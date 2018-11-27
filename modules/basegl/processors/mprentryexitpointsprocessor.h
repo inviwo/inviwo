@@ -34,29 +34,23 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/interaction/cameratrackball.h>
 #include <modules/opengl/shader/shader.h>
 
 namespace inviwo {
 
 /** \docpage{org.inviwo.MPREntryExitPoints, Entry exit points}
  * ![](org.inviwo.MPREntryExitPoints.png?classIdentifier=org.inviwo.MPREntryExitPoints)
- * Computes the entry and exit points
- * ### Inports
- *   * __MeshInport__ The mesh to intersect.
+ * Uses a plane in volume space to generate entry and exit points
  *
  * ### Outports
- *   * __ImageOutport__ The first hit point.
- *   * __ImageOutport__ The last hit point.
+ *   * __ImageOutport__ entry points
+ *   * __ImageOutport__ exit points
  * 
- * ### Properties
- *   * __Camera__ Camera of the scene.
  */
 
 class IVW_MODULE_BASEGL_API MPREntryExitPoints : public Processor {
@@ -73,12 +67,12 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
 private:
+	VolumeInport volumeInport_;
+
     ImageOutport entryPort_;
     ImageOutport exitPort_;
 
-    CameraProperty camera_;
     BoolProperty capNearClipping_;
-    CameraTrackball trackball_;
 
 	// Generating entry exit points on a plane with these parameters
 	FloatVec3Property planePosition_;
@@ -86,6 +80,8 @@ private:
 	FloatVec3Property planeUp_;
 	FloatProperty offset0_;
 	FloatProperty offset1_;
+
+	vec2 planeSize_;
 
 	Shader shader_;
 };

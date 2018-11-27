@@ -94,7 +94,8 @@ private:
 	// Normal pointing out of the image plane, used as crosshair rotation axis
 	FloatVec3Property planeNormal_;
 
-	FloatVec3Property planeUp_; // to link with mpr entry exit
+	// Up vector so you can configure the orientation of your image
+	FloatVec3Property planeUp_; // to link with mprentryexitpointsprocessor
 
 	// Rotation in world coords to keep multiple image planes in sync through property linking
 	FloatMat4Property normalRotationMatrix_;

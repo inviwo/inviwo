@@ -29,17 +29,32 @@
 
 uniform vec3 middle;
 uniform vec3 normal;
+uniform vec3 up;
+uniform vec3 right;
 uniform float offset;
+uniform float viewportAspect = 1.0f;
+uniform float sliceAspect = 1.0f;
 
 in vec2 uv;
 
 void main() {
+	// Viewport coordinates in [0,1]
     float x = uv.x;
     float y = uv.y;
-	// https://www.gamedev.net/forums/topic/357797-rotate-a-vector-by-90-degrees/?do=findComment&comment=3348469
-    vec3 up = vec3(normal.x, -normal.z, normal.y); // 90 deg CW about x-axis
-    vec3 right = vec3(normal.z, normal.y, -normal.x); // 90 deg CCW about y-axis
-    vec3 bottomLeft = middle - 0.5f * up - 0.5f * right;
+
+    vec3 bottomLeft = middle - 0.5f * right - 0.5f * up;
+
+	// Correct for uneven viewport aspect ratio
+
+	float aspect = viewportAspect * sliceAspect;
+
+	if (aspect < 1.0f) bottomLeft = middle - 0.5f * right - 0.5f * (1.0f/aspect) * up;
+	else if (aspect > 1.0f) bottomLeft = middle - 0.5f * aspect * right - 0.5f * up;
+
+	// Apply offset that controls the slab thickness
     bottomLeft += offset * normal;
+
     FragData0 = vec4(bottomLeft + x * right + y * up, 1.0f);
+	if (aspect < 1.0f) FragData0 = vec4(bottomLeft + x * right + y * (1.0f/aspect) * up, 1.0f);
+	else if (aspect > 1.0f) FragData0 = vec4(bottomLeft + x * aspect * right + y * up, 1.0f);
 }
