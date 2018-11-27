@@ -179,8 +179,6 @@ TEST(Marchingcubes, two) {
         return vec;
     };
 
-    const vec3 center{0.5f};
-
     std::vector<vec3> vals = {vec3{0.5f, 0.0f, 0.0f}, vec3{0.0f, 0.5f, 0.0f},
                               vec3{0.0f, 0.0f, 0.5f}};
     int n1nn = 0;

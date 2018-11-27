@@ -515,7 +515,7 @@ void CollapsibleGroupBoxWidgetQt::addButtonLayout(QGridLayout* layout, int row, 
     removePropertyBtn->setFixedSize(QSize(12, 11));
     removePropertyBtn->setIconSize(QSize(10, 9));
 
-    connect(removePropertyBtn, &QToolButton::clicked, this, [this, layout, prop, buttonWidget]() {
+    connect(removePropertyBtn, &QToolButton::clicked, this, [layout, prop, buttonWidget]() {
         if (prop->getOwner()) {
             prop->getOwner()->removeProperty(prop);
         } else {

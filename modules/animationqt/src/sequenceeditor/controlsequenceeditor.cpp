@@ -101,7 +101,7 @@ public:
 
         connect(jumpToWidget_,
                 static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this,
-                [this, &ctrlKey](double t) { ctrlKey.setJumpTime(Seconds{t}); });
+                [&ctrlKey](double t) { ctrlKey.setJumpTime(Seconds{t}); });
 
         layout->addWidget(actionWidget_);
         layout->addWidget(jumpToWidget_);

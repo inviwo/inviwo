@@ -87,7 +87,7 @@ void SequenceEditorWidget::reorderKeyframes() {
     });
 
     bool orderChanged = false;
-    size_t i = 0;
+    int i = 0;
     for (auto w : widgets) {
         orderChanged |= keyframesLayout_->indexOf(w.second) != i++;
     }

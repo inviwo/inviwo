@@ -72,7 +72,7 @@ void StructuredGrid::sameLevelConnection(std::vector<ind>& result, const ind idx
     std::vector<ind> index = indexFromLinear(idxLin, size);
 
     ind dimensionProduct = 1;
-    for (int dim = 0; dim < size.size(); ++dim) {
+    for (size_t dim = 0; dim < size.size(); ++dim) {
         if (index[dim] > 0) result.push_back(idxLin - dimensionProduct);
         if (index[dim] < size[dim] - 1) result.push_back(idxLin + dimensionProduct);
 

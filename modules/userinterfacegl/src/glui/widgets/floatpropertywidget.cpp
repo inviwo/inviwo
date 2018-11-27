@@ -48,7 +48,6 @@ FloatPropertyWidget::FloatPropertyWidget(FloatProperty &property, Processor &pro
         if (!property_->getReadOnly()) {
             // delta in pixel (screen coords),
             // need to scale from graphical representation to slider
-            const ivec2 scaledExtent(getWidgetExtentScaled());
             float newVal = sliderToRepr(glm::clamp(
                 static_cast<int>(round(getPreviousValue() +
                                        convertDeltaToSlider(delta) *

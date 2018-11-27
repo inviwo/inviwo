@@ -312,7 +312,7 @@ void ScatterPlotGL::plot(const size2_t &dims, IndexBuffer *indexBuffer, bool use
         auto &inds = indices->getEditableRAMRepresentation()->getDataContainer();
 
         radius_->getRepresentation<BufferRAM>()->dispatch<void, dispatching::filter::Scalars>(
-            [this, &inds](auto bufferpr) {
+            [&inds](auto bufferpr) {
                 auto &radii = bufferpr->getDataContainer();
                 std::sort(inds.begin(), inds.end(), [&radii](const uint32_t &a, const uint32_t &b) {
                     return radii[a] > radii[b];

@@ -136,8 +136,8 @@ public:
 
 protected:
     // Defines the transform
-    virtual int editorToRepr(double val) { return static_cast<int>(val + 0.5); }
-    virtual double reprToEditor(int val) { return static_cast<double>(val); }
+    virtual int editorToRepr(double val) override { return static_cast<int>(val + 0.5); }
+    virtual double reprToEditor(int val) override { return static_cast<double>(val); }
 
     virtual int spinnerDecimals() override { return 0; }
 };

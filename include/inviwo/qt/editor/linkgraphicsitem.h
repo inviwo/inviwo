@@ -94,7 +94,7 @@ public:
     virtual ProcessorGraphicsItem* getSrcProcessorGraphicsItem() const;
 
     enum { Type = UserType + LinkConnectionDragGraphicsType };
-    int type() const { return Type; }
+    virtual int type() const override { return Type; }
 
 protected:
     static QPointF compare(const QPointF startLeft, const QPointF& startRight,
@@ -122,9 +122,9 @@ public:
     virtual ProcessorGraphicsItem* getDestProcessorGraphicsItem() const;
 
     enum { Type = UserType + LinkConnectionGraphicsType };
-    int type() const { return Type; }
+    virtual int type() const override { return Type; }
 
-    virtual void showToolTip(QGraphicsSceneHelpEvent* e);
+    virtual void showToolTip(QGraphicsSceneHelpEvent* e) override;
 
 protected:
     ProcessorLinkGraphicsItem* inLink_;  //< non-owning reference

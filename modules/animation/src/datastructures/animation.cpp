@@ -96,7 +96,7 @@ std::unique_ptr<Track> Animation::remove(const std::string& id) {
 std::unique_ptr<Keyframe> Animation::remove(Keyframe* key) {
     for (auto& track : tracks_) {
         if (auto res = track->remove(key)) {
-            return std::move(res);
+            return res;
         }
     }
     return nullptr;
@@ -105,7 +105,7 @@ std::unique_ptr<Keyframe> Animation::remove(Keyframe* key) {
 std::unique_ptr<KeyframeSequence> Animation::remove(KeyframeSequence* seq) {
     for (auto& track : tracks_) {
         if (auto res = track->remove(seq)) {
-            return std::move(res);
+            return res;
         }
     }
     return nullptr;
