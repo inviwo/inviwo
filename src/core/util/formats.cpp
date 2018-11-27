@@ -119,7 +119,7 @@ const DataFormatBase* DataFormatBase::getPointer(DataFormatId id) {
             std::make_unique<DataFormatBase>(DataFormatId::NotSpecialized, 0, 0, 0.0, 0.0, 0.0,
                                              NumericType::NotSpecialized, "NotSpecialized");
         util::for_each_type<DefaultDataFormats>{}(AddInstance{}, res);
-        return std::move(res);
+        return res;
     }();
 
     return instances[static_cast<int>(id)].get();

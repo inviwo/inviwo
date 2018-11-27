@@ -191,7 +191,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
         return action;
     };
 
-    auto updateRowsHeights = [this, height, margin]() {
+    auto updateRowsHeights = [this, height]() {
         tableView_->setUpdatesEnabled(false);
 
         auto vrows = tableView_->verticalHeader()->count();

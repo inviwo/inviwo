@@ -259,7 +259,7 @@ bool VectorFieldVisualizationModule::Converter::integralLineTracerMetaDataProper
         selectors.push_back(popertiesMatcher);
     }
     bool res = false;
-    xml::visitMatchingNodes(root, selectors, [&res, this](TxElement* node) {
+    xml::visitMatchingNodes(root, selectors, [&res](TxElement* node) {
         for (std::string id : {"calculateCurvature", "calculateTortuosity"}) {
             TxElement prop("Property");
             prop.SetAttribute("type", "org.inviwo.BoolProperty");

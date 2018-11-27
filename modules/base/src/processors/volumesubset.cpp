@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/base/processors/volumesubset.h>
@@ -41,19 +41,17 @@ const ProcessorInfo VolumeSubset::processorInfo_{
     CodeState::Stable,          // Code state
     Tags::CPU,                  // Tags
 };
-const ProcessorInfo VolumeSubset::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo VolumeSubset::getProcessorInfo() const { return processorInfo_; }
 
-VolumeSubset::VolumeSubset() : Processor()
-      , inport_("inputVolume")
-      , outport_("outputVolume")
-      , enabled_("enabled", "Enable Operation", true)
-      , adjustBasisAndOffset_("adjustBasisAndOffset", "Adjust Basis and Offset", true)
-      , rangeX_("rangeX", "X Slices", 0, 256, 0, 256, 1, 1)
-      , rangeY_("rangeY", "Y Slices", 0, 256, 0, 256, 1, 1)
-      , rangeZ_("rangeZ", "Z Slices", 0, 256, 0, 256, 1, 1)
-{
+VolumeSubset::VolumeSubset()
+    : Processor()
+    , inport_("inputVolume")
+    , outport_("outputVolume")
+    , enabled_("enabled", "Enable Operation", true)
+    , adjustBasisAndOffset_("adjustBasisAndOffset", "Adjust Basis and Offset", true)
+    , rangeX_("rangeX", "X Slices", 0, 256, 0, 256, 1, 1)
+    , rangeY_("rangeY", "Y Slices", 0, 256, 0, 256, 1, 1)
+    , rangeZ_("rangeZ", "Z Slices", 0, 256, 0, 256, 1, 1) {
     addPort(inport_);
     addPort(outport_);
     addProperty(enabled_);
@@ -61,7 +59,7 @@ VolumeSubset::VolumeSubset() : Processor()
     addProperty(rangeX_);
     addProperty(rangeY_);
     addProperty(rangeZ_);
-    dims_ = size3_t(1,1,1);
+    dims_ = size3_t(1, 1, 1);
 
     // Since the ranges depend on the input volume dimensions, we make sure to always
     // serialize them so we can do a proper renormalization when we load new data.
@@ -75,9 +73,9 @@ VolumeSubset::VolumeSubset() : Processor()
         // Update to the new dimensions.
         dims_ = inport_.getData()->getDimensions();
 
-        rangeX_.setRangeNormalized(ivec2(0, dims_.x));
-        rangeY_.setRangeNormalized(ivec2(0, dims_.y));
-        rangeZ_.setRangeNormalized(ivec2(0, dims_.z));
+        rangeX_.setRangeNormalized(size2_t(0, dims_.x));
+        rangeY_.setRangeNormalized(size2_t(0, dims_.y));
+        rangeZ_.setRangeNormalized(size2_t(0, dims_.z));
 
         // set the new dimensions to default if we were to press reset
         rangeX_.setCurrentStateAsDefault();
@@ -86,23 +84,18 @@ VolumeSubset::VolumeSubset() : Processor()
     });
 }
 
-VolumeSubset::~VolumeSubset() {}
+VolumeSubset::~VolumeSubset() = default;
 
 void VolumeSubset::process() {
     if (enabled_.get()) {
-        const VolumeRAM* vol = inport_.getData()->getRepresentation<VolumeRAM>();
-        size3_t dim = size3_t(static_cast<unsigned int>(rangeX_.get().y),
-                          static_cast<unsigned int>(rangeY_.get().y),
-                          static_cast<unsigned int>(rangeZ_.get().y));
-        size3_t offset = size3_t(static_cast<unsigned int>(rangeX_.get().x),
-                             static_cast<unsigned int>(rangeY_.get().x),
-                             static_cast<unsigned int>(rangeZ_.get().x));
-        dim -= offset;
+        const auto vol = inport_.getData()->getRepresentation<VolumeRAM>();
+        const size3_t offset{rangeX_.get().x, rangeY_.get().x, rangeZ_.get().x};
+        const size3_t dim = size3_t{rangeX_.get().y, rangeY_.get().y, rangeZ_.get().y} - offset;
 
         if (dim == dims_)
             outport_.setData(inport_.getData());
         else {
-            Volume* volume = new Volume(VolumeRAMSubSet::apply(vol, dim, offset));
+            auto volume = std::make_shared<Volume>(VolumeRAMSubSet::apply(vol, dim, offset));
             // pass meta data on
             volume->copyMetaDataFrom(*inport_.getData());
             volume->dataMap_ = inport_.getData()->dataMap_;
@@ -134,5 +127,4 @@ void VolumeSubset::process() {
     }
 }
 
-} // inviwo namespace
-
+}  // namespace inviwo

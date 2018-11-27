@@ -99,7 +99,7 @@ public:
 
         addMinor(div.start - div.step);
 
-        for (auto i = 0; i <= div.count; ++i) {
+        for (size_t i = 0; i <= div.count; ++i) {
             const auto x = view_->mapFromScene(widthPerSecond * (div.start + i * div.step), 0).x();
             QRectF box(x - 0.5 * gridSpacing, rect().top(), gridSpacing, timelineHeight);
             painter.drawText(box, Qt::AlignHCenter | Qt::AlignTop | Qt::TextDontClip,

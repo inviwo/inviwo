@@ -85,13 +85,13 @@ ListProperty::ListProperty(const ListProperty& rhs)
     : CompositeProperty(rhs)
     , uiFlags_(rhs.uiFlags_)
     , maxNumElements_(rhs.maxNumElements_)
-    , prefabs_(std::move(detail::clonePropertyVector(rhs.prefabs_))) {}
+    , prefabs_(detail::clonePropertyVector(rhs.prefabs_)) {}
 
 ListProperty& ListProperty::operator=(const ListProperty& that) {
     if (this != &that) {
         uiFlags_ = that.uiFlags_;
         maxNumElements_ = that.maxNumElements_;
-        prefabs_ = std::move(detail::clonePropertyVector(that.prefabs_));
+        prefabs_ = detail::clonePropertyVector(that.prefabs_);
     }
     return *this;
 }

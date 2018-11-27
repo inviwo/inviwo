@@ -51,7 +51,7 @@ public:
                  const std::vector<bool>& isDimPeriodic);
     virtual ~PeriodicGrid() = default;
 
-    ind getNumCellsInDimension(ind dim) const;
+    virtual ind getNumCellsInDimension(ind dim) const override;
 
     bool isPeriodic(ind dim) const { return isDimPeriodic_[dim]; }
 

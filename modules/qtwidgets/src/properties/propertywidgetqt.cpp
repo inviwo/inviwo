@@ -333,7 +333,7 @@ void PropertyWidgetQt::addPresetMenuActions(QMenu* menu, InviwoApplication* app)
     auto presetManager = app->getPropertyPresetManager();
 
     {
-        auto addPresetToMenu = [presetManager, this](QMenu* menu, const std::string& name,
+        auto addPresetToMenu = [presetManager](QMenu* menu, const std::string& name,
                                                      Property* property, PropertyPresetType type) {
             auto action = menu->addAction(QString::fromStdString(name));
             if (property->getReadOnly()) action->setEnabled(false);

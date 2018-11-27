@@ -84,7 +84,7 @@ void registerTrackHelper(animation::AnimationQtSupplier& as) {
                                         PropertySequenceEditor::classIdentifier());
 }
 
-template <template <typename> typename Prop>
+template <template <typename> class Prop>
 struct Reghelper {
     template <typename T>
     auto operator()(animation::AnimationQtSupplier& as) {

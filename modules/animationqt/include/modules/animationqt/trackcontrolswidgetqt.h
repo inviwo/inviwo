@@ -63,7 +63,6 @@ private:
     AnimationController& controller_;
     Track& track_;
 
-    QStandardItem* item_;
     QHBoxLayout* layout_{nullptr};
 
     QToolButton* btnDisable_;

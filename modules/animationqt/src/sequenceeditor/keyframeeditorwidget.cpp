@@ -75,7 +75,7 @@ KeyframeEditorWidget::KeyframeEditorWidget(Keyframe &keyframe, SequenceEditorWid
         auto baseProperty = propTrack->getProperty();
         property_.reset(baseProperty->clone());
         propTrack->setOtherProperty(property_.get(), &keyframe);
-        property_->onChange([b = baseProperty, p = property_.get(), t = propTrack,
+        property_->onChange([p = property_.get(), t = propTrack,
                              k = &keyframe_]() { t->updateKeyframeFromProperty(p, k); });
         property_->setOwner(nullptr);
 
@@ -109,7 +109,7 @@ KeyframeEditorWidget::KeyframeEditorWidget(Keyframe &keyframe, SequenceEditorWid
 
         connect(timeSpinner_,
                 static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this,
-                [this, ctrlKey](double t) { ctrlKey->setJumpTime(Seconds{t}); });
+                [ctrlKey](double t) { ctrlKey->setJumpTime(Seconds{t}); });
 
         layout_->addWidget(actionWidget_);
         layout_->addWidget(jumpToWidget_);

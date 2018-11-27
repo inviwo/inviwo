@@ -177,4 +177,8 @@ const StructuredCameraCoordinateTransformer<3>& Volume::getCoordinateTransformer
     return StructuredGridEntity<3>::getCoordinateTransformer(camera);
 }
 
+template class IVW_CORE_TMPL_INST DataReaderType<Volume>;
+template class IVW_CORE_TMPL_INST DataWriterType<Volume>;
+template class IVW_CORE_TMPL_INST DataReaderType<VolumeSequence>;
+
 }  // namespace

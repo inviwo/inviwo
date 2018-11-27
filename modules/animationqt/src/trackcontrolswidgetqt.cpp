@@ -46,7 +46,7 @@ namespace animation {
 
 TrackControlsWidgetQt::TrackControlsWidgetQt(QStandardItem* item, Track& track,
                                              AnimationController& controller)
-    : QWidget(), controller_(controller), track_{track}, item_(item) {
+    : QWidget(), controller_(controller), track_{track} {
 
     setObjectName("TrackControlsWidget");
     setAutoFillBackground(true);

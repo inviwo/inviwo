@@ -85,9 +85,6 @@ void IndicatorWidget::paintEvent(QPaintEvent *e) {
     QPen pen(QColor("#1e70a8").darker(150), 1.0);
     p.setPen(pen);
 
-    QRect handle;
-    QRect groove;
-
     p.setTransform(painterTransform_);
 
     if (grooveRect_.isValid()) {

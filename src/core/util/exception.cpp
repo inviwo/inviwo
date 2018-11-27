@@ -87,7 +87,7 @@ void Exception::getFullMessage(std::ostream& ss, int maxFrames) const {
 
 void Exception::getStack(std::ostream& os, int maxFrames) const {
     auto j = inviwo::util::make_ostream_joiner(os, "\n");
-    if (maxFrames > 0 && stack_.size() > maxFrames) {
+    if (maxFrames > 0 && static_cast<int>(stack_.size()) > maxFrames) {
         std::copy(stack_.begin(), stack_.begin() + maxFrames, j);
         os << "\n...";
     } else {

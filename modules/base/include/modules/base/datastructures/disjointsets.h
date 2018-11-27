@@ -91,8 +91,8 @@ inline bool DisjointSets<T>::join(T r, T s) {
     IVW_ASSERT(r >= 0, "r should be greater than or equal to 0");
     IVW_ASSERT(s >= 0, "s should be greater than or equal to 0");
 
-    IVW_ASSERT(r < array_.size(), "r should be less than size");
-    IVW_ASSERT(s < array_.size(), "s should be less than size");
+    IVW_ASSERT(r < static_cast<T>(array_.size()), "r should be less than size");
+    IVW_ASSERT(s < static_cast<T>(array_.size()), "s should be less than size");
 
     r = find(r);
     s = find(s);
@@ -111,7 +111,7 @@ inline bool DisjointSets<T>::join(T r, T s) {
 template <typename T>
 inline T DisjointSets<T>::find(T x) {
     IVW_ASSERT(x >= 0, "x should be greater than or equal to 0");
-    IVW_ASSERT(x < array_.size(), "x should be less than size");
+    IVW_ASSERT(x < static_cast<T>(array_.size()), "x should be less than size");
 
     // find with path compression
     if (array_[x] < 0) {
