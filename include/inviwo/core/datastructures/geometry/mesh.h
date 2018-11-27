@@ -232,8 +232,8 @@ IVW_CORE_API bool hasRadiiBuffer(const Mesh* mesh);
 
 
 // https://docs.microsoft.com/en-us/cpp/cpp/general-rules-and-limitations?view=vs-2017
-IVW_CORE_EXT template class IVW_CORE_API DataReaderType<Mesh>;
-IVW_CORE_EXT template class IVW_CORE_API DataWriterType<Mesh>;
+extern template class IVW_CORE_TMPL_EXP DataReaderType<Mesh>;
+extern template class IVW_CORE_TMPL_EXP DataWriterType<Mesh>;
 
 }  // namespace inviwo
 

@@ -293,4 +293,7 @@ Document Image::getInfo() const {
     return doc;
 }
 
+template class IVW_CORE_TMPL_INST DataReaderType<Image>;
+template class IVW_CORE_TMPL_INST DataWriterType<Image>;
+
 } // namespace

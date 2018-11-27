@@ -31,4 +31,14 @@
 
 namespace inviwo {
 
+template class IVW_CORE_TMPL_INST SpatialCoordinateTransformer<2>;
+template class IVW_CORE_TMPL_INST SpatialCoordinateTransformer<3>;
+template class IVW_CORE_TMPL_INST SpatialCameraCoordinateTransformer<2>;
+template class IVW_CORE_TMPL_INST SpatialCameraCoordinateTransformer<3>;
+
+template class IVW_CORE_TMPL_INST StructuredCoordinateTransformer<2>;
+template class IVW_CORE_TMPL_INST StructuredCoordinateTransformer<3>;
+template class IVW_CORE_TMPL_INST StructuredCameraCoordinateTransformer<2>;
+template class IVW_CORE_TMPL_INST StructuredCameraCoordinateTransformer<3>;
+
 }  // namespace inviwo

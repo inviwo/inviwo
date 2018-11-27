@@ -31,4 +31,40 @@
 
 namespace inviwo {
 
+// Scalar properties
+template class IVW_CORE_TMPL_INST OrdinalProperty<float>;
+template class IVW_CORE_TMPL_INST OrdinalProperty<int>;
+template class IVW_CORE_TMPL_INST OrdinalProperty<size_t>;
+template class IVW_CORE_TMPL_INST OrdinalProperty<glm::i64>;
+template class IVW_CORE_TMPL_INST OrdinalProperty<double>;
+
+// Vector properties
+template class IVW_CORE_TMPL_INST OrdinalProperty<vec2>;
+template class IVW_CORE_TMPL_INST OrdinalProperty<vec3>;
+template class IVW_CORE_TMPL_INST OrdinalProperty<vec4>;
+
+template class IVW_CORE_TMPL_INST OrdinalProperty<dvec2>;
+template class IVW_CORE_TMPL_INST OrdinalProperty<dvec3>;
+template class IVW_CORE_TMPL_INST OrdinalProperty<dvec4>;
+
+template class IVW_CORE_TMPL_INST OrdinalProperty<ivec2>;
+template class IVW_CORE_TMPL_INST OrdinalProperty<ivec3>;
+template class IVW_CORE_TMPL_INST OrdinalProperty<ivec4>;
+
+template class IVW_CORE_TMPL_INST OrdinalProperty<size2_t>;
+template class IVW_CORE_TMPL_INST OrdinalProperty<size3_t>;
+template class IVW_CORE_TMPL_INST OrdinalProperty<size4_t>;
+
+// Matrix properties
+template class IVW_CORE_TMPL_INST OrdinalProperty<mat2>;
+template class IVW_CORE_TMPL_INST OrdinalProperty<mat3>;
+template class IVW_CORE_TMPL_INST OrdinalProperty<mat4>;
+
+template class IVW_CORE_TMPL_INST OrdinalProperty<dmat2>;
+template class IVW_CORE_TMPL_INST OrdinalProperty<dmat3>;
+template class IVW_CORE_TMPL_INST OrdinalProperty<dmat4>;
+
+template class IVW_CORE_TMPL_INST OrdinalProperty<glm::dquat>;
+template class IVW_CORE_TMPL_INST OrdinalProperty<glm::fquat>;
+
 }  // namespace inviwo

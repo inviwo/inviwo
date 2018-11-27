@@ -687,19 +687,19 @@ TemplateOptionProperty<T>* TemplateOptionProperty<T>::clone() const {
     return new TemplateOptionProperty<T>(*this);
 }
 
-IVW_CORE_EXT template class IVW_CORE_API OptionPropertyOption<unsigned int>;
-IVW_CORE_EXT template class IVW_CORE_API OptionPropertyOption<int>;
-IVW_CORE_EXT template class IVW_CORE_API OptionPropertyOption<size_t>;
-IVW_CORE_EXT template class IVW_CORE_API OptionPropertyOption<float>;
-IVW_CORE_EXT template class IVW_CORE_API OptionPropertyOption<double>;
-IVW_CORE_EXT template class IVW_CORE_API OptionPropertyOption<std::string>;
+extern template class IVW_CORE_TMPL_EXP OptionPropertyOption<unsigned int>;
+extern template class IVW_CORE_TMPL_EXP OptionPropertyOption<int>;
+extern template class IVW_CORE_TMPL_EXP OptionPropertyOption<size_t>;
+extern template class IVW_CORE_TMPL_EXP OptionPropertyOption<float>;
+extern template class IVW_CORE_TMPL_EXP OptionPropertyOption<double>;
+extern template class IVW_CORE_TMPL_EXP OptionPropertyOption<std::string>;
 
-IVW_CORE_EXT template class IVW_CORE_API TemplateOptionProperty<unsigned int>;
-IVW_CORE_EXT template class IVW_CORE_API TemplateOptionProperty<int>;
-IVW_CORE_EXT template class IVW_CORE_API TemplateOptionProperty<size_t>;
-IVW_CORE_EXT template class IVW_CORE_API TemplateOptionProperty<float>;
-IVW_CORE_EXT template class IVW_CORE_API TemplateOptionProperty<double>;
-IVW_CORE_EXT template class IVW_CORE_API TemplateOptionProperty<std::string>;
+extern template class IVW_CORE_TMPL_EXP TemplateOptionProperty<unsigned int>;
+extern template class IVW_CORE_TMPL_EXP TemplateOptionProperty<int>;
+extern template class IVW_CORE_TMPL_EXP TemplateOptionProperty<size_t>;
+extern template class IVW_CORE_TMPL_EXP TemplateOptionProperty<float>;
+extern template class IVW_CORE_TMPL_EXP TemplateOptionProperty<double>;
+extern template class IVW_CORE_TMPL_EXP TemplateOptionProperty<std::string>;
 
 }  // namespace inviwo
 
