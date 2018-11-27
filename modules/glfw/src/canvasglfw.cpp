@@ -36,6 +36,8 @@
 #include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/util/rendercontext.h>
 
+#include <modules/opengl/openglcapabilities.h>
+
 #include <codecvt>
 
 namespace inviwo {
