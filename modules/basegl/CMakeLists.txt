@@ -70,6 +70,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeslicegl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/polylinegrabber.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/delaunaytriangulation2d.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/coloroffset.h
     ${CMAKE_CURRENT_SOURCE_DIR}/viewmanager.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
@@ -141,6 +142,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeslicegl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/polylinegrabber.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/delaunaytriangulation2d.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/coloroffset.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/viewmanager.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})

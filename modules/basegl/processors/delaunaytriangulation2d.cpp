@@ -45,56 +45,83 @@ namespace inviwo {
         CodeState::Experimental,              // Code state
         Tags::CPU,                            // Tags
     };
+
 const ProcessorInfo DelaunayTriangulation2D::getProcessorInfo() const { return processorInfo_; }
 
     DelaunayTriangulation2D::DelaunayTriangulation2D()
         : Processor()
-        , ptsInport_("meshport1")
-        , meshOutport_("meshport2")
+        , ptsInport_("pts_in")
+        , meshOutport_("mesh_out")
+        , meshEdgesOutport_("mesh_edges_out")
+        , triangulateInViewSpace_("triangulate_in_view_space", "Triangulate in View Space", false)
         , camera_("camera", "Camera", vec3(0.0f, 0.0f, 10.0f), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f))
     {
         addPort(ptsInport_);
         addPort(meshOutport_);
+        addPort(meshEdgesOutport_);
 
+        addProperty(triangulateInViewSpace_);
         addProperty(camera_);
     }
 
     void DelaunayTriangulation2D::process() {
-        const auto& view_mat = camera_.viewMatrix();
-        const auto& pts = *ptsInport_.getData();
-        const vec3 offset{0.0f};
+        if (ptsInport_.isChanged() || triangulateInViewSpace_) {
+            const auto& pts = *ptsInport_.getData();
 
-        if (pts.size() >= 3) {
-            std::vector<Vec2Indexed> pts_2d;
-            pts_2d.reserve(pts.size());
-            for (size_t idx = 0; idx < pts.size(); ++idx) {
-                const auto& pt = pts[idx];
-                // specify dimensions (x, y, or z) or project along normal before
-                pts_2d.emplace_back(pt.z, pt.y, idx);
+            if (pts.size() >= 3) {
+                std::vector<Vec2Indexed> pts_2d;
+                pts_2d.reserve(pts.size());
+                for (size_t idx = 0; idx < pts.size(); ++idx) {
+                    const auto& pt = pts[idx];
+                    if (triangulateInViewSpace_) {
+                        const auto& view_mat = camera_.viewMatrix();
+                        const auto pt_view_space = view_mat * vec4(pt, 1.0f);
+                        pts_2d.emplace_back(pt_view_space.x, pt_view_space.y, idx);
+                    } else {
+                        // specify dimensions (x, y, or z) or project along normal
+                        pts_2d.emplace_back(pt.z, pt.y, idx);
+                    }
+                }
+
+                Delaunay delaunayTriangulation;
+                const auto triangles = delaunayTriangulation.triangulate(pts_2d);
+
+                auto mesh = std::make_shared<SimpleMesh>();
+                mesh->setModelMatrix(mat4(1.f));
+
+                for (const auto& p : pts) {
+                    // color is the important attribute for the ray-caster
+                    mesh->addVertex(p, p, vec4(p, 1.0f));
+
+                    // TODO: add pixel spacing and slice thickness
+                }
+
+                auto mesh_edges = mesh->clone();
+
+                mesh->setIndicesInfo(DrawType::Triangles, ConnectivityType::None);
+                mesh_edges->setIndicesInfo(DrawType::Lines, ConnectivityType::None);
+                for (const auto& t : triangles) {
+                    // full triangle
+                    mesh->addIndex(static_cast<unsigned int>(t.p1.idx));
+                    mesh->addIndex(static_cast<unsigned int>(t.p2.idx));
+                    mesh->addIndex(static_cast<unsigned int>(t.p3.idx));
+
+                    // edges of triangle
+                    mesh_edges->addIndex(static_cast<unsigned int>(t.p1.idx));
+                    mesh_edges->addIndex(static_cast<unsigned int>(t.p2.idx));
+
+                    mesh_edges->addIndex(static_cast<unsigned int>(t.p2.idx));
+                    mesh_edges->addIndex(static_cast<unsigned int>(t.p3.idx));
+
+                    mesh_edges->addIndex(static_cast<unsigned int>(t.p1.idx));
+                    mesh_edges->addIndex(static_cast<unsigned int>(t.p3.idx));
+                }
+
+                meshOutport_.setData(mesh);
+                meshEdgesOutport_.setData(mesh_edges);
+            } else {
+                LogWarn("not enough points for delaunay triangulation! (only " << pts.size() << " given)");
             }
-
-            Delaunay delaunayTriangulation;
-            const auto triangles = delaunayTriangulation.triangulate(pts_2d);
-
-            auto mesh = std::make_shared<SimpleMesh>();
-            mesh->setModelMatrix(mat4(1.f));
-
-            for (const auto& p : pts) {
-                // pos, color, texCoord
-                // color and texCoord = pos to match volume coordinate for ray-casting later
-                mesh->addVertex(p, p + offset, vec4(p + offset, 1.0f));
-            }
-
-            mesh->setIndicesInfo(DrawType::Triangles, ConnectivityType::None);
-            for (const auto& t : triangles) {
-                mesh->addIndex(static_cast<unsigned int>(t.p1.idx));
-                mesh->addIndex(static_cast<unsigned int>(t.p2.idx));
-                mesh->addIndex(static_cast<unsigned int>(t.p3.idx));
-            }
-
-            meshOutport_.setData(mesh);
-        } else {
-            LogWarn("not enough points for delaunay triangulation! (only " << pts.size() << " given)");
         }
     }
 

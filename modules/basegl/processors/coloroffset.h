@@ -27,28 +27,27 @@
 *
 *********************************************************************************/
 
-#ifndef IVW_DELAUNAYTRIANGULATION2D_H
-#define IVW_DELAUNAYTRIANGULATION2D_H
+#ifndef IVW_COLOROFFSET_H
+#define IVW_COLOROFFSET_H
 
 #include <modules/basegl/baseglmoduledefine.h>
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 
-#include <inviwo/core/ports/polylineport.h>
 #include <inviwo/core/ports/meshport.h>
-#include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 
 namespace inviwo {
     /**
     * \class
     * \brief 
     */
-    class IVW_MODULE_BASEGL_API DelaunayTriangulation2D : public Processor {
+    class IVW_MODULE_BASEGL_API ColorOffset : public Processor {
     public:
-        DelaunayTriangulation2D();
-        virtual ~DelaunayTriangulation2D() = default;
+        ColorOffset();
+        virtual ~ColorOffset() = default;
 
         virtual void process() override;
 
@@ -58,13 +57,12 @@ namespace inviwo {
     protected:
 
     private:
-        PolylineInport ptsInport_;
-        MeshOutport meshOutport_;
-        MeshOutport meshEdgesOutport_;
+        MeshInport mesh_inport_;
+        MeshOutport mesh_outport_;
 
-        BoolProperty triangulateInViewSpace_;
-        CameraProperty camera_;
+        FloatVec4Property offset_;
+        BoolProperty clamp_color_;
     };
 }
 
-#endif // IVW_DELAUNAYTRIANGULATION2D_H
+#endif // IVW_COLOROFFSET_H
