@@ -39,6 +39,7 @@
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 
 namespace inviwo {
     /**
@@ -62,6 +63,7 @@ namespace inviwo {
         MeshOutport meshOutport_;
         MeshOutport meshEdgesOutport_;
 
+        OptionPropertyInt projectAlongAxis_; // Axis enum
         BoolProperty triangulateInViewSpace_;
         CameraProperty camera_;
     };
