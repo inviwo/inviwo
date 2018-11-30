@@ -559,7 +559,7 @@ std::shared_ptr<Mesh> MeshClipping::clipGeometryAgainstPlane(const Mesh* in,
                 // Calculate centroids per polygon
                 // First in the x-y plane and then in the x-z plane.
                 std::vector<vec3> polygonCentroids;
-                vec3 u, v;
+                vec3 u{0.0f}, v{0.0f};
                 vec3 n = plane.getNormal();
 
                 for (auto& polygon : polygons) {

@@ -173,7 +173,7 @@ void PathLinesDeprecated::process() {
         auto indexBuffer = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);
         indexBuffer->add(0);
 
-        vec4 c;
+        vec4 c{0.0f};
         if (hasColors) {
             if (line.getIndex() >= colors_.getData()->size()) {
                 if (warnOnce2) {

@@ -162,7 +162,7 @@ void StreamRibbonsDeprecated::process() {
             auto indexBuffer = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::Strip);
             indexBuffer->getDataContainer().reserve(size);
 
-            vec4 c;
+            vec4 c{0.0f};
             if (hasColors) {
                 if (lineId >= colors_.getData()->size()) {
                     LogWarn("The vector of colors is smaller then the vector of seed points");

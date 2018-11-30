@@ -55,7 +55,7 @@ IVW_MODULE_DISCRETEDATA_API double getMeasure(const Connectivity& grid, const Ch
  */
 inline double getMeasure(const Channel& positions, const ElementIterator& element) {
     return getMeasure(*element.getGrid(), positions, element.getType(), element.getIndex());
-};
+}
 
 struct HexVolumeComputer {
     template <typename T>
