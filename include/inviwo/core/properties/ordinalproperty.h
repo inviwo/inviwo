@@ -53,11 +53,11 @@ public:
                     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                     PropertySemantics semantics = PropertySemantics::Default);
 
-    OrdinalProperty(const OrdinalProperty<T>& rhs) = default;
-    OrdinalProperty<T>& operator=(const OrdinalProperty<T>& that) = default;
+    OrdinalProperty(const OrdinalProperty<T>& rhs);
+    OrdinalProperty<T>& operator=(const OrdinalProperty<T>& that);
     OrdinalProperty<T>& operator=(const T& value);
     virtual OrdinalProperty<T>* clone() const override;
-    virtual ~OrdinalProperty() = default;
+    virtual ~OrdinalProperty();
 
     virtual std::string getClassIdentifier() const override;
 
@@ -167,6 +167,12 @@ OrdinalProperty<T>::OrdinalProperty(const std::string& identifier, const std::st
 }
 
 template <typename T>
+OrdinalProperty<T>::OrdinalProperty(const OrdinalProperty<T>& rhs) = default;
+
+template <typename T>
+OrdinalProperty<T>& OrdinalProperty<T>::operator=(const OrdinalProperty<T>& that) = default;
+
+template <typename T>
 OrdinalProperty<T>& OrdinalProperty<T>::operator=(const T& value) {
     TemplateProperty<T>::operator=(value);
     return *this;
@@ -176,6 +182,9 @@ template <typename T>
 OrdinalProperty<T>* OrdinalProperty<T>::clone() const {
     return new OrdinalProperty<T>(*this);
 }
+
+template <typename T>
+OrdinalProperty<T>::~OrdinalProperty() = default;
 
 template <typename T>
 std::string OrdinalProperty<T>::getClassIdentifier() const {
@@ -344,40 +353,40 @@ Document OrdinalProperty<T>::getDescription() const {
 }
 
 // Scalar properties
-IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<float>;
-IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<int>;
-IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<size_t>;
-IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<glm::i64>;
-IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<double>;
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<float>;
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<int>;
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<size_t>;
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<glm::i64>;
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<double>;
 
 // Vector properties
-IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<vec2>;
-IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<vec3>;
-IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<vec4>;
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<vec2>;
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<vec3>;
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<vec4>;
 
-IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<dvec2>;
-IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<dvec3>;
-IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<dvec4>;
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<dvec2>;
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<dvec3>;
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<dvec4>;
 
-IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<ivec2>;
-IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<ivec3>;
-IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<ivec4>;
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<ivec2>;
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<ivec3>;
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<ivec4>;
 
-IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<size2_t>;
-IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<size3_t>;
-IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<size4_t>;
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<size2_t>;
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<size3_t>;
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<size4_t>;
 
 // Matrix properties
-IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<mat2>;
-IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<mat3>;
-IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<mat4>;
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<mat2>;
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<mat3>;
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<mat4>;
 
-IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<dmat2>;
-IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<dmat3>;
-IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<dmat4>;
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<dmat2>;
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<dmat3>;
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<dmat4>;
 
-IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<glm::dquat>;
-IVW_CORE_EXT template class IVW_CORE_API OrdinalProperty<glm::fquat>;
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<glm::dquat>;
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<glm::fquat>;
 
 }  // namespace inviwo
 

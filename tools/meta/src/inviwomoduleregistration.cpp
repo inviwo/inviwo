@@ -77,7 +77,7 @@ void InviwoModuleRegistration::addInclude(const std::filesystem::path& incPath) 
         res << "\n#include <" << incPath.generic_string() << ">";
         res << std::string_view{file.data() + pos, file.size() - pos};
     }
-    file = res.str();
+    file = std::move(res).str();
 }
 
 void InviwoModuleRegistration::registerProcessor(std::string_view name,

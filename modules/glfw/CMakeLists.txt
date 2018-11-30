@@ -9,20 +9,21 @@ ivw_module(GLFW)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/canvasglfw.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/canvasprocessorwidgetglfw.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/glfwexception.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/glfwmodule.h
+    include/modules/glfw/canvasglfw.h
+    include/modules/glfw/canvasprocessorwidgetglfw.h
+    include/modules/glfw/glfwexception.h
+    include/modules/glfw/glfwmodule.h
+    include/modules/glfw/glfwmoduledefine.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/canvasglfw.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/canvasprocessorwidgetglfw.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/glfwexception.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/glfwmodule.cpp
+    src/canvasglfw.cpp
+    src/canvasprocessorwidgetglfw.cpp
+    src/glfwexception.cpp
+    src/glfwmodule.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

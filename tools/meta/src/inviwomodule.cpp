@@ -130,6 +130,17 @@ std::filesystem::path InviwoModule::findShortestRelativePath(
     }
 }
 
+cmake::Command* InviwoModule::findGroup(std::string_view group) {
+    auto it = std::find_if(cmf_.begin(), cmf_.end(), [&](auto& cmd) {
+        return cmd.identifier == "set" && cmd.begin() != cmd.end() && cmd.begin()->value == group;
+    });
+    if (it != cmf_.end()) {
+        return &(*it);
+    } else {
+        return nullptr;
+    }
+}
+
 void InviwoModule::addFileToGroup(std::string_view group, const std::filesystem::path& path) {
     auto p = std::filesystem::relative(path_ / path, (path_ / cmakelistsFile()).parent_path());
 
@@ -139,11 +150,7 @@ void InviwoModule::addFileToGroup(std::string_view group, const std::filesystem:
 
     if (group.empty()) return;
 
-    auto it = std::find_if(cmf_.begin(), cmf_.end(), [&](auto& cmd) {
-        return cmd.identifier == "set" && cmd.begin() != cmd.end() && cmd.begin()->value == group;
-    });
-
-    if (it != cmf_.end()) {
+    if (auto it = findGroup(group)) {
         auto& cmd = *it;
         const auto pstr = p.generic_string();
 

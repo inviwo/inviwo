@@ -17,6 +17,15 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/events/someotherselectionevent.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ports/brushingandlinkingports.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/brushingandlinkingprocessor.h
+    include/modules/brushingandlinking/brushingandlinkingmanager.h
+    include/modules/brushingandlinking/brushingandlinkingmodule.h
+    include/modules/brushingandlinking/brushingandlinkingmoduledefine.h
+    include/modules/brushingandlinking/datastructures/indexlist.h
+    include/modules/brushingandlinking/events/brushingandlinkingevent.h
+    include/modules/brushingandlinking/events/filteringevent.h
+    include/modules/brushingandlinking/events/selectionevent.h
+    include/modules/brushingandlinking/ports/brushingandlinkingports.h
+    include/modules/brushingandlinking/processors/brushingandlinkingprocessor.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -35,6 +44,14 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/events/someotherselectionevent.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ports/brushingandlinkingports.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/brushingandlinkingprocessor.cpp
+    src/brushingandlinkingmanager.cpp
+    src/brushingandlinkingmodule.cpp
+    src/datastructures/indexlist.cpp
+    src/events/brushingandlinkingevent.cpp
+    src/events/filteringevent.cpp
+    src/events/selectionevent.cpp
+    src/ports/brushingandlinkingports.cpp
+    src/processors/brushingandlinkingprocessor.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

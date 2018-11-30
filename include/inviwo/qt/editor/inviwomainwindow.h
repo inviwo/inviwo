@@ -59,12 +59,12 @@ class ConsoleWidget;
 class SettingsWidget;
 class HelpWidget;
 class InviwoApplicationQt;
-class NetworkSearch;
 class InviwoEditMenu;
 class InviwoAboutWindow;
 class ResourceManagerDockWidget;
 class FileAssociations;
 class ToolsMenu;
+class TextLabelOverlay;
 
 class IVW_QTEDITOR_API InviwoMainWindow : public QMainWindow, public NetworkEditorObserver {
 public:
@@ -87,6 +87,8 @@ public:
     std::string getCurrentWorkspace();
 
     NetworkEditor* getNetworkEditor() const;
+    NetworkEditorView& getNetworkEditorView() const;
+    TextLabelOverlay& getNetworkEditorOverlay() const;
     SettingsWidget* getSettingsWidget() const;
     ProcessorTreeWidget* getProcessorTreeWidget() const;
     PropertyListWidget* getPropertyListWidget() const;
@@ -166,7 +168,6 @@ private:
     ResourceManagerDockWidget* resourceManagerDockWidget_;
     PropertyListWidget* propertyListWidget_;
     HelpWidget* helpWidget_;
-    NetworkSearch* networkSearch_;
     InviwoAboutWindow* inviwoAboutWindow_ = nullptr;
     
     std::vector<QAction*> workspaceActionRecent_;

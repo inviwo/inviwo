@@ -65,6 +65,11 @@ if(POLICY CMP0066)
     cmake_policy(SET CMP0066 NEW)
 endif()
 
+if(POLICY CMP0074)
+    # find_package uses <PackageName>_ROOT variables
+    cmake_policy(SET CMP0074 NEW)
+endif()
+
 string(TIMESTAMP timeStart "%Y-%m-%d %H:%M:%S")
 
 # option for setting the project/solution name of the Inviwo project
@@ -117,10 +122,15 @@ if(NOT "${CMAKE_PREFIX_PATH}" MATCHES "[Qq][Tt]")
         if(APPLE) # On OSX look for the usual brew installation. 
             foreach(path "/usr/local/Cellar/qt" "/usr/local/Cellar/qt5")
                 if(EXISTS ${path})
-                    file(GLOB qtversions RELATIVE "${path}/" "${path}/?.?.*")
+                    file(GLOB qtversions RELATIVE "${path}/" "${path}/?.*.*")
                     list(LENGTH qtversions len)
                     if(${len} GREATER 0)
-                        list(GET qtversions -1 qtlatest)
+                        list(GET qtversions 0 qtlatest)
+                        foreach(ver IN LISTS qtversion)
+                            if(ver VERSION_GREATER qtlatest)
+                                set(qtlatest ${ver})
+                            endif()
+                        endforeach()
                         if(EXISTS "${path}/${qtlatest}")
                             set(QT5_PATH "${path}/${qtlatest}")
                             break()
@@ -174,7 +184,7 @@ if(WIN32)
 endif()
 
 ivw_add_build_module_dependency(GLFW IVW_INTEGRATION_TESTS)
-ivw_add_build_module_dependency(BASE IVW_INTEGRATION_TESTS)
+ivw_add_build_module_dependency(Base IVW_INTEGRATION_TESTS)
 
 #--------------------------------------------------------------------
 # Add modules

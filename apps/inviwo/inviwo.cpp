@@ -122,23 +122,12 @@ int main(int argc, char** argv) {
             {
                 inviwo::util::log(e.getContext(), e.getMessage());
                 std::stringstream ss;
-                auto j = inviwo::util::make_ostream_joiner(ss, "\n");
-                std::copy(e.getStack().begin(), e.getStack().end(), j);
+                e.getStack(ss);
                 LogErrorCustom("Inviwo", ss.str());
             }
             {
                 std::stringstream ss;
-                ss << e.getMessage();
-                if (!e.getStack().empty()) {
-                    ss << "\nStack Trace:\n";
-                    auto j = inviwo::util::make_ostream_joiner(ss, "\n");
-                    if (std::distance(e.getStack().begin(), e.getStack().end()) > 10) {
-                        std::copy(e.getStack().begin(), e.getStack().begin() + 10, j);
-                        ss << "\n...";
-                    } else {
-                        std::copy(e.getStack().begin(), e.getStack().end(), j);
-                    }
-                }
+                e.getFullMessage(ss, 10);
                 ss << "\nApplication state might be corrupted, be warned.";
                 auto res = QMessageBox::critical(
                     &mainWin, "Fatal Error", QString::fromStdString(ss.str()),

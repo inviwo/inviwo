@@ -71,7 +71,7 @@ void addInviwoMetaAction(QMenu* menu) {
     };
 
     {
-        auto action = menu->addAction("Add File...");
+        auto action = menu->addAction("Add &File...");
         menu->connect(action, &QAction::triggered, [&]() {
             create("File", [](meta::Creator& creator, const std::filesystem::path& path) {
                 creator.createFile(path);
@@ -79,7 +79,7 @@ void addInviwoMetaAction(QMenu* menu) {
         });
     }
     {
-        auto action = menu->addAction("Add Processor...");
+        auto action = menu->addAction("Add &Processor...");
         menu->connect(action, &QAction::triggered, [&]() {
             create("Processor", [](meta::Creator& creator, const std::filesystem::path& path) {
                 creator.createProcessor(path);
@@ -87,7 +87,7 @@ void addInviwoMetaAction(QMenu* menu) {
         });
     }
     {
-        auto action = menu->addAction("Add Test...");
+        auto action = menu->addAction("Add &Unit Test...");
         menu->connect(action, &QAction::triggered, [&]() {
             create("Test", [](meta::Creator& creator, const std::filesystem::path& path) {
                 creator.createTest(path);
@@ -95,12 +95,13 @@ void addInviwoMetaAction(QMenu* menu) {
         });
     }
     {
-        auto action = menu->addAction("Add Module...");
+        auto action = menu->addAction("Add &Module...");
         menu->connect(action, &QAction::triggered, [&]() {
             create("Module", [](meta::Creator& creator, const std::filesystem::path& path) {
                 bool ok;
                 QString text = QInputDialog::getText(
-                    nullptr, "Add Module", "Organization:", QLineEdit::Normal, "inviwo", &ok);
+                    nullptr, "Add Module", "Organization:", QLineEdit::Normal, "inviwo", &ok,
+                    Qt::WindowFlags() | Qt::MSWindowsFixedSizeDialogHint);
                 if (ok && !text.isEmpty()) {
                     creator.createModule(path, utilqt::fromQString(text));
                 }

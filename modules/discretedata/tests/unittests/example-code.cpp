@@ -108,7 +108,7 @@ TEST(Using, Dataset) {
     std::vector<float> filteredRandom(vertexChannel->getNumComponents() * vertexChannel->size());
 
     // Iterate through all vertices.
-    for (auto vertex : dataset.Grid->all(GridPrimitive::Vertex)) {
+    for (auto vertex : dataset.grid->all(GridPrimitive::Vertex)) {
         glm::ivec3 sum(0), bufferSum(0), currentValue(0);
         ind numNeighbors = 0;
 
@@ -166,7 +166,7 @@ TEST(Using, Dataset) {
     std::vector<double> normalizedSinCos(cellChannel->size() * cellChannel->getNumComponents());
 
     // Iterate through all 3D cells, thus, volume.
-    for (auto cell : dataset.Grid->all(GridPrimitive::Volume)) {
+    for (auto cell : dataset.grid->all(GridPrimitive::Volume)) {
 
         // Get cell volume.
         double volume = euclidean::getMeasure(*vertices, cell);
@@ -182,7 +182,7 @@ TEST(Using, Dataset) {
      * Random algorithm: divide averaged random data by volume.
      * "Distribute" the cell volumes uniformly across connected vertices.
      *********************************************************************************/
-    for (auto vertex : dataset.Grid->all(GridPrimitive::Vertex)) {
+    for (auto vertex : dataset.grid->all(GridPrimitive::Vertex)) {
         double totalVolume = 0;
 
         // Iterate through all volumes containing this vertex.

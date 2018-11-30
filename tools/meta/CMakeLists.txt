@@ -31,6 +31,7 @@ set(headers
 	include/inviwo/meta/iter/transformiterator.hpp
 	include/inviwo/meta/paths.hpp
 	include/inviwo/meta/util.hpp
+	include/inviwo/meta/includetools.hpp
 )
 ivw_group("Header Files" BASE include/inviwo/meta ${headers})
 
@@ -43,6 +44,7 @@ set(sources
 	src/inviwomoduleregistration.cpp
 	src/paths.cpp
 	src/util.cpp
+	src/includetools.cpp
 )
 ivw_group("Source Files" BASE src ${sources})
 
@@ -84,3 +86,5 @@ option(IVW_META_BUILD_TESTS "Build meta tests" ON)
 if(IVW_META_BUILD_TESTS) 
 	add_subdirectory(tests)
 endif()
+
+ivw_default_install_comp_targets(core inviwo-meta)

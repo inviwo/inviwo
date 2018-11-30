@@ -33,6 +33,8 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/settings/systemsettings.h>
+#include <inviwo/core/util/ostreamjoiner.h>
+#include <sstream>
 
 namespace inviwo {
 
@@ -40,14 +42,11 @@ namespace {
 
 std::vector<std::string> stackTrace() {
     if (InviwoApplication::isInitialized()) {
-        auto app = InviwoApplication::getPtr();
-        if (auto sys = app->getSettingsByType<SystemSettings>()) {
-            if (sys->stackTraceInException_) {
-                auto stack = getStackTrace();
-                const auto offset = std::min(size_t(4), stack.size());
-                stack.erase(stack.begin(), stack.begin() + offset);
-                return stack;
-            }
+        if (InviwoApplication::getPtr()->getSystemSettings().stackTraceInException_) {
+            auto stack = getStackTrace();
+            const auto offset = std::min(size_t(4), stack.size());
+            stack.erase(stack.begin(), stack.begin() + offset);
+            return stack;
         }
     }
     return {};
@@ -55,10 +54,7 @@ std::vector<std::string> stackTrace() {
 
 bool breakOnException() {
     if (InviwoApplication::isInitialized()) {
-        auto app = InviwoApplication::getPtr();
-        if (auto sys = app->getSettingsByType<SystemSettings>()) {
-            return sys->breakOnException_;
-        }
+        return InviwoApplication::getPtr()->getSystemSettings().breakOnException_;
     }
     return false;
 }
@@ -66,14 +62,38 @@ bool breakOnException() {
 }  // namespace
 
 Exception::Exception(const std::string& message, ExceptionContext context)
-    : std::exception(), message_(message), context_(std::move(context)), stack_{stackTrace()} {
+    : std::runtime_error(message), context_(std::move(context)), stack_{stackTrace()} {
     if (breakOnException()) util::debugBreak();
 }
 
 Exception::~Exception() noexcept = default;
 
-std::string Exception::getMessage() const noexcept { return message_; }
-const char* Exception::what() const noexcept { return message_.c_str(); }
+std::string Exception::getMessage() const { return what(); }
+
+std::string Exception::getFullMessage() const {
+    std::stringstream ss;
+    getFullMessage(ss);
+    return ss.str();
+}
+
+void Exception::getFullMessage(std::ostream& ss, int maxFrames) const {
+    ss << what() << "\n";
+    ss << context_ << "\n";
+    if (!stack_.empty()) {
+        ss << "\nStack Trace:\n";
+        getStack(ss, maxFrames);
+    }
+}
+
+void Exception::getStack(std::ostream& os, int maxFrames) const {
+    auto j = inviwo::util::make_ostream_joiner(os, "\n");
+    if (maxFrames > 0 && static_cast<int>(stack_.size()) > maxFrames) {
+        std::copy(stack_.begin(), stack_.begin() + maxFrames, j);
+        os << "\n...";
+    } else {
+        std::copy(stack_.begin(), stack_.end(), j);
+    }
+}
 
 const ExceptionContext& Exception::getContext() const { return context_; }
 

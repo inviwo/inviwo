@@ -73,6 +73,7 @@ public:
     std::filesystem::path getOtherPath(const std::filesystem::path&) const;
     std::string getHeaderInclude(const std::filesystem::path&) const;
 
+    cmake::Command* findGroup(std::string_view group);
     void addFileToGroup(std::string_view group, const std::filesystem::path& path);
     void addHeaderFile(const std::filesystem::path& path);
     void addSourceFile(const std::filesystem::path& path);

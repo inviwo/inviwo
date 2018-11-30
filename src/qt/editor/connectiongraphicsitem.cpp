@@ -24,8 +24,17 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
+
+#include <inviwo/core/ports/inport.h>
+#include <inviwo/core/ports/outport.h>
+
+#include <inviwo/qt/editor/processorgraphicsitem.h>
+#include <inviwo/qt/editor/connectiongraphicsitem.h>
+#include <inviwo/qt/editor/processorportgraphicsitem.h>
+
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -35,25 +44,11 @@
 #include <QPainterPath>
 #include <warn/pop>
 
-#include <inviwo/core/ports/inport.h>
-#include <inviwo/core/ports/outport.h>
-
-#include <inviwo/qt/editor/processorgraphicsitem.h>
-#include <inviwo/qt/editor/connectiongraphicsitem.h>
-#include <inviwo/qt/editor/processorportgraphicsitem.h>
-
 namespace inviwo {
 
-
-CurveGraphicsItem::CurveGraphicsItem(QPointF startPoint, QPointF endPoint, uvec3 color)
-    : startPoint_(startPoint)
-    , endPoint_(endPoint)
-    , color_(color.r, color.g, color.b)
-    , borderColor_()
-    , selectedBorderColor_() {
-
+CurveGraphicsItem::CurveGraphicsItem(QColor color, QColor borderColor, QColor selectedBorderColor)
+    : color_(color), borderColor_(borderColor), selectedBorderColor_(selectedBorderColor) {
     setZValue(DRAGING_ITEM_DEPTH);
-    resetBorderColors();
 }
 
 CurveGraphicsItem::~CurveGraphicsItem() = default;
@@ -90,13 +85,8 @@ QPainterPath CurveGraphicsItem::obtainCurvePath(QPointF startPoint, QPointF endP
     return bezierCurve;
 }
 
-void CurveGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem* options,
-                              QWidget* widget) {
-    IVW_UNUSED_PARAM(options);
-    IVW_UNUSED_PARAM(widget);
-
-    QColor color = getColor();
-
+void CurveGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem*, QWidget*) {
+    const auto color = getColor();
     if (isSelected()) {
         p->setPen(QPen(selectedBorderColor_, 4.0, Qt::SolidLine, Qt::RoundCap));
     } else {
@@ -119,30 +109,14 @@ void CurveGraphicsItem::resetBorderColors() {
     update();
 }
 
-void CurveGraphicsItem::updateShape() {   
+void CurveGraphicsItem::updateShape() {
     path_ = obtainCurvePath();
-
-    QRectF p = path_.boundingRect();
+    const auto p = path_.boundingRect();
     rect_ = QRectF(p.topLeft() - QPointF(5, 5), p.size() + QSizeF(10, 10));
-
     prepareGeometryChange();
 }
 
-QRectF CurveGraphicsItem::boundingRect() const {
-    return rect_;
-}
-
-QPointF CurveGraphicsItem::getStartPoint() const { return startPoint_; }
-QPointF CurveGraphicsItem::getEndPoint() const { return endPoint_; }
-
-void CurveGraphicsItem::setStartPoint(QPointF startPoint) {
-    startPoint_ = startPoint;
-    updateShape();
-}
-void CurveGraphicsItem::setEndPoint(QPointF endPoint) {
-    endPoint_ = endPoint;
-    updateShape();
-}
+QRectF CurveGraphicsItem::boundingRect() const { return rect_; }
 
 void CurveGraphicsItem::setColor(QColor color) { color_ = color; }
 
@@ -152,23 +126,13 @@ void CurveGraphicsItem::setSelectedBorderColor(QColor selectedBorderColor) {
     selectedBorderColor_ = selectedBorderColor;
 }
 
-QColor CurveGraphicsItem::getColor() const {
-    return color_;
-}
-
-
-
-//////////////////////////////////////////////////////////////////////////
-
+QColor CurveGraphicsItem::getColor() const { return color_; }
 
 ConnectionDragGraphicsItem::ConnectionDragGraphicsItem(ProcessorOutportGraphicsItem* outport,
-                                                       QPointF endPoint,
-                                                       uvec3 color)
-    : CurveGraphicsItem(QPointF(0.0f, 0.0f), endPoint, color)
-    , outport_(outport) {
-}
+                                                       QPointF endPoint, QColor color)
+    : CurveGraphicsItem(color), endPoint_{endPoint}, outport_(outport) {}
 
-ConnectionDragGraphicsItem::~ConnectionDragGraphicsItem() {}
+ConnectionDragGraphicsItem::~ConnectionDragGraphicsItem() = default;
 
 ProcessorOutportGraphicsItem* ConnectionDragGraphicsItem::getOutportGraphicsItem() const {
     return outport_;
@@ -176,6 +140,12 @@ ProcessorOutportGraphicsItem* ConnectionDragGraphicsItem::getOutportGraphicsItem
 
 QPointF ConnectionDragGraphicsItem::getStartPoint() const {
     return outport_->mapToScene(outport_->rect().center());
+}
+
+QPointF ConnectionDragGraphicsItem::getEndPoint() const { return endPoint_; }
+void ConnectionDragGraphicsItem::setEndPoint(QPointF endPoint) {
+    endPoint_ = endPoint;
+    updateShape();
 }
 
 void ConnectionDragGraphicsItem::reactToPortHover(ProcessorInportGraphicsItem* inport) {
@@ -190,15 +160,14 @@ void ConnectionDragGraphicsItem::reactToPortHover(ProcessorInportGraphicsItem* i
     }
 }
 
-//////////////////////////////////////////////////////////////////////////
-
-
 ConnectionGraphicsItem::ConnectionGraphicsItem(ProcessorOutportGraphicsItem* outport,
                                                ProcessorInportGraphicsItem* inport,
                                                const PortConnection& connection)
-    : ConnectionDragGraphicsItem(outport, QPointF(0.0f,0.0f), connection.getInport()->getColorCode())
+    : CurveGraphicsItem(utilqt::toQColor(connection.getInport()->getColorCode()))
+    , outport_(outport)
     , inport_(inport)
     , connection_(connection) {
+
     setFlags(ItemIsSelectable | ItemIsFocusable);
     setZValue(CONNECTIONGRAPHICSITEM_DEPTH);
     outport_->addConnection(this);
@@ -214,6 +183,10 @@ ProcessorInportGraphicsItem* ConnectionGraphicsItem::getInportGraphicsItem() con
     return inport_;
 }
 
+ProcessorOutportGraphicsItem* ConnectionGraphicsItem::getOutportGraphicsItem() const {
+    return outport_;
+}
+
 ProcessorGraphicsItem* ConnectionGraphicsItem::getOutProcessor() const {
     return outport_->getProcessor();
 }
@@ -226,7 +199,13 @@ Outport* ConnectionGraphicsItem::getOutport() const { return connection_.getOutp
 
 Inport* ConnectionGraphicsItem::getInport() const { return connection_.getInport(); }
 
-QPointF ConnectionGraphicsItem::getEndPoint() const {   
+PortConnection ConnectionGraphicsItem::getPortConnection() const { return connection_; }
+
+QPointF ConnectionGraphicsItem::getStartPoint() const {
+    return outport_->mapToScene(outport_->rect().center());
+}
+
+QPointF ConnectionGraphicsItem::getEndPoint() const {
     return inport_->mapToScene(inport_->rect().center());
 }
 
@@ -234,7 +213,7 @@ void ConnectionGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
     showPortInfo(e, getOutport());
 }
 
-QVariant ConnectionGraphicsItem::itemChange(GraphicsItemChange change, const QVariant &value) {
+QVariant ConnectionGraphicsItem::itemChange(GraphicsItemChange change, const QVariant& value) {
 #include <warn/push>
 #include <warn/ignore/switch-enum>
     switch (change) {
@@ -249,4 +228,4 @@ QVariant ConnectionGraphicsItem::itemChange(GraphicsItemChange change, const QVa
     return QGraphicsItem::itemChange(change, value);
 }
 
-}  // namespace
+}  // namespace inviwo

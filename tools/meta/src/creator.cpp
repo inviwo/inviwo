@@ -31,6 +31,7 @@
 #include <inviwo/meta/paths.hpp>
 #include <inviwo/meta/util.hpp>
 #include <inviwo/meta/inviwomoduleconf.hpp>
+#include <inviwo/meta/includetools.hpp>
 
 #include <exception>
 #include <array>
@@ -38,6 +39,8 @@
 #include <algorithm>
 #include <chrono>
 #include <ctime>
+#include <set>
+#include <regex>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -217,6 +220,102 @@ void Creator::createModule(const fs::path& modulePath, std::string_view org) con
 
     for (auto [key, file] : files) {
         generate(im, file, key);
+    }
+}
+
+void Creator::updateModule(const fs::path& modulePath, std::string_view org,
+                           const std::vector<std::string>& filters) const {
+    if (fs::exists(modulePath / "src") || fs::exists(modulePath / "include")) {
+        logf("Module at '{}' already updated", modulePath.generic_string());
+        return;
+    }
+
+    auto oldIm = InviwoModule::findInviwoModule(modulePath, inviwoRepo_);
+    oldIm.setDryrun(true);  // Don't save
+    InviwoModule im{oldIm.path(), ModuleConf{oldIm.name(), org}};
+
+    logf("Updating module '{}' at '{}'", im.name(), im.path().generic_string());
+
+    log(" * Settings");
+    log("Name", im.name());
+    log("Include", im.moduleInclude());
+    log("API", im.api());
+    log("API Include", im.defineInclude());
+
+    auto file = templates_["file"];
+
+    if (auto sources = im.findGroup(*file.source->cmakeGroup)) {
+        auto& args = sources->arguments;
+        args.erase(++args.begin(), args.end());
+    }
+    if (auto headers = im.findGroup(*file.header->cmakeGroup)) {
+        auto& args = headers->arguments;
+        args.erase(++args.begin(), args.end());
+    }
+
+    const auto replace_extension = [](fs::path path, std::string_view ext) {
+        path.replace_extension(ext);
+        return path;
+    };
+
+    auto filter = [&](const fs::path& path) {
+        const auto p = path.generic_string();
+        const auto test = std::regex(R"(^tests/)");
+        const auto ext = std::regex(R"(^ext/)");
+
+        return std::regex_search(p, test) || std::regex_search(p, ext) ||
+               std::any_of(filters.begin(), filters.end(), [&](const std::string& f) {
+                   return std::regex_search(p, std::regex(f));
+               });
+    };
+
+    std::set<fs::path> oldFolders;
+    log(" * Moving files:");
+    for (auto& item : fs::recursive_directory_iterator(oldIm.path())) {
+        const auto relpath = fs::relative(item.path(), oldIm.path());
+        if (filter(relpath)) continue;
+
+        if (item.path().extension() == ".cpp") {
+            logf("  - {}\n    -> {}", relpath.generic_string(),
+                 (im.srcPath() / relpath).generic_string());
+            const auto dst = im.path() / im.srcPath() / relpath;
+            fs::create_directories(dst.parent_path());
+            fs::copy_file(item.path(), dst);
+            fs::remove(item.path());
+            oldFolders.insert(relpath.parent_path());
+
+            im.addFileToGroup(*(file.source->cmakeGroup), im.srcPath() / relpath);
+
+            const auto oldinc = relpath.filename().replace_extension(".h").generic_string();
+            const auto newinc = im.getHeaderInclude(replace_extension(dst, ".h"));
+            const auto relacedInclude = util::replaceInclude(dst, fmt::format(R"("{}")", oldinc),
+                                                             fmt::format(R"(<{}>)", newinc));
+            if (relacedInclude) {
+                logf(R"(    Change include from "{}" to <{}>)", oldinc, newinc);
+            }
+
+        } else if (item.path().extension() == ".h") {
+            logf("  - {}\n    -> {}", relpath.generic_string(),
+                 (im.incPath() / relpath).generic_string());
+            const auto dst = im.path() / im.incPath() / relpath;
+            fs::create_directories(dst.parent_path());
+            fs::copy_file(item.path(), dst);
+            fs::remove(item.path());
+            oldFolders.insert(relpath.parent_path());
+
+            im.addFileToGroup(*(file.header->cmakeGroup), im.incPath() / relpath);
+        }
+    }
+
+    log(" * Removing empty folders:");
+    for (auto item : oldFolders) {
+        while (!item.empty()) {
+            if (fs::exists(oldIm.path() / item) && fs::is_directory(oldIm.path() / item) &&
+                fs::is_empty(oldIm.path() / item)) {
+                logf("  - {}", item.generic_string()), fs::remove(oldIm.path() / item);
+            }
+            item = item.parent_path();
+        }
     }
 }
 

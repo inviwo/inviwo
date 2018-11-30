@@ -7,14 +7,17 @@ ivw_module(Nifti)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/niftireader.h
+    include/modules/nifti/niftimodule.h
+    include/modules/nifti/niftimoduledefine.h
+    include/modules/nifti/niftireader.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/niftireader.cpp
+    src/niftimodule.cpp
+    src/niftireader.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

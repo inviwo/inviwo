@@ -72,6 +72,17 @@ int main(int argc, char** argv) {
     TCLAP::MultiArg<std::string> tests{
         "t", "tests", "Tests to add, form: path/name1 path/name2 ...", false, "test"};
 
+    TCLAP::MultiArg<std::string> updateModule{
+        "", "updateModule",
+        "Update a module to use include and src folders\n"
+        "Will move all .h file into the include/<org>/<module> sub folder\n"
+        "and all .cpp into the src folder\n"
+        "except for files under /ext, /tests, or paths excluded be the given updatePathFilter.",
+        false, "module"};
+
+    TCLAP::MultiArg<std::string> updatePathFilter{
+        "", "updatePathFilter", "Exclude file matching filter from module update", false, "filter"};
+
     cmd.add(verbose);
     cmd.add(dryrun);
     cmd.add(force);
@@ -82,6 +93,8 @@ int main(int argc, char** argv) {
     cmd.add(files);
     cmd.add(processors);
     cmd.add(tests);
+    cmd.add(updateModule);
+    cmd.add(updatePathFilter);
 
     auto getInviwoPath = [&]() -> std::filesystem::path {
         if (inviwoDir.isSet()) {
@@ -131,6 +144,14 @@ int main(int argc, char** argv) {
                 creator.createTest(std::filesystem::path{item});
             }
         }
+
+        if (updateModule.isSet()) {
+            for (auto& item : updateModule.getValue()) {
+                creator.updateModule(std::filesystem::path{item}, org.getValue(),
+                                     updatePathFilter.getValue());
+            }
+        }
+
     } catch (const std::runtime_error& e) {
         std::cerr << e.what() << std::endl;
         return 1;

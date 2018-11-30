@@ -5,38 +5,41 @@ ivw_module(VectorFieldVisualizationGL)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/2d/hedgehog2d.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/2d/lic2d.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/2d/vector2dcurl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/2d/vector2ddivergence.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/2d/vector2dmagnitude.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/3d/lic3d.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/3d/vector3dcurl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/3d/vector3ddivergence.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/4d/tmip.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/lorenzsystem.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/vectorfieldgenerator2d.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/vectorfieldgenerator3d.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/vectorfieldgenerator4d.h
+    include/modules/vectorfieldvisualizationgl/processors/2d/hedgehog2d.h
+    include/modules/vectorfieldvisualizationgl/processors/2d/lic2d.h
+    include/modules/vectorfieldvisualizationgl/processors/2d/vector2dcurl.h
+    include/modules/vectorfieldvisualizationgl/processors/2d/vector2ddivergence.h
+    include/modules/vectorfieldvisualizationgl/processors/2d/vector2dmagnitude.h
+    include/modules/vectorfieldvisualizationgl/processors/3d/lic3d.h
+    include/modules/vectorfieldvisualizationgl/processors/3d/vector3dcurl.h
+    include/modules/vectorfieldvisualizationgl/processors/3d/vector3ddivergence.h
+    include/modules/vectorfieldvisualizationgl/processors/4d/tmip.h
+    include/modules/vectorfieldvisualizationgl/processors/datageneration/lorenzsystem.h
+    include/modules/vectorfieldvisualizationgl/processors/datageneration/vectorfieldgenerator2d.h
+    include/modules/vectorfieldvisualizationgl/processors/datageneration/vectorfieldgenerator3d.h
+    include/modules/vectorfieldvisualizationgl/processors/datageneration/vectorfieldgenerator4d.h
+    include/modules/vectorfieldvisualizationgl/vectorfieldvisualizationglmodule.h
+    include/modules/vectorfieldvisualizationgl/vectorfieldvisualizationglmoduledefine.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/2d/hedgehog2d.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/2d/lic2d.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/2d/vector2dcurl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/2d/vector2ddivergence.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/2d/vector2dmagnitude.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/3d/lic3d.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/3d/vector3dcurl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/3d/vector3ddivergence.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/4d/tmip.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/lorenzsystem.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/vectorfieldgenerator2d.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/vectorfieldgenerator3d.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/vectorfieldgenerator4d.cpp
+    src/processors/2d/hedgehog2d.cpp
+    src/processors/2d/lic2d.cpp
+    src/processors/2d/vector2dcurl.cpp
+    src/processors/2d/vector2ddivergence.cpp
+    src/processors/2d/vector2dmagnitude.cpp
+    src/processors/3d/lic3d.cpp
+    src/processors/3d/vector3dcurl.cpp
+    src/processors/3d/vector3ddivergence.cpp
+    src/processors/4d/tmip.cpp
+    src/processors/datageneration/lorenzsystem.cpp
+    src/processors/datageneration/vectorfieldgenerator2d.cpp
+    src/processors/datageneration/vectorfieldgenerator3d.cpp
+    src/processors/datageneration/vectorfieldgenerator4d.cpp
+    src/vectorfieldvisualizationglmodule.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

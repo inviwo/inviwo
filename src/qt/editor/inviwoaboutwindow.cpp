@@ -252,7 +252,7 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
     std::string str = doc;
     textdoc->setHtml(utilqt::toQString(str));
 
-    auto showLicense = [this, str, textdoc, app, escape, makeBody](const QUrl& url) {
+    auto showLicense = [str, textdoc, app, escape, makeBody](const QUrl& url) {
         if (url.hasQuery()) {
             QUrlQuery query(url);
             auto module = utilqt::fromQString(query.queryItemValue("module"));

@@ -125,8 +125,8 @@ protected:
 };
 
 // https://docs.microsoft.com/en-us/cpp/cpp/general-rules-and-limitations?view=vs-2017
-IVW_CORE_EXT template class IVW_CORE_API DataReaderType<Image>;
-IVW_CORE_EXT template class IVW_CORE_API DataWriterType<Image>;
+extern template class IVW_CORE_TMPL_EXP DataReaderType<Image>;
+extern template class IVW_CORE_TMPL_EXP DataWriterType<Image>;
 
 }  // namespace
 
