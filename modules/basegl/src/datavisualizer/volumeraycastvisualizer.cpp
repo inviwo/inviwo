@@ -35,10 +35,13 @@
 #include <modules/basegl/processors/entryexitpointsprocessor.h>
 #include <modules/basegl/processors/background.h>
 #include <modules/basegl/processors/meshrenderprocessorgl.h>
+#include <modules/basegl/processors/linerenderer.h>
 #include <modules/opengl/canvasprocessorgl.h>
 #include <inviwo/core/processors/processorutils.h>
 #include <inviwo/core/ports/volumeport.h>
 
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/io/datareaderfactory.h>
 
 namespace inviwo {
@@ -75,8 +78,7 @@ bool VolumeRaycastVisualizer::hasVisualizerNetwork() const { return true; }
 std::pair<Processor*, Outport*> VolumeRaycastVisualizer::addSourceProcessor(
     const std::string& filename, ProcessorNetwork* net) const {
 
-    auto source =
-        net->addProcessor(util::makeProcessor<VolumeSource>(GP{0, 0}, app_, filename));
+    auto source = net->addProcessor(util::makeProcessor<VolumeSource>(GP{0, 0}, app_, filename));
     auto outport = source->getOutports().front();
     return {source, outport};
 }
@@ -87,11 +89,23 @@ std::vector<Processor*> VolumeRaycastVisualizer::addVisualizerNetwork(Outport* o
     auto cpg = net->addProcessor(util::makeProcessor<CubeProxyGeometry>(GP{1, 3}));
     auto eep = net->addProcessor(util::makeProcessor<EntryExitPoints>(GP{1, 6}));
     auto vrc = net->addProcessor(util::makeProcessor<VolumeRaycaster>(GP{0, 9}));
-    auto cvs = net->addProcessor(util::makeProcessor<CanvasProcessorGL>(GP{0, 12}));
+    auto bak = net->addProcessor(util::makeProcessor<Background>(GP{0, 12}));
+    auto cvs = net->addProcessor(util::makeProcessor<CanvasProcessorGL>(GP{0, 15}));
 
     auto vbb = net->addProcessor(util::makeProcessor<VolumeBoundingBox>(GP{8, 3}));
-    auto bak = net->addProcessor(util::makeProcessor<Background>(GP{15, 3}));
-    auto mrp = net->addProcessor(util::makeProcessor<MeshRenderProcessorGL>(GP{8, 6}));
+    auto lrp = net->addProcessor(util::makeProcessor<LineRenderer>(GP{8, 6}));
+
+    static_cast<FloatVec4Property*>(bak->getPropertyByIdentifier("bgColor1"))
+        ->set(vec4(0.443f, 0.482f, 0.6f, 1.0f));
+    static_cast<FloatVec4Property*>(bak->getPropertyByIdentifier("bgColor2"))
+        ->set(vec4(0.831f, 0.831f, 0.831f, 1.0f));
+
+    // set shading mode in volume raycaster to 'no shading'
+    static_cast<OptionPropertyInt*>(vrc->getPropertyByIdentifier("shadingMode", true))->set(0);
+
+    static_cast<FloatProperty*>(lrp->getPropertyByIdentifier("lineWidth"))->set(1.5f);
+    static_cast<FloatVec3Property*>(vrc->getPropertyByIdentifier("lookFrom", true))
+        ->set(vec3(0.0f, 0.0f, 30.0f));
 
     net->addConnection(outport, cpg->getInports()[0]);
     net->addConnection(cpg->getOutports()[0], eep->getInports()[0]);
@@ -100,22 +114,22 @@ std::vector<Processor*> VolumeRaycastVisualizer::addVisualizerNetwork(Outport* o
     net->addConnection(eep->getOutports()[1], vrc->getInports()[2]);
 
     net->addConnection(outport, vrc->getInports()[0]);
-    net->addConnection(vrc->getOutports()[0], cvs->getInports()[0]);
+    net->addConnection(vrc->getOutports()[0], bak->getInports()[0]);
+    net->addConnection(bak->getOutports()[0], cvs->getInports()[0]);
 
     net->addConnection(outport, vbb->getInports()[0]);
-    net->addConnection(vbb->getOutports()[0], mrp->getInports()[0]);
-    net->addConnection(bak->getOutports()[0], mrp->getInports()[1]);
-    net->addConnection(mrp->getOutports()[0], vrc->getInports()[3]);
+    net->addConnection(vbb->getOutports()[0], lrp->getInports()[0]);
+    net->addConnection(lrp->getOutports()[0], vrc->getInports()[3]);
 
     net->addLink(eep->getPropertyByIdentifier("camera"), vrc->getPropertyByIdentifier("camera"));
     net->addLink(vrc->getPropertyByIdentifier("camera"), eep->getPropertyByIdentifier("camera"));
 
-    net->addLink(eep->getPropertyByIdentifier("camera"), mrp->getPropertyByIdentifier("camera"));
-    net->addLink(mrp->getPropertyByIdentifier("camera"), eep->getPropertyByIdentifier("camera"));
+    net->addLink(eep->getPropertyByIdentifier("camera"), lrp->getPropertyByIdentifier("camera"));
+    net->addLink(lrp->getPropertyByIdentifier("camera"), eep->getPropertyByIdentifier("camera"));
 
     net->evaluateLinksFromProperty(vrc->getPropertyByIdentifier("camera"));
 
-    return {cpg, eep, vrc, cvs, vbb, bak, mrp};
+    return {cpg, eep, vrc, cvs, vbb, bak, lrp};
 }
 
 std::vector<Processor*> VolumeRaycastVisualizer::addSourceAndVisualizerNetwork(

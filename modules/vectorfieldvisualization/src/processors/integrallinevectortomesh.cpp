@@ -61,7 +61,8 @@ IntegralLineVectorToMesh::ColorByProperty::ColorByProperty(
     std::string identifier, std::string displayName,
     InvalidationLevel invalidationLevel /*= InvalidationLevel::InvalidOutput*/)
     : CompositeProperty(identifier, displayName, invalidationLevel)
-    , scaleBy_("scaleBy", "Data Range (for normalization)", 0, 1, 0, 1, 0.01)
+    , scaleBy_("scaleBy", "Data Range (for normalization)", 0, 1,
+               std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max(), 0.01)
     , loopTF_("loopTF", "Loop Transfer Function", false)
     , minValue_("minValue", "Min " + displayName, 0, std::numeric_limits<double>::lowest(),
                 std::numeric_limits<double>::max(), 0.01, InvalidationLevel::InvalidOutput,
@@ -70,7 +71,8 @@ IntegralLineVectorToMesh::ColorByProperty::ColorByProperty(
                 std::numeric_limits<double>::max(), 0.01, InvalidationLevel::InvalidOutput,
                 PropertySemantics::Text)
     , tf_("transferFunction", "Transfer function")
-    , key_(displayName) {
+    , key_(identifier) {
+    scaleBy_.setSemantics(PropertySemantics::Text);
     addProperties();
 }
 
@@ -167,56 +169,25 @@ bool IntegralLineVectorToMesh::isSelected(const IntegralLine &line, size_t idx) 
 void IntegralLineVectorToMesh::updateOptions() {
     auto lines = lines_.getData();
     if (lines->size() == 0) return;
-    std::string selected = "";
-    int selectedIndex = -1;
-    int velocityIndex = -1;
-    if (colorBy_.size() > 0) {
-        selected = colorBy_.getSelectedIdentifier();
-        if (selected == "portIndex") {
-            selectedIndex = static_cast<int>(colorBy_.size() - 2);
-        }
 
-        if (selected == "portNumber") {
-            selectedIndex = static_cast<int>(colorBy_.size() - 1);
-        }
-    }
+    std::vector<OptionPropertyStringOption> options = {{"constant", "constant color"}};
 
-    colorBy_.clearOptions();
-
-    int i = 0;
     for (const auto &key : lines->front().getMetaDataKeys()) {
-        if (key == selected) {
-            selectedIndex = i;
-        }
-        if (key == "velocity") {
-            velocityIndex = i;
-        }
-        colorBy_.addOption(key, key);
+        options.emplace_back(key, key);
 
         if (!getPropertyByIdentifier(key)) {
             auto prop = std::make_unique<ColorByProperty>(key, "Color by " + key);
-            auto propPtr = prop.get();
-            prop->setVisible(selectedIndex == i);
+            prop->setVisible(false);
             prop->setSerializationMode(PropertySerializationMode::All);
             addProperty(prop.release());
-            colorBy_.onChange(
-                [=]() { propPtr->setVisible(i == static_cast<int>(colorBy_.getSelectedIndex())); });
         }
-
-        i++;
     }
-
     if (colors_.isConnected()) {
-        colorBy_.addOption("portIndex", "Colors in port (line index)");
-        colorBy_.addOption("portNumber", "Colors in port (line vector position)");
+        options.emplace_back("portIndex", "Colors in port (line index)");
+        options.emplace_back("portNumber", "Colors in port (line vector position)");
     }
 
-    colorBy_.setCurrentStateAsDefault();
-    if (selectedIndex != -1) {
-        colorBy_.setSelectedIndex(selectedIndex);
-    } else if (velocityIndex != -1) {
-        colorBy_.setSelectedIndex(velocityIndex);
-    }
+    colorBy_.replaceOptions(options);
 }
 
 IntegralLineVectorToMesh::IntegralLineVectorToMesh()
@@ -230,7 +201,7 @@ IntegralLineVectorToMesh::IntegralLineVectorToMesh()
                 {"lineindex", "Use Line Index (seed point index)", BrushBy::LineIndex},
                 {"vectorposition", "Use position in input vector.", BrushBy::VectorPosition}})
 
-    , colorBy_("colorBy", "Color by")
+    , colorBy_("colorBy", "Color by", {{"constant", "constant color"}})
 
     , stride_("stride", "Vertex stride", 1, 1, 10)
 
@@ -267,11 +238,17 @@ IntegralLineVectorToMesh::IntegralLineVectorToMesh()
 
     setAllPropertiesCurrentStateAsDefault();
 
-    colorBy_.onChange([&]() {
+    auto updateVisibility = [&]() {
         for (auto &prop : getPropertiesByType<ColorByProperty>()) {
-            prop->setVisible(prop->getKey() == colorBy_.get());
+            bool t = prop->getKey() == colorBy_.getSelectedIdentifier();
+            prop->setVisible(prop->getKey() == colorBy_.getSelectedIdentifier());
+            LogWarn("visibility: " << prop->getKey()
+                                   << " (selected: " << colorBy_.getSelectedIdentifier() << ") "
+                                   << std::boolalpha << t);
         }
-    });
+    };
+    colorBy_.onChange(updateVisibility);
+    updateVisibility();
 
     lines_.onChange([&]() { updateOptions(); });
 
@@ -334,20 +311,16 @@ void IntegralLineVectorToMesh::process() {
 
     vertices.reserve(lines_.getData()->size() * 2000);
 
-    bool colorByPortIndex = false;
-    bool colorByPortNumber = false;
-
     auto metaDataKey = colorBy_.get();
-    if (metaDataKey == "portIndex") {
-        colorByPortIndex = true;
-    }
-    if (metaDataKey == "portNumber") {
-        colorByPortNumber = true;
-    }
-    bool colorByPort = colorByPortIndex || colorByPortNumber;
+
+    const bool constantColor = (metaDataKey == "constant");
+    const bool colorByPortIndex = (metaDataKey == "portIndex");
+    const bool colorByPortNumber = (metaDataKey == "portNumber");
+
+    const bool colorByPort = colorByPortIndex || colorByPortNumber;
 
     ColorByProperty *mdProp = nullptr;
-    if (!colorByPort) {
+    if (!colorByPort && !constantColor) {
         mdProp = dynamic_cast<ColorByProperty *>(getPropertyByIdentifier(metaDataKey));
 
         if (!mdProp) {  // Fallback
@@ -390,7 +363,7 @@ void IntegralLineVectorToMesh::process() {
         }();
 
         auto coloring = [&, this](auto sample, size_t lineIndex, size_t lineNumber) -> vec4 {
-            if (this->isSelected(line, lineIdx)) {
+            if (constantColor || this->isSelected(line, lineIdx)) {
                 return selectedColor_.get();
             }
 
