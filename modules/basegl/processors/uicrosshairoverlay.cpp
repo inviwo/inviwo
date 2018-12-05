@@ -61,11 +61,14 @@ UICrosshairOverlay::UICrosshairOverlay()
     : Processor()
     , inport_("inport")
     , outport_("outport")
-	, planePosition_("planePosition", "Plane Position", vec3(0.5f), vec3(0.0f), vec3(1.0f))
+	, crosshairPos_("crosshairPosition", "Crosshair Position", vec3(0.5f), vec3(0.0f), vec3(1.0f))
 	, planeNormal_("planeNormal", "Plane Normal", vec3(1.f, 0.f, 0.f), vec3(-1.f, -1.f, -1.f),
 		vec3(1.f, 1.f, 1.f), vec3(0.01f, 0.01f, 0.01f))
 	, planeUp_("planeUp", "Plane Up", vec3(0.f, 0.f, 1.f), vec3(-1.f, -1.f, -1.f),
 		vec3(1.f, 1.f, 1.f), vec3(0.01f, 0.01f, 0.01f))
+	, planePosition_("planePosition", "Plane Position", vec3(0.5f, 0.5f, 0.5f), vec3(-1.f, -1.f, -1.f),
+		vec3(1.f, 1.f, 1.f), vec3(0.01f, 0.01f, 0.01f))
+	, lastPlanePosition_(0.0f)
 	, indicatorColor_("indicatorColor", "Indicator Color", vec4(1.0f, 0.8f, 0.1f, 0.8f), vec4(0.0f),
 		vec4(1.0f), vec4(0.01f), InvalidationLevel::InvalidOutput,
 		PropertySemantics::Color)
@@ -84,15 +87,12 @@ UICrosshairOverlay::UICrosshairOverlay()
     inport_.setOptional(true);
     addPort(inport_);
     addPort(outport_);
-	addProperty(planePosition_);
-	planePosition_.onChange(this, &UICrosshairOverlay::invalidateMesh);
+	addProperty(crosshairPos_);
+	crosshairPos_.onChange(this, &UICrosshairOverlay::invalidateMesh);
 	addProperty(planeNormal_);
-	planeNormal_.setReadOnly(true);
 	addProperty(planeUp_);
-	planeUp_.setReadOnly(true);
+	addProperty(planePosition_);
 	planeNormal_.onChange(this, &UICrosshairOverlay::invalidateMesh);
-	//TODO use the plane of the crosshair UI to generate extry/exit points for a raycaster
-	// dont forget to link the normal rotation matrices
 	addProperty(indicatorColor_);
 	addProperty(mouseSetMarker_);
 	mousePositionTracker_.setVisible(false);
@@ -102,8 +102,28 @@ UICrosshairOverlay::UICrosshairOverlay()
 	indicatorColor_.setSemantics(PropertySemantics::Color);
 	normalRotationMatrix_.setReadOnly(true);
 	addProperty(normalRotationMatrix_);
-	normalRotationMatrix_.onChange(this, &UICrosshairOverlay::rotateNormal);
+
 	uiShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+
+	// When some crosshair with a linked rotation matrix was rotated, apply the matrix to this normal
+	normalRotationMatrix_.onChange(this, &UICrosshairOverlay::rotateNormal);
+
+	// For the 2 orthogonal planes, a position change in 3D must be translated to a position change of the crosshair in 2D.
+	// We must ensure that we only trigger the crosshair position change for these 2 planes!
+	// Note that working with position changes will introduce numerical errors.
+	planePosition_.onChange([this]() {
+		const vec3 dx = planePosition_.get() - lastPlanePosition_;
+		if (abs(dot(normalize(dx), planeNormal_.get())) > 0.01f) {
+			const vec3 up = normalize(planeUp_.get());
+			const vec3 right = cross(up, normalize(planeNormal_.get()));
+			crosshairPos_.set(crosshairPos_.get() + vec2(
+				dot(normalize(dx), up) * length(dx),
+				dot(normalize(dx), right) * length(dx)
+			));
+		}
+		lastPlanePosition_ = planePosition_.get();
+	});
+	lastPlanePosition_ = planePosition_;
 }
 
 void UICrosshairOverlay::process() {
@@ -111,11 +131,10 @@ void UICrosshairOverlay::process() {
 }
 
 void UICrosshairOverlay::rotateNormal() {
-	const auto planeNormalNormalized = glm::normalize(planeNormal_.get());
-	const auto rotated = normalRotationMatrix_.get() * vec4 { planeNormalNormalized, 0.0f };
-	planeNormal_.set(glm::normalize(vec3{ rotated }));
-	const auto upRotated = normalRotationMatrix_.get() * vec4(glm::normalize(planeUp_.get()), 0.0f);
-	planeUp_.set(glm::normalize(vec3(upRotated)));
+	const auto rotN = normalRotationMatrix_.get() * vec4{ normalize(planeNormal_.get()), 0.0f };
+	planeNormal_.set(normalize(vec3{ rotN }));
+	const auto rotU = normalRotationMatrix_.get() * vec4{ normalize(planeUp_.get()), 0.0f };
+	planeUp_.set(normalize(vec3{ rotU }));
 }
 
 
@@ -142,11 +161,10 @@ void UICrosshairOverlay::eventSetRotateMarker(Event* event) {
 		normalRotationMatrix_ = glm::rotate(sign * alpha, planeNormal_.get());
 		markerRotationMatrix_ *= glm::rotate(sign * alpha, vec3(0.0f, 0.0f, 1.0f));
 		interactionState_ = ROTATE;
-		//TODO keep position fixed when rotating
 	}
 	// Move if crosshair center is dragged
 	else if (interactionState_ == NONE || interactionState_ == MOVE) {
-		setVolPosFromScreenPos(newMousePos);
+		setCrosshairPos(newMousePos);
 		interactionState_ = MOVE;
 	}
 	invalidateMesh();
@@ -249,94 +267,13 @@ void UICrosshairOverlay::invalidateMesh() { meshDirty_ = true; }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 vec2 UICrosshairOverlay::getScreenPosFromVolPos() {
-	return convertVolPosToScreen(clamp(planePosition_.get(), vec3(0,0,0), vec3(1,1,1)));
+	return clamp(crosshairPos_.get(), vec2(0,0), vec2(1,1));
 }
 
-void UICrosshairOverlay::setVolPosFromScreenPos(vec2 pos) {
+void UICrosshairOverlay::setCrosshairPos(vec2 pos) {
 	pos = clamp(pos, vec2(0, 0), vec2(1, 1));
-	planePosition_.set(vec3(convertScreenPosToVolume(pos)));
+	crosshairPos_.set(pos);
 }
 
-
-//TODO implement proper plane volume projections (with a reasonable plane origin)
-
-vec2 UICrosshairOverlay::convertVolPosToScreen(const vec3& volPos) const {
-	assert(volPos.x >= 0 && volPos.x <= 1);
-	assert(volPos.y >= 0 && volPos.y <= 1);
-	assert(volPos.z >= 0 && volPos.z <= 1);
-	return vec2(volPos);
-
-	// screen params
-	/*const float width = 2.0f, height = 2.0f;
-	const vec3 n = planeNormal_.get();
-	const vec3 up = planeUp_.get();
-	const vec3 right = -cross(n, up);*/
-
-	// use quick arbitrary origin
-	//const vec3 o = vec3(0.5f, 0.5f, 0.5f) + n * 2.0f;
-
-	// shortcut for matrix mult
-	//const float x = volPos.x * right.x + volPos.y * up.x + volPos.z * n.x;
-	//const float y = volPos.x * right.y + volPos.y * up.y + volPos.z * n.y;
-	//return vec2(x / width / 0.5f + 0.5f, y / height / 0.5f + 0.5f);
-
-	// conventional OpenGL-style transform with orthogonal projection without near/far
-	/*const mat4 view = mat4(
-		vec4(right, 1),
-		vec4(up, 1),
-		vec4(-n, 1),
-		vec4(0, 0, 0, 1));
-	const mat4 proj = mat4(
-		vec4(1.0f / width, 0, 0, 0),
-		vec4(0, 1.0f / height, 0, 0),
-		vec4(0, 0, 1, 0),
-		vec4(0, 0, 0, 1));*/
-
-	// project point to plane
-	//const vec3 tmp = volPos - o;
-	//const float d = tmp.x*n.x + tmp.y*n.y + tmp.z*n.z;
-	//return vec2(volPos - d * n);
-}
-
-vec3 UICrosshairOverlay::convertScreenPosToVolume(const vec2& screenPos) const {
-	/*assert(screenPos.x >= 0 && screenPos.x <= 1);
-	assert(screenPos.y >= 0 && screenPos.y <= 1);
-
-	LogInfo(planeNormal_.get());
-	LogInfo(planeUp_.get());
-
-	const float width = 2.0f, height = 2.0f;
-	const vec3 n = planeNormal_.get();
-	const vec3 up = planeUp_.get();
-	const vec3 right = -cross(n, up);
-
-	const mat4 view = mat4(
-		vec4(right, 1),
-		vec4(up, 1),
-		vec4(-n, 1),
-		vec4(0, 0, 0, 1));
-	const mat4 proj = mat4(
-		vec4(1.0f / width, 0, 0, 0),
-		vec4(0, 1.0f / height, 0, 0),
-		vec4(0, 0, 1, 0),
-		vec4(0, 0, 0, 1));
-
-	const mat4 m = inverse(proj * view);
-	return vec3(m * vec4(screenPos, 0, 1));
-
-	const float x = screenPos.x;
-	const float y = screenPos.y;
-	return x * right + y * up;*/
-
-	vec2 pos = vec2(glm::translate(vec3(0.5f, 0.5f, 0.0f)) *
-		glm::translate(vec3(-0.5f, -0.5f, 0.0f)) * vec4(screenPos, 0.0f, 1.0f));
-
-	vec4 newpos(inverse(normalRotationMatrix_.get()) * vec4(planePosition_.get(), 1.0f));
-	newpos.x = pos.x;
-	newpos.y = pos.y;
-	newpos = normalRotationMatrix_.get() * newpos;
-
-	return vec3(newpos);
-}
 
 }  // namespace inviwo

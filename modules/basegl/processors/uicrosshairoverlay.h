@@ -72,12 +72,8 @@ protected:
 	void invalidateMesh();
 	void updateIndicatorMesh();
 
-	//
-	vec3 convertScreenPosToVolume(const vec2 &screenPos) const;
-	vec2 convertVolPosToScreen(const vec3& volPos) const;
-
 	// Set crosshair center from normalized viewport coords, i.e. [0,1]
-	void setVolPosFromScreenPos(vec2 pos);
+	void setCrosshairPos(vec2 pos);
 
 	// Get normalized viewport coords
 	vec2 getScreenPosFromVolPos();
@@ -88,14 +84,16 @@ private:
     ImageInport inport_;
     ImageOutport outport_;
 
-	// Center of the crosshair in volume coords
-	FloatVec3Property planePosition_;
+	// Center of the crosshair in screen coords
+	FloatVec2Property crosshairPos_;
 
 	// Normal pointing out of the image plane, used as crosshair rotation axis
 	FloatVec3Property planeNormal_;
 
 	// Up vector so you can configure the orientation of your image
-	FloatVec3Property planeUp_; // to link with mprentryexitpointsprocessor
+	FloatVec3Property planeUp_;
+	FloatVec3Property planePosition_;
+	vec3 lastPlanePosition_;
 
 	// Rotation in world coords to keep multiple image planes in sync through property linking
 	FloatMat4Property normalRotationMatrix_;

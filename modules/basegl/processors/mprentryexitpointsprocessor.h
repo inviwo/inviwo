@@ -45,6 +45,7 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.MPREntryExitPoints, Entry exit points}
  * ![](org.inviwo.MPREntryExitPoints.png?classIdentifier=org.inviwo.MPREntryExitPoints)
+ *
  * Uses a plane in volume space to generate entry and exit points
  *
  * ### Outports
@@ -72,9 +73,12 @@ private:
     ImageOutport entryPort_;
     ImageOutport exitPort_;
 
-    BoolProperty capNearClipping_;
+	BoolProperty capNearClipping_;
 
-	// Generating entry exit points on a plane with these parameters
+	vec2 lastCrosshairPos_;
+	FloatVec2Property crosshairPos_;
+
+	vec3 lastPlanePosition_;
 	FloatVec3Property planePosition_;
 	FloatVec3Property planeNormal_;
 	FloatVec3Property planeUp_;

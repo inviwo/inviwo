@@ -52,9 +52,12 @@ MPREntryExitPoints::MPREntryExitPoints()
     , entryPort_("entry", DataVec4UInt16::get())
     , exitPort_("exit", DataVec4UInt16::get())
     , capNearClipping_("capNearClipping", "Cap near plane clipping", true)
+	, lastCrosshairPos_()
+	, crosshairPos_("crosshairPos", "Crosshair Position")
+	, lastPlanePosition_()
 	, planePosition_("planePosition", "Position")
-	, planeNormal_("planeNormal", "Normal", vec3(0))
-	, planeUp_("planeUp", "Up")
+	, planeNormal_("planeNormal", "Normal", vec3(0), vec3(-1), vec3(1))
+	, planeUp_("planeUp", "Up", vec3(0), vec3(-1), vec3(1))
 	, offset0_("offset0", "Offset 0", -0.01f, -1.0f, 0.0f, 0.001f)
 	, offset1_("offset1", "Offset 1", 0.01f, 0.0f, 1.0f, 0.001f)
 	, planeSize_(0)
@@ -62,11 +65,27 @@ MPREntryExitPoints::MPREntryExitPoints()
 	addPort(volumeInport_);
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");
+	crosshairPos_.setReadOnly(true);
     addProperty(capNearClipping_);
+	addProperty(crosshairPos_);
+	lastCrosshairPos_ = crosshairPos_.get();
+
+	// When some crosshair position is moved by a crosshair processor with linked crosshairPos,
+	// apply the change to all 3 planes in 3D along their respective up and right vectors.
+	// The image of the parallel plane will not change since
+	// the entry/exit points are generated so that the whole slice is centered in the viewport.
+	crosshairPos_.onChange([this]() {
+		const vec2 dx = crosshairPos_.get() - lastCrosshairPos_;
+		const vec3 up = normalize(planeUp_.get());
+		const vec3 right = cross(up, normalize(planeNormal_.get()));
+		planePosition_.set(planePosition_.get() + dx.x * right + dx.y * up);
+		lastCrosshairPos_ = crosshairPos_.get();
+	});
+
 	addProperty(planePosition_);
+	lastPlanePosition_ = planePosition_.get();
 	addProperty(planeNormal_);
-	addProperty(planeUp_);
-	planeUp_.setReadOnly(true);
+	addProperty(planeUp_); //TODD make this user configurable so we can have a workspace that looks exactly like radiant (to be able to validate) but it is read-only!?!?!?
 	addProperty(offset0_);
 	addProperty(offset1_);
 	shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
