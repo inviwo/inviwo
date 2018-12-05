@@ -71,8 +71,9 @@ SharedVolume GdcmVolumeReader::getVolumeDescription(DICOMDIRSeries& series) {
     std::vector<gdcm::Image> imageStack;
     unsigned int maxWidth = 0, maxHeight = 0;
 
-	double smallestVoxelValue = std::numeric_limits<double>::infinity();
-	double largestVoxelValue = -std::numeric_limits<double>::infinity();
+    double smallestVoxelValue = std::numeric_limits<double>::infinity();
+    double largestVoxelValue = -std::numeric_limits<double>::infinity();
+    double sliceThickness = std::numeric_limits<double>::infinity();
 
     // Read images and extract relevant metadata
     // possible optimization: dont read whole image (gdcm::ImageRegionReader)
@@ -104,18 +105,44 @@ SharedVolume GdcmVolumeReader::getVolumeDescription(DICOMDIRSeries& series) {
             {  // read window center/level
                 const gdcm::Tag windowCenterTag(0x0028, 0x1050);
                 if (dataset.FindDataElement(windowCenterTag)) {
-                    std::stringstream windowCenter;
-                    dataset.GetDataElement(windowCenterTag).GetValue().Print(windowCenter);
-                    imgInfo.windowCenter = windowCenter.str();
+                    const auto el = dataset.GetDataElement(windowCenterTag);
+                    if (el.GetVR() == gdcm::VR::DS) {  // decimal string
+                        std::stringstream windowCenterSS;
+                        el.GetValue().Print(windowCenterSS);
+                        imgInfo.windowCenter = windowCenterSS.str();
+                    }
                 }
             }
 
             {  // read window width
                 const gdcm::Tag windowWidthTag(0x0028, 0x1051);
                 if (dataset.FindDataElement(windowWidthTag)) {
-                    std::stringstream windowWidth;
-                    dataset.GetDataElement(windowWidthTag).GetValue().Print(windowWidth);
-                    imgInfo.windowWidth = windowWidth.str();
+                    const auto el = dataset.GetDataElement(windowWidthTag);
+                    if (el.GetVR() == gdcm::VR::DS) {  // decimal string
+                        std::stringstream windowWidthSS;
+                        el.GetValue().Print(windowWidthSS);
+                        imgInfo.windowWidth = windowWidthSS.str();
+                    }
+                }
+            }
+
+            {  // read slice thickness
+                const gdcm::Tag sliceThicknessTag(0x0018, 0x0050);
+                if (dataset.FindDataElement(sliceThicknessTag)) {
+                    const auto el = dataset.GetDataElement(sliceThicknessTag);
+                    if (el.GetVR() == gdcm::VR::DS) { // decimal string
+                        std::stringstream sliceThicknessSS;
+                        el.GetValue().Print(sliceThicknessSS);
+                        imgInfo.sliceThickness = sliceThicknessSS.str();
+                        
+                        bool sliceThicknessConversionSuccessful{true};
+                        try {
+                            double SliceThicknessTmp = std::stod(imgInfo.sliceThickness);
+                            sliceThickness = SliceThicknessTmp;
+                        } catch (...) {
+                            sliceThicknessConversionSuccessful = false;
+                        }
+                    }
                 }
             }
 
@@ -124,12 +151,12 @@ SharedVolume GdcmVolumeReader::getVolumeDescription(DICOMDIRSeries& series) {
 				if (dataset.FindDataElement(smallestImagePixelValueTag)) {
 					const gdcm::DataElement el = dataset.GetDataElement(smallestImagePixelValueTag);
 					const gdcm::ByteValue* ptr = el.GetByteValue();
-					if (el.GetVR() == gdcm::VR::SS) {
+					if (el.GetVR() == gdcm::VR::SS) { // signed short
 						short v;
 						ptr->GetBuffer((char*)&v, 2);
 						smallestVoxelValue = std::min(smallestVoxelValue, static_cast<double>(v));
 					}
-					else if (el.GetVR() == gdcm::VR::US) {
+					else if (el.GetVR() == gdcm::VR::US) { // unsigned short
 						unsigned short v;
 						ptr->GetBuffer((char*)&v, 2);
 						smallestVoxelValue = std::min(smallestVoxelValue, static_cast<double>(v));
@@ -142,12 +169,12 @@ SharedVolume GdcmVolumeReader::getVolumeDescription(DICOMDIRSeries& series) {
 				if (dataset.FindDataElement(largestImagePixelValueTag)) {
 					const gdcm::DataElement el = dataset.GetDataElement(largestImagePixelValueTag);
 					const gdcm::ByteValue* ptr = el.GetByteValue();
-					if (el.GetVR() == gdcm::VR::SS) {
+					if (el.GetVR() == gdcm::VR::SS) { // signed short
 						short v;
 						ptr->GetBuffer((char*)&v, 2);
 						largestVoxelValue = std::max(largestVoxelValue, static_cast<double>(v));
 					}
-					else if (el.GetVR() == gdcm::VR::US) {
+					else if (el.GetVR() == gdcm::VR::US) { // unsigned short
 						unsigned short v;
 						ptr->GetBuffer((char*)&v, 2);
 						largestVoxelValue = std::max(largestVoxelValue, static_cast<double>(v));
@@ -197,7 +224,12 @@ SharedVolume GdcmVolumeReader::getVolumeDescription(DICOMDIRSeries& series) {
 
         spacing.x = image.GetSpacing(0);
         spacing.y = image.GetSpacing(1);
-        spacing.z = image.GetSpacing(2);
+
+        if (sliceThickness == std::numeric_limits<double>::infinity()) {
+            spacing.z = image.GetSpacing(2); // fallback if no explicit slice thickness is set
+        } else {
+            spacing.z = sliceThickness; // image.GetSpacing(2); seems to be not set correctly for volumes?
+        }
 
         pixelformat = image.GetPixelFormat();
 

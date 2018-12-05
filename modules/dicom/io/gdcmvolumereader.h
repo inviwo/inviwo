@@ -56,6 +56,7 @@ struct DICOMDIRImage {
     std::string path = "";
     std::string windowCenter = "";
     std::string windowWidth = "";
+    std::string sliceThickness = "";
     // double windowCenter = 0.0;
     // double windowWidth = 0.0;
     // std::vector<double> windowCenters;
