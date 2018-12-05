@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,25 +27,56 @@
  *
  *********************************************************************************/
 
-#include <modules/cimg/cimgmodule.h>
-#include <modules/cimg/cimglayerreader.h>
-#include <modules/cimg/cimglayerwriter.h>
+#ifndef IVW_TIFFSTACKVOLUMEREADER_H
+#define IVW_TIFFSTACKVOLUMEREADER_H
+
+#include <modules/cimg/cimgmoduledefine.h>
+
 #include <modules/cimg/cimgvolumereader.h>
 #include <modules/cimg/cimgutils.h>
-#include <modules/cimg/tiffstackvolumereader.h>
 
 namespace inviwo {
 
-CImgModule::CImgModule(InviwoApplication* app) : InviwoModule(app, "CImg") {
-    // Register Data Readers
-    registerDataReader(util::make_unique<CImgLayerReader>());
-    registerDataReader(util::make_unique<TiffStackVolumeReader>());
+/**
+ * \class TiffStackVolumeReader
+ * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
+ * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
+ */
+class IVW_MODULE_CIMG_API TiffStackVolumeReader : public DataReaderType<Volume> {
+public:
+    TiffStackVolumeReader();
+	virtual TiffStackVolumeReader* clone() const;
+    virtual ~TiffStackVolumeReader() = default;
 
-    // Register Data Writers
-    registerDataWriter(util::make_unique<CImgLayerWriter>());
+	virtual std::shared_ptr<Volume> readData(const std::string& filePath);
+};
 
-    LogInfo("Using LibJPG Version " << cimgutil::getLibJPGVesrion());
-    LogInfo("Using OpenEXR Version " << cimgutil::getOpenEXRVesrion());
-}
+
+
+class IVW_MODULE_CIMG_API TiffStackVolumeRAMLoader
+    : public DiskRepresentationLoader<VolumeRepresentation> {
+public:
+	TiffStackVolumeRAMLoader(VolumeDisk* volumeDisk) : volumeDisk_(volumeDisk) {};
+	virtual TiffStackVolumeRAMLoader* clone() const;
+	virtual ~TiffStackVolumeRAMLoader() = default;
+
+	virtual std::shared_ptr<VolumeRepresentation> createRepresentation() const override;
+	virtual void updateRepresentation(std::shared_ptr<VolumeRepresentation> dest) const override;
+
+	using type = std::shared_ptr<VolumeRAM>;
+	template <typename ReturnType, typename T>
+	std::shared_ptr<VolumeRAM> operator()(void* data) const {
+		using F = typename T::type;
+		return std::make_shared<VolumeRAMPrecision<F>>(static_cast<F*>(data),
+			volumeDisk_->getDimensions());
+	}
+
+private:
+	VolumeDisk* volumeDisk_;
+
+};
+
 
 }  // namespace inviwo
+
+#endif  // IVW_TIFFSTACKVOLUMEREADER_H
