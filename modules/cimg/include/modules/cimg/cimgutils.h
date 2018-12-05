@@ -64,18 +64,27 @@ IVW_MODULE_CIMG_API void* loadVolumeData(void* dst, const std::string& filePath,
 /**
  * Saves an layer of an image to a specified filename.
  * @param filePath the path including filename and extension, which is used to determine the image
- *format
+ * format
  * @param inputImage specifies the image that is to be saved.
- **/
+ */
 IVW_MODULE_CIMG_API void saveLayer(const std::string& filePath, const Layer* inputImage);
 
 /**
  * Saves an layer of an unsigned char buffer.
  * @param extension  specifies the output image format
  * @param inputImage specifies the image that is to be saved.
- **/
+ */
 IVW_MODULE_CIMG_API std::unique_ptr<std::vector<unsigned char>> saveLayerToBuffer(
     const std::string& extension, const Layer* inputImage);
+
+/**
+ * Load tiff file as volume
+ * @param formatId   data format of the tiff file, needs to be known before loading the data
+ *                   because it loads but not converts the saved values in the told dataformat
+ *                   and we determine the valuerange by the datarange
+ */
+void* loadTiffVolumeData(void* dst, const std::string& filePath, size3_t& dimensions,
+                         DataFormatId& formatId);
 
 /**
  * \brief Rescales Layer of given image data

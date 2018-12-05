@@ -15,6 +15,7 @@ set(HEADER_FILES
     include/modules/cimg/cimgsavebuffer.h
     include/modules/cimg/cimgutils.h
     include/modules/cimg/cimgvolumereader.h
+    include/modules/cimg/tiffstackvolumereader.h
 )
 
 #--------------------------------------------------------------------
@@ -26,6 +27,7 @@ set(SOURCE_FILES
     src/cimgsavebuffer.cpp
     src/cimgutils.cpp
     src/cimgvolumereader.cpp
+    src/tiffstackvolumereader.cpp
 )
 
 #--------------------------------------------------------------------
