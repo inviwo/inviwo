@@ -85,7 +85,7 @@ public:
     void build();
     bool isReady() const; // returns whether the shader has been built and linked successfully
 
-    GLuint getID() const { return id_; }
+    GLuint getID() const { return prog_.id; }
     const ShaderObjectMap& getShaderObjects() { return shaderObjects_; }
 
     ShaderObject* operator[](ShaderType type) const;
@@ -110,6 +110,15 @@ public:
     void removeOnReload(const BaseCallBack* callback);
 
 private:
+    struct ScopedShaderProgram {
+        ScopedShaderProgram() = default;
+        ~ScopedShaderProgram() {
+            if (id != 0) {
+                glDeleteProgram(id);
+            }
+        }
+        GLuint id = {glCreateProgram()};
+    };
     void handleError(OpenGLException& e);
     std::string processLog(std::string log) const;
 
@@ -130,7 +139,7 @@ private:
     std::string shaderNames() const;
     GLint findUniformLocation(const std::string &name) const;
 
-    GLuint id_;
+    ScopedShaderProgram prog_;
     ShaderObjectMap shaderObjects_;
 
     bool ready_ = false;

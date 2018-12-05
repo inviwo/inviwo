@@ -31,6 +31,7 @@
 #include <modules/opengl/image/imagegl.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/shader/shaderresource.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/buffer/framebufferobject.h>
 
@@ -47,7 +48,15 @@ ImageGLProcessor::ImageGLProcessor(std::shared_ptr<const ShaderResource> fragmen
     , dataFormat_(nullptr)
     , swizzleMask_(swizzlemasks::rgba)
     , internalInvalid_(false)
-    , shader_({{ShaderType::Vertex, utilgl::findShaderResource("img_identity.vert")}, {ShaderType::Fragment, fragmentShader}},
+    , shader_({
+        {ShaderType::Vertex, std::make_shared<StringShaderResource>("org.inviwo.ImageGLProcessor.vert",
+        // singleDrawImagePlaneRect uses mesh with vertices and tex coords that do not need transformation
+        "out vec3 texCoord_;"
+        "void main() {"
+        "    texCoord_ = in_TexCoord;"
+        "    gl_Position = in_Vertex;"
+        "}")
+    }, {ShaderType::Fragment, fragmentShader}},
               buildShader ? Shader::Build::Yes : Shader::Build::No) {
     addPort(inport_);
     addPort(outport_);
