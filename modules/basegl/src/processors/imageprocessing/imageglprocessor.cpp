@@ -47,7 +47,7 @@ ImageGLProcessor::ImageGLProcessor(std::shared_ptr<const ShaderResource> fragmen
     , dataFormat_(nullptr)
     , swizzleMask_(swizzlemasks::rgba)
     , internalInvalid_(false)
-    , shader_({{ShaderType::Fragment, fragmentShader}},
+    , shader_({{ShaderType::Vertex, utilgl::findShaderResource("img_identity.vert")}, {ShaderType::Fragment, fragmentShader}},
               buildShader ? Shader::Build::Yes : Shader::Build::No) {
     addPort(inport_);
     addPort(outport_);

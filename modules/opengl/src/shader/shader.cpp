@@ -38,6 +38,9 @@ namespace inviwo {
 
 Shader::Shader(const std::vector<std::pair<ShaderType, std::string>> &items, Build buildShader)
     : id_{glCreateProgram()}, warningLevel_{UniformWarning::Ignore} {
+    if (std::find_if(std::begin(items), std::end(items), [](const auto& item) { return item.first == ShaderType::Vertex;}) == std::end(items)) {
+        throw Exception("Vertex shader required, provide for example img_identity.vert");
+    }
     for (auto &item : items) createAndAddShader(item.first, item.second);
 
     if (buildShader == Build::Yes) build();
@@ -48,6 +51,9 @@ Shader::Shader(
     const std::vector<std::pair<ShaderType, std::shared_ptr<const ShaderResource>>> &items,
     Build buildShader)
     : id_{glCreateProgram()}, warningLevel_{UniformWarning::Ignore} {
+    if (std::find_if(std::begin(items), std::end(items), [](const auto& item) { return item.first == ShaderType::Vertex;}) == std::end(items)) {
+        throw Exception("Vertex shader required, provide for example img_identity.vert");
+    }
     for (auto &item : items) createAndAddShader(item.first, item.second);
 
     if (buildShader == Build::Yes) build();
@@ -82,6 +88,9 @@ Shader::Shader(const char *vertexFilename, const char *geometryFilename,
 
 Shader::Shader(std::vector<std::unique_ptr<ShaderObject>> &shaderObjects, bool buildShader)
     : id_{glCreateProgram()}, warningLevel_{UniformWarning::Ignore} {
+    if (std::find_if(std::begin(shaderObjects), std::end(shaderObjects), [](const auto& item) { return item->getShaderType() == ShaderType::Vertex;}) == std::end(shaderObjects)) {
+        throw Exception("Vertex shader required, provide for example img_identity.vert");
+    }
     for (auto &shaderObject : shaderObjects) createAndAddShader(std::move(shaderObject));
 
     if (buildShader) build();

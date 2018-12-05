@@ -57,7 +57,9 @@ public:
 
     Shader(const std::vector<std::pair<ShaderType, std::shared_ptr<const ShaderResource>>> &items,
            Build buildShader = Build::Yes);
-
+    /*
+     * Will add img_identity.vert as vertex shader.
+     */
     Shader(std::string fragmentFilename, bool buildShader = true);
     Shader(std::string vertexFilename, std::string fragmentFilename, bool buildShader = true);
     Shader(std::string vertexFilename, std::string geometryFilename, std::string fragmentFilename,
