@@ -34,7 +34,9 @@
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/polylineport.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 
 #include <vector>
@@ -57,8 +59,10 @@ namespace inviwo {
 
     private:
         void addPoint(const vec3& pt);
+        void removePoint(const vec3& pt);
 
         FloatVec3Property pt_;
+        BoolProperty addPolylinePoint_;
         bool readyToRecord_;
 
         ButtonProperty clearPolyline_;

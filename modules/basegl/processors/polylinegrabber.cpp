@@ -30,6 +30,8 @@
 #include "polylinegrabber.h"
 
 #include <fstream>
+#include <limits>
+#include <algorithm>
 
 namespace inviwo {
 
@@ -45,6 +47,7 @@ namespace inviwo {
     PolylineGrabber::PolylineGrabber()
         : Processor()
         , pt_("pt", "Point to Add")
+        , addPolylinePoint_("addPolylinePoint", "Point: Add (true) / Remove (false)", true)
         , readyToRecord_(false)
         , clearPolyline_("clearpolyline", "Clear Points")
         , loadExamplePolyline_("loadexamplepolyline", "Load Example Polyline")
@@ -94,12 +97,18 @@ namespace inviwo {
 
         //pt_.setVisible(false);
         pt_.setReadOnly(true);
-        pt_.onChange([this]() { addPoint(pt_); });
+        pt_.onChange([this]() {
+            if (addPolylinePoint_) {
+                addPoint(pt_);
+            } else {
+                removePoint(pt_);
+            }
+        });
         addProperty(pt_);
 
-        //TODO smoothen the normal
+        addProperty(addPolylinePoint_);
 
-        //TODO color points whether they are on slice or above or below
+        //TODO smoothen the normal
 
         //TODO implement move and delete points
     }
@@ -108,6 +117,25 @@ namespace inviwo {
     {
         if (readyToRecord_) {
             polyline_->push_back(pt);
+        }
+
+        readyToRecord_ = true;
+        invalidate(InvalidationLevel::InvalidOutput);
+    }
+
+    void PolylineGrabber::removePoint(const vec3& pt) {
+        if (readyToRecord_ && !polyline_->empty()) {
+            size_t min_idx{0};
+            float min_dist{std::numeric_limits<float>::infinity()};
+            for (size_t idx = 0; idx < polyline_->size(); ++idx) {
+                const float dist = glm::distance(polyline_->at(idx), pt);
+                if (dist < min_dist) {
+                    min_dist = dist;
+                    min_idx = idx;
+                }
+            }
+
+            polyline_->erase(polyline_->begin() + min_idx);
         }
 
         readyToRecord_ = true;

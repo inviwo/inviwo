@@ -52,782 +52,860 @@
 
 namespace inviwo {
 
-	const ProcessorInfo VolumeSliceGL::processorInfo_{
-		"org.inviwo.VolumeSliceGL",  // Class identifier
-		"Volume Slice",              // Display name
-		"Volume Operation",          // Category
-		CodeState::Stable,           // Code state
-		Tags::GL,                    // Tags
-	};
-	const ProcessorInfo VolumeSliceGL::getProcessorInfo() const { return processorInfo_; }
+    const ProcessorInfo VolumeSliceGL::processorInfo_{
+        "org.inviwo.VolumeSliceGL",  // Class identifier
+        "Volume Slice",              // Display name
+        "Volume Operation",          // Category
+        CodeState::Stable,           // Code state
+        Tags::GL,                    // Tags
+    };
+    const ProcessorInfo VolumeSliceGL::getProcessorInfo() const { return processorInfo_; }
 
-	VolumeSliceGL::VolumeSliceGL()
-		: Processor()
-		, inport_("volume")
-		, polyline_("polyline")
-		, outport_("outport", DataFormat<glm::u8vec4>::get(), false)
-		, shader_("standard.vert", "volumeslice.frag", false)
-		, uiShader_("standard.vert", "standard.frag", true)
-		, trafoGroup_("trafoGroup", "Transformations")
-		, pickGroup_("pickGroup", "Position Selection")
-		, tfGroup_("tfGroup", "Transfer Function Properties")
-		, sliceAlongAxis_("sliceAxis", "Slice along axis")
-		, sliceX_("sliceX", "X Volume Position", 128, 1, 256, 1, InvalidationLevel::Valid)
-		, sliceY_("sliceY", "Y Volume Position", 128, 1, 256, 1, InvalidationLevel::Valid)
-		, sliceZ_("sliceZ", "Z Volume Position", 128, 1, 256, 1, InvalidationLevel::Valid)
-		, worldPosition_("worldPosition_", "World Position", vec3(0.0f), vec3(-10.0f), vec3(10.0f),
-			vec3(0.01f), InvalidationLevel::Valid)
-		, planeNormal_("planeNormal", "Plane Normal", vec3(1.f, 0.f, 0.f), vec3(-1.f, -1.f, -1.f),
-			vec3(1.f, 1.f, 1.f), vec3(0.01f, 0.01f, 0.01f))
-		, planePosition_("planePosition", "Plane Position", vec3(0.5f), vec3(0.0f), vec3(1.0f))
-		, imageScale_("imageScale", "Scale", 1.0f, 0.1f, 10.0f)
-		, rotationAroundAxis_("rotation", "Rotation (ccw)", InvalidationLevel::Valid)
-		, imageRotation_("imageRotation", "Angle", 0, 0, glm::radians(360.f))
-		, flipHorizontal_("flipHorizontal", "Horizontal Flip", false)
-		, flipVertical_("flipVertical", "Vertical Flip", false)
-		, volumeWrapping_("volumeWrapping", "Volume Texture Wrapping")
-		, fillColor_("fillColor", "Fill Color", vec4(0.0f, 0.0f, 0.0f, 0.0f), vec4(0.0f), vec4(1.0f),
-			vec4(0.01f), InvalidationLevel::InvalidOutput, PropertySemantics::Color)
-		, posPicking_("posPicking", "Enable Position Picking", false)
-		, showIndicator_("showIndicator", "Show Position Indicator", true)
-		, indicatorColor_("indicatorColor", "Indicator Color", vec4(1.0f, 0.8f, 0.1f, 0.8f), vec4(0.0f),
-			vec4(1.0f), vec4(0.01f), InvalidationLevel::InvalidOutput,
-			PropertySemantics::Color)
-		, tfMappingEnabled_("tfMappingEnabled", "Enable Transfer Function", true,
-			InvalidationLevel::InvalidResources)
-		, transferFunction_("transferFunction", "Transfer Function", &inport_)
-		, tfAlphaOffset_("alphaOffset", "Alpha Offset", 0.0f, 0.0f, 1.0f, 0.01f)
-		, sampleQuery_("sampleQuery", "Sampling Query", false)
-		, normalizedSample_("normalizedSample", "Normalized Output", vec4(0.0f), vec4(0.0f), vec4(1.0f),
-			vec4(0.001f), InvalidationLevel::Valid, PropertySemantics::Text)
-		, volumeSample_("volumeSample", "Sample Output", vec4(0.0f),
-			vec4(std::numeric_limits<float>::lowest()),
-			vec4(std::numeric_limits<float>::max()), vec4(0.001f), InvalidationLevel::Valid,
-			PropertySemantics::Text)
-		, handleInteractionEvents_("handleEvents", "Handle Interaction Events", true,
-			InvalidationLevel::Valid)
-		, mouseShiftSlice_("mouseShiftSlice", "Mouse Slice Shift",
-			[this](Event* e) { eventShiftSlice(e); },
-			util::make_unique<WheelEventMatcher>())
+    VolumeSliceGL::VolumeSliceGL()
+        : Processor()
+        , inport_("volume")
+        , polyline_("polyline")
+        , outport_("outport", DataFormat<glm::u8vec4>::get(), false)
+        , shader_("standard.vert", "volumeslice.frag", false)
+        , uiShader_("standard.vert", "standard.frag", true)
+        , trafoGroup_("trafoGroup", "Transformations")
+        , pickGroup_("pickGroup", "Position Selection")
+        , tfGroup_("tfGroup", "Transfer Function Properties")
+        , sliceAlongAxis_("sliceAxis", "Slice along axis")
+        , sliceX_("sliceX", "X Volume Position", 128, 1, 256, 1, InvalidationLevel::Valid)
+        , sliceY_("sliceY", "Y Volume Position", 128, 1, 256, 1, InvalidationLevel::Valid)
+        , sliceZ_("sliceZ", "Z Volume Position", 128, 1, 256, 1, InvalidationLevel::Valid)
+        , worldPosition_("worldPosition_", "World Position", vec3(0.0f), vec3(-10.0f), vec3(10.0f),
+            vec3(0.01f), InvalidationLevel::Valid)
+        , planeNormal_("planeNormal", "Plane Normal", vec3(1.f, 0.f, 0.f), vec3(-1.f, -1.f, -1.f),
+            vec3(1.f, 1.f, 1.f), vec3(0.01f, 0.01f, 0.01f))
+        , planePosition_("planePosition", "Plane Position", vec3(0.5f), vec3(0.0f), vec3(1.0f))
+        , imageScale_("imageScale", "Scale", 1.0f, 0.1f, 10.0f)
+        , rotationAroundAxis_("rotation", "Rotation (ccw)", InvalidationLevel::Valid)
+        , imageRotation_("imageRotation", "Angle", 0, 0, glm::radians(360.f))
+        , flipHorizontal_("flipHorizontal", "Horizontal Flip", false)
+        , flipVertical_("flipVertical", "Vertical Flip", false)
+        , volumeWrapping_("volumeWrapping", "Volume Texture Wrapping")
+        , fillColor_("fillColor", "Fill Color", vec4(0.0f, 0.0f, 0.0f, 0.0f), vec4(0.0f), vec4(1.0f),
+            vec4(0.01f), InvalidationLevel::InvalidOutput, PropertySemantics::Color)
+        , posPicking_("posPicking", "Enable Position Picking", false)
+        , showIndicator_("showIndicator", "Show Position Indicator", true)
+        , indicatorColor_("indicatorColor", "Indicator Color", vec4(1.0f, 0.8f, 0.1f, 0.8f), vec4(0.0f),
+            vec4(1.0f), vec4(0.01f), InvalidationLevel::InvalidOutput,
+            PropertySemantics::Color)
+        , tfMappingEnabled_("tfMappingEnabled", "Enable Transfer Function", true,
+            InvalidationLevel::InvalidResources)
+        , transferFunction_("transferFunction", "Transfer Function", &inport_)
+        , tfAlphaOffset_("alphaOffset", "Alpha Offset", 0.0f, 0.0f, 1.0f, 0.01f)
+        , sampleQuery_("sampleQuery", "Sampling Query", false)
+        , normalizedSample_("normalizedSample", "Normalized Output", vec4(0.0f), vec4(0.0f), vec4(1.0f),
+            vec4(0.001f), InvalidationLevel::Valid, PropertySemantics::Text)
+        , volumeSample_("volumeSample", "Sample Output", vec4(0.0f),
+            vec4(std::numeric_limits<float>::lowest()),
+            vec4(std::numeric_limits<float>::max()), vec4(0.001f), InvalidationLevel::Valid,
+            PropertySemantics::Text)
+        , handleInteractionEvents_("handleEvents", "Handle Interaction Events", true,
+            InvalidationLevel::Valid)
+        , mouseShiftSlice_("mouseShiftSlice", "Mouse Slice Shift",
+            [this](Event* e) { eventShiftSlice(e); },
+            util::make_unique<WheelEventMatcher>())
 
-		, mouseSetMarker_("mouseSetMarker", "Mouse Set Marker", [this](Event* e) { eventSetRotateMarker(e); },
-			MouseButton::Left, MouseState::Press | MouseState::Move)
-		, mousePositionTracker_("mousePositionTracker", "Mouse Position Tracker",
-			[this](Event* e) { eventUpdateMousePos(e); }, MouseButton::None,
-			MouseState::Move)
+        , mouseSetMarker_("mouseSetMarker", "Mouse Set Marker", [this](Event* e) { eventSetRotateMarker(e); },
+            MouseButton::Left, MouseState::Press | MouseState::Move)
+        , mousePositionTracker_("mousePositionTracker", "Mouse Position Tracker",
+            [this](Event* e) { eventUpdateMousePos(e); }, MouseButton::None,
+            MouseState::Move)
 
-		, stepSliceUp_("stepSliceUp", "Key Slice Up", [this](Event* e) { eventStepSliceUp(e); },
-			IvwKey::W, KeyState::Press)
-		, stepSliceDown_("stepSliceDown", "Key Slice Down", [this](Event* e) { eventStepSliceDown(e); },
-			IvwKey::S, KeyState::Press)
-		, gestureShiftSlice_(
-			"gestureShiftSlice", "Gesture Slice Shift",
-			[this](Event* e) { eventGestureShiftSlice(e); },
-			util::make_unique<GestureEventMatcher>(GestureType::Pan, GestureStates(flags::any), 3))
-		, mousePickPolylinePoint_("mousePickPolylinePoint", "Mouse Pick Polyline Point",
-			[this](Event* e) { eventAddPolylinePoint(e); },
-			MouseButton::Left)
-		, enablePolylinePicking_("polylinePicking", "Enable Polyline Picking", false)
-		, lastPolylinePoint_("lastPolylinePoint", "Last Polyline Point", vec3{0.0f})
+        , stepSliceUp_("stepSliceUp", "Key Slice Up", [this](Event* e) { eventStepSliceUp(e); },
+            IvwKey::W, KeyState::Press)
+        , stepSliceDown_("stepSliceDown", "Key Slice Down", [this](Event* e) { eventStepSliceDown(e); },
+            IvwKey::S, KeyState::Press)
+        , gestureShiftSlice_(
+            "gestureShiftSlice", "Gesture Slice Shift",
+            [this](Event* e) { eventGestureShiftSlice(e); },
+            util::make_unique<GestureEventMatcher>(GestureType::Pan, GestureStates(flags::any), 3))
+        , mousePickPolylinePoint_("mousePickPolylinePoint", "Mouse Pick Polyline Point",
+            [this](Event* e) { eventAddPolylinePoint(e); },
+            MouseButton::Left | MouseButton::Right)
+        , enablePolylinePicking_("polylinePicking", "Enable Polyline Picking", false)
+        , lastPolylinePoint_("lastPolylinePoint", "Last Polyline Point", vec3{0.0f})
+        , addPolylinePoint_("addPolylinePoint", "Point: Add (true) / Remove (false)", true)
         , polylineVertexBuf_(util::makeBuffer<vec2>({}))
-		, meshDirty_(true)
-		, updating_(false)
-		, sliceRotation_(1.0f)
-		, inverseSliceRotation_(1.0f)
-		, volumeDimensions_(8u)
-		, texToWorld_(1.0f)
-		, normalRotationMatrix_("Rotationmatrix", "Rotation Matrix", glm::mat4{ 1.0f })
-		, markerRotationMatrix_{ 1.0f }
-		, lastMousePos_{ 0.0f }
-		, interactionState_(NONE) {
-		addPort(inport_);
-		addPort(outport_);
+        , meshDirty_(true)
+        , updating_(false)
+        , sliceRotation_(1.0f)
+        , inverseSliceRotation_(1.0f)
+        , volumeDimensions_(8u)
+        , texToWorld_(1.0f)
+        , normalRotationMatrix_("Rotationmatrix", "Rotation Matrix", glm::mat4{ 1.0f })
+        , markerRotationMatrix_{ 1.0f }
+        , lastMousePos_{ 0.0f }
+        , interactionState_(NONE) {
+        addPort(inport_);
+        addPort(outport_);
 
-		inport_.onChange(this, &VolumeSliceGL::updateMaxSliceNumber);
-		polyline_.setOptional(true);
-		addPort(polyline_);
-		sliceAlongAxis_.addOption("x", "y-z plane (X axis)",
-			static_cast<int>(CartesianCoordinateAxis::X));
-		sliceAlongAxis_.addOption("y", "z-x plane (Y axis)",
-			static_cast<int>(CartesianCoordinateAxis::Y));
-		sliceAlongAxis_.addOption("z", "x-y plane (Z axis)",
-			static_cast<int>(CartesianCoordinateAxis::Z));
-		sliceAlongAxis_.addOption("p", "Plane Equation", 3);
-		sliceAlongAxis_.set(static_cast<int>(CartesianCoordinateAxis::X));
-		sliceAlongAxis_.setCurrentStateAsDefault();
-		sliceAlongAxis_.onChange(this, &VolumeSliceGL::modeChange);
-		addProperty(sliceAlongAxis_);
+        inport_.onChange(this, &VolumeSliceGL::updateMaxSliceNumber);
+        polyline_.setOptional(true);
+        addPort(polyline_);
+        sliceAlongAxis_.addOption("x", "y-z plane (X axis)",
+            static_cast<int>(CartesianCoordinateAxis::X));
+        sliceAlongAxis_.addOption("y", "z-x plane (Y axis)",
+            static_cast<int>(CartesianCoordinateAxis::Y));
+        sliceAlongAxis_.addOption("z", "x-y plane (Z axis)",
+            static_cast<int>(CartesianCoordinateAxis::Z));
+        sliceAlongAxis_.addOption("p", "Plane Equation", 3);
+        sliceAlongAxis_.set(static_cast<int>(CartesianCoordinateAxis::X));
+        sliceAlongAxis_.setCurrentStateAsDefault();
+        sliceAlongAxis_.onChange(this, &VolumeSliceGL::modeChange);
+        addProperty(sliceAlongAxis_);
 
-		addProperty(sliceX_);
-		addProperty(sliceY_);
-		addProperty(sliceZ_);
-		// Invalidate selected voxel cursor when current slice changes
-		sliceX_.onChange(this, &VolumeSliceGL::sliceChange);
-		sliceY_.onChange(this, &VolumeSliceGL::sliceChange);
-		sliceZ_.onChange(this, &VolumeSliceGL::sliceChange);
+        addProperty(sliceX_);
+        addProperty(sliceY_);
+        addProperty(sliceZ_);
+        // Invalidate selected voxel cursor when current slice changes
+        sliceX_.onChange(this, &VolumeSliceGL::sliceChange);
+        sliceY_.onChange(this, &VolumeSliceGL::sliceChange);
+        sliceZ_.onChange(this, &VolumeSliceGL::sliceChange);
 
-		addProperty(planeNormal_);
-		addProperty(planePosition_);
+        addProperty(planeNormal_);
+        addProperty(planePosition_);
 
-		planePosition_.onChange(this, &VolumeSliceGL::positionChange);
-		planeNormal_.onChange(this, &VolumeSliceGL::planeSettingsChanged);
+        planePosition_.onChange(this, &VolumeSliceGL::positionChange);
+        planeNormal_.onChange(this, &VolumeSliceGL::planeSettingsChanged);
 
-		// Transformations
-		rotationAroundAxis_.addOption("0", "0 deg", 0);
-		rotationAroundAxis_.addOption("90", "90 deg", 1);
-		rotationAroundAxis_.addOption("180", "180 deg", 2);
-		rotationAroundAxis_.addOption("270", "270 deg", 3);
-		rotationAroundAxis_.addOption("free", "Free Rotation", 4);
-		rotationAroundAxis_.set(0);
-		rotationAroundAxis_.setCurrentStateAsDefault();
+        // Transformations
+        rotationAroundAxis_.addOption("0", "0 deg", 0);
+        rotationAroundAxis_.addOption("90", "90 deg", 1);
+        rotationAroundAxis_.addOption("180", "180 deg", 2);
+        rotationAroundAxis_.addOption("270", "270 deg", 3);
+        rotationAroundAxis_.addOption("free", "Free Rotation", 4);
+        rotationAroundAxis_.set(0);
+        rotationAroundAxis_.setCurrentStateAsDefault();
 
-		volumeWrapping_.addOption("color", "Fill with Color", GL_CLAMP_TO_EDGE);
-		volumeWrapping_.addOption("edge", "Fill with Edge", GL_CLAMP_TO_EDGE);
-		volumeWrapping_.addOption("repeat", "Repeat", GL_REPEAT);
-		volumeWrapping_.addOption("m-repeat", "Mirrored Repeat", GL_MIRRORED_REPEAT);
-		volumeWrapping_.setSelectedIndex(0);
-		volumeWrapping_.setCurrentStateAsDefault();
+        volumeWrapping_.addOption("color", "Fill with Color", GL_CLAMP_TO_EDGE);
+        volumeWrapping_.addOption("edge", "Fill with Edge", GL_CLAMP_TO_EDGE);
+        volumeWrapping_.addOption("repeat", "Repeat", GL_REPEAT);
+        volumeWrapping_.addOption("m-repeat", "Mirrored Repeat", GL_MIRRORED_REPEAT);
+        volumeWrapping_.setSelectedIndex(0);
+        volumeWrapping_.setCurrentStateAsDefault();
 
-		volumeWrapping_.onChange([&]() {
-			if (volumeWrapping_.getSelectedIdentifier() == "color") {
-				shader_.getFragmentShaderObject()->addShaderDefine("COLOR_FILL_ENABLED");
-				fillColor_.setVisible(true);
-			}
-			else {
-				shader_.getFragmentShaderObject()->removeShaderDefine("COLOR_FILL_ENABLED");
-				fillColor_.setVisible(false);
-			}
-			shader_.build();
-		});
-		shader_.getFragmentShaderObject()->addShaderDefine("COLOR_FILL_ENABLED");
-		shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-		uiShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+        volumeWrapping_.onChange([&]() {
+            if (volumeWrapping_.getSelectedIdentifier() == "color") {
+                shader_.getFragmentShaderObject()->addShaderDefine("COLOR_FILL_ENABLED");
+                fillColor_.setVisible(true);
+            }
+            else {
+                shader_.getFragmentShaderObject()->removeShaderDefine("COLOR_FILL_ENABLED");
+                fillColor_.setVisible(false);
+            }
+            shader_.build();
+        });
+        shader_.getFragmentShaderObject()->addShaderDefine("COLOR_FILL_ENABLED");
+        shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+        uiShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
-		imageRotation_.setVisible(false);
+        imageRotation_.setVisible(false);
 
-		trafoGroup_.addProperty(rotationAroundAxis_);
-		trafoGroup_.addProperty(imageRotation_);
-		trafoGroup_.addProperty(imageScale_);
-		trafoGroup_.addProperty(flipHorizontal_);
-		trafoGroup_.addProperty(flipVertical_);
-		trafoGroup_.addProperty(volumeWrapping_);
-		trafoGroup_.addProperty(fillColor_);
+        trafoGroup_.addProperty(rotationAroundAxis_);
+        trafoGroup_.addProperty(imageRotation_);
+        trafoGroup_.addProperty(imageScale_);
+        trafoGroup_.addProperty(flipHorizontal_);
+        trafoGroup_.addProperty(flipVertical_);
+        trafoGroup_.addProperty(volumeWrapping_);
+        trafoGroup_.addProperty(fillColor_);
 
-		rotationAroundAxis_.onChange(this, &VolumeSliceGL::rotationModeChange);
-		imageRotation_.onChange(this, &VolumeSliceGL::planeSettingsChanged);
-		imageScale_.onChange(this, &VolumeSliceGL::planeSettingsChanged);
-		flipHorizontal_.onChange(this, &VolumeSliceGL::planeSettingsChanged);
-		flipVertical_.onChange(this, &VolumeSliceGL::planeSettingsChanged);
+        rotationAroundAxis_.onChange(this, &VolumeSliceGL::rotationModeChange);
+        imageRotation_.onChange(this, &VolumeSliceGL::planeSettingsChanged);
+        imageScale_.onChange(this, &VolumeSliceGL::planeSettingsChanged);
+        flipHorizontal_.onChange(this, &VolumeSliceGL::planeSettingsChanged);
+        flipVertical_.onChange(this, &VolumeSliceGL::planeSettingsChanged);
 
-		addProperty(trafoGroup_);
+        addProperty(trafoGroup_);
 
-		// Position Selection
-		pickGroup_.addProperty(enablePolylinePicking_);
-		pickGroup_.addProperty(posPicking_);
-		pickGroup_.addProperty(showIndicator_);
-		pickGroup_.addProperty(indicatorColor_);
+        // Position Selection
+        pickGroup_.addProperty(enablePolylinePicking_);
+        pickGroup_.addProperty(posPicking_);
+        pickGroup_.addProperty(showIndicator_);
+        pickGroup_.addProperty(addPolylinePoint_);
+        pickGroup_.addProperty(indicatorColor_);
 
-		posPicking_.onChange([this]() {
-			if (posPicking_.get() && enablePolylinePicking_.get()) enablePolylinePicking_.set(false);
-			showIndicator_.set(posPicking_.get());
-			modeChange();
-		});
-		indicatorColor_.onChange(this, &VolumeSliceGL::invalidateMesh);
-		showIndicator_.setReadOnly(posPicking_.get());
-		indicatorColor_.setSemantics(PropertySemantics::Color);
+        posPicking_.onChange([this]() {
+            if (posPicking_.get() && enablePolylinePicking_.get()) enablePolylinePicking_.set(false);
+            showIndicator_.set(posPicking_.get());
+            modeChange();
+        });
+        indicatorColor_.onChange(this, &VolumeSliceGL::invalidateMesh);
+        showIndicator_.setReadOnly(posPicking_.get());
+        indicatorColor_.setSemantics(PropertySemantics::Color);
 
-		addProperty(pickGroup_);
+        addProperty(pickGroup_);
 
-		// Transfer Function
-		tfGroup_.addProperty(tfMappingEnabled_);
-		// Make sure that opacity does not affect the mapped color.
-		if (transferFunction_.get().getNumPoints() > 0) {
-			transferFunction_.get().getPoint(0)->setAlpha(1.f);
-		}
-		transferFunction_.setCurrentStateAsDefault();
-		tfGroup_.addProperty(transferFunction_);
-		tfGroup_.addProperty(tfAlphaOffset_);
-		addProperty(tfGroup_);
+        // Transfer Function
+        tfGroup_.addProperty(tfMappingEnabled_);
+        // Make sure that opacity does not affect the mapped color.
+        if (transferFunction_.get().getNumPoints() > 0) {
+            transferFunction_.get().getPoint(0)->setAlpha(1.f);
+        }
+        transferFunction_.setCurrentStateAsDefault();
+        tfGroup_.addProperty(transferFunction_);
+        tfGroup_.addProperty(tfAlphaOffset_);
+        addProperty(tfGroup_);
 
-		sampleQuery_.onChange([&]() {
-			if (!sampleQuery_.isChecked()) {
-				normalizedSample_.set(vec4(-std::numeric_limits<float>::infinity()));
-				volumeSample_.set(vec4(-std::numeric_limits<float>::infinity()));
-			}
-		});
+        sampleQuery_.onChange([&]() {
+            if (!sampleQuery_.isChecked()) {
+                normalizedSample_.set(vec4(-std::numeric_limits<float>::infinity()));
+                volumeSample_.set(vec4(-std::numeric_limits<float>::infinity()));
+            }
+        });
 
-		normalizedSample_.setReadOnly(true);
-		normalizedSample_.setSerializationMode(PropertySerializationMode::None);
-		normalizedSample_.setCurrentStateAsDefault();
-		volumeSample_.setReadOnly(true);
-		volumeSample_.setSerializationMode(PropertySerializationMode::None);
-		volumeSample_.setCurrentStateAsDefault();
+        normalizedSample_.setReadOnly(true);
+        normalizedSample_.setSerializationMode(PropertySerializationMode::None);
+        normalizedSample_.setCurrentStateAsDefault();
+        volumeSample_.setReadOnly(true);
+        volumeSample_.setSerializationMode(PropertySerializationMode::None);
+        volumeSample_.setCurrentStateAsDefault();
 
-		sampleQuery_.addProperty(normalizedSample_);
-		sampleQuery_.addProperty(volumeSample_);
-		addProperty(sampleQuery_);
+        sampleQuery_.addProperty(normalizedSample_);
+        sampleQuery_.addProperty(volumeSample_);
+        addProperty(sampleQuery_);
 
-		worldPosition_.setReadOnly(true);
-		addProperty(worldPosition_);
-		worldPosition_.onChange([this]() { updateFromWorldPosition(); });
+        worldPosition_.setReadOnly(true);
+        addProperty(worldPosition_);
+        worldPosition_.onChange([this]() { updateFromWorldPosition(); });
 
-		addProperty(handleInteractionEvents_);
+        addProperty(handleInteractionEvents_);
 
-		mouseShiftSlice_.setVisible(false);
-		mouseShiftSlice_.setCurrentStateAsDefault();
-		addProperty(mouseShiftSlice_);
+        mouseShiftSlice_.setVisible(false);
+        mouseShiftSlice_.setCurrentStateAsDefault();
+        addProperty(mouseShiftSlice_);
 
-		addProperty(stepSliceUp_);
-		addProperty(stepSliceDown_);
-		addProperty(mouseSetMarker_);
+        addProperty(stepSliceUp_);
+        addProperty(stepSliceDown_);
+        addProperty(mouseSetMarker_);
 
-		mousePositionTracker_.setVisible(false);
-		mousePositionTracker_.setCurrentStateAsDefault();
-		addProperty(mousePositionTracker_);
+        mousePositionTracker_.setVisible(false);
+        mousePositionTracker_.setCurrentStateAsDefault();
+        addProperty(mousePositionTracker_);
 
-		gestureShiftSlice_.setVisible(false);
-		gestureShiftSlice_.setCurrentStateAsDefault();
-		addProperty(gestureShiftSlice_);
+        gestureShiftSlice_.setVisible(false);
+        gestureShiftSlice_.setCurrentStateAsDefault();
+        addProperty(gestureShiftSlice_);
 
-		addProperty(mousePickPolylinePoint_);
-		lastPolylinePoint_.setReadOnly(true);
-		addProperty(lastPolylinePoint_);
-		enablePolylinePicking_.onChange([this]() {
-			if (enablePolylinePicking_.get() && posPicking_.get()) posPicking_.set(false);
-		});
+        addProperty(mousePickPolylinePoint_);
+        lastPolylinePoint_.setReadOnly(true);
+        addProperty(lastPolylinePoint_);
+        enablePolylinePicking_.onChange([this]() {
+            if (enablePolylinePicking_.get() && posPicking_.get()) posPicking_.set(false);
+        });
 
-		normalRotationMatrix_.setReadOnly(true);
-		addProperty(normalRotationMatrix_);
-		normalRotationMatrix_.onChange(this, &VolumeSliceGL::rotateNormal);
-	}
+        normalRotationMatrix_.setReadOnly(true);
+        addProperty(normalRotationMatrix_);
+        normalRotationMatrix_.onChange(this, &VolumeSliceGL::rotateNormal);
+    }
 
-	VolumeSliceGL::~VolumeSliceGL() {}
+    VolumeSliceGL::~VolumeSliceGL() {}
 
-	void VolumeSliceGL::initializeResources() {
-		updateMaxSliceNumber();
+    void VolumeSliceGL::initializeResources() {
+        updateMaxSliceNumber();
 
-		if (tfMappingEnabled_.get()) {
-			shader_.getFragmentShaderObject()->addShaderDefine("TF_MAPPING_ENABLED");
-			transferFunction_.setVisible(true);
-			tfAlphaOffset_.setVisible(true);
-		}
-		else {
-			shader_.getFragmentShaderObject()->removeShaderDefine("TF_MAPPING_ENABLED");
-			transferFunction_.setVisible(false);
-			tfAlphaOffset_.setVisible(false);
-		}
-		shader_.build();
-		planeSettingsChanged();
-	}
+        if (tfMappingEnabled_.get()) {
+            shader_.getFragmentShaderObject()->addShaderDefine("TF_MAPPING_ENABLED");
+            transferFunction_.setVisible(true);
+            tfAlphaOffset_.setVisible(true);
+        }
+        else {
+            shader_.getFragmentShaderObject()->removeShaderDefine("TF_MAPPING_ENABLED");
+            transferFunction_.setVisible(false);
+            tfAlphaOffset_.setVisible(false);
+        }
+        shader_.build();
+        planeSettingsChanged();
+    }
 
-	void VolumeSliceGL::invokeEvent(Event* event) {
-		if (!handleInteractionEvents_) return;
-		Processor::invokeEvent(event);
-	}
+    void VolumeSliceGL::invokeEvent(Event* event) {
+        if (!handleInteractionEvents_) return;
+        Processor::invokeEvent(event);
+    }
 
-	void VolumeSliceGL::modeChange() {
-		NetworkLock lock(this);
+    void VolumeSliceGL::modeChange() {
+        NetworkLock lock(this);
 
-		sliceX_.setReadOnly(true);
-		sliceY_.setReadOnly(true);
-		sliceZ_.setReadOnly(true);
-		planePosition_.setReadOnly(true);
-		planeNormal_.setReadOnly(true);
+        sliceX_.setReadOnly(true);
+        sliceY_.setReadOnly(true);
+        sliceZ_.setReadOnly(true);
+        planePosition_.setReadOnly(true);
+        planeNormal_.setReadOnly(true);
 
-		switch (sliceAlongAxis_.get()) {
-		case static_cast<int>(CartesianCoordinateAxis::X) :
-			sliceX_.setReadOnly(false);
-			planeNormal_.set(vec3(-1.0f, 0.0f, 0.0f));
-			sliceChange();
-			break;
-		case static_cast<int>(CartesianCoordinateAxis::Y) :
-			sliceY_.setReadOnly(false);
-			planeNormal_.set(vec3(0.0f, -1.0f, 0.0f));
-			sliceChange();
-			break;
-		case static_cast<int>(CartesianCoordinateAxis::Z) :
-			sliceZ_.setReadOnly(false);
-			planeNormal_.set(vec3(0.0f, 0.0f, -1.0f));
-			sliceChange();
-			break;
-		case 3:  // General plane
-		default:
-			planePosition_.setReadOnly(false);
-			planeNormal_.setReadOnly(false);
-			break;
-		}
+        switch (sliceAlongAxis_.get()) {
+        case static_cast<int>(CartesianCoordinateAxis::X) :
+            sliceX_.setReadOnly(false);
+            planeNormal_.set(vec3(-1.0f, 0.0f, 0.0f));
+            sliceChange();
+            break;
+        case static_cast<int>(CartesianCoordinateAxis::Y) :
+            sliceY_.setReadOnly(false);
+            planeNormal_.set(vec3(0.0f, -1.0f, 0.0f));
+            sliceChange();
+            break;
+        case static_cast<int>(CartesianCoordinateAxis::Z) :
+            sliceZ_.setReadOnly(false);
+            planeNormal_.set(vec3(0.0f, 0.0f, -1.0f));
+            sliceChange();
+            break;
+        case 3:  // General plane
+        default:
+            planePosition_.setReadOnly(false);
+            planeNormal_.setReadOnly(false);
+            break;
+        }
 
-		showIndicator_.setReadOnly(!posPicking_.get());
+        showIndicator_.setReadOnly(!posPicking_.get());
 
-		planeSettingsChanged();
-	}
+        planeSettingsChanged();
+    }
 
-	void VolumeSliceGL::planeSettingsChanged() {
-		if (!inport_.hasData()) return;
+    void VolumeSliceGL::planeSettingsChanged() {
+        if (!inport_.hasData()) return;
 
-		// Make sure we keep the aspect of the input data.
+        // Make sure we keep the aspect of the input data.
 
-		// In texture space
-		const vec3 normal = glm::normalize(planeNormal_.get());
-		const Plane plane(planePosition_.get(), normal);
+        // In texture space
+        const vec3 normal = glm::normalize(planeNormal_.get());
+        const Plane plane(planePosition_.get(), normal);
 
-		// In worldSpace.
-		const mat4 texToWorld(inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix());
-		const vec3 worldNormal(
-			glm::normalize(vec3(glm::inverseTranspose(texToWorld) * vec4(normal, 0.0f))));
-		const mat4 boxrotation(glm::toMat4(glm::rotation(worldNormal, vec3(0.0f, 0.0f, 1.0f))));
+        // In worldSpace.
+        const mat4 texToWorld(inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix());
+        const vec3 worldNormal(
+            glm::normalize(vec3(glm::inverseTranspose(texToWorld) * vec4(normal, 0.0f))));
+        const mat4 boxrotation(glm::toMat4(glm::rotation(worldNormal, vec3(0.0f, 0.0f, 1.0f))));
 
-		// Construct the edges of a unit box and intersect with the plane.
-		std::vector<IntersectionResult> points;
-		points.reserve(12);
+        // Construct the edges of a unit box and intersect with the plane.
+        std::vector<IntersectionResult> points;
+        points.reserve(12);
 
-		points.push_back(plane.getIntersection(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f)));
-		points.push_back(plane.getIntersection(vec3(1.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.0f)));
-		points.push_back(plane.getIntersection(vec3(1.0f, 1.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f)));
-		points.push_back(plane.getIntersection(vec3(0.0f, 1.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f)));
+        points.push_back(plane.getIntersection(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f)));
+        points.push_back(plane.getIntersection(vec3(1.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.0f)));
+        points.push_back(plane.getIntersection(vec3(1.0f, 1.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f)));
+        points.push_back(plane.getIntersection(vec3(0.0f, 1.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f)));
 
-		points.push_back(plane.getIntersection(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 1.0f)));
-		points.push_back(plane.getIntersection(vec3(1.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 1.0f)));
-		points.push_back(plane.getIntersection(vec3(1.0f, 1.0f, 0.0f), vec3(1.0f, 1.0f, 1.0f)));
-		points.push_back(plane.getIntersection(vec3(0.0f, 1.0f, 0.0f), vec3(0.0f, 1.0f, 1.0f)));
+        points.push_back(plane.getIntersection(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 1.0f)));
+        points.push_back(plane.getIntersection(vec3(1.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 1.0f)));
+        points.push_back(plane.getIntersection(vec3(1.0f, 1.0f, 0.0f), vec3(1.0f, 1.0f, 1.0f)));
+        points.push_back(plane.getIntersection(vec3(0.0f, 1.0f, 0.0f), vec3(0.0f, 1.0f, 1.0f)));
 
-		points.push_back(plane.getIntersection(vec3(0.0f, 0.0f, 1.0f), vec3(1.0f, 0.0f, 1.0f)));
-		points.push_back(plane.getIntersection(vec3(1.0f, 0.0f, 1.0f), vec3(1.0f, 1.0f, 1.0f)));
-		points.push_back(plane.getIntersection(vec3(1.0f, 1.0f, 1.0f), vec3(0.0f, 1.0f, 1.0f)));
-		points.push_back(plane.getIntersection(vec3(0.0f, 1.0f, 1.0f), vec3(0.0f, 0.0f, 1.0f)));
+        points.push_back(plane.getIntersection(vec3(0.0f, 0.0f, 1.0f), vec3(1.0f, 0.0f, 1.0f)));
+        points.push_back(plane.getIntersection(vec3(1.0f, 0.0f, 1.0f), vec3(1.0f, 1.0f, 1.0f)));
+        points.push_back(plane.getIntersection(vec3(1.0f, 1.0f, 1.0f), vec3(0.0f, 1.0f, 1.0f)));
+        points.push_back(plane.getIntersection(vec3(0.0f, 1.0f, 1.0f), vec3(0.0f, 0.0f, 1.0f)));
 
-		// Calculate the aspect of the intersected plane in world space.
-		vec2 xrange(std::numeric_limits<float>::max(), std::numeric_limits<float>::min());
-		vec2 yrange(std::numeric_limits<float>::max(), std::numeric_limits<float>::min());
-		for (auto& point : points) {
-			if (point.intersects_) {
-				vec4 corner = vec4(point.intersection_, 1.0f);
-				corner = boxrotation * texToWorld * corner;
+        // Calculate the aspect of the intersected plane in world space.
+        vec2 xrange(std::numeric_limits<float>::max(), std::numeric_limits<float>::min());
+        vec2 yrange(std::numeric_limits<float>::max(), std::numeric_limits<float>::min());
+        for (auto& point : points) {
+            if (point.intersects_) {
+                vec4 corner = vec4(point.intersection_, 1.0f);
+                corner = boxrotation * texToWorld * corner;
 
-				xrange[0] = std::min(xrange[0], corner.x);
-				xrange[1] = std::max(xrange[1], corner.x);
-				yrange[0] = std::min(yrange[0], corner.y);
-				yrange[1] = std::max(yrange[1], corner.y);
-			}
-		}
-		const float sourceRatio = glm::abs((xrange[1] - xrange[0]) / (yrange[1] - yrange[0]));
+                xrange[0] = std::min(xrange[0], corner.x);
+                xrange[1] = std::max(xrange[1], corner.x);
+                yrange[0] = std::min(yrange[0], corner.y);
+                yrange[1] = std::max(yrange[1], corner.y);
+            }
+        }
+        const float sourceRatio = glm::abs((xrange[1] - xrange[0]) / (yrange[1] - yrange[0]));
 
-		// Goal: define a transformation that maps the view 2D texture coordinates into
-		// 3D texture coordinates at at some plane in the volume.
-		const mat4 flipMatX(-1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1);
-		const mat4 flipMatY(1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1);
+        // Goal: define a transformation that maps the view 2D texture coordinates into
+        // 3D texture coordinates at at some plane in the volume.
+        const mat4 flipMatX(-1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1);
+        const mat4 flipMatY(1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1);
 
-		const vec2 targetDim(outport_.getDimensions());
-		const float targetRatio = targetDim.x / targetDim.y;
+        const vec2 targetDim(outport_.getDimensions());
+        const float targetRatio = targetDim.x / targetDim.y;
 
-		const vec3 scaleSource(imageScale_ / (sourceRatio > 1.0f ? 1.0f : sourceRatio),
-			imageScale_ * (sourceRatio > 1.0f ? sourceRatio : 1.0f), 1.0f);
+        const vec3 scaleSource(imageScale_ / (sourceRatio > 1.0f ? 1.0f : sourceRatio),
+            imageScale_ * (sourceRatio > 1.0f ? sourceRatio : 1.0f), 1.0f);
 
-		const vec3 scaleTarget(1.0f * (targetRatio < 1.0f ? 1.0f : targetRatio),
-			1.0f / (targetRatio < 1.0f ? targetRatio : 1.0f), 1.0f);
+        const vec3 scaleTarget(1.0f * (targetRatio < 1.0f ? 1.0f : targetRatio),
+            1.0f / (targetRatio < 1.0f ? targetRatio : 1.0f), 1.0f);
 
-		mat4 rotation(
-			glm::translate(vec3(0.5f)) * glm::toMat4(glm::rotation(vec3(0.0f, 0.0f, 1.0f), normal)) *
-			glm::scale(scaleSource) * glm::rotate(imageRotation_.get(), vec3(0.0f, 0.0f, 1.0f)) *
-			glm::scale(scaleTarget) * glm::translate(vec3(-0.5f)));
+        mat4 rotation(
+            glm::translate(vec3(0.5f)) * glm::toMat4(glm::rotation(vec3(0.0f, 0.0f, 1.0f), normal)) *
+            glm::scale(scaleSource) * glm::rotate(imageRotation_.get(), vec3(0.0f, 0.0f, 1.0f)) *
+            glm::scale(scaleTarget) * glm::translate(vec3(-0.5f)));
 
-		if (flipHorizontal_) rotation *= flipMatX;
-		if (flipVertical_) rotation *= flipMatY;
+        if (flipHorizontal_) rotation *= flipMatX;
+        if (flipVertical_) rotation *= flipMatY;
 
-		// Save the inverse rotation.
-		sliceRotation_ = rotation;
-		inverseSliceRotation_ = glm::inverse(rotation);
+        // Save the inverse rotation.
+        sliceRotation_ = rotation;
+        inverseSliceRotation_ = glm::inverse(rotation);
 
-		invalidateMesh();
-		return;
-	}
+        invalidateMesh();
+        return;
+    }
 
-	void VolumeSliceGL::process() {
-		if (volumeDimensions_ != inport_.getData()->getDimensions()) {
-			volumeDimensions_ = inport_.getData()->getDimensions();
-			updateMaxSliceNumber();
-			modeChange();
-			vec2 dim{ glm::length(vec3(volumeDimensions_)) };
-			outport_.setDimensions(static_cast<size2_t>(dim));  // set default dimensions.
-		}
-		if (texToWorld_ != inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix()) {
-			texToWorld_ = inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix();
-			planeSettingsChanged();
-		}
+    void VolumeSliceGL::process() {
+        if (volumeDimensions_ != inport_.getData()->getDimensions()) {
+            volumeDimensions_ = inport_.getData()->getDimensions();
+            updateMaxSliceNumber();
+            modeChange();
+            vec2 dim{ glm::length(vec3(volumeDimensions_)) };
+            outport_.setDimensions(static_cast<size2_t>(dim));  // set default dimensions.
+        }
+        if (texToWorld_ != inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix()) {
+            texToWorld_ = inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix();
+            planeSettingsChanged();
+        }
 
-		utilgl::activateAndClearTarget(outport_, ImageType::ColorOnly);
-		shader_.activate();
+        utilgl::activateAndClearTarget(outport_, ImageType::ColorOnly);
+        shader_.activate();
 
-		TextureUnitContainer units;
-		utilgl::bindAndSetUniforms(shader_, units, inport_);
+        TextureUnitContainer units;
+        utilgl::bindAndSetUniforms(shader_, units, inport_);
 
-		utilgl::TexParameter wraps(units[0], GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, volumeWrapping_.get());
-		utilgl::TexParameter wrapt(units[0], GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, volumeWrapping_.get());
-		utilgl::TexParameter wrapr(units[0], GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, volumeWrapping_.get());
+        utilgl::TexParameter wraps(units[0], GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, volumeWrapping_.get());
+        utilgl::TexParameter wrapt(units[0], GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, volumeWrapping_.get());
+        utilgl::TexParameter wrapr(units[0], GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, volumeWrapping_.get());
 
-		if (tfMappingEnabled_) utilgl::bindAndSetUniforms(shader_, units, transferFunction_);
+        if (tfMappingEnabled_) utilgl::bindAndSetUniforms(shader_, units, transferFunction_);
 
-		utilgl::setUniforms(shader_, tfAlphaOffset_, fillColor_);
-		shader_.setUniform("sliceRotation", sliceRotation_);
-		shader_.setUniform("slice", (inverseSliceRotation_ * vec4(planePosition_.get(), 1.0f)).z);
-		shader_.setUniform("dataToClip", mat4(1.0f));
+        utilgl::setUniforms(shader_, tfAlphaOffset_, fillColor_);
+        shader_.setUniform("sliceRotation", sliceRotation_);
+        shader_.setUniform("slice", (inverseSliceRotation_ * vec4(planePosition_.get(), 1.0f)).z);
+        shader_.setUniform("dataToClip", mat4(1.0f));
 
-		utilgl::singleDrawImagePlaneRect();
-		shader_.deactivate();
+        utilgl::singleDrawImagePlaneRect();
+        shader_.deactivate();
 
-		if (posPicking_.get() && showIndicator_.get()) {
-			renderPositionIndicator();
-		}
-		if (enablePolylinePicking_.get()) {
-			const auto points = polyline_.getData();
-			if (points) {
-				if (points->size() > 0) {
-					updatePolylineMesh();
-					renderPolyline();
-				}
-			}
-		}
-		utilgl::deactivateCurrentTarget();
-	}
+        if (posPicking_.get() && showIndicator_.get()) {
+            renderPositionIndicator();
+        }
+        if (enablePolylinePicking_.get()) {
+            const auto points = polyline_.getData();
+            if (points) {
+                if (points->size() > 0) {
+                    updatePolylineMesh();
+                    renderPolyline();
+                }
+            }
+        }
+        utilgl::deactivateCurrentTarget();
+    }
 
 void VolumeSliceGL::renderPositionIndicator() {
     if (meshDirty_) {
         updateIndicatorMesh();
     }
 
-		MeshDrawerGL drawer(meshCrossHair_.get());
+        MeshDrawerGL drawer(meshCrossHair_.get());
 
-		utilgl::GlBoolState smooth(GL_LINE_SMOOTH, true);
-		utilgl::BlendModeState blend(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		utilgl::LineWidthState linewidth(2.5f); // Only width 1 is guaranteed to be supported
+        utilgl::GlBoolState smooth(GL_LINE_SMOOTH, true);
+        utilgl::BlendModeState blend(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        utilgl::LineWidthState linewidth(2.5f); // Only width 1 is guaranteed to be supported
 
-		uiShader_.activate();
-		const vec2 clipPos = getScreenPosFromVolPos() * 2.0f - 1.0f;
-		uiShader_.setUniform("dataToClip", glm::translate(vec3(clipPos, 0.0f)) * markerRotationMatrix_ * glm::translate(vec3(-clipPos, 0.0f)));
+        uiShader_.activate();
+        const vec2 clipPos = getScreenPosFromVolPos() * 2.0f - 1.0f;
+        uiShader_.setUniform("dataToClip", glm::translate(vec3(clipPos, 0.0f)) * markerRotationMatrix_ * glm::translate(vec3(-clipPos, 0.0f)));
 
-		utilgl::DepthFuncState depth(GL_ALWAYS);
-		drawer.draw();
-		uiShader_.deactivate();
-	}
+        utilgl::DepthFuncState depth(GL_ALWAYS);
+        drawer.draw();
+        uiShader_.deactivate();
+    }
 
-	void VolumeSliceGL::updatePolylineMesh() {
-		if (polyline_.hasData() && polyline_.getData()) {
-			const auto volPoints = polyline_.getData();
-			std::vector<vec2> screenPoints;
-			for (const vec3 p : *volPoints) {
-				vec2 screenPos = vec2(inverseSliceRotation_ * vec4(p, 1.0f)) * 2.0f - 1.0f;
-				screenPoints.push_back(screenPos);
-			}
-			polylineVertexBuf_ = util::makeBuffer<vec2>(std::vector<vec2>(screenPoints));
-		}
-	}
+    void VolumeSliceGL::updatePolylineMesh() {
+        const auto& volPoints = polyline_.getData();
+        if (polyline_.hasData() && volPoints) {
+            /*auto volPointsSorted = *volPoints;
+            std::sort(volPointsSorted.begin(), volPointsSorted.end(), [this](vec3 a, vec3 b) {
+                bool result{false};
+                switch (sliceAlongAxis_.get()) {
+                    case static_cast<int>(CartesianCoordinateAxis::X):
+                        result = a.x > b.x;
+                        break;
+                    case static_cast<int>(CartesianCoordinateAxis::Y):
+                        result = a.y > b.y;
+                        break;
+                    case static_cast<int>(CartesianCoordinateAxis::Z):
+                        result = a.z > b.z;
+                        break;
+                    default:
+                        break;
+                }
+                return result;
+            });*/
 
-	void VolumeSliceGL::renderPolyline() {
-		if (polyline_.hasData() && polyline_.getData()) {
-			auto indexBuf =
-				util::makeIndexBuffer(util::table([&](int i) { return static_cast<uint32_t>(i); }, 0, polyline_.getData()->size()));
+            std::vector<vec2> screenPoints;
+            for (const auto& p : *volPoints) {
+                vec2 screenPos = vec2(inverseSliceRotation_ * vec4(p, 1.0f)) * 2.0f - 1.0f;
+                screenPoints.push_back(screenPos);
+            }
 
-			auto meshCurve_ = util::make_unique<Mesh>();
-			meshCurve_->setModelMatrix(mat4(1.0f));
+            polylineVertexBuf_ = util::makeBuffer<vec2>(std::vector<vec2>(screenPoints));
+        }
+    }
 
-			//TODO color points whether they are on slice or above or below
-			auto colorBuf = util::makeBuffer<vec4>(
-				std::vector<vec4>(polyline_.getData()->size(), 
-				indicatorColor_.get()));
-			meshCurve_->addBuffer(BufferType::ColorAttrib, colorBuf);
+    void VolumeSliceGL::renderPolyline() {
+        if (polyline_.hasData() && polyline_.getData()) {
+            auto indexBuf =
+                util::makeIndexBuffer(util::table([&](int i) { return static_cast<uint32_t>(i); }, 0, polyline_.getData()->size()));
 
-			meshCurve_->addBuffer(BufferType::PositionAttrib, polylineVertexBuf_);
-			meshCurve_->addIndicies(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::Strip), indexBuf);
+            auto meshCurve_ = util::make_unique<Mesh>();
+            meshCurve_->setModelMatrix(mat4(1.0f));
 
-			MeshDrawerGL drawer(meshCurve_.get());
+            //TODO color points whether they are on slice or above or below
+            const auto& pts = polyline_.getData();
+            auto colorBuf = util::makeBuffer<vec4>(
+                std::vector<vec4>(pts->size()));
 
-			utilgl::GlBoolState smooth(GL_LINE_SMOOTH, true);
-			utilgl::BlendModeState blend(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			utilgl::LineWidthState linewidth(2.5f); // Only width 1 is guaranteed to be supported
+            auto vColors = colorBuf->getEditableRAMRepresentation();
+            for (size_t idx = 0; idx < pts->size(); ++idx) {
+                const auto& pt = pts->at(idx);
+                const auto vol = inport_.getData();
+                const vec4 volumeCoordinate{pt, 1.0f};
+                const auto indexCoordinate =
+                    ivec4(vol->getCoordinateTransformer().getTextureToIndexMatrix() * volumeCoordinate + 0.5f);
 
-			uiShader_.activate();
-			uiShader_.setUniform("dataToClip", glm::mat4(1));
+                float dist{0.0f};
+                bool isInSlice{false};
+                switch (sliceAlongAxis_.get()) {
+                    case static_cast<int>(CartesianCoordinateAxis::X):
+                        dist = planePosition_.get().x - pt.x;
+                        isInSlice = sliceX_ - 1 == indexCoordinate.x;
+                        break;
+                    case static_cast<int>(CartesianCoordinateAxis::Y):
+                        dist = planePosition_.get().y - pt.y;
+                        isInSlice = sliceY_ - 1 == indexCoordinate.y;
+                        break;
+                    case static_cast<int>(CartesianCoordinateAxis::Z):
+                        dist = planePosition_.get().z - pt.z;
+                        isInSlice = sliceZ_ - 1 == indexCoordinate.z;
+                        break;
+                    default:
+                        dist = std::numeric_limits<float>::infinity();
+                        LogError("This should not happen!");
+                        break;
+                }
 
-			utilgl::DepthFuncState depth(GL_ALWAYS);
-			drawer.draw();
-			uiShader_.deactivate();
-		}
-	}
+                const auto vColor = // green if in slice, otherwise mix orange and red
+                    isInSlice ? vec4{0.0f, 1.0f, 0.0f, 1.0f} 
+                              : glm::mix(
+                                  vec4{1.0f, 0.7f, 0.0f, 1.0f},
+                                  vec4{1.0f, 0.0f, 0.0f, 1.0f},
+                                  5.0f * glm::abs(dist));
 
-	void VolumeSliceGL::updateIndicatorMesh() {
-		const vec2 pos = getScreenPosFromVolPos();
+                vColors->setFromDVec4(idx, vColor);
+            }
 
-		const size2_t canvasSize(outport_.getDimensions());
-		const vec2 indicatorSize = vec2(4.0f / canvasSize.x, 4.0f / canvasSize.y);
-		const vec4 color(indicatorColor_.get());
+            meshCurve_->addBuffer(BufferType::ColorAttrib, colorBuf);
+            meshCurve_->addBuffer(BufferType::PositionAttrib, polylineVertexBuf_);
+            meshCurve_->addIndicies(Mesh::MeshInfo(DrawType::Points, ConnectivityType::None), indexBuf);
 
-		meshCrossHair_ = util::make_unique<Mesh>();
-		meshCrossHair_->setModelMatrix(mat4(1.0f));
-		// add two vertical and two horizontal lines with a gap around the selected position
-		auto posBuf = util::makeBuffer<vec2>(
-			{// horizontal
-				vec2(-0.5f, pos.y) * 2.0f - 1.0f, 
-				vec2(pos.x - indicatorSize.x, pos.y) * 2.0f - 1.0f,
+            MeshDrawerGL drawer(meshCurve_.get());
 
-				vec2(pos.x + indicatorSize.x, pos.y) * 2.0f - 1.0f, 
-				vec2(1.5f, pos.y) * 2.0f - 1.0f,
+            utilgl::GlBoolState smooth(GL_LINE_SMOOTH, true);
+            utilgl::BlendModeState blend(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            utilgl::LineWidthState linewidth(2.5f); // Only width 1 is guaranteed to be supported
+            utilgl::PointSizeState pointsize(10.0f);
 
-				// vertical
-				vec2(pos.x, -0.5f) * 2.0f - 1.0f, 
-				vec2(pos.x, pos.y - indicatorSize.y) * 2.0f - 1.0f,
+            uiShader_.activate();
+            uiShader_.setUniform("dataToClip", mat4(1.0f));
 
-				vec2(pos.x, pos.y + indicatorSize.y) * 2.0f - 1.0f, 
-				vec2(pos.x, 1.5f) * 2.0f - 1.0f,
+            utilgl::DepthFuncState depth(GL_ALWAYS);
+            drawer.draw();
+            uiShader_.deactivate();
+        }
+    }
 
-				// box
-				vec2(pos.x - indicatorSize.x, pos.y - indicatorSize.y) * 2.0f - 1.0f,
-				vec2(pos.x + indicatorSize.x, pos.y - indicatorSize.y) * 2.0f - 1.0f,
-				vec2(pos.x + indicatorSize.x, pos.y + indicatorSize.y) * 2.0f - 1.0f,
-				vec2(pos.x - indicatorSize.x, pos.y + indicatorSize.y) * 2.0f - 1.0f });
+    void VolumeSliceGL::updateIndicatorMesh() {
+        const vec2 pos = getScreenPosFromVolPos();
 
-		// indices for cross lines
-		auto indexBuf1 =
-			util::makeIndexBuffer(util::table([&](int i) { return static_cast<uint32_t>(i); }, 0, 8));
+        const size2_t canvasSize(outport_.getDimensions());
+        const vec2 indicatorSize = vec2(4.0f / canvasSize.x, 4.0f / canvasSize.y);
+        const vec4 color(indicatorColor_.get());
 
-		// indices for box lines
-		auto indexBuf2 =
-			util::makeIndexBuffer(util::table([&](int i) { return static_cast<uint32_t>(i); }, 8, 12));
+        meshCrossHair_ = util::make_unique<Mesh>();
+        meshCrossHair_->setModelMatrix(mat4(1.0f));
+        // add two vertical and two horizontal lines with a gap around the selected position
+        auto posBuf = util::makeBuffer<vec2>(
+            {// horizontal
+                vec2(-0.5f, pos.y) * 2.0f - 1.0f, 
+                vec2(pos.x - indicatorSize.x, pos.y) * 2.0f - 1.0f,
 
-		// clear up existing attribute buffers
-		// meshCrossHair_->deinitialize();
-		auto colorBuf = util::makeBuffer<vec4>(std::vector<vec4>(12, color));
-		meshCrossHair_->addBuffer(BufferType::ColorAttrib, colorBuf);
-		meshCrossHair_->addBuffer(BufferType::PositionAttrib, posBuf);
-		meshCrossHair_->addIndicies(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::None), indexBuf1);
+                vec2(pos.x + indicatorSize.x, pos.y) * 2.0f - 1.0f, 
+                vec2(1.5f, pos.y) * 2.0f - 1.0f,
 
-		meshCrossHair_->addIndicies(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::Loop), indexBuf2);
+                // vertical
+                vec2(pos.x, -0.5f) * 2.0f - 1.0f, 
+                vec2(pos.x, pos.y - indicatorSize.y) * 2.0f - 1.0f,
 
-		meshDirty_ = false;
-	}
+                vec2(pos.x, pos.y + indicatorSize.y) * 2.0f - 1.0f, 
+                vec2(pos.x, 1.5f) * 2.0f - 1.0f,
 
-	void VolumeSliceGL::invalidateMesh() { meshDirty_ = true; }
+                // box
+                vec2(pos.x - indicatorSize.x, pos.y - indicatorSize.y) * 2.0f - 1.0f,
+                vec2(pos.x + indicatorSize.x, pos.y - indicatorSize.y) * 2.0f - 1.0f,
+                vec2(pos.x + indicatorSize.x, pos.y + indicatorSize.y) * 2.0f - 1.0f,
+                vec2(pos.x - indicatorSize.x, pos.y + indicatorSize.y) * 2.0f - 1.0f });
 
-	void VolumeSliceGL::shiftSlice(int shift) {
-		switch (sliceAlongAxis_.get()) {
-		case 0:  // x axis
-		{
-			int newValue = sliceX_.get() + shift;
-			newValue = glm::clamp(newValue, sliceX_.getMinValue(), sliceX_.getMaxValue());
-			sliceX_.set(newValue);
-			break;
-		}
-		case 1:  // y axis
-		{
-			int newValue = sliceY_.get() + shift;
-			newValue = glm::clamp(newValue, sliceY_.getMinValue(), sliceY_.getMaxValue());
-			sliceY_.set(newValue);
-			break;
-		}
-		case 2:  // z axis
-		{
-			int newValue = sliceZ_.get() + shift;
-			newValue = glm::clamp(newValue, sliceZ_.getMinValue(), sliceZ_.getMaxValue());
-			sliceZ_.set(newValue);
-			break;
-		}
-		default:
-		case 3: {
-			vec3 newPos = planePosition_.get() +
-				static_cast<float>(shift) / 100.0f * glm::normalize(planeNormal_.get());
-			newPos = glm::clamp(newPos, vec3(0.0f), vec3(1.0f));
-			planePosition_.set(newPos);
-			break;
-		}
-		}
-	}
+        // indices for cross lines
+        auto indexBuf1 =
+            util::makeIndexBuffer(util::table([&](int i) { return static_cast<uint32_t>(i); }, 0, 8));
 
-	void VolumeSliceGL::setVolPosFromScreenPos(vec2 pos) {
-		if (!posPicking_.get()) return;  // position mode not enabled
+        // indices for box lines
+        auto indexBuf2 =
+            util::makeIndexBuffer(util::table([&](int i) { return static_cast<uint32_t>(i); }, 8, 12));
 
-		vec3 planePos = convertScreenPosToVolume(pos);
+        // clear up existing attribute buffers
+        // meshCrossHair_->deinitialize();
+        auto colorBuf = util::makeBuffer<vec4>(std::vector<vec4>(12, color));
+        meshCrossHair_->addBuffer(BufferType::ColorAttrib, colorBuf);
+        meshCrossHair_->addBuffer(BufferType::PositionAttrib, posBuf);
+        meshCrossHair_->addIndicies(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::None), indexBuf1);
 
-		invalidateMesh();
-		planePosition_.set(vec3(planePos));
-	}
+        meshCrossHair_->addIndicies(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::Loop), indexBuf2);
 
-	vec2 VolumeSliceGL::getScreenPosFromVolPos() {
-		vec2 pos(inverseSliceRotation_ * vec4(planePosition_.get(), 1.0f));
-		return pos;
-	}
+        meshDirty_ = false;
+    }
 
-	vec3 VolumeSliceGL::convertScreenPosToVolume(const vec2& screenPos, bool clamp) const {
-		vec2 pos = vec2(glm::translate(vec3(0.5f, 0.5f, 0.0f)) *
-			glm::translate(vec3(-0.5f, -0.5f, 0.0f)) * vec4(screenPos, 0.0f, 1.0f));
+    void VolumeSliceGL::invalidateMesh() { meshDirty_ = true; }
 
-		if (clamp) {
-			if ((pos.x < 0.0f) || (pos.x > 1.0f) || (pos.y < 0.0f) || (pos.y > 1.0f)) {
-				pos = glm::clamp(pos, vec2(0.0f), vec2(1.0f));
-			}
-		}
+    void VolumeSliceGL::shiftSlice(int shift) {
+        switch (sliceAlongAxis_.get()) {
+        case 0:  // x axis
+        {
+            int newValue = sliceX_.get() + shift;
+            newValue = glm::clamp(newValue, sliceX_.getMinValue(), sliceX_.getMaxValue());
+            sliceX_.set(newValue);
+            break;
+        }
+        case 1:  // y axis
+        {
+            int newValue = sliceY_.get() + shift;
+            newValue = glm::clamp(newValue, sliceY_.getMinValue(), sliceY_.getMaxValue());
+            sliceY_.set(newValue);
+            break;
+        }
+        case 2:  // z axis
+        {
+            int newValue = sliceZ_.get() + shift;
+            newValue = glm::clamp(newValue, sliceZ_.getMinValue(), sliceZ_.getMaxValue());
+            sliceZ_.set(newValue);
+            break;
+        }
+        default:
+        case 3: {
+            vec3 newPos = planePosition_.get() +
+                static_cast<float>(shift) / 100.0f * glm::normalize(planeNormal_.get());
+            newPos = glm::clamp(newPos, vec3(0.0f), vec3(1.0f));
+            planePosition_.set(newPos);
+            break;
+        }
+        }
+    }
 
-		vec4 newpos(inverseSliceRotation_ * vec4(planePosition_.get(), 1.0f));
-		newpos.x = pos.x;
-		newpos.y = pos.y;
-		newpos = sliceRotation_ * newpos;
+    void VolumeSliceGL::setVolPosFromScreenPos(vec2 pos) {
+        if (!posPicking_.get()) return;  // position mode not enabled
 
-		if (clamp) {
-			newpos = glm::clamp(newpos, vec4(0.0f), vec4(1.0f));
-		}
-		return vec3(newpos);
-	}
+        vec3 planePos = convertScreenPosToVolume(pos);
 
-	void VolumeSliceGL::updateMaxSliceNumber() {
-		if (!inport_.hasData()) {
-			return;
-		}
-		NetworkLock lock(this);
+        invalidateMesh();
+        planePosition_.set(vec3(planePos));
+    }
 
-		const size3_t dims{ inport_.getData()->getDimensions() };
-		if (static_cast<int>(dims.x) != sliceX_.getMaxValue()) {
-			sliceX_.setMaxValue(static_cast<int>(dims.x));
-			sliceX_.set(static_cast<int>(dims.x) / 2);
-		}
-		if (static_cast<int>(dims.y) != sliceY_.getMaxValue()) {
-			sliceY_.setMaxValue(static_cast<int>(dims.y));
-			sliceY_.set(static_cast<int>(dims.y) / 2);
-		}
-		if (static_cast<int>(dims.z) != sliceZ_.getMaxValue()) {
-			sliceZ_.setMaxValue(static_cast<int>(dims.z));
-			sliceZ_.set(static_cast<int>(dims.z) / 2);
-		}
+    vec2 VolumeSliceGL::getScreenPosFromVolPos() {
+        vec2 pos(inverseSliceRotation_ * vec4(planePosition_.get(), 1.0f));
+        return pos;
+    }
 
-		mat4 texToWorld(inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix());
+    vec3 VolumeSliceGL::convertScreenPosToVolume(const vec2& screenPos, bool clamp) const {
+        vec2 pos = vec2(glm::translate(vec3(0.5f, 0.5f, 0.0f)) *
+            glm::translate(vec3(-0.5f, -0.5f, 0.0f)) * vec4(screenPos, 0.0f, 1.0f));
 
-		vec3 max(texToWorld * vec4(1.0f));
-		vec3 min(texToWorld * vec4(0.0f, 0.0f, 0.0f, 1.0f));
-		// Rotation/mirroring may change the sign so apply min/max
-		worldPosition_.setMaxValue(glm::max(min, max));
-		worldPosition_.setMinValue(glm::min(min, max));
-	}
+        if (clamp) {
+            if ((pos.x < 0.0f) || (pos.x > 1.0f) || (pos.y < 0.0f) || (pos.y > 1.0f)) {
+                pos = glm::clamp(pos, vec2(0.0f), vec2(1.0f));
+            }
+        }
 
-	//TODO:
-	// [0,1] range from viewport to inner
-	// link background color with colorProperty of planeProperty of volumePositionProperty
+        vec4 newpos(inverseSliceRotation_ * vec4(planePosition_.get(), 1.0f));
+        newpos.x = pos.x;
+        newpos.y = pos.y;
+        newpos = sliceRotation_ * newpos;
 
-	void VolumeSliceGL::rotateNormal() { // on rotation matrix property change
-		const auto planeNormalNormalized = glm::normalize(planeNormal_.get());
-		const auto rotated = normalRotationMatrix_.get() * vec4 { planeNormalNormalized, 0.0f };
-		planeNormal_.set(glm::normalize(vec3{ rotated }));
-	}
+        if (clamp) {
+            newpos = glm::clamp(newpos, vec4(0.0f), vec4(1.0f));
+        }
+        return vec3(newpos);
+    }
 
-	void VolumeSliceGL::eventShiftSlice(Event* event) {
-		auto wheelEvent = static_cast<WheelEvent*>(event);
-		int steps = static_cast<int>(wheelEvent->delta().y);
-		shiftSlice(steps);
-		event->markAsUsed();
-	}
+    void VolumeSliceGL::updateMaxSliceNumber() {
+        if (!inport_.hasData()) {
+            return;
+        }
+        NetworkLock lock(this);
 
-	void VolumeSliceGL::eventSetRotateMarker(Event* event) {
-		if (enablePolylinePicking_.get()) return;
-		auto mouseEvent = static_cast<MouseEvent*>(event);
-		const auto newMousePos = vec2(mouseEvent->posNormalized());
-		const auto markerPos = getScreenPosFromVolPos();
-		// if drag started far from current pos, trigger rotate
-		if (glm::distance(lastMousePos_, markerPos) > 0.1f) {
-			interactionState_ = ROTATE;
-			const vec2 newDir = glm::normalize(newMousePos - markerPos);
-			const vec2 oldDir = glm::normalize(lastMousePos_ - markerPos);
-			// get angle through dot and clamp because of float inaccuracies
-			const float cosAlpha = glm::clamp(glm::dot(newDir, oldDir), 0.0f, 1.0f);
-			const float alpha = glm::acos(cosAlpha);
-			assert(!std::isnan(alpha));
-			const float sign = (glm::cross(vec3(oldDir, 0), vec3(newDir, 0)).z > 0) ? 1.0f : -1.0f;
-			normalRotationMatrix_ = glm::rotate(sign * alpha, planeNormal_.get());
-			markerRotationMatrix_ *= glm::rotate(sign * alpha, vec3(0.0f, 0.0f, 1.0f));
-		}
-		else if (interactionState_ != ROTATE) { // else trigger move
-			interactionState_ = MOVE;
-			setVolPosFromScreenPos(newMousePos);
-		}
+        const size3_t dims{ inport_.getData()->getDimensions() };
+        if (static_cast<int>(dims.x) != sliceX_.getMaxValue()) {
+            sliceX_.setMaxValue(static_cast<int>(dims.x));
+            sliceX_.set(static_cast<int>(dims.x) / 2);
+        }
+        if (static_cast<int>(dims.y) != sliceY_.getMaxValue()) {
+            sliceY_.setMaxValue(static_cast<int>(dims.y));
+            sliceY_.set(static_cast<int>(dims.y) / 2);
+        }
+        if (static_cast<int>(dims.z) != sliceZ_.getMaxValue()) {
+            sliceZ_.setMaxValue(static_cast<int>(dims.z));
+            sliceZ_.set(static_cast<int>(dims.z) / 2);
+        }
 
-		lastMousePos_ = newMousePos;
+        mat4 texToWorld(inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix());
 
-		event->markAsUsed();
-	}
+        vec3 max(texToWorld * vec4(1.0f));
+        vec3 min(texToWorld * vec4(0.0f, 0.0f, 0.0f, 1.0f));
+        // Rotation/mirroring may change the sign so apply min/max
+        worldPosition_.setMaxValue(glm::max(min, max));
+        worldPosition_.setMinValue(glm::min(min, max));
+    }
 
-	void VolumeSliceGL::eventAddPolylinePoint(Event* event) {
-		if (!enablePolylinePicking_.get()) return;
-		auto mouseEvent = static_cast<MouseEvent*>(event);
-		const auto mousePos = vec2(mouseEvent->posNormalized());
-		const vec3 volPos = convertScreenPosToVolume(mousePos);
-		lastPolylinePoint_.set(volPos);
-	}
+    //TODO:
+    // [0,1] range from viewport to inner
+    // link background color with colorProperty of planeProperty of volumePositionProperty
 
+    void VolumeSliceGL::rotateNormal() { // on rotation matrix property change
+        const auto planeNormalNormalized = glm::normalize(planeNormal_.get());
+        const auto rotated = normalRotationMatrix_.get() * vec4 { planeNormalNormalized, 0.0f };
+        planeNormal_.set(glm::normalize(vec3{ rotated }));
+    }
 
+    void VolumeSliceGL::eventShiftSlice(Event* event) {
+        auto wheelEvent = static_cast<WheelEvent*>(event);
+        int steps = static_cast<int>(wheelEvent->delta().y);
+        shiftSlice(steps);
+        event->markAsUsed();
+    }
 
+    void VolumeSliceGL::eventSetRotateMarker(Event* event) {
+        if (enablePolylinePicking_.get()) return;
+        auto mouseEvent = static_cast<MouseEvent*>(event);
+        const auto newMousePos = vec2(mouseEvent->posNormalized());
+        const auto markerPos = getScreenPosFromVolPos();
+        // if drag started far from current pos, trigger rotate
+        if (glm::distance(lastMousePos_, markerPos) > 0.1f) {
+            interactionState_ = ROTATE;
+            const vec2 newDir = glm::normalize(newMousePos - markerPos);
+            const vec2 oldDir = glm::normalize(lastMousePos_ - markerPos);
+            // get angle through dot and clamp because of float inaccuracies
+            const float cosAlpha = glm::clamp(glm::dot(newDir, oldDir), 0.0f, 1.0f);
+            const float alpha = glm::acos(cosAlpha);
+            assert(!std::isnan(alpha));
+            const float sign = (glm::cross(vec3(oldDir, 0), vec3(newDir, 0)).z > 0) ? 1.0f : -1.0f;
+            normalRotationMatrix_ = glm::rotate(sign * alpha, planeNormal_.get());
+            markerRotationMatrix_ *= glm::rotate(sign * alpha, vec3(0.0f, 0.0f, 1.0f));
+        }
+        else if (interactionState_ != ROTATE) { // else trigger move
+            interactionState_ = MOVE;
+            setVolPosFromScreenPos(newMousePos);
+        }
 
-	void VolumeSliceGL::eventStepSliceUp(Event* event) {
-		shiftSlice(1);
-		event->markAsUsed();
-	}
+        lastMousePos_ = newMousePos;
 
-	void VolumeSliceGL::eventStepSliceDown(Event* event) {
-		shiftSlice(-1);
-		event->markAsUsed();
-	}
+        event->markAsUsed();
+    }
 
-	void VolumeSliceGL::eventGestureShiftSlice(Event* event) {
-		GestureEvent* gestureEvent = static_cast<GestureEvent*>(event);
-		if (gestureEvent->deltaPos().y < 0) {
-			shiftSlice(1);
-			event->markAsUsed();
+    void VolumeSliceGL::eventAddPolylinePoint(Event* event) {
+        if (!enablePolylinePicking_.get())
+            return;
 
-		}
-		else if (gestureEvent->deltaPos().y > 0) {
-			shiftSlice(-1);
-			event->markAsUsed();
-		}
-	}
+        NetworkLock lock(this); // lock network to change multiple properties at a time before releasing it
 
-	void VolumeSliceGL::eventUpdateMousePos(Event* event) {
-		interactionState_ = NONE;
-		lastMousePos_ = vec2(static_cast<MouseEvent*>(event)->posNormalized());
+        const auto mouseEvent = static_cast<MouseEvent*>(event);
+        const auto mousePos = vec2(mouseEvent->posNormalized());
+        const auto volPos = convertScreenPosToVolume(mousePos);
 
-		if (!sampleQuery_.isChecked()) return;
+        // set last clicked point in volume to be grabbed
+        lastPolylinePoint_.set(volPos);
 
-		if (!inport_.hasData()) {
-			return;
-		}
+        // set if point should be added or removed
+        const auto button = mouseEvent->button();
+        const auto modifiers = mouseEvent->modifiers();
+        if (button == MouseButton::Left) {
+            if (modifiers & KeyModifier::Control) {
+                addPolylinePoint_ = false; // remove point
+            } else {
+                addPolylinePoint_ = true; // add point
+            }
+        } else if (button == MouseButton::Right) { // remove point
+            addPolylinePoint_ = false;
+        }
+    }
 
-		auto volume = inport_.getData();
-		auto mouseEvent = static_cast<MouseEvent*>(event);
+    void VolumeSliceGL::eventStepSliceUp(Event* event) {
+        shiftSlice(1);
+        event->markAsUsed();
+    }
 
-		auto volPos = convertScreenPosToVolume(vec2(mouseEvent->posNormalized()), false);
-		// convert normalized volume position to voxel coords
-		const mat4 textureToIndex(volume->getCoordinateTransformer().getTextureToIndexMatrix());
-		const vec4 texturePos(volPos, 1.0);
-		ivec3 indexPos(ivec3(textureToIndex * texturePos));
+    void VolumeSliceGL::eventStepSliceDown(Event* event) {
+        shiftSlice(-1);
+        event->markAsUsed();
+    }
 
-		const ivec3 volDim(volume->getDimensions());
+    void VolumeSliceGL::eventGestureShiftSlice(Event* event) {
+        GestureEvent* gestureEvent = static_cast<GestureEvent*>(event);
+        if (gestureEvent->deltaPos().y < 0) {
+            shiftSlice(1);
+            event->markAsUsed();
 
-		bool outOfBounds = glm::any(glm::greaterThanEqual(indexPos, volDim)) ||
-			glm::any(glm::lessThan(indexPos, ivec3(0)));
-		if (outOfBounds) {
-			normalizedSample_.set(vec4(-std::numeric_limits<float>::infinity()));
-			volumeSample_.set(vec4(-std::numeric_limits<float>::infinity()));
-		}
-		else {
-			// sample input volume at given index position
-			const auto volumeRAM = volume->getRepresentation<VolumeRAM>();
-			normalizedSample_.set(volumeRAM->getAsNormalizedDVec4(indexPos));
-			volumeSample_.set(volumeRAM->getAsDVec4(indexPos));
-		}
-		event->markAsUsed();
-	}
+        }
+        else if (gestureEvent->deltaPos().y > 0) {
+            shiftSlice(-1);
+            event->markAsUsed();
+        }
+    }
 
-	void VolumeSliceGL::sliceChange() {
-		if (!inport_.hasData() || updating_) return;
-		util::KeepTrueWhileInScope guard(&updating_);
+    void VolumeSliceGL::eventUpdateMousePos(Event* event) {
+        interactionState_ = NONE;
+        lastMousePos_ = vec2(static_cast<MouseEvent*>(event)->posNormalized());
 
-		const mat4 indexToTexture(
-			inport_.getData()->getCoordinateTransformer().getIndexToTextureMatrix());
-		const ivec4 indexPos(sliceX_.get() - 1, sliceY_.get() - 1, sliceZ_.get() - 1, 1.0);
-		const vec3 texturePos(vec3(indexToTexture * vec4(indexPos)));
+        if (!sampleQuery_.isChecked()) return;
+
+        if (!inport_.hasData()) {
+            return;
+        }
+
+        auto volume = inport_.getData();
+        auto mouseEvent = static_cast<MouseEvent*>(event);
+
+        auto volPos = convertScreenPosToVolume(vec2(mouseEvent->posNormalized()), false);
+        // convert normalized volume position to voxel coords
+        const mat4 textureToIndex(volume->getCoordinateTransformer().getTextureToIndexMatrix());
+        const vec4 texturePos(volPos, 1.0);
+        ivec3 indexPos(ivec3(textureToIndex * texturePos));
+
+        const ivec3 volDim(volume->getDimensions());
+
+        bool outOfBounds = glm::any(glm::greaterThanEqual(indexPos, volDim)) ||
+            glm::any(glm::lessThan(indexPos, ivec3(0)));
+        if (outOfBounds) {
+            normalizedSample_.set(vec4(-std::numeric_limits<float>::infinity()));
+            volumeSample_.set(vec4(-std::numeric_limits<float>::infinity()));
+        }
+        else {
+            // sample input volume at given index position
+            const auto volumeRAM = volume->getRepresentation<VolumeRAM>();
+            normalizedSample_.set(volumeRAM->getAsNormalizedDVec4(indexPos));
+            volumeSample_.set(volumeRAM->getAsDVec4(indexPos));
+        }
+        event->markAsUsed();
+    }
+
+    void VolumeSliceGL::sliceChange() {
+        if (!inport_.hasData() || updating_) return;
+        util::KeepTrueWhileInScope guard(&updating_);
+
+        const mat4 indexToTexture(
+            inport_.getData()->getCoordinateTransformer().getIndexToTextureMatrix());
+        const ivec4 indexPos(sliceX_.get() - 1, sliceY_.get() - 1, sliceZ_.get() - 1, 1.0);
+        const vec3 texturePos(vec3(indexToTexture * vec4(indexPos)));
 
     const mat4 indexToWorld(inport_.getData()->getCoordinateTransformer().getIndexToWorldMatrix());
     const vec3 worldPos = vec3(indexToWorld * vec4(sliceX_.get(), sliceY_.get(), sliceZ_.get(), 1.0f));
@@ -836,7 +914,7 @@ void VolumeSliceGL::renderPositionIndicator() {
         NetworkLock lock(this);
         planePosition_.set(texturePos);
         worldPosition_.set(worldPos);
-	}
+    }
 
 }
 
@@ -844,10 +922,10 @@ void VolumeSliceGL::positionChange() {
     if (!inport_.hasData() || updating_) return;
     util::KeepTrueWhileInScope guard(&updating_);
 
-		const mat4 textureToIndex(
-			inport_.getData()->getCoordinateTransformer().getTextureToIndexMatrix());
-		const vec4 texturePos(planePosition_.get(), 1.0);
-		const ivec3 indexPos(ivec3(textureToIndex * texturePos) + ivec3(1));
+        const mat4 textureToIndex(
+            inport_.getData()->getCoordinateTransformer().getTextureToIndexMatrix());
+        const vec4 texturePos(planePosition_.get(), 1.0);
+        const ivec3 indexPos(ivec3(textureToIndex * texturePos) + ivec3(1));
 
     const mat4 textureToWorld(inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix());
     const vec3 worldPos = vec3(textureToWorld * vec4(planePosition_.get(), 1.0f));
@@ -862,30 +940,30 @@ void VolumeSliceGL::positionChange() {
     invalidateMesh();
 }
 
-	void VolumeSliceGL::rotationModeChange() {
-		switch (rotationAroundAxis_.get()) {
-		case 0:
-			imageRotation_.setVisible(false);
-			imageRotation_.set(glm::radians(0.f));
-			break;
-		case 1:
-			imageRotation_.setVisible(false);
-			imageRotation_.set(glm::radians(90.f));
-			break;
-		case 2:
-			imageRotation_.setVisible(false);
-			imageRotation_.set(glm::radians(180.f));
-			break;
-		case 3:
-			imageRotation_.setVisible(false);
-			imageRotation_.set(glm::radians(270.f));
-			break;
-		case 4:
-		default:
-			imageRotation_.setVisible(true);
-			break;
-		}
-	}
+    void VolumeSliceGL::rotationModeChange() {
+        switch (rotationAroundAxis_.get()) {
+        case 0:
+            imageRotation_.setVisible(false);
+            imageRotation_.set(glm::radians(0.f));
+            break;
+        case 1:
+            imageRotation_.setVisible(false);
+            imageRotation_.set(glm::radians(90.f));
+            break;
+        case 2:
+            imageRotation_.setVisible(false);
+            imageRotation_.set(glm::radians(180.f));
+            break;
+        case 3:
+            imageRotation_.setVisible(false);
+            imageRotation_.set(glm::radians(270.f));
+            break;
+        case 4:
+        default:
+            imageRotation_.setVisible(true);
+            break;
+        }
+    }
 
 void VolumeSliceGL::updateFromWorldPosition() {
 
