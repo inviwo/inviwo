@@ -1368,7 +1368,6 @@
                         <value x="0.0047450778" y="-0.99998593" z="-0.00071673014" />
                     </Property>
                     <Property type="org.inviwo.FloatVec3Property" identifier="planeUp">
-                        <readonly content="1" />
                         <minvalue x="-1" y="-1" z="-1" />
                         <value x="0" y="-0.003609299" z="-1" />
                     </Property>
@@ -1504,7 +1503,6 @@
                         <value x="0" y="0.0029270814" z="-0.99923682" />
                     </Property>
                     <Property type="org.inviwo.FloatVec3Property" identifier="planeUp">
-                        <readonly content="1" />
                         <minvalue x="-1" y="-1" z="-1" />
                         <value x="-0.0047634766" y="0.99998629" z="0.00020481461" />
                     </Property>
@@ -1771,7 +1769,6 @@
                         <value x="-0.99998629" y="-0.0047450964" z="5.7781534e-05" />
                     </Property>
                     <Property type="org.inviwo.FloatVec3Property" identifier="planeUp">
-                        <readonly content="1" />
                         <minvalue x="-1" y="-1" z="-1" />
                         <value x="0" y="-0.003609299" z="1" />
                     </Property>
