@@ -132,9 +132,17 @@ void UICrosshairOverlay::process() {
 
 void UICrosshairOverlay::rotateNormal() {
 	const auto rotN = normalRotationMatrix_.get() * vec4{ normalize(planeNormal_.get()), 0.0f };
-	planeNormal_.set(normalize(vec3{ rotN }));
-	const auto rotU = normalRotationMatrix_.get() * vec4{ normalize(planeUp_.get()), 0.0f };
-	planeUp_.set(normalize(vec3{ rotU }));
+
+	// Quickfix for rotating the plane around itself
+	// (in MPR it is not desired to rotate the image that the user is currently interacting with)
+	const auto diff = (planeNormal_.get() - vec3(rotN));
+	const auto dx = diff.x, dy = diff.y, dz = diff.z;
+	if (abs(dx) > 0.001f || abs(dy) > 0.001f || abs(dz) > 0.001f) {
+
+		planeNormal_.set(normalize(vec3{ rotN }));
+		const auto rotU = normalRotationMatrix_.get() * vec4 { normalize(planeUp_.get()), 0.0f };
+		planeUp_.set(normalize(vec3{ rotU }));
+	}
 }
 
 
