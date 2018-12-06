@@ -110,6 +110,7 @@ set(HEADER_FILES
     include/modules/base/properties/gaussianproperty.h
     include/modules/base/properties/sequencetimerproperty.h
     include/modules/base/properties/volumeinformationproperty.h
+    include/modules/base/properties/volumedescriptionproperty.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -213,6 +214,7 @@ set(SOURCE_FILES
     src/properties/gaussianproperty.cpp
     src/properties/sequencetimerproperty.cpp
     src/properties/volumeinformationproperty.cpp
+    src/properties/volumedescriptionproperty.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

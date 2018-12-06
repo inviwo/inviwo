@@ -33,6 +33,9 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 
+#include <vector>
+#include <string>
+
 namespace inviwo {
 /**
  * \brief Map values into data or value ranges.
@@ -53,6 +56,15 @@ public:
     dvec2 dataRange;        ///< Minimum and maximum data range
     dvec2 valueRange;       ///< Minimum and maximum value range
     std::string valueUnit;  ///< Unit, i.e. Hounsfield/absorption/W.
+
+    // value_in_houndsfield_units = value * rescaleSlope + rescaleIntercept
+    double rescaleSlope;
+    double rescaleIntercept;
+
+    std::vector<std::string> windowCenters;
+    std::vector<std::string> windowWidths;
+
+    dvec3 voxelSpacing;
 
     void initWithFormat(const DataFormatBase* format);
 

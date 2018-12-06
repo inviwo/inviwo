@@ -238,6 +238,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/transferfunctionproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/valuewrapper.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/volumeindicatorproperty.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/properties/imageproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/rendering/datavisualizer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/rendering/datavisualizermanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/rendering/meshdrawer.h
@@ -315,6 +316,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/stdextensions.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/stringconversion.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/stringlogger.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/stringutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/systemcapabilities.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/templatesampler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/threadpool.h
@@ -513,6 +515,7 @@ set(SOURCE_FILES
     properties/tfpropertyconcept.cpp
     properties/transferfunctionproperty.cpp
     properties/volumeindicatorproperty.cpp
+    properties/imageproperty.cpp
     rendering/datavisualizer.cpp
     rendering/datavisualizermanager.cpp
     rendering/meshdrawerfactory.cpp
@@ -567,6 +570,7 @@ set(SOURCE_FILES
     util/statecoordinator.cpp
     util/stringconversion.cpp
     util/stringlogger.cpp
+    util/stringutils.cpp
     util/systemcapabilities.cpp
     util/threadpool.cpp
     util/timer.cpp

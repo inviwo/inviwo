@@ -1,0 +1,319 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<?xml-stylesheet type="text/xsl" href="http://docbook.sourceforge.net/release/xsl-ns/current/manpages/docbook.xsl" ?>
+<!DOCTYPE Data [ <!ENTITY version SYSTEM 'version.txt'> ]>
+<refentry xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink">
+<info>
+<author><personname><firstname>Mathieu</firstname><surname>Malaterre</surname></personname><contrib>Main developer</contrib></author>
+<copyright><year>2006</year><year>2011</year><holder>Mathieu Malaterre</holder></copyright>
+</info>
+  <refmeta>
+    <refentrytitle>gdcmscu</refentrytitle>
+    <manvolnum>1</manvolnum>
+    <refmiscinfo class="source">GDCM</refmiscinfo>
+    <refmiscinfo class="version">&version;</refmiscinfo>
+    <refmiscinfo class="manual">DICOM Manipulation.</refmiscinfo>
+  </refmeta>
+  <refnamediv><refname>gdcmscu</refname>
+    <refpurpose>Tool to execute a DICOM Query/Retrieve operation</refpurpose>
+</refnamediv>
+<refsection xml:id="gdcmscu_1synopsis">
+<title>SYNOPSIS</title>
+
+<para><literallayout>gdcmscu [OPTION]...[OPERATION]...HOSTNAME...[PORT]...
+</literallayout> Execute a DICOM Q/R operation to HOSTNAME, using port PORT (104 when not specified)</para>
+</refsection>
+<refsection xml:id="gdcmscu_1description">
+<title>DESCRIPTION</title>
+
+<para>The <emphasis role="bold">gdcmscu</emphasis> command line program is the tool to execute DICOM Query/Retrieve operation. It supports: <itemizedlist>
+<listitem>
+<para>C-ECHO (SCU) </para>
+</listitem>
+<listitem>
+<para>C-FIND (SCU) </para>
+</listitem>
+<listitem>
+<para>C-STORE (SCU) </para>
+</listitem>
+<listitem>
+<para>C-MOVE (SCU/SCP) C-MOVE operation are executed using two different ports (one for the SCU and one for the SCP).</para>
+</listitem>
+</itemizedlist>
+</para>
+</refsection>
+<refsection xml:id="gdcmscu_1parameters">
+<title>PARAMETERS</title>
+</refsection>
+<refsection xml:id="gdcmscu_1options">
+<title>OPTIONS</title>
+<refsection xml:id="gdcmscu_1specific_options">
+<title>specific options</title>
+
+<para><literallayout>  -H --hostname    %s  Hostname.
+  -p --port        %d  Port number.
+     --aetitle     %s  Set calling AE Title.
+     --call        %s  Set called AE Title.
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmscu_1mode_options">
+<title>mode options</title>
+
+<para><literallayout>     --echo           C-ECHO (default when none).
+     --store          C-STORE.
+     --find           C-FIND.
+     --move           C-MOVE.
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmscu_1cstore_options">
+<title>C-STORE options</title>
+
+<para><literallayout>  -i --input       %s   DICOM filename
+  -r --recursive        recursively process (sub-)directories
+     --store-query %s   Store constructed query in file
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmscu_1cfind_options">
+<title>C-FIND/C-MOVE options</title>
+
+<para><literallayout>     --patientroot       C-FIND Patient Root Model.
+     --studyroot         C-FIND Study Root Model.
+
+     --patient           C-FIND Query on Patient Info (cannot be used with --studyroot).
+     --study             C-FIND Query on Study Info.
+     --series            C-FIND Query on Series Info.
+     --image             C-FIND Query on Image Info.
+     --key   %d,%d[=%s]  0123,4567=VALUE for specifying search criteria (wildcard allowed)
+                         With --key, leave blank (ie, --key 10,20="" or --key 10,20) to retrieve values
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmscu_1cmove_options">
+<title>C-MOVE options</title>
+
+<para><literallayout>  -o --output    %s      DICOM filename / directory
+     --port-scp  %d      Port for incoming associations
+     --key   %d,%d[=%s   0123,4567=VALUE for specifying search criteria (wildcard not allowed)
+                         Note that C-MOVE supports the same queries as C-FIND, but no wildcards are allowed
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmscu_1general_options">
+<title>general options</title>
+
+<para><literallayout>  -h   --help
+         print this help text and exit
+
+  -v   --version
+         print version information and exit
+
+  -V   --verbose
+         verbose mode (warning+error).
+
+  -W   --warning
+         warning mode, print warning information
+
+  -E   --error
+         error mode, print error information
+
+  -D   --debug
+         debug mode, print debug information
+
+  -L   --log-file
+         specify a filename where to write logs
+
+  --queryhelp
+         print query help
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmtar_1environment_variable">
+<title>environment variable</title>
+
+<para><literallayout>  GDCM_ROOT_UID Root UID
+</literallayout></para>
+</refsection>
+</refsection>
+<refsection xml:id="gdcmscu_1cecho_usage">
+<title>C-ECHO usage</title>
+
+<para><emphasis role="bold">gdcmscu</emphasis> is a great tool to test if a DICOM server is up. For example to send a C-ECHO to server dicom.example.com using port 104, use:</para>
+
+<para><literallayout>$ gdcmscu dicom.example.com
+</literallayout></para>
+
+<para>or if you prefer being explicit:</para>
+
+<para><literallayout>$ gdcmscu --echo dicom.example.com 104
+</literallayout></para>
+
+<para>Using basic security your DICOM server might require that you set the appropriate called AE-TITLE</para>
+
+<para><literallayout>$ gdcmscu --echo dicom.example.com 11112 --call SERVSCP
+</literallayout></para>
+
+<para>If you want to specifiy your own AE-TITLE (default is GDCMSCU), simply use:</para>
+
+<para><literallayout>$ gdcmscu --echo dicom.example.com 11112 --call SERVSCP --aetitle MYSCU
+</literallayout></para>
+
+<para>For example you could test on the DICOM server provided by DICOMObject team:</para>
+
+<para><literallayout>$ gdcmscu www.dicomserver.co.uk 11112
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmscu_1cstore_usage">
+<title>C-STORE usage</title>
+
+<para>C-STORE is the operation that allow sending a DICOM file to a remote DICOM server. For instance to send a file called myfile.dcm</para>
+
+<para><literallayout>$ gdcmscu --store dicom.example.com 104 myfile.dcm
+</literallayout></para>
+
+<para>or if you prefer being explicit:</para>
+
+<para><literallayout>$ gdcmscu --store dicom.example.com 104 -i myfile.dcm
+</literallayout></para>
+
+<para>You can even send multiple files using the same association:</para>
+
+<para><literallayout>$ gdcmscu --store dicom.example.com 104 myfile1.dcm myfile2.dcm myfile3.dcm ...
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmscu_1cfind_usage">
+<title>C-FIND usage</title>
+
+<para><emphasis role="bold">gdcmscu</emphasis> also allow querying a DICOM server. This is the C-FIND operation, for example to find all DICOM Instance where PatientsName match a particular pattern, usage is simply:</para>
+
+<para><literallayout>$ gdcmscu --find --patient dicom.example.com 11112 --patientroot --key 10,10,"A*"
+</literallayout></para>
+
+<para>We also support a DCMTK compatible convention:</para>
+
+<para><literallayout>$ gdcmscu --find --patient dicom.example.com 11112 --patientroot --key 10,10="A*"
+</literallayout></para>
+
+<para>When an attribute is set without a value it will be part of the output result:</para>
+
+<para><literallayout>$ gdcmscu --find --patient dicom.example.com 11112 --call MI2B2 --patientroot -k 10,10="A*" -k 10,20
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmscu_1cmove_usage">
+<title>C-MOVE usage</title>
+
+<para>C-MOVE is the operation to retrieve a DICOM instance from a remote DICOM server. Most of the time, it is a subsequent operation after a C-FIND query. To retrieve a DICOM instance where PatientID is ABCD1234, simply execute:</para>
+
+<para><literallayout>$ gdcmscu --move --patient --aetitle ACME1 --call ACME_STORE dicom.example.com 5678 --patientroot -k 10,20="ABCD1234" --port-scp 1234
+</literallayout></para>
+
+<para>WARNING For this operation to work you need information from the DICOM server you are communicating with. Only the DICOM server you are sending a C-MOVE query will be responsible for sending back incoming associations (the actual C-STORE SCP). Therefore you need to make sure that you mapping of (AE-TITLE,PortNumber) is properly set on the DICOM server side as well as the port for incoming association (&#8211;port-scp).</para>
+
+<para><emphasis role="bold">gdcmscu</emphasis> does not currently support external C-STORE association (C-STORE request sent to an external SCP application).</para>
+</refsection>
+<refsection xml:id="gdcmscu_1patientroot_notes">
+<title>patientroot notes</title>
+
+<para>The flag &#8211;patientroot is just simply a wrapper around the syntax &#8211;key 8,52=PATIENT For instance one would write using DCMTK syntax:</para>
+
+<para><literallayout>$ findscu --patient dicom.example.com 11112 --key 8,52=PATIENT --key 10,10="F*"
+</literallayout></para>
+
+<para>This would become using GDCM syntax:</para>
+
+<para><literallayout>$ gdcmscu --find --patient dicom.example.com 11112 --patientroot --key 10,10="F*"
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmscu_1debugging">
+<title>Debugging</title>
+
+<para>This is sometime difficult to investigate why a connection to a remote DICOM server cannot be done. Some recommendations follows:</para>
+
+<para>Always try to do a simple C-ECHO at first. If you cannot get the C-ECHO to work none of the other operations will work</para>
+
+<para>Before trying to a C-MOVE operation, make sure you can execute the C-FIND equivalent query first.</para>
+
+<para>When doing a C-MOVE operation you really need to communicate with the PACS admin as the C-MOVE operation is different from the other lower level operation such as HTTP/GET. When doing a C-MOVE, the server will communicate back using another channel (could be different port) using it&apos;s internal database to map an AE-TITLE back to the destination IP.</para>
+
+<para>Indeed the C-MOVE operation by design does not always use your incoming IP address to send back the resulting dataset. Instead it uses a mapping of AE-TITLE to IP address to send back any results. So pay particular attention to the spelling of your AE-TITLE and your incoming port (which may be different from the port to connect to the server).</para>
+</refsection>
+<refsection xml:id="gdcmscu_1gdcmscu_portwarnings">
+<title>Port Warning</title>
+
+<para>Watch out that port ranging [1-1024] are reserved for admin and not easily accessible unless granted special privileges. Therefore the default 104 DICOM port might not be accessible to all your users.</para>
+</refsection>
+<refsection xml:id="gdcmscu_1gdcmscu_ctorewarnings">
+<title>C-STORE Warnings</title>
+
+<para>When constructing a C-STORE operation, gdcmscu will always use the Media Storage SOP Class UID as found in the file to be sent. For encapsulated DICOM file (eg. RLE Lossless) the receiving SCP server might not support this compression and will legitimately refuse the C-STORE operation. In this case users have to manually convert to a non-compressed form this particular file:</para>
+
+<para><literallayout>$ gdcmconv --raw compressed.dcm non_compressed.dcm
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmscu_1gdcmscu_cmovewarnings">
+<title>C-MOVE Warnings</title>
+
+<para>At the moment <emphasis role="bold">gdcmscu</emphasis> only supports non-compressed transfer syntax. It will always request DataSet using Implicit VR Little Endian Transfer Syntax during a C-MOVE operation (both incoming and outgoing associations). This make gdcmscu &#8211;move equivalent to DCMTK movescu syntax:</para>
+
+<para><literallayout>$ movescu -xi +xi ...
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmscu_1gdcmscu_cfind_image">
+<title>C-FIND IMAGE level (Composite Object Instance)</title>
+
+<para>One should pay attention that gdcmscu &#8211;find and findscu are not completely equivalent. Using gdcmscu &#8211;find, all Unique Keys will be added automatically. One can therefore execute something like this:</para>
+
+<para><literallayout>$ gdcmscu --find --patientroot --image --key 8,18=1.2.3.4.5.6 dicom.example.com 11112
+</literallayout></para>
+
+<para>instead of the more explicit form</para>
+
+<para><literallayout>$ gdcmscu --find --patientroot --image --key 8,18=1.2.3.4.5.6 dicom.example.com 11112 --key 10,20 --key 20,d --key 20,e
+</literallayout></para>
+
+<para>This would also be equivalent to:</para>
+
+<para><literallayout>$ findscu --patient --key 8,52=IMAGE --key 8,18=1.2.3.4.5.6 dicom.example.com 11112 --key 10,20 --key 20,d --key 20,e
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmscu_1gdcmscu_storing">
+<title>Storing the Query</title>
+
+<para>It is also possible to store the query:</para>
+
+<para><literallayout>gdcmscu --find --patient --patientroot dicom.example.com 11112 --key 10,20="*" --key 10,10 --store-query query.dcm
+</literallayout></para>
+
+<para>One can then check the DataSet values send for the query:</para>
+
+<para><literallayout>$ gdcmdump query.dcm
+# Dicom-File-Format
+
+# Dicom-Meta-Information-Header
+# Used TransferSyntax:
+
+# Dicom-Data-Set
+# Used TransferSyntax: 1.2.840.10008.1.2
+(0008,0005) ?? (CS) [ISO_IR 192]                                  # 10,1-n Specific Character Set
+(0008,0052) ?? (CS) [PATIENT ]                                    # 8,1 Query/Retrieve Level
+(0010,0010) ?? (PN) (no value)                                    # 0,1 Patient&apos;s Name
+(0010,0020) ?? (LO) [* ]                                          # 2,1 Patient ID
+</literallayout></para>
+
+<para>The Specific Character Set was set to <quote>ISO_IR 192</quote> as the locale encoding of the system was found automatically by gdcmscu to be UTF-8.</para>
+
+<para>This means that the following command line will properly setup the Query with the appropriate Charset to be executed correctly:</para>
+
+<para><literallayout>$ gdcmscu --find --patient --patientroot dicom.example.com 11112 --key 10,10="*Jérôme*"
+</literallayout></para>
+
+<para>The query is always executed on the server side (SCP), some implementations does not support string matching with different Character Set.</para>
+</refsection>
+<refsection xml:id="gdcmscu_1public_servers">
+<title>DICOM Public Servers</title>
+
+<para>An up to date list of DICOM Public Servers can be found at:</para>
+
+<para><link xlink:href="http://www.dclunie.com/medical-image-faq/html/part8.html#DICOMPublicServers">http://www.dclunie.com/medical-image-faq/html/part8.html#DICOMPublicServers</link></para>
+</refsection>
+<refsection xml:id="gdcmscu_1see_also">
+<title>SEE ALSO</title>
+
+<para><emphasis role="bold">gdcmconv</emphasis>(1)</para>
+</refsection>
+</refentry>

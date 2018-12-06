@@ -66,6 +66,8 @@ set(HEADER_FILES
     include/modules/basegl/processors/volumeprocessing/volumeshader.h
     include/modules/basegl/processors/volumeraycaster.h
     include/modules/basegl/processors/volumeslicegl.h
+    include/modules/basegl/processors/mprentryexitpointsprocessor.h
+    include/modules/basegl/processors/uicrosshairoverlay.h
     include/modules/basegl/viewmanager.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
@@ -133,6 +135,8 @@ set(SOURCE_FILES
     src/processors/volumeprocessing/volumeshader.cpp
     src/processors/volumeraycaster.cpp
     src/processors/volumeslicegl.cpp
+    src/processors/mprentryexitpointsprocessor.cpp
+    src/processors/uicrosshairoverlay.cpp
     src/viewmanager.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
@@ -197,6 +201,7 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/volumegradientmagnitude.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/volumemerger.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/volumeslice.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/mpr_entry_exit_points.frag
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 

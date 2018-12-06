@@ -1,0 +1,20 @@
+set(EXPAT_SRCS
+  xmlparse.c
+  xmltok.c
+  xmlrole.c
+)
+# technically xmlparse.c does not need this compile definition flag:
+set_source_files_properties(${EXPAT_SRCS}
+  PROPERTIES COMPILE_DEFINITIONS HAVE_EXPAT_CONFIG_H)
+
+add_library(${EXPAT_LIBRARY_NAME} ${EXPAT_SRCS})
+set_target_properties(${EXPAT_LIBRARY_NAME} PROPERTIES ${EXPAT_LIBRARY_PROPERTIES})
+if(NOT EXPAT_INSTALL_NO_LIBRARIES)
+  install(TARGETS ${EXPAT_LIBRARY_NAME}
+    EXPORT ${GDCM_TARGETS_NAME}
+    RUNTIME DESTINATION ${EXPAT_INSTALL_BIN_DIR} COMPONENT Applications
+    LIBRARY DESTINATION ${EXPAT_INSTALL_LIB_DIR} COMPONENT Libraries
+    ARCHIVE DESTINATION ${EXPAT_INSTALL_LIB_DIR} COMPONENT DebugDevel
+    ${CPACK_NAMELINK_TYPE}
+    )
+endif()

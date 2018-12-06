@@ -89,6 +89,7 @@
 #include <modules/base/properties/basisproperty.h>
 #include <modules/base/properties/gaussianproperty.h>
 #include <modules/base/properties/volumeinformationproperty.h>
+#include <modules/base/properties/volumedescriptionproperty.h>
 #include <modules/base/properties/sequencetimerproperty.h>
 
 // Io
@@ -184,6 +185,8 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProperty<SequenceTimerProperty>();
     registerProperty<BasisProperty>();
     registerProperty<VolumeInformationProperty>();
+    registerProperty<VolumeDesriptionProperty>();
+    registerProperty<VolumeDesriptionMetadataProperty>();
 
     registerProperty<Gaussian1DProperty>();
     registerProperty<Gaussian2DProperty>();

@@ -1,0 +1,87 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<?xml-stylesheet type="text/xsl" href="http://docbook.sourceforge.net/release/xsl-ns/current/manpages/docbook.xsl" ?>
+<!DOCTYPE Data [ <!ENTITY version SYSTEM 'version.txt'> ]>
+<refentry xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink">
+<info>
+<author><personname><firstname>Mathieu</firstname><surname>Malaterre</surname></personname><contrib>Main developer</contrib></author>
+<copyright><year>2006</year><year>2011</year><holder>Mathieu Malaterre</holder></copyright>
+</info>
+  <refmeta>
+    <refentrytitle>gdcmxml</refentrytitle>
+    <manvolnum>1</manvolnum>
+    <refmiscinfo class="source">GDCM</refmiscinfo>
+    <refmiscinfo class="version">&version;</refmiscinfo>
+    <refmiscinfo class="manual">DICOM Manipulation.</refmiscinfo>
+  </refmeta>
+  <refnamediv><refname>gdcmxml</refname>
+    <refpurpose>provides a tool to convert a DICOM file into a XML infoset and vice-versa.</refpurpose>
+</refnamediv>
+<refsection xml:id="gdcmxml_1synopsis">
+<title>SYNOPSIS</title>
+
+<para><literallayout>gdcmxml [options] file-in[DICOM or XML] file-out[XML or DICOM]
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmxml_1description">
+<title>DESCRIPTION</title>
+
+<para>The <emphasis role="bold">gdcmxml</emphasis> command line program converts a DICOM file (DataSet) into an XML file (according to the Native DICOM Model) or vice-versa. For those familiar with DCMTK, this provides binary capabilities (i.e. functionality of both dcm2xml and xml2dcm).</para>
+
+<para>The XML infoset which is from the DICOM file gdcmXMLPrintet Class. This is in strict compliance with the Native DICOM Model as given in Supp 118.</para>
+</refsection>
+<refsection xml:id="gdcmxml_1parameters">
+<title>PARAMETERS</title>
+
+<para><literallayout>file-in   DICOM or XML input filename ( cannot be absent)
+
+file-out  output filename (can be absent)
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmxml_1options">
+<title>OPTIONS</title>
+
+<para><literallayout>  -i --input      DICOM filename
+  -o --output     DICOM filename
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmxml_1options_dicom2xml">
+<title>Options for DICOM to XML:</title>
+
+<para><literallayout>  -B --loadBulkData   Loads bulk data into a binary file named "UUID" (by default UUID are written).
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmxml_1options_xml2dicom">
+<title>Options for XML to DICOM:</title>
+
+<para><literallayout>  -B --loadBulkData   Loads bulk data from a binary file named as the "UUID" in XML file (by default UUID are written).
+  -T --TransferSyntax Loads transfer syntax from file (default is LittleEndianImplicit)
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmxml_1general_options">
+<title>general options</title>
+
+<para><literallayout>  -h   --help
+         print this help text and exit
+
+  -v   --version
+         print version information and exit
+
+  -V   --verbose
+         verbose mode (warning+error).
+
+  -W   --warning
+         warning mode, print warning information
+
+  -E   --error
+         error mode, print error information
+
+  -D   --debug
+         debug mode, print debug information
+</literallayout></para>
+</refsection>
+<refsection xml:id="gdcmxml_1see_also">
+<title>SEE ALSO</title>
+
+<para><emphasis role="bold">gdcmdump</emphasis>(1), <emphasis role="bold">gdcmconv</emphasis>(1)</para>
+</refsection>
+</refentry>

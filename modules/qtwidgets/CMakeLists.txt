@@ -58,6 +58,7 @@ set(HEADER_FILES
     include/modules/qtwidgets/properties/eventpropertywidgetqt.h
     include/modules/qtwidgets/properties/filepropertywidgetqt.h
     include/modules/qtwidgets/properties/fontsizepropertywidgetqt.h
+    include/modules/qtwidgets/properties/imagepropertywidgetqt.h
     include/modules/qtwidgets/properties/indicatorwidget.h
     include/modules/qtwidgets/properties/isotfpropertywidgetqt.h
     include/modules/qtwidgets/properties/isovaluepropertywidgetqt.h
@@ -128,6 +129,7 @@ set(SOURCE_FILES
     src/properties/filepropertywidgetqt.cpp
     src/properties/fontsizepropertywidgetqt.cpp
     src/properties/glslsyntaxhighlighter.cpp
+    src/properties/imagepropertywidgetqt.cpp
     src/properties/indicatorwidget.cpp
     src/properties/isotfpropertywidgetqt.cpp
     src/properties/isovaluepropertywidgetqt.cpp
