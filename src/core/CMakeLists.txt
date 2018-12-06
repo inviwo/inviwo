@@ -314,6 +314,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/statecoordinator.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/stdextensions.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/stringconversion.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/stringutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/systemcapabilities.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/templatesampler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/threadpool.h
@@ -564,6 +565,7 @@ set(SOURCE_FILES
     util/stacktrace.cpp
     util/statecoordinator.cpp
     util/stringconversion.cpp
+    util/stringutils.cpp
     util/systemcapabilities.cpp
     util/threadpool.cpp
     util/timer.cpp
