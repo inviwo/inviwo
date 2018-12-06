@@ -64,7 +64,7 @@ public:
     Shader(std::string vertexFilename, std::string fragmentFilename, bool buildShader = true);
     Shader(std::string vertexFilename, std::string geometryFilename, std::string fragmentFilename,
            bool buildShader = true);
-    
+
     // We need these to avoid strange implicit conversions...
     Shader(const char *fragmentFilename, bool buildShader = true);
     Shader(const char *vertexFilename, const char *fragmentFilename, bool buildShader = true);
@@ -73,7 +73,6 @@ public:
 
     Shader(std::vector<std::unique_ptr<ShaderObject>> &shaderObjects, bool buildShader = true);
 
-    
     Shader(const Shader &rhs);
     Shader(Shader &&rhs);
     Shader &operator=(const Shader &that);
@@ -83,52 +82,56 @@ public:
 
     void link();
     void build();
-    bool isReady() const; // returns whether the shader has been built and linked successfully
+    bool isReady() const;  // returns whether the shader has been built and linked successfully
 
     GLuint getID() const { return prog_.id; }
-    const ShaderObjectMap& getShaderObjects() { return shaderObjects_; }
+    const ShaderObjectMap &getShaderObjects() { return shaderObjects_; }
 
-    ShaderObject* operator[](ShaderType type) const;
-    ShaderObject* getShaderObject(ShaderType type) const;
-    ShaderObject* getVertexShaderObject() const;
-    ShaderObject* getGeometryShaderObject() const;
-    ShaderObject* getFragmentShaderObject() const;
+    ShaderObject *operator[](ShaderType type) const;
+    ShaderObject *getShaderObject(ShaderType type) const;
+    ShaderObject *getVertexShaderObject() const;
+    ShaderObject *getGeometryShaderObject() const;
+    ShaderObject *getFragmentShaderObject() const;
 
     void activate();
     void deactivate();
 
     template <typename T>
-    void setUniform(const std::string &name, const T& value) const;
+    void setUniform(const std::string &name, const T &value) const;
 
     template <typename T>
-    void setUniform(const std::string &name, std::size_t len, const T* value) const;
+    void setUniform(const std::string &name, std::size_t len, const T *value) const;
 
     void setUniformWarningLevel(UniformWarning level);
 
     // Callback when the shader is reloaded. A reload can for example be triggered by a file change.
-    const BaseCallBack* onReload(std::function<void()> callback);
-    void removeOnReload(const BaseCallBack* callback);
+    const BaseCallBack *onReload(std::function<void()> callback);
+    void removeOnReload(const BaseCallBack *callback);
 
 private:
     struct ScopedShaderProgram {
         ScopedShaderProgram() = default;
+        ScopedShaderProgram(GLuint id_) : id{id_} {};
         ~ScopedShaderProgram() {
-            if (id != 0) {
-                glDeleteProgram(id);
-            }
+            // A value of 0 for program will be silently ignored.
+            glDeleteProgram(id);
         }
-        GLuint id = {glCreateProgram()};
+        bool created() { return id != 0; } 
+
+        GLuint id = {
+            glCreateProgram()};  // This function returns 0 if an error occurs creating the program
+                                 // object.
     };
-    void handleError(OpenGLException& e);
+    void handleError(OpenGLException &e);
     std::string processLog(std::string log) const;
 
-    void rebuildShader(ShaderObject* obj);
+    void rebuildShader(ShaderObject *obj);
     void linkShader(bool notifyRebuild = false);
 
     void createAndAddShader(ShaderType type, std::string fileName);
     void createAndAddShader(ShaderType type, std::shared_ptr<const ShaderResource> resource);
     void createAndAddShader(std::unique_ptr<ShaderObject> object);
-    void createAndAddHelper(ShaderObject* object);
+    void createAndAddHelper(ShaderObject *object);
 
     void attachShaderObject(ShaderObject *shaderObject);
     void detachShaderObject(ShaderObject *shaderObject);
@@ -151,22 +154,21 @@ private:
     // Callback on reload.
     CallBackList onReloadCallback_;
 
-
     std::vector<std::shared_ptr<ShaderObject::Callback>> objectCallbacks_;
 };
 
 template <typename T>
-void Shader::setUniform(const std::string &name, const T& value) const {
+void Shader::setUniform(const std::string &name, const T &value) const {
     GLint location = findUniformLocation(name);
     if (location != -1) utilgl::UniformSetter<T>::set(location, value);
 }
 
 template <typename T>
-void Shader::setUniform(const std::string &name, std::size_t len, const T* value) const {
+void Shader::setUniform(const std::string &name, std::size_t len, const T *value) const {
     GLint location = findUniformLocation(name);
     if (location != -1) utilgl::UniformSetter<T>::set(location, static_cast<GLsizei>(len), value);
 }
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_SHADER_H
