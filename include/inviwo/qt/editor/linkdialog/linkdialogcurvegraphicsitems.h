@@ -44,24 +44,32 @@ namespace inviwo {
 
 class IVW_QTEDITOR_API DialogCurveGraphicsItem : public CurveGraphicsItem {
 public:
-    DialogCurveGraphicsItem(QPointF startPoint, QPointF endPoint, uvec3 color = uvec3(38, 38, 38));
+    DialogCurveGraphicsItem(QPointF startPoint, QPointF endPoint,
+                            QColor color = QColor(38, 38, 38));
     virtual ~DialogCurveGraphicsItem();
 
     // override for qgraphicsitem_cast (refer qt documentation)
     enum { Type = UserType + LinkDialogCurveGraphicsItemType };
     int type() const override { return Type; }
 
-protected:
-    virtual QPainterPath obtainCurvePath() const override;
-    virtual QPainterPath obtainCurvePath(QPointF startPoint, QPointF endPoint) const override;
-};
+    // Override
+    virtual QPointF getStartPoint() const override;
+    virtual QPointF getEndPoint() const override;
 
-//////////////////////////////////////////////////////////////////////////
+    void setStartPoint(QPointF startPoint);
+    void setEndPoint(QPointF endPoint);
+
+    virtual QPainterPath obtainCurvePath(QPointF startPoint, QPointF endPoint) const override;
+
+protected:
+    QPointF startPoint_;
+    QPointF endPoint_;
+};
 
 class LinkDialogPropertyGraphicsItem;
 class LinkDialogProcessorGraphicsItem;
 
-class IVW_QTEDITOR_API DialogConnectionGraphicsItem : public DialogCurveGraphicsItem {
+class IVW_QTEDITOR_API DialogConnectionGraphicsItem : public CurveGraphicsItem {
 public:
     DialogConnectionGraphicsItem(LinkDialogPropertyGraphicsItem* startProperty,
                                  LinkDialogPropertyGraphicsItem* endProperty,
@@ -72,8 +80,14 @@ public:
     LinkDialogPropertyGraphicsItem* getStartProperty() const { return startPropertyGraphicsItem_; }
     LinkDialogPropertyGraphicsItem* getEndProperty() const { return endPropertyGraphicsItem_; }
 
-    void updateStartEndPoint();
-    void updateConnectionDrawing();
+    // Override
+    virtual QPointF getStartPoint() const override;
+    virtual QPointF getEndPoint() const override;
+
+    virtual QPainterPath obtainCurvePath(QPointF startPoint, QPointF endPoint) const override;
+
+    virtual void paint(QPainter* p, const QStyleOptionGraphicsItem* options,
+                       QWidget* widget) override;
 
 private:
     LinkDialogPropertyGraphicsItem* startPropertyGraphicsItem_;
@@ -81,6 +95,6 @@ private:
     PropertyLink propertyLink_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_LINKDIALOG_CURVEGRAPHICSITEMS_H

@@ -40,14 +40,17 @@ namespace color {
 /**
  * \brief convert from hexadecimal html color code to RGBA
  *
- * A hexadecimal html color code is converted to RGBA. Supports both 6 and 8 digit
- * hexcodes with a leading '#'. In case of 6 digits, alpha is set to 1.0.
+ * A hexadecimal html color code is converted to RGBA. Supports both 3 and 6 digit
+ * hexcodes with a leading '#' and optional alpha value (single / double digit). 
+ * In case of 3 respective 6 digits, alpha is implicitly set to 1.0.
+ * 
+ * Supports #RGB, #RGBA, #RRGGBB, #RRGGBBAA
  *
  * @param str    html color code in the form of "#10a0b0ff" or "#a0b0c0"
  * @return RGBA color in [0 1]^3 range
  * @throw Exception if string is malformed
  */
-IVW_CORE_API vec4 hex2rgba(const std::string &str);
+IVW_CORE_API vec4 hex2rgba(std::string str);
 
 /**
  * \brief convert from rgba to 8-digit hexadecimal html color code

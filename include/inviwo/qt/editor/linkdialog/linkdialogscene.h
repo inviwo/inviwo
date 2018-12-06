@@ -117,7 +117,7 @@ protected:
     DialogConnectionGraphicsItem* getConnectionGraphicsItem(LinkDialogPropertyGraphicsItem*,
                                                             LinkDialogPropertyGraphicsItem*) const;
 
-    void offsetItems(float yIncrement, bool scrollLeft);
+    void offsetItems(double yIncrement, bool scrollLeft);
 
 private:
     LinkDialogPropertyGraphicsItem* getPropertyGraphicsItemOf(Property* property) const;

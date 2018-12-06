@@ -5,28 +5,31 @@ ivw_module(BaseCL)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/meshentryexitpointscl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/entryexitpointsclprocessor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/grayscaleclprocessor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumefirsthitclprocessor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumemaxclprocessor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeraycasterclprocessor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/runningimagemeanandstandarddeviationcl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/volumeraycastercl.h
+    include/modules/basecl/baseclmodule.h
+    include/modules/basecl/baseclmoduledefine.h
+    include/modules/basecl/meshentryexitpointscl.h
+    include/modules/basecl/processors/entryexitpointsclprocessor.h
+    include/modules/basecl/processors/grayscaleclprocessor.h
+    include/modules/basecl/processors/volumefirsthitclprocessor.h
+    include/modules/basecl/processors/volumemaxclprocessor.h
+    include/modules/basecl/processors/volumeraycasterclprocessor.h
+    include/modules/basecl/runningimagemeanandstandarddeviationcl.h
+    include/modules/basecl/volumeraycastercl.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/meshentryexitpointscl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/entryexitpointsclprocessor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/grayscaleclprocessor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumefirsthitclprocessor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumemaxclprocessor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeraycasterclprocessor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/runningimagemeanandstandarddeviationcl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/volumeraycastercl.cpp
+    src/baseclmodule.cpp
+    src/meshentryexitpointscl.cpp
+    src/processors/entryexitpointsclprocessor.cpp
+    src/processors/grayscaleclprocessor.cpp
+    src/processors/volumefirsthitclprocessor.cpp
+    src/processors/volumemaxclprocessor.cpp
+    src/processors/volumeraycasterclprocessor.cpp
+    src/runningimagemeanandstandarddeviationcl.cpp
+    src/volumeraycastercl.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

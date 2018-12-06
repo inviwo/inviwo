@@ -40,6 +40,8 @@
 #include <inviwo/core/metadata/metadataowner.h>
 #include <inviwo/core/util/document.h>
 #include <utility>
+#include <inviwo/core/io/datareader.h>
+#include <inviwo/core/io/datawriter.h>
 
 namespace inviwo {
 
@@ -227,6 +229,11 @@ IVW_CORE_API bool hasPickIDBuffer(const Mesh* mesh);
 IVW_CORE_API bool hasRadiiBuffer(const Mesh* mesh);
 
 }  // namespace meshutil
+
+
+// https://docs.microsoft.com/en-us/cpp/cpp/general-rules-and-limitations?view=vs-2017
+extern template class IVW_CORE_TMPL_EXP DataReaderType<Mesh>;
+extern template class IVW_CORE_TMPL_EXP DataWriterType<Mesh>;
 
 }  // namespace inviwo
 

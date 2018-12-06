@@ -36,6 +36,9 @@
 #include <inviwo/core/datastructures/image/imagetypes.h>
 #include <inviwo/core/datastructures/image/layerrepresentation.h>
 
+#include <inviwo/core/io/datareader.h>
+#include <inviwo/core/io/datawriter.h>
+
 namespace inviwo {
 
 /**
@@ -104,6 +107,11 @@ private:
     LayerType layerType_;
     SwizzleMask swizzleMask_;
 };
+
+// https://docs.microsoft.com/en-us/cpp/cpp/general-rules-and-limitations?view=vs-2017
+extern template class IVW_CORE_TMPL_EXP DataReaderType<Layer>;
+extern template class IVW_CORE_TMPL_EXP DataWriterType<Layer>;
+
 
 }  // namespace
 

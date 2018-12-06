@@ -65,6 +65,11 @@ if(POLICY CMP0066)
     cmake_policy(SET CMP0066 NEW)
 endif()
 
+if(POLICY CMP0074)
+    # find_package uses <PackageName>_ROOT variables
+    cmake_policy(SET CMP0074 NEW)
+endif()
+
 string(TIMESTAMP timeStart "%Y-%m-%d %H:%M:%S")
 
 # option for setting the project/solution name of the Inviwo project
@@ -78,10 +83,8 @@ endif()
 # Build
 option(BUILD_SHARED_LIBS "Build shared libs, else static libs" ON)
 
-
 # Needed for find_package(PythonLibsNew 3), which is an improved version of CMake shipped find_pythonLibs
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/ext/pybind11/tools") 
-
 
 # Make sure we do look for python 3 here, before it is done in any subdirectory or external library. 
 # If we do not specify version number on our first call to find_package(PythonLibs) it returns the 
@@ -119,10 +122,15 @@ if(NOT "${CMAKE_PREFIX_PATH}" MATCHES "[Qq][Tt]")
         if(APPLE) # On OSX look for the usual brew installation. 
             foreach(path "/usr/local/Cellar/qt" "/usr/local/Cellar/qt5")
                 if(EXISTS ${path})
-                    file(GLOB qtversions RELATIVE "${path}/" "${path}/?.?.*")
+                    file(GLOB qtversions RELATIVE "${path}/" "${path}/?.*.*")
                     list(LENGTH qtversions len)
                     if(${len} GREATER 0)
-                        list(GET qtversions -1 qtlatest)
+                        list(GET qtversions 0 qtlatest)
+                        foreach(ver IN LISTS qtversion)
+                            if(ver VERSION_GREATER qtlatest)
+                                set(qtlatest ${ver})
+                            endif()
+                        endforeach()
                         if(EXISTS "${path}/${qtlatest}")
                             set(QT5_PATH "${path}/${qtlatest}")
                             break()
@@ -161,6 +169,8 @@ add_subdirectory(ext/tclap)
 add_subdirectory(ext/tinydir)
 add_subdirectory(ext/half)
 add_subdirectory(ext/utf)
+add_subdirectory(ext/json)
+add_subdirectory(ext/fmt)
 
 option(IVW_SIGAR "Use sigar to detect system capabilities" ON)
 if(IVW_SIGAR)
@@ -173,43 +183,16 @@ if(WIN32)
     add_subdirectory(ext/stackwalker)
 endif()
 
-#--------------------------------------------------------------------
-# Add default modules
-set(ivw_default_modules
-    "Assimp" 
-    "Base"
-    "BaseGL"
-    "CImg"
-    "FontRendering"
-    "OpenGL"
-    "OpenGLQt"
-    "PVM"
-    "Nifti"
-    "QtWidgets"
-    "EigenUtils"
-    "BrushingAndLinking"
-    "VectorFieldVisualization"
-    "VectorFieldVisualizationGL"
-    "PostProcessing"
-    "Nifti" 
-    CACHE INTERNAL "Default Inviwo Modules"
-)
-
-if(PYTHONLIBS_FOUND)
-    list(APPEND ivw_default_modules "Python3" "Python3Qt")
-endif()
-
-find_package(OpenCL QUIET)
-if(OPENCL_FOUND)
-    list(APPEND ivw_default_modules "OpenCL" "BaseCL")
-endif()
-
 ivw_add_build_module_dependency(GLFW IVW_INTEGRATION_TESTS)
-ivw_add_build_module_dependency(BASE IVW_INTEGRATION_TESTS)
+ivw_add_build_module_dependency(Base IVW_INTEGRATION_TESTS)
 
 #--------------------------------------------------------------------
 # Add modules
 ivw_register_modules(all_modules)
+
+#--------------------------------------------------------------------
+# Add Inviwo meta
+add_subdirectory(tools/meta)
 
 #--------------------------------------------------------------------
 # Add Qt

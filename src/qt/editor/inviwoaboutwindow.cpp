@@ -93,7 +93,7 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
     textdoc->setOpenExternalLinks(true);
 
     auto& syscap = app->getSystemCapabilities();
-    auto buildYear = syscap.getBuildTimeYear();
+    auto buildYear = syscap.getBuildInfo().year;
 
     using P = Document::PathComponent;
     using H = utildoc::TableBuilder::Header;
@@ -185,16 +185,20 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
         uulm.append("img", "", makeImg(":/images/uulm.png", 50));
     }
     {
+        const auto& bi = syscap.getBuildInfo();
         auto h = body.append("p");
-        h.append("h3", "Build Date: ");
-        h.append("span", syscap.getBuildDateString());
+        h.append("h3", "Build Info: ");
+        utildoc::TableBuilder tb(h, P::end());
+        tb(H("Date"), bi.getDate());
+        tb(H("Configuration"), bi.configuration);
+        tb(H("Generator"), bi.generator);
+        tb(H("Compiler"), bi.compiler + " " + bi.compilerVersion);
     }
     {
         auto h = body.append("p");
         h.append("h3", "Repos:");
         utildoc::TableBuilder tb(h, P::end());
-        for (size_t i = 0; i < syscap.getGitNumberOfHashes(); ++i) {
-            auto& item = syscap.getGitHash(i);
+        for (auto item : syscap.getBuildInfo().githashes) {
             tb(H(item.first), item.second);
         }
     }
@@ -248,7 +252,7 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
     std::string str = doc;
     textdoc->setHtml(utilqt::toQString(str));
 
-    auto showLicense = [this, str, textdoc, app, escape, makeBody](const QUrl& url) {
+    auto showLicense = [str, textdoc, app, escape, makeBody](const QUrl& url) {
         if (url.hasQuery()) {
             QUrlQuery query(url);
             auto module = utilqt::fromQString(query.queryItemValue("module"));

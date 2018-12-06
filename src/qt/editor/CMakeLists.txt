@@ -5,11 +5,14 @@ project(inviwo-qteditor)
 #--------------------------------------------------------------------
 # Add MOC files
 set(MOC_FILES
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/connectiondraghelper.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/consolewidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/networkeditor.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdraghelper.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialogscene.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialogprocessorgraphicsitems.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processormimedata.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processordraghelper.h
 )
 
 #--------------------------------------------------------------------
@@ -42,14 +45,20 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorstatusgraphicsitem.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/resourcemanager/resourcemanagerdockwidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/settingswidget.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/toolsmenu.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/undomanager.h
     ${MOC_FILES}
 )
-ivw_group("Header Files" ${HEADER_FILES})
+if(TARGET inviwo::meta)
+    list(APPEND HEADER_FILES ${IVW_INCLUDE_DIR}/inviwo/qt/editor/toolsmetamenu.h)
+endif()
+
+ivw_group("Header Files" BASE ${IVW_INCLUDE_DIR}/inviwo/qt/editor/ ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
+    connectiondraghelper.cpp
     connectiongraphicsitem.cpp
     consolewidget.cpp
     dataopener.cpp
@@ -58,6 +67,7 @@ set(SOURCE_FILES
     helpwidget.cpp
     inviwoaboutwindow.cpp
     inviwoeditmenu.cpp
+    inviwoeditmenu.cpp
     inviwomainwindow.cpp
     linkdialog/linkdialog.cpp
     linkdialog/linkdialogcurvegraphicsitems.cpp
@@ -65,10 +75,12 @@ set(SOURCE_FILES
     linkdialog/linkdialogpropertygraphicsitems.cpp
     linkdialog/linkdialogscene.cpp
     linkdialog/linkdialogview.cpp
+    linkdraghelper.cpp
     linkgraphicsitem.cpp
     networkeditor.cpp
     networkeditorview.cpp
     networksearch.cpp
+    processordraghelper.cpp
     processorgraphicsitem.cpp
     processorlinkgraphicsitem.cpp
     processorlistwidget.cpp
@@ -79,8 +91,13 @@ set(SOURCE_FILES
     processorstatusgraphicsitem.cpp
     resourcemanager/resourcemanagerdockwidget.cpp
     settingswidget.cpp
+    toolsmenu.cpp
     undomanager.cpp
 )
+if(TARGET inviwo::meta)
+    list(APPEND SOURCE_FILES toolsmetamenu.cpp)
+endif()
+
 ivw_group("Source Files" ${SOURCE_FILES})
 
 #--------------------------------------------------------------------
@@ -103,6 +120,10 @@ target_link_libraries(inviwo-qteditor PUBLIC
     Qt5::Widgets 
     Qt5::Help
 )
+if(TARGET inviwo::meta)
+    target_link_libraries(inviwo-qteditor PUBLIC inviwo::meta)
+    target_compile_definitions(inviwo-qteditor PRIVATE IVW_INVIWO_META)
+endif()
 
 #--------------------------------------------------------------------
 # Define defintions

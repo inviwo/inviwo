@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_VOLUMEINDICATORPROPERTY_H
@@ -32,8 +32,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/planeproperty.h>
 
 namespace inviwo {
@@ -46,33 +45,26 @@ namespace inviwo {
  * The property is used to represent an indicator in a 3D volume the indicator
  * can be a set of planes, a set of lines, or some other.
  */
-class IVW_CORE_API VolumeIndicatorProperty : public CompositeProperty { 
+class IVW_CORE_API VolumeIndicatorProperty : public BoolCompositeProperty {
 public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    VolumeIndicatorProperty(std::string identifier, std::string displayName,
-                            InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
-                            PropertySemantics semantics = PropertySemantics::Default);
+    VolumeIndicatorProperty(
+        std::string identifier, std::string displayName,
+        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
+        PropertySemantics semantics = PropertySemantics::Default);
 
     VolumeIndicatorProperty(const VolumeIndicatorProperty& rhs);
     VolumeIndicatorProperty& operator=(const VolumeIndicatorProperty& that);
     virtual VolumeIndicatorProperty* clone() const override;
     virtual ~VolumeIndicatorProperty();
 
-    BoolProperty enable_;
-
-    OptionPropertyInt mode_;
-
     PlaneProperty plane1_;
     PlaneProperty plane2_;
     PlaneProperty plane3_;
-
-private:
-    void onModeChange();
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_VOLUMEINDICATORPROPERTY_H
-
+#endif  // IVW_VOLUMEINDICATORPROPERTY_H

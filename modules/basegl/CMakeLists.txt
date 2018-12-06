@@ -5,134 +5,139 @@ ivw_module(BaseGL)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/entryexitpoints.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/imageconvolution.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/datavisualizer/imagevisualizer.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/datavisualizer/meshvisualizer.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/datavisualizer/volumeraycastvisualizer.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/datavisualizer/volumeslicevisualizer.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/axisalignedcutplane.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/background.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/cuberenderer.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/drawlines.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/drawpoints.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/entryexitpointsprocessor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/mprentryexitpointsprocessor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/firstivwprocessor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/heightfieldprocessor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/findedges.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagebinary.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagecompositeprocessorgl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagegamma.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageglprocessor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagegradient.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagegrayscale.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagehighpass.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageinvert.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagelayoutgl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagelowpass.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagemapping.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagemixer.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagenormalizationprocessor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageoverlaygl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageresample.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagescaling.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/jacobian2d.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/isoraycaster.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightingraycaster.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightvolumegl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/linerenderer.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/mesh2drenderprocessorgl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshpicking.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshrenderprocessorgl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/multichannelraycaster.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/pointrenderer.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/redgreenprocessor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/sphererenderer.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/splitimage.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/tuberendering.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/vectormagnitudeprocessor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumebinary.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumecombiner.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumediff.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumeglprocessor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumegradientmagnitude.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumegradientprocessor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumelowpass.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumemapping.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumemerger.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumeshader.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeraycaster.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeslicegl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/uicrosshairoverlay.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/viewmanager.h
+    include/modules/basegl/algorithm/entryexitpoints.h
+    include/modules/basegl/algorithm/imageconvolution.h
+    include/modules/basegl/baseglmodule.h
+    include/modules/basegl/baseglmoduledefine.h
+    include/modules/basegl/datavisualizer/imagevisualizer.h
+    include/modules/basegl/datavisualizer/meshvisualizer.h
+    include/modules/basegl/datavisualizer/volumeraycastvisualizer.h
+    include/modules/basegl/datavisualizer/volumeslicevisualizer.h
+    include/modules/basegl/processors/axisalignedcutplane.h
+    include/modules/basegl/processors/background.h
+    include/modules/basegl/processors/cuberenderer.h
+    include/modules/basegl/processors/drawlines.h
+    include/modules/basegl/processors/drawpoints.h
+    include/modules/basegl/processors/entryexitpointsprocessor.h
+    include/modules/basegl/processors/firstivwprocessor.h
+    include/modules/basegl/processors/heightfieldprocessor.h
+    include/modules/basegl/processors/imageprocessing/findedges.h
+    include/modules/basegl/processors/imageprocessing/imagebinary.h
+    include/modules/basegl/processors/imageprocessing/imagecompositeprocessorgl.h
+    include/modules/basegl/processors/imageprocessing/imagegamma.h
+    include/modules/basegl/processors/imageprocessing/imageglprocessor.h
+    include/modules/basegl/processors/imageprocessing/imagegradient.h
+    include/modules/basegl/processors/imageprocessing/imagegrayscale.h
+    include/modules/basegl/processors/imageprocessing/imagehighpass.h
+    include/modules/basegl/processors/imageprocessing/imageinvert.h
+    include/modules/basegl/processors/imageprocessing/imagelayer.h
+    include/modules/basegl/processors/imageprocessing/imagelayoutgl.h
+    include/modules/basegl/processors/imageprocessing/imagelowpass.h
+    include/modules/basegl/processors/imageprocessing/imagemapping.h
+    include/modules/basegl/processors/imageprocessing/imagemixer.h
+    include/modules/basegl/processors/imageprocessing/imagenormalizationprocessor.h
+    include/modules/basegl/processors/imageprocessing/imageoverlaygl.h
+    include/modules/basegl/processors/imageprocessing/imageresample.h
+    include/modules/basegl/processors/imageprocessing/imagescaling.h
+    include/modules/basegl/processors/imageprocessing/jacobian2d.h
+    include/modules/basegl/processors/isoraycaster.h
+    include/modules/basegl/processors/lightingraycaster.h
+    include/modules/basegl/processors/lightvolumegl.h
+    include/modules/basegl/processors/linerenderer.h
+    include/modules/basegl/processors/mesh2drenderprocessorgl.h
+    include/modules/basegl/processors/meshpicking.h
+    include/modules/basegl/processors/meshrenderprocessorgl.h
+    include/modules/basegl/processors/multichannelraycaster.h
+    include/modules/basegl/processors/pointrenderer.h
+    include/modules/basegl/processors/redgreenprocessor.h
+    include/modules/basegl/processors/sphererenderer.h
+    include/modules/basegl/processors/splitimage.h
+    include/modules/basegl/processors/tuberendering.h
+    include/modules/basegl/processors/volumeprocessing/vectormagnitudeprocessor.h
+    include/modules/basegl/processors/volumeprocessing/volumebinary.h
+    include/modules/basegl/processors/volumeprocessing/volumecombiner.h
+    include/modules/basegl/processors/volumeprocessing/volumediff.h
+    include/modules/basegl/processors/volumeprocessing/volumeglprocessor.h
+    include/modules/basegl/processors/volumeprocessing/volumegradientmagnitude.h
+    include/modules/basegl/processors/volumeprocessing/volumegradientprocessor.h
+    include/modules/basegl/processors/volumeprocessing/volumelowpass.h
+    include/modules/basegl/processors/volumeprocessing/volumemapping.h
+    include/modules/basegl/processors/volumeprocessing/volumemerger.h
+    include/modules/basegl/processors/volumeprocessing/volumeshader.h
+    include/modules/basegl/processors/volumeraycaster.h
+    include/modules/basegl/processors/volumeslicegl.h
+    include/modules/basegl/processors/mprentryexitpointsprocessor.h
+    include/modules/basegl/processors/uicrosshairoverlay.h
+    include/modules/basegl/viewmanager.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/entryexitpoints.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/imageconvolution.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/datavisualizer/imagevisualizer.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/datavisualizer/meshvisualizer.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/datavisualizer/volumeraycastvisualizer.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/datavisualizer/volumeslicevisualizer.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/axisalignedcutplane.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/background.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/cuberenderer.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/drawlines.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/drawpoints.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/entryexitpointsprocessor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/mprentryexitpointsprocessor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/firstivwprocessor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/heightfieldprocessor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/findedges.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagebinary.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagecompositeprocessorgl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagegamma.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageglprocessor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagegradient.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagegrayscale.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagehighpass.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageinvert.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagelayoutgl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagelowpass.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagemapping.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagemixer.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagenormalizationprocessor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageoverlaygl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageresample.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagescaling.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/jacobian2d.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/isoraycaster.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightingraycaster.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightvolumegl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/linerenderer.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/mesh2drenderprocessorgl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshpicking.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshrenderprocessorgl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/multichannelraycaster.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/pointrenderer.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/redgreenprocessor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/sphererenderer.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/splitimage.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/tuberendering.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/vectormagnitudeprocessor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumebinary.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumecombiner.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumediff.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumeglprocessor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumegradientmagnitude.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumegradientprocessor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumelowpass.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumemapping.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumemerger.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumeshader.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeraycaster.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeslicegl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/uicrosshairoverlay.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/viewmanager.cpp
+    src/algorithm/entryexitpoints.cpp
+    src/algorithm/imageconvolution.cpp
+    src/baseglmodule.cpp
+    src/datavisualizer/imagevisualizer.cpp
+    src/datavisualizer/meshvisualizer.cpp
+    src/datavisualizer/volumeraycastvisualizer.cpp
+    src/datavisualizer/volumeslicevisualizer.cpp
+    src/processors/axisalignedcutplane.cpp
+    src/processors/background.cpp
+    src/processors/cuberenderer.cpp
+    src/processors/drawlines.cpp
+    src/processors/drawpoints.cpp
+    src/processors/entryexitpointsprocessor.cpp
+    src/processors/firstivwprocessor.cpp
+    src/processors/heightfieldprocessor.cpp
+    src/processors/imageprocessing/findedges.cpp
+    src/processors/imageprocessing/imagebinary.cpp
+    src/processors/imageprocessing/imagecompositeprocessorgl.cpp
+    src/processors/imageprocessing/imagegamma.cpp
+    src/processors/imageprocessing/imageglprocessor.cpp
+    src/processors/imageprocessing/imagegradient.cpp
+    src/processors/imageprocessing/imagegrayscale.cpp
+    src/processors/imageprocessing/imagehighpass.cpp
+    src/processors/imageprocessing/imageinvert.cpp
+    src/processors/imageprocessing/imagelayer.cpp
+    src/processors/imageprocessing/imagelayoutgl.cpp
+    src/processors/imageprocessing/imagelowpass.cpp
+    src/processors/imageprocessing/imagemapping.cpp
+    src/processors/imageprocessing/imagemixer.cpp
+    src/processors/imageprocessing/imagenormalizationprocessor.cpp
+    src/processors/imageprocessing/imageoverlaygl.cpp
+    src/processors/imageprocessing/imageresample.cpp
+    src/processors/imageprocessing/imagescaling.cpp
+    src/processors/imageprocessing/jacobian2d.cpp
+    src/processors/isoraycaster.cpp
+    src/processors/lightingraycaster.cpp
+    src/processors/lightvolumegl.cpp
+    src/processors/linerenderer.cpp
+    src/processors/mesh2drenderprocessorgl.cpp
+    src/processors/meshpicking.cpp
+    src/processors/meshrenderprocessorgl.cpp
+    src/processors/multichannelraycaster.cpp
+    src/processors/pointrenderer.cpp
+    src/processors/redgreenprocessor.cpp
+    src/processors/sphererenderer.cpp
+    src/processors/splitimage.cpp
+    src/processors/tuberendering.cpp
+    src/processors/volumeprocessing/vectormagnitudeprocessor.cpp
+    src/processors/volumeprocessing/volumebinary.cpp
+    src/processors/volumeprocessing/volumecombiner.cpp
+    src/processors/volumeprocessing/volumediff.cpp
+    src/processors/volumeprocessing/volumeglprocessor.cpp
+    src/processors/volumeprocessing/volumegradientmagnitude.cpp
+    src/processors/volumeprocessing/volumegradientprocessor.cpp
+    src/processors/volumeprocessing/volumelowpass.cpp
+    src/processors/volumeprocessing/volumemapping.cpp
+    src/processors/volumeprocessing/volumemerger.cpp
+    src/processors/volumeprocessing/volumeshader.cpp
+    src/processors/volumeraycaster.cpp
+    src/processors/volumeslicegl.cpp
+    src/processors/mprentryexitpointsprocessor.cpp
+    src/processors/uicrosshairoverlay.cpp
+    src/viewmanager.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
@@ -143,9 +148,9 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/axisalignedcutplaneslice.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/background.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/capnearclipping.frag
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/cubeglyph.vert
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/cubeglyph.geom
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/cubeglyph.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/cubeglyph.geom
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/cubeglyph.vert
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/heightfield.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/heightfield.vert
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/imagegradient.frag
@@ -180,6 +185,7 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/sphereglyph.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/sphereglyph.geom
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/sphereglyph.vert
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/splitter.vert
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/tuberendering.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/tuberendering.geom
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/tuberendering.vert

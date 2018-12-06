@@ -35,6 +35,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <modules/python3/python3module.h>
 #include <modules/python3/pythonscript.h>
+#include <modules/python3/pybindutils.h>
 
 #include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/datastructures/image/layer.h>
@@ -53,9 +54,6 @@
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
-#include <modules/python3/pybindutils.h>
-#include <modules/python3/python3module.h>
-#include <modules/python3/interface/pybuffer.h>
 
 #include <glm/gtc/epsilon.hpp>
 
@@ -195,11 +193,12 @@ TEST(Python3Scripts, GLMTest) {
 TEST(Python3Scripts, OptionPropertyTest) {
     PythonScriptDisk script(getPath() + "option_property.py");
 
+    
     bool status = false;
     script.run([&](pybind11::dict dict) {
         auto prop = dict["p"].cast<Property *>();
         ASSERT_TRUE(prop != nullptr);
-        auto optionProperty = dynamic_cast<OptionPropertyInt *>(prop);
+        auto optionProperty = static_cast<OptionPropertyInt*>(prop);
         ASSERT_TRUE(optionProperty != nullptr);
 
         EXPECT_STREQ("test", optionProperty->getIdentifier().c_str());

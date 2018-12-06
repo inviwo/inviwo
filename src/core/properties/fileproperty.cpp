@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/common/inviwoapplication.h>
@@ -37,8 +37,7 @@ const std::string FileProperty::classIdentifier = "org.inviwo.FileProperty";
 std::string FileProperty::getClassIdentifier() const { return classIdentifier; }
 
 FileProperty::FileProperty(std::string identifier, std::string displayName, std::string value,
-                           std::string contentType,
-                           InvalidationLevel invalidationLevel,
+                           std::string contentType, InvalidationLevel invalidationLevel,
                            PropertySemantics semantics)
     : TemplateProperty<std::string>(identifier, displayName, value, invalidationLevel, semantics)
     , acceptMode_(AcceptMode::Open)
@@ -52,24 +51,38 @@ FileProperty& FileProperty::operator=(const std::string& value) {
     return *this;
 }
 
-FileProperty* FileProperty::clone() const {
-    return new FileProperty(*this);
-}
-
+FileProperty* FileProperty::clone() const { return new FileProperty(*this); }
 
 void FileProperty::set(const std::string& value) {
     TemplateProperty<std::string>::set(filesystem::cleanupPath(value));
+
+    // figure out best matching extension based on given path
+    FileExtension ext;
+    FileExtension matchAll;
+    for (const auto& filter : getNameFilters()) {
+        if (filter.matchesAll()) {
+            matchAll = filter;
+        } else if (filter.matches(get())) {
+            ext = filter;
+            break;
+        }
+    }
+    if (ext.empty() && !matchAll.empty()) {
+        setSelectedExtension(matchAll);
+    } else {
+        setSelectedExtension(ext);
+    }
 }
 
-void FileProperty::set(const Property *property) {
-    TemplateProperty<std::string>::set(property);
-}
+void FileProperty::set(const Property* property) { TemplateProperty<std::string>::set(property); }
 
 void FileProperty::serialize(Serializer& s) const {
     /*
     We always use absolute paths inside of inviwo but serialize
-    several version to have a higher success rate when moving stuff around. 
+    several version to have a higher success rate when moving stuff around.
     
+
+
     Saved path versions:
      1) Absolute
      2) Relative workspace
@@ -79,7 +92,7 @@ void FileProperty::serialize(Serializer& s) const {
     Property::serialize(s);
 
     if (this->serializationMode_ == PropertySerializationMode::None) return;
-    
+
     const std::string absolutePath = get();
     std::string workspaceRelativePath;
     std::string ivwdataRelativePath;
@@ -119,11 +132,12 @@ void FileProperty::deserialize(Deserializer& d) {
 
     if (!oldWorkspacePath.empty()) {  // fallback if the old value "url" is used
         if (filesystem::isAbsolutePath(oldWorkspacePath)) {
-            if (absolutePath.empty()) {   // on use url if "absolutePath" is not set
+            if (absolutePath.empty()) {  // on use url if "absolutePath" is not set
                 absolutePath = oldWorkspacePath;
             }
         } else {
-            if (workspaceRelativePath.empty()) { // on use url if "workspaceRelativePath" is not set
+            if (workspaceRelativePath
+                    .empty()) {  // on use url if "workspaceRelativePath" is not set
                 workspaceRelativePath = oldWorkspacePath;
             }
         }
@@ -160,54 +174,36 @@ void FileProperty::deserialize(Deserializer& d) {
     }
 }
 
-void FileProperty::addNameFilter(std::string filter) { 
-    nameFilters_.push_back(FileExtension::createFileExtensionFromString(filter)); 
+void FileProperty::addNameFilter(std::string filter) {
+    nameFilters_.push_back(FileExtension::createFileExtensionFromString(filter));
 }
 
-void FileProperty::addNameFilter(FileExtension filter) {
-    nameFilters_.push_back(filter);
-}
+void FileProperty::addNameFilter(FileExtension filter) { nameFilters_.push_back(filter); }
 
 void FileProperty::addNameFilters(const std::vector<FileExtension>& filters) {
     util::append(nameFilters_, filters);
 }
 
-void FileProperty::clearNameFilters() {
-    nameFilters_.clear(); 
-}
+void FileProperty::clearNameFilters() { nameFilters_.clear(); }
 
-std::vector<FileExtension> FileProperty::getNameFilters() { 
-    return nameFilters_; 
-}
+std::vector<FileExtension> FileProperty::getNameFilters() { return nameFilters_; }
 
-void FileProperty::setAcceptMode(AcceptMode mode) { 
-    acceptMode_ = mode; 
-}
+void FileProperty::setAcceptMode(AcceptMode mode) { acceptMode_ = mode; }
 
-AcceptMode FileProperty::getAcceptMode() const {
-    return acceptMode_;
-}
+AcceptMode FileProperty::getAcceptMode() const { return acceptMode_; }
 
-void FileProperty::setFileMode(FileMode mode) { 
-    fileMode_ = mode; 
-}
+void FileProperty::setFileMode(FileMode mode) { fileMode_ = mode; }
 
-FileMode FileProperty::getFileMode() const {
-    return fileMode_; 
-}
+FileMode FileProperty::getFileMode() const { return fileMode_; }
 
-void FileProperty::setContentType(const std::string& contentType) { 
-    contentType_ = contentType; 
-}
+void FileProperty::setContentType(const std::string& contentType) { contentType_ = contentType; }
 
-std::string FileProperty::getContentType() const { 
-    return contentType_; 
-}
+std::string FileProperty::getContentType() const { return contentType_; }
 
 void FileProperty::requestFile() {
     for (auto widget : getWidgets()) {
         if (auto filerequestable = dynamic_cast<FileRequestable*>(widget)) {
-            if(filerequestable->requestFile()) return;
+            if (filerequestable->requestFile()) return;
         }
     }
 }
@@ -245,4 +241,4 @@ Document FileProperty::getDescription() const {
     return doc;
 }
 
-}  // namespace
+}  // namespace inviwo

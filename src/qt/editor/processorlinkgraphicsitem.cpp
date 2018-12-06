@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/qt/editor/processorlinkgraphicsitem.h>
@@ -41,13 +41,11 @@
 namespace inviwo {
 
 ProcessorLinkGraphicsItem::ProcessorLinkGraphicsItem(ProcessorGraphicsItem* parent)
-    : QGraphicsItem(parent), processor_(parent), leftItem_(nullptr), rightItem_(nullptr) {
+    : QGraphicsItem(parent)
+    , processor_(parent)
+    , leftItem_(new LinkItem(this, QPointF(parent->rect().left() - 1.0, 0.0), -90.0f))
+    , rightItem_(new LinkItem(this, QPointF(parent->rect().right() + 1.0, 0.0), 90.0f)) {
     setFlags(ItemSendsScenePositionChanges);
-
-    leftItem_ =
-        new LinkItem(this, QPointF(parent->rect().right()+1.0, 0.0), 90.0f);
-    rightItem_ =
-        new LinkItem(this, QPointF(parent->rect().left()-1.0, 0.0), -90.0f);
 }
 
 QPointF ProcessorLinkGraphicsItem::getLeftPos() const {
@@ -78,7 +76,7 @@ void ProcessorLinkGraphicsItem::addLink(LinkConnectionGraphicsItem* link) {
 }
 
 void ProcessorLinkGraphicsItem::removeLink(LinkConnectionGraphicsItem* link) {
-    links_.erase(std::find(links_.begin(),links_.end(), link));
+    links_.erase(std::find(links_.begin(), links_.end(), link));
 }
 
 void ProcessorLinkGraphicsItem::updateLinkPositions() {
@@ -100,7 +98,7 @@ ProcessorLinkGraphicsItem::LinkItem::LinkItem(ProcessorLinkGraphicsItem* parent,
     setPos(pos);
 }
 
-ProcessorLinkGraphicsItem::LinkItem::~LinkItem() {}
+ProcessorLinkGraphicsItem::LinkItem::~LinkItem() = default;
 
 void ProcessorLinkGraphicsItem::LinkItem::mousePressEvent(QGraphicsSceneMouseEvent* e) {
     getNetworkEditor()->initiateLink(parent_, e->scenePos());
@@ -119,4 +117,4 @@ void ProcessorLinkGraphicsItem::LinkItem::paint(QPainter* p, const QStyleOptionG
     p->restore();
 }
 
-}  // namespace
+}  // namespace inviwo

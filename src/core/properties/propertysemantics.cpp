@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/properties/propertysemantics.h>
@@ -32,14 +32,8 @@
 namespace inviwo {
 
 PropertySemantics::PropertySemantics() : Serializable(), semantic_("Default") {}
-PropertySemantics::PropertySemantics(std::string semantic) : Serializable(), semantic_(semantic) {}
-PropertySemantics::PropertySemantics(const PropertySemantics& rhs)
-    : Serializable(), semantic_(rhs.semantic_){}
-PropertySemantics& PropertySemantics::operator=(const PropertySemantics& that) {
-    if (this != &that) semantic_ = that.semantic_;
-
-    return *this;
-}
+PropertySemantics::PropertySemantics(std::string semantic)
+    : Serializable(), semantic_(std::move(semantic)) {}
 
 const std::string& PropertySemantics::getString() const { return semantic_; }
 
@@ -49,11 +43,6 @@ void PropertySemantics::serialize(Serializer& s) const {
 
 void PropertySemantics::deserialize(Deserializer& d) {
     d.deserialize("semantics", semantic_, SerializationTarget::Attribute);
-}
-
-std::ostream& operator<<(std::ostream& os, const inviwo::PropertySemantics& obj) {
-    os << obj.semantic_;
-    return os;
 }
 
 const PropertySemantics PropertySemantics::Default("Default");
@@ -66,4 +55,4 @@ const PropertySemantics PropertySemantics::PythonEditor("PythonEditor");
 const PropertySemantics PropertySemantics::ImageEditor("ImageEditor");
 const PropertySemantics PropertySemantics::ShaderEditor("ShaderEditor");
 
-} // namespace
+}  // namespace inviwo

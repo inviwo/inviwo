@@ -295,7 +295,7 @@ void LinkDialogGraphicsScene::contextMenuEvent(QGraphicsSceneContextMenuEvent* e
     }
 }
 
-void LinkDialogGraphicsScene::offsetItems(float yIncrement, bool scrollLeft) {
+void LinkDialogGraphicsScene::offsetItems(double yIncrement, bool scrollLeft) {
     auto proc = scrollLeft ? srcProcessor_ : dstProcessor_;
 
     auto tree =
@@ -376,7 +376,7 @@ void LinkDialogGraphicsScene::removePropertyLink(DialogConnectionGraphicsItem* p
 }
 
 void LinkDialogGraphicsScene::updateAll() {
-    for (auto& elem : connections_) elem->updateConnectionDrawing();
+    for (auto& elem : connections_) elem->updateShape();
     update();
 }
 
@@ -403,7 +403,7 @@ void LinkDialogGraphicsScene::makePropertyLinkBidirectional(
         }
     }
 
-    propertyLink->updateConnectionDrawing();
+    propertyLink->updateShape();
     update();
 }
 

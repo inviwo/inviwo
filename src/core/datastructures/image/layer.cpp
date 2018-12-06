@@ -149,4 +149,7 @@ void Layer::updateMetaFromRepresentation(const LayerRepresentation *layerRep) {
     }
 }
 
+template class IVW_CORE_TMPL_INST DataReaderType<Layer>;
+template class IVW_CORE_TMPL_INST DataWriterType<Layer>;
+
 }  // namespace

@@ -35,7 +35,6 @@
 #include <inviwo/core/properties/templateproperty.h>
 #include <inviwo/core/util/glm.h>
 #include <string>
-#include <sstream>
 
 namespace inviwo {
 
@@ -54,11 +53,11 @@ public:
                     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                     PropertySemantics semantics = PropertySemantics::Default);
 
-    OrdinalProperty(const OrdinalProperty<T>& rhs) = default;
-    OrdinalProperty<T>& operator=(const OrdinalProperty<T>& that) = default;
+    OrdinalProperty(const OrdinalProperty<T>& rhs);
+    OrdinalProperty<T>& operator=(const OrdinalProperty<T>& that);
     OrdinalProperty<T>& operator=(const T& value);
     virtual OrdinalProperty<T>* clone() const override;
-    virtual ~OrdinalProperty() = default;
+    virtual ~OrdinalProperty();
 
     virtual std::string getClassIdentifier() const override;
 
@@ -168,6 +167,12 @@ OrdinalProperty<T>::OrdinalProperty(const std::string& identifier, const std::st
 }
 
 template <typename T>
+OrdinalProperty<T>::OrdinalProperty(const OrdinalProperty<T>& rhs) = default;
+
+template <typename T>
+OrdinalProperty<T>& OrdinalProperty<T>::operator=(const OrdinalProperty<T>& that) = default;
+
+template <typename T>
 OrdinalProperty<T>& OrdinalProperty<T>::operator=(const T& value) {
     TemplateProperty<T>::operator=(value);
     return *this;
@@ -177,6 +182,9 @@ template <typename T>
 OrdinalProperty<T>* OrdinalProperty<T>::clone() const {
     return new OrdinalProperty<T>(*this);
 }
+
+template <typename T>
+OrdinalProperty<T>::~OrdinalProperty() = default;
 
 template <typename T>
 std::string OrdinalProperty<T>::getClassIdentifier() const {
@@ -257,12 +265,11 @@ void OrdinalProperty<T>::set(const T& value, const T& minVal, const T& maxVal, c
     bool modified = false;
 
     if ((minVal != minValue_.value) || (maxVal != maxValue_.value)) {
-        if (glm::any(glm::greaterThan(minVal, maxVal))) {
+        if (glm::max(minVal, maxVal) != maxVal) {
             LogWarn("Invalid range given for \"" << this->getDisplayName() << "\" ("
                                                  << Defaultvalues<T>::getName()
                                                  << "Property). Using min range as reference.");
         }
-
         minValue_.value = minVal;
         maxValue_.value = glm::max(minVal, maxVal);
         modified = true;
@@ -271,7 +278,7 @@ void OrdinalProperty<T>::set(const T& value, const T& minVal, const T& maxVal, c
         increment_ = increment;
         modified = true;
     }
-    auto retVal = validateValues(value);
+    const auto retVal = validateValues(value);
     if (retVal.first) {
         value_.value = retVal.second;
         modified = true;
@@ -344,6 +351,42 @@ Document OrdinalProperty<T>::getDescription() const {
 
     return doc;
 }
+
+// Scalar properties
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<float>;
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<int>;
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<size_t>;
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<glm::i64>;
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<double>;
+
+// Vector properties
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<vec2>;
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<vec3>;
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<vec4>;
+
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<dvec2>;
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<dvec3>;
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<dvec4>;
+
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<ivec2>;
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<ivec3>;
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<ivec4>;
+
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<size2_t>;
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<size3_t>;
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<size4_t>;
+
+// Matrix properties
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<mat2>;
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<mat3>;
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<mat4>;
+
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<dmat2>;
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<dmat3>;
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<dmat4>;
+
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<glm::dquat>;
+extern template class IVW_CORE_TMPL_EXP OrdinalProperty<glm::fquat>;
 
 }  // namespace inviwo
 

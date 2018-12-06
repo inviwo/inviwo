@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 
 #include <inviwo/core/datastructures/spatialdata.h>
+#include <inviwo/core/datastructures/coordinatetransformer.h>
 #include <inviwo/core/datastructures/datatraits.h>
 
 
@@ -72,6 +73,15 @@ protected:
 
     std::shared_ptr<const SpatialEntity<3>> spatialEntity_;
 };
+
+extern template class IVW_CORE_TMPL_EXP Spatial4DSampler<1, double>;
+extern template class IVW_CORE_TMPL_EXP Spatial4DSampler<1, float>;
+extern template class IVW_CORE_TMPL_EXP Spatial4DSampler<2, double>;
+extern template class IVW_CORE_TMPL_EXP Spatial4DSampler<2, float>;
+extern template class IVW_CORE_TMPL_EXP Spatial4DSampler<3, double>;
+extern template class IVW_CORE_TMPL_EXP Spatial4DSampler<3, float>;
+extern template class IVW_CORE_TMPL_EXP Spatial4DSampler<4, double>;
+extern template class IVW_CORE_TMPL_EXP Spatial4DSampler<4, float>;
 
 template <unsigned DataDims, typename T>
 struct DataTraits<Spatial4DSampler<DataDims, T>> {

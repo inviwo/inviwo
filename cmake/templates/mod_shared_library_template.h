@@ -29,17 +29,13 @@
 
 // Automatically generated file do not change!
 
-#ifndef IVW_@U_MODULE@_SHARED_LIBRARY
-#define IVW_@U_MODULE@_SHARED_LIBRARY
+#pragma once
 
 #include <@API_HEADER@>
 
 namespace inviwo {
 class InviwoModuleFactoryObject;
 
-@API_DEFINE@ InviwoModuleFactoryObject* create@MODULE@Module();
+@API_DEFINE@ InviwoModuleFactoryObject* create@MODULE_CLASS@();
 
-}
-
-
-#endif // IVW_@U_MODULE@_SHARED_LIBRARY
+}  // namespace inviwo

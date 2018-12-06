@@ -59,11 +59,12 @@ class ConsoleWidget;
 class SettingsWidget;
 class HelpWidget;
 class InviwoApplicationQt;
-class NetworkSearch;
 class InviwoEditMenu;
 class InviwoAboutWindow;
 class ResourceManagerDockWidget;
 class FileAssociations;
+class ToolsMenu;
+class TextLabelOverlay;
 
 class IVW_QTEDITOR_API InviwoMainWindow : public QMainWindow, public NetworkEditorObserver {
 public:
@@ -86,6 +87,8 @@ public:
     std::string getCurrentWorkspace();
 
     NetworkEditor* getNetworkEditor() const;
+    NetworkEditorView& getNetworkEditorView() const;
+    TextLabelOverlay& getNetworkEditorOverlay() const;
     SettingsWidget* getSettingsWidget() const;
     ProcessorTreeWidget* getProcessorTreeWidget() const;
     PropertyListWidget* getPropertyListWidget() const;
@@ -95,6 +98,7 @@ public:
     InviwoApplicationQt* getInviwoApplicationQt() const;
 
     InviwoEditMenu* getInviwoEditMenu() const;
+    ToolsMenu* getToolsMenu() const;
 
     void newWorkspace();
     void openWorkspace();
@@ -107,6 +111,7 @@ public:
     * leaves the current workspace file as current workspace
     */
     void saveWorkspaceAsCopy();
+    bool askToSaveWorkspaceChanges();
     void exitInviwo(bool saveIfModified = true);
     void showAboutBox();
 
@@ -135,8 +140,6 @@ private:
     void saveCanvases(std::string path, std::string fileName);
     void getScreenGrab(std::string path, std::string fileName);
 
-    bool askToSaveWorkspaceChanges();
-
     void addToRecentWorkspaces(QString workspaceFileName);
 
     /**
@@ -153,6 +156,7 @@ private:
 
     InviwoApplicationQt* app_;
     InviwoEditMenu* editMenu_ = nullptr;
+    ToolsMenu* toolsMenu_ = nullptr;
     QMenu* exampleMenu_ = nullptr;
     QMenu* testMenu_ = nullptr;
     std::shared_ptr<ConsoleWidget> consoleWidget_;
@@ -164,7 +168,6 @@ private:
     ResourceManagerDockWidget* resourceManagerDockWidget_;
     PropertyListWidget* propertyListWidget_;
     HelpWidget* helpWidget_;
-    NetworkSearch* networkSearch_;
     InviwoAboutWindow* inviwoAboutWindow_ = nullptr;
     
     std::vector<QAction*> workspaceActionRecent_;

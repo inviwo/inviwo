@@ -41,6 +41,7 @@
 #include <inviwo/core/metadata/metadata.h>
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/network/networklock.h>
+#include <inviwo/core/network/autolinker.h>
 
 namespace inviwo {
 
@@ -84,7 +85,7 @@ void PortInspectorManager::returnPortInspector(std::unique_ptr<PortInspector> pi
 }
 
 void PortInspectorManager::insertNetwork(PortInspector* portInspector, ProcessorNetwork* network,
-                                         Outport* outport) {
+                                         Outport* outport, bool bidirectionalAutoLinks) {
     for (auto& processor : portInspector->getProcessors()) {
         network->addProcessor(processor);
     }
@@ -106,7 +107,8 @@ void PortInspectorManager::insertNetwork(PortInspector* portInspector, Processor
 
     // Do auto-linking.
     for (auto& processor : portInspector->getProcessors()) {
-        util::autoLinkProcessor(network, processor);
+        AutoLinker al(network, processor, outport->getProcessor());
+        al.addLinksToClosestCandidates(bidirectionalAutoLinks);
     }
 }
 
@@ -149,7 +151,7 @@ ProcessorWidget* PortInspectorManager::addPortInspector(Outport* outport, ivec2 
             widgetMeta->setVisibile(false);
 
             // Add processors to the network
-            insertNetwork(portInspector.get(), network, outport);
+            insertNetwork(portInspector.get(), network, outport, true);
 
             auto processorWidget = canvasProcessor->getProcessorWidget();
             if (!processorWidget) {
@@ -208,7 +210,7 @@ std::shared_ptr<const Image> PortInspectorManager::renderPortInspectorImage(Outp
                 {
                     // Add processors to the network
                     NetworkLock lock(network);
-                    insertNetwork(portInspector, network, outport);
+                    insertNetwork(portInspector, network, outport, false);
                 }  // Network will unlock and evaluate here.
 
                 // clone the image since removing the port inspector processors from the network

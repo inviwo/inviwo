@@ -4,3 +4,4 @@
 set(dependencies
 	InviwoBaseModule
 )
+set(EnableByDefault ON)

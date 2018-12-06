@@ -261,6 +261,9 @@ Document Mesh::getInfo() const {
     return doc;
 }
 
+template class IVW_CORE_TMPL_INST DataReaderType<Mesh>;
+template class IVW_CORE_TMPL_INST DataWriterType<Mesh>;
+
 namespace meshutil {
 
 bool hasPickIDBuffer(const Mesh* mesh) {

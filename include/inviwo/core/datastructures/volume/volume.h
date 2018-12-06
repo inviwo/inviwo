@@ -39,6 +39,8 @@
 #include <inviwo/core/datastructures/volume/volumerepresentation.h>
 #include <inviwo/core/metadata/metadataowner.h>
 #include <inviwo/core/util/document.h>
+#include <inviwo/core/io/datareader.h>
+#include <inviwo/core/io/datawriter.h>
 
 namespace inviwo {
 
@@ -146,6 +148,10 @@ const typename representation_traits<Volume, Kind>::type* Volume::getRep() const
 }
 
 using VolumeSequence = std::vector<std::shared_ptr<Volume>>;
+
+extern template class IVW_CORE_TMPL_EXP DataReaderType<Volume>;
+extern template class IVW_CORE_TMPL_EXP DataWriterType<Volume>;
+extern template class IVW_CORE_TMPL_EXP DataReaderType<VolumeSequence>;
 
 }  // namespace inviwo
 

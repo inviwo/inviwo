@@ -32,11 +32,12 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/stringconversion.h>
-#include <iostream>
 #include <string>
 #include <functional>
+#include <exception>
 #include <stdexcept>
 #include <vector>
+#include <iostream>
 
 #include <warn/push>
 #include <warn/ignore/dll-interface-base>
@@ -47,18 +48,24 @@ namespace inviwo {
 struct IVW_CORE_API ExceptionContext {
     ExceptionContext(std::string caller = "", std::string file = "", std::string function = "",
                      int line = 0);
-
-    const std::string& getCaller();
-    const std::string& getFile();
-    const std::string& getFunction();
-    const int& getLine();
+    const std::string& getCaller() const;
+    const std::string& getFile() const;
+    const std::string& getFunction() const;
+    const int& getLine() const;
 
 private:
     std::string caller_;
     std::string file_;
     std::string function_;
-    int line_;
+    int line_ = 0;
 };
+
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
+                                             const ExceptionContext& ec) {
+    ss << ec.getCaller() << " (" << ec.getFile() << ":" << ec.getLine() << ")";
+    return ss;
+}
 
 #define IvwContext                                                                             \
     ExceptionContext(parseTypeIdName(std::string(typeid(this).name())), std::string(__FILE__), \
@@ -69,18 +76,28 @@ private:
 
 using ExceptionHandler = std::function<void(ExceptionContext)>;
 
-class IVW_CORE_API Exception : public std::exception {
+class IVW_CORE_API Exception : public std::runtime_error {
 public:
     Exception(const std::string& message = "", ExceptionContext context = ExceptionContext());
     virtual ~Exception() noexcept;
-    virtual std::string getMessage() const noexcept;
-    virtual const char* what() const noexcept override;
+    virtual std::string getMessage() const;
+    std::string getFullMessage() const;
+    virtual void getFullMessage(std::ostream& os, int maxFrames = -1) const;
     virtual const ExceptionContext& getContext() const;
+    const std::vector<std::string>& getStack() const;
+    void getStack(std::ostream& os, int maxFrames = -1) const;
 
 private:
-    std::string message_;
     ExceptionContext context_;
+    std::vector<std::string> stack_;
 };
+
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
+                                             const Exception& e) {
+    e.getFullMessage(ss);
+    return ss;
+}
 
 class IVW_CORE_API RangeException : public Exception {
 public:

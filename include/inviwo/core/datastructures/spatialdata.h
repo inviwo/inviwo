@@ -36,7 +36,7 @@
 
 namespace inviwo {
 
-/** 
+/**
  * \brief A convenience class to generate transformation matrices between
  *        the different coordinate systems in use.
  *
@@ -88,7 +88,7 @@ namespace inviwo {
  *      m[0][3]=0  m[1][3]=0  m[2][3]=0  m[3][3]=1
  *
  *  This means that they have the same representation as on the gpu.
- *  
+ *
  *  ![](coordinate-spaces.png)
  */
 
@@ -118,7 +118,8 @@ public:
     void setWorldMatrix(const Matrix<N + 1, float>& worldMatrix);
 
     virtual const SpatialCoordinateTransformer<N>& getCoordinateTransformer() const;
-    virtual const SpatialCameraCoordinateTransformer<N>& getCoordinateTransformer(const CameraND<N>& camera) const;
+    virtual const SpatialCameraCoordinateTransformer<N>& getCoordinateTransformer(
+        const CameraND<N>& camera) const;
 
 protected:
     mutable SpatialCoordinateTransformer<N>* transformer_;
@@ -128,13 +129,8 @@ protected:
     Matrix<N + 1, float> worldMatrix_;
 };
 
-#ifdef _MSC_VER
-template class IVW_CORE_API SpatialEntity<2>;
-template class IVW_CORE_API SpatialEntity<3>;
-#else
-extern template class IVW_CORE_API SpatialEntity<2>;
-extern template class IVW_CORE_API SpatialEntity<3>;
-#endif
+extern template class IVW_CORE_TMPL_EXP SpatialEntity<2>;
+extern template class IVW_CORE_TMPL_EXP SpatialEntity<3>;
 
 template <unsigned int N>
 class StructuredGridEntity : public SpatialEntity<N> {
@@ -157,24 +153,26 @@ public:
     virtual Vector<N, size_t> getDimensions() const;
     virtual void setDimensions(const Vector<N, size_t>& dimensions);
 
-    
     /**
      * Returns the matrix transformation mapping from texture coordinates
      * to voxel index coordinates, i.e. from [0,1] to [-0.5, number of voxels-0.5]
-     * @note Data is centered on the voxel, see OpenGL specifications, figure 8.3 
-     * http://www.opengl.org/registry/doc/glspec43.core.20120806.pdf 
+     * @note Data is centered on the voxel, see OpenGL specifications, figure 8.3
+     * http://www.opengl.org/registry/doc/glspec43.core.20120806.pdf
      * or for instance http://bpeers.com/articles/glpixel/
      * @see CoordinateTransformer::getTextureToIndexMatrix
      */
     Matrix<N + 1, float> getIndexMatrix() const;
 
     virtual const StructuredCoordinateTransformer<N>& getCoordinateTransformer() const;
-    virtual const StructuredCameraCoordinateTransformer<N>& getCoordinateTransformer(const CameraND<N>& camera) const;
+    virtual const StructuredCameraCoordinateTransformer<N>& getCoordinateTransformer(
+        const CameraND<N>& camera) const;
 
 protected:
     Vector<N, size_t> dimensions_;
 };
 
+extern template class IVW_CORE_TMPL_EXP StructuredGridEntity<2>;
+extern template class IVW_CORE_TMPL_EXP StructuredGridEntity<3>;
 
 /*---------------------------------------------------------------*
  *  Implementations                                              *
@@ -183,10 +181,7 @@ protected:
 
 template <unsigned int N>
 SpatialEntity<N>::SpatialEntity()
-    : transformer_(nullptr)
-    , cameraTransformer_(nullptr)
-    , modelMatrix_(1.0f)
-    , worldMatrix_(1.0f) {}
+    : transformer_(nullptr), cameraTransformer_(nullptr), modelMatrix_(1.0f), worldMatrix_(1.0f) {}
 
 template <unsigned int N>
 SpatialEntity<N>::SpatialEntity(const SpatialEntity<N>& rhs)
@@ -303,8 +298,7 @@ const SpatialCameraCoordinateTransformer<N>& inviwo::SpatialEntity<N>::getCoordi
  *---------------------------------------------------------------*/
 
 template <unsigned int N>
-StructuredGridEntity<N>::StructuredGridEntity()
-    : SpatialEntity<N>(), dimensions_(1) {}
+StructuredGridEntity<N>::StructuredGridEntity() : SpatialEntity<N>(), dimensions_(1) {}
 
 template <unsigned int N>
 StructuredGridEntity<N>::StructuredGridEntity(const StructuredGridEntity<N>& rhs)
@@ -319,13 +313,13 @@ StructuredGridEntity<N>::StructuredGridEntity(const Vector<N, size_t>& dimension
                                               const Vector<N, float>& spacing)
     : SpatialEntity<N>(), dimensions_(dimensions) {
     Matrix<N, float> basis(1.0f);
-    for (int i = 0; i < N; ++i) {
+    for (unsigned int i = 0; i < N; ++i) {
         basis[i][i] = dimensions[i] * spacing[i];
     }
-    
+
     this->setBasis(basis);
     Vector<N, float> offset(0.0f);
-    for (int i = 0; i < N; ++i) {
+    for (unsigned int i = 0; i < N; ++i) {
         offset += basis[i];
     }
     this->setOffset(-0.5f * offset);
@@ -334,15 +328,13 @@ StructuredGridEntity<N>::StructuredGridEntity(const Vector<N, size_t>& dimension
 template <unsigned int N>
 StructuredGridEntity<N>::StructuredGridEntity(const Vector<N, size_t>& dimensions,
                                               const Matrix<N + 1, float>& modelMatrix)
-    : SpatialEntity<N>(modelMatrix)
-    , dimensions_(dimensions) {}
+    : SpatialEntity<N>(modelMatrix), dimensions_(dimensions) {}
 
 template <unsigned int N>
 StructuredGridEntity<N>::StructuredGridEntity(const Vector<N, size_t>& dimensions,
                                               const Matrix<N + 1, float>& modelMatrix,
                                               const Matrix<N + 1, float>& worldMatrix)
-    : SpatialEntity<N>(modelMatrix, worldMatrix)
-    , dimensions_(dimensions) {}
+    : SpatialEntity<N>(modelMatrix, worldMatrix), dimensions_(dimensions) {}
 
 template <unsigned int N>
 StructuredGridEntity<N>& StructuredGridEntity<N>::operator=(const StructuredGridEntity<N>& that) {
@@ -365,33 +357,34 @@ void StructuredGridEntity<N>::setDimensions(const Vector<N, size_t>& dimensions)
 template <unsigned int N>
 Matrix<N + 1, float> StructuredGridEntity<N>::getIndexMatrix() const {
     Matrix<N + 1, float> indexMatrix(1.0f);
-    for (size_t i = 0; i < N; ++i) {
+    for (unsigned int i = 0; i < N; ++i) {
         indexMatrix[i][i] = static_cast<float>(dimensions_[i]);
     }
 
     // Offset to coordinates to center them in the middle of the texel/voxel.
-    for (size_t i = 0; i < N; i++) {
+    for (unsigned int i = 0; i < N; i++) {
         indexMatrix[N][i] = -0.5f;
     }
     return indexMatrix;
 }
 
 template <unsigned int N>
-const StructuredCoordinateTransformer<N>& StructuredGridEntity<N>::getCoordinateTransformer() const {
+const StructuredCoordinateTransformer<N>& StructuredGridEntity<N>::getCoordinateTransformer()
+    const {
     if (!this->transformer_) this->transformer_ = new StructuredCoordinateTransformerImpl<N>(*this);
     return *static_cast<StructuredCoordinateTransformer<N>*>(this->transformer_);
 }
 
 template <unsigned int N>
-const StructuredCameraCoordinateTransformer<N>& inviwo::StructuredGridEntity<N>::getCoordinateTransformer(
-    const CameraND<N>& camera) const {
+const StructuredCameraCoordinateTransformer<N>&
+inviwo::StructuredGridEntity<N>::getCoordinateTransformer(const CameraND<N>& camera) const {
     if (!this->cameraTransformer_)
         this->cameraTransformer_ = new StructuredCameraCoordinateTransformerImpl<N>(*this, camera);
-    static_cast<StructuredCameraCoordinateTransformerImpl<N>*>(this->cameraTransformer_)->setCamera(camera);
+    static_cast<StructuredCameraCoordinateTransformerImpl<N>*>(this->cameraTransformer_)
+        ->setCamera(camera);
     return *static_cast<StructuredCameraCoordinateTransformer<N>*>(this->cameraTransformer_);
 }
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_SPATIALDATA_H
-

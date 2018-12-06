@@ -6,22 +6,22 @@ IF(${OpenEXR_GENERATE_LUT})
 
   ADD_CUSTOM_COMMAND (
     TARGET elut POST_BUILD
-    COMMAND elut > ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/eLut.h
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr
+    COMMAND elut > ${CMAKE_CURRENT_BINARY_DIR}/include/eLut.h
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include
   )
   SET_SOURCE_FILES_PROPERTIES(
-    ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/eLut.h
+    ${CMAKE_CURRENT_BINARY_DIR}/include/eLut.h
     PROPERTIES HEADER_FILE_ONLY TRUE
     )
 
   ADD_EXECUTABLE ( tofloat toFloat.cpp )
   ADD_CUSTOM_COMMAND (
     TARGET tofloat POST_BUILD
-    COMMAND tofloat > ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/toFloat.h
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr
+    COMMAND tofloat > ${CMAKE_CURRENT_BINARY_DIR}/include/toFloat.h
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include
   )
   SET_SOURCE_FILES_PROPERTIES(
-    ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/toFloat.h
+    ${CMAKE_CURRENT_BINARY_DIR}/include/toFloat.h
     PROPERTIES HEADER_FILE_ONLY TRUE
     )
 ENDIF()

@@ -5,56 +5,59 @@ ivw_module(UserInterfaceGL)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/glui/element.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/glui/layout/boxlayout.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/glui/layout/hboxlayout.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/glui/layout/layout.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/glui/layout/vboxlayout.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/glui/renderer.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/abstractbutton.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/boolpropertywidget.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/button.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/buttonpropertywidget.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/checkbox.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/floatminmaxpropertywidget.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/floatpropertywidget.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/intminmaxpropertywidget.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/intpropertywidget.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/rangeslider.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/slider.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/toolbutton.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/camerawidget.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/cropwidget.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/gluitestprocessor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/presentationprocessor.h
+    include/modules/userinterfacegl/glui/element.h
+    include/modules/userinterfacegl/glui/layout/boxlayout.h
+    include/modules/userinterfacegl/glui/layout/hboxlayout.h
+    include/modules/userinterfacegl/glui/layout/layout.h
+    include/modules/userinterfacegl/glui/layout/vboxlayout.h
+    include/modules/userinterfacegl/glui/renderer.h
+    include/modules/userinterfacegl/glui/widgets/abstractbutton.h
+    include/modules/userinterfacegl/glui/widgets/boolpropertywidget.h
+    include/modules/userinterfacegl/glui/widgets/button.h
+    include/modules/userinterfacegl/glui/widgets/buttonpropertywidget.h
+    include/modules/userinterfacegl/glui/widgets/checkbox.h
+    include/modules/userinterfacegl/glui/widgets/floatminmaxpropertywidget.h
+    include/modules/userinterfacegl/glui/widgets/floatpropertywidget.h
+    include/modules/userinterfacegl/glui/widgets/intminmaxpropertywidget.h
+    include/modules/userinterfacegl/glui/widgets/intpropertywidget.h
+    include/modules/userinterfacegl/glui/widgets/rangeslider.h
+    include/modules/userinterfacegl/glui/widgets/slider.h
+    include/modules/userinterfacegl/glui/widgets/toolbutton.h
+    include/modules/userinterfacegl/processors/camerawidget.h
+    include/modules/userinterfacegl/processors/cropwidget.h
+    include/modules/userinterfacegl/processors/gluitestprocessor.h
+    include/modules/userinterfacegl/processors/presentationprocessor.h
+    include/modules/userinterfacegl/userinterfaceglmodule.h
+    include/modules/userinterfacegl/userinterfaceglmoduledefine.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/glui/element.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/glui/layout/boxlayout.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/glui/layout/hboxlayout.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/glui/layout/layout.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/glui/layout/vboxlayout.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/glui/renderer.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/abstractbutton.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/boolpropertywidget.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/button.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/buttonpropertywidget.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/checkbox.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/floatminmaxpropertywidget.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/floatpropertywidget.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/intminmaxpropertywidget.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/intpropertywidget.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/rangeslider.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/slider.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/glui/widgets/toolbutton.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/camerawidget.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/cropwidget.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/gluitestprocessor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/presentationprocessor.cpp
+    src/glui/element.cpp
+    src/glui/layout/boxlayout.cpp
+    src/glui/layout/hboxlayout.cpp
+    src/glui/layout/layout.cpp
+    src/glui/layout/vboxlayout.cpp
+    src/glui/renderer.cpp
+    src/glui/widgets/abstractbutton.cpp
+    src/glui/widgets/boolpropertywidget.cpp
+    src/glui/widgets/button.cpp
+    src/glui/widgets/buttonpropertywidget.cpp
+    src/glui/widgets/checkbox.cpp
+    src/glui/widgets/floatminmaxpropertywidget.cpp
+    src/glui/widgets/floatpropertywidget.cpp
+    src/glui/widgets/intminmaxpropertywidget.cpp
+    src/glui/widgets/intpropertywidget.cpp
+    src/glui/widgets/rangeslider.cpp
+    src/glui/widgets/slider.cpp
+    src/glui/widgets/toolbutton.cpp
+    src/processors/camerawidget.cpp
+    src/processors/cropwidget.cpp
+    src/processors/gluitestprocessor.cpp
+    src/processors/presentationprocessor.cpp
+    src/userinterfaceglmodule.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
@@ -67,6 +70,7 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/renderui.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/renderui.vert
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/widgetrenderer.vert
+	${CMAKE_CURRENT_SOURCE_DIR}/glsl/widgettexture.frag
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 

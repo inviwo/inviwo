@@ -7,6 +7,6 @@ set(dependencies
 
 set(aliases OpenGLSupplier)
 set(protected ON)
-
+set(EnableByDefault ON)
 
 

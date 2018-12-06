@@ -36,43 +36,35 @@ std::string VolumeIndicatorProperty::getClassIdentifier() const { return classId
 VolumeIndicatorProperty::VolumeIndicatorProperty(std::string identifier, std::string displayName,
                                                  InvalidationLevel invalidationLevel,
                                                  PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
-    , enable_("enable", "Enable", false, InvalidationLevel::InvalidResources)
-    , mode_("mode", "Mode", InvalidationLevel::InvalidResources)
-    , plane1_("plane1", "Plane 1")
-    , plane2_("plane2", "Plane 2")
-    , plane3_("plane3", "Plane 3") {
+    : BoolCompositeProperty(identifier, displayName, false, invalidationLevel, semantics)
+    , plane1_("plane1", "Plane 1", vec3(0.5f), vec3(0.0f, 0.0f, 1.0f))
+    , plane2_("plane2", "Plane 2", vec3(0.5f), vec3(0.0f, 1.0f, 0.0f))
+    , plane3_("plane3", "Plane 3", vec3(0.5f), vec3(1.0f, 0.0f, 0.0f)) {
 
-    addProperty(enable_);
-    addProperty(mode_);
+    getBoolProperty()->setIdentifier("enable");
+    getBoolProperty()->setInvalidationLevel(InvalidationLevel::InvalidResources);
+    plane1_.getBoolProperty()->setInvalidationLevel(InvalidationLevel::InvalidResources);
+    plane2_.getBoolProperty()->setInvalidationLevel(InvalidationLevel::InvalidResources);
+    plane3_.getBoolProperty()->setInvalidationLevel(InvalidationLevel::InvalidResources);
+
     addProperty(plane1_);
     addProperty(plane2_);
     addProperty(plane3_);
 
-    mode_.addOption("plane", "Plane", 0);
-    mode_.addOption("cross", "Cross", 1);
-    mode_.onChange([this]() { onModeChange(); });
-
     setCollapsed(true);
-    setAllPropertiesCurrentStateAsDefault();
 }
 
 VolumeIndicatorProperty::VolumeIndicatorProperty(const VolumeIndicatorProperty& rhs)
-    : CompositeProperty(rhs)
-    , enable_(rhs.enable_)
-    , mode_(rhs.mode_)
-    , plane1_(rhs.plane1_)
-    , plane2_(rhs.plane2_)
-    , plane3_(rhs.plane3_) {
-    mode_.onChange([this]() { onModeChange(); });
-    setAllPropertiesCurrentStateAsDefault();
+    : BoolCompositeProperty(rhs), plane1_(rhs.plane1_), plane2_(rhs.plane2_), plane3_(rhs.plane3_) {
+
+    addProperty(plane1_);
+    addProperty(plane2_);
+    addProperty(plane3_);
 }
 
 VolumeIndicatorProperty& VolumeIndicatorProperty::operator=(const VolumeIndicatorProperty& that) {
     if (this != &that) {
-        CompositeProperty::operator=(that);
-        enable_ = that.enable_;
-        mode_ = that.mode_;
+        BoolCompositeProperty::operator=(that);
         plane1_ = that.plane1_;
         plane2_ = that.plane2_;
         plane3_ = that.plane3_;
@@ -84,8 +76,6 @@ VolumeIndicatorProperty* VolumeIndicatorProperty::clone() const {
     return new VolumeIndicatorProperty(*this);
 }
 
-VolumeIndicatorProperty::~VolumeIndicatorProperty() {}
-
-void VolumeIndicatorProperty::onModeChange() {}
+VolumeIndicatorProperty::~VolumeIndicatorProperty() = default;
 
 }  // namespace inviwo

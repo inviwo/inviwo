@@ -30,9 +30,8 @@
 #include <inviwo/core/datastructures/spatialdata.h>
 
 namespace inviwo {
- 
-template class SpatialEntity<2>;
-template class SpatialEntity<3>;
- 
- 
+  	template class IVW_CORE_TMPL_INST SpatialEntity<2>;
+	template class IVW_CORE_TMPL_INST SpatialEntity<3>;
+	template class IVW_CORE_TMPL_INST StructuredGridEntity<2>;
+	template class IVW_CORE_TMPL_INST StructuredGridEntity<3>;
 } // namespace

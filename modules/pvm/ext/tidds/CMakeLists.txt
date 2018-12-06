@@ -5,15 +5,15 @@ project(tidds)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/codebase.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/ddsbase.h
+    include/tidds/codebase.h
+    include/tidds/ddsbase.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/ddsbase.cpp
+    src/ddsbase.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
@@ -21,10 +21,9 @@ ivw_group("Source Files" ${SOURCE_FILES})
 #--------------------------------------------------------------------
 # Create library
 add_library(tidds ${SOURCE_FILES} ${HEADER_FILES})
-
-target_include_directories(tidds INTERFACE 
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-    #$<INSTALL_INTERFACE:???>
+target_include_directories(tidds PUBLIC 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:install>
 )
 
 #--------------------------------------------------------------------

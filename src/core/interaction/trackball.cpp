@@ -157,7 +157,8 @@ Trackball::Trackball(TrackballObject* object)
 
     auto systemSettings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
     followObjectDuringRotation_ = systemSettings->followObjectDuringRotation_.get();
-    systemSettings->followObjectDuringRotation_.onChange([systemSettings,this]() {
+    systemSettings->followObjectDuringRotation_.onChange([this]() {
+        auto systemSettings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
         followObjectDuringRotation_ = systemSettings->followObjectDuringRotation_.get();
     });
 }
@@ -240,7 +241,8 @@ Trackball::Trackball(const Trackball& rhs)
 
     auto systemSettings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
     followObjectDuringRotation_ = systemSettings->followObjectDuringRotation_.get();
-    systemSettings->followObjectDuringRotation_.onChange( [&](){
+    systemSettings->followObjectDuringRotation_.onChange( [this]() {
+        auto systemSettings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
         followObjectDuringRotation_ = systemSettings->followObjectDuringRotation_.get();
     });
 
@@ -866,14 +868,13 @@ void inviwo::Trackball::animate() {
             const glm::quat identity(1.0f, 0.0f, 0.0f, 0.0f);
             const float t = 0.1f;
             const float dot = glm::dot(lastRot_, identity);
-			const float dotEpsilon = (1.f - std::numeric_limits<float>::epsilon());
-			// Avoid division by zero 
-			if (std::abs(dot) > dotEpsilon) {
+			// Avoid division by zero when sin( n*pi ) == 0.
+			// Occurs when acos(+-1) == 0/pi (0/180 degreees)  
+			if (std::abs(dot) < 1.f) {
 				const float theta = std::acos(dot);
 				const float sintheta = std::sin(theta);
 				lastRot_ = lastRot_ * (std::sin((1.0f - t) * theta) / sintheta) +
 					identity * (std::sin(t * theta) / sintheta);
-				lastRot_ = identity;
 			}
 			else {
 				lastRot_ = identity;

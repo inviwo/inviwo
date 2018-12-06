@@ -51,10 +51,9 @@ public:
                        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                        PropertySemantics semantics = PropertySemantics::Default);
 
-    BaseOptionProperty(const BaseOptionProperty& rhs) = default;
-    BaseOptionProperty& operator=(const BaseOptionProperty&) = default;
-
-    virtual ~BaseOptionProperty() = default;
+    BaseOptionProperty(const BaseOptionProperty& rhs);
+    BaseOptionProperty& operator=(const BaseOptionProperty&);
+    virtual ~BaseOptionProperty();
 
     virtual std::string getClassIdentifier() const override = 0;
 
@@ -83,38 +82,30 @@ public:
 template <typename T>
 class OptionPropertyOption : public Serializable {
 public:
-    OptionPropertyOption() = default;
-    OptionPropertyOption(const std::string& id, const std::string& name, const T& value)
-        : id_(id), name_(name), value_(value) {}
+    OptionPropertyOption();
+    OptionPropertyOption(const OptionPropertyOption& rhs);
+    OptionPropertyOption(OptionPropertyOption&& rhs) noexcept;
+    OptionPropertyOption& operator=(const OptionPropertyOption& that);
+    OptionPropertyOption& operator=(OptionPropertyOption&& that) noexcept;
+
+    OptionPropertyOption(const std::string& id, const std::string& name, const T& value);
     template <typename U = T,
               class = typename std::enable_if<std::is_same<U, std::string>::value, void>::type>
-    OptionPropertyOption(const std::string& id, const std::string& name)
-        : id_(id), name_(name), value_(id) {}
+    OptionPropertyOption(const std::string& id, const std::string& name);
 
     template <typename U = T,
               class = typename std::enable_if<util::is_stream_insertable<U>::value, void>::type>
-    OptionPropertyOption(const T& val)
-        : id_(toString(val)), name_(camelCaseToHeader(toString(val))), value_(val) {}
+    OptionPropertyOption(const T& val);
 
     std::string id_;
     std::string name_;
     T value_ = T{};
 
-    virtual void serialize(Serializer& s) const {
-        s.serialize("id", id_);
-        s.serialize("name", name_);
-        s.serialize("value", value_);
-    }
-    virtual void deserialize(Deserializer& d) {
-        d.deserialize("id", id_);
-        d.deserialize("name", name_);
-        d.deserialize("value", value_);
-    }
+    virtual void serialize(Serializer& s) const;
+    virtual void deserialize(Deserializer& d);
 
-    bool operator==(const OptionPropertyOption<T>& rhs) const {
-        return id_ == rhs.id_ && name_ == rhs.name_ && value_ == rhs.value_;
-    }
-    bool operator!=(const OptionPropertyOption<T>& rhs) const { return !operator==(rhs); }
+    bool operator==(const OptionPropertyOption<T>& rhs) const;
+    bool operator!=(const OptionPropertyOption<T>& rhs) const;
 };
 
 template <typename T>
@@ -140,10 +131,10 @@ public:
                            InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                            PropertySemantics semantics = PropertySemantics::Default);
 
-    TemplateOptionProperty(const TemplateOptionProperty<T>& rhs) = default;
-    TemplateOptionProperty<T>& operator=(const TemplateOptionProperty<T>& that) = default;
+    TemplateOptionProperty(const TemplateOptionProperty<T>& rhs);
+    TemplateOptionProperty<T>& operator=(const TemplateOptionProperty<T>& that);
     virtual TemplateOptionProperty<T>* clone() const override;
-    virtual ~TemplateOptionProperty() = default;
+    virtual ~TemplateOptionProperty();
 
     virtual std::string getClassIdentifier() const override;
 
@@ -267,9 +258,7 @@ std::string getClassIdentifierForWidget() {
 
 template <typename T>
 struct PropertyTraits<TemplateOptionProperty<T>> {
-    static std::string classIdentifier() {
-        return detail::getOptionPropertyClassIdentifier<T>();
-    }
+    static std::string classIdentifier() { return detail::getOptionPropertyClassIdentifier<T>(); }
 };
 
 template <typename T>
@@ -282,6 +271,13 @@ std::string TemplateOptionProperty<T>::getClassIdentifierForWidget() const {
     return detail::getClassIdentifierForWidget<T>();
 }
 
+using OptionPropertyUIntOption = OptionPropertyOption<unsigned int>;
+using OptionPropertyIntOption = OptionPropertyOption<int>;
+using OptionPropertySize_tOption = OptionPropertyOption<size_t>;
+using OptionPropertyFloatOption = OptionPropertyOption<float>;
+using OptionPropertyDoubleOption = OptionPropertyOption<double>;
+using OptionPropertyStringOption = OptionPropertyOption<std::string>;
+
 using OptionPropertyUInt = TemplateOptionProperty<unsigned int>;
 using OptionPropertyInt = TemplateOptionProperty<int>;
 using OptionPropertySize_t = TemplateOptionProperty<size_t>;
@@ -289,12 +285,58 @@ using OptionPropertyFloat = TemplateOptionProperty<float>;
 using OptionPropertyDouble = TemplateOptionProperty<double>;
 using OptionPropertyString = TemplateOptionProperty<std::string>;
 
-using OptionPropertyUIntOption = OptionPropertyOption<unsigned int>;
-using OptionPropertyIntOption = OptionPropertyOption<int>;
-using OptionPropertySize_tOption = OptionPropertyOption<size_t>;
-using OptionPropertyFloatOption = OptionPropertyOption<float>;
-using OptionPropertyDoubleOption = OptionPropertyOption<double>;
-using OptionPropertyStringOption = OptionPropertyOption<std::string>;
+template <typename T>
+OptionPropertyOption<T>::OptionPropertyOption() = default;
+
+template <typename T>
+OptionPropertyOption<T>::OptionPropertyOption(const OptionPropertyOption& rhs) = default;
+template <typename T>
+OptionPropertyOption<T>::OptionPropertyOption(OptionPropertyOption&& rhs) noexcept = default;
+template <typename T>
+OptionPropertyOption<T>& OptionPropertyOption<T>::operator=(const OptionPropertyOption& that) =
+    default;
+template <typename T>
+OptionPropertyOption<T>& OptionPropertyOption<T>::operator=(OptionPropertyOption&& that) noexcept =
+    default;
+
+template <typename T>
+OptionPropertyOption<T>::OptionPropertyOption(const std::string& id, const std::string& name,
+                                              const T& value)
+    : id_(id), name_(name), value_(value) {}
+
+template <typename T>
+template <typename U, class>
+OptionPropertyOption<T>::OptionPropertyOption(const std::string& id, const std::string& name)
+    : id_(id), name_(name), value_(id) {}
+
+template <typename T>
+template <typename U, class>
+OptionPropertyOption<T>::OptionPropertyOption(const T& val)
+    : id_(toString(val)), name_(camelCaseToHeader(toString(val))), value_(val) {}
+
+template <typename T>
+void OptionPropertyOption<T>::serialize(Serializer& s) const {
+    s.serialize("id", id_);
+    s.serialize("name", name_);
+    s.serialize("value", value_);
+}
+
+template <typename T>
+void OptionPropertyOption<T>::deserialize(Deserializer& d) {
+    d.deserialize("id", id_);
+    d.deserialize("name", name_);
+    d.deserialize("value", value_);
+}
+
+template <typename T>
+bool OptionPropertyOption<T>::operator==(const OptionPropertyOption<T>& rhs) const {
+    return id_ == rhs.id_ && name_ == rhs.name_ && value_ == rhs.value_;
+}
+
+template <typename T>
+bool OptionPropertyOption<T>::operator!=(const OptionPropertyOption<T>& rhs) const {
+    return !operator==(rhs);
+}
 
 template <typename T>
 TemplateOptionProperty<T>::TemplateOptionProperty(const std::string& identifier,
@@ -332,6 +374,16 @@ TemplateOptionProperty<T>::TemplateOptionProperty(
         defaultOptions_.emplace_back(option);
     }
 }
+
+template <typename T>
+TemplateOptionProperty<T>::TemplateOptionProperty(const TemplateOptionProperty<T>& rhs) = default;
+
+template <typename T>
+TemplateOptionProperty<T>& TemplateOptionProperty<T>::operator=(
+    const TemplateOptionProperty<T>& that) = default;
+
+template <typename T>
+TemplateOptionProperty<T>::~TemplateOptionProperty() = default;
 
 template <typename T>
 void TemplateOptionProperty<T>::addOption(const std::string& identifier,
@@ -688,6 +740,20 @@ template <typename T>
 TemplateOptionProperty<T>* TemplateOptionProperty<T>::clone() const {
     return new TemplateOptionProperty<T>(*this);
 }
+
+extern template class IVW_CORE_TMPL_EXP OptionPropertyOption<unsigned int>;
+extern template class IVW_CORE_TMPL_EXP OptionPropertyOption<int>;
+extern template class IVW_CORE_TMPL_EXP OptionPropertyOption<size_t>;
+extern template class IVW_CORE_TMPL_EXP OptionPropertyOption<float>;
+extern template class IVW_CORE_TMPL_EXP OptionPropertyOption<double>;
+extern template class IVW_CORE_TMPL_EXP OptionPropertyOption<std::string>;
+
+extern template class IVW_CORE_TMPL_EXP TemplateOptionProperty<unsigned int>;
+extern template class IVW_CORE_TMPL_EXP TemplateOptionProperty<int>;
+extern template class IVW_CORE_TMPL_EXP TemplateOptionProperty<size_t>;
+extern template class IVW_CORE_TMPL_EXP TemplateOptionProperty<float>;
+extern template class IVW_CORE_TMPL_EXP TemplateOptionProperty<double>;
+extern template class IVW_CORE_TMPL_EXP TemplateOptionProperty<std::string>;
 
 }  // namespace inviwo
 

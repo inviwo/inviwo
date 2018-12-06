@@ -5,31 +5,34 @@ ivw_module(HDF5)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/hdf5handle.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/hdf5metadata.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/hdf5path.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/hdf5exception.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/hdf5types.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/hdf5utils.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/ports/hdf5port.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/hdf5pathselection.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/hdf5source.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/hdf5volumesource.h
+    include/modules/hdf5/datastructures/hdf5handle.h
+    include/modules/hdf5/datastructures/hdf5metadata.h
+    include/modules/hdf5/datastructures/hdf5path.h
+    include/modules/hdf5/hdf5exception.h
+    include/modules/hdf5/hdf5module.h
+    include/modules/hdf5/hdf5moduledefine.h
+    include/modules/hdf5/hdf5types.h
+    include/modules/hdf5/hdf5utils.h
+    include/modules/hdf5/ports/hdf5port.h
+    include/modules/hdf5/processors/hdf5pathselection.h
+    include/modules/hdf5/processors/hdf5source.h
+    include/modules/hdf5/processors/hdf5volumesource.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/hdf5handle.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/hdf5metadata.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/datastructures/hdf5path.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/hdf5exception.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/hdf5types.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/hdf5utils.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/hdf5pathselection.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/hdf5source.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/hdf5volumesource.cpp
+    src/datastructures/hdf5handle.cpp
+    src/datastructures/hdf5metadata.cpp
+    src/datastructures/hdf5path.cpp
+    src/hdf5exception.cpp
+    src/hdf5module.cpp
+    src/hdf5types.cpp
+    src/hdf5utils.cpp
+    src/processors/hdf5pathselection.cpp
+    src/processors/hdf5source.cpp
+    src/processors/hdf5volumesource.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

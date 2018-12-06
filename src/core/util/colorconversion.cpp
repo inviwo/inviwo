@@ -29,6 +29,7 @@
 
 #include <inviwo/core/util/colorconversion.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/stringconversion.h>
 
 #include <algorithm>
 #include <string>
@@ -38,25 +39,48 @@ namespace inviwo {
 
 namespace color {
 
-vec4 hex2rgba(const std::string &str) {
+vec4 hex2rgba(std::string str) {
     vec4 result;
-    if ((str[0] == '#') && ((str.size() == 7) || (str.size() == 9))) {
+    str = trim(str);
+    if (!str.empty() && (str[0] == '#') && (str.length() <= 9)) {
         // extract rgba values from HTML color code
-        try {
-            unsigned long v = std::stoul("0x" + str.substr(1), nullptr, 16);
-            unsigned char *c = reinterpret_cast<unsigned char *>(&v);
-            if (str.size() == 9) {
-                result = vec4(c[3], c[2], c[1], c[0]) / 255.0f;
-            } else {
-                result = vec4(c[2], c[1], c[0], 255) / 255.0f;
+
+        const auto numStr = [str]() {
+            if ((str.length() == 4) || (str.length() == 5)) {
+                // duplicate each character for hexcodes #RGB and #RGBA
+                std::string result;
+                for (auto c : str.substr(1)) {
+                    result.append(std::string(2, c));
+                }
+                return result;
             }
-        } catch (...) {
-            // string was not properly formatted, ignore
+            return str.substr(1);
+        }();
+
+        const unsigned long v = [numStr]() {
+            unsigned long v = 0;
+            std::istringstream stream("0x" + numStr);
+            if (!(stream >> std::hex >> v)) {
+                throw Exception("Invalid hex code \"#" + numStr + "\".",
+                                IvwContextCustom("color::hex2rgba"));
+            }
+            return v;
+        }();
+        auto *c = reinterpret_cast<const unsigned char *>(&v);
+        switch (numStr.size()) {
+            case 6:
+                result = vec4(c[2], c[1], c[0], 255) / 255.0f;
+                break;
+            case 8:
+                result = vec4(c[3], c[2], c[1], c[0]) / 255.0f;
+                break;
+            default:
+                throw Exception("Invalid hex code \"" + str + "\".",
+                                IvwContextCustom("color::hex2rgba"));
         }
+
     } else {
-        std::ostringstream oss;
-        oss << "Invalid hex code \"" << str << "\".";
-        throw Exception(oss.str(), IvwContextCustom("color::hex2rgba"));
+        throw Exception("Invalid hex code \"" + str + "\".", IvwContextCustom("color::hex2rgba"));
     }
     return result;
 }
@@ -80,7 +104,7 @@ std::string rgb2hex(const vec3 &rgb) {
 
     std::ostringstream ss;
     ss << "#" << std::setw(6) << std::setfill('0') << std::hex
-        << *reinterpret_cast<unsigned int *>(&color);
+       << *reinterpret_cast<unsigned int *>(&color);
     return ss.str();
 }
 

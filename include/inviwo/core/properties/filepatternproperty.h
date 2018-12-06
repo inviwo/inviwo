@@ -69,6 +69,9 @@ public:
                         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                         PropertySemantics semantics = PropertySemantics::Default);
 
+    FilePatternProperty(const FilePatternProperty& rhs);
+    FilePatternProperty& operator=(const FilePatternProperty& that);
+
     virtual FilePatternProperty* clone() const override;
     virtual ~FilePatternProperty();
 
@@ -108,8 +111,10 @@ private:
     IntProperty minIndex_;
     IntProperty maxIndex_;
 
-    std::vector<IndexFileTuple> files_;  //!< contains file names and the extracted numbers/indices
-    bool outOfRangeMatches_;  //!< flag is true if all matching files are outside the selected range
+    // contains file names and the extracted numbers/indices
+    std::vector<IndexFileTuple> files_;
+    // flag is true if all matching files are outside the selected range
+    bool outOfRangeMatches_ = false;
 };
 
 }  // namespace inviwo

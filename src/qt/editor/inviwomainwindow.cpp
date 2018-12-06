@@ -43,6 +43,7 @@
 #include <inviwo/qt/editor/consolewidget.h>
 #include <inviwo/qt/editor/helpwidget.h>
 #include <inviwo/qt/editor/inviwoaboutwindow.h>
+#include <inviwo/qt/editor/toolsmenu.h>
 #include <inviwo/qt/editor/processorpreview.h>
 #include <inviwo/qt/editor/networkeditor.h>
 #include <inviwo/qt/editor/networkeditorview.h>
@@ -65,8 +66,6 @@
 #include <inviwo/qt/editor/fileassociations.h>
 #include <inviwo/qt/editor/dataopener.h>
 #include <inviwo/core/rendering/datavisualizermanager.h>
-
-#include <inviwomodulespaths.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -98,6 +97,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     : QMainWindow()
     , app_(app)
     , editMenu_{new InviwoEditMenu(this)}  // needed in ConsoleWidget
+    , toolsMenu_{new ToolsMenu(this)}
     , consoleWidget_{[this]() {
         // initialize console widget first to receive log messages
         auto cw = std::make_shared<ConsoleWidget>(this);
@@ -199,10 +199,6 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
 
     networkEditorView_ = new NetworkEditorView(networkEditor_.get(), this);
     NetworkEditorObserver::addObservation(networkEditor_.get());
-    auto grid = new QGridLayout(networkEditorView_);
-    grid->setContentsMargins(7, 7, 7, 7);
-    networkSearch_ = new NetworkSearch(this);
-    grid->addWidget(networkSearch_, 0, 0, Qt::AlignTop | Qt::AlignRight);
 
     setCentralWidget(networkEditorView_);
 
@@ -287,6 +283,7 @@ void InviwoMainWindow::addActions() {
     menu->addMenu(editMenu_);
     auto viewMenuItem = menu->addMenu(tr("&View"));
     auto networkMenuItem = menu->addMenu(tr("&Network"));
+    menu->addMenu(toolsMenu_);
     auto helpMenuItem = menu->addMenu(tr("&Help"));
 
     auto workspaceToolBar = addToolBar("File");
@@ -541,8 +538,8 @@ void InviwoMainWindow::addActions() {
             editMenu_->addAction(QIcon(":/icons/searchnetwork.png"), tr("&Search Network"));
         searchNetwork->setShortcut(Qt::ShiftModifier + Qt::ControlModifier + Qt::Key_F);
         connect(searchNetwork, &QAction::triggered, [this]() {
-            networkSearch_->setVisible(true);
-            networkSearch_->setFocus();
+            networkEditorView_->getNetworkSearch().setVisible(true);
+            networkEditorView_->getNetworkSearch().setFocus();
         });
 
         auto findAction =
@@ -1069,6 +1066,9 @@ bool InviwoMainWindow::askToSaveWorkspaceChanges() {
         msgBox.setInformativeText("Do you want to save your changes?");
         msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
         msgBox.setDefaultButton(QMessageBox::Yes);
+        // set minimum size to suppress Qt warning
+        // see bug report https://bugreports.qt.io/browse/QTBUG-63661
+        msgBox.setMinimumSize(msgBox.minimumSizeHint());
         int answer = msgBox.exec();
 
         switch (answer) {
@@ -1100,10 +1100,16 @@ ConsoleWidget* InviwoMainWindow::getConsoleWidget() const { return consoleWidget
 
 HelpWidget* InviwoMainWindow::getHelpWidget() const { return helpWidget_; }
 
+NetworkEditorView& InviwoMainWindow::getNetworkEditorView() const { return *networkEditorView_; }
+TextLabelOverlay& InviwoMainWindow::getNetworkEditorOverlay() const {
+    return networkEditorView_->getOverlay();
+}
+
 InviwoApplication* InviwoMainWindow::getInviwoApplication() const { return app_; }
 InviwoApplicationQt* InviwoMainWindow::getInviwoApplicationQt() const { return app_; }
 
 InviwoEditMenu* InviwoMainWindow::getInviwoEditMenu() const { return editMenu_; }
+ToolsMenu* InviwoMainWindow::getToolsMenu() const { return toolsMenu_; }
 
 void InviwoMainWindow::dragEnterEvent(QDragEnterEvent* event) { dragMoveEvent(event); }
 

@@ -1,6 +1,6 @@
 # Add OpenEXR
 add_subdirectory(ext/openexr)
-
+add_subdirectory(ext/cimg)
 #--------------------------------------------------------------------
 # CImg Module
 ivw_module(CImg)
@@ -8,22 +8,24 @@ ivw_module(CImg)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/cimglayerreader.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/cimglayerwriter.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/cimgsavebuffer.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/cimgutils.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/cimgvolumereader.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/ext/cimg/CImg.h
+    include/modules/cimg/cimglayerreader.h
+    include/modules/cimg/cimglayerwriter.h
+    include/modules/cimg/cimgmodule.h
+    include/modules/cimg/cimgmoduledefine.h
+    include/modules/cimg/cimgsavebuffer.h
+    include/modules/cimg/cimgutils.h
+    include/modules/cimg/cimgvolumereader.h
 )
 
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/cimglayerreader.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/cimglayerwriter.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/cimgsavebuffer.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/cimgutils.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/cimgvolumereader.cpp
+    src/cimglayerreader.cpp
+    src/cimglayerwriter.cpp
+    src/cimgmodule.cpp
+    src/cimgsavebuffer.cpp
+    src/cimgutils.cpp
+    src/cimgvolumereader.cpp
 )
 
 #--------------------------------------------------------------------
@@ -37,7 +39,6 @@ ivw_add_unittest(${TEST_FILES})
 #--------------------------------------------------------------------
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
-
 target_link_libraries(inviwo-module-cimg PUBLIC
     ZLIB::ZLIB
     inviwo::libjpeg
@@ -50,6 +51,7 @@ target_link_libraries(inviwo-module-cimg PUBLIC
     openexr-ilmthread
     openexr-ilmimf
     openexr-ilmimfutil
+    inviwo::cimg
 )
 
 target_compile_definitions(inviwo-module-cimg PUBLIC 
