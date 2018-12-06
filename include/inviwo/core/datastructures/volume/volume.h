@@ -149,9 +149,9 @@ const typename representation_traits<Volume, Kind>::type* Volume::getRep() const
 
 using VolumeSequence = std::vector<std::shared_ptr<Volume>>;
 
-IVW_CORE_EXT template class IVW_CORE_API DataReaderType<Volume>;
-IVW_CORE_EXT template class IVW_CORE_API DataWriterType<Volume>;
-IVW_CORE_EXT template class IVW_CORE_API DataReaderType<VolumeSequence>;
+extern template class IVW_CORE_TMPL_EXP DataReaderType<Volume>;
+extern template class IVW_CORE_TMPL_EXP DataWriterType<Volume>;
+extern template class IVW_CORE_TMPL_EXP DataReaderType<VolumeSequence>;
 
 }  // namespace inviwo
 

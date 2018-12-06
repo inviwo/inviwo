@@ -199,10 +199,6 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
 
     networkEditorView_ = new NetworkEditorView(networkEditor_.get(), this);
     NetworkEditorObserver::addObservation(networkEditor_.get());
-    auto grid = new QGridLayout(networkEditorView_);
-    grid->setContentsMargins(7, 7, 7, 7);
-    networkSearch_ = new NetworkSearch(this);
-    grid->addWidget(networkSearch_, 0, 0, Qt::AlignTop | Qt::AlignRight);
 
     setCentralWidget(networkEditorView_);
 
@@ -542,8 +538,8 @@ void InviwoMainWindow::addActions() {
             editMenu_->addAction(QIcon(":/icons/searchnetwork.png"), tr("&Search Network"));
         searchNetwork->setShortcut(Qt::ShiftModifier + Qt::ControlModifier + Qt::Key_F);
         connect(searchNetwork, &QAction::triggered, [this]() {
-            networkSearch_->setVisible(true);
-            networkSearch_->setFocus();
+            networkEditorView_->getNetworkSearch().setVisible(true);
+            networkEditorView_->getNetworkSearch().setFocus();
         });
 
         auto findAction =
@@ -1103,6 +1099,11 @@ PropertyListWidget* InviwoMainWindow::getPropertyListWidget() const { return pro
 ConsoleWidget* InviwoMainWindow::getConsoleWidget() const { return consoleWidget_.get(); }
 
 HelpWidget* InviwoMainWindow::getHelpWidget() const { return helpWidget_; }
+
+NetworkEditorView& InviwoMainWindow::getNetworkEditorView() const { return *networkEditorView_; }
+TextLabelOverlay& InviwoMainWindow::getNetworkEditorOverlay() const {
+    return networkEditorView_->getOverlay();
+}
 
 InviwoApplication* InviwoMainWindow::getInviwoApplication() const { return app_; }
 InviwoApplicationQt* InviwoMainWindow::getInviwoApplicationQt() const { return app_; }

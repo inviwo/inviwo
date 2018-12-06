@@ -73,7 +73,7 @@ LinkDialogProcessorGraphicsItem::LinkDialogProcessorGraphicsItem(Side side, Proc
 
     LinkDialogTreeItem* prev = this;
     std::function<void(LinkDialogPropertyGraphicsItem*)> connect =
-        [this, &connect, &prev](LinkDialogPropertyGraphicsItem* item) {
+        [&connect, &prev](LinkDialogPropertyGraphicsItem* item) {
             prev->setNext(item);
             item->setPrev(prev);
             prev = item;

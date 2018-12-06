@@ -90,14 +90,17 @@ public:
 
     static const QSizeF size_;
 
+    enum class PortType { In, Out };
+    static QPointF portOffset(PortType type, size_t index);
+    QPointF portPosition(PortType type, size_t index);
+
 protected:
     void paint(QPainter* p, const QStyleOptionGraphicsItem* options, QWidget* widget) override;
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
 
     void updateWidgets();
 
-    enum class PortType { In, Out };
-    QPointF portPosition(PortType type, size_t index);
+
     void addInport(Inport* port);
     void addOutport(Outport* port);
     void removeInport(Inport* port);

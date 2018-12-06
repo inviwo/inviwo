@@ -38,7 +38,7 @@
 
 namespace inviwo::meta::util {
 
-bool replaceInlcude(std::filesystem::path file, std::string_view oldInclude,
+bool replaceInclude(std::filesystem::path file, std::string_view oldInclude,
                     std::string_view newInclude) {
 
     const auto data = [&file]() {

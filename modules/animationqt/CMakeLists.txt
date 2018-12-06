@@ -9,54 +9,59 @@ find_package(Qt5Widgets QUIET REQUIRED)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/animationeditordockwidgetqt.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/animationeditorqt.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/animationlabelviewqt.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/animationqtsupplier.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/animationviewqt.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/demo/demonavigatordockwidgetqt.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/factories/sequenceeditorfactory.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/factories/sequenceeditorfactoryobject.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/factories/trackwidgetqtfactory.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/factories/trackwidgetqtfactoryobject.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/sequenceeditor/controlsequenceeditor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/sequenceeditor/propertysequenceeditor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/sequenceeditor/sequenceeditorpanel.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/sequenceeditor/sequenceeditorwidget.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/trackcontrolswidgetqt.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/controltrackwidgetqt.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/editorconstants.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/keyframesequencewidgetqt.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/keyframewidgetqt.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/propertytrackwidgetqt.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/trackwidgetqt.h
+    include/modules/animationqt/animationeditordockwidgetqt.h
+    include/modules/animationqt/animationeditorqt.h
+    include/modules/animationqt/animationlabelviewqt.h
+    include/modules/animationqt/animationqtmodule.h
+    include/modules/animationqt/animationqtmoduledefine.h
+    include/modules/animationqt/animationqtsupplier.h
+    include/modules/animationqt/animationviewqt.h
+    include/modules/animationqt/demo/demonavigatordockwidgetqt.h
+    include/modules/animationqt/factories/sequenceeditorfactory.h
+    include/modules/animationqt/factories/sequenceeditorfactoryobject.h
+    include/modules/animationqt/factories/trackwidgetqtfactory.h
+    include/modules/animationqt/factories/trackwidgetqtfactoryobject.h
+    include/modules/animationqt/sequenceeditor/controlsequenceeditor.h
+    include/modules/animationqt/sequenceeditor/keyframeeditorwidget.h
+    include/modules/animationqt/sequenceeditor/propertysequenceeditor.h
+    include/modules/animationqt/sequenceeditor/sequenceeditorpanel.h
+    include/modules/animationqt/sequenceeditor/sequenceeditorwidget.h
+    include/modules/animationqt/trackcontrolswidgetqt.h
+    include/modules/animationqt/widgets/controltrackwidgetqt.h
+    include/modules/animationqt/widgets/editorconstants.h
+    include/modules/animationqt/widgets/keyframesequencewidgetqt.h
+    include/modules/animationqt/widgets/keyframewidgetqt.h
+    include/modules/animationqt/widgets/propertytrackwidgetqt.h
+    include/modules/animationqt/widgets/trackwidgetqt.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/animationeditordockwidgetqt.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/animationeditorqt.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/animationlabelviewqt.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/animationqtsupplier.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/animationviewqt.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/demo/demonavigatordockwidgetqt.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/factories/sequenceeditorfactory.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/factories/sequenceeditorfactoryobject.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/factories/trackwidgetqtfactory.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/factories/trackwidgetqtfactoryobject.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/sequenceeditor/controlsequenceeditor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/sequenceeditor/propertysequenceeditor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/sequenceeditor/sequenceeditorpanel.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/sequenceeditor/sequenceeditorwidget.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/trackcontrolswidgetqt.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/controltrackwidgetqt.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/editorconstants.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/keyframesequencewidgetqt.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/keyframewidgetqt.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/propertytrackwidgetqt.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/trackwidgetqt.cpp
+    src/animationeditordockwidgetqt.cpp
+    src/animationeditorqt.cpp
+    src/animationlabelviewqt.cpp
+    src/animationqtmodule.cpp
+    src/animationqtsupplier.cpp
+    src/animationviewqt.cpp
+    src/demo/demonavigatordockwidgetqt.cpp
+    src/factories/sequenceeditorfactory.cpp
+    src/factories/sequenceeditorfactoryobject.cpp
+    src/factories/trackwidgetqtfactory.cpp
+    src/factories/trackwidgetqtfactoryobject.cpp
+    src/sequenceeditor/controlsequenceeditor.cpp
+    src/sequenceeditor/keyframeeditorwidget.cpp
+    src/sequenceeditor/propertysequenceeditor.cpp
+    src/sequenceeditor/sequenceeditorpanel.cpp
+    src/sequenceeditor/sequenceeditorwidget.cpp
+    src/trackcontrolswidgetqt.cpp
+    src/widgets/controltrackwidgetqt.cpp
+    src/widgets/editorconstants.cpp
+    src/widgets/keyframesequencewidgetqt.cpp
+    src/widgets/keyframewidgetqt.cpp
+    src/widgets/propertytrackwidgetqt.cpp
+    src/widgets/trackwidgetqt.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

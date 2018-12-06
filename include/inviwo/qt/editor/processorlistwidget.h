@@ -63,12 +63,15 @@ public:
     static const int sortRole;
     static const int viewRole;
     static const int typeRole;
-    enum ItemType {GroupType, ProcessoorType};
+    enum ItemType { GroupType, ProcessoorType };
+
 protected:
     virtual void mousePressEvent(QMouseEvent* e) override;
     virtual void mouseMoveEvent(QMouseEvent* e) override;
 
 private:
+    void showContextMenu(const QPoint& p);
+
     ProcessorTreeWidget* processorTreeWidget_;
     QPoint dragStartPosition_;
 };
@@ -81,15 +84,21 @@ class IVW_QTEDITOR_API ProcessorTreeItem : public QTreeWidgetItem {
 class IVW_QTEDITOR_API ProcessorTreeWidget : public InviwoDockWidget,
                                              public FactoryObserver<ProcessorFactoryObject> {
 public:
+    enum class Grouping { Alphabetical, Categorical, CodeState, Module, LastUsed, MostUsed };
+    Q_ENUM(Grouping);
+
     ProcessorTreeWidget(InviwoMainWindow* parent, HelpWidget* helpWidget);
     ~ProcessorTreeWidget();
 
     void focusSearch();
     void addSelectedProcessor();
+    void addProcessor(QString className);
     void addProcessorsToTree(ProcessorFactoryObject* item = nullptr);
     void recordProcessorUse(const std::string& id);
 
     std::unique_ptr<Processor> createProcessor(QString cid);
+
+    Grouping getGrouping() const;
 
 protected:
     bool processorFits(ProcessorFactoryObject* processor, const QString& filter);
@@ -97,7 +106,6 @@ protected:
 
 private:
     void currentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
-    void addProcessor(QString className);
 
     void extractInfoAndAddProcessor(ProcessorFactoryObject* processor, InviwoModule* elem);
     QTreeWidgetItem* addToplevelItemTo(QString title, const std::string& desc);
@@ -133,9 +141,6 @@ private:
 class IVW_QTEDITOR_API ProcessorDragObject : public QDrag {
 public:
     ProcessorDragObject(QWidget* source, std::unique_ptr<Processor> processor);
-
-    static bool canDecode(const QMimeData* mimeData);
-    static bool decode(const QMimeData* mimeData, QString& className);
 };
 
 }  // namespace inviwo

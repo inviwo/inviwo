@@ -37,6 +37,11 @@ BaseOptionProperty::BaseOptionProperty(const std::string& identifier,
                                        PropertySemantics semantics)
     : Property(identifier, displayName, invalidationLevel, semantics) {}
 
+BaseOptionProperty::BaseOptionProperty(const BaseOptionProperty& rhs) = default;
+BaseOptionProperty& BaseOptionProperty::operator=(const BaseOptionProperty&) = default;
+
+BaseOptionProperty::~BaseOptionProperty() = default;
+
 void BaseOptionProperty::set(const Property* srcProperty) {
     if (auto optionSrcProp = dynamic_cast<const BaseOptionProperty*>(srcProperty)) {
         size_t option = std::min(optionSrcProp->getSelectedIndex(), size() - 1);
@@ -46,5 +51,19 @@ void BaseOptionProperty::set(const Property* srcProperty) {
         }
     }
 }
+
+template class IVW_CORE_TMPL_INST OptionPropertyOption<unsigned int>;
+template class IVW_CORE_TMPL_INST OptionPropertyOption<int>;
+template class IVW_CORE_TMPL_INST OptionPropertyOption<size_t>;
+template class IVW_CORE_TMPL_INST OptionPropertyOption<float>;
+template class IVW_CORE_TMPL_INST OptionPropertyOption<double>;
+template class IVW_CORE_TMPL_INST OptionPropertyOption<std::string>;
+
+template class IVW_CORE_TMPL_INST TemplateOptionProperty<unsigned int>;
+template class IVW_CORE_TMPL_INST TemplateOptionProperty<int>;
+template class IVW_CORE_TMPL_INST TemplateOptionProperty<size_t>;
+template class IVW_CORE_TMPL_INST TemplateOptionProperty<float>;
+template class IVW_CORE_TMPL_INST TemplateOptionProperty<double>;
+template class IVW_CORE_TMPL_INST TemplateOptionProperty<std::string>;
 
 }  // namespace inviwo

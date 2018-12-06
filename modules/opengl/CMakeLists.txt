@@ -11,94 +11,97 @@ ivw_module(OpenGL)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/buffer/buffergl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/buffer/bufferglconverter.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/buffer/bufferobject.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/buffer/bufferobjectarray.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/buffer/framebufferobject.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/buffer/renderbufferobject.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/canvasgl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/canvasprocessorgl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/clockgl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/debugmessages.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/geometry/meshgl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/glformats.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/image/imagecompositor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/image/imagegl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/image/layergl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/image/layerglconverter.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/inviwoopengl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/openglcapabilities.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/openglexception.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/openglmodule.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/openglsettings.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/openglutils.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/rendering/meshdrawergl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/rendering/texturequadrenderer.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/shader/shader.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/shader/shadermanager.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/shader/shaderobject.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/shader/shaderresource.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/shader/shadertype.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/shader/shaderutils.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/shader/uniformutils.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/sharedopenglresources.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/texture/texture.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/texture/texture2d.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/texture/texture2darray.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/texture/texture3d.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/texture/textureobserver.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/texture/textureunit.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/texture/textureutils.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/volume/volumegl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/volume/volumeglconverter.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/volume/volumeutils.h
+    include/modules/opengl/buffer/buffergl.h
+    include/modules/opengl/buffer/bufferglconverter.h
+    include/modules/opengl/buffer/bufferglobjectid.h
+    include/modules/opengl/buffer/bufferobject.h
+    include/modules/opengl/buffer/bufferobjectarray.h
+    include/modules/opengl/buffer/bufferobjectobserver.h
+    include/modules/opengl/buffer/framebufferobject.h
+    include/modules/opengl/buffer/renderbufferobject.h
+    include/modules/opengl/canvasgl.h
+    include/modules/opengl/canvasprocessorgl.h
+    include/modules/opengl/clockgl.h
+    include/modules/opengl/debugmessages.h
+    include/modules/opengl/geometry/meshgl.h
+    include/modules/opengl/glformats.h
+    include/modules/opengl/image/imagecompositor.h
+    include/modules/opengl/image/imagegl.h
+    include/modules/opengl/image/layergl.h
+    include/modules/opengl/image/layerglconverter.h
+    include/modules/opengl/inviwoopengl.h
+    include/modules/opengl/openglcapabilities.h
+    include/modules/opengl/openglexception.h
+    include/modules/opengl/openglmodule.h
+    include/modules/opengl/openglmoduledefine.h
+    include/modules/opengl/openglsettings.h
+    include/modules/opengl/openglutils.h
+    include/modules/opengl/rendering/meshdrawergl.h
+    include/modules/opengl/rendering/texturequadrenderer.h
+    include/modules/opengl/shader/shader.h
+    include/modules/opengl/shader/shadermanager.h
+    include/modules/opengl/shader/shaderobject.h
+    include/modules/opengl/shader/shaderresource.h
+    include/modules/opengl/shader/shadertype.h
+    include/modules/opengl/shader/shaderutils.h
+    include/modules/opengl/shader/uniformutils.h
+    include/modules/opengl/sharedopenglresources.h
+    include/modules/opengl/texture/texture.h
+    include/modules/opengl/texture/texture2d.h
+    include/modules/opengl/texture/texture2darray.h
+    include/modules/opengl/texture/texture3d.h
+    include/modules/opengl/texture/textureobserver.h
+    include/modules/opengl/texture/textureunit.h
+    include/modules/opengl/texture/textureutils.h
+    include/modules/opengl/volume/volumegl.h
+    include/modules/opengl/volume/volumeglconverter.h
+    include/modules/opengl/volume/volumeutils.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/buffer/buffergl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/buffer/bufferglconverter.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/buffer/bufferobject.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/buffer/bufferobjectarray.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/buffer/framebufferobject.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/buffer/renderbufferobject.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/canvasgl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/canvasprocessorgl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/clockgl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/debugmessages.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/geometry/meshgl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/glformats.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/image/imagecompositor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/image/imagegl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/image/layergl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/image/layerglconverter.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/inviwoopengl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/openglcapabilities.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/openglexception.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/openglmodule.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/openglsettings.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/openglutils.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/rendering/meshdrawergl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/rendering/texturequadrenderer.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/shader/shader.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/shader/shadermanager.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/shader/shaderobject.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/shader/shaderresource.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/shader/shadertype.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/shader/shaderutils.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/sharedopenglresources.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/texture/texture.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/texture/texture2d.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/texture/texture2darray.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/texture/texture3d.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/texture/textureunit.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/texture/textureutils.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/volume/volumegl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/volume/volumeglconverter.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/volume/volumeutils.cpp
+    src/buffer/buffergl.cpp
+    src/buffer/bufferglconverter.cpp
+    src/buffer/bufferobject.cpp
+    src/buffer/bufferobjectarray.cpp
+    src/buffer/framebufferobject.cpp
+    src/buffer/renderbufferobject.cpp
+    src/canvasgl.cpp
+    src/canvasprocessorgl.cpp
+    src/clockgl.cpp
+    src/debugmessages.cpp
+    src/geometry/meshgl.cpp
+    src/glformats.cpp
+    src/image/imagecompositor.cpp
+    src/image/imagegl.cpp
+    src/image/layergl.cpp
+    src/image/layerglconverter.cpp
+    src/inviwoopengl.cpp
+    src/openglcapabilities.cpp
+    src/openglexception.cpp
+    src/openglmodule.cpp
+    src/openglsettings.cpp
+    src/openglutils.cpp
+    src/rendering/meshdrawergl.cpp
+    src/rendering/texturequadrenderer.cpp
+    src/shader/shader.cpp
+    src/shader/shadermanager.cpp
+    src/shader/shaderobject.cpp
+    src/shader/shaderresource.cpp
+    src/shader/shadertype.cpp
+    src/shader/shaderutils.cpp
+    src/sharedopenglresources.cpp
+    src/texture/texture.cpp
+    src/texture/texture2d.cpp
+    src/texture/texture2darray.cpp
+    src/texture/texture3d.cpp
+    src/texture/textureunit.cpp
+    src/texture/textureutils.cpp
+    src/volume/volumegl.cpp
+    src/volume/volumeglconverter.cpp
+    src/volume/volumeutils.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
@@ -145,12 +148,11 @@ ivw_group("Shader Files" ${SHADER_FILES})
 #--------------------------------------------------------------------
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
-
-target_link_libraries(inviwo-module-opengl PUBLIC GLEW)
+target_link_libraries(inviwo-module-opengl PUBLIC inviwo::GLEW)
 
 find_package(OpenGL QUIET REQUIRED)
 target_link_libraries(inviwo-module-opengl PUBLIC ${OPENGL_LIBRARIES})
-target_include_directories(inviwo-module-opengl INTERFACE ${OPENGL_INCLUDE_DIR})
+target_include_directories(inviwo-module-opengl PUBLIC ${OPENGL_INCLUDE_DIR})
 
 #--------------------------------------------------------------------
 # Package or build shaders into resources

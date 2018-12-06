@@ -5,34 +5,37 @@ ivw_module(PostProcessing)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/depthdarkening.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/fog.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/fxaa.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagebrightnesscontrast.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageedgedarken.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagehuesaturationluminance.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagesharpen.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageopacity.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/ssao.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/hdrbloom.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/tonemapping.h
+    include/modules/postprocessing/postprocessingmodule.h
+    include/modules/postprocessing/postprocessingmoduledefine.h
+    include/modules/postprocessing/processors/depthdarkening.h
+    include/modules/postprocessing/processors/fog.h
+    include/modules/postprocessing/processors/fxaa.h
+    include/modules/postprocessing/processors/hdrbloom.h
+    include/modules/postprocessing/processors/imagebrightnesscontrast.h
+    include/modules/postprocessing/processors/imageedgedarken.h
+    include/modules/postprocessing/processors/imagehuesaturationluminance.h
+    include/modules/postprocessing/processors/imageopacity.h
+    include/modules/postprocessing/processors/imagesharpen.h
+    include/modules/postprocessing/processors/ssao.h
+    include/modules/postprocessing/processors/tonemapping.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/depthdarkening.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/fog.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/fxaa.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagebrightnesscontrast.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageedgedarken.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagehuesaturationluminance.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagesharpen.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageopacity.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/ssao.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/hdrbloom.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/tonemapping.cpp
+    src/postprocessingmodule.cpp
+    src/processors/depthdarkening.cpp
+    src/processors/fog.cpp
+    src/processors/fxaa.cpp
+    src/processors/hdrbloom.cpp
+    src/processors/imagebrightnesscontrast.cpp
+    src/processors/imageedgedarken.cpp
+    src/processors/imagehuesaturationluminance.cpp
+    src/processors/imageopacity.cpp
+    src/processors/imagesharpen.cpp
+    src/processors/ssao.cpp
+    src/processors/tonemapping.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

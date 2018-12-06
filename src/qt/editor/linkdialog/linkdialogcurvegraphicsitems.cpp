@@ -39,8 +39,8 @@
 
 namespace inviwo {
 
-DialogCurveGraphicsItem::DialogCurveGraphicsItem(QPointF startPoint, QPointF endPoint, uvec3 color)
-    : CurveGraphicsItem(startPoint, endPoint, color) {
+DialogCurveGraphicsItem::DialogCurveGraphicsItem(QPointF startPoint, QPointF endPoint, QColor color)
+    : CurveGraphicsItem(color), startPoint_{startPoint}, endPoint_{endPoint} {
     setZValue(linkdialog::connectionDepth);
 }
 
@@ -56,14 +56,22 @@ QPainterPath DialogCurveGraphicsItem::obtainCurvePath(QPointF startPoint, QPoint
     return bezierCurve;
 }
 
-QPainterPath DialogCurveGraphicsItem::obtainCurvePath() const {
-    return CurveGraphicsItem::obtainCurvePath();
+QPointF DialogCurveGraphicsItem::getStartPoint() const { return startPoint_; }
+QPointF DialogCurveGraphicsItem::getEndPoint() const { return endPoint_; }
+
+void DialogCurveGraphicsItem::setStartPoint(QPointF startPoint) {
+    startPoint_ = startPoint;
+    updateShape();
+}
+void DialogCurveGraphicsItem::setEndPoint(QPointF endPoint) {
+    endPoint_ = endPoint;
+    updateShape();
 }
 
 DialogConnectionGraphicsItem::DialogConnectionGraphicsItem(
     LinkDialogPropertyGraphicsItem* startProperty, LinkDialogPropertyGraphicsItem* endProperty,
     const PropertyLink& propertyLink)
-    : DialogCurveGraphicsItem(startProperty->pos(), endProperty->pos(), uvec3(38, 38, 38))
+    : CurveGraphicsItem(QColor(38, 38, 38))
     , startPropertyGraphicsItem_(startProperty)
     , endPropertyGraphicsItem_(endProperty)
     , propertyLink_(propertyLink) {
@@ -75,7 +83,7 @@ DialogConnectionGraphicsItem::DialogConnectionGraphicsItem(
     endPropertyGraphicsItem_->addConnectionGraphicsItem(this);
 }
 
-DialogConnectionGraphicsItem::~DialogConnectionGraphicsItem() { 
+DialogConnectionGraphicsItem::~DialogConnectionGraphicsItem() {
     if (startPropertyGraphicsItem_) {
         startPropertyGraphicsItem_->removeConnectionGraphicsItem(this);
         startPropertyGraphicsItem_ = nullptr;
@@ -86,26 +94,36 @@ DialogConnectionGraphicsItem::~DialogConnectionGraphicsItem() {
     }
 }
 
-void DialogConnectionGraphicsItem::updateStartEndPoint() {
+QPointF DialogConnectionGraphicsItem::getStartPoint() const {
     auto si = startPropertyGraphicsItem_->getConnectionIndex(this);
-    setStartPoint(startPropertyGraphicsItem_->calculateArrowCenter(si));
-
+    return startPropertyGraphicsItem_->calculateArrowCenter(si);
+}
+QPointF DialogConnectionGraphicsItem::getEndPoint() const {
     auto ei = endPropertyGraphicsItem_->getConnectionIndex(this);
-    setEndPoint(endPropertyGraphicsItem_->calculateArrowCenter(ei));
-    
-    if (startPropertyGraphicsItem_->isVisible() || endPropertyGraphicsItem_->isVisible()){
+    return endPropertyGraphicsItem_->calculateArrowCenter(ei);
+}
+
+QPainterPath DialogConnectionGraphicsItem::obtainCurvePath(QPointF startPoint,
+                                                           QPointF endPoint) const {
+    double delta = endPoint.x() - startPoint.x();
+    QPointF ctrlPoint1 = QPointF(startPoint.x() + delta / 4.0, startPoint.y());
+    QPointF ctrlPoint2 = QPointF(endPoint.x() - delta / 4.0, endPoint.y());
+    QPainterPath bezierCurve;
+    bezierCurve.moveTo(startPoint);
+    bezierCurve.cubicTo(ctrlPoint1, ctrlPoint2, endPoint);
+    return bezierCurve;
+}
+
+void DialogConnectionGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem* options,
+                                         QWidget* widget) {
+    if (startPropertyGraphicsItem_->isVisible() || endPropertyGraphicsItem_->isVisible()) {
         setColor(QColor(38, 38, 38));
         setZValue(linkdialog::connectionDepth);
     } else {
         setColor(QColor(138, 138, 138));
-        setZValue(linkdialog::connectionDepth-0.5);
+        setZValue(linkdialog::connectionDepth - 0.5);
     }
+    CurveGraphicsItem::paint(p, options, widget);
 }
 
-void DialogConnectionGraphicsItem::updateConnectionDrawing() {
-    startPropertyGraphicsItem_->prepareGeometryChange();
-    endPropertyGraphicsItem_->prepareGeometryChange();
-    updateStartEndPoint();
-}
-
-}  // namespace
+}  // namespace inviwo

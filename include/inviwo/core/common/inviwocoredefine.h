@@ -36,22 +36,32 @@
         #ifdef _WIN32
             #define IVW_CORE_API __declspec(dllexport)
             #define IVW_CORE_EXT
+            #define IVW_CORE_TMPL_EXP
+            #define IVW_CORE_TMPL_INST __declspec(dllexport)
         #else //UNIX (GCC)
             #define IVW_CORE_API __attribute__ ((visibility ("default")))
             #define IVW_CORE_EXT
+            #define IVW_CORE_TMPL_EXP __attribute__ ((__visibility__("default")))
+            #define IVW_CORE_TMPL_INST
         #endif
     #else
         #ifdef _WIN32
             #define IVW_CORE_API __declspec(dllimport)
             #define IVW_CORE_EXT extern
+            #define IVW_CORE_TMPL_EXP __declspec(dllimport)
+            #define IVW_CORE_TMPL_INST
         #else
             #define IVW_CORE_API
             #define IVW_CORE_EXT extern
+            #define IVW_CORE_TMPL_EXP __attribute__ ((__visibility__("default")))
+            #define IVW_CORE_TMPL_INST
         #endif
     #endif
 #else //STATIC
     #define IVW_CORE_API
     #define IVW_CORE_EXT extern
+    #define IVW_CORE_TMPL_EXP
+    #define IVW_CORE_TMPL_INST
 #endif
 
 #endif /* _IVW_CORE_DEFINE_H_ */

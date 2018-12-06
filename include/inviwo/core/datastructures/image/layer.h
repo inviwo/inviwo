@@ -109,8 +109,8 @@ private:
 };
 
 // https://docs.microsoft.com/en-us/cpp/cpp/general-rules-and-limitations?view=vs-2017
-IVW_CORE_EXT template class IVW_CORE_API DataReaderType<Layer>;
-IVW_CORE_EXT template class IVW_CORE_API DataWriterType<Layer>;
+extern template class IVW_CORE_TMPL_EXP DataReaderType<Layer>;
+extern template class IVW_CORE_TMPL_EXP DataWriterType<Layer>;
 
 
 }  // namespace
