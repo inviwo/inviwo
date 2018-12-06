@@ -57,6 +57,11 @@ BaseSliderWidgetQt::BaseSliderWidgetQt()
     slider_->setPageStep(1);
     slider_->setMaximum(sliderMax_);
     slider_->installEventFilter(this);
+    slider_->setFocusPolicy(Qt::ClickFocus);
+
+    setFocusPolicy(spinBox_->focusPolicy());
+    setFocusProxy(spinBox_);
+    slider_->setFocusProxy(spinBox_);
 
     spinBox_->setKeyboardTracking(false);  // don't emit the valueChanged() signal while typing
 

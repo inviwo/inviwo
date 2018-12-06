@@ -227,8 +227,8 @@ std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
                 }
 
                 connect(
-                    semanticsGroup, &QActionGroup::triggered,
-                    this, [prop = property_](QAction * action) {
+                    semanticsGroup, &QActionGroup::triggered, this,
+                    [prop = property_](QAction* action) {
                         PropertySemantics semantics(utilqt::fromQString(action->data().toString()));
                         prop->setSemantics(semantics);
                     });
@@ -248,18 +248,16 @@ std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
 
     return menu;
 }
-    
+
 std::unique_ptr<QMimeData> PropertyWidgetQt::getPropertyMimeData() const {
     auto mimeData = util::make_unique<QMimeData>();
     if (!property_) return mimeData;
-    
+
     Serializer serializer("");
     {
         // Need to set the serialization mode to all temporarily to be able to copy the
         // property.
-        auto toReset =
-        PropertyPresetManager::scopedSerializationModeAll(
-                                                          property_);
+        auto toReset = PropertyPresetManager::scopedSerializationModeAll(property_);
         std::vector<Property*> properties = {property_};
         serializer.serialize("Properties", properties, "Property");
     }
@@ -267,7 +265,7 @@ std::unique_ptr<QMimeData> PropertyWidgetQt::getPropertyMimeData() const {
     serializer.writeFile(ss);
     auto str = ss.str();
     QByteArray dataArray(str.c_str(), static_cast<int>(str.length()));
-    
+
     mimeData->setData(QString("application/x.vnd.inviwo.property+xml"), dataArray);
     mimeData->setData(QString("text/plain"), dataArray);
     return mimeData;
@@ -289,7 +287,7 @@ void PropertyWidgetQt::addModuleMenuActions(QMenu* menu, InviwoApplication* app)
             auto actionName = mAction->getActionName();
             auto action = submenu->addAction(QString::fromStdString(actionName));
             connect(action, &QAction::triggered, this,
-                    [ app, actionName, property = property_ ](bool /*checked*/) {
+                    [app, actionName, property = property_](bool /*checked*/) {
                         const auto& mActions = app->getCallbackActions();
                         auto it = std::find_if(mActions.begin(), mActions.end(), [&](auto& item) {
                             return item->getActionName() == actionName;
@@ -301,30 +299,30 @@ void PropertyWidgetQt::addModuleMenuActions(QMenu* menu, InviwoApplication* app)
         }
     }
 }
-    
-void PropertyWidgetQt::mousePressEvent(QMouseEvent *event) {
+
+void PropertyWidgetQt::mousePressEvent(QMouseEvent* event) {
     if (event->button() == Qt::LeftButton) {
         mousePressedPosition_ = event->pos();
     }
     QWidget::mousePressEvent(event);
 }
 
-void PropertyWidgetQt::mouseMoveEvent(QMouseEvent *event) {
+void PropertyWidgetQt::mouseMoveEvent(QMouseEvent* event) {
 
     if (!(event->buttons() & Qt::LeftButton)) return;
-    
-    if ((event->pos() - mousePressedPosition_).manhattanLength()
-        < QApplication::startDragDistance())
+
+    if ((event->pos() - mousePressedPosition_).manhattanLength() <
+        QApplication::startDragDistance())
         return;
-    
+
     if (!property_) return;
-    
-    QDrag *drag = new QDrag(this);
+
+    QDrag* drag = new QDrag(this);
     auto mimeData = getPropertyMimeData();
     // Displayed while dragging property
     mimeData->setText(utilqt::toLocalQString(property_->getDisplayName()));
     drag->setMimeData(mimeData.release());
-    
+
     drag->exec();
 }
 
@@ -344,14 +342,15 @@ void PropertyWidgetQt::addPresetMenuActions(QMenu* menu, InviwoApplication* app)
                 presetManager->loadPreset(name, property, type);
             });
         };
-        auto savePreset =
-            [ presetManager, property = property_ ](QWidget * parent, PropertyPresetType type) {
+        auto savePreset = [presetManager, property = property_](QWidget* parent,
+                                                                PropertyPresetType type) {
             // will prompt the user to enter a preset name.
             // returns false if a preset with the same name already exits
             // and the user does not want to overwrite it.
             bool ok;
-            QString text = QInputDialog::getText(parent, tr("Save Preset"), tr("Name:"),
-                                                 QLineEdit::Normal, "", &ok);
+            QString text =
+                QInputDialog::getText(parent, tr("Save Preset"), tr("Name:"), QLineEdit::Normal, "",
+                                      &ok, Qt::WindowFlags() | Qt::MSWindowsFixedSizeDialogHint);
             if (ok && !text.isEmpty()) {
                 const auto presetName = text.toStdString();
                 bool actionExists = false;
@@ -374,7 +373,7 @@ void PropertyWidgetQt::addPresetMenuActions(QMenu* menu, InviwoApplication* app)
             }
             return true;
         };
-        auto clearPresets = [ presetManager, property = property_ ](PropertyPresetType type) {
+        auto clearPresets = [presetManager, property = property_](PropertyPresetType type) {
             switch (type) {
                 case PropertyPresetType::Property:
                     presetManager->clearPropertyPresets(property);

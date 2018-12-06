@@ -1,20 +1,18 @@
 # Following
 # http://stackoverflow.com/a/29214327/3214598
 
-file(GLOB_RECURSE HEADER_FILES ./*.h)
+file(GLOB_RECURSE HEADER_FILES include/tclap/*.h)
 
-ivw_group("Header Files" ${HEADER_FILES})
-source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
+ivw_group("Header Files" BASE include/tclap ${HEADER_FILES})
+source_group("CMake Files" FILES CMakeLists.txt)
 
-#add_library(moduleA INTERFACE) # 'moduleA' is an INTERFACE pseudo target
-
-# From here, the target 'moduleA' can be customised
-#target_include_directories(moduleA ...) # Transitively forwarded
-#install(TARGETS moduleA ...)
+add_library(tclap INTERFACE)
+add_library(inviwo::tclap ALIAS tclap)
+target_include_directories(tclap INTERFACE include)
 
 #  HACK: have the files showing in the IDE, under the name 'flags'
-add_custom_target(tclap SOURCES ${HEADER_FILES})
-set_target_properties(tclap PROPERTIES VERSION 1.2.1 SOVERSION 1.2)
+add_custom_target(tclap_dummy SOURCES ${HEADER_FILES})
+set_target_properties(tclap_dummy PROPERTIES VERSION 1.2.1 SOVERSION 1.2)
 
 # Creates VS folder structure
-ivw_folder(tclap ext)
+ivw_folder(tclap_dummy ext)

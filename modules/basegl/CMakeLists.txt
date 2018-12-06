@@ -33,6 +33,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagegrayscale.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagehighpass.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageinvert.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagelayer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagelayoutgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagelowpass.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagemapping.h
@@ -105,6 +106,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagegrayscale.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagehighpass.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageinvert.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagelayer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagelayoutgl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagelowpass.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagemapping.cpp
@@ -154,9 +156,9 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/axisalignedcutplaneslice.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/background.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/capnearclipping.frag
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/cubeglyph.vert
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/cubeglyph.geom
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/cubeglyph.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/cubeglyph.geom
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/cubeglyph.vert
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/heightfield.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/heightfield.vert
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/imagegradient.frag
@@ -191,6 +193,7 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/sphereglyph.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/sphereglyph.geom
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/sphereglyph.vert
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/splitter.vert
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/tuberendering.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/tuberendering.geom
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/tuberendering.vert

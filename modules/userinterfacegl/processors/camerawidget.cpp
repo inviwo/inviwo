@@ -110,7 +110,7 @@ CameraWidget::CameraWidget()
     , picking_(this, numInteractionWidgets, [&](PickingEvent *p) { objectPicked(p); })
     , shader_("widgetrenderer.vert", "geometryrendering.frag", false)
     , cubeShader_("geometryrendering.vert", "geometryrendering.frag", false)
-    , overlayShader_("img_identity.vert", "img_copy.frag")
+    , overlayShader_("img_identity.vert", "widgettexture.frag")
     , isMouseBeingPressedAndHold_(false)
     , mouseWasMoved_(false)
     , activeWidgetID_(-1) {
@@ -207,7 +207,7 @@ void CameraWidget::process() {
     }
 
     // combine the previously rendered widget image with the input
-    if (inport_.isConnected()) {
+    if (inport_.isReady()) {
         utilgl::activateTargetAndCopySource(outport_, inport_);
     } else {
         utilgl::activateAndClearTarget(outport_, ImageType::ColorDepthPicking);

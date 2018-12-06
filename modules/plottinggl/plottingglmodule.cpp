@@ -34,6 +34,7 @@
 #include <modules/opengl/shader/shadermanager.h>
 
 #include <modules/plottinggl/processors/axisrenderprocessor.h>
+#include <modules/plottinggl/processors/colorscalelegend.h>
 #include <modules/plottinggl/processors/parallelcoordinates/parallelcoordinates.h>
 #include <modules/plottinggl/processors/scatterplotmatrixprocessor.h>
 #include <modules/plottinggl/processors/scatterplotprocessor.h>
@@ -50,6 +51,7 @@ PlottingGLModule::PlottingGLModule(InviwoApplication* app) : InviwoModule(app, "
     ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
 
     registerProcessor<plot::AxisRenderProcessor>();
+    registerProcessor<plot::ColorScaleLegend>();
     registerProcessor<plot::ParallelCoordinates>();
     registerProcessor<plot::PersistenceDiagramPlotProcessor>();
     registerProcessor<plot::ScatterPlotMatrixProcessor>();

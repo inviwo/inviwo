@@ -78,13 +78,15 @@ private:
      * @param margin  margin around each entry in texel
      * @return minimum texture size required to accommodate atlas
      */
-    ivec2 calcTexLayout(const std::vector<size_t> indices, const int width, const int margin);
+    ivec2 calcTexLayout(const std::vector<size_t> indices, double minArea);
 
     void initAtlas(TextRenderer &textRenderer);
 
     std::shared_ptr<Texture2D> atlasTex_;
     std::vector<TexAtlasEntry> entries_;
     TexAtlasRenderInfo renderInfo_;
+    static constexpr int maxTexSize_ = 8192;
+    static constexpr int margin_ = 2;
 };
 
 }  // namespace util

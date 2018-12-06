@@ -30,6 +30,7 @@
 #include <inviwo/core/util/settings/settings.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/util/utilities.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/properties/propertyfactory.h>
 #include <inviwo/core/metadata/metadatafactory.h>
@@ -53,18 +54,18 @@ void Settings::addProperty(Property& property) { addProperty(&property, false); 
 std::string Settings::getIdentifier() { return identifier_; }
 
 std::string Settings::getFileName() const {
-    std::string filename = identifier_;
-    replaceInString(filename, " ", "_");
-    return filesystem::getPath(PathType::Settings, "/" + filename + ".ivs", true);
+    auto settingname = identifier_;
+    replaceInString(settingname, " ", "_");
+    const auto appname = util::stripIdentifier(app_->getDisplayName());
+    return filesystem::getPath(PathType::Settings, "/" + appname + "_" + settingname + ".ivs",
+                               true);
 }
 
-InviwoApplication* Settings::getInviwoApplication() {
-    return app_;
-}
+InviwoApplication* Settings::getInviwoApplication() { return app_; }
 
 void Settings::load() {
     util::KeepTrueWhileInScope guard{&isDeserializing_};
-    const auto filename = getFileName();
+    auto filename = getFileName();
 
     if (filesystem::fileExists(filename)) {
         // An error is not critical as the default setting will be used.

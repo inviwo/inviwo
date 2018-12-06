@@ -3,3 +3,4 @@
 set(dependencies
     InviwoOpenGLModule
 )
+set(EnableByDefault ON)

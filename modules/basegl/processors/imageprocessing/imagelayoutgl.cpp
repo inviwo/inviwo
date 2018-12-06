@@ -108,6 +108,8 @@ ImageLayoutGL::ImageLayoutGL()
     addProperty(vertical3Right1LeftSplitter_);
 
     layout_.onChange([this]() { onStatusChange(); });
+
+    onStatusChange(false);
 }
 
 ImageLayoutGL::~ImageLayoutGL() = default;
@@ -143,7 +145,7 @@ void ImageLayoutGL::propagateEvent(Event* event, Outport* source) {
     }
 }
 
-void ImageLayoutGL::onStatusChange() {
+void ImageLayoutGL::onStatusChange(bool propagate) {
     horizontalSplitter_.setVisible(false);
     verticalSplitter_.setVisible(false);
     vertical3Left1RightSplitter_.setVisible(false);
@@ -173,8 +175,10 @@ void ImageLayoutGL::onStatusChange() {
             break;
     }
 
-    ResizeEvent e(currentDim_);
-    propagateEvent(&e, &outport_);
+    if (propagate) {
+        ResizeEvent e(currentDim_);
+        propagateEvent(&e, &outport_);
+    }
 }
 
 void ImageLayoutGL::process() {

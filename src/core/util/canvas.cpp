@@ -51,14 +51,14 @@ Canvas::Canvas(size2_t dimensions)
     , ownerWidget_(nullptr) {}
 
 void Canvas::resize(size2_t canvasSize) {
-    auto previousScreenDimensions_ = screenDimensions_;
+    auto previousScreenDimensions = screenDimensions_;
     screenDimensions_ = canvasSize;
 
     if (propagator_) {
         NetworkLock lock;
         RenderContext::getPtr()->activateDefaultRenderContext();
         ResizeEvent resizeEvent(screenDimensions_);
-        resizeEvent.setPreviousSize(previousScreenDimensions_);
+        resizeEvent.setPreviousSize(previousScreenDimensions);
         propagator_->propagateEvent(&resizeEvent, nullptr);
     }
 }
@@ -80,4 +80,11 @@ ProcessorWidget* Canvas::getProcessorWidgetOwner() const { return ownerWidget_; 
 
 void Canvas::setProcessorWidgetOwner(ProcessorWidget* ownerWidget) { ownerWidget_ = ownerWidget; }
 
-}  // namespace
+bool Canvas::isFullScreen() const { return isFullScreen_; }
+
+void Canvas::setFullScreen(bool fullscreen) {
+    isFullScreen_ = fullscreen;
+    setFullScreenInternal(fullscreen);
+}
+
+}  // namespace inviwo

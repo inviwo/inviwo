@@ -258,7 +258,7 @@ void GLUITestProcessor::process() {
         propertyLayout_.setMargins(m.x, m.y, m.z, m.w);
     }
 
-    if (inport_.isConnected()) {
+    if (inport_.isReady()) {
         utilgl::activateTargetAndCopySource(outport_, inport_);
     } else {
         utilgl::activateAndClearTarget(outport_);

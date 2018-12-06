@@ -41,7 +41,7 @@ namespace plot {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo CSVSource::processorInfo_{
     "org.inviwo.CSVSource",                   // Class identifier
-    "CSVSource",                              // Display name
+    "CSV Source",                             // Display name
     "Data Input",                             // Category
     CodeState::Stable,                        // Code state
     "CPU, Plotting, Source, CSV, DataFrame",  // Tags
@@ -63,10 +63,13 @@ CSVSource::CSVSource()
     addProperty(delimiters_);
     addProperty(reloadData_);
 
-    reloadData_.onChange([&] {});
+    isReady_.setUpdate([this]() { return filesystem::fileExists(inputFile_.get()); });
+    inputFile_.onChange([this]() { isReady_.update(); });
 }
 
 void CSVSource::process() {
+    if (inputFile_.get().empty()) return;
+
     CSVReader reader;
 
     reader.setDelimiters(delimiters_.get());

@@ -33,95 +33,61 @@
 #include <warn/pop>
 
 #include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorfactory.h>
 #include <inviwo/core/util/logerrorcounter.h>
-#include <inviwo/core/datastructures/transferfunction.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/util/stringlogger.h>
 #include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/common/inviwomodule.h>
 
 namespace inviwo {
 
-class ProcessorCreationTests : public ::testing::TestWithParam<std::string> {
-protected:
-    ProcessorCreationTests() : p(nullptr) {}
+namespace {
 
-    virtual ~ProcessorCreationTests() { EXPECT_TRUE(p == nullptr); }
-
-    virtual void SetUp() {
-        isAdded_ = false;
-        logCounter_ = std::make_shared<LogErrorCounter>();
+struct LogErrorCheck {
+    LogErrorCheck()
+        : logCounter_{std::make_shared<LogErrorCounter>()}
+        , stringLog_{std::make_shared<StringLogger>()} {
         LogCentral::getPtr()->registerLogger(logCounter_);
+        LogCentral::getPtr()->registerLogger(stringLog_);
     }
+    ~LogErrorCheck() { EXPECT_EQ(0, logCounter_->getErrorCount()) << stringLog_->getLog(); }
 
-    virtual void TearDown() {
-        if (isAdded_) {
-            ProcessorNetwork *pn = InviwoApplication::getPtr()->getProcessorNetwork();
-            size_t sizeBefore = pn->getProcessors().size();
-
-            pn->removeAndDeleteProcessor(p);
-
-            size_t sizeAfter = pn->getProcessors().size();
-            EXPECT_EQ(sizeBefore, sizeAfter + 1);
-        } else if (p) {
-            delete p;
-        }
-        p = nullptr;
-    }
-
-    void create() {
-        logCounter_->reset();
-
-        auto s = InviwoApplication::getPtr()->getProcessorFactory()->create(GetParam());
-        ASSERT_TRUE(s.get() != nullptr);
-
-        p = dynamic_cast<Processor *>(s.get());
-        ASSERT_TRUE(p != nullptr);
-        s.release();
-        //EXPECT_EQ(0, logCounter_->getWarnCount());
-        EXPECT_EQ(0, logCounter_->getErrorCount());
-    }
-
-    void resetAllPoperties() {
-        logCounter_->reset();
-
-        p->resetAllPoperties();
-
-        //EXPECT_EQ(0, logCounter_->getWarnCount());
-        EXPECT_EQ(0, logCounter_->getErrorCount());
-    }
-
-    void addProcessor() {
-        logCounter_->reset();
-
-        InviwoApplication::getPtr()->getProcessorNetwork()->addProcessor(p);
-
-        //EXPECT_EQ(0, logCounter_->getWarnCount());
-        EXPECT_EQ(0, logCounter_->getErrorCount());
-        isAdded_ = true;
-    }
-
-    Processor *p;
-    bool isAdded_;
     std::shared_ptr<LogErrorCounter> logCounter_;
+    std::shared_ptr<StringLogger> stringLog_;
 };
 
-const std::vector<std::string> getListOfProcessors() {
-    std::vector<std::string> theVec;
-    for (const auto& module : InviwoApplication::getPtr()->getModules()) {
-        for (const auto& processor: module->getProcessors()) {
-            theVec.push_back(processor->getClassIdentifier());
-        }
-    }
-    return theVec;
-}
+}  // namespace
+
+class ProcessorCreationTests : public ::testing::TestWithParam<std::string> {
+protected:
+    ProcessorCreationTests()
+        : network_{InviwoApplication::getPtr()->getProcessorNetwork()}
+        , factory_{InviwoApplication::getPtr()->getProcessorFactory()} {};
+
+    virtual ~ProcessorCreationTests() = default;
+
+    virtual void SetUp() override {}
+    virtual void TearDown() override {}
+
+    ProcessorNetwork* network_;
+    ProcessorFactory* factory_;
+};
 
 TEST_P(ProcessorCreationTests, ProcesorCreateAndResetAndAddToNetwork) {
-    create();
-    resetAllPoperties();
-    addProcessor();
+    LogErrorCheck checklog;
+    auto s = factory_->create(GetParam());
+    ASSERT_TRUE(s.get() != nullptr);
+    s->resetAllPoperties();
+
+    const size_t sizeBefore = network_->getProcessors().size();
+    auto p = s.release();
+    network_->addProcessor(p);
+    EXPECT_EQ(sizeBefore + 1, network_->getProcessors().size());
+    network_->removeAndDeleteProcessor(p);
+    EXPECT_EQ(sizeBefore, network_->getProcessors().size());
 }
 
-INSTANTIATE_TEST_CASE_P(RegisteredProcessors, ProcessorCreationTests,
-                        ::testing::ValuesIn(getListOfProcessors()));
-}
+INSTANTIATE_TEST_CASE_P(
+    RegisteredProcessors, ProcessorCreationTests,
+    ::testing::ValuesIn(InviwoApplication::getPtr()->getProcessorFactory()->getKeys()));
+}  // namespace inviwo

@@ -40,7 +40,7 @@ OPTION (NAMESPACE_VERSIONING "Use Namespace Versioning" ON)
 ADD_DEFINITIONS ( -DHAVE_CONFIG_H )
 
 INCLUDE_DIRECTORIES (
-  ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr
+  ${CMAKE_CURRENT_BINARY_DIR}/include
   IlmImf
   IlmImfUtil
   # exrmaketiled
@@ -120,7 +120,10 @@ CHECK_CXX_SOURCE_COMPILES (
 # OpenEXRConfig.h generation
 ##########################
 
-set(openexrConfigFile ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/OpenEXRConfig.h)
+add_library(openexr-conf INTERFACE)
+target_include_directories(openexr-conf INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/include)
+
+set(openexrConfigFile ${CMAKE_CURRENT_BINARY_DIR}/include/OpenEXRConfig.h)
 set(tmpOpenexrConfigFile ${openexrConfigFile}.tmp)
 
 IF (WIN32)
@@ -253,7 +256,7 @@ SET_TARGET_PROPERTIES ( openexr-ilmimfutil
 ##########################
 
 # INSTALL ( FILES
-#   ${CMAKE_BINARY_DIR}/modules/_generated/ext/openexr/OpenEXRConfig.h
+#   ${CMAKE_CURRENT_BINARY_DIR}/include/OpenEXRConfig.h
 #   DESTINATION
 #   ${CMAKE_INSTALL_PREFIX}/include/OpenEXR
 #   )

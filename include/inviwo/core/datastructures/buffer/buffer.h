@@ -36,8 +36,6 @@
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/util/document.h>
 
-#include <initializer_list>
-
 namespace inviwo {
 
 class IVW_CORE_API BufferBase : public Data<BufferBase, BufferRepresentation> {

@@ -105,6 +105,11 @@ QToolButton:hover#resetButton {
     image: url(:/icons/reset.png);
 }
 
+QToolButton#ColorButton {
+    border: 1px solid black;
+    border-radius: 2px;
+} 
+
 /************************ 
 QDockWidget
 ************************/
@@ -299,7 +304,7 @@ QLineEdit, QAbstractSpinBox, QComboBox {
       should be invisible. DO NOT adjust the border width as the widgets will then 
       jump on hover!
       */
-    border: 1px none transparent;
+    border: 1px solid transparent;
 }
 QLineEdit:disabled, QAbstractSpinBox:disabled, QComboBox:disabled, QCheckBox:disabled {
     color: #777;
@@ -314,6 +319,12 @@ QPushButton:hover, QToolButton:hover, QCheckBox:indicator:hover {
     border: 1px solid #268bd2;
 }
 
+QLineEdit#ColorLineEdit[input="valid"] {
+    border: 1px solid #1a800d;
+}
+QLineEdit#ColorLineEdit[input="invalid"] {
+    border: 1px solid #801717;
+}
 
 /************************ 
  QPushButton 

@@ -43,7 +43,9 @@
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/util/fileextension.h>
 
 namespace inviwo {
 
@@ -80,7 +82,13 @@ private:
     FileProperty exportFile_;
     ButtonProperty exportButton_;
     BoolProperty overwrite_;
+    BoolProperty exportIndexCol_;
     BoolProperty separateVectorTypesIntoColumns_;
+    BoolProperty quoteStrings_;
+    StringProperty delimiter_;
+
+    static FileExtension csvExtension_;
+    static FileExtension xmlExtension_;
 
     bool export_;
 };

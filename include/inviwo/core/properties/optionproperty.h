@@ -267,9 +267,7 @@ std::string getClassIdentifierForWidget() {
 
 template <typename T>
 struct PropertyTraits<TemplateOptionProperty<T>> {
-    static std::string classIdentifier() {
-        return detail::getOptionPropertyClassIdentifier<T>();
-    }
+    static std::string classIdentifier() { return detail::getOptionPropertyClassIdentifier<T>(); }
 };
 
 template <typename T>
@@ -282,19 +280,19 @@ std::string TemplateOptionProperty<T>::getClassIdentifierForWidget() const {
     return detail::getClassIdentifierForWidget<T>();
 }
 
-using OptionPropertyUInt = TemplateOptionProperty<unsigned int>;
-using OptionPropertyInt = TemplateOptionProperty<int>;
-using OptionPropertySize_t = TemplateOptionProperty<size_t>;
-using OptionPropertyFloat = TemplateOptionProperty<float>;
-using OptionPropertyDouble = TemplateOptionProperty<double>;
-using OptionPropertyString = TemplateOptionProperty<std::string>;
-
 using OptionPropertyUIntOption = OptionPropertyOption<unsigned int>;
 using OptionPropertyIntOption = OptionPropertyOption<int>;
 using OptionPropertySize_tOption = OptionPropertyOption<size_t>;
 using OptionPropertyFloatOption = OptionPropertyOption<float>;
 using OptionPropertyDoubleOption = OptionPropertyOption<double>;
 using OptionPropertyStringOption = OptionPropertyOption<std::string>;
+
+using OptionPropertyUInt = TemplateOptionProperty<unsigned int>;
+using OptionPropertyInt = TemplateOptionProperty<int>;
+using OptionPropertySize_t = TemplateOptionProperty<size_t>;
+using OptionPropertyFloat = TemplateOptionProperty<float>;
+using OptionPropertyDouble = TemplateOptionProperty<double>;
+using OptionPropertyString = TemplateOptionProperty<std::string>;
 
 template <typename T>
 TemplateOptionProperty<T>::TemplateOptionProperty(const std::string& identifier,
@@ -688,6 +686,20 @@ template <typename T>
 TemplateOptionProperty<T>* TemplateOptionProperty<T>::clone() const {
     return new TemplateOptionProperty<T>(*this);
 }
+
+IVW_CORE_EXT template class IVW_CORE_API OptionPropertyOption<unsigned int>;
+IVW_CORE_EXT template class IVW_CORE_API OptionPropertyOption<int>;
+IVW_CORE_EXT template class IVW_CORE_API OptionPropertyOption<size_t>;
+IVW_CORE_EXT template class IVW_CORE_API OptionPropertyOption<float>;
+IVW_CORE_EXT template class IVW_CORE_API OptionPropertyOption<double>;
+IVW_CORE_EXT template class IVW_CORE_API OptionPropertyOption<std::string>;
+
+IVW_CORE_EXT template class IVW_CORE_API TemplateOptionProperty<unsigned int>;
+IVW_CORE_EXT template class IVW_CORE_API TemplateOptionProperty<int>;
+IVW_CORE_EXT template class IVW_CORE_API TemplateOptionProperty<size_t>;
+IVW_CORE_EXT template class IVW_CORE_API TemplateOptionProperty<float>;
+IVW_CORE_EXT template class IVW_CORE_API TemplateOptionProperty<double>;
+IVW_CORE_EXT template class IVW_CORE_API TemplateOptionProperty<std::string>;
 
 }  // namespace inviwo
 

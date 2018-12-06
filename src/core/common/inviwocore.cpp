@@ -332,6 +332,9 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     using Vec3s = std::tuple<vec3, dvec3, ivec3, size3_t>;
     using Vec4s = std::tuple<vec4, dvec4, ivec4, size4_t>;
 
+    registerPropertyConverter(std::make_unique<FileToStringConverter>());
+    registerPropertyConverter(std::make_unique<StringToFileConverter>());
+
     // for_each_type_pair will call the functor with all permutation of types, and supplied
     // arguments like: ConverterRegFunctor<float, float>(registerPC), ConverterRegFunctor<float,
     // double>(registerPC), ...

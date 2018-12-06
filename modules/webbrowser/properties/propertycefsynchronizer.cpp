@@ -33,6 +33,13 @@
 #include <modules/webbrowser/properties/ordinalpropertywidgetcef.h>
 #include <modules/webbrowser/properties/stringpropertywidgetcef.h>
 
+#include <modules/webbrowser/webbrowsermodule.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include "include/cef_parser.h"
+#include <warn/pop>
+
 namespace inviwo {
 PropertyCefSynchronizer::PropertyCefSynchronizer() {
     registerPropertyWidget<BoolPropertyWidgetCEF, BoolProperty>(PropertySemantics("Default"));
@@ -54,8 +61,28 @@ void PropertyCefSynchronizer::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr
     // Ok to send javascript commands when frame loaded
     for (auto& widget : widgets_) {
         widget->setFrame(frame);
-        widget->updateFromProperty();
     }
+}
+
+void PropertyCefSynchronizer::OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
+                                          CefLoadHandler::ErrorCode errorCode,
+                                          const CefString& errorText, const CefString& failedUrl) {
+    std::stringstream ss;
+    ss << "<html><head><title>Page failed to load</title></head>"
+          "<body bgcolor=\"white\">"
+          "<h3>Page failed to load.</h3>"
+          "URL: <a href=\""
+       << failedUrl.ToString() << "\">" << failedUrl.ToString()
+       << "</a><br/>Error: " << WebBrowserModule::getCefErrorString(errorCode) << " (" << errorCode
+       << ")";
+
+    if (!errorText.empty()) {
+        ss << "<br/>Description: " << errorText.ToString();
+    }
+
+    ss << "</body></html>";
+
+    frame->LoadURL(WebBrowserModule::getDataURI(ss.str(), "text/html"));
 }
 
 bool PropertyCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
@@ -67,7 +94,7 @@ bool PropertyCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<C
     auto key = std::string(R"("id":")");
     auto keyStart = requestStr.find(key);
     if (keyStart == std::string::npos) {
-        LogWarn(R"(No id found. Expected {"id":"elementId", "value":"x")" + requestStr);
+        LogWarn(R"(No id found. Expected {"id":"elementId", "value":"x"})" + requestStr);
         return false;
     }
     size_t offset = keyStart + key.length();
@@ -76,10 +103,8 @@ bool PropertyCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<C
         return false;
     }
     auto id = requestStr.substr(offset, idEnd - offset);
-    auto widget =
-    std::find_if(std::begin(widgets_), std::end(widgets_), [id](const auto& widget) {
-        return id == widget->getHtmlId();
-    });
+    auto widget = std::find_if(std::begin(widgets_), std::end(widgets_),
+                               [id](const auto& widget) { return id == widget->getHtmlId(); });
     if (widget != widgets_.end()) {
         auto nextValPos = requestStr.find("}", idEnd);
         if (nextValPos == std::string::npos) {

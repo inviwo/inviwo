@@ -74,9 +74,6 @@ public:
     virtual void setProcessorWidget(std::unique_ptr<ProcessorWidget> processorWidget) override;
     virtual void propagateEvent(Event* event, Outport* source) override;
 
-    bool isFullScreen() const;
-    void setFullScreen(bool fullscreen);
-
     bool isContextMenuAllowed() const;
 
     /**
@@ -108,8 +105,8 @@ public:
     ButtonProperty saveLayerButton_;
     ButtonProperty saveLayerToFileButton_;
     CompositeProperty inputSize_;
-    ButtonProperty toggleFullscreen_;
-    EventProperty fullscreen_;
+    BoolProperty fullScreen_;
+    EventProperty fullScreenEvent_;
     EventProperty saveLayerEvent_;
 
     BoolProperty allowContextMenu_;
@@ -120,8 +117,6 @@ private:
 
     ivec2 previousImageSize_;   
     ProcessorWidgetMetaData* widgetMetaData_;
-    CanvasProcessorWidget* canvasWidget_;   //< non-owning reference
-
 };
 
 }  // namespace

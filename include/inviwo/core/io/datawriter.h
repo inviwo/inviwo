@@ -42,7 +42,7 @@ class IVW_CORE_API DataWriterException : public Exception {
 public:
     DataWriterException(const std::string& message = "",
                         ExceptionContext context = ExceptionContext());
-    virtual ~DataWriterException() throw(){};
+    virtual ~DataWriterException() noexcept = default;
 };
 
 /**

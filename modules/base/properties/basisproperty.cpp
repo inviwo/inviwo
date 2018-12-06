@@ -86,10 +86,11 @@ BasisProperty::BasisProperty(const BasisProperty& rhs)
     , b_(rhs.b_)
     , c_(rhs.c_)
     , offset_(rhs.offset_)
-    , overrideA_(rhs.overrideB_)
+    , overrideA_(rhs.overrideA_)
     , overrideB_(rhs.overrideB_)
     , overrideC_(rhs.overrideC_)
     , overrideOffset_(rhs.overrideOffset_) {
+
     addProperty(overRideDefaults_);
     addProperty(a_);
     addProperty(b_);

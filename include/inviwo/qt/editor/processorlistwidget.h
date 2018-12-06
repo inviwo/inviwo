@@ -51,6 +51,7 @@ class HelpWidget;
 class InviwoMainWindow;
 class InviwoApplication;
 class ProcessorTreeWidget;
+class Processor;
 
 class IVW_QTEDITOR_API ProcessorTree : public QTreeWidget {
 
@@ -88,13 +89,15 @@ public:
     void addProcessorsToTree(ProcessorFactoryObject* item = nullptr);
     void recordProcessorUse(const std::string& id);
 
+    std::unique_ptr<Processor> createProcessor(QString cid);
+
 protected:
     bool processorFits(ProcessorFactoryObject* processor, const QString& filter);
     const QIcon* getCodeStateIcon(CodeState) const;
 
 private:
     void currentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
-    void addProcessor(std::string className);
+    void addProcessor(QString className);
 
     void extractInfoAndAddProcessor(ProcessorFactoryObject* processor, InviwoModule* elem);
     QTreeWidgetItem* addToplevelItemTo(QString title, const std::string& desc);
@@ -129,7 +132,7 @@ private:
 
 class IVW_QTEDITOR_API ProcessorDragObject : public QDrag {
 public:
-    ProcessorDragObject(QWidget* source, const QString& className);
+    ProcessorDragObject(QWidget* source, std::unique_ptr<Processor> processor);
 
     static bool canDecode(const QMimeData* mimeData);
     static bool decode(const QMimeData* mimeData, QString& className);

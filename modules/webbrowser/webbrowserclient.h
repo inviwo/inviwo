@@ -55,6 +55,8 @@ public:
 
     virtual CefRefPtr<CefLoadHandler> GetLoadHandler() override { return propertyCefSynchronizer_; }
     virtual CefRefPtr<CefRenderHandler> GetRenderHandler() override { return renderHandler_; }
+    virtual CefRefPtr<CefRequestHandler> GetRequestHandler() override { return this; }
+    
     void SetRenderHandler(CefRefPtr<RenderHandlerGL> renderHandler);
 
     CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() override { return this; }

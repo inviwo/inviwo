@@ -51,29 +51,39 @@ const ProcessorInfo DataFrameExporter::processorInfo_{
 
 const ProcessorInfo DataFrameExporter::getProcessorInfo() const { return processorInfo_; }
 
+FileExtension DataFrameExporter::csvExtension_ = FileExtension("csv", "CSV");
+FileExtension DataFrameExporter::xmlExtension_ = FileExtension("xml", "XML");
+
 DataFrameExporter::DataFrameExporter()
     : Processor()
     , dataFrame_("dataFrame")
     , exportFile_("exportFile", "Export file name", "", "dataframe")
     , exportButton_("snapshot", "Export DataFrame")
     , overwrite_("overwrite", "Overwrite", false)
+    , exportIndexCol_("exportIndexCol", "Export Index Column", false)
     , separateVectorTypesIntoColumns_("separateVectorTypesIntoColumns",
                                       "Separate Vector Types Into Columns", true)
+    , quoteStrings_("quoteStrings", "Quote Strings", true)
+    , delimiter_("delimiter", "Delimiter", ",")
     , export_(false) {
+
     exportFile_.clearNameFilters();
-    exportFile_.addNameFilter("CSV (*.csv)");
-    exportFile_.addNameFilter("XML (*.xml)");
+    exportFile_.addNameFilter(csvExtension_);
+    exportFile_.addNameFilter(xmlExtension_);
 
     addPort(dataFrame_);
     addProperty(exportFile_);
     addProperty(exportButton_);
     addProperty(overwrite_);
+    addProperty(exportIndexCol_);
     addProperty(separateVectorTypesIntoColumns_);
+    addProperty(quoteStrings_);
+    addProperty(delimiter_);
 
     exportFile_.setAcceptMode(AcceptMode::Save);
-    exportFile_.onChange([&]() {
-        separateVectorTypesIntoColumns_.setReadOnly(exportFile_.getSelectedExtension() !=
-                                                    exportFile_.getNameFilters()[0]);
+    exportFile_.onChange([this]() {
+        separateVectorTypesIntoColumns_.setReadOnly(exportFile_.getSelectedExtension().extension_ ==
+                                                    xmlExtension_.extension_);
     });
     exportButton_.onChange([&]() { export_ = true; });
 
@@ -90,12 +100,16 @@ void DataFrameExporter::exportNow() {
         LogWarn("File already exists: " << exportFile_);
         return;
     }
-    if (exportFile_.getSelectedExtension() == exportFile_.getNameFilters()[0]) {
-        exportAsCSV(separateVectorTypesIntoColumns_);
-    } else if (exportFile_.getSelectedExtension() == exportFile_.getNameFilters()[1]) {
+    if (exportFile_.getSelectedExtension() == xmlExtension_) {
         exportAsXML();
+    } else if (exportFile_.getSelectedExtension() == csvExtension_) {
+        exportAsCSV(separateVectorTypesIntoColumns_);
     } else {
-        LogWarn("Unsupported file type: " << exportFile_);
+        // use CSV format as fallback
+        LogWarn("Could not determine export format from extension '"
+                << filesystem::getFileExtension(exportFile_)
+                << "', exporting as comma-separated values (csv).");
+        exportAsCSV(separateVectorTypesIntoColumns_);
     }
 }
 
@@ -103,17 +117,22 @@ void DataFrameExporter::exportAsCSV(bool separateVectorTypesIntoColumns) {
     std::ofstream file(exportFile_);
     auto dataFrame = dataFrame_.getData();
 
-    const std::string delimiter = ", ";
+    const std::string delimiter = delimiter_.get();
+    std::string citation = "\"";
+    if (!quoteStrings_.get()) citation = "";
     const char lineterminator = '\n';
     const std::array<char, 4> componentNames = {'X', 'Y', 'Z', 'W'};
 
     // headers
     auto oj = util::make_ostream_joiner(file, delimiter);
     for (const auto& col : *dataFrame) {
+        if ((col == dataFrame->getIndexColumn()) && !exportIndexCol_) {
+            continue;
+        }
         const auto components = col->getBuffer()->getDataFormat()->getComponents();
         if (components > 1 && separateVectorTypesIntoColumns) {
             for (size_t k = 0; k < components; k++) {
-                oj = col->getHeader() + ' ' + componentNames[k];
+                oj = citation + col->getHeader() + ' ' + componentNames[k] + citation;
             }
         } else {
             oj = col->getHeader();
@@ -123,10 +142,13 @@ void DataFrameExporter::exportAsCSV(bool separateVectorTypesIntoColumns) {
 
     std::vector<std::function<void(std::ostream&, size_t)>> printers;
     for (const auto& col : *dataFrame) {
+        if ((col == dataFrame->getIndexColumn()) && !exportIndexCol_) {
+            continue;
+        }
         auto df = col->getBuffer()->getDataFormat();
         if (auto cc = dynamic_cast<const CategoricalColumn*>(col.get())) {
-            printers.push_back([cc](std::ostream& os, size_t index) {
-                os << "\"" << cc->getAsString(index) << "\"";
+            printers.push_back([cc, citation](std::ostream& os, size_t index) {
+                os << citation << cc->getAsString(index) << citation;
             });
         } else if (df->getComponents() == 1) {
             col->getBuffer()
@@ -151,9 +173,9 @@ void DataFrameExporter::exportAsCSV(bool separateVectorTypesIntoColumns) {
         } else {
             col->getBuffer()
                 ->getRepresentation<BufferRAM>()
-                ->dispatch<void, dispatching::filter::Vecs>([&printers](auto br) {
-                    printers.push_back([br](std::ostream& os, size_t index) {
-                        os << "\"" << br->getDataContainer()[index] << "\"";
+                ->dispatch<void, dispatching::filter::Vecs>([&printers, citation](auto br) {
+                    printers.push_back([br, citation](std::ostream& os, size_t index) {
+                        os << citation << br->getDataContainer()[index] << citation;
                     });
                 });
         }
@@ -183,6 +205,9 @@ void DataFrameExporter::exportAsXML() {
     Serializer serializer("");
 
     for (const auto& col : *dataFrame) {
+        if ((col == dataFrame->getIndexColumn()) && !exportIndexCol_) {
+            continue;
+        }
         col->getBuffer()->getRepresentation<BufferRAM>()->dispatch<void>([&](auto br) {
             serializer.serialize(col->getHeader(), br->getDataContainer(), "Item");
         });

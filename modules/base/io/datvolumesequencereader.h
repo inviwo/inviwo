@@ -56,14 +56,15 @@ namespace inviwo {
  *   - __DatFile__ Relative path to other file to create a VolumeSequence from
  *  The tag names are case insensitive and should always be followed by a ":"
  *  Anything after a '#' will be considered a comment.
- * 
+ *
  * Supports reading VolumeSequence (for example time-varying volume data) by specifying multiple .dat files.
  * Example:
  * Datfile: sequence0.dat
  * Datfile: sequence1.dat
  * Datfile: sequence2.dat
  */
-class IVW_MODULE_BASE_API DatVolumeSequenceReader : public DataReaderType<std::vector<std::shared_ptr<Volume>>> {
+class IVW_MODULE_BASE_API DatVolumeSequenceReader
+    : public DataReaderType<std::vector<std::shared_ptr<Volume>>> {
 public:
     using VolumeSequence = std::vector<std::shared_ptr<Volume>>;
 
@@ -73,7 +74,7 @@ public:
     virtual DatVolumeSequenceReader* clone() const override;
     virtual ~DatVolumeSequenceReader() = default;
 
-    virtual std::shared_ptr<VolumeSequence> readData(const std::string &filePath) override;
+    virtual std::shared_ptr<VolumeSequence> readData(const std::string& filePath) override;
 
 private:
     std::string rawFile_;
@@ -84,6 +85,6 @@ private:
     bool enableLogOutput_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_DATVOLUMESEQUENCEREADER_H

@@ -49,6 +49,9 @@ ValueDragSpinBox::ValueDragSpinBox(QWidget *parent)
 
     setLayout(layout);
 
+    setFocusProxy(spinBox_);
+    spinBox_->setFocusPolicy(Qt::WheelFocus);
+    valueDragger_->setFocusPolicy(Qt::ClickFocus);
     spinBox_->setButtonSymbols(QAbstractSpinBox::NoButtons);
 
     connect(spinBox_, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this,

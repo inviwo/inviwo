@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/util/stacktrace.h>
@@ -41,13 +41,12 @@
 
 #include <inviwo/core/util/stringconversion.h>
 
-
-
 #if defined(_MSC_VER)
 class StackWalkerToVector : public StackWalker {
 public:
-    StackWalkerToVector(StackWalkOptions level , std::vector<std::string>* vector):StackWalker(level),vector_(vector) {
-    }
+    StackWalkerToVector(StackWalkOptions level, std::vector<std::string>* vector)
+        : StackWalker(level), vector_(vector) {}
+
 protected:
     virtual void OnOutput(LPCSTR szText) {
         std::string str(szText);
@@ -55,12 +54,14 @@ protected:
         if (str.find("StackWalker") != std::string::npos) {
             vector_->clear();
         } else if (str.find("ERROR: ") != std::string::npos) {
-           // return;
+            // return;
         } else if (str.find("filename not available") != std::string::npos) {
-           // return;
+            // return;
         }
 
-        inviwo::replaceInString(str,"\n",""); //remove new line character at the end of the string that we get fro stack walker
+        inviwo::replaceInString(
+            str, "\n",
+            "");  // remove new line character at the end of the string that we get fro stack walker
         vector_->push_back(str);
     }
 
@@ -68,7 +69,6 @@ private:
     std::vector<std::string>* vector_;
 };
 #endif
-
 
 namespace inviwo {
 
@@ -85,12 +85,12 @@ std::vector<std::string> getStackTrace() {
         int status;
         std::string line = strings[i];
         size_t start = line.find("(");
-        size_t end    = line.find("+");
-        std::string className = line.substr(start+1,end - start - 1);
-        char* fixedClass = abi::__cxa_demangle(className.c_str(),0,0,&status);
+        size_t end = line.find("+");
+        std::string className = line.substr(start + 1, end - start - 1);
+        char* fixedClass = abi::__cxa_demangle(className.c_str(), 0, 0, &status);
 
         if (!status && fixedClass) {
-            replaceInString(line,className,std::string(fixedClass));
+            replaceInString(line, className, std::string(fixedClass));
             free(fixedClass);
         }
 
@@ -100,12 +100,10 @@ std::vector<std::string> getStackTrace() {
 
     free(strings);
 #elif defined(_MSC_VER)
-    StackWalkerToVector sw(StackWalker::OptionsAll,&lines);
-    sw.LoadModules();
+    StackWalkerToVector sw(StackWalker::OptionsAll, &lines);
     sw.ShowCallstack();
 #endif
     return lines;
 }
 
-
-} // namespace
+}  // namespace inviwo

@@ -52,57 +52,55 @@ public:
         : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
         , height_("height_", "Height", 1.0)
         , sigma_("sigma", "Sigma", 1.0)
-        , center_("center", "Center", T(0), T(-1), T(1)) {
+        , center_("center", "Center", T{0}, T{-1}, T{1}) {
         addProperty(height_);
         addProperty(sigma_);
         addProperty(center_);
     }
-    virtual ~GaussianProperty() {}
+    GaussianProperty(const GaussianProperty &rhs)
+        : CompositeProperty(rhs), height_{rhs.height_}, sigma_{rhs.sigma_}, center_{rhs.center_} {
 
-    virtual double evaluate(const T &inV) const {
-        T v = inV - center_.get();
-        return height_.get() *
-               std::exp(
-                   -glm::pow(static_cast<double>(glm::distance(center_.get(), v)), 2.0) /
-                   glm::pow(2.0 * sigma_.get(), 2.0));
+        addProperty(height_);
+        addProperty(sigma_);
+        addProperty(center_);
+    }
+    GaussianProperty &operator=(const GaussianProperty &that) = default;
+
+    virtual GaussianProperty<T> *clone() const override { return new GaussianProperty<T>(*this); }
+
+    virtual ~GaussianProperty() = default;
+
+    double operator()(const T &r) const { return eveluate(r); }
+
+    double evaluate(const T &r) const {
+        // TODO This definition seems strange, should be verified
+        const double s =
+            0.5 * glm::distance2(r, center_.get()) / (sigma_.get() * sigma_.get()) / M_PI;
+        return height_.get() * std::exp(-s);
     }
 
     DoubleProperty height_;
     DoubleProperty sigma_;
-
     OrdinalProperty<T> center_;
-
-private:
 };
 
-class IVW_MODULE_BASE_API Gaussian1DProperty : public GaussianProperty<double>{
-public:
-    Gaussian1DProperty(const std::string &identifier,const std::string &displayName,
-        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-        PropertySemantics semantics = PropertySemantics::Default);
-    virtual ~Gaussian1DProperty();
+using Gaussian1DProperty = GaussianProperty<double>;
+using Gaussian2DProperty = GaussianProperty<dvec2>;
+using Gaussian3DProperty = GaussianProperty<dvec3>;
 
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
-    virtual double evaluate(const double &v)const override;
+template <>
+struct PropertyTraits<Gaussian1DProperty> {
+    static std::string classIdentifier() { return "org.inviwo.Gaussian1DProperty"; }
+};
+template <>
+struct PropertyTraits<Gaussian2DProperty> {
+    static std::string classIdentifier() { return "org.inviwo.Gaussian2DProperty"; }
+};
+template <>
+struct PropertyTraits<Gaussian3DProperty> {
+    static std::string classIdentifier() { return "org.inviwo.Gaussian3DProperty"; }
 };
 
-class IVW_MODULE_BASE_API Gaussian2DProperty : public GaussianProperty<dvec2>{
-public:
-    Gaussian2DProperty(const std::string &identifier,const std::string &displayName,
-        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-        PropertySemantics semantics = PropertySemantics::Default);
-    virtual ~Gaussian2DProperty();
+}  // namespace inviwo
 
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
-    virtual double evaluate(const dvec2 &v)const override;
-};
-
-
-
-
-} // namespace
-
-#endif // IVW_GAUSSIANPROPERTY_H
-
+#endif  // IVW_GAUSSIANPROPERTY_H

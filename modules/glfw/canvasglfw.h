@@ -86,10 +86,8 @@ public:
     virtual ContextID activeContext() const override;
     virtual ContextID contextId() const override;
 
-    virtual bool isFullScreen() const override;
-    virtual void setFullScreen(bool fullscreen) override;
-
 protected:
+    virtual void setFullScreenInternal(bool fullscreen) override;
     static CanvasGLFW* getCanvasGLFW(GLFWwindow*);
     static CanvasGLFW* getSharedContext();
 
@@ -104,6 +102,9 @@ private:
     MouseButton mouseButton_;
     MouseState mouseState_;
     KeyModifiers modifiers_;
+
+    ivec2 oldPos_{0};
+    ivec2 oldSize_{256};
 
     static GLFWwindow* sharedContext_;
     static int glfwWindowCount_;

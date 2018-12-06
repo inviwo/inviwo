@@ -39,14 +39,13 @@
 
 namespace inviwo {
 
-TFColorEdit::TFColorEdit(QWidget* parent) : QLineEdit(parent) {
-    // accept only 6-digit hex codes
-    setInputMask("\\#HHHHHH");
+TFColorEdit::TFColorEdit(QWidget* parent) : ColorLineEdit(parent) {
+    setRepresentation(ColorRepresentation::Hexadecimal);
 
-    connect(this, &QLineEdit::editingFinished, this, [this]() {
+    connect(this, &ColorLineEdit::colorChanged, this, [this]() {
         // QColor(QString) should only be used for 6-digit hex codes, since
         // 8-digit hex codes in Qt are in the form of #AARRGGBB while Inviwo uses #RRGGBBAA
-        emit colorChanged(QColor(text()));
+        emit colorChanged(utilqt::toQColor(getColor<vec3>()));
     });
 
     setSizePolicy(QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred));
@@ -59,7 +58,7 @@ void TFColorEdit::setColor(const QColor& color, bool ambiguous) {
         // clear text field
         clear();
     } else {
-        setText(color.name());
+        ColorLineEdit::setColor(utilqt::tovec3(color), ColorRepresentation::Hexadecimal);
     }
 }
 

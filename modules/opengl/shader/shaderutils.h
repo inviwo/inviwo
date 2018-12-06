@@ -135,11 +135,23 @@ void setShaderUniforms(Shader& shader, const OrdinalProperty<T>& property, std::
     shader.setUniform(name, property.get());
 }
 
+namespace detail {
+template <typename T, typename std::enable_if<!std::is_enum<T>::value, int>::type = 0>
+T getOptionValue(const TemplateOptionProperty<T>& prop) {
+    return prop.get();
+}
+template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type = 0>
+auto getOptionValue(const TemplateOptionProperty<T>& prop) ->
+    typename std::underlying_type<T>::type {
+    return static_cast<typename std::underlying_type<T>::type>(prop.get());
+}
+}  // namespace detail
+
 // Option Property
 template <typename T>
 void setShaderUniforms(Shader& shader, const TemplateOptionProperty<T>& property,
                        std::string name) {
-    shader.setUniform(name, property.get());
+    shader.setUniform(name, detail::getOptionValue(property));
 }
 
 // MinMax Property

@@ -1,5 +1,87 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2018-11-14
+Added an option to control if a module should be on by default, and remove the old global setting.
+To enable the module by default add the following to the module `depends.cmake` file:
+```
+    set(EnableByDefault ON)
+```
+
+## 2018-11-14
+A new inviwo-meta library and an inviwo-meta-cli commandline app has been added to supersede the `make-new-module.py` and `make-new-file.py` python scripts. The library is also exposed in the tools menu of inviwo. Note that the inviwo-meta library relies on C++17 features and, thus, requires a recent compiler.
+
+## 2018-11-14
+Generated files are now stored in the corresponding `CMAKE_CURRENT_BINAY_DIR` for the subdirectory in question.
+For a module this means `{build folder}/modules/{module name}`. `CMAKE_CURRENT_BINAY_DIR/include` path is added as an include path for each module. Hence, the generated headers are put in 
+```
+    {build folder}/modules/{module name}/include/{organization}/{module name}/
+```
+Same is true for the generated headers of inviwo core, like `moduleregistration.h`. They are now placed in:
+```
+    {build folder}/modules/core/include/inviwo/core/
+```
+Which means that for the module loading in apps
+```c++
+    #include <moduleregistration.h>
+```
+needs to be changed to 
+```c++
+    #include <inviwo/core/moduleregistration.h>
+```
+
+## 2018-11-14
+New Module structure. We have introduced a new module structure where we separate headers and source files in the same way as it was already done for the core part of inviwo. Hence, module headers should now be placed under the include folder like:
+```
+    .../{module name}/include/{organization}/{module name}/
+```
+and sources goes in the source folder:
+```
+    .../{module name}/src/
+ ```
+`{module name}` it the lower case name of the module, `{organization}` default to inviwo but can be user-specified. 
+The headers can then be included using 
+```c++
+    #include <{organization}/{module name}/header.h>
+```
+The implementation is backwards compatible so old modules can continue to exist, but the structure is considered deprecated.
+The main reasons for the change are to make packaging of headers easier and to prevent accidentally including headers from modules without depending on them.
+
+## 2018-11-05
+The SplitImage processor now features a draggable handle. This handle allows to adjust the split position in the canvas with either mouse or touch.
+
+## 2018-10-04 Color Scale Legend
+Added a Color Scale Legend processor to the plottinggl module that draws a 1D transfer function and the corresponding value axis on top of an image.
+
+## 2018-09-27 Full screen on startup
+Core: Renamed key mapping to fullscreenEvent and instead use fullscreen for a bool property.
+You will need to change the key mapping again if you have changed it from shift + f.
+
+Python: Full screen is now exposed as a property in the canvas instead of a function.
+
+## 2018-09-26 Initial DiscreteData
+Adding the DiscreteData module. The idea is to handle datasets that support all kinds of grids, data representations and interpolations on them.
+Current status: Dataset; Explicit and implicit channel; Structured and periodic structured grid.
+
+## 2018-09-24 Color property improvements
+Updated the color property widget which allows to edit colors directly. Supports floating point range `[0,1]`, int range `[0,255]`, and hex color codes (`#RGB`, `#RGBA`, `#RRGGBB`, `#RRGGBBAA`).
+Invalid input is indicated by red border and changes discarded if either <Esc> is pressed or the widget looses focus.
+
+
+## 2018-09-24 Spinbox semantics for ordinal properties
+New property semantics for ordinal properties: `SpinBox`
+
+This widget allows to adjust the value by dragging the arrow up/down indicator with the mouse. The rate of change per sec is shown in a tooltip. Alternatively, use the mouse wheel to adjust the value.
+
+
+## 2018-09-21
+Settings are no longer shared between executables. I.e. The Inviwo app and the integration test will not use the same settings any more. We now prefix the settings with the InviwoApplication display name. This also implies that any existing Inviwo app settings will be lost. To keep old setting one can prefix all the ".ivs" file in the inviwo settings folder with "Inviwo_".  On windows the inviwo settings can be found in %APPDATA%/inviwo.
+
+Added System settings for breaking into the debugger on various log message levels, and on throwing exceptions. Also added an option to add stacktraces to exceptions. All to help with debugging. 
+
+The inviwo app will now catch uncaught inviwo exceptions in main and present an dialog with information and an option to continue or abort. It will also give an option to save your workspace before closing.
+
+InviwoApplicationQt now has the same order of constructor arguments as InviwoApplication.
+
 ## 2018-08-21
 The property class identifier system no longer uses the `InviwoPropertyInfo` / `PropertyClassIdentifier` macros but rather implements
 ```
@@ -47,6 +129,12 @@ TemplateOptionProperty<MyEnum> prop("test","test");
 prop.getClassIdentifier() == PropertyTraits<TemplateOptionProperty<MyEnum>>::classIdentifier == "org.inviwo.OptionPropertyMyEnum"
 ```
 This makes it possible to differentiate `MyEnum` from other enum TemplateOptionPropertys.
+
+## 2018-09-19 Web browser
+Use html5 web pages inside of Inviwo. Uses Chromium Embedded Framework (CEF) to render web pages off-screen. The rendered web page is transferred to an Inviwo Image.
+
+Inviwo properties can be synchronized using javascript, see the web browser module example.
+ 
 
 ## 2018-07-26 ListProperty
 

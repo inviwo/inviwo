@@ -49,6 +49,9 @@ OptionPropertyWidgetQt::OptionPropertyWidgetQt(BaseOptionProperty* property)
     , comboBox_{new IvwComboBox(this)}
     , label_{new EditableLabelQt(this, property_)} {
 
+    setFocusPolicy(comboBox_->focusPolicy());
+    setFocusProxy(comboBox_);
+
     QHBoxLayout* hLayout = new QHBoxLayout();
     hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->setSpacing(7);

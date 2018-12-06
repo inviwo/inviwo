@@ -116,9 +116,6 @@ IVW_MODULE_QTWIDGETS_API ivec3 toivec3(const QColor&);
 IVW_MODULE_QTWIDGETS_API vec4 tovec4(const QColor&);
 IVW_MODULE_QTWIDGETS_API ivec4 toivec4(const QColor&);
 
-IVW_MODULE_QTWIDGETS_API vec4 fromQColor(const QColor&);
-IVW_MODULE_QTWIDGETS_API ivec4 fromQColori(const QColor&);
-
 IVW_MODULE_QTWIDGETS_API QColor toQColor(const vec3&);
 IVW_MODULE_QTWIDGETS_API QColor toQColor(const ivec3&);
 

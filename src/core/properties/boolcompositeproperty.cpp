@@ -42,8 +42,13 @@ BoolCompositeProperty::BoolCompositeProperty(std::string identifier, std::string
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , checked_("checked", "checked", checked, invalidationLevel, semantics) {
     checked_.setVisible(false);
-    this->addProperty(checked_);
-    checked_.onChange([this]() { Property::propertyModified(); });
+    checked_.setCurrentStateAsDefault();
+    addProperty(checked_);
+}
+
+BoolCompositeProperty::BoolCompositeProperty(const BoolCompositeProperty& rhs)
+    : CompositeProperty(rhs), checked_{rhs.checked_} {
+    addProperty(checked_);
 }
 
 BoolCompositeProperty* BoolCompositeProperty::clone() const {
@@ -63,8 +68,6 @@ void BoolCompositeProperty::setChecked(bool checked) {
         checked_.set(checked);
     }
 }
-
-BoolCompositeProperty::operator bool&() { return checked_.get(); }
 
 BoolCompositeProperty::operator const bool&() const { return checked_.get(); }
 

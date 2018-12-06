@@ -49,18 +49,16 @@ void main() {
     // if border is present, we need to adjust the texture coords
     vec2 texCoord = gl_FragCoord.xy - viewport_.xy;
 
-    bool isBorder = false;
     // The BorderValue is used as a step function for determining the output results by mix.
-    // If set to 0, the textures will be sampled, otherwise the border color is set.
-    float borderValue = 0.0; 
-
+    // If set to false, the textures will be sampled, otherwise the border color is set.
+    bool border = false; 
     if (borderWidth_ > 0) {
         // set border flag iff the fragment coord is within the border
         vec2 centeredPos = (texCoord - viewport_.zw * 0.5);
         vec2 outputDim = viewport_.zw - vec2(2 * borderWidth_);
 
         if (any(greaterThan(abs(centeredPos), outputDim * 0.5))) {
-            borderValue = 1.0;
+            border = true;
         }
         // adjust texture coords
         // rescaling to size without border around the center
@@ -72,15 +70,24 @@ void main() {
     texCoord /=  vec2(textureSize(color_, 0));
 
 #ifdef SINGLE_CHANNEL
-    FragData0 = mix(vec4(vec3(texture(color_, texCoord).r), 1.0), borderColor_, borderValue);
+    vec4 srcColor = vec4(vec3(texture(color_, texCoord).r), 1.0);
 #else
-    FragData0 = mix(texture(color_, texCoord), borderColor_, borderValue);
+    vec4 srcColor = texture(color_, texCoord);
 #endif
+
+#if !defined(BLENDMODE_REPLACE)
+    // if a blend mode other than "replace" is used, discard output for transparent fragments
+    if ((srcColor.a == 0.0) && !border) {
+	    discard;
+    }
+#endif
+
+    FragData0 = mix(srcColor, borderColor_, border);
 
 #ifdef ADDITIONAL_COLOR_LAYERS
     ADDITIONAL_COLOR_LAYER_WRITE
 #endif
 
-    PickingData = mix(texture(picking_, texCoord), vec4(0.0), borderValue);
-    gl_FragDepth = mix(texture(depth_, texCoord).r, 1.0, borderValue);
+    PickingData = mix(texture(picking_, texCoord), vec4(0.0), border);
+    gl_FragDepth = mix(texture(depth_, texCoord).r, 1.0, border);
 }

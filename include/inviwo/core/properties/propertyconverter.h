@@ -35,6 +35,7 @@
 
 #include <inviwo/core/properties/templateproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/fileproperty.h>
 
 namespace inviwo {
 
@@ -111,6 +112,20 @@ protected:
         } else {
             dst->set("");
         }
+    }
+};
+
+class FileToStringConverter : public TemplatePropertyConverter<FileProperty, StringProperty> {
+protected:
+    virtual void convertimpl(const FileProperty *src, StringProperty *dst) const override {
+        dst->set(src->get());
+    }
+};
+
+class StringToFileConverter : public TemplatePropertyConverter<StringProperty, FileProperty> {
+protected:
+    virtual void convertimpl(const StringProperty *src, FileProperty *dst) const override {
+        dst->set(src->get());
     }
 };
 

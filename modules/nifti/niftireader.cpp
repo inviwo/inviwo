@@ -119,7 +119,7 @@ std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(const std::st
         // Additional information
         volume->setMetaData<StringMetaData>("description", descrip);
     }
-    mat4 niftiIndexToModel;
+    mat4 niftiIndexToModel(1.f);
 
     // qform_code / sform_code
     // NIFTI_XFORM_UNKNOWN      0 /! Arbitrary coordinates (Method 1). /

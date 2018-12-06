@@ -183,7 +183,6 @@ void exposeProcessors(pybind11::module &m) {
         .def_property_readonly("image", [](CanvasProcessor *cp) { return cp->getImage().get(); },
                                py::return_value_policy::reference)
         .def_property_readonly("ready", &CanvasProcessor::isReady)
-        .def_property("fullScreen", &CanvasProcessor::isFullScreen, &CanvasProcessor::setFullScreen)
         .def("snapshot", [](CanvasProcessor *canvas, std::string filepath) {
             auto ext = filesystem::getFileExtension(filepath);
 
@@ -200,7 +199,7 @@ void exposeProcessors(pybind11::module &m) {
         });
 
     py::class_<PythonScriptProcessor, Processor, ProcessorPtr<PythonScriptProcessor>>(
-        m, "PythonScriptProcessor")
+        m, "PythonScriptProcessor", py::dynamic_attr{})
         .def("setInitializeResources", &PythonScriptProcessor::setInitializeResources)
         .def("setProcess", &PythonScriptProcessor::setProcess);
 }

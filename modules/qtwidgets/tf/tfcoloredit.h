@@ -32,6 +32,7 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <modules/qtwidgets/properties/colorlineedit.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -45,7 +46,7 @@ namespace inviwo {
  * \class TFColorEdit
  * \brief widget in TF dialog for entering six digit HTML hex color codes
  */
-class IVW_MODULE_QTWIDGETS_API TFColorEdit : public QLineEdit {
+class IVW_MODULE_QTWIDGETS_API TFColorEdit : public ColorLineEdit {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT

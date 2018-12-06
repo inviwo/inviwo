@@ -88,6 +88,8 @@ RandomSphereGenerator::RandomSphereGenerator()
     camera_.setInvalidationLevel(InvalidationLevel::Valid);
     camera_.setCollapsed(true);
 
+    seed_.setSemantics(PropertySemantics::Text);
+
     reseed_.onChange([&]() {
         seed_.set(static_cast<glm::i64>(rand(0.0f, static_cast<float>(seed_.getMaxValue()))));
         rand_.seed(static_cast<std::mt19937::result_type>(seed_.get()));

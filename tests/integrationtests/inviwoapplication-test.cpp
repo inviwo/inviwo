@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <warn/push>
@@ -34,18 +34,11 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 
-namespace inviwo{
+namespace inviwo {
 
-TEST(InviwoApplicationTest,initTest) {
+TEST(InviwoApplicationTest, initTest) {
     InviwoApplication* app = InviwoApplication::getPtr();
-    ASSERT_TRUE(app!=0);
+    ASSERT_TRUE(app != 0);
 }
 
-
-TEST(InviwoApplicationTest,displayNameTest) {
-    InviwoApplication* app = InviwoApplication::getPtr();
-    ASSERT_TRUE(app!=0);
-    EXPECT_TRUE(app->getDisplayName().find(IVW_VERSION)!=std::string::npos);
-}
-
-}
+}  // namespace inviwo

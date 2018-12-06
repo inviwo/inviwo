@@ -54,6 +54,9 @@ EventPropertyWidgetQt::EventPropertyWidgetQt(EventProperty* eventproperty)
     , button_{new IvwPushButton(this)}
     , label_{new EditableLabelQt(this, eventproperty_)} {
 
+    setFocusPolicy(button_->focusPolicy());
+    setFocusProxy(button_);
+
     QHBoxLayout* hLayout = new QHBoxLayout();
     setSpacingAndMargins(hLayout);
 
