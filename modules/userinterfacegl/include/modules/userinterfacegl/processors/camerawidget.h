@@ -70,7 +70,8 @@ class ImageGL;
  * ### Properties
  *   * __Enabled (settings)__ Enables interactions with the widget
  *   * __Invert Directions (settings)__ Inverts the rotation directions
- *   * __Show Rotation Widget (settings)__ Shows an additional widget for rolling the camera
+ *   * __Camera Roll (settings)__ Shows an additional widget for rolling the camera
+ *   * __Camera Dolly (settings)__ Shows an additional widget for camera dolly
  *   * __Speed Scaling (settings)__ Scaling factor (sensitivity) for rotation with a mouse drag
  *   * __Angle per click (settings)__  Rotation angle in degrees when a rotation is triggered by a
  * mouse click
@@ -136,6 +137,7 @@ private:
     BoolProperty invertDirections_;
     BoolProperty useObjectRotAxis_;
     BoolProperty showRollWidget_;
+    BoolProperty showDollyWidget_;
     FloatProperty speed_;
     FloatProperty angleIncrement_;
     IntProperty minTouchMovement_;
