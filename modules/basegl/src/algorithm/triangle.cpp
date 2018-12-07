@@ -1,4 +1,4 @@
-#include "triangle.h"
+#include <modules/basegl/algorithm/triangle.h>
 
 bool Triangle::containsVertex(const Vec2Indexed& v) const {
     // return p1 == v || p2 == v || p3 == v;

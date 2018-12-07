@@ -27,7 +27,7 @@
 *
 *********************************************************************************/
 
-#include "polylinegrabber.h"
+#include <modules/basegl/processors/polylinegrabber.h>
 
 #include <fstream>
 #include <limits>
@@ -36,10 +36,10 @@
 namespace inviwo {
 
     const ProcessorInfo PolylineGrabber::processorInfo_{
-        "org.inviwo.PolylineGrabber",  // Class identifier
-        "Polyline Grabber",              // Display name
-        "Input",          // Category
-        CodeState::Experimental,           // Code state
+        "org.inviwo.PolylineGrabber", // Class identifier
+        "Polyline Grabber",           // Display name
+        "Input",                      // Category
+        CodeState::Experimental,      // Code state
         Tags::CPU,                    // Tags
     };
     const ProcessorInfo PolylineGrabber::getProcessorInfo() const { return processorInfo_; }

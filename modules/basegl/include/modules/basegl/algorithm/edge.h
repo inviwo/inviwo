@@ -1,6 +1,6 @@
 #pragma once
 
-#include "vec2_indexed.h"
+#include <modules/basegl/algorithm/vec2_indexed.h>
 
 #include <iostream>
 

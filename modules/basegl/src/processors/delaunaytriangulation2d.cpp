@@ -27,12 +27,12 @@
  *
  *********************************************************************************/
 
-#include "delaunaytriangulation2d.h"
+#include <modules/basegl/processors/delaunaytriangulation2d.h>
 
-#include "basegl/algorithm/vec2_indexed.h"
-#include "basegl/algorithm/edge.h"
-#include "basegl/algorithm/triangle.h"
-#include "basegl/algorithm/delaunay.h"
+#include <modules/basegl/algorithm/vec2_indexed.h>
+#include <modules/basegl/algorithm/edge.h>
+#include <modules/basegl/algorithm/triangle.h>
+#include <modules/basegl/algorithm/delaunay.h>
 
 #include <inviwo/core/datastructures/geometry/simplemeshcreator.h>
 #include <inviwo/core/datastructures/geometry/geometrytype.h>

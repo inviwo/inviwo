@@ -1,6 +1,4 @@
-#pragma once
-
-#include "numeric.h"
+#include <modules/basegl/algorithm/numeric.h>
 
 #include <glm/glm.hpp>
 #include <limits>

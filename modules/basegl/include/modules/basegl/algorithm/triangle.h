@@ -1,8 +1,8 @@
 #pragma once
 
-#include "vec2_indexed.h"
-#include "edge.h"
-#include "numeric.h"
+#include <modules/basegl/algorithm/vec2_indexed.h>
+#include <modules/basegl/algorithm/edge.h>
+#include <modules/basegl/algorithm/numeric.h>
 
 #include <iostream>
 

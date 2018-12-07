@@ -7,6 +7,11 @@ ivw_module(BaseGL)
 set(HEADER_FILES
     include/modules/basegl/algorithm/entryexitpoints.h
     include/modules/basegl/algorithm/imageconvolution.h
+    include/modules/basegl/algorithm/delaunay.h
+    include/modules/basegl/algorithm/edge.h
+    include/modules/basegl/algorithm/numeric.h
+    include/modules/basegl/algorithm/triangle.h
+    include/modules/basegl/algorithm/vec2_indexed.h
     include/modules/basegl/baseglmodule.h
     include/modules/basegl/baseglmoduledefine.h
     include/modules/basegl/datavisualizer/imagevisualizer.h
@@ -53,6 +58,9 @@ set(HEADER_FILES
     include/modules/basegl/processors/sphererenderer.h
     include/modules/basegl/processors/splitimage.h
     include/modules/basegl/processors/tuberendering.h
+    include/modules/basegl/processors/coloroffset.h
+    include/modules/basegl/processors/delaunaytriangulation2d.h
+    include/modules/basegl/processors/polylinegrabber.h
     include/modules/basegl/processors/volumeprocessing/vectormagnitudeprocessor.h
     include/modules/basegl/processors/volumeprocessing/volumebinary.h
     include/modules/basegl/processors/volumeprocessing/volumecombiner.h
@@ -77,6 +85,11 @@ ivw_group("Header Files" ${HEADER_FILES})
 set(SOURCE_FILES
     src/algorithm/entryexitpoints.cpp
     src/algorithm/imageconvolution.cpp
+    src/algorithm/delaunay.cpp
+    src/algorithm/edge.cpp
+    src/algorithm/numeric.cpp
+    src/algorithm/triangle.cpp
+    src/algorithm/vec2_indexed.cpp
     src/baseglmodule.cpp
     src/datavisualizer/imagevisualizer.cpp
     src/datavisualizer/meshvisualizer.cpp
@@ -122,6 +135,9 @@ set(SOURCE_FILES
     src/processors/sphererenderer.cpp
     src/processors/splitimage.cpp
     src/processors/tuberendering.cpp
+    src/processors/coloroffset.cpp
+    src/processors/delaunaytriangulation2d.cpp
+    src/processors/polylinegrabber.cpp
     src/processors/volumeprocessing/vectormagnitudeprocessor.cpp
     src/processors/volumeprocessing/volumebinary.cpp
     src/processors/volumeprocessing/volumecombiner.cpp

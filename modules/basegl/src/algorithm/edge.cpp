@@ -1,7 +1,4 @@
-#pragma once
-
-#include "edge.h"
-#include "vec2_indexed.h"
+#include <modules/basegl/algorithm/edge.h>
 
 std::ostream &operator << (std::ostream &str, const Edge& e)
 {
