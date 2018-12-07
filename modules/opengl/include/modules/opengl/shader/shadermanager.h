@@ -60,6 +60,8 @@ public:
 
     void registerShader(Shader* shader);
     void unregisterShader(Shader* shader);
+    bool isRegistered(Shader* shader) const;
+
 
     std::string getGlobalGLSLHeader();
     std::string getGlobalGLSLVertexDefines();

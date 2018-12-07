@@ -38,13 +38,8 @@ namespace inviwo {
 
 Shader::Shader(const std::vector<std::pair<ShaderType, std::string>> &items, Build buildShader)
     : warningLevel_{UniformWarning::Ignore} {
-    if (std::find_if(std::begin(items), std::end(items), [](const auto &item) {
-            return item.first == ShaderType::Vertex;
-        }) == std::end(items)) {
-        throw Exception("Vertex shader required, provide for example img_identity.vert");
-    }
     for (auto &item : items) createAndAddShader(item.first, item.second);
-
+    verify();
     if (buildShader == Build::Yes) build();
     ShaderManager::getPtr()->registerShader(this);
 }
@@ -53,15 +48,24 @@ Shader::Shader(
     const std::vector<std::pair<ShaderType, std::shared_ptr<const ShaderResource>>> &items,
     Build buildShader)
     : warningLevel_{UniformWarning::Ignore} {
-    if (std::find_if(std::begin(items), std::end(items), [](const auto &item) {
-            return item.first == ShaderType::Vertex;
-        }) == std::end(items)) {
-        throw Exception("Vertex shader required, provide for example img_identity.vert");
-    }
     for (auto &item : items) createAndAddShader(item.first, item.second);
-
+    verify();
     if (buildShader == Build::Yes) build();
     ShaderManager::getPtr()->registerShader(this);
+}
+
+Shader::Shader(std::vector<std::unique_ptr<ShaderObject>> &shaderObjects, bool buildShader)
+    : warningLevel_{UniformWarning::Ignore} {
+    for (auto &shaderObject : shaderObjects) createAndAddShader(std::move(shaderObject));
+    verify();
+    if (buildShader) build();
+    ShaderManager::getPtr()->registerShader(this);
+}
+
+void Shader::verify() const {
+    if (shaderObjects_.count(ShaderType::Vertex) == 0) {
+        throw Exception("Vertex shader required, provide for example img_identity.vert");
+    }
 }
 
 Shader::Shader(std::string vertexFilename, std::string geometryFilename,
@@ -90,20 +94,7 @@ Shader::Shader(const char *vertexFilename, const char *geometryFilename,
     : Shader(std::string(vertexFilename), std::string(geometryFilename),
              std::string(fragmentFilename), buildShader) {}
 
-Shader::Shader(std::vector<std::unique_ptr<ShaderObject>> &shaderObjects, bool buildShader)
-    : warningLevel_{UniformWarning::Ignore} {
-    if (std::find_if(std::begin(shaderObjects), std::end(shaderObjects), [](const auto &item) {
-            return item->getShaderType() == ShaderType::Vertex;
-        }) == std::end(shaderObjects)) {
-        throw Exception("Vertex shader required, provide for example img_identity.vert");
-    }
-    for (auto &shaderObject : shaderObjects) createAndAddShader(std::move(shaderObject));
-
-    if (buildShader) build();
-    ShaderManager::getPtr()->registerShader(this);
-}
-
-Shader::Shader(const Shader &rhs) : warningLevel_{rhs.warningLevel_} {
+Shader::Shader(const Shader &rhs) : program_{rhs.program_}, warningLevel_{rhs.warningLevel_} {
     for (auto &elem : rhs.shaderObjects_) {
         createAndAddShader(util::make_unique<ShaderObject>(*(elem.second.get())));
     }
@@ -113,10 +104,9 @@ Shader::Shader(const Shader &rhs) : warningLevel_{rhs.warningLevel_} {
 }
 
 Shader::Shader(Shader &&rhs)
-    : prog_{rhs.prog_.id}, ready_(rhs.ready_), warningLevel_{rhs.warningLevel_} {
+    : program_{std::move(rhs.program_)}, ready_(rhs.ready_), warningLevel_{rhs.warningLevel_} {
 
     ShaderManager::getPtr()->unregisterShader(&rhs);
-    rhs.prog_.id = 0;
     rhs.objectCallbacks_.clear();
     rhs.ready_ = false;
 
@@ -132,11 +122,7 @@ Shader::Shader(Shader &&rhs)
 
 Shader &Shader::operator=(const Shader &that) {
     if (this != &that) {
-        bool needRegister = false;
-        if (!prog_.created()) {
-            needRegister = true;
-            prog_.id = glCreateProgram();
-        }
+        program_ = that.program_;
 
         shaderObjects_.clear();
         for (auto &elem : that.shaderObjects_) {
@@ -145,32 +131,30 @@ Shader &Shader::operator=(const Shader &that) {
         warningLevel_ = that.warningLevel_;
 
         if (that.isReady()) build();
-
-        if (needRegister) ShaderManager::getPtr()->registerShader(this);
+        if (!ShaderManager::getPtr()->isRegistered(this)) {
+            // Need to re-register if we have been moved from
+            ShaderManager::getPtr()->registerShader(this);
+        }
     }
     return *this;
 }
 
 Shader &Shader::operator=(Shader &&that) {
     if (this != &that) {
-        if (!prog_.created()) {
-            // Re-register this since we change id, which some observers might depend on
+        if (ShaderManager::getPtr()->isRegistered(this)) {
             ShaderManager::getPtr()->unregisterShader(this);
-            shaderObjects_.clear();
-            objectCallbacks_.clear();
-            glDeleteProgram(prog_.id);
         }
-        ShaderManager::getPtr()->unregisterShader(&that);
 
-        prog_.id = that.prog_.id;
+        program_ = std::move(that.program_);
+        ShaderManager::getPtr()->unregisterShader(&that);
         ready_ = that.ready_;
         warningLevel_ = that.warningLevel_;
-
-        that.prog_.id = 0;
         that.ready_ = false;
         that.objectCallbacks_.clear();
 
         shaderObjects_ = std::move(that.shaderObjects_);
+
+        objectCallbacks_.clear();
         for (auto &elem : shaderObjects_) {
             objectCallbacks_.push_back(
                 elem.second->onChange([this](ShaderObject *o) { rebuildShader(o); }));
@@ -181,34 +165,27 @@ Shader &Shader::operator=(Shader &&that) {
 }
 
 Shader::~Shader() {
-    if (prog_.created()) {
+    if (ShaderManager::getPtr()->isRegistered(this)) {
         ShaderManager::getPtr()->unregisterShader(this);
-        // clear shader objects before the program is deleted
-        shaderObjects_.clear();
     }
 }
 
 void Shader::createAndAddShader(ShaderType type, std::string fileName) {
-    createAndAddHelper(new ShaderObject(type, fileName));
-}
-
-void Shader::createAndAddShader(std::unique_ptr<ShaderObject> object) {
-    createAndAddHelper(object.get());
-    object.release();
+    createAndAddShader(type, utilgl::findShaderResource(fileName));
 }
 
 void Shader::createAndAddShader(ShaderType type, std::shared_ptr<const ShaderResource> resource) {
-    createAndAddHelper(new ShaderObject(type, resource));
+    createAndAddShader(std::make_unique<ShaderObject>(type, resource));
 }
-
-void Shader::createAndAddHelper(ShaderObject *object) {
-    auto ptr = ShaderObjectPtr(object, [shaderId = prog_.id](ShaderObject *shaderObject) {
-        if (shaderObject != nullptr) {
-            glDetachShader(shaderId, shaderObject->getID());
-            LGL_ERROR;
-            delete shaderObject;
-        }
-    });
+void Shader::createAndAddShader(std::unique_ptr<ShaderObject> object) {
+    auto ptr =
+        ShaderObjectPtr(object.release(), [shaderId = program_.id](ShaderObject *shaderObject) {
+            if (shaderObject != nullptr) {
+                glDetachShader(shaderId, shaderObject->getID());
+                LGL_ERROR;
+                delete shaderObject;
+            }
+        });
 
     objectCallbacks_.push_back(ptr->onChange([this](ShaderObject *o) { rebuildShader(o); }));
     attachShaderObject(ptr.get());
@@ -237,29 +214,29 @@ void Shader::link() {
 
 void Shader::linkShader(bool notifyRebuild /*= false*/) {
     uniformLookup_.clear();  // clear uniform location cache.
-    ShaderManager::getPtr()->bindCommonAttributes(prog_.id);
+    ShaderManager::getPtr()->bindCommonAttributes(program_.id);
 
     if (!util::all_of(shaderObjects_, [](const ShaderObjectMap::value_type &elem) {
             return elem.second->isReady();
         })) {
-        util::log(IvwContext, "Id: " + toString(prog_.id) + " objects not ready when linking.",
+        util::log(IvwContext, "Id: " + toString(program_.id) + " objects not ready when linking.",
                   LogLevel::Error, LogAudience::User);
         return;
     }
 
-    glLinkProgram(prog_.id);
+    glLinkProgram(program_.id);
 
     if (!isReady()) {
-        throw OpenGLException(
-            "Id: " + toString(prog_.id) + " " + processLog(utilgl::getProgramInfoLog(prog_.id)),
-            IvwContext);
+        throw OpenGLException("Id: " + toString(program_.id) + " " +
+                                  processLog(utilgl::getProgramInfoLog(program_.id)),
+                              IvwContext);
     }
 
 #ifdef IVW_DEBUG
-    auto log = utilgl::getProgramInfoLog(prog_.id);
+    auto log = utilgl::getProgramInfoLog(program_.id);
     if (!log.empty()) {
-        util::log(IvwContext, "Id: " + toString(prog_.id) + " " + processLog(log), LogLevel::Info,
-                  LogAudience::User);
+        util::log(IvwContext, "Id: " + toString(program_.id) + " " + processLog(log),
+                  LogLevel::Info, LogAudience::User);
     }
 #endif
 
@@ -277,7 +254,7 @@ void Shader::rebuildShader(ShaderObject *obj) {
         onReloadCallback_.invokeAll();
 
         util::log(IvwContext,
-                  "Id: " + toString(prog_.id) + ", resource: " + obj->getFileName() +
+                  "Id: " + toString(program_.id) + ", resource: " + obj->getFileName() +
                       " successfully reloaded",
                   LogLevel::Info, LogAudience::User);
     } catch (OpenGLException &e) {
@@ -336,15 +313,15 @@ std::string Shader::processLog(std::string log) const {
 
 bool Shader::isReady() const {
     GLint res;
-    glGetProgramiv(prog_.id, GL_LINK_STATUS, &res);
+    glGetProgramiv(program_.id, GL_LINK_STATUS, &res);
     return res == GL_TRUE;
 }
 
 void Shader::activate() {
     if (!ready_)
-        throw OpenGLException("Shader Id: " + toString(prog_.id) + " not ready: " + shaderNames(),
-                              IvwContext);
-    glUseProgram(prog_.id);
+        throw OpenGLException(
+            "Shader Id: " + toString(program_.id) + " not ready: " + shaderNames(), IvwContext);
+    glUseProgram(program_.id);
     LGL_ERROR;
 }
 
@@ -354,12 +331,12 @@ void Shader::deactivate() {
 }
 
 void Shader::attachShaderObject(ShaderObject *shaderObject) {
-    glAttachShader(prog_.id, shaderObject->getID());
+    glAttachShader(program_.id, shaderObject->getID());
     LGL_ERROR;
 }
 
 void Shader::detachShaderObject(ShaderObject *shaderObject) {
-    glDetachShader(prog_.id, shaderObject->getID());
+    glDetachShader(program_.id, shaderObject->getID());
     LGL_ERROR;
 }
 
@@ -396,17 +373,17 @@ GLint Shader::findUniformLocation(const std::string &name) const {
     if (it != uniformLookup_.end()) {
         return it->second;
     } else {
-        GLint location = glGetUniformLocation(prog_.id, name.c_str());
+        GLint location = glGetUniformLocation(program_.id, name.c_str());
         uniformLookup_[name] = location;
 
         if (warningLevel_ == UniformWarning::Throw && location == -1) {
-            throw OpenGLException("Unable to set uniform " + name +
-                                      " in shader id: " + toString(prog_.id) + " " + shaderNames(),
+            throw OpenGLException("Unable to set uniform " + name + " in shader id: " +
+                                      toString(program_.id) + " " + shaderNames(),
                                   IvwContext);
         } else if (warningLevel_ == UniformWarning::Warn && location == -1) {
             util::log(IvwContext,
                       "Unable to set uniform " + name + " in shader " +
-                          " in shader id: " + toString(prog_.id) + " " + shaderNames(),
+                          " in shader id: " + toString(program_.id) + " " + shaderNames(),
                       LogLevel::Warn, LogAudience::User);
         }
 

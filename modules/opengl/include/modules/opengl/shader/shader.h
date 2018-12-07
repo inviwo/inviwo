@@ -84,7 +84,7 @@ public:
     void build();
     bool isReady() const;  // returns whether the shader has been built and linked successfully
 
-    GLuint getID() const { return prog_.id; }
+    GLuint getID() const { return program_.id; }
     const ShaderObjectMap &getShaderObjects() { return shaderObjects_; }
 
     ShaderObject *operator[](ShaderType type) const;
@@ -109,19 +109,32 @@ public:
     void removeOnReload(const BaseCallBack *callback);
 
 private:
-    struct ScopedShaderProgram {
-        ScopedShaderProgram() = default;
-        ScopedShaderProgram(GLuint id_) : id{id_} {};
-        ~ScopedShaderProgram() {
-            // A value of 0 for program will be silently ignored.
-            glDeleteProgram(id);
+    struct Program {
+        // glCreateProgram This function returns 0 if an error occurs creating the program object.
+        Program() : id{glCreateProgram()} {}
+        Program(const Program &) : Program() {}
+        Program(Program &&rhs) noexcept : id{rhs.id} { rhs.id = 0; }
+        Program &operator=(const Program &) {
+            if (id == 0) {
+                id = glCreateProgram();
+            }
+            return *this;
         }
-        bool created() { return id != 0; } 
+        Program &operator=(Program &&that) noexcept {
+            Program copy(std::move(that));
+            std::swap(id, copy.id);
+            return *this;
+        }
 
-        GLuint id = {
-            glCreateProgram()};  // This function returns 0 if an error occurs creating the program
-                                 // object.
+        ~Program() {
+            if (id != 0) {
+                glDeleteProgram(id);
+            }
+        }
+        GLuint id = 0;
     };
+
+    void verify() const;
     void handleError(OpenGLException &e);
     std::string processLog(std::string log) const;
 
@@ -131,7 +144,6 @@ private:
     void createAndAddShader(ShaderType type, std::string fileName);
     void createAndAddShader(ShaderType type, std::shared_ptr<const ShaderResource> resource);
     void createAndAddShader(std::unique_ptr<ShaderObject> object);
-    void createAndAddHelper(ShaderObject *object);
 
     void attachShaderObject(ShaderObject *shaderObject);
     void detachShaderObject(ShaderObject *shaderObject);
@@ -142,7 +154,8 @@ private:
     std::string shaderNames() const;
     GLint findUniformLocation(const std::string &name) const;
 
-    ScopedShaderProgram prog_;
+    Program program_;
+    // clear shader objects before the program is deleted
     ShaderObjectMap shaderObjects_;
 
     bool ready_ = false;
@@ -155,7 +168,7 @@ private:
     CallBackList onReloadCallback_;
 
     std::vector<std::shared_ptr<ShaderObject::Callback>> objectCallbacks_;
-};
+};  // namespace inviwo
 
 template <typename T>
 void Shader::setUniform(const std::string &name, const T &value) const {
