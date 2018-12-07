@@ -1090,7 +1090,7 @@ namespace half_float
 		/// This initializes the half to 0. Although this does not match the builtin types' default-initialization semantics 
 		/// and may be less efficient than no initialization, it is needed to provide proper value-initialization semantics.
 		//HALF_CONSTEXPR half() HALF_NOEXCEPT : data_() {}
-        HALF_CONSTEXPR half() HALF_NOEXCEPT = default;
+        half() HALF_NOEXCEPT = default;
 
 
 		/// Copy constructor.
