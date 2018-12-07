@@ -173,7 +173,7 @@ void PathLinesDeprecated::process() {
         auto indexBuffer = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);
         indexBuffer->add(0);
 
-        vec4 c;
+        vec4 c{0};
         if (hasColors) {
             if (line.getIndex() >= colors_.getData()->size()) {
                 if (warnOnce2) {
@@ -208,10 +208,12 @@ void PathLinesDeprecated::process() {
                                 "No colors in the color port, using velocity for coloring "
                                 "instead ");
                         }
+                        [[fallthrough]];
                     }
+                default:
+                    [[fallthrough]];
                 case ColoringMethod::Velocity:
                     c = tf_.get().sample(d);
-                default:
                     break;
             }
 

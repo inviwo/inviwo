@@ -38,6 +38,7 @@
 #include <warn/ignore/conversion>
 #include <warn/ignore/misleading-indentation>
 #include <warn/ignore/mismatched-tags>
+#include <warn/ignore/uninitialized>
 
 #include <glm/glm.hpp>
 
@@ -56,6 +57,10 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/scalar_relational.hpp>
 #include <glm/gtx/scalar_multiplication.hpp>
+
+#include <glm/ext/scalar_relational.hpp>
+#include <glm/ext/vector_relational.hpp>
+#include <glm/ext/matrix_relational.hpp>
 
 #include <half/half.hpp>
 
@@ -717,6 +722,95 @@ inline bool any(const T& t) {
 template <>
 inline bool any(const bool& t) {
     return t;
+}
+
+namespace detail {
+
+template <typename T>
+struct epsilon {
+    static T value() { return std::numeric_limits<T>::epsilon(); }
+};
+
+template <glm::length_t L, typename T, glm::qualifier Q>
+struct epsilon<glm::vec<L, T, Q>> {
+    static glm::vec<L, T, Q> value() { return glm::vec<L, T, Q>{epsilon<T>::value()}; }
+};
+
+template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
+struct epsilon<glm::mat<C, R, T, Q>> {
+    static glm::mat<C, R, T, Q> value() { return glm::mat<C, R, T, Q>{0} + epsilon<T>::value(); }
+};
+
+template <typename T>
+struct min {
+    static T value() { return std::numeric_limits<T>::min(); }
+};
+
+template <glm::length_t L, typename T, glm::qualifier Q>
+struct min<glm::vec<L, T, Q>> {
+    static glm::vec<L, T, Q> value() { return glm::vec<L, T, Q>{min<T>()}; }
+};
+
+template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
+struct min<glm::mat<C, R, T, Q>> {
+    static glm::mat<C, R, T, Q> value() { return glm::mat<C, R, T, Q>{0} + min<T>(); }
+};
+
+template <typename T>
+struct almostEqual {
+    template <typename U = T,
+              typename std::enable_if<std::is_floating_point<U>::value, int>::type = 0>
+    static bool value(const T& x, const T& y, int ulp) {
+        return glm::equal(x, y, ulp);
+    }
+
+    template <typename U = T,
+              typename std::enable_if<!std::is_floating_point<U>::value, int>::type = 0>
+    static bool value(const T& x, const T& y, int) {
+        return x == y;
+    }
+};
+
+template <glm::length_t L, typename T, glm::qualifier Q>
+struct almostEqual<glm::vec<L, T, Q>> {
+    template <typename U = T,
+              typename std::enable_if<std::is_floating_point<U>::value, int>::type = 0>
+    static bool value(const glm::vec<L, T, Q>& x, const glm::vec<L, T, Q>& y, int ulp) {
+        return glm::all(glm::equal(x, y, ulp));
+    }
+
+    template <typename U = T,
+              typename std::enable_if<!std::is_floating_point<U>::value, int>::type = 0>
+    static bool value(const glm::vec<L, T, Q>& x, const glm::vec<L, T, Q>& y, int) {
+        return x == y;
+    }
+};
+
+template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
+struct almostEqual<glm::mat<C, R, T, Q>> {
+    template <typename U = T,
+              typename std::enable_if<std::is_floating_point<U>::value, int>::type = 0>
+    static bool value(const glm::mat<C, R, T, Q>& x, const glm::mat<C, R, T, Q>& y, int ulp) {
+        return glm::all(glm::equal(x, y, ulp));
+    }
+
+    template <typename U = T,
+              typename std::enable_if<!std::is_floating_point<U>::value, int>::type = 0>
+    static bool value(const glm::mat<C, R, T, Q>& x, const glm::mat<C, R, T, Q>& y, int ulp) {
+        return x == y;
+    }
+};
+
+}  // namespace detail
+
+template <typename T>
+T epsilon() {
+    return detail::epsilon<T>::value();
+}
+
+template <typename T>
+bool almostEqual(const T& x, const T& y, int ulp = 2) {
+    return detail::almostEqual<T>::value(x, y, ulp);
 }
 
 }  // namespace util

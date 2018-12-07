@@ -284,7 +284,6 @@ void CropWidget::createLineStripMesh() {
 
     vec3 p(0.0f);
     vec2 t(0.0f, 0.0f);
-    vec4 color;
     vec3 mask[5] = {{0.0f, 0.0f, 0.0f},
                     {1.0f, 0.0f, 0.0f},
                     {1.0f, 1.0f, 0.0f},

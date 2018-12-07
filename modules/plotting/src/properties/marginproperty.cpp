@@ -73,7 +73,7 @@ MarginProperty& MarginProperty::operator=(const MarginProperty& that) {
     }
     return *this;
 }
-MarginProperty* MarginProperty::clone() const { return new MarginProperty(*this); };
+MarginProperty* MarginProperty::clone() const { return new MarginProperty(*this); }
 
 void MarginProperty::setMargins(float top, float right, float bottom, float left) {
     top_.set(top);

@@ -208,7 +208,7 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
                                      ControlSequenceEditor::classIdentifier());
 }
 
-AnimationQtModule::~AnimationQtModule() { unRegisterAll(); };
+AnimationQtModule::~AnimationQtModule() { unRegisterAll(); }
 
 animation::TrackWidgetQtFactory& AnimationQtModule::getTrackWidgetQtFactory() {
     return trackWidgetQtFactory_;

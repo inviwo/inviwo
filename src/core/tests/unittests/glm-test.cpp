@@ -464,7 +464,6 @@ TEST(GLMTest, MatVectorize) {
         EXPECT_EQ(clamp, a);
     }
 
-
     {
         auto clamp = glm::clamp(b, a, c);
         EXPECT_EQ(clamp, b);
@@ -477,7 +476,27 @@ TEST(GLMTest, MatVectorize) {
         auto clamp = glm::clamp(c, a, b);
         EXPECT_EQ(clamp, b);
     }
+}
 
+TEST(GLMTest, Epsilon) {
+    EXPECT_EQ(util::epsilon<int>(), 0);
+    EXPECT_NE(util::epsilon<float>(), 0.0f);
+
+    EXPECT_EQ(util::epsilon<ivec4>(), ivec4{0});
+    EXPECT_NE(util::epsilon<vec4>(), vec4{0.0f});
+}
+
+TEST(GLMTest, AlmostEqual) {
+    static_assert(util::is_floating_point<typename util::value_type<float>::type>::value, "");
+    EXPECT_TRUE(util::almostEqual(1, 1));
+    EXPECT_TRUE(util::almostEqual(1.0, 1.0));
+    EXPECT_TRUE(util::almostEqual(vec3{1.0f}, vec3{1.0f}));
+    EXPECT_TRUE(util::almostEqual(ivec3{1}, ivec3{1}));
+
+    EXPECT_FALSE(util::almostEqual(1, 2));
+    EXPECT_FALSE(util::almostEqual(1.0, 2.0));
+    EXPECT_FALSE(util::almostEqual(vec3{1.0f}, vec3{2.0f}));
+    EXPECT_FALSE(util::almostEqual(ivec3{1}, ivec3{2}));
 }
 
 }  // namespace inviwo
