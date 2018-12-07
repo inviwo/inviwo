@@ -71,6 +71,13 @@
 
 namespace inviwo {
 
+static_assert(std::is_standard_layout<half_float::half>::value, "");
+static_assert(std::is_trivially_copyable<half_float::half>::value, "");
+static_assert(std::is_default_constructible<half_float::half>::value, "");
+static_assert(std::is_trivially_default_constructible<half_float::half>::value, "");
+static_assert(std::is_trivial<half_float::half>::value, "");
+static_assert(std::is_pod<half_float::half>::value, "");
+
 using ivec2 = glm::ivec2;
 using ivec3 = glm::ivec3;
 using ivec4 = glm::ivec4;

@@ -712,7 +712,7 @@ ivw_register_license_file(NAME "OpenGL Mathematics (GLM)" VERSION 0.9.9.3 MODULE
 ivw_register_license_file(NAME "half" TARGET half MODULE Core
     URL "http://half.sourceforge.net"
     TYPE "The MIT License"
-    FILES ${IVW_EXTENSIONS_DIR}/half/LICENSE
+    FILES ${IVW_EXTENSIONS_DIR}/half/LICENSE.txt
 )
 
 if(TARGET inviwo::sigar)
