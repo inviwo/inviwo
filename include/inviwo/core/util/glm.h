@@ -62,6 +62,8 @@
 #include <glm/ext/vector_relational.hpp>
 #include <glm/ext/matrix_relational.hpp>
 
+#include <warn/ignore/parentheses>
+
 #include <half/half.hpp>
 
 #include <warn/pop>
