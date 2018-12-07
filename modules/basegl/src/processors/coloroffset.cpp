@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "coloroffset.h"
+#include <modules/basegl/processors/coloroffset.h>
 
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 
