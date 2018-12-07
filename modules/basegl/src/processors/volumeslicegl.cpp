@@ -129,7 +129,6 @@ namespace inviwo {
             MouseButton::Left | MouseButton::Right)
         , enablePolylinePicking_("polylinePicking", "Enable Polyline Picking", false)
         , lastPolylinePoint_("lastPolylinePoint", "Last Polyline Point", vec3{0.0f})
-        , addPolylinePoint_("addPolylinePoint", "Point: Add (true) / Remove (false)", true)
         , polylineVertexBuf_(util::makeBuffer<vec2>({}))
         , meshDirty_(true)
         , updating_(false)
@@ -226,7 +225,6 @@ namespace inviwo {
         pickGroup_.addProperty(enablePolylinePicking_);
         pickGroup_.addProperty(posPicking_);
         pickGroup_.addProperty(showIndicator_);
-        pickGroup_.addProperty(addPolylinePoint_);
         pickGroup_.addProperty(indicatorColor_);
 
         posPicking_.onChange([this]() {
@@ -816,27 +814,12 @@ void VolumeSliceGL::renderPositionIndicator() {
         if (!enablePolylinePicking_.get())
             return;
 
-        NetworkLock lock(this); // lock network to change multiple properties at a time before releasing it
-
         const auto mouseEvent = static_cast<MouseEvent*>(event);
         const auto mousePos = vec2(mouseEvent->posNormalized());
         const auto volPos = convertScreenPosToVolume(mousePos);
 
         // set last clicked point in volume to be grabbed
         lastPolylinePoint_.set(volPos);
-
-        // set if point should be added or removed
-        const auto button = mouseEvent->button();
-        const auto modifiers = mouseEvent->modifiers();
-        if (button == MouseButton::Left) {
-            if (modifiers & KeyModifier::Control) {
-                addPolylinePoint_ = false; // remove point
-            } else {
-                addPolylinePoint_ = true; // add point
-            }
-        } else if (button == MouseButton::Right) { // remove point
-            addPolylinePoint_ = false;
-        }
     }
 
     void VolumeSliceGL::eventStepSliceUp(Event* event) {

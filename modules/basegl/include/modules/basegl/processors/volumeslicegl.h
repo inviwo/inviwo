@@ -206,7 +206,6 @@ namespace inviwo {
 		EventProperty mousePickPolylinePoint_;
 		BoolProperty enablePolylinePicking_;
 		FloatVec3Property lastPolylinePoint_;
-        BoolProperty addPolylinePoint_;
 		std::shared_ptr<Buffer<vec2, BufferTarget::Data>> polylineVertexBuf_;
 
 		std::unique_ptr<Mesh> meshCrossHair_;

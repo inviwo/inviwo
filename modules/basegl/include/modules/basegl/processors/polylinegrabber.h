@@ -38,6 +38,7 @@
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/eventproperty.h>
 
 #include <vector>
 #include <memory>
@@ -61,9 +62,11 @@ namespace inviwo {
         void addPoint(const vec3& pt);
         void removePoint(const vec3& pt);
 
+        void processClickEvent(Event* e);
+
         FloatVec3Property pt_;
-        BoolProperty addPolylinePoint_;
-        bool readyToRecord_;
+
+        EventProperty addOrRemovePolylinePoint_;
 
         ButtonProperty clearPolyline_;
         ButtonProperty loadExamplePolyline_;

@@ -57,6 +57,7 @@ ColorOffset::ColorOffset() : Processor()
 }
 
 void ColorOffset::process() {
+    // TODO: replace clone, buffer IDs also get copied, which should not happen
     auto mesh_out = mesh_inport_.getData()->clone();
 
     if (mesh_out) {

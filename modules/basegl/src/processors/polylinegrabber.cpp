@@ -28,6 +28,7 @@
 *********************************************************************************/
 
 #include <modules/basegl/processors/polylinegrabber.h>
+#include <inviwo/core/interaction/events/mouseevent.h>
 
 #include <fstream>
 #include <limits>
@@ -47,8 +48,9 @@ namespace inviwo {
     PolylineGrabber::PolylineGrabber()
         : Processor()
         , pt_("pt", "Point to Add")
-        , addPolylinePoint_("addPolylinePoint", "Point: Add (true) / Remove (false)", true)
-        , readyToRecord_(false)
+        , addOrRemovePolylinePoint_("addOrRemovePolylinePoint", "Add or Remove Polyline Point",
+                                    [this](Event* e) { processClickEvent(e); },
+                                    MouseButton::Left | MouseButton::Right)
         , clearPolyline_("clearpolyline", "Clear Points")
         , loadExamplePolyline_("loadexamplepolyline", "Load Example Polyline")
         , polyline_(std::make_shared<std::vector<vec3>>())
@@ -95,36 +97,40 @@ namespace inviwo {
         });
         addProperty(clip_);
 
-        //pt_.setVisible(false);
         pt_.setReadOnly(true);
-        pt_.onChange([this]() {
-            if (addPolylinePoint_) {
-                addPoint(pt_);
-            } else {
-                removePoint(pt_);
-            }
-        });
         addProperty(pt_);
 
-        addProperty(addPolylinePoint_);
+        addProperty(addOrRemovePolylinePoint_);
 
         //TODO smoothen the normal
 
         //TODO implement move and delete points
     }
 
+    void PolylineGrabber::processClickEvent(Event* e)
+    {
+        const auto mouseEvent = static_cast<MouseEvent*>(e);
+        const auto mousePos = vec2(mouseEvent->posNormalized());
+
+        const auto button = mouseEvent->button();
+        if (button == MouseButton::Left) {
+            LogInfo("add");
+            addPoint(pt_);
+        } else if (button == MouseButton::Right) {
+            LogInfo("remove");
+            removePoint(pt_);
+        }
+    }
+
     void PolylineGrabber::addPoint(const vec3& pt)
     {
-        if (readyToRecord_) {
-            polyline_->push_back(pt);
-        }
+        polyline_->push_back(pt);
 
-        readyToRecord_ = true;
         invalidate(InvalidationLevel::InvalidOutput);
     }
 
     void PolylineGrabber::removePoint(const vec3& pt) {
-        if (readyToRecord_ && !polyline_->empty()) {
+        if (!polyline_->empty()) {
             size_t min_idx{0};
             float min_dist{std::numeric_limits<float>::infinity()};
             for (size_t idx = 0; idx < polyline_->size(); ++idx) {
@@ -138,7 +144,6 @@ namespace inviwo {
             polyline_->erase(polyline_->begin() + min_idx);
         }
 
-        readyToRecord_ = true;
         invalidate(InvalidationLevel::InvalidOutput);
     }
 
