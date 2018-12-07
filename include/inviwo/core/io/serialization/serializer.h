@@ -83,13 +83,17 @@ public:
                    const std::string& itemKey = "item");
 
     template <typename T>
+    void serialize(const std::string& key, const std::unordered_set<T>& sSet,
+                   const std::string& itemKey = "item");
+
+    template <typename T>
     void serialize(const std::string& key, const std::list<T>& container,
                    const std::string& itemKey = "item");
 
     template <typename K, typename V, typename C, typename A>
     void serialize(const std::string& key, const std::map<K, V, C, A>& map,
                    const std::string& itemKey = "item");
-    
+
     template <typename K, typename V, typename H, typename C, typename A>
     void serialize(const std::string& key, const std::unordered_map<K, V, H, C, A>& map,
                    const std::string& itemKey = "item");
@@ -129,7 +133,7 @@ public:
     void serialize(const std::string& key, const Mat& data);
 
     // bitsets
-    template<unsigned N>
+    template <unsigned N>
     void serialize(const std::string& key, const std::bitset<N>& bits);
 
     // serializable classes
@@ -149,7 +153,7 @@ protected:
 
 template <typename T>
 void Serializer::serialize(const std::string& key, const std::vector<T>& vector,
-                              const std::string& itemKey) {
+                           const std::string& itemKey) {
     if (vector.empty()) return;
 
     auto node = util::make_unique<TxElement>(key);
@@ -162,8 +166,22 @@ void Serializer::serialize(const std::string& key, const std::vector<T>& vector,
 }
 
 template <typename T>
+void Serializer::serialize(const std::string& key, const std::unordered_set<T>& set,
+                           const std::string& itemKey) {
+    if (set.empty()) return;
+
+    auto node = util::make_unique<TxElement>(key);
+    rootElement_->LinkEndChild(node.get());
+    NodeSwitch nodeSwitch(*this, node.get());
+
+    for (const auto& item : set) {
+        serialize(itemKey, item);
+    }
+}
+
+template <typename T>
 void Serializer::serialize(const std::string& key, const std::list<T>& container,
-                              const std::string& itemKey) {
+                           const std::string& itemKey) {
     if (container.empty()) return;
 
     auto node = util::make_unique<TxElement>(key);
@@ -177,7 +195,7 @@ void Serializer::serialize(const std::string& key, const std::list<T>& container
 
 template <typename K, typename V, typename C, typename A>
 void Serializer::serialize(const std::string& key, const std::map<K, V, C, A>& map,
-                              const std::string& itemKey) {
+                           const std::string& itemKey) {
     if (!isPrimitiveType(typeid(K)))
         throw SerializationException("Error: map key has to be a primitive type", IvwContext);
 
@@ -263,10 +281,9 @@ void Serializer::serialize(const std::string& key, const T& data,
 // Flag types
 template <typename T>
 void Serializer::serialize(const std::string& key, const flags::flags<T>& data,
-               const SerializationTarget& target) {
+                           const SerializationTarget& target) {
     serialize(key, data.underlying_value(), target);
 }
-
 
 // glm vector types
 template <typename Vec, typename std::enable_if<util::rank<Vec>::value == 1, int>::type>
@@ -295,5 +312,5 @@ void Serializer::serialize(const std::string& key, const std::bitset<N>& bits) {
     serialize(key, bits.to_string());
 }
 
-}  // namespace
+}  // namespace inviwo
 #endif
