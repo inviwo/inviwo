@@ -883,7 +883,6 @@ void Deserializer::deserialize(const std::string& key, std::unordered_set<T>& se
     NodeSwitch vectorNodeSwitch(*this, key);
     if (!vectorNodeSwitch) return;
 
-    unsigned int i = 0;
     TxEIt child(itemKey);
 
     for (child = child.begin(rootElement_); child != child.end(); ++child) {
@@ -891,7 +890,6 @@ void Deserializer::deserialize(const std::string& key, std::unordered_set<T>& se
         // hence the "false" as the last arg.
         NodeSwitch elementNodeSwitch(*this, &(*child), false);
         try {
-
             T item;
             deserialize(itemKey, item);
             set.insert(std::move(item));
@@ -899,7 +897,6 @@ void Deserializer::deserialize(const std::string& key, std::unordered_set<T>& se
         } catch (...) {
             handleError(IvwContext);
         }
-        i++;
     }
 }
 
