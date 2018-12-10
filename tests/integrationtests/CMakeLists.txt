@@ -11,6 +11,7 @@ set(SOURCE_FILES
     processorcreation-test.cpp
     propertycreation-test.cpp
     volume-test.cpp
+    shader-test.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
