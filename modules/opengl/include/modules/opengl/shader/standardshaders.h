@@ -38,10 +38,21 @@ namespace inviwo {
 
 namespace utilgl {
 
-IVW_MODULE_OPENGL_API std::pair<ShaderType, std::shared_ptr<const ShaderResource>> imgQuadVert();
-
+/**
+ * Standard minimal vertex shader resource, used if no vertex shader exits in shader.h
+ */
 IVW_MODULE_OPENGL_API std::pair<ShaderType, std::shared_ptr<const ShaderResource>>
 imgIdentityVert();
+
+/**
+ * Standard vertex shader resource for a quad
+ */
+IVW_MODULE_OPENGL_API std::pair<ShaderType, std::shared_ptr<const ShaderResource>> imgQuadVert();
+
+/**
+ * Standard vertex shader resource for a quad
+ */
+IVW_MODULE_OPENGL_API std::pair<ShaderType, std::shared_ptr<const ShaderResource>> imgQuadFrag();
 
 }  // namespace utilgl
 

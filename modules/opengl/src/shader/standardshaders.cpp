@@ -32,19 +32,6 @@
 namespace inviwo {
 
 namespace utilgl {
-std::pair<ShaderType, std::shared_ptr<const ShaderResource>> imgQuadVert() {
-    static const std::shared_ptr<const ShaderResource> vert =
-        std::make_shared<StringShaderResource>("image_quad.vert", R"(
-out vec3 texCoord_;
-
-void main() {
-    texCoord_ = in_TexCoord;
-    gl_Position = in_Vertex;
-}
-)");
-
-    return {ShaderType::Vertex, vert};
-}
 
 std::pair<ShaderType, std::shared_ptr<const ShaderResource>> imgIdentityVert() {
     static const std::shared_ptr<const ShaderResource> vert =
@@ -60,6 +47,35 @@ void main() {
 )");
 
     return {ShaderType::Vertex, vert};
+}
+
+std::pair<ShaderType, std::shared_ptr<const ShaderResource>> imgQuadVert() {
+    static const std::shared_ptr<const ShaderResource> vert =
+        std::make_shared<StringShaderResource>("image_quad.vert", R"(
+out vec3 texCoord_;
+
+void main() {
+    texCoord_ = in_TexCoord;
+    gl_Position = in_Vertex;
+}
+)");
+
+    return {ShaderType::Vertex, vert};
+}
+
+std::pair<ShaderType, std::shared_ptr<const ShaderResource>> imgQuadFrag() {
+    static const std::shared_ptr<const ShaderResource> frag =
+        std::make_shared<StringShaderResource>("image_quad.frag", R"(
+uniform sampler2D tex_;
+
+in vec3 texCoord_;
+
+void main() {
+    FragData0 = texture(tex_, texCoord_.xy);
+}
+)");
+
+    return {ShaderType::Fragment, frag};
 }
 
 }  // namespace utilgl
