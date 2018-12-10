@@ -38,19 +38,56 @@
 #include <modules/opengl/shader/uniformutils.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/callback.h>
+#include <inviwo/core/util/transformiterator.h>
+#include <inviwo/core/util/stdextensions.h>
+
 #include <unordered_map>
 
 namespace inviwo {
 
 class IVW_MODULE_OPENGL_API Shader {
+    struct Program {
+        Program();
+        Program(const Program &);
+        Program(Program &&rhs) noexcept;
+        Program &operator=(const Program &);
+        Program &operator=(Program &&that) noexcept;
+        ~Program();
+        GLuint id = 0;
+    };
+
+    struct ShaderAttachment {
+        ShaderAttachment();
+        ShaderAttachment(Shader *shader, std::unique_ptr<ShaderObject> obj);
+        ShaderAttachment(const ShaderAttachment &) = delete;
+        ShaderAttachment(ShaderAttachment &&rhs) noexcept;
+        ShaderAttachment &operator=(const ShaderAttachment &) = delete;
+        ShaderAttachment &operator=(ShaderAttachment &&that) noexcept;
+        ~ShaderAttachment();
+
+        void attatch();
+        void detatch();
+        void setShader(Shader *shader);
+        ShaderObject &obj() const { return *obj_; }
+
+    private:
+        Shader *shader_;
+        std::unique_ptr<ShaderObject> obj_;
+        std::shared_ptr<ShaderObject::Callback> callback_;
+    };
+
+    using ShaderMap = std::unordered_map<ShaderType, ShaderAttachment>;
+    using transform_t = ShaderObject &(*)(typename ShaderMap::value_type &);
+    using const_transform_t = const ShaderObject &(*)(const typename ShaderMap::value_type &);
+
 public:
     enum class OnError { Warn, Throw };
     enum class Build { Yes, No };
-
-    using ShaderObjectPtr = std::unique_ptr<ShaderObject, std::function<void(ShaderObject *)>>;
-    using ShaderObjectMap = std::unordered_map<ShaderType, ShaderObjectPtr>;
-
     enum class UniformWarning { Ignore, Warn, Throw };
+
+    using iterator = util::TransformIterator<transform_t, typename ShaderMap::iterator>;
+    using const_iterator =
+        util::TransformIterator<const_transform_t, typename ShaderMap::const_iterator>;
 
     Shader(const std::vector<std::pair<ShaderType, std::string>> &items,
            Build buildShader = Build::Yes);
@@ -58,7 +95,7 @@ public:
     Shader(const std::vector<std::pair<ShaderType, std::shared_ptr<const ShaderResource>>> &items,
            Build buildShader = Build::Yes);
     /*
-     * Will add img_identity.vert as vertex shader.
+     * Will add utilgl::imgIdentityVert() as vertex shader.
      */
     Shader(std::string fragmentFilename, bool buildShader = true);
     Shader(std::string vertexFilename, std::string fragmentFilename, bool buildShader = true);
@@ -85,7 +122,14 @@ public:
     bool isReady() const;  // returns whether the shader has been built and linked successfully
 
     GLuint getID() const { return program_.id; }
-    const ShaderObjectMap &getShaderObjects() { return shaderObjects_; }
+
+    iterator begin();
+    iterator end();
+    const_iterator begin() const;
+    const_iterator end() const;
+
+    util::iter_range<iterator> getShaderObjects();
+    util::iter_range<const_iterator> getShaderObjects() const;
 
     ShaderObject *operator[](ShaderType type) const;
     ShaderObject *getShaderObject(ShaderType type) const;
@@ -109,31 +153,6 @@ public:
     void removeOnReload(const BaseCallBack *callback);
 
 private:
-    struct Program {
-        // glCreateProgram This function returns 0 if an error occurs creating the program object.
-        Program() : id{glCreateProgram()} {}
-        Program(const Program &) : Program() {}
-        Program(Program &&rhs) noexcept : id{rhs.id} { rhs.id = 0; }
-        Program &operator=(const Program &) {
-            if (id == 0) {
-                id = glCreateProgram();
-            }
-            return *this;
-        }
-        Program &operator=(Program &&that) noexcept {
-            Program copy(std::move(that));
-            std::swap(id, copy.id);
-            return *this;
-        }
-
-        ~Program() {
-            if (id != 0) {
-                glDeleteProgram(id);
-            }
-        }
-        GLuint id = 0;
-    };
-
     void verify() const;
     void handleError(OpenGLException &e);
     std::string processLog(std::string log) const;
@@ -141,22 +160,16 @@ private:
     void rebuildShader(ShaderObject *obj);
     void linkShader(bool notifyRebuild = false);
 
-    void createAndAddShader(ShaderType type, std::string fileName);
-    void createAndAddShader(ShaderType type, std::shared_ptr<const ShaderResource> resource);
-    void createAndAddShader(std::unique_ptr<ShaderObject> object);
-
-    void attachShaderObject(ShaderObject *shaderObject);
-    void detachShaderObject(ShaderObject *shaderObject);
-
-    void attachAllShaderObjects();
-    void detachAllShaderObject();
+    static const transform_t transform;
+    static const const_transform_t const_transform;
 
     std::string shaderNames() const;
     GLint findUniformLocation(const std::string &name) const;
 
     Program program_;
+
     // clear shader objects before the program is deleted
-    ShaderObjectMap shaderObjects_;
+    ShaderMap shaderObjects_;
 
     bool ready_ = false;
 
@@ -166,9 +179,7 @@ private:
 
     // Callback on reload.
     CallBackList onReloadCallback_;
-
-    std::vector<std::shared_ptr<ShaderObject::Callback>> objectCallbacks_;
-};  // namespace inviwo
+};
 
 template <typename T>
 void Shader::setUniform(const std::string &name, const T &value) const {

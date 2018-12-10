@@ -39,6 +39,10 @@ namespace inviwo {
 namespace utilgl {
 
 IVW_MODULE_OPENGL_API std::pair<ShaderType, std::shared_ptr<const ShaderResource>> imgQuadVert();
-}
+
+IVW_MODULE_OPENGL_API std::pair<ShaderType, std::shared_ptr<const ShaderResource>>
+imgIdentityVert();
+
+}  // namespace utilgl
 
 }  // namespace inviwo

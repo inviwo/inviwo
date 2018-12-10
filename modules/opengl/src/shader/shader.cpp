@@ -33,12 +33,84 @@
 #include <inviwo/core/util/stdextensions.h>
 #include <modules/opengl/shader/shaderresource.h>
 #include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/shader/standardshaders.h>
 
 namespace inviwo {
 
+// glCreateProgram This function returns 0 if an error occurs creating the program object.
+Shader::Program::Program() : id{glCreateProgram()} {}
+Shader::Program::Program(const Program &) : Program() {}
+Shader::Program::Program(Program &&rhs) noexcept : id{rhs.id} { rhs.id = 0; }
+Shader::Program &Shader::Program::operator=(const Program &) {
+    if (id == 0) {
+        id = glCreateProgram();
+    }
+    return *this;
+}
+Shader::Program &Shader::Program::operator=(Program &&that) noexcept {
+    Program copy(std::move(that));
+    std::swap(id, copy.id);
+    return *this;
+}
+
+Shader::Program::~Program() {
+    if (id != 0) {
+        glDeleteProgram(id);
+    }
+}
+
+Shader::ShaderAttachment::ShaderAttachment() : shader_{nullptr}, obj_{}, callback_{} {}
+Shader::ShaderAttachment::ShaderAttachment(Shader *shader, std::unique_ptr<ShaderObject> obj)
+    : shader_{shader}
+    , obj_{std::move(obj)}
+    , callback_{obj_->onChange([s = shader_](ShaderObject *o) {
+        if (s) s->rebuildShader(o);
+    })} {
+    attatch();
+}
+Shader::ShaderAttachment::ShaderAttachment(ShaderAttachment &&rhs) noexcept
+    : shader_{rhs.shader_}, obj_{std::move(rhs.obj_)}, callback_{std::move(rhs.callback_)} {
+    rhs.shader_ = nullptr;
+}
+Shader::ShaderAttachment &Shader::ShaderAttachment::operator=(ShaderAttachment &&that) noexcept {
+    if (this != &that) {
+        shader_ = that.shader_;
+        obj_ = std::move(that.obj_);
+        callback_ = std::move(that.callback_);
+        that.shader_ = nullptr;
+    }
+    return *this;
+};
+Shader::ShaderAttachment::~ShaderAttachment() { detatch(); }
+
+void Shader::ShaderAttachment::attatch() {
+    if (obj_ && shader_) {
+        glAttachShader(shader_->getID(), obj_->getID());
+    }
+}
+void Shader::ShaderAttachment::detatch() {
+    if (obj_ && shader_) {
+        glDetachShader(shader_->getID(), obj_->getID());
+    }
+}
+
+void Shader::ShaderAttachment::setShader(Shader *shader) {
+    shader_ = shader;
+    callback_ = obj_->onChange([s = shader_](ShaderObject *o) {
+        if (s) s->rebuildShader(o);
+    });
+}
+
 Shader::Shader(const std::vector<std::pair<ShaderType, std::string>> &items, Build buildShader)
     : warningLevel_{UniformWarning::Ignore} {
-    for (auto &item : items) createAndAddShader(item.first, item.second);
+
+    for (auto &item : items) {
+        shaderObjects_.insert(
+            {item.first,
+             ShaderAttachment(this, std::make_unique<ShaderObject>(
+                                        item.first, utilgl::findShaderResource(item.second)))});
+    }
+
     verify();
     if (buildShader == Build::Yes) build();
     ShaderManager::getPtr()->registerShader(this);
@@ -48,7 +120,11 @@ Shader::Shader(
     const std::vector<std::pair<ShaderType, std::shared_ptr<const ShaderResource>>> &items,
     Build buildShader)
     : warningLevel_{UniformWarning::Ignore} {
-    for (auto &item : items) createAndAddShader(item.first, item.second);
+
+    for (auto &item : items) {
+        shaderObjects_.insert({item.first, ShaderAttachment(this, std::make_unique<ShaderObject>(
+                                                                      item.first, item.second))});
+    }
     verify();
     if (buildShader == Build::Yes) build();
     ShaderManager::getPtr()->registerShader(this);
@@ -56,7 +132,12 @@ Shader::Shader(
 
 Shader::Shader(std::vector<std::unique_ptr<ShaderObject>> &shaderObjects, bool buildShader)
     : warningLevel_{UniformWarning::Ignore} {
-    for (auto &shaderObject : shaderObjects) createAndAddShader(std::move(shaderObject));
+
+    for (auto &obj : shaderObjects) {
+        auto type = obj->getShaderType();
+        shaderObjects_.insert({type, ShaderAttachment(this, std::move(obj))});
+    }
+
     verify();
     if (buildShader) build();
     ShaderManager::getPtr()->registerShader(this);
@@ -80,7 +161,8 @@ Shader::Shader(std::string vertexFilename, std::string fragmentFilename, bool bu
              buildShader ? Build::Yes : Build::No) {}
 
 Shader::Shader(std::string fragmentFilename, bool buildShader)
-    : Shader({{ShaderType::Vertex, "img_identity.vert"}, {ShaderType::Fragment, fragmentFilename}},
+    : Shader({utilgl::imgIdentityVert(),
+              {ShaderType::Fragment, utilgl::findShaderResource(fragmentFilename)}},
              buildShader ? Build::Yes : Build::No) {}
 
 Shader::Shader(const char *fragmentFilename, bool buildShader)
@@ -96,7 +178,8 @@ Shader::Shader(const char *vertexFilename, const char *geometryFilename,
 
 Shader::Shader(const Shader &rhs) : program_{rhs.program_}, warningLevel_{rhs.warningLevel_} {
     for (auto &elem : rhs.shaderObjects_) {
-        createAndAddShader(util::make_unique<ShaderObject>(*(elem.second.get())));
+        shaderObjects_[elem.first] =
+            ShaderAttachment(this, util::make_unique<ShaderObject>(elem.second.obj()));
     }
 
     if (rhs.isReady()) build();
@@ -104,19 +187,19 @@ Shader::Shader(const Shader &rhs) : program_{rhs.program_}, warningLevel_{rhs.wa
 }
 
 Shader::Shader(Shader &&rhs)
-    : program_{std::move(rhs.program_)}, ready_(rhs.ready_), warningLevel_{rhs.warningLevel_} {
+    : program_{std::move(rhs.program_)}
+    , shaderObjects_{std::move(rhs.shaderObjects_)}
+    , ready_(false)
+    , warningLevel_{rhs.warningLevel_} {
+
+    auto ready = rhs.ready_;
 
     ShaderManager::getPtr()->unregisterShader(&rhs);
-    rhs.objectCallbacks_.clear();
     rhs.ready_ = false;
 
-    shaderObjects_ = std::move(rhs.shaderObjects_);
+    for (auto &elem : shaderObjects_) elem.second.setShader(this);
 
-    for (auto &elem : shaderObjects_) {
-        objectCallbacks_.push_back(
-            elem.second->onChange([this](ShaderObject *o) { rebuildShader(o); }));
-    }
-
+    if (ready) build();
     ShaderManager::getPtr()->registerShader(this);
 }
 
@@ -126,7 +209,8 @@ Shader &Shader::operator=(const Shader &that) {
 
         shaderObjects_.clear();
         for (auto &elem : that.shaderObjects_) {
-            createAndAddShader(util::make_unique<ShaderObject>(*(elem.second.get())));
+            shaderObjects_[elem.first] =
+                ShaderAttachment(this, util::make_unique<ShaderObject>(elem.second.obj()));
         }
         warningLevel_ = that.warningLevel_;
 
@@ -147,18 +231,14 @@ Shader &Shader::operator=(Shader &&that) {
 
         program_ = std::move(that.program_);
         ShaderManager::getPtr()->unregisterShader(&that);
-        ready_ = that.ready_;
+        auto ready = that.ready_;
         warningLevel_ = that.warningLevel_;
         that.ready_ = false;
-        that.objectCallbacks_.clear();
 
         shaderObjects_ = std::move(that.shaderObjects_);
+        for (auto &elem : shaderObjects_) elem.second.setShader(this);
 
-        objectCallbacks_.clear();
-        for (auto &elem : shaderObjects_) {
-            objectCallbacks_.push_back(
-                elem.second->onChange([this](ShaderObject *o) { rebuildShader(o); }));
-        }
+        if (ready) build();
         ShaderManager::getPtr()->registerShader(this);
     }
     return *this;
@@ -170,33 +250,10 @@ Shader::~Shader() {
     }
 }
 
-void Shader::createAndAddShader(ShaderType type, std::string fileName) {
-    createAndAddShader(type, utilgl::findShaderResource(fileName));
-}
-
-void Shader::createAndAddShader(ShaderType type, std::shared_ptr<const ShaderResource> resource) {
-    createAndAddShader(std::make_unique<ShaderObject>(type, resource));
-}
-void Shader::createAndAddShader(std::unique_ptr<ShaderObject> object) {
-    auto ptr =
-        ShaderObjectPtr(object.release(), [shaderId = program_.id](ShaderObject *shaderObject) {
-            if (shaderObject != nullptr) {
-                glDetachShader(shaderId, shaderObject->getID());
-                LGL_ERROR;
-                delete shaderObject;
-            }
-        });
-
-    objectCallbacks_.push_back(ptr->onChange([this](ShaderObject *o) { rebuildShader(o); }));
-    attachShaderObject(ptr.get());
-
-    shaderObjects_[object->getShaderType()] = std::move(ptr);
-}
-
 void Shader::build() {
     try {
         ready_ = false;
-        for (auto &elem : shaderObjects_) elem.second->build();
+        for (auto &elem : shaderObjects_) elem.second.obj().build();
         linkShader();
     } catch (OpenGLException &e) {
         handleError(e);
@@ -212,13 +269,12 @@ void Shader::link() {
     }
 }
 
-void Shader::linkShader(bool notifyRebuild /*= false*/) {
+void Shader::linkShader(bool notifyRebuild) {
     uniformLookup_.clear();  // clear uniform location cache.
     ShaderManager::getPtr()->bindCommonAttributes(program_.id);
 
-    if (!util::all_of(shaderObjects_, [](const ShaderObjectMap::value_type &elem) {
-            return elem.second->isReady();
-        })) {
+    if (!util::all_of(shaderObjects_,
+                      [](const auto &elem) { return elem.second.obj().isReady(); })) {
         util::log(IvwContext, "Id: " + toString(program_.id) + " objects not ready when linking.",
                   LogLevel::Error, LogAudience::User);
         return;
@@ -330,28 +386,6 @@ void Shader::deactivate() {
     LGL_ERROR;
 }
 
-void Shader::attachShaderObject(ShaderObject *shaderObject) {
-    glAttachShader(program_.id, shaderObject->getID());
-    LGL_ERROR;
-}
-
-void Shader::detachShaderObject(ShaderObject *shaderObject) {
-    glDetachShader(program_.id, shaderObject->getID());
-    LGL_ERROR;
-}
-
-void Shader::attachAllShaderObjects() {
-    for (auto &elem : shaderObjects_) {
-        attachShaderObject(elem.second.get());
-    }
-}
-
-void Shader::detachAllShaderObject() {
-    for (auto &elem : shaderObjects_) {
-        detachShaderObject(elem.second.get());
-    }
-}
-
 void Shader::setUniformWarningLevel(UniformWarning level) { warningLevel_ = level; }
 
 const BaseCallBack *Shader::onReload(std::function<void()> callback) {
@@ -363,7 +397,7 @@ void Shader::removeOnReload(const BaseCallBack *callback) { onReloadCallback_.re
 std::string Shader::shaderNames() const {
     std::vector<std::string> names;
     for (const auto &elem : shaderObjects_) {
-        names.push_back(elem.second->getFileName());
+        names.push_back(elem.second.obj().getFileName());
     }
     return joinString(names, "/");
 }
@@ -394,8 +428,7 @@ GLint Shader::findUniformLocation(const std::string &name) const {
 ShaderObject *Shader::operator[](ShaderType type) const { return getShaderObject(type); }
 
 ShaderObject *Shader::getShaderObject(ShaderType type) const {
-    return util::map_find_or_null(shaderObjects_, type,
-                                  [](const ShaderObjectPtr &p) { return p.get(); });
+    return util::map_find_or_null(shaderObjects_, type, [](auto &p) { return &p.obj(); });
 }
 
 ShaderObject *Shader::getFragmentShaderObject() const {
@@ -407,5 +440,29 @@ ShaderObject *Shader::getGeometryShaderObject() const {
 }
 
 ShaderObject *Shader::getVertexShaderObject() const { return getShaderObject(ShaderType::Vertex); }
+
+const Shader::transform_t Shader::transform =
+    [](std::unordered_map<ShaderType, ShaderAttachment>::value_type &item) -> ShaderObject & {
+    return item.second.obj();
+};
+
+const Shader::const_transform_t Shader::const_transform =
+    [](const std::unordered_map<ShaderType, ShaderAttachment>::value_type &item)
+    -> const ShaderObject & { return item.second.obj(); };
+
+auto Shader::begin() -> iterator { return iterator(transform, shaderObjects_.begin()); }
+auto Shader::end() -> iterator { return iterator(transform, shaderObjects_.end()); }
+auto Shader::begin() const -> const_iterator {
+    return const_iterator(const_transform, shaderObjects_.begin());
+}
+auto Shader::end() const -> const_iterator {
+    return const_iterator(const_transform, shaderObjects_.end());
+}
+auto Shader::getShaderObjects() -> util::iter_range<iterator> {
+    return util::as_range(begin(), end());
+}
+auto Shader::getShaderObjects() const -> util::iter_range<const_iterator> {
+    return util::as_range(begin(), end());
+}
 
 }  // namespace inviwo

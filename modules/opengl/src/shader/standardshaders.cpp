@@ -46,6 +46,22 @@ void main() {
     return {ShaderType::Vertex, vert};
 }
 
+std::pair<ShaderType, std::shared_ptr<const ShaderResource>> imgIdentityVert() {
+    static const std::shared_ptr<const ShaderResource> vert =
+        std::make_shared<StringShaderResource>("image_identity.vert", R"(
+out vec4 color_;
+out vec3 texCoord_;
+
+void main() {
+    color_ = in_Color;
+    texCoord_ = in_TexCoord;
+    gl_Position = in_Vertex;
+}
+)");
+
+    return {ShaderType::Vertex, vert};
+}
+
 }  // namespace utilgl
 
 }  // namespace inviwo

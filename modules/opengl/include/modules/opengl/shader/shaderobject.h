@@ -50,7 +50,9 @@ public:
     ShaderObject(GLenum shaderType, std::string fileName);
     
     ShaderObject(const ShaderObject& rhs);
+    ShaderObject(ShaderObject&& rhs) noexcept;
     ShaderObject& operator=(const ShaderObject& that);
+    ShaderObject& operator=(ShaderObject&& that) noexcept;
 
     ~ShaderObject();
 
