@@ -3,6 +3,7 @@
 set(HEADER_FILES
     include/inviwopy/inviwopy.h
     include/inviwopy/pyglmtypes.h
+    include/inviwopy/pyglmmattypes.h
     include/inviwopy/pyport.h
     include/inviwopy/pyprocessors.h
     include/inviwopy/pyproperties.h
@@ -28,6 +29,7 @@ set(SOURCE_FILES
     src/pydataformat.cpp
     src/pydatamapper.cpp
     src/pyglmtypes.cpp
+    src/pyglmmattypes.cpp
     src/pyimage.cpp
     src/pyinviwoapplication.cpp
     src/pyinviwomodule.cpp

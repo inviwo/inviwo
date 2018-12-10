@@ -218,12 +218,13 @@ WorkspaceManager::SerializationHandle WorkspaceManager::onSave(
     const SerializationCallback& callback) {
     return serializers_.add(
         [callback, this](Serializer& s, const ExceptionHandler& exceptionHandler) {
+            IVW_UNUSED_PARAM(this);
             try {
                 callback(s);
             } catch (Exception& e) {
                 exceptionHandler(e.getContext());
             } catch (...) {
-                exceptionHandler(IvwContext);
+                exceptionHandler(IVW_CONTEXT);
             }
         });
 }
@@ -232,12 +233,13 @@ WorkspaceManager::DeserializationHandle WorkspaceManager::onLoad(
     const DeserializationCallback& callback) {
     return deserializers_.add(
         [callback, this](Deserializer& d, const ExceptionHandler& exceptionHandler) {
+            IVW_UNUSED_PARAM(this);
             try {
                 callback(d);
             } catch (Exception& e) {
                 exceptionHandler(e.getContext());
             } catch (...) {
-                exceptionHandler(IvwContext);
+                exceptionHandler(IVW_CONTEXT);
             }
         });
 }

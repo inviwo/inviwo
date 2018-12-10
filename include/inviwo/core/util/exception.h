@@ -67,10 +67,17 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
     return ss;
 }
 
+#define IVW_CONTEXT                                                                            \
+    ExceptionContext(parseTypeIdName(std::string(typeid(this).name())), std::string(__FILE__), \
+                     std::string(__FUNCTION__), __LINE__)
+// Old deprecated macro, use uppercase
 #define IvwContext                                                                             \
     ExceptionContext(parseTypeIdName(std::string(typeid(this).name())), std::string(__FILE__), \
                      std::string(__FUNCTION__), __LINE__)
 
+#define IVW_CONTEXT_CUSTOM(source) \
+    ExceptionContext(source, std::string(__FILE__), std::string(__FUNCTION__), __LINE__)
+// Old deprecated macro, use uppercase
 #define IvwContextCustom(source) \
     ExceptionContext(source, std::string(__FILE__), std::string(__FUNCTION__), __LINE__)
 

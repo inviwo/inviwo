@@ -145,7 +145,7 @@ ProcessorNetwork* NetworkEditor::getNetwork() const { return network_; }
 InviwoMainWindow* NetworkEditor::getMainWindow() const { return mainwindow_; }
 TextLabelOverlay& NetworkEditor::getOverlay() const {
     return mainwindow_->getNetworkEditorOverlay();
-};
+}
 
 ProcessorGraphicsItem* NetworkEditor::addProcessorRepresentations(Processor* processor) {
     // generate GUI representations (graphics item, property widget, processor widget)

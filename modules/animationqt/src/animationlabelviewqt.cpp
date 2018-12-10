@@ -96,24 +96,24 @@ AnimationLabelViewQt::AnimationLabelViewQt(AnimationController& controller)
     }
     animation.addObserver(this);
 
-    connect(
-        selectionModel(), &QItemSelectionModel::selectionChanged, this,
-        [this](const QItemSelection& selected, const QItemSelection& /*deselected*/) {
-            for (auto& index : selected.indexes()) {
-                if (auto tcw = static_cast<TrackControlsWidgetQt*>(indexWidget(index))) {
-                    if (auto propertytrack = dynamic_cast<BasePropertyTrack*>(&tcw->track())) {
-                        // Deselect all processors first
-                        util::setSelected(
-                            util::getInviwoApplication()->getProcessorNetwork()->getProcessors(),
-                            false);
-                        auto property = propertytrack->getProperty();
-                        // Select the processor the selected property belongs to
-                        Processor* processor = property->getOwner()->getProcessor();
-                        util::setSelected({processor}, true);
+    connect(selectionModel(), &QItemSelectionModel::selectionChanged, this,
+            [this](const QItemSelection& selected, const QItemSelection& /*deselected*/) {
+                for (auto& index : selected.indexes()) {
+                    if (auto tcw = static_cast<TrackControlsWidgetQt*>(indexWidget(index))) {
+                        if (auto propertytrack = dynamic_cast<BasePropertyTrack*>(&tcw->track())) {
+                            // Deselect all processors first
+                            util::setSelected(controller_.getInviwoApplication()
+                                                  ->getProcessorNetwork()
+                                                  ->getProcessors(),
+                                              false);
+                            auto property = propertytrack->getProperty();
+                            // Select the processor the selected property belongs to
+                            Processor* processor = property->getOwner()->getProcessor();
+                            util::setSelected(processor, true);
+                        }
                     }
                 }
-            }
-        });
+            });
 
     auto deleteAction = new QAction(QIcon(":/icons/edit-delete.png"), tr("&Delete"), this);
     deleteAction->setShortcuts(QKeySequence::Delete);

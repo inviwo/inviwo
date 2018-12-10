@@ -65,12 +65,15 @@
 #include <warn/ignore/format>
 #include <warn/ignore/four-char-constants>
 #include <warn/ignore/global-constructors>
+#include <warn/ignore/gnu-zero-variadic-macro-arguments>
 #include <warn/ignore/hide-virtual-func>
+#include <warn/ignore/ignored-attributes>
 #include <warn/ignore/ill-formed-comma-expr>
 #include <warn/ignore/implicit-fallthrough>
 #include <warn/ignore/inconsistent-missing-override>
 #include <warn/ignore/inherits-via-dominance>
 #include <warn/ignore/int-conversion>
+#include <warn/ignore/int-in-bool-context>
 #include <warn/ignore/invalid-offsetof>
 #include <warn/ignore/is-defined-to-be>
 #include <warn/ignore/layout-changed>
@@ -86,6 +89,7 @@
 #include <warn/ignore/no-unnamed-raii-objects>
 #include <warn/ignore/non-virtual-dtor>
 #include <warn/ignore/not-inlined>
+#include <warn/ignore/null-pointer-arithmetic>
 #include <warn/ignore/object-layout-change>
 #include <warn/ignore/old-style-cast>
 #include <warn/ignore/overloaded-virtual>

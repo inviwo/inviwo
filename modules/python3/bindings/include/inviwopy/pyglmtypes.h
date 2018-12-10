@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PYGLMTYPES_H
-#define IVW_PYGLMTYPES_H
+#pragma once
 
 #include <inviwo/core/util/glm.h>
 
@@ -151,4 +150,3 @@ namespace inviwo {
 void exposeGLMTypes(pybind11::module &m);
 }
 
-#endif

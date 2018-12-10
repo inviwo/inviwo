@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2017-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,60 +27,26 @@
  *
  *********************************************************************************/
 
-#include <modules/animation/datastructures/basekeyframe.h>
+#if !defined(WARN_INCLUDE_PUSH)
+#   error "`warn/ignore/ignored-attributes` used without `warn/push`"
+#endif
 
-namespace inviwo {
+#if defined(WARN_IGNORE_IGNORED_ATTRIBUTES)
+#   error "`warn/ignore/ignored-attributes` already included"
+#endif
 
-namespace animation {
+#define WARN_IGNORE_IGNORED_ATTRIBUTES
 
-BaseKeyframe::BaseKeyframe(Seconds time) : time_(time) {}
-BaseKeyframe::~BaseKeyframe() = default;
-
-BaseKeyframe::BaseKeyframe(const BaseKeyframe& rhs) = default;
-BaseKeyframe& BaseKeyframe::operator=(const BaseKeyframe& that) {
-    if (this != &that) {
-        Keyframe::operator=(that);
-        setTime(that.time_);
-        setSelected(that.isSelected_);
-    }
-    return *this;
-}
-
-void BaseKeyframe::setTime(Seconds time) {
-    if (time != time_) {
-        auto oldTime = time_;
-        time_ = time;
-        notifyKeyframeTimeChanged(this, oldTime);
-    }
-}
-Seconds BaseKeyframe::getTime() const { return time_; }
-
-bool BaseKeyframe::isSelected() const { return isSelected_; }
-void BaseKeyframe::setSelected(bool selected) {
-    if (selected != isSelected_) {
-        isSelected_ = selected;
-        notifyKeyframeSelectionChanged(this);
-    }
-}
-
-void BaseKeyframe::serialize(Serializer& s) const {
-    s.serialize("time", time_.count());
-    s.serialize("selected", isSelected_);
-}
-
-void BaseKeyframe::deserialize(Deserializer& d) {
-    {
-        double tmp = time_.count();
-        d.deserialize("time", tmp);
-        setTime(Seconds{tmp});
-    }
-    {
-        bool isSelected = isSelected_;
-        d.deserialize("selected", isSelected);
-        setSelected(isSelected);
-    }
-}
-
-}  // namespace animation
-
-}  // namespace inviwo
+#if defined(__clang__)
+#   if __clang_major__ > 3 || (__clang_major__ == 3  && __clang_minor__ > 2)
+#       if __has_warning("-Wignored-attributes")
+#           pragma clang diagnostic ignored "-Wignored-attributes"
+#       endif
+#   endif
+#elif defined(__GNUC__)
+#   if __GNUC__ > 6 || (__GNUC__ == 6  && __GNUC_MINOR__ > 0)
+#       pragma GCC diagnostic ignored "-Wignored-attributes"
+#   endif
+#elif defined(_MSC_VER)
+//  Not available
+#endif

@@ -123,7 +123,7 @@ function(ivw_register_license_file)
         foreach(file ${ARG_FILES})
             get_filename_component(filename ${file} NAME)
             install(FILES ${file} DESTINATION ${dest} RENAME "${ARG_ID}-${filename}")
-    endforeach()
+        endforeach()
     endif()
 
 endfunction()

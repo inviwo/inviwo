@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2014-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,60 +27,16 @@
  *
  *********************************************************************************/
 
-#include <modules/animation/datastructures/basekeyframe.h>
+#pragma once
+
+#include <inviwo/core/util/glm.h>
+
+#include <pybind11/pybind11.h>
+#include <pybind11/stl_bind.h>
 
 namespace inviwo {
 
-namespace animation {
+void exposeGLMMatTypes(pybind11::module &m);
 
-BaseKeyframe::BaseKeyframe(Seconds time) : time_(time) {}
-BaseKeyframe::~BaseKeyframe() = default;
-
-BaseKeyframe::BaseKeyframe(const BaseKeyframe& rhs) = default;
-BaseKeyframe& BaseKeyframe::operator=(const BaseKeyframe& that) {
-    if (this != &that) {
-        Keyframe::operator=(that);
-        setTime(that.time_);
-        setSelected(that.isSelected_);
-    }
-    return *this;
 }
 
-void BaseKeyframe::setTime(Seconds time) {
-    if (time != time_) {
-        auto oldTime = time_;
-        time_ = time;
-        notifyKeyframeTimeChanged(this, oldTime);
-    }
-}
-Seconds BaseKeyframe::getTime() const { return time_; }
-
-bool BaseKeyframe::isSelected() const { return isSelected_; }
-void BaseKeyframe::setSelected(bool selected) {
-    if (selected != isSelected_) {
-        isSelected_ = selected;
-        notifyKeyframeSelectionChanged(this);
-    }
-}
-
-void BaseKeyframe::serialize(Serializer& s) const {
-    s.serialize("time", time_.count());
-    s.serialize("selected", isSelected_);
-}
-
-void BaseKeyframe::deserialize(Deserializer& d) {
-    {
-        double tmp = time_.count();
-        d.deserialize("time", tmp);
-        setTime(Seconds{tmp});
-    }
-    {
-        bool isSelected = isSelected_;
-        d.deserialize("selected", isSelected);
-        setSelected(isSelected);
-    }
-}
-
-}  // namespace animation
-
-}  // namespace inviwo

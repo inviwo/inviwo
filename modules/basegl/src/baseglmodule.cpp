@@ -305,6 +305,7 @@ bool BaseGLModule::Converter::convert(TxElement* root) {
     switch (version_) {
         case 0: {
             res |= xml::changeIdentifiers(root, replV1);
+            [[fallthrough]];
         }
         case 1: {
             res |= xml::changeIdentifier(root,
@@ -315,6 +316,7 @@ bool BaseGLModule::Converter::convert(TxElement* root) {
                                          {{xml::Kind::processor("org.inviwo.Background"),
                                            xml::Kind::property("org.inviwo.FloatVec4Property")}},
                                          "color2", "bgColor2");
+            [[fallthrough]];
         }
         case 2: {
             res |= xml::changeIdentifier(root,

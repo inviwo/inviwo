@@ -15,7 +15,7 @@ source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
 
 #  HACK: have the files showing in the IDE, under the name 'flags'
 add_custom_target(half SOURCES ${HEADER_FILES})
-set_target_properties(half PROPERTIES VERSION 1.11.0 SOVERSION 1.11)
+set_target_properties(half PROPERTIES VERSION 1.12.0 SOVERSION 1.12)
 
 # Creates VS folder structure
 ivw_folder(half ext)

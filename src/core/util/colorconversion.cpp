@@ -281,7 +281,7 @@ vec3 XYZ2rgb(const vec3 xyz) {
 
 vec3 XYZ2xyY(vec3 xyz) {
     // if X, Y, and Z are 0, set xy to chromaticity (xy) of ref. white D65.
-    if (glm::all(glm::lessThan(xyz, glm::epsilon<vec3>()))) {
+    if (glm::all(glm::lessThan(xyz, util::epsilon<vec3>()))) {
         // This xy value is obtained by calling XYZ2xyY(getD65WhitePoint())
         return vec3(0.3127266147f, 0.3290231303f, 0.0f);  // brucelindbloom.com D65
     } else {
@@ -294,7 +294,6 @@ vec3 XYZ2xyY(vec3 xyz) {
 }
 
 vec3 xyY2XYZ(vec3 xyY) {
-    vec3 XYZ;
     // if y is 0, set X, Y, Z to 0
     if (xyY.y < glm::epsilon<float>()) {
         return vec3(0.0f);

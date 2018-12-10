@@ -333,14 +333,15 @@ void PropertyWidgetQt::addPresetMenuActions(QMenu* menu, InviwoApplication* app)
     auto presetManager = app->getPropertyPresetManager();
 
     {
-        auto addPresetToMenu = [presetManager](QMenu* menu, const std::string& name,
+        auto addPresetToMenu = [presetManager, this](QMenu* menu, const std::string& name,
                                                      Property* property, PropertyPresetType type) {
             auto action = menu->addAction(QString::fromStdString(name));
             if (property->getReadOnly()) action->setEnabled(false);
             action->setToolTip(utilqt::toQString(toString(type) + " Preset"));
-            connect(action, &QAction::triggered, menu, [presetManager, name, property, type]() {
-                presetManager->loadPreset(name, property, type);
-            });
+            this->connect(action, &QAction::triggered, menu,
+                          [presetManager, name, property, type]() {
+                              presetManager->loadPreset(name, property, type);
+                          });
         };
         auto savePreset = [presetManager, property = property_](QWidget* parent,
                                                                 PropertyPresetType type) {

@@ -349,7 +349,7 @@ void IntegralLineVectorToMesh::process() {
 
         if (size == 0 || isFiltered(line, lineIdx)) continue;
 
-        auto indexBuffer = [&, this]() -> std::shared_ptr<IndexBufferRAM> {
+        auto indexBuffer = [&]() -> std::shared_ptr<IndexBufferRAM> {
             if (output == Output::Lines) {
                 auto ib = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);
                 ib->getDataContainer().reserve(size + 2);
