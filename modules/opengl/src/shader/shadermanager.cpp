@@ -81,6 +81,10 @@ void ShaderManager::unregisterShader(Shader* shader) {
     util::erase_remove(shaders_, shader);
 }
 
+bool ShaderManager::isRegistered(Shader* shader) const {
+    return std::find(shaders_.begin(), shaders_.end(), shader) != shaders_.end();
+}
+
 std::string ShaderManager::getGlobalGLSLHeader() {
     OpenGLCapabilities* glCaps = getOpenGLCapabilitiesObject();
     return glCaps->getCurrentGlobalGLSLHeader();
