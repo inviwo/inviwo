@@ -80,7 +80,7 @@ Shader::ShaderAttachment &Shader::ShaderAttachment::operator=(ShaderAttachment &
         that.shader_ = nullptr;
     }
     return *this;
-};
+}
 Shader::ShaderAttachment::~ShaderAttachment() { detatch(); }
 
 void Shader::ShaderAttachment::attatch() {
@@ -428,7 +428,12 @@ GLint Shader::findUniformLocation(const std::string &name) const {
 ShaderObject *Shader::operator[](ShaderType type) const { return getShaderObject(type); }
 
 ShaderObject *Shader::getShaderObject(ShaderType type) const {
-    return util::map_find_or_null(shaderObjects_, type, [](auto &p) { return &p.obj(); });
+    auto it = shaderObjects_.find(type);
+    if (it != shaderObjects_.end()) {
+       return &(it->second.obj()); 
+    } else {
+        return nullptr;
+    }
 }
 
 ShaderObject *Shader::getFragmentShaderObject() const {
