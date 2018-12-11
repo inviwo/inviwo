@@ -776,11 +776,13 @@ ivw_register_license_file(NAME "zlib" TARGET ZLIB::ZLIB MODULE Core
     FILES ${IVW_EXTENSIONS_DIR}/zlib-1.2.11/LICENSE
 )
 
-ivw_register_license_file(NAME "Google C++ Testing Framework" TARGET gtest MODULE Core
-    URL "https://github.com/google/googletest"
-    TYPE "BSD 3-clause"
-    FILES ${IVW_EXTENSIONS_DIR}/gtest/gtest/LICENSE
-)
+if(IVW_UNITTESTS OR IVW_INTEGRATION_TESTS)
+    ivw_register_license_file(NAME "Google C++ Testing Framework" TARGET gtest MODULE Core
+        URL "https://github.com/google/googletest"
+        TYPE "BSD 3-clause"
+        FILES ${IVW_EXTENSIONS_DIR}/gtest/gtest/LICENSE
+    )
+endif()
 
 ivw_register_license_file(NAME "JSON for Modern C++" target nlohmann_json MODULE Core
     URL "https://github.com/nlohmann/json"
