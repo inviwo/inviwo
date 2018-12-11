@@ -29,12 +29,10 @@
 
 #include <modules/basegl/processors/delaunaytriangulation2d.h>
 
-#include <modules/basegl/algorithm/vec2_indexed.h>
 #include <modules/basegl/algorithm/edge.h>
 #include <modules/basegl/algorithm/triangle.h>
 #include <modules/basegl/algorithm/delaunay.h>
 
-#include <inviwo/core/datastructures/geometry/simplemeshcreator.h>
 #include <inviwo/core/datastructures/geometry/geometrytype.h>
 
 namespace inviwo {
@@ -54,73 +52,122 @@ DelaunayTriangulation2D::DelaunayTriangulation2D()
     , ptsInport_("pts_in")
     , meshOutport_("mesh_out")
     , meshEdgesOutport_("mesh_edges_out")
-    , projectAlongAxis_("project_along_axis", "Axis of Projection")
+    , axisOfProjection_("project_along_axis", "Axis of Projection")
+    , volumeVoxelSpacing_("volumeVoxelSpacing", "Volume Voxel Spacing", vec3{1.0f}, vec3{1e-9f},
+                          vec3{1e9f}, vec3{1e-3f})
     , triangulateInViewSpace_("triangulate_in_view_space", "Triangulate in View Space", false)
     , camera_("camera", "Camera", vec3(0.0f, 0.0f, 10.0f), vec3(0.0f, 0.0f, 0.0f),
-              vec3(0.0f, 1.0f, 0.0f)) {
+              vec3(0.0f, 1.0f, 0.0f))
+    , planeNormal_("planeNormal", "Plane Normal", vec3(1.0f, 0.0f, 0.0f), vec3(-1.0f),
+                   vec3(1.0f), vec3(0.001f)) {
     addPort(ptsInport_);
     addPort(meshOutport_);
     addPort(meshEdgesOutport_);
 
-    projectAlongAxis_.addOption("x", "y-z plane (X axis)",
+    axisOfProjection_.addOption("x", "y-z plane (X axis)",
         static_cast<int>(CartesianCoordinateAxis::X));
-    projectAlongAxis_.addOption("y", "z-x plane (Y axis)",
+    axisOfProjection_.addOption("y", "z-x plane (Y axis)",
         static_cast<int>(CartesianCoordinateAxis::Y));
-    projectAlongAxis_.addOption("z", "x-y plane (Z axis)",
+    axisOfProjection_.addOption("z", "x-y plane (Z axis)",
         static_cast<int>(CartesianCoordinateAxis::Z));
-    projectAlongAxis_.set(
+    axisOfProjection_.addOption("p", "Plane Equation", 3);
+    axisOfProjection_.set(
         static_cast<int>(CartesianCoordinateAxis::X));
-    projectAlongAxis_.setCurrentStateAsDefault();
-    addProperty(projectAlongAxis_);
+    axisOfProjection_.setCurrentStateAsDefault();
+    addProperty(axisOfProjection_);
 
     addProperty(triangulateInViewSpace_);
     addProperty(camera_);
+    addProperty(planeNormal_);
 }
 
-void DelaunayTriangulation2D::process() {
-    if (ptsInport_.isChanged() || triangulateInViewSpace_ || projectAlongAxis_.isModified()) {
-        const auto& pts = *ptsInport_.getData();
+std::vector<Vec2Indexed> DelaunayTriangulation2D::setupPoints2D(
+    const std::vector<vec3>& pts_3d)
+{
+    std::vector<Vec2Indexed> pts_2d;
 
-        if (pts.size() >= 3) {
-            std::vector<Vec2Indexed> pts_2d;
-            pts_2d.reserve(pts.size());
-            for (size_t idx = 0; idx < pts.size(); ++idx) {
-                const auto& pt = pts[idx];
-                if (triangulateInViewSpace_) {
-                    const auto& view_mat = camera_.viewMatrix();
-                    const auto pt_view_space = view_mat * vec4(pt, 1.0f);
-                    pts_2d.emplace_back(pt_view_space.x, pt_view_space.y, idx);
-                } else {
-                    switch (projectAlongAxis_.get()) {
-                        case static_cast<int>(CartesianCoordinateAxis::X):
-                            pts_2d.emplace_back(pt.y, pt.z, idx);
-                            break;
-                        case static_cast<int>(CartesianCoordinateAxis::Y):
-                            pts_2d.emplace_back(pt.x, pt.z, idx);
-                            break;
-                        case static_cast<int>(CartesianCoordinateAxis::Z):
-                            pts_2d.emplace_back(pt.x, pt.y, idx);
-                            break;
-                        default:
-                            LogError("This should not happen!");
+    if (pts_3d.size() >= 3 && glm::length(planeNormal_.get()) > 0.0f) {
+        planeNormal_.setReadOnly(true);
+
+        // find smalles component of current normal and set up 1st. basis vector of new
+        // local coordinate system
+        const auto n = glm::normalize(planeNormal_.get());
+        vec3 tmp;
+        if (glm::abs(n.x) <= glm::abs(n.y) &&
+            glm::abs(n.x) <= glm::abs(n.z)) {  // x component is smallest
+            tmp = vec3(1.0f, 0.0f, 0.0f);
+        } else if (glm::abs(n.y) <= glm::abs(n.z)) {  // y component is smallest
+            tmp = vec3(0.0f, 1.0f, 0.0f);
+        } else {  // z component is smallest
+            tmp = vec3(0.0f, 0.0f, 1.0f);
+        }
+
+        // setup new basis if general plane equation is used
+        const auto basis_1 = glm::cross(n, tmp);
+        const auto basis_2 = glm::cross(n, basis_1);
+
+        pts_2d.reserve(pts_3d.size());
+        for (size_t idx = 0; idx < pts_3d.size(); ++idx) {
+            const auto& pt = pts_3d[idx];
+            if (triangulateInViewSpace_) {
+                const auto& view_mat = camera_.viewMatrix();
+                const auto pt_view_space = view_mat * vec4(pt, 1.0f);
+                pts_2d.emplace_back(pt_view_space.x, pt_view_space.y, idx);
+            } else {
+                switch (axisOfProjection_.get()) {
+                    case static_cast<int>(CartesianCoordinateAxis::X): {
+                        pts_2d.emplace_back(pt.y, pt.z, idx);
+                        break;
+                    }
+                    case static_cast<int>(CartesianCoordinateAxis::Y): {
+                        pts_2d.emplace_back(pt.x, pt.z, idx);
+                        break;
+                    }
+                    case static_cast<int>(CartesianCoordinateAxis::Z): {
+                        pts_2d.emplace_back(pt.x, pt.y, idx);
+                        break;
+                    }
+                    case 3: {  // general plane equation
+                        planeNormal_.setReadOnly(false);
+
+                        // ### projection along normal ###
+                        // add 2D point projected into new basis
+                        pts_2d.emplace_back(glm::dot(basis_1, pt), glm::dot(basis_2, pt), idx);
+                        break;
+                    }
+                    default: {
+                        LogError("This should not happen!");
+                        break;
                     }
                 }
             }
+        }
+    }
 
-            Delaunay delaunayTriangulation;
-            const auto triangles = delaunayTriangulation.triangulate(pts_2d);
+    return pts_2d;
+}
 
-            auto mesh = std::make_shared<SimpleMesh>();
+std::pair<std::shared_ptr<SimpleMesh>, std::shared_ptr<SimpleMesh>>
+DelaunayTriangulation2D::createMeshFrom2dPts(
+    const std::vector<Vec2Indexed>& pts_2d,
+    const std::vector<vec3>& pts_3d) const
+{
+    std::shared_ptr<SimpleMesh> mesh = std::make_shared<SimpleMesh>(), mesh_edges;
+
+    if (pts_2d.size() >= 3) {
+        Delaunay delaunayTriangulation;
+        const auto triangles = delaunayTriangulation.triangulate(pts_2d);
+
+        if (!triangles.empty()) {
             mesh->setModelMatrix(mat4(1.f));
 
-            for (const auto& p : pts) {
+            for (const auto& p : pts_3d) {
                 // color is the important attribute for the ray-caster
-                mesh->addVertex(p, p, vec4(p, 1.0f));
-
-                // TODO: add pixel spacing and slice thickness
+                mesh->addVertex(volumeVoxelSpacing_.get() * p, p, vec4(p, 1.0f));
             }
 
-            auto mesh_edges = mesh->clone();
+            // TODO: fix this conversion
+            mesh_edges = std::shared_ptr<SimpleMesh>(mesh->clone());
 
             mesh->setIndicesInfo(DrawType::Triangles, ConnectivityType::None);
             mesh_edges->setIndicesInfo(DrawType::Lines, ConnectivityType::None);
@@ -140,13 +187,37 @@ void DelaunayTriangulation2D::process() {
                 mesh_edges->addIndex(static_cast<unsigned int>(t.p1.idx));
                 mesh_edges->addIndex(static_cast<unsigned int>(t.p3.idx));
             }
-
-            meshOutport_.setData(mesh);
-            meshEdgesOutport_.setData(mesh_edges);
         } else {
-            LogWarn("not enough points for delaunay triangulation! (only " << pts.size()
-                                                                           << " given)");
+            LogWarn("triangulation yielded no triangles, all points are potentially in one plane.");
         }
+    } else {
+        LogWarn("not enough points for delaunay triangulation! (only " << pts_2d.size()
+                                                                       << " given)");
+    }
+
+    return {mesh, mesh_edges};
+}
+
+void DelaunayTriangulation2D::process() {
+    // check for all properties that have to be changes in order to trigger a new triangulation
+    // otherwise, a re-calculation is always triggered, even if you rotate the mesh in the 3D canvas
+    const auto readyToProcess = ptsInport_.isChanged() ||
+                              axisOfProjection_.isModified() ||
+                              planeNormal_.isModified() ||
+                              triangulateInViewSpace_;
+    if (!readyToProcess) {
+        return;
+    }
+
+    const auto& pts_3d = *ptsInport_.getData();
+    const auto pts_2d = setupPoints2D(pts_3d);
+
+    std::shared_ptr<SimpleMesh> mesh, mesh_edges;
+    std::tie(mesh, mesh_edges) = createMeshFrom2dPts(pts_2d, pts_3d);
+
+    if (mesh && mesh_edges) {
+        meshOutport_.setData(mesh);
+        meshEdgesOutport_.setData(mesh_edges);
     }
 }
 

@@ -46,13 +46,18 @@ const ProcessorInfo ColorOffset::getProcessorInfo() const { return processorInfo
 ColorOffset::ColorOffset() : Processor()
     , mesh_inport_("mesh_in")
     , mesh_outport_("mesh_out")
-    , offset_("offset", "Offset", vec4(0.0f), vec4(-1.0f), vec4(1.0f), vec4(0.001f))
+    , offset_("offset", "Offset", vec4(0.0f), vec4(-1.0f), vec4(1.0f), vec4(1e-3f))
+    , normal_("normal", "Normal", vec3(0.0f), vec3(-1.0f), vec3(1.0f), vec3(1e-3f))
+    , amount_("amount", "Amount", 0.0f, 0.0f, 1.0f, 1e-3f)
     , clamp_color_("clamp_color", "Clamp Color", true)
 {
     addPort(mesh_inport_);
     addPort(mesh_outport_);
 
+    offset_.setReadOnly(true);
     addProperty(offset_);
+    addProperty(normal_);
+    addProperty(amount_);
     addProperty(clamp_color_);
 }
 
@@ -66,6 +71,7 @@ void ColorOffset::process() {
             ->getEditableRepresentation<BufferRAM>());
 
         if (color_buffer) {
+            offset_ = amount_.get() * vec4(glm::abs(normal_.get()), 0.0f);
             for (size_t idx = 0; idx < color_buffer->getSize(); ++idx) {
                 auto& color = color_buffer->get(idx);
                 const auto new_color = color + offset_.get();

@@ -93,6 +93,7 @@ namespace inviwo {
         , indicatorColor_("indicatorColor", "Indicator Color", vec4(1.0f, 0.8f, 0.1f, 0.8f), vec4(0.0f),
             vec4(1.0f), vec4(0.01f), InvalidationLevel::InvalidOutput,
             PropertySemantics::Color)
+        , indicatorPointSize_("indicatorPointSize", "Indicator Point Size", 5.0f, 1.0f, 10.0f, 1.0f)
         , tfMappingEnabled_("tfMappingEnabled", "Enable Transfer Function", true,
             InvalidationLevel::InvalidResources)
         , transferFunction_("transferFunction", "Transfer Function", &inport_)
@@ -226,6 +227,7 @@ namespace inviwo {
         pickGroup_.addProperty(posPicking_);
         pickGroup_.addProperty(showIndicator_);
         pickGroup_.addProperty(indicatorColor_);
+        pickGroup_.addProperty(indicatorPointSize_);
 
         posPicking_.onChange([this]() {
             if (posPicking_.get() && enablePolylinePicking_.get()) enablePolylinePicking_.set(false);
@@ -513,25 +515,6 @@ void VolumeSliceGL::renderPositionIndicator() {
     void VolumeSliceGL::updatePolylineMesh() {
         const auto& volPoints = polyline_.getData();
         if (polyline_.hasData() && volPoints) {
-            /*auto volPointsSorted = *volPoints;
-            std::sort(volPointsSorted.begin(), volPointsSorted.end(), [this](vec3 a, vec3 b) {
-                bool result{false};
-                switch (sliceAlongAxis_.get()) {
-                    case static_cast<int>(CartesianCoordinateAxis::X):
-                        result = a.x > b.x;
-                        break;
-                    case static_cast<int>(CartesianCoordinateAxis::Y):
-                        result = a.y > b.y;
-                        break;
-                    case static_cast<int>(CartesianCoordinateAxis::Z):
-                        result = a.z > b.z;
-                        break;
-                    default:
-                        break;
-                }
-                return result;
-            });*/
-
             std::vector<vec2> screenPoints;
             for (const auto& p : *volPoints) {
                 vec2 screenPos = vec2(inverseSliceRotation_ * vec4(p, 1.0f)) * 2.0f - 1.0f;
@@ -578,6 +561,14 @@ void VolumeSliceGL::renderPositionIndicator() {
                         dist = planePosition_.get().z - pt.z;
                         isInSlice = sliceZ_ - 1 == indexCoordinate.z;
                         break;
+                    case 3: { // plane equation, calc. distance to plane
+                        const auto diff = pt - planePosition_.get();
+                        const auto n = glm::normalize(planeNormal_.get());
+                        dist = glm::abs(glm::dot(n, diff));
+                        const float inPlaneThreshold{1e-5f};
+                        isInSlice = dist < inPlaneThreshold;
+                        break;
+                    }
                     default:
                         dist = std::numeric_limits<float>::infinity();
                         LogError("This should not happen!");
@@ -603,7 +594,7 @@ void VolumeSliceGL::renderPositionIndicator() {
             utilgl::GlBoolState smooth(GL_LINE_SMOOTH, true);
             utilgl::BlendModeState blend(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             utilgl::LineWidthState linewidth(2.5f); // Only width 1 is guaranteed to be supported
-            utilgl::PointSizeState pointsize(10.0f);
+            utilgl::PointSizeState pointsize(indicatorPointSize_);
 
             uiShader_.activate();
             uiShader_.setUniform("dataToClip", mat4(1.0f));

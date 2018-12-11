@@ -34,12 +34,18 @@
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/datastructures/geometry/simplemesh.h>
 
 #include <inviwo/core/ports/polylineport.h>
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
+
+#include <modules/basegl/algorithm/vec2_indexed.h>
+
+#include <vector>
+#include <memory>
 
 namespace inviwo {
     /**
@@ -63,9 +69,17 @@ namespace inviwo {
         MeshOutport meshOutport_;
         MeshOutport meshEdgesOutport_;
 
-        OptionPropertyInt projectAlongAxis_; // Axis enum
+        OptionPropertyInt axisOfProjection_;
+        FloatVec3Property volumeVoxelSpacing_;
         BoolProperty triangulateInViewSpace_;
         CameraProperty camera_;
+
+        FloatVec3Property planeNormal_;
+
+        std::vector<Vec2Indexed> setupPoints2D(const std::vector<vec3>& pts_3d);
+        std::pair<std::shared_ptr<SimpleMesh>, std::shared_ptr<SimpleMesh>> createMeshFrom2dPts(
+            const std::vector<Vec2Indexed>& pts_2d,
+            const std::vector<vec3>& pts_3d) const;
     };
 }
 

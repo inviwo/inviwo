@@ -183,6 +183,7 @@ namespace inviwo {
 		BoolProperty posPicking_;
 		BoolProperty showIndicator_;
 		FloatVec4Property indicatorColor_;
+        FloatProperty indicatorPointSize_;
 
 		BoolProperty tfMappingEnabled_;
 		TransferFunctionProperty transferFunction_;

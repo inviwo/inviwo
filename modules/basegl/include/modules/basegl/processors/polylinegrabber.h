@@ -56,9 +56,11 @@ namespace inviwo {
         virtual const ProcessorInfo getProcessorInfo() const override;
         static const ProcessorInfo processorInfo_;
 
-    protected:
-
     private:
+        std::string createPointSerializationName(size_t idx) const;
+        void serialize(Serializer& s) const override;
+        void deserialize(Deserializer& d) override;
+
         void addPoint(const vec3& pt);
         void removePoint(const vec3& pt);
 
@@ -72,6 +74,7 @@ namespace inviwo {
         ButtonProperty loadExamplePolyline_;
 
         std::shared_ptr<std::vector<vec3>> polyline_;
+        IntSizeTProperty numPolylinePts_;
 
         FloatMinMaxProperty clip_;
 

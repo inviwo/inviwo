@@ -61,6 +61,8 @@ namespace inviwo {
         MeshOutport mesh_outport_;
 
         FloatVec4Property offset_;
+        FloatVec3Property normal_;
+        FloatProperty amount_;
         BoolProperty clamp_color_;
     };
 }

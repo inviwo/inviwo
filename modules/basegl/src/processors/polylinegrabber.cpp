@@ -54,6 +54,7 @@ namespace inviwo {
         , clearPolyline_("clearpolyline", "Clear Points")
         , loadExamplePolyline_("loadexamplepolyline", "Load Example Polyline")
         , polyline_(std::make_shared<std::vector<vec3>>())
+        , numPolylinePts_("numPolylinePts", "Num. Points", 0)
         , clip_("clip", "Clip Polyline", 0.0f, 1.0f)
         , outport_("polylineport")
     {
@@ -84,6 +85,10 @@ namespace inviwo {
         });
         addProperty(loadExamplePolyline_);
 
+        numPolylinePts_.setReadOnly(true);
+        numPolylinePts_.setSemantics(PropertySemantics::Text);
+        addProperty(numPolylinePts_);
+
         clip_.onChange([this]() {
             const auto from =
                 static_cast<size_t>(clip_.getStart() * static_cast<float>(polyline_->size()));
@@ -112,14 +117,15 @@ namespace inviwo {
         const auto mouseEvent = static_cast<MouseEvent*>(e);
         const auto mousePos = vec2(mouseEvent->posNormalized());
 
+        // TODO: only add and remove if clicked in right canvas!
         const auto button = mouseEvent->button();
         if (button == MouseButton::Left) {
-            LogInfo("add");
             addPoint(pt_);
         } else if (button == MouseButton::Right) {
-            LogInfo("remove");
             removePoint(pt_);
         }
+
+        numPolylinePts_ = polyline_->size();
     }
 
     void PolylineGrabber::addPoint(const vec3& pt)
@@ -134,6 +140,7 @@ namespace inviwo {
             size_t min_idx{0};
             float min_dist{std::numeric_limits<float>::infinity()};
             for (size_t idx = 0; idx < polyline_->size(); ++idx) {
+                // only in same slice
                 const float dist = glm::distance(polyline_->at(idx), pt);
                 if (dist < min_dist) {
                     min_dist = dist;
@@ -141,10 +148,43 @@ namespace inviwo {
                 }
             }
 
+            // check min_dist < deletion_threshold_dist
             polyline_->erase(polyline_->begin() + min_idx);
         }
 
         invalidate(InvalidationLevel::InvalidOutput);
+    }
+
+    std::string PolylineGrabber::createPointSerializationName(size_t idx) const {
+        return std::string("point") + std::to_string(idx);
+    }
+
+    void PolylineGrabber::serialize(Serializer& s) const {
+        Processor::serialize(s);
+
+        // save the number of points
+        s.serialize("num_pts", polyline_->size());
+
+        // save all points
+        for (size_t idx = 0; idx < polyline_->size(); ++idx) {
+            s.serialize(createPointSerializationName(idx), polyline_->at(idx));
+        }
+    }
+
+    void PolylineGrabber::deserialize(Deserializer& d) {
+        // load the number of total points
+        size_t num_pts{0};
+        d.deserialize("num_pts", num_pts);
+
+        // load all points
+        polyline_->resize(num_pts);
+        for (size_t idx = 0; idx < num_pts; ++idx) {
+            d.deserialize(createPointSerializationName(idx), polyline_->at(idx));
+        }
+
+        numPolylinePts_ = num_pts;
+
+        Processor::deserialize(d);
     }
 
 }  // namespace inviwo
