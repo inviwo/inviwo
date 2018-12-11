@@ -66,8 +66,8 @@ node {
             echo "Building inviwo Running ${env.BUILD_ID} on ${env.JENKINS_URL}"
             dir('inviwo') {
                 checkout scm
-                sh 'git submodule sync' // needed when a submodule has a new url  
-                sh 'git submodule update --init'
+                sh 'git submodule sync --recursive' // needed when a submodule has a new url  
+                sh 'git submodule update --init --recursive'
             }
         }
 
