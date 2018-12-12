@@ -54,6 +54,7 @@ namespace inviwo {
         , clearPolyline_("clearpolyline", "Clear Points")
         , loadExamplePolyline_("loadexamplepolyline", "Load Example Polyline")
         , polyline_(std::make_shared<std::vector<vec3>>())
+        , pointRemovalDistanceThreshold_("pointRemovalDistanceThreshold", "Point Removal Distance Threshold", 0.02f, 0.0f, 1.0f)
         , numPolylinePts_("numPolylinePts", "Num. Points", 0)
         , clip_("clip", "Clip Polyline", 0.0f, 1.0f)
         , outport_("polylineport")
@@ -107,6 +108,8 @@ namespace inviwo {
 
         addProperty(addOrRemovePolylinePoint_);
 
+        addProperty(pointRemovalDistanceThreshold_);
+
         //TODO smoothen the normal
 
         //TODO implement move and delete points
@@ -130,6 +133,7 @@ namespace inviwo {
 
     void PolylineGrabber::addPoint(const vec3& pt)
     {
+        // TODO: check if point is already in place
         polyline_->push_back(pt);
 
         invalidate(InvalidationLevel::InvalidOutput);
@@ -148,8 +152,10 @@ namespace inviwo {
                 }
             }
 
-            // check min_dist < deletion_threshold_dist
-            polyline_->erase(polyline_->begin() + min_idx);
+            // TODO: check min_dist < deletion_threshold_dist
+            if (min_dist <= pointRemovalDistanceThreshold_) {
+                polyline_->erase(polyline_->begin() + min_idx);
+            }
         }
 
         invalidate(InvalidationLevel::InvalidOutput);

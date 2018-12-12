@@ -69,6 +69,7 @@ namespace inviwo {
         FloatVec3Property pt_;
 
         EventProperty addOrRemovePolylinePoint_;
+        FloatProperty pointRemovalDistanceThreshold_;
 
         ButtonProperty clearPolyline_;
         ButtonProperty loadExamplePolyline_;

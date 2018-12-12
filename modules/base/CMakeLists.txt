@@ -55,6 +55,7 @@ set(HEADER_FILES
     include/modules/base/processors/diffuselightsourceprocessor.h
     include/modules/base/processors/directionallightsourceprocessor.h
     include/modules/base/processors/distancetransformram.h
+    include/modules/base/processors/eventsilencer.h
     include/modules/base/processors/heightfieldmapper.h
     include/modules/base/processors/imagecontourprocessor.h
     include/modules/base/processors/imageexport.h
@@ -162,6 +163,7 @@ set(SOURCE_FILES
     src/processors/diffuselightsourceprocessor.cpp
     src/processors/directionallightsourceprocessor.cpp
     src/processors/distancetransformram.cpp
+    src/processors/eventsilencer.cpp
     src/processors/heightfieldmapper.cpp
     src/processors/imagecontourprocessor.cpp
     src/processors/imageexport.cpp
