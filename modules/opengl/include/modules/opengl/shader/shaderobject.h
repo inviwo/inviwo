@@ -41,6 +41,28 @@ namespace inviwo {
 
 class OpenGLCapabilities;
 
+
+/**
+ * A wrapper for an OpenGL shader object.
+ * Handles loading sources from shader resources, either files or stings.
+ * Pre-processes the sources resolving all include with help of the shader manager.
+ * Keeps a lookup table of from which include each line originates. 
+ * Handles a list of defines, that can be added or removed @see addShaderDefine
+ * Handles a list of shader extensions @see addShaderExtension
+ * Handles a list of input declarations @set addInDeclaration
+ * Handles a list of output declarations @set addOutDeclaration
+ * 
+ * A fragment shader will by default have the following out declarations:
+ *     out vec4 FragData0;   (location 0)
+ *     out vev4 PickingData; (location 1)
+ * and a vertex shader will by default have the following in declarations:
+ *     in vec4 in_Vertex;   (location 0)
+ *     in vec3 in_Normal;   (location 1)
+ *     in vec4 in_Color;    (location 2)
+ *     in vec3 in_TexCoord; (location 3)
+ * The defaults can be removed by calling clearOutDeclarations or clearInDeclarations
+ * respectively.
+ */
 class IVW_MODULE_OPENGL_API ShaderObject {
 public:
     struct InDeclaration {
@@ -135,7 +157,10 @@ public:
      * Adds the default fragment out declarations to the list of out declarations.
      * This function is automatically called in the constructor for a fragment shader.
      * If clearOutDeclarations is called then they will be removed and one would have to
-     * manually call this function to re-add them if needed.
+     * manually call this function to re-add them if needed. 
+     * The defaults are:
+     *     out vec4 FragData0;   (location 0)
+     *     out vev4 PickingData; (location 1)
      */
     void addStandardFragmentOutDeclarations();
 
@@ -144,6 +169,11 @@ public:
      * This function is automatically called in the constructor for a vertex shader.
      * If clearInDeclarations is called then they will be removed and one would have to
      * manually call this function to re-add them if needed.
+     * The defaults are:
+     *     in vec4 in_Vertex;   (location 0)
+     *     in vec3 in_Normal;   (location 1)
+     *     in vec4 in_Color;    (location 2)
+     *     in vec3 in_TexCoord; (location 3)
      */
     void addStandardVertexInDeclarations();
 
