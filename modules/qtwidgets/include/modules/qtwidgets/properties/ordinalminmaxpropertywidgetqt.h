@@ -205,14 +205,14 @@ void OrdinalMinMaxPropertyWidgetQt<T>::updateFromSlider(int valMin, int valMax) 
     bool modified = false;
     V range = minMaxProperty_->get();
 
-    if (glm::abs(min - range.x) > glm::epsilon<T>()) {
+    if (!util::almostEqual(min, range.x)) {
         modified = true;
         range.x = min;
         QSignalBlocker minBlock(spinBoxMin_);
         spinBoxMin_->setValue(Transformer<T>::valueToSpinbox(minMaxProperty_, min));
     }
 
-    if (glm::abs(max - range.y) > glm::epsilon<T>()) {
+    if (!util::almostEqual(max, range.y)) {
         modified = true;
         range.y = max;
         QSignalBlocker maxBlock(spinBoxMax_);
@@ -232,7 +232,7 @@ void OrdinalMinMaxPropertyWidgetQt<T>::updateFromSpinBoxMin(double minVal) {
     const T sep = minMaxProperty_->getMinSeparation();
     V range = minMaxProperty_->get();
 
-    if (glm::abs(min - range.x) > glm::epsilon<T>()) {
+    if (!util::almostEqual(min, range.x)) {
         range.x = min;
 
         if (range.y - range.x < sep) {
@@ -259,7 +259,7 @@ void OrdinalMinMaxPropertyWidgetQt<T>::updateFromSpinBoxMax(double maxVal) {
     const T sep = minMaxProperty_->getMinSeparation();
     V range = minMaxProperty_->get();
 
-    if (glm::abs(max - range.y) > glm::epsilon<T>()) {
+    if (!util::almostEqual(max, range.y)) {
         range.y = max;
 
         if (range.y - range.x < sep) {

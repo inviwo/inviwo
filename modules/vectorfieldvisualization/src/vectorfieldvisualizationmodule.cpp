@@ -213,7 +213,7 @@ bool VectorFieldVisualizationModule::Converter::convert(TxElement* root) {
             res |=
                 traverseNodes(root, &VectorFieldVisualizationModule::Converter::updateAllowLooping);
             res |= xml::changeIdentifiers(root, repl);
-            return res;
+            [[fallthrough]];
         }
         case 1: {
             for (const auto& fromTO : std::vector<std::pair<std::string, std::string>>{
@@ -227,9 +227,11 @@ bool VectorFieldVisualizationModule::Converter::convert(TxElement* root) {
                     root, {{xml::Kind::processor("org.inviwo." + fromTO.first)}}, "type",
                     "org.inviwo." + fromTO.first, "org.inviwo." + fromTO.second);
             }
+            [[fallthrough]];
         }
         case 2: {
             res |= integralLineTracerMetaDataProperty(root);
+            [[fallthrough]];
         }
         case 3: {
             for (const auto& fromTO : std::vector<std::pair<std::string, std::string>>{
@@ -240,6 +242,7 @@ bool VectorFieldVisualizationModule::Converter::convert(TxElement* root) {
                     root, {{xml::Kind::processor("org.inviwo." + fromTO.first)}}, "type",
                     "org.inviwo." + fromTO.first, "org.inviwo." + fromTO.second);
             }
+            return res;
         }
 
         default:

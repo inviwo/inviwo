@@ -927,9 +927,6 @@ public:
 
 
 
-#include <warn/push>
-#include <warn/ignore/deprecated-declarations>
-
 namespace detail {
 #define __DEFAULT_NOT_INITIALIZED 1 
 #define __DEFAULT_BEING_INITIALIZED 2
@@ -957,8 +954,6 @@ namespace detail {
 
     inline void fence() { _mm_mfence(); }
 }  // namespace detail
-
-#include <warn/pop>
     
 /*! \brief class used to interface between C++ and
  *  OpenCL C calls that require arrays of size_t values, whose

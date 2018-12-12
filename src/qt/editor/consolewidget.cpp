@@ -349,7 +349,6 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
                                            default:
                                                return false;
                                        }
-
                                    },
                                    [this](MenuItemType t) -> void {
                                        switch (t) {
@@ -366,7 +365,6 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
                                            default:
                                                break;
                                        }
-
                                    }));
 }
 

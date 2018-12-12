@@ -77,7 +77,7 @@ TEST(EnumOptionProperty, Test1) {
     std::unique_ptr<Property> propB;
     d.deserialize("property", propB);
 
-    EXPECT_NE(propB, nullptr);
+    EXPECT_TRUE(propB != nullptr);
 
 }
 

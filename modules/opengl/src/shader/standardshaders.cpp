@@ -27,60 +27,57 @@
  *
  *********************************************************************************/
 
-#include <modules/animation/datastructures/basekeyframe.h>
+#include <modules/opengl/shader/standardshaders.h>
 
 namespace inviwo {
 
-namespace animation {
+namespace utilgl {
 
-BaseKeyframe::BaseKeyframe(Seconds time) : time_(time) {}
-BaseKeyframe::~BaseKeyframe() = default;
+std::pair<ShaderType, std::shared_ptr<const ShaderResource>> imgIdentityVert() {
+    static const std::shared_ptr<const ShaderResource> vert =
+        std::make_shared<StringShaderResource>("image_identity.vert", R"(
+out vec4 color_;
+out vec3 texCoord_;
 
-BaseKeyframe::BaseKeyframe(const BaseKeyframe& rhs) = default;
-BaseKeyframe& BaseKeyframe::operator=(const BaseKeyframe& that) {
-    if (this != &that) {
-        Keyframe::operator=(that);
-        setTime(that.time_);
-        setSelected(that.isSelected_);
-    }
-    return *this;
+void main() {
+    color_ = in_Color;
+    texCoord_ = in_TexCoord;
+    gl_Position = in_Vertex;
+}
+)");
+
+    return {ShaderType::Vertex, vert};
 }
 
-void BaseKeyframe::setTime(Seconds time) {
-    if (time != time_) {
-        auto oldTime = time_;
-        time_ = time;
-        notifyKeyframeTimeChanged(this, oldTime);
-    }
-}
-Seconds BaseKeyframe::getTime() const { return time_; }
+std::pair<ShaderType, std::shared_ptr<const ShaderResource>> imgQuadVert() {
+    static const std::shared_ptr<const ShaderResource> vert =
+        std::make_shared<StringShaderResource>("image_quad.vert", R"(
+out vec3 texCoord_;
 
-bool BaseKeyframe::isSelected() const { return isSelected_; }
-void BaseKeyframe::setSelected(bool selected) {
-    if (selected != isSelected_) {
-        isSelected_ = selected;
-        notifyKeyframeSelectionChanged(this);
-    }
+void main() {
+    texCoord_ = in_TexCoord;
+    gl_Position = in_Vertex;
+}
+)");
+
+    return {ShaderType::Vertex, vert};
 }
 
-void BaseKeyframe::serialize(Serializer& s) const {
-    s.serialize("time", time_.count());
-    s.serialize("selected", isSelected_);
+std::pair<ShaderType, std::shared_ptr<const ShaderResource>> imgQuadFrag() {
+    static const std::shared_ptr<const ShaderResource> frag =
+        std::make_shared<StringShaderResource>("image_quad.frag", R"(
+uniform sampler2D tex_;
+
+in vec3 texCoord_;
+
+void main() {
+    FragData0 = texture(tex_, texCoord_.xy);
+}
+)");
+
+    return {ShaderType::Fragment, frag};
 }
 
-void BaseKeyframe::deserialize(Deserializer& d) {
-    {
-        double tmp = time_.count();
-        d.deserialize("time", tmp);
-        setTime(Seconds{tmp});
-    }
-    {
-        bool isSelected = isSelected_;
-        d.deserialize("selected", isSelected);
-        setSelected(isSelected);
-    }
-}
-
-}  // namespace animation
+}  // namespace utilgl
 
 }  // namespace inviwo

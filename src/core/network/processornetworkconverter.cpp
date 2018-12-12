@@ -40,36 +40,51 @@ bool ProcessorNetworkConverter::convert(TxElement* root) {
     switch (from_) {
         case 0:
             traverseNodes(root, &ProcessorNetworkConverter::updateProcessorType);
+            [[fallthrough]];
         case 1:
             traverseNodes(root, &ProcessorNetworkConverter::updateMetaDataTree);
+            [[fallthrough]];
         case 2:
             traverseNodes(root, &ProcessorNetworkConverter::updatePropertType);
+            [[fallthrough]];
         case 3:
             traverseNodes(root, &ProcessorNetworkConverter::updateShadingMode);
+            [[fallthrough]];
         case 4:
             traverseNodes(root, &ProcessorNetworkConverter::updateCameraToComposite);
+            [[fallthrough]];
         case 5:
             traverseNodes(root, &ProcessorNetworkConverter::updateMetaDataType);
+            [[fallthrough]];
         case 6:
             traverseNodes(root, &ProcessorNetworkConverter::updateMetaDataKeys);
+            [[fallthrough]];
         case 7:
             traverseNodes(root, &ProcessorNetworkConverter::updateDimensionTag);
+            [[fallthrough]];
         case 8:
             traverseNodes(root, &ProcessorNetworkConverter::updatePropertyLinks);
+            [[fallthrough]];
         case 9:
             ProcessorNetworkConverter::updatePortsInProcessors(root);
+            [[fallthrough]];
         case 10:
             traverseNodes(root,
                           &ProcessorNetworkConverter::updateNoSpaceInProcessorClassIdentifers);
+            [[fallthrough]];
         case 11:
             traverseNodes(root, &ProcessorNetworkConverter::updateDisplayName);
+            [[fallthrough]];
         case 12:
             traverseNodes(root, &ProcessorNetworkConverter::updateProcessorIdentifiers);
+            [[fallthrough]];
         case 13:
             traverseNodes(root, &ProcessorNetworkConverter::updateTransferfunctions);
+            [[fallthrough]];
         case 14:
             usedIdentifier_.clear();
             traverseNodes(root, &ProcessorNetworkConverter::updateProcessorIdentifiersStriped);
+            [[fallthrough]];
         case 15:
             traverseNodes(root, &ProcessorNetworkConverter::updatePropertyEditorMetadata);
             return true;  // Changes has been made.

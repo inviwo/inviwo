@@ -79,11 +79,16 @@ void DiffuseLightSourceProcessor::updateLightSource(DiffuseLight* lightSource) {
     vec3 dir;
     switch (
         static_cast<PositionProperty::Space>(lightPosition_.referenceFrame_.getSelectedValue())) {
-        case PositionProperty::Space::VIEW:
+        case PositionProperty::Space::VIEW: {
             dir = glm::normalize(camera_.getLookTo() - lightPos);
+            break;
+        }
         case PositionProperty::Space::WORLD:
-        default:
-            dir = glm::normalize(vec3(0.f) - lightPos);
+            [[fallthrough]];
+        default: {
+            dir = glm::normalize(vec3(0.f) - lightPos); 
+            break;
+        }
     }
 
     mat4 transformationMatrix = getLightTransformationMatrix(lightPos, dir);

@@ -52,7 +52,6 @@ public:
                            ExceptionContext context = ExceptionContext());
 };
 
-
 /**
  * \class CSVReader
  * \ingroup dataio
@@ -60,18 +59,19 @@ public:
  * \brief A reader for comma separated value (CSV) files with customizable delimiters.
  * The default delimiter is ',' and headers are included
  */
-class IVW_MODULE_PLOTTING_API CSVReader : public DataReaderType<plot::DataFrame> { 
+class IVW_MODULE_PLOTTING_API CSVReader : public DataReaderType<plot::DataFrame> {
 public:
     CSVReader();
     CSVReader(const CSVReader&) = default;
-    CSVReader(CSVReader&&) = default;
+    CSVReader(CSVReader&&) noexcept = default;
     CSVReader& operator=(const CSVReader&) = default;
-    CSVReader& operator=(CSVReader&&) = default;
+    CSVReader& operator=(CSVReader&&) noexcept = default;
     virtual CSVReader* clone() const override;
     virtual ~CSVReader() = default;
 
-    void setDelimiters(const std::string &delim);
+    void setDelimiters(const std::string& delim);
     void setFirstRowHeader(bool hasHeader);
+    using DataReaderType<plot::DataFrame>::readData;
 
     /**
      * read a CSV file from a file
@@ -79,8 +79,8 @@ public:
      * @param fileName   name of the input CSV file
      * @return a plot::DataFrame containing the CSV data
      * @throws FileException if the file cannot be accessed
-     * @throws CSVDataReaderException if the file contains no data, the first row 
-     *   should hold column headers, but they cannot be found, or if there are 
+     * @throws CSVDataReaderException if the file contains no data, the first row
+     *   should hold column headers, but they cannot be found, or if there are
      *   unmatched quotes at the end of the file
      */
     virtual std::shared_ptr<plot::DataFrame> readData(const std::string& fileName) override;
@@ -92,7 +92,7 @@ public:
      * @param stream    input stream with the CSV data
      * @return a plot::DataFrame containing the CSV data
      * @throws CSVDataReaderException if the given stream is in a bad state,
-     *   the stream contains no data, the first row should hold column headers, 
+     *   the stream contains no data, the first row should hold column headers,
      *   but they cannot be found, or if there are unmateched quotes at the end of
      *   the stream
      */
@@ -103,7 +103,6 @@ private:
     bool firstRowHeader_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_CSVREADER_H
-
+#endif  // IVW_CSVREADER_H

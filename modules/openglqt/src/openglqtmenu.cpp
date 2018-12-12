@@ -72,7 +72,7 @@ OpenGLQtMenu::OpenGLQtMenu(QWidget* parent) : QMenu(tr("&Shaders"), parent) {
             const auto& shaders = ShaderManager::getPtr()->getShaders();
             auto it = util::find_if(shaders, [id](Shader* s) { return s->getID() == id; });
             for (auto& obj : (*it)->getShaderObjects()) {
-                auto eit = editors_.find(obj.second->getID());
+                auto eit = editors_.find(obj.getID());
                 if (eit != editors_.end()) {
                     eit->second->close();
                     editors_.erase(eit);
@@ -90,11 +90,11 @@ OpenGLQtMenu::OpenGLQtMenu(QWidget* parent) : QMenu(tr("&Shaders"), parent) {
 }
 
 void OpenGLQtMenu::addShaderObjects(Shader* shader, QMenu* menuItem) {
-    for (auto& item : shader->getShaderObjects()) {
-        auto name = QString::fromStdString(item.second->getFileName());
+    for (auto& obj : shader->getShaderObjects()) {
+        auto name = QString::fromStdString(obj.getFileName());
         auto action = menuItem->addAction(name);
         menuItem->setTitle(menuItem->title() + QString(", ") + name);
-        connect(action, &QAction::triggered, [&]() { showShader(item.second.get()); });
+        connect(action, &QAction::triggered, [&]() { showShader(&obj); });
     }
 }
 

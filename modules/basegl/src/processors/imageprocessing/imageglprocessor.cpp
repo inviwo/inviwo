@@ -31,7 +31,9 @@
 #include <modules/opengl/image/imagegl.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/shader/shaderresource.h>
 #include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/shader/standardshaders.h>
 #include <modules/opengl/buffer/framebufferobject.h>
 
 namespace inviwo {
@@ -47,7 +49,7 @@ ImageGLProcessor::ImageGLProcessor(std::shared_ptr<const ShaderResource> fragmen
     , dataFormat_(nullptr)
     , swizzleMask_(swizzlemasks::rgba)
     , internalInvalid_(false)
-    , shader_({{ShaderType::Fragment, fragmentShader}},
+    , shader_({utilgl::imgQuadVert(), {ShaderType::Fragment, fragmentShader}},
               buildShader ? Shader::Build::Yes : Shader::Build::No) {
     addPort(inport_);
     addPort(outport_);

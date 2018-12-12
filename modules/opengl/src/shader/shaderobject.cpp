@@ -43,8 +43,11 @@ namespace inviwo {
 
 ShaderObject::ShaderObject(ShaderType shaderType, std::shared_ptr<const ShaderResource> resource)
     : shaderType_{shaderType}, id_{glCreateShader(shaderType)}, resource_{resource} {
-    if (!shaderType_) throw OpenGLException("Invalid shader type", IvwContext);
- 
+    if (!shaderType_) {
+        glDeleteShader(id_);
+        throw OpenGLException("Invalid shader type", IvwContext);
+    }
+
     // Help developer to spot errors
     std::string fileExtension = filesystem::getFileExtension(resource_->key());
     if (fileExtension != shaderType_.extension()) {
@@ -65,50 +68,84 @@ ShaderObject::ShaderObject(std::string fileName)
 ShaderObject::ShaderObject(GLenum shaderType, std::string fileName)
     : ShaderObject(ShaderType(shaderType), loadResource(fileName)) {}
 
+
 ShaderObject::ShaderObject(const ShaderObject& rhs)
     : shaderType_(rhs.shaderType_)
     , id_(glCreateShader(rhs.shaderType_))
     , resource_(rhs.resource_)
     , outDeclarations_(rhs.outDeclarations_)
     , shaderDefines_(rhs.shaderDefines_)
-    , shaderExtensions_(rhs.shaderExtensions_) {
+    , shaderExtensions_(rhs.shaderExtensions_)
+    , sourceProcessed_{}
+    , includeResources_{} 
+    , lineNumberResolver_{} 
+    , callbacks_{}
+    , resourceCallbacks_{} {
+}
+
+
+ShaderObject::ShaderObject(ShaderObject&& rhs) noexcept
+    : shaderType_(rhs.shaderType_)
+    , id_(rhs.id_)
+    , resource_(std::move(rhs.resource_))
+    , outDeclarations_(std::move(rhs.outDeclarations_))
+    , shaderDefines_(std::move(rhs.shaderDefines_))
+    , shaderExtensions_(std::move(rhs.shaderExtensions_))
+    , sourceProcessed_{}
+    , includeResources_{} 
+    , lineNumberResolver_{} 
+    , callbacks_{}
+    , resourceCallbacks_{} {
+
+    rhs.id_ = 0;
+    rhs.resourceCallbacks_.clear();
 }
 
 ShaderObject& ShaderObject::operator=(const ShaderObject& that) {
-    if (this != &that) {
-        glDeleteShader(id_);
-        
-        shaderType_ = that.shaderType_;
-        id_ = glCreateShader(shaderType_);
-        resource_ = that.resource_;
-        outDeclarations_ = that.outDeclarations_;
-        shaderDefines_ = that.shaderDefines_;
-        shaderExtensions_ = that.shaderExtensions_;
-    }
+    ShaderObject copy(that);
+    std::swap(shaderType_, copy.shaderType_);
+    std::swap(id_, copy.id_);
+    std::swap(resource_, copy.resource_);
+    std::swap(outDeclarations_, copy.outDeclarations_);
+    std::swap(shaderDefines_, copy.shaderDefines_);
+    std::swap(shaderExtensions_, copy.shaderExtensions_);
+    std::swap(sourceProcessed_, copy.sourceProcessed_);
+    std::swap(includeResources_, copy.includeResources_);
+    std::swap(lineNumberResolver_, copy.lineNumberResolver_);
+    std::swap(callbacks_, copy.callbacks_);
+    std::swap(resourceCallbacks_, copy.resourceCallbacks_);
+    return *this;
+}
+
+ShaderObject& ShaderObject::operator=(ShaderObject&& that) noexcept {
+    ShaderObject copy(std::move(that));
+    std::swap(shaderType_, copy.shaderType_);
+    std::swap(id_, copy.id_);
+    std::swap(resource_, copy.resource_);
+    std::swap(outDeclarations_, copy.outDeclarations_);
+    std::swap(shaderDefines_, copy.shaderDefines_);
+    std::swap(shaderExtensions_, copy.shaderExtensions_);
+    std::swap(sourceProcessed_, copy.sourceProcessed_);
+    std::swap(includeResources_, copy.includeResources_);
+    std::swap(lineNumberResolver_, copy.lineNumberResolver_);
+    std::swap(callbacks_, copy.callbacks_);
+    std::swap(resourceCallbacks_, copy.resourceCallbacks_);
     return *this;
 }
 
 ShaderObject::~ShaderObject() { glDeleteShader(id_); }
 
-GLuint ShaderObject::getID() const {
-    return id_;
-}
+GLuint ShaderObject::getID() const { return id_; }
 
-std::string ShaderObject::getFileName() const {
-    return resource_->key();
-}
+std::string ShaderObject::getFileName() const { return resource_->key(); }
 
-std::shared_ptr<const ShaderResource> ShaderObject::getResource() const {
-    return resource_;
-}
+std::shared_ptr<const ShaderResource> ShaderObject::getResource() const { return resource_; }
 
 const std::vector<std::shared_ptr<const ShaderResource>>& ShaderObject::getResources() const {
     return includeResources_;
 }
 
-ShaderType ShaderObject::getShaderType() const {
-    return shaderType_;
-}
+ShaderType ShaderObject::getShaderType() const { return shaderType_; }
 
 std::shared_ptr<const ShaderResource> ShaderObject::loadResource(std::string fileName) {
     return utilgl::findShaderResource(fileName);
@@ -123,7 +160,7 @@ void ShaderObject::build() {
 void ShaderObject::preprocess() {
     resourceCallbacks_.clear();
     lineNumberResolver_.clear();
-    auto holdOntoResources = includeResources_; // Don't release until we have processed again.
+    auto holdOntoResources = includeResources_;  // Don't release until we have processed again.
     includeResources_.clear();
 
     std::ostringstream source;
@@ -191,7 +228,7 @@ void ShaderObject::addIncludes(std::ostringstream& source,
     std::string curLine;
     includeResources_.push_back(resource);
     resourceCallbacks_.push_back(
-        resource->onChange([this](const ShaderResource* /*res*/) { callbacks_.invoke(this); }));
+        resource->onChange([this](const ShaderResource*) { callbacks_.invoke(this); }));
     std::istringstream shaderSource(resource->source());
     int localLineNumber = 1;
     bool isInsideBlockComment = false;
@@ -350,10 +387,10 @@ void ShaderObject::addOutDeclaration(std::string name, int location) {
 void ShaderObject::clearOutDeclarations() { outDeclarations_.clear(); }
 
 std::pair<std::string, unsigned int> ShaderObject::resolveLine(size_t line) const {
-    if (line<lineNumberResolver_.size())
+    if (line < lineNumberResolver_.size())
         return lineNumberResolver_[line];
-    else 
-        return {"",0};
+    else
+        return {"", 0};
 }
 
 std::string ShaderObject::print(bool showSource, bool preprocess) const {
@@ -404,4 +441,4 @@ std::string ShaderObject::print(bool showSource, bool preprocess) const {
     }
 }
 
-}  // namespace
+}  // namespace inviwo

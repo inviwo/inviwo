@@ -26,61 +26,34 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <modules/animation/datastructures/basekeyframe.h>
+#include <modules/opengl/openglmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+
+#include <modules/opengl/shader/shaderresource.h>
+#include <modules/opengl/shader/shadertype.h>
 
 namespace inviwo {
 
-namespace animation {
+namespace utilgl {
 
-BaseKeyframe::BaseKeyframe(Seconds time) : time_(time) {}
-BaseKeyframe::~BaseKeyframe() = default;
+/**
+ * Standard minimal vertex shader resource, used if no vertex shader exits in shader.h
+ */
+IVW_MODULE_OPENGL_API std::pair<ShaderType, std::shared_ptr<const ShaderResource>>
+imgIdentityVert();
 
-BaseKeyframe::BaseKeyframe(const BaseKeyframe& rhs) = default;
-BaseKeyframe& BaseKeyframe::operator=(const BaseKeyframe& that) {
-    if (this != &that) {
-        Keyframe::operator=(that);
-        setTime(that.time_);
-        setSelected(that.isSelected_);
-    }
-    return *this;
-}
+/**
+ * Standard vertex shader resource for a quad
+ */
+IVW_MODULE_OPENGL_API std::pair<ShaderType, std::shared_ptr<const ShaderResource>> imgQuadVert();
 
-void BaseKeyframe::setTime(Seconds time) {
-    if (time != time_) {
-        auto oldTime = time_;
-        time_ = time;
-        notifyKeyframeTimeChanged(this, oldTime);
-    }
-}
-Seconds BaseKeyframe::getTime() const { return time_; }
+/**
+ * Standard vertex shader resource for a quad
+ */
+IVW_MODULE_OPENGL_API std::pair<ShaderType, std::shared_ptr<const ShaderResource>> imgQuadFrag();
 
-bool BaseKeyframe::isSelected() const { return isSelected_; }
-void BaseKeyframe::setSelected(bool selected) {
-    if (selected != isSelected_) {
-        isSelected_ = selected;
-        notifyKeyframeSelectionChanged(this);
-    }
-}
-
-void BaseKeyframe::serialize(Serializer& s) const {
-    s.serialize("time", time_.count());
-    s.serialize("selected", isSelected_);
-}
-
-void BaseKeyframe::deserialize(Deserializer& d) {
-    {
-        double tmp = time_.count();
-        d.deserialize("time", tmp);
-        setTime(Seconds{tmp});
-    }
-    {
-        bool isSelected = isSelected_;
-        d.deserialize("selected", isSelected);
-        setSelected(isSelected);
-    }
-}
-
-}  // namespace animation
+}  // namespace utilgl
 
 }  // namespace inviwo

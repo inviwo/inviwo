@@ -316,6 +316,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/stringlogger.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/systemcapabilities.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/templatesampler.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/transformiterator.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/threadpool.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/timer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/tinydirinterface.h
@@ -697,7 +698,13 @@ ivw_register_license_file(NAME "Flags" MODULE Core
     FILES ${IVW_EXTENSIONS_DIR}/flags/LICENSE
 )
 
-ivw_register_license_file(NAME "OpenGL Mathematics (GLM)" TARGET glm_dummy MODULE Core
+ivw_register_license_file(NAME "{fmt}" target fmt MODULE Core
+    URL "https://github.com/fmtlib/fmt"
+    TYPE "TBSD 2-Clause"
+    FILES  ${IVW_EXTENSIONS_DIR}/fmt/LICENSE.rst
+)
+
+ivw_register_license_file(NAME "OpenGL Mathematics (GLM)" VERSION 0.9.9.3 MODULE Core
     URL "https://glm.g-truc.net"
     TYPE "The MIT License"
     FILES  ${IVW_EXTENSIONS_DIR}/glm/LICENSE
@@ -706,7 +713,7 @@ ivw_register_license_file(NAME "OpenGL Mathematics (GLM)" TARGET glm_dummy MODUL
 ivw_register_license_file(NAME "half" TARGET half MODULE Core
     URL "http://half.sourceforge.net"
     TYPE "The MIT License"
-    FILES ${IVW_EXTENSIONS_DIR}/half/LICENSE
+    FILES ${IVW_EXTENSIONS_DIR}/half/LICENSE.txt
 )
 
 if(TARGET inviwo::sigar)
@@ -768,6 +775,32 @@ ivw_register_license_file(NAME "zlib" TARGET ZLIB::ZLIB MODULE Core
     TYPE "The zlib/libpng License"
     FILES ${IVW_EXTENSIONS_DIR}/zlib-1.2.11/LICENSE
 )
+
+if(IVW_UNITTESTS OR IVW_INTEGRATION_TESTS)
+    ivw_register_license_file(NAME "Google C++ Testing Framework" TARGET gtest MODULE Core
+        URL "https://github.com/google/googletest"
+        TYPE "BSD 3-clause"
+        FILES ${IVW_EXTENSIONS_DIR}/gtest/gtest/LICENSE
+    )
+endif()
+
+ivw_register_license_file(NAME "JSON for Modern C++" target nlohmann_json MODULE Core
+    URL "https://github.com/nlohmann/json"
+    TYPE "The MIT License"
+    FILES  ${IVW_EXTENSIONS_DIR}/json/LICENSE.MIT
+)
+
+ivw_register_license_file(NAME "inja" VERSION 1.0.0 target inja MODULE Core
+    URL "https://github.com/pantor/inja"
+    TYPE "The MIT License"
+    FILES ${IVW_TOOLS_DIR}/meta/ext/inja/LICENSE
+)
+ivw_register_license_file(NAME "PEGTL" VERSION 2.7.1 target taocpp::pegtl MODULE Core
+    URL "https://github.com/taocpp/PEGTL"
+    TYPE "The MIT License"
+    FILES ${IVW_TOOLS_DIR}/meta/ext/pegtl/LICENSE
+)
+
 
 #----------------------------------------------------------------
 # Generate build info - the build info will be updated during every compilation

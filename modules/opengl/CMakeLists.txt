@@ -44,6 +44,7 @@ set(HEADER_FILES
     include/modules/opengl/shader/shaderresource.h
     include/modules/opengl/shader/shadertype.h
     include/modules/opengl/shader/shaderutils.h
+    include/modules/opengl/shader/standardshaders.h
     include/modules/opengl/shader/uniformutils.h
     include/modules/opengl/sharedopenglresources.h
     include/modules/opengl/texture/texture.h
@@ -92,6 +93,7 @@ set(SOURCE_FILES
     src/shader/shaderresource.cpp
     src/shader/shadertype.cpp
     src/shader/shaderutils.cpp
+    src/shader/standardshaders.cpp
     src/sharedopenglresources.cpp
     src/texture/texture.cpp
     src/texture/texture2d.cpp
