@@ -148,11 +148,15 @@ void Creator::generate(InviwoModule& im, const std::filesystem::path& filePath,
     auto write = [&](const File& file, const std::filesystem::path& dst) {
         log(dst.generic_string(), file.description);
 
-        if (!opts.force && fs::exists(dst)) {
+        if (!opts.force && fs::exists(im.path() / dst)) {
             throw util::makeError("Error: file '{}' already exits, use --force to overwrite",
                                   dst.generic_string());
         }
         if (!opts.dryrun) {
+            if (!fs::exists(im.path() / dst.parent_path())) {
+                logf("    - Create folder {}", dst.parent_path().generic_string());
+                fs::create_directories(im.path() / dst.parent_path());
+            }
             env.write(env.parse_template(file.templateFile), settings, dst.generic_string());
         }
         cmake(file.cmakeGroup, dst);
