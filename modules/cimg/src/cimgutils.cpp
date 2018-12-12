@@ -131,9 +131,11 @@ namespace inviwo {
 
 namespace cimgutil {
 
-std::unordered_map<std::string, DataFormatId> extToBaseTypeMap_ = {
-    {"png", DataFormatId::UInt8}, {"jpg", DataFormatId::UInt8},   {"jpeg", DataFormatId::UInt8},
-    {"bmp", DataFormatId::UInt8}, {"exr", DataFormatId::Float32}, {"hdr", DataFormatId::Float32}};
+std::unordered_map<std::string, DataFormatId> extToBaseTypeMap_ = {{"jpg", DataFormatId::UInt8},
+                                                                   {"jpeg", DataFormatId::UInt8},
+                                                                   {"bmp", DataFormatId::UInt8},
+                                                                   {"exr", DataFormatId::Float32},
+                                                                   {"hdr", DataFormatId::Float32}};
 
 ////////////////////// Templates ///////////////////////////////////////////////////
 
@@ -531,16 +533,6 @@ bool rescaleLayerRamToLayerRam(const LayerRAM* source, LayerRAM* target) {
     CImgRescaleLayerRamToLayerRamDispatcher disp;
     return dispatching::dispatch<bool, dispatching::filter::All>(source->getDataFormat()->getId(),
                                                                  disp, source, target);
-}
-
-std::string getLibPNGVesrion() {
-#ifdef cimg_use_png
-    std::ostringstream oss;
-    oss << PNG_LIBPNG_VER_MAJOR << "." << PNG_LIBPNG_VER_MINOR << "." << PNG_LIBPNG_VER_RELEASE;
-    return oss.str();
-#else
-    return "LibPNG not available";
-#endif
 }
 
 std::string getLibJPGVesrion() {
