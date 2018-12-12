@@ -24,7 +24,7 @@
 # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-# 
+#
 #*********************************************************************************
 
 import PIL.Image as Image
@@ -44,11 +44,28 @@ class ImageCompare:
         self.numberOfDifferentPixels = None
         self.maxDifference = None
 
+        channels = len(self.testImage.getbands());
+
+
+        # Inviwo don't save PNG using a pallete, if test image is a pallete we
+        # need to convert it to RGB or RGBA
+        if self.refImage.mode == 'P':
+            if channels == 3:
+                self.refImage = self.refImage.convert('RGB')
+            else:
+                self.refImage = self.refImage.convert('RGBA')
+
+
         if self.testImage.mode != self.refImage.mode or self.testImage.size != self.refImage.size:
-            return 
+            return
+
+        # ImageChops.difference does not work for signed integers
+        if self.testImage.mode == 'I':
+            self.testImage = self.testImage.convert('L')
+            self.refImage = self.refImage.convert('L')
+
 
         numPixels = self.testImage.size[0] * self.testImage.size[1]
-        channels = len(self.testImage.getbands());
 
         self.diffImage = ImageChops.difference(self.testImage, self.refImage)
 
@@ -71,22 +88,22 @@ class ImageCompare:
         if enhance != 1:
             self.diffImage = self.diffImage.point(lambda i : i * (enhance))
         self.diffImage = ImageChops.invert(self.diffImage)
-        
+
         self.maskImage = self.diffImage.convert('1')
         self.numberOfDifferentPixels = int(numPixels - ImageStat.Stat(self.maskImage).sum[0] / 255)
 
     def saveDifferenceImage(self, difffile):
-        if self.diffImage is not None: 
+        if self.diffImage is not None:
             self.diffImage.save(difffile)
             return True
-        else: 
+        else:
             return False
-            
+
     def saveMaskImage(self, maskfile):
-        if self.maskImage is not None: 
+        if self.maskImage is not None:
             self.maskImage.save(maskfile)
             return True
-        else: 
+        else:
             return False
 
     def saveReferenceImage(self, file):
@@ -104,10 +121,10 @@ class ImageCompare:
 
     def getDifference(self):
         return self.difference
-    
+
     def getNumberOfDifferentPixels(self):
         return self.numberOfDifferentPixels
-    
+
     def getMaxDifference(self):
         return self.maxDifference
 
@@ -116,5 +133,3 @@ class ImageCompare:
 
     def isSameMode(self):
         return self.testImage.mode == self.refImage.mode
-
-
