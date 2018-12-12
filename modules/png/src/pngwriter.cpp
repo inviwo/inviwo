@@ -29,6 +29,10 @@
 
 #include <inviwo/png/pngwriter.h>
 
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/datastructures/image/layerram.h>
+#include <inviwo/core/datastructures/image/layerramprecision.h>
+
 #include <png.h>
 
 #pragma optimize("", off)
@@ -97,20 +101,22 @@ void write(const LayerRAMPrecision<T>* ram, png_voidp* ioPtr, png_rw_ptr writeFu
     auto bit_depth = df->getPrecision();
 
     if (df->getNumericType() == NumericType::Float) {
-        bit_depth = 16;
-        png_set_IHDR(png_ptr, info_ptr, size.x, size.y, bit_depth, color_type, PNG_INTERLACE_NONE,
-                     PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
+        png_set_IHDR(png_ptr, info_ptr, static_cast<int>(size.x), static_cast<int>(size.y), 16,
+                     color_type, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE,
+                     PNG_FILTER_TYPE_BASE);
 
         png_write_info(png_ptr, info_ptr);
         png_set_swap(png_ptr);
 
         auto pixels = ram->getDataTyped();
+
         using T2 = typename util::same_extent<T, glm::uint16>::type;
         std::vector<T2> newData(size.x * size.y);
         for (int i = 0; i < size.x * size.y; i++) {
-            newData[i] = glm::clamp(pixels[i], T(0), T(1)) * T(0xFFFF);
+            const static T zero(0);
+            const static T one(1);
+            newData[i] = util::glm_convert_normalized<T2>(glm::clamp(pixels[i], zero, one));
         }
-        // TODO include range
 
         std::vector<png_bytep> rows(size.y);
         for (png_uint_32 r = 0; r < size.y; ++r) {
@@ -120,7 +126,8 @@ void write(const LayerRAMPrecision<T>* ram, png_voidp* ioPtr, png_rw_ptr writeFu
         png_write_image(png_ptr, rows.data());
 
     } else {
-        png_set_IHDR(png_ptr, info_ptr, size.x, size.y, bit_depth, color_type, PNG_INTERLACE_NONE,
+        png_set_IHDR(png_ptr, info_ptr, static_cast<int>(size.x), static_cast<int>(size.y),
+                     static_cast<int>(bit_depth), color_type, PNG_INTERLACE_NONE,
                      PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
 
         png_write_info(png_ptr, info_ptr);
@@ -167,8 +174,8 @@ void PNGLayerWriter::writeData(const Layer* data, const std::string filePath) co
 }
 
 std::unique_ptr<std::vector<unsigned char>> PNGLayerWriter::writeDataToBuffer(
-    const Layer* data, const std::string& fileExtension) const {
-    
+    const Layer* data, const std::string&) const {
+
     auto buffer = std::make_unique<std::vector<unsigned char>>();
     data->getRepresentation<LayerRAM>()->dispatch<void>(
         [&](auto ram) { detail::write(ram, (png_voidp*)buffer.get(), &detail::writeToBuffer); });
@@ -185,6 +192,7 @@ bool PNGLayerWriter::writeDataToRepresentation(const repr* src, repr* dst) const
         return false;
     }
 
+    // TODO how to fix?
     LogError("Not Yet Implemented: writeDataToRepresentation");
     return false;
 }
