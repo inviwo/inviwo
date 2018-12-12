@@ -661,6 +661,7 @@ target_link_libraries(inviwo-core PUBLIC
     inviwo::tinydir
     inviwo::tclap
     inviwo::warn
+    fmt::fmt
     $<$<BOOL:${IVW_SIGAR}>:inviwo::sigar>
     $<$<BOOL:${WIN32}>:inviwo::stackwalker>
     $<$<BOOL:${UNIX}>:${CMAKE_DL_LIBS}>  # Required for dlopen

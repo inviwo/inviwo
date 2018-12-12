@@ -105,10 +105,10 @@ Shader::Shader(const std::vector<std::pair<ShaderType, std::string>> &items, Bui
     : warningLevel_{UniformWarning::Ignore} {
 
     for (auto &item : items) {
-        shaderObjects_.insert(
-            {item.first,
-             ShaderAttachment(this, std::make_unique<ShaderObject>(
-                                        item.first, utilgl::findShaderResource(item.second)))});
+        shaderObjects_.emplace(
+            item.first,
+            ShaderAttachment(this, std::make_unique<ShaderObject>(
+                                       item.first, utilgl::findShaderResource(item.second))));
     }
 
     verify();
@@ -122,8 +122,8 @@ Shader::Shader(
     : warningLevel_{UniformWarning::Ignore} {
 
     for (auto &item : items) {
-        shaderObjects_.insert({item.first, ShaderAttachment(this, std::make_unique<ShaderObject>(
-                                                                      item.first, item.second))});
+        shaderObjects_.emplace(item.first, ShaderAttachment(this, std::make_unique<ShaderObject>(
+                                                                      item.first, item.second)));
     }
     verify();
     if (buildShader == Build::Yes) build();
@@ -135,7 +135,7 @@ Shader::Shader(std::vector<std::unique_ptr<ShaderObject>> &shaderObjects, bool b
 
     for (auto &obj : shaderObjects) {
         auto type = obj->getShaderType();
-        shaderObjects_.insert({type, ShaderAttachment(this, std::move(obj))});
+        shaderObjects_.emplace(type, ShaderAttachment(this, std::move(obj)));
     }
 
     verify();
@@ -178,8 +178,8 @@ Shader::Shader(const char *vertexFilename, const char *geometryFilename,
 
 Shader::Shader(const Shader &rhs) : program_{rhs.program_}, warningLevel_{rhs.warningLevel_} {
     for (auto &elem : rhs.shaderObjects_) {
-        shaderObjects_[elem.first] =
-            ShaderAttachment(this, util::make_unique<ShaderObject>(elem.second.obj()));
+        shaderObjects_.emplace(
+            elem.first, ShaderAttachment(this, util::make_unique<ShaderObject>(elem.second.obj())));
     }
 
     if (rhs.isReady()) build();
@@ -209,8 +209,9 @@ Shader &Shader::operator=(const Shader &that) {
 
         shaderObjects_.clear();
         for (auto &elem : that.shaderObjects_) {
-            shaderObjects_[elem.first] =
-                ShaderAttachment(this, util::make_unique<ShaderObject>(elem.second.obj()));
+            shaderObjects_.emplace(
+                elem.first,
+                ShaderAttachment(this, util::make_unique<ShaderObject>(elem.second.obj())));
         }
         warningLevel_ = that.warningLevel_;
 
@@ -271,7 +272,7 @@ void Shader::link() {
 
 void Shader::linkShader(bool notifyRebuild) {
     uniformLookup_.clear();  // clear uniform location cache.
-    ShaderManager::getPtr()->bindCommonAttributes(program_.id);
+    bindAttributes();
 
     if (!util::all_of(shaderObjects_,
                       [](const auto &elem) { return elem.second.obj().isReady(); })) {
@@ -299,6 +300,17 @@ void Shader::linkShader(bool notifyRebuild) {
     LGL_ERROR;
     ready_ = true;
     if (notifyRebuild) onReloadCallback_.invokeAll();
+}
+
+void Shader::bindAttributes() {
+    for (const auto &obj : getShaderObjects()) {
+        for (const auto &item : obj.getInDeclarations()) {
+            glBindAttribLocation(program_.id, item.location, item.name.c_str());
+        }
+        for (const auto &item : obj.getOutDeclarations()) {
+            glBindFragDataLocation(program_.id, item.location, item.name.c_str());
+        }
+    }
 }
 
 void Shader::rebuildShader(ShaderObject *obj) {
@@ -430,7 +442,7 @@ ShaderObject *Shader::operator[](ShaderType type) const { return getShaderObject
 ShaderObject *Shader::getShaderObject(ShaderType type) const {
     auto it = shaderObjects_.find(type);
     if (it != shaderObjects_.end()) {
-       return &(it->second.obj()); 
+        return &(it->second.obj());
     } else {
         return nullptr;
     }

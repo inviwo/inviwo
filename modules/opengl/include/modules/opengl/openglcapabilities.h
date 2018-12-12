@@ -44,12 +44,12 @@ public:
         GLSLShaderVersion(int num);
         GLSLShaderVersion(int num, std::string pro);
 
-        std::string getProfile();
-        int getVersion();
-        std::string getVersionAsString();
-        std::string getVersionAndProfileAsString();
+        const std::string& getProfile() const;
+        int getVersion() const;
+        std::string getVersionAsString() const;
+        std::string getVersionAndProfileAsString() const;
 
-        bool hasProfile();
+        bool hasProfile() const;
 
         static bool sortHighestFirst(GLSLShaderVersion i, GLSLShaderVersion j);
 
@@ -65,10 +65,7 @@ public:
 
     virtual void printInfo() override;
     void printDetailedInfo();
-    
-    virtual bool canAllocate(glm::u64 dataSize, glm::u8 percentageOfAvailableMemory = 100) override;
-    virtual uvec3 calculateOptimalBrickSize(uvec3 dimensions, size_t formatSizeInBytes,
-                                            glm::u8 percentageOfAvailableMemory = 100) override;
+
     static void initializeGLEW();
     static int getOpenGLVersion();
 
@@ -80,35 +77,35 @@ public:
     static bool isExtensionSupported(const char*);
     static bool isSupported(const char*);
 
-    bool isTexturesSupported();
-    bool is3DTexturesSupported();
-    bool isTextureArraysSupported();
-    bool isFboSupported();
-    bool isShadersSupported();
-    bool isShadersSupportedARB();
-    bool isGeometryShadersSupported();
+    bool isTexturesSupported() const;
+    bool is3DTexturesSupported() const;
+    bool isTextureArraysSupported() const;
+    bool isFboSupported() const;
+    bool isShadersSupported() const;
+    bool isShadersSupportedARB() const;
+    bool isGeometryShadersSupported() const;
 
     GLSLShaderVersion getCurrentShaderVersion();
-    std::string getCurrentGlobalGLSLHeader();
-    std::string getCurrentGlobalGLSLVertexDefines();
-    std::string getCurrentGlobalGLSLFragmentDefines();
+    size_t getCurrentShaderIndex() const;
+    size_t getNumberOfShaderVersions() const;
+    GLSLShaderVersion getShaderVersion(size_t ind) const;
 
     glm::u64 getCurrentAvailableTextureMem();
     glm::u64 getTotalAvailableTextureMem();
 
-    std::string getRenderString() const;
-    std::string getVendorString() const;
-    std::string getGLVersionString() const;
-    std::string getGLSLVersionString() const;
+    const std::string& getRenderString() const;
+    const std::string& getVendorString() const;
+    const std::string& getGLVersionString() const;
+    const std::string& getGLSLVersionString() const;
     GlVendor getVendor() const;
 
-    int getMaxProgramLoopCount();
-    int getMaxTexSize();
-    int getMax3DTexSize();
-    int getMaxArrayTexSize();
-    int getMaxArrayVertexAttribs();
-    int getMaxColorAttachments();
-    int getNumTexUnits();
+    int getMaxProgramLoopCount() const;
+    int getMaxTexSize() const;
+    int getMax3DTexSize() const;
+    int getMaxArrayTexSize() const;
+    int getMaxArrayVertexAttribs() const;
+    int getMaxColorAttachments() const;
+    int getNumTexUnits() const;
 
     static std::string getPreferredProfile();
     bool setPreferredProfile(std::string, bool);
@@ -116,10 +113,6 @@ public:
 protected:
     virtual void retrieveStaticInfo() override;
     virtual void retrieveDynamicInfo() override;
-
-    void rebuildGLSLHeader();
-    void rebuildGLSLVertexDefines();
-    void rebuildGLSLFragmentDefines();
 
     void addShaderVersion(GLSLShaderVersion);
     void addShaderVersionIfEqualOrLower(GLSLShaderVersion, int);
@@ -142,9 +135,9 @@ private:
     void print(const Ts&... messages) const {
         std::stringstream ss;
         printHelper(ss, messages...);
-        LogCentral::getPtr()->log("OpenGLInfo", LogLevel::Info, LogAudience::User, "", "", 0, ss.str());
+        LogCentral::getPtr()->log("OpenGLInfo", LogLevel::Info, LogAudience::User, "", "", 0,
+                                  ss.str());
     }
-
 
     static bool glewInitialized_;
     static std::string preferredProfile_;
@@ -167,9 +160,6 @@ private:
     int geometryShadersMaxTotalOutputComponents_;
 
     size_t currentGlobalGLSLVersionIdx_;
-    std::string currentGlobalGLSLHeader_;
-    std::string currentGlobalGLSLVertexDefines_;
-    std::string currentGlobalGLSLFragmentDefines_;
     std::vector<GLSLShaderVersion> supportedShaderVersions_;
 
     // Texturing
@@ -185,6 +175,6 @@ private:
     int numTexUnits_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_OPENGLCAPABILITIES_H
