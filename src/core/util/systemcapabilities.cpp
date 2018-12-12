@@ -56,26 +56,6 @@ SystemCapabilities::~SystemCapabilities() {
 #endif
 }
 
-bool SystemCapabilities::canAllocate(glm::u64 dataSize, glm::u8 percentageOfAvailableMemory) {
-    return getAvailableMemory() * percentageOfAvailableMemory / 100 >= dataSize;
-}
-
-uvec3 SystemCapabilities::calculateOptimalBrickSize(uvec3 dimensions, size_t formatSizeInBytes,
-                                                    glm::u8 percentageOfAvailableMemory) {
-    uvec3 dim = dimensions;
-
-    while (
-        !canAllocate(getMemorySizeInBytes(dim, formatSizeInBytes), percentageOfAvailableMemory)) {
-        int theMaxDim = (dim.x > dim.y ? (dim.x > dim.z ? 0 : 2) : (dim.y > dim.z ? 1 : 2));
-
-        if (dim[theMaxDim] % 2 != 0) dim[theMaxDim]++;  // Make the dim we are dividing even
-
-        dim[theMaxDim] /= 2;
-    }
-
-    return dim;
-}
-
 void SystemCapabilities::retrieveStaticInfo() {
     successOSInfo_ = lookupOSInfo();
     buildInfo_ = util::getBuildInfo();

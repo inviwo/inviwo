@@ -62,13 +62,7 @@ public:
     void unregisterShader(Shader* shader);
     bool isRegistered(Shader* shader) const;
 
-
-    std::string getGlobalGLSLHeader();
-    std::string getGlobalGLSLVertexDefines();
-    std::string getGlobalGLSLFragmentDefines();
     int getGlobalGLSLVersion();
-
-    void bindCommonAttributes(unsigned int);
 
     void addShaderSearchPath(std::string);
     const std::vector<std::string>& getShaderSearchPaths();
@@ -89,8 +83,7 @@ public:
     template <typename T>
     std::shared_ptr<Callback> onWillRemoveShader(T&& callback);
 
-protected:
-    OpenGLCapabilities* getOpenGLCapabilitiesObject();
+    OpenGLCapabilities* getOpenGLCapabilities();
 
 private:
     bool addShaderSearchPathImpl(const std::string &);
