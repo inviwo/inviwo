@@ -24,7 +24,7 @@
 # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-# 
+#
 #*********************************************************************************
 import os
 import itertools
@@ -55,14 +55,14 @@ def findModuleTest(path):
 			tests.append(test.Test(
 				name = testDir,
 				module = moduleDir,
-				path = toPath(regressionDir, testDir) 
+				path = toPath(regressionDir, testDir)
 				))
 	return tests
 
 class App:
-	def __init__(self, 
-		         appPath, 
-				 moduleTestPaths, 
+	def __init__(self,
+		         appPath,
+				 moduleTestPaths,
 				 outputDir,
 				 jsonFile = "report",
 				 htmlFile = "report",
@@ -84,7 +84,7 @@ class App:
 		if not self.git.foundGit():
 			print_error("Git not found")
 			exit(1)
-		
+
 		self.db = Database(self.output+ "/" + self.sqlFile + ".sqlite")
 		self.loadJson()
 
@@ -190,14 +190,17 @@ class App:
 		diffpath = mkdir(toPath(outputdir, "imgdiff"))
 		maskpath = mkdir(toPath(outputdir, "imgmask"))
 
+		allowDifferentImageMode = safeget(test.config, "image_test", "allowDifferentImageMode", failure = False)
+
 		for img in imgs & refs:
-			comp = ImageCompare(testImage = toPath(testpath, img), 
-				                refImage = toPath(test.path, img))
+			comp = ImageCompare(testImage = toPath(testpath, img),
+				                refImage = toPath(test.path, img),
+								allowDifferentImageMode = allowDifferentImageMode)
 
 			comp.saveReferenceImage(toPath(refpath, img))
 			comp.saveDifferenceImage(toPath(diffpath, img))
 			comp.saveMaskImage(toPath(maskpath, img))
-			
+
 			# do some hardlinks to save disk space...
 			if lastoutdir != None:
 				self.linkImages(toPath(lastoutdir, "imgtest", img), toPath(testpath, img))
@@ -245,15 +248,15 @@ class App:
 				report['status'] = "old"
 
 	def saveHtml(self, header = None, footer = None):
-		html = HtmlReport(basedir = self.output, 
-						  reports = self.reports, 
-						  database = self.db, 
-						  header = header, 
+		html = HtmlReport(basedir = self.output,
+						  reports = self.reports,
+						  database = self.db,
+						  header = header,
 						  footer = footer)
 		filepath = html.saveHtml(self.htmlFile)
-		shutil.copyfile(filepath, toPath(self.output, 
+		shutil.copyfile(filepath, toPath(self.output,
 	    	self.htmlFile + "-" + datetime.datetime.now().strftime('%Y-%m-%dT%H_%M_%S')+".html"))
-    		
+
 	def success(self):
 		for name, report in self.reports.items():
 			if len(report['failures']) != 0:
@@ -266,26 +269,26 @@ class App:
 		dbtime = self.db.getOrAddQuantity("time", "s")
 		dbcount = self.db.getOrAddQuantity("count", "")
 		dbfrac = self.db.getOrAddQuantity("fraction", "%")
-		
+
 		db_elapsed_time = self.db.getOrAddSeries(dbtest, dbtime, "elapsed_time")
 		db_failures = self.db.getOrAddSeries(dbtest, dbcount, "number_of_failures")
 
 		git = report["git"]
 		dbcommit = self.db.getOrAddCommit(hash    = git["hash"],
-				                     	  date    = stringToDate(git['date']), 
-				                    	  author  = git['author'], 
-				                     	  message = git['message'], 
-				                          server  = git['server']) 
+				                     	  date    = stringToDate(git['date']),
+				                    	  author  = git['author'],
+				                     	  message = git['message'],
+				                          server  = git['server'])
 
-		dbtestrun = self.db.addTestRun(run = run, 
-									   test = dbtest, commit = dbcommit, 
+		dbtestrun = self.db.addTestRun(run = run,
+									   test = dbtest, commit = dbcommit,
 									   config = json.dumps(safeget(report, "config", failure = "")))
 
-		self.db.addMeasurement(series  = db_elapsed_time, 
-							   testrun = dbtestrun, 
+		self.db.addMeasurement(series  = db_elapsed_time,
+							   testrun = dbtestrun,
 							   value   = report["elapsed_time"])
-		self.db.addMeasurement(series = db_failures, 
-			                   testrun = dbtestrun, 
+		self.db.addMeasurement(series = db_failures,
+			                   testrun = dbtestrun,
 			                   value = len(report["failures"]))
 
 
@@ -295,8 +298,8 @@ class App:
 
 		for img in report["image_tests"]:
 			db_img_test = self.db.getOrAddSeries(dbtest, dbfrac, "image_test_diff." + img["image"])
-			self.db.addMeasurement(series = db_img_test, 
-				                   testrun = dbtestrun, 
+			self.db.addMeasurement(series = db_img_test,
+				                   testrun = dbtestrun,
 				                   value = img["difference"])
 
 		if os.path.exists(report['outputdir'] + "/stats.json"):
@@ -308,31 +311,3 @@ class App:
 				unit = self.db.getOrAddQuantity(stat["quantity"], stat["unit"])
 				series = self.db.getOrAddSeries(dbtest, unit, stat["name"])
 				self.db.addMeasurement(series = series, testrun = dbtestrun, value = stat["value"])
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

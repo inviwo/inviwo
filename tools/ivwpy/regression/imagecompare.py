@@ -33,7 +33,7 @@ import PIL.ImageStat as ImageStat
 import PIL.ImageChops as ImageChops
 
 class ImageCompare:
-    def __init__(self, testImage, refImage, enhance = 10):
+    def __init__(self, testImage, refImage, allowDifferentImageMode = False , enhance = 10):
 
         self.testImage = Image.open(testImage)
         self.refImage = Image.open(refImage)
@@ -44,20 +44,15 @@ class ImageCompare:
         self.numberOfDifferentPixels = None
         self.maxDifference = None
 
-        channels = len(self.testImage.getbands());
 
-
-        # Inviwo don't save PNG using a pallete, if test image is a pallete we
-        # need to convert it to RGB or RGBA
-        if self.refImage.mode == 'P':
-            if channels == 3:
-                self.refImage = self.refImage.convert('RGB')
-            else:
-                self.refImage = self.refImage.convert('RGBA')
-
-
-        if self.testImage.mode != self.refImage.mode or self.testImage.size != self.refImage.size:
+        if self.testImage.size != self.refImage.size:
             return
+
+        if self.testImage.mode != self.refImage.mode:
+            if not allowDifferentImageMode:
+                return;
+            self.refImage = self.refImage.convert(self.testImage.mode)
+
 
         # ImageChops.difference does not work for signed integers
         if self.testImage.mode == 'I':
@@ -69,6 +64,7 @@ class ImageCompare:
 
         self.diffImage = ImageChops.difference(self.testImage, self.refImage)
 
+        channels = len(self.testImage.getbands());
         if channels == 1:
             normImage = self.diffImage
         elif channels == 2:
