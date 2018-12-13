@@ -27,13 +27,12 @@
  * 
  *********************************************************************************/
 
-uniform vec3 middle;
-uniform vec3 normal;
-uniform vec3 up;
-uniform vec3 right;
+
+uniform vec3 p;
+uniform vec3 n;
+uniform vec3 u;
+uniform vec3 r;
 uniform float offset;
-uniform float viewportAspect = 1.0f;
-uniform float sliceAspect = 1.0f;
 
 in vec2 uv;
 
@@ -42,19 +41,10 @@ void main() {
     float x = uv.x;
     float y = uv.y;
 
-    vec3 bottomLeft = middle - 0.5f * right - 0.5f * up;
-
-	// Correct for uneven viewport aspect ratio
-
-	float aspect = viewportAspect * sliceAspect;
-
-	if (aspect < 1.0f) bottomLeft = middle - 0.5f * right - 0.5f * (1.0f/aspect) * up;
-	else if (aspect > 1.0f) bottomLeft = middle - 0.5f * aspect * right - 0.5f * up;
+    vec3 bottomLeft = p - 0.5f * r - 0.5f * u;
 
 	// Apply offset that controls the slab thickness
-    bottomLeft += offset * normal;
+    bottomLeft += offset * n;
 
-    FragData0 = vec4(bottomLeft + x * right + y * up, 1.0f);
-	if (aspect < 1.0f) FragData0 = vec4(bottomLeft + x * right + y * (1.0f/aspect) * up, 1.0f);
-	else if (aspect > 1.0f) FragData0 = vec4(bottomLeft + x * aspect * right + y * up, 1.0f);
+    FragData0 = vec4(bottomLeft + x * r + y * u, 1.0f);
 }

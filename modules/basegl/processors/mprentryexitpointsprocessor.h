@@ -73,19 +73,15 @@ private:
     ImageOutport entryPort_;
     ImageOutport exitPort_;
 
-	BoolProperty capNearClipping_;
-
-	vec2 lastCrosshairPos_;
-	FloatVec2Property crosshairPos_;
-
-	vec3 lastPlanePosition_;
-	FloatVec3Property planePosition_;
-	FloatVec3Property planeNormal_;
-	FloatVec3Property planeUp_;
+	FloatVec3Property p_;
+	FloatVec3Property n_;
+	FloatVec3Property u_;
 	FloatProperty offset0_;
 	FloatProperty offset1_;
 
-	vec2 planeSize_;
+	FloatMat4Property R_;
+	FloatVec3Property n_prime_;
+	FloatVec3Property u_prime_;
 
 	Shader shader_;
 };

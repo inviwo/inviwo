@@ -51,43 +51,35 @@ MPREntryExitPoints::MPREntryExitPoints()
 	, volumeInport_("volume")
     , entryPort_("entry", DataVec4UInt16::get())
     , exitPort_("exit", DataVec4UInt16::get())
-    , capNearClipping_("capNearClipping", "Cap near plane clipping", true)
-	, lastCrosshairPos_()
-	, crosshairPos_("crosshairPos", "Crosshair Position")
-	, lastPlanePosition_()
-	, planePosition_("planePosition", "Position")
-	, planeNormal_("planeNormal", "Normal", vec3(0), vec3(-1), vec3(1))
-	, planeUp_("planeUp", "Up", vec3(0), vec3(-1), vec3(1))
+	, p_("planePosition", "p", vec3(0.5f))
+	, n_("planeNormal", "n", vec3(0,0,1))
+	, u_("planeUp", "u", vec3(0,1,0))
 	, offset0_("offset0", "Offset 0", -0.01f, -1.0f, 0.0f, 0.001f)
 	, offset1_("offset1", "Offset 1", 0.01f, 0.0f, 1.0f, 0.001f)
-	, planeSize_(0)
-	, shader_("uv_pass_through.vert", "mpr_entry_exit_points.frag") {
+	, shader_("uv_pass_through.vert", "mpr_entry_exit_points.frag")
+	, R_("rotationMatrix", "R", mat4(1.0f))
+	, n_prime_("nPrime", "n'", n_.get())
+	, u_prime_("uPrime", "u'", u_.get()) {
+
 	addPort(volumeInport_);
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");
-	crosshairPos_.setReadOnly(true);
-    addProperty(capNearClipping_);
-	addProperty(crosshairPos_);
-	lastCrosshairPos_ = crosshairPos_.get();
 
-	// When some crosshair position is moved by a crosshair processor with linked crosshairPos,
-	// apply the change to all 3 planes in 3D along their respective up and right vectors.
-	// The image of the parallel plane will not change since
-	// the entry/exit points are generated so that the whole slice is centered in the viewport.
-	crosshairPos_.onChange([this]() {
-		const vec2 dx = crosshairPos_.get() - lastCrosshairPos_;
-		const vec3 up = normalize(planeUp_.get());
-		const vec3 right = cross(up, normalize(planeNormal_.get()));
-		planePosition_.set(planePosition_.get() + dx.x * right + dx.y * up);
-		lastCrosshairPos_ = crosshairPos_.get();
-	});
-
-	addProperty(planePosition_);
-	lastPlanePosition_ = planePosition_.get();
-	addProperty(planeNormal_);
-	addProperty(planeUp_); //TODD make this user configurable so we can have a workspace that looks exactly like radiant (to be able to validate) but it is read-only!?!?!?
+	addProperty(p_);
+	addProperty(n_);
+	addProperty(u_);
 	addProperty(offset0_);
 	addProperty(offset1_);
+
+	addProperty(R_);
+	addProperty(n_prime_); n_prime_.setReadOnly(true);
+	addProperty(u_prime_); u_prime_.setReadOnly(true);
+
+	R_.onChange([this]() {
+		n_prime_ = R_.get() * vec4(n_.get(), 1.0f);
+		u_prime_ = R_.get() * vec4(u_.get(), 1.0f);
+	});
+
 	shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
 
@@ -98,66 +90,21 @@ void MPREntryExitPoints::process() {
 		{ -1.0f, -1.0f },{ 1.0f, -1.0f },{ -1.0f, 1.0f },{ 1.0f, 1.0f } 
 	});
 
-	// The problem with seemingly non-orthogonal indicator planes in the volume raycaster
-	// appeared after applying spacings to the model matrix
-	// This could mean that the planes are wrongly calculated in model space
+	const vec3 p = p_.get();
 
-	// Construct coordinate cross on plane
-	const vec3 normal = normalize(planeNormal_.get());
-	const vec3 up = normalize(planeUp_.get());
-	const vec3 right = cross(normal, up);
-
-	vec3 middle = planePosition_.get();
-
-	// Calc length of up- and right-segments inside the volume to get the plane's width and height
-	const auto volume = volumeInport_.getData();
-	const vec3 voxels = static_cast<vec3>(volume->getDimensions());
-	{
-		// Let r be right vector scaled with voxel ratio
-		const vec3 r = right * normalize(voxels);
-
-		// Solve middle + t * r = 0
-		float t0 = std::numeric_limits<float>::infinity();
-		for (int i = 0; i < 3; i++) if (r[i] != 0.0f) t0 = glm::min(t0, fabs(-middle[i] / r[i]));
-
-		// Solve middle + t * r = 1
-		float t1 = std::numeric_limits<float>::infinity();
-		for (int i = 0; i < 3; i++) if (r[i] != 0.0f) t1 = glm::min(t1, fabs((1.0f - middle[i]) / r[i]));
-
-		planeSize_.x = t0 + t1;
-
-		// Move to middle
-		middle += ((planeSize_.x/2.0f - t0) * r);
-	}
-	{
-		// Let u be up vector scaled with voxel ratio
-		const vec3 u = up * normalize(voxels);
-
-		// Solve middle + t * u = 0
-		float t0 = std::numeric_limits<float>::infinity();
-		for (int i = 0; i < 3; i++) if (u[i] != 0.0f) t0 = glm::min(t0, fabs(-middle[i] / u[i]));
-
-		// Solve middle + t * u = 1
-		float t1 = std::numeric_limits<float>::infinity();
-		for (int i = 0; i < 3; i++) if (u[i] != 0.0f) t1 = glm::min(t1, fabs((1.0f - middle[i]) / u[i]));
-
-		planeSize_.y = t0 + t1;
-
-		// Move to middle
-		middle += ((planeSize_.y/2.0f - t0) * u);
-	}
+	// Construct coordinate cross for this plane
+	const vec3 n = normalize(n_prime_.get());
+	const vec3 u = normalize(u_prime_.get());
+	const vec3 r = cross(n, u);
 
 	// generate entry points
 	utilgl::activateAndClearTarget(*entryPort_.getEditableData().get(), ImageType::ColorOnly);
 	shader_.activate();
 
-	const auto viewportSize = entryPort_.getDimensions();
-	shader_.setUniform("viewportAspect", static_cast<float>(viewportSize.x) / static_cast<float>(viewportSize.y));
-	shader_.setUniform("sliceAspect", planeSize_.x / planeSize_.y);
-	shader_.setUniform("middle", middle);
-	shader_.setUniform("normal", normal);
-	shader_.setUniform("up", up);
-	shader_.setUniform("right", right);
+	shader_.setUniform("p", p);
+	shader_.setUniform("n", n);
+	shader_.setUniform("u", u);
+	shader_.setUniform("r", r);
 	shader_.setUniform("offset", offset0_.get()); // note that setUniform does not work when passing a literal 0
 
 	auto quadGL = quad->getRepresentation<BufferGL>();
