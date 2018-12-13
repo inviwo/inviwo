@@ -55,6 +55,8 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
+	void process() override;
+
 private:
     enum class InteractionState { NONE, MOVE, ROTATE };
 

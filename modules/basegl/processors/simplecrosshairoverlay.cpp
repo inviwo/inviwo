@@ -54,8 +54,8 @@ SimpleCrosshairOverlay::SimpleCrosshairOverlay()
     , cursorRadius_("cursorRadius", "Cursor Radius", 0.1f, 0.0f, 1.0f)
     , mouseEvent_("mouseEvent", "Mouse Event", [this](Event* e) { updateCrosshair(e); },
                   MouseButton::Left, MouseState::Press | MouseState::Move | MouseState::Release)
-    , lastMousePos_(0.0f)
-    , interactionState_ (InteractionState::NONE) {
+    , interactionState_ (InteractionState::NONE)
+	, lastMousePos_(0.0f) {
 
     imageIn_.setOptional(true);
     addPort(imageIn_);
@@ -69,7 +69,12 @@ SimpleCrosshairOverlay::SimpleCrosshairOverlay()
     addProperty(cursorPos_);
     addProperty(cursorRadius_);
 
+	mouseEvent_.setVisible(false);
     addProperty(mouseEvent_);
+}
+
+void SimpleCrosshairOverlay::process() {
+	imageOut_.setData(imageIn_.getData());
 }
 
 void SimpleCrosshairOverlay::updateCrosshair(Event* e) {

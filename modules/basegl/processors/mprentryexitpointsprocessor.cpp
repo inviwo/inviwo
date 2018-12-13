@@ -52,14 +52,14 @@ MPREntryExitPoints::MPREntryExitPoints()
     , entryPort_("entry", DataVec4UInt16::get())
     , exitPort_("exit", DataVec4UInt16::get())
 	, p_("planePosition", "p", vec3(0.5f))
-	, n_("planeNormal", "n", vec3(0,0,1))
-	, u_("planeUp", "u", vec3(0,1,0))
+	, n_("planeNormal", "n", vec3(0.0f, 0.0f, 1.0f), vec3(-1.0f), vec3(1.0f))
+	, u_("planeUp", "u", vec3(0.0f, 1.0f, 0.0f), vec3(-1.0f), vec3(1.0f))
 	, offset0_("offset0", "Offset 0", -0.01f, -1.0f, 0.0f, 0.001f)
 	, offset1_("offset1", "Offset 1", 0.01f, 0.0f, 1.0f, 0.001f)
 	, shader_("uv_pass_through.vert", "mpr_entry_exit_points.frag")
 	, R_("rotationMatrix", "R", mat4(1.0f))
-	, n_prime_("nPrime", "n'", n_.get())
-	, u_prime_("uPrime", "u'", u_.get()) {
+	, n_prime_("nPrime", "n'", n_.get(), vec3(-1.0f), vec3(1.0f))
+	, u_prime_("uPrime", "u'", u_.get(), vec3(-1.0f), vec3(1.0f)) {
 
 	addPort(volumeInport_);
     addPort(entryPort_, "ImagePortGroup1");
