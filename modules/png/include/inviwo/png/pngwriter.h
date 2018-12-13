@@ -40,7 +40,7 @@ class IVW_MODULE_PNG_API PNGLayerWriterException : public Exception {
 public:
     PNGLayerWriterException(const std::string& message = "",
                             ExceptionContext context = ExceptionContext());
-    virtual ~PNGLayerWriterException() throw() {}
+    virtual ~PNGLayerWriterException() noexcept = default;
 };
 
 class IVW_MODULE_PNG_API PNGLayerWriter : public DataWriterType<Layer> {

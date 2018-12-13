@@ -35,8 +35,6 @@
 
 #include <png.h>
 
-#pragma optimize("", off)
-
 namespace inviwo {
 
 namespace detail {
