@@ -51,6 +51,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/sphererenderer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/splitimage.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/tuberendering.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/simplecrosshairoverlay.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/vectormagnitudeprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumebinary.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumecombiner.h
@@ -118,6 +119,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/sphererenderer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/splitimage.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/tuberendering.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/simplecrosshairoverlay.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/vectormagnitudeprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumebinary.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumecombiner.cpp
