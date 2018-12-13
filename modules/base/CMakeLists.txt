@@ -63,6 +63,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagetospatialsampler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/inputselector.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/layerdistancetransformram.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/mathprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshclipping.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshconverterprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshcreator.h
@@ -168,6 +169,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagetospatialsampler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/inputselector.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/layerdistancetransformram.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/mathprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshclipping.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshconverterprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshcreator.cpp
