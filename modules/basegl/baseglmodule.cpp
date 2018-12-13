@@ -68,6 +68,7 @@
 #include <modules/basegl/processors/redgreenprocessor.h>
 #include <modules/basegl/processors/sphererenderer.h>
 #include <modules/basegl/processors/tuberendering.h>
+#include <modules/basegl/processors/simplecrosshairoverlay.h>
 #include <modules/basegl/processors/volumeprocessing/vectormagnitudeprocessor.h>
 #include <modules/basegl/processors/volumeprocessing/volumebinary.h>
 #include <modules/basegl/processors/volumeprocessing/volumecombiner.h>
@@ -127,6 +128,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerProcessor<VolumeRaycaster>();
     registerProcessor<VolumeSliceGL>();
     registerProcessor<UICrosshairOverlay>();
+    registerProcessor<SimpleCrosshairOverlay>();
 
     // image processing
     registerProcessor<FindEdges>();
