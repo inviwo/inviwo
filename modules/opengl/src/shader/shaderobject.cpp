@@ -38,8 +38,21 @@
 #include <modules/opengl/openglexception.h>
 #include <modules/opengl/shader/shadermanager.h>
 #include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/openglcapabilities.h>
+
+#include <fmt/format.h>
 
 namespace inviwo {
+
+std::string ShaderObject::InDeclaration::toString() const {
+    return fmt::format(decl, fmt::arg("type", type), fmt::arg("name", name),
+                       fmt::arg("location", location));
+}
+
+std::string ShaderObject::OutDeclaration::toString() const {
+    return fmt::format(decl, fmt::arg("type", type), fmt::arg("name", name),
+                       fmt::arg("location", location));
+}
 
 ShaderObject::ShaderObject(ShaderType shaderType, std::shared_ptr<const ShaderResource> resource)
     : shaderType_{shaderType}, id_{glCreateShader(shaderType)}, resource_{resource} {
@@ -52,6 +65,12 @@ ShaderObject::ShaderObject(ShaderType shaderType, std::shared_ptr<const ShaderRe
     std::string fileExtension = filesystem::getFileExtension(resource_->key());
     if (fileExtension != shaderType_.extension()) {
         LogWarn("File extension does not match shader type: " << resource_->key());
+    }
+
+    if (shaderType_ == ShaderType::Fragment) {
+        addStandardFragmentOutDeclarations();
+    } else if (shaderType_ == ShaderType::Vertex) {
+        addStandardVertexInDeclarations();
     }
 }
 
@@ -68,32 +87,31 @@ ShaderObject::ShaderObject(std::string fileName)
 ShaderObject::ShaderObject(GLenum shaderType, std::string fileName)
     : ShaderObject(ShaderType(shaderType), loadResource(fileName)) {}
 
-
 ShaderObject::ShaderObject(const ShaderObject& rhs)
     : shaderType_(rhs.shaderType_)
     , id_(glCreateShader(rhs.shaderType_))
     , resource_(rhs.resource_)
+    , inDeclarations_(rhs.inDeclarations_)
     , outDeclarations_(rhs.outDeclarations_)
     , shaderDefines_(rhs.shaderDefines_)
     , shaderExtensions_(rhs.shaderExtensions_)
     , sourceProcessed_{}
-    , includeResources_{} 
-    , lineNumberResolver_{} 
+    , includeResources_{}
+    , lnr_{}
     , callbacks_{}
-    , resourceCallbacks_{} {
-}
-
+    , resourceCallbacks_{} {}
 
 ShaderObject::ShaderObject(ShaderObject&& rhs) noexcept
     : shaderType_(rhs.shaderType_)
     , id_(rhs.id_)
     , resource_(std::move(rhs.resource_))
+    , inDeclarations_(std::move(rhs.inDeclarations_))
     , outDeclarations_(std::move(rhs.outDeclarations_))
     , shaderDefines_(std::move(rhs.shaderDefines_))
     , shaderExtensions_(std::move(rhs.shaderExtensions_))
     , sourceProcessed_{}
-    , includeResources_{} 
-    , lineNumberResolver_{} 
+    , includeResources_{}
+    , lnr_{}
     , callbacks_{}
     , resourceCallbacks_{} {
 
@@ -106,12 +124,13 @@ ShaderObject& ShaderObject::operator=(const ShaderObject& that) {
     std::swap(shaderType_, copy.shaderType_);
     std::swap(id_, copy.id_);
     std::swap(resource_, copy.resource_);
+    std::swap(inDeclarations_, copy.inDeclarations_);
     std::swap(outDeclarations_, copy.outDeclarations_);
     std::swap(shaderDefines_, copy.shaderDefines_);
     std::swap(shaderExtensions_, copy.shaderExtensions_);
     std::swap(sourceProcessed_, copy.sourceProcessed_);
     std::swap(includeResources_, copy.includeResources_);
-    std::swap(lineNumberResolver_, copy.lineNumberResolver_);
+    std::swap(lnr_, copy.lnr_);
     std::swap(callbacks_, copy.callbacks_);
     std::swap(resourceCallbacks_, copy.resourceCallbacks_);
     return *this;
@@ -122,12 +141,13 @@ ShaderObject& ShaderObject::operator=(ShaderObject&& that) noexcept {
     std::swap(shaderType_, copy.shaderType_);
     std::swap(id_, copy.id_);
     std::swap(resource_, copy.resource_);
+    std::swap(inDeclarations_, copy.inDeclarations_);
     std::swap(outDeclarations_, copy.outDeclarations_);
     std::swap(shaderDefines_, copy.shaderDefines_);
     std::swap(shaderExtensions_, copy.shaderExtensions_);
     std::swap(sourceProcessed_, copy.sourceProcessed_);
     std::swap(includeResources_, copy.includeResources_);
-    std::swap(lineNumberResolver_, copy.lineNumberResolver_);
+    std::swap(lnr_, copy.lnr_);
     std::swap(callbacks_, copy.callbacks_);
     std::swap(resourceCallbacks_, copy.resourceCallbacks_);
     return *this;
@@ -159,67 +179,73 @@ void ShaderObject::build() {
 
 void ShaderObject::preprocess() {
     resourceCallbacks_.clear();
-    lineNumberResolver_.clear();
+    lnr_.clear();
     auto holdOntoResources = includeResources_;  // Don't release until we have processed again.
     includeResources_.clear();
 
     std::ostringstream source;
     addDefines(source);
-    addOutDeclarations(source);
     addIncludes(source, resource_);
     sourceProcessed_ = source.str();
 }
 
 void ShaderObject::addDefines(std::ostringstream& source) {
-    {
-        std::string globalGLSLHeader = ShaderManager::getPtr()->getGlobalGLSLHeader();
-        std::string curLine;
-        std::istringstream globalGLSLHeaderStream(globalGLSLHeader);
-        while (std::getline(globalGLSLHeaderStream, curLine)) {
-            lineNumberResolver_.emplace_back("GlobalGLSLSHeader", 0);
-        }
-        source << globalGLSLHeader;
+    auto capa = ShaderManager::getPtr()->getOpenGLCapabilities();
+    const auto current = capa->getCurrentShaderVersion();
+
+    source << "#version " << current.getVersionAndProfileAsString() << "\n";
+    lnr_.addLine("Version", 0);
+
+    for (const auto& se : shaderExtensions_) {
+        source << "#extension " << se.first << " : " << (se.second ? "enable" : "disable") << "\n";
+        lnr_.addLine("Extensions", 0);
     }
 
-    {
-        for (const auto& se : shaderExtensions_) {
-            source << "#extension " << se.first << " : " << (se.second ? "enable" : "disable")
-                   << "\n";
-            lineNumberResolver_.emplace_back("Extension", 0);
-        }
+    if (current.hasProfile()) {
+        source << "#define GLSL_PROFILE_" + toUpper(current.getProfile()) + "\n";
+        lnr_.addLine("Header", 0);
     }
-    {
-        for (const auto& sd : shaderDefines_) {
-            source << "#define " << sd.first << " " << sd.second << "\n";
-            lineNumberResolver_.emplace_back("Defines", 0);
+
+    int lastVersion = -1;
+    for (size_t i = capa->getCurrentShaderIndex(); i < capa->getNumberOfShaderVersions(); i++) {
+        const auto version = capa->getShaderVersion(i);
+        if (lastVersion != version.getVersion()) {
+            source << "#define GLSL_VERSION_" << version.getVersionAsString() << "\n";
+            lnr_.addLine("Header", 0);
+            lastVersion = version.getVersion();
         }
     }
 
-    {
-        std::string globalDefines;
-        if (shaderType_ == ShaderType::Vertex) {
-            globalDefines += ShaderManager::getPtr()->getGlobalGLSLVertexDefines();
-        } else if (shaderType_ == ShaderType::Fragment) {
-            globalDefines += ShaderManager::getPtr()->getGlobalGLSLFragmentDefines();
-        }
+    if (capa->getMaxProgramLoopCount() > 0) {
+        source << "#define MAX_PROGRAM_LOOP_COUNT " << capa->getMaxProgramLoopCount() << "\n";
+        lnr_.addLine("Header", 0);
+    }
 
-        std::string curLine;
-        std::istringstream globalGLSLDefinesStream(globalDefines);
-        while (std::getline(globalGLSLDefinesStream, curLine)) {
-            lineNumberResolver_.emplace_back("GlobalGLSLSDefines", 0);
-        }
-        source << globalDefines;
+    for (const auto& sd : shaderDefines_) {
+        source << "#define " << sd.first << " " << sd.second << "\n";
+        lnr_.addLine("Defines", 0);
+    }
+
+    for (auto decl : outDeclarations_) {
+        source << decl.toString() << "\n";
+        lnr_.addLine("Out Declaration", 0);
+    }
+    for (auto decl : inDeclarations_) {
+        source << decl.toString() << "\n";
+        lnr_.addLine("In Declaration", 0);
     }
 }
 
-void ShaderObject::addOutDeclarations(std::ostringstream& source) {
-    for (auto curDeclaration : outDeclarations_) {
-        if (curDeclaration.second > -1) {
-            source << "layout(location = " << curDeclaration.second << ") ";
-        }
-        source << "out vec4 " << curDeclaration.first << ";\n";
-        lineNumberResolver_.emplace_back("Out Declaration", 0);
-    }
+void ShaderObject::addStandardFragmentOutDeclarations() {
+    addOutDeclaration("FragData0", 0);
+    addOutDeclaration("PickingData", 1);
+}
+
+void ShaderObject::addStandardVertexInDeclarations() {
+    addInDeclaration(InDeclaration{"in_Vertex", 0});
+    addInDeclaration(InDeclaration{"in_Normal", 1, "vec3"});
+    addInDeclaration(InDeclaration{"in_Color", 2});
+    addInDeclaration(InDeclaration{"in_TexCoord", 3, "vec3"});
 }
 
 void ShaderObject::addIncludes(std::ostringstream& source,
@@ -313,7 +339,7 @@ void ShaderObject::addIncludes(std::ostringstream& source,
 
         if (!hasAddedInclude) {  // include the whole line
             source << curLine << "\n";
-            lineNumberResolver_.emplace_back(resource->key(), localLineNumber);
+            lnr_.addLine(resource->key(), localLineNumber);
         }
         localLineNumber++;
     }
@@ -335,17 +361,14 @@ void ShaderObject::compile() {
     glCompileShader(id_);
     if (!isReady()) {
         throw OpenGLException(
-            resource_->key() + " " +
-                utilgl::reformatInfoLog(lineNumberResolver_, utilgl::getShaderInfoLog(id_)),
-            IvwContext);
+            resource_->key() + " " + lnr_.resolveLog(utilgl::getShaderInfoLog(id_)), IVW_CONTEXT);
     }
 
 #ifdef IVW_DEBUG
-    auto log = utilgl::getShaderInfoLog(id_);
+    const auto log = utilgl::getShaderInfoLog(id_);
     if (!log.empty()) {
-        util::log(IvwContext,
-                  resource_->key() + " " + utilgl::reformatInfoLog(lineNumberResolver_, log),
-                  LogLevel::Info, LogAudience::User);
+        util::log(IVW_CONTEXT, resource_->key() + " " + lnr_.resolveLog(log), LogLevel::Info,
+                  LogAudience::User);
     }
 #endif
 }
@@ -374,50 +397,110 @@ bool ShaderObject::hasShaderExtension(const std::string& extName) const {
 
 void ShaderObject::clearShaderExtensions() { shaderExtensions_.clear(); }
 
-void ShaderObject::addOutDeclaration(std::string name, int location) {
+void ShaderObject::addOutDeclaration(std::string name, int location, const std::string& type) {
+    addOutDeclaration(OutDeclaration{name, location, type});
+}
+
+void ShaderObject::addOutDeclaration(const OutDeclaration& decl) {
     auto it = util::find_if(outDeclarations_,
-                            [&](std::pair<std::string, int>& elem) { return elem.first == name; });
+                            [&](const OutDeclaration& elem) { return elem.name == decl.name; });
     if (it != outDeclarations_.end()) {
-        it->second = location;
+        *it = decl;
     } else {
-        outDeclarations_.push_back({name, location});
+        outDeclarations_.push_back(decl);
     }
+}
+
+auto ShaderObject::getOutDeclarations() const -> const std::vector<OutDeclaration>& {
+    return outDeclarations_;
 }
 
 void ShaderObject::clearOutDeclarations() { outDeclarations_.clear(); }
 
-std::pair<std::string, unsigned int> ShaderObject::resolveLine(size_t line) const {
-    if (line < lineNumberResolver_.size())
-        return lineNumberResolver_[line];
-    else
+void ShaderObject::ShaderObject::addInDeclaration(std::string name, int location,
+                                                  const std::string& type) {
+    addInDeclaration(InDeclaration{name, location, type});
+}
+void ShaderObject::addInDeclaration(const InDeclaration& decl) {
+
+    auto it = util::find_if(inDeclarations_,
+                            [&](const InDeclaration& elem) { return elem.name == decl.name; });
+    if (it != inDeclarations_.end()) {
+        *it = decl;
+    } else {
+        inDeclarations_.push_back(decl);
+    }
+}
+void ShaderObject::clearInDeclarations() { inDeclarations_.clear(); }
+auto ShaderObject::getInDeclarations() const -> const std::vector<InDeclaration>& {
+    return inDeclarations_;
+}
+
+std::pair<std::string, size_t> ShaderObject::LineNumberResolver::resolveLine(size_t line) const {
+    if (line < lines_.size()) {
+        return lines_[line];
+    } else {
         return {"", 0};
+    }
+}
+
+void ShaderObject::LineNumberResolver::addLine(const std::string& file, size_t line) {
+    lines_.emplace_back(file, line);
+}
+
+void ShaderObject::LineNumberResolver::clear() { lines_.clear(); }
+
+std::string ShaderObject::LineNumberResolver::resolveLog(const std::string& compileLog) const {
+    std::ostringstream result;
+    std::istringstream origShaderInfoLog(compileLog);
+
+    std::string curLine;
+    while (std::getline(origShaderInfoLog, curLine)) {
+        if (!curLine.empty()) {
+            const int origLineNumber = utilgl::getLogLineNumber(curLine);
+            if (origLineNumber > 0) {
+                const auto res = resolveLine(origLineNumber);
+                result << "\n"
+                       << res.first << " (" << res.second
+                       << "): " << curLine.substr(curLine.find(":") + 1);
+            } else {
+                result << "\n" << curLine;
+            }
+        }
+    }
+
+    return std::move(result).str();
+}
+
+std::pair<std::string, size_t> ShaderObject::resolveLine(size_t line) const {
+    return lnr_.resolveLine(line);
 }
 
 std::string ShaderObject::print(bool showSource, bool preprocess) const {
     if (preprocess) {
         if (showSource) {
             std::string::size_type width = 0;
-            for (auto l : lineNumberResolver_) {
+            for (auto l : lnr_) {
                 std::string file = splitString(l.first, '/').back();
                 width = std::max(width, file.length());
             }
 
             size_t i = 0;
-            std::string line;
             std::stringstream out;
             std::istringstream in(sourceProcessed_);
+
+            std::string line;
             while (std::getline(in, line)) {
-                std::string file = i < lineNumberResolver_.size()
-                                       ? splitString(lineNumberResolver_[i].first, '/').back()
-                                       : "";
-                unsigned int lineNumber =
-                    i < lineNumberResolver_.size() ? lineNumberResolver_[i].second : 0;
+                const auto res = lnr_.resolveLine(i);
+                const std::string file =
+                    res.first.empty() ? "" : splitString(res.first, '/').back();
+                const size_t lineNumber = res.second;
 
                 out << std::left << std::setw(width + 1u) << file << std::right << std::setw(4)
                     << lineNumber << ": " << std::left << line << "\n";
                 ++i;
             }
-            return out.str();
+            return std::move(out).str();
         } else {
             return sourceProcessed_;
         }

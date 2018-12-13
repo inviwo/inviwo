@@ -41,16 +41,9 @@ public:
     virtual ~Capabilities();
 
     virtual void printInfo() = 0;
-
-    virtual bool canAllocate(glm::u64 dataSize, glm::u8 percentageOfAvailableMemory = 100);
-
-    virtual uvec3 calculateOptimalBrickSize(uvec3 dimensions, size_t formatSizeInBytes,
-                                            glm::u8 percentageOfAvailableMemory = 100);
-
     virtual void retrieveStaticInfo() = 0;
 
 protected:
-    virtual glm::u64 getMemorySizeInBytes(uvec3 dimensions, size_t formatSizeInBytes);
     virtual void retrieveDynamicInfo() = 0;
 };
 

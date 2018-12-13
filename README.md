@@ -19,7 +19,7 @@ Below follow some general information about the framework:
  - The core is written in C/C++ only, with minor dependencies.
  
 #### Modules
- - Modern graphics programming through OpenGL (>= 3.2 Core) related modules.
+ - Modern graphics programming through OpenGL (>= 3.3 Core) related modules.
  - Parallel computing on multiple platforms (GPU/CPU) through OpenCL (>= 1.0) related modules.
  - Python (> 3.2) scripting and computation is supported through provided modules.
 

@@ -592,32 +592,6 @@ int getLogLineNumber(const std::string& compileLogLine) {
     return result;
 }
 
-std::string reformatInfoLog(
-    const std::vector<std::pair<std::string, unsigned int> >& lineNumberResolver,
-    const std::string compileLog) {
-
-    std::ostringstream result;
-    std::string curLine;
-    std::istringstream origShaderInfoLog(compileLog);
-
-    while (std::getline(origShaderInfoLog, curLine)) {
-        if (!curLine.empty()) {
-            int origLineNumber = getLogLineNumber(curLine);
-            if (origLineNumber > 0) {
-                auto lineNumber = lineNumberResolver[origLineNumber - 1].second;
-                auto fileName = lineNumberResolver[origLineNumber - 1].first;
-                result << "\n"
-                       << fileName << " (" << lineNumber
-                       << "): " << curLine.substr(curLine.find(":") + 1);
-            } else {
-                result << "\n" << curLine;
-            }
-        }
-    }
-
-    return result.str();
-}
-
 std::string getShaderInfoLog(GLuint id) {
     GLint maxLogLength;
     glGetShaderiv(id, GL_INFO_LOG_LENGTH, &maxLogLength);

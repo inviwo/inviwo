@@ -85,37 +85,9 @@ bool ShaderManager::isRegistered(Shader* shader) const {
     return std::find(shaders_.begin(), shaders_.end(), shader) != shaders_.end();
 }
 
-std::string ShaderManager::getGlobalGLSLHeader() {
-    OpenGLCapabilities* glCaps = getOpenGLCapabilitiesObject();
-    return glCaps->getCurrentGlobalGLSLHeader();
-}
-
-std::string ShaderManager::getGlobalGLSLVertexDefines() {
-    OpenGLCapabilities* glCaps = getOpenGLCapabilitiesObject();
-    return glCaps->getCurrentGlobalGLSLVertexDefines();
-}
-
-std::string ShaderManager::getGlobalGLSLFragmentDefines() {
-    OpenGLCapabilities* glCaps = getOpenGLCapabilitiesObject();
-    return glCaps->getCurrentGlobalGLSLFragmentDefines();
-}
-
 int ShaderManager::getGlobalGLSLVersion() {
-    OpenGLCapabilities* glCaps = getOpenGLCapabilitiesObject();
+    OpenGLCapabilities* glCaps = getOpenGLCapabilities();
     return glCaps->getCurrentShaderVersion().getVersion();
-}
-
-void ShaderManager::bindCommonAttributes(unsigned int programID) {
-    int glslVersion = this->getGlobalGLSLVersion();
-    glBindAttribLocation(programID, 0, "in_Vertex");
-    glBindAttribLocation(programID, 1, "in_Normal");
-    glBindAttribLocation(programID, 2, "in_Color");
-    glBindAttribLocation(programID, 3, "in_TexCoord");
-
-    if (glslVersion >= 130) {
-        glBindFragDataLocation(programID, 0, "FragData0");
-        glBindFragDataLocation(programID, 1, "PickingData");
-    }
 }
 
 const std::vector<std::string>& ShaderManager::getShaderSearchPaths() { return shaderSearchPaths_; }
@@ -181,7 +153,7 @@ std::shared_ptr<ShaderResource> ShaderManager::getShaderResource(std::string key
     return nullptr;
 }
 
-OpenGLCapabilities* ShaderManager::getOpenGLCapabilitiesObject() {
+OpenGLCapabilities* ShaderManager::getOpenGLCapabilities() {
     if (!openGLInfoRef_) {
         if (auto openGLModule = InviwoApplication::getPtr()->getModuleByType<OpenGLModule>())
             openGLInfoRef_ = getTypeFromVector<OpenGLCapabilities>(openGLModule->getCapabilities());
