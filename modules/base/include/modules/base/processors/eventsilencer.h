@@ -34,6 +34,9 @@
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/ports/polylineport.h>
+#include <inviwo/core/ports/volumeport.h>
 
 namespace inviwo {
 /**
@@ -48,11 +51,18 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    void process() override;
-
 private:
     ImageInport imgIn_;
     ImageOutport imgOut_;
+
+    MeshInport meshIn_;
+    MeshOutport meshOut_;
+
+    PolylineInport polylineIn_;
+    PolylineOutport polylineOut_;
+
+    VolumeInport volumeIn_;
+    VolumeOutport volumeOut_;
 
     void propagateEvent(Event* e, Outport* source) override;
 };

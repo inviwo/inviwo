@@ -44,13 +44,33 @@ const ProcessorInfo EventSilencer::getProcessorInfo() const { return processorIn
 
 EventSilencer::EventSilencer() : Processor()
     , imgIn_("imgIn")
-    , imgOut_("imgOut") {
+    , imgOut_("imgOut")
+    , meshIn_("meshIn")
+    , meshOut_("meshOut")
+    , polylineIn_("polylineIn")
+    , polylineOut_("polylineOut")
+    , volumeIn_("volumeIn")
+    , volumeOut_("volumeOut") {
+
+    imgIn_.setOptional(true);
+    imgIn_.onChange([this]() { imgOut_.setData(imgIn_.getData()); });
     addPort(imgIn_);
     addPort(imgOut_);
-}
 
-void EventSilencer::process() {
-    imgOut_.setData(imgIn_.getData());
+    meshIn_.setOptional(true);
+    meshIn_.onChange([this]() { meshOut_.setData(meshIn_.getData()); });
+    addPort(meshIn_);
+    addPort(meshOut_);
+
+    polylineIn_.setOptional(true);
+    polylineIn_.onChange([this]() { polylineOut_.setData(polylineIn_.getData()); });
+    addPort(polylineIn_);
+    addPort(polylineOut_);
+
+    volumeIn_.setOptional(true);
+    volumeIn_.onChange([this]() { volumeOut_.setData(volumeIn_.getData()); });
+    addPort(volumeIn_);
+    addPort(volumeOut_);
 }
 
 void EventSilencer::propagateEvent(Event* e, Outport* source) {
