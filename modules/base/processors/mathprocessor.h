@@ -65,6 +65,11 @@ private:
     FloatProperty vec3y_;
     FloatProperty vec3z_;
     FloatVec3Property combinedXYZ_;
+
+    CompositeProperty vec3Scale_;
+    FloatVec3Property vec3ScaleIn_;
+    FloatVec3Property vec3ScalingFactors_;
+    FloatVec3Property vec3ScaleOut_;
 };
 }  // namespace inviwo
 

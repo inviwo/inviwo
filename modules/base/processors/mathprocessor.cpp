@@ -54,6 +54,10 @@ MathProcessor::MathProcessor() : Processor()
     , vec3y_("vec3y", "Y", 0.0f, -1e9f, 1e9f)
     , vec3z_("vec3z", "Z", 0.0f, -1e9f, 1e9f)
     , combinedXYZ_("combinedXYZ", "XYZ", vec3(0.0f), vec3(-1e9f), vec3(1e9f))
+    , vec3Scale_("Vec3Scale", "Vec3 Scaling")
+    , vec3ScaleIn_("vec3ScaleIn", "Vec3 In", vec3(1.0f), vec3(-1e9f), vec3(1e9f))
+    , vec3ScalingFactors_("vec3ScalingFactors", "Vec3 Scaling Factors", vec3(1.0f), vec3(-1e9f), vec3(1e9f))
+    , vec3ScaleOut_("vec3ScaleOut", "Vec3 Out", vec3(1.0f), vec3(-1e9f), vec3(1e9f))
 {
     // euler angles to rotation matrix
     eulerAngles_.onChange([this]() { rotationMatrix_ = glm::orientate4(eulerAngles_.get()); });
@@ -87,6 +91,16 @@ MathProcessor::MathProcessor() : Processor()
     Vec3FloatElementCombiner_.addProperty(combinedXYZ_);
     Vec3FloatElementCombiner_.setCollapsed(true);
     addProperty(Vec3FloatElementCombiner_);
+
+    // scale vector
+    vec3ScaleIn_.onChange([this]() { vec3ScaleOut_ = vec3ScalingFactors_.get() * vec3ScaleIn_.get(); });
+    vec3ScalingFactors_.onChange([this]() { vec3ScaleOut_ = vec3ScalingFactors_.get() * vec3ScaleIn_.get(); });
+    vec3Scale_.addProperty(vec3ScaleIn_);
+    vec3Scale_.addProperty(vec3ScalingFactors_);
+    vec3ScaleOut_.setReadOnly(true);
+    vec3Scale_.addProperty(vec3ScaleOut_);
+    vec3Scale_.setCollapsed(true);
+    addProperty(vec3Scale_);
 }
 
 }  // namespace inviwo
