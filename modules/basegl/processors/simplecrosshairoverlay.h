@@ -74,7 +74,7 @@ private:
 
     EventProperty mouseEvent_;
     InteractionState interactionState_;
-    vec2 lastMousePos_;
+    FloatVec2Property lastMousePos_;
 };
 }  // namespace inviwo
 

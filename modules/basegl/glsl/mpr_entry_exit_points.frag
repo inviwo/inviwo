@@ -32,7 +32,8 @@ uniform vec3 p;
 uniform vec3 n;
 uniform vec3 u;
 uniform vec3 r;
-uniform float offset;
+uniform float aspect_ratio = 1.0;
+uniform float offset = 0.0;
 
 in vec2 uv;
 
@@ -41,10 +42,11 @@ void main() {
     float x = uv.x;
     float y = uv.y;
 
+    // TODO: do not use bottom left as reference?
     vec3 bottomLeft = p - 0.5f * r - 0.5f * u;
 
 	// Apply offset that controls the slab thickness
     bottomLeft += offset * n;
 
-    FragData0 = vec4(bottomLeft + x * r + y * u, 1.0f);
+    FragData0 = vec4(bottomLeft + x * r + aspect_ratio * y * u, 1.0f);
 }

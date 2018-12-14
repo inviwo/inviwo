@@ -28,8 +28,6 @@
  *********************************************************************************/
 
 #include <modules/basegl/processors/mprentryexitpointsprocessor.h>
-#include <inviwo/core/interaction/cameratrackball.h>
-#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
 #include <modules/opengl/buffer/buffergl.h>
 #include <modules/opengl/texture/textureutils.h>
@@ -39,83 +37,102 @@ namespace inviwo {
 
 const ProcessorInfo MPREntryExitPoints::processorInfo_{
     "org.inviwo.MPREntryExitPoints",  // Class identifier
-    "MPR Entry Exit Points",           // Display name
-    "Mesh Rendering",          // Category
-    CodeState::Experimental,             // Code state
-    Tags::GL,                      // Tags
+    "MPR Entry Exit Points",          // Display name
+    "Mesh Rendering",                 // Category
+    CodeState::Experimental,          // Code state
+    Tags::GL,                         // Tags
 };
 const ProcessorInfo MPREntryExitPoints::getProcessorInfo() const { return processorInfo_; }
 
 MPREntryExitPoints::MPREntryExitPoints()
     : Processor()
-	, volumeInport_("volume")
+    , volumeInport_("volume")
     , entryPort_("entry", DataVec4UInt16::get())
     , exitPort_("exit", DataVec4UInt16::get())
-	, p_("planePosition", "p", vec3(0.5f))
-	, n_("planeNormal", "n", vec3(0.0f, 0.0f, 1.0f), vec3(-1.0f), vec3(1.0f))
-	, u_("planeUp", "u", vec3(0.0f, 1.0f, 0.0f), vec3(-1.0f), vec3(1.0f))
-	, offset0_("offset0", "Offset 0", -0.01f, -1.0f, 0.0f, 0.001f)
-	, offset1_("offset1", "Offset 1", 0.01f, 0.0f, 1.0f, 0.001f)
-	, shader_("uv_pass_through.vert", "mpr_entry_exit_points.frag")
-	, R_("rotationMatrix", "R", mat4(1.0f))
-	, n_prime_("nPrime", "n'", n_.get(), vec3(-1.0f), vec3(1.0f))
-	, u_prime_("uPrime", "u'", u_.get(), vec3(-1.0f), vec3(1.0f)) {
+    , p_("planePosition", "p", vec3(0.5f))
+    , n_("planeNormal", "n", vec3(0.0f, 0.0f, 1.0f), vec3(-1.0f), vec3(1.0f))
+    , u_("planeUp", "u", vec3(0.0f, 1.0f, 0.0f), vec3(-1.0f), vec3(1.0f))
+    , offset0_("offset0", "Offset 0", -0.01f, -1.0f, 0.0f, 0.001f)
+    , offset1_("offset1", "Offset 1", 0.01f, 0.0f, 1.0f, 0.001f)
+    , R_("rotationMatrix", "R", mat4(1.0f))
+    , n_prime_("nPrime", "n'", n_.get(), vec3(-1.0f), vec3(1.0f))
+    , u_prime_("uPrime", "u'", u_.get(), vec3(-1.0f), vec3(1.0f))
+    , cursorScreenPos_("cursorScreenPos", "Cursor Screen Pos", vec2(0.5f), vec2(0.0f), vec2(1.0f))
+    , cursorVolumePos_("cursorVolumePos", "Cursor Volume Pos", vec3(0.5f), vec3(0.0f), vec3(1.0f))
+    , shader_("uv_pass_through.vert", "mpr_entry_exit_points.frag") {
 
-	addPort(volumeInport_);
+    addPort(volumeInport_);
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");
 
-	addProperty(p_);
-	addProperty(n_);
-	addProperty(u_);
-	addProperty(offset0_);
-	addProperty(offset1_);
+    addProperty(p_);
+    n_.onChange([this]() {
+        n_prime_ = R_.get() * vec4(n_.get(), 0.0f);
+    });
+    addProperty(n_);
+    u_.onChange([this]() {
+        u_prime_ = R_.get() * vec4(u_.get(), 0.0f);
+    });
+    addProperty(u_);
+    addProperty(offset0_);
+    addProperty(offset1_);
 
-	addProperty(R_);
-	addProperty(n_prime_); n_prime_.setReadOnly(true);
-	addProperty(u_prime_); u_prime_.setReadOnly(true);
+    R_.onChange([this]() {
+        n_prime_ = R_.get() * vec4(n_.get(), 0.0f);
+        u_prime_ = R_.get() * vec4(u_.get(), 0.0f);
+    });
+    addProperty(R_);
+    addProperty(n_prime_); n_prime_.setReadOnly(true);
+    addProperty(u_prime_); u_prime_.setReadOnly(true);
+    
+    cursorScreenPos_.onChange([this]() {
+        //TODO: add calculation here
+    });
+    addProperty(cursorScreenPos_);
+    addProperty(cursorVolumePos_);
 
-	R_.onChange([this]() {
-		n_prime_ = R_.get() * vec4(n_.get(), 1.0f);
-		u_prime_ = R_.get() * vec4(u_.get(), 1.0f);
-	});
-
-	shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
 
 MPREntryExitPoints::~MPREntryExitPoints() {}
 
 void MPREntryExitPoints::process() {
-	auto const quad = util::makeBuffer<vec2>({ 
-		{ -1.0f, -1.0f },{ 1.0f, -1.0f },{ -1.0f, 1.0f },{ 1.0f, 1.0f } 
-	});
+    auto const quad = util::makeBuffer<vec2>({
+        { -1.0f, -1.0f },{ 1.0f, -1.0f },{ -1.0f, 1.0f },{ 1.0f, 1.0f } 
+    });
 
-	const vec3 p = p_.get();
+    const auto p = p_.get();
 
-	// Construct coordinate cross for this plane
-	const vec3 n = normalize(n_prime_.get());
-	const vec3 u = normalize(u_prime_.get());
-	const vec3 r = cross(n, u);
+    // Construct coordinate cross for this plane
+    const auto n_prime_normalized = glm::normalize(n_prime_.get());
+    const auto u_prime_normalized = glm::normalize(u_prime_.get());
+    const auto r_prime_normalized = glm::normalize(cross(n_prime_normalized, u_prime_normalized));
 
-	// generate entry points
-	utilgl::activateAndClearTarget(*entryPort_.getEditableData().get(), ImageType::ColorOnly);
-	shader_.activate();
+    // generate entry points
+    utilgl::activateAndClearTarget(*entryPort_.getEditableData().get(), ImageType::ColorOnly);
+    shader_.activate();
 
-	shader_.setUniform("p", p);
-	shader_.setUniform("n", n);
-	shader_.setUniform("u", u);
-	shader_.setUniform("r", r);
-	shader_.setUniform("offset", offset0_.get()); // note that setUniform does not work when passing a literal 0
+    shader_.setUniform("p", p);
+    shader_.setUniform("n", n_prime_normalized);
+    shader_.setUniform("u", u_prime_normalized);
+    shader_.setUniform("r", r_prime_normalized);
+    shader_.setUniform("offset", offset0_.get()); // note that setUniform does not work when passing a literal 0
 
-	auto quadGL = quad->getRepresentation<BufferGL>();
-	quadGL->enable();
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    auto quadGL = quad->getRepresentation<BufferGL>();
+    quadGL->enable();
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-	// generate exit points
-	utilgl::activateAndClearTarget(*exitPort_.getEditableData().get(), ImageType::ColorOnly);
-	shader_.setUniform("offset", offset1_.get());
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-	quadGL->disable();
+    // generate exit points
+    utilgl::activateAndClearTarget(*exitPort_.getEditableData().get(), ImageType::ColorOnly);
+    shader_.setUniform("offset", offset1_.get());
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    quadGL->disable();
+
+    const vec2 volumeScreenPos{0.5f}; // TODO: calculate this and pass to crosshair overlay
+    const auto cursorRel = cursorScreenPos_.get() - volumeScreenPos;
+    cursorVolumePos_ = p + cursorRel.x * r_prime_normalized + cursorRel.y * u_prime_normalized;
+    LogInfo("cursor screen pos: " << cursorScreenPos_);
+    LogInfo("cursor volume pos: " << cursorVolumePos_);
 }
 
 void MPREntryExitPoints::deserialize(Deserializer& d) {

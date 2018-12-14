@@ -55,7 +55,7 @@ SimpleCrosshairOverlay::SimpleCrosshairOverlay()
     , mouseEvent_("mouseEvent", "Mouse Event", [this](Event* e) { updateCrosshair(e); },
                   MouseButton::Left, MouseState::Press | MouseState::Move | MouseState::Release)
     , interactionState_ (InteractionState::NONE)
-	, lastMousePos_(0.0f) {
+	, lastMousePos_("lastMousePos", "Last Mouse Position", vec2(0.0f), vec2(0.0f), vec2(1.0f)) {
 
     imageIn_.setOptional(true);
     addPort(imageIn_);
@@ -71,6 +71,7 @@ SimpleCrosshairOverlay::SimpleCrosshairOverlay()
 
 	mouseEvent_.setVisible(false);
     addProperty(mouseEvent_);
+    addProperty(lastMousePos_);
 }
 
 void SimpleCrosshairOverlay::process() {
@@ -93,7 +94,7 @@ void SimpleCrosshairOverlay::updateCrosshair(Event* e) {
     } else if (mouseState == MouseState::Move) {
         if (interactionState_ == InteractionState::ROTATE) { // ### update angle at mouse move ###
             // angle between cursor center to old and new mouse pos
-            const auto dirOld = glm::normalize(lastMousePos_ - cursorPos_.get());
+            const auto dirOld = glm::normalize(lastMousePos_.get() - cursorPos_.get());
             const auto dirNew = glm::normalize(newMousePos - cursorPos_.get());
             const auto angleDiff = glm::acos(glm::dot(dirOld, dirNew));
 
@@ -119,7 +120,7 @@ void SimpleCrosshairOverlay::updateCrosshair(Event* e) {
             lastMousePos_ = newMousePos;
         } else if (interactionState_ == InteractionState::MOVE) { // ### update position at mouse move ###
             const auto newMousePosClamped = glm::clamp(newMousePos, vec2(0.0f), vec2(1.0f));
-            const auto diff = newMousePosClamped - lastMousePos_;
+            const auto diff = newMousePosClamped - lastMousePos_.get();
             const auto newCursorPos = glm::clamp(cursorPos_.get() + diff, vec2(0.0f), vec2(1.0f));
 
             // set new position vec2[0..1]
@@ -127,9 +128,12 @@ void SimpleCrosshairOverlay::updateCrosshair(Event* e) {
 
             // update clamped new mouse pos while dragging
             lastMousePos_ = newMousePosClamped;
+        } else {
+            lastMousePos_ = newMousePos;
         }
     } else if (mouseState == MouseState::Release) {
         interactionState_ = InteractionState::NONE;
+        lastMousePos_ = newMousePos;
     }
 }
 

@@ -33,13 +33,13 @@
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/ports/meshport.h>
+
+#include <modules/opengl/shader/shader.h>>
+
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/volumeport.h>
-#include <modules/opengl/inviwoopengl.h>
-#include <inviwo/core/common/inviwoapplication.h>
-#include <modules/opengl/shader/shader.h>
+
+#include <inviwo/core/properties/ordinalproperty.h>
 
 namespace inviwo {
 
@@ -68,22 +68,27 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
 private:
-	VolumeInport volumeInport_;
+    VolumeInport volumeInport_;
 
     ImageOutport entryPort_;
     ImageOutport exitPort_;
 
-	FloatVec3Property p_;
-	FloatVec3Property n_;
-	FloatVec3Property u_;
-	FloatProperty offset0_;
-	FloatProperty offset1_;
+    // TODO: group properties using composites
 
-	FloatMat4Property R_;
-	FloatVec3Property n_prime_;
-	FloatVec3Property u_prime_;
+    FloatVec3Property p_;
+    FloatVec3Property n_;
+    FloatVec3Property u_;
+    FloatProperty offset0_;
+    FloatProperty offset1_;
 
-	Shader shader_;
+    FloatMat4Property R_;
+    FloatVec3Property n_prime_;
+    FloatVec3Property u_prime_;
+
+    FloatVec2Property cursorScreenPos_;
+    FloatVec3Property cursorVolumePos_;
+
+    Shader shader_;
 };
 
 } // namespace
