@@ -702,7 +702,7 @@ ivw_register_license_file(NAME "Flags" MODULE Core
 ivw_register_license_file(NAME "{fmt}" target fmt MODULE Core
     URL "https://github.com/fmtlib/fmt"
     TYPE "TBSD 2-Clause"
-    FILES  ${IVW_EXTENSIONS_DIR}/fmt/LICENSE.rst
+    FILES  ${IVW_EXTENSIONS_DIR}/fmt/fmt/LICENSE.rst
 )
 
 ivw_register_license_file(NAME "OpenGL Mathematics (GLM)" VERSION 0.9.9.3 MODULE Core
@@ -768,7 +768,7 @@ endif()
 ivw_register_license_file(NAME "warn" MODULE Core
     URL "https://github.com/petersteneteg/warn"
     TYPE "BSD 2-clause"
-    FILES ${IVW_ROOT_DIR}/tools/codegen/warn/warn/LICENSE
+    FILES ${IVW_TOOLS_DIR}/codegen/warn/warn/LICENSE
 )
 
 ivw_register_license_file(NAME "zlib" TARGET ZLIB::ZLIB MODULE Core
