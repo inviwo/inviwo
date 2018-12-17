@@ -130,6 +130,10 @@ std::unique_ptr<QMenu> TFPropertyWidgetQt::getContextMenu() {
                 }
             }
         }
+        if (presets->actions().empty()) {
+            auto action = presets->addAction("No Presets Available");
+            action->setEnabled(false);
+        }
     }
 
     auto clearTF = menu->addAction("&Clear TF");
