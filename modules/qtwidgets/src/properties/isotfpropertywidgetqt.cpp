@@ -30,6 +30,7 @@
 #include <modules/qtwidgets/properties/isotfpropertywidgetqt.h>
 
 #include <inviwo/core/properties/isotfproperty.h>
+#include <inviwo/core/util/filesystem.h>
 #include <modules/qtwidgets/properties/tfpropertywidgetqt.h>
 #include <modules/qtwidgets/editablelabelqt.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
@@ -90,6 +91,35 @@ std::unique_ptr<QMenu> IsoTFPropertyWidgetQt::getContextMenu() {
     auto menu = PropertyWidgetQt::getContextMenu();
 
     menu->addSeparator();
+
+    auto presets = menu->addMenu("&TF Presets");
+    presets->setEnabled(!property_->getReadOnly());
+    if (!property_->getReadOnly()) {
+        const auto basePath = filesystem::getPath(PathType::TransferFunctions);
+        auto files = filesystem::getDirectoryContentsRecursively(basePath);
+
+        auto p = static_cast<TransferFunctionProperty*>(property_);
+
+        for (auto file : files) {
+            for (auto& ext : p->get().getSupportedExtensions()) {
+                if (ext.matches(file)) {
+                    // remove basepath and trailing directory separator
+                    auto action =
+                        presets->addAction(utilqt::toQString(file.substr(basePath.length() + 1)));
+                    connect(action, &QAction::triggered, this, [this, p, file, ext]() {
+                        NetworkLock lock(p);
+                        p->get().load(file, ext);
+                    });
+
+                    break;
+                }
+            }
+        }
+        if (presets->actions().empty()) {
+            auto action = presets->addAction("No Presets Available");
+            action->setEnabled(false);
+        }
+    }
 
     auto clearTF = menu->addAction("&Clear TF & Isovalues");
     clearTF->setEnabled(!property_->getReadOnly());

@@ -33,6 +33,8 @@
 
 #include <inviwo/core/datastructures/tfprimitiveset.h>
 
+class QWidget;
+
 namespace inviwo {
 
 namespace util {

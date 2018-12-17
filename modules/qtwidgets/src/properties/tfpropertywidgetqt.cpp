@@ -33,6 +33,7 @@
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/qtwidgets/tf/tfutils.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/util/filesystem.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -105,6 +106,31 @@ std::unique_ptr<QMenu> TFPropertyWidgetQt::getContextMenu() {
     auto menu = PropertyWidgetQt::getContextMenu();
 
     menu->addSeparator();
+
+    auto presets = menu->addMenu("&TF Presets");
+    presets->setEnabled(!property_->getReadOnly());
+    if (!property_->getReadOnly()) {
+        const auto basePath = filesystem::getPath(PathType::TransferFunctions);
+        auto files = filesystem::getDirectoryContentsRecursively(basePath);
+
+        auto p = static_cast<TransferFunctionProperty*>(property_);
+
+        for (auto file : files) {
+            for (auto& ext : p->get().getSupportedExtensions()) {
+                if (ext.matches(file)) {
+                    // remove basepath and trailing directory separator
+                    auto action =
+                        presets->addAction(utilqt::toQString(file.substr(basePath.length() + 1)));
+                    connect(action, &QAction::triggered, this, [this, p, file, ext]() {
+                        NetworkLock lock(p);
+                        p->get().load(file, ext);
+                    });
+
+                    break;
+                }
+            }
+        }
+    }
 
     auto clearTF = menu->addAction("&Clear TF");
     clearTF->setEnabled(!property_->getReadOnly());
