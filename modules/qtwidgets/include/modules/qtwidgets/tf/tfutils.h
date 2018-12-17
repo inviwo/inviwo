@@ -26,41 +26,39 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_ISOVALUEPROPERTYWIDGETQT_H
-#define IVW_ISOVALUEPROPERTYWIDGETQT_H
+#pragma once
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <modules/qtwidgets/properties/propertywidgetqt.h>
-#include <modules/qtwidgets/tf/tfpropertydialog.h>
+#include <inviwo/core/common/inviwo.h>
+
+#include <inviwo/core/datastructures/tfprimitiveset.h>
 
 namespace inviwo {
 
-class IsoValueProperty;
-class TFPushButton;
-class EditableLabelQt;
+namespace util {
 
-class IVW_MODULE_QTWIDGETS_API IsoValuePropertyWidgetQt : public PropertyWidgetQt {
-public:
-    IsoValuePropertyWidgetQt(IsoValueProperty* property);
-    virtual ~IsoValuePropertyWidgetQt() = default;
+/**
+ * \brief Shows an InviwoFileDialog to import a TFPrimitiveSet from a file.
+ * Depending on the underlying type of \p primitiveSet, either TF primitives or isovalues are
+ * imported.
+ *
+ * @param primitiveSet   target primitive set which might either be a TF or isovalues
+ * @param parent         parent widget of the file dialog
+ */
+IVW_MODULE_QTWIDGETS_API void importFromFile(TFPrimitiveSet& primitiveSet,
+                                             QWidget* parent = nullptr);
 
-    virtual TFPropertyDialog* getEditorWidget() const override;
-    virtual bool hasEditorWidget() const override;
+/**
+ * \brief Shows an InviwoFileDialog to export a TFPrimitiveSet to a file.
+ * Depending on the underlying type of \p primitiveSet, either TF primitives or isovalues are
+ * exported.
+ *
+ * @param primitiveSet   primitive set to be exported (either TF or isovalues)
+ * @param parent         parent widget of the file dialog
+ */
+IVW_MODULE_QTWIDGETS_API void exportToFile(const TFPrimitiveSet& primitiveSet,
+                                           QWidget* parent = nullptr);
 
-    virtual void updateFromProperty() override;
-
-    virtual void setReadOnly(bool readonly) override;
-
-protected:
-    virtual std::unique_ptr<QMenu> getContextMenu() override;
-
-private:
-    EditableLabelQt* label_;
-    TFPushButton* btnOpenTF_;
-    mutable std::unique_ptr<TFPropertyDialog> tfDialog_ = nullptr;
-};
+}  // namespace util
 
 }  // namespace inviwo
-
-#endif  // IVW_ISOVALUEPROPERTYWIDGETQT_H

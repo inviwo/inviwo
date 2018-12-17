@@ -92,8 +92,6 @@ protected:
 
     void changeVerticalZoom(int zoomMin, int zoomMax);
     void changeHorizontalZoom(int zoomMin, int zoomMax);
-    void importFromFile(TFPrimitiveSet &primitiveSet);
-    void exportToFile(const TFPrimitiveSet &primitiveSet);
     void showHistogram(int type);
     void changeMoveMode(int i);
 
