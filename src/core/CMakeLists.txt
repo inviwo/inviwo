@@ -109,6 +109,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/io/datareaderexception.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/datareaderfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/datawriter.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/io/datawriterexception.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/datawriterfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/imagewriterutil.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/rawvolumeramloader.h
@@ -316,10 +317,10 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/stringlogger.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/systemcapabilities.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/templatesampler.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/util/transformiterator.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/threadpool.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/timer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/tinydirinterface.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/transformiterator.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/utilities.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/vectoroperations.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/volumeramutils.h
@@ -406,6 +407,7 @@ set(SOURCE_FILES
     io/datareaderexception.cpp
     io/datareaderfactory.cpp
     io/datawriter.cpp
+    io/datawriterexception.cpp
     io/datawriterfactory.cpp
     io/imagewriterutil.cpp
     io/rawvolumeramloader.cpp

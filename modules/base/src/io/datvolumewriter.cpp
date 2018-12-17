@@ -30,6 +30,7 @@
 #include <modules/base/io/datvolumewriter.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/io/datawriterexception.h>
 
 namespace inviwo {
 

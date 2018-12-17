@@ -33,6 +33,7 @@
 #include <inviwo/core/datastructures/image/layerramprecision.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/io/datawriter.h>
+#include <inviwo/core/io/datawriterexception.h>
 #include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/io/datareaderexception.h>
