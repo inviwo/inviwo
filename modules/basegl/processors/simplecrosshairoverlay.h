@@ -65,9 +65,6 @@ private:
     ImageInport imageIn_;
     ImageOutport imageOut_;
 
-    /*FloatVec3Property planePosition_;
-    FloatVec3Property planeNormal_;
-    FloatVec3Property planeUp_;*/
     FloatProperty cursorAngle_;
     FloatVec2Property cursorPos_;
     FloatProperty cursorRadius_;

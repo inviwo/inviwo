@@ -52,13 +52,13 @@ MPREntryExitPoints::MPREntryExitPoints()
     , p_("planePosition", "p", vec3(0.5f))
     , n_("planeNormal", "n", vec3(0.0f, 0.0f, 1.0f), vec3(-1.0f), vec3(1.0f))
     , u_("planeUp", "u", vec3(0.0f, 1.0f, 0.0f), vec3(-1.0f), vec3(1.0f))
-    , offset0_("offset0", "Offset 0", -0.01f, -1.0f, 0.0f, 0.001f)
-    , offset1_("offset1", "Offset 1", 0.01f, 0.0f, 1.0f, 0.001f)
+    , offset0_("offset0", "Offset 0", -0.01f, -1.0f, 1.0f, 0.001f)
+    , offset1_("offset1", "Offset 1", 0.01f, -1.0f, 1.0f, 0.001f)
     , R_("rotationMatrix", "R", mat4(1.0f))
     , n_prime_("nPrime", "n'", n_.get(), vec3(-1.0f), vec3(1.0f))
     , u_prime_("uPrime", "u'", u_.get(), vec3(-1.0f), vec3(1.0f))
     , cursorScreenPos_("cursorScreenPos", "Cursor Screen Pos", vec2(0.5f), vec2(0.0f), vec2(1.0f))
-    , cursorVolumePos_("cursorVolumePos", "Cursor Volume Pos", vec3(0.5f), vec3(0.0f), vec3(1.0f))
+    , cursorScreenPosOld_("cursorScreenPosOld", "Cursor Screen Pos Old", cursorScreenPos_.get(), vec2(0.0f), vec2(1.0f))
     , shader_("uv_pass_through.vert", "mpr_entry_exit_points.frag") {
 
     addPort(volumeInport_);
@@ -86,10 +86,21 @@ MPREntryExitPoints::MPREntryExitPoints()
     addProperty(u_prime_); u_prime_.setReadOnly(true);
     
     cursorScreenPos_.onChange([this]() {
-        //TODO: add calculation here
+        const auto offset = cursorScreenPos_.get() - cursorScreenPosOld_.get();
+
+        // Construct coordinate cross for this plane
+        const auto n_prime_normalized = glm::normalize(n_prime_.get());
+        const auto u_prime_normalized = glm::normalize(u_prime_.get());
+        const auto r_prime_normalized = glm::normalize(cross(n_prime_normalized, u_prime_normalized));
+
+        // update plane position
+        p_ = p_.get() + offset.x * r_prime_normalized + offset.y * u_prime_normalized;
+
+        // save current cursor position
+        cursorScreenPosOld_ = cursorScreenPos_;
     });
     addProperty(cursorScreenPos_);
-    addProperty(cursorVolumePos_);
+    addProperty(cursorScreenPosOld_);
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
@@ -101,8 +112,6 @@ void MPREntryExitPoints::process() {
         { -1.0f, -1.0f },{ 1.0f, -1.0f },{ -1.0f, 1.0f },{ 1.0f, 1.0f } 
     });
 
-    const auto p = p_.get();
-
     // Construct coordinate cross for this plane
     const auto n_prime_normalized = glm::normalize(n_prime_.get());
     const auto u_prime_normalized = glm::normalize(u_prime_.get());
@@ -112,11 +121,12 @@ void MPREntryExitPoints::process() {
     utilgl::activateAndClearTarget(*entryPort_.getEditableData().get(), ImageType::ColorOnly);
     shader_.activate();
 
-    shader_.setUniform("p", p);
-    shader_.setUniform("n", n_prime_normalized);
-    shader_.setUniform("u", u_prime_normalized);
-    shader_.setUniform("r", r_prime_normalized);
-    shader_.setUniform("offset", offset0_.get()); // note that setUniform does not work when passing a literal 0
+    shader_.setUniform("p", p_.get()); // plane pos. in volume space
+    shader_.setUniform("p_screen", cursorScreenPos_.get()); // plane pos. in screen space
+    shader_.setUniform("n", n_prime_normalized); // plane's normal
+    shader_.setUniform("u", u_prime_normalized); // plane's up
+    shader_.setUniform("r", r_prime_normalized); // plane's right
+    shader_.setUniform("thickness_offset", offset0_.get()); // plane's offset along normal, // note that setUniform does not work when passing a literal 0
 
     auto quadGL = quad->getRepresentation<BufferGL>();
     quadGL->enable();
@@ -124,15 +134,9 @@ void MPREntryExitPoints::process() {
 
     // generate exit points
     utilgl::activateAndClearTarget(*exitPort_.getEditableData().get(), ImageType::ColorOnly);
-    shader_.setUniform("offset", offset1_.get());
+    shader_.setUniform("thickness_offset", offset1_.get());
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     quadGL->disable();
-
-    const vec2 volumeScreenPos{0.5f}; // TODO: calculate this and pass to crosshair overlay
-    const auto cursorRel = cursorScreenPos_.get() - volumeScreenPos;
-    cursorVolumePos_ = p + cursorRel.x * r_prime_normalized + cursorRel.y * u_prime_normalized;
-    LogInfo("cursor screen pos: " << cursorScreenPos_);
-    LogInfo("cursor volume pos: " << cursorVolumePos_);
 }
 
 void MPREntryExitPoints::deserialize(Deserializer& d) {

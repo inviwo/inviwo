@@ -86,7 +86,7 @@ private:
     FloatVec3Property u_prime_;
 
     FloatVec2Property cursorScreenPos_;
-    FloatVec3Property cursorVolumePos_;
+    FloatVec2Property cursorScreenPosOld_;
 
     Shader shader_;
 };

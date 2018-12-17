@@ -46,24 +46,17 @@ SimpleCrosshairOverlay::SimpleCrosshairOverlay()
     : Processor()
     , imageIn_("imageIn")
     , imageOut_("imageOut")
-    /*, planePosition_("planePosition", "Plane Position", vec3(0.0f), vec3(-1.0f), vec3(1.0f))
-    , planeNormal_("planeNormal", "Plane Normal", vec3(0.0f), vec3(-1.0f), vec3(1.0f))
-    , planeUp_("planeUp", "Plane Up", vec3(0.0f), vec3(-1.0f), vec3(1.0f))*/
     , cursorAngle_("cursorAngle", "Cursor Angle", 0.0f, 0.0f, glm::two_pi<float>())
     , cursorPos_("cursorPos", "Cursor Position", vec2(0.5f), vec2(0.0f), vec2(1.0f))
     , cursorRadius_("cursorRadius", "Cursor Radius", 0.1f, 0.0f, 1.0f)
     , mouseEvent_("mouseEvent", "Mouse Event", [this](Event* e) { updateCrosshair(e); },
                   MouseButton::Left, MouseState::Press | MouseState::Move | MouseState::Release)
     , interactionState_ (InteractionState::NONE)
-	, lastMousePos_("lastMousePos", "Last Mouse Position", vec2(0.0f), vec2(0.0f), vec2(1.0f)) {
+	, lastMousePos_("lastMousePos", "Last Mouse Position", vec2(0.0f), vec2(-10.0f), vec2(10.0f)) {
 
     imageIn_.setOptional(true);
     addPort(imageIn_);
     addPort(imageOut_);
-
-    /*addProperty(planePosition_);
-    addProperty(planeNormal_);
-    addProperty(planeUp_);*/
 
     addProperty(cursorAngle_);
     addProperty(cursorPos_);

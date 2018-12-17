@@ -28,25 +28,21 @@
  *********************************************************************************/
 
 
-uniform vec3 p;
-uniform vec3 n;
-uniform vec3 u;
-uniform vec3 r;
-uniform float aspect_ratio = 1.0;
-uniform float offset = 0.0;
+uniform vec3 p; // plane pos. in volume space
+uniform vec2 p_screen; // plane pos. in screen space
+uniform vec3 n; // plane's normal
+uniform vec3 u; // plane's up
+uniform vec3 r; // plane's right
+uniform float aspect_ratio = 1.0; // aspect ratio of screen
+uniform float thickness_offset = 0.0; // plane's offset along normal
 
-in vec2 uv;
+in vec2 uv; // Viewport coordinates in [0,1]
 
 void main() {
-	// Viewport coordinates in [0,1]
-    float x = uv.x;
-    float y = uv.y;
+    const vec2 uv_offset = uv - p_screen;
 
-    // TODO: do not use bottom left as reference?
-    vec3 bottomLeft = p - 0.5f * r - 0.5f * u;
+    // TODO: add aspect ratio of screen and dimensions of volume to correct for distortion
+    const vec3 volume_coord = p + uv_offset.x * r + aspect_ratio * uv_offset.y * u + thickness_offset * n;
 
-	// Apply offset that controls the slab thickness
-    bottomLeft += offset * n;
-
-    FragData0 = vec4(bottomLeft + x * r + aspect_ratio * y * u, 1.0f);
+    FragData0 = vec4(volume_coord, 1.0);
 }
