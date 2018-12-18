@@ -33,11 +33,19 @@
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/fileextension.h>
+#include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/io/datareaderexception.h>
 #include <inviwo/core/io/datawriterexception.h>
+#include <inviwo/core/datastructures/transferfunction.h>
 
 #include <modules/qtwidgets/inviwofiledialog.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QMenu>
+#include <QAction>
+#include <warn/pop>
 
 namespace inviwo {
 
@@ -85,6 +93,45 @@ void exportToFile(const TFPrimitiveSet& primitiveSet, QWidget* parent) {
             util::log(e.getContext(), e.getMessage(), LogLevel::Error, LogAudience::User);
         }
     }
+}
+
+QMenu* addTFPresetsMenu(QWidget* parent, QMenu* menu, TransferFunctionProperty* property) {
+    if (!parent || !menu || !property) {
+        return nullptr;
+    }
+
+    auto presets = menu->addMenu("&TF Presets");
+    presets->setObjectName("TF");
+    presets->setEnabled(!property->getReadOnly());
+    if (!property->getReadOnly()) {
+        const auto basePath = filesystem::getPath(PathType::TransferFunctions);
+        auto files = filesystem::getDirectoryContentsRecursively(basePath);
+
+        TransferFunction tf;
+
+        for (auto file : files) {
+            for (auto& ext : property->get().getSupportedExtensions()) {
+                if (ext.matches(file)) {
+                    // remove basepath and trailing directory separator
+                    auto action =
+                        presets->addAction(utilqt::toQString(file.substr(basePath.length() + 1)));
+                    QObject::connect(action, &QAction::triggered, parent,
+                                     [parent, property, file, ext]() {
+                                         NetworkLock lock(property);
+                                         property->get().load(file, ext);
+                                     });
+                    tf.load(file, ext);
+                    action->setIcon(QIcon(utilqt::toQPixmap(tf, QSize(120, 20))));
+                    break;
+                }
+            }
+        }
+        if (presets->actions().empty()) {
+            auto action = presets->addAction("No Presets Available");
+            action->setEnabled(false);
+        }
+    }
+    return presets;
 }
 
 }  // namespace util

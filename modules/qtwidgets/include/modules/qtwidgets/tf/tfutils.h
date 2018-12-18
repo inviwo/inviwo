@@ -34,8 +34,11 @@
 #include <inviwo/core/datastructures/tfprimitiveset.h>
 
 class QWidget;
+class QMenu;
 
 namespace inviwo {
+
+class TransferFunctionProperty;
 
 namespace util {
 
@@ -60,6 +63,19 @@ IVW_MODULE_QTWIDGETS_API void importFromFile(TFPrimitiveSet& primitiveSet,
  */
 IVW_MODULE_QTWIDGETS_API void exportToFile(const TFPrimitiveSet& primitiveSet,
                                            QWidget* parent = nullptr);
+
+/**
+ * \brief create a submenu containing entries for TF presets of all transfer functions found in
+ * the path `PathType::TransferFunctions`. Upon selecting a menu entry, the respective preset will
+ * be loaded by \p property. The submenu will be disabled if \p property is read-only.
+ *
+ * @param parent     parent widget
+ * @param menu       parent menu to which the TF preset submenu should be added
+ * @param property   this property will load the TF presets once the menu entries are triggered
+ * @return newly created submenu, which is owned by \p parent
+ */
+IVW_MODULE_QTWIDGETS_API QMenu* addTFPresetsMenu(QWidget* parent, QMenu* menu,
+                                                 TransferFunctionProperty* property);
 
 }  // namespace util
 
