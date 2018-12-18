@@ -233,6 +233,13 @@ void TransferFunction::load(const std::string& filename, const FileExtension& ex
                 points.push_back(rgba);
             }
             if (points.empty()) return;
+            if (std::count_if(points.begin(), points.end(),
+                              [](const auto& p) { return p.a == 0.0f; }) == points.size()) {
+                // all points have zero alpha, assign alpha = 1
+                for (auto& p : points) {
+                    p.a = 1.0f;
+                }
+            }
 
             std::vector<std::pair<std::ptrdiff_t, vec4>> uniquePoints;
             uniquePoints.emplace_back(0, points.front());
