@@ -108,6 +108,7 @@ std::shared_ptr<inviwo::Layer> PNGLayerReader::readData(const std::string& fileP
             channels = 1;
             break;
         case PNG_COLOR_TYPE_PALETTE:
+            [[fallthrough]];
         case PNG_COLOR_TYPE_RGB:
             swizzleMask = swizzlemasks::rgb;
             channels = 3;

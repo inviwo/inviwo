@@ -1,3 +1,3 @@
-# png Module
+# PNG Module
 
-Description of the png module
+Enables support for reading and writing PNG image files.
