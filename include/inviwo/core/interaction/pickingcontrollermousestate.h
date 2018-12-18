@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,24 +26,26 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <inviwo/core/interaction/events/interactionevent.h>
-#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/common/inviwocoredefine.h>
 
 namespace inviwo {
 
-InteractionEvent::InteractionEvent(KeyModifiers modifiers) : Event(), modifiers_(modifiers) {}
+struct PickingControllerMouseStateSM;
+class MouseEvent;
+class EventPropagator;
 
-KeyModifiers InteractionEvent::modifiers() const { return modifiers_; }
-void InteractionEvent::setModifiers(KeyModifiers modifiers) { modifiers_ = modifiers; }
+class IVW_CORE_API PickingControllerMouseState {
+public:
+    PickingControllerMouseState();
+    PickingControllerMouseState(const PickingControllerMouseState&) = delete;
+    PickingControllerMouseState& operator=(const PickingControllerMouseState&) = delete;
+    ~PickingControllerMouseState();
 
-std::string InteractionEvent::modifierNames() const {
-    std::stringstream ss;
-    ss << modifiers_;
-    return ss.str();
-}
+    void propagateEvent(MouseEvent* e, EventPropagator* propagator, size_t globalId);
 
-void InteractionEvent::setToolTipCallback(ToolTipCallback tooltip) { tooltip_ = tooltip; }
-auto InteractionEvent::getToolTipCallback() const -> const ToolTipCallback& { return tooltip_; }
+    std::unique_ptr<PickingControllerMouseStateSM> msm;
+};
 
 }  // namespace inviwo

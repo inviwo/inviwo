@@ -47,6 +47,10 @@ public:
     struct Result {
         size_t index;
         const PickingAction* action;
+
+        size_t getLocalPickingId() const {
+            return action->getLocalPickingId(index);
+        };
     };
 
     PickingManager();
@@ -69,7 +73,9 @@ public:
     static size_t colorToIndex(uvec3 color);
 
     Result getPickingActionFromColor(const uvec3& color);
+    Result getPickingActionFromIndex(size_t index);
 
+    bool isRegisterPickingAction(const PickingAction* action) const; 
 private:
     // start indexing at 1, 0 maps to black {0,0,0} and indicated no picking.
     size_t lastIndex_ = 1;

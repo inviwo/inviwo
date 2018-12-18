@@ -27,13 +27,8 @@
  *
  *********************************************************************************/
 
-layout(location = 4) in uint in_PickId;
-layout(location = 5) in float in_SphereRadii;
-
 #include "utils/structs.glsl"
-
 uniform GeometryParameters geometry;
-uniform CameraParameters camera;
 
 uniform vec4 customColor = vec4(1, 0, 0, 1);
 uniform float customRadius = 0.1f;
@@ -43,22 +38,30 @@ out vec4 sphereColor_;
 flat out float sphereRadius_;
 flat out uint pickID_;
 
+uniform sampler2D metaColor;
+
 void main(void) {
-#if defined(UNIFORM_RADIUS)
-    sphereRadius_ = customRadius;
-#else
-    sphereRadius_ = in_SphereRadii;
-#endif  // UNIFORM_RADIUS
 
-#if defined(UNIFORM_COLOR)
-    sphereColor_ = customColor;
-#else
+#if defined(HAS_SCALARMETA) && !defined(UNIFORM_COLOR)
+    sphereColor_ = texture(metaColor, vec2(in_ScalarMeta, 0.5));
+#elif defined(HAS_COLOR) && !defined(UNIFORM_COLOR)
     sphereColor_ = in_Color;
-#endif // UNIFORM_COLOR
+#else
+    sphereColor_ = customColor;
+#endif
 
-    worldPosition_ = geometry.dataToWorld * vec4(in_Vertex.xyz, 1.0);
+#if defined(HAS_RADII) && !defined(UNIFORM_RADIUS)
+    sphereRadius_ = in_Radii;
+#else 
+    sphereRadius_ = customRadius;
+#endif
 
+#if defined(HAS_PICKING)
+    pickID_ = in_Picking;
+#else 
+    pickID_ = 0;
+#endif
+
+    worldPosition_ = geometry.dataToWorld * vec4(in_Position.xyz, 1.0);
     gl_Position = worldPosition_;
-
-    pickID_ = in_PickId;
 }

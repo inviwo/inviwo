@@ -373,11 +373,18 @@ void ShaderObject::compile() {
 #endif
 }
 
-void ShaderObject::addShaderDefine(std::string name, std::string value) {
+void ShaderObject::addShaderDefine(const std::string& name, const std::string& value) {
     shaderDefines_[name] = value;
 }
+void ShaderObject::setShaderDefine(const std::string& name, bool exists, const std::string& value) {
+    if (exists) {
+        addShaderDefine(name, value);
+    } else {
+        removeShaderDefine(name);
+    }
+}
 
-void ShaderObject::removeShaderDefine(std::string name) { shaderDefines_.erase(name); }
+void ShaderObject::removeShaderDefine(const std::string& name) { shaderDefines_.erase(name); }
 
 bool ShaderObject::hasShaderDefine(const std::string& name) const {
     return shaderDefines_.find(name) != shaderDefines_.end();
@@ -385,11 +392,13 @@ bool ShaderObject::hasShaderDefine(const std::string& name) const {
 
 void ShaderObject::clearShaderDefines() { shaderDefines_.clear(); }
 
-void ShaderObject::addShaderExtension(std::string extName, bool enabled) {
+void ShaderObject::addShaderExtension(const std::string& extName, bool enabled) {
     shaderExtensions_[extName] = enabled;
 }
 
-void ShaderObject::removeShaderExtension(std::string extName) { shaderExtensions_.erase(extName); }
+void ShaderObject::removeShaderExtension(const std::string& extName) {
+    shaderExtensions_.erase(extName);
+}
 
 bool ShaderObject::hasShaderExtension(const std::string& extName) const {
     return shaderExtensions_.find(extName) != shaderExtensions_.end();
@@ -397,7 +406,8 @@ bool ShaderObject::hasShaderExtension(const std::string& extName) const {
 
 void ShaderObject::clearShaderExtensions() { shaderExtensions_.clear(); }
 
-void ShaderObject::addOutDeclaration(std::string name, int location, const std::string& type) {
+void ShaderObject::addOutDeclaration(const std::string& name, int location,
+                                     const std::string& type) {
     addOutDeclaration(OutDeclaration{name, location, type});
 }
 
@@ -417,12 +427,11 @@ auto ShaderObject::getOutDeclarations() const -> const std::vector<OutDeclaratio
 
 void ShaderObject::clearOutDeclarations() { outDeclarations_.clear(); }
 
-void ShaderObject::ShaderObject::addInDeclaration(std::string name, int location,
+void ShaderObject::ShaderObject::addInDeclaration(const std::string& name, int location,
                                                   const std::string& type) {
     addInDeclaration(InDeclaration{name, location, type});
 }
 void ShaderObject::addInDeclaration(const InDeclaration& decl) {
-
     auto it = util::find_if(inDeclarations_,
                             [&](const InDeclaration& elem) { return elem.name == decl.name; });
     if (it != inDeclarations_.end()) {

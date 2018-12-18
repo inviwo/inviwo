@@ -632,6 +632,77 @@ std::shared_ptr<const ShaderResource> findShaderResource(const std::string& file
     return resource;
 }
 
+std::vector<std::pair<ShaderType, std::shared_ptr<const ShaderResource>>> toShaderResources(
+    const std::vector<std::pair<ShaderType, std::string>>& items) {
+
+    std::vector<std::pair<ShaderType, std::shared_ptr<const ShaderResource>>> res;
+    for (auto& item : items) {
+        res.emplace_back(item.first, utilgl::findShaderResource(item.second));
+    }
+    return res;
+}
+
+std::string getGLSLTypeName(const DataFormatBase* format) {
+    if (format->getComponents() == 1) {
+        switch (format->getNumericType()) {
+            case NumericType::Float: {
+                switch (format->getPrecision()) {
+                    case 32:
+                        return "float";
+                    case 64:
+                        return "double";
+                    default:
+                        return "";
+                }
+            }
+            case NumericType::UnsignedInteger: {
+                if (format->getPrecision() < 64) {
+                    return "uint";
+                } else {
+                    return "";
+                }
+            }
+            case NumericType::SignedInteger: {
+                if (format->getPrecision() < 64) {
+                    return "int";
+                } else {
+                    return "";
+                }
+            }
+            default:
+                return "";
+        }
+    } else {
+        const auto comp = toString(format->getComponents());
+        switch (format->getNumericType()) {
+            case NumericType::Float: {
+                switch (format->getPrecision()) {
+                    case 32:
+                        return "vec" + comp;
+                    case 64:
+                        return "dvec" + comp;
+                    default:
+                        return "";
+                }
+            }
+            case NumericType::UnsignedInteger: {
+                if (format->getPrecision() < 64) {
+                    return "uvec" + comp;
+                } else {
+                    return "";
+                }
+            }
+            case NumericType::SignedInteger: {
+                if (format->getPrecision() < 64) {
+                    return "ivec" + comp;
+                } else {
+                    return "";
+                }
+            }
+        }
+    }
+}
+
 }  // namespace utilgl
 
 }  // namespace inviwo

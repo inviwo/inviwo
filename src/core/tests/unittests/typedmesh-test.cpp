@@ -140,7 +140,7 @@ TEST(buffertraits, texcoordbuffer2) {
 }
 
 TEST(buffertraits, radiibuffer) {
-    EXPECT_EQ(BufferType::NumberOfBufferTypes, buffertraits::RadiiBuffer::bi().type);
+    EXPECT_EQ(BufferType::RadiiAttrib, buffertraits::RadiiBuffer::bi().type);
     ASSERT_EQ(1, util::extent<buffertraits::RadiiBuffer::type>::value)
         << "buffertraits::RadiiBuffer expected to hold float";
 

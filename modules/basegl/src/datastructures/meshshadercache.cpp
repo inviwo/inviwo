@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,23 +27,8 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/interaction/events/interactionevent.h>
-#include <inviwo/core/util/stringconversion.h>
+#include <modules/basegl/datastructures/meshshadercache.h>
 
 namespace inviwo {
-
-InteractionEvent::InteractionEvent(KeyModifiers modifiers) : Event(), modifiers_(modifiers) {}
-
-KeyModifiers InteractionEvent::modifiers() const { return modifiers_; }
-void InteractionEvent::setModifiers(KeyModifiers modifiers) { modifiers_ = modifiers; }
-
-std::string InteractionEvent::modifierNames() const {
-    std::stringstream ss;
-    ss << modifiers_;
-    return ss.str();
-}
-
-void InteractionEvent::setToolTipCallback(ToolTipCallback tooltip) { tooltip_ = tooltip; }
-auto InteractionEvent::getToolTipCallback() const -> const ToolTipCallback& { return tooltip_; }
 
 }  // namespace inviwo

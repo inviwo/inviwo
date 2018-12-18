@@ -46,19 +46,17 @@ size_t PickingAction::getPickingId(size_t id) const {
     }
 }
 
-size_t PickingAction::getLocalPickingId(size_t id) const {
-    if (id < start_) {
-        throw RangeException("Global picking ID " + toString(id) + " not in range (" +
+bool PickingAction::isIndex(size_t globalId) const {
+    return globalId >= start_ && globalId < start_ + size_;
+}
+
+size_t PickingAction::getLocalPickingId(size_t globalId) const {
+    if (!isIndex(globalId)) {
+        throw RangeException("Global picking ID " + toString(globalId) + " not in range (" +
                                  toString(start_) + " - " + toString(start_ + size_) + ")",
                              IvwContext);
     }
-    auto localID = id - start_;
-    if (localID >= size_) {
-        throw RangeException("Global picking ID " + toString(id) + " not in range (" +
-                                 toString(start_) + " - " + toString(start_ + size_) + ")",
-                             IvwContext);
-    }
-    return localID;
+    return globalId - start_;
 }
 
 vec3 PickingAction::getColor(size_t id) const {
