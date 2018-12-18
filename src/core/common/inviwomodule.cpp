@@ -150,11 +150,13 @@ std::string InviwoModule::getPath() const {
 
 std::string InviwoModule::getPath(ModulePath type) const {
     std::string path = getPath();
+    // clang-format off
     switch (type) {
         case ModulePath::Data:               return path + "/data";
         case ModulePath::Images:             return path + "/data/images";
         case ModulePath::PortInspectors:     return path + "/data/portinspectors";
         case ModulePath::Scripts:            return path + "/data/scripts";
+        case ModulePath::TransferFunctions:  return path + "/data/transferfunctions";
         case ModulePath::Volumes:            return path + "/data/volumes";
         case ModulePath::Workspaces:         return path + "/data/workspaces";
         case ModulePath::Docs:               return path + "/docs";
@@ -167,6 +169,7 @@ std::string InviwoModule::getPath(ModulePath type) const {
         case ModulePath::CL:                 return path + "/cl";
         default:                             return path;
     }
+    // clang-format on
 }
 
 int InviwoModule::getVersion() const {

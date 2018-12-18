@@ -228,13 +228,14 @@ void TransferFunction::load(const std::string& filename, const FileExtension& ex
             const auto size = lrprecision->getDimensions().x;
 
             std::vector<vec4> points;
+            bool nonZeroAlpha = false;
             for (size_t i = 0; i < size; ++i) {
                 auto rgba = util::glm_convert_normalized<vec4>(data[i]);
+                nonZeroAlpha |= (rgba.a != 0.0f);
                 points.push_back(rgba);
             }
             if (points.empty()) return;
-            if (std::count_if(points.begin(), points.end(),
-                              [](const auto& p) { return p.a == 0.0f; }) == points.size()) {
+            if (!nonZeroAlpha) {
                 // all points have zero alpha, assign alpha = 1
                 for (auto& p : points) {
                     p.a = 1.0f;
