@@ -29,6 +29,8 @@
 
 #include <modules/qtwidgets/tf/tfutils.h>
 
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/logcentral.h>
@@ -104,28 +106,34 @@ QMenu* addTFPresetsMenu(QWidget* parent, QMenu* menu, TransferFunctionProperty* 
     presets->setObjectName("TF");
     presets->setEnabled(!property->getReadOnly());
     if (!property->getReadOnly()) {
-        const auto basePath = filesystem::getPath(PathType::TransferFunctions);
-        auto files = filesystem::getDirectoryContentsRecursively(basePath);
-
-        TransferFunction tf;
-
-        for (auto file : files) {
-            for (auto& ext : property->get().getSupportedExtensions()) {
-                if (ext.matches(file)) {
-                    // remove basepath and trailing directory separator
-                    auto action =
-                        presets->addAction(utilqt::toQString(file.substr(basePath.length() + 1)));
-                    QObject::connect(action, &QAction::triggered, parent,
-                                     [parent, property, file, ext]() {
-                                         NetworkLock lock(property);
-                                         property->get().load(file, ext);
-                                     });
-                    tf.load(file, ext);
-                    action->setIcon(QIcon(utilqt::toQPixmap(tf, QSize(120, 20))));
-                    break;
+        auto addPresetActions = [presets, parent, property](const std::string& basePath) {
+            TransferFunction tf;
+            auto files = filesystem::getDirectoryContentsRecursively(basePath);
+            for (auto file : files) {
+                for (auto& ext : property->get().getSupportedExtensions()) {
+                    if (ext.matches(file)) {
+                        // remove basepath and trailing directory separator from filename
+                        auto action = presets->addAction(
+                            utilqt::toQString(file.substr(basePath.length() + 1)));
+                        QObject::connect(action, &QAction::triggered, parent,
+                                         [parent, property, file, ext]() {
+                                             NetworkLock lock(property);
+                                             property->get().load(file, ext);
+                                         });
+                        tf.load(file, ext);
+                        action->setIcon(QIcon(utilqt::toQPixmap(tf, QSize(120, 20))));
+                        break;
+                    }
                 }
             }
+        };
+
+        for (const auto& module : InviwoApplication::getPtr()->getModules()) {
+            auto moduleTFPath = module->getPath(ModulePath::TransferFunctions);
+            if (!filesystem::directoryExists(moduleTFPath)) continue;
+            addPresetActions(moduleTFPath);
         }
+
         if (presets->actions().empty()) {
             auto action = presets->addAction("No Presets Available");
             action->setEnabled(false);
