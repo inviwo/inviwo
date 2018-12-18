@@ -38,6 +38,7 @@
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/io/datawriter.h>
+#include <inviwo/core/io/datawriterexception.h>
 #include <inviwo/core/io/datawriterfactory.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/fileextension.h>

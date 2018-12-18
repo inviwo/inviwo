@@ -1,15 +1,18 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
-## 2918-11-22
+## 2018-12-18
+Extended context menu of transfer function properties. It is now possible to import and export TFs directly in the property widget. Transfer functions located in `data/transferfunctions/` are accessible as TF presets in the context menu of both TF editor and TF property.
+
+## 2018-11-22
 Better handling of linking in port inspectors. Show auto links when dragging in processors, disable auto links by pressing alt. Pressing shift while dragging when dragging in processors enables auto connection for inports.
 
 ## 2018-11-19
-    Converted all Inviwo core modules to use the new structure with include and src folders. 
+Converted all Inviwo core modules to use the new structure with include and src folders. 
 
 ## 2018-11-19
-    Added a `--updateModule` option to inviwo-meta-cli.exe it will update a module to use include and src folders.
-    Move all `.h` file into the `include/<org>/<module>` sub folder and all `.cpp` into the `src ` folder. 
-    except for files under `/ext`, `/tests`, or paths excluded be the given filters.
+Added a `--updateModule` option to inviwo-meta-cli.exe it will update a module to use include and src folders.
+Move all `.h` file into the `include/<org>/<module>` sub folder and all `.cpp` into the `src ` folder. 
+except for files under `/ext`, `/tests`, or paths excluded be the given filters.
 
 ## 2018-11-14
 Added an option to control if a module should be on by default, and remove the old global setting.

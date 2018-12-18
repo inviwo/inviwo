@@ -33,6 +33,7 @@
 #include <inviwo/core/datastructures/image/layerramprecision.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/io/datawriter.h>
+#include <inviwo/core/io/datawriterexception.h>
 #include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/io/datareaderexception.h>
@@ -227,11 +228,19 @@ void TransferFunction::load(const std::string& filename, const FileExtension& ex
             const auto size = lrprecision->getDimensions().x;
 
             std::vector<vec4> points;
+            bool nonZeroAlpha = false;
             for (size_t i = 0; i < size; ++i) {
                 auto rgba = util::glm_convert_normalized<vec4>(data[i]);
+                nonZeroAlpha |= (rgba.a != 0.0f);
                 points.push_back(rgba);
             }
             if (points.empty()) return;
+            if (!nonZeroAlpha) {
+                // all points have zero alpha, assign alpha = 1
+                for (auto& p : points) {
+                    p.a = 1.0f;
+                }
+            }
 
             std::vector<std::pair<std::ptrdiff_t, vec4>> uniquePoints;
             uniquePoints.emplace_back(0, points.front());

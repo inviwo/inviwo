@@ -34,6 +34,7 @@
 #include <modules/qtwidgets/editablelabelqt.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/qtwidgets/inviwowidgetsqt.h>
+#include <modules/qtwidgets/tf/tfutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -82,4 +83,29 @@ void IsoValuePropertyWidgetQt::updateFromProperty() { btnOpenTF_->updateFromProp
 
 void IsoValuePropertyWidgetQt::setReadOnly(bool readonly) { label_->setDisabled(readonly); }
 
+std::unique_ptr<QMenu> IsoValuePropertyWidgetQt::getContextMenu() {
+    auto menu = PropertyWidgetQt::getContextMenu();
+
+    menu->addSeparator();
+
+    auto clearTF = menu->addAction("&Clear Isovalues");
+    clearTF->setEnabled(!property_->getReadOnly());
+
+    connect(clearTF, &QAction::triggered, this, [this]() {
+        NetworkLock lock(property_);
+        static_cast<IsoValueProperty*>(property_)->get().clear();
+    });
+
+    auto importIso = menu->addAction("&Import Isovalues...");
+    auto exportIso = menu->addAction("&Export Isovalues...");
+    importIso->setEnabled(!property_->getReadOnly());
+    connect(importIso, &QAction::triggered, this, [this]() {
+        util::importFromFile(static_cast<IsoValueProperty*>(property_)->get(), this);
+    });
+    connect(exportIso, &QAction::triggered, this, [this]() {
+        util::exportToFile(static_cast<IsoValueProperty*>(property_)->get(), this);
+    });
+
+    return menu;
+}
 }  // namespace inviwo

@@ -29,6 +29,7 @@
 
 #include <modules/base/io/ivfsequencevolumewriter.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/io/datawriterexception.h>
 
 namespace inviwo {
 

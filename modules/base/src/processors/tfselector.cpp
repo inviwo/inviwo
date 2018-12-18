@@ -36,11 +36,11 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo TFSelector::processorInfo_{
-    "org.inviwo.TFSelector",            // Class identifier
-    "Transfer Function Selector",       // Display name
-    "Volume Rendering",                 // Category
-    CodeState::Stable,                  // Code state
-    "Transfer Function, Presets, UI,",  // Tags
+    "org.inviwo.TFSelector",               // Class identifier
+    "Transfer Function Selector",          // Display name
+    "Transfer Function",                   // Category
+    CodeState::Stable,                     // Code state
+    "Transfer Function, TF, Presets, UI",  // Tags
 };
 
 const ProcessorInfo TFSelector::getProcessorInfo() const { return processorInfo_; }

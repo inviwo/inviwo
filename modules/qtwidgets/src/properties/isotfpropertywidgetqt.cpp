@@ -34,6 +34,7 @@
 #include <modules/qtwidgets/editablelabelqt.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/qtwidgets/inviwowidgetsqt.h>
+#include <modules/qtwidgets/tf/tfutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -61,8 +62,7 @@ IsoTFPropertyWidgetQt::IsoTFPropertyWidgetQt(IsoTFProperty* property)
 
     connect(btnOpenTF_, &IvwPushButton::clicked, [this, property]() {
         if (!tfDialog_) {
-            tfDialog_ =
-                std::make_unique<TFPropertyDialog>(property);
+            tfDialog_ = std::make_unique<TFPropertyDialog>(property);
             tfDialog_->setVisible(true);
         } else {
             tfDialog_->setVisible(!tfDialog_->isVisible());
@@ -85,5 +85,47 @@ TFPropertyDialog* IsoTFPropertyWidgetQt::getEditorWidget() const { return tfDial
 bool IsoTFPropertyWidgetQt::hasEditorWidget() const { return tfDialog_ != nullptr; }
 
 void IsoTFPropertyWidgetQt::setReadOnly(bool readonly) { label_->setDisabled(readonly); }
+
+std::unique_ptr<QMenu> IsoTFPropertyWidgetQt::getContextMenu() {
+    auto menu = PropertyWidgetQt::getContextMenu();
+
+    menu->addSeparator();
+
+    util::addTFPresetsMenu(this, menu.get(), &static_cast<IsoTFProperty*>(property_)->tf_);
+
+    auto clearTF = menu->addAction("&Clear TF & Isovalues");
+    clearTF->setEnabled(!property_->getReadOnly());
+
+    connect(clearTF, &QAction::triggered, this, [this]() {
+        NetworkLock lock(property_);
+        auto p = static_cast<IsoTFProperty*>(property_);
+        p->tf_.get().clear();
+        p->isovalues_.get().clear();
+    });
+
+    auto importMenu = menu->addMenu("&Import");
+    auto exportMenu = menu->addMenu("&Export");
+    importMenu->setEnabled(!property_->getReadOnly());
+
+    auto importTF = importMenu->addAction("&TF...");
+    auto importIso = importMenu->addAction("&Isovalues...");
+    connect(importTF, &QAction::triggered, this, [this]() {
+        util::importFromFile(static_cast<IsoTFProperty*>(property_)->tf_.get(), this);
+    });
+    connect(importIso, &QAction::triggered, this, [this]() {
+        util::importFromFile(static_cast<IsoTFProperty*>(property_)->isovalues_.get(), this);
+    });
+
+    auto exportTF = exportMenu->addAction("&TF...");
+    auto exportIso = exportMenu->addAction("&Isovalues...");
+    connect(exportTF, &QAction::triggered, this, [this]() {
+        util::exportToFile(static_cast<IsoTFProperty*>(property_)->tf_.get(), this);
+    });
+    connect(exportIso, &QAction::triggered, this, [this]() {
+        util::exportToFile(static_cast<IsoTFProperty*>(property_)->isovalues_.get(), this);
+    });
+
+    return menu;
+}
 
 }  // namespace inviwo

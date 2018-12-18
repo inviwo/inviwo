@@ -135,9 +135,9 @@ QMainWindow* getApplicationMainWindow() {
     }
 }
 
-QPixmap toQPixmap(const TransferFunctionProperty& tfproperty, const QSize& size) {
+QPixmap toQPixmap(const TransferFunction& tf, const QSize& size) {
     QVector<QGradientStop> gradientStops;
-    for (auto tfpoint : tfproperty.get()) {
+    for (auto tfpoint : tf) {
         vec4 curColor = tfpoint->getColor();
         // increase alpha to allow better visibility by 1 - (1 - a)^4
         curColor.a = 1.0f - std::pow(1.0f - curColor.a, 4.0f);
@@ -145,7 +145,7 @@ QPixmap toQPixmap(const TransferFunctionProperty& tfproperty, const QSize& size)
         gradientStops.append(QGradientStop(tfpoint->getPosition(), utilqt::toQColor(curColor)));
     }
 
-    const auto tfRange = tfproperty.get().getRange();
+    const auto tfRange = tf.getRange();
 
     // set bounds of the gradient
     QLinearGradient gradient;
@@ -171,6 +171,15 @@ QPixmap toQPixmap(const TransferFunctionProperty& tfproperty, const QSize& size)
     tfPainter.fillRect(r, QBrush(checkerBoard));
     // draw TF gradient on top
     tfPainter.fillRect(r, gradient);
+
+    return tfPixmap;
+}
+
+QPixmap toQPixmap(const TransferFunctionProperty& tfproperty, const QSize& size) {
+    auto tfPixmap = toQPixmap(tfproperty.get(), size);
+    QPainter tfPainter(&tfPixmap);
+
+    const auto tfRange = tfproperty.get().getRange();
 
     // draw masking indicators
     const QColor maskColor(25, 25, 25, 150);
