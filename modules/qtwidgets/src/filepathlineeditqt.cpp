@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/filepathlineeditqt.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/core/util/filesystem.h>
 
 #include <warn/push>
@@ -60,20 +61,21 @@ FilePathLineEditQt::FilePathLineEditQt(QWidget* parent)
     QObject::connect(this, &QLineEdit::returnPressed, [this]() {
         if (editingEnabled_) {
             cursorPos_ = -1;
-            path_ = this->text().toStdString();
+            path_ = utilqt::fromQString(text());
             setEditing(false);
         }
     });
     QObject::connect(this, &QLineEdit::editingFinished, [this]() {
         if (editingEnabled_) {
             cursorPos_ = this->cursorPosition();
-            path_ = this->text().toStdString();
+            path_ = utilqt::fromQString(text());
             setEditing(false);
         }
     });
     QObject::connect(this, &LineEditQt::editingCanceled, [this]() {
         // revert changes
         if (editingEnabled_) {
+            setModified(false);
             cursorPos_ = -1;
             updateContents();
             setEditing(false);
@@ -85,6 +87,7 @@ void FilePathLineEditQt::setPath(const std::string &path) {
     if (path_ != path) {
         path_ = path;
         cursorPos_ = -1;
+        setModified(false);
         updateContents();
     }
 }
@@ -140,14 +143,16 @@ void FilePathLineEditQt::mousePressEvent(QMouseEvent *event) {
 }
 
 void FilePathLineEditQt::updateContents() {
+    const bool modified = isModified();
     if (editingEnabled_) {
         // show entire path
-        this->setText(QString::fromStdString(path_));
+        this->setText(utilqt::toQString(path_));
     }
     else {
         // abbreviate file path and show only the file name        
-        this->setText(QString::fromStdString(filesystem::getFileNameWithExtension(path_)));
+        this->setText(utilqt::toQString(filesystem::getFileNameWithExtension(path_)));
     }
+    setModified(modified);
     updateIcon();
 }
 

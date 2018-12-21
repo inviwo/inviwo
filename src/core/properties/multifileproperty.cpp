@@ -142,9 +142,15 @@ void MultiFileProperty::serialize(Serializer& s) const {
         if (!basePath.empty()) {
             if (!workspacePath.empty() && filesystem::sameDrive(workspacePath, basePath)) {
                 workspaceRelative = filesystem::getRelativePath(workspacePath, basePath);
+                if (workspaceRelative.empty()) {
+                    workspaceRelative = ".";
+                }
             }
             if (!ivwdataPath.empty() && filesystem::sameDrive(ivwdataPath, basePath)) {
                 ivwdataRelative = filesystem::getRelativePath(ivwdataPath, basePath);
+                if (ivwdataRelative.empty()) {
+                    ivwdataRelative = ".";
+                }
             }
         }
         workspaceRelativePaths.push_back(workspaceRelative);
@@ -182,22 +188,21 @@ void MultiFileProperty::deserialize(Deserializer& d) {
             const auto basePath = filesystem::getFileDirectory(absolutePaths[i]);
             const auto pattern = filesystem::getFileNameWithExtension(absolutePaths[i]);
 
+            const auto workspaceBasedPath = filesystem::cleanupPath(
+                filesystem::getCanonicalPath(workspacePath + "/" + workspaceRelativePaths[i]));
+            const auto ivwdataBasedPath = filesystem::cleanupPath(
+                filesystem::getCanonicalPath(ivwdataPath + "/" + ivwdataRelativePaths[i]));
+
             if (!basePath.empty() && filesystem::fileExists(basePath)) {
                 continue;
-            } else if (!workspaceRelativePaths[i].empty()) {
-                const auto path = filesystem::cleanupPath(
-                    filesystem::getCanonicalPath(workspacePath + "/" + workspaceRelativePaths[i]));
-                if (filesystem::fileExists(path)) {
-                    absolutePaths[i] = path + "/" + pattern;
-                    modifiedPath = true;
-                }
-            } else if (!ivwdataRelativePaths[i].empty()) {
-                const auto path = filesystem::cleanupPath(
-                    filesystem::getCanonicalPath(ivwdataPath + "/" + ivwdataRelativePaths[i]));
-                if (filesystem::fileExists(path)) {
-                    absolutePaths[i] = path + "/" + pattern;
-                    modifiedPath = true;
-                }
+            } else if (!ivwdataRelativePaths[i].empty() &&
+                       filesystem::fileExists(ivwdataBasedPath)) {
+                absolutePaths[i] = ivwdataBasedPath + "/" + pattern;
+                modifiedPath = true;
+            } else if (!workspaceRelativePaths[i].empty() &&
+                       filesystem::fileExists(workspaceBasedPath)) {
+                absolutePaths[i] = workspaceBasedPath + "/" + pattern;
+                modifiedPath = true;
             }
         }
 
