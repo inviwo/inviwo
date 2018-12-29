@@ -242,9 +242,6 @@ IntegralLineVectorToMesh::IntegralLineVectorToMesh()
         for (auto &prop : getPropertiesByType<ColorByProperty>()) {
             bool t = prop->getKey() == colorBy_.getSelectedIdentifier();
             prop->setVisible(prop->getKey() == colorBy_.getSelectedIdentifier());
-            LogWarn("visibility: " << prop->getKey()
-                                   << " (selected: " << colorBy_.getSelectedIdentifier() << ") "
-                                   << std::boolalpha << t);
         }
     };
     colorBy_.onChange(updateVisibility);
