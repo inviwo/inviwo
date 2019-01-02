@@ -28,7 +28,6 @@
  *********************************************************************************/
 
 #include <inviwo/core/interaction/pickingcontrollermousestate.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/interaction/pickingmanager.h>
 #include <inviwo/core/interaction/events/eventpropagator.h>
@@ -66,14 +65,24 @@ struct Pressing {};
 
 // events;
 struct BaseEvent {
+    BaseEvent(const size_t globalId, MouseEvent* event, EventPropagator* propagator)
+        : globalId{globalId}, event{event}, propagator{propagator} {}
     const size_t globalId;
     MouseEvent* event;
     EventPropagator* propagator;
 };
-struct Move : BaseEvent {};
-struct Press : BaseEvent {};
-struct Release : BaseEvent {};
-struct DblClk : BaseEvent {};
+struct Move : BaseEvent {
+    using BaseEvent::BaseEvent;
+};
+struct Press : BaseEvent {
+    using BaseEvent::BaseEvent;
+};
+struct Release : BaseEvent {
+    using BaseEvent::BaseEvent;
+};
+struct DblClk : BaseEvent {
+    using BaseEvent::BaseEvent;
+};
 
 PickingPressItem mouseButtonToPressItem(MouseButton mb) {
     switch (mb) {
