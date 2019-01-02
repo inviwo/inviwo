@@ -30,6 +30,13 @@
 #ifndef IVW_GEOMETRYTYPE_H
 #define IVW_GEOMETRYTYPE_H
 
+#include <inviwo/core/util/ostreamjoiner.h>
+
+#include <flags/flags.h>
+
+#include <iterator>
+#include <ostream>
+
 namespace inviwo {
 
 enum class CoordinatePlane { XY, XZ, YZ, ZY };

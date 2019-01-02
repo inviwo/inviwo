@@ -62,15 +62,10 @@ public:
     };
 
     MeshShaderCache(std::vector<std::pair<ShaderType, std::shared_ptr<const ShaderResource>>> items,
-                    std::vector<Item> buffers, std::function<void(Shader&)> configureShader)
-        : items_{std::move(items)}
-        , config_{std::move(configureShader)}
-        , buffers_{std::move(buffers)} {}
+                    std::vector<Item> buffers, std::function<void(Shader&)> configureShader);
 
     MeshShaderCache(std::vector<std::pair<ShaderType, std::string>> items,
-                    std::vector<Item> buffers, std::function<void(Shader&)> configureShader)
-        : MeshShaderCache(utilgl::toShaderResources(items), std::move(buffers),
-                          std::move(configureShader)) {}
+                    std::vector<Item> buffers, std::function<void(Shader&)> configureShader);
 
     MeshShaderCache(const MeshShaderCache&) = delete;
     MeshShaderCache(MeshShaderCache&&) = delete;
@@ -78,40 +73,7 @@ public:
     MeshShaderCache& operator=(MeshShaderCache&&) = delete;
     ~MeshShaderCache() = default;
 
-    Shader& getShader(const Mesh& mesh) {
-        std::vector<int> locations(buffers_.size(), -1);
-        for (auto&& item : util::zip(buffers_, locations)) {
-            const auto res = mesh.findBuffer(item.first().bufferType);
-            if (res.first) {
-                item.second() = res.second;
-            } else if (!item.first().optional) {
-                throw Exception(
-                    "Unsupported mesh type, a " + toString(item.first().bufferType) + " is needed",
-                    IVW_CONTEXT);
-            }
-        }
-
-        auto it = shaders_.find(locations);
-        if (it != shaders_.end()) {
-            return it->second;
-        } else {
-            auto ins = shaders_.emplace(locations, Shader(items_, Shader::Build::No));
-            auto& shader = ins.first->second;
-            shader[ShaderType::Vertex]->clearInDeclarations();
-            for (auto&& item : util::zip(buffers_, locations)) {
-                if (item.second() >= 0) {
-                    const auto& buffername = item.first().name;
-                    shader[ShaderType::Vertex]->addInDeclaration("in_" + buffername, item.second(),
-                                                                 item.first().glslType);
-                    for (auto& obj : shader.getShaderObjects()) {
-                        obj.addShaderDefine("HAS_" + toUpper(buffername));
-                    }
-                }
-            }
-            config_(shader);
-            return shader;
-        }
-    }
+    Shader& getShader(const Mesh& mesh);
 
     std::map<std::vector<int>, Shader>& getShaders() { return shaders_; }
 
