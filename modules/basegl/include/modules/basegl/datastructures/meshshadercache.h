@@ -41,6 +41,8 @@
 
 namespace inviwo {
 
+class Mesh;
+
 /**
  * \brief Keeps a set of shaders for various mesh configs
  */
