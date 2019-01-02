@@ -53,6 +53,7 @@
 #include <QMouseEvent>
 #include <QKeyEvent>
 #include <QEvent>
+#include <QHelpEvent>
 #include <QGestureEvent>
 #include <QTouchDevice>
 #include <QTouchEvent>
@@ -61,7 +62,7 @@
 #include <QAction>
 #include <QWidget>
 #include <QApplication>
-#include <QTooltip>
+#include <QToolTip>
 #include <warn/pop>
 
 namespace inviwo {
@@ -91,6 +92,7 @@ protected:
 
     void propagateEvent(Event* e);
     void propagateEvent(MouseInteractionEvent* e);
+    bool showToolTip(QHelpEvent* e);
 
 private:
     void doContextMenu(QMouseEvent* event);
@@ -116,6 +118,8 @@ private:
     int lastNumFingers_;
     vec2 screenPositionNormalized_;
     bool blockContextMenu_;
+
+    std::string toolTipText_;
 };
 
 using CanvasQt = CanvasQtBase<CanvasQGLWidget>;
@@ -230,6 +234,8 @@ bool CanvasQtBase<T>::event(QEvent* e) {
             return mapTouchEvent(static_cast<QTouchEvent*>(e));
         case QEvent::Gesture:
             return mapGestureEvent(static_cast<QGestureEvent*>(e));
+        case QEvent::ToolTip:
+            return showToolTip(static_cast<QHelpEvent*>(e));
         default:
             return QtBase::event(e);
     }
@@ -531,11 +537,20 @@ void CanvasQtBase<T>::propagateEvent(Event* e) {
 template <typename T>
 void CanvasQtBase<T>::propagateEvent(MouseInteractionEvent* e) {
     e->setToolTipCallback([this, e](const std::string& tooltip) -> void {
+        toolTipText_ = tooltip;
         const auto pos = utilqt::toQPoint(util::invertY(e->pos(), e->canvasSize()));
-        QToolTip::showText(this->mapToGlobal(pos.toPoint()), utilqt::toQString(tooltip), this);
+        auto event = std::make_unique<QHelpEvent>(QEvent::ToolTip, pos.toPoint(), this->mapToGlobal(pos.toPoint()));
+        QApplication::postEvent(this, event.release(), Qt::NormalEventPriority);
     });
 
     T::propagateEvent(e);
+}
+
+template <typename T>
+bool CanvasQtBase<T>::showToolTip(QHelpEvent* e) {
+    QToolTip::showText(e->globalPos(), utilqt::toLocalQString(toolTipText_), this);
+    e->accept();
+    return true;
 }
 
 }  // namespace inviwo
