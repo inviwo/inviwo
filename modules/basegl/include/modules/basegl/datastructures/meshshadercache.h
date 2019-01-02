@@ -32,11 +32,9 @@
 
 #include <inviwo/core/datastructures/geometry/geometrytype.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/util/zip.h>
 
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/shader/shaderresource.h>
-#include <modules/opengl/shader/shaderutils.h>
 
 #include <functional>
 #include <map>

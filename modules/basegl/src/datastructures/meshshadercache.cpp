@@ -28,6 +28,10 @@
  *********************************************************************************/
 
 #include <modules/basegl/datastructures/meshshadercache.h>
+#include <modules/opengl/shader/shaderutils.h>
+
+#include <inviwo/core/util/zip.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
 
 namespace inviwo {
 
