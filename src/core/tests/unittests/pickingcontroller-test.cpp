@@ -27,23 +27,25 @@
  *
  *********************************************************************************/
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <gtest/gtest.h>
-#include <warn/pop>
+#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/zip.h>
 
 #include <inviwo/core/interaction/pickingmanager.h>
 #include <inviwo/core/interaction/pickingmapper.h>
 #include <inviwo/core/interaction/pickingaction.h>
-#include <inviwo/core/util/stdextensions.h>
-#include <inviwo/core/util/zip.h>
-
+#include <inviwo/core/interaction/pickingstate.h>
+#include <inviwo/core/interaction/events/event.h>
+#include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/interaction/events/eventpropagator.h>
-
 #include <inviwo/core/interaction/pickingcontrollermousestate.h>
 
 #include <sml/sml.hpp>
 namespace sml = boost::sml;
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <gtest/gtest.h>
+#include <warn/pop>
 
 namespace inviwo {
 
