@@ -51,9 +51,10 @@ DoubleValueDragSpinBox::DoubleValueDragSpinBox(QWidget *parent)
 
     setLayout(layout);
 
-    setFocusProxy(spinBox_);
+    valueDragger_->setFocusPolicy(Qt::NoFocus);
     spinBox_->setFocusPolicy(Qt::WheelFocus);
-    valueDragger_->setFocusPolicy(Qt::ClickFocus);
+    setFocusProxy(spinBox_);
+    setFocusPolicy(spinBox_->focusPolicy());
     spinBox_->setButtonSymbols(QAbstractSpinBox::NoButtons);
 
     connect(spinBox_, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),

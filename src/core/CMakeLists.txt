@@ -99,6 +99,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/interactionhandler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingaction.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingcontroller.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingcontrollermousestate.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingmanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingmapper.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingstate.h
@@ -109,6 +110,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/io/datareaderexception.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/datareaderfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/datawriter.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/io/datawriterexception.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/datawriterfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/imagewriterutil.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/rawvolumeramloader.h
@@ -316,10 +318,10 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/stringlogger.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/systemcapabilities.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/templatesampler.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/util/transformiterator.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/threadpool.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/timer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/tinydirinterface.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/transformiterator.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/utilities.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/vectoroperations.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/volumeramutils.h
@@ -398,6 +400,7 @@ set(SOURCE_FILES
     interaction/interactionhandler.cpp
     interaction/pickingaction.cpp
     interaction/pickingcontroller.cpp
+    interaction/pickingcontrollermousestate.cpp
     interaction/pickingmanager.cpp
     interaction/pickingmapper.cpp
     interaction/trackball.cpp
@@ -406,6 +409,7 @@ set(SOURCE_FILES
     io/datareaderexception.cpp
     io/datareaderfactory.cpp
     io/datawriter.cpp
+    io/datawriterexception.cpp
     io/datawriterfactory.cpp
     io/imagewriterutil.cpp
     io/rawvolumeramloader.cpp
@@ -606,6 +610,7 @@ set(TEST_FILES
     tests/unittests/metadata-test.cpp
     tests/unittests/network-evaluator-test.cpp
     tests/unittests/picking-test.cpp
+    tests/unittests/pickingcontroller-test.cpp
     tests/unittests/serialize-container-test.cpp
     tests/unittests/serializer-test.cpp
     tests/unittests/typedmesh-test.cpp
@@ -661,6 +666,7 @@ target_link_libraries(inviwo-core PUBLIC
     inviwo::tinydir
     inviwo::tclap
     inviwo::warn
+    inviwo::sml
     fmt::fmt
     $<$<BOOL:${IVW_SIGAR}>:inviwo::sigar>
     $<$<BOOL:${WIN32}>:inviwo::stackwalker>
@@ -702,7 +708,7 @@ ivw_register_license_file(NAME "Flags" MODULE Core
 ivw_register_license_file(NAME "{fmt}" target fmt MODULE Core
     URL "https://github.com/fmtlib/fmt"
     TYPE "TBSD 2-Clause"
-    FILES  ${IVW_EXTENSIONS_DIR}/fmt/LICENSE.rst
+    FILES  ${IVW_EXTENSIONS_DIR}/fmt/fmt/LICENSE.rst
 )
 
 ivw_register_license_file(NAME "OpenGL Mathematics (GLM)" VERSION 0.9.9.3 MODULE Core
@@ -768,7 +774,7 @@ endif()
 ivw_register_license_file(NAME "warn" MODULE Core
     URL "https://github.com/petersteneteg/warn"
     TYPE "BSD 2-clause"
-    FILES ${IVW_ROOT_DIR}/tools/codegen/warn/warn/LICENSE
+    FILES ${IVW_TOOLS_DIR}/codegen/warn/warn/LICENSE
 )
 
 ivw_register_license_file(NAME "zlib" TARGET ZLIB::ZLIB MODULE Core

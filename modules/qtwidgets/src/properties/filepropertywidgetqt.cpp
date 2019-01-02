@@ -81,7 +81,9 @@ FilePropertyWidgetQt::FilePropertyWidgetQt(FileProperty* property)
     {
         connect(lineEdit_, &FilePathLineEditQt::editingFinished, this, [this]() {
             // editing is done, sync property with contents
-            property_->set(lineEdit_->getPath());
+            if (lineEdit_->isModified()) {
+                property_->set(lineEdit_->getPath());
+            }
         });
         auto sp = lineEdit_->sizePolicy();
         sp.setHorizontalStretch(3);
@@ -93,7 +95,7 @@ FilePropertyWidgetQt::FilePropertyWidgetQt(FileProperty* property)
         auto revealButton = new QToolButton(this);
         revealButton->setIcon(QIcon(":/icons/about.png"));
         hWidgetLayout->addWidget(revealButton);
-        connect(revealButton, &QToolButton::pressed, [&]() {
+        connect(revealButton, &QToolButton::pressed, this, [&]() {
             auto dir = filesystem::directoryExists(property_->get())
                            ? property_->get()
                            : filesystem::getFileDirectory(property_->get());
@@ -227,6 +229,9 @@ PropertyEditorWidget* FilePropertyWidgetQt::getEditorWidget() const { return edi
 
 bool FilePropertyWidgetQt::hasEditorWidget() const { return editor_ != nullptr; }
 
-void FilePropertyWidgetQt::updateFromProperty() { lineEdit_->setPath(property_->get()); }
+void FilePropertyWidgetQt::updateFromProperty() {
+    lineEdit_->setPath(property_->get());
+    lineEdit_->setModified(false);
+}
 
 }  // namespace inviwo

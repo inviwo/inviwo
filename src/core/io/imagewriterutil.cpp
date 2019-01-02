@@ -34,6 +34,7 @@
 #include <inviwo/core/util/dialogfactory.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/io/datawriter.h>
+#include <inviwo/core/io/datawriterexception.h>
 #include <inviwo/core/io/datawriterfactory.h>
 
 namespace inviwo {

@@ -128,15 +128,16 @@ void RandomSphereGenerator::process() {
                         std::make_shared<Buffer<vec3>>(vertexRAM));
         mesh->addBuffer(Mesh::BufferInfo(BufferType::ColorAttrib),
                         std::make_shared<Buffer<vec4>>(colorRAM));
-        mesh->addBuffer(Mesh::BufferInfo(BufferType::NumberOfBufferTypes, 5),
+        mesh->addBuffer(Mesh::BufferInfo(BufferType::RadiiAttrib),
                         std::make_shared<Buffer<float>>(radiiRAM));
         if (enablePicking_.get()) {
             auto pickingRAM = std::make_shared<BufferRAMPrecision<uint32_t>>(numSpheres);
             auto& data = pickingRAM->getDataContainer();
             // fill in picking IDs
-            std::iota(data.begin(), data.end(), static_cast<uint32_t>(spherePicking_.getPickingId(0)));
+            std::iota(data.begin(), data.end(),
+                      static_cast<uint32_t>(spherePicking_.getPickingId(0)));
 
-            mesh->addBuffer(Mesh::BufferInfo(BufferType::NumberOfBufferTypes, 4),
+            mesh->addBuffer(Mesh::BufferInfo(BufferType::PickingAttrib),
                             std::make_shared<Buffer<uint32_t>>(pickingRAM));
         }
 

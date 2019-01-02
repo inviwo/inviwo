@@ -30,6 +30,13 @@
 #ifndef IVW_GEOMETRYTYPE_H
 #define IVW_GEOMETRYTYPE_H
 
+#include <inviwo/core/util/ostreamjoiner.h>
+
+#include <flags/flags.h>
+
+#include <iterator>
+#include <ostream>
+
 namespace inviwo {
 
 enum class CoordinatePlane { XY, XZ, YZ, ZY };
@@ -47,8 +54,14 @@ enum class BufferType {
     TexcoordAttrib,
     CurvatureAttrib,
     IndexAttrib,
+    RadiiAttrib,
+    PickingAttrib,
+    ScalarMetaAttrib,
     NumberOfBufferTypes
 };
+
+ALLOW_FLAGS_FOR_ENUM(BufferType)
+using BufferTypes = flags::flags<BufferType>;
 
 enum class BufferUsage { Static, Dynamic };
 
@@ -119,13 +132,13 @@ template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, BufferType bt) {
     switch (bt) {
         case BufferType::PositionAttrib:
-            ss << "Positions";
+            ss << "Position";
             break;
         case BufferType::NormalAttrib:
-            ss << "Normals";
+            ss << "Normal";
             break;
         case BufferType::ColorAttrib:
-            ss << "Colors";
+            ss << "Color";
             break;
         case BufferType::TexcoordAttrib:
             ss << "Texture";
@@ -136,9 +149,21 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
         case BufferType::IndexAttrib:
             ss << "Index";
             break;
+        case BufferType::RadiiAttrib:
+            ss << "Radii";
+            break;
+        case BufferType::PickingAttrib:
+            ss << "Picking";
+            break;
+        case BufferType::ScalarMetaAttrib:
+            ss << "ScalarMeta";
+            break;
         case BufferType::NumberOfBufferTypes:
+            ss << "NumberOfBufferTypes";
+            break;
         default:
             ss << "Type not specified";
+            break;
     }
     return ss;
 }

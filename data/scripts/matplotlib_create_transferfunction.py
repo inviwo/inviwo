@@ -2,7 +2,7 @@
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import inviwopy
-from inviwopy.glm import vec2,vec3
+from inviwopy.glm import vec2,vec3,vec4
 
 #http://matplotlib.org/examples/color/colormaps_reference.html
 
@@ -17,7 +17,7 @@ from inviwopy.glm import vec2,vec3
 tf = inviwopy.app.network.VolumeRaycaster.transferFunction
 tf.clear()
 
-cmapName = "hot"
+cmapName = "viridis"
 
 cmap=plt.get_cmap(cmapName)
 
@@ -27,5 +27,5 @@ for i in range(0,N,1):
    x = i / (N-1)
    a = 1.0
    color = cmap(x)
-   tf.addPoint(vec2(x,a), vec3(color[0],color[1],color[2])) 
+   tf.add(x, vec4(color[0],color[1],color[2], a)) 
 

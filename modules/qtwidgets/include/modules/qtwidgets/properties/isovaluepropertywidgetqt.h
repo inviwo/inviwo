@@ -52,6 +52,9 @@ public:
 
     virtual void setReadOnly(bool readonly) override;
 
+protected:
+    virtual std::unique_ptr<QMenu> getContextMenu() override;
+
 private:
     EditableLabelQt* label_;
     TFPushButton* btnOpenTF_;

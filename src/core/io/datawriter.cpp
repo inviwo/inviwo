@@ -30,9 +30,6 @@
 #include <inviwo/core/io/datawriter.h>
 
 namespace inviwo {
-DataWriterException::DataWriterException(const std::string& message, ExceptionContext context)
-    : Exception(message, context) {}
-
 
 DataWriter::DataWriter() : overwrite_(false), extensions_() {}
 

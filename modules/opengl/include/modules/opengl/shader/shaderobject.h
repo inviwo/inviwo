@@ -107,13 +107,14 @@ public:
     void build();
     bool isReady() const;
 
-    void addShaderDefine(std::string name, std::string value = "");
-    void removeShaderDefine(std::string name);
+    void addShaderDefine(const std::string& name, const std::string& value = "");
+    void removeShaderDefine(const std::string& name);
+    void setShaderDefine(const std::string& name, bool exists, const std::string& value = "");
     bool hasShaderDefine(const std::string& name) const;
     void clearShaderDefines();
 
-    void addShaderExtension(std::string extName, bool enabled);
-    void removeShaderExtension(std::string extName);
+    void addShaderExtension(const std::string& extName, bool enabled);
+    void removeShaderExtension(const std::string& extName);
     bool hasShaderExtension(const std::string& extName) const;
     void clearShaderExtensions();
 
@@ -130,7 +131,7 @@ public:
      * @param location  index location of the output (< MAX_RENDER_TARGETS)
      * @param type      type used for the output specifier
      */
-    void addOutDeclaration(std::string name, int location = -1, const std::string& type = "vec4");
+    void addOutDeclaration(const std::string& name, int location = -1, const std::string& type = "vec4");
     void addOutDeclaration(const OutDeclaration& decl);
     void clearOutDeclarations();
     const std::vector<OutDeclaration>& getOutDeclarations() const;
@@ -148,7 +149,7 @@ public:
      * @param location  index location of the output (< MAX_RENDER_TARGETS)
      * @param type      type used for the output specifier
      */
-    void addInDeclaration(std::string name, int location = -1, const std::string& type = "vec4");
+    void addInDeclaration(const std::string& name, int location = -1, const std::string& type = "vec4");
     void addInDeclaration(const InDeclaration& decl);
     void clearInDeclarations();
     const std::vector<InDeclaration>& getInDeclarations() const;

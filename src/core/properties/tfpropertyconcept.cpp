@@ -42,6 +42,11 @@ template <>
 bool TFPropertyModel<TransferFunctionProperty*>::hasTFInternal() const {
     return true;
 }
+template <>
+TransferFunctionProperty* TFPropertyModel<TransferFunctionProperty*>::getTFPropertyInternal()
+    const {
+    return data_;
+}
 
 // IsoValueProperty
 template <>
@@ -81,6 +86,10 @@ bool TFPropertyModel<IsoTFProperty*>::hasTFInternal() const {
 template <>
 bool TFPropertyModel<IsoTFProperty*>::hasIsovaluesInternal() const {
     return true;
+}
+template <>
+TransferFunctionProperty* TFPropertyModel<IsoTFProperty*>::getTFPropertyInternal() const {
+    return &data_->tf_;
 }
 
 }  // namespace util

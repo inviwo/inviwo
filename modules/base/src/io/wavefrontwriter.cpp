@@ -30,6 +30,7 @@
 #include <modules/base/io/wavefrontwriter.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/io/datawriterexception.h>
 
 #include <fstream>
 #include <sstream>

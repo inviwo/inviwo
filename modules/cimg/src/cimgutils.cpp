@@ -31,7 +31,7 @@
 #include <modules/cimg/cimgsavebuffer.h>
 #include <inviwo/core/datastructures/image/layerramprecision.h>
 #include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/io/datawriter.h>
+#include <inviwo/core/io/datawriterexception.h>
 #include <inviwo/core/io/datareaderexception.h>
 #include <algorithm>
 #include <limits>

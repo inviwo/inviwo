@@ -91,7 +91,9 @@ void TubeRendering::process() {
 
         size_t idx = 0;
         for (auto ib : mesh_.getData()->getIndexBuffers()) {
-            if (ib.first.dt == DrawType::Lines && ib.first.ct == ConnectivityType::StripAdjacency) {
+            if (ib.first.dt == DrawType::Lines &&
+                (ib.first.ct == ConnectivityType::StripAdjacency ||
+                 ib.first.ct == ConnectivityType::Adjacency)) {
                 indexBuffersToRender_.push_back(idx);
             } else {
                 nonAdjLineStrips++;
@@ -141,4 +143,4 @@ void TubeRendering::initializeResources() {
     shader_.build();
 }
 
-}  // namespace
+}  // namespace inviwo

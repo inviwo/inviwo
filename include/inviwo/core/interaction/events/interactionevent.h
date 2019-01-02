@@ -36,6 +36,8 @@
 #include <inviwo/core/interaction/events/event.h>
 #include <inviwo/core/interaction/events/keyboardkeys.h>
 
+#include <functional>
+
 namespace inviwo {
 
 class IVW_CORE_API InteractionEvent : public Event {
@@ -49,9 +51,15 @@ public:
     KeyModifiers modifiers() const;
     void setModifiers(KeyModifiers modifiers);
     std::string modifierNames() const;
+    
+
+    using ToolTipCallback = std::function<void(std::string)>;
+    void setToolTipCallback(ToolTipCallback callback);
+    const ToolTipCallback& getToolTipCallback() const;
 
 protected:
     KeyModifiers modifiers_;
+    ToolTipCallback tooltip_;
 };
 
 }  // namespace

@@ -89,6 +89,7 @@ set(HEADER_FILES
     include/modules/qtwidgets/tf/tfeditorprimitive.h
     include/modules/qtwidgets/tf/tfeditorview.h
     include/modules/qtwidgets/tf/tfpropertydialog.h
+    include/modules/qtwidgets/tf/tfutils.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -168,6 +169,7 @@ set(SOURCE_FILES
     src/tf/tflineedit.cpp
     src/tf/tfpropertydialog.cpp
     src/tf/tfselectionwatcher.cpp
+    src/tf/tfutils.cpp
     src/tfhelpwindow.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})

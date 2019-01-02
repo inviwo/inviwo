@@ -186,9 +186,6 @@ void setUniforms(Shader& shader, const T& elem, const Ts&... elements) {
 }
 
 IVW_MODULE_OPENGL_API int getLogLineNumber(const std::string& compileLogLine);
-IVW_MODULE_OPENGL_API std::string reformatInfoLog(
-    const std::vector<std::pair<std::string, unsigned int> >& lineNumberResolver,
-    const std::string compileLog);
 
 IVW_MODULE_OPENGL_API std::string getShaderInfoLog(GLuint id);
 
@@ -196,6 +193,11 @@ IVW_MODULE_OPENGL_API std::string getProgramInfoLog(GLuint id);
 
 IVW_MODULE_OPENGL_API std::shared_ptr<const ShaderResource> findShaderResource(
     const std::string& fileName);
+
+IVW_MODULE_OPENGL_API std::vector<std::pair<ShaderType, std::shared_ptr<const ShaderResource>>>
+toShaderResources(const std::vector<std::pair<ShaderType, std::string>>& items);
+
+IVW_MODULE_OPENGL_API std::string getGLSLTypeName(const DataFormatBase* format); 
 
 }  // namespace utilgl
 

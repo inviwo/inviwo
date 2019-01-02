@@ -224,8 +224,11 @@ std::optional<std::string> InviwoModule::findModuleName(const cmake::CMakeFile& 
     return {};
 }
 
-InviwoModule InviwoModule::findInviwoModule(const std::filesystem::path& path,
+InviwoModule InviwoModule::findInviwoModule(const std::filesystem::path& inpath,
                                             const std::filesystem::path& inviwoRepo) {
+
+    auto path = std::filesystem::weakly_canonical(inpath);
+
     const std::filesystem::path inccore = inviwoRepo / "include" / "inviwo" / "core";
     const std::filesystem::path incqt = inviwoRepo / "include" / "inviwo" / "qt" / "editor";
     const std::filesystem::path srccore = inviwoRepo / "src" / "core";

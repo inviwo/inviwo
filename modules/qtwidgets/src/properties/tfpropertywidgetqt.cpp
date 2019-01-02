@@ -31,6 +31,7 @@
 #include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
 #include <modules/qtwidgets/editablelabelqt.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/tf/tfutils.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 
 #include <warn/push>
@@ -99,6 +100,34 @@ TFPropertyDialog* TFPropertyWidgetQt::getEditorWidget() const {
 bool TFPropertyWidgetQt::hasEditorWidget() const { return transferFunctionDialog_ != nullptr; }
 
 void TFPropertyWidgetQt::setReadOnly(bool readonly) { label_->setDisabled(readonly); }
+
+std::unique_ptr<QMenu> TFPropertyWidgetQt::getContextMenu() {
+    auto menu = PropertyWidgetQt::getContextMenu();
+
+    menu->addSeparator();
+
+    util::addTFPresetsMenu(this, menu.get(), static_cast<TransferFunctionProperty*>(property_));
+
+    auto clearTF = menu->addAction("&Clear TF");
+    clearTF->setEnabled(!property_->getReadOnly());
+
+    connect(clearTF, &QAction::triggered, this, [this]() {
+        NetworkLock lock(property_);
+        static_cast<TransferFunctionProperty*>(property_)->get().clear();
+    });
+
+    auto importTF = menu->addAction("&Import TF...");
+    auto exportTF = menu->addAction("&Export TF...");
+    importTF->setEnabled(!property_->getReadOnly());
+    connect(importTF, &QAction::triggered, this, [this]() {
+        util::importFromFile(static_cast<TransferFunctionProperty*>(property_)->get(), this);
+    });
+    connect(exportTF, &QAction::triggered, this, [this]() {
+        util::exportToFile(static_cast<TransferFunctionProperty*>(property_)->get(), this);
+    });
+
+    return menu;
+}
 
 TFPushButton::TFPushButton(TransferFunctionProperty* property, QWidget* parent)
     : IvwPushButton(parent)

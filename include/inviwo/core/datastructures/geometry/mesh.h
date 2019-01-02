@@ -171,6 +171,9 @@ public:
     BufferInfo getBufferInfo(size_t idx) const;
     const IndexBuffer* getIndices(size_t idx) const;
 
+    std::pair<const BufferBase*, int> findBuffer(BufferType type) const;
+    bool hasBuffer(BufferType type) const;
+
     BufferBase* getBuffer(size_t idx);
     IndexBuffer* getIndices(size_t idx);
 

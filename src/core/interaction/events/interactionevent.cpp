@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/interaction/events/interactionevent.h>
@@ -42,4 +42,8 @@ std::string InteractionEvent::modifierNames() const {
     ss << modifiers_;
     return ss.str();
 }
-} // namespace
+
+void InteractionEvent::setToolTipCallback(ToolTipCallback tooltip) { tooltip_ = tooltip; }
+auto InteractionEvent::getToolTipCallback() const -> const ToolTipCallback& { return tooltip_; }
+
+}  // namespace inviwo

@@ -76,12 +76,14 @@ MultiFilePropertyWidgetQt::MultiFilePropertyWidgetQt(MultiFileProperty* property
     QWidget* widget = new QWidget();
     widget->setLayout(hWidgetLayout);
 
-    connect(lineEdit_, &FilePathLineEditQt::editingFinished, [&]() {
+    connect(lineEdit_, &FilePathLineEditQt::editingFinished, this, [this]() {
         // editing is done, sync property with contents
-        property_->set(lineEdit_->getPath());
+        if (lineEdit_->isModified()) {
+            property_->set(lineEdit_->getPath());
+        }
     });
 #if defined(IVW_DEBUG)
-    QObject::connect(lineEdit_, &LineEditQt::editingCanceled, [this]() {
+    QObject::connect(lineEdit_, &LineEditQt::editingCanceled, this, [this]() {
         // undo textual changes by resetting the contents of the line edit
         ivwAssert(
             lineEdit_->getPath() == (!property_->get().empty() ? property_->get().front() : ""),
@@ -97,7 +99,7 @@ MultiFilePropertyWidgetQt::MultiFilePropertyWidgetQt(MultiFileProperty* property
     auto revealButton = new QToolButton(this);
     revealButton->setIcon(QIcon(":/icons/about.png"));
     hWidgetLayout->addWidget(revealButton);
-    connect(revealButton, &QToolButton::pressed, [&]() {
+    connect(revealButton, &QToolButton::pressed, this, [&]() {
         auto fileName = (!property_->get().empty() ? property_->get().front() : "");
         auto dir = filesystem::directoryExists(fileName) ? fileName
                                                          : filesystem::getFileDirectory(fileName);
@@ -224,6 +226,7 @@ void MultiFilePropertyWidgetQt::updateFromProperty() {
     } else {
         lineEdit_->setPath("");
     }
+    lineEdit_->setModified(false);
 }
 
 }  // namespace inviwo

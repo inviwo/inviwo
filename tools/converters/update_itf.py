@@ -11,7 +11,16 @@
 
 import sys
 import os
+import re
 from bs4 import BeautifulSoup
+
+# custom indentation for bs4.BeatuifulSoup.prettify
+# https://stackoverflow.com/questions/15509397/custom-indent-width-for-beautifulsoup-prettify
+orig_prettify = BeautifulSoup.prettify
+r = re.compile(r'^(\s*)', re.MULTILINE)
+def prettify(self, encoding=None, formatter="minimal", indent_width=4):
+    return r.sub(r'\1' * indent_width, orig_prettify(self, encoding, formatter))
+BeautifulSoup.prettify = prettify
 
 def perform(f):
     print("Open file " + f)
@@ -31,37 +40,24 @@ def perform(f):
         print("BEFORE " + 60*"#")
         print(tf.prettify())
         print("AFTER  " + 60*"#")
-
-        np = int(tf.size["content"])
-
-        tf.size.decompose()
     
-        newtf = soup.new_tag("InviwoTreeData")
+        newtf = soup.new_tag("InviwoWorkspace", version="2")
 
-        newtf.append(soup.new_tag("maskMin", content=tf.mask_["x"]))
-        newtf.append(soup.new_tag("maskMax", content=tf.mask_["y"]))
+        newtf.append(tf.maskMin)
+        newtf.append(tf.maskMax)
 
-        tf.mask_.decompose()
+        dps = soup.new_tag("Points")
+        print(tf.point)
 
-        dps = soup.new_tag("dataPoints")
-        for i in range(0,np):
-            p = tf.find("pos"+str(i)).extract()
-            c = tf.find("rgba"+str(i)).extract()
-            p.name = "pos"
-            c.name = "rgba"
+        for i in tf.find_all("point"):
+            newp = soup.new_tag("Point")
         
-            newp = soup.new_tag("point")
-        
-            newp.append(p)
-            newp.append(c)
+            newp.append(soup.new_tag("pos", content=i.pos["x"]))
+            newp.append(i.rgba)
         
             dps.append(newp)
 
         newtf.append(dps)
-        
-        ipt = tf.interpolationType_.extract()
-        ipt.name = "interpolationType_"
-        newtf.append(ipt)
 
         tf.decompose()
 		
