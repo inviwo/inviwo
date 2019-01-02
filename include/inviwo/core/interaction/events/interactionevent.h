@@ -53,7 +53,7 @@ public:
     std::string modifierNames() const;
     
 
-    using ToolTipCallback = std::function<void(std::string)>;
+    using ToolTipCallback = std::function<void(const std::string&)>;
     void setToolTipCallback(ToolTipCallback callback);
     const ToolTipCallback& getToolTipCallback() const;
 

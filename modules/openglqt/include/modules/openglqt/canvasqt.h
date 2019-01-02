@@ -61,6 +61,7 @@
 #include <QAction>
 #include <QWidget>
 #include <QApplication>
+#include <QTooltip>
 #include <warn/pop>
 
 namespace inviwo {
@@ -87,6 +88,9 @@ public:
 protected:
     virtual void setFullScreenInternal(bool fullscreen) override;
     virtual bool event(QEvent* e) override;
+
+    void propagateEvent(Event* e);
+    void propagateEvent(MouseInteractionEvent* e);
 
 private:
     void doContextMenu(QMouseEvent* event);
@@ -165,9 +169,11 @@ void CanvasQtBase<T>::setFullScreenInternal(bool fullscreen) {
         // https://stackoverflow.com/questions/19817881/qt-fullscreen-on-startup
         // No need to process user events, i.e. mouse/keyboard etc.
         QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
-        this->parentWidget()->setWindowState(this->parentWidget()->windowState() | Qt::WindowFullScreen);
+        this->parentWidget()->setWindowState(this->parentWidget()->windowState() |
+                                             Qt::WindowFullScreen);
     } else {
-        this->parentWidget()->setWindowState(this->parentWidget()->windowState() & ~Qt::WindowFullScreen);
+        this->parentWidget()->setWindowState(this->parentWidget()->windowState() &
+                                             ~Qt::WindowFullScreen);
     }
 }
 
@@ -246,7 +252,7 @@ bool CanvasQtBase<T>::mapMousePressEvent(QMouseEvent* e) {
                           this->getImageDimensions(), this->getDepthValueAtNormalizedCoord(pos));
 
     e->accept();
-    Canvas::propagateEvent(&mouseEvent);
+    this->propagateEvent(&mouseEvent);
 
     if (e->button() == Qt::RightButton && mouseEvent.hasBeenUsed()) {
         blockContextMenu_ = true;
@@ -265,7 +271,7 @@ bool CanvasQtBase<T>::mapMouseDoubleClickEvent(QMouseEvent* e) {
                           this->getImageDimensions(), this->getDepthValueAtNormalizedCoord(pos));
 
     e->accept();
-    Canvas::propagateEvent(&mouseEvent);
+    this->propagateEvent(&mouseEvent);
     if (e->button() == Qt::RightButton) {
         blockContextMenu_ = true;
     }
@@ -282,7 +288,7 @@ bool CanvasQtBase<T>::mapMouseReleaseEvent(QMouseEvent* e) {
                           utilqt::getMouseButtons(e), utilqt::getModifiers(e), pos,
                           this->getImageDimensions(), this->getDepthValueAtNormalizedCoord(pos));
     e->accept();
-    Canvas::propagateEvent(&mouseEvent);
+    this->propagateEvent(&mouseEvent);
 
     // Only show context menu when we have not used the event and the mouse have not been dragged.
     if (e->button() == Qt::RightButton && !mouseEvent.hasBeenUsed() && !blockContextMenu_) {
@@ -303,7 +309,7 @@ bool CanvasQtBase<T>::mapMouseMoveEvent(QMouseEvent* e) {
                           utilqt::getModifiers(e), pos, this->getImageDimensions(),
                           this->getDepthValueAtNormalizedCoord(pos));
     e->accept();
-    Canvas::propagateEvent(&mouseEvent);
+    this->propagateEvent(&mouseEvent);
     if (e->button() == Qt::RightButton) {
         blockContextMenu_ = true;
     }
@@ -327,7 +333,7 @@ bool CanvasQtBase<T>::mapWheelEvent(QWheelEvent* e) {
     WheelEvent wheelEvent(utilqt::getMouseWheelButtons(e), utilqt::getModifiers(e), numSteps, pos,
                           this->getImageDimensions(), this->getDepthValueAtNormalizedCoord(pos));
     e->accept();
-    Canvas::propagateEvent(&wheelEvent);
+    this->propagateEvent(&wheelEvent);
     return true;
 }
 
@@ -347,7 +353,7 @@ bool CanvasQtBase<T>::mapKeyPressEvent(QKeyEvent* keyEvent) {
     }
     pressKeyEvent.setModifiers(modifiers);
 
-    Canvas::propagateEvent(&pressKeyEvent);
+    this->propagateEvent(&pressKeyEvent);
     if (pressKeyEvent.hasBeenUsed()) {
         keyEvent->accept();
     } else {
@@ -361,8 +367,8 @@ bool CanvasQtBase<T>::mapKeyReleaseEvent(QKeyEvent* keyEvent) {
     KeyboardEvent releaseKeyEvent(utilqt::getKeyButton(keyEvent), KeyState::Release,
                                   utilqt::getModifiers(keyEvent), keyEvent->nativeVirtualKey(),
                                   utilqt::fromQString(keyEvent->text()));
-    
-    Canvas::propagateEvent(&releaseKeyEvent);
+
+    this->propagateEvent(&releaseKeyEvent);
     if (releaseKeyEvent.hasBeenUsed()) {
         keyEvent->accept();
     } else {
@@ -450,7 +456,7 @@ bool CanvasQtBase<T>::mapTouchEvent(QTouchEvent* touch) {
     lastNumFingers_ = static_cast<int>(touch->touchPoints().size());
     screenPositionNormalized_ = touchEvent.centerPointNormalized();
 
-    Canvas::propagateEvent(&touchEvent);
+    this->propagateEvent(&touchEvent);
     return true;
 }
 
@@ -500,7 +506,7 @@ bool CanvasQtBase<T>::mapPanTriggered(QPanGesture* gesture) {
     GestureEvent ge(deltaPos, 0.0, GestureType::Pan, utilqt::getGestureState(gesture),
                     lastNumFingers_, screenPositionNormalized_, this->getImageDimensions(), depth);
 
-    Canvas::propagateEvent(&ge);
+    this->propagateEvent(&ge);
     return true;
 }
 
@@ -512,11 +518,25 @@ bool CanvasQtBase<T>::mapPinchTriggered(QPinchGesture* gesture) {
                     utilqt::getGestureState(gesture), lastNumFingers_, screenPositionNormalized_,
                     this->getImageDimensions(), depth);
 
-    Canvas::propagateEvent(&ge);
+    this->propagateEvent(&ge);
     return true;
 }
-
 #include <warn/pop>
+
+template <typename T>
+void CanvasQtBase<T>::propagateEvent(Event* e) {
+    T::propagateEvent(e);
+}
+
+template <typename T>
+void CanvasQtBase<T>::propagateEvent(MouseInteractionEvent* e) {
+    e->setToolTipCallback([this, e](const std::string& tooltip) -> void {
+        const auto pos = utilqt::toQPoint(util::invertY(e->pos(), e->canvasSize()));
+        QToolTip::showText(this->mapToGlobal(pos.toPoint()), utilqt::toQString(tooltip), this);
+    });
+
+    T::propagateEvent(e);
+}
 
 }  // namespace inviwo
 
