@@ -27,8 +27,8 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_BRUSHINGLIST_H
-#define IVW_BRUSHINGLIST_H
+#ifndef IVW_RANGELIST_H
+#define IVW_RANGELIST_H
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/dispatcher.h>
@@ -38,32 +38,32 @@ namespace inviwo {
 class BrushingAndLinkingInport;
 class BrushingAndLinkingManager;
 
-class IVW_MODULE_BRUSHINGANDLINKING_API IndexList {
+class IVW_MODULE_BRUSHINGANDLINKING_API RangeList {
 public:
-    IndexList();
-    virtual ~IndexList();
+    RangeList();
+    virtual ~RangeList();
 
     size_t getSize() const;
-    bool has(size_t idx) const;
+    bool has(const vec2& range) const;
 
-    void set(const BrushingAndLinkingInport *src, const std::unordered_set<size_t> &indices);
+    void set(const BrushingAndLinkingInport *src, const std::vector<vec2> &ranges);
     void remove(const BrushingAndLinkingInport *src);
 
     std::shared_ptr<std::function<void()>> onChange(std::function<void()> V);
 
     void update();
     void clear();
-    const std::unordered_set<size_t> &getIndices() const {
-        return indices_;
+    const std::vector<vec2> &getRanges() const {
+        return ranges_;
     }
 
 private:
-    std::unordered_map<const BrushingAndLinkingInport *, std::unordered_set<size_t>>
-        indicesBySource_;
-    std::unordered_set<size_t> indices_;
+    std::unordered_map<const BrushingAndLinkingInport *, std::vector<vec2>>
+        rangesBySource_;
+    std::vector<vec2> ranges_;
     Dispatcher<void()> onUpdate_;
 };
 
 }  // namespace
 
-#endif  // IVW_BRUSHINGLIST_H
+#endif  // IVW_RANGELIST_H

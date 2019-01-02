@@ -228,5 +228,7 @@ void ParallelCoordinatesAxisSettingsProperty::updateBrushing(std::unordered_set<
     }
 }
 
+dvec2 ParallelCoordinatesAxisSettingsProperty::getRange() const { return range_.get(); }
+
 }  // namespace plot
 }  // namespace inviwo

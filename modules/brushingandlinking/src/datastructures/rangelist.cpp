@@ -27,43 +27,53 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_BRUSHINGLIST_H
-#define IVW_BRUSHINGLIST_H
-
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/util/dispatcher.h>
-#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
+#include <modules/brushingandlinking/datastructures/indexlist.h>
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 
 namespace inviwo {
-class BrushingAndLinkingInport;
-class BrushingAndLinkingManager;
 
-class IVW_MODULE_BRUSHINGANDLINKING_API IndexList {
-public:
-    IndexList();
-    virtual ~IndexList();
+RangeList::RangeList() {}
 
-    size_t getSize() const;
-    bool has(size_t idx) const;
+RangeList::~RangeList() {}
 
-    void set(const BrushingAndLinkingInport *src, const std::unordered_set<size_t> &indices);
-    void remove(const BrushingAndLinkingInport *src);
+size_t RangeList::getSize() const { return ranges_.size(); }
 
-    std::shared_ptr<std::function<void()>> onChange(std::function<void()> V);
+bool RangeList::has(const vec2 &range) const {
+    return std::find(ranges_.begin(), ranges_.end(), range) != ranges_.end();
+}
 
-    void update();
-    void clear();
-    const std::unordered_set<size_t> &getIndices() const {
-        return indices_;
+void RangeList::set(const BrushingAndLinkingInport *src, const std::vector<vec2> &ranges) {
+    rangesBySource_[src] = ranges;
+    update();
+}
+
+void RangeList::remove(const BrushingAndLinkingInport *src) {
+    rangesBySource_.erase(src);
+    update();
+}
+
+std::shared_ptr<std::function<void()>> RangeList::onChange(std::function<void()> V) {
+    return onUpdate_.add(V);
+}
+
+void RangeList::update() {
+    ranges_.clear();
+
+    using T = std::unordered_map<const BrushingAndLinkingInport *, std::vector<vec2>>::value_type;
+    util::map_erase_remove_if(rangesBySource_, [](const T &p) {
+        return !p.first->isConnected() ||
+               p.second.empty();  // remove if port is disconnected or if the set is empty
+    });
+
+    for (auto p : rangesBySource_) {
+        ranges_.insert(ranges_.end(), p.second.begin(), p.second.end());
     }
+    onUpdate_.invoke();
+}
 
-private:
-    std::unordered_map<const BrushingAndLinkingInport *, std::unordered_set<size_t>>
-        indicesBySource_;
-    std::unordered_set<size_t> indices_;
-    Dispatcher<void()> onUpdate_;
-};
+void RangeList::clear() {
+    ranges_.clear();
+    update();
+}
 
-}  // namespace
-
-#endif  // IVW_BRUSHINGLIST_H
+}  // namespace inviwo

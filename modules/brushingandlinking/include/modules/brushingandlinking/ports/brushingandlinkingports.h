@@ -40,6 +40,7 @@
 #include <modules/brushingandlinking/events/selectionevent.h>
 #include <modules/brushingandlinking/events/clusterselectionevent.h>
 #include <modules/brushingandlinking/events/someotherselectionevent.h>
+#include <modules/brushingandlinking/events/filteringrangechangedevent.h>
 #include <inviwo/core/datastructures/datatraits.h>
 
 namespace inviwo {
@@ -57,6 +58,7 @@ public:
     void sendClusterSelectionEvent(const std::unordered_set<int> &indices);
 
     void sendSomeOtherSelectionEvent(const std::unordered_set<int> &indices);
+    void sendRangeEvent(const std::vector<vec2> &ranges);
 
     bool isFiltered(size_t idx) const;
     bool isSelected(size_t idx) const;
@@ -67,6 +69,7 @@ public:
     const std::unordered_set<size_t> &getFilteredIndices() const;
     const std::unordered_set<int> & getClusterSelectedIndices() const;
     const std::unordered_set<int> & getSomeOtherSelectedIndices() const;
+    const std::vector<vec2> & getFilterRanges() const;
 
     virtual std::string getClassIdentifier() const override;
 
@@ -74,6 +77,7 @@ public:
     std::unordered_set<size_t> selectionCache_;
     std::unordered_set<int> clusterSelectionCache_;
     std::unordered_set<int> someOtherSelectionCache_;
+    std::vector<vec2> rangeCache_;
 };
 
 class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingOutport

@@ -38,6 +38,9 @@ BrushingAndLinkingInport::BrushingAndLinkingInport(std::string identifier)
     onConnect([&]() {
         sendFilterEvent(filterCache_);
         sendSelectionEvent(selectionCache_);
+        sendClusterSelectionEvent(clusterSelectionCache_);
+        sendSomeOtherSelectionEvent(someOtherSelectionCache_);
+        sendRangeEvent(rangeCache_);
     });
 }
 
@@ -55,17 +58,21 @@ void BrushingAndLinkingInport::sendSelectionEvent(const std::unordered_set<size_
     getProcessor()->propagateEvent(&event, nullptr);
 }
 
-void BrushingAndLinkingInport::sendClusterSelectionEvent(
-        const std::unordered_set<int> &indices) {
+void BrushingAndLinkingInport::sendClusterSelectionEvent(const std::unordered_set<int> &indices) {
     clusterSelectionCache_ = indices;
     ClusterSelectionEvent event(this, clusterSelectionCache_);
     getProcessor()->propagateEvent(&event, nullptr);
 }
 
-void BrushingAndLinkingInport::sendSomeOtherSelectionEvent(
-        const std::unordered_set<int> &indices) {
+void BrushingAndLinkingInport::sendSomeOtherSelectionEvent(const std::unordered_set<int> &indices) {
     someOtherSelectionCache_ = indices;
     SomeOtherSelectionEvent event(this, someOtherSelectionCache_);
+    getProcessor()->propagateEvent(&event, nullptr);
+}
+
+void BrushingAndLinkingInport::sendRangeEvent(const std::vector<vec2> &ranges) {
+    rangeCache_ = ranges;
+    FilteringRangeChangedEvent event(this, rangeCache_);
     getProcessor()->propagateEvent(&event, nullptr);
 }
 
@@ -101,7 +108,7 @@ bool BrushingAndLinkingInport::isSomeOtherSelected(int idx) const {
     }
 }
 
-const std::unordered_set<size_t>& BrushingAndLinkingInport::getSelectedIndices() const {
+const std::unordered_set<size_t> &BrushingAndLinkingInport::getSelectedIndices() const {
     if (isConnected()) {
         return getData()->getSelectedIndices();
     } else {
@@ -117,7 +124,7 @@ const std::unordered_set<size_t> &BrushingAndLinkingInport::getFilteredIndices()
     }
 }
 
-const std::unordered_set<int> & BrushingAndLinkingInport::getClusterSelectedIndices() const {
+const std::unordered_set<int> &BrushingAndLinkingInport::getClusterSelectedIndices() const {
     if (isConnected()) {
         return getData()->getClusterSelectedIndices();
     } else {
@@ -125,11 +132,19 @@ const std::unordered_set<int> & BrushingAndLinkingInport::getClusterSelectedIndi
     }
 }
 
-const std::unordered_set<int> & BrushingAndLinkingInport::getSomeOtherSelectedIndices() const {
+const std::unordered_set<int> &BrushingAndLinkingInport::getSomeOtherSelectedIndices() const {
     if (isConnected()) {
         return getData()->getSomeOtherSelectedIndices();
     } else {
         return someOtherSelectionCache_;
+    }
+}
+
+const std::vector<vec2> &BrushingAndLinkingInport::getFilterRanges() const {
+    if (isConnected()) {
+        return getData()->getFilterRanges();
+    } else {
+        return rangeCache_;
     }
 }
 

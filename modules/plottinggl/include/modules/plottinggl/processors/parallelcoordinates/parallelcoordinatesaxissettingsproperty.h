@@ -97,6 +97,8 @@ public:
 
     std::function<double(size_t)> at = [](size_t) { return 0.0; };
 
+    dvec2 getRange() const;
+
 private:
     BoolProperty usePercentiles_;
     DoubleMinMaxProperty range_;

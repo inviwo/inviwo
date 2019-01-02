@@ -34,6 +34,7 @@
 #include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
 #include <modules/brushingandlinking/datastructures/indexlist.h>
 #include <modules/brushingandlinking/datastructures/signedindexlist.h>
+#include <modules/brushingandlinking/datastructures/rangelist.h>
 #include <inviwo/core/properties/invalidationlevel.h>
 
 namespace inviwo {
@@ -54,6 +55,7 @@ public:
     size_t getNumberOfFiltered() const;
     size_t getNumberOfClusterSelected() const;
     size_t getNumberOfSomeOtherSelected() const;
+    size_t getNumberOfRanges() const;
 
     void remove(const BrushingAndLinkingInport* src);
 
@@ -74,21 +76,27 @@ public:
     void setSomeOtherSelected(const BrushingAndLinkingInport *src,
                               const std::unordered_set<int> &indices);
 
+    void setFilterRanges(const BrushingAndLinkingInport *src,
+                              const std::vector<vec2> &ranges);
+
     const std::unordered_set<size_t>& getSelectedIndices() const;
     const std::unordered_set<size_t>& getFilteredIndices() const;
     const std::unordered_set<int> & getClusterSelectedIndices() const;
     const std::unordered_set<int> & getSomeOtherSelectedIndices() const;
+    const std::vector<vec2> & getFilterRanges() const;
 
 private:
     IndexList selected_;
     IndexList filtered_;
     SignedIndexList clusterSelected_;
     SignedIndexList someOtherSelected_;
+    RangeList ranges_;
 
     std::shared_ptr<std::function<void()>> callback1_;
     std::shared_ptr<std::function<void()>> callback2_;
     std::shared_ptr<std::function<void()>> callback3_;
     std::shared_ptr<std::function<void()>> callback4_;
+    std::shared_ptr<std::function<void()>> callback5_;
 };
 
 }  // namespace inviwo

@@ -27,43 +27,12 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_BRUSHINGLIST_H
-#define IVW_BRUSHINGLIST_H
-
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/util/dispatcher.h>
-#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
+#include <modules/brushingandlinking/events/filteringrangechangedevent.h>
 
 namespace inviwo {
-class BrushingAndLinkingInport;
-class BrushingAndLinkingManager;
 
-class IVW_MODULE_BRUSHINGANDLINKING_API IndexList {
-public:
-    IndexList();
-    virtual ~IndexList();
+FilteringRangeChangedEvent::FilteringRangeChangedEvent(const BrushingAndLinkingInport* src,
+                                                       const std::vector<vec2>& indices)
+    : RangedBrushingAndLinkingEvent(src, indices) {}
 
-    size_t getSize() const;
-    bool has(size_t idx) const;
-
-    void set(const BrushingAndLinkingInport *src, const std::unordered_set<size_t> &indices);
-    void remove(const BrushingAndLinkingInport *src);
-
-    std::shared_ptr<std::function<void()>> onChange(std::function<void()> V);
-
-    void update();
-    void clear();
-    const std::unordered_set<size_t> &getIndices() const {
-        return indices_;
-    }
-
-private:
-    std::unordered_map<const BrushingAndLinkingInport *, std::unordered_set<size_t>>
-        indicesBySource_;
-    std::unordered_set<size_t> indices_;
-    Dispatcher<void()> onUpdate_;
-};
-
-}  // namespace
-
-#endif  // IVW_BRUSHINGLIST_H
+}  // namespace inviwo

@@ -119,8 +119,9 @@ void DataFrame::updateIndexBuffer() {
     const size_t nrows = getNumberOfRows();
 
     auto indexBuffer = std::static_pointer_cast<Buffer<std::uint32_t>>(columns_[0]->getBuffer());
+    indexBuffer->setSize(nrows);
     auto &indexVector = indexBuffer->getEditableRAMRepresentation()->getDataContainer();
-    indexVector.resize(nrows);
+    indexVector.resize(nrows);  // Might be unnecessary
     std::iota(indexVector.begin(), indexVector.end(), 0);
 }
 
@@ -131,6 +132,9 @@ size_t DataFrame::getNumberOfRows() const {
     if (columns_.size() > 1) {
         for (size_t i = 1; i < columns_.size(); i++) {
             size = std::max(size, columns_[i]->getSize());
+        }
+        for (size_t i = 1; i < columns_.size(); i++) {
+            if (columns_[i]->getSize() != size) LogWarn("Dataframe columns of different lengths");
         }
     }
     return size;

@@ -52,6 +52,7 @@ BrushingAndLinkingManager::BrushingAndLinkingManager(Processor* p,
         clusterSelected_.onChange([p, validationLevel]() { p->invalidate(validationLevel); });
     callback4_ =
         someOtherSelected_.onChange([p, validationLevel]() { p->invalidate(validationLevel); });
+    callback5_ = ranges_.onChange([p, validationLevel]() { p->invalidate(validationLevel); });
 }
 
 BrushingAndLinkingManager::~BrushingAndLinkingManager() {}
@@ -68,11 +69,14 @@ size_t BrushingAndLinkingManager::getNumberOfSomeOtherSelected() const {
     return someOtherSelected_.getSize();
 }
 
+size_t BrushingAndLinkingManager::getNumberOfRanges() const { return ranges_.getSize(); }
+
 void BrushingAndLinkingManager::remove(const BrushingAndLinkingInport* src) {
     selected_.remove(src);
     filtered_.remove(src);
     clusterSelected_.remove(src);
     someOtherSelected_.remove(src);
+    ranges_.remove(src);
 }
 
 bool BrushingAndLinkingManager::isFiltered(size_t idx) const { return filtered_.has(idx); }
@@ -97,15 +101,20 @@ void BrushingAndLinkingManager::setFiltered(const BrushingAndLinkingInport* src,
     filtered_.set(src, indices);
 }
 
-void BrushingAndLinkingManager::setClusterSelected(const BrushingAndLinkingInport *src,
-                                                   const std::unordered_set<int> &indices) {
+void BrushingAndLinkingManager::setClusterSelected(const BrushingAndLinkingInport* src,
+                                                   const std::unordered_set<int>& indices) {
     clusterSelected_.set(src, indices);
 }
 
-void BrushingAndLinkingManager::setSomeOtherSelected(const BrushingAndLinkingInport *src,
-                                                     const std::unordered_set<int> &indices) {
+void BrushingAndLinkingManager::setSomeOtherSelected(const BrushingAndLinkingInport* src,
+                                                     const std::unordered_set<int>& indices) {
     someOtherSelected_.set(src, indices);
 }
+
+    void BrushingAndLinkingManager::setFilterRanges(const BrushingAndLinkingInport* src,
+                                                         const std::vector<vec2>& ranges) {
+        ranges_.set(src, ranges);
+    }
 
 const std::unordered_set<size_t>& BrushingAndLinkingManager::getSelectedIndices() const {
     return selected_.getIndices();
@@ -115,12 +124,16 @@ const std::unordered_set<size_t>& BrushingAndLinkingManager::getFilteredIndices(
     return filtered_.getIndices();
 }
 
-const std::unordered_set<int> & BrushingAndLinkingManager::getClusterSelectedIndices() const {
+const std::unordered_set<int>& BrushingAndLinkingManager::getClusterSelectedIndices() const {
     return clusterSelected_.getIndices();
 }
 
-const std::unordered_set<int> & BrushingAndLinkingManager::getSomeOtherSelectedIndices() const {
+const std::unordered_set<int>& BrushingAndLinkingManager::getSomeOtherSelectedIndices() const {
     return someOtherSelected_.getIndices();
 }
+
+    const std::vector<vec2>& BrushingAndLinkingManager::getFilterRanges() const {
+        return ranges_.getRanges();
+    }
 
 }  // namespace inviwo
