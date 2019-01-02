@@ -43,7 +43,7 @@
 
 namespace inviwo {
 
-PickingController::PickingController() = default;
+PickingController::PickingController() : mouseState_{PickingManager::getPtr()} {}
 
 PickingController::~PickingController() = default;
 

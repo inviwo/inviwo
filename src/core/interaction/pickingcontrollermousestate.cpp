@@ -101,14 +101,12 @@ template <typename E>
 auto send(PickingState state, PickingPressState pressState, PickingHoverState hoverState,
           bool updatePrev = true, bool markAsUsed = true) {
     return [state, pressState, hoverState, updatePrev, markAsUsed](
-               const E& fsmEvent, FsmState& fsmState, PreviousFsmState& prev,
-               PressFsmState& press) {
-        auto res = PickingManager::getPtr()->getPickingActionFromIndex(fsmState.active_globalId);
+               const E& fsmEvent, FsmState& fsmState, PreviousFsmState& prev, PressFsmState& press,
+               PickingManager* pickingManager) {
+        auto res = pickingManager->getPickingActionFromIndex(fsmState.active_globalId);
         if (res.index == 0) return;
 
-        const auto pickingAction = res.action;
         auto me = fsmEvent.event;
-
         const PickingPressItem pressItem = mouseButtonToPressItem(me->button());
         const PickingPressItems pressedState = mouseButtonsToPressItems(me->buttonState());
 
@@ -198,14 +196,17 @@ struct Fsm {
 }  // namespace fsm
 
 struct PickingControllerMouseStateSM {
+    PickingControllerMouseStateSM(PickingManager* pickingManager)
+        : pickingManager{pickingManager} {}
+    PickingManager* pickingManager;
     fsm::FsmState state;
     fsm::PreviousFsmState previousState;
     fsm::PressFsmState pressState;
-    sml::sm<fsm::Fsm> sm{state, previousState, pressState};
+    sml::sm<fsm::Fsm> sm{state, previousState, pressState, pickingManager};
 };
 
-PickingControllerMouseState::PickingControllerMouseState()
-    : msm{std::make_unique<PickingControllerMouseStateSM>()} {}
+PickingControllerMouseState::PickingControllerMouseState(PickingManager* pickingManager)
+    : msm{std::make_unique<PickingControllerMouseStateSM>(pickingManager)} {}
 
 PickingControllerMouseState::~PickingControllerMouseState() = default;
 

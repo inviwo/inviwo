@@ -35,10 +35,11 @@ namespace inviwo {
 struct PickingControllerMouseStateSM;
 class MouseEvent;
 class EventPropagator;
+class PickingManager;
 
 class IVW_CORE_API PickingControllerMouseState {
 public:
-    PickingControllerMouseState();
+    PickingControllerMouseState(PickingManager* pickingManager);
     PickingControllerMouseState(const PickingControllerMouseState&) = delete;
     PickingControllerMouseState& operator=(const PickingControllerMouseState&) = delete;
     ~PickingControllerMouseState();
