@@ -55,6 +55,7 @@ int main(int argc, char** argv) {
     inviwo::LogCentral::init(&logger);
     auto logCounter = std::make_shared<inviwo::LogErrorCounter>();
     logger.registerLogger(logCounter);
+    qputenv("QT_STYLE_OVERRIDE","");
     inviwo::InviwoApplicationQt inviwoApp(argc, argv, "Inviwo");
     inviwoApp.setWindowIcon(QIcon(":/inviwo/inviwo_light.png"));
     inviwoApp.setAttribute(Qt::AA_NativeWindows);
