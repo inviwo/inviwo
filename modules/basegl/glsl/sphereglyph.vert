@@ -30,8 +30,8 @@
 #include "utils/structs.glsl"
 uniform GeometryParameters geometry;
 
-uniform vec4 customColor = vec4(1, 0, 0, 1);
-uniform float customRadius = 0.1f;
+uniform vec4 defaultColor = vec4(1, 0, 0, 1);
+uniform float defaultRadius = 0.1f;
 
 out vec4 worldPosition_;
 out vec4 sphereColor_;
@@ -42,18 +42,18 @@ uniform sampler2D metaColor;
 
 void main(void) {
 
-#if defined(HAS_SCALARMETA) && !defined(UNIFORM_COLOR)
+#if defined(HAS_SCALARMETA) && !defined(FORCE_COLOR)
     sphereColor_ = texture(metaColor, vec2(in_ScalarMeta, 0.5));
-#elif defined(HAS_COLOR) && !defined(UNIFORM_COLOR)
+#elif defined(HAS_COLOR) && !defined(FORCE_COLOR)
     sphereColor_ = in_Color;
 #else
-    sphereColor_ = customColor;
+    sphereColor_ = defaultColor;
 #endif
 
-#if defined(HAS_RADII) && !defined(UNIFORM_RADIUS)
+#if defined(HAS_RADII) && !defined(FORCE_RADIUS)
     sphereRadius_ = in_Radii;
 #else 
-    sphereRadius_ = customRadius;
+    sphereRadius_ = defaultRadius;
 #endif
 
 #if defined(HAS_PICKING)
