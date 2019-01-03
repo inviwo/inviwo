@@ -113,7 +113,7 @@ auto send(PickingState state, PickingPressState pressState, PickingHoverState ho
                const E& fsmEvent, FsmState& fsmState, PreviousFsmState& prev, PressFsmState& press,
                PickingManager* pickingManager) {
         auto res = pickingManager->getPickingActionFromIndex(fsmState.active_globalId);
-        if (res.index == 0) return;
+        if (res.index == 0 || !res.action) return;
 
         auto me = fsmEvent.event;
         const PickingPressItem pressItem = mouseButtonToPressItem(me->button());
