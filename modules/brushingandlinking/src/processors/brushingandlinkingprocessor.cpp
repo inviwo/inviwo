@@ -56,15 +56,21 @@ void BrushingAndLinkingProcessor::invokeEvent(Event* event) {
             manager_->setSelected(brushingEvent->getSource(), brushingEvent->getIndices());
             event->markAsUsed();
         }
-    }if (auto brushingEvent = dynamic_cast<SignedBrushingAndLinkingEvent*>(event)) {
-		if (dynamic_cast<ClusterSelectionEvent*>(event)) {
-			manager_->setClusterSelected(brushingEvent->getSource(), brushingEvent->getIndices());
-			event->markAsUsed();
-		}
-		else if (dynamic_cast<SomeOtherSelectionEvent*>(event)) {
-			manager_->setSomeOtherSelected(brushingEvent->getSource(), brushingEvent->getIndices());
-			event->markAsUsed();
-		}
+    }
+    if (auto brushingEvent = dynamic_cast<SignedBrushingAndLinkingEvent*>(event)) {
+        if (dynamic_cast<ClusterSelectionEvent*>(event)) {
+            manager_->setClusterSelected(brushingEvent->getSource(), brushingEvent->getIndices());
+            event->markAsUsed();
+        } else if (dynamic_cast<SomeOtherSelectionEvent*>(event)) {
+            manager_->setSomeOtherSelected(brushingEvent->getSource(), brushingEvent->getIndices());
+            event->markAsUsed();
+        }
+    }
+    if (auto brushingEvent = dynamic_cast<RangedBrushingAndLinkingEvent*>(event)) {
+        if (dynamic_cast<FilteringRangeChangedEvent*>(event)) {
+            manager_->setFilterRanges(brushingEvent->getSource(), brushingEvent->getRanges());
+            event->markAsUsed();
+        }
     }
     Processor::invokeEvent(event);
 }
@@ -78,4 +84,4 @@ BrushingAndLinkingProcessor::BrushingAndLinkingProcessor()
 
 void BrushingAndLinkingProcessor::process() { outport_.setData(manager_); }
 
-}  // namespace
+}  // namespace inviwo

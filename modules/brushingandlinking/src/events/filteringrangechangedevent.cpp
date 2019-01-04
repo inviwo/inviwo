@@ -32,7 +32,7 @@
 namespace inviwo {
 
 FilteringRangeChangedEvent::FilteringRangeChangedEvent(const BrushingAndLinkingInport* src,
-                                                       const std::vector<vec2>& indices)
-    : RangedBrushingAndLinkingEvent(src, indices) {}
+                                                       const std::vector<vec2>& ranges)
+    : RangedBrushingAndLinkingEvent(src, ranges) {}
 
 }  // namespace inviwo

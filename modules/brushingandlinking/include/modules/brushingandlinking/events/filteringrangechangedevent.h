@@ -44,7 +44,7 @@ class IVW_MODULE_BRUSHINGANDLINKING_API FilteringRangeChangedEvent
     : public RangedBrushingAndLinkingEvent {
 public:
     FilteringRangeChangedEvent(const BrushingAndLinkingInport* src,
-                               const std::vector<vec2>& indices);
+                               const std::vector<vec2>& ranges);
     virtual ~FilteringRangeChangedEvent() = default;
 };
 

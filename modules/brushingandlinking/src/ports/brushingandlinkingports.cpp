@@ -40,37 +40,40 @@ BrushingAndLinkingInport::BrushingAndLinkingInport(std::string identifier)
         sendSelectionEvent(selectionCache_);
         sendClusterSelectionEvent(clusterSelectionCache_);
         sendSomeOtherSelectionEvent(someOtherSelectionCache_);
-        sendRangeEvent(rangeCache_);
+        sendFilterRangeChangedEvent(rangeCache_);
     });
 }
 
 void BrushingAndLinkingInport::sendFilterEvent(const std::unordered_set<size_t> &indices) {
-    if (filterCache_.size() == 0 && indices.size() == 0) return;
+    if (filterCache_.empty() && indices.empty()) return;
     filterCache_ = indices;
     FilteringEvent event(this, filterCache_);
     getProcessor()->propagateEvent(&event, nullptr);
 }
 
 void BrushingAndLinkingInport::sendSelectionEvent(const std::unordered_set<size_t> &indices) {
-    if (selectionCache_.size() == 0 && indices.size() == 0) return;
+    if (selectionCache_.empty() && indices.empty()) return;
     selectionCache_ = indices;
     SelectionEvent event(this, selectionCache_);
     getProcessor()->propagateEvent(&event, nullptr);
 }
 
 void BrushingAndLinkingInport::sendClusterSelectionEvent(const std::unordered_set<int> &indices) {
+    if (clusterSelectionCache_.empty() && indices.empty()) return;
     clusterSelectionCache_ = indices;
     ClusterSelectionEvent event(this, clusterSelectionCache_);
     getProcessor()->propagateEvent(&event, nullptr);
 }
 
 void BrushingAndLinkingInport::sendSomeOtherSelectionEvent(const std::unordered_set<int> &indices) {
+    if (someOtherSelectionCache_.empty() && indices.empty()) return;
     someOtherSelectionCache_ = indices;
     SomeOtherSelectionEvent event(this, someOtherSelectionCache_);
     getProcessor()->propagateEvent(&event, nullptr);
 }
 
-void BrushingAndLinkingInport::sendRangeEvent(const std::vector<vec2> &ranges) {
+void BrushingAndLinkingInport::sendFilterRangeChangedEvent(const std::vector<vec2> &ranges) {
+    if (rangeCache_.empty() && ranges.empty()) return;
     rangeCache_ = ranges;
     FilteringRangeChangedEvent event(this, rangeCache_);
     getProcessor()->propagateEvent(&event, nullptr);

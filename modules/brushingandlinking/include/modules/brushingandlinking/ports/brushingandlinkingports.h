@@ -58,7 +58,7 @@ public:
     void sendClusterSelectionEvent(const std::unordered_set<int> &indices);
 
     void sendSomeOtherSelectionEvent(const std::unordered_set<int> &indices);
-    void sendRangeEvent(const std::vector<vec2> &ranges);
+    void sendFilterRangeChangedEvent(const std::vector<vec2> &ranges);
 
     bool isFiltered(size_t idx) const;
     bool isSelected(size_t idx) const;
@@ -67,9 +67,9 @@ public:
 
     const std::unordered_set<size_t> &getSelectedIndices() const;
     const std::unordered_set<size_t> &getFilteredIndices() const;
-    const std::unordered_set<int> & getClusterSelectedIndices() const;
-    const std::unordered_set<int> & getSomeOtherSelectedIndices() const;
-    const std::vector<vec2> & getFilterRanges() const;
+    const std::unordered_set<int> &getClusterSelectedIndices() const;
+    const std::unordered_set<int> &getSomeOtherSelectedIndices() const;
+    const std::vector<vec2> &getFilterRanges() const;
 
     virtual std::string getClassIdentifier() const override;
 
@@ -112,6 +112,7 @@ struct DataTraits<BrushingAndLinkingManager> {
         oss << "Number of cluster selected indices: " << data.getNumberOfClusterSelected()
             << std::endl;
         oss << "Number of some other selected indices: " << data.getNumberOfSomeOtherSelected();
+        oss << "Number of ranges: " << data.getNumberOfRanges();
         doc.append("p", oss.str());
         return doc;
     }

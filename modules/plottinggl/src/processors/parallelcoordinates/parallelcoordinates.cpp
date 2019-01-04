@@ -723,6 +723,16 @@ void ParallelCoordinates::handlePicked(PickingEvent *p) {
         newY = glm::clamp(newY, 0.0, 1.0);
 
         axisVector_[axisID]->moveHandle(upper, newY);
+
+        /*
+         * Send filter ranges
+         */
+        std::vector<vec2> ranges;
+        for (const auto axis : axisVector_) {
+            ranges.emplace_back(axis->getRange());
+        }
+        brushingAndLinking_.sendFilterRangeChangedEvent(ranges);
+
         mouseEvent->markAsUsed();
     }
 }
