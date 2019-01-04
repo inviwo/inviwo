@@ -326,26 +326,32 @@ bool BaseGLModule::Converter::convert(TxElement* root) {
             return res;
         }
         case 3: {
-            res |= xml::changeIdentifier(root,
-                                         {{xml::Kind::processor("org.inviwo.SphereRenderer"),
-                                           xml::Kind::property("org.inviwo.BoolProperty")}},
-                                         "overrideSphereRadius", "forceRadius");
-            res |= xml::changeIdentifier(root,
-                                         {{xml::Kind::processor("org.inviwo.SphereRenderer"),
-                                           xml::Kind::property("org.inviwo.FloatProperty")}},
-                                         "customRadius", "defaultRadius");
-            res |= xml::changeIdentifier(root,
-                                         {{xml::Kind::processor("org.inviwo.SphereRenderer"),
-                                           xml::Kind::property("org.inviwo.BoolProperty")}},
-                                         "overrideSphereColor", "forceColor");
-            res |= xml::changeIdentifier(root,
-                                         {{xml::Kind::processor("org.inviwo.SphereRenderer"),
-                                           xml::Kind::property("org.inviwo.FloatProperty")}},
-                                         "customColor", "defaultColor");
-            res |= xml::changeIdentifier(root,
-                                         {{xml::Kind::processor("org.inviwo.TubeRendering"),
-                                           xml::Kind::property("org.inviwo.SimpleLightingProperty")}},
-                                         "light", "lighting");
+            std::vector<xml::IdentifierReplacement> repl{
+                {{xml::Kind::processor("org.inviwo.SphereRenderer"),
+                  xml::Kind::property("org.inviwo.BoolProperty")},
+                 "overrideSphereRadius",
+                 "forceRadius"},
+                {{xml::Kind::processor("org.inviwo.SphereRenderer"),
+                  xml::Kind::property("org.inviwo.FloatProperty")},
+                 "customRadius",
+                 "defaultRadius"},
+                {{xml::Kind::processor("org.inviwo.SphereRenderer"),
+                  xml::Kind::property("org.inviwo.BoolProperty")},
+                 "overrideSphereColor",
+                 "forceColor"},
+                {{xml::Kind::processor("org.inviwo.SphereRenderer"),
+                  xml::Kind::property("org.inviwo.FloatProperty")},
+                 "customColor",
+                 "defaultColor"},
+                {{xml::Kind::processor("org.inviwo.TubeRendering"),
+                  xml::Kind::property("org.inviwo.SimpleLightingProperty")},
+                 "light",
+                 "lighting"},
+                {{xml::Kind::processor("org.inviwo.TubeRendering"),
+                  xml::Kind::property("org.inviwo.FloatProperty")},
+                 "radius",
+                 "defaultRadius"}};
+            res |= xml::changeIdentifiers(root, repl);
 
             return res;
         }

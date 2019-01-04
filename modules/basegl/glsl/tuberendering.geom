@@ -27,119 +27,122 @@
  *
  *********************************************************************************/
 
-#ifndef GLSL_VERSION_150
-#extension GL_EXT_gpu_shader4 : enable
-#extension GL_EXT_geometry_shader4 : enable
-#endif
-
 #include "utils/structs.glsl"
+#include "utils/pickingutils.glsl"
 
 layout(lines_adjacency) in;
 layout(triangle_strip, max_vertices = 24) out;
 
-
-#include "utils/sampler3d.glsl"
-#include "utils/structs.glsl"
-
 uniform GeometryParameters geometry;
 uniform CameraParameters camera;
 
-
-uniform float radius;
-uniform mat4 ModelviewProjection;
-in vec3 worldPosition_[4]; 
-in vec3 normal_[4];   
 in vec4 vColor_[4];
-vec4 prismoid[8]; 
-
+flat in float vRadius_[4];
+flat in uint pickID_[4];
 
 out vec4 color_;
+flat out vec4 pickColor_;
 out vec3 worldPos_;
 out vec3 startPos_;
 out vec3 endPos_;
 out vec3 gEndplanes[2];
+out float radii[2];
 
-void emitV(int a){
-    color_ = vColor_[a <= 3 ? 1 : 2]; 
-    worldPos_ = prismoid[a].xyz;
-    gl_Position = camera.worldToClip * prismoid[a];  
+vec3 prismoid[8];
+vec4 pickColor;
+vec3 startPos;
+vec3 endPos;
+vec3 capNormals[2];
+
+void emitVertex(int a) { 
+    gl_Position = camera.worldToClip * vec4(prismoid[a], 1.0);  
+    color_ = vColor_[a <= 3 ? 1 : 2];
+    pickColor_ = pickColor;
+    worldPos_ = prismoid[a];
+    startPos_ = startPos;
+    endPos_ = endPos;
+    gEndplanes[0] = capNormals[0];
+    gEndplanes[1] = capNormals[1];
+    radii[0] = vRadius_[1];
+    radii[1] = vRadius_[2];
     EmitVertex();
 }
 
-void emit(int a, int b, int c, int d)
-{
-    emitV(a);
-    emitV(b);
-    emitV(c);
-    emitV(d);
+void emitFace(int a, int b, int c, int d) {
+    emitVertex(a);
+    emitVertex(b);
+    emitVertex(c);
+    emitVertex(d);
     EndPrimitive(); 
 }
 
-vec3 getOrthogonalVector(vec3 v,vec3 A,vec3 B){
-    if(abs(1-dot(v,A))>0.001){
-        return normalize(cross(v,A));
-    }else{
-        return normalize(cross(v,B));
+// v should be normalized
+vec3 findOrthogonalVector(vec3 v) {
+    vec3 A = normalize((camera.viewToWorld * vec4(1,0,0,0)).xyz);
+    if (abs(dot(v,A)) > 0.5) {
+        return cross(v,A);
+    } else {
+        vec3 B = normalize((camera.viewToWorld * vec4(0,0,1,0)).xyz);
+        return cross(v,B);
     }
 }
 
-void main()
-{
+/*  Corners of the prismoid;
+ *   
+ *        7------ 4                     
+ *       /|  p2  /|                 
+ *      / |  *  / |                 
+ *     /  6----/--5                 
+ *    3-------0  /                  
+ *    | / p1  | /                   
+ *    |/  *   |/                    
+ *    2-------1
+ *
+ * if we let p2-p1 -> z i -> x, and k -> y
+ */
+
+void main() {
     // Compute orientation vectors for the two connecting faces:
-    vec3 p0, p1, p2, p3;
+    vec3 p0 = gl_in[0].gl_Position.xyz;
+    vec3 p1 = gl_in[1].gl_Position.xyz;
+    vec3 p2 = gl_in[2].gl_Position.xyz;
+    vec3 p3 = gl_in[3].gl_Position.xyz;
+    if (p1 == p2) return; // zero size segment
 
-#ifndef GLSL_VERSION_150 
-    p0 = gl_PositionIn[0].xyz;
-    p1 = gl_PositionIn[1].xyz;
-    p2 = gl_PositionIn[2].xyz;
-    p3 = gl_PositionIn[3].xyz; 
-#else
-    p0 = gl_in[0].gl_Position.xyz;
-    p1 = gl_in[1].gl_Position.xyz;
-    p2 = gl_in[2].gl_Position.xyz;
-    p3 = gl_in[3].gl_Position.xyz;
-#endif
+    startPos = p1;
+    endPos = p2;
 
-    vec3 n0 = normalize(p1-p0);
-    vec3 n1 = normalize(p2-p1);
-    vec3 n2 = normalize(p3-p2);
-    vec3 u = normalize(n0+n1);
-    vec3 v = normalize(n1+n2);
-    gEndplanes[0] = u;
-    gEndplanes[1] = v;
+    pickColor = vec4(pickingIndexToColor(pickID_[0]), pickID_[0] == 0 ? 0.0 : 1.0);
 
+    vec3 prevDir = p1-p0;
+    vec3 tubeDir = normalize(p2-p1);
+    vec3 nextDir = p3-p2;
+    capNormals[0] = normalize(tubeDir + (prevDir != vec3(0) ? normalize(prevDir) : prevDir));
+    capNormals[1] = normalize(tubeDir + (nextDir != vec3(0) ? normalize(nextDir) : nextDir));
 
-    startPos_ = p1;
-    endPos_ = p2;
-
-
-    vec3 B = normalize((camera.viewToWorld * vec4(0,0,1,0)).xyz);
-    vec3 A = normalize((camera.viewToWorld * vec4(1,0,0,0)).xyz);
-    vec3 N1,N2; 
-    N1 = getOrthogonalVector(n1,A,B);
-    N2 = getOrthogonalVector(n2,A,B);
-
-    // Declare scratch variables for basis vectors:
-    vec3 i,j,k; float r = radius;
+    vec3 radialDir = findOrthogonalVector(tubeDir);
 
     // Compute face 1 of 2:
-    j = u; i = N1; k = normalize(cross(i, j)); i = normalize(cross(k, j)); ; i *= r; k *= r;
-    prismoid[0] = vec4(p1 + i + k, 1);
-    prismoid[1] = vec4(p1 + i - k, 1);
-    prismoid[2] = vec4(p1 - i - k, 1);
-    prismoid[3] = vec4(p1 - i + k, 1);
+    vec3 k = vRadius_[1] * normalize(cross(radialDir, capNormals[0])); 
+    vec3 i = vRadius_[1] * normalize(cross(k, capNormals[0])); 
+    prismoid[0] = p1 + i + k;
+    prismoid[1] = p1 + i - k;
+    prismoid[2] = p1 - i - k;
+    prismoid[3] = p1 - i + k;
 
     // Compute face 2 of 2:
-    j = v; i = N2; k = normalize(cross(i, j)); i = normalize(cross(k, j)); i *= r; k *= r;
-    prismoid[4] = vec4(p2 + i + k, 1);
-    prismoid[5] = vec4(p2 + i - k, 1);
-    prismoid[6] = vec4(p2 - i - k, 1);
-    prismoid[7] = vec4(p2 - i + k, 1);
+    k = vRadius_[2] * normalize(cross(radialDir, capNormals[1])); 
+    i = vRadius_[2] * normalize(cross(k, capNormals[1])); 
+    prismoid[4] = p2 + i + k;
+    prismoid[5] = p2 + i - k;
+    prismoid[6] = p2 - i - k;
+    prismoid[7] = p2 - i + k;
 
     // Emit the six faces of the prismoid:
-    emit(0,1,3,2); emit(5,4,6,7);
-    emit(4,5,0,1); emit(3,2,7,6);
-    emit(0,3,4,7); emit(2,1,6,5);
+    emitFace(0,1,3,2); 
+    emitFace(5,4,6,7);
+    emitFace(4,5,0,1); 
+    emitFace(3,2,7,6);
+    emitFace(0,3,4,7); 
+    emitFace(2,1,6,5);
 }
-
-
