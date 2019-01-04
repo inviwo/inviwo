@@ -77,7 +77,9 @@ protected:
     CameraProperty camera_;
     CameraTrackball trackball_;
     SimpleLightingProperty lighting_;
-
+    std::vector<std::pair<ShaderType, std::string>> shaderItems_;
+    std::vector<MeshShaderCache::Requirement> shaderRequirements_;
+    MeshShaderCache adjacencyShaders_;
     MeshShaderCache shaders_;
 };
 

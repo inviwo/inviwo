@@ -70,17 +70,24 @@ TubeRendering::TubeRendering()
     , camera_("camera", "Camera")
     , trackball_(&camera_)
     , lighting_("light", "Lighting", &camera_)
-    , shaders_{{{ShaderType::Vertex, "tuberendering.vert"},
-                {ShaderType::Geometry, "tuberendering.geom"},
-                {ShaderType::Fragment, "tuberendering.frag"}},
-
-               {{BufferType::PositionAttrib, false, "vec3"},
-                {BufferType::ColorAttrib, true, "vec4"},
-                {BufferType::RadiiAttrib, true, "float"},
-                {BufferType::PickingAttrib, true, "uint"},
-                {BufferType::ScalarMetaAttrib, true, "float"}},
-
-               [&](Shader& shader) -> void {
+    , shaderItems_{{{ShaderType::Vertex, "tuberendering.vert"},
+                    {ShaderType::Geometry, "tuberendering.geom"},
+                    {ShaderType::Fragment, "tuberendering.frag"}}}
+    , shaderRequirements_{{{BufferType::PositionAttrib, MeshShaderCache::Mandatory, "vec3"},
+                           {BufferType::ColorAttrib, MeshShaderCache::Optional, "vec4"},
+                           {BufferType::RadiiAttrib, MeshShaderCache::Optional, "float"},
+                           {BufferType::PickingAttrib, MeshShaderCache::Optional, "uint"},
+                           {BufferType::ScalarMetaAttrib, MeshShaderCache::Optional, "float"}}}
+    , adjacencyShaders_{shaderItems_, shaderRequirements_,
+                        [&](Shader& shader) -> void {
+                            shader.onReload(
+                                [this]() { invalidate(InvalidationLevel::InvalidResources); });
+                            for (auto& obj : shader.getShaderObjects()) {
+                                obj.addShaderDefine("HAS_ADJACENCY");
+                            }
+                            configureShader(shader);
+                        }}
+    , shaders_{shaderItems_, shaderRequirements_, [&](Shader& shader) -> void {
                    shader.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
                    configureShader(shader);
                }} {
@@ -88,7 +95,7 @@ TubeRendering::TubeRendering()
     addPort(inport_);
     addPort(imageInport_);
     imageInport_.setOptional(true);
-    
+
     addPort(outport_);
     outport_.addResizeEventListener(&camera_);
 
@@ -125,36 +132,57 @@ void TubeRendering::process() {
     } else {
         utilgl::activateAndClearTarget(outport_, ImageType::ColorDepthPicking);
     }
+    const auto hasLineAdjacency = [](Mesh::MeshInfo mi) {
+        return mi.dt == DrawType::Lines &&
+               (mi.ct == ConnectivityType::StripAdjacency || mi.ct == ConnectivityType::Adjacency);
+    };
+    const auto hasLine = [](Mesh::MeshInfo mi) {
+        return mi.dt == DrawType::Lines && mi.ct == ConnectivityType::None;
+    };
 
-    for (const auto& mesh : inport_) {
-        auto& shader = shaders_.getShader(*mesh);
+    const auto hasAnyLine = [](const Mesh& mesh, auto test) {
+        if (mesh.getNumberOfIndicies() > 0) {
+            for (size_t i = 0; i < mesh.getNumberOfIndicies(); ++i) {
+                if (test(mesh.getIndexMeshInfo(i))) return true;
+            }
+        } else {
+            if (test(mesh.getDefaultMeshInfo())) return true;
+        }
+        return false;
+    };
+
+    const auto draw = [this, hasAnyLine](const Mesh& mesh, Shader& shader, auto test) {
+        if (!hasAnyLine(mesh, test)) return;
+
         shader.activate();
-
         TextureUnitContainer units;
         utilgl::bindAndSetUniforms(shader, units, metaColor_);
         utilgl::setUniforms(shader, camera_, lighting_, defaultColor_, defaultRadius_);
 
         utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
-        MeshDrawerGL::DrawObject drawer(mesh->getRepresentation<MeshGL>(),
-                                        mesh->getDefaultMeshInfo());
-        utilgl::setShaderUniforms(shader, *mesh, "geometry");
-        if (mesh->getNumberOfIndicies() > 0) {
-            for (size_t i = 0; i < mesh->getNumberOfIndicies(); ++i) {
-                const auto mi = mesh->getIndexMeshInfo(i);
-                if (mi.dt == DrawType::Lines && (mi.ct == ConnectivityType::StripAdjacency ||
-                                                 mi.ct == ConnectivityType::Adjacency)) {
+        MeshDrawerGL::DrawObject drawer(mesh.getRepresentation<MeshGL>(),
+                                        mesh.getDefaultMeshInfo());
+        utilgl::setShaderUniforms(shader, mesh, "geometry");
+        if (mesh.getNumberOfIndicies() > 0) {
+            for (size_t i = 0; i < mesh.getNumberOfIndicies(); ++i) {
+                const auto mi = mesh.getIndexMeshInfo(i);
+                if (test(mi)) {
                     drawer.draw(i);
                 }
             }
         } else {
             // no index buffers, check mesh default draw type
-            const auto mi = mesh->getDefaultMeshInfo();
-            if (mi.dt == DrawType::Lines && (mi.ct == ConnectivityType::StripAdjacency ||
-                                             mi.ct == ConnectivityType::Adjacency)) {
+            const auto mi = mesh.getDefaultMeshInfo();
+            if (test(mi)) {
                 drawer.draw();
             }
         }
         shader.deactivate();
+    };
+
+    for (const auto& mesh : inport_) {
+        draw(*mesh, adjacencyShaders_.getShader(*mesh), hasLineAdjacency);
+        draw(*mesh, shaders_.getShader(*mesh), hasLine);
     }
     utilgl::deactivateCurrentTarget();
 }

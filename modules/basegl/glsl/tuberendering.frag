@@ -39,7 +39,7 @@ in vec3 worldPos_;
 in vec3 startPos_;
 in vec3 endPos_;
 in vec3 gEndplanes[2];
-in float radii[2];
+in float radius_;
 
 vec3 perp(vec3 v) {
     vec3 b = cross(v, vec3(0, 0, 1));
@@ -59,8 +59,7 @@ bool cylinderIntersect(vec3 origin, vec3 dir, out float t) {
     vec3 V = cross(U, W);
     U = normalize(cross(V, W));
     V = normalize(V);
-    float radius = mix(radii[0], radii[1], 0.5); //dot(origin-A, B-A)); 
-    float rSqr = radius*radius;
+    float rSqr = radius_*radius_;
     vec3 diff = origin - 0.5 * (A + B);
     mat3 basis = mat3(U, V, W);
     vec3 P = diff * basis;

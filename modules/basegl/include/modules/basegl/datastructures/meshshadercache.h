@@ -48,24 +48,27 @@ class Mesh;
  */
 class IVW_MODULE_BASEGL_API MeshShaderCache {
 public:
-    struct Item {
-        Item(BufferType aBufferType, bool aOptional = false, const std::string& aGlslType = "vec4",
-             const std::string& aName = "")
-            : bufferType{aBufferType}
-            , optional{aOptional}
-            , glslType{aGlslType}
-            , name{aName.empty() ? toString(bufferType) : aName} {}
+    using GetStateFunctor = std::function<int(const Mesh&)>;
+    using UpdateShaderFunctor = std::function<void(int, Shader&)>;
+
+    enum RequireBuffer { Mandatory, Optional };
+
+    struct Requirement {
+        Requirement(BufferType bufferType, RequireBuffer required = Mandatory,
+                    const std::string& glslType = "vec4", const std::string& name = "");
         BufferType bufferType;
-        bool optional;
+        RequireBuffer required;
         std::string glslType;
         std::string name;
     };
 
     MeshShaderCache(std::vector<std::pair<ShaderType, std::shared_ptr<const ShaderResource>>> items,
-                    std::vector<Item> buffers, std::function<void(Shader&)> configureShader);
+                    std::vector<Requirement> requirements,
+                    std::function<void(Shader&)> configureShader);
 
     MeshShaderCache(std::vector<std::pair<ShaderType, std::string>> items,
-                    std::vector<Item> buffers, std::function<void(Shader&)> configureShader);
+                    std::vector<Requirement> requirements,
+                    std::function<void(Shader&)> configureShader);
 
     MeshShaderCache(const MeshShaderCache&) = delete;
     MeshShaderCache(MeshShaderCache&&) = delete;
@@ -77,10 +80,14 @@ public:
 
     std::map<std::vector<int>, Shader>& getShaders() { return shaders_; }
 
+    void addState(GetStateFunctor getState, UpdateShaderFunctor updateShader);
+
 private:
     std::vector<std::pair<ShaderType, std::shared_ptr<const ShaderResource>>> items_;
     std::function<void(Shader&)> config_;
-    const std::vector<Item> buffers_;
+
+    using StateFunctor = std::pair<GetStateFunctor, UpdateShaderFunctor>;
+    std::vector<StateFunctor> stateFunctors_;
     std::map<std::vector<int>, Shader> shaders_;
 };
 

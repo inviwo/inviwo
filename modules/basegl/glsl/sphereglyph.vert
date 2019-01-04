@@ -32,13 +32,13 @@ uniform GeometryParameters geometry;
 
 uniform vec4 defaultColor = vec4(1, 0, 0, 1);
 uniform float defaultRadius = 0.1f;
+uniform sampler2D metaColor;
 
 out vec4 worldPosition_;
 out vec4 sphereColor_;
 flat out float sphereRadius_;
 flat out uint pickID_;
 
-uniform sampler2D metaColor;
 
 void main(void) {
 

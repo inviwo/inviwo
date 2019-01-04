@@ -30,15 +30,26 @@
 #include "utils/structs.glsl"
 #include "utils/pickingutils.glsl"
 
+#ifdef HAS_ADJACENCY
+#define SIZE 4
+#define BEGIN 1
+#define END 2
 layout(lines_adjacency) in;
+#else
+#define SIZE 2
+#define BEGIN 0
+#define END 1
+layout(lines) in;
+#endif
+
 layout(triangle_strip, max_vertices = 24) out;
 
 uniform GeometryParameters geometry;
 uniform CameraParameters camera;
 
-in vec4 vColor_[4];
-flat in float vRadius_[4];
-flat in uint pickID_[4];
+in vec4 vColor_[SIZE];
+flat in float vRadius_[SIZE];
+flat in uint pickID_[SIZE];
 
 out vec4 color_;
 flat out vec4 pickColor_;
@@ -46,25 +57,26 @@ out vec3 worldPos_;
 out vec3 startPos_;
 out vec3 endPos_;
 out vec3 gEndplanes[2];
-out float radii[2];
+out float radius_;
 
 vec3 prismoid[8];
+vec4 color[2];
 vec4 pickColor;
 vec3 startPos;
 vec3 endPos;
 vec3 capNormals[2];
+float radius[2];
 
 void emitVertex(int a) { 
     gl_Position = camera.worldToClip * vec4(prismoid[a], 1.0);  
-    color_ = vColor_[a <= 3 ? 1 : 2];
+    color_ = color[a <= 3 ? 0 : 1];
     pickColor_ = pickColor;
     worldPos_ = prismoid[a];
     startPos_ = startPos;
     endPos_ = endPos;
     gEndplanes[0] = capNormals[0];
     gEndplanes[1] = capNormals[1];
-    radii[0] = vRadius_[1];
-    radii[1] = vRadius_[2];
+    radius_ = radius[a <= 3 ? 0 : 1];
     EmitVertex();
 }
 
@@ -102,41 +114,47 @@ vec3 findOrthogonalVector(vec3 v) {
  */
 
 void main() {
-    // Compute orientation vectors for the two connecting faces:
-    vec3 p0 = gl_in[0].gl_Position.xyz;
-    vec3 p1 = gl_in[1].gl_Position.xyz;
-    vec3 p2 = gl_in[2].gl_Position.xyz;
-    vec3 p3 = gl_in[3].gl_Position.xyz;
-    if (p1 == p2) return; // zero size segment
+    color[0] = vColor_[BEGIN];
+    color[1] = vColor_[END];
+    radius[0] = vRadius_[BEGIN];
+    radius[1] = vRadius_[END];
+    pickColor = vec4(pickingIndexToColor(pickID_[BEGIN]), pickID_[BEGIN] == 0 ? 0.0 : 1.0);
+    startPos = gl_in[BEGIN].gl_Position.xyz;
+    endPos = gl_in[END].gl_Position.xyz;
 
-    startPos = p1;
-    endPos = p2;
+#ifdef HAS_ADJACENCY
+    vec3 prevPos = gl_in[0].gl_Position.xyz;
+    vec3 nextPos = gl_in[3].gl_Position.xyz;
+#else
+    vec3 prevPos = startPos;
+    vec3 nextPos = endPos;
+#endif
 
-    pickColor = vec4(pickingIndexToColor(pickID_[0]), pickID_[0] == 0 ? 0.0 : 1.0);
-
-    vec3 prevDir = p1-p0;
-    vec3 tubeDir = normalize(p2-p1);
-    vec3 nextDir = p3-p2;
+    if (startPos == endPos) return; // zero size segment
+  
+    vec3 prevDir = startPos-prevPos;
+    vec3 tubeDir = normalize(endPos-startPos);
+    vec3 nextDir = nextPos-endPos;
     capNormals[0] = normalize(tubeDir + (prevDir != vec3(0) ? normalize(prevDir) : prevDir));
     capNormals[1] = normalize(tubeDir + (nextDir != vec3(0) ? normalize(nextDir) : nextDir));
 
     vec3 radialDir = findOrthogonalVector(tubeDir);
 
-    // Compute face 1 of 2:
-    vec3 k = vRadius_[1] * normalize(cross(radialDir, capNormals[0])); 
-    vec3 i = vRadius_[1] * normalize(cross(k, capNormals[0])); 
-    prismoid[0] = p1 + i + k;
-    prismoid[1] = p1 + i - k;
-    prismoid[2] = p1 - i - k;
-    prismoid[3] = p1 - i + k;
+    // Compute cap face 1 of 2:
+    vec3 k = radius[0] * normalize(cross(radialDir, capNormals[0])); 
+    vec3 i = radius[0] * normalize(cross(k, capNormals[0])); 
+    prismoid[0] = startPos + i + k;
+    prismoid[1] = startPos + i - k;
+    prismoid[2] = startPos - i - k;
+    prismoid[3] = startPos - i + k;
 
-    // Compute face 2 of 2:
-    k = vRadius_[2] * normalize(cross(radialDir, capNormals[1])); 
-    i = vRadius_[2] * normalize(cross(k, capNormals[1])); 
-    prismoid[4] = p2 + i + k;
-    prismoid[5] = p2 + i - k;
-    prismoid[6] = p2 - i - k;
-    prismoid[7] = p2 - i + k;
+    // Compute cap face 2 of 2:
+    k = radius[1] * normalize(cross(radialDir, capNormals[1])); 
+    i = radius[1] * normalize(cross(k, capNormals[1])); 
+    prismoid[4] = endPos + i + k;
+    prismoid[5] = endPos + i - k;
+    prismoid[6] = endPos - i - k;
+    prismoid[7] = endPos - i + k;
 
     // Emit the six faces of the prismoid:
     emitFace(0,1,3,2); 

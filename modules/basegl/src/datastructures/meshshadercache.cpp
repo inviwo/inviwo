@@ -35,50 +35,79 @@
 
 namespace inviwo {
 
+MeshShaderCache::Requirement::Requirement(BufferType bufferType,
+                                          RequireBuffer required,
+                                          const std::string& glslType,
+                                          const std::string& name)
+    : bufferType{bufferType}
+    , required{required}
+    , glslType{glslType}
+    , name{name.empty() ? toString(bufferType) : name} {}
+
 MeshShaderCache::MeshShaderCache(
     std::vector<std::pair<ShaderType, std::shared_ptr<const ShaderResource>>> items,
-    std::vector<Item> buffers, std::function<void(Shader&)> configureShader)
-    : items_{std::move(items)}, config_{std::move(configureShader)}, buffers_{std::move(buffers)} {}
+    std::vector<Requirement> requirements, std::function<void(Shader&)> configureShader)
+    : items_{std::move(items)}, config_{std::move(configureShader)} {
+
+    for (auto& requirement : requirements) {
+        stateFunctors_.emplace_back(
+            [requirement, this](const Mesh& mesh) -> int {
+                const auto res = mesh.findBuffer(requirement.bufferType);
+                if (res.first) {
+                    return res.second;
+                } else if (requirement.required == Mandatory) {
+                    throw Exception("Unsupported mesh type, a " + toString(requirement.bufferType) +
+                                        " is needed",
+                                    IVW_CONTEXT);
+                } else {
+                    return -1;
+                }
+            },
+            [requirement](int location, Shader& shader) -> void {
+                if (location >= 0) {
+                    const auto& buffername = requirement.name;
+                    shader[ShaderType::Vertex]->addInDeclaration("in_" + buffername, location,
+                                                                 requirement.glslType);
+                    for (auto& obj : shader.getShaderObjects()) {
+                        obj.addShaderDefine("HAS_" + toUpper(buffername));
+                    }
+                }
+            });
+    }
+}
 
 MeshShaderCache::MeshShaderCache(std::vector<std::pair<ShaderType, std::string>> items,
-                                 std::vector<Item> buffers,
+                                 std::vector<Requirement> buffers,
                                  std::function<void(Shader&)> configureShader)
     : MeshShaderCache(utilgl::toShaderResources(items), std::move(buffers),
                       std::move(configureShader)) {}
 
 Shader& MeshShaderCache::getShader(const Mesh& mesh) {
-    std::vector<int> locations(buffers_.size(), -1);
-    for (auto&& item : util::zip(buffers_, locations)) {
-        const auto res = mesh.findBuffer(item.first().bufferType);
-        if (res.first) {
-            item.second() = res.second;
-        } else if (!item.first().optional) {
-            throw Exception(
-                "Unsupported mesh type, a " + toString(item.first().bufferType) + " is needed",
-                IVW_CONTEXT);
-        }
+    std::vector<int> state;
+    for (auto& functor : stateFunctors_) {
+        state.push_back(functor.first(mesh));
     }
 
-    auto it = shaders_.find(locations);
+    auto it = shaders_.find(state);
     if (it != shaders_.end()) {
         return it->second;
     } else {
-        auto ins = shaders_.emplace(locations, Shader(items_, Shader::Build::No));
+        auto ins = shaders_.emplace(state, Shader(items_, Shader::Build::No));
         auto& shader = ins.first->second;
         shader[ShaderType::Vertex]->clearInDeclarations();
-        for (auto&& item : util::zip(buffers_, locations)) {
-            if (item.second() >= 0) {
-                const auto& buffername = item.first().name;
-                shader[ShaderType::Vertex]->addInDeclaration("in_" + buffername, item.second(),
-                                                             item.first().glslType);
-                for (auto& obj : shader.getShaderObjects()) {
-                    obj.addShaderDefine("HAS_" + toUpper(buffername));
-                }
-            }
+
+        for (auto&& item : util::zip(stateFunctors_, state)) {
+            item.first().second(item.second(), shader);
         }
+
         config_(shader);
         return shader;
     }
+}
+
+void MeshShaderCache::addState(GetStateFunctor getState, UpdateShaderFunctor updateShader) {
+    shaders_.clear();
+    stateFunctors_.emplace_back(std::move(getState), std::move(updateShader));
 }
 
 }  // namespace inviwo

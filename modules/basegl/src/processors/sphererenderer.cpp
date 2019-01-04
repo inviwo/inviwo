@@ -81,11 +81,11 @@ SphereRenderer::SphereRenderer()
                 {ShaderType::Geometry, "sphereglyph.geom"},
                 {ShaderType::Fragment, "sphereglyph.frag"}},
 
-               {{BufferType::PositionAttrib, false, "vec3"},
-                {BufferType::ColorAttrib, true, "vec4"},
-                {BufferType::RadiiAttrib, true, "float"},
-                {BufferType::PickingAttrib, true, "uint"},
-                {BufferType::ScalarMetaAttrib, true, "float"}},
+               {{BufferType::PositionAttrib, MeshShaderCache::Mandatory, "vec3"},
+                {BufferType::ColorAttrib, MeshShaderCache::Optional, "vec4"},
+                {BufferType::RadiiAttrib, MeshShaderCache::Optional, "float"},
+                {BufferType::PickingAttrib, MeshShaderCache::Optional, "uint"},
+                {BufferType::ScalarMetaAttrib, MeshShaderCache::Optional, "float"}},
 
                [&](Shader& shader) -> void {
                    shader.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
@@ -96,9 +96,9 @@ SphereRenderer::SphereRenderer()
     addPort(inport_);
     addPort(imageInport_);
     imageInport_.setOptional(true);
+
     addPort(outport_);
     outport_.addResizeEventListener(&camera_);
-
 
     clipping_.addProperty(clipMode_);
     clipping_.addProperty(clipShadingFactor_);
