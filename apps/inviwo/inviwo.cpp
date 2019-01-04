@@ -55,7 +55,13 @@ int main(int argc, char** argv) {
     inviwo::LogCentral::init(&logger);
     auto logCounter = std::make_shared<inviwo::LogErrorCounter>();
     logger.registerLogger(logCounter);
-    qputenv("QT_STYLE_OVERRIDE","");
+#ifdef __linux__
+    /*
+     * Suppress warning "QApplication: invalid style override passed, ignoring it." when starting Inviwo on Linux.
+     * See https://forum.qt.io/topic/75398/qt-5-8-0-qapplication-invalid-style-override-passed-ignoring-it/2
+     */
+    qputenv("QT_STYLE_OVERRIDE", "");
+#endif
     inviwo::InviwoApplicationQt inviwoApp(argc, argv, "Inviwo");
     inviwoApp.setWindowIcon(QIcon(":/inviwo/inviwo_light.png"));
     inviwoApp.setAttribute(Qt::AA_NativeWindows);
