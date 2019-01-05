@@ -171,7 +171,16 @@ public:
     BufferInfo getBufferInfo(size_t idx) const;
     const IndexBuffer* getIndices(size_t idx) const;
 
+    /**
+     * Try and find a buffer of the given BufferType.
+     * Returns the buffer and its location.
+     * If no buffer is found the buffer will be a nullptr.
+     */
     std::pair<const BufferBase*, int> findBuffer(BufferType type) const;
+
+    /**
+     * Check if there exits a buffer of BufferType type in the mesh.
+     */
     bool hasBuffer(BufferType type) const;
 
     BufferBase* getBuffer(size_t idx);

@@ -223,11 +223,7 @@ void PickingControllerMouseState::propagateEvent(MouseEvent* e, EventPropagator*
                                                  size_t globalId) {
     switch (e->state()) {
         case MouseState::Press: {
-            if (e->button() == MouseButton::Left) {
-                msm->sm.process_event(fsm::Press{globalId, e, propagator});
-            } else if (e->button() == MouseButton::Right) {
-                msm->sm.process_event(fsm::Press{globalId, e, propagator});
-            }
+            msm->sm.process_event(fsm::Press{globalId, e, propagator});
             break;
         }
         case MouseState::Move: {
@@ -235,11 +231,7 @@ void PickingControllerMouseState::propagateEvent(MouseEvent* e, EventPropagator*
             break;
         }
         case MouseState::Release: {
-            if (e->button() == MouseButton::Left) {
-                msm->sm.process_event(fsm::Release{globalId, e, propagator});
-            } else if (e->button() == MouseButton::Right) {
-                msm->sm.process_event(fsm::Release{globalId, e, propagator});
-            }
+            msm->sm.process_event(fsm::Release{globalId, e, propagator});
             break;
         }
         case MouseState::DoubleClick: {

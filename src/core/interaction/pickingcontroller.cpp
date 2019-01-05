@@ -93,7 +93,7 @@ void PickingController::propagateEvent(TouchEvent* e, EventPropagator* propagato
     std::vector<int> usedPointIds;
 
     for (auto& point : touchPoints) {
-        auto coord = glm::clamp(point.pos(), dvec2(0.0), dvec2(e->canvasSize() - uvec2(1)));
+        const auto coord = glm::clamp(point.pos(), dvec2(0.0), dvec2(e->canvasSize() - uvec2(1)));
         if (point.state() == TouchState::Started) {
             auto pa = findPickingAction(coord);
             tstate_.pointIdToPickingId[point.id()] = pa;
@@ -119,15 +119,23 @@ void PickingController::propagateEvent(TouchEvent* e, EventPropagator* propagato
         TouchEvent te(points, e->getDevice());
         auto prevPos = te.centerNDC();  // Need so save here since te might be modified
         auto localId = pickingIdToAction[pickingId]->getLocalPickingId(pickingId);
-        /*
-        PickingEvent pickingEvent(pickingIdToAction[pickingId], ps, &te,
-                                  tstate_.pickingIdToPressNDC[pickingId],
-                                  tstate_.pickingIdToPreviousNDC[pickingId], localId);
+
+        size_t currentId = 0; // TODO
+        size_t pressedId = 0; // TODO
+        size_t previousId = 0; // TODO
+
+       PickingEvent pickingEvent(
+            pickingIdToAction[pickingId], &te, ps,
+            ps == PickingState::Started ? PickingPressState::Press : PickingPressState::Move,
+            PickingPressItem::Primary, PickingHoverState::None, PickingPressItem::Primary,
+            pickingId, currentId, pressedId, previousId, tstate_.pickingIdToPressNDC[pickingId],
+            tstate_.pickingIdToPreviousNDC[pickingId]);
+ 
         propagator->propagateEvent(&pickingEvent, nullptr);
         if (pickingEvent.hasBeenUsed() || te.hasBeenUsed()) {
             for (const auto& p : points) usedPointIds.push_back(p.id());
         }
-        */
+        
         tstate_.pickingIdToPreviousNDC[pickingId] = prevPos;
     }
 
@@ -151,11 +159,11 @@ void PickingController::propagateEvent(TouchEvent* e, EventPropagator* propagato
     if (touchPoints.empty()) e->markAsUsed();
 }
 
-void PickingController::propagateEvent(WheelEvent* e, EventPropagator* propagator) {
+void PickingController::propagateEvent(WheelEvent*, EventPropagator*) {
     // TODO
 }
 
-void PickingController::propagateEvent(GestureEvent* /*event*/, EventPropagator* /*propagator*/) {
+void PickingController::propagateEvent(GestureEvent*, EventPropagator*) {
     // TODO
 }
 

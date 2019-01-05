@@ -148,7 +148,7 @@ bool PickingManager::pickingEnabled() {
     return enabled_;
 }
 
-bool PickingManager::isRegisterPickingAction(const PickingAction* action) const {
+bool PickingManager::isPickingActionRegistered(const PickingAction* action) const {
     return std::any_of(pickingActions_.begin(), pickingActions_.end(),
                  [&](auto& item) { return item.get() == action; });
 }

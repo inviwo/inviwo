@@ -216,6 +216,11 @@ public:
     }
 };
 
+/**
+ * \ingroup typedmesh
+ * BufferTrait for picking buffers (uint32)
+ * \see PickingMapper
+ */
 class PickingBuffer
     : public TypedMeshBufferBase<uint32_t, 1, static_cast<int>(BufferType::PickingAttrib)> {
 public:
@@ -230,6 +235,12 @@ public:
     }
 };
 
+/**
+ * \ingroup typedmesh
+ * BufferTrait for scalar meta data buffers (float)
+ * Useful the pass additional information the rendering
+ * \see SphereRenderer
+ */
 class ScalarMetaBuffer
     : public TypedMeshBufferBase<float, 1, static_cast<int>(BufferType::ScalarMetaAttrib)> {
 public:
@@ -239,8 +250,8 @@ public:
     std::shared_ptr<const Buffer<Base::type>> getScalarMeta() const { return Base::buffer_; }
     std::shared_ptr<Buffer<Base::type>> getEditableScalarMeta() { return Base::buffer_; }
 
-    void setVertexScalarMeta(size_t index, float id) {
-        getEditableScalarMeta()->getEditableRAMRepresentation()->set(index, id);
+    void setVertexScalarMeta(size_t index, float value) {
+        getEditableScalarMeta()->getEditableRAMRepresentation()->set(index, value);
     }
 };
 

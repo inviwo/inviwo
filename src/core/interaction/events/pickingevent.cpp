@@ -122,7 +122,6 @@ size_t PickingEvent::getCurrentGlobalPickingId() const { return currentGlobalId_
 size_t PickingEvent::getPreviousGlobalPickingId() const { return previousGlobalId_; }
 size_t PickingEvent::getPressedGlobalPickingId() const { return pressedGlobalId_; }
 
-
 size_t PickingEvent::getPickedId() const {
     return pickingAction_->getLocalPickingId(pickedGlobalId_);
 }
@@ -265,6 +264,10 @@ void PickingEvent::invoke(Processor* p) {
 
 const InteractionEvent::ToolTipCallback& PickingEvent::getToolTipCallback() const {
     return event_->getToolTipCallback();
+}
+
+void PickingEvent::setToolTip(const std::string& tooltip) const {
+    event_->setToolTip(tooltip);
 }
 
 const PickingAction* PickingEvent::getPickingAction() const { return pickingAction_; }

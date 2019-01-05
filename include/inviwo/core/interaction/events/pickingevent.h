@@ -78,13 +78,14 @@ public:
     size_t getGlobalPickingId() const;
 
     /**
-     *	Returns the current global picking index of the object at the current position
+     * Returns the current global picking index of the object at the current position
      */
     size_t getCurrentGlobalPickingId() const;
     /**
-     *	Returns the current local picking index
+     * Returns the current local picking index
+     * If the global index belongs to a different picking action {false, 0} is returned.
      */
-    std::pair<bool, size_t> getCurrentLocalPickingId() const;   
+    std::pair<bool, size_t> getCurrentLocalPickingId() const;
     /**
      * Returns the current normalized position
      */
@@ -95,13 +96,14 @@ public:
     double getDepth() const;
 
     /**
-     *	Returns the previous global picking index
+     * Returns the previous global picking index
      */
     size_t getPreviousGlobalPickingId() const;
     /**
-     *	Returns the previous local picking index
+     * Returns the previous local picking index
+     * If the global index belongs to a different picking action {false, 0} is returned.
      */
-    std::pair<bool, size_t> getPreviousLocalPickingId() const;   
+    std::pair<bool, size_t> getPreviousLocalPickingId() const;
     /**
      * Returns the previous normalized position
      */
@@ -112,13 +114,14 @@ public:
     double getPreviousDepth() const;
 
     /**
-     *	Returns the pressed global picking index
+     * Returns the pressed global picking index
      */
-    size_t getPressedGlobalPickingId() const;   
+    size_t getPressedGlobalPickingId() const;
     /**
-     *	Returns the pressed local picking index
+     * Returns the pressed local picking index
+     * If the global index belongs to a different picking action {false, 0} is returned.
      */
-    std::pair<bool, size_t> getPressedLocalPickingId() const;   
+    std::pair<bool, size_t> getPressedLocalPickingId() const;
     /**
      * Returns the normalized position of the initial press
      */
@@ -155,6 +158,11 @@ public:
     dvec3 getNDC() const;
     dvec3 getPreviousNDC() const;
     dvec3 getPressedNDC() const;
+
+    /**
+     * Return the {curr.x, curr.y. press.z} - {prev.x, prev.y, press.z} transformed into world space
+     * using the given camera. This is useful when dragging an object in the screen plane. 
+     */
     dvec3 getWorldSpaceDeltaAtPressDepth(const Camera& camera) const;
 
     /**
@@ -178,6 +186,14 @@ public:
 
     template <typename EventType>
     EventType* getEventAs() const;
+
+    /**
+     * Display a tool tip using the optionally set tool tip callback.
+     * If no tool tip callback is set, the function does nothing.
+     * The supported formation depends on the used back end, but simple html is usually supported.
+     * Calling the function with an empty sting will hide any existing tool tip.
+     */
+    void setToolTip(const std::string& tooltip) const;
 
     const InteractionEvent::ToolTipCallback& getToolTipCallback() const;
 
