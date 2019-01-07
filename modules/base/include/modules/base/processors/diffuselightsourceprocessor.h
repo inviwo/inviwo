@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_DIFFUSE_LIGHT_SOURCE_PROCESSOR_H
@@ -48,12 +48,13 @@ class DiffuseLight;
  * ![](org.inviwo.Diffuselightsource.png?classIdentifier=org.inviwo.Diffuselightsource)
  *
  * Produces a planar area light source, spreading light in all directions from the plane.
- * The direction of the plane will be computed as glm::normalize(vec3(0) - lightPos) 
- * when specified in world space and normalize(camera_.getLookTo() - lightPos) when specified in view space.
- * 
+ * The direction of the plane will be computed as glm::normalize(vec3(0) - lightPos)
+ * when specified in world space and normalize(camera_.getLookTo() - lightPos) when specified in
+ * view space.
+ *
  * ### Outports
  *   * __DiffuseLightSource__ Planar area light source
- * 
+ *
  * ### Properties
  *   * __Light Source Position__ Center point of the plane
  *   * __Light power__ Increases/decreases light strength
@@ -82,18 +83,16 @@ protected:
 private:
     DataOutport<LightSource> outport_;
 
-    CameraProperty camera_; //< Link camera in order to specify position in view space.
+    CameraProperty camera_;  //< Link camera in order to specify position in view space.
     PositionProperty lightPosition_;
     CompositeProperty lighting_;
     FloatProperty lightPowerProp_;
     FloatVec2Property lightSize_;
     FloatVec3Property lightDiffuse_;
-    
-    
 
     std::shared_ptr<DiffuseLight> lightSource_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_DIFFUSE_LIGHT_SOURCE_PROCESSOR_H

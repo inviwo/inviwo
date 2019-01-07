@@ -40,7 +40,7 @@ namespace inviwo {
 class Layer;
 
 /**
- * \ingroup datastructures	
+ * \ingroup datastructures
  */
 class IVW_CORE_API LayerRepresentation : public DataRepresentation<Layer> {
 public:
@@ -48,7 +48,7 @@ public:
     virtual ~LayerRepresentation() = default;
 
     size2_t getDimensions() const;
-    
+
     /**
      * Resize the representation to dimension. This is destructive, the data will not be
      * preserved. Use copyRepresentationsTo to update the data.
@@ -56,13 +56,13 @@ public:
      */
     virtual void setDimensions(size2_t dimensions) = 0;
 
-    /** 
+    /**
      * \brief update the swizzle mask of the channels for sampling color layers
      * Needs to be overloaded by child classes.
-     * 
+     *
      * @param mask    new swizzle mask
      */
-    virtual void setSwizzleMask(const SwizzleMask &mask) = 0;
+    virtual void setSwizzleMask(const SwizzleMask& mask) = 0;
     virtual SwizzleMask getSwizzleMask() const = 0;
 
     /**
@@ -84,6 +84,6 @@ protected:
     LayerType layerType_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_LAYERREPRESENTATION_H

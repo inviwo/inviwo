@@ -36,7 +36,6 @@
 #include <inviwo/core/ports/portinspector.h>
 #include <inviwo/core/ports/portinspectorfactoryobject.h>
 
-
 namespace inviwo {
 
 class IVW_CORE_API PortInspectorFactory
@@ -46,6 +45,6 @@ public:
     virtual ~PortInspectorFactory() = default;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PORTINSPECTORFACTORY_H

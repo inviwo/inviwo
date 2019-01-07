@@ -55,7 +55,7 @@ public:
     void setSyntax(SyntaxType type);
 
     // QPlainTextEdit overrides
-    virtual void keyPressEvent(QKeyEvent* keyEvent) override;
+    virtual void keyPressEvent(QKeyEvent *keyEvent) override;
 
     void setLineAnnotation(std::function<std::string(int)>);
     void setAnnotationSpace(std::function<int(int)>);

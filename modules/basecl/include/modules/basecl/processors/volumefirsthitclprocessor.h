@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_VOLUME_FIRST_HIT_CL_H
@@ -45,9 +45,9 @@
 namespace inviwo {
 /** \docpage{org.inviwo.VolumeFirstHitCL, Volume First Hit}
  * ![](org.inviwo.VolumeFirstHitCL.png?classIdentifier=org.inviwo.VolumeFirstHitCL)
- * Computes the first point with non-zero opacity within a volume given 
- * entry and exit points. 
- * 
+ * Computes the first point with non-zero opacity within a volume given
+ * entry and exit points.
+ *
  * ### Inports
  *   * __VolumeInport__ The volume to intersect.
  *   * __ImageInport__ The entry point.
@@ -55,7 +55,7 @@ namespace inviwo {
  *
  * ### Outports
  *   * __ImageOutport__ The first hit point.
- * 
+ *
  * ### Properties
  *   * __Sampling rate__ Number of sample per voxel to take.
  *   * __Transfer function__ Transfer function to map data values into color and opacity.
@@ -64,10 +64,12 @@ namespace inviwo {
  */
 
 /**
- * \brief Computes the first point with non-zero opacity within a volume given entry and exit points in texture space. 
+ * \brief Computes the first point with non-zero opacity within a volume given entry and exit points
+ * in texture space.
  *
  */
-class IVW_MODULE_BASECL_API VolumeFirstHitCLProcessor : public Processor, public ProcessorKernelOwner {
+class IVW_MODULE_BASECL_API VolumeFirstHitCLProcessor : public Processor,
+                                                        public ProcessorKernelOwner {
 public:
     VolumeFirstHitCLProcessor();
     ~VolumeFirstHitCLProcessor() = default;
@@ -97,6 +99,6 @@ private:
     cl::Kernel* kernel_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_VOLUME_FIRST_HIT_CL_H

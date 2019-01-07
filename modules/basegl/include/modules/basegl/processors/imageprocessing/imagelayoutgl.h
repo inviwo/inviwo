@@ -45,7 +45,7 @@
 
 namespace inviwo {
 
-// 
+//
 // clang-format off
 /** \docpage{org.inviwo.ImageLayoutGL, Image Layout}
  * ![](org.inviwo.ImageLayoutGL.png?classIdentifier=org.inviwo.ImageLayoutGL)

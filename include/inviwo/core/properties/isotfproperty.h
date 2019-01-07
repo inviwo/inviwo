@@ -74,7 +74,7 @@ public:
     virtual IsoTFProperty* clone() const override;
 
     virtual std::string getClassIdentifierForWidget() const override;
-    
+
     void setMask(double maskMin, double maskMax);
     const dvec2 getMask() const;
     void clearMask();

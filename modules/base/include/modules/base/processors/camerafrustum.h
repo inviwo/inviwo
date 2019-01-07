@@ -41,7 +41,8 @@ namespace inviwo {
 /** \docpage{org.inviwo.CameraFrustum, Camera Frustum}
  * ![](org.inviwo.CameraFrustum.png?classIdentifier=org.inviwo.CameraFrustum)
  *
- * Creates a line mesh of a frustum for a given camera. See Example Workspace Base/camera_furstum.inv
+ * Creates a line mesh of a frustum for a given camera. See Example Workspace
+ * Base/camera_furstum.inv
  *
  *
  * ### Outports

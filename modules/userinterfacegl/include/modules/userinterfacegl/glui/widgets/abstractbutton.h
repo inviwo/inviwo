@@ -53,9 +53,9 @@ class Renderer;
 class IVW_MODULE_USERINTERFACEGL_API AbstractButton : public Element {
 public:
     AbstractButton(const std::string &label, Processor &processor, Renderer &uiRenderer,
-           const ivec2 &extent = ivec2(100, 24));
+                   const ivec2 &extent = ivec2(100, 24));
     virtual ~AbstractButton() = default;
-    
+
 protected:
     virtual void renderWidget(const ivec2 &origin, const size2_t &canvasDim) override = 0;
 

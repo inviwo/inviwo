@@ -77,6 +77,6 @@ public:
                         std::shared_ptr<VolumeGL> destination) const override;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_VOLUMECLGLCONVERTER_H

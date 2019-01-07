@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_IMAGESCALING_H
@@ -37,7 +37,6 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/ports/imageport.h>
-
 
 namespace inviwo {
 
@@ -62,11 +61,11 @@ namespace inviwo {
  * \brief Processor for up-scaling or down-scaling an image. Modifies the resize events by scaling
  * them before they are propagated further.
  */
-class IVW_MODULE_BASEGL_API ImageScaling : public Processor { 
+class IVW_MODULE_BASEGL_API ImageScaling : public Processor {
 public:
     ImageScaling();
     virtual ~ImageScaling() = default;
-     
+
     virtual void process() override;
 
     virtual void propagateEvent(Event*, Outport* source) override;
@@ -75,7 +74,7 @@ public:
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
-    
+
 private:
     size2_t calcInputImageSize() const;
     bool resizeInports();
@@ -84,14 +83,13 @@ private:
     ImageOutport outport_;
 
     BoolProperty enabled_;
-    OptionPropertyDouble scalingFactor_; //<! if negative, use custom scaling factor
+    OptionPropertyDouble scalingFactor_;  //<! if negative, use custom scaling factor
     DoubleProperty customFactor_;
 
-    size2_t lastValidOutputSize_ = { 0u, 0u };
+    size2_t lastValidOutputSize_ = {0u, 0u};
     bool deserializing_ = false;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_IMAGESCALING_H
-
+#endif  // IVW_IMAGESCALING_H

@@ -79,7 +79,7 @@ public:
     virtual ~BasisTransform() = default;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
-    
+
     virtual void deserialize(Deserializer& d) override;
 
 protected:
@@ -154,6 +154,6 @@ void BasisTransform<T>::process() {
     }
 }
 
-}  // namespace
+}  // namespace inviwo
 
 #endif

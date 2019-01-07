@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_VOLUMEDIFF_H
@@ -46,10 +46,11 @@ namespace inviwo {
  *   * __volume2__ Input volume 2
  *
  * ### Outports
- *   * __outputVolume__ Difference volume corresponding to <tt>(volume 1 - volume 2 + 1.0) / 2.0</tt>
+ *   * __outputVolume__ Difference volume corresponding to <tt>(volume 1 - volume 2 + 1.0)
+ * / 2.0</tt>
  *
  */
-class IVW_MODULE_BASEGL_API VolumeDiff : public VolumeGLProcessor { 
+class IVW_MODULE_BASEGL_API VolumeDiff : public VolumeGLProcessor {
 public:
     VolumeDiff();
     virtual ~VolumeDiff() = default;
@@ -62,7 +63,6 @@ protected:
     virtual void preProcess(TextureUnitContainer &cont) override;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_VOLUMEDIFF_H
-
+#endif  // IVW_VOLUMEDIFF_H

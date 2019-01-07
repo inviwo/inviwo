@@ -59,9 +59,6 @@ private:
     void writeData(const Mesh* data, std::ostream& os) const;
 };
 
+}  // namespace inviwo
 
-
-} // namespace
-
-#endif // IVW_BINARYSTLWRITER_H
-
+#endif  // IVW_BINARYSTLWRITER_H

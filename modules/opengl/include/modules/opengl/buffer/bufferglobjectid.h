@@ -24,12 +24,11 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_BUFFER_GL_OBJECT_ID_H
 #define IVW_BUFFER_GL_OBJECT_ID_H
-
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -39,10 +38,9 @@ namespace inviwo {
 
 class BufferGLObjectId {
 public:
-
-    BufferGLObjectId(): object_(0) {};
-    BufferGLObjectId(const GLuint id): object_(id) {};
-    virtual ~BufferGLObjectId() { glDeleteBuffers(1, &object_);};
+    BufferGLObjectId() : object_(0){};
+    BufferGLObjectId(const GLuint id) : object_(id){};
+    virtual ~BufferGLObjectId() { glDeleteBuffers(1, &object_); };
 
     GLuint getId() const { return object_; }
     GLuint& getId() { return object_; }
@@ -51,6 +49,6 @@ private:
     GLuint object_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_BUFFER_GL_OBJECT_ID_H
+#endif  // IVW_BUFFER_GL_OBJECT_ID_H

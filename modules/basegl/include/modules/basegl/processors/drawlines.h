@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_DRAWLINES_H
@@ -43,31 +43,30 @@
 
 namespace inviwo {
 
-
 /** \docpage{org.inviwo.DrawLines, Draw Lines}
-* ![](org.inviwo.DrawLines.png?classIdentifier=org.inviwo.DrawLines)
-* 
-* Interactive 2D line drawing
-*
-* Hold Ctrl+D and click/move Left Mouse Button to Draw
-*
-* ### Inports
-*   * __ImageInport__ The input image.
-*
-* ### Outports
-*   * __ImageOutport__ The output image.
-*
-* ### Properties
-*   * __LineSize__ Defines size of all lines.
-*   * __LineColor__ Defines color of all lines.
-*   * __ClearButton__ Button to clear all lines.
-*/
+ * ![](org.inviwo.DrawLines.png?classIdentifier=org.inviwo.DrawLines)
+ *
+ * Interactive 2D line drawing
+ *
+ * Hold Ctrl+D and click/move Left Mouse Button to Draw
+ *
+ * ### Inports
+ *   * __ImageInport__ The input image.
+ *
+ * ### Outports
+ *   * __ImageOutport__ The output image.
+ *
+ * ### Properties
+ *   * __LineSize__ Defines size of all lines.
+ *   * __LineColor__ Defines color of all lines.
+ *   * __ClearButton__ Button to clear all lines.
+ */
 
 /**
-* \brief Interactive 2D line drawing
-*
-* Hold Ctrl+D and click/move Left Mouse Button to Draw
-*/
+ * \brief Interactive 2D line drawing
+ *
+ * Hold Ctrl+D and click/move Left Mouse Button to Draw
+ */
 class IVW_MODULE_BASEGL_API DrawLines : public Processor {
 public:
     virtual const ProcessorInfo getProcessorInfo() const override;
@@ -105,6 +104,6 @@ private:
     bool drawModeEnabled_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_DRAWLINES_H
+#endif  // IVW_DRAWLINES_H

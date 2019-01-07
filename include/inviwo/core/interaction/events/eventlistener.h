@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_EVENTLISTENER_H
@@ -45,6 +45,6 @@ public:
     virtual void invokeEvent(Event* event);
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_EVENTLISTENER_H
+#endif  // IVW_EVENTLISTENER_H

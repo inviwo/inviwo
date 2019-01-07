@@ -61,23 +61,20 @@ IVW_MODULE_OPENCL_API PackedLightSource baseLightToPackedLight(const LightSource
                                                                float radianceScale);
 
 /**
-* \brief Transform a BaseLightSource to PackedLightSource and apply the transformation matrix to the light
-* source transformation matrix.
-* Also transforms the width and height of the light source to
-* match the supplied transformation extent, which means
-* that a light size of (1,1) can be specified and it will be as large as the volume
-* if transformLightMat == worldToTexture.
-*
-* @param lightsource Input light source
-* @param radianceScale Scales light power
-* @param transformLightMat Transformation to be applied to lightSource.modelToWorld.
-* @return PackedLightSource
-*/
+ * \brief Transform a BaseLightSource to PackedLightSource and apply the transformation matrix to
+ * the light source transformation matrix. Also transforms the width and height of the light source
+ * to match the supplied transformation extent, which means that a light size of (1,1) can be
+ * specified and it will be as large as the volume if transformLightMat == worldToTexture.
+ *
+ * @param lightsource Input light source
+ * @param radianceScale Scales light power
+ * @param transformLightMat Transformation to be applied to lightSource.modelToWorld.
+ * @return PackedLightSource
+ */
 IVW_MODULE_OPENCL_API PackedLightSource baseLightToPackedLight(const LightSource* lightsource,
                                                                float radianceScale,
                                                                const mat4& transformLightMat);
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_PACKEDLIGHTSOURCE_H
-
+#endif  // IVW_PACKEDLIGHTSOURCE_H

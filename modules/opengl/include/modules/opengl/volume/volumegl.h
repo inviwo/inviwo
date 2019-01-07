@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_VOLUMEGL_H
@@ -42,16 +42,17 @@ class Shader;
 class Volume;
 
 namespace kind {
-    struct GL {};
-}
+struct GL {};
+}  // namespace kind
 
 /**
- * \ingroup datastructures	
+ * \ingroup datastructures
  */
 class IVW_MODULE_OPENGL_API VolumeGL : public VolumeRepresentation {
 
 public:
-    VolumeGL(size3_t dimensions = size3_t(128,128,128), const DataFormatBase* format = DataFormatBase::get(), bool initializeTexture = true);
+    VolumeGL(size3_t dimensions = size3_t(128, 128, 128),
+             const DataFormatBase* format = DataFormatBase::get(), bool initializeTexture = true);
     VolumeGL(std::shared_ptr<Texture3D> tex, const DataFormatBase* format);
     VolumeGL(const VolumeGL& rhs);
     VolumeGL& operator=(const VolumeGL& rhs);
@@ -66,6 +67,7 @@ public:
 
     std::shared_ptr<Texture3D> getTexture() const { return volumeTexture_; }
     virtual std::type_index getTypeIndex() const override final;
+
 private:
     size3_t dimensions_;
     std::shared_ptr<Texture3D> volumeTexture_;
@@ -76,6 +78,6 @@ struct representation_traits<Volume, kind::GL> {
     using type = VolumeGL;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_VOLUMEGL_H
+#endif  // IVW_VOLUMEGL_H

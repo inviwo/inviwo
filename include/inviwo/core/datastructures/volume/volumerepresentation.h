@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_VOLUMEREPRESENTATION_H
@@ -40,7 +40,7 @@ namespace inviwo {
 class Volume;
 
 /**
- * \ingroup datastructures	
+ * \ingroup datastructures
  */
 class IVW_CORE_API VolumeRepresentation : public DataRepresentation<Volume> {
 public:
@@ -51,6 +51,7 @@ public:
     // Needs to be overloaded by child classes.
     virtual void setDimensions(size3_t dimensions) = 0;
     virtual const size3_t& getDimensions() const = 0;
+
 protected:
     VolumeRepresentation() = default;
     VolumeRepresentation(const DataFormatBase* format);
@@ -63,6 +64,6 @@ struct representation_traits<Volume, kind::Base> {
     using type = VolumeRepresentation;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_VOLUMEREPRESENTATION_H
+#endif  // IVW_VOLUMEREPRESENTATION_H

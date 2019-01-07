@@ -35,7 +35,6 @@
 #include <modules/python3/pythonlogger.h>
 #include <string>
 
-
 namespace inviwo {
 class PythonInterpreter;
 
@@ -53,6 +52,6 @@ private:
     PythonLogger pythonLogger_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PYTHON3MODULE_H

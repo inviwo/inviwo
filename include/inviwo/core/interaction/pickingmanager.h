@@ -54,12 +54,14 @@ public:
     PickingManager& operator=(PickingManager const&) = delete;
     virtual ~PickingManager();
 
+    // clang-format off
     template <typename T>
     [[deprecated("was declared deprecated. Use `registerPickingAction(Processor*, PickingAction::Callback, size_t)` instead")]]
     PickingAction* registerPickingAction(Processor* processor, T* o,
                                          void (T::*m)(PickingEvent*), size_t size = 1);
-    PickingAction* registerPickingAction(Processor* processor,
-                                         PickingAction::Callback callback,
+    // clang-format on
+
+    PickingAction* registerPickingAction(Processor* processor, PickingAction::Callback callback,
                                          size_t size = 1);
 
     bool unregisterPickingAction(const PickingAction*);
@@ -85,15 +87,16 @@ private:
     static PickingManager* instance_;
 };
 
+// clang-format off
 template <typename T>
 [[deprecated("was declared deprecated. Use `registerPickingAction(Processor*, PickingAction::Callback, size_t)` instead")]]
 PickingAction* PickingManager::registerPickingAction(Processor* processor, T* o,
                                                      void (T::*m)(PickingEvent*),
-                                                     size_t size) {
+                                      size_t size) {
     using namespace std::placeholders;
     return registerPickingAction(processor, std::bind(m, o, _1), size);
 }
-
-}  // namespace
+// clang-format on
+}  // namespace inviwo
 
 #endif  // IVW_PICKINGMANAGER_H

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_TUBERENDERING_H
@@ -44,15 +44,15 @@
 namespace inviwo {
 class MeshDrawerGL;
 
-class IVW_MODULE_BASEGL_API TubeRendering : public Processor { 
+class IVW_MODULE_BASEGL_API TubeRendering : public Processor {
 public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
     TubeRendering();
-    virtual ~TubeRendering(){}
-     
+    virtual ~TubeRendering() {}
+
     virtual void process() override;
-    
+
     virtual void initializeResources() override;
 
 protected:
@@ -71,7 +71,6 @@ protected:
     std::vector<size_t> indexBuffersToRender_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_TUBERENDERING_H
-
+#endif  // IVW_TUBERENDERING_H

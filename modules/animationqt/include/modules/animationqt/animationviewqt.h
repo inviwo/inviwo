@@ -54,7 +54,6 @@ public:
     AnimationViewQt(AnimationController& controller, AnimationEditorQt* scene);
     virtual ~AnimationViewQt() = default;
 
-
     void setTimelinePos(int x);
     AnimationController& getController();
 
@@ -63,8 +62,8 @@ protected:
     virtual void mouseMoveEvent(QMouseEvent* e) override;
     virtual void mouseReleaseEvent(QMouseEvent* e) override;
     virtual void wheelEvent(QWheelEvent* e) override;
-    virtual void keyPressEvent(QKeyEvent * keyEvent) override;
-    virtual void keyReleaseEvent(QKeyEvent * keyEvent) override;
+    virtual void keyPressEvent(QKeyEvent* keyEvent) override;
+    virtual void keyReleaseEvent(QKeyEvent* keyEvent) override;
 
     void zoom(double dz);
     virtual void drawBackground(QPainter* painter, const QRectF& rect) override;

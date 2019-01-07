@@ -55,58 +55,57 @@ public:
     PickingEvent(const PickingEvent&);
     PickingEvent& operator=(const PickingEvent&);
 
-
     virtual PickingEvent* clone() const override;
-    
+
     /**
-     *	Returns the local picking index of the object currently being picked. 
-    */
+     *	Returns the local picking index of the object currently being picked.
+     */
     size_t getPickedId() const;
 
     /**
-    * Returns the current normalized position
-    */
+     * Returns the current normalized position
+     */
     dvec2 getPosition() const;
     /**
-    * Returns the current normalized depth
-    */
+     * Returns the current normalized depth
+     */
     double getDepth() const;
 
     /**
-    * Returns the previous normalized position
-    */
+     * Returns the previous normalized position
+     */
     dvec2 getPreviousPosition() const;
     /**
-    * Returns the previous normalized depth
-    */
+     * Returns the previous normalized depth
+     */
     double getPreviousDepth() const;
 
     /**
-    * Returns the normalized position of the most resent press
-    */
+     * Returns the normalized position of the most resent press
+     */
     dvec2 getPressedPosition() const;
     /**
-    * Returns the normalized depth of the most resent press
-    */
+     * Returns the normalized depth of the most resent press
+     */
     double getPressedDepth() const;
 
     /**
-    * Returns the delta of the previous and current position;
-    */
+     * Returns the delta of the previous and current position;
+     */
     dvec2 getDeltaPosition() const;
     /**
-    * Returns the delta of the previous and current depth;
-    */
+     * Returns the delta of the previous and current depth;
+     */
     double getDeltaDepth() const;
 
     /**
-    * Returns the delta of the press position and current position;
-    */
+     * Returns the delta of the press position and current position;
+     */
     dvec2 getDeltaPressedPosition() const;
-    
+
     /**
-    * Returns the delta of the press depth and current depth;
-    */
+     * Returns the delta of the press depth and current depth;
+     */
     double getDeltaPressedDepth() const;
 
     /**
@@ -125,15 +124,11 @@ public:
 
     PickingState getState() const;
 
-
-
     void invoke(Processor* p);
     const PickingAction* getPickingAction() const;
 
     virtual uint64_t hash() const override;
-    static constexpr uint64_t chash() {
-        return util::constexpr_hash("org.inviwo.PickingEvent");
-    }
+    static constexpr uint64_t chash() { return util::constexpr_hash("org.inviwo.PickingEvent"); }
 
     Event* getEvent() const;
 
@@ -141,13 +136,13 @@ public:
     EventType* getEventAs() const;
 
 private:
-    using EventPtr = std::unique_ptr<Event,std::function<void(Event*)>>;
+    using EventPtr = std::unique_ptr<Event, std::function<void(Event*)>>;
 
     const PickingAction* pickingAction_;
     PickingState state_ = PickingState::None;
     EventPtr event_;
     bool ownsEvent_ = false;
-    
+
     dvec3 pressedNDC_ = dvec3(0.0);
     dvec3 previousNDC_ = dvec3(0.0);
     size_t pickedId_ = 0;
@@ -161,7 +156,6 @@ EventType* PickingEvent::getEventAs() const {
     return nullptr;
 }
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_PICKINGEVENT_H
-
+#endif  // IVW_PICKINGEVENT_H

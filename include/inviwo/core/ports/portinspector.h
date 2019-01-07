@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PORTINSPECTOR_H
@@ -43,7 +43,7 @@ namespace inviwo {
 
 class IVW_CORE_API PortInspector : public Serializable {
 public:
-    PortInspector(); // Should only be used for deserialization.
+    PortInspector();  // Should only be used for deserialization.
     PortInspector(std::string portClassIdentifier, std::string inspectorWorkspaceFileName);
     virtual ~PortInspector();
 
@@ -71,6 +71,6 @@ private:
     CanvasProcessor* canvasProcessor_ = nullptr;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PORTINSPECTOR_H

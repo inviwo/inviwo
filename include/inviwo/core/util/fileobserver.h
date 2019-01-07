@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_FILEOBSERVER_H
@@ -46,11 +46,11 @@ class InviwoApplication;
  */
 class IVW_CORE_API FileObserver {
 public:
-     /** 
+    /**
      * @note Registers as a file observer in InviwoApplication.
      */
     FileObserver(InviwoApplication* app);
-    /** 
+    /**
      * \brief Starts observing file if existing.
      * @note Registers as a file observer in InviwoApplication.
      * @param filePath Full path to file to observe
@@ -59,7 +59,7 @@ public:
     FileObserver(const FileObserver&) = delete;
     FileObserver& operator=(const FileObserver&) = delete;
     /**
-     * Moves observed files from other 
+     * Moves observed files from other
      */
     FileObserver(FileObserver&& rhs);
     FileObserver& operator=(FileObserver&& that);
@@ -69,17 +69,17 @@ public:
      */
     virtual ~FileObserver();
 
-    /** 
+    /**
      * \brief Starts observing file if it exists.
      * @param filePath Full path to file
      */
     bool startFileObservation(const std::string& filePath);
-    /** 
+    /**
      * \brief Stops observing the file if being observed.
      * @param filePath Full path to file
      */
     bool stopFileObservation(const std::string& filePath);
-    
+
     /**
      * Stop observation of all observed files
      */
@@ -92,10 +92,11 @@ public:
 
 protected:
     InviwoApplication* app_;
+
 private:
     std::unordered_set<std::string> observedFiles_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_FILEOBSERVER_H
+#endif  // IVW_FILEOBSERVER_H

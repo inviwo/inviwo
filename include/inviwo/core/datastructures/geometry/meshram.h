@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_MESHRAM_H
@@ -40,7 +40,7 @@ class Mesh;
 class BufferRAM;
 
 /**
- * \ingroup datastructures	
+ * \ingroup datastructures
  */
 class IVW_CORE_API MeshRAM : public MeshRepresentation {
 
@@ -58,6 +58,6 @@ protected:
     std::vector<BufferRAM*> bufferRAM_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_MESHRAM_H
+#endif  // IVW_MESHRAM_H

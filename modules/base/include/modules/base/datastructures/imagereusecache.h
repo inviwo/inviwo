@@ -40,7 +40,7 @@
 
 namespace inviwo {
 
-class IVW_MODULE_BASE_API ImageReuseCache { 
+class IVW_MODULE_BASE_API ImageReuseCache {
 public:
     ImageReuseCache() = default;
 
@@ -75,7 +75,6 @@ std::pair<std::shared_ptr<Image>, LayerRAMPrecision<T>*> ImageReuseCache::getTyp
     return res;
 }
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_BASE_DATASTRUCTUES_IMAGECACHE_H
-
+#endif  // IVW_BASE_DATASTRUCTUES_IMAGECACHE_H

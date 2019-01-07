@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_IMAGESOURCE_H
@@ -43,10 +43,10 @@ namespace inviwo {
  * ![](org.inviwo.ImageSource.png?classIdentifier=org.inviwo.ImageSource)
  *
  * Loads a image
- * 
+ *
  * ### Outports
  *   * __Outport__ The loaded image
- * 
+ *
  * ### Properties
  *   * __File name__ The name of the file to load
  *   * __Dimensions__ Readonly, the dimensions of the loaded image.
@@ -70,6 +70,6 @@ private:
     IntVec2Property imageDimension_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_IMAGESOURCE_H
+#endif  // IVW_IMAGESOURCE_H

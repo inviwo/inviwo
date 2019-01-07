@@ -44,7 +44,7 @@ public:
     virtual ~MetaData() = default;
     virtual std::string getClassIdentifier() const;
     virtual MetaData* clone() const = 0;
-    virtual void serialize(Serializer& s) const  = 0;
+    virtual void serialize(Serializer& s) const = 0;
     virtual void deserialize(Deserializer& d) = 0;
     virtual bool equal(const MetaData& rhs) const = 0;
     friend bool IVW_CORE_API operator==(const MetaData& lhs, const MetaData& rhs);
@@ -80,12 +80,10 @@ protected:
 };
 
 template <typename T>
-MetaDataPrimitiveType<T, 0, 0>::MetaDataPrimitiveType()
-    : MetaData(), value_() {}
+MetaDataPrimitiveType<T, 0, 0>::MetaDataPrimitiveType() : MetaData(), value_() {}
 
 template <typename T>
-MetaDataPrimitiveType<T, 0, 0>::MetaDataPrimitiveType(T value)
-    : MetaData(), value_(value) {}
+MetaDataPrimitiveType<T, 0, 0>::MetaDataPrimitiveType(T value) : MetaData(), value_(value) {}
 
 template <typename T>
 bool inviwo::MetaDataPrimitiveType<T, 0, 0>::equal(const MetaData& rhs) const {
@@ -212,12 +210,10 @@ protected:
 };
 
 template <typename T, int N>
-MetaDataPrimitiveType<T, N, 0>::MetaDataPrimitiveType()
-    : MetaData(), value_(0) {}
+MetaDataPrimitiveType<T, N, 0>::MetaDataPrimitiveType() : MetaData(), value_(0) {}
 
 template <typename T, int N>
-MetaDataPrimitiveType<T, N, 0>::MetaDataPrimitiveType(T value)
-    : MetaData(), value_(value) {}
+MetaDataPrimitiveType<T, N, 0>::MetaDataPrimitiveType(T value) : MetaData(), value_(value) {}
 
 template <typename T, int N>
 bool inviwo::MetaDataPrimitiveType<T, N, 0>::equal(const MetaData& rhs) const {
@@ -326,12 +322,10 @@ protected:
 };
 
 template <typename T, int N>
-MetaDataPrimitiveType<T, N, N>::MetaDataPrimitiveType()
-    : MetaData(), value_(0) {}
+MetaDataPrimitiveType<T, N, N>::MetaDataPrimitiveType() : MetaData(), value_(0) {}
 
 template <typename T, int N>
-MetaDataPrimitiveType<T, N, N>::MetaDataPrimitiveType(T value)
-    : MetaData(), value_(value) {}
+MetaDataPrimitiveType<T, N, N>::MetaDataPrimitiveType(T value) : MetaData(), value_(value) {}
 
 template <typename T, int N>
 bool inviwo::MetaDataPrimitiveType<T, N, N>::equal(const MetaData& rhs) const {
@@ -415,6 +409,6 @@ public:
     virtual MatrixMetaData<N, T>* clone() const { return new MatrixMetaData<N, T>(*this); }
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PROCESSOR_H

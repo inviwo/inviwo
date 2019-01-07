@@ -62,6 +62,6 @@ public:
     }
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_QSTRINGHELPER_H

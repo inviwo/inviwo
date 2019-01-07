@@ -75,7 +75,6 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
     return ss;
 }
 
-}  // namespace
+}  // namespace inviwo
 
-#endif // IVW_PICKINGSTATE_H
-
+#endif  // IVW_PICKINGSTATE_H

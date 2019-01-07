@@ -49,6 +49,6 @@ public:
     bool hasBorder;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_VOLUMEBORDER_H

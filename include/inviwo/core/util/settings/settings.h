@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_SETTINGS_H
@@ -42,8 +42,8 @@ class InviwoApplication;
 class IVW_CORE_API Settings : public PropertyOwner {
 
 public:
-    Settings(const std::string &id, InviwoApplication* app);
-    Settings(const std::string &id = "");
+    Settings(const std::string& id, InviwoApplication* app);
+    Settings(const std::string& id = "");
     virtual ~Settings();
 
     virtual void addProperty(Property* property, bool owner = true) override;
@@ -62,6 +62,7 @@ public:
 
     virtual std::string getIdentifier();
     virtual InviwoApplication* getInviwoApplication() override;
+
 protected:
     std::string getFileName() const;
     std::string identifier_;
@@ -69,6 +70,6 @@ protected:
     InviwoApplication* app_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_SETTINGS_H
+#endif  // IVW_SETTINGS_H

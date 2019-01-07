@@ -42,7 +42,7 @@ namespace util {
  * \brief sets the given bool variable to true and restores its state when leaving the scope
  *
  * An instance of this class will set a given bool variable to true upon construction.
- * It restores the previous state of the bool variable when leaving the current scope. 
+ * It restores the previous state of the bool variable when leaving the current scope.
  */
 class IVW_CORE_API KeepTrueWhileInScope {
 public:
@@ -65,7 +65,7 @@ private:
  * \brief calls the given function when leaving the current scope
  *
  * An instance of this class will call the provided action, i.e. a void function, when leaving the
- * current scope. The action will also be called in case the constructor fails. 
+ * current scope. The action will also be called in case the constructor fails.
  *
  * The action can be changed at any time by calling setAction() or release().
  */

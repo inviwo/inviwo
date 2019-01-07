@@ -67,6 +67,6 @@ private:
     size3_t dimensions_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_TEXTURE3D_H

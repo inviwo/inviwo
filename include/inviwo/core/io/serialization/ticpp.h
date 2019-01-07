@@ -31,7 +31,7 @@
 #define IVW_TICPP_H
 
 #ifndef TIXML_USE_TICPP
-#  define TIXML_USE_TICPP
+#define TIXML_USE_TICPP
 #endif
 
 #include <warn/push>
@@ -51,7 +51,6 @@ typedef ticpp::Attribute TxAttribute;
 typedef ticpp::Iterator<TxElement> TxEIt;
 typedef ticpp::Iterator<TxAttribute> TxAIt;
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_TICPP_H
-
+#endif  // IVW_TICPP_H

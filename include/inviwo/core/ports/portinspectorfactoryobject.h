@@ -52,7 +52,6 @@ private:
     std::string inspectorWorkspaceFileName_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_PORTINSPECTORFACTORYOBJECT_H
-
+#endif  // IVW_PORTINSPECTORFACTORYOBJECT_H

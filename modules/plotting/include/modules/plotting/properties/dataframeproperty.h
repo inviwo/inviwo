@@ -47,7 +47,7 @@ public:
     DataFrameColumnProperty(std::string identifier, std::string displayName, bool allowNone = false,
                             size_t firstIndex = 0);
     DataFrameColumnProperty(std::string identifier, std::string displayName,
-                            DataInport<DataFrame> &port, bool allowNone = false,
+                            DataInport<DataFrame>& port, bool allowNone = false,
                             size_t firstIndex = 0);
 
     DataFrameColumnProperty(const DataFrameColumnProperty& rhs);
@@ -65,7 +65,7 @@ public:
         return TemplateOptionProperty<int>::getClassIdentifier();
     }
 
-    virtual void set(const Property *p) override;
+    virtual void set(const Property* p) override;
 
 private:
     std::shared_ptr<const DataFrame> dataframe_;

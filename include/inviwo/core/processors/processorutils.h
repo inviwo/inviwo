@@ -72,17 +72,17 @@ IVW_CORE_API bool isSelected(const Processor* processor);
 IVW_CORE_API void setSelected(Processor* processor, bool selected);
 
 /**
- * A utility class to place processors on the "grid" in the editor 
- */ 
+ * A utility class to place processors on the "grid" in the editor
+ */
 struct IVW_CORE_API GridPos {
     GridPos(int x, int y) : pos_{x, y} {};
     explicit GridPos(ivec2 pos) : pos_{pos} {}
 
     operator ivec2() const { return pos_ * ivec2{25, 25}; }
+
 private:
     ivec2 pos_;
 };
-
 
 /**
  * A utility function to create a processor and set identifier, display name, and position
@@ -101,9 +101,7 @@ std::unique_ptr<Processor> makeProcessor(ivec2 pos, Args&&... args) {
     return std::move(p);
 }
 
-
-
-}
+}  // namespace util
 
 }  // namespace inviwo
 

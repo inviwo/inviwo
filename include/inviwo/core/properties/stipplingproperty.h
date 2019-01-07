@@ -39,20 +39,16 @@
 
 namespace inviwo {
 
-class IVW_CORE_API StipplingProperty : public CompositeProperty { 
+class IVW_CORE_API StipplingProperty : public CompositeProperty {
 public:
-    enum class Mode {
-        None,
-        ScreenSpace,
-        WorldSpace
-    };
+    enum class Mode { None, ScreenSpace, WorldSpace };
 
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
     StipplingProperty(const std::string& identifier, const std::string& displayName,
-                 InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
-                 PropertySemantics semantics = PropertySemantics::Default);
+                      InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
+                      PropertySemantics semantics = PropertySemantics::Default);
     StipplingProperty(const StipplingProperty& rhs);
     StipplingProperty& operator=(const StipplingProperty& rhs) = default;
     virtual StipplingProperty* clone() const override;
@@ -65,6 +61,6 @@ public:
     FloatProperty worldScale_;
 };
 
-} // namespace inviwo
+}  // namespace inviwo
 
-#endif // IVW_STIPPLINGPROPERTY_H
+#endif  // IVW_STIPPLINGPROPERTY_H

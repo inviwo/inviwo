@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 #ifndef IVW_KEYBOARDUTILS_H
 #define IVW_KEYBOARDUTILS_H
@@ -40,8 +40,8 @@ namespace util {
 
 IVW_MODULE_QTWIDGETS_API IvwKey mapKeyFromQt(const QKeyEvent *keyevent);
 
-} // namespace util
+}  // namespace util
 
-} //namespace inviwo
+}  // namespace inviwo
 
-#endif // IVW_KEYBOARDUTILS_H
+#endif  // IVW_KEYBOARDUTILS_H

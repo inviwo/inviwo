@@ -45,8 +45,9 @@ public:
     class const_iterator {
         using self = const_iterator;
         using PortIter = typename std::vector<Outport*>::const_iterator;
-        using DataIter = typename OutportIterable<T>::const_iterator; 
-    public: 
+        using DataIter = typename OutportIterable<T>::const_iterator;
+
+    public:
         using difference_type = std::ptrdiff_t;
         using value_type = T;
         using pointer = std::shared_ptr<const T>;

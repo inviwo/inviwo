@@ -41,6 +41,6 @@ public:
     virtual ~PostProcessingModule() = default;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_POSTPROCESSINGMODULE_H
+#endif  // IVW_POSTPROCESSINGMODULE_H

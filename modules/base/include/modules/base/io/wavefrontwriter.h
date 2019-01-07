@@ -59,7 +59,6 @@ private:
     void writeData(const Mesh* data, std::ostream& os) const;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_WAVEFRONTWRITER_H
-
+#endif  // IVW_WAVEFRONTWRITER_H

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_LINKSETTINGS_H
@@ -57,6 +57,6 @@ private:
     std::unordered_map<std::string, BoolProperty*> propertyMap_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_LINKSETTINGS_H
+#endif  // IVW_LINKSETTINGS_H

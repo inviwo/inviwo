@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_DATAGROUPREPRESENTATION_H
@@ -34,7 +34,7 @@
 
 namespace inviwo {
 
-/** 
+/**
  * \ingroup datastructures
  *
  *  \brief The base class for all DataGroupRepresentation objects.
@@ -66,6 +66,6 @@ protected:
     DataGroupRepresentation& operator=(const DataGroupRepresentation& that) = default;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_DATAGROUPREPRESENTATION_H
+#endif  // IVW_DATAGROUPREPRESENTATION_H

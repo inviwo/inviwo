@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_DATAREPRESENTATION_H
@@ -34,7 +34,6 @@
 #include <typeindex>
 
 namespace inviwo {
-
 
 /**
  * \ingroup datastructures
@@ -65,16 +64,15 @@ protected:
     DataRepresentation(const DataRepresentation& rhs) = default;
     DataRepresentation& operator=(const DataRepresentation& that) = default;
     void setDataFormat(const DataFormatBase* format);
-   
+
     bool isValid_ = true;
     const DataFormatBase* dataFormatBase_ = DataUInt8::get();
-    Owner *owner_ = nullptr;
+    Owner* owner_ = nullptr;
 };
 
 template <typename Owner>
 DataRepresentation<Owner>::DataRepresentation(const DataFormatBase* format)
     : isValid_(true), dataFormatBase_(format), owner_(nullptr) {}
-
 
 template <typename Owner>
 const DataFormatBase* DataRepresentation<Owner>::getDataFormat() const {
@@ -121,7 +119,6 @@ void DataRepresentation<Owner>::setValid(bool valid) {
     isValid_ = valid;
 }
 
+}  // namespace inviwo
 
-} // namespace
-
-#endif // IVW_DATAREPRESENTATION_H
+#endif  // IVW_DATAREPRESENTATION_H

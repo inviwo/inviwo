@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_IMAGEGL_H
@@ -45,7 +45,7 @@ class Shader;
 class Image;
 
 /**
- * \ingroup datastructures	
+ * \ingroup datastructures
  */
 class IVW_MODULE_OPENGL_API ImageGL : public ImageRepresentation {
 
@@ -64,7 +64,7 @@ public:
     virtual size2_t getDimensions() const override;
     virtual bool copyRepresentationsTo(ImageRepresentation* target) const override;
     virtual size_t priority() const override;
-    
+
     bool copyRepresentationsTo(ImageGL* target) const;
     bool updateFrom(const ImageGL*);
 
@@ -100,23 +100,22 @@ public:
     virtual void update(bool editable) override;
 
 private:
-    std::vector<LayerGL*> colorLayersGL_; //< non-owning reference
-    LayerGL* depthLayerGL_;               //< non-owning reference  
-    LayerGL* pickingLayerGL_;             //< non-owning reference
+    std::vector<LayerGL*> colorLayersGL_;  //< non-owning reference
+    LayerGL* depthLayerGL_;                //< non-owning reference
+    LayerGL* pickingLayerGL_;              //< non-owning reference
 
     FrameBufferObject frameBufferObject_;
     GLenum pickingAttachmentID_;
 
-    mutable Shader* shader_ = nullptr;    //< non-owning reference
+    mutable Shader* shader_ = nullptr;  //< non-owning reference
     mutable size_t colorLayerCopyCount_;
 
     GLboolean prevDepthTest_;
     GLboolean prevDepthMask_;
 
     utilgl::Viewport prevViewport_;
-
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_IMAGEGL_H
+#endif  // IVW_IMAGEGL_H

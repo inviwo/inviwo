@@ -65,13 +65,14 @@ public:
     bool hasPortInspector(Outport* outport) const;
     ProcessorWidget* addPortInspector(Outport* outport, ivec2 pos);
     void removePortInspector(Outport* outport);
-    
+
     std::shared_ptr<const Image> renderPortInspectorImage(Outport* outport);
 
     void clear();
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
+
 private:
     using PortInspectorMap = std::map<std::string, std::unique_ptr<PortInspector>>;
 
@@ -90,11 +91,10 @@ private:
 
     PortInspectorMap portInspectors_;
     std::vector<std::unique_ptr<PortInspector>> unUsedInspectors_;
-    
+
     InviwoApplication* app_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_PORTINSPECTORMANAGER_H
-
+#endif  // IVW_PORTINSPECTORMANAGER_H

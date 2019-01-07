@@ -116,7 +116,7 @@ private:
     std::unique_ptr<ColorWheel> colorWheel_;
     std::unique_ptr<QColorDialog> colorDialog_;
 
-    std::unique_ptr<TFEditor> tfEditor_; //!< inherited from QGraphicsScene
+    std::unique_ptr<TFEditor> tfEditor_;  //!< inherited from QGraphicsScene
 
     std::unique_ptr<TFSelectionWatcher> tfSelectionWatcher_;
 

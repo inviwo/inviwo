@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_GLFORMATS_H
@@ -68,6 +68,6 @@ private:
 IVW_MODULE_OPENGL_API bool operator==(const GLFormats::GLFormat& a, const GLFormats::GLFormat& b);
 IVW_MODULE_OPENGL_API bool operator!=(const GLFormats::GLFormat& a, const GLFormats::GLFormat& b);
 
-}  // namespace
+}  // namespace inviwo
 
 #endif

@@ -63,7 +63,7 @@ public:
     // PropertyObservable overrides
     virtual void onSetVisible(Property *property, bool visible) override;
     virtual void onSetDisplayName(Property *property, const std::string &displayName) override;
-    virtual void onSetReadOnly(Property* property, bool readonly) override;
+    virtual void onSetReadOnly(Property *property, bool readonly) override;
 
 private:
     ButtonProperty *property_;
@@ -90,7 +90,7 @@ public:
     // PropertyObservable overrides
     virtual void onSetVisible(Property *property, bool visible) override;
     virtual void onSetDisplayName(Property *property, const std::string &displayName) override;
-    virtual void onSetReadOnly(Property* property, bool readonly) override;
+    virtual void onSetReadOnly(Property *property, bool readonly) override;
 
 private:
     ButtonProperty *property_;

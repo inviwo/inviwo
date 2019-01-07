@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_VOLUMESLICEGL_H
@@ -54,42 +54,48 @@ class Mesh;
 /** \docpage{org.inviwo.VolumeSliceGL, Volume Slice (GL)}
  * ![](org.inviwo.VolumeSliceGL.png?classIdentifier=org.inviwo.VolumeSliceGL)
  * This processor extracts an arbitrary 2D slice from an input volume.
- * 
+ *
  * ### Inports
  *   * __volume__ The input volume
- * 
+ *
  * ### Outports
  *   * __outport__ The extracted volume slice
- * 
+ *
  * ### Properties
  *   * __Slice along axis__ Defines the volume axis or plane normal for the output slice
  *   * __X Volume Position__ Position of the slice if the x axis is chosen
  *   * __Y Volume Position__ Position of the slice if the y axis is chosen
  *   * __Z Volume Position__ Position of the slice if the z axis is chosen
- *   * __Plane Normal__ Defines the normal of the slice plane (if slice axis is set to "Plane Equation")
- *   * __Plane Position__ Defines the origin of the slice plane (if slice axis is set to "Plane Equation")
+ *   * __Plane Normal__ Defines the normal of the slice plane (if slice axis is set to "Plane
+ *                      Equation")
+ *   * __Plane Position__ Defines the origin of the slice plane (if slice axis is set to "Plane
+ *                        Equation")
  *   * __Transformations__
  *      + __Rotation (ccw)__ Defines the rotation of the output image
  *      + __Angle__ Angle of rotation if "Free Rotation" is chosen as rotation
  *      + __Scale__ Scaling factor applied to the volume slice
  *      + __Horizontal Flip__ Flips the output image left and right
  *      + __Vertical Flip__ Flips the output image up and down
- *      + __Volume Texture Wrapping__ Texture wrapping mode used for extracting the image slice 
+ *      + __Volume Texture Wrapping__ Texture wrapping mode used for extracting the image slice
  *          (use fill color, repeat edge values, repeat the contents, mirror contents)
- *      + __Fill Color__ Defines the color which is used if the texture wrapping  is set to "Fill with Color"
+ *      + __Fill Color__ Defines the color which is used if the texture wrapping  is set to "Fill
+ *                       with Color"
  *   * __Position Selection__
  *      + __Enable Picking__ Enables selecting the position selection with the mouse
  *      + __Show Position Indicator__ Toggles the visibility of the position indicator
  *      + __Indicator Color__  Custom color of the position indicator
  *   * __Transfer Function Properties__
- *      + __Enable Transfer Function__ Toggles whether the transfer function is applied onto the extracted volume slice
- *      + __Transfer Function__ Defines the transfer function for mapping voxel values to color and opacity
- *      + __Alpha Offset__ Offset 
+ *      + __Enable Transfer Function__ Toggles whether the transfer function is applied onto the
+ *                                     extracted volume slice
+ *      + __Transfer Function__ Defines the transfer function for mapping voxel values to color and
+ *                              opacity
+ *      + __Alpha Offset__ Offset
  *   * __World Position__ Outputs the world position of the slice plane (read-only)
- *   * __Handle interaction events__ Toggles whether this processor will handle interaction events like mouse buttons or key presses
+ *   * __Handle interaction events__ Toggles whether this processor will handle interaction events
+ *                                   like mouse buttons or key presses
  */
 
- /**
+/**
  * \class VolumeSliceGL
  * \brief extracts an arbitrary 2D slice from an input volume
  */
@@ -127,14 +133,13 @@ protected:
     void setVolPosFromScreenPos(vec2 pos);
     vec2 getScreenPosFromVolPos();
 
-    vec3 convertScreenPosToVolume(const vec2 &screenPos, bool clamp = true) const;
-    
+    vec3 convertScreenPosToVolume(const vec2& screenPos, bool clamp = true) const;
+
     void invalidateMesh();
 
     void sliceChange();
     void positionChange();
     void rotationModeChange();
-
 
 private:
     void eventShiftSlice(Event*);
@@ -144,7 +149,7 @@ private:
     void eventGestureShiftSlice(Event*);
     void eventUpdateMousePos(Event*);
 
-	void updateFromWorldPosition();
+    void updateFromWorldPosition();
 
     VolumeInport inport_;
     ImageOutport outport_;
@@ -169,7 +174,7 @@ private:
     FloatProperty imageRotation_;
     BoolProperty flipHorizontal_;
     BoolProperty flipVertical_;
-    OptionPropertyInt volumeWrapping_; 
+    OptionPropertyInt volumeWrapping_;
     FloatVec4Property fillColor_;
 
     BoolProperty posPicking_;
@@ -196,15 +201,15 @@ private:
     EventProperty gestureShiftSlice_;
 
     std::unique_ptr<Mesh> meshCrossHair_;
-   
+
     bool meshDirty_;
     bool updating_;
 
     mat4 sliceRotation_;
-    mat4 inverseSliceRotation_; // Used to calculate the slice "z position" from the plain point. 
+    mat4 inverseSliceRotation_;  // Used to calculate the slice "z position" from the plain point.
     size3_t volumeDimensions_;
     mat4 texToWorld_;
 };
-}
+}  // namespace inviwo
 
 #endif  // IVW_VOLUMESLICEGL_H

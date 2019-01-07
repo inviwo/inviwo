@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_OPTIONPROPERTYWIDGETQT_H
@@ -47,12 +47,12 @@ public:
 
 private:
     void optionChanged(int);
- 
+
     BaseOptionProperty* property_;
     IvwComboBox* comboBox_;
     EditableLabelQt* label_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_OPTIONPROPERTYWIDGETQT_H
+#endif  // IVW_OPTIONPROPERTYWIDGETQT_H

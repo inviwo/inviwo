@@ -41,11 +41,11 @@
 namespace inviwo {
 
 enum class TouchState {
-    None       = 0,
-    Started    = 1 << 0, // Pressed
-    Updated    = 1 << 1, // Moved
-    Stationary = 1 << 2, // No movement
-    Finished   = 1 << 3, // Released
+    None = 0,
+    Started = 1 << 0,     // Pressed
+    Updated = 1 << 1,     // Moved
+    Stationary = 1 << 2,  // No movement
+    Finished = 1 << 3,    // Released
 };
 
 ALLOW_FLAGS_FOR_ENUM(TouchState)
@@ -73,14 +73,11 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
     return ss;
 }
 template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             TouchStates s) {
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, TouchStates s) {
     std::copy(s.begin(), s.end(), util::make_ostream_joiner(ss, "+"));
     return ss;
 }
 
+}  // namespace inviwo
 
-} // namespace
-
-#endif // IVW_TOUCHSTATE_H
-
+#endif  // IVW_TOUCHSTATE_H

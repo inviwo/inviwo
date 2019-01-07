@@ -89,8 +89,8 @@ void forEachVoxelParallel(const VolumeRAM &v, C callback, size_t jobs = 0) {
     }
 }
 
-}  // namespace
+}  // namespace util
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_VOLUMERAMUTILS_H

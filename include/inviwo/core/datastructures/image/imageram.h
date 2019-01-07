@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_IMAGERAM_H
@@ -40,7 +40,7 @@ namespace inviwo {
 class LayerRAM;
 
 /**
- * \ingroup datastructures	
+ * \ingroup datastructures
  */
 class IVW_CORE_API ImageRAM : public ImageRepresentation {
 
@@ -80,6 +80,6 @@ private:
     LayerRAM* pickingLayerRAM_ = nullptr;    //< non-owning reference
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_IMAGERAM_H
+#endif  // IVW_IMAGERAM_H

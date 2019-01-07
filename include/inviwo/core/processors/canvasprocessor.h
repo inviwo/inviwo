@@ -48,7 +48,7 @@ namespace inviwo {
 class Canvas;
 class CanvasProcessorWidget;
 class ProcessorNetworkEvaluator;
-template<typename T>
+template <typename T>
 class DataWriterType;
 
 class IVW_CORE_API CanvasProcessor : public Processor, public ProcessorWidgetMetaDataObserver {
@@ -66,11 +66,11 @@ public:
     ivec2 getCustomDimensions() const;
 
     void saveImageLayer();
-    void saveImageLayer(std::string filePath, const FileExtension &extension=FileExtension());
+    void saveImageLayer(std::string filePath, const FileExtension& extension = FileExtension());
     const Layer* getVisibleLayer() const;
 
     std::shared_ptr<const Image> getImage() const;
-    
+
     virtual void setProcessorWidget(std::unique_ptr<ProcessorWidget> processorWidget) override;
     virtual void propagateEvent(Event* event, Outport* source) override;
 
@@ -115,10 +115,10 @@ private:
     void sizeChanged();
     ivec2 calcSize();
 
-    ivec2 previousImageSize_;   
+    ivec2 previousImageSize_;
     ProcessorWidgetMetaData* widgetMetaData_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_CANVASPROCESSOR_H

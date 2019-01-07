@@ -79,6 +79,6 @@ private:
     BoolProperty updateDataRange_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_VOLUMELOWPASS_H

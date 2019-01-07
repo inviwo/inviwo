@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_LAYERCL_BASE_H
@@ -37,22 +37,22 @@
 
 namespace inviwo {
 
-// This class enables inviwo to use cl::Image(s) in a generic way (i.e. not caring if it is an Image2D or Image2DGL/ImageGL).
+// This class enables inviwo to use cl::Image(s) in a generic way (i.e. not caring if it is an
+// Image2D or Image2DGL/ImageGL).
 class IVW_MODULE_OPENCL_API LayerCLBase {
 
 public:
     LayerCLBase() = default;
     LayerCLBase(const LayerCLBase& other) = default;
-    virtual ~LayerCLBase() {};
+    virtual ~LayerCLBase(){};
 
     virtual cl::Image& getEditable() = 0;
     virtual const cl::Image& get() const = 0;
 
 protected:
-    
 };
 
-} // namespace
+}  // namespace inviwo
 
 namespace cl {
 
@@ -61,8 +61,6 @@ namespace cl {
 template <>
 IVW_MODULE_OPENCL_API cl_int Kernel::setArg(cl_uint index, const inviwo::LayerCLBase& value);
 
-} // namespace cl
+}  // namespace cl
 
-
-
-#endif // IVW_LAYERCL_BASE_H
+#endif  // IVW_LAYERCL_BASE_H

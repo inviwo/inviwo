@@ -24,44 +24,44 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef _IVW_CORE_DEFINE_H_
 #define _IVW_CORE_DEFINE_H_
 
-#ifdef INVIWO_ALL_DYN_LINK //DYNAMIC
-    // If we are building DLL files we must declare dllexport/dllimport
-    #ifdef INVIWO_CORE_EXPORTS
-        #ifdef _WIN32
-            #define IVW_CORE_API __declspec(dllexport)
-            #define IVW_CORE_EXT
-            #define IVW_CORE_TMPL_EXP
-            #define IVW_CORE_TMPL_INST __declspec(dllexport)
-        #else //UNIX (GCC)
-            #define IVW_CORE_API __attribute__ ((visibility ("default")))
-            #define IVW_CORE_EXT
-            #define IVW_CORE_TMPL_EXP __attribute__ ((__visibility__("default")))
-            #define IVW_CORE_TMPL_INST
-        #endif
-    #else
-        #ifdef _WIN32
-            #define IVW_CORE_API __declspec(dllimport)
-            #define IVW_CORE_EXT extern
-            #define IVW_CORE_TMPL_EXP __declspec(dllimport)
-            #define IVW_CORE_TMPL_INST
-        #else
-            #define IVW_CORE_API
-            #define IVW_CORE_EXT extern
-            #define IVW_CORE_TMPL_EXP __attribute__ ((__visibility__("default")))
-            #define IVW_CORE_TMPL_INST
-        #endif
-    #endif
-#else //STATIC
-    #define IVW_CORE_API
-    #define IVW_CORE_EXT extern
-    #define IVW_CORE_TMPL_EXP
-    #define IVW_CORE_TMPL_INST
+#ifdef INVIWO_ALL_DYN_LINK  // DYNAMIC
+// If we are building DLL files we must declare dllexport/dllimport
+#ifdef INVIWO_CORE_EXPORTS
+#ifdef _WIN32
+#define IVW_CORE_API __declspec(dllexport)
+#define IVW_CORE_EXT
+#define IVW_CORE_TMPL_EXP
+#define IVW_CORE_TMPL_INST __declspec(dllexport)
+#else  // UNIX (GCC)
+#define IVW_CORE_API __attribute__((visibility("default")))
+#define IVW_CORE_EXT
+#define IVW_CORE_TMPL_EXP __attribute__((__visibility__("default")))
+#define IVW_CORE_TMPL_INST
+#endif
+#else
+#ifdef _WIN32
+#define IVW_CORE_API __declspec(dllimport)
+#define IVW_CORE_EXT extern
+#define IVW_CORE_TMPL_EXP __declspec(dllimport)
+#define IVW_CORE_TMPL_INST
+#else
+#define IVW_CORE_API
+#define IVW_CORE_EXT extern
+#define IVW_CORE_TMPL_EXP __attribute__((__visibility__("default")))
+#define IVW_CORE_TMPL_INST
+#endif
+#endif
+#else  // STATIC
+#define IVW_CORE_API
+#define IVW_CORE_EXT extern
+#define IVW_CORE_TMPL_EXP
+#define IVW_CORE_TMPL_INST
 #endif
 
 #endif /* _IVW_CORE_DEFINE_H_ */

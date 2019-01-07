@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_VOLUMECL_BASE_H
@@ -70,18 +70,19 @@ public:
     virtual cl::Image& getEditable() = 0;
     virtual const cl::Image& get() const = 0;
 
-    /** 
+    /**
      * \brief Calculates scaling for 12-bit data dependent on internal OpenCL format.
      * Scaling will be applied using: dataValue * scaling
      * @return vec2 Offset in first component and scaling in second.
      */
     virtual vec2 getVolumeDataOffsetAndScaling(const Volume* volume) const;
     const Buffer<glm::u8>& getVolumeStruct(const Volume* volume) const;
+
 protected:
-    Buffer<glm::u8> volumeStruct_; // Contains VolumeParameters
+    Buffer<glm::u8> volumeStruct_;  // Contains VolumeParameters
 };
 
-} // namespace
+}  // namespace inviwo
 
 namespace cl {
 
@@ -90,8 +91,6 @@ namespace cl {
 template <>
 IVW_MODULE_OPENCL_API cl_int Kernel::setArg(cl_uint index, const inviwo::VolumeCLBase& value);
 
-} // namespace cl
+}  // namespace cl
 
-
-
-#endif // IVW_VOLUMECL_BASE_H
+#endif  // IVW_VOLUMECL_BASE_H

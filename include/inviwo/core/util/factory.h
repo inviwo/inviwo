@@ -91,7 +91,7 @@ public:
 /**
  * T Models the object created
  * M Models a object with a function create(K key, Args...) that can create objects of type T with
- * constructor T(Args...) 
+ * constructor T(Args...)
  * M would usually be a "factory object" type
  * K Models a key used to look up T
  */
@@ -101,7 +101,7 @@ public:
     using Key = typename std::remove_cv<typename std::remove_reference<K>::type>::type;
     using Map = std::unordered_map<Key, M*>;
     StandardFactory() = default;
-   
+
     // The factory will not assume ownership over obj, although is assumes that obj will be
     // valid for the lifetime of the factory
     virtual bool registerObject(M* obj);
@@ -122,7 +122,7 @@ bool StandardFactory<T, M, K, Args...>::registerObject(M* obj) {
         return true;
     } else {
         LogWarn("Failed to register object \"" << obj->getClassIdentifier()
-                                             << "\", already registered");
+                                               << "\", already registered");
         return false;
     }
 }
@@ -162,9 +162,9 @@ auto StandardFactory<T, M, K, Args...>::getKeys() const -> std::vector<Key> {
 }
 
 /**
-* T Models the object created
-* T needs to have a clone() function.
-*/
+ * T Models the object created
+ * T needs to have a clone() function.
+ */
 template <typename T, typename K = const std::string&>
 class CloningFactory : public Factory<T, K> {
 public:
@@ -215,6 +215,6 @@ auto inviwo::CloningFactory<T, K>::getKeys() const -> std::vector<Key> {
     return res;
 }
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_INVIWOFACETORYBASE_H

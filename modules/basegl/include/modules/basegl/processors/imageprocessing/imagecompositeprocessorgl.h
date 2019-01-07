@@ -68,7 +68,6 @@ private:
     ImageCompositor compositor_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_IMAGECOMPOSITEPROCESSORGL_H
-
+#endif  // IVW_IMAGECOMPOSITEPROCESSORGL_H

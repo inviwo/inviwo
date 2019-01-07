@@ -50,6 +50,7 @@ public:
                      const char* fileName, const char* functionName, int lineNumber,
                      std::string logMsg) override;
     std::string getLog() const;
+
 private:
     std::stringstream logstream_;
 };

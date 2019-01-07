@@ -103,6 +103,6 @@ private:
     Texture2D texBright_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_FXAA_H

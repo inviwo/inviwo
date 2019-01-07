@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_STRINGPROPERTY_H
@@ -35,7 +35,7 @@
 
 namespace inviwo {
 
-/** 
+/**
  * \ingroup properties
  * \brief  The StringProperty holds a string as value.
  *
@@ -57,20 +57,19 @@ public:
      *  The PropertySemantics can be set to Editor.
      *  Then a TextEditorWidget will be used instead of a StringPropertyWidget
      */
-    StringProperty(
-        std::string identifier, std::string displayName, std::string value = "",
-        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-        PropertySemantics semantics = PropertySemantics::Default);
+    StringProperty(std::string identifier, std::string displayName, std::string value = "",
+                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                   PropertySemantics semantics = PropertySemantics::Default);
 
     StringProperty(const StringProperty& rhs);
     StringProperty& operator=(const StringProperty& that);
     StringProperty& operator=(const std::string& value);
     virtual StringProperty* clone() const override;
     virtual ~StringProperty() = default;
-    
+
     virtual Document getDescription() const override;
 };
 
-}  // namespace
+}  // namespace inviwo
 
-#endif // IVW_STRINGPROPERTY_H
+#endif  // IVW_STRINGPROPERTY_H

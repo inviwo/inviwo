@@ -46,11 +46,11 @@ enum class PathType {
     TransferFunctions,  // /data/transferfunctions
     Settings,           // path to the current users settings
     Modules,            // Module libraries folder, i.e. /appdata/inviwo/modules on Windows.
-                        // Install your module there to make it load when runtime loading is enabled.
-    Help,               // /data/help
-    Tests               // /tests
+              // Install your module there to make it load when runtime loading is enabled.
+    Help,  // /data/help
+    Tests  // /tests
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PATHTYPE_H

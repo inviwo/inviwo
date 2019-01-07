@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_IMAGEMAPPING_H
@@ -40,15 +40,15 @@ namespace inviwo {
 /** \docpage{org.inviwo.ImageMapping, Image Mapping}
  * Maps the input image to an output image with the help of a transfer function.
  * ![](org.inviwo.ImageMapping.png?classIdentifier=org.inviwo.ImageMapping)
- * 
+ *
  * ### Inports
  *   * __ImageInport__ The input image.
  *
  * ### Outports
  *   * __ImageOutport__ The output image.
- * 
+ *
  * ### Properties
- *   * __Transfer Function__ The transfer function used for mapping input to output values 
+ *   * __Transfer Function__ The transfer function used for mapping input to output values
  *                           including the alpha channel.
  */
 
@@ -71,6 +71,6 @@ private:
     TransferFunctionProperty transferFunction_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_IMAGEMAPPING_H
+#endif  // IVW_IMAGEMAPPING_H

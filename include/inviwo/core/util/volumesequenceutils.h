@@ -35,28 +35,28 @@
 
 namespace inviwo {
 
-    class Volume;
-    using SharedVolume = std::shared_ptr<Volume>;
-    using VolumeSequence = std::vector<SharedVolume>;
+class Volume;
+using SharedVolume = std::shared_ptr<Volume>;
+using VolumeSequence = std::vector<SharedVolume>;
 
-    namespace util {
+namespace util {
 
-        bool IVW_CORE_API hasTimestamps(const VolumeSequence &seq,bool checkfirstonly = true);
+bool IVW_CORE_API hasTimestamps(const VolumeSequence &seq, bool checkfirstonly = true);
 
+std::pair<double, double> IVW_CORE_API getTimestampRange(const VolumeSequence &seq,
+                                                         bool sorted = true);
 
-        std::pair<double, double> IVW_CORE_API getTimestampRange(const VolumeSequence &seq, bool sorted = true);
+bool IVW_CORE_API isSorted(const VolumeSequence &seq);
+VolumeSequence IVW_CORE_API sortSequence(const VolumeSequence &seq);
 
-        bool IVW_CORE_API isSorted(const VolumeSequence &seq);
-        VolumeSequence IVW_CORE_API sortSequence(const VolumeSequence &seq);
+std::pair<SharedVolume, SharedVolume> IVW_CORE_API getVolumesForTimestep(const VolumeSequence &seq,
+                                                                         double t,
+                                                                         bool sorted = true);
 
-        std::pair<SharedVolume, SharedVolume> IVW_CORE_API getVolumesForTimestep(const VolumeSequence &seq, double t, bool sorted = true);
+bool IVW_CORE_API hasTimestamp(SharedVolume vol);
+double IVW_CORE_API getTimestamp(SharedVolume vol);
+}  // namespace util
 
+}  // namespace inviwo
 
-        bool IVW_CORE_API hasTimestamp(SharedVolume vol);
-        double IVW_CORE_API getTimestamp(SharedVolume vol);
-    }
-
-} // namespace
-
-#endif // IVW_VOLUMESEQUENCEUTILS_H
-
+#endif  // IVW_VOLUMESEQUENCEUTILS_H

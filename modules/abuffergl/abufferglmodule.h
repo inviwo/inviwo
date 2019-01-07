@@ -54,6 +54,6 @@ private:
     };
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_ABUFFERGL_MODULE_H

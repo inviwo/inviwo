@@ -58,7 +58,7 @@ public:
 
     /**
      * Implement this function to update the widget after the property has been modified.
-     */ 
+     */
     virtual void updateFromProperty() = 0;
 
     virtual PropertyEditorWidget* getEditorWidget() const;

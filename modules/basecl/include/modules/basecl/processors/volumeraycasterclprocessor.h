@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_VOLUMERAYCASTERCLPROCESSOR_H
@@ -40,8 +40,6 @@
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
 
-
-
 #include <modules/opencl/inviwoopencl.h>
 #include <modules/opencl/image/layerclbase.h>
 #include <modules/opencl/kernelowner.h>
@@ -50,16 +48,16 @@
 namespace inviwo {
 /** \docpage{org.inviwo.VolumeRaycasterCL, Volume Raycaster}
  * ![](org.inviwo.VolumeRaycasterCL.png?classIdentifier=org.inviwo.VolumeRaycasterCL)
- * * Perform volume rendering on the input volume. 
+ * * Perform volume rendering on the input volume.
  * ### Inports
  *   * __VolumeInport__ The volume data to render.
  *   * __ImageInport__ The entry point.
  *   * __ImageInport__ The exit point.
- *   * __ImageInport__ Background (optional). 
+ *   * __ImageInport__ Background (optional).
  *
  * ### Outports
  *   * __ImageOutport__ Light reaching the camera through the volume.
- * 
+ *
  * ### Properties
  *   * __Sampling rate__ Number of sample per voxel to take.
  *   * __Transfer function__ Transfer function to map data values into color and opacity.
@@ -68,7 +66,7 @@ namespace inviwo {
  */
 
 /**
- * \brief Perform volume rendering on the input volume. 
+ * \brief Perform volume rendering on the input volume.
  *
  */
 class IVW_MODULE_BASECL_API VolumeRaycasterCLProcessor : public Processor, public KernelObserver {
@@ -88,7 +86,7 @@ private:
     VolumeInport volumePort_;
     ImageInport entryPort_;
     ImageInport exitPort_;
-    ImageInport backgroundPort_; //! Optional background
+    ImageInport backgroundPort_;  //! Optional background
     ImageOutport outport_;
 
     FloatProperty samplingRate_;
@@ -103,6 +101,6 @@ private:
     VolumeRaycasterCL volumeRaycaster_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_VOLUMERAYCASTERCLPROCESSOR_H
+#endif  // IVW_VOLUMERAYCASTERCLPROCESSOR_H

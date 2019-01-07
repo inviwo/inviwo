@@ -40,14 +40,13 @@
 #include <inviwo/core/interaction/events/keyboardkeys.h>
 #include <inviwo/core/interaction/events/gesturestate.h>
 
-
 namespace inviwo {
 
 /**
  * \class EventMatcher
  * \brief A class to represent a event matcher for use in event properties.
  */
-class IVW_CORE_API EventMatcher : public Serializable { 
+class IVW_CORE_API EventMatcher : public Serializable {
 public:
     EventMatcher() = default;
     virtual ~EventMatcher() = default;
@@ -69,7 +68,7 @@ class IVW_CORE_API KeyboardEventMatcher : public EventMatcher {
 public:
     KeyboardEventMatcher(IvwKey key, KeyStates states = KeyState::Press,
                          KeyModifiers modifier = KeyModifiers(flags::none));
-    
+
     virtual ~KeyboardEventMatcher() = default;
     virtual KeyboardEventMatcher* clone() const override;
 
@@ -80,10 +79,10 @@ public:
 
     KeyStates states() const;
     void setStates(KeyStates states);
-  
+
     KeyModifiers modifiers() const;
     void setModifiers(KeyModifiers modifiers);
-   
+
     virtual void setCurrentStateAsDefault() override;
     virtual void resetToDefaultState() override;
     virtual void serialize(Serializer& s) const override;
@@ -103,7 +102,7 @@ class IVW_CORE_API MouseEventMatcher : public EventMatcher {
 public:
     MouseEventMatcher(MouseButtons buttons, MouseStates states = MouseState::Press,
                       KeyModifiers modifiers = KeyModifiers(flags::none));
-    
+
     virtual ~MouseEventMatcher() = default;
     virtual MouseEventMatcher* clone() const override;
 
@@ -114,10 +113,10 @@ public:
 
     MouseStates states() const;
     void setStates(MouseStates states);
-  
+
     KeyModifiers modifiers() const;
     void setModifiers(KeyModifiers modifiers);
-    
+
     virtual void setCurrentStateAsDefault() override;
     virtual void resetToDefaultState() override;
     virtual void serialize(Serializer& s) const override;
@@ -133,19 +132,18 @@ private:
     ValueWrapper<KeyModifiers> modifiers_;
 };
 
-
 class IVW_CORE_API WheelEventMatcher : public EventMatcher {
 public:
     WheelEventMatcher(KeyModifiers modifiers = KeyModifiers(flags::none));
-    
+
     virtual ~WheelEventMatcher() = default;
     virtual WheelEventMatcher* clone() const override;
 
     virtual bool operator()(Event*) override;
- 
+
     KeyModifiers modifiers() const;
     void setModifiers(KeyModifiers modifiers);
-    
+
     virtual void setCurrentStateAsDefault() override;
     virtual void resetToDefaultState() override;
     virtual void serialize(Serializer& s) const override;
@@ -158,7 +156,6 @@ protected:
 private:
     ValueWrapper<KeyModifiers> modifiers_;
 };
-
 
 class IVW_CORE_API GestureEventMatcher : public EventMatcher {
 public:
@@ -175,13 +172,13 @@ public:
 
     GestureStates states() const;
     void setStates(GestureState states);
-  
+
     int numFingers() const;
     void setNumFingers(int numFingers);
-  
+
     KeyModifiers modifiers() const;
     void setModifiers(KeyModifiers modifiers);
-    
+
     virtual void setCurrentStateAsDefault() override;
     virtual void resetToDefaultState() override;
     virtual void serialize(Serializer& s) const override;
@@ -197,8 +194,6 @@ private:
     ValueWrapper<int> numFingers_;
     ValueWrapper<KeyModifiers> modifiers_;
 };
-
-
 
 class IVW_CORE_API GeneralEventMatcher : public EventMatcher {
 public:
@@ -216,8 +211,6 @@ private:
     std::function<bool(Event*)> matcher_;
 };
 
+}  // namespace inviwo
 
-} // namespace
-
-#endif // IVW_EVENTMATCHER_H
-
+#endif  // IVW_EVENTMATCHER_H

@@ -48,6 +48,6 @@ public:
                                         PythonOutputType outputType) override;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PYTHONLOGGER_H

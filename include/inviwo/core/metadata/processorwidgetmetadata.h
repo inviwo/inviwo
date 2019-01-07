@@ -79,6 +79,6 @@ private:
     bool visibility_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PROCESSOR_WIDGET_METADATA_H

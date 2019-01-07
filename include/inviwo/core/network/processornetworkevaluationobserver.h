@@ -53,6 +53,6 @@ protected:
     virtual void notifyObserversProcessorNetworkEvaluationEnd();
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PROCESSORNETWORKEVALUATIONOBSERVER_H

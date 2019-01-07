@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_CONVEXHULL2DPROCESSOR_H
@@ -47,21 +47,21 @@ namespace inviwo {
  *
  * ### Outports
  *   * __Geometry__ 2D convex hull of the input geometry
- * 
+ *
  * ### Properties
- *   * __Normal__ Normal of the plane onto which all points are projected prior to computing the convex hull
+ *   * __Normal__ Normal of the plane onto which all points are projected prior to computing the
+ *                convex hull
  */
-
 
 /**
  * \class ConvexHull2DProcessor
  * \brief Processor computing the convex hull of a given 2D input geometry
  */
-class IVW_MODULE_BASE_API ConvexHull2DProcessor : public Processor { 
+class IVW_MODULE_BASE_API ConvexHull2DProcessor : public Processor {
 public:
     ConvexHull2DProcessor();
     virtual ~ConvexHull2DProcessor() = default;
-     
+
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
@@ -75,6 +75,6 @@ private:
     FloatVec3Property normal_;
 };
 
-} // namespace inviwo
+}  // namespace inviwo
 
-#endif // IVW_CONVEXHULL2DPROCESSOR_H
+#endif  // IVW_CONVEXHULL2DPROCESSOR_H

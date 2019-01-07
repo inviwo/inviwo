@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_CIMGMODULE_H
@@ -38,9 +38,8 @@ namespace inviwo {
 class IVW_MODULE_CIMG_API CImgModule : public InviwoModule {
 public:
     CImgModule(InviwoApplication* app);
-
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_CIMGMODULE_H
+#endif  // IVW_CIMGMODULE_H

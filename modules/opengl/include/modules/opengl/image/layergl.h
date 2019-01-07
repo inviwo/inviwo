@@ -42,7 +42,7 @@ class Shader;
 class Texture2D;
 
 /**
- * \ingroup datastructures	
+ * \ingroup datastructures
  */
 class IVW_MODULE_OPENGL_API LayerGL : public LayerRepresentation {
 public:
@@ -58,28 +58,29 @@ public:
     virtual void setDimensions(size2_t dimensions) override;
 
     /**
-    * \brief update the swizzle mask of the channels for sampling the layer
-    * Needs to be overloaded by child classes.
-    *
-    * @param mask    new swizzle mask
-    */
-    virtual void setSwizzleMask(const SwizzleMask &mask) override;
+     * \brief update the swizzle mask of the channels for sampling the layer
+     * Needs to be overloaded by child classes.
+     *
+     * @param mask    new swizzle mask
+     */
+    virtual void setSwizzleMask(const SwizzleMask& mask) override;
     virtual SwizzleMask getSwizzleMask() const override;
 
     void bindTexture(GLenum texUnit) const;
-    void bindTexture(const TextureUnit &texUnit) const;
+    void bindTexture(const TextureUnit& texUnit) const;
     void unbindTexture() const;
 
     virtual bool copyRepresentationsTo(LayerRepresentation*) const override;
 
     std::shared_ptr<Texture2D> getTexture() const { return texture_; }
     virtual std::type_index getTypeIndex() const override final;
+
 private:
-    std::shared_ptr<Texture2D> texture_; // Can be shared
+    std::shared_ptr<Texture2D> texture_;  // Can be shared
     mutable GLenum texUnit_;
     SwizzleMask swizzleMask_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_LAYERGL_H

@@ -24,11 +24,11 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef  IVW_LINKDIALOG_VIEW_H
-#define  IVW_LINKDIALOG_VIEW_H
+#ifndef IVW_LINKDIALOG_VIEW_H
+#define IVW_LINKDIALOG_VIEW_H
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 
@@ -47,6 +47,6 @@ public:
     virtual ~LinkDialogGraphicsView() = default;
 };
 
-} //namespace
+}  // namespace inviwo
 
-#endif //IVW_LINKDIALOG_VIEW_H
+#endif  // IVW_LINKDIALOG_VIEW_H

@@ -40,11 +40,11 @@ namespace inviwo {
  * \class RepresentationConverterMetaFactory
  * \brief A class to manage RepresentationConverterFactories
  */
-class IVW_CORE_API RepresentationConverterMetaFactory { 
+class IVW_CORE_API RepresentationConverterMetaFactory {
 public:
     using BaseReprId = BaseRepresentationConverterFactory::BaseReprId;
     using FactoryMap = std::unordered_map<BaseReprId, BaseRepresentationConverterFactory*>;
-    
+
     RepresentationConverterMetaFactory() = default;
     virtual ~RepresentationConverterMetaFactory() = default;
 
@@ -55,19 +55,18 @@ public:
     RepresentationConverterFactory<BaseRepr>* getConverterFactory() const;
 
 private:
-     FactoryMap map_;
+    FactoryMap map_;
 };
 
 template <typename BaseRepr>
-RepresentationConverterFactory<BaseRepr>*
-RepresentationConverterMetaFactory::getConverterFactory() const {
+RepresentationConverterFactory<BaseRepr>* RepresentationConverterMetaFactory::getConverterFactory()
+    const {
     if (auto ptr = util::map_find_or_null(map_, BaseReprId(typeid(BaseRepr)))) {
         return static_cast<RepresentationConverterFactory<BaseRepr>*>(ptr);
     }
     return nullptr;
 }
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_REPRESENTATIONCONVERTERMETAFACTORY_H
-
+#endif  // IVW_REPRESENTATIONCONVERTERMETAFACTORY_H

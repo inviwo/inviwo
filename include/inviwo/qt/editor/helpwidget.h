@@ -43,7 +43,6 @@ namespace inviwo {
 class QCHFileObserver;
 class HelpBrowser;
 
-
 class IVW_QTEDITOR_API HelpWidget : public InviwoDockWidget {
 public:
     HelpWidget(InviwoMainWindow* parent);
@@ -53,6 +52,7 @@ public:
 
     void showDocForClassName(std::string className);
     void registerQCHFiles();
+
 protected:
     virtual void resizeEvent(QResizeEvent* event) override;
 
@@ -65,13 +65,13 @@ private:
     std::string requested_;
     std::string current_;
     std::unique_ptr<QCHFileObserver> fileObserver_;
-    
+
     // Called after modules have been registered
     std::shared_ptr<std::function<void()>> onModulesDidRegister_;
     // Called before modules have been unregistered
     std::shared_ptr<std::function<void()>> onModulesWillUnregister_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_HELPWIDGET_H

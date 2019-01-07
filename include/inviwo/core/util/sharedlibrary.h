@@ -126,10 +126,11 @@ public:
     static std::set<std::string> libraryFileExtensions();
 
     /**
-     * Reset the handle and effectively leak the lib. 
+     * Reset the handle and effectively leak the lib.
      * Needed for some dll that crashes on exit otherwise
      */
     void release();
+
 private:
     std::string filePath_;
 #if WIN32

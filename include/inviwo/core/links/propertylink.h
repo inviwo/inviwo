@@ -52,7 +52,7 @@ public:
 
     Property* getSource() const { return src_; }
     Property* getDestination() const { return dst_; }
-        
+
     bool involves(Processor* processor) const;
     bool involves(Property* property) const;
 
@@ -71,7 +71,7 @@ bool IVW_CORE_API operator==(const PropertyLink& lhs, const PropertyLink& rhs);
 bool IVW_CORE_API operator!=(const PropertyLink& lhs, const PropertyLink& rhs);
 bool IVW_CORE_API operator<(const PropertyLink& lhs, const PropertyLink& rhs);
 
-}  // namespace
+}  // namespace inviwo
 
 namespace std {
 

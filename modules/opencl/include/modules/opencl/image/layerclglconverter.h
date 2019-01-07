@@ -75,6 +75,6 @@ public:
                         std::shared_ptr<LayerCLGL> destination) const override;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_LAYERCLGLCONVERTER_H

@@ -95,6 +95,6 @@ private:
     MeshEntryExitPointsCL entryExitPoints_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_ENTRYEXITPOINTSCLPROCESSOR_H
