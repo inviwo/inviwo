@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PROCESSORWIDGETQT_H
@@ -49,20 +49,19 @@ class IVW_MODULE_QTWIDGETS_API ProcessorWidgetQt : public QWidget, public Proces
 public:
     ProcessorWidgetQt(Processor* p);
     virtual ~ProcessorWidgetQt() = default;
-   
-    virtual void setVisible(bool visible) override; // Override QWidget && ProcessorWidget
-    virtual void show() override; // Override ProcessorWidget
-    virtual void hide() override; // Override ProcessorWidget
-    virtual void setPosition(ivec2 pos) override; // Override ProcessorWidget
-    virtual void setDimensions(ivec2 dime) override; // Override ProcessorWidget
 
-    virtual void move(ivec2 pos); // Mirror QWidget::move
-    
+    virtual void setVisible(bool visible) override;   // Override QWidget && ProcessorWidget
+    virtual void show() override;                     // Override ProcessorWidget
+    virtual void hide() override;                     // Override ProcessorWidget
+    virtual void setPosition(ivec2 pos) override;     // Override ProcessorWidget
+    virtual void setDimensions(ivec2 dime) override;  // Override ProcessorWidget
+
+    virtual void move(ivec2 pos);  // Mirror QWidget::move
+
 protected:
     virtual void updateVisible(bool visible) override;
     virtual void updateDimensions(ivec2) override;
     virtual void updatePosition(ivec2) override;
-
 
     // Override QWidget events
     virtual void resizeEvent(QResizeEvent*) override;
@@ -75,6 +74,6 @@ protected:
     bool ignoreUpdate_{false};
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_PROCESSORWIDGETQT_H
+#endif  // IVW_PROCESSORWIDGETQT_H

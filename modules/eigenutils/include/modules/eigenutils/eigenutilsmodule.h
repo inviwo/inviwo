@@ -40,6 +40,6 @@ public:
     EigenUtilsModule(InviwoApplication* app);
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_EIGENUTILSMODULE_H
+#endif  // IVW_EIGENUTILSMODULE_H

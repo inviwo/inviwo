@@ -55,8 +55,8 @@ public:
     bool isFiltered(size_t idx) const;
     bool isSelected(size_t idx) const;
 
-    const std::unordered_set<size_t> &getSelectedIndices()const;
-    const std::unordered_set<size_t> &getFilteredIndices()const;
+    const std::unordered_set<size_t> &getSelectedIndices() const;
+    const std::unordered_set<size_t> &getFilteredIndices() const;
 
     virtual std::string getClassIdentifier() const override;
 
@@ -71,7 +71,6 @@ public:
     virtual ~BrushingAndLinkingOutport() = default;
 
     virtual std::string getClassIdentifier() const override;
-
 };
 
 template <>
@@ -89,7 +88,7 @@ struct DataTraits<BrushingAndLinkingManager> {
     static std::string classIdentifier() { return "BrushingAndLinkingManager"; }
     static std::string dataName() { return "BrushingAndLinkingManager"; }
     static uvec3 colorCode() { return uvec3(160, 182, 240); }
-    static Document info(const BrushingAndLinkingManager& data) {
+    static Document info(const BrushingAndLinkingManager &data) {
         Document doc;
         std::ostringstream oss;
         oss << "Number of selected indices: " << data.getNumberOfSelected() << std::endl;
@@ -99,6 +98,6 @@ struct DataTraits<BrushingAndLinkingManager> {
     }
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_BRUSHINGANDLINKINGOUTPORT_H

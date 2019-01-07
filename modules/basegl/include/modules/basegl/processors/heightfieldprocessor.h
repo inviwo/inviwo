@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_HEIGHTFIELDPROCESSOR_H
@@ -51,31 +51,31 @@
 namespace inviwo {
 
 namespace HeightFieldShading {
-    enum Type {
-        ConstantColor,
-        ColorTexture,
-        HeightField,
-    };
+enum Type {
+    ConstantColor,
+    ColorTexture,
+    HeightField,
+};
 }
 
 /** \docpage{org.inviwo.HeightFieldRenderGL, Height Field Renderer}
- * Maps a heightfield onto a geometry and renders it to an image. 
+ * Maps a heightfield onto a geometry and renders it to an image.
  * ![](org.inviwo.HeightFieldRenderGL.png?classIdentifier=org.inviwo.HeightFieldRenderGL)
- * 
- * 
+ *
+ *
  * ### Inports
  *   * __GeometryMultiInport__ Input geometry which is modified by the heightfield.
- *   * __ImageInport__ The heightfield input (single-channel image). If the 
+ *   * __ImageInport__ The heightfield input (single-channel image). If the
  *                     image has multiple channels only the red channel is used.
  *   * __ImageInport__ Color texture for color mapping (optional).
  *   * __ImageInport__ Normal map input (optional).
  *
  * ### Outports
  *   * __ImageOutport__ The rendered height field.
- * 
+ *
  * ### Properties
  *   * __Height Scale__ Scaling factor for the heightfield.
- *   * __Shading Mode__ Defines the color mapped onto the heightfield using either constant color, 
+ *   * __Shading Mode__ Defines the color mapped onto the heightfield using either constant color,
  *                      color input texture, or the heightfield texture.
  *
  * ### Example Network
@@ -102,14 +102,14 @@ private:
     void updateDrawers();
 
     MeshFlatMultiInport inport_;
-    ImageInport inportHeightfield_; //!< inport for the 2D heightfield texture
-    ImageInport inportTexture_;     //!< inport for the 2D color texture (optional)
-    ImageInport inportNormalMap_;   //!< inport for the 2D normal map texture (optional)
+    ImageInport inportHeightfield_;  //!< inport for the 2D heightfield texture
+    ImageInport inportTexture_;      //!< inport for the 2D color texture (optional)
+    ImageInport inportNormalMap_;    //!< inport for the 2D normal map texture (optional)
     ImageInport imageInport_;
     ImageOutport outport_;
 
-    FloatProperty heightScale_;            //!< scaling factor for the input heightfield
-    OptionPropertyInt terrainShadingMode_; //!< shading mode for coloring the heightfield
+    FloatProperty heightScale_;             //!< scaling factor for the input heightfield
+    OptionPropertyInt terrainShadingMode_;  //!< shading mode for coloring the heightfield
 
     CameraProperty camera_;
     ButtonProperty resetViewParams_;
@@ -123,6 +123,6 @@ private:
     DrawerMap drawers_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_HEIGHTFIELDPROCESSOR_H
+#endif  // IVW_HEIGHTFIELDPROCESSOR_H

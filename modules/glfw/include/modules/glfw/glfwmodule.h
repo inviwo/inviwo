@@ -37,7 +37,8 @@
 
 namespace inviwo {
 
-class IVW_MODULE_GLFW_API GLFWModule : public InviwoModule, public ProcessorNetworkEvaluationObserver {
+class IVW_MODULE_GLFW_API GLFWModule : public InviwoModule,
+                                       public ProcessorNetworkEvaluationObserver {
 public:
     GLFWModule(InviwoApplication* app);
     virtual ~GLFWModule();
@@ -49,6 +50,6 @@ private:
     std::unique_ptr<CanvasGLFW> GLFWSharedCanvas_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_GLFWMODULE_H

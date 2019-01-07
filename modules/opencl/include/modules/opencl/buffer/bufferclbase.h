@@ -45,7 +45,7 @@ public:
     virtual const cl::Buffer& get() const = 0;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 namespace cl {
 

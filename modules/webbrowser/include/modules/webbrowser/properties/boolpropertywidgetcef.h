@@ -51,7 +51,7 @@ public:
      * Update HTML widget using calls javascript oninput() function on element.
      * Assumes that widget is HTML input attribute.
      */
-	virtual void updateFromProperty() override;
+    virtual void updateFromProperty() override;
 };
 
 }  // namespace inviwo

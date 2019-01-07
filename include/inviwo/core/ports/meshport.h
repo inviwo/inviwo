@@ -55,8 +55,8 @@ using MeshFlatMultiInport = DataInport<Mesh, 0, true>;
 /**
  * \ingroup ports
  */
-using MeshOutport =  DataOutport<Mesh>;
+using MeshOutport = DataOutport<Mesh>;
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_GEOMETRYPORT_H

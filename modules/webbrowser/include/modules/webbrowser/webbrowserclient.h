@@ -56,7 +56,7 @@ public:
     virtual CefRefPtr<CefLoadHandler> GetLoadHandler() override { return propertyCefSynchronizer_; }
     virtual CefRefPtr<CefRenderHandler> GetRenderHandler() override { return renderHandler_; }
     virtual CefRefPtr<CefRequestHandler> GetRequestHandler() override { return this; }
-    
+
     void SetRenderHandler(CefRefPtr<RenderHandlerGL> renderHandler);
 
     CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() override { return this; }
@@ -70,10 +70,8 @@ public:
     void OnBeforeClose(CefRefPtr<CefBrowser> browser) override;
 
     // CefRequestHandler methods:
-    virtual bool OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
-                                CefRefPtr<CefFrame> frame,
-                                CefRefPtr<CefRequest> request,
-                                bool user_gesture,
+    virtual bool OnBeforeBrowse(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
+                                CefRefPtr<CefRequest> request, bool user_gesture,
                                 bool is_redirect) override;
 
     void OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,

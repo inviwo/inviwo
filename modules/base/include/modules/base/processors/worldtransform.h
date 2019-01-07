@@ -38,7 +38,6 @@
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
 
-
 namespace inviwo {
 
 /** \docpage{org.inviwo.WorldTransformVolume, Basis Transform Mesh}
@@ -157,7 +156,7 @@ WorldTransform<T>::WorldTransform()
     , scale_("scale", "Scale", vec3(1), vec3(0.001f), vec3(10))
     , rotationAxis_("rotationAxis", "Axis", vec3(1, 0, 0), vec3(-1), vec3(1))
     , rotationAngle_("rotationAngle", "Angle", 0, 0, 2.0f * static_cast<float>(M_PI))
-    , matrix_("matrix_", "Transformation", mat4(1) , mat4(0)-10.f , mat4(0)+10.f)
+    , matrix_("matrix_", "Transformation", mat4(1), mat4(0) - 10.f, mat4(0) + 10.f)
     , updatingValues_(false) {
 
     addPort(inport_);
@@ -186,7 +185,6 @@ WorldTransform<T>::WorldTransform()
     matrix_.onChange([this]() { onMatrixChange(); });
     changeVisibility();
 }
-
 
 template <typename T>
 void WorldTransform<T>::process() {
@@ -233,6 +231,6 @@ void WorldTransform<T>::onMatrixChange() {
     type_.set(10);
 }
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_WORLDTRANSFORM_H

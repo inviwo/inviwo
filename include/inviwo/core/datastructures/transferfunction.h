@@ -61,6 +61,7 @@ public:
     const Layer* getData() const;
     size_t getTextureSize() const;
 
+    // clang-format off
     [[deprecated("was declared deprecated. Use `size()` instead")]]
     size_t getNumPoints() const;
 
@@ -89,6 +90,7 @@ public:
 
     [[deprecated("was declared deprecated. Use `clear()` instead")]]
     void clearPoints();
+    // clang-format on
 
     void setMaskMin(double maskMin);
     double getMaskMin() const;
@@ -125,8 +127,10 @@ public:
     friend bool operator==(const TransferFunction& lhs, const TransferFunction& rhs);
 
     virtual std::vector<FileExtension> getSupportedExtensions() const override;
-    virtual void save(const std::string& filename, const FileExtension& ext = FileExtension()) const override;
-    virtual void load(const std::string& filename, const FileExtension& ext = FileExtension()) override;
+    virtual void save(const std::string& filename,
+                      const FileExtension& ext = FileExtension()) const override;
+    virtual void load(const std::string& filename,
+                      const FileExtension& ext = FileExtension()) override;
 
 protected:
     void calcTransferValues() const;

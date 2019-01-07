@@ -47,6 +47,6 @@ protected:
     virtual void retrieveDynamicInfo() = 0;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_CAPABILITIES_H

@@ -57,6 +57,6 @@ using VolumeSequenceInport = DataInport<VolumeSequence>;
  */
 using VolumeSequenceOutport = DataOutport<VolumeSequence>;
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_VOLUMEPORT_H

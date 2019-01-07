@@ -57,13 +57,13 @@ std::shared_ptr<SimpleMesh> IVW_MODULE_BASE_API createCubeProxyGeometry(
     const std::shared_ptr<const Volume> &volume, const vec3 &clipOrigin, const vec3 &clipExtent);
 
 /**
-* \brief create a clipped cube proxy geometry for the given volume
-*
-* @param volume
-* @param clipMin  bottom left clip position in voxel coordinates [0,volDim - 1]
-* @param clipMax  top right clip position in voxel coordinates [0,volDim - 1]
-* @return cube proxy geometry
-*/
+ * \brief create a clipped cube proxy geometry for the given volume
+ *
+ * @param volume
+ * @param clipMin  bottom left clip position in voxel coordinates [0,volDim - 1]
+ * @param clipMax  top right clip position in voxel coordinates [0,volDim - 1]
+ * @return cube proxy geometry
+ */
 std::shared_ptr<SimpleMesh> IVW_MODULE_BASE_API createCubeProxyGeometry(
     const std::shared_ptr<const Volume> &volume, const size3_t &clipMin, const size3_t &clipMax);
 
@@ -71,4 +71,4 @@ std::shared_ptr<SimpleMesh> IVW_MODULE_BASE_API createCubeProxyGeometry(
 
 }  // namespace inviwo
 
-#endif // IVW_CUBEPROXYGEOMETRY_H
+#endif  // IVW_CUBEPROXYGEOMETRY_H

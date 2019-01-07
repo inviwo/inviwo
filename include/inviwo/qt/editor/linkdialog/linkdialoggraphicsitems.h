@@ -71,7 +71,7 @@ static const int propertyExpandCollapseOffset = 16;
 
 static const int arrowWidth = propertyWidth / 15;
 static const int arrowHeight = arrowWidth / 2;
-}
+}  // namespace linkdialog
 
 enum InviwoLinkUserGraphicsItemType {
     LinkDialogCurveGraphicsItemType = 3,
@@ -79,7 +79,6 @@ enum InviwoLinkUserGraphicsItemType {
     LinkDialogPropertyGraphicsItemType = 5,
     LinkDialogDragCurveGraphicsItemType = 6,
 };
-
 
 class IVW_QTEDITOR_API LinkDialogTreeItem {
 public:
@@ -91,16 +90,16 @@ public:
     virtual void updatePositions() = 0;
     virtual QPointF treeItemScenePos() const = 0;
     virtual QRectF treeItemRect() const = 0;
-    
+
     void setPrev(LinkDialogTreeItem* prev);
     void setNext(LinkDialogTreeItem* next);
     LinkDialogTreeItem* parent() const;
     LinkDialogTreeItem* next() const;
     LinkDialogTreeItem* prev() const;
-    
+
     void setExpanded(bool expand);
     bool isExpanded() const;
-    
+
 private:
     LinkDialogTreeItem* parent_ = nullptr;
     LinkDialogTreeItem* prev_ = nullptr;
@@ -131,8 +130,7 @@ protected:
     const Side side_;
 };
 
-inline LinkDialogTreeItem::LinkDialogTreeItem(LinkDialogTreeItem* parent)
-    : parent_(parent) {}
+inline LinkDialogTreeItem::LinkDialogTreeItem(LinkDialogTreeItem* parent) : parent_(parent) {}
 inline void LinkDialogTreeItem::setNext(LinkDialogTreeItem* next) { next_ = next; }
 inline void LinkDialogTreeItem::setPrev(LinkDialogTreeItem* prev) { prev_ = prev; }
 inline LinkDialogTreeItem* LinkDialogTreeItem::parent() const { return parent_; }
@@ -142,6 +140,6 @@ inline LinkDialogTreeItem* LinkDialogTreeItem::prev() const { return prev_; }
 inline void LinkDialogTreeItem::setExpanded(bool expand) { isExpanded_ = expand; }
 inline bool LinkDialogTreeItem::isExpanded() const { return isExpanded_; }
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_LINKDIALOG_GRAPHICSITEMS_H

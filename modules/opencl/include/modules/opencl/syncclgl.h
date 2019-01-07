@@ -47,7 +47,7 @@
 // Define function clCreateEventFromGLsync (vendor extension)
 typedef cl_event (*pfnclCreateEventFromSyncKHR)(cl_context context, cl_GLsync sync,
                                                 cl_int* errcode_ret);
-#endif // CL_VERSION_1_1
+#endif  // CL_VERSION_1_1
 
 namespace inviwo {
 /** \class SyncCLGL

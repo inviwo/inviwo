@@ -74,6 +74,6 @@ private:
     std::shared_ptr<BrushingAndLinkingManager> manager_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_BRUSHINGANDLINKINGPROCESSOR_H

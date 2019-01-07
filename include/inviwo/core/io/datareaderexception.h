@@ -42,6 +42,6 @@ public:
                         ExceptionContext context = ExceptionContext());
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_DATAREADEREXCEPTION_H

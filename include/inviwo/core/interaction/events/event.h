@@ -46,13 +46,13 @@ class Outport;
  */
 class IVW_CORE_API Event {
 public:
-    virtual ~Event() = default;   
+    virtual ~Event() = default;
     virtual Event* clone() const = 0;
     virtual uint64_t hash() const = 0;
 
     /**
      * Determine if the event should be propagated upwards to inport.
-     * Can be overloaded to limit the number or ports a event is propagated through. 
+     * Can be overloaded to limit the number or ports a event is propagated through.
      */
     virtual bool shouldPropagateTo(Inport* inport, Processor* processor, Outport* source);
 
@@ -62,7 +62,7 @@ public:
 
     void markAsVisited(Processor*);
     bool hasVisitedProcessor(Processor*) const;
-    // Can be used to figure out where an event came from. 
+    // Can be used to figure out where an event came from.
     // Processors are added in chronological order.
     const std::vector<Processor*>& getVisitedProcessors() const;
 
@@ -74,14 +74,14 @@ public:
 protected:
     Event() = default;
     Event(const Event& rhs) = default;
-    Event& operator=(const Event& that) = default;   
+    Event& operator=(const Event& that) = default;
 
 private:
     bool used_ = false;
-    #include <warn/push>
-    #include <warn/ignore/dll-interface>
+#include <warn/push>
+#include <warn/ignore/dll-interface>
     std::vector<Processor*> visitedProcessors_;
-    #include <warn/pop>
+#include <warn/pop>
 };
 
 template <typename EventType>
@@ -99,6 +99,6 @@ const EventType* Event::getAs() const {
     return nullptr;
 }
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_EVENT_H

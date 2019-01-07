@@ -74,9 +74,9 @@ public:
 };
 
 /**
-* \brief A loader of Nifti files. Used to create VolumeRAM representations.
-* This class us used by the NiftiReader.
-*/
+ * \brief A loader of Nifti files. Used to create VolumeRAM representations.
+ * This class us used by the NiftiReader.
+ */
 class IVW_MODULE_NIFTI_API NiftiVolumeRAMLoader
     : public DiskRepresentationLoader<VolumeRepresentation> {
 public:
@@ -90,7 +90,7 @@ public:
 
     using type = std::shared_ptr<VolumeRAM>;
 
-  template <typename Result, typename T>
+    template <typename Result, typename T>
     std::shared_ptr<VolumeRAM> operator()() const {
         using F = typename T::type;
 
@@ -114,8 +114,8 @@ public:
         // Flip data along axes if necessary
         if (flipAxis[0] || flipAxis[1] || flipAxis[2]) {
             auto tmp = util::make_unique<F[]>(size);
-            std::memcpy(tmp.get(), dataPointer, size*sizeof(F));
-            auto dim = size3_t{ region_size[0], region_size[1], region_size[2] };
+            std::memcpy(tmp.get(), dataPointer, size * sizeof(F));
+            auto dim = size3_t{region_size[0], region_size[1], region_size[2]};
             util::IndexMapper3D mapper(dim);
             for (auto z = 0; z < region_size[2]; ++z) {
                 auto idz = flipAxis[2] ? region_size[2] - 1 - z : z;
@@ -140,10 +140,10 @@ public:
 private:
     std::array<int, 7> start_index;
     std::array<int, 7> region_size;
-    std::array<bool, 3> flipAxis; // Flip x,y,z axis?
+    std::array<bool, 3> flipAxis;  // Flip x,y,z axis?
     std::shared_ptr<nifti_image> nim;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_NIFTIREADER_H

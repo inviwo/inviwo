@@ -101,7 +101,7 @@ namespace marching {
  *            X
  *
  * Caching
- * Edge 
+ * Edge
  *   0: xCacheCurr0 get 0 ind.x, ind.y
  *   1: yCacheCurr  get 4 ind.x + 1, ind.y
  *   2: xCacheCurr1 get 1 ind.x, ind.y + 1
@@ -115,7 +115,8 @@ namespace marching {
  *  10: xCacheNext1 add 3 ind.x, ind.y + 1
  *  11: yCacheNext  get 5 ind.x, ind.y
  *
- * {xCacheCurr0, xCacheCurr1, xCacheNext0, xCacheNext1, yCacheCurr, yCacheNext, zCacheCurr, zCacheNext}
+ * {xCacheCurr0, xCacheCurr1, xCacheNext0, xCacheNext1,
+ *  yCacheCurr, yCacheNext, zCacheCurr, zCacheNext}
  * 0, 4, 1, 4, 6, 6, 7, 7, 2, 5, 3, 5
  * Triangulations
  *                                                                      3

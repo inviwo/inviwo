@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_HDF5SOURCE_H
@@ -69,8 +69,7 @@ private:
     Outport port_;
 };
 
-}  // namespace
-}  // namespace
+}  // namespace hdf5
+}  // namespace inviwo
 
-#endif // IVW_HDF5SOURCE_H
-
+#endif  // IVW_HDF5SOURCE_H

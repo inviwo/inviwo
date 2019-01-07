@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_CANVASQWINDOW_H
@@ -55,7 +55,7 @@ class IVW_MODULE_OPENGLQT_API CanvasQWindow : public QWindow, public CanvasGL {
 public:
     using QtBase = QWindow;
 
-    explicit CanvasQWindow(QWindow* parent = nullptr, uvec2 dim = uvec2(256,256));
+    explicit CanvasQWindow(QWindow* parent = nullptr, uvec2 dim = uvec2(256, 256));
     ~CanvasQWindow() = default;
 
     static void defineDefaultContextFormat();
@@ -66,7 +66,7 @@ public:
     void repaint();
 
     virtual void resize(uvec2 size) override;
-    
+
     QOpenGLContext* context() const;
     QWindow* parentWidget() const;
 
@@ -76,18 +76,17 @@ protected:
     void initializeGL();
     void paintGL();
     virtual void resizeEvent(QResizeEvent* event) override;
-    void exposeEvent(QExposeEvent *event) override;
+    void exposeEvent(QExposeEvent* event) override;
 
     static CanvasQWindow* sharedCanvas_;
- 
+
 private:
     QOpenGLContext* thisGLContext_;
-    static QOpenGLContext* sharedGLContext_; //For rendering-context sharing
+    static QOpenGLContext* sharedGLContext_;  // For rendering-context sharing
     static QSurfaceFormat sharedFormat_;
     bool swapBuffersAllowed_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_CANVASQWINDOW_H
-
+#endif  // IVW_CANVASQWINDOW_H

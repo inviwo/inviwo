@@ -58,11 +58,10 @@ namespace animation {
  * Tracks are listed in order based on their priority.
  * @see KeyFrameSequence
  */
-class IVW_MODULE_ANIMATION_API Track : public Serializable,
-                                       public TrackObservable {
+class IVW_MODULE_ANIMATION_API Track : public Serializable, public TrackObservable {
 public:
     Track() = default;
-    
+
     /**
      * Remove all keyframe sequences and call TrackObserver::notifyKeyframeSequenceRemoved
      */
@@ -77,13 +76,13 @@ public:
 
     virtual const std::string& getIdentifier() const = 0;
     virtual void setIdentifier(const std::string& identifier) = 0;
-    
+
     /**
      * Set Track name. Used when displaying the track.
      */
     virtual void setName(const std::string& name) = 0;
     virtual const std::string& getName() const = 0;
-    
+
     /**
      * Return Track priority (0 is highest)
      */
@@ -151,8 +150,6 @@ IVW_MODULE_ANIMATION_API bool operator<(const Seconds& a, const Track& b);
 IVW_MODULE_ANIMATION_API bool operator<=(const Seconds& a, const Track& b);
 IVW_MODULE_ANIMATION_API bool operator>(const Seconds& a, const Track& b);
 IVW_MODULE_ANIMATION_API bool operator>=(const Seconds& a, const Track& b);
-
-
 
 /** \class TrackTyped
  * Track containing KeyFrameSequence of a given KeyFrame type.

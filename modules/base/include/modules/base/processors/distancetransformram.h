@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_DISTANCETRANSFORMRAM_H
@@ -76,15 +76,14 @@ namespace inviwo {
 *       * Custom specify a custom range.
 *   * __Data Range__ The data range of the output volume. (ReadOnly)
 *   * __Custom Data Range__ Specify a custom output range.
-*   * __Update Distance Map__ Triggers a computation of the distance transform. Since the 
+*   * __Update Distance Map__ Triggers a computation of the distance transform. Since the
 *     computation is time consuming one has to manually trigger it.
 *
 */
 
 class IVW_MODULE_BASE_API DistanceTransformRAM : public Processor, public ProgressBarOwner {
-public:  
-    enum class DataRangeMode {Diagonal, MinMax, Custom};
-
+public:
+    enum class DataRangeMode { Diagonal, MinMax, Custom };
 
     DistanceTransformRAM();
     virtual ~DistanceTransformRAM();
@@ -109,12 +108,12 @@ private:
     DoubleProperty threshold_;
     BoolProperty flip_;
     BoolProperty normalize_;
-    DoubleProperty resultDistScale_; // scaling factor for distances
-    BoolProperty resultSquaredDist_; // determines whether output uses squared euclidean distances
+    DoubleProperty resultDistScale_;  // scaling factor for distances
+    BoolProperty resultSquaredDist_;  // determines whether output uses squared euclidean distances
     BoolProperty uniformUpsampling_;
-    IntProperty upsampleFactorUniform_; // uniform upscaling of the output field
-    IntSize3Property upsampleFactorVec3_; // non-uniform upscaling of the output field 
-    
+    IntProperty upsampleFactorUniform_;    // uniform upscaling of the output field
+    IntSize3Property upsampleFactorVec3_;  // non-uniform upscaling of the output field
+
     DoubleMinMaxProperty dataRangeOutput_;
     TemplateOptionProperty<DataRangeMode> dataRangeMode_;
     DoubleMinMaxProperty customDataRange_;
@@ -144,6 +143,6 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
     return ss;
 }
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_DISTANCETRANSFORMRAM_H
+#endif  // IVW_DISTANCETRANSFORMRAM_H

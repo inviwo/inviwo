@@ -42,7 +42,7 @@ class Image;
 /**
  * \class ImageCache
  */
-class IVW_CORE_API ImageCache { 
+class IVW_CORE_API ImageCache {
 public:
     ImageCache(std::shared_ptr<const Image> master = std::shared_ptr<const Image>());
     ~ImageCache() = default;
@@ -71,13 +71,12 @@ public:
 
 private:
     mutable bool valid_;
-    std::shared_ptr<const Image> master_; // non-owning reference.
+    std::shared_ptr<const Image> master_;  // non-owning reference.
 
     using Cache = std::unordered_map<glm::size2_t, std::shared_ptr<Image>>;
     mutable Cache cache_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_IMAGECACHE_H
-
+#endif  // IVW_IMAGECACHE_H

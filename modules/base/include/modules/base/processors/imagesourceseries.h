@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_IMAGESOURCESERIES_H
@@ -87,6 +87,6 @@ private:
     std::vector<std::string> fileList_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_IMAGESOURCESERIES_H
+#endif  // IVW_IMAGESOURCESERIES_H

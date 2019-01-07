@@ -65,7 +65,10 @@ using BufferTypes = flags::flags<BufferType>;
 
 enum class BufferUsage { Static, Dynamic };
 
-enum class BufferTarget { Data, Index }; // Index maps to GL_ELEMENT_ARRAY_BUFFER, Data maps to GL_ARRAY_BUFFER
+enum class BufferTarget {
+    Data,
+    Index
+};  // Index maps to GL_ELEMENT_ARRAY_BUFFER, Data maps to GL_ARRAY_BUFFER
 
 enum class DrawType { NotSpecified = 0, Points, Lines, Triangles, NumberOfDrawTypes };
 
@@ -183,6 +186,6 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
     return ss;
 }
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_GEOMETRYTYPE_H

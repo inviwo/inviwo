@@ -38,8 +38,7 @@
 
 namespace inviwo {
 
-class IVW_CORE_API MeshDrawerFactory
-    : public Factory<MeshDrawer, const Mesh*> {
+class IVW_CORE_API MeshDrawerFactory : public Factory<MeshDrawer, const Mesh*> {
 public:
     MeshDrawerFactory() = default;
     virtual ~MeshDrawerFactory() = default;
@@ -53,6 +52,6 @@ private:
     std::set<MeshDrawer*> drawers_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_GEOMETRY_DRAWER_FACTORY_H

@@ -72,7 +72,6 @@ protected:
     void updateDrawers();
 
 private:
-
     MeshFlatMultiInport inport_;
     ImageInport imageInport_;
     ImageOutport outport_;
@@ -99,6 +98,6 @@ private:
     DrawerMap drawers_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_ABUFFER_GEOMETRYGL_RENDERING_PROCESSOR_H

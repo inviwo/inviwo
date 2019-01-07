@@ -86,7 +86,7 @@ public:
 
     /**
      * \brief add column based on the contents of the given buffer
-     * updateIndexBuffer() needs to be called after all columns have been added before 
+     * updateIndexBuffer() needs to be called after all columns have been added before
      * the DataFrame can be used
      */
     std::shared_ptr<Column> addColumnFromBuffer(const std::string &identifier,
@@ -94,15 +94,15 @@ public:
 
     /**
      * \brief add column of type T
-     * updateIndexBuffer() needs to be called after all columns have been added before 
+     * updateIndexBuffer() needs to be called after all columns have been added before
      * the DataFrame can be used
      */
     template <typename T>
     std::shared_ptr<TemplateColumn<T>> addColumn(const std::string &header, size_t size = 0);
 
     /**
-     * \brief add a categorical column 
-     * updateIndexBuffer() needs to be called after all columns have been added before 
+     * \brief add a categorical column
+     * updateIndexBuffer() needs to be called after all columns have been added before
      * the DataFrame can be used
      */
     std::shared_ptr<CategoricalColumn> addCategoricalColumn(const std::string &header,
@@ -126,7 +126,8 @@ public:
 
     /**
      * \brief access individual columns
-     * updateIndexBuffer() needs to be called if the size of the column, i.e. the row count, was changed
+     * updateIndexBuffer() needs to be called if the size of the column, i.e. the row count, was
+     * changed
      */
     std::shared_ptr<Column> getColumn(size_t index);
     std::shared_ptr<const Column> getColumn(size_t index) const;
@@ -147,8 +148,8 @@ public:
     std::vector<std::shared_ptr<Column>>::const_iterator end() const;
 
     /**
-     * \brief update row indices. Needs to be called if the row count has changed, i.e. 
-     * after adding rows from the DataFrame or adding or removing rows from a particular 
+     * \brief update row indices. Needs to be called if the row count has changed, i.e.
+     * after adding rows from the DataFrame or adding or removing rows from a particular
      * column.
      */
     void updateIndexBuffer();
@@ -159,7 +160,7 @@ private:
 
 using DataFrameOutport = DataOutport<DataFrame>;
 using DataFrameInport = DataInport<DataFrame>;
-using DataFrameMultiInport = DataInport<DataFrame,0>;
+using DataFrameMultiInport = DataInport<DataFrame, 0>;
 
 /**
  * \brief Create a new DataFrame by guessing the column types from a number of rows.
@@ -207,7 +208,7 @@ struct DataTraits<plot::DataFrame> {
         }
         if (ncols != data.getNumberOfColumns()) {
             doc.append("span", "... (" + std::to_string(data.getNumberOfColumns() - ncols) +
-                " additional columns)");
+                                   " additional columns)");
         }
 
         return doc;

@@ -47,6 +47,6 @@ using BufferInport = DataInport<BufferBase>;
  */
 using BufferOutport = DataOutport<BufferBase>;
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_BUFFER_PORT_H

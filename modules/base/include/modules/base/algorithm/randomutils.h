@@ -230,7 +230,7 @@ std::shared_ptr<Volume> randomVolume(size3_t dims, Rand &randomNumberGenerator =
  * @param persistence controls the amplitude used in the different frequencies
  * @param startLevel controls the min level used. The level is determining the frequency to use
  * in each white noise image as 2^level
- * @param endLevel controlsthe max level used. 
+ * @param endLevel controlsthe max level used.
  * @param randomNumberGenerator the Random number generator to use, defaults to the Mersenne Twister
  * engine (std::mt19937)
  */

@@ -36,7 +36,6 @@
 #include <inviwo/core/ports/volumeport.h>
 #include <modules/base/processors/vectorelementselectorprocessor.h>
 
-
 namespace inviwo {
 
 /** \docpage{org.inviwo.TimeStepSelector, Volume Sequence/Time Selector}
@@ -62,6 +61,6 @@ public:
     static const ProcessorInfo processorInfo_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_VOLUMESEQUENCEELEMENTSELECTORPROCESSOR_H

@@ -57,6 +57,6 @@ private:
     std::map<LogLevel, size_t> messageCount_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_LOGERRORCOUNTER_H

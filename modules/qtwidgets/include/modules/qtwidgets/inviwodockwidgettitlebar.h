@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_INVIWODOCKWIDGETTITLEBAR_H
@@ -46,24 +46,24 @@ namespace inviwo {
 /*! \class InviwoDockWidgetTitleBar
 \brief Custom title bar widget for QDockWidget derived from QWidget.
 
-The title bar widget contains a label showing the window title of the 
+The title bar widget contains a label showing the window title of the
 parent QDockWidget and buttons for the sticky mode, dock/undock, and close.
 The sticky mode determines whether the floating dock widget can be docked
-to prevent involuntary docking when moving the dock widget. Docking via the 
+to prevent involuntary docking when moving the dock widget. Docking via the
 dock button or double clicking the title bar is still possible.
 
 Note: adding a custom title bar to a QDockWidget removes the window decoration!
 */
 class IVW_MODULE_QTWIDGETS_API InviwoDockWidgetTitleBar : public QWidget {
-    #include <warn/push>
-    #include <warn/ignore/all>
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
-    #include <warn/pop>
+#include <warn/pop>
 public:
-    InviwoDockWidgetTitleBar(QWidget *parent=nullptr);
+    InviwoDockWidgetTitleBar(QWidget *parent = nullptr);
     virtual ~InviwoDockWidgetTitleBar();
 
-    virtual void paintEvent(QPaintEvent *) override;    
+    virtual void paintEvent(QPaintEvent *) override;
 
     void setLabel(const QString &str);
 
@@ -83,7 +83,7 @@ private:
 
     QDockWidget *parent_;
 
-    QLabel* label_;
+    QLabel *label_;
     QToolButton *stickyBtn_;
     QToolButton *floatBtn_;
     Qt::DockWidgetAreas allowedDockAreas_;
@@ -91,6 +91,6 @@ private:
     bool internalStickyFlagUpdate_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_INVIWODOCKWIDGETTITLEBAR_H
+#endif  // IVW_INVIWODOCKWIDGETTITLEBAR_H

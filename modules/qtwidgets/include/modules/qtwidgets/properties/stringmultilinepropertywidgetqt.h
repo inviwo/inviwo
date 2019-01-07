@@ -94,6 +94,6 @@ private:
     bool showContextMenu_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_STRINGMULTILINEPROPERTYWIDGETQT_H

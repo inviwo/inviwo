@@ -54,6 +54,7 @@ private:
     public:
         Observer(InviwoModuleLibraryObserver& imo, InviwoApplication* app);
         virtual void fileChanged(const std::string& dir) override;
+
     private:
         InviwoModuleLibraryObserver& imo_;
     };
@@ -64,10 +65,8 @@ private:
     // Need to be pointer since we cannot initialize the observer before the application.
     std::unique_ptr<Observer> observer_;
     std::unordered_map<std::string, std::time_t> observing_;
-
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_INVIWOMODULELIBRARYOBSERVER_H
-
+#endif  // IVW_INVIWOMODULELIBRARYOBSERVER_H

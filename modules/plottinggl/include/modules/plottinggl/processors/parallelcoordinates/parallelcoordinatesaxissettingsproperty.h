@@ -51,10 +51,11 @@ public:
 
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
-    
+
     ParallelCoordinatesAxisSettingsProperty(std::string identifier, std::string displayName);
     ParallelCoordinatesAxisSettingsProperty(const ParallelCoordinatesAxisSettingsProperty& rhs);
-    ParallelCoordinatesAxisSettingsProperty& operator=(const ParallelCoordinatesAxisSettingsProperty& that);
+    ParallelCoordinatesAxisSettingsProperty& operator=(
+        const ParallelCoordinatesAxisSettingsProperty& that);
     virtual ParallelCoordinatesAxisSettingsProperty* clone() const override;
 
     virtual ~ParallelCoordinatesAxisSettingsProperty() = default;
@@ -93,7 +94,7 @@ public:
     /**
      * Helper function for ParallelCoordinates::updateBrushing
      */
-    void updateBrushing(std::unordered_set<size_t> &brushed);
+    void updateBrushing(std::unordered_set<size_t>& brushed);
 
     std::function<double(size_t)> at = [](size_t) { return 0.0; };
 

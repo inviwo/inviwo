@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_IMAGEMIXER_H
@@ -40,28 +40,29 @@
 #include <modules/opengl/shader/shader.h>
 
 namespace inviwo {
-    
+
 namespace BlendModes {
-    enum Mode {
-        Mix, //!< f(a,b) = a * (1 - alpha) + b * alpha
-        Over, //!< f(a,b) = b, b over a, regular front-to-back blending
-        Multiply, //!< f(a,b) = a * b
-        Screen, //!< f(a,b) = 1 - (1 - a) * (1 - b)
-        Overlay, //!< f(a,b) = 2 * a *b, if a < 0.5,   f(a,b) = 1 - 2(1 - a)(1 - b), otherwise (combination of Multiply and Screen)
-        HardLight, //!< Overlay where a and b are swapped
-        Divide, //!< f(a,b) = a/b
-        Addition, //!< f(a,b) = a + b, clamped to [0,1]
-        Subtraction, //!< f(a,b) = a - b, clamped to [0,1]
-        Difference, //!< f(a,b) = |a - b|
-        DarkenOnly, //!< f(a,b) = min(a, b), per component
-        BrightenOnly, //!< f(a,b) = max(a, b), per component
-    };
+enum Mode {
+    Mix,           //!< f(a,b) = a * (1 - alpha) + b * alpha
+    Over,          //!< f(a,b) = b, b over a, regular front-to-back blending
+    Multiply,      //!< f(a,b) = a * b
+    Screen,        //!< f(a,b) = 1 - (1 - a) * (1 - b)
+    Overlay,       //!< f(a,b) = 2 * a *b, if a < 0.5,   f(a,b) = 1 - 2(1 - a)(1 - b), otherwise
+                   //!< (combination of Multiply and Screen)
+    HardLight,     //!< Overlay where a and b are swapped
+    Divide,        //!< f(a,b) = a/b
+    Addition,      //!< f(a,b) = a + b, clamped to [0,1]
+    Subtraction,   //!< f(a,b) = a - b, clamped to [0,1]
+    Difference,    //!< f(a,b) = |a - b|
+    DarkenOnly,    //!< f(a,b) = min(a, b), per component
+    BrightenOnly,  //!< f(a,b) = max(a, b), per component
+};
 }
 
 /** \docpage{org.inviwo.ImageMixer, Image Mixer}
- * Mixes the two input images according to the chosen blend mode. 
+ * Mixes the two input images according to the chosen blend mode.
  * ![](org.inviwo.ImageMixer.png?classIdentifier=org.inviwo.ImageMixer)
- * The output is defined by function <tt>f(a,b)</tt> which is given by the blend mode: 
+ * The output is defined by function <tt>f(a,b)</tt> which is given by the blend mode:
  *
  * Supported blend modes for determining <tt>f(a,b)</tt>
  * <table>
@@ -70,8 +71,8 @@ namespace BlendModes {
  *   <tr><td>Multiply</td><td><tt>f(a,b) = a * b</tt></td></tr>
  *   <tr><td>Screen</td><td><tt>f(a,b) = 1 - (1 - a) * (1 - b)</tt></td></tr>
  *   <tr><td>Overlay</td><td><tt>f(a,b) = 2 * a *b, if a < 0.5</tt>, and</td></tr>
- *      <tr><td></td><td><tt>f(a,b) = 1 - 2(1 - a)(1 - b)</tt>, otherwise (combination of Multiply and Screen)</td></tr>
- *   <tr><td>HardLight</td><td>Overlay where a and b are swapped</td></tr>
+ *      <tr><td></td><td><tt>f(a,b) = 1 - 2(1 - a)(1 - b)</tt>, otherwise (combination of Multiply
+ * and Screen)</td></tr> <tr><td>HardLight</td><td>Overlay where a and b are swapped</td></tr>
  *   <tr><td>Divide</td><td><tt>f(a,b) = a/b</tt></td></tr>
  *   <tr><td>Addition</td><td><tt>f(a,b) = a + b</tt>, clamped to [0,1]</td></tr>
  *   <tr><td>Subtraction</td><td><tt>f(a,b) = a - b</tt>, clamped to [0,1]</td></tr>
@@ -79,17 +80,17 @@ namespace BlendModes {
  *   <tr><td>DarkenOnly</td><td><tt>f(a,b) = min(a, b)</tt>, per component</td></tr>
  *   <tr><td>BrightenOnly</td><td><tt>f(a,b) = max(a, b)</tt>, per component</td></tr>
  * </table>
- * 
+ *
  * ### Inports
  *   * __ImageInport__ Input image A.
  *   * __ImageInport__ Input image B.
  *
  * ### Outports
- *   * __ImageOutport__ The mixed image. 
- * 
+ *   * __ImageOutport__ The mixed image.
+ *
  * ### Properties
  *   * __Blend Mode__ Blend mode used for mixing the input images.
- *   * __Weight__     Weighting factor for mixing the blending result with input image A. 
+ *   * __Weight__     Weighting factor for mixing the blending result with input image A.
  */
 
 /*! \class ImageMixer
@@ -108,19 +109,19 @@ public:
 
 protected:
     virtual void initializeResources() override;
-    
+
 private:
-    ImageInport inport0_; //!< first input image
-    ImageInport inport1_; //!< second input image
+    ImageInport inport0_;  //!< first input image
+    ImageInport inport1_;  //!< second input image
 
-    ImageOutport outport_; //!< output image
+    ImageOutport outport_;  //!< output image
 
-    OptionPropertyInt blendingMode_; //!< blend mode from BlendModes::Mode
-    FloatProperty weight_; //!< weighting factor
+    OptionPropertyInt blendingMode_;  //!< blend mode from BlendModes::Mode
+    FloatProperty weight_;            //!< weighting factor
     BoolProperty clamp_;
     Shader shader_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_IMAGEMIXER_H
+#endif  // IVW_IMAGEMIXER_H

@@ -56,6 +56,6 @@ struct DataTraits<Eigen::MatrixXf> {
     }
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PORTS_H

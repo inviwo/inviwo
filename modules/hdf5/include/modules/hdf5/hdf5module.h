@@ -41,6 +41,6 @@ public:
     virtual ~HDF5Module() = default;
 };
 
-}  // namespace
+}  // namespace inviwo
 
-#endif // IVW_HDF55MODULE_H
+#endif  // IVW_HDF55MODULE_H

@@ -57,7 +57,8 @@ public:
                                DataMapper dataMapper, size_t dataOffset = 0u);
 
     virtual std::shared_ptr<Volume> readData(const std::string& filePath) override;
-    virtual std::shared_ptr<Volume> readData(const std::string& filePath, MetaDataOwner* metadata) override;
+    virtual std::shared_ptr<Volume> readData(const std::string& filePath,
+                                             MetaDataOwner* metadata) override;
 
     bool haveReadLittleEndian() const { return littleEndian_; }
     const DataFormatBase* getFormat() const { return format_; }

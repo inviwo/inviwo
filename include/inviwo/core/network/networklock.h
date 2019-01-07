@@ -69,6 +69,6 @@ inline NetworkLock::~NetworkLock() {
     if (network_) network_->unlock();
 }
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_NETWORKLOCK_H

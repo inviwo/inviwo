@@ -121,7 +121,7 @@ std::shared_ptr<Mesh> IVW_MODULE_PLOTTING_API generateTicksMesh(
     const std::vector<double> tickMarks, dvec2 axisRange, const vec3& startPos, const vec3& endPos,
     const vec3& tickDirection, float tickLength, TickStyle style, const vec4& color, bool flip);
 
-}  // namespace plotting
+}  // namespace plot
 
 }  // namespace inviwo
 

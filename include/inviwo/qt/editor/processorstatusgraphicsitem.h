@@ -63,7 +63,7 @@ protected:
     virtual void activityIndicatorChanged(bool active) override;
 
 private:
-    enum class State {Invalid, Running, Ready};
+    enum class State { Invalid, Running, Ready };
 
     Processor* processor_;
     float size_;
@@ -73,6 +73,6 @@ private:
     State current_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PROCESSORSTATUSGRAPHICSITEM_H

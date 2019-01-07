@@ -40,12 +40,13 @@ namespace inviwo {
 
 class IVW_CORE_API ProcessorMetaDataObserver : public Observer {
 public:
-    virtual void onProcessorMetaDataPositionChange() {};
-    virtual void onProcessorMetaDataVisibilityChange() {};
-    virtual void onProcessorMetaDataSelectionChange() {};
+    virtual void onProcessorMetaDataPositionChange(){};
+    virtual void onProcessorMetaDataVisibilityChange(){};
+    virtual void onProcessorMetaDataSelectionChange(){};
 };
 
-class IVW_CORE_API ProcessorMetaData : public MetaData, public Observable<ProcessorMetaDataObserver>{
+class IVW_CORE_API ProcessorMetaData : public MetaData,
+                                       public Observable<ProcessorMetaDataObserver> {
 public:
     ProcessorMetaData();
     ProcessorMetaData(const ProcessorMetaData& rhs) = default;
@@ -74,6 +75,6 @@ private:
     bool selection_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PROCESSORMETADATA_H

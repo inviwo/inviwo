@@ -78,7 +78,7 @@ protected:
     Track& track_;
 
     std::unordered_map<Keyframe*, QWidget*> keyframeEditorWidgets_;
-     
+
     QVBoxLayout* keyframesLayout_{nullptr};
 
     bool reorderNeeded_{true};

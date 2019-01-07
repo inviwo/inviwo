@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_MESHRENDERPROCESSORGL_H
@@ -50,28 +50,30 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.GeometryRenderGL, Mesh Renderer}
  * ![](org.inviwo.GeometryRenderGL.png?classIdentifier=org.inviwo.GeometryRenderGL)
- * Renders a set of meshes using OpenGL on top of an image. Different rendering modes can be selected.
- * 
+ * Renders a set of meshes using OpenGL on top of an image. Different rendering modes can be
+ * selected.
+ *
  * ### Inports
  *   * __geometry__ Input meshes
  *   * __imageInport__ Optional background image
- * 
+ *
  * ### Outports
  *   * __image__ output image containing the rendered mesh and the optional input image
- * 
+ *
  * ### Properties
  *   * __Camera__ Camera used for rendering the mesh
  *   * __Center view on geometry__ Adjusts the camera so that the geometry is rendered in the center
- *   * __Calculate Near and Far Plane__ Determine the near and far clip planes based on the mesh bounding box
+ *   * __Calculate Near and Far Plane__ Determine the near and far clip planes based on the mesh
+ *                                      bounding box
  *   * __Reset Camera__ Reset the camera to its default state
- *   * __Geometry Rendering Properties__ 
+ *   * __Geometry Rendering Properties__
  *       + __Cull Face__ (None, Front, Back, Back and Front)
  *       + __Polygon Mode__  (Points, Lines, Fill)
  *       + __Point Size__ Defines the point size when polygon mode is set to "Points"
  *       + __Line Width__ Defines the line width when polygon mode is set to "Lines" (not supported)
  *       + __Enable Depth Test__ Toggles the depth test during rendering
  *   * __Lighting__ Standard lighting settings
- *   * __Output Layers__ 
+ *   * __Output Layers__
  *       + __Color__ Toggle output of color layer
  *       + __Texture Coordinates__ Toggle output of texture coordinates
  *       + __Normals (World Space)__ Toggle output of normals (world space)
@@ -91,7 +93,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
     virtual void initializeResources() override;
-    virtual void process() override; 
+    virtual void process() override;
 
 protected:
     void updateDrawers();
@@ -105,7 +107,7 @@ protected:
     ButtonProperty setNearFarPlane_;
     ButtonProperty resetViewParams_;
     CameraTrackball trackball_;
-    
+
     BoolProperty overrideColorBuffer_;
     FloatVec4Property overrideColor_;
 
@@ -113,7 +115,6 @@ protected:
     OptionPropertyInt cullFace_;
     BoolProperty enableDepthTest_;
     SimpleLightingProperty lightingProperty_;
-
 
     CompositeProperty layers_;
     BoolProperty colorLayer_;
@@ -125,9 +126,8 @@ protected:
 
     using DrawerMap = std::multimap<const Outport*, std::unique_ptr<MeshDrawer>>;
     DrawerMap drawers_;
-
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_GEOMETRYRENDERPROCESSORGL_H
+#endif  // IVW_GEOMETRYRENDERPROCESSORGL_H

@@ -40,7 +40,7 @@ namespace kind {
 struct Base {};
 struct Disk {};
 struct RAM {};
-}
+}  // namespace kind
 
 template <typename DataType, typename Kind>
 struct representation_traits {
@@ -50,6 +50,6 @@ struct representation_traits {
 template <typename DataType, typename Kind>
 using representation_traits_t = typename representation_traits<DataType, Kind>::type;
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_REPRESENTATIONTRAITS_H

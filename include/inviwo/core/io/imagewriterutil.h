@@ -45,10 +45,8 @@ IVW_CORE_API void saveLayer(const Layer& layer, const std::string& path,
 
 IVW_CORE_API void saveLayer(const Layer& layer);
 
-} // namespace
+}  // namespace util
 
+}  // namespace inviwo
 
-} // namespace
-
-#endif // IVW_IMAGEWRITERUTIL_H
-
+#endif  // IVW_IMAGEWRITERUTIL_H

@@ -41,12 +41,11 @@ namespace inviwo {
 /**
  * \class CameraFactory
  */
-class IVW_CORE_API CameraFactory : public StandardFactory<Camera, CameraFactoryObject> { 
+class IVW_CORE_API CameraFactory : public StandardFactory<Camera, CameraFactoryObject> {
 public:
     CameraFactory() = default;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_CAMERAFACTORY_H
-
+#endif  // IVW_CAMERAFACTORY_H

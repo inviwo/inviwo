@@ -58,7 +58,6 @@ public:
      */
     virtual dvec4 readPixel(size2_t pos, LayerType layer, size_t index = 0) const override;
 
-
     virtual std::type_index getTypeIndex() const override final;
     virtual bool isValid() const override;
     virtual void update(bool) override;
@@ -67,7 +66,7 @@ private:
     LayerCL* layerCL_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 namespace cl {
 

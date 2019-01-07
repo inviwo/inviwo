@@ -92,7 +92,6 @@ public:
 
 private:
     void adjustAlignment();
-
 };
 
 }  // namespace plot

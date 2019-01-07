@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PYTHON3QTMODULE_H
@@ -34,8 +34,8 @@
 #include <inviwo/core/common/inviwomodule.h>
 
 namespace inviwo {
-    class PyModule;
-    class PythonMenu;
+class PyModule;
+class PythonMenu;
 
 class IVW_MODULE_PYTHON3QT_API Python3QtModule : public InviwoModule {
 public:
@@ -46,6 +46,6 @@ private:
     std::unique_ptr<PythonMenu> menu_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_PYTHON3QTMODULE_H
+#endif  // IVW_PYTHON3QTMODULE_H

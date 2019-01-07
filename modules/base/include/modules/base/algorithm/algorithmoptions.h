@@ -34,9 +34,8 @@
 
 namespace inviwo {
 
-enum class IgnoreSpecialValues {No, Yes};
+enum class IgnoreSpecialValues { No, Yes };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_ALGORITHMOPTIONS_H
-
+#endif  // IVW_ALGORITHMOPTIONS_H

@@ -47,7 +47,6 @@ class FileProperty;
 class StringProperty;
 class SyntaxHighligther;
 
-
 class IVW_MODULE_QTWIDGETS_API TextEditorDockWidget : public PropertyEditorWidgetQt {
 public:
     TextEditorDockWidget(Property* property);
@@ -69,10 +68,10 @@ private:
     public:
         ScriptObserver(TextEditorDockWidget& widget, InviwoApplication* app);
         virtual void fileChanged(const std::string& dir) override;
+
     private:
         TextEditorDockWidget& widget_;
     };
-
 
     FileProperty* fileProperty_;
     StringProperty* stringProperty_;

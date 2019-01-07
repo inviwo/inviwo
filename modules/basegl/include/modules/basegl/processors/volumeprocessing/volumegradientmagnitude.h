@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_VOLUMEGRADIENTMAGNITUDEPROCESSOR_H
@@ -35,7 +35,6 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
 
-
 namespace inviwo {
 
 /** \docpage{org.inviwo.VolumeGradientMagnitude, Volume Gradient Magnitude}
@@ -44,8 +43,8 @@ namespace inviwo {
  *
  * This processor internally computes the gradients of the given 3D scalar field and only
  * writes the magnitudes of the gradients to the outport. It yields the same results as
- * when combining a GradientVolumeProcessor and VectorMagnitudeProcessor. However, the 
- * intermediate gradient volume is never generated and, thus, this processor is more memory 
+ * when combining a GradientVolumeProcessor and VectorMagnitudeProcessor. However, the
+ * intermediate gradient volume is never generated and, thus, this processor is more memory
  * efficient.
  *
  * ### Inports
@@ -55,7 +54,7 @@ namespace inviwo {
  *   * __outputVolume__ Output volume
  *
  * ### Properties
- *   * __Render Channel__ Selects the channel used for the gradient computation 
+ *   * __Render Channel__ Selects the channel used for the gradient computation
  */
 
 /**
@@ -65,11 +64,11 @@ namespace inviwo {
  *
  * This processor internally computes the gradients of the given 3D scalar field and only
  * writes the magnitudes of the gradients to the outport. It yields the same results as
- * when combining a GradientVolumeProcessor and VectorMagnitudeProcessor. However, the 
- * intermediate gradient volume is never generated and, thus, this processor is more memory 
+ * when combining a GradientVolumeProcessor and VectorMagnitudeProcessor. However, the
+ * intermediate gradient volume is never generated and, thus, this processor is more memory
  * efficient.
  */
- class IVW_MODULE_BASEGL_API VolumeGradientMagnitude : public VolumeGLProcessor  { 
+class IVW_MODULE_BASEGL_API VolumeGradientMagnitude : public VolumeGLProcessor {
 public:
     VolumeGradientMagnitude();
     virtual ~VolumeGradientMagnitude();
@@ -86,6 +85,6 @@ private:
     OptionPropertyInt channel_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_VOLUMEGRADIENTMAGNITUDEPROCESSOR_H
+#endif  // IVW_VOLUMEGRADIENTMAGNITUDEPROCESSOR_H

@@ -40,21 +40,21 @@
 namespace inviwo {
 
 /** \docpage{org.inviwo.NumPyVolume, NumPy Volume}
-* ![](org.inviwo.NumPyVolume.png?classIdentifier=org.inviwo.NumPyVolume)
-*
-* En example processor illustrating how Python can be used to create volumes.
-* Processor creates an "empty" volume and passes it along to a python script. The script calculates
-* for a signed distance value for each voxel which can be visualized with any iso surface
-* visualization method.
-* See the Example workspace in File/Python3/volume.inv
-*
-* ### Outports
-*   * __outport__ The final signed distance volume
-*
-* ### Properties
-*   * __Size__ Size of the created volume.
-*
-*/
+ * ![](org.inviwo.NumPyVolume.png?classIdentifier=org.inviwo.NumPyVolume)
+ *
+ * En example processor illustrating how Python can be used to create volumes.
+ * Processor creates an "empty" volume and passes it along to a python script. The script calculates
+ * for a signed distance value for each voxel which can be visualized with any iso surface
+ * visualization method.
+ * See the Example workspace in File/Python3/volume.inv
+ *
+ * ### Outports
+ *   * __outport__ The final signed distance volume
+ *
+ * ### Properties
+ *   * __Size__ Size of the created volume.
+ *
+ */
 
 /**
  * \class NumPyVolume
@@ -78,6 +78,6 @@ private:
     PythonScriptDisk script_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_NUMPYVOLUME_H

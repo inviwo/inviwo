@@ -50,6 +50,6 @@ protected:
     void notifyObserversOnSetCollapsed(bool collapsed);
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_COMPOSITEPROPERTYOBSERVER_H

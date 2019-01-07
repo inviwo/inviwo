@@ -68,10 +68,10 @@ public:
 
     void setData(const TFPrimitiveData& data);
     inline const TFPrimitiveData& getData() const;
-    
+
     void setPosition(double pos);
     inline double getPosition() const;
-    
+
     void setAlpha(float alpha);
     inline float getAlpha() const;
 
@@ -81,7 +81,7 @@ public:
     void setColor(const vec3& color);
     void setColor(const vec4& color);
     inline const vec4& getColor() const;
-    
+
     void notifyTFPrimitiveObservers();
 
     virtual void serialize(Serializer& s) const override;

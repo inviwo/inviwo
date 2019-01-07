@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PROPERTYFACTORYOBJECT_H
@@ -41,8 +41,7 @@ public:
     PropertyFactoryObject(const std::string& className);
     virtual ~PropertyFactoryObject();
 
-    virtual std::unique_ptr<Property> create(std::string identifier,
-                             std::string displayName) = 0;
+    virtual std::unique_ptr<Property> create(std::string identifier, std::string displayName) = 0;
 
     std::string getClassIdentifier() const;
 
@@ -50,21 +49,18 @@ private:
     std::string className_;
 };
 
-template<typename T>
+template <typename T>
 class PropertyFactoryObjectTemplate : public PropertyFactoryObject {
 public:
-    PropertyFactoryObjectTemplate()
-        : PropertyFactoryObject(PropertyTraits<T>::classIdentifier()) {}
+    PropertyFactoryObjectTemplate() : PropertyFactoryObject(PropertyTraits<T>::classIdentifier()) {}
 
     virtual ~PropertyFactoryObjectTemplate() = default;
 
-    virtual std::unique_ptr<Property> create(std::string identifier,
-                             std::string displayName) {
+    virtual std::unique_ptr<Property> create(std::string identifier, std::string displayName) {
         return std::make_unique<T>(identifier, displayName);
     }
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_PROPERTYFACTORYOBJECT_H
-
+#endif  // IVW_PROPERTYFACTORYOBJECT_H

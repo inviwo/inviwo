@@ -37,7 +37,7 @@ namespace discretedata {
 //! Discretedata index type
 using ind = signed long long;
 
-/** 
+/**
  * Mapping structure name to respective dimension.
  * Assign channels to any dimensions this way.
  * If these do not suffice, cast the respective short.

@@ -68,7 +68,7 @@ public:
         if (need_delimiter) *os << delimiter;
         auto pos = os->tellp();
         *os << item;
-        need_delimiter = (os->tellp() != pos); // don't add delimiter if there were no output
+        need_delimiter = (os->tellp() != pos);  // don't add delimiter if there were no output
         return *this;
     }
 
@@ -83,9 +83,8 @@ ostream_joiner<std::decay_t<DelimT>, charT, traits> make_ostream_joiner(
     return ostream_joiner<std::decay_t<DelimT>, charT, traits>(os, delimiter);
 }
 
-} // namespace
+}  // namespace util
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_OSTREAMJOINER_H
-
+#endif  // IVW_OSTREAMJOINER_H

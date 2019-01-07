@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_HISTOGRAM_H
@@ -34,7 +34,7 @@
 #include <inviwo/core/common/inviwo.h>
 
 namespace inviwo {
-enum class HistogramMode {Off, All, P99, P95, P90, Log};
+enum class HistogramMode { Off, All, P99, P95, P90, Log };
 
 /**
  *The NormalizedHistogram has a array of bins and all bins are normalized.
@@ -78,7 +78,7 @@ public:
 
 protected:
     std::vector<double> data_;
-    double maximumBinCount_; //The maximum count (used for normalization)
+    double maximumBinCount_;  // The maximum count (used for normalization)
     bool valid_;
 };
 
@@ -107,7 +107,6 @@ private:
     std::vector<NormalizedHistogram*> histograms_;
 };
 
+}  // namespace inviwo
 
-} // namespace
-
-#endif // IVW_HISTOGRAM_H
+#endif  // IVW_HISTOGRAM_H

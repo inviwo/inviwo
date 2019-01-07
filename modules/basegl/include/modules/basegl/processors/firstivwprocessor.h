@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_FIRSTIVWPROCESSOR_H
@@ -46,11 +46,11 @@ namespace inviwo {
  * ![](org.inviwo.FirstIVWProcessor.png?classIdentifier=org.inviwo.FirstIVWProcessor)
  *
  * ...
- * 
- * 
+ *
+ *
  * ### Outports
  *   * __outport__ ...
- * 
+ *
  * ### Properties
  *   * __Color__ ...
  *
@@ -59,7 +59,7 @@ class IVW_MODULE_BASEGL_API FirstIvwProcessor : public Processor {
 public:
     FirstIvwProcessor();
     virtual ~FirstIvwProcessor() = default;
-    
+
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
@@ -79,6 +79,6 @@ private:
     Shader shader_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_FIRSTIVWPROCESSOR_H
+#endif  // IVW_FIRSTIVWPROCESSOR_H

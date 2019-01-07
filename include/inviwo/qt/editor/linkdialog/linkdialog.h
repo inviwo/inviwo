@@ -43,7 +43,6 @@ public:
     virtual ~LinkDialog() = default;
 
     virtual QSize sizeHint() const;
-
 };
 
 }  // namespace inviwo

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_FILEPATHLINEEDITQT_H
@@ -38,22 +38,22 @@ class QLabel;
 namespace inviwo {
 
 /**
-* \class FilePathLineEditQt
-* \brief QLineEdit for file paths. When editing the path, i.e. the widget is focused, the full path is shown.
-*        When not in focus, it shows only the file name with extension.
-*        A small warning icon is shown to indicate non-existing files and paths.
-*/
+ * \class FilePathLineEditQt
+ * \brief QLineEdit for file paths. When editing the path, i.e. the widget is focused, the full path
+ * is shown. When not in focus, it shows only the file name with extension. A small warning icon is
+ * shown to indicate non-existing files and paths.
+ */
 class IVW_MODULE_QTWIDGETS_API FilePathLineEditQt : public LineEditQt {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT
 #include <warn/pop>
 public:
-    FilePathLineEditQt(QWidget *parent=nullptr);
+    FilePathLineEditQt(QWidget *parent = nullptr);
     virtual ~FilePathLineEditQt() = default;
 
     void setPath(const std::string &path);
-    const std::string& getPath() const;
+    const std::string &getPath() const;
 
     void setEditing(bool editing);
     bool isEditingEnabled() const;
@@ -67,13 +67,14 @@ protected:
     void updateIcon();
 
 private:
-    QLabel *warningLabel_; //!< warning icon which is visible if the path is invalid
-    std::string path_; //!< full path including file name
-    bool editingEnabled_; //!< if this flag is set, the full path is shown. Otherwise only the file name is shown
+    QLabel *warningLabel_;  //!< warning icon which is visible if the path is invalid
+    std::string path_;      //!< full path including file name
+    bool editingEnabled_;  //!< if this flag is set, the full path is shown. Otherwise only the file
+                           //!< name is shown
     int cursorPos_;
     bool cursorPosDirty_;
 };
 
-} // namespace iniwo
+}  // namespace inviwo
 
-#endif // IVW_FILEPATHLINEEDITQT_H
+#endif  // IVW_FILEPATHLINEEDITQT_H

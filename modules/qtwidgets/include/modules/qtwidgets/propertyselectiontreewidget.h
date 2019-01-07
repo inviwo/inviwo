@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PROPERTY_SELECTION_TREE_WIDGET_H
@@ -49,12 +49,13 @@ class ProcessorNetwork;
 class IVW_MODULE_QTWIDGETS_API PropertySelectionTree : public QTreeWidget {
 
 public:
-    PropertySelectionTree(QWidget* parent) : QTreeWidget(parent) {};
+    PropertySelectionTree(QWidget* parent) : QTreeWidget(parent){};
     ~PropertySelectionTree() = default;
 
 protected:
     void mousePressEvent(QMouseEvent* e);
     void mouseMoveEvent(QMouseEvent* e);
+
 private:
     QPoint dragStartPosition_;
 };
@@ -99,6 +100,6 @@ private:
     ProcessorNetwork* processorNetwork_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_PROPERTY_SELECTION_TREE_WIDGET_H
+#endif  // IVW_PROPERTY_SELECTION_TREE_WIDGET_H

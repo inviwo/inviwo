@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_VOLUMEDIVERGENCECPUPROCESSOR_H
@@ -38,21 +38,21 @@
 
 namespace inviwo {
 
-class IVW_MODULE_BASE_API VolumeDivergenceCPUProcessor : public Processor { 
+class IVW_MODULE_BASE_API VolumeDivergenceCPUProcessor : public Processor {
 public:
     VolumeDivergenceCPUProcessor();
     virtual ~VolumeDivergenceCPUProcessor() = default;
-     
+
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+
 private:
     VolumeInport inport_;
     VolumeOutport outport_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_VOLUMECURLCPUPROCESSOR_H
-
+#endif  // IVW_VOLUMECURLCPUPROCESSOR_H

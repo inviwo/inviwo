@@ -83,7 +83,7 @@ protected:
     std::shared_ptr<Mesh> minorTicksMesh_;
 
     std::shared_ptr<Texture2D> axisCaptionTex_;
-    
+
     util::TextureAtlas labelTexAtlas_;
 };
 

@@ -32,7 +32,6 @@
 
 #include <pybind11/pybind11.h>
 
-
 namespace inviwo {
 
 void exposeVolume(pybind11::module &m);

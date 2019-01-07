@@ -64,6 +64,6 @@ public:
     }
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PROCESSORWIDGETFACTORYOBJECT_H

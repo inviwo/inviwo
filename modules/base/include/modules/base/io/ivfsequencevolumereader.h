@@ -43,7 +43,7 @@ namespace inviwo {
  *
  * Supports reader a volume sequence from disk.
  *
- * The expected structure of the ivfs sequence files is: 
+ * The expected structure of the ivfs sequence files is:
  * \verbatim
 <?xml version="1.0" ?>
 <InviwoWorkspace version="2">

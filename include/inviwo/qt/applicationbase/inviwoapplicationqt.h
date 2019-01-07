@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_INVIWOAPPLICATIONQT_H
@@ -92,8 +92,8 @@ public:
     QMainWindow* getMainWindow() { return mainWindow_; }
 
     virtual bool event(QEvent* e) override;
-    
-    virtual bool notify(QObject *receiver, QEvent *e) override;
+
+    virtual bool notify(QObject* receiver, QEvent* e) override;
     void setUndoTrigger(std::function<void()> func);
     virtual void resizePool(size_t newSize) override;
     virtual void printApplicationInfo() override;
@@ -109,7 +109,7 @@ private:
      * If the Qt application has not been initialized, the returned
      * value is the environment's default locale.
      * @note This is a duplicate of utilqt::getCurrentStdLocale
-     * in the qtwidgets module. We do not want to depend on modules in external.      
+     * in the qtwidgets module. We do not want to depend on modules in external.
      * @return std::locale   Qt locale converted to std::locale
      */
     static std::locale getCurrentStdLocale();
@@ -122,6 +122,6 @@ private:
     std::function<void()> undoTrigger_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
-#endif // IVW_INVIWOAPPLICATIONQT_H
+#endif  // IVW_INVIWOAPPLICATIONQT_H

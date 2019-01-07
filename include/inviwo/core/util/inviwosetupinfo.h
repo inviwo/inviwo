@@ -30,7 +30,6 @@
 #ifndef IVW_INVIWOSETUPINFO_H
 #define IVW_INVIWOSETUPINFO_H
 
-
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/processors/processorfactoryobject.h>
@@ -44,7 +43,7 @@ class InviwoApplication;
 
 struct IVW_CORE_API InviwoSetupInfo : public Serializable {
     struct ModuleSetupInfo : public Serializable {
-        ModuleSetupInfo() = default; 
+        ModuleSetupInfo() = default;
         ModuleSetupInfo(const InviwoModule* module);
         virtual void serialize(Serializer& s) const;
         virtual void deserialize(Deserializer& d);
@@ -58,11 +57,11 @@ struct IVW_CORE_API InviwoSetupInfo : public Serializable {
     virtual void serialize(Serializer& s) const;
     virtual void deserialize(Deserializer& d);
     std::vector<ModuleSetupInfo> modules_;
-    
+
     const InviwoSetupInfo::ModuleSetupInfo* getModuleInfo(const std::string& module) const;
     std::string getModuleForProcessor(const std::string& processor) const;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_INVIWOSETUPINFO_H

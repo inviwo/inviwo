@@ -60,7 +60,7 @@ void forEachPixelParallel(const LayerRAM &layer, C callback, size_t jobs = 0) {
     if (jobs == 0) {
         auto settings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
         jobs = 4 * settings->poolSize_.get();
-        if (jobs == 0) { // if poolsize is zero
+        if (jobs == 0) {  // if poolsize is zero
             forEachPixel(layer, callback);
             return;
         }
@@ -74,11 +74,11 @@ void forEachPixelParallel(const LayerRAM &layer, C callback, size_t jobs = 0) {
         futures.push_back(dispatchPool([&callback, start, stop]() {
             size2_t pos{0};
 
-                for (pos.y = start.y; pos.y < stop.y; ++pos.y) {
-                    for (pos.x = start.x; pos.x < stop.x; ++pos.x) {
-                        callback(pos);
-                    }
+            for (pos.y = start.y; pos.y < stop.y; ++pos.y) {
+                for (pos.x = start.x; pos.x < stop.x; ++pos.x) {
+                    callback(pos);
                 }
+            }
         }));
     }
 
@@ -88,8 +88,8 @@ void forEachPixelParallel(const LayerRAM &layer, C callback, size_t jobs = 0) {
 }
 
 IVW_CORE_API std::shared_ptr<Image> readImageFromDisk(std::string filename);
-}
+}  // namespace util
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_IMAGERAMUTILS_H

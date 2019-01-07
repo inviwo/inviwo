@@ -373,7 +373,6 @@ bool CanvasQtBase<T>::mapKeyReleaseEvent(QKeyEvent* keyEvent) {
     KeyboardEvent releaseKeyEvent(utilqt::getKeyButton(keyEvent), KeyState::Release,
                                   utilqt::getModifiers(keyEvent), keyEvent->nativeVirtualKey(),
                                   utilqt::fromQString(keyEvent->text()));
-
     this->propagateEvent(&releaseKeyEvent);
     if (releaseKeyEvent.hasBeenUsed()) {
         keyEvent->accept();

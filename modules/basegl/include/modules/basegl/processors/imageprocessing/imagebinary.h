@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_IMAGEBINARY_H
@@ -40,7 +40,7 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.ImageBinary, Image Binary}
  * ![](org.inviwo.ImageBinary.png?classIdentifier=org.inviwo.ImageBinary)
- * Computes a binary image of the input image using a threshold. The output 
+ * Computes a binary image of the input image using a threshold. The output
  * will contain "0" for all values below the threshold and "1" otherwise.
  *
  * ### Inports
@@ -48,11 +48,10 @@ namespace inviwo {
  *
  * ### Outports
  *   * __outputImage__ Binary output image
- * 
+ *
  * ### Properties
  *   * __Threshold__ Threshold used for the binarization of the input image
  */
-
 
 /**
  * \class ImageBinary
@@ -70,11 +69,10 @@ protected:
     virtual void preProcess(TextureUnitContainer &cont) override;
 
     FloatProperty threshold_;
-private:
 
+private:
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_IMAGEBINARY_H
-
+#endif  // IVW_IMAGEBINARY_H

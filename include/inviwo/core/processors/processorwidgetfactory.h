@@ -62,6 +62,6 @@ protected:
     Map map_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PROCESSORWIDGETFACTORY_H

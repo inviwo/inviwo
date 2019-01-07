@@ -80,6 +80,6 @@ public:
     QSize minimumSizeHint() const;
 };
 
-} // namespace inviwo
+}  // namespace inviwo
 
-#endif // IVW_INVIWOWIDGETSQT_H
+#endif  // IVW_INVIWOWIDGETSQT_H

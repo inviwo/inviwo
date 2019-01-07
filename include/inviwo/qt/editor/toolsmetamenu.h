@@ -38,4 +38,3 @@ namespace inviwo {
 void addInviwoMetaAction(QMenu* menu);
 
 }  // namespace inviwo
-

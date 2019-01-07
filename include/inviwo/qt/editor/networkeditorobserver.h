@@ -38,11 +38,11 @@ namespace inviwo {
 
 class IVW_QTEDITOR_API NetworkEditorObserver : public Observer {
 public:
-    virtual void onNetworkEditorFileChanged(const std::string& /*newFilename*/) {};
-    virtual void onModifiedStatusChanged(const bool& /*newStatus*/) {};
-    virtual void onSceneSizeChanged() {};
+    virtual void onNetworkEditorFileChanged(const std::string& /*newFilename*/){};
+    virtual void onModifiedStatusChanged(const bool& /*newStatus*/){};
+    virtual void onSceneSizeChanged(){};
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_NETWORKEDITOROBSERVER_H

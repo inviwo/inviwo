@@ -66,7 +66,7 @@ private:
     LayerCLGL* layerCLGL_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 namespace cl {
 

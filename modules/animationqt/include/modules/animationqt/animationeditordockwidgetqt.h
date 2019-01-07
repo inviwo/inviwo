@@ -59,7 +59,7 @@ public:
                                 TrackWidgetQtFactory& widgetFactory,
                                 SequenceEditorFactory& editorFactory, QWidget* parent);
     AnimationEditorDockWidgetQt(const AnimationEditorDockWidgetQt&) = delete;
-    AnimationEditorDockWidgetQt(AnimationEditorDockWidgetQt&&)= delete;
+    AnimationEditorDockWidgetQt(AnimationEditorDockWidgetQt&&) = delete;
     AnimationEditorDockWidgetQt& operator=(const AnimationEditorDockWidgetQt&) = delete;
     AnimationEditorDockWidgetQt& operator=(AnimationEditorDockWidgetQt&&) = delete;
     virtual ~AnimationEditorDockWidgetQt();

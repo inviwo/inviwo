@@ -47,15 +47,15 @@ namespace inviwo {
 class IVW_CORE_API ProgressBarObserver : public Observer {
 public:
     /**
-    * This method will be called when observed object changes.
-    * Override it to add behavior.
-    */
+     * This method will be called when observed object changes.
+     * Override it to add behavior.
+     */
     virtual void progressChanged(){};
 
     /**
-    * This method will be called when observed object changes.
-    * Override it to add behavior.
-    */
+     * This method will be called when observed object changes.
+     * Override it to add behavior.
+     */
     virtual void progressBarVisibilityChanged(){};
 };
 
@@ -105,6 +105,6 @@ private:
     bool visible_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PROGRESSBAR_H

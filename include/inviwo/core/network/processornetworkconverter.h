@@ -43,35 +43,35 @@ namespace inviwo {
  * \brief A utility to handle conversion of ProcessorNetwork versions.
  */
 class IVW_CORE_API ProcessorNetworkConverter : public VersionConverter {
-    public:
-        typedef void (ProcessorNetworkConverter::*updateType)(TxElement*);
-        ProcessorNetworkConverter(int from);
-        virtual bool convert(TxElement* root);
-        int from_;
-    private:
-        void updateProcessorType(TxElement* node);
-        void updateMetaDataTree(TxElement* node);
-        void updatePropertType(TxElement* node);
-        void updateMetaDataType(TxElement* node);
-        void updateMetaDataKeys(TxElement* node);
-        void updateShadingMode(TxElement* node);
-        void updateCameraToComposite(TxElement* node);
-        void updateDimensionTag(TxElement* node);
-        void updatePropertyLinks(TxElement* node);
-        void updatePortsInProcessors(TxElement* node);
-        void updateNoSpaceInProcessorClassIdentifers(TxElement* node);
-        void updateDisplayName(TxElement* node);
-        void updateProcessorIdentifiers(TxElement* node);
-        void updateTransferfunctions(TxElement* node);
-        void updateProcessorIdentifiersStriped(TxElement *node);
-        void updatePropertyEditorMetadata(TxElement *node);
+public:
+    typedef void (ProcessorNetworkConverter::*updateType)(TxElement*);
+    ProcessorNetworkConverter(int from);
+    virtual bool convert(TxElement* root);
+    int from_;
 
-        void traverseNodes(TxElement* node, updateType update);
+private:
+    void updateProcessorType(TxElement* node);
+    void updateMetaDataTree(TxElement* node);
+    void updatePropertType(TxElement* node);
+    void updateMetaDataType(TxElement* node);
+    void updateMetaDataKeys(TxElement* node);
+    void updateShadingMode(TxElement* node);
+    void updateCameraToComposite(TxElement* node);
+    void updateDimensionTag(TxElement* node);
+    void updatePropertyLinks(TxElement* node);
+    void updatePortsInProcessors(TxElement* node);
+    void updateNoSpaceInProcessorClassIdentifers(TxElement* node);
+    void updateDisplayName(TxElement* node);
+    void updateProcessorIdentifiers(TxElement* node);
+    void updateTransferfunctions(TxElement* node);
+    void updateProcessorIdentifiersStriped(TxElement* node);
+    void updatePropertyEditorMetadata(TxElement* node);
 
-        std::set<std::string> usedIdentifier_;
-    };
+    void traverseNodes(TxElement* node, updateType update);
 
-} // namespace
+    std::set<std::string> usedIdentifier_;
+};
 
-#endif // IVW_PROCESSORNETWORKCONVERTER_H
+}  // namespace inviwo
 
+#endif  // IVW_PROCESSORNETWORKCONVERTER_H

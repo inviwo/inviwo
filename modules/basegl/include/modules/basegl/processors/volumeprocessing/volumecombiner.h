@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_VOLUMECOMBINER_H
@@ -48,43 +48,42 @@
 namespace inviwo {
 
 /** \docpage{org.inviwo.VolumeCombiner, Volume Combiner}
-* Combines/fuses volumes into a single volume. Resolution and data type of the 
-* result match the first input volume. The input volumes can be scaled individually.
-* ![](org.inviwo.VolumeCombiner.png?classIdentifier=org.inviwo.VolumeCombiner)
-*
-* ### Inports
-*   * __VolumeInport__ Input volume A.
-*   * __VolumeInport__ Input volume B.
-*
-* ### Outports
-*   * __VolumeOutport__ The output volume. Dimension and data type match input volume A. 
-*                       <tt>combine(a,b) = a * volScale1 + b * volScale2</tt>
-* 
-*
-* ### Properties
-*   * __Normalization mode__ Determine how to normalize the incoming volumes.
-*   * __Volume 1 Scaling__ Scaling factor for volume 1.
-*   * __Volume 2 Scaling__ Scaling factor for volume 2.
-*   * __useWorldSpace__ Retrieve data in world space corrdinate system. 
-*   * __borderValue__ Value to use for coordinates outside the first volume.
-*/
+ * Combines/fuses volumes into a single volume. Resolution and data type of the
+ * result match the first input volume. The input volumes can be scaled individually.
+ * ![](org.inviwo.VolumeCombiner.png?classIdentifier=org.inviwo.VolumeCombiner)
+ *
+ * ### Inports
+ *   * __VolumeInport__ Input volume A.
+ *   * __VolumeInport__ Input volume B.
+ *
+ * ### Outports
+ *   * __VolumeOutport__ The output volume. Dimension and data type match input volume A.
+ *                       <tt>combine(a,b) = a * volScale1 + b * volScale2</tt>
+ *
+ *
+ * ### Properties
+ *   * __Normalization mode__ Determine how to normalize the incoming volumes.
+ *   * __Volume 1 Scaling__ Scaling factor for volume 1.
+ *   * __Volume 2 Scaling__ Scaling factor for volume 2.
+ *   * __useWorldSpace__ Retrieve data in world space corrdinate system.
+ *   * __borderValue__ Value to use for coordinates outside the first volume.
+ */
 
 /*! \class VolumeCombiner
-*
-* \brief Combines two volumes.
-*/
-class IVW_MODULE_BASEGL_API VolumeCombiner : public Processor { 
+ *
+ * \brief Combines two volumes.
+ */
+class IVW_MODULE_BASEGL_API VolumeCombiner : public Processor {
 public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
-    
+
     VolumeCombiner();
     virtual ~VolumeCombiner() = default;
 
     virtual void process() override;
 
 private:
-
     enum class NormalizationMode { Normalized, SignedNormalized, NotNormalized };
 
     std::string buildEquation() const;
@@ -112,6 +111,6 @@ private:
     bool valid_ = true;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_VOLUMECOMBINER_H
+#endif  // IVW_VOLUMECOMBINER_H

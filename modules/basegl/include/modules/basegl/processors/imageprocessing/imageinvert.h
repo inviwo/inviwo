@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_IMAGEINVERT_H
@@ -40,12 +40,12 @@ namespace inviwo {
  * Create the invert image of an input image. The alpha channel is not touched.
  * ![](org.inviwo.ImageInvert.png?classIdentifier=org.inviwo.ImageInvert)
  * This processor computes the inverted image as follows
- * 
+ *
  *     out.rgb = 1.0 - in.rgb
  *     out.a = in.a
  *
- * The input range is assumed to be normalized, i.e. [0, 1]. 
- * 
+ * The input range is assumed to be normalized, i.e. [0, 1].
+ *
  * ### Inports
  *   * __ImageInport__ The input image.
  *
@@ -57,11 +57,11 @@ namespace inviwo {
  *
  * \brief Create the invert image of an input image. Alpha channel is not touched.
  *
- * This processor computes the inverted image by subtracting the rgb channels from 1.0 
- * utilizing the ImageGLProcessor. 
- * The input range is assumed to be normalized, i.e. [0, 1]. 
+ * This processor computes the inverted image by subtracting the rgb channels from 1.0
+ * utilizing the ImageGLProcessor.
+ * The input range is assumed to be normalized, i.e. [0, 1].
  */
-class IVW_MODULE_BASEGL_API ImageInvert : public ImageGLProcessor  { 
+class IVW_MODULE_BASEGL_API ImageInvert : public ImageGLProcessor {
 public:
     ImageInvert();
     virtual ~ImageInvert();
@@ -69,7 +69,6 @@ public:
     static const ProcessorInfo processorInfo_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_IMAGEINVERT_H
-
+#endif  // IVW_IMAGEINVERT_H

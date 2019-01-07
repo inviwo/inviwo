@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_CANVASGLFW_H
@@ -37,7 +37,6 @@
 
 #include <inviwo/core/interaction/events/mousebuttons.h>
 #include <inviwo/core/interaction/events/keyboardkeys.h>
-
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -56,10 +55,10 @@ public:
 
     void show();
     void hide();
-    
+
     void setWindowSize(ivec2);
     void setWindowPosition(ivec2);
-    
+
     void setWindowTitle(std::string);
 
     static void closeWindow(GLFWwindow*);
@@ -68,10 +67,10 @@ public:
     virtual void update() override;
 
     static void reshape(GLFWwindow*, int, int);
-    static void move(GLFWwindow*,int,int);
+    static void move(GLFWwindow*, int, int);
 
     static void keyboard(GLFWwindow*, int, int, int, int);
-    static void character(GLFWwindow*, unsigned int); ///< UTF32 encoded text input
+    static void character(GLFWwindow*, unsigned int);  ///< UTF32 encoded text input
     static void mouseButton(GLFWwindow*, int, int, int);
     static void mouseMotion(GLFWwindow*, double, double);
     static void scroll(GLFWwindow*, double, double);
@@ -81,7 +80,7 @@ public:
     static KeyModifiers mapModifiers(const int modifiersGLFW);
 
     static void setAlwaysOnTopByDefault(bool);
-    
+
     virtual std::unique_ptr<Canvas> createHiddenCanvas() override;
     virtual ContextID activeContext() const override;
     virtual ContextID contextId() const override;
@@ -111,6 +110,6 @@ private:
     static bool alwaysOnTop_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_CANVASGLFW_H
+#endif  // IVW_CANVASGLFW_H

@@ -42,9 +42,8 @@ namespace hdf5 {
 using Inport = DataInport<Handle>;
 using Outport = DataOutport<Handle>;
 
-}  // namespace
+}  // namespace hdf5
 
-}  // namespace
-
+}  // namespace inviwo
 
 #endif  // IVW_HDF5PORT_H

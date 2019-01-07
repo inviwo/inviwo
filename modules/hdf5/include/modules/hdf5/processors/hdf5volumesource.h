@@ -49,18 +49,17 @@ namespace inviwo {
 
 namespace hdf5 {
 
-
 /** \docpage{org.inviwo.hdf5.ToVolume, HDF5 To Volume}
  * ![](org.inviwo.hdf5.ToVolume.png?classIdentifier=org.inviwo.hdf5.ToVolume)
  *
  * Load a volume from a HTF5 file handle
- * 
+ *
  * ### Inports
  *   * __inport__ HDF5 file handle
- * 
+ *
  * ### Outports
  *   * __outport__ Volume
- * 
+ *
  * ### Properties
  *   * __Load__ ...
  *   * __Value range__ ...
@@ -125,6 +124,7 @@ private:
         void update(const MetaData& meta);
 
         BoolProperty adjustBasis_;
+
     private:
         size_t maxRank_;
         size_t rank_;
@@ -133,12 +133,11 @@ private:
 
     void makeVolume();
     void onDataChange();
-    
+
     void onSelectionChange();
     void onBasisSelecionChange();
     mat4 getBasisFromMeta(MetaData);
-    std::string getDescription(const MetaData &meta);
-
+    std::string getDescription(const MetaData& meta);
 
     std::vector<MetaData> volumeMatches_;
     std::vector<MetaData> basisMatches_;
@@ -174,9 +173,8 @@ private:
     bool dirty_;
 };
 
-}  // namespace
+}  // namespace hdf5
 
-}  // namespace
-
+}  // namespace inviwo
 
 #endif  // IVW_HDF5VOLUMESOURCE_H

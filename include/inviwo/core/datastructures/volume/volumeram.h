@@ -40,7 +40,7 @@
 namespace inviwo {
 
 /**
- * \ingroup datastructures	
+ * \ingroup datastructures
  */
 class IVW_CORE_API VolumeRAM : public VolumeRepresentation {
 public:
@@ -78,12 +78,11 @@ public:
     virtual dvec2 getAsDVec2(const size3_t& pos) const = 0;
     virtual dvec3 getAsDVec3(const size3_t& pos) const = 0;
     virtual dvec4 getAsDVec4(const size3_t& pos) const = 0;
-    
+
     virtual void setFromDouble(const size3_t& pos, double val) = 0;
     virtual void setFromDVec2(const size3_t& pos, dvec2 val) = 0;
     virtual void setFromDVec3(const size3_t& pos, dvec3 val) = 0;
     virtual void setFromDVec4(const size3_t& pos, dvec4 val) = 0;
-
 
     virtual double getAsNormalizedDouble(const size3_t& pos) const = 0;
     virtual dvec2 getAsNormalizedDVec2(const size3_t& pos) const = 0;
@@ -114,7 +113,7 @@ public:
      * Dispatch functionality to retrieve the actual underlaying VolumeRamPrecision.
      * The dispatcher takes a generic lambda as argument. Code will be instantiated for all the
      * DataFormat types by default. But by suppling the template `Predicate` argument the list of
-     * formats to instantiate can be filtered. Hence if one knows that only Vector types are 
+     * formats to instantiate can be filtered. Hence if one knows that only Vector types are
      * applicable there is no need to write generic code that also works for scalars.
 
      * Example of counting the number of elements larger then 0:
@@ -123,10 +122,10 @@ public:
      * auto count = volumeram->dispatch<size_t, dispatching::filter::Vecs>([](auto vrprecision) {
      *     using VolumeType = util::PrecsionType<decltype(vrprecision)>;
      *     using ValueType = util::PrecsionValueType<decltype(vrprecision)>;
-     *     
+     *
      *     T* data = vrprecision->getDataTyped();
      *     auto dim = vrprecision->getDimensions();
-     *     return std::count_if(data, data + dim.x * dim.y * dim.z, 
+     *     return std::count_if(data, data + dim.x * dim.y * dim.z,
      *                          [](auto x){return x > ValueType{0};});
      * });
      *
@@ -134,14 +133,14 @@ public:
      *
      * # Template arguments:
      *  * __Result__ the return type of the lambda.
-     *  * __Predicate__ A type that is used to filter the list of types to consider in the 
+     *  * __Predicate__ A type that is used to filter the list of types to consider in the
      *    dispatching. The `dispatching::filter` namespace have a few standard ones predefined.
-     *  
+     *
      * # Predicates:
      *  * __All__ Matches all formats, default.
      *  * __Floats__ Matches all floating point types. float, double, half, vec2, dvec3,...
      *  * __Integers__ Matches all integer types, i.e. int, ivec2, uvec3...
-     *  * __Scalars__ Matches all scalar types, i.e. int, char, long, float, ... 
+     *  * __Scalars__ Matches all scalar types, i.e. int, char, long, float, ...
      *  * __Vecs__ Matches all glm vector types, i.e. vec3, ivec3, uvec4,...
      *  * __VecNs__ Matches all glm vector types of length N. N = 2,3,4.
      *  * __FloatNs__ Matches all floating point glm vector types of length N. N = 2,3,4.
@@ -150,7 +149,7 @@ public:
      * it will be called with the specific VolumeRamPresision<T> as the first argument and any
      * additional arguments (`args`) appended to that.
      * @param args Any additional arguments that should be passed on to the lambda.
-     *  
+     *
      * @throws dispatching::DispatchException in the case that the format of the buffer is not in
      * the list of formats after the filtering.
      */
@@ -205,7 +204,7 @@ struct VolumeRamConstDispatcher {
                    std::forward<Args>(args)...);
     }
 };
-}
+}  // namespace detail
 
 template <typename Result, template <class> class Predicate, typename Callable, typename... Args>
 auto VolumeRAM::dispatch(Callable&& callable, Args&&... args) -> Result {
@@ -223,6 +222,6 @@ auto VolumeRAM::dispatch(Callable&& callable, Args&&... args) const -> Result {
                                                     std::forward<Args>(args)...);
 }
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_VOLUMERAM_H

@@ -77,21 +77,20 @@ public:
         void draw(std::size_t index);
         void draw(DrawMode drawMode, std::size_t index);
 
-
-        /** 
+        /**
          * \brief returns the number of index buffers associated with the mesh representation
          */
         std::size_t size() const;
 
     private:
         utilgl::Enable<MeshGL> enable_;
-        const MeshGL *meshGL_;
+        const MeshGL* meshGL_;
         Mesh::MeshInfo arrayMeshInfo_;
     };
 
     MeshDrawerGL();
     MeshDrawerGL(const Mesh* mesh);
-    MeshDrawerGL(const MeshDrawerGL &rhs) = default;
+    MeshDrawerGL(const MeshDrawerGL& rhs) = default;
     MeshDrawerGL(MeshDrawerGL&& other) = default;
     virtual ~MeshDrawerGL() = default;
 
@@ -99,7 +98,7 @@ public:
     MeshDrawerGL& operator=(MeshDrawerGL&& rhs) = default;
 
     DrawObject getDrawObject() const;
-    static DrawObject getDrawObject(const Mesh *mesh);
+    static DrawObject getDrawObject(const Mesh* mesh);
 
     /**
      * \brief draws the mesh using its mesh info. If index buffers are present, the mesh
@@ -112,14 +111,14 @@ public:
     virtual void draw() override;
 
     /**
-    * \brief draws the mesh with the specified draw mode. If index buffers are present, the mesh
-    * will be rendered with glDrawElements() using those index buffers. Otherwise, the entire mesh
-    * is rendered using glDrawArrays.
-    *
-    * \see Mesh, DrawMode
-    *
-    * @param drawMode draw mode used to render the mesh
-    */
+     * \brief draws the mesh with the specified draw mode. If index buffers are present, the mesh
+     * will be rendered with glDrawElements() using those index buffers. Otherwise, the entire mesh
+     * is rendered using glDrawArrays.
+     *
+     * \see Mesh, DrawMode
+     *
+     * @param drawMode draw mode used to render the mesh
+     */
     virtual void draw(DrawMode drawMode);
 
     static DrawMode getDrawMode(DrawType, ConnectivityType);
@@ -135,6 +134,6 @@ protected:
     const Mesh* meshToDraw_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_MESHGLDRAWER_H

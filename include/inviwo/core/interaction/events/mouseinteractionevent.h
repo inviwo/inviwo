@@ -60,7 +60,7 @@ public:
      * the upper right corner is (canvasSize.x, canvasSize.y) This is in accordance
      * with the positioning within an Inviwo Layer and an OpenGL texture. But opposite to
      * QT which has (0,0) at the top left corner. The depth is then defined to be positive
-     * inwards by default, resulting in a left handed coordinate system.  
+     * inwards by default, resulting in a left handed coordinate system.
      */
     dvec2 pos() const;
     void setPos(dvec2 pos);
@@ -72,16 +72,16 @@ public:
     void setCanvasSize(uvec2 size);
 
     /**
-    * Retrieve depth value in normalized device coordinates at mouse position.
-    * Defined in [-1 1], where -1 is the near plane and 1 is the far plane.
-    * Will be 1 if no depth value is available. The depth is then defined to be positive
-    * inwards by default, resulting in a left handed coordinate system together with the position.
-    */
+     * Retrieve depth value in normalized device coordinates at mouse position.
+     * Defined in [-1 1], where -1 is the near plane and 1 is the far plane.
+     * Will be 1 if no depth value is available. The depth is then defined to be positive
+     * inwards by default, resulting in a left handed coordinate system together with the position.
+     */
     double depth() const;
     void setDepth(double depth);
 
     /**
-     * Returns the position normalized to the range (0,1). The lower left will be (0,0) 
+     * Returns the position normalized to the range (0,1). The lower left will be (0,0)
      * And the upper right (1,1)
      */
     dvec2 posNormalized() const;
@@ -108,8 +108,6 @@ private:
     double depth_;  ///< Depth in normalized device coordinates [-1 1].
 };
 
+}  // namespace inviwo
 
-} // namespace
-
-#endif // IVW_MOUSEINTERACTIONEVENT_H
-
+#endif  // IVW_MOUSEINTERACTIONEVENT_H

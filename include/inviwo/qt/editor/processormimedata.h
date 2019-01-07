@@ -55,9 +55,7 @@ public:
 
     static const std::string& getMimeTag();
 
-
     static const ProcessorMimeData* toProcessorMimeData(const QMimeData* data);
-
 
 private:
     mutable std::unique_ptr<Processor> processor_;

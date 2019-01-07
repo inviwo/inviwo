@@ -129,6 +129,6 @@ void RepresentationConverterPackage<BaseRepr>::addConverter(
     converters_.push_back(converter);
 }
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_REPRESENTATIONCONVERTER_H
