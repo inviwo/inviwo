@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2018 Inviwo Foundation
+ * Copyright (c) 2014-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,43 +24,47 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  *********************************************************************************/
 
-// Owned by the CubeRenderer Processor
+// Owned by the MeshRenderProcessorGL Processor
 
-#include "utils/structs.glsl"
-uniform GeometryParameters geometry;
+#include "utils/shading.glsl"
 
-uniform vec4 defaultColor = vec4(1, 0, 0, 1);
-uniform float defaultSize = 0.1f;
-uniform sampler2D metaColor;
-
-out vec4 vColor;
-flat out float vSize;
-flat out uint vPickID;
-
-void main(void) {
-
-#if defined(HAS_SCALARMETA) && !defined(FORCE_COLOR)
-    vColor = texture(metaColor, vec2(in_ScalarMeta, 0.5));
-#elif defined(HAS_COLOR) && !defined(FORCE_COLOR)
-    vColor = in_Color;
-#else
-    vColor = defaultColor;
+#if !defined(TEXCOORD_LAYER) || !defined(NORMALS_LAYER) \
+    || !defined(VIEW_NORMALS_LAYER) || !defined(COLOR_LAYER)
+#  define COLOR_LAYER
 #endif
 
-#if defined(HAS_RADII) && !defined(FORCE_RADIUS)
-    vSize = in_Radii;
-#else 
-    vSize = defaultSize;
+uniform LightParameters lighting;
+uniform CameraParameters camera;
+
+in vec4 worldPosition_;
+in vec3 normal_;
+in vec3 viewNormal_;
+in vec3 texCoord_;
+in vec4 color_;
+flat in vec4 pickColor_;
+
+void main() {
+    vec4 fragColor = color_;
+    vec3 toCameraDir_ = camera.position - worldPosition_.xyz;
+
+    fragColor.rgb = APPLY_LIGHTING(lighting, color_.rgb, color_.rgb, vec3(1.0f), worldPosition_.xyz,
+                                   normalize(normal_), normalize(toCameraDir_));
+
+#ifdef COLOR_LAYER
+    FragData0 = fragColor;
+#endif
+#ifdef TEXCOORD_LAYER
+    tex_coord_out = vec4(texCoord_,1.0f);
+#endif
+#ifdef NORMALS_LAYER
+    normals_out = vec4((normalize(normal_)+1.0)*0.5,1.0f);
+#endif
+#ifdef VIEW_NORMALS_LAYER
+    view_normals_out = vec4((normalize(viewNormal_)+1.0)*0.5,1.0f);
 #endif
 
-#if defined(HAS_PICKING)
-    vPickID = in_Picking;
-#else 
-    vPickID = 0;
-#endif
-
-    gl_Position = geometry.dataToWorld * vec4(in_Position.xyz, 1.0);
+    PickingData = pickColor_;
 }

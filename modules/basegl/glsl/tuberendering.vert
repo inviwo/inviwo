@@ -27,12 +27,14 @@
  * 
  *********************************************************************************/
 
+// Owned by the TubeRendering Processor
+
 #include "utils/structs.glsl"
 
 uniform GeometryParameters geometry;
 
 uniform vec4 defaultColor = vec4(1, 0, 0, 1);
-uniform float radius = 0.1f;
+uniform float defaultRadius = 0.1f;
 uniform sampler2D metaColor;
 
 out vec4 vColor_;
@@ -51,7 +53,7 @@ void main() {
 #if defined(HAS_RADII) && !defined(FORCE_RADIUS)
     vRadius_ = in_Radii;
 #else 
-    vRadius_ = radius;
+    vRadius_ = defaultRadius;
 #endif
 
 #if defined(HAS_PICKING)

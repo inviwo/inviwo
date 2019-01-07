@@ -27,6 +27,8 @@
  * 
  *********************************************************************************/
 
+// Owned by the CubeRenderer Processor
+
 #include "utils/structs.glsl"
 #include "utils/pickingutils.glsl"
 

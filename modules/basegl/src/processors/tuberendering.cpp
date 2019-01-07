@@ -61,7 +61,7 @@ TubeRendering::TubeRendering()
     , outport_("outport")
     , tubeProperties_("tubeProperties", "Tube Properties")
     , forceRadius_("forceRadius", "Force Radius", false, InvalidationLevel::InvalidResources)
-    , defaultRadius_("radius", "Tube Radius", 0.01f, 0.0001f, 2.f, 0.0001f)
+    , defaultRadius_("defaultRadius", "Tube Radius", 0.01f, 0.0001f, 2.f, 0.0001f)
     , forceColor_("forceColor", "Force Color", false, InvalidationLevel::InvalidResources)
     , defaultColor_("defaultColor", "Default Color", vec4(0.7f, 0.7f, 0.7f, 1.0f), vec4(0.0f),
                     vec4(1.0f))
@@ -69,7 +69,7 @@ TubeRendering::TubeRendering()
     , metaColor_("metaColor", "Meta Color Mapping")
     , camera_("camera", "Camera")
     , trackball_(&camera_)
-    , lighting_("light", "Lighting", &camera_)
+    , lighting_("lighting", "Lighting", &camera_)
     , shaderItems_{{{ShaderType::Vertex, "tuberendering.vert"},
                     {ShaderType::Geometry, "tuberendering.geom"},
                     {ShaderType::Fragment, "tuberendering.frag"}}}
@@ -127,11 +127,8 @@ void TubeRendering::configureShader(Shader& shader) {
 }
 
 void TubeRendering::process() {
-    if (imageInport_.isReady()) {
-        utilgl::activateTargetAndCopySource(outport_, imageInport_, ImageType::ColorDepthPicking);
-    } else {
-        utilgl::activateAndClearTarget(outport_, ImageType::ColorDepthPicking);
-    }
+    utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
+
     const auto hasLineAdjacency = [](Mesh::MeshInfo mi) {
         return mi.dt == DrawType::Lines &&
                (mi.ct == ConnectivityType::StripAdjacency || mi.ct == ConnectivityType::Adjacency);

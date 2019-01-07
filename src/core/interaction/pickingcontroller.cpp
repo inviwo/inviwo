@@ -118,8 +118,7 @@ void PickingController::propagateEvent(TouchEvent* e, EventPropagator* propagato
 
         TouchEvent te(points, e->getDevice());
         auto prevPos = te.centerNDC();  // Need so save here since te might be modified
-        auto localId = pickingIdToAction[pickingId]->getLocalPickingId(pickingId);
-
+        
         size_t currentId = 0; // TODO
         size_t pressedId = 0; // TODO
         size_t previousId = 0; // TODO

@@ -27,6 +27,8 @@
  *
  *********************************************************************************/
 
+// Owned by the TubeRendering Processor
+
 #include "utils/structs.glsl"
 #include "utils/pickingutils.glsl"
 

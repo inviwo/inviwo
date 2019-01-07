@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2018 Inviwo Foundation
+ * Copyright (c) 2014-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,43 +24,40 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  *********************************************************************************/
 
-// Owned by the CubeRenderer Processor
+// Owned by the MeshRenderProcessorGL Processor
+
+layout(location = 7) in uint in_PickId;
 
 #include "utils/structs.glsl"
+#include "utils/pickingutils.glsl"
+
 uniform GeometryParameters geometry;
+uniform CameraParameters camera;
 
-uniform vec4 defaultColor = vec4(1, 0, 0, 1);
-uniform float defaultSize = 0.1f;
-uniform sampler2D metaColor;
+uniform vec4 overrideColor;
 
-out vec4 vColor;
-flat out float vSize;
-flat out uint vPickID;
+uniform bool pickingEnabled = false;
 
-void main(void) {
-
-#if defined(HAS_SCALARMETA) && !defined(FORCE_COLOR)
-    vColor = texture(metaColor, vec2(in_ScalarMeta, 0.5));
-#elif defined(HAS_COLOR) && !defined(FORCE_COLOR)
-    vColor = in_Color;
+out vec4 worldPosition_;
+out vec3 normal_;
+out vec3 viewNormal_;
+out vec4 color_;
+out vec3 texCoord_;
+flat out vec4 pickColor_;
+ 
+void main() {
+#ifdef OVERRIDE_COLOR_BUFFER
+    color_ = overrideColor;
 #else
-    vColor = defaultColor;
+    color_ = in_Color;
 #endif
-
-#if defined(HAS_RADII) && !defined(FORCE_RADIUS)
-    vSize = in_Radii;
-#else 
-    vSize = defaultSize;
-#endif
-
-#if defined(HAS_PICKING)
-    vPickID = in_Picking;
-#else 
-    vPickID = 0;
-#endif
-
-    gl_Position = geometry.dataToWorld * vec4(in_Position.xyz, 1.0);
+    texCoord_ = in_TexCoord;
+    worldPosition_ = geometry.dataToWorld * in_Vertex;
+    normal_ = geometry.dataToWorldNormalMatrix * in_Normal * vec3(1.0);
+    viewNormal_ = (camera.worldToView * vec4(normal_,0)).xyz;
+    gl_Position = camera.worldToClip * worldPosition_;
+    pickColor_ = vec4(pickingIndexToColor(in_PickId), pickingEnabled ? 1.0 : 0.0);
 }

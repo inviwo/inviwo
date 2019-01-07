@@ -27,10 +27,12 @@
  *
  *********************************************************************************/
 
+// Owned by the TubeRendering Processor
+
 #include "utils/structs.glsl"
 #include "utils/shading.glsl"
 
-uniform LightParameters light;
+uniform LightParameters lighting;
 uniform CameraParameters camera;
 
 in vec4 color_;
@@ -122,7 +124,7 @@ void main() {
     vec3 spinePoint = x1 + t * v;
     vec3 N = normalize(hitPoint - spinePoint);
 
-    vec3 color = APPLY_LIGHTING(light, color_.rgb, color_.rgb, vec3(1.0f), hitPoint, N, dir);
+    vec3 color = APPLY_LIGHTING(lighting, color_.rgb, color_.rgb, vec3(1.0f), hitPoint, N, dir);
 
     vec4 ndc = camera.worldToClip * vec4(hitPoint, 1);
     gl_FragDepth = ((ndc.z / ndc.w) + 1 ) / 2;

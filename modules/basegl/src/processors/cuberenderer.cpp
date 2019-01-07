@@ -115,11 +115,7 @@ void CubeRenderer::configureShader(Shader& shader) {
 }
 
 void CubeRenderer::process() {
-    if (imageInport_.isReady()) {
-        utilgl::activateTargetAndCopySource(outport_, imageInport_, ImageType::ColorDepthPicking);
-    } else {
-        utilgl::activateAndClearTarget(outport_, ImageType::ColorDepthPicking);
-    }
+    utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
 
     for (const auto& mesh : inport_) {
         auto& shader = shaders_.getShader(*mesh);
