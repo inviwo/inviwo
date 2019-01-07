@@ -177,9 +177,9 @@ enum class IvwKey {
     X = 88,
     Y = 89,
     Z = 90,
-    BracketLeft = 91,  // [
-    Backslash = 92,    // \ 
-    BracketRight = 93, // ]
+    BracketLeft = 91,
+    Backslash = 92,
+    BracketRight = 93,
     GraveAccent = 96,  // `
     AsciiCircum = 94,  // °
     Underscore = 95,   // _
