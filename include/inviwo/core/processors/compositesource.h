@@ -63,9 +63,9 @@ public:
  * Processor used to connect inports in a sub network inside of a CompositeProcessor to outports in
  * the network it is in (referred as the super network). The CompositeProcessor will find all
  * SourceProcessors in its sub network and add the SourceProcessors super inports to it self.
- * Whenever the sub network gets evaluated the SourceProcessors will pass through super inport data to
- * its outport, thus making the data available to the sub network. Note that the actual data will not be
- * copied since shared pointers are used.
+ * Whenever the sub network gets evaluated the SourceProcessors will pass through super inport data
+ * to its outport, thus making the data available to the sub network. Note that the actual data will
+ * not be copied since shared pointers are used.
  * @see CompositeProcessor
  * @see CompositeSink
  */
@@ -92,7 +92,7 @@ public:
     virtual void propagateEvent(Event* event, Outport* source) override;
 
 private:
-    InportType superInport_; ///< To be added to CompositeProcessor, not itself
+    InportType superInport_;  ///< To be added to CompositeProcessor, not itself
     OutportType outport_;
 };
 

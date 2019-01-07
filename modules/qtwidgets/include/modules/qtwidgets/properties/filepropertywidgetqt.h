@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_FILEPROPERTYWIDGETQT_H
@@ -44,7 +44,7 @@ class FilePathLineEditQt;
 class TextEditorDockWidget;
 
 class IVW_MODULE_QTWIDGETS_API FilePropertyWidgetQt : public PropertyWidgetQt,
-    public FileRequestable {
+                                                      public FileRequestable {
 public:
     FilePropertyWidgetQt(FileProperty* property);
     virtual ~FilePropertyWidgetQt() = default;
@@ -68,6 +68,6 @@ private:
     std::unique_ptr<TextEditorDockWidget> editor_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_FILEPROPERTYWIDGETQT_H
+#endif  // IVW_FILEPROPERTYWIDGETQT_H

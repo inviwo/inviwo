@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PIXELTOBUFFERPROCESSOR_H
@@ -46,13 +46,13 @@ namespace inviwo {
  * ![](org.inviwo.PixelToBufferProcessor.png?classIdentifier=org.inviwo.PixelToBufferProcessor)
  *
  * ...
- * 
+ *
  * ### Inports
  *   * __input__ ...
- * 
+ *
  * ### Outports
  *   * __pixelValues__ ...
- * 
+ *
  * ### Properties
  *   * __From pixel__ ...
  *   * __Clear collected values__ ...
@@ -65,30 +65,30 @@ public:
     using PosBuffer = Buffer<double>;
     PixelToBufferProcessor();
     virtual ~PixelToBufferProcessor() = default;
-    
+
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
     void setPixelToCollectFrom(const ivec2& xy);
     void clearOutput();
     virtual void invokeEvent(Event* event) override;
+
 protected:
     virtual void process() override;
     void inportChanged();
     void handleInteractionEventsChanged();
+
 private:
     ImageInport inport_;
     BufferOutport pixelValues_;
 
-
     IntVec2Property fromPixel_;
     IntProperty channel_;
     ButtonProperty clearValues_;
-    BoolProperty handleInteractionEvents_; ///< Enable or disable pixel picking
+    BoolProperty handleInteractionEvents_;  ///< Enable or disable pixel picking
 
     std::shared_ptr<PosBuffer> values_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_PIXELTOBUFFERPROCESSOR_H
-
+#endif  // IVW_PIXELTOBUFFERPROCESSOR_H

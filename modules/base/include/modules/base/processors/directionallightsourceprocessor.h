@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_DIRECTIONAL_LIGHT_SOURCE_PROCESSOR_H
@@ -47,13 +47,14 @@ class DirectionalLight;
 /** \docpage{org.inviwo.Directionallightsource, Directional light source}
  * ![](org.inviwo.Directionallightsource.png?classIdentifier=org.inviwo.Directionallightsource)
  *
- * Produces a light source with parallel light rays, spreading light in the direction from an infinite plane.
- * The direction of the plane will be computed as glm::normalize(vec3(0) - lightPos)
- * when specified in world space and normalize(camera_.getLookTo() - lightPos) when specified in view space.
- * 
+ * Produces a light source with parallel light rays, spreading light in the direction from an
+ * infinite plane. The direction of the plane will be computed as glm::normalize(vec3(0) - lightPos)
+ * when specified in world space and normalize(camera_.getLookTo() - lightPos) when specified in
+ * view space.
+ *
  * ### Outports
  *   * __DirectionalLightSource__ Directional light source
- * 
+ *
  * ### Properties
  *   * __Light power__ Increases/decreases light strength
  *   * __Color__ Flux density per solid angle, W*s*r^-1 (intensity)
@@ -82,17 +83,16 @@ protected:
 private:
     DataOutport<LightSource> outport_;
 
-    CameraProperty camera_; //< Link camera in order to specify position in view space.
+    CameraProperty camera_;  //< Link camera in order to specify position in view space.
     PositionProperty lightPosition_;
     CompositeProperty lighting_;
     FloatProperty lightPowerProp_;
     FloatVec3Property lightDiffuse_;
     BoolProperty lightEnabled_;
-    
-    
+
     std::shared_ptr<DirectionalLight> lightSource_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_DIRECTIONAL_LIGHT_SOURCE_PROCESSOR_H

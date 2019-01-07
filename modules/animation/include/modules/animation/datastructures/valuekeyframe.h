@@ -74,7 +74,7 @@ bool operator==(const ValueKeyframe<T>& a, const ValueKeyframe<T>& b) {
 }
 template <typename T>
 bool operator!=(const ValueKeyframe<T>& a, const ValueKeyframe<T>& b) {
-    return !(a==b);
+    return !(a == b);
 }
 
 template <typename T>

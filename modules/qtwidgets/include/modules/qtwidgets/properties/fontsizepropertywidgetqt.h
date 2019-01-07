@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_FONTSIZEPROPERTYWIDGETQT_H
@@ -46,14 +46,15 @@ public:
     FontSizePropertyWidgetQt(IntProperty* property);
     virtual void updateFromProperty() override;
 
-private: 
+private:
     IntProperty* property_;
     IvwComboBox* comboBox_;
     EditableLabelQt* label_;
 
-    const std::array<int, 15> fontSizes_ = { {6, 8, 10, 11, 12, 14, 16, 20, 24, 28, 36, 48, 60, 72, 96} };
+    const std::array<int, 15> fontSizes_ = {
+        {6, 8, 10, 11, 12, 14, 16, 20, 24, 28, 36, 48, 60, 72, 96}};
 };
 
-} // namespace
+}  // namespace inviwo
 
 #endif  // IVW_FONTSIZEPROPERTYWIDGETQT_H

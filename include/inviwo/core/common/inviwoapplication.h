@@ -241,11 +241,11 @@ public:
     void setPostEnqueueFront(std::function<void()> func);
     void setProgressCallback(std::function<void(std::string)> progressCallback);
 
-    /** 
+    /**
      * Returns the ResourceManager owned the InviwoApplication
-     * 
+     *
      * @see inviwo::ResourceManager
-     */ 
+     */
     ResourceManager* getResourceManager();
 
     // Factory getters
@@ -292,7 +292,6 @@ public:
      * Convenience method to set the current ApplicationUsageMode in the system settings
      */
     void setApplicationUsageMode(UsageMode mode);
-
 
     virtual void onResourceManagerEnableStateChanged() override;
 
@@ -354,6 +353,7 @@ protected:
     WorkspaceManager::SerializationHandle presetsSerializationHandle_;
     WorkspaceManager::DeserializationHandle presetsDeserializationHandle_;
     std::unique_ptr<TimerThread> timerThread_;
+
 private:
     friend Singleton<InviwoApplication>;
     static InviwoApplication* instance_;

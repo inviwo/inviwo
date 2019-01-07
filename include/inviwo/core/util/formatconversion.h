@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_FORMATCONVERSION_H
@@ -53,8 +53,8 @@ IVW_CORE_API glm::u64 megabytes_to_bytes(glm::u64 bytes);
 
 IVW_CORE_API std::string formatBytesToString(glm::u64 bytes);
 
-} // namespace
+}  // namespace util
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_FORMATCONVERSION_H
+#endif  // IVW_FORMATCONVERSION_H

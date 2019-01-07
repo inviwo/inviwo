@@ -74,7 +74,6 @@ public:
     void setLookFrom(vec3 lookFrom);
     void setLookUp(vec3 lookUp);
 
-
     /**
      * \brief Set look from, look to and up vector at the same time.
      * Should be used when more than one parameter will be changed to avoid duplicate evaluations.
@@ -119,7 +118,7 @@ protected:
     void zoomIn(Event* event);
     void zoomOut(Event* event);
 
-    void recenterFocusPoint(Event *event);
+    void recenterFocusPoint(Event* event);
 
     /**
      * \brief Rotates around the direction vector,
@@ -145,15 +144,15 @@ protected:
     BoolProperty allowVerticalPanning_;    ///< Enable/disable vertical panning
     BoolProperty allowZooming_;            ///< Enable/disable zooming
 
-    FloatProperty maxZoomInDistance_;     ///< Cannot zoom in closer than this distance
+    FloatProperty maxZoomInDistance_;  ///< Cannot zoom in closer than this distance
     // Options to restrict rotation around view-space axes.
     BoolProperty allowHorizontalRotation_;  ///< Enable/disable rotation around horizontal axis
     BoolProperty allowVerticalRotation_;    ///< Enable/disable rotation around vertical axis
-    
-    // Enable/disable rotation around view direction axis
-    BoolProperty  allowViewDirectionRotation_;  
 
-    BoolProperty allowRecenterView_; ///< recenter the camera focus point with a double click
+    // Enable/disable rotation around view direction axis
+    BoolProperty allowViewDirectionRotation_;
+
+    BoolProperty allowRecenterView_;  ///< recenter the camera focus point with a double click
 
     BoolProperty animate_;
 
@@ -189,6 +188,6 @@ protected:
     bool followObjectDuringRotation_;
 };
 
-}
+}  // namespace inviwo
 
 #endif  // IVW_TRACKBALL_H

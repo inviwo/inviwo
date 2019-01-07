@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PVMVOLUMEWRITER_H
@@ -47,11 +47,11 @@ public:
     PVMVolumeWriter(const PVMVolumeWriter& rhs);
     PVMVolumeWriter& operator=(const PVMVolumeWriter& that);
     virtual PVMVolumeWriter* clone() const;
-    virtual ~PVMVolumeWriter() {};
+    virtual ~PVMVolumeWriter(){};
 
     virtual void writeData(const Volume* data, const std::string filePath) const;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_PVMVOLUMEWRITER_H
+#endif  // IVW_PVMVOLUMEWRITER_H

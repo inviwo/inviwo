@@ -65,6 +65,6 @@ public:
         const vec2& normalizedScreenCoord) const = 0;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_TRACKBALLOBJECT_H

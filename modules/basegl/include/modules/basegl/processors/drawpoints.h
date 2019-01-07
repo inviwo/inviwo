@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_DRAWPOINTS_H
@@ -45,17 +45,17 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.DrawPoints, Draw Points}
  * ![](org.inviwo.DrawPoints.png?classIdentifier=org.inviwo.DrawPoints)
- * 
- * Interactive 2D point drawing 
- * 
+ *
+ * Interactive 2D point drawing
+ *
  * Hold Ctrl+D and click/move Left Mouse Button to Draw
- * 
+ *
  * ### Inports
  *   * __ImageInport__ The input image.
  *
  * ### Outports
  *   * __ImageOutport__ The output image.
- * 
+ *
  * ### Properties
  *   * __PointSize__ Defines size of all points.
  *   * __PointColor__ Defines color of all points.
@@ -103,6 +103,6 @@ private:
     bool drawModeEnabled_;
 };
 
-}
+}  // namespace inviwo
 
-#endif //IVW_DRAWPOINTS_H
+#endif  // IVW_DRAWPOINTS_H

@@ -72,7 +72,9 @@ namespace inviwo {
  * it for example changes the property identifier if not set.
  * @see TemplatePropertyWidgetCEF
  */
-class IVW_MODULE_WEBBROWSER_API PropertyWidgetCEF : public PropertyWidget, public PropertyObserver, public Serializable {
+class IVW_MODULE_WEBBROWSER_API PropertyWidgetCEF : public PropertyWidget,
+                                                    public PropertyObserver,
+                                                    public Serializable {
 public:
     PropertyWidgetCEF() = default;
     PropertyWidgetCEF(Property* prop, CefRefPtr<CefFrame> frame = nullptr, std::string htmlId = "");
@@ -113,9 +115,10 @@ public:
     virtual bool onQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 query_id,
                          const CefString& request, bool persistent,
                          CefRefPtr<CefMessageRouterBrowserSide::Handler::Callback> callback) = 0;
-    
-    virtual void serialize(Serializer&) const override {};
+
+    virtual void serialize(Serializer&) const override{};
     virtual void deserialize(Deserializer& d) override;
+
 protected:
     // PropertyObservable overrides
     virtual void onSetReadOnly(Property* property, bool readonly) override;
@@ -127,7 +130,6 @@ protected:
     std::string htmlId_;         /// Id in used in html, usually Processor.PropertyId
     CefRefPtr<CefFrame> frame_;  /// Browser frame containing corresponding properties
     int onQueryBlocker_ = 0;     /// Block jacascript callback queries
-
 };
 
 }  // namespace inviwo

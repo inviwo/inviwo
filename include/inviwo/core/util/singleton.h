@@ -46,7 +46,6 @@ public:
         : Exception(message, context) {}
 };
 
-
 /*
  * T must have a static T* instance_ member variable.
  */
@@ -59,17 +58,20 @@ public:
 
     static void init() {
         if (T::instance_) {
-            throw SingletonException("Singleton already initialized", IvwContextCustom("Singleton"));
+            throw SingletonException("Singleton already initialized",
+                                     IvwContextCustom("Singleton"));
         }
         T::instance_ = util::defaultConstructType<T>();
         if (!T::instance_) {
-            throw SingletonException("Was not able to initialize singleton", IvwContextCustom("Singleton"));
+            throw SingletonException("Was not able to initialize singleton",
+                                     IvwContextCustom("Singleton"));
         }
     };
 
     static void init(T* instance) {
         if (T::instance_) {
-            throw SingletonException("Singleton already initialized", IvwContextCustom("Singleton"));
+            throw SingletonException("Singleton already initialized",
+                                     IvwContextCustom("Singleton"));
         }
         if (!instance) {
             throw SingletonException("Null pointer passed", IvwContextCustom("Singleton"));
@@ -92,14 +94,11 @@ public:
         T::instance_ = nullptr;
     };
 
-    static bool isInitialized() {
-        return T::instance_ != nullptr;
-    }
+    static bool isInitialized() { return T::instance_ != nullptr; }
 
     virtual ~Singleton() { T::instance_ = nullptr; };
 };
 
-
-}  // end of namespace
+}  // namespace inviwo
 
 #endif  // IVW_SINGLETON_H

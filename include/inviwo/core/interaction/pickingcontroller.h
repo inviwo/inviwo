@@ -49,11 +49,11 @@ class TouchEvent;
  * Handle mapping of interaction events into picking events and propagation of them
  * if the index of the color in the picking buffer of the src image if found by the PickingManager
  */
-class IVW_CORE_API PickingController { 
+class IVW_CORE_API PickingController {
 public:
     PickingController();
     virtual ~PickingController() = default;
-    
+
     void propagateEvent(Event*, EventPropagator*);
     void setPickingSource(const std::shared_ptr<const Image>& src);
     bool pickingEnabled() const;
@@ -89,7 +89,6 @@ private:
     PCTouchState tstate_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_PICKINGCONTROLLER_H
-
+#endif  // IVW_PICKINGCONTROLLER_H

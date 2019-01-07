@@ -47,7 +47,7 @@ namespace inviwo {
  * multiple times.
  *
  * Note: The render context of the current thread needs to be activated. Using the same ClockGL
- *       instance in different render contexts results in undefined behavior and getElapsedTime() 
+ *       instance in different render contexts results in undefined behavior and getElapsedTime()
  *       will most likely time out.
  *
  * \see RenderContext::activateDefaultRenderContext, RenderContext::activateLocalRenderContext
@@ -179,11 +179,11 @@ using ScopedClockGL = ScopedClock<ClockGL>;
  */
 
 #if IVW_PROFILING
-#define IVW_OPENGL_PROFILING(message)                                                 \
+#define IVW_OPENGL_PROFILING(message)                                                     \
     std::ostringstream IVW_ADDLINE(__stream);                                             \
     IVW_ADDLINE(__stream) << message;                                                     \
     ScopedClockGL IVW_ADDLINE(__clock)(parseTypeIdName(std::string(typeid(this).name())), \
-                                   IVW_ADDLINE(__stream).str());
+                                       IVW_ADDLINE(__stream).str());
 #else
 #define IVW_OPENGL_PROFILING(message)
 #endif
@@ -198,11 +198,11 @@ using ScopedClockGL = ScopedClock<ClockGL>;
 #endif
 
 #if IVW_PROFILING
-#define IVW_OPENGL_PROFILING_IF(time, message)                                        \
+#define IVW_OPENGL_PROFILING_IF(time, message)                                            \
     std::ostringstream IVW_ADDLINE(__stream);                                             \
     IVW_ADDLINE(__stream) << message;                                                     \
     ScopedClockGL IVW_ADDLINE(__clock)(parseTypeIdName(std::string(typeid(this).name())), \
-                                   IVW_ADDLINE(__stream).str(), time);
+                                       IVW_ADDLINE(__stream).str(), time);
 #else
 #define IVW_OPENGL_PROFILING_IF(time, message)
 #endif

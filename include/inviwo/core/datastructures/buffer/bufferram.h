@@ -38,7 +38,7 @@
 namespace inviwo {
 
 /**
- * \ingroup datastructures	
+ * \ingroup datastructures
  */
 class IVW_CORE_API BufferRAM : public BufferRepresentation {
 public:
@@ -76,12 +76,12 @@ public:
     virtual void setFromNormalizedDVec4(const size_t& pos, dvec4 val) = 0;
 
     virtual std::type_index getTypeIndex() const override final;
-    
+
     /**
      * Dispatch functionality to retrieve the actual underlaying BufferRamPrecision.
      * The dispatcher takes a generic lambda as argument. Code will be instantiated for all the
      * DataFormat types by default. But by suppling the template `Predicate` argument the list of
-     * formats to instantiate can be filtered. Hence if one knows that only Vector types are 
+     * formats to instantiate can be filtered. Hence if one knows that only Vector types are
      * applicable there is no need to write generic code that also works for scalars.
 
      * Example of counting the number of elements larger then 0:
@@ -90,7 +90,7 @@ public:
      * auto count = bufferram->dispatch<size_t, dispatching::filter::Vecs>([](auto brprecision) {
      *     using BufferType = util::PrecsionType<decltype(brprecision)>;
      *     using ValueType = util::PrecsionValueType<decltype(brprecision)>;
-     *     
+     *
      *     std::vector<ValueType>& data = brprecision->getDataContainer();
      *     return std::count_if(data.begin(), data.end(), [](auto x){return x > ValueType{0};});
      * });
@@ -99,14 +99,14 @@ public:
      *
      * # Template arguments:
      *  * __Result__ the return type of the lambda.
-     *  * __Predicate__ A type that is used to filter the list of types to consider in the 
+     *  * __Predicate__ A type that is used to filter the list of types to consider in the
      *    dispatching. The `dispatching::filter` namespace have a few standard ones predefined.
-     *  
+     *
      * # Predicates:
      *  * __All__ Matches all formats, default.
      *  * __Floats__ Matches all floating point types. float, double, half, vec2, dvec3,...
      *  * __Integers__ Matches all integer types, i.e. int, ivec2, uvec3...
-     *  * __Scalars__ Matches all scalar types, i.e. int, char, long, float, ... 
+     *  * __Scalars__ Matches all scalar types, i.e. int, char, long, float, ...
      *  * __Vecs__ Matches all glm vector types, i.e. vec3, ivec3, uvec4,...
      *  * __VecNs__ Matches all glm vector types of length N. N = 2,3,4.
      *  * __FloatNs__ Matches all floating point glm vector types of length N. N = 2,3,4.
@@ -115,7 +115,7 @@ public:
      * it will be called with the specific BufferRamPresision<T> as the first argument and any
      * additional arguments (`args`) appended to that.
      * @param args Any additional arguments that should be passed on to the lambda.
-     *  
+     *
      * @throws dispatching::DispatchException in the case that the format of the buffer is not in
      * the list of formats after the filtering.
      */
@@ -171,7 +171,7 @@ struct BufferRamConstDispatcher {
         }
     }
 };
-}
+}  // namespace detail
 
 template <typename Result, template <class> class Predicate, typename Callable, typename... Args>
 auto BufferRAM::dispatch(Callable&& callable, Args&&... args) -> Result {
@@ -210,14 +210,14 @@ std::shared_ptr<BufferRAMPrecision<T, Target>> createBufferRAM(std::vector<T> da
                                                            U);
 }
 
-/** 
+/**
  * \brief compare two buffers using their RAM representation
- * 
+ *
  * @return true if buffers are identical, i.e. identical data format, size, and buffer contents
  */
-bool IVW_CORE_API operator==(const BufferBase &bufA, const BufferBase &bufB);
-bool IVW_CORE_API operator!=(const BufferBase &bufA, const BufferBase &bufB);
+bool IVW_CORE_API operator==(const BufferBase& bufA, const BufferBase& bufB);
+bool IVW_CORE_API operator!=(const BufferBase& bufA, const BufferBase& bufB);
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_BUFFER_RAM_H

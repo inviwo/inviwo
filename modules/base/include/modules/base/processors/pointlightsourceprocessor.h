@@ -60,17 +60,15 @@ public:
 };
 
 /*
-* Enables light source to be placed relative to camera using middle mouse button or pan gesture with
-* two fingers.
-* Uses trackball interaction for all other types of interaction.
-*/
+ * Enables light source to be placed relative to camera using middle mouse button or pan gesture
+ * with two fingers. Uses trackball interaction for all other types of interaction.
+ */
 class IVW_MODULE_BASE_API PointLightInteractionHandler : public InteractionHandler,
                                                          public TrackballObject {
 public:
     PointLightInteractionHandler(PositionProperty*, CameraProperty*, BoolProperty*,
                                  FloatVec2Property*);
     virtual ~PointLightInteractionHandler();
-
 
     virtual std::string getClassIdentifier() const override;
 
@@ -80,18 +78,18 @@ public:
     void setHandleEventsOptions(int);
 
     /**
-    * \brief Changes the direction of the light source, relative to the camera,
-    * such that it acts as if it comes from the direction where the user clicked on the screen.
-    *
-    * Intersects a sphere covering the scene and places the light source
-    * in the direction of the intersection point but at the same distance from the origin as before.
-    * If the intersection is outside the sphere the light source will be placed perpendicular
-    * to the camera at the same distance as before.
-    *
-    *
-    * @param normalizedScreenCoord Coordinates in [0 1], where y coordinate is 0 at top of
-    * screen.
-    */
+     * \brief Changes the direction of the light source, relative to the camera,
+     * such that it acts as if it comes from the direction where the user clicked on the screen.
+     *
+     * Intersects a sphere covering the scene and places the light source
+     * in the direction of the intersection point but at the same distance from the origin as
+     * before. If the intersection is outside the sphere the light source will be placed
+     * perpendicular to the camera at the same distance as before.
+     *
+     *
+     * @param normalizedScreenCoord Coordinates in [0 1], where y coordinate is 0 at top of
+     * screen.
+     */
     void setLightPosFromScreenCoords(const vec2& normalizedScreenCoord);
 
     // Update up vector when camera changes
@@ -188,6 +186,6 @@ private:
     std::shared_ptr<PointLight> lightSource_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_POINT_LIGHT_SOURCE_PROCESSOR_H

@@ -34,12 +34,11 @@
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/util/timer.h>
 
-
 #include <warn/push>
 #include <warn/ignore/all>
 
 #include "include/internal/cef_types.h"
-#if DARWIN // Mac
+#if DARWIN  // Mac
 #include "include/wrapper/cef_library_loader.h"
 #endif
 
@@ -54,14 +53,15 @@ class IVW_MODULE_WEBBROWSER_API WebBrowserModule : public InviwoModule {
 public:
     WebBrowserModule(InviwoApplication* app);
     virtual ~WebBrowserModule();
-    
+
     static std::string getDataURI(const std::string& data, const std::string& mime_type);
-    
+
     // Return error code enum as string
     static std::string getCefErrorString(cef_errorcode_t code);
+
 protected:
     Timer doChromiumWork_;  /// Calls CefDoMessageLoopWork()
-#ifdef DARWIN // Load library dynamically for Mac
+#ifdef DARWIN               // Load library dynamically for Mac
     CefScopedLibraryLoader cefLib_;
 #endif
 };

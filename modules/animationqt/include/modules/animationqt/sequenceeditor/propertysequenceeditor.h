@@ -59,7 +59,6 @@ protected:
     virtual void onValueKeyframeSequenceEasingChanged(ValueKeyframeSequence* seq) override;
     virtual void onValueKeyframeSequenceInterpolationChanged(ValueKeyframeSequence* seq) override;
 
-
     QComboBox* easingComboBox_{nullptr};
     QComboBox* interpolation_{nullptr};
 };

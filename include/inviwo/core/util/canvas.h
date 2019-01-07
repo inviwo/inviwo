@@ -71,13 +71,13 @@ public:
     // used to create hidden canvases used for context in background threads.
     virtual std::unique_ptr<Canvas> createHiddenCanvas() = 0;
     using ContextID = const void*;
-    virtual ContextID activeContext() const = 0; 
+    virtual ContextID activeContext() const = 0;
     virtual ContextID contextId() const = 0;
 
     virtual void releaseContext() = 0;
 
     bool isFullScreen() const;
-    /** 
+    /**
      * Sets window state of canvas to cover the entire screen.
      * Will call setFullScreenInternal after setting full screen flag.
      * @see setFullScreenInternal
@@ -98,6 +98,6 @@ protected:
     bool isFullScreen_ = false;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_CANVAS_H

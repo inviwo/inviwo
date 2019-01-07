@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_TEMPLATEPROPERTY_H
@@ -45,13 +45,13 @@ class TemplateProperty : public Property {
 public:
     using value_type = T;
 
-    TemplateProperty(
-        const std::string& identifier, const std::string& displayName, const T& value = T(),
-        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-        PropertySemantics semantics = PropertySemantics::Default);
+    TemplateProperty(const std::string& identifier, const std::string& displayName,
+                     const T& value = T(),
+                     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                     PropertySemantics semantics = PropertySemantics::Default);
 
     TemplateProperty<T>& operator=(const T& value);
-   
+
     virtual TemplateProperty<T>* clone() const override = 0;
     virtual operator T&();
     virtual operator const T&() const;
@@ -77,21 +77,18 @@ protected:
 };
 
 template <typename CTy, typename CTr, typename T>
-std::basic_ostream<CTy, CTr> &operator<<(std::basic_ostream<CTy, CTr> &os,
-                                         const TemplateProperty<T> &prop) {
+std::basic_ostream<CTy, CTr>& operator<<(std::basic_ostream<CTy, CTr>& os,
+                                         const TemplateProperty<T>& prop) {
     return os << prop.get();
 }
 
 template <typename T>
 TemplateProperty<T>::TemplateProperty(const std::string& identifier, const std::string& displayName,
-                                      const T& value,
-                                      InvalidationLevel invalidationLevel,
+                                      const T& value, InvalidationLevel invalidationLevel,
                                       PropertySemantics semantics)
-    : Property(identifier, displayName, invalidationLevel, semantics)
-    , value_("value", value) {
-}
+    : Property(identifier, displayName, invalidationLevel, semantics), value_("value", value) {}
 
-template<typename T>
+template <typename T>
 TemplateProperty<T>& TemplateProperty<T>::operator=(const T& value) {
     if (value_ != value) {
         value_ = value;
@@ -100,23 +97,23 @@ TemplateProperty<T>& TemplateProperty<T>::operator=(const T& value) {
     return *this;
 }
 
-template<typename T>
+template <typename T>
 TemplateProperty<T>::operator T&() {
     return value_;
 }
 
-template<typename T>
+template <typename T>
 TemplateProperty<T>::operator const T&() const {
     return value_;
 }
 
-template<typename T>
-void inviwo::TemplateProperty<T>::resetToDefaultState() { 
+template <typename T>
+void inviwo::TemplateProperty<T>::resetToDefaultState() {
     value_.reset();
     Property::resetToDefaultState();
 }
 
-template<typename T>
+template <typename T>
 void inviwo::TemplateProperty<T>::setCurrentStateAsDefault() {
     Property::setCurrentStateAsDefault();
     value_.setAsDefault();
@@ -167,6 +164,6 @@ void TemplateProperty<T>::deserialize(Deserializer& d) {
     }
 }
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_TEMPLATEPROPERTY_H
+#endif  // IVW_TEMPLATEPROPERTY_H

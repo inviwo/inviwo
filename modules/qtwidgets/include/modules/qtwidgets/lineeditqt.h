@@ -45,21 +45,22 @@ class QKeyEvent;
 namespace inviwo {
 
 /**
-* \class LineEditQt
-* \brief customized line edit class based on QLineEdit. Pressing Escape will emit a cancel signal.
-*  This signal can be used to revert the changes and loose focus without changing the property. 
-*/
+ * \class LineEditQt
+ * \brief customized line edit class based on QLineEdit. Pressing Escape will emit a cancel signal.
+ *  This signal can be used to revert the changes and loose focus without changing the property.
+ */
 class IVW_MODULE_QTWIDGETS_API LineEditQt : public QLineEdit {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT
 #include <warn/pop>
 public:
-    LineEditQt(QWidget *parent=nullptr);
+    LineEditQt(QWidget *parent = nullptr);
     virtual ~LineEditQt() = default;
 
 signals:
     void editingCanceled();
+
 protected:
     virtual void keyPressEvent(QKeyEvent *e) override;
 };

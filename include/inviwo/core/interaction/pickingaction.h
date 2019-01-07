@@ -50,25 +50,25 @@ public:
 
     PickingAction(size_t start, size_t size = 1);
     virtual ~PickingAction();
-    
+
     /**
-    * Returns the global picking index, the global index can be used with the 
-    * PickingManager::indexToColor(size_t index) function to get a picking color.
-    * \param id the local picking index 
-    */
+     * Returns the global picking index, the global index can be used with the
+     * PickingManager::indexToColor(size_t index) function to get a picking color.
+     * \param id the local picking index
+     */
     size_t getPickingId(size_t id = 0) const;
 
     /**
-    * Returns the local picking index, the local index converted from the global index by
-    * subtracting the start id making it range from 0 to size-1
-    * \param id the global picking index
-    */
+     * Returns the local picking index, the local index converted from the global index by
+     * subtracting the start id making it range from 0 to size-1
+     * \param id the global picking index
+     */
     size_t getLocalPickingId(size_t id = 0) const;
 
     /**
      *	The picking color to use for the object with local index id.
      *  This is eqvivalent to PickingManager::indexToColor(getPickingId(id))/255.0
-     * \param id the local picking index 
+     * \param id the local picking index
      */
     vec3 getColor(size_t id = 0) const;
 
@@ -76,26 +76,26 @@ public:
      *	The number of picking indices in this picking object.
      */
     size_t getSize() const;
-    
+
     /**
-     * Enable or disable calling of the callback action.   
+     * Enable or disable calling of the callback action.
      */
     void setEnabled(bool enabled);
     bool isEnabled() const;
-    
+
     /**
      *	Set the callback action
      */
     void setAction(Callback action);
-    
+
     /**
-     *	Set the processor where the picking colors is drawn. 
+     *	Set the processor where the picking colors is drawn.
      */
     void setProcessor(Processor* processor);
     Processor* getProcessor() const;
-    
+
     void operator()(PickingEvent*) const;
-    
+
 private:
     size_t getCapacity() const;
     void setSize(size_t size);
@@ -106,11 +106,10 @@ private:
 
     Callback action_;
     Processor* processor_;
-    
+
     bool enabled_ = true;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_PICKINGACTION_H
-
+#endif  // IVW_PICKINGACTION_H

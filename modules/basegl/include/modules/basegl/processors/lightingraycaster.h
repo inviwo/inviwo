@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_LIGHTINGRAYCASTER_H
@@ -48,16 +48,16 @@ namespace inviwo {
  * ![](org.inviwo.LightingRaycaster.png?classIdentifier=org.inviwo.LightingRaycaster)
  *
  * ...
- * 
+ *
  * ### Inports
  *   * __volume__ ...
  *   * __exit-points__ ...
  *   * __lightVolume__ ...
  *   * __entry-points__ ...
- * 
+ *
  * ### Outports
  *   * __outport__ ...
- * 
+ *
  * ### Properties
  *   * __Raycasting__ ...
  *   * __Transfer function__ ...
@@ -100,6 +100,6 @@ private:
     SimpleLightingProperty lighting_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_LIGHTINGRAYCASTER_H
+#endif  // IVW_LIGHTINGRAYCASTER_H

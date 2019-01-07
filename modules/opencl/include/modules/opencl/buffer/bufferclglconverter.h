@@ -75,6 +75,6 @@ public:
                         std::shared_ptr<BufferCL> destination) const override;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_BUFFERCLGLCONVERTER_H

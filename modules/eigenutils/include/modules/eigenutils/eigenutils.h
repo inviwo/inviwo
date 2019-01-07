@@ -47,7 +47,8 @@ namespace inviwo {
 namespace util {
 
 template <typename T, typename std::enable_if<util::rank<T>::value == 1, int>::type = 0>
-auto glm2eigen(const T& elem) -> Eigen::Matrix<typename T::value_type, util::extent<T, 0>::value, 1> {
+auto glm2eigen(const T& elem)
+    -> Eigen::Matrix<typename T::value_type, util::extent<T, 0>::value, 1> {
     Eigen::Matrix<typename T::value_type, util::extent<T, 0>::value, 1> a;
     for (size_t i = 0; i < util::extent<T, 0>::value; i++) {
         a(i) = elem[i];
@@ -104,10 +105,9 @@ auto eigen2glm(const Eigen::Matrix<T, Cols, Cols>& m) {
 }
 
 template <typename T>
-std::shared_ptr<Image> eigenMatToImage(const T& m,
-                                       bool flipY = false, std::string name = "") {
+std::shared_ptr<Image> eigenMatToImage(const T& m, bool flipY = false, std::string name = "") {
     using Type = typename T::value_type;
-    
+
     auto img = std::make_shared<Image>(size2_t(m.cols(), m.rows()), DataFormat<Type>::get());
 
     auto rep = dynamic_cast<LayerRAMPrecision<Type>*>(
@@ -138,8 +138,8 @@ std::shared_ptr<Image> eigenMatToImage(const T& m,
 
     return img;
 }
-}
+}  // namespace util
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_EIGENUTILS_H

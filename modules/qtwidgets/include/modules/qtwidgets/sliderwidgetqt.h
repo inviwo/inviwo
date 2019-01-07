@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_SLIDETWIDGETQT_H
@@ -96,7 +96,7 @@ private:
      */
     void updateSlider();
 
-    virtual bool eventFilter(QObject *watched, QEvent *event) override;
+    virtual bool eventFilter(QObject* watched, QEvent* event) override;
 
     CustomDoubleSpinBoxQt* spinBox_;
     QSlider* slider_;
@@ -312,7 +312,6 @@ void TemplateSliderWidget<T>::setIncrement(T increment) {
     }
 }
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_SLIDETWIDGETQT_H
-
+#endif  // IVW_SLIDETWIDGETQT_H

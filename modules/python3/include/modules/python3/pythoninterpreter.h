@@ -51,6 +51,6 @@ private:
     bool isInit_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PYINVIWO_H

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_HDF5UTILS_H
@@ -53,9 +53,8 @@ IVW_MODULE_HDF5_API Paths findpaths(const H5::Group& grp, const Path& path,
 IVW_MODULE_HDF5_API bool isOfType(const H5::Group& grp, const std::string& type);
 IVW_MODULE_HDF5_API VolumeInfos getVolumeInfo(const H5::DataSet& ds, const Path& path);
 
-}  // namespace
+}  // namespace hdf5
 
-}  // namespace
+}  // namespace inviwo
 
-#endif // IVW_HDF5UTILS_H
-
+#endif  // IVW_HDF5UTILS_H

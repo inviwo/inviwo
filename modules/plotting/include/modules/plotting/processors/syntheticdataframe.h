@@ -70,8 +70,8 @@ private:
     IntSizeTProperty numRow_;
 
     CompositeProperty randomParams_;
-    BoolProperty useSameSeed_;///< Use the same seed for each call to process.
-    IntProperty seed_;///<  The seed used to initialize the random sequence
+    BoolProperty useSameSeed_;  ///< Use the same seed for each call to process.
+    IntProperty seed_;          ///<  The seed used to initialize the random sequence
 };
 
 }  // namespace plot

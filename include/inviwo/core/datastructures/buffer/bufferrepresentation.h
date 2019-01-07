@@ -40,7 +40,7 @@ namespace inviwo {
 class BufferBase;
 
 /**
- * \ingroup datastructures	
+ * \ingroup datastructures
  */
 class IVW_CORE_API BufferRepresentation : public DataRepresentation<BufferBase> {
 public:
@@ -69,6 +69,6 @@ protected:
     BufferTarget target_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_BUFFER_REPRESENTATION_H

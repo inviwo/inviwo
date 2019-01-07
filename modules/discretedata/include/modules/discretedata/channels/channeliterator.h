@@ -132,9 +132,7 @@ public:
     static_assert(sizeof(VecNT) == sizeof(T) * num_comp,
                   "Size and type do not agree with the vector type.");
 
-
-    ConstChannelIterator(const Parent* parent, ind index)
-        : parent(parent), index(index) {}
+    ConstChannelIterator(const Parent* parent, ind index) : parent(parent), index(index) {}
     ConstChannelIterator() : parent(nullptr), index(-1) {}
 
     VecNT operator*();
@@ -185,15 +183,15 @@ protected:
 
 //! Increment randomly
 template <typename Parent, typename VecNT>
-ConstChannelIterator<Parent, VecNT> operator+(
-    ind offset, ConstChannelIterator<Parent, VecNT>& iter) {
+ConstChannelIterator<Parent, VecNT> operator+(ind offset,
+                                              ConstChannelIterator<Parent, VecNT>& iter) {
     return ConstChannelIterator<Parent, VecNT>(iter.parent, iter.index + offset);
 }
 
 //! Decrement randomly
 template <typename Parent, typename VecNT>
-ConstChannelIterator<Parent, VecNT> operator-(
-    ind offset, ConstChannelIterator<Parent, VecNT>& iter) {
+ConstChannelIterator<Parent, VecNT> operator-(ind offset,
+                                              ConstChannelIterator<Parent, VecNT>& iter) {
     return ConstChannelIterator<Parent, VecNT>(iter.parent, iter.index - offset);
 }
 
@@ -209,8 +207,6 @@ VecNT& ChannelIterator<VecNT, T, N>::operator*() {
     T* data = getter->get(index);
     return *reinterpret_cast<VecNT*>(data);
 }
-
-
 
 }  // namespace discretedata
 }  // namespace inviwo

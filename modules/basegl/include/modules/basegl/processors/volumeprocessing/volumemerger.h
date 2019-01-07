@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_VOLUMEMERGER_H
@@ -39,8 +39,8 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.VolumeMerger, Volume Merger}
  * ![](org.inviwo.VolumeMerger.png?classIdentifier=org.inviwo.VolumeMerger)
- * Merges up to four single-channel volumes into a single volume. If, for example, 
- * input volumes 1 and 4 are given, the output volume will have 2 channels where the 
+ * Merges up to four single-channel volumes into a single volume. If, for example,
+ * input volumes 1 and 4 are given, the output volume will have 2 channels where the
  * first one contains volume 1 and the second one volume 4.
  *
  * ### Inports
@@ -52,7 +52,6 @@ namespace inviwo {
  * ### Outports
  *   * __outputVolume__ Merged volume
  */
-
 
 /**
  * \class VolumeMerger
@@ -73,7 +72,6 @@ protected:
     virtual void preProcess(TextureUnitContainer &cont) override;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_VOLUMEMERGER_H
-
+#endif  // IVW_VOLUMEMERGER_H

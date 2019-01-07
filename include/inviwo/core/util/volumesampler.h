@@ -118,7 +118,8 @@ Vector<DataDims, double> VolumeDoubleSampler<DataDims>::sampleDataSpace(const dv
 
 template <unsigned int DataDims>
 bool VolumeDoubleSampler<DataDims>::withinBoundsDataSpace(const dvec3 &pos) const {
-    return !(glm::any(glm::lessThan(pos, dvec3(0.0))) || glm::any(glm::greaterThan(pos, dvec3(1.0))));
+    return !(glm::any(glm::lessThan(pos, dvec3(0.0))) ||
+             glm::any(glm::greaterThan(pos, dvec3(1.0))));
 }
 
 }  // namespace inviwo

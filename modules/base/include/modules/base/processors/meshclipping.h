@@ -48,10 +48,10 @@ namespace inviwo {
  *
  * Remove parts of a mesh that is on the back side of a plane.
  * Replaces removed parts with triangles aligned with the plane.
- * Link the camera property to move the camera along the plane, or to align plane with view direction.
- * Coordinates are specified in world space.
+ * Link the camera property to move the camera along the plane, or to align plane with view
+ * direction. Coordinates are specified in world space.
  *
- * Supports SimpleMesh and BasicMesh 
+ * Supports SimpleMesh and BasicMesh
  *
  * ### Inports
  *   * __inputMesh__ Input mesh
@@ -69,8 +69,8 @@ namespace inviwo {
  *   * __Camera__ Camera used for moving or aligning plane.
  *   * __Align Plane Normal To Camera Normal__ Aligns plane normal with camera
  *   * __Enable clipping__ Pass through mesh if disabled.
-
  *
+
  */
 class IVW_MODULE_BASE_API MeshClipping : public Processor {
 public:
@@ -102,8 +102,8 @@ private:
     BoolProperty movePointAlongNormal_;
     BoolProperty moveCameraAlongNormal_;
     FloatProperty pointPlaneMove_;
-    FloatVec3Property planePoint_; ///< World space plane position
-    FloatVec3Property planeNormal_; ///< World space plane normal
+    FloatVec3Property planePoint_;   ///< World space plane position
+    FloatVec3Property planeNormal_;  ///< World space plane normal
     ButtonProperty alignPlaneNormalToCameraNormal_;
     CameraProperty camera_;
 

@@ -51,7 +51,6 @@
 
 namespace inviwo {
 
-
 /** \docpage{org.inviwo.LayerDistanceTransformRAM, Layer Distance Transform}
 * ![](org.inviwo.LayerDistanceTransformRAM.png?classIdentifier=org.inviwo.LayerDistanceTransformRAM)
 *
@@ -79,7 +78,7 @@ namespace inviwo {
 *       * Custom specify a custom range.
 *   * __Data Range__ The data range of the output volume. (ReadOnly)
 *   * __Custom Data Range__ Specify a custom output range.
-*   * __Update Distance Map__ Triggers a computation of the distance transform. Since the 
+*   * __Update Distance Map__ Triggers a computation of the distance transform. Since the
 *     computation is time consuming one has to manually trigger it.
 *
 */
@@ -105,7 +104,7 @@ private:
     ImageInport imagePort_;
     ImageOutport outport_;
 
-    std::future<std::shared_ptr<Image>> newImage_;   
+    std::future<std::shared_ptr<Image>> newImage_;
     ImageReuseCache imageCache_;
 
     DoubleProperty threshold_;
@@ -142,7 +141,6 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
     return ss;
 }
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_LAYERDISTANCETRANSFORMRAM_H
-
+#endif  // IVW_LAYERDISTANCETRANSFORMRAM_H

@@ -49,11 +49,9 @@ public:
      * @param nativeVirtualKey Platform dependent scancode of pressed key
      * @param utfText Unicode representation of pressed keys
      */
-    KeyboardEvent(IvwKey key = IvwKey::Unknown,
-                  KeyState state = KeyState::Press,
+    KeyboardEvent(IvwKey key = IvwKey::Unknown, KeyState state = KeyState::Press,
                   KeyModifiers modifiers = KeyModifiers(flags::empty),
-                  uint32_t nativeVirtualKey = 0,
-                  const std::string& utfText = u8"");
+                  uint32_t nativeVirtualKey = 0, const std::string& utfText = u8"");
 
     KeyboardEvent(const KeyboardEvent& rhs) = default;
     KeyboardEvent& operator=(const KeyboardEvent& that) = default;
@@ -62,14 +60,14 @@ public:
 
     KeyState state() const;
     void setState(KeyState state);
-    
+
     /*
      * Platform-independent code for key.
      * @note Does not differentiate between lower and uppercase letters. Use text instead.
      */
     virtual IvwKey key() const;
     void setKey(IvwKey key);
-    
+
     /*
      * Returns virtual key representation of pressed key.
      * The key may be 0 even though the event contain information.
@@ -77,7 +75,7 @@ public:
      */
     uint32_t getNativeVirtualKey() const;
     void setNativeVirtualKey(uint32_t key);
-    
+
     /*
      * Returns Unicode representation of pressed keys
      */
@@ -85,17 +83,15 @@ public:
     void setText(const std::string& text) { text_ = text; }
 
     virtual uint64_t hash() const override;
-    static constexpr uint64_t chash() {
-        return util::constexpr_hash("org.inviwo.KeyboardEvent");
-    }
+    static constexpr uint64_t chash() { return util::constexpr_hash("org.inviwo.KeyboardEvent"); }
 
 private:
-    std::string text_; ///< Unicode representation of pressed keys
+    std::string text_;  ///< Unicode representation of pressed keys
     KeyState state_;
     IvwKey key_;
     uint32_t nativeVirtualKey_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_KEYBOARDEVENT_H

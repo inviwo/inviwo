@@ -75,6 +75,7 @@ public:
     CommandLineArgHolder& operator=(CommandLineArgHolder&&) = delete;
 
     ~CommandLineArgHolder();
+
 private:
     InviwoApplication* app_;
     TCLAP::Arg& arg_;

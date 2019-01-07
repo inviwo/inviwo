@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_ORDINALMINMAXPROPERTYWIDGETQT_H
@@ -137,13 +137,13 @@ OrdinalMinMaxPropertyWidgetQt<T>::OrdinalMinMaxPropertyWidgetQt(MinMaxProperty<T
     sliderWidget->setLayout(hSliderLayout);
     hSliderLayout->setContentsMargins(0, 0, 0, 0);
 
-    spinBoxMin_->setKeyboardTracking(false); // don't emit the valueChanged() signal while typing
+    spinBoxMin_->setKeyboardTracking(false);  // don't emit the valueChanged() signal while typing
     spinBoxMin_->setFixedWidth(50);
     hSliderLayout->addWidget(spinBoxMin_);
 
     hSliderLayout->addWidget(slider_);
 
-    spinBoxMax_->setKeyboardTracking(false); // don't emit the valueChanged() signal while typing
+    spinBoxMax_->setKeyboardTracking(false);  // don't emit the valueChanged() signal while typing
     spinBoxMax_->setFixedWidth(50);
     hSliderLayout->addWidget(spinBoxMax_);
 
@@ -168,7 +168,7 @@ OrdinalMinMaxPropertyWidgetQt<T>::OrdinalMinMaxPropertyWidgetQt(MinMaxProperty<T
     updateFromProperty();
 }
 
-template<typename T>
+template <typename T>
 void OrdinalMinMaxPropertyWidgetQt<T>::updateFromProperty() {
     const V val = minMaxProperty_->get();
     const V range = minMaxProperty_->getRange();
@@ -319,7 +319,6 @@ void OrdinalMinMaxPropertyWidgetQt<T>::showSettings() {
     settingsWidget_->showWidget();
 }
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_ORDINALMINMAXPROPERTYWIDGETQT_H
-
+#endif  // IVW_ORDINALMINMAXPROPERTYWIDGETQT_H

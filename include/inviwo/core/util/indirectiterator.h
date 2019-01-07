@@ -119,13 +119,13 @@ struct asPointer<false> {
  *
  * auto it = util::makeIndirectIterator(vec.begin());
  * *it = 5; // *it is a int& not a std::make_unique<int>&
- * 
- * // note cbegin() return a const_iterator
- * auto const_it = util::makeIndirectIterator<true>(vec.cbegin()); 
- * *const_it = 5; // will fail since we propagate const from the pointer to the value 
  *
- * auto mutable_it = util::makeIndirectIterator<false>(vec.cbegin()); 
- * *mutable_it = 5; // will work since __don't__ propagate const from the pointer to the value 
+ * // note cbegin() return a const_iterator
+ * auto const_it = util::makeIndirectIterator<true>(vec.cbegin());
+ * *const_it = 5; // will fail since we propagate const from the pointer to the value
+ *
+ * auto mutable_it = util::makeIndirectIterator<false>(vec.cbegin());
+ * *mutable_it = 5; // will work since __don't__ propagate const from the pointer to the value
  *
  * \endcode
  *

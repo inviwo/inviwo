@@ -84,5 +84,4 @@ struct type_caster<std::vector<Layer *>> : ListCasterBase<Layer> {
 }  // namespace detail
 }  // namespace pybind11
 
-
 #endif  // IVW_PYPROPERTIES_H

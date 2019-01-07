@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 // based on ideas from http://thradams.com/timers.htm
@@ -60,7 +60,7 @@ class IVW_CORE_API TimerThread {
 public:
     using Milliseconds = std::chrono::milliseconds;
     using clock_t = std::chrono::high_resolution_clock;
-    
+
     TimerThread();
     ~TimerThread();
 
@@ -77,8 +77,8 @@ private:
     struct TimerInfo {
         TimerInfo(clock_t::time_point tp, std::weak_ptr<ControlBlock> controlBlock);
 
-        TimerInfo(const TimerInfo&) = default;
-        TimerInfo& operator=(const TimerInfo&) = default;
+        TimerInfo(const TimerInfo &) = default;
+        TimerInfo &operator=(const TimerInfo &) = default;
         TimerInfo(TimerInfo &&) = default;
         TimerInfo &operator=(TimerInfo &&) = default;
 
@@ -88,7 +88,6 @@ private:
 
     void add(std::weak_ptr<ControlBlock> controlBlock);
     void TimerLoop();
-    
 
     std::vector<TimerInfo> timers_;
     std::mutex mutex_;
@@ -103,9 +102,9 @@ namespace util {
  *	Utility function to get the default TimerThread from the app.
  */
 IVW_CORE_API TimerThread &getDefaultTimerThread();
-}
+}  // namespace util
 
-/** 
+/**
  * A Timer class. Will evaluate it's callback in the front thread, with the period of interval
  */
 class IVW_CORE_API Timer {
@@ -119,7 +118,7 @@ public:
     void start();
     void start(Milliseconds interval);
     void stop();
-    
+
     void setInterval(Milliseconds interval);
     void setCallback(std::function<void()> callback);
     Milliseconds getInterval() const;
@@ -133,7 +132,7 @@ private:
 };
 
 /**
- *	A one time delay. 
+ *	A one time delay.
  */
 class IVW_CORE_API Delay {
 public:
@@ -154,4 +153,4 @@ private:
 
 }  // namespace inviwo
 
-#endif // IVW_TIMER_H
+#endif  // IVW_TIMER_H

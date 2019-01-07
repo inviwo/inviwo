@@ -75,7 +75,8 @@ public:
     void volumeRaycast(const Volume* volume, const VolumeCLBase* volumeCL,
                        const LayerCLBase* background, const LayerCLBase* entryCL,
                        const LayerCLBase* exitCL, const LayerCLBase* transferFunctionCL,
-                       LayerCLBase* outImageCL, size2_t globalWorkGroupSize, size2_t localWorkGroupSize,
+                       LayerCLBase* outImageCL, size2_t globalWorkGroupSize,
+                       size2_t localWorkGroupSize,
                        const VECTOR_CLASS<cl::Event>* waitForEvents = nullptr,
                        cl::Event* event = nullptr);
 
@@ -103,11 +104,11 @@ public:
      */
     void setBackground(const Layer* val) { background_ = val; }
     /**
-    * \brief Set the default background color to use in the rendering.
-    * Will only be used if background layer is set to nullptr.
-    *
-    * @param color RGBA color in [0 1]^4
-    */
+     * \brief Set the default background color to use in the rendering.
+     * Will only be used if background layer is set to nullptr.
+     *
+     * @param color RGBA color in [0 1]^4
+     */
     void setDefaultBackgroundColor(const vec4 color);
 
     size2_t workGroupSize() const { return workGroupSize_; }
@@ -122,8 +123,8 @@ public:
     void outputSize(ivec2 val);
 
     /**
-    * Called when kernel has compiled. Set all parameters and notify observers
-    */
+     * Called when kernel has compiled. Set all parameters and notify observers
+     */
     virtual void notifyObserversKernelCompiled(const cl::Kernel* kernel);
 
     void setKernelArguments();
@@ -146,6 +147,6 @@ private:
     cl::Kernel* kernel_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_VOLUME_RAYCASTER_CL_H

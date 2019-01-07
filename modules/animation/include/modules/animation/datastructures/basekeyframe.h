@@ -61,7 +61,7 @@ protected:
     Seconds time_{0.0};
 };
 
-}
+}  // namespace animation
 
 }  // namespace inviwo
 

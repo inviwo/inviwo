@@ -44,7 +44,7 @@ namespace inviwo {
  * A property representing a range.
  */
 template <typename T>
-class MinMaxProperty : public TemplateProperty<glm::tvec2<T, glm::defaultp> > {
+class MinMaxProperty : public TemplateProperty<glm::tvec2<T, glm::defaultp>> {
 public:
     typedef glm::tvec2<T, glm::defaultp> range_type;
     virtual std::string getClassIdentifier() const override;

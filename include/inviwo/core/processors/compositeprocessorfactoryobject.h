@@ -35,14 +35,12 @@
 #include <inviwo/core/processors/compositeprocessor.h>
 #include <inviwo/core/processors/processorfactoryobject.h>
 
-
 namespace inviwo {
 
 /**
  * \class CompositeProcessorFactoryObject
  */
-class IVW_CORE_API CompositeProcessorFactoryObject
-    : public ProcessorFactoryObject {
+class IVW_CORE_API CompositeProcessorFactoryObject : public ProcessorFactoryObject {
 public:
     CompositeProcessorFactoryObject(const std::string& filen);
     virtual ~CompositeProcessorFactoryObject() = default;

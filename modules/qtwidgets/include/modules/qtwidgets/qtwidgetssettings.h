@@ -50,7 +50,7 @@ public:
 
     OptionPropertyString font_;
     IntProperty fontSize_;
-    
+
     CompositeProperty glslSyntax_;
     IntVec4Property glslTextColor_;
     IntVec4Property glslBackgroundColor_;

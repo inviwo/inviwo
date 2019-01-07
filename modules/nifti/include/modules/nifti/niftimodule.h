@@ -40,6 +40,6 @@ public:
     NiftiModule(InviwoApplication* app);
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_NIFTIMODULE_H
+#endif  // IVW_NIFTIMODULE_H

@@ -49,13 +49,7 @@ namespace inviwo {
 
 class InviwoMainWindow;
 
-enum class MenuItemType {
-    cut,
-    copy,
-    paste,
-    del,
-    select
-};
+enum class MenuItemType { cut, copy, paste, del, select };
 
 class IVW_QTEDITOR_API MenuItem {
 public:
@@ -74,18 +68,17 @@ class IVW_QTEDITOR_API InviwoEditMenu : public QMenu {
 public:
     InviwoEditMenu(InviwoMainWindow* win);
     virtual ~InviwoEditMenu() = default;
-    
+
     std::shared_ptr<MenuItem> registerItem(std::shared_ptr<MenuItem> item);
-    
+
 private:
     std::shared_ptr<MenuItem> getFocusItem();
 
     std::unordered_map<QObject*, std::weak_ptr<MenuItem>> items_;
-    std::map<MenuItemType, QAction*> actions_; 
+    std::map<MenuItemType, QAction*> actions_;
     std::weak_ptr<MenuItem> lastItem_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_INVIWOEDITMENU_H
-
+#endif  // IVW_INVIWOEDITMENU_H

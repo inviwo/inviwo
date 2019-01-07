@@ -57,11 +57,12 @@ namespace inviwo {
  *  The tag names are case insensitive and should always be followed by a ":"
  *  Anything after a '#' will be considered a comment.
  *
- * Supports reading VolumeSequence (for example time-varying volume data) by specifying multiple .dat files.
+ * Supports reading VolumeSequence (for example time-varying volume data) by specifying multiple
+ *.dat files.
  * Example:
- * Datfile: sequence0.dat
- * Datfile: sequence1.dat
- * Datfile: sequence2.dat
+ *     Datfile: sequence0.dat
+ *     Datfile: sequence1.dat
+ *     Datfile: sequence2.dat
  */
 class IVW_MODULE_BASE_API DatVolumeSequenceReader
     : public DataReaderType<std::vector<std::shared_ptr<Volume>>> {

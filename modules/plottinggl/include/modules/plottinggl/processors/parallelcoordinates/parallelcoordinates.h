@@ -161,7 +161,7 @@ private:
     std::unique_ptr<Mesh> lines_;
     std::unique_ptr<MeshDrawerGL> linesDrawer_;
 
-    std::vector<ParallelCoordinatesAxisSettingsProperty *> axisVector_; // owned by axisProperty_
+    std::vector<ParallelCoordinatesAxisSettingsProperty *> axisVector_;  // owned by axisProperty_
 
     PickingMapper linePicking_;
     PickingMapper handlePicking_;

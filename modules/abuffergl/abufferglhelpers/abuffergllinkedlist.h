@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 /**
@@ -49,30 +49,29 @@ public:
     Inviwo_ABufferGL4_LinkedList(ivec2 dim = ivec2(512));
     virtual ~Inviwo_ABufferGL4_LinkedList();
     virtual void allocateABuffer(void);
-    virtual void initABuffer(int abufferSize=0);
+    virtual void initABuffer(int abufferSize = 0);
     virtual void addUniforms(Shader* shader);
     virtual void deinitABuffer(void);
     virtual void clear(void);
     Image* get_AbufferFragCountImgTexture() { return abufferFragCountImgTexture_; }
-    size_t getDefaultSharedPoolSize() { return sharedPoolSize_;}
+    size_t getDefaultSharedPoolSize() { return sharedPoolSize_; }
 
 private:
-
     void initShaders_LinkedList(void);
     void initABuffer_LinkedList(void);
     void initSharedPool_LinkedList(void);
     bool display_LinkedList_ManageSharedPool(void);
 
-    ///Linked Lists///
+    /// Linked Lists///
     size_t sharedPoolSize_;
-    //Occlusion queries
+    // Occlusion queries
     GLuint totalFragmentQuery_;
     GLuint lastFrameNumFrags_;
     bool queryRequested_;
 
     std::vector<TextureUnit*> texUnits_;
 
-    GLuint		curSharedPageBuffID_;
+    GLuint curSharedPageBuffID_;
     GLuint64 curSharedPageAddress_;
 
     GLuint abufferPageIdxBuffID_;
@@ -103,7 +102,7 @@ private:
     GLuint64 semaphoreAddress_;
     GLuint semaphoreTexID_;
 
-    //Abuffer Link List images
+    // Abuffer Link List images
     Image* abufferPageIdxImgTexture_;
     Image* abufferFragCountImgTexture_;
     Image* semaphoreImgTexture_;
@@ -118,6 +117,6 @@ private:
 
 typedef Inviwo_ABufferGL4_LinkedList InviwoABuffer;
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_ABUFFERGL4_LINKEDLIST_H
+#endif  // IVW_ABUFFERGL4_LINKEDLIST_H

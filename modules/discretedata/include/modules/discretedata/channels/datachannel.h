@@ -50,8 +50,7 @@ protected:
     virtual ChannelGetter<T, N>* newIterator() = 0;
 };
 
-
-/** 
+/**
  * \brief A single vector component of a data set.
  *
  * The type is arbitrary but is expected to support the basic arithmetic operations.
@@ -81,7 +80,7 @@ public:
                                   std::array<T, N>>::type;
 
 public:
-    /** 
+    /**
      * \brief Direct construction
      * @param name Name associated with the channel
      * @param definedOn GridPrimitive the data is defined on, default: 0D vertices
@@ -89,7 +88,7 @@ public:
     DataChannel(const std::string& name, GridPrimitive definedOn = GridPrimitive::Vertex);
     virtual ~DataChannel() = default;
 
-    /** 
+    /**
      * \brief Indexed point access, copy data
      * Thread safe.
      * @param dest Position to write to, expect T[NumComponents]
@@ -103,7 +102,9 @@ public:
     }
 
     template <typename VecNT>
-    void operator()(VecNT& dest, ind index) const { fill(dest, index); }
+    void operator()(VecNT& dest, ind index) const {
+        fill(dest, index);
+    }
 
     template <typename VecNT = DefaultVec>
     iterator<VecNT> begin() {
@@ -153,7 +154,7 @@ public:
         const DataChannel<T, N>* parent_;
     };
 
-    /** 
+    /**
      * \brief Get iterator range
      * Templated iterator return type, only specified once.
      * @tparam VecNT Return type of resulting iterators
@@ -163,7 +164,7 @@ public:
         return ChannelRange<VecNT>(this);
     }
 
-    /** 
+    /**
      * \brief Get const iterator range
      * Templated iterator return type, only specified once.
      * @tparam VecNT Return type of resulting iterators

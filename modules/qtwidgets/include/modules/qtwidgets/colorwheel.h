@@ -84,8 +84,8 @@ protected slots:
     void svChanged(const QColor& newcolor);
 
 private:
-    void setColorFromWheel(const QPoint &point);
-    void setColorFromSquare(const QPoint &point);
+    void setColorFromWheel(const QPoint& point);
+    void setColorFromSquare(const QPoint& point);
 
     void drawOuterRing(QPainter& painter);
     void drawIndicator(QPainter& painter);

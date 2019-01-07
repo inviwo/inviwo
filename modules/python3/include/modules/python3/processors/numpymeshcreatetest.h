@@ -41,17 +41,17 @@
 namespace inviwo {
 
 /** \docpage{org.inviwo.NumPyMeshCreateTest, NumPy Mesh Create Test}
-* ![](org.inviwo.NumPyMeshCreateTest.png?classIdentifier=org.inviwo.NumPyMeshCreateTest)
-*
-* En example processor illustrating how Python can be used to create a mesh.
-* The processors process function executes a python scripts which creates a BasicMesh consisting of
-* three squares of different colors. This basic mesh is then "stolen" from python and ownership is
-* passed to the port.
-*
-*
-* ### Outports
-*   * __mesh__ The final created mesh.
-*/
+ * ![](org.inviwo.NumPyMeshCreateTest.png?classIdentifier=org.inviwo.NumPyMeshCreateTest)
+ *
+ * En example processor illustrating how Python can be used to create a mesh.
+ * The processors process function executes a python scripts which creates a BasicMesh consisting of
+ * three squares of different colors. This basic mesh is then "stolen" from python and ownership is
+ * passed to the port.
+ *
+ *
+ * ### Outports
+ *   * __mesh__ The final created mesh.
+ */
 
 class IVW_MODULE_PYTHON3_API NumPyMeshCreateTest : public Processor {
 public:
@@ -69,6 +69,6 @@ private:
     MeshOutport mesh_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_NUMPYMESHCREATETEST_H

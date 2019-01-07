@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_SSAO_H
@@ -71,11 +71,11 @@ namespace inviwo {
  * \class SSAO
  * \brief Screen space ambient occlusion post process. (Computed using depth layer)
  */
-class IVW_MODULE_POSTPROCESSING_API SSAO : public Processor { 
+class IVW_MODULE_POSTPROCESSING_API SSAO : public Processor {
 public:
     SSAO();
     virtual ~SSAO();
-    
+
     virtual void initializeResources() override;
     virtual void process() override;
 
@@ -85,7 +85,7 @@ public:
     static constexpr int AO_RANDOM_TEX_SIZE = 4;
     static constexpr int HBAO_RANDOM_SIZE = AO_RANDOM_TEX_SIZE;
     static constexpr int HBAO_RANDOM_ELEMENTS = HBAO_RANDOM_SIZE * HBAO_RANDOM_SIZE;
-    static constexpr int MAX_SAMPLES = 1; // CHANGE TO 8 WHEN IMPLEMENTING MSAA
+    static constexpr int MAX_SAMPLES = 1;  // CHANGE TO 8 WHEN IMPLEMENTING MSAA
 
 private:
     struct ProjectionParam {
@@ -98,32 +98,33 @@ private:
     };
 
     struct HBAOData {
-        float   RadiusToScreen;
-        float   R2;
-        float   NegInvR2;
-        float   NDotVBias;
+        float RadiusToScreen;
+        float R2;
+        float NegInvR2;
+        float NDotVBias;
 
-        vec2    InvFullResolution;
-        vec2    InvQuarterResolution;
+        vec2 InvFullResolution;
+        vec2 InvQuarterResolution;
 
-        float   AOMultiplier;
-        float   PowExponent;
-        vec2    _pad0;
+        float AOMultiplier;
+        float PowExponent;
+        vec2 _pad0;
 
-        vec4    projInfo;
-        vec2    projScale;
-        int     projOrtho;
-        int     _pad1;
+        vec4 projInfo;
+        vec2 projScale;
+        int projOrtho;
+        int _pad1;
 
-        vec4    float2Offsets[AO_RANDOM_TEX_SIZE * AO_RANDOM_TEX_SIZE];
-        vec4    jitters[AO_RANDOM_TEX_SIZE * AO_RANDOM_TEX_SIZE];
+        vec4 float2Offsets[AO_RANDOM_TEX_SIZE * AO_RANDOM_TEX_SIZE];
+        vec4 jitters[AO_RANDOM_TEX_SIZE * AO_RANDOM_TEX_SIZE];
     };
 
     void initHbao();
     void initFramebuffers(int width, int height);
     void prepareHbaoData(const ProjectionParam& proj, int width, int height);
     void drawLinearDepth(GLuint texDepth, const ProjectionParam& proj);
-    void drawHbaoClassic(GLuint fboOut, GLuint texDepth, const ProjectionParam& proj, int width, int height);
+    void drawHbaoClassic(GLuint fboOut, GLuint texDepth, const ProjectionParam& proj, int width,
+                         int height);
     void drawHbaoBlur(GLuint fboOut, const ProjectionParam& proj, int width, int height);
 
     ImageInport inport_;
@@ -162,12 +163,11 @@ private:
     struct {
         GLuint depthLinear = 0;
         GLuint hbaoCalc = 0;
-        //GLuint viewNormal = 0;
+        // GLuint viewNormal = 0;
 
         int width = 0;
         int height = 0;
     } framebuffers_;
-
 
     struct {
         GLuint depthLinear = 0;
@@ -208,7 +208,6 @@ private:
     HBAOData hbaoUboData_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_SSAO_H
-
+#endif  // IVW_SSAO_H

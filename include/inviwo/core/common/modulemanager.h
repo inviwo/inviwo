@@ -86,7 +86,6 @@ public:
      */
     void registerModules(RuntimeModuleLoading);
 
-
     /**
      * \brief Removes all modules not marked as protected by the application.
      *

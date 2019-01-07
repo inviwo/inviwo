@@ -46,6 +46,4 @@ CefRefPtr<CefCommandLine> CreateCommandLine(const CefMainArgs& main_args);
 
 ProcessType GetProcessType(const CefRefPtr<CefCommandLine>& command_line);
 
-
 #endif  // IVW_APP_SWITCHES_H
-

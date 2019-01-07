@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_CUBEPROXYGEOMETRYPROCESSOR_H
@@ -42,16 +42,16 @@ namespace inviwo {
 /** \docpage{org.inviwo.CubeProxyGeometry, Cube Proxy Geometry}
  * ![](org.inviwo.CubeProxyGeometry.png?classIdentifier=org.inviwo.CubeProxyGeometry)
  *
- * Constructs a proxy geometry based on the model and world matrix of the input volume. 
+ * Constructs a proxy geometry based on the model and world matrix of the input volume.
  * The gemetry will be shaped as a parallelepiped. If clipping is enabled the geometry
- * will be cut along the corresponding axes. 
- * 
+ * will be cut along the corresponding axes.
+ *
  * ### Inports
  *   * __Inport__ Input Volume
  *
  * ### Outports
  *   * __Outport__ Output proxy geometry.
- * 
+ *
  * ### Properties
  *   * __Enable Clipping__ Enable axis aligned clipping of the mesh
  *   * __Clip X Slices__ Clip X axis
@@ -81,6 +81,6 @@ private:
     IntMinMaxProperty clipZ_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_CUBEPROXYGEOMETRYPROCESSOR_H
+#endif  // IVW_CUBEPROXYGEOMETRYPROCESSOR_H

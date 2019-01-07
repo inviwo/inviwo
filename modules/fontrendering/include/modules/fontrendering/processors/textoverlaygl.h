@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_TEXTOVERLAYGL_H
@@ -45,7 +45,6 @@
 
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/rendering/texturequadrenderer.h>
-
 
 namespace inviwo {
 
@@ -102,18 +101,19 @@ protected:
 private:
     ImageInport inport_;
     ImageOutport outport_;
-    
+
     BoolProperty enable_;
     StringProperty text_;
     FloatVec4Property color_;
     FontProperty font_;
     FloatVec2Property position_;
     IntVec2Property offset_;
-    
-    ButtonProperty addArgButton_; //!< this button will add string properties to be used with place markers
+
+    ButtonProperty
+        addArgButton_;  //!< this button will add string properties to be used with place markers
 
     TextRenderer textRenderer_;
-    std::size_t numArgs_; //!< number of optional place marker properties 
+    std::size_t numArgs_;  //!< number of optional place marker properties
 
     const std::size_t maxNumArgs_ = 99;
 
@@ -122,6 +122,6 @@ private:
     TextureQuadRenderer textureRenderer_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_TEXTOVERLAYGL_H
+#endif  // IVW_TEXTOVERLAYGL_H

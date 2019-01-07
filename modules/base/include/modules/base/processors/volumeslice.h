@@ -101,5 +101,5 @@ private:
     EventProperty gestureShiftSlice_;
 };
 
-}
+}  // namespace inviwo
 #endif  // IVW_VOLUMESLICE_H

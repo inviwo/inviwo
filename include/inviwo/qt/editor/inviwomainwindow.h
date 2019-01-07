@@ -35,7 +35,6 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/qt/editor/undomanager.h>
 
-
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QMainWindow>
@@ -107,9 +106,9 @@ public:
     void saveWorkspaceAs();
 
     /*
-    * Save the current workspace into a new workspace file,
-    * leaves the current workspace file as current workspace
-    */
+     * Save the current workspace into a new workspace file,
+     * leaves the current workspace file as current workspace
+     */
     void saveWorkspaceAsCopy();
     bool askToSaveWorkspaceChanges();
     void exitInviwo(bool saveIfModified = true);
@@ -120,7 +119,6 @@ protected:
     virtual void dragMoveEvent(QDragMoveEvent* event) override;
     virtual void dropEvent(QDropEvent* event) override;
 
-
 private:
     virtual void onModifiedStatusChanged(const bool& newStatus) override;
 
@@ -129,7 +127,7 @@ private:
     void openWorkspace(QString workspaceFileName, bool exampleWorkspace);
     void saveWorkspace(QString workspaceFileName);
     void appendWorkspace(const std::string& workspaceFileName);
-    
+
     void addActions();
 
     void closeEvent(QCloseEvent* event) override;
@@ -143,8 +141,8 @@ private:
     void addToRecentWorkspaces(QString workspaceFileName);
 
     /**
-    * \brief query the Qt settings for recent workspaces and update internal status
-    */
+     * \brief query the Qt settings for recent workspaces and update internal status
+     */
     QStringList getRecentWorkspaceList() const;
     /**
      * \brief update Qt settings for recent workspaces with internal status
@@ -162,14 +160,14 @@ private:
     std::shared_ptr<ConsoleWidget> consoleWidget_;
     std::unique_ptr<NetworkEditor> networkEditor_;
     NetworkEditorView* networkEditorView_;
- 
+
     SettingsWidget* settingsWidget_;
     ProcessorTreeWidget* processorTreeWidget_;
     ResourceManagerDockWidget* resourceManagerDockWidget_;
     PropertyListWidget* propertyListWidget_;
     HelpWidget* helpWidget_;
     InviwoAboutWindow* inviwoAboutWindow_ = nullptr;
-    
+
     std::vector<QAction*> workspaceActionRecent_;
     QAction* clearRecentWorkspaces_;
     QAction* visibilityModeAction_;
@@ -192,10 +190,10 @@ private:
     TCLAP::ValueArg<std::string> saveProcessorPreviews_;
     TCLAP::ValueArg<std::string> openData_;
     TCLAP::SwitchArg updateWorkspaces_;
-    
+
     UndoManager undoManager_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_INVIWOMAINWINDOW_H

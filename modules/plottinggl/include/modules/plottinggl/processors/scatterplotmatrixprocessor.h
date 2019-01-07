@@ -100,7 +100,7 @@ private:
     IntProperty fontSize_;
     OptionPropertyString fontFaceStats_;
     IntProperty statsFontSize_;
-    BoolProperty showCorrelationValues_; // Show numerical correlation values
+    BoolProperty showCorrelationValues_;  // Show numerical correlation values
 
     CompositeProperty parameters_;
 

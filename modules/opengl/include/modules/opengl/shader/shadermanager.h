@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_SHADERMANAGER_H
@@ -46,7 +46,7 @@ class OpenGLSettings;
 class ShaderResource;
 class OpenGLCapabilities;
 
-template<typename T>
+template <typename T>
 class TemplateOptionProperty;
 
 class IVW_MODULE_OPENGL_API ShaderManager : public Singleton<ShaderManager> {
@@ -55,7 +55,7 @@ public:
     ShaderManager();
     ShaderManager(const ShaderManager&) = delete;
     ShaderManager& operator=(const ShaderManager&) = delete;
-    
+
     virtual ~ShaderManager() = default;
 
     void registerShader(Shader* shader);
@@ -66,17 +66,17 @@ public:
 
     void addShaderSearchPath(std::string);
     const std::vector<std::string>& getShaderSearchPaths();
-    
+
     void addShaderResource(std::string key, std::string resource);
     void addShaderResource(std::string key, std::unique_ptr<ShaderResource> resource);
     std::shared_ptr<ShaderResource> getShaderResource(std::string key);
-    
+
     const std::vector<Shader*>& getShaders() const;
     void rebuildAllShaders();
 
     void setOpenGLSettings(OpenGLSettings* settings);
     Shader::OnError getOnShaderError() const;
-    
+
     using Callback = std::function<void(GLuint)>;
     template <typename T>
     std::shared_ptr<Callback> onDidAddShader(T&& callback);
@@ -86,17 +86,17 @@ public:
     OpenGLCapabilities* getOpenGLCapabilities();
 
 private:
-    bool addShaderSearchPathImpl(const std::string &);
+    bool addShaderSearchPathImpl(const std::string&);
     std::vector<Shader*> shaders_;
     OpenGLCapabilities* openGLInfoRef_;
     std::vector<std::string> shaderSearchPaths_;
 
     std::vector<std::shared_ptr<ShaderResource>> ownedResources_;
     std::unordered_map<std::string, std::weak_ptr<ShaderResource>> shaderResources_;
-    
-    TemplateOptionProperty<Shader::UniformWarning>* uniformWarnings_; // non-owning reference
-    TemplateOptionProperty<Shader::OnError>* shaderObjectErrors_; // non-owning reference
-    
+
+    TemplateOptionProperty<Shader::UniformWarning>* uniformWarnings_;  // non-owning reference
+    TemplateOptionProperty<Shader::OnError>* shaderObjectErrors_;      // non-owning reference
+
     Dispatcher<void(GLuint)> shaderAddCallbacks_;
     Dispatcher<void(GLuint)> shaderRemoveCallbacks_;
 
@@ -113,6 +113,6 @@ std::shared_ptr<ShaderManager::Callback> ShaderManager::onWillRemoveShader(T&& c
     return shaderRemoveCallbacks_.add(std::forward<T>(callback));
 }
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_SHADERMANAGER_H
+#endif  // IVW_SHADERMANAGER_H

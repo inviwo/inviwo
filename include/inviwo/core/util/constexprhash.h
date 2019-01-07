@@ -33,7 +33,7 @@
  * The MIT License(MIT)
  *
  * Copyright(c) 2015
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files(the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -132,24 +132,24 @@ static uint64_t constexpr crc_table[] = {
     0xb05cbd6cc0cc10faULL, 0x94d9f4fb7ae3911dULL, 0xf9562e43b4931334ULL, 0xddd367d40ebc92d3ULL};
 
 constexpr uint64_t crc64impl(uint64_t prevCrc, const char* str, size_t size) {
-    return !size ? prevCrc : crc64impl((prevCrc >> 8) ^ crc_table[(prevCrc ^ *str) & 0xff], str + 1,
-                                       size - 1);
+    return !size
+               ? prevCrc
+               : crc64impl((prevCrc >> 8) ^ crc_table[(prevCrc ^ *str) & 0xff], str + 1, size - 1);
 }
 
 constexpr uint64_t crc64(const char* str, size_t size) {
     return crc64impl(0xffffffff, str, size) ^ 0xffffffff;
 }
 
-}  // namespace
+}  // namespace detail
 
 template <size_t len>
-constexpr uint64_t constexpr_hash(const char(&str)[len]) {
+constexpr uint64_t constexpr_hash(const char (&str)[len]) {
     return detail::crc64(str, len);
 }
 
-} // namespace
+}  // namespace util
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_CONSTEXPRHASH_H
-
+#endif  // IVW_CONSTEXPRHASH_H

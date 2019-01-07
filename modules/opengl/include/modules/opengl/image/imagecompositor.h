@@ -41,7 +41,7 @@ namespace inviwo {
 /**
  * \class ImageCompositor
  */
-class IVW_MODULE_OPENGL_API ImageCompositor { 
+class IVW_MODULE_OPENGL_API ImageCompositor {
 public:
     ImageCompositor(std::string programFileName = "composite.frag");
     virtual ~ImageCompositor() = default;
@@ -53,7 +53,6 @@ private:
     Shader shader_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_IMAGECOMPOSITOR_H
-
+#endif  // IVW_IMAGECOMPOSITOR_H

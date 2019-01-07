@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_ANGLERADIUSWIDGET_H
@@ -38,9 +38,9 @@
 
 namespace inviwo {
 /** \class AngleRadiusWidget
- * The AngleRadiusWidget provides an interface to edit an angle in [0 2pi) 
+ * The AngleRadiusWidget provides an interface to edit an angle in [0 2pi)
  * as well as a radius within given bounds [minRadius maxRadius].
- * 
+ *
  * @see AnglePropertyWidgetQt
  */
 class IVW_MODULE_QTWIDGETS_API AngleRadiusWidget : public QWidget {
@@ -50,30 +50,30 @@ class IVW_MODULE_QTWIDGETS_API AngleRadiusWidget : public QWidget {
 #include <warn/pop>
 public:
     AngleRadiusWidget(QWidget*);
-    virtual ~AngleRadiusWidget() {};
+    virtual ~AngleRadiusWidget(){};
 
-    virtual void paintEvent(QPaintEvent *) override;
+    virtual void paintEvent(QPaintEvent*) override;
 
     virtual void mousePressEvent(QMouseEvent* e) override;
     virtual void mouseMoveEvent(QMouseEvent* e) override;
 
     void setAngle(double angle);
-    double getAngle() const { return angle_;}
+    double getAngle() const { return angle_; }
     void setRadius(double radius);
-    double getRadius() const { return radius_;}
+    double getRadius() const { return radius_; }
 
     void setMinMaxAngle(double minAngle, double maxAngle);
     void setMinMaxRadius(double minRadius, double maxRadius);
 
     void setMinAngle(double angle);
-    double getMinAngle() const { return minAngle_;}
+    double getMinAngle() const { return minAngle_; }
     void setMaxAngle(double angle);
-    double getMaxAngle() const { return maxAngle_;}
+    double getMaxAngle() const { return maxAngle_; }
 
     void setMinRadius(double radius);
-    double getMinRadius() const { return minRadius_;}
+    double getMinRadius() const { return minRadius_; }
     void setMaxRadius(double radius);
-    double getMaxRadius() const { return maxRadius_;}
+    double getMaxRadius() const { return maxRadius_; }
 
     QSize sizeHint() const override;
     QSize minimumSizeHint() const override;
@@ -82,17 +82,18 @@ signals:
     void radiusChanged();
     void angleMinMaxChanged();
     void radiusMinMaxChanged();
+
 private:
-    /** 
+    /**
      * \brief Outer bounds of circle.
      *
      * @return int Radius in pixes
      */
     int getMaxPixelSpaceRadius() const;
-    /** 
+    /**
      * Calculates and sets the angle and radius from the center
      * of the widget to the position.
-     * 
+     *
      * @param const QPoint & pos given in pixels
      */
     void setAngleRadiusAtPosition(const QPoint& pos);
@@ -103,12 +104,8 @@ private:
     double maxAngle_;
     double minRadius_;
     double maxRadius_;
-
-
-
-
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_ANGLERADIUSWIDGET_H

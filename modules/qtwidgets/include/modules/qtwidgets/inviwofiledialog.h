@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_INVIWOFILEDIALOG_H
@@ -44,14 +44,13 @@
 #include <QSettings>
 #include <warn/pop>
 
-
 namespace inviwo {
 
 class IVW_MODULE_QTWIDGETS_API InviwoFileDialog : public QFileDialog, public FileDialog {
-    #include <warn/push>
-    #include <warn/ignore/all>
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
-    #include <warn/pop>
+#include <warn/pop>
 public:
     InviwoFileDialog(QWidget *parent = nullptr, const std::string &title = "",
                      const std::string &pathType = "default", const std::string &path = "");
@@ -59,9 +58,9 @@ public:
     virtual bool show() override;
 
     virtual int exec() override;
-    
+
     virtual void setTitle(const std::string &title) override;
-    
+
     virtual void setAcceptMode(inviwo::AcceptMode mode) override;
     virtual inviwo::AcceptMode getAcceptMode() const override;
 
@@ -80,19 +79,19 @@ public:
     virtual std::vector<std::string> getSelectedFiles() const override;
 
     /**
-    * \brief set the current directory of the file dialog
-    *
-    * @param path  given path, must not contain a file name
-    */
+     * \brief set the current directory of the file dialog
+     *
+     * @param path  given path, must not contain a file name
+     */
     virtual void setCurrentDirectory(const std::string &path) override;
 
     virtual FileExtension getSelectedFileExtension() const override;
-    virtual void setSelectedExtenstion(const FileExtension& ext) override;
+    virtual void setSelectedExtenstion(const FileExtension &ext) override;
 
     virtual void addExtension(const FileExtension &fileExt) override;
     virtual void addExtension(const std::string &ext, const std::string &description) override;
     virtual void addExtension(const std::string &extString) override;
-    virtual void addExtensions(const std::vector<FileExtension>& extensions) override;
+    virtual void addExtensions(const std::vector<FileExtension> &extensions) override;
 
     void addSidebarPath(const PathType &path);
     void addSidebarPath(const std::string &path);
@@ -123,6 +122,6 @@ protected:
     using FileExtMap = std::unordered_map<std::string, FileExtension>;
     FileExtMap extmap_;
 };
-}  // namespace
+}  // namespace inviwo
 
 #endif

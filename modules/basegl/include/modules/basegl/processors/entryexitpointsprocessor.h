@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_ENTRYEXITPOINTSPROCESSOR_H
@@ -48,7 +48,7 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.EntryExitPoints, Entry exit points}
  * ![](org.inviwo.EntryExitPoints.png?classIdentifier=org.inviwo.EntryExitPoints)
- * Computes the entry and exit points of a triangle mesh from the camera position in texture space. 
+ * Computes the entry and exit points of a triangle mesh from the camera position in texture space.
  * The output color will be zero if no intersection is found, otherwise .
  * ### Inports
  *   * __MeshInport__ The mesh to intersect.
@@ -56,7 +56,7 @@ namespace inviwo {
  * ### Outports
  *   * __ImageOutport__ The first hit point.
  *   * __ImageOutport__ The last hit point.
- * 
+ *
  * ### Properties
  *   * __Camera__ Camera of the scene.
  */
@@ -65,7 +65,7 @@ class IVW_MODULE_BASEGL_API EntryExitPoints : public Processor {
 public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
-    
+
     EntryExitPoints();
     virtual ~EntryExitPoints();
 
@@ -86,6 +86,6 @@ private:
     algorithm::EntryExitPointsHelper entryExitHelper_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_ENTRYEXITPOINTSPROCESSOR_H
+#endif  // IVW_ENTRYEXITPOINTSPROCESSOR_H

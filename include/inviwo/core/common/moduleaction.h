@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_MODULE_ACTION_H
@@ -39,10 +39,9 @@ class InviwoModule;
 
 enum class ModuleCallBackActionState { Default = 0, Enabled = 1, Disabled = 2, Custom = 3 };
 
-
 /**
  * A Module can register ModuleCallbackActions with the InviwoApplication. These action will the
- * Be added a some places, for example as property widget context menu options.  
+ * Be added a some places, for example as property widget context menu options.
  */
 class IVW_CORE_API ModuleCallbackAction {
 public:
@@ -63,6 +62,6 @@ private:
     ModuleCallBackActionState actionState_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_MODULE_ACTION_H
+#endif  // IVW_MODULE_ACTION_H

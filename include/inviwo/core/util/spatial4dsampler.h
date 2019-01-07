@@ -37,7 +37,6 @@
 #include <inviwo/core/datastructures/coordinatetransformer.h>
 #include <inviwo/core/datastructures/datatraits.h>
 
-
 namespace inviwo {
 
 class IVW_CORE_API Spatial4DSamplerBase {

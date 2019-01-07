@@ -24,19 +24,18 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_IMAGEEDITORWIDGETQT_H
 #define IVW_IMAGEEDITORWIDGETQT_H
 
-
-//Property includes
+// Property includes
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/imageeditorproperty.h>
 #include <inviwo/core/properties/property.h>
 
-//Widget includes
+// Widget includes
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/properties/buttonpropertywidgetqt.h>
 #include <modules/qtwidgets/properties/filepropertywidgetqt.h>
@@ -47,7 +46,7 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-//QT includes
+// QT includes
 #include <QFile>
 #include <QCheckBox>
 #include <QGridLayout>
@@ -88,28 +87,27 @@ class IVW_MODULE_QTWIDGETS_API SimpleGraphicsScene : public QGraphicsScene {
     Q_OBJECT
 #include <warn/pop>
 public:
-    SimpleGraphicsScene(QWidget* parent=0);
+    SimpleGraphicsScene(QWidget* parent = 0);
 signals:
     void status(const QString&);
 };
-
-
 
 /////////////////////////////////////////////////
 // Simple Graphics Rectangle Item with label
 // used by Simple Graphics View
 class IVW_MODULE_QTWIDGETS_API SimpleWithRectangleLabel : public QGraphicsRectItem {
 public:
-    SimpleWithRectangleLabel(QPointF mendPoint, QGraphicsScene* scene, int index=0);
+    SimpleWithRectangleLabel(QPointF mendPoint, QGraphicsScene* scene, int index = 0);
     ~SimpleWithRectangleLabel();
     void updateLabelPosition();
     void setLabel(std::string label);
     std::string getLabel();
     void editLabel();
     int getIndex();
+
 private:
     LabelGraphicsItem* label_;
-    int uniqueIndex_; //to keep track of added rectangles
+    int uniqueIndex_;  // to keep track of added rectangles
 };
 
 /////////////////////////////////////////////////
@@ -127,10 +125,11 @@ class IVW_MODULE_QTWIDGETS_API SimpleGraphicsView : public QGraphicsView {
     Q_OBJECT
 #include <warn/pop>
 public:
-    SimpleGraphicsView(QWidget* parent=0);
+    SimpleGraphicsView(QWidget* parent = 0);
     virtual ~SimpleGraphicsView();
     void setDialogScene(QGraphicsScene* scene);
-    void addRectangle(QPointF mstartPoint, QPointF mendPoint,ivec3 color = ivec3(0,0,255), int uniqueIndex=0);
+    void addRectangle(QPointF mstartPoint, QPointF mendPoint, ivec3 color = ivec3(0, 0, 255),
+                      int uniqueIndex = 0);
     std::vector<ImgRect> getRectList();
     void setReadOnly(bool readOnly);
     void hideLabelDescription(bool hide);
@@ -140,6 +139,7 @@ public:
     void setCurrentLabelPositionToTextField();
     void setScaleFactor(float scaling);
     void clearRectItems();
+
 protected:
     void mousePressEvent(QMouseEvent* e);
     void mouseDoubleClickEvent(QMouseEvent* e);
@@ -147,6 +147,7 @@ protected:
     void mouseMoveEvent(QMouseEvent* e);
 signals:
     void currentRectItemPositionChanged(vec2 pos);
+
 private:
     QGraphicsScene* scene_;
     QPoint startPoint_;
@@ -158,7 +159,6 @@ private:
     QGraphicsRectItem* currentRectItem_;
     QGraphicsDropShadowEffect* shadowEffect_;
 };
-
 
 /////////////////////////////////////////////////
 // Image Labeling widget
@@ -172,8 +172,8 @@ public:
     ImageLabelWidget();
     virtual ~ImageLabelWidget();
     void setParent(ImageEditorWidgetQt*);
-    QGraphicsScene* getScene() {return scene_;}
-    QGraphicsView* getView() {return view_;}
+    QGraphicsScene* getScene() { return scene_; }
+    QGraphicsView* getView() { return view_; }
     void addRectangleTest();
     void addBackGroundImage(std::string imagePath);
     void generateWidget();
@@ -198,6 +198,7 @@ public slots:
     void onCurrentItemPositionChange(vec2 pos);
 signals:
     void rectItemPositionChanged();
+
 protected:
     void closeEvent(QCloseEvent*);
     QSpinBox* positionX_;
@@ -219,6 +220,7 @@ public:
     virtual ~ImageEditorWidgetQt();
     void updateFromProperty();
     bool saveDialog();
+
 private:
     QToolButton* btnEdit_;
     FilePropertyWidgetQt* fileWidget_;
@@ -235,7 +237,6 @@ public slots:
     bool writeImageLabel();
 };
 
+}  // namespace inviwo
 
-}//namespace
-
-#endif //IVW_IMAGEEDITORWIDGETQT_H
+#endif  // IVW_IMAGEEDITORWIDGETQT_H

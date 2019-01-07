@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_IVFVOLUMEREADER_H
@@ -41,7 +41,6 @@ namespace inviwo {
  */
 class IVW_MODULE_BASE_API IvfVolumeReader : public DataReaderType<Volume> {
 public:
-
     IvfVolumeReader();
     IvfVolumeReader(const IvfVolumeReader& rhs) = default;
     IvfVolumeReader& operator=(const IvfVolumeReader& that) = default;
@@ -58,6 +57,6 @@ private:
     const DataFormatBase* format_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_IVFVOLUMEREADER_H
+#endif  // IVW_IVFVOLUMEREADER_H

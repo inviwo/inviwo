@@ -107,7 +107,6 @@ private:
     std::map<K, T> map_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_CONTAINERMETADATA_H
-
+#endif  // IVW_CONTAINERMETADATA_H

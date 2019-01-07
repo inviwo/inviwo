@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_GRAYSCALE_CL_H
@@ -36,23 +36,21 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/boolproperty.h>
 
-
 #include <modules/opencl/inviwoopencl.h>
 #include <modules/opencl/kernelowner.h>
-
 
 namespace inviwo {
 /** \docpage{org.inviwo.GrayscaleCL, Image Grayscale}
  * ![](org.inviwo.GrayscaleCL.png?classIdentifier=org.inviwo.GrayscaleCL)
  * Turns an image into grayscale using the following operation:
  *      out = 0.2989*red + 0.5870*green + 0.1140*blue;
- * 
+ *
  * ### Inports
  *   * __ImageInport__ The input color image.
  *
  * ### Outports
  *   * __ImageOutport__ The output grayscale image.
- * 
+ *
  * ### Properties
  *   * __Use OpenGL sharing__ Share input and output image with OpenGL
  */
@@ -68,7 +66,7 @@ public:
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
-    
+
     virtual void process() override;
 
 private:
@@ -80,6 +78,6 @@ private:
     cl::Kernel* kernel_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_GRAYSCALE_CL_H
+#endif  // IVW_GRAYSCALE_CL_H

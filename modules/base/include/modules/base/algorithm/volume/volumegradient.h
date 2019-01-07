@@ -42,8 +42,8 @@ namespace util {
 IVW_MODULE_BASE_API std::shared_ptr<Volume> gradientVolume(std::shared_ptr<const Volume> volume,
                                                            int channel);
 
-}  // namespace
+}  // namespace util
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_VOLUMEGRADIENT_H

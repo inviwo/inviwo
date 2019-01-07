@@ -47,11 +47,11 @@ public:
 IVW_CORE_API bool operator==(const ProcessorPair& p1, const ProcessorPair& p2);
 IVW_CORE_API bool operator<(const ProcessorPair& p1, const ProcessorPair& p2);
 
-} // namespace
+}  // namespace inviwo
 
 namespace std {
 
-template<>
+template <>
 struct hash<inviwo::ProcessorPair> {
     size_t operator()(const inviwo::ProcessorPair& p) const {
         size_t h = 0;
@@ -63,5 +63,4 @@ struct hash<inviwo::ProcessorPair> {
 
 }  // namespace std
 
-#endif // IVW_PROCESSORPAIR_H
-
+#endif  // IVW_PROCESSORPAIR_H

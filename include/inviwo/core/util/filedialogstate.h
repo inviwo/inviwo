@@ -76,6 +76,6 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
     return ss;
 }
 
-} // namespace inviwo
+}  // namespace inviwo
 
-#endif // IVW_FILEDIALOGSTATE_H
+#endif  // IVW_FILEDIALOGSTATE_H

@@ -111,11 +111,11 @@ struct DispatchHelper<Result, B, E, std::tuple<Formats...>> {
                 IvwContextCustom("Dispatching"));
 
         if (id == Format::id()) {
-            #ifdef _WIN32 // TODO: remove win fix when VS does the right thing...
+#ifdef _WIN32  // TODO: remove win fix when VS does the right thing...
             return (obj.operator()<Result, Format>(std::forward<Args>(args)...));
-            #else
+#else
             return (obj.template operator()<Result, Format>(std::forward<Args>(args)...));
-            #endif
+#endif
         } else if (static_cast<int>(id) < static_cast<int>(Format::id())) {
             return DispatchHelper<Result, B, M - 1, std::tuple<Formats...>>::dispatch(
                 id, std::forward<Callable>(obj), std::forward<Args>(args)...);
@@ -128,11 +128,10 @@ struct DispatchHelper<Result, B, E, std::tuple<Formats...>> {
 
 #include <warn/pop>
 
-} // namespace detail
-
+}  // namespace detail
 
 /**
- * Function for dispatching a DataFormat based on the DataFormatId. 
+ * Function for dispatching a DataFormat based on the DataFormatId.
  * The matching DataFormat is found using binary search in the type list.
  *
  * # Template arguments:
@@ -143,8 +142,8 @@ struct DispatchHelper<Result, B, E, std::tuple<Formats...>> {
  * # Example
  * \snippet src/core/datastructures/buffer/bufferram.cpp Format Dispatching Example
  *
- * @param callable This should be a struct with a generic call operator taking two template 
- * arguments the result type and DataFormat type. The callable will be called with the supplied 
+ * @param callable This should be a struct with a generic call operator taking two template
+ * arguments the result type and DataFormat type. The callable will be called with the supplied
  * arguments (`args`).
  * @param args Any arguments that should be passed on to the lambda.
  *
@@ -161,8 +160,8 @@ auto dispatch(DataFormatId format, Callable &&obj, Args &&... args) -> Result {
     using FilteredFormats = typename detail::Filter<Predicate, Formats>::type;
 
     return detail::DispatchHelper<Result, 0, std::tuple_size<FilteredFormats>::value - 1,
-                          FilteredFormats>::dispatch(format, std::forward<Callable>(obj),
-                                                     std::forward<Args>(args)...);
+                                  FilteredFormats>::dispatch(format, std::forward<Callable>(obj),
+                                                             std::forward<Args>(args)...);
 }
 
 /**
@@ -216,9 +215,8 @@ struct Float4s
 template <typename Format>
 struct Integers : std::integral_constant<bool, Format::numtype != NumericType::Float> {};
 
-
 /**
- *	Matches all scalar types, i.e. int, char, long... 
+ *	Matches all scalar types, i.e. int, char, long...
  */
 template <typename Format>
 struct Scalars : std::integral_constant<bool, Format::comp == 1> {};
@@ -247,10 +245,9 @@ struct Vec3s : std::integral_constant<bool, Format::comp == 3> {};
 template <typename Format>
 struct Vec4s : std::integral_constant<bool, Format::comp == 4> {};
 
-} // namespace filter
+}  // namespace filter
 
-} // namespace dispatching
-
+}  // namespace dispatching
 
 namespace util {
 
@@ -284,8 +281,6 @@ using PrecsionValueType = typename PrecsionType<T>::type;
 
 }  // namespace util
 
+}  // namespace inviwo
 
-} // namespace inviwo
-
-#endif // IVW_FORMATDISPATCHING_H
-
+#endif  // IVW_FORMATDISPATCHING_H

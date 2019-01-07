@@ -42,7 +42,7 @@ class TFPushButton;
 
 class IVW_MODULE_QTWIDGETS_API IsoTFPropertyWidgetQt : public PropertyWidgetQt {
 public:
-    IsoTFPropertyWidgetQt(IsoTFProperty *property);
+    IsoTFPropertyWidgetQt(IsoTFProperty* property);
     virtual ~IsoTFPropertyWidgetQt();
 
     virtual void updateFromProperty() override;

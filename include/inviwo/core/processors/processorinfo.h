@@ -47,13 +47,13 @@ public:
                   CodeState aCodeState, Tags someTags, bool visible = true);
     /// Identifier must be unique for all processors, example org.inviwo.yourprocessor
     const std::string classIdentifier;
-    const std::string displayName; ///< Processor::getDisplayName
-    const std::string category;  ///< Used for grouping processors in ProcessorTreeWidget
+    const std::string displayName;  ///< Processor::getDisplayName
+    const std::string category;     ///< Used for grouping processors in ProcessorTreeWidget
     const CodeState codeState;
     const Tags tags;     ///< Searchable tags, platform tags are shown in ProcessorTreeWidget
     const bool visible;  ///< Show in processor list (ProcessorTreeWidget), enabling drag&drop
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PROCESSORINFO_H

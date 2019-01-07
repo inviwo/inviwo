@@ -41,8 +41,8 @@ namespace utilgl {
 
 namespace debug {
 
-enum class Mode {Off, Debug, DebugSynchronous};
-enum class BreakLevel {Off, High, Medium, Low, Notification};
+enum class Mode { Off, Debug, DebugSynchronous };
+enum class BreakLevel { Off, High, Medium, Low, Notification };
 
 enum class Source : GLenum {
     Api = GL_DEBUG_SOURCE_API,
@@ -75,17 +75,11 @@ enum class Severity : GLenum {
     DontCare = GL_DONT_CARE
 };
 
-inline Source toSouce(GLenum val) {
-    return static_cast<Source>(val);
-}
+inline Source toSouce(GLenum val) { return static_cast<Source>(val); }
 
-inline Type toType(GLenum val) {
-    return static_cast<Type>(val);
-}
+inline Type toType(GLenum val) { return static_cast<Type>(val); }
 
-inline Severity toSeverity(GLenum val) {
-    return static_cast<Severity>(val);
-}
+inline Severity toSeverity(GLenum val) { return static_cast<Severity>(val); }
 
 inline LogLevel toLogLevel(Severity s) {
     switch (s) {
@@ -118,7 +112,6 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
     }
     return ss;
 }
-
 
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, BreakLevel b) {
@@ -178,31 +171,30 @@ inline int toInt(BreakLevel b) {
             return 0;
     }
 }
-}  // namespace
+}  // namespace detail
 
-
-inline bool operator ==(const Severity& s, const BreakLevel& b) {
+inline bool operator==(const Severity& s, const BreakLevel& b) {
     const int bi = detail::toInt(b);
     const int si = detail::toInt(s);
     return si == bi;
 }
-inline bool operator !=(const Severity& s, const BreakLevel& b) {return !(s==b);}
+inline bool operator!=(const Severity& s, const BreakLevel& b) { return !(s == b); }
 
-inline bool operator <(const Severity& s, const BreakLevel& b) {
+inline bool operator<(const Severity& s, const BreakLevel& b) {
     const int bi = detail::toInt(b);
     const int si = detail::toInt(s);
     return si < bi;
-} 
+}
 inline bool operator<=(const Severity& s, const BreakLevel& b) { return s < b || s == b; }
 inline bool operator>(const Severity& s, const BreakLevel& b) { return !(s < b); }
 inline bool operator>=(const Severity& s, const BreakLevel& b) { return s > b || s == b; }
 
-inline bool operator ==(const BreakLevel& b, const Severity& s) { return s == b;}
-inline bool operator !=(const BreakLevel& b, const Severity& s) { return s != b;}
-inline bool operator <(const BreakLevel& b, const Severity& s) { return s > b;}
-inline bool operator <=(const BreakLevel& b, const Severity& s) { return s >= b;}
-inline bool operator >(const BreakLevel& b, const Severity& s) { return s < b; }
-inline bool operator >=(const BreakLevel& b, const Severity& s) { return s <= b; }
+inline bool operator==(const BreakLevel& b, const Severity& s) { return s == b; }
+inline bool operator!=(const BreakLevel& b, const Severity& s) { return s != b; }
+inline bool operator<(const BreakLevel& b, const Severity& s) { return s > b; }
+inline bool operator<=(const BreakLevel& b, const Severity& s) { return s >= b; }
+inline bool operator>(const BreakLevel& b, const Severity& s) { return s < b; }
+inline bool operator>=(const BreakLevel& b, const Severity& s) { return s <= b; }
 
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, Source s) {
@@ -297,21 +289,21 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
     return ss;
 }
 
-}  // namespace
+}  // namespace debug
 
 IVW_MODULE_OPENGL_API void GLAPIENTRY openGLDebugMessageCallback(GLenum source, GLenum type,
-                                                               GLuint id, GLenum severity,
-                                                               GLsizei length,
-                                                               const GLchar* message,
-                                                               const void* none);
+                                                                 GLuint id, GLenum severity,
+                                                                 GLsizei length,
+                                                                 const GLchar* message,
+                                                                 const void* none);
 
 IVW_MODULE_OPENGL_API void handleOpenGLDebugModeChange(debug::Mode mode, debug::Severity severity);
 IVW_MODULE_OPENGL_API void handleOpenGLDebugMode(Canvas::ContextID context);
 IVW_MODULE_OPENGL_API void setOpenGLDebugMode(debug::Mode mode, debug::Severity severity);
 IVW_MODULE_OPENGL_API void handleOpenGLDebugMessagesChange(utilgl::debug::Severity severity);
 IVW_MODULE_OPENGL_API void configureOpenGLDebugMessages(utilgl::debug::Severity severity);
-}
+}  // namespace utilgl
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_DEBUGMESSAGES_H
+#endif  // IVW_DEBUGMESSAGES_H

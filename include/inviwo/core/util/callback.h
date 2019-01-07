@@ -38,7 +38,7 @@
 namespace inviwo {
 
 using BaseCallBack = std::function<void()>;
-
+// clang-format off
 /**
  * Example usage
  * CallBackList list;
@@ -58,6 +58,7 @@ public:
         if (callbacksBlocked_ == 0) dispatcher_.invoke();
     }
 
+
     template <typename T>
     [[deprecated("was declared deprecated. Use `addLambdaCallback(std::function<void()>)` instead")]]
     const BaseCallBack* addMemberFunction(T* o, void (T::*m)()) {
@@ -66,6 +67,7 @@ public:
         objMap_[static_cast<void*>(o)].push_back(cb.get());
         return cb.get();
     }
+
     const BaseCallBack* addLambdaCallback(std::function<void()> lambda) {
         auto cb = dispatcher_.add(std::move(lambda));
         callBackList_.push_back(cb);
@@ -109,6 +111,7 @@ public:
         }
     }
 
+
 private:
     int callbacksBlocked_{0};
     std::vector<std::shared_ptr<std::function<void()>>> callBackList_;
@@ -116,6 +119,7 @@ private:
     mutable Dispatcher<void()> dispatcher_;
 };
 
+// clang-format on
 }  // namespace inviwo
 
 #endif  // IVW_CALLBACK_H

@@ -43,7 +43,6 @@
 
 namespace inviwo {
 
-
 class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API TMIP : public Processor {
 public:
     enum class OutputType { Scalar, HighestVelocity };

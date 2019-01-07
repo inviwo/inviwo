@@ -46,9 +46,9 @@ class BufferBase;
 
 class IVW_MODULE_PLOTTING_API InvalidConversion : public Exception {
 public:
-    InvalidConversion(const std::string &message = "", ExceptionContext context = ExceptionContext())
-        : Exception(message, context) {
-    }
+    InvalidConversion(const std::string &message = "",
+                      ExceptionContext context = ExceptionContext())
+        : Exception(message, context) {}
     virtual ~InvalidConversion() throw() {}
 };
 
@@ -112,10 +112,10 @@ public:
     void setHeader(const std::string &header) override;
 
     virtual void add(const T &value);
-    /** 
+    /**
      * \brief converts given value to type T, which is added to the column
      *
-     * @param value   
+     * @param value
      * @throws InvalidConversion if the value cannot be converted to T
      */
     virtual void add(const std::string &value) override;
@@ -284,14 +284,14 @@ void add(Buffer<T> *buffer, const std::string &value) {
     }
 }
 
-template <typename T
-    ,typename std::enable_if<!std::is_integral<T>::value &&
-    !std::is_floating_point<T>::value, int>::type = 0>
-void add(Buffer<T>* /*buffer*/, const std::string &value) {
+template <typename T,
+          typename std::enable_if<!std::is_integral<T>::value && !std::is_floating_point<T>::value,
+                                  int>::type = 0>
+void add(Buffer<T> * /*buffer*/, const std::string &value) {
     throw InvalidConversion("conversion to target type not implemented (\"" + value + "\")");
 }
 
-} // namespace detail
+}  // namespace detail
 
 template <typename T>
 void TemplateColumn<T>::add(const std::string &value) {

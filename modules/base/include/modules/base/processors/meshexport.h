@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_MESHEXPORT_H
@@ -41,7 +41,7 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.MeshExport, Mesh Export}
  * ![](org.inviwo.MeshExport.png?classIdentifier=org.inviwo.MeshExport)
- * 
+ *
  * Export meshes
  *
  * ### Inports
@@ -57,14 +57,13 @@ class IVW_MODULE_BASE_API MeshExport : public DataExport<Mesh, MeshInport> {
 public:
     MeshExport() = default;
     virtual ~MeshExport() = default;
-    
+
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
-    
+
     virtual const Mesh* getData() override;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_MESHEXPORT_H
-
+#endif  // IVW_MESHEXPORT_H

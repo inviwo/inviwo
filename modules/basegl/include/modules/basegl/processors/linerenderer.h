@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_LINERENDERER_H
@@ -60,7 +60,7 @@ namespace inviwo {
  *
  * ### Properties
  *   * __Line Width__  width of the rendered lines (in pixel)
- *   * __Antialising__ width of the antialiased line edge (in pixel), this determines the 
+ *   * __Antialising__ width of the antialiased line edge (in pixel), this determines the
  *                     softness along the edge
  *   * __Miter Limit__ limit for cutting of sharp corners
  *   * __Round Caps__  if enabled, round caps are drawn at the end of each line
@@ -68,7 +68,7 @@ namespace inviwo {
  *   * __Round Depth Profile__  modify line depth matching a round depth profile
  *   * __Write Depth Layer__    if enabled, line depths are rendered onto the background image
  *   * __Draw Mode__      overwrites mesh drawing mode
- *   * __Use Adjacency__  enable the use of adjacency information along the line. The 
+ *   * __Use Adjacency__  enable the use of adjacency information along the line. The
  *                        start and end points need to be duplicated.
  */
 
@@ -76,18 +76,13 @@ namespace inviwo {
  * \class LineRenderer
  * \brief Renders input geometry with 2D lines
  */
-class IVW_MODULE_BASEGL_API LineRenderer : public Processor { 
+class IVW_MODULE_BASEGL_API LineRenderer : public Processor {
 public:
-    enum class LineDrawMode {
-        Auto,
-        LineSegments,
-        LineStrip,
-        LineLoop
-    };
+    enum class LineDrawMode { Auto, LineSegments, LineStrip, LineLoop };
 
     LineRenderer();
     virtual ~LineRenderer() = default;
-     
+
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
@@ -122,7 +117,6 @@ private:
     Shader shader_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_LINERENDERER_H
-
+#endif  // IVW_LINERENDERER_H

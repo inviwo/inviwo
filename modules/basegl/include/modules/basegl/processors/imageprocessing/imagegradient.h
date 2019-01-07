@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_IMAGEGRADIENT_H
@@ -51,10 +51,9 @@ namespace inviwo {
  *   * __outputImage__ Resulting gradient
  *
  * ### Properties
- *   * __Channel__ Selects the channel used for the gradient computation 
+ *   * __Channel__ Selects the channel used for the gradient computation
  *   * __Renormalization__ Re-normalize results by taking the grid spacing into account
  */
-
 
 /**
  * \class ImageGradient
@@ -76,7 +75,6 @@ private:
     BoolProperty renormalization_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_IMAGEGRADIENT_H
-
+#endif  // IVW_IMAGEGRADIENT_H

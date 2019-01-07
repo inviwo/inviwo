@@ -59,20 +59,20 @@ public:
 
     void clear();
 
-    void fillAtlas(TextRenderer &textRenderer, std::vector<TexAtlasEntry>& atlas);
+    void fillAtlas(TextRenderer& textRenderer, std::vector<TexAtlasEntry>& atlas);
 
     void initTexture(const size2_t& dims);
 
     std::shared_ptr<Texture2D> getTexture() const;
     const std::vector<TexAtlasEntry>& getEntries() const;
     const TexAtlasRenderInfo& getRenderInfo() const;
-    
+
 private:
-    /** 
-     * \brief figure out texture atlas size to fit all entries given a specific width 
-     * using the Shelf First Fit algorithm. This function also updates the element positions 
+    /**
+     * \brief figure out texture atlas size to fit all entries given a specific width
+     * using the Shelf First Fit algorithm. This function also updates the element positions
      * within the new atlas texture
-     * 
+     *
      * @param indices ordered indices of atlas entries
      * @param width   initial texture width
      * @param margin  margin around each entry in texel
@@ -80,7 +80,7 @@ private:
      */
     ivec2 calcTexLayout(const std::vector<size_t> indices, double minArea);
 
-    void initAtlas(TextRenderer &textRenderer);
+    void initAtlas(TextRenderer& textRenderer);
 
     std::shared_ptr<Texture2D> atlasTex_;
     std::vector<TexAtlasEntry> entries_;

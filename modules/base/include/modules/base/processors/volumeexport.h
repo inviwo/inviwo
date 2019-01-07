@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_VOLUMEEXPORT_H
@@ -43,7 +43,7 @@ namespace inviwo {
  * ![](org.inviwo.VolumeExport.png?classIdentifier=org.inviwo.VolumeExport)
  *
  * Export volumes
- * 
+ *
  * ### Inports
  *   * __Volume__ Volume to export
  *
@@ -65,6 +65,6 @@ protected:
     virtual const Volume* getData() override;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_VOLUMEEXPORT_H
+#endif  // IVW_VOLUMEEXPORT_H

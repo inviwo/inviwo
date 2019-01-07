@@ -173,9 +173,8 @@ H5T_NATIVE_HERR 	herr_t
 H5T_NATIVE_HBOOL 	hbool_t
 */
 
-}  // namespace
+}  // namespace hdf5
 
-}  // namespace
-
+}  // namespace inviwo
 
 #endif  // IVW_HDF5DATA_H

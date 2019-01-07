@@ -61,11 +61,11 @@ public:
     virtual bool copyRepresentationsTo(LayerRepresentation* target) const override;
     cl::ImageFormat getFormat() const { return layerFormat_; }
 
-    virtual cl::Image2D& getEditable() override {    return *clImage_;   }
-    virtual const cl::Image2D& get() const override {    return *clImage_;   }
+    virtual cl::Image2D& getEditable() override { return *clImage_; }
+    virtual const cl::Image2D& get() const override { return *clImage_; }
 
     virtual std::type_index getTypeIndex() const override final;
-    
+
     /**
      * Read a single pixel value out of the specified layer at pos. Should only be used to read
      * single values not entire images.
@@ -73,12 +73,12 @@ public:
     virtual dvec4 readPixel(size2_t pos, LayerType layer, size_t index = 0) const;
 
     /**
-    * \brief update the swizzle mask of the channels for sampling color layers
-    * Needs to be overloaded by child classes.
-    *
-    * @param mask    new swizzle mask
-    */
-    virtual void setSwizzleMask(const SwizzleMask &mask) override;
+     * \brief update the swizzle mask of the channels for sampling color layers
+     * Needs to be overloaded by child classes.
+     *
+     * @param mask    new swizzle mask
+     */
+    virtual void setSwizzleMask(const SwizzleMask& mask) override;
     virtual SwizzleMask getSwizzleMask() const override;
 
 protected:
@@ -87,7 +87,7 @@ protected:
     SwizzleMask swizzleMask_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 namespace cl {
 

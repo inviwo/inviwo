@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_VECTORMAGNITUDEPROCESSOR_H
@@ -34,19 +34,18 @@
 #include <inviwo/core/common/inviwo.h>
 #include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
 
-
 namespace inviwo {
 
 /** \docpage{org.inviwo.VectorMagnitude, Vector Magnitude}
  * ![](org.inviwo.VectorMagnitude.png?classIdentifier=org.inviwo.VectorMagnitude)
  * Calculates the magnitude of the input volume.
- * 
+ *
  * ### Inports
  *   * __inputVolume__ Input volume
  *
  * ### Outports
  *   * __outputVolume__ Gradient magnitude of the input volume
- * 
+ *
  */
 
 /**
@@ -54,7 +53,7 @@ namespace inviwo {
  *
  * \brief takes and ImageInport and renders it into a OpenGL window i.e. a canvas.
  */
-class IVW_MODULE_BASEGL_API VectorMagnitudeProcessor : public VolumeGLProcessor  { 
+class IVW_MODULE_BASEGL_API VectorMagnitudeProcessor : public VolumeGLProcessor {
 public:
     VectorMagnitudeProcessor();
     virtual ~VectorMagnitudeProcessor();
@@ -66,7 +65,6 @@ protected:
     virtual void postProcess() override;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_VECTORMAGNITUDEPROCESSOR_H
-
+#endif  // IVW_VECTORMAGNITUDEPROCESSOR_H

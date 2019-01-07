@@ -79,11 +79,12 @@ public:
             });
         }
     }
+
 private:
     std::vector<std::weak_ptr<std::function<C>>> callbacks;
     int32_t concurrent_dispatcher_count = 0;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_DISPATCHER_H

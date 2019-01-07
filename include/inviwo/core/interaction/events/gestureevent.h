@@ -64,7 +64,7 @@ public:
      * Defined in [-1 1], where -1 is the near plane and 1 is the far plane.
      * Will be 1 if no depth value is available. The depth is then defined to be positive
      * inwards by default, resulting in a left handed coordinate system together with the position.
-    */
+     */
     double depth() const;
     void setDepth(double depth);
 
@@ -76,9 +76,7 @@ public:
     dvec3 ndc() const;
 
     virtual uint64_t hash() const override;
-    static constexpr uint64_t chash() {
-        return util::constexpr_hash("org.inviwo.GestureEvent");
-    }
+    static constexpr uint64_t chash() { return util::constexpr_hash("org.inviwo.GestureEvent"); }
 
 private:
     GestureType type_;
@@ -92,6 +90,6 @@ private:
     double depth_;  ///< Depth in normalized device coordinates [-1 1].
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_GESTUREEVENT_H

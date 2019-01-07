@@ -111,6 +111,6 @@ private:
     mutable bool pboBackHasData_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_TEXTURE_H

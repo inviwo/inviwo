@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_IMAGERESAMPLE_H
@@ -51,18 +51,19 @@ namespace inviwo {
  *
  * ### Properties
  *   * __Interpolation Type__ Determines the interpolation for resampling (bilinear or bicubic)
- *   * __Output Size Mode__ Determines the size of the resampled image (set by inport, resize events, or custom dimensions)
+ *   * __Output Size Mode__ Determines the size of the resampled image (set by inport, resize
+ * events, or custom dimensions)
  *   * __Target Resolution__ Custom target resolution
  *
  */
 
 /*! \class ImageResample
-*
-* \brief Resamples the input image, which corresponds to upscaling or downscaling to the respective
-* target resolution.
-*
-*/
-class IVW_MODULE_BASEGL_API ImageResample : public ImageGLProcessor  { 
+ *
+ * \brief Resamples the input image, which corresponds to upscaling or downscaling to the respective
+ * target resolution.
+ *
+ */
+class IVW_MODULE_BASEGL_API ImageResample : public ImageGLProcessor {
 public:
     ImageResample();
     virtual ~ImageResample();
@@ -82,7 +83,6 @@ private:
     IntVec2Property targetResolution_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_IMAGERESAMPLE_H
-
+#endif  // IVW_IMAGERESAMPLE_H

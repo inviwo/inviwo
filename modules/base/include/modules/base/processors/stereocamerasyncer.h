@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_STEREOCAMERASYNCER_H
@@ -42,7 +42,7 @@ namespace inviwo {
  * ![](org.inviwo.StereoCameraSyncer.png?classIdentifier=org.inviwo.StereoCameraSyncer)
  * A processor linking a left and right camera.
  *
- * 
+ *
  * ### Properties
  *   * __master__ Master Camera
  *   * __left__ Left Camera
@@ -50,17 +50,16 @@ namespace inviwo {
  *   * __seperation__ Eye separation
  */
 
-
 /**
  * \class StereoCameraSyncer
  * \brief A processor linking a left and right camera.
  */
-class IVW_MODULE_BASE_API StereoCameraSyncer : public Processor { 
+class IVW_MODULE_BASE_API StereoCameraSyncer : public Processor {
 public:
     StereoCameraSyncer();
 
     virtual ~StereoCameraSyncer() = default;
-     
+
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
@@ -75,7 +74,6 @@ private:
     bool isChanging = false;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_STEREOCAMERASYNCER_H
-
+#endif  // IVW_STEREOCAMERASYNCER_H

@@ -90,8 +90,8 @@ IVW_MODULE_BASE_API std::shared_ptr<BasicMesh> coordindicator(const vec3& center
 IVW_MODULE_BASE_API std::shared_ptr<BasicMesh> boundingbox(const mat4& basisandoffset,
                                                            const vec4& color);
 
-IVW_MODULE_BASE_API std::shared_ptr<PosTexColorMesh> boundingBoxAdjacency(const mat4& basisandoffset,
-                                                                    const vec4& color);
+IVW_MODULE_BASE_API std::shared_ptr<PosTexColorMesh> boundingBoxAdjacency(
+    const mat4& basisandoffset, const vec4& color);
 
 IVW_MODULE_BASE_API std::shared_ptr<BasicMesh> torus(const vec3& center,
                                                      const vec3& up = vec3(0, 1, 0), float r1 = 1.f,
@@ -100,7 +100,8 @@ IVW_MODULE_BASE_API std::shared_ptr<BasicMesh> torus(const vec3& center,
                                                      vec4 color = vec4(1, 1, 1, 1));
 
 IVW_MODULE_BASE_API std::shared_ptr<ColoredMesh> cameraFrustum(
-    const Camera& camera, vec4 color, std::shared_ptr<ColoredMesh> mesh = std::make_shared<ColoredMesh>());
+    const Camera& camera, vec4 color,
+    std::shared_ptr<ColoredMesh> mesh = std::make_shared<ColoredMesh>());
 
 }  // namespace meshutil
 

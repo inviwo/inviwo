@@ -41,6 +41,6 @@ public:
     virtual ~UserInterfaceGLModule() = default;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_USERINTERFACEGLMODULE_H
+#endif  // IVW_USERINTERFACEGLMODULE_H

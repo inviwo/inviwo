@@ -73,7 +73,7 @@ protected:
     std::unique_ptr<cl::Image3D> clImage_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 namespace cl {
 

@@ -40,11 +40,12 @@ namespace inviwo {
 /** \docpage{org.inviwo.ImageHueSaturationLuminance, Image Hue Saturation Luminance}
  * ![](org.inviwo.ImageHueSaturationLuminance.png?classIdentifier=org.inviwo.ImageHueSaturationLuminance)
  * Controls hue, saturation and luminance of an image.
- * Input image is in RGB color space. The colors are then converted into HSL and the following manipulations are performed:
- * 
+ * Input image is in RGB color space. The colors are then converted into HSL and the following
+ * manipulations are performed:
+ *
  *    hsl.r = mod(hsl.r + hue, 1.0);
  *    hsl.g = clamp(hsl.g + sat, 0.0, 1.0);
- *    hsl.b = clamp(hsl.b + lum, 0.0, 1.0); 
+ *    hsl.b = clamp(hsl.b + lum, 0.0, 1.0);
  *
  * Finally, the image is transformed back into RGB.
  *
@@ -81,6 +82,6 @@ private:
     FloatProperty luminance_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_IMAGEHUESATURATIONLUMINANCE_H

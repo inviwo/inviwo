@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_OPENCLMODULE_H
@@ -43,6 +43,6 @@ public:
     virtual ~OpenCLModule();
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_OPENGLMODULE_H
+#endif  // IVW_OPENGLMODULE_H

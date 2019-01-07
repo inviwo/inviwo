@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_CANVASPROCESSORGL_H
@@ -43,11 +43,11 @@ namespace inviwo {
  * ![](org.inviwo.CanvasGL.png?classIdentifier=org.inviwo.CanvasGL)
  *
  * Show a image
- * 
+ *
  * ### Inports
  *   * __Inport__ Input image
  *
- * 
+ *
  * ### Properties
  *   * __Canvas Size__ Size of canvas
  */
@@ -61,12 +61,11 @@ class IVW_MODULE_OPENGL_API CanvasProcessorGL : public CanvasProcessor {
 public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
-    
-    CanvasProcessorGL();
-    virtual ~CanvasProcessorGL() {};
 
+    CanvasProcessorGL();
+    virtual ~CanvasProcessorGL(){};
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_CANVASPROCESSORGL_H
+#endif  // IVW_CANVASPROCESSORGL_H

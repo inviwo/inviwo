@@ -43,11 +43,11 @@ namespace inviwo {
 namespace util {
 
 /**
-* \brief check whether the given polygon is convex
-*
-* @param polygon   polygon consisting of points
-* @return true if the polygon is convex, false otherwise
-*/
+ * \brief check whether the given polygon is convex
+ *
+ * @param polygon   polygon consisting of points
+ * @return true if the polygon is convex, false otherwise
+ */
 template <class T, typename std::enable_if<util::rank<T>::value == 1 && util::extent<T>::value == 2,
                                            int>::type = 0>
 bool isConvex(const std::vector<T> &polygon) {
@@ -65,14 +65,14 @@ bool isConvex(const std::vector<T> &polygon) {
 }
 
 /**
-* \brief check whether a given point lies within the convex hull
-*
-* @param hull  convex hull
-* @param p     point
-* @return true if the point lies inside the convex hull
-*/
+ * \brief check whether a given point lies within the convex hull
+ *
+ * @param hull  convex hull
+ * @param p     point
+ * @return true if the point lies inside the convex hull
+ */
 template <class T, typename std::enable_if<util::rank<T>::value == 1 && util::extent<T>::value == 2,
-    int>::type = 0>
+                                           int>::type = 0>
 bool isInside(const std::vector<T> &hull, const T &p) {
     const std::size_t n = hull.size();
     if (n < 3) return false;
@@ -92,14 +92,14 @@ bool isInside(const std::vector<T> &hull, const T &p) {
 }
 
 /**
-* \brief compute the area of a convex polygon
-*
-* @param polygon   points ordered counter-clockwise
-* @return area of polygon
-*/
+ * \brief compute the area of a convex polygon
+ *
+ * @param polygon   points ordered counter-clockwise
+ * @return area of polygon
+ */
 template <class T, typename std::enable_if<util::rank<T>::value == 1 && util::extent<T>::value == 2,
-    int>::type = 0>
-    double getArea(const std::vector<T> &polygon) {
+                                           int>::type = 0>
+double getArea(const std::vector<T> &polygon) {
     const std::size_t n = polygon.size();
 
     auto cross2D = [](const T &a, const T &b) { return (a.x * b.y - a.y * b.x); };
@@ -112,13 +112,13 @@ template <class T, typename std::enable_if<util::rank<T>::value == 1 && util::ex
 }
 
 /**
-* \brief compute the complex hull from a given set of 2D points using
-* the Monotone Chain algorithm, i.e. Andrew's convex hull algorithm
-* \see https://en.wikipedia.org/wiki/Convex_hull_algorithms#Algorithms
-* 
-* @param points   set of 2D points
-* @return complex hull of input points
-*/
+ * \brief compute the complex hull from a given set of 2D points using
+ * the Monotone Chain algorithm, i.e. Andrew's convex hull algorithm
+ * \see https://en.wikipedia.org/wiki/Convex_hull_algorithms#Algorithms
+ *
+ * @param points   set of 2D points
+ * @return complex hull of input points
+ */
 template <class T, typename std::enable_if<util::rank<T>::value == 1 && util::extent<T>::value == 2,
                                            int>::type = 0>
 std::vector<T> convexHull(const std::vector<T> &points) {
@@ -155,7 +155,8 @@ std::vector<T> convexHull(const std::vector<T> &points) {
     // build upper hull
     const std::size_t lastIndex = k + 1;
     for (int i = static_cast<int>(n) - 2; i >= 0; --i) {
-        while ((k >= lastIndex) && (cross2D(T(hull[k - 1] - hull[k - 2]), T(p[i] - hull[k - 2])) <= 0)) {
+        while ((k >= lastIndex) &&
+               (cross2D(T(hull[k - 1] - hull[k - 2]), T(p[i] - hull[k - 2])) <= 0)) {
             // last two points of the hull and p do not make a counter-clockwise turn
             // -> remove last hull point
             --k;
@@ -172,12 +173,12 @@ template <class T, typename std::enable_if<util::rank<T>::value == 1 && util::ex
 std::vector<T> convexHull(const std::vector<T> & /*points*/) {
     std::ostringstream message;
     message << "util::complexHull() not implemented for nD points with n = "
-        << util::extent<T>::value;
+            << util::extent<T>::value;
     throw Exception(message.str());
 }
 
-} // namespace util
+}  // namespace util
 
-} // namespace inviwo
+}  // namespace inviwo
 
-#endif // IVW_CONVEXHULL2D_H
+#endif  // IVW_CONVEXHULL2D_H

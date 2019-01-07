@@ -37,12 +37,11 @@
 
 namespace inviwo {
 
-
 namespace util {
 
-    IVW_MODULE_BASE_API std::unique_ptr<Volume> curlVolume(std::shared_ptr<const Volume> volume);
-    
-    IVW_MODULE_BASE_API std::unique_ptr<Volume> curlVolume(const Volume& volume);
+IVW_MODULE_BASE_API std::unique_ptr<Volume> curlVolume(std::shared_ptr<const Volume> volume);
+
+IVW_MODULE_BASE_API std::unique_ptr<Volume> curlVolume(const Volume& volume);
 
 }  // namespace util
 

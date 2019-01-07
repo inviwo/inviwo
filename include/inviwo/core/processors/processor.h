@@ -345,12 +345,12 @@ public:
      */
     void addPort(Inport& port, const std::string& portGroup = "default");
     /**
-    * Add outport to processor.
-    * @note Port group is a concept for event propagation. Currently only used for
-    * ResizeEvents, which only propagate from outports to inports in the same port group
-    * @param port to add
-    * @param portGroup name of group to propagate events through (defaults to "default")
-    */
+     * Add outport to processor.
+     * @note Port group is a concept for event propagation. Currently only used for
+     * ResizeEvents, which only propagate from outports to inports in the same port group
+     * @param port to add
+     * @param portGroup name of group to propagate events through (defaults to "default")
+     */
     void addPort(Outport& port, const std::string& portGroup = "default");
 
     // Assume ownership of port, needed for dynamic ports
@@ -363,14 +363,13 @@ public:
     Outport* removePort(Outport* port);
 
 protected:
-
     std::unique_ptr<ProcessorWidget> processorWidget_;
     StateCoordinator<bool> isReady_;
     StateCoordinator<bool> isSink_;
     StateCoordinator<bool> isSource_;
     /**
-     * Overwrites current port group, if any. 
-     * @note Port group will be overwritten by addPort. 
+     * Overwrites current port group, if any.
+     * @note Port group will be overwritten by addPort.
      * @see addPort
      */
     void addPortToGroup(Port* port, const std::string& portGroup);

@@ -52,9 +52,10 @@ public:
      * @param touchState State of the touch point.
      * @param posNormalized Position normalized to the size of the screen [0 1]^2.
      * @param prevPosNormalized Previous position normalized to the size of the screen [0 1]^2.
-     * @param pressedPosNormalized Position that was pressed normalized to the size of the screen [0 1]^2.
+     * @param pressedPosNormalized Position that was pressed normalized to the size of the screen
+     *        [0 * 1]^2.
      * @param canvasSize size of the canvas from where the event originates
-     * @param pressure the pressure of the touch 
+     * @param pressure the pressure of the touch
      * @param depth Depth value in normalized device coordinates ([-1 1]) at touch point, 1
      * if no depth is available.
      */
@@ -63,12 +64,12 @@ public:
     /**
      * Return true if all positions and state are the same, false otherwise.
      */
-    bool operator ==(const TouchPoint& b) const;
+    bool operator==(const TouchPoint& b) const;
     /**
      * Return true if any positions or state is eifferent, false otherwise.
      */
-    bool operator !=(const TouchPoint& b) const;
-    
+    bool operator!=(const TouchPoint& b) const;
+
     TouchState state() const;
     /**
      * \brief Retrieve touch point id
@@ -116,7 +117,7 @@ public:
      */
     double depth() const;
     void setDepth(double val);
-    
+
     /**
      * Return how hard the touch point is being pressed.
      */
@@ -153,16 +154,17 @@ protected:
 class IVW_CORE_API TouchDevice {
 public:
     enum class DeviceType {
-        TouchScreen = 0, ///< Touch points are physically located on screen
-        TouchPad, ///< Touch points are not on the screen. More similar to mouse
+        TouchScreen = 0,  ///< Touch points are physically located on screen
+        TouchPad,         ///< Touch points are not on the screen. More similar to mouse
     };
     TouchDevice(DeviceType type = DeviceType::TouchScreen, std::string name = "");
-    
+
     DeviceType getType() const { return type_; }
     void setType(DeviceType type) { type_ = type; }
-    
+
     std::string getName() const { return name_; }
-    void setName(std::string name) {  name_ = name; }
+    void setName(std::string name) { name_ = name; }
+
 private:
     DeviceType type_;
     std::string name_;
@@ -197,25 +199,25 @@ public:
     dvec2 centerPoint() const;
 
     /**
-    * \brief Computes average normalized position. Returns dvec2(0) if no touch points exist.
-    * @return dvec2 sum(touch points) / nPoints
-    */
+     * \brief Computes average normalized position. Returns dvec2(0) if no touch points exist.
+     * @return dvec2 sum(touch points) / nPoints
+     */
     dvec2 centerPointNormalized() const;
 
     /**
-    * \brief Computes previous average normalized position. Returns dvec2(0) if no touch points
-    * exist.
-    * @return dvec2 sum(touch points) / nPoints
-    */
+     * \brief Computes previous average normalized position. Returns dvec2(0) if no touch points
+     * exist.
+     * @return dvec2 sum(touch points) / nPoints
+     */
     dvec2 prevCenterPointNormalized() const;
-    
+
     /**
      * \brief Average of touch points in normalized device coordinates, TouchPoint::ndc()
      * Defined in (-1,1) in a left handed coordinate system
      * @return sum(touch points.ndc()) / nPoints, or dvec3(0) if no touch points exist.
      */
     dvec3 centerNDC() const;
-    
+
     /**
      * \brief Average depth of touch points, TouchPoint::depth()
      * Defined in [-1 1], where -1 is the near plane and 1 is the far plane.
@@ -225,11 +227,12 @@ public:
 
     /**
      * \brief Get PickingState by analyzing all touch points.
-     * @return PickingState::Started or PickingState::Finished when all touch points started or finished.
-     * Return PickingState::Updated when any of the touch points updated or some started and some finished.
+     * @return PickingState::Started or PickingState::Finished when all touch points started or
+     * finished. Return PickingState::Updated when any of the touch points updated or some started
+     * and some finished.
      */
     static PickingState getPickingState(const std::vector<TouchPoint>& points);
-    
+
     /**
      * \brief Return TouchDevice that generated the event.
      */
@@ -247,9 +250,10 @@ public:
 
 private:
     std::vector<TouchPoint> touchPoints_;
-    const TouchDevice* device_ = nullptr; ///< Non-owning reference to device that generated the event
+    const TouchDevice* device_ =
+        nullptr;  ///< Non-owning reference to device that generated the event
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_TOUCHEVENT_H
