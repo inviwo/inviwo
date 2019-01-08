@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/opengl/texture/texture3d.h>
@@ -32,8 +32,9 @@
 
 namespace inviwo {
 
-Texture3D::Texture3D(size3_t dimensions, GLFormats::GLFormat glFormat, GLenum filtering, GLint level)
-    : Texture(GL_TEXTURE_3D, glFormat, filtering, level), dimensions_(dimensions) {  
+Texture3D::Texture3D(size3_t dimensions, GLFormats::GLFormat glFormat, GLenum filtering,
+                     GLint level)
+    : Texture(GL_TEXTURE_3D, glFormat, filtering, level), dimensions_(dimensions) {
     setTextureParameters(&Texture3D::default3DTextureParameterFunction);
 }
 
@@ -58,10 +59,8 @@ Texture3D::Texture3D(const Texture3D& rhs) : Texture(rhs), dimensions_(rhs.dimen
     }
 }
 
-Texture3D::Texture3D(Texture3D&& rhs) 
-    : Texture(std::move(rhs))
-    , dimensions_(std::move(rhs.dimensions_)) {
-}
+Texture3D::Texture3D(Texture3D&& rhs)
+    : Texture(std::move(rhs)), dimensions_(std::move(rhs.dimensions_)) {}
 
 Texture3D& Texture3D::operator=(const Texture3D& rhs) {
     if (this != &rhs) {
@@ -136,4 +135,4 @@ void Texture3D::default3DTextureParameterFunction(Texture* tex) {
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, tex->getFiltering());
 }
 
-}  // namespace
+}  // namespace inviwo

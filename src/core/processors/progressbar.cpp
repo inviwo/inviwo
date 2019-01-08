@@ -52,7 +52,7 @@ void ProgressBar::finishProgress() {
 }
 
 void ProgressBar::updateProgress(float progress) {
-    setActive(progress>0.0f && progress<1.0f);
+    setActive(progress > 0.0f && progress < 1.0f);
     if (visible_) {
         progress_ = progress;
         notifyProgressChanged();
@@ -101,4 +101,4 @@ void ProgressBarObservable::notifyVisibilityChanged() {
     forEachObserver([](ProgressBarObserver* o) { o->progressBarVisibilityChanged(); });
 }
 
-}  // namespace
+}  // namespace inviwo

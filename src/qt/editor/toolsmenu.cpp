@@ -131,7 +131,7 @@ void createRegressionActions(QWidget *parent, InviwoApplication *app, QMenu *men
         auto action = menu->addAction(utilqt::toQString(module->getIdentifier()));
 
         QObject::connect(
-            action, &QAction::triggered, [modulename = module->getIdentifier(), parent, app]() {
+            action, &QAction::triggered, [ modulename = module->getIdentifier(), parent, app ]() {
                 bool ok;
                 const auto name = QInputDialog::getText(
                     parent, "Create Regression Test", "Regression test name", QLineEdit::Normal, "",

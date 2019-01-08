@@ -54,7 +54,6 @@ TEST(ShaderTests, initTest) {
 
     copy = std::move(shader3);
     ASSERT_TRUE(copy.isReady());
-
 }
 
 }  // namespace inviwo

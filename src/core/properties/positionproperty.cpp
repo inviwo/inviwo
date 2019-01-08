@@ -143,4 +143,4 @@ void PositionProperty::cameraChanged() {
     }
 }
 
-}  // namespace
+}  // namespace inviwo

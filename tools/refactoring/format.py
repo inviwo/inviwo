@@ -12,7 +12,7 @@ paths = [
 
 excludespatterns = ["*/ext/*", "*/templates/*", "*/tools/codegen/*" , "*moc_*", "*cmake*"];
 
-files = refactoring.find_files(paths, ['*.h', '*.hpp' '*.cpp'], excludes=excludespatterns)
+files = refactoring.find_files(paths, ['*.h', '*.hpp', '*.cpp'], excludes=excludespatterns)
 
 for file in files:
 	print("check " + file)

@@ -314,7 +314,7 @@ void InviwoApplicationQt::setUndoTrigger(std::function<void()> func) { undoTrigg
 std::locale InviwoApplicationQt::getCurrentStdLocale() {
     std::locale loc;
     try {
-        // use the system locale provided by Qt
+    // use the system locale provided by Qt
 
 #ifdef WIN32
         // need to change locale given by Qt from underscore to hyphenated ("sv_SE" to "sv-SE")

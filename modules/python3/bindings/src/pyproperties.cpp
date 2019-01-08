@@ -218,10 +218,12 @@ void exposeProperties(py::module &m) {
         .def("load",
              [](TransferFunctionProperty *tf, std::string filename) { tf->get().load(filename); })
         .def("clear", [](TransferFunctionProperty &tp) { tp.get().clear(); })
-        .def_property("value",
-                      py::cpp_function([](TransferFunctionProperty &tp)->TransferFunction & { return tp.get(); },
-                                       py::return_value_policy::reference_internal),
-                      py::overload_cast<const TransferFunction &>(&TransferFunctionProperty::set))
+        .def_property(
+            "value",
+            py::cpp_function(
+                [](TransferFunctionProperty &tp) -> TransferFunction & { return tp.get(); },
+                py::return_value_policy::reference_internal),
+            py::overload_cast<const TransferFunction &>(&TransferFunctionProperty::set))
 
         .def("add", [](TransferFunctionProperty &tp, double value,
                        const vec4 &color) { tp.get().add(value, color); })
@@ -266,7 +268,8 @@ void exposeProperties(py::module &m) {
         .def("clear", [](IsoValueProperty &ivp) { ivp.get().clear(); })
         .def_property(
             "value",
-            py::cpp_function([](IsoValueProperty &tp)->IsoValueCollection & { return tp.get(); }, py::return_value_policy::reference_internal),
+            py::cpp_function([](IsoValueProperty &tp) -> IsoValueCollection & { return tp.get(); },
+                             py::return_value_policy::reference_internal),
             py::overload_cast<const IsoValueCollection &>(&IsoValueProperty::set))
         .def("add", [](IsoValueProperty &ivp, double value,
                        const vec4 &color) { ivp.get().add(value, color); })

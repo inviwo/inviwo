@@ -34,4 +34,4 @@ namespace inviwo {
 const std::vector<FileExtension>& DataReader::getExtensions() const { return extensions_; }
 void DataReader::addExtension(FileExtension ext) { extensions_.push_back(ext); }
 
-}  // namespace
+}  // namespace inviwo

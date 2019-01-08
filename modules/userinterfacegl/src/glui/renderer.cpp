@@ -98,9 +98,7 @@ const TextRenderer& Renderer::getTextRenderer(bool bold) const {
     }
 }
 
-int Renderer::getDefaultFontSize() const {
-    return defaultFontSize_;
-}
+int Renderer::getDefaultFontSize() const { return defaultFontSize_; }
 
 TextRenderer& Renderer::getTextRenderer(bool bold) {
     if (bold)

@@ -63,7 +63,7 @@ BufferCLGL::BufferCLGL(const BufferCLGL& rhs)
     , size_(rhs.size_) {
     // Share the copied BufferObject
     clBuffer_ = std::make_shared<cl::BufferGL>(OpenCL::getPtr()->getContext(), readWriteFlag_,
-        bufferObject_->getId());
+                                               bufferObject_->getId());
     BufferCLGL::clBufferSharingMap_.insert(BufferSharingPair(bufferObject_, clBuffer_));
 
     bufferObject_->addObserver(this);
@@ -106,7 +106,7 @@ void BufferCLGL::upload(const void* data, size_t size) {
         glSync.addToAquireGLObjectList(this);
         glSync.aquireAllObjects();
         OpenCL::getPtr()->getQueue().enqueueWriteBuffer(*clBuffer_, true, 0, size,
-            const_cast<void*>(data));
+                                                        const_cast<void*>(data));
     } catch (cl::Error& err) {
         LogError(getCLErrorString(err));
         throw err;
@@ -119,7 +119,7 @@ void BufferCLGL::download(void* data) const {
         glSync.addToAquireGLObjectList(this);
         glSync.aquireAllObjects();
         OpenCL::getPtr()->getQueue().enqueueReadBuffer(*clBuffer_, true, 0,
-            getSize() * getSizeOfElement(), data);
+                                                       getSize() * getSizeOfElement(), data);
     } catch (cl::Error& err) {
         LogError(getCLErrorString(err));
         throw err;
@@ -151,7 +151,7 @@ void BufferCLGL::onAfterBufferInitialization() {
     }
 }
 
-}  // namespace
+}  // namespace inviwo
 
 namespace cl {
 

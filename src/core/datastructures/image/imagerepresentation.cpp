@@ -38,5 +38,4 @@ Image* ImageRepresentation::getOwner() { return owner_; }
 
 const Image* ImageRepresentation::getOwner() const { return owner_; }
 
-
-}  // namespace
+}  // namespace inviwo

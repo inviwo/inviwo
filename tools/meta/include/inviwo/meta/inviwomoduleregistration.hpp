@@ -43,9 +43,9 @@ public:
 
     void addInclude(const std::filesystem::path& incPath);
     void registerProcessor(std::string_view name, const std::filesystem::path& incPath);
-    
+
     std::filesystem::path modulecpp;
     std::string file;
 };
 
-}
+}  // namespace inviwo::meta

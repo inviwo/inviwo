@@ -49,13 +49,12 @@ std::shared_ptr<Mesh> convertHullToMesh(const std::vector<vec2> &hull, bool useI
 
     vBuffer->append(&hull);
 
-
     mesh->addBuffer(BufferType::PositionAttrib, vertices);
 
     if (useIndices) {
         auto indices = std::make_shared<IndexBuffer>();
         auto indexBuffer = indices->getEditableRAMRepresentation();
-        
+
         std::vector<uint32_t> seq(hull.size());
         // create a sequence of increasing numbers
         std::iota(seq.begin(), seq.end(), 0);
@@ -68,6 +67,6 @@ std::shared_ptr<Mesh> convertHullToMesh(const std::vector<vec2> &hull, bool useI
     return mesh;
 }
 
-} // namespace util
+}  // namespace util
 
-} // namespace inviwo
+}  // namespace inviwo

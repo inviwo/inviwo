@@ -34,7 +34,7 @@
 namespace inviwo {
 namespace utilgl {
 
-std::array<GLint, 4> convertSwizzleMaskToGL(const SwizzleMask &mask) {
+std::array<GLint, 4> convertSwizzleMaskToGL(const SwizzleMask& mask) {
     auto convertToGL = [](ImageChannel channel) {
         switch (channel) {
             case ImageChannel::Red:
@@ -58,7 +58,7 @@ std::array<GLint, 4> convertSwizzleMaskToGL(const SwizzleMask &mask) {
     return swizzleMaskGL;
 }
 
-SwizzleMask convertSwizzleMaskFromGL(const std::array<GLint, 4> &maskGL) {
+SwizzleMask convertSwizzleMaskFromGL(const std::array<GLint, 4>& maskGL) {
     auto convertFromGL = [](GLint channel) {
         switch (channel) {
             case GL_RED:
@@ -81,7 +81,6 @@ SwizzleMask convertSwizzleMaskFromGL(const std::array<GLint, 4> &maskGL) {
     std::transform(maskGL.begin(), maskGL.end(), mask.begin(), convertFromGL);
     return mask;
 }
-
 
 PolygonModeState& utilgl::PolygonModeState::operator=(PolygonModeState&& that) {
     if (this != &that) {
@@ -357,9 +356,7 @@ BlendModeEquationState& utilgl::BlendModeEquationState::operator=(BlendModeEquat
 }
 
 utilgl::BlendModeEquationState::BlendModeEquationState(BlendModeEquationState&& rhs)
-    : BlendModeState(std::move(rhs))
-    , eqn_(rhs.eqn_)
-    , oldEqn_(rhs.oldEqn_) {
+    : BlendModeState(std::move(rhs)), eqn_(rhs.eqn_), oldEqn_(rhs.oldEqn_) {
     rhs.eqn_ = rhs.oldEqn_;
 }
 
@@ -374,12 +371,9 @@ utilgl::ClearColor::ClearColor(vec4 color) : color_(color) {
     if (oldColor_ != color_) {
         glClearColor(color_.x, color_.y, color_.z, color_.w);
     }
-
 }
 
-utilgl::ClearColor::ClearColor(ClearColor&& rhs)
-    : color_(rhs.color_)
-    , oldColor_(rhs.oldColor_) {
+utilgl::ClearColor::ClearColor(ClearColor&& rhs) : color_(rhs.color_), oldColor_(rhs.oldColor_) {
     rhs.color_ = rhs.oldColor_;
 }
 
@@ -400,26 +394,25 @@ utilgl::ClearColor::~ClearColor() {
 
 ViewportState& utilgl::ViewportState::operator=(ViewportState&& that) {
     if (this != &that) {
-        coords_ = { 0, 0, 0, 0 };
+        coords_ = {0, 0, 0, 0};
         std::swap(coords_, that.coords_);
-        oldCoords_ = { 0, 0, 0, 0 };
+        oldCoords_ = {0, 0, 0, 0};
         std::swap(oldCoords_, that.oldCoords_);
     }
     return *this;
 }
 
 utilgl::ViewportState::ViewportState(ViewportState&& rhs)
-    : coords_(rhs.coords_), oldCoords_(rhs.oldCoords_) {
-}
+    : coords_(rhs.coords_), oldCoords_(rhs.oldCoords_) {}
 
 utilgl::ViewportState::ViewportState(GLint x, GLint y, GLsizei width, GLsizei height)
-    : coords_{ x, y, width, height }, oldCoords_{} {
+    : coords_{x, y, width, height}, oldCoords_{} {
     oldCoords_.get();
     coords_.set();
 }
 
-utilgl::ViewportState::ViewportState(const ivec4 &coords)
-    : coords_{ coords.x, coords.y, coords.z, coords.w }, oldCoords_{} {
+utilgl::ViewportState::ViewportState(const ivec4& coords)
+    : coords_{coords.x, coords.y, coords.z, coords.w}, oldCoords_{} {
     oldCoords_.get();
     coords_.set();
 }
@@ -430,36 +423,30 @@ utilgl::ViewportState::~ViewportState() {
     }
 }
 
-void Viewport::get() {
-    glGetIntegerv(GL_VIEWPORT, view_.data());
-}
+void Viewport::get() { glGetIntegerv(GL_VIEWPORT, view_.data()); }
 
-void Viewport::set() {
-    glViewport(x(), y(), width(), height());
-}
+void Viewport::set() { glViewport(x(), y(), width(), height()); }
 
 ScissorState& utilgl::ScissorState::operator=(ScissorState&& that) {
     if (this != &that) {
-        box_ = { 0, 0, 0, 0 };
+        box_ = {0, 0, 0, 0};
         std::swap(box_, that.box_);
-        oldBox_ = { 0, 0, 0, 0 };
+        oldBox_ = {0, 0, 0, 0};
         std::swap(oldBox_, that.oldBox_);
     }
     return *this;
 }
 
-utilgl::ScissorState::ScissorState(ScissorState&& rhs)
-    : box_(rhs.box_), oldBox_(rhs.oldBox_) {
-}
+utilgl::ScissorState::ScissorState(ScissorState&& rhs) : box_(rhs.box_), oldBox_(rhs.oldBox_) {}
 
 utilgl::ScissorState::ScissorState(GLint x, GLint y, GLsizei width, GLsizei height)
-    : box_{ x, y, width, height }, oldBox_{} {
+    : box_{x, y, width, height}, oldBox_{} {
     oldBox_.get();
     box_.set();
 }
 
-utilgl::ScissorState::ScissorState(const ivec4 &coords)
-    : box_{ coords.x, coords.y, coords.z, coords.w }, oldBox_{} {
+utilgl::ScissorState::ScissorState(const ivec4& coords)
+    : box_{coords.x, coords.y, coords.z, coords.w}, oldBox_{} {
     oldBox_.get();
     box_.set();
 }
@@ -470,13 +457,9 @@ utilgl::ScissorState::~ScissorState() {
     }
 }
 
-void ScissorBox::get() {
-    glGetIntegerv(GL_SCISSOR_BOX, box_.data());
-}
+void ScissorBox::get() { glGetIntegerv(GL_SCISSOR_BOX, box_.data()); }
 
-void ScissorBox::set() {
-    glScissor(x(), y(), width(), height());
-}
+void ScissorBox::set() { glScissor(x(), y(), width(), height()); }
 
 IVW_MODULE_OPENGL_API GLfloat validateLineWidth(GLfloat width) {
     float s_sizes[2];
@@ -486,5 +469,5 @@ IVW_MODULE_OPENGL_API GLfloat validateLineWidth(GLfloat width) {
     return width;
 }
 
-}  // namespace
-}  // namespace
+}  // namespace utilgl
+}  // namespace inviwo

@@ -42,9 +42,7 @@ const ProcessorInfo PixelToBufferProcessor::processorInfo_{
     CodeState::Experimental,              // Code state
     Tags::CPU,                            // Tags
 };
-const ProcessorInfo PixelToBufferProcessor::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo PixelToBufferProcessor::getProcessorInfo() const { return processorInfo_; }
 
 PixelToBufferProcessor::PixelToBufferProcessor()
     : Processor()
@@ -59,7 +57,7 @@ PixelToBufferProcessor::PixelToBufferProcessor()
     addPort(inport_);
     addPort(pixelValues_);
 
-    inport_.onChange([this]() {inportChanged(); });
+    inport_.onChange([this]() { inportChanged(); });
 
     addProperty(fromPixel_);
     addProperty(channel_);
@@ -110,5 +108,4 @@ void PixelToBufferProcessor::invokeEvent(Event* event) {
     Processor::invokeEvent(event);
 }
 
-}  // namespace
-
+}  // namespace inviwo

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/basegl/processors/imageprocessing/imagegrayscale.h>
@@ -40,14 +40,10 @@ const ProcessorInfo ImageGrayscale::processorInfo_{
     CodeState::Stable,            // Code state
     Tags::GL,                     // Tags
 };
-const ProcessorInfo ImageGrayscale::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo ImageGrayscale::getProcessorInfo() const { return processorInfo_; }
 
 ImageGrayscale::ImageGrayscale()
-    : ImageGLProcessor("img_graysc.frag")
-    , luminanceModel_("luminanceModel", "Luminance Model")
-{
+    : ImageGLProcessor("img_graysc.frag"), luminanceModel_("luminanceModel", "Luminance Model") {
     luminanceModel_.addOption("perceived", "Perceived", LuminanceModels::PerceivedLum);
     luminanceModel_.addOption("relative", "Relative", LuminanceModels::RelativeLum);
     luminanceModel_.addOption("average", "Average", LuminanceModels::AverageLum);
@@ -65,30 +61,29 @@ ImageGrayscale::~ImageGrayscale() {}
 void ImageGrayscale::preProcess(TextureUnitContainer &) {
     vec3 lumScale(1.0f);
     switch (luminanceModel_.get()) {
-    case LuminanceModels::PerceivedLum:
-        lumScale = vec3(0.299f, 0.587f, 0.114f);
-        break;
-    case LuminanceModels::RelativeLum:
-        lumScale = vec3(0.2126f, 0.7152f, 0.0722f);
-        break;
-    case LuminanceModels::AverageLum:
-        lumScale = vec3(1.0f/3.0f);
-        break;
-    case LuminanceModels::RedOnly:
-        lumScale = vec3(1.0f, 0.0f, 0.0f);
-        break;
-    case LuminanceModels::GreenOnly:
-        lumScale = vec3(0.0f, 1.0f, 0.0f);
-        break;
-    case LuminanceModels::BlueOnly:
-        lumScale = vec3(0.0f, 0.0f, 1.0f);
-        break;
-    default:
-        break;
+        case LuminanceModels::PerceivedLum:
+            lumScale = vec3(0.299f, 0.587f, 0.114f);
+            break;
+        case LuminanceModels::RelativeLum:
+            lumScale = vec3(0.2126f, 0.7152f, 0.0722f);
+            break;
+        case LuminanceModels::AverageLum:
+            lumScale = vec3(1.0f / 3.0f);
+            break;
+        case LuminanceModels::RedOnly:
+            lumScale = vec3(1.0f, 0.0f, 0.0f);
+            break;
+        case LuminanceModels::GreenOnly:
+            lumScale = vec3(0.0f, 1.0f, 0.0f);
+            break;
+        case LuminanceModels::BlueOnly:
+            lumScale = vec3(0.0f, 0.0f, 1.0f);
+            break;
+        default:
+            break;
     }
 
     shader_.setUniform("lumScale_", lumScale);
 }
 
-}  // namespace
-
+}  // namespace inviwo

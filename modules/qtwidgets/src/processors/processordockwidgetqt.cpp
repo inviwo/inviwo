@@ -37,23 +37,21 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
- // Qt
+// Qt
 #include <QMoveEvent>
 #include <QMainWindow>
 #include <warn/pop>
 
-
 namespace inviwo {
 
-ProcessorDockWidgetQt::ProcessorDockWidgetQt(Processor* p, const QString &title, QWidget *parent)
-    : InviwoDockWidget(title, parent), ProcessorWidget(p)
-{
+ProcessorDockWidgetQt::ProcessorDockWidgetQt(Processor* p, const QString& title, QWidget* parent)
+    : InviwoDockWidget(title, parent), ProcessorWidget(p) {
     this->setObjectName("ProcessorDockWidgetQt");
     setDimensions(ivec2(200, 150));
 
     ivec2 dim = ProcessorWidget::getDimensions();
     ivec2 pos = ProcessorWidget::getPosition();
-    
+
     setWindowTitle(QString::fromStdString(processor_->getIdentifier()));
     // make the widget to float and not sticky by default
     this->setFloating(true);
@@ -62,43 +60,40 @@ ProcessorDockWidgetQt::ProcessorDockWidgetQt(Processor* p, const QString &title,
     setDimensions(dim);
 
     if (auto mainWindow = utilqt::getApplicationMainWindow()) {
-        
+
         // set default docking area to the right side
         mainWindow->addDockWidget(Qt::RightDockWidgetArea, this);
         // Move widget relative to main window to make sure that it is visible on screen.
-        QPoint newPos = utilqt::movePointOntoDesktop(QPoint(pos.x, pos.y), QSize(dim.x, dim.y), true);
+        QPoint newPos =
+            utilqt::movePointOntoDesktop(QPoint(pos.x, pos.y), QSize(dim.x, dim.y), true);
 
         if (!(newPos.x() == 0 && newPos.y() == 0)) {
             InviwoDockWidget::move(newPos);
-        } else { // We guess that this is a new widget and give a new position
+        } else {  // We guess that this is a new widget and give a new position
             newPos = mainWindow->pos();
             newPos += utilqt::offsetWidget();
             InviwoDockWidget::move(newPos);
         }
     }
-    
+
     processor_->ProcessorObservable::addObserver(this);
 }
 
 void ProcessorDockWidgetQt::setVisible(bool visible) {
-    InviwoDockWidget::setVisible(visible); // This will trigger show/hide events.
+    InviwoDockWidget::setVisible(visible);  // This will trigger show/hide events.
     ProcessorWidget::setVisible(visible);
 }
 
-void ProcessorDockWidgetQt::show() {
-    ProcessorDockWidgetQt::setVisible(true);
-}
+void ProcessorDockWidgetQt::show() { ProcessorDockWidgetQt::setVisible(true); }
 
-void ProcessorDockWidgetQt::hide() {
-    ProcessorDockWidgetQt::setVisible(false);
-}
+void ProcessorDockWidgetQt::hide() { ProcessorDockWidgetQt::setVisible(false); }
 
 void ProcessorDockWidgetQt::setPosition(glm::ivec2 pos) {
-    InviwoDockWidget::move(pos.x, pos.y); // This will trigger a move event.
+    InviwoDockWidget::move(pos.x, pos.y);  // This will trigger a move event.
 }
 
 void ProcessorDockWidgetQt::setDimensions(ivec2 dimensions) {
-    InviwoDockWidget::resize(dimensions.x, dimensions.y); // This will trigger a resize event.
+    InviwoDockWidget::resize(dimensions.x, dimensions.y);  // This will trigger a resize event.
 }
 
 void ProcessorDockWidgetQt::resizeEvent(QResizeEvent* event) {
@@ -120,5 +115,4 @@ void ProcessorDockWidgetQt::onProcessorIdentifierChanged(Processor*, const std::
     setWindowTitle(QString::fromStdString(processor_->getIdentifier()));
 }
 
-} // namespace
-
+}  // namespace inviwo

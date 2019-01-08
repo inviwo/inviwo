@@ -58,7 +58,7 @@ void ConsoleLogger::log(std::string logSource, LogLevel logLevel, LogAudience /*
 
     auto& os = logLevel == LogLevel::Error ? std::cerr : std::cout;
 
-    #ifdef WIN32
+#ifdef WIN32
     const auto h = logLevel == LogLevel::Error ? STD_ERROR_HANDLE : STD_OUTPUT_HANDLE;
     HANDLE hConsole = GetStdHandle(h);
     const auto k = [&]() {
@@ -79,11 +79,11 @@ void ConsoleLogger::log(std::string logSource, LogLevel logLevel, LogAudience /*
 
     FlushConsoleInputBuffer(hConsole);
     SetConsoleTextAttribute(hConsole, k);
-    
+
     const auto width = oldState.dwSize.X;
 
-    #else
-    
+#else
+
     const std::string none{""};
     const std::string red{"\x1B[31m"};
     const std::string yellow{"\x1B[33m"};
@@ -103,14 +103,14 @@ void ConsoleLogger::log(std::string logSource, LogLevel logLevel, LogAudience /*
             os << none;
             break;
     }
-    
+
     struct winsize w;
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
     const auto width = w.ws_col;
-    #endif
-    
+#endif
+
     const size_t reserved = 33;
-    const auto maxWidth = width - reserved-1;
+    const auto maxWidth = width - reserved - 1;
     auto lines = splitString(logMsg, '\n');
     std::vector<std::string> res;
     for (auto line : lines) {
@@ -129,17 +129,15 @@ void ConsoleLogger::log(std::string logSource, LogLevel logLevel, LogAudience /*
     auto joiner = util::make_ostream_joiner(ss, "\n" + std::string(reserved, ' '));
     std::copy(res.begin(), res.end(), joiner);
     logMsg = ss.str();
-    
 
     os << std::left << std::setw(5) << logLevel << " " << std::setw(25) << logSource << ": "
        << logMsg << std::endl;
 
-    #ifdef WIN32
+#ifdef WIN32
     SetConsoleTextAttribute(hConsole, oldState.wAttributes);
-    #else
+#else
     os << reset;
-    #endif
+#endif
 }
 
-} // namespace
-
+}  // namespace inviwo

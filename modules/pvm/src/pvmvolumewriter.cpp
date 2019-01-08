@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/pvm/pvmvolumewriter.h>
@@ -40,19 +40,15 @@ PVMVolumeWriter::PVMVolumeWriter() : DataWriterType<Volume>() {
     addExtension(FileExtension("pvm", "PVM file format"));
 }
 
-PVMVolumeWriter::PVMVolumeWriter(const PVMVolumeWriter& rhs) : DataWriterType<Volume>(rhs) {
-}
+PVMVolumeWriter::PVMVolumeWriter(const PVMVolumeWriter &rhs) : DataWriterType<Volume>(rhs) {}
 
-PVMVolumeWriter& PVMVolumeWriter::operator=(const PVMVolumeWriter& that) {
-    if (this != &that)
-        DataWriterType<Volume>::operator=(that);
+PVMVolumeWriter &PVMVolumeWriter::operator=(const PVMVolumeWriter &that) {
+    if (this != &that) DataWriterType<Volume>::operator=(that);
 
     return *this;
 }
 
-PVMVolumeWriter* PVMVolumeWriter::clone() const {
-    return new PVMVolumeWriter(*this);
-}
+PVMVolumeWriter *PVMVolumeWriter::clone() const { return new PVMVolumeWriter(*this); }
 
 void PVMVolumeWriter::writeData(const Volume *data, const std::string filePath) const {
     if (filesystem::fileExists(filePath) && !overwrite_)
@@ -144,4 +140,4 @@ void PVMVolumeWriter::writeData(const Volume *data, const std::string filePath) 
     delete[] comment;
 }
 
-} // namespace
+}  // namespace inviwo

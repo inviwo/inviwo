@@ -55,7 +55,7 @@ DataFrameColumnProperty::DataFrameColumnProperty(std::string identifier, std::st
 
     setSerializationMode(PropertySerializationMode::All);
 
-    port.onChange([this, portPtr = &port]() {
+    port.onChange([ this, portPtr = &port ]() {
         if (portPtr->hasData()) {
             setOptions(portPtr->getData());
         }

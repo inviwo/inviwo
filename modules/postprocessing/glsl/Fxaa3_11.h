@@ -63,11 +63,11 @@ Example,
 Or,
 
   #define FXAA_360 1
-  
+  
 Or,
 
   #define FXAA_PS3 1
-  
+  
 Etc.
 
 (2.)
@@ -1273,7 +1273,7 @@ FxaaFloat4 FxaaPixelShader(
 /*============================================================================
 
                          FXAA3 CONSOLE - PC VERSION
-                         
+                         
 ------------------------------------------------------------------------------
 Instead of using this on PC, I'd suggest just using FXAA Quality with
     #define FXAA_QUALITY__PRESET 10
@@ -1561,7 +1561,7 @@ Pass |  Unit  |  uOp |  PC:  Op
      |        |      |
   13 |   SCT0 |  mad |  48:  ADDxc0_s rc, h2, h2.w---;
      | SCB0/1 |  mul |  49:  MOVh h0(NE0.xxxx), h1;
- 
+ 
 Pass   SCT  TEX  SCB
   1:   0% 100%  25%
   2:   0% 100%  25%
@@ -1857,7 +1857,7 @@ Pass |  Unit  |  uOp |  PC:  Op
      |        |      |
   15 | SCT0/1 |  mul |  55:  MOVh h0(NE0.wwww), h2;
      | SCB0/1 |  mul |  56:  MOVh h0(NE0.xxxx), h1;
- 
+ 
 Pass   SCT  TEX  SCB
   1:   0% 100%  25%
   2:   0% 100%  25%

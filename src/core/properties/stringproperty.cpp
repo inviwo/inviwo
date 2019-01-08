@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/properties/stringproperty.h>
@@ -35,13 +35,10 @@ const std::string StringProperty::classIdentifier = "org.inviwo.StringProperty";
 std::string StringProperty::getClassIdentifier() const { return classIdentifier; }
 
 StringProperty::StringProperty(std::string identifier, std::string displayName, std::string value,
-                               InvalidationLevel invalidationLevel,
-                               PropertySemantics semantics)
+                               InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : TemplateProperty<std::string>(identifier, displayName, value, invalidationLevel, semantics) {}
 
-StringProperty::StringProperty(const StringProperty& rhs)
-    : TemplateProperty<std::string>(rhs)    {
-}
+StringProperty::StringProperty(const StringProperty& rhs) : TemplateProperty<std::string>(rhs) {}
 
 StringProperty& StringProperty::operator=(const StringProperty& that) {
     if (this != &that) {
@@ -55,17 +52,14 @@ StringProperty& StringProperty::operator=(const std::string& value) {
     return *this;
 }
 
-StringProperty* StringProperty::clone() const {
-    return new StringProperty(*this);
-}
+StringProperty* StringProperty::clone() const { return new StringProperty(*this); }
 
 Document StringProperty::getDescription() const {
     using P = Document::PathComponent;
     Document doc = TemplateProperty<std::string>::getDescription();
     auto b = doc.get({P("html"), P("body")});
-    b.append("p", value_.value);   
+    b.append("p", value_.value);
     return doc;
 }
 
-
-}  // namespace
+}  // namespace inviwo

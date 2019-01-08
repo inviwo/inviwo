@@ -74,5 +74,4 @@ bool DataWriterFactory::hasKey(const std::string& key) const {
     return false;
 }
 
-
-}  // namespace
+}  // namespace inviwo

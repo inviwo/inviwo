@@ -60,7 +60,7 @@ TFHelpWindow::TFHelpWindow(QWidget* parent)
     textedit->setReadOnly(true);
     textedit->setUndoRedoEnabled(false);
     textedit->setAcceptRichText(true);
-    
+
     const std::string contents = R"(<h1 style='color:white;'>Transfer Function Editor</h1>
 <p>The Transfer Function Editor allows to create and modify a 1D transfer
 function (TF) for mapping scalar values to color and opacity. A TF consists of
@@ -124,7 +124,7 @@ TFMenuHelper::TFMenuHelper() {
     if (utilqt::getApplicationMainWindow()) {
         showAction_ = util::make_unique<QAction>(QString("&Transfer Function"), nullptr);
         QObject::connect(showAction_.get(), &QAction::triggered, this, [this]() {
-            auto window = getWindow(); 
+            auto window = getWindow();
             window->activateWindow();
             window->raise();
             window->show();
@@ -168,12 +168,12 @@ TFHelpWindow* TFMenuHelper::getWindow() const {
                          [this]() { helpWindow_.release(); });
     }
 
-    return helpWindow_.get(); 
+    return helpWindow_.get();
 }
 
 QAction* TFMenuHelper::getAction() const { return showAction_.get(); }
 
-void TFMenuHelper::showWindow() const { 
+void TFMenuHelper::showWindow() const {
     auto window = getWindow();
     window->activateWindow();
     window->raise();

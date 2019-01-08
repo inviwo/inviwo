@@ -40,8 +40,7 @@
 
 namespace inviwo {
 
-TFEditorIsovalue::TFEditorIsovalue(TFPrimitive* primitive, QGraphicsScene* scene,
-                                           double size)
+TFEditorIsovalue::TFEditorIsovalue(TFPrimitive* primitive, QGraphicsScene* scene, double size)
     : TFEditorPrimitive(primitive, scene, vec2(primitive->getPosition(), primitive->getAlpha()),
                         size) {
     // ensure that Isovalue primitives are rendered behind TF control points
@@ -104,19 +103,17 @@ void TFEditorIsovalue::paintPrimitive(QPainter* painter) {
     // draw square for indicating isovalue
     const auto width = getSize();
     painter->drawRect(QRectF(QPointF(-0.5f * width, -0.5f * width), QSizeF(width, width)));
-
 }
 
-void TFEditorIsovalue::onItemPositionChange(const vec2& newPos) {
-    data_->setPositionAlpha(newPos);
-}
+void TFEditorIsovalue::onItemPositionChange(const vec2& newPos) { data_->setPositionAlpha(newPos); }
 
 void TFEditorIsovalue::onItemSceneHasChanged() { onTFPrimitiveChange(data_); }
 
 double TFEditorIsovalue::getVerticalSceneScaling() const {
     double verticalScaling = 1.0;
     if (auto tfe = qobject_cast<TFEditor*>(scene())) {
-        verticalScaling = 1.0 / tfe->getZoom().y; ;
+        verticalScaling = 1.0 / tfe->getZoom().y;
+        ;
     }
     return verticalScaling;
 }
@@ -133,16 +130,10 @@ bool operator<(const TFEditorIsovalue& lhs, const TFEditorIsovalue& rhs) {
     return lhs.currentPos_.x() < rhs.currentPos_.x();
 }
 
-bool operator>(const TFEditorIsovalue& lhs, const TFEditorIsovalue& rhs) {
-    return rhs < lhs;
-}
+bool operator>(const TFEditorIsovalue& lhs, const TFEditorIsovalue& rhs) { return rhs < lhs; }
 
-bool operator<=(const TFEditorIsovalue& lhs, const TFEditorIsovalue& rhs) {
-    return !(rhs < lhs);
-}
+bool operator<=(const TFEditorIsovalue& lhs, const TFEditorIsovalue& rhs) { return !(rhs < lhs); }
 
-bool operator>=(const TFEditorIsovalue& lhs, const TFEditorIsovalue& rhs) {
-    return !(lhs < rhs);
-}
+bool operator>=(const TFEditorIsovalue& lhs, const TFEditorIsovalue& rhs) { return !(lhs < rhs); }
 
 }  // namespace inviwo

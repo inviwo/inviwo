@@ -55,8 +55,8 @@ Background::Background()
                          BackgroundStyle::LinearVertical},
                         {"linearGradientHorizontal", "Linear gradient (Horizontal)",
                          BackgroundStyle::LinearHorizontal},
-                        { "linearGradientSpherical", "Linear gradient (Spherical)",
-                        BackgroundStyle::LinearSpherical },
+                        {"linearGradientSpherical", "Linear gradient (Spherical)",
+                         BackgroundStyle::LinearSpherical},
                         {"uniformColor", "Uniform color", BackgroundStyle::Uniform},
                         {"checkerBoard", "Checker board", BackgroundStyle::CheckerBoard}},
                        0, InvalidationLevel::InvalidResources)
@@ -219,7 +219,7 @@ void Background::updateShaderInputs() {
         std::stringstream ssWrite;
         for (size_t i = 1; i < numColorLayers; ++i) {
             ssWrite << "FragData" << i << " = texture(color" << i << ", texCoord.xy);";
-            if(i<numColorLayers-1){
+            if (i < numColorLayers - 1) {
                 ssWrite << " \\";
             }
             ssWrite << "\n";
@@ -236,4 +236,4 @@ void Background::updateShaderInputs() {
     }
 }
 
-}  // namespace
+}  // namespace inviwo

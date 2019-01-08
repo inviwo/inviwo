@@ -29,6 +29,4 @@
 
 #include <modules/qtwidgets/properties/valuedragger.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

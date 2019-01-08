@@ -29,8 +29,4 @@
 
 #include <modules/base/algorithm/image/layerramdistancetransform.h>
 
-namespace inviwo {
-
-
-} // namespace
-
+namespace inviwo {}  // namespace inviwo

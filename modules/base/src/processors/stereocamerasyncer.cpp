@@ -34,11 +34,11 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo StereoCameraSyncer::processorInfo_{
-    "org.inviwo.StereoCameraSyncer",    // Class identifier
-    "Stereo Camera Syncer",             // Display name
-    "Camera",                           // Category
-    CodeState::Experimental,            // Code state
-    Tags::None,                         // Tags
+    "org.inviwo.StereoCameraSyncer",  // Class identifier
+    "Stereo Camera Syncer",           // Display name
+    "Camera",                         // Category
+    CodeState::Experimental,          // Code state
+    Tags::None,                       // Tags
 };
 const ProcessorInfo StereoCameraSyncer::getProcessorInfo() const { return processorInfo_; }
 
@@ -52,7 +52,7 @@ StereoCameraSyncer::StereoCameraSyncer()
     , right_("right", "Right", master_.getLookFrom() - separation_.get() / 2.0f,
              master_.getLookTo(), master_.getLookUp(), nullptr, InvalidationLevel::Valid) {
     addProperty(separation_);
-    
+
     addProperty(master_);
     addProperty(left_);
     addProperty(right_);
@@ -60,39 +60,43 @@ StereoCameraSyncer::StereoCameraSyncer()
     separation_.onChange([&]() {
         if (isChanging) return;
         util::KeepTrueWhileInScope guard(&isChanging);
-        left_.setLookFrom(master_.getLookFrom() - 0.5f * master_.getLookRight()*separation_.get());
-        right_.setLookFrom(master_.getLookFrom() + 0.5f * master_.getLookRight()*separation_.get());
+        left_.setLookFrom(master_.getLookFrom() -
+                          0.5f * master_.getLookRight() * separation_.get());
+        right_.setLookFrom(master_.getLookFrom() +
+                           0.5f * master_.getLookRight() * separation_.get());
     });
 
-    master_.onChange([&](){
-        if(isChanging) return;
+    master_.onChange([&]() {
+        if (isChanging) return;
         util::KeepTrueWhileInScope guard(&isChanging);
         left_.set(&master_);
-        left_.setLookFrom(master_.getLookFrom() - 0.5f * master_.getLookRight()*separation_.get());
+        left_.setLookFrom(master_.getLookFrom() -
+                          0.5f * master_.getLookRight() * separation_.get());
         right_.set(&master_);
-        right_.setLookFrom(master_.getLookFrom() + 0.5f * master_.getLookRight()*separation_.get());
+        right_.setLookFrom(master_.getLookFrom() +
+                           0.5f * master_.getLookRight() * separation_.get());
     });
 
     left_.onChange([&]() {
         if (isChanging) return;
         util::KeepTrueWhileInScope guard(&isChanging);
         master_.set(&left_);
-        master_.setLookFrom(left_.getLookFrom() + 0.5f * left_.getLookRight()*separation_.get());
+        master_.setLookFrom(left_.getLookFrom() + 0.5f * left_.getLookRight() * separation_.get());
         right_.set(&left_);
-        right_.setLookFrom(left_.getLookFrom() + 1.0f * left_.getLookRight()*separation_.get());
+        right_.setLookFrom(left_.getLookFrom() + 1.0f * left_.getLookRight() * separation_.get());
     });
 
     right_.onChange([&]() {
         if (isChanging) return;
         util::KeepTrueWhileInScope guard(&isChanging);
         master_.set(&right_);
-        master_.setLookFrom(right_.getLookFrom() - 0.5f * right_.getLookRight()*separation_.get());
+        master_.setLookFrom(right_.getLookFrom() -
+                            0.5f * right_.getLookRight() * separation_.get());
         left_.set(&right_);
-        left_.setLookFrom(right_.getLookFrom() - 1.0f * right_.getLookRight()*separation_.get());
+        left_.setLookFrom(right_.getLookFrom() - 1.0f * right_.getLookRight() * separation_.get());
     });
 }
 
-void StereoCameraSyncer::process() {
-}
+void StereoCameraSyncer::process() {}
 
-}  // namespace
+}  // namespace inviwo

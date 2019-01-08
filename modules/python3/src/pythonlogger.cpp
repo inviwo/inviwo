@@ -31,8 +31,7 @@
 
 namespace inviwo {
 
-void PythonLogger::onPyhonExecutionOutput(const std::string &msg,
-                                          PythonOutputType outputType) {
+void PythonLogger::onPyhonExecutionOutput(const std::string &msg, PythonOutputType outputType) {
     switch (outputType) {
         case PythonOutputType::sysstderr:
             LogError(msg);
@@ -43,4 +42,4 @@ void PythonLogger::onPyhonExecutionOutput(const std::string &msg,
     }
 }
 
-}  // namespace
+}  // namespace inviwo

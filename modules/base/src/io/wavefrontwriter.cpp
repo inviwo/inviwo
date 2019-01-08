@@ -38,12 +38,10 @@
 namespace inviwo {
 
 WaveFrontWriter::WaveFrontWriter() : DataWriterType<Mesh>() {
-    addExtension(FileExtension("obj","WaveFront Obj file format"));
+    addExtension(FileExtension("obj", "WaveFront Obj file format"));
 }
 
-WaveFrontWriter* WaveFrontWriter::clone() const {
-    return new WaveFrontWriter(*this);
-}
+WaveFrontWriter* WaveFrontWriter::clone() const { return new WaveFrontWriter(*this); }
 
 void WaveFrontWriter::writeData(const Mesh* data, const std::string filePath) const {
     if (filesystem::fileExists(filePath) && !getOverwrite()) {
@@ -150,49 +148,39 @@ void WaveFrontWriter::writeData(const Mesh* data, std::ostream& f) const {
         if (hasTextures && hasNormals) {
             return std::function<void(const size_t& i1, const size_t& i2, const size_t& i3)>(
                 [&f](const size_t& i1, const size_t& i2, const size_t& i3) -> void {
-                f << "f "
-                  << i1+1 << "/" << i1+1 << "/" << i1+1 << " "
-                  << i2+1 << "/" << i2+1 << "/" << i2+1 << " "
-                  << i3+1 << "/" << i3+1 << "/" << i3+1 << "\n";
-            });
+                    f << "f " << i1 + 1 << "/" << i1 + 1 << "/" << i1 + 1 << " " << i2 + 1 << "/"
+                      << i2 + 1 << "/" << i2 + 1 << " " << i3 + 1 << "/" << i3 + 1 << "/" << i3 + 1
+                      << "\n";
+                });
         } else if (hasNormals && !hasTextures) {
             return std::function<void(const size_t& i1, const size_t& i2, const size_t& i3)>(
                 [&f](const size_t& i1, const size_t& i2, const size_t& i3) -> void {
-                f << "f "
-                  << i1+1 << "//" << i1+1 << " "
-                  << i2+1 << "//" << i2+1 << " "
-                  << i3+1 << "//" << i3+1 << "\n";
-            });
+                    f << "f " << i1 + 1 << "//" << i1 + 1 << " " << i2 + 1 << "//" << i2 + 1 << " "
+                      << i3 + 1 << "//" << i3 + 1 << "\n";
+                });
         } else if (!hasNormals && hasTextures) {
             return std::function<void(const size_t& i1, const size_t& i2, const size_t& i3)>(
                 [&f](const size_t& i1, const size_t& i2, const size_t& i3) -> void {
-                f << "f "
-                  << i1+1 << "/" << i1+1 << " "
-                  << i2+1 << "/" << i2+1 << " "
-                  << i3+1 << "/" << i3+1 << "\n";
-            });
-        } else { // only verties
+                    f << "f " << i1 + 1 << "/" << i1 + 1 << " " << i2 + 1 << "/" << i2 + 1 << " "
+                      << i3 + 1 << "/" << i3 + 1 << "\n";
+                });
+        } else {  // only verties
             return std::function<void(const size_t& i1, const size_t& i2, const size_t& i3)>(
                 [&f](const size_t& i1, const size_t& i2, const size_t& i3) -> void {
-                f << "f " << i1+1 << " " << i2+1 << " " << i3+1  << "\n";
-            });
+                    f << "f " << i1 + 1 << " " << i2 + 1 << " " << i3 + 1 << "\n";
+                });
         }
     }();
-
 
     std::function<void(const size_t& i)> line = [&]() {
         if (hasTextures) {
             return std::function<void(const size_t& i)>(
-                [&f](const size_t& i) -> void {
-                f << i+1 << "/" << i+1;
-            });
-        } else { // only verties
+                [&f](const size_t& i) -> void { f << i + 1 << "/" << i + 1; });
+        } else {  // only verties
             return std::function<void(const size_t& i)>(
-                [&f](const size_t& i) -> void { f << i+1;
-            });
+                [&f](const size_t& i) -> void { f << i + 1; });
         }
     }();
-
 
     f << "# list of primitives\n";
     for (const auto& inds : data->getIndexBuffers()) {
@@ -283,7 +271,7 @@ void WaveFrontWriter::writeData(const Mesh* data, std::ostream& f) const {
                     }
                     case ConnectivityType::StripAdjacency: {
                         f << "l ";
-                        for (size_t i = 1; i < indices.size()-1u; i += 1u) {
+                        for (size_t i = 1; i < indices.size() - 1u; i += 1u) {
                             line(indices[i]);
                             f << " ";
                         }
@@ -317,5 +305,4 @@ void WaveFrontWriter::writeData(const Mesh* data, std::ostream& f) const {
     }
 }
 
-} // namespace
-
+}  // namespace inviwo

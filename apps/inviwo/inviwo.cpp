@@ -57,8 +57,9 @@ int main(int argc, char** argv) {
     logger.registerLogger(logCounter);
 #ifdef __linux__
     /*
-     * Suppress warning "QApplication: invalid style override passed, ignoring it." when starting Inviwo on Linux.
-     * See https://forum.qt.io/topic/75398/qt-5-8-0-qapplication-invalid-style-override-passed-ignoring-it/2
+     * Suppress warning "QApplication: invalid style override passed, ignoring it." when starting
+     * Inviwo on Linux. See
+     * https://forum.qt.io/topic/75398/qt-5-8-0-qapplication-invalid-style-override-passed-ignoring-it/2
      */
     qputenv("QT_STYLE_OVERRIDE", "");
 #endif

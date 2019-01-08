@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/basegl/processors/volumeprocessing/volumediff.h>
@@ -41,12 +41,10 @@ const ProcessorInfo VolumeDiff::processorInfo_{
     "org.inviwo.VolumeDiff",  // Class identifier
     "Volume Difference",      // Display name
     "Volume Operation",       // Category
-    CodeState::Stable,  // Code state
+    CodeState::Stable,        // Code state
     Tags::GL,                 // Tags
 };
-const ProcessorInfo VolumeDiff::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo VolumeDiff::getProcessorInfo() const { return processorInfo_; }
 
 VolumeDiff::VolumeDiff() : VolumeGLProcessor("volume_difference.frag"), vol2_("volume2") {
     addPort(vol2_);
@@ -56,5 +54,4 @@ void VolumeDiff::preProcess(TextureUnitContainer &cont) {
     utilgl::bindAndSetUniforms(shader_, cont, *vol2_.getData(), "volume2");
 }
 
-}  // namespace
-
+}  // namespace inviwo

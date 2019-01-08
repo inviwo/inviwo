@@ -29,8 +29,4 @@
 
 #include <modules/base/datastructures/disjointsets.h>
 
-namespace inviwo {
-
-
-} // namespace
-
+namespace inviwo {}  // namespace inviwo

@@ -69,5 +69,4 @@ std::pair<dvec4, dvec4> util::bufferMinMax(const BufferBase* buffer, IgnoreSpeci
     return util::bufferMinMax(buffer->getRepresentation<BufferRAM>(), ignore);
 }
 
-} // namespace
-
+}  // namespace inviwo

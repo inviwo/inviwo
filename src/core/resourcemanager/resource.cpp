@@ -31,9 +31,6 @@
 
 namespace inviwo {
 
-Resource::Resource(const std::string &key) : key_(key)  {
-    
-}
+Resource::Resource(const std::string &key) : key_(key) {}
 
-} // namespace
-
+}  // namespace inviwo

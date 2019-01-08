@@ -111,8 +111,8 @@ void EditableLabelQt::edit() {
     getLineEdit()->setText(QString::fromStdString(text_));
     label_->hide();
     auto le = getLineEdit();
-    le->show();     
-    le->setCursorPosition(le->text().size());   
+    le->show();
+    le->setCursorPosition(le->text().size());
     le->setFocus();
 }
 

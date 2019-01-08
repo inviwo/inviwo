@@ -24,15 +24,12 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/opencl/image/layerclbase.h>
 
-namespace inviwo {
-
-
-} // namespace
+namespace inviwo {}  // namespace inviwo
 
 namespace cl {
 
@@ -41,4 +38,4 @@ cl_int Kernel::setArg(cl_uint index, const inviwo::LayerCLBase& value) {
     return setArg(index, value.get());
 }
 
-} // namespace cl
+}  // namespace cl

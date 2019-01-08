@@ -54,4 +54,4 @@ size_t util::volumeSignificantVoxels(const VolumeRAM* volume, IgnoreSpecialValue
     });
 }
 
-}  // namespace
+}  // namespace inviwo

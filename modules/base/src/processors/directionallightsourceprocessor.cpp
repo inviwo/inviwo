@@ -80,7 +80,7 @@ void DirectionalLightSourceProcessor::updateDirectionalLightSource(DirectionalLi
     vec3 dir;
     switch (
         static_cast<PositionProperty::Space>(lightPosition_.referenceFrame_.getSelectedValue())) {
-        case PositionProperty::Space::VIEW: 
+        case PositionProperty::Space::VIEW:
             dir = glm::normalize(camera_.getLookTo() - lightPos);
             break;
         case PositionProperty::Space::WORLD:

@@ -39,9 +39,7 @@ const ProcessorInfo ExampleProgressBar::processorInfo_{
     CodeState::Experimental,          // Code state
     Tags::None,                       // Tags
 };
-const ProcessorInfo ExampleProgressBar::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo ExampleProgressBar::getProcessorInfo() const { return processorInfo_; }
 
 ExampleProgressBar::ExampleProgressBar()
     : Processor(), inport_("inputImage"), outport_("outputImage") {
@@ -77,5 +75,4 @@ void ExampleProgressBar::process() {
     outport_.setData(inport_.getData());
 }
 
-}  // inviwo namespace
-
+}  // namespace inviwo

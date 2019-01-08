@@ -80,5 +80,5 @@ std::shared_ptr<Volume> gradientVolume(std::shared_ptr<const Volume> volume, int
     return newVolume;
 }
 
-}  // namespace
-}  // namespace
+}  // namespace util
+}  // namespace inviwo

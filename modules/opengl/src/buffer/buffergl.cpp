@@ -34,11 +34,11 @@ namespace inviwo {
 BufferGL::BufferGL(size_t size, const DataFormatBase* format, BufferUsage usage,
                    BufferTarget target, std::shared_ptr<BufferObject> data)
     : BufferRepresentation(format, usage, target)
-    , buffer_(data ? data : std::make_shared<BufferObject>(size * format->getSize(), format, usage,
-                                                           target))
+    , buffer_(data
+                  ? data
+                  : std::make_shared<BufferObject>(size * format->getSize(), format, usage, target))
     , bufferArray_(nullptr)
-    , size_(size) {
-}
+    , size_(size) {}
 
 BufferGL::BufferGL(const BufferGL& rhs)
     : BufferRepresentation(rhs)
@@ -85,4 +85,4 @@ void BufferGL::disable() const {
 
 std::type_index BufferGL::getTypeIndex() const { return std::type_index(typeid(BufferGL)); }
 
-}  // namespace
+}  // namespace inviwo

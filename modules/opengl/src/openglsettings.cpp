@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/common/inviwoapplication.h>
@@ -51,14 +51,16 @@ OpenGLSettings::OpenGLSettings()
                           {{"warn", "Print warning", Shader::OnError::Warn},
                            {"throw", "Throw error", Shader::OnError::Throw}},
                           0)
-    , debugMessages_("debugMessages", "Debug", {{utilgl::debug::Mode::Off},
-                                                {utilgl::debug::Mode::Debug},
-                                                {utilgl::debug::Mode::DebugSynchronous}},
+    , debugMessages_("debugMessages", "Debug",
+                     {{utilgl::debug::Mode::Off},
+                      {utilgl::debug::Mode::Debug},
+                      {utilgl::debug::Mode::DebugSynchronous}},
                      0)
-    , debugSeverity_("debugSeverity", "Severity", {{utilgl::debug::Severity::Notification},
-                                                   {utilgl::debug::Severity::Low},
-                                                   {utilgl::debug::Severity::Medium},
-                                                   {utilgl::debug::Severity::High}},
+    , debugSeverity_("debugSeverity", "Severity",
+                     {{utilgl::debug::Severity::Notification},
+                      {utilgl::debug::Severity::Low},
+                      {utilgl::debug::Severity::Medium},
+                      {utilgl::debug::Severity::High}},
                      2)
     , breakOnMessage_("breakOnMessage", "Break on Message",
                       {{utilgl::debug::BreakLevel::Off},
@@ -79,9 +81,8 @@ OpenGLSettings::OpenGLSettings()
 
     breakOnMessage_.setVisible(false);
 
-    debugSeverity_.onChange([&](){
-        utilgl::handleOpenGLDebugMessagesChange(debugSeverity_.getSelectedValue());
-    });
+    debugSeverity_.onChange(
+        [&]() { utilgl::handleOpenGLDebugMessagesChange(debugSeverity_.getSelectedValue()); });
 
     debugMessages_.onChange([this]() {
         if (debugMessages_.getSelectedValue() == utilgl::debug::Mode::DebugSynchronous) {
@@ -96,4 +97,4 @@ OpenGLSettings::OpenGLSettings()
     load();
 }
 
-} // namespace
+}  // namespace inviwo

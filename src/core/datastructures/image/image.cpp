@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/image/image.h>
@@ -111,15 +111,14 @@ Image& Image::operator=(const Image& that) {
     return *this;
 }
 
-Image* Image::clone() const {
-    return new Image(*this);
-}
+Image* Image::clone() const { return new Image(*this); }
 
 std::shared_ptr<Layer> Image::createColorLayer(size2_t dimensions, const DataFormatBase* format) {
     return std::make_shared<Layer>(dimensions, format, LayerType::Color);
 }
 std::shared_ptr<Layer> Image::createDepthLayer(size2_t dimensions) {
-    return std::make_shared<Layer>(dimensions, DataFloat32::get(), LayerType::Depth, swizzlemasks::depth);
+    return std::make_shared<Layer>(dimensions, DataFloat32::get(), LayerType::Depth,
+                                   swizzlemasks::depth);
 }
 std::shared_ptr<Layer> Image::createPickingLayer(size2_t dimensions, const DataFormatBase* format) {
     return std::make_shared<Layer>(dimensions, format, LayerType::Picking);
@@ -149,41 +148,23 @@ Layer* Image::getLayer(LayerType type, size_t idx) {
     return nullptr;
 }
 
-const Layer* Image::getColorLayer(size_t idx) const {
-    return colorLayers_[idx].get();
-}
+const Layer* Image::getColorLayer(size_t idx) const { return colorLayers_[idx].get(); }
 
-Layer* Image::getColorLayer(size_t idx) {
-    return colorLayers_[idx].get();
-}
+Layer* Image::getColorLayer(size_t idx) { return colorLayers_[idx].get(); }
 
-void Image::addColorLayer(std::shared_ptr<Layer> layer) {
-    colorLayers_.push_back(layer);
-}
+void Image::addColorLayer(std::shared_ptr<Layer> layer) { colorLayers_.push_back(layer); }
 
-size_t Image::getNumberOfColorLayers() const {
-    return colorLayers_.size();
-}
+size_t Image::getNumberOfColorLayers() const { return colorLayers_.size(); }
 
-const Layer* Image::getDepthLayer() const {
-    return depthLayer_.get();
-}
+const Layer* Image::getDepthLayer() const { return depthLayer_.get(); }
 
-Layer* Image::getDepthLayer() {
-    return depthLayer_.get();
-}
+Layer* Image::getDepthLayer() { return depthLayer_.get(); }
 
-const Layer* Image::getPickingLayer() const {
-    return pickingLayer_.get();
-}
+const Layer* Image::getPickingLayer() const { return pickingLayer_.get(); }
 
-Layer* Image::getPickingLayer() {
-    return pickingLayer_.get();
-}
+Layer* Image::getPickingLayer() { return pickingLayer_.get(); }
 
-size2_t Image::getDimensions() const {
-    return getColorLayer()->getDimensions();
-}
+size2_t Image::getDimensions() const { return getColorLayer()->getDimensions(); }
 
 void Image::setDimensions(size2_t dimensions) {
     for (auto layer : colorLayers_) layer->setDimensions(dimensions);
@@ -224,7 +205,7 @@ void Image::copyRepresentationsTo(Image* targetImage) const {
 
     auto& targets = targetImage->representations_;
     std::vector<std::pair<size_t, std::type_index>> order;
-    for(const auto& elem: targets) order.emplace_back(elem.second->priority(), elem.first);
+    for (const auto& elem : targets) order.emplace_back(elem.second->priority(), elem.first);
     std::sort(order.begin(), order.end(),
               [](const auto& a, const auto& b) { return a.first < b.first; });
 
@@ -252,9 +233,7 @@ void Image::copyRepresentationsTo(Image* targetImage) const {
     }
 }
 
-const DataFormatBase* Image::getDataFormat() const {
-    return getColorLayer()->getDataFormat();
-}
+const DataFormatBase* Image::getDataFormat() const { return getColorLayer()->getDataFormat(); }
 
 dvec4 Image::readPixel(size2_t pos, LayerType layer, size_t index) const {
     std::vector<std::pair<size_t, ImageRepresentation*>> order;
@@ -279,14 +258,14 @@ Document Image::getInfo() const {
     using H = utildoc::TableBuilder::Header;
     using P = Document::PathComponent;
     Document doc;
-    doc.append("b", "Image", { {"style", "color:white;"} });
+    doc.append("b", "Image", {{"style", "color:white;"}});
     utildoc::TableBuilder tb(doc.handle(), P::end());
     tb(H("Color channels"), colorLayers_.size());
     tb(H("Depth"), getDepthLayer() ? "Yes" : "No");
     tb(H("Picking"), getPickingLayer() ? "Yes" : "No");
     tb(H("Format"), getDataFormat()->getString());
     auto dims = getDimensions();
-    double ar = static_cast<double>(dims.x)/static_cast<double>(dims.y);
+    double ar = static_cast<double>(dims.x) / static_cast<double>(dims.y);
     tb(H("Dimension"), dims);
     tb(H("Aspect Ratio"), ar);
 
@@ -296,4 +275,4 @@ Document Image::getInfo() const {
 template class IVW_CORE_TMPL_INST DataReaderType<Image>;
 template class IVW_CORE_TMPL_INST DataWriterType<Image>;
 
-} // namespace
+}  // namespace inviwo

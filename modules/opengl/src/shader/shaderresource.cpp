@@ -35,8 +35,7 @@
 namespace inviwo {
 
 FileShaderResource::FileShaderResource(const std::string& key, const std::string& fileName)
-    : FileObserver(fileName), key_(key), fileName_(fileName) {
-}
+    : FileObserver(fileName), key_(key), fileName_(fileName) {}
 
 std::unique_ptr<ShaderResource> FileShaderResource::clone() {
     return util::make_unique<FileShaderResource>(key_, fileName_);
@@ -55,9 +54,9 @@ std::string FileShaderResource::source() const {
 
 std::string FileShaderResource::file() const { return fileName_; }
 
-void FileShaderResource::fileChanged(const std::string& /*fileName*/) { 
+void FileShaderResource::fileChanged(const std::string& /*fileName*/) {
     cache_ = "";
-    callbacks_.invoke(this); 
+    callbacks_.invoke(this);
 }
 
 StringShaderResource::StringShaderResource(const std::string& key, const std::string& source)
@@ -76,4 +75,4 @@ void StringShaderResource::setSource(const std::string& source) {
     callbacks_.invoke(this);
 }
 
-}  // namespace
+}  // namespace inviwo

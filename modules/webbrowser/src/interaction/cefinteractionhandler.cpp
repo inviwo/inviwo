@@ -157,17 +157,17 @@ CefKeyEvent CEFInteractionHandler::mapKeyEvent(const KeyboardEvent* e) {
     CefKeyEvent cefEvent;
 
     // TODO: Fix key code translation to match the ones used in CEF
-    //cefEvent.type = e->state() & KeyState::Press ? KEYEVENT_RAWKEYDOWN : KEYEVENT_CHAR;
+    // cefEvent.type = e->state() & KeyState::Press ? KEYEVENT_RAWKEYDOWN : KEYEVENT_CHAR;
     cefEvent.type = e->state() & KeyState::Press ? KEYEVENT_KEYDOWN : KEYEVENT_KEYUP;
     // Convert character to UTF16
-#if _MSC_VER 
-	// Linker error when using char16_t in visual studio
-	// https://social.msdn.microsoft.com/Forums/vstudio/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481/vs-2015-rc-linker-stdcodecvt-error?forum=vcgeneral
-	auto textUTF16 = std::wstring_convert<std::codecvt_utf8_utf16<uint16_t>, uint16_t>{}
-	.from_bytes(e->text().data());
-#else 
-	auto textUTF16 = std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>{}
-	.from_bytes(e->text().data());
+#if _MSC_VER
+    // Linker error when using char16_t in visual studio
+    // https://social.msdn.microsoft.com/Forums/vstudio/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481/vs-2015-rc-linker-stdcodecvt-error?forum=vcgeneral
+    auto textUTF16 = std::wstring_convert<std::codecvt_utf8_utf16<uint16_t>, uint16_t>{}.from_bytes(
+        e->text().data());
+#else
+    auto textUTF16 = std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>{}.from_bytes(
+        e->text().data());
 #endif
 
     if (textUTF16.length() > 0) {
@@ -175,7 +175,7 @@ CefKeyEvent CEFInteractionHandler::mapKeyEvent(const KeyboardEvent* e) {
     } else {
         cefEvent.character = 0;
     }
-    
+
     cefEvent.native_key_code = e->getNativeVirtualKey();
 
 #ifdef _WINDOWS

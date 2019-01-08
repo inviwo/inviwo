@@ -27,7 +27,6 @@
  *
  *********************************************************************************/
 
-
 #include <modules/python3/processors/numpyvolume.h>
 #include <modules/python3/python3module.h>
 #include <pybind11/pybind11.h>
@@ -42,38 +41,34 @@ const ProcessorInfo NumPyVolume::processorInfo_{
     CodeState::Experimental,   // Code state
     {"Python"},                // Tags
 };
-const ProcessorInfo NumPyVolume::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo NumPyVolume::getProcessorInfo() const { return processorInfo_; }
 
 NumPyVolume::NumPyVolume()
     : Processor()
     , outport_("outport")
     , size_("size", "Size", size3_t(64), size3_t(32), size3_t(512))
-    , script_(InviwoApplication::getPtr()->getModuleByType<Python3Module>()->getPath(ModulePath::Scripts) + "/numpyvolumeprocessor.py")
+    , script_(InviwoApplication::getPtr()->getModuleByType<Python3Module>()->getPath(
+                  ModulePath::Scripts) +
+              "/numpyvolumeprocessor.py")
 
 {
-    
+
     addPort(outport_);
     addProperty(size_);
 
-    script_.onChange([&]() {invalidate(InvalidationLevel::InvalidOutput); });
-
+    script_.onChange([&]() { invalidate(InvalidationLevel::InvalidOutput); });
 }
-    
+
 void NumPyVolume::process() {
     auto vol = std::make_shared<Volume>(size_.get(), DataFloat32::get());
 
     auto volObj = pybind11::cast(vol.get());
 
-    script_.run({
-        {"vol" , volObj}
-    }); 
+    script_.run({{"vol", volObj}});
 
-    vol->dataMap_.dataRange = dvec2(0,1);
+    vol->dataMap_.dataRange = dvec2(0, 1);
 
     outport_.setData(vol);
 }
 
-} // namespace
-
+}  // namespace inviwo

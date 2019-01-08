@@ -46,5 +46,4 @@ bool operator<(const ProcessorPair& p1, const ProcessorPair& p2) {
     }
 }
 
-} // namespace
-
+}  // namespace inviwo

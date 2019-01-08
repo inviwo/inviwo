@@ -42,7 +42,7 @@ const ProcessorInfo AxisRenderProcessor::processorInfo_{
     "org.inviwo.AxisRenderProcessor",  // Class identifier
     "Axis Render Processor",           // Display name
     "Plotting",                        // Category
-    CodeState::Stable,           // Code state
+    CodeState::Stable,                 // Code state
     "GL, Plotting, Demo",              // Tags
 };
 const ProcessorInfo AxisRenderProcessor::getProcessorInfo() const { return processorInfo_; }

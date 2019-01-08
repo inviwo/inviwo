@@ -38,9 +38,9 @@ PlaneProperty::PlaneProperty(const std::string& identifier, const std::string& d
                              InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : BoolCompositeProperty(identifier, displayName, true, invalidationLevel, semantics)
     , position_("position", "Position", position, vec3(0.0f), vec3(1.0f), vec3(0.01f),
-             InvalidationLevel::InvalidOutput, PropertySemantics("SpinBox"))
+                InvalidationLevel::InvalidOutput, PropertySemantics("SpinBox"))
     , normal_("normal", "Normal", normal, vec3(-1.0f), vec3(1.0f), vec3(0.01f),
-             InvalidationLevel::InvalidOutput, PropertySemantics("SpinBox"))
+              InvalidationLevel::InvalidOutput, PropertySemantics("SpinBox"))
     , color_("color", "Color", color, vec4(0.0f), vec4(1.0f), vec4(0.01f),
              InvalidationLevel::InvalidOutput, PropertySemantics::Color) {
 

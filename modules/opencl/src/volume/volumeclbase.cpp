@@ -40,7 +40,7 @@ VolumeCLBase::VolumeCLBase()
     : volumeStruct_(std::make_shared<BufferRAMPrecision<glm::u8>>(sizeof(VolumeParameters))) {
     ivwAssert(volumeStruct_.getSize() == 512,
               "VolumeParameters must have a size that is power of two, currently "
-              << volumeStruct_.getSize());
+                  << volumeStruct_.getSize());
 }
 
 VolumeCLBase::VolumeCLBase(const VolumeCLBase&)
@@ -58,9 +58,9 @@ vec2 VolumeCLBase::getVolumeDataOffsetAndScaling(const Volume* volume) const {
 
     // We are not using the signed versions for now.
     double scalingFactor = 1.0;
-    //double signedScalingFactor = 1.0;
+    // double signedScalingFactor = 1.0;
     double offset = 0.0;
-    //double signedOffset = 0.0;
+    // double signedOffset = 0.0;
 
     double invRange = 1.0 / (dataRange.y - dataRange.x);
     double defaultToDataRange = (defaultRange.dataRange.y - defaultRange.dataRange.x) * invRange;
@@ -71,20 +71,20 @@ vec2 VolumeCLBase::getVolumeDataOffsetAndScaling(const Volume* volume) const {
         case CLFormats::Normalization::None:
             scalingFactor = invRange;
             offset = -dataRange.x;
-            //signedScalingFactor = scalingFactor;
-            //signedOffset = offset;
+            // signedScalingFactor = scalingFactor;
+            // signedOffset = offset;
             break;
         case CLFormats::Normalization::Normalized:
             scalingFactor = defaultToDataRange;
             offset = -defaultToDataOffset;
-            //signedScalingFactor = scalingFactor;
-            //signedOffset = offset;
+            // signedScalingFactor = scalingFactor;
+            // signedOffset = offset;
             break;
         case CLFormats::Normalization::SignNormalized:
             scalingFactor = 0.5 * defaultToDataRange;
             offset = 1.0 - 2 * defaultToDataOffset;
-            //signedScalingFactor = defaultToDataRange;
-            //signedOffset = -defaultToDataOffset;
+            // signedScalingFactor = defaultToDataRange;
+            // signedOffset = -defaultToDataOffset;
             break;
     }
     return vec2(offset, scalingFactor);
@@ -92,8 +92,10 @@ vec2 VolumeCLBase::getVolumeDataOffsetAndScaling(const Volume* volume) const {
 
 const Buffer<glm::u8>& VolumeCLBase::getVolumeStruct(const Volume* volume) const {
     // Update data before returning it
-    VolumeParameters* volumeStruct = static_cast<VolumeParameters*>(
-        const_cast<Buffer<glm::u8>&>(volumeStruct_).getEditableRepresentation<BufferRAM>()->getData());
+    VolumeParameters* volumeStruct =
+        static_cast<VolumeParameters*>(const_cast<Buffer<glm::u8>&>(volumeStruct_)
+                                           .getEditableRepresentation<BufferRAM>()
+                                           ->getData());
 
     volumeStruct->modelToWorld = volume->getCoordinateTransformer().getModelToWorldMatrix();
     volumeStruct->worldToModel = volume->getCoordinateTransformer().getWorldToModelMatrix();
@@ -163,7 +165,7 @@ const Buffer<glm::u8>& VolumeCLBase::getVolumeStruct(const Volume* volume) const
     return volumeStruct_;
 }
 
-}  // namespace
+}  // namespace inviwo
 
 namespace cl {
 

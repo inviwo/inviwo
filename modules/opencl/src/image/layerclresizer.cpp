@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/common/inviwoapplication.h>
@@ -46,24 +46,28 @@ LayerCLResizer::LayerCLResizer() {
     }
 }
 
-void LayerCLResizer::resize(const cl::Image& src, const cl::Image& dst, const size2_t& resizeToDimension)
-{
+void LayerCLResizer::resize(const cl::Image& src, const cl::Image& dst,
+                            const size2_t& resizeToDimension) {
     static LayerCLResizer instance;
 
     try {
         instance.getResizeKernel()->setArg(0, src);
         instance.getResizeKernel()->setArg(1, dst);
         cl::Event event;
-        OpenCL::getPtr()->getQueue().enqueueNDRangeKernel(instance.resizeKernel_, cl::NullRange, cl::NDRange(resizeToDimension[0],
-                resizeToDimension[1]),
-                cl::NullRange, nullptr, &event);
+        OpenCL::getPtr()->getQueue().enqueueNDRangeKernel(
+            instance.resizeKernel_, cl::NullRange,
+            cl::NDRange(resizeToDimension[0], resizeToDimension[1]), cl::NullRange, nullptr,
+            &event);
         event.wait();
 #if IVW_PROFILING
-        LogInfoCustom("LayerCLResizer", "Image resizing from (" << src.getImageInfo<CL_IMAGE_WIDTH>() << ", " << src.getImageInfo<CL_IMAGE_HEIGHT>()
-                      << ") to (" << resizeToDimension.x << ", " << resizeToDimension.y << ") in " << event.getElapsedTime() << " ms");
+        LogInfoCustom("LayerCLResizer", "Image resizing from ("
+                                            << src.getImageInfo<CL_IMAGE_WIDTH>() << ", "
+                                            << src.getImageInfo<CL_IMAGE_HEIGHT>() << ") to ("
+                                            << resizeToDimension.x << ", " << resizeToDimension.y
+                                            << ") in " << event.getElapsedTime() << " ms");
 #endif
     } catch (cl::Error& err) {
         LogErrorCustom("LayerCLResizer", getCLErrorString(err));
     }
 }
-} // namespace
+}  // namespace inviwo

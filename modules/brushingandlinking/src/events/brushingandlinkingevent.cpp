@@ -44,10 +44,6 @@ const inviwo::BrushingAndLinkingInport* BrushingAndLinkingEvent::getSource() con
 
 const std::unordered_set<size_t>& BrushingAndLinkingEvent::getIndices() const { return indices_; }
 
+uint64_t BrushingAndLinkingEvent::hash() const { return chash(); }
 
-uint64_t BrushingAndLinkingEvent::hash() const {
-    return chash();
-}
-
-
-}  // namespace
+}  // namespace inviwo

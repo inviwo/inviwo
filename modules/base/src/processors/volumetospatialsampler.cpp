@@ -34,29 +34,23 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VolumeToSpatialSampler::processorInfo_{
-    "org.inviwo.VolumeToSpatialSampler",      // Class identifier
-    "Volume To Spatial Sampler",                // Display name
-    "Spatial Sampler",              // Category
-    CodeState::Experimental,  // Code state
-    Tags::None,               // Tags
+    "org.inviwo.VolumeToSpatialSampler",  // Class identifier
+    "Volume To Spatial Sampler",          // Display name
+    "Spatial Sampler",                    // Category
+    CodeState::Experimental,              // Code state
+    Tags::None,                           // Tags
 };
-const ProcessorInfo VolumeToSpatialSampler::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo VolumeToSpatialSampler::getProcessorInfo() const { return processorInfo_; }
 
 VolumeToSpatialSampler::VolumeToSpatialSampler()
-    : Processor()
-    , volume_("volume")
-    , sampler_("sampler")
-{    
+    : Processor(), volume_("volume"), sampler_("sampler") {
     addPort(volume_);
     addPort(sampler_);
 }
-    
+
 void VolumeToSpatialSampler::process() {
-    auto sampler = std::make_shared< VolumeDoubleSampler<3>>(volume_.getData());
+    auto sampler = std::make_shared<VolumeDoubleSampler<3>>(volume_.getData());
     sampler_.setData(sampler);
 }
 
-} // namespace
-
+}  // namespace inviwo

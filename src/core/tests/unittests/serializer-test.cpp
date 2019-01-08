@@ -60,23 +60,23 @@ T serializationOfType(T inValue) {
 }
 
 #define TYPE_TEST(n, T, v)                                                                   \
-    TEST(SerializationTest, n##TypeTest) {                                                     \
+    TEST(SerializationTest, n##TypeTest) {                                                   \
         EXPECT_NEAR((T)(v), serializationOfType((T)(v)), std::numeric_limits<T>::epsilon()); \
     }
 #define MIN_TEST(n, T)                                                  \
-    TEST(SerializationTest, n##MinTest) {                                 \
+    TEST(SerializationTest, n##MinTest) {                               \
         EXPECT_NEAR(std::numeric_limits<T>::min(),                      \
                     serializationOfType(std::numeric_limits<T>::min()), \
                     std::numeric_limits<T>::epsilon());                 \
     }
 #define MAX_TEST(n, T)                                                  \
-    TEST(SerializationTest, n##MaxTest) {                                 \
+    TEST(SerializationTest, n##MaxTest) {                               \
         EXPECT_NEAR(std::numeric_limits<T>::max(),                      \
                     serializationOfType(std::numeric_limits<T>::max()), \
                     std::numeric_limits<T>::epsilon());                 \
     }
 #define EPSILON_TEST(n, T)                                                  \
-    TEST(SerializationTest, n##EpsilonTest) {                                 \
+    TEST(SerializationTest, n##EpsilonTest) {                               \
         EXPECT_NEAR(std::numeric_limits<T>::epsilon(),                      \
                     serializationOfType(std::numeric_limits<T>::epsilon()), \
                     std::numeric_limits<T>::epsilon());                     \
@@ -100,17 +100,17 @@ TYPE_TEST(oneMinusEpsilonDobuleTest, double, oneMinusEpsilonD)
 #define TYPE_TEST(n, T, v) \
     TEST(SerializationTest, n##TypeTest) { EXPECT_EQ((T)(v), serializationOfType((T)(v))); }
 #define MIN_TEST(n, T)                                                 \
-    TEST(SerializationTest, n##MinTest) {                                \
+    TEST(SerializationTest, n##MinTest) {                              \
         EXPECT_EQ(std::numeric_limits<T>::min(),                       \
                   serializationOfType(std::numeric_limits<T>::min())); \
     }
 #define MAX_TEST(n, T)                                                 \
-    TEST(SerializationTest, n##MaxTest) {                                \
+    TEST(SerializationTest, n##MaxTest) {                              \
         EXPECT_EQ(std::numeric_limits<T>::max(),                       \
                   serializationOfType(std::numeric_limits<T>::max())); \
     }
 #define EPSILON_TEST(n, T)                                                 \
-    TEST(SerializationTest, n##EpsilonTest) {                                \
+    TEST(SerializationTest, n##EpsilonTest) {                              \
         EXPECT_EQ(std::numeric_limits<T>::epsilon(),                       \
                   serializationOfType(std::numeric_limits<T>::epsilon())); \
     }
@@ -161,7 +161,7 @@ TEST(SerializationTest, IvwSerializableClassTest) {
 }
 
 TEST(SerializationTest, IvwSerializableClassAsPointerTest) {
-    MinimumSerilizableClass* inValue = new MinimumSerilizableClass(12), * outValue = 0;
+    MinimumSerilizableClass *inValue = new MinimumSerilizableClass(12), *outValue = 0;
     std::string refpath = filesystem::findBasePath();
     std::stringstream ss;
     Serializer serializer(refpath);
@@ -383,4 +383,4 @@ TEST(SerializationTest, mat4Tests) {
     for (int i = 0; i < s; i++)
         for (int j = 0; j < s; j++) EXPECT_EQ(inMat[i][j], outMat[i][j]);
 }
-}
+}  // namespace inviwo

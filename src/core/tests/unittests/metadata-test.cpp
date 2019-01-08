@@ -71,4 +71,4 @@ void testserialization(T def, T in) {
 #define MetaDataMacro(n, t, d, v) \
     TEST(MetaDataTest, n##SerializationTest) { testserialization<t, n##MetaData>(d, v); }
 #include <inviwo/core/metadata/metadatadefinefunc.h>
-}
+}  // namespace inviwo

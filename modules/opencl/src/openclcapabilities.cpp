@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/opencl/openclcapabilities.h>
@@ -100,67 +100,67 @@ std::string imageFormatToString(const cl::ImageFormat& format) {
 
     switch (format.image_channel_data_type) {
         case CL_SNORM_INT8:
-            type =          "CL_SNORM_INT8";
+            type = "CL_SNORM_INT8";
             break;
 
         case CL_SNORM_INT16:
-            type =         "CL_SNORM_INT16";
+            type = "CL_SNORM_INT16";
             break;
 
         case CL_UNORM_INT8:
-            type =          "CL_UNORM_INT8";
+            type = "CL_UNORM_INT8";
             break;
 
         case CL_UNORM_INT16:
-            type =         "CL_UNORM_INT16";
+            type = "CL_UNORM_INT16";
             break;
 
         case CL_UNORM_SHORT_565:
-            type =     "CL_UNORM_SHORT_565";
+            type = "CL_UNORM_SHORT_565";
             break;
 
         case CL_UNORM_SHORT_555:
-            type =     "CL_UNORM_SHORT_555";
+            type = "CL_UNORM_SHORT_555";
             break;
 
         case CL_UNORM_INT_101010:
-            type =    "CL_UNORM_INT_101010";
+            type = "CL_UNORM_INT_101010";
             break;
 
         case CL_SIGNED_INT8:
-            type =         "CL_SIGNED_INT8";
+            type = "CL_SIGNED_INT8";
             break;
 
         case CL_SIGNED_INT16:
-            type =        "CL_SIGNED_INT16";
+            type = "CL_SIGNED_INT16";
             break;
 
         case CL_SIGNED_INT32:
-            type =        "CL_SIGNED_INT32";
+            type = "CL_SIGNED_INT32";
             break;
 
         case CL_UNSIGNED_INT8:
-            type =       "CL_UNSIGNED_INT8";
+            type = "CL_UNSIGNED_INT8";
             break;
 
         case CL_UNSIGNED_INT16:
-            type =      "CL_UNSIGNED_INT16";
+            type = "CL_UNSIGNED_INT16";
             break;
 
         case CL_UNSIGNED_INT32:
-            type =      "CL_UNSIGNED_INT32";
+            type = "CL_UNSIGNED_INT32";
             break;
 
         case CL_HALF_FLOAT:
-            type =          "CL_HALF_FLOAT";
+            type = "CL_HALF_FLOAT";
             break;
 
         case CL_FLOAT:
-            type =               "CL_FLOAT";
+            type = "CL_FLOAT";
             break;
 
         default:
-            type =                     "unkown data type";
+            type = "unkown data type";
             break;
     }
 
@@ -173,37 +173,32 @@ OpenCLCapabilities::OpenCLCapabilities() {}
 
 OpenCLCapabilities::~OpenCLCapabilities() {}
 
-void OpenCLCapabilities::retrieveStaticInfo() {
-}
+void OpenCLCapabilities::retrieveStaticInfo() {}
 
-void OpenCLCapabilities::retrieveDynamicInfo() {
-}
+void OpenCLCapabilities::retrieveDynamicInfo() {}
 
 void OpenCLCapabilities::printInfo() {
     const cl::Device& device = OpenCL::getPtr()->getDevice();
-    try
-    {
-    __DEVICE_INFO_GENERAL(__CL_PRINT_DEVICE_INFO)
-    }
-    catch (cl::Error& e)
-    {
+    try {
+        __DEVICE_INFO_GENERAL(__CL_PRINT_DEVICE_INFO)
+    } catch (cl::Error& e) {
         LogInfoCustom("OpenCL", "Device does not have the following info: " << e.what());
     }
 }
 
 void OpenCLCapabilities::printDetailedInfo() {
     OpenCLCapabilities::printDeviceInfo(OpenCL::getPtr()->getDevice());
-    try 
-    {
+    try {
         // Supported image 2D formats
         std::vector<cl::ImageFormat> formats;
-        OpenCL::getPtr()->getContext().getSupportedImageFormats(CL_MEM_READ_WRITE, CL_MEM_OBJECT_IMAGE2D, &formats);
+        OpenCL::getPtr()->getContext().getSupportedImageFormats(CL_MEM_READ_WRITE,
+                                                                CL_MEM_OBJECT_IMAGE2D, &formats);
         {
             std::ostringstream stream;
             stream << "Supported 2D READ_WRITE formats: ";
-            for(::size_t i = 0; i < formats.size(); ++i) {
+            for (::size_t i = 0; i < formats.size(); ++i) {
                 stream << imageFormatToString(formats[i]);
-                if (i != formats.size()-1) {
+                if (i != formats.size() - 1) {
                     stream << ", ";
                 }
             }
@@ -214,25 +209,24 @@ void OpenCLCapabilities::printDetailedInfo() {
         {
             std::ostringstream stream;
 
-            OpenCL::getPtr()->getContext().getSupportedImageFormats(CL_MEM_READ_WRITE, CL_MEM_OBJECT_IMAGE3D, &formats);
+            OpenCL::getPtr()->getContext().getSupportedImageFormats(
+                CL_MEM_READ_WRITE, CL_MEM_OBJECT_IMAGE3D, &formats);
             stream << "Supported 3D READ_WRITE formats: ";
-            for(::size_t i = 0; i < formats.size(); ++i) {
+            for (::size_t i = 0; i < formats.size(); ++i) {
                 stream << imageFormatToString(formats[i]);
-                if (i != formats.size()-1) {
+                if (i != formats.size() - 1) {
                     stream << ", ";
                 }
             }
             LogInfo(stream.str())
         }
-    } catch (cl::Error& e)
-    {
+    } catch (cl::Error& e) {
         LogInfoCustom("OpenCL", "Device does not have the following info: " << e.what());
     }
 }
 
 void OpenCLCapabilities::printDeviceInfo(const cl::Device& device) {
-    try
-    {
+    try {
         // Macros will print print supported device info
         __DEVICE_INFO_GENERAL(__CL_PRINT_DEVICE_INFO)
         __DEVICE_INFO_1_0(__CL_PRINT_DEVICE_INFO)
@@ -245,14 +239,9 @@ void OpenCLCapabilities::printDeviceInfo(const cl::Device& device) {
 #if defined(USE_CL_DEVICE_FISSION)
         __PARAM_NAME_DEVICE_FISSION(__CL_PRINT_DEVICE_INFO)
 #endif
-    }
-    catch (cl::Error& e)
-    {
+    } catch (cl::Error& e) {
         LogInfoCustom("OpenCL", "Device does not have the following info: " << e.what());
     }
 }
 
-
-
-} // namespace
-
+}  // namespace inviwo

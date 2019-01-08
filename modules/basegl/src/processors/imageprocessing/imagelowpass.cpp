@@ -80,4 +80,4 @@ void ImageLowPass::process() {
     }
 }
 
-}  // namespace
+}  // namespace inviwo

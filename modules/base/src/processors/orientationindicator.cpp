@@ -53,15 +53,15 @@ OrientationIndicator::OrientationIndicator()
     , zColor_("zColor", "Z axis Color", vec4(0.0f, 0.0f, 1.0f, 1.0f))
     , scale_("scale", "Scale", .05f, 0.001f, 1.f, 0.001f)
     , axisScale_("axisScale", "Axis scale", vec3(1.0f), vec3(0.001f), vec3(10.f), vec3(0.001f))
-    , radius_("radius","Radius", 1.0f, 0.001f, 10.f, 0.001f)
+    , radius_("radius", "Radius", 1.0f, 0.001f, 10.f, 0.001f)
 
-    , location_("location","Location")
-    , locationType_("locationType","Location Type")
+    , location_("location", "Location")
+    , locationType_("locationType", "Location Type")
 
-    , viewCoords_("viewCoords","View Coords", vec2(0.05f), vec2(0.f), vec2(1.f))
-    , cam_("cam","Camera") 
+    , viewCoords_("viewCoords", "View Coords", vec2(0.05f), vec2(0.f), vec2(1.f))
+    , cam_("cam", "Camera")
     , offset_("offset", "Offset", vec3(0.0f), vec3(-100.0f), vec3(100.0f)) {
-    
+
     addPort(outport_);
     addProperty(baseColor_);
     addProperty(xColor_);
@@ -93,18 +93,17 @@ OrientationIndicator::OrientationIndicator()
     setVisibility();
     locationType_.setCurrentStateAsDefault();
 
-
     baseColor_.setSemantics(PropertySemantics::Color);
     xColor_.setSemantics(PropertySemantics::Color);
     yColor_.setSemantics(PropertySemantics::Color);
     zColor_.setSemantics(PropertySemantics::Color);
 }
-    
+
 void OrientationIndicator::process() {
     if (!mesh_ || axisScale_.isModified()) {
         updateMesh();
     }
-    
+
     auto start = offset_.get();
     float scale = scale_.get();
 
@@ -116,7 +115,7 @@ void OrientationIndicator::process() {
         vec4 viewPos(p, 0.f, 1.f);
         vec4 viewPos2(p2, 0.f, 1.f);
         auto m = cam_.get().getInverseViewMatrix() * cam_.get().getInverseProjectionMatrix();
-        auto point  = m * viewPos;
+        auto point = m * viewPos;
         auto point2 = m * viewPos2;
         start = vec3(point) / point.w;
         auto end = vec3(point2) / point2.w;
@@ -134,16 +133,19 @@ void OrientationIndicator::updateMesh() {
     vec3 origin(0.0f);
     mat3 basis(glm::scale(axisScale_.get()));
 
-    const static float baseRadius = 0.06f; // radius
-    const static float baseHeadradius = 0.15f; // outer radius of arrow tips
+    const static float baseRadius = 0.06f;      // radius
+    const static float baseHeadradius = 0.15f;  // outer radius of arrow tips
     vec3 radius = axisScale_.get() * radius_.get() * baseRadius;
     vec3 headradius = axisScale_.get() * radius_.get() * baseHeadradius;
 
     // build indicator using a sphere and three arrows
     auto base = meshutil::sphere(origin, radius_.get() * baseRadius * 2, baseColor_);
-    auto xArrow = meshutil::arrow(origin, origin + basis[0], xColor_, radius.x, 0.25, headradius.x, 64);
-    auto yArrow = meshutil::arrow(origin, origin + basis[1], yColor_, radius.y, 0.25, headradius.y, 64);
-    auto zArrow = meshutil::arrow(origin, origin + basis[2], zColor_, radius.z, 0.25, headradius.z, 64);
+    auto xArrow =
+        meshutil::arrow(origin, origin + basis[0], xColor_, radius.x, 0.25, headradius.x, 64);
+    auto yArrow =
+        meshutil::arrow(origin, origin + basis[1], yColor_, radius.y, 0.25, headradius.y, 64);
+    auto zArrow =
+        meshutil::arrow(origin, origin + basis[2], zColor_, radius.z, 0.25, headradius.z, 64);
     base->append(xArrow.get());
     base->append(yArrow.get());
     base->append(zArrow.get());
@@ -151,5 +153,4 @@ void OrientationIndicator::updateMesh() {
     mesh_ = base;
 }
 
-} // namespace
-
+}  // namespace inviwo

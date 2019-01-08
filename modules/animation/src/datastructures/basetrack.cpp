@@ -29,6 +29,4 @@
 
 #include <modules/animation/datastructures/basetrack.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

@@ -71,4 +71,4 @@ bool DataReaderFactory::hasKey(const std::string& key) const {
 
 bool DataReaderFactory::hasKey(const FileExtension& key) const { return util::has_key(map_, key); }
 
-}  // namespace
+}  // namespace inviwo

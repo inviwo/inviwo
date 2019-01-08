@@ -102,13 +102,11 @@ void updateWorkspaces(InviwoApplication* app) {
 
     updatePath(filesystem::getPath(PathType::Workspaces));
 
-    for(const auto& m : app->getModules()) {
+    for (const auto& m : app->getModules()) {
         updatePath(m->getPath(ModulePath::Workspaces));
     }
 }
 
+}  // namespace util
 
-} // namespace
-
-
-} // namespace
+}  // namespace inviwo

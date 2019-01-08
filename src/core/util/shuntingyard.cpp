@@ -203,7 +203,7 @@ double Calculator::calculate(std::string expression, std::map<std::string, doubl
             throw Exception("Invalid token.");
         }
     }
-   
+
     return evaluation.top();
 }
 
@@ -229,7 +229,7 @@ std::string Calculator::shaderCode(std::string expression, std::map<std::string,
             auto it2 = symbols.find(str);
             if (it1 != vars.end()) {
                 evaluation.push(toString(it1->second));
-            } else if(it2 != symbols.end()) {
+            } else if (it2 != symbols.end()) {
                 evaluation.push(it2->second);
             } else if (evaluation.size() < 2) {
                 throw Exception("Invalid equation.");
@@ -262,6 +262,6 @@ std::string Calculator::shaderCode(std::string expression, std::map<std::string,
     return evaluation.top();
 }
 
-}  // namespace
+}  // namespace shuntingyard
 
-}  // namespace
+}  // namespace inviwo

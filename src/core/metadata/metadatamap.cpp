@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/metadata/metadatamap.h>
@@ -40,20 +40,16 @@ MetaDataMap::MetaDataMap(const MetaDataMap& inMap) {
     }
 }
 
-MetaData* MetaDataMap::add(const std::string &key, MetaData* metaData) {
+MetaData* MetaDataMap::add(const std::string& key, MetaData* metaData) {
     metaData_[key] = std::unique_ptr<MetaData>(metaData);
     return metaData;
 }
 
-void MetaDataMap::remove(const std::string &key) {
-    metaData_.erase(key);
-}
+void MetaDataMap::remove(const std::string& key) { metaData_.erase(key); }
 
-void MetaDataMap::removeAll() {
-    metaData_.clear();
-}
+void MetaDataMap::removeAll() { metaData_.clear(); }
 
-void MetaDataMap::rename(const std::string &newKey, const std::string &oldKey) {
+void MetaDataMap::rename(const std::string& newKey, const std::string& oldKey) {
     auto it = metaData_.find(oldKey);
     if (it != metaData_.end()) {
         metaData_[newKey] = std::move(it->second);
@@ -68,24 +64,21 @@ std::vector<std::string> MetaDataMap::getKeys() const {
     return keys;
 }
 
-MetaData* MetaDataMap::get(const std::string &key) {
+MetaData* MetaDataMap::get(const std::string& key) {
     auto it = metaData_.find(key);
-    if (it!=metaData_.end())
-        return it->second.get();
+    if (it != metaData_.end()) return it->second.get();
     return nullptr;
 }
 
-const MetaData* MetaDataMap::get(const std::string &key) const {
+const MetaData* MetaDataMap::get(const std::string& key) const {
     auto it = metaData_.find(key);
-    if (it!=metaData_.end()) {
+    if (it != metaData_.end()) {
         return it->second.get();
     }
     return nullptr;
 }
 
-bool MetaDataMap::empty() const {
-    return metaData_.empty();
-}
+bool MetaDataMap::empty() const { return metaData_.empty(); }
 
 MetaDataMap& MetaDataMap::operator=(const MetaDataMap& map) {
     if (this != &map) {
@@ -113,14 +106,12 @@ bool operator==(const MetaDataMap& lhs, const MetaDataMap& rhs) {
     }
     for (const auto& _cIt : lhs.metaData_) {
         auto elem = rhs.metaData_.find(_cIt.first);
-        if (elem == rhs.metaData_.end()) return false; 
+        if (elem == rhs.metaData_.end()) return false;
         if (*(elem->second) != *(_cIt.second)) return false;
     }
     return true;
 }
 
-bool operator!=(const MetaDataMap& lhs, const MetaDataMap& rhs) {
-    return !operator==(lhs, rhs);
-}
+bool operator!=(const MetaDataMap& lhs, const MetaDataMap& rhs) { return !operator==(lhs, rhs); }
 
-} // namespace
+}  // namespace inviwo

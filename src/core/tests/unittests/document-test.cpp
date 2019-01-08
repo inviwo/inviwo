@@ -41,17 +41,14 @@ namespace inviwo {
 
 TEST(DocumentTest, Minimal) {
     Document doc;
-        
+
     doc.append("html").append("body").append("table").append("tr").append("td", "hej");
     std::string res{doc};
-    
+
     replaceInString(res, " ", "");
     replaceInString(res, "\n", "");
-    
+
     EXPECT_EQ("<html><body><table><tr><td>hej</td></tr></table></body></html>", res);
 }
 
-
-
-} // namespace
-
+}  // namespace inviwo

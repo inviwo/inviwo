@@ -29,7 +29,6 @@
 
 #include <inviwo/core/interaction/events/keyboardevent.h>
 
-
 namespace inviwo {
 
 KeyboardEvent::KeyboardEvent(IvwKey key, KeyState state, KeyModifiers modifiers,
@@ -49,11 +48,11 @@ IvwKey KeyboardEvent::key() const { return key_; }
 void KeyboardEvent::setState(KeyState state) { state_ = state; }
 
 void KeyboardEvent::setKey(IvwKey button) { key_ = button; }
-    
+
 uint32_t KeyboardEvent::getNativeVirtualKey() const { return nativeVirtualKey_; }
 
 void KeyboardEvent::setNativeVirtualKey(uint32_t key) { nativeVirtualKey_ = key; }
 
 uint64_t KeyboardEvent::hash() const { return chash(); }
 
-}  // namespace
+}  // namespace inviwo

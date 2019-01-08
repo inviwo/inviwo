@@ -33,7 +33,4 @@
 
 #include <modules/base/properties/gaussianproperty.h>
 
-namespace inviwo {
-
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

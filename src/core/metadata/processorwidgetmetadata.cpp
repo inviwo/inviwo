@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/metadata/processorwidgetmetadata.h>
@@ -40,7 +40,6 @@ ProcessorWidgetMetaData::ProcessorWidgetMetaData()
     , dimensions_(256, 256)
     , visibility_(true) {}
 
-
 ProcessorWidgetMetaData* ProcessorWidgetMetaData::clone() const {
     return new ProcessorWidgetMetaData(*this);
 }
@@ -53,22 +52,17 @@ void ProcessorWidgetMetaData::setPosition(const ivec2& pos) {
     }
 }
 
-ivec2 ProcessorWidgetMetaData::getPosition() const {
-    return position_;
-}
+ivec2 ProcessorWidgetMetaData::getPosition() const { return position_; }
 
-void ProcessorWidgetMetaData::setDimensions(const ivec2 &dim) {
+void ProcessorWidgetMetaData::setDimensions(const ivec2& dim) {
     if (dim != dimensions_) {
         dimensions_ = dim;
-        forEachObserver([&](ProcessorWidgetMetaDataObserver* o) {
-            o->onProcessorWidgetDimensionChange(this);
-        });
+        forEachObserver(
+            [&](ProcessorWidgetMetaDataObserver* o) { o->onProcessorWidgetDimensionChange(this); });
     }
 }
 
-ivec2 ProcessorWidgetMetaData::getDimensions() const {
-    return dimensions_;
-}
+ivec2 ProcessorWidgetMetaData::getDimensions() const { return dimensions_; }
 
 void ProcessorWidgetMetaData::setVisibile(bool visibility) {
     if (visibility != visibility_) {
@@ -79,9 +73,7 @@ void ProcessorWidgetMetaData::setVisibile(bool visibility) {
     }
 }
 
-bool ProcessorWidgetMetaData::isVisible() const {
-    return visibility_;
-}
+bool ProcessorWidgetMetaData::isVisible() const { return visibility_; }
 
 void ProcessorWidgetMetaData::serialize(Serializer& s) const {
     s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
@@ -91,14 +83,14 @@ void ProcessorWidgetMetaData::serialize(Serializer& s) const {
 }
 
 void ProcessorWidgetMetaData::deserialize(Deserializer& d) {
-    ivec2 position{0,0};
+    ivec2 position{0, 0};
     d.deserialize("position", position);
     setPosition(position);
 
-    ivec2 dimensions{0,0};
+    ivec2 dimensions{0, 0};
     d.deserialize("dimensions", dimensions);
     setDimensions(dimensions);
-    
+
     bool visibility{true};
     d.deserialize("visibility", visibility);
     setVisibile(visibility);
@@ -106,16 +98,11 @@ void ProcessorWidgetMetaData::deserialize(Deserializer& d) {
 
 bool ProcessorWidgetMetaData::equal(const MetaData& rhs) const {
     if (auto tmp = dynamic_cast<const ProcessorWidgetMetaData*>(&rhs)) {
-        return tmp->position_ == position_
-            && tmp->visibility_ == visibility_
-            && tmp->dimensions_ == dimensions_;
+        return tmp->position_ == position_ && tmp->visibility_ == visibility_ &&
+               tmp->dimensions_ == dimensions_;
     } else {
         return false;
     }
 }
 
-
-
-
-
-} // namespace
+}  // namespace inviwo

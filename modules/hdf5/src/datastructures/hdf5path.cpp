@@ -34,12 +34,9 @@ namespace inviwo {
 
 namespace hdf5 {
 
-
 Path::Path() = default;
 
-Path::Path(const std::string& path) : path_{} {
-    splitString(path);
-}
+Path::Path(const std::string& path) : path_{} { splitString(path); }
 
 Path::Path(const Path& rhs) = default;
 Path::Path(Path&& rhs) = default;
@@ -98,7 +95,6 @@ Path operator+(const Path& lhs, const std::string& rhs) {
     return newpath;
 }
 
-}  // namespace
+}  // namespace hdf5
 
-}  // namespace
-
+}  // namespace inviwo

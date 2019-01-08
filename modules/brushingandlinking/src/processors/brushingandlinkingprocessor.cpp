@@ -66,4 +66,4 @@ BrushingAndLinkingProcessor::BrushingAndLinkingProcessor()
 
 void BrushingAndLinkingProcessor::process() { outport_.setData(manager_); }
 
-}  // namespace
+}  // namespace inviwo

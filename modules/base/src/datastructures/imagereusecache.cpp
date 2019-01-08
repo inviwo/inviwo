@@ -43,9 +43,6 @@ std::shared_ptr<Image> ImageReuseCache::getUnused() {
     }
 }
 
-void ImageReuseCache::add(std::shared_ptr<Image> image) {
-    imageCache_.push_back(image);
-}
+void ImageReuseCache::add(std::shared_ptr<Image> image) { imageCache_.push_back(image); }
 
-} // namespace
-
+}  // namespace inviwo

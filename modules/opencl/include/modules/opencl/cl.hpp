@@ -45,6 +45,8 @@
  *                #define USE_CL_DEVICE_FISSION
  */
 
+// clang-format off
+
 #ifndef CL_HPP_
 #define CL_HPP_
 
@@ -12389,3 +12391,5 @@ public:
 #endif // _WIN32
 
 #endif // CL_HPP_
+
+// clang-format on

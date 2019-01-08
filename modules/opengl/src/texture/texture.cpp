@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/opengl/texture/texture.h>
@@ -43,7 +43,7 @@ Texture::Texture(GLenum target, GLFormats::GLFormat glFormat, GLenum filtering, 
     , level_(level)
     , pboBackIsSetup_(false)
     , pboBackHasData_(false) {
-    
+
     glGenTextures(1, &id_);
     numChannels_ = glFormat.channels;
     byteSize_ = numChannels_ * glFormat.typeSize;
@@ -225,7 +225,7 @@ void Texture::bindToPBO() const {
 
 void Texture::unbindFromPBO() const {
     glBindBuffer(GL_PIXEL_UNPACK_BUFFER_ARB, 0);
-    //Invalidate PBO, as error might occur in download() otherwise.
+    // Invalidate PBO, as error might occur in download() otherwise.
     pboBackHasData_ = false;
     LGL_ERROR;
 }
@@ -241,16 +241,16 @@ void Texture::download(void* data) const {
         // Copy from PBO
         bindToPBO();
         void* mem = glMapBuffer(GL_PIXEL_PACK_BUFFER_ARB, GL_READ_ONLY);
-        if (mem){
-            memcpy(data, mem, getNumberOfValues()*getSizeInBytes());
+        if (mem) {
+            memcpy(data, mem, getNumberOfValues() * getSizeInBytes());
             downloadComplete = true;
         }
-        //Release PBO data
+        // Release PBO data
         glUnmapBuffer(GL_PIXEL_PACK_BUFFER_ARB);
         unbindToPBO();
         pboBackHasData_ = false;
     }
-    
+
     if (!downloadComplete) {
         bind();
         glPixelStorei(GL_PACK_ALIGNMENT, 1);
@@ -262,7 +262,7 @@ void Texture::download(void* data) const {
 }
 
 void Texture::downloadToPBO() const {
-    if (!pboBackIsSetup_){
+    if (!pboBackIsSetup_) {
         setupAsyncReadBackPBO();
         pboBackIsSetup_ = true;
     }
@@ -296,9 +296,7 @@ void Texture::setupAsyncReadBackPBO() const {
     LGL_ERROR;
 }
 
-void Texture::setPBOAsInvalid() {
-     pboBackIsSetup_ = false;
-}
+void Texture::setPBOAsInvalid() { pboBackIsSetup_ = false; }
 
 void Texture::setNChannels() {
     switch (format_) {
@@ -354,11 +352,7 @@ void Texture::setSizeInBytes() {
             LogError("Invalid data type: " << dataTypeSize);
     }
 
-    byteSize_ = numChannels_*dataTypeSize;
+    byteSize_ = numChannels_ * dataTypeSize;
 }
 
-
-
-
-
-} // namespace
+}  // namespace inviwo

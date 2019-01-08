@@ -76,4 +76,4 @@ auto ProcessorWidgetFactory::getKeys() const -> std::vector<Key> {
     return res;
 }
 
-}  // namespace
+}  // namespace inviwo

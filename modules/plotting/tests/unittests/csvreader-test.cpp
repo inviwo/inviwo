@@ -115,10 +115,11 @@ TEST(CSVdata, emptyRowsAtEnd) {
 
 TEST(CSVdata, emptyFields) {
     // test for empty fields in both categorical and numeric columns
-    std::istringstream ss("Number,Name,Category\n"
-                          "1,Apple,Fruit\n"
-                          "2,Banana,\n" // -> 2, "Banana", ""
-                          ",,Vegetable"); // -> nan, "", "Vegetable"
+    std::istringstream ss(
+        "Number,Name,Category\n"
+        "1,Apple,Fruit\n"
+        "2,Banana,\n"    // -> 2, "Banana", ""
+        ",,Vegetable");  // -> nan, "", "Vegetable"
 
     CSVReader reader;
     reader.setFirstRowHeader(true);

@@ -79,7 +79,7 @@ PropertyListWidget::PropertyListWidget(QWidget* parent, InviwoApplication* app)
     : InviwoDockWidget(tr("Properties"), parent, "PropertyListWidget"), app_{app} {
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    resize(QSize(400, 700)); // default size
+    resize(QSize(400, 700));  // default size
 
     QSizePolicy sp(QSizePolicy::Fixed, QSizePolicy::MinimumExpanding);
     sp.setVerticalStretch(1);
@@ -114,7 +114,6 @@ PropertyListWidget::PropertyListWidget(QWidget* parent, InviwoApplication* app)
 
     scrollArea_->setWidget(listWidget_);
     setWidget(scrollArea_);
-
 }
 
 PropertyListWidget::~PropertyListWidget() = default;

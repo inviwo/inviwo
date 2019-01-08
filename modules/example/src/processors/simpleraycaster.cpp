@@ -62,7 +62,7 @@ SimpleRaycaster::SimpleRaycaster()
     , camera_("camera", "Camera") {
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-    
+
     addPort(volumePort_, "VolumePortGroup");
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");

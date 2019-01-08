@@ -58,13 +58,9 @@ MemoryFileHandle::~MemoryFileHandle() {
     if (handle_) fclose(handle_);
 }
 
-FILE* MemoryFileHandle::getHandle() {
-    return handle_;
-}
+FILE* MemoryFileHandle::getHandle() { return handle_; }
 
-MemoryFileHandle::operator FILE*() {
-    return handle_;
-}
+MemoryFileHandle::operator FILE*() { return handle_; }
 
 void MemoryFileHandle::reset() {
     fflush(handle_);
@@ -85,21 +81,15 @@ void MemoryFileHandle::resize(size_t bufferSize) {
     initBuffer();
 }
 
-size_t MemoryFileHandle::getBufferSize() const {
-    return buffer_.size();
-}
+size_t MemoryFileHandle::getBufferSize() const { return buffer_.size(); }
 
 size_t MemoryFileHandle::getNumberOfBytesInBuffer() const {
     return static_cast<size_t>(ftell(handle_));
 }
 
-const std::vector<unsigned char>& MemoryFileHandle::getBuffer() const {
-    return buffer_;
-}
+const std::vector<unsigned char>& MemoryFileHandle::getBuffer() const { return buffer_; }
 
-std::vector<unsigned char>& MemoryFileHandle::getBuffer() {
-    return buffer_;
-}
+std::vector<unsigned char>& MemoryFileHandle::getBuffer() { return buffer_; }
 
 bool MemoryFileHandle::checkForOverflow() const {
 
@@ -118,15 +108,15 @@ bool MemoryFileHandle::checkForOverflow() const {
 }
 
 void MemoryFileHandle::initBuffer() {
-#ifdef WIN32    
+#ifdef WIN32
     handle_ = fopen("NUL", "wb");
-#else 
+#else
     handle_ = fopen("/dev/null", "w");
 #endif
     // setvbuf needs to be set first thing after the file handle has been created
-    setvbuf(handle_, reinterpret_cast<char *>(buffer_.data()), _IOFBF, buffer_.size());
+    setvbuf(handle_, reinterpret_cast<char*>(buffer_.data()), _IOFBF, buffer_.size());
 }
 
-} // namespace util
+}  // namespace util
 
-} // namespace inviwo
+}  // namespace inviwo

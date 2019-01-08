@@ -86,7 +86,6 @@ public:
 
     std::vector<std::pair<std::filesystem::path, std::string>> dirs() const;
 
-
     static InviwoModule findInviwoModule(const std::filesystem::path& path,
                                          const std::filesystem::path& inviwoRepo);
 

@@ -57,8 +57,8 @@ void LayerRAM2CLConverter::update(std::shared_ptr<const LayerRAM> layerSrc,
 std::shared_ptr<LayerRAM> LayerCL2RAMConverter::createFrom(
     std::shared_ptr<const LayerCL> layerCL) const {
     uvec2 dimensions = layerCL->getDimensions();
-    auto destination =
-        createLayerRAM(dimensions, layerCL->getLayerType(), layerCL->getDataFormat(), layerCL->getSwizzleMask());
+    auto destination = createLayerRAM(dimensions, layerCL->getLayerType(), layerCL->getDataFormat(),
+                                      layerCL->getSwizzleMask());
 
     if (destination) {
         layerCL->download(destination->getData());
@@ -83,4 +83,4 @@ void LayerCL2RAMConverter::update(std::shared_ptr<const LayerCL> layerSrc,
     layerDst->setSwizzleMask(layerSrc->getSwizzleMask());
 }
 
-}  // namespace
+}  // namespace inviwo

@@ -34,28 +34,25 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo ImageEdgeDarken::processorInfo_{
-    "org.inviwo.ImageEdgeDarken",      // Class identifier
-    "Image Edge Darken",                // Display name
-    "Image Operation",              // Category
-    CodeState::Stable,  // Code state
-    Tags::GL,               // Tags
+    "org.inviwo.ImageEdgeDarken",  // Class identifier
+    "Image Edge Darken",           // Display name
+    "Image Operation",             // Category
+    CodeState::Stable,             // Code state
+    Tags::GL,                      // Tags
 };
-const ProcessorInfo ImageEdgeDarken::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo ImageEdgeDarken::getProcessorInfo() const { return processorInfo_; }
 
 ImageEdgeDarken::ImageEdgeDarken()
     : ImageGLProcessor("edgedarken.frag")
-    , darken_("darken","Darken",true)
+    , darken_("darken", "Darken", true)
     , intensity_("intensity", "Intensity", 1.f, 0.f, 2.f, 0.01f) {
 
     addProperty(darken_);
     addProperty(intensity_);
 }
-    
+
 void ImageEdgeDarken::preProcess(TextureUnitContainer &) {
     utilgl::setUniforms(shader_, darken_, intensity_);
 }
 
-} // namespace
-
+}  // namespace inviwo

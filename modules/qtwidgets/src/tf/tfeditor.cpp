@@ -525,7 +525,7 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             QString str = (i < 10 ? QString("Group &%1").arg(i) : "Group 1&0");
             auto action = groupSelectMenu->addAction(str);
             action->setEnabled(!groups_[i % 10].empty());
-            connect(action, &QAction::triggered, [this, group = i % 10]() {
+            connect(action, &QAction::triggered, [ this, group = i % 10 ]() {
                 auto selection = getSelectedPrimitiveItems();
 
                 const bool addToSelection = ((QGuiApplication::queryKeyboardModifiers() &
@@ -545,7 +545,7 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         for (auto&& i : util::make_sequence(1, 11, 1)) {
             QString str = (i < 10 ? QString("Group &%1").arg(i) : "Group 1&0");
             auto action = groupAssignMenu->addAction(str);
-            connect(action, &QAction::triggered, [this, group = i % 10]() {
+            connect(action, &QAction::triggered, [ this, group = i % 10 ]() {
                 groups_[group].clear();
                 for (auto& item : getSelectedPrimitiveItems()) {
                     groups_[group].push_back(item);
@@ -558,8 +558,7 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
     auto tfMenu = menu.addMenu("&Transfer Function");
     {
         if (tfPropertyPtr_->hasTF()) {
-            util::addTFPresetsMenu(
-                e->widget(), tfMenu, tfPropertyPtr_->getTFProperty());
+            util::addTFPresetsMenu(e->widget(), tfMenu, tfPropertyPtr_->getTFProperty());
             tfMenu->addSeparator();
         }
 

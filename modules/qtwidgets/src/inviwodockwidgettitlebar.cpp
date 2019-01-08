@@ -115,7 +115,7 @@ void InviwoDockWidgetTitleBar::stickyBtnToggled(bool toggle) {
     emit stickyFlagChanged(toggle);
 }
 
-void InviwoDockWidgetTitleBar::showEvent(QShowEvent*) {
+void InviwoDockWidgetTitleBar::showEvent(QShowEvent *) {
     if (isSticky()) {
         // docking allowed, restore docking areas
         parent_->setAllowedAreas(allowedDockAreas_);

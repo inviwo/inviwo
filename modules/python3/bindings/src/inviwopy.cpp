@@ -109,7 +109,7 @@ PYBIND11_MODULE(inviwopy, m) {
         if (auto app = util::getInviwoApplication()) {
             m.attr("app") = py::cast(app, py::return_value_policy::reference);
         }
-    } catch (SingletonException &) {
+    } catch (SingletonException&) {
         LogErrorCustom("inviwopy",
                        "Failed to get Inviwo application, inviwopy will not function as expected");
     }

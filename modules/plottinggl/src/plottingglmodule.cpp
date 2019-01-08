@@ -43,7 +43,6 @@
 
 #include <modules/plottinggl/processors/parallelcoordinates/parallelcoordinatesaxissettingsproperty.h>
 
-
 namespace inviwo {
 
 PlottingGLModule::PlottingGLModule(InviwoApplication* app) : InviwoModule(app, "PlottingGL") {
@@ -57,7 +56,6 @@ PlottingGLModule::PlottingGLModule(InviwoApplication* app) : InviwoModule(app, "
     registerProcessor<plot::ScatterPlotMatrixProcessor>();
     registerProcessor<plot::ScatterPlotProcessor>();
     registerProcessor<plot::VolumeAxis>();
-
 
     registerProperty<plot::ParallelCoordinatesAxisSettingsProperty>();
 }

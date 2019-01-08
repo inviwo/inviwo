@@ -33,4 +33,4 @@ namespace inviwo {
 
 OpenCLFormatException::OpenCLFormatException(const std::string& message, ExceptionContext context)
     : Exception(message, context) {}
-}  // namespace
+}  // namespace inviwo

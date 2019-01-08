@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/qtwidgets/eventconverterqt.h>
@@ -45,42 +45,41 @@ namespace utilqt {
 
 MouseButtons getMouseButtons(const QMouseEvent* e) {
     MouseButtons res(flags::none);
-    
-    if(e->buttons() & Qt::LeftButton)   res |= MouseButton::Left;
-    if(e->buttons() & Qt::MiddleButton) res |= MouseButton::Middle;
-    if(e->buttons() & Qt::RightButton)  res |= MouseButton::Right;
-    
+
+    if (e->buttons() & Qt::LeftButton) res |= MouseButton::Left;
+    if (e->buttons() & Qt::MiddleButton) res |= MouseButton::Middle;
+    if (e->buttons() & Qt::RightButton) res |= MouseButton::Right;
+
     return res;
 }
 
 MouseButton getMouseButtonCausingEvent(const QMouseEvent* e) {
-    // QMouseEvent::getButtons does not
-    // include the button that caused the event.
-    // The QMouseEvent::getButton function
-    // returns the button that caused the event
-    #include <warn/push>
-    #include <warn/ignore/switch-enum>
-    switch (e->button())
-    {
-    case Qt::LeftButton:
-        return MouseButton::Left;
-    case Qt::RightButton:
-        return MouseButton::Right;
-    case Qt::MiddleButton:
-        return MouseButton::Middle;
-    default:
-        return MouseButton::None;
+// QMouseEvent::getButtons does not
+// include the button that caused the event.
+// The QMouseEvent::getButton function
+// returns the button that caused the event
+#include <warn/push>
+#include <warn/ignore/switch-enum>
+    switch (e->button()) {
+        case Qt::LeftButton:
+            return MouseButton::Left;
+        case Qt::RightButton:
+            return MouseButton::Right;
+        case Qt::MiddleButton:
+            return MouseButton::Middle;
+        default:
+            return MouseButton::None;
     }
-    #include <warn/pop>
+#include <warn/pop>
 }
 
 MouseButtons getMouseWheelButtons(const QWheelEvent* e) {
     MouseButtons res(flags::none);
-    
-    if(e->buttons() & Qt::LeftButton)   res |= MouseButton::Left;
-    if(e->buttons() & Qt::MiddleButton) res |= MouseButton::Middle;
-    if(e->buttons() & Qt::RightButton)  res |= MouseButton::Right;
-    
+
+    if (e->buttons() & Qt::LeftButton) res |= MouseButton::Left;
+    if (e->buttons() & Qt::MiddleButton) res |= MouseButton::Middle;
+    if (e->buttons() & Qt::RightButton) res |= MouseButton::Right;
+
     return res;
 }
 
@@ -104,18 +103,16 @@ GestureState getGestureState(const QGesture* gesture) {
 KeyModifiers getModifiers(const QInputEvent* e) {
     KeyModifiers res(flags::none);
 
-    if (e->modifiers() & Qt::ShiftModifier)   res |= KeyModifier::Shift;
+    if (e->modifiers() & Qt::ShiftModifier) res |= KeyModifier::Shift;
     if (e->modifiers() & Qt::ControlModifier) res |= KeyModifier::Control;
-    if (e->modifiers() & Qt::AltModifier)     res |= KeyModifier::Alt;
-    if (e->modifiers() & Qt::MetaModifier)    res |= KeyModifier::Meta;
-    
+    if (e->modifiers() & Qt::AltModifier) res |= KeyModifier::Alt;
+    if (e->modifiers() & Qt::MetaModifier) res |= KeyModifier::Meta;
+
     return res;
 }
 
-IvwKey getKeyButton(const QKeyEvent* e) {
-    return util::mapKeyFromQt(e);
-}
+IvwKey getKeyButton(const QKeyEvent* e) { return util::mapKeyFromQt(e); }
 
-} // namespace
+}  // namespace utilqt
 
-} // namespace
+}  // namespace inviwo

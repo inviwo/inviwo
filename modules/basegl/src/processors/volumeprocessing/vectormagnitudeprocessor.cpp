@@ -24,13 +24,12 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/basegl/processors/volumeprocessing/vectormagnitudeprocessor.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <modules/base/algorithm/dataminmax.h>
-
 
 namespace inviwo {
 const ProcessorInfo VectorMagnitudeProcessor::processorInfo_{
@@ -40,9 +39,7 @@ const ProcessorInfo VectorMagnitudeProcessor::processorInfo_{
     CodeState::Stable,             // Code state
     Tags::GL,                      // Tags
 };
-const ProcessorInfo VectorMagnitudeProcessor::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo VectorMagnitudeProcessor::getProcessorInfo() const { return processorInfo_; }
 
 VectorMagnitudeProcessor::VectorMagnitudeProcessor()
     : VolumeGLProcessor("vectormagnitudeprocessor.frag") {
@@ -76,5 +73,4 @@ void VectorMagnitudeProcessor::postProcess() {
     volume_->dataMap_.valueRange = dvec2(minV, maxV);
 }
 
-}  // namespace
-
+}  // namespace inviwo

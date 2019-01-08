@@ -66,8 +66,7 @@ void IntegralLine::reverse() {
     }
 }
 
-const std::map<std::string, std::shared_ptr<BufferBase>> &IntegralLine::getMetaDataBuffers()
-    const {
+const std::map<std::string, std::shared_ptr<BufferBase>> &IntegralLine::getMetaDataBuffers() const {
     return metaData_;
 }
 

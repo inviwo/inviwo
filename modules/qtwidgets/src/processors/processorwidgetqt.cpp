@@ -130,4 +130,4 @@ void ProcessorWidgetQt::updatePosition(ivec2 pos) {
     QWidget::move(pos.x, pos.y);
 }
 
-}  // namespace
+}  // namespace inviwo

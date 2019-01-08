@@ -66,9 +66,6 @@ std::unique_ptr<Processor> ProcessorFactory::create(const std::string& key) cons
     return Parent::create(key, app_);
 }
 
-bool ProcessorFactory::hasKey(const std::string& key) const {
-    return Parent::hasKey(key);
-
-}
+bool ProcessorFactory::hasKey(const std::string& key) const { return Parent::hasKey(key); }
 
 }  // namespace inviwo

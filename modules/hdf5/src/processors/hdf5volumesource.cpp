@@ -47,9 +47,7 @@ const ProcessorInfo HDF5ToVolume::processorInfo_{
     CodeState::Stable,           // Code state
     Tags::None,                  // Tags
 };
-const ProcessorInfo HDF5ToVolume::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo HDF5ToVolume::getProcessorInfo() const { return processorInfo_; }
 
 HDF5ToVolume::HDF5ToVolume()
     : Processor()
@@ -82,27 +80,28 @@ HDF5ToVolume::HDF5ToVolume()
                   0.0, 0.0, InvalidationLevel::InvalidOutput, PropertySemantics("Text"))
     , valueUnit_("valueUnit", "Value unit", "arb. unit.")
 
-    , datatype_("convertType", "Convert to type", {{"none", "No conversion", 0},
-                                                   {"float", "Float", 0},
-                                                   {"double", "Double", 1},
-                                                   {"uchar", "Unsigned Char", 2},
-                                                   {"ushort", "Unsigned Short", 3}},
+    , datatype_("convertType", "Convert to type",
+                {{"none", "No conversion", 0},
+                 {"float", "Float", 0},
+                 {"double", "Double", 1},
+                 {"uchar", "Unsigned Char", 2},
+                 {"ushort", "Unsigned Short", 3}},
                 0)
     , selection_("selection", "Selection", 6)
     , dirty_(false) {
 
     addPort(inport_);
     addPort(outport_);
-    inport_.onChange([this]() { onDataChange(); });    
+    inport_.onChange([this]() { onDataChange(); });
 
     addProperty(volumeSelection_);
     volumeSelection_.onChange([this]() { onSelectionChange(); });
     volumeSelection_.setSerializationMode(PropertySerializationMode::All);
 
     addProperty(automaticEvaluation_);
-    automaticEvaluation_.onChange([this](){evaluate_.setReadOnly(automaticEvaluation_);});
+    automaticEvaluation_.onChange([this]() { evaluate_.setReadOnly(automaticEvaluation_); });
     addProperty(evaluate_);
-    evaluate_.onChange([this](){dirty_ = true;});
+    evaluate_.onChange([this]() { dirty_ = true; });
 
     basisGroup_.addProperty(basisSelection_);
     basisGroup_.addProperty(spacing_);
@@ -116,7 +115,7 @@ HDF5ToVolume::HDF5ToVolume()
     information_.addProperty(dataDimensions_);
     information_.addProperty(dataRange_);
     addProperty(information_);
-   
+
     outputGroup_.addProperty(datatype_);
     outputGroup_.addProperty(overrideRange_);
 
@@ -125,7 +124,7 @@ HDF5ToVolume::HDF5ToVolume()
     outputGroup_.addProperty(valueUnit_);
     outputGroup_.addProperty(selection_);
 
-    outputGroup_.onChange([this](){
+    outputGroup_.onChange([this]() {
         if (automaticEvaluation_) {
             dirty_ = true;
             this->invalidate(InvalidationLevel::InvalidOutput);
@@ -424,8 +423,6 @@ std::vector<Handle::Selection> HDF5ToVolume::DimSelections::getMaxSelection() co
     return selection;
 }
 
-}  // namespace
+}  // namespace hdf5
 
-}  // namespace
-
-
+}  // namespace inviwo

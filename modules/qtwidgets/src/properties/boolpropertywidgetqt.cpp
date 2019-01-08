@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/qtwidgets/properties/boolpropertywidgetqt.h>
@@ -38,10 +38,9 @@
 #include <QHBoxLayout>
 #include <warn/pop>
 
-
 namespace inviwo {
 
-BoolPropertyWidgetQt::BoolPropertyWidgetQt(BoolProperty* property) 
+BoolPropertyWidgetQt::BoolPropertyWidgetQt(BoolProperty* property)
     : PropertyWidgetQt(property)
     , property_(property)
     , checkBox_{nullptr}
@@ -82,9 +81,7 @@ BoolPropertyWidgetQt::BoolPropertyWidgetQt(BoolProperty* property)
         setFocusPolicy(checkBox_->focusPolicy());
         setFocusProxy(checkBox_);
 
-        auto setPropertyValueFromCheckbox = [=](bool checked) {
-            property_->set(checked);
-        };
+        auto setPropertyValueFromCheckbox = [=](bool checked) { property_->set(checked); };
         connect(checkBox_, &QCheckBox::toggled, setPropertyValueFromCheckbox);
         hLayout->addWidget(checkBox_);
     }
@@ -99,4 +96,4 @@ void BoolPropertyWidgetQt::updateFromProperty() {
     if (lineEdit_) lineEdit_->setText(property_->get() ? "true" : "false");
 }
 
-} // namespace inviwo
+}  // namespace inviwo

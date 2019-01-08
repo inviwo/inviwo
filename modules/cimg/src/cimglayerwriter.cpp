@@ -73,4 +73,4 @@ bool CImgLayerWriter::writeDataToRepresentation(const repr* src, repr* dst) cons
     return cimgutil::rescaleLayerRamToLayerRam(source, target);
 }
 
-}  // namespace
+}  // namespace inviwo

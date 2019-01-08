@@ -34,4 +34,4 @@ namespace inviwo {
 OpenCLException::OpenCLException(const std::string& message, ExceptionContext context)
     : Exception(message, context) {}
 
-}  // namespace
+}  // namespace inviwo

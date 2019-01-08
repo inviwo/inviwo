@@ -204,7 +204,7 @@ TEST(Marchingcubes, two) {
             vec3 fv1(v1);
             vec3 fv2(v2);
 
-            auto l2 = glm::compAdd((v2-v1)*(v2-v1));
+            auto l2 = glm::compAdd((v2 - v1) * (v2 - v1));
 
             if (l2 == 1) {
                 ++n1nn;
@@ -242,8 +242,6 @@ TEST(Marchingcubes, two) {
     EXPECT_EQ(24, n2nn);
     EXPECT_EQ(8, n3nn);
 }
-
-
 
 TEST(Marchingcubes, minimal) {
     auto v = std::shared_ptr<Volume>(util::makeSingleVoxelVolume(size3_t{3}));
@@ -325,7 +323,7 @@ TEST(Marchingcubes, sphere) {
 
     ASSERT_EQ(mesh1->getNumberOfIndicies(), 1);
     ASSERT_EQ(mesh2->getNumberOfIndicies(), 1);
-    
+
     /*
     auto indBuffer1 = mesh1->getIndices(0);
     auto indBuffer2 = mesh2->getIndices(0);

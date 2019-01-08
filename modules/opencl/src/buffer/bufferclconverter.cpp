@@ -61,4 +61,4 @@ void BufferCL2RAMConverter::update(std::shared_ptr<const BufferCL> src,
     src->download(dst->getData());
 }
 
-}  // end namespace
+}  // namespace inviwo
