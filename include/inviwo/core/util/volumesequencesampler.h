@@ -78,7 +78,7 @@ public:
     void setAllowedLooping(bool allowed = true) { allowLooping_ = allowed; }
 
 protected:
-    virtual dvec3 sampleDataSpace(const dvec4 &pos) const;  // { return sample(pos).xyz(); }
+    virtual dvec3 sampleDataSpace(const dvec4 &pos) const;
     virtual bool withinBoundsDataSpace(const dvec4 &pos) const;
 
 private:

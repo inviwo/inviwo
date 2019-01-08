@@ -98,7 +98,8 @@ Vector<DataDims, double> VolumeDoubleSampler<DataDims>::sampleDataSpace(const dv
     if (!withinBoundsDataSpace(pos)) {
         return Vector<DataDims, double>(0.0);
     }
-    const dvec3 samplePos = pos * dvec3(dims_ - size3_t(1));
+    // const dvec3 samplePos = pos * dvec3(dims_ - size3_t(1));
+    const dvec3 samplePos = pos * dvec3(dims_) - 0.5;
     const size3_t indexPos = size3_t(samplePos);
     const dvec3 interpolants = samplePos - dvec3(indexPos);
 
