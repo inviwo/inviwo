@@ -27,20 +27,40 @@
  * 
  *********************************************************************************/
 
+// Owned by the TubeRendering Processor
+
 #include "utils/structs.glsl"
 
-
 uniform GeometryParameters geometry;
-uniform CameraParameters camera;
 
-out vec3 worldPosition_;
-out vec3 normal_;
+uniform vec4 defaultColor = vec4(1, 0, 0, 1);
+uniform float defaultRadius = 0.1f;
+uniform sampler2D metaColor;
+
 out vec4 vColor_;
+flat out float vRadius_;
+flat out uint pickID_;
  
 void main() {
+#if defined(HAS_SCALARMETA) && !defined(FORCE_COLOR)
+    vColor_ = texture(metaColor, vec2(in_ScalarMeta, 0.5));
+#elif defined(HAS_COLOR) && !defined(FORCE_COLOR)
     vColor_ = in_Color;
-    vec4 wp = geometry.dataToWorld * in_Vertex;
-    worldPosition_ = wp.xyz / wp.w;
-    normal_ = in_Normal;
-    gl_Position = wp;
+#else
+    vColor_ = defaultColor;
+#endif
+
+#if defined(HAS_RADII) && !defined(FORCE_RADIUS)
+    vRadius_ = in_Radii;
+#else 
+    vRadius_ = defaultRadius;
+#endif
+
+#if defined(HAS_PICKING)
+    pickID_ = in_Picking;
+#else 
+    pickID_ = 0;
+#endif
+
+    gl_Position = geometry.dataToWorld * vec4(in_Position, 1.0);
 }  

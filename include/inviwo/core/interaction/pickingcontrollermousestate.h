@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,57 +24,30 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
+#pragma once
 
-#include "utils/structs.glsl"
+#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/common/inviwo.h>
 
-layout(location=9) in vec3 in_PickCoords_;
+namespace inviwo {
 
-uniform GeometryParameters geometry;
-uniform CameraParameters camera;
+struct PickingControllerMouseStateSM;
+class MouseEvent;
+class EventPropagator;
+class PickingManager;
 
-uniform vec4 overrideColor;
+class IVW_CORE_API PickingControllerMouseState {
+public:
+    PickingControllerMouseState(PickingManager* pickingManager);
+    PickingControllerMouseState(const PickingControllerMouseState&) = delete;
+    PickingControllerMouseState& operator=(const PickingControllerMouseState&) = delete;
+    ~PickingControllerMouseState();
 
-uniform vec2 scaling_ = vec2(1.0f);
-uniform vec2 offset_ = vec2(0.0, 0.0);
+    void propagateEvent(MouseEvent* e, EventPropagator* propagator, size_t globalId);
 
-uniform vec4 meshColors_[5];
-uniform vec3 pickColors[10];
+    std::unique_ptr<PickingControllerMouseStateSM> msm;
+};
 
-out vec4 worldPosition_;
-out vec3 normal_;
-out vec3 viewNormal_;
-out vec4 color_;
-out vec3 texCoord_;
-flat out vec4 pickColor_;
-out float pickingCoord_;
- 
-void main() {
-    color_ = in_Color;
-    texCoord_ = in_TexCoord;
-    worldPosition_ = geometry.dataToWorld * in_Vertex;
-    normal_ = geometry.dataToWorldNormalMatrix * in_Normal * vec3(1.0);
-    viewNormal_ = (camera.worldToView * vec4(normal_,0)).xyz;
-    gl_Position = camera.worldToClip * worldPosition_;
-
-    // move mesh into correct 2D position on screen and scale it accordingly
-    gl_Position /= gl_Position.w;
-    gl_Position.xy *= scaling_;
-    gl_Position.xy += offset_;
-
-    pickingCoord_ = in_PickCoords_.x;
-
-    int pickID = int(pickingCoord_ * 10.0 + 0.5);
-
-#if defined(CUSTOM_COLOR)
-#  if (CUSTOM_COLOR == 0)
-    color_ = overrideColor;
-#  else
-    // apply RGB axis coloring
-    color_ = meshColors_[pickID / 2];
-#  endif // #if (CUSTOM_COLOR == 0)
-#endif
-
-    pickColor_ = vec4(pickColors[pickID], 1.0);
-}
+}  // namespace inviwo

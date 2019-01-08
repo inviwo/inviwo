@@ -27,6 +27,8 @@
  * 
  *********************************************************************************/
 
+// Owned by the CubeRenderer Processor
+
 #include "utils/structs.glsl"
 #include "utils/pickingutils.glsl"
 
@@ -38,50 +40,55 @@ uniform bool pickingEnabled = false;
 layout(points) in;
 layout(triangle_strip, max_vertices = 24) out;
 
-in vec4 worldPosition_[];
-in vec4 cubeColor_[];
-flat in float cubeSize_[];
-flat in uint pickID_[];
+in vec4 vColor[1];
+flat in float vSize[1];
+flat in uint vPickID[1];
 
-out vec4 color_;
-flat out vec4 pickColor_;
+out vec4 color;
+flat out vec4 picking;
 out vec4 worldPosition;
-
 out vec3 normal;
 
-void emit(vec4 v0, vec4 v1, vec4 v2, vec4 v3) {
-    gl_Position = v0;
+vec4 corners[8];
+vec4 pickColor;
+
+void emitVertex(int v, vec3 n) {
+    gl_Position = corners[v];
+    color = vColor[0];
+    picking = pickColor;
+    worldPosition = gl_in[0].gl_Position;
+    normal = n;
     EmitVertex();
-    gl_Position = v1;
-    EmitVertex();
-    gl_Position = v2;
-    EmitVertex();
-    gl_Position = v3;
-    EmitVertex();
+}
+
+void emitFace(int v0, int v1, int v2, int v3, vec3 n) {
+    emitVertex(v0, n);
+    emitVertex(v1, n);
+    emitVertex(v2, n);
+    emitVertex(v3, n);
     EndPrimitive();
 }
 
 void main(void) {
-    worldPosition = worldPosition_[0];
+    worldPosition = gl_in[0].gl_Position;
+    pickColor = vec4(pickingIndexToColor(vPickID[0]), vPickID[0] == 0 ? 0.0 : 1.0);
 
     mat4 worldToViewMatrixInv = inverse(camera.worldToView);
 
     vec3 camDir = normalize((worldToViewMatrixInv[2]).xyz);     
     vec3 camPosModel =  worldToViewMatrixInv[3].xyz;
     // calculate cam position (in model space of the cube)
-    vec3 camPos_ = camPosModel - worldPosition_[0].xyz;
+    vec3 camPos_ = camPosModel - worldPosition.xyz;
 
-    if (dot(camPos_, camDir) < camera.nearPlane + cubeSize_[0]) {
-        // glyph intersects with the near plane of the camera, discard entire glyph, i.e. no output
+    if (dot(camPos_, camDir) < camera.nearPlane + vSize[0]) {
+        // glyph intersects with the near plane of the camera, discard entire glyph, 
+        // i.e. no output
         EndPrimitive();
         return;
     }
     
-    color_ = cubeColor_[0];
-    pickColor_ = vec4(pickingIndexToColor(pickID_[0]), pickingEnabled ? 1.f : 0.f);
-
-    vec3 center = worldPosition_[0].xyz;
-    float d = 0.5f * cubeSize_[0];
+    vec3 center = worldPosition.xyz;
+    float d = 0.5f * vSize[0];
 
     float cx_m = center.x - d;
     float cx_p = center.x + d;
@@ -90,30 +97,19 @@ void main(void) {
     float cz_m = center.z - d;
     float cz_p = center.z + d;
 
-    vec4 v0 = (camera.worldToClip * vec4(cx_m, cy_p, cz_p, 1.f)); v0 /= v0.w;
-    vec4 v1 = (camera.worldToClip * vec4(cx_m, cy_m, cz_p, 1.f)); v1 /= v1.w;
-    vec4 v2 = (camera.worldToClip * vec4(cx_p, cy_p, cz_p, 1.f)); v2 /= v2.w;
-    vec4 v3 = (camera.worldToClip * vec4(cx_p, cy_m, cz_p, 1.f)); v3 /= v3.w;
-    vec4 v4 = (camera.worldToClip * vec4(cx_m, cy_p, cz_m, 1.f)); v4 /= v4.w;
-    vec4 v5 = (camera.worldToClip * vec4(cx_p, cy_p, cz_m, 1.f)); v5 /= v5.w;
-    vec4 v6 = (camera.worldToClip * vec4(cx_m, cy_m, cz_m, 1.f)); v6 /= v6.w;
-    vec4 v7 = (camera.worldToClip * vec4(cx_p, cy_m, cz_m, 1.f)); v7 /= v7.w;
+    corners[0] = (camera.worldToClip * vec4(cx_m, cy_p, cz_p, 1.f)); corners[0] /= corners[0].w;
+    corners[1] = (camera.worldToClip * vec4(cx_m, cy_m, cz_p, 1.f)); corners[1] /= corners[1].w;
+    corners[2] = (camera.worldToClip * vec4(cx_p, cy_p, cz_p, 1.f)); corners[2] /= corners[2].w;
+    corners[3] = (camera.worldToClip * vec4(cx_p, cy_m, cz_p, 1.f)); corners[3] /= corners[3].w;
+    corners[4] = (camera.worldToClip * vec4(cx_m, cy_p, cz_m, 1.f)); corners[4] /= corners[4].w;
+    corners[5] = (camera.worldToClip * vec4(cx_p, cy_p, cz_m, 1.f)); corners[5] /= corners[5].w;
+    corners[6] = (camera.worldToClip * vec4(cx_m, cy_m, cz_m, 1.f)); corners[6] /= corners[6].w;
+    corners[7] = (camera.worldToClip * vec4(cx_p, cy_m, cz_m, 1.f)); corners[7] /= corners[7].w;
 
-    normal = vec3(0.f, 0.f, 1.f);
-    emit(v0,v1,v2,v3);
-
-    normal = vec3(0.f, 1.f, 0.f);
-    emit(v4,v0,v5,v2);
-
-    normal = vec3(0.f, 0.f, -1.f);
-    emit(v6,v4,v7,v5);
-    
-    normal = vec3(0.f, -1.f, 0.f);
-    emit(v1,v6,v3,v7);
-    
-    normal = vec3(-1.f, 0.f, 0.f);
-    emit(v4,v6,v0,v1);
-    
-    normal = vec3(1.f, 0.f, 0.f);
-    emit(v2,v3,v5,v7);  
+    emitFace(0, 1, 2, 3, vec3(0.f, 0.f, 1.f));
+    emitFace(4, 0, 5, 2, vec3(0.f, 1.f, 0.f));
+    emitFace(6, 4, 7, 5, vec3(0.f, 0.f, -1.f));
+    emitFace(1, 6, 3, 7, vec3(0.f, -1.f, 0.f));
+    emitFace(4, 6, 0, 1, vec3(-1.f, 0.f, 0.f));
+    emitFace(2, 3, 5, 7, vec3(1.f, 0.f, 0.f));  
 }

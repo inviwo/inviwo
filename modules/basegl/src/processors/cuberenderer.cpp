@@ -31,6 +31,7 @@
 #include <modules/opengl/rendering/meshdrawergl.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/openglutils.h>
+#include <modules/basegl/datastructures/meshshadercache.h>
 
 namespace inviwo {
 
@@ -50,91 +51,93 @@ CubeRenderer::CubeRenderer()
     , imageInport_("imageInport")
     , outport_("image")
     , cubeProperties_("cubeProperties", "Cube Properties")
-    , overrideCubeSize_("overrideCubeSize", "Override Cube Size", false,
-                        InvalidationLevel::InvalidResources)
-    , customSize_("customSize", "Custom Size", 0.05f, 0.00001f, 2.0f, 0.01f)
-    , overrideCubeColor_("overrideCubeColor", "Override Cube Color", false,
-                         InvalidationLevel::InvalidResources)
-    , customColor_("customColor", "Custom Color", vec4(0.7f, 0.7f, 0.7f, 1.0f), vec4(0.0f),
-                   vec4(1.0f))
+    , forceSize_("forceSize", "Force Size", false, InvalidationLevel::InvalidResources)
+    , defaultSize_("defaultRadius", "Default Size", 0.05f, 0.00001f, 2.0f, 0.01f)
+    , forceColor_("forceColor", "Force Color", false, InvalidationLevel::InvalidResources)
+    , defaultColor_("defaultColor", "Default Color", vec4(0.7f, 0.7f, 0.7f, 1.0f), vec4(0.0f),
+                    vec4(1.0f))
+    , useMetaColor_("useMetaColor", "Use meta color mapping", false)
+    , metaColor_("metaColor", "Meta Color Mapping")
+
     , camera_("camera", "Camera")
-    , lighting_("lighting", "Lighting", &camera_)
     , trackball_(&camera_)
-    , shader_("cubeglyph.vert", "cubeglyph.geom", "cubeglyph.frag", false) {
+    , lighting_("lighting", "Lighting", &camera_)
+    , shaders_{{{ShaderType::Vertex, "cubeglyph.vert"},
+                {ShaderType::Geometry, "cubeglyph.geom"},
+                {ShaderType::Fragment, "cubeglyph.frag"}},
+
+               {{BufferType::PositionAttrib, MeshShaderCache::Mandatory, "vec3"},
+                {BufferType::ColorAttrib, MeshShaderCache::Optional, "vec4"},
+                {BufferType::RadiiAttrib, MeshShaderCache::Optional, "float"},
+                {BufferType::PickingAttrib, MeshShaderCache::Optional, "uint"},
+                {BufferType::ScalarMetaAttrib, MeshShaderCache::Optional, "float"}},
+
+               [&](Shader& shader) -> void {
+                   shader.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+                   configureShader(shader);
+               }} {
 
     outport_.addResizeEventListener(&camera_);
 
     addPort(inport_);
     addPort(imageInport_);
-    addPort(outport_);
     imageInport_.setOptional(true);
 
-    customColor_.setSemantics(PropertySemantics::Color);
+    addPort(outport_);
+    outport_.addResizeEventListener(&camera_);
 
-    cubeProperties_.addProperty(overrideCubeSize_);
-    cubeProperties_.addProperty(customSize_);
-    cubeProperties_.addProperty(overrideCubeColor_);
-    cubeProperties_.addProperty(customColor_);
+    cubeProperties_.addProperty(forceSize_);
+    cubeProperties_.addProperty(defaultSize_);
+    cubeProperties_.addProperty(forceColor_);
+    cubeProperties_.addProperty(defaultColor_);
+    cubeProperties_.addProperty(useMetaColor_);
+    cubeProperties_.addProperty(metaColor_);
+    defaultColor_.setSemantics(PropertySemantics::Color);
 
     addProperty(cubeProperties_);
 
     addProperty(camera_);
     addProperty(lighting_);
     addProperty(trackball_);
-
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-    shader_.getVertexShaderObject()->addShaderExtension("GL_EXT_geometry_shader4", true);
-}
-
-void CubeRenderer::process() {
-    if (imageInport_.isReady()) {
-        utilgl::activateTargetAndCopySource(outport_, imageInport_, ImageType::ColorDepthPicking);
-    } else {
-        utilgl::activateAndClearTarget(outport_, ImageType::ColorDepthPicking);
-    }
-
-    shader_.activate();
-    utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    utilgl::setUniforms(shader_, camera_, lighting_, customColor_, customSize_);
-
-    shader_.setUniform("viewport", vec4(0.0f, 0.0f, 2.0f / outport_.getDimensions().x,
-                                        2.0f / outport_.getDimensions().y));
-    drawMeshes();
-
-    shader_.deactivate();
-    utilgl::deactivateCurrentTarget();
 }
 
 void CubeRenderer::initializeResources() {
-    utilgl::addShaderDefines(shader_, lighting_);
-
-    if (overrideCubeSize_.get()) {
-        shader_.getVertexShaderObject()->addShaderDefine("UNIFORM_SIZE");
-    } else {
-        shader_.getVertexShaderObject()->removeShaderDefine("UNIFORM_SIZE");
+    for (auto& item : shaders_.getShaders()) {
+        configureShader(item.second);
     }
-
-    if (overrideCubeColor_.get()) {
-        shader_.getVertexShaderObject()->addShaderDefine("UNIFORM_COLOR");
-    } else {
-        shader_.getVertexShaderObject()->removeShaderDefine("UNIFORM_COLOR");
-    }
-
-    shader_.build();
 }
 
-void CubeRenderer::drawMeshes() {
-    
-            for (const auto& elem : inport_) {
-                MeshDrawerGL::DrawObject drawer(elem->getRepresentation<MeshGL>(),
-                                                elem->getDefaultMeshInfo());
-                utilgl::setShaderUniforms(shader_, *elem, "geometry");
-                shader_.setUniform("pickingEnabled", meshutil::hasPickIDBuffer(elem.get()));
-                drawer.draw(MeshDrawerGL::DrawMode::Points);
-            }
-    
-    
+void CubeRenderer::configureShader(Shader& shader) {
+    utilgl::addDefines(shader, lighting_);
+    shader[ShaderType::Vertex]->setShaderDefine("FORCE_SIZE", forceSize_);
+    shader[ShaderType::Vertex]->setShaderDefine("FORCE_COLOR", forceColor_);
+    shader.build();
+}
+
+void CubeRenderer::process() {
+    utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
+
+    for (const auto& mesh : inport_) {
+        auto& shader = shaders_.getShader(*mesh);
+
+        shader.activate();
+        utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        TextureUnitContainer units;
+        utilgl::bindAndSetUniforms(shader, units, metaColor_);
+        utilgl::setUniforms(shader, camera_, lighting_, defaultColor_, defaultSize_);
+        shader.setUniform("viewport", vec4(0.0f, 0.0f, 2.0f / outport_.getDimensions().x,
+                                           2.0f / outport_.getDimensions().y));
+
+        MeshDrawerGL::DrawObject drawer(mesh->getRepresentation<MeshGL>(),
+                                        mesh->getDefaultMeshInfo());
+        utilgl::setShaderUniforms(shader, *mesh, "geometry");
+
+        drawer.draw(MeshDrawerGL::DrawMode::Points);
+
+        shader.deactivate();
+    }
+    utilgl::deactivateCurrentTarget();
 }
 
 }  // namespace inviwo

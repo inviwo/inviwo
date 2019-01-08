@@ -99,6 +99,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/interactionhandler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingaction.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingcontroller.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingcontrollermousestate.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingmanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingmapper.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingstate.h
@@ -399,6 +400,7 @@ set(SOURCE_FILES
     interaction/interactionhandler.cpp
     interaction/pickingaction.cpp
     interaction/pickingcontroller.cpp
+    interaction/pickingcontrollermousestate.cpp
     interaction/pickingmanager.cpp
     interaction/pickingmapper.cpp
     interaction/trackball.cpp
@@ -608,6 +610,7 @@ set(TEST_FILES
     tests/unittests/metadata-test.cpp
     tests/unittests/network-evaluator-test.cpp
     tests/unittests/picking-test.cpp
+    tests/unittests/pickingcontroller-test.cpp
     tests/unittests/serialize-container-test.cpp
     tests/unittests/serializer-test.cpp
     tests/unittests/typedmesh-test.cpp
@@ -663,6 +666,7 @@ target_link_libraries(inviwo-core PUBLIC
     inviwo::tinydir
     inviwo::tclap
     inviwo::warn
+    inviwo::sml
     fmt::fmt
     $<$<BOOL:${IVW_SIGAR}>:inviwo::sigar>
     $<$<BOOL:${WIN32}>:inviwo::stackwalker>

@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/interaction/pickingmanager.h>
+#include <inviwo/core/interaction/pickingcontrollermousestate.h>
 
 namespace inviwo {
 
@@ -43,37 +44,26 @@ class PickingAction;
 class MouseInteractionEvent;
 class GestureEvent;
 class TouchEvent;
+class WheelEvent;
 
 /**
  * \class PickingController
  * Handle mapping of interaction events into picking events and propagation of them
  * if the index of the color in the picking buffer of the src image if found by the PickingManager
  */
-class IVW_CORE_API PickingController { 
+class IVW_CORE_API PickingController {
 public:
     PickingController();
-    virtual ~PickingController() = default;
-    
+    ~PickingController();
+
     void propagateEvent(Event*, EventPropagator*);
     void setPickingSource(const std::shared_ptr<const Image>& src);
     bool pickingEnabled() const;
 
 private:
-    void propagateEvent(MouseInteractionEvent*, EventPropagator*);
+    void propagateEvent(WheelEvent*, EventPropagator*);
     void propagateEvent(TouchEvent*, EventPropagator*);
     void propagateEvent(GestureEvent*, EventPropagator*);
-
-    struct PCMouseState {
-        PickingManager::Result update(PickingController& pc, MouseInteractionEvent* e);
-
-        PickingManager::Result previousPickingAction = {0, nullptr};
-        dvec3 previousNDC = dvec3(0.0);
-        size_t previousPickingId = 0;
-
-        bool mousePressed = false;
-        PickingManager::Result pressedPickingAction = {0, nullptr};
-        dvec3 pressNDC = dvec3(0.0);
-    };
 
     struct PCTouchState {
         std::unordered_map<int, PickingManager::Result> pointIdToPickingId;
@@ -84,12 +74,11 @@ private:
     PickingManager::Result findPickingAction(const uvec2& coord);
     std::shared_ptr<const Image> src_;
 
-    PCMouseState mstate_;
+    PickingControllerMouseState mouseState_;
 
     PCTouchState tstate_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_PICKINGCONTROLLER_H
-
+#endif  // IVW_PICKINGCONTROLLER_H

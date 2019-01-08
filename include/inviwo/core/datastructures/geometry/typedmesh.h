@@ -203,9 +203,9 @@ using IndexBuffer = TypedMeshBufferBase<uint32_t, 1, static_cast<int>(BufferType
  * \see SphereMesh
  */
 class RadiiBuffer
-    : public TypedMeshBufferBase<float, 1, static_cast<int>(BufferType::NumberOfBufferTypes)> {
+    : public TypedMeshBufferBase<float, 1, static_cast<int>(BufferType::RadiiAttrib)> {
 public:
-    using Base = TypedMeshBufferBase<float, 1, static_cast<int>(BufferType::NumberOfBufferTypes)>;
+    using Base = TypedMeshBufferBase<float, 1, static_cast<int>(BufferType::RadiiAttrib)>;
     using Base::Base;
 
     std::shared_ptr<const Buffer<Base::type>> getRadii() const { return Base::buffer_; }
@@ -215,6 +215,46 @@ public:
         getEditableRadii()->getEditableRAMRepresentation()->set(index, radius);
     }
 };
+
+/**
+ * \ingroup typedmesh
+ * BufferTrait for picking buffers (uint32)
+ * \see PickingMapper
+ */
+class PickingBuffer
+    : public TypedMeshBufferBase<uint32_t, 1, static_cast<int>(BufferType::PickingAttrib)> {
+public:
+    using Base = TypedMeshBufferBase<uint32_t, 1, static_cast<int>(BufferType::PickingAttrib)>;
+    using Base::Base;
+
+    std::shared_ptr<const Buffer<Base::type>> getPicking() const { return Base::buffer_; }
+    std::shared_ptr<Buffer<Base::type>> getEditablePicking() { return Base::buffer_; }
+
+    void setVertexPicking(size_t index, uint32_t id) {
+        getEditablePicking()->getEditableRAMRepresentation()->set(index, id);
+    }
+};
+
+/**
+ * \ingroup typedmesh
+ * BufferTrait for scalar meta data buffers (float)
+ * Useful the pass additional information the rendering
+ * \see SphereRenderer
+ */
+class ScalarMetaBuffer
+    : public TypedMeshBufferBase<float, 1, static_cast<int>(BufferType::ScalarMetaAttrib)> {
+public:
+    using Base = TypedMeshBufferBase<float, 1, static_cast<int>(BufferType::ScalarMetaAttrib)>;
+    using Base::Base;
+
+    std::shared_ptr<const Buffer<Base::type>> getScalarMeta() const { return Base::buffer_; }
+    std::shared_ptr<Buffer<Base::type>> getEditableScalarMeta() { return Base::buffer_; }
+
+    void setVertexScalarMeta(size_t index, float value) {
+        getEditableScalarMeta()->getEditableRAMRepresentation()->set(index, value);
+    }
+};
+
 }  // namespace buffertraits
 
 /**

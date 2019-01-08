@@ -136,47 +136,17 @@ void RandomMeshGenerator::addPickingBuffer(Mesh& mesh, size_t id) {
     auto pickBuffer = std::make_shared<Buffer<uint32_t>>(bufferRAM);
     auto& data = bufferRAM->getDataContainer();
     std::fill(data.begin(), data.end(), static_cast<uint32_t>(id));
-    mesh.addBuffer(Mesh::BufferInfo(BufferType::NumberOfBufferTypes, 4), pickBuffer);
+    mesh.addBuffer(BufferType::PickingAttrib, pickBuffer);
 }
 
 void RandomMeshGenerator::handlePicking(PickingEvent* p, std::function<void(vec3)> callback) {
-
-    if (enablePicking_) {
-        if (p->getState() == PickingState::Updated &&
-            p->getEvent()->hash() == MouseEvent::chash()) {
-            auto me = p->getEventAs<MouseEvent>();
-            if ((me->buttonState() & MouseButton::Left) && me->state() == MouseState::Move) {
-                auto delta = getDelta(camera_, p);
-                callback(delta);
-                invalidate(InvalidationLevel::InvalidOutput);
-                p->markAsUsed();
-            }
-        } else if (p->getState() == PickingState::Updated &&
-                   p->getEvent()->hash() == TouchEvent::chash()) {
-
-            auto te = p->getEventAs<TouchEvent>();
-            if (!te->touchPoints().empty() && te->touchPoints()[0].state() == TouchState::Updated) {
-                auto delta = getDelta(camera_, p);
-                callback(delta);
-                invalidate(InvalidationLevel::InvalidOutput);
-                p->markAsUsed();
-            }
-        }
+    if (p->getPressState() == PickingPressState::Move &&
+        p->getPressItems().count(PickingPressItem::Primary)) {
+        callback(vec3{p->getWorldSpaceDeltaAtPressDepth(camera_)});
+        const auto worldDelta = p->getWorldSpaceDeltaAtPressDepth(camera_);
+        p->markAsUsed();
+        invalidate(InvalidationLevel::InvalidOutput);
     }
-}
-
-vec3 RandomMeshGenerator::getDelta(const Camera& camera, PickingEvent* p) {
-    auto currNDC = p->getNDC();
-    auto prevNDC = p->getPreviousNDC();
-
-    // Use depth of initial press as reference to move in the image plane.
-    auto refDepth = p->getPressedDepth();
-    currNDC.z = refDepth;
-    prevNDC.z = refDepth;
-
-    auto corrWorld = camera.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(currNDC));
-    auto prevWorld = camera.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(prevNDC));
-    return (corrWorld - prevWorld);
 }
 
 void RandomMeshGenerator::process() {

@@ -37,9 +37,13 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
-#include <modules/opengl/shader/shader.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/interaction/cameratrackball.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/basegl/datastructures/meshshadercache.h>
 
 namespace inviwo {
 class MeshDrawerGL;
@@ -49,26 +53,34 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
     TubeRendering();
-    virtual ~TubeRendering(){}
+    virtual ~TubeRendering() = default;
      
     virtual void process() override;
     
     virtual void initializeResources() override;
 
 protected:
-    MeshInport mesh_;
+    void configureShader(Shader& shader);
+
+    MeshFlatMultiInport inport_;
     ImageInport imageInport_;
     ImageOutport outport_;
 
-    FloatProperty radius_;
+    CompositeProperty tubeProperties_;
+    BoolProperty forceRadius_;
+    FloatProperty defaultRadius_;
+    BoolProperty forceColor_;
+    FloatVec4Property defaultColor_;
+    BoolProperty useMetaColor_;
+    TransferFunctionProperty metaColor_;
+
     CameraProperty camera_;
     CameraTrackball trackball_;
-    SimpleLightingProperty light_;
-
-    Shader shader_;
-
-    std::unique_ptr<MeshDrawerGL> drawer_;
-    std::vector<size_t> indexBuffersToRender_;
+    SimpleLightingProperty lighting_;
+    std::vector<std::pair<ShaderType, std::string>> shaderItems_;
+    std::vector<MeshShaderCache::Requirement> shaderRequirements_;
+    MeshShaderCache adjacencyShaders_;
+    MeshShaderCache shaders_;
 };
 
 } // namespace

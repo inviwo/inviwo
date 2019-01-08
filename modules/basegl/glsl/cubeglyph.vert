@@ -27,38 +27,40 @@
  *
  *********************************************************************************/
 
-layout(location = 4) in uint in_PickId;
-layout(location = 5) in float in_CubeSizes;
+// Owned by the CubeRenderer Processor
 
 #include "utils/structs.glsl"
-
 uniform GeometryParameters geometry;
-uniform CameraParameters camera;
 
-uniform vec4 customColor = vec4(1, 0, 0, 1);
-uniform float customSize = 0.1f;
+uniform vec4 defaultColor = vec4(1, 0, 0, 1);
+uniform float defaultSize = 0.1f;
+uniform sampler2D metaColor;
 
-out vec4 worldPosition_;
-out vec4 cubeColor_;
-flat out float cubeSize_;
-flat out uint pickID_;
+out vec4 vColor;
+flat out float vSize;
+flat out uint vPickID;
 
 void main(void) {
-#if defined(UNIFORM_SIZE)
-    cubeSize_ = customSize;
+
+#if defined(HAS_SCALARMETA) && !defined(FORCE_COLOR)
+    vColor = texture(metaColor, vec2(in_ScalarMeta, 0.5));
+#elif defined(HAS_COLOR) && !defined(FORCE_COLOR)
+    vColor = in_Color;
 #else
-    cubeSize_ = in_CubeSizes;
-#endif  // UNIFORM_RADIUS
+    vColor = defaultColor;
+#endif
 
-#if defined(UNIFORM_COLOR)
-    cubeColor_ = customColor;
-#else
-    cubeColor_ = in_Color;
-#endif // UNIFORM_COLOR
+#if defined(HAS_RADII) && !defined(FORCE_RADIUS)
+    vSize = in_Radii;
+#else 
+    vSize = defaultSize;
+#endif
 
-    worldPosition_ = geometry.dataToWorld * vec4(in_Vertex.xyz, 1.0);
+#if defined(HAS_PICKING)
+    vPickID = in_Picking;
+#else 
+    vPickID = 0;
+#endif
 
-    gl_Position = worldPosition_;
-
-    pickID_ = in_PickId;
+    gl_Position = geometry.dataToWorld * vec4(in_Position.xyz, 1.0);
 }

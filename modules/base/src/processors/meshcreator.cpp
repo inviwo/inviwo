@@ -314,7 +314,7 @@ void MeshCreator::process() {
         auto pickBuffer = std::make_shared<Buffer<uint32_t>>(bufferRAM);
         auto& data = bufferRAM->getDataContainer();
         std::fill(data.begin(), data.end(), static_cast<uint32_t>(picking_.getPickingId(0)));
-        mesh->addBuffer(Mesh::BufferInfo(BufferType::NumberOfBufferTypes, 4), pickBuffer);
+        mesh->addBuffer(Mesh::BufferInfo(BufferType::PickingAttrib), pickBuffer);
     }
 
     outport_.setData(mesh);

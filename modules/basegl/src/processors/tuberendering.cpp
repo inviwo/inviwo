@@ -31,7 +31,7 @@
 Code for rendering tubes is heavily inspired by a blog post written by Philip Rideout
 (Tron, Volumetric Lines, and Meshless Tubes)
 at "The little grasshopper, Graphics Programming Tips"
-http://prideout.net/blog/?p=61
+https://prideout.net/blog/old/blog/index.html@p=61.html
 
 */
 
@@ -56,89 +56,132 @@ const ProcessorInfo TubeRendering::getProcessorInfo() const { return processorIn
 
 TubeRendering::TubeRendering()
     : Processor()
-    , mesh_("mesh")
+    , inport_("mesh")
     , imageInport_("imageInport")
     , outport_("outport")
-    , radius_("radius", "Tube Radius", 0.01f, 0.0001f, 2.f, 0.0001f)
+    , tubeProperties_("tubeProperties", "Tube Properties")
+    , forceRadius_("forceRadius", "Force Radius", false, InvalidationLevel::InvalidResources)
+    , defaultRadius_("defaultRadius", "Tube Radius", 0.01f, 0.0001f, 2.f, 0.0001f)
+    , forceColor_("forceColor", "Force Color", false, InvalidationLevel::InvalidResources)
+    , defaultColor_("defaultColor", "Default Color", vec4(0.7f, 0.7f, 0.7f, 1.0f), vec4(0.0f),
+                    vec4(1.0f))
+    , useMetaColor_("useMetaColor", "Use meta color mapping", false)
+    , metaColor_("metaColor", "Meta Color Mapping")
     , camera_("camera", "Camera")
     , trackball_(&camera_)
-    , light_("light", "Lighting", &camera_)
-    , shader_("tuberendering.vert", "tuberendering.geom", "tuberendering.frag", false)
-    , drawer_(nullptr) {
-    addPort(mesh_);
+    , lighting_("lighting", "Lighting", &camera_)
+    , shaderItems_{{{ShaderType::Vertex, "tuberendering.vert"},
+                    {ShaderType::Geometry, "tuberendering.geom"},
+                    {ShaderType::Fragment, "tuberendering.frag"}}}
+    , shaderRequirements_{{{BufferType::PositionAttrib, MeshShaderCache::Mandatory, "vec3"},
+                           {BufferType::ColorAttrib, MeshShaderCache::Optional, "vec4"},
+                           {BufferType::RadiiAttrib, MeshShaderCache::Optional, "float"},
+                           {BufferType::PickingAttrib, MeshShaderCache::Optional, "uint"},
+                           {BufferType::ScalarMetaAttrib, MeshShaderCache::Optional, "float"}}}
+    , adjacencyShaders_{shaderItems_, shaderRequirements_,
+                        [&](Shader& shader) -> void {
+                            shader.onReload(
+                                [this]() { invalidate(InvalidationLevel::InvalidResources); });
+                            for (auto& obj : shader.getShaderObjects()) {
+                                obj.addShaderDefine("HAS_ADJACENCY");
+                            }
+                            configureShader(shader);
+                        }}
+    , shaders_{shaderItems_, shaderRequirements_, [&](Shader& shader) -> void {
+                   shader.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+                   configureShader(shader);
+               }} {
+
+    addPort(inport_);
     addPort(imageInport_);
-    addPort(outport_);
-
-    addProperty(radius_);
-    addProperty(camera_);
-    addProperty(light_);
-
-    addProperty(trackball_);
-
     imageInport_.setOptional(true);
 
+    addPort(outport_);
     outport_.addResizeEventListener(&camera_);
 
-    mesh_.onChange([this]() { drawer_ = nullptr; });
+    addProperty(tubeProperties_);
+    tubeProperties_.addProperty(forceRadius_);
+    tubeProperties_.addProperty(defaultRadius_);
+    tubeProperties_.addProperty(forceColor_);
+    tubeProperties_.addProperty(defaultColor_);
+    tubeProperties_.addProperty(useMetaColor_);
+    tubeProperties_.addProperty(metaColor_);
+    defaultColor_.setSemantics(PropertySemantics::Color);
 
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidOutput); });
-}
-
-void TubeRendering::process() {
-    if (!drawer_) {
-        indexBuffersToRender_.clear();
-        size_t nonAdjLineStrips = 0;
-
-        size_t idx = 0;
-        for (auto ib : mesh_.getData()->getIndexBuffers()) {
-            if (ib.first.dt == DrawType::Lines && ib.first.ct == ConnectivityType::StripAdjacency) {
-                indexBuffersToRender_.push_back(idx);
-            } else {
-                nonAdjLineStrips++;
-            }
-            idx++;
-        }
-        if (nonAdjLineStrips) {
-            LogWarn(
-                "Tube renderer only support rendering of lines strips with adjacency information. "
-                "Ignoring "
-                << nonAdjLineStrips << " index buffers of incompatible type");
-            LogInfo("Number of lines strips with adjacency index buffers: "
-                    << indexBuffersToRender_.size());
-        }
-        drawer_ = util::make_unique<MeshDrawerGL>(mesh_.getData().get());
-    }
-    if (!drawer_) return;
-
-    if (imageInport_.isReady()) {
-        utilgl::activateTargetAndCopySource(outport_, imageInport_, ImageType::ColorDepth);
-    } else {
-        utilgl::activateAndClearTarget(outport_, ImageType::ColorDepth);
-    }
-
-    shader_.activate();
-
-    utilgl::setShaderUniforms(shader_, radius_);
-    utilgl::setShaderUniforms(shader_, *mesh_.getData(), "geometry");
-    utilgl::setShaderUniforms(shader_, camera_, "camera");
-    utilgl::setShaderUniforms(shader_, light_, "light");
-
-    //  utilgl::PolygonModeState polygon(GL_LINE, 1, 1);
-    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
-
-    auto drawObj = drawer_->getDrawObject();
-    // drawer_->draw();
-    for (const auto &idx : indexBuffersToRender_) {
-        drawObj.draw(idx);
-    }
-
-    shader_.deactivate();
-    utilgl::deactivateCurrentTarget();
+    addProperty(camera_);
+    addProperty(lighting_);
+    addProperty(trackball_);
 }
 
 void TubeRendering::initializeResources() {
-    utilgl::addShaderDefines(shader_, light_);
-    shader_.build();
+    for (auto& item : shaders_.getShaders()) {
+        configureShader(item.second);
+    }
 }
 
-}  // namespace
+void TubeRendering::configureShader(Shader& shader) {
+    utilgl::addDefines(shader, lighting_);
+    shader[ShaderType::Vertex]->setShaderDefine("FORCE_RADIUS", forceRadius_);
+    shader[ShaderType::Vertex]->setShaderDefine("FORCE_COLOR", forceColor_);
+    shader.build();
+}
+
+void TubeRendering::process() {
+    utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
+
+    const auto hasLineAdjacency = [](Mesh::MeshInfo mi) {
+        return mi.dt == DrawType::Lines &&
+               (mi.ct == ConnectivityType::StripAdjacency || mi.ct == ConnectivityType::Adjacency);
+    };
+    const auto hasLine = [](Mesh::MeshInfo mi) {
+        return mi.dt == DrawType::Lines && mi.ct == ConnectivityType::None;
+    };
+
+    const auto hasAnyLine = [](const Mesh& mesh, auto test) {
+        if (mesh.getNumberOfIndicies() > 0) {
+            for (size_t i = 0; i < mesh.getNumberOfIndicies(); ++i) {
+                if (test(mesh.getIndexMeshInfo(i))) return true;
+            }
+        } else {
+            if (test(mesh.getDefaultMeshInfo())) return true;
+        }
+        return false;
+    };
+
+    const auto draw = [this, hasAnyLine](const Mesh& mesh, Shader& shader, auto test) {
+        if (!hasAnyLine(mesh, test)) return;
+
+        shader.activate();
+        TextureUnitContainer units;
+        utilgl::bindAndSetUniforms(shader, units, metaColor_);
+        utilgl::setUniforms(shader, camera_, lighting_, defaultColor_, defaultRadius_);
+
+        utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
+        MeshDrawerGL::DrawObject drawer(mesh.getRepresentation<MeshGL>(),
+                                        mesh.getDefaultMeshInfo());
+        utilgl::setShaderUniforms(shader, mesh, "geometry");
+        if (mesh.getNumberOfIndicies() > 0) {
+            for (size_t i = 0; i < mesh.getNumberOfIndicies(); ++i) {
+                const auto mi = mesh.getIndexMeshInfo(i);
+                if (test(mi)) {
+                    drawer.draw(i);
+                }
+            }
+        } else {
+            // no index buffers, check mesh default draw type
+            const auto mi = mesh.getDefaultMeshInfo();
+            if (test(mi)) {
+                drawer.draw();
+            }
+        }
+        shader.deactivate();
+    };
+
+    for (const auto& mesh : inport_) {
+        draw(*mesh, adjacencyShaders_.getShader(*mesh), hasLineAdjacency);
+        draw(*mesh, shaders_.getShader(*mesh), hasLine);
+    }
+    utilgl::deactivateCurrentTarget();
+}
+
+}  // namespace inviwo

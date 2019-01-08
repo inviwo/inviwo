@@ -48,9 +48,7 @@ NodeDebugger::NodeDebugger(TxElement* elem) {
     }
 }
 
-const NodeDebugger::Node& NodeDebugger::operator[](std::size_t idx) const {
-    return nodes_[idx];
-}
+const NodeDebugger::Node& NodeDebugger::operator[](std::size_t idx) const { return nodes_[idx]; }
 
 std::string NodeDebugger::toString(std::size_t idx) const {
     if (idx < nodes_.size()) {
@@ -75,11 +73,11 @@ std::string NodeDebugger::getDescription() const {
     for (const auto& elem : nodes_) {
         if (!elem.identifier.empty()) {
             std::stringstream ss;
-            ss << elem.key << ": \"" << elem.identifier << "\" of class \"" << elem.type << "\"";
+            ss << elem.key << " '" << elem.identifier << "' of class '" << elem.type << "'";
             parts.push_back(ss.str());
         }
     }
-    return joinString(parts, " in ");
+    return joinString(parts, " in\n   ");
 }
 
 size_t NodeDebugger::size() const { return nodes_.size(); }
@@ -88,4 +86,4 @@ NodeDebugger::Node::Node(std::string k /*= ""*/, std::string i /*= ""*/, std::st
                          int l /*= 0*/)
     : key(k), identifier(i), type(t), line(l) {}
 
-}  // namespace
+}  // namespace inviwo

@@ -58,7 +58,8 @@ PickingAction* PickingManager::registerPickingAction(Processor* processor,
     if (!pickObj) {
         pickingActions_.push_back(util::make_unique<PickingAction>(lastIndex_, size));
         lastIndex_ += size;
-        // we can only differentiate up to 2^24-1 picking IDs due to the use of u8vec3 for picking colors
+        // we can only differentiate up to 2^24-1 picking IDs due to the use of u8vec3 for picking
+        // colors
         if (lastIndex_ >= (1 << 24)) {
             LogWarn("More than " << (1 << 24)
                                  << " picking IDs in use. Unreliable picking behavior expected.");
@@ -112,8 +113,7 @@ bool PickingManager::unregisterPickingAction(const PickingAction* p) {
     return false;
 }
 
-PickingManager::Result PickingManager::getPickingActionFromColor(const uvec3& c) {
-    auto index = colorToIndex(c);
+auto PickingManager::getPickingActionFromIndex(size_t index) -> Result {
     if (index == 0) return {index, nullptr};
 
     // This will find the first picking object with an start greater then index.
@@ -124,13 +124,15 @@ PickingManager::Result PickingManager::getPickingActionFromColor(const uvec3& c)
 
     if (std::distance(pickingActions_.begin(), pIt) > 0) {
         auto po = (*(--pIt)).get();
-        const auto start = po->getPickingId(0);
-        if (index >= start && index < start + po->getSize()) {
+        if (po->isIndex(index)) {
             return {index, po};
         }
     }
-
     return {index, nullptr};
+}
+
+auto PickingManager::getPickingActionFromColor(const uvec3& c) -> Result {
+    return getPickingActionFromIndex(colorToIndex(c));
 }
 
 bool PickingManager::pickingEnabled() {
@@ -144,6 +146,11 @@ bool PickingManager::pickingEnabled() {
     }
 
     return enabled_;
+}
+
+bool PickingManager::isPickingActionRegistered(const PickingAction* action) const {
+    return std::any_of(pickingActions_.begin(), pickingActions_.end(),
+                 [&](auto& item) { return item.get() == action; });
 }
 
 // First the left four bits are swapped with the right four bits.

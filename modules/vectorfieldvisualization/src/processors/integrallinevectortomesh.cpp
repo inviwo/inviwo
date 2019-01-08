@@ -240,7 +240,6 @@ IntegralLineVectorToMesh::IntegralLineVectorToMesh()
 
     auto updateVisibility = [&]() {
         for (auto &prop : getPropertiesByType<ColorByProperty>()) {
-            bool t = prop->getKey() == colorBy_.getSelectedIdentifier();
             prop->setVisible(prop->getKey() == colorBy_.getSelectedIdentifier());
         }
     };

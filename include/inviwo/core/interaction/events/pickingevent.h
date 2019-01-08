@@ -33,80 +33,121 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/interaction/events/event.h>
+#include <inviwo/core/interaction/events/interactionevent.h>
 #include <inviwo/core/interaction/pickingstate.h>
 #include <inviwo/core/util/constexprhash.h>
 
 namespace inviwo {
 
 class PickingAction;
-class InteractionEvent;
+class Camera;
 
 /**
  * \class PickingEvent
  */
 class IVW_CORE_API PickingEvent : public Event {
 public:
-    PickingEvent(const PickingAction* pickingAction, PickingState state, Event* event,
-                 dvec3 pressNDC, dvec3 previousNDC, size_t pickedId);
-    PickingEvent(const PickingAction* pickingAction, PickingState state,
-                 std::unique_ptr<Event> event, dvec3 pressNDC, dvec3 previousNDC, size_t pickedId);
+    PickingEvent(const PickingAction* pickingAction, InteractionEvent* event, PickingState state,
+                 PickingPressState pressState, PickingPressItem pressItem,
+                 PickingHoverState hoverState, PickingPressItems pressedState,
+                 size_t pickedGlobalId, size_t currentGlobalId, size_t pressedGlobalId,
+                 size_t previousGlobalId, dvec3 pressedNDC, dvec3 previousNDC);
+    PickingEvent(const PickingAction* pickingAction, std::unique_ptr<InteractionEvent> event,
+                 PickingState state, PickingPressState pressState, PickingPressItem pressItem,
+                 PickingHoverState hoverState, PickingPressItems pressedState,
+                 size_t pickedGlobalId, size_t currentGlobalId, size_t pressedGlobalId,
+                 size_t previousGlobalId, dvec3 pressedNDC, dvec3 previousNDC);
 
     virtual ~PickingEvent();
     PickingEvent(const PickingEvent&);
     PickingEvent& operator=(const PickingEvent&);
 
-
     virtual PickingEvent* clone() const override;
-    
-    /**
-     *	Returns the local picking index of the object currently being picked. 
-    */
-    size_t getPickedId() const;
 
     /**
-    * Returns the current normalized position
-    */
+     * Returns the local picking index of the object currently being picked.
+     * this id does not change while an item is being pressed even if the position is no longer
+     * on the item.
+     */
+    size_t getPickedId() const;
+    /**
+     * Returns the global picking index of the object currently being picked.
+     * this id does not change while an item is being pressed even if the position is no longer
+     * on the item.
+     */
+    size_t getGlobalPickingId() const;
+
+    /**
+     * Returns the current global picking index of the object at the current position
+     */
+    size_t getCurrentGlobalPickingId() const;
+    /**
+     * Returns the current local picking index
+     * If the global index belongs to a different picking action {false, 0} is returned.
+     */
+    std::pair<bool, size_t> getCurrentLocalPickingId() const;
+    /**
+     * Returns the current normalized position
+     */
     dvec2 getPosition() const;
     /**
-    * Returns the current normalized depth
-    */
+     * Returns the current normalized depth
+     */
     double getDepth() const;
 
     /**
-    * Returns the previous normalized position
-    */
+     * Returns the previous global picking index
+     */
+    size_t getPreviousGlobalPickingId() const;
+    /**
+     * Returns the previous local picking index
+     * If the global index belongs to a different picking action {false, 0} is returned.
+     */
+    std::pair<bool, size_t> getPreviousLocalPickingId() const;
+    /**
+     * Returns the previous normalized position
+     */
     dvec2 getPreviousPosition() const;
     /**
-    * Returns the previous normalized depth
-    */
+     * Returns the previous normalized depth
+     */
     double getPreviousDepth() const;
 
     /**
-    * Returns the normalized position of the most resent press
-    */
+     * Returns the pressed global picking index
+     */
+    size_t getPressedGlobalPickingId() const;
+    /**
+     * Returns the pressed local picking index
+     * If the global index belongs to a different picking action {false, 0} is returned.
+     */
+    std::pair<bool, size_t> getPressedLocalPickingId() const;
+    /**
+     * Returns the normalized position of the initial press
+     */
     dvec2 getPressedPosition() const;
     /**
-    * Returns the normalized depth of the most resent press
-    */
+     * Returns the normalized depth of the initial press
+     */
     double getPressedDepth() const;
 
     /**
-    * Returns the delta of the previous and current position;
-    */
+     * Returns the delta of the previous and current position;
+     */
     dvec2 getDeltaPosition() const;
     /**
-    * Returns the delta of the previous and current depth;
-    */
+     * Returns the delta of the previous and current depth;
+     */
     double getDeltaDepth() const;
 
     /**
-    * Returns the delta of the press position and current position;
-    */
+     * Returns the delta of the press position and current position;
+     */
     dvec2 getDeltaPressedPosition() const;
-    
+
     /**
-    * Returns the delta of the press depth and current depth;
-    */
+     * Returns the delta of the press depth and current depth;
+     */
     double getDeltaPressedDepth() const;
 
     /**
@@ -119,49 +160,72 @@ public:
     dvec3 getPressedNDC() const;
 
     /**
+     * Return the {curr.x, curr.y. press.z} - {prev.x, prev.y, press.z} transformed into world space
+     * using the given camera. This is useful when dragging an object in the screen plane. 
+     */
+    dvec3 getWorldSpaceDeltaAtPressDepth(const Camera& camera) const;
+
+    /**
      *	The size of the canvas where the event occurred.
      */
     uvec2 getCanvasSize() const;
 
     PickingState getState() const;
-
-
+    PickingPressState getPressState() const;
+    PickingPressItem getPressItem() const;
+    PickingHoverState getHoverState() const;
+    PickingPressItems getPressItems() const;
 
     void invoke(Processor* p);
     const PickingAction* getPickingAction() const;
 
     virtual uint64_t hash() const override;
-    static constexpr uint64_t chash() {
-        return util::constexpr_hash("org.inviwo.PickingEvent");
-    }
+    static constexpr uint64_t chash() { return util::constexpr_hash("org.inviwo.PickingEvent"); }
 
     Event* getEvent() const;
 
     template <typename EventType>
     EventType* getEventAs() const;
 
-private:
-    using EventPtr = std::unique_ptr<Event,std::function<void(Event*)>>;
+    /**
+     * Display a tool tip using the optionally set tool tip callback.
+     * If no tool tip callback is set, the function does nothing.
+     * The supported formation depends on the used back end, but simple html is usually supported.
+     * Calling the function with an empty sting will hide any existing tool tip.
+     */
+    void setToolTip(const std::string& tooltip) const;
 
+    const InteractionEvent::ToolTipCallback& getToolTipCallback() const;
+
+private:
     const PickingAction* pickingAction_;
+
+    std::unique_ptr<InteractionEvent> owner_ = nullptr;
+    InteractionEvent* event_ = nullptr;
+
     PickingState state_ = PickingState::None;
-    EventPtr event_;
-    bool ownsEvent_ = false;
-    
+    PickingPressState pressState_ = PickingPressState::None;
+    PickingPressItem pressItem_ = PickingPressItem::None;
+    PickingHoverState hoverState_ = PickingHoverState::None;
+    PickingPressItems pressedState_ = PickingPressItem::None;
+
+    size_t pickedGlobalId_ = 0;
+    size_t currentGlobalId_ = 0;
+    size_t pressedGlobalId_ = 0;
+    size_t previousGlobalId_ = 0;
+
     dvec3 pressedNDC_ = dvec3(0.0);
     dvec3 previousNDC_ = dvec3(0.0);
-    size_t pickedId_ = 0;
 };
 
 template <typename EventType>
 EventType* PickingEvent::getEventAs() const {
     if (event_ && event_->hash() == EventType::chash()) {
-        return static_cast<EventType*>(event_.get());
+        return static_cast<EventType*>(event_);
     }
     return nullptr;
 }
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_PICKINGEVENT_H
-
+#endif  // IVW_PICKINGEVENT_H

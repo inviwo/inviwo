@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2014-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,20 +27,19 @@
  * 
  *********************************************************************************/
 
-#include "utils/structs.glsl"
+// Owned by the MeshRenderProcessorGL Processor
 
-layout(location=9) in vec3 in_PickCoords_;
+layout(location = 7) in uint in_PickId;
+
+#include "utils/structs.glsl"
+#include "utils/pickingutils.glsl"
 
 uniform GeometryParameters geometry;
 uniform CameraParameters camera;
 
 uniform vec4 overrideColor;
 
-uniform vec2 scaling_ = vec2(1.0f);
-uniform vec2 offset_ = vec2(0.0, 0.0);
-
-uniform vec4 meshColors_[5];
-uniform vec3 pickColors[10];
+uniform bool pickingEnabled = false;
 
 out vec4 worldPosition_;
 out vec3 normal_;
@@ -48,33 +47,17 @@ out vec3 viewNormal_;
 out vec4 color_;
 out vec3 texCoord_;
 flat out vec4 pickColor_;
-out float pickingCoord_;
  
 void main() {
+#ifdef OVERRIDE_COLOR_BUFFER
+    color_ = overrideColor;
+#else
     color_ = in_Color;
+#endif
     texCoord_ = in_TexCoord;
     worldPosition_ = geometry.dataToWorld * in_Vertex;
     normal_ = geometry.dataToWorldNormalMatrix * in_Normal * vec3(1.0);
     viewNormal_ = (camera.worldToView * vec4(normal_,0)).xyz;
     gl_Position = camera.worldToClip * worldPosition_;
-
-    // move mesh into correct 2D position on screen and scale it accordingly
-    gl_Position /= gl_Position.w;
-    gl_Position.xy *= scaling_;
-    gl_Position.xy += offset_;
-
-    pickingCoord_ = in_PickCoords_.x;
-
-    int pickID = int(pickingCoord_ * 10.0 + 0.5);
-
-#if defined(CUSTOM_COLOR)
-#  if (CUSTOM_COLOR == 0)
-    color_ = overrideColor;
-#  else
-    // apply RGB axis coloring
-    color_ = meshColors_[pickID / 2];
-#  endif // #if (CUSTOM_COLOR == 0)
-#endif
-
-    pickColor_ = vec4(pickColors[pickID], 1.0);
+    pickColor_ = vec4(pickingIndexToColor(in_PickId), pickingEnabled ? 1.0 : 0.0);
 }

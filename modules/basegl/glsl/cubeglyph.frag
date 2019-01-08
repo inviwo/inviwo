@@ -27,21 +27,24 @@
  *
  *********************************************************************************/
 
+// Owned by the CubeRenderer Processor
+
 #include "utils/structs.glsl"
 #include "utils/shading.glsl"
 
 uniform CameraParameters camera;
 uniform LightParameters lighting;
 
-in vec4 color_;
-flat in vec4 pickColor_;
+in vec4 color;
+flat in vec4 picking;
 in vec3 normal;
 in vec4 worldPosition;
 
 void main() {
-    vec3 c = APPLY_LIGHTING(lighting, color_.rgb, color_.rgb, vec3(1.f), worldPosition.xyz,
-                                   normalize(normal), normalize(camera.position - worldPosition.xyz));
+    vec3 c = APPLY_LIGHTING(lighting, color.rgb, color.rgb, vec3(1.f), worldPosition.xyz,
+                            normal, normalize(camera.position - worldPosition.xyz));
 
-    FragData0 = vec4(c, 1.f);
-    PickingData = pickColor_;
+    FragData0 = vec4(c, color.a);
+    PickingData = picking;
+   // FragData0 = color;
 }

@@ -109,28 +109,15 @@ void LineRenderer::initializeResources() {
         "ENABLE_ADJACENCY", useAdjacency_.get() && adjacencySupport ? "1" : "0");
 
     auto fragShader = shader_.getFragmentShaderObject();
-    if (pseudoLighting_.get()) {
-        fragShader->addShaderDefine("ENABLE_PSEUDO_LIGHTING");
-    } else {
-        fragShader->removeShaderDefine("ENABLE_PSEUDO_LIGHTING");
-    }
-    if (roundDepthProfile_.get()) {
-        fragShader->addShaderDefine("ENABLE_ROUND_DEPTH_PROFILE");
-    } else {
-        fragShader->removeShaderDefine("ENABLE_ROUND_DEPTH_PROFILE");
-    }
+    fragShader->setShaderDefine("ENABLE_PSEUDO_LIGHTING", pseudoLighting_);
+    fragShader->setShaderDefine("ENABLE_ROUND_DEPTH_PROFILE", roundDepthProfile_);
 
     utilgl::addShaderDefines(shader_, stippling_);
-
     shader_.build();
 }
 
 void LineRenderer::process() {
-    if (imageInport_.isReady()) {
-        utilgl::activateTargetAndCopySource(outport_, imageInport_, ImageType::ColorDepth);
-    } else {
-        utilgl::activateAndClearTarget(outport_, ImageType::ColorDepth);
-    }
+    utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
 
     utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     utilgl::DepthMaskState depthMask(writeDepth_.get());

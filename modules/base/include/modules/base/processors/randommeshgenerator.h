@@ -92,10 +92,7 @@ private:
     vec3 randVec3(const float min = 0, const float max = 1);
 
     void addPickingBuffer(Mesh& mesh, size_t id);
-
     void handlePicking(PickingEvent* p, std::function<void(vec3)> callback);
-
-    static vec3 getDelta(const Camera& camera, PickingEvent* p);
 
     MeshOutport mesh_;
 

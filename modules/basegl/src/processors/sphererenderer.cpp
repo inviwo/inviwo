@@ -32,6 +32,9 @@
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/openglutils.h>
 
+#include <inviwo/core/util/zip.h>
+#include <inviwo/core/util/stringconversion.h>
+
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
@@ -61,41 +64,58 @@ SphereRenderer::SphereRenderer()
     , shadeClippedArea_("shadeClippedArea", "Shade Clipped Area", false,
                         InvalidationLevel::InvalidResources)
     , sphereProperties_("sphereProperties", "Sphere Properties")
-    , overrideSphereRadius_("overrideSphereRadius", "Override Sphere Radius", false,
-                          InvalidationLevel::InvalidResources)
-    , customRadius_("customRadius", "Custom Radius", 0.05f, 0.00001f, 2.0f, 0.01f)
-    , overrideSphereColor_("overrideSphereColor", "Override Sphere Color", false,
-                      InvalidationLevel::InvalidResources)
-    , customColor_("customColor", "Custom Color", vec4(0.7f, 0.7f, 0.7f, 1.0f), vec4(0.0f),
+    , forceRadius_("forceRadius", "Force Radius", false,
+                            InvalidationLevel::InvalidResources)
+    , defaultRadius_("defaultRadius", "Default Radius", 0.05f, 0.00001f, 2.0f, 0.01f)
+    , forceColor_("forceColor", "Force Color", false,
+                           InvalidationLevel::InvalidResources)
+    , defaultColor_("defaultColor", "Default Color", vec4(0.7f, 0.7f, 0.7f, 1.0f), vec4(0.0f),
                    vec4(1.0f))
+    , useMetaColor_("useMetaColor", "Use meta color mapping", false)
+    , metaColor_("metaColor", "Meta Color Mapping")
 
     , camera_("camera", "Camera")
-    , lighting_("lighting", "Lighting", &camera_)
     , trackball_(&camera_)
-    , shader_("sphereglyph.vert", "sphereglyph.geom", "sphereglyph.frag", false) {
+    , lighting_("lighting", "Lighting", &camera_)
+    , shaders_{{{ShaderType::Vertex, "sphereglyph.vert"},
+                {ShaderType::Geometry, "sphereglyph.geom"},
+                {ShaderType::Fragment, "sphereglyph.frag"}},
 
-    outport_.addResizeEventListener(&camera_);
+               {{BufferType::PositionAttrib, MeshShaderCache::Mandatory, "vec3"},
+                {BufferType::ColorAttrib, MeshShaderCache::Optional, "vec4"},
+                {BufferType::RadiiAttrib, MeshShaderCache::Optional, "float"},
+                {BufferType::PickingAttrib, MeshShaderCache::Optional, "uint"},
+                {BufferType::ScalarMetaAttrib, MeshShaderCache::Optional, "float"}},
+
+               [&](Shader& shader) -> void {
+                   shader.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+                   configureShader(shader);
+               }} {
+
 
     addPort(inport_);
     addPort(imageInport_);
-    addPort(outport_);
     imageInport_.setOptional(true);
 
-    customColor_.setSemantics(PropertySemantics::Color);
+    addPort(outport_);
+    outport_.addResizeEventListener(&camera_);
 
     clipping_.addProperty(clipMode_);
     clipping_.addProperty(clipShadingFactor_);
     clipping_.addProperty(shadeClippedArea_);
 
-    sphereProperties_.addProperty(overrideSphereRadius_);
-    sphereProperties_.addProperty(customRadius_);
-    sphereProperties_.addProperty(overrideSphereColor_);
-    sphereProperties_.addProperty(customColor_);
+    sphereProperties_.addProperty(forceRadius_);
+    sphereProperties_.addProperty(defaultRadius_);
+    sphereProperties_.addProperty(forceColor_);
+    sphereProperties_.addProperty(defaultColor_);
+    sphereProperties_.addProperty(useMetaColor_);
+    sphereProperties_.addProperty(metaColor_);
+    defaultColor_.setSemantics(PropertySemantics::Color);
 
     addProperty(renderMode_);
     addProperty(sphereProperties_);
     addProperty(clipping_);
-    
+
     addProperty(camera_);
     addProperty(lighting_);
     addProperty(trackball_);
@@ -104,75 +124,51 @@ SphereRenderer::SphereRenderer()
         clipShadingFactor_.setReadOnly(clipMode_.get() == GlyphClippingMode::Discard);
         shadeClippedArea_.setReadOnly(clipMode_.get() == GlyphClippingMode::Discard);
     });
-
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-    shader_.getVertexShaderObject()->addShaderExtension("GL_EXT_geometry_shader4", true);
-}
-
-void SphereRenderer::process() {
-    if (imageInport_.isReady()) {
-        utilgl::activateTargetAndCopySource(outport_, imageInport_, ImageType::ColorDepthPicking);
-    } else {
-        utilgl::activateAndClearTarget(outport_, ImageType::ColorDepthPicking);
-    }
-
-    shader_.activate();
-    utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    utilgl::setUniforms(shader_, camera_, lighting_, customColor_, customRadius_,
-                        clipShadingFactor_);
-    shader_.setUniform("viewport", vec4(0.0f, 0.0f, 2.0f / outport_.getDimensions().x,
-                                        2.0f / outport_.getDimensions().y));
-    drawMeshes();
-
-    shader_.deactivate();
-    utilgl::deactivateCurrentTarget();
 }
 
 void SphereRenderer::initializeResources() {
-    utilgl::addShaderDefines(shader_, lighting_);
-
-    if (overrideSphereRadius_.get()) {
-        shader_.getVertexShaderObject()->addShaderDefine("UNIFORM_RADIUS");
-    } else {
-        shader_.getVertexShaderObject()->removeShaderDefine("UNIFORM_RADIUS");
+    for (auto& item : shaders_.getShaders()) {
+        configureShader(item.second);
     }
-
-    if (overrideSphereColor_.get()) {
-        shader_.getVertexShaderObject()->addShaderDefine("UNIFORM_COLOR");
-    } else {
-        shader_.getVertexShaderObject()->removeShaderDefine("UNIFORM_COLOR");
-    }
-
-    if (shadeClippedArea_.get()) {
-        shader_.getFragmentShaderObject()->addShaderDefine("SHADE_CLIPPED_AREA");
-    } else {
-        shader_.getFragmentShaderObject()->removeShaderDefine("SHADE_CLIPPED_AREA");
-    }
-
-    if (clipMode_.get() == GlyphClippingMode::Discard) {
-        shader_.getGeometryShaderObject()->addShaderDefine("DISCARD_CLIPPED_GLYPHS");
-        shader_.getFragmentShaderObject()->addShaderDefine("DISCARD_CLIPPED_GLYPHS");
-    } else {
-        shader_.getGeometryShaderObject()->removeShaderDefine("DISCARD_CLIPPED_GLYPHS");
-        shader_.getFragmentShaderObject()->removeShaderDefine("DISCARD_CLIPPED_GLYPHS");
-    }
-
-    shader_.build();
 }
 
-void SphereRenderer::drawMeshes() {
-    switch (renderMode_.get()) {
-        case RenderMode::PointsOnly:
-            // render only index buffers marked as points (or the entire mesh if none exists)
-            for (const auto& elem : inport_) {
-                MeshDrawerGL::DrawObject drawer(elem->getRepresentation<MeshGL>(),
-                                                elem->getDefaultMeshInfo());
-                utilgl::setShaderUniforms(shader_, *elem, "geometry");
-                shader_.setUniform("pickingEnabled", meshutil::hasPickIDBuffer(elem.get()));
-                if (elem->getNumberOfIndicies() > 0) {
-                    for (size_t i = 0; i < elem->getNumberOfIndicies(); ++i) {
-                        auto meshinfo = elem->getIndexMeshInfo(i);
+void SphereRenderer::configureShader(Shader& shader) {
+    utilgl::addDefines(shader, lighting_);
+    shader[ShaderType::Vertex]->setShaderDefine("FORCE_RADIUS", forceRadius_);
+    shader[ShaderType::Vertex]->setShaderDefine("FORCE_COLOR", forceColor_);
+    shader[ShaderType::Fragment]->setShaderDefine("SHADE_CLIPPED_AREA", shadeClippedArea_);
+    shader[ShaderType::Fragment]->setShaderDefine("DISCARD_CLIPPED_GLYPHS",
+                                                  clipMode_.get() == GlyphClippingMode::Discard);
+    shader[ShaderType::Geometry]->setShaderDefine("DISCARD_CLIPPED_GLYPHS",
+                                                  clipMode_.get() == GlyphClippingMode::Discard);
+    shader.build();
+}
+
+void SphereRenderer::process() {
+    utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
+    
+    for (const auto& mesh : inport_) {
+        auto& shader = shaders_.getShader(*mesh);
+
+        shader.activate();
+        utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        TextureUnitContainer units;
+        utilgl::bindAndSetUniforms(shader, units, metaColor_);
+
+        utilgl::setUniforms(shader, camera_, lighting_, defaultColor_, defaultRadius_,
+                            clipShadingFactor_);
+        shader.setUniform("viewport", vec4(0.0f, 0.0f, 2.0f / outport_.getDimensions().x,
+                                           2.0f / outport_.getDimensions().y));
+        switch (renderMode_) {
+            case RenderMode::PointsOnly: {
+                // render only index buffers marked as points (or the entire mesh if none exists)
+                MeshDrawerGL::DrawObject drawer(mesh->getRepresentation<MeshGL>(),
+                                                mesh->getDefaultMeshInfo());
+                utilgl::setShaderUniforms(shader, *mesh, "geometry");
+                if (mesh->getNumberOfIndicies() > 0) {
+                    for (size_t i = 0; i < mesh->getNumberOfIndicies(); ++i) {
+                        auto meshinfo = mesh->getIndexMeshInfo(i);
                         if ((meshinfo.dt == DrawType::Points) ||
                             (meshinfo.dt == DrawType::NotSpecified)) {
                             drawer.draw(MeshDrawerGL::DrawMode::Points, i);
@@ -180,25 +176,28 @@ void SphereRenderer::drawMeshes() {
                     }
                 } else {
                     // no index buffers, check mesh default draw type
-                    auto drawtype = elem->getDefaultMeshInfo().dt;
+                    auto drawtype = mesh->getDefaultMeshInfo().dt;
                     if ((drawtype == DrawType::Points) || (drawtype == DrawType::NotSpecified)) {
                         drawer.draw(MeshDrawerGL::DrawMode::Points);
                     }
                 }
+
+                break;
             }
-            break;
-        case RenderMode::EntireMesh:
-        default:
-            // render all parts of the input meshes as points
-            for (const auto& elem : inport_) {
-                MeshDrawerGL::DrawObject drawer(elem->getRepresentation<MeshGL>(),
-                                                elem->getDefaultMeshInfo());
-                utilgl::setShaderUniforms(shader_, *elem, "geometry");
-                shader_.setUniform("pickingEnabled", meshutil::hasPickIDBuffer(elem.get()));
+            case RenderMode::EntireMesh:
+                [[fallthrough]];
+            default:  // render all parts of the input meshes as points
+                MeshDrawerGL::DrawObject drawer(mesh->getRepresentation<MeshGL>(),
+                                                mesh->getDefaultMeshInfo());
+                utilgl::setShaderUniforms(shader, *mesh, "geometry");
                 drawer.draw(MeshDrawerGL::DrawMode::Points);
-            }
-            break;
+
+                break;
+        }
+        shader.deactivate();
     }
+
+    utilgl::deactivateCurrentTarget();
 }
 
 }  // namespace inviwo

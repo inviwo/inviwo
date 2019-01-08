@@ -171,6 +171,7 @@ add_subdirectory(ext/half)
 add_subdirectory(ext/utf)
 add_subdirectory(ext/json)
 add_subdirectory(ext/fmt)
+add_subdirectory(ext/sml)
 
 option(IVW_SIGAR "Use sigar to detect system capabilities" ON)
 if(IVW_SIGAR)
