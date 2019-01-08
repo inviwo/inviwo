@@ -80,7 +80,7 @@ void FileProperty::serialize(Serializer& s) const {
     /*
     We always use absolute paths inside of inviwo but serialize
     several version to have a higher success rate when moving stuff around.
-    
+    
 
 
     Saved path versions:

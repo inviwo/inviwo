@@ -197,7 +197,7 @@ IVW_MODULE_OPENGL_API std::shared_ptr<const ShaderResource> findShaderResource(
 IVW_MODULE_OPENGL_API std::vector<std::pair<ShaderType, std::shared_ptr<const ShaderResource>>>
 toShaderResources(const std::vector<std::pair<ShaderType, std::string>>& items);
 
-IVW_MODULE_OPENGL_API std::string getGLSLTypeName(const DataFormatBase* format); 
+IVW_MODULE_OPENGL_API std::string getGLSLTypeName(const DataFormatBase* format);
 
 }  // namespace utilgl
 

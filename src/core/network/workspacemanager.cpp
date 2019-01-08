@@ -93,7 +93,7 @@ struct ErrorHandle {
     ~ErrorHandle() {
         if (!messages.empty()) {
             LogNetworkError("There were errors while loading workspace: " + filename_);
-            for (auto& message : messages){
+            for (auto& message : messages) {
                 LogNetworkError(message);
             }
         }

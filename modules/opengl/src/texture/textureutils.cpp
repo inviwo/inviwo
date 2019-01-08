@@ -110,8 +110,7 @@ void activateTargetAndClearOrCopySource(Image& targetImage, const ImageInport& s
 }
 
 void activateTargetAndClearOrCopySource(ImageOutport& targetOutport,
-                                        const ImageInport& sourceInport,
-                                        ImageType type) {
+                                        const ImageInport& sourceInport, ImageType type) {
     if (sourceInport.isReady()) {
         utilgl::activateTargetAndCopySource(targetOutport, sourceInport, type);
     } else {
