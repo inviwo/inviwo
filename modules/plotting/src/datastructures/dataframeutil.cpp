@@ -164,6 +164,16 @@ std::shared_ptr<plot::DataFrame> combineDataFrames(
     return newDataFrame;
 }
 
+std::string createToolTipForRow(const plot::DataFrame &dataframe, size_t rowId) {
+    std::ostringstream oss;
+    for (size_t i = 0; i < dataframe.getNumberOfColumns(); i++) {
+        oss << dataframe.getHeader(i) << ": " << dataframe.getColumn(i)->getAsString(rowId)
+            << std::endl;
+    }
+
+    return oss.str();
+}
+
 }  // namespace dataframeutil
 
 }  // namespace inviwo

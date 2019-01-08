@@ -53,6 +53,7 @@
 #include <inviwo/core/io/datareaderfactory.h>
 
 #include <modules/plotting/utils/statsutils.h>
+#include <modules/plotting/datastructures/dataframeutil.h>
 #include <inviwo/core/util/utilities.h>
 
 namespace inviwo {
@@ -692,6 +693,12 @@ void ParallelCoordinates::renderText(
 }
 
 void ParallelCoordinates::linePicked(PickingEvent *p) {
+
+    if (auto df = dataFrame_.getData()) {
+        // Show tooltip about current line
+        p->setToolTip(dataframeutil::createToolTipForRow(*df, p->getPickedId()));
+    }
+
     if (auto mouseEvent = p->getEventAs<MouseEvent>()) {
         if (!(mouseEvent->buttonState() & MouseButton::Left)) return;
         if (mouseEvent->state() != MouseState::Press) return;
@@ -721,6 +728,9 @@ void ParallelCoordinates::handlePicked(PickingEvent *p) {
         auto newY =
             (mouseEvent->pos().y - marigins[2]) / (canvasSize.y - marigins[2] - marigins[0]);
         newY = glm::clamp(newY, 0.0, 1.0);
+
+        // Show tooltip for current value
+        p->setToolTip(std::to_string(axisVector_[axisID]->getValue(newY)));
 
         axisVector_[axisID]->moveHandle(upper, newY);
         mouseEvent->markAsUsed();
