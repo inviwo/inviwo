@@ -47,7 +47,8 @@ void DataSet::addChannel(std::shared_ptr<const Channel> sharedChannel) {
 }
 
 bool DataSet::removeChannel(std::shared_ptr<const Channel> channel) {
-    return channels_.erase(std::make_pair(channel->getName(), channel->getGridPrimitiveType())) != 0;
+    return channels_.erase(std::make_pair(channel->getName(), channel->getGridPrimitiveType())) !=
+           0;
 }
 
 std::shared_ptr<const Channel> DataSet::getFirstChannel() const {

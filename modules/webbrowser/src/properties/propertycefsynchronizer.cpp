@@ -85,7 +85,7 @@ void PropertyCefSynchronizer::OnLoadError(CefRefPtr<CefBrowser> browser, CefRefP
         ss << "<br/>Description: " << errorText.ToString();
     }
     ss << "</body></html>";
-    
+
     frame->LoadURL(WebBrowserModule::getDataURI(ss.str(), "text/html"));
 }
 

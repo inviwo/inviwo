@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/qtwidgets/properties/compositepropertywidgetqt.h>
@@ -35,15 +35,12 @@
 namespace inviwo {
 
 CompositePropertyWidgetQt::CompositePropertyWidgetQt(CompositeProperty* property)
-    : CollapsibleGroupBoxWidgetQt(property)
-    , compProperty_(property) {
-    
-    compProperty_->CompositePropertyObservable::addObserver(this);
-}                           
+    : CollapsibleGroupBoxWidgetQt(property), compProperty_(property) {
 
-void CompositePropertyWidgetQt::setCollapsed(bool value) {
-    compProperty_->setCollapsed(value);
+    compProperty_->CompositePropertyObservable::addObserver(this);
 }
+
+void CompositePropertyWidgetQt::setCollapsed(bool value) { compProperty_->setCollapsed(value); }
 
 void CompositePropertyWidgetQt::onSetCollapsed(bool value) {
     CollapsibleGroupBoxWidgetQt::setCollapsed(value);
@@ -59,8 +56,6 @@ void CompositePropertyWidgetQt::initState() {
     updateFromProperty();
 }
 
-bool CompositePropertyWidgetQt::isCollapsed() const {
-    return compProperty_->isCollapsed();
-}
+bool CompositePropertyWidgetQt::isCollapsed() const { return compProperty_->isCollapsed(); }
 
-} // namespace
+}  // namespace inviwo

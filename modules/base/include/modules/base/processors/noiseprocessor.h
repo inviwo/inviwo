@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_NOISEPROCESSOR_H
@@ -107,30 +107,28 @@ public:
 protected:
     ImageOutport noise_;
 
-    IntSize2Property size_; ///< Size of the output image.
-    TemplateOptionProperty<NoiseType> type_; ///< Witch type of noise to generate.
-    FloatMinMaxProperty range_;///< The min/max values of the output values (default: [0 1]).
-    IntMinMaxProperty levels_;///< Numbers of levels used in the generation of the Perlin noise
-    FloatProperty persistence_;///< Controls the sharpnes in Perlin noise
+    IntSize2Property size_;                   ///< Size of the output image.
+    TemplateOptionProperty<NoiseType> type_;  ///< Witch type of noise to generate.
+    FloatMinMaxProperty range_;  ///< The min/max values of the output values (default: [0 1]).
+    IntMinMaxProperty levels_;   ///< Numbers of levels used in the generation of the Perlin noise
+    FloatProperty persistence_;  ///< Controls the sharpnes in Perlin noise
 
-    IntProperty poissonDotsAlongX_;///< Average number of points along the x-axis.
-    IntProperty poissonMaxPoints_;///< Maximum number of output points (total).
+    IntProperty poissonDotsAlongX_;  ///< Average number of points along the x-axis.
+    IntProperty poissonMaxPoints_;   ///< Maximum number of output points (total).
 
     IntSizeTProperty haltonNumPoints_;
     IntSizeTProperty haltonXBase_;
     IntSizeTProperty haltonYBase_;
 
     CompositeProperty randomness_;
-    BoolProperty useSameSeed_;///< Use the same seed for each call to process.
-    IntProperty seed_;///<  The seed used to initialize the random sequence
+    BoolProperty useSameSeed_;  ///< Use the same seed for each call to process.
+    IntProperty seed_;          ///<  The seed used to initialize the random sequence
 
 private:
-
     std::random_device rd_;
     std::mt19937 mt_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_NOISEPROCESSOR_H
-
+#endif  // IVW_NOISEPROCESSOR_H

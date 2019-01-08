@@ -37,7 +37,7 @@ namespace meshutil {
 std::pair<vec3, vec3> axisAlignedBoundingBox(
     const std::vector<std::shared_ptr<const Mesh>>& meshes) {
     if (meshes.empty()) {
-        return { vec3(0.f), vec3(0.f) };
+        return {vec3(0.f), vec3(0.f)};
     }
 
     vec3 worldMin(std::numeric_limits<float>::max());
@@ -64,8 +64,7 @@ std::pair<vec3, vec3> axisAlignedBoundingBox(const Mesh& mesh) {
         mat4 trans = mesh.getCoordinateTransformer().getDataToWorldMatrix();
         worldMin = glm::min(worldMin, vec3(trans * vec4(vec3(minmax.first), 1.f)));
         worldMax = glm::max(worldMax, vec3(trans * vec4(vec3(minmax.second), 1.f)));
-    }
-    else {
+    } else {
         // No vertices, use same values for min/max
         worldMin = worldMax = mesh.getOffset();
     }

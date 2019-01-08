@@ -86,6 +86,6 @@ private:
     bool deserialized_ = false;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_VOLUMESOURCE_H

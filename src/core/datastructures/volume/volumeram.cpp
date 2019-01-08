@@ -38,8 +38,6 @@ void VolumeRAM::setValuesFromVolume(const VolumeRAM* src, const size3_t& dstOffs
     setValuesFromVolume(src, dstOffset, src->getDimensions(), size3_t(0));
 }
 
-std::type_index VolumeRAM::getTypeIndex() const {
-     return std::type_index(typeid(VolumeRAM));
-}
+std::type_index VolumeRAM::getTypeIndex() const { return std::type_index(typeid(VolumeRAM)); }
 
-}  // namespace
+}  // namespace inviwo

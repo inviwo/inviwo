@@ -103,7 +103,7 @@ private:
         Worker& operator=(Worker&& rhs) = delete;
         ~Worker();
 
-        std::atomic<State> state; //< State of the worker
+        std::atomic<State> state;  //< State of the worker
         std::thread thread;
     };
     // need to keep track of threads so we can join them
@@ -142,6 +142,6 @@ auto ThreadPool::enqueue(F&& f, Args&&... args)
     return res;
 }
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_THREADPOOL_H

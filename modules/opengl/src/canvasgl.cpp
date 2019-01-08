@@ -97,7 +97,7 @@ bool CanvasGL::ready() {
         return true;
     } else if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) {
         ready_ = true;
-        
+
         // Setup the GL state for the canvas, only need to do this once, since this
         // context will only be used to render the canvas on screen.
         // All other computation is done in the hidden contexts, which should never
@@ -108,7 +108,7 @@ bool CanvasGL::ready() {
         glDepthFunc(GL_ALWAYS);
         glEnable(GL_BLEND);
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-        
+
         square_ = utilgl::planeRect();
         squareGL_ = square_->getRepresentation<MeshGL>();
         textureShader_ = SharedOpenGLResources::getPtr()->getTextureShader();
@@ -160,8 +160,8 @@ double CanvasGL::getDepthValueAtNormalizedCoord(dvec2 normalizedScreenCoordinate
 
     if (imageGL_) {
         RenderContext::getPtr()->activateDefaultRenderContext();
-        const dvec2 depthDims{ imageGL_->getDimensions() - size2_t(1, 1) };
-        const size2_t coordDepth{ depthDims * coords };        
+        const dvec2 depthDims{imageGL_->getDimensions() - size2_t(1, 1)};
+        const size2_t coordDepth{depthDims * coords};
         auto depth = imageGL_->readPixel(coordDepth, LayerType::Depth).x;
 
         // Convert to normalized device coordinates
@@ -173,10 +173,10 @@ double CanvasGL::getDepthValueAtNormalizedCoord(dvec2 normalizedScreenCoordinate
     auto depthLayer = image_->getDepthLayer();
     if (!depthLayer) return 1.0;
     auto depthLayerRAM = depthLayer->getRepresentation<LayerRAM>();
-    if (!depthLayerRAM) return 1.0;   
-        
-    const dvec2 depthDims{ depthLayerRAM->getDimensions() - size2_t(1, 1) };
-    const size2_t coordDepth{ depthDims * coords };      
+    if (!depthLayerRAM) return 1.0;
+
+    const dvec2 depthDims{depthLayerRAM->getDimensions() - size2_t(1, 1)};
+    const size2_t coordDepth{depthDims * coords};
     const double depthValue = depthLayerRAM->getAsNormalizedDouble(coordDepth);
 
     // Convert to normalized device coordinates
@@ -195,4 +195,4 @@ size2_t CanvasGL::getImageDimensions() const {
     return image_ ? image_->getDimensions() : size2_t(0, 0);
 }
 
-}  // namespace
+}  // namespace inviwo

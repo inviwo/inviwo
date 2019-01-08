@@ -1734,8 +1734,7 @@ const std::vector<dvec4> &getColormap(Colormap colormap) {
         case Colormap::RdGy_3: {
             static const std::vector<dvec4> rdgy_3(
                 {dvec4(0.9372549019607843, 0.5411764705882353, 0.3843137254901961, 1.0),
-                 dvec4(1.0, 1.0, 1.0, 1.0),
-                 dvec4(0.6, 0.6, 0.6, 1.0)});
+                 dvec4(1.0, 1.0, 1.0, 1.0), dvec4(0.6, 0.6, 0.6, 1.0)});
             return rdgy_3;
         }
         case Colormap::RdGy_4: {
@@ -2198,8 +2197,7 @@ const std::vector<dvec4> &getColormap(Colormap colormap) {
                  dvec4(0.21568627450980393, 0.49411764705882355, 0.7215686274509804, 1.0),
                  dvec4(0.30196078431372547, 0.6862745098039216, 0.2901960784313726, 1.0),
                  dvec4(0.596078431372549, 0.3058823529411765, 0.6392156862745098, 1.0),
-                 dvec4(1.0, 0.4980392156862745, 0.0, 1.0),
-                 dvec4(1.0, 1.0, 0.2, 1.0)});
+                 dvec4(1.0, 0.4980392156862745, 0.0, 1.0), dvec4(1.0, 1.0, 0.2, 1.0)});
             return set1_6;
         }
         case Colormap::Set1_7: {
@@ -2208,8 +2206,7 @@ const std::vector<dvec4> &getColormap(Colormap colormap) {
                  dvec4(0.21568627450980393, 0.49411764705882355, 0.7215686274509804, 1.0),
                  dvec4(0.30196078431372547, 0.6862745098039216, 0.2901960784313726, 1.0),
                  dvec4(0.596078431372549, 0.3058823529411765, 0.6392156862745098, 1.0),
-                 dvec4(1.0, 0.4980392156862745, 0.0, 1.0),
-                 dvec4(1.0, 1.0, 0.2, 1.0),
+                 dvec4(1.0, 0.4980392156862745, 0.0, 1.0), dvec4(1.0, 1.0, 0.2, 1.0),
                  dvec4(0.6509803921568628, 0.33725490196078434, 0.1568627450980392, 1.0)});
             return set1_7;
         }
@@ -2219,8 +2216,7 @@ const std::vector<dvec4> &getColormap(Colormap colormap) {
                  dvec4(0.21568627450980393, 0.49411764705882355, 0.7215686274509804, 1.0),
                  dvec4(0.30196078431372547, 0.6862745098039216, 0.2901960784313726, 1.0),
                  dvec4(0.596078431372549, 0.3058823529411765, 0.6392156862745098, 1.0),
-                 dvec4(1.0, 0.4980392156862745, 0.0, 1.0),
-                 dvec4(1.0, 1.0, 0.2, 1.0),
+                 dvec4(1.0, 0.4980392156862745, 0.0, 1.0), dvec4(1.0, 1.0, 0.2, 1.0),
                  dvec4(0.6509803921568628, 0.33725490196078434, 0.1568627450980392, 1.0),
                  dvec4(0.9686274509803922, 0.5058823529411764, 0.7490196078431373, 1.0)});
             return set1_8;
@@ -2231,8 +2227,7 @@ const std::vector<dvec4> &getColormap(Colormap colormap) {
                  dvec4(0.21568627450980393, 0.49411764705882355, 0.7215686274509804, 1.0),
                  dvec4(0.30196078431372547, 0.6862745098039216, 0.2901960784313726, 1.0),
                  dvec4(0.596078431372549, 0.3058823529411765, 0.6392156862745098, 1.0),
-                 dvec4(1.0, 0.4980392156862745, 0.0, 1.0),
-                 dvec4(1.0, 1.0, 0.2, 1.0),
+                 dvec4(1.0, 0.4980392156862745, 0.0, 1.0), dvec4(1.0, 1.0, 0.2, 1.0),
                  dvec4(0.6509803921568628, 0.33725490196078434, 0.1568627450980392, 1.0),
                  dvec4(0.9686274509803922, 0.5058823529411764, 0.7490196078431373, 1.0),
                  dvec4(0.6, 0.6, 0.6, 1.0)});
@@ -2518,16 +2513,14 @@ const std::vector<dvec4> &getColormap(Colormap colormap) {
         }
         case Colormap::YlGn_4: {
             static const std::vector<dvec4> ylgn_4(
-                {dvec4(1.0, 1.0, 0.8, 1.0),
-                 dvec4(0.7607843137254902, 0.9019607843137255, 0.6, 1.0),
+                {dvec4(1.0, 1.0, 0.8, 1.0), dvec4(0.7607843137254902, 0.9019607843137255, 0.6, 1.0),
                  dvec4(0.47058823529411764, 0.7764705882352941, 0.4745098039215686, 1.0),
                  dvec4(0.13725490196078433, 0.5176470588235295, 0.2627450980392157, 1.0)});
             return ylgn_4;
         }
         case Colormap::YlGn_5: {
             static const std::vector<dvec4> ylgn_5(
-                {dvec4(1.0, 1.0, 0.8, 1.0),
-                 dvec4(0.7607843137254902, 0.9019607843137255, 0.6, 1.0),
+                {dvec4(1.0, 1.0, 0.8, 1.0), dvec4(0.7607843137254902, 0.9019607843137255, 0.6, 1.0),
                  dvec4(0.47058823529411764, 0.7764705882352941, 0.4745098039215686, 1.0),
                  dvec4(0.19215686274509805, 0.6392156862745098, 0.32941176470588235, 1.0),
                  dvec4(0.0, 0.40784313725490196, 0.21568627450980393, 1.0)});
@@ -2766,8 +2759,7 @@ const std::vector<dvec4> &getColormap(Colormap colormap) {
         }
         case Colormap::YlOrRd_8: {
             static const std::vector<dvec4> ylorrd_8(
-                {dvec4(1.0, 1.0, 0.8, 1.0),
-                 dvec4(1.0, 0.9294117647058824, 0.6274509803921569, 1.0),
+                {dvec4(1.0, 1.0, 0.8, 1.0), dvec4(1.0, 0.9294117647058824, 0.6274509803921569, 1.0),
                  dvec4(0.996078431372549, 0.8509803921568627, 0.4627450980392157, 1.0),
                  dvec4(0.996078431372549, 0.6980392156862745, 0.2980392156862745, 1.0),
                  dvec4(0.9921568627450981, 0.5529411764705883, 0.23529411764705882, 1.0),
@@ -2776,16 +2768,15 @@ const std::vector<dvec4> &getColormap(Colormap colormap) {
                  dvec4(0.6941176470588235, 0.0, 0.14901960784313725, 1.0)});
             return ylorrd_8;
         }
-
     }
     throw ColorBrewerException("Invalid colorbrewer colormap");
 }
 
 const std::vector<dvec4> &getColormap(const Family &family, glm::uint8 numberOfColors) {
-    if (getMinNumberOfColorsForFamily(family) > numberOfColors){
+    if (getMinNumberOfColorsForFamily(family) > numberOfColors) {
         throw ColorBrewerTooFewException();
-    } 
-    if(getMaxNumberOfColorsForFamily(family) < numberOfColors) {
+    }
+    if (getMaxNumberOfColorsForFamily(family) < numberOfColors) {
         throw ColorBrewerTooManyException();
     }
 
@@ -2841,7 +2832,7 @@ std::map<Family, std::vector<std::vector<dvec4>>> getColormaps(const Category &c
 }
 
 std::map<Family, std::vector<dvec4>> getColormaps(const Category &category,
-                                                   glm::uint8 numberOfColors) {
+                                                  glm::uint8 numberOfColors) {
     std::map<Family, std::vector<dvec4>> v;
 
     for (const auto &family : getFamiliesForCategory(category)) {
@@ -2875,32 +2866,25 @@ std::map<Family, std::vector<dvec4>> getColormaps(const Category &category,
 glm::uint8 getMinNumberOfColorsForFamily(const Family &) { return 3; }
 
 glm::uint8 getMaxNumberOfColorsForFamily(const Family &family) {
-    if (family == Family::Accent || family == Family::Dark2 || 
-        family == Family::Pastel2 || family == Family::Set2 || 
-        family == Family::YlOrRd) {
+    if (family == Family::Accent || family == Family::Dark2 || family == Family::Pastel2 ||
+        family == Family::Set2 || family == Family::YlOrRd) {
         return 8;
     }
-    if (family == Family::Blues || 
-        family == Family::BuGn || family == Family::BuPu || 
-        family == Family::GnBu || family == Family::Greens || 
-        family == Family::Greys || family == Family::OrRd || 
-        family == Family::Oranges || family == Family::Pastel1 || 
-        family == Family::PuBu || family == Family::PuBuGn || 
-        family == Family::PuRd || family == Family::Purples || 
-        family == Family::RdPu || family == Family::Reds || 
-        family == Family::Set1 || family == Family::YlGn || 
-        family == Family::YlGnBu || family == Family::YlOrBr) {
+    if (family == Family::Blues || family == Family::BuGn || family == Family::BuPu ||
+        family == Family::GnBu || family == Family::Greens || family == Family::Greys ||
+        family == Family::OrRd || family == Family::Oranges || family == Family::Pastel1 ||
+        family == Family::PuBu || family == Family::PuBuGn || family == Family::PuRd ||
+        family == Family::Purples || family == Family::RdPu || family == Family::Reds ||
+        family == Family::Set1 || family == Family::YlGn || family == Family::YlGnBu ||
+        family == Family::YlOrBr) {
         return 9;
     }
-    if (family == Family::BrBG || family == Family::PRGn || 
-        family == Family::PiYG || family == Family::PuOr || 
-        family == Family::RdBu || family == Family::RdGy || 
-        family == Family::RdYlBu || family == Family::RdYlGn || 
-        family == Family::Spectral) {
+    if (family == Family::BrBG || family == Family::PRGn || family == Family::PiYG ||
+        family == Family::PuOr || family == Family::RdBu || family == Family::RdGy ||
+        family == Family::RdYlBu || family == Family::RdYlGn || family == Family::Spectral) {
         return 11;
     }
-    if (family == Family::Paired || 
-        family == Family::Set3) {
+    if (family == Family::Paired || family == Family::Set3) {
         return 12;
     }
 
@@ -2961,4 +2945,3 @@ std::vector<Family> getFamiliesForCategory(const Category &category) {
 }  // namespace colorbrewer
 
 }  // namespace inviwo
-

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_RAYPLANEINTERSECTION_H
@@ -51,8 +51,7 @@ template <typename T, glm::precision P>
 std::pair<bool, T> rayPlaneIntersection(const glm::tvec3<T, P>& planePos,
                                         const glm::tvec3<T, P>& planeNormal,
                                         const glm::tvec3<T, P>& origin,
-                                        const glm::tvec3<T, P>& direction, const T t0,
-                                        const T t1) {
+                                        const glm::tvec3<T, P>& direction, const T t0, const T t1) {
     // http://en.wikipedia.org/wiki/Line-plane_intersection
     // http://www.scratchapixel.com/lessons/3d-basic-lessons/lesson-7-intersecting-simple-shapes/ray-plane-and-ray-disk-intersection/
     T denom = glm::dot(planeNormal, direction);
@@ -70,7 +69,6 @@ std::pair<bool, T> rayPlaneIntersection(const glm::tvec3<T, P>& planePos,
     return {false, T{0.0}};
 }
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_RAYPLANEINTERSECTION_H
-
+#endif  // IVW_RAYPLANEINTERSECTION_H

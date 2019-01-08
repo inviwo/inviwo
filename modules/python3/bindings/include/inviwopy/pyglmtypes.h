@@ -149,4 +149,3 @@ using namespace inviwo;
 namespace inviwo {
 void exposeGLMTypes(pybind11::module &m);
 }
-

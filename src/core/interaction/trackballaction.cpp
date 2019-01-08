@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/interaction/trackballaction.h>
@@ -32,9 +32,7 @@
 namespace inviwo {
 
 TrackballAction::TrackballAction(TrackballAction::Actions action)
-    : Action(actionNames_[action])
-    , action_(action) {
-}
+    : Action(actionNames_[action]), action_(action) {}
 
 TrackballAction::~TrackballAction() {}
 
@@ -54,18 +52,8 @@ void TrackballAction::deserialize(Deserializer& d) {
 }
 
 const std::string TrackballAction::actionNames_[COUNT] = {
-    "Trackball rotate",
-    "Trackball zoom",
-    "Trackball pan",
-    "Step rotate up",
-    "Step rotate left",
-    "Step rotate down",
-    "Step rotate right",
-    "Step zoom in",
-    "Step zoom out",
-    "Step pan up",
-    "Step pan left",
-    "Step pan down",
-    "Step pan right" };
+    "Trackball rotate", "Trackball zoom",    "Trackball pan", "Step rotate up", "Step rotate left",
+    "Step rotate down", "Step rotate right", "Step zoom in",  "Step zoom out",  "Step pan up",
+    "Step pan left",    "Step pan down",     "Step pan right"};
 
-} //namespace
+}  // namespace inviwo

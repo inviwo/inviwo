@@ -48,4 +48,4 @@ PropertyEditorWidget* PropertyWidget::getEditorWidget() const { return nullptr; 
 
 bool PropertyWidget::hasEditorWidget() const { return false; }
 
-}  // namespace
+}  // namespace inviwo

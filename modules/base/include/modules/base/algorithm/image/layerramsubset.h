@@ -120,7 +120,7 @@ std::shared_ptr<LayerRAMPrecision<U>> extractLayerSubSet(const LayerRAMPrecision
         // clear entire layer as only parts will be copied
         std::fill(dst, dst + dstDim.x * dstDim.y, U(0));
     }
-    // memcpy each row to form sub layer
+        // memcpy each row to form sub layer
 #pragma omp parallel for
     for (int j = 0; j < copyExtent.y; j++) {
         size_t srcPos = (j + srcOffset.y) * srcDim.x + srcOffset.x;

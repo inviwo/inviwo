@@ -30,7 +30,6 @@
 #include <modules/brushingandlinking/brushingandlinkingmodule.h>
 #include <modules/brushingandlinking/processors/brushingandlinkingprocessor.h>
 
-
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 
 namespace inviwo {
@@ -43,7 +42,6 @@ BrushingAndLinkingModule::BrushingAndLinkingModule(InviwoApplication* app)
     // Ports
     registerPort<BrushingAndLinkingOutport>();
     registerPort<BrushingAndLinkingInport>();
-
 }
 
-}  // namespace
+}  // namespace inviwo

@@ -29,6 +29,4 @@
 
 #include <inviwo/core/rendering/datavisualizer.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

@@ -81,7 +81,7 @@ VolumeSource::VolumeSource(InviwoApplication* app, const std::string& file)
     addProperty(information_);
     addProperty(basis_);
     addProperty(volumeSequence_);
-    
+
     isReady_.setUpdate([this]() { return filesystem::fileExists(file_.get()); });
     file_.onChange([this]() { isReady_.update(); });
 }

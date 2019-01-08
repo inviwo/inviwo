@@ -82,10 +82,8 @@ public:
     // See net\base\net_error_list.h for complete descriptions of the error codes.
     ///
     /*--cef(optional_param=errorText)--*/
-    virtual void OnLoadError(CefRefPtr<CefBrowser> browser,
-                             CefRefPtr<CefFrame> frame,
-                             CefLoadHandler::ErrorCode errorCode,
-                             const CefString& errorText,
+    virtual void OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
+                             CefLoadHandler::ErrorCode errorCode, const CefString& errorText,
                              const CefString& failedUrl) override;
 
     /**
@@ -118,16 +116,15 @@ public:
      * @param property Property to remove
      */
     void stopSynchronize(Property* property);
-    
+
     // Use own widget factory for now. Multiple widget types are not supported in Inviwo yet
     template <typename T, typename P>
     void registerPropertyWidget(PropertySemantics semantics);
-    
+
     PropertyWidgetFactory htmlWidgetFactory_;
+
 private:
-
     std::vector<std::unique_ptr<PropertyWidgetFactoryObject>> propertyWidgets_;
-
 
     std::vector<std::unique_ptr<PropertyWidgetCEF>> widgets_;
     IMPLEMENT_REFCOUNTING(PropertyCefSynchronizer)

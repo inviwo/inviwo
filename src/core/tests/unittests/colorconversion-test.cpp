@@ -90,4 +90,4 @@ TEST(colorconversion, rgb2hexIdentity) {
     EXPECT_EQ("#100000", rgb2hex(hex2rgba("#100000")));
 }
 
-}
+}  // namespace inviwo

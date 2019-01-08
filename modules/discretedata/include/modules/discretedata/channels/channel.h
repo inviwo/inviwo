@@ -38,7 +38,7 @@
 namespace inviwo {
 namespace discretedata {
 
-/** 
+/**
  * \brief An untyped scalar or vector component of a data set.
  *
  * General version of a DataChannel for use in general containers
@@ -48,7 +48,7 @@ namespace discretedata {
  */
 class IVW_MODULE_DISCRETEDATA_API Channel : public MetaDataOwner {
 public:
-    /** 
+    /**
      * \brief Direct construction
      * @param numComponents Size of vector at each position
      * @param name Name associated with the channel
@@ -72,7 +72,7 @@ public:
     virtual ind size() const = 0;
 
 protected:
-    /** 
+    /**
      * Sets the "GridPrimitiveType" meta data
      * Should be constant, only DataSet is allowed to write.
      */
@@ -80,7 +80,7 @@ protected:
 
     void setDataFormatId(DataFormatId);
 
-    /** 
+    /**
      * Sets the "NumComponents" meta data
      * Should be constant, only DataSet is allowed to write.
      */

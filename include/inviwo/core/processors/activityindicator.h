@@ -36,7 +36,7 @@
 
 namespace inviwo {
 
-class IVW_CORE_API ActivityIndicatorObserver: public Observer {
+class IVW_CORE_API ActivityIndicatorObserver : public Observer {
 public:
     virtual void activityIndicatorChanged(bool active);
 };
@@ -45,12 +45,12 @@ public:
  * \class ActivityIndicator
  * A class for indicating that a processor is working.
  */
-class IVW_CORE_API ActivityIndicator : public Observable<ActivityIndicatorObserver> { 
+class IVW_CORE_API ActivityIndicator : public Observable<ActivityIndicatorObserver> {
 public:
     void setActive(bool active);
     bool isActive() const;
 
-private: 
+private:
     void notifyActivityIndicatorChanged(bool active);
     bool active_ = false;
 };
@@ -58,14 +58,12 @@ private:
 class IVW_CORE_API ActivityIndicatorOwner {
 public:
     ActivityIndicator& getActivityIndicator();
-    const ActivityIndicator&  getActivityIndicator() const;
+    const ActivityIndicator& getActivityIndicator() const;
+
 private:
     ActivityIndicator indicator_;
 };
 
+}  // namespace inviwo
 
-
-} // namespace
-
-#endif // IVW_ACTIVITYINDICATOR_H
-
+#endif  // IVW_ACTIVITYINDICATOR_H

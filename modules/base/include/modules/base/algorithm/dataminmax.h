@@ -67,8 +67,8 @@ IVW_MODULE_BASE_API std::pair<dvec4, dvec4> bufferMinMax(
 namespace detail {
 
 // Specialization for double, float, half
-template <typename ValueType, typename std::enable_if<util::is_floating_point<ValueType>::value,
-                                                      int>::type = 0>
+template <typename ValueType,
+          typename std::enable_if<util::is_floating_point<ValueType>::value, int>::type = 0>
 std::pair<dvec4, dvec4> dataMinMax(const ValueType* data, size_t size,
                                    IgnoreSpecialValues ignore = IgnoreSpecialValues::No) {
     using Res = std::pair<ValueType, ValueType>;
@@ -79,9 +79,11 @@ std::pair<dvec4, dvec4> dataMinMax(const ValueType* data, size_t size,
             data, data + size, minmax, [](const Res& mm, const ValueType& v) -> Res {
                 Res res(mm);
                 for (size_t i = 0; i < util::flat_extent<ValueType>::value; ++i) {
-                    if (util::isfinite(util::glmcomp(v,i))) {
-                        util::glmcomp(res.first, i) = std::min(util::glmcomp(mm.first, i), util::glmcomp(v,i));
-                        util::glmcomp(res.second, i) = std::max(util::glmcomp(mm.second, i), util::glmcomp(v, i));
+                    if (util::isfinite(util::glmcomp(v, i))) {
+                        util::glmcomp(res.first, i) =
+                            std::min(util::glmcomp(mm.first, i), util::glmcomp(v, i));
+                        util::glmcomp(res.second, i) =
+                            std::max(util::glmcomp(mm.second, i), util::glmcomp(v, i));
                     }
                 }
                 return res;
@@ -116,7 +118,7 @@ std::pair<dvec4, dvec4> dataMinMax(const ValueType* data, size_t size,
  * Compute component-wise minimum and maximum values scalar and glm::vec types.
  *
  * @param data pointer to values
- * @param size of data 
+ * @param size of data
  * @param ignore infinite and NaN
  * @return minimum and maximum values of each component and zero for non-existing components
  */
@@ -126,9 +128,8 @@ std::pair<dvec4, dvec4> dataMinMax(const ValueType* data, size_t size,
     return detail::dataMinMax<ValueType>(data, size, ignore);
 }
 
-}  // namespace
+}  // namespace util
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_DATAMINMAX_H
-
+#endif  // IVW_DATAMINMAX_H

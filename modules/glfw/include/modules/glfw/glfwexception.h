@@ -52,7 +52,6 @@ public:
     virtual ~GLFWInitException() throw() {}
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_GLFWEXCEPTION_H
-
+#endif  // IVW_GLFWEXCEPTION_H

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_VECTOROPERATIONS_H
@@ -40,7 +40,8 @@ template <typename T>
 class ComparePointers {
 public:
     explicit ComparePointers(const T* ptr) : p(ptr) {}
-    bool operator() (const T* rhs) const { return p == rhs; }
+    bool operator()(const T* rhs) const { return p == rhs; }
+
 private:
     const T* p;
 };
@@ -55,7 +56,7 @@ T* getTypeFromVector(std::vector<U*>& vec) {
 
 template <class T, class U>
 T* getTypeFromVector(std::vector<std::unique_ptr<U>>& vec) {
-    for (size_t i = 0; i < vec.size(); i++) {   
+    for (size_t i = 0; i < vec.size(); i++) {
         if (auto item = dynamic_cast<T*>(vec[i].get())) return item;
     }
     return nullptr;
@@ -103,6 +104,6 @@ struct equalPtr {
     }
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_VECTOROPERATIONS_H
+#endif  // IVW_VECTOROPERATIONS_H

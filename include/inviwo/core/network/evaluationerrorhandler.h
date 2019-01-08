@@ -47,7 +47,6 @@ struct IVW_CORE_API StandardEvaluationErrorHandler {
     void operator()(Processor*, EvaluationType, ExceptionContext);
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_EVALUATIONERRORHANDLER_H
-
+#endif  // IVW_EVALUATIONERRORHANDLER_H

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/opengl/shader/shader.h>
@@ -38,19 +38,15 @@ const ProcessorInfo VolumeGradientMagnitude::processorInfo_{
     CodeState::Stable,                     // Code state
     Tags::GL,                              // Tags
 };
-const ProcessorInfo VolumeGradientMagnitude::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo VolumeGradientMagnitude::getProcessorInfo() const { return processorInfo_; }
 
 VolumeGradientMagnitude::VolumeGradientMagnitude()
-    : VolumeGLProcessor("volumegradientmagnitude.frag")
-    , channel_("channel", "Render Channel")
-{
+    : VolumeGLProcessor("volumegradientmagnitude.frag"), channel_("channel", "Render Channel") {
     this->dataFormat_ = DataFloat32::get();
 
     channel_.addOption("Channel 1", "Channel 1", 0);
     channel_.setCurrentStateAsDefault();
-    
+
     addProperty(channel_);
 }
 
@@ -60,26 +56,22 @@ void VolumeGradientMagnitude::preProcess(TextureUnitContainer &) {
     shader_.setUniform("channel", channel_.getSelectedValue());
 }
 
-void VolumeGradientMagnitude::postProcess() {
-    volume_->dataMap_.dataRange = dvec2(0, 1);
-}
+void VolumeGradientMagnitude::postProcess() { volume_->dataMap_.dataRange = dvec2(0, 1); }
 
 void VolumeGradientMagnitude::afterInportChanged() {
-    if (inport_.hasData()){
+    if (inport_.hasData()) {
         int channels = static_cast<int>(inport_.getData()->getDataFormat()->getComponents());
 
-        if(channels == static_cast<int>(channel_.size()))
-            return;
+        if (channels == static_cast<int>(channel_.size())) return;
 
         channel_.clearOptions();
         for (int i = 0; i < channels; i++) {
             std::stringstream ss;
             ss << "Channel " << i;
-            channel_.addOption(ss.str() , ss.str(), i);
+            channel_.addOption(ss.str(), ss.str(), i);
         }
         channel_.setCurrentStateAsDefault();
     }
 }
 
-}  // namespace
-
+}  // namespace inviwo

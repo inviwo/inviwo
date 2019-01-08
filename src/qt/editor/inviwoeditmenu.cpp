@@ -130,7 +130,7 @@ std::shared_ptr<MenuItem> InviwoEditMenu::registerItem(std::shared_ptr<MenuItem>
     if (auto w = qobject_cast<QWidget*>(item->owner)) {
         for (auto& action : actions_) {
             w->addAction(action.second);
-        }      
+        }
     }
     return item;
 }

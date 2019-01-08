@@ -42,7 +42,7 @@ namespace discretedata {
  */
 class IVW_MODULE_DISCRETEDATA_API PeriodicGrid : public StructuredGrid {
 public:
-    /** 
+    /**
      * \brief Create an nD grid
      * @param gridDimension Dimension of grid (not vertices)
      * @param gridSize Number of cells in each dimension, expect size gridDimension+1

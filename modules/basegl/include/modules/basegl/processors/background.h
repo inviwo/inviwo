@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_BACKGROUND_H
@@ -43,18 +43,18 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.Background, Background}
  * ![](org.inviwo.Background.png?classIdentifier=org.inviwo.Background)
- * Adds a background to an image. 
+ * Adds a background to an image.
  * The following mixing is applied
- * 
+ *
  *     out.rgb = in.rgb + color.rgb * color.a * (1.0 - in.a)
  *     out.a = in.a + color.a * (1.0 - in.a)
- * 
+ *
  * ### Inports
  *   * __ImageInport__ Input image.
  *
  * ### Outports
  *   * __ImageOutport__ Output image.
- * 
+ *
  * ### Properties
  *   * __Style__ The are three different styles to choose from Linear gradient, uniform color,
  *     or checker board.
@@ -82,10 +82,7 @@ public:
 private:
     void updateShaderInputs();
 
-    enum class BlendMode {
-        BackToFront,
-        AlphaMixing
-    };
+    enum class BlendMode { BackToFront, AlphaMixing };
     enum class BackgroundStyle {
         LinearHorizontal,
         LinearVertical,
@@ -109,6 +106,6 @@ private:
     bool hadData_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_BACKGROUND_H
+#endif  // IVW_BACKGROUND_H

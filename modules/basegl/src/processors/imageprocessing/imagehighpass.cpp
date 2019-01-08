@@ -40,23 +40,18 @@ const ProcessorInfo ImageHighPass::processorInfo_{
     CodeState::Stable,           // Code state
     Tags::GL,                    // Tags
 };
-const ProcessorInfo ImageHighPass::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo ImageHighPass::getProcessorInfo() const { return processorInfo_; }
 
 ImageHighPass::ImageHighPass()
     : ImageGLProcessor("img_highpass.frag")
-    , kernelSize_("kernelSize", "Kernel Size" , 3 , 1 , 15 , 2) 
-    , sharpen_("sharpen" , "Sharpen" , false){
+    , kernelSize_("kernelSize", "Kernel Size", 3, 1, 15, 2)
+    , sharpen_("sharpen", "Sharpen", false) {
     addProperty(kernelSize_);
     addProperty(sharpen_);
 }
-
 
 void ImageHighPass::preProcess(TextureUnitContainer &) {
     utilgl::setUniforms(shader_, kernelSize_, sharpen_);
 }
 
-} // namespace
-
-
+}  // namespace inviwo

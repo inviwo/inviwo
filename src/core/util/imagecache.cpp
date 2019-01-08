@@ -59,7 +59,7 @@ std::shared_ptr<const Image> ImageCache::getImage(const size2_t dimensions) cons
 
     // look for size in cache_
     auto it = cache_.find(dimensions);
-    if ( it != cache_.end()) {
+    if (it != cache_.end()) {
         return it->second;
     } else {
         auto newImage = std::shared_ptr<Image>(master_->clone());
@@ -106,25 +106,20 @@ void ImageCache::update(std::vector<size2_t> dimensions) {
             valid_ = false;
         } else {
             auto newImage = std::shared_ptr<Image>(master_->clone());
-            newImage->setDimensions(dim);    
+            newImage->setDimensions(dim);
             cache_[newImage->getDimensions()] = newImage;
             valid_ = false;
         }
     }
-
 }
 
-void ImageCache::setInvalid() const {
-    valid_ = false;
-}
+void ImageCache::setInvalid() const { valid_ = false; }
 
 bool ImageCache::hasImage(const size2_t dimensions) {
     return cache_.find(dimensions) != cache_.end();
 }
 
-void ImageCache::addImage(std::shared_ptr<Image> image) {
-    cache_[image->getDimensions()] = image;
-}
+void ImageCache::addImage(std::shared_ptr<Image> image) { cache_[image->getDimensions()] = image; }
 
 std::shared_ptr<Image> ImageCache::releaseImage(const size2_t dimensions) {
     auto it = cache_.find(dimensions);
@@ -138,9 +133,10 @@ std::shared_ptr<Image> ImageCache::releaseImage(const size2_t dimensions) {
 }
 
 std::shared_ptr<Image> ImageCache::getUnusedImage(const std::vector<size2_t>& dimensions) {
-    auto it = std::find_if(cache_.begin(), cache_.end(), [&dimensions](const Cache::value_type& elem) {
-        return !util::contains(dimensions, elem.first);
-    });
+    auto it =
+        std::find_if(cache_.begin(), cache_.end(), [&dimensions](const Cache::value_type& elem) {
+            return !util::contains(dimensions, elem.first);
+        });
 
     if (it != cache_.end()) {
         auto ptr = it->second;
@@ -153,4 +149,4 @@ std::shared_ptr<Image> ImageCache::getUnusedImage(const std::vector<size2_t>& di
 
 size_t ImageCache::size() const { return cache_.size(); }
 
-}  // namespace
+}  // namespace inviwo

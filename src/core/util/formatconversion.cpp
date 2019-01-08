@@ -59,4 +59,4 @@ std::string util::formatBytesToString(glm::u64 bytes) {
     return stream.str();
 }
 
-}  // namespace
+}  // namespace inviwo

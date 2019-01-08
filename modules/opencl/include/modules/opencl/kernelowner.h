@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_KERNEL_OWNER_H
@@ -41,19 +41,18 @@ namespace inviwo {
 
 class Processor;
 
-class IVW_MODULE_OPENCL_API KernelObserver: public Observer {
+class IVW_MODULE_OPENCL_API KernelObserver : public Observer {
 public:
     KernelObserver() = default;
 
     /**
-    * This method will be called when observed object changes.
-    * Override it to add behavior.
-    */
+     * This method will be called when observed object changes.
+     * Override it to add behavior.
+     */
     virtual void onKernelCompiled(const cl::Kernel* kernel);
-
 };
 
-class IVW_MODULE_OPENCL_API KernelObservable: public Observable<KernelObserver> {
+class IVW_MODULE_OPENCL_API KernelObservable : public Observable<KernelObserver> {
 public:
     KernelObservable() = default;
 
@@ -64,18 +63,18 @@ public:
  * Interface for classes that use OpenCL features.
  * Using this class will enable KernelObservs to react
  * when a kernel has been compiled.
- * Since we do not wish to alter the cl::Kernel class 
+ * Since we do not wish to alter the cl::Kernel class
  * we provide wrappers to be used in the framework instead.
  * @see ProcessorKernelOwner
  * @see KernelObserver
  */
-class IVW_MODULE_OPENCL_API KernelOwner: public KernelObservable {
+class IVW_MODULE_OPENCL_API KernelOwner : public KernelObservable {
 public:
-    KernelOwner() {};
+    KernelOwner(){};
     virtual ~KernelOwner();
 
     /**
-     * Builds, adds and returns the kernel if successfully built. 
+     * Builds, adds and returns the kernel if successfully built.
      * Only provide the file name as the file will be searched for in all the include paths.
      *
      * @note Do not delete the returned kernel
@@ -85,11 +84,12 @@ public:
      * @param defines Defines to be set when building kernel
      * @return bool Kernel if successfully built, otherwise nullptr
      */
-    cl::Kernel* addKernel(const std::string& fileName, const std::string& kernelName, const std::string& header = "", const std::string& defines = "");
+    cl::Kernel* addKernel(const std::string& fileName, const std::string& kernelName,
+                          const std::string& header = "", const std::string& defines = "");
 
-    /** 
-     * \brief Remove kernel and effectively stop observing the kernel 
-     * 
+    /**
+     * \brief Remove kernel and effectively stop observing the kernel
+     *
      * @param cl::Kernel * kernel Kernel owned by the KernelOwner
      */
     void removeKernel(cl::Kernel* kernel);
@@ -106,23 +106,24 @@ protected:
  * when a kernel has been compiled.
  * @see ProcessorKernelOwner
  */
-class IVW_MODULE_OPENCL_API ProcessorKernelOwner: public KernelOwner {
+class IVW_MODULE_OPENCL_API ProcessorKernelOwner : public KernelOwner {
 public:
     ProcessorKernelOwner(Processor* processor);
-    virtual ~ProcessorKernelOwner() {};
+    virtual ~ProcessorKernelOwner(){};
 
     /**
      * Notifies kernel observers that the kernel was compiled and
-     * calls invalidate(InvalidationLevel::InvalidResources) on Processor specified in the constructor.
-     * Override this method to perform operations after a successful kernel 
-     * compilation. 
+     * calls invalidate(InvalidationLevel::InvalidResources) on Processor specified in the
+     * constructor. Override this method to perform operations after a successful kernel
+     * compilation.
      * @param kernel The kernel that was compiled
      */
     virtual void notifyObserversKernelCompiled(const cl::Kernel* kernel);
+
 protected:
     Processor* processor_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_KERNEL_OWNER_H
+#endif  // IVW_KERNEL_OWNER_H

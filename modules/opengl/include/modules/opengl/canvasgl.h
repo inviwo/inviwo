@@ -88,24 +88,24 @@ protected:
      * since QT uses a context per canvas
      * and the vertex array in MeshGL cannot be shared.
      */
-    const MeshGL* squareGL_ = nullptr; ///< Non-owning reference.
+    const MeshGL* squareGL_ = nullptr;  ///< Non-owning reference.
 
     /**
      * Sometime on OSX in renderNoise when on the first time using
      * a canvas we get a INVALID_FRAMEBUFFER_OPERATION error
-     * to avoid this we have this ready flag to check that the 
+     * to avoid this we have this ready flag to check that the
      * frame buffer is complete.
      */
     bool ready();
     bool ready_ = false;
 
     LayerType layerType_ = LayerType::Color;
-    Shader* textureShader_ = nullptr; ///< non-owning reference
-    Shader* noiseShader_ = nullptr;   ///< non-owning reference
+    Shader* textureShader_ = nullptr;  ///< non-owning reference
+    Shader* noiseShader_ = nullptr;    ///< non-owning reference
 
     size_t activeRenderLayerIdx_ = 0;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_CANVASGL_H

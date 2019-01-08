@@ -50,8 +50,7 @@ QGLFormat CanvasQGLWidget::sharedFormat_ = GetQGLFormat();
 CanvasQGLWidget* CanvasQGLWidget::sharedCanvas_ = nullptr;
 
 CanvasQGLWidget::CanvasQGLWidget(QGLWidget* parent, size2_t dim)
-    : QGLWidget(sharedFormat_, parent, sharedCanvas_)
-    , CanvasGL(dim) {
+    : QGLWidget(sharedFormat_, parent, sharedCanvas_), CanvasGL(dim) {
     // This is our default rendering context
     // Initialized once. So "THE" first object of this class will
     // not have any shared context (or widget)
@@ -83,27 +82,23 @@ void CanvasQGLWidget::defineDefaultContextFormat() {
     }
 }
 
-void CanvasQGLWidget::activate() {
-    makeCurrent();
-}
+void CanvasQGLWidget::activate() { makeCurrent(); }
 
 void CanvasQGLWidget::initializeGL() {
     OpenGLCapabilities::initializeGLEW();
     // QOpenGLWidget docs:
-    // There is no need to call makeCurrent() because this has already been done 
+    // There is no need to call makeCurrent() because this has already been done
     // when this function is called.
-    // Note however that the framebuffer is not yet available at this stage, 
+    // Note however that the framebuffer is not yet available at this stage,
     // so do not issue draw calls from here.
     // Defer such calls to paintGL() instead.
     QGLWidget::initializeGL();
 }
 
-void CanvasQGLWidget::glSwapBuffers() {
-    QGLWidget::swapBuffers();
-}
+void CanvasQGLWidget::glSwapBuffers() { QGLWidget::swapBuffers(); }
 
-void CanvasQGLWidget::update() { 
-    QGLWidget::update(); // this will trigger a paint event.
+void CanvasQGLWidget::update() {
+    QGLWidget::update();  // this will trigger a paint event.
 }
 
 void CanvasQGLWidget::paintGL() {
@@ -120,15 +115,13 @@ Canvas::ContextID CanvasQGLWidget::activeContext() const {
     return static_cast<ContextID>(QGLContext::currentContext());
 }
 
-Canvas::ContextID CanvasQGLWidget::contextId() const {
-    return static_cast<ContextID>(context());
-}
+Canvas::ContextID CanvasQGLWidget::contextId() const { return static_cast<ContextID>(context()); }
 
 void CanvasQGLWidget::resizeEvent(QResizeEvent* event) {
     if (event->spontaneous()) return;
 
     setUpdatesEnabled(false);
-    util::OnScopeExit enable([&](){setUpdatesEnabled(true);});
+    util::OnScopeExit enable([&]() { setUpdatesEnabled(true); });
 
     CanvasGL::resize(size2_t(event->size().width(), event->size().height()));
     QGLWidget::resizeEvent(event);
@@ -140,4 +133,4 @@ void CanvasQGLWidget::releaseContext() {
     context()->moveToThread(QApplication::instance()->thread());
 }
 
-}  // namespace
+}  // namespace inviwo

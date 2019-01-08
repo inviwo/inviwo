@@ -375,6 +375,6 @@ bool VolumeRAMPrecision<T>::hasHistograms() const {
     return !histCont_.empty() && histCont_.isValid();
 }
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_VOLUMERAMPRECISION_H

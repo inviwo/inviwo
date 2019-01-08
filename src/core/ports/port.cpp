@@ -51,4 +51,4 @@ void Port::deserialize(Deserializer& d) {
     d.deserialize("identifier", identifier_, SerializationTarget::Attribute);
 }
 
-}  // namespace
+}  // namespace inviwo

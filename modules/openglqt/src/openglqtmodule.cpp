@@ -43,7 +43,6 @@
 #include <modules/openglqt/canvasqt.h>
 #include <modules/openglqt/openglqtmenu.h>
 
-
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QApplication>
@@ -66,12 +65,12 @@ OpenGLQtModule::OpenGLQtModule(InviwoApplication* app)
 
     // Create GL Context
     CanvasQt::defineDefaultContextFormat();
-    sharedCanvas_ = util::make_unique<CanvasQt>(size2_t(16,16), "Default");
+    sharedCanvas_ = util::make_unique<CanvasQt>(size2_t(16, 16), "Default");
 
-    if (!glFenceSync) { // Make sure we have setup the opengl function pointers.
+    if (!glFenceSync) {  // Make sure we have setup the opengl function pointers.
         throw OpenGLInitException("Unable to initiate opengl", IvwContext);
-    } 
-    
+    }
+
     static_cast<CanvasQt*>(sharedCanvas_.get())->defaultGLState();
     RenderContext::getPtr()->setDefaultRenderContext(sharedCanvas_.get());
 
@@ -81,7 +80,7 @@ OpenGLQtModule::OpenGLQtModule(InviwoApplication* app)
     if (auto mainWindow = utilqt::getApplicationMainWindow()) {
         auto menu = util::make_unique<OpenGLQtMenu>(mainWindow);
         auto menuBar = mainWindow->menuBar();
-        menuBar->insertMenu(utilqt::getMenu("&Help")->menuAction(),menu.release());
+        menuBar->insertMenu(utilqt::getMenu("&Help")->menuAction(), menu.release());
     }
 
     app->getProcessorNetworkEvaluator()->addObserver(this);
@@ -106,27 +105,25 @@ void OpenGLQtModule::onProcessorNetworkEvaluationEnd() {
     // data when we render the canvases.
     auto syncObj = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
 
-    const GLuint64 timeoutInNanoSec = 50'000'000; // 50ms
+    const GLuint64 timeoutInNanoSec = 50'000'000;  // 50ms
 
     auto res = glClientWaitSync(syncObj, GL_SYNC_FLUSH_COMMANDS_BIT, timeoutInNanoSec);
     while (res == GL_TIMEOUT_EXPIRED) {
         res = glClientWaitSync(syncObj, GL_SYNC_FLUSH_COMMANDS_BIT, timeoutInNanoSec);
     }
     switch (res) {
-        case GL_ALREADY_SIGNALED: // No queue to wait for
+        case GL_ALREADY_SIGNALED:  // No queue to wait for
             break;
-        case GL_TIMEOUT_EXPIRED: // Handled above
+        case GL_TIMEOUT_EXPIRED:  // Handled above
             break;
         case GL_WAIT_FAILED:
             LogError("Error syncing with opengl 'GL_WAIT_FAILED'");
             break;
-        case GL_CONDITION_SATISFIED: // Queue done.
+        case GL_CONDITION_SATISFIED:  // Queue done.
             break;
     }
-    
+
     glDeleteSync(syncObj);
 }
 
-
-
-}  // namespace
+}  // namespace inviwo

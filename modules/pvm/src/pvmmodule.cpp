@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/pvm/pvmmodule.h>
@@ -40,4 +40,4 @@ PVMModule::PVMModule(InviwoApplication* app) : InviwoModule(app, "PVM") {
     registerDataReader(util::make_unique<MPVMVolumeReader>());
 }
 
-} // namespace
+}  // namespace inviwo

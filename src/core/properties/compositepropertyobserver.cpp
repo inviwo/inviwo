@@ -37,4 +37,4 @@ void CompositePropertyObservable::notifyObserversOnSetCollapsed(bool collapsed) 
 
 void CompositePropertyObserver::onSetCollapsed(bool) {}
 
-}  // namespace
+}  // namespace inviwo

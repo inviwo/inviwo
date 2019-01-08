@@ -41,7 +41,6 @@ namespace util {
 
 void IVW_QTEDITOR_API insertNetworkForData(const std::string& dataFile, ProcessorNetwork* net,
                                            bool alwaysFirst = false, bool onlySource = false);
-
 }
 
 }  // namespace inviwo

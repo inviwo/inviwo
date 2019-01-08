@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_IMAGE_CL_RESIZER_H
@@ -44,21 +44,21 @@ namespace inviwo {
 class IVW_MODULE_OPENCL_API LayerCLResizer {
 
 public:
-
     /**
      * Resize layer to given dimension.
      *
      * \param src (const cl::Image2D &) Layer to get data from
-     * \param dst (const cl::Image2D &) Layer containing resized src layer. Note that this should same dimensions as resizeToDimension
-     * \param resizeToDimension (const ivec2 &) Size to resize to
-     * \return (void)
+     * \param dst (const cl::Image2D &) Layer containing resized src layer. Note that this should
+     * same dimensions as resizeToDimension \param resizeToDimension (const ivec2 &) Size to resize
+     * to \return (void)
      */
-    static void resize(const cl::Image& src, const cl::Image& dst, const size2_t& resizeToDimension);
+    static void resize(const cl::Image& src, const cl::Image& dst,
+                       const size2_t& resizeToDimension);
 
 private:
     LayerCLResizer();
-    LayerCLResizer(LayerCLResizer const&) {};
-    void operator=(LayerCLResizer const&) {};
+    LayerCLResizer(LayerCLResizer const&){};
+    void operator=(LayerCLResizer const&){};
     /**
      * Kernel that takes two layers as input. First layer acts as source and second as destination.
      *
@@ -67,11 +67,8 @@ private:
     cl::Kernel* getResizeKernel() { return &resizeKernel_; }
 
     cl::Kernel resizeKernel_;
-
-
 };
 
+}  // namespace inviwo
 
-} // namespace
-
-#endif // IVW_IMAGE_CL_RESIZER_H
+#endif  // IVW_IMAGE_CL_RESIZER_H

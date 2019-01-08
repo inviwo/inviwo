@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef __GLMCL_H__
@@ -37,7 +37,6 @@
 #include <iostream>
 
 namespace cl {
-
 
 // Kernel argument specializations for vec3 types:
 // int, uint, float
@@ -62,10 +61,9 @@ IVW_MODULE_OPENCL_API cl_int Kernel::setArg(cl_uint index, const glm::u32vec3& v
 template <>
 IVW_MODULE_OPENCL_API cl_int Kernel::setArg(cl_uint index, const glm::u64vec3& value);
 
-
 // float types
 template <>
 IVW_MODULE_OPENCL_API cl_int Kernel::setArg(cl_uint index, const glm::vec3& value);
 
-} // namespace cl
+}  // namespace cl
 #endif

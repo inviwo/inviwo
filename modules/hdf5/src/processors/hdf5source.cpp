@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/hdf5/processors/hdf5source.h>
@@ -36,10 +36,10 @@ namespace hdf5 {
 
 const ProcessorInfo Source::processorInfo_{
     "org.inviwo.hdf5.Source",  // Class identifier
-    "HDF Source",            // Display name
-    "Data Input",            // Category
-    CodeState::Stable,       // Code state
-    Tags::None,              // Tags
+    "HDF Source",              // Display name
+    "Data Input",              // Category
+    CodeState::Stable,         // Code state
+    Tags::None,                // Tags
 };
 const ProcessorInfo Source::getProcessorInfo() const { return processorInfo_; }
 
@@ -64,7 +64,5 @@ void Source::process() {
     }
 }
 
-}  // namespace
-}  // namespace
-
-
+}  // namespace hdf5
+}  // namespace inviwo

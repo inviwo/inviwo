@@ -68,12 +68,12 @@ protected:
     int getPreviousValue() const;
 
     /**
-    * \brief transform mouse movements from pixel to normalized slider range while also
-    * considering the slider orientation
-    *
-    * @param delta   (in screen coords, i.e. pixel)
-    * @return delta movement normalized to slider range
-    */
+     * \brief transform mouse movements from pixel to normalized slider range while also
+     * considering the slider orientation
+     *
+     * @param delta   (in screen coords, i.e. pixel)
+     * @return delta movement normalized to slider range
+     */
     double convertDeltaToSlider(const dvec2 &delta) const;
 
 private:

@@ -31,12 +31,12 @@
 #include <inviwo/core/util/assertion.h>
 
 #if defined(IVW_DEBUG)
-#  define IS_ACTIVE_CHECK_ATTACH ivwAssert(isActive(), "FBO not active when attaching texture")
-#  define IS_ACTIVE_CHECK_DETACH ivwAssert(isActive(), "FBO not active when detaching texture")
+#define IS_ACTIVE_CHECK_ATTACH ivwAssert(isActive(), "FBO not active when attaching texture")
+#define IS_ACTIVE_CHECK_DETACH ivwAssert(isActive(), "FBO not active when detaching texture")
 #else
-#  define IS_ACTIVE_CHECK_ATTACH
-#  define IS_ACTIVE_CHECK_DETACH
-#endif // IVW_DEBUG
+#define IS_ACTIVE_CHECK_ATTACH
+#define IS_ACTIVE_CHECK_DETACH
+#endif  // IVW_DEBUG
 
 namespace inviwo {
 
@@ -109,8 +109,7 @@ GLenum FrameBufferObject::attachColorTexture(Texture2D* texture) {
     IS_ACTIVE_CHECK_ATTACH;
     GLenum attachmentID;
     if (performAttachColorTexture(attachmentID)) {
-        glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentID, GL_TEXTURE_2D, texture->getID(),
-                                  0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentID, GL_TEXTURE_2D, texture->getID(), 0);
     }
     return attachmentID;
 }
@@ -120,8 +119,7 @@ GLenum FrameBufferObject::attachColorTexture(Texture2D* texture, int attachmentN
     IS_ACTIVE_CHECK_ATTACH;
     GLenum attachmentID;
     if (performAttachColorTexture(attachmentID, attachmentNumber, attachFromRear, forcedLocation)) {
-        glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentID, GL_TEXTURE_2D, texture->getID(),
-                                  0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentID, GL_TEXTURE_2D, texture->getID(), 0);
     }
     return attachmentID;
 }
@@ -210,16 +208,15 @@ GLenum FrameBufferObject::attachColorTexture(Texture3D* texture, int attachmentN
 void FrameBufferObject::attachTextureLayer(Texture3D* texture, GLenum attachmentID, int layer) {
     IS_ACTIVE_CHECK_ATTACH;
     performAttachTexture(attachmentID);
-    glFramebufferTexture3D(GL_FRAMEBUFFER, attachmentID, GL_TEXTURE_3D, texture->getID(), 0,
-                              layer);
+    glFramebufferTexture3D(GL_FRAMEBUFFER, attachmentID, GL_TEXTURE_3D, texture->getID(), 0, layer);
 }
 
 GLenum FrameBufferObject::attachColorTextureLayer(Texture3D* texture, int layer) {
     IS_ACTIVE_CHECK_ATTACH;
     GLenum attachmentID;
     if (performAttachColorTexture(attachmentID)) {
-        glFramebufferTexture3D(GL_FRAMEBUFFER, attachmentID, GL_TEXTURE_3D, texture->getID(),
-                                  0, layer);
+        glFramebufferTexture3D(GL_FRAMEBUFFER, attachmentID, GL_TEXTURE_3D, texture->getID(), 0,
+                               layer);
     }
     return attachmentID;
 }
@@ -230,8 +227,8 @@ GLenum FrameBufferObject::attachColorTextureLayer(Texture3D* texture, int attach
     IS_ACTIVE_CHECK_ATTACH;
     GLenum attachmentID;
     if (performAttachColorTexture(attachmentID, attachmentNumber, attachFromRear, forcedLocation)) {
-        glFramebufferTexture3D(GL_FRAMEBUFFER, attachmentID, GL_TEXTURE_3D, texture->getID(),
-                                  0, layer);
+        glFramebufferTexture3D(GL_FRAMEBUFFER, attachmentID, GL_TEXTURE_3D, texture->getID(), 0,
+                               layer);
     }
     return attachmentID;
 }
@@ -293,9 +290,9 @@ void FrameBufferObject::checkStatus() {
     GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 
     switch (status) {
-        case GL_FRAMEBUFFER_COMPLETE: // All OK
+        case GL_FRAMEBUFFER_COMPLETE:  // All OK
             break;
-    
+
         case GL_FRAMEBUFFER_UNDEFINED:
             LogWarn("GL_FRAMEBUFFER_UNDEFINED");
             break;
@@ -335,7 +332,7 @@ void FrameBufferObject::checkStatus() {
 }
 
 void FrameBufferObject::setRead_Blit(bool set) const {
-    if (set) { // store currently bound draw FBO
+    if (set) {  // store currently bound draw FBO
         glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &prevReadFbo_);
         glBindFramebuffer(GL_READ_FRAMEBUFFER, id_);
     } else {
@@ -348,7 +345,7 @@ void FrameBufferObject::setRead_Blit(bool set) const {
 }
 
 void FrameBufferObject::setDraw_Blit(bool set) {
-    if (set) { // store currently bound draw FBO
+    if (set) {  // store currently bound draw FBO
         glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &prevDrawFbo_);
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, id_);
     } else {
@@ -386,7 +383,7 @@ void FrameBufferObject::performAttachTexture(GLenum attachmentID) {
 
 bool FrameBufferObject::performAttachColorTexture(GLenum& outAttachNumber) {
     // identify first unused color attachment ID
-    auto itUnUsed = util::find_if(buffersInUse_, [](const auto& used){ return !used;});
+    auto itUnUsed = util::find_if(buffersInUse_, [](const auto& used) { return !used; });
 
     if (itUnUsed == buffersInUse_.end()) {
         LogError("Maximum number of color attachments reached.");
@@ -481,4 +478,4 @@ std::string FrameBufferObject::getAttachmentStr(GLenum attachmentID) {
     return str.str();
 }
 
-}  // namespace
+}  // namespace inviwo

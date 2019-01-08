@@ -61,26 +61,26 @@ T stringTo(const std::string& str) {
 
 namespace util {
 
-/** 
- * \brief convert the given std::string to std::wstring. 
- * On Windows, MultiByteToWideChar is used for this conversion assuming utf8 encoding. 
+/**
+ * \brief convert the given std::string to std::wstring.
+ * On Windows, MultiByteToWideChar is used for this conversion assuming utf8 encoding.
  * Otherwise, std::mbsrtowcs is used.
- * 
+ *
  * @param str   multibyte character string
  * @return input converted to std::wstring
  */
 std::wstring toWstring(const std::string& str);
 
-} // namespace util
+}  // namespace util
 
-/** 
+/**
  * \brief Split string into substrings based on separating delimiter character.
  * Using delimiter ';' on string "aa;bb" will result in a vector contaning aa and bb.
- * 
+ *
  * @note Empty substrings are not skipped, ";;" will generate an element.
  * @param str The string to split
  * @param delimeter The character use for splitting (default to space)
- * @return a vector containing the substrings 
+ * @return a vector containing the substrings
  */
 IVW_CORE_API std::vector<std::string> splitString(const std::string& str, char delimeter = ' ');
 
@@ -129,14 +129,14 @@ IVW_CORE_API std::string camelCaseToHeader(const std::string& s);
 
 /**
  * \brief Case insensitive equal comparison of two strings.
- * @return true if all the elements in the two containers are the same. 
+ * @return true if all the elements in the two containers are the same.
  * @see CaseInsensitiveCompare
  */
 IVW_CORE_API bool iCaseCmp(const std::string& l, const std::string& r);
 /**
- * \brief Case insensitive alphabetical less than comparison of two strings, i.e. "aa" < "ab" = true.
- * Compares letters from left to right using std::lexicographical_compare.
- * @return true if the alphabetical order in the first string is less than the second string. 
+ * \brief Case insensitive alphabetical less than comparison of two strings, i.e. "aa" < "ab" =
+ * true. Compares letters from left to right using std::lexicographical_compare.
+ * @return true if the alphabetical order in the first string is less than the second string.
  */
 IVW_CORE_API bool iCaseLess(const std::string& l, const std::string& r);
 /**
@@ -144,9 +144,8 @@ IVW_CORE_API bool iCaseLess(const std::string& l, const std::string& r);
  * @see iCaseCmp
  */
 struct IVW_CORE_API CaseInsensitiveCompare {
-    bool operator() (const std::string& a, const std::string& b) const;
+    bool operator()(const std::string& a, const std::string& b) const;
 };
-
 
 /**
  * \brief convert the given duration from milliseconds to a string.

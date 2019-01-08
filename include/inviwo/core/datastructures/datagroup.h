@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_DATAGROUP_H
@@ -37,7 +37,7 @@
 #include <typeindex>
 
 namespace inviwo {
-/** 
+/**
  *  \ingroup datastructures
  *
  *  \brief The base class for all DataGroup objects.
@@ -48,13 +48,13 @@ namespace inviwo {
  *  which are owned by the referenced/owned Data objects.
  *
  *  Differences between DataGroup and Data:
- *    - DataGroup can never hold any data with owning(referencing[later]) a Data object or a 
+ *    - DataGroup can never hold any data with owning(referencing[later]) a Data object or a
  *      DataGroup object
  *    - DataGroupRepresentation need reference to all Data objects to be created correctly
- *    - DataGroup does not have converters, as the DataGroup objects always can create them self 
+ *    - DataGroup does not have converters, as the DataGroup objects always can create them self
  *      correctly.
- *    - DataGroupRepresentation becomes invalid when a child representations becomes invalid, 
- *      thus we do not know when it's valid and we need to call update before we return it 
+ *    - DataGroupRepresentation becomes invalid when a child representations becomes invalid,
+ *      thus we do not know when it's valid and we need to call update before we return it
  *      from getRepresentation.
  */
 template <typename Self, typename Repr>
@@ -66,13 +66,13 @@ public:
     virtual DataGroup<Self, Repr>* clone() const = 0;
     virtual ~DataGroup() = default;
 
-    //Representations
-    template<typename T>
+    // Representations
+    template <typename T>
     const T* getRepresentation() const;
-    template<typename T>
+    template <typename T>
     T* getEditableRepresentation();
 
-    template<typename T>
+    template <typename T>
     bool hasRepresentation() const;
     bool hasRepresentations() const;
 
@@ -87,8 +87,8 @@ protected:
     mutable std::unordered_map<std::type_index, std::shared_ptr<Repr>> representations_;
 
 private:
-    template<typename T>
-    T* getRepresentation(bool editable) const; 
+    template <typename T>
+    T* getRepresentation(bool editable) const;
 };
 
 namespace detail {
@@ -109,7 +109,7 @@ template <typename Repr, typename T,
 std::shared_ptr<T> createGroupRepresentation() {
     return std::shared_ptr<T>();
 }
-}
+}  // namespace detail
 
 template <typename Self, typename Repr>
 DataGroup<Self, Repr>::DataGroup(const DataGroup<Self, Repr>& rhs) {
@@ -164,14 +164,14 @@ T* DataGroup<Self, Repr>::getRepresentation(bool editable) const {
     lock.unlock();
     auto representation = detail::createGroupRepresentation<Repr, T>();
     if (!representation) {
-        throw Exception("Trying to create an invalid group representation: " +
-                            std::string(typeid(T).name()) + " for data: " +
-                            std::string(typeid(this).name()),
-                        IvwContext);
+        throw Exception(
+            "Trying to create an invalid group representation: " + std::string(typeid(T).name()) +
+                " for data: " + std::string(typeid(this).name()),
+            IvwContext);
     }
     representation->setOwner(static_cast<Self*>(const_cast<DataGroup<Self, Repr>*>(this)));
     representation->update(editable);
-    
+
     lock.lock();
     representations_[representation->getTypeIndex()] = representation;
 
@@ -179,24 +179,24 @@ T* DataGroup<Self, Repr>::getRepresentation(bool editable) const {
 }
 
 template <typename Self, typename Repr>
-template<typename T>
+template <typename T>
 const T* DataGroup<Self, Repr>::getRepresentation() const {
     return static_cast<const T*>(getRepresentation<T>(false));
 }
 
 template <typename Self, typename Repr>
-template<typename T>
+template <typename T>
 T* DataGroup<Self, Repr>::getEditableRepresentation() {
     return getRepresentation<T>(true);
 }
 
 template <typename Self, typename Repr>
-template<typename T>
+template <typename T>
 bool DataGroup<Self, Repr>::hasRepresentation() const {
     std::unique_lock<std::mutex> lock(mutex_);
     return representations_.find(std::type_index(typeid(T))) != representations_.end();
 }
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_DATAGROUP_H
+#endif  // IVW_DATAGROUP_H

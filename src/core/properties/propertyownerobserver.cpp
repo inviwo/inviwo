@@ -39,7 +39,6 @@ void PropertyOwnerObserver::onWillRemoveProperty(Property*, size_t) {}
 
 void PropertyOwnerObserver::onDidRemoveProperty(Property*, size_t) {}
 
-
 void PropertyOwnerObservable::notifyObserversWillAddProperty(Property* property, size_t index) {
     forEachObserver([&](PropertyOwnerObserver* o) { o->onWillAddProperty(property, index); });
 }
@@ -56,6 +55,4 @@ void PropertyOwnerObservable::notifyObserversDidRemoveProperty(Property* propert
     forEachObserver([&](PropertyOwnerObserver* o) { o->onDidRemoveProperty(property, index); });
 }
 
-}  // namespace
-
-
+}  // namespace inviwo

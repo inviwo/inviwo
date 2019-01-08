@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_ANGLEPROPERTYWIDGETQT_H
@@ -48,7 +48,7 @@ namespace inviwo {
 
 /** \class AnglePropertyWidgetQt
  * Widget for Float and Double properties to edit an angle in [0 2pi).
- * 
+ *
  * @see AngleWidget
  */
 template <typename T>
@@ -58,6 +58,7 @@ public:
     virtual ~AnglePropertyWidgetQt() = default;
 
     virtual void updateFromProperty() override;
+
 protected:
     virtual std::unique_ptr<QMenu> getContextMenu() override;
     void showSettings();
@@ -135,9 +136,6 @@ void AnglePropertyWidgetQt<T>::showSettings() {
     settingsWidget_->showWidget();
 }
 
-}  // namespace
-
-
-
+}  // namespace inviwo
 
 #endif  // IVW_ANGLEPROPERTYWIDGETQT_H

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_TEXTUREUNIT_H
@@ -41,13 +41,13 @@ class IVW_MODULE_OPENGL_API TextureUnit {
 public:
     TextureUnit();
     ~TextureUnit();
-    
+
     TextureUnit(TextureUnit& rhs) = delete;
     TextureUnit& operator=(const TextureUnit& that) = delete;
-    
+
     TextureUnit(TextureUnit&& rhs);
     TextureUnit& operator=(TextureUnit&& that);
-    
+
     // These are called from OpenGLCapabilities retrieveStaticInfo/destructor.
     static void initialize(int numUnits);
     static void deinitialize();
@@ -73,17 +73,16 @@ public:
     TextureUnitContainer(TextureUnitContainer&& rhs);
     TextureUnitContainer& operator=(TextureUnitContainer&& that);
     ~TextureUnitContainer() = default;
-    
+
     void push_back(TextureUnit&& unit);
-    
+
     TextureUnit& operator[](size_t i);
     size_t size() const;
-    
+
 private:
     std::vector<TextureUnit> units_;
 };
 
+}  // namespace inviwo
 
-} // namespace
-
-#endif // IVW_TEXTUREUNIT_H
+#endif  // IVW_TEXTUREUNIT_H

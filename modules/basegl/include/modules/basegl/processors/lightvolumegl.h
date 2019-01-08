@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_LIGHTVOLUMEGL_H
@@ -50,13 +50,13 @@ namespace inviwo {
  * ![](org.inviwo.LightVolumeGL.png?classIdentifier=org.inviwo.LightVolumeGL)
  *
  * ...
- * 
+ *
  * ### Inports
  *   * __inport__ ...
- * 
+ *
  * ### Outports
  *   * __outport__ ...
- * 
+ *
  * ### Properties
  *   * __Light Volume Size__ ...
  *   * __Support Light Color__ ...
@@ -132,6 +132,6 @@ private:
     bool calculatedOnes_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_LIGHTVOLUMEGL_H
+#endif  // IVW_LIGHTVOLUMEGL_H

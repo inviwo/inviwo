@@ -51,15 +51,15 @@ public:
 namespace detail {
 struct IVW_MODULE_BASE_API ImageContourDispatcher {
     using type = std::shared_ptr<Mesh>;
-  template <typename Result, typename T>
+    template <typename Result, typename T>
     std::shared_ptr<Mesh> operator()(const LayerRepresentation* in, size_t channel, double isoValue,
-                                   vec4 color);
+                                     vec4 color);
 };
 
 template <typename Result, class DataType>
 std::shared_ptr<Mesh> ImageContourDispatcher::operator()(const LayerRepresentation* in,
-                                                       size_t channel, double isoValue,
-                                                       vec4 color) {
+                                                         size_t channel, double isoValue,
+                                                         vec4 color) {
     static const std::vector<std::vector<int>> caseTable = {
         std::vector<int>(),                          // case 0
         std::vector<int>({0, 1, 0, 3}),              // case 1
@@ -127,8 +127,7 @@ std::shared_ptr<Mesh> ImageContourDispatcher::operator()(const LayerRepresentati
             auto& edges = caseTable[theCase];
             for (size_t i = 0; i < edges.size(); i += 2) {
                 auto t = (isoValue - vals[edges[i]]) / (vals[edges[i + 1]] - vals[edges[i]]);
-                auto p = Interpolation<vec3, float>::linear(outPos[edges[i]] , 
-                                                            outPos[edges[i + 1]] ,
+                auto p = Interpolation<vec3, float>::linear(outPos[edges[i]], outPos[edges[i + 1]],
                                                             static_cast<float>(t));
                 indices->add(mesh->addVertex(p, p, p, color));
             }
@@ -137,8 +136,8 @@ std::shared_ptr<Mesh> ImageContourDispatcher::operator()(const LayerRepresentati
 
     return mesh;
 }
-}
+}  // namespace detail
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_IMAGECONTOUR_H

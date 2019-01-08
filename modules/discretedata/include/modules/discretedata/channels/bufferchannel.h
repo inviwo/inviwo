@@ -39,7 +39,7 @@
 namespace inviwo {
 namespace discretedata {
 
-/** 
+/**
  * \brief Data channel as array data
  *
  * Data block with a size of
@@ -55,7 +55,7 @@ class BufferChannel : public DataChannel<T, N> {
     using DefaultVec = typename DataChannel<T, N>::DefaultVec;
 
 public:
-    /** 
+    /**
      * \brief Direct construction, empty data
      * @param numElements Total number of indexed positions
      * @param numComponents Size of vector at each position
@@ -66,7 +66,7 @@ public:
                   GridPrimitive definedOn = GridPrimitive::Vertex)
         : DataChannel<T, N>(name, definedOn), buffer_(numElements * N) {}
 
-    /** 
+    /**
      * \brief Direct construction
      * @param data Raw data, copy values
      * @param name Name associated with the channel
@@ -76,7 +76,7 @@ public:
                   GridPrimitive definedOn = GridPrimitive::Vertex)
         : DataChannel<T, N>(name, definedOn), buffer_(rawData) {}
 
-    /** 
+    /**
      * \brief Direct construction
      * @param data Raw data, move values
      * @param name Name associated with the channel
@@ -86,7 +86,7 @@ public:
                   GridPrimitive definedOn = GridPrimitive::Vertex)
         : DataChannel<T, N>(name, definedOn), buffer_(std::move(data)) {}
 
-    /** 
+    /**
      * \brief Direct construction
      * @param data Pointer to data, copy numElements * numComponents
      * @param numElements Total number of indexed positions
@@ -101,7 +101,7 @@ public:
 
     const std::vector<T>& data() const { return buffer_; }
 
-    /** 
+    /**
      * \brief Indexed point access
      * @param index Linear point index
      * @return Reference to data
@@ -110,7 +110,7 @@ public:
         return *reinterpret_cast<DefaultVec*>(&buffer_[index * N]);
     }
 
-    /** 
+    /**
      * \brief Indexed point access
      * @param index Linear point index
      * @return Reference to data
@@ -119,7 +119,7 @@ public:
         return *reinterpret_cast<const DefaultVec*>(&buffer_[index * N]);
     }
 
-    /** 
+    /**
      * \brief Indexed point access
      * @param index Linear point index
      * @return Reference to data
@@ -131,7 +131,7 @@ public:
         return *reinterpret_cast<VecNT*>(&buffer_[index * N]);
     }
 
-    /** 
+    /**
      * \brief Indexed point access
      * @param index Linear point index
      * @return Reference to data
@@ -148,7 +148,7 @@ protected:
         return new BufferGetter<BufferChannel<T, N>>(this);
     }
 
-    /** 
+    /**
      * \brief Indexed point access, constant
      * @param dest Position to write to, expect write of NumComponents many T
      * @param index Linear point index
@@ -157,7 +157,7 @@ protected:
         memcpy(dest, &buffer_[index * N], sizeof(T) * N);
     }
 
-    /** 
+    /**
      * \brief Vector containing the buffer data
      * Resizeable only by DataSet. Handle with care:
      * Resize invalidates pointers to memory, but iterators remain valid.

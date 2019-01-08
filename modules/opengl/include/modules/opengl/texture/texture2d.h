@@ -69,6 +69,6 @@ private:
     size2_t dimensions_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_TEXTURE2D_H

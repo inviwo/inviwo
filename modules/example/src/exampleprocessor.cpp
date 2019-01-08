@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/example/exampleprocessor.h>
@@ -38,14 +38,9 @@ const ProcessorInfo ExampleProcessor::processorInfo_{
     CodeState::Experimental,        // Code state
     Tags::None,                     // Tags
 };
-const ProcessorInfo ExampleProcessor::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo ExampleProcessor::getProcessorInfo() const { return processorInfo_; }
 
-ExampleProcessor::ExampleProcessor()
-    : Processor()
-    , inport_("inputVolume")
-    , outport_("outputMesh") {
+ExampleProcessor::ExampleProcessor() : Processor(), inport_("inputVolume"), outport_("outputMesh") {
 
     addPort(inport_);
     addPort(outport_);
@@ -53,7 +48,5 @@ ExampleProcessor::ExampleProcessor()
 
 ExampleProcessor::~ExampleProcessor() = default;
 
-void ExampleProcessor::process() {
-}
-} // namespace
-
+void ExampleProcessor::process() {}
+}  // namespace inviwo

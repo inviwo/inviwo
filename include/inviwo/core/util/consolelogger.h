@@ -51,7 +51,6 @@ public:
                      std::string logMsg) override;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_CONSOLELOGGER_H
-
+#endif  // IVW_CONSOLELOGGER_H

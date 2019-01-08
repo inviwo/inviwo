@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_FRAMEBUFFEROBJECT_H
@@ -50,7 +50,7 @@ public:
      */
     void activate();
     void defineDrawBuffers();
-    
+
     /**
      * Unbind FBO and restore previous one
      */
@@ -141,7 +141,7 @@ public:
      * Returns a compactified list of all color attachments (as used in glDrawBuffers())
      */
     const std::vector<GLenum>& getDrawBuffers() const { return drawBuffers_; }
-    
+
     /**
      * Returns a boolean field indicating whether attachment i has an attached texture
      */
@@ -173,15 +173,15 @@ protected:
     /**
      * If forcedLocation is > -1, this will enforce to position the color attachment at the given
      * location in the draw buffer list (as used for attrib location in shaders). Side effects:
-     * affects subsequent buffer locations of already attached color buffers. NOTE: if forcedLocation
-     * is larger than the number of attachments, it will not be considered
+     * affects subsequent buffer locations of already attached color buffers. NOTE: if
+     * forcedLocation is larger than the number of attachments, it will not be considered
      */
     bool performAttachColorTexture(GLenum& outAttachNumber, int attachmentNumber,
                                    bool attachFromRear = false, int forcedLocation = -1);
 
     std::string printBuffers() const;
     static std::string getAttachmentStr(GLenum attachmentID);
-    
+
 private:
     unsigned int id_;
     bool hasDepthAttachment_;
@@ -198,6 +198,6 @@ private:
     mutable GLint prevReadFbo_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_FRAMEBUFFEROBJECT_H
+#endif  // IVW_FRAMEBUFFEROBJECT_H

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/opencl/inviwoopencl.h>
@@ -61,38 +61,54 @@ OpenCLModule::OpenCLModule(InviwoApplication* app) : InviwoModule(app, "OpenCL")
     auto sharing = OpenCL::getPtr()->isOpenGLSharingEnabled();
 
     // Buffer CL
-    registerRepresentationConverter<BufferRepresentation>(util::make_unique<BufferRAM2CLConverter>());
-    registerRepresentationConverter<BufferRepresentation>(util::make_unique<BufferCL2RAMConverter>());
-    
+    registerRepresentationConverter<BufferRepresentation>(
+        util::make_unique<BufferRAM2CLConverter>());
+    registerRepresentationConverter<BufferRepresentation>(
+        util::make_unique<BufferCL2RAMConverter>());
+
     if (sharing) {
         // Buffer CLGL
-        registerRepresentationConverter<BufferRepresentation>(util::make_unique<BufferGL2CLGLConverter>());
-        registerRepresentationConverter<BufferRepresentation>(util::make_unique<BufferCLGL2RAMConverter>());
-        registerRepresentationConverter<BufferRepresentation>(util::make_unique<BufferCLGL2GLConverter>());
-        registerRepresentationConverter<BufferRepresentation>(util::make_unique<BufferCLGL2CLConverter>());
+        registerRepresentationConverter<BufferRepresentation>(
+            util::make_unique<BufferGL2CLGLConverter>());
+        registerRepresentationConverter<BufferRepresentation>(
+            util::make_unique<BufferCLGL2RAMConverter>());
+        registerRepresentationConverter<BufferRepresentation>(
+            util::make_unique<BufferCLGL2GLConverter>());
+        registerRepresentationConverter<BufferRepresentation>(
+            util::make_unique<BufferCLGL2CLConverter>());
     }
     // LayerCL
     registerRepresentationConverter<LayerRepresentation>(util::make_unique<LayerRAM2CLConverter>());
     registerRepresentationConverter<LayerRepresentation>(util::make_unique<LayerCL2RAMConverter>());
-    
+
     if (sharing) {
         // LayerCLGL
-        registerRepresentationConverter<LayerRepresentation>(util::make_unique<LayerGL2CLGLConverter>());
-        registerRepresentationConverter<LayerRepresentation>(util::make_unique<LayerCLGL2RAMConverter>());
-        registerRepresentationConverter<LayerRepresentation>(util::make_unique<LayerCLGL2CLConverter>());
-        registerRepresentationConverter<LayerRepresentation>(util::make_unique<LayerCLGL2GLConverter>());
+        registerRepresentationConverter<LayerRepresentation>(
+            util::make_unique<LayerGL2CLGLConverter>());
+        registerRepresentationConverter<LayerRepresentation>(
+            util::make_unique<LayerCLGL2RAMConverter>());
+        registerRepresentationConverter<LayerRepresentation>(
+            util::make_unique<LayerCLGL2CLConverter>());
+        registerRepresentationConverter<LayerRepresentation>(
+            util::make_unique<LayerCLGL2GLConverter>());
     }
 
     // VolumeCL
-    registerRepresentationConverter<VolumeRepresentation>(util::make_unique<VolumeRAM2CLConverter>());
-    registerRepresentationConverter<VolumeRepresentation>(util::make_unique<VolumeCL2RAMConverter>());
-    
+    registerRepresentationConverter<VolumeRepresentation>(
+        util::make_unique<VolumeRAM2CLConverter>());
+    registerRepresentationConverter<VolumeRepresentation>(
+        util::make_unique<VolumeCL2RAMConverter>());
+
     if (sharing) {
         // VolumeCLGL
-        registerRepresentationConverter<VolumeRepresentation>(util::make_unique<VolumeGL2CLGLConverter>());
-        registerRepresentationConverter<VolumeRepresentation>(util::make_unique<VolumeCLGL2RAMConverter>());
-        registerRepresentationConverter<VolumeRepresentation>(util::make_unique<VolumeCLGL2CLConverter>());
-        registerRepresentationConverter<VolumeRepresentation>(util::make_unique<VolumeCLGL2GLConverter>());
+        registerRepresentationConverter<VolumeRepresentation>(
+            util::make_unique<VolumeGL2CLGLConverter>());
+        registerRepresentationConverter<VolumeRepresentation>(
+            util::make_unique<VolumeCLGL2RAMConverter>());
+        registerRepresentationConverter<VolumeRepresentation>(
+            util::make_unique<VolumeCLGL2CLConverter>());
+        registerRepresentationConverter<VolumeRepresentation>(
+            util::make_unique<VolumeCLGL2GLConverter>());
     }
 }
 
@@ -101,4 +117,4 @@ OpenCLModule::~OpenCLModule() {
     KernelManager::deleteInstance();
 }
 
-} // namespace
+}  // namespace inviwo

@@ -86,6 +86,6 @@ auto makeIndexMapper(const Vector<N, IndexType> &dim) {
 }
 
 }  // namespace util
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_INDEXMAPPER_H

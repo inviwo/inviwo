@@ -57,7 +57,7 @@ namespace plot {
  *
  * ### Properties
  *   * __Mode__  The processor can operate in 3 modes: Analytics, where data for each pixel is
- *               outputted, or Rows/Columns where one column for each line of pixel in the 
+ *               outputted, or Rows/Columns where one column for each line of pixel in the
  *               specified direction is outputted.
  *   * __Layer__ The image layer to use
  *   * __Color Index__ The color layer index

@@ -47,11 +47,11 @@ class CanvasProcessor;
 class IVW_MODULE_OPENGLQT_API CanvasProcessorWidgetQt : public QWidget,
                                                         public CanvasProcessorWidget,
                                                         public ProcessorObserver {
-    
-    #include <warn/push>
-    #include <warn/ignore/all>
+
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
-    #include <warn/pop>
+#include <warn/pop>
 public:
     CanvasProcessorWidgetQt(Processor* p);
     virtual ~CanvasProcessorWidgetQt();
@@ -60,7 +60,7 @@ public:
     virtual void setVisible(bool visible) override;
     virtual void show() override;
     virtual void hide() override;
-    virtual void setPosition(ivec2 pos) override; 
+    virtual void setPosition(ivec2 pos) override;
     virtual void setDimensions(ivec2 dimensions) override;
 
     virtual Canvas* getCanvas() const override;
@@ -83,11 +83,11 @@ protected:
 private:
     using canvas_ptr = std::unique_ptr<CanvasQt, std::function<void(CanvasQt*)>>;
     canvas_ptr canvas_;
-    
+
     bool ignoreEvents_{false};
     bool ignoreUpdate_{false};
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_CANVASPROCESSORWIDGETQT_H

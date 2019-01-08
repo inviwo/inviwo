@@ -80,7 +80,6 @@ protected:
 
     virtual void setReadOnly(bool readonly);
 
-
     static const std::string visibleKey;
     static const std::string floatingKey;
     static const std::string stickyKey;

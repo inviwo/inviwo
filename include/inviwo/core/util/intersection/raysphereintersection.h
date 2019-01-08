@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_RAYSPHEREINTERSECTION_H
@@ -49,11 +49,11 @@ namespace inviwo {
  */
 
 template <typename T, glm::precision P>
-std::pair<bool, float> raySphereIntersection(const glm::tvec3<T, P>& sphereCenter,
-                                             const T radius, const glm::tvec3<T, P>& origin,
+std::pair<bool, float> raySphereIntersection(const glm::tvec3<T, P>& sphereCenter, const T radius,
+                                             const glm::tvec3<T, P>& origin,
                                              const glm::tvec3<T, P>& direction, const T t0,
                                              const T t1) {
-    glm::tvec3<T,P> m = origin - sphereCenter;
+    glm::tvec3<T, P> m = origin - sphereCenter;
     T b = glm::dot(m, direction);
     T c = glm::dot(m, m) - radius * radius;
     // Exit if ray origin is outside of sphere and pointing away from sphere
@@ -75,7 +75,6 @@ std::pair<bool, float> raySphereIntersection(const glm::tvec3<T, P>& sphereCente
     }
 }
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_RAYSPHEREINTERSECTION_H
-
+#endif  // IVW_RAYSPHEREINTERSECTION_H

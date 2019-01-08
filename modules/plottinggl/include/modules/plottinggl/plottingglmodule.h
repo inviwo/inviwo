@@ -40,6 +40,6 @@ public:
     PlottingGLModule(InviwoApplication* app);
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_PLOTTINGGLMODULE_H
+#endif  // IVW_PLOTTINGGLMODULE_H

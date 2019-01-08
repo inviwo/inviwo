@@ -48,9 +48,9 @@ namespace inviwo {
 template <typename DataType, typename PortType>
 class DataSource : public Processor {
 public:
-    /** 
+    /**
      * Construct a DataSource
-     * @param app An InviwoApplication. 
+     * @param app An InviwoApplication.
      * @param file A filename passed into the FileProperty
      * @param content A content type passed into the FileProperty, usually 'volume', 'image' etc.
      * @see FileProperty

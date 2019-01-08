@@ -78,6 +78,7 @@ public:
 
     // override to do member renaming.
     virtual void deserialize(Deserializer& d) override;
+
 private:
     Shader shader_;
 
@@ -95,6 +96,6 @@ private:
     VolumeIndicatorProperty positionIndicator_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_MULTICHANNELRAYCASTER_H

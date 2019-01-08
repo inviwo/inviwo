@@ -55,6 +55,6 @@ public:
                         std::shared_ptr<BufferRAM> destination) const override;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_BUFFERGL_CONVERTER_H

@@ -55,11 +55,11 @@ PythonMenu::PythonMenu(InviwoApplication* app) {
             editor->loadState();
             editor->setAttribute(Qt::WA_DeleteOnClose);
             if (!editors_.empty()) {
-                auto newPos = editors_.back()->pos() + QPoint(40,40);
+                auto newPos = editors_.back()->pos() + QPoint(40, 40);
                 if (newPos.x() > 800) newPos.setX(350);
                 if (newPos.y() > 800) newPos.setX(100);
                 editor->move(newPos);
-            }   
+            }
             win->connect(editor.get(), &PythonEditorWidget::destroyed, [this](QObject* obj) {
                 auto it = std::find_if(editors_.begin(), editors_.end(),
                                        [&](auto& elem) { return elem.get() == obj; });

@@ -64,13 +64,11 @@ SphereRenderer::SphereRenderer()
     , shadeClippedArea_("shadeClippedArea", "Shade Clipped Area", false,
                         InvalidationLevel::InvalidResources)
     , sphereProperties_("sphereProperties", "Sphere Properties")
-    , forceRadius_("forceRadius", "Force Radius", false,
-                            InvalidationLevel::InvalidResources)
+    , forceRadius_("forceRadius", "Force Radius", false, InvalidationLevel::InvalidResources)
     , defaultRadius_("defaultRadius", "Default Radius", 0.05f, 0.00001f, 2.0f, 0.01f)
-    , forceColor_("forceColor", "Force Color", false,
-                           InvalidationLevel::InvalidResources)
+    , forceColor_("forceColor", "Force Color", false, InvalidationLevel::InvalidResources)
     , defaultColor_("defaultColor", "Default Color", vec4(0.7f, 0.7f, 0.7f, 1.0f), vec4(0.0f),
-                   vec4(1.0f))
+                    vec4(1.0f))
     , useMetaColor_("useMetaColor", "Use meta color mapping", false)
     , metaColor_("metaColor", "Meta Color Mapping")
 
@@ -91,7 +89,6 @@ SphereRenderer::SphereRenderer()
                    shader.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
                    configureShader(shader);
                }} {
-
 
     addPort(inport_);
     addPort(imageInport_);
@@ -146,7 +143,7 @@ void SphereRenderer::configureShader(Shader& shader) {
 
 void SphereRenderer::process() {
     utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
-    
+
     for (const auto& mesh : inport_) {
         auto& shader = shaders_.getShader(*mesh);
 

@@ -405,7 +405,7 @@ public:
      * @return uint32_t the position of the new vertex is the buffers.
      */
     template <typename... Args>
-    uint32_t addVertex(Args&&... args);
+    uint32_t addVertex(Args &&... args);
 
     /**
      * \brief Sets a specific vertex.
@@ -417,7 +417,7 @@ public:
      * @param args the arguments, needs to match the buffers of the mesh
      */
     template <typename... Args>
-    void setVertex(size_t index, Args&&... args);
+    void setVertex(size_t index, Args &&... args);
 
     /**
      * \brief Updates the a specific value in specific buffer
@@ -498,7 +498,6 @@ public:
     }
 
 private:
-
     template <unsigned I>
     void copyConstrHelper() {}  // sink
 
@@ -571,9 +570,9 @@ void TypedMesh<BufferTraits...>::setVertex(size_t index, const Vertex &vertex) {
 
 template <typename... BufferTraits>
 template <typename... Args>
-uint32_t TypedMesh<BufferTraits...>::addVertex(Args&&... args) {
+uint32_t TypedMesh<BufferTraits...>::addVertex(Args &&... args) {
     detail::helper<TypedMesh<BufferTraits...>, sizeof...(BufferTraits)>::addVertexImplVertex(
-        *this, TypedMesh<BufferTraits...>::Vertex{ args... });
+        *this, TypedMesh<BufferTraits...>::Vertex{args...});
 
     using BT = typename std::tuple_element<0, Traits>::type;
     return static_cast<uint32_t>(getTypedBuffer<BT>()->getSize() - 1);
@@ -583,10 +582,8 @@ template <typename... BufferTraits>
 template <typename... Args>
 void TypedMesh<BufferTraits...>::setVertex(size_t index, Args &&... args) {
     detail::helper<TypedMesh<BufferTraits...>, sizeof...(BufferTraits)>::setVertexImplVertex(
-        *this, index, TypedMesh<BufferTraits...>::Vertex{ args... });
+        *this, index, TypedMesh<BufferTraits...>::Vertex{args...});
 }
-
-
 
 /**
  * \ingroup typedmesh

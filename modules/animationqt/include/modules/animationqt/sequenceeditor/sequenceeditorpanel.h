@@ -84,8 +84,7 @@ private:
     QVBoxLayout* sequenceEditors_{nullptr};
     QVBoxLayout* optionLayout_{nullptr};
 
-    std::unordered_map<KeyframeSequence*, SequenceEditorWidget*>
-        widgets_;
+    std::unordered_map<KeyframeSequence*, SequenceEditorWidget*> widgets_;
 };
 }  // namespace animation
 

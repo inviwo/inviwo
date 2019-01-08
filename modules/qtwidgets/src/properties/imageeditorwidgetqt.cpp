@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/qtwidgets/properties/imageeditorwidgetqt.h>
@@ -34,8 +34,7 @@ namespace inviwo {
 
 /////////////////////////////////////////////////
 // Simple Graphics Scene
-SimpleGraphicsScene::SimpleGraphicsScene(QWidget* parent) : QGraphicsScene(parent) { }
-
+SimpleGraphicsScene::SimpleGraphicsScene(QWidget* parent) : QGraphicsScene(parent) {}
 
 /////////////////////////////////////////////////
 // Simple Graphics Rectangle Item with label
@@ -55,14 +54,16 @@ SimpleWithRectangleLabel::SimpleWithRectangleLabel(QPointF rectSize, QGraphicsSc
 SimpleWithRectangleLabel::~SimpleWithRectangleLabel() {}
 
 void SimpleWithRectangleLabel::updateLabelPosition() {
-    //set offset
+    // set offset
 }
 
 void SimpleWithRectangleLabel::setLabel(std::string label) {
     label_->setText(QString::fromStdString(label));
 }
 
-std::string SimpleWithRectangleLabel::getLabel() { return label_->text().toLocal8Bit().constData(); }
+std::string SimpleWithRectangleLabel::getLabel() {
+    return label_->text().toLocal8Bit().constData();
+}
 
 void SimpleWithRectangleLabel::editLabel() {
     setFocus();
@@ -71,7 +72,7 @@ void SimpleWithRectangleLabel::editLabel() {
     label_->setFocus();
 }
 
-int SimpleWithRectangleLabel::getIndex() {return uniqueIndex_;}
+int SimpleWithRectangleLabel::getIndex() { return uniqueIndex_; }
 /////////////////////////////////////////////////
 // Simple Graphics view
 
@@ -93,19 +94,20 @@ SimpleGraphicsView::SimpleGraphicsView(QWidget* parent)
 }
 
 void SimpleGraphicsView::setDialogScene(QGraphicsScene* scene) {
-    //scene->setBackgroundBrush(QBrush(Qt::lightGray));
+    // scene->setBackgroundBrush(QBrush(Qt::lightGray));
     setScene(scene);
     scene_ = scene;
 }
 
-void SimpleGraphicsView::addRectangle(QPointF mStartPoint, QPointF deltaPoint,ivec3 color, int index) {
-    //QAbstractGraphicsShapeItem *i = scene_->addRect( mStartPoint.x(), mStartPoint.y(),  deltaPoint.x(), deltaPoint.y() );
+void SimpleGraphicsView::addRectangle(QPointF mStartPoint, QPointF deltaPoint, ivec3 color,
+                                      int index) {
+    // QAbstractGraphicsShapeItem *i = scene_->addRect( mStartPoint.x(), mStartPoint.y(),
+    // deltaPoint.x(), deltaPoint.y() );
     SimpleWithRectangleLabel* i = new SimpleWithRectangleLabel(deltaPoint, scene_, index);
     i->setPos(mStartPoint.x(), mStartPoint.y());
     scene_->addItem(i);
 
-    if (!hideLabelDescriptions_)
-        i->setLabel("Box");
+    if (!hideLabelDescriptions_) i->setLabel("Box");
 
     i->updateLabelPosition();
     i->setFlag(QGraphicsItem::ItemIsMovable);
@@ -118,49 +120,44 @@ void SimpleGraphicsView::addRectangle(QPointF mStartPoint, QPointF deltaPoint,iv
     i->setZValue(255);
     currentRectItem_ = i;
 
-    if (hideLabels_)
-        currentRectItem_->hide();
+    if (hideLabels_) currentRectItem_->hide();
 
     setCurrentLabelPositionToTextField();
 }
 
 void SimpleGraphicsView::mouseDoubleClickEvent(QMouseEvent* e) {
-    QList<QGraphicsItem*> graphicsItems =items(e->pos());
+    QList<QGraphicsItem*> graphicsItems = items(e->pos());
 
-    //graphicsItems.size()==1 because of background pixmap item
-    if (e->button()==Qt::LeftButton && graphicsItems.size()>1) {
-        //Delete rectangle
+    // graphicsItems.size()==1 because of background pixmap item
+    if (e->button() == Qt::LeftButton && graphicsItems.size() > 1) {
+        // Delete rectangle
         for (auto& graphicsItem : graphicsItems) {
             SimpleWithRectangleLabel* rectItem =
                 qgraphicsitem_cast<SimpleWithRectangleLabel*>(graphicsItem);
 
-            if (rectItem)
-                rectItem->editLabel();
+            if (rectItem) rectItem->editLabel();
         }
     }
 
     QGraphicsView::mouseDoubleClickEvent(e);
 }
 
-SimpleGraphicsView::~SimpleGraphicsView() {
-    delete shadowEffect_;
-}
+SimpleGraphicsView::~SimpleGraphicsView() { delete shadowEffect_; }
 
 void SimpleGraphicsView::mousePressEvent(QMouseEvent* e) {
     QPoint currentPoint = e->pos();
-    QList<QGraphicsItem*> graphicsItems =items(e->pos());
+    QList<QGraphicsItem*> graphicsItems = items(e->pos());
 
-    //graphicsItems.size()==1 because of background pixmap item
-    if (e->button()==Qt::LeftButton && graphicsItems.size()<2) {
-        //Left click on canvas region, where there is no rectangle item
+    // graphicsItems.size()==1 because of background pixmap item
+    if (e->button() == Qt::LeftButton && graphicsItems.size() < 2) {
+        // Left click on canvas region, where there is no rectangle item
         startPoint_ = currentPoint;
         rubberBandActive_ = true;
-    }
-    else {
+    } else {
         rubberBandActive_ = false;
 
         if (e->modifiers() == Qt::ControlModifier) {
-            //Delete rectangle
+            // Delete rectangle
             for (auto& graphicsItem : graphicsItems) {
                 QGraphicsRectItem* rectItem = qgraphicsitem_cast<QGraphicsRectItem*>(graphicsItem);
 
@@ -172,15 +169,14 @@ void SimpleGraphicsView::mousePressEvent(QMouseEvent* e) {
                     }
                 }
             }
-        }
-        else {
-            //selection
+        } else {
+            // selection
             for (auto& graphicsItem : graphicsItems) {
                 QGraphicsRectItem* rectItem = qgraphicsitem_cast<QGraphicsRectItem*>(graphicsItem);
 
                 if (rectItem) {
                     if (currentRectItem_) {
-                        //switch off shadow
+                        // switch off shadow
                         shadowEffect_->setOffset(0.0);
                         shadowEffect_->setBlurRadius(0.0);
                         currentRectItem_->setGraphicsEffect(shadowEffect_);
@@ -188,7 +184,7 @@ void SimpleGraphicsView::mousePressEvent(QMouseEvent* e) {
                     }
 
                     currentRectItem_ = rectItem;
-                    //switch on shadow
+                    // switch on shadow
                     shadowEffect_->setOffset(3.0);
                     shadowEffect_->setBlurRadius(3.0);
                     currentRectItem_->setGraphicsEffect(shadowEffect_);
@@ -198,7 +194,7 @@ void SimpleGraphicsView::mousePressEvent(QMouseEvent* e) {
         }
     }
 
-    //e->accept();
+    // e->accept();
     QGraphicsView::mousePressEvent(e);
 }
 
@@ -217,62 +213,59 @@ std::vector<ImgRect> SimpleGraphicsView::getRectList() {
             r.rect_ = QRectF(rectItem->mapRectToScene(rectItem->rect()));
             r.label_ = rectItem->getLabel();
             r.uniqueIndex_ = rectItem->getIndex();
-            rectList.push_back(r) ;
+            rectList.push_back(r);
         }
     }
 
     return rectList;
 }
 
-void SimpleGraphicsView::mouseReleaseEvent(QMouseEvent* e)
-{
+void SimpleGraphicsView::mouseReleaseEvent(QMouseEvent* e) {
     QPointF mendPoint = mapToScene(e->pos());
     QPointF mStartPoint = mapToScene(startPoint_);
     QPointF deltaPoint = mendPoint - mStartPoint;
 
-    if (rubberBandActive_ && (deltaPoint.x()>5 && deltaPoint.y()>5)) {
+    if (rubberBandActive_ && (deltaPoint.x() > 5 && deltaPoint.y() > 5)) {
         if (e->modifiers() == Qt::ShiftModifier) {
-            //add a square
-            (deltaPoint.x()>deltaPoint.y())?deltaPoint.setY(deltaPoint.x()):deltaPoint.setX(deltaPoint.y());
+            // add a square
+            (deltaPoint.x() > deltaPoint.y()) ? deltaPoint.setY(deltaPoint.x())
+                                              : deltaPoint.setX(deltaPoint.y());
         }
 
-        if (!readOnly_)
-            addRectangle(mStartPoint, deltaPoint);
+        if (!readOnly_) addRectangle(mStartPoint, deltaPoint);
     }
 
     rubberBandActive_ = false;
-    //e->accept();
+    // e->accept();
     QGraphicsView::mouseReleaseEvent(e);
 }
 
 void SimpleGraphicsView::mouseMoveEvent(QMouseEvent* e) {
-    QList<QGraphicsItem*> graphicsItems =items(e->pos());
+    QList<QGraphicsItem*> graphicsItems = items(e->pos());
 
-    if (e->button()==Qt::LeftButton) {
-        //graphicsItems.size()==1 because of background pixmap item
+    if (e->button() == Qt::LeftButton) {
+        // graphicsItems.size()==1 because of background pixmap item
         for (auto& graphicsItem : graphicsItems) {
             QGraphicsRectItem* rectItem = qgraphicsitem_cast<QGraphicsRectItem*>(graphicsItem);
 
             if (rectItem == currentRectItem_) {
-                //LogWarn("Rect Item Move");
+                // LogWarn("Rect Item Move");
                 setCurrentLabelPositionToTextField();
             }
         }
 
-        //e->accept();
+        // e->accept();
     }
 
     QGraphicsView::mouseMoveEvent(e);
 }
 
 void SimpleGraphicsView::setReadOnly(bool readOnly) {
-    //does not allow creation of new labels
+    // does not allow creation of new labels
     readOnly_ = readOnly;
 }
 
-void SimpleGraphicsView::hideLabelDescription(bool hide) {
-    hideLabelDescriptions_ = hide;
-}
+void SimpleGraphicsView::hideLabelDescription(bool hide) { hideLabelDescriptions_ = hide; }
 
 void SimpleGraphicsView::hideLabels(bool hide) {
     hideLabels_ = hide;
@@ -285,8 +278,7 @@ void SimpleGraphicsView::hideLabels(bool hide) {
 
             if (rectItem) rectItem->hide();
         }
-    }
-    else {
+    } else {
         for (auto& graphicsItem : graphicsItems) {
             SimpleWithRectangleLabel* rectItem =
                 qgraphicsitem_cast<SimpleWithRectangleLabel*>(graphicsItem);
@@ -296,9 +288,7 @@ void SimpleGraphicsView::hideLabels(bool hide) {
     }
 }
 
-void SimpleGraphicsView::filledRectangles(bool fill) {
-    fillRectangle_ = fill;
-}
+void SimpleGraphicsView::filledRectangles(bool fill) { fillRectangle_ = fill; }
 
 void SimpleGraphicsView::setScaleFactor(float scaling) {
     QMatrix matrix;
@@ -308,13 +298,14 @@ void SimpleGraphicsView::setScaleFactor(float scaling) {
 
 void SimpleGraphicsView::setCurrentLabelPositionFromTextField(ivec2 pos) {
     if (currentRectItem_) {
-        SimpleWithRectangleLabel* rectItem = qgraphicsitem_cast<SimpleWithRectangleLabel*>(currentRectItem_);
+        SimpleWithRectangleLabel* rectItem =
+            qgraphicsitem_cast<SimpleWithRectangleLabel*>(currentRectItem_);
 
         if (rectItem) {
             vec2 topLeft(pos.x, pos.y);
             QRectF rect = rectItem->mapRectToScene(rectItem->rect());
             vec2 rectSize(rect.size().width(), rect.size().height());
-            topLeft = topLeft - (rectSize/2.0f);
+            topLeft = topLeft - (rectSize / 2.0f);
             rectItem->setPos(QPointF(topLeft.x, topLeft.y));
         }
     }
@@ -322,7 +313,8 @@ void SimpleGraphicsView::setCurrentLabelPositionFromTextField(ivec2 pos) {
 
 void SimpleGraphicsView::setCurrentLabelPositionToTextField() {
     if (currentRectItem_) {
-        SimpleWithRectangleLabel* rectItem = qgraphicsitem_cast<SimpleWithRectangleLabel*>(currentRectItem_);
+        SimpleWithRectangleLabel* rectItem =
+            qgraphicsitem_cast<SimpleWithRectangleLabel*>(currentRectItem_);
 
         if (rectItem) {
             ImgRect r;
@@ -332,7 +324,7 @@ void SimpleGraphicsView::setCurrentLabelPositionToTextField() {
             r.label_ = rectItem->getLabel();
             vec2 topLeft(r.rect_.topLeft().x(), r.rect_.topLeft().y());
             vec2 rectSize(r.rect_.size().width(), r.rect_.size().height());
-            vec2 centerPos = topLeft+(rectSize/2.0f);
+            vec2 centerPos = topLeft + (rectSize / 2.0f);
             emit currentRectItemPositionChanged(centerPos);
         }
     }
@@ -358,11 +350,9 @@ ImageLabelWidget::~ImageLabelWidget() {
 }
 
 void ImageLabelWidget::closeEvent(QCloseEvent* event) {
-    if (mainParentWidget_)
-        mainParentWidget_->saveDialog();
+    if (mainParentWidget_) mainParentWidget_->saveDialog();
 
-    if (QWidget::isVisible())
-        QWidget::hide();
+    if (QWidget::isVisible()) QWidget::hide();
 
     event->ignore();
 }
@@ -380,16 +370,16 @@ void ImageLabelWidget::generateWidget() {
     editorLayout->setMargin(0);
     toolBar_ = new QToolBar();
     saveButton_ = new QToolButton();
-    saveButton_->setIcon(QIcon(":/icons/save.png")); // Temporary icon
+    saveButton_->setIcon(QIcon(":/icons/save.png"));  // Temporary icon
     saveButton_->setToolTip("Save file");
     unDoButton_ = new QToolButton();
-    unDoButton_->setIcon(QIcon(":/icons/arrow_left.png")); // Temporary icon
+    unDoButton_->setIcon(QIcon(":/icons/arrow_left.png"));  // Temporary icon
     unDoButton_->setToolTip("Undo");
     reDoButton_ = new QToolButton();
-    reDoButton_->setIcon(QIcon(":/icons/arrow_right.png")); // Temporary icon
+    reDoButton_->setIcon(QIcon(":/icons/arrow_right.png"));  // Temporary icon
     reDoButton_->setToolTip("Redo");
     reLoadButton_ = new QToolButton();
-    reLoadButton_->setIcon(QIcon(":/icons/inviwo_tmp.png")); // Temporary icon
+    reLoadButton_->setIcon(QIcon(":/icons/inviwo_tmp.png"));  // Temporary icon
     reLoadButton_->setToolTip("Reload");
     toolBar_->addWidget(saveButton_);
     toolBar_->addSeparator();
@@ -423,12 +413,13 @@ void ImageLabelWidget::generateWidget() {
     positionY_->setSingleStep(1);
     connect(positionX_, SIGNAL(valueChanged(int)), this, SLOT(updatePositionX(int)));
     connect(positionY_, SIGNAL(valueChanged(int)), this, SLOT(updatePositionY(int)));
-    connect(view_, SIGNAL(currentRectItemPositionChanged(vec2)),this, SLOT(onCurrentItemPositionChange(vec2)));
+    connect(view_, SIGNAL(currentRectItemPositionChanged(vec2)), this,
+            SLOT(onCurrentItemPositionChange(vec2)));
     setLayout(editorLayout);
-    //test rectangle
-    //addRectangleTest();
-    //connect(unDoButton_,SIGNAL(pressed()),editor_,SLOT(undo()));
-    //connect(reDoButton_,SIGNAL(pressed()),editor_,SLOT(redo()));
+    // test rectangle
+    // addRectangleTest();
+    // connect(unDoButton_,SIGNAL(pressed()),editor_,SLOT(undo()));
+    // connect(reDoButton_,SIGNAL(pressed()),editor_,SLOT(redo()));
 }
 
 void ImageLabelWidget::setToolBarVisible(bool visible) {
@@ -441,21 +432,19 @@ void ImageLabelWidget::setToolBarVisible(bool visible) {
 }
 
 void ImageLabelWidget::setReadOnly(bool readOnly) {
-    //does not allow creation of new labels
+    // does not allow creation of new labels
     view_->setReadOnly(readOnly);
 }
 
-void ImageLabelWidget::setSceneScaling(float scaling) {
-    sceneScaleFactor_ = scaling;
-}
+void ImageLabelWidget::setSceneScaling(float scaling) { sceneScaleFactor_ = scaling; }
 
 void ImageLabelWidget::hideLabelDescription(bool hide) {
-    //does not show labels
+    // does not show labels
     view_->hideLabelDescription(hide);
 }
 
 void ImageLabelWidget::hideLabels(bool hide) {
-    //does not show label and descriptions
+    // does not show label and descriptions
     view_->hideLabels(hide);
 
     if (hide) {
@@ -463,8 +452,7 @@ void ImageLabelWidget::hideLabels(bool hide) {
         positionY_->hide();
         labelPositionX_->hide();
         labelPositionY_->hide();
-    }
-    else {
+    } else {
         positionX_->show();
         positionY_->show();
         labelPositionX_->show();
@@ -475,7 +463,7 @@ void ImageLabelWidget::hideLabels(bool hide) {
 void ImageLabelWidget::addRectangleTest() {
     QAbstractGraphicsShapeItem* i = scene_->addRect(0, 0, 25, 25);
     i->setFlag(QGraphicsItem::ItemIsMovable);
-    i->setBrush(QColor(0,0,128,0));
+    i->setBrush(QColor(0, 0, 128, 0));
     i->setPen(QPen(QColor(255, 0, 0), 2));
     i->setZValue(255);
 }
@@ -484,8 +472,10 @@ void ImageLabelWidget::addBackGroundImage(std::string imagePath) {
     view_->clearRectItems();
     backGroundImage_ = new QImage(imagePath.c_str());
     vec2 unscaledSize(backGroundImage_->width(), backGroundImage_->height());
-    vec2 scaledSceneSize(backGroundImage_->width()*sceneScaleFactor_, backGroundImage_->height()*sceneScaleFactor_);
-    QSize scaledSceneSizei(static_cast<int>(scaledSceneSize.x), static_cast<int>(scaledSceneSize.y));
+    vec2 scaledSceneSize(backGroundImage_->width() * sceneScaleFactor_,
+                         backGroundImage_->height() * sceneScaleFactor_);
+    QSize scaledSceneSizei(static_cast<int>(scaledSceneSize.x),
+                           static_cast<int>(scaledSceneSize.y));
     backGroundImage_->scaled(scaledSceneSizei);
     QGraphicsPixmapItem* i = scene_->addPixmap(QPixmap(imagePath.c_str()));
     i->setZValue(1);
@@ -494,16 +484,14 @@ void ImageLabelWidget::addBackGroundImage(std::string imagePath) {
     resize(scaledSceneSizei);
 }
 
-void ImageLabelWidget::setParent(ImageEditorWidgetQt* tmp) {
-    mainParentWidget_ = tmp;
-}
+void ImageLabelWidget::setParent(ImageEditorWidgetQt* tmp) { mainParentWidget_ = tmp; }
 
 void ImageLabelWidget::updatePositionX(int x) {
     ivec2 pos;
-    pos[0] =x;
+    pos[0] = x;
     pos[1] = positionY_->value();
     view_->setCurrentLabelPositionFromTextField(pos);
-    //LogWarn("x,y " << pos[0] << " " << pos[1]);
+    // LogWarn("x,y " << pos[0] << " " << pos[1]);
 }
 
 void ImageLabelWidget::updatePositionY(int y) {
@@ -511,11 +499,11 @@ void ImageLabelWidget::updatePositionY(int y) {
     pos[0] = positionX_->value();
     pos[1] = y;
     view_->setCurrentLabelPositionFromTextField(pos);
-    //LogWarn("x,y " << pos[0] << " " << pos[1]);
+    // LogWarn("x,y " << pos[0] << " " << pos[1]);
 }
 
 void ImageLabelWidget::onCurrentItemPositionChange(vec2 centerPos) {
-    ivec2 pos{ centerPos };
+    ivec2 pos{centerPos};
     positionX_->setValue(pos[0]);
     positionY_->setValue(pos[1]);
     emit rectItemPositionChanged();
@@ -546,13 +534,13 @@ void ImageEditorWidgetQt::generateWidget() {
 
     if (dynamic_cast<FileProperty*>(property_)) {
         fileWidget_ = new FilePropertyWidgetQt(static_cast<FileProperty*>(property_));
-        connect(btnEdit_,SIGNAL(clicked()),this,SLOT(editImageLabel()));
+        connect(btnEdit_, SIGNAL(clicked()), this, SLOT(editImageLabel()));
         fileWidget_->layout()->addWidget(btnEdit_);
         hLayout->addWidget(fileWidget_);
     }
     setLayout(hLayout);
-    
-    imageLabelWidget_= new ImageLabelWidget();
+
+    imageLabelWidget_ = new ImageLabelWidget();
     imageLabelWidget_->setParent(this);
     imageLabelWidget_->hide();
 }
@@ -563,8 +551,7 @@ void ImageEditorWidgetQt::editImageLabel() {
     ImageEditorProperty* imageEditorProperty = static_cast<ImageEditorProperty*>(property_);
 
     if (imageEditorProperty) {
-        if (static_cast<FileProperty*>(property_)->get() == "")
-            fileWidget_->setPropertyValue();
+        if (static_cast<FileProperty*>(property_)->get() == "") fileWidget_->setPropertyValue();
 
         connect(imageLabelWidget_->saveButton_, SIGNAL(pressed()), this, SLOT(writeImageLabel()));
         connect(imageLabelWidget_->reLoadButton_, SIGNAL(pressed()), this, SLOT(loadImageLabel()));
@@ -574,10 +561,10 @@ void ImageEditorWidgetQt::editImageLabel() {
 }
 
 void ImageEditorWidgetQt::loadImageLabel() {
-    if (tmpPropertyValue_!=static_cast<FileProperty*>(property_)->get()) {
+    if (tmpPropertyValue_ != static_cast<FileProperty*>(property_)->get()) {
         tmpPropertyValue_ = static_cast<FileProperty*>(property_)->get();
         imageLabelWidget_->addBackGroundImage(tmpPropertyValue_);
-        ImageEditorProperty* imageProperty  = static_cast<ImageEditorProperty*>(property_);
+        ImageEditorProperty* imageProperty = static_cast<ImageEditorProperty*>(property_);
         const std::vector<ImageLabel> labels = imageProperty->getLabels();
 
         for (auto& label : labels) {
@@ -588,18 +575,18 @@ void ImageEditorWidgetQt::loadImageLabel() {
     }
 }
 
-//Function writes content of the textEditor_ to the file
+// Function writes content of the textEditor_ to the file
 bool ImageEditorWidgetQt::writeImageLabel() {
-    //Close the file to open it with new flags
+    // Close the file to open it with new flags
     ImageEditorProperty* imageEditorProperty = dynamic_cast<ImageEditorProperty*>(property_);
 
     if (imageEditorProperty) {
-        //Save labels
+        // Save labels
         std::stringstream ss;
         std::vector<ImgRect> rectList = imageLabelWidget_->view_->getRectList();
         QSize dim = imageLabelWidget_->backGroundImage_->size();
         imageEditorProperty->setDimensions(ivec2(dim.width(), dim.height()));
-        //if (rectList.size())
+        // if (rectList.size())
         imageEditorProperty->clearLabels();
 
         for (auto& elem : rectList) {
@@ -638,5 +625,4 @@ void ImageEditorWidgetQt::updateFromProperty() {
     }
 }
 
-
-} // namespace
+}  // namespace inviwo

@@ -35,10 +35,8 @@
 
 namespace inviwo {
 
-MeshShaderCache::Requirement::Requirement(BufferType bufferType,
-                                          RequireBuffer required,
-                                          const std::string& glslType,
-                                          const std::string& name)
+MeshShaderCache::Requirement::Requirement(BufferType bufferType, RequireBuffer required,
+                                          const std::string& glslType, const std::string& name)
     : bufferType{bufferType}
     , required{required}
     , glslType{glslType}

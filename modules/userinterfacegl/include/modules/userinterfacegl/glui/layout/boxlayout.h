@@ -64,11 +64,11 @@ public:
     int getSpacing() const;
 
     /**
-    * \brief apply the given scaling factor to all widgets
-    *
-    * @param factor   scaling factor for widget extents
-    * @see Element::setScalingFactor
-    */
+     * \brief apply the given scaling factor to all widgets
+     *
+     * @param factor   scaling factor for widget extents
+     * @see Element::setScalingFactor
+     */
     virtual void setScalingFactor(double factor) override;
 
     /**

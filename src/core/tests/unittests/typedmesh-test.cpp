@@ -165,8 +165,8 @@ TEST(typedmesh, compilationChecks) {
     mesh.addVertices({{vec3(2.0f), vec3(1.0f), vec4(1.0f)}, {vec3(3.0f), vec3(1.0f), vec4(1.0f)}});
 
     mesh.setVertex(1, vec3(1.5f), vec3(1.0f, 0.0f, 0.0f), vec4(1.0f));
-    mesh.setVertex(2, MyMesh::Vertex{ vec3(2.5f), vec3(0.0f), vec4(1.0f) });
-    mesh.setVertex(3, { vec3(3.5f), vec3(0.0f), vec4(1.0f) });
+    mesh.setVertex(2, MyMesh::Vertex{vec3(2.5f), vec3(0.0f), vec4(1.0f)});
+    mesh.setVertex(3, {vec3(3.5f), vec3(0.0f), vec4(1.0f)});
 
     mesh.setVertex<buffertraits::ColorsBuffer>(3, vec4(0.2f));
     mesh.setVertexPosition(0, vec3(0.5f));

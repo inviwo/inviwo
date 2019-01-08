@@ -38,12 +38,10 @@
 namespace inviwo {
 
 StlWriter::StlWriter() : DataWriterType<Mesh>() {
-    addExtension(FileExtension("stl","STL ASCII file format"));
+    addExtension(FileExtension("stl", "STL ASCII file format"));
 }
 
-StlWriter* StlWriter::clone() const {
-    return new StlWriter(*this);
-}
+StlWriter* StlWriter::clone() const { return new StlWriter(*this); }
 
 void StlWriter::writeData(const Mesh* data, const std::string filePath) const {
     if (filesystem::fileExists(filePath) && !getOverwrite()) {
@@ -81,9 +79,7 @@ void StlWriter::writeData(const Mesh* data, std::ostream& f) const {
 
     const auto model = data->getModelMatrix();
     auto modelNormal = mat3(glm::transpose(glm::inverse(model)));
-    
-    
-    
+
     const auto proj = [&](const auto& d1) {
         using GT = typename std::decay<decltype(d1)>::type;
         using T = typename GT::value_type;
@@ -113,8 +109,8 @@ void StlWriter::writeData(const Mesh* data, std::ostream& f) const {
                                    dispatching::filter::Vec3s>(
                             [&](auto nb)
                                 -> std::function<void(std::ostream & fs, size_t, size_t, size_t)> {
-                                return [&modelNormal, nb](std::ostream& fs, size_t i1,
-                                                              size_t i2, size_t i3) {
+                                return [&modelNormal, nb](std::ostream& fs, size_t i1, size_t i2,
+                                                          size_t i3) {
                                     auto& norm = *nb;
                                     const auto n1 = modelNormal * norm[i1];
                                     const auto n2 = modelNormal * norm[i2];
@@ -127,17 +123,19 @@ void StlWriter::writeData(const Mesh* data, std::ostream& f) const {
             }
         }
         return std::function<void(std::ostream&, size_t, size_t, size_t)>(
-            [](std::ostream& fs, size_t, size_t, size_t) -> void {
-                fs << "0.0 0.0 0.0\n";
-            });
+            [](std::ostream& fs, size_t, size_t, size_t) -> void { fs << "0.0 0.0 0.0\n"; });
     }();
 
     const auto triangle = [&](const auto& i1, const auto& i2, const auto& i3) {
-        f << "facet normal "; normalprinter(f, i1, i2, i3);
+        f << "facet normal ";
+        normalprinter(f, i1, i2, i3);
         f << "    outer loop\n";
-        f << "        vertex "; vertexprinter(f, i1);
-        f << "        vertex "; vertexprinter(f, i2);
-        f << "        vertex "; vertexprinter(f, i3);
+        f << "        vertex ";
+        vertexprinter(f, i1);
+        f << "        vertex ";
+        vertexprinter(f, i2);
+        f << "        vertex ";
+        vertexprinter(f, i3);
         f << "    endloop\n";
         f << "endfacet\n";
     };
@@ -197,5 +195,4 @@ void StlWriter::writeData(const Mesh* data, std::ostream& f) const {
     f << "endsolid inviwo stl file\n";
 }
 
-} // namespace
-
+}  // namespace inviwo

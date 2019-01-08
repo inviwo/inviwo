@@ -72,10 +72,8 @@ private:
     size2_t previousSize_;
 };
 
-constexpr uint64_t ResizeEvent::chash() {
-    return util::constexpr_hash("org.inviwo.ResizeEvent");
-}
+constexpr uint64_t ResizeEvent::chash() { return util::constexpr_hash("org.inviwo.ResizeEvent"); }
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_RESIZEEVENT_H

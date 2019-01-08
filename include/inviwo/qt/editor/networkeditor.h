@@ -232,7 +232,6 @@ private:
     std::pair<bool, ivec2> clickedPosition_ = {false, ivec2{0, 0}};
     mutable std::pair<bool, ivec2> pastePos_ = {false, ivec2{0, 0}};
 
-
     InviwoMainWindow* mainwindow_;
     ProcessorNetwork* network_;
     static const int gridSpacing_;

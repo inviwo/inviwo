@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_INTSLIDERQT_H
@@ -38,10 +38,10 @@
 
 namespace inviwo {
 
-//class IVW_MODULE_QTWIDGETS_API IntSliderWidgetQt : public QWidget {
+// class IVW_MODULE_QTWIDGETS_API IntSliderWidgetQt : public QWidget {
 
 //    Q_OBJECT
-//public:
+// public:
 //
 //    IntSliderWidgetQt(int minValue_, int maxValue_, int increment_);
 //
@@ -90,17 +90,17 @@ namespace inviwo {
 //
 //    void updateSlider();
 //
-//private slots:
+// private slots:
 //    void updateFromSlider();
 //    void updateFromSpinBox();
 //
 //
-//signals:
+// signals:
 //    void valueChanged(int value);
 //
 //
 //
-//private:
+// private:
 //    int value_;
 //    int sliderValue_;
 //    int maxValue_;
@@ -114,6 +114,6 @@ namespace inviwo {
 //
 //};
 
-}//namespace
+}  // namespace inviwo
 
-#endif // IVW_INTSLIDERQT_H
+#endif  // IVW_INTSLIDERQT_H

@@ -273,7 +273,7 @@ TEST(PickingControllerTest, IdleMove) {
     {
         SCOPED_TRACE("Move 1,1 -> 1,2");
         uvec2 pos{1, 2};  // id = 0
-        auto event = mouseEvent(B::None, S::Move, Bs(flags::empty), pos, dim); 
+        auto event = mouseEvent(B::None, S::Move, Bs(flags::empty), pos, dim);
         TestPropagator tp;
         ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
         ASSERT_EQ(tp.events.size(), 0);
@@ -288,7 +288,7 @@ TEST(PickingControllerTest, MoveMouseAround) {
     {
         uvec2 pos{1, 1};  // id = 0
         auto event = mouseEvent(B::None, S::Move, Bs(flags::empty), pos, dim);
-        
+
         TestPropagator tp;
         ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
         ASSERT_EQ(tp.events.size(), 0);
@@ -320,7 +320,7 @@ TEST(PickingControllerTest, MoveMouseAround) {
         uvec2 pre{3, 4};  // id = 1
         uvec2 pos{1, 4};  // id = 0
         auto event = mouseEvent(B::None, S::Move, Bs(flags::empty), pos, dim);
-        
+
         TestPropagator tp;
         ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
         ASSERT_EQ(tp.events.size(), 1);
@@ -363,7 +363,7 @@ void doMousePress(PickingControllerMouseState& ms) {
     {
         uvec2 pos{1, 1};  // id = 0
         auto event = mouseEvent(B::None, S::Move, Bs(flags::empty), pos, dim);
-        
+
         TestPropagator tp;
         ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
         ASSERT_EQ(tp.events.size(), 0);

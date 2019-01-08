@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_BASEMODULE_H
@@ -47,7 +47,6 @@ public:
     virtual std::unique_ptr<VersionConverter> getConverter(int version) const override;
 
 private:
-
     struct RegHelper {
         template <typename T>
         void operator()(BaseModule& base) {
@@ -65,6 +64,6 @@ private:
     };
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_BASEMODULE_H
+#endif  // IVW_BASEMODULE_H

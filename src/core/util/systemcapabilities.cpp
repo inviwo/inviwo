@@ -68,9 +68,7 @@ void SystemCapabilities::retrieveDynamicInfo() {
     successProcessMemoryInfo_ = lookupProcessMemoryInfo();
 }
 
-const util::BuildInfo& SystemCapabilities::getBuildInfo() const {
-    return buildInfo_;
-}
+const util::BuildInfo& SystemCapabilities::getBuildInfo() const { return buildInfo_; }
 
 bool SystemCapabilities::lookupOSInfo() {
 #ifdef IVW_SIGAR

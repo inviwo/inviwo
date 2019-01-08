@@ -52,19 +52,23 @@ public:
 };
 class IVW_CORE_API ColorBrewerTooFewException : public Exception {
 public:
-    ColorBrewerTooFewException(const std::string &message = "Requested colormap does not support selected number of colors.",
-        ExceptionContext context = ExceptionContext())
+    ColorBrewerTooFewException(const std::string &message =
+                                   "Requested colormap does not support selected number of colors.",
+                               ExceptionContext context = ExceptionContext())
         : Exception(message, context) {}
     virtual ~ColorBrewerTooFewException() throw() {}
 };
 class IVW_CORE_API ColorBrewerTooManyException : public Exception {
 public:
-    ColorBrewerTooManyException(const std::string &message = "Requested colormap does not support selected number of colors.",
+    ColorBrewerTooManyException(
+        const std::string &message =
+            "Requested colormap does not support selected number of colors.",
         ExceptionContext context = ExceptionContext())
         : Exception(message, context) {}
     virtual ~ColorBrewerTooManyException() throw() {}
 };
 
+// clang-format off
 enum class Colormap {
     Accent_3, Accent_4, Accent_5, Accent_6, Accent_7, Accent_8, 
     Blues_3, Blues_4, Blues_5, Blues_6, Blues_7, Blues_8, Blues_9, 
@@ -103,6 +107,7 @@ enum class Colormap {
     YlOrRd_3, YlOrRd_4, YlOrRd_5, YlOrRd_6, YlOrRd_7, YlOrRd_8, 
     FirstMap=Accent_3, LastMap=YlOrRd_8
 };
+// clang-format on
 
 enum class Category { Diverging, Qualitative, Sequential, NumberOfColormapCategories, Undefined };
 
@@ -149,6 +154,7 @@ enum class Family {
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &os,
                                              Colormap colormap) {
+    // clang-format off
     switch (colormap) {
     case Colormap::Accent_3: os << "Accent_3"; break;
     case Colormap::Accent_4: os << "Accent_4"; break;
@@ -414,9 +420,8 @@ std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &o
     case Colormap::YlOrRd_6: os << "YlOrRd_6"; break;
     case Colormap::YlOrRd_7: os << "YlOrRd_7"; break;
     case Colormap::YlOrRd_8: os << "YlOrRd_8"; break;
-
     }
-
+    // clang-format on
     return os;
 }
 
@@ -424,20 +429,29 @@ template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &os,
                                              Category category) {
     switch (category) {
-        case Category::Diverging: os << "Diverging"; break;
-        case Category::Qualitative: os << "Qualitative"; break;
-        case Category::Sequential: os << "Sequential"; break;
-        case Category::NumberOfColormapCategories: os << "NumberOfColormapCategories"; break;
-        case Category::Undefined: os << "Undefined"; break;
-
+        case Category::Diverging:
+            os << "Diverging";
+            break;
+        case Category::Qualitative:
+            os << "Qualitative";
+            break;
+        case Category::Sequential:
+            os << "Sequential";
+            break;
+        case Category::NumberOfColormapCategories:
+            os << "NumberOfColormapCategories";
+            break;
+        case Category::Undefined:
+            os << "Undefined";
+            break;
     }
 
     return os;
 }
 
 template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &os,
-                                             Family family) {
+std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &os, Family family) {
+    // clang-format off
     switch (family) {
     case Family::Accent: os << "Accent"; break;
     case Family::Blues: os << "Blues"; break;
@@ -476,9 +490,8 @@ std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &o
     case Family::YlOrRd: os << "YlOrRd"; break;
     case Family::NumberOfColormapFamilies: os << "NumberOfColormapFamilies"; break;
     case Family::Undefined: os << "Undefined"; break;
-
     }
-
+    // clang-format on
     return os;
 }
 
@@ -534,6 +547,3 @@ IVW_CORE_API std::vector<Family> getFamiliesForCategory(const Category &category
 }  // namespace inviwo
 
 #endif  // COLORBREWER_H
-
-
-

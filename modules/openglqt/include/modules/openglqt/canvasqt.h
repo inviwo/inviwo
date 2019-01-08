@@ -373,7 +373,6 @@ bool CanvasQtBase<T>::mapKeyReleaseEvent(QKeyEvent* keyEvent) {
     KeyboardEvent releaseKeyEvent(utilqt::getKeyButton(keyEvent), KeyState::Release,
                                   utilqt::getModifiers(keyEvent), keyEvent->nativeVirtualKey(),
                                   utilqt::fromQString(keyEvent->text()));
-
     this->propagateEvent(&releaseKeyEvent);
     if (releaseKeyEvent.hasBeenUsed()) {
         keyEvent->accept();
@@ -539,7 +538,8 @@ void CanvasQtBase<T>::propagateEvent(MouseInteractionEvent* e) {
     e->setToolTipCallback([this, e](const std::string& tooltip) -> void {
         toolTipText_ = tooltip;
         const auto pos = utilqt::toQPoint(util::invertY(e->pos(), e->canvasSize()));
-        auto event = std::make_unique<QHelpEvent>(QEvent::ToolTip, pos.toPoint(), this->mapToGlobal(pos.toPoint()));
+        auto event = std::make_unique<QHelpEvent>(QEvent::ToolTip, pos.toPoint(),
+                                                  this->mapToGlobal(pos.toPoint()));
         QApplication::postEvent(this, event.release(), Qt::NormalEventPriority);
     });
 

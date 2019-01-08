@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_HDF5PATHSELECTION_H
@@ -42,18 +42,17 @@ namespace inviwo {
 
 namespace hdf5 {
 
-
 /** \docpage{org.inviwo.HDFPathSelection, HDF Path Selection}
  * ![](org.inviwo.HDFPathSelection.png?classIdentifier=org.inviwo.HDFPathSelection)
  *
  * ...
- * 
+ *
  * ### Inports
  *   * __inport__ A HDF5 file handle
- * 
+ *
  * ### Outports
  *   * __outport__ A HDF5 file handle
- * 
+ *
  * ### Properties
  *   * __Select Group__ The subgroup to output
  *
@@ -78,8 +77,7 @@ private:
     OptionPropertyString selection_;
 };
 
-}  // namespace
-}  // namespace
+}  // namespace hdf5
+}  // namespace inviwo
 
-#endif // IVW_HDF5PATHSELECTION_H
-
+#endif  // IVW_HDF5PATHSELECTION_H

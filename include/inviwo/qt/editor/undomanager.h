@@ -47,7 +47,6 @@ namespace inviwo {
 
 class InviwoMainWindow;
 
-
 /**
  * \class UndoManager
  */
@@ -97,7 +96,6 @@ private:
     WorkspaceManager::DeserializationHandle loadHandle_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_UNDOMANAGER_H
-
+#endif  // IVW_UNDOMANAGER_H

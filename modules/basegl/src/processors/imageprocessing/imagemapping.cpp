@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/basegl/processors/imageprocessing/imagemapping.h>
@@ -42,9 +42,7 @@ const ProcessorInfo ImageMapping::processorInfo_{
     CodeState::Stable,          // Code state
     Tags::GL,                   // Tags
 };
-const ProcessorInfo ImageMapping::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo ImageMapping::getProcessorInfo() const { return processorInfo_; }
 
 ImageMapping::ImageMapping()
     : ImageGLProcessor("img_mapping.frag")
@@ -54,7 +52,7 @@ ImageMapping::ImageMapping()
 
 ImageMapping::~ImageMapping() {}
 
-void ImageMapping::preProcess(TextureUnitContainer &) {
+void ImageMapping::preProcess(TextureUnitContainer&) {
     TextureUnit transFuncUnit;
     const Layer* tfLayer = transferFunction_.get().getData();
     const LayerGL* transferFunctionGL = tfLayer->getRepresentation<LayerGL>();
@@ -68,15 +66,18 @@ void ImageMapping::afterInportChanged() {
     // but always output 4 component data representing RGBA
     const DataFormatBase* inputDataFormat = inport_.getData()->getDataFormat();
     size_t precision = inputDataFormat->getSize() / inputDataFormat->getComponents() * 8;
-    const DataFormatBase* outputDataFormat = DataFormatBase::get(inputDataFormat->getNumericType(), 4, precision);
+    const DataFormatBase* outputDataFormat =
+        DataFormatBase::get(inputDataFormat->getNumericType(), 4, precision);
     if (dataFormat_ != outputDataFormat) {
         dataFormat_ = outputDataFormat;
 
-        // The TF mapping currently only uses the first channel, print warning if we have more channels
+        // The TF mapping currently only uses the first channel, print warning if we have more
+        // channels
         if (inputDataFormat->getComponents() > 1)
-            LogWarn("Input data has " << inputDataFormat->getComponents() << " components, only the first component will be used in the mapping");
+            LogWarn("Input data has "
+                    << inputDataFormat->getComponents()
+                    << " components, only the first component will be used in the mapping");
     }
 }
 
-}  // namespace
-
+}  // namespace inviwo

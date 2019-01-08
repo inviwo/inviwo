@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_IMAGEREPRESENTATION_H
@@ -40,7 +40,7 @@ namespace inviwo {
 class Image;
 
 /**
- * \ingroup datastructures	
+ * \ingroup datastructures
  */
 class IVW_CORE_API ImageRepresentation : public DataGroupRepresentation<Image> {
 public:
@@ -56,14 +56,14 @@ public:
      * Copy and resize the representations of this onto the target.
      */
     virtual bool copyRepresentationsTo(ImageRepresentation* target) const = 0;
-    
+
     /**
      * Returns a number representing the general efficiency of the representation.
      * Larger value means more efficient representation. Used for selection which representation
      * to operate on when resizing for example.
      */
     virtual size_t priority() const = 0;
-    
+
     /**
      * Read a single pixel value out of the specified layer at pos. Should only be used to read
      * single values not entire images.
@@ -81,6 +81,6 @@ protected:
     Image* owner_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_IMAGEREPRESENTATION_H
+#endif  // IVW_IMAGEREPRESENTATION_H

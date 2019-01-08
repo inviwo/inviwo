@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_SERIALIZE_BASE_H
@@ -65,7 +65,7 @@ private:
     std::string identifier_;
 };
 
-enum class SerializationTarget {Node, Attribute};
+enum class SerializationTarget { Node, Attribute };
 
 class NodeSwitch;
 class Serializable;
@@ -81,7 +81,7 @@ public:
      *
      * @param allowReference disables or enables reference management schemes.
      */
-    SerializeBase(bool allowReference=true);
+    SerializeBase(bool allowReference = true);
 
     /**
      * \brief Base class for Serializer and Deserializer.
@@ -93,7 +93,7 @@ public:
      * @param fileName full path to xml file (for reading or writing).
      * @param allowReference disables or enables reference management schemes.
      */
-    SerializeBase(std::string fileName, bool allowReference=true);
+    SerializeBase(std::string fileName, bool allowReference = true);
 
     /**
      * \brief Base class for Serializer and Deserializer.
@@ -103,18 +103,18 @@ public:
      * (ticpp::Node) node switch and factory registration.
      *
      * @param stream containing all xml data (for reading).
-     * @param path A path that will be used to decode the location of data during deserialization. 
+     * @param path A path that will be used to decode the location of data during deserialization.
      * @param allowReference disables or enables reference management schemes.
      */
-    SerializeBase(std::istream& stream, const std::string& path, bool allowReference=true);
-    
+    SerializeBase(std::istream& stream, const std::string& path, bool allowReference = true);
+
     SerializeBase(const SerializeBase& rhs) = delete;
     SerializeBase(SerializeBase&& rhs) = default;
     SerializeBase& operator=(const SerializeBase&) = delete;
     SerializeBase& operator=(SerializeBase&&) = default;
 
     virtual ~SerializeBase() = default;
-    
+
     /**
      * \brief gets the xml file name.
      */
@@ -126,14 +126,15 @@ public:
      * return true if type is one of following type:
      * bool, char, signed int, unsigned int, float, double, long double, std::string
      *
-     * @param type can be one of  bool, char, signed int, unsigned int, float, double, long double, std::string
+     * @param type can be one of  bool, char, signed int, unsigned int, float, double, long double,
+     * std::string
      * @return true or false
      */
     bool isPrimitiveType(const std::type_info& type) const;
 
     struct IVW_CORE_API ReferenceData {
-        TxElement* node_; //Ticpp Node element.
-        bool isPointer_; //Used to differentiate pointer and object.
+        TxElement* node_;  // Ticpp Node element.
+        bool isPointer_;   // Used to differentiate pointer and object.
     };
 
     using RefDataPair = std::pair<const void*, SerializeBase::ReferenceData>;
@@ -148,7 +149,7 @@ public:
         ReferenceDataContainer& operator=(ReferenceDataContainer&&) = default;
         ~ReferenceDataContainer() = default;
 
-        size_t insert(const void* data, TxElement* node, bool isPointer=true);
+        size_t insert(const void* data, TxElement* node, bool isPointer = true);
         size_t find(const void* data);
         void* find(const std::string& key, const std::string& reference_or_id);
         TxElement* nodeCopy(const void* data);
@@ -158,7 +159,6 @@ public:
         RefMap referenceMap_;
         int referenceCount_ = 0;
     };
-
 
     static std::string nodeToString(const TxElement& node);
 
@@ -202,9 +202,9 @@ public:
 
 private:
     SerializeBase& serializer_;  // reference to serializer or deserializer
-    TxElement* storedNode_;  // Parent (Ticpp Node) element.
+    TxElement* storedNode_;      // Parent (Ticpp Node) element.
     bool storedRetrieveChild_;
 };
 
-} //namespace
+}  // namespace inviwo
 #endif

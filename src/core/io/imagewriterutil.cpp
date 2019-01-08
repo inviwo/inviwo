@@ -88,7 +88,6 @@ void saveLayer(const Layer& layer) {
     }
 }
 
-} // namespace
+}  // namespace util
 
-} // namespace
-
+}  // namespace inviwo

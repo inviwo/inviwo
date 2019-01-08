@@ -29,7 +29,4 @@
 
 #include <modules/base/algorithm/volume/volumegeneration.h>
 
-namespace inviwo {
-
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

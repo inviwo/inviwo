@@ -33,7 +33,6 @@
 
 namespace inviwo {
 
-
 const ProcessorInfo NumpyMandelbrot::processorInfo_{
     "org.inviwo.NumpyMandelbrot",  // Class identifier
     "NumPy Mandelbrot",            // Display name
@@ -41,9 +40,7 @@ const ProcessorInfo NumpyMandelbrot::processorInfo_{
     CodeState::Experimental,       // Code state
     {"Python"},                    // Tags
 };
-const ProcessorInfo NumpyMandelbrot::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo NumpyMandelbrot::getProcessorInfo() const { return processorInfo_; }
 
 NumpyMandelbrot::NumpyMandelbrot()
     : Processor()
@@ -65,21 +62,15 @@ NumpyMandelbrot::NumpyMandelbrot()
     addProperty(power_);
     addProperty(iterations_);
 
-
-    script_.onChange([&](){invalidate(InvalidationLevel::InvalidOutput);});
-
+    script_.onChange([&]() { invalidate(InvalidationLevel::InvalidOutput); });
 }
-    
+
 void NumpyMandelbrot::process() {
-    auto img = std::make_shared<Image>( size_.get(), DataFloat32::get() );
-    script_.run({
-      {"img" , pybind11::cast(img->getColorLayer()) }
-    , {"p" , pybind11::cast(static_cast<Processor*>( this)) }
-    });
+    auto img = std::make_shared<Image>(size_.get(), DataFloat32::get());
+    script_.run({{"img", pybind11::cast(img->getColorLayer())},
+                 {"p", pybind11::cast(static_cast<Processor*>(this))}});
 
     outport_.setData(img);
-
 }
 
-} // namespace
-
+}  // namespace inviwo

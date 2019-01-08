@@ -60,4 +60,4 @@ bool MeshDrawerFactory::hasKey(const Mesh* geom) const {
     return (it != drawers_.end());
 }
 
-}  // namespace
+}  // namespace inviwo

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/base/io/ivfvolumewriter.h>
@@ -35,28 +35,25 @@
 namespace inviwo {
 
 IvfVolumeWriter::IvfVolumeWriter() : DataWriterType<Volume>() {
-    addExtension(FileExtension("ivf","Inviwo ivf file format"));
+    addExtension(FileExtension("ivf", "Inviwo ivf file format"));
 }
 
-IvfVolumeWriter::IvfVolumeWriter(const IvfVolumeWriter& rhs) : DataWriterType<Volume>(rhs) {
-}
+IvfVolumeWriter::IvfVolumeWriter(const IvfVolumeWriter& rhs) : DataWriterType<Volume>(rhs) {}
 
 IvfVolumeWriter& IvfVolumeWriter::operator=(const IvfVolumeWriter& that) {
-    if (this != &that)
-        DataWriterType<Volume>::operator=(that);
+    if (this != &that) DataWriterType<Volume>::operator=(that);
 
     return *this;
 }
 
-IvfVolumeWriter* IvfVolumeWriter::clone() const {
-    return new IvfVolumeWriter(*this);
-}
+IvfVolumeWriter* IvfVolumeWriter::clone() const { return new IvfVolumeWriter(*this); }
 
 void IvfVolumeWriter::writeData(const Volume* volume, const std::string filePath) const {
     std::string rawPath = filesystem::replaceFileExtension(filePath, "raw");
 
     if (filesystem::fileExists(filePath) && !overwrite_)
-        throw DataWriterException("Error: Output file: " + filePath + " already exists", IvwContext);
+        throw DataWriterException("Error: Output file: " + filePath + " already exists",
+                                  IvwContext);
 
     if (filesystem::fileExists(rawPath) && !overwrite_)
         throw DataWriterException("Error: Output file: " + rawPath + " already exists", IvwContext);
@@ -78,13 +75,13 @@ void IvfVolumeWriter::writeData(const Volume* volume, const std::string filePath
     std::fstream fout(rawPath.c_str(), std::ios::out | std::ios::binary);
 
     if (fout.good()) {
-        fout.write((char*)vr->getData(),
-                   vr->getDimensions().x*vr->getDimensions().y*vr->getDimensions().z
-                   * vr->getDataFormat()->getSize());
+        fout.write((char*)vr->getData(), vr->getDimensions().x * vr->getDimensions().y *
+                                             vr->getDimensions().z *
+                                             vr->getDataFormat()->getSize());
     } else
         throw DataWriterException("Error: Could not write to raw file: " + rawPath, IvwContext);
 
     fout.close();
 }
 
-} // namespace
+}  // namespace inviwo

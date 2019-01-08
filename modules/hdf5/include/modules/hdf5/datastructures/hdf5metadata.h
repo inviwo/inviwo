@@ -78,11 +78,10 @@ namespace util {
 IVW_MODULE_HDF5_API std::vector<MetaData> getMetaData(const H5::Group& grp, Path path = Path{});
 IVW_MODULE_HDF5_API std::vector<size_t> getDimensions(const H5::DataSpace space);
 IVW_MODULE_HDF5_API const DataFormatBase* getDataFormat(const H5::DataType type);
-}
+}  // namespace util
 
-}  // namespace
+}  // namespace hdf5
 
-}  // namespace
-
+}  // namespace inviwo
 
 #endif  // IVW_HDF5METADATA_H

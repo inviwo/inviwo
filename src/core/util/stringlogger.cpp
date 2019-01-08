@@ -32,8 +32,8 @@
 namespace inviwo {
 
 void StringLogger::log(std::string logSource, LogLevel logLevel, LogAudience /*audience*/,
-                     const char* fileName, const char* /*functionName*/, int lineNumber,
-                     std::string logMsg) {
+                       const char* fileName, const char* /*functionName*/, int lineNumber,
+                       std::string logMsg) {
 
     switch (logLevel) {
         case LogLevel::Info:
@@ -52,8 +52,6 @@ void StringLogger::log(std::string logSource, LogLevel logLevel, LogAudience /*a
     logstream_ << logSource << " (" << fileName << ":" << lineNumber << ") " << logMsg << std::endl;
 }
 
-std::string StringLogger::getLog() const {
-    return logstream_.str();
-}
+std::string StringLogger::getLog() const { return logstream_.str(); }
 
 }  // namespace inviwo

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_METADATA_MAP_H
@@ -44,7 +44,7 @@ public:
     virtual ~MetaDataMap() = default;
 
     MetaData* add(const std::string& key, MetaData* metaData);
-    template <typename T> // T Should derive from MetaData
+    template <typename T>  // T Should derive from MetaData
     T* add(const std::string& key, std::unique_ptr<T> metaData);
 
     void remove(const std::string& key);
@@ -77,6 +77,6 @@ T* inviwo::MetaDataMap::add(const std::string& key, std::unique_ptr<T> metaData)
 bool IVW_CORE_API operator==(const MetaDataMap& lhs, const MetaDataMap& rhs);
 bool IVW_CORE_API operator!=(const MetaDataMap& lhs, const MetaDataMap& rhs);
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_METADATA_MAP_H

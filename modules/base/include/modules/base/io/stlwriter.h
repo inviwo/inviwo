@@ -39,7 +39,6 @@
 
 namespace inviwo {
 
-
 /**
  * \class StlWriter
  * \brief Export Meshes in the STL format
@@ -60,7 +59,6 @@ private:
     void writeData(const Mesh* data, std::ostream& os) const;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_STLWRITER_H
-
+#endif  // IVW_STLWRITER_H

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_TEXTURE_OBSERVER_H
@@ -33,7 +33,6 @@
 #include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/observer.h>
-
 
 namespace inviwo {
 
@@ -48,24 +47,23 @@ namespace inviwo {
  * @see Texture2D
  * @see Texture3D
  */
-class IVW_MODULE_OPENGL_API TextureObserver: public Observer {
+class IVW_MODULE_OPENGL_API TextureObserver : public Observer {
 public:
-    TextureObserver(): Observer() {};
+    TextureObserver() : Observer(){};
 
     /**
-    * This method will be called before the texture is initialized.
-    * Override it to add behavior.
-    */
-    virtual void notifyBeforeTextureInitialization() {};
+     * This method will be called before the texture is initialized.
+     * Override it to add behavior.
+     */
+    virtual void notifyBeforeTextureInitialization(){};
 
     /**
-    * This method will be called after the texture has been initialized.
-    * Override it to add behavior.
-    */
-    virtual void notifyAfterTextureInitialization() {};
+     * This method will be called after the texture has been initialized.
+     * Override it to add behavior.
+     */
+    virtual void notifyAfterTextureInitialization(){};
 };
 
+}  // namespace inviwo
 
-} // namespace
-
-#endif // IVW_TEXTURE_OBSERVER_H
+#endif  // IVW_TEXTURE_OBSERVER_H

@@ -68,7 +68,7 @@ void exposePropertyOwner(pybind11::module &m) {
              py::arg("recursiveSearch") = false)
         .def("getPropertyByPath", &PropertyOwner::getPropertyByPath,
              py::return_value_policy::reference)
-         .def("getPath", &PropertyOwner::getPath)
+        .def("getPath", &PropertyOwner::getPath)
         .def("size", &PropertyOwner::size)
         .def("setValid", &PropertyOwner::setValid)
         .def("getInvalidationLevel", &PropertyOwner::getInvalidationLevel)

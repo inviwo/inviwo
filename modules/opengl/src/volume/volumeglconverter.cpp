@@ -73,4 +73,4 @@ void VolumeGL2RAMConverter::update(std::shared_ptr<const VolumeGL> volumeSrc,
     if (volumeDst->hasHistograms()) volumeDst->getHistograms()->setValid(false);
 }
 
-}  // namespace
+}  // namespace inviwo

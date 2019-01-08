@@ -89,12 +89,11 @@ VolumeSequence sortSequence(const VolumeSequence &seq) {
     return sorted;
 }
 
-std::pair<SharedVolume, SharedVolume> getVolumesForTimestep(
-    const VolumeSequence &seq, double t, bool sorted) {
+std::pair<SharedVolume, SharedVolume> getVolumesForTimestep(const VolumeSequence &seq, double t,
+                                                            bool sorted) {
     if (seq.size() == 1) {
         return std::make_pair(seq.front(), seq.front());
-    }
-    else if (!hasTimestamps(seq)) { 
+    } else if (!hasTimestamps(seq)) {
         if (t < 0) {
             return std::make_pair(seq.front(), seq.front());
         }
@@ -105,8 +104,7 @@ std::pair<SharedVolume, SharedVolume> getVolumesForTimestep(
             i2 = i;
         }
         return std::make_pair(seq[i], seq[i2]);
-    }
-    else if (sorted) {
+    } else if (sorted) {
         // find first volume with timestamp greater than t
         auto it = std::find_if(seq.begin(), seq.end(), [t](const SharedVolume &v) {
             auto vt = getTimestamp(v);
@@ -116,25 +114,23 @@ std::pair<SharedVolume, SharedVolume> getVolumesForTimestep(
         if (it == seq.end()) {
             // t > time stamp of last volume
             return std::make_pair(seq.back(), seq.back());
-        } else if (it== seq.begin()) {
+        } else if (it == seq.begin()) {
             // t < time stamp of first volume
             return std::make_pair(*it, *it);
         }
-        
-        //return predecessor and current iterator to enclose t
+
+        // return predecessor and current iterator to enclose t
         return std::make_pair(*std::prev(it), *it);
     } else {
         return getVolumesForTimestep(sortSequence(seq), t, true);
     }
 }
 
-bool hasTimestamp(SharedVolume vol) {
-    return vol->hasMetaData<DoubleMetaData>("timestamp");
-}
+bool hasTimestamp(SharedVolume vol) { return vol->hasMetaData<DoubleMetaData>("timestamp"); }
 
 double getTimestamp(SharedVolume vol) {
     return vol->getMetaData<DoubleMetaData>("timestamp")->get();
 }
 
-}  // namespace
-}  // namespace
+}  // namespace util
+}  // namespace inviwo

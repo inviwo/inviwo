@@ -421,7 +421,7 @@ void PythonEditorWidget::onTextChange() {
     updateTitleBar();
 }
 
-void PythonEditorWidget::setFileName(const std::string &filename) {
+void PythonEditorWidget::setFileName(const std::string& filename) {
     scriptFileName_ = filename;
     script_.setFilename(filename);
     updateTitleBar();

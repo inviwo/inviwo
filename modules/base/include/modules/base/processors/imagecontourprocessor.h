@@ -75,6 +75,6 @@ private:
     FloatVec4Property color_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_IMAGECONTOURPROCESSOR_H

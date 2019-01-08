@@ -31,10 +31,10 @@
 #include <modules/brushingandlinking/processors/brushingandlinkingprocessor.h>
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 
-
 namespace inviwo {
 
-BrushingAndLinkingManager::BrushingAndLinkingManager(Processor* p, InvalidationLevel validationLevel) {
+BrushingAndLinkingManager::BrushingAndLinkingManager(Processor* p,
+                                                     InvalidationLevel validationLevel) {
     auto outPorts = p->getOutports();
     for (auto& op : outPorts) {
         if (dynamic_cast<BrushingAndLinkingOutport*>(op)) {
@@ -81,4 +81,4 @@ const std::unordered_set<size_t>& BrushingAndLinkingManager::getFilteredIndices(
     return filtered_.getIndices();
 }
 
-}  // namespace
+}  // namespace inviwo

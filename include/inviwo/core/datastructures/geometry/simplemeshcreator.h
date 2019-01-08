@@ -59,6 +59,6 @@ public:
                                              unsigned int meshResY);
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_SIMPLEMESHCREATOR_H

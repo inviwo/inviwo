@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/qtwidgets/rangesliderqt.h>
@@ -39,25 +39,22 @@
 
 namespace inviwo {
 
-
-RangeSliderQt::RangeSliderQt(Qt::Orientation orientation, QWidget* parent, bool showTooltip) 
+RangeSliderQt::RangeSliderQt(Qt::Orientation orientation, QWidget *parent, bool showTooltip)
     : QSplitter(orientation, parent)
-    , range_{0,10}
-    , value_{0,10}
+    , range_{0, 10}
+    , value_{0, 10}
     , minSeperation_(0)
-    , formatTooltip_{[](int /*handle*/, int pos) {
-        return toString(pos);
-    }}{
+    , formatTooltip_{[](int /*handle*/, int pos) { return toString(pos); }} {
 
-    QFrame* left = new QFrame(this);
-    QFrame* middle =new QFrame(this);
-    QFrame* right = new QFrame(this);
+    QFrame *left = new QFrame(this);
+    QFrame *middle = new QFrame(this);
+    QFrame *right = new QFrame(this);
 
     addWidget(left);
     addWidget(middle);
     addWidget(right);
 
-    // enable QSplitter:hover stylesheet 
+    // enable QSplitter:hover stylesheet
     // QTBUG-13768 https://bugreports.qt.io/browse/QTBUG-13768
     handle(1)->setAttribute(Qt::WA_Hover);
     handle(2)->setAttribute(Qt::WA_Hover);
@@ -113,7 +110,7 @@ void RangeSliderQt::setMinValue(int minVal) {
         if (value_.x > range_.y - minSeperation_) {
             value_.x = range_.y - minSeperation_;
         }
-        
+
         if (value_.y - value_.x < minSeperation_) {
             value_.y = value_.x + minSeperation_;
         }
@@ -146,14 +143,14 @@ void RangeSliderQt::setMinSeparation(int sep) {
     minSeperation_ = sep;
     QList<int> sizes = QSplitter::sizes();
     int range = sizes[0] + sizes[1] + sizes[2];
-    
+
     int size = range_.y - range_.x;
     if (size <= 0) {
         return;
     }
 
     if (orientation() == Qt::Horizontal) {
-        widget(1)->setMinimumWidth(range * minSeperation_/ size);
+        widget(1)->setMinimumWidth(range * minSeperation_ / size);
     } else {
         widget(1)->setMinimumHeight(range * minSeperation_ / size);
     }
@@ -166,7 +163,7 @@ void RangeSliderQt::setMinRange(int minR) {
         if (value_.x < range_.x) {
             // updateSlidersFromState() is called in setMinValue
             setMinValue(range_.x);
-        } else { 
+        } else {
             updateSlidersFromState();
         }
     }
@@ -179,13 +176,13 @@ void RangeSliderQt::setMaxRange(int maxR) {
         if (value_.y > range_.y) {
             // updateSlidersFromState() is called in setMinValue
             setMaxValue(range_.y);
-        } else { 
+        } else {
             updateSlidersFromState();
         }
     }
 }
 
-void RangeSliderQt::resizeEvent(QResizeEvent* event) {
+void RangeSliderQt::resizeEvent(QResizeEvent *event) {
     QSplitter::resizeEvent(event);
     setMinSeparation(minSeperation_);
 }
@@ -222,7 +219,7 @@ void RangeSliderQt::updateSlidersFromState() {
 void RangeSliderQt::updateSplitterPosition(int /*pos*/, int /*idx*/) {
     updateStateFromSliders();
 
-    //Emit
+    // Emit
     emit valuesChanged(value_.x, value_.y);
 }
 
@@ -249,7 +246,6 @@ void RangeSliderQt::moveMiddle(int delta) {
     updateSplitterPosition(0, 0);
     parentWidget()->repaint();
     repaint();
-
 }
 
 bool RangeSliderQt::eventFilter(QObject *obj, QEvent *event) {
@@ -264,7 +260,7 @@ bool RangeSliderQt::eventFilter(QObject *obj, QEvent *event) {
                                QString::fromStdString(formatTooltip_(1, value_.y)));
             return true;
         }
-        
+
     } else if (obj == widget(1) && event->type() == QEvent::MouseButtonPress && isEnabled()) {
         QMouseEvent *me = static_cast<QMouseEvent *>(event);
         if (me->button() == Qt::LeftButton) {
@@ -313,12 +309,10 @@ bool RangeSliderQt::eventFilter(QObject *obj, QEvent *event) {
         }
     }
     return QObject::eventFilter(obj, event);
-    
 }
 
 void RangeSliderQt::setTooltipFormat(std::function<std::string(int, int)> formater) {
     formatTooltip_ = formater;
 }
 
-
-} // namespace inviwo
+}  // namespace inviwo

@@ -87,7 +87,7 @@ TrackControlsWidgetQt::TrackControlsWidgetQt(QStandardItem*, Track& track,
             iconSize, QIcon::Normal, QIcon::On);
         QAction* lock = new QAction(lockTrackIcon, "Lock/Unlock Track", this);
         connect(lock, &QAction::triggered, this, [this]() {
-            IVW_UNUSED_PARAM(this); // needed for the LogWarn
+            IVW_UNUSED_PARAM(this);  // needed for the LogWarn
             LogWarn("Locking tracks is not implemented yet.");
         });
         lock->setCheckable(true);

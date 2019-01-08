@@ -965,7 +965,6 @@ void NetworkEditor::drawForeground(QPainter* /*painter*/, const QRectF& /*rect*/
     */
 }
 
-
 void NetworkEditor::initiateConnection(ProcessorOutportGraphicsItem* item) {
     const auto pos = item->mapToScene(item->rect().center());
     const auto color = item->getPort()->getColorCode();

@@ -53,7 +53,7 @@ class IVW_QTEDITOR_API NetworkSearch : public QWidget {
 public:
     NetworkSearch(InviwoMainWindow* win);
 
-    void updateSearch(const QString & str);
+    void updateSearch(const QString& str);
 
     virtual ~NetworkSearch() = default;
 
@@ -67,7 +67,7 @@ private:
         std::string shortcut;
         std::string description;
         bool global;
-        std::function<bool(Processor *, const std::string &)> match;
+        std::function<bool(Processor*, const std::string&)> match;
     };
     static std::vector<std::pair<std::string, std::string>> tokenize(const std::string& str);
     static std::unordered_map<std::string, std::string> getModuleMap(InviwoApplication* app);
@@ -75,7 +75,7 @@ private:
     InviwoMainWindow* win_;
     QLineEdit* edit_;
     std::vector<Item> items_;
-    std::unordered_map<std::string, std::function<bool(Processor *, const std::string &)>> map_;
+    std::unordered_map<std::string, std::function<bool(Processor*, const std::string&)>> map_;
 };
 
 }  // namespace inviwo

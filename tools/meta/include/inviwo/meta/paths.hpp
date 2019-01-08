@@ -36,6 +36,7 @@
 namespace inviwo::meta {
 
 INVIWO_META_API bool isInviwoDir(const std::filesystem::path& path);
-INVIWO_META_API std::optional<std::filesystem::path> findInviwoPath(std::vector<std::filesystem::path> guesses);
+INVIWO_META_API std::optional<std::filesystem::path> findInviwoPath(
+    std::vector<std::filesystem::path> guesses);
 
 }  // namespace inviwo::meta

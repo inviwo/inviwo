@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/util/filesystem.h>
@@ -34,7 +34,7 @@
 #include <gtest/gtest.h>
 #include <warn/pop>
 
-namespace inviwo{
+namespace inviwo {
 
 /* This will not work with ccache.
 TEST(filesystemTest, fileExistsTest) {
@@ -81,7 +81,6 @@ TEST(filesystemTest, relativePathTest) {
     const std::string c = "/a/b";
     const std::string d = "/a/b/c/d/p/q";
 
-
     auto AB = filesystem::getRelativePath(a, b);
     EXPECT_STREQ("e/f", AB.c_str());
 
@@ -122,9 +121,7 @@ TEST(filesystemTest, pathCleanupTest) {
                  filesystem::cleanupPath("\"C:\\a\\directory\\for\\test/file.txt\"").c_str());
 
     // unmatched quote
-    EXPECT_STREQ("\"C:/test/file.txt",
-                 filesystem::cleanupPath("\"C:\\test/file.txt").c_str());
+    EXPECT_STREQ("\"C:/test/file.txt", filesystem::cleanupPath("\"C:\\test/file.txt").c_str());
 }
 
-
-}
+}  // namespace inviwo

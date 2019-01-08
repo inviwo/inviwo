@@ -29,6 +29,4 @@
 
 #include <modules/discretedata/discretedatatypes.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

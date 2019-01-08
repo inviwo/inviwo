@@ -24,14 +24,14 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/util/tinydirinterface.h>
 #include <inviwo/core/util/exception.h>
 
 #ifdef WIN32
-#define NOMINMAX // tinydir.h includes windows.h... 
+#define NOMINMAX  // tinydir.h includes windows.h...
 #define WIN32_LEAN_AND_MEAN
 #endif
 
@@ -55,16 +55,13 @@ TinyDirInterface::TinyDirInterface() : isOpen_(false), mode_(ListMode::FilesOnly
     memset(resource_.get(), 0, sizeof(tinydir_dir_hack));
 }
 
-TinyDirInterface::~TinyDirInterface() {
-    close();
-}
+TinyDirInterface::~TinyDirInterface() { close(); }
 
 bool TinyDirInterface::open(const std::string &path) {
     // close previous directory
     close();
 
-    if (path.empty())
-        return false;
+    if (path.empty()) return false;
 
     path_ = path;
     int errCode = tinydir_open(resource_.get(), path_.c_str());
@@ -81,36 +78,22 @@ void TinyDirInterface::close() {
     }
 }
 
+void TinyDirInterface::setListMode(ListMode mode) { mode_ = mode; }
 
-void TinyDirInterface::setListMode(ListMode mode) {
-    mode_ = mode;
-}
+TinyDirInterface::ListMode TinyDirInterface::getListMode() const { return mode_; }
 
-TinyDirInterface::ListMode TinyDirInterface::getListMode() const {
-    return mode_;
-}
+bool TinyDirInterface::isOpen() const { return isOpen_; }
 
-bool TinyDirInterface::isOpen() const {
-    return isOpen_;
-}
+bool TinyDirInterface::isNextEntryAvailable() const { return (isOpen_ && resource_->has_next); }
 
-bool TinyDirInterface::isNextEntryAvailable() const {
-    return (isOpen_ && resource_->has_next);
-}
+std::string TinyDirInterface::getNextEntry() { return getNextEntry(false); }
 
-std::string TinyDirInterface::getNextEntry() {
-    return getNextEntry(false);
-
-}
-
-std::string TinyDirInterface::getNextEntryWithBasePath() {
-    return getNextEntry(true);
-}
+std::string TinyDirInterface::getNextEntryWithBasePath() { return getNextEntry(true); }
 
 std::vector<std::string> TinyDirInterface::getContents() {
     std::vector<std::string> files;
     while (isNextEntryAvailable()) {
-        std::string entry{ getNextEntry(false) };
+        std::string entry{getNextEntry(false)};
         // getNextEntry might return an empty string depending on the ListMode setting
         if (!entry.empty()) {
             files.push_back(entry);
@@ -121,16 +104,16 @@ std::vector<std::string> TinyDirInterface::getContents() {
     std::sort(files.begin(), files.end(), [](const std::string &a, const std::string &b) {
         std::size_t pos = a.rfind(".");
         bool extFound = (pos != std::string::npos);
-        std::string filenameA{ extFound ? a.substr(0, pos) : a };
-        std::string extA{ extFound ? a.substr(pos + 1, std::string::npos) : "" };
+        std::string filenameA{extFound ? a.substr(0, pos) : a};
+        std::string extA{extFound ? a.substr(pos + 1, std::string::npos) : ""};
 
         pos = b.rfind(".");
         extFound = (pos != std::string::npos);
-        std::string filenameB{ extFound ? b.substr(0, pos) : b };
-        std::string extB{ extFound ? b.substr(pos + 1, std::string::npos) : "" };
+        std::string filenameB{extFound ? b.substr(0, pos) : b};
+        std::string extB{extFound ? b.substr(pos + 1, std::string::npos) : ""};
 
         int nameComp = filenameA.compare(filenameB);
-        // file a is to be sorted before b, if the file name is 'smaller' in 
+        // file a is to be sorted before b, if the file name is 'smaller' in
         // lexical order or if the file names are identical and the extension is 'smaller'
         return ((nameComp < 0) || ((nameComp == 0) && (extA.compare(extB) < 0)));
     });
@@ -146,8 +129,7 @@ std::vector<std::string> TinyDirInterface::getContentsWithBasePath() {
 }
 
 std::string TinyDirInterface::getNextEntry(bool includeBasePath) {
-    if (!isOpen_)
-        return{};
+    if (!isOpen_) return {};
 
     std::string str{};
     bool foundEntry = false;
@@ -157,7 +139,7 @@ std::string TinyDirInterface::getNextEntry(bool includeBasePath) {
         int errnum = tinydir_readfile(resource_.get(), &file);
         if (errnum != 0) {
             // cannot access entry
-            std::string errMsg{ "Cannot access entry in \"" };
+            std::string errMsg{"Cannot access entry in \""};
             errMsg.append(resource_->path);
             errMsg.append("\": ");
             errMsg.append(strerror(errnum));
@@ -168,8 +150,8 @@ std::string TinyDirInterface::getNextEntry(bool includeBasePath) {
         bool skip = ((strcmp(file.name, ".") == 0) || (strcmp(file.name, "..") == 0));
 
         // check whether entry matches current ListMode setting
-        foundEntry = !skip && ((mode_ == ListMode::FilesAndDirectories)
-            || ((file.is_dir == 0) != (mode_ == ListMode::DirectoriesOnly)));
+        foundEntry = !skip && ((mode_ == ListMode::FilesAndDirectories) ||
+                               ((file.is_dir == 0) != (mode_ == ListMode::DirectoriesOnly)));
         if (foundEntry) {
             str = (includeBasePath ? file.path : file.name);
         }
@@ -182,4 +164,4 @@ std::string TinyDirInterface::getNextEntry(bool includeBasePath) {
     return str;
 }
 
-} // namespace inviwo
+}  // namespace inviwo

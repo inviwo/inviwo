@@ -51,37 +51,26 @@ ALLOW_FLAGS_FOR_ENUM(PickingState)
 using PickingStates = flags::flags<PickingState>;
 
 // a button / touch / gesture
-enum class PickingPressItem {
-    None = 0,
-    Primary = 1 << 0,
-    Secondary = 1 << 1,
-    Tertiary = 1 << 2
-};
+enum class PickingPressItem { None = 0, Primary = 1 << 0, Secondary = 1 << 1, Tertiary = 1 << 2 };
 
 ALLOW_FLAGS_FOR_ENUM(PickingPressItem)
 using PickingPressItems = flags::flags<PickingPressItem>;
 
 enum class PickingPressState {
     None = 0,
-    Press = 1 << 0,  // button / touch / gesture started
-    Move = 1 << 1,   // button / touch / gesture updated
-    Release = 1 << 2,   // button / touch / gesture ended
+    Press = 1 << 0,    // button / touch / gesture started
+    Move = 1 << 1,     // button / touch / gesture updated
+    Release = 1 << 2,  // button / touch / gesture ended
     DoubleClick = 1 << 3
 };
 
 ALLOW_FLAGS_FOR_ENUM(PickingPressState)
 using PickingPressStates = flags::flags<PickingPressState>;
 
-enum class PickingHoverState {
-    None = 0,
-    Enter = 1 << 0, 
-    Move = 1 << 1,
-    Exit = 1 << 2
-};
+enum class PickingHoverState { None = 0, Enter = 1 << 0, Move = 1 << 1, Exit = 1 << 2 };
 
 ALLOW_FLAGS_FOR_ENUM(PickingHoverState)
 using PickingHoverStates = flags::flags<PickingHoverState>;
-
 
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, PickingState s) {

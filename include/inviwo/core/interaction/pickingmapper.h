@@ -55,7 +55,7 @@ public:
      */
     PickingMapper(Processor* p, size_t size, std::function<void(PickingEvent*)> callback,
                   PickingManager* manager = PickingManager::getPtr());
-   
+
     PickingMapper(const PickingMapper& rhs) = delete;
     PickingMapper& operator=(const PickingMapper& that) = delete;
     PickingMapper(PickingMapper&& rhs);
@@ -64,11 +64,11 @@ public:
 
     /**
      * Resize the underlaying PickingAction. This will invalidate all old indices/colors
-     */	
+     */
     void resize(size_t newSize);
 
     /**
-     * Enable or disable calling of the callback action.   
+     * Enable or disable calling of the callback action.
      */
     bool isEnabled() const;
     void setEnabled(bool enabled);
@@ -83,7 +83,7 @@ public:
     /**
      *	The picking color to use for the object with local index id.
      *  This is eqvivalent to PickingManager::indexToColor(getPickingId(id))/255.0
-     * \param id the local picking index 
+     * \param id the local picking index
      */
     vec3 getColor(size_t id = 0) const;
 
@@ -98,13 +98,12 @@ public:
     const PickingAction* getPickingAction() const;
 
 private:
-    PickingManager* manager_ = nullptr; // Should never be null.
+    PickingManager* manager_ = nullptr;  // Should never be null.
     Processor* processor_ = nullptr;
     std::function<void(PickingEvent*)> callback_;
     PickingAction* pickingAction_ = nullptr;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_PICKINGMAPPER_H
-
+#endif  // IVW_PICKINGMAPPER_H

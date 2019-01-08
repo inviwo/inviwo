@@ -35,7 +35,6 @@
 
 namespace inviwo {
 
-
 namespace utilcl {
 
 // Struct that can be transferred to OpenCL.
@@ -44,16 +43,16 @@ namespace utilcl {
 // Note that float3 in OpenCL is same as vec4
 typedef struct LightParameters {
     vec4 position;
-    vec4 ambientColor; 
+    vec4 ambientColor;
     vec4 diffuseColor;
     vec4 specularColor;
     float specularExponent;
     ShadingMode::Modes shadingMode;
 
-    char padding[56]; // Align to power of two bytes (128)
+    char padding[56];  // Align to power of two bytes (128)
 } LightParameters;
-}  // namspace utilcl
+}  // namespace utilcl
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_UTILCL_H

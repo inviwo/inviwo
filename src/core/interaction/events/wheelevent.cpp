@@ -42,8 +42,6 @@ dvec2 WheelEvent::delta() const { return delta_; }
 
 void WheelEvent::setDelta(dvec2 delta) { delta_ = delta; }
 
-uint64_t WheelEvent::hash() const {
-    return chash();
-}
+uint64_t WheelEvent::hash() const { return chash(); }
 
-}  // namespace
+}  // namespace inviwo

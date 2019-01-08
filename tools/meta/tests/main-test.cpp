@@ -36,7 +36,6 @@
 
 #endif
 
-
 #include <warn/push>
 #include <warn/ignore/all>
 #include <gtest/gtest.h>

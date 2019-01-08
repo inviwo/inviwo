@@ -47,4 +47,4 @@ const Layer* ImageExport::getData() {
     return nullptr;
 }
 
-}  // namespace
+}  // namespace inviwo

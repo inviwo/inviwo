@@ -39,7 +39,6 @@
 
 namespace inviwo {
 
-
 class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API Vector3DDivergence : public VolumeGLProcessor {
 public:
     Vector3DDivergence();

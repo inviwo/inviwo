@@ -67,9 +67,9 @@ public:
     /**
      * Update a module to use include and src folders.
      * Will move all .h file into the include/<org>/<module> sub folder
-     * and all .cpp into the src folder. 
+     * and all .cpp into the src folder.
      * except for files under /ext, /tests, or paths excluded be the given filters.
-     */ 
+     */
     void updateModule(const std::filesystem::path& modulePath, std::string_view org,
                       const std::vector<std::string>& filters) const;
 

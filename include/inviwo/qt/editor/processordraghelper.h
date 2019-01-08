@@ -66,11 +66,10 @@ public:
     ProcessorDragHelper(NetworkEditor& editor);
     virtual ~ProcessorDragHelper();
 
-    virtual bool eventFilter(QObject *obj, QEvent *event) override;
+    virtual bool eventFilter(QObject* obj, QEvent* event) override;
 
     void clear(ConnectionGraphicsItem* connection);
     void clear(ProcessorGraphicsItem* processor);
-
 
     bool enter(QGraphicsSceneDragDropEvent* e, const ProcessorMimeData* mime);
     bool move(QGraphicsSceneDragDropEvent* e, const ProcessorMimeData* mime);
@@ -99,7 +98,6 @@ private:
 
     std::unique_ptr<AutoLinker> autoLinker_;
     std::unordered_map<Processor*, std::unique_ptr<LinkConnectionDragGraphicsItem>> autoLinks_;
-
 };
 
 }  // namespace inviwo

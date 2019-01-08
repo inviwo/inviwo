@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PROCESSORWIDGETOBSERVER_H
@@ -43,7 +43,7 @@ public:
     friend ProcessorWidgetObservable;
     ProcessorWidgetObserver() = default;
     virtual ~ProcessorWidgetObserver() = default;
-    
+
     virtual void onProcessorWidgetShow(ProcessorWidget*);
     virtual void onProcessorWidgetHide(ProcessorWidget*);
 };
@@ -52,14 +52,11 @@ class IVW_CORE_API ProcessorWidgetObservable : public Observable<ProcessorWidget
 public:
     ProcessorWidgetObservable() = default;
     virtual ~ProcessorWidgetObservable() = default;
-    
+
     void notifyObserversAboutShow(ProcessorWidget* p);
     void notifyObserversAboutHide(ProcessorWidget* p);
 };
 
+}  // namespace inviwo
 
-
-} // namespace
-
-#endif // IVW_PROCESSORWIDGETOBSERVER_H
-
+#endif  // IVW_PROCESSORWIDGETOBSERVER_H

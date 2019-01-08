@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/util/commandlineparser.h>
@@ -34,12 +34,12 @@
 #include <gtest/gtest.h>
 #include <warn/pop>
 
-namespace inviwo{
+namespace inviwo {
 
 TEST(CommandLineParserTest, DefaultTest) {
     const int argc = 1;
     const char *argv[argc] = {"unittests.exe"};
-    CommandLineParser clp(argc, const_cast<char**>(argv));
+    CommandLineParser clp(argc, const_cast<char **>(argv));
     EXPECT_STREQ("", clp.getOutputPath().c_str());
     EXPECT_STREQ("", clp.getWorkspacePath().c_str());
     EXPECT_FALSE(clp.getQuitApplicationAfterStartup());
@@ -50,7 +50,7 @@ TEST(CommandLineParserTest, DefaultTest) {
 TEST(CommandLineParserTest, CommandLineParserTest) {
     const int argc = 3;
     const char *argv[argc] = {"unittests.exe", "-w", "C:/Just/A/Path/"};
-    CommandLineParser clp(argc, const_cast<char**>(argv));
+    CommandLineParser clp(argc, const_cast<char **>(argv));
     EXPECT_STREQ("", clp.getOutputPath().c_str());
     EXPECT_STREQ("C:/Just/A/Path/", clp.getWorkspacePath().c_str());
     EXPECT_FALSE(clp.getQuitApplicationAfterStartup());
@@ -58,6 +58,4 @@ TEST(CommandLineParserTest, CommandLineParserTest) {
     EXPECT_TRUE(clp.getShowSplashScreen());
 }
 
-
-
-}
+}  // namespace inviwo

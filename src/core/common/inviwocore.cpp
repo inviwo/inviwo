@@ -354,7 +354,6 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     using OptionEnumTypes = std::tuple<OptionRegEnumInt, OptionRegEnumUInt>;
     util::for_each_type<OptionEnumTypes>{}(OptionStringConverterRegFunctor{}, registerPC);
 
-    
     // Observe composite processors
     auto userCompositeDir = app_->getPath(PathType::Settings, "/composites");
     scanDirForComposites(userCompositeDir);

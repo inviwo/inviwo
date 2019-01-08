@@ -39,9 +39,7 @@ const ProcessorInfo BufferToMeshProcessor::processorInfo_{
     CodeState::Stable,                   // Code state
     Tags::CPU,                           // Tags
 };
-const ProcessorInfo BufferToMeshProcessor::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo BufferToMeshProcessor::getProcessorInfo() const { return processorInfo_; }
 
 BufferToMeshProcessor::BufferToMeshProcessor()
     : Processor()
@@ -67,7 +65,7 @@ BufferToMeshProcessor::BufferToMeshProcessor()
                      {"StripAdjacency", "StripAdjacency", ConnectivityType::StripAdjacency}},
                     0) {
 
-    indices_.setOptional(true); // Not needed when rendering for example points
+    indices_.setOptional(true);  // Not needed when rendering for example points
     textureCoordinates_.setOptional(true);
     vertexColors_.setOptional(true);
     normals_.setOptional(true);
@@ -84,38 +82,43 @@ BufferToMeshProcessor::BufferToMeshProcessor()
     addProperty(drawType_);
     addProperty(connectivity_);
 }
-    
+
 void BufferToMeshProcessor::process() {
     auto mesh = std::make_shared<Mesh>(drawType_.get(), connectivity_.get());
-    
-    // Note on const_cast of input buffers when adding them to mesh: 
-    // The buffers are not modified and the mesh will be const in all connected ports,  
-    // making it ok to use const_cast in this particular case. 
-    // Be aware that, in general, you should not use const cast on inport data! 
-    mesh->addBuffer(BufferType::PositionAttrib, std::const_pointer_cast<BufferBase>(vertices_.getData()));
+
+    // Note on const_cast of input buffers when adding them to mesh:
+    // The buffers are not modified and the mesh will be const in all connected ports,
+    // making it ok to use const_cast in this particular case.
+    // Be aware that, in general, you should not use const cast on inport data!
+    mesh->addBuffer(BufferType::PositionAttrib,
+                    std::const_pointer_cast<BufferBase>(vertices_.getData()));
     if (textureCoordinates_.isConnected()) {
         if (textureCoordinates_.getData()->getSize() != vertices_.getData()->getSize()) {
             throw Exception("Number of texture coordinates does not match number of vertices");
         }
-        mesh->addBuffer(BufferType::TexcoordAttrib, std::const_pointer_cast<BufferBase>(textureCoordinates_.getData()));
+        mesh->addBuffer(BufferType::TexcoordAttrib,
+                        std::const_pointer_cast<BufferBase>(textureCoordinates_.getData()));
     }
     if (vertexColors_.isConnected()) {
         if (vertexColors_.getData()->getSize() != vertices_.getData()->getSize()) {
             throw Exception("Number of colors does not match number of vertices");
         }
-        mesh->addBuffer(BufferType::ColorAttrib, std::const_pointer_cast<BufferBase>(vertexColors_.getData()));
+        mesh->addBuffer(BufferType::ColorAttrib,
+                        std::const_pointer_cast<BufferBase>(vertexColors_.getData()));
     }
     if (normals_.isConnected()) {
         if (normals_.getData()->getSize() != vertices_.getData()->getSize()) {
             throw Exception("Number of normals does not match number of vertices");
         }
-        mesh->addBuffer(BufferType::NormalAttrib, std::const_pointer_cast<BufferBase>(normals_.getData()));
+        mesh->addBuffer(BufferType::NormalAttrib,
+                        std::const_pointer_cast<BufferBase>(normals_.getData()));
     }
     if (curvature_.isConnected()) {
         if (curvature_.getData()->getSize() != vertices_.getData()->getSize()) {
             throw Exception("Number of curvatures does not match number of vertices");
         }
-        mesh->addBuffer(BufferType::CurvatureAttrib, std::const_pointer_cast<BufferBase>(curvature_.getData()));
+        mesh->addBuffer(BufferType::CurvatureAttrib,
+                        std::const_pointer_cast<BufferBase>(curvature_.getData()));
     }
 
     if (indices_.isConnected()) {
@@ -125,11 +128,11 @@ void BufferToMeshProcessor::process() {
                 "Index buffer must be of IndexBuffer type (Buffer<std::uint32_t, "
                 "BufferTarget::Index>)");
         }
-        mesh->addIndicies(Mesh::MeshInfo(drawType_.get(), connectivity_.get()), std::const_pointer_cast<IndexBuffer>(indexBuffer));
+        mesh->addIndicies(Mesh::MeshInfo(drawType_.get(), connectivity_.get()),
+                          std::const_pointer_cast<IndexBuffer>(indexBuffer));
     }
-   
+
     outport_.setData(mesh);
 }
 
-} // namespace
-
+}  // namespace inviwo

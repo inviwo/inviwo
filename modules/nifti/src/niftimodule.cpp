@@ -32,22 +32,22 @@
 
 namespace inviwo {
 
-NiftiModule::NiftiModule(InviwoApplication* app) : InviwoModule(app, "Nifti") {   
+NiftiModule::NiftiModule(InviwoApplication* app) : InviwoModule(app, "Nifti") {
     // Add a directory to the search path of the Shadermanager
-    //ShaderManager::getPtr()->addShaderSearchPath(PathType::Modules, "/nifti/glsl");
-    
+    // ShaderManager::getPtr()->addShaderSearchPath(PathType::Modules, "/nifti/glsl");
+
     // Register objects that can be shared with the rest of inviwo here:
-    
+
     // Processors
     // registerProcessor<NiftiProcessor>());
-    
+
     // Properties
     // registerProperty<NiftiProperty>());
-    
+
     // Readers and writes
     registerDataReader(util::make_unique<NiftiReader>());
     // registerDataWriter(util::make_unique<NiftiWriter>());
-    
+
     // Data converters
     // registerRepresentationConverter(util::make_unique<NiftiDisk2RAMConverter>());
 
@@ -57,17 +57,17 @@ NiftiModule::NiftiModule(InviwoApplication* app) : InviwoModule(app, "Nifti") {
 
     // PropertyWidgets
     // registerPropertyWidget<NiftiPropertyWidget, NiftiProperty>("Default");
-    
+
     // Dialogs
     // registerDialog<NiftiDialog>(NiftiOutport));
-    
+
     // Other varius things
     // registerCapabilities(util::make_unique<NiftiCapabilities>()));
     // registerSettings(util::make_unique<NiftiSettings>());
-    // registerMetaData(util::make_unique<NiftiMetaData>());   
+    // registerMetaData(util::make_unique<NiftiMetaData>());
     // registerPortInspector("NiftiOutport", "path/workspace.inv");
-    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget> processorWidget);
-    // registerDrawer(util::make_unique_ptr<NiftiDrawer>());  
+    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget>
+    // processorWidget); registerDrawer(util::make_unique_ptr<NiftiDrawer>());
 }
 
-} // namespace
+}  // namespace inviwo

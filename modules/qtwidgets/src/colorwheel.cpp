@@ -55,7 +55,7 @@ T clamp(const T& val, const T& min, const T& max) {
     return (val > max ? max : (val < min ? min : val));
 }
 
-}
+}  // namespace
 
 namespace inviwo {
 
@@ -83,7 +83,7 @@ void ColorWheel::setColor(const QColor& color) {
 
     if (color.isValid()) {
         // QColor sets hue to -1 for achromatic colors, i.e. saturation = 0
-        // Ensure that hue is always larger equal than 0, otherwise the square will only 
+        // Ensure that hue is always larger equal than 0, otherwise the square will only
         // show a black-white gradient
         const bool hueDifference = (std::max(color.hue(), 0) != currentColor_.hue());
         currentColor_.setHsv(std::max(color.hue(), 0), color.saturation(), color.value());
@@ -120,7 +120,7 @@ void ColorWheel::setColorFromWheel(const QPoint& point) {
         }
     }
 
-    int hueI = (360 + (static_cast<int>(hue) % 360)) % 360; 
+    int hueI = (360 + (static_cast<int>(hue) % 360)) % 360;
     if (currentColor_.isValid()) {
         hueChanged(hueI);
     } else {

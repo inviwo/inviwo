@@ -60,6 +60,4 @@ void ImageCompositeProcessorGL::process() {
     compositor_.composite(imageInport2_, outport_, ImageType::ColorDepth);
 }
 
-} // namespace
-
-
+}  // namespace inviwo

@@ -23,18 +23,18 @@
 
 /*! \file
  *
- *   \brief C++ bindings for OpenCL 1.0 (rev 48), OpenCL 1.1 (rev 33) and 
- *       OpenCL 1.2 (rev 15)    
+ *   \brief C++ bindings for OpenCL 1.0 (rev 48), OpenCL 1.1 (rev 33) and
+ *       OpenCL 1.2 (rev 15)
  *   \author Benedict R. Gaster, Laurent Morichetti and Lee Howes
- *   
+ *
  *   Additions and fixes from:
- *       Brian Cole, March 3rd 2010 and April 2012 
+ *       Brian Cole, March 3rd 2010 and April 2012
  *       Matt Gruenke, April 2012.
- *       Daniel Jönsson, Januari 2013 (Removed doxygen mainpage, extensions to simplify handling, 
+ *       Daniel Jönsson, Januari 2013 (Removed doxygen mainpage, extensions to simplify handling,
  *                                     as much as possible is kept in cl.cpp)
  *       Bruce Merry, February 2013.
  *       Tom Deakin and Simon McIntosh-Smith, July 2013
- *   
+ *
  *   \version 1.2.6
  *   \date August 2013
  *
@@ -44,6 +44,8 @@
  *         cl_ext_device_fission
  *                #define USE_CL_DEVICE_FISSION
  */
+
+// clang-format off
 
 #ifndef CL_HPP_
 #define CL_HPP_
@@ -12389,3 +12391,5 @@ public:
 #endif // _WIN32
 
 #endif // CL_HPP_
+
+// clang-format on

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_MESH2DRENDERPROCESSORGL_H
@@ -48,9 +48,9 @@ public:
     static const ProcessorInfo processorInfo_;
     Mesh2DRenderProcessorGL();
     virtual ~Mesh2DRenderProcessorGL();
-     
+
     virtual void process() override;
-    
+
 protected:
     MeshFlatMultiInport inport_;
     ImageInport imageInport_;
@@ -59,15 +59,13 @@ protected:
 
     BoolProperty enableDepthTest_;
 
-    FloatProperty top_,bottom_,left_,right_;
+    FloatProperty top_, bottom_, left_, right_;
 
     using DrawerMap = std::multimap<const Outport*, std::unique_ptr<MeshDrawer>>;
     DrawerMap drawers_;
     void updateDrawers();
-
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_MESH2DRENDERER_H
-
+#endif  // IVW_MESH2DRENDERER_H

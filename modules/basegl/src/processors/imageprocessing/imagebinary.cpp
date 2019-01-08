@@ -40,20 +40,13 @@ const ProcessorInfo ImageBinary::processorInfo_{
     CodeState::Stable,         // Code state
     Tags::GL,                  // Tags
 };
-const ProcessorInfo ImageBinary::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo ImageBinary::getProcessorInfo() const { return processorInfo_; }
 
 ImageBinary::ImageBinary()
-    : ImageGLProcessor("img_binary.frag")
-    , threshold_("threshold","Threshold", 0.5)  {
+    : ImageGLProcessor("img_binary.frag"), threshold_("threshold", "Threshold", 0.5) {
     addProperty(threshold_);
 }
 
-void ImageBinary::preProcess(TextureUnitContainer &) {
-    utilgl::setUniforms(shader_, threshold_);
-}
+void ImageBinary::preProcess(TextureUnitContainer &) { utilgl::setUniforms(shader_, threshold_); }
 
-} // namespace
-
-
+}  // namespace inviwo

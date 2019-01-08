@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_ISORAYCASTER_H
@@ -49,15 +49,15 @@ namespace inviwo {
  * ![](org.inviwo.ISORaycaster.png?classIdentifier=org.inviwo.ISORaycaster)
  *
  * ...
- * 
+ *
  * ### Inports
  *   * __volume__ ...
  *   * __exit-points__ ...
  *   * __entry-points__ ...
- * 
+ *
  * ### Outports
  *   * __outport__ ...
- * 
+ *
  * ### Properties
  *   * __Raycasting__ ...
  *   * __Lighting__ ...
@@ -73,9 +73,10 @@ public:
     static const ProcessorInfo processorInfo_;
 
     virtual void initializeResources() override;
-    
+
     // override to do member renaming.
     virtual void deserialize(Deserializer& d) override;
+
 protected:
     virtual void process() override;
     Shader shader_;
@@ -90,7 +91,7 @@ private:
     FloatVec4Property surfaceColor_;
 
     OptionPropertyInt channel_;
-    
+
     SimpleRaycastingProperty raycasting_;
     CameraProperty camera_;
     SimpleLightingProperty lighting_;
@@ -98,6 +99,6 @@ private:
 private:
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_ISORAYCASTER_H
+#endif  // IVW_ISORAYCASTER_H

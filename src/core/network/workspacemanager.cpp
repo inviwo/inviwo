@@ -88,12 +88,12 @@ private:
 
 struct ErrorHandle {
     ErrorHandle(const InviwoSetupInfo& info, const std::string& filename)
-        : info_(info), filename_(filename){}
+        : info_(info), filename_(filename) {}
 
     ~ErrorHandle() {
         if (!messages.empty()) {
             LogNetworkError("There were errors while loading workspace: " + filename_);
-            for (auto& message : messages){
+            for (auto& message : messages) {
                 LogNetworkError(message);
             }
         }
@@ -125,14 +125,11 @@ struct ErrorHandle {
     std::string filename_;
 };
 
-
 WorkspaceManager::WorkspaceManager(InviwoApplication* app) : app_(app) {}
 
 WorkspaceManager::~WorkspaceManager() = default;
 
-void WorkspaceManager::clear() {
-    clears_.invoke();
-}
+void WorkspaceManager::clear() { clears_.invoke(); }
 
 void WorkspaceManager::save(std::ostream& stream, const std::string& refPath,
                             const ExceptionHandler& exceptionHandler) {
@@ -149,10 +146,10 @@ void WorkspaceManager::load(std::istream& stream, const std::string& refPath,
                             const ExceptionHandler& exceptionHandler) {
 
     auto deserializer = createWorkspaceDeserializer(stream, refPath);
-    
+
     InviwoSetupInfo info;
     deserializer.deserialize("InviwoSetup", info);
-    
+
     DeserializationErrorHandle<ErrorHandle> errorHandle(deserializer, info, refPath);
 
     deserializers_.invoke(deserializer, exceptionHandler);
@@ -246,5 +243,4 @@ WorkspaceManager::DeserializationHandle WorkspaceManager::onLoad(
         });
 }
 
-} // namespace
-
+}  // namespace inviwo

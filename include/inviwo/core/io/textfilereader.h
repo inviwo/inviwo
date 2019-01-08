@@ -36,7 +36,7 @@
 #include <string>
 
 namespace inviwo {
-/** 
+/**
  * \ingroup dataio
  * Reader for text files.
  */
@@ -69,6 +69,6 @@ private:
     std::string filePath_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_TEXTFILEREADER_H

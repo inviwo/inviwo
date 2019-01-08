@@ -41,10 +41,10 @@ StringPropertyWidgetCEF::StringPropertyWidgetCEF(StringProperty* property,
  */
 
 void StringPropertyWidgetCEF::updateFromProperty() {
-	// Frame might be null if for example webpage is not found on startup
-	if (!frame_) {
-		return;
-	}
+    // Frame might be null if for example webpage is not found on startup
+    if (!frame_) {
+        return;
+    }
     auto property = static_cast<StringProperty*>(property_);
 
     std::stringstream script;

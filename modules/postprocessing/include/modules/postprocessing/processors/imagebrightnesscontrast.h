@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_IMAGEBRIGHTNESSCONTRAST_H
@@ -50,7 +50,7 @@ namespace inviwo {
  *
  * ### Outports
  *   * __ImageOutport__ Output image.
- * 
+ *
  * ### Properties
  *   * __Brightness__ Controls brightness.
  *   * __Contrast__ Controls contrast.
@@ -60,11 +60,11 @@ namespace inviwo {
  * \class ImageBrightnessContrast
  * \brief Controls brightness and contrast of an image.
  */
-class IVW_MODULE_POSTPROCESSING_API ImageBrightnessContrast : public ImageGLProcessor { 
+class IVW_MODULE_POSTPROCESSING_API ImageBrightnessContrast : public ImageGLProcessor {
 public:
     ImageBrightnessContrast();
     virtual ~ImageBrightnessContrast() = default;
-    
+
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
@@ -76,7 +76,6 @@ private:
     FloatProperty contrast_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_IMAGEBRIGHTNESSCONTRAST_H
-
+#endif  // IVW_IMAGEBRIGHTNESSCONTRAST_H

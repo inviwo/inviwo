@@ -49,4 +49,4 @@ VolumeBorders::VolumeBorders(size_t front, size_t back, size_t left, size_t righ
 VolumeBorders::VolumeBorders()
     : llf(size3_t(0, 0, 0)), urb(size3_t(0, 0, 0)), numVoxels(0), hasBorder(false) {}
 
-}  // namespace
+}  // namespace inviwo

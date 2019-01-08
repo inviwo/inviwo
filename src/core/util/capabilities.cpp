@@ -34,4 +34,4 @@ namespace inviwo {
 Capabilities::Capabilities() = default;
 Capabilities::~Capabilities() = default;
 
-}  // namespace
+}  // namespace inviwo

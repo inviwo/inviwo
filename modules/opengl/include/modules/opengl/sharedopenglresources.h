@@ -48,15 +48,15 @@ class IVW_MODULE_OPENGL_API SharedOpenGLResources : public Singleton<SharedOpenG
 public:
     SharedOpenGLResources() = default;
     virtual ~SharedOpenGLResources() = default;
-    
+
     const MeshGL* imagePlaneRect();
 
     Shader* getTextureShader();
-    Shader* getNoiseShader(); 
+    Shader* getNoiseShader();
     Shader* getImageCopyShader(size_t colorLayers);
 
     void reset();
-    
+
 private:
     std::unique_ptr<Mesh> planeRectMesh_;
     const MeshGL* planeRectMeshGl_ = nullptr;
@@ -69,7 +69,6 @@ private:
     static SharedOpenGLResources* instance_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_SHAREDOPENGLRESOURCES_H
-
+#endif  // IVW_SHAREDOPENGLRESOURCES_H

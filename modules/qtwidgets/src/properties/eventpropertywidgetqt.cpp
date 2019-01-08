@@ -185,4 +185,4 @@ void EventPropertyWidgetQt::mousePressEvent(QMouseEvent* event) {
     releaseMouse();
 }
 
-}  // namespace
+}  // namespace inviwo

@@ -24,26 +24,20 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/properties/propertywidgetfactoryobject.h>
 
 namespace inviwo {
 PropertyWidgetFactoryObject::PropertyWidgetFactoryObject(const std::string& className,
-        const PropertySemantics& semantics)
-    : className_(className), semantics_(semantics) {
-}
+                                                         const PropertySemantics& semantics)
+    : className_(className), semantics_(semantics) {}
 
 PropertyWidgetFactoryObject::~PropertyWidgetFactoryObject() {}
 
-std::string PropertyWidgetFactoryObject::getClassIdentifier() const {
-    return className_;
-}
+std::string PropertyWidgetFactoryObject::getClassIdentifier() const { return className_; }
 
-PropertySemantics PropertyWidgetFactoryObject::getSematics() const {
-    return semantics_;
-}
+PropertySemantics PropertyWidgetFactoryObject::getSematics() const { return semantics_; }
 
-} // namespace
-
+}  // namespace inviwo

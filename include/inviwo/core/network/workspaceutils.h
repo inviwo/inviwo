@@ -41,10 +41,8 @@ namespace util {
 
 void IVW_CORE_API updateWorkspaces(InviwoApplication* app);
 
+}  // namespace util
 
-} // namespace
+}  // namespace inviwo
 
-} // namespace
-
-#endif // IVW_WORKSPACEUTILS_H
-
+#endif  // IVW_WORKSPACEUTILS_H

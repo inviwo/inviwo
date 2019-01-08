@@ -161,7 +161,7 @@ public:
 
     /**
      * Return the {curr.x, curr.y. press.z} - {prev.x, prev.y, press.z} transformed into world space
-     * using the given camera. This is useful when dragging an object in the screen plane. 
+     * using the given camera. This is useful when dragging an object in the screen plane.
      */
     dvec3 getWorldSpaceDeltaAtPressDepth(const Camera& camera) const;
 

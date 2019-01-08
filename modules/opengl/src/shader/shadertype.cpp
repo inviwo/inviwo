@@ -31,38 +31,36 @@
 
 namespace inviwo {
 
-ShaderType::ShaderType(GLenum type) : type_(type) {
+ShaderType::ShaderType(GLenum type) : type_(type) {}
 
-}
+ShaderType::operator GLenum() const { return type_; }
 
-ShaderType::operator GLenum() const {
-    return type_;
-}
-
-std::string ShaderType::extension() const {
-    return extension(*this);
-}
+std::string ShaderType::extension() const { return extension(*this); }
 
 std::string ShaderType::extension(const ShaderType& type) {
     // Following https://www.khronos.org/opengles/sdk/tools/Reference-Compiler/
     switch (type.type_) {
-        case GL_VERTEX_SHADER: return "vert";
-        case GL_GEOMETRY_SHADER: return "geom";
-        case GL_FRAGMENT_SHADER: return "frag";
-        case GL_TESS_CONTROL_SHADER: return "tesc";
-        case GL_TESS_EVALUATION_SHADER: return "tese";
-        case GL_COMPUTE_SHADER: return "comp";
-        default: return "";
+        case GL_VERTEX_SHADER:
+            return "vert";
+        case GL_GEOMETRY_SHADER:
+            return "geom";
+        case GL_FRAGMENT_SHADER:
+            return "frag";
+        case GL_TESS_CONTROL_SHADER:
+            return "tesc";
+        case GL_TESS_EVALUATION_SHADER:
+            return "tese";
+        case GL_COMPUTE_SHADER:
+            return "comp";
+        default:
+            return "";
     }
 }
 
 ShaderType::operator bool() const {
-    return type_ == GL_VERTEX_SHADER
-        || type_ == GL_GEOMETRY_SHADER
-        || type_ == GL_FRAGMENT_SHADER
-        || type_ == GL_TESS_CONTROL_SHADER
-        || type_ == GL_TESS_EVALUATION_SHADER
-        || type_ == GL_COMPUTE_SHADER;
+    return type_ == GL_VERTEX_SHADER || type_ == GL_GEOMETRY_SHADER ||
+           type_ == GL_FRAGMENT_SHADER || type_ == GL_TESS_CONTROL_SHADER ||
+           type_ == GL_TESS_EVALUATION_SHADER || type_ == GL_COMPUTE_SHADER;
 }
 
 ShaderType ShaderType::Vertex = ShaderType(GL_VERTEX_SHADER);
@@ -73,18 +71,24 @@ ShaderType ShaderType::TessellationEvaluation = ShaderType(GL_TESS_EVALUATION_SH
 ShaderType ShaderType::Compute = ShaderType(GL_COMPUTE_SHADER);
 
 ShaderType ShaderType::get(const std::string& ext) {
-    if (ext == "vert") return Vertex;
-    else if (ext == "geom") return Geometry;
-    else if (ext == "frag") return Fragment;
-    else if (ext == "tesc") return TessellationControl;
-    else if (ext == "tese") return TessellationEvaluation;
-    else if (ext == "comp") return Compute;
-    else return ShaderType(0);
+    if (ext == "vert")
+        return Vertex;
+    else if (ext == "geom")
+        return Geometry;
+    else if (ext == "frag")
+        return Fragment;
+    else if (ext == "tesc")
+        return TessellationControl;
+    else if (ext == "tese")
+        return TessellationEvaluation;
+    else if (ext == "comp")
+        return Compute;
+    else
+        return ShaderType(0);
 }
 
 bool operator==(const ShaderType& lhs, const ShaderType& rhs) {
     return static_cast<GLenum>(lhs) == static_cast<GLenum>(rhs);
 }
 
-} // namespace
-
+}  // namespace inviwo

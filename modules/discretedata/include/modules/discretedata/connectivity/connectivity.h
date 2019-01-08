@@ -73,14 +73,14 @@ public:
     //! Returns the maximal dimension of the grid
     GridPrimitive getDimension() const { return gridDimension_; }
 
-    /** 
+    /**
      * \brief Return the number of elements of the given type
      * @param elementType Type to get number of
      * @return Number of elements
      */
     virtual ind getNumElements(GridPrimitive elementType) const;
 
-    /** 
+    /**
      * \brief Get the map from one element to another
      * E.g. cell to its vertices, vertex to its neighbors, vertex to connected faces
      * @param result All connected indices in dimension 'to'
@@ -91,20 +91,20 @@ public:
     virtual void getConnections(std::vector<ind>& result, ind index, GridPrimitive from,
                                 GridPrimitive to, bool isPosition = false) const = 0;
 
-    /** 
+    /**
      * \brief Range of all elements to iterate over
      * @param dim Dimension to return the elements of
      */
     ElementRange all(GridPrimitive dim) const;
 
-    /** 
+    /**
      * \brief Get the cell type (i.e. triangle, quad...; tetrahedron, voxel...)
      * @param dim Dimension of element (edge, face, volume...)
      * @Param index Index of respective element type
      */
     virtual CellType getCellType(GridPrimitive dim, ind index) const;
 
-    /** 
+    /**
      * \brief Get the cell type (i.e. triangle, quad...; tetrahedron, voxel...)
      * @param element Element to get measure of
      */

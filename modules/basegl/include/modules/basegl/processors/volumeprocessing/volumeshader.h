@@ -38,7 +38,6 @@
 
 namespace inviwo {
 
-
 class IVW_MODULE_BASEGL_API VolumeShader : public VolumeGLProcessor {
 public:
     VolumeShader();

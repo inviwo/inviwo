@@ -65,6 +65,6 @@ protected:
     void notifyObserversOnSetUsageMode(Property* property, UsageMode usageMode);
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PROPERTYOBSERVER_H

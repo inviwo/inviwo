@@ -47,6 +47,6 @@ public:
                         std::shared_ptr<VolumeRAM> destination) const override;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_VOLUMERAMCONVERTER_H

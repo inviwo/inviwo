@@ -38,7 +38,7 @@
 namespace inviwo {
 
 /**
- * \ingroup datastructures	
+ * \ingroup datastructures
  */
 class IVW_CORE_API LayerRAM : public LayerRepresentation {
 public:
@@ -71,7 +71,6 @@ public:
     virtual void setFromDVec3(const size2_t& pos, dvec3 val) = 0;
     virtual void setFromDVec4(const size2_t& pos, dvec4 val) = 0;
 
-
     virtual double getAsNormalizedDouble(const size2_t& pos) const = 0;
     virtual dvec2 getAsNormalizedDVec2(const size2_t& pos) const = 0;
     virtual dvec3 getAsNormalizedDVec3(const size2_t& pos) const = 0;
@@ -90,7 +89,7 @@ public:
      * Dispatch functionality to retrieve the actual underlaying LayerRamPrecision.
      * The dispatcher takes a generic lambda as argument. Code will be instantiated for all the
      * DataFormat types by default. But by suppling the template `Predicate` argument the list of
-     * formats to instantiate can be filtered. Hence if one knows that only Vector types are 
+     * formats to instantiate can be filtered. Hence if one knows that only Vector types are
      * applicable there is no need to write generic code that also works for scalars.
 
      * Example of counting the number of elements larger then 0:
@@ -99,10 +98,10 @@ public:
      * auto count = layerram->dispatch<size_t, dispatching::filter::Vecs>([](auto lrprecision) {
      *     using LayerType = util::PrecsionType<decltype(lrprecision)>;
      *     using ValueType = util::PrecsionValueType<decltype(lrprecision)>;
-     *     
+     *
      *     T* data = lrprecision->getDataTyped();
      *     auto dim = lrprecision->getDimensions();
-     *     return std::count_if(data, data + dim.x * dim.y, 
+     *     return std::count_if(data, data + dim.x * dim.y,
      *                          [](auto x){return x > ValueType{0};});
      * });
      *
@@ -110,14 +109,14 @@ public:
      *
      * # Template arguments:
      *  * __Result__ the return type of the lambda.
-     *  * __Predicate__ A type that is used to filter the list of types to consider in the 
+     *  * __Predicate__ A type that is used to filter the list of types to consider in the
      *    dispatching. The `dispatching::filter` namespace have a few standard ones predefined.
-     *  
+     *
      * # Predicates:
      *  * __All__ Matches all formats, default.
      *  * __Floats__ Matches all floating point types. float, double, half, vec2, dvec3,...
      *  * __Integers__ Matches all integer types, i.e. int, ivec2, uvec3...
-     *  * __Scalars__ Matches all scalar types, i.e. int, char, long, float, ... 
+     *  * __Scalars__ Matches all scalar types, i.e. int, char, long, float, ...
      *  * __Vecs__ Matches all glm vector types, i.e. vec3, ivec3, uvec4,...
      *  * __VecNs__ Matches all glm vector types of length N. N = 2,3,4.
      *  * __FloatNs__ Matches all floating point glm vector types of length N. N = 2,3,4.
@@ -126,7 +125,7 @@ public:
      * it will be called with the specific LayerRamPresision<T> as the first argument and any
      * additional arguments (`args`) appended to that.
      * @param args Any additional arguments that should be passed on to the lambda.
-     *  
+     *
      * @throws dispatching::DispatchException in the case that the format of the buffer is not in
      * the list of formats after the filtering.
      */
@@ -142,13 +141,11 @@ public:
     auto dispatch(Callable&& callable, Args&&... args) const -> Result;
 };
 
-
 size_t inline LayerRAM::posToIndex(const size2_t& pos, const size2_t& dim) {
     ivwAssert((pos.x < dim.x) && (pos.y < dim.y),
               "posToIndex: position out of bounds (pos: " << pos << ", dim: " << dim << ")");
     return pos.x + (pos.y * dim.x);
 }
-
 
 template <typename T>
 class LayerRAMPrecision;
@@ -169,7 +166,7 @@ struct LayerRamConstDispatcher {
                    std::forward<Args>(args)...);
     }
 };
-}
+}  // namespace detail
 
 template <typename Result, template <class> class Predicate, typename Callable, typename... Args>
 auto LayerRAM::dispatch(Callable&& callable, Args&&... args) -> Result {
@@ -186,6 +183,6 @@ auto LayerRAM::dispatch(Callable&& callable, Args&&... args) const -> Result {
                                                     std::forward<Args>(args)...);
 }
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_LAYERRAM_H

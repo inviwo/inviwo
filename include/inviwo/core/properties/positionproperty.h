@@ -54,25 +54,28 @@ public:
 
     enum class Space : int { WORLD, VIEW };
 
-    PositionProperty(std::string identifier, std::string displayName
-        , FloatVec3Property position = FloatVec3Property("position", "Position", vec3(0.0f, 0.0f, 0.0f), vec3(-10, -10, -10),
-        vec3(10, 10, 10))
-        , CameraProperty* camera = nullptr
-        , InvalidationLevel = InvalidationLevel::InvalidResources
-        , PropertySemantics semantics = PropertySemantics::Default);
+    PositionProperty(std::string identifier, std::string displayName,
+                     FloatVec3Property position = FloatVec3Property("position", "Position",
+                                                                    vec3(0.0f, 0.0f, 0.0f),
+                                                                    vec3(-10, -10, -10),
+                                                                    vec3(10, 10, 10)),
+                     CameraProperty* camera = nullptr,
+                     InvalidationLevel = InvalidationLevel::InvalidResources,
+                     PropertySemantics semantics = PropertySemantics::Default);
     PositionProperty(const PositionProperty& rhs);
     PositionProperty& operator=(const PositionProperty& that);
     virtual PositionProperty* clone() const override;
-    virtual ~PositionProperty(){}
+    virtual ~PositionProperty() {}
 
-    /** 
+    /**
      * \brief Get position in world space.
      * @return vec3 World space position.
      */
     const vec3& get() const;
 
-    using CompositeProperty::set; // Enable calling CompositeProperty::set(...) functions even though overriding with set(const vec3& value)
-    /** 
+    using CompositeProperty::set;  // Enable calling CompositeProperty::set(...) functions even
+                                   // though overriding with set(const vec3& value)
+    /**
      * \brief Set coordinate in world space.
      * @param worldSpacePos Position in world space.
      */
@@ -81,18 +84,19 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
-    OptionPropertyInt referenceFrame_; //< The space in which the position is specified (world or view).
-    FloatVec3Property position_; //< Position in specified space (world or view).
+    OptionPropertyInt
+        referenceFrame_;          //< The space in which the position is specified (world or view).
+    FloatVec3Property position_;  //< Position in specified space (world or view).
 private:
     void referenceFrameChanged();
     void positionChanged();
     void cameraChanged();
 
-    vec3 positionWorldSpace_; //< Used for always keeping track of the current position in world space.
-    CameraProperty* camera_; //< Non-owning reference.
+    vec3 positionWorldSpace_;  //< Used for always keeping track of the current position in world
+                               // space.
+    CameraProperty* camera_;   //< Non-owning reference.
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_POSITIONPROPERTY_H
-
+#endif  // IVW_POSITIONPROPERTY_H

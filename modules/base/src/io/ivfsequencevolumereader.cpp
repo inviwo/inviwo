@@ -55,9 +55,9 @@ std::shared_ptr<VolumeSequence> IvfSequenceVolumeReader::readData(const std::str
 
     std::vector<std::string> filenames;
     Deserializer d(fileName);
-    d.deserialize("volumes", filenames , "volume");
+    d.deserialize("volumes", filenames, "volume");
     for (auto filename : filenames) {
-        auto abs = filesystem::cleanupPath( dir + "/" + filename);
+        auto abs = filesystem::cleanupPath(dir + "/" + filename);
         volumes->push_back(reader_.readData(abs));
     }
 

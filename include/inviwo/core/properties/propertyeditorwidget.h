@@ -55,7 +55,6 @@ public:
     virtual void setPosition(const ivec2& pos) = 0;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_PROPERTYEDITORWIDGET_H
-
+#endif  // IVW_PROPERTYEDITORWIDGET_H

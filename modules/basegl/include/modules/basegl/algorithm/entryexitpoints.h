@@ -44,27 +44,27 @@ class Mesh;
 namespace algorithm {
 
 /**
-* \class EntryExitPointsHelper
-* \brief Helper class for creating 
-*/
+ * \class EntryExitPointsHelper
+ * \brief Helper class for creating
+ */
 class IVW_MODULE_BASEGL_API EntryExitPointsHelper {
 public:
     EntryExitPointsHelper();
     ~EntryExitPointsHelper() = default;
 
     /**
-     * \brief computes entry and exit points for raycasting using the 
+     * \brief computes entry and exit points for raycasting using the
      * given camera and bounding geometry
      *
      * @param entryPoints  entry points for raycasting the bounding geometry
      * @param exitPoints   exit points for raycasting the bounding geometry
-     * @param camera       camera 
+     * @param camera       camera
      * @param mesh         mesh containing the bounding geometry
      * @param capNearClip  if true and the near clip plane of the camera is inside the volume, an
      *                     additional plane will be used to close the volume in front of the camera
      */
-    void operator()(Image &entryPoints, Image &exitPoints, const Camera &camera,
-                    const Mesh &mesh, bool capNearClip);
+    void operator()(Image &entryPoints, Image &exitPoints, const Camera &camera, const Mesh &mesh,
+                    bool capNearClip);
 
     Shader &getEntryExitShader() { return entryExitShader_; }
     Shader &getNearClipShader() { return nearClipShader_; }
@@ -81,8 +81,8 @@ private:
     std::unique_ptr<Image> tmpEntry_;
 };
 
-} // namespace algorithm
+}  // namespace algorithm
 
-} // namespace inviwo
+}  // namespace inviwo
 
-#endif // IVW_ENTRYEXITPOINTS_H
+#endif  // IVW_ENTRYEXITPOINTS_H

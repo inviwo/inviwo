@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PROCESSOR_NETWORK_OBSERVER_H
@@ -40,39 +40,39 @@ class PortConnection;
 class PropertyLink;
 class ProcessorNetworkObservable;
 
-class IVW_CORE_API ProcessorNetworkObserver: public Observer {
+class IVW_CORE_API ProcessorNetworkObserver : public Observer {
 public:
     ProcessorNetworkObserver() = default;
     virtual ~ProcessorNetworkObserver() = default;
     friend ProcessorNetworkObservable;
     /**
-    * This method will be called when observed object changes.
-    * Override it to add behavior.
-    */
-    virtual void onProcessorNetworkChange() {};
-    virtual void onProcessorNetworkEvaluateRequest() {};
-    virtual void onProcessorNetworkUnlocked() {};
+     * This method will be called when observed object changes.
+     * Override it to add behavior.
+     */
+    virtual void onProcessorNetworkChange(){};
+    virtual void onProcessorNetworkEvaluateRequest(){};
+    virtual void onProcessorNetworkUnlocked(){};
 
     // Processors
-    virtual void onProcessorNetworkWillAddProcessor(Processor*) {};
-    virtual void onProcessorNetworkDidAddProcessor(Processor*) {};
-    virtual void onProcessorNetworkWillRemoveProcessor(Processor*) {};
-    virtual void onProcessorNetworkDidRemoveProcessor(Processor*) {};
+    virtual void onProcessorNetworkWillAddProcessor(Processor*){};
+    virtual void onProcessorNetworkDidAddProcessor(Processor*){};
+    virtual void onProcessorNetworkWillRemoveProcessor(Processor*){};
+    virtual void onProcessorNetworkDidRemoveProcessor(Processor*){};
 
     // Connections
-    virtual void onProcessorNetworkWillAddConnection(const PortConnection&) {};
-    virtual void onProcessorNetworkDidAddConnection(const PortConnection&) {};
-    virtual void onProcessorNetworkWillRemoveConnection(const PortConnection&) {};
-    virtual void onProcessorNetworkDidRemoveConnection(const PortConnection&) {};
+    virtual void onProcessorNetworkWillAddConnection(const PortConnection&){};
+    virtual void onProcessorNetworkDidAddConnection(const PortConnection&){};
+    virtual void onProcessorNetworkWillRemoveConnection(const PortConnection&){};
+    virtual void onProcessorNetworkDidRemoveConnection(const PortConnection&){};
 
     // Links
-    virtual void onProcessorNetworkWillAddLink(const PropertyLink&) {};
-    virtual void onProcessorNetworkDidAddLink(const PropertyLink&) {};
-    virtual void onProcessorNetworkWillRemoveLink(const PropertyLink&) {};
-    virtual void onProcessorNetworkDidRemoveLink(const PropertyLink&) {};
+    virtual void onProcessorNetworkWillAddLink(const PropertyLink&){};
+    virtual void onProcessorNetworkDidAddLink(const PropertyLink&){};
+    virtual void onProcessorNetworkWillRemoveLink(const PropertyLink&){};
+    virtual void onProcessorNetworkDidRemoveLink(const PropertyLink&){};
 };
 
-class IVW_CORE_API ProcessorNetworkObservable: public Observable<ProcessorNetworkObserver> {
+class IVW_CORE_API ProcessorNetworkObservable : public Observable<ProcessorNetworkObserver> {
 public:
     ProcessorNetworkObservable() = default;
     virtual ~ProcessorNetworkObservable() = default;
@@ -98,9 +98,8 @@ public:
     void notifyObserversProcessorNetworkDidAddLink(const PropertyLink& propertyLink);
     void notifyObserversProcessorNetworkWillRemoveLink(const PropertyLink& propertyLink);
     void notifyObserversProcessorNetworkDidRemoveLink(const PropertyLink& propertyLink);
-
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_PROCESSOR_NETWORK_OBSERVER_H
+#endif  // IVW_PROCESSOR_NETWORK_OBSERVER_H

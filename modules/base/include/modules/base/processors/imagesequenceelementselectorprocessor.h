@@ -61,6 +61,6 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 };
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_IMAGESEQUENCEELEMENTSELECTORPROCESSOR_H

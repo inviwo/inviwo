@@ -48,6 +48,6 @@ public:
     virtual ~OpenGLInitException() noexcept = default;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_OPENGLEXCEPTION_H

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <warn/push>
@@ -36,63 +36,54 @@
 #include <inviwo/core/metadata/metadata.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 
-
 namespace {
 
-    std::shared_ptr<inviwo::Volume> createVolume() {
-        auto v = std::make_shared<inviwo::Volume>(inviwo::size3_t(5, 5, 5), inviwo::DataUInt8::get());
-        return v;
-    }
-
-
-    std::shared_ptr<inviwo::Volume> createVolume(double t) {
-        auto v = createVolume();
-        v->setMetaData<inviwo::DoubleMetaData, double>("timestamp", t);
-        return v;
-    }
+std::shared_ptr<inviwo::Volume> createVolume() {
+    auto v = std::make_shared<inviwo::Volume>(inviwo::size3_t(5, 5, 5), inviwo::DataUInt8::get());
+    return v;
 }
 
-namespace inviwo{
+std::shared_ptr<inviwo::Volume> createVolume(double t) {
+    auto v = createVolume();
+    v->setMetaData<inviwo::DoubleMetaData, double>("timestamp", t);
+    return v;
+}
+}  // namespace
 
+namespace inviwo {
 
+TEST(VolumeSequenceUtilsTests, hasTimestampsTest) {
+    VolumeSequence s1;
+    s1.push_back(createVolume(0.0));
+    s1.push_back(createVolume(0.1));
+    s1.push_back(createVolume(0.2));
 
+    VolumeSequence s2;
+    s2.push_back(createVolume());
+    s2.push_back(createVolume());
+    s2.push_back(createVolume());
 
-    TEST(VolumeSequenceUtilsTests, hasTimestampsTest) {
-        VolumeSequence s1;
-        s1.push_back(createVolume(0.0));
-        s1.push_back(createVolume(0.1));
-        s1.push_back(createVolume(0.2));
+    EXPECT_TRUE(util::hasTimestamps(s1));
+    EXPECT_FALSE(util::hasTimestamps(s2));
+}
 
-        VolumeSequence s2;
-        s2.push_back(createVolume());
-        s2.push_back(createVolume());
-        s2.push_back(createVolume());
+TEST(VolumeSequenceUtilsTests, isSorted) {
+    VolumeSequence s1;
+    s1.push_back(createVolume(0.0));
+    s1.push_back(createVolume(0.1));
+    s1.push_back(createVolume(0.2));
 
-        EXPECT_TRUE(util::hasTimestamps(s1));
-        EXPECT_FALSE(util::hasTimestamps(s2));
-    }
+    VolumeSequence s2;
+    s2.push_back(createVolume(0.2));
+    s2.push_back(createVolume(0.1));
+    s2.push_back(createVolume(0.4));
 
+    auto a = util::isSorted(s1);
+    auto b = util::isSorted(s2);
 
-
-    TEST(VolumeSequenceUtilsTests, isSorted) {
-        VolumeSequence s1;
-        s1.push_back(createVolume(0.0));
-        s1.push_back(createVolume(0.1));
-        s1.push_back(createVolume(0.2));
-
-        VolumeSequence s2;
-        s2.push_back(createVolume(0.2));
-        s2.push_back(createVolume(0.1));
-        s2.push_back(createVolume(0.4));
-
-        auto a = util::isSorted(s1);
-        auto b = util::isSorted(s2);
-
-        EXPECT_TRUE(a);
-        EXPECT_FALSE(b);
-    }
-
-
+    EXPECT_TRUE(a);
+    EXPECT_FALSE(b);
+}
 
 TEST(VolumeSequenceUtilsTests, getTimestampRangeTest) {
     VolumeSequence s1;
@@ -105,7 +96,6 @@ TEST(VolumeSequenceUtilsTests, getTimestampRangeTest) {
     EXPECT_EQ(range.second, 0.2);
 }
 
-
 TEST(VolumeSequenceUtilsTests, getVolumesForTimestepTest) {
     VolumeSequence s1;
     s1.push_back(createVolume(0.0));
@@ -116,7 +106,6 @@ TEST(VolumeSequenceUtilsTests, getVolumesForTimestepTest) {
     auto p1 = util::getVolumesForTimestep(s1, 0.1);
     auto p2 = util::getVolumesForTimestep(s1, 0.2);
     auto p3 = util::getVolumesForTimestep(s1, 0.15);
-
 
     /* UNUSED
     auto A = s1[0].get();
@@ -135,7 +124,7 @@ TEST(VolumeSequenceUtilsTests, getVolumesForTimestepTest) {
     auto W1 = p3.first.get();
     auto W2 = p3.second.get();
     */
-   
+
     EXPECT_EQ(s1[0].get(), p0.first.get());
     EXPECT_EQ(s1[1].get(), p0.second.get());
 
@@ -148,35 +137,25 @@ TEST(VolumeSequenceUtilsTests, getVolumesForTimestepTest) {
     EXPECT_EQ(s1[1].get(), p3.first.get());
     EXPECT_EQ(s1[2].get(), p3.second.get());
 
-
-
-
-
-
     VolumeSequence s2;
-    
-    s2.push_back(createVolume());
-    s2.push_back(createVolume());
-    s2.push_back(createVolume());
-    s2.push_back(createVolume());
 
+    s2.push_back(createVolume());
+    s2.push_back(createVolume());
+    s2.push_back(createVolume());
+    s2.push_back(createVolume());
 
     auto p4 = util::getVolumesForTimestep(s2, 0.0);
     auto p5 = util::getVolumesForTimestep(s2, 1.0);
     auto p6 = util::getVolumesForTimestep(s2, 0.5);
 
-
     EXPECT_EQ(p4.first.get(), s2[0].get());
     EXPECT_EQ(p4.second.get(), s2[1].get());
-
 
     EXPECT_EQ(p5.first.get(), s2[3].get());
     EXPECT_EQ(p5.second.get(), s2[3].get());
 
-
     EXPECT_EQ(p6.first.get(), s2[1].get());
     EXPECT_EQ(p6.second.get(), s2[2].get());
-
 }
 
-}
+}  // namespace inviwo

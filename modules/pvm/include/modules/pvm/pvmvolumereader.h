@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PVMVOLUMEREADER_H
@@ -41,7 +41,7 @@ namespace inviwo {
  *
  *  Format designed by Stefan Roettger
  */
- class IVW_MODULE_PVM_API PVMVolumeReader : public DataReaderType<Volume> {
+class IVW_MODULE_PVM_API PVMVolumeReader : public DataReaderType<Volume> {
 public:
     PVMVolumeReader();
     PVMVolumeReader(const PVMVolumeReader& rhs) = default;
@@ -52,11 +52,10 @@ public:
     virtual std::shared_ptr<Volume> readData(const std::string& filePath) override;
     static std::shared_ptr<Volume> readPVMData(std::string filePath);
 
- protected:
-     void printMetaInfo(const MetaDataOwner&, std::string) const;
-
+protected:
+    void printMetaInfo(const MetaDataOwner&, std::string) const;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PVMVOLUMEREADER_H

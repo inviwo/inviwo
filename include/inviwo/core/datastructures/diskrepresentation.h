@@ -115,6 +115,6 @@ public:
     virtual void updateRepresentation(std::shared_ptr<Repr> dest) const = 0;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_DISKREPRESENTATION_H

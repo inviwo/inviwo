@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_IMAGESNAPSHOT_H
@@ -49,16 +49,16 @@ namespace inviwo {
  * ### Outports
  *   * __outport1__ Outputs the input image or a saved image
  *   * __outport2__ Outputs the input image or a saved image
- * 
+ *
  * ### Properties
  *   * __Image 1 index__ The image to output on outport1, -1 means input pass through.
  *   * __Image 2 index__ The image to output on outport2, -1 means input pass through.
  */
-class IVW_MODULE_BASE_API ImageSnapshot : public Processor { 
+class IVW_MODULE_BASE_API ImageSnapshot : public Processor {
 public:
     ImageSnapshot();
     virtual ~ImageSnapshot() = default;
-     
+
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
@@ -75,11 +75,9 @@ private:
     ButtonProperty snapshot_;
     ButtonProperty clear_;
 
-
     std::vector<std::shared_ptr<Image>> snapshots_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_IMAGESNAPSHOT_H
-
+#endif  // IVW_IMAGESNAPSHOT_H

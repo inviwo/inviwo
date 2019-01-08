@@ -52,24 +52,14 @@ bool ResizeEvent::shouldPropagateTo(Inport* inport, Processor* processor, Outpor
     return false;
 }
 
-size2_t ResizeEvent::size() const {
-    return size_;
-}
+size2_t ResizeEvent::size() const { return size_; }
 
-size2_t ResizeEvent::previousSize() const {
-    return previousSize_;
-}
+size2_t ResizeEvent::previousSize() const { return previousSize_; }
 
-void ResizeEvent::setSize(size2_t csize) {
-    size_ = csize;
-}
+void ResizeEvent::setSize(size2_t csize) { size_ = csize; }
 
-void ResizeEvent::setPreviousSize(size2_t previousSize) {
-    previousSize_ = previousSize;
-}
+void ResizeEvent::setPreviousSize(size2_t previousSize) { previousSize_ = previousSize; }
 
-uint64_t ResizeEvent::hash() const {
-    return chash();
-}
+uint64_t ResizeEvent::hash() const { return chash(); }
 
-}  // namespace
+}  // namespace inviwo

@@ -110,7 +110,7 @@ protected:
     std::shared_ptr<cl::BufferGL> clBuffer_;  ///< Potentially shared with other BufferCLGL
 };
 
-}  // namespace
+}  // namespace inviwo
 
 namespace cl {
 

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_BUFFERGL_OBJECT_OBSERVER_H
@@ -33,7 +33,6 @@
 #include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/observer.h>
-
 
 namespace inviwo {
 
@@ -47,24 +46,23 @@ namespace inviwo {
  * @see Observable
  * @see BufferObject
  */
-class IVW_MODULE_OPENGL_API BufferObjectObserver: public Observer {
+class IVW_MODULE_OPENGL_API BufferObjectObserver : public Observer {
 public:
-    BufferObjectObserver(): Observer() {};
+    BufferObjectObserver() : Observer(){};
 
     /**
-    * This method will be called before the buffer is initialized.
-    * Override it to add behavior.
-    */
-    virtual void onBeforeBufferInitialization() {};
+     * This method will be called before the buffer is initialized.
+     * Override it to add behavior.
+     */
+    virtual void onBeforeBufferInitialization(){};
 
     /**
-    * This method will be called after the buffer has been initialized.
-    * Override it to add behavior.
-    */
-    virtual void onAfterBufferInitialization() {};
+     * This method will be called after the buffer has been initialized.
+     * Override it to add behavior.
+     */
+    virtual void onAfterBufferInitialization(){};
 };
 
+}  // namespace inviwo
 
-} // namespace
-
-#endif // IVW_BUFFERGL_OBJECT_OBSERVER_H
+#endif  // IVW_BUFFERGL_OBJECT_OBSERVER_H

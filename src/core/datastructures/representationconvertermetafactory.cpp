@@ -48,4 +48,4 @@ bool RepresentationConverterMetaFactory::unRegisterObject(
     return removed > 0;
 }
 
-}  // namespace
+}  // namespace inviwo

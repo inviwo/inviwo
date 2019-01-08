@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_IMAGEGAMMA_H
@@ -41,7 +41,7 @@ namespace inviwo {
  * Apply gamma correction to an input image. The alpha channel is not touched.
  * ![](org.inviwo.ImageGamma.png?classIdentifier=org.inviwo.ImageGamma)
  * This processor applies a gamma correction as follows
- * 
+ *
  *     out.rgb = pow(in.rgb, gamma)
  *     out.a = in.a
  *
@@ -59,11 +59,11 @@ namespace inviwo {
  *
  * \brief Apply gamma correction to an image. Alpha channel is not touched.
  *
- * This processor applies a gamma correction pow(input.rgb, gamma) utilizing 
- * the ImageGLProcessor. 
- * The input range is assumed to be normalized, i.e. [0, 1]. 
+ * This processor applies a gamma correction pow(input.rgb, gamma) utilizing
+ * the ImageGLProcessor.
+ * The input range is assumed to be normalized, i.e. [0, 1].
  */
-class IVW_MODULE_BASEGL_API ImageGamma : public ImageGLProcessor  { 
+class IVW_MODULE_BASEGL_API ImageGamma : public ImageGLProcessor {
 public:
     ImageGamma();
     virtual ~ImageGamma();
@@ -77,7 +77,6 @@ private:
     FloatProperty gamma_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_IMAGEGAMMA_H
-
+#endif  // IVW_IMAGEGAMMA_H

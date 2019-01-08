@@ -54,7 +54,7 @@ void StandardEvaluationErrorHandler::operator()(Processor* processor, Evaluation
         util::log(e.getContext(), id + " Error in " + func + ": " + e.getMessage(),
                   LogLevel::Error);
 
-        if(!e.getStack().empty()) {
+        if (!e.getStack().empty()) {
             std::stringstream ss;
             ss << "Stack Trace:\n";
             e.getStack(ss);
@@ -68,5 +68,4 @@ void StandardEvaluationErrorHandler::operator()(Processor* processor, Evaluation
     }
 }
 
-} // namespace
-
+}  // namespace inviwo

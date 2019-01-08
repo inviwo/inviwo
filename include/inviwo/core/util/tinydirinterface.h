@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_TINYDIR_INTERFACE_H
@@ -40,7 +40,7 @@ struct tinydir_dir_hack;
 
 namespace inviwo {
 
-/** 
+/**
  * Interface for tinydir responsible for listing files in a directory. Depending
  * on the list mode (default ListMode::FilesOnly), the result contains files, directories or both.
  */
@@ -55,20 +55,20 @@ public:
     TinyDirInterface();
     TinyDirInterface(TinyDirInterface const&) = delete;
     TinyDirInterface& operator=(TinyDirInterface const&) = delete;
-    
+
     virtual ~TinyDirInterface();
 
-    /** 
+    /**
      * \brief Opens the given path as directory resource.
      *
      * \see close isOpen
-     * 
+     *
      * @param path Path of the directory whose contents will be queried.
      * @return True if opening the directory resource is successful.
      */
-    bool open(const std::string &path);
-    /** 
-     * \brief Closes any open directory resource. Directory contents can 
+    bool open(const std::string& path);
+    /**
+     * \brief Closes any open directory resource. Directory contents can
      * no longer be listed. The resource will automatically be closed on
      * deconstruction of this object.
      *
@@ -76,8 +76,8 @@ public:
      */
     void close();
 
-    /** 
-     * \brief Returns whether a directory resource is open, i.e. available, 
+    /**
+     * \brief Returns whether a directory resource is open, i.e. available,
      * for querying.
      *
      * @return True if resource is open. False otherwise.
@@ -85,36 +85,36 @@ public:
     bool isOpen() const;
 
     /**
-    * \brief Set the current mode used for listing the directory.
-    *
-    * @param mode new listing mode
-    */
+     * \brief Set the current mode used for listing the directory.
+     *
+     * @param mode new listing mode
+     */
     void setListMode(ListMode mode);
 
     /**
-    * \brief Returns the current mode used for listing the directory.
-    *
-    * @return current listing mode
-    */
+     * \brief Returns the current mode used for listing the directory.
+     *
+     * @return current listing mode
+     */
     ListMode getListMode() const;
 
     /**
-    * \brief Returns whether the directory resource can be queried for
-    * another entry.
-    *
-    * @return True if directory listing contains at least one entry.
-    */
+     * \brief Returns whether the directory resource can be queried for
+     * another entry.
+     *
+     * @return True if directory listing contains at least one entry.
+     */
     bool isNextEntryAvailable() const;
-    
-    /** 
-     * \brief Queries the directory for the next entry. The current ListMode 
-     *  determines what contents will be returned. An empty string is 
+
+    /**
+     * \brief Queries the directory for the next entry. The current ListMode
+     *  determines what contents will be returned. An empty string is
      *  returned in case the resource is closed or no further file is available.
      *  Querying the last file automatically closes the directory resource.
      *
      * \see close getNextEntryWithBasePath
      *
-     * @return next entry in directory. If none is available or the directory 
+     * @return next entry in directory. If none is available or the directory
      *         was not open before, an empty string is returned.
      * @throws FileException
      */
@@ -165,4 +165,4 @@ private:
 
 }  // namespace inviwo
 
-#endif // IVW_TINYDIR_INTERFACE_H
+#endif  // IVW_TINYDIR_INTERFACE_H

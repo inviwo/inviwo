@@ -39,7 +39,6 @@ namespace inviwo {
 
 namespace hdf5 {
 
-
 template <typename T>
 struct TypeMap {
     static H5::PredType getType() {
@@ -47,47 +46,55 @@ struct TypeMap {
     }
 };
 
-template <> struct TypeMap<float> {
+template <>
+struct TypeMap<float> {
     static H5::PredType getType() { return H5::PredType::NATIVE_FLOAT; }
 };
-template <> struct TypeMap<double> { 
-    static H5::PredType getType() { return H5::PredType::NATIVE_DOUBLE; } 
+template <>
+struct TypeMap<double> {
+    static H5::PredType getType() { return H5::PredType::NATIVE_DOUBLE; }
 };
 
-template <> struct TypeMap<char> {
+template <>
+struct TypeMap<char> {
     static H5::PredType getType() { return H5::PredType::NATIVE_INT8; }
 };
-template <> struct TypeMap<short> {
+template <>
+struct TypeMap<short> {
     static H5::PredType getType() { return H5::PredType::NATIVE_INT16; }
 };
-template <> struct TypeMap<int> {
+template <>
+struct TypeMap<int> {
     static H5::PredType getType() { return H5::PredType::NATIVE_INT32; }
 };
-template <> struct TypeMap<long long> {
+template <>
+struct TypeMap<long long> {
     static H5::PredType getType() { return H5::PredType::NATIVE_INT64; }
 };
 
-template <> struct TypeMap<unsigned char> {
+template <>
+struct TypeMap<unsigned char> {
     static H5::PredType getType() { return H5::PredType::NATIVE_UINT8; }
 };
-template <> struct TypeMap<unsigned short> {
+template <>
+struct TypeMap<unsigned short> {
     static H5::PredType getType() { return H5::PredType::NATIVE_UINT16; }
 };
-template <> struct TypeMap<unsigned int> {
+template <>
+struct TypeMap<unsigned int> {
     static H5::PredType getType() { return H5::PredType::NATIVE_UINT32; }
 };
-template <> struct TypeMap<unsigned long long> {
+template <>
+struct TypeMap<unsigned long long> {
     static H5::PredType getType() { return H5::PredType::NATIVE_UINT64; }
 };
-
 
 namespace util {
 IVW_MODULE_HDF5_API const DataFormatBase* getDataFormatFromDataSet(const H5::DataSet& dataset);
 }
 
-}  // namespace
+}  // namespace hdf5
 
-}  // namespace
-
+}  // namespace inviwo
 
 #endif  // IVW_HDF5TYPES_H

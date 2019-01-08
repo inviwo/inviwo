@@ -63,7 +63,6 @@ private:
     const std::unordered_set<size_t>& indices_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
-#endif // IVW_BRUSHINGANDLINKINGEVENT_H
-
+#endif  // IVW_BRUSHINGANDLINKINGEVENT_H

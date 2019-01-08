@@ -93,8 +93,8 @@ AxisAlignedCutPlane::AxisAlignedCutPlane()
 
     tf_.setCurrentStateAsDefault();
 
-    sliceShader_.onReload([&]() {this->invalidate(InvalidationLevel::InvalidResources); });
-    boundingBoxShader_.onReload([&]() {this->invalidate(InvalidationLevel::InvalidResources); });
+    sliceShader_.onReload([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
+    boundingBoxShader_.onReload([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
 
     xSlide_.onChange([&]() {
         if (volume_.hasData()) xSlide_.createDrawer(volume_.getData());
@@ -118,25 +118,23 @@ AxisAlignedCutPlane::AxisAlignedCutPlane()
         boundingBoxMesh_->setModelMatrix(vol->getModelMatrix());
         boundingBoxMesh_->setWorldMatrix(vol->getWorldMatrix());
 
-
         // Update channel option property
         if (channel_.size() != vol->getDataFormat()->getComponents()) {
             auto curC = channel_.getSelectedIndex();
 
             for (auto i = channel_.size(); i < vol->getDataFormat()->getComponents(); i++) {
                 channel_.addOption("channel" + std::to_string(i),
-                    "Channel " + std::to_string(i + 1), static_cast<int>(i));
+                                   "Channel " + std::to_string(i + 1), static_cast<int>(i));
             }
 
             while (channel_.size() > vol->getDataFormat()->getComponents()) {
                 channel_.removeOption(channel_.size() - 1);
             }
-            
+
             channel_.setSelectedIndex(0);
             channel_.setCurrentStateAsDefault();
 
-            channel_.setSelectedIndex(std::min(curC , channel_.size()-1) );
-                        
+            channel_.setSelectedIndex(std::min(curC, channel_.size() - 1));
         }
     });
 
@@ -145,7 +143,6 @@ AxisAlignedCutPlane::AxisAlignedCutPlane()
     setAllPropertiesCurrentStateAsDefault();
 
     createBoundingBox();
-
 }
 
 void AxisAlignedCutPlane::process() {
@@ -213,4 +210,4 @@ void AxisAlignedCutPlane::drawBoundingBox() {
     boundingBoxShader_.deactivate();
 }
 
-}  // namespace
+}  // namespace inviwo

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/qtwidgets/sliderwidgetqt.h>
@@ -50,8 +50,8 @@ BaseSliderWidgetQt::BaseSliderWidgetQt()
     , slider_(new QSlider())
     , spinnerValue_(0.0)
     , sliderValue_(0) {
-    
-    QHBoxLayout* hLayout = new QHBoxLayout();
+
+    QHBoxLayout *hLayout = new QHBoxLayout();
 
     slider_->setOrientation(Qt::Horizontal);
     slider_->setPageStep(1);
@@ -137,17 +137,17 @@ void BaseSliderWidgetQt::updateFromSpinBox() {
 
 void BaseSliderWidgetQt::updateSpinBox() {
     QSignalBlocker spinBlock(spinBox_);
-    
+
     spinnerValue_ = transformValueToSpinner();
     spinBox_->setValue(spinnerValue_);
 }
 
 void BaseSliderWidgetQt::updateSlider() {
     QSignalBlocker slideBlock(slider_);
-    
+
     sliderValue_ = transformValueToSlider();
     bool isOutOfBounds = (slider_->maximum() < sliderValue_ || slider_->minimum() > sliderValue_);
-    if (isOutOfBounds != slider_->property("outOfBounds").toBool() ) {
+    if (isOutOfBounds != slider_->property("outOfBounds").toBool()) {
         slider_->setProperty("outOfBounds", isOutOfBounds);
         slider_->style()->unpolish(slider_);
         slider_->style()->polish(slider_);
@@ -172,5 +172,4 @@ bool BaseSliderWidgetQt::eventFilter(QObject *watched, QEvent *event) {
     return QObject::eventFilter(watched, event);
 }
 
-} // namespace
-
+}  // namespace inviwo

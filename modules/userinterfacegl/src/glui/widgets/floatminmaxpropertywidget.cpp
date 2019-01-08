@@ -96,9 +96,7 @@ void FloatMinMaxPropertyWidget::onSetDisplayName(Property *, const std::string &
     property_->propertyModified();
 }
 
-void FloatMinMaxPropertyWidget::onSetReadOnly(Property *, bool readonly) {
-    setEnabled(!readonly);
-}
+void FloatMinMaxPropertyWidget::onSetReadOnly(Property *, bool readonly) { setEnabled(!readonly); }
 
 float FloatMinMaxPropertyWidget::sliderToRepr(int val) const {
     return property_->getRangeMin() +

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_VOLUMEMAPPING_H
@@ -41,18 +41,19 @@ namespace inviwo {
 /** \docpage{org.inviwo.VolumeMapping, Volume Mapping}
  * ![](org.inviwo.VolumeMapping.png?classIdentifier=org.inviwo.VolumeMapping)
  * Maps the voxel values of an input volume to an alpha-only volume by applying a transfer function.
- * 
+ *
  * ### Inports
  *   * __inputVolume__ Input volume
  *
  * ### Outports
- *   * __outputVolume__ Output volume containing the alpha channel after applying the transfer function to the input
+ *   * __outputVolume__ Output volume containing the alpha channel after applying the transfer
+ * function to the input
  *
  * ### Properties
  *   * __Transfer function__ Defines the transfer function for mapping voxel values to opacity
  *
  */
-class IVW_MODULE_BASEGL_API VolumeMapping  : public VolumeGLProcessor { 
+class IVW_MODULE_BASEGL_API VolumeMapping : public VolumeGLProcessor {
 public:
     VolumeMapping();
     virtual ~VolumeMapping();
@@ -66,7 +67,6 @@ protected:
     virtual void preProcess(TextureUnitContainer &cont) override;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_VOLUMEMAPPING_H
-
+#endif  // IVW_VOLUMEMAPPING_H

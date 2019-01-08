@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_TONEMAPPING_H
@@ -48,7 +48,7 @@ namespace inviwo {
  *
  * ### Outports
  *   * __ImageOutport__ Output image.
- * 
+ *
  * ### Properties
  *   * __Exposure__ Controls exposure if the image.
  *   * __Gamma__ Controls the gamma (1.0 / gamma) (default is 2.2).
@@ -58,26 +58,25 @@ namespace inviwo {
  * \class ImageBrightnessContrast
  * \brief Controls brightness and contrast of an image.
  */
-class IVW_MODULE_POSTPROCESSING_API Tonemapping : public ImageGLProcessor { 
+class IVW_MODULE_POSTPROCESSING_API Tonemapping : public ImageGLProcessor {
 public:
-	Tonemapping();
+    Tonemapping();
     virtual ~Tonemapping() = default;
-    
+
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-	virtual void initializeResources() override;
+    virtual void initializeResources() override;
 
 protected:
     virtual void preProcess(TextureUnitContainer &cont) override;
 
 private:
-	OptionPropertyInt method_;
-	FloatProperty exposure_;
-	FloatProperty gamma_;
+    OptionPropertyInt method_;
+    FloatProperty exposure_;
+    FloatProperty gamma_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_TONEMAPPING_H
-
+#endif  // IVW_TONEMAPPING_H

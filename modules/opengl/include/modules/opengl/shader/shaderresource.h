@@ -41,7 +41,7 @@ namespace inviwo {
  * \class ShaderResource
  * \brief Abstraction for a shader source file.
  */
-class IVW_MODULE_OPENGL_API ShaderResource { 
+class IVW_MODULE_OPENGL_API ShaderResource {
 public:
     using Callback = std::function<void(const ShaderResource*)>;
 
@@ -50,34 +50,33 @@ public:
 
     virtual std::string key() const = 0;
     virtual std::string source() const = 0;
-    
+
     template <typename T>
     std::shared_ptr<Callback> onChange(T&& callback) const;
-    
+
 protected:
     mutable Dispatcher<void(const ShaderResource*)> callbacks_;
 };
 
 template <typename T>
-std::shared_ptr<ShaderResource::Callback>
-ShaderResource::onChange(T&& callback) const {
+std::shared_ptr<ShaderResource::Callback> ShaderResource::onChange(T&& callback) const {
     return callbacks_.add(std::forward<T>(callback));
 }
 
-class IVW_MODULE_OPENGL_API FileShaderResource : public ShaderResource,  public FileObserver {
+class IVW_MODULE_OPENGL_API FileShaderResource : public ShaderResource, public FileObserver {
 public:
     FileShaderResource(const std::string& key, const std::string& fileName);
     virtual ~FileShaderResource() = default;
-    
+
     virtual std::unique_ptr<ShaderResource> clone() override;
-    
+
     virtual std::string key() const override;
     virtual std::string source() const override;
-    
-    std::string file() const; 
-    
+
+    std::string file() const;
+
     virtual void fileChanged(const std::string& fileName) override;
-    
+
 private:
     std::string key_;
     std::string fileName_;
@@ -85,26 +84,23 @@ private:
     mutable std::string cache_;
 };
 
-
 class IVW_MODULE_OPENGL_API StringShaderResource : public ShaderResource {
 public:
     StringShaderResource(const std::string& key, const std::string& source);
     virtual ~StringShaderResource() = default;
-    
+
     virtual std::unique_ptr<ShaderResource> clone() override;
-    
+
     virtual std::string key() const override;
     virtual std::string source() const override;
-    
+
     void setSource(const std::string& source);
-    
+
 private:
     std::string key_;
     std::string source_;
 };
 
+}  // namespace inviwo
 
-} // namespace
-
-#endif // IVW_SHADERRESOURCE_H
-
+#endif  // IVW_SHADERRESOURCE_H

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PLANE_H
@@ -49,23 +49,23 @@ public:
     /**
      * \brief Get intersection point with plane and line segment.
      * Intersects if plane is in between start and stop.
-     * Segement start point will be returned if segment lies in the plane. 
+     * Segement start point will be returned if segment lies in the plane.
      *
      * Returned intersection point is invalid if no intersection exist.
      * @param start Start point of segment
      * @param stop End point of segment
-     * @return Intersected point and true if intersecting. 
+     * @return Intersected point and true if intersecting.
      */
     IntersectionResult getIntersection(const vec3& start, const vec3& stop) const;
 
     /**
      * Return signed distance from plane to point, i.e. dot(x - p, normal).
-     * 
+     *
      *      Plane
      *        |
      *        p-> normal
      * x <----|----> x (point)
-     *    -d     d   
+     *    -d     d
      * @return Negative distance if behind plane, positive otherwise.
      */
     float distance(const vec3& x) const;
@@ -90,12 +90,12 @@ public:
                 |-> normal
       (outside) |  (inside)
      \endverbatim
-     * 
+     *
      * @see Plane::distance
      * @param point to check
      * @return true if on positive side of normal or on the plane, otherwise false
      */
-    bool isInside(const vec3 &point) const;
+    bool isInside(const vec3& point) const;
 
     bool perpendicularToPlane(const vec3&) const;
 
@@ -119,6 +119,6 @@ struct IntersectionResult {
     bool intersects_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_PLANE_H
+#endif  // IVW_PLANE_H

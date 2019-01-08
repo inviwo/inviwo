@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/base/processors/ordinalpropertyanimator.h>
@@ -41,9 +41,7 @@ const ProcessorInfo OrdinalPropertyAnimator::processorInfo_{
     CodeState::Experimental,               // Code state
     Tags::CPU,                             // Tags
 };
-const ProcessorInfo OrdinalPropertyAnimator::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo OrdinalPropertyAnimator::getProcessorInfo() const { return processorInfo_; }
 
 OrdinalPropertyAnimator::OrdinalPropertyAnimator()
     : Processor()
@@ -82,7 +80,7 @@ OrdinalPropertyAnimator::OrdinalPropertyAnimator()
         }
         p->setIdentifier(id);
         p->setDisplayName(displayname);
-        
+
         p->setSerializationMode(PropertySerializationMode::All);
         props_.push_back(static_cast<BaseOrdinalAnimationProperty*>(p.get()));
         addProperty(p.release(), true);
@@ -103,7 +101,7 @@ OrdinalPropertyAnimator::OrdinalPropertyAnimator()
 
 void OrdinalPropertyAnimator::deserialize(Deserializer& d) {
     Processor::deserialize(d);
-    
+
     for (auto prop : *this) {
         if (auto p = dynamic_cast<BaseOrdinalAnimationProperty*>(prop)) {
             props_.push_back(p);
@@ -111,6 +109,4 @@ void OrdinalPropertyAnimator::deserialize(Deserializer& d) {
     }
 }
 
-} // namespace
-
-
+}  // namespace inviwo

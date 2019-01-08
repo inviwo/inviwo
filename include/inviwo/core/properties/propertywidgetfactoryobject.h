@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PROPERTYWIDGETFACTORYOBJECT_H
@@ -55,7 +55,7 @@ private:
     PropertySemantics semantics_;
 };
 
-template<typename T, typename P>
+template <typename T, typename P>
 class PropertyWidgetFactoryObjectTemplate : public PropertyWidgetFactoryObject {
 public:
     PropertyWidgetFactoryObjectTemplate(const PropertySemantics& semantics)
@@ -68,7 +68,6 @@ public:
     }
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_PROPERTYWIDGETFACTORYOBJECT_H
-
+#endif  // IVW_PROPERTYWIDGETFACTORYOBJECT_H

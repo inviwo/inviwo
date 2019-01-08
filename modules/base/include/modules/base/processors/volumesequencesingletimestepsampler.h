@@ -46,7 +46,7 @@ public:
     VolumeSequenceSingleTimestepSampler(double t, std::shared_ptr<const Volume> v0,
                                         std::shared_ptr<const Volume> v1,
                                         CoordinateSpace space = CoordinateSpace::Data)
-        : SpatialSampler(*v0,space), t_(t), v0_(v0, space), v1_(v1, space) {}
+        : SpatialSampler(*v0, space), t_(t), v0_(v0, space), v1_(v1, space) {}
 
 protected:
     virtual dvec3 sampleDataSpace(const dvec3 &pos) const override {
@@ -70,8 +70,8 @@ private:
  * ![](org.inviwo.VolumeSequenceSingleTimestepSampler.png?classIdentifier=org.inviwo.VolumeSequenceSingleTimestepSampler)
  *
  * Creates a spatial sampler for a given timestamp from a VolumeSequence. Will use linear
- * interpolation to sample between two volume in the sequence. 
- * Useful for streamline visualization of a specific timestep 
+ * interpolation to sample between two volume in the sequence.
+ * Useful for streamline visualization of a specific timestep
  *
  *
  * ### Inports

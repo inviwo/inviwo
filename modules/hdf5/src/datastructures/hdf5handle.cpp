@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/hdf5/datastructures/hdf5handle.h>
@@ -36,7 +36,6 @@
 #include <modules/base/algorithm/dataminmax.h>
 
 #include <algorithm>
-
 
 namespace inviwo {
 
@@ -84,15 +83,13 @@ Handle& Handle::operator=(const Handle& that) {
     return *this;
 }
 
-Handle::~Handle() {
-    data_.close();
-}
+Handle::~Handle() { data_.close(); }
 
 Handle* Handle::getHandleForPath(const std::string& path) const {
     return new Handle(this->filename_, path_ + path);
 }
 
-Document Handle::getInfo() const { 
+Document Handle::getInfo() const {
     Document doc;
     doc.append("p", "File: " + filename_ + path_);
     return doc;
@@ -128,7 +125,7 @@ double Handle::getMax(const DataFormatBase* type) const {
 std::shared_ptr<Volume> Handle::getVolumeAtPathAsType(const Path& path,
                                                       std::vector<Selection> selection,
                                                       const DataFormatBase* type) const {
-    
+
     auto dataset = data_.openDataSet(path);
     ::inviwo::util::OnScopeExit closedataset{[&]() { dataset.close(); }};
 
@@ -160,7 +157,7 @@ std::shared_ptr<Volume> Handle::getVolumeAtPathAsType(const Path& path,
 
     size3_t volumeDimensions(1);
     int resRank = 0;
-    std::vector<hsize_t> memoryDimensions{ 1, 1, 1 };
+    std::vector<hsize_t> memoryDimensions{1, 1, 1};
 
     for (size_t i = 0; i < rank; ++i) {
         start[i] = selection[i].start;
@@ -194,26 +191,26 @@ std::shared_ptr<Volume> Handle::getVolumeAtPathAsType(const Path& path,
     std::reverse(&volumeDimensions[0], &volumeDimensions[0] + volumeDimensions.length());
     auto volumeram = createVolumeRAM(volumeDimensions, format);
 
-    auto minmax = volumeram->dispatch<std::pair<dvec4, dvec4>, dispatching::filter::Scalars>([&](
-        auto vrprecision) {
-        using ValueType = ::inviwo::util::PrecsionValueType<decltype(vrprecision)>;
+    auto minmax = volumeram->dispatch<std::pair<dvec4, dvec4>, dispatching::filter::Scalars>(
+        [&](auto vrprecision) {
+            using ValueType = ::inviwo::util::PrecsionValueType<decltype(vrprecision)>;
 
-        ValueType* data = vrprecision->getDataTyped();
+            ValueType* data = vrprecision->getDataTyped();
 
-        try {
-            dataset.read(data, TypeMap<ValueType>::getType(), memorySpace, dataSpace);
-        } catch (H5::DataSetIException& e) {
-            throw Exception("HDF: unable to read data: " + e.getDetailMsg(), IvwContext);
-        }
+            try {
+                dataset.read(data, TypeMap<ValueType>::getType(), memorySpace, dataSpace);
+            } catch (H5::DataSetIException& e) {
+                throw Exception("HDF: unable to read data: " + e.getDetailMsg(), IvwContext);
+            }
 
-        auto res = ::inviwo::util::dataMinMax(data, selectionSize);
+            auto res = ::inviwo::util::dataMinMax(data, selectionSize);
 
-        LogInfo("Read HDF volume type: " << DataFormat<ValueType>::str()
-                                         << " data range: " << res.first << ", " << res.second
-                                         << " file: " << dataset.getFileName());
+            LogInfo("Read HDF volume type: " << DataFormat<ValueType>::str()
+                                             << " data range: " << res.first << ", " << res.second
+                                             << " file: " << dataset.getFileName());
 
-        return res;
-    });
+            return res;
+        });
 
     auto volume = std::make_shared<Volume>();
     volume->dataMap_.dataRange.x = glm::compMin(minmax.first);
@@ -223,7 +220,7 @@ std::shared_ptr<Volume> Handle::getVolumeAtPathAsType(const Path& path,
     volume->setDimensions(volumeram->getDimensions());
     volume->setDataFormat(volumeram->getDataFormat());
     volume->addRepresentation(volumeram);
-  
+
     return volume;
 }
 
@@ -235,7 +232,6 @@ const std::string Handle::dataName = "HDF";
 
 const H5::Group& Handle::getGroup() const { return data_; }
 
-}  // namespace
+}  // namespace hdf5
 
-}  // namespace
-
+}  // namespace inviwo

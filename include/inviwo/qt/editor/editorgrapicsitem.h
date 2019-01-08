@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_EDITORGRAPHICSITEM_H
@@ -39,7 +39,6 @@
 #include <QGraphicsSceneHelpEvent>
 #include <warn/pop>
 
-
 namespace inviwo {
 
 class NetworkEditor;
@@ -50,8 +49,8 @@ enum InviwoUserGraphicsItemType {
     ConnectionDragGraphicsType,
     ConnectionGraphicsType,
     LinkGraphicsType,
-    LinkConnectionDragGraphicsType, 
-    LinkConnectionGraphicsType, 
+    LinkConnectionDragGraphicsType,
+    LinkConnectionGraphicsType,
     ProcessorProgressGraphicsType,
     ProcessorStatusGraphicsType,
     ProcessorLinkGraphicsType,
@@ -77,12 +76,12 @@ public:
 
     virtual void showToolTip(QGraphicsSceneHelpEvent* event);
     void showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) const;
-    
+
 protected:
     void showToolTipHelper(QGraphicsSceneHelpEvent* event, QString string) const;
     NetworkEditor* getNetworkEditor() const;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_EDITORGRAPHICSITEM_H

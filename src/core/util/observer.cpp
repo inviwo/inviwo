@@ -97,4 +97,4 @@ util::NotificationBlocker::NotificationBlocker(ObservableInterface& observable)
 }
 util::NotificationBlocker::~NotificationBlocker() { observable_.stopBlockingNotifications(); }
 
-}  // namespace
+}  // namespace inviwo

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/opencl/settings/openclsettings.h>
@@ -35,21 +35,22 @@
 
 namespace inviwo {
 
-OpenCLSettings::OpenCLSettings(OpenCLCapabilities* openclInfo) :
-    Settings("OpenCL Settings")
-    , openCLDeviceProperty_("openCLDevice","Default device")
+OpenCLSettings::OpenCLSettings(OpenCLCapabilities* openclInfo)
+    : Settings("OpenCL Settings")
+    , openCLDeviceProperty_("openCLDevice", "Default device")
     , enableOpenGLSharing_("glsharing", "Enable OpenGL sharing", true)
     , btnOpenCLInfo_("printOpenCLInfo", "Print OpenCL Info") {
 
     std::vector<cl::Device> devices = OpenCL::getAllDevices();
-    int defaultSelected = 0; 
-    cl::Device bestDevice; cl::Platform platform;
+    int defaultSelected = 0;
+    cl::Device bestDevice;
+    cl::Platform platform;
     OpenCL::getBestGPUDeviceOnSystem(bestDevice, platform);
     for (size_t i = 0; i < devices.size(); ++i) {
         std::string name = devices[i].getInfo<CL_DEVICE_NAME>();
         if (bestDevice.getInfo<CL_DEVICE_NAME>() == name) {
             defaultSelected = static_cast<int>(i);
-        }        
+        }
         openCLDeviceProperty_.addOption(name, name, static_cast<int>(i));
     }
     openCLDeviceProperty_.setSelectedIndex(defaultSelected);
@@ -70,21 +71,23 @@ OpenCLSettings::OpenCLSettings(OpenCLCapabilities* openclInfo) :
 
 void OpenCLSettings::changeDevice() {
     // TODO: Close network before changing device. Load it again after changing
-    //InviwoApplication::getPtr()->getProcessorNetwork()->
+    // InviwoApplication::getPtr()->getProcessorNetwork()->
     KernelManager::getPtr()->clear();
     std::vector<cl::Device> devices = OpenCL::getAllDevices();
 
     // Assuming that the number of devices did not change since initialize()
     // was called
     if (openCLDeviceProperty_.get() < static_cast<int>(devices.size())) {
-        if (!devices[openCLDeviceProperty_.get()].getInfo<CL_DEVICE_EXTENSIONS>().find("cl_khr_gl_sharing")) {
+        if (!devices[openCLDeviceProperty_.get()].getInfo<CL_DEVICE_EXTENSIONS>().find(
+                "cl_khr_gl_sharing")) {
             enableOpenGLSharing_.set(false);
             enableOpenGLSharing_.setReadOnly(true);
         } else {
             enableOpenGLSharing_.setReadOnly(false);
         }
-        OpenCL::getPtr()->setDevice(devices[openCLDeviceProperty_.get()], enableOpenGLSharing_.get());
+        OpenCL::getPtr()->setDevice(devices[openCLDeviceProperty_.get()],
+                                    enableOpenGLSharing_.get());
     }
 }
 
-} // namespace
+}  // namespace inviwo

@@ -48,9 +48,7 @@ class WebBrowserApp : public CefApp, public CefBrowserProcessHandler {
 public:
     WebBrowserApp();
     // CefBrowserProcessHandler methods:
-    CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() OVERRIDE {
-        return this;
-    }
+    CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() OVERRIDE { return this; }
 
 private:
     IMPLEMENT_REFCOUNTING(WebBrowserApp)

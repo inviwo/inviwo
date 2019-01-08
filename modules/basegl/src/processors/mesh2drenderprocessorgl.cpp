@@ -49,13 +49,11 @@ namespace inviwo {
 const ProcessorInfo Mesh2DRenderProcessorGL::processorInfo_{
     "org.inviwo.Mesh2DRenderProcessorGL",  // Class identifier
     "2D Mesh Renderer",                    // Display name
-    "Mesh Rendering",                  // Category
+    "Mesh Rendering",                      // Category
     CodeState::Experimental,               // Code state
     Tags::GL,                              // Tags
 };
-const ProcessorInfo Mesh2DRenderProcessorGL::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo Mesh2DRenderProcessorGL::getProcessorInfo() const { return processorInfo_; }
 
 Mesh2DRenderProcessorGL::Mesh2DRenderProcessorGL()
     : Processor()
@@ -63,17 +61,15 @@ Mesh2DRenderProcessorGL::Mesh2DRenderProcessorGL()
     , imageInport_("imageInport")
     , outport_("outputImage")
     , shader_("mesh2drendering.vert", "mesh2drendering.frag")
-    , enableDepthTest_("enableDepthTest","Enable Depth Test" ,true)
+    , enableDepthTest_("enableDepthTest", "Enable Depth Test", true)
 
     , top_("top", "Top", 1, -1, 1)
     , bottom_("bottom", "Bottom", 0, -1, 1)
     , left_("left", "Left", 0, -1, 1)
-    , right_("right", "Right", 1, -1, 1)
-{
+    , right_("right", "Right", 1, -1, 1) {
     addPort(inport_);
     addPort(imageInport_);
     addPort(outport_);
-
 
     imageInport_.setOptional(true);
 
@@ -97,8 +93,8 @@ void Mesh2DRenderProcessorGL::process() {
     }
     shader_.activate();
 
-    mat4 proj = glm::ortho(left_.get(),right_.get(), bottom_.get(), top_.get(), -200.0f, 100.0f);
-    //mat4 proj = glm::ortho(-0.0f, 1.0f, -0.0f, 1.0f, -200.0f, 100.0f);
+    mat4 proj = glm::ortho(left_.get(), right_.get(), bottom_.get(), top_.get(), -200.0f, 100.0f);
+    // mat4 proj = glm::ortho(-0.0f, 1.0f, -0.0f, 1.0f, -200.0f, 100.0f);
     shader_.setUniform("projectionMatrix", proj);
 
     utilgl::GlBoolState depthTest(GL_DEPTH_TEST, enableDepthTest_);
@@ -143,5 +139,4 @@ void Mesh2DRenderProcessorGL::updateDrawers() {
     }
 }
 
-}  // namespace
-
+}  // namespace inviwo

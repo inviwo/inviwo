@@ -42,24 +42,24 @@ namespace util {
 /**
  * \class MemoryFileHandle
  * \brief RAII class for providing a FILE stream handle to a buffer in memory.
- *      This class will open a file handle to /dev/null and use a dedicated buffer for 
+ *      This class will open a file handle to /dev/null and use a dedicated buffer for
  *      buffering. As long as less bytes than getBufferSize() bytes are written/read, its
- *      status is well defined. However, after writing more than buffer size bytes, the 
+ *      status is well defined. However, after writing more than buffer size bytes, the
  *      buffer contents will be flushed, i.e. are no longer accessible.
  *
  *      To detect potential overflows, the entire buffer is initialized with the value 0xaf.
- *      If the number of bytes in the buffer is less than the buffer size, the next 8 bytes 
- *      are checked whether they contain 0xaf. If not, then there was a potential buffer 
+ *      If the number of bytes in the buffer is less than the buffer size, the next 8 bytes
+ *      are checked whether they contain 0xaf. If not, then there was a potential buffer
  *      overflow.
  */
-class IVW_CORE_API MemoryFileHandle { 
+class IVW_CORE_API MemoryFileHandle {
 public:
     MemoryFileHandle() = delete;
     explicit MemoryFileHandle(size_t bufferSize);
-   
+
     MemoryFileHandle(const MemoryFileHandle&) = delete;
     MemoryFileHandle& operator=(const MemoryFileHandle&) = delete;
-    
+
     MemoryFileHandle(MemoryFileHandle&& rhs);
     MemoryFileHandle& operator=(MemoryFileHandle&& rhs);
 
@@ -73,7 +73,7 @@ public:
     void resize(size_t bufferSize);
     size_t getBufferSize() const;
 
-    /** 
+    /**
      * \brief returns the number of bytes currently stored in the buffer.
      * If the number of bytes written using the file handle exceeds the buffer size,
      * the result will be the number of bytes modulo buffer size.
@@ -94,8 +94,8 @@ private:
     std::vector<unsigned char> buffer_;
 };
 
-} // namespace util
+}  // namespace util
 
-} // namespace inviwo
+}  // namespace inviwo
 
-#endif // IVW_MEMORYFILEHANDLE_H
+#endif  // IVW_MEMORYFILEHANDLE_H

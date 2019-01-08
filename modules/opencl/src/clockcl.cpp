@@ -48,4 +48,4 @@ ScopedClockCL::~ScopedClockCL() {
     delete profilingEvent_;
 }
 
-}  // namespace
+}  // namespace inviwo

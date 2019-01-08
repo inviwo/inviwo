@@ -43,9 +43,8 @@ namespace util {
 IVW_MODULE_BASE_API size_t volumeSignificantVoxels(
     const VolumeRAM* volume, IgnoreSpecialValues ignore = IgnoreSpecialValues::No);
 
-}  // namespace
+}  // namespace util
 
-}  // namespace
+}  // namespace inviwo
 
-#endif // IVW_VOLUMESIGNIFICANTVOXELS_H
-
+#endif  // IVW_VOLUMESIGNIFICANTVOXELS_H

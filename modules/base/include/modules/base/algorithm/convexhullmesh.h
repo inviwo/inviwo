@@ -39,10 +39,11 @@ class Mesh;
 
 namespace util {
 
-std::shared_ptr<Mesh> IVW_MODULE_BASE_API convertHullToMesh(const std::vector<vec2> &hull, bool useIndices=false);
+std::shared_ptr<Mesh> IVW_MODULE_BASE_API convertHullToMesh(const std::vector<vec2> &hull,
+                                                            bool useIndices = false);
 
-} // namespace util
+}  // namespace util
 
-} // namespace inviwo
+}  // namespace inviwo
 
-#endif // IVW_CONVEXHULLMESH_H
+#endif  // IVW_CONVEXHULLMESH_H

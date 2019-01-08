@@ -86,7 +86,7 @@ protected:
     std::unique_ptr<cl::Buffer> clBuffer_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 namespace cl {
 
@@ -108,7 +108,10 @@ IVW_MODULE_OPENCL_API cl_int Kernel::setArg(cl_uint index, const inviwo::BufferB
 // Calls value.getRepresentation<BufferCL>().
 // @note This function is only valid for buffers
 // that does not change the buffer data.
-#define DataFormatIdMacro(i) template <> IVW_MODULE_OPENCL_API cl_int Kernel::setArg(cl_uint index, const inviwo::Buffer<inviwo::Data##i::type>& value);
+#define DataFormatIdMacro(i)                     \
+    template <>                                  \
+    IVW_MODULE_OPENCL_API cl_int Kernel::setArg( \
+        cl_uint index, const inviwo::Buffer<inviwo::Data##i::type>& value);
 #include <inviwo/core/util/formatsdefinefunc.h>
 
 }  // namespace cl

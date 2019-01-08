@@ -29,6 +29,4 @@
 
 #include <modules/qtwidgets/ordinalbasewidget.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

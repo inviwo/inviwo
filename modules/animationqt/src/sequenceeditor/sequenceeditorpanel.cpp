@@ -60,27 +60,27 @@ SequenceEditorPanel::SequenceEditorPanel(AnimationManager& manager,
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 #endif
     setFrameShape(QFrame::NoFrame);
-    
+
     setContentsMargins(0, 0, 0, 0);
-    
+
     auto upper = new QWidget();
     sequenceEditors_ = new QVBoxLayout();
     upper->setLayout(sequenceEditors_);
     sequenceEditors_->setAlignment(Qt::AlignTop);
-    sequenceEditors_->setContentsMargins(7,7,0,7);
+    sequenceEditors_->setContentsMargins(7, 7, 0, 7);
     sequenceEditors_->setSpacing(7);
 
     auto lower = new QWidget();
     optionLayout_ = new QVBoxLayout();
     lower->setLayout(optionLayout_);
     optionLayout_->setAlignment(Qt::AlignBottom);
-    optionLayout_->setContentsMargins(7,7,0,7);
+    optionLayout_->setContentsMargins(7, 7, 0, 7);
     optionLayout_->setSpacing(7);
-    
+
     auto widget = new QWidget();
     auto baseLayout = new QVBoxLayout();
     widget->setLayout(baseLayout);
-    baseLayout->setContentsMargins(0,0,0,0);
+    baseLayout->setContentsMargins(0, 0, 0, 0);
     baseLayout->setSpacing(0);
     baseLayout->addWidget(upper);
     baseLayout->addWidget(lower);
@@ -93,9 +93,7 @@ SequenceEditorPanel::SequenceEditorPanel(AnimationManager& manager,
     ani.addObserver(this);
 }
 
-QLayout* SequenceEditorPanel::getOptionLayout() {
-    return optionLayout_;
-}
+QLayout* SequenceEditorPanel::getOptionLayout() { return optionLayout_; }
 
 void SequenceEditorPanel::onAnimationChanged(AnimationController*, Animation* oldAnim,
                                              Animation* newAnim) {

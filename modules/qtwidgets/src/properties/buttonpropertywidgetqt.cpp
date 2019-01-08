@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/qtwidgets/properties/buttonpropertywidgetqt.h>
@@ -66,9 +66,6 @@ void ButtonPropertyWidgetQt::updateFromProperty() {
     button_->setText(QString::fromStdString(property_->getDisplayName()));
 }
 
-QPushButton* ButtonPropertyWidgetQt::getButton() {
-    return button_;
-}
+QPushButton* ButtonPropertyWidgetQt::getButton() { return button_; }
 
-
-} //namespace
+}  // namespace inviwo

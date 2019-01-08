@@ -42,6 +42,6 @@ public:
     virtual ~MetaDataFactory() = default;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PROCESSORFACTORY_H

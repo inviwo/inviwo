@@ -29,7 +29,6 @@
 
 #include <modules/base/processors/volumelaplacianprocessor.h>
 
-
 namespace inviwo {
 
 const ProcessorInfo VolumeLaplacianProcessor::processorInfo_{
@@ -53,17 +52,19 @@ VolumeLaplacianProcessor::VolumeLaplacianProcessor()
             util::VolumeLaplacianPostProcessing::SignNormalized},
            {"scaled", "Scaled", util::VolumeLaplacianPostProcessing::Scaled}},
           0)
-    , scale_("scale", "Scale", 0.0, 0.0, 1000.0, 0.0001, InvalidationLevel::InvalidOutput, PropertySemantics::Text)
+    , scale_("scale", "Scale", 0.0, 0.0, 1000.0, 0.0001, InvalidationLevel::InvalidOutput,
+             PropertySemantics::Text)
     , inVolume_("inputVolume", "Input Volume")
-    , outVolume_ ("outputVolume", "Output Volume") {
+    , outVolume_("outputVolume", "Output Volume") {
 
     addPort(inport_);
     addPort(outport_);
 
     addProperty(postProcessing_);
     scale_.setVisible(false);
-    postProcessing_.onChange([&](){
-        scale_.setVisible(postProcessing_.get() == util::VolumeLaplacianPostProcessing::Scaled);});
+    postProcessing_.onChange([&]() {
+        scale_.setVisible(postProcessing_.get() == util::VolumeLaplacianPostProcessing::Scaled);
+    });
     addProperty(scale_);
     addProperty(inVolume_);
     addProperty(outVolume_);
@@ -98,5 +99,4 @@ void VolumeLaplacianProcessor::invalidate(InvalidationLevel invalidationLevel,
     Processor::invalidate(invalidationLevel, modifiedProperty);
 }
 
-} // namespace
-
+}  // namespace inviwo

@@ -118,23 +118,23 @@ void PickingController::propagateEvent(TouchEvent* e, EventPropagator* propagato
 
         TouchEvent te(points, e->getDevice());
         auto prevPos = te.centerNDC();  // Need so save here since te might be modified
-        
-        size_t currentId = 0; // TODO
-        size_t pressedId = 0; // TODO
-        size_t previousId = 0; // TODO
 
-       PickingEvent pickingEvent(
+        size_t currentId = 0;   // TODO
+        size_t pressedId = 0;   // TODO
+        size_t previousId = 0;  // TODO
+
+        PickingEvent pickingEvent(
             pickingIdToAction[pickingId], &te, ps,
             ps == PickingState::Started ? PickingPressState::Press : PickingPressState::Move,
             PickingPressItem::Primary, PickingHoverState::None, PickingPressItem::Primary,
             pickingId, currentId, pressedId, previousId, tstate_.pickingIdToPressNDC[pickingId],
             tstate_.pickingIdToPreviousNDC[pickingId]);
- 
+
         propagator->propagateEvent(&pickingEvent, nullptr);
         if (pickingEvent.hasBeenUsed() || te.hasBeenUsed()) {
             for (const auto& p : points) usedPointIds.push_back(p.id());
         }
-        
+
         tstate_.pickingIdToPreviousNDC[pickingId] = prevPos;
     }
 

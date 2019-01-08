@@ -74,6 +74,6 @@ private:
     EvaluationErrorHandler exceptionHandler_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PROCESSORNETWORKEVALUATOR_H

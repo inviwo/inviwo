@@ -41,9 +41,7 @@ const ProcessorInfo VolumeSubsample::processorInfo_{
     CodeState::Experimental,       // Code state
     Tags::CPU,                     // Tags
 };
-const ProcessorInfo VolumeSubsample::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo VolumeSubsample::getProcessorInfo() const { return processorInfo_; }
 
 VolumeSubsample::VolumeSubsample()
     : Processor()
@@ -118,5 +116,4 @@ void VolumeSubsample::invalidate(InvalidationLevel invalidationLevel, Property* 
     notifyObserversInvalidationEnd(this);
 }
 
-}  // inviwo namespace
-
+}  // namespace inviwo

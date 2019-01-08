@@ -36,8 +36,7 @@ SingleFileObserver::SingleFileObserver(std::string filename) : FileObserver(), f
     start();
 }
 
-SingleFileObserver::~SingleFileObserver() {
-}
+SingleFileObserver::~SingleFileObserver() {}
 
 void SingleFileObserver::start() { startFileObservation(filename_); }
 
@@ -57,4 +56,4 @@ void SingleFileObserver::fileChanged(const std::string& /*filename*/) {
     onChangeCallbacks_.invokeAll();
 }
 
-}  // namespace
+}  // namespace inviwo

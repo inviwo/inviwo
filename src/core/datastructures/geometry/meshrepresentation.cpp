@@ -37,4 +37,4 @@ Mesh* MeshRepresentation::getOwner() { return owner_; }
 
 const Mesh* MeshRepresentation::getOwner() const { return owner_; }
 
-}  // namespace
+}  // namespace inviwo

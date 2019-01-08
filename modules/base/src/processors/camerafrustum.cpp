@@ -54,8 +54,6 @@ CameraFrustum::CameraFrustum()
     addProperty(camera_);
 }
 
-void CameraFrustum::process() { 
-    mesh_.setData(meshutil::cameraFrustum(camera_, color_)); 
-}
+void CameraFrustum::process() { mesh_.setData(meshutil::cameraFrustum(camera_, color_)); }
 
 }  // namespace inviwo

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_SPOT_LIGHT_SOURCE_PROCESSOR_H
@@ -49,11 +49,12 @@ class SpotLight;
  *
  * Produces a spot light source, spreading light in the shape of a cone.
  * The direction of the cone will be computed as glm::normalize(vec3(0) - lightPos)
- * when specified in world space and normalize(camera_.getLookTo() - lightPos) when specified in view space.
+ * when specified in world space and normalize(camera_.getLookTo() - lightPos) when specified in
+ * view space.
  *
- * 
- * 
- * 
+ *
+ *
+ *
  * ### Properties
  *   * __Light Source Position__ Start point of the cone.
  *   * __Light power (%)__ Increases/decreases light strength.
@@ -85,7 +86,7 @@ protected:
 private:
     DataOutport<LightSource> outport_;
 
-    CameraProperty camera_; //< Link camera in order to specify position in view space.
+    CameraProperty camera_;  //< Link camera in order to specify position in view space.
     PositionProperty lightPosition_;
     CompositeProperty lighting_;
     FloatProperty lightPowerProp_;
@@ -97,6 +98,6 @@ private:
     std::shared_ptr<SpotLight> lightSource_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_SPOT_LIGHT_SOURCE_PROCESSOR_H
+#endif  // IVW_SPOT_LIGHT_SOURCE_PROCESSOR_H

@@ -36,7 +36,7 @@
 #include <vector>
 
 namespace ticpp {
-    class Element;
+class Element;
 }
 
 typedef ticpp::Element TxElement;
@@ -63,7 +63,6 @@ struct IVW_CORE_API NodeDebugger {
     std::vector<Node> nodes_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_NODEDEBUGGER_H
-
+#endif  // IVW_NODEDEBUGGER_H

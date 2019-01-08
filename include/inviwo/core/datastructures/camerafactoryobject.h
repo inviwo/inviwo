@@ -54,11 +54,9 @@ public:
     CameraFactoryObjectTemplate(const std::string& classIdentifier)
         : CameraFactoryObject(classIdentifier) {}
 
-    virtual std::unique_ptr<Camera> create() override {
-        return util::make_unique<T>();
-    }
+    virtual std::unique_ptr<Camera> create() override { return util::make_unique<T>(); }
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_CAMERAFACTORYOBJECT_H

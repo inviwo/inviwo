@@ -53,9 +53,7 @@ public:
 
     void update();
     void clear();
-    const std::unordered_set<size_t> &getIndices() const {
-        return indices_;
-    }
+    const std::unordered_set<size_t> &getIndices() const { return indices_; }
 
 private:
     std::unordered_map<const BrushingAndLinkingInport *, std::unordered_set<size_t>>
@@ -64,6 +62,6 @@ private:
     Dispatcher<void()> onUpdate_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_BRUSHINGLIST_H

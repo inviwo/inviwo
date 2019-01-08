@@ -38,13 +38,12 @@ namespace inviwo {
 
 class InviwoMainWindow;
 
-class IVW_QTEDITOR_API InviwoAboutWindow : public InviwoDockWidget { 
+class IVW_QTEDITOR_API InviwoAboutWindow : public InviwoDockWidget {
 public:
     InviwoAboutWindow(InviwoMainWindow* parent);
     virtual ~InviwoAboutWindow() = default;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_INVIWOABOUTWINDOW_H
-
+#endif  // IVW_INVIWOABOUTWINDOW_H

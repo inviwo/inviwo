@@ -24,23 +24,17 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/metadata/metadata.h>
 
 namespace inviwo {
 
-std::string MetaData::getClassIdentifier() const {
-    return "MetaData";
-}
+std::string MetaData::getClassIdentifier() const { return "MetaData"; }
 
-bool operator==(const MetaData& lhs, const MetaData& rhs) {
-    return lhs.equal(rhs);
-}
+bool operator==(const MetaData& lhs, const MetaData& rhs) { return lhs.equal(rhs); }
 
-bool operator!=(const MetaData& lhs, const MetaData& rhs) {
-    return !operator==(lhs, rhs);
-}
+bool operator!=(const MetaData& lhs, const MetaData& rhs) { return !operator==(lhs, rhs); }
 
-} // namespace
+}  // namespace inviwo

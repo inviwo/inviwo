@@ -56,10 +56,10 @@ namespace inviwo {
  * ### Inports
  *   * __geometry__ Input meshes
  *       The input mesh uses the following buffers:
-         * PositionAttrib vec3 
-         * ColorAttrib    vec4   (optional will fall-back to use __Custom Color__)
-         * RadiiAttrib    float  (optional will fall-back to use __Custom Radius__)
-         * PickingAttrib  uint32 (optional will fall-back to not draw any picking)
+ * PositionAttrib vec3
+ * ColorAttrib    vec4   (optional will fall-back to use __Custom Color__)
+ * RadiiAttrib    float  (optional will fall-back to use __Custom Radius__)
+ * PickingAttrib  uint32 (optional will fall-back to not draw any picking)
  *   * __imageInport__ Optional background image
  *
  * ### Outports

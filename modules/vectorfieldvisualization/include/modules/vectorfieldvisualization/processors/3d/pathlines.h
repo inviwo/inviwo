@@ -49,7 +49,6 @@
 
 namespace inviwo {
 
-
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API PathLinesDeprecated : public Processor {
 public:
     enum class ColoringMethod { Velocity, Timestamp, ColorPort };
