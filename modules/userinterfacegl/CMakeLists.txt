@@ -28,6 +28,7 @@ set(HEADER_FILES
     include/modules/userinterfacegl/glui/widgetsupplier.h
     include/modules/userinterfacegl/processors/camerawidget.h
     include/modules/userinterfacegl/processors/cropwidget.h
+    include/modules/userinterfacegl/processors/gluiprocessor.h
     include/modules/userinterfacegl/processors/gluitestprocessor.h
     include/modules/userinterfacegl/processors/presentationprocessor.h
     include/modules/userinterfacegl/userinterfaceglmodule.h
@@ -61,6 +62,7 @@ set(SOURCE_FILES
     src/glui/widgetsupplier.cpp
     src/processors/camerawidget.cpp
     src/processors/cropwidget.cpp
+    src/processors/gluiprocessor.cpp
     src/processors/gluitestprocessor.cpp
     src/processors/presentationprocessor.cpp
     src/userinterfaceglmodule.cpp
