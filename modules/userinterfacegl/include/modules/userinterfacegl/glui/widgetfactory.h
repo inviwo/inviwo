@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,34 +26,40 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_USERINTERFACEGLMODULE_H
-#define IVW_USERINTERFACEGLMODULE_H
+#pragma once
 
 #include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/common/inviwo.h>
 
-#include <modules/userinterfacegl/glui/widgetsupplier.h>
-#include <modules/userinterfacegl/glui/widgetfactory.h>
-#include <modules/userinterfacegl/glui/widgetfactoryobject.h>
+#include <inviwo/core/util/factory.h>
 #include <modules/userinterfacegl/glui/element.h>
+#include <modules/userinterfacegl/glui/widgetfactoryobject.h>
 
 namespace inviwo {
 
-class IVW_MODULE_USERINTERFACEGL_API UserInterfaceGLModule : public InviwoModule, public glui::WidgetSupplier {
+class Processor;
+
+namespace glui {
+
+class Renderer;
+
+class IVW_MODULE_USERINTERFACEGL_API WidgetFactory
+    : public StandardFactory<Element, WidgetFactoryObject, const std::string & /*key*/,
+                             Property & /*prop*/, Processor & /*proc*/, Renderer & /*renderer*/>,
+      public Factory<Element, const std::string & /*key*/> {
 public:
-    UserInterfaceGLModule(InviwoApplication* app);
-    virtual ~UserInterfaceGLModule();
-    
-    glui::WidgetFactory& getGLUIWidgetFactory();
-    const glui::WidgetFactory& getGLUIWidgetFactory() const;
+    using Parent = StandardFactory<Element, WidgetFactoryObject, const std::string &, Property &,
+                                   Processor &, Renderer &>;
 
-private:
-    glui::WidgetFactory widgetFactory_;
+    WidgetFactory() = default;
+    virtual ~WidgetFactory() = default;
 
-    std::vector<glui::Element> widgets_;
+    using Parent::create;
+
+    virtual std::unique_ptr<Element> create(const std::string &className) const override;
+    virtual bool hasKey(const std::string &key) const override;
 };
 
-}  // namespace inviwo
+}  // namespace glui
 
-#endif  // IVW_USERINTERFACEGLMODULE_H
+}  // namespace inviwo

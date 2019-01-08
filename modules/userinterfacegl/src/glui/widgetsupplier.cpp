@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,33 +27,39 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_USERINTERFACEGLMODULE_H
-#define IVW_USERINTERFACEGLMODULE_H
-
-#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
-
 #include <modules/userinterfacegl/glui/widgetsupplier.h>
-#include <modules/userinterfacegl/glui/widgetfactory.h>
-#include <modules/userinterfacegl/glui/widgetfactoryobject.h>
-#include <modules/userinterfacegl/glui/element.h>
+
+#include <inviwo/core/common/inviwoapplication.h>
+#include <modules/userinterfacegl/userinterfaceglmodule.h>
 
 namespace inviwo {
 
-class IVW_MODULE_USERINTERFACEGL_API UserInterfaceGLModule : public InviwoModule, public glui::WidgetSupplier {
-public:
-    UserInterfaceGLModule(InviwoApplication* app);
-    virtual ~UserInterfaceGLModule();
-    
-    glui::WidgetFactory& getGLUIWidgetFactory();
-    const glui::WidgetFactory& getGLUIWidgetFactory() const;
+namespace glui {
 
-private:
-    glui::WidgetFactory widgetFactory_;
+WidgetSupplier::WidgetSupplier(UserInterfaceGLModule& uiGLModule) : uiGLModule_(uiGLModule) {}
 
-    std::vector<glui::Element> widgets_;
-};
+WidgetSupplier::WidgetSupplier(InviwoApplication* app)
+    : uiGLModule_{[app]() -> UserInterfaceGLModule& {
+        if (app) {
+            if (auto uiGLModule = app->getModuleByType<UserInterfaceGLModule>()) {
+                return *uiGLModule;
+            }
+        }
+        throw Exception("Was not able to find the User Interface GL module",
+                        IvwContextCustom("UserInterfaceGLModule"));
+    }()} {}
+
+WidgetSupplier::~WidgetSupplier() = default;
+
+WidgetFactory& WidgetSupplier::getGLUIWidgetFactory() { return uiGLModule_.getGLUIWidgetFactory(); }
+
+void WidgetSupplier::unregisterAll() {
+    for (auto& elem : widgets_) {
+        uiGLModule_.getGLUIWidgetFactory().unRegisterObject(elem.get());
+    }
+    widgets_.clear();
+}
+
+}  // namespace glui
 
 }  // namespace inviwo
-
-#endif  // IVW_USERINTERFACEGLMODULE_H

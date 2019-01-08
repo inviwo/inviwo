@@ -31,15 +31,28 @@
 
 #include <modules/userinterfacegl/processors/camerawidget.h>
 #include <modules/userinterfacegl/processors/cropwidget.h>
+#include <modules/userinterfacegl/processors/gluiprocessor.h>
 #include <modules/userinterfacegl/processors/gluitestprocessor.h>
 #include <modules/userinterfacegl/processors/presentationprocessor.h>
 
 #include <modules/opengl/shader/shadermanager.h>
 
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+
+#include <modules/userinterfacegl/glui/widgets/boolpropertywidget.h>
+#include <modules/userinterfacegl/glui/widgets/buttonpropertywidget.h>
+#include <modules/userinterfacegl/glui/widgets/floatminmaxpropertywidget.h>
+#include <modules/userinterfacegl/glui/widgets/floatpropertywidget.h>
+#include <modules/userinterfacegl/glui/widgets/intminmaxpropertywidget.h>
+#include <modules/userinterfacegl/glui/widgets/intpropertywidget.h>
+
 namespace inviwo {
 
 UserInterfaceGLModule::UserInterfaceGLModule(InviwoApplication* app)
-    : InviwoModule(app, "UserInterfaceGL") {
+    : InviwoModule(app, "UserInterfaceGL"), WidgetSupplier(*this) {
     // Add a directory to the search path of the Shadermanager
     ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
 
@@ -48,6 +61,7 @@ UserInterfaceGLModule::UserInterfaceGLModule(InviwoApplication* app)
     // Processors
     registerProcessor<CameraWidget>();
     registerProcessor<CropWidget>();
+    registerProcessor<glui::GLUIProcessor>();
     registerProcessor<PresentationProcessor>();
 
     registerProcessor<GLUITestProcessor>();
@@ -56,7 +70,22 @@ UserInterfaceGLModule::UserInterfaceGLModule(InviwoApplication* app)
     // registerProperty<UserInterfaceGLProperty>();
 
     // PropertyWidgets
-    // registerPropertyWidget<UserInterfaceGLPropertyWidget, UserInterfaceGLProperty>("Default");
+
+    // GLUI Widgets
+    registerGLUIWidget<glui::BoolPropertyWidget, BoolProperty>();
+    registerGLUIWidget<glui::ButtonPropertyWidget, ButtonProperty>();
+    registerGLUIWidget<glui::FloatPropertyWidget, FloatProperty>();
+    registerGLUIWidget<glui::FloatMinMaxPropertyWidget, FloatMinMaxProperty>();
+    registerGLUIWidget<glui::IntPropertyWidget, IntProperty>();
+    registerGLUIWidget<glui::IntMinMaxPropertyWidget, IntMinMaxProperty>();
+}
+
+UserInterfaceGLModule::~UserInterfaceGLModule() { unregisterAll(); }
+
+glui::WidgetFactory& UserInterfaceGLModule::getGLUIWidgetFactory() { return widgetFactory_; }
+
+const glui::WidgetFactory& UserInterfaceGLModule::getGLUIWidgetFactory() const {
+    return widgetFactory_;
 }
 
 }  // namespace inviwo

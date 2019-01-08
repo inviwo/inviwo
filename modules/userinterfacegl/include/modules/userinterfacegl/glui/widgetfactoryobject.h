@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,34 +26,45 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_USERINTERFACEGLMODULE_H
-#define IVW_USERINTERFACEGLMODULE_H
+#pragma once
 
 #include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/common/inviwo.h>
 
-#include <modules/userinterfacegl/glui/widgetsupplier.h>
-#include <modules/userinterfacegl/glui/widgetfactory.h>
-#include <modules/userinterfacegl/glui/widgetfactoryobject.h>
+#include <inviwo/core/properties/property.h>
 #include <modules/userinterfacegl/glui/element.h>
 
 namespace inviwo {
 
-class IVW_MODULE_USERINTERFACEGL_API UserInterfaceGLModule : public InviwoModule, public glui::WidgetSupplier {
+namespace glui {
+
+class IVW_MODULE_USERINTERFACEGL_API WidgetFactoryObject {
 public:
-    UserInterfaceGLModule(InviwoApplication* app);
-    virtual ~UserInterfaceGLModule();
-    
-    glui::WidgetFactory& getGLUIWidgetFactory();
-    const glui::WidgetFactory& getGLUIWidgetFactory() const;
+    WidgetFactoryObject(const std::string &className);
+    virtual ~WidgetFactoryObject();
+
+    virtual std::unique_ptr<Element> create(Property &, Processor &, Renderer &) = 0;
+
+    std::string getClassIdentifier() const;
 
 private:
-    glui::WidgetFactory widgetFactory_;
-
-    std::vector<glui::Element> widgets_;
+    std::string className_;
 };
 
-}  // namespace inviwo
+template <typename T, typename P>
+class WidgetFactoryObjectTemplate : public WidgetFactoryObject {
+public:
+    WidgetFactoryObjectTemplate() : WidgetFactoryObject(PropertyTraits<P>::classIdentifier()) {}
+    WidgetFactoryObjectTemplate(const std::string &classIdentifier)
+        : WidgetFactoryObject(classIdentifier){};
+    virtual ~WidgetFactoryObjectTemplate() = default;
 
-#endif  // IVW_USERINTERFACEGLMODULE_H
+    virtual std::unique_ptr<Element> create(Property &prop, Processor &proc,
+                                            Renderer &renderer) override {
+        return std::make_unique<T>(static_cast<P &>(prop), proc, renderer);
+    }
+};
+
+}  // namespace glui
+
+}  // namespace inviwo

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,34 +26,48 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_USERINTERFACEGLMODULE_H
-#define IVW_USERINTERFACEGLMODULE_H
+#pragma once
 
 #include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/common/inviwo.h>
 
-#include <modules/userinterfacegl/glui/widgetsupplier.h>
 #include <modules/userinterfacegl/glui/widgetfactory.h>
 #include <modules/userinterfacegl/glui/widgetfactoryobject.h>
-#include <modules/userinterfacegl/glui/element.h>
 
 namespace inviwo {
 
-class IVW_MODULE_USERINTERFACEGL_API UserInterfaceGLModule : public InviwoModule, public glui::WidgetSupplier {
+class InviwoApplication;
+class UserInterfaceGLModule;
+
+namespace glui {
+
+class IVW_MODULE_USERINTERFACEGL_API WidgetSupplier {
 public:
-    UserInterfaceGLModule(InviwoApplication* app);
-    virtual ~UserInterfaceGLModule();
-    
-    glui::WidgetFactory& getGLUIWidgetFactory();
-    const glui::WidgetFactory& getGLUIWidgetFactory() const;
+    WidgetSupplier(UserInterfaceGLModule& uiGLModule);
+    WidgetSupplier(InviwoApplication* app);
+    WidgetSupplier(const WidgetSupplier&) = delete;
+    WidgetSupplier& operator=(const WidgetSupplier&) = delete;
+    virtual ~WidgetSupplier();
+
+    template <typename T, typename P>
+    void registerGLUIWidget();
+
+    void unregisterAll();
 
 private:
-    glui::WidgetFactory widgetFactory_;
-
-    std::vector<glui::Element> widgets_;
+    WidgetFactory& getGLUIWidgetFactory();
+    UserInterfaceGLModule& uiGLModule_;
+    std::vector<std::unique_ptr<WidgetFactoryObject>> widgets_;
 };
 
-}  // namespace inviwo
+template <typename T, typename P>
+void WidgetSupplier::registerGLUIWidget() {
+    auto widget = std::make_unique<WidgetFactoryObjectTemplate<T, P>>();
+    if (getGLUIWidgetFactory().registerObject(widget.get())) {
+        widgets_.push_back(std::move(widget));
+    }
+}
 
-#endif  // IVW_USERINTERFACEGLMODULE_H
+}  // namespace glui
+
+}  // namespace inviwo
