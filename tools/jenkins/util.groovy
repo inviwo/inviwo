@@ -206,7 +206,7 @@ def build(opts, externalModules, onModules, offModules = []) {
                 export CPATH=`pwd`
                 export CCACHE_BASEDIR=`readlink -f \${CPATH}/..`
                         
-                ${cmake(opts, externalModules, onModules, offModules, indent)}
+                ${cmake(opts, externalModules, onModules, offModules)}
 
                 ninja
 
@@ -223,7 +223,7 @@ def buildStandard(params, externalModules, extraOpts, onModules, offModules = []
         extraOpts.each {item ->
             opts[item.key] = item.value
         }
-        build(opts, onModules, offModules, indent)
+        build(opts, onModules, offModules)
     }
 }
 
