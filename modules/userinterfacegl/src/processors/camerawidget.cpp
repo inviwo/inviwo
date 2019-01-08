@@ -268,7 +268,7 @@ void CameraWidget::initializeResources() {
 void CameraWidget::updateWidgetTexture(const ivec2 &widgetSize) {
 
     if (!widgetImage_.get() || (ivec2(widgetImage_->getDimensions()) != widgetSize)) {
-        widgetImage_ = std::make_shared<Image>(widgetSize, outport_.getDataFormat());
+        widgetImage_ = std::make_unique<Image>(widgetSize, outport_.getDataFormat());
         widgetImageGL_ = widgetImage_->getEditableRepresentation<ImageGL>();
     }
     // enable fbo for rendering only the widget
@@ -477,28 +477,35 @@ void CameraWidget::loadMesh() {
 
     std::string basePath(module->getPath(ModulePath::Data));
     basePath += "/meshes/";
-    std::string meshFilename = basePath + "camera-widget.fbx";
 
-    AssimpReader meshReader;
-    meshReader.setLogLevel(AssimpLogLevel::Error);
-    meshReader.setFixInvalidDataFlag(false);
+    static std::array<std::shared_ptr<const Mesh>, 4> meshes = [basePath]() {
+        std::array<std::shared_ptr<const Mesh>, 4> res;
 
-    // camera interaction widgets
-    meshes_[0] = meshReader.readData(basePath + "camera-widget.fbx");
-    // widget including "camera roll" arrow
-    meshes_[1] = meshReader.readData(basePath + "camera-widget-roll.fbx");
-    // camera zoom buttons
-    meshes_[2] = meshReader.readData(basePath + "camera-zoom.fbx");
+        AssimpReader meshReader;
+        meshReader.setLogLevel(AssimpLogLevel::Error);
+        meshReader.setFixInvalidDataFlag(false);
 
-    // cube mesh for orientation
-    const vec3 cubeScale(8.0f);
-    mat4 transform(glm::scale(vec3(cubeScale)));
-    transform[3] = vec4(-0.5f * cubeScale, 1.0f);
-    meshes_[3] = meshutil::cube(transform, vec4(0.6f, 0.42f, 0.42f, 1.0f));
+        // camera interaction widgets
+        res[0] = meshReader.readData(basePath + "camera-widget.fbx");
+        // widget including "camera roll" arrow
+        res[1] = meshReader.readData(basePath + "camera-widget-roll.fbx");
+        // camera zoom buttons
+        res[2] = meshReader.readData(basePath + "camera-zoom.fbx");
+
+        // cube mesh for orientation
+        const vec3 cubeScale(8.0f);
+        mat4 transform(glm::scale(vec3(cubeScale)));
+        transform[3] = vec4(-0.5f * cubeScale, 1.0f);
+        res[3] = meshutil::cube(transform, vec4(0.6f, 0.42f, 0.42f, 1.0f));
+
+        return res;
+    }();
+
+    meshes_ = meshes;
 
     for (std::size_t i = 0; i < meshes_.size(); ++i) {
         if (auto mesh = meshes_[i].get()) {
-            meshDrawers_[i] = std::make_shared<MeshDrawerGL>(mesh);
+            meshDrawers_[i] = std::make_unique<MeshDrawerGL>(mesh);
         }
     }
 }

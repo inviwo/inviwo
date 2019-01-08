@@ -82,7 +82,10 @@ void exposeBuffer(pybind11::module &m) {
         .value("TexcoordAttrib", BufferType::TexcoordAttrib)
         .value("CurvatureAttrib", BufferType::CurvatureAttrib)
         .value("IndexAttrib", BufferType::IndexAttrib)
-        .value("Unspecified", BufferType::NumberOfBufferTypes);
+        .value("RadiiAttrib", BufferType::RadiiAttrib)
+        .value("PickingAttrib", BufferType::PickingAttrib)
+        .value("ScalarMetaAttrib", BufferType::ScalarMetaAttrib)
+        .value("NumberOfBufferTypes", BufferType::NumberOfBufferTypes);
 
     py::enum_<BufferUsage>(m, "BufferUsage")
         .value("Static", BufferUsage::Static)
@@ -110,27 +113,27 @@ void exposeBuffer(pybind11::module &m) {
         .def(py::init([](py::array data) { return pyutil::createBuffer(data).release(); }))
         .def("clone", [](BufferBase &self) { return self.clone(); })
         .def_property("size", &BufferBase::getSize, &BufferBase::setSize)
-        .def_property(
-            "data",
-            [&](BufferBase *buffer) -> py::array {
-                auto df = buffer->getDataFormat();
-                std::vector<size_t> shape = {buffer->getSize()};
-                std::vector<size_t> strides = {df->getSize()};
+        .def_property("data",
+                      [&](BufferBase *buffer) -> py::array {
+                          auto df = buffer->getDataFormat();
+                          std::vector<size_t> shape = {buffer->getSize()};
+                          std::vector<size_t> strides = {df->getSize()};
 
-                if (df->getComponents() > 1) {
-                    shape.push_back(df->getComponents());
-                    strides.push_back(df->getSize() / df->getComponents());
-                }
+                          if (df->getComponents() > 1) {
+                              shape.push_back(df->getComponents());
+                              strides.push_back(df->getSize() / df->getComponents());
+                          }
 
-                auto data = buffer->getEditableRepresentation<BufferRAM>()->getData();
-                return py::array(pyutil::toNumPyFormat(df), shape, strides, data, py::cast<>(1));
-            },
-            [](BufferBase *buffer, py::array data) {
-                auto rep = buffer->getEditableRepresentation<BufferRAM>();
-                pyutil::checkDataFormat<1>(rep->getDataFormat(), rep->getSize(), data);
+                          auto data = buffer->getEditableRepresentation<BufferRAM>()->getData();
+                          return py::array(pyutil::toNumPyFormat(df), shape, strides, data,
+                                           py::cast<>(1));
+                      },
+                      [](BufferBase *buffer, py::array data) {
+                          auto rep = buffer->getEditableRepresentation<BufferRAM>();
+                          pyutil::checkDataFormat<1>(rep->getDataFormat(), rep->getSize(), data);
 
-                memcpy(rep->getData(), data.data(0), data.nbytes());
-            });
+                          memcpy(rep->getData(), data.data(0), data.nbytes());
+                      });
 
     util::for_each_type<DefaultDataFormats>{}(BufferRAMHelper{}, m);
 

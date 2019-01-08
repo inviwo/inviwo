@@ -29,7 +29,7 @@
 
 #include "utils/structs.glsl"
 
-layout(location=6) in vec3 in_PickCoords_;
+layout(location=9) in vec3 in_PickCoords_;
 
 uniform GeometryParameters geometry;
 uniform CameraParameters camera;

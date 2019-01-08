@@ -27,7 +27,7 @@
  * 
  *********************************************************************************/
 
-layout(location = 4) in uint in_PickId;
+layout(location = 7) in uint in_PickId;
 
 #include "utils/structs.glsl"
 #include "utils/pickingutils.glsl"
