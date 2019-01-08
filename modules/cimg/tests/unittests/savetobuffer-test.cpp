@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <warn/push>
@@ -55,13 +55,12 @@ namespace inviwo {
 TEST(CImgUtils, cimgToBuffer) {
     // load source image
 
-    const auto filename = filesystem::getPath(PathType::Tests, "/images/swirl.png");
+    std::string testExtension = "bmp";
+    const auto filename = filesystem::getPath(PathType::Tests, "/images/swirl." + testExtension);
     CImgLayerReader reader;
     auto layer = reader.readData(filename);
 
-    const std::string testExtension = "png";
-
-    // write layer to a temporary png file
+    // write layer to a temporary file
     util::TempFileHandle tmpFile("cimg", std::string(".") + testExtension);
 
     cimgutil::saveLayer(tmpFile.getFileName(), layer.get());
@@ -90,4 +89,4 @@ TEST(CImgUtils, cimgToBuffer) {
     EXPECT_EQ(*imgBuffer.get(), fileContents) << "buffer and file contents do not match";
 }
 
-}
+}  // namespace inviwo

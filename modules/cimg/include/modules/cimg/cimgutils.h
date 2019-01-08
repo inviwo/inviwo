@@ -97,7 +97,6 @@ IVW_MODULE_CIMG_API void* rescaleLayerRAM(const LayerRAM* layerRam, uvec2 dst_di
 
 IVW_MODULE_CIMG_API bool rescaleLayerRamToLayerRam(const LayerRAM* source, LayerRAM* target);
 
-IVW_MODULE_CIMG_API std::string getLibPNGVesrion();
 IVW_MODULE_CIMG_API std::string getLibJPGVesrion();
 IVW_MODULE_CIMG_API std::string getOpenEXRVesrion();
 

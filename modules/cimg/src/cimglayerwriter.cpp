@@ -34,9 +34,6 @@
 namespace inviwo {
 
 CImgLayerWriter::CImgLayerWriter() : DataWriterType<Layer>() {
-#ifdef cimg_use_png
-    addExtension(FileExtension("png", "Portable Network Graphics"));
-#endif
 #ifdef cimg_use_jpeg
     addExtension(FileExtension("jpg", "Joint Photographic Experts Group"));
     addExtension(FileExtension("jpeg", "Joint Photographic Experts Group"));
