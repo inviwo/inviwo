@@ -34,6 +34,7 @@
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
+#include <modules/opengl/texture/textureutils.h>
 
 #include <modules/userinterfacegl/userinterfaceglmodule.h>
 #include <modules/userinterfacegl/glui/widgetfactory.h>
@@ -66,6 +67,10 @@ GLUIProcessor::GLUIProcessor()
     // settings properties for GLUI
     , uiSettings_("uiSettings", "UI Settings")
     , uiVisible_("uiVisibility", "UI Visible", true)
+    , positioning_("positioning", "Positioning")
+    , position_("position", "Position", vec2(0.0f), vec2(0.0f), vec2(1.0f), vec2(0.01f))
+    , anchorPos_("anchor", "Anchor", vec2(-1.0f), vec2(-1.0f), vec2(1.0f), vec2(0.01f))
+    , offset_("offset", "Offset (Pixel)", ivec2(0), ivec2(-100), ivec2(100))
     , uiScaling_("uiScaling", "UI Scaling", 1.0f, 0.0f, 4.0f)
     , uiColor_("uiColor", "UI Color", vec4(0.51f, 0.64f, 0.91f, 1.0f), vec4(0.0f), vec4(1.0f))
     , uiSecondaryColor_("uiSecondaryColor", "UI Secondary Color", vec4(0.4f, 0.4f, 0.45f, 1.0f),
@@ -114,8 +119,14 @@ GLUIProcessor::GLUIProcessor()
     uiTextColor_.setSemantics(PropertySemantics::Color);
     hoverColor_.setSemantics(PropertySemantics::Color);
 
+    positioning_.setCollapsed(true);
+    positioning_.addProperty(position_);
+    positioning_.addProperty(anchorPos_);
+    positioning_.addProperty(offset_);
+
     uiSettings_.setCollapsed(true);
     uiSettings_.addProperty(uiVisible_);
+    uiSettings_.addProperty(positioning_);
     uiSettings_.addProperty(uiScaling_);
     uiSettings_.addProperty(uiColor_);
     uiSettings_.addProperty(uiSecondaryColor_);
@@ -185,11 +196,15 @@ void GLUIProcessor::process() {
     if (uiVisible_.get()) {
         // coordinate system defined in screen coords with origin in the top-left corner
 
-        // TODO: make position/alignment accessible via properties
         {
             // put UI elements in lower left corner of the canvas
             const ivec2 extent(layout_.getExtent());
-            ivec2 origin(0, extent.y);
+
+            // use integer position for best results
+            vec2 shift = 0.5f * vec2(extent) * (anchorPos_.get() + vec2(1.0f));
+
+            ivec2 origin(position_.get() * vec2(outport_.getDimensions()));
+            origin += offset_.get() - ivec2(shift) + ivec2(0, extent.y);
 
             layout_.render(origin, outport_.getDimensions());
         }
