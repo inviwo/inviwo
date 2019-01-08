@@ -80,7 +80,12 @@ UserInterfaceGLModule::UserInterfaceGLModule(InviwoApplication* app)
     registerGLUIWidget<glui::IntMinMaxPropertyWidget, IntMinMaxProperty>();
 }
 
-UserInterfaceGLModule::~UserInterfaceGLModule() { unregisterAll(); }
+UserInterfaceGLModule::~UserInterfaceGLModule() {
+    // Unregister everything from the factory. This is neccessary even though the base class
+    // destructor, i.e. of the supplier, takes care of this. Otherwise the supplier will unregister
+    // the items after the factory is destroyed.
+    unregisterAll();
+}
 
 glui::WidgetFactory& UserInterfaceGLModule::getGLUIWidgetFactory() { return widgetFactory_; }
 

@@ -49,7 +49,7 @@ WidgetSupplier::WidgetSupplier(InviwoApplication* app)
                         IvwContextCustom("UserInterfaceGLModule"));
     }()} {}
 
-WidgetSupplier::~WidgetSupplier() = default;
+WidgetSupplier::~WidgetSupplier() { unregisterAll(); }
 
 WidgetFactory& WidgetSupplier::getGLUIWidgetFactory() { return uiGLModule_.getGLUIWidgetFactory(); }
 
