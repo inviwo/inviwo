@@ -50,8 +50,6 @@ public:
 
 private:
     glui::WidgetFactory widgetFactory_;
-
-    std::vector<glui::Element> widgets_;
 };
 
 }  // namespace inviwo

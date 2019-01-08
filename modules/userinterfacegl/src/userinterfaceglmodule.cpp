@@ -81,9 +81,12 @@ UserInterfaceGLModule::UserInterfaceGLModule(InviwoApplication* app)
 }
 
 UserInterfaceGLModule::~UserInterfaceGLModule() {
-    // Unregister everything from the factory. This is neccessary even though the base class
-    // destructor, i.e. of the supplier, takes care of this. Otherwise the supplier will unregister
-    // the items after the factory is destroyed.
+    // Unregister everything from the factory since this module _owns_ the factory. This is
+    // neccessary even though the base class destructor, i.e. glui::WidgetSupplier, takes
+    // care of this. Otherwise the supplier will unregister the items _after_ the factory is
+    // destroyed.
+    //
+    // Other modules do not have to do this!
     unregisterAll();
 }
 

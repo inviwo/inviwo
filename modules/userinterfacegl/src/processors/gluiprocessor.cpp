@@ -34,6 +34,7 @@
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/propertyfactory.h>
 #include <modules/opengl/texture/textureutils.h>
 
 #include <modules/userinterfacegl/userinterfaceglmodule.h>
@@ -92,14 +93,17 @@ GLUIProcessor::GLUIProcessor()
           "dynamicProperties", "Properties",
           []() {
               std::vector<std::unique_ptr<Property>> v;
-              v.emplace_back(std::make_unique<BoolProperty>("boolProperty", "Boolean"));
-              v.emplace_back(std::make_unique<ButtonProperty>("buttonProperty", "Button"));
-              v.emplace_back(std::make_unique<FloatProperty>("floatProperty", "Float Value"));
-              v.emplace_back(
-                  std::make_unique<FloatMinMaxProperty>("floatMinMaxProperty", "Float MinMax"));
-              v.emplace_back(std::make_unique<IntProperty>("intProperty", "Int Value"));
-              v.emplace_back(
-                  std::make_unique<IntMinMaxProperty>("intMinMaxProperty", "Int MinMax"));
+              auto& factory = InviwoApplication::getPtr()
+                                  ->getModuleByType<UserInterfaceGLModule>()
+                                  ->getGLUIWidgetFactory();
+              auto propertyFactory = InviwoApplication::getPtr()->getPropertyFactory();
+
+              for (auto key : factory.getKeys()) {
+                  auto displayName = splitString(key, '.').back();
+                  auto identifier = displayName;
+                  identifier[0] = static_cast<char>(std::tolower(identifier[0]));
+                  v.emplace_back(propertyFactory->create(key, identifier, displayName));
+              }
               return v;
           }())
     , layout_(glui::BoxLayout::LayoutDirection::Vertical) {
@@ -149,65 +153,53 @@ GLUIProcessor::GLUIProcessor()
     uiRenderer_.setHoverColor(hoverColor_.get());
 }
 
+namespace {
+
+template <typename P, typename func>
+void sync(P& property, glui::Renderer& renderer, func set) {
+    if (property.isModified()) {
+        (renderer.*set)(property.get());
+    }
+}
+
+template <typename P, typename func>
+void sync(P& property, glui::BoxLayout& layout, func set) {
+    if (property.isModified()) {
+        (layout.*set)(property.get());
+    }
+}
+
+}  // namespace
+
 void GLUIProcessor::process() {
-    if (uiColor_.isModified()) {
-        uiRenderer_.setUIColor(uiColor_.get());
-    }
-    if (uiSecondaryColor_.isModified()) {
-        uiRenderer_.setSecondaryUIColor(uiSecondaryColor_.get());
-    }
-    if (uiBorderColor_.isModified()) {
-        uiRenderer_.setBorderColor(uiBorderColor_.get());
-    }
-    if (uiTextColor_.isModified()) {
-        uiRenderer_.setTextColor(uiTextColor_.get());
-    }
-    if (hoverColor_.isModified()) {
-        uiRenderer_.setHoverColor(hoverColor_.get());
-    }
-    if (uiDisabledColor_.isModified()) {
-        uiRenderer_.setDisabledColor(uiDisabledColor_.get());
-    }
-    if (uiScaling_.isModified()) {
-        // scaling will affect all glui elements, the change is propagated by the layout
-        layout_.setScalingFactor(uiScaling_.get());
-    }
-
+    sync(uiColor_, uiRenderer_, &Renderer::setUIColor);
+    sync(uiSecondaryColor_, uiRenderer_, &Renderer::setSecondaryUIColor);
+    sync(uiBorderColor_, uiRenderer_, &Renderer::setBorderColor);
+    sync(uiTextColor_, uiRenderer_, &Renderer::setTextColor);
+    sync(hoverColor_, uiRenderer_, &Renderer::setHoverColor);
+    sync(uiDisabledColor_, uiRenderer_, &Renderer::setDisabledColor);
     // layout
-    if (layoutDirection_.isModified()) {
-        layout_.setDirection(layoutDirection_.get());
-    }
-    if (layoutSpacing_.isModified()) {
-        layout_.setSpacing(layoutSpacing_.get());
-    }
-    if (layoutMargins_.isModified()) {
-        const ivec4& m(layoutMargins_.get());
-        layout_.setMargins(m.x, m.y, m.z, m.w);
-    }
+    sync(layoutDirection_, layout_, &BoxLayout::setDirection);
+    sync(layoutSpacing_, layout_, &BoxLayout::setSpacing);
+    sync(layoutMargins_, layout_, static_cast<void (Layout::*)(const ivec4&)>(&Layout::setMargins));
+    // scaling will affect all glui elements, the change is propagated by the layout
+    sync(uiScaling_, layout_, &BoxLayout::setScalingFactor);
 
-    if (inport_.isReady()) {
-        utilgl::activateTargetAndCopySource(outport_, inport_);
-    } else {
-        utilgl::activateAndClearTarget(outport_);
-    }
+    utilgl::activateTargetAndClearOrCopySource(outport_, inport_);
     utilgl::DepthFuncState depthFunc(GL_ALWAYS);
     utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
     if (uiVisible_.get()) {
-        // coordinate system defined in screen coords with origin in the top-left corner
+        // coordinate system defined in screen coords with origin in the bottom-left corner
+        // Note: the layout needs to be positioned with respect to its top-left corner
 
-        {
-            // put UI elements in lower left corner of the canvas
-            const ivec2 extent(layout_.getExtent());
+        const ivec2 extent(layout_.getExtent());
+        // use integer position for best results
+        vec2 shift = 0.5f * vec2(extent) * (anchorPos_.get() + vec2(1.0f));
+        ivec2 origin(position_.get() * vec2(outport_.getDimensions()));
+        origin += offset_.get() - ivec2(shift) + ivec2(0, extent.y);
 
-            // use integer position for best results
-            vec2 shift = 0.5f * vec2(extent) * (anchorPos_.get() + vec2(1.0f));
-
-            ivec2 origin(position_.get() * vec2(outport_.getDimensions()));
-            origin += offset_.get() - ivec2(shift) + ivec2(0, extent.y);
-
-            layout_.render(origin, outport_.getDimensions());
-        }
+        layout_.render(origin, outport_.getDimensions());
     }
 
     utilgl::deactivateCurrentTarget();

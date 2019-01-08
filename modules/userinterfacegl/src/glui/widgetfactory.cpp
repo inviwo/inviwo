@@ -31,10 +31,4 @@
 
 namespace inviwo {
 
-namespace glui {
-
-bool WidgetFactory::hasKey(const std::string& key) const { return Parent::hasKey(key); }
-
-}  // namespace glui
-
 }  // namespace inviwo

@@ -47,14 +47,9 @@ class IVW_MODULE_USERINTERFACEGL_API WidgetFactory
     : public StandardFactory<Element, WidgetFactoryObject, const std::string & /*key*/,
                              Property & /*prop*/, Processor & /*proc*/, Renderer & /*renderer*/>
       {
-public:
-    using Parent = StandardFactory<Element, WidgetFactoryObject, const std::string &, Property &,
-                                   Processor &, Renderer &>;
-
+public:    
     WidgetFactory() = default;
     virtual ~WidgetFactory() = default;
-
-    virtual bool hasKey(const std::string &key) const override;
 };
 
 }  // namespace glui

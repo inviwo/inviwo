@@ -48,12 +48,7 @@ AnimationQtSupplier::AnimationQtSupplier(InviwoApplication* app)
                         IvwContextCustom("AnimationQtSupplier"));
     }()} {}
 
-AnimationQtSupplier::~AnimationQtSupplier() {
-    // Unregister everything from the factory. This is neccessary even though the base class
-    // destructor, i.e. of the supplier, takes care of this. Otherwise the supplier will unregister
-    // the items after the factory is destroyed.
-    unRegisterAll(); 
-}
+AnimationQtSupplier::~AnimationQtSupplier() { unRegisterAll(); }
 
 TrackWidgetQtFactory& AnimationQtSupplier::getTrackWidgetQtFactory() {
     return animationQtModule_.getTrackWidgetQtFactory();
