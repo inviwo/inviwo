@@ -42,7 +42,6 @@ IvwLineEdit::~IvwLineEdit() = default;
 
 QSize IvwLineEdit::sizeHint() const { return QSize(18, 18); }
 
-
 IvwPushButton::IvwPushButton(QWidget* parent) : QPushButton(parent) {
     QSizePolicy sp = sizePolicy();
     sp.setHorizontalPolicy(QSizePolicy::Minimum);
@@ -55,7 +54,6 @@ IvwPushButton::~IvwPushButton() = default;
 QSize IvwPushButton::sizeHint() const { return QSize(18, 18); }
 
 QSize IvwPushButton::minimumSizeHint() const { return sizeHint(); }
-
 
 IvwComboBox::IvwComboBox(QWidget* parent) : QComboBox(parent) {
     QSizePolicy sp = sizePolicy();

@@ -36,4 +36,4 @@ NetworkLock::NetworkLock() : network_(InviwoApplication::getPtr()->getProcessorN
     if (network_) network_->lock();
 }
 
-}  // namespace
+}  // namespace inviwo

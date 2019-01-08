@@ -141,4 +141,4 @@ void TubeRendering::initializeResources() {
     shader_.build();
 }
 
-}  // namespace
+}  // namespace inviwo

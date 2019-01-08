@@ -45,20 +45,24 @@ BufferCL::BufferCL(size_t size, const DataFormatBase* format, BufferUsage usage,
         clBuffer_ = util::make_unique<cl::Buffer>(
             OpenCL::getPtr()->getContext(),
             readWriteFlag_ | CL_MEM_COPY_HOST_PTR | CL_MEM_ALLOC_HOST_PTR,
-            std::max(std::size_t{ 1 }, getSize()) * getSizeOfElement(), const_cast<void*>(data));
+            std::max(std::size_t{1}, getSize()) * getSizeOfElement(), const_cast<void*>(data));
     } else {
-        clBuffer_ = util::make_unique<cl::Buffer>(OpenCL::getPtr()->getContext(), readWriteFlag_,
-            std::max(std::size_t{ 1 }, getSize()) * getSizeOfElement());
+        clBuffer_ =
+            util::make_unique<cl::Buffer>(OpenCL::getPtr()->getContext(), readWriteFlag_,
+                                          std::max(std::size_t{1}, getSize()) * getSizeOfElement());
     }
 }
 
 BufferCL::BufferCL(const BufferCL& rhs)
-    : BufferCLBase(rhs), BufferRepresentation(rhs), readWriteFlag_(rhs.readWriteFlag_), size_(rhs.size_) {
-    clBuffer_ = util::make_unique<cl::Buffer>(OpenCL::getPtr()->getContext(), readWriteFlag_,
-        std::max(std::size_t{ 1 }, getSize()) * getSizeOfElement());
+    : BufferCLBase(rhs)
+    , BufferRepresentation(rhs)
+    , readWriteFlag_(rhs.readWriteFlag_)
+    , size_(rhs.size_) {
+    clBuffer_ =
+        util::make_unique<cl::Buffer>(OpenCL::getPtr()->getContext(), readWriteFlag_,
+                                      std::max(std::size_t{1}, getSize()) * getSizeOfElement());
     OpenCL::getPtr()->getQueue().enqueueCopyBuffer(rhs.get(), *clBuffer_, 0, 0,
-        getSize() * getSizeOfElement());
-
+                                                   getSize() * getSizeOfElement());
 }
 
 BufferCL* BufferCL::clone() const { return new BufferCL(*this); }
@@ -67,8 +71,9 @@ BufferCL::~BufferCL() {}
 
 void BufferCL::setSize(size_t size) {
     size_ = size;
-    clBuffer_ = util::make_unique<cl::Buffer>(OpenCL::getPtr()->getContext(), readWriteFlag_,
-        std::max(std::size_t{ 1 }, getSize()) * getSizeOfElement());
+    clBuffer_ =
+        util::make_unique<cl::Buffer>(OpenCL::getPtr()->getContext(), readWriteFlag_,
+                                      std::max(std::size_t{1}, getSize()) * getSizeOfElement());
 }
 size_t BufferCL::getSize() const { return size_; }
 
@@ -80,7 +85,7 @@ void BufferCL::upload(const void* data, size_t size) {
         clBuffer_ = util::make_unique<cl::Buffer>(
             OpenCL::getPtr()->getContext(),
             readWriteFlag_ | CL_MEM_COPY_HOST_PTR | CL_MEM_ALLOC_HOST_PTR,
-            std::max(std::size_t{ 1 }, getSize()) * getSizeOfElement(), const_cast<void*>(data));
+            std::max(std::size_t{1}, getSize()) * getSizeOfElement(), const_cast<void*>(data));
     } else {
         OpenCL::getPtr()->getQueue().enqueueWriteBuffer(*clBuffer_, true, 0, size,
                                                         const_cast<void*>(data));
@@ -110,7 +115,11 @@ cl_int Kernel::setArg(cl_uint index, const inviwo::BufferBase& value) {
     return setArg(index, value.getRepresentation<inviwo::BufferCL>()->get());
 }
 
-#define DataFormatIdMacro(i) template <> cl_int Kernel::setArg(cl_uint index, const inviwo::Buffer<inviwo::Data##i::type>& value) { return setArg(index, value.getRepresentation<inviwo::BufferCL>()->get()); }
+#define DataFormatIdMacro(i)                                                                   \
+    template <>                                                                                \
+    cl_int Kernel::setArg(cl_uint index, const inviwo::Buffer<inviwo::Data##i::type>& value) { \
+        return setArg(index, value.getRepresentation<inviwo::BufferCL>()->get());              \
+    }
 #include <inviwo/core/util/formatsdefinefunc.h>
 
 }  // namespace cl

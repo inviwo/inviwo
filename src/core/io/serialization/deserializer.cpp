@@ -70,27 +70,25 @@ void Deserializer::deserialize(const std::string& key, Serializable& sObj) {
 }
 
 void Deserializer::deserialize(const std::string& key, signed char& data,
-                                  const SerializationTarget& target) {
+                               const SerializationTarget& target) {
     int val = data;
     deserialize(key, val, target);
     data = static_cast<char>(val);
 }
 void Deserializer::deserialize(const std::string& key, char& data,
-                                  const SerializationTarget& target) {
+                               const SerializationTarget& target) {
     int val = data;
     deserialize(key, val, target);
     data = static_cast<char>(val);
 }
 void Deserializer::deserialize(const std::string& key, unsigned char& data,
-                                 const SerializationTarget& target) {
+                               const SerializationTarget& target) {
     unsigned int val = data;
     deserialize(key, val, target);
     data = static_cast<unsigned char>(val);
 }
 
-void Deserializer::setExceptionHandler(ExceptionHandler handler) {
-    exceptionHandler_ = handler;
-}
+void Deserializer::setExceptionHandler(ExceptionHandler handler) { exceptionHandler_ = handler; }
 
 void Deserializer::convertVersion(VersionConverter* converter) {
     if (converter->convert(rootElement_)) {
@@ -103,7 +101,7 @@ void Deserializer::convertVersion(VersionConverter* converter) {
 void Deserializer::handleError(const ExceptionContext& context) {
     if (exceptionHandler_) {
         exceptionHandler_(context);
-    } else { // If no error handler found:
+    } else {  // If no error handler found:
         try {
             throw;
         } catch (SerializationException& e) {
@@ -129,4 +127,4 @@ void Deserializer::registerFactory(FactoryBase* factory) {
 
 int Deserializer::getInviwoWorkspaceVersion() const { return inviwoWorkspaceVersion_; }
 
-}  // namespace
+}  // namespace inviwo

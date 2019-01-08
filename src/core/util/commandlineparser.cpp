@@ -32,20 +32,17 @@
 
 namespace inviwo {
 
-
 CommandLineArgHolder::CommandLineArgHolder(InviwoApplication* app, TCLAP::Arg& arg)
     : app_{app}, arg_{arg} {
     app_->getCommandLineParser().add(&arg);
 }
 
-CommandLineArgHolder::CommandLineArgHolder(InviwoApplication* app, TCLAP::Arg& arg, std::function<void()> callback,
-                     int priority)
+CommandLineArgHolder::CommandLineArgHolder(InviwoApplication* app, TCLAP::Arg& arg,
+                                           std::function<void()> callback, int priority)
     : app_{app}, arg_{arg} {
     app_->getCommandLineParser().add(&arg, std::move(callback), priority);
 }
-CommandLineArgHolder::~CommandLineArgHolder() {
-    app_->getCommandLineParser().remove(&arg_);
-}
+CommandLineArgHolder::~CommandLineArgHolder() { app_->getCommandLineParser().remove(&arg_); }
 
 CommandLineParser::CommandLineParser() : CommandLineParser(0, nullptr) {}
 

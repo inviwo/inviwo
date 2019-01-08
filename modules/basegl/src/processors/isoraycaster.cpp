@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/basegl/processors/isoraycaster.h>
@@ -43,9 +43,7 @@ const ProcessorInfo ISORaycaster::processorInfo_{
     CodeState::Stable,          // Code state
     Tags::GL,                   // Tags
 };
-const ProcessorInfo ISORaycaster::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo ISORaycaster::getProcessorInfo() const { return processorInfo_; }
 
 ISORaycaster::ISORaycaster()
     : Processor()
@@ -55,13 +53,12 @@ ISORaycaster::ISORaycaster()
     , exitPort_("exit")
     , backgroundPort_("bg")
     , outport_("outport")
-    , surfaceColor_("surfaceColor","Surface Color" , vec4(1,1,1,1))
+    , surfaceColor_("surfaceColor", "Surface Color", vec4(1, 1, 1, 1))
     , channel_("channel", "Render Channel")
     , raycasting_("raycasting", "Raycasting")
     , camera_("camera", "Camera", vec3(0.0f, 0.0f, 3.5f), vec3(0.0f, 0.0f, 0.0f),
-              vec3(0.0f, 1.0f, 0.0f)) 
-    , lighting_("lighting", "Lighting", &camera_)
-{
+              vec3(0.0f, 1.0f, 0.0f))
+    , lighting_("lighting", "Lighting", &camera_) {
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
     addPort(volumePort_, "VolumePortGroup");
@@ -69,7 +66,7 @@ ISORaycaster::ISORaycaster()
     addPort(exitPort_, "ImagePortGroup1");
     addPort(outport_, "ImagePortGroup1");
     addPort(backgroundPort_, "ImagePortGroup1");
-    
+
     surfaceColor_.setSemantics(PropertySemantics::Color);
 
     backgroundPort_.setOptional(true);
@@ -78,8 +75,7 @@ ISORaycaster::ISORaycaster()
         if (volumePort_.hasData()) {
             std::size_t channels = volumePort_.getData()->getDataFormat()->getComponents();
 
-            if (channels == channel_.size())
-                return;
+            if (channels == channel_.size()) return;
 
             channel_.clearOptions();
             for (int i = 0; i < static_cast<int>(channels); i++) {
@@ -94,7 +90,6 @@ ISORaycaster::ISORaycaster()
     backgroundPort_.onConnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
     backgroundPort_.onDisconnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
 
-
     addProperty(surfaceColor_);
     addProperty(channel_);
     addProperty(raycasting_);
@@ -103,14 +98,13 @@ ISORaycaster::ISORaycaster()
 
     std::stringstream ss;
     ss << "Channel " << 0;
-    channel_.addOption(ss.str() , ss.str(), 0);
+    channel_.addOption(ss.str(), ss.str(), 0);
 
     raycasting_.compositingMode_.setVisible(false);
     setAllPropertiesCurrentStateAsDefault();
 }
 
-
-void ISORaycaster::initializeResources(){    
+void ISORaycaster::initializeResources() {
     utilgl::addShaderDefines(shader_, raycasting_);
     utilgl::addShaderDefines(shader_, camera_);
     utilgl::addShaderDefines(shader_, lighting_);
@@ -128,10 +122,10 @@ void ISORaycaster::process() {
     utilgl::bindAndSetUniforms(shader_, units, exitPort_, ImageType::ColorDepth);
     if (backgroundPort_.hasData()) {
         utilgl::bindAndSetUniforms(shader_, units, backgroundPort_, ImageType::ColorDepthPicking);
-        
     }
 
-    utilgl::setUniforms(shader_, outport_, camera_, lighting_, raycasting_, channel_,surfaceColor_);
+    utilgl::setUniforms(shader_, outport_, camera_, lighting_, raycasting_, channel_,
+                        surfaceColor_);
 
     utilgl::singleDrawImagePlaneRect();
     shader_.deactivate();
@@ -143,5 +137,4 @@ void ISORaycaster::deserialize(Deserializer& d) {
     Processor::deserialize(d);
 }
 
-} // namespace
-
+}  // namespace inviwo

@@ -46,11 +46,12 @@ const ProcessorInfo SyntheticDataFrame::processorInfo_{
 const ProcessorInfo SyntheticDataFrame::getProcessorInfo() const { return processorInfo_; }
 
 SyntheticDataFrame::SyntheticDataFrame()
-    : Processor(), dataFrame_("dataFrame_"), numRow_("numRow", "Number of Rows", 1000, 3, 100000)
+    : Processor()
+    , dataFrame_("dataFrame_")
+    , numRow_("numRow", "Number of Rows", 1000, 3, 100000)
     , randomParams_("randomParams", "Random Generator Settings")
     , useSameSeed_("useSameSeed", "Use same seed", true)
-    , seed_("seed", "Seed", 1, 0, 1000)
-{
+    , seed_("seed", "Seed", 1, 0, 1000) {
 
     addPort(dataFrame_);
     addProperty(numRow_);

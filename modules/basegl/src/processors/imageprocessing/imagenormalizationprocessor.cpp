@@ -67,7 +67,7 @@ ImageNormalizationProcessor::ImageNormalizationProcessor()
 
 ImageNormalizationProcessor::~ImageNormalizationProcessor() = default;
 
-void ImageNormalizationProcessor::preProcess(TextureUnitContainer &) {
+void ImageNormalizationProcessor::preProcess(TextureUnitContainer&) {
     if (inport_.isChanged() || normalizeSeparately_.isModified()) {
         updateMinMax();
     }
@@ -79,8 +79,7 @@ void ImageNormalizationProcessor::preProcess(TextureUnitContainer &) {
         max = glm::max(glm::abs(min), glm::abs(max));
         min = -max;
     }
-    
-     
+
     auto df = inport_.getData()->getColorLayer()->getRepresentation<LayerRAM>()->getDataFormat();
     double typeMax = 1.0;
     double typeMin = 0.0;
@@ -135,4 +134,4 @@ void ImageNormalizationProcessor::updateMinMax() {
     max_.a = 1.0;
 }
 
-}  // namespace
+}  // namespace inviwo

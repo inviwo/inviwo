@@ -36,9 +36,7 @@ PortConnection::PortConnection() : inport_(nullptr), outport_(nullptr) {}
 PortConnection::PortConnection(Outport* outport, Inport* inport)
     : inport_(inport), outport_(outport) {}
 
-PortConnection::operator bool() const {
-    return inport_ && outport_;
-}
+PortConnection::operator bool() const { return inport_ && outport_; }
 
 void PortConnection::serialize(Serializer& s) const {
     s.serialize("OutPort", outport_);
@@ -92,7 +90,9 @@ void PortConnection::deserialize(Deserializer& d) {
 bool operator==(const PortConnection& lhs, const PortConnection& rhs) {
     return lhs.outport_ == rhs.outport_ && lhs.inport_ == rhs.inport_;
 }
-bool operator!=(const PortConnection& lhs, const PortConnection& rhs) { return !operator==(lhs, rhs); }
+bool operator!=(const PortConnection& lhs, const PortConnection& rhs) {
+    return !operator==(lhs, rhs);
+}
 
 bool operator<(const PortConnection& lhs, const PortConnection& rhs) {
     if (lhs.outport_ != rhs.outport_) {
@@ -102,4 +102,4 @@ bool operator<(const PortConnection& lhs, const PortConnection& rhs) {
     }
 }
 
-}  // namespace
+}  // namespace inviwo

@@ -29,7 +29,4 @@
 
 #include <inviwo/core/ports/porttraits.h>
 
-namespace inviwo {
-
-} // namespace
-
+namespace inviwo {}  // namespace inviwo

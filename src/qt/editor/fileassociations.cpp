@@ -324,7 +324,6 @@ public:
     void registerFileType(const std::string& documentId, const std::string& fileTypeName,
                           const std::string& fileExtension, int appIconIndex,
                           const std::vector<FileAssociationCommand>& commands) {}
-
 };
 
 #endif

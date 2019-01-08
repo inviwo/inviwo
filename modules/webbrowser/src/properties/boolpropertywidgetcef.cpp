@@ -36,10 +36,10 @@ BoolPropertyWidgetCEF::BoolPropertyWidgetCEF(BoolProperty* property, CefRefPtr<C
     : TemplatePropertyWidgetCEF<bool>(property, frame, htmlId) {}
 
 void BoolPropertyWidgetCEF::updateFromProperty() {
-	// Frame might be null if for example webpage is not found on startup
-	if (!frame_) {
-		return;
-	}
+    // Frame might be null if for example webpage is not found on startup
+    if (!frame_) {
+        return;
+    }
     // LogInfo("updateFromProperty");
     auto property = static_cast<BoolProperty*>(property_);
 

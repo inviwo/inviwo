@@ -48,9 +48,10 @@ EigenNormalize::EigenNormalize()
     , in_("in")
     , out_("out")
 
-    , method_("method", "Method", {{"maxelement", "Max Element", Method::MaxElement},
-                                   {"minmaxelement", "Min/Max Element", Method::MinMaxElement},
-                                   {"normalize", "Normalize", Method::Normalize}}) {
+    , method_("method", "Method",
+              {{"maxelement", "Max Element", Method::MaxElement},
+               {"minmaxelement", "Min/Max Element", Method::MinMaxElement},
+               {"normalize", "Normalize", Method::Normalize}}) {
 
     addPort(in_);
     addPort(out_);
@@ -81,4 +82,4 @@ void EigenNormalize::process() {
     }
 }
 
-}  // namespace
+}  // namespace inviwo

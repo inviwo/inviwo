@@ -37,7 +37,7 @@ namespace inviwo {
 const ProcessorInfo EntryExitPoints::processorInfo_{
     "org.inviwo.EntryExitPoints",  // Class identifier
     "Entry Exit Points",           // Display name
-    "Mesh Rendering",          // Category
+    "Mesh Rendering",              // Category
     CodeState::Stable,             // Code state
     Tags::GL,                      // Tags
 };
@@ -69,8 +69,8 @@ EntryExitPoints::EntryExitPoints()
 EntryExitPoints::~EntryExitPoints() {}
 
 void EntryExitPoints::process() {
-    entryExitHelper_(*entryPort_.getEditableData().get(), *exitPort_.getEditableData().get(), camera_.get(),
-                     *inport_.getData().get(), capNearClipping_.get());
+    entryExitHelper_(*entryPort_.getEditableData().get(), *exitPort_.getEditableData().get(),
+                     camera_.get(), *inport_.getData().get(), capNearClipping_.get());
 }
 
 void EntryExitPoints::deserialize(Deserializer& d) {
@@ -78,4 +78,4 @@ void EntryExitPoints::deserialize(Deserializer& d) {
     Processor::deserialize(d);
 }
 
-}  // namespace
+}  // namespace inviwo

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/basegl/processors/imageprocessing/imagegamma.h>
@@ -39,22 +39,16 @@ const ProcessorInfo ImageGamma::processorInfo_{
     CodeState::Stable,        // Code state
     Tags::GL,                 // Tags
 };
-const ProcessorInfo ImageGamma::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo ImageGamma::getProcessorInfo() const { return processorInfo_; }
 
-ImageGamma::ImageGamma() 
+ImageGamma::ImageGamma()
     : ImageGLProcessor("img_gamma.frag")
-    , gamma_("gammaFactor", "Gamma Correction", 1.0f, 0.0f, 2.0f, 0.01f)
-{
+    , gamma_("gammaFactor", "Gamma Correction", 1.0f, 0.0f, 2.0f, 0.01f) {
     addProperty(gamma_);
 }
 
 ImageGamma::~ImageGamma() = default;
 
-void ImageGamma::preProcess(TextureUnitContainer &) {
-    shader_.setUniform("gamma_", gamma_.get());
-}
+void ImageGamma::preProcess(TextureUnitContainer &) { shader_.setUniform("gamma_", gamma_.get()); }
 
-}  // namespace
-
+}  // namespace inviwo

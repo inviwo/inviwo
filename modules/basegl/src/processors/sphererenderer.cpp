@@ -62,10 +62,10 @@ SphereRenderer::SphereRenderer()
                         InvalidationLevel::InvalidResources)
     , sphereProperties_("sphereProperties", "Sphere Properties")
     , overrideSphereRadius_("overrideSphereRadius", "Override Sphere Radius", false,
-                          InvalidationLevel::InvalidResources)
+                            InvalidationLevel::InvalidResources)
     , customRadius_("customRadius", "Custom Radius", 0.05f, 0.00001f, 2.0f, 0.01f)
     , overrideSphereColor_("overrideSphereColor", "Override Sphere Color", false,
-                      InvalidationLevel::InvalidResources)
+                           InvalidationLevel::InvalidResources)
     , customColor_("customColor", "Custom Color", vec4(0.7f, 0.7f, 0.7f, 1.0f), vec4(0.0f),
                    vec4(1.0f))
 
@@ -95,7 +95,7 @@ SphereRenderer::SphereRenderer()
     addProperty(renderMode_);
     addProperty(sphereProperties_);
     addProperty(clipping_);
-    
+
     addProperty(camera_);
     addProperty(lighting_);
     addProperty(trackball_);

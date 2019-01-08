@@ -50,4 +50,4 @@ void LayerDisk2RAMConverter::update(std::shared_ptr<const LayerDisk> source,
     source->updateRepresentation(destination);
 }
 
-}  // namespace
+}  // namespace inviwo

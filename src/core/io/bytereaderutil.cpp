@@ -62,4 +62,4 @@ void util::readBytesIntoBuffer(const std::string& file, size_t offset, size_t by
     }
 }
 
-}  // namespace
+}  // namespace inviwo

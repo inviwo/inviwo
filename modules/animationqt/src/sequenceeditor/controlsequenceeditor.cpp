@@ -133,7 +133,7 @@ private:
 }  // namespace
 
 ControlSequenceEditor::ControlSequenceEditor(KeyframeSequence &sequence, Track &track,
-                                             AnimationManager&)
+                                             AnimationManager &)
     : SequenceEditorWidget(sequence, track) {
 
     sequence_.addObserver(this);

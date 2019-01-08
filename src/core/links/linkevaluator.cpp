@@ -64,7 +64,7 @@ void LinkEvaluator::addLink(const PropertyLink& propertyLink) {
 
 bool LinkEvaluator::canLink(const Property* src, const Property* dst) const {
     auto manager = network_->getApplication()->getPropertyConverterManager();
-    return manager->canConvert(src, dst);   
+    return manager->canConvert(src, dst);
 }
 
 bool LinkEvaluator::canLink(const PropertyLink& propertyLink) const {

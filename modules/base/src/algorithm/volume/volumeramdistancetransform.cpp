@@ -29,8 +29,4 @@
 
 #include <modules/base/algorithm/volume/volumeramdistancetransform.h>
 
-namespace inviwo {
-
-
-} // namespace
-
+namespace inviwo {}  // namespace inviwo

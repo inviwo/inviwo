@@ -145,17 +145,17 @@ void testVolumeClone(Volume* volume) {
             for (size_t x = 0; x < dim.x; x++) {
                 const auto ref = static_cast<double>(x + y + z);
 
-                const auto val =  static_cast<double>(data[im(x, y, z)]);
+                const auto val = static_cast<double>(data[im(x, y, z)]);
                 ASSERT_EQ(ref, val)
                     << "Error at Voxel: " << x << ", " << y << ", " << z << "\n"
                     << "Dimensions:     " << dim.x << ", " << dim.y << ", " << dim.z;
 
-                const auto val1 =  static_cast<double>(data1[im(x, y, z)]);
+                const auto val1 = static_cast<double>(data1[im(x, y, z)]);
                 ASSERT_EQ(ref, val1)
                     << "Error at Voxel: " << x << ", " << y << ", " << z << "\n"
                     << "Dimensions:     " << dim.x << ", " << dim.y << ", " << dim.z;
 
-                const auto val2 =  static_cast<double>(data2[im(x, y, z)]);
+                const auto val2 = static_cast<double>(data2[im(x, y, z)]);
                 ASSERT_EQ(ref, val2)
                     << "Error at Voxel: " << x << ", " << y << ", " << z << "\n"
                     << "Dimensions:     " << dim.x << ", " << dim.y << ", " << dim.z;

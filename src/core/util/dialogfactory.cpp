@@ -39,4 +39,4 @@ bool DialogFactory::registerObject(DialogFactoryObject *dialog) {
     return true;
 }
 
-}  // namespace
+}  // namespace inviwo

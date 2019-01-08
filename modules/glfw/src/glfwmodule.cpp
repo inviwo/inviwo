@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/glfw/glfwmodule.h>
@@ -48,12 +48,12 @@ GLFWModule::GLFWModule(InviwoApplication* app) : InviwoModule(app, "GLFW") {
 
     GLFWSharedCanvas_ = util::make_unique<CanvasGLFW>(app->getDisplayName());
     GLFWSharedCanvas_->activate();
-    OpenGLCapabilities::initializeGLEW(); 
+    OpenGLCapabilities::initializeGLEW();
     GLFWSharedCanvas_->defaultGLState();
 
     RenderContext::getPtr()->setDefaultRenderContext(GLFWSharedCanvas_.get());
     registerProcessorWidget<CanvasProcessorWidgetGLFW, CanvasProcessorGL>();
-    
+
     app->getProcessorNetworkEvaluator()->addObserver(this);
 }
 
@@ -62,7 +62,6 @@ GLFWModule::~GLFWModule() {
         RenderContext::getPtr()->setDefaultRenderContext(nullptr);
     }
 }
-
 
 void GLFWModule::onProcessorNetworkEvaluationBegin() {
     // This is called before the network is evaluated, here we make sure that the default context is
@@ -76,7 +75,7 @@ void GLFWModule::onProcessorNetworkEvaluationEnd() {
     // data when we render the canvases.
     auto syncObj = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
     auto res = glClientWaitSync(syncObj, GL_SYNC_FLUSH_COMMANDS_BIT, 100000000);
-    
+
     switch (res) {
         case GL_ALREADY_SIGNALED:
             LogWarn("GL_ALREADY_SIGNALED");
@@ -90,8 +89,8 @@ void GLFWModule::onProcessorNetworkEvaluationEnd() {
         case GL_CONDITION_SATISFIED:
             break;
     }
-    
+
     glDeleteSync(syncObj);
 }
 
-} // namespace
+}  // namespace inviwo

@@ -82,7 +82,9 @@ void Processor::addPortInternal(Inport* port, const std::string& portGroup) {
     isReady_.update();
 }
 
-void Processor::addPort(Inport& port, const std::string& portGroup) { addPortInternal(&port, portGroup); }
+void Processor::addPort(Inport& port, const std::string& portGroup) {
+    addPortInternal(&port, portGroup);
+}
 void Processor::addPort(std::unique_ptr<Inport> port, const std::string& portGroup) {
     addPortInternal(port.get(), portGroup);
     ownedInports_.push_back(std::move(port));
@@ -200,9 +202,7 @@ void Processor::setIdentifier(const std::string& identifier) {
     }
 }
 
-const std::string& Processor::getIdentifier() const {
-    return identifier_;
-}
+const std::string& Processor::getIdentifier() const { return identifier_; }
 
 const std::string& Processor::getDisplayName() const { return displayName_; }
 void Processor::setDisplayName(const std::string& displayName) {

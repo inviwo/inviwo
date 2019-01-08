@@ -35,4 +35,4 @@ FilteringEvent::FilteringEvent(const BrushingAndLinkingInport* src,
                                const std::unordered_set<size_t>& indices)
     : BrushingAndLinkingEvent(src, indices) {}
 
-}  // namespace
+}  // namespace inviwo

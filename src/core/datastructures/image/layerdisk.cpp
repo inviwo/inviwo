@@ -59,28 +59,22 @@ LayerDisk::~LayerDisk() {}
 
 LayerDisk* LayerDisk::clone() const { return new LayerDisk(*this); }
 
-void LayerDisk::setDimensions(size2_t dimensions) { 
-    dimensions_ = dimensions; 
+void LayerDisk::setDimensions(size2_t dimensions) {
+    dimensions_ = dimensions;
     updateBaseMetaFromRepresentation();
 }
 
 bool LayerDisk::copyRepresentationsTo(LayerRepresentation*) const { return false; }
 
-void LayerDisk::updateDataFormat(const DataFormatBase* format) { 
-    setDataFormat(format); 
-}
+void LayerDisk::updateDataFormat(const DataFormatBase* format) { setDataFormat(format); }
 
-std::type_index LayerDisk::getTypeIndex() const {
-    return std::type_index(typeid(LayerDisk));
-}
+std::type_index LayerDisk::getTypeIndex() const { return std::type_index(typeid(LayerDisk)); }
 
-void LayerDisk::setSwizzleMask(const SwizzleMask &mask) {
+void LayerDisk::setSwizzleMask(const SwizzleMask& mask) {
     swizzleMask_ = mask;
     updateBaseMetaFromRepresentation();
 }
 
-SwizzleMask LayerDisk::getSwizzleMask() const {
-    return swizzleMask_;
-}
+SwizzleMask LayerDisk::getSwizzleMask() const { return swizzleMask_; }
 
-}  // namespace
+}  // namespace inviwo

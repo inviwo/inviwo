@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/opencl/kernelowner.h>
@@ -67,13 +67,10 @@ void KernelOwner::removeKernel(cl::Kernel* kernel) {
         kernels_.erase(kernels_.find(kernel));
         KernelManager::getPtr()->stopObservingKernel(kernel, this);
     }
-
 }
 
 ProcessorKernelOwner::ProcessorKernelOwner(Processor* processor)
-    : KernelOwner()
-    , processor_(processor) {
-}
+    : KernelOwner(), processor_(processor) {}
 
 void ProcessorKernelOwner::notifyObserversKernelCompiled(const cl::Kernel* kernel) {
     KernelOwner::notifyObserversKernelCompiled(kernel);
@@ -82,4 +79,4 @@ void ProcessorKernelOwner::notifyObserversKernelCompiled(const cl::Kernel* kerne
 
 void KernelObserver::onKernelCompiled(const cl::Kernel*) {}
 
-} // namespace
+}  // namespace inviwo

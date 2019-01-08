@@ -56,4 +56,4 @@ void EigenMix::process() {
     res_.setData(std::make_shared<Eigen::MatrixXf>((*A) + w_.get() * ((*B) - (*A))));
 }
 
-}  // namespace
+}  // namespace inviwo

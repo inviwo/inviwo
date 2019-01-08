@@ -35,8 +35,7 @@ namespace inviwo {
 
 MeshDrawerGL::MeshDrawerGL() : meshToDraw_(nullptr) {}
 
-MeshDrawerGL::MeshDrawerGL(const Mesh* mesh)
-    : meshToDraw_(mesh) {
+MeshDrawerGL::MeshDrawerGL(const Mesh* mesh) : meshToDraw_(mesh) {
     if (mesh == nullptr) throw NullPointerException("input mesh is null", IvwContext);
 }
 
@@ -44,7 +43,7 @@ MeshDrawerGL::DrawObject MeshDrawerGL::getDrawObject() const {
     return DrawObject(meshToDraw_->getRepresentation<MeshGL>(), meshToDraw_->getDefaultMeshInfo());
 }
 
-MeshDrawerGL::DrawObject MeshDrawerGL::getDrawObject(const Mesh *mesh) {
+MeshDrawerGL::DrawObject MeshDrawerGL::getDrawObject(const Mesh* mesh) {
     return DrawObject(mesh->getRepresentation<MeshGL>(), mesh->getDefaultMeshInfo());
 }
 
@@ -95,8 +94,7 @@ void MeshDrawerGL::draw(DrawMode drawMode) {
                                indexBuffer->getFormatType(), nullptr);
             }
         }
-    }
-    else {
+    } else {
         // the mesh does not contain index buffers, render all vertices
         glDrawArrays(drawModeGL, 0, static_cast<GLsizei>(meshGL->getBufferGL(0)->getSize()));
     }
@@ -272,8 +270,6 @@ void MeshDrawerGL::DrawObject::draw(DrawMode drawMode, std::size_t index) {
     }
 }
 
-std::size_t MeshDrawerGL::DrawObject::size() const {
-    return meshGL_->getIndexBufferCount();
-}
+std::size_t MeshDrawerGL::DrawObject::size() const { return meshGL_->getIndexBufferCount(); }
 
-}  // namespace
+}  // namespace inviwo

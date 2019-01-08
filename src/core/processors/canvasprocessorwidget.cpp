@@ -30,8 +30,4 @@
 #include <inviwo/core/processors/canvasprocessorwidget.h>
 #include <inviwo/core/processors/processor.h>
 
-namespace inviwo {
-
-
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

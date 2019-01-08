@@ -35,14 +35,11 @@
 namespace inviwo {
 
 pngModule::pngModule(InviwoApplication* app) : InviwoModule(app, "png") {
-    
-    LogInfo("Using LibPNG Version " << pngutil::getLibPNGVesrion());
 
+    LogInfo("Using LibPNG Version " << pngutil::getLibPNGVesrion());
 
     registerDataReader(util::make_unique<PNGLayerReader>());
     registerDataWriter(util::make_unique<PNGLayerWriter>());
-
-
 }
 
 }  // namespace inviwo

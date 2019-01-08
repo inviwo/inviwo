@@ -312,4 +312,4 @@ std::shared_ptr<SimpleMesh> SimpleMeshCreator::plane(glm::vec3 pos, glm::vec2 ex
     return plane;
 }
 
-}  // namespace
+}  // namespace inviwo

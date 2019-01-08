@@ -50,9 +50,7 @@ ImageRAM& ImageRAM::operator=(const ImageRAM& that) {
 }
 ImageRAM::~ImageRAM() = default;
 
-size2_t ImageRAM::getDimensions() const {
-    return colorLayersRAM_.front()->getDimensions();
-}
+size2_t ImageRAM::getDimensions() const { return colorLayersRAM_.front()->getDimensions(); }
 
 bool ImageRAM::copyRepresentationsTo(ImageRepresentation* targetRep) const {
     const ImageRAM* source = this;
@@ -61,8 +59,7 @@ bool ImageRAM::copyRepresentationsTo(ImageRepresentation* targetRep) const {
     if (!target) return false;
 
     // Copy and resize color layers
-    size_t minSize = std::min(source->getNumberOfColorLayers(),
-                              target->getNumberOfColorLayers());
+    size_t minSize = std::min(source->getNumberOfColorLayers(), target->getNumberOfColorLayers());
 
     for (size_t i = 0; i < minSize; ++i) {
         if (!source->getColorLayerRAM(i)->copyRepresentationsTo(target->getColorLayerRAM(i)))
@@ -82,9 +79,7 @@ bool ImageRAM::copyRepresentationsTo(ImageRepresentation* targetRep) const {
     return true;
 }
 
-size_t ImageRAM::priority() const {
-    return 200;
-}
+size_t ImageRAM::priority() const { return 200; }
 
 void ImageRAM::update(bool editable) {
     colorLayersRAM_.clear();
@@ -128,13 +123,9 @@ LayerRAM* ImageRAM::getDepthLayerRAM() { return depthLayerRAM_; }
 
 LayerRAM* ImageRAM::getPickingLayerRAM() { return pickingLayerRAM_; }
 
-size_t ImageRAM::getNumberOfColorLayers() const {
-    return colorLayersRAM_.size();
-}
+size_t ImageRAM::getNumberOfColorLayers() const { return colorLayersRAM_.size(); }
 
-std::type_index ImageRAM::getTypeIndex() const {
-    return std::type_index(typeid(ImageRAM));
-}
+std::type_index ImageRAM::getTypeIndex() const { return std::type_index(typeid(ImageRAM)); }
 
 const LayerRAM* ImageRAM::getColorLayerRAM(size_t idx) const { return colorLayersRAM_.at(idx); }
 
@@ -159,4 +150,4 @@ dvec4 ImageRAM::readPixel(size2_t pos, LayerType layer, size_t index) const {
     }
 }
 
-}  // namespace
+}  // namespace inviwo

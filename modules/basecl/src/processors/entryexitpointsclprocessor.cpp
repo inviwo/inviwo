@@ -43,9 +43,7 @@ const ProcessorInfo EntryExitPointsCLProcessor::processorInfo_{
     CodeState::Stable,               // Code state
     Tags::CL,                        // Tags
 };
-const ProcessorInfo EntryExitPointsCLProcessor::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo EntryExitPointsCLProcessor::getProcessorInfo() const { return processorInfo_; }
 
 EntryExitPointsCLProcessor::EntryExitPointsCLProcessor()
     : Processor()
@@ -75,7 +73,9 @@ EntryExitPointsCLProcessor::EntryExitPointsCLProcessor()
         useGLSharing_.setReadOnly(true);
         useGLSharing_.set(false);
     }
-    LogWarn("This processor does not compute depth values. It act as an example on how to use OpenCL. Use OpenGL based Entry Exit Points processor, in module BaseGL, instead.");
+    LogWarn(
+        "This processor does not compute depth values. It act as an example on how to use OpenCL. "
+        "Use OpenGL based Entry Exit Points processor, in module BaseGL, instead.");
 }
 
 void EntryExitPointsCLProcessor::process() {
@@ -97,5 +97,4 @@ void EntryExitPointsCLProcessor::onKernelCompiled(const cl::Kernel*) {
     invalidate(InvalidationLevel::InvalidResources);
 }
 
-}  // namespace
-
+}  // namespace inviwo

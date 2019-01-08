@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/basegl/processors/meshpicking.h>
@@ -57,10 +57,11 @@ MeshPicking::MeshPicking()
     , imageInport_("imageInport")
     , outport_("outport")
     , compositor_()
-    , cullFace_("cullFace", "Cull Face", {{"culldisable", "Disable", GL_NONE},
-                                          {"cullfront", "Front", GL_FRONT},
-                                          {"cullback", "Back", GL_BACK},
-                                          {"cullfrontback", "Front & Back", GL_FRONT_AND_BACK}},
+    , cullFace_("cullFace", "Cull Face",
+                {{"culldisable", "Disable", GL_NONE},
+                 {"cullfront", "Front", GL_FRONT},
+                 {"cullback", "Back", GL_BACK},
+                 {"cullfrontback", "Front & Back", GL_FRONT_AND_BACK}},
                 2)
     , position_("position", "Position", vec3(0.0f), vec3(-100.f), vec3(100.f))
     , highlightColor_("highlightColor", "Highlight Color", vec4(1.0f, 0.0f, 0.0f, 1.0f))
@@ -69,7 +70,7 @@ MeshPicking::MeshPicking()
     , trackball_(&camera_)
     , picking_(this, 1, [&](PickingEvent* p) { handlePickingEvent(p); })
     , shader_("standard.vert", "picking.frag") {
-    
+
     imageInport_.setOptional(true);
 
     addPort(meshInport_);
@@ -78,10 +79,10 @@ MeshPicking::MeshPicking()
 
     addProperty(cullFace_);
     addProperty(position_);
- 
+
     highlightColor_.setSemantics(PropertySemantics::Color);
     addProperty(highlightColor_);
-    
+
     outport_.addResizeEventListener(&camera_);
     addProperty(camera_);
     addProperty(trackball_);
@@ -135,10 +136,8 @@ void MeshPicking::updatePosition(PickingEvent* p) {
     currNDC.z = refDepth;
     prevNDC.z = refDepth;
 
-    auto corrWorld =
-        camera_.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(currNDC));
-    auto prevWorld =
-        camera_.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(prevNDC));
+    auto corrWorld = camera_.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(currNDC));
+    auto prevWorld = camera_.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(prevNDC));
 
     position_.set(position_.get() + (corrWorld - prevWorld));
 }
@@ -172,9 +171,8 @@ void MeshPicking::process() {
     shader_.deactivate();
     utilgl::deactivateCurrentTarget();
     if (imageInport_.hasData()) {
-        compositor_.composite(imageInport_,outport_, ImageType::ColorDepthPicking);
+        compositor_.composite(imageInport_, outport_, ImageType::ColorDepthPicking);
     }
 }
 
-}  // namespace
-
+}  // namespace inviwo

@@ -36,10 +36,10 @@ ButtonPropertyWidgetCEF::ButtonPropertyWidgetCEF(ButtonProperty* property,
     : PropertyWidgetCEF(property, frame, htmlId) {}
 
 inline void ButtonPropertyWidgetCEF::updateFromProperty() {
-	// Frame might be null if for example webpage is not found on startup
-	if (!frame_) {
-		return;
-	}
+    // Frame might be null if for example webpage is not found on startup
+    if (!frame_) {
+        return;
+    }
     std::stringstream script;
     // Send click button event
     script << "var property = document.getElementById(\"" << htmlId_ << "\");";

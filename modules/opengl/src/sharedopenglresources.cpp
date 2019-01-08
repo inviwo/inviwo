@@ -102,5 +102,4 @@ void SharedOpenGLResources::reset() {
     imgCopyShaders_.clear();
 }
 
-} // namespace
-
+}  // namespace inviwo

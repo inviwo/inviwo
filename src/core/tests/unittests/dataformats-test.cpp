@@ -564,4 +564,4 @@ TEST(DataFormatsTests, UInt64Vec4Test) {
     EXPECT_EQ(DataFormatId::Vec4UInt64, df->getId());
 }
 
-}  // namespace
+}  // namespace inviwo

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/basegl/processors/multichannelraycaster.h>
@@ -46,9 +46,7 @@ const ProcessorInfo MultichannelRaycaster::processorInfo_{
     CodeState::Experimental,             // Code state
     Tags::GL,                            // Tags
 };
-const ProcessorInfo MultichannelRaycaster::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo MultichannelRaycaster::getProcessorInfo() const { return processorInfo_; }
 
 MultichannelRaycaster::MultichannelRaycaster()
     : Processor()
@@ -87,7 +85,7 @@ MultichannelRaycaster::MultichannelRaycaster()
     addProperty(lighting_);
     addProperty(positionIndicator_);
     addProperty(transferFunctions_);
-    
+
     volumePort_.onChange([this]() { initializeResources(); });
 
     backgroundPort_.onConnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
@@ -109,19 +107,20 @@ void MultichannelRaycaster::initializeResources() {
 
     if (volumePort_.hasData()) {
         size_t channels = volumePort_.getData()->getDataFormat()->getComponents();
-        
+
         auto tfs = transferFunctions_.getPropertiesByType<TransferFunctionProperty>();
         for (size_t i = 0; i < tfs.size(); i++) {
             tfs[i]->setVisible(i < channels ? true : false);
         }
-        
+
         std::stringstream ss;
         ss << channels;
         shader_.getFragmentShaderObject()->addShaderDefine("NUMBER_OF_CHANNELS", ss.str());
 
         std::stringstream ss2;
         for (size_t i = 0; i < channels; ++i) {
-            ss2 << "color[" << i << "] = APPLY_CHANNEL_CLASSIFICATION(transferFunction" << i + 1 << ", voxel, " << i << ");";
+            ss2 << "color[" << i << "] = APPLY_CHANNEL_CLASSIFICATION(transferFunction" << i + 1
+                << ", voxel, " << i << ");";
         }
         shader_.getFragmentShaderObject()->addShaderDefine("SAMPLE_CHANNELS", ss2.str());
         shader_.build();
@@ -174,5 +173,4 @@ void MultichannelRaycaster::deserialize(Deserializer& d) {
     Processor::deserialize(d);
 }
 
-}  // namespace
-
+}  // namespace inviwo

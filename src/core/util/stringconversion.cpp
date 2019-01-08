@@ -45,7 +45,6 @@
 
 namespace inviwo {
 
-
 namespace util {
 
 #if defined(_WIN32)

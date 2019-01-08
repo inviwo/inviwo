@@ -46,9 +46,7 @@ DirectoryProperty::DirectoryProperty(std::string identifier, std::string display
 
 DirectoryProperty::DirectoryProperty(const DirectoryProperty& rhs) = default;
 DirectoryProperty& DirectoryProperty::operator=(const DirectoryProperty& that) = default;
-DirectoryProperty* DirectoryProperty::clone() const {
-    return new DirectoryProperty(*this);
-}
+DirectoryProperty* DirectoryProperty::clone() const { return new DirectoryProperty(*this); }
 
 DirectoryProperty::~DirectoryProperty() = default;
 std::string DirectoryProperty::getClassIdentifierForWidget() const {

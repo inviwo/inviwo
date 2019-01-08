@@ -52,7 +52,9 @@ void InviwoModuleRegistration::addInclude(const std::filesystem::path& incPath) 
     const std::vector incMatches(std::sregex_iterator(file.begin(), file.end(), reInclude),
                                  std::sregex_iterator());
 
-    if (incMatches.empty()) throw util::makeError("Could not find any includes statments in '{}'",  modulecpp.generic_string());
+    if (incMatches.empty())
+        throw util::makeError("Could not find any includes statments in '{}'",
+                              modulecpp.generic_string());
 
     if (std::find_if(incMatches.begin(), incMatches.end(), [&](auto& m) {
             return m.str(1) == incPath.generic_string();

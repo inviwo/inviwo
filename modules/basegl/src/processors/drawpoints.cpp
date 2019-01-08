@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/basegl/processors/drawpoints.h>
@@ -44,9 +44,7 @@ const ProcessorInfo DrawPoints::processorInfo_{
     CodeState::Stable,        // Code state
     Tags::GL,                 // Tags
 };
-const ProcessorInfo DrawPoints::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo DrawPoints::getProcessorInfo() const { return processorInfo_; }
 
 DrawPoints::DrawPoints()
     : Processor()
@@ -95,21 +93,20 @@ void DrawPoints::process() {
 }
 
 void DrawPoints::addPoint(vec2 p) {
-    auto buff = static_cast<Vec2BufferRAM*>(
-                    points_.getBuffer(0)->getEditableRepresentation<BufferRAM>());
+    auto buff =
+        static_cast<Vec2BufferRAM*>(points_.getBuffer(0)->getEditableRepresentation<BufferRAM>());
     buff->add(p);
 }
 
 void DrawPoints::clearPoints() {
-    auto buff = static_cast<Vec2BufferRAM*>(
-        points_.getBuffer(0)->getEditableRepresentation<BufferRAM>());
+    auto buff =
+        static_cast<Vec2BufferRAM*>(points_.getBuffer(0)->getEditableRepresentation<BufferRAM>());
 
     buff->clear();
 }
 
-void DrawPoints::eventDraw(Event* event){
-    if (!drawModeEnabled_)
-        return;
+void DrawPoints::eventDraw(Event* event) {
+    if (!drawModeEnabled_) return;
 
     auto mouseEvent = static_cast<MouseEvent*>(event);
     auto point = mouseEvent->ndc();
@@ -119,10 +116,9 @@ void DrawPoints::eventDraw(Event* event){
     invalidate(InvalidationLevel::InvalidOutput);
 }
 
-void DrawPoints::eventEnableDraw(Event* event){
+void DrawPoints::eventEnableDraw(Event* event) {
     KeyboardEvent* keyEvent = static_cast<KeyboardEvent*>(event);
     drawModeEnabled_ = (keyEvent->state() != KeyState::Release);
 }
 
-} // inviwo namespace
-
+}  // namespace inviwo

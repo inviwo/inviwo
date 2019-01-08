@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <warn/push>
@@ -39,8 +39,7 @@
 
 #include <unordered_set>
 
-namespace inviwo{
-
+namespace inviwo {
 
 TEST(PickingTests, GenerateColor0) {
     auto c0 = PickingManager::indexToColor(0);
@@ -61,7 +60,7 @@ TEST(PickingTests, GenerateIndex1) {
 }
 
 TEST(PickingTests, GenerateLots) {
-    //const size_t ncolors = (1 << 24) - 1; // Takes alot of time...
+    // const size_t ncolors = (1 << 24) - 1; // Takes alot of time...
     const size_t ncolors = 100000;
 
     for (size_t i = 1; i < ncolors; ++i) {
@@ -73,7 +72,7 @@ TEST(PickingTests, GenerateLots) {
 }
 
 TEST(PickingTests, Unique) {
-    //const size_t ncolors = (1 << 24) - 1; // Takes alot of time...
+    // const size_t ncolors = (1 << 24) - 1; // Takes alot of time...
     const size_t ncolors = 100000;
     std::unordered_set<uvec3> colors(ncolors * 2);
 
@@ -87,8 +86,8 @@ TEST(PickingTests, Unique) {
 }
 
 TEST(PickingMapperTests, Create) {
-    PickingManager manager;   
-    PickingMapper mapper(nullptr, 100, [](const PickingEvent*){}, &manager);
+    PickingManager manager;
+    PickingMapper mapper(nullptr, 100, [](const PickingEvent*) {}, &manager);
 
     auto po = mapper.getPickingAction();
     EXPECT_NE(po, nullptr);
@@ -96,11 +95,10 @@ TEST(PickingMapperTests, Create) {
     EXPECT_EQ(po->getSize(), 100);
 }
 
-
 TEST(PickingMapperTests, Resize) {
     PickingManager manager;
 
-    PickingMapper mapper(nullptr, 100, [](const PickingEvent*){}, &manager);
+    PickingMapper mapper(nullptr, 100, [](const PickingEvent*) {}, &manager);
     {
         auto po = mapper.getPickingAction();
         EXPECT_NE(po, nullptr);
@@ -113,16 +111,14 @@ TEST(PickingMapperTests, Resize) {
         }
 
         EXPECT_EQ(colors.size(), 100);
-
     }
 
-    mapper = PickingMapper(nullptr, 200, [](const PickingEvent*){}, &manager);
+    mapper = PickingMapper(nullptr, 200, [](const PickingEvent*) {}, &manager);
 
     {
         auto po = mapper.getPickingAction();
         EXPECT_NE(po, nullptr);
         EXPECT_EQ(po->getSize(), 200);
-
 
         std::unordered_set<vec3> colors;
 
@@ -140,7 +136,6 @@ TEST(PickingMapperTests, Resize) {
         EXPECT_NE(po, nullptr);
         EXPECT_EQ(po->getSize(), 300);
 
-
         std::unordered_set<vec3> colors;
 
         for (size_t i = 0; i < po->getSize(); ++i) {
@@ -149,15 +144,6 @@ TEST(PickingMapperTests, Resize) {
 
         EXPECT_EQ(colors.size(), 300);
     }
-
 }
 
-
-
-
-
-
-
-
-
-}
+}  // namespace inviwo

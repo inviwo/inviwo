@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/basecl/processors/volumefirsthitclprocessor.h>
@@ -44,9 +44,7 @@ const ProcessorInfo VolumeFirstHitCLProcessor::processorInfo_{
     CodeState::Experimental,        // Code state
     Tags::CL,                       // Tags
 };
-const ProcessorInfo VolumeFirstHitCLProcessor::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo VolumeFirstHitCLProcessor::getProcessorInfo() const { return processorInfo_; }
 
 VolumeFirstHitCLProcessor::VolumeFirstHitCLProcessor()
     : Processor()
@@ -69,8 +67,7 @@ VolumeFirstHitCLProcessor::VolumeFirstHitCLProcessor()
     addProperty(workGroupSize_);
     addProperty(useGLSharing_);
 
-    kernel_ = addKernel("volumefirsthit.cl",
-        "volumeFirstHit");
+    kernel_ = addKernel("volumefirsthit.cl", "volumeFirstHit");
 }
 
 void VolumeFirstHitCLProcessor::process() {
@@ -81,7 +78,7 @@ void VolumeFirstHitCLProcessor::process() {
     auto entryImage = entryPort_.getData();
     auto exitImage = exitPort_.getData();
 
-    //mat4 volumeTextureToWorld =
+    // mat4 volumeTextureToWorld =
     //    volumePort_.getData()->getCoordinateTransformer().getTextureToWorldMatrix();
     const size3_t volumeDim{volumePort_.getData()->getDimensions()};
     float stepSize =
@@ -127,14 +124,14 @@ void VolumeFirstHitCLProcessor::process() {
         firstHit(volumeCL, entryCL, exitCL, tf, outImageCL, stepSize, globalWorkGroupSize,
                  localWorkGroupSize, profilingEvent);
     }
-
-    
 }
 
 void VolumeFirstHitCLProcessor::firstHit(const cl::Image& volumeCL, const cl::Image& entryPoints,
-                                const cl::Image& exitPoints, const cl::Image& transferFunctionCL,
-                                const cl::Image& output, float stepSize, size2_t globalWorkGroupSize,
-                                size2_t localWorkGroupSize, cl::Event* profilingEvent) {
+                                         const cl::Image& exitPoints,
+                                         const cl::Image& transferFunctionCL,
+                                         const cl::Image& output, float stepSize,
+                                         size2_t globalWorkGroupSize, size2_t localWorkGroupSize,
+                                         cl::Event* profilingEvent) {
     try {
         cl_uint arg = 0;
         kernel_->setArg(arg++, volumeCL);
@@ -143,13 +140,12 @@ void VolumeFirstHitCLProcessor::firstHit(const cl::Image& volumeCL, const cl::Im
         kernel_->setArg(arg++, transferFunctionCL);
         kernel_->setArg(arg++, stepSize);
         kernel_->setArg(arg++, output);
-        OpenCL::getPtr()->getQueue().enqueueNDRangeKernel(
-            *kernel_, cl::NullRange, globalWorkGroupSize, localWorkGroupSize, nullptr, profilingEvent);
-    }
-    catch (cl::Error& err) {
+        OpenCL::getPtr()->getQueue().enqueueNDRangeKernel(*kernel_, cl::NullRange,
+                                                          globalWorkGroupSize, localWorkGroupSize,
+                                                          nullptr, profilingEvent);
+    } catch (cl::Error& err) {
         LogError(getCLErrorString(err));
     }
 }
 
-}  // namespace
-
+}  // namespace inviwo

@@ -77,17 +77,18 @@ void exposeImage(py::module &m) {
         .def("clone", [](Layer &self) { return self.clone(); })
         .def(py::init([](py::array data) { return pyutil::createLayer(data).release(); }))
         .def_property_readonly("dimensions", &Layer::getDimensions)
-        .def("save", [](Layer& self, std::string filepath) {
-            auto ext = filesystem::getFileExtension(filepath);
+        .def("save",
+             [](Layer &self, std::string filepath) {
+                 auto ext = filesystem::getFileExtension(filepath);
 
-            auto writer = InviwoApplication::getPtr()
-                              ->getDataWriterFactory()
-                              ->getWriterForTypeAndExtension<Layer>(ext);
-            if (!writer) {
-                throw Exception("No write for extension " + ext);
-            }
-            writer->writeData(&self, filepath);
-        })
+                 auto writer = InviwoApplication::getPtr()
+                                   ->getDataWriterFactory()
+                                   ->getWriterForTypeAndExtension<Layer>(ext);
+                 if (!writer) {
+                     throw Exception("No write for extension " + ext);
+                 }
+                 writer->writeData(&self, filepath);
+             })
         .def_property(
             "data",
             [&](Layer *layer) -> py::array {

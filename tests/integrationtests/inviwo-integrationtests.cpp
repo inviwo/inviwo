@@ -77,7 +77,7 @@ int main(int argc, char** argv) {
         inviwoApp.registerModules(inviwo::getModuleList());
         inviwoApp.resizePool(0);
         inviwoApp.printApplicationInfo();
-        
+
         auto& cmdparser = inviwoApp.getCommandLineParser();
 
         cmdparser.processCallbacks();  // run any command line callbacks from modules.

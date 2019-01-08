@@ -36,10 +36,10 @@
 
 namespace inviwo {
 
-void EventMatcher::setCurrentStateAsDefault(){}
-void EventMatcher::resetToDefaultState(){}
+void EventMatcher::setCurrentStateAsDefault() {}
+void EventMatcher::resetToDefaultState() {}
 void EventMatcher::serialize(Serializer&) const {}
-void EventMatcher::deserialize(Deserializer&){}
+void EventMatcher::deserialize(Deserializer&) {}
 
 KeyboardEventMatcher::KeyboardEventMatcher(IvwKey key, KeyStates states, KeyModifiers modifiers)
     : EventMatcher()
@@ -76,10 +76,10 @@ KeyModifiers KeyboardEventMatcher::modifiers() const { return modifiers_; }
 void KeyboardEventMatcher::setModifiers(KeyModifiers modifiers) { modifiers_ = modifiers; }
 
 void KeyboardEventMatcher::setCurrentStateAsDefault() {
-    util::for_each_argument([](auto& x){x.setAsDefault();}, key_, states_, modifiers_);
+    util::for_each_argument([](auto& x) { x.setAsDefault(); }, key_, states_, modifiers_);
 }
 void KeyboardEventMatcher::resetToDefaultState() {
-    util::for_each_argument([](auto& x){x.reset();}, key_, states_, modifiers_);
+    util::for_each_argument([](auto& x) { x.reset(); }, key_, states_, modifiers_);
 }
 
 void KeyboardEventMatcher::serialize(Serializer& s) const {
@@ -91,9 +91,8 @@ void KeyboardEventMatcher::deserialize(Deserializer& d) {
     util::for_each_argument([&d](auto& x) { x.deserialize(d); }, key_, states_, modifiers_);
 }
 
-
-
-MouseEventMatcher::MouseEventMatcher(MouseButtons buttons, MouseStates states, KeyModifiers modifiers)
+MouseEventMatcher::MouseEventMatcher(MouseButtons buttons, MouseStates states,
+                                     KeyModifiers modifiers)
     : EventMatcher()
     , buttons_("buttons", buttons)
     , states_("states", states)
@@ -144,10 +143,10 @@ KeyModifiers MouseEventMatcher::modifiers() const { return modifiers_; }
 void MouseEventMatcher::setModifiers(KeyModifiers modifiers) { modifiers_ = modifiers; }
 
 void MouseEventMatcher::setCurrentStateAsDefault() {
-    util::for_each_argument([](auto& x){x.setAsDefault();}, buttons_, states_, modifiers_);
+    util::for_each_argument([](auto& x) { x.setAsDefault(); }, buttons_, states_, modifiers_);
 }
 void MouseEventMatcher::resetToDefaultState() {
-    util::for_each_argument([](auto& x){x.reset();}, buttons_, states_, modifiers_);
+    util::for_each_argument([](auto& x) { x.reset(); }, buttons_, states_, modifiers_);
 }
 
 void MouseEventMatcher::serialize(Serializer& s) const {
@@ -158,8 +157,6 @@ void MouseEventMatcher::deserialize(Deserializer& d) {
     EventMatcher::deserialize(d);
     util::for_each_argument([&d](auto& x) { x.deserialize(d); }, buttons_, states_, modifiers_);
 }
-
-
 
 WheelEventMatcher::WheelEventMatcher(KeyModifiers modifiers)
     : EventMatcher(), modifiers_("modifiers", modifiers) {}
@@ -261,5 +258,4 @@ GeneralEventMatcher* GeneralEventMatcher::clone() const { return new GeneralEven
 
 bool GeneralEventMatcher::operator()(Event* e) { return matcher_(e); }
 
-} // namespace
-
+}  // namespace inviwo

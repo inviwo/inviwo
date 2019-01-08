@@ -27,7 +27,6 @@
  *
  *********************************************************************************/
 
-
 #include <warn/push>
 #include <warn/ignore/all>
 #include <gtest/gtest.h>
@@ -41,18 +40,18 @@ namespace inviwo {
 TEST(ContainerSerialitionTest, Minimal) {
     std::stringstream ss;
     Serializer serializer("");
-    
-    std::vector<int> vector {1,2,3,4,5};
-    
+
+    std::vector<int> vector{1, 2, 3, 4, 5};
+
     serializer.serialize("Vector", vector, "Item");
     serializer.writeFile(ss);
-    
+
     vector[2] = 10;
     vector.pop_back();
-    
+
     Deserializer deserializer(ss, "");
     deserializer.deserialize("Vector", vector, "Item");
-    
+
     ASSERT_EQ(5, vector.size());
     ASSERT_EQ(1, vector[0]);
     ASSERT_EQ(2, vector[1]);
@@ -60,25 +59,23 @@ TEST(ContainerSerialitionTest, Minimal) {
     ASSERT_EQ(4, vector[3]);
     ASSERT_EQ(5, vector[4]);
 }
-    
-    
+
 TEST(ContainerSerialitionTest, ContainerTest1) {
     std::stringstream ss;
     Serializer serializer("");
-    
-    std::vector<int> vector {1,2,3,4,5};
-    
+
+    std::vector<int> vector{1, 2, 3, 4, 5};
+
     serializer.serialize("Vector", vector, "Item");
     serializer.writeFile(ss);
-    
+
     vector[2] = 10;
     vector.push_back(12);
 
     int tmp = 0;
     std::vector<bool> visited(vector.size(), false);
     ContainerWrapper<int> cont(
-        "Item", [&](std::string id,
-                    size_t ind) -> ContainerWrapper<int>::Item {
+        "Item", [&](std::string id, size_t ind) -> ContainerWrapper<int>::Item {
             if (ind < vector.size()) {
                 return {true, vector[ind], [&visited, ind](int& /*val*/) { visited[ind] = true; }};
             } else {
@@ -90,15 +87,13 @@ TEST(ContainerSerialitionTest, ContainerTest1) {
         });
 
     ASSERT_EQ(vector.size(), visited.size());
-    
+
     Deserializer deserializer(ss, "");
     deserializer.deserialize("Vector", cont);
 
     size_t ind = 0;
-    util::erase_remove_if(vector, [&](int&) {
-        return !visited[ind++];
-    });
-    
+    util::erase_remove_if(vector, [&](int&) { return !visited[ind++]; });
+
     ASSERT_EQ(5, vector.size());
     ASSERT_EQ(1, vector[0]);
     ASSERT_EQ(2, vector[1]);
@@ -135,13 +130,12 @@ TEST(ContainerSerialitionTest, ContainerTest2) {
 
     vector[0].id_ = "c";
     vector.pop_back();
-    vector.insert(vector.begin(), Item("d",4));
+    vector.insert(vector.begin(), Item("d", 4));
 
     Item tmp;
     std::vector<std::string> visited;
     ContainerWrapper<Item> cont(
-        "Item", [&](std::string id,
-                    size_t /*ind*/) -> ContainerWrapper<Item>::Item {
+        "Item", [&](std::string id, size_t /*ind*/) -> ContainerWrapper<Item>::Item {
             visited.push_back(id);
             auto it = util::find_if(vector, [&](const Item& i) { return i.id_ == id; });
             if (it != vector.end()) {
@@ -189,10 +183,10 @@ TEST(ContainerSerialitionTest, ContainerTest3) {
     Serializer serializer("");
 
     std::vector<Item*> vector;
-    
-    vector.push_back(new Item("a",1));
-    vector.push_back(new Item("b",2));
-    vector.push_back(new Item("c",3));
+
+    vector.push_back(new Item("a", 1));
+    vector.push_back(new Item("b", 2));
+    vector.push_back(new Item("c", 3));
 
     serializer.serialize("Vector", vector, "Item");
     serializer.writeFile(ss);
@@ -205,8 +199,7 @@ TEST(ContainerSerialitionTest, ContainerTest3) {
     Item* tmp = nullptr;
     std::vector<std::string> visited;
     ContainerWrapper<Item*> cont(
-        "Item", [&](std::string id,
-                    size_t /*ind*/) -> ContainerWrapper<Item*>::Item {
+        "Item", [&](std::string id, size_t /*ind*/) -> ContainerWrapper<Item*>::Item {
             visited.push_back(id);
             auto it = util::find_if(vector, [&](Item*& i) { return i->id_ == id; });
             if (it != vector.end()) {
@@ -238,10 +231,9 @@ TEST(ContainerSerialitionTest, ContainerTest3) {
     ASSERT_EQ(1, vector[2]->value_);
     ASSERT_EQ(2, vector[1]->value_);
     ASSERT_EQ(3, vector[0]->value_);
-    
+
     for (auto& item : vector) delete item;
 }
-
 
 TEST(ContainerSerialitionTest, ContainerTest4) {
     struct Item : Serializable {
@@ -265,10 +257,10 @@ TEST(ContainerSerialitionTest, ContainerTest4) {
     Serializer serializer("");
 
     std::vector<Item*> vector;
-    
-    vector.push_back(new Item("a",1));
-    vector.push_back(new Item("b",2));
-    vector.push_back(new Item("c",3));
+
+    vector.push_back(new Item("a", 1));
+    vector.push_back(new Item("b", 2));
+    vector.push_back(new Item("c", 3));
 
     serializer.serialize("Vector", vector, "Item");
     serializer.writeFile(ss);
@@ -276,7 +268,7 @@ TEST(ContainerSerialitionTest, ContainerTest4) {
     vector[0]->id_ = "c";
     delete vector.back();
     vector.pop_back();
-    vector.insert(vector.begin(), new Item("d",1));
+    vector.insert(vector.begin(), new Item("d", 1));
 
     Deserializer deserializer(ss, "");
     auto des = util::IdentifiedDeserializer<std::string, Item*>("Vector", "Item")
@@ -305,19 +297,19 @@ TEST(ContainerSerialitionTest, ContainerTest4) {
     ASSERT_EQ(1, vector[2]->value_);
     ASSERT_EQ(2, vector[1]->value_);
     ASSERT_EQ(3, vector[0]->value_);
-    
+
     for (auto& item : vector) delete item;
 }
 
 TEST(ContainerSerialitionTest, ContainerTest5) {
     std::stringstream ss;
     Serializer serializer("");
-    
-    std::vector<int> vector {1,2,3,4,5};
-    
+
+    std::vector<int> vector{1, 2, 3, 4, 5};
+
     serializer.serialize("Vector", vector, "Item");
     serializer.writeFile(ss);
-    
+
     vector[2] = 10;
     vector.push_back(12);
 
@@ -325,11 +317,10 @@ TEST(ContainerSerialitionTest, ContainerTest5) {
     auto des = util::IndexedDeserializer<int>("Vector", "Item")
                    .setMakeNew([]() { return 0; })
                    .onNew([&](int& i) { vector.push_back(i); })
-                   .onRemove([](int&) {return true;});
-    
+                   .onRemove([](int&) { return true; });
+
     des(deserializer, vector);
-    
-   
+
     ASSERT_EQ(5, vector.size());
     ASSERT_EQ(1, vector[0]);
     ASSERT_EQ(2, vector[1]);
@@ -338,18 +329,17 @@ TEST(ContainerSerialitionTest, ContainerTest5) {
     ASSERT_EQ(5, vector[4]);
 }
 
-
 TEST(ContainerSerialitionTest, ContainerTest6) {
     std::stringstream ss;
     Serializer serializer("");
-    
+
     std::unordered_map<std::string, int> map = {{"a", 1}, {"b", 2}, {"c", 3}};
-    
+
     serializer.serialize("Map", map, "Item");
     serializer.writeFile(ss);
-    
+
     std::string str = ss.str();
-    
+
     map["a"] = 10;
     map.erase("b");
     map["d"] = 20;
@@ -358,10 +348,10 @@ TEST(ContainerSerialitionTest, ContainerTest6) {
     auto des = util::MapDeserializer<std::string, int>("Map", "Item")
                    .setMakeNew([]() { return 0; })
                    .onNew([&](const std::string& k, int& v) { map[k] = v; })
-                   .onRemove([&](const std::string& k) {map.erase(k);});
+                   .onRemove([&](const std::string& k) { map.erase(k); });
 
     des(deserializer, map);
-    
+
     ASSERT_EQ(map.size(), 3);
     ASSERT_EQ(map["a"], 1);
     ASSERT_EQ(map["b"], 2);
@@ -371,14 +361,14 @@ TEST(ContainerSerialitionTest, ContainerTest6) {
 TEST(ContainerSerialitionTest, ContainerTest7) {
     std::stringstream ss;
     Serializer serializer("");
-    
+
     std::unordered_map<int, std::string> map = {{1, "a"}, {2, "b"}, {3, "c"}};
-    
+
     serializer.serialize("Map", map, "Item");
     serializer.writeFile(ss);
-    
+
     std::string str = ss.str();
-    
+
     map[1] = "g";
     map.erase(2);
     map[4] = "h";
@@ -387,16 +377,14 @@ TEST(ContainerSerialitionTest, ContainerTest7) {
     auto des = util::MapDeserializer<int, std::string>("Map", "Item")
                    .setMakeNew([]() { return ""; })
                    .onNew([&](const int& k, std::string& v) { map[k] = v; })
-                   .onRemove([&](const int& k) {map.erase(k);});
+                   .onRemove([&](const int& k) { map.erase(k); });
 
     des(deserializer, map);
-    
+
     ASSERT_EQ(map.size(), 3);
     ASSERT_EQ(map[1], "a");
     ASSERT_EQ(map[2], "b");
     ASSERT_EQ(map[3], "c");
 }
 
-
-} // namespace
-
+}  // namespace inviwo

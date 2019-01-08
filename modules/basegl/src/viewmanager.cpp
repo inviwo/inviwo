@@ -175,7 +175,7 @@ bool ViewManager::propagateTouchEvent(TouchEvent* te, Propagator propagator) {
             p.setCanvasSize(canvasSize);
             p.setPosNormalized(scale * (p.posNormalized() - offset));
             p.setPrevPosNormalized(scale * (p.prevPosNormalized() - offset));
-            p.setPressedPosNormalized(scale *(p.pressedPosNormalized() - offset));
+            p.setPressedPosNormalized(scale * (p.pressedPosNormalized() - offset));
         }
 
         TouchEvent newEvent(points, te->getDevice());
@@ -187,10 +187,9 @@ bool ViewManager::propagateTouchEvent(TouchEvent* te, Propagator propagator) {
     }
 
     // remove the "used" points from the event
-    util::erase_remove_if(touchPoints, [&](const auto& p) {
-        return util::contains(propagatedPointIds, p.id());
-    });
-    
+    util::erase_remove_if(
+        touchPoints, [&](const auto& p) { return util::contains(propagatedPointIds, p.id()); });
+
     if (touchPoints.empty()) te->markAsUsed();
 
     return touchPoints.empty();
@@ -218,9 +217,7 @@ bool ViewManager::propagateEvent(Event* event, Propagator propagator) {
     }
 }
 
-std::pair<bool, ViewManager::ViewId> ViewManager::getSelectedView() const {
-    return selectedView_;
-}
+std::pair<bool, ViewManager::ViewId> ViewManager::getSelectedView() const { return selectedView_; }
 
 const ViewManager::ViewList& ViewManager::getViews() const { return views_; }
 
@@ -240,8 +237,7 @@ void ViewManager::erase(ViewId ind) {
 void ViewManager::replace(ViewId ind, View view) {
     if (ind < views_.size()) {
         views_[ind] = view;
-    }
-    else {
+    } else {
         throw Exception("Out of range", IvwContext);
     }
 }
@@ -251,8 +247,6 @@ ViewManager::View& ViewManager::operator[](ViewId ind) { return views_[ind]; }
 size_t ViewManager::size() const { return views_.size(); }
 
 void ViewManager::clear() { views_.clear(); }
-
-
 
 std::pair<bool, ViewManager::ViewId> ViewManager::findView(ivec2 pos) const {
     auto it = util::find_if(views_, [&](const auto& view) { return inView(view, pos); });
@@ -334,4 +328,4 @@ std::unordered_map<int, ViewManager::ViewId> ViewManager::EventState::getView(
     return newTouchpointIdToViewID;
 }
 
-}  // namespace
+}  // namespace inviwo

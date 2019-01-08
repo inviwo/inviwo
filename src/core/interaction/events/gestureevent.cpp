@@ -74,4 +74,4 @@ void GestureEvent::setScreenPosNormalized(dvec2 posNorm) { screenPosNorm_ = posN
 
 uint64_t GestureEvent::hash() const { return chash(); }
 
-}  // namespace
+}  // namespace inviwo

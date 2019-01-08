@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/qt/editor/processorprogressgraphicsitem.h>
@@ -41,13 +41,10 @@ namespace inviwo {
 ProcessorProgressGraphicsItem::ProcessorProgressGraphicsItem(QGraphicsRectItem* parent,
                                                              ProgressBar* progressBar)
     : EditorGraphicsItem(parent), size_(134, 5), progressBar_(progressBar) {
-    setRect(-0.5f * size_.width(), 
-            -0.5f * size_.height() + 3,
-            size_.width(), size_.height());
+    setRect(-0.5f * size_.width(), -0.5f * size_.height() + 3, size_.width(), size_.height());
 
     setVisible(progressBar_->isVisible());
     progressBar_->ProgressBarObservable::addObserver(this);
-
 }
 
 void ProcessorProgressGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem*, QWidget*) {
@@ -71,9 +68,9 @@ void ProcessorProgressGraphicsItem::paint(QPainter* p, const QStyleOptionGraphic
     p->drawRoundedRect(progressBarRect, 2.0, 2.0);
     QColor shadeColor(128, 128, 128);
     QLinearGradient shadingGrad(progressBarRect.topLeft(), progressBarRect.bottomLeft());
-    shadingGrad.setColorAt(0.0f, QColor(static_cast<int>(shadeColor.red() * 0.6), 
-        static_cast<int>(shadeColor.green() * 0.6),
-        static_cast<int>(shadeColor.blue() * 0.6), 120));
+    shadingGrad.setColorAt(0.0f, QColor(static_cast<int>(shadeColor.red() * 0.6),
+                                        static_cast<int>(shadeColor.green() * 0.6),
+                                        static_cast<int>(shadeColor.blue() * 0.6), 120));
     shadingGrad.setColorAt(0.3f,
                            QColor(shadeColor.red(), shadeColor.green(), shadeColor.blue(), 120));
     shadingGrad.setColorAt(1.0f,
@@ -95,4 +92,4 @@ void ProcessorProgressGraphicsItem::progressBarVisibilityChanged() {
     this->update();
 }
 
-}  // namespace
+}  // namespace inviwo

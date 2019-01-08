@@ -45,7 +45,7 @@ const ProcessorInfo RandomMeshGenerator::processorInfo_{
     "Random Mesh Generator",           // Display name
     "Mesh Creation",                   // Category
     CodeState::Stable,                 // Code state
-    Tags::CPU,                        // Tags
+    Tags::CPU,                         // Tags
 };
 
 const ProcessorInfo RandomMeshGenerator::getProcessorInfo() const { return processorInfo_; }
@@ -183,7 +183,7 @@ void RandomMeshGenerator::process() {
     rand_.seed(static_cast<std::mt19937::result_type>(seed_.get()));
 
     auto randPos = [&]() { return randVec3(-scale_.get(), scale_.get()); };
-    auto randSize = [&]() { return size_.get()*randVec3(0.1f, 1.0f); };
+    auto randSize = [&]() { return size_.get() * randVec3(0.1f, 1.0f); };
     auto randColor = [&]() { return vec4(randVec3(0.5f, 1.0f), 1); };
     auto randDir = [&]() { return glm::normalize(randVec3()); };
     auto randScale = [&]() { return size_.get() * rand(0.1f, 1.0f); };
@@ -209,7 +209,8 @@ void RandomMeshGenerator::process() {
         cylinderPicking_.resize(numberOfCylinders_);
         for (int i = 0; i < numberOfCylinders_.get(); i++) {
             const auto r = randPos();
-            cylinders_.push_back({r, r + 10.0f*randScale() * randDir(), randScale(), randColor()});
+            cylinders_.push_back(
+                {r, r + 10.0f * randScale() * randDir(), randScale(), randColor()});
         }
     }
     if (numberOfCones_.isModified() || dirty) {
@@ -217,7 +218,7 @@ void RandomMeshGenerator::process() {
         conePicking_.resize(numberOfCones_);
         for (int i = 0; i < numberOfCones_.get(); i++) {
             const auto r = randPos();
-            cones_.push_back({r, r + 10.0f*randScale() * randDir(), randScale(), randColor()});
+            cones_.push_back({r, r + 10.0f * randScale() * randDir(), randScale(), randColor()});
         }
     }
     if (numberOfToruses_.isModified() || dirty) {
@@ -270,7 +271,7 @@ void RandomMeshGenerator::process() {
     i = 0;
     for (const auto& torus : toruses_) {
         auto mesh2 = meshutil::torus(torus.center, torus.up, torus.radius1, torus.radius2,
-                                      ivec2(32, 8), torus.color);
+                                     ivec2(32, 8), torus.color);
         if (enablePicking_) addPickingBuffer(*mesh2, torusPicking_.getPickingId(i++));
         mesh->Mesh::append(*mesh2);
     }
@@ -278,4 +279,4 @@ void RandomMeshGenerator::process() {
     mesh_.setData(mesh);
 }
 
-}  // namespace
+}  // namespace inviwo

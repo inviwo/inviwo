@@ -37,18 +37,15 @@ const ProcessorInfo VolumeBinary::processorInfo_{
     "org.inviwo.VolumeBinary",  // Class identifier
     "Volume Binary",            // Display name
     "Volume Operation",         // Category
-    CodeState::Stable,    // Code state
+    CodeState::Stable,          // Code state
     Tags::None,                 // Tags
 };
-const ProcessorInfo VolumeBinary::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo VolumeBinary::getProcessorInfo() const { return processorInfo_; }
 
 VolumeBinary::VolumeBinary()
-    : VolumeGLProcessor("volume_binary.frag",false)
-    , threshold_("threshold", "Threshold", 0.5) 
-    , op_("operator","Operator",InvalidationLevel::InvalidResources)
-{
+    : VolumeGLProcessor("volume_binary.frag", false)
+    , threshold_("threshold", "Threshold", 0.5)
+    , op_("operator", "Operator", InvalidationLevel::InvalidResources) {
     addProperty(threshold_);
     addProperty(op_);
 
@@ -62,22 +59,15 @@ VolumeBinary::VolumeBinary()
     op_.setCurrentStateAsDefault();
     this->dataFormat_ = DataUInt8::get();
 }
-    
-void VolumeBinary::preProcess(TextureUnitContainer &) {
-    utilgl::setUniforms(shader_, threshold_);
-}
 
-void VolumeBinary::postProcess() {
-    volume_->dataMap_.dataRange = vec2(0, 255);
-}
+void VolumeBinary::preProcess(TextureUnitContainer &) { utilgl::setUniforms(shader_, threshold_); }
+
+void VolumeBinary::postProcess() { volume_->dataMap_.dataRange = vec2(0, 255); }
 
 void VolumeBinary::initializeResources() {
 
     shader_.getFragmentShaderObject()->addShaderDefine("OP", op_.getSelectedDisplayName());
     shader_.build();
-
 }
 
-} // namespace
-
-
+}  // namespace inviwo

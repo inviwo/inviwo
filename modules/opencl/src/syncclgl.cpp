@@ -39,17 +39,16 @@ std::map<cl_context, pfnclCreateEventFromSyncKHR> SyncCLGL::syncFunctionMap_;
 SyncCLGL::SyncCLGL(const cl::Context& context, const cl::CommandQueue& queue)
     :
 #if defined(CL_VERSION_1_1)
-      glFenceSync_(nullptr)
+    glFenceSync_(nullptr)
 #endif
     , context_(context)
-    , queue_(queue)
-{
+    , queue_(queue) {
 #if defined(CL_VERSION_1_1)
     // Check if function clCreateEventFromGLsyncKHR has been fetched previously
     // and that glCreateSyncFromCLeventARB exist (non-existing on Mac).
     if (syncFunctionMap_.find(context()) == syncFunctionMap_.end() && glCreateSyncFromCLeventARB) {
-        // Get clCreateEventFromGLsyncKHR function from platform since
-        // it is a vendor extension and cannot be statically linked
+    // Get clCreateEventFromGLsyncKHR function from platform since
+    // it is a vendor extension and cannot be statically linked
 #if defined(CL_VERSION_1_2)  // version >= 1.2
         // Function was renamed in version 1.2
         auto device = queue.getInfo<CL_QUEUE_DEVICE>();
@@ -58,7 +57,7 @@ SyncCLGL::SyncCLGL(const cl::Context& context, const cl::CommandQueue& queue)
             (pfnclCreateEventFromSyncKHR)clGetExtensionFunctionAddressForPlatform(
                 platform, "clCreateEventFromGLsyncKHR");
 #else  // Version 1.1
-        // Requires cl_khr_gl_sharing extension. Extension is supported since we are using sharing
+       // Requires cl_khr_gl_sharing extension. Extension is supported since we are using sharing
         syncFunctionMap_[context()] = (pfnclCreateEventFromSyncKHR)clGetExtensionFunctionAddress(
             "clCreateEventFromGLsyncKHR");
 #endif

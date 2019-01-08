@@ -78,4 +78,4 @@ EigenUtilsModule::EigenUtilsModule(InviwoApplication* app) : InviwoModule(app, "
     // registerDrawer(util::make_unique_ptr<EigenUtilsDrawer>());
 }
 
-}  // namespace
+}  // namespace inviwo

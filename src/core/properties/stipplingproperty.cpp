@@ -35,27 +35,25 @@ const std::string StipplingProperty::classIdentifier = "org.inviwo.StipplingProp
 std::string StipplingProperty::getClassIdentifier() const { return classIdentifier; }
 
 StipplingProperty::StipplingProperty(const std::string& identifier, const std::string& displayName,
-                           InvalidationLevel invalidationLevel, PropertySemantics semantics)
+                                     InvalidationLevel invalidationLevel,
+                                     PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , mode_("stippleMode", "Stipple Mode",
-    { { "none", "None", Mode::None },
-    { "screenspace", "Screen Space", Mode::ScreenSpace },
-    { "worldspace", "World Space", Mode::WorldSpace } },
-                   0, InvalidationLevel::InvalidResources)
+            {{"none", "None", Mode::None},
+             {"screenspace", "Screen Space", Mode::ScreenSpace},
+             {"worldspace", "World Space", Mode::WorldSpace}},
+            0, InvalidationLevel::InvalidResources)
     , length_("stippleLen", "Length", 30.0f, 0.0f, 100.0f)
     , spacing_("stippleSpacing", "Spacing", 10.0f, 0.0f, 100.0f)
     , offset_("stippleOffset", "Offset", 0.0f, 0.0f, 100.0f)
-    , worldScale_("stippleWorldScale", "World Scale", 4.0f, 1.0f, 20.0f)
-{
+    , worldScale_("stippleWorldScale", "World Scale", 4.0f, 1.0f, 20.0f) {
     addProperty(mode_);
     addProperty(length_);
     addProperty(spacing_);
     addProperty(offset_);
     addProperty(worldScale_);
 
-    mode_.onChange([this]() {
-        worldScale_.setVisible(mode_.get() == Mode::WorldSpace);
-    });
+    mode_.onChange([this]() { worldScale_.setVisible(mode_.get() == Mode::WorldSpace); });
     worldScale_.setVisible(mode_.get() == Mode::WorldSpace);
 }
 
@@ -63,9 +61,9 @@ StipplingProperty::StipplingProperty(const StipplingProperty& rhs)
     : CompositeProperty(rhs)
     , mode_(rhs.mode_)
     , length_(rhs.length_)
-    ,spacing_(rhs.spacing_)
-    ,offset_(rhs.offset_)
-    ,worldScale_(rhs.worldScale_) {
+    , spacing_(rhs.spacing_)
+    , offset_(rhs.offset_)
+    , worldScale_(rhs.worldScale_) {
 
     addProperty(mode_);
     addProperty(length_);
@@ -73,12 +71,10 @@ StipplingProperty::StipplingProperty(const StipplingProperty& rhs)
     addProperty(offset_);
     addProperty(worldScale_);
 
-    mode_.onChange([this]() {
-        worldScale_.setVisible(mode_.get() == Mode::WorldSpace);
-    });
+    mode_.onChange([this]() { worldScale_.setVisible(mode_.get() == Mode::WorldSpace); });
     worldScale_.setVisible(mode_.get() == Mode::WorldSpace);
 }
 
 StipplingProperty* StipplingProperty::clone() const { return new StipplingProperty(*this); }
 
-} // namespace inviwo
+}  // namespace inviwo

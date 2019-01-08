@@ -416,13 +416,17 @@ void SyntaxHighligther::loadConfig<GLSL>() {
 
     formaters_.push_back(std::make_unique<GLSLKeywordFormater>(typeformat, glsl_types));
     formaters_.push_back(std::make_unique<GLSLKeywordFormater>(qualifiersformat, glsl_qualifiers));
-    formaters_.push_back(std::make_unique<GLSLKeywordFormater>(builtins_varformat, glsl_builtins_var));
-    formaters_.push_back(std::make_unique<GLSLKeywordFormater>(glsl_builtins_funcformat, glsl_builtins_func));
+    formaters_.push_back(
+        std::make_unique<GLSLKeywordFormater>(builtins_varformat, glsl_builtins_var));
+    formaters_.push_back(
+        std::make_unique<GLSLKeywordFormater>(glsl_builtins_funcformat, glsl_builtins_func));
     formaters_.push_back(std::make_unique<GLSLKeywordFormater>(preprocessorformat, glsl_operators));
     formaters_.push_back(std::make_unique<GLSLNumberFormater>(constantsformat));
     formaters_.push_back(std::make_unique<GLSLKeywordFormater>(mainformat, voidmain));
-    formaters_.push_back(std::make_unique<GLSLPreProcessorFormater>(preprocessorformat, glsl_preprocessor));
-    formaters_.push_back(std::make_unique<GLSLKeywordFormater>(preprocessorformat, glsl_preprocessorAdditional));
+    formaters_.push_back(
+        std::make_unique<GLSLPreProcessorFormater>(preprocessorformat, glsl_preprocessor));
+    formaters_.push_back(
+        std::make_unique<GLSLKeywordFormater>(preprocessorformat, glsl_preprocessorAdditional));
     formaters_.push_back(std::make_unique<GLSLCommentFormater>(commentformat));
 }
 

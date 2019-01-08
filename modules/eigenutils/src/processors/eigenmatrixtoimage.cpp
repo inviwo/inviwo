@@ -54,4 +54,4 @@ void EigenMatrixToImage::process() {
     image_.setData(util::eigenMatToImage(*matrix_.getData(), flipY_.get()));
 }
 
-}  // namespace
+}  // namespace inviwo

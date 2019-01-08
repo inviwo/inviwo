@@ -46,11 +46,10 @@ ImageToSpatialSampler::ImageToSpatialSampler() : Processor(), image_("image"), s
     addPort(image_);
     addPort(sampler_);
 }
-    
+
 void ImageToSpatialSampler::process() {
-    auto sampler = std::make_shared<ImageSpatialSampler<2,double>>(image_.getData());
+    auto sampler = std::make_shared<ImageSpatialSampler<2, double>>(image_.getData());
     sampler_.setData(sampler);
 }
 
-} // namespace
-
+}  // namespace inviwo

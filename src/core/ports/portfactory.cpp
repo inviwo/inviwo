@@ -32,7 +32,7 @@
 
 namespace inviwo {
 
-bool InportFactory::hasKey(const std::string& key) const {
+bool InportFactory::hasKey(const std::string &key) const {
     return StandardFactory<Inport, InportFactoryObject>::hasKey(key);
 }
 
@@ -42,7 +42,7 @@ std::unique_ptr<Inport> InportFactory::create(const std::string &className,
         map_, className, [&identifier](InportFactoryObject *o) { return o->create(identifier); }));
 }
 
-bool OutportFactory::hasKey(const std::string& key) const {
+bool OutportFactory::hasKey(const std::string &key) const {
     return StandardFactory<Outport, OutportFactoryObject>::hasKey(key);
 }
 
@@ -52,4 +52,4 @@ std::unique_ptr<Outport> OutportFactory::create(const std::string &className,
         map_, className, [&identifier](OutportFactoryObject *o) { return o->create(identifier); }));
 }
 
-}  // namespace
+}  // namespace inviwo

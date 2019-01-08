@@ -50,8 +50,7 @@ const ProcessorInfo CompositeProcessor::processorInfo_{
     "Meta",                           // Category
     CodeState::Stable,                // Code state
     "Composites",                     // Tags
-    false
-};
+    false};
 const ProcessorInfo CompositeProcessor::getProcessorInfo() const { return processorInfo_; }
 
 CompositeProcessor::CompositeProcessor(const std::string& identifier,
@@ -252,9 +251,7 @@ void CompositeProcessor::onProcessorNetworkWillRemoveProcessor(Processor* p) {
 
 void CompositeProcessor::onDidAddProperty(Property* prop, size_t) { registerProperty(prop); }
 
-void CompositeProcessor::onWillRemoveProperty(Property* prop, size_t) {
-    unregisterProperty(prop);
-}
+void CompositeProcessor::onWillRemoveProperty(Property* prop, size_t) { unregisterProperty(prop); }
 
 CompositeProcessor::PropertyHandler::PropertyHandler(CompositeProcessor& composite,
                                                      Property* aSubProperty)

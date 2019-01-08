@@ -41,9 +41,7 @@ const ProcessorInfo ImageMixer::processorInfo_{
     CodeState::Stable,        // Code state
     Tags::GL,                 // Tags
 };
-const ProcessorInfo ImageMixer::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo ImageMixer::getProcessorInfo() const { return processorInfo_; }
 
 ImageMixer::ImageMixer()
     : Processor()
@@ -54,7 +52,7 @@ ImageMixer::ImageMixer()
     , weight_("weight", "Weight", 0.5f, 0.0f, 1.0f)
     , clamp_("clamp", "Clamp values to zero and one", false, InvalidationLevel::InvalidResources)
     , shader_("img_mix.frag", false) {
-    
+
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
     addPort(inport0_);
@@ -80,9 +78,7 @@ ImageMixer::ImageMixer()
     addProperty(weight_);
     addProperty(clamp_);
 
-    blendingMode_.onChange([&]() {
-        weight_.setVisible(blendingMode_.get() == BlendModes::Mix);
-    });
+    blendingMode_.onChange([&]() { weight_.setVisible(blendingMode_.get() == BlendModes::Mix); });
 }
 
 ImageMixer::~ImageMixer() {}
@@ -102,16 +98,15 @@ void ImageMixer::process() {
         NumericType numericType;
         if ((nf0 == NumericType::Float) || (nf1 == NumericType::Float)) {
             numericType = NumericType::Float;
-        }
-        else if ((nf0 == NumericType::UnsignedInteger) || (nf1 == NumericType::UnsignedInteger)) {
+        } else if ((nf0 == NumericType::UnsignedInteger) || (nf1 == NumericType::UnsignedInteger)) {
             numericType = NumericType::UnsignedInteger;
-        }
-        else {
+        } else {
             numericType = NumericType::SignedInteger;
         }
 
-        auto format = DataFormatBase::get(numericType, std::max(format0->getComponents(), format1->getComponents()),
-                            std::max(precision0, precision1));
+        auto format = DataFormatBase::get(
+            numericType, std::max(format0->getComponents(), format1->getComponents()),
+            std::max(precision0, precision1));
         if (format != outport_.getData()->getDataFormat()) {
             auto dimensions = outport_.getData()->getDimensions();
             auto img = std::make_shared<Image>(dimensions, format);
@@ -147,7 +142,7 @@ void ImageMixer::initializeResources() {
             compositingValue = "screen(colorA, colorB)";
             break;
         case BlendModes::Overlay:  //!< f(a,b) = 2 * a *b, if a < 0.5,   f(a,b) = 1 - 2(1 - a)(1 -
-                                   //b), otherwise (combination of Multiply and Screen)
+                                   // b), otherwise (combination of Multiply and Screen)
             compositingValue = "overlay(colorA, colorB)";
             break;
         case BlendModes::HardLight:  //!< Overlay where a and b are swapped
@@ -179,8 +174,7 @@ void ImageMixer::initializeResources() {
 
     if (clamp_) {
         shader_.getFragmentShaderObject()->addShaderDefine("CLAMP_VALUES");
-    }
-    else {
+    } else {
         shader_.getFragmentShaderObject()->removeShaderDefine("CLAMP_VALUES");
     }
 
@@ -188,5 +182,4 @@ void ImageMixer::initializeResources() {
     shader_.build();
 }
 
-}  // namespace
-
+}  // namespace inviwo

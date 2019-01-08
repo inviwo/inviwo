@@ -96,4 +96,4 @@ void Serializer::writeFile(std::ostream& stream, bool format) {
     }
 }
 
-}  // namespace
+}  // namespace inviwo

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/basegl/processors/drawlines.h>
@@ -43,9 +43,7 @@ const ProcessorInfo DrawLines::processorInfo_{
     CodeState::Stable,       // Code state
     Tags::GL,                // Tags
 };
-const ProcessorInfo DrawLines::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo DrawLines::getProcessorInfo() const { return processorInfo_; }
 
 DrawLines::DrawLines()
     : Processor()
@@ -84,8 +82,7 @@ DrawLines::DrawLines()
     lineSize_.setMinValue(static_cast<float>(aliasRange[0]));
     lineSize_.setMaxValue(static_cast<float>(aliasRange[1]));
 
-    if (aliasRange[0] == aliasRange[1])
-        lineSize_.setVisible(false);
+    if (aliasRange[0] == aliasRange[1]) lineSize_.setVisible(false);
 }
 
 DrawLines::~DrawLines() = default;
@@ -107,21 +104,20 @@ void DrawLines::process() {
 }
 
 void DrawLines::addPoint(vec2 p) {
-    auto buff = static_cast<Vec2BufferRAM*>(
-        lines_.getBuffer(0)->getEditableRepresentation<BufferRAM>());
+    auto buff =
+        static_cast<Vec2BufferRAM*>(lines_.getBuffer(0)->getEditableRepresentation<BufferRAM>());
     buff->add(p);
 }
 
 void DrawLines::clearLines() {
-    auto buff = static_cast<Vec2BufferRAM*>(
-        lines_.getBuffer(0)->getEditableRepresentation<BufferRAM>());
+    auto buff =
+        static_cast<Vec2BufferRAM*>(lines_.getBuffer(0)->getEditableRepresentation<BufferRAM>());
 
     buff->clear();
 }
 
-void DrawLines::eventDraw(Event* event){
-    if (!drawModeEnabled_)
-        return;
+void DrawLines::eventDraw(Event* event) {
+    if (!drawModeEnabled_) return;
 
     auto mouseEvent = static_cast<MouseEvent*>(event);
     auto line = mouseEvent->ndc();
@@ -130,10 +126,9 @@ void DrawLines::eventDraw(Event* event){
     invalidate(InvalidationLevel::InvalidOutput);
 }
 
-void DrawLines::eventEnableDraw(Event* event){
+void DrawLines::eventEnableDraw(Event* event) {
     auto keyEvent = static_cast<KeyboardEvent*>(event);
     drawModeEnabled_ = (keyEvent->state() != KeyState::Release);
 }
 
-}  // namespace
-
+}  // namespace inviwo

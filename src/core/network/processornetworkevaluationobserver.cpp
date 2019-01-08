@@ -41,5 +41,4 @@ void ProcessorNetworkEvaluationObservable::notifyObserversProcessorNetworkEvalua
         [](ProcessorNetworkEvaluationObserver* o) { o->onProcessorNetworkEvaluationEnd(); });
 }
 
-} // namespace
-
+}  // namespace inviwo

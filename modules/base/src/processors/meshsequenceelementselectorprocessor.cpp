@@ -47,5 +47,4 @@ MeshSequenceElementSelectorProcessor::MeshSequenceElementSelectorProcessor()
         "timeStep.selectedSequenceIndex");
 }
 
-} // namespace
-
+}  // namespace inviwo

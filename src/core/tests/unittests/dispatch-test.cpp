@@ -37,7 +37,6 @@
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 
-
 namespace inviwo {
 
 struct RamDispatcher {
@@ -61,32 +60,33 @@ using res_t = std::tuple<DataFormatId, NumericType, size_t, size_t>;
 
 template <template <class> class Predicate>
 res_t test(DataFormatId id) {
-    auto buf = createBufferRAM(10, DataFormatBase::get(id), BufferUsage::Static, BufferTarget::Data);
+    auto buf =
+        createBufferRAM(10, DataFormatBase::get(id), BufferUsage::Static, BufferTarget::Data);
 
     return dispatch<res_t, Predicate>(buf.get(), [](auto b) -> res_t {
         IVW_UNUSED_PARAM(b);
         using BT = typename std::decay<decltype(*b)>::type;
         using DT = typename BT::type;
-        return res_t{DataFormat<DT>::id(), DataFormat<DT>::numericType(), DataFormat<DT>::components(),
-                DataFormat<DT>::precision()};
+        return res_t{DataFormat<DT>::id(), DataFormat<DT>::numericType(),
+                     DataFormat<DT>::components(), DataFormat<DT>::precision()};
     });
 }
 
 TEST(DispatchTests, Test1) {
     auto res = test<dispatching::filter::Vecs>(DataFormatId::Vec3Float32);
-    
+
     EXPECT_EQ(DataFormatId::Vec3Float32, std::get<0>(res));
     EXPECT_EQ(NumericType::Float, std::get<1>(res));
-    EXPECT_EQ(3,  std::get<2>(res));
+    EXPECT_EQ(3, std::get<2>(res));
     EXPECT_EQ(32, std::get<3>(res));
 }
 
 TEST(DispatchTests, Test2) {
     auto res = test<dispatching::filter::Integers>(DataFormatId::Vec3Int32);
-    
+
     EXPECT_EQ(DataFormatId::Vec3Int32, std::get<0>(res));
     EXPECT_EQ(NumericType::SignedInteger, std::get<1>(res));
-    EXPECT_EQ(3,  std::get<2>(res));
+    EXPECT_EQ(3, std::get<2>(res));
     EXPECT_EQ(32, std::get<3>(res));
 }
 
@@ -100,8 +100,8 @@ TEST(DispatchTests, ThrowTest2) {
 }
 
 TEST(DispatchTests, InstantiationTest1) {
-    auto buf = createBufferRAM(10, DataFormatBase::get(DataFormatId::Float32),
-                               BufferUsage::Static, BufferTarget::Data);
+    auto buf = createBufferRAM(10, DataFormatBase::get(DataFormatId::Float32), BufferUsage::Static,
+                               BufferTarget::Data);
 
     auto res = dispatch<float, dispatching::filter::Scalars>(buf.get(), [](auto b) {
         IVW_UNUSED_PARAM(b);
@@ -110,13 +110,12 @@ TEST(DispatchTests, InstantiationTest1) {
 
         DT v1{0};
         DT v2{1};
-        
-        auto min = std::min(v1,v2);
+
+        auto min = std::min(v1, v2);
         return static_cast<float>(min);
     });
     EXPECT_EQ(0.0f, res);
 }
-
 
 TEST(DispatchTests, InstantiationTest2) {
     auto buf = createBufferRAM(10, DataFormatBase::get(DataFormatId::Vec3Float32),
@@ -129,14 +128,11 @@ TEST(DispatchTests, InstantiationTest2) {
 
         DT v1{0};
         DT v2{1};
-        
-        auto min = glm::min(v1,v2);
+
+        auto min = glm::min(v1, v2);
         return static_cast<float>(min[0]);
     });
     EXPECT_EQ(0.0f, res);
 }
 
-
-
-} // namespace inviwo
-
+}  // namespace inviwo

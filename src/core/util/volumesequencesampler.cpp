@@ -39,14 +39,13 @@ VolumeSequenceSampler::VolumeSequenceSampler(
     , allowLooping_(allowLooping)
     , timeRange_(0, 0)
     , totDuration_(0) {
-    
+
     for (const auto &vol : (*volumeSequence.get())) {
         wrappers_.emplace_back(std::make_shared<Wrapper>(vol));
     }
 
     auto lastWrapper = wrappers_.back();
 
-    
     auto infsTime = std::count_if(
         wrappers_.begin(), wrappers_.end(), [&](const std::shared_ptr<Wrapper> &w) -> bool {
             return w->timestamp_ == std::numeric_limits<double>::infinity();
@@ -55,13 +54,11 @@ VolumeSequenceSampler::VolumeSequenceSampler(
     auto infsDuration = std::count_if(
         wrappers_.begin(), wrappers_.end(), [&](const std::shared_ptr<Wrapper> &w) -> bool {
             return w->duration_ == std::numeric_limits<double>::infinity();
-    });
+        });
     auto size = static_cast<decltype(infsTime)>(wrappers_.size());
 
     if (infsTime == 0) {  // all volumes has timestamps, make sure the volumes are in sorted order,
-        std::sort(wrappers_.begin(), wrappers_.end() , [](auto a,auto b){
-            return *a < *b;
-        });
+        std::sort(wrappers_.begin(), wrappers_.end(), [](auto a, auto b) { return *a < *b; });
     }
 
     if (!(infsTime == 0 || infsTime == size)) {
@@ -121,7 +118,6 @@ VolumeSequenceSampler::VolumeSequenceSampler(
         }
     }
 
-
     if (firstAndLastAreSame && wrappers_.size() > 1) {
         wrappers_.pop_back();
     }
@@ -180,4 +176,4 @@ bool VolumeSequenceSampler::withinBoundsDataSpace(const dvec4 &pos) const {
     return true;
 }
 
-}  // namespace
+}  // namespace inviwo

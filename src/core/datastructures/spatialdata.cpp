@@ -24,14 +24,14 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
- 
+
 #include <inviwo/core/datastructures/spatialdata.h>
 
 namespace inviwo {
-  	template class IVW_CORE_TMPL_INST SpatialEntity<2>;
-	template class IVW_CORE_TMPL_INST SpatialEntity<3>;
-	template class IVW_CORE_TMPL_INST StructuredGridEntity<2>;
-	template class IVW_CORE_TMPL_INST StructuredGridEntity<3>;
-} // namespace
+template class IVW_CORE_TMPL_INST SpatialEntity<2>;
+template class IVW_CORE_TMPL_INST SpatialEntity<3>;
+template class IVW_CORE_TMPL_INST StructuredGridEntity<2>;
+template class IVW_CORE_TMPL_INST StructuredGridEntity<3>;
+}  // namespace inviwo

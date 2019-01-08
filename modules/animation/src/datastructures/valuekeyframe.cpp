@@ -29,7 +29,4 @@
 
 #include <modules/animation/datastructures/valuekeyframe.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
-
+namespace inviwo {}  // namespace inviwo

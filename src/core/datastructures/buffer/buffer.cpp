@@ -68,4 +68,4 @@ size_t BufferBase::getSize() const {
     return size_;
 }
 
-}
+}  // namespace inviwo

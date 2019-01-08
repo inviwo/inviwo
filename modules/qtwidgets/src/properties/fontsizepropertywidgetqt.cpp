@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/qtwidgets/properties/fontsizepropertywidgetqt.h>
@@ -89,7 +89,7 @@ FontSizePropertyWidgetQt::FontSizePropertyWidgetQt(IntProperty* property)
     comboBox_->setEditable(true);
     comboBox_->setValidator(new QIntValidator(0, 1000));
     comboBox_->setInsertPolicy(QComboBox::NoInsert);
-    
+
     connect(comboBox_->lineEdit(), &QLineEdit::editingFinished, [&]() {
         int fontSize = comboBox_->currentText().toInt();
         // check whether it is a custom font size
@@ -105,16 +105,16 @@ FontSizePropertyWidgetQt::FontSizePropertyWidgetQt(IntProperty* property)
 
     connect(comboBox_, static_cast<void (QComboBox::*)(int)>(&IvwComboBox::currentIndexChanged),
             [&](int option) {
-        if (option >= 0) {
-            int fontSize = comboBox_->currentData().toInt();
+                if (option >= 0) {
+                    int fontSize = comboBox_->currentData().toInt();
 
-            if (fontSize != property_->get()) {
-                property_->setInitiatingWidget(this);
-                property_->set(fontSize);
-                property_->clearInitiatingWidget();
-            }
-        }
-    });
+                    if (fontSize != property_->get()) {
+                        property_->setInitiatingWidget(this);
+                        property_->set(fontSize);
+                        property_->clearInitiatingWidget();
+                    }
+                }
+            });
 
     updateFromProperty();
 }
@@ -137,4 +137,4 @@ void FontSizePropertyWidgetQt::updateFromProperty() {
     }
 }
 
-} // namespace inviwo
+}  // namespace inviwo

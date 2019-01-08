@@ -37,14 +37,11 @@
 
 namespace inviwo {
 
-
 BinarySTLWriter::BinarySTLWriter() : DataWriterType<Mesh>() {
-    addExtension(FileExtension("stl","STL Binary file format"));
+    addExtension(FileExtension("stl", "STL Binary file format"));
 }
 
-BinarySTLWriter* BinarySTLWriter::clone() const {
-    return new BinarySTLWriter(*this);
-}
+BinarySTLWriter* BinarySTLWriter::clone() const { return new BinarySTLWriter(*this); }
 
 void BinarySTLWriter::writeData(const Mesh* data, const std::string filePath) const {
     if (filesystem::fileExists(filePath) && !getOverwrite()) {
@@ -82,7 +79,7 @@ void BinarySTLWriter::writeData(const Mesh* data, std::ostream& f) const {
 
     const auto model = data->getModelMatrix();
     auto modelNormal = mat3(glm::transpose(glm::inverse(model)));
-    
+
     const auto proj = [&](const auto& d1) {
         using GT = typename std::decay<decltype(d1)>::type;
         using T = typename GT::value_type;
@@ -91,14 +88,15 @@ void BinarySTLWriter::writeData(const Mesh* data, std::ostream& f) const {
     };
 
     auto vertexprinter =
-        posRam->dispatch<std::function<void(std::vector<vec3>&, size_t)>, dispatching::filter::Vec3s>(
-            [&](auto pb) -> std::function<void(std::vector<vec3>&, size_t)> {
-                return [&proj, pb](std::vector<vec3>& faces, size_t i) {
-                    auto& pos = *pb;
-                    const auto v = proj(pos[i]);
-                    faces.push_back(static_cast<vec3>(v));
-                };
-            });
+        posRam
+            ->dispatch<std::function<void(std::vector<vec3>&, size_t)>, dispatching::filter::Vec3s>(
+                [&](auto pb) -> std::function<void(std::vector<vec3>&, size_t)> {
+                    return [&proj, pb](std::vector<vec3>& faces, size_t i) {
+                        auto& pos = *pb;
+                        const auto v = proj(pos[i]);
+                        faces.push_back(static_cast<vec3>(v));
+                    };
+                });
 
     auto nit = util::find_if(data->getBuffers(), [](const auto& buf) {
         return buf.first.type == BufferType::NormalAttrib;
@@ -138,7 +136,7 @@ void BinarySTLWriter::writeData(const Mesh* data, std::ostream& f) const {
         vertexprinter(floatdata, i2);
         vertexprinter(floatdata, i3);
     };
-    
+
     for (const auto& inds : data->getIndexBuffers()) {
 
         if (inds.first.dt != DrawType::Triangles) {
@@ -188,20 +186,19 @@ void BinarySTLWriter::writeData(const Mesh* data, std::ostream& f) const {
                 break;
         }
     }
-    
-    std::uint16_t attrib {0};
+
+    std::uint16_t attrib{0};
     std::array<char, 80> header = {0};
     f.write(header.data(), header.size());
     std::uint32_t size = static_cast<std::uint32_t>(floatdata.size() / 4);
     f.write(reinterpret_cast<char*>(&size), sizeof(size));
     for (size_t i = 0; i < floatdata.size() - 4u; i += 4) {
-        f.write(reinterpret_cast<char*>(&floatdata[i+0]), sizeof(vec3));
-        f.write(reinterpret_cast<char*>(&floatdata[i+1]), sizeof(vec3));
-        f.write(reinterpret_cast<char*>(&floatdata[i+2]), sizeof(vec3));
-        f.write(reinterpret_cast<char*>(&floatdata[i+3]), sizeof(vec3));
+        f.write(reinterpret_cast<char*>(&floatdata[i + 0]), sizeof(vec3));
+        f.write(reinterpret_cast<char*>(&floatdata[i + 1]), sizeof(vec3));
+        f.write(reinterpret_cast<char*>(&floatdata[i + 2]), sizeof(vec3));
+        f.write(reinterpret_cast<char*>(&floatdata[i + 3]), sizeof(vec3));
         f.write(reinterpret_cast<char*>(&attrib), sizeof(attrib));
     }
 }
 
-} // namespace
-
+}  // namespace inviwo

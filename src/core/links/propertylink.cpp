@@ -35,9 +35,7 @@ namespace inviwo {
 
 PropertyLink::PropertyLink() : src_(nullptr), dst_(nullptr) {}
 
-PropertyLink::operator bool() const {
-    return src_ && dst_;
-}
+PropertyLink::operator bool() const { return src_ && dst_; }
 
 PropertyLink::PropertyLink(Property* src, Property* dst) : src_(src), dst_(dst) {}
 
@@ -109,4 +107,4 @@ bool operator<(const PropertyLink& lhs, const PropertyLink& rhs) {
     }
 }
 
-}  // namespace
+}  // namespace inviwo

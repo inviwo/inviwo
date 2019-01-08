@@ -106,4 +106,4 @@ void MeshEntryExitPointsCL::computeEntryExitPoints(
     }
 }
 
-}  // namespace
+}  // namespace inviwo

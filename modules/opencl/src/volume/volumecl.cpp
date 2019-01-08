@@ -32,7 +32,6 @@
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/util/stdextensions.h>  // make_unique is c++14 but works on some compilers
 
-
 namespace inviwo {
 
 VolumeCL::VolumeCL(const DataFormatBase* format, const void* data)
@@ -102,7 +101,7 @@ const cl::Image3D& VolumeCL::get() const { return *clImage_; }
 
 std::type_index VolumeCL::getTypeIndex() const { return std::type_index(typeid(VolumeCL)); }
 
-}  // namespace
+}  // namespace inviwo
 
 namespace cl {
 

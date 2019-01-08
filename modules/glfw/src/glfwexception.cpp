@@ -37,4 +37,4 @@ GLFWException::GLFWException(const std::string& message, ExceptionContext contex
 GLFWInitException::GLFWInitException(const std::string& message, ExceptionContext context)
     : ModuleInitException(message, context, {"opengl"}) {}
 
-}  // namespace
+}  // namespace inviwo

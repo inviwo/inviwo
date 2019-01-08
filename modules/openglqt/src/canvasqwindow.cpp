@@ -63,7 +63,7 @@ CanvasQWindow::CanvasQWindow(QWindow* parent, uvec2 dim)
     thisGLContext_->setFormat(sharedFormat_);
 
     // This is our default rendering context
-    // Initialized once. So "THE" first object of this class will 
+    // Initialized once. So "THE" first object of this class will
     // not have any shared context (or widget)
     // But Following objects, will share the context of initial object
     bool contextCreated;
@@ -84,9 +84,10 @@ CanvasQWindow::CanvasQWindow(QWindow* parent, uvec2 dim)
         int major = sharedFormat_.majorVersion();
         int minor = sharedFormat_.minorVersion();
         std::cout << "GL Version: " << major << "." << minor << std::endl;
-        std::cout << "GL Profile: " << (sharedFormat_.profile() == QSurfaceFormat::CoreProfile
-                                            ? "Core"
-                                            : "CompatibilityProfile")
+        std::cout << "GL Profile: "
+                  << (sharedFormat_.profile() == QSurfaceFormat::CoreProfile
+                          ? "Core"
+                          : "CompatibilityProfile")
                   << std::endl;
         const GLubyte* vendor = glGetString(GL_VENDOR);
         std::string vendorStr =
@@ -154,4 +155,4 @@ void CanvasQWindow::resizeEvent(QResizeEvent* event) {
     QWindow::resizeEvent(event);
 }
 
-}  // namespace
+}  // namespace inviwo

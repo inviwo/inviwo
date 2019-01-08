@@ -57,7 +57,7 @@ void InviwoSplashScreen::drawContents(QPainter* painter) {
     painter->setPen(Qt::black);
     painter->drawText(12, 326, versionLabel);
     auto font = painter->font();
-    font.setPointSizeF(font.pointSizeF()*0.8f);
+    font.setPointSizeF(font.pointSizeF() * 0.8f);
     painter->setFont(font);
     painter->drawText(12, 346, message());
 }
@@ -70,4 +70,4 @@ void InviwoSplashScreen::finish(QWidget* waitFor) {
     if (showSplashScreen_) QSplashScreen::finish(waitFor);
 }
 
-}  // namespace
+}  // namespace inviwo

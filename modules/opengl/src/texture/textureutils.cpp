@@ -75,7 +75,8 @@ void activateTargetAndCopySource(Image& targetImage, const Image& sourceImage, I
     outImageGL->activateBuffer(type);
 }
 
-void activateTargetAndCopySource(Image& targetImage, const ImageInport& sourceInport, ImageType type) {
+void activateTargetAndCopySource(Image& targetImage, const ImageInport& sourceInport,
+                                 ImageType type) {
     auto outImageGL = targetImage.getEditableRepresentation<ImageGL>();
 
     if (auto inImage = sourceInport.getData()) {
@@ -414,8 +415,7 @@ void bindTexture(const IsoTFProperty& property, const TextureUnit& texUnit) {
     }
 }
 
-void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
-                        const IsoTFProperty& property) {
+void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const IsoTFProperty& property) {
     TextureUnit unit;
     bindTexture(property, unit);
     shader.setUniform(property.tf_.getIdentifier(), unit);
@@ -490,6 +490,6 @@ void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, ImageOutport
                         ImageType type) {
     bindAndSetUniforms(shader, cont, *port.getData(), port.getIdentifier(), type);
 }
-}
+}  // namespace utilgl
 
-}  // namespace
+}  // namespace inviwo

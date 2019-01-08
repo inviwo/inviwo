@@ -104,4 +104,4 @@ void GrayscaleCLProcessor::process() {
     }
 }
 
-}  // namespace
+}  // namespace inviwo

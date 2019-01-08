@@ -32,19 +32,15 @@
 
 namespace inviwo {
 
-PortInspectorFactoryObject::PortInspectorFactoryObject(const std::string& portClassIdentifier,
-                               const std::string& inspectorWorkspaceFileName)
+PortInspectorFactoryObject::PortInspectorFactoryObject(
+    const std::string& portClassIdentifier, const std::string& inspectorWorkspaceFileName)
     : portClassIdentifier_(portClassIdentifier)
     , inspectorWorkspaceFileName_(inspectorWorkspaceFileName) {}
 
-std::string PortInspectorFactoryObject::getClassIdentifier() const {
-    return portClassIdentifier_;
-}
+std::string PortInspectorFactoryObject::getClassIdentifier() const { return portClassIdentifier_; }
 
 std::unique_ptr<PortInspector> PortInspectorFactoryObject::create() {
     return util::make_unique<PortInspector>(portClassIdentifier_, inspectorWorkspaceFileName_);
 }
 
-
-} // namespace
-
+}  // namespace inviwo

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/io/datawriter.h>
@@ -34,34 +34,23 @@ namespace inviwo {
 DataWriter::DataWriter() : overwrite_(false), extensions_() {}
 
 DataWriter::DataWriter(const DataWriter& rhs)
-    : overwrite_(rhs.overwrite_)
-    , extensions_(rhs.extensions_) {
-}
+    : overwrite_(rhs.overwrite_), extensions_(rhs.extensions_) {}
 
 DataWriter& DataWriter::operator=(const DataWriter& that) {
     if (this != &that) {
         overwrite_ = that.overwrite_;
         extensions_.clear();
 
-        for (const auto &elem : that.getExtensions())
-          extensions_.push_back(elem);
+        for (const auto& elem : that.getExtensions()) extensions_.push_back(elem);
     }
 
     return *this;
 }
 
-const std::vector<FileExtension>& DataWriter::getExtensions() const {
-    return extensions_;
-}
-void DataWriter::addExtension(FileExtension ext) {
-    extensions_.push_back(ext);
-}
+const std::vector<FileExtension>& DataWriter::getExtensions() const { return extensions_; }
+void DataWriter::addExtension(FileExtension ext) { extensions_.push_back(ext); }
 
-bool DataWriter::getOverwrite() const {
-    return overwrite_;
-}
-void DataWriter::setOverwrite(bool val) {
-    overwrite_ = val;
-}
+bool DataWriter::getOverwrite() const { return overwrite_; }
+void DataWriter::setOverwrite(bool val) { overwrite_ = val; }
 
-} // namespace
+}  // namespace inviwo

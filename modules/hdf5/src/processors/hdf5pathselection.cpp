@@ -74,8 +74,6 @@ void PathSelection::onDataChange() {
     selection_.setCurrentStateAsDefault();
 }
 
-}  // namespace
+}  // namespace hdf5
 
-}  // namespace
-
-
+}  // namespace inviwo

@@ -43,8 +43,6 @@
 #include <gtest/gtest.h>
 #include <warn/pop>
 
-
-
 using namespace inviwo;
 
 int main(int argc, char** argv) {

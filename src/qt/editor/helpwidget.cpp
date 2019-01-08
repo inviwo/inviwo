@@ -265,7 +265,7 @@ QVariant HelpBrowser::loadResource(int type, const QUrl& name) {
                 image.scaled(std::max(200, width() - 60), image.height(), Qt::KeepAspectRatio)};
 
             if (name.toString().contains("form_")) {
-                
+
                 for (int y = 0; y < resized.height(); y++) {
                     for (int x = 0; x < resized.width(); x++) {
                         auto p = resized.pixelColor(x, y);

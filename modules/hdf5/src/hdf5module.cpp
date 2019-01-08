@@ -45,4 +45,4 @@ HDF5Module::HDF5Module(InviwoApplication* app) : InviwoModule(app, "HDF5") {
     registerProcessor<hdf5::PathSelection>();
 }
 
-}  // namespace
+}  // namespace inviwo

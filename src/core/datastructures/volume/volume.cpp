@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/volume/volume.h>
@@ -56,7 +56,7 @@ Document Volume::getInfo() const {
     using P = Document::PathComponent;
     using H = utildoc::TableBuilder::Header;
     Document doc;
-    doc.append("b", "Volume", { {"style", "color:white;"} });
+    doc.append("b", "Volume", {{"style", "color:white;"}});
     utildoc::TableBuilder tb(doc.handle(), P::end());
 
     tb(H("Format"), getDataFormat()->getString());
@@ -72,9 +72,9 @@ Document Volume::getInfo() const {
             for (size_t i = 0; i < histograms->size(); ++i) {
                 std::stringstream ss;
                 ss << "Channel " << i << " Min: " << (*histograms)[i].stats_.min
-                    << " Mean: " << (*histograms)[i].stats_.mean
-                    << " Max: " << (*histograms)[i].stats_.max
-                    << " Std: " << (*histograms)[i].stats_.standardDeviation;
+                   << " Mean: " << (*histograms)[i].stats_.mean
+                   << " Max: " << (*histograms)[i].stats_.max
+                   << " Std: " << (*histograms)[i].stats_.standardDeviation;
                 tb(H("Stats"), ss.str());
 
                 std::stringstream ss2;
@@ -129,7 +129,6 @@ std::shared_ptr<VolumeRepresentation> Volume::createDefaultRepresentation() cons
     return createVolumeRAM(getDimensions(), getDataFormat());
 }
 
-
 vec3 Volume::getWorldSpaceGradientSpacing() const {
     mat3 textureToWorld = mat3(getCoordinateTransformer().getTextureToWorldMatrix());
     // Basis vectors with a length of one voxel.
@@ -138,7 +137,7 @@ vec3 Volume::getWorldSpaceGradientSpacing() const {
     vec3 a = textureToWorld[0] / static_cast<float>(dimensions[0]);
     vec3 b = textureToWorld[1] / static_cast<float>(dimensions[1]);
     vec3 c = textureToWorld[2] / static_cast<float>(dimensions[2]);
-    // Project the voxel basis vectors 
+    // Project the voxel basis vectors
     // onto the world space x/y/z axes,
     // and choose the longest projected vector
     // for each axis.
@@ -146,19 +145,17 @@ vec3 Volume::getWorldSpaceGradientSpacing() const {
     // vec3 x{ 1.f, 0, 0 };
     // vec3 y{ 0, 1.f, 0 };
     // vec3 z{ 0, 0, 1.f };
-    // such that 
+    // such that
     // ax' = dot(x, a) = a.x
     // bx' = dot(x, b) = b.x
     // cx' = dot(x, c) = c.x
     // and so on.
-    auto signedMax = [](const float &x1, const float &x2) {
+    auto signedMax = [](const float& x1, const float& x2) {
         return (std::abs(x1) >= std::abs(x2)) ? x1 : x2;
     };
 
-    vec3 ds{ 
-        signedMax(a.x, signedMax(b.x, c.x)),
-        signedMax(a.y, signedMax(b.y, c.y)),
-        signedMax(a.z, signedMax(b.z, c.z)) };
+    vec3 ds{signedMax(a.x, signedMax(b.x, c.x)), signedMax(a.y, signedMax(b.y, c.y)),
+            signedMax(a.z, signedMax(b.z, c.z))};
 
     // Return the spacing in world space,
     // actually given by:
@@ -181,4 +178,4 @@ template class IVW_CORE_TMPL_INST DataReaderType<Volume>;
 template class IVW_CORE_TMPL_INST DataWriterType<Volume>;
 template class IVW_CORE_TMPL_INST DataReaderType<VolumeSequence>;
 
-}  // namespace
+}  // namespace inviwo

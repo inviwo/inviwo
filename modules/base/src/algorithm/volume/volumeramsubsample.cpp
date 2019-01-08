@@ -87,4 +87,4 @@ std::shared_ptr<VolumeRAM> util::volumeSubSample(const VolumeRAM* volume, size3_
         });
 }
 
-}  // namespace
+}  // namespace inviwo

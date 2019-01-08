@@ -24,38 +24,26 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/metadata/positionmetadata.h>
 
 namespace inviwo {
 
-PositionMetaData::PositionMetaData()
-    : IntVec2MetaData(ivec2(0,0))
-{}
+PositionMetaData::PositionMetaData() : IntVec2MetaData(ivec2(0, 0)) {}
 
-PositionMetaData::PositionMetaData(int x, int y)
-    : IntVec2MetaData(ivec2(x,y))
-{}
+PositionMetaData::PositionMetaData(int x, int y) : IntVec2MetaData(ivec2(x, y)) {}
 
 PositionMetaData::~PositionMetaData() {}
 
-PositionMetaData* PositionMetaData::clone() const {
-    return new PositionMetaData(*this);
-}
+PositionMetaData* PositionMetaData::clone() const { return new PositionMetaData(*this); }
 
-ivec2 PositionMetaData::getXY() {
-    return get();
-}
+ivec2 PositionMetaData::getXY() { return get(); }
 
-void PositionMetaData::setXY(const ivec2& xy) {
-    set(xy);
-}
+void PositionMetaData::setXY(const ivec2& xy) { set(xy); }
 
-int PositionMetaData::getX() {
-    return get().x;
-}
+int PositionMetaData::getX() { return get().x; }
 
 void PositionMetaData::setX(const int& x) {
     ivec2 value = get();
@@ -63,9 +51,7 @@ void PositionMetaData::setX(const int& x) {
     set(value);
 }
 
-int PositionMetaData::getY() {
-    return get().y;
-}
+int PositionMetaData::getY() { return get().y; }
 
 void PositionMetaData::setY(const int& y) {
     ivec2 value = get();
@@ -86,4 +72,4 @@ void PositionMetaData::deserialize(Deserializer& d) {
 
 const std::string PositionMetaData::CLASS_IDENTIFIER = "org.inviwo.PositionMetaData";
 
-} // namespace
+}  // namespace inviwo

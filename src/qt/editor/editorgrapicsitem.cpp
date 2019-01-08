@@ -145,7 +145,7 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
                 auto layer = item.second;
 
                 auto imgbuf = layer->getAsCodedBuffer("png");
-                // imgbuf might be null, if we don't have a data writer factory function to save 
+                // imgbuf might be null, if we don't have a data writer factory function to save
                 // the layer. Happens if cimg not used, and no other data writer is registered.
                 if (!imgbuf) continue;
 

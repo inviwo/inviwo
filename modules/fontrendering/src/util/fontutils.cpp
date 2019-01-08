@@ -41,7 +41,7 @@ namespace inviwo {
 namespace util {
 
 std::vector<std::pair<std::string, std::string>> getAvailableFonts(const std::string &fontPath) {
-    const std::vector<std::string> supportedExt ={ "ttf", "otf", "cff", "pcf" };
+    const std::vector<std::string> supportedExt = {"ttf", "otf", "cff", "pcf"};
 
     const std::string path = (fontPath.empty() ? getDefaultFontPath() : fontPath);
 
@@ -54,9 +54,8 @@ std::vector<std::pair<std::string, std::string>> getAvailableFonts(const std::st
     });
 
     // sort file names case insensitive
-    std::sort(fonts.begin(), fonts.end(), [](std::string a, std::string b) {
-        return toLower(a) < toLower(b);
-    });
+    std::sort(fonts.begin(), fonts.end(),
+              [](std::string a, std::string b) { return toLower(a) < toLower(b); });
 
     // capitalize the first letter and each one following a space.
     // Also replace '-' with space for improved readability
@@ -78,10 +77,11 @@ std::vector<std::pair<std::string, std::string>> getAvailableFonts(const std::st
 
     std::vector<std::pair<std::string, std::string>> result;
     // create readable font names from file names and add full path to each file
-    std::transform(fonts.begin(), fonts.end(), std::back_inserter(result),
+    std::transform(
+        fonts.begin(), fonts.end(), std::back_inserter(result),
         [path, makeReadable](const std::string &str) -> std::pair<std::string, std::string> {
-        return{ makeReadable(filesystem::getFileNameWithoutExtension(str)), path + '/' + str };
-    });
+            return {makeReadable(filesystem::getFileNameWithoutExtension(str)), path + '/' + str};
+        });
 
     return result;
 }
@@ -91,6 +91,6 @@ std::string getDefaultFontPath() {
            "/fonts";
 }
 
-} // namespace util
+}  // namespace util
 
-} // namespace inviwo
+}  // namespace inviwo

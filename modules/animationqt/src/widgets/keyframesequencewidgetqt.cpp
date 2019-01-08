@@ -119,9 +119,7 @@ void KeyframeSequenceWidgetQt::onKeyframeSequenceMoved(KeyframeSequence*) {
     prepareGeometryChange();
 }
 
-QRectF KeyframeSequenceWidgetQt::boundingRect() const {
-    return childrenBoundingRect();
-}
+QRectF KeyframeSequenceWidgetQt::boundingRect() const { return childrenBoundingRect(); }
 
 KeyframeWidgetQt* KeyframeSequenceWidgetQt::getKeyframeQt(const Keyframe* keyframe) const {
     auto it = keyframes_.find(keyframe);

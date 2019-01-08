@@ -39,17 +39,15 @@ namespace inviwo {
 class CompositePropertyWidgetQt;
 
 ABufferGLModule::ABufferGLModule(InviwoApplication* app) : InviwoModule(app, "ABufferGL") {
-    
-    abuffergl::addShaderResources(ShaderManager::getPtr(),
-        {getPath(ModulePath::GLSL), getPath(ModulePath::GLSL) + "/abuffer"}
-    );
+
+    abuffergl::addShaderResources(
+        ShaderManager::getPtr(),
+        {getPath(ModulePath::GLSL), getPath(ModulePath::GLSL) + "/abuffer"});
 
     registerProcessor<ABufferGeometryGLProcessor>();
 }
 
-int ABufferGLModule::getVersion() const {
-    return 1;
-}
+int ABufferGLModule::getVersion() const { return 1; }
 
 std::unique_ptr<VersionConverter> ABufferGLModule::getConverter(int version) const {
     return util::make_unique<Converter>(version);
@@ -74,13 +72,12 @@ bool ABufferGLModule::Converter::convert(TxElement* root) {
         case 0: {
             res |= xml::changeIdentifiers(root, repl);
         }
-                return res;
+            return res;
 
         default:
             return false;  // No changes
     }
     return true;
-
 }
 
-}  // namespace
+}  // namespace inviwo

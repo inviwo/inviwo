@@ -125,16 +125,14 @@ void CubeRenderer::initializeResources() {
 }
 
 void CubeRenderer::drawMeshes() {
-    
-            for (const auto& elem : inport_) {
-                MeshDrawerGL::DrawObject drawer(elem->getRepresentation<MeshGL>(),
-                                                elem->getDefaultMeshInfo());
-                utilgl::setShaderUniforms(shader_, *elem, "geometry");
-                shader_.setUniform("pickingEnabled", meshutil::hasPickIDBuffer(elem.get()));
-                drawer.draw(MeshDrawerGL::DrawMode::Points);
-            }
-    
-    
+
+    for (const auto& elem : inport_) {
+        MeshDrawerGL::DrawObject drawer(elem->getRepresentation<MeshGL>(),
+                                        elem->getDefaultMeshInfo());
+        utilgl::setShaderUniforms(shader_, *elem, "geometry");
+        shader_.setUniform("pickingEnabled", meshutil::hasPickIDBuffer(elem.get()));
+        drawer.draw(MeshDrawerGL::DrawMode::Points);
+    }
 }
 
 }  // namespace inviwo

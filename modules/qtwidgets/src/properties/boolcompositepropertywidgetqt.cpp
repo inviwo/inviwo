@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/qtwidgets/properties/boolcompositepropertywidgetqt.h>
@@ -35,13 +35,12 @@
 namespace inviwo {
 
 BoolCompositePropertyWidgetQt::BoolCompositePropertyWidgetQt(BoolCompositeProperty* property)
-    : CollapsibleGroupBoxWidgetQt(property, true)
-    , boolCompProperty_(property) {
-   
+    : CollapsibleGroupBoxWidgetQt(property, true), boolCompProperty_(property) {
+
     setPropertyOwner(property);
     boolCompProperty_->PropertyOwnerObservable::addObserver(this);
     boolCompProperty_->CompositePropertyObservable::addObserver(this);
-}          
+}
 
 void BoolCompositePropertyWidgetQt::setCollapsed(bool value) {
     boolCompProperty_->setCollapsed(value);
@@ -66,16 +65,12 @@ void BoolCompositePropertyWidgetQt::onSetDisplayName(Property*, const std::strin
     label_->setText(displayName);
 }
 
-bool BoolCompositePropertyWidgetQt::isChecked() const {
-    return boolCompProperty_->isChecked();
-}
+bool BoolCompositePropertyWidgetQt::isChecked() const { return boolCompProperty_->isChecked(); }
 void BoolCompositePropertyWidgetQt::setChecked(bool checked) {
     CollapsibleGroupBoxWidgetQt::setChecked(checked);
     boolCompProperty_->setChecked(checked);
 }
 
-bool BoolCompositePropertyWidgetQt::isCollapsed() const {
-    return boolCompProperty_->isCollapsed();
-}
+bool BoolCompositePropertyWidgetQt::isCollapsed() const { return boolCompProperty_->isCollapsed(); }
 
-} // namespace
+}  // namespace inviwo

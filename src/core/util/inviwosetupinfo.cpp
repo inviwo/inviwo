@@ -33,8 +33,8 @@
 #include <inviwo/core/common/inviwoapplication.h>
 
 namespace inviwo {
-InviwoSetupInfo::ModuleSetupInfo::ModuleSetupInfo(const InviwoModule* module) :
-    name_(module->getIdentifier()), version_(module->getVersion()) {
+InviwoSetupInfo::ModuleSetupInfo::ModuleSetupInfo(const InviwoModule* module)
+    : name_(module->getIdentifier()), version_(module->getVersion()) {
     for (const auto& processor : module->getProcessors()) {
         processors_.push_back((processor)->getClassIdentifier());
     }
@@ -58,12 +58,8 @@ InviwoSetupInfo::InviwoSetupInfo(const InviwoApplication* app) {
     }
 }
 
-void InviwoSetupInfo::serialize(Serializer& s) const {
-    s.serialize("Modules", modules_, "Module");
-}
-void InviwoSetupInfo::deserialize(Deserializer& d) {
-    d.deserialize("Modules", modules_, "Module");
-}
+void InviwoSetupInfo::serialize(Serializer& s) const { s.serialize("Modules", modules_, "Module"); }
+void InviwoSetupInfo::deserialize(Deserializer& d) { d.deserialize("Modules", modules_, "Module"); }
 
 const InviwoSetupInfo::ModuleSetupInfo* InviwoSetupInfo::getModuleInfo(
     const std::string& module) const {
@@ -87,4 +83,4 @@ std::string InviwoSetupInfo::getModuleForProcessor(const std::string& processor)
     return "";
 }
 
-}  // namespace
+}  // namespace inviwo

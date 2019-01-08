@@ -40,9 +40,6 @@ const ProcessorInfo VolumeExport::processorInfo_{
 };
 const ProcessorInfo VolumeExport::getProcessorInfo() const { return processorInfo_; }
 
-const Volume* VolumeExport::getData() {
-    return port_.getData().get();
-}
+const Volume* VolumeExport::getData() { return port_.getData().get(); }
 
-
-}  // namespace
+}  // namespace inviwo

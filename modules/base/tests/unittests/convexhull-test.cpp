@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <warn/push>
@@ -69,12 +69,12 @@ std::vector<T> getPointSet(const std::size_t numPoints, T extent) {
     return points;
 }
 
-//TEST(ConvexHullTests, init) {
+// TEST(ConvexHullTests, init) {
 //}
 
 TEST(isConvex, oneElement) {
-    std::vector<ivec2> points = { ivec2(1, 0) };
-    std::vector<ivec2> result = { ivec2(1, 0) };
+    std::vector<ivec2> points = {ivec2(1, 0)};
+    std::vector<ivec2> result = {ivec2(1, 0)};
 
     auto hull = util::convexHull(points);
     EXPECT_TRUE(util::isConvex(hull));
@@ -82,8 +82,8 @@ TEST(isConvex, oneElement) {
 }
 
 TEST(isConvex, twoElements) {
-    std::vector<ivec2> points = { ivec2(1, 0), ivec2(0, 0) };
-    std::vector<ivec2> result = { ivec2(0, 0), ivec2(1, 0) };
+    std::vector<ivec2> points = {ivec2(1, 0), ivec2(0, 0)};
+    std::vector<ivec2> result = {ivec2(0, 0), ivec2(1, 0)};
 
     auto hull = util::convexHull(points);
     EXPECT_EQ(result, hull);
@@ -91,8 +91,8 @@ TEST(isConvex, twoElements) {
 }
 
 TEST(isConvex, threeElements) {
-    std::vector<ivec2> points = { ivec2(1, 0), ivec2(0, 0), ivec2(1, 1) };
-    std::vector<ivec2> result = { ivec2(0, 0), ivec2(1, 0), ivec2(1, 1) };
+    std::vector<ivec2> points = {ivec2(1, 0), ivec2(0, 0), ivec2(1, 1)};
+    std::vector<ivec2> result = {ivec2(0, 0), ivec2(1, 0), ivec2(1, 1)};
 
     auto hull = util::convexHull(points);
     EXPECT_EQ(result, hull);
@@ -100,8 +100,8 @@ TEST(isConvex, threeElements) {
 }
 
 TEST(isConvex, fourElements) {
-    std::vector<ivec2> points = { ivec2(1, 0), ivec2(0, 0), ivec2(0, 1), ivec2(1, 1) };
-    std::vector<ivec2> result = { ivec2(0, 0), ivec2(1, 0), ivec2(1, 1), ivec2(0, 1) };
+    std::vector<ivec2> points = {ivec2(1, 0), ivec2(0, 0), ivec2(0, 1), ivec2(1, 1)};
+    std::vector<ivec2> result = {ivec2(0, 0), ivec2(1, 0), ivec2(1, 1), ivec2(0, 1)};
 
     auto hull = util::convexHull(points);
     EXPECT_EQ(result, hull);
@@ -109,19 +109,17 @@ TEST(isConvex, fourElements) {
 }
 
 TEST(isConvex, fourElementsDouble) {
-    std::vector<dvec2> points = { dvec2(1, 0), dvec2(0, 0), dvec2(0, 1), dvec2(1, 1) };
-    std::vector<dvec2> result = { dvec2(0, 0), dvec2(1, 0), dvec2(1, 1), dvec2(0, 1) };
+    std::vector<dvec2> points = {dvec2(1, 0), dvec2(0, 0), dvec2(0, 1), dvec2(1, 1)};
+    std::vector<dvec2> result = {dvec2(0, 0), dvec2(1, 0), dvec2(1, 1), dvec2(0, 1)};
 
     auto hull = util::convexHull(points);
     EXPECT_EQ(result, hull);
     EXPECT_TRUE(util::isConvex(hull)) << "computed hull is _not_ convex";
 }
 
-
-
 TEST(isInside, inside) {
-    std::vector<ivec2> points ={ ivec2(2, 0), ivec2(0, 0), ivec2(0, 2), ivec2(2, 2) };
-    std::vector<ivec2> result ={ ivec2(0, 0), ivec2(2, 0), ivec2(2, 2), ivec2(0, 2) };
+    std::vector<ivec2> points = {ivec2(2, 0), ivec2(0, 0), ivec2(0, 2), ivec2(2, 2)};
+    std::vector<ivec2> result = {ivec2(0, 0), ivec2(2, 0), ivec2(2, 2), ivec2(0, 2)};
 
     auto hull = util::convexHull(points);
     EXPECT_EQ(result, hull);
@@ -129,8 +127,8 @@ TEST(isInside, inside) {
 }
 
 TEST(isInside, insideDouble) {
-    std::vector<dvec2> points ={ dvec2(1, 0), dvec2(0, 0), dvec2(0, 1), dvec2(1, 1) };
-    std::vector<dvec2> result ={ dvec2(0, 0), dvec2(1, 0), dvec2(1, 1), dvec2(0, 1) };
+    std::vector<dvec2> points = {dvec2(1, 0), dvec2(0, 0), dvec2(0, 1), dvec2(1, 1)};
+    std::vector<dvec2> result = {dvec2(0, 0), dvec2(1, 0), dvec2(1, 1), dvec2(0, 1)};
 
     auto hull = util::convexHull(points);
     EXPECT_EQ(result, hull);
@@ -138,15 +136,16 @@ TEST(isInside, insideDouble) {
 }
 
 TEST(isInside, outsideDouble) {
-    std::vector<dvec2> points ={ dvec2(1, 0), dvec2(0, 0), dvec2(0, 1), dvec2(1, 1) };
-    std::vector<dvec2> result ={ dvec2(0, 0), dvec2(1, 0), dvec2(1, 1), dvec2(0, 1) };
+    std::vector<dvec2> points = {dvec2(1, 0), dvec2(0, 0), dvec2(0, 1), dvec2(1, 1)};
+    std::vector<dvec2> result = {dvec2(0, 0), dvec2(1, 0), dvec2(1, 1), dvec2(0, 1)};
 
     auto hull = util::convexHull(points);
     EXPECT_EQ(result, hull);
-    EXPECT_FALSE(util::isInside(hull, dvec2(1.5, 0.5))) << "point (1.5,0.5) not outside convex hull";
-    EXPECT_FALSE(util::isInside(hull, dvec2(-0.25, 0.5))) << "point (-0.25,0.5) not outside convex hull";
+    EXPECT_FALSE(util::isInside(hull, dvec2(1.5, 0.5)))
+        << "point (1.5,0.5) not outside convex hull";
+    EXPECT_FALSE(util::isInside(hull, dvec2(-0.25, 0.5)))
+        << "point (-0.25,0.5) not outside convex hull";
 }
-
 
 TEST(convexHull, ivec2) {
     auto points = getPointSet<ivec2>(10, ivec2(10, 10));
@@ -163,9 +162,9 @@ TEST(convexHull, dvec2) {
 }
 
 TEST(convexHull, vec3) {
-    std::vector<vec3> p = { vec3(0.0f), vec3(1.0f) };
+    std::vector<vec3> p = {vec3(0.0f), vec3(1.0f)};
     // convex hull is not yet implemented for other types than *vec2
     EXPECT_THROW(util::convexHull<vec3>(p), inviwo::Exception);
 }
 
-}
+}  // namespace inviwo

@@ -39,13 +39,8 @@ const ProcessorInfo MeshExport::processorInfo_{
     CodeState::Stable,        // Code state
     Tags::CPU,                // Tags
 };
-const ProcessorInfo MeshExport::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo MeshExport::getProcessorInfo() const { return processorInfo_; }
 
-const Mesh* MeshExport::getData() {
-    return port_.getData().get();
-}
+const Mesh* MeshExport::getData() { return port_.getData().get(); }
 
-} // namespace
-
+}  // namespace inviwo

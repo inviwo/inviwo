@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/qtwidgets/lightpositionwidgetqt.h>
@@ -40,7 +40,6 @@
 #include <warn/pop>
 
 namespace inviwo {
-
 
 LightPositionWidgetQt::LightPositionWidgetQt() : QLabel(), mouseDown_(false) {
     gradientPixmap_ = new QPixmap(100, 100);
@@ -62,9 +61,7 @@ LightPositionWidgetQt::~LightPositionWidgetQt() {
     delete gradientPixmap_;
 }
 
-void LightPositionWidgetQt::mousePressEvent(QMouseEvent*) {
-    mouseDown_ = true;
-}
+void LightPositionWidgetQt::mousePressEvent(QMouseEvent*) { mouseDown_ = true; }
 
 void LightPositionWidgetQt::mouseMoveEvent(QMouseEvent* e) {
     if (!mouseDown_) return;
@@ -78,10 +75,10 @@ void LightPositionWidgetQt::mouseReleaseEvent(QMouseEvent* e) {
 
 void LightPositionWidgetQt::setNewPosition(QMouseEvent* e) {
     const QPointF p{e->pos()};
-    QPointF center{gradientPixmap_->width()/2.0f, gradientPixmap_->height()/2.0f};
-    float x = static_cast<float>(p.x()-center.x());
-    float y = static_cast<float>(p.y()-center.y());
-    float gradientSpaceRadius = sqrt(x*x+y*y);
+    QPointF center{gradientPixmap_->width() / 2.0f, gradientPixmap_->height() / 2.0f};
+    float x = static_cast<float>(p.x() - center.x());
+    float y = static_cast<float>(p.y() - center.y());
+    float gradientSpaceRadius = sqrt(x * x + y * y);
 
     float gradientRadius = static_cast<float>(gradient_->radius());
 
@@ -89,17 +86,17 @@ void LightPositionWidgetQt::setNewPosition(QMouseEvent* e) {
     if (gradientSpaceRadius + 3.f > gradientRadius) {
         // User clicked outside of radius so we need to normalize x,y coordinate
         // Add a small number to avoid gradient on the border
-        float normFactor = gradientRadius /(gradientSpaceRadius + 3.f);
+        float normFactor = gradientRadius / (gradientSpaceRadius + 3.f);
         x *= normFactor;
         y *= normFactor;
     }
 
-    float z = sqrt(gradientRadius*gradientRadius - x*x - y*y);
-    theta_ = acos(z/gradientRadius);
+    float z = sqrt(gradientRadius * gradientRadius - x * x - y * y);
+    theta_ = acos(z / gradientRadius);
     phi_ = atan2(y, x);
     // Spherical to Cartesian coordinates
-    float x1=sin(theta_)*cos(phi_)*gradientRadius;
-    float y1=sin(theta_)*sin(phi_)*gradientRadius;
+    float x1 = sin(theta_) * cos(phi_) * gradientRadius;
+    float y1 = sin(theta_) * sin(phi_) * gradientRadius;
     QPointF newPoint(x1, y1);
     gradient_->setFocalPoint(newPoint + center);
     gradientPixmap_->fill(Qt::transparent);
@@ -110,27 +107,26 @@ void LightPositionWidgetQt::setNewPosition(QMouseEvent* e) {
 
 void LightPositionWidgetQt::setPosition(const vec3& p) {
     radius_ = glm::length(p);
-    radius_ *= p.z < 0.0f ? -1.0f : 1.0f;  
+    radius_ *= p.z < 0.0f ? -1.0f : 1.0f;
 
-    if (radius_==0)
-        return;
+    if (radius_ == 0) return;
     float gradientRadius = static_cast<float>(gradient_->radius());
 
-    QPointF center(gradientPixmap_->width()/2, gradientPixmap_->height()/2);
-    theta_ = acos(p.z/std::abs(radius_));
+    QPointF center(gradientPixmap_->width() / 2, gradientPixmap_->height() / 2);
+    theta_ = acos(p.z / std::abs(radius_));
     phi_ = atan2(-p.y, p.x);
-    float x1=sin(theta_)*cos(phi_)*gradientRadius;
-    float y1=sin(theta_)*sin(phi_)*gradientRadius;
-    float gradientSpaceRadius = sqrt(pow(x1,2)+pow(y1,2));
+    float x1 = sin(theta_) * cos(phi_) * gradientRadius;
+    float y1 = sin(theta_) * sin(phi_) * gradientRadius;
+    float gradientSpaceRadius = sqrt(pow(x1, 2) + pow(y1, 2));
 
     // Check if user clicked close to, or outside of radius
-    if (gradientSpaceRadius+3.f > gradientRadius) {
-        float normFactor = gradientRadius /(3.f+gradientSpaceRadius);
+    if (gradientSpaceRadius + 3.f > gradientRadius) {
+        float normFactor = gradientRadius / (3.f + gradientSpaceRadius);
         x1 *= normFactor;
         y1 *= normFactor;
     }
 
-    QPointF newPoint(x1,y1);
+    QPointF newPoint(x1, y1);
     gradient_->setFocalPoint(newPoint + center);
     gradientPixmap_->fill(Qt::transparent);
     painter_->fillRect(0, 0, 100, 100, *gradient_);
@@ -138,33 +134,25 @@ void LightPositionWidgetQt::setPosition(const vec3& p) {
 }
 
 vec3 LightPositionWidgetQt::getPosition() const {
-    return std::abs(radius_ ) * vec3(getX(), getY(), getZ());
+    return std::abs(radius_) * vec3(getX(), getY(), getZ());
 }
 
 void LightPositionWidgetQt::setRadius(float radius) {
-    radius_ = radius; 
+    radius_ = radius;
     emit positionChanged();
 }
 
-float LightPositionWidgetQt::getRadius() const {
-    return radius_;
-}
+float LightPositionWidgetQt::getRadius() const { return radius_; }
 
-float LightPositionWidgetQt::getX() const {
-    return sin(theta_)*cos(phi_);
-}
+float LightPositionWidgetQt::getX() const { return sin(theta_) * cos(phi_); }
 
-float LightPositionWidgetQt::getY() const {
-    return -sin(theta_)*sin(phi_);
-}
+float LightPositionWidgetQt::getY() const { return -sin(theta_) * sin(phi_); }
 
-float LightPositionWidgetQt::getZ() const {
-    return (radius_ < 0.0f ? -1.0f : 1.0f) * cos(theta_);
-}
+float LightPositionWidgetQt::getZ() const { return (radius_ < 0.0f ? -1.0f : 1.0f) * cos(theta_); }
 
 void LightPositionWidgetQt::mouseDoubleClickEvent(QMouseEvent*) {
     radius_ *= -1.0;
     emit positionChanged();
 }
 
-}//namespace
+}  // namespace inviwo

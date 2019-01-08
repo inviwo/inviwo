@@ -34,28 +34,25 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo ImageBrightnessContrast::processorInfo_{
-    "org.inviwo.ImageBrightnessContrast",      // Class identifier
-    "Image Brightness Contrast",                // Display name
-    "Image Operation",              // Category
-    CodeState::Stable,  // Code state
-    Tags::None,               // Tags
+    "org.inviwo.ImageBrightnessContrast",  // Class identifier
+    "Image Brightness Contrast",           // Display name
+    "Image Operation",                     // Category
+    CodeState::Stable,                     // Code state
+    Tags::None,                            // Tags
 };
-const ProcessorInfo ImageBrightnessContrast::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo ImageBrightnessContrast::getProcessorInfo() const { return processorInfo_; }
 
 ImageBrightnessContrast::ImageBrightnessContrast()
     : ImageGLProcessor("brightnesscontrast.frag")
-    , brightness_("brightness","Brightness", 0.f, -1.f, 1.f, 0.01f)
+    , brightness_("brightness", "Brightness", 0.f, -1.f, 1.f, 0.01f)
     , contrast_("contrast", "Contrast", 1.f, 0.f, 2.f, 0.01f) {
 
     addProperty(brightness_);
     addProperty(contrast_);
 }
-    
+
 void ImageBrightnessContrast::preProcess(TextureUnitContainer &) {
     utilgl::setUniforms(shader_, brightness_, contrast_);
 }
 
-} // namespace
-
+}  // namespace inviwo

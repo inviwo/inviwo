@@ -24,11 +24,10 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/qtwidgets/ordinaleditorwidget.h>
-
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -38,7 +37,7 @@
 
 namespace inviwo {
 
-BaseOrdinalEditorWidget::BaseOrdinalEditorWidget() : editor_{ new IvwLineEdit(this) } {
+BaseOrdinalEditorWidget::BaseOrdinalEditorWidget() : editor_{new IvwLineEdit(this)} {
 
     QHBoxLayout* hLayout = new QHBoxLayout();
 
@@ -59,7 +58,7 @@ BaseOrdinalEditorWidget::BaseOrdinalEditorWidget() : editor_{ new IvwLineEdit(th
 BaseOrdinalEditorWidget::~BaseOrdinalEditorWidget() = default;
 
 void BaseOrdinalEditorWidget::updateEditor() {
-    QSignalBlocker block{ editor_ };
+    QSignalBlocker block{editor_};
     editor_->setText(transformValueToEditor());
 }
 
@@ -75,5 +74,4 @@ void BaseOrdinalEditorWidget::applyValue() {
     emit valueChanged();
 }
 
-} // namespace
-
+}  // namespace inviwo

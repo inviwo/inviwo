@@ -29,6 +29,4 @@
 
 #include <inviwo/core/ports/portinspectorfactory.h>
 
-namespace inviwo {
-
-}  // namespace
+namespace inviwo {}  // namespace inviwo

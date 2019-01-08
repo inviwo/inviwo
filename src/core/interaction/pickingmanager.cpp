@@ -58,7 +58,8 @@ PickingAction* PickingManager::registerPickingAction(Processor* processor,
     if (!pickObj) {
         pickingActions_.push_back(util::make_unique<PickingAction>(lastIndex_, size));
         lastIndex_ += size;
-        // we can only differentiate up to 2^24-1 picking IDs due to the use of u8vec3 for picking colors
+        // we can only differentiate up to 2^24-1 picking IDs due to the use of u8vec3 for picking
+        // colors
         if (lastIndex_ >= (1 << 24)) {
             LogWarn("More than " << (1 << 24)
                                  << " picking IDs in use. Unreliable picking behavior expected.");

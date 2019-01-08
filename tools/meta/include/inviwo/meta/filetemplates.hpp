@@ -37,7 +37,6 @@
 #include <optional>
 #include <unordered_map>
 
-
 namespace inviwo::meta {
 
 struct INVIWO_META_API File {
@@ -57,12 +56,12 @@ struct INVIWO_META_API FileTemplate {
 };
 
 class INVIWO_META_API FileTemplates {
-public: 
+public:
     FileTemplates();
     const FileTemplate& operator[](const std::string& key) const;
+
 private:
     std::unordered_map<std::string, FileTemplate> templates;
 };
 
-}
-
+}  // namespace inviwo::meta

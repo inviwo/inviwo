@@ -27,7 +27,6 @@
  *
  *********************************************************************************/
 
-
 #include <inviwo/core/util/imageramutils.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/io/datareaderfactory.h>
@@ -54,6 +53,6 @@ std::shared_ptr<Image> readImageFromDisk(std::string filename) {
         return nullptr;
     }
 }
-}
+}  // namespace util
 
-}  // namespace
+}  // namespace inviwo

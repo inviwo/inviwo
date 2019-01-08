@@ -29,6 +29,4 @@
 
 #include <modules/fontrendering/datastructures/texatlasentry.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

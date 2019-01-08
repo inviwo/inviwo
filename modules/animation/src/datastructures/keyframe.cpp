@@ -43,7 +43,7 @@ bool operator<=(const Keyframe& a, const Keyframe& b) { return a.getTime() <= b.
 
 bool operator<(const Keyframe& a, const Seconds& b) { return a.getTime() < b; }
 bool operator<=(const Keyframe& a, const Seconds& b) { return a.getTime() <= b; }
-bool operator>(const Keyframe& a, const Seconds& b) { return  a.getTime() > b; }
+bool operator>(const Keyframe& a, const Seconds& b) { return a.getTime() > b; }
 bool operator>=(const Keyframe& a, const Seconds& b) { return a.getTime() >= b; }
 
 bool operator<(const Seconds& a, const Keyframe& b) { return a < b.getTime(); }

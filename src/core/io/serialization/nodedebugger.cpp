@@ -48,9 +48,7 @@ NodeDebugger::NodeDebugger(TxElement* elem) {
     }
 }
 
-const NodeDebugger::Node& NodeDebugger::operator[](std::size_t idx) const {
-    return nodes_[idx];
-}
+const NodeDebugger::Node& NodeDebugger::operator[](std::size_t idx) const { return nodes_[idx]; }
 
 std::string NodeDebugger::toString(std::size_t idx) const {
     if (idx < nodes_.size()) {
@@ -88,4 +86,4 @@ NodeDebugger::Node::Node(std::string k /*= ""*/, std::string i /*= ""*/, std::st
                          int l /*= 0*/)
     : key(k), identifier(i), type(t), line(l) {}
 
-}  // namespace
+}  // namespace inviwo

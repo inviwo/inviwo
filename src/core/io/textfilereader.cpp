@@ -61,7 +61,7 @@ std::string TextFileReader::read() {
     if (data.empty()) {
         file.close();
         std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(400));
-        
+
         file = filesystem::ifstream(filePath_);
         if (!file.is_open()) {
             throw FileException("Could not open file: " + filePath_);

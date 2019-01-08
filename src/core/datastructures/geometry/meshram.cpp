@@ -47,7 +47,7 @@ MeshRAM& MeshRAM::operator=(const MeshRAM& that) {
 std::type_index MeshRAM::getTypeIndex() const { return std::type_index(typeid(MeshRAM)); }
 
 bool MeshRAM::isValid() const {
-    return util::all_of(bufferRAM_, [](const auto& b) { return b->isValid(); }); 
+    return util::all_of(bufferRAM_, [](const auto& b) { return b->isValid(); });
 }
 
 MeshRAM* MeshRAM::clone() const { return new MeshRAM(*this); }
@@ -66,4 +66,4 @@ void MeshRAM::update(bool editable) {
     }
 }
 
-}  // namespace
+}  // namespace inviwo
