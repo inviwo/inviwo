@@ -223,7 +223,7 @@ def buildStandard(params, externalModules, extraOpts, onModules, offModules = []
         extraOpts.each {item ->
             opts[item.key] = item.value
         }
-        build(opts, onModules, offModules)
+        build(opts, externalModules, onModules, offModules)
     }
 }
 
