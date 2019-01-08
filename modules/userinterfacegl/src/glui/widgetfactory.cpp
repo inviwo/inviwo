@@ -33,10 +33,6 @@ namespace inviwo {
 
 namespace glui {
 
-std::unique_ptr<Element> WidgetFactory::create(const std::string&) const {
-    return nullptr;
-}
-
 bool WidgetFactory::hasKey(const std::string& key) const { return Parent::hasKey(key); }
 
 }  // namespace glui

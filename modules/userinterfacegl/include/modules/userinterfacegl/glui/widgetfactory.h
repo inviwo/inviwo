@@ -45,8 +45,8 @@ class Renderer;
 
 class IVW_MODULE_USERINTERFACEGL_API WidgetFactory
     : public StandardFactory<Element, WidgetFactoryObject, const std::string & /*key*/,
-                             Property & /*prop*/, Processor & /*proc*/, Renderer & /*renderer*/>,
-      public Factory<Element, const std::string & /*key*/> {
+                             Property & /*prop*/, Processor & /*proc*/, Renderer & /*renderer*/>
+      {
 public:
     using Parent = StandardFactory<Element, WidgetFactoryObject, const std::string &, Property &,
                                    Processor &, Renderer &>;
@@ -54,9 +54,6 @@ public:
     WidgetFactory() = default;
     virtual ~WidgetFactory() = default;
 
-    using Parent::create;
-
-    virtual std::unique_ptr<Element> create(const std::string &className) const override;
     virtual bool hasKey(const std::string &key) const override;
 };
 
