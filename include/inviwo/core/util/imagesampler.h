@@ -119,7 +119,8 @@ public:
 
 protected:
     virtual Vector<DataDims, T> sampleDataSpace(const dvec2 &pos) const {
-        dvec2 samplePos = pos * dvec2(dims_ - size2_t(1));
+        //dvec2 samplePos = pos * dvec2(dims_ - size2_t(1));
+        dvec2 samplePos = pos * dvec2(dims_) - 0.5;
         size2_t indexPos = size2_t(samplePos);
         dvec2 interpolants = samplePos - dvec2(indexPos);
 
