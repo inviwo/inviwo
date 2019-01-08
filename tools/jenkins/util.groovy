@@ -164,7 +164,7 @@ def cmake(opts, externalModules, onModules, offModules) {
         (externalModules ? " -DIVW_EXTERNAL_MODULES=" + externalModules.join(";") : "" ) +
         onModules.inject("", {res, item -> res + " -D" + "IVW_MODULE_" + item + "=ON"}) +
         offModules.inject("", {res, item -> res + " -D" + "IVW_MODULE_" + item + "=OFF"}) + 
-        "../inviwo"
+        " ../inviwo"
 }
 
 def clean(params) {
