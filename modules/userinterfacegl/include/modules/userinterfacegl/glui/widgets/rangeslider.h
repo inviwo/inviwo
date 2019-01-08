@@ -51,6 +51,9 @@ class Renderer;
  */
 class IVW_MODULE_USERINTERFACEGL_API RangeSlider : public Element {
 public:
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
+
     RangeSlider(const std::string &label, const ivec2 &value, int minValue, int maxValue,
                 int minSeparation, Processor &processor, Renderer &uiRenderer,
                 const ivec2 &extent = ivec2(100, 24),
