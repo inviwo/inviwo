@@ -812,6 +812,11 @@ struct almostEqual<glm::mat<C, R, T, Q>> {
 
 }  // namespace detail
 
+template <typename M, typename T = M::value_type>
+M filledMat(T v) {
+    return M{T(0)} + v;
+}
+
 template <typename T>
 T epsilon() {
     return detail::epsilon<T>::value();
