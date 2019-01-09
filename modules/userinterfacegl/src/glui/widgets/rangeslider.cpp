@@ -43,6 +43,9 @@ namespace inviwo {
 
 namespace glui {
 
+const std::string RangeSlider::classIdentifier = "org.inviwo.glui.RangeSlider";
+std::string RangeSlider::getClassIdentifier() const { return classIdentifier; }
+
 RangeSlider::RangeSlider(const std::string &label, const ivec2 &value, int minValue, int maxValue,
                          int minSeparation, Processor &processor, Renderer &uiRenderer,
                          const ivec2 &extent, UIOrientation orientation)

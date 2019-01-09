@@ -39,6 +39,8 @@ void Layout::setMargins(int top, int left, int bottom, int right) {
     margins_ = ivec4(top, left, bottom, right);
 }
 
+void Layout::setMargins(const ivec4& margins) { margins_ = margins; }
+
 const ivec4& Layout::getMargins() const { return margins_; }
 
 }  // namespace glui

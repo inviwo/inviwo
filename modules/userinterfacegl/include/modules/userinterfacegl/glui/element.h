@@ -76,6 +76,8 @@ class IVW_MODULE_USERINTERFACEGL_API Element {
 public:
     enum class UIState { Normal, Pressed, Checked };
 
+    virtual std::string getClassIdentifier() const = 0;
+
     Element(const std::string &label, Processor &processor, Renderer &uiRenderer,
             UIOrientation orientation = UIOrientation::Horizontal);
     virtual ~Element();

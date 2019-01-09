@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,31 +27,8 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_USERINTERFACEGLMODULE_H
-#define IVW_USERINTERFACEGLMODULE_H
-
-#include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
-
-#include <modules/userinterfacegl/glui/widgetsupplier.h>
 #include <modules/userinterfacegl/glui/widgetfactory.h>
-#include <modules/userinterfacegl/glui/widgetfactoryobject.h>
-#include <modules/userinterfacegl/glui/element.h>
 
 namespace inviwo {
 
-class IVW_MODULE_USERINTERFACEGL_API UserInterfaceGLModule : public InviwoModule, public glui::WidgetSupplier {
-public:
-    UserInterfaceGLModule(InviwoApplication* app);
-    virtual ~UserInterfaceGLModule();
-    
-    glui::WidgetFactory& getGLUIWidgetFactory();
-    const glui::WidgetFactory& getGLUIWidgetFactory() const;
-
-private:
-    glui::WidgetFactory widgetFactory_;
-};
-
 }  // namespace inviwo
-
-#endif  // IVW_USERINTERFACEGLMODULE_H

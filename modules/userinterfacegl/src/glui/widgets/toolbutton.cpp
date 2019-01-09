@@ -48,6 +48,9 @@ namespace inviwo {
 
 namespace glui {
 
+const std::string ToolButton::classIdentifier = "org.inviwo.glui.ToolButton";
+std::string ToolButton::getClassIdentifier() const { return classIdentifier; }
+
 ToolButton::ToolButton(const std::string &filename, Processor &processor, Renderer &uiRenderer,
                        const ivec2 &extent)
     : AbstractButton("", processor, uiRenderer, extent)

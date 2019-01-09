@@ -208,7 +208,15 @@ AnimationQtModule::AnimationQtModule(InviwoApplication* app)
                                      ControlSequenceEditor::classIdentifier());
 }
 
-AnimationQtModule::~AnimationQtModule() { unRegisterAll(); }
+AnimationQtModule::~AnimationQtModule() {
+    // Unregister everything from the factory since this module _owns_ the factory. This is
+    // neccessary even though the base class destructor, i.e. animation::AnimationQtSupplier, takes
+    // care of this. Otherwise the supplier will unregister the items _after_ the factory is
+    // destroyed.
+    //
+    // Other modules do not have to do this!
+    unRegisterAll();
+}
 
 animation::TrackWidgetQtFactory& AnimationQtModule::getTrackWidgetQtFactory() {
     return trackWidgetQtFactory_;
