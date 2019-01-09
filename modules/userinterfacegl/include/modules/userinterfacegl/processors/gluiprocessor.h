@@ -51,6 +51,8 @@
 
 namespace inviwo {
 
+class InviwoApplication;
+
 namespace glui {
 
 class Element;
@@ -85,7 +87,7 @@ class Element;
 class IVW_MODULE_USERINTERFACEGL_API GLUIProcessor : public Processor,
                                                      public PropertyOwnerObserver {
 public:
-    GLUIProcessor();
+    GLUIProcessor(InviwoApplication* app = InviwoApplication::getPtr());
     virtual ~GLUIProcessor() = default;
 
     virtual void process() override;
@@ -129,6 +131,7 @@ private:
     glui::BoxLayout layout_;
 
     std::unordered_map<Property*, std::unique_ptr<glui::Element>> propertyWidgetMap_;
+    InviwoApplication* app_;
 };
 
 }  // namespace glui

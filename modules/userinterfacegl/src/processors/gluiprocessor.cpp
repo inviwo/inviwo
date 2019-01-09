@@ -60,7 +60,7 @@ const ProcessorInfo GLUIProcessor::processorInfo_{
 };
 const ProcessorInfo GLUIProcessor::getProcessorInfo() const { return processorInfo_; }
 
-GLUIProcessor::GLUIProcessor()
+GLUIProcessor::GLUIProcessor(InviwoApplication* app)
     : Processor()
     , inport_("inport")
     , outport_("outport")
@@ -91,12 +91,10 @@ GLUIProcessor::GLUIProcessor()
     // list of dynamic properties
     , dynamicProperties_(
           "dynamicProperties", "Properties",
-          []() {
+          [app]() {
               std::vector<std::unique_ptr<Property>> v;
-              auto& factory = InviwoApplication::getPtr()
-                                  ->getModuleByType<UserInterfaceGLModule>()
-                                  ->getGLUIWidgetFactory();
-              auto propertyFactory = InviwoApplication::getPtr()->getPropertyFactory();
+              auto& factory = app->getModuleByType<UserInterfaceGLModule>()->getGLUIWidgetFactory();
+              auto propertyFactory = app->getPropertyFactory();
 
               for (auto key : factory.getKeys()) {
                   auto displayName = splitString(key, '.').back();
@@ -106,7 +104,8 @@ GLUIProcessor::GLUIProcessor()
               }
               return v;
           }())
-    , layout_(glui::BoxLayout::LayoutDirection::Vertical) {
+    , layout_(glui::BoxLayout::LayoutDirection::Vertical)
+    , app_(app) {
 
     inport_.setOptional(true);
 
@@ -155,35 +154,35 @@ GLUIProcessor::GLUIProcessor()
 
 namespace {
 
-template <typename P, typename func>
-void sync(P& property, glui::Renderer& renderer, func set) {
+template <typename P, typename T, typename Arg>
+void sync(T& obj, const P& property, void (T::*setter)(Arg)) {
     if (property.isModified()) {
-        (renderer.*set)(property.get());
+        (obj.*setter)(property.get());
     }
 }
-
-template <typename P, typename func>
-void sync(P& property, glui::BoxLayout& layout, func set) {
+template <typename P, typename T, typename V>
+void sync(T& obj, const P& property, V T::*member) {
     if (property.isModified()) {
-        (layout.*set)(property.get());
+        obj.*member = property.get();
     }
 }
 
 }  // namespace
 
 void GLUIProcessor::process() {
-    sync(uiColor_, uiRenderer_, &Renderer::setUIColor);
-    sync(uiSecondaryColor_, uiRenderer_, &Renderer::setSecondaryUIColor);
-    sync(uiBorderColor_, uiRenderer_, &Renderer::setBorderColor);
-    sync(uiTextColor_, uiRenderer_, &Renderer::setTextColor);
-    sync(hoverColor_, uiRenderer_, &Renderer::setHoverColor);
-    sync(uiDisabledColor_, uiRenderer_, &Renderer::setDisabledColor);
+    sync(uiRenderer_, uiColor_, &Renderer::setUIColor);
+    sync(uiRenderer_, uiSecondaryColor_, &Renderer::setSecondaryUIColor);
+    sync(uiRenderer_, uiBorderColor_, &Renderer::setBorderColor);
+    sync(uiRenderer_, uiTextColor_, &Renderer::setTextColor);
+    sync(uiRenderer_, hoverColor_, &Renderer::setHoverColor);
+    sync(uiRenderer_, uiDisabledColor_, &Renderer::setDisabledColor);
     // layout
-    sync(layoutDirection_, layout_, &BoxLayout::setDirection);
-    sync(layoutSpacing_, layout_, &BoxLayout::setSpacing);
-    sync(layoutMargins_, layout_, static_cast<void (Layout::*)(const ivec4&)>(&Layout::setMargins));
+    sync(layout_, layoutDirection_, &BoxLayout::setDirection);
+    sync(layout_, layoutSpacing_, &BoxLayout::setSpacing);
+    sync(layout_, layoutMargins_,
+         static_cast<void (BoxLayout::*)(const ivec4&)>(&BoxLayout::setMargins));
     // scaling will affect all glui elements, the change is propagated by the layout
-    sync(uiScaling_, layout_, &BoxLayout::setScalingFactor);
+    sync(layout_, uiScaling_, &BoxLayout::setScalingFactor);
 
     utilgl::activateTargetAndClearOrCopySource(outport_, inport_);
     utilgl::DepthFuncState depthFunc(GL_ALWAYS);
@@ -208,9 +207,7 @@ void GLUIProcessor::process() {
 void GLUIProcessor::onWillAddProperty(Property*, size_t) {}
 
 void GLUIProcessor::onDidAddProperty(Property* property, size_t) {
-    auto& factory = InviwoApplication::getPtr()
-                        ->getModuleByType<UserInterfaceGLModule>()
-                        ->getGLUIWidgetFactory();
+    auto& factory = app_->getModuleByType<UserInterfaceGLModule>()->getGLUIWidgetFactory();
 
     auto widget = factory.create(property->getClassIdentifier(), *property, *this, uiRenderer_);
     layout_.addElement(*widget.get());
