@@ -63,11 +63,13 @@ def cmd(stageName, dirName, env = [], fun) {
 
 def warn(refjob = 'inviwo/master') {
     stage("Warn Tests") {
-        recordIssues failedNewAll: 1, referenceJobName: refjob, sourceCodeEncoding: 'UTF-8', 
-            tools: [gcc4(name: 'GCC', reportEncoding: 'UTF-8'), 
-                    cppCheck(reportEncoding: 'UTF-8'), 
-                    clangTidy(reportEncoding: 'UTF-8'), 
-                    clang(name: 'Clang', reportEncoding: 'UTF-8')]
+        dir('build')
+            recordIssues failedNewAll: 1, referenceJobName: refjob, sourceCodeEncoding: 'UTF-8', 
+                tools: [gcc4(name: 'GCC', reportEncoding: 'UTF-8'), 
+                        //cppCheck(reportEncoding: 'UTF-8'), 
+                        //clangTidy(reportEncoding: 'UTF-8'), 
+                        clang(name: 'Clang', reportEncoding: 'UTF-8')]
+        }
     }
 }
 
@@ -177,6 +179,7 @@ def clean(params) {
 Map defaultOptions(params) {
     return [
         "CMAKE_CXX_COMPILER_LAUNCHER" : "ccache",
+        "CMAKE_EXPORT_COMPILE_COMMANDS" : "ON",
         "CMAKE_BUILD_TYPE" : params['Build Type'],
         "OpenCL_LIBRARY" : "/usr/local/cuda/lib64/libOpenCL.so",
         "OpenCL_INCLUDE_DIR" : "/usr/local/cuda/include/",
