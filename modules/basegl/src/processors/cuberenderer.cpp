@@ -52,7 +52,7 @@ CubeRenderer::CubeRenderer()
     , outport_("image")
     , cubeProperties_("cubeProperties", "Cube Properties")
     , forceSize_("forceSize", "Force Size", false, InvalidationLevel::InvalidResources)
-    , defaultSize_("defaultRadius", "Default Size", 0.05f, 0.00001f, 2.0f, 0.01f)
+    , defaultSize_("defaultSize", "Default Size", 0.05f, 0.00001f, 2.0f, 0.01f)
     , forceColor_("forceColor", "Force Color", false, InvalidationLevel::InvalidResources)
     , defaultColor_("defaultColor", "Default Color", vec4(0.7f, 0.7f, 0.7f, 1.0f), vec4(0.0f),
                     vec4(1.0f))

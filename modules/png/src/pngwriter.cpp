@@ -40,27 +40,25 @@ namespace inviwo {
 namespace detail {
 
 void writeToBuffer(png_structp png_ptr, png_bytep data, png_size_t length) {
-    std::vector<unsigned char>* buffer = (std::vector<unsigned char>*)(png_get_io_ptr(png_ptr));
-
-    for (int i = 0; i < length; i++) {
-        buffer->push_back(((unsigned char*)data)[i]);
+    auto buffer = static_cast<std::vector<unsigned char>*>(png_get_io_ptr(png_ptr));
+    for (png_size_t i = 0; i < length; i++) {
+        buffer->push_back(static_cast<unsigned char>(data[i]));
     }
 }
 
 template <typename T>
-void write(const LayerRAMPrecision<T>* ram, png_voidp* ioPtr, png_rw_ptr writeFunc = NULL,
-           png_flush_ptr flushFunc = NULL) {
+void write(const LayerRAMPrecision<T>* ram, png_voidp ioPtr, png_rw_ptr writeFunc = nullptr,
+           png_flush_ptr flushFunc = nullptr) {
 
     // TODO better exception messages
-    auto png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-
+    auto png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
     if (!png_ptr) {
         throw PNGLayerWriterException("Internal PNG Error: Failed to create write struct");
     }
-    util::OnScopeExit cleanup([&]() { png_destroy_write_struct(&png_ptr, NULL); });
+    util::OnScopeExit cleanup([&]() { png_destroy_write_struct(&png_ptr, nullptr); });
 
     png_set_error_fn(
-        png_ptr, NULL,
+        png_ptr, nullptr,
         [](png_structp, png_const_charp message) {
             throw PNGLayerWriterException(std::string("Error witting PNG: ") + message);
         },
@@ -74,29 +72,25 @@ void write(const LayerRAMPrecision<T>* ram, png_voidp* ioPtr, png_rw_ptr writeFu
 
     png_set_write_fn(png_ptr, ioPtr, writeFunc, flushFunc);
 
-    png_uint_32 color_type = PNG_COLOR_TYPE_RGB;
-    auto df = ram->getDataFormat();
+    const auto df = ram->getDataFormat();
+    const auto color_type = [&]() {
+        switch (df->getComponents()) {
+            case 1:
+                return PNG_COLOR_TYPE_GRAY;
+            case 2:
+                return PNG_COLOR_TYPE_GRAY_ALPHA;
+            case 3:
+                return PNG_COLOR_TYPE_RGB;
+            case 4:
+                return PNG_COLOR_TYPE_RGBA;
+            default:
+                // Should not ever reach this
+                throw new PNGLayerWriterException("Unsupported number of channels");
+        }
+    }();
 
-    switch (df->getComponents()) {
-        case 1:
-            color_type = PNG_COLOR_TYPE_GRAY;
-            break;
-        case 2:
-            color_type = PNG_COLOR_TYPE_GRAY_ALPHA;
-            break;
-        case 3:
-            color_type = PNG_COLOR_TYPE_RGB;
-            break;
-        case 4:
-            color_type = PNG_COLOR_TYPE_RGBA;
-            break;
-        default:
-            throw new PNGLayerWriterException(
-                "Unsupported number of channels");  // Should not ever reach this
-    }
-
-    auto size = ram->getDimensions();
-    auto bit_depth = df->getPrecision();
+    const auto size = ram->getDimensions();
+    const auto bit_depth = df->getPrecision();
 
     if (df->getNumericType() == NumericType::Float) {
         png_set_IHDR(png_ptr, info_ptr, static_cast<int>(size.x), static_cast<int>(size.y), 16,
@@ -106,19 +100,17 @@ void write(const LayerRAMPrecision<T>* ram, png_voidp* ioPtr, png_rw_ptr writeFu
         png_write_info(png_ptr, info_ptr);
         png_set_swap(png_ptr);
 
-        auto pixels = ram->getDataTyped();
+        const auto pixels = ram->getDataTyped();
 
         using T2 = typename util::same_extent<T, glm::uint16>::type;
         std::vector<T2> newData(size.x * size.y);
-        for (int i = 0; i < size.x * size.y; i++) {
-            const static T zero(0);
-            const static T one(1);
-            newData[i] = util::glm_convert_normalized<T2>(glm::clamp(pixels[i], zero, one));
+        for (size_t i = 0; i < size.x * size.y; i++) {
+            newData[i] = util::glm_convert_normalized<T2>(glm::clamp(pixels[i], T{0}, T{1}));
         }
 
         std::vector<png_bytep> rows(size.y);
         for (png_uint_32 r = 0; r < size.y; ++r) {
-            rows[size.y - r - 1] = (png_bytep)(newData.data() + r * size.x);
+            rows[size.y - r - 1] = reinterpret_cast<png_bytep>(newData.data() + r * size.x);
         }
 
         png_write_image(png_ptr, rows.data());
@@ -131,12 +123,11 @@ void write(const LayerRAMPrecision<T>* ram, png_voidp* ioPtr, png_rw_ptr writeFu
         png_write_info(png_ptr, info_ptr);
         png_set_swap(png_ptr);
 
-        auto pixels = ram->getDataTyped();
-
+        auto pixels = const_cast<T*>(ram->getDataTyped());
         std::vector<png_bytep> rows(size.y);
         for (png_uint_32 r = 0; r < size.y; ++r) {
             // Inviwo images are upside down compared to how libpng expects them
-            rows[size.y - r - 1] = (png_bytep)(pixels + r * size.x);
+            rows[size.y - r - 1] = reinterpret_cast<png_bytep>(pixels + r * size.x);
         }
 
         png_write_image(png_ptr, rows.data());
@@ -158,16 +149,12 @@ PNGLayerWriter::PNGLayerWriter() : DataWriterType<Layer>() {
 PNGLayerWriter* PNGLayerWriter::clone() const { return new PNGLayerWriter(*this); }
 
 void PNGLayerWriter::writeData(const Layer* data, const std::string filePath) const {
-
     data->getRepresentation<LayerRAM>()->dispatch<void>([&](auto ram) {
         FILE* fp = fopen(filePath.c_str(), "wb");
+        if (!fp) throw PNGLayerWriterException("Failed to open file for writing, " + filePath);
         util::OnScopeExit closeFile([&fp]() { fclose(fp); });
 
-        if (!fp) {
-            throw PNGLayerWriterException("Failed to open file for writing, " + filePath);
-        }
-
-        detail::write(ram, (png_voidp*)fp);
+        detail::write(ram, static_cast<png_voidp>(fp));
     });
 }
 
@@ -175,24 +162,13 @@ std::unique_ptr<std::vector<unsigned char>> PNGLayerWriter::writeDataToBuffer(
     const Layer* data, const std::string&) const {
 
     auto buffer = std::make_unique<std::vector<unsigned char>>();
-    data->getRepresentation<LayerRAM>()->dispatch<void>(
-        [&](auto ram) { detail::write(ram, (png_voidp*)buffer.get(), &detail::writeToBuffer); });
+    data->getRepresentation<LayerRAM>()->dispatch<void>([&](auto ram) {
+        detail::write(ram, static_cast<png_voidp>(buffer.get()), &detail::writeToBuffer);
+    });
 
     return buffer;
 }
 
-bool PNGLayerWriter::writeDataToRepresentation(const repr* src, repr* dst) const {
-    const LayerRAM* source = dynamic_cast<const LayerRAM*>(src);
-    LayerRAM* target = dynamic_cast<LayerRAM*>(dst);
-
-    if (!source || !target) {
-        LogError("Target representation missing.");
-        return false;
-    }
-
-    // TODO how to fix?
-    LogError("Not Yet Implemented: writeDataToRepresentation");
-    return false;
-}
+bool PNGLayerWriter::writeDataToRepresentation(const repr*, repr*) const { return false; }
 
 }  // namespace inviwo

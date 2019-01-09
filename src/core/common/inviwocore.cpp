@@ -133,6 +133,9 @@ struct VectorStringConverterRegFunctor {
 enum class OptionRegEnumInt : int {};
 enum class OptionRegEnumUInt : unsigned int {};
 
+template class TemplateOptionProperty<OptionRegEnumInt>;
+template class TemplateOptionProperty<OptionRegEnumUInt>;
+
 struct OptionStringConverterRegFunctor {
     template <typename T>
     auto operator()(std::function<void(std::unique_ptr<PropertyConverter>)> reg) {
