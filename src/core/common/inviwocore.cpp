@@ -142,9 +142,6 @@ struct OptionStringConverterRegFunctor {
 
 }  // namespace
 
-template class TemplateOptionProperty<OptionRegEnumInt>;
-template class TemplateOptionProperty<OptionRegEnumUInt>;
-
 InviwoCore::Observer::Observer(InviwoCore& core, InviwoApplication* app)
     : FileObserver(app), core_(core) {}
 void InviwoCore::Observer::fileChanged(const std::string& dir) { core_.scanDirForComposites(dir); }
