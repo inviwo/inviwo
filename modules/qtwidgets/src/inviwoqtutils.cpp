@@ -145,8 +145,6 @@ QPixmap toQPixmap(const TransferFunction& tf, const QSize& size) {
         gradientStops.append(QGradientStop(tfpoint->getPosition(), utilqt::toQColor(curColor)));
     }
 
-    const auto tfRange = tf.getRange();
-
     // set bounds of the gradient
     QLinearGradient gradient;
     gradient.setStops(gradientStops);

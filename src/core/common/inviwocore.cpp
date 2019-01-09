@@ -31,6 +31,11 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/filesystem.h>
 
+#include <warn/push>
+#include <warn/ignore/unused-function>
+#include <inviwo/core/properties/optionproperty.h>
+#include <warn/pop>
+
 // Cameras
 #include <inviwo/core/datastructures/camera.h>
 
@@ -77,7 +82,6 @@
 #include <inviwo/core/properties/listproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/multifileproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/planeproperty.h>
 #include <inviwo/core/properties/positionproperty.h>
@@ -99,6 +103,7 @@
 #include <inviwo/core/processors/compositesource.h>
 
 #include <inviwo/core/util/stdextensions.h>
+
 
 namespace inviwo {
 
@@ -141,6 +146,9 @@ struct OptionStringConverterRegFunctor {
 };
 
 }  // namespace
+ 
+template class TemplateOptionProperty<OptionRegEnumInt>;
+template class TemplateOptionProperty<OptionRegEnumUInt>; 
 
 InviwoCore::Observer::Observer(InviwoCore& core, InviwoApplication* app)
     : FileObserver(app), core_(core) {}

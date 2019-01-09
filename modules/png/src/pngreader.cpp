@@ -52,20 +52,15 @@ PNGLayerReader::PNGLayerReader() : DataReaderType<Layer>() {
 PNGLayerReader* PNGLayerReader::clone() const { return new PNGLayerReader(*this); }
 
 std::shared_ptr<inviwo::Layer> PNGLayerReader::readData(const std::string& filePath) {
-
-    if (!filesystem::fileExists(filePath)) {
-        throw PNGLayerReaderException(filePath);
-    }
+    if (!filesystem::fileExists(filePath)) throw PNGLayerReaderException(filePath);
 
     auto* fp = fopen(filePath.c_str(), "rb");
-    if (!fp) {
-        throw PNGLayerReaderException("Failed to open file for reading, " + filePath);
-    }
+    if (!fp) throw PNGLayerReaderException("Failed to open file for reading, " + filePath);
     util::OnScopeExit closeFile([fp]() { fclose(fp); });
 
     unsigned char header[8];
-    fread(header, 1, 8, fp);
-    if (png_sig_cmp(header, 0, 8)) {
+    const auto read = fread(header, 1, 8, fp);
+    if (read != 8 || png_sig_cmp(header, 0, 8)) {
         throw PNGLayerReaderException("File is not a PNG, " + filePath);
     }
 
