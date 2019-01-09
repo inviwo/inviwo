@@ -143,7 +143,6 @@ void RandomMeshGenerator::handlePicking(PickingEvent* p, std::function<void(vec3
     if (p->getPressState() == PickingPressState::Move &&
         p->getPressItems().count(PickingPressItem::Primary)) {
         callback(vec3{p->getWorldSpaceDeltaAtPressDepth(camera_)});
-        const auto worldDelta = p->getWorldSpaceDeltaAtPressDepth(camera_);
         p->markAsUsed();
         invalidate(InvalidationLevel::InvalidOutput);
     }

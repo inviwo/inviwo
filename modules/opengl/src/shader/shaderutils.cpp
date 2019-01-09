@@ -699,6 +699,8 @@ std::string getGLSLTypeName(const DataFormatBase* format) {
                     return "";
                 }
             }
+            default:
+                return "";
         }
     }
     return "";
