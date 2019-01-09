@@ -141,6 +141,12 @@ struct OptionStringConverterRegFunctor {
 };
 
 }  // namespace
+ 
+#include <warn/push>
+#include <warn/ignore/unused-function>
+template class TemplateOptionProperty<OptionRegEnumInt>;
+template class TemplateOptionProperty<OptionRegEnumUInt>;
+#include <warn/pop>    
 
 InviwoCore::Observer::Observer(InviwoCore& core, InviwoApplication* app)
     : FileObserver(app), core_(core) {}
