@@ -16,7 +16,7 @@ node {
         def extraOn = []
         def off = ["ABUFFERGL" , "DISCRETEDATA", "GLFW", "HDF5"]
 
-        util.buildStandard(params, external, extraOn, off)
+        util.buildStandard(params : params, external : external, onModules : extraOn,  offModules : off)
         util.warn()
         util.unittest()
         util.integrationtest()        
@@ -30,6 +30,6 @@ node {
         currentBuild.result = 'FAILURE'
         throw e
     } finally {
-        util.slack(currentBuild, env)
+        util.slack(currentBuild, env, "#jenkins-branch-pr")
     }
 }

@@ -23,22 +23,27 @@ def getChangeString(build) {
 
 def defaultProperties() {
     return [
-            parameters([
-                booleanParam(
-                    defaultValue: false, 
-                    description: 'Do a clean build', 
-                    name: 'Clean Build'
-                ),
-                choice(
-                    choices: "Release\nDebug\nMinSizeRel\nRelWithDebInfo\n", // The first will be default
-                    description: 'Select build configuration', 
-                    name: 'Build Type'
-                )
-            ]),
-            pipelineTriggers([
-                [$class: 'GitHubPushTrigger']
-            ])
-        ]
+        parameters([
+            booleanParam(
+                defaultValue: false, 
+                description: 'Do a clean build', 
+                name: 'Clean Build'
+            ),
+            booleanParam(
+                defaultValue: true, 
+                description: 'Disable ccache', 
+                name: 'Use ccache'
+            ),
+            choice(
+                choices: "Release\nDebug\nMinSizeRel\nRelWithDebInfo\n", // The first will be default
+                description: 'Select build configuration', 
+                name: 'Build Type'
+            )
+        ]),
+        pipelineTriggers([
+            [$class: 'GitHubPushTrigger']
+        ])
+    ]
 }
 
 def log(env = [], fun) {
@@ -66,9 +71,10 @@ def warn(refjob = 'inviwo/master') {
         dir('build') {
             recordIssues failedNewAll: 1, referenceJobName: refjob, sourceCodeEncoding: 'UTF-8', 
                 tools: [gcc4(name: 'GCC', reportEncoding: 'UTF-8'), 
+                        clang(name: 'Clang', reportEncoding: 'UTF-8')
                         //cppCheck(reportEncoding: 'UTF-8'), 
                         //clangTidy(reportEncoding: 'UTF-8'), 
-                        clang(name: 'Clang', reportEncoding: 'UTF-8')]
+                       ]
         }
     }
 }
@@ -93,15 +99,16 @@ def integrationtest(display = 0) {
     }
 }
 
-def regression(build, env, display = 0) {
+def regression(build, env, modulepaths, display = 0) {
     cmd('Regression Tests', 'regress', ['DISPLAY=:' + display]) {
+        def modules = modulepaths ? '--modules ' + modulepaths.join(' ') : ''
         try {
             sh """
                 python3 ../inviwo/tools/regression.py \
                         --inviwo ../build/bin/inviwo \
                         --header ${env.JENKINS_HOME}/inviwo-config/header.html \
                         --output . \
-                        --repos ../inviwo
+                        --repos ../inviwo ${modules}
             """
         } catch (e) {
             // Mark as unstable, if we mark as failed, the report will not be published.
@@ -110,10 +117,12 @@ def regression(build, env, display = 0) {
     }
 }
 
-def copyright() {
-    cmd('Copyright Check', 'inviwo') {
-        sh 'python3 tools/refactoring/check-copyright.py .'
-    }    
+def copyright(extraPaths = []) {
+    stage('Copyright Check') {
+        log() {
+            sh 'python3 inviwo/tools/refactoring/check-copyright.py ./inviwo ${extraPaths.join(" ")}'
+        }
+    }   
 }
 
 def doxygen(display = 0) {
@@ -143,15 +152,15 @@ def publish() {
     }
 }
 
-def slack(build, env) {
+def slack(build, env, channel) {
     stage('Slack') {
         echo "result: ${build.result}"
         def res2color = ['SUCCESS' : 'good', 'UNSTABLE' : 'warning' , 'FAILURE' : 'danger' ]
         def color = res2color.containsKey(build.result) ? res2color[build.result] : 'warning'
         slackSend(
             color: color, 
-            channel: "#jenkins-branch-pr", 
-            message: "Inviwo branch: ${env.BRANCH_NAME}\n" + \
+            channel: channel, 
+            message: "Branch: ${env.BRANCH_NAME}\n" + \
                      "Status: ${build.result}\n" + \
                      "Job: ${env.BUILD_URL} \n" + \
                      "Regression: ${env.JOB_URL}Regression_Report/\n" + \
@@ -160,7 +169,7 @@ def slack(build, env) {
     }
 }
 
-def cmake(opts, externalModules, onModules, offModules) {
+def cmake(Map opts, List externalModules, List onModules, List offModules) {
     return "cmake -G Ninja -LA " +
         opts.inject("", {res, item -> res + " -D" + item.key + "=" + item.value}) + 
         (externalModules ? " -DIVW_EXTERNAL_MODULES=" + externalModules.join(";") : "" ) +
@@ -176,11 +185,10 @@ def clean(params) {
     }
 }
 
-Map defaultOptions(params) {
+Map defaultOptions(String buildType) {
     return [
-        "CMAKE_CXX_COMPILER_LAUNCHER" : "ccache",
         "CMAKE_EXPORT_COMPILE_COMMANDS" : "ON",
-        "CMAKE_BUILD_TYPE" : params['Build Type'],
+        "CMAKE_BUILD_TYPE" : buildType,
         "OpenCL_LIBRARY" : "/usr/local/cuda/lib64/libOpenCL.so",
         "OpenCL_INCLUDE_DIR" : "/usr/local/cuda/include/",
         "CMAKE_PREFIX_PATH" : "/opt/Qt/5.6/gcc_64",
@@ -195,13 +203,19 @@ Map defaultOptions(params) {
         "IVW_RUNTIME_MODULE_LOADING" : "ON"
     ]
 }
+Map ccacheOption() {
+    return [
+        "CMAKE_CXX_COMPILER_LAUNCHER" : "ccache",
+    ]
+}
 
-def build(opts, externalModules, onModules, offModules = []) {
+//Args opts, external, onModules, offModules
+def build(Map args = [:]) { ) {
     dir('build') {
-        println("Options: ${opts.inject('', {res, item -> res + '\n  ' + item.key + ' = ' + item.value})}")
-        println("External Modules: ${externalModules.inject('', {res, item -> res + '\n  ' + item})}")
-        println("Modules On: ${onModules.inject('', {res, item -> res + '\n  ' + item})}")
-        println("Modules Off: ${offModules.inject('', {res, item -> res + '\n  ' + item})}")
+        println("Options: ${args.opts.inject('', {res, item -> res + '\n  ' + item.key + ' = ' + item.value})}")
+        println("External: ${args.external.inject('', {res, item -> res + '\n  ' + item})}")
+        println("Modules On: ${args.onModules.inject('', {res, item -> res + '\n  ' + item})}")
+        println("Modules Off: ${args.offModules.inject('', {res, item -> res + '\n  ' + item})}")
         log {
             sh """
                 ccache -z # reset ccache statistics
@@ -209,7 +223,7 @@ def build(opts, externalModules, onModules, offModules = []) {
                 export CPATH=`pwd`
                 export CCACHE_BASEDIR=`readlink -f \${CPATH}/..`
                         
-                ${cmake(opts, externalModules, onModules, offModules)}
+                ${cmake(args.opts, args.externalModules, args.onModules, args.offModules)}
 
                 ninja
 
@@ -219,14 +233,16 @@ def build(opts, externalModules, onModules, offModules = []) {
     }    
 }
 
-def buildStandard(params, externalModules, extraOpts, onModules, offModules = []) {
+// Args: params, external, opts, onModules, offModules
+def buildStandard(Map args = [:]) {
+    assert args.params, "Arguemnt params must be supplied"
     stage('Build') {
-        clean(params)
-        def opts = defaultOptions(params)
-        extraOpts.each {item ->
-            opts[item.key] = item.value
-        }
-        build(opts, externalModules, onModules, offModules)
+        clean(args.params)
+        def defaultOpts = defaultOptions(args.params['Build Type'])
+        if (args.params['Use ccache']) defaultOpts.putAll(ccacheOption())
+        defaultOpts.putAll(args.opts)
+        args.opts = defaultOpts
+        build(args)
     }
 }
 
