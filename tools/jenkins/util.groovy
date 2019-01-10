@@ -210,7 +210,7 @@ Map ccacheOption() {
 }
 
 //Args opts, external, onModules, offModules
-def build(Map args = [:]) { ) {
+def build(Map args = [:]) {
     dir('build') {
         println("Options: ${args.opts.inject('', {res, item -> res + '\n  ' + item.key + ' = ' + item.value})}")
         println("External: ${args.external.inject('', {res, item -> res + '\n  ' + item})}")
