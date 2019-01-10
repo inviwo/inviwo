@@ -120,7 +120,7 @@ def regression(build, env, modulepaths = [], display = 0) {
 def copyright(extraPaths = []) {
     stage('Copyright Check') {
         log() {
-            sh 'python3 inviwo/tools/refactoring/check-copyright.py ./inviwo ${extraPaths.join(" ")}'
+            sh "python3 inviwo/tools/refactoring/check-copyright.py ./inviwo ${extraPaths.join(' ')}"
         }
     }   
 }
