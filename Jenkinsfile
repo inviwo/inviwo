@@ -14,7 +14,7 @@ node {
     try {
         def external = []
         def extraOn = []
-        def off = ["ABUFFERGL" , "DISCRETEDATA", "GLFW", "HDF5"]
+        def off = ["ABUFFERGL" , "DISCRETEDATA", "HDF5"]
 
         util.buildStandard(params : params, external : external, onModules : extraOn,  offModules : off)
         util.warn()
