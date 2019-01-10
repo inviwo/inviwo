@@ -886,6 +886,19 @@ void InviwoMainWindow::saveWorkspace(QString workspaceFileName) {
     fileName = filesystem::cleanupPath(fileName);
 
     try {
+        auto networkImageSerializationHandle =
+            app_->getWorkspaceManager()->onSave([&](Serializer& s) {
+                auto image = networkEditorView_->exportViewToImage(true, true, QSize(256, 256));
+
+                QByteArray byteArray;
+                QBuffer buffer(&byteArray);
+                buffer.open(QIODevice::WriteOnly);
+                image.save(&buffer, "PNG");
+
+                s.serialize("WorkspaceImage", std::string(byteArray.toBase64().data()));
+                LogWarn("serializing workspace image");
+            });
+
         app_->getWorkspaceManager()->save(fileName, [&](ExceptionContext ec) {
             try {
                 throw;
