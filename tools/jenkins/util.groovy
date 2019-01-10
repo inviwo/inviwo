@@ -240,7 +240,7 @@ def buildStandard(Map args = [:]) {
         clean(args.params)
         def defaultOpts = defaultOptions(args.params['Build Type'])
         if (args.params['Use ccache']) defaultOpts.putAll(ccacheOption())
-        defaultOpts.putAll(args.opts)
+        if (args.opts) defaultOpts.putAll(args.opts)
         args.opts = defaultOpts
         build(args)
     }
