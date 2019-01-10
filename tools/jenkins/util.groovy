@@ -68,7 +68,7 @@ def cmd(stageName, dirName, env = [], fun) {
 
 def warn(refjob = 'inviwo/master') {
     stage("Warn Tests") {
-        dir('build') {
+        dir('inviwo') {
             recordIssues failedNewAll: 1, referenceJobName: refjob, sourceCodeEncoding: 'UTF-8', 
                 tools: [gcc4(name: 'GCC', reportEncoding: 'UTF-8'), 
                         clang(name: 'Clang', reportEncoding: 'UTF-8')
