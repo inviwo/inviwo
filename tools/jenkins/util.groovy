@@ -99,7 +99,7 @@ def integrationtest(display = 0) {
     }
 }
 
-def regression(build, env, modulepaths, display = 0) {
+def regression(build, env, modulepaths = [], display = 0) {
     cmd('Regression Tests', 'regress', ['DISPLAY=:' + display]) {
         def modules = modulepaths ? '--modules ' + modulepaths.join(' ') : ''
         try {
