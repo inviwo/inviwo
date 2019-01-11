@@ -4,7 +4,6 @@ import re
 import string
 import subprocess
 import json
-import StringIO
 
 def main():
     parser = argparse.ArgumentParser(description="")
@@ -19,15 +18,20 @@ def main():
         for item in data:
             filename = item['file']
             command = [args.binary, filename]
-            p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=None, stdin=subprocess.PIPE)
+            p = subprocess.Popen(command, 
+                stdout=subprocess.PIPE, 
+                stderr=subprocess.STDOUT, 
+                stdin=subprocess.PIPE,
+                universal_newlines=True)
             stdout, stderr = p.communicate()
             if p.returncode != 0:
                 sys.exit(p.returncode);
 
+            with open(stdout) as f:
+                formatted_code = f.readlines()
+
             with open(filename) as f:
                 code = f.readlines()
-            
-            formatted_code = StringIO.StringIO(stdout).readlines()
 
             diff = difflib.unified_diff(code, formatted_code,
                                         filename, filename,
