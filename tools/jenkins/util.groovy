@@ -133,7 +133,7 @@ def copyright(extraPaths = []) {
 
 def doxygen(display = 0) {
     cmd('Doxygen', 'build', ['DISPLAY=:' + display]) {
-        sh 'ninja DOXY-ALL'
+        sh 'ninja DOXY-Inviwo'
     }    
 }
 
