@@ -35,11 +35,17 @@
 #include <inviwo/core/util/dispatcher.h>
 #include <inviwo/core/util/exception.h>
 
+#include <flags/flags.h>
+
 #include <iostream>
 
 namespace inviwo {
 
 class FactoryBase;
+
+enum class WorkspaceSaveMode { Disk, Undo };
+ALLOW_FLAGS_FOR_ENUM(WorkspaceSaveMode)
+using WorkspaceSaveModes = flags::flags<WorkspaceSaveMode>;
 
 /**
  * The WorkspaceManager is responsible for clearing, loading, and saving a workspace. Different
@@ -53,7 +59,8 @@ class FactoryBase;
  */
 class IVW_CORE_API WorkspaceManager {
     using ClearDispatcher = Dispatcher<void()>;
-    using SerializationDispatcher = Dispatcher<void(Serializer&, const ExceptionHandler&)>;
+    using SerializationDispatcher =
+        Dispatcher<void(Serializer&, const ExceptionHandler&, WorkspaceSaveMode mode)>;
     using DeserializationDispatcher = Dispatcher<void(Deserializer&, const ExceptionHandler&)>;
 
 public:
@@ -83,7 +90,8 @@ public:
      * \param exceptionHandler A callback for handling errors.
      */
     void save(std::ostream& stream, const std::string& refPath,
-              const ExceptionHandler& exceptionHandler = StandardExceptionHandler());
+              const ExceptionHandler& exceptionHandler = StandardExceptionHandler(),
+              WorkspaceSaveMode mode = WorkspaceSaveMode::Disk);
 
     /**
      * Save the current workspace to a file
@@ -91,7 +99,8 @@ public:
      * \param exceptionHandler A callback for handling errors.
      */
     void save(const std::string& path,
-              const ExceptionHandler& exceptionHandler = StandardExceptionHandler());
+              const ExceptionHandler& exceptionHandler = StandardExceptionHandler(),
+              WorkspaceSaveMode mode = WorkspaceSaveMode::Disk);
 
     /**
      * Load a workspace from a stream
@@ -120,7 +129,8 @@ public:
     /**
      * Callback for saving the workspace.
      */
-    SerializationHandle onSave(const SerializationCallback& callback);
+    SerializationHandle onSave(const SerializationCallback& callback,
+                               WorkspaceSaveModes modes = WorkspaceSaveModes{flags::any});
 
     /**
      * Callback for loading the workspace.
