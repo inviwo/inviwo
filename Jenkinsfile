@@ -12,11 +12,11 @@ node {
     def display = 0       
 
     try {
-        def external = []
-        def extraOn = []
+        def modulePaths = []
+        def on = []
         def off = ["ABUFFERGL" , "DISCRETEDATA", "HDF5"]
 
-        util.buildStandard(params : params, external : external, onModules : extraOn,  offModules : off)
+        util.buildStandard(params : params, modulePaths : modulePaths, onModules : on,  offModules : off)
         util.warn()
         util.unittest()
         util.integrationtest()        

@@ -68,13 +68,19 @@ def cmd(stageName, dirName, env = [], fun) {
 
 def warn(refjob = 'inviwo/master') {
     stage("Warn Tests") {
+        dir('build') {
+            sh 'copy compile_commands.json compile_commands_org.json'
+            sh 'python3 ../inviwo/tools/jenkins/filter-compilecommands.py'
+            sh 'python3 ../inviwo/tools/jenkins/check-format.py'
+            sh 'cppcheck --enable=all --inconclusive --xml --xml-version=2 --project=compile_commands.json 2> cppcheck.xml'
+        }
+
         dir('inviwo') {
-            recordIssues failedNewAll: 1, referenceJobName: refjob, sourceCodeEncoding: 'UTF-8', 
+            recordIssues failedNewAll: 0, referenceJobName: refjob, sourceCodeEncoding: 'UTF-8', 
                 tools: [gcc4(name: 'GCC', reportEncoding: 'UTF-8'), 
-                        clang(name: 'Clang', reportEncoding: 'UTF-8')
-                        //cppCheck(reportEncoding: 'UTF-8'), 
-                        //clangTidy(reportEncoding: 'UTF-8'), 
-                       ]
+                        clang(name: 'Clang', reportEncoding: 'UTF-8')]
+            recordIssues referenceJobName: refjob, sourceCodeEncoding: 'UTF-8', 
+                tools: [cppCheck(name: 'CPPCheck', pattern: '../build/cppcheck.xml')]
         }
     }
 }
@@ -169,10 +175,10 @@ def slack(build, env, channel) {
     }
 }
 
-def cmake(Map opts, List externalModules, List onModules, List offModules) {
+def cmake(Map opts, List modulePaths, List onModules, List offModules) {
     return "cmake -G Ninja -LA " +
         opts.inject("", {res, item -> res + " -D" + item.key + "=" + item.value}) + 
-        (externalModules ? " -DIVW_EXTERNAL_MODULES=" + externalModules.join(";") : "" ) +
+        (modulePaths ? " -DIVW_EXTERNAL_MODULES=" + modulePaths.join(";") : "" ) +
         onModules.inject("", {res, item -> res + " -D" + "IVW_MODULE_" + item + "=ON"}) +
         offModules.inject("", {res, item -> res + " -D" + "IVW_MODULE_" + item + "=OFF"}) + 
         " ../inviwo"
@@ -185,7 +191,7 @@ def clean(params) {
     }
 }
 
-Map defaultOptions(String buildType) {
+Map defaultCMakeOptions(String buildType) {
     return [
         "CMAKE_EXPORT_COMPILE_COMMANDS" : "ON",
         "CMAKE_BUILD_TYPE" : buildType,
@@ -209,11 +215,11 @@ Map ccacheOption() {
     ]
 }
 
-//Args opts, external, onModules, offModules
+//Args opts, modulePaths, onModules, offModules
 def build(Map args = [:]) {
     dir('build') {
         println("Options: ${args.opts.inject('', {res, item -> res + '\n  ' + item.key + ' = ' + item.value})}")
-        println("External: ${args.external.inject('', {res, item -> res + '\n  ' + item})}")
+        println("External: ${args.modulePaths.inject('', {res, item -> res + '\n  ' + item})}")
         println("Modules On: ${args.onModules.inject('', {res, item -> res + '\n  ' + item})}")
         println("Modules Off: ${args.offModules.inject('', {res, item -> res + '\n  ' + item})}")
         log {
@@ -223,7 +229,7 @@ def build(Map args = [:]) {
                 export CPATH=`pwd`
                 export CCACHE_BASEDIR=`readlink -f \${CPATH}/..`
                         
-                ${cmake(args.opts, args.externalModules, args.onModules, args.offModules)}
+                ${cmake(args.opts, args.modulePaths, args.onModules, args.offModules)}
 
                 ninja
 
@@ -233,12 +239,17 @@ def build(Map args = [:]) {
     }    
 }
 
-// Args: params, external, opts, onModules, offModules
+// Args: 
+// * params The global pipeline variable
+// * modulePaths list of paths to module folders (optional)
+// * opts Map of extra CMake options (optional)
+// * onModules List of extra module to enable (optional)
+// * offModules List of modules to disable (optional)
 def buildStandard(Map args = [:]) {
-    assert args.params, "Arguemnt params must be supplied"
+    assert args.params, "Argument params must be supplied"
     stage('Build') {
         clean(args.params)
-        def defaultOpts = defaultOptions(args.params['Build Type'])
+        def defaultOpts = defaultCMakeOptions(args.params['Build Type'])
         if (args.params['Use ccache']) defaultOpts.putAll(ccacheOption())
         if (args.opts) defaultOpts.putAll(args.opts)
         args.opts = defaultOpts
