@@ -1,9 +1,11 @@
+
 import argparse
 import difflib
 import re
-import string
 import subprocess
 import json
+import sys
+import io
 
 def main():
     parser = argparse.ArgumentParser(description="")
@@ -18,29 +20,25 @@ def main():
         for item in data:
             filename = item['file']
             command = [args.binary, filename]
-            p = subprocess.Popen(command, 
-                stdout=subprocess.PIPE, 
-                stderr=subprocess.STDOUT, 
-                stdin=subprocess.PIPE,
+            p = subprocess.Popen(command,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
                 universal_newlines=True)
-            stdout, stderr = p.communicate()
+            formatted_code, err = p.communicate()
             if p.returncode != 0:
+                sys.write(err)
                 sys.exit(p.returncode);
 
-            with open(stdout) as f:
-                formatted_code = f.readlines()
-
             with open(filename) as f:
-                code = f.readlines()
+                code = f.read().split('\n')
 
-            diff = difflib.unified_diff(code, formatted_code,
-                                        filename, filename,
-                                        '(before formatting)', '(after formatting)')
-            diff_string = string.join(diff, '')
+            diff = difflib.unified_diff(code, formatted_code.split('\n'), "filename", "formatted", '','',3,"")
+            diff_string = '\n'.join(diff)
             if len(diff_string) > 0:
-                sys.stdout.write("Warning: Inconsistent format" + filename)
+                sys.stdout.write("\n\nWarning: Inconsistent format" + filename + "\n")
                 sys.stdout.write(diff_string)
 
 
 if __name__ == '__main__':
     main()
+
