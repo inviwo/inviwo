@@ -69,7 +69,7 @@ def cmd(stageName, dirName, env = [], fun) {
 def warn(refjob = 'inviwo/master') {
     stage("Warn Tests") {
         dir('build') {
-            sh 'copy compile_commands.json compile_commands_org.json'
+            sh 'cp compile_commands.json compile_commands_org.json'
             sh 'python3 ../inviwo/tools/jenkins/filter-compilecommands.py'
             sh 'python3 ../inviwo/tools/jenkins/check-format.py'
             sh 'cppcheck --enable=all --inconclusive --xml --xml-version=2 --project=compile_commands.json 2> cppcheck.xml'
