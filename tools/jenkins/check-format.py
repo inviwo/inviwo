@@ -14,9 +14,8 @@ def main():
                         help='location of binary to use for clang-format')
     args = parser.parse_args()
 
-
-	with open(args.compile_commands) as f:
-    	data = json.load(f)
+    with open(args.compile_commands) as f:
+        data = json.load(f)
         for item in data:
             filename = item['file']
             command = [args.binary, filename]
