@@ -7,12 +7,14 @@ project(inviwo-qteditor)
 set(MOC_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/connectiondraghelper.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/consolewidget.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/networkeditor.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdraghelper.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialogscene.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/filetreewidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialogprocessorgraphicsitems.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processormimedata.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialogscene.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdraghelper.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/networkeditor.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processordraghelper.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processormimedata.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/welcomewidget.h
 )
 
 #--------------------------------------------------------------------
@@ -64,6 +66,7 @@ set(SOURCE_FILES
     dataopener.cpp
     editorgrapicsitem.cpp
     fileassociations.cpp
+    filetreewidget.cpp
     helpwidget.cpp
     inviwoaboutwindow.cpp
     inviwoeditmenu.cpp
@@ -93,6 +96,7 @@ set(SOURCE_FILES
     settingswidget.cpp
     toolsmenu.cpp
     undomanager.cpp
+    welcomewidget.cpp
 )
 if(TARGET inviwo::meta)
     list(APPEND SOURCE_FILES toolsmetamenu.cpp)

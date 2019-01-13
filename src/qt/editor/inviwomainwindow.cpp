@@ -86,6 +86,7 @@
 #include <QToolBar>
 #include <QDropEvent>
 #include <QDragEnterEvent>
+#include <QBuffer>
 
 #include <warn/pop>
 
