@@ -14,7 +14,6 @@ set(MOC_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/networkeditor.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processordraghelper.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processormimedata.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/welcomewidget.h
 )
 
 #--------------------------------------------------------------------
@@ -49,6 +48,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/settingswidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/toolsmenu.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/undomanager.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/welcomewidget.h
     ${MOC_FILES}
 )
 if(TARGET inviwo::meta)

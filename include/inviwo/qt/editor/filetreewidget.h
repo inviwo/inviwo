@@ -31,16 +31,33 @@
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/core/common/inviwo.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
+
+#include <QTreeWidget>
+
+#include <warn/pop>
+
 namespace inviwo {
 
-/**
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
- */
-class IVW_QTEDITOR_API FileTreeWidget {
+class InviwoApplication;
+
+class IVW_QTEDITOR_API FileTreeWidget : public QTreeWidget {
+#include <warn/push>
+#include <warn/ignore/all>
+    Q_OBJECT
+#include <warn/pop>
 public:
-    FileTreeWidget();
+    enum ListElemType { Normal = 1, Section, SubSection };
+
+    enum ItemRoles { FileName = Qt::UserRole + 100, Path, Type, ExampleWorkspace };
+
+    explicit FileTreeWidget(InviwoApplication *app, const QStringList &recentFiles = QStringList(),
+                            QWidget *parent = nullptr);
     virtual ~FileTreeWidget() = default;
+
+signals:
+    void selectedFileChanged(const QString &filename, bool isExample);
 };
 
 }  // namespace inviwo

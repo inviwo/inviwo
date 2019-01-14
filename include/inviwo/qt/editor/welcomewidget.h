@@ -31,16 +31,35 @@
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/core/common/inviwo.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
+
+#include <QWidget>
+
+#include <warn/pop>
+
+class QTabWidget;
+class QTextEdit;
+class QToolButton;
+
 namespace inviwo {
 
-/**
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
- */
-class IVW_QTEDITOR_API WelcomeWidget {
+class FileTreeWidget;
+class InviwoMainWindow;
+
+class IVW_QTEDITOR_API WelcomeWidget : public QWidget {
 public:
-    WelcomeWidget();
+    WelcomeWidget(InviwoMainWindow *w, bool shownOnStartup, QWidget *parent);
     virtual ~WelcomeWidget() = default;
+
+private:
+    InviwoMainWindow *mainWindow_;
+
+    FileTreeWidget *filetree_;
+    QTextEdit *details_;
+    QTextEdit *changelog_;
+    QTabWidget *previewImages_;
+    QToolButton *loadWorkspace_;
 };
 
 }  // namespace inviwo
