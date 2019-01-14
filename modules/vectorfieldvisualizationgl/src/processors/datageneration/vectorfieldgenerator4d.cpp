@@ -113,6 +113,8 @@ void VectorFieldGenerator4D::process() {
         auto volume = std::make_shared<Volume>(size3_t(size_.get()), DataVec3Float32::get());
         volume->dataMap_.dataRange = vec2(0, 1);
         volume->dataMap_.valueRange = vec2(-1, 1);
+        volume->setBasis(basis);
+        volume->setOffset(corners[0]);
         volume->setMetaData<DoubleMetaData>("timestamp", t);
         volume->setMetaData<DoubleMetaData>("duration", dt);
 
@@ -120,15 +122,12 @@ void VectorFieldGenerator4D::process() {
         utilgl::bindAndSetUniforms(shader_, cont, *volume.get(), "volume");
 
         shader_.setUniform("t", t);
-        utilgl::setUniforms(shader_, xRange_, yRange_, zRange_);
 
         VolumeGL* outVolumeGL = volume->getEditableRepresentation<VolumeGL>();
         fbo_.attachColorTexture(outVolumeGL->getTexture().get(), 0);
 
         utilgl::multiDrawImagePlaneRect(static_cast<int>(dim.z));
 
-        volume->setBasis(basis);
-        volume->setOffset(corners[0]);
         seq->push_back(volume);
     }
     shader_.deactivate();

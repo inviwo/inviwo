@@ -29,28 +29,10 @@
 
 uniform ivec3 volumeSize_;
 
-in vec4 texCoord_;
-in vec4 dataposition_;
-
-uniform vec2 xRange;
-uniform vec2 yRange;
-uniform vec2 zRange;
-
-float getPos(float v ,vec2 range){ 
-	return range.x + v * (range.y - range.x);
-}
-
-vec4 getPos(){
-	return vec4(
-		      getPos(dataposition_.x , xRange)
-			, getPos(dataposition_.y , yRange)
-			, getPos(dataposition_.z , zRange)
-			, 1.0
-		);
-}
+in vec4 worldPos_;
 
 void main() {
-    vec4 pos = getPos();
+    vec4 pos = worldPos_;
 
     vec4 value = vec4(0,0,0,1);
     value.x = X_VALUE(pos.x,pos.y,pos.z);
