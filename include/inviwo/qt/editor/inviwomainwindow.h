@@ -47,6 +47,7 @@
 
 class QDropEvent;
 class QDragEnterEvent;
+class QStackedWidget;
 
 namespace inviwo {
 
@@ -57,6 +58,7 @@ class ProcessorTreeWidget;
 class ConsoleWidget;
 class SettingsWidget;
 class HelpWidget;
+class WelcomeWidget;
 class InviwoApplicationQt;
 class InviwoEditMenu;
 class InviwoAboutWindow;
@@ -75,7 +77,7 @@ public:
     void showWindow();
 
     void openLastWorkspace(std::string workspace = "");
-    void openWorkspace(QString workspaceFileName);
+    bool openWorkspace(QString workspaceFileName);
 
     /**
      * Open the given workspaceFileName but only after asking whether to save the
@@ -99,8 +101,8 @@ public:
     InviwoEditMenu* getInviwoEditMenu() const;
     ToolsMenu* getToolsMenu() const;
 
-    void newWorkspace();
-    void openWorkspace();
+    bool newWorkspace();
+    bool openWorkspace();
 
     void saveWorkspace();
     void saveWorkspaceAs();
@@ -113,6 +115,9 @@ public:
     bool askToSaveWorkspaceChanges();
     void exitInviwo(bool saveIfModified = true);
     void showAboutBox();
+    
+    void showWelcomeScreen(bool shownOnStartup = false);
+    void hideWelcomeScreen();
 
 protected:
     virtual void dragEnterEvent(QDragEnterEvent* event) override;
@@ -120,11 +125,13 @@ protected:
     virtual void dropEvent(QDropEvent* event) override;
 
 private:
+    friend WelcomeWidget;
+
     virtual void onModifiedStatusChanged(const bool& newStatus) override;
 
     void visibilityModeChangedInSettings();
 
-    void openWorkspace(QString workspaceFileName, bool exampleWorkspace);
+    bool openWorkspace(QString workspaceFileName, bool exampleWorkspace);
     void saveWorkspace(QString workspaceFileName);
     void appendWorkspace(const std::string& workspaceFileName);
 
@@ -159,6 +166,7 @@ private:
     QMenu* testMenu_ = nullptr;
     std::shared_ptr<ConsoleWidget> consoleWidget_;
     std::unique_ptr<NetworkEditor> networkEditor_;
+    QStackedWidget* centralWidget_;
     NetworkEditorView* networkEditorView_;
 
     SettingsWidget* settingsWidget_;
@@ -166,6 +174,7 @@ private:
     ResourceManagerDockWidget* resourceManagerDockWidget_;
     PropertyListWidget* propertyListWidget_;
     HelpWidget* helpWidget_;
+    WelcomeWidget* welcomeWidget_ = nullptr;
     InviwoAboutWindow* inviwoAboutWindow_ = nullptr;
 
     std::vector<QAction*> workspaceActionRecent_;
