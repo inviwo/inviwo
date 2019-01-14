@@ -77,7 +77,6 @@ void VolumeLaplacianProcessor::process() {
     auto calc = [this](std::shared_ptr<const Volume> volume,
                        util::VolumeLaplacianPostProcessing postProcessing,
                        double scale) -> std::shared_ptr<Volume> {
-
         auto res = util::volumeLaplacian(volume, postProcessing, scale);
         dispatchFront([this]() { invalidate(InvalidationLevel::InvalidOutput); });
         return res;

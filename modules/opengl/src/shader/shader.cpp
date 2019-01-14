@@ -63,7 +63,7 @@ Shader::ShaderAttachment::ShaderAttachment() : shader_{nullptr}, obj_{}, callbac
 Shader::ShaderAttachment::ShaderAttachment(Shader *shader, std::unique_ptr<ShaderObject> obj)
     : shader_{shader}
     , obj_{std::move(obj)}
-    , callback_{obj_->onChange([s = shader_](ShaderObject * o) {
+    , callback_{obj_->onChange([s = shader_](ShaderObject *o) {
         if (s) s->rebuildShader(o);
     })} {
     attatch();
@@ -96,7 +96,7 @@ void Shader::ShaderAttachment::detatch() {
 
 void Shader::ShaderAttachment::setShader(Shader *shader) {
     shader_ = shader;
-    callback_ = obj_->onChange([s = shader_](ShaderObject * o) {
+    callback_ = obj_->onChange([s = shader_](ShaderObject *o) {
         if (s) s->rebuildShader(o);
     });
 }

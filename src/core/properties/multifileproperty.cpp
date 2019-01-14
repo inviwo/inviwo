@@ -40,8 +40,8 @@ MultiFileProperty::MultiFileProperty(std::string identifier, std::string display
                                      const std::vector<std::string>& value, std::string contentType,
                                      InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
-    : TemplateProperty<std::vector<std::string> >(identifier, displayName, value, invalidationLevel,
-                                                  semantics)
+    : TemplateProperty<std::vector<std::string>>(identifier, displayName, value, invalidationLevel,
+                                                 semantics)
     , acceptMode_(AcceptMode::Open)
     , fileMode_(FileMode::ExistingFiles)
     , contentType_(contentType) {
@@ -49,14 +49,14 @@ MultiFileProperty::MultiFileProperty(std::string identifier, std::string display
 }
 
 MultiFileProperty::MultiFileProperty(const MultiFileProperty& rhs)
-    : TemplateProperty<std::vector<std::string> >(rhs)
+    : TemplateProperty<std::vector<std::string>>(rhs)
     , nameFilters_(rhs.nameFilters_)
     , acceptMode_(rhs.acceptMode_)
     , fileMode_(rhs.fileMode_) {}
 
 MultiFileProperty& MultiFileProperty::operator=(const MultiFileProperty& that) {
     if (this != &that) {
-        TemplateProperty<std::vector<std::string> >::operator=(that);
+        TemplateProperty<std::vector<std::string>>::operator=(that);
         nameFilters_ = that.nameFilters_;
         acceptMode_ = that.acceptMode_;
         fileMode_ = that.fileMode_;
@@ -65,14 +65,14 @@ MultiFileProperty& MultiFileProperty::operator=(const MultiFileProperty& that) {
 }
 
 MultiFileProperty& MultiFileProperty::operator=(const std::vector<std::string>& value) {
-    TemplateProperty<std::vector<std::string> >::operator=(value);
+    TemplateProperty<std::vector<std::string>>::operator=(value);
     return *this;
 }
 
 MultiFileProperty* MultiFileProperty::clone() const { return new MultiFileProperty(*this); }
 
 void MultiFileProperty::set(const std::string& value) {
-    TemplateProperty<std::vector<std::string> >::set({filesystem::cleanupPath(value)});
+    TemplateProperty<std::vector<std::string>>::set({filesystem::cleanupPath(value)});
 }
 
 void MultiFileProperty::set(const std::vector<std::string>& values) {
@@ -82,7 +82,7 @@ void MultiFileProperty::set(const std::vector<std::string>& values) {
     for (auto elem : values) {
         tmp.push_back(filesystem::cleanupPath(elem));
     }
-    TemplateProperty<std::vector<std::string> >::set(tmp);
+    TemplateProperty<std::vector<std::string>>::set(tmp);
 
     // figure out best matching extension based on first filename
     const auto& files = get();
@@ -108,7 +108,7 @@ void MultiFileProperty::set(const std::vector<std::string>& values) {
 }
 
 void MultiFileProperty::set(const Property* property) {
-    TemplateProperty<std::vector<std::string> >::set(property);
+    TemplateProperty<std::vector<std::string>>::set(property);
 }
 
 void MultiFileProperty::serialize(Serializer& s) const {
@@ -273,7 +273,7 @@ Document MultiFileProperty::getDescription() const {
     using P = Document::PathComponent;
     using H = utildoc::TableBuilder::Header;
 
-    Document doc = TemplateProperty<std::vector<std::string> >::getDescription();
+    Document doc = TemplateProperty<std::vector<std::string>>::getDescription();
     auto table = doc.get({P("html"), P("body"), P("table", {{"identifier", "propertyInfo"}})});
 
     std::ostringstream stream;

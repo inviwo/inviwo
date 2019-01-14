@@ -73,7 +73,6 @@ VolumeSequenceSingleTimestepSamplerProcessor::VolumeSequenceSingleTimestepSample
         timestamp_.setCurrentStateAsDefault();
 
         timestamp_.set(newrange.first + t * (newrange.second - newrange.first));
-
     });
 }
 

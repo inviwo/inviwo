@@ -227,8 +227,8 @@ std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
                 }
 
                 connect(
-                    semanticsGroup, &QActionGroup::triggered,
-                    this, [prop = property_](QAction * action) {
+                    semanticsGroup, &QActionGroup::triggered, this,
+                    [prop = property_](QAction* action) {
                         PropertySemantics semantics(utilqt::fromQString(action->data().toString()));
                         prop->setSemantics(semantics);
                     });
@@ -287,7 +287,7 @@ void PropertyWidgetQt::addModuleMenuActions(QMenu* menu, InviwoApplication* app)
             auto actionName = mAction->getActionName();
             auto action = submenu->addAction(QString::fromStdString(actionName));
             connect(action, &QAction::triggered, this,
-                    [ app, actionName, property = property_ ](bool /*checked*/) {
+                    [app, actionName, property = property_](bool /*checked*/) {
                         const auto& mActions = app->getCallbackActions();
                         auto it = std::find_if(mActions.begin(), mActions.end(), [&](auto& item) {
                             return item->getActionName() == actionName;
@@ -343,8 +343,8 @@ void PropertyWidgetQt::addPresetMenuActions(QMenu* menu, InviwoApplication* app)
                               presetManager->loadPreset(name, property, type);
                           });
         };
-        auto savePreset =
-            [ presetManager, property = property_ ](QWidget * parent, PropertyPresetType type) {
+        auto savePreset = [presetManager, property = property_](QWidget* parent,
+                                                                PropertyPresetType type) {
             // will prompt the user to enter a preset name.
             // returns false if a preset with the same name already exits
             // and the user does not want to overwrite it.
@@ -374,7 +374,7 @@ void PropertyWidgetQt::addPresetMenuActions(QMenu* menu, InviwoApplication* app)
             }
             return true;
         };
-        auto clearPresets = [ presetManager, property = property_ ](PropertyPresetType type) {
+        auto clearPresets = [presetManager, property = property_](PropertyPresetType type) {
             switch (type) {
                 case PropertyPresetType::Property:
                     presetManager->clearPropertyPresets(property);

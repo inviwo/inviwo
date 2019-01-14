@@ -274,9 +274,9 @@ void CropWidget::initMesh() {
 
 void CropWidget::createLineStripMesh() {
     auto linestrip = std::make_shared<Mesh>(DrawType::Lines, ConnectivityType::StripAdjacency);
-    auto vertices = std::make_shared<Buffer<vec3> >();
-    auto colors = std::make_shared<Buffer<vec4> >();
-    auto texCoords = std::make_shared<Buffer<vec2> >();
+    auto vertices = std::make_shared<Buffer<vec3>>();
+    auto colors = std::make_shared<Buffer<vec4>>();
+    auto texCoords = std::make_shared<Buffer<vec2>>();
 
     auto vBuffer = vertices->getEditableRAMRepresentation();
     auto colorBuffer = colors->getEditableRAMRepresentation();

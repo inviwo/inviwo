@@ -205,7 +205,7 @@ void Creator::createModule(const fs::path& modulePath, std::string_view org) con
 
     log(" * Creating folders:");
     if (!opts.dryrun) fs::create_directories(path);
-    for (auto[dir, desc] : im.dirs()) {
+    for (auto [dir, desc] : im.dirs()) {
         log(dir.generic_string(), desc);
         if (!opts.dryrun && !fs::exists(path / dir)) {
             fs::create_directories(path / dir);
@@ -222,7 +222,7 @@ void Creator::createModule(const fs::path& modulePath, std::string_view org) con
         {"depends", path / "depends"},
         {"testmain", path / "tests" / "unittests" / (name + "-unittest-main")}};
 
-    for (auto[key, file] : files) {
+    for (auto [key, file] : files) {
         generate(im, file, key);
     }
 }

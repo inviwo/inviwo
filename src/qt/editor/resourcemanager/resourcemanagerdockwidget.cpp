@@ -152,7 +152,7 @@ void ResourceManagerDockWidget::onResourceAdded(const std::string &key, const st
     model_->setData(model_->index(rowID, 0), QVariant::fromValue((void *)resource), ResourceRole);
 
     connect(btn, &QPushButton::pressed,
-            [ key, t = type, rm = &this->manager_ ]() { rm->removeResource(key, t); });
+            [key, t = type, rm = &this->manager_]() { rm->removeResource(key, t); });
 }
 
 void ResourceManagerDockWidget::onResourceRemoved(const std::string &, const std::type_index &,

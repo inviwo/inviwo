@@ -110,7 +110,7 @@ PathLinesDeprecated::PathLinesDeprecated()
 }
 
 void PathLinesDeprecated::process() {
-    auto sampler = [&]() -> std::shared_ptr<const Spatial4DSampler<3, double> > {
+    auto sampler = [&]() -> std::shared_ptr<const Spatial4DSampler<3, double>> {
         if (sampler_.isConnected()) {
             if (allowLooping_.getVisible()) {
                 allowLooping_.setVisible(false);

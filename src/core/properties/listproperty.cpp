@@ -217,7 +217,7 @@ void ListProperty::addProperty(Property& property) {
 }
 
 void ListProperty::insertProperty(size_t index, Property* property, bool owner) {
-    if (!util::contains_if(prefabs_, [&, id = property->getClassIdentifier() ](auto& elem) {
+    if (!util::contains_if(prefabs_, [&, id = property->getClassIdentifier()](auto& elem) {
             return elem->getClassIdentifier() == id;
         })) {
         throw Exception("Unsupported property type, no prefab matching `" +

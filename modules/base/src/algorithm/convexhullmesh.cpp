@@ -44,7 +44,7 @@ std::shared_ptr<Mesh> convertHullToMesh(const std::vector<vec2> &hull, bool useI
     if (hull.empty()) {
         return mesh;
     }
-    auto vertices = std::make_shared<Buffer<vec2> >();
+    auto vertices = std::make_shared<Buffer<vec2>>();
     auto vBuffer = vertices->getEditableRAMRepresentation();
 
     vBuffer->append(&hull);

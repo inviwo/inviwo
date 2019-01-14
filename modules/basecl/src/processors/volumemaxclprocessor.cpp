@@ -127,7 +127,7 @@ void VolumeMaxCLProcessor::executeVolumeOperation(const Volume* volume,
         } else {
             size_t outDimFlattened = outDim.x * outDim.y * outDim.z;
             if (tmpVolume_.get() == nullptr || tmpVolume_->getSize() != outDimFlattened) {
-                tmpVolume_ = std::unique_ptr<Buffer<unsigned char> >(
+                tmpVolume_ = std::unique_ptr<Buffer<unsigned char>>(
                     new Buffer<unsigned char>(outDimFlattened));
             }
             tmpVolumeCL = tmpVolume_->getEditableRepresentation<BufferCL>();

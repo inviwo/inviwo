@@ -45,7 +45,7 @@ namespace inviwo {
  *
  * @see TemplateProperty, FileProperty
  */
-class IVW_CORE_API MultiFileProperty : public TemplateProperty<std::vector<std::string> > {
+class IVW_CORE_API MultiFileProperty : public TemplateProperty<std::vector<std::string>> {
 public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;

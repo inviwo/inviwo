@@ -39,9 +39,9 @@
 
 namespace inviwo {
 
-typedef std::pair<std::shared_ptr<Texture>, std::shared_ptr<cl::Image3DGL> >
+typedef std::pair<std::shared_ptr<Texture>, std::shared_ptr<cl::Image3DGL>>
     Texture3DCLImageSharingPair;
-typedef std::map<std::shared_ptr<Texture>, std::shared_ptr<cl::Image3DGL> > CLTexture3DSharingMap;
+typedef std::map<std::shared_ptr<Texture>, std::shared_ptr<cl::Image3DGL>> CLTexture3DSharingMap;
 
 /** \class VolumeCLGL
  *

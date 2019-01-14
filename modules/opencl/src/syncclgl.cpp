@@ -47,8 +47,8 @@ SyncCLGL::SyncCLGL(const cl::Context& context, const cl::CommandQueue& queue)
     // Check if function clCreateEventFromGLsyncKHR has been fetched previously
     // and that glCreateSyncFromCLeventARB exist (non-existing on Mac).
     if (syncFunctionMap_.find(context()) == syncFunctionMap_.end() && glCreateSyncFromCLeventARB) {
-    // Get clCreateEventFromGLsyncKHR function from platform since
-    // it is a vendor extension and cannot be statically linked
+        // Get clCreateEventFromGLsyncKHR function from platform since
+        // it is a vendor extension and cannot be statically linked
 #if defined(CL_VERSION_1_2)  // version >= 1.2
         // Function was renamed in version 1.2
         auto device = queue.getInfo<CL_QUEUE_DEVICE>();

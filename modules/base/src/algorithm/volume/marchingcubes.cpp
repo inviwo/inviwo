@@ -653,7 +653,6 @@ std::shared_ptr<Mesh> marchingcubes(std::shared_ptr<const Volume> volume, double
         if (progressCallback) progressCallback(1.0f);
 
         return mesh;
-
     });
 }
 }  // namespace util

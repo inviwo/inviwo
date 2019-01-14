@@ -84,7 +84,6 @@ NetworkSearch::NetworkSearch(InviwoMainWindow *win)
            }},
           {"inport", "", "search inport class identifiers", true,
            [](Processor *p, const std::string &s) -> bool {
-
                bool inport = false;
                for (const auto &pt : p->getInports()) {
                    inport |= find(pt->getClassIdentifier(), s);

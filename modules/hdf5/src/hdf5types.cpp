@@ -86,6 +86,6 @@ IVW_MODULE_HDF5_API const DataFormatBase* util::getDataFormatFromDataSet(
 
 #include <warn/pop>
 
-}  // namespace
+}  // namespace hdf5
 
 }  // namespace inviwo

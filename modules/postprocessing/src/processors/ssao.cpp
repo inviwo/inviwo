@@ -521,4 +521,4 @@ void SSAO::drawHbaoBlur(GLuint fboOut, const ProjectionParam& /*proj*/, int widt
     glDrawArrays(GL_TRIANGLES, 0, 3);
 }
 
-}  // namespace
+}  // namespace inviwo

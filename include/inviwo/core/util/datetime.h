@@ -53,6 +53,6 @@ static const std::string currentDateTime() {
 }
 #include <warn/pop>
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_DATETIME_H

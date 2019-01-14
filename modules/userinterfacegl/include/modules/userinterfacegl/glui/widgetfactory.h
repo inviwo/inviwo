@@ -44,10 +44,9 @@ namespace glui {
 class Renderer;
 
 class IVW_MODULE_USERINTERFACEGL_API WidgetFactory
-    : public StandardFactory<Element, WidgetFactoryObject, const std::string & /*key*/,
-                             Property & /*prop*/, Processor & /*proc*/, Renderer & /*renderer*/>
-      {
-public:    
+    : public StandardFactory<Element, WidgetFactoryObject, const std::string& /*key*/,
+                             Property& /*prop*/, Processor& /*proc*/, Renderer& /*renderer*/> {
+public:
     WidgetFactory() = default;
     virtual ~WidgetFactory() = default;
 };
