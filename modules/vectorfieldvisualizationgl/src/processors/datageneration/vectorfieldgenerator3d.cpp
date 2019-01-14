@@ -88,22 +88,6 @@ void VectorFieldGenerator3D::process() {
     volume->dataMap_.dataRange = vec2(0, 1);
     volume->dataMap_.valueRange = vec2(-1, 1);
 
-    shader_.activate();
-    TextureUnitContainer cont;
-    utilgl::bindAndSetUniforms(shader_, cont, *volume.get(), "volume");
-    utilgl::setUniforms(shader_, xRange_, yRange_, zRange_);
-    const size3_t dim{size_.get()};
-    fbo_.activate();
-    glViewport(0, 0, static_cast<GLsizei>(dim.x), static_cast<GLsizei>(dim.y));
-
-    VolumeGL* outVolumeGL = volume->getEditableRepresentation<VolumeGL>();
-    fbo_.attachColorTexture(outVolumeGL->getTexture().get(), 0);
-
-    utilgl::multiDrawImagePlaneRect(static_cast<int>(dim.z));
-
-    shader_.deactivate();
-    fbo_.deactivate();
-
     vec3 corners[4];
     corners[0] = vec3(xRange_.get().x, yRange_.get().x, zRange_.get().x);
     corners[1] = vec3(xRange_.get().y, yRange_.get().x, zRange_.get().x);
@@ -117,6 +101,22 @@ void VectorFieldGenerator3D::process() {
 
     volume->setBasis(basis);
     volume->setOffset(corners[0]);
+
+    shader_.activate();
+    TextureUnitContainer cont;
+    utilgl::bindAndSetUniforms(shader_, cont, *volume.get(), "volume");
+    const size3_t dim{size_.get()};
+    fbo_.activate();
+    glViewport(0, 0, static_cast<GLsizei>(dim.x), static_cast<GLsizei>(dim.y));
+
+    VolumeGL* outVolumeGL = volume->getEditableRepresentation<VolumeGL>();
+    fbo_.attachColorTexture(outVolumeGL->getTexture().get(), 0);
+
+    utilgl::multiDrawImagePlaneRect(static_cast<int>(dim.z));
+
+    shader_.deactivate();
+    fbo_.deactivate();
+
     outport_.setData(volume);
 }
 
