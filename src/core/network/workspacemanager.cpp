@@ -221,15 +221,13 @@ WorkspaceManager::SerializationHandle WorkspaceManager::onSave(
     return serializers_.add([callback, modes, this](Serializer& s,
                                                     const ExceptionHandler& exceptionHandler,
                                                     WorkspaceSaveMode mode) {
-        if (modes.count(mode)) {
-            IVW_UNUSED_PARAM(this);
-            try {
-                callback(s);
-            } catch (Exception& e) {
-                exceptionHandler(e.getContext());
-            } catch (...) {
-                exceptionHandler(IVW_CONTEXT);
-            }
+        IVW_UNUSED_PARAM(this);
+        try {
+            callback(s);
+        } catch (Exception& e) {
+            exceptionHandler(e.getContext());
+        } catch (...) {
+            exceptionHandler(IVW_CONTEXT);
         }
     });
 }
