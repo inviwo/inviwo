@@ -68,7 +68,7 @@ public:
     /**
      * Normalizes the value v from the range of the parameter to zero and one. Clamps out-of-bounds
      * values to zero and one. Using inverse linear interpolation between min and max unless
-     * usePercentiles_ is checked. If usePercentiles_ is checked linear interpolation is used within
+     * usePercentiles is checked. If usePercentiles is checked linear interpolation is used within
      * three percentile ranges (0-25, 25-75, 75-100).
      */
     double getNormalized(double v) const;
@@ -98,10 +98,11 @@ public:
 
     std::function<double(size_t)> at = [](size_t) { return 0.0; };
 
-private:
-    BoolProperty usePercentiles_;
-    DoubleMinMaxProperty range_;
 
+    BoolProperty usePercentiles;
+    DoubleMinMaxProperty range;
+
+private:
     std::shared_ptr<const Column> col_;
 
     bool upperBrushed_ = false;  //! Flag to indicated if the upper handle is brushing away data

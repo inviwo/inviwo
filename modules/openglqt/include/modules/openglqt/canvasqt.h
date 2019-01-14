@@ -536,11 +536,8 @@ void CanvasQtBase<T>::propagateEvent(Event* e) {
 template <typename T>
 void CanvasQtBase<T>::propagateEvent(MouseInteractionEvent* e) {
     e->setToolTipCallback([this, e](const std::string& tooltip) -> void {
+        // Save tooltip text to be displayed when Qt raises a QHelpEvent (mouse is still for a while)
         toolTipText_ = tooltip;
-        const auto pos = utilqt::toQPoint(util::invertY(e->pos(), e->canvasSize()));
-        auto event = std::make_unique<QHelpEvent>(QEvent::ToolTip, pos.toPoint(),
-                                                  this->mapToGlobal(pos.toPoint()));
-        QApplication::postEvent(this, event.release(), Qt::NormalEventPriority);
     });
 
     T::propagateEvent(e);
@@ -548,6 +545,8 @@ void CanvasQtBase<T>::propagateEvent(MouseInteractionEvent* e) {
 
 template <typename T>
 bool CanvasQtBase<T>::showToolTip(QHelpEvent* e) {
+    // Raised when mouse is still for a while
+    // Display the saved text from tooltip callback (setToolTipCallback)
     QToolTip::showText(e->globalPos(), utilqt::toLocalQString(toolTipText_), this);
     e->accept();
     return true;
