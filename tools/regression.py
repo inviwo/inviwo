@@ -161,7 +161,7 @@ if __name__ == '__main__':
 	])
 
 	modulePaths = []
-	if args.repos || args.modules:
+	if args.repos or args.modules:
 		if args.repos: 
 			modulePaths = searchRepoPaths(args.repos)
 		if args.modules:
