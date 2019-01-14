@@ -45,7 +45,8 @@ QDockWidget > .QWidget,
 QDockWidget > .QScrollArea, 
 QDockWidget > .QSplitter, 
 QDialog,
-QStatusBar {
+QStatusBar,
+QWidget#WelcomeWidget {
     background-color: #323235;
 }
 
@@ -159,6 +160,9 @@ QTabWidget::pane QWidget, QTabWidget::pane QDockWidget QWidget {
 }
 QTabWidget::tab-bar {
     left: 5px;
+}
+QTabWidget::pane#PreviewImageTabWidget {
+    border: 1px solid #414145;
 }
 QTabBar {
     /* docked QDockWidgets ignore QTabWidget */
@@ -376,6 +380,18 @@ QLabel#TextLabelOverlay {
     color: #c8ccd0;
     font-weight: 600;
     font-size: 10pt;
+}
+
+QLabel#WelcomeHeader {
+    font-size: 50pt;
+    color: #268bd2;
+}
+
+/************************ 
+QFrame
+************************/
+QFrame#WelcomeRightColumn {
+    background-color: #434345;
 }
 
 /************************ 
