@@ -44,10 +44,9 @@ IntegralLineSet curvature(const IntegralLineSet &lines) {
 
 void curvature(IntegralLine &line, dmat4 toWorld) {
     if (line.hasMetaData("curvature")) return;
+    if (line.getPositions().size() <= 1) return;
     auto positions = line.getPositions();  // note, this creates a copy, we modify it below
-    if (positions.size() <= 1) return;
-    auto dt = static_cast<float>(positions.size() - 1);
-    dt = 1 / dt;
+    auto dt = 1.0 / static_cast<float>(positions.size() - 1);
 
     std::transform(positions.begin(), positions.end(), positions.begin(), [&](dvec3 pos) {
         dvec4 P = toWorld * dvec4(pos, 1);
@@ -56,7 +55,7 @@ void curvature(IntegralLine &line, dmat4 toWorld) {
 
     auto md = line.createMetaData<double>("curvature");
     auto &K = md->getEditableRAMRepresentation()->getDataContainer();
-    auto &V = line.getMetaData<dvec3>("velocity");
+    const auto &V = line.getMetaData<dvec3>("velocity");
 
     auto cur = positions.begin();
     auto vel = V.begin();
@@ -66,30 +65,33 @@ void curvature(IntegralLine &line, dmat4 toWorld) {
             // first
             K.emplace_back(0);
         } else if (cur == positions.end() - 1) {
-            // last
-            K.emplace_back(0);
+            // last, copy second to last
+            K.emplace_back(K.back());
         } else {
-            auto p = *cur;
-            auto pm = *(cur - 1);
-            auto pp = *(cur + 1);
+            const auto p = *cur;
+            const auto pm = *(cur - 1);
+            const auto pp = *(cur + 1);
 
-            auto t1 = pm - p;
-            auto t2 = p - pp;
-            auto nt1 = glm::normalize(t1);
-            auto nt2 = glm::normalize(t2);
-            auto angle = std::acos(glm::dot(nt1, nt2));
+            const auto t1 = pm - p;
+            const auto t2 = p - pp;
 
-            double a = std::abs(0.5 * glm::length(pp - p));
-            double b = std::abs(0.5 * glm::length(p - pm));
-            double c = a + b;
-
-            if (c == 0) {
+            auto l1 = glm::length(t1);
+            auto l2 = glm::length(t2);
+            if (l1 == 0 || l2 == 0) {
                 K.emplace_back(0);
-            } else {
-                K.emplace_back(angle / c);
+                LogWarnCustom("util::curvature", "Got zero offset");
+                continue;
             }
+            const auto nt1 = t1 / l1;  // normalize t1
+            const auto nt2 = t2 / l2;  // normalize t2
+            const auto dot = std::clamp(glm::dot(nt1, nt2), -1.0, 1.0);
+            const auto angle = std::acos(dot);
+
+            const double meanL = 0.5 * (l1 + l2);
+            K.emplace_back(angle / meanL);
         }
     }
+    K[0] = K[1];  // Copy second to first
 }
 void curvature(IntegralLineSet &lines) {
     for (auto &line : lines) {
