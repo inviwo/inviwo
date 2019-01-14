@@ -90,7 +90,6 @@ TEST(AnimationTests, Easing) {
     // Function Values
     std::vector<double> Y(X);
 
-    
     // Run over all easings
     for (const auto& ThisEasing : AllEasings) {
         // Compute

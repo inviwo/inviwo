@@ -161,15 +161,15 @@ if __name__ == '__main__':
 	])
 
 	modulePaths = []
-	if args.repos: 
-		modulePaths = searchRepoPaths(args.repos)
+	if args.repos || args.modules:
+		if args.repos: 
+			modulePaths = searchRepoPaths(args.repos)
+		if args.modules:
+			modulePaths += args.modules
 	elif config.has_option("Inviwo", "modulepaths"):
 		modulePaths = config.get("Inviwo", "modulepaths").split(";")
 
-	if args.modules:
-		modulePaths += args.modules
-
-	modulePaths = list(map(os.path.abspath, modulePaths))
+	modulePaths = list(set(map(os.path.abspath, modulePaths)))
 
 	if args.output:
 		output = os.path.abspath(args.output)
