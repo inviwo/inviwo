@@ -115,6 +115,8 @@ public:
     void setRadiusData(std::shared_ptr<const BufferBase> buffer);
     void setIndexColumn(std::shared_ptr<const TemplateColumn<uint32_t>> indexcol);
 
+    void setDataFrame(std::shared_ptr<const plot::DataFrame> dataFrame);
+
     Properties properties_;
     Shader shader_;
 
@@ -147,6 +149,7 @@ protected:
     std::unique_ptr<BufferObjectArray> boa_;
 
     Processor *processor_;
+    std::weak_ptr<const plot::DataFrame> dataFrame_;
 };
 
 }  // namespace plot

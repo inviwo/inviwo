@@ -167,10 +167,9 @@ std::shared_ptr<DataFrame> combineDataFrames(
 std::string createToolTipForRow(const DataFrame &dataframe, size_t rowId) {
     std::ostringstream oss;
     for (size_t i = 0; i < dataframe.getNumberOfColumns(); i++) {
-        oss << dataframe.getHeader(i) << ": " << dataframe.getColumn(i)->getAsString(rowId)
-            << std::endl;
+        if(i!=0) oss << std::endl;
+        oss << dataframe.getHeader(i) << ": " << dataframe.getColumn(i)->getAsString(rowId);
     }
-
     return oss.str();
 }
 
