@@ -34,7 +34,7 @@ def main():
 
             diff = difflib.unified_diff(code, formatted_code.split('\n'), 
                 filename + " (original)", 
-                filename + " (formatted)", '','',3,"")
+                filename + " (formatted)", '', '', 3, "")
             diff_string = '\n'.join(diff)
             if len(diff_string) > 0:
                 sys.stdout.write("\n\nWarning: Inconsistent format " + filename + "\n")

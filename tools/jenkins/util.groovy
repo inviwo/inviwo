@@ -72,15 +72,16 @@ def warn(refjob = 'inviwo/master') {
             sh 'cp compile_commands.json compile_commands_org.json'
             sh 'python3 ../inviwo/tools/jenkins/filter-compilecommands.py'
             sh 'python3 ../inviwo/tools/jenkins/check-format.py'
-            sh 'cppcheck --enable=all --inconclusive --xml --xml-version=2 --project=compile_commands.json 2> cppcheck.xml'
+            // disabled for now, has some macro issues.
+            //sh 'cppcheck --enable=all --inconclusive --xml --xml-version=2 --project=compile_commands.json 2> cppcheck.xml'
         }
 
         dir('inviwo') {
             recordIssues failedNewAll: 0, referenceJobName: refjob, sourceCodeEncoding: 'UTF-8', 
                 tools: [gcc4(name: 'GCC', reportEncoding: 'UTF-8'), 
                         clang(name: 'Clang', reportEncoding: 'UTF-8')]
-            recordIssues referenceJobName: refjob, sourceCodeEncoding: 'UTF-8', 
-                tools: [cppCheck(name: 'CPPCheck', pattern: '../build/cppcheck.xml')]
+            //recordIssues referenceJobName: refjob, sourceCodeEncoding: 'UTF-8', 
+            //    tools: [cppCheck(name: 'CPPCheck', pattern: '../build/cppcheck.xml')]
         }
     }
 }
@@ -105,16 +106,15 @@ def integrationtest(display = 0) {
     }
 }
 
-def regression(build, env, modulepaths = [], display = 0) {
+def regression(build, env, modulepaths, display = 0) {
     cmd('Regression Tests', 'regress', ['DISPLAY=:' + display]) {
-        def modules = modulepaths ? '--modules ' + modulepaths.join(' ') : ''
         try {
             sh """
                 python3 ../inviwo/tools/regression.py \
                         --inviwo ../build/bin/inviwo \
                         --header ${env.JENKINS_HOME}/inviwo-config/header.html \
                         --output . \
-                        --repos ../inviwo ${modules}
+                        --modules ${modulepaths.join(' ')}
             """
         } catch (e) {
             // Mark as unstable, if we mark as failed, the report will not be published.
