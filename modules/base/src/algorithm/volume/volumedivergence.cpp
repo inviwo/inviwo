@@ -77,7 +77,7 @@ std::unique_ptr<Volume> divergenceVolume(const Volume& volume) {
         const Sampler sampler(volume, worldSpace);
 
         util::forEachVoxel(*vol, [&](const size3_t& pos) {
-            const vec3 world{m * vec4(vec3(pos) / vec3(volume.getDimensions() - size3_t(1)), 1)};
+            const vec3 world{m * vec4((vec3(pos) + 0.5f) / vec3(volume.getDimensions()), 1)};
 
             const auto Fxp = static_cast<vec3>(sampler.sample(world + ox));
             const auto Fxm = static_cast<vec3>(sampler.sample(world - ox));
