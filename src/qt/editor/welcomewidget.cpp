@@ -303,7 +303,11 @@ void WelcomeWidget::keyPressEvent(QKeyEvent *event) {
             if ((event->modifiers() & Qt::ControlModifier) == Qt::ControlModifier) {
                 loadWorkspace_->animateClick();
             }
+            event->accept();
         }
+    } else if ((event->key() == Qt::Key_Return) || (event->key() == Qt::Key_Enter)) {
+        loadWorkspace_->animateClick();
+        event->accept();
     }
     QWidget::keyPressEvent(event);
 }
