@@ -21,7 +21,8 @@ node {
             modulePaths : modulePaths, 
             onModules : on,  
             offModules : off)
-
+        util.filterfiles()
+        util.format()
         util.warn()
         util.unittest()
         util.integrationtest()        
@@ -31,12 +32,12 @@ node {
         util.publish()
         
         if (env.CHANGE_ID) {
-            if (fileExists("commentid.txt")) {
+            if (fileExists(file: "commentid.txt")) {
                 def id = readFile(file: "commentid.txt") as Integer
                 pullRequest.editComment(id, 'tested by jenkins again')
             } else {
                 def comment = pullRequest.comment('tested by jenkins')
-                writeFile file: "commentid.txt", text: (comment.id as String)
+                writeFile(file: "commentid.txt", text: (comment.id as String))
             }
         }
 
