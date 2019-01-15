@@ -17,10 +17,11 @@ node {
         def off = ["ABUFFERGL" , "DISCRETEDATA", "HDF5"]
 
         util.buildStandard(
-            params : params, 
-            modulePaths : modulePaths, 
-            onModules : on,  
-            offModules : off)
+            env: env
+            params: params, 
+            modulePaths: modulePaths, 
+            onModules: on,  
+            offModules: off)
         util.filterfiles()
         util.format()
         util.warn()

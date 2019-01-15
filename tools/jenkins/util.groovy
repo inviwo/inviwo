@@ -237,6 +237,14 @@ Map ccacheOption() {
         "CMAKE_CXX_COMPILER_LAUNCHER" : "ccache",
     ]
 }
+Map envCMakeOptions(env) {
+    def res = [:]
+    if (env.QT_PATH) res["CMAKE_PREFIX_PATH"] = env.QT_PATH
+    if (env.OpenCL_LIBRARY) res["OpenCL_LIBRARY"] = env.OpenCL_LIBRARY
+    if (env.OpenCL_INCLUDE_DIR) res["OpenCL_INCLUDE_DIR"] = env.OpenCL_INCLUDE_DIR
+    return res
+}
+
 
 //Args opts, modulePaths, onModules, offModules
 def build(Map args = [:]) {
@@ -264,6 +272,7 @@ def build(Map args = [:]) {
 
 // Args: 
 // * params The global pipeline variable
+// * env The global pipeline variable
 // * modulePaths list of paths to module folders (optional)
 // * opts Map of extra CMake options (optional)
 // * onModules List of extra module to enable (optional)
@@ -273,6 +282,7 @@ def buildStandard(Map args = [:]) {
     stage('Build') {
         clean(args.params)
         def defaultOpts = defaultCMakeOptions(args.params['Build Type'])
+        if (args.env) defaultOpts.putAll(envCMakeOptions(args.env))
         if (args.params['Use ccache']) defaultOpts.putAll(ccacheOption())
         if (args.opts) defaultOpts.putAll(args.opts)
         args.opts = defaultOpts
