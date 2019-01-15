@@ -256,7 +256,7 @@ using PHS = PickingHoverState;
 
 const auto canvas = makeCanvas();
 const uvec2 dim{canvas.size(), canvas.size()};
-const auto ndc = [dim](uvec2 pos) { return dvec3{2.0 * dvec2{pos} / dvec2{dim} - dvec2{1.0}, 0.5}; };
+const auto ndc = [](uvec2 pos) { return dvec3{2.0 * dvec2{pos} / dvec2{10.0} - dvec2{1.0}, 0.5}; };
 
 TEST(PickingControllerTest, IdleMove) {
     PickingManager pm;
