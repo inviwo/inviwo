@@ -254,9 +254,9 @@ using PPI = PickingPressItem;
 using PPIs = PickingPressItems;
 using PHS = PickingHoverState;
 
-static const auto canvas = makeCanvas();
-static const uvec2 dim{canvas.size(), canvas.size()};
-static const auto ndc = [dim](uvec2 pos) { return dvec3{2.0 * dvec2{pos} / dvec2{dim} - dvec2{1.0}, 0.5}; };
+const auto canvas = makeCanvas();
+const uvec2 dim{canvas.size(), canvas.size()};
+const auto ndc = [dim](uvec2 pos) { return dvec3{2.0 * dvec2{pos} / dvec2{dim} - dvec2{1.0}, 0.5}; };
 
 TEST(PickingControllerTest, IdleMove) {
     PickingManager pm;
