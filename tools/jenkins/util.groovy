@@ -34,6 +34,11 @@ def defaultProperties() {
                 description: 'Disable ccache', 
                 name: 'Use ccache'
             ),
+            booleanParam(
+                defaultValue: false, 
+                description: 'Prints all the cmake variables to the log', 
+                name: 'Print CMake Variables'
+            ),
             choice(
                 choices: "Release\nDebug\nMinSizeRel\nRelWithDebInfo\n", // The first will be default
                 description: 'Select build configuration', 
@@ -73,7 +78,9 @@ def warn(refjob = 'inviwo/master') {
             sh 'cp compile_commands.json compile_commands_org.json'
             sh 'python3 ../inviwo/tools/jenkins/filter-compilecommands.py'
             sh 'python3 ../inviwo/tools/jenkins/check-format.py'
-            format_diff = new File('clang-format-result.diff').text
+            if (fileExists 'clang-format-result.diff') {
+                format_diff = readFile 'clang-format-result.diff'
+            }
 
             // disabled for now, has some macro issues.
             //sh '''cppcheck --enable=all --inconclusive --xml --xml-version=2 \
@@ -180,8 +187,9 @@ def slack(build, env, channel) {
     }
 }
 
-def cmake(Map opts, List modulePaths, List onModules, List offModules) {
-    return "cmake -G Ninja -LA " +
+def cmake(Map opts, List modulePaths, List onModules, List offModules, Boolean printVars = False) {
+    return "cmake -G Ninja " +
+        (printVars ? " -LA " : "")
         opts.inject("", {res, item -> res + " -D" + item.key + "=" + item.value}) + 
         (modulePaths ? " -DIVW_EXTERNAL_MODULES=" + modulePaths.join(";") : "" ) +
         onModules.inject("", {res, item -> res + " -D" + "IVW_MODULE_" + item + "=ON"}) +
@@ -234,7 +242,8 @@ def build(Map args = [:]) {
                 export CPATH=`pwd`
                 export CCACHE_BASEDIR=`readlink -f \${CPATH}/..`
                         
-                ${cmake(args.opts, args.modulePaths, args.onModules, args.offModules)}
+                ${cmake(args.opts, args.modulePaths, args.onModules, args.offModules, 
+                        args.printCMakeVars)}
 
                 ninja
 
@@ -258,6 +267,7 @@ def buildStandard(Map args = [:]) {
         if (args.params['Use ccache']) defaultOpts.putAll(ccacheOption())
         if (args.opts) defaultOpts.putAll(args.opts)
         args.opts = defaultOpts
+        args.printCMakeVars = args.params['Print CMake Variables']
         build(args)
     }
 }
