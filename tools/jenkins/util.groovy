@@ -189,7 +189,7 @@ def slack(build, env, channel) {
 
 def cmake(Map opts, List modulePaths, List onModules, List offModules, Boolean printVars = False) {
     return "cmake -G Ninja " +
-        (printVars ? " -LA " : "")
+        (printVars ? " -LA " : "") +
         opts.inject("", {res, item -> res + " -D" + item.key + "=" + item.value}) + 
         (modulePaths ? " -DIVW_EXTERNAL_MODULES=" + modulePaths.join(";") : "" ) +
         onModules.inject("", {res, item -> res + " -D" + "IVW_MODULE_" + item + "=ON"}) +
