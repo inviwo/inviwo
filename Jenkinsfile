@@ -16,7 +16,12 @@ node {
         def on = []
         def off = ["ABUFFERGL" , "DISCRETEDATA", "HDF5"]
 
-        util.buildStandard(params : params, modulePaths : modulePaths, onModules : on,  offModules : off)
+        util.buildStandard(
+            params : params, 
+            modulePaths : modulePaths, 
+            onModules : on,  
+            offModules : off)
+
         util.warn()
         util.unittest()
         util.integrationtest()        
@@ -26,7 +31,13 @@ node {
         util.publish()
         
         if (env.CHANGE_ID) {
-            pullRequest.comment('tested by jenkins')
+            if (fileExists("commentid.txt")) {
+                id = readFile file: "commentid.txt"
+                pullRequest.editComment(it, 'tested by jenkins again')
+            } else {
+                def comment = pullRequest.comment('tested by jenkins')
+                writeFile file: "commentid.txt", text: comment.id
+            }
         }
 
         currentBuild.result = 'SUCCESS'

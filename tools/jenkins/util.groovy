@@ -71,22 +71,33 @@ def cmd(stageName, dirName, env = [], fun) {
     }
 }
 
-def warn(refjob = 'inviwo/master') {
+def filterfiles() {
+    dir('build') {
+        sh 'cp compile_commands.json compile_commands_org.json'
+        sh 'python3 ../inviwo/tools/jenkins/filter-compilecommands.py'
+    }
+}
+
+def format() {
     String format_diff
-    stage("Warn Tests") {
+    stage("Format Tests") {
         dir('build') {
-            sh 'cp compile_commands.json compile_commands_org.json'
-            sh 'python3 ../inviwo/tools/jenkins/filter-compilecommands.py'
             sh 'python3 ../inviwo/tools/jenkins/check-format.py'
             if (fileExists('clang-format-result.diff')) {
                 format_diff = readFile('clang-format-result.diff')
             }
+        }
+    }
+    return format_diff
+}
 
+def warn(refjob = 'inviwo/master') {
+    stage("Warn Tests") {
+        dir('build') {
             // disabled for now, has some macro issues.
             //sh '''cppcheck --enable=all --inconclusive --xml --xml-version=2 \
             //      --project=compile_commands.json 2> cppcheck.xml'''    
-        }
-        
+        }    
         dir('inviwo') {
             recordIssues failedNewAll: 0, referenceJobName: refjob, sourceCodeEncoding: 'UTF-8', 
                 tools: [gcc4(name: 'GCC', reportEncoding: 'UTF-8'), 
@@ -95,7 +106,6 @@ def warn(refjob = 'inviwo/master') {
             //    tools: [cppCheck(name: 'CPPCheck', pattern: '../build/cppcheck.xml')]
         }
     }
-    return format_diff
 }
 
 def unittest(display = 0) {
