@@ -32,11 +32,11 @@ node {
         
         if (env.CHANGE_ID) {
             if (fileExists("commentid.txt")) {
-                id = readFile file: "commentid.txt"
-                pullRequest.editComment(it, 'tested by jenkins again')
+                def id = readFile(file: "commentid.txt") as Integer
+                pullRequest.editComment(id, 'tested by jenkins again')
             } else {
                 def comment = pullRequest.comment('tested by jenkins')
-                writeFile file: "commentid.txt", text: comment.id
+                writeFile file: "commentid.txt", text: (comment.id as String)
             }
         }
 
