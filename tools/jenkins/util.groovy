@@ -218,9 +218,6 @@ Map defaultCMakeOptions(String buildType) {
     return [
         "CMAKE_EXPORT_COMPILE_COMMANDS" : "ON",
         "CMAKE_BUILD_TYPE" : buildType,
-        "OpenCL_LIBRARY" : "/usr/local/cuda/lib64/libOpenCL.so",
-        "OpenCL_INCLUDE_DIR" : "/usr/local/cuda/include/",
-        "CMAKE_PREFIX_PATH" : "/opt/Qt/5.6/gcc_64",
         "IVW_CMAKE_DEBUG" : "ON",
         "IVW_DOXYGEN_PROJECT" : "ON",
         "BUILD_SHARED_LIBS" : "ON",
