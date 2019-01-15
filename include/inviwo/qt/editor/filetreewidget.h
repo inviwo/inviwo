@@ -35,8 +35,11 @@
 #include <warn/ignore/all>
 
 #include <QTreeWidget>
+#include <QIcon>
 
 #include <warn/pop>
+
+class QTreeWidgetItem;
 
 namespace inviwo {
 
@@ -48,16 +51,34 @@ class IVW_QTEDITOR_API FileTreeWidget : public QTreeWidget {
     Q_OBJECT
 #include <warn/pop>
 public:
-    enum ListElemType { Normal = 1, Section, SubSection };
+    enum ListElemType { File = 1, Section, SubSection };
 
     enum ItemRoles { FileName = Qt::UserRole + 100, Path, Type, ExampleWorkspace };
 
-    explicit FileTreeWidget(InviwoApplication *app, const QStringList &recentFiles = QStringList(),
-                            QWidget *parent = nullptr);
+    explicit FileTreeWidget(InviwoApplication *app, QWidget *parent = nullptr);
     virtual ~FileTreeWidget() = default;
+
+    void updateRecentWorkspaces(const QStringList &recentFiles);
+    void updateExampleEntries();
+
+    bool selectRecentWorkspace(int index);
 
 signals:
     void selectedFileChanged(const QString &filename, bool isExample);
+    void loadFile(const QString &filename, bool isExample);
+
+private:
+    static QTreeWidgetItem *createCategory(const QString &caption,
+                                           ListElemType = ListElemType::Section);
+    static QTreeWidgetItem *createFileEntry(const QIcon &icon, const std::string &filename,
+                                            bool isExample = false);
+
+    InviwoApplication *inviwoApp_;
+
+    QTreeWidgetItem *recentWorkspaceItem_ = nullptr;
+    QTreeWidgetItem *examplesItem_ = nullptr;
+
+    QIcon fileIcon_;
 };
 
 }  // namespace inviwo

@@ -53,6 +53,9 @@ QWidget#WelcomeWidget {
 /************************ 
 QMainWindow
 ************************/
+QMainWindow {
+    background: #252527;
+}
 QMainWindow::separator {
     background: #444;
     width: 2px;
@@ -161,9 +164,6 @@ QTabWidget::pane QWidget, QTabWidget::pane QDockWidget QWidget {
 QTabWidget::tab-bar {
     left: 5px;
 }
-QTabWidget::pane#PreviewImageTabWidget {
-    border: 1px solid #414145;
-}
 QTabBar {
     /* docked QDockWidgets ignore QTabWidget */
     background: #252527;
@@ -193,6 +193,7 @@ QTabBar::tab:top {
     border-bottom-right-radius: 0px;
 
     margin-bottom: 1px;
+    margin-top: 2px;
 }
 QTabBar::tab:bottom:selected{
     background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
@@ -380,18 +381,6 @@ QLabel#TextLabelOverlay {
     color: #c8ccd0;
     font-weight: 600;
     font-size: 10pt;
-}
-
-QLabel#WelcomeHeader {
-    font-size: 50pt;
-    color: #268bd2;
-}
-
-/************************ 
-QFrame
-************************/
-QFrame#WelcomeRightColumn {
-    background-color: #434345;
 }
 
 /************************ 
@@ -917,4 +906,20 @@ QDockWidget#ResourceManager QTableView QHeaderView::section {
     border: none;
     border-bottom: 2px ridge #4a4a4f;
     background: transparent;
+}
+
+/************************ 
+WelcomeWidget
+************************/
+QLabel#WelcomeHeader {
+    font-size: 50pt;
+    color: #268bd2;
+}
+
+QFrame#WelcomeRightColumn {
+    background-color: #434345;
+}
+
+QTreeWidget#FileTreeWidget {
+    border: 1px solid transparent;
 }

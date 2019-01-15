@@ -49,10 +49,19 @@ class InviwoMainWindow;
 
 class IVW_QTEDITOR_API WelcomeWidget : public QWidget {
 public:
-    WelcomeWidget(InviwoMainWindow *w, bool shownOnStartup, QWidget *parent);
+    WelcomeWidget(InviwoMainWindow *w, QWidget *parent);
     virtual ~WelcomeWidget() = default;
 
+    void updateRecentWorkspaces();
+
+protected:
+    virtual void showEvent(QShowEvent *event) override;
+    virtual void keyPressEvent(QKeyEvent *event) override;
+
 private:
+    void loadWorkspace(const QString &filename, bool isExample) const;
+    void initChangelog();
+
     InviwoMainWindow *mainWindow_;
 
     FileTreeWidget *filetree_;

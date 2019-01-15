@@ -55,6 +55,7 @@
 #include <inviwo/qt/editor/welcomewidget.h>
 #include <inviwo/qt/editor/resourcemanager/resourcemanagerdockwidget.h>
 #include <inviwo/qt/applicationbase/inviwoapplicationqt.h>
+#include <inviwo/qt/editor/workspacepreview.h>
 #include <modules/qtwidgets/inviwofiledialog.h>
 #include <modules/qtwidgets/propertylistwidget.h>
 #include <inviwo/core/metadata/processormetadata.h>
@@ -63,8 +64,6 @@
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/processors/compositeprocessor.h>
 #include <inviwo/core/processors/compositeprocessorutils.h>
-
-#include <inviwo/core/processors/canvasprocessor.h>
 
 #include <inviwo/qt/editor/fileassociations.h>
 #include <inviwo/qt/editor/dataopener.h>
@@ -90,7 +89,7 @@
 #include <QDropEvent>
 #include <QDragEnterEvent>
 #include <QBuffer>
-#include <QStackedWidget>
+#include <QTabWidget>
 
 #include <warn/pop>
 
@@ -205,8 +204,12 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     networkEditorView_ = new NetworkEditorView(networkEditor_.get(), this);
     NetworkEditorObserver::addObservation(networkEditor_.get());
 
-    centralWidget_ = new QStackedWidget(this);
-    centralWidget_->addWidget(networkEditorView_);
+    centralWidget_ = new QTabWidget(this);
+    centralWidget_->setObjectName("CentralTabWidget");
+    centralWidget_->setTabPosition(QTabWidget::North);
+    centralWidget_->setMovable(true);
+
+    centralWidget_->addTab(networkEditorView_, "Network Editor");
     setCentralWidget(centralWidget_);
 
     settingsWidget_ = new SettingsWidget(this);
@@ -425,6 +428,10 @@ void InviwoMainWindow::addActions() {
             // save empty list
             saveRecentWorkspaceList(QStringList());
             clearRecentWorkspaces_->setEnabled(false);
+
+            if (welcomeWidget_) {
+                welcomeWidget_->updateRecentWorkspaces();
+            }
         });
 
         connect(recentWorkspaceMenu, &QMenu::aboutToShow, this, [this]() {
@@ -515,7 +522,7 @@ void InviwoMainWindow::addActions() {
         fileMenuItem->addAction(reloadAction);
     }
 
-#ifdef IVW_DEBUG
+#if defined(IVW_DEBUG) || 1
     {
         fileMenuItem->addSeparator();
         auto reloadStyle = fileMenuItem->addAction("Reload Style sheet");
@@ -765,6 +772,10 @@ void InviwoMainWindow::addToRecentWorkspaces(QString workspaceFileName) {
 
     if (recentFiles.size() > static_cast<int>(maxNumRecentFiles_)) recentFiles.removeLast();
     saveRecentWorkspaceList(recentFiles);
+
+    if (welcomeWidget_) {
+        welcomeWidget_->updateRecentWorkspaces();
+    }
 }
 
 QStringList InviwoMainWindow::getRecentWorkspaceList() const {
@@ -836,7 +847,7 @@ void InviwoMainWindow::openLastWorkspace(std::string workspace) {
     }();
 
     if (showWelcomePage && !loadSuccessful) {
-        showWelcomeScreen(true);
+        showWelcomeScreen();
     }
 }
 
@@ -919,30 +930,15 @@ void InviwoMainWindow::saveWorkspace(QString workspaceFileName) {
     try {
         auto networkImageSerializationHandle = app_->getWorkspaceManager()->onSave(
             [&](Serializer& s) {
+                const int fixedHeight = 256;
                 auto image = networkEditorView_->exportViewToImage(true, true, QSize(256, 256));
 
-                auto encodeBase64 = [](QImage& img) {
-                    QByteArray byteArray;
-                    QBuffer buffer(&byteArray);
-                    buffer.open(QIODevice::WriteOnly);
-                    img.save(&buffer, "PNG");
-                    return std::string(byteArray.toBase64().data());
-                };
-
-                s.serialize("NetworkImage", encodeBase64(image));
-                LogWarn("serializing network image");
-
-                LogWarn("serializing canvas images...");
-                std::vector<std::string> canvasImages;
-                for (auto* p :
-                     app_->getProcessorNetwork()->getProcessorsByType<CanvasProcessor>()) {
-                    if (p->isSink() && p->isReady()) {
-                        auto img = utilqt::layerToQImage(*p->getVisibleLayer()).scaledToHeight(256);
-                        canvasImages.push_back(encodeBase64(img));
-                    }
+                auto canvases = utilqt::getCanvasImages(app_->getProcessorNetwork());
+                for (auto& img : canvases) {
+                    img.second = img.second.scaledToHeight(fixedHeight);
                 }
-                s.serialize("CanvasImages", canvasImages, "Canvas");
-                LogWarn("... Done");
+                WorkspacePreview p{image, canvases};
+                s.serialize("WorkspacePreview", p);
             },
             WorkspaceSaveMode::Disk);
 
@@ -1017,18 +1013,32 @@ void InviwoMainWindow::saveWorkspaceAsCopy() {
     saveWindowState();
 }
 
-void InviwoMainWindow::showWelcomeScreen(bool shownOnStartup) {
+void InviwoMainWindow::showWelcomeScreen() {
     if (!welcomeWidget_) {
-        welcomeWidget_ = new WelcomeWidget(this, shownOnStartup, centralWidget_);
-        centralWidget_->addWidget(welcomeWidget_);
+        welcomeWidget_ = new WelcomeWidget(this, centralWidget_);
+
+        centralWidget_->setUpdatesEnabled(false);
+        centralWidget_->setCurrentIndex(0);
+        centralWidget_->insertTab(0, welcomeWidget_, "Get Started");
+        centralWidget_->setUpdatesEnabled(true);
+
+        QToolButton* closeBtn = new QToolButton();
+        closeBtn->setIcon(QIcon(":/stylesheets/images/close.png"));
+        closeBtn->setObjectName("dockBtn");
+        QObject::connect(closeBtn, &QToolButton::clicked, this, [&]() { hideWelcomeScreen(); });
+
+        centralWidget_->tabBar()->setTabButton(0, QTabBar::RightSide, closeBtn);
     }
     centralWidget_->setCurrentIndex(centralWidget_->indexOf(welcomeWidget_));
+    welcomeWidget_->setFocus();
 }
 
 void InviwoMainWindow::hideWelcomeScreen() {
     if (welcomeWidget_) {
-        centralWidget_->setCurrentIndex(0);
-        centralWidget_->removeWidget(welcomeWidget_);
+        int index = centralWidget_->indexOf(welcomeWidget_);
+        if (index > -1) {
+            centralWidget_->removeTab(index);
+        }
 
         welcomeWidget_->close();
         welcomeWidget_ = nullptr;

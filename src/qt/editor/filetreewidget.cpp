@@ -70,8 +70,7 @@ SectionDelegate::SectionDelegate(QWidget *parent) : QStyledItemDelegate(parent) 
 
 void SectionDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o,
                             const QModelIndex &index) const {
-    if (index.data(FileTreeWidget::ItemRoles::Type).toInt() ==
-        FileTreeWidget::ListElemType::Normal) {
+    if (index.data(FileTreeWidget::ItemRoles::Type).toInt() == FileTreeWidget::ListElemType::File) {
         auto option = o;
         initStyleOption(&option, index);
 
@@ -105,8 +104,7 @@ void SectionDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o,
 QSize SectionDelegate::sizeHint(const QStyleOptionViewItem &o, const QModelIndex &index) const {
     if (!index.isValid()) return QSize();
 
-    if (index.data(FileTreeWidget::ItemRoles::Type).toInt() ==
-        FileTreeWidget::ListElemType::Normal) {
+    if (index.data(FileTreeWidget::ItemRoles::Type).toInt() == FileTreeWidget::ListElemType::File) {
         auto option = o;
         initStyleOption(&option, index);
 
@@ -201,90 +199,23 @@ QString SectionDelegate::elidedText(const QString &str, const QFontMetrics &metr
 
 }  // namespace
 
-FileTreeWidget::FileTreeWidget(InviwoApplication *app, const QStringList &recentFiles,
-                               QWidget *parent)
-    : QTreeWidget(parent) {
-    if (!app) {
-        app = InviwoApplication::getPtr();
+FileTreeWidget::FileTreeWidget(InviwoApplication *app, QWidget *parent)
+    : QTreeWidget{parent}, inviwoApp_(app), fileIcon_{":/inviwo/inviwo_light.png"} {
+    if (!inviwoApp_) {
+        inviwoApp_ = InviwoApplication::getPtr();
     }
 
     setHeaderHidden(true);
     setColumnCount(2);
     setIconSize(QSize(24, 24));
     setIndentation(10);
-    setColumnWidth(0, 20);
+    setColumnWidth(0, 10);
     setItemDelegate(new SectionDelegate(this));
-
-    QIcon icon{":/inviwo/inviwo_light.png"};
-    auto createFileEntry = [icon](const std::string &filename, bool isExample = false) {
-        auto file = filesystem::getFileNameWithExtension(filename);
-        auto path = filesystem::getFileDirectory(filename);
-        if (path.empty()) {
-            path = ".";
-        }
-        auto item = new QTreeWidgetItem({"", utilqt::toQString(filename)}, ListElemType::Normal);
-        item->setData(1, ItemRoles::Type, ListElemType::Normal);
-        item->setData(1, ItemRoles::FileName, utilqt::toQString(file));
-        item->setData(1, ItemRoles::Path, utilqt::toQString(path));
-        item->setData(1, ItemRoles::ExampleWorkspace, isExample);
-        item->setData(1, Qt::ToolTipRole, item->data(1, ItemRoles::Path));
-        item->setData(1, Qt::DecorationRole, icon);
-        return item;
-    };
-    auto createCategory = [](const QString &caption, ListElemType type = ListElemType::Section) {
-        auto item = new QTreeWidgetItem({caption}, type);
-        item->setData(0, ItemRoles::Type, type);
-        auto font = item->font(0);
-        font.setBold(true);
-        font.setPointSizeF(font.pointSize() * 1.2);
-        item->setFont(0, font);
-        return item;
-    };
-
-    auto recentCategory = createCategory("Recent Workspaces");
-    QList<QTreeWidgetItem *> items;
-    for (auto &elem : recentFiles) {
-        items.append(createFileEntry(utilqt::fromQString(elem)));
-    }
-    recentCategory->addChildren(items);
-    addTopLevelItem(recentCategory);
-    recentCategory->setFirstColumnSpanned(true);
-    recentCategory->setExpanded(true);
-
-    // add example workspaces
-    QList<QTreeWidgetItem *> examples;
-    for (const auto &module : app->getModules()) {
-        auto moduleWorkspacePath = module->getPath(ModulePath::Workspaces);
-        if (!filesystem::directoryExists(moduleWorkspacePath)) continue;
-        QList<QTreeWidgetItem *> moduleExamples;
-        for (auto item : filesystem::getDirectoryContents(moduleWorkspacePath)) {
-            // only accept inviwo workspace files
-            if (filesystem::getFileExtension(item) != "inv") continue;
-            moduleExamples.append(createFileEntry(moduleWorkspacePath + "/" + item, true));
-        }
-        if (!moduleExamples.isEmpty()) {
-            auto category = createCategory(utilqt::toQString(module->getIdentifier()),
-                                           ListElemType::SubSection);
-            category->addChildren(moduleExamples);
-            examples.push_back(category);
-        }
-    }
-    if (!examples.isEmpty()) {
-        auto exampleCategory = createCategory("Examples");
-        addTopLevelItem(exampleCategory);
-        exampleCategory->addChildren(examples);
-        exampleCategory->setExpanded(true);
-        exampleCategory->setFirstColumnSpanned(true);
-        for (auto elem : examples) {
-            elem->setExpanded(true);
-            elem->setFirstColumnSpanned(true);
-        }
-    }
 
     QObject::connect(
         this, &QTreeWidget::currentItemChanged, this,
         [this](QTreeWidgetItem *current, QTreeWidgetItem *) {
-            if (current && (current->data(1, ItemRoles::Type) == ListElemType::Normal)) {
+            if (current && (current->data(1, ItemRoles::Type) == ListElemType::File)) {
                 const auto filename = current->data(1, ItemRoles::Path).toString() + "/" +
                                       current->data(1, ItemRoles::FileName).toString();
                 const auto isExample = current->data(1, ItemRoles::ExampleWorkspace).toBool();
@@ -293,6 +224,101 @@ FileTreeWidget::FileTreeWidget(InviwoApplication *app, const QStringList &recent
                 emit selectedFileChanged("", false);
             }
         });
+
+    QObject::connect(
+        this, &QTreeWidget::itemDoubleClicked, this, [this](QTreeWidgetItem *item, int) {
+            if (item && (item->data(1, ItemRoles::Type) == ListElemType::File)) {
+                const auto filename = item->data(1, ItemRoles::Path).toString() + "/" +
+                                      item->data(1, ItemRoles::FileName).toString();
+                const auto isExample = item->data(1, ItemRoles::ExampleWorkspace).toBool();
+                emit loadFile(filename, isExample);
+            }
+        });
+}
+
+void FileTreeWidget::updateRecentWorkspaces(const QStringList &recentFiles) {
+    if (!recentWorkspaceItem_) {
+        recentWorkspaceItem_ = createCategory("Recent Workspaces");
+        addTopLevelItem(recentWorkspaceItem_);
+        recentWorkspaceItem_->setFirstColumnSpanned(true);
+        recentWorkspaceItem_->setExpanded(true);
+    }
+    QList<QTreeWidgetItem *> items;
+    for (auto &elem : recentFiles) {
+        items.append(createFileEntry(fileIcon_, utilqt::fromQString(elem)));
+    }
+    recentWorkspaceItem_->addChildren(items);
+}
+
+void FileTreeWidget::updateExampleEntries() {
+    QList<QTreeWidgetItem *> examples;
+    for (const auto &module : inviwoApp_->getModules()) {
+        auto moduleWorkspacePath = module->getPath(ModulePath::Workspaces);
+        if (!filesystem::directoryExists(moduleWorkspacePath)) continue;
+        QList<QTreeWidgetItem *> moduleExamples;
+        for (auto item : filesystem::getDirectoryContents(moduleWorkspacePath)) {
+            // only accept inviwo workspace files
+            if (filesystem::getFileExtension(item) != "inv") continue;
+            moduleExamples.append(
+                createFileEntry(fileIcon_, moduleWorkspacePath + "/" + item, true));
+        }
+        if (!moduleExamples.isEmpty()) {
+            auto category = createCategory(utilqt::toQString(module->getIdentifier()),
+                                           ListElemType::SubSection);
+            category->addChildren(moduleExamples);
+            examples.push_back(category);
+        }
+    }
+    if (!examplesItem_) {
+        examplesItem_ = createCategory("Examples");
+        addTopLevelItem(examplesItem_);
+        examplesItem_->setFirstColumnSpanned(true);
+        examplesItem_->setExpanded(true);
+    }
+    examplesItem_->setHidden(examples.isEmpty());
+
+    if (!examples.isEmpty()) {
+        examplesItem_->addChildren(examples);
+        for (auto elem : examples) {
+            elem->setExpanded(true);
+            elem->setFirstColumnSpanned(true);
+        }
+    }
+}
+
+bool FileTreeWidget::selectRecentWorkspace(int index) {
+    if (!recentWorkspaceItem_) return false;
+    if (recentWorkspaceItem_->childCount() < index) return false;
+
+    setCurrentItem(recentWorkspaceItem_->child(index));
+    return true;
+}
+
+QTreeWidgetItem *FileTreeWidget::createCategory(const QString &caption, ListElemType type) {
+    auto item = new QTreeWidgetItem({caption}, type);
+    item->setData(0, ItemRoles::Type, type);
+    auto font = item->font(0);
+    font.setBold(true);
+    font.setPointSizeF(font.pointSize() * 1.2);
+    item->setFont(0, font);
+    return item;
+}
+
+QTreeWidgetItem *FileTreeWidget::createFileEntry(const QIcon &icon, const std::string &filename,
+                                                 bool isExample) {
+    auto file = filesystem::getFileNameWithExtension(filename);
+    auto path = filesystem::getFileDirectory(filename);
+    if (path.empty()) {
+        path = ".";
+    }
+    auto item = new QTreeWidgetItem({"", utilqt::toQString(filename)}, ListElemType::File);
+    item->setData(1, ItemRoles::Type, ListElemType::File);
+    item->setData(1, ItemRoles::FileName, utilqt::toQString(file));
+    item->setData(1, ItemRoles::Path, utilqt::toQString(path));
+    item->setData(1, ItemRoles::ExampleWorkspace, isExample);
+    item->setData(1, Qt::ToolTipRole, item->data(1, ItemRoles::Path));
+    item->setData(1, Qt::DecorationRole, icon);
+    return item;
 }
 
 }  // namespace inviwo

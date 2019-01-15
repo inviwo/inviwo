@@ -1,6 +1,9 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
-## 2018-12-18
+## 2019-01-15 Get Started
+Get Started screen provides an overview over recently used workspaces and available examples next to the latest changes.
+
+## 2018-12-18 Transfer Function Import/Export
 Extended context menu of transfer function properties. It is now possible to import and export TFs directly in the property widget. Transfer functions located in `data/transferfunctions/` are accessible as TF presets in the context menu of both TF editor and TF property.
 
 ## 2018-11-22
@@ -51,7 +54,7 @@ New Module structure. We have introduced a new module structure where we separat
 and sources goes in the source folder:
 ```
     .../{module name}/src/
- ```
+```
 `{module name}` it the lower case name of the module, `{organization}` default to inviwo but can be user-specified. 
 The headers can then be included using 
 ```c++

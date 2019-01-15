@@ -47,7 +47,7 @@
 
 class QDropEvent;
 class QDragEnterEvent;
-class QStackedWidget;
+class QTabWidget;
 
 namespace inviwo {
 
@@ -116,7 +116,7 @@ public:
     void exitInviwo(bool saveIfModified = true);
     void showAboutBox();
     
-    void showWelcomeScreen(bool shownOnStartup = false);
+    void showWelcomeScreen();
     void hideWelcomeScreen();
 
 protected:
@@ -166,7 +166,7 @@ private:
     QMenu* testMenu_ = nullptr;
     std::shared_ptr<ConsoleWidget> consoleWidget_;
     std::unique_ptr<NetworkEditor> networkEditor_;
-    QStackedWidget* centralWidget_;
+    QTabWidget* centralWidget_;
     NetworkEditorView* networkEditorView_;
 
     SettingsWidget* settingsWidget_;
