@@ -78,8 +78,8 @@ def warn(refjob = 'inviwo/master') {
             sh 'cp compile_commands.json compile_commands_org.json'
             sh 'python3 ../inviwo/tools/jenkins/filter-compilecommands.py'
             sh 'python3 ../inviwo/tools/jenkins/check-format.py'
-            if (fileExists 'clang-format-result.diff') {
-                format_diff = readFile 'clang-format-result.diff'
+            if (fileExists('clang-format-result.diff')) {
+                format_diff = readFile('clang-format-result.diff')
             }
 
             // disabled for now, has some macro issues.
