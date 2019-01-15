@@ -17,7 +17,7 @@ node {
         def off = ["ABUFFERGL" , "DISCRETEDATA", "HDF5"]
 
         util.buildStandard(
-            env: env
+            env: env,
             params: params, 
             modulePaths: modulePaths, 
             onModules: on,  
