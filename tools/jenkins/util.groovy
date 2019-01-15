@@ -67,15 +67,19 @@ def cmd(stageName, dirName, env = [], fun) {
 }
 
 def warn(refjob = 'inviwo/master') {
+    String format_diff
     stage("Warn Tests") {
         dir('build') {
             sh 'cp compile_commands.json compile_commands_org.json'
             sh 'python3 ../inviwo/tools/jenkins/filter-compilecommands.py'
             sh 'python3 ../inviwo/tools/jenkins/check-format.py'
-            // disabled for now, has some macro issues.
-            //sh 'cppcheck --enable=all --inconclusive --xml --xml-version=2 --project=compile_commands.json 2> cppcheck.xml'
-        }
+            format_diff = new File('clang-format-result.diff').text
 
+            // disabled for now, has some macro issues.
+            //sh '''cppcheck --enable=all --inconclusive --xml --xml-version=2 \
+            //      --project=compile_commands.json 2> cppcheck.xml'''    
+        }
+        
         dir('inviwo') {
             recordIssues failedNewAll: 0, referenceJobName: refjob, sourceCodeEncoding: 'UTF-8', 
                 tools: [gcc4(name: 'GCC', reportEncoding: 'UTF-8'), 
@@ -84,6 +88,7 @@ def warn(refjob = 'inviwo/master') {
             //    tools: [cppCheck(name: 'CPPCheck', pattern: '../build/cppcheck.xml')]
         }
     }
+    return format_diff
 }
 
 def unittest(display = 0) {

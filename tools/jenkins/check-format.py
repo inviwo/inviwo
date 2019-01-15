@@ -13,10 +13,15 @@ def main():
                         help='location of binary to use for clang-format')
     parser.add_argument('-binary', default='clang-format-6.0',
                         help='location of binary to use for clang-format')
+    parser.add_argument('-output', default='clang-format-result.diff',
+                        help='output file')
+    
     args = parser.parse_args()
 
-    with open(args.compile_commands) as f:
+    with open(args.compile_commands) as f: 
         data = json.load(f)
+    
+    with open(args.output, 'w') as out:
         for item in data:
             filename = item['file']
             command = [args.binary, filename]
@@ -39,7 +44,8 @@ def main():
             if len(diff_string) > 0:
                 sys.stdout.write("\n\nWarning: Inconsistent format " + filename + "\n")
                 sys.stdout.write(diff_string)
-
+                out.write("\n\nWarning: Inconsistent format " + filename + "\n")
+                out.write(diff_string)
 
 if __name__ == '__main__':
     main()
