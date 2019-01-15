@@ -249,8 +249,7 @@ def build(Map args = [:]) {
             sh """
                 ccache -z # reset ccache statistics
                 # tell ccache where the project root is
-                export CPATH=`pwd`
-                export CCACHE_BASEDIR=`readlink -f \${CPATH}/..`
+                export CCACHE_BASEDIR=${env.WORKSPACE}/build
                         
                 ${cmake(args.opts, args.modulePaths, args.onModules, args.offModules, 
                         args.printCMakeVars)}
