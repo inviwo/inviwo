@@ -20,10 +20,14 @@ node {
         util.warn()
         util.unittest()
         util.integrationtest()        
-        util.regression(currentBuild, env, ["${env.WORKSPACE}/inviwo/modules"])
+        //util.regression(currentBuild, env, ["${env.WORKSPACE}/inviwo/modules"])
         util.copyright()
         util.doxygen()       
         util.publish()
+        
+        if (env.CHANGE_ID) {
+            pullRequest.comment('tested by jenkins')
+        }
 
         currentBuild.result = 'SUCCESS'
     } catch (e) {
