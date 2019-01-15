@@ -43,7 +43,7 @@ namespace inviwo {
 
 class FactoryBase;
 
-enum class WorkspaceSaveMode { Disk, Undo };
+enum class WorkspaceSaveMode { Disk = 1 << 0, Undo = 1 << 1 };
 ALLOW_FLAGS_FOR_ENUM(WorkspaceSaveMode)
 using WorkspaceSaveModes = flags::flags<WorkspaceSaveMode>;
 
