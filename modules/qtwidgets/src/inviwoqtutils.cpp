@@ -32,6 +32,8 @@
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/io/imagewriterutil.h>
+#include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/processors/canvasprocessor.h>
 
 #include <inviwo/core/util/logcentral.h>
 #include <warn/push>
@@ -46,6 +48,8 @@
 #include <QMenuBar>
 #include <QPainter>
 #include <QLinearGradient>
+#include <QBuffer>
+#include <QByteArray>
 #include <warn/pop>
 
 #include <ios>
@@ -58,7 +62,7 @@ namespace utilqt {
 std::locale getCurrentStdLocale() {
     std::locale loc;
     try {
-    // use the system locale provided by Qt
+        // use the system locale provided by Qt
 
 #ifdef WIN32
         // need to change locale given by Qt from underscore to hyphenated ("sv_SE" to "sv-SE")
@@ -491,6 +495,26 @@ void addImageActions(QMenu& menu, const Image& image, LayerType visibleLayer, si
 
     addAction("Picking Layer", image.getPickingLayer(), visibleLayer == LayerType::Picking);
     addAction("Depth Layer", image.getDepthLayer(), visibleLayer == LayerType::Depth);
+}
+
+std::string toBase64(const QImage& image) {
+    QByteArray byteArray;
+    QBuffer buffer{&byteArray};
+    buffer.open(QIODevice::WriteOnly);
+    image.save(&buffer, "PNG");
+    return std::string{byteArray.toBase64().data()};
+}
+
+std::vector<std::pair<std::string, QImage>> getCanvasImages(ProcessorNetwork* network) {
+    std::vector<std::pair<std::string, QImage>> images;
+    for (auto* p : network->getProcessorsByType<CanvasProcessor>()) {
+        if (p->isSink() && p->isReady()) {
+            auto img = utilqt::layerToQImage(*p->getVisibleLayer()).scaledToHeight(256);
+            images.push_back({p->getDisplayName(), img});
+        }
+    }
+
+    return images;
 }
 
 }  // namespace utilqt

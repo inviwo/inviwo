@@ -349,11 +349,23 @@ void NetworkEditorView::exportViewToFile(const QString& filename, bool entireSce
 QImage NetworkEditorView::exportViewToImage(bool entireScene, bool backgroundVisible, QSize size) {
     QRectF rect;
     if (entireScene) {
-        rect = scene()->itemsBoundingRect() + QMargins(10, 10, 10, 10);
+        rect = scene()->itemsBoundingRect() + QMarginsF(10, 10, 10, 10);
     } else {
         rect = viewport()->rect();
     }
-    const QRect destRect(QPoint(0, 0), size.isNull() ? rect.size().toSize() : size);
+    const QRectF destRect(QPointF(0, 0), size.isNull() ? rect.size() : size);
+
+    const auto srcAspectRatio = rect.width() / rect.height();
+    const auto destAspectRatio = destRect.width() / destRect.height();
+
+    // padding of source/scene rect if output aspect ratio does not match
+    if (srcAspectRatio > destAspectRatio) {
+        auto padding = (rect.width() / destAspectRatio - rect.height()) * 0.5;
+        rect += QMarginsF(0.0, padding, 0.0, padding);
+    } else if (srcAspectRatio < destAspectRatio) {
+        auto padding = (rect.height() * destAspectRatio - rect.width()) * 0.5;
+        rect += QMarginsF(padding, 0.0, padding, 0.0);
+    }
 
     editor_->setBackgroundVisible(backgroundVisible);
 
@@ -365,7 +377,7 @@ QImage NetworkEditorView::exportViewToImage(bool entireScene, bool backgroundVis
         }
     };
 
-    QImage image(destRect.size(), QImage::Format_ARGB32);
+    QImage image(destRect.size().toSize(), QImage::Format_ARGB32);
     QPainter painter(&image);
     painter.setRenderHint(QPainter::Antialiasing);
     renderCall(painter);
