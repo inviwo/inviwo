@@ -71,15 +71,6 @@ def cmd(stageName, dirName, env = [], fun) {
     }
 }
 
-class State {
-    def env
-    def params
-    def pull
-    def build
-    Integer display = 0 
-    List errors = []
-}
-
 // this uses global pipeline vars env and pullRequest
 def setLabel(Map state, String label, Boolean add) {
     /*

@@ -14,7 +14,16 @@ node {
     List on = []
     List off = ["ABUFFERGL" , "DISCRETEDATA", "HDF5"]
 
-    def state2 = new util.State(env : env, params: params, build : currentBuild, pull: null)
+    class State {
+        def env
+        def params
+        def pull
+        def build
+        Integer display = 0 
+        List errors = []
+    }
+
+    def state2 = new State(env : env, params: params, build : currentBuild, pull: null)
 
     Map state = [
         env: env,
