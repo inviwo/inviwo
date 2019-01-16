@@ -100,6 +100,7 @@ def setLabel(Map state, String label, Boolean add) {
 
 def checked(Map state, String label, Closure fun) {
     try {
+        println("Run: ${label}")
         fun()
         setLabel(state, "J:" + label  + " Failure", false)
     } catch (e) {
