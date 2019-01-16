@@ -34,6 +34,7 @@
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/properties/propertyfactory.h>
 
 #include <inviwo/qt/editor/filetreewidget.h>
 #include <inviwo/qt/editor/inviwomainwindow.h>
