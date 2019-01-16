@@ -49,7 +49,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/toolsmenu.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/undomanager.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/welcomewidget.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/workspacepreview.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/workspaceannotationsqt.h
     ${MOC_FILES}
 )
 if(TARGET inviwo::meta)
@@ -98,7 +98,7 @@ set(SOURCE_FILES
     toolsmenu.cpp
     undomanager.cpp
     welcomewidget.cpp
-    workspacepreview.cpp
+    workspaceannotationsqt.cpp
 )
 if(TARGET inviwo::meta)
     list(APPEND SOURCE_FILES toolsmetamenu.cpp)

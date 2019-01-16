@@ -32,10 +32,12 @@
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/io/serialization/deserializer.h>
 #include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 #include <inviwo/qt/editor/filetreewidget.h>
 #include <inviwo/qt/editor/inviwomainwindow.h>
-#include <inviwo/qt/editor/workspacepreview.h>
+#include <inviwo/qt/editor/workspaceannotationsqt.h>
 #include <inviwo/qt/applicationbase/inviwoapplicationqt.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
@@ -102,27 +104,38 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
 
         loadWorkspace_->setEnabled(true);
 
+        // extract annotations including network screenshot and canvas images from workspace
+        Deserializer d(utilqt::fromQString(filename));
+        d.registerFactory(window->getInviwoApplication()->getPropertyFactory());
+        WorkspaceAnnotationsQt annotations;
+        d.deserialize("WorkspaceAnnotations", annotations);
+
         const auto dateformat = "yyyy-MM-dd hh:mm:ss";
         auto createdStr = utilqt::fromQString(info.created().toString(dateformat));
         auto modifiedStr = utilqt::fromQString(info.lastModified().toString(dateformat));
+
+        const bool hasTitle = !annotations.getTitle().empty();
+        const auto titleStr =
+            hasTitle ? annotations.getTitle() : utilqt::fromQString(info.completeBaseName());
+        auto description = htmlEncode(annotations.getDescription());
+        replaceInString(description, "\n", "<br/>");
 
         Document doc;
         using P = Document::PathComponent;
         using H = utildoc::TableBuilder::Header;
         auto body = doc.append("html").append("body");
-        body.append("h1", utilqt::fromQString(info.completeBaseName()),
-                    {{"style", "font-size:20pt; color:#268bd2"}});
+        body.append("h1", titleStr, {{"style", "font-size:20pt; color:#268bd2"}});
 
-        auto t = body.append("p").append("table");
+        auto t = body.append("p").append("table", "", {{"style", "margin-bottom:20px;"}});
         auto pi = t.append("tr").append("td");
         utildoc::TableBuilder tb(pi, P::end());
+        tb(H("File Name"), htmlEncode(utilqt::fromQString(info.fileName())));
         tb(H("Last Modified"), modifiedStr);
         tb(H("Created"), createdStr);
-
-        // parse workspace file and extract network screenshot and canvas images
-        Deserializer d(utilqt::fromQString(filename));
-        WorkspacePreview p;
-        d.deserialize("WorkspacePreview", p);
+        tb(H("Author"), htmlEncode(annotations.getAuthor()));
+        tb(H("Tags"), htmlEncode(annotations.getTags()));
+        tb(H("Categories"), htmlEncode(annotations.getCategories()));
+        tb(H("Description"), description);
 
         auto addImage = [&body](auto item) {
             const int fixedImgHeight = 256;
@@ -132,13 +145,13 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
             auto p = body.append("p").append(
                 "img", "",
                 {{"height", std::to_string(std::min(fixedImgHeight, item.size.y))},
-                 {"src", "data:image/png;base64," + item.base64img}});
+                 {"src", "data:image/png;base64," + item.base64png}});
         };
 
-        for (auto &elem : p.getCanvases()) {
+        for (auto &elem : annotations.getCanvasImages()) {
             addImage(elem);
         }
-        addImage(p.getNetworkImage());
+        addImage(annotations.getNetworkImage());
 
         details_->setHtml(utilqt::toQString(doc));
     };

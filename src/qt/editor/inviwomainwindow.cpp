@@ -55,7 +55,7 @@
 #include <inviwo/qt/editor/welcomewidget.h>
 #include <inviwo/qt/editor/resourcemanager/resourcemanagerdockwidget.h>
 #include <inviwo/qt/applicationbase/inviwoapplicationqt.h>
-#include <inviwo/qt/editor/workspacepreview.h>
+#include <inviwo/qt/editor/workspaceannotationsqt.h>
 #include <modules/qtwidgets/inviwofiledialog.h>
 #include <modules/qtwidgets/propertylistwidget.h>
 #include <inviwo/core/metadata/processormetadata.h>
@@ -523,7 +523,7 @@ void InviwoMainWindow::addActions() {
         fileMenuItem->addAction(reloadAction);
     }
 
-#if defined(IVW_DEBUG) || 1
+#ifdef IVW_DEBUG
     {
         fileMenuItem->addSeparator();
         auto reloadStyle = fileMenuItem->addAction("Reload Style sheet");
@@ -938,7 +938,7 @@ void InviwoMainWindow::saveWorkspace(QString workspaceFileName) {
                 for (auto& img : canvases) {
                     img.second = img.second.scaledToHeight(fixedHeight);
                 }
-                WorkspacePreview p{image, canvases};
+                WorkspaceAnnotationsQt p{image, canvases};
                 s.serialize("WorkspacePreview", p);
             },
             WorkspaceSaveMode::Disk);

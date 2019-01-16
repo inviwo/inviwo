@@ -31,7 +31,7 @@
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/core/common/inviwo.h>
 
-#include <inviwo/core/io/serialization/serializable.h>
+#include <inviwo/core/network/workspaceannotations.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -42,38 +42,25 @@
 
 namespace inviwo {
 
-class IVW_QTEDITOR_API WorkspacePreview : public Serializable {
+class IVW_QTEDITOR_API WorkspaceAnnotationsQt : public WorkspaceAnnotations {
 public:
-    using ImageVector = std::vector<std::pair<std::string, QImage>>;
+    using QImageVector = std::vector<std::pair<std::string, QImage>>;
 
-    struct Item : public Serializable {
-        Item() = default;
-        Item(std::string name, std::string base64img, int w, int h);
-        virtual ~Item() = default;
+    WorkspaceAnnotationsQt() = default;
+    WorkspaceAnnotationsQt(const QImage &network, const QImageVector &canvasImages);
+    virtual ~WorkspaceAnnotationsQt() = default;
 
-        bool isValid() const;
+    void setNetworkImage(const QImage &network);
+    const Base64Image &getNetworkImage() const;
 
-        virtual void serialize(Serializer &s) const override;
-        virtual void deserialize(Deserializer &d) override;
-
-        std::string name;
-        std::string base64img;
-        ivec2 size = ivec2{0};
-    };
-
-    WorkspacePreview() = default;
-    WorkspacePreview(const QImage &network, const ImageVector &canvases);
-    virtual ~WorkspacePreview() = default;
+    using WorkspaceAnnotations::setCanvasImages;
+    void setCanvasImages(const QImageVector &canvasImages);
 
     virtual void serialize(Serializer &s) const override;
     virtual void deserialize(Deserializer &d) override;
 
-    const Item &getNetworkImage() const;
-    const std::vector<Item> getCanvases() const;
-
 private:
-    Item network_;
-    std::vector<Item> canvases_;
+    Base64Image network_;
 };
 
 }  // namespace inviwo

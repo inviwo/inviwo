@@ -27,60 +27,53 @@
  *
  *********************************************************************************/
 
-#include <inviwo/qt/editor/workspacepreview.h>
+#include <inviwo/qt/editor/workspaceannotationsqt.h>
 
 #include <modules/qtwidgets/inviwoqtutils.h>
 
 namespace inviwo {
 
-WorkspacePreview::Item::Item(std::string name, std::string base64img, int w, int h)
-    : name(name), base64img(base64img), size{w, h} {}
-
-bool WorkspacePreview::Item::isValid() const {
-    return !base64img.empty() && glm::compMul(size) > 0;
+WorkspaceAnnotationsQt::WorkspaceAnnotationsQt(const QImage &network,
+                                               const QImageVector &canvasImages) {
+    setNetworkImage(network);
+    setCanvasImages(canvasImages);
 }
 
-void WorkspacePreview::Item::serialize(Serializer &s) const {
-    s.serialize("name", name);
-    s.serialize("size", size);
-    s.serialize("base64", base64img);
-}
+void WorkspaceAnnotationsQt::serialize(Serializer &s) const {
+    WorkspaceAnnotations::serialize(s);
 
-void WorkspacePreview::Item::deserialize(Deserializer &d) {
-    d.deserialize("name", name);
-    d.deserialize("size", size);
-    d.deserialize("base64", base64img);
-}
-
-WorkspacePreview::WorkspacePreview(const QImage &network, const ImageVector &canvases) {
-    if (!network.isNull()) {
-        network_ = Item{"Network", utilqt::toBase64(network), network.width(), network.height()};
-    }
-    for (auto &elem : canvases) {
-        if (!elem.second.isNull()) {
-            canvases_.push_back({elem.first, utilqt::toBase64(elem.second), elem.second.width(),
-                                 elem.second.height()});
-        }
-    }
-}
-
-void WorkspacePreview::serialize(Serializer &s) const {
     s.serialize("Network", network_);
-    s.serialize("Canvases", canvases_, "CanvasImage");
 }
 
-void WorkspacePreview::deserialize(Deserializer &d) {
-    network_ = Item{};
-    canvases_.clear();
+void WorkspaceAnnotationsQt::deserialize(Deserializer &d) {
+    WorkspaceAnnotations::deserialize(d);
 
+    network_ = Base64Image{"Network"};
     d.deserialize("Network", network_);
-    d.deserialize("Canvases", canvases_, "CanvasImage");
 }
 
-const WorkspacePreview::Item &WorkspacePreview::getNetworkImage() const { return network_; }
+void WorkspaceAnnotationsQt::setNetworkImage(const QImage &network) {
+    network_ = Base64Image{"Network"};
 
-const std::vector<WorkspacePreview::Item> WorkspacePreview::getCanvases() const {
-    return canvases_;
+    if (!network.isNull()) {
+        network_ =
+            Base64Image{"Network", utilqt::toBase64(network), network.width(), network.height()};
+    }
+}
+
+void WorkspaceAnnotationsQt::setCanvasImages(const QImageVector &canvasImages) {
+    ImageVector images;
+    images.reserve(canvasImages.size());
+
+    for (auto &elem : canvasImages) {
+        images.push_back(
+            {elem.first, utilqt::toBase64(elem.second), elem.second.width(), elem.second.height()});
+    }
+    setCanvasImages(images);
+}
+
+const WorkspaceAnnotationsQt::Base64Image &WorkspaceAnnotationsQt::getNetworkImage() const {
+    return network_;
 }
 
 }  // namespace inviwo
