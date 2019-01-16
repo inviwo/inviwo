@@ -180,7 +180,7 @@ def regression(Map state, modulepaths, display = 0) {
             """
             setlabel('J: Regression Test Failure', false)
         } catch (e) {
-            setlabel('J: Regression Test Failure', true)
+            setlabel(state, 'J: Regression Test Failure', true)
             state.errors += "Failure in Regression Test"
             // Mark as unstable, if we mark as failed, the report will not be published.
             state.build.result = 'UNSTABLE'
@@ -233,10 +233,11 @@ def slack(Map state, channel) {
         slackSend(
             color: color, 
             channel: channel, 
-            message: "Branch: ${state.env.BRANCH_NAME}\n" + \
-                     "Status: ${state.build.result}\n" + \
-                     "Job: ${state.env.BUILD_URL} \n" + \
-                     "Regression: ${state.env.JOB_URL}Regression_Report/\n" + \
+            message: "Branch: ${state.env.BRANCH_NAME}\n" + 
+                     "Status: ${state.build.result}\n" + 
+                     "Job: ${state.env.BUILD_URL} \n" + 
+                     "Regression: ${state.env.JOB_URL}Regression_Report/\n" + 
+                     !state.errors.isEmpty() ? "Errors:\n ${state.errors.join("\n")}n" : "" 
                      "Changes: " + getChangeString(state.build) 
         )
     }

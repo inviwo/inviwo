@@ -35,7 +35,7 @@ node {
         util.warn(state)
         util.unittest(state)
         util.integrationtest(state)        
-        util.regression(state, ["${env.WORKSPACE}/inviwo/modules"])
+        //util.regression(state, ["${env.WORKSPACE}/inviwo/modules"])
         util.copyright(state)
         util.doxygen()       
         util.publish()
