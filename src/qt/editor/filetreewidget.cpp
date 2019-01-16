@@ -247,7 +247,10 @@ void FileTreeWidget::updateRecentWorkspaces(const QStringList &recentFiles) {
     for (auto &elem : recentFiles) {
         items.append(createFileEntry(fileIcon_, utilqt::fromQString(elem)));
     }
+    setUpdatesEnabled(false);
+    removeChildren(recentWorkspaceItem_);
     recentWorkspaceItem_->addChildren(items);
+    setUpdatesEnabled(true);
 }
 
 void FileTreeWidget::updateExampleEntries() {
@@ -278,11 +281,14 @@ void FileTreeWidget::updateExampleEntries() {
     examplesItem_->setHidden(examples.isEmpty());
 
     if (!examples.isEmpty()) {
+        setUpdatesEnabled(false);
+        removeChildren(examplesItem_);
         examplesItem_->addChildren(examples);
         for (auto elem : examples) {
             elem->setExpanded(true);
             elem->setFirstColumnSpanned(true);
         }
+        setUpdatesEnabled(true);
     }
 }
 
@@ -319,6 +325,14 @@ QTreeWidgetItem *FileTreeWidget::createFileEntry(const QIcon &icon, const std::s
     item->setData(1, Qt::ToolTipRole, item->data(1, ItemRoles::Path));
     item->setData(1, Qt::DecorationRole, icon);
     return item;
+}
+
+void FileTreeWidget::removeChildren(QTreeWidgetItem *node) {
+    if (node) {
+        for (auto child : node->takeChildren()) {
+            delete child;
+        }
+    }
 }
 
 }  // namespace inviwo

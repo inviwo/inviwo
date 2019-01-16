@@ -103,10 +103,8 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
         loadWorkspace_->setEnabled(true);
 
         const auto dateformat = "yyyy-MM-dd hh:mm:ss";
-        auto createdStr =
-            utilqt::fromQString(info.fileTime(QFileDevice::FileBirthTime).toString(dateformat));
-        auto modifiedStr = utilqt::fromQString(
-            info.fileTime(QFileDevice::FileModificationTime).toString(dateformat));
+        auto createdStr = utilqt::fromQString(info.created().toString(dateformat));
+        auto modifiedStr = utilqt::fromQString(info.lastModified().toString(dateformat));
 
         Document doc;
         using P = Document::PathComponent;
@@ -329,6 +327,8 @@ void WelcomeWidget::initChangelog() {
         "p, li { white-space: pre-wrap; }"
         "</style></head><body style=' font-family:'Calibra'; font-size:8pt; font-weight:400; "
         "font-style:normal;'>"
+        "<p style=' margin-top:0px; margin-bottom:5px;'><span "
+        "style='font-size:x-large; font-weight:600; color:#268bd2;'>Latest Changes</span></p>"
         "<p style=' margin-top:20px; margin-bottom:2px;'><a name='20190115'></a><span "
         "style='font-size:large; font-weight:600; color:#268bd2;'>2019-01-15 Get Started</span></p>"
         "<p style=' margin-bottom:4px;'><span style='color: white;'>Get Started screen provides an "

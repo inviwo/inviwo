@@ -73,6 +73,8 @@ private:
     static QTreeWidgetItem *createFileEntry(const QIcon &icon, const std::string &filename,
                                             bool isExample = false);
 
+    static void removeChildren(QTreeWidgetItem *node);
+
     InviwoApplication *inviwoApp_;
 
     QTreeWidgetItem *recentWorkspaceItem_ = nullptr;
