@@ -75,8 +75,10 @@ def cmd(stageName, dirName, env = [], fun) {
 def setLabel(String label, Boolean add) {
     if (env.CHANGE_ID) {
         if (add) {
+            println("Add label ${label}")
             pullRequest.addLabel(label)
         } else {
+            println("Remove label ${label}")
             pullRequest.removeLabel(label)
         }
     }
