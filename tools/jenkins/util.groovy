@@ -275,6 +275,7 @@ def build(Map args = [:]) {
 // * onModules List of extra module to enable (optional)
 // * offModules List of modules to disable (optional)
 def buildStandard(Map args = [:]) {
+    assert params, "no global params"
     assert args.params, "Argument params must be supplied"
     stage('Build') {
         clean(args.params)
