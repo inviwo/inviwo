@@ -76,21 +76,21 @@ def setLabel(String label, Boolean add) {
     if (env.CHANGE_ID) {
         if (add) {
             println("Add label ${label}")
-            if(! label in pullRequest.labels) {
-                try {
+            try {
+                if(! label in pullRequest.labels) {
                     pullRequest.addLabels([label])
-                catch (e) {
-                    println("Error adding label")
                 }
+            } catch (e) {
+                    println("Error adding label")
             }
         } else {
             println("Remove label ${label}")
-            if(label in pullRequest.labels) {
-                try {
+            try {
+                if (label in pullRequest.labels) {
                     pullRequest.removeLabel(label)
-                } catch (e) {
-                   println("Error adding label")
                 }
+            } catch (e) {
+                println("Error adding label")
             }
         }       
     }
