@@ -7,16 +7,32 @@ import json
 import sys
 import io
 
+def test_cmd(cmd):
+    try:  
+        subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE).check_returncode()
+        return True
+    except error:
+        return False
+
 def main():
     parser = argparse.ArgumentParser(description="")
     parser.add_argument('-compile_commands', default='compile_commands.json',
                         help='location of binary to use for clang-format')
-    parser.add_argument('-binary', default='clang-format-6.0',
-                        help='location of binary to use for clang-format')
+    parser.add_argument('-binary', help='location of binary to use for clang-format')
     parser.add_argument('-output', default='clang-format-result.diff',
                         help='output file')
     
     args = parser.parse_args()
+
+    if not args.binary:
+        for ext in ["", "-6.0", "-7.0", "-8.0", "-9.0"]:
+            if test_cmd(["clang-format" + ext, "--version"]): 
+                args.binary = "clang-format" + ext
+                break
+        else:
+            sys.stdout.write("Could not find clang format please use the '-binary'\n")
+            sys.exit(1);
+
 
     with open(args.compile_commands) as f: 
         data = json.load(f)
