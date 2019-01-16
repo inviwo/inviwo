@@ -102,9 +102,11 @@ def checked(Map state, String label, Closure fun) {
     try {
         println("Run: ${label}")
         fun()
-        setLabel(state, "J:" + label  + " Failure", false)
+        println("Done: ${label}")
+        //setLabel(state, "J:" + label  + " Failure", false)
     } catch (e) {
-        setLabel(state, "J:" + label  + " Failure", true)
+        println("Error: ${label}")
+        //setLabel(state, "J:" + label  + " Failure", true)
         state.errors += "Failure in ${label}"
         throw e
     }
