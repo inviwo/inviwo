@@ -45,6 +45,8 @@ public:
     virtual void updateFromProperty() override;
     QPushButton* getButton();
 
+    virtual std::unique_ptr<QMenu> getContextMenu() override;
+
 private:
     ButtonProperty* property_;
     QPushButton* button_;
