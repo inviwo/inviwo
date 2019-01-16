@@ -1,3 +1,13 @@
+
+class State {
+    def env
+    def params
+    def pull
+    def build
+    Integer display = 0 
+    List errors = []
+}
+
 node {
     stage('Fetch') { 
         dir('inviwo') {
@@ -13,15 +23,6 @@ node {
     List modulePaths = []
     List on = []
     List off = ["ABUFFERGL" , "DISCRETEDATA", "HDF5"]
-
-    class State {
-        def env
-        def params
-        def pull
-        def build
-        Integer display = 0 
-        List errors = []
-    }
 
     def state2 = new State(env : env, params: params, build : currentBuild, pull: null)
 
