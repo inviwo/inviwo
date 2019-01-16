@@ -181,10 +181,12 @@ IVW_MODULE_QTWIDGETS_API std::string toBase64(const QImage& image);
  * \brief retrieve the contents of all visible canvases as QImage. A canvas must be ready and
  * visible in order to be considered. 
  *
+ * @param network    visible canvases are extracted from this processor network 
+ * @param alpha      the resulting images will retain their alpha channel if true
  * @return vector of pairs representing the display name and contents of the respective canvases
  */
 IVW_MODULE_QTWIDGETS_API std::vector<std::pair<std::string, QImage>> getCanvasImages(
-    ProcessorNetwork* network);
+    ProcessorNetwork* network, bool alpha = true);
 
 IVW_MODULE_QTWIDGETS_API void addImageActions(QMenu& menu, const Image& image,
                                               LayerType visibleLayer = LayerType::Color,
