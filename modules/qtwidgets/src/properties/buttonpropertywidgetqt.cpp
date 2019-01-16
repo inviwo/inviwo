@@ -38,6 +38,8 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QInputDialog>
+#include <QMenu>
+#include <QAction>
 #include <warn/pop>
 
 namespace inviwo {
