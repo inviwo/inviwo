@@ -71,6 +71,15 @@ def cmd(stageName, dirName, env = [], fun) {
     }
 }
 
+class State {
+    def env
+    def params
+    def pull
+    def build
+    Integer display = 0 
+    List errors = []
+}
+
 // this uses global pipeline vars env and pullRequest
 def setLabel(Map state, String label, Boolean add) {
     /*
@@ -103,10 +112,10 @@ def checked(Map state, String label, Closure fun) {
         println("Run: ${label}")
         fun()
         println("Done: ${label}")
-        //setLabel(state, "J:" + label  + " Failure", false)
+        setLabel(state, "J:" + label  + " Failure", false)
     } catch (e) {
         println("Error: ${label}")
-        //setLabel(state, "J:" + label  + " Failure", true)
+        setLabel(state, "J:" + label  + " Failure", true)
         state.errors += "Failure in ${label}"
         throw e
     }
@@ -302,7 +311,7 @@ def build(Map args = [:]) {
         println("Modules On: ${args.onModules.inject('', {res, item -> res + '\n  ' + item})}")
         println("Modules Off: ${args.offModules.inject('', {res, item -> res + '\n  ' + item})}")
         log {
-            //checked(args.state, 'Build') {
+            checked(args.state, 'Build') {
                 sh """
                     ccache -z # reset ccache statistics
                     # tell ccache where the project root is
@@ -315,7 +324,7 @@ def build(Map args = [:]) {
     
                     ccache -s # print ccache statistics
                 """
-            //}
+            }
         }
     }    
 }
