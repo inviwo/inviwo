@@ -302,7 +302,7 @@ def build(Map args = [:]) {
         println("Modules On: ${args.onModules.inject('', {res, item -> res + '\n  ' + item})}")
         println("Modules Off: ${args.offModules.inject('', {res, item -> res + '\n  ' + item})}")
         log {
-            checked(args.state, 'Build') {
+            //checked(args.state, 'Build') {
                 sh """
                     ccache -z # reset ccache statistics
                     # tell ccache where the project root is
@@ -315,7 +315,7 @@ def build(Map args = [:]) {
     
                     ccache -s # print ccache statistics
                 """
-            }
+            //}
         }
     }    
 }
