@@ -16,6 +16,18 @@ node {
         def on = []
         def off = ["ABUFFERGL" , "DISCRETEDATA", "HDF5"]
 
+        Map state = [
+            env: env,
+            params: params, 
+            pull: pullRequest
+        ]
+
+        if (env.CHANGE_ID) {
+            println("Add label J:Unit Test Failure")
+            pullRequest.addLabels(["J:Unit Test Failure"])
+        }
+
+
         util.buildStandard(
             env: env,
             params: params, 
