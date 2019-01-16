@@ -11,24 +11,25 @@ node {
     properties(util.defaultProperties())
     def display = 0       
 
+    def modulePaths = []
+    def on = []
+    def off = ["ABUFFERGL" , "DISCRETEDATA", "HDF5"]
+
+    Map state = [
+        env: env,
+        params: params,
+        pull :  env.CHANGE_ID ? pullRequest : null,
+        build : currentBuild,
+        errors : []
+    ]
+
     try {
-        def modulePaths = []
-        def on = []
-        def off = ["ABUFFERGL" , "DISCRETEDATA", "HDF5"]
-
-        Map state = [
-            env: env,
-            params: params,
-            pull :  env.CHANGE_ID ? pullRequest : null,
-            build : currentBuild,
-            errors : []
-        ]
-
         util.buildStandard(
             state: state,
             modulePaths: modulePaths, 
             onModules: on,  
-            offModules: off)
+            offModules: off
+        )
         util.filterfiles()
         util.format(state)
         util.warn(state)
