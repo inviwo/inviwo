@@ -237,8 +237,8 @@ def slack(Map state, channel) {
                      "Status: ${state.build.result}\n" + 
                      "Job: ${state.env.BUILD_URL} \n" + 
                      "Regression: ${state.env.JOB_URL}Regression_Report/\n" + 
-                     !state.errors.isEmpty() ? "Errors:\n ${state.errors.join("\n")}n" : "" 
-                     "Changes: " + getChangeString(state.build) 
+                     (!state.errors.isEmpty() ? "Errors:\n ${state.errors.join("\n")}\n" : "") +
+                     "Changes: " + getChangeString(state.build)
         )
     }
 }
