@@ -73,6 +73,7 @@ def cmd(stageName, dirName, env = [], fun) {
 
 // this uses global pipeline vars env and pullRequest
 def setLabel(Map state, String label, Boolean add) {
+    /*
     if (state.pull) {
         if (add) {
             println("Add label ${label}")
@@ -94,6 +95,7 @@ def setLabel(Map state, String label, Boolean add) {
             }
         }       
     }
+    */
 }
 
 def checked(Map state, String label, Closure fun) {
@@ -102,7 +104,7 @@ def checked(Map state, String label, Closure fun) {
         setLabel(state, "J:" + label  + " Failure", false)
     } catch (e) {
         setLabel(state, "J:" + label  + " Failure", true)
-        state.errors += "Falure in ${label}"
+        state.errors += "Failure in ${label}"
         throw e
     }
 }
@@ -144,8 +146,8 @@ def warn(Map state, refjob = 'inviwo/master') {
     }
 }
 
-def unittest(Map state, display = 0) {
-    cmd('Unit Tests', 'build/bin', ['DISPLAY=:' + display]) {
+def unittest(Map state) {
+    cmd('Unit Tests', 'build/bin', ['DISPLAY=:' + state.display]) {
         checked(state, "Unit Test") {
             sh '''
                 rc=0
@@ -160,16 +162,16 @@ def unittest(Map state, display = 0) {
     }
 }
 
-def integrationtest(Map state, display = 0) {
-    cmd('Integration Tests', 'build/bin', ['DISPLAY=:' + display]) {
+def integrationtest(Map state) {
+    cmd('Integration Tests', 'build/bin', ['DISPLAY=:' + state.display]) {
         checked(state, 'Integration Test') {
             sh './inviwo-integrationtests'
         }
     }
 }
 
-def regression(Map state, modulepaths, display = 0) {
-    cmd('Regression Tests', 'regress', ['DISPLAY=:' + display]) {
+def regression(Map state, modulepaths) {
+    cmd('Regression Tests', 'regress', ['DISPLAY=:' + state.display]) {
         try {
             sh """
                 python3 ../inviwo/tools/regression.py \
@@ -198,8 +200,8 @@ def copyright(Map state, extraPaths = []) {
     }   
 }
 
-def doxygen(display = 0) {
-    cmd('Doxygen', 'build', ['DISPLAY=:' + display]) {
+def doxygen(Map state) {
+    cmd('Doxygen', 'build', ['DISPLAY=:' + state.display]) {
         sh 'ninja DOXY-Inviwo'
     }    
 }

@@ -9,17 +9,17 @@ node {
     def rootDir = pwd()
     def util = load "${rootDir}/inviwo/tools/jenkins/util.groovy"      
     properties(util.defaultProperties())
-    def display = 0       
 
-    def modulePaths = []
-    def on = []
-    def off = ["ABUFFERGL" , "DISCRETEDATA", "HDF5"]
+    List modulePaths = []
+    List on = []
+    List off = ["ABUFFERGL" , "DISCRETEDATA", "HDF5"]
 
     Map state = [
         env: env,
         params: params,
         pull :  env.CHANGE_ID ? pullRequest : null,
         build : currentBuild,
+        display: 0,
         errors : []
     ]
 
@@ -37,7 +37,7 @@ node {
         util.integrationtest(state)        
         //util.regression(state, ["${env.WORKSPACE}/inviwo/modules"])
         util.copyright(state)
-        util.doxygen()       
+        util.doxygen(state)       
         util.publish()
         
         if (env.CHANGE_ID) {
