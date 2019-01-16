@@ -17,7 +17,7 @@ node {
     Map state = [
         env: env,
         params: params,
-        pull :  env.CHANGE_ID ? pullRequest : null,
+        pull :  null // env.CHANGE_ID ? pullRequest : null,
         build : currentBuild,
         display: 0,
         errors : []
