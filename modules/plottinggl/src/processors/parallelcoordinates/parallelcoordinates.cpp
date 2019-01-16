@@ -371,7 +371,7 @@ void ParallelCoordinates::createOrUpdateProperties() {
             // Name will be empty string first time this is called
             if (prop->name_.empty()) {
                 prop->name_ = c->getHeader();
-                prop->range_.onChange([&]() { this->updateBrushing(); });
+                prop->range.onChange([&]() { this->updateBrushing(); });
             }
             prop->columnId_ = axisVector_.size();
 
@@ -494,16 +494,14 @@ void ParallelCoordinates::drawHandles(
         handleShader_.setUniform("x", x);
         handleShader_.setUniform("w", handleSize_.get().x);
         handleShader_.setUniform("h", handleSize_.get().y);
-        handleShader_.setUniform("y",
-                                 static_cast<float>(axes->getNormalized(axes->range_.get().x)));
+        handleShader_.setUniform("y", static_cast<float>(axes->getNormalized(axes->range.get().x)));
         handleShader_.setUniform("flipped", 0);
         handleShader_.setUniform("pickColor", handlePicking_.getColor(pickingID + 0));
 
         handleDrawer_->draw();
 
         handleShader_.setUniform("color", axes->upperBrushed_ ? filteredColor : notFilteredColor);
-        handleShader_.setUniform("y",
-                                 static_cast<float>(axes->getNormalized(axes->range_.get().y)));
+        handleShader_.setUniform("y", static_cast<float>(axes->getNormalized(axes->range.get().y)));
         handleShader_.setUniform("flipped", 1);
         handleShader_.setUniform("pickColor", handlePicking_.getColor(pickingID + 1));
 
@@ -612,8 +610,8 @@ void ParallelCoordinates::buildTextCache(
         textCacheDirty_ = false;
 
         for (auto &axes : enabledAxis) {
-            std::string minV = toString(axes->range_.getRange().x);
-            std::string maxV = toString(axes->range_.getRange().y);
+            std::string minV = toString(axes->range.getRange().x);
+            std::string maxV = toString(axes->range.getRange().y);
 
             textRenderer_.setFontSize(fontSize_);
             axes->labelTexture_ =
@@ -696,44 +694,59 @@ void ParallelCoordinates::linePicked(PickingEvent *p) {
 
     if (auto df = dataFrame_.getData()) {
         // Show tooltip about current line
-        p->setToolTip(dataframeutil::createToolTipForRow(*df, p->getPickedId()));
+        if (p->getHoverState() == PickingHoverState::Move ||
+            p->getHoverState() == PickingHoverState::Enter) {
+            p->setToolTip(dataframeutil::createToolTipForRow(*df, p->getPickedId()));
+        } else {
+            p->setToolTip("");
+        }
     }
 
-    if (auto mouseEvent = p->getEventAs<MouseEvent>()) {
-        if (!(mouseEvent->buttonState() & MouseButton::Left)) return;
-        if (mouseEvent->state() != MouseState::Press) return;
+    if (p->getPressState() == PickingPressState::Press &&
+        p->getPressItem() == PickingPressItem::Primary) {
 
         auto iCol = dataFrame_.getData()->getIndexColumn();
         auto &indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
 
         auto id = p->getPickedId();
-        brushingAndLinking_.sendSelectionEvent({indexCol[id]});
-        mouseEvent->markAsUsed();
+        if (brushingAndLinking_.isSelected(indexCol[id])) {
+            brushingAndLinking_.sendSelectionEvent({});
+        } else {
+            brushingAndLinking_.sendSelectionEvent({indexCol[id]});
+        }
+
+        p->markAsUsed();
         invalidate(InvalidationLevel::InvalidOutput);
     }
 }
 
 void ParallelCoordinates::handlePicked(PickingEvent *p) {
-    if (auto mouseEvent = p->getEventAs<MouseEvent>()) {
-        if (!(mouseEvent->buttonState() & MouseButton::Left)) return;
-        if (mouseEvent->state() != MouseState::Move) return;
+    const auto pickedID = p->getPickedId();
+    const auto axisID = pickedID / 2;
+    const bool upper = pickedID % 2 == 1;
+    if (p->getHoverState() == PickingHoverState::Move ||
+        p->getHoverState() == PickingHoverState::Enter) {
+        const auto rangeValue =
+            axisVector_[axisID]->getValue(upper ? axisVector_[axisID]->range.getRangeMax()
+                                                : axisVector_[axisID]->range.getRangeMin());
+        p->setToolTip(std::to_string(rangeValue));
+    } else {
+        p->setToolTip("");
+    }
+
+    if (p->getPressState() == PickingPressState::Move &&
+        p->getPressItems().count(PickingPressItem::Primary)) {
+        // move axis range handle
         auto canvasSize = outport_.getDimensions();
-        auto pickedID = p->getPickedId();
-
-        auto axisID = pickedID / 2;
-        bool upper = pickedID % 2 == 1;
-
         auto marigins = margins_.getAsVec4();
 
-        auto newY =
-            (mouseEvent->pos().y - marigins[2]) / (canvasSize.y - marigins[2] - marigins[0]);
+        const auto pos = p->getPosition() * dvec2(p->getCanvasSize());
+
+        auto newY = (pos.y - marigins[2]) / (canvasSize.y - marigins[2] - marigins[0]);
         newY = glm::clamp(newY, 0.0, 1.0);
 
-        // Show tooltip for current value
-        p->setToolTip(std::to_string(axisVector_[axisID]->getValue(newY)));
-
         axisVector_[axisID]->moveHandle(upper, newY);
-        mouseEvent->markAsUsed();
+        p->markAsUsed();
     }
 }
 
