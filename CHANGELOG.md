@@ -1,7 +1,9 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
-## 2019-01-15 Get Started
+## 2019-01-16 Get Started and Workspace Annotations
 Get Started screen provides an overview over recently used workspaces and available examples next to the latest changes.
+
+Inviwo workspaces now also feature annotations like title, author, tags, and a description stored along with the network. The annotation widget allows to edit the annotations in the Qt application (accessible via the "View" menu).
 
 ## 2018-12-18 Transfer Function Import/Export
 Extended context menu of transfer function properties. It is now possible to import and export TFs directly in the property widget. Transfer functions located in `data/transferfunctions/` are accessible as TF presets in the context menu of both TF editor and TF property.

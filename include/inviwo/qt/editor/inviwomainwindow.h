@@ -148,6 +148,8 @@ protected:
     virtual void dropEvent(QDropEvent* event) override;
 
 private:
+    friend WelcomeWidget;
+
     virtual void onModifiedStatusChanged(const bool& newStatus) override;
 
     void visibilityModeChangedInSettings();
