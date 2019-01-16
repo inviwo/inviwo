@@ -78,7 +78,7 @@ def setLabel(Map state, String label, Boolean add) {
             println("Add label ${label}")
             try {
                 if(! label in state.pull.labels) {
-                    //state.pull.addLabels([label])
+                    state.pull.addLabels([label])
                 }
             } catch (e) {
                     println("Error adding label")
@@ -87,7 +87,7 @@ def setLabel(Map state, String label, Boolean add) {
             println("Remove label ${label}")
             try {
                 if (label in state.pull.labels) {
-                    //state.pull.removeLabel(label)
+                    state.pull.removeLabel(label)
                 }
             } catch (e) {
                 println("Error adding label")
@@ -321,7 +321,7 @@ def build(Map args = [:]) {
 // * onModules List of extra module to enable (optional)
 // * offModules List of modules to disable (optional)
 def buildStandard(Map args = [:]) {
-    assert args.params, "Argument params must be supplied"
+    assert args.state.params : "Argument params must be supplied"
     stage('Build') {
         clean(args.state.params)
         def defaultOpts = defaultCMakeOptions(args.state.params['Build Type'])
