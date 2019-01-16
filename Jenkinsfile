@@ -18,29 +18,24 @@ node {
 
         Map state = [
             env: env,
-            params: params, 
-            pull: pullRequest
+            params: params,
+            pull :  env.CHANGE_ID ? pullRequest : null,
+            build : currentBuild,
+            errors : []
         ]
 
-        if (env.CHANGE_ID) {
-            println("Add label J:Unit Test Failure")
-            pullRequest.addLabels(["J:Unit Test Failure"])
-        }
-
-
         util.buildStandard(
-            env: env,
-            params: params, 
+            state: state,
             modulePaths: modulePaths, 
             onModules: on,  
             offModules: off)
         util.filterfiles()
-        util.format()
-        util.warn()
-        util.unittest()
-        util.integrationtest()        
-        //util.regression(currentBuild, env, ["${env.WORKSPACE}/inviwo/modules"])
-        util.copyright()
+        util.format(state)
+        util.warn(state)
+        util.unittest(state)
+        util.integrationtest(state)        
+        util.regression(state, ["${env.WORKSPACE}/inviwo/modules"])
+        util.copyright(state)
         util.doxygen()       
         util.publish()
         
@@ -55,11 +50,11 @@ node {
             }
         }
 
-        currentBuild.result = 'SUCCESS'
+        state.build.result = 'SUCCESS'
     } catch (e) {
-        currentBuild.result = 'FAILURE'
+        state.build.result = 'FAILURE'
         throw e
     } finally {
-        util.slack(currentBuild, env, "#jenkins-branch-pr")
+        util.slack(state, "#jenkins-branch-pr")
     }
 }

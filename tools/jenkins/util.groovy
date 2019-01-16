@@ -72,13 +72,13 @@ def cmd(stageName, dirName, env = [], fun) {
 }
 
 // this uses global pipeline vars env and pullRequest
-def setLabel(String label, Boolean add) {
-    if (env.CHANGE_ID) {
+def setLabel(Map state, String label, Boolean add) {
+    if (state.pull) {
         if (add) {
             println("Add label ${label}")
             try {
-                if(! label in pullRequest.labels) {
-                    pullRequest.addLabels([label])
+                if(! label in state.pull.labels) {
+                    state.pull.addLabels([label])
                 }
             } catch (e) {
                     println("Error adding label")
@@ -86,8 +86,8 @@ def setLabel(String label, Boolean add) {
         } else {
             println("Remove label ${label}")
             try {
-                if (label in pullRequest.labels) {
-                    pullRequest.removeLabel(label)
+                if (label in state.pull.labels) {
+                    state.pull.removeLabel(label)
                 }
             } catch (e) {
                 println("Error adding label")
@@ -96,12 +96,13 @@ def setLabel(String label, Boolean add) {
     }
 }
 
-def checked(String label, Closure fun) {
+def checked(Map state, String label, Closure fun) {
     try {
         fun()
-        setLabel(label, false)
+        setLabel(state, "J:" + label  + " Failure", false)
     } catch (e) {
-        setLabel(label, true)
+        setLabel(state, "J:" + label  + " Failure", true)
+        state.errors += "Falure in ${label}"
         throw e
     }
 }
@@ -114,19 +115,19 @@ def filterfiles() {
     }
 }
 
-def format() {
+def format(Map state) {
     stage("Format Tests") {
         dir('build') {
             sh 'python3 ../inviwo/tools/jenkins/check-format.py'
             if (fileExists('clang-format-result.diff')) {
                 String format_diff = readFile('clang-format-result.diff')
-                setLabel('J: Format Test Failure', !format_diff.isEmpty())
+                setLabel(state, 'J: Format Test Failure', !format_diff.isEmpty())
             }
         }
     }
 }
 
-def warn(refjob = 'inviwo/master') {
+def warn(Map state, refjob = 'inviwo/master') {
     stage("Warn Tests") {
         dir('build') {
             // disabled for now, has some macro issues.
@@ -143,9 +144,9 @@ def warn(refjob = 'inviwo/master') {
     }
 }
 
-def unittest(display = 0) {
+def unittest(Map state, display = 0) {
     cmd('Unit Tests', 'build/bin', ['DISPLAY=:' + display]) {
-        checked("J:Unit Test Failure") {
+        checked(state, "Unit Test") {
             sh '''
                 rc=0
                 for unittest in inviwo-unittests-*
@@ -159,37 +160,40 @@ def unittest(display = 0) {
     }
 }
 
-def integrationtest(display = 0) {
+def integrationtest(Map state, display = 0) {
     cmd('Integration Tests', 'build/bin', ['DISPLAY=:' + display]) {
-        checked('J: Integration Test Failure') {
+        checked(state, 'Integration Test') {
             sh './inviwo-integrationtests'
         }
     }
 }
 
-def regression(build, env, modulepaths, display = 0) {
+def regression(Map state, modulepaths, display = 0) {
     cmd('Regression Tests', 'regress', ['DISPLAY=:' + display]) {
         try {
             sh """
                 python3 ../inviwo/tools/regression.py \
                         --inviwo ../build/bin/inviwo \
-                        --header ${env.JENKINS_HOME}/inviwo-config/header.html \
+                        --header ${state.env.JENKINS_HOME}/inviwo-config/header.html \
                         --output . \
                         --modules ${modulepaths.join(' ')}
             """
             setlabel('J: Regression Test Failure', false)
         } catch (e) {
             setlabel('J: Regression Test Failure', true)
+            state.errors += "Failure in Regression Test"
             // Mark as unstable, if we mark as failed, the report will not be published.
-            build.result = 'UNSTABLE'
+            state.build.result = 'UNSTABLE'
         }
     }
 }
 
-def copyright(extraPaths = []) {
+def copyright(Map state, extraPaths = []) {
     stage('Copyright Check') {
         log() {
-            sh "python3 inviwo/tools/refactoring/check-copyright.py ./inviwo ${extraPaths.join(' ')}"
+            checked(state, "Copyright Test") {
+                sh "python3 inviwo/tools/refactoring/check-copyright.py ./inviwo ${extraPaths.join(' ')}"
+            }
         }
     }   
 }
@@ -221,11 +225,11 @@ def publish() {
     }
 }
 
-def slack(build, env, channel) {
+def slack(Map state, channel) {
     stage('Slack') {
         echo "result: ${build.result}"
         def res2color = ['SUCCESS' : 'good', 'UNSTABLE' : 'warning' , 'FAILURE' : 'danger' ]
-        def color = res2color.containsKey(build.result) ? res2color[build.result] : 'warning'
+        def color = res2color.containsKey(build.result) ? res2color[state.build.result] : 'warning'
         slackSend(
             color: color, 
             channel: channel, 
@@ -284,7 +288,7 @@ Map envCMakeOptions(env) {
 }
 
 
-//Args opts, modulePaths, onModules, offModules
+//Args state, opts, modulePaths, onModules, offModules
 def build(Map args = [:]) {
     dir('build') {
         println("Options: ${args.opts.inject('', {res, item -> res + '\n  ' + item.key + ' = ' + item.value})}")
@@ -292,11 +296,11 @@ def build(Map args = [:]) {
         println("Modules On: ${args.onModules.inject('', {res, item -> res + '\n  ' + item})}")
         println("Modules Off: ${args.offModules.inject('', {res, item -> res + '\n  ' + item})}")
         log {
-            checked('J:Build Failure') {
+            checked(args.state, 'Build') {
                 sh """
                     ccache -z # reset ccache statistics
                     # tell ccache where the project root is
-                    export CCACHE_BASEDIR=${env.WORKSPACE}/build
+                    export CCACHE_BASEDIR=${args.state.env.WORKSPACE}/build
                             
                     ${cmake(args.opts, args.modulePaths, args.onModules, args.offModules, 
                             args.printCMakeVars)}
@@ -311,8 +315,7 @@ def build(Map args = [:]) {
 }
 
 // Args: 
-// * params The global pipeline variable
-// * env The global pipeline variable
+// * state map of global variables (env, params, pull, errors)
 // * modulePaths list of paths to module folders (optional)
 // * opts Map of extra CMake options (optional)
 // * onModules List of extra module to enable (optional)
@@ -320,13 +323,13 @@ def build(Map args = [:]) {
 def buildStandard(Map args = [:]) {
     assert args.params, "Argument params must be supplied"
     stage('Build') {
-        clean(args.params)
-        def defaultOpts = defaultCMakeOptions(args.params['Build Type'])
-        if (args.env) defaultOpts.putAll(envCMakeOptions(args.env))
-        if (args.params['Use ccache']) defaultOpts.putAll(ccacheOption())
+        clean(args.state.params)
+        def defaultOpts = defaultCMakeOptions(args.state.params['Build Type'])
+        if (args.state.env) defaultOpts.putAll(envCMakeOptions(args.state.env))
+        if (args.state.params['Use ccache']) defaultOpts.putAll(ccacheOption())
         if (args.opts) defaultOpts.putAll(args.opts)
         args.opts = defaultOpts
-        args.printCMakeVars = args.params['Print CMake Variables']
+        args.printCMakeVars = args.state.params['Print CMake Variables']
         build(args)
     }
 }
