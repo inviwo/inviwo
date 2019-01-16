@@ -11,7 +11,7 @@ def test_cmd(cmd):
     try:  
         subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE).check_returncode()
         return True
-    except error:
+    except:
         return False
 
 def main():

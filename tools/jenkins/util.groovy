@@ -71,6 +71,28 @@ def cmd(stageName, dirName, env = [], fun) {
     }
 }
 
+// this uses global pipeline vars env and pullRequest
+def setLabel(String label, Boolean add) {
+    if (env.CHANGE_ID) {
+        if (add) {
+            pullRequest.addLabel(label)
+        } else {
+            pullRequest.removeLabel(label)
+        }
+    }
+}
+
+def checked(String label, Closure fun) {
+    try {
+        fun()
+        setLabel(label, false)
+    } catch (e) {
+        setLabel(label, true)
+        throw e
+    }
+}
+
+
 def filterfiles() {
     dir('build') {
         sh 'cp compile_commands.json compile_commands_org.json'
@@ -79,16 +101,15 @@ def filterfiles() {
 }
 
 def format() {
-    String format_diff
     stage("Format Tests") {
         dir('build') {
             sh 'python3 ../inviwo/tools/jenkins/check-format.py'
             if (fileExists('clang-format-result.diff')) {
-                format_diff = readFile('clang-format-result.diff')
+                String format_diff = readFile('clang-format-result.diff')
+                setLabel('J: Format Test Failure', !format_diff.isEmpty())
             }
         }
     }
-    return format_diff
 }
 
 def warn(refjob = 'inviwo/master') {
@@ -110,21 +131,25 @@ def warn(refjob = 'inviwo/master') {
 
 def unittest(display = 0) {
     cmd('Unit Tests', 'build/bin', ['DISPLAY=:' + display]) {
-        sh '''
-            rc=0
-            for unittest in inviwo-unittests-*
-                do echo ==================================
-                echo Running: ${unittest}
-                ./${unittest} || rc=$?
-            done
-            exit ${rc}
-        '''
+        checked("J:Unit Test Failure") {
+            sh '''
+                rc=0
+                for unittest in inviwo-unittests-*
+                    do echo ==================================
+                    echo Running: ${unittest}
+                    ./${unittest} || rc=$?
+                done
+                exit ${rc}
+            '''
+        }
     }
 }
 
 def integrationtest(display = 0) {
     cmd('Integration Tests', 'build/bin', ['DISPLAY=:' + display]) {
-        sh './inviwo-integrationtests'
+        checked('J: Integration Test Failure') {
+            sh './inviwo-integrationtests'
+        }
     }
 }
 
@@ -138,7 +163,9 @@ def regression(build, env, modulepaths, display = 0) {
                         --output . \
                         --modules ${modulepaths.join(' ')}
             """
+            setlabel('J: Regression Test Failure', false)
         } catch (e) {
+            setlabel('J: Regression Test Failure', true)
             // Mark as unstable, if we mark as failed, the report will not be published.
             build.result = 'UNSTABLE'
         }
@@ -251,18 +278,20 @@ def build(Map args = [:]) {
         println("Modules On: ${args.onModules.inject('', {res, item -> res + '\n  ' + item})}")
         println("Modules Off: ${args.offModules.inject('', {res, item -> res + '\n  ' + item})}")
         log {
-            sh """
-                ccache -z # reset ccache statistics
-                # tell ccache where the project root is
-                export CCACHE_BASEDIR=${env.WORKSPACE}/build
-                        
-                ${cmake(args.opts, args.modulePaths, args.onModules, args.offModules, 
-                        args.printCMakeVars)}
-
-                ninja
-
-                ccache -s # print ccache statistics
-            """
+            checked('J:Build Failure') {
+                sh """
+                    ccache -z # reset ccache statistics
+                    # tell ccache where the project root is
+                    export CCACHE_BASEDIR=${env.WORKSPACE}/build
+                            
+                    ${cmake(args.opts, args.modulePaths, args.onModules, args.offModules, 
+                            args.printCMakeVars)}
+    
+                    ninja
+    
+                    ccache -s # print ccache statistics
+                """
+            }
         }
     }    
 }
@@ -275,7 +304,6 @@ def build(Map args = [:]) {
 // * onModules List of extra module to enable (optional)
 // * offModules List of modules to disable (optional)
 def buildStandard(Map args = [:]) {
-    assert params, "no global params"
     assert args.params, "Argument params must be supplied"
     stage('Build') {
         clean(args.params)
