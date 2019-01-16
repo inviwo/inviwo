@@ -227,17 +227,17 @@ def publish() {
 
 def slack(Map state, channel) {
     stage('Slack') {
-        echo "result: ${build.result}"
+        echo "result: ${state.build.result}"
         def res2color = ['SUCCESS' : 'good', 'UNSTABLE' : 'warning' , 'FAILURE' : 'danger' ]
-        def color = res2color.containsKey(build.result) ? res2color[state.build.result] : 'warning'
+        def color = res2color.containsKey(state.build.result) ? res2color[state.build.result] : 'warning'
         slackSend(
             color: color, 
             channel: channel, 
-            message: "Branch: ${env.BRANCH_NAME}\n" + \
-                     "Status: ${build.result}\n" + \
-                     "Job: ${env.BUILD_URL} \n" + \
-                     "Regression: ${env.JOB_URL}Regression_Report/\n" + \
-                     "Changes: " + getChangeString(build) 
+            message: "Branch: ${state.env.BRANCH_NAME}\n" + \
+                     "Status: ${state.build.result}\n" + \
+                     "Job: ${state.env.BUILD_URL} \n" + \
+                     "Regression: ${state.env.JOB_URL}Regression_Report/\n" + \
+                     "Changes: " + getChangeString(state.build) 
         )
     }
 }
