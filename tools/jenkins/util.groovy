@@ -78,7 +78,7 @@ def setLabel(Map state, String label, Boolean add) {
             println("Add label ${label}")
             try {
                 if(! label in state.pull.labels) {
-                    state.pull.addLabels([label])
+                    //state.pull.addLabels([label])
                 }
             } catch (e) {
                     println("Error adding label")
@@ -87,7 +87,7 @@ def setLabel(Map state, String label, Boolean add) {
             println("Remove label ${label}")
             try {
                 if (label in state.pull.labels) {
-                    state.pull.removeLabel(label)
+                    //state.pull.removeLabel(label)
                 }
             } catch (e) {
                 println("Error adding label")

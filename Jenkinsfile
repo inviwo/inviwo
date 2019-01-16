@@ -24,6 +24,7 @@ node {
     ]
 
     try {
+        println("Bygger")
         util.buildStandard(
             state: state,
             modulePaths: modulePaths, 
