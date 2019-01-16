@@ -19,6 +19,7 @@ set(MOC_FILES
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/annotationswidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/connectiongraphicsitem.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/dataopener.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/editorgrapicsitem.h
@@ -61,6 +62,7 @@ ivw_group("Header Files" BASE ${IVW_INCLUDE_DIR}/inviwo/qt/editor/ ${HEADER_FILE
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
+    annotationswidget.cpp
     connectiondraghelper.cpp
     connectiongraphicsitem.cpp
     consolewidget.cpp

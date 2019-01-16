@@ -49,6 +49,7 @@
 #include <inviwo/qt/editor/networkeditorview.h>
 #include <inviwo/qt/editor/processorlistwidget.h>
 #include <inviwo/qt/editor/settingswidget.h>
+#include <inviwo/qt/editor/annotationswidget.h>
 #include <inviwo/qt/editor/networksearch.h>
 #include <inviwo/qt/editor/processorgraphicsitem.h>
 #include <inviwo/qt/editor/inviwoeditmenu.h>
@@ -218,8 +219,13 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     settingsWidget_->setVisible(false);
     settingsWidget_->loadState();
 
+    annotationsWidget_ = new AnnotationsWidget(this);
+    tabifyDockWidget(settingsWidget_, annotationsWidget_);
+    annotationsWidget_->setVisible(true);
+    annotationsWidget_->loadState();
+
     helpWidget_ = new HelpWidget(this);
-    tabifyDockWidget(settingsWidget_, helpWidget_);
+    tabifyDockWidget(annotationsWidget_, helpWidget_);
     helpWidget_->setVisible(true);
     helpWidget_->loadState();
 
@@ -241,6 +247,30 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     addDockWidget(Qt::LeftDockWidgetArea, resourceManagerDockWidget_);
     resourceManagerDockWidget_->setVisible(false);
     resourceManagerDockWidget_->loadState();
+
+    // register workspace annotation serialization and deserialization as well as clear callback
+    annotationSerializationHandle_ = app_->getWorkspaceManager()->onSave(
+        [&](Serializer& s) {
+            const int fixedHeight = 256;
+
+            auto canvases = utilqt::getCanvasImages(app_->getProcessorNetwork(), false);
+            for (auto& img : canvases) {
+                img.second = img.second.scaledToHeight(fixedHeight);
+            }
+
+            annotationsWidget_->setNetworkImage(
+                networkEditorView_->exportViewToImage(true, true, QSize(fixedHeight, fixedHeight)));
+            annotationsWidget_->setCanvasImages(canvases);
+
+            s.serialize("WorkspaceAnnotations", *annotationsWidget_);
+        },
+        WorkspaceSaveMode::Disk);
+
+    annotationDeserializationHandle_ = app_->getWorkspaceManager()->onLoad(
+        [&](Deserializer& d) { d.deserialize("WorkspaceAnnotations", *annotationsWidget_); });
+
+    annotationClearHandle_ =
+        app_->getWorkspaceManager()->onClear([&]() { annotationsWidget_->resetAllPoperties(); });
 
     // load settings and restore window state
     loadWindowState();
@@ -601,6 +631,8 @@ void InviwoMainWindow::addActions() {
         viewMenuItem->addAction(processorTreeWidget_->toggleViewAction());
         propertyListWidget_->toggleViewAction()->setText(tr("&Property List"));
         viewMenuItem->addAction(propertyListWidget_->toggleViewAction());
+        annotationsWidget_->toggleViewAction()->setText(tr("&Workspace Annotations"));
+        viewMenuItem->addAction(annotationsWidget_->toggleViewAction());
         resourceManagerDockWidget_->toggleViewAction()->setText(tr("&Resource Manager"));
         viewMenuItem->addAction(resourceManagerDockWidget_->toggleViewAction());
         consoleWidget_->toggleViewAction()->setText(tr("&Output Console"));
@@ -822,8 +854,7 @@ bool InviwoMainWindow::openWorkspace(QString workspaceFileName) {
 
 bool InviwoMainWindow::openWorkspaceAskToSave(QString workspaceFileName) {
     if (askToSaveWorkspaceChanges()) {
-        openWorkspace(workspaceFileName, false);
-        return true;
+        return openWorkspace(workspaceFileName, false);
     } else {
         return false;
     }
@@ -1186,6 +1217,8 @@ ProcessorTreeWidget* InviwoMainWindow::getProcessorTreeWidget() const {
 PropertyListWidget* InviwoMainWindow::getPropertyListWidget() const { return propertyListWidget_; }
 
 ConsoleWidget* InviwoMainWindow::getConsoleWidget() const { return consoleWidget_.get(); }
+
+AnnotationsWidget* InviwoMainWindow::getAnnotationsWidget() const { return annotationsWidget_; }
 
 HelpWidget* InviwoMainWindow::getHelpWidget() const { return helpWidget_; }
 

@@ -33,6 +33,7 @@
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/qt/editor/networkeditorobserver.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/network/workspacemanager.h>
 #include <inviwo/qt/editor/undomanager.h>
 
 #include <warn/push>
@@ -59,6 +60,7 @@ class ConsoleWidget;
 class SettingsWidget;
 class HelpWidget;
 class WelcomeWidget;
+class AnnotationsWidget;
 class InviwoApplicationQt;
 class InviwoEditMenu;
 class InviwoAboutWindow;
@@ -77,11 +79,17 @@ public:
     void showWindow();
 
     void openLastWorkspace(std::string workspace = "");
+    /**
+     * loads the given workspace.
+     *
+     * @return true if the workspace was opened, otherwise false.
+     * @see askToSaveWorkspaceChanges
+     */
     bool openWorkspace(QString workspaceFileName);
 
     /**
-     * Open the given workspaceFileName but only after asking whether to save the
-     * current workspace. The use can also abort the open bu pressing cancel.
+     * loads the given workspace. In case there are unsaved changes, the user will be asked to save
+     * or discard them, or cancel the loading.
      * @return true if the workspace was opened, otherwise false.
      */
     bool openWorkspaceAskToSave(QString workspaceFileName);
@@ -94,6 +102,7 @@ public:
     ProcessorTreeWidget* getProcessorTreeWidget() const;
     PropertyListWidget* getPropertyListWidget() const;
     ConsoleWidget* getConsoleWidget() const;
+    AnnotationsWidget* getAnnotationsWidget() const;
     HelpWidget* getHelpWidget() const;
     InviwoApplication* getInviwoApplication() const;
     InviwoApplicationQt* getInviwoApplicationQt() const;
@@ -101,7 +110,21 @@ public:
     InviwoEditMenu* getInviwoEditMenu() const;
     ToolsMenu* getToolsMenu() const;
 
+    /**
+     * sets up an empty workspace. In case there are unsaved changes, the user will be asked to save
+     * or discard them, or cancel the task.
+     *
+     * @return true if the workspace was opened, otherwise false.
+     * @see askToSaveWorkspaceChanges
+     */
     bool newWorkspace();
+    /**
+     * shows a file dialog for loading a workspace. In case there are unsaved changes, the user will
+     * be asked to save or discard them, or cancel the loading.
+     *
+     * @return true if the workspace was opened, otherwise false.
+     * @see askToSaveWorkspaceChanges
+     */
     bool openWorkspace();
 
     void saveWorkspace();
@@ -115,7 +138,7 @@ public:
     bool askToSaveWorkspaceChanges();
     void exitInviwo(bool saveIfModified = true);
     void showAboutBox();
-    
+
     void showWelcomeScreen();
     void hideWelcomeScreen();
 
@@ -125,12 +148,20 @@ protected:
     virtual void dropEvent(QDropEvent* event) override;
 
 private:
-    friend WelcomeWidget;
-
     virtual void onModifiedStatusChanged(const bool& newStatus) override;
 
     void visibilityModeChangedInSettings();
 
+    /**
+     * loads the workspace \p workspaceFileName. In case there are unsaved changes, the user will
+     * be asked to save or discard them, or cancel the loading.
+     *
+     * @param exampleWorkspace    if true, the workspace file name will not be set. Thereby
+     *                            preventing the user from accidentally overwriting the original
+     *                            file.
+     * @return true if the workspace was opened, otherwise false.
+     * @see askToSaveWorkspaceChanges
+     */
     bool openWorkspace(QString workspaceFileName, bool exampleWorkspace);
     void saveWorkspace(QString workspaceFileName);
     void appendWorkspace(const std::string& workspaceFileName);
@@ -175,6 +206,7 @@ private:
     PropertyListWidget* propertyListWidget_;
     HelpWidget* helpWidget_;
     WelcomeWidget* welcomeWidget_ = nullptr;
+    AnnotationsWidget* annotationsWidget_ = nullptr;
     InviwoAboutWindow* inviwoAboutWindow_ = nullptr;
 
     std::vector<QAction*> workspaceActionRecent_;
@@ -182,6 +214,10 @@ private:
     QAction* visibilityModeAction_;
 
     std::unique_ptr<FileAssociations> fileAssociations_;
+
+    WorkspaceManager::SerializationHandle annotationSerializationHandle_;
+    WorkspaceManager::DeserializationHandle annotationDeserializationHandle_;
+    WorkspaceManager::ClearHandle annotationClearHandle_;
 
     // settings
     bool maximized_;
