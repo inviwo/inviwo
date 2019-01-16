@@ -161,7 +161,7 @@ QString SectionDelegate::elidedText(const QString &str, const QFontMetrics &metr
 
     auto directories = str.split('/');
 
-    bool keepFirst = str.front() != '/';
+    bool keepFirst = str[0] != '/';
     const int widthFirst = (keepFirst ? metrics.boundingRect(directories.front()).width() : 0);
     const QString strFirst = (keepFirst ? directories.front() : "");
     if (keepFirst) {

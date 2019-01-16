@@ -90,6 +90,7 @@
 #include <QDragEnterEvent>
 #include <QBuffer>
 #include <QTabWidget>
+#include <QToolButton>
 
 #include <warn/pop>
 
