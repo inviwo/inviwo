@@ -229,6 +229,7 @@ def slack(def state, channel) {
         echo "result: ${state.build.result}"
         def res2color = ['SUCCESS' : 'good', 'UNSTABLE' : 'warning' , 'FAILURE' : 'danger' ]
         def color = res2color.containsKey(state.build.result) ? res2color[state.build.result] : 'warning'
+        def errors = !state.errors.isEmpty() ? "Errors:\n ${state.errors.inject("", {res, item -> res + item + '\n'})}" : ""
         slackSend(
             color: color, 
             channel: channel, 
@@ -236,7 +237,7 @@ def slack(def state, channel) {
                      "Status: ${state.build.result}\n" + 
                      "Job: ${state.env.BUILD_URL} \n" + 
                      "Regression: ${state.env.JOB_URL}Regression_Report/\n" + 
-                     (!state.errors.isEmpty() ? "Errors:\n ${state.errors.join("\n")}\n" : "") +
+                     errors +
                      "Changes: " + getChangeString(state.build)
         )
     }
