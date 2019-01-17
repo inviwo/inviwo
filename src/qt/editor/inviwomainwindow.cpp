@@ -270,8 +270,10 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     annotationDeserializationHandle_ = app_->getWorkspaceManager()->onLoad(
         [&](Deserializer& d) { d.deserialize("WorkspaceAnnotations", *annotationsWidget_); });
 
-    annotationClearHandle_ =
-        app_->getWorkspaceManager()->onClear([&]() { annotationsWidget_->resetAllPoperties(); });
+    annotationClearHandle_ = app_->getWorkspaceManager()->onClear([&]() {
+        annotationsWidget_->resetAllPoperties();
+        annotationsWidget_->setAuthor(app_->getSystemSettings().workspaceAuthor_);
+    });
 
     // load settings and restore window state
     loadWindowState();
