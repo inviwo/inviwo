@@ -73,7 +73,6 @@ def cmd(stageName, dirName, env = [], fun) {
 
 // this uses global pipeline vars env and pullRequest
 def setLabel(def state, String label, Boolean add) {
-    /*
     if (state.pull) {
         if (add) {
             println("Add label ${label}")
@@ -95,7 +94,6 @@ def setLabel(def state, String label, Boolean add) {
             }
         }       
     }
-    */
 }
 
 def checked(def state, String label, Closure fun) {
