@@ -18,6 +18,8 @@ node {
         env: env,
         params: params, 
         build: currentBuild, 
+        errors: [],
+        display: 0,
         setLabel: {label -> 
             if (env.CHANGE_ID) {
                 if (! label in pullRequest.labels) {
