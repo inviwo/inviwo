@@ -72,7 +72,7 @@ def cmd(stageName, dirName, env = [], fun) {
 }
 
 // this uses global pipeline vars env and pullRequest
-def setLabel(Map state, String label, Boolean add) {
+def setLabel(def state, String label, Boolean add) {
     /*
     if (state.pull) {
         if (add) {
@@ -98,7 +98,7 @@ def setLabel(Map state, String label, Boolean add) {
     */
 }
 
-def checked(Map state, String label, Closure fun) {
+def checked(def state, String label, Closure fun) {
     try {
         println("Run: ${label}")
         fun()
@@ -120,7 +120,7 @@ def filterfiles() {
     }
 }
 
-def format(Map state) {
+def format(def state) {
     stage("Format Tests") {
         dir('build') {
             sh 'python3 ../inviwo/tools/jenkins/check-format.py'
@@ -132,7 +132,7 @@ def format(Map state) {
     }
 }
 
-def warn(Map state, refjob = 'inviwo/master') {
+def warn(def state, refjob = 'inviwo/master') {
     stage("Warn Tests") {
         dir('build') {
             // disabled for now, has some macro issues.
@@ -149,7 +149,7 @@ def warn(Map state, refjob = 'inviwo/master') {
     }
 }
 
-def unittest(Map state) {
+def unittest(def state) {
     cmd('Unit Tests', 'build/bin', ['DISPLAY=:' + state.display]) {
         checked(state, "Unit Test") {
             sh '''
@@ -165,7 +165,7 @@ def unittest(Map state) {
     }
 }
 
-def integrationtest(Map state) {
+def integrationtest(def state) {
     cmd('Integration Tests', 'build/bin', ['DISPLAY=:' + state.display]) {
         checked(state, 'Integration Test') {
             sh './inviwo-integrationtests'
@@ -173,7 +173,7 @@ def integrationtest(Map state) {
     }
 }
 
-def regression(Map state, modulepaths) {
+def regression(def state, modulepaths) {
     cmd('Regression Tests', 'regress', ['DISPLAY=:' + state.display]) {
         try {
             sh """
@@ -193,7 +193,7 @@ def regression(Map state, modulepaths) {
     }
 }
 
-def copyright(Map state, extraPaths = []) {
+def copyright(def state, extraPaths = []) {
     stage('Copyright Check') {
         log() {
             checked(state, "Copyright Test") {
@@ -203,7 +203,7 @@ def copyright(Map state, extraPaths = []) {
     }   
 }
 
-def doxygen(Map state) {
+def doxygen(def state) {
     cmd('Doxygen', 'build', ['DISPLAY=:' + state.display]) {
         sh 'ninja DOXY-Inviwo'
     }    
@@ -230,7 +230,7 @@ def publish() {
     }
 }
 
-def slack(Map state, channel) {
+def slack(def state, channel) {
     stage('Slack') {
         echo "result: ${state.build.result}"
         def res2color = ['SUCCESS' : 'good', 'UNSTABLE' : 'warning' , 'FAILURE' : 'danger' ]

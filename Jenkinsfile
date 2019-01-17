@@ -24,16 +24,12 @@ node {
     List on = []
     List off = ["ABUFFERGL" , "DISCRETEDATA", "HDF5"]
 
-    def state2 = new State(env : env, params: params, build : currentBuild, pull: null)
-
-    Map state = [
+    def state = new State(
         env: env,
-        params: params,
-        pull :  null, // env.CHANGE_ID ? pullRequest : null,
-        build : currentBuild,
-        display: 0,
-        errors : []
-    ]
+        params: params, 
+        build: currentBuild, 
+        pull: null
+    )
 
     try {
         util.buildStandard(
