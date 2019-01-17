@@ -325,11 +325,19 @@ void WelcomeWidget::keyPressEvent(QKeyEvent *event) {
 }
 
 void WelcomeWidget::loadWorkspace(const QString &filename, bool isExample) const {
-    bool controlPressed =
-        (mainWindow_->getInviwoApplicationQt()->keyboardModifiers() == Qt::ControlModifier);
-    if (mainWindow_->askToSaveWorkspaceChanges() &&
-        mainWindow_->openWorkspace(filename, isExample && !controlPressed)) {
-        mainWindow_->hideWelcomeScreen();
+    if (mainWindow_->askToSaveWorkspaceChanges()) {
+        bool hide = [&]() {
+            bool controlPressed =
+                (mainWindow_->getInviwoApplicationQt()->keyboardModifiers() == Qt::ControlModifier);
+            if (isExample && !controlPressed) {
+                return mainWindow_->openExample(filename);
+            } else {
+                return mainWindow_->openWorkspace(filename);
+            }
+        }();
+        if (hide) {
+            mainWindow_->hideWelcomeScreen();
+        }
     }
 }
 

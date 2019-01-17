@@ -210,6 +210,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     centralWidget_->setObjectName("CentralTabWidget");
     centralWidget_->setTabPosition(QTabWidget::North);
     centralWidget_->setMovable(true);
+    centralWidget_->setTabBarAutoHide(true);
 
     centralWidget_->addTab(networkEditorView_, "Network Editor");
     setCentralWidget(centralWidget_);
@@ -860,6 +861,10 @@ bool InviwoMainWindow::openWorkspaceAskToSave(QString workspaceFileName) {
     }
 }
 
+bool InviwoMainWindow::openExample(QString exampleFileName) {
+    return openWorkspace(exampleFileName, true);
+}
+
 void InviwoMainWindow::openLastWorkspace(std::string workspace) {
     QSettings settings;
     settings.beginGroup(objectName());
@@ -899,7 +904,7 @@ bool InviwoMainWindow::openWorkspace() {
     return false;
 }
 
-bool InviwoMainWindow::openWorkspace(QString workspaceFileName, bool exampleWorkspace) {
+bool InviwoMainWindow::openWorkspace(QString workspaceFileName, bool isExample) {
     std::string fileName{utilqt::fromQString(workspaceFileName)};
     fileName = filesystem::cleanupPath(fileName);
     workspaceFileName = utilqt::toQString(fileName);
@@ -924,7 +929,7 @@ bool InviwoMainWindow::openWorkspace(QString workspaceFileName, bool exampleWork
                 }
             });
 
-            if (exampleWorkspace) {
+            if (isExample) {
                 setCurrentWorkspace(untitledWorkspaceName_);
             } else {
                 setCurrentWorkspace(workspaceFileName);
@@ -1046,34 +1051,35 @@ void InviwoMainWindow::saveWorkspaceAsCopy() {
 }
 
 void InviwoMainWindow::showWelcomeScreen() {
-    if (!welcomeWidget_) {
-        welcomeWidget_ = new WelcomeWidget(this, centralWidget_);
-
-        centralWidget_->setUpdatesEnabled(false);
-        centralWidget_->setCurrentIndex(0);
-        centralWidget_->insertTab(0, welcomeWidget_, "Get Started");
-        centralWidget_->setUpdatesEnabled(true);
-
+    auto createTabCloseButton = [&](int tabIndex) {
         QToolButton* closeBtn = new QToolButton();
         closeBtn->setIcon(QIcon(":/stylesheets/images/close.png"));
         closeBtn->setObjectName("dockBtn");
         QObject::connect(closeBtn, &QToolButton::clicked, this, [&]() { hideWelcomeScreen(); });
 
-        centralWidget_->tabBar()->setTabButton(0, QTabBar::RightSide, closeBtn);
+        centralWidget_->tabBar()->setTabButton(tabIndex, QTabBar::RightSide, closeBtn);
+    };
+
+    if (!welcomeWidget_) {
+        welcomeWidget_ = std::make_unique<WelcomeWidget>(this, centralWidget_);
+
+        centralWidget_->setUpdatesEnabled(false);
+        centralWidget_->insertTab(0, welcomeWidget_.get(), "Get Started");
+        createTabCloseButton(0);
+        centralWidget_->setUpdatesEnabled(true);
     }
-    centralWidget_->setCurrentIndex(centralWidget_->indexOf(welcomeWidget_));
+    if (centralWidget_->indexOf(welcomeWidget_.get()) < 0) {
+        centralWidget_->insertTab(0, welcomeWidget_.get(), "Get Started");
+        createTabCloseButton(0);
+    }
+
+    centralWidget_->setCurrentWidget(welcomeWidget_.get());
     welcomeWidget_->setFocus();
 }
 
 void InviwoMainWindow::hideWelcomeScreen() {
     if (welcomeWidget_) {
-        int index = centralWidget_->indexOf(welcomeWidget_);
-        if (index > -1) {
-            centralWidget_->removeTab(index);
-        }
-
-        welcomeWidget_->close();
-        welcomeWidget_ = nullptr;
+        centralWidget_->removeTab(centralWidget_->indexOf(welcomeWidget_.get()));
     }
 }
 

@@ -78,12 +78,18 @@ public:
 
     void showWindow();
 
+    /**
+     * loads the given example workspace.
+     *
+     * @return true if the example was opened, otherwise false.
+     */
+    bool openExample(QString exampleFileName);
+
     void openLastWorkspace(std::string workspace = "");
     /**
      * loads the given workspace.
      *
      * @return true if the workspace was opened, otherwise false.
-     * @see askToSaveWorkspaceChanges
      */
     bool openWorkspace(QString workspaceFileName);
 
@@ -141,6 +147,11 @@ public:
 
     void showWelcomeScreen();
     void hideWelcomeScreen();
+    
+    /**
+     * \brief query the Qt settings for recent workspaces 
+     */
+    QStringList getRecentWorkspaceList() const;
 
 protected:
     virtual void dragEnterEvent(QDragEnterEvent* event) override;
@@ -148,8 +159,6 @@ protected:
     virtual void dropEvent(QDropEvent* event) override;
 
 private:
-    friend WelcomeWidget;
-
     virtual void onModifiedStatusChanged(const bool& newStatus) override;
 
     void visibilityModeChangedInSettings();
@@ -158,13 +167,13 @@ private:
      * loads the workspace \p workspaceFileName. In case there are unsaved changes, the user will
      * be asked to save or discard them, or cancel the loading.
      *
-     * @param exampleWorkspace    if true, the workspace file name will not be set. Thereby
-     *                            preventing the user from accidentally overwriting the original
-     *                            file.
+     * @param isExample    if true, the workspace file name will not be set. Thereby preventing 
+     *                     the user from accidentally overwriting the original file. In addition, 
+     *                     the workspace is _not_ added to the recent file list.
      * @return true if the workspace was opened, otherwise false.
      * @see askToSaveWorkspaceChanges
      */
-    bool openWorkspace(QString workspaceFileName, bool exampleWorkspace);
+    bool openWorkspace(QString workspaceFileName, bool isExample);
     void saveWorkspace(QString workspaceFileName);
     void appendWorkspace(const std::string& workspaceFileName);
 
@@ -180,10 +189,6 @@ private:
 
     void addToRecentWorkspaces(QString workspaceFileName);
 
-    /**
-     * \brief query the Qt settings for recent workspaces and update internal status
-     */
-    QStringList getRecentWorkspaceList() const;
     /**
      * \brief update Qt settings for recent workspaces with internal status
      */
@@ -207,7 +212,7 @@ private:
     ResourceManagerDockWidget* resourceManagerDockWidget_;
     PropertyListWidget* propertyListWidget_;
     HelpWidget* helpWidget_;
-    WelcomeWidget* welcomeWidget_ = nullptr;
+    std::unique_ptr<WelcomeWidget> welcomeWidget_;
     AnnotationsWidget* annotationsWidget_ = nullptr;
     InviwoAboutWindow* inviwoAboutWindow_ = nullptr;
 
