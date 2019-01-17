@@ -2,8 +2,9 @@
 class State {
     def env
     def params
-    def pull
     def build
+    def setLabel
+    def removeLabel
     Integer display = 0 
     List errors = []
 }
