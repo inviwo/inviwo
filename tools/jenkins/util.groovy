@@ -197,7 +197,9 @@ def copyright(def state, extraPaths = []) {
 
 def doxygen(def state) {
     cmd('Doxygen', 'build', ['DISPLAY=:' + state.display]) {
-        sh 'ninja DOXY-Inviwo'
+        checked(state, "Doxygen") {
+            sh 'ninja DOXY-Inviwo'
+        }
     }    
 }
 

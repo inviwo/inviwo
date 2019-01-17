@@ -32,6 +32,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/processors/processorfactory.h>
+#include <inviwo/core/util/filesystem.h>
 #include <inviwo/qt/editor/processorgraphicsitem.h>
 #include <inviwo/qt/editor/processorportgraphicsitem.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
@@ -178,6 +179,7 @@ QImage utilqt::generateProcessorPreview(Processor* processor, double opacity) {
 void utilqt::saveProcessorPreviews(InviwoApplication* app, std::string& path) {
 
     auto save = [&](const std::string& classIdentifier) {
+        filesystem::createDirectoryRecursively(path);
         QString imgname(QString::fromStdString(path + "/" + classIdentifier + ".png"));
         QImage img = utilqt::generatePreview(QString::fromStdString(classIdentifier));
         if (!img.isNull()) {

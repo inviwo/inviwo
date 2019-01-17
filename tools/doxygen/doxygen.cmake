@@ -455,7 +455,7 @@ function(make_doxygen_target modules_var)
     set_target_properties("DOXY-generate-processor-previews" 
                             PROPERTIES FOLDER "doc" EXCLUDE_FROM_ALL TRUE)
     add_dependencies("DOXY-ALL" "DOXY-generate-processor-previews")
-    add_dependencies("DOXY-generate-processor-previews" "DOXY-Inviwo")
+    add_dependencies("DOXY-Inviwo" "DOXY-generate-processor-previews")
 
     # Help, used for the help inside inviwo
     set(module_bases "")
