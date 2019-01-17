@@ -410,8 +410,6 @@ void ParallelCoordinates::buildLineMesh(
 
     auto colorAxisId = selectedColorAxis_.get();
 
-    if (colorAxisId > 0) colorAxisId--;
-
     auto colorAxes = axisVector_[glm::clamp(colorAxisId, 0, (int)axisVector_.size() - 1)];
 
     float dx = 1.0f / (numberOfAxis - 1);
