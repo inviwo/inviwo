@@ -1,5 +1,6 @@
 <!DOCTYPE RCC><RCC version="1.0">
     <qresource prefix="/">
+        <file>changelog.html</file>
         <file>icons/about.png</file>
         <file>icons/composite-create.png</file>
         <file>icons/composite-expand.png</file>

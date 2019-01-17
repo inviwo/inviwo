@@ -143,6 +143,25 @@ ivw_define_standard_properties(inviwo-qteditor)
 ivw_compile_optimize_on_target(inviwo-qteditor)
 
 #--------------------------------------------------------------------
+# Generate html version of changelog (for the welcome widget), if python is available
+find_package(PythonInterp QUIET)
+if (PYTHONINTERP_FOUND)
+    add_custom_command(OUTPUT ${IVW_RESOURCES_DIR}/changelog.html
+        COMMAND ${PYTHON_EXECUTABLE} ${IVW_ROOT_DIR}/tools/changelog-to-html.py -i ${IVW_ROOT_DIR}/CHANGELOG.md -o ${IVW_RESOURCES_DIR}/changelog.html
+        WORKING_DIRECTORY ${IVW_ROOT_DIR}
+        MAIN_DEPENDENCY ${IVW_ROOT_DIR}/CHANGELOG.md
+        DEPENDS ${IVW_ROOT_DIR}/tools/changelog-to-html.py
+        COMMENT "Generating HTML version of the Inviwo Changelog"
+        VERBATIM
+    )
+    add_custom_target("inviwo-changelog"
+        DEPENDS ${IVW_RESOURCES_DIR}/changelog.html
+    )
+
+    add_dependencies("inviwo-qteditor" "inviwo-changelog")
+endif()
+
+#--------------------------------------------------------------------
 # Make package (for other projects to find)
 ivw_default_install_comp_targets(qt_editor inviwo-qteditor)
 ivw_qt_add_to_install(qt_editor Qt5Core Qt5Gui Qt5Widgets Qt5Help Qt5Sql) # Qt5Sql is needed by Qt5Help
