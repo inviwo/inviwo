@@ -469,7 +469,7 @@
                                         <value content="5" />
                                     </option>
                                 </options>
-                                <selectedIdentifier content="class" />
+                                <selectedIdentifier content="petalwidth" />
                             </Property>
                             <Property type="org.inviwo.TransferFunctionProperty" identifier="tfSelection">
                                 <TransferFunction>
