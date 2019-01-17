@@ -34,7 +34,7 @@
 #include <warn/push>
 #include <warn/ignore/all>
 
-#include <QWidget>
+#include <QSplitter>
 
 #include <warn/pop>
 
@@ -47,7 +47,7 @@ namespace inviwo {
 class FileTreeWidget;
 class InviwoMainWindow;
 
-class IVW_QTEDITOR_API WelcomeWidget : public QWidget {
+class IVW_QTEDITOR_API WelcomeWidget : public QSplitter {
 public:
     WelcomeWidget(InviwoMainWindow *w, QWidget *parent);
     virtual ~WelcomeWidget() = default;
@@ -68,7 +68,7 @@ private:
     QTextEdit *details_;
     QTextEdit *changelog_;
     QTabWidget *previewImages_;
-    QToolButton *loadWorkspace_;
+    QToolButton *loadWorkspaceBtn_;
 };
 
 }  // namespace inviwo

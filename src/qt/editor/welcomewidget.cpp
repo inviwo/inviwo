@@ -68,18 +68,22 @@
 namespace inviwo {
 
 WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
-    : QWidget(parent), mainWindow_(window) {
+    : QSplitter(parent), mainWindow_(window) {
 
     setObjectName("WelcomeWidget");
-    setAttribute(Qt::WA_DeleteOnClose);
+
+    setOrientation(Qt::Horizontal);
+    setHandleWidth(5);
+
+    auto leftWidget = new QWidget(this);
 
     auto gridLayout = new QGridLayout();
-    gridLayout->setContentsMargins(9, 0, 0, 0);
+    gridLayout->setContentsMargins(9, 0, 0, 9);
     gridLayout->setSpacing(6);
 
     // heading: logo + "get started"
     auto horizontalLayout = new QHBoxLayout();
-    auto label_2 = new QLabel(this);
+    auto label_2 = new QLabel(leftWidget);
     label_2->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
 
     label_2->setPixmap(QPixmap(":/inviwo/inviwo_light.png"));
@@ -87,7 +91,7 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
 
     horizontalLayout->addWidget(label_2);
 
-    auto label_6 = new QLabel("Get Started", this);
+    auto label_6 = new QLabel("Get Started", leftWidget);
     label_6->setObjectName("WelcomeHeader");
     label_6->setAlignment(Qt::AlignLeading | Qt::AlignLeft | Qt::AlignTop);
 
@@ -99,11 +103,11 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
         QFileInfo info(filename);
         if (filename.isEmpty() || !info.exists()) {
             details_->clear();
-            loadWorkspace_->setEnabled(false);
+            loadWorkspaceBtn_->setEnabled(false);
             return;
         }
 
-        loadWorkspace_->setEnabled(true);
+        loadWorkspaceBtn_->setEnabled(true);
 
         // extract annotations including network screenshot and canvas images from workspace
         Deserializer d(utilqt::fromQString(filename));
@@ -143,7 +147,7 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
 
             if (!item.isValid()) return;
             body.append("h3", item.name, {{"style", "font-weight:600;margin-top:20px"}});
-            auto p = body.append("p").append(
+            body.append("p").append(
                 "img", "",
                 {{"height", std::to_string(std::min(fixedImgHeight, item.size.y))},
                  {"src", "data:image/png;base64," + item.base64png}});
@@ -158,27 +162,27 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
     };
 
     // left column: list of recently used workspaces and examples
-    filetree_ = new FileTreeWidget(window->getInviwoApplication(), this);
+    filetree_ = new FileTreeWidget(window->getInviwoApplication(), leftWidget);
     filetree_->setObjectName("FileTreeWidget");
     filetree_->setMinimumWidth(300);
-    filetree_->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);
+    filetree_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     QObject::connect(filetree_, &FileTreeWidget::selectedFileChanged, this,
                      [this, window, updateDetails](const QString &filename, bool isExample) {
                          updateDetails(filename);
 
-                         loadWorkspace_->disconnect();
+                         loadWorkspaceBtn_->disconnect();
                          QObject::connect(
-                             loadWorkspace_, &QToolButton::clicked, this,
+                             loadWorkspaceBtn_, &QToolButton::clicked, this,
                              [this, filename, isExample]() { loadWorkspace(filename, isExample); });
                      });
     QObject::connect(filetree_, &FileTreeWidget::loadFile, this, &WelcomeWidget::loadWorkspace);
 
     gridLayout->addWidget(filetree_, 1, 0, 2, 1);
 
-    // center column: workspace details, and buttons for loading workspaces
+    // center column: workspace details and buttons for loading workspaces
 
     // workspace details
-    details_ = new QTextEdit(this);
+    details_ = new QTextEdit(leftWidget);
     details_->setObjectName("NetworkDetails");
     details_->setReadOnly(true);
     details_->setFrameShape(QFrame::NoFrame);
@@ -190,8 +194,8 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
     auto horizontalLayout_2 = new QHBoxLayout();
     horizontalLayout_2->setSpacing(6);
 
-    auto createButton = [this](const QString &str, auto iconpath) {
-        auto button = new QToolButton(this);
+    auto createButton = [this, leftWidget](const QString &str, auto iconpath) {
+        auto button = new QToolButton(leftWidget);
         button->setText(str);
         button->setIcon(QIcon(iconpath));
         button->setIconSize(QSize(48, 48));
@@ -199,10 +203,10 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
         return button;
     };
 
-    loadWorkspace_ = createButton("Load", ":/icons/large/open.png");
-    loadWorkspace_->setObjectName("LoadWorkspaceToolButton");
+    loadWorkspaceBtn_ = createButton("Load", ":/icons/large/open.png");
+    loadWorkspaceBtn_->setObjectName("LoadWorkspaceToolButton");
 
-    horizontalLayout_2->addWidget(loadWorkspace_);
+    horizontalLayout_2->addWidget(loadWorkspaceBtn_);
 
     auto horizontalSpacer = new QSpacerItem(18, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
@@ -231,8 +235,14 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
     gridLayout->addLayout(horizontalLayout_2, 2, 1, 1, 1);
 
     // add some space between center and right column
-    auto horizontalSpacer_2 = new QSpacerItem(10, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+    auto horizontalSpacer_2 = new QSpacerItem(20, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
     gridLayout->addItem(horizontalSpacer_2, 1, 2, 1, 1);
+
+    leftWidget->setLayout(gridLayout);
+    gridLayout->setRowStretch(1, 2);
+    gridLayout->setRowStretch(2, 1);
+    gridLayout->setColumnStretch(0, 1);
+    gridLayout->setColumnStretch(1, 2);
 
     // right column: changelog and options
 
@@ -246,7 +256,7 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
     sizePolicy1.setVerticalStretch(100);
     changelog_->setSizePolicy(sizePolicy1);
     changelog_->setFrameShape(QFrame::NoFrame);
-    changelog_->setReadOnly(true);
+    changelog_->setTextInteractionFlags(Qt::TextBrowserInteraction);
 
     verticalLayout_3->addWidget(changelog_);
 
@@ -279,16 +289,11 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
 
     settings.endGroup();
 
-    gridLayout->addWidget(rightColumn, 0, 3, 3, 1);
+    addWidget(rightColumn);
 
-    // final layout adjustments
-    gridLayout->setRowStretch(1, 10);
-    gridLayout->setRowStretch(2, 1);
-    gridLayout->setColumnStretch(0, 1);
-    gridLayout->setColumnStretch(1, 3);
-    gridLayout->setColumnStretch(3, 2);
-
-    setLayout(gridLayout);
+    // ensure that the splitter handle responds to hover events
+    // see https://bugreports.qt.io/browse/QTBUG-13768
+    handle(1)->setAttribute(Qt::WA_Hover);
 
     initChangelog();
 }
@@ -313,12 +318,12 @@ void WelcomeWidget::keyPressEvent(QKeyEvent *event) {
         }();
         if (filetree_->selectRecentWorkspace(number)) {
             if ((event->modifiers() & Qt::ControlModifier) == Qt::ControlModifier) {
-                loadWorkspace_->animateClick();
+                loadWorkspaceBtn_->animateClick();
             }
             event->accept();
         }
     } else if ((event->key() == Qt::Key_Return) || (event->key() == Qt::Key_Enter)) {
-        loadWorkspace_->animateClick();
+        loadWorkspaceBtn_->animateClick();
         event->accept();
     }
     QWidget::keyPressEvent(event);

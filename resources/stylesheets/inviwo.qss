@@ -46,7 +46,7 @@ QDockWidget > .QScrollArea,
 QDockWidget > .QSplitter, 
 QDialog,
 QStatusBar,
-QWidget#WelcomeWidget {
+QSplitter#WelcomeWidget {
     background-color: #323235;
 }
 
@@ -160,6 +160,11 @@ QTabWidget::pane:top {}
 QTabWidget::pane QWidget, QTabWidget::pane QDockWidget QWidget {
     /* docked QDockWidgets ignore QTabWidget */
     background: transparent;
+}
+QTabWidget::pane QGraphicsView {
+    /* need to set the background otherwise the scrollbars will have a white background */
+    background: #323235;
+    border: none;
 }
 QTabWidget::tab-bar {
     left: 5px;
@@ -922,4 +927,17 @@ QFrame#WelcomeRightColumn {
 
 QTreeWidget#FileTreeWidget {
     border: 1px solid transparent;
+}
+
+QSplitter#WelcomeWidget::handle {
+    background: #434345;
+    border: none;
+}
+
+QSplitter#WelcomeWidget::handle:horizontal:hover {
+    background: #5b5f62;
+}
+
+QSplitter#WelcomeWidget::handle:horizontal:pressed {
+    background: #1e70a8;
 }
