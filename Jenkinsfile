@@ -34,7 +34,7 @@ node {
                     pullRequest.addLabels([label])
                 }
             }
-        }
+        },
         removeLabel: {label -> 
             if (env.CHANGE_ID) {
                 if (label in pullRequest.labels) {
