@@ -1,14 +1,3 @@
-
-class State {
-    def env
-    def params
-    def build
-    def setLabel
-    def removeLabel
-    Integer display = 0 
-    List errors = []
-}
-
 node {
     stage('Fetch') { 
         dir('inviwo') {
@@ -25,7 +14,7 @@ node {
     List on = []
     List off = ["ABUFFERGL" , "DISCRETEDATA", "HDF5"]
 
-    def state = new State(
+    Map state = [
         env: env,
         params: params, 
         build: currentBuild, 
@@ -43,7 +32,7 @@ node {
                 }
             }
         }
-    )
+    ]
 
     try {
         util.buildStandard(
@@ -57,7 +46,7 @@ node {
         util.warn(state)
         util.unittest(state)
         util.integrationtest(state)        
-        //util.regression(state, ["${env.WORKSPACE}/inviwo/modules"])
+        util.regression(state, ["${env.WORKSPACE}/inviwo/modules"])
         util.copyright(state)
         util.doxygen(state)       
         util.publish()
