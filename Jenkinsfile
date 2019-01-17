@@ -20,7 +20,7 @@ node {
         build: currentBuild, 
         errors: [],
         display: 0,
-        setLabel: {label -> 
+        addLabel: {label -> 
             if (env.CHANGE_ID) {
                 if (! label in pullRequest.labels) {
                     pullRequest.addLabels([label])

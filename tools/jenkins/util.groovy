@@ -74,14 +74,12 @@ def cmd(stageName, dirName, env = [], fun) {
 // this uses global pipeline var pullRequest
 def setLabel(def state, String label, Boolean add) {
     if (add) {
-        println("Add label ${label}")
         try {
-            state.setLabel(label)
+            state.addLabel(label)
         } catch (e) {
             println("Error adding label")
         }
     } else {
-        println("Remove label ${label}")
         try {
             state.removeLabel(label)
         } catch (e) {
@@ -92,12 +90,9 @@ def setLabel(def state, String label, Boolean add) {
 
 def checked(def state, String label, Closure fun) {
     try {
-        println("Run: ${label}")
         fun()
-        println("Done: ${label}")
         setLabel(state, "J:" + label  + " Failure", false)
     } catch (e) {
-        println("Error: ${label}")
         setLabel(state, "J:" + label  + " Failure", true)
         state.errors += "Failure in ${label}"
         throw e
@@ -168,17 +163,16 @@ def integrationtest(def state) {
 def regression(def state, modulepaths) {
     cmd('Regression Tests', 'regress', ['DISPLAY=:' + state.display]) {
         try {
-            sh """
-                python3 ../inviwo/tools/regression.py \
-                        --inviwo ../build/bin/inviwo \
-                        --header ${state.env.JENKINS_HOME}/inviwo-config/header.html \
-                        --output . \
-                        --modules ${modulepaths.join(' ')}
-            """
-            setlabel('J: Regression Test Failure', false)
+            checked(state, 'Regression Test') {
+                sh """
+                    python3 ../inviwo/tools/regression.py \
+                            --inviwo ../build/bin/inviwo \
+                            --header ${state.env.JENKINS_HOME}/inviwo-config/header.html \
+                            --output . \
+                            --modules ${modulepaths.join(' ')}
+                """
+            }
         } catch (e) {
-            setlabel(state, 'J: Regression Test Failure', true)
-            state.errors += "Failure in Regression Test"
             // Mark as unstable, if we mark as failed, the report will not be published.
             state.build.result = 'UNSTABLE'
         }
