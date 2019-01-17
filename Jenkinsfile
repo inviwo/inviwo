@@ -28,7 +28,20 @@ node {
         env: env,
         params: params, 
         build: currentBuild, 
-        pull: env.CHANGE_ID ? pullRequest : null
+        setLabel: {label -> 
+            if (env.CHANGE_ID) {
+                if (! label in pullRequest.labels) {
+                    pullRequest.addLabels([label])
+                }
+            }
+        }
+        removeLabel: {label -> 
+            if (env.CHANGE_ID) {
+                if (label in pullRequest.labels) {
+                    pullRequest.removeLabel([label])
+                }
+            }
+        }
     )
 
     try {

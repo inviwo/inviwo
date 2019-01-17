@@ -71,29 +71,23 @@ def cmd(stageName, dirName, env = [], fun) {
     }
 }
 
-// this uses global pipeline vars env and pullRequest
+// this uses global pipeline var pullRequest
 def setLabel(def state, String label, Boolean add) {
-    if (state.pull) {
-        if (add) {
-            println("Add label ${label}")
-            try {
-                if(! label in state.pull.labels) {
-                    state.pull.addLabels([label])
-                }
-            } catch (e) {
-                    println("Error adding label")
-            }
-        } else {
-            println("Remove label ${label}")
-            try {
-                if (label in state.pull.labels) {
-                    state.pull.removeLabel(label)
-                }
-            } catch (e) {
-                println("Error adding label")
-            }
-        }       
-    }
+    if (add) {
+        println("Add label ${label}")
+        try {
+            state.setLabel(label)
+        } catch (e) {
+            println("Error adding label")
+        }
+    } else {
+        println("Remove label ${label}")
+        try {
+            state.removeLabel(label)
+        } catch (e) {
+            println("Error adding label")
+        }
+    }       
 }
 
 def checked(def state, String label, Closure fun) {
