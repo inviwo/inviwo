@@ -28,7 +28,7 @@ node {
         env: env,
         params: params, 
         build: currentBuild, 
-        pull: null
+        pull: env.CHANGE_ID ? pullRequest : null
     )
 
     try {
@@ -47,17 +47,6 @@ node {
         util.copyright(state)
         util.doxygen(state)       
         util.publish()
-        
-        if (env.CHANGE_ID) {
-            println("Created by: ${pullRequest.createdBy}")
-            if (fileExists(file: "commentid.txt")) {
-                def id = readFile(file: "commentid.txt") as Integer
-                pullRequest.editComment(id, 'tested by jenkins again')
-            } else {
-                def comment = pullRequest.comment('tested by jenkins')
-                writeFile(file: "commentid.txt", text: (comment.id as String))
-            }
-        }
 
         state.build.result = 'SUCCESS'
     } catch (e) {
