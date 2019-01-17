@@ -81,12 +81,25 @@ AnnotationsWidget::AnnotationsWidget(const QString &title, InviwoMainWindow *mai
 AnnotationsWidget::AnnotationsWidget(InviwoMainWindow *mainwindow)
     : AnnotationsWidget("Annotations", mainwindow) {}
 
+AnnotationsWidget::~AnnotationsWidget() {
+    // manually free scroll area and nested group box widget
+    // The base class InviwoDockWidget is responsible for cleaning up the Qt layout but the child
+    // property widgets refer to the annotations owned by this class instance.
+    delete scrollArea_;
+    setWidget(nullptr);
+}
+
+WorkspaceAnnotationsQt &AnnotationsWidget::getAnnotations() { return annotations_; }
+
+const WorkspaceAnnotationsQt &AnnotationsWidget::getAnnotations() const { return annotations_; }
+
 void AnnotationsWidget::updateWidget() {
-    auto groupbox = new CollapsibleGroupBoxWidgetQt(nullptr, this, "Workspace Annotations");
+    auto groupbox =
+        new CollapsibleGroupBoxWidgetQt(nullptr, &annotations_, "Workspace Annotations");
     layout_->addWidget(groupbox);
     groupbox->initState();
 
-    for (auto p : getProperties()) {
+    for (auto p : annotations_.getProperties()) {
         groupbox->addProperty(p);
         p->onChange([w = mainwindow_]() { w->getNetworkEditor()->setModified(true); });
     }

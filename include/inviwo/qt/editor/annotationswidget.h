@@ -46,16 +46,20 @@ namespace inviwo {
 
 class InviwoMainWindow;
 
-class IVW_QTEDITOR_API AnnotationsWidget : public InviwoDockWidget, public WorkspaceAnnotationsQt {
+class IVW_QTEDITOR_API AnnotationsWidget : public InviwoDockWidget {
 public:
-    AnnotationsWidget(const QString &title, InviwoMainWindow* parent);
+    AnnotationsWidget(const QString& title, InviwoMainWindow* parent);
     AnnotationsWidget(InviwoMainWindow* parent);
-    virtual ~AnnotationsWidget() = default;
+    virtual ~AnnotationsWidget();
+
+    WorkspaceAnnotationsQt& getAnnotations();
+    const WorkspaceAnnotationsQt& getAnnotations() const;
 
 protected:
     void updateWidget();
 
     InviwoMainWindow* mainwindow_;
+    WorkspaceAnnotationsQt annotations_;
     QVBoxLayout* layout_ = nullptr;
     QWidget* mainWidget_ = nullptr;
     QScrollArea* scrollArea_ = nullptr;

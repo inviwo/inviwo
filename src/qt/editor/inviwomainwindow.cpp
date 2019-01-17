@@ -259,20 +259,21 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
                 img.second = img.second.scaledToHeight(fixedHeight);
             }
 
-            annotationsWidget_->setNetworkImage(
+            annotationsWidget_->getAnnotations().setNetworkImage(
                 networkEditorView_->exportViewToImage(true, true, QSize(fixedHeight, fixedHeight)));
-            annotationsWidget_->setCanvasImages(canvases);
+            annotationsWidget_->getAnnotations().setCanvasImages(canvases);
 
-            s.serialize("WorkspaceAnnotations", *annotationsWidget_);
+            s.serialize("WorkspaceAnnotations", annotationsWidget_->getAnnotations());
         },
         WorkspaceSaveMode::Disk);
 
-    annotationDeserializationHandle_ = app_->getWorkspaceManager()->onLoad(
-        [&](Deserializer& d) { d.deserialize("WorkspaceAnnotations", *annotationsWidget_); });
+    annotationDeserializationHandle_ = app_->getWorkspaceManager()->onLoad([&](Deserializer& d) {
+        d.deserialize("WorkspaceAnnotations", annotationsWidget_->getAnnotations());
+    });
 
     annotationClearHandle_ = app_->getWorkspaceManager()->onClear([&]() {
-        annotationsWidget_->resetAllPoperties();
-        annotationsWidget_->setAuthor(app_->getSystemSettings().workspaceAuthor_);
+        annotationsWidget_->getAnnotations().resetAllPoperties();
+        annotationsWidget_->getAnnotations().setAuthor(app_->getSystemSettings().workspaceAuthor_);
     });
 
     // load settings and restore window state
