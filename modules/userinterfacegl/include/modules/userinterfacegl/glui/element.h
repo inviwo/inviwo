@@ -51,8 +51,8 @@ namespace glui {
 enum class UIOrientation { Vertical, Horizontal };
 
 /**
- * \class glui::Element
- * \brief graphical UI element for use in combination with glui::Layout
+ * \class Element
+ * \brief graphical UI element for use in combination with Layout
  *
  * Layout of a UI element:
  *                                                         extent
@@ -70,7 +70,7 @@ enum class UIOrientation { Vertical, Horizontal };
  *   +----------------------------------------------------+
  * (0,0)
  *
- * \see glui::Layout, glui::Renderer
+ * \see Layout, Renderer
  */
 class IVW_MODULE_USERINTERFACEGL_API Element {
 public:

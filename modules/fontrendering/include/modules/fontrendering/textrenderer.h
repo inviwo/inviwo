@@ -353,7 +353,7 @@ namespace util {
 /**
  * \brief Creates a texture with rendered text for a given string including its bounding box
  *
- * Creates a texture with rendered text for a string using the specified renderer, fontSize and
+ * Creates a texture with rendered text for a string using the specified renderer and
  * color. May take an additional variable tex of an existing texture that can be reused to reduce
  * the number of times we need to allocating new textures. The resulting texture is returned along
  * with the respective bounding box.
@@ -367,7 +367,6 @@ namespace util {
  *
  * @param textRenderer The renderer that will be used to render the text
  * @param text         string to be rendered
- * @param fontSize     size of the text in pt
  * @param fontColor    the final color of the text
  * @param tex          optional cache texture which will be reused if possible
  *                    (same texture will be returned)
@@ -380,7 +379,7 @@ createTextTextureObject(TextRenderer &textRenderer, std::string text, vec4 fontC
 /**
  * \brief Creates a texture with rendered text for a given string
  *
- * Creates a texture with a text string using the specified renderer, fontSize and color. May
+ * Creates a texture with a text string using the specified renderer and color. May
  * take an additional variable tex of an existing texture that can be reused to reduce the number of
  * times we need to allocating new textures.
  *
@@ -393,7 +392,6 @@ createTextTextureObject(TextRenderer &textRenderer, std::string text, vec4 fontC
  *
  * @param textRenderer The renderer that will be used to render the text
  * @param text text to be rendered
- * @param fontSize size of the text in pt
  * @param fontColor the final color of the text
  * @param tex optional cache texture which will be reused if possible
  * @return texture containing the text

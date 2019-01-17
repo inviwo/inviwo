@@ -65,12 +65,6 @@ namespace inviwo {
  *   * __Iterations__ Maximum iterations to use for testing membership.
  *
  */
-
-/**
- * \class NumpyMandelbrot
- * \brief <brief description>
- * <Detailed description from a developer prespective>
- */
 class IVW_MODULE_PYTHON3_API NumpyMandelbrot : public Processor {
 public:
     NumpyMandelbrot();

@@ -703,7 +703,6 @@ std::string getGLSLTypeName(const DataFormatBase* format) {
                 return "";
         }
     }
-    return "";
 }
 
 }  // namespace utilgl
