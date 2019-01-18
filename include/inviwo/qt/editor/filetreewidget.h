@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,46 +26,61 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#ifndef IVW_SYSTEMSETTINGS_H
-#define IVW_SYSTEMSETTINGS_H
+#include <inviwo/qt/editor/inviwoqteditordefine.h>
+#include <inviwo/core/common/inviwo.h>
 
-#include <inviwo/core/util/settings/settings.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
+#include <warn/push>
+#include <warn/ignore/all>
+
+#include <QTreeWidget>
+#include <QIcon>
+
+#include <warn/pop>
+
+class QTreeWidgetItem;
 
 namespace inviwo {
 
 class InviwoApplication;
 
-/**
- * System settings, owned by the application, loaded before all the factories so we can't use any
- * dynamic properties here
- */
-class IVW_CORE_API SystemSettings : public Settings {
+class IVW_QTEDITOR_API FileTreeWidget : public QTreeWidget {
+#include <warn/push>
+#include <warn/ignore/all>
+    Q_OBJECT
+#include <warn/pop>
 public:
-    SystemSettings(InviwoApplication* app);
-    StringProperty workspaceAuthor_;
-    TemplateOptionProperty<UsageMode> applicationUsageMode_;
-    IntSizeTProperty poolSize_;
-    BoolProperty enablePortInspectors_;
-    IntProperty portInspectorSize_;
-    BoolProperty enableTouchProperty_;
-    BoolProperty enablePickingProperty_;
-    BoolProperty enableSoundProperty_;
-    BoolProperty logStackTraceProperty_;
-    BoolProperty followObjectDuringRotation_;
-    BoolProperty runtimeModuleReloading_;
-    BoolProperty enableResourceManager_;
-    TemplateOptionProperty<MessageBreakLevel> breakOnMessage_;
-    BoolProperty breakOnException_;
-    BoolProperty stackTraceInException_;
+    enum ListElemType { File = 1, Section, SubSection };
 
-    static size_t defaultPoolSize();
+    enum ItemRoles { FileName = Qt::UserRole + 100, Path, Type, ExampleWorkspace };
+
+    explicit FileTreeWidget(InviwoApplication *app, QWidget *parent = nullptr);
+    virtual ~FileTreeWidget() = default;
+
+    void updateRecentWorkspaces(const QStringList &recentFiles);
+    void updateExampleEntries();
+
+    bool selectRecentWorkspace(int index);
+
+signals:
+    void selectedFileChanged(const QString &filename, bool isExample);
+    void loadFile(const QString &filename, bool isExample);
+
+private:
+    static QTreeWidgetItem *createCategory(const QString &caption,
+                                           ListElemType = ListElemType::Section);
+    static QTreeWidgetItem *createFileEntry(const QIcon &icon, const std::string &filename,
+                                            bool isExample = false);
+
+    static void removeChildren(QTreeWidgetItem *node);
+
+    InviwoApplication *inviwoApp_;
+
+    QTreeWidgetItem *recentWorkspaceItem_ = nullptr;
+    QTreeWidgetItem *examplesItem_ = nullptr;
+
+    QIcon fileIcon_;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_SYSTEMSETTINGS_H

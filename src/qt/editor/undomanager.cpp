@@ -84,8 +84,13 @@ void UndoManager::pushState() {
     if (isRestoring) return;
 
     std::stringstream stream;
-    manager_->save(stream, refPath_);
-    auto str = stream.str();
+    try {
+        manager_->save(stream, refPath_, [](ExceptionContext context) -> void { throw; },
+                       WorkspaceSaveMode::Undo);
+    } catch (...) {
+        return;
+    }
+    auto str = std::move(stream).str();
 
     dirty_ = false;
     if (head_ >= 0 && str == undoBuffer_[head_]) return;  // No Change

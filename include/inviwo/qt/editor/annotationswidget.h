@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,46 +26,47 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#ifndef IVW_SYSTEMSETTINGS_H
-#define IVW_SYSTEMSETTINGS_H
+#include <inviwo/qt/editor/inviwoqteditordefine.h>
+#include <inviwo/core/common/inviwo.h>
 
-#include <inviwo/core/util/settings/settings.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/qt/editor/workspaceannotationsqt.h>
+#include <modules/qtwidgets/inviwodockwidget.h>
+
+#include <memory>
+#include <functional>
+
+class QVBoxLayout;
+class QScrollArea;
+class QString;
+class QVBoxLayout;
 
 namespace inviwo {
 
-class InviwoApplication;
+class InviwoMainWindow;
 
-/**
- * System settings, owned by the application, loaded before all the factories so we can't use any
- * dynamic properties here
- */
-class IVW_CORE_API SystemSettings : public Settings {
+class IVW_QTEDITOR_API AnnotationsWidget : public InviwoDockWidget {
 public:
-    SystemSettings(InviwoApplication* app);
-    StringProperty workspaceAuthor_;
-    TemplateOptionProperty<UsageMode> applicationUsageMode_;
-    IntSizeTProperty poolSize_;
-    BoolProperty enablePortInspectors_;
-    IntProperty portInspectorSize_;
-    BoolProperty enableTouchProperty_;
-    BoolProperty enablePickingProperty_;
-    BoolProperty enableSoundProperty_;
-    BoolProperty logStackTraceProperty_;
-    BoolProperty followObjectDuringRotation_;
-    BoolProperty runtimeModuleReloading_;
-    BoolProperty enableResourceManager_;
-    TemplateOptionProperty<MessageBreakLevel> breakOnMessage_;
-    BoolProperty breakOnException_;
-    BoolProperty stackTraceInException_;
+    AnnotationsWidget(const QString& title, InviwoMainWindow* parent);
+    AnnotationsWidget(InviwoMainWindow* parent);
+    virtual ~AnnotationsWidget();
 
-    static size_t defaultPoolSize();
+    WorkspaceAnnotationsQt& getAnnotations();
+    const WorkspaceAnnotationsQt& getAnnotations() const;
+
+protected:
+    void updateWidget();
+
+    InviwoMainWindow* mainwindow_;
+    WorkspaceAnnotationsQt annotations_;
+    QVBoxLayout* layout_ = nullptr;
+    QWidget* mainWidget_ = nullptr;
+    QScrollArea* scrollArea_ = nullptr;
+    ///< Called after modules have been registered
+    std::shared_ptr<std::function<void()>> onModulesDidRegister_;
+    ///< Called before modules have been unregistered
+    std::shared_ptr<std::function<void()>> onModulesWillUnregister_;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_SYSTEMSETTINGS_H

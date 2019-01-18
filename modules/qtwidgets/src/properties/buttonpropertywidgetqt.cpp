@@ -30,11 +30,16 @@
 #include <modules/qtwidgets/properties/buttonpropertywidgetqt.h>
 #include <inviwo/core/properties/buttonproperty.h>
 
+#include <modules/qtwidgets/inviwoqtutils.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPushButton>
+#include <QInputDialog>
+#include <QMenu>
+#include <QAction>
 #include <warn/pop>
 
 namespace inviwo {
@@ -67,5 +72,21 @@ void ButtonPropertyWidgetQt::updateFromProperty() {
 }
 
 QPushButton* ButtonPropertyWidgetQt::getButton() { return button_; }
+
+std::unique_ptr<QMenu> ButtonPropertyWidgetQt::getContextMenu() {
+    auto menu = PropertyWidgetQt::getContextMenu();
+
+    auto renameAction = menu->addAction(tr("&Rename"));
+    connect(renameAction, &QAction::triggered, this, [this]() {
+        bool ok;
+        const auto displayname = utilqt::toQString(property_->getDisplayName());
+        const auto name = utilqt::fromQString(QInputDialog::getText(
+            nullptr, "Rename", "Name of Property", QLineEdit::Normal, displayname, &ok));
+        if (ok) {
+            property_->setDisplayName(name);
+        }
+    });
+    return menu;
+}
 
 }  // namespace inviwo

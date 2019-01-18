@@ -32,6 +32,8 @@
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/io/imagewriterutil.h>
+#include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/processors/canvasprocessor.h>
 
 #include <inviwo/core/util/logcentral.h>
 #include <warn/push>
@@ -46,6 +48,8 @@
 #include <QMenuBar>
 #include <QPainter>
 #include <QLinearGradient>
+#include <QBuffer>
+#include <QByteArray>
 #include <warn/pop>
 
 #include <ios>
@@ -491,6 +495,46 @@ void addImageActions(QMenu& menu, const Image& image, LayerType visibleLayer, si
 
     addAction("Picking Layer", image.getPickingLayer(), visibleLayer == LayerType::Picking);
     addAction("Depth Layer", image.getDepthLayer(), visibleLayer == LayerType::Depth);
+}
+
+std::string toBase64(const QImage& image) {
+    QByteArray byteArray;
+    QBuffer buffer{&byteArray};
+    buffer.open(QIODevice::WriteOnly);
+    image.save(&buffer, "PNG");
+    return std::string{byteArray.toBase64().data()};
+}
+
+std::vector<std::pair<std::string, QImage>> getCanvasImages(ProcessorNetwork* network, bool alpha) {
+    std::vector<std::pair<std::string, QImage>> images;
+    for (auto* p : network->getProcessorsByType<CanvasProcessor>()) {
+        if (p->isSink() && p->isReady()) {
+            auto img = utilqt::layerToQImage(*p->getVisibleLayer()).scaledToHeight(256);
+            images.push_back({p->getDisplayName(), img});
+        }
+    }
+
+    if (!alpha) {
+        for (auto& elem : images) {
+            QImage& img = elem.second;
+            if (img.hasAlphaChannel()) {
+                switch (img.format()) {
+                    case QImage::Format_Alpha8:
+                        img = img.convertToFormat(QImage::Format_Grayscale8);
+                        break;
+                    case QImage::Format_RGBA8888:
+                    case QImage::Format_RGBA8888_Premultiplied:
+                        img = img.convertToFormat(QImage::Format_RGBX8888);
+                        break;
+                    default:
+                        img = img.convertToFormat(QImage::Format_RGB32);
+                        break;
+                }
+            }
+        }
+    }
+
+    return images;
 }
 
 }  // namespace utilqt

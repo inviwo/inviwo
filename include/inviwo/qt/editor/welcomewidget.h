@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,69 +26,49 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_NETWORKEDITORVIEW_H
-#define IVW_NETWORKEDITORVIEW_H
+#pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <inviwo/qt/editor/networkeditor.h>
-#include <inviwo/core/network/workspacemanager.h>
+#include <inviwo/core/common/inviwo.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QGraphicsView>
-#include <QImage>
+
+#include <QSplitter>
+
 #include <warn/pop>
 
-class QDropEvent;
-class QDragEnterEvent;
+class QTabWidget;
+class QTextEdit;
+class QToolButton;
 
 namespace inviwo {
 
+class FileTreeWidget;
 class InviwoMainWindow;
-class MenuItem;
-class NetworkSearch;
-class TextLabelOverlay;
 
-class IVW_QTEDITOR_API NetworkEditorView : public QGraphicsView, public NetworkEditorObserver {
+class IVW_QTEDITOR_API WelcomeWidget : public QSplitter {
 public:
-    NetworkEditorView(NetworkEditor* networkEditor, InviwoMainWindow* parent = nullptr);
-    ~NetworkEditorView();
+    WelcomeWidget(InviwoMainWindow *w, QWidget *parent);
+    virtual ~WelcomeWidget() = default;
 
-    void hideNetwork(bool);
-    void fitNetwork();
-    virtual void onNetworkEditorFileChanged(const std::string& newFilename) override;
-
-    void exportViewToFile(const QString& filename, bool entireScene, bool backgroundVisible);
-    QImage exportViewToImage(bool entireScene, bool backgroundVisible, QSize size = QSize());
-
-    TextLabelOverlay& getOverlay() const;
-    NetworkSearch& getNetworkSearch() const;
+    void updateRecentWorkspaces();
 
 protected:
-    virtual void mouseDoubleClickEvent(QMouseEvent* e) override;
-    virtual void resizeEvent(QResizeEvent* re) override;
-    virtual void wheelEvent(QWheelEvent* e) override;
-
-    virtual void keyPressEvent(QKeyEvent* keyEvent) override;
-    virtual void keyReleaseEvent(QKeyEvent* keyEvent) override;
-    virtual void focusOutEvent(QFocusEvent*) override;
+    virtual void showEvent(QShowEvent *event) override;
+    virtual void keyPressEvent(QKeyEvent *event) override;
 
 private:
-    void zoom(double dz);
-    virtual void onSceneSizeChanged() override;
+    void loadWorkspace(const QString &filename, bool isExample) const;
+    void initChangelog();
 
-    InviwoMainWindow* mainwindow_;
-    NetworkEditor* editor_;
-    NetworkSearch* search_;
-    TextLabelOverlay* overlay_;
+    InviwoMainWindow *mainWindow_;
 
-    ivec2 scrollPos_;
-    WorkspaceManager::DeserializationHandle loadHandle_;
-    WorkspaceManager::ClearHandle clearHandle_;
-    std::shared_ptr<MenuItem> editActionsHandle_;
+    FileTreeWidget *filetree_;
+    QTextEdit *details_;
+    QTextEdit *changelog_;
+    QTabWidget *previewImages_;
+    QToolButton *loadWorkspaceBtn_;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_NETWORKEDITORVIEW_H

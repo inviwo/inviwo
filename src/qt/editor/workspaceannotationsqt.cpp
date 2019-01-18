@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,45 +27,53 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SYSTEMSETTINGS_H
-#define IVW_SYSTEMSETTINGS_H
+#include <inviwo/qt/editor/workspaceannotationsqt.h>
 
-#include <inviwo/core/util/settings/settings.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 namespace inviwo {
 
-class InviwoApplication;
+WorkspaceAnnotationsQt::WorkspaceAnnotationsQt(const QImage &network,
+                                               const QImageVector &canvasImages) {
+    setNetworkImage(network);
+    setCanvasImages(canvasImages);
+}
 
-/**
- * System settings, owned by the application, loaded before all the factories so we can't use any
- * dynamic properties here
- */
-class IVW_CORE_API SystemSettings : public Settings {
-public:
-    SystemSettings(InviwoApplication* app);
-    StringProperty workspaceAuthor_;
-    TemplateOptionProperty<UsageMode> applicationUsageMode_;
-    IntSizeTProperty poolSize_;
-    BoolProperty enablePortInspectors_;
-    IntProperty portInspectorSize_;
-    BoolProperty enableTouchProperty_;
-    BoolProperty enablePickingProperty_;
-    BoolProperty enableSoundProperty_;
-    BoolProperty logStackTraceProperty_;
-    BoolProperty followObjectDuringRotation_;
-    BoolProperty runtimeModuleReloading_;
-    BoolProperty enableResourceManager_;
-    TemplateOptionProperty<MessageBreakLevel> breakOnMessage_;
-    BoolProperty breakOnException_;
-    BoolProperty stackTraceInException_;
+void WorkspaceAnnotationsQt::serialize(Serializer &s) const {
+    WorkspaceAnnotations::serialize(s);
 
-    static size_t defaultPoolSize();
-};
+    s.serialize("Network", network_);
+}
+
+void WorkspaceAnnotationsQt::deserialize(Deserializer &d) {
+    WorkspaceAnnotations::deserialize(d);
+
+    network_ = Base64Image{"Network"};
+    d.deserialize("Network", network_);
+}
+
+void WorkspaceAnnotationsQt::setNetworkImage(const QImage &network) {
+    network_ = Base64Image{"Network"};
+
+    if (!network.isNull()) {
+        network_ =
+            Base64Image{"Network", utilqt::toBase64(network), network.width(), network.height()};
+    }
+}
+
+void WorkspaceAnnotationsQt::setCanvasImages(const QImageVector &canvasImages) {
+    ImageVector images;
+    images.reserve(canvasImages.size());
+
+    for (auto &elem : canvasImages) {
+        images.push_back(
+            {elem.first, utilqt::toBase64(elem.second), elem.second.width(), elem.second.height()});
+    }
+    setCanvasImages(images);
+}
+
+const WorkspaceAnnotationsQt::Base64Image &WorkspaceAnnotationsQt::getNetworkImage() const {
+    return network_;
+}
 
 }  // namespace inviwo
-
-#endif  // IVW_SYSTEMSETTINGS_H
