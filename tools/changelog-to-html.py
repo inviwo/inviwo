@@ -29,6 +29,7 @@
 import os
 import sys
 import argparse
+import pathlib
 
 import ivwpy.util
 from ivwpy.colorprint import *
@@ -50,12 +51,6 @@ try:
 except ImportError:
 	missing_modules['py-gfm'] = "extension for markdown, needed for parsing github-flavored markdown (GFM)"
 
-if len(missing_modules)>0: 
-	print_error("Error: Could not generate HTML changelog. Missing python modules:")
-	for k,v in missing_modules.items():
-		print_error("    {:20s} {}".format(k,v))	
-	print_info("    To install run: 'pip3 install {}'".format(" ".join(missing_modules.keys())))
-	exit(0)
 
 def makeCmdParser():
 	parser = argparse.ArgumentParser(
@@ -163,6 +158,17 @@ changelogBegin = "Here we document changes"
 
 def main(args):
 	args = makeCmdParser();
+
+	if len(missing_modules)>0: 
+		print_error("Warning: Could not generate HTML changelog. Missing python modules:")
+		for k,v in missing_modules.items():
+			print_error("    {:20s} {}".format(k,v))	
+		print_info("    To install run: 'pip install {}'".format(" ".join(missing_modules.keys())))
+
+		# touch target file to update time stamp even though we could not update it
+		pathlib.Path(args.output).touch()
+
+		exit(0)
 
 	if not os.path.exists(args.input):
 		print_error("changelog-to-html.py was unable to locate the input file " + args.input)

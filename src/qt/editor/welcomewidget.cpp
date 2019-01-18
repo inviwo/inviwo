@@ -352,7 +352,7 @@ void WelcomeWidget::loadWorkspace(const QString &filename, bool isExample) const
 
 void WelcomeWidget::initChangelog() {
     QFile file(":/changelog.html");
-    if (file.open(QFile::ReadOnly | QFile::Text)) {
+    if (file.open(QFile::ReadOnly | QFile::Text) && file.size() > 0) {
         changelog_->setHtml(file.readAll());
     } else {
         changelog_->setHtml(
