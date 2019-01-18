@@ -54,8 +54,7 @@ void WorkspaceAnnotations::Base64Image::deserialize(Deserializer &d) {
     d.deserialize("base64", base64png);
 }
 
-WorkspaceAnnotations::WorkspaceAnnotations()
-    : WorkspaceAnnotations(ImageVector{}) {}
+WorkspaceAnnotations::WorkspaceAnnotations() : WorkspaceAnnotations(ImageVector{}) {}
 
 WorkspaceAnnotations::WorkspaceAnnotations(const ImageVector &canvasImages)
     : title_{"title", "Title", ""}
