@@ -29,7 +29,6 @@
 import os
 import sys
 import argparse
-import codecs
 
 import ivwpy.util
 from ivwpy.colorprint import *
@@ -49,10 +48,10 @@ except ImportError:
 try:
 	import gfm
 except ImportError:
-	missing_modules['[py-gfm'] = "extension for markdown, needed for parsing github-flavored markdown (GFM)"
+	missing_modules['py-gfm'] = "extension for markdown, needed for parsing github-flavored markdown (GFM)"
 
 if len(missing_modules)>0: 
-	print_error("Error: Missing python modules:")
+	print_error("Error: Could not generate HTML changelog. Missing python modules:")
 	for k,v in missing_modules.items():
 		print_error("    {:20s} {}".format(k,v))	
 	print_info("    To install run: 'pip3 install {}'".format(" ".join(missing_modules.keys())))
@@ -169,7 +168,7 @@ def main(args):
 		print_error("changelog-to-html.py was unable to locate the input file " + args.input)
 		sys.exit(1)
 
-	with codecs.open(args.input, mode="r", encoding="utf-8") as f:
+	with open(args.input, mode="r", encoding="utf-8") as f:
 		text = f.read();
 	
 	# remove first line starting with "Here we document changes..."
@@ -183,9 +182,8 @@ def main(args):
 
 	(path, filename)  = os.path.split(os.path.abspath(args.output))
 	ivwpy.util.mkdir(path)
-	with codecs.open(args.output, mode="w", encoding="utf-8", errors="xmlcharrefreplace") as f:
+	with open(args.output, mode="w", encoding="utf-8", errors="xmlcharrefreplace") as f:
 		f.write(html)
-
 
 if __name__ == '__main__':
 	main(sys.argv[1:])
