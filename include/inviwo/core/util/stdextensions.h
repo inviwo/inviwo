@@ -520,7 +520,7 @@ struct is_dereferenceable<T, void_t<decltype(*std::declval<T>())>> : std::true_t
  */
 template <typename Type, typename... Arguments>
 struct is_constructible {
-    template <typename U, decltype(U(std::declval<Arguments>()...)) * = nullptr>
+    template <typename U, decltype(U(std::declval<Arguments>()...))* = nullptr>
     static std::true_type check(int);
     template <class>
     static std::false_type check(...);

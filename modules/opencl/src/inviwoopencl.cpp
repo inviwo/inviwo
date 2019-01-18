@@ -159,7 +159,6 @@ bool OpenCL::getBestGPUDeviceOnSystem(cl::Device& bestDevice, cl::Platform& onPl
 
     if (devices.empty()) return false;
     std::sort(devices.begin(), devices.end(), [&](Device& a, Device& b) {
-
         if (a.vendor == glVendor && b.vendor != glVendor) return true;
         if (a.vendor != glVendor && b.vendor == glVendor) return false;
 
@@ -171,7 +170,6 @@ bool OpenCL::getBestGPUDeviceOnSystem(cl::Device& bestDevice, cl::Platform& onPl
         }
 
         return a.max_compute_units > b.max_compute_units;
-
     });
 
     bestDevice = devices.front().device;

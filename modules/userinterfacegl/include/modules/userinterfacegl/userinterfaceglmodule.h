@@ -40,11 +40,12 @@
 
 namespace inviwo {
 
-class IVW_MODULE_USERINTERFACEGL_API UserInterfaceGLModule : public InviwoModule, public glui::WidgetSupplier {
+class IVW_MODULE_USERINTERFACEGL_API UserInterfaceGLModule : public InviwoModule,
+                                                             public glui::WidgetSupplier {
 public:
     UserInterfaceGLModule(InviwoApplication* app);
     virtual ~UserInterfaceGLModule();
-    
+
     glui::WidgetFactory& getGLUIWidgetFactory();
     const glui::WidgetFactory& getGLUIWidgetFactory() const;
 

@@ -104,7 +104,6 @@
 
 #include <inviwo/core/util/stdextensions.h>
 
-
 namespace inviwo {
 
 namespace {
@@ -146,9 +145,9 @@ struct OptionStringConverterRegFunctor {
 };
 
 }  // namespace
- 
+
 template class TemplateOptionProperty<OptionRegEnumInt>;
-template class TemplateOptionProperty<OptionRegEnumUInt>; 
+template class TemplateOptionProperty<OptionRegEnumUInt>;
 
 InviwoCore::Observer::Observer(InviwoCore& core, InviwoApplication* app)
     : FileObserver(app), core_(core) {}

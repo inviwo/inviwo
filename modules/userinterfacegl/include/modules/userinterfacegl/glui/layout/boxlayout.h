@@ -43,10 +43,10 @@ namespace inviwo {
 namespace glui {
 
 /**
- * \class glui::BoxLayout
- * \brief layout for aligning glui::Elements either horizontally or vertically
+ * \class BoxLayout
+ * \brief layout for aligning Elements either horizontally or vertically
  *
- * This class does not take over ownership of the glui::Elements.
+ * This class does not take over ownership of the Elements.
  */
 class IVW_MODULE_USERINTERFACEGL_API BoxLayout : public Layout {
 public:

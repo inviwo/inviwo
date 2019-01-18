@@ -40,8 +40,8 @@ namespace inviwo {
 namespace glui {
 
 /**
- * \class glui::HBoxLayout
- * \brief layout for aligning glui::Elements horizontally (left to right)
+ * \class HBoxLayout
+ * \brief layout for aligning Elements horizontally (left to right)
  */
 class IVW_MODULE_USERINTERFACEGL_API HBoxLayout : public BoxLayout {
 public:

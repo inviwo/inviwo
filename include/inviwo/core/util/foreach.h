@@ -53,7 +53,7 @@ void foreach_helper(std::true_type, IT a, IT b, Callback callback, size_t startI
 
 template <typename Callback, typename IT>
 auto foreach_helper_pool(std::true_type, IT a, IT b, Callback callback, size_t startIndex = 0) {
-    return dispatchPool([ id = startIndex, c = std::move(callback), a, b ]() mutable {
+    return dispatchPool([id = startIndex, c = std::move(callback), a, b]() mutable {
         std::for_each(a, b, [&](auto v) { c(v, id++); });
     });
 }
@@ -61,7 +61,7 @@ auto foreach_helper_pool(std::true_type, IT a, IT b, Callback callback, size_t s
 template <typename Callback, typename IT>
 auto foreach_helper_pool(std::false_type, IT a, IT b, Callback callback,
                          size_t /*startIndex*/ = 0) {
-    return dispatchPool([ c = std::move(callback), a, b ]() { std::for_each(a, b, c); });
+    return dispatchPool([c = std::move(callback), a, b]() { std::for_each(a, b, c); });
 }
 
 }  // namespace detail

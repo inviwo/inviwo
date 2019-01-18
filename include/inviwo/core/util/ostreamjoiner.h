@@ -43,7 +43,7 @@ namespace util {
 // Based on http://codereview.stackexchange.com/questions/13176/infix-iterator-code
 // and http://en.cppreference.com/w/cpp/experimental/ostream_joiner
 
-template <class DelimT, class charT = char, class traits = std::char_traits<charT> >
+template <class DelimT, class charT = char, class traits = std::char_traits<charT>>
 class ostream_joiner {
     std::basic_ostream<charT, traits> *os;
     std::basic_string<charT> delimiter;

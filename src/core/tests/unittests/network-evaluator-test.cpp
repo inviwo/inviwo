@@ -132,7 +132,7 @@ TEST(NetworkEvaluator, Eval) {
     auto a = at.get();
     Instrument ai(*a);
 
-    a->onProcess = [func = a->onProcess](TestProcessor & p) {
+    a->onProcess = [func = a->onProcess](TestProcessor& p) {
         func(p);
         static_cast<DataOutport<int>*>(p.getOutports()[0])->setData(std::make_shared<int>(0));
     };
@@ -205,7 +205,7 @@ TEST(NetworkEvaluator, Error) {
     Instrument ai(*a);
 
     bool shouldThrow = false;
-    a->onProcess = [ func = a->onProcess, &shouldThrow ](TestProcessor & p) {
+    a->onProcess = [func = a->onProcess, &shouldThrow](TestProcessor& p) {
         func(p);
         static_cast<DataOutport<int>*>(p.getOutports()[0])->setData(std::make_shared<int>(0));
         if (shouldThrow) {

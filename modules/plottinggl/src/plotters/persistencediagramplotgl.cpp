@@ -313,10 +313,9 @@ void PersistenceDiagramPlotGL::plot(const size2_t &dims, IndexBuffer *indices, b
         };
         auto colorBuffer = (color_ ? color_->getRepresentation<BufferRAM>() : nullptr);
 
-        auto getColor = [
-            this, hoverEnabled = (properties_.hovering_.get() && !hoveredIndices_.empty()),
-            buffer = colorBuffer, normalizeValue
-        ](uint32_t index) {
+        auto getColor = [this,
+                         hoverEnabled = (properties_.hovering_.get() && !hoveredIndices_.empty()),
+                         buffer = colorBuffer, normalizeValue](uint32_t index) {
             if (hoverEnabled && util::contains(hoveredIndices_, index)) {
                 return properties_.hoverColor_.get();
             } else if (color_) {

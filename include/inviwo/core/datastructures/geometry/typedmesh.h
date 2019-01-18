@@ -354,7 +354,9 @@ public:
     TypedMesh(DrawType dt = DrawType::Points, ConnectivityType ct = ConnectivityType::None)
         : Mesh(dt, ct), BufferTraits(*static_cast<Mesh *>(this))... {}
 
-    TypedMesh(const TypedMesh &rhs) : Mesh(rhs), BufferTraits()... { copyConstrHelper<0, BufferTraits...>(); }
+    TypedMesh(const TypedMesh &rhs) : Mesh(rhs), BufferTraits()... {
+        copyConstrHelper<0, BufferTraits...>();
+    }
     TypedMesh &operator=(const TypedMesh &that) {
         if (this != &that) {
             Mesh::operator=(that);

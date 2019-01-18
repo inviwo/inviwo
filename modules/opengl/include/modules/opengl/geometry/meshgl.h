@@ -74,7 +74,7 @@ private:
     std::vector<const BufferGL*> bufferGLs_;
     BufferObjectArray bufferArray_;
 
-    std::vector<std::pair<Mesh::MeshInfo, const BufferGL*> > indexBuffers_;
+    std::vector<std::pair<Mesh::MeshInfo, const BufferGL*>> indexBuffers_;
 };
 
 }  // namespace inviwo

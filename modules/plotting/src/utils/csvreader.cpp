@@ -83,7 +83,7 @@ std::shared_ptr<plot::DataFrame> CSVReader::readData(std::istream& stream) const
 
     // extract exactly one field from the current stream position, the bool return value indicates
     // whether a line break was detected following the field
-    auto extractField = [&in, &lineNumber, delims = delimiters_ ]()->std::pair<std::string, bool> {
+    auto extractField = [&in, &lineNumber, delims = delimiters_]() -> std::pair<std::string, bool> {
         std::string value;
         size_t quoteCount = 0;
         size_t quoteBeginLine = 0;

@@ -384,7 +384,7 @@ void InviwoModule::registerRepresentationConverter(
     if (auto factory = app_->getRepresentationConverterFactory<BaseRepr>()) {
         if (factory->registerObject(converter.get())) {
             representationConvertersUnRegFunctors_.push_back(
-                [ factory, conv = converter.get() ]() { factory->unRegisterObject(conv); });
+                [factory, conv = converter.get()]() { factory->unRegisterObject(conv); });
             representationConverters_.push_back(std::move(converter));
         }
     }

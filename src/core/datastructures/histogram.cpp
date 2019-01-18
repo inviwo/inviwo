@@ -84,9 +84,8 @@ void NormalizedHistogram::performNormalization() {
     maximumBinCount_ = *std::max_element(data_.begin(), data_.end());
 
     // Normalize all bins with the largest count
-    std::transform(
-        data_.begin(), data_.end(),
-        data_.begin(), [factor = 1.0 / maximumBinCount_](auto val) { return val * factor; });
+    std::transform(data_.begin(), data_.end(), data_.begin(),
+                   [factor = 1.0 / maximumBinCount_](auto val) { return val * factor; });
 }
 
 double NormalizedHistogram::getMaximumBinValue() const { return maximumBinCount_; }

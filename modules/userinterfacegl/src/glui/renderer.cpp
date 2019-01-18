@@ -212,7 +212,7 @@ void Renderer::setupRectangleMesh() {
 std::shared_ptr<Texture2DArray> Renderer::createUITextureObject(
     const std::vector<std::string>& textureFiles, const std::string& sourcePath) const {
     // read in textures
-    std::vector<std::shared_ptr<Layer> > textureLayers;
+    std::vector<std::shared_ptr<Layer>> textureLayers;
     auto factory = InviwoApplication::getPtr()->getDataReaderFactory();
     if (auto reader = factory->getReaderForTypeAndExtension<Layer>("png")) {
         for (auto filename : textureFiles) {

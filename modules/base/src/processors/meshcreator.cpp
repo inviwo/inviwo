@@ -207,7 +207,6 @@ MeshCreator::MeshCreator()
                 break;
             }
         }
-
     });
 
     addProperty(meshType_);

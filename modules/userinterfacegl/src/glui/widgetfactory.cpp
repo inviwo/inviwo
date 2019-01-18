@@ -29,6 +29,4 @@
 
 #include <modules/userinterfacegl/glui/widgetfactory.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

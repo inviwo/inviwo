@@ -39,9 +39,9 @@
 
 namespace inviwo {
 
-typedef std::pair<std::shared_ptr<Texture>, std::shared_ptr<cl::Image2DGL> >
+typedef std::pair<std::shared_ptr<Texture>, std::shared_ptr<cl::Image2DGL>>
     TextureCLImageSharingPair;
-typedef std::map<std::shared_ptr<Texture>, std::shared_ptr<cl::Image2DGL> > CLTextureSharingMap;
+typedef std::map<std::shared_ptr<Texture>, std::shared_ptr<cl::Image2DGL>> CLTextureSharingMap;
 
 /** \class LayerCLGL
  *
