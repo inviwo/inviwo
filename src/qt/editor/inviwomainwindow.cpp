@@ -130,7 +130,14 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
                              "path"}
     , openData_{"d", "data", "Try and open a data file", false, "", "file name"}
     , updateWorkspaces_{"", "update-workspaces",
-                        "Go through and update all workspaces to the latest version"}
+                        "Update workspaces of all modules to the latest version "
+                        "(located in '<module>/data/workspaces/*')"}
+    , updateWorkspacesInPath_{"",
+                              "update-workspaces-in-path",
+                              "Update all workspaces in path to the latest version",
+                              false,
+                              "",
+                              "path"}
     , undoManager_(this) {
 
     setObjectName("InviwoMainWindow");
@@ -202,6 +209,9 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
 
     app->getCommandLineParser().add(&updateWorkspaces_, [this]() { util::updateWorkspaces(app_); },
                                     1250);
+    app->getCommandLineParser().add(
+        &updateWorkspacesInPath_,
+        [this]() { util::updateWorkspacesInPath(app_, updateWorkspacesInPath_.getValue()); }, 1250);
 
     networkEditorView_ = new NetworkEditorView(networkEditor_.get(), this);
     NetworkEditorObserver::addObservation(networkEditor_.get());
@@ -259,8 +269,9 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
                 img.second = img.second.scaledToHeight(fixedHeight);
             }
 
-            annotationsWidget_->getAnnotations().setNetworkImage(
-                networkEditorView_->exportViewToImage(true, true, QSize(fixedHeight, fixedHeight)));
+            annotationsWidget_->getAnnotations()
+                .setNetworkImage(networkEditorView_->exportViewToImage(
+                    true, true, QSize(fixedHeight, fixedHeight)));
             annotationsWidget_->getAnnotations().setCanvasImages(canvases);
 
             s.serialize("WorkspaceAnnotations", annotationsWidget_->getAnnotations());

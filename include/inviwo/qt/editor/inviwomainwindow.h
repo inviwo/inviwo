@@ -242,6 +242,7 @@ private:
     TCLAP::ValueArg<std::string> saveProcessorPreviews_;
     TCLAP::ValueArg<std::string> openData_;
     TCLAP::SwitchArg updateWorkspaces_;
+    TCLAP::ValueArg<std::string> updateWorkspacesInPath_;
 
     UndoManager undoManager_;
 };

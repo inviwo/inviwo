@@ -116,6 +116,8 @@ public:
     void processCallbacks();
     void add(TCLAP::Arg* arg);
     void add(TCLAP::Arg* arg, std::function<void()> callback, int priority = 0);
+    void xorAdd(TCLAP::Arg* a, std::function<void()> callbackA, int priorityA, TCLAP::Arg* b,
+                std::function<void()> callbackB, int priorityB);
     void remove(TCLAP::Arg* arg);
 
 private:

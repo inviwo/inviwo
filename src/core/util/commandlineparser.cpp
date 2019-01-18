@@ -208,6 +208,14 @@ void CommandLineParser::add(TCLAP::Arg* arg, std::function<void()> callback, int
     callbacks_.push_back(std::make_tuple(priority, arg, callback));
 }
 
+void CommandLineParser::xorAdd(TCLAP::Arg* a, std::function<void()> callbackA, int priorityA,
+                               TCLAP::Arg* b, std::function<void()> callbackB, int priorityB) {
+    auto args = std::vector<TCLAP::Arg*>{a, b};
+    cmd_.xorAdd(args);
+    callbacks_.push_back(std::make_tuple(priorityA, a, callbackA));
+    callbacks_.push_back(std::make_tuple(priorityB, b, callbackB));
+}
+
 void CommandLineParser::remove(TCLAP::Arg* arg) {
     auto& args = cmd_.getArgList();
     auto argIt = std::find_if(std::begin(args), std::end(args),
