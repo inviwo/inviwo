@@ -115,6 +115,22 @@ protected:
     }
 };
 
+template <typename OptionProperty>
+class OptionToIntConverter : public TemplatePropertyConverter<OptionProperty, IntProperty> {
+protected:
+    virtual void convertimpl(const OptionProperty *src, IntProperty *dst) const override {
+        dst->set(src->getSelectedIndex(), 0, src->size() - 1, 1);
+    }
+};
+
+template <typename OptionProperty>
+class IntToOptionConverter : public TemplatePropertyConverter<IntProperty, OptionProperty> {
+protected:
+    virtual void convertimpl(const IntProperty *src, OptionProperty *dst) const override {
+        dst->setSelectedIndex(src->get());
+    }
+};
+
 class FileToStringConverter : public TemplatePropertyConverter<FileProperty, StringProperty> {
 protected:
     virtual void convertimpl(const FileProperty *src, StringProperty *dst) const override {
