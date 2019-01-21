@@ -30,6 +30,7 @@ import os
 import sys
 import argparse
 import pathlib
+from distutils.version import StrictVersion
 
 import ivwpy.util
 from ivwpy.colorprint import *
@@ -40,21 +41,27 @@ from ivwpy.colorprint import *
 # gfm, a markdown extension for parsing github-flavored markdown (GFM)
 
 missing_modules = {}
+downgradeMarkdown = False
 
 try:
 	import markdown
+	if hasattr(markdown, 'version'):
+		# version check, py-gfm has not yet been updated to markdown >3.0.0
+		if StrictVersion(markdown.version) > StrictVersion("3.0.0"):
+			raise ImportError # need to downgrade markdown module, do NOT check for gfm module!
 except ImportError:
-	missing_modules['markdown'] = "needed for markdown parsing"
+	missing_modules["pip install \'markdown<3.0\'"] = "needed for markdown parsing (requires version prior 3 due to py-gfm dependency)"
 
-try:
-	import gfm
-except ImportError:
-	missing_modules['py-gfm'] = "extension for markdown, needed for parsing github-flavored markdown (GFM)"
+if not downgradeMarkdown:
+	try:
+		import gfm
+	except ImportError:
+		missing_modules['py-gfm'] = "extension for markdown, needed for parsing github-flavored markdown (GFM)"
 
 
 def makeCmdParser():
 	parser = argparse.ArgumentParser(
-		description="Run regression tests",
+		description="Convert a github-flavored markdown (GFM) changelog to HTML",
 		formatter_class=argparse.ArgumentDefaultsHelpFormatter
 	)
 	parser.add_argument('-i', '--input', type=str, required=True, action="store", dest="input",
@@ -160,9 +167,9 @@ def main(args):
 	args = makeCmdParser();
 
 	if len(missing_modules)>0: 
-		print_error("Warning: Could not generate HTML changelog. Missing python modules:")
+		print_error("Warning: Cannot generate HTML changelog. Missing python modules:")
 		for k,v in missing_modules.items():
-			print_error("    {:20s} {}".format(k,v))	
+			print_error("    {:20s} {}".format(k,v))
 		print_info("    To install run: 'python -m pip install {}'".format(" ".join(missing_modules.keys())))
 
 		# touch target file to update time stamp even though we could not update it
