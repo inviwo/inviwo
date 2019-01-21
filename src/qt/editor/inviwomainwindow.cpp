@@ -211,7 +211,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
                                     1250);
     app->getCommandLineParser().add(
         &updateWorkspacesInPath_,
-        [this]() { util::updateWorkspacesInPath(app_, updateWorkspacesInPath_.getValue()); }, 1250);
+        [this]() { util::updateWorkspaces(app_, updateWorkspacesInPath_.getValue()); }, 1250);
 
     networkEditorView_ = new NetworkEditorView(networkEditor_.get(), this);
     NetworkEditorObserver::addObservation(networkEditor_.get());

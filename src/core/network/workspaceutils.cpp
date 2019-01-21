@@ -41,14 +41,14 @@ namespace inviwo {
 namespace util {
 
 void updateWorkspaces(InviwoApplication* app) {
-    updateWorkspacesInPath(app, filesystem::getPath(PathType::Workspaces));
+    updateWorkspaces(app, filesystem::getPath(PathType::Workspaces));
 
     for (const auto& m : app->getModules()) {
-        updateWorkspacesInPath(app, m->getPath(ModulePath::Workspaces));
+        updateWorkspaces(app, m->getPath(ModulePath::Workspaces));
     }
 }
 
-void updateWorkspacesInPath(InviwoApplication* app, const std::string& path) {
+void updateWorkspaces(InviwoApplication* app, const std::string& path) {
     auto update = [&](const std::string& fileName) {
         auto errorCounter = std::make_shared<LogErrorCounter>();
         LogCentral::getPtr()->registerLogger(errorCounter);
