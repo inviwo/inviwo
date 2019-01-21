@@ -48,6 +48,7 @@ try:
 	if hasattr(markdown, 'version'):
 		# version check, py-gfm has not yet been updated to markdown >3.0.0
 		if StrictVersion(markdown.version) > StrictVersion("3.0.0"):
+			downgradeMarkdown = True
 			raise ImportError # need to downgrade markdown module, do NOT check for gfm module!
 except ImportError:
 	missing_modules["pip install \'markdown<3.0\'"] = "needed for markdown parsing (requires version prior 3 due to py-gfm dependency)"
