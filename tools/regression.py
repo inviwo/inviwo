@@ -75,7 +75,7 @@ if len(missing_modules)>0:
 	print_error("Error: Missing python modules:")
 	for k,v in missing_modules.items():
 		print_error("    {:20s} {}".format(k,v))	
-	print_info("    To install run: 'pip3 install {}'".format(" ".join(missing_modules.keys())))
+	print_info("    To install run: 'python -m pip install {}'".format(" ".join(missing_modules.keys())))
 	exit()
 
 import ivwpy.regression.app

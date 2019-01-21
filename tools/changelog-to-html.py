@@ -163,7 +163,7 @@ def main(args):
 		print_error("Warning: Could not generate HTML changelog. Missing python modules:")
 		for k,v in missing_modules.items():
 			print_error("    {:20s} {}".format(k,v))	
-		print_info("    To install run: 'pip install {}'".format(" ".join(missing_modules.keys())))
+		print_info("    To install run: 'python -m pip install {}'".format(" ".join(missing_modules.keys())))
 
 		# touch target file to update time stamp even though we could not update it
 		pathlib.Path(args.output).touch()
