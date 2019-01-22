@@ -266,7 +266,7 @@ Map defaultCMakeOptions(String buildType) {
         "IVW_UNITTESTS" : "ON",
         "IVW_UNITTESTS_RUN_ON_BUILD" : "OFF",
         "IVW_INTEGRATION_TESTS" : "ON",
-        "IVW_RUNTIME_MODULE_LOADING" : "ON"
+        "IVW_RUNTIME_MODULE_LOADING" : "OFF"
     ]
 }
 Map ccacheOption() {
