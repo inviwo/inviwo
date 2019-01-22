@@ -119,7 +119,7 @@ template <typename OptionProperty>
 class OptionToIntConverter : public TemplatePropertyConverter<OptionProperty, IntProperty> {
 protected:
     virtual void convertimpl(const OptionProperty *src, IntProperty *dst) const override {
-        dst->set(src->getSelectedIndex(), 0, src->size() - 1, 1);
+        dst->set(static_cast<int>(src->getSelectedIndex()), 0, static_cast<int>(src->size()) - 1, 1);
     }
 };
 
