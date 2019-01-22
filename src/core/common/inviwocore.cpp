@@ -371,16 +371,12 @@ InviwoCore::InviwoCore(InviwoApplication* app)
 
     using OptionTypes = std::tuple<unsigned int, int, size_t, float, double, std::string>;
     util::for_each_type<OptionTypes>{}(OptionStringConverterRegFunctor{}, registerPC);
-    using OptionTypes = std::tuple<unsigned int, int, size_t, float, double, std::string>;
     util::for_each_type<OptionTypes>{}(OptionIntConverterRegFunctor{}, registerPC);
-    using OptionTypes = std::tuple<unsigned int, int, size_t, float, double, std::string>;
     util::for_each_type<OptionTypes>{}(IntOptionConverterRegFunctor{}, registerPC);
 
     using OptionEnumTypes = std::tuple<OptionRegEnumInt, OptionRegEnumUInt>;
     util::for_each_type<OptionEnumTypes>{}(OptionStringConverterRegFunctor{}, registerPC);
-    using OptionEnumTypes = std::tuple<OptionRegEnumInt, OptionRegEnumUInt>;
     util::for_each_type<OptionEnumTypes>{}(OptionIntConverterRegFunctor{}, registerPC);
-    using OptionEnumTypes = std::tuple<OptionRegEnumInt, OptionRegEnumUInt>;
     util::for_each_type<OptionEnumTypes>{}(IntOptionConverterRegFunctor{}, registerPC);
 
     // Observe composite processors
