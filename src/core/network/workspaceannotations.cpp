@@ -72,13 +72,6 @@ WorkspaceAnnotations::WorkspaceAnnotations(const ImageVector &canvasImages)
     addProperty(description_);
 }
 
-void WorkspaceAnnotations::addProperty(Property *property, bool owner) {
-    PropertyOwner::addProperty(property, owner);
-    property->onChange([this]() {});
-}
-
-void WorkspaceAnnotations::addProperty(Property &property) { addProperty(&property, false); }
-
 void WorkspaceAnnotations::serialize(Serializer &s) const {
     try {
         PropertyOwner::serialize(s);

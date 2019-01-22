@@ -60,9 +60,6 @@ public:
     WorkspaceAnnotations(const ImageVector &canvasImages);
     virtual ~WorkspaceAnnotations() = default;
 
-    virtual void addProperty(Property *property, bool owner = true) override;
-    virtual void addProperty(Property &property) override;
-
     void setTitle(const std::string &title);
     std::string getTitle() const;
 
