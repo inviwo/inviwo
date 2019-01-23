@@ -169,7 +169,7 @@ if __name__ == '__main__':
 	else:
 		print_error("Regression.py needs either a either an inviwo executable using \
 			'--inviwo' or a config and build_type using '--config' and '--build_type'")
-			sys.exit(1)
+		sys.exit(1)
 
 
 	if not os.path.exists(inviwopath):
