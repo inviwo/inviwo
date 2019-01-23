@@ -163,13 +163,13 @@ if __name__ == '__main__':
 			configpath if configpath else "", 
 			args.config if args.config else ""
 		])
-	else if args.config and args.build_type:
+	elif args.config and args.build_type:
 		readfiles = config.read([args.config, execonf(args.config, args.build_type)])
 		inviwopath = config.get("Inviwo", "executable")
 	else:
 		print_error("Regression.py needs either a either an inviwo executable using \
 			'--inviwo' or a config and build_type using '--config' and '--build_type'")
-		sys.exit(1)
+			sys.exit(1)
 
 
 	if not os.path.exists(inviwopath):
