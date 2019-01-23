@@ -113,5 +113,5 @@ extern template class IVW_CORE_TMPL_EXP DataReaderType<Layer>;
 extern template class IVW_CORE_TMPL_EXP DataWriterType<Layer>;
 
 }  // namespace inviwo
-
+	
 #endif  // IVW_LAYER_H

@@ -93,6 +93,8 @@ def makeCmdParser():
 	parser.add_argument('-i', '--inviwo', type=str, required=True, action="store", dest="inviwo",
 						help='Paths to inviwo executable')
 	parser.add_argument('-c', '--config', type=str, action="store", dest="config", help='A configure file', default="")
+	parser.add_argument('-b', '--build_type', type=str, action="store", dest="build_type", 
+		help='Specify the build type (Debug, Release, ...)', default="")
 	parser.add_argument('-o', '--output', type=str, action="store", dest="output", help='Path to output')
 	
 	parser.add_argument('-r', '--repos', type=str, nargs='*', action="store", dest="repos",
@@ -144,21 +146,34 @@ def makeFilter(inc, exc):
 
 	return filter
 
+
+def execonf(file, build):
+	parts = os.path.splitext(file)
+	return parts[0] + "-" + build + parts[1]
+
 if __name__ == '__main__':
 
 	args = makeCmdParser();
 
 	inviwopath = os.path.abspath(args.inviwo)
-	if not os.path.exists(inviwopath):
-		print_error("Regression.py was unable to find inviwo executable at " + inviwopath)
-		sys.exit(1)
-
+	
 	configpath = find_pyconfig(inviwopath)
 	config = configparser.ConfigParser()
-	config.read([
+	readfiles = config.read([
 		configpath if configpath else "", 
 		args.config if args.config else ""
 	])
+	if args.build_type:
+		config.read([execonf(f, args.build_type) for f in readfiles])
+
+
+	if not os.path.exists(inviwopath):
+		if config.has_option("Inviwo", "executable") and os.path.exists(config.get("Inviwo", "executable")):
+			inviwopath = config.get("Inviwo", "executable")
+		else:	
+			print_error("Regression.py was unable to find inviwo executable at " + inviwopath)
+			sys.exit(1)
+
 
 	modulePaths = []
 	if args.repos or args.modules:

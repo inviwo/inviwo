@@ -166,7 +166,8 @@ def regression(def state, modulepaths) {
             checked(state, 'Regression Test') {
                 sh """
                     python3 ../inviwo/tools/regression.py \
-                            --inviwo ../build/bin/inviwo \
+                            --config ../build/pyconfig.ini \
+                            --build_type ${state.params['Build Type']}
                             --header ${state.env.JENKINS_HOME}/inviwo-config/header.html \
                             --output . \
                             --modules ${modulepaths.join(' ')}
