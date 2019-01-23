@@ -154,25 +154,27 @@ def execonf(file, build):
 if __name__ == '__main__':
 
 	args = makeCmdParser();
-
-	inviwopath = os.path.abspath(args.inviwo)
-	
-	configpath = find_pyconfig(inviwopath)
 	config = configparser.ConfigParser()
-	readfiles = config.read([
-		configpath if configpath else "", 
-		args.config if args.config else ""
-	])
-	if args.build_type:
-		config.read([execonf(f, args.build_type) for f in readfiles])
+	
+	if args.inviwo:
+		inviwopath = os.path.abspath(args.inviwo)
+		configpath = find_pyconfig(inviwopath)
+		config.read([
+			configpath if configpath else "", 
+			args.config if args.config else ""
+		])
+	else if args.config and args.build_type:
+		readfiles = config.read([args.config, execonf(args.config, args.build_type)])
+		inviwopath = config.get("Inviwo", "executable")
+	else:
+		print_error("Regression.py needs either a either an inviwo executable using \
+			'--inviwo' or a config and build_type using '--config' and '--build_type'")
+		sys.exit(1)
 
 
 	if not os.path.exists(inviwopath):
-		if config.has_option("Inviwo", "executable") and os.path.exists(config.get("Inviwo", "executable")):
-			inviwopath = config.get("Inviwo", "executable")
-		else:	
-			print_error("Regression.py was unable to find inviwo executable at " + inviwopath)
-			sys.exit(1)
+		print_error("Regression.py was unable to find inviwo executable at " + inviwopath)
+		sys.exit(1)
 
 
 	modulePaths = []
