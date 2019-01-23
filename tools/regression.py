@@ -90,7 +90,7 @@ def makeCmdParser():
 		description="Run regression tests",
 		formatter_class=argparse.ArgumentDefaultsHelpFormatter
 	)
-	parser.add_argument('-i', '--inviwo', type=str, required=True, action="store", dest="inviwo",
+	parser.add_argument('-i', '--inviwo', type=str, action="store", dest="inviwo",
 						help='Paths to inviwo executable')
 	parser.add_argument('-c', '--config', type=str, action="store", dest="config", help='A configure file', default="")
 	parser.add_argument('-b', '--build_type', type=str, action="store", dest="build_type", 
