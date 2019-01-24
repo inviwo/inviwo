@@ -185,7 +185,7 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
     filetree_->setMinimumWidth(300);
     filetree_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     QObject::connect(filetree_, &FileTreeWidget::selectedFileChanged, this,
-                     [this, window, updateDetails](const QString &filename, bool isExample) {
+                     [this, updateDetails](const QString &filename, bool isExample) {
                          updateDetails(filename);
 
                          loadWorkspaceBtn_->disconnect();
@@ -212,7 +212,7 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
     auto horizontalLayout_2 = new QHBoxLayout();
     horizontalLayout_2->setSpacing(6);
 
-    auto createButton = [this, leftWidget](const QString &str, auto iconpath) {
+    auto createButton = [leftWidget](const QString &str, auto iconpath) {
         auto button = new QToolButton(leftWidget);
         button->setText(str);
         button->setIcon(QIcon(iconpath));
