@@ -176,6 +176,15 @@ def regression(def state, modulepaths) {
         } catch (e) {
             // Mark as unstable, if we mark as failed, the report will not be published.
             state.build.result = 'UNSTABLE'
+        } finally {
+            publishHTML([
+                allowMissing: true,
+                alwaysLinkToLastBuild: true,
+                keepAll: false,
+                reportDir: '.',
+                reportFiles: 'report.html',
+                reportName: 'Regression Report'
+            ])
         }
     }
 }
@@ -195,28 +204,18 @@ def doxygen(def state) {
         checked(state, "Doxygen") {
             sh 'ninja DOXY-Inviwo'
         }
+        publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: false,
+            reportDir: 'doc/inviwo/html',
+            reportFiles: 'index.html',
+            reportName: 'Doxygen Documentation'
+        ])
     }    
 }
 
 def publish() {
-    stage('Publish') {
-        publishHTML([
-            allowMissing: true,
-            alwaysLinkToLastBuild: true,
-            keepAll: false,
-            reportDir: 'regress',
-            reportFiles: 'report.html',
-            reportName: 'Regression Report'
-        ])
-        publishHTML([
-            allowMissing: true,
-            alwaysLinkToLastBuild: true,
-            keepAll: false,
-            reportDir: 'build/doc/inviwo/html',
-            reportFiles: 'index.html',
-            reportName: 'Doxygen Documentation'
-        ])
-    }
 }
 
 def slack(def state, channel) {

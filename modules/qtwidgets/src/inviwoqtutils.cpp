@@ -60,6 +60,14 @@ namespace inviwo {
 namespace utilqt {
 
 std::locale getCurrentStdLocale() {
+    auto warnOnce = [](auto message) {
+        static bool hasWarned = false;
+        if (!hasWarned) {
+            LogWarnCustom("getStdLocale", message);
+            hasWarned = true;
+        }
+    };
+    
     std::locale loc;
     try {
         // use the system locale provided by Qt
@@ -73,7 +81,10 @@ std::locale getCurrentStdLocale() {
 #endif
         loc = std::locale(localeName.c_str());
     } catch (std::exception& e) {
-        LogWarnCustom("getStdLocale", "Locale could not be set. " << e.what());
+        warnOnce(std::string("Locale could not be set. ") + e.what());
+        try {
+            loc = std::locale("en_US.UTF8");
+        } catch (...) {}
     }
     return loc;
 }
