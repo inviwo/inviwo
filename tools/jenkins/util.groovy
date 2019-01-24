@@ -161,17 +161,19 @@ def integrationtest(def state) {
 }
 
 def regression(def state, modulepaths) {
-    cmd('Regression Tests', 'regress', ['DISPLAY=:' + state.display]) {
+    stage('Regression Tests') {
         try {
-            checked(state, 'Regression Test') {
-                sh """
-                    python3 ../inviwo/tools/regression.py \
-                            --config ../build/pyconfig.ini \
-                            --build_type ${state.params['Build Type']}
-                            --header ${state.env.JENKINS_HOME}/inviwo-config/header.html \
-                            --output . \
-                            --modules ${modulepaths.join(' ')}
-                """
+            log(['DISPLAY=:' + state.display]) {
+                checked(state, 'Regression Test') {
+                    sh """
+                        python3  inviwo/tools/regression.py \
+                                --config build/pyconfig.ini \
+                                --build_type ${state.params['Build Type']}
+                                --header ${state.env.JENKINS_HOME}/inviwo-config/header.html \
+                                --output build/regress \
+                                --modules ${modulepaths.join(' ')}
+                    """
+                }
             }
         } catch (e) {
             // Mark as unstable, if we mark as failed, the report will not be published.
@@ -181,9 +183,9 @@ def regression(def state, modulepaths) {
                 allowMissing: true,
                 alwaysLinkToLastBuild: true,
                 keepAll: false,
-                reportDir: '.',
+                reportDir: 'build/regress',
                 reportFiles: 'report.html',
-                reportName: 'Regression Report'
+                reportName: 'Regression'
             ])
         }
     }
@@ -210,7 +212,7 @@ def doxygen(def state) {
             keepAll: false,
             reportDir: 'doc/inviwo/html',
             reportFiles: 'index.html',
-            reportName: 'Doxygen Documentation'
+            reportName: 'Doxygen'
         ])
     }    
 }
