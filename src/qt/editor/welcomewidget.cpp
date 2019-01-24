@@ -35,6 +35,8 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/properties/propertyfactory.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/filesystem.h>
 
 #include <inviwo/qt/editor/filetreewidget.h>
 #include <inviwo/qt/editor/inviwomainwindow.h>
@@ -111,10 +113,21 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
         loadWorkspaceBtn_->setEnabled(true);
 
         // extract annotations including network screenshot and canvas images from workspace
-        Deserializer d(utilqt::fromQString(filename));
-        d.registerFactory(window->getInviwoApplication()->getPropertyFactory());
         WorkspaceAnnotationsQt annotations;
-        d.deserialize("WorkspaceAnnotations", annotations);
+        bool fileBroken = false;
+        try {
+            auto istream = filesystem::ifstream(utilqt::fromQString(filename));
+            if (istream.is_open()) {
+            Deserializer d(istream, utilqt::fromQString(filename));
+            d.registerFactory(window->getInviwoApplication()->getPropertyFactory());
+            d.deserialize("WorkspaceAnnotations", annotations);
+            } else {
+                fileBroken = true;
+            }
+        } catch (Exception &e) {
+            util::log(e.getContext(), e.getMessage(), LogLevel::Warn);
+            fileBroken = "true";
+        }
 
         const auto dateformat = "yyyy-MM-dd hh:mm:ss";
         auto createdStr = utilqt::fromQString(info.created().toString(dateformat));
@@ -143,6 +156,10 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
         tb(H("Categories"), htmlEncode(annotations.getCategories()));
         tb(H("Description"), description);
 
+        if (fileBroken) {
+            body.append("h3", "Workspace file could not be opened!",
+                        {{"style", "color:firebrick;font-weight:600;margin-top:20px"}});
+        }
         auto addImage = [&body](auto item) {
             const int fixedImgHeight = 256;
 
