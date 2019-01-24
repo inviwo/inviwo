@@ -53,15 +53,15 @@ class PickingEvent;
  * vertically.
  *
  * ### Inports
- *   * __inputA__  first image
- *   * __inputB__  second image
+ *   * __inputA__  first image (left/top)
+ *   * __inputB__  second image (right/bottom)
  *
  * ### Outports
  *   * __outport__  resulting image where the two input images are split in the middle
  *
  * ### Properties
- *   * __Direction__       split direction
- *   * __Split Position__  normalized split position
+ *   * __Split Direction__       split direction, i.e. either vertical or horizontal
+ *   * __Split Position__        normalized split position [0,1]
  */
 
 /**
