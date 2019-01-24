@@ -53,7 +53,7 @@ public:
 
     enum RequireBuffer { Mandatory, Optional };
 
-    struct Requirement {
+    struct IVW_MODULE_BASEGL_API Requirement {
         Requirement(BufferType bufferType, RequireBuffer required = Mandatory,
                     const std::string& glslType = "vec4", const std::string& name = "");
         BufferType bufferType;

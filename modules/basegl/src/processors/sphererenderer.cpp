@@ -69,7 +69,8 @@ SphereRenderer::SphereRenderer()
     , forceColor_("forceColor", "Force Color", false, InvalidationLevel::InvalidResources)
     , defaultColor_("defaultColor", "Default Color", vec4(0.7f, 0.7f, 0.7f, 1.0f), vec4(0.0f),
                     vec4(1.0f))
-    , useMetaColor_("useMetaColor", "Use meta color mapping", false)
+    , useMetaColor_("useMetaColor", "Use meta color mapping", false,
+                    InvalidationLevel::InvalidResources)
     , metaColor_("metaColor", "Meta Color Mapping")
 
     , camera_("camera", "Camera")
@@ -133,6 +134,7 @@ void SphereRenderer::configureShader(Shader& shader) {
     utilgl::addDefines(shader, lighting_);
     shader[ShaderType::Vertex]->setShaderDefine("FORCE_RADIUS", forceRadius_);
     shader[ShaderType::Vertex]->setShaderDefine("FORCE_COLOR", forceColor_);
+    shader[ShaderType::Vertex]->setShaderDefine("USE_SCALARMETACOLOR", useMetaColor_);
     shader[ShaderType::Fragment]->setShaderDefine("SHADE_CLIPPED_AREA", shadeClippedArea_);
     shader[ShaderType::Fragment]->setShaderDefine("DISCARD_CLIPPED_GLYPHS",
                                                   clipMode_.get() == GlyphClippingMode::Discard);

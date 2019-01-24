@@ -42,7 +42,7 @@ flat out float sphereRadius_;
 flat out uint pickID_;
 
 void main(void) {
-#if defined(HAS_SCALARMETA) && !defined(FORCE_COLOR)
+#if defined(HAS_SCALARMETA) && defined(USE_SCALARMETACOLOR) && !defined(FORCE_COLOR)
     sphereColor_ = texture(metaColor, vec2(in_ScalarMeta, 0.5));
 #elif defined(HAS_COLOR) && !defined(FORCE_COLOR)
     sphereColor_ = in_Color;

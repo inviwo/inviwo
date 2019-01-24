@@ -42,7 +42,7 @@ flat out float vRadius_;
 flat out uint pickID_;
  
 void main() {
-#if defined(HAS_SCALARMETA) && !defined(FORCE_COLOR)
+#if defined(HAS_SCALARMETA) && defined(USE_SCALARMETACOLOR) && !defined(FORCE_COLOR)
     vColor_ = texture(metaColor, vec2(in_ScalarMeta, 0.5));
 #elif defined(HAS_COLOR) && !defined(FORCE_COLOR)
     vColor_ = in_Color;
