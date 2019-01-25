@@ -170,7 +170,6 @@ def regression(def state, modulepaths) {
                             --build_type ${state.params['Build Type']} \
                             --header ${state.env.JENKINS_HOME}/inviwo-config/header.html \
                             --output . \
-                            --slice 1:3 \
                             --modules ${modulepaths.join(' ')}
                 """        
             }
