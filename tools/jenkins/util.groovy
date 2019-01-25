@@ -185,7 +185,7 @@ def regression(def state, modulepaths) {
         keepAll: false,
         reportDir: 'regress',
         reportFiles: 'report.html',
-        reportName: 'Regression Report'
+        reportName: 'Regression'
     ])
 }
 
