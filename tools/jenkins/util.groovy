@@ -163,16 +163,19 @@ def integrationtest(def state) {
 def regression(def state, modulepaths) {
     stage('Regression Tests') {
         try {
-            log(['DISPLAY=:' + state.display]) {
-                checked(state, 'Regression Test') {
-                    sh """
-                        python3  inviwo/tools/regression.py \
-                                --config build/pyconfig.ini \
-                                --build_type ${state.params['Build Type']}
-                                --header ${state.env.JENKINS_HOME}/inviwo-config/header.html \
-                                --output build/regress \
-                                --modules ${modulepaths.join(' ')}
-                    """
+            dir('regress') {
+                log(['DISPLAY=:' + state.display]) {
+                    checked(state, 'Regression Test') {
+                        sh """
+                            python3 ../inviwo/tools/regression.py \
+                                    --config ../build/pyconfig.ini \
+                                    --build_type ${state.params['Build Type']}
+                                    --header ${state.env.JENKINS_HOME}/inviwo-config/header.html \
+                                    --output . \
+                                    --slice 1:3
+                                    --modules ${modulepaths.join(' ')}
+                        """
+                    }
                 }
             }
         } catch (e) {
@@ -183,7 +186,7 @@ def regression(def state, modulepaths) {
                 allowMissing: true,
                 alwaysLinkToLastBuild: true,
                 keepAll: false,
-                reportDir: 'build/regress',
+                reportDir: 'regress',
                 reportFiles: 'report.html',
                 reportName: 'Regression'
             ])

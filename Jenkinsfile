@@ -50,7 +50,7 @@ node {
         //util.integrationtest(state)        
         util.regression(state, ["${env.WORKSPACE}/inviwo/modules"])
         util.copyright(state)    
-        util.publish()
+        util.doxygen(state)
 
         state.build.result = 'SUCCESS'
     } catch (e) {
