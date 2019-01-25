@@ -33,16 +33,17 @@ uniform vec2 p_screen; // plane pos. in screen space
 uniform vec3 n; // plane's normal
 uniform vec3 u; // plane's up
 uniform vec3 r; // plane's right
-uniform float aspect_ratio = 1.0; // aspect ratio of screen
+uniform float screen_aspect = 1.0; // aspect ratio of screen
 uniform float thickness_offset = 0.0; // plane's offset along normal
+uniform float slice_aspect = 1.0;
+uniform float zoom = 1.0;
 
 in vec2 uv; // Viewport coordinates in [0,1]
 
 void main() {
-    const vec2 uv_offset = uv - p_screen;
+    const vec2 uv_offset = (uv - p_screen) * zoom;
 
-    // TODO: add aspect ratio of screen and dimensions of volume to correct for distortion
-    const vec3 volume_coord = p + uv_offset.x * r + aspect_ratio * uv_offset.y * u + thickness_offset * n;
+    const vec3 volume_coord = p + uv_offset.x * r * slice_aspect + 1./screen_aspect * uv_offset.y * u + thickness_offset * n;
 
     FragData0 = vec4(volume_coord, 1.0);
 }

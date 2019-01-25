@@ -88,6 +88,8 @@ private:
     FloatVec2Property cursorScreenPos_;
     FloatVec2Property cursorScreenPosOld_;
 
+    FloatProperty zoom_;
+
     Shader shader_;
 };
 

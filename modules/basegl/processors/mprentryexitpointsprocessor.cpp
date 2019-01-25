@@ -59,6 +59,7 @@ MPREntryExitPoints::MPREntryExitPoints()
     , u_prime_("uPrime", "u'", u_.get(), vec3(-1.0f), vec3(1.0f))
     , cursorScreenPos_("cursorScreenPos", "Cursor Screen Pos", vec2(0.5f), vec2(0.0f), vec2(1.0f))
     , cursorScreenPosOld_("cursorScreenPosOld", "Cursor Screen Pos Old", cursorScreenPos_.get(), vec2(0.0f), vec2(1.0f))
+    , zoom_("zoom", "Zoom", 1.0f, 0.1f, 10.0f)
     , shader_("uv_pass_through.vert", "mpr_entry_exit_points.frag") {
 
     addPort(volumeInport_);
@@ -102,40 +103,70 @@ MPREntryExitPoints::MPREntryExitPoints()
     addProperty(cursorScreenPos_);
     addProperty(cursorScreenPosOld_);
 
+    addProperty(zoom_);
+
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+
+    volumeInport_.onChange([this]() {
+
+        if (volumeInport_.hasData()) {
+
+            // Calc length of up- and right-segments inside the volume to get the slice's width and height
+            // (in volume coords, exploiting that volume coords are in [0,1]^3)
+            const auto n_prime_normalized = glm::normalize(n_prime_.get());
+            const auto u_prime_normalized = glm::normalize(u_prime_.get());
+            const auto r_prime_normalized = glm::normalize(cross(n_prime_normalized, u_prime_normalized));
+            const auto volume = volumeInport_.getData();
+
+            LogInfo("r_prime_normalized=" << r_prime_normalized); //TODO called two times with diff values!?
+
+        }
+    });
 }
 
 MPREntryExitPoints::~MPREntryExitPoints() {}
 
 void MPREntryExitPoints::process() {
-    auto const quad = util::makeBuffer<vec2>({
-        { -1.0f, -1.0f },{ 1.0f, -1.0f },{ -1.0f, 1.0f },{ 1.0f, 1.0f } 
-    });
 
-    // Construct coordinate cross for this plane
-    const auto n_prime_normalized = glm::normalize(n_prime_.get());
-    const auto u_prime_normalized = glm::normalize(u_prime_.get());
-    const auto r_prime_normalized = glm::normalize(cross(n_prime_normalized, u_prime_normalized));
-
-    // generate entry points
-    utilgl::activateAndClearTarget(*entryPort_.getEditableData().get(), ImageType::ColorOnly);
     shader_.activate();
+
+    const auto pxdims = entryPort_.getDimensions();
+    shader_.setUniform("screen_aspect", static_cast<float>(pxdims.x) / static_cast<float>(pxdims.y));
 
     shader_.setUniform("p", p_.get()); // plane pos. in volume space
     shader_.setUniform("p_screen", cursorScreenPos_.get()); // plane pos. in screen space
+    shader_.setUniform("zoom", 1.0f / zoom_.get());
+
+    // Construct coordinate cross for this plane
+    const auto n_prime_normalized = normalize(n_prime_.get());
+    const auto u_prime_normalized = normalize(u_prime_.get());
+    const auto r_prime_normalized = normalize(cross(n_prime_normalized, u_prime_normalized));
     shader_.setUniform("n", n_prime_normalized); // plane's normal
     shader_.setUniform("u", u_prime_normalized); // plane's up
     shader_.setUniform("r", r_prime_normalized); // plane's right
-    shader_.setUniform("thickness_offset", offset0_.get()); // plane's offset along normal, // note that setUniform does not work when passing a literal 0
 
+    // Get volume slice metrics
+    const auto volume = volumeInport_.getData();
+    const auto reldim = normalize(inverse(volume->getBasis()) * vec3(volume->getDimensions()));
+    const auto p = p_.get();
+    const auto u = u_prime_normalized * reldim;
+    const auto r = r_prime_normalized * reldim;
+    shader_.setUniform("slice_aspect", length(u) / length(r));
+
+    auto const quad = util::makeBuffer<vec2>({ { -1.0f, -1.0f },{ 1.0f, -1.0f },{ -1.0f, 1.0f },{ 1.0f, 1.0f } });
     auto quadGL = quad->getRepresentation<BufferGL>();
     quadGL->enable();
+
+    // generate entry points
+    shader_.setUniform("thickness_offset", offset0_.get()); // plane's offset along normal
+    utilgl::activateAndClearTarget(*entryPort_.getEditableData().get(), ImageType::ColorOnly);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
     // generate exit points
-    utilgl::activateAndClearTarget(*exitPort_.getEditableData().get(), ImageType::ColorOnly);
     shader_.setUniform("thickness_offset", offset1_.get());
+    utilgl::activateAndClearTarget(*exitPort_.getEditableData().get(), ImageType::ColorOnly);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
     quadGL->disable();
 }
 
