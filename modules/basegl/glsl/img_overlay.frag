@@ -88,5 +88,5 @@ void main() {
 #endif
 
     PickingData = mix(texture(picking_, texCoord), vec4(0.0), bvec4(border));
-    gl_FragDepth = mix(texture(depth_, texCoord).r, 1.0, bvec4(border));
+    gl_FragDepth = mix(texture(depth_, texCoord).r, 1.0, border);
 }
