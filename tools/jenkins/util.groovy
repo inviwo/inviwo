@@ -169,10 +169,10 @@ def regression(def state, modulepaths) {
                         sh """
                             python3 ../inviwo/tools/regression.py \
                                     --config ../build/pyconfig.ini \
-                                    --build_type ${state.params['Build Type']}
+                                    --build_type ${state.params['Build Type']} \
                                     --header ${state.env.JENKINS_HOME}/inviwo-config/header.html \
                                     --output . \
-                                    --slice 1:3
+                                    --slice 1:3 \
                                     --modules ${modulepaths.join(' ')}
                         """
                     }
