@@ -161,37 +161,32 @@ def integrationtest(def state) {
 }
 
 def regression(def state, modulepaths) {
-    stage('Regression Tests') {
-        try {
-            dir('regress') {
-                log(['DISPLAY=:' + state.display]) {
-                    checked(state, 'Regression Test') {
-                        sh """
-                            python3 ../inviwo/tools/regression.py \
-                                    --config ../build/pyconfig.ini \
-                                    --build_type ${state.params['Build Type']} \
-                                    --header ${state.env.JENKINS_HOME}/inviwo-config/header.html \
-                                    --output . \
-                                    --slice 1:3 \
-                                    --modules ${modulepaths.join(' ')}
-                        """
-                    }
-                }
+    try {
+        cmd('Regression Tests', 'regress', ['DISPLAY=:' + state.display]) {
+            checked(state, 'Regression Test') {
+                sh """
+                    python3 ../inviwo/tools/regression.py \
+                            --config ../build/pyconfig.ini \
+                            --build_type ${state.params['Build Type']} \
+                            --header ${state.env.JENKINS_HOME}/inviwo-config/header.html \
+                            --output . \
+                            --slice 1:3 \
+                            --modules ${modulepaths.join(' ')}
+                """        
             }
-        } catch (e) {
-            // Mark as unstable, if we mark as failed, the report will not be published.
-            state.build.result = 'UNSTABLE'
-        } finally {
-            publishHTML([
-                allowMissing: true,
-                alwaysLinkToLastBuild: true,
-                keepAll: false,
-                reportDir: 'regress',
-                reportFiles: 'report.html',
-                reportName: 'Regression'
-            ])
         }
-    }
+    } catch (e) {
+        // Mark as unstable, if we mark as failed, the report will not be published.
+        state.build.result = 'UNSTABLE'
+    } 
+    publishHTML([
+        allowMissing: true,
+        alwaysLinkToLastBuild: true,
+        keepAll: false,
+        reportDir: 'regress',
+        reportFiles: 'report.html',
+        reportName: 'Regression Report'
+    ])
 }
 
 def copyright(def state, extraPaths = []) {
