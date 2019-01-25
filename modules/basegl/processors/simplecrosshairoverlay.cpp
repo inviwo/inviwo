@@ -52,7 +52,12 @@ SimpleCrosshairOverlay::SimpleCrosshairOverlay()
     , mouseEvent_("mouseEvent", "Mouse Event", [this](Event* e) { updateCrosshair(e); },
                   MouseButton::Left, MouseState::Press | MouseState::Move | MouseState::Release)
     , interactionState_ (InteractionState::NONE)
-	, lastMousePos_("lastMousePos", "Last Mouse Position", vec2(0.0f), vec2(-10.0f), vec2(10.0f)) {
+	, lastMousePos_("lastMousePos", "Last Mouse Position", vec2(0.0f), vec2(-10.0f), vec2(10.0f))
+    , color1_("color1", "Color 1", vec4(1), vec4(0), vec4(1))
+    , color2_("color2", "Color 2", vec4(1), vec4(0), vec4(1))
+    , color3_("color3", "Color 3", vec4(1), vec4(0), vec4(1))
+    , thickness1_("thickness1", "Thickness 1", 8u, 0u, 20u)
+    , thickness2_("thickness2", "Thickness 2", 8u, 0u, 20u) {
 
     imageIn_.setOptional(true);
     addPort(imageIn_);
@@ -65,10 +70,66 @@ SimpleCrosshairOverlay::SimpleCrosshairOverlay()
 	mouseEvent_.setVisible(false);
     addProperty(mouseEvent_);
     addProperty(lastMousePos_);
+
+    addProperty(color1_);
+    addProperty(color2_);
+    addProperty(color3_);
+
+    addProperty(thickness1_);
+    addProperty(thickness2_);
 }
 
 void SimpleCrosshairOverlay::process() {
-	imageOut_.setData(imageIn_.getData());
+
+    const auto pxthickness = thickness1_;
+    const auto pxthicknessOutline = thickness2_;
+
+    const auto pxdims = imageOut_.getDimensions();
+    const auto thickness = 1.f / vec2(pxdims) * static_cast<float>(pxthickness);
+    const auto thicknessOutline = 2.f / vec2(pxdims) * static_cast<float>(pxthicknessOutline);
+    const auto pos = cursorPos_.get() * 2.0f - 1.0f;
+
+    // Create crosshair in NDC with double screen size so that endings are never visible
+    const auto crosshair = std::make_shared<Mesh>(DrawType::Triangles, ConnectivityType::None);
+    crosshair->addBuffer(BufferType::PositionAttrib, util::makeBuffer<vec2>({
+        // horizontal
+        vec2(2.f, pos.y + thickness.y), vec2(-2.f, pos.y + thickness.y), vec2(-2.f, pos.y - thickness.y), // upper triangle (CCW)
+        vec2(2.f, pos.y - thickness.y), vec2(2.f, pos.y + thickness.y), vec2(-2.f, pos.y - thickness.y), // lower triangle
+        // vertical
+        vec2(pos.x + thickness.x, 2.f), vec2(pos.x - thickness.x, 2.f), vec2(pos.x - thickness.x, -2.f), // left triangle
+        vec2(pos.x + thickness.x, -2.f), vec2(pos.x + thickness.x, 2.f), vec2(pos.x - thickness.x, -2.f) // right triangle
+    }));
+    crosshair->addBuffer(BufferType::ColorAttrib, util::makeBuffer<vec4>(std::vector<vec4>{
+        color1_, color1_, color1_, color1_, color1_, color1_,
+        color2_, color2_, color2_, color2_, color2_, color2_
+    }));
+
+    // Create viewport outline as useful indicator when having multiple views, e.g. in MPR
+    const auto outline = std::make_shared<Mesh>(DrawType::Triangles, ConnectivityType::None);
+    outline->addBuffer(BufferType::PositionAttrib, util::makeBuffer<vec2>({
+        // top
+        vec2(1.f, 1.f), vec2(-1.f, 1.f), vec2(-1.f, 1.f - thicknessOutline.y), // upper triangle (CCW)
+        vec2(-1.f, 1.f - thicknessOutline.y), vec2(1.f, 1.f - thicknessOutline.y), vec2(1.f, 1.f), // lower triangle
+        // bottom
+        vec2(1.f, -1.f), vec2(1.f, -1.f + thicknessOutline.y), vec2(-1.f, -1.f + thicknessOutline.y), // upper triangle
+        vec2(-1.f, -1.f), vec2(1.f, -1.f), vec2(-1.f, -1.f + thicknessOutline.y), // lower triangle
+        // left
+        vec2(-1.f, 1.f), vec2(-1.f + thicknessOutline.x, -1.f), vec2(-1.f, -1.f), // left triangle
+        vec2(-1.f + thicknessOutline.x, 1.f), vec2(-1.f + thicknessOutline.x, -1.f), vec2(-1.f, 1.f), // right triangle
+        // right
+        vec2(1.f - thicknessOutline.x, 1.f), vec2(1.f, -1.f), vec2(1.f - thicknessOutline.x, -1.f), // left triangle
+        vec2(1.f, 1.f), vec2(1.f, -1.f), vec2(1.f - thicknessOutline.x, 1.f) // right triangle
+    }));
+    outline->addBuffer(BufferType::ColorAttrib, util::makeBuffer<vec4>(std::vector<vec4>(24, color3_)));
+
+    // Render mesh over input image and copy to output port
+    utilgl::activateTargetAndCopySource(imageOut_, imageIn_, ImageType::ColorDepth);
+    Shader shader("standard.vert", "standard.frag");
+    shader.activate();
+    utilgl::DepthFuncState depth(GL_ALWAYS);
+    MeshDrawerGL(crosshair.get()).draw();
+    MeshDrawerGL(outline.get()).draw();
+    shader.deactivate();
 }
 
 void SimpleCrosshairOverlay::updateCrosshair(Event* e) {
