@@ -76,10 +76,10 @@ def main():
                 imgcount += 1
                 print(testName)
                 print_error("   {0.image} has wrong size: {0.test_size} != {0.ref_size}".format(test))
-            elif test.difference < args.max and test.difference > args.min and test.difference > test.max_difference:
+            elif test.difference < args.max and test.difference > args.min and test.difference > 0.0:
                 imgcount += 1
                 print_error(testName)
-                print_warn("   {0.image:30} has differences {0.difference:<09.4} > {0.max_difference:<09.4}".format(test))
+                print_warn("   {0.image:30} Diff: {0.difference:<09.4}%, Max: {0.max_difference:<09.4}, #Pixels: {0.different_pixels}".format(test))
                 src = args.job + "/" + (Path('Regression') / testdir / 'imgtest' / test.image).as_posix()
                 dst = localdir / test.image
                 print("   src: {}".format(src))
