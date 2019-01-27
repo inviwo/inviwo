@@ -29,7 +29,7 @@ for filename in os.listdir(path):
     if filename in PILNotWorking:
         continue;
     if filename.endswith(".png"):
-        start = time.clock()
+        start = time.perf_counter()
         imgsrc.imageFileName.value = path + filename
 
         size = imgsrc.imageDimension_.value
@@ -42,7 +42,7 @@ for filename in os.listdir(path):
         canvas.inputSize.customInputDimensions.maxValue = size
         canvas.inputSize.customInputDimensions.value = size
         ivw.regression.saveCanvas(canvas, filename[0:-4])
-        end = time.clock()
+        end = time.perf_counter()
         m.addFrequency(filename+'-time', end - start );
 
 m.save()
