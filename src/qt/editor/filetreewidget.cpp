@@ -242,7 +242,9 @@ void FileTreeWidget::updateRecentWorkspaces(const QStringList &recentFiles) {
     }
     QList<QTreeWidgetItem *> items;
     for (auto &elem : recentFiles) {
-        items.append(createFileEntry(fileIcon_, utilqt::fromQString(elem)));
+        if (filesystem::fileExists(utilqt::fromQString(elem))) {
+            items.append(createFileEntry(fileIcon_, utilqt::fromQString(elem)));
+        }
     }
     setUpdatesEnabled(false);
     removeChildren(recentWorkspaceItem_);

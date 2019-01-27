@@ -54,8 +54,7 @@ void WorkspaceAnnotations::Base64Image::deserialize(Deserializer &d) {
     d.deserialize("base64", base64png);
 }
 
-WorkspaceAnnotations::WorkspaceAnnotations()
-    : WorkspaceAnnotations(ImageVector{}) {}
+WorkspaceAnnotations::WorkspaceAnnotations() : WorkspaceAnnotations(ImageVector{}) {}
 
 WorkspaceAnnotations::WorkspaceAnnotations(const ImageVector &canvasImages)
     : title_{"title", "Title", ""}
@@ -72,13 +71,6 @@ WorkspaceAnnotations::WorkspaceAnnotations(const ImageVector &canvasImages)
     addProperty(categories_);
     addProperty(description_);
 }
-
-void WorkspaceAnnotations::addProperty(Property *property, bool owner) {
-    PropertyOwner::addProperty(property, owner);
-    property->onChange([this]() {});
-}
-
-void WorkspaceAnnotations::addProperty(Property &property) { addProperty(&property, false); }
 
 void WorkspaceAnnotations::serialize(Serializer &s) const {
     try {

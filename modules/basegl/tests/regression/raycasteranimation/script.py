@@ -23,10 +23,10 @@ with ivw.camera.Camera(network.EntryExitPoints.camera, lookfrom = vec3(0,4,0), l
         canvas.size=ivec2(size,size)
         ivw.regression.saveCanvas(canvas, "CanvasGL-"+str(size) + "x" +str(size))
 
-        start = time.clock()
+        start = time.perf_counter()
         for step in c.rotate(math.pi/steps, steps, vec3(0,1,0)):
             inviwoqt.update()
-        end = time.clock()
+        end = time.perf_counter()
         frametime = (end - start) / steps
         fps = 1.0 / frametime
     

@@ -161,22 +161,31 @@ def integrationtest(def state) {
 }
 
 def regression(def state, modulepaths) {
-    cmd('Regression Tests', 'regress', ['DISPLAY=:' + state.display]) {
-        try {
+    try {
+        cmd('Regression Tests', 'regress', ['DISPLAY=:' + state.display]) {
             checked(state, 'Regression Test') {
                 sh """
                     python3 ../inviwo/tools/regression.py \
-                            --inviwo ../build/bin/inviwo \
+                            --config ../build/pyconfig.ini \
+                            --build_type ${state.params['Build Type']} \
                             --header ${state.env.JENKINS_HOME}/inviwo-config/header.html \
                             --output . \
                             --modules ${modulepaths.join(' ')}
-                """
+                """        
             }
-        } catch (e) {
-            // Mark as unstable, if we mark as failed, the report will not be published.
-            state.build.result = 'UNSTABLE'
         }
-    }
+    } catch (e) {
+        // Mark as unstable, if we mark as failed, the report will not be published.
+        state.build.result = 'UNSTABLE'
+    } 
+    publishHTML([
+        allowMissing: true,
+        alwaysLinkToLastBuild: true,
+        keepAll: false,
+        reportDir: 'regress',
+        reportFiles: 'report.html',
+        reportName: 'Regression'
+    ])
 }
 
 def copyright(def state, extraPaths = []) {
@@ -194,28 +203,18 @@ def doxygen(def state) {
         checked(state, "Doxygen") {
             sh 'ninja DOXY-Inviwo'
         }
+        publishHTML([
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: false,
+            reportDir: 'doc/inviwo/html',
+            reportFiles: 'index.html',
+            reportName: 'Doxygen'
+        ])
     }    
 }
 
 def publish() {
-    stage('Publish') {
-        publishHTML([
-            allowMissing: true,
-            alwaysLinkToLastBuild: true,
-            keepAll: false,
-            reportDir: 'regress',
-            reportFiles: 'report.html',
-            reportName: 'Regression Report'
-        ])
-        publishHTML([
-            allowMissing: true,
-            alwaysLinkToLastBuild: true,
-            keepAll: false,
-            reportDir: 'build/doc/inviwo/html',
-            reportFiles: 'index.html',
-            reportName: 'Doxygen Documentation'
-        ])
-    }
 }
 
 def slack(def state, channel) {
@@ -266,7 +265,7 @@ Map defaultCMakeOptions(String buildType) {
         "IVW_UNITTESTS" : "ON",
         "IVW_UNITTESTS_RUN_ON_BUILD" : "OFF",
         "IVW_INTEGRATION_TESTS" : "ON",
-        "IVW_RUNTIME_MODULE_LOADING" : "ON"
+        "IVW_RUNTIME_MODULE_LOADING" : "OFF"
     ]
 }
 Map ccacheOption() {

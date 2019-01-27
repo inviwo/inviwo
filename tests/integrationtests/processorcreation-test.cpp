@@ -71,8 +71,8 @@ protected:
 
     ProcessorNetwork* network_;
     ProcessorFactory* factory_;
-};
-
+};  
+    
 TEST_P(ProcessorCreationTests, ProcesorCreateAndResetAndAddToNetwork) {
     LogErrorCheck checklog;
     auto s = factory_->create(GetParam());

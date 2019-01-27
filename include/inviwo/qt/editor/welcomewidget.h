@@ -67,7 +67,6 @@ private:
     FileTreeWidget *filetree_;
     QTextEdit *details_;
     QTextEdit *changelog_;
-    QTabWidget *previewImages_;
     QToolButton *loadWorkspaceBtn_;
 };
 
