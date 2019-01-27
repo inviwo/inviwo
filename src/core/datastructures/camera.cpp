@@ -142,7 +142,9 @@ void PerspectiveCamera::configureProperties(CompositeProperty* comp) {
         comp->addProperty(fov, true);
     }
 
-    fov->onChange([this, fov]() { setFovy(fov->get()); });
+    fovCallbackHolder_= fov->onChangeScoped([this, fov]() {
+        setFovy(fov->get());
+    });
 }
 
 bool operator==(const PerspectiveCamera& lhs, const PerspectiveCamera& rhs) {
@@ -193,7 +195,7 @@ void OrthographicCamera::configureProperties(CompositeProperty* comp) {
         widthProp->setSerializationMode(PropertySerializationMode::All);
     }
 
-    widthProp->onChange([this, widthProp]() {
+    widthCallbackHolder_ = widthProp->onChangeScoped([this, widthProp]() {
         // Left, right, bottom, top view volume
         const float oldWidth{frustum_.y - frustum_.x};
         const float oldHeight{frustum_.w - frustum_.z};
@@ -272,7 +274,7 @@ void SkewedPerspectiveCamera::configureProperties(CompositeProperty* comp) {
         widthProp->setSerializationMode(PropertySerializationMode::All);
     }
 
-    widthProp->onChange([this, widthProp]() {
+    widthCallbackHolder_ = widthProp->onChangeScoped([this, widthProp]() {
         // Left, right, bottom, top view volume
         const float oldWidth{frustum_.y - frustum_.x};
         const float oldHeight{frustum_.w - frustum_.z};
@@ -292,7 +294,7 @@ void SkewedPerspectiveCamera::configureProperties(CompositeProperty* comp) {
         offsetProp->setSerializationMode(PropertySerializationMode::All);
     }
 
-    offsetProp->onChange([this, offsetProp, widthProp]() {
+    offsetCallbackHolder_ = offsetProp->onChangeScoped([this, offsetProp, widthProp]() {
         const vec2 offset = offsetProp->get();
         const float oldWidth{frustum_.y - frustum_.x};
         const float oldHeight{frustum_.w - frustum_.z};
