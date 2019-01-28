@@ -37,6 +37,7 @@
 #include <inviwo/core/properties/propertyfactory.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/network/workspacemanager.h>
 
 #include <inviwo/qt/editor/filetreewidget.h>
 #include <inviwo/qt/editor/inviwomainwindow.h>
@@ -118,9 +119,11 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
         try {
             auto istream = filesystem::ifstream(utilqt::fromQString(filename));
             if (istream.is_open()) {
-            Deserializer d(istream, utilqt::fromQString(filename));
-            d.registerFactory(window->getInviwoApplication()->getPropertyFactory());
-            d.deserialize("WorkspaceAnnotations", annotations);
+                auto d = mainWindow_->getInviwoApplication()
+                             ->getWorkspaceManager()
+                             ->createWorkspaceDeserializer(istream, utilqt::fromQString(filename));
+                d.setExceptionHandler([](const ExceptionContext) {});
+                d.deserialize("WorkspaceAnnotations", annotations);
             } else {
                 fileBroken = true;
             }
