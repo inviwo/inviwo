@@ -177,14 +177,14 @@ struct UniformSetter<mat4> {
 
 // specializations for std::vector and std::array for multiple values
 template <typename T>
-struct UniformSetter<std::vector<T> > {
+struct UniformSetter<std::vector<T>> {
     static void set(GLint loc, const std::vector<T>& data) {
         UniformSetter<T>::set(loc, static_cast<GLsizei>(data.size()), data.data());
     }
 };
 
 template <typename T, std::size_t N>
-struct UniformSetter<std::array<T, N> > {
+struct UniformSetter<std::array<T, N>> {
     static void set(GLint loc, const std::array<T, N>& data) {
         UniformSetter<T>::set(loc, N, data.data());
     }
@@ -192,7 +192,7 @@ struct UniformSetter<std::array<T, N> > {
 
 // specializations for template properties
 template <typename T>
-struct UniformSetter<OrdinalProperty<T> > {
+struct UniformSetter<OrdinalProperty<T>> {
     static void set(GLint loc, const OrdinalProperty<T>& property) {
         UniformSetter<T>::set(loc, property.get());
     }
@@ -234,7 +234,7 @@ struct UniformSetter<bvec4> {
 };
 
 template <std::size_t N>
-struct UniformSetter<std::array<bool, N> > {
+struct UniformSetter<std::array<bool, N>> {
     static void set(GLint loc, const std::array<bool, N>& data) {
         std::array<int, N> values;
         for (std::size_t i = 0; i < N; ++i) {

@@ -49,10 +49,7 @@ NumPyVolume::NumPyVolume()
     , size_("size", "Size", size3_t(64), size3_t(32), size3_t(512))
     , script_(InviwoApplication::getPtr()->getModuleByType<Python3Module>()->getPath(
                   ModulePath::Scripts) +
-              "/numpyvolumeprocessor.py")
-
-{
-
+              "/numpyvolumeprocessor.py") {
     addPort(outport_);
     addProperty(size_);
 
@@ -61,13 +58,9 @@ NumPyVolume::NumPyVolume()
 
 void NumPyVolume::process() {
     auto vol = std::make_shared<Volume>(size_.get(), DataFloat32::get());
-
     auto volObj = pybind11::cast(vol.get());
-
     script_.run({{"vol", volObj}});
-
     vol->dataMap_.dataRange = dvec2(0, 1);
-
     outport_.setData(vol);
 }
 

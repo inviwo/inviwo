@@ -76,7 +76,9 @@ class ImageCompare:
         elif channels == 4:
             (a,b,c,d) = self.diffImage.split()
             normImage = ImageMath.eval("convert((a+b+c+d), 'L')" , a=a, b=b, c=c, d=d)
-
+        
+        self.maskImage = normImage.point(lambda p: 0 if p > 0 else 255, 'L')
+        
         stats = ImageStat.Stat(normImage)
         self.maxDifference = stats.extrema[0][1] / (channels*255)
         self.difference = (sum(stats.sum)/(255*channels)) * 100.0 / numPixels
@@ -85,7 +87,6 @@ class ImageCompare:
             self.diffImage = self.diffImage.point(lambda i : i * (enhance))
         self.diffImage = ImageChops.invert(self.diffImage)
 
-        self.maskImage = self.diffImage.convert('1')
         self.numberOfDifferentPixels = int(numPixels - ImageStat.Stat(self.maskImage).sum[0] / 255)
 
     def saveDifferenceImage(self, difffile):

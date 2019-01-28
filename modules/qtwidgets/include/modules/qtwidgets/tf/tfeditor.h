@@ -173,7 +173,7 @@ private:
     bool mouseDoubleClick_ = false;
     DataMapper dataMap_;
 
-    std::vector<std::vector<TFEditorPrimitive*> > groups_;
+    std::vector<std::vector<TFEditorPrimitive*>> groups_;
     int moveMode_;
 
     bool selectNewPrimitives_;

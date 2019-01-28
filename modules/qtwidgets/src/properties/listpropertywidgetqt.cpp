@@ -121,7 +121,7 @@ std::unique_ptr<QMenu> ListPropertyWidgetQt::getContextMenu() {
                     auto addAction =
                         addItemMenu->addAction(utilqt::toQString(item.second()->getDisplayName()));
                     connect(addAction, &QAction::triggered, this,
-                            [ this, index = item.first() ]() { addNewItem(index); });
+                            [this, index = item.first()]() { addNewItem(index); });
                 }
             } else {  // no prefab objects available
                 auto action = addItemMenu->addAction("No templates available");

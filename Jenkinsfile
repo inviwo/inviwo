@@ -9,27 +9,54 @@ node {
     def rootDir = pwd()
     def util = load "${rootDir}/inviwo/tools/jenkins/util.groovy"      
     properties(util.defaultProperties())
-    def display = 0       
+
+    List modulePaths = []
+    List on = []
+    List off = ["ABUFFERGL" , "DISCRETEDATA", "HDF5"]
+
+    Map state = [
+        env: env,
+        params: params, 
+        build: currentBuild, 
+        errors: [],
+        display: 0,
+        addLabel: {label -> 
+            if (env.CHANGE_ID) {
+                if (! label in pullRequest.labels) {
+                    pullRequest.addLabels([label])
+                }
+            }
+        },
+        removeLabel: {label -> 
+            if (env.CHANGE_ID) {
+                if (label in pullRequest.labels) {
+                    pullRequest.removeLabel([label])
+                }
+            }
+        }
+    ]
 
     try {
-        def external = []
-        def extraOn = []
-        def off = ["ABUFFERGL" , "DISCRETEDATA", "GLFW", "HDF5"]
+        util.buildStandard(
+            state: state,
+            modulePaths: modulePaths, 
+            onModules: on,  
+            offModules: off
+        )
+        util.filterfiles()
+        util.format(state)
+        util.warn(state)
+        util.unittest(state)
+        util.integrationtest(state)        
+        util.regression(state, ["${env.WORKSPACE}/inviwo/modules"])
+        util.copyright(state)    
+        util.doxygen(state)
 
-        util.buildStandard(params, external, extraOn, off)
-        util.warn()
-        util.unittest()
-        util.integrationtest()        
-        util.regression(currentBuild, env)
-        util.copyright()
-        util.doxygen()       
-        util.publish()
-
-        currentBuild.result = 'SUCCESS'
+        state.build.result = 'SUCCESS'
     } catch (e) {
-        currentBuild.result = 'FAILURE'
+        state.build.result = 'FAILURE'
         throw e
     } finally {
-        util.slack(currentBuild, env)
+        util.slack(state, "#jenkins-branch-pr")
     }
 }

@@ -164,7 +164,6 @@ protected:
                         EXPECT_EQ(expected++, (int)util::glmcomp(v, i));
                     }
                 }
-
             });
 
             status = true;
@@ -202,7 +201,6 @@ protected:
                         EXPECT_EQ(expected++, (int)util::glmcomp(v, i));
                     }
                 }
-
             });
 
             status = true;

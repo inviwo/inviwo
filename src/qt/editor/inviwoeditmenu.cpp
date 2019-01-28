@@ -74,7 +74,7 @@ InviwoEditMenu::InviwoEditMenu(InviwoMainWindow* win) : QMenu(tr("&Edit"), win) 
     for (auto& action : actions_) {
         action.second->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         action.second->setEnabled(true);
-        connect(action.second, &QAction::triggered, this, [ this, type = action.first ]() {
+        connect(action.second, &QAction::triggered, this, [this, type = action.first]() {
             if (auto item = getFocusItem()) {
                 item->invoke(type);
             }

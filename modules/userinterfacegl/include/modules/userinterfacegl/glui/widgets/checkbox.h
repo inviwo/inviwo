@@ -48,7 +48,7 @@ class Renderer;
  * \brief glui::Element representing a checkbox with the label positioned on the right side
  */
 class IVW_MODULE_USERINTERFACEGL_API CheckBox : public Element {
-public:    
+public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 

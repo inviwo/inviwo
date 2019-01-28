@@ -148,6 +148,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/network/processornetworkevaluationobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/processornetworkevaluator.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/processornetworkobserver.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/network/workspaceannotations.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/workspacemanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/workspaceutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/bufferport.h
@@ -442,6 +443,7 @@ set(SOURCE_FILES
     network/processornetworkevaluationobserver.cpp
     network/processornetworkevaluator.cpp
     network/processornetworkobserver.cpp
+    network/workspaceannotations.cpp
     network/workspacemanager.cpp
     network/workspaceutils.cpp
     ports/imageport.cpp

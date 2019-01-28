@@ -1,6 +1,11 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
-## 2018-12-18
+## 2019-01-17 Get Started and Workspace Annotations
+Get Started screen provides an overview over recently used workspaces and available examples next to the latest changes.
+
+Inviwo workspaces now also feature annotations like title, author, tags, and a description stored along with the network. The annotation widget allows to edit the annotations in the Qt application (accessible via the "View" menu). A default author for new workspaces can be specified in the System Settings of Inviwo.
+
+## 2018-12-18 Transfer Function Import/Export
 Extended context menu of transfer function properties. It is now possible to import and export TFs directly in the property widget. Transfer functions located in `data/transferfunctions/` are accessible as TF presets in the context menu of both TF editor and TF property.
 
 ## 2018-11-22
@@ -17,7 +22,7 @@ except for files under `/ext`, `/tests`, or paths excluded be the given filters.
 ## 2018-11-14
 Added an option to control if a module should be on by default, and remove the old global setting.
 To enable the module by default add the following to the module `depends.cmake` file:
-```
+```c++
     set(EnableByDefault ON)
 ```
 
@@ -38,6 +43,7 @@ Which means that for the module loading in apps
 ```c++
     #include <moduleregistration.h>
 ```
+
 needs to be changed to 
 ```c++
     #include <inviwo/core/moduleregistration.h>
@@ -51,7 +57,7 @@ New Module structure. We have introduced a new module structure where we separat
 and sources goes in the source folder:
 ```
     .../{module name}/src/
- ```
+```
 `{module name}` it the lower case name of the module, `{organization}` default to inviwo but can be user-specified. 
 The headers can then be included using 
 ```c++
@@ -78,7 +84,7 @@ Current status: Dataset; Explicit and implicit channel; Structured and periodic 
 
 ## 2018-09-24 Color property improvements
 Updated the color property widget which allows to edit colors directly. Supports floating point range `[0,1]`, int range `[0,255]`, and hex color codes (`#RGB`, `#RGBA`, `#RRGGBB`, `#RRGGBBAA`).
-Invalid input is indicated by red border and changes discarded if either <Esc> is pressed or the widget looses focus.
+Invalid input is indicated by red border and changes discarded if either `<Esc>` is pressed or the widget looses focus.
 
 
 ## 2018-09-24 Spinbox semantics for ordinal properties
@@ -88,7 +94,7 @@ This widget allows to adjust the value by dragging the arrow up/down indicator w
 
 
 ## 2018-09-21
-Settings are no longer shared between executables. I.e. The Inviwo app and the integration test will not use the same settings any more. We now prefix the settings with the InviwoApplication display name. This also implies that any existing Inviwo app settings will be lost. To keep old setting one can prefix all the ".ivs" file in the inviwo settings folder with "Inviwo_".  On windows the inviwo settings can be found in %APPDATA%/inviwo.
+Settings are no longer shared between executables. I.e. The Inviwo app and the integration test will not use the same settings any more. We now prefix the settings with the InviwoApplication display name. This also implies that any existing Inviwo app settings will be lost. To keep old setting one can prefix all the ".ivs" file in the inviwo settings folder with "Inviwo_".  On windows the inviwo settings can be found in `%APPDATA%/inviwo`.
 
 Added System settings for breaking into the debugger on various log message levels, and on throwing exceptions. Also added an option to add stacktraces to exceptions. All to help with debugging. 
 
@@ -98,88 +104,84 @@ InviwoApplicationQt now has the same order of constructor arguments as InviwoApp
 
 ## 2018-08-21
 The property class identifier system no longer uses the `InviwoPropertyInfo` / `PropertyClassIdentifier` macros but rather implements
-```
-virtual std::string getClassIdentifier() const override
+```c++
+    virtual std::string getClassIdentifier() const override
 ```
 The static class identifier 
-```
-static const std::string CLASS_IDENTIFIER
+```c++
+    static const std::string CLASS_IDENTIFIER
 ```
 can still be added manually, but the preferred way is to either use
-```
-static const std::string classIdentifier
+```c++
+    static const std::string classIdentifier
 ```
 or specialize the `PropertyTraits` like:
-```
-template <>
-struct PropertyTraits<MyProperty> {
-    static std::string classIdentifier() {
-        return "org.somename.myproperty";
-    }
-};
+```c++
+    template <>
+    struct PropertyTraits<MyProperty> {
+        static std::string classIdentifier() {
+            return "org.somename.myproperty";
+        }
+    };
 ```
 To access a class identifier of a property type statically, the `PropertyTraits` class should be used  
-```
-PropertyTraits<MyProperty>::classIdentifier()
+```c++
+    PropertyTraits<MyProperty>::classIdentifier()
 ```
 instead of accessing the `CLASS_IDENTIFIER` directly.
 
 An enum traits class has been added to help working with enums and serialization, especially in the case of OptionProperties. 
 For example given an enum:
-```
-enum class MyEnum { a, b };
+```c++
+    enum class MyEnum { a, b };
 ```
 EnumTraits can be specialized to provided a name for `MyEnum`, i.e.
-```
-template <>
-struct EnumTraits<MyEnum> {
-    static std::string name() {return "MyEnum"; }
-};
+```c++
+    template <>
+    struct EnumTraits<MyEnum> {
+        static std::string name() {return "MyEnum"; }
+    };
 ```
 This name will then be used by the TemplateOptionProperty in its class identifier. 
-```
-
-TemplateOptionProperty<MyEnum> prop("test","test");    
-prop.getClassIdentifier() == PropertyTraits<TemplateOptionProperty<MyEnum>>::classIdentifier == "org.inviwo.OptionPropertyMyEnum"
+```c++
+    TemplateOptionProperty<MyEnum> prop("test","test");    
+    prop.getClassIdentifier() == PropertyTraits<TemplateOptionProperty<MyEnum>>::classIdentifier == "org.inviwo.OptionPropertyMyEnum"
 ```
 This makes it possible to differentiate `MyEnum` from other enum TemplateOptionPropertys.
 
 ## 2018-09-19 Web browser
 Use html5 web pages inside of Inviwo. Uses Chromium Embedded Framework (CEF) to render web pages off-screen. The rendered web page is transferred to an Inviwo Image.
-
 Inviwo properties can be synchronized using javascript, see the web browser module example.
  
-
 ## 2018-07-26 ListProperty
 
 Added `ListProperty`, a new property for dynamically adding and removing properties.
-A ListProperty holds a number of "prefab" objects, i.e. unique_ptr to properties, which are used to instantiate new list entries. The property widget features small "x" buttons for removing individual elements (if removal is enabled). Pressing the "+" button next to the property label adds new elements (if adding is enabeld). In case multiple prefabs exist, a dropdown menu is shown when pressing the "+" button.
-
+A ListProperty holds a number of "prefab" objects, i.e. unique_ptr to properties, which are used to instantiate new list entries. The property widget features small "x" buttons for removing individual elements (if removal is enabled). Pressing the "+" button next to the property label adds new elements (if adding is enabled). In case multiple prefabs exist, a drop-down menu is shown when pressing the "+" button.
 ```c++
-// using a single prefab object and at most 10 elements
-ListProperty listProperty("myListProperty", "My ListProperty",
-    std::make_unique<BoolProperty>("boolProp", "BoolProperty", true), 10);
+    // using a single prefab object and at most 10 elements
+    ListProperty listProperty("myListProperty", "My ListProperty",
+        std::make_unique<BoolProperty>("boolProp", "BoolProperty", true), 10);
 
-// multiple prefab objects
-ListProperty listProperty("myListProperty", "My List Property", 
-    []() {
-        std::vector<std::unique_ptr<Property>> v;
-        v.emplace_back(std::make_unique<IntProperty>("template1", "Template 1", 5, 0, 10));
-        v.emplace_back(std::make_unique<IntProperty>("template2", "Template 2", 2, 0, 99));
-        return v;
-    }());
+    // multiple prefab objects
+    ListProperty listProperty("myListProperty", "My List Property", 
+        []() {
+            std::vector<std::unique_ptr<Property>> v;
+            v.emplace_back(std::make_unique<IntProperty>("template1", "Template 1", 5, 0, 10));
+            v.emplace_back(std::make_unique<IntProperty>("template2", "Template 2", 2, 0, 99));
+            return v;
+        }());
 ```
 
 This also works when using different types of properties as prefab objects:
 ```c++
-ListProperty listProperty("myListProperty", "My List Property", 
-    []() {
-        std::vector<std::unique_ptr<Property>> v;
-        v.emplace_back(std::make_unique<BoolProperty>("boolProperty1", "Boolean Flag", true));
-        v.emplace_back(std::make_unique<TransferFunctionProperty>("customTF1", "Transfer Function"));
-        v.emplace_back(std::make_unique<IntProperty>("template1", "Template 1", 5, 0, 10));
-        return v;
-    }());
+    ListProperty listProperty("myListProperty", "My List Property", 
+        []() {
+            std::vector<std::unique_ptr<Property>> v;
+            v.emplace_back(std::make_unique<BoolProperty>("boolProperty1", "Boolean Flag", true));
+            v.emplace_back(std::make_unique<TransferFunctionProperty>("customTF1", "Transfer Function"));
+            v.emplace_back(std::make_unique<IntProperty>("template1", "Template 1", 5, 0, 10));
+            return v;
+        }());
 ```
 Prefabs can be added later on as well using `ListProperty::addPrefab(std::unique_ptr<Property>&& p)`.
 
@@ -196,14 +198,14 @@ see how they are used.
 ## 2018-06-28 GLM Version Update
 GLM was updated to the new 0.9.9.0 version. Major changes are listed at https://github.com/g-truc/glm/releases/tag/0.9.9.0
 Notable changes include the include of the vector / matrix dimension as a template argument, so the main types are now
-```
-template <glm::length_t L, typename T, glm::qualifier Q>
-glm::vec<L, T, Q> 
+```c++
+    template <glm::length_t L, typename T, glm::qualifier Q>
+    glm::vec<L, T, Q> 
 ```
 and
-```
-template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
-glm::mat<C, R, T, Q>
+```c++
+    template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
+    glm::mat<C, R, T, Q>
 ```
 Most code should continue working as before. Except for __default constructed values that now are left uninitialized__. Where as before vec where initialized to 0 and mat to identify. This change can __break__ user code we have seen.  
 
@@ -214,7 +216,6 @@ Most code should continue working as before. Except for __default constructed va
 - Renamed `TransferFunctionDataPoint::getPos`. Instead use `TFPrimitive::getPosition`
 - Renamed `TransferFunctionObserver`. Instead use `TFPrimitiveSetObserver`
 - Renamed `TransferFunctionPointObserver`. Instead use `TFPrimitiveObserver`
-
 - TF primitive position type changed from float to double
 - Deprecated many Transfer function methods, see deprecation messages. 
 
@@ -279,40 +280,39 @@ The old port_traits was previously used to acquire information, mainly class ide
 
 Hence if you have your own port_traits specialization it has to be replaced by something like the following for a Port:
 ```c++
-#include <inviwo/core/ports/porttraits.h>
+    #include <inviwo/core/ports/porttraits.h>
 
-template <typename T>
-struct PortTraits<MyPort<T>> {
-    static std::string classIdentifier() {
-        return generateMyPortClassIdentifier<T>();
-    }
-};
+    template <typename T>
+    struct PortTraits<MyPort<T>> {
+        static std::string classIdentifier() {
+            return generateMyPortClassIdentifier<T>();
+        }
+    };
 ```
 And for a data object, i.e. something that you put in a port. 
 ```c++
-#include <inviwo/core/datastructures/datatraits.h>
+    #include <inviwo/core/datastructures/datatraits.h>
 
-template <>
-struct DataTraits<MyDataType> {
-    static std::string classIdentifier() {
-        return "org.something.mydatatype";
-    }
-    static std::string dataName() {
-        return "MyDataType";
-    }
-    static uvec3 colorCode() {
-        return uvec3{55,66,77};
-    }
-    static Document info(const MyDataType& data) {
-        Document doc;
-        doc.append("p", data.someInfo());
-        return doc;
-    }
-};
+    template <>
+    struct DataTraits<MyDataType> {
+        static std::string classIdentifier() {
+            return "org.something.mydatatype";
+        }
+        static std::string dataName() {
+            return "MyDataType";
+        }
+        static uvec3 colorCode() {
+            return uvec3{55,66,77};
+        }
+        static Document info(const MyDataType& data) {
+            Document doc;
+            doc.append("p", data.someInfo());
+            return doc;
+        }
+    };
 ```
 
 Port registration also now gets the port classIdentifier via PortTraits, so no need to specify the class identifier that registering the port.
-
 
 ## 2017-11-07 Breaking changes: Static functioned moved from BasicMesh 
 Before this change, BasicMesh had various static functions to create meshes. These methods have been moved to a new file and namespace. They are now located in `<modules/base/algorithm/meshutils.h>` and the namespace meshutil. 
@@ -336,8 +336,8 @@ Before this change, we could not detect when the Processor::isReady status chang
 - Processor performEvaluationRequest has been removed, instead call `Processor::invalidate` to trigger a network evaluation. 
 - If you happen to override ```Processor::isReady()```, that will no longer work. You instead have to set the updater for the ```isReady_``` StateCoordinator. Most likely, you will just need to move your isReady code to a functor and set it in the constructor of your processor:
 ```c++
-// (default isReady() behavior)
-isReady_.setUpdate([this]() { return allInportsAreReady(); });
+    // (default isReady() behavior)
+    isReady_.setUpdate([this]() { return allInportsAreReady(); });
 ```
 - This also applies to `isSink_` and `isSource_` in a similar manner. To mark a processor as sink, use `isSink_.setUpdate([]() { return true; });`
 
@@ -351,72 +351,71 @@ As this is now a state that is pushed instead of pulled you should also call ```
 Moved `InviwoApplicationQt` from `QtWidgets` into a new project InviwoQtApplicationBase.  
 If a module was using `InviwoApplicationQt` to get the main window, for example:  
 ```cpp
-#include <inviwo/qt/qtwidgets/inviwoapplicationqt.h> 
-auto mainWindow = dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())->getMainWindow();
+    #include <inviwo/qt/qtwidgets/inviwoapplicationqt.h> 
+    auto mainWindow = dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())->getMainWindow();
 ``` 
 This can be exchanged with:   
 ```cpp
-#include <modules/qtwidgets/inviwoqtutils.h>  
-auto mainWindow = utilqt::getApplicationMainWindow();
-``` 
+    #include <modules/qtwidgets/inviwoqtutils.h>  
+    auto mainWindow = utilqt::getApplicationMainWindow();
+```
 
 Perform search and replace to accommodate changes:  
-Search: 
-`#include <inviwo/qt/widgets/inviwoapplicationqt.h>`  
+Search:  `#include <inviwo/qt/widgets/inviwoapplicationqt.h>``
 Replace: `#include <inviwo/qt/applicationbase/inviwoapplicationqt.h>`  
 Furthermore, make your project depend on `InviwoQtApplicationBase` instead of `InviwoQtWidgets`
 
 Search: `inviwo/qt/widgets/`  
-Replace: `modules/qtwidgets/`  
+Replace: `modules/qtwidgets/`
+
 ##2016-11-08
 The vector interpolation was removed from the Interpolation helper class. The reason for this is that having the function pointer as a parameter for the function made the function impossible to inline and hence much slower, the interpolation calls become about 50% faster when the argument was removed. 
 
 ## 2016-02-03
-The ```setValueFrom*``` and ```getValueAs*``` in buffer-, layer- and volumeRAM has been renamed to ```getAs*``` and ```setFrom*``` Previously only get function would use normalization. Now there are instead an other set of functions ```getAsNormalized*``` and ```setFromNormalized*``` that will apply normalization. Where as neither ```setFrom*``` or ```getAs*``` will use any normalization, just plain casting.
+The `setValueFrom*` and `getValueAs*` in buffer-, layer- and volumeRAM has been renamed to `getAs*` and `setFrom*` Previously only get function would use normalization. Now there are instead an other set of functions `getAsNormalized*` and `setFromNormalized*` that will apply normalization. Where as neither `setFrom*` or `getAs*` will use any normalization, just plain casting.
 
 ##2015-12-03
-* __GenetryTypes__ BufferType,BufferUsage, DrawType, and ConnectivityType have had their members renamed to pascal case. Use tools/refactoring/enumfixes.py to update your code.
+* __Generic Types__ `BufferType`, `BufferUsage`, `DrawType`, and `ConnectivityType` have had their members renamed to pascal case. Use `tools/refactoring/enumfixes.py` to update your code.
 * __Processor__ InviwoProcessorInfo macros has been removed. Use ProcessorInfo class. 
 * __Processor__ Virtual initialize and deinitialize function has be removed. Use constructor.
 * __Processor__ enable/disable evaluation function has been removed. It was rarely used and the new NetworkLock is easier to use.
 
 ## 2015-11-16
-__Singeltons__ The factories are not singletons any longer. They are now owned by InviwoApplication, one can ask InviwoApplication for them. There is a script "tools/refactoring/factoryfixes.py" to update code. 
+__Singeltons__ The factories are not singletons any longer. They are now owned by InviwoApplication, one can ask InviwoApplication for them. There is a script `tools/refactoring/factoryfixes.py` to update code. 
 
 ## 2015-11-04
-__Serialization__ Removed the ivw prefix from all serialization classes, and related filenames.  Use "tools/refactoring/serializerename.py" to update you own code. Just modify the "path = [paths, to, code]" variable first.
+__Serialization__ Removed the ivw prefix from all serialization classes, and related filenames.  Use `tools/refactoring/serializerename.py` to update you own code. Just modify the "path = [paths, to, code]" variable first.
 
 ## 2015-10-29
 __Enum refactoring:__ 
-* enum DataFromatEnums::Id -> enum class DataFormatId, camelcased 
-* enum DataFromatEnums::NumericType, -> enum class NumericType, camelcased 
-* enum ShadingFunctionEnum -> enum class ShadingFunctionKind, camelcased 
-* enum UsageMode -> enum class UsageMode, camelcased 
-* DrawMode camelcased 
-* enum InteractionEventType-> enum class InteractionEventType, camelcased 
-* enum GlVendor-> enum class GlVendor, camelcased 
-* enum GLFormats::Normalization-> enum class GLFormats::Normalization, camelcased
-* enum CLFormats::Normalization-> enum class CLFormats::Normalization, camelcased
-* enum InvalidationLevel -> enum class InvalidationLevel, camelcased
+* `enum DataFromatEnums::Id` -> `enum class DataFormatId`, camelcased 
+* `enum DataFromatEnums::NumericType` -> `enum class NumericType`, camelcased 
+* `enum ShadingFunctionEnum` -> `enum class ShadingFunctionKind`, camelcased 
+* `enum UsageMode` -> `enum class UsageMode`, camelcased 
+* `DrawMode` camelcased 
+* `enum InteractionEventType` -> `enum class InteractionEventType`, camelcased 
+* `enum GlVendor` -> `enum class GlVendor`, camelcased 
+* `enum GLFormats::Normalization` -> `enum class GLFormats::Normalization`, camelcased
+* `enum CLFormats::Normalization` -> `enum class CLFormats::Normalization`, camelcased
+* `enum InvalidationLevel` -> `enum class InvalidationLevel`, camelcased
 
 The enums has also been made into a consistent camel case.
-To simplify refactoring there is a script in tools/refactoring/enumfixes.py that one can run to update code. You only have to specify the relevant paths in the script first.
+To simplify refactoring there is a script in `tools/refactoring/enumfixes.py` that one can run to update code. You only have to specify the relevant paths in the script first.
 
 ## 2015-10-28
-Processors: Updated to use new structure of ProcessorInfo:
-the macro:
-    ```InviwoProcessorInfo();```
-is should be replaced with:
-```cpp
+Processors: Updated to use new structure of ProcessorInfo. The macro
+```c++
+    InviwoProcessorInfo();
+```
+should be replaced with:
+```c++
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 ```
 in the header file.
 
-In the cpp file the macros,
-```ProcessorClassIdentifier(VolumeRaycaster, "org.inviwo.VolumeRaycaster");``` etc.
- for the static members are replaced with:
-```cpp
+In the cpp file the macros, `ProcessorClassIdentifier(VolumeRaycaster, "org.inviwo.VolumeRaycaster");` etc. for the static members are replaced with:
+```c++
     const ProcessorInfo VolumeRaycaster::processorInfo_{
         "org.inviwo.VolumeRaycaster",  // Class identifer
         "Volume Raycaster",            // Display name
@@ -432,72 +431,73 @@ The old macros should still work, but will be deprecated before next release.
 
 The name of the static member ```processorInfo_``` is important since that is what the ```ProcessorTraits``` looks for when it tries to find the information statically. If you want to have a different name or generate the information dynamically you can specialize the ```ProcessorTraits``` for your processor. Here is an example for the template processor BasisTransform:
 ```cpp
-template <>
-struct ProcessorTraits<BasisTransform<Mesh>> {
-    static ProcessorInfo getProcessorInfo() {
-        return {
-            "org.inviwo.BasisTransformGeometry",  // Class identifier
-            "Basis Transform Mesh",               // Display name
-            "Coordinate Transforms",              // Category
-            CodeState::Experimental,              // Code state
-            Tags::CPU                             // Tags
-        };
-    }
-};
+    template <>
+    struct ProcessorTraits<BasisTransform<Mesh>> {
+        static ProcessorInfo getProcessorInfo() {
+            return {
+                "org.inviwo.BasisTransformGeometry",  // Class identifier
+                "Basis Transform Mesh",               // Display name
+                "Coordinate Transforms",              // Category
+                CodeState::Experimental,              // Code state
+                Tags::CPU                             // Tags
+            };
+        }
+    };
 ```
 
 If you have many processor that needs updating there is a utility script 
-"tools/refactoring/processorinfo.py".
+`tools/refactoring/processorinfo.py`.
 You will need to edit some path information in it, but otherwise it should be automatic.
 
 **Converting files to UTF-8**
 
 If you need to convert your files to UTF-8 you can use notepad++ and the following python script (python plugin installer can be found at http://sourceforge.net/projects/npppythonscript/files/):
 ```py
-import os;
-import sys;
-filePathSrc="C:\\inviwo\\vistinct\\" # Path to the folder with files to convert
-for root, dirs, files in os.walk(filePathSrc):
-    for fn in files:
-        if fn.endswith(".h") or fn.endswith(".cpp") or fn.endswith(".cl") or fn.endswith(".frag") or fn.endswith(".vert") or fn.endswith(".glsl") or fn.endswith(".geom"): # Specify type of the files
-            notepad.open(root + "\\" + fn)
-            notepad.runMenuCommand("Encoding", "Convert to UTF-8")
-            notepad.save()
-            notepad.close()
+    import os;
+    import sys;
+    filePathSrc="C:\\inviwo\\vistinct\\" # Path to the folder with files to convert
+    for root, dirs, files in os.walk(filePathSrc):
+        for fn in files:
+            if fn.endswith(".h") or fn.endswith(".cpp") or fn.endswith(".cl") or fn.endswith(".frag") or fn.endswith(".vert") or fn.endswith(".glsl") or fn.endswith(".geom"): # Specify type of the files
+                notepad.open(root + "\\" + fn)
+                notepad.runMenuCommand("Encoding", "Convert to UTF-8")
+                notepad.save()
+                notepad.close()
 ```
+
 ## 2015-10-27
-__CodeState__ CodeState is now an enum class, i.e. CODE_STATE_STABLE -> CodeState::Stable etc
+__CodeState__ CodeState is now an enum class, i.e. `CODE_STATE_STABLE` -> `CodeState::Stable` etc
 
 ## 2015-10-07
-__Modules__ The module registration has change a bit a module now has to take a  ```InviwoApplication*``` in the constructor, like:
+__Modules__ The module registration has change a bit a module now has to take a  `InviwoApplication*` in the constructor, like:
 ```cpp 
-class IVW_MODULE_BASEGL_API BaseGLModule : public InviwoModule {
-public:
-    BaseGLModule(InviwoApplication* app);
-};
+    class IVW_MODULE_BASEGL_API BaseGLModule : public InviwoModule {
+    public:
+        BaseGLModule(InviwoApplication* app);
+    };
 ```
 And then pass that on to the base class together with the module name
 ```cpp
-BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL") {
+    BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL") {
 ```
-There is also not any ```initialize()``` do ```deinitialize()``` function anymore, just use the constructor and destructor.
+There is also not any `initialize()` do `deinitialize()` function anymore, just use the constructor and destructor.
 
 The MACROS for registering object in the module are now replaced by proper function. The most common one for processor now look like this:
 ```cpp
-registerProcessor<Background>();
+    registerProcessor<Background>();
 ```
 For other object refer to InviwoModule. 
 
 Is is also generally encouraged to avoid using any singletons, especially during initialization but also in general. In the long run we are working on removing most of the.   
 
 ## 2015-10-01
-* __Data__ ```Data``` and ```DataGroup" is now templated with respect to the ```DataRepresentation``` that they have.
+* __Data__ `Data` and `DataGroup" is now templated with respect to the `DataRepresentation` that they have.
 * __Converters__ The converter are now typed with From and To templates.
 * __Geometry Types__ all the enums CoordinatePlane, CartesianCoordinateAxis, BufferUsage, DrawType, ConnectivityType are now enum classes. 
-* __Buffers__ The buffers have been updated. The old ```Buffer``` is now a abstract ```BufferBase``` and the old ```BufferPrecision<T>``` is now ```Buffer<T>``` this is the class you should use. The BufferType member/template argument has been removed from both ```Buffer``` and ```BufferRepresentation``` and is now handled by the ```Mesh```. Because of this most typedef for ```Buffer``` and ```BufferRAM``` has now been removed. To create a ```BufferRAM``` you would now to this: ```auto repr = std::make_shared<BufferRAMPrecision<vec3>>()``` and then add it to a ```Buffer``` with ```auto buffer = std::make_shared<Buffer<vec3>>(repr);```
-* __Multiple context__ there is now basic support for using OpenGL from multiple thread. Call ```RenderContext::getPtr()->activateLocalRenderContext();``` before using OpenGL.
-* __Data Readers__ The Data Reader base class has been clean up. Now there is only one function to implement: ```virtual std::shared_ptr<T> readData(const std::string filePath) = 0;```
-* __DiskRepresentationLoader__ there is a new class DiskRepresentationLoader to handle the old ```DataReader::readData```, and ```DataReader::readDataInto``` with a cleaner interface without any ```void*```. and a ```RawVolumeRAMLoader``` class that is used in by the "dat", "ivf", "raw" readers. 
+* __Buffers__ The buffers have been updated. The old `Buffer` is now a abstract `BufferBase` and the old `BufferPrecision<T>` is now `Buffer<T>` this is the class you should use. The BufferType member/template argument has been removed from both `Buffer` and `BufferRepresentation` and is now handled by the `Mesh`. Because of this most typedef for `Buffer` and `BufferRAM` has now been removed. To create a `BufferRAM` you would now to this: `auto repr = std::make_shared<BufferRAMPrecision<vec3>>()` and then add it to a `Buffer` with `auto buffer = std::make_shared<Buffer<vec3>>(repr);`
+* __Multiple context__ there is now basic support for using OpenGL from multiple thread. Call `RenderContext::getPtr()->activateLocalRenderContext();` before using OpenGL.
+* __Data Readers__ The Data Reader base class has been clean up. Now there is only one function to implement: `virtual std::shared_ptr<T> readData(const std::string filePath) = 0;`
+* __DiskRepresentationLoader__ there is a new class DiskRepresentationLoader to handle the old `DataReader::readData`, and `DataReader::readDataInto` with a cleaner interface without any `void*`. and a `RawVolumeRAMLoader` class that is used in by the "dat", "ivf", "raw" readers. 
 
 ## 2015-10-01
 Updates to Data:
@@ -513,14 +513,14 @@ Updates to Data:
 
 
 ## 2015-09-10
-* __Ports__ now uses ```std::shared_ptr<const T>``` for everything. I.e. ```DataInport::getData()``` now returns a ```std::shared_ptr<const T>``` and ```DataOutport::setData(std::shared_ptr<const T> data)``` also takes a shared ptr. Notably the argument to the ```DataOutport::setData``` is now a ```std::shared_ptr<__const__ T>``` this means that you can now do ```outport.setData(inport.getData());``` But on the other hand will you not be able to do:
-```outport.getData()->getEditableRepresentation<T>()``` since the data is now const. To solve this it is recommended to keep a copy of the ```std::shared_ptr<T>``` around in the processor instead. 
-One should take special care when changing data that has already been added to a outport since a different processor might be using that data in a background thread. One might for example use ```std::shared_ptr<T>::unique()``` to check whether there is someone else holding the data.
+* __Ports__ now uses `std::shared_ptr<const T>` for everything. I.e. `DataInport::getData()` now returns a `std::shared_ptr<const T>` and `DataOutport::setData(std::shared_ptr<const T> data)` also takes a shared ptr. Notably the argument to the `DataOutport::setData` is now a `std::shared_ptr<__const__ T>` this means that you can now do `outport.setData(inport.getData());` But on the other hand will you not be able to do:
+`outport.getData()->getEditableRepresentation<T>()` since the data is now const. To solve this it is recommended to keep a copy of the `std::shared_ptr<T>` around in the processor instead. 
+One should take special care when changing data that has already been added to a outport since a different processor might be using that data in a background thread. One might for example use `std::shared_ptr<T>::unique()` to check whether there is someone else holding the data.
 
-* __Image port__ has special overloads for non-const data since they might need to resize the data during resize events. Hence ```ImageOutport::setData(std::shared_ptr<T> data)``` and ```std::shared_ptr<T> ImageOutport::getEditableData()``` exists.
+* __Image port__ has special overloads for non-const data since they might need to resize the data during resize events. Hence `ImageOutport::setData(std::shared_ptr<T> data)` and `std::shared_ptr<T> ImageOutport::getEditableData()` exists.
 
 * __utilgl__ All the opengl utility functions in shaderutils, textureutils, etc, now uses reference arguments instead of points. 
-Notably the: ``` void setShaderUniforms(Shader& shader, ...) ```
+Notably the: ` void setShaderUniforms(Shader& shader, ...) `
 functions now take the shader by reference not pointer. 
 
 ## 2015-09-09
@@ -533,7 +533,7 @@ functions now take the shader by reference not pointer.
 ## 2015-07-16
 * __Shaders__ A shader now has a `onReload(std::function<void()>)` callback that processors that want to be reloaded on shader reload has to use. So now only affected processors will be invalidated on shader modifications. To get the same behavior as before this needs to be added to an processor using shaders:
 ```cpp
-shader_.onReload([this]() { invalidate(INVALID_RESOURCES); });
+    shader_.onReload([this]() { invalidate(INVALID_RESOURCES); });
 ```
 
 ## 2015-07-15
@@ -542,9 +542,9 @@ shader_.onReload([this]() { invalidate(INVALID_RESOURCES); });
 ## 2015-07-14
 * __Observers__ The observers now use a unordered_set and the "observers_" member is now typed correctly hence there is no need to static cast. And since unordered_set does not have reverse iterators, if you use that you need to update. The current preferred use looks like this: 
 ```cpp
-void PropertyObservable::notifyObserversOnSetVisible(bool visible) const {
-    for (auto o : observers_) o->onSetVisible(visible);
-}
+    void PropertyObservable::notifyObserversOnSetVisible(bool visible) const {
+        for (auto o : observers_) o->onSetVisible(visible);
+    }
 ```
 
 * __Activity Indicator__ There is now activity indicator for processor similar to a progress bar. it will only show up as a yellow status indicator on the processor. It can either be active or not. See volumesubsample for an example.
@@ -553,10 +553,10 @@ void PropertyObservable::notifyObserversOnSetVisible(bool visible) const {
 ## 2015-07-09
 * __Threading__ For handling background work there are now two global functions 
 ```cpp
-template <class F, class... Args>
-auto dispatchFront(F&& f, Args&&... args) -> std::future<typename std::result_of<F(Args...)>::type>
-template <class F, class... Args>
-auto dispatchPool(F&& f, Args&&... args) -> std::future<typename std::result_of<F(Args...)>::type> 
+    template <class F, class... Args>
+    auto dispatchFront(F&& f, Args&&... args) -> std::future<typename std::result_of<F(Args...)>::type>
+    template <class F, class... Args>
+    auto dispatchPool(F&& f, Args&&... args) -> std::future<typename std::result_of<F(Args...)>::type> 
 ```
 `dispatchFront` is used to submit a task to the Front thread, i.e. the thread that does handles the GUI and so far all the evaluation. Everything that can have side effects should be run in this thread, changing properties, updating the GUI, triggering evaluation etc. 
 
@@ -564,30 +564,30 @@ auto dispatchPool(F&& f, Args&&... args) -> std::future<typename std::result_of<
 
 The return value of both `dispatchFront` and `dispatchPool` is a future<...> of the return value of the task given. Apart for getting the result of the task this future can be used to check whether the task has finished or is still running. Here is a small example:
 ```cpp
-std::future<std::unique_ptr<Volume>> result_;
+    std::future<std::unique_ptr<Volume>> result_;
 ```
 result here is a future holding the resulting volume from a subsampling. The following code submits the subsampling task to the thread pool and extracts the result from the future when the calculation is done.
 ```cpp
-void VolumeSubsample::process() { 
-    if (result_.valid() &&
-        result_.wait_for(std::chrono::duration<int, std::milli>(0)) ==
-            std::future_status::ready) {
+    void VolumeSubsample::process() { 
+        if (result_.valid() &&
+            result_.wait_for(std::chrono::duration<int, std::milli>(0)) ==
+                std::future_status::ready) {
 
-        std::unique_ptr<Volume> volume = std::move(result_.get());
-        outport_.setData(volume.release());
+            std::unique_ptr<Volume> volume = std::move(result_.get());
+            outport_.setData(volume.release());
 
-    } else if (!result_.valid()) {
-        const Volume* data = inport_.getData();
-        const VolumeRAM* vol = data->getRepresentation<VolumeRAM>();
+        } else if (!result_.valid()) {
+            const Volume* data = inport_.getData();
+            const VolumeRAM* vol = data->getRepresentation<VolumeRAM>();
 
-        result_ = dispatchPool(
-            [this](const VolumeRAM* v, VolumeRAMSubSample::Factor f) -> std::unique_ptr<Volume> {
-                auto volume = util::make_unique<Volume>(VolumeRAMSubSample::apply(v, f));
-                dispatchFront([this]() { invalidate(INVALID_OUTPUT); });
-                return volume;
-            },
-            vol, subSampleFactor_.get());
+            result_ = dispatchPool(
+                [this](const VolumeRAM* v, VolumeRAMSubSample::Factor f) -> std::unique_ptr<Volume> {
+                    auto volume = util::make_unique<Volume>(VolumeRAMSubSample::apply(v, f));
+                    dispatchFront([this]() { invalidate(INVALID_OUTPUT); });
+                    return volume;
+                },
+                vol, subSampleFactor_.get());
+        }
     }
-}
 ```
 Here we start by checking if there is a valid future, that means that there is either a result available or the calculation is running. In the case when the result is ready we extract the result and set it to the outport. If it is still running we do nothing since we don't what to fill the pool with jobs. To check if a future is ready we use wait_for with a timeout of 0. In the case that the result is invalid we submit a new task the pool using `dispatchPool` and assign the result to `result_`. To make sure that we get back to the process function when the task is done we also add a nested task submit inside of the pool task `dispatchFront([this]() { invalidate(INVALID_OUTPUT); });` this will run when that task is finished submitting an invalidation on the Front thread casing a new evaluation of the processor. Where we then will find the result of the task.

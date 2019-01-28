@@ -365,10 +365,6 @@ function(ivw_register_modules retval)
     # Save list of modules
     set(ivw_all_registered_modules ${ivw_module_names} CACHE INTERNAL "All registered inviwo modules")
 
-    # Save information for python tools.
-    ivw_mod_name_to_class(ivw_module_classes ${ivw_module_names})
-    ivw_private_create_pyconfig("${IVW_MODULE_DIR};${IVW_EXTERNAL_MODULES}" "${ivw_module_classes}")
-
     set(${retval} ${sorted_modules} PARENT_SCOPE)
 endfunction()
 
@@ -598,7 +594,7 @@ endfunction()
 # depending targets.
 function(ivw_compile_optimize_on_target target)
     if(PRECOMPILED_HEADERS)
-        ivw_get_target_property_recursive(publicIgnorePaths ${target} COTIRE_PREFIX_HEADER_PUBLIC_IGNORE_PATH)
+        ivw_get_target_property_recursive(publicIgnorePaths ${target} COTIRE_PREFIX_HEADER_PUBLIC_IGNORE_PATH False)
         get_target_property(ignorePaths ${target} COTIRE_PREFIX_HEADER_IGNORE_PATH)
         if(NOT ignorePaths)
             set(ignorePaths "")
@@ -615,7 +611,7 @@ function(ivw_compile_optimize_on_target target)
         endif()
         list(REMOVE_DUPLICATES ignorePaths)
 
-        ivw_get_target_property_recursive(publicIncludePaths ${target} COTIRE_PREFIX_HEADER_PUBLIC_INCLUDE_PATH)
+        ivw_get_target_property_recursive(publicIncludePaths ${target} COTIRE_PREFIX_HEADER_PUBLIC_INCLUDE_PATH False)
         get_target_property(includePaths ${target} COTIRE_PREFIX_HEADER_INCLUDE_PATH)
         if(NOT includePaths)
             set(includePaths "")

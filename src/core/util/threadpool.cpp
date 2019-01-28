@@ -98,7 +98,6 @@ ThreadPool::Worker::Worker(ThreadPool& pool)
             task();
         }
         state = State::Done;
-
     }} {}
 
 }  // namespace inviwo

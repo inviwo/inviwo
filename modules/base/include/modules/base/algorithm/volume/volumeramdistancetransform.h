@@ -286,7 +286,6 @@ void util::volumeDistanceTransform(const Volume *inVolume, VolumeRAMPrecision<U>
     inputVolumeRep->dispatch<void, dispatching::filter::Scalars>([&](const auto vrprecision) {
         volumeRAMDistanceTransform(vrprecision, outDistanceField, inVolume->getBasis(), upsample,
                                    predicate, valueTransform, callback);
-
     });
 }
 

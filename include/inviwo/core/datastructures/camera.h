@@ -188,6 +188,7 @@ protected:
 
     float fovy_;
     float aspectRatio_;
+    std::shared_ptr<std::function<void()>> fovCallbackHolder_;
 };
 
 bool operator==(const PerspectiveCamera& lhs, const PerspectiveCamera& rhs);
@@ -234,6 +235,7 @@ protected:
 
     // Left, right, bottom, top view volume
     vec4 frustum_;
+    std::shared_ptr<std::function<void()>> widthCallbackHolder_;
 };
 
 bool operator==(const OrthographicCamera& lhs, const OrthographicCamera& rhs);
@@ -291,6 +293,8 @@ protected:
     // Left, right, bottom, top view volume
     vec4 frustum_;
     vec2 frustumSkewOffset_;
+    std::shared_ptr<std::function<void()>> widthCallbackHolder_;
+    std::shared_ptr<std::function<void()>> offsetCallbackHolder_;
 };
 
 bool operator==(const SkewedPerspectiveCamera& lhs, const SkewedPerspectiveCamera& rhs);

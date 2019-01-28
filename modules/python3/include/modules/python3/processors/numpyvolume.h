@@ -55,12 +55,6 @@ namespace inviwo {
  *   * __Size__ Size of the created volume.
  *
  */
-
-/**
- * \class NumPyVolume
- * \brief <brief description>
- * <Detailed description from a developer prespective>
- */
 class IVW_MODULE_PYTHON3_API NumPyVolume : public Processor {
 public:
     NumPyVolume();

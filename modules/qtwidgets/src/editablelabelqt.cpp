@@ -101,7 +101,6 @@ QLineEdit* EditableLabelQt::getLineEdit() {
             if (property_) property_->setDisplayName(text_);
 
             emit textChanged();
-
         });
     }
     return lineEdit_;

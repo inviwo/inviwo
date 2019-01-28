@@ -45,13 +45,17 @@ QDockWidget > .QWidget,
 QDockWidget > .QScrollArea, 
 QDockWidget > .QSplitter, 
 QDialog,
-QStatusBar {
+QStatusBar,
+QSplitter#WelcomeWidget {
     background-color: #323235;
 }
 
 /************************ 
 QMainWindow
 ************************/
+QMainWindow {
+    background: #252527;
+}
 QMainWindow::separator {
     background: #444;
     width: 2px;
@@ -157,6 +161,11 @@ QTabWidget::pane QWidget, QTabWidget::pane QDockWidget QWidget {
     /* docked QDockWidgets ignore QTabWidget */
     background: transparent;
 }
+QTabWidget::pane QGraphicsView {
+    /* need to set the background otherwise the scrollbars will have a white background */
+    background: #323235;
+    border: none;
+}
 QTabWidget::tab-bar {
     left: 5px;
 }
@@ -189,6 +198,7 @@ QTabBar::tab:top {
     border-bottom-right-radius: 0px;
 
     margin-bottom: 1px;
+    margin-top: 2px;
 }
 QTabBar::tab:bottom:selected{
     background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
@@ -901,4 +911,33 @@ QDockWidget#ResourceManager QTableView QHeaderView::section {
     border: none;
     border-bottom: 2px ridge #4a4a4f;
     background: transparent;
+}
+
+/************************ 
+WelcomeWidget
+************************/
+QLabel#WelcomeHeader {
+    font-size: 50pt;
+    color: #268bd2;
+}
+
+QFrame#WelcomeRightColumn {
+    background-color: #434345;
+}
+
+QTreeWidget#FileTreeWidget {
+    border: 1px solid transparent;
+}
+
+QSplitter#WelcomeWidget::handle {
+    background: #434345;
+    border: none;
+}
+
+QSplitter#WelcomeWidget::handle:horizontal:hover {
+    background: #5b5f62;
+}
+
+QSplitter#WelcomeWidget::handle:horizontal:pressed {
+    background: #1e70a8;
 }

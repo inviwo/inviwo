@@ -62,4 +62,4 @@ std::vector<int> OpenGLQtCapabilities::getGLVersion() {
     return versionInfo;
 }
 
-}  // namespace
+}  // namespace inviwo

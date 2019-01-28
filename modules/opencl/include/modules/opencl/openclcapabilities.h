@@ -326,7 +326,7 @@ inline std::string deviceInfoToString<cl_sampler>(cl_device_info, const cl_sampl
     F(cl_device_info, CL_DEVICE_MAX_COMPUTE_UNITS, cl_uint)                          \
     F(cl_device_info, CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS, cl_uint)                   \
     F(cl_device_info, CL_DEVICE_MAX_WORK_GROUP_SIZE, ::size_t)                       \
-    F(cl_device_info, CL_DEVICE_MAX_WORK_ITEM_SIZES, VECTOR_CLASS< ::size_t>)        \
+    F(cl_device_info, CL_DEVICE_MAX_WORK_ITEM_SIZES, VECTOR_CLASS<::size_t>)         \
     F(cl_device_info, CL_DEVICE_PREFERRED_VECTOR_WIDTH_CHAR, cl_uint)                \
     F(cl_device_info, CL_DEVICE_PREFERRED_VECTOR_WIDTH_SHORT, cl_uint)               \
     F(cl_device_info, CL_DEVICE_PREFERRED_VECTOR_WIDTH_INT, cl_uint)                 \

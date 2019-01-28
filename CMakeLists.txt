@@ -80,6 +80,11 @@ if(IVW_PROJECT_NAME)
 else()
     project(inviwo-projects)
 endif()
+
+#Verify that git submodules has been cloned
+include(cmake/verifysubmodules.cmake)
+verify_submodules("${CMAKE_CURRENT_LIST_DIR}/.gitmodules")
+
 # Build
 option(BUILD_SHARED_LIBS "Build shared libs, else static libs" ON)
 
@@ -95,9 +100,6 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/ext/pybind11/too
 set(PythonLibsNew_FIND_VERSION 3)
 set(Python_ADDITIONAL_VERSIONS 3.5 3.6 3.7 3.8 3.9)
 find_package(PythonLibsNew 3)
-
-include(cmake/verifysubmodules.cmake)
-verify_submodules("${CMAKE_CURRENT_LIST_DIR}/.gitmodules")
 
 include(cmake/globalconfig.cmake)
 

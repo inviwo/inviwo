@@ -41,8 +41,8 @@
 
 namespace inviwo {
 
-typedef std::pair<std::shared_ptr<BufferObject>, std::shared_ptr<cl::BufferGL> > BufferSharingPair;
-typedef std::map<std::shared_ptr<BufferObject>, std::shared_ptr<cl::BufferGL> > CLBufferSharingMap;
+typedef std::pair<std::shared_ptr<BufferObject>, std::shared_ptr<cl::BufferGL>> BufferSharingPair;
+typedef std::map<std::shared_ptr<BufferObject>, std::shared_ptr<cl::BufferGL>> CLBufferSharingMap;
 
 class IVW_MODULE_OPENCL_API BufferCLGL : public BufferCLBase,
                                          public BufferRepresentation,

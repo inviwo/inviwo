@@ -87,7 +87,7 @@ public:
 
         property_.reset(propTrack.getProperty()->clone());
         propTrack.setOtherProperty(property_.get(), &keyframe);
-        property_->onChange([ p = property_.get(), &propTrack, k = &keyframe_ ]() {
+        property_->onChange([p = property_.get(), &propTrack, k = &keyframe_]() {
             propTrack.updateKeyframeFromProperty(p, k);
         });
         property_->setOwner(nullptr);

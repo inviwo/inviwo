@@ -166,3 +166,13 @@ if(WIN32)
 
     install(TARGETS inviwo-cli RUNTIME DESTINATION bin COMPONENT qt_app)
 endif()
+
+
+
+# Save information for python tools.
+ivw_mod_name_to_class(ivw_module_classes ${enabled_modules})
+ivw_private_create_pyconfig("${IVW_MODULE_DIR};${IVW_EXTERNAL_MODULES}" "${ivw_module_classes}" inviwo)
+
+
+
+

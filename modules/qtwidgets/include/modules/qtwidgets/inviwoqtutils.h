@@ -59,6 +59,7 @@
 namespace inviwo {
 
 class Property;
+class ProcessorNetwork;
 
 namespace utilqt {
 
@@ -167,6 +168,25 @@ IVW_MODULE_QTWIDGETS_API QMenu* addMenu(std::string menuName, QMenu* before = nu
 IVW_MODULE_QTWIDGETS_API QMenu* getMenu(std::string menuName, bool createIfNotFound = false);
 
 IVW_MODULE_QTWIDGETS_API QImage layerToQImage(const Layer& layer);
+
+/*
+ * \brief save the given QImage \p image as png in a base64-encoded string
+ *
+ * @param image    image to be encoded
+ * @return base64 string of the corresponding png image
+ */
+IVW_MODULE_QTWIDGETS_API std::string toBase64(const QImage& image);
+
+/*
+ * \brief retrieve the contents of all visible canvases as QImage. A canvas must be ready and
+ * visible in order to be considered. 
+ *
+ * @param network    visible canvases are extracted from this processor network 
+ * @param alpha      the resulting images will retain their alpha channel if true
+ * @return vector of pairs representing the display name and contents of the respective canvases
+ */
+IVW_MODULE_QTWIDGETS_API std::vector<std::pair<std::string, QImage>> getCanvasImages(
+    ProcessorNetwork* network, bool alpha = true);
 
 IVW_MODULE_QTWIDGETS_API void addImageActions(QMenu& menu, const Image& image,
                                               LayerType visibleLayer = LayerType::Color,

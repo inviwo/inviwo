@@ -132,13 +132,15 @@ WorkspaceManager::~WorkspaceManager() = default;
 void WorkspaceManager::clear() { clears_.invoke(); }
 
 void WorkspaceManager::save(std::ostream& stream, const std::string& refPath,
-                            const ExceptionHandler& exceptionHandler) {
+                            const ExceptionHandler& exceptionHandler, WorkspaceSaveMode mode) {
     Serializer serializer(refPath);
 
-    InviwoSetupInfo info(app_);
-    serializer.serialize("InviwoSetup", info);
+    if (mode != WorkspaceSaveMode::Undo) {
+        InviwoSetupInfo info(app_);
+        serializer.serialize("InviwoSetup", info);
+    }
 
-    serializers_.invoke(serializer, exceptionHandler);
+    serializers_.invoke(serializer, exceptionHandler, mode);
     serializer.writeFile(stream, true);
 }
 
@@ -155,10 +157,11 @@ void WorkspaceManager::load(std::istream& stream, const std::string& refPath,
     deserializers_.invoke(deserializer, exceptionHandler);
 }
 
-void WorkspaceManager::save(const std::string& path, const ExceptionHandler& exceptionHandler) {
+void WorkspaceManager::save(const std::string& path, const ExceptionHandler& exceptionHandler,
+                            WorkspaceSaveMode mode) {
     auto ostream = filesystem::ofstream(path);
     if (ostream.is_open()) {
-        save(ostream, path, exceptionHandler);
+        save(ostream, path, exceptionHandler, mode);
     } else {
         throw AbortException("Could not open workspace file: " + path, IvwContext);
     }
@@ -214,9 +217,11 @@ WorkspaceManager::ClearHandle WorkspaceManager::onClear(const ClearCallback& cal
 }
 
 WorkspaceManager::SerializationHandle WorkspaceManager::onSave(
-    const SerializationCallback& callback) {
-    return serializers_.add(
-        [callback, this](Serializer& s, const ExceptionHandler& exceptionHandler) {
+    const SerializationCallback& callback, WorkspaceSaveModes modes) {
+    return serializers_.add([callback, modes, this](Serializer& s,
+                                                    const ExceptionHandler& exceptionHandler,
+                                                    WorkspaceSaveMode mode) {
+        if (modes.count(mode)) {
             IVW_UNUSED_PARAM(this);
             try {
                 callback(s);
@@ -225,7 +230,8 @@ WorkspaceManager::SerializationHandle WorkspaceManager::onSave(
             } catch (...) {
                 exceptionHandler(IVW_CONTEXT);
             }
-        });
+        }
+    });
 }
 
 WorkspaceManager::DeserializationHandle WorkspaceManager::onLoad(

@@ -132,7 +132,6 @@ void visitMatchingNodes(TxElement* root, const std::vector<ElementMatcher>& sele
                        std::vector<ElementMatcher>::const_iterator end)>
         visitNodes = [&](TxElement* node, std::vector<ElementMatcher>::const_iterator begin,
                          std::vector<ElementMatcher>::const_iterator end) {
-
             ticpp::Iterator<ticpp::Element> child;
             for (child = child.begin(node); child != child.end(); child++) {
                 std::string childname;

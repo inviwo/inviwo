@@ -241,7 +241,6 @@ std::shared_ptr<Mesh> marchingtetrahedron(std::shared_ptr<const Volume> volume, 
         if (progressCallback) progressCallback(1.0f);
 
         return mesh;
-
     });
 }
 }  // namespace util

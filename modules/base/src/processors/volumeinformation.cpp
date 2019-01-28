@@ -109,11 +109,13 @@ VolumeInformation::VolumeInformation()
                       DataFloat64::max(), 0.0, 0.0, InvalidationLevel::Valid,
                       PropertySemantics::Text)
     , worldTransform_("worldTransform_", "World Transform", mat4(1.0f),
-                      mat4(std::numeric_limits<float>::lowest()),
-                      mat4(std::numeric_limits<float>::max()), mat4(0.001f),
-                      InvalidationLevel::Valid)
-    , basis_("basis", "Basis", mat3(1.0f), mat3(std::numeric_limits<float>::lowest()),
-             mat3(std::numeric_limits<float>::max()), mat3(0.001f), InvalidationLevel::Valid)
+                      util::filled<mat3>(std::numeric_limits<float>::lowest()),
+                      util::filled<mat3>(std::numeric_limits<float>::max()),
+                      util::filled<mat3>(0.001f), InvalidationLevel::Valid)
+    , basis_("basis", "Basis", mat3(1.0f),
+             util::filled<mat3>(std::numeric_limits<float>::lowest()),
+             util::filled<mat3>(std::numeric_limits<float>::max()),
+             util::filled<mat3>(0.001f), InvalidationLevel::Valid)
     , offset_("offset", "Offset", vec3(0.0f), vec3(std::numeric_limits<float>::lowest()),
               vec3(std::numeric_limits<float>::max()), vec3(0.001f), InvalidationLevel::Valid,
               PropertySemantics::Text)

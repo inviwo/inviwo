@@ -87,8 +87,8 @@ std::unique_ptr<PropertyWidget> PropertyWidgetFactory::create(Property* property
         }
     }
 
-    LogWarn("Can not find a property widget for property: " << property->getClassIdentifier() << "("
-                                                            << sematics << ")");
+    LogWarn("Cannot find a property widget for property: " << property->getClassIdentifier() << "("
+                                                           << sematics << ")");
     return std::unique_ptr<PropertyWidget>();
 }
 

@@ -111,8 +111,8 @@ LinkDialog::LinkDialog(Processor* srcProcessor, Processor* dstProcessor, QWidget
 
     smartLink->setMenu(menu);
 
-    auto shouldLink =
-        [ net = srcProcessor->getNetwork(), matchType, matchId ](Property * src, Property * dst) {
+    auto shouldLink = [net = srcProcessor->getNetwork(), matchType, matchId](Property* src,
+                                                                             Property* dst) {
         if (!net->canLink(src, dst)) {
             return false;
         }
