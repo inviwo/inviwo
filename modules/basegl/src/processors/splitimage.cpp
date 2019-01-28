@@ -340,10 +340,9 @@ void SplitImage::handlePickingEvent(PickingEvent *e) {
     if (e->getEvent()->hash() == MouseEvent::chash()) {
         auto mouseEvent = e->getEventAs<MouseEvent>();
 
-        bool leftMouseBtn = (mouseEvent->button() == MouseButton::Left);
-        bool mousePress = (mouseEvent->state() == MouseState::Press);
-        // bool mouseRelease = (mouseEvent->state() == MouseState::Release);
-        bool mouseMove = (mouseEvent->state() == MouseState::Move);
+        const bool leftMouseBtn = (mouseEvent->button() == MouseButton::Left);
+        const bool mousePress = (mouseEvent->state() == MouseState::Press);
+        const bool mouseMove = (mouseEvent->state() == MouseState::Move);
 
         if (e->getState() == PickingState::Started) {
             // start hover
@@ -361,12 +360,7 @@ void SplitImage::handlePickingEvent(PickingEvent *e) {
             } else if (leftMouseBtn) {
                 if (mousePress) {
                     triggerUpdate = true;
-                } /*else if (mouseRelease && isPushed()) {
-                    // mouse button is release upon the active element
-                    triggerAction();
-                    setPushedState(false);
-                    triggerUpdate = true;
-                }*/
+                }
                 e->markAsUsed();
             }
         }
@@ -383,11 +377,6 @@ void SplitImage::handlePickingEvent(PickingEvent *e) {
                 hover_ = true;
                 triggerUpdate = true;
             } else if (touchPoint.state() == TouchState::Finished) {
-                // if (isPushed()) {
-                //    // touch event has finished
-                //    triggerAction();
-                //    setPushedState(false);
-                //}
                 // end hover
                 hover_ = false;
                 triggerUpdate = true;
