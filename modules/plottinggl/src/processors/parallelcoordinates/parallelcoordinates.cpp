@@ -78,6 +78,8 @@ ParallelCoordinates::ParallelCoordinates()
     , dataFrame_("dataFrame")
     , brushingAndLinking_("brushingAndLinking")
     , outport_("outport")
+    , brushOnlyWhenMouseRelease_("brushOnlyWhenMouseRelease", "Brush only when mouse is released",
+                                 false)
     , axisProperties_("axisProps_", "Axis")
     , colors_("colors", "Colors")
     , axisColor_("axisColor", "Axis Color", vec4(.6f, .6f, .6f, 1))
@@ -130,6 +132,8 @@ ParallelCoordinates::ParallelCoordinates()
     addPort(dataFrame_);
     addPort(brushingAndLinking_);
     addPort(outport_);
+
+    addProperty(brushOnlyWhenMouseRelease_);
 
     axisColor_.setSemantics(PropertySemantics::Color);
     handleBaseColor_.setSemantics(PropertySemantics::Color);
@@ -573,7 +577,7 @@ void ParallelCoordinates::drawLines(size2_t size) {
     lineShader_.setUniform("selected", 0);
     lineShader_.setUniform("filtered", 0);
     for (size_t i = 0; i < numLines; i++) {
-        if (brushingAndLinking_.isFiltered(indexCol[i])) {
+        if (brushedID.find(indexCol[i]) != brushedID.end()) {
             if (showFiltered_) {
                 filteredIndices.push_back(i);
             }
@@ -597,7 +601,7 @@ void ParallelCoordinates::drawLines(size2_t size) {
     lineShader_.setUniform("selected", 1);
     lineShader_.setUniform("filtered", 0);
     for (const auto &i : selectIndices) {
-        if (brushingAndLinking_.isFiltered(indexCol[i])) continue;
+        if (brushedID.find(indexCol[i]) != brushedID.end()) continue;
         drawObject.draw(i);
     }
 
@@ -736,6 +740,9 @@ void ParallelCoordinates::handlePicked(PickingEvent *p) {
 
     if (p->getPressState() == PickingPressState::Move &&
         p->getPressItems().count(PickingPressItem::Primary)) {
+
+        mouseReleased = false;
+
         // move axis range handle
         auto canvasSize = outport_.getDimensions();
         auto marigins = margins_.getAsVec4();
@@ -748,6 +755,10 @@ void ParallelCoordinates::handlePicked(PickingEvent *p) {
         axisVector_[axisID]->moveHandle(upper, newY);
         p->markAsUsed();
     }
+    if (p->getPressState() == PickingPressState::Release) {
+        mouseReleased = true;
+        updateBrushing();
+    }
 }
 
 void ParallelCoordinates::updateBrushing() {
@@ -758,14 +769,18 @@ void ParallelCoordinates::updateBrushing() {
         axes->updateBrushing(brushed);
     }
 
-    std::unordered_set<size_t> brushedID;
     auto iCol = dataFrame_.getData()->getIndexColumn();
     auto &indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
 
+    brushedID.clear();
     std::for_each(brushed.begin(), brushed.end(),
                   [&](const auto &id) { brushedID.insert(indexCol[id]); });
 
-    brushingAndLinking_.sendFilterEvent(brushedID);
+    if (brushOnlyWhenMouseRelease_.get() && mouseReleased) {
+        brushingAndLinking_.sendFilterEvent(brushedID);
+    } else if (!brushOnlyWhenMouseRelease_.get()) {
+        brushingAndLinking_.sendFilterEvent(brushedID);
+    }
 }
 
 }  // namespace plot

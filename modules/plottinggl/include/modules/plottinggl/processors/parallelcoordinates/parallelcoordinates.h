@@ -109,10 +109,14 @@ private:
                     const std::vector<ParallelCoordinatesAxisSettingsProperty *> &enabledAxis);
 
     void updateBrushing();
+    std::unordered_set<size_t> brushedID;
 
     DataInport<DataFrame> dataFrame_;
     BrushingAndLinkingInport brushingAndLinking_;
     ImageOutport outport_;
+
+    BoolProperty brushOnlyWhenMouseRelease_;
+    bool mouseReleased = true;
 
     CompositeProperty axisProperties_;
 
