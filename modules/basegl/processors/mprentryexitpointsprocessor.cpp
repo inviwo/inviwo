@@ -103,8 +103,8 @@ void MPREntryExitPoints::process() {
     utilgl::activateAndClearTarget(*entryPort_.getEditableData().get(), ImageType::ColorOnly);
     shader_.activate();
 
-    shader_.setUniform("p", mprP_.get()); // volume position
     shader_.setUniform("p_screen", cursorScreenPos_.get()); // plane pos. in screen space
+    shader_.setUniform("p", mprP_.get()); // volume position
     shader_.setUniform("n", mprBasisN_.get()); // plane's normal
     shader_.setUniform("u", mprBasisU_.get()); // plane's up
     shader_.setUniform("r", mprBasisR_.get()); // plane's right
@@ -115,7 +115,7 @@ void MPREntryExitPoints::process() {
     shader_.setUniform("volume_dimensions", vec3(volumeDimensions_.get())); // correction angle
     shader_.setUniform("volume_spacing", volumeSpacing_.get()); // correction angle
 
-    LogInfo("cursorScreenPos_: " << cursorScreenPos_);
+    /*LogInfo("cursorScreenPos_: " << cursorScreenPos_);
     LogInfo("offset0_: " << offset0_);
     LogInfo("offset1_: " << offset1_);
     LogInfo("mprP_: " << mprP_);
@@ -124,7 +124,7 @@ void MPREntryExitPoints::process() {
     LogInfo("mprBasisN_: " << mprBasisN_);
     LogInfo("canvasSize_: " << canvasSize_);
     LogInfo("volumeDimensions_: " << volumeDimensions_);
-    LogInfo("volumeSpacing_: " << volumeSpacing_);
+    LogInfo("volumeSpacing_: " << volumeSpacing_);*/
 
     auto quadGL = quad->getRepresentation<BufferGL>();
     quadGL->enable();
