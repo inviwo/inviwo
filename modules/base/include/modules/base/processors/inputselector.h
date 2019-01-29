@@ -78,6 +78,8 @@ private:
     Outport outport_;
 
     OptionPropertyInt selectedPort_;
+
+    void updateOptions();
 };
 
 template <typename Inport, typename Outport>
@@ -96,27 +98,10 @@ InputSelector<Inport, Outport>::InputSelector()
     addPort(inport_);
     addPort(outport_);
 
-    selectedPort_.setSerializationMode(PropertySerializationMode::All);
+    inport_.onConnect([&]() { updateOptions(); });
 
     inport_.onChange([&]() {
-        std::string selectedID;
-        if (selectedPort_.size() != 0) {
-            selectedID = selectedPort_.getSelectedIdentifier();
-            selectedPort_.clearOptions();
-        }
-        int idx = 0;
-        for (auto port : inport_.getConnectedOutports()) {
-            auto p = port->getProcessor();
-            auto displayName = p->getIdentifier();
-            auto id = p->getDisplayName();
-            selectedPort_.addOption(displayName, displayName, idx++);
-        }
-
-        if (!selectedID.empty()) {
-            selectedPort_.setSelectedIdentifier(selectedID);
-        }
-
-        selectedPort_.setCurrentStateAsDefault();
+        if (selectedPort_.size() != inport_.getConnectedOutports().size()) updateOptions();
     });
 
     addProperty(selectedPort_);
@@ -124,6 +109,23 @@ InputSelector<Inport, Outport>::InputSelector()
     selectedPort_.setSerializationMode(PropertySerializationMode::All);
 
     setAllPropertiesCurrentStateAsDefault();
+}
+
+template <typename Inport, typename Outport>
+void InputSelector<Inport, Outport>::updateOptions() {
+    selectedPort_.clearOptions();
+    std::string selectedID = selectedPort_.getSelectedIdentifier();
+
+    int idx = 0;
+    for (auto port : inport_.getConnectedOutports()) {
+        auto id = port->getProcessor()->getIdentifier();
+        selectedPort_.addOption(id, id, idx++);
+    }
+    if (!selectedID.empty()) {
+        selectedPort_.setSelectedIdentifier(selectedID);
+    }
+    selectedPort_.setCurrentStateAsDefault();
+    invalidate(InvalidationLevel::InvalidResources);
 }
 
 template <typename Inport, typename Outport>
