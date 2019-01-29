@@ -78,8 +78,11 @@ SimpleCrosshairOverlay::SimpleCrosshairOverlay()
     addProperty(mouseEvent_);
     addProperty(lastMousePos_);
 
+    color1_.setSemantics(PropertySemantics::Color);
     addProperty(color1_);
+    color2_.setSemantics(PropertySemantics::Color);
     addProperty(color2_);
+    color3_.setSemantics(PropertySemantics::Color);
     addProperty(color3_);
 
     addProperty(thickness1_);

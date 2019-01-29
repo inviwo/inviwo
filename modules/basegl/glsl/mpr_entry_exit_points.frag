@@ -48,23 +48,46 @@ vec2 rotate2D(vec2 pt, float angle)
     return mat2(cos(angle), -sin(angle), sin(angle), cos(angle)) * pt;
 }
 
+float maxmax(vec2 v)
+{
+    return max(v.x, v.y);
+}
+
+float maxmax(vec3 v)
+{
+    return max(max(v.x, v.y), v.z);
+}
+
+float maxmax(vec4 v)
+{
+    return max(max(v.x, v.y), max(v.z, v.w));
+}
+
+float minmin(vec2 v)
+{
+    return min(v.x, v.y);
+}
+
+float minmin(vec3 v)
+{
+    return min(min(v.x, v.y), v.z);
+}
+
+float minmin(vec4 v)
+{
+    return min(min(v.x, v.y), min(v.z, v.w));
+}
+
 void main() {
     //vec2 uv_offset = uv - p_screen;
     vec2 uv_offset = uv - vec2(0.5);
-    uv_offset.y *= (canvas_size.y / canvas_size.x); // aspect ration
+    uv_offset.y *= (canvas_size.y / canvas_size.x); // aspect ration of screen
     vec2 uv_rotated = rotate2D(uv_offset, correction_angle);
-    //vec2 uv_rotated = uv_offset;
 
-    //vec3 vd = volume_dimensions / max(max(volume_dimensions.x, volume_dimensions.y), volume_dimensions.z);
-    //vec3 vs = volume_spacing;
+    vec3 vd = volume_dimensions / maxmax(volume_dimensions);
+    vec3 vs = volume_spacing / minmin(volume_spacing);
 
-    // add thickness offset without spacing and dimensions transformation?
-    //vec3 volume_coord = p + (vd/vd) * vs * (zoom_factor * (uv_rotated.x * r + uv_rotated.y * u) + thickness_offset * n);
-    vec3 volume_coord = p + zoom_factor * (uv_rotated.x * r + uv_rotated.y * u) + thickness_offset * n;
+    vec3 volume_coord = p + (1.0 / vd) * (1.0 / vs) * zoom_factor * (uv_rotated.x * r + uv_rotated.y * u) + thickness_offset * n;
 
-    if (volume_coord.y < 0) {
-        FragData0 = vec4(1, 0, 0, 1.0);
-    } else {
-        FragData0 = vec4(volume_coord, 1.0);
-    }
+    FragData0 = vec4(volume_coord, 1.0);
 }
