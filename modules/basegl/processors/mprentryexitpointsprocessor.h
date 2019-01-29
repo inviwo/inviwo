@@ -78,7 +78,6 @@ private:
     FloatProperty zoomFactor_;
     FloatProperty correctionAngle_;
 
-    IntVec2Property canvasSize_;
     IntSize3Property volumeDimensions_;
     FloatVec3Property volumeSpacing_;
 
