@@ -33,13 +33,12 @@ uniform vec2 p_screen; // plane pos. in screen space
 uniform vec3 n; // plane's normal
 uniform vec3 u; // plane's up
 uniform vec3 r; // plane's right
-uniform float aspect_ratio = 1.0; // aspect ratio of screen
-uniform vec2 canvas_size = vec2(0.0);
-uniform float thickness_offset = 0.0; // plane's offset along normal
-uniform float zoom_factor = 1.0;
-uniform float correction_angle = 0.0;
-uniform vec3 volume_dimensions = vec3(0.0);
-uniform vec3 volume_spacing = vec3(0.0);
+uniform float aspect_ratio; // aspect ratio of screen
+uniform float thickness_offset; // plane's offset along normal
+uniform float zoom_factor;
+uniform float correction_angle;
+uniform vec3 volume_dimensions;
+uniform vec3 volume_spacing;
 
 in vec2 uv; // Viewport coordinates in [0,1]
 
@@ -48,24 +47,9 @@ vec2 rotate2D(vec2 pt, float angle)
     return mat2(cos(angle), -sin(angle), sin(angle), cos(angle)) * pt;
 }
 
-float maxmax(vec2 v)
-{
-    return max(v.x, v.y);
-}
-
 float maxmax(vec3 v)
 {
     return max(max(v.x, v.y), v.z);
-}
-
-float maxmax(vec4 v)
-{
-    return max(max(v.x, v.y), max(v.z, v.w));
-}
-
-float minmin(vec2 v)
-{
-    return min(v.x, v.y);
 }
 
 float minmin(vec3 v)
@@ -73,15 +57,8 @@ float minmin(vec3 v)
     return min(min(v.x, v.y), v.z);
 }
 
-float minmin(vec4 v)
-{
-    return min(min(v.x, v.y), min(v.z, v.w));
-}
-
 void main() {
-    //vec2 uv_offset = uv - p_screen;
-    vec2 uv_offset = uv - vec2(0.5);
-    uv_offset.x *= aspect_ratio; // aspect ration of screen
+    vec2 uv_offset = (uv - p_screen) * vec2(aspect_ratio, 1.0);
     vec2 uv_rotated = rotate2D(uv_offset, correction_angle);
 
     vec3 vd = volume_dimensions / maxmax(volume_dimensions);
