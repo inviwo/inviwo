@@ -62,6 +62,7 @@ public:
 
     // Read only used to show information
     IntSize3Property dimensions_;
+    FloatVec3Property voxelSpacing_;
     StringProperty format_;
     IntSizeTProperty channels_;
     IntSizeTProperty numVoxels_;

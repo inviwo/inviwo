@@ -49,60 +49,47 @@ MPREntryExitPoints::MPREntryExitPoints()
     , volumeInport_("volume")
     , entryPort_("entry", DataVec4UInt16::get())
     , exitPort_("exit", DataVec4UInt16::get())
-    , p_("planePosition", "p", vec3(0.5f))
-    , n_("planeNormal", "n", vec3(0.0f, 0.0f, 1.0f), vec3(-1.0f), vec3(1.0f))
-    , u_("planeUp", "u", vec3(0.0f, 1.0f, 0.0f), vec3(-1.0f), vec3(1.0f))
     , offset0_("offset0", "Offset 0", -0.01f, -1.0f, 1.0f, 0.001f)
     , offset1_("offset1", "Offset 1", 0.01f, -1.0f, 1.0f, 0.001f)
-    , R_("rotationMatrix", "R", mat4(1.0f))
-    , n_prime_("nPrime", "n'", n_.get(), vec3(-1.0f), vec3(1.0f))
-    , u_prime_("uPrime", "u'", u_.get(), vec3(-1.0f), vec3(1.0f))
+    , zoomFactor_("zoomFactor", "Zoom Factor", 1.0f, 0.01f, 100.0f, 0.01f)
+    , correctionAngle_("correctionAngle", "Correction Angle", 0.0f, -1e9f, 1e9f, 0.001f)
+    , canvasSize_("canvasSize", "Canvas Size", ivec2(0), ivec2(0), ivec2(8096), ivec2(1))
+    , volumeDimensions_("volumeDimensions", "Volume Dimensions", size3_t(0), size3_t(0), size3_t(std::numeric_limits<size_t>::max()), size3_t(1))
+    , volumeSpacing_("volumeSpacing", "Volume Spacing", vec3(0.0f), vec3(0.0f), vec3(1e5f), vec3(1e-3f))
     , cursorScreenPos_("cursorScreenPos", "Cursor Screen Pos", vec2(0.5f), vec2(0.0f), vec2(1.0f))
     , cursorScreenPosOld_("cursorScreenPosOld", "Cursor Screen Pos Old", cursorScreenPos_.get(), vec2(0.0f), vec2(1.0f))
-    , shader_("uv_pass_through.vert", "mpr_entry_exit_points.frag") {
-
+    , shader_("uv_pass_through.vert", "mpr_entry_exit_points.frag")
+    , mprP_("mprP_", "mprP_", vec3(0.5f), vec3(-10.0f), vec3(10.0f))
+    , mprBasisR_("mprBasisR_", "mprBasisR_", vec3(0.0f), vec3(-1.0f), vec3(1.0f))
+    , mprBasisU_("mprBasisU_", "mprBasisU_", vec3(0.0f), vec3(-1.0f), vec3(1.0f))
+    , mprBasisN_("mprBasisN_", "mprBasisN_", vec3(0.0f), vec3(-1.0f), vec3(1.0f))
+{
     addPort(volumeInport_);
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");
 
-    addProperty(p_);
-    n_.onChange([this]() {
-        n_prime_ = R_.get() * vec4(n_.get(), 0.0f);
-    });
-    addProperty(n_);
-    u_.onChange([this]() {
-        u_prime_ = R_.get() * vec4(u_.get(), 0.0f);
-    });
-    addProperty(u_);
     addProperty(offset0_);
     addProperty(offset1_);
+    addProperty(zoomFactor_);
+    addProperty(correctionAngle_);
+    addProperty(canvasSize_);
+    addProperty(volumeDimensions_);
+    addProperty(volumeSpacing_);
 
-    R_.onChange([this]() {
-        n_prime_ = R_.get() * vec4(n_.get(), 0.0f);
-        u_prime_ = R_.get() * vec4(u_.get(), 0.0f);
-    });
-    addProperty(R_);
-    addProperty(n_prime_); n_prime_.setReadOnly(true);
-    addProperty(u_prime_); u_prime_.setReadOnly(true);
-    
     cursorScreenPos_.onChange([this]() {
-        const auto offset = cursorScreenPos_.get() - cursorScreenPosOld_.get();
-
-        // Construct coordinate cross for this plane
-        const auto n_prime_normalized = glm::normalize(n_prime_.get());
-        const auto u_prime_normalized = glm::normalize(u_prime_.get());
-        const auto r_prime_normalized = glm::normalize(cross(n_prime_normalized, u_prime_normalized));
-
-        // update plane position
-        p_ = p_.get() + offset.x * r_prime_normalized + offset.y * u_prime_normalized;
-
-        // save current cursor position
+        const auto cursor_offset = cursorScreenPos_.get() - cursorScreenPosOld_.get();
         cursorScreenPosOld_ = cursorScreenPos_;
     });
     addProperty(cursorScreenPos_);
+    cursorScreenPosOld_.setReadOnly(true);
     addProperty(cursorScreenPosOld_);
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+
+    addProperty(mprP_);
+    addProperty(mprBasisR_);
+    addProperty(mprBasisU_);
+    addProperty(mprBasisN_);
 }
 
 MPREntryExitPoints::~MPREntryExitPoints() {}
@@ -112,21 +99,32 @@ void MPREntryExitPoints::process() {
         { -1.0f, -1.0f },{ 1.0f, -1.0f },{ -1.0f, 1.0f },{ 1.0f, 1.0f } 
     });
 
-    // Construct coordinate cross for this plane
-    const auto n_prime_normalized = glm::normalize(n_prime_.get());
-    const auto u_prime_normalized = glm::normalize(u_prime_.get());
-    const auto r_prime_normalized = glm::normalize(cross(n_prime_normalized, u_prime_normalized));
-
     // generate entry points
     utilgl::activateAndClearTarget(*entryPort_.getEditableData().get(), ImageType::ColorOnly);
     shader_.activate();
 
-    shader_.setUniform("p", p_.get()); // plane pos. in volume space
+    shader_.setUniform("p", mprP_.get()); // volume position
     shader_.setUniform("p_screen", cursorScreenPos_.get()); // plane pos. in screen space
-    shader_.setUniform("n", n_prime_normalized); // plane's normal
-    shader_.setUniform("u", u_prime_normalized); // plane's up
-    shader_.setUniform("r", r_prime_normalized); // plane's right
+    shader_.setUniform("n", mprBasisN_.get()); // plane's normal
+    shader_.setUniform("u", mprBasisU_.get()); // plane's up
+    shader_.setUniform("r", mprBasisR_.get()); // plane's right
     shader_.setUniform("thickness_offset", offset0_.get()); // plane's offset along normal, // note that setUniform does not work when passing a literal 0
+    shader_.setUniform("zoom_factor", zoomFactor_.get()); // zoom factor
+    shader_.setUniform("correction_angle", -correctionAngle_.get()); // correction angle
+    shader_.setUniform("canvas_size", vec2(canvasSize_.get())); // correction angle
+    shader_.setUniform("volume_dimensions", vec3(volumeDimensions_.get())); // correction angle
+    shader_.setUniform("volume_spacing", volumeSpacing_.get()); // correction angle
+
+    LogInfo("cursorScreenPos_: " << cursorScreenPos_);
+    LogInfo("offset0_: " << offset0_);
+    LogInfo("offset1_: " << offset1_);
+    LogInfo("mprP_: " << mprP_);
+    LogInfo("mprBasisR_: " << mprBasisR_);
+    LogInfo("mprBasisU_: " << mprBasisU_);
+    LogInfo("mprBasisN_: " << mprBasisN_);
+    LogInfo("canvasSize_: " << canvasSize_);
+    LogInfo("volumeDimensions_: " << volumeDimensions_);
+    LogInfo("volumeSpacing_: " << volumeSpacing_);
 
     auto quadGL = quad->getRepresentation<BufferGL>();
     quadGL->enable();

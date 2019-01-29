@@ -73,22 +73,24 @@ private:
     ImageOutport entryPort_;
     ImageOutport exitPort_;
 
-    // TODO: group properties using composites
-
-    FloatVec3Property p_;
-    FloatVec3Property n_;
-    FloatVec3Property u_;
     FloatProperty offset0_;
     FloatProperty offset1_;
+    FloatProperty zoomFactor_;
+    FloatProperty correctionAngle_;
 
-    FloatMat4Property R_;
-    FloatVec3Property n_prime_;
-    FloatVec3Property u_prime_;
+    IntVec2Property canvasSize_;
+    IntSize3Property volumeDimensions_;
+    FloatVec3Property volumeSpacing_;
 
     FloatVec2Property cursorScreenPos_;
     FloatVec2Property cursorScreenPosOld_;
 
     Shader shader_;
+
+    FloatVec3Property mprP_;
+    FloatVec3Property mprBasisR_;
+    FloatVec3Property mprBasisU_;
+    FloatVec3Property mprBasisN_;
 };
 
 } // namespace

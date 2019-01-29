@@ -34,15 +34,37 @@ uniform vec3 n; // plane's normal
 uniform vec3 u; // plane's up
 uniform vec3 r; // plane's right
 uniform float aspect_ratio = 1.0; // aspect ratio of screen
+uniform vec2 canvas_size = vec2(0.0);
 uniform float thickness_offset = 0.0; // plane's offset along normal
+uniform float zoom_factor = 1.0;
+uniform float correction_angle = 0.0;
+uniform vec3 volume_dimensions = vec3(0.0);
+uniform vec3 volume_spacing = vec3(0.0);
 
 in vec2 uv; // Viewport coordinates in [0,1]
 
+vec2 rotate2D(vec2 pt, float angle)
+{
+    return mat2(cos(angle), -sin(angle), sin(angle), cos(angle)) * pt;
+}
+
 void main() {
-    const vec2 uv_offset = uv - p_screen;
+    //vec2 uv_offset = uv - p_screen;
+    vec2 uv_offset = uv - vec2(0.5);
+    uv_offset.y *= (canvas_size.y / canvas_size.x); // aspect ration
+    vec2 uv_rotated = rotate2D(uv_offset, correction_angle);
+    //vec2 uv_rotated = uv_offset;
 
-    // TODO: add aspect ratio of screen and dimensions of volume to correct for distortion
-    const vec3 volume_coord = p + uv_offset.x * r + aspect_ratio * uv_offset.y * u + thickness_offset * n;
+    //vec3 vd = volume_dimensions / max(max(volume_dimensions.x, volume_dimensions.y), volume_dimensions.z);
+    //vec3 vs = volume_spacing;
 
-    FragData0 = vec4(volume_coord, 1.0);
+    // add thickness offset without spacing and dimensions transformation?
+    //vec3 volume_coord = p + (vd/vd) * vs * (zoom_factor * (uv_rotated.x * r + uv_rotated.y * u) + thickness_offset * n);
+    vec3 volume_coord = p + zoom_factor * (uv_rotated.x * r + uv_rotated.y * u) + thickness_offset * n;
+
+    if (volume_coord.y < 0) {
+        FragData0 = vec4(1, 0, 0, 1.0);
+    } else {
+        FragData0 = vec4(volume_coord, 1.0);
+    }
 }
