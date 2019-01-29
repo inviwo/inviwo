@@ -575,7 +575,7 @@ void ParallelCoordinates::drawLines(size2_t size) {
     lineShader_.setUniform("selected", 0);
     lineShader_.setUniform("filtered", 0);
     for (size_t i = 0; i < numLines; i++) {
-        if (brushedID.find(indexCol[i]) != brushedID.end()) {
+        if (brushingAndLinking_.isFiltered(indexCol[i])) {
             if (showFiltered_) {
                 filteredIndices.push_back(i);
             }
@@ -599,7 +599,7 @@ void ParallelCoordinates::drawLines(size2_t size) {
     lineShader_.setUniform("selected", 1);
     lineShader_.setUniform("filtered", 0);
     for (const auto &i : selectIndices) {
-        if (brushedID.find(indexCol[i]) != brushedID.end()) continue;
+        if (brushingAndLinking_.isFiltered(indexCol[i])) continue;
         drawObject.draw(i);
     }
 
@@ -739,7 +739,7 @@ void ParallelCoordinates::handlePicked(PickingEvent *p) {
     if (p->getPressState() == PickingPressState::Move &&
         p->getPressItems().count(PickingPressItem::Primary)) {
 
-        mouseReleased = false;
+        if (brushOnlyWhenMouseRelease_.get()) brushingAndLinking_.pauseFilterEvents();
 
         // move axis range handle
         auto canvasSize = outport_.getDimensions();
@@ -753,8 +753,8 @@ void ParallelCoordinates::handlePicked(PickingEvent *p) {
         axisVector_[axisID]->moveHandle(upper, newY);
         p->markAsUsed();
     }
-    if (p->getPressState() == PickingPressState::Release) {
-        mouseReleased = true;
+    if (p->getPressState() == PickingPressState::Release && brushOnlyWhenMouseRelease_.get()) {
+        brushingAndLinking_.unpauseFilterEvents();
         updateBrushing();
     }
 }
@@ -767,18 +767,14 @@ void ParallelCoordinates::updateBrushing() {
         axes->updateBrushing(brushed);
     }
 
+    std::unordered_set<size_t> brushedID;
     auto iCol = dataFrame_.getData()->getIndexColumn();
     auto &indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
 
-    brushedID.clear();
     std::for_each(brushed.begin(), brushed.end(),
                   [&](const auto &id) { brushedID.insert(indexCol[id]); });
 
-    if (brushOnlyWhenMouseRelease_.get() && mouseReleased) {
-        brushingAndLinking_.sendFilterEvent(brushedID);
-    } else if (!brushOnlyWhenMouseRelease_.get()) {
-        brushingAndLinking_.sendFilterEvent(brushedID);
-    }
+    brushingAndLinking_.sendFilterEvent(brushedID);
 }
 
 }  // namespace plot
