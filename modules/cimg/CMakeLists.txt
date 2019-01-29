@@ -1,5 +1,5 @@
 # Add OpenEXR
-#add_subdirectory(ext/openexr)
+add_subdirectory(ext/openexr)
 add_subdirectory(ext/cimg)
 #--------------------------------------------------------------------
 # CImg Module
@@ -43,21 +43,35 @@ target_link_libraries(inviwo-module-cimg PUBLIC
     ZLIB::ZLIB
     inviwo::libjpeg
     inviwo::tiff
-    #openexr-half
-    #openexr-iex
-    #openexr-iexmath
-    #openexr-imath
-    #openexr-ilmthread
-    #openexr-ilmimf
-    #openexr-ilmimfutil
+
+    IlmBase::Half
+    IlmBase::Iex
+    IlmBase::IexMath
+    IlmBase::Imath
+    IlmBase::IlmThread
+    OpenEXR::IlmImf
+    OpenEXR::IlmImfUtil
+
     inviwo::cimg
 )
+target_include_directories(inviwo-module-cimg PUBLIC 
+    ${CMAKE_CURRENT_BINARY_DIR}/ext/openexr/openexr/IlmBase/config
+    ${CMAKE_CURRENT_SOURCE_DIR}/ext/openexr/openexr/IlmBase/Half
+    ${CMAKE_CURRENT_SOURCE_DIR}/ext/openexr/openexr/IlmBase/Iex
+    ${CMAKE_CURRENT_SOURCE_DIR}/ext/openexr/openexr/IlmBase/IexMath
+    ${CMAKE_CURRENT_SOURCE_DIR}/ext/openexr/openexr/IlmBase/Imath
+    ${CMAKE_CURRENT_SOURCE_DIR}/ext/openexr/openexr/IlmBase/IlmThread
+    ${CMAKE_CURRENT_BINARY_DIR}/ext/openexr/openexr/OpenEXR/config
+    ${CMAKE_CURRENT_SOURCE_DIR}/ext/openexr/openexr/OpenEXR/IlmImf
+    ${CMAKE_CURRENT_SOURCE_DIR}/ext/openexr/openexr/OpenEXR/IlmImfUtil
+)
+
 
 target_compile_definitions(inviwo-module-cimg PUBLIC
     cimg_use_cpp11
     cimg_use_jpeg
     cimg_use_zlib
-    #cimg_use_openexr
+    cimg_use_openexr
     cimg_use_tiff
 )
 
@@ -66,11 +80,11 @@ ivw_register_license_file(NAME CImg VERSION 2.1.5 MODULE CImg TYPE CeCILL-C
     FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/cimg/Licence_CeCILL-C_V1-en.txt
 )
 
-#ivw_register_license_file(NAME "OpenEXR" TARGET openexr-ilmimf MODULE CImg
-#    URL "http://www.openexr.com"
-#    TYPE "Modified BSD License"
-#    FILES ext/openexr/openexr-2.2.0/LICENSE
-#)
+ivw_register_license_file(NAME "OpenEXR" TARGET OpenEXR::IlmImf MODULE CImg
+    URL "http://www.openexr.com"
+    TYPE "Modified BSD License"
+    FILES ext/openexr/openexr/LICENSE
+)
 
 ivw_register_license_file(NAME libjpeg-turbo TARGET inviwo::libjpeg MODULE CImg
     TYPE "BSD-style, acknowledgement: This software is based in part on the work of the Independent JPEG Group"
