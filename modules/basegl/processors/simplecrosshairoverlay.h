@@ -66,16 +66,18 @@ private:
 
     void updateMouse(Event* e);
 
+    float getAngleFromMouse(vec2 mousePos);
+
     ImageInport imageIn_;
     ImageOutport imageOut_;
 
+    float angleDiff_;
     FloatProperty cursorAngle_;
     FloatVec2Property cursorPos_;
     FloatProperty cursorRadius_;
 
     EventProperty mouseEvent_;
     InteractionState interactionState_;
-    FloatVec2Property lastMousePos_;
 
     FloatVec4Property color1_;
     FloatVec4Property color2_;

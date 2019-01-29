@@ -50,13 +50,13 @@ SimpleCrosshairOverlay::SimpleCrosshairOverlay()
     : Processor()
     , imageIn_("imageIn")
     , imageOut_("imageOut")
+    , angleDiff_(0)
     , cursorAngle_("cursorAngle", "Cursor Angle", 0.0f, 0.0f, glm::two_pi<float>())
     , cursorPos_("cursorPos", "Cursor Position", vec2(0.5f), vec2(0.0f), vec2(1.0f))
     , cursorRadius_("cursorRadius", "Cursor Radius", 0.1f, 0.0f, 1.0f)
     , mouseEvent_("mouseEvent", "Mouse Event", [this](Event* e) { updateMouse(e); },
                   MouseButton::Left, MouseState::Press | MouseState::Move | MouseState::Release)
     , interactionState_ (InteractionState::NONE)
-	, lastMousePos_("lastMousePos", "Last Mouse Position", vec2(0.0f), vec2(-10.0f), vec2(10.0f))
     , color1_("color1", "Color 1", vec4(1), vec4(0), vec4(1))
     , color2_("color2", "Color 2", vec4(1), vec4(0), vec4(1))
     , color3_("color3", "Color 3", vec4(1), vec4(0), vec4(1))
@@ -76,7 +76,6 @@ SimpleCrosshairOverlay::SimpleCrosshairOverlay()
 
 	mouseEvent_.setVisible(false);
     addProperty(mouseEvent_);
-    addProperty(lastMousePos_);
 
     color1_.setSemantics(PropertySemantics::Color);
     addProperty(color1_);
@@ -102,18 +101,18 @@ void SimpleCrosshairOverlay::process() {
     crosshairMesh_ = std::make_shared<Mesh>(DrawType::Triangles, ConnectivityType::None);
     outlineMesh_ = std::make_shared<Mesh>(DrawType::Triangles, ConnectivityType::None);
 
-    // Create crosshair in NDC with double screen size so that endings are never visible
+    // Create crosshair in NDC with double screen size bars so that endings are never visible
     crosshairMesh_->addBuffer(BufferType::PositionAttrib, util::makeBuffer<vec2>({
         // horizontal
-        vec2(2.f, pos.y + thickness.y), vec2(-2.f, pos.y + thickness.y), vec2(-2.f, pos.y - thickness.y), // upper triangle (CCW)
-        vec2(2.f, pos.y - thickness.y), vec2(2.f, pos.y + thickness.y), vec2(-2.f, pos.y - thickness.y), // lower triangle
+        vec2(4.f, pos.y + thickness.y), vec2(-4.f, pos.y + thickness.y), vec2(-4.f, pos.y - thickness.y), // upper triangle (CCW)
+        vec2(4.f, pos.y - thickness.y), vec2(4.f, pos.y + thickness.y), vec2(-4.f, pos.y - thickness.y), // lower triangle
         // vertical
-        vec2(pos.x + thickness.x, 2.f), vec2(pos.x - thickness.x, 2.f), vec2(pos.x - thickness.x, -2.f), // left triangle
-        vec2(pos.x + thickness.x, -2.f), vec2(pos.x + thickness.x, 2.f), vec2(pos.x - thickness.x, -2.f) // right triangle
+        vec2(pos.x + thickness.x, 4.f), vec2(pos.x - thickness.x, 4.f), vec2(pos.x - thickness.x, -4.f), // left triangle
+        vec2(pos.x + thickness.x, -4.f), vec2(pos.x + thickness.x, 4.f), vec2(pos.x - thickness.x, -4.f) // right triangle
         }));
     crosshairMesh_->addBuffer(BufferType::ColorAttrib, util::makeBuffer<vec4>(std::vector<vec4>{
         color1_, color1_, color1_, color1_, color1_, color1_,
-        color2_, color2_, color2_, color2_, color2_, color2_
+            color2_, color2_, color2_, color2_, color2_, color2_
     }));
 
     // Create viewport outline as useful indicator when having multiple views, e.g. in MPR
@@ -130,16 +129,34 @@ void SimpleCrosshairOverlay::process() {
         // right
         vec2(1.f - thicknessOutline.x, 1.f), vec2(1.f, -1.f), vec2(1.f - thicknessOutline.x, -1.f), // left triangle
         vec2(1.f, 1.f), vec2(1.f, -1.f), vec2(1.f - thicknessOutline.x, 1.f) // right triangle
-    }));
+        }));
     outlineMesh_->addBuffer(BufferType::ColorAttrib, util::makeBuffer<vec4>(std::vector<vec4>(24, color3_)));
 
     // Render mesh over input image and copy to output port
     utilgl::activateTargetAndCopySource(imageOut_, imageIn_, ImageType::ColorDepth);
     shader_.activate();
+    float cosA = cos(cursorAngle_), sinA = sin(cursorAngle_);
+    mat4 rot(mat2(cosA, -sinA, sinA, cosA));
+    mat4 transl1(1); transl1[3] = vec4(-pos, 0, 1);
+    mat4 transl2(1); transl2[3] = vec4(pos, 0, 1);
+    shader_.setUniform("dataToClip", transl2 * rot * transl1);
     utilgl::DepthFuncState depth(GL_ALWAYS);
     MeshDrawerGL(crosshairMesh_.get()).draw();
+    shader_.setUniform("dataToClip", mat4(1));
     MeshDrawerGL(outlineMesh_.get()).draw();
     shader_.deactivate();
+}
+
+float SimpleCrosshairOverlay::getAngleFromMouse(vec2 mousePos) {
+
+    // get angle in [0..2pi] relative to "12 o'clock"
+
+    const vec2 watchHand = normalize(mousePos * 2.f - 1.f);
+
+    if (watchHand.x > 0)
+        return acos(watchHand.y);
+    else
+        return acos(-watchHand.y) + M_PI;
 }
 
 void SimpleCrosshairOverlay::updateMouse(Event* e) {
@@ -148,56 +165,37 @@ void SimpleCrosshairOverlay::updateMouse(Event* e) {
     const auto newMousePos = vec2(mouseEvent->posNormalized());
 
     if (mouseState == MouseState::Press) { // ### update last mouse position at mouse down ###
-        lastMousePos_ = newMousePos;
+
+        // Here we have actually a press but no move
 
         if (glm::distance(newMousePos, cursorPos_.get()) < cursorRadius_) { // ### determine if cursor rotation or movement
             interactionState_ = InteractionState::MOVE;
         } else {
             interactionState_ = InteractionState::ROTATE;
+
+            // To prevent snapping angle to mouse, save the diff to the last rotation interaction here
+            angleDiff_ = getAngleFromMouse(newMousePos) - cursorAngle_;
         }
     } else if (mouseState == MouseState::Move) {
+
+        // Here we have a move and press at the same time, i.e. drag
+
         if (interactionState_ == InteractionState::ROTATE) { // ### update angle at mouse move ###
-            // angle between cursor center to old and new mouse pos
-            const auto dirOld = glm::normalize(lastMousePos_.get() - cursorPos_.get());
-            const auto dirNew = glm::normalize(newMousePos - cursorPos_.get());
-            const auto angleDiff = glm::acos(glm::dot(dirOld, dirNew));
 
-            // determine direction of rotation
-            const float angleSign = (glm::cross(vec3(dirOld, 0.0f), vec3(dirNew, 0.0f)).z > 0) ? 1.0f : -1.0f;
+            // set new angle minus diff
+            // be sure to stay in [0..2pi] after applying diff
+            float a = getAngleFromMouse(newMousePos) - angleDiff_;
+            if (a < 0) a = glm::two_pi<float>() + a;
+            cursorAngle_ = fmod(a, glm::two_pi<float>());
 
-            // update angle in temporary variable
-            auto tmp = cursorAngle_.get();
-            tmp += angleSign * angleDiff;
-
-            // fix angle between 0 and 2pi
-            while (tmp > glm::two_pi<float>()) {
-                tmp -= glm::two_pi<float>();
-            }
-            while (tmp < 0.0f) {
-                tmp += glm::two_pi<float>();
-            }
-
-            // set new angle [0..2pi]
-            cursorAngle_ = tmp;
-
-            // update regular mouse pos while rotating
-            lastMousePos_ = newMousePos;
         } else if (interactionState_ == InteractionState::MOVE) { // ### update position at mouse move ###
-            const auto newMousePosClamped = glm::clamp(newMousePos, vec2(0.0f), vec2(1.0f));
-            const auto diff = newMousePosClamped - lastMousePos_.get();
-            const auto newCursorPos = glm::clamp(cursorPos_.get() + diff, vec2(0.0f), vec2(1.0f));
 
             // set new position vec2[0..1]
-            cursorPos_ = newCursorPos;
+            cursorPos_ = clamp(newMousePos, vec2(0), vec2(1));
 
-            // update clamped new mouse pos while dragging
-            lastMousePos_ = newMousePosClamped;
-        } else {
-            lastMousePos_ = newMousePos;
         }
     } else if (mouseState == MouseState::Release) {
         interactionState_ = InteractionState::NONE;
-        lastMousePos_ = newMousePos;
     }
 }
 
