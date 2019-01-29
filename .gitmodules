@@ -38,3 +38,6 @@
 [submodule "modules/cimg/ext/openexr/openexr"]
 	path = modules/cimg/ext/openexr/openexr
 	url = https://petersteneteg@github.com/inviwo/openexr.git
+[submodule "modules/assimp/ext/assimp/assimp"]
+	path = modules/assimp/ext/assimp/assimp
+	url = https://petersteneteg@github.com/inviwo/assimp.git
