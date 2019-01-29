@@ -30,7 +30,10 @@
 #ifndef IVW_PYINVIWOMODULE_H
 #define IVW_PYINVIWOMODULE_H
 
+#include <warn/push>
+#include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
+#include <warn/pop>
 
 namespace inviwo {
 
