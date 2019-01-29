@@ -81,13 +81,14 @@ float minmin(vec4 v)
 void main() {
     //vec2 uv_offset = uv - p_screen;
     vec2 uv_offset = uv - vec2(0.5);
-    uv_offset.y *= (canvas_size.y / canvas_size.x); // aspect ration of screen
+    uv_offset.x *= aspect_ratio; // aspect ration of screen
     vec2 uv_rotated = rotate2D(uv_offset, correction_angle);
 
     vec3 vd = volume_dimensions / maxmax(volume_dimensions);
     vec3 vs = volume_spacing / minmin(volume_spacing);
 
-    vec3 volume_coord = p + (1.0 / vd) * (1.0 / vs) * zoom_factor * (uv_rotated.x * r + uv_rotated.y * u) + thickness_offset * n;
+    vec3 volume_offset = (1.0 / vd) * (1.0 / vs) * zoom_factor * (uv_rotated.x * r + uv_rotated.y * u) + thickness_offset * n;
+    vec3 volume_coord = p + volume_offset;
 
     FragData0 = vec4(volume_coord, 1.0);
 }

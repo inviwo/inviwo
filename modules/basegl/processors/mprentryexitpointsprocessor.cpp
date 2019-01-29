@@ -53,7 +53,6 @@ MPREntryExitPoints::MPREntryExitPoints()
     , offset1_("offset1", "Offset 1", 0.01f, -1.0f, 1.0f, 0.001f)
     , zoomFactor_("zoomFactor", "Zoom Factor", 1.0f, 0.01f, 100.0f, 0.01f)
     , correctionAngle_("correctionAngle", "Correction Angle", 0.0f, -1e9f, 1e9f, 0.001f)
-    , canvasSize_("canvasSize", "Canvas Size", ivec2(0), ivec2(0), ivec2(8096), ivec2(1))
     , volumeDimensions_("volumeDimensions", "Volume Dimensions", size3_t(0), size3_t(0), size3_t(std::numeric_limits<size_t>::max()), size3_t(1))
     , volumeSpacing_("volumeSpacing", "Volume Spacing", vec3(0.0f), vec3(0.0f), vec3(1e5f), vec3(1e-3f))
     , cursorScreenPos_("cursorScreenPos", "Cursor Screen Pos", vec2(0.5f), vec2(0.0f), vec2(1.0f))
@@ -72,7 +71,6 @@ MPREntryExitPoints::MPREntryExitPoints()
     addProperty(offset1_);
     addProperty(zoomFactor_);
     addProperty(correctionAngle_);
-    addProperty(canvasSize_);
     addProperty(volumeDimensions_);
     addProperty(volumeSpacing_);
 
@@ -103,28 +101,20 @@ void MPREntryExitPoints::process() {
     utilgl::activateAndClearTarget(*entryPort_.getEditableData().get(), ImageType::ColorOnly);
     shader_.activate();
 
+    const auto canvas_size = entryPort_.getDimensions();
+    const auto aspect_ratio = static_cast<float>(canvas_size.x) / static_cast<float>(canvas_size.y);
+
     shader_.setUniform("p_screen", cursorScreenPos_.get()); // plane pos. in screen space
     shader_.setUniform("p", mprP_.get()); // volume position
     shader_.setUniform("n", mprBasisN_.get()); // plane's normal
     shader_.setUniform("u", mprBasisU_.get()); // plane's up
     shader_.setUniform("r", mprBasisR_.get()); // plane's right
     shader_.setUniform("thickness_offset", offset0_.get()); // plane's offset along normal, // note that setUniform does not work when passing a literal 0
-    shader_.setUniform("zoom_factor", zoomFactor_.get()); // zoom factor
-    shader_.setUniform("correction_angle", -correctionAngle_.get()); // correction angle
-    shader_.setUniform("canvas_size", vec2(canvasSize_.get())); // correction angle
-    shader_.setUniform("volume_dimensions", vec3(volumeDimensions_.get())); // correction angle
-    shader_.setUniform("volume_spacing", volumeSpacing_.get()); // correction angle
-
-    /*LogInfo("cursorScreenPos_: " << cursorScreenPos_);
-    LogInfo("offset0_: " << offset0_);
-    LogInfo("offset1_: " << offset1_);
-    LogInfo("mprP_: " << mprP_);
-    LogInfo("mprBasisR_: " << mprBasisR_);
-    LogInfo("mprBasisU_: " << mprBasisU_);
-    LogInfo("mprBasisN_: " << mprBasisN_);
-    LogInfo("canvasSize_: " << canvasSize_);
-    LogInfo("volumeDimensions_: " << volumeDimensions_);
-    LogInfo("volumeSpacing_: " << volumeSpacing_);*/
+    shader_.setUniform("zoom_factor", zoomFactor_.get());
+    shader_.setUniform("correction_angle", -correctionAngle_.get());
+    shader_.setUniform("aspect_ratio", aspect_ratio);
+    shader_.setUniform("volume_dimensions", vec3(volumeDimensions_.get()));
+    shader_.setUniform("volume_spacing", volumeSpacing_.get());
 
     auto quadGL = quad->getRepresentation<BufferGL>();
     quadGL->enable();
