@@ -55,6 +55,7 @@ public:
     void remove(const BrushingAndLinkingInport* src);
 
     bool isFiltered(size_t idx) const;
+    bool isFilteredByOther(size_t idx, const inviwo::BrushingAndLinkingInport* src) const;
     bool isSelected(size_t idx) const;
 
     void setSelected(const BrushingAndLinkingInport* src,

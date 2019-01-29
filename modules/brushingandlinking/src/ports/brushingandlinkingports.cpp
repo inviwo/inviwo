@@ -44,8 +44,10 @@ BrushingAndLinkingInport::BrushingAndLinkingInport(std::string identifier)
 void BrushingAndLinkingInport::sendFilterEvent(const std::unordered_set<size_t> &indices) {
     if (filterCache_.size() == 0 && indices.size() == 0) return;
     filterCache_ = indices;
-    FilteringEvent event(this, filterCache_);
-    getProcessor()->propagateEvent(&event, nullptr);
+    if (!filterEventsPaused_) {
+        FilteringEvent event(this, filterCache_);
+        getProcessor()->propagateEvent(&event, nullptr);
+    }
 }
 
 void BrushingAndLinkingInport::sendSelectionEvent(const std::unordered_set<size_t> &indices) {
@@ -56,8 +58,13 @@ void BrushingAndLinkingInport::sendSelectionEvent(const std::unordered_set<size_
 }
 
 bool BrushingAndLinkingInport::isFiltered(size_t idx) const {
-    if (isConnected()) {
+    if (isConnected() && !filterEventsPaused_) {
         return getData()->isFiltered(idx);
+    } else if (isConnected() && filterEventsPaused_) {
+        // If the filterevents are paused from this inport, search through both the local cache and
+        // index-lists from other inports for given index.
+        return (filterCache_.find(idx) != filterCache_.end()) ||
+               getData()->isFilteredByOther(idx, this);
     } else {
         return filterCache_.find(idx) != filterCache_.end();
     }
@@ -69,6 +76,15 @@ bool BrushingAndLinkingInport::isSelected(size_t idx) const {
     } else {
         return selectionCache_.find(idx) != selectionCache_.end();
     }
+}
+
+void BrushingAndLinkingInport::pauseFilterEvents() {
+    filterEventsPaused_ = true;
+}
+
+void BrushingAndLinkingInport::unpauseFilterEvents() {
+    filterEventsPaused_ = false;
+    sendFilterEvent(filterCache_);
 }
 
 const std::unordered_set<size_t> &BrushingAndLinkingInport::getSelectedIndices() const {

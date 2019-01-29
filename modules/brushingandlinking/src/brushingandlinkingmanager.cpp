@@ -61,6 +61,11 @@ void BrushingAndLinkingManager::remove(const BrushingAndLinkingInport* src) {
 
 bool BrushingAndLinkingManager::isFiltered(size_t idx) const { return filtered_.has(idx); }
 
+bool BrushingAndLinkingManager::isFilteredByOther(
+    size_t idx, const inviwo::BrushingAndLinkingInport* src) const {
+    return filtered_.hasFromOtherInport(idx, src);
+}
+
 bool BrushingAndLinkingManager::isSelected(size_t idx) const { return selected_.has(idx); }
 
 void BrushingAndLinkingManager::setSelected(const BrushingAndLinkingInport* src,

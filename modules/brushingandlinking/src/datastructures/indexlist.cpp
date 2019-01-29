@@ -40,6 +40,15 @@ size_t IndexList::getSize() const { return indices_.size(); }
 
 bool IndexList::has(size_t idx) const { return indices_.find(idx) != indices_.end(); }
 
+bool IndexList::hasFromOtherInport(size_t idx, const inviwo::BrushingAndLinkingInport *src) const {
+    for (auto indexList : indicesBySource_) {
+        if (indexList.first != src) {
+            if (indexList.second.find(idx) != indexList.second.end()) return true;
+        }
+    }
+    return false;
+}
+
 void IndexList::set(const BrushingAndLinkingInport *src,
                     const std::unordered_set<size_t> &indices) {
     indicesBySource_[src] = indices;

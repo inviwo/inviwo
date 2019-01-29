@@ -45,6 +45,7 @@ public:
 
     size_t getSize() const;
     bool has(size_t idx) const;
+    bool hasFromOtherInport(size_t idx, const inviwo::BrushingAndLinkingInport *src) const;
 
     void set(const BrushingAndLinkingInport *src, const std::unordered_set<size_t> &incices);
     void remove(const BrushingAndLinkingInport *src);

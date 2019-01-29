@@ -55,6 +55,10 @@ public:
     bool isFiltered(size_t idx) const;
     bool isSelected(size_t idx) const;
 
+    void pauseFilterEvents();
+    void unpauseFilterEvents();
+    bool brushingEventsIsPaused() { return filterEventsPaused_; };
+
     const std::unordered_set<size_t> &getSelectedIndices() const;
     const std::unordered_set<size_t> &getFilteredIndices() const;
 
@@ -62,6 +66,9 @@ public:
 
     std::unordered_set<size_t> filterCache_;
     std::unordered_set<size_t> selectionCache_;
+
+private:
+    bool filterEventsPaused_ = false;
 };
 
 class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingOutport
