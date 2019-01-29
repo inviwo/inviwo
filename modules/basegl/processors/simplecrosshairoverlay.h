@@ -34,6 +34,7 @@
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
+#include <memory>
 
 // properties
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -58,9 +59,10 @@ public:
 	void process() override;
 
 private:
+
     enum class InteractionState { NONE, MOVE, ROTATE };
 
-    void updateCrosshair(Event* e);
+    void updateMouse(Event* e);
 
     ImageInport imageIn_;
     ImageOutport imageOut_;
@@ -79,6 +81,10 @@ private:
 
     IntSizeTProperty thickness1_;
     IntSizeTProperty thickness2_;
+
+    std::shared_ptr<Mesh> crosshairMesh_;
+    std::shared_ptr<Mesh> outlineMesh_;
+    Shader shader_;
 };
 }  // namespace inviwo
 
