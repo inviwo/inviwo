@@ -30,7 +30,10 @@
 #ifndef IVW_PYTFPRIMITIVESET_H
 #define IVW_PYTFPRIMITIVESET_H
 
+#include <warn/push>
+#include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
+#include <warn/pop>
 #include <inviwo/core/datastructures/tfprimitive.h>
 
 namespace inviwo {

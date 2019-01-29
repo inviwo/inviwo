@@ -29,7 +29,12 @@
 
 #ifndef IVW_PYNETWORK_H
 #define IVW_PYNETWORK_H
+
+#include <warn/push>
+#include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
+#include <warn/pop>
+
 
 #include <inviwo/core/ports/outport.h>
 

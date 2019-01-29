@@ -535,7 +535,7 @@ void CanvasQtBase<T>::propagateEvent(Event* e) {
 
 template <typename T>
 void CanvasQtBase<T>::propagateEvent(MouseInteractionEvent* e) {
-    e->setToolTipCallback([this, e](const std::string& tooltip) -> void {
+    e->setToolTipCallback([this](const std::string& tooltip) -> void {
         // Save tooltip text to be displayed when Qt raises a QHelpEvent (mouse is still for a while)
         toolTipText_ = tooltip;
     });

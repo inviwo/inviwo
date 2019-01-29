@@ -30,7 +30,10 @@
 #ifndef IVW_PYDATAMAPPER_H
 #define IVW_PYDATAMAPPER_H
 
+#include <warn/push>
+#include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
+#include <warn/pop>
 
 namespace inviwo {
 

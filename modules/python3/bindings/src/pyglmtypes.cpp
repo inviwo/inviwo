@@ -33,9 +33,12 @@
 
 #include <inviwopy/pyglmmattypes.h>
 
+#include <warn/push>
+#include <warn/ignore/shadow>
 #include <pybind11/operators.h>
 #include <pybind11/numpy.h>
 #include <pybind11/stl_bind.h>
+#include <warn/pop>
 
 #include <map>
 #include <string>

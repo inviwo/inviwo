@@ -116,7 +116,7 @@ QMenu* addTFPresetsMenu(QWidget* parent, QMenu* menu, TransferFunctionProperty* 
                         auto action = presets->addAction(
                             utilqt::toQString(file.substr(basePath.length() + 1)));
                         QObject::connect(action, &QAction::triggered, parent,
-                                         [parent, property, file, ext]() {
+                                         [property, file, ext]() {
                                              NetworkLock lock(property);
                                              property->get().load(file, ext);
                                          });

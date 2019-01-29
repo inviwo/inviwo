@@ -32,7 +32,10 @@
 
 #include <inviwo/core/common/inviwo.h>
 
+#include <warn/push>
+#include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
+#include <warn/pop>
 #include <memory>
 
 namespace inviwo {

@@ -28,7 +28,10 @@
  *
  *********************************************************************************/
 
+#include <warn/push>
+#include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
+#include <warn/pop>
 #include <modules/python3qt/python3qtmodule.h>
 #include <modules/python3qt/pythoneditorwidget.h>
 #include <modules/python3qt/pythonmenu.h>
