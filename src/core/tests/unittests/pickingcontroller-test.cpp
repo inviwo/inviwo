@@ -456,19 +456,9 @@ TEST(PickingControllerTest, MouseDrag1to2) {
         auto event = mouseEvent(B::None, S::Move, Bs{B::Left}, pos, dim);
         TestPropagator tp;
         ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
-        ASSERT_EQ(tp.events.size(), 2);
-        {
-            SCOPED_TRACE("hover exit event");
-            testPickingEvent(tp.events[0].get(), PS::Updated, PHS::Exit, PPS::Move, PPI::None,
-                             PPIs{PPI::Primary}, 2, 5, 2, 2, 1, 2, 1, 1, ndc(pos), ndc(pre),
-                             ndc(uvec2{3, 3}));
-        }
-        {
-            SCOPED_TRACE("hover enter event");
-            testPickingEvent(tp.events[1].get(), PS::Updated, PHS::Enter, PPS::Move, PPI::None,
-                             PPIs{PPI::Primary}, 2, 5, 2, 2, 1, 2, 1, 1, ndc(pos), ndc(pos),
-                             ndc(uvec2{3, 3}));
-        }
+        ASSERT_EQ(tp.events.size(), 1);
+        testPickingEvent(tp.events[0].get(), PS::Updated, PHS::Move, PPS::Move, PPI::None,
+                         PPI::Primary, 2, 5, 2, 2, 1, 0, 1, 1, ndc(pos), ndc(pre), ndc(pre));
     }
 }
 
@@ -490,7 +480,7 @@ TEST(PickingControllerTest, MouseDrag1to0) {
         TestPropagator tp;
         ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
         ASSERT_EQ(tp.events.size(), 1);
-        testPickingEvent(tp.events[0].get(), PS::Updated, PHS::Exit, PPS::Move, PPI::None,
+        testPickingEvent(tp.events[0].get(), PS::Updated, PHS::Move, PPS::Move, PPI::None,
                          PPIs{PPI::Primary}, 2, 0, 2, 2, 1, 0, 1, 1, ndc(pos), ndc(pre),
                          ndc(uvec2{3, 3}));
     }
@@ -503,9 +493,58 @@ TEST(PickingControllerTest, MouseDrag1to0) {
         TestPropagator tp;
         ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
         ASSERT_EQ(tp.events.size(), 1);
-        testPickingEvent(tp.events[0].get(), PS::Finished, PHS::None, PPS::Release, PPI::Primary,
+        testPickingEvent(tp.events[0].get(), PS::Finished, PHS::Exit, PPS::Release, PPI::Primary,
                          PPIs{flags::empty}, 2, 0, 2, 2, 1, 0, 1, 1, ndc(pos), ndc(pre),
                          ndc(uvec2{3, 3}));
+    }
+}
+
+TEST(PickingControllerTest, MouseDrag0to1) {
+    PickingManager pm;
+    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 2);
+    pm.registerPickingAction(nullptr, [](PickingEvent*) {}, 3);
+    PickingControllerMouseState ms(&pm);
+    {
+        uvec2 pos{1, 1};  // id = 0
+        auto event = mouseEvent(B::None, S::Move, Bs(flags::empty), pos, dim);
+
+        TestPropagator tp;
+        ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
+        ASSERT_EQ(tp.events.size(), 0);
+    }
+    {
+        SCOPED_TRACE("Press 1,1");
+        uvec2 pre{1, 1};  // id = 0
+        uvec2 pos{1, 1};  // id = 0
+
+        auto event = mouseEvent(B::Left, S::Press, Bs{B::Left}, pos, dim);
+        TestPropagator tp;
+        ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
+        ASSERT_EQ(tp.events.size(), 0);
+    }
+
+    {
+        SCOPED_TRACE("Drag 1,1 -> 3,3");
+        uvec2 pre{1, 1};  // id = 0
+        uvec2 pos{3, 3};  // id = 1
+
+        auto event = mouseEvent(B::None, S::Move, Bs{B::Left}, pos, dim);
+        TestPropagator tp;
+        ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
+        ASSERT_EQ(tp.events.size(), 0);
+    }
+    {
+        SCOPED_TRACE("Release 3,3");
+        uvec2 pre{3, 3};  // id = 1
+        uvec2 pos{3, 3};  // id = 1
+
+        auto event = mouseEvent(B::Left, S::Release, Bs{flags::empty}, pos, dim);
+        TestPropagator tp;
+        ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
+        ASSERT_EQ(tp.events.size(), 1);
+        testPickingEvent(tp.events[0].get(), PS::Started, PHS::Enter, PPS::None, PPI::Primary,
+                         PPIs{flags::empty}, 2, 2, 0, 0, 1, 1, 1, 1, ndc(pos), dvec3{0.0},
+                         dvec3{0.0});
     }
 }
 
