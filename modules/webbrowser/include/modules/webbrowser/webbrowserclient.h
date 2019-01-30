@@ -49,7 +49,9 @@ namespace inviwo {
 /* \class WebBrowserClient
  * CefClient with custom render handler
  */
-class WebBrowserClient : public CefClient, public CefLifeSpanHandler, public CefRequestHandler {
+class IVW_MODULE_WEBBROWSER_API WebBrowserClient : public CefClient,
+                                                  public CefLifeSpanHandler,
+                                                  public CefRequestHandler {
 public:
     WebBrowserClient(CefRefPtr<RenderHandlerGL> renderHandler);
 

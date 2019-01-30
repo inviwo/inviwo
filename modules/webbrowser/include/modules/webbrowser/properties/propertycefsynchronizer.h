@@ -65,7 +65,9 @@ namespace inviwo {
  *
  *
  */
-class PropertyCefSynchronizer : public CefMessageRouterBrowserSide::Handler, public CefLoadHandler {
+class IVW_MODULE_WEBBROWSER_API PropertyCefSynchronizer
+    : public CefMessageRouterBrowserSide::Handler,
+      public CefLoadHandler {
 public:
     explicit PropertyCefSynchronizer();
     virtual ~PropertyCefSynchronizer() = default;

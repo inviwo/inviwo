@@ -44,7 +44,7 @@ namespace inviwo {
 /**
  * App to be used in the browser thread.
  */
-class WebBrowserApp : public CefApp, public CefBrowserProcessHandler {
+class IVW_MODULE_WEBBROWSER_API WebBrowserApp : public CefApp, public CefBrowserProcessHandler {
 public:
     WebBrowserApp();
     // CefBrowserProcessHandler methods:
