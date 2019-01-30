@@ -91,12 +91,14 @@ SimpleCrosshairOverlay::SimpleCrosshairOverlay()
 
 void SimpleCrosshairOverlay::process() {
 
-    const auto pxthickness = thickness1_;
-    const auto pxthicknessOutline = thickness2_;
-    const auto pxdims = imageOut_.getDimensions();
+    const auto& pxthickness = thickness1_;
+    const auto& pxthicknessOutline = thickness2_;
+    const auto pxdims = vec2(imageOut_.getDimensions());
+    const auto aspect_ratio = pxdims.x / pxdims.y;
 
-    const auto thickness = 1.f / vec2(pxdims) * static_cast<float>(pxthickness);
-    const auto thicknessOutline = 2.f / vec2(pxdims) * static_cast<float>(pxthicknessOutline);
+    const float bar_length(100.0f);
+    const auto thickness = 1.0f / pxdims.x * static_cast<float>(pxthickness);
+    const auto thicknessOutline = 2.0f / pxdims * static_cast<float>(pxthicknessOutline);
     const auto pos = cursorPos_.get() * 2.0f - 1.0f;
 
     crosshairMesh_ = std::make_shared<Mesh>(DrawType::Triangles, ConnectivityType::None);
@@ -106,11 +108,11 @@ void SimpleCrosshairOverlay::process() {
     // Create crosshair in NDC with double screen size bars so that endings are never visible
     crosshairMesh_->addBuffer(BufferType::PositionAttrib, util::makeBuffer<vec2>({
         // horizontal
-        vec2(4.f, pos.y + thickness.y), vec2(-4.f, pos.y + thickness.y), vec2(-4.f, pos.y - thickness.y), // upper triangle (CCW)
-        vec2(4.f, pos.y - thickness.y), vec2(4.f, pos.y + thickness.y), vec2(-4.f, pos.y - thickness.y), // lower triangle
+        vec2(bar_length, pos.y + thickness), vec2(-bar_length, pos.y + thickness), vec2(-bar_length, pos.y - thickness), // upper triangle (CCW)
+        vec2(bar_length, pos.y - thickness), vec2(bar_length, pos.y + thickness), vec2(-bar_length, pos.y - thickness), // lower triangle
         // vertical
-        vec2(pos.x + thickness.x, 4.f), vec2(pos.x - thickness.x, 4.f), vec2(pos.x - thickness.x, -4.f), // left triangle
-        vec2(pos.x + thickness.x, -4.f), vec2(pos.x + thickness.x, 4.f), vec2(pos.x - thickness.x, -4.f) // right triangle
+        vec2(pos.x + thickness, bar_length), vec2(pos.x - thickness, bar_length), vec2(pos.x - thickness, -bar_length), // left triangle
+        vec2(pos.x + thickness, -bar_length), vec2(pos.x + thickness, bar_length), vec2(pos.x - thickness, -bar_length) // right triangle
         }));
     crosshairMesh_->addBuffer(BufferType::ColorAttrib, util::makeBuffer<vec4>(std::vector<vec4>{
         color1_, color1_, color1_, color1_, color1_, color1_,
@@ -135,15 +137,13 @@ void SimpleCrosshairOverlay::process() {
     outlineMesh_->addBuffer(BufferType::ColorAttrib, util::makeBuffer<vec4>(std::vector<vec4>(24, color3_)));
 
     // Create circle at center of cursor
-    const auto canvas_size = vec2(imageOut_.getDimensions());
-    const auto aspect_ratio = canvas_size.x / canvas_size.y;
     const size_t num_pts(32);
     auto vertex_buffer_ram = std::make_shared<Vec2BufferRAM>(num_pts);
     auto vertex_buffer = std::make_shared<Buffer<vec2>>(vertex_buffer_ram);
     for (size_t idx = 0; idx < num_pts; ++idx) {
         const auto psi(static_cast<float>(idx) / static_cast<float>(num_pts) * glm::two_pi<float>());
         const vec2 pt(
-            cursorRadius_ * glm::cos(psi) * aspect_ratio,
+            cursorRadius_ * glm::cos(psi),
             cursorRadius_ * glm::sin(psi)
         );
         vertex_buffer_ram->set(idx, pt + pos);
@@ -152,18 +152,23 @@ void SimpleCrosshairOverlay::process() {
     cursorCenterMesh_->addBuffer(BufferType::ColorAttrib, util::makeBuffer<vec4>(std::vector<vec4>(num_pts, vec4(1.0f)))); // ToDo: change white to property
 
     // Render mesh over input image and copy to output port
+
     utilgl::activateTargetAndCopySource(imageOut_, imageIn_, ImageType::ColorDepth);
+    utilgl::DepthFuncState depth(GL_ALWAYS);
     shader_.activate();
-    float cosA = cos(cursorAngle_), sinA = sin(cursorAngle_);
-    mat4 rot(mat2(cosA, -sinA, sinA, cosA));
+
+    const mat4 scale(mat2(1, 0, 0, aspect_ratio));
+    const float cosA = cos(cursorAngle_), sinA = sin(cursorAngle_);
+    const mat4 rot(mat2(cosA, -sinA, sinA, cosA));
     mat4 transl1(1); transl1[3] = vec4(-pos, 0, 1);
     mat4 transl2(1); transl2[3] = vec4(pos, 0, 1);
-    shader_.setUniform("dataToClip", transl2 * rot * transl1);
-    utilgl::DepthFuncState depth(GL_ALWAYS);
+
+    shader_.setUniform("dataToClip", transl2 * scale * rot * transl1);
     MeshDrawerGL(crosshairMesh_.get()).draw();
     MeshDrawerGL(cursorCenterMesh_.get()).draw();
     shader_.setUniform("dataToClip", mat4(1));
     MeshDrawerGL(outlineMesh_.get()).draw();
+    
     shader_.deactivate();
 }
 

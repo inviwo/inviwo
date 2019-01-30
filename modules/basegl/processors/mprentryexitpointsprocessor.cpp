@@ -49,16 +49,6 @@ vec2 rotate2D(vec2 pt, float angle)
     return mat2(cos(angle), -sin(angle), sin(angle), cos(angle)) * pt;
 }
 
-float maxmax(vec3 v)
-{
-    return glm::max(glm::max(v.x, v.y), v.z);
-}
-
-float minmin(vec3 v)
-{
-    return glm::min(glm::min(v.x, v.y), v.z);
-}
-
 vec3 MPREntryExitPoints::screenPosToVolumePos(const vec2& screen_pos) const
 {
     // use cursorScreenPos_old_ instead of cursorScreenPos_.get() to prevent 0 offset in case the cursor has changes in the same frame
@@ -73,8 +63,8 @@ vec3 MPREntryExitPoints::screenOffsetToVolumeOffset(const vec2& screen_offset) c
 {
     const auto canvas_size = entryPort_.getDimensions();
     const auto aspect_ratio = static_cast<float>(canvas_size.x) / static_cast<float>(canvas_size.y);
-    const auto vd = vec3(volumeDimensions_.get()) / maxmax(vec3(volumeDimensions_.get()));
-    const auto vs = volumeSpacing_.get() / minmin(volumeSpacing_.get());
+    const auto vd = vec3(volumeDimensions_.get()) / glm::compMax(vec3(volumeDimensions_.get()));
+    const auto vs = volumeSpacing_.get() / glm::compMin(volumeSpacing_.get());
 
     const auto uv_offset = screen_offset * vec2(aspect_ratio, 1.0);
     const auto uv_rotated = rotate2D(uv_offset, -correctionAngle_.get()); // watch out for the correction angle if this is actually desired
@@ -96,8 +86,8 @@ vec2 MPREntryExitPoints::volumePosToScreenPos(const vec3& volume_pos) const
 
 vec2 MPREntryExitPoints::volumeOffsetToScreenOffset(const vec3& volume_offset) const
 {
-    const auto vd = vec3(volumeDimensions_.get()) / maxmax(vec3(volumeDimensions_.get()));
-    const auto vs = volumeSpacing_.get() / minmin(volumeSpacing_.get());
+    const auto vd = vec3(volumeDimensions_.get()) / glm::compMax(vec3(volumeDimensions_.get()));
+    const auto vs = volumeSpacing_.get() / glm::compMin(volumeSpacing_.get());
     const auto canvas_size = vec2(entryPort_.getDimensions());
     const auto aspect_ratio = canvas_size.x / canvas_size.y;
 
