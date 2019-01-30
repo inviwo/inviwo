@@ -51,6 +51,10 @@ namespace inviwo {
  * ### Outports
  *   * __ImageOutport__ entry points
  *   * __ImageOutport__ exit points
+ *
+ * ### ToDo's:
+ *  - rename all properties appropriately
+ *  - make offset along normal in mm according to volume spacing
  * 
  */
 
@@ -82,14 +86,23 @@ private:
     FloatVec3Property volumeSpacing_;
 
     FloatVec2Property cursorScreenPos_;
-    FloatVec2Property cursorScreenPosOld_;
-
-    Shader shader_;
+    vec2 cursorScreenPos_old_;
 
     FloatVec3Property mprP_;
+    vec3 mprP_old_;
     FloatVec3Property mprBasisR_;
     FloatVec3Property mprBasisU_;
     FloatVec3Property mprBasisN_;
+
+    Shader shader_;
+
+    bool dirty_;
+
+    vec3 screenPosToVolumePos(const vec2& screen_pos) const;
+    vec3 screenOffsetToVolumeOffset(const vec2& screen_offset) const;
+
+    vec2 volumePosToScreenPos(const vec3& volume_pos) const;
+    vec2 volumeOffsetToScreenOffset(const vec3& volume_offset) const;
 };
 
 } // namespace

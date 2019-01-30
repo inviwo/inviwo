@@ -35,6 +35,7 @@ uniform vec3 u; // plane's up
 uniform vec3 r; // plane's right
 uniform float aspect_ratio; // aspect ratio of screen
 uniform float thickness_offset; // plane's offset along normal
+uniform float thickness_offset_other; // plane's offset along normal
 uniform float zoom_factor;
 uniform float correction_angle;
 uniform vec3 volume_dimensions;
@@ -64,8 +65,21 @@ void main() {
     vec3 vd = volume_dimensions / maxmax(volume_dimensions);
     vec3 vs = volume_spacing / minmin(volume_spacing);
 
-    vec3 volume_offset = (1.0 / vd) * (1.0 / vs) * zoom_factor * (uv_rotated.x * r + uv_rotated.y * u) + thickness_offset * n;
-    vec3 volume_coord = p + volume_offset;
+    vec3 offset_on_plane = (1.0 / vd) * (1.0 / vs) * zoom_factor * (uv_rotated.x * r + uv_rotated.y * u);
+    vec3 pt_on_plane = p + offset_on_plane;
+    vec3 final_volume_coord = pt_on_plane + thickness_offset * n;
+    vec3 other_volume_coord = pt_on_plane + thickness_offset_other * n;
 
-    FragData0 = vec4(volume_coord, 1.0);
+    // check if outside of volume
+    // ToDo: simplify or put in separate function
+    // ToDo: clamp to border of volume
+    float volume_alpha = 1.0;
+
+    if (any(lessThan(final_volume_coord, vec3(0.0))) || any(greaterThan(final_volume_coord, vec3(1.0))) ||
+        any(lessThan(other_volume_coord, vec3(0.0))) || any(greaterThan(other_volume_coord, vec3(1.0)))) {
+        volume_alpha = 0.0;
+        final_volume_coord = vec3(0.0);
+    }
+
+    FragData0 = vec4(final_volume_coord, volume_alpha);
 }
