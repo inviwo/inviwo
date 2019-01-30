@@ -88,6 +88,7 @@ private:
 
     std::shared_ptr<Mesh> crosshairMesh_;
     std::shared_ptr<Mesh> outlineMesh_;
+    std::shared_ptr<Mesh> cursorCenterMesh_;
     Shader shader_;
 };
 }  // namespace inviwo

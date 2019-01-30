@@ -64,6 +64,7 @@ SimpleCrosshairOverlay::SimpleCrosshairOverlay()
     , thickness2_("thickness2", "Thickness 2", 2u, 0u, 20u)
     , crosshairMesh_(nullptr)
     , outlineMesh_(nullptr)
+    , cursorCenterMesh_(nullptr)
     , shader_("standard.vert", "standard.frag") {
 
     imageIn_.setOptional(true);
@@ -100,6 +101,7 @@ void SimpleCrosshairOverlay::process() {
 
     crosshairMesh_ = std::make_shared<Mesh>(DrawType::Triangles, ConnectivityType::None);
     outlineMesh_ = std::make_shared<Mesh>(DrawType::Triangles, ConnectivityType::None);
+    cursorCenterMesh_ = std::make_shared<Mesh>(DrawType::Lines, ConnectivityType::Loop);
 
     // Create crosshair in NDC with double screen size bars so that endings are never visible
     crosshairMesh_->addBuffer(BufferType::PositionAttrib, util::makeBuffer<vec2>({
@@ -132,6 +134,23 @@ void SimpleCrosshairOverlay::process() {
         }));
     outlineMesh_->addBuffer(BufferType::ColorAttrib, util::makeBuffer<vec4>(std::vector<vec4>(24, color3_)));
 
+    // Create circle at center of cursor
+    const auto canvas_size = vec2(imageOut_.getDimensions());
+    const auto aspect_ratio = canvas_size.x / canvas_size.y;
+    const size_t num_pts(32);
+    auto vertex_buffer_ram = std::make_shared<Vec2BufferRAM>(num_pts);
+    auto vertex_buffer = std::make_shared<Buffer<vec2>>(vertex_buffer_ram);
+    for (size_t idx = 0; idx < num_pts; ++idx) {
+        const auto psi(static_cast<float>(idx) / static_cast<float>(num_pts) * glm::two_pi<float>());
+        const vec2 pt(
+            cursorRadius_ * glm::cos(psi) * aspect_ratio,
+            cursorRadius_ * glm::sin(psi)
+        );
+        vertex_buffer_ram->set(idx, pt + pos);
+    }
+    cursorCenterMesh_->addBuffer(BufferType::PositionAttrib, vertex_buffer);
+    cursorCenterMesh_->addBuffer(BufferType::ColorAttrib, util::makeBuffer<vec4>(std::vector<vec4>(num_pts, vec4(1.0f)))); // ToDo: change white to property
+
     // Render mesh over input image and copy to output port
     utilgl::activateTargetAndCopySource(imageOut_, imageIn_, ImageType::ColorDepth);
     shader_.activate();
@@ -142,6 +161,7 @@ void SimpleCrosshairOverlay::process() {
     shader_.setUniform("dataToClip", transl2 * rot * transl1);
     utilgl::DepthFuncState depth(GL_ALWAYS);
     MeshDrawerGL(crosshairMesh_.get()).draw();
+    MeshDrawerGL(cursorCenterMesh_.get()).draw();
     shader_.setUniform("dataToClip", mat4(1));
     MeshDrawerGL(outlineMesh_.get()).draw();
     shader_.deactivate();
