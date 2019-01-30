@@ -61,6 +61,7 @@ float minmin(vec3 v)
 void main() {
     vec2 uv_offset = (uv - p_screen) * vec2(aspect_ratio, 1.0);
     vec2 uv_rotated = rotate2D(uv_offset, correction_angle);
+    //vec2 uv_rotated = uv_offset;
 
     vec3 vd = volume_dimensions / maxmax(volume_dimensions);
     vec3 vs = volume_spacing / minmin(volume_spacing);

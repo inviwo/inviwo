@@ -57,11 +57,11 @@ SimpleCrosshairOverlay::SimpleCrosshairOverlay()
     , mouseEvent_("mouseEvent", "Mouse Event", [this](Event* e) { updateMouse(e); },
                   MouseButton::Left, MouseState::Press | MouseState::Move | MouseState::Release)
     , interactionState_ (InteractionState::NONE)
-    , color1_("color1", "Color 1", vec4(1), vec4(0), vec4(1))
-    , color2_("color2", "Color 2", vec4(1), vec4(0), vec4(1))
-    , color3_("color3", "Color 3", vec4(1), vec4(0), vec4(1))
-    , thickness1_("thickness1", "Thickness 1", 2u, 0u, 20u)
-    , thickness2_("thickness2", "Thickness 2", 2u, 0u, 20u)
+    , color1_("color1", "Horizontal Axis Color", vec4(1), vec4(0), vec4(1))
+    , color2_("color2", "Vertical Axis Color", vec4(1), vec4(0), vec4(1))
+    , color3_("color3", "Border Color", vec4(1), vec4(0), vec4(1))
+    , thickness1_("thickness1", "Crosshair Thickness", 2u, 0u, 20u)
+    , thickness2_("thickness2", "Border Thickness", 2u, 0u, 20u)
     , crosshairMesh_(nullptr)
     , outlineMesh_(nullptr)
     , cursorCenterMesh_(nullptr)
@@ -91,14 +91,14 @@ SimpleCrosshairOverlay::SimpleCrosshairOverlay()
 
 void SimpleCrosshairOverlay::process() {
 
-    const auto& pxthickness = thickness1_;
+    const auto& pxthicknessCrosshair = thickness1_;
     const auto& pxthicknessOutline = thickness2_;
-    const auto pxdims = vec2(imageOut_.getDimensions());
-    const auto aspect_ratio = pxdims.x / pxdims.y;
+    const auto canvas_dimensions = vec2(imageOut_.getDimensions());
+    const auto aspect_ratio = canvas_dimensions.x / canvas_dimensions.y;
 
     const float bar_length(100.0f);
-    const auto thickness = 1.0f / pxdims.x * static_cast<float>(pxthickness);
-    const auto thicknessOutline = 2.0f / pxdims * static_cast<float>(pxthicknessOutline);
+    const auto thicknessCrosshair = 1.0f / canvas_dimensions.x * static_cast<float>(pxthicknessCrosshair);
+    const auto thicknessOutline = 2.0f / canvas_dimensions * static_cast<float>(pxthicknessOutline);
     const auto pos = cursorPos_.get() * 2.0f - 1.0f;
 
     crosshairMesh_ = std::make_shared<Mesh>(DrawType::Triangles, ConnectivityType::None);
@@ -108,11 +108,11 @@ void SimpleCrosshairOverlay::process() {
     // Create crosshair in NDC with double screen size bars so that endings are never visible
     crosshairMesh_->addBuffer(BufferType::PositionAttrib, util::makeBuffer<vec2>({
         // horizontal
-        vec2(bar_length, pos.y + thickness), vec2(-bar_length, pos.y + thickness), vec2(-bar_length, pos.y - thickness), // upper triangle (CCW)
-        vec2(bar_length, pos.y - thickness), vec2(bar_length, pos.y + thickness), vec2(-bar_length, pos.y - thickness), // lower triangle
+        vec2(bar_length, pos.y + thicknessCrosshair), vec2(-bar_length, pos.y + thicknessCrosshair), vec2(-bar_length, pos.y - thicknessCrosshair), // upper triangle (CCW)
+        vec2(bar_length, pos.y - thicknessCrosshair), vec2(bar_length, pos.y + thicknessCrosshair), vec2(-bar_length, pos.y - thicknessCrosshair), // lower triangle
         // vertical
-        vec2(pos.x + thickness, bar_length), vec2(pos.x - thickness, bar_length), vec2(pos.x - thickness, -bar_length), // left triangle
-        vec2(pos.x + thickness, -bar_length), vec2(pos.x + thickness, bar_length), vec2(pos.x - thickness, -bar_length) // right triangle
+        vec2(pos.x + thicknessCrosshair, bar_length), vec2(pos.x - thicknessCrosshair, bar_length), vec2(pos.x - thicknessCrosshair, -bar_length), // left triangle
+        vec2(pos.x + thicknessCrosshair, -bar_length), vec2(pos.x + thicknessCrosshair, bar_length), vec2(pos.x - thicknessCrosshair, -bar_length) // right triangle
         }));
     crosshairMesh_->addBuffer(BufferType::ColorAttrib, util::makeBuffer<vec4>(std::vector<vec4>{
         color1_, color1_, color1_, color1_, color1_, color1_,
