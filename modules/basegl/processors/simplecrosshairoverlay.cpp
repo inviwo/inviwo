@@ -94,7 +94,7 @@ void SimpleCrosshairOverlay::process() {
     const auto pxthicknessOutline = thickness2_;
     const auto pxdims = imageOut_.getDimensions();
 
-    const auto thickness = 1.f / vec2(pxdims) * static_cast<float>(pxthickness);
+    const auto thickness = 1.f / glm::compMin(vec2(pxdims)) * static_cast<float>(pxthickness);
     const auto thicknessOutline = 2.f / vec2(pxdims) * static_cast<float>(pxthicknessOutline);
     const auto pos = cursorPos_.get() * 2.0f - 1.0f;
 
@@ -104,11 +104,11 @@ void SimpleCrosshairOverlay::process() {
     // Create crosshair in NDC with double screen size bars so that endings are never visible
     crosshairMesh_->addBuffer(BufferType::PositionAttrib, util::makeBuffer<vec2>({
         // horizontal
-        vec2(4.f, pos.y + thickness.y), vec2(-4.f, pos.y + thickness.y), vec2(-4.f, pos.y - thickness.y), // upper triangle (CCW)
-        vec2(4.f, pos.y - thickness.y), vec2(4.f, pos.y + thickness.y), vec2(-4.f, pos.y - thickness.y), // lower triangle
+        vec2(4.f, pos.y + thickness), vec2(-4.f, pos.y + thickness), vec2(-4.f, pos.y - thickness), // upper triangle (CCW)
+        vec2(4.f, pos.y - thickness), vec2(4.f, pos.y + thickness), vec2(-4.f, pos.y - thickness), // lower triangle
         // vertical
-        vec2(pos.x + thickness.x, 4.f), vec2(pos.x - thickness.x, 4.f), vec2(pos.x - thickness.x, -4.f), // left triangle
-        vec2(pos.x + thickness.x, -4.f), vec2(pos.x + thickness.x, 4.f), vec2(pos.x - thickness.x, -4.f) // right triangle
+        vec2(pos.x + thickness, 4.f), vec2(pos.x - thickness, 4.f), vec2(pos.x - thickness, -4.f), // left triangle
+        vec2(pos.x + thickness, -4.f), vec2(pos.x + thickness, 4.f), vec2(pos.x - thickness, -4.f) // right triangle
         }));
     crosshairMesh_->addBuffer(BufferType::ColorAttrib, util::makeBuffer<vec4>(std::vector<vec4>{
         color1_, color1_, color1_, color1_, color1_, color1_,
@@ -132,18 +132,26 @@ void SimpleCrosshairOverlay::process() {
         }));
     outlineMesh_->addBuffer(BufferType::ColorAttrib, util::makeBuffer<vec4>(std::vector<vec4>(24, color3_)));
 
+
     // Render mesh over input image and copy to output port
+
     utilgl::activateTargetAndCopySource(imageOut_, imageIn_, ImageType::ColorDepth);
+    utilgl::DepthFuncState depth(GL_ALWAYS);
     shader_.activate();
-    float cosA = cos(cursorAngle_), sinA = sin(cursorAngle_);
-    mat4 rot(mat2(cosA, -sinA, sinA, cosA));
+
+    const float aspect = (float)pxdims.x / pxdims.y;
+    const mat4 scale(mat2(1, 0, 0, aspect));
+    const float cosA = cos(cursorAngle_), sinA = sin(cursorAngle_);
+    const mat4 rot(mat2(cosA, -sinA, sinA, cosA));
     mat4 transl1(1); transl1[3] = vec4(-pos, 0, 1);
     mat4 transl2(1); transl2[3] = vec4(pos, 0, 1);
-    shader_.setUniform("dataToClip", transl2 * rot * transl1);
-    utilgl::DepthFuncState depth(GL_ALWAYS);
+
+    shader_.setUniform("dataToClip", transl2 * scale * rot * transl1);
     MeshDrawerGL(crosshairMesh_.get()).draw();
+
     shader_.setUniform("dataToClip", mat4(1));
     MeshDrawerGL(outlineMesh_.get()).draw();
+    
     shader_.deactivate();
 }
 
