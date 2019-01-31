@@ -30,6 +30,6 @@ ivw_move_targets_in_dir_to_folder(${CMAKE_CURRENT_SOURCE_DIR} ext/openexr)
 
 ivw_get_targets_in_dir_recursive(targets ${CMAKE_CURRENT_SOURCE_DIR})
 ivw_suppress_compiler_warnings(${targets})
-    
+
 # debug
 #ivw_print_targets_in_dir_recursive(${CMAKE_CURRENT_SOURCE_DIR})

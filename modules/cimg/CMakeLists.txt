@@ -39,22 +39,23 @@ ivw_add_unittest(${TEST_FILES})
 #--------------------------------------------------------------------
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
-target_link_libraries(inviwo-module-cimg PUBLIC
-    ZLIB::ZLIB
-    inviwo::libjpeg
-    inviwo::tiff
+target_link_libraries(inviwo-module-cimg 
+    PRIVATE
+        inviwo::cimg
+    
+        ZLIB::ZLIB
+        inviwo::libjpeg
+        inviwo::tiff
 
-    IlmBase::Half
-    IlmBase::Iex
-    IlmBase::IexMath
-    IlmBase::Imath
-    IlmBase::IlmThread
-    OpenEXR::IlmImf
-    OpenEXR::IlmImfUtil
-
-    inviwo::cimg
+        IlmBase::Half
+        IlmBase::Iex
+        IlmBase::IexMath
+        IlmBase::Imath
+        IlmBase::IlmThread
+        OpenEXR::IlmImf
+        OpenEXR::IlmImfUtil
 )
-target_include_directories(inviwo-module-cimg PUBLIC 
+target_include_directories(inviwo-module-cimg PRIVATE 
     ${CMAKE_CURRENT_BINARY_DIR}/ext/openexr/openexr/IlmBase/config
     ${CMAKE_CURRENT_SOURCE_DIR}/ext/openexr/openexr/IlmBase/Half
     ${CMAKE_CURRENT_SOURCE_DIR}/ext/openexr/openexr/IlmBase/Iex
@@ -67,7 +68,7 @@ target_include_directories(inviwo-module-cimg PUBLIC
 )
 
 
-target_compile_definitions(inviwo-module-cimg PUBLIC
+target_compile_definitions(inviwo-module-cimg PRIVATE
     cimg_use_cpp11
     cimg_use_jpeg
     cimg_use_zlib

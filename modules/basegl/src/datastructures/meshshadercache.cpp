@@ -49,7 +49,7 @@ MeshShaderCache::MeshShaderCache(
 
     for (auto& requirement : requirements) {
         stateFunctors_.emplace_back(
-            [requirement](const Mesh& mesh) -> int {
+            [this, requirement](const Mesh& mesh) -> int {
                 const auto res = mesh.findBuffer(requirement.bufferType);
                 if (res.first) {
                     return res.second;

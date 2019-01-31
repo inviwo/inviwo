@@ -64,6 +64,10 @@ if(POLICY CMP0066)
     # Honor per-config flags in ``try_compile()`` source-file signature.
     cmake_policy(SET CMP0066 NEW)
 endif()
+if(POLICY CMP0067)
+    # Honor language standard in try_compile() source-file signature.
+    cmake_policy(SET CMP0067 NEW)
+endif()
 
 if(POLICY CMP0074)
     # find_package uses <PackageName>_ROOT variables
