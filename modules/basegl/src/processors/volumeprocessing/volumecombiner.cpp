@@ -210,7 +210,7 @@ void VolumeCombiner::buildShader(const std::string& eqn) {
 void VolumeCombiner::updateProperties() {
     std::stringstream desc;
     for (const auto& p : util::enumerate(inport_.getConnectedOutports())) {
-        desc << "v" + toString(p.first() + 1) + ": " + p.second()->getProcessor()->getIdentifier()
+        desc << "v" + toString(p.first() + 1) + ": " + p.second()->getProcessor()->getDisplayName()
              << "\n";
     }
     description_.set(desc.str());
