@@ -40,6 +40,7 @@ endif()
 
 #--------------------------------------------------------------------
 # Requirement checks
+include(CheckCXXCompilerFlag)
 if(MSVC) 
     if(MSVC_VERSION LESS 1900)
         message(FATAL_ERROR "Inviwo requires C++14 features. " 
@@ -47,18 +48,24 @@ if(MSVC)
                 "The latest Visual Studio version is available at "
                 "https://www.visualstudio.com/en-us/downloads/download-visual-studio-vs.aspx")
     endif()
+    CHECK_CXX_COMPILER_FLAG("/std:c++14" compiler_supports_cxx14)
+    CHECK_CXX_COMPILER_FLAG("/std:c++17" compiler_supports_cxx17)
 else()
-    include(CheckCXXCompilerFlag)
-    CHECK_CXX_COMPILER_FLAG("-std=c++14" COMPILER_SUPPORTS_CXX14)
-    if(COMPILER_SUPPORTS_CXX14)
-        set(CMAKE_CXX_STANDARD 14)
-        set(CMAKE_CXX_STANDARD_REQUIRED ON)
-        set(CMAKE_CXX_EXTENSIONS OFF)
-    else()
-        message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++14 support. "
-                "Please use a different C++ compiler.")
-    endif()
+    CHECK_CXX_COMPILER_FLAG("-std=c++14" compiler_supports_cxx14)
+    CHECK_CXX_COMPILER_FLAG("-std=c++17" compiler_supports_cxx17)
 endif()
+if(compiler_supports_cxx17)
+    message(STATUS "C++17 enabled")
+    set(CMAKE_CXX_STANDARD 17 CACHE STRING "C++ ISO Standard" FORCE)
+elseif(compiler_supports_cxx14)
+    message(STATUS "C++14 enabled")
+    set(CMAKE_CXX_STANDARD 14 CACHE STRING "C++ ISO Standard" FORCE) 
+else()
+    message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++14 support. "
+            "Please use a different C++ compiler.")
+endif()
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
     message(WARNING "Inviwo is only supported for 64-bit architectures.")

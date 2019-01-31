@@ -322,7 +322,6 @@ void CameraWidget::drawWidgetTexture() {
     vec2 centerPos(position_.get() * dstSize);
     // draw widget image on top of the input image
     // consider anchor position
-    vec2 anchor(anchorPos_.get());
     vec2 shift = 0.5f * vec2(widgetSize) * (anchorPos_.get() + vec2(1.0f, 1.0f));
     centerPos.x -= shift.x;
     // negate y axis

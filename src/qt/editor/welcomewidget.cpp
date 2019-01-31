@@ -103,7 +103,7 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
 
     gridLayout->addLayout(horizontalLayout, 0, 0, 1, 2);
 
-    auto updateDetails = [this, window](const QString &filename) {
+    auto updateDetails = [this](const QString &filename) {
         QFileInfo info(filename);
         if (filename.isEmpty() || !info.exists()) {
             details_->clear();

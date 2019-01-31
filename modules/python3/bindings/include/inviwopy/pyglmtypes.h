@@ -31,8 +31,11 @@
 
 #include <inviwo/core/util/glm.h>
 
+#include <warn/push>
+#include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl_bind.h>
+#include <warn/pop>
 
 // Manually expand PYBIND11_MAKE_OPAQUE because macros and commas in template arguments mix poorly.
 namespace pybind11 {

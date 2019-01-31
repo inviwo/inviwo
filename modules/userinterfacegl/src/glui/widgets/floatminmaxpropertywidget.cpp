@@ -88,7 +88,6 @@ FloatMinMaxPropertyWidget::FloatMinMaxPropertyWidget(FloatMinMaxProperty &proper
 }
 
 void FloatMinMaxPropertyWidget::updateFromProperty() {
-    const auto value(property_->get());
     set(reprToSlider(property_->get()), 0, sliderMax_, reprSeparationToSlider());
     setEnabled(!property_->getReadOnly());
 }

@@ -44,8 +44,10 @@
 #include <modules/python3/pybindutils.h>
 #include <inviwopy/pyport.h>
 
-#include <pybind11/pybind11.h>
+#include <warn/push>
+#include <warn/ignore/shadow>
 #include <pybind11/numpy.h>
+#include <warn/pop>
 
 namespace py = pybind11;
 

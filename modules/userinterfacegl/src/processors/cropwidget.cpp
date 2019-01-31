@@ -643,8 +643,6 @@ void CropWidget::rangePositionHandlePicked(CropAxis &cropAxis, PickingEvent *p,
     currNDC.z = refDepth;
     prevNDC.z = refDepth;
 
-    vec3 axis(volumeBasis_[static_cast<int>(cropAxis.axis)]);
-
     // project mouse delta onto axis
     vec2 delta(currNDC - prevNDC);
     vec2 axis2D(cropAxis.info.endNDC - cropAxis.info.startNDC);

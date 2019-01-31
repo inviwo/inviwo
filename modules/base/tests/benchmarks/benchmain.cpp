@@ -41,6 +41,9 @@
 
 #include <cmath>
 
+#include <warn/push>
+#include <warn/ignore/unused-function>
+
 using namespace inviwo;
 
 static void SphereOld(benchmark::State& state) {
@@ -148,3 +151,5 @@ int main(int argc, char** argv) {
 
     return 0;
 }
+
+#include <warn/pop>

@@ -35,6 +35,7 @@
 
 // push/pop warning state to prevent disabling some warnings by pybind headers
 #include <warn/push>
+#include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 #include <warn/pop>

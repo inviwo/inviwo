@@ -29,7 +29,11 @@
 
 #ifndef IVW_PYPROPERTIES_H
 #define IVW_PYPROPERTIES_H
+
+#include <warn/push>
+#include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
+#include <warn/pop>
 
 #include <inviwopy/inviwopy.h>
 
