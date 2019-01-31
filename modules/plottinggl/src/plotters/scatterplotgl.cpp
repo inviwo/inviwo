@@ -492,24 +492,26 @@ void ScatterPlotGL::objectPicked(PickingEvent *p) {
         }
     };
 
-    if (auto me = p->getEventAs<MouseEvent>()) {
-        if (me->button() == MouseButton::Left) {
-            if (me->state() == MouseState::Release) {
-                // print information on current element
-                logRowData();
+    if (p->getState() == PickingState::Updated) {
+        if (auto me = p->getEventAs<MouseEvent>()) {
+            if (me->button() == MouseButton::Left) {
+                if (me->state() == MouseState::Release) {
+                    // print information on current element
+                    logRowData();
+                }
+                me->markAsUsed();
             }
-            me->markAsUsed();
-        }
-    } else if (auto touchEvent = p->getEventAs<TouchEvent>()) {
-        if (touchEvent->touchPoints().size() == 1) {
-            // allow interaction only for a single touch point
-            const auto &touchPoint = touchEvent->touchPoints().front();
+        } else if (auto touchEvent = p->getEventAs<TouchEvent>()) {
+            if (touchEvent->touchPoints().size() == 1) {
+                // allow interaction only for a single touch point
+                const auto &touchPoint = touchEvent->touchPoints().front();
 
-            if (touchPoint.state() == TouchState::Started) {
-                // print information on current element
-                logRowData();
+                if (touchPoint.state() == TouchState::Started) {
+                    // print information on current element
+                    logRowData();
+                }
+                p->markAsUsed();
             }
-            p->markAsUsed();
         }
     }
 }
