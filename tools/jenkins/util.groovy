@@ -318,7 +318,7 @@ def build(Map args = [:]) {
 def buildStandard(Map args = [:]) {
     assert args.state.params : "Argument params must be supplied"
     stage('Build') {
-        if (args.state.params.params['Clean Build']) clean()
+        if (args.state.params['Clean Build']) clean()
         def defaultOpts = defaultCMakeOptions(args.state.params['Build Type'])
         if (args.state.env) defaultOpts.putAll(envCMakeOptions(args.state.env))
         if (args.state.params['Use ccache']) defaultOpts.putAll(ccacheOption())
