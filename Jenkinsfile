@@ -1,3 +1,8 @@
+@NonCPS
+def printParams(def env) {
+    env.getEnvironment().each { name, value -> println "Name: $name -> Value $value" }
+}
+
 node {
     stage('Fetch') { 
         dir('inviwo') {
@@ -36,11 +41,8 @@ node {
         }
     ]
     
-    @NonCPS
-    def printParams() {
-        env.getEnvironment().each { name, value -> println "Name: $name -> Value $value" }
-    }
-    printParams()
+  
+    printParams(env)
 
     try {
         println(env)
