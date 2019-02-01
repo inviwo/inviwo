@@ -37,15 +37,8 @@ node {
     ]
 
     try {
-        def opts = []
-        if (params.cxx) {
-            println(params.cxx)
-            opts['CMAKE_CXX_COMPILER'] = params.cxx
-        }
-        if (params.c) {
-            println(params.c)
-            opts['CMAKE_C_COMPILER'] = params.c
-        }
+        def opts = (params.cxx ? ['CMAKE_CXX_COMPILER' : params.cxx] : [:]) + 
+            (params.c ? ['CMAKE_C_COMPILER' : params.c])
 
 
         util.buildStandard(
