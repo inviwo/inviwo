@@ -38,8 +38,7 @@ node {
 
     try {
         def opts = (params.cxx ? ['CMAKE_CXX_COMPILER' : params.cxx] : [:]) + 
-            (params.c ? ['CMAKE_C_COMPILER' : params.c])
-
+                   (params.c ? ['CMAKE_C_COMPILER' : params.c] : [:])
 
         util.buildStandard(
             state: state,
