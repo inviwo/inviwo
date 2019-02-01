@@ -118,7 +118,8 @@ void InputSelector<Inport, Outport>::updateOptions() {
 
     for (auto port : inport_.getConnectedOutports()) {
         auto id = port->getProcessor()->getIdentifier();
-        options.emplace_back(id, id, static_cast<int>(options.size()));
+        auto dispName = port->getProcessor()->getDisplayName();
+        options.emplace_back(id, dispName, static_cast<int>(options.size()));
     }
     selectedPort_.replaceOptions(options);
     selectedPort_.setCurrentStateAsDefault();
