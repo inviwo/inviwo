@@ -37,8 +37,9 @@ node {
     ]
 
     try {
+        println(env)
         def opts = (env.cxx ? ['CMAKE_CXX_COMPILER' : env.cxx] : [:]) + 
-                   (env.c ? ['CMAKE_C_COMPILER' : env.c] : [:])
+                   (env.c   ? ['CMAKE_C_COMPILER'   : env.c]   : [:])
 
         util.buildStandard(
             state: state,
