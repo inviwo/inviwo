@@ -22,7 +22,7 @@ def getChangeString(build) {
 }
 
 def defaultProperties(Map args = [:]) {
-    def params [
+    def params = [
         parameters([
             booleanParam(
                 defaultValue: args.clean?:false, 
