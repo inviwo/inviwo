@@ -37,11 +37,23 @@ node {
     ]
 
     try {
+        def opts = []
+        if (params.cxx) {
+            println(params.cxx)
+            opts['CMAKE_CXX_COMPILER'] = params.cxx
+        }
+        if (params.c) {
+            println(params.c)
+            opts['CMAKE_C_COMPILER'] = params.c
+        }
+
+
         util.buildStandard(
             state: state,
             modulePaths: modulePaths, 
             onModules: on,  
-            offModules: off
+            offModules: off,
+            opts: opts
         )
         util.filterfiles()
         util.format(state)
