@@ -80,6 +80,7 @@ private:
     OptionPropertyInt selectedPort_;
 
     void updateOptions();
+    bool updatedNedded_ = true;
 };
 
 template <typename Inport, typename Outport>
@@ -98,10 +99,10 @@ InputSelector<Inport, Outport>::InputSelector()
     addPort(inport_);
     addPort(outport_);
 
-    inport_.onConnect([&]() { updateOptions(); });
+    inport_.onConnect([&]() { updatedNedded_ = true; });
 
     inport_.onChange([&]() {
-        if (selectedPort_.size() != inport_.getConnectedOutports().size()) updateOptions();
+        if (selectedPort_.size() != inport_.getConnectedOutports().size()) updatedNedded_ = true;
     });
 
     addProperty(selectedPort_);
@@ -113,23 +114,21 @@ InputSelector<Inport, Outport>::InputSelector()
 
 template <typename Inport, typename Outport>
 void InputSelector<Inport, Outport>::updateOptions() {
-    selectedPort_.clearOptions();
-    std::string selectedID = selectedPort_.getSelectedIdentifier();
+    std::vector<OptionPropertyIntOption> options;
 
-    int idx = 0;
     for (auto port : inport_.getConnectedOutports()) {
         auto id = port->getProcessor()->getIdentifier();
-        selectedPort_.addOption(id, id, idx++);
+        auto dispName = port->getProcessor()->getDisplayName();
+        options.emplace_back(id, dispName, static_cast<int>(options.size()));
     }
-    if (!selectedID.empty()) {
-        selectedPort_.setSelectedIdentifier(selectedID);
-    }
+    selectedPort_.replaceOptions(options);
     selectedPort_.setCurrentStateAsDefault();
-    invalidate(InvalidationLevel::InvalidResources);
+    updatedNedded_ = false;
 }
 
 template <typename Inport, typename Outport>
 void InputSelector<Inport, Outport>::process() {
+    if (updatedNedded_) updateOptions();
     outport_.setData(inport_.getVectorData().at(selectedPort_.get()));
 }
 
