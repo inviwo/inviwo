@@ -12,7 +12,7 @@ node {
 
     List modulePaths = []
     List on = []
-    List off = ["ABUFFERGL" , "DISCRETEDATA", "HDF5"]
+    List off = ["ABUFFERGL"]
 
     Map state = [
         env: env,
