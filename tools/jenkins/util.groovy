@@ -21,21 +21,21 @@ def getChangeString(build) {
     return changeString
 }
 
-def defaultProperties() {
-    return [
+def defaultProperties(Map args = [:]) {
+    def params [
         parameters([
             booleanParam(
-                defaultValue: false, 
+                defaultValue: args.clean?:false, 
                 description: 'Do a clean build', 
                 name: 'Clean Build'
             ),
             booleanParam(
-                defaultValue: true, 
-                description: 'Disable ccache', 
+                defaultValue: args.ccache?:true, 
+                description: 'Use ccache to speed up build', 
                 name: 'Use ccache'
             ),
             booleanParam(
-                defaultValue: false, 
+                defaultValue: args.printCMakeVars?:false, 
                 description: 'Prints all the cmake variables to the log', 
                 name: 'Print CMake Variables'
             ),
@@ -45,10 +45,13 @@ def defaultProperties() {
                 name: 'Build Type'
             )
         ]),
-        pipelineTriggers([
+    ]
+    if (!args.disabledTrigger) {
+        params += pipelineTriggers([
             [$class: 'GitHubPushTrigger']
         ])
-    ]
+    }
+    return params
 }
 
 def log(env = [], fun) {
@@ -246,11 +249,9 @@ def cmake(Map opts, List modulePaths, List onModules, List offModules, Boolean p
         " ../inviwo"
 }
 
-def clean(params) {
-    if (params['Clean Build']) {
-        echo "Clean build, removing build folder"
-        sh "rm -r build"
-    }
+def clean() {
+    echo "Clean build, removing build folder"
+    sh "rm -rf build"
 }
 
 Map defaultCMakeOptions(String buildType) {
@@ -317,7 +318,7 @@ def build(Map args = [:]) {
 def buildStandard(Map args = [:]) {
     assert args.state.params : "Argument params must be supplied"
     stage('Build') {
-        clean(args.state.params)
+        if (args.state.params.params['Clean Build']) clean()
         def defaultOpts = defaultCMakeOptions(args.state.params['Build Type'])
         if (args.state.env) defaultOpts.putAll(envCMakeOptions(args.state.env))
         if (args.state.params['Use ccache']) defaultOpts.putAll(ccacheOption())

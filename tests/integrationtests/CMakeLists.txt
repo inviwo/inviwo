@@ -1,5 +1,5 @@
 #--------------------------------------------------------------------
-# Inviwo GLFW Application
+# Inviwo integration tests
 project(inviwo-integrationtests)
 
 # Add source files

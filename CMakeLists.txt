@@ -78,12 +78,7 @@ string(TIMESTAMP timeStart "%Y-%m-%d %H:%M:%S")
 
 # option for setting the project/solution name of the Inviwo project
 set(IVW_PROJECT_NAME "inviwo-projects" CACHE STRING "Project/Solution name (default: inviwo-projects)")
-
-if(IVW_PROJECT_NAME)
-    project(${IVW_PROJECT_NAME})
-else()
-    project(inviwo-projects)
-endif()
+project(${IVW_PROJECT_NAME})
 
 #Verify that git submodules has been cloned
 include(cmake/verifysubmodules.cmake)
@@ -107,46 +102,29 @@ find_package(PythonLibsNew 3)
 
 include(cmake/globalconfig.cmake)
 
-option(IVW_INTEGRATION_TESTS "Build inviwo integration test" ON)
-
 #--------------------------------------------------------------------
-# Applications/Qt
-option(IVW_QT_APPLICATION "Build Inviwo Qt network editor application" ON)
-option(IVW_QT_APPLICATION_BASE "Build base for Qt applications. Used by Inviwo Qt network editor and Qt minimal application" ON)
+# Application setup
+option(IVW_QT_APPLICATION_BASE   "Build base for Qt applications. \
+                                 Used by Inviwo Qt network editor and Qt minimal application" ON)
+option(IVW_QT_APPLICATION        "Build Inviwo Qt network editor application" ON)
+option(IVW_INTEGRATION_TESTS     "Build inviwo integration test" ON)
+option(IVW_TINY_GLFW_APPLICATION "Build Inviwo Tiny GLFW Application" OFF)
+option(IVW_TINY_QT_APPLICATION   "Build Inviwo Tiny QT Application" OFF)
+
+if(IVW_QT_APPLICATION AND NOT IVW_QT_APPLICATION_BASE)
+    set(IVW_QT_APPLICATION_BASE ON CACHE BOOL "Build base for qt applications. \
+            Used by Qt network editor and Qt minimal application" FORCE)
+    message(STATUS "IVW_QT_APPLICATION_BASE was set to build, due to dependency towards IVW_QT_APPLICATION")
+endif()
+
+ivw_enable_modules_if(IVW_QT_APPLICATION QtWidgets)
+ivw_enable_modules_if(IVW_INTEGRATION_TEST GLFW Base)
+ivw_enable_modules_if(IVW_TINY_GLFW_APPLICATION GLFW)
 
 # Try to find qt and add it if it is not already in CMAKE_PREFIX_PATH
 if(NOT "${CMAKE_PREFIX_PATH}" MATCHES "[Qq][Tt]")
-    if(NOT QT_QMAKE_EXECUTABLE)
-        find_program(QT_QMAKE_EXECUTABLE_FINDQT NAMES qmake qmake4 qmake-qt4 qmake5 qmake-qt5
-           PATHS "${QT_SEARCH_PATH}/bin" "$ENV{QTDIR}/bin")
-        set(QT_QMAKE_EXECUTABLE ${QT_QMAKE_EXECUTABLE_FINDQT} CACHE PATH "Qt qmake program.")
-    endif()
-
-    if(QT_QMAKE_EXECUTABLE)
-        execute_process(COMMAND ${QT_QMAKE_EXECUTABLE} -query "QT_INSTALL_PREFIX" OUTPUT_VARIABLE QT5_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)
-    else()
-        if(APPLE) # On OSX look for the usual brew installation. 
-            foreach(path "/usr/local/Cellar/qt" "/usr/local/Cellar/qt5")
-                if(EXISTS ${path})
-                    file(GLOB qtversions RELATIVE "${path}/" "${path}/?.*.*")
-                    list(LENGTH qtversions len)
-                    if(${len} GREATER 0)
-                        list(GET qtversions 0 qtlatest)
-                        foreach(ver IN LISTS qtversion)
-                            if(ver VERSION_GREATER qtlatest)
-                                set(qtlatest ${ver})
-                            endif()
-                        endforeach()
-                        if(EXISTS "${path}/${qtlatest}")
-                            set(QT5_PATH "${path}/${qtlatest}")
-                            break()
-                        endif()
-                    endif()
-                endif()
-            endforeach()
-        endif()
-    endif()
-
+    include(cmake/locateqt.cmake)
+    ivw_locateqt(QT5_PATH)
     if(QT5_PATH)
         ivw_debug_message(STATUS "Found qt at: ${QT5_PATH}") 
         list(APPEND CMAKE_PREFIX_PATH ${QT5_PATH}) 
@@ -162,9 +140,9 @@ endif()
 # It also ensures that we are in control of the used version 
 # and is built using the same, Inviwo, settings.
 add_subdirectory(ext/zlib-1.2.11) # Defines target ZLIB::ZLIB
-add_subdirectory(ext/libpng)  # Defines target inviwo::libpng and libpng
-add_subdirectory(ext/libjpeg) # Defines target inviwo::libjpeg and libjpeg
-add_subdirectory(ext/tiff)    # Defines target inviwo::tiff and tiff
+add_subdirectory(ext/libpng)      # Defines target inviwo::libpng and libpng
+add_subdirectory(ext/libjpeg)     # Defines target inviwo::libjpeg and libjpeg
+add_subdirectory(ext/tiff)        # Defines target inviwo::tiff and tiff
 add_subdirectory(ext/flags)
 add_subdirectory(ext/glm)
 add_subdirectory(ext/ticpp)
@@ -190,9 +168,6 @@ if(WIN32)
     add_subdirectory(ext/stackwalker)
 endif()
 
-ivw_add_build_module_dependency(GLFW IVW_INTEGRATION_TESTS)
-ivw_add_build_module_dependency(Base IVW_INTEGRATION_TESTS)
-
 #--------------------------------------------------------------------
 # Add modules
 ivw_register_modules(all_modules)
@@ -215,9 +190,7 @@ ivw_add_external_projects()
 
 #--------------------------------------------------------------------
 # Add integration tests project
-if(IVW_INTEGRATION_TESTS)
-    add_subdirectory(tests/integrationtests)
-endif()
+add_subdirectory(tests/integrationtests)
 
 #--------------------------------------------------------------------
 # Package creation
