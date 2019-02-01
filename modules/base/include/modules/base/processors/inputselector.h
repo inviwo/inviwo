@@ -114,28 +114,20 @@ InputSelector<Inport, Outport>::InputSelector()
 
 template <typename Inport, typename Outport>
 void InputSelector<Inport, Outport>::updateOptions() {
-    std::string selectedID;
-    if(selectedPort_.size() != 0){
-        selectedID = selectedPort_.getSelectedIdentifier();
-    }
-    selectedPort_.clearOptions();
-    
-    int idx = 0;
+    std::vector<OptionPropertyIntOption> options;
+
     for (auto port : inport_.getConnectedOutports()) {
         auto id = port->getProcessor()->getIdentifier();
-        selectedPort_.addOption(id, id, idx++);
+        options.emplace_back(id, id, static_cast<int>(options.size()));
     }
-    if (!selectedID.empty()) {
-        selectedPort_.setSelectedIdentifier(selectedID);
-    }
+    selectedPort_.replaceOptions(options);
     selectedPort_.setCurrentStateAsDefault();
-    invalidate(InvalidationLevel::InvalidResources);
     updatedNedded_ = false;
 }
 
 template <typename Inport, typename Outport>
 void InputSelector<Inport, Outport>::process() {
-    if(updatedNedded_) updateOptions();
+    if (updatedNedded_) updateOptions();
     outport_.setData(inport_.getVectorData().at(selectedPort_.get()));
 }
 
