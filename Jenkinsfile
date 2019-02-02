@@ -1,11 +1,3 @@
-@NonCPS
-def printParams(def env) {
-    println "Env properties"
-    println env.getProperties().toString()
-    println "Env:"
-    println env.getEnvironment().inject('' { res, item -> res + "\n ${item.key}  =  ${item.value}" })
-}
-
 node {
     stage('Fetch') { 
         dir('inviwo') {
@@ -43,8 +35,11 @@ node {
             }
         }
     ]
-    
-    printParams(env)
+
+    println "\nEnv"
+    println env.getEnvironment().inject('', { res, item -> res + "${item.key.padLeft(25)} =  ${item.value}\n" })
+    println "\nParams"
+    println params.inject('', { res, item -> res + "${item.key.padLeft(25)} =  ${item.value}\n" })
 
     try {
           def opts = (env.cxx ? ['CMAKE_CXX_COMPILER' : env.cxx] : [:]) + 
