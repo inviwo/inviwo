@@ -1,6 +1,9 @@
 @NonCPS
 def printParams(def env) {
-    env.getEnvironment().each { name, value -> println "Name: $name -> Value $value" }
+    println "Env properties"
+    println env.getProperties().toString()
+    println "Env:"
+    println env.getEnvironment().inject('' { res, item -> res + "\n ${item.key}  =  ${item.value}" })
 }
 
 node {
@@ -41,13 +44,11 @@ node {
         }
     ]
     
-  
     printParams(env)
 
     try {
-        println(env)
-        def opts = (env.cxx ? ['CMAKE_CXX_COMPILER' : env.cxx] : [:]) + 
-                   (env.c   ? ['CMAKE_C_COMPILER'   : env.c]   : [:])
+          def opts = (env.cxx ? ['CMAKE_CXX_COMPILER' : env.cxx] : [:]) + 
+                     (env.c   ? ['CMAKE_C_COMPILER'   : env.c]   : [:])
 
         util.buildStandard(
             state: state,
