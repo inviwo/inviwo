@@ -332,8 +332,8 @@ def buildStandard(Map args = [:]) {
         args.opts = defaultOpts
         args.printCMakeVars = args.state.env.Print_CMake_Variables
 
-        if (args.state.env.offModules) args.offModules += args.state.env.offModules.split(';')
-        if (args.state.env.onModules) args.onModules += args.state.env.onModules.split(';')
+        if (args.state.env.offModules) args.offModules += args.state.env.offModules.tokenize(';')
+        if (args.state.env.onModules) args.onModules += args.state.env.onModules.tokenize(';')
 
         build(args)
     }
