@@ -99,14 +99,20 @@ def setLabel(def state, String label, Boolean add) {
     }       
 }
 
-def checked(def state, String label, Closure fun) {
+def checked(def state, String label, Boolean fail, Closure fun) {
     try {
         fun()
         setLabel(state, "J:" + label  + " Failure", false)
     } catch (e) {
         setLabel(state, "J:" + label  + " Failure", true)
         state.errors += label
-        println e.toString()
+        if (fail) {
+            state.build.result = 'FAILURE'
+            throw e
+        } else {
+            println e.toString()
+            state.build.result = 'UNSTABLE'
+         }
     }
 }
 
@@ -150,7 +156,7 @@ def warn(def state, refjob = 'inviwo/master') {
 def unittest(def state) {
     if(state.env.disableUnittest) return
     cmd('Unit Tests', 'build/bin', ['DISPLAY=:' + state.display]) {
-        checked(state, "Unit Test") {
+        checked(state, "Unit Test", false) {
             sh '''
                 rc=0
                 for unittest in inviwo-unittests-*
@@ -167,7 +173,7 @@ def unittest(def state) {
 def integrationtest(def state) {
     if(state.env.disableIntegration) return
     cmd('Integration Tests', 'build/bin', ['DISPLAY=:' + state.display]) {
-        checked(state, 'Integration Test') {
+        checked(state, 'Integration Test', false) {
             sh './inviwo-integrationtests'
         }
     }
@@ -176,7 +182,7 @@ def integrationtest(def state) {
 def regression(def state, modulepaths) {
     if(state.env.disableRegression) return
     cmd('Regression Tests', 'regress', ['DISPLAY=:' + state.display]) {
-        checked(state, 'Regression Test') {
+        checked(state, 'Regression Test', false) {
             sh """
                 python3 ../inviwo/tools/regression.py \
                         --config ../build/pyconfig.ini \
@@ -201,7 +207,7 @@ def copyright(def state, extraPaths = []) {
     if(state.env.disableCopyright) return
     stage('Copyright Check') {
         log() {
-            checked(state, "Copyright Test") {
+            checked(state, "Copyright Test", false) {
                 sh "python3 inviwo/tools/refactoring/check-copyright.py ./inviwo ${extraPaths.join(' ')}"
             }
         }
@@ -211,7 +217,7 @@ def copyright(def state, extraPaths = []) {
 def doxygen(def state) {
     if(state.env.disableDoxygen) return
     cmd('Doxygen', 'build', ['DISPLAY=:' + state.display]) {
-        checked(state, "Doxygen") {
+        checked(state, "Doxygen", false) {
             sh 'ninja DOXY-Inviwo'
         }
         publishHTML([
@@ -295,7 +301,7 @@ def build(Map args = [:]) {
         println "Modules On:\n  ${args.onModules?.join('\n  ')?:""}"
         println "Modules Off:\n  ${args.offModules?.join('\n  ')?:""}"
         log {
-            checked(args.state, 'Build') {
+            checked(args.state, 'Build', true) {
                 sh """
                     ccache -z # reset ccache statistics
                     # tell ccache where the project root is
