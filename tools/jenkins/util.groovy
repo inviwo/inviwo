@@ -322,7 +322,7 @@ def buildStandard(Map args = [:]) {
     stage('Build') {
         if (args.state.env.Clean_Build) clean()
         def defaultOpts = defaultCMakeOptions(args.state.env.Build_Type)
-        if (args.state.env) defaultOpts.putAll(envCMakeOptions(args.state.env))
+        defaultOpts.putAll(envCMakeOptions(args.state.env))
         if (args.state.env.Use_Ccache) defaultOpts.putAll(ccacheOption())
         if (args.env.opts) {
             defaultOpts.putAll(arg.env.opts.tokenize(';').collect {
