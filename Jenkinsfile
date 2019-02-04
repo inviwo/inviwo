@@ -11,7 +11,7 @@ node {
     properties(util.defaultProperties(env))
 
     Map state = [
-        env: env,
+        env: env.getEnvironment().clone()
         build: currentBuild, 
         errors: [],
         display: 0,
@@ -29,7 +29,7 @@ node {
         }
     ]
     
-    println "Env2:\n" + state.env.getEnvironment()?.collect{"${it.key.padLeft(25)} = ${it.value}"}?.join("\n  ") ?: ''
+    println "Env2:\n" + state.env?.collect{"${it.key.padLeft(25)} = ${it.value}"}?.join("\n  ") ?: ''
 
     try {
         util.buildStandard(
