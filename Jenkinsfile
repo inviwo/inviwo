@@ -13,8 +13,7 @@ node {
     Map state = [
         env: env.getEnvironment().collectEntries{it -> 
             println "key ${it}"
-            [(it.key): it.value]}​​​​
-        ​,
+            [(it.key): it.value]},
         build: currentBuild, 
         errors: [],
         display: 0,
