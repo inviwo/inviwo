@@ -325,7 +325,7 @@ def buildStandard(Map args = [:]) {
         defaultOpts.putAll(envCMakeOptions(args.state.env))
         if (args.state.env.Use_Ccache) defaultOpts.putAll(ccacheOption())
         if (args.state.env.opts) {
-            def envopts = arg.state.env.opts.tokenize(';').collect{it.tokenize('=')}.collectEntries()
+            def envopts = args.state.env.opts.tokenize(';').collect{it.tokenize('=')}.collectEntries()
             defaultOpts.putAll(envopts)
         }
         if (args.opts) defaultOpts.putAll(args.opts)
