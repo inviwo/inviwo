@@ -32,6 +32,8 @@
 #include <modules/opengl/buffer/buffergl.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shaderutils.h>
+#include <inviwo/core/interaction/events/wheelevent.h>
+#include <inviwo/core/interaction/events/eventmatcher.h>
 
 namespace inviwo {
 
@@ -119,6 +121,10 @@ MPREntryExitPoints::MPREntryExitPoints()
     , mprBasisU_("mprBasisU_", "mprBasisU_", vec3(0.0f), vec3(-1.0f), vec3(1.0f))
     , mprBasisN_("mprBasisN_", "mprBasisN_", vec3(0.0f), vec3(-1.0f), vec3(1.0f))
     , shader_("uv_pass_through.vert", "mpr_entry_exit_points.frag")
+    , mouseWheelStepSize_("mouseWheelStepSize_", "Mouse Wheel Step Size", 0.01f, 0.001f, 0.1f, 0.001f)
+    , mouseWheelEvent_("mouseWheelEvent_", "Mouse Wheel Event",
+        [this](Event* e) { mouseWheelEventHandler(e); },
+        util::make_unique<WheelEventMatcher>())
     , dirty_(false)
 {
     addPort(volumeInport_);
@@ -165,6 +171,12 @@ MPREntryExitPoints::MPREntryExitPoints()
     addProperty(mprBasisN_);
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+
+    addProperty(mouseWheelStepSize_);
+
+    mouseWheelEvent_.setVisible(false);
+    mouseWheelEvent_.setCurrentStateAsDefault();
+    addProperty(mouseWheelEvent_);
 }
 
 void MPREntryExitPoints::process() {
@@ -206,6 +218,15 @@ void MPREntryExitPoints::process() {
     shader_.deactivate();
 
     utilgl::deactivateCurrentTarget();
+}
+
+void MPREntryExitPoints::mouseWheelEventHandler(Event* e)
+{
+    auto wheelEvent = static_cast<WheelEvent*>(e);
+    const auto steps = static_cast<float>(wheelEvent->delta().y);
+    const auto vs = volumeSpacing_.get() / glm::compMin(volumeSpacing_.get());
+    mprP_ = mprP_.get() + steps * mouseWheelStepSize_.get() * vs * mprBasisN_.get();
+    e->markAsUsed();
 }
 
 void MPREntryExitPoints::deserialize(Deserializer& d) {

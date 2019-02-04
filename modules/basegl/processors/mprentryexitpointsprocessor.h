@@ -40,6 +40,7 @@
 #include <inviwo/core/ports/volumeport.h>
 
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/eventproperty.h>
 
 namespace inviwo {
 
@@ -96,7 +97,12 @@ private:
 
     Shader shader_;
 
+    FloatProperty mouseWheelStepSize_;
+    EventProperty mouseWheelEvent_;
+
     bool dirty_;
+
+    void mouseWheelEventHandler(Event* e);
 
     vec3 screenPosToVolumePos(const vec2& screen_pos) const;
     vec3 screenOffsetToVolumeOffset(const vec2& screen_offset) const;
