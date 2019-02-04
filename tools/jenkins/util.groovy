@@ -327,13 +327,13 @@ def build(Map args = [:]) {
 def buildStandard(Map args = [:]) {
     stage('Build') {
         if (args.state.env.Clean_Build) clean()
+        println "BUILDTYPE ${args.state.env.Build_Type}"
         def defaultOpts = defaultCMakeOptions(args.state.env.Build_Type)
         defaultOpts.putAll(envCMakeOptions(args.state.env))
         if (args.state.env.Use_Ccache) defaultOpts.putAll(ccacheOption())
+        println "Envopts: ${args.state.env.opts}"
         if (args.state.env.opts) {
-            println "Envopts: ${args.state.env.opts}"
             def envopts = args.state.env.opts.tokenize(';').collect{it.tokenize('=')}.collectEntries()
-            println args.state.env.opts
             defaultOpts.putAll(envopts)
         }
         if (args.opts) defaultOpts.putAll(args.opts)
