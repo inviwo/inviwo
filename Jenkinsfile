@@ -11,9 +11,10 @@ node {
     properties(util.defaultProperties(env))
 
     Map state = [
-        env: env.getEnvironment().collectEntries{it -> 
+        env: env.getEnvironment().collectEntries{
             println "key ${it}"
-            [(it.key): it.value]},
+            [(it.key): it.value]
+        },
         build: currentBuild, 
         errors: [],
         display: 0,
