@@ -101,6 +101,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequencetospatial4dsampler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeslice.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesource.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/multivolumesource.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesubsample.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesubset.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumetospatialsampler.h
@@ -205,6 +206,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesequencetospatial4dsampler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeslice.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesource.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/multivolumesource.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesubsample.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesubset.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumetospatialsampler.cpp
