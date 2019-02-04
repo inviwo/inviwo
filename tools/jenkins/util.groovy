@@ -1,52 +1,60 @@
+/* Eviorment customizations
+ *  * clean
+ *  * ccache
+ *  * printCMakeVars
+ *  * configs
+ *  * disabledTrigger
+ *   
+ *  * disableUnittest
+ *  * disableIntegration
+ *  * disableRegression
+ *  * disableCopyright
+ *  * disableDoxygen
+ *  
+ *  * offModules
+ *  * onModules
+ *  * opts
+ */
+
 @NonCPS
 def getChangeString(build) {
     def MAX_MSG_LEN = 100
     def changeString = ""
-
-    echo "Gathering SCM changes"
-    def changeLogSets = build.rawBuild.changeSets
-    for (int i = 0; i < changeLogSets.size(); i++) {
-        def entries = changeLogSets[i].items
-        for (int j = 0; j < entries.length; j++) {
-            def entry = entries[j]
-            truncated_msg = entry.msg.take(MAX_MSG_LEN)
+    build.rawBuild.changeSets.each {entries -> 
+        entries.each { entry -> 
             changeString += "${new Date(entry.timestamp).format("yyyy-MM-dd HH:mm:ss")} "
-            changeString += "[${entry.commitId.take(8)}] ${entry.author}: ${truncated_msg}\n"
+            changeString += "[${entry.commitId.take(8)}] ${entry.author}: ${entry.msg.take(MAX_MSG_LEN)}\n"
         }
     }
-
-    if (!changeString) {
-        changeString = " - No new changes"
-    }
-    return changeString
+    return changeString ?: " - No new changes"
 }
 
-def defaultProperties(Map args = [:]) {
+def defaultProperties(def env) {
     def params = [
         parameters([
             booleanParam(
-                defaultValue: args.clean?:false, 
+                defaultValue: env.clean?:false, 
                 description: 'Do a clean build', 
                 name: 'Clean Build'
             ),
             booleanParam(
-                defaultValue: args.ccache?:true, 
+                defaultValue: env.ccache?:true, 
                 description: 'Use ccache to speed up build', 
-                name: 'Use ccache'
+                name: 'Use Ccache'
             ),
             booleanParam(
-                defaultValue: args.printCMakeVars?:false, 
+                defaultValue: env.printCMakeVars?:false, 
                 description: 'Prints all the cmake variables to the log', 
                 name: 'Print CMake Variables'
             ),
             choice(
-                choices: "Release\nDebug\nMinSizeRel\nRelWithDebInfo\n", // The first will be default
+                choices: env.configs?:"Release\nDebug\nMinSizeRel\nRelWithDebInfo\n", // The first will be default
                 description: 'Select build configuration', 
                 name: 'Build Type'
             )
         ]),
     ]
-    if (!args.disabledTrigger) {
+    if (!env.disabledTrigger) {
         params += pipelineTriggers([
             [$class: 'GitHubPushTrigger']
         ])
@@ -97,8 +105,7 @@ def checked(def state, String label, Closure fun) {
         setLabel(state, "J:" + label  + " Failure", false)
     } catch (e) {
         setLabel(state, "J:" + label  + " Failure", true)
-        state.errors += "Failure in ${label}"
-        throw e
+        state.errors += label
     }
 }
 
@@ -140,6 +147,7 @@ def warn(def state, refjob = 'inviwo/master') {
 }
 
 def unittest(def state) {
+    if(state.env.disableUnittest) return
     cmd('Unit Tests', 'build/bin', ['DISPLAY=:' + state.display]) {
         checked(state, "Unit Test") {
             sh '''
@@ -156,6 +164,7 @@ def unittest(def state) {
 }
 
 def integrationtest(def state) {
+    if(state.env.disableIntegration) return
     cmd('Integration Tests', 'build/bin', ['DISPLAY=:' + state.display]) {
         checked(state, 'Integration Test') {
             sh './inviwo-integrationtests'
@@ -164,13 +173,14 @@ def integrationtest(def state) {
 }
 
 def regression(def state, modulepaths) {
+    if(state.env.disableRegression) return
     try {
         cmd('Regression Tests', 'regress', ['DISPLAY=:' + state.display]) {
             checked(state, 'Regression Test') {
                 sh """
                     python3 ../inviwo/tools/regression.py \
                             --config ../build/pyconfig.ini \
-                            --build_type ${state.params['Build Type']} \
+                            --build_type ${state.env['Build Type']} \
                             --header ${state.env.JENKINS_HOME}/inviwo-config/header.html \
                             --output . \
                             --modules ${modulepaths.join(' ')}
@@ -192,6 +202,7 @@ def regression(def state, modulepaths) {
 }
 
 def copyright(def state, extraPaths = []) {
+    if(state.env.disableCopyright) return
     stage('Copyright Check') {
         log() {
             checked(state, "Copyright Test") {
@@ -202,6 +213,7 @@ def copyright(def state, extraPaths = []) {
 }
 
 def doxygen(def state) {
+    if(state.env.disableDoxygen) return
     cmd('Doxygen', 'build', ['DISPLAY=:' + state.display]) {
         checked(state, "Doxygen") {
             sh 'ninja DOXY-Inviwo'
@@ -217,15 +229,12 @@ def doxygen(def state) {
     }    
 }
 
-def publish() {
-}
-
 def slack(def state, channel) {
     stage('Slack') {
         echo "result: ${state.build.result}"
         def res2color = ['SUCCESS' : 'good', 'UNSTABLE' : 'warning' , 'FAILURE' : 'danger' ]
         def color = res2color.containsKey(state.build.result) ? res2color[state.build.result] : 'warning'
-        def errors = !state.errors.isEmpty() ? "Errors:\n ${state.errors.inject("", {res, item -> res + item + '\n'})}" : ""
+        def errors = !state.errors.isEmpty() ? "Errors in: ${state.errors.join(" ")}\n" : ""
         slackSend(
             color: color, 
             channel: channel, 
@@ -275,11 +284,10 @@ Map ccacheOption() {
     ]
 }
 Map envCMakeOptions(env) {
-    def res = [:]
-    if (env.QT_PATH) res["CMAKE_PREFIX_PATH"] = env.QT_PATH
-    if (env.OpenCL_LIBRARY) res["OpenCL_LIBRARY"] = env.OpenCL_LIBRARY
-    if (env.OpenCL_INCLUDE_DIR) res["OpenCL_INCLUDE_DIR"] = env.OpenCL_INCLUDE_DIR
-    return res
+    def opts = (env.QT_PATH ? ["CMAKE_PREFIX_PATH"  : env.QT_PATH] : [:]) +
+               (env.OpenCL_LIBRARY     ? [OpenCL_LIBRARY     : env.OpenCL_LIBRARY] :  [:]) +
+               (env.OpenCL_INCLUDE_DIR ? [OpenCL_INCLUDE_DIR : env.OpenCL_INCLUDE_DIR] : [:])
+    return opts
 }
 
 
@@ -316,15 +324,22 @@ def build(Map args = [:]) {
 // * onModules List of extra module to enable (optional)
 // * offModules List of modules to disable (optional)
 def buildStandard(Map args = [:]) {
-    assert args.state.params : "Argument params must be supplied"
+    assert args.state.env : "Argument params must be supplied"
     stage('Build') {
-        if (args.state.params['Clean Build']) clean()
-        def defaultOpts = defaultCMakeOptions(args.state.params['Build Type'])
+        if (args.state.env['Clean Build']) clean()
+        def defaultOpts = defaultCMakeOptions(args.state.env['Build Type'])
         if (args.state.env) defaultOpts.putAll(envCMakeOptions(args.state.env))
-        if (args.state.params['Use ccache']) defaultOpts.putAll(ccacheOption())
+        if (args.state.env['Use ccache']) defaultOpts.putAll(ccacheOption())
+        if (args.env.opts) {
+            defaultOpts.putAll(arg.env.opts.tokenize(';')*.tokenize('=').collectEntries())
+        }
         if (args.opts) defaultOpts.putAll(args.opts)
         args.opts = defaultOpts
         args.printCMakeVars = args.state.params['Print CMake Variables']
+
+        if (args.env.offModules) args.offModules += args.env.offModules.split(';')
+        if (args.env.onModules) args.offModules += args.env.onModules.split(';')
+
         build(args)
     }
 }
