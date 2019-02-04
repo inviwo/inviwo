@@ -6,7 +6,6 @@ node {
             sh 'git submodule update --init --recursive'
         }
     }
-    println "Env:\n" + env.getEnvironment()?.collect{"${it.key.padLeft(25)} = ${it.value}"}?.join("\n  ") ?: ''
 
     Map state = [
         env: env.getEnvironment(),
@@ -29,8 +28,6 @@ node {
 
     def util = load "${env.WORKSPACE}/inviwo/tools/jenkins/util.groovy"
     if(!env.disabledProperties) properties(util.defaultProperties())
-    
-    println "Env3b:\n" + state.env?.collect{"${it.key.padLeft(25)} = ${it.value}"}?.join("\n  ") ?: ''
 
     try {
         util.buildStandard(

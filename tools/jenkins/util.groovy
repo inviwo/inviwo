@@ -43,17 +43,16 @@ def defaultProperties() {
                 name: 'Print_CMake_Variables'
             ),
             choice(
-                choices: "Release\nDebug\nMinSizeRel\nRelWithDebInfo\n", // The first will be default
+                // The first will be default
+                choices: "Release\nDebug\nMinSizeRel\nRelWithDebInfo\n", 
                 description: 'Select build configuration', 
                 name: 'Build_Type'
             )
         ]),
-    ]
-    if (!env.disabledTrigger) {
-        params += pipelineTriggers([
+        pipelineTriggers([
             [$class: 'GitHubPushTrigger']
         ])
-    }
+    ]
     return params
 }
 
@@ -322,11 +321,9 @@ def build(Map args = [:]) {
 def buildStandard(Map args = [:]) {
     stage('Build') {
         if (args.state.env.Clean_Build) clean()
-        println "BUILDTYPE ${args.state.env.Build_Type}"
         def defaultOpts = defaultCMakeOptions(args.state.env.Build_Type)
         defaultOpts.putAll(envCMakeOptions(args.state.env))
         if (args.state.env.Use_Ccache) defaultOpts.putAll(ccacheOption())
-        println "Envopts: ${args.state.env.opts}"
         if (args.state.env.opts) {
             def envopts = args.state.env.opts.tokenize(';').collect{it.tokenize('=')}.collectEntries()
             defaultOpts.putAll(envopts)

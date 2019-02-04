@@ -370,7 +370,7 @@ endfunction()
 
 #--------------------------------------------------------------------
 # Set module to build by default if value is true
-# Example ivw_enable_modules_if(IVW_INTEGRATION_TEST GLFW Base)
+# Example ivw_enable_modules_if(IVW_INTEGRATION_TESTS GLFW Base)
 # Needs to be called before ivw_register_modules
 function(ivw_enable_modules_if value)
     if(NOT value) 

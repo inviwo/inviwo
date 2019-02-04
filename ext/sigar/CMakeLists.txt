@@ -1,5 +1,10 @@
 #--------------------------------------------------------------------
 # Sigar Library
+option(IVW_SIGAR "Use sigar to detect system capabilities" ON)
+if(NOT IVW_SIGAR)
+    return()
+endif()
+
 project(sigar)
 
 #--------------------------------------------------------------------

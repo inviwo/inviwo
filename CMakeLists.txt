@@ -30,8 +30,8 @@
 cmake_minimum_required(VERSION 3.2.0)
 cmake_policy(VERSION 3.2.0)
 
-if(POLICY CMP0042)
-    cmake_policy(SET CMP0042 NEW) # MacOSX rpath policy.
+if(POLICY CMP0042) # MacOSX rpath policy.
+    cmake_policy(SET CMP0042 NEW) 
 endif()
 
 if(POLICY CMP0043)
@@ -40,37 +40,30 @@ if(POLICY CMP0043)
     cmake_policy(SET CMP0043 NEW)
 endif()
 
-if(POLICY CMP0046)
-     # Warn when adding a missing dependency using add_dependencies()
+if(POLICY CMP0046) # Warn when adding a missing dependency using add_dependencies()
     cmake_policy(SET CMP0046 NEW)
 endif()
 
-if(POLICY CMP0051)
-    # include TARGET_OBJECTS expressions in a target's SOURCES property
+if(POLICY CMP0051) # include TARGET_OBJECTS expressions in a target's SOURCES property
     cmake_policy(SET CMP0051 NEW)
 endif()
 
-if(POLICY CMP0054)
-    # only interpret if() arguments as variables or keywords when unquoted
+if(POLICY CMP0054) # only interpret if() arguments as variables or keywords when unquoted
     cmake_policy(SET CMP0054 NEW)
 endif()
 
-if(POLICY CMP0057)
-    # CMake 3.3 adds support for the new IN_LIST operator.
+if(POLICY CMP0057) # CMake 3.3 adds support for the new IN_LIST operator.
     cmake_policy(SET CMP0057 NEW)
 endif()
 
-if(POLICY CMP0066)
-    # Honor per-config flags in ``try_compile()`` source-file signature.
+if(POLICY CMP0066) # Honor per-config flags in ``try_compile()`` source-file signature.
     cmake_policy(SET CMP0066 NEW)
 endif()
-if(POLICY CMP0067)
-    # Honor language standard in try_compile() source-file signature.
+if(POLICY CMP0067) # Honor language standard in try_compile() source-file signature.
     cmake_policy(SET CMP0067 NEW)
 endif()
 
-if(POLICY CMP0074)
-    # find_package uses <PackageName>_ROOT variables
+if(POLICY CMP0074) # find_package uses <PackageName>_ROOT variables
     cmake_policy(SET CMP0074 NEW)
 endif()
 
@@ -84,7 +77,6 @@ project(${IVW_PROJECT_NAME})
 include(cmake/verifysubmodules.cmake)
 verify_submodules("${CMAKE_CURRENT_LIST_DIR}/.gitmodules")
 
-# Build
 option(BUILD_SHARED_LIBS "Build shared libs, else static libs" ON)
 
 # Needed for find_package(PythonLibsNew 3), which is an improved version of CMake shipped find_pythonLibs
@@ -104,8 +96,8 @@ include(cmake/globalconfig.cmake)
 
 #--------------------------------------------------------------------
 # Application setup
-option(IVW_QT_APPLICATION_BASE   "Build base for Qt applications. \
-                                 Used by Inviwo Qt network editor and Qt minimal application" ON)
+option(IVW_QT_APPLICATION_BASE   
+    "Build base for Qt apps. Used by the Qt network editor and the Tiny Qt app" ON)
 option(IVW_QT_APPLICATION        "Build Inviwo Qt network editor application" ON)
 option(IVW_INTEGRATION_TESTS     "Build inviwo integration test" ON)
 option(IVW_TINY_GLFW_APPLICATION "Build Inviwo Tiny GLFW Application" OFF)
@@ -116,9 +108,8 @@ if(IVW_QT_APPLICATION AND NOT IVW_QT_APPLICATION_BASE)
             Used by Qt network editor and Qt minimal application" FORCE)
     message(STATUS "IVW_QT_APPLICATION_BASE was set to build, due to dependency towards IVW_QT_APPLICATION")
 endif()
-
 ivw_enable_modules_if(IVW_QT_APPLICATION QtWidgets)
-ivw_enable_modules_if(IVW_INTEGRATION_TEST GLFW Base)
+ivw_enable_modules_if(IVW_INTEGRATION_TESTS GLFW Base)
 ivw_enable_modules_if(IVW_TINY_GLFW_APPLICATION GLFW)
 
 # Try to find qt and add it if it is not already in CMAKE_PREFIX_PATH
@@ -156,47 +147,18 @@ add_subdirectory(ext/utf)
 add_subdirectory(ext/json)
 add_subdirectory(ext/fmt)
 add_subdirectory(ext/sml)
+add_subdirectory(ext/sigar)
+add_subdirectory(ext/stackwalker) # Add stackwalker for windows for stack traces in the log
 
-option(IVW_SIGAR "Use sigar to detect system capabilities" ON)
-if(IVW_SIGAR)
-    add_subdirectory(ext/sigar)
-endif()
+ivw_register_modules(all_modules)        # Add modules  
 
-#--------------------------------------------------------------------
-# Add stackwalker for windows for stack traces in the log
-if(WIN32)
-    add_subdirectory(ext/stackwalker)
-endif()
+add_subdirectory(tools/meta)             # Add Inviwo meta
+add_subdirectory(src/qt)                 # Add Qt
+add_subdirectory(apps)                   # Add applications
+ivw_add_external_projects()              # Add external projects
+add_subdirectory(tests/integrationtests) # Add integration tests project
+include(cmake/packaging.cmake)           # Package creation
 
-#--------------------------------------------------------------------
-# Add modules
-ivw_register_modules(all_modules)
-
-#--------------------------------------------------------------------
-# Add Inviwo meta
-add_subdirectory(tools/meta)
-
-#--------------------------------------------------------------------
-# Add Qt
-add_subdirectory(src/qt)
-
-#--------------------------------------------------------------------
-# Add applications
-add_subdirectory(apps)
-
-#--------------------------------------------------------------------
-# Add external projects
-ivw_add_external_projects()
-
-#--------------------------------------------------------------------
-# Add integration tests project
-add_subdirectory(tests/integrationtests)
-
-#--------------------------------------------------------------------
-# Package creation
-include(cmake/packaging.cmake)
-
-#--------------------------------------------------------------------
 # Generate Doxygen setup. 
 include(tools/doxygen/doxygen.cmake)
 make_doxygen_target(all_modules)
