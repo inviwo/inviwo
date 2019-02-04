@@ -11,10 +11,6 @@ node {
     def util = load "${env.WORKSPACE}/inviwo/tools/jenkins/util.groovy"      
     properties(util.defaultProperties(env))
 
-    List modulePaths = []
-    List on = []
-    List off = ["ABUFFERGL"]
-
     Map state = [
         env: env,
         build: currentBuild, 
@@ -37,10 +33,10 @@ node {
     try {
         util.buildStandard(
             state: state,
-            modulePaths: modulePaths, 
-            onModules: on,  
-            offModules: off,
-            opts: opts
+            modulePaths: [], 
+            onModules: [],  
+            offModules: ["ABUFFERGL"],
+            opts: [:]
         )
         util.filterfiles()
         util.format(state)
