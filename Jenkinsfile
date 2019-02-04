@@ -8,7 +8,7 @@ node {
     }
 
     Map state = [
-        env: env.getEnvironment(),
+        env: env,
         build: currentBuild, 
         errors: [],
         display: 0,
