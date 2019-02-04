@@ -106,6 +106,7 @@ def checked(def state, String label, Closure fun) {
     } catch (e) {
         setLabel(state, "J:" + label  + " Failure", true)
         state.errors += label
+        throw e
     }
 }
 
