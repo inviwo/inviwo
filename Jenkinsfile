@@ -11,7 +11,7 @@ node {
     properties(util.defaultProperties(env))
 
     Map state = [
-        env: env.getEnvironment().clone()
+        env: env.getEnvironment().clone(),
         build: currentBuild, 
         errors: [],
         display: 0,
