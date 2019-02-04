@@ -37,6 +37,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageoverlaygl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageresample.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagescaling.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagetransform.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/jacobian2d.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/isoraycaster.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightingraycaster.h
@@ -105,6 +106,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageoverlaygl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageresample.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagescaling.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagetransform.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/jacobian2d.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/isoraycaster.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightingraycaster.cpp
@@ -164,6 +166,7 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_normalize.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_overlay.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_resample.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_transform.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/lighting/lightingraycasting.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/lighting/lightpropagation.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/lighting/lightpropagation.geom
