@@ -288,6 +288,7 @@ Map envCMakeOptions(env) {
 
 //Args state, opts, modulePaths, onModules, offModules
 def build(Map args = [:]) {
+    println "build"
     dir('build') {
         println("Options: ${args.opts.inject('', {res, item -> res + '\n  ' + item.key + ' = ' + item.value})}")
         println("External: ${args.modulePaths.inject('', {res, item -> res + '\n  ' + item})}")
@@ -319,6 +320,7 @@ def build(Map args = [:]) {
 // * onModules List of extra module to enable (optional)
 // * offModules List of modules to disable (optional)
 def buildStandard(Map args = [:]) {
+    println "buildStandard"
     stage('Build') {
         if (args.state.env.Clean_Build) clean()
         def defaultOpts = defaultCMakeOptions(args.state.env.Build_Type)
@@ -334,7 +336,7 @@ def buildStandard(Map args = [:]) {
         args.printCMakeVars = args.state.env.Print_CMake_Variables
 
         if (args.state.env.offModules) args.offModules += args.state.env.offModules.split(';')
-        if (args.state.env.onModules) args.offModules += args.state.env.onModules.split(';')
+        if (args.state.env.onModules) args.onModules += args.state.env.onModules.split(';')
 
         build(args)
     }
