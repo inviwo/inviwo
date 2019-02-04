@@ -324,12 +324,11 @@ def build(Map args = [:]) {
 // * onModules List of extra module to enable (optional)
 // * offModules List of modules to disable (optional)
 def buildStandard(Map args = [:]) {
-    assert args.state.env : "Argument params must be supplied"
     stage('Build') {
         if (args.state.env['Clean Build']) clean()
         def defaultOpts = defaultCMakeOptions(args.state.env['Build Type'])
         if (args.state.env) defaultOpts.putAll(envCMakeOptions(args.state.env))
-        if (args.state.env['Use ccache']) defaultOpts.putAll(ccacheOption())
+        if (args.state.env['Use Ccache']) defaultOpts.putAll(ccacheOption())
         if (args.env.opts) {
             defaultOpts.putAll(arg.env.opts.tokenize(';').collect {
                     it.tokenize('=') 
