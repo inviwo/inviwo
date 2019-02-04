@@ -106,7 +106,7 @@ def checked(def state, String label, Closure fun) {
     } catch (e) {
         setLabel(state, "J:" + label  + " Failure", true)
         state.errors += label
-        throw e
+        println e.toString()
     }
 }
 
@@ -180,7 +180,7 @@ def regression(def state, modulepaths) {
             sh """
                 python3 ../inviwo/tools/regression.py \
                         --config ../build/pyconfig.ini \
-                        --build_type ${state.env.get('Build Type')} \
+                        --build_type ${state.env.Build_Type} \
                         --header ${state.env.JENKINS_HOME}/inviwo-config/header.html \
                         --output . \
                         --modules ${modulepaths.join(' ')}
@@ -245,7 +245,6 @@ def slack(def state, channel) {
 }
 
 def cmake(Map args = [:]) {
-    println "cmake"
     return "cmake -G Ninja " +
         (args.printCMakeVars ? " -LA " : "") +
         (args.opts?.collect{" -D${it.key}=${it.value}"}?.join('') ?: "") + 
@@ -290,7 +289,6 @@ Map envCMakeOptions(env) {
 
 //Args state, opts, modulePaths, onModules, offModules
 def build(Map args = [:]) {
-    println "build"
     dir('build') {
         println "Options:\n  " + args.opts?.collect{"  ${it.key.padRight(30)} = ${it.value}"}?.join('\n  ') ?: ""
         println "External:\n  ${args.modulePaths?.join('\n  ')?:""}"
@@ -298,7 +296,6 @@ def build(Map args = [:]) {
         println "Modules Off:\n  ${args.offModules?.join('\n  ')?:""}"
         log {
             checked(args.state, 'Build') {
-                sh 'set -x'
                 sh """
                     ccache -z # reset ccache statistics
                     # tell ccache where the project root is
@@ -322,7 +319,6 @@ def build(Map args = [:]) {
 // * onModules List of extra module to enable (optional)
 // * offModules List of modules to disable (optional)
 def buildStandard(Map args = [:]) {
-    println "buildStandard"
     stage('Build') {
         if (args.state.env.Clean_Build) clean()
         def defaultOpts = defaultCMakeOptions(args.state.env.Build_Type)
