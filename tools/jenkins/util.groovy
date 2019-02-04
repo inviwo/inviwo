@@ -243,13 +243,13 @@ def slack(def state, channel) {
     }
 }
 
-def cmake(Map opts, List modulePaths, List onModules, List offModules, Boolean printVars = False) {
+def cmake(Map args = [:]) {
     return "cmake -G Ninja " +
-        (printVars ? " -LA " : "") +
-        opts.inject("", {res, item -> res + " -D" + item.key + "=" + item.value}) + 
-        (modulePaths ? " -DIVW_EXTERNAL_MODULES=" + modulePaths.join(";") : "" ) +
-        onModules.inject("", {res, item -> res + " -D" + "IVW_MODULE_" + item + "=ON"}) +
-        offModules.inject("", {res, item -> res + " -D" + "IVW_MODULE_" + item + "=OFF"}) + 
+        (args.printCMakeVars ? " -LA " : "") +
+        (args.opts?.collect{" -D${it.key}=${it.value}"}?.join() ?: "") + 
+        (args.modulePaths ? " -DIVW_EXTERNAL_MODULES=" + args.modulePaths.join(";") : "" ) +
+        (args.onModules?.collect{" -DIVW_MODULE_${it}=ON"}?.join() ?: "") +
+        (args.offModules?.collect{" -DIVW_MODULE_${it}=OFF"}?.join() ?: "") +
         " ../inviwo"
 }
 
@@ -290,10 +290,10 @@ Map envCMakeOptions(env) {
 def build(Map args = [:]) {
     println "build"
     dir('build') {
-        println("Options: ${args.opts.inject('', {res, item -> res + '\n  ' + item.key + ' = ' + item.value})}")
-        println("External: ${args.modulePaths.inject('', {res, item -> res + '\n  ' + item})}")
-        println("Modules On: ${args.onModules.inject('', {res, item -> res + '\n  ' + item})}")
-        println("Modules Off: ${args.offModules.inject('', {res, item -> res + '\n  ' + item})}")
+        println "Options:\n  " + args.opts?.collect{"${it.key.padLeft(25)} = ${it.value}"}?.join('\n  ') ?: ""
+        println "External:\n  ${args.modulePaths?.join('\n  ')?:""}"
+        println "Modules On:\n  ${args.onModules?.join('\n  ')?:""}"
+        println "Modules Off:\n  ${args.offModules?.join('\n  ')?:""}"
         log {
             checked(args.state, 'Build') {
                 sh """
@@ -301,8 +301,7 @@ def build(Map args = [:]) {
                     # tell ccache where the project root is
                     export CCACHE_BASEDIR=${args.state.env.WORKSPACE}/build
                             
-                    ${cmake(args.opts, args.modulePaths, args.onModules, args.offModules, 
-                            args.printCMakeVars)}
+                    ${cmake(args)}
     
                     ninja
     

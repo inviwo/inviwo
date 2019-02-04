@@ -6,8 +6,7 @@ node {
             sh 'git submodule update --init --recursive'
         }
     }
-    println env.getEnvironment().inject('\nEnv:\n', { res, item -> res + "${item.key.padLeft(25)} = ${item.value}\n" })
-
+    println "Env:\n" + env.getEnvironment()?.collect{"${it.key.padLeft(25)} = ${it.value}"}?.join("\n  ") ?: ''
     def util = load "${env.WORKSPACE}/inviwo/tools/jenkins/util.groovy"      
     properties(util.defaultProperties(env))
 
