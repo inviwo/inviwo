@@ -45,7 +45,7 @@ def defaultProperties(def env) {
             booleanParam(
                 defaultValue: env.printCMakeVars?:false, 
                 description: 'Prints all the cmake variables to the log', 
-                name: 'Print_CMake_Variables
+                name: 'Print_CMake_Variables'
             ),
             choice(
                 choices: env.configs?:"Release\nDebug\nMinSizeRel\nRelWithDebInfo\n", // The first will be default
