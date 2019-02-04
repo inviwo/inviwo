@@ -11,7 +11,7 @@ node {
     properties(util.defaultProperties(env))
 
     Map state = [
-        env: [:]
+        env: [:],
         build: currentBuild, 
         errors: [],
         display: 0,
