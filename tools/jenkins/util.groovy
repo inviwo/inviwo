@@ -324,8 +324,8 @@ def buildStandard(Map args = [:]) {
         def defaultOpts = defaultCMakeOptions(args.state.env.Build_Type)
         defaultOpts.putAll(envCMakeOptions(args.state.env))
         if (args.state.env.Use_Ccache) defaultOpts.putAll(ccacheOption())
-        if (args.env.opts) {
-            defaultOpts.putAll(arg.env.opts.tokenize(';').collect {
+        if (args.state.env.opts) {
+            defaultOpts.putAll(arg.state.env.opts.tokenize(';').collect {
                     it.tokenize('=') 
                 }.collectEntries())
         }
@@ -333,8 +333,8 @@ def buildStandard(Map args = [:]) {
         args.opts = defaultOpts
         args.printCMakeVars = args.state.env.Print_CMake_Variables
 
-        if (args.env.offModules) args.offModules += args.env.offModules.split(';')
-        if (args.env.onModules) args.offModules += args.env.onModules.split(';')
+        if (args.state.env.offModules) args.offModules += args.state.env.offModules.split(';')
+        if (args.state.env.onModules) args.offModules += args.state.env.onModules.split(';')
 
         build(args)
     }
