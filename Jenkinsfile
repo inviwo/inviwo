@@ -7,8 +7,6 @@ node {
         }
     }
     println "Env:\n" + env.getEnvironment()?.collect{"${it.key.padLeft(25)} = ${it.value}"}?.join("\n  ") ?: ''
-    def util = load "${env.WORKSPACE}/inviwo/tools/jenkins/util.groovy"      
-    properties(util.defaultProperties(env))
 
     Map state = [
         env: env.getEnvironment().collectEntries{
@@ -31,8 +29,14 @@ node {
             }
         }
     ]
-    
+
     println "Env2:\n" + state.env?.collect{"${it.key.padLeft(25)} = ${it.value}"}?.join("\n  ") ?: ''
+
+    def util = load "${env.WORKSPACE}/inviwo/tools/jenkins/util.groovy"      
+    properties(util.defaultProperties(env))
+    
+    println "Env3a:\n" + env.getEnvironment()?.collect{"${it.key.padLeft(25)} = ${it.value}"}?.join("\n  ") ?: ''
+    println "Env3b:\n" + state.env?.collect{"${it.key.padLeft(25)} = ${it.value}"}?.join("\n  ") ?: ''
 
     try {
         util.buildStandard(
