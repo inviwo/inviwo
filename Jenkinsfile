@@ -28,6 +28,8 @@ node {
             }
         }
     ]
+    
+    println "Env2:\n" + state.env.getEnvironment()?.collect{"${it.key.padLeft(25)} = ${it.value}"}?.join("\n  ") ?: ''
 
     try {
         util.buildStandard(
