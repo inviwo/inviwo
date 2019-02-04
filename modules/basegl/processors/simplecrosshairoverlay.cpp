@@ -54,12 +54,14 @@ SimpleCrosshairOverlay::SimpleCrosshairOverlay()
     , cursorAngle_("cursorAngle", "Cursor Angle", 0.0f, 0.0f, glm::two_pi<float>())
     , cursorPos_("cursorPos", "Cursor Position", vec2(0.5f), vec2(0.0f), vec2(1.0f))
     , cursorRadius_("cursorRadius", "Cursor Radius", 0.1f, 0.0f, 1.0f)
+    , showCenterIndicator_("showCenterIndicator_", "Show Cursor Center", true)
     , mouseEvent_("mouseEvent", "Mouse Event", [this](Event* e) { updateMouse(e); },
                   MouseButton::Left, MouseState::Press | MouseState::Move | MouseState::Release)
     , interactionState_ (InteractionState::NONE)
     , color1_("color1", "Horizontal Axis Color", vec4(1), vec4(0), vec4(1))
     , color2_("color2", "Vertical Axis Color", vec4(1), vec4(0), vec4(1))
     , color3_("color3", "Border Color", vec4(1), vec4(0), vec4(1))
+    , color4_("color4", "Center Indicator Color", vec4(1), vec4(0), vec4(1))
     , thickness1_("thickness1", "Crosshair Thickness", 2u, 0u, 20u)
     , thickness2_("thickness2", "Border Thickness", 2u, 0u, 20u)
     , crosshairMesh_(nullptr)
@@ -74,6 +76,7 @@ SimpleCrosshairOverlay::SimpleCrosshairOverlay()
     addProperty(cursorAngle_);
     addProperty(cursorPos_);
     addProperty(cursorRadius_);
+    addProperty(showCenterIndicator_);
 
 	mouseEvent_.setVisible(false);
     addProperty(mouseEvent_);
@@ -84,6 +87,8 @@ SimpleCrosshairOverlay::SimpleCrosshairOverlay()
     addProperty(color2_);
     color3_.setSemantics(PropertySemantics::Color);
     addProperty(color3_);
+    color4_.setSemantics(PropertySemantics::Color);
+    addProperty(color4_);
 
     addProperty(thickness1_);
     addProperty(thickness2_);
@@ -149,7 +154,7 @@ void SimpleCrosshairOverlay::process() {
         vertex_buffer_ram->set(idx, pt + pos);
     }
     cursorCenterMesh_->addBuffer(BufferType::PositionAttrib, vertex_buffer);
-    cursorCenterMesh_->addBuffer(BufferType::ColorAttrib, util::makeBuffer<vec4>(std::vector<vec4>(num_pts, vec4(1.0f)))); // ToDo: change white to property
+    cursorCenterMesh_->addBuffer(BufferType::ColorAttrib, util::makeBuffer<vec4>(std::vector<vec4>(num_pts, color4_.get())));
 
     // Render mesh over input image and copy to output port
 
@@ -165,7 +170,9 @@ void SimpleCrosshairOverlay::process() {
 
     shader_.setUniform("dataToClip", transl2 * scale * rot * transl1);
     MeshDrawerGL(crosshairMesh_.get()).draw();
-    MeshDrawerGL(cursorCenterMesh_.get()).draw();
+    if (showCenterIndicator_.get()) {
+        MeshDrawerGL(cursorCenterMesh_.get()).draw();
+    }
     shader_.setUniform("dataToClip", mat4(1));
     MeshDrawerGL(outlineMesh_.get()).draw();
     

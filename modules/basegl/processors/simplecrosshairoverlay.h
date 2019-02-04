@@ -75,6 +75,7 @@ private:
     FloatProperty cursorAngle_;
     FloatVec2Property cursorPos_;
     FloatProperty cursorRadius_;
+    BoolProperty showCenterIndicator_;
 
     EventProperty mouseEvent_;
     InteractionState interactionState_;
@@ -82,6 +83,7 @@ private:
     FloatVec4Property color1_;
     FloatVec4Property color2_;
     FloatVec4Property color3_;
+    FloatVec4Property color4_;
 
     IntSizeTProperty thickness1_;
     IntSizeTProperty thickness2_;

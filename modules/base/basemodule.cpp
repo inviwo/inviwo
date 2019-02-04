@@ -68,6 +68,7 @@
 #include <modules/base/processors/volumecreator.h>
 #include <modules/base/processors/volumesequenceelementselectorprocessor.h>
 #include <modules/base/processors/volumesource.h>
+#include <modules/base/processors/multivolumesource.h>
 #include <modules/base/processors/volumeexport.h>
 #include <modules/base/processors/volumebasistransformer.h>
 #include <modules/base/processors/volumeslice.h>
@@ -139,6 +140,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<SpotLightSourceProcessor>();
     registerProcessor<SurfaceExtraction>();
     registerProcessor<VolumeSource>();
+    registerProcessor<MultiVolumeSource>();
     registerProcessor<VolumeExport>();
     registerProcessor<BasisTransformMesh>();
     registerProcessor<BasisTransformVolume>();

@@ -167,8 +167,6 @@ MPREntryExitPoints::MPREntryExitPoints()
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
 
-MPREntryExitPoints::~MPREntryExitPoints() {}
-
 void MPREntryExitPoints::process() {
     auto const quad = util::makeBuffer<vec2>({
         { -1.0f, -1.0f },{ 1.0f, -1.0f },{ -1.0f, 1.0f },{ 1.0f, 1.0f } 
@@ -204,6 +202,10 @@ void MPREntryExitPoints::process() {
     shader_.setUniform("thickness_offset_other", offset0_.get());
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     quadGL->disable();
+
+    shader_.deactivate();
+
+    utilgl::deactivateCurrentTarget();
 }
 
 void MPREntryExitPoints::deserialize(Deserializer& d) {
