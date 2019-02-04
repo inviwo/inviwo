@@ -244,6 +244,7 @@ def slack(def state, channel) {
 }
 
 def cmake(Map args = [:]) {
+    println "cmake"
     return "cmake -G Ninja " +
         (args.printCMakeVars ? " -LA " : "") +
         (args.opts?.collect{" -D${it.key}=${it.value}"}?.join() ?: "") + 
@@ -290,12 +291,13 @@ Map envCMakeOptions(env) {
 def build(Map args = [:]) {
     println "build"
     dir('build') {
-        println "Options:\n  " + args.opts?.collect{"${it.key.padLeft(25)} = ${it.value}"}?.join('\n  ') ?: ""
+        println "Options:\n  " + args.opts?.collect{"  ${it.key.padRight(30)} = ${it.value}"}?.join('\n  ') ?: ""
         println "External:\n  ${args.modulePaths?.join('\n  ')?:""}"
         println "Modules On:\n  ${args.onModules?.join('\n  ')?:""}"
         println "Modules Off:\n  ${args.offModules?.join('\n  ')?:""}"
         log {
             checked(args.state, 'Build') {
+                sh 'set -x'
                 sh """
                     ccache -z # reset ccache statistics
                     # tell ccache where the project root is
@@ -326,9 +328,8 @@ def buildStandard(Map args = [:]) {
         defaultOpts.putAll(envCMakeOptions(args.state.env))
         if (args.state.env.Use_Ccache) defaultOpts.putAll(ccacheOption())
         if (args.state.env.opts) {
-            defaultOpts.putAll(arg.state.env.opts.tokenize(';').collect {
-                    it.tokenize('=') 
-                }.collectEntries())
+            def envopts = arg.state.env.opts.tokenize(';').collect{it.tokenize('=')}.collectEntries()
+            defaultOpts.putAll(envopts)
         }
         if (args.opts) defaultOpts.putAll(args.opts)
         args.opts = defaultOpts

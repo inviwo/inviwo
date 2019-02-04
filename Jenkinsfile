@@ -17,13 +17,13 @@ node {
         display: 0,
         addLabel: {label -> 
             println("Add label: ${label}")
-            if (env.CHANGE_ID  & (!label in pullRequest.labels)) {
+            if (env.CHANGE_ID  && (!label in pullRequest.labels)) {
                 pullRequest.addLabels([label])
             }
         },
         removeLabel: {label -> 
             println("Remove label: ${label}")
-            if (env.CHANGE_ID & label in pullRequest.labels) {
+            if (env.CHANGE_ID && label in pullRequest.labels) {
                 pullRequest.removeLabel([label])
             }
         }
