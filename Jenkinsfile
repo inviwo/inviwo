@@ -11,7 +11,10 @@ node {
     properties(util.defaultProperties(env))
 
     Map state = [
-        env: [:],
+        env: env.getEnvironment().collectEntries{it -> 
+            println "key ${it}"
+            [(it.key): it.value]}​​​​
+        ​,
         build: currentBuild, 
         errors: [],
         display: 0,
@@ -28,7 +31,6 @@ node {
             }
         }
     ]
-    env.getEnvironment().each { k, v -> state.env.put(k, v) }
     
     println "Env2:\n" + state.env?.collect{"${it.key.padLeft(25)} = ${it.value}"}?.join("\n  ") ?: ''
 
