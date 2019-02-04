@@ -180,7 +180,7 @@ def regression(def state, modulepaths) {
                 sh """
                     python3 ../inviwo/tools/regression.py \
                             --config ../build/pyconfig.ini \
-                            --build_type ${state.env['Build Type']} \
+                            --build_type ${state.env.get('Build Type')} \
                             --header ${state.env.JENKINS_HOME}/inviwo-config/header.html \
                             --output . \
                             --modules ${modulepaths.join(' ')}
@@ -325,10 +325,10 @@ def build(Map args = [:]) {
 // * offModules List of modules to disable (optional)
 def buildStandard(Map args = [:]) {
     stage('Build') {
-        if (args.state.env['Clean Build']) clean()
-        def defaultOpts = defaultCMakeOptions(args.state.env['Build Type'])
+        if (args.state.env.get('Clean Build')) clean()
+        def defaultOpts = defaultCMakeOptions(args.state.env.get('Build Type'))
         if (args.state.env) defaultOpts.putAll(envCMakeOptions(args.state.env))
-        if (args.state.env['Use Ccache']) defaultOpts.putAll(ccacheOption())
+        if (args.state.env.get('Use Ccache')) defaultOpts.putAll(ccacheOption())
         if (args.env.opts) {
             defaultOpts.putAll(arg.env.opts.tokenize(';').collect {
                     it.tokenize('=') 
@@ -336,7 +336,7 @@ def buildStandard(Map args = [:]) {
         }
         if (args.opts) defaultOpts.putAll(args.opts)
         args.opts = defaultOpts
-        args.printCMakeVars = args.state.params['Print CMake Variables']
+        args.printCMakeVars = args.state.env.get('Print CMake Variables')
 
         if (args.env.offModules) args.offModules += args.env.offModules.split(';')
         if (args.env.onModules) args.offModules += args.env.onModules.split(';')
