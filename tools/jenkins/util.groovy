@@ -45,7 +45,7 @@ def defaultProperties(def env) {
             booleanParam(
                 defaultValue: env.printCMakeVars?:false, 
                 description: 'Prints all the cmake variables to the log', 
-                name: 'Print_CMake_Variables'
+                name: 'Print_CMake_Variables
             ),
             choice(
                 choices: env.configs?:"Release\nDebug\nMinSizeRel\nRelWithDebInfo\n", // The first will be default
@@ -331,7 +331,7 @@ def buildStandard(Map args = [:]) {
         }
         if (args.opts) defaultOpts.putAll(args.opts)
         args.opts = defaultOpts
-        args.printCMakeVars = args.state.env.Print_CMake_Variables'
+        args.printCMakeVars = args.state.env.Print_CMake_Variables
 
         if (args.env.offModules) args.offModules += args.env.offModules.split(';')
         if (args.env.onModules) args.offModules += args.env.onModules.split(';')
