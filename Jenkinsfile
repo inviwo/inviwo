@@ -6,7 +6,7 @@ node {
             sh 'git submodule update --init --recursive'
         }
     }
-    println env.getEnvironment().inject('\nEnv:\n' { res, item -> res + "${item.key.padLeft(25)} =  ${item.value}\n" })
+    println env.getEnvironment().inject('\nEnv:\n', { res, item -> res + "${item.key.padLeft(25)} = ${item.value}\n" })
 
     def util = load "${env.WORKSPACE}/inviwo/tools/jenkins/util.groovy"      
     properties(util.defaultProperties(env))
@@ -51,7 +51,7 @@ node {
         util.copyright(state)    
         util.doxygen(state)
 
-        state.build.result = state.errors.isEmpty() ? 'SUCCESS' :_'FAILURE'
+        state.build.result = state.errors.isEmpty() ? 'SUCCESS' : 'FAILURE'
     } catch (e) {
         state.build.result = 'FAILURE'
         throw e
