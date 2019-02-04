@@ -35,22 +35,22 @@ def defaultProperties(def env) {
             booleanParam(
                 defaultValue: env.clean?:false, 
                 description: 'Do a clean build', 
-                name: 'Clean Build'
+                name: 'Clean_Build'
             ),
             booleanParam(
                 defaultValue: env.ccache?:true, 
                 description: 'Use ccache to speed up build', 
-                name: 'Use Ccache'
+                name: 'Use_Ccache'
             ),
             booleanParam(
                 defaultValue: env.printCMakeVars?:false, 
                 description: 'Prints all the cmake variables to the log', 
-                name: 'Print CMake Variables'
+                name: 'Print_CMake_Variables'
             ),
             choice(
                 choices: env.configs?:"Release\nDebug\nMinSizeRel\nRelWithDebInfo\n", // The first will be default
                 description: 'Select build configuration', 
-                name: 'Build Type'
+                name: 'Build_Type'
             )
         ]),
     ]
@@ -174,23 +174,18 @@ def integrationtest(def state) {
 
 def regression(def state, modulepaths) {
     if(state.env.disableRegression) return
-    try {
-        cmd('Regression Tests', 'regress', ['DISPLAY=:' + state.display]) {
-            checked(state, 'Regression Test') {
-                sh """
-                    python3 ../inviwo/tools/regression.py \
-                            --config ../build/pyconfig.ini \
-                            --build_type ${state.env.get('Build Type')} \
-                            --header ${state.env.JENKINS_HOME}/inviwo-config/header.html \
-                            --output . \
-                            --modules ${modulepaths.join(' ')}
-                """        
-            }
+    cmd('Regression Tests', 'regress', ['DISPLAY=:' + state.display]) {
+        checked(state, 'Regression Test') {
+            sh """
+                python3 ../inviwo/tools/regression.py \
+                        --config ../build/pyconfig.ini \
+                        --build_type ${state.env.get('Build Type')} \
+                        --header ${state.env.JENKINS_HOME}/inviwo-config/header.html \
+                        --output . \
+                        --modules ${modulepaths.join(' ')}
+            """        
         }
-    } catch (e) {
-        // Mark as unstable, if we mark as failed, the report will not be published.
-        state.build.result = 'UNSTABLE'
-    } 
+    }
     publishHTML([
         allowMissing: true,
         alwaysLinkToLastBuild: true,
@@ -325,10 +320,10 @@ def build(Map args = [:]) {
 // * offModules List of modules to disable (optional)
 def buildStandard(Map args = [:]) {
     stage('Build') {
-        if (args.state.env.get('Clean Build')) clean()
-        def defaultOpts = defaultCMakeOptions(args.state.env.get('Build Type'))
+        if (args.state.env.Clean_Build) clean()
+        def defaultOpts = defaultCMakeOptions(args.state.env.Build_Type)
         if (args.state.env) defaultOpts.putAll(envCMakeOptions(args.state.env))
-        if (args.state.env.get('Use Ccache')) defaultOpts.putAll(ccacheOption())
+        if (args.state.env.Use_Ccache) defaultOpts.putAll(ccacheOption())
         if (args.env.opts) {
             defaultOpts.putAll(arg.env.opts.tokenize(';').collect {
                     it.tokenize('=') 
@@ -336,7 +331,7 @@ def buildStandard(Map args = [:]) {
         }
         if (args.opts) defaultOpts.putAll(args.opts)
         args.opts = defaultOpts
-        args.printCMakeVars = args.state.env.get('Print CMake Variables')
+        args.printCMakeVars = args.state.env.Print_CMake_Variables'
 
         if (args.env.offModules) args.offModules += args.env.offModules.split(';')
         if (args.env.onModules) args.offModules += args.env.onModules.split(';')
