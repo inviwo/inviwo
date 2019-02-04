@@ -1,10 +1,5 @@
 /* Eviorment customizations
- *  * clean
- *  * ccache
- *  * printCMakeVars
- *  * configs
- *  * disabledTrigger
- *   
+ *  * disabledProperties
  *  * disableUnittest
  *  * disableIntegration
  *  * disableRegression
@@ -29,26 +24,26 @@ def getChangeString(build) {
     return changeString ?: " - No new changes"
 }
 
-def defaultProperties(def env) {
+def defaultProperties() {
     def params = [
         parameters([
             booleanParam(
-                defaultValue: env.clean?:false, 
+                defaultValue: false, 
                 description: 'Do a clean build', 
                 name: 'Clean_Build'
             ),
             booleanParam(
-                defaultValue: env.ccache?:true, 
+                defaultValue: true, 
                 description: 'Use ccache to speed up build', 
                 name: 'Use_Ccache'
             ),
             booleanParam(
-                defaultValue: env.printCMakeVars?:false, 
+                defaultValue: false, 
                 description: 'Prints all the cmake variables to the log', 
                 name: 'Print_CMake_Variables'
             ),
             choice(
-                choices: env.configs?:"Release\nDebug\nMinSizeRel\nRelWithDebInfo\n", // The first will be default
+                choices: "Release\nDebug\nMinSizeRel\nRelWithDebInfo\n", // The first will be default
                 description: 'Select build configuration', 
                 name: 'Build_Type'
             )
