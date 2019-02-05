@@ -241,6 +241,15 @@ void ValueDragger<T>::timerEvent(QTimerEvent *e) {
 
     if (doStep) {
         currentValue_ += delta_ * timerInterval_ / 1000;
+        if (spinBox_->wrapping()) {
+            auto remainder = std::remainder(currentValue_ - spinBox_->minimum(),
+                                            spinBox_->maximum() - spinBox_->minimum());
+            if (remainder < 0.0) {
+                remainder += spinBox_->maximum() - spinBox_->minimum();
+            }
+            currentValue_ = remainder + spinBox_->minimum();
+        }
+
         currentValue_ = std::max<double>(std::min<double>(currentValue_, spinBox_->maximum()),
                                          spinBox_->minimum());
 

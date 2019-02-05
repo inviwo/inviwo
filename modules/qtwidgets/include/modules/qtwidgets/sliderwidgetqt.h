@@ -55,6 +55,9 @@ public:
     BaseSliderWidgetQt(bool intMode = false);
     virtual ~BaseSliderWidgetQt() = default;
 
+    void setWrapping(bool wrap);
+    bool wrapping() const;
+
 protected:
     virtual double transformValueToSpinner() = 0;
     virtual int transformValueToSlider() = 0;

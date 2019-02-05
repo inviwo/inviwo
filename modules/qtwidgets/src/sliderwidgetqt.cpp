@@ -82,6 +82,10 @@ BaseSliderWidgetQt::BaseSliderWidgetQt(bool intMode)
     setSizePolicy(sp);
 }
 
+void BaseSliderWidgetQt::setWrapping(bool wrap) { spinBox_->setWrapping(wrap); }
+
+bool BaseSliderWidgetQt::wrapping() const { return spinBox_->wrapping(); }
+
 void BaseSliderWidgetQt::applyInit() {
     updateSlider();
     updateSpinBox();
