@@ -67,6 +67,9 @@ std::shared_ptr<plot::DataFrame> CSVReader::readData(const std::string& fileName
 }
 
 std::shared_ptr<plot::DataFrame> CSVReader::readData(std::istream& stream) const {
+    // Skip BOM if it exists. Added by for example Excel when saving csv files.
+    filesystem::skipByteOrderMark(stream);
+
     if (stream.bad() || stream.fail()) {
         throw CSVDataReaderException("Input stream in a bad state", IvwContext);
     }
