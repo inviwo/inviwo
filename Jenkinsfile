@@ -6,42 +6,36 @@ node {
             sh 'git submodule update --init --recursive'
         }
     }
-    def rootDir = pwd()
-    def util = load "${rootDir}/inviwo/tools/jenkins/util.groovy"      
-    properties(util.defaultProperties())
-
-    List modulePaths = []
-    List on = []
-    List off = ["ABUFFERGL" , "DISCRETEDATA", "HDF5"]
 
     Map state = [
         env: env,
-        params: params, 
         build: currentBuild, 
         errors: [],
         display: 0,
         addLabel: {label -> 
-            if (env.CHANGE_ID) {
-                if (! label in pullRequest.labels) {
-                    pullRequest.addLabels([label])
-                }
+            println("Add label: ${label}")
+            if (env.CHANGE_ID  && (!label in pullRequest.labels)) {
+                pullRequest.addLabels([label])
             }
         },
         removeLabel: {label -> 
-            if (env.CHANGE_ID) {
-                if (label in pullRequest.labels) {
-                    pullRequest.removeLabel([label])
-                }
+            println("Remove label: ${label}")
+            if (env.CHANGE_ID && label in pullRequest.labels) {
+                pullRequest.removeLabel([label])
             }
         }
     ]
 
+    def util = load "${env.WORKSPACE}/inviwo/tools/jenkins/util.groovy"
+    if(!env.disabledProperties) properties(util.defaultProperties())
+
     try {
         util.buildStandard(
             state: state,
-            modulePaths: modulePaths, 
-            onModules: on,  
-            offModules: off
+            modulePaths: [], 
+            onModules: [],  
+            offModules: ["ABUFFERGL"],
+            opts: [:]
         )
         util.filterfiles()
         util.format(state)
@@ -52,11 +46,14 @@ node {
         util.copyright(state)    
         util.doxygen(state)
 
-        state.build.result = 'SUCCESS'
+        state.build.result = state.errors.isEmpty() ? 'SUCCESS' : 'FAILURE'
     } catch (e) {
         state.build.result = 'FAILURE'
         throw e
     } finally {
         util.slack(state, "#jenkins-branch-pr")
+        if (!state.errors.isEmpty()) {
+            println "Errors in: ${state.errors.join(", ")}"
+        }
     }
 }

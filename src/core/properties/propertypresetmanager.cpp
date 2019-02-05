@@ -236,8 +236,8 @@ void PropertyPresetManager::saveApplicationPresets() {
         Serializer s(filesystem::getPath(PathType::Settings, "/PropertyPresets.ivs", true));
         s.serialize("PropertyPresets", appPresets_, "Preset");
         s.writeFile();
-    } catch (std::exception e) {
-        LogWarn("Could not write application presets");
+    } catch (const std::exception& e) {
+        LogWarn("Could not write application presets: " << e.what());
     }
 }
 
