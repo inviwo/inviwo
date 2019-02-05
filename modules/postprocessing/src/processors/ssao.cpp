@@ -89,11 +89,11 @@ static void delBuffer(GLuint id) {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo SSAO::processorInfo_{
-    "org.inviwo.SSAO",  // Class identifier
-    "SSAO",             // Display name
-    "Postprocessing",   // Category
-    CodeState::Stable,  // Code state
-    Tags::GL,           // Tags
+    "org.inviwo.SSAO",                                         // Class identifier
+    "SSAO",                                                    // Display name
+    "Postprocessing",                                          // Category
+    CodeState::Stable,                                         // Code state
+    "GL, Postprocessing, Image Operation, Ambient Occlusion",  // Tags
 };
 
 const ProcessorInfo SSAO::getProcessorInfo() const { return processorInfo_; }

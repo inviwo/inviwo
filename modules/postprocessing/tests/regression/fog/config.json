@@ -1,7 +1,7 @@
 {
 	"image_test" :  {
 		"differenceTolerance" : {
-			 "fog.png"   : 0.001
+			 "Canvas.png"   : 0.001
 		}
 	}
 }
