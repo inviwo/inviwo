@@ -53,7 +53,7 @@ bool operator==(const bar& a, const bar& b) { return a.x == b.x; }
 TEST(Transformiterator, plain) {
     std::vector<int> a = {2, 4, 6, 8};
 
-    auto trans = [](const int& a) -> double { return a * 2.0; };
+    auto trans = [](const int& k) -> double { return k * 2.0; };
     auto begin = makeTransformIterator(trans, a.begin());
     auto end = makeTransformIterator(trans, a.end());
 
@@ -67,7 +67,7 @@ TEST(Transformiterator, plain) {
 TEST(Transformiterator, pair) {
     std::vector<foo> a = {{2, 2}, {4, 4}, {6, 6}, {8, 8}};
 
-    auto trans = [](foo& a) -> int& { return a.first; };
+    auto trans = [](foo& k) -> int& { return k.first; };
     auto begin = makeTransformIterator(trans, a.begin());
     auto end = makeTransformIterator(trans, a.end());
 

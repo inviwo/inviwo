@@ -132,7 +132,7 @@ void Creator::generate(InviwoModule& im, const std::filesystem::path& filePath,
     auto settings = createSettings(im, name);
 
     const fs::path incpath =
-        files.header ? im.getHeaderInclude(path / (lname + "." + files.header->extension))
+        files.header ? fs::path{im.getHeaderInclude(path / (lname + "." + files.header->extension))}
                      : fs::path{"NOT_USED"};
     settings["file"]["include"] = incpath.generic_string();
 

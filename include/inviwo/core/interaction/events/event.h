@@ -34,6 +34,7 @@
 #include <inviwo/core/io/serialization/serializable.h>
 #include <vector>
 #include <cstdint>
+#include <ostream>
 
 namespace inviwo {
 
@@ -70,6 +71,13 @@ public:
     EventType* getAs();
     template <typename EventType>
     const EventType* getAs() const;
+
+    friend std::ostream& operator<<(std::ostream& ss, const Event& e) {
+        e.print(ss);
+        return ss;
+    }
+
+    virtual void print(std::ostream& ss) const { ss << "Unknown Event. Hash:" << hash(); }
 
 protected:
     Event() = default;

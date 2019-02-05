@@ -34,6 +34,8 @@
 #include <inviwo/core/interaction/events/interactionevent.h>
 #include <inviwo/core/interaction/events/keyboardkeys.h>
 #include <inviwo/core/util/constexprhash.h>
+#include <fmt/format.h>
+#include <fmt/ostream.h>
 
 namespace inviwo {
 /**
@@ -84,6 +86,8 @@ public:
 
     virtual uint64_t hash() const override;
     static constexpr uint64_t chash() { return util::constexpr_hash("org.inviwo.KeyboardEvent"); }
+
+    virtual void print(std::ostream& ss) const override;
 
 private:
     std::string text_;  ///< Unicode representation of pressed keys

@@ -234,4 +234,22 @@ std::vector<const TouchPoint*> TouchEvent::findClosestTwoTouchPoints() const {
 
 uint64_t TouchEvent::hash() const { return chash(); }
 
+void TouchEvent::print(std::ostream& ss) const {
+    ss << "TouchEvent: ";
+
+    util::for_each_argument(
+        [&ss](auto&& item) { fmt::print(ss, " {:10}: {8}", item.first, item.second); },
+        std::make_pair("points", touchPoints_.size()), std::make_pair("size", canvasSize()),
+        std::make_pair("modifiers", modifiers_));
+
+    for (const auto& p : touchPoints()) {
+        ss << "\n  TouchPoint ";
+        util::for_each_argument(
+            [&ss](auto&& item) { fmt::print(ss, " {:10}: {8}", item.first, item.second); },
+            std::make_pair("state", p.state()), std::make_pair("id", p.id()),
+            std::make_pair("pos", p.pos()), std::make_pair("depth", p.depth()),
+            std::make_pair("prevPos", p.prevPos()));
+    }
+}
+
 }  // namespace inviwo
