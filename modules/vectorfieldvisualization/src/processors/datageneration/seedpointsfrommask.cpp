@@ -98,8 +98,8 @@ void SeedPointsFromMask::process() {
                     if (enableSuperSample_.get()) {
                         for (int j = 0; j < superSample_.get(); j++) {
                             const auto x = dis_(mt_);
-                            const auto = dis_(mt_);
-                            const auto = dis_(mt_);
+                            const auto y = dis_(mt_);
+                            const auto z = dis_(mt_);
                             points->push_back((vec3(pos) + vec3{x,y,z}) * invDim);
                         }
                     } else {
