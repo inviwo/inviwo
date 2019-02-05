@@ -97,11 +97,10 @@ void SeedPointsFromMask::process() {
                 if (util::glm_convert_normalized<double>(data[index(pos)]) > threshold_.get()) {
                     if (enableSuperSample_.get()) {
                         for (int j = 0; j < superSample_.get(); j++) {
-                            vec3 off;
-                            off.x = dis_(mt_);
-                            off.y = dis_(mt_);
-                            off.z = dis_(mt_);
-                            points->push_back((vec3(pos) + off) * invDim);
+                            const auto x = dis_(mt_);
+                            const auto = dis_(mt_);
+                            const auto = dis_(mt_);
+                            points->push_back((vec3(pos) + vec3{x,y,z}) * invDim);
                         }
                     } else {
                         points->push_back((vec3(pos) + 0.5f) * invDim);

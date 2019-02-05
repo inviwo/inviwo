@@ -53,7 +53,7 @@ node {
     } finally {
         util.slack(state, "#jenkins-branch-pr")
         if (!state.errors.isEmpty()) {
-            println "Errors in: ${state.errors.join(" ")}"
+            println "Errors in: ${state.errors.join(", ")}"
         }
     }
 }
