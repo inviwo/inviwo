@@ -44,7 +44,7 @@ class QSlider;
 
 namespace inviwo {
 
-class CustomDoubleSpinBoxQt;
+class NumberLineEdit;
 
 class IVW_MODULE_QTWIDGETS_API BaseSliderWidgetQt : public QWidget {
 #include <warn/push>
@@ -52,7 +52,7 @@ class IVW_MODULE_QTWIDGETS_API BaseSliderWidgetQt : public QWidget {
     Q_OBJECT
 #include <warn/pop>
 public:
-    BaseSliderWidgetQt();
+    BaseSliderWidgetQt(bool intMode = false);
     virtual ~BaseSliderWidgetQt() = default;
 
 protected:
@@ -98,7 +98,7 @@ private:
 
     virtual bool eventFilter(QObject* watched, QEvent* event) override;
 
-    CustomDoubleSpinBoxQt* spinBox_;
+    NumberLineEdit* spinBox_;
     QSlider* slider_;
     double spinnerValue_;
     int sliderValue_;
@@ -108,7 +108,11 @@ template <typename T>
 class TemplateSliderWidget : public BaseSliderWidgetQt, public OrdinalBaseWidget<T> {
 public:
     TemplateSliderWidget()
-        : BaseSliderWidgetQt(), value_(0), minValue_(0), maxValue_(0), increment_(0) {}
+        : BaseSliderWidgetQt(std::is_integral<T>::value)
+        , value_(0)
+        , minValue_(0)
+        , maxValue_(0)
+        , increment_(0) {}
     virtual ~TemplateSliderWidget() = default;
 
     virtual T getValue() override;

@@ -29,6 +29,7 @@
 
 #include <modules/qtwidgets/properties/lightpropertywidgetqt.h>
 #include <modules/qtwidgets/properties/compositepropertywidgetqt.h>
+#include <modules/qtwidgets/numberlineedit.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -44,7 +45,7 @@ LightPropertyWidgetQt::LightPropertyWidgetQt(FloatVec3Property* property)
     : PropertyWidgetQt(property)
     , property_(property)
     , lightWidget_{new LightPositionWidgetQt()}
-    , radiusSpinBox_{new CustomDoubleSpinBoxQt(this)}
+    , radiusSpinBox_{new NumberLineEdit(this)}
     , label_{new EditableLabelQt(this, property_)} {
 
     setFocusPolicy(radiusSpinBox_->focusPolicy());
@@ -62,7 +63,7 @@ LightPropertyWidgetQt::LightPropertyWidgetQt(FloatVec3Property* property)
     radiusSpinBox_->setKeyboardTracking(false);
     connect(
         radiusSpinBox_,
-        static_cast<void (CustomDoubleSpinBoxQt::*)(double)>(&CustomDoubleSpinBoxQt::valueChanged),
+        static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
         this, &LightPropertyWidgetQt::onRadiusSpinBoxChanged);
 
     // Assuming that minimum value is negative and maximum value is positive

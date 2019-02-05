@@ -38,9 +38,9 @@
 #include <QWidget>
 #include <warn/pop>
 
-class QSpinBox;
-
 namespace inviwo {
+
+class NumberLineEdit;
 
 template <typename T>
 class ValueDragger;
@@ -93,7 +93,7 @@ public slots:
     void stepUp();
 
 private:
-    QSpinBox *spinBox_;
+    NumberLineEdit *spinBox_;
     ValueDragger<int> *valueDragger_;
 };
 
