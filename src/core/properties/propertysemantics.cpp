@@ -47,6 +47,7 @@ void PropertySemantics::deserialize(Deserializer& d) {
 
 const PropertySemantics PropertySemantics::Default("Default");
 const PropertySemantics PropertySemantics::Text("Text");
+const PropertySemantics PropertySemantics::SpinBox("SpinBox");
 const PropertySemantics PropertySemantics::Color("Color");
 const PropertySemantics PropertySemantics::LightPosition("LightPosition");
 const PropertySemantics PropertySemantics::Multiline("Multiline");
