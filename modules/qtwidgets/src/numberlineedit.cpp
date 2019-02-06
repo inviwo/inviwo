@@ -37,13 +37,14 @@
 #include <QDoubleValidator>
 #include <QEvent>
 #include <QLocale>
+#include <QStyleOptionSpinBox>
+#include <QStyle>
+#include <QApplication>
 #include <warn/pop>
 
 #include <numeric>
 #include <unordered_map>
 #include <array>
-
-#pragma optimize("", off)
 
 namespace inviwo {
 
@@ -247,12 +248,7 @@ void NumberLineEdit::setRange(double min, double max) {
 
 void NumberLineEdit::focusInEvent(QFocusEvent *e) {
     abbreviated_ = false;
-    // FIXME: find a better way to update the contents
-    // setSpecialValueText will trigger an internal update of the spin box without any side effects
-    //setSpecialValueText(specialValueText());
-
     lineEdit()->setText(textFromValue(value()));
-
     QDoubleSpinBox::focusInEvent(e);
 }
 
