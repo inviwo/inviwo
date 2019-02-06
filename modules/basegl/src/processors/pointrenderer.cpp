@@ -80,8 +80,7 @@ PointRenderer::PointRenderer()
 void PointRenderer::process() {
     utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
 
-    utilgl::GlBoolState nvPointSize(GL_VERTEX_PROGRAM_POINT_SIZE_NV, true);
-    utilgl::GlBoolState pointSprite(GL_POINT_SPRITE, true);
+    utilgl::GlBoolState pointSprite(GL_PROGRAM_POINT_SIZE, true);
 
     utilgl::PolygonModeState polygon(GL_POINT, 1.0f, pointSize_.get());
     utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
