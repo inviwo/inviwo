@@ -87,7 +87,7 @@ TEST_P(ProcessorCreationTests, ProcesorCreateAndResetAndAddToNetwork) {
     EXPECT_EQ(sizeBefore, network_->getProcessors().size());
 }
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     RegisteredProcessors, ProcessorCreationTests,
     ::testing::ValuesIn(InviwoApplication::getPtr()->getProcessorFactory()->getKeys()));
 }  // namespace inviwo

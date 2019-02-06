@@ -245,6 +245,6 @@ const static std::vector<std::string> dtypes = {{"float16"}, {"float32"}, {"floa
                                                 {"int16"},   {"int32"},   {"int64"},   {"uint8"},
                                                 {"uint16"},  {"uint32"},  {"uint64"}};
 
-INSTANTIATE_TEST_CASE_P(DefaultTypes, DTypeTest, ::testing::ValuesIn(dtypes));
+INSTANTIATE_TEST_SUITE_P(DefaultTypes, DTypeTest, ::testing::ValuesIn(dtypes));
 
 }  // namespace inviwo
