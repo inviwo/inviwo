@@ -700,7 +700,7 @@ void ParallelCoordinates::linePicked(PickingEvent *p) {
         }
     }
 
-    if (p->getPressState() == PickingPressState::Press &&
+    if (p->getState() == PickingState::Updated && p->getPressState() == PickingPressState::Press &&
         p->getPressItem() == PickingPressItem::Primary) {
 
         auto iCol = dataFrame_.getData()->getIndexColumn();
@@ -732,7 +732,7 @@ void ParallelCoordinates::handlePicked(PickingEvent *p) {
         p->setToolTip("");
     }
 
-    if (p->getPressState() == PickingPressState::Move &&
+    if (p->getState() == PickingState::Updated && p->getPressState() == PickingPressState::Move &&
         p->getPressItems().count(PickingPressItem::Primary)) {
         // move axis range handle
         auto canvasSize = outport_.getDimensions();

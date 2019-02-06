@@ -152,7 +152,7 @@ void ImageSourceSeries::updateProperties() {
     if (fileList_.size() < static_cast<std::size_t>(currentImageIndex_.get())) {
         currentImageIndex_.set(1);
     }
-    currentImageIndex_.setMaxValue(std::max(static_cast<const int>(fileList_.size()), 1));
+    currentImageIndex_.setMaxValue(std::max(static_cast<int>(fileList_.size()), 1));
     updateFileName();
     isReady_.update();
 }

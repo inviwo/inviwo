@@ -1,5 +1,9 @@
 #--------------------------------------------------------------------
-# Inviwo GLFW Application
+# Inviwo integration tests
+if(NOT IVW_INTEGRATION_TESTS)
+    return()
+endif()
+
 project(inviwo-integrationtests)
 
 # Add source files
