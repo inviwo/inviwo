@@ -83,6 +83,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/eventlistener.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/eventmatcher.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/eventpropagator.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/eventutil.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/gestureevent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/gesturestate.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/interactionevent.h
@@ -389,6 +390,7 @@ set(SOURCE_FILES
     interaction/events/eventhandler.cpp
     interaction/events/eventlistener.cpp
     interaction/events/eventmatcher.cpp
+    interaction/events/eventutil.cpp
     interaction/events/gestureevent.cpp
     interaction/events/interactionevent.cpp
     interaction/events/keyboardevent.cpp

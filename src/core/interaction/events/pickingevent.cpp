@@ -34,6 +34,7 @@
 #include <inviwo/core/interaction/events/gestureevent.h>
 #include <inviwo/core/interaction/events/touchevent.h>
 #include <inviwo/core/datastructures/camera.h>
+#include <inviwo/core/interaction/events/eventutil.h>
 
 namespace inviwo {
 
@@ -271,22 +272,18 @@ void PickingEvent::setToolTip(const std::string& tooltip) const { event_->setToo
 const PickingAction* PickingEvent::getPickingAction() const { return pickingAction_; }
 
 void PickingEvent::print(std::ostream& ss) const {
-    ss << "PickingEvent: ";
-
-    util::for_each_argument(
-        [&ss](auto&& item) { fmt::print(ss, " {:10}: {8}", item.first, item.second); },
+   util::printEvent(ss, "PickingEvent",
         std::make_pair("state", state_), 
         std::make_pair("pressState", pressState_),
         std::make_pair("pressItem", pressItem_), 
         std::make_pair("hoverState", hoverState_),
         std::make_pair("pressedState", pressedState_), 
-        std::make_pair("pickedGlobalId", pickedGlobalId_),
-        std::make_pair("currentGlobalId", currentGlobalId_),
-        std::make_pair("pressedGlobalId", pressedGlobalId_),
-        std::make_pair("previousGlobalId", previousGlobalId_),
+        std::make_tuple("GlobalID"),
+        std::make_tuple("pick", pickedGlobalId_, 4),
+        std::make_tuple("curr", currentGlobalId_, 4),
+        std::make_tuple("pres", pressedGlobalId_, 4),
+        std::make_tuple("prev", previousGlobalId_, 4),
         std::make_pair("NDC", getNDC()));
-
-    ss << "Event: " << *event_;
 }
 
 }  // namespace inviwo

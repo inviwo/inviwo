@@ -7,6 +7,9 @@ node {
         }
     }
 
+    def util = load "${env.WORKSPACE}/inviwo/tools/jenkins/util.groovy"
+    if(!env.disabledProperties) properties(util.defaultProperties())
+
     Map state = [
         env: env,
         build: currentBuild, 
@@ -26,9 +29,6 @@ node {
         }
     ]
 
-    def util = load "${env.WORKSPACE}/inviwo/tools/jenkins/util.groovy"
-    if(!env.disabledProperties) properties(util.defaultProperties())
-
     try {
         util.buildStandard(
             state: state,
@@ -46,7 +46,7 @@ node {
         util.copyright(state)    
         util.doxygen(state)
 
-        state.build.result = state.errors.isEmpty() ? 'SUCCESS' : 'FAILURE'
+        state.build.result = state.errors.isEmpty() ? 'SUCCESS' : 'UNSTABLE'
     } catch (e) {
         state.build.result = 'FAILURE'
         throw e

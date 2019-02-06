@@ -28,9 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/interaction/events/gestureevent.h>
-#include <inviwo/core/util/foreacharg.h>
-#include <fmt/format.h>
-#include <fmt/ostream.h>
+#include <inviwo/core/interaction/events/eventutil.h>
 
 namespace inviwo {
 
@@ -78,14 +76,11 @@ void GestureEvent::setScreenPosNormalized(dvec2 posNorm) { screenPosNorm_ = posN
 uint64_t GestureEvent::hash() const { return chash(); }
 
 void GestureEvent::print(std::ostream& ss) const {
-    ss << "GestureEvent: ";
-
-    util::for_each_argument(
-        [&ss](auto&& item) { fmt::print(ss, " {:10}: {8}", item.first, item.second); },
-        std::make_pair("state", state_), std::make_pair("type", type_),
-        std::make_pair("pos", screenPosNorm_), std::make_pair("depth", depth_),
-        std::make_pair("canvasSize", canvasSize_), std::make_pair("deltaPos", deltaPos_),
-        std::make_pair("modifiers", modifiers_));
+    util::printEvent(ss, "GestureEvent", std::make_pair("state", state_),
+                     std::make_pair("type", type_), std::make_pair("pos", screenPosNorm_),
+                     std::make_pair("depth", depth_), std::make_pair("canvasSize", canvasSize_),
+                     std::make_pair("deltaPos", deltaPos_),
+                     std::make_pair("modifiers", modifiers_));
 }
 
 }  // namespace inviwo

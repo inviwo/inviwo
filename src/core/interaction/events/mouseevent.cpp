@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/interaction/events/eventutil.h>
 
 namespace inviwo {
 
@@ -51,14 +52,11 @@ void MouseEvent::setState(MouseState state) { state_ = state; }
 uint64_t MouseEvent::hash() const { return chash(); }
 
 void MouseEvent::print(std::ostream& ss) const {
-    ss << "MouseEvent: ";
-
-    util::for_each_argument(
-        [&ss](auto&& item) { fmt::print(ss, " {:10}: {8}", item.first, item.second); },
-        std::make_pair("state", state_), std::make_pair("button", button_),
-        std::make_pair("pos", pos()), std::make_pair("depth", depth()),
-        std::make_pair("size", canvasSize()), std::make_pair("sState", buttonState()),
-        std::make_pair("modifiers", modifiers_));
+    util::printEvent(ss, "MouseEvent", std::make_pair("state", state_),
+                     std::make_pair("button", button_), std::make_pair("pos", pos()),
+                     std::make_pair("depth", depth()), std::make_pair("size", canvasSize()),
+                     std::make_pair("sState", buttonState()),
+                     std::make_pair("modifiers", modifiers_));
 }
 
 }  // namespace inviwo

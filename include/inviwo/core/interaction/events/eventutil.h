@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,30 +26,62 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <inviwo/core/interaction/events/wheelevent.h>
-#include <inviwo/core/interaction/events/eventutil.h>
+#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/common/inviwo.h>
+
+#include <inviwo/core/util/foreacharg.h>
+#include <fmt/format.h>
+#include <fmt/ostream.h>
+
+#include <tuple>
+#include <utility>
 
 namespace inviwo {
 
-WheelEvent::WheelEvent(MouseButtons buttonState, KeyModifiers modifiers, dvec2 delta,
-                       dvec2 normalizedPosition, uvec2 canvasSize, double depth)
-    : MouseInteractionEvent(buttonState, modifiers, normalizedPosition, canvasSize, depth)
-    , delta_(delta) {}
+namespace util {
 
-WheelEvent* WheelEvent::clone() const { return new WheelEvent(*this); }
+namespace detail {
 
-dvec2 WheelEvent::delta() const { return delta_; }
+template <size_t N>
+struct PrintEventHelper;
 
-void WheelEvent::setDelta(dvec2 delta) { delta_ = delta; }
+template <>
+struct PrintEventHelper<1> {
+    template <typename Arg>
+    static void print(std::ostream& os, Arg&& item) {
+        fmt::print(os, "{}", std::get<0>(item));
+    }
+};
+template <>
+struct PrintEventHelper<2> {
+    template <typename Arg>
+    static void print(std::ostream& os, Arg&& item) {
+        fmt::print(os, "{}: {:8} ", std::get<0>(item), std::get<1>(item));
+    }
+};
+template <>
+struct PrintEventHelper<3> {
+    template <typename Arg>
+    static void print(std::ostream& os, Arg&& item) {
+        fmt::print(os, "{}: {:{}} ", std::get<0>(item), std::get<1>(item), std::get<2>(item));
+    }
+};
 
-uint64_t WheelEvent::hash() const { return chash(); }
+}  // namespace detail
 
-void WheelEvent::print(std::ostream& ss) const {
-    util::printEvent(ss, "WheelEvent", std::make_pair("delta", delta_),
-                     std::make_pair("pos", pos()), std::make_pair("depth", depth()),
-                     std::make_pair("size", canvasSize()), std::make_pair("sState", buttonState()),
-                     std::make_pair("modifiers", modifiers_));
+template <typename... Args>
+void printEvent(std::ostream& os, const std::string& event, Args... args) {
+    fmt::print(os, "{:14} ", event);
+    util::for_each_argument(
+        [&os](auto&& item) {
+            detail::PrintEventHelper<std::tuple_size<std::remove_reference<decltype(item)>::type>::
+                                         value>::print(os, item);
+        },
+        args...);
 }
+
+}  // namespace util
 
 }  // namespace inviwo
