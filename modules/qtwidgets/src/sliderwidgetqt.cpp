@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/sliderwidgetqt.h>
-#include <modules/qtwidgets/NumberLineEdit.h>
+#include <modules/qtwidgets/numberlineedit.h>
 
 #include <limits>
 #include <cmath>
