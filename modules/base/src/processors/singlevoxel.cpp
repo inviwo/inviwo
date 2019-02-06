@@ -52,16 +52,16 @@ SingleVoxel::SingleVoxel()
                       PropertySemantics::Text)
     , dvec2Property_("dvec2Property", "Voxel value", dvec2(0),
                      dvec2(std::numeric_limits<double>::lowest()),
-                     dvec2(std::numeric_limits<double>::max()), dvec2(0.0001), InvalidationLevel::Valid,
-                     PropertySemantics::Text)
+                     dvec2(std::numeric_limits<double>::max()), dvec2(0.0001),
+                     InvalidationLevel::Valid, PropertySemantics::Text)
     , dvec3Property_("dvec3Property", "Voxel value", dvec3(0),
                      dvec3(std::numeric_limits<double>::lowest()),
-                     dvec3(std::numeric_limits<double>::max()), dvec3(0.0001), InvalidationLevel::Valid,
-                     PropertySemantics::Text)
+                     dvec3(std::numeric_limits<double>::max()), dvec3(0.0001),
+                     InvalidationLevel::Valid, PropertySemantics::Text)
     , dvec4Property_("dvec4Property", "Voxel value", dvec4(0),
                      dvec4(std::numeric_limits<double>::lowest()),
-                     dvec4(std::numeric_limits<double>::max()), dvec4(0.0001), InvalidationLevel::Valid,
-                     PropertySemantics::Text)
+                     dvec4(std::numeric_limits<double>::max()), dvec4(0.0001),
+                     InvalidationLevel::Valid, PropertySemantics::Text)
     , space_("space", "Space") {
     addPort(volume_);
     addProperty(space_);
@@ -120,4 +120,4 @@ void SingleVoxel::process() {
     }
 }
 
-}  // namespace
+}  // namespace inviwo

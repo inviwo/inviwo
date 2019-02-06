@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_EVENTCONVERTERQT_H
@@ -45,35 +45,35 @@ class QKeyEvent;
 namespace inviwo {
 
 namespace utilqt {
-    /**
-     * \brief  Convert the button state
-     * when the event was generated 
-     * to an inviwo button.
-     *
-     * Converts QMouseEvent::getButtons().
-     */
-    IVW_MODULE_QTWIDGETS_API MouseButtons getMouseButtons(const QMouseEvent* e);
+/**
+ * \brief  Convert the button state
+ * when the event was generated
+ * to an inviwo button.
+ *
+ * Converts QMouseEvent::getButtons().
+ */
+IVW_MODULE_QTWIDGETS_API MouseButtons getMouseButtons(const QMouseEvent* e);
 
-    /**
-     * \brief Convert the button originally
-     * causing the event to an inviwo button.
-     *
-     * Converts QMouseEvent::getButton().
-     *
-     * @note Qt does not include the button that caused a release event in the regular
-     * QMouseEvent::getButtons function, which is why a separate conversion function is necessary
-     * @param e the QT Mouse Event
-     * @return MouseEvent::MouseButton
-     */
-    IVW_MODULE_QTWIDGETS_API MouseButton getMouseButtonCausingEvent(const QMouseEvent* e);
-    IVW_MODULE_QTWIDGETS_API MouseButtons getMouseWheelButtons(const QWheelEvent* e);
-    IVW_MODULE_QTWIDGETS_API KeyModifiers getModifiers(const QInputEvent* e);
-    IVW_MODULE_QTWIDGETS_API GestureState getGestureState(const QGesture* e);
+/**
+ * \brief Convert the button originally
+ * causing the event to an inviwo button.
+ *
+ * Converts QMouseEvent::getButton().
+ *
+ * @note Qt does not include the button that caused a release event in the regular
+ * QMouseEvent::getButtons function, which is why a separate conversion function is necessary
+ * @param e the QT Mouse Event
+ * @return MouseEvent::MouseButton
+ */
+IVW_MODULE_QTWIDGETS_API MouseButton getMouseButtonCausingEvent(const QMouseEvent* e);
+IVW_MODULE_QTWIDGETS_API MouseButtons getMouseWheelButtons(const QWheelEvent* e);
+IVW_MODULE_QTWIDGETS_API KeyModifiers getModifiers(const QInputEvent* e);
+IVW_MODULE_QTWIDGETS_API GestureState getGestureState(const QGesture* e);
 
-    IVW_MODULE_QTWIDGETS_API IvwKey getKeyButton(const QKeyEvent* e);
+IVW_MODULE_QTWIDGETS_API IvwKey getKeyButton(const QKeyEvent* e);
 
-}  // namespace
+}  // namespace utilqt
 
-}  // namespace
+}  // namespace inviwo
 
-#endif // IVW_EVENTCONVERTERQT_H
+#endif  // IVW_EVENTCONVERTERQT_H

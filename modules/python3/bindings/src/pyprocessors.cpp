@@ -53,11 +53,43 @@ public:
 
     /* Trampoline (need one for each virtual function) */
     virtual void initializeResources() override {
-        PYBIND11_OVERLOAD(void, Processor, initializeResources);
+        pybind11::gil_scoped_acquire gil;
+        if (auto overload = pybind11::get_overload(static_cast<const Processor *>(this),
+                                                   "initializeResources")) {
+            if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+                static pybind11::detail::overload_caster_t<void> caster;
+                return pybind11::detail::cast_ref<void>(overload(), caster);
+            } else {
+                return pybind11::detail::cast_safe<void>(overload());
+            }
+        }
+        Processor::initializeResources();
     }
-    virtual void process() override { PYBIND11_OVERLOAD(void, Processor, process); }
+    virtual void process() override {
+        pybind11::gil_scoped_acquire gil;
+        if (auto overload =
+                pybind11::get_overload(static_cast<const Processor *>(this), "process")) {
+            if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
+                static pybind11::detail::overload_caster_t<void> caster;
+                return pybind11::detail::cast_ref<void>(overload(), caster);
+            } else {
+                return pybind11::detail::cast_safe<void>(overload());
+            }
+        }
+        Processor::process();
+    }
     virtual const ProcessorInfo getProcessorInfo() const override {
-        PYBIND11_OVERLOAD_PURE(const ProcessorInfo, Processor, getProcessorInfo);
+        pybind11::gil_scoped_acquire gil;
+        if (auto overload =
+                pybind11::get_overload(static_cast<const Processor *>(this), "getProcessorInfo")) {
+            if (pybind11::detail::cast_is_temporary_value_reference<const ProcessorInfo>::value) {
+                static pybind11::detail::overload_caster_t<const ProcessorInfo> caster;
+                return pybind11::detail::cast_ref<const ProcessorInfo>(overload(), caster);
+            } else {
+                return pybind11::detail::cast_safe<const ProcessorInfo>(overload());
+            }
+        }
+        pybind11::pybind11_fail("Tried to call pure virtual function Processor::getProcessorInfo");
     }
 };
 

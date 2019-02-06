@@ -119,4 +119,4 @@ void ProcessorNetworkObservable::notifyObserversProcessorNetworkDidRemoveLink(
         [&](ProcessorNetworkObserver* o) { o->onProcessorNetworkDidRemoveLink(propertyLink); });
 }
 
-}  // namespace
+}  // namespace inviwo

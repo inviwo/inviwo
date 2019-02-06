@@ -50,6 +50,9 @@ class Renderer;
  */
 class IVW_MODULE_USERINTERFACEGL_API Button : public AbstractButton {
 public:
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
+
     Button(const std::string &label, Processor &processor, Renderer &uiRenderer,
            const ivec2 &extent = ivec2(100, 24));
     virtual ~Button() = default;

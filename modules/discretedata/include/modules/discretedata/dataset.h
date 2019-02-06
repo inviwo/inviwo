@@ -54,7 +54,7 @@ using DataChannelMap =
                                               // property
              ChannelCompare>;                 // Lesser operator on string-Primitve pairs
 
-/** 
+/**
  * \brief Data package containing structure by cell connectivity and data
  * Conglomerate of data grid and several data channels assigned to grid dimensions.
  *

@@ -43,7 +43,7 @@ ProcessorNetworkEvaluator::ProcessorNetworkEvaluator(ProcessorNetwork* processor
     , processorsSorted_(util::topologicalSort(processorNetwork_))
     , evaulationQueued_(false)
     , exceptionHandler_(StandardEvaluationErrorHandler()) {
-    
+
     processorNetwork_->addObserver(this);
 }
 
@@ -98,9 +98,9 @@ void ProcessorNetworkEvaluator::evaluate() {
     NetworkLock lock(processorNetwork_);
 
     notifyObserversProcessorNetworkEvaluationBegin();
-    
+
     IVW_CPU_PROFILING_IF(500, "Evaluated Processor Network");
-    
+
     for (auto processor : processorsSorted_) {
         if (!processor->isValid()) {
             if (processor->isReady()) {
@@ -129,7 +129,7 @@ void ProcessorNetworkEvaluator::evaluate() {
                     exceptionHandler_(processor, EvaluationType::Process, IvwContext);
                 }
 
-                // Set processor as valid only if we still are ready. 
+                // Set processor as valid only if we still are ready.
                 // Callbacks might have made our inports invalid, if so abort
                 // the evaluation by not setting the processor valid.
                 if (processor->isReady()) processor->setValid();
@@ -145,7 +145,7 @@ void ProcessorNetworkEvaluator::evaluate() {
             }
         }
     }
-    
+
     notifyObserversProcessorNetworkEvaluationEnd();
 }
 
@@ -171,4 +171,4 @@ void ProcessorNetworkEvaluator::onProcessorNetworkDidRemoveConnection(const Port
     processorsSorted_ = util::topologicalSort(processorNetwork_);
 }
 
-}  // namespace
+}  // namespace inviwo

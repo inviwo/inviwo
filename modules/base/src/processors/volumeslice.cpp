@@ -137,94 +137,94 @@ void VolumeSlice::process() {
 
     auto image =
         vol->getRepresentation<VolumeRAM>()
-            ->dispatch<std::shared_ptr<Image>, dispatching::filter::All>([
-                axis = static_cast<CartesianCoordinateAxis>(sliceAlongAxis_.get()),
-                slice = static_cast<size_t>(sliceNumber_.get() - 1), &cache = imageCache_
-            ](const auto vrprecision) {
-                using T = util::PrecsionValueType<decltype(vrprecision)>;
+            ->dispatch<std::shared_ptr<Image>, dispatching::filter::All>(
+                [axis = static_cast<CartesianCoordinateAxis>(sliceAlongAxis_.get()),
+                 slice = static_cast<size_t>(sliceNumber_.get() - 1),
+                 &cache = imageCache_](const auto vrprecision) {
+                    using T = util::PrecsionValueType<decltype(vrprecision)>;
 
-                const T* voldata = vrprecision->getDataTyped();
-                const auto voldim = vrprecision->getDimensions();
+                    const T* voldata = vrprecision->getDataTyped();
+                    const auto voldim = vrprecision->getDimensions();
 
-                const auto imgdim = [&]() {
-                    switch (axis) {
+                    const auto imgdim = [&]() {
+                        switch (axis) {
+                            default:
+                                return size2_t(voldim.z, voldim.y);
+                            case CartesianCoordinateAxis::X:
+                                return size2_t(voldim.z, voldim.y);
+                            case CartesianCoordinateAxis::Y:
+                                return size2_t(voldim.x, voldim.z);
+                            case CartesianCoordinateAxis::Z:
+                                return size2_t(voldim.x, voldim.y);
+                        }
+                    }();
+
+                    auto res = cache.getTypedUnused<T>(imgdim);
+                    auto sliceImage = res.first;
+                    auto layerrep = res.second;
+                    auto layerdata = layerrep->getDataTyped();
+
+                    switch (util::extent<T, 0>::value) {
+                        case 0:  // util::extent<T, 0>::value returns zero for non-glm types
+                        case 1:
+                            layerrep->setSwizzleMask({{ImageChannel::Red, ImageChannel::Red,
+                                                       ImageChannel::Red, ImageChannel::One}});
+                            break;
+                        case 2:
+                            layerrep->setSwizzleMask({{ImageChannel::Red, ImageChannel::Green,
+                                                       ImageChannel::Zero, ImageChannel::One}});
+                            break;
+                        case 3:
+                            layerrep->setSwizzleMask({{ImageChannel::Red, ImageChannel::Green,
+                                                       ImageChannel::Blue, ImageChannel::One}});
+                            break;
                         default:
-                            return size2_t(voldim.z, voldim.y);
-                        case CartesianCoordinateAxis::X:
-                            return size2_t(voldim.z, voldim.y);
-                        case CartesianCoordinateAxis::Y:
-                            return size2_t(voldim.x, voldim.z);
-                        case CartesianCoordinateAxis::Z:
-                            return size2_t(voldim.x, voldim.y);
+                        case 4:
+                            layerrep->setSwizzleMask({{ImageChannel::Red, ImageChannel::Green,
+                                                       ImageChannel::Blue, ImageChannel::Alpha}});
                     }
-                }();
 
-                auto res = cache.getTypedUnused<T>(imgdim);
-                auto sliceImage = res.first;
-                auto layerrep = res.second;
-                auto layerdata = layerrep->getDataTyped();
-
-                switch (util::extent<T, 0>::value) {
-                    case 0:  // util::extent<T, 0>::value returns zero for non-glm types
-                    case 1:
-                        layerrep->setSwizzleMask({{ImageChannel::Red, ImageChannel::Red,
-                                                   ImageChannel::Red, ImageChannel::One}});
-                        break;
-                    case 2:
-                        layerrep->setSwizzleMask({{ImageChannel::Red, ImageChannel::Green,
-                                                   ImageChannel::Zero, ImageChannel::One}});
-                        break;
-                    case 3:
-                        layerrep->setSwizzleMask({{ImageChannel::Red, ImageChannel::Green,
-                                                   ImageChannel::Blue, ImageChannel::One}});
-                        break;
-                    default:
-                    case 4:
-                        layerrep->setSwizzleMask({{ImageChannel::Red, ImageChannel::Green,
-                                                   ImageChannel::Blue, ImageChannel::Alpha}});
-                }
-
-                size_t offsetVolume;
-                size_t offsetImage;
-                switch (axis) {
-                    case CartesianCoordinateAxis::X: {
-                        util::IndexMapper3D vm(voldim);
-                        util::IndexMapper2D im(imgdim);
-                        auto x = glm::clamp(slice, size_t{0}, voldim.x - 1);
-                        for (size_t z = 0; z < voldim.z; z++) {
-                            for (size_t y = 0; y < voldim.y; y++) {
-                                offsetVolume = vm(x, y, z);
-                                offsetImage = im(z, y);
-                                layerdata[offsetImage] = voldata[offsetVolume];
+                    size_t offsetVolume;
+                    size_t offsetImage;
+                    switch (axis) {
+                        case CartesianCoordinateAxis::X: {
+                            util::IndexMapper3D vm(voldim);
+                            util::IndexMapper2D im(imgdim);
+                            auto x = glm::clamp(slice, size_t{0}, voldim.x - 1);
+                            for (size_t z = 0; z < voldim.z; z++) {
+                                for (size_t y = 0; y < voldim.y; y++) {
+                                    offsetVolume = vm(x, y, z);
+                                    offsetImage = im(z, y);
+                                    layerdata[offsetImage] = voldata[offsetVolume];
+                                }
                             }
+                            break;
                         }
-                        break;
-                    }
-                    case CartesianCoordinateAxis::Y: {
-                        auto y = glm::clamp(slice, size_t{0}, voldim.y - 1);
-                        const size_t dataSize = voldim.x;
-                        const size_t initialStartPos = y * voldim.x;
-                        for (size_t j = 0; j < voldim.z; j++) {
-                            offsetVolume = (j * voldim.x * voldim.y) + initialStartPos;
-                            offsetImage = j * voldim.x;
-                            std::copy(voldata + offsetVolume, voldata + offsetVolume + dataSize,
-                                      layerdata + offsetImage);
+                        case CartesianCoordinateAxis::Y: {
+                            auto y = glm::clamp(slice, size_t{0}, voldim.y - 1);
+                            const size_t dataSize = voldim.x;
+                            const size_t initialStartPos = y * voldim.x;
+                            for (size_t j = 0; j < voldim.z; j++) {
+                                offsetVolume = (j * voldim.x * voldim.y) + initialStartPos;
+                                offsetImage = j * voldim.x;
+                                std::copy(voldata + offsetVolume, voldata + offsetVolume + dataSize,
+                                          layerdata + offsetImage);
+                            }
+                            break;
                         }
-                        break;
-                    }
-                    case CartesianCoordinateAxis::Z: {
-                        auto z = glm::clamp(slice, size_t{0}, voldim.z - 1);
-                        const size_t dataSize = voldim.x * voldim.y;
-                        const size_t initialStartPos = z * voldim.x * voldim.y;
+                        case CartesianCoordinateAxis::Z: {
+                            auto z = glm::clamp(slice, size_t{0}, voldim.z - 1);
+                            const size_t dataSize = voldim.x * voldim.y;
+                            const size_t initialStartPos = z * voldim.x * voldim.y;
 
-                        std::copy(voldata + initialStartPos, voldata + initialStartPos + dataSize,
-                                  layerdata);
-                        break;
+                            std::copy(voldata + initialStartPos,
+                                      voldata + initialStartPos + dataSize, layerdata);
+                            break;
+                        }
                     }
-                }
-                cache.add(sliceImage);
-                return sliceImage;
-            });
+                    cache.add(sliceImage);
+                    return sliceImage;
+                });
 
     outport_.setData(image);
 }

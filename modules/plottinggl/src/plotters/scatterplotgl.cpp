@@ -461,12 +461,12 @@ void ScatterPlotGL::objectPicked(PickingEvent *p) {
     auto rowIndex = idToDataFrameIndex(id);
 
     if (properties_.hovering_.get()) {
-        if (p->getState() == PickingState::Started) {
+        if (p->getHoverState() == PickingHoverState::Enter) {
             hoveredIndices_.insert(id);
             if (processor_) {
                 processor_->invalidate(InvalidationLevel::InvalidOutput);
             }
-        } else if (p->getState() == PickingState::Finished) {
+        } else if (p->getHoverState() == PickingHoverState::Exit) {
             hoveredIndices_.erase(id);
             if (processor_) {
                 processor_->invalidate(InvalidationLevel::InvalidOutput);
@@ -492,25 +492,10 @@ void ScatterPlotGL::objectPicked(PickingEvent *p) {
         }
     };
 
-    if (auto me = p->getEventAs<MouseEvent>()) {
-        if (me->button() == MouseButton::Left) {
-            if (me->state() == MouseState::Release) {
-                // print information on current element
-                logRowData();
-            }
-            me->markAsUsed();
-        }
-    } else if (auto touchEvent = p->getEventAs<TouchEvent>()) {
-        if (touchEvent->touchPoints().size() == 1) {
-            // allow interaction only for a single touch point
-            const auto &touchPoint = touchEvent->touchPoints().front();
-
-            if (touchPoint.state() == TouchState::Started) {
-                // print information on current element
-                logRowData();
-            }
-            p->markAsUsed();
-        }
+    if ((p->getPressState() == PickingPressState::Release) &&
+        (p->getPressItem() == PickingPressItem::Primary) &&
+        (p->getCurrentGlobalPickingId() == p->getPressedGlobalPickingId())) {
+        logRowData();
     }
 }
 

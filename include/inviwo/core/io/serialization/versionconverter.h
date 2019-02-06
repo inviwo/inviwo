@@ -91,7 +91,7 @@ IVW_CORE_API void renameProperty(Deserializer& d,
 IVW_CORE_API void changePropertyType(Deserializer& d,
                                      std::vector<std::pair<const Property*, std::string>> rules);
 
-}  // namespace
+}  // namespace util
 
 namespace xml {
 
@@ -107,7 +107,6 @@ IVW_CORE_API bool findMatchingSubPropertiesForComposites(
 IVW_CORE_API TxElement* getElement(TxElement* node, std::string path);
 
 IVW_CORE_API bool copyMatchingCompositeProperty(TxElement* node, const CompositeProperty& prop);
-
 
 /**
  *	Helper class for specifying a selector path for visitMatchingNodes
@@ -130,10 +129,9 @@ template <typename Visitor>
 void visitMatchingNodes(TxElement* root, const std::vector<ElementMatcher>& selector,
                         Visitor visitor) {
     std::function<void(TxElement * node, std::vector<ElementMatcher>::const_iterator begin,
-                       std::vector<ElementMatcher>::const_iterator end)> visitNodes =
-        [&](TxElement* node, std::vector<ElementMatcher>::const_iterator begin,
-            std::vector<ElementMatcher>::const_iterator end) {
-
+                       std::vector<ElementMatcher>::const_iterator end)>
+        visitNodes = [&](TxElement* node, std::vector<ElementMatcher>::const_iterator begin,
+                         std::vector<ElementMatcher>::const_iterator end) {
             ticpp::Iterator<ticpp::Element> child;
             for (child = child.begin(node); child != child.end(); child++) {
                 std::string childname;
@@ -197,7 +195,6 @@ private:
     std::string type_;
 };
 
-
 /**
  * Utility function to change a xml tag matching oldName.
  * @param root The xml node to start from.
@@ -205,11 +202,11 @@ private:
  * @param oldName The old tag value. This is also used for identifying the elements.
  * @param newName The new tag value
  */
-IVW_CORE_API bool changeTag(TxElement* root, const std::vector<Kind>& path, const std::string& oldName,
-                            const std::string& newName);
+IVW_CORE_API bool changeTag(TxElement* root, const std::vector<Kind>& path,
+                            const std::string& oldName, const std::string& newName);
 
 /**
- * Utility function to change a attribute processor network element, i.e a processor, port, or 
+ * Utility function to change a attribute processor network element, i.e a processor, port, or
  * property.
  * @param root The xml node to start from.
  * @param path The elements that you want to change (@See Kind).
@@ -247,8 +244,8 @@ struct IVW_CORE_API IdentifierReplacement {
 IVW_CORE_API bool changeIdentifiers(TxElement* root,
                                     const std::vector<IdentifierReplacement>& replacements);
 
-}  // namespace
+}  // namespace xml
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_VERSIONCONVERTER_H

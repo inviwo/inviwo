@@ -281,7 +281,7 @@ void PropertyOwner::setAllPropertiesCurrentStateAsDefault() {
 }
 
 void PropertyOwner::resetAllPoperties() {
-    for (auto& elem : properties_) (elem)->resetToDefaultState();
+    for (auto& elem : properties_) elem->resetToDefaultState();
 }
 
 std::vector<std::string> PropertyOwner::getPath() const { return std::vector<std::string>(); }

@@ -164,8 +164,8 @@ RawDataReaderDialogQt::RawDataReaderDialogQt() {
     dataSizeLayout->addWidget(dimensions, 0, 1);
     dataSizeLayout->addWidget(spaceLabel, 1, 0);
     dataSizeLayout->addWidget(space, 1, 1);
-    //dataSizeLayout->addWidget(timeStepLabel, 2, 0);
-    //dataSizeLayout->addWidget(timeSteps_, 2, 1);
+    // dataSizeLayout->addWidget(timeStepLabel, 2, 0);
+    // dataSizeLayout->addWidget(timeSteps_, 2, 1);
     QGroupBox* dataSizeBox = new QGroupBox("Data size", this);
     dataSizeBox->setLayout(dataSizeLayout);
 
@@ -272,9 +272,9 @@ void RawDataReaderDialogQt::setSpacing(dvec3 spacing) {
 bool RawDataReaderDialogQt::getEndianess() const { return endianess_->currentIndex() == 0; }
 
 void RawDataReaderDialogQt::setEndianess(bool endian) {
-    if(endian) {
+    if (endian) {
         endianess_->setCurrentIndex(0);
-    }else{
+    } else {
         endianess_->setCurrentIndex(1);
     }
 }

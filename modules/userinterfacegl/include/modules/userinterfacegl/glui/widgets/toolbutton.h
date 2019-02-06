@@ -51,6 +51,9 @@ class Renderer;
  */
 class IVW_MODULE_USERINTERFACEGL_API ToolButton : public AbstractButton {
 public:
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
+
     ToolButton(const std::string &filename, Processor &processor, Renderer &uiRenderer,
                const ivec2 &extent = ivec2(24, 24));
     ToolButton(std::shared_ptr<Texture2D> labelImage, Processor &processor, Renderer &uiRenderer,

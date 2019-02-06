@@ -40,7 +40,7 @@ namespace inviwo {
 class BufferGL;
 
 /**
- * \ingroup datastructures	
+ * \ingroup datastructures
  */
 class IVW_MODULE_OPENGL_API MeshGL : public MeshRepresentation {
 public:
@@ -66,7 +66,6 @@ public:
 
     size_t getIndexBufferCount() const;
 
-
     virtual std::type_index getTypeIndex() const override final;
     virtual bool isValid() const override;
     virtual void update(bool editable) override;
@@ -75,9 +74,9 @@ private:
     std::vector<const BufferGL*> bufferGLs_;
     BufferObjectArray bufferArray_;
 
-    std::vector<std::pair<Mesh::MeshInfo, const BufferGL *> > indexBuffers_;
+    std::vector<std::pair<Mesh::MeshInfo, const BufferGL*>> indexBuffers_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_MESHGL_H

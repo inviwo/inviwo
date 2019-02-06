@@ -38,27 +38,24 @@
 namespace inviwo {
 
 const ProcessorInfo ConvexHull2DProcessor::processorInfo_{
-    "org.inviwo.ConvexHull2DProcessor", // Class identifier
-    "Convex Hull2D Processor",          // Display name
-    "Geometry",                         // Category
-    CodeState::Stable,                  // Code state
-    Tags::CPU,                          // Tags
+    "org.inviwo.ConvexHull2DProcessor",  // Class identifier
+    "Convex Hull2D Processor",           // Display name
+    "Geometry",                          // Category
+    CodeState::Stable,                   // Code state
+    Tags::CPU,                           // Tags
 };
-const ProcessorInfo ConvexHull2DProcessor::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo ConvexHull2DProcessor::getProcessorInfo() const { return processorInfo_; }
 
 ConvexHull2DProcessor::ConvexHull2DProcessor()
     : Processor()
     , inport_("geometry")
     , outport_("convexhull")
-    , normal_("normal", "Normal", vec3(0.0f, 0.0f, 1.0f), vec3(-1.0f), vec3(1.0f)) 
-{    
+    , normal_("normal", "Normal", vec3(0.0f, 0.0f, 1.0f), vec3(-1.0f), vec3(1.0f)) {
     addPort(inport_);
     addPort(outport_);
     addProperty(normal_);
 }
-    
+
 void ConvexHull2DProcessor::process() {
     auto data = inport_.getData();
 
@@ -88,7 +85,7 @@ void ConvexHull2DProcessor::process() {
                 // project point p onto plane given by normal
                 auto q = proj * p;
                 points.push_back(q);
-            }            
+            }
         }
     }
 
@@ -104,4 +101,4 @@ void ConvexHull2DProcessor::process() {
     outport_.setData(mesh);
 }
 
-} // namespace inviwo
+}  // namespace inviwo

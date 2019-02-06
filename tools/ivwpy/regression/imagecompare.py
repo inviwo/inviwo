@@ -24,7 +24,7 @@
 # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-# 
+#
 #*********************************************************************************
 
 import PIL.Image as Image
@@ -33,7 +33,7 @@ import PIL.ImageStat as ImageStat
 import PIL.ImageChops as ImageChops
 
 class ImageCompare:
-    def __init__(self, testImage, refImage, enhance = 10):
+    def __init__(self, testImage, refImage, allowDifferentImageMode = False , enhance = 10):
 
         self.testImage = Image.open(testImage)
         self.refImage = Image.open(refImage)
@@ -44,14 +44,27 @@ class ImageCompare:
         self.numberOfDifferentPixels = None
         self.maxDifference = None
 
-        if self.testImage.mode != self.refImage.mode or self.testImage.size != self.refImage.size:
-            return 
+
+        if self.testImage.size != self.refImage.size:
+            return
+
+        if self.testImage.mode != self.refImage.mode:
+            if not allowDifferentImageMode:
+                return;
+            self.refImage = self.refImage.convert(self.testImage.mode)
+
+
+        # ImageChops.difference does not work for signed integers
+        if self.testImage.mode == 'I':
+            self.testImage = self.testImage.convert('L')
+            self.refImage = self.refImage.convert('L')
+
 
         numPixels = self.testImage.size[0] * self.testImage.size[1]
-        channels = len(self.testImage.getbands());
 
         self.diffImage = ImageChops.difference(self.testImage, self.refImage)
 
+        channels = len(self.testImage.getbands());
         if channels == 1:
             normImage = self.diffImage
         elif channels == 2:
@@ -63,7 +76,9 @@ class ImageCompare:
         elif channels == 4:
             (a,b,c,d) = self.diffImage.split()
             normImage = ImageMath.eval("convert((a+b+c+d), 'L')" , a=a, b=b, c=c, d=d)
-
+        
+        self.maskImage = normImage.point(lambda p: 0 if p > 0 else 255, 'L')
+        
         stats = ImageStat.Stat(normImage)
         self.maxDifference = stats.extrema[0][1] / (channels*255)
         self.difference = (sum(stats.sum)/(255*channels)) * 100.0 / numPixels
@@ -71,22 +86,21 @@ class ImageCompare:
         if enhance != 1:
             self.diffImage = self.diffImage.point(lambda i : i * (enhance))
         self.diffImage = ImageChops.invert(self.diffImage)
-        
-        self.maskImage = self.diffImage.convert('1')
+
         self.numberOfDifferentPixels = int(numPixels - ImageStat.Stat(self.maskImage).sum[0] / 255)
 
     def saveDifferenceImage(self, difffile):
-        if self.diffImage is not None: 
+        if self.diffImage is not None:
             self.diffImage.save(difffile)
             return True
-        else: 
+        else:
             return False
-            
+
     def saveMaskImage(self, maskfile):
-        if self.maskImage is not None: 
+        if self.maskImage is not None:
             self.maskImage.save(maskfile)
             return True
-        else: 
+        else:
             return False
 
     def saveReferenceImage(self, file):
@@ -104,10 +118,10 @@ class ImageCompare:
 
     def getDifference(self):
         return self.difference
-    
+
     def getNumberOfDifferentPixels(self):
         return self.numberOfDifferentPixels
-    
+
     def getMaxDifference(self):
         return self.maxDifference
 
@@ -116,5 +130,3 @@ class ImageCompare:
 
     def isSameMode(self):
         return self.testImage.mode == self.refImage.mode
-
-

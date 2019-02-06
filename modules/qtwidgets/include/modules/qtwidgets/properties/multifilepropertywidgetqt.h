@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_MULTIFILEPROPERTYWIDGETQT_H
@@ -70,6 +70,6 @@ private:
     EditableLabelQt* label_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_MULTIFILEPROPERTYWIDGETQT_H
+#endif  // IVW_MULTIFILEPROPERTYWIDGETQT_H

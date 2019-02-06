@@ -42,7 +42,9 @@
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
 #include <modules/opengl/shader/shader.h>
+#include <modules/basegl/datastructures/meshshadercache.h>
 
 namespace inviwo {
 
@@ -51,13 +53,13 @@ namespace inviwo {
  * This processor renders a set of point meshes using spherical glyphs in OpenGL.
  * The glyphs are resolution independent and consist only of a single point.
  *
- * The radius of each point is provided by an additional single float buffer being part of the input
- * meshes. This buffer must be bound to buffer location 5!
- * Alternatively, the radius can be globally overwritten using the <em>Overwrite Sphere Radius</em>
- * and <em>Custom Radius</em> properties.
- *
  * ### Inports
  *   * __geometry__ Input meshes
+ *       The input mesh uses the following buffers:
+ * PositionAttrib vec3
+ * ColorAttrib    vec4   (optional will fall-back to use __Custom Color__)
+ * RadiiAttrib    float  (optional will fall-back to use __Custom Radius__)
+ * PickingAttrib  uint32 (optional will fall-back to not draw any picking)
  *   * __imageInport__ Optional background image
  *
  * ### Outports
@@ -68,10 +70,10 @@ namespace inviwo {
  *   * __Clip Mode__                 defines the handling of spheres clipped at the camera
  *   * __Clip Surface Adjustment__   brighten/darken glyph color on clip surface
  *   * __Shaded Clipped Area__       enable illumination computations for the clipped surface
- *   * __Overwrite Sphere Radius__   enable a fixed user-defined radius for all spheres
- *   * __Custom Radius__          radius of the rendered spheres (in world coordinates)
- *   * __Overwrite Color__     if enabled, all spheres will share the same custom color
- *   * __Custom Color__        custom color when overwriting the input colors
+ *   * __Force Radius__              enable a fixed user-defined radius for all spheres
+ *   * __Default Radius__            radius of the rendered spheres (in world coordinates)
+ *   * __Force Color__               if enabled, all spheres will share the same custom color
+ *   * __Default Color__             custom color when overwriting the input colors
  */
 
 /**
@@ -82,6 +84,10 @@ class IVW_MODULE_BASEGL_API SphereRenderer : public Processor {
 public:
     SphereRenderer();
     virtual ~SphereRenderer() = default;
+    SphereRenderer(const SphereRenderer&) = delete;
+    SphereRenderer(SphereRenderer&&) = delete;
+    SphereRenderer& operator=(const SphereRenderer&) = delete;
+    SphereRenderer& operator=(SphereRenderer&&) = delete;
 
     virtual void process() override;
 
@@ -91,7 +97,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    void drawMeshes();
+    void configureShader(Shader& shader);
 
     enum class RenderMode {
         EntireMesh,  //!< render all vertices of the input mesh as glyphs
@@ -119,16 +125,18 @@ private:
     BoolProperty shadeClippedArea_;
 
     CompositeProperty sphereProperties_;
-    BoolProperty overrideSphereRadius_;
-    FloatProperty customRadius_;
-    BoolProperty overrideSphereColor_;
-    FloatVec4Property customColor_;
+    BoolProperty forceRadius_;
+    FloatProperty defaultRadius_;
+    BoolProperty forceColor_;
+    FloatVec4Property defaultColor_;
+    BoolProperty useMetaColor_;
+    TransferFunctionProperty metaColor_;
+
     CameraProperty camera_;
+    CameraTrackball trackball_;
     SimpleLightingProperty lighting_;
 
-    CameraTrackball trackball_;
-
-    Shader shader_;
+    MeshShaderCache shaders_;
 };
 
 }  // namespace inviwo

@@ -39,8 +39,8 @@ namespace inviwo {
 #if defined(IVW_DEBUG) || defined(IVW_FORCE_ASSERTIONS)
 
 void assertion(const char* fileName, const char* functionName, long lineNumber,
-                  std::string message) {
-    std::cout << "Assertion failed in (" << fileName << ":" << lineNumber << ", " << functionName 
+               std::string message) {
+    std::cout << "Assertion failed in (" << fileName << ":" << lineNumber << ", " << functionName
               << "): ";
     std::cout << message << std::endl;
 

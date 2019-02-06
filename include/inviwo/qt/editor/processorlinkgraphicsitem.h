@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PROCESSORLINKGRAPHICSITEM_H
@@ -46,7 +46,7 @@ class LinkConnectionGraphicsItem;
 class IVW_QTEDITOR_API ProcessorLinkGraphicsItem : public QGraphicsItem {
 public:
     ProcessorLinkGraphicsItem(ProcessorGraphicsItem* parent);
-    virtual ~ProcessorLinkGraphicsItem(){}
+    virtual ~ProcessorLinkGraphicsItem() {}
 
     // override for qgraphicsitem_cast (refer qt documentation)
     enum { Type = UserType + ProcessorLinkGraphicsType };
@@ -96,7 +96,6 @@ private:
     std::vector<LinkConnectionGraphicsItem*> links_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_PROCESSORLINKGRAPHICSITEM_H
-
+#endif  // IVW_PROCESSORLINKGRAPHICSITEM_H

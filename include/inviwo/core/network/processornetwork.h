@@ -145,7 +145,7 @@ public:
     /**
      * Check if sourcePort can be connected to destPort
      */
-    bool canConnect(const Outport* sourcePort, const Inport* destPort) const; 
+    bool canConnect(const Outport* sourcePort, const Inport* destPort) const;
 
     /**
      * Removes and deletes a PortConnection from the ProcessorNetwork. This involves resolving the

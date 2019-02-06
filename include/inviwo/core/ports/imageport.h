@@ -193,7 +193,7 @@ public:
 
     virtual ~ImageOutport() = default;
     virtual std::string getClassIdentifier() const override;
- 
+
     virtual void setData(std::shared_ptr<const Image>) override;
     virtual void setData(const Image* data) override;  // will assume ownership of data.
     void setData(std::shared_ptr<Image>);

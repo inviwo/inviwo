@@ -43,6 +43,9 @@ namespace inviwo {
 
 namespace glui {
 
+const std::string Button::classIdentifier = "org.inviwo.glui.Button";
+std::string Button::getClassIdentifier() const { return classIdentifier; }
+
 Button::Button(const std::string &label, Processor &processor, Renderer &uiRenderer,
                const ivec2 &extent)
     : AbstractButton(label, processor, uiRenderer, extent) {}

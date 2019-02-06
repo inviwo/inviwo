@@ -61,8 +61,8 @@ getAvailableFonts(const std::string &fontPath = std::string());
  */
 std::string IVW_MODULE_FONTRENDERING_API getDefaultFontPath();
 
-} // namespace util
+}  // namespace util
 
-} // namespace inviwo
+}  // namespace inviwo
 
-#endif // IVW_FONTUTILS_H
+#endif  // IVW_FONTUTILS_H

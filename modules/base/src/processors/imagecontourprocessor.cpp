@@ -35,7 +35,7 @@ namespace inviwo {
 const ProcessorInfo ImageContourProcessor::processorInfo_{
     "org.inviwo.ImageContourProcessor",  // Class identifier
     "Image Contour",                     // Display name
-    "Image Processing",                         // Category
+    "Image Processing",                  // Category
     CodeState::Experimental,             // Code state
     Tags::None,                          // Tags
 };
@@ -59,12 +59,13 @@ ImageContourProcessor::ImageContourProcessor()
 }
 
 void ImageContourProcessor::process() {
-    if(image_.isChanged()) {
-        auto max = image_.getData()->getDataFormat()->getComponents()-1;
+    if (image_.isChanged()) {
+        auto max = image_.getData()->getDataFormat()->getComponents() - 1;
         channel_.setMaxValue(max);
     }
-    mesh_.setData(ImageContour::apply(
-        image_.getData()->getColorLayer()->getRepresentation<LayerRAM>(), channel_, isoValue_, color_));
+    mesh_.setData(
+        ImageContour::apply(image_.getData()->getColorLayer()->getRepresentation<LayerRAM>(),
+                            channel_, isoValue_, color_));
 }
 
-}  // namespace
+}  // namespace inviwo

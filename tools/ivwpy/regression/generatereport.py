@@ -193,19 +193,22 @@ def testImages(testimg, refimg, diffimg, maskimg):
 
 	with tag('div', klass="zoomset"):
 		with tag('div', klass="slider"):
-			with tag('div', klass="imgtestlabel"): text("Test")
-			with tag('div', klass="imgtestlabel"): text("Reference")
-			with tag('div', klass="imgtestlabel"): text("Difference * 10") 
-			with tag('div', klass="imgtestlabel"): text("Mask") 
-		with tag('div', klass="slider"):
-			with tag('div', klass ="zoom"):
-				doc.asis(image(testimg, alt = "test image", klass ="test"))
-			with tag('div', klass ="zoom"):
-				doc.asis(image(refimg,  alt = "reference image", klass ="test"))
-			with tag('div', klass ="zoom"):
-				doc.asis(image(diffimg, alt = "difference image", klass ="diff"))
-			with tag('div', klass ="zoom"):
-				doc.asis(image(maskimg, alt = "mask image", klass ="diff"))
+			with tag('div'):
+				with tag('div', klass="imgtestlabel"): text("Test")
+				with tag('div', klass ="zoom"):
+					doc.asis(image(testimg, alt = "test image", klass ="test"))
+			with tag('div'):
+				with tag('div', klass="imgtestlabel"): text("Reference")
+				with tag('div', klass ="zoom"):
+					doc.asis(image(refimg,  alt = "reference image", klass ="test"))
+			with tag('div'):
+				with tag('div', klass="imgtestlabel"): text("Difference * 10") 
+				with tag('div', klass ="zoom"):
+					doc.asis(image(diffimg, alt = "difference image", klass ="diff"))
+			with tag('div'):
+				with tag('div', klass="imgtestlabel"): text("Mask") 
+				with tag('div', klass ="zoom"):
+					doc.asis(image(maskimg, alt = "mask image", klass ="diff"))
 	return doc.getvalue()
 
 def dataToJsArray(data):

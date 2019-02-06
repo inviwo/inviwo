@@ -56,6 +56,6 @@ private:
     BoolProperty flipY_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_EIGENMATRIXTOIMAGE_H

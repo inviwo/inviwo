@@ -62,8 +62,7 @@ VolumeGL& VolumeGL::operator=(const VolumeGL& rhs) {
     return *this;
 }
 
-VolumeGL::~VolumeGL() {
-}
+VolumeGL::~VolumeGL() {}
 
 VolumeGL* VolumeGL::clone() const { return new VolumeGL(*this); }
 
@@ -82,8 +81,6 @@ void VolumeGL::setDimensions(size3_t dimensions) {
     volumeTexture_->uploadAndResize(nullptr, dimensions_);
 }
 
-std::type_index VolumeGL::getTypeIndex() const {
-    return std::type_index(typeid(VolumeGL));
-}
+std::type_index VolumeGL::getTypeIndex() const { return std::type_index(typeid(VolumeGL)); }
 
-}  // namespace
+}  // namespace inviwo

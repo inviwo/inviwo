@@ -61,7 +61,5 @@ void main() {
     float borderAlpha = clamp(mix(1.0, 0.0, (r - outerglyphRadius) / (glyphRadius + borderWidth - outerglyphRadius)), 0.0, 1.0);
 
     vec4 color = mix(color_, borderColor, borderValue);
-
-    FragData0 = vec4(vec3(borderValue), 1.0);
     FragData0 = vec4(color.rgb, color.a * borderAlpha);
 }

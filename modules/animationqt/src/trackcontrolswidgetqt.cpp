@@ -44,7 +44,7 @@ namespace inviwo {
 
 namespace animation {
 
-TrackControlsWidgetQt::TrackControlsWidgetQt(QStandardItem* item, Track& track,
+TrackControlsWidgetQt::TrackControlsWidgetQt(QStandardItem*, Track& track,
                                              AnimationController& controller)
     : QWidget(), controller_(controller), track_{track} {
 
@@ -87,7 +87,7 @@ TrackControlsWidgetQt::TrackControlsWidgetQt(QStandardItem* item, Track& track,
             iconSize, QIcon::Normal, QIcon::On);
         QAction* lock = new QAction(lockTrackIcon, "Lock/Unlock Track", this);
         connect(lock, &QAction::triggered, this, [this]() {
-            // lock the track
+            IVW_UNUSED_PARAM(this);  // needed for the LogWarn
             LogWarn("Locking tracks is not implemented yet.");
         });
         lock->setCheckable(true);

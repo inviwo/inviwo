@@ -76,13 +76,14 @@ public:
 
     virtual void updatePositions() override;
     void showToolTip(QGraphicsSceneHelpEvent* event);
-    
+
 protected:
     QPointF calculateArrowCenterLocal(size_t curPort) const;
     QRectF calculateArrowRect(size_t curPort) const;
     QRectF calculateArrowRect(DialogConnectionGraphicsItem* cItem) const;
 
-    virtual void paint(QPainter* p, const QStyleOptionGraphicsItem* options, QWidget* widget) override;
+    virtual void paint(QPainter* p, const QStyleOptionGraphicsItem* options,
+                       QWidget* widget) override;
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
 
 private:
@@ -90,6 +91,6 @@ private:
     std::vector<LinkDialogPropertyGraphicsItem*> subProperties_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_LINKDIALOG_PROPERTYGRAPHICSITEMS_H

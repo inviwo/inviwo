@@ -46,9 +46,9 @@ public:
     virtual ~PropertyOwnerObserver() = default;
 
     /**
-    * This methods will be called when observed object changes.
-    * Override it to add behavior.
-    */
+     * This methods will be called when observed object changes.
+     * Override it to add behavior.
+     */
     virtual void onWillAddProperty(Property* property, size_t index);
     virtual void onDidAddProperty(Property* property, size_t index);
 
@@ -68,6 +68,6 @@ public:
     void notifyObserversDidRemoveProperty(Property* property, size_t index);
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PROPERTYOWNEROBSERVER_H

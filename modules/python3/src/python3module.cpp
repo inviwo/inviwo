@@ -27,7 +27,10 @@
  *
  *********************************************************************************/
 
+#include <warn/push>
+#include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
+#include <warn/pop>
 #include <modules/python3/python3module.h>
 
 #include <modules/python3/pythoninterpreter.h>
@@ -50,7 +53,7 @@ Python3Module::Python3Module(InviwoApplication* app)
     : InviwoModule(app, "Python3")
     , pythonInterpreter_(util::make_unique<PythonInterpreter>(this))
     , pythonScriptArg_("p", "pythonScript", "Specify a python script to run at startup", false, "",
-                       "Path to the file containing the script")
+                       "python script")
     , argHolder_{app, pythonScriptArg_,
                  [this]() {
                      auto filename = pythonScriptArg_.getValue();

@@ -91,7 +91,7 @@ public:
 
 private:
     InportType inport_;
-    OutportType superOutport_; ///< To be added to CompositeProcessor, not itself
+    OutportType superOutport_;  ///< To be added to CompositeProcessor, not itself
 };
 
 template <typename InportType, typename OutportType>
@@ -105,9 +105,9 @@ struct ProcessorTraits<CompositeSink<InportType, OutportType>> {
         return {
             id,                 // Class identifier
             name,               // Display name
-            "Composite",             // Category
+            "Composite",        // Category
             CodeState::Stable,  // Code state
-            "Composite",             // Tags
+            "Composite",        // Tags
             false               // Visible
         };
     }

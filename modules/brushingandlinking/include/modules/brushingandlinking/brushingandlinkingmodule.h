@@ -40,6 +40,6 @@ public:
     BrushingAndLinkingModule(InviwoApplication* app);
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_BRUSHINGANDLINKINGMODULE_H
+#endif  // IVW_BRUSHINGANDLINKINGMODULE_H

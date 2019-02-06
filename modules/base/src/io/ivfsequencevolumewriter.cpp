@@ -29,6 +29,7 @@
 
 #include <modules/base/io/ivfsequencevolumewriter.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/io/datawriterexception.h>
 
 namespace inviwo {
 
@@ -62,7 +63,7 @@ std::string writeIvfVolumeSequence(const VolumeSequence &volumes, std::string na
     Serializer serializer(ivfwFile);
 
     auto fillLength = static_cast<int>(log10(volumes.size())) + 1;
-    
+
     filesystem::createDirectoryRecursively(path + "/" + reltivePathToTimesteps);
     IvfVolumeWriter writer;
     writer.setOverwrite(overwrite);

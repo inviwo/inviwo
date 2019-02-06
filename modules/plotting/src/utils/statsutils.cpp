@@ -51,11 +51,10 @@ RegresionResult linearRegresion(const Tx &X, const Ty &Y) {
     double sumY = 0;
 
     // Iterate over containers in sync
-    for (auto&& i : util::zip(xvec, yvec)) {
+    for (auto &&i : util::zip(xvec, yvec)) {
         auto x = get<0>(i);
         auto y = get<1>(i);
-        if (std::isnan(static_cast<double>(x)) ||
-            std::isnan(static_cast<double>(y))) {
+        if (std::isnan(static_cast<double>(x)) || std::isnan(static_cast<double>(y))) {
             --A[0][0];
             continue;
         }
@@ -76,7 +75,7 @@ RegresionResult linearRegresion(const Tx &X, const Ty &Y) {
     double stdX = 0;
     double stdY = 0;
 
-    for (auto&& i : util::zip(xvec, yvec)) {
+    for (auto &&i : util::zip(xvec, yvec)) {
         if (std::isnan(static_cast<double>(get<0>(i))) ||
             std::isnan(static_cast<double>(get<1>(i)))) {
             continue;

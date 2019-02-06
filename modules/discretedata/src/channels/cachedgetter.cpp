@@ -29,6 +29,4 @@
 
 #include <modules/discretedata/channels/cachedgetter.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

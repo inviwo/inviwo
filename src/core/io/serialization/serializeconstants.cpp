@@ -24,24 +24,24 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/io/serialization/serializeconstants.h>
 
 namespace inviwo {
 
-const std::string SerializeConstants::XmlVersion="1.0";
-const std::string SerializeConstants::InviwoWorkspace="InviwoWorkspace";
+const std::string SerializeConstants::XmlVersion = "1.0";
+const std::string SerializeConstants::InviwoWorkspace = "InviwoWorkspace";
 const int SerializeConstants::InviwoWorkspaceVersion = 2;
-const std::string SerializeConstants::VersionAttribute="version";
-const std::string SerializeConstants::ContentAttribute="content";
-const std::string SerializeConstants::KeyAttribute="key";
+const std::string SerializeConstants::VersionAttribute = "version";
+const std::string SerializeConstants::ContentAttribute = "content";
+const std::string SerializeConstants::KeyAttribute = "key";
 
-const std::string SerializeConstants::TypeAttribute="type";
-const std::string SerializeConstants::RefAttribute="reference";
-const std::string SerializeConstants::IDAttribute="id";
+const std::string SerializeConstants::TypeAttribute = "type";
+const std::string SerializeConstants::RefAttribute = "reference";
+const std::string SerializeConstants::IDAttribute = "id";
 
 const std::string SerializeConstants::VectorAttributes[] = {"x", "y", "z", "w"};
 
-} //namespace
+}  // namespace inviwo

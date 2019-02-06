@@ -42,7 +42,7 @@
 namespace inviwo {
 
 /**
- * \ingroup datastructures	
+ * \ingroup datastructures
  */
 class IVW_CORE_API Layer : public Data<Layer, LayerRepresentation>, public StructuredGridEntity<2> {
 public:
@@ -82,11 +82,11 @@ public:
         const std::string& fileExtension) const;
 
     /**
-    * \brief update the swizzle mask of the channels for sampling color layers
-    * The swizzle mask is only affecting Color layers.
-    *
-    * @param mask new swizzle mask
-    */
+     * \brief update the swizzle mask of the channels for sampling color layers
+     * The swizzle mask is only affecting Color layers.
+     *
+     * @param mask new swizzle mask
+     */
     void setSwizzleMask(const SwizzleMask& mask);
     SwizzleMask getSwizzleMask() const;
 
@@ -97,11 +97,11 @@ private:
     friend class LayerRepresentation;
 
     /**
-    * \brief update the internal state of the layer based on the given representation
-    * This will affect layer type, dimension, and swizzle mask.
-    *
-    * @param layerRep    layer representation of which the values will be taken from
-    */
+     * \brief update the internal state of the layer based on the given representation
+     * This will affect layer type, dimension, and swizzle mask.
+     *
+     * @param layerRep    layer representation of which the values will be taken from
+     */
     void updateMetaFromRepresentation(const LayerRepresentation* layerRep);
 
     LayerType layerType_;
@@ -112,7 +112,6 @@ private:
 extern template class IVW_CORE_TMPL_EXP DataReaderType<Layer>;
 extern template class IVW_CORE_TMPL_EXP DataWriterType<Layer>;
 
-
-}  // namespace
-
+}  // namespace inviwo
+	
 #endif  // IVW_LAYER_H

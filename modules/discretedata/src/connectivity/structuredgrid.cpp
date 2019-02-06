@@ -33,7 +33,6 @@
 
 #include <inviwo/core/util/assertion.h>
 
-
 namespace inviwo {
 namespace discretedata {
 

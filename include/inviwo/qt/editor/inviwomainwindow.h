@@ -33,8 +33,8 @@
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/qt/editor/networkeditorobserver.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/network/workspacemanager.h>
 #include <inviwo/qt/editor/undomanager.h>
-
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -48,6 +48,7 @@
 
 class QDropEvent;
 class QDragEnterEvent;
+class QTabWidget;
 
 namespace inviwo {
 
@@ -58,6 +59,8 @@ class ProcessorTreeWidget;
 class ConsoleWidget;
 class SettingsWidget;
 class HelpWidget;
+class WelcomeWidget;
+class AnnotationsWidget;
 class InviwoApplicationQt;
 class InviwoEditMenu;
 class InviwoAboutWindow;
@@ -75,12 +78,24 @@ public:
 
     void showWindow();
 
+    /**
+     * loads the given example workspace.
+     *
+     * @return true if the example was opened, otherwise false.
+     */
+    bool openExample(QString exampleFileName);
+
     void openLastWorkspace(std::string workspace = "");
-    void openWorkspace(QString workspaceFileName);
+    /**
+     * loads the given workspace.
+     *
+     * @return true if the workspace was opened, otherwise false.
+     */
+    bool openWorkspace(QString workspaceFileName);
 
     /**
-     * Open the given workspaceFileName but only after asking whether to save the
-     * current workspace. The use can also abort the open bu pressing cancel.
+     * loads the given workspace. In case there are unsaved changes, the user will be asked to save
+     * or discard them, or cancel the loading.
      * @return true if the workspace was opened, otherwise false.
      */
     bool openWorkspaceAskToSave(QString workspaceFileName);
@@ -93,6 +108,7 @@ public:
     ProcessorTreeWidget* getProcessorTreeWidget() const;
     PropertyListWidget* getPropertyListWidget() const;
     ConsoleWidget* getConsoleWidget() const;
+    AnnotationsWidget* getAnnotationsWidget() const;
     HelpWidget* getHelpWidget() const;
     InviwoApplication* getInviwoApplication() const;
     InviwoApplicationQt* getInviwoApplicationQt() const;
@@ -100,36 +116,67 @@ public:
     InviwoEditMenu* getInviwoEditMenu() const;
     ToolsMenu* getToolsMenu() const;
 
-    void newWorkspace();
-    void openWorkspace();
+    /**
+     * sets up an empty workspace. In case there are unsaved changes, the user will be asked to save
+     * or discard them, or cancel the task.
+     *
+     * @return true if the workspace was opened, otherwise false.
+     * @see askToSaveWorkspaceChanges
+     */
+    bool newWorkspace();
+    /**
+     * shows a file dialog for loading a workspace. In case there are unsaved changes, the user will
+     * be asked to save or discard them, or cancel the loading.
+     *
+     * @return true if the workspace was opened, otherwise false.
+     * @see askToSaveWorkspaceChanges
+     */
+    bool openWorkspace();
 
     void saveWorkspace();
     void saveWorkspaceAs();
 
     /*
-    * Save the current workspace into a new workspace file,
-    * leaves the current workspace file as current workspace
-    */
+     * Save the current workspace into a new workspace file,
+     * leaves the current workspace file as current workspace
+     */
     void saveWorkspaceAsCopy();
     bool askToSaveWorkspaceChanges();
     void exitInviwo(bool saveIfModified = true);
     void showAboutBox();
+
+    void showWelcomeScreen();
+    void hideWelcomeScreen();
+    
+    /**
+     * \brief query the Qt settings for recent workspaces 
+     */
+    QStringList getRecentWorkspaceList() const;
 
 protected:
     virtual void dragEnterEvent(QDragEnterEvent* event) override;
     virtual void dragMoveEvent(QDragMoveEvent* event) override;
     virtual void dropEvent(QDropEvent* event) override;
 
-
 private:
     virtual void onModifiedStatusChanged(const bool& newStatus) override;
 
     void visibilityModeChangedInSettings();
 
-    void openWorkspace(QString workspaceFileName, bool exampleWorkspace);
+    /**
+     * loads the workspace \p workspaceFileName. In case there are unsaved changes, the user will
+     * be asked to save or discard them, or cancel the loading.
+     *
+     * @param isExample    if true, the workspace file name will not be set. Thereby preventing 
+     *                     the user from accidentally overwriting the original file. In addition, 
+     *                     the workspace is _not_ added to the recent file list.
+     * @return true if the workspace was opened, otherwise false.
+     * @see askToSaveWorkspaceChanges
+     */
+    bool openWorkspace(QString workspaceFileName, bool isExample);
     void saveWorkspace(QString workspaceFileName);
     void appendWorkspace(const std::string& workspaceFileName);
-    
+
     void addActions();
 
     void closeEvent(QCloseEvent* event) override;
@@ -142,10 +189,6 @@ private:
 
     void addToRecentWorkspaces(QString workspaceFileName);
 
-    /**
-    * \brief query the Qt settings for recent workspaces and update internal status
-    */
-    QStringList getRecentWorkspaceList() const;
     /**
      * \brief update Qt settings for recent workspaces with internal status
      */
@@ -161,20 +204,27 @@ private:
     QMenu* testMenu_ = nullptr;
     std::shared_ptr<ConsoleWidget> consoleWidget_;
     std::unique_ptr<NetworkEditor> networkEditor_;
+    QTabWidget* centralWidget_;
     NetworkEditorView* networkEditorView_;
- 
+
     SettingsWidget* settingsWidget_;
     ProcessorTreeWidget* processorTreeWidget_;
     ResourceManagerDockWidget* resourceManagerDockWidget_;
     PropertyListWidget* propertyListWidget_;
     HelpWidget* helpWidget_;
+    std::unique_ptr<WelcomeWidget> welcomeWidget_;
+    AnnotationsWidget* annotationsWidget_ = nullptr;
     InviwoAboutWindow* inviwoAboutWindow_ = nullptr;
-    
+
     std::vector<QAction*> workspaceActionRecent_;
     QAction* clearRecentWorkspaces_;
     QAction* visibilityModeAction_;
 
     std::unique_ptr<FileAssociations> fileAssociations_;
+
+    WorkspaceManager::SerializationHandle annotationSerializationHandle_;
+    WorkspaceManager::DeserializationHandle annotationDeserializationHandle_;
+    WorkspaceManager::ClearHandle annotationClearHandle_;
 
     // settings
     bool maximized_;
@@ -192,10 +242,11 @@ private:
     TCLAP::ValueArg<std::string> saveProcessorPreviews_;
     TCLAP::ValueArg<std::string> openData_;
     TCLAP::SwitchArg updateWorkspaces_;
-    
+    TCLAP::ValueArg<std::string> updateWorkspacesInPath_;
+
     UndoManager undoManager_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_INVIWOMAINWINDOW_H

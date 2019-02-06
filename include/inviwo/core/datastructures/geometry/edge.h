@@ -67,6 +67,6 @@ typedef EdgeDataFormat<DataUInt32::type> EdgeIndex;
 typedef EdgeDataFormat<DataVec2Float32::type> Edge2D;
 typedef EdgeDataFormat<DataVec3Float32::type> Edge3D;
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_EDGE_H

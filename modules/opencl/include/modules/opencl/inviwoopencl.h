@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_INVIWOOPENCL_H
@@ -32,18 +32,23 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/singleton.h>
 #include <inviwo/core/common/inviwoapplication.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <modules/opencl/cl.hpp>
+#include <warn/pop>
+
 #include <modules/opencl/clockcl.h>
 #include <modules/opencl/glmcl.h>
 #include <modules/opencl/openclmoduledefine.h>
 
 #if defined(CL_VERSION_1_2)
-//using Image2DGL cl::Image2D;
-//using Image3DGL cl::Image3D;
+// using Image2DGL cl::Image2D;
+// using Image3DGL cl::Image3D;
 namespace cl {
 typedef ImageGL Image2DGL;
 typedef ImageGL Image3DGL;
-}
+}  // namespace cl
 #endif
 using glm::size2_t;
 using glm::size3_t;
@@ -51,10 +56,9 @@ using glm::size3_t;
 using cl::CommandQueue;
 using cl::Context;
 using cl::Device;
+using cl::ImageFormat;
 using cl::Platform;
 using cl::Program;
-using cl::ImageFormat;
-
 
 namespace inviwo {
 
@@ -69,12 +73,12 @@ namespace inviwo {
  */
 
 /*
-#if IVW_PROFILING 
-   #define IVW_OPENCL_PROFILING(profilingEvent, "") cl::Event* profilingEvent = new cl::Event(); 
-#else 
-   #define IVW_OPENCL_PROFILING(profilingEvent, "") cl::Event* profilingEvent = nullptr; 
-#endif 
-#if IVW_PROFILING 
+#if IVW_PROFILING
+   #define IVW_OPENCL_PROFILING(profilingEvent, "") cl::Event* profilingEvent = new cl::Event();
+#else
+   #define IVW_OPENCL_PROFILING(profilingEvent, "") cl::Event* profilingEvent = nullptr;
+#endif
+#if IVW_PROFILING
    #define  \
    try { \
        profilingEvent->wait(); \
@@ -82,17 +86,17 @@ namespace inviwo {
    } catch (cl::Error& err) { \
        LogError(getCLErrorString(err)); \
    } \
-   delete profilingEvent; 
-#else 
-   #define 
+   delete profilingEvent;
+#else
+   #define
 #endif
 
-#if IVW_PROFILING 
-#define IVW_OPENCL_PROFILING(profilingEvent, "")N(name) cl::Event* name = new cl::Event(); 
-#else 
-#define IVW_OPENCL_PROFILING(profilingEvent, "")N(name) cl::Event* name = nullptr; 
-#endif 
-#if IVW_PROFILING 
+#if IVW_PROFILING
+#define IVW_OPENCL_PROFILING(profilingEvent, "")N(name) cl::Event* name = new cl::Event();
+#else
+#define IVW_OPENCL_PROFILING(profilingEvent, "")N(name) cl::Event* name = nullptr;
+#endif
+#if IVW_PROFILING
 #define N(name) \
    try { \
    name->wait(); \
@@ -100,8 +104,8 @@ namespace inviwo {
 } catch (cl::Error& err) { \
    LogError(getCLErrorString(err)); \
 } \
-   delete name; 
-#else 
+   delete name;
+#else
 #define N(name)
 #endif
 */
@@ -109,7 +113,7 @@ namespace inviwo {
 /** \class OpenCL
  * Singleton class that manages OpenCL context and queues.
  */
-class IVW_MODULE_OPENCL_API OpenCL: public Singleton<OpenCL> {
+class IVW_MODULE_OPENCL_API OpenCL : public Singleton<OpenCL> {
 public:
     OpenCL();
     OpenCL(OpenCL const&) = delete;
@@ -205,22 +209,22 @@ public:
         return includeDirectories_;
     }
 
-
     bool isOpenGLSharingEnabled() const;
 
     /**
      * /brief Get the device that has most compute units.
      * Search priority:
-     *  1. CL Devices from same vendor as GL 
+     *  1. CL Devices from same vendor as GL
      *  2. GPU devices rather than CPU devices
-     *  3. Number of max compute units 
-     * (Some Intel CPU reports larger number of max compute units than some NVidia graphics cards) 
-     * 
+     *  3. Number of max compute units
+     * (Some Intel CPU reports larger number of max compute units than some NVidia graphics cards)
+     *
      * @param bestDevice Set to found device, if found.
      * @param onPlatform Set to platform that device exist on, if found.
      * @return True if any device found, false otherwise.
      */
     static bool getBestGPUDeviceOnSystem(cl::Device& bestDevice, cl::Platform& onPlatform);
+
 private:
     /// Initialize OpenCL context and queues.
     void initialize(bool enableOpenGLSharing);
@@ -299,7 +303,6 @@ IVW_MODULE_OPENCL_API std::string getCLErrorResolveHint(cl_int err);
 #define LogCLError
 #endif
 
-}
+}  // namespace inviwo
 
-
-#endif // IVW_INVIWOOPENGL_H
+#endif  // IVW_INVIWOOPENGL_H

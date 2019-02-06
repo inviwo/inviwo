@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_TRACKBALLACTION_H
@@ -40,9 +40,9 @@ namespace inviwo {
 class IVW_CORE_API TrackballAction : public Action {
 public:
     enum Actions {
-        TRACKBALL_ROTATE  =      0,
-        TRACKBALL_ZOOM    ,
-        TRACKBALL_PAN     ,
+        TRACKBALL_ROTATE = 0,
+        TRACKBALL_ZOOM,
+        TRACKBALL_PAN,
         TRACKBALL_STEPROTATE_UP,
         TRACKBALL_STEPROTATE_LEFT,
         TRACKBALL_STEPROTATE_DOWN,
@@ -75,10 +75,8 @@ private:
 template <typename T>
 inviwo::TrackballAction::TrackballAction(TrackballAction::Actions action, T* obj,
                                          void (T::*m)(Event*))
-    : Action(actionNames_[action], obj, m) 
-    , action_(action) {
-}
+    : Action(actionNames_[action], obj, m), action_(action) {}
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_TRACKBALLACTION_H
+#endif  // IVW_TRACKBALLACTION_H

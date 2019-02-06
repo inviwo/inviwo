@@ -7,17 +7,18 @@ project(inviwo-qteditor)
 set(MOC_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/connectiondraghelper.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/consolewidget.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/networkeditor.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdraghelper.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/filetreewidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialogscene.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialogprocessorgraphicsitems.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processormimedata.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdraghelper.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/networkeditor.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processordraghelper.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processormimedata.h
 )
 
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/annotationswidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/connectiongraphicsitem.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/dataopener.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/editorgrapicsitem.h
@@ -31,6 +32,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialogcurvegraphicsitems.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialoggraphicsitems.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialogpropertygraphicsitems.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialogprocessorgraphicsitems.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialogview.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkgraphicsitem.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/networkeditorobserver.h
@@ -47,6 +49,8 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/settingswidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/toolsmenu.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/undomanager.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/welcomewidget.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/workspaceannotationsqt.h
     ${MOC_FILES}
 )
 if(TARGET inviwo::meta)
@@ -58,12 +62,14 @@ ivw_group("Header Files" BASE ${IVW_INCLUDE_DIR}/inviwo/qt/editor/ ${HEADER_FILE
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
+    annotationswidget.cpp
     connectiondraghelper.cpp
     connectiongraphicsitem.cpp
     consolewidget.cpp
     dataopener.cpp
     editorgrapicsitem.cpp
     fileassociations.cpp
+    filetreewidget.cpp
     helpwidget.cpp
     inviwoaboutwindow.cpp
     inviwoeditmenu.cpp
@@ -93,6 +99,8 @@ set(SOURCE_FILES
     settingswidget.cpp
     toolsmenu.cpp
     undomanager.cpp
+    welcomewidget.cpp
+    workspaceannotationsqt.cpp
 )
 if(TARGET inviwo::meta)
     list(APPEND SOURCE_FILES toolsmetamenu.cpp)
@@ -133,6 +141,25 @@ ivw_define_standard_properties(inviwo-qteditor)
 #--------------------------------------------------------------------
 # Optimize compilation with pre-compilied headers
 ivw_compile_optimize_on_target(inviwo-qteditor)
+
+#--------------------------------------------------------------------
+# Generate html version of changelog (for the welcome widget), if python is available
+find_package(PythonInterp QUIET)
+if (PYTHONINTERP_FOUND)
+    add_custom_command(OUTPUT ${IVW_RESOURCES_DIR}/changelog.html
+        COMMAND ${PYTHON_EXECUTABLE} ${IVW_ROOT_DIR}/tools/changelog-to-html.py -i ${IVW_ROOT_DIR}/CHANGELOG.md -o ${IVW_RESOURCES_DIR}/changelog.html
+        WORKING_DIRECTORY ${IVW_ROOT_DIR}
+        MAIN_DEPENDENCY ${IVW_ROOT_DIR}/CHANGELOG.md
+        DEPENDS ${IVW_ROOT_DIR}/tools/changelog-to-html.py
+        COMMENT "Generating HTML version of the Inviwo Changelog"
+        VERBATIM
+    )
+    add_custom_target("inviwo-changelog"
+        DEPENDS ${IVW_RESOURCES_DIR}/changelog.html
+    )
+
+    add_dependencies("inviwo-qteditor" "inviwo-changelog")
+endif()
 
 #--------------------------------------------------------------------
 # Make package (for other projects to find)

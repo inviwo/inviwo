@@ -30,6 +30,4 @@
 #include <modules/discretedata/discretedatamoduledefine.h>
 #include <modules/discretedata/channels/datachannel.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

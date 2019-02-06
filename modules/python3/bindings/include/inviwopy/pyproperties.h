@@ -29,7 +29,11 @@
 
 #ifndef IVW_PYPROPERTIES_H
 #define IVW_PYPROPERTIES_H
+
+#include <warn/push>
+#include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
+#include <warn/pop>
 
 #include <inviwopy/inviwopy.h>
 
@@ -49,8 +53,8 @@ using namespace inviwo;
  * which derives from Property, and we try to cast a Property pointer pointing to a Basis
  * and only Property and CompositeProperty are exposed to python and not Basis. Python will
  * not find a exact match, and the returned wrapper will be of the Pointer class used.
- * In this cases Property. To get at least some support for unexposed properties 
- * derived from CompositeProperty and BaseOptionProperty we add a specialization here 
+ * In this cases Property. To get at least some support for unexposed properties
+ * derived from CompositeProperty and BaseOptionProperty we add a specialization here
  * that will mean that in the example above we will get a CompositeProperty wrapper instead of
  * of a Property wrapper.
  */
@@ -67,7 +71,7 @@ struct type_caster<Property> : type_caster_base<Property> {
     }
     static handle cast(const Property *prop, return_value_policy policy, handle parent) {
         if (auto cp = dynamic_cast<const CompositeProperty *>(prop)) {
-           return type_caster_base<CompositeProperty>::cast(cp, policy, parent);
+            return type_caster_base<CompositeProperty>::cast(cp, policy, parent);
         } else if (auto op = dynamic_cast<const BaseOptionProperty *>(prop)) {
             return type_caster_base<BaseOptionProperty>::cast(op, policy, parent);
         } else {

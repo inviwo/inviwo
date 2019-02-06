@@ -55,7 +55,7 @@ FontProperty::FontProperty(const std::string& identifier, const std::string& dis
     fontFace_.setCurrentStateAsDefault();
 
     fontSize_.setSemantics(PropertySemantics("Fontsize"));
-    
+
     addProperty(fontFace_);
     addProperty(fontSize_);
     addProperty(lineSpacing_);

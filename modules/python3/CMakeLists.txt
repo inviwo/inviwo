@@ -81,7 +81,7 @@ ivw_add_unittest(${TEST_FILES})
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SCRIPT_FILES})
 target_link_libraries(inviwo-module-python3 PUBLIC 
-    pybind11::module 
+    pybind11::embed 
     $<BUILD_INTERFACE:${PYTHON_LIBRARIES}>
 )
 target_include_directories(inviwo-module-python3 PUBLIC
@@ -125,7 +125,7 @@ ivw_make_package(InviwoPython3Module inviwo-module-python3)
 #--------------------------------------------------------------------
 # register license files
 # Cannot get pybind11::module version property since it is an INTERFACE target
-ivw_register_license_file(NAME "PyBind11" VERSION 2.2.2 MODULE Python3
+ivw_register_license_file(NAME "PyBind11" VERSION 2.2.4 MODULE Python3
     URL "https://github.com/pybind/pybind11"
     TYPE "BSD-style"
     FILES ${IVW_EXTENSIONS_DIR}/pybind11/LICENSE

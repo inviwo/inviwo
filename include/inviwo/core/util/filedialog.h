@@ -54,21 +54,21 @@ public:
     virtual FileMode getFileMode() const = 0;
 
     /**
-    * \brief sets the current directory of the file dialog to the parent directory of the given
-    *   file name or, if it is referring to a directory, to the given path. The file will be
-    *   selected when the dialog is shown.
-    *
-    * @param filename  path and name of the file (can be either a file name or directory name
-    * including the full path)
-    */
+     * \brief sets the current directory of the file dialog to the parent directory of the given
+     *   file name or, if it is referring to a directory, to the given path. The file will be
+     *   selected when the dialog is shown.
+     *
+     * @param filename  path and name of the file (can be either a file name or directory name
+     * including the full path)
+     */
     virtual void setCurrentFile(const std::string &filename) = 0;
     std::string getSelectedFile() const;
     virtual std::vector<std::string> getSelectedFiles() const = 0;
     /**
-    * \brief set the current directory of the file dialog
-    *
-    * @param path  given path, must not contain a file name
-    */
+     * \brief set the current directory of the file dialog
+     *
+     * @param path  given path, must not contain a file name
+     */
     virtual void setCurrentDirectory(const std::string &path) = 0;
 
     virtual void setSelectedExtenstion(const FileExtension &ext) = 0;
@@ -77,10 +77,9 @@ public:
     virtual void addExtension(const FileExtension &fileExt) = 0;
     virtual void addExtension(const std::string &ext, const std::string &description) = 0;
     virtual void addExtension(const std::string &extString) = 0;
-    virtual void addExtensions(const std::vector<FileExtension>& extensions) = 0;
-
+    virtual void addExtensions(const std::vector<FileExtension> &extensions) = 0;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_FILEDIALOG_H
+#endif  // IVW_FILEDIALOG_H

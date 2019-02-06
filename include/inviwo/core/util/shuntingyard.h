@@ -122,7 +122,7 @@ private:
     }
 };
 
-}  // namespace
-}  // namespace
+}  // namespace shuntingyard
+}  // namespace inviwo
 
 #endif  // IVW_SHUNTINGYARD_H

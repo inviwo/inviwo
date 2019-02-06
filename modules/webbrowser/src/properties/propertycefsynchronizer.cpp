@@ -67,6 +67,11 @@ void PropertyCefSynchronizer::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr
 void PropertyCefSynchronizer::OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
                                           CefLoadHandler::ErrorCode errorCode,
                                           const CefString& errorText, const CefString& failedUrl) {
+    if (errorCode == ERR_ABORTED) {
+        // Ignore page loading aborted (occurs during deserialization).
+        // Prevents error page from showing after deserialization.
+        return;
+    }
     std::stringstream ss;
     ss << "<html><head><title>Page failed to load</title></head>"
           "<body bgcolor=\"white\">"
@@ -79,7 +84,6 @@ void PropertyCefSynchronizer::OnLoadError(CefRefPtr<CefBrowser> browser, CefRefP
     if (!errorText.empty()) {
         ss << "<br/>Description: " << errorText.ToString();
     }
-
     ss << "</body></html>";
 
     frame->LoadURL(WebBrowserModule::getDataURI(ss.str(), "text/html"));

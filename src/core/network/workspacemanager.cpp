@@ -88,12 +88,14 @@ private:
 
 struct ErrorHandle {
     ErrorHandle(const InviwoSetupInfo& info, const std::string& filename)
-        : info_(info), filename_(filename){}
+        : info_(info), filename_(filename) {}
 
     ~ErrorHandle() {
         if (!messages.empty()) {
-            LogNetworkError("There were errors while loading workspace: " + filename_ + "\n" +
-                            joinString(messages, "\n"));
+            LogNetworkError("There were errors while loading workspace: " + filename_);
+            for (auto& message : messages) {
+                LogNetworkError(message);
+            }
         }
     }
 
@@ -123,23 +125,22 @@ struct ErrorHandle {
     std::string filename_;
 };
 
-
 WorkspaceManager::WorkspaceManager(InviwoApplication* app) : app_(app) {}
 
 WorkspaceManager::~WorkspaceManager() = default;
 
-void WorkspaceManager::clear() {
-    clears_.invoke();
-}
+void WorkspaceManager::clear() { clears_.invoke(); }
 
 void WorkspaceManager::save(std::ostream& stream, const std::string& refPath,
-                            const ExceptionHandler& exceptionHandler) {
+                            const ExceptionHandler& exceptionHandler, WorkspaceSaveMode mode) {
     Serializer serializer(refPath);
 
-    InviwoSetupInfo info(app_);
-    serializer.serialize("InviwoSetup", info);
+    if (mode != WorkspaceSaveMode::Undo) {
+        InviwoSetupInfo info(app_);
+        serializer.serialize("InviwoSetup", info);
+    }
 
-    serializers_.invoke(serializer, exceptionHandler);
+    serializers_.invoke(serializer, exceptionHandler, mode);
     serializer.writeFile(stream, true);
 }
 
@@ -147,19 +148,20 @@ void WorkspaceManager::load(std::istream& stream, const std::string& refPath,
                             const ExceptionHandler& exceptionHandler) {
 
     auto deserializer = createWorkspaceDeserializer(stream, refPath);
-    
+
     InviwoSetupInfo info;
     deserializer.deserialize("InviwoSetup", info);
-    
+
     DeserializationErrorHandle<ErrorHandle> errorHandle(deserializer, info, refPath);
 
     deserializers_.invoke(deserializer, exceptionHandler);
 }
 
-void WorkspaceManager::save(const std::string& path, const ExceptionHandler& exceptionHandler) {
+void WorkspaceManager::save(const std::string& path, const ExceptionHandler& exceptionHandler,
+                            WorkspaceSaveMode mode) {
     auto ostream = filesystem::ofstream(path);
     if (ostream.is_open()) {
-        save(ostream, path, exceptionHandler);
+        save(ostream, path, exceptionHandler, mode);
     } else {
         throw AbortException("Could not open workspace file: " + path, IvwContext);
     }
@@ -215,32 +217,36 @@ WorkspaceManager::ClearHandle WorkspaceManager::onClear(const ClearCallback& cal
 }
 
 WorkspaceManager::SerializationHandle WorkspaceManager::onSave(
-    const SerializationCallback& callback) {
-    return serializers_.add(
-        [callback, this](Serializer& s, const ExceptionHandler& exceptionHandler) {
+    const SerializationCallback& callback, WorkspaceSaveModes modes) {
+    return serializers_.add([callback, modes, this](Serializer& s,
+                                                    const ExceptionHandler& exceptionHandler,
+                                                    WorkspaceSaveMode mode) {
+        if (modes.count(mode)) {
+            IVW_UNUSED_PARAM(this);
             try {
                 callback(s);
             } catch (Exception& e) {
                 exceptionHandler(e.getContext());
             } catch (...) {
-                exceptionHandler(IvwContext);
+                exceptionHandler(IVW_CONTEXT);
             }
-        });
+        }
+    });
 }
 
 WorkspaceManager::DeserializationHandle WorkspaceManager::onLoad(
     const DeserializationCallback& callback) {
     return deserializers_.add(
         [callback, this](Deserializer& d, const ExceptionHandler& exceptionHandler) {
+            IVW_UNUSED_PARAM(this);
             try {
                 callback(d);
             } catch (Exception& e) {
                 exceptionHandler(e.getContext());
             } catch (...) {
-                exceptionHandler(IvwContext);
+                exceptionHandler(IVW_CONTEXT);
             }
         });
 }
 
-} // namespace
-
+}  // namespace inviwo

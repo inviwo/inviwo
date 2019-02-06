@@ -39,9 +39,7 @@ const ProcessorInfo DiffuseLightSourceProcessor::processorInfo_{
     CodeState::Experimental,          // Code state
     Tags::CPU,                        // Tags
 };
-const ProcessorInfo DiffuseLightSourceProcessor::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo DiffuseLightSourceProcessor::getProcessorInfo() const { return processorInfo_; }
 
 DiffuseLightSourceProcessor::DiffuseLightSourceProcessor()
     : Processor()
@@ -56,7 +54,7 @@ DiffuseLightSourceProcessor::DiffuseLightSourceProcessor()
     , lightPowerProp_("lightPower", "Light power (%)", 50.f, 0.f, 100.f)
     , lightSize_("lightSize", "Light size", vec2(1.5f, 1.5f), vec2(0.0f, 0.0f), vec2(3.0f, 3.0f))
     , lightDiffuse_("lightDiffuse", "Color", vec3(1.0f)) {
-    
+
     addPort(outport_);
     addProperty(lightPosition_);
     lighting_.addProperty(lightDiffuse_);
@@ -79,11 +77,16 @@ void DiffuseLightSourceProcessor::updateLightSource(DiffuseLight* lightSource) {
     vec3 dir;
     switch (
         static_cast<PositionProperty::Space>(lightPosition_.referenceFrame_.getSelectedValue())) {
-        case PositionProperty::Space::VIEW:
+        case PositionProperty::Space::VIEW: {
             dir = glm::normalize(camera_.getLookTo() - lightPos);
+            break;
+        }
         case PositionProperty::Space::WORLD:
-        default:
+            [[fallthrough]];
+        default: {
             dir = glm::normalize(vec3(0.f) - lightPos);
+            break;
+        }
     }
 
     mat4 transformationMatrix = getLightTransformationMatrix(lightPos, dir);
@@ -95,5 +98,4 @@ void DiffuseLightSourceProcessor::updateLightSource(DiffuseLight* lightSource) {
     lightSource->setNormal(dir);
 }
 
-}  // namespace
-
+}  // namespace inviwo

@@ -101,7 +101,6 @@ QLineEdit* EditableLabelQt::getLineEdit() {
             if (property_) property_->setDisplayName(text_);
 
             emit textChanged();
-
         });
     }
     return lineEdit_;
@@ -111,8 +110,8 @@ void EditableLabelQt::edit() {
     getLineEdit()->setText(QString::fromStdString(text_));
     label_->hide();
     auto le = getLineEdit();
-    le->show();     
-    le->setCursorPosition(le->text().size());   
+    le->show();
+    le->setCursorPosition(le->text().size());
     le->setFocus();
 }
 

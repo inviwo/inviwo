@@ -38,7 +38,6 @@
 
 namespace inviwo {
 
-
 class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API Vector2DCurl : public Processor {
 public:
     virtual const ProcessorInfo getProcessorInfo() const override;

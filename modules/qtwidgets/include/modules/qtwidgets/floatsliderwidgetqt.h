@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_FLOATSLIDERQT_H
@@ -39,10 +39,10 @@
 #include <sstream>
 
 namespace inviwo {
-    
-//class IVW_MODULE_QTWIDGETS_API FloatSliderWidgetQt : public QWidget {
+
+// class IVW_MODULE_QTWIDGETS_API FloatSliderWidgetQt : public QWidget {
 //    Q_OBJECT
-//public:
+// public:
 //
 //    FloatSliderWidgetQt();
 //
@@ -57,14 +57,16 @@ namespace inviwo {
 //    /**
 //     * \brief Sets the float value of the slider.
 //     *
-//     * Sets the float value of the slider, in order to update the spinbox updateValueSpinbox needs to be called after setting the value
+//     * Sets the float value of the slider, in order to update the spinbox updateValueSpinbox needs
+//     to be called after setting the value
 //     *
 //     * @param float tmpValue Must be between minValue and maxValue of the slider
 //     */
 //    void setValue(float value);
 //
 //    /**
-//     * \brief In contrast to setValue(float), initValue(float) does not emit signals. Also this is added due to lack of constructor.
+//     * \brief In contrast to setValue(float), initValue(float) does not emit signals. Also this is
+//     added due to lack of constructor.
 //     *
 //     * Sets the float value
 //     *
@@ -76,14 +78,14 @@ namespace inviwo {
 //    void setRange(float minValue, float maxValue);
 //    void setIncrement(float increment);
 //
-//private slots:
+// private slots:
 //    void updateFromSlider();
 //    void updateFromSpinBox();
 //
-//signals:
+// signals:
 //    void valueChanged(float value);
 //
-//private:
+// private:
 //    float value_;
 //    float minValue_;
 //    float maxValue_;
@@ -104,9 +106,9 @@ namespace inviwo {
 //    void updateSlider();
 //
 //    void setSpinBoxDecimals(float increment);
-    
+
 //};
 
-}//namespace
+}  // namespace inviwo
 
-#endif // IVW_FLOATSLIDERQT_H
+#endif  // IVW_FLOATSLIDERQT_H

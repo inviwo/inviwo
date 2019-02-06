@@ -67,6 +67,9 @@ std::shared_ptr<plot::DataFrame> CSVReader::readData(const std::string& fileName
 }
 
 std::shared_ptr<plot::DataFrame> CSVReader::readData(std::istream& stream) const {
+    // Skip BOM if it exists. Added by for example Excel when saving csv files.
+    filesystem::skipByteOrderMark(stream);
+
     if (stream.bad() || stream.fail()) {
         throw CSVDataReaderException("Input stream in a bad state", IvwContext);
     }
@@ -83,7 +86,7 @@ std::shared_ptr<plot::DataFrame> CSVReader::readData(std::istream& stream) const
 
     // extract exactly one field from the current stream position, the bool return value indicates
     // whether a line break was detected following the field
-    auto extractField = [&in, &lineNumber, delims = delimiters_ ]()->std::pair<std::string, bool> {
+    auto extractField = [&in, &lineNumber, delims = delimiters_]() -> std::pair<std::string, bool> {
         std::string value;
         size_t quoteCount = 0;
         size_t quoteBeginLine = 0;

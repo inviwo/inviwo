@@ -34,17 +34,4 @@ namespace inviwo {
 Capabilities::Capabilities() = default;
 Capabilities::~Capabilities() = default;
 
-bool Capabilities::canAllocate(glm::u64 /*dataSize*/, glm::u8 /*percentageOfAvailableMemory*/) {
-    return true;
-}
-
-uvec3 Capabilities::calculateOptimalBrickSize(uvec3 dimensions, size_t /*formatSizeInBytes*/,
-                                              glm::u8 /*percentageOfAvailableMemory*/) {
-    return dimensions;
-}
-
-glm::u64 Capabilities::getMemorySizeInBytes(uvec3 dimensions, size_t formatSizeInBytes) {
-    return static_cast<glm::u64>(dimensions.x * dimensions.y * dimensions.z * formatSizeInBytes);
-}
-
-}  // namespace
+}  // namespace inviwo

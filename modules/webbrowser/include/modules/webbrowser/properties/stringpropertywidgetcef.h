@@ -42,7 +42,8 @@ namespace inviwo {
  * Widget for synchronizing HTML elements:
  * <input type="text">
  */
-class IVW_MODULE_WEBBROWSER_API StringPropertyWidgetCEF : public TemplatePropertyWidgetCEF<std::string> {
+class IVW_MODULE_WEBBROWSER_API StringPropertyWidgetCEF
+    : public TemplatePropertyWidgetCEF<std::string> {
 public:
     StringPropertyWidgetCEF(StringProperty* property, CefRefPtr<CefFrame> frame = nullptr,
                             std::string htmlId = "");
@@ -51,7 +52,7 @@ public:
      * Update HTML widget using calls javascript oninput() function on element.
      * Assumes that widget is HTML input attribute.
      */
-	virtual void updateFromProperty() override;
+    virtual void updateFromProperty() override;
 };
 
 }  // namespace inviwo

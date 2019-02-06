@@ -30,15 +30,19 @@
 #include <inviwo/core/util/glm.h>
 
 namespace inviwo {
-    
+
 namespace util {
 
-template<>
-bool isfinite(const half_float::half& v) { return half_float::isfinite(v); }
+template <>
+bool isfinite(const half_float::half& v) {
+    return half_float::isfinite(v);
+}
 
-template<>
-bool isnan(const half_float::half& v) { return half_float::isnan(v); }
-    
+template <>
+bool isnan(const half_float::half& v) {
+    return half_float::isnan(v);
+}
+
 }  // namespace util
 
 }  // namespace inviwo

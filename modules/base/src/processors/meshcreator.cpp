@@ -27,7 +27,6 @@
  *
  *********************************************************************************/
 
-
 #include <modules/base/processors/meshcreator.h>
 
 #include <inviwo/core/datastructures/geometry/basicmesh.h>
@@ -40,13 +39,12 @@
 
 #include <modules/base/algorithm/meshutils.h>
 
-
 namespace inviwo {
 
 const ProcessorInfo MeshCreator::processorInfo_{
     "org.inviwo.MeshCreator",  // Class identifier
     "Mesh Creator",            // Display name
-    "Mesh Creation",       // Category
+    "Mesh Creation",           // Category
     CodeState::Stable,         // Code state
     Tags::CPU,                 // Tags
 };
@@ -67,10 +65,13 @@ MeshCreator::MeshCreator()
     , meshRes_("res", "Mesh resolution", vec2(16), vec2(1), vec2(1024))
     , meshType_("meshType", "Mesh Type")
     , enablePicking_("enablePicking", "Enable Picking", false)
-    , picking_(this, 1, [&](PickingEvent* p) { if (enablePicking_) handlePicking(p); })
+    , picking_(this, 1,
+               [&](PickingEvent* p) {
+                   if (enablePicking_) handlePicking(p);
+               })
     , camera_("camera", "Camera")
-    , pickingUpdate_{[](PickingEvent*){}} {
-    
+    , pickingUpdate_{[](PickingEvent*) {}} {
+
     addPort(outport_);
 
     meshType_.addOption("sphere", "Sphere", MeshType::Sphere);
@@ -88,7 +89,7 @@ MeshCreator::MeshCreator()
     meshType_.addOption("torus", "Torus", MeshType::Torus);
     meshType_.addOption("sphereopt", "Sphere with Position", MeshType::SphereOpt);
 
-    util::hide(position1_, position2_, normal_, basis_, color_ , torusRadius1_ , torusRadius2_);
+    util::hide(position1_, position2_, normal_, basis_, color_, torusRadius1_, torusRadius2_);
     util::show(meshScale_, meshRes_);
 
     meshType_.set(MeshType::Sphere);
@@ -96,7 +97,7 @@ MeshCreator::MeshCreator()
 
     meshType_.onChange([this]() {
         auto updateNone = [](PickingEvent*) {};
-    
+
         auto getDelta = [this](PickingEvent* p) {
             auto currNDC = p->getNDC();
             auto prevNDC = p->getPreviousNDC();
@@ -116,7 +117,7 @@ MeshCreator::MeshCreator()
         auto updatePosition1 = [this, getDelta](PickingEvent* p) {
             position1_.set(position1_.get() + getDelta(p));
         };
-        
+
         auto updatePosition1and2 = [this, getDelta](PickingEvent* p) {
             auto delta = getDelta(p);
             position1_.set(position1_.get() + delta);
@@ -125,11 +126,9 @@ MeshCreator::MeshCreator()
         auto updateBasis = [this, getDelta](PickingEvent* p) {
             basis_.offset_.set(basis_.offset_.get() + getDelta(p));
         };
-        
-        
 
-        util::hide(position1_, position2_, normal_, basis_, meshScale_, meshRes_, color_, torusRadius1_,
-             torusRadius2_);
+        util::hide(position1_, position2_, normal_, basis_, meshScale_, meshRes_, color_,
+                   torusRadius1_, torusRadius2_);
 
         switch (meshType_.get()) {
             case MeshType::Sphere: {
@@ -194,7 +193,7 @@ MeshCreator::MeshCreator()
             }
             case MeshType::Torus: {
                 pickingUpdate_ = updatePosition1;
-                util::show(position1_,torusRadius1_, torusRadius2_,meshRes_,color_);
+                util::show(position1_, torusRadius1_, torusRadius2_, meshRes_, color_);
                 break;
             }
             case MeshType::SphereOpt: {
@@ -208,7 +207,6 @@ MeshCreator::MeshCreator()
                 break;
             }
         }
-
     });
 
     addProperty(meshType_);
@@ -221,7 +219,7 @@ MeshCreator::MeshCreator()
     addProperty(color_);
     addProperty(meshScale_);
     addProperty(meshRes_);
-    
+
     addProperty(enablePicking_);
     addProperty(camera_);
     camera_.setInvalidationLevel(InvalidationLevel::Valid);
@@ -261,24 +259,24 @@ std::shared_ptr<Mesh> MeshCreator::createMesh() {
 
         case MeshType::Plane: {
             return meshutil::square(position1_, normal_, vec2(1.0f, 1.0f) * meshScale_.get(),
-                                     color_, meshRes_.get());
+                                    color_, meshRes_.get());
         }
         case MeshType::Disk:
             return meshutil::disk(position1_, normal_, color_, meshScale_.get(), meshRes_.get().x);
         case MeshType::Cone:
             return meshutil::cone(position1_, position2_, color_, meshScale_.get(),
-                                   meshRes_.get().x);
+                                  meshRes_.get().x);
         case MeshType::Cylinder:
             return meshutil::cylinder(position1_, position2_, color_, meshScale_.get(),
-                                       meshRes_.get().x);
+                                      meshRes_.get().x);
         case MeshType::Arrow:
             return meshutil::arrow(position1_, position2_, color_, meshScale_.get(), 0.15f,
-                                    meshScale_.get() * 2, meshRes_.get().x);
+                                   meshScale_.get() * 2, meshRes_.get().x);
         case MeshType::CoordAxes:
             return meshutil::coordindicator(position1_, meshScale_.get());
         case MeshType::Torus:
             return meshutil::torus(position1_, vec3(0, 0, 1), torusRadius1_, torusRadius2_,
-                                    meshRes_, color_);
+                                   meshRes_, color_);
         case MeshType::SphereOpt:
             return meshutil::sphere(position1_, meshScale_, color_);
         default:
@@ -314,10 +312,10 @@ void MeshCreator::process() {
         auto pickBuffer = std::make_shared<Buffer<uint32_t>>(bufferRAM);
         auto& data = bufferRAM->getDataContainer();
         std::fill(data.begin(), data.end(), static_cast<uint32_t>(picking_.getPickingId(0)));
-        mesh->addBuffer(Mesh::BufferInfo(BufferType::NumberOfBufferTypes, 4), pickBuffer);
+        mesh->addBuffer(Mesh::BufferInfo(BufferType::PickingAttrib), pickBuffer);
     }
 
     outport_.setData(mesh);
 }
 
-}  // namespace
+}  // namespace inviwo

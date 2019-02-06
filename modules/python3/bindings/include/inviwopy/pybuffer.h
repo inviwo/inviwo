@@ -30,8 +30,11 @@
 #ifndef IVW_PYBUFFER_H
 #define IVW_PYBUFFER_H
 
+#include <warn/push>
+#include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
+#include <warn/pop>
 
 namespace inviwo {
 

@@ -127,7 +127,7 @@ void AnimationManager::addKeyframeCallback(Property* property, Seconds time) {
         } else {
             LogWarn("No matching Track found for property \"" + property->getIdentifier() + "\"");
         }
-    } catch (Exception ex) {
+    } catch (const Exception& ex) {
         // No interpolation method registered?
         LogError(ex.getMessage());
     }
@@ -148,7 +148,7 @@ void AnimationManager::addSequenceCallback(Property* property, Seconds time) {
         } else {
             LogWarn("No matching Track found for property \"" + property->getIdentifier() + "\"");
         }
-    } catch (Exception ex) {
+    } catch (const Exception& ex) {
         // No interpolation method registered?
         LogError(ex.getMessage());
     }
@@ -161,7 +161,7 @@ BasePropertyTrack* AnimationManager::addNewTrack(Property* property) {
             if (auto basePropertyTrack = dynamic_cast<BasePropertyTrack*>(track.get())) {
                 try {
                     basePropertyTrack->setProperty(const_cast<Property*>(property));
-                } catch (Exception e) {
+                } catch (const Exception& e) {
                     LogWarn(e.getMessage() << " Invalid property class identified?") return nullptr;
                 }
                 animation_.add(std::move(track));  // Callback will add track to trackMap_

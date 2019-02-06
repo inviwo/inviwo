@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/basegl/processors/firstivwprocessor.h>
@@ -40,10 +40,7 @@ const ProcessorInfo FirstIvwProcessor::processorInfo_{
     CodeState::Stable,               // Code state
     Tags::GL,                        // Tags
 };
-const ProcessorInfo FirstIvwProcessor::getProcessorInfo() const {
-    return processorInfo_;
-}
-
+const ProcessorInfo FirstIvwProcessor::getProcessorInfo() const { return processorInfo_; }
 
 FirstIvwProcessor::FirstIvwProcessor()
     : Processor()
@@ -56,11 +53,9 @@ FirstIvwProcessor::FirstIvwProcessor()
     addProperty(color_);
     addPort(outport_);
 
-    quad_ = util::makeBuffer<vec2>(
-    { {-1.0f, -1.0f}, {1.0f, -1.0f}, {-1.0f, 1.0f}, {1.0f, 1.0f} });
+    quad_ = util::makeBuffer<vec2>({{-1.0f, -1.0f}, {1.0f, -1.0f}, {-1.0f, 1.0f}, {1.0f, 1.0f}});
 
-    triangle_ = util::makeBuffer<vec2>(
-    { {0.0f, 1.0f}, {-1.0f, -1.0f}, {1.0f, -1.0f} });
+    triangle_ = util::makeBuffer<vec2>({{0.0f, 1.0f}, {-1.0f, -1.0f}, {1.0f, -1.0f}});
 
     quadGL_ = quad_->getRepresentation<BufferGL>();
     triangleGL_ = triangle_->getRepresentation<BufferGL>();
@@ -70,13 +65,13 @@ void FirstIvwProcessor::process() {
     utilgl::activateAndClearTarget(outport_, ImageType::ColorOnly);
     shader_.activate();
 
-    //Render Quad
+    // Render Quad
     shader_.setUniform("color", vec4(color_.get().x, color_.get().y, color_.get().z, 1.f));
     quadGL_->enable();
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     quadGL_->disable();
 
-    //Render Triangle
+    // Render Triangle
     shader_.setUniform("color", vec4(0.f, 1.f, 0.f, 1.f));
     triangleGL_->enable();
     glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -86,5 +81,4 @@ void FirstIvwProcessor::process() {
     utilgl::deactivateCurrentTarget();
 }
 
-} // namespace
-
+}  // namespace inviwo

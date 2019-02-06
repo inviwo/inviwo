@@ -92,8 +92,6 @@ protected:
 
     void changeVerticalZoom(int zoomMin, int zoomMax);
     void changeHorizontalZoom(int zoomMin, int zoomMax);
-    void importFromFile(TFPrimitiveSet &primitiveSet);
-    void exportToFile(const TFPrimitiveSet &primitiveSet);
     void showHistogram(int type);
     void changeMoveMode(int i);
 
@@ -118,7 +116,7 @@ private:
     std::unique_ptr<ColorWheel> colorWheel_;
     std::unique_ptr<QColorDialog> colorDialog_;
 
-    std::unique_ptr<TFEditor> tfEditor_; //!< inherited from QGraphicsScene
+    std::unique_ptr<TFEditor> tfEditor_;  //!< inherited from QGraphicsScene
 
     std::unique_ptr<TFSelectionWatcher> tfSelectionWatcher_;
 

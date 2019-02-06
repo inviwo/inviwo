@@ -142,7 +142,7 @@ void StreamRibbonsDeprecated::process() {
     ImageSampler tf(tf_.get().getData());
     tracer.addMetaDataSampler("vorticity", vorticitySampler);
     //  mat3 invBasis = glm::inverse(vectorVolume_.getData()->getBasis());
-    mat3 invBasis;
+    mat3 invBasis{1};
     std::vector<BasicMesh::Vertex> vertices;
 
     bool hasColors = colors_.hasData();
@@ -162,7 +162,7 @@ void StreamRibbonsDeprecated::process() {
             auto indexBuffer = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::Strip);
             indexBuffer->getDataContainer().reserve(size);
 
-            vec4 c;
+            vec4 c{0};
             if (hasColors) {
                 if (lineId >= colors_.getData()->size()) {
                     LogWarn("The vector of colors is smaller then the vector of seed points");
@@ -200,12 +200,14 @@ void StreamRibbonsDeprecated::process() {
                             LogWarn(
                                 "No colors in the color port, using velocity for coloring "
                                 "instead ");
+                            [[fallthrough]];
                         }
+                    default:
+                        [[fallthrough]];
                     case ColoringMethod::Velocity:
                         d = glm::clamp(static_cast<float>(velocityMagnitude) / velocityScale_.get(),
                                        0.0f, 1.0f);
                         c = vec4(tf.sample(dvec2(d, 0.0)));
-                    default:
                         break;
                 }
 

@@ -70,7 +70,6 @@ DirectionalLightSourceProcessor::DirectionalLightSourceProcessor()
     lightDiffuse_.setCurrentStateAsDefault();
 }
 
-
 void DirectionalLightSourceProcessor::process() {
     updateDirectionalLightSource(lightSource_.get());
     outport_.setData(lightSource_);
@@ -83,9 +82,12 @@ void DirectionalLightSourceProcessor::updateDirectionalLightSource(DirectionalLi
         static_cast<PositionProperty::Space>(lightPosition_.referenceFrame_.getSelectedValue())) {
         case PositionProperty::Space::VIEW:
             dir = glm::normalize(camera_.getLookTo() - lightPos);
+            break;
         case PositionProperty::Space::WORLD:
+            [[fallthrough]];
         default:
             dir = glm::normalize(vec3(0.f) - lightPos);
+            break;
     }
     mat4 transformationMatrix = getLightTransformationMatrix(lightPos, dir);
 
@@ -99,5 +101,4 @@ void DirectionalLightSourceProcessor::updateDirectionalLightSource(DirectionalLi
     lightSource->setEnabled(lightEnabled_.get());
 }
 
-}  // namespace
-
+}  // namespace inviwo

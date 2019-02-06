@@ -56,8 +56,10 @@ public:
 
     virtual std::vector<FileExtension> getSupportedExtensions() const override;
 
-    virtual void save(const std::string& filename, const FileExtension& ext = FileExtension()) const override;
-    virtual void load(const std::string& filename, const FileExtension& ext = FileExtension()) override;
+    virtual void save(const std::string& filename,
+                      const FileExtension& ext = FileExtension()) const override;
+    virtual void load(const std::string& filename,
+                      const FileExtension& ext = FileExtension()) override;
 };
 
 }  // namespace inviwo

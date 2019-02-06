@@ -182,8 +182,8 @@ private:
     // 2) camera widget including widget for "camera roll"
     // 3) camera zoom buttons
     // 4) cube
-    std::array<std::shared_ptr<MeshDrawerGL>, 4> meshDrawers_;
-    std::array<std::shared_ptr<Mesh>, 4> meshes_;
+    std::array<std::unique_ptr<MeshDrawerGL>, 4> meshDrawers_;
+    std::array<std::shared_ptr<const Mesh>, 4> meshes_;
 
     struct PickIDs {
         std::size_t id;
@@ -205,7 +205,7 @@ private:
         double zoom_ = 1.0f;
     } initialState_;
 
-    std::shared_ptr<Image> widgetImage_;  //!< the widget is rendered into this image, which is then
+    std::unique_ptr<Image> widgetImage_;  //!< the widget is rendered into this image, which is then
                                           //!< drawn on top of the input image
     ImageGL *widgetImageGL_;  //!< keep an ImageGL representation around to avoid overhead
 };

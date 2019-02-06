@@ -41,6 +41,9 @@
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/io/datawriter.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/dataoutport.h>
+
 
 namespace inviwo {
 
@@ -152,7 +155,13 @@ using VolumeSequence = std::vector<std::shared_ptr<Volume>>;
 extern template class IVW_CORE_TMPL_EXP DataReaderType<Volume>;
 extern template class IVW_CORE_TMPL_EXP DataWriterType<Volume>;
 extern template class IVW_CORE_TMPL_EXP DataReaderType<VolumeSequence>;
+    
+extern template class IVW_CORE_TMPL_EXP DataInport<Volume>;
+extern template class IVW_CORE_TMPL_EXP DataOutport<Volume>;
+extern template class IVW_CORE_TMPL_EXP DataInport<VolumeSequence>;
+extern template class IVW_CORE_TMPL_EXP DataOutport<VolumeSequence>;
 
+    
 }  // namespace inviwo
 
 #endif  // IVW_VOLUME_H

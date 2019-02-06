@@ -33,6 +33,9 @@ namespace inviwo {
 
 namespace glui {
 
+const std::string IntPropertyWidget::classIdentifier = "org.inviwo.glui.IntPropertyWidget";
+std::string IntPropertyWidget::getClassIdentifier() const { return classIdentifier; }
+
 IntPropertyWidget::IntPropertyWidget(IntProperty &property, Processor &processor,
                                      Renderer &uiRenderer, const ivec2 &extent,
                                      UIOrientation orientation)

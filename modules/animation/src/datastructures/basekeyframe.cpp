@@ -55,7 +55,7 @@ void BaseKeyframe::setTime(Seconds time) {
 }
 Seconds BaseKeyframe::getTime() const { return time_; }
 
-bool BaseKeyframe::isSelected() const { return isSelected_; };
+bool BaseKeyframe::isSelected() const { return isSelected_; }
 void BaseKeyframe::setSelected(bool selected) {
     if (selected != isSelected_) {
         isSelected_ = selected;

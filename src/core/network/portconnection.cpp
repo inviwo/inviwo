@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/network/portconnection.h>
+#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -36,9 +37,7 @@ PortConnection::PortConnection() : inport_(nullptr), outport_(nullptr) {}
 PortConnection::PortConnection(Outport* outport, Inport* inport)
     : inport_(inport), outport_(outport) {}
 
-PortConnection::operator bool() const {
-    return inport_ && outport_;
-}
+PortConnection::operator bool() const { return inport_ && outport_; }
 
 void PortConnection::serialize(Serializer& s) const {
     s.serialize("OutPort", outport_);
@@ -68,22 +67,30 @@ void PortConnection::deserialize(Deserializer& d) {
     }
 
     if (out.error && in.error) {
-        throw SerializationException("Could not create Connection from \"" +
-                                     out.data.nd.getDescription() + " to " +
-                                     in.data.nd.getDescription() +
-                                     ". Outport and Inport not found.", IvwContext,
-                                     "Connection");
+        const auto message = util::formatSerializationError(
+            "Connection", out.data.nd.getDescription(), in.data.nd.getDescription(),
+            "Outport and Inport not found.");
+        throw SerializationException(message, IvwContext, "Connection");
     } else if (out.error) {
-        std::string message = "Could not create Connection from \"" + out.data.nd.getDescription() +
-                              " to port \"" + inport_->getIdentifier() + "\" in processor \"" +
-                              inport_->getProcessor()->getIdentifier() + "\". Outport not found.";
+        const auto message = util::formatSerializationError(
+            "Connection", out.data.nd.getDescription(),
+            fmt::format("Inport '{}' of class '{}' in   Processor '{}' of class '{}')",
+                        inport_->getIdentifier(), inport_->getClassIdentifier(),
+                        inport_->getProcessor()->getIdentifier(),
+                        inport_->getProcessor()->getClassIdentifier()),
+            "Outport not found.");
+
         delete outport_;
         throw SerializationException(message, IvwContext, "Connection");
     } else if (in.error) {
-        std::string message = "Could not create Connection from port \"" +
-                              outport_->getIdentifier() + "\" in processor \"" +
-                              outport_->getProcessor()->getIdentifier() + "\" to " +
-                              in.data.nd.getDescription() + ". Inport not found.";
+        const auto message = util::formatSerializationError(
+            "Connection",
+            fmt::format("Port '{}' of class '{}' in   Processor '{}' of class '{}')",
+                        outport_->getIdentifier(), outport_->getClassIdentifier(),
+                        outport_->getProcessor()->getIdentifier(),
+                        outport_->getProcessor()->getClassIdentifier()),
+            in.data.nd.getDescription(), "Inport not found.");
+
         delete inport_;
         throw SerializationException(message, IvwContext, "Connection");
     }
@@ -92,7 +99,9 @@ void PortConnection::deserialize(Deserializer& d) {
 bool operator==(const PortConnection& lhs, const PortConnection& rhs) {
     return lhs.outport_ == rhs.outport_ && lhs.inport_ == rhs.inport_;
 }
-bool operator!=(const PortConnection& lhs, const PortConnection& rhs) { return !operator==(lhs, rhs); }
+bool operator!=(const PortConnection& lhs, const PortConnection& rhs) {
+    return !operator==(lhs, rhs);
+}
 
 bool operator<(const PortConnection& lhs, const PortConnection& rhs) {
     if (lhs.outport_ != rhs.outport_) {
@@ -102,4 +111,4 @@ bool operator<(const PortConnection& lhs, const PortConnection& rhs) {
     }
 }
 
-}  // namespace
+}  // namespace inviwo

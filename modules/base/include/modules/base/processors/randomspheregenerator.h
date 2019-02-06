@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_RANDOMSPHEREGENERATOR_H
@@ -56,11 +56,11 @@ class Mesh;
  *   * __mesh__ generated sphere meshes with randomized colors and radii
  */
 
-class IVW_MODULE_BASE_API RandomSphereGenerator : public Processor { 
+class IVW_MODULE_BASE_API RandomSphereGenerator : public Processor {
 public:
     RandomSphereGenerator();
     virtual ~RandomSphereGenerator() = default;
-     
+
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
@@ -74,7 +74,7 @@ private:
     static vec3 getDelta(const Camera& camera, PickingEvent* p);
 
     MeshOutport meshOut_;
-    
+
     Int64Property seed_;
     ButtonProperty reseed_;
 
@@ -83,7 +83,7 @@ private:
     IntVec3Property gridDim_;
 
     BoolProperty jigglePos_;
-    
+
     BoolProperty enablePicking_;
     CameraProperty camera_;
 
@@ -95,6 +95,6 @@ private:
     mutable std::uniform_real_distribution<float> dis_;
 };
 
-} // namespace inviwo
+}  // namespace inviwo
 
-#endif // IVW_RANDOMSPHEREGENERATOR_H
+#endif  // IVW_RANDOMSPHEREGENERATOR_H

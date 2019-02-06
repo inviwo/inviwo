@@ -114,6 +114,10 @@ public:
                      const std::string& itemKey = "item");
 
     template <typename T>
+    void deserialize(const std::string& key, std::unordered_set<T>& sSet,
+                     const std::string& itemKey = "item");
+
+    template <typename T>
     void deserialize(const std::string& key, std::vector<std::unique_ptr<T>>& vector,
                      const std::string& itemKey = "item");
 
@@ -870,6 +874,29 @@ void Deserializer::deserialize(const std::string& key, std::vector<T>& vector,
             handleError(IvwContext);
         }
         i++;
+    }
+}
+
+template <typename T>
+void Deserializer::deserialize(const std::string& key, std::unordered_set<T>& set,
+                               const std::string& itemKey) {
+    NodeSwitch vectorNodeSwitch(*this, key);
+    if (!vectorNodeSwitch) return;
+
+    TxEIt child(itemKey);
+
+    for (child = child.begin(rootElement_); child != child.end(); ++child) {
+        // In the next deserialization call do net fetch the "child" since we are looping...
+        // hence the "false" as the last arg.
+        NodeSwitch elementNodeSwitch(*this, &(*child), false);
+        try {
+            T item;
+            deserialize(itemKey, item);
+            set.insert(std::move(item));
+
+        } catch (...) {
+            handleError(IvwContext);
+        }
     }
 }
 

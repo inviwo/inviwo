@@ -80,14 +80,11 @@ void FileProperty::serialize(Serializer& s) const {
     /*
     We always use absolute paths inside of inviwo but serialize
     several version to have a higher success rate when moving stuff around.
-    
-
 
     Saved path versions:
      1) Absolute
      2) Relative workspace
      3) Relative filesystem::getPath(PathType::Data)
-
     */
     Property::serialize(s);
 

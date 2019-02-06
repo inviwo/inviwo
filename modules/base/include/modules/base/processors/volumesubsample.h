@@ -86,6 +86,6 @@ private:
     std::future<std::shared_ptr<Volume>> result_;
     bool dirty_;
 };
-}
+}  // namespace inviwo
 
 #endif  // IVW_VOLUMESUBSAMPLE_H

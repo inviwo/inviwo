@@ -61,9 +61,8 @@ size_t ThreadPool::trySetSize(size_t size) {
 
         condition.notify_all();
 
-        util::erase_remove_if(workers, [](std::unique_ptr<Worker>& worker) {
-            return worker->state == State::Done;
-        });
+        util::erase_remove_if(
+            workers, [](std::unique_ptr<Worker>& worker) { return worker->state == State::Done; });
     }
     return workers.size();
 }
@@ -73,14 +72,13 @@ size_t ThreadPool::getSize() const { return workers.size(); }
 ThreadPool::~ThreadPool() {
     for (auto& worker : workers) worker->state = State::Abort;
     condition.notify_all();
-    workers.clear(); // this will join all threads.
+    workers.clear();  // this will join all threads.
 }
 
 ThreadPool::Worker::~Worker() { thread.join(); }
 
 ThreadPool::Worker::Worker(ThreadPool& pool)
-    : state{ State::Free }
-    , thread{ [this, &pool]() {
+    : state{State::Free}, thread{[this, &pool]() {
         pool.onThreadStart_();
         util::OnScopeExit cleanup{[&pool]() { pool.onThreadStop_(); }};
 
@@ -100,7 +98,6 @@ ThreadPool::Worker::Worker(ThreadPool& pool)
             task();
         }
         state = State::Done;
+    }} {}
 
-    } } {}
-
-}  // namespace
+}  // namespace inviwo

@@ -137,6 +137,18 @@ const BufferBase* Mesh::getBuffer(size_t idx) const {
     return buffers_[idx].second.get();
 }
 
+std::pair<const BufferBase*, int> Mesh::findBuffer(BufferType type) const {
+    auto it = std::find_if(buffers_.begin(), buffers_.end(),
+                           [&](const auto& item) { return item.first.type == type; });
+    if (it != buffers_.end()) {
+        return {it->second.get(), it->first.location};
+    } else {
+        return {nullptr, 0};
+    }
+}
+
+bool Mesh::hasBuffer(BufferType type) const { return findBuffer(type).first != nullptr; }
+
 Mesh::BufferInfo Mesh::getBufferInfo(size_t idx) const {
     if (idx >= buffers_.size()) {
         throw RangeException("Index out of range", IvwContext);
@@ -268,26 +280,12 @@ namespace meshutil {
 
 bool hasPickIDBuffer(const Mesh* mesh) {
     if (!mesh) return false;
-    for (auto buffer : mesh->getBuffers()) {
-        // FIXME: this assumes the picking data to be stored at location 4
-        if ((buffer.first.type == BufferType::NumberOfBufferTypes) &&
-            (buffer.first.location == 4)) {
-            return true;
-        }
-    }
-    return false;
+    return mesh->hasBuffer(BufferType::PickingAttrib);
 }
 
 bool hasRadiiBuffer(const Mesh* mesh) {
     if (!mesh) return false;
-    for (auto buffer : mesh->getBuffers()) {
-        // FIXME: this assumes the radii to be stored at location 5
-        if ((buffer.first.type == BufferType::NumberOfBufferTypes) &&
-            (buffer.first.location == 5)) {
-            return true;
-        }
-    }
-    return false;
+    return mesh->hasBuffer(BufferType::RadiiAttrib);
 }
 
 }  // namespace meshutil

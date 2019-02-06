@@ -51,17 +51,13 @@ const Track& Animation::operator[](size_t i) const { return *tracks_[i]; }
 
 Track& Animation::operator[](size_t i) { return *tracks_[i]; }
 
-auto Animation::begin() -> iterator {
-    return util::makeIndirectIterator<true>(tracks_.begin());
-}
+auto Animation::begin() -> iterator { return util::makeIndirectIterator<true>(tracks_.begin()); }
 
 auto Animation::begin() const -> const_iterator {
     return util::makeIndirectIterator<true>(tracks_.begin());
 }
 
-auto Animation::end() -> iterator {
-    return util::makeIndirectIterator<true>(tracks_.end());
-}
+auto Animation::end() -> iterator { return util::makeIndirectIterator<true>(tracks_.end()); }
 
 auto Animation::end() const -> const_iterator {
     return util::makeIndirectIterator<true>(tracks_.end());
@@ -169,13 +165,9 @@ void Animation::doPrioritySort() {
         [](const auto& a, const auto& b) { return a->getPriority() > b->getPriority(); });
 }
 
-void Animation::onFirstMoved(Track*) { 
-    notifyFirstMoved(); 
-}
+void Animation::onFirstMoved(Track*) { notifyFirstMoved(); }
 
-void Animation::onLastMoved(Track*) { 
-    notifyLastMoved(); 
-}
+void Animation::onLastMoved(Track*) { notifyLastMoved(); }
 
 }  // namespace animation
 

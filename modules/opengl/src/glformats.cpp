@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
- #include <modules/opengl/glformats.h>
+#include <modules/opengl/glformats.h>
 
 namespace inviwo {
 
@@ -145,4 +145,4 @@ bool operator==(const GLFormats::GLFormat& a, const GLFormats::GLFormat& b) {
 
 bool operator!=(const GLFormats::GLFormat& a, const GLFormats::GLFormat& b) { return !(a == b); }
 
-}  // namespace
+}  // namespace inviwo

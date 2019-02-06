@@ -54,6 +54,9 @@ class IVW_MODULE_USERINTERFACEGL_API ButtonPropertyWidget : public Button,
                                                             public PropertyWidget,
                                                             public PropertyObserver {
 public:
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
+
     ButtonPropertyWidget(ButtonProperty &property, Processor &processor, Renderer &uiRenderer,
                          const ivec2 &extent = ivec2(100, 24));
     virtual ~ButtonPropertyWidget() = default;
@@ -63,7 +66,7 @@ public:
     // PropertyObservable overrides
     virtual void onSetVisible(Property *property, bool visible) override;
     virtual void onSetDisplayName(Property *property, const std::string &displayName) override;
-    virtual void onSetReadOnly(Property* property, bool readonly) override;
+    virtual void onSetReadOnly(Property *property, bool readonly) override;
 
 private:
     ButtonProperty *property_;
@@ -90,7 +93,7 @@ public:
     // PropertyObservable overrides
     virtual void onSetVisible(Property *property, bool visible) override;
     virtual void onSetDisplayName(Property *property, const std::string &displayName) override;
-    virtual void onSetReadOnly(Property* property, bool readonly) override;
+    virtual void onSetReadOnly(Property *property, bool readonly) override;
 
 private:
     ButtonProperty *property_;

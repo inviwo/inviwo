@@ -48,7 +48,6 @@ public:
     virtual ~OpenCLFormatException() throw(){};
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_OPENCLFORMATEXCEPTION_H
-
+#endif  // IVW_OPENCLFORMATEXCEPTION_H

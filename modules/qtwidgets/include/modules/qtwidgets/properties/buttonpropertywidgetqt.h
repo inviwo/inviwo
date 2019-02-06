@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_BUTTONPROPERTYWIDGETQT_H
@@ -45,14 +45,15 @@ public:
     virtual void updateFromProperty() override;
     QPushButton* getButton();
 
+    virtual std::unique_ptr<QMenu> getContextMenu() override;
+
 private:
     ButtonProperty* property_;
     QPushButton* button_;
 
     virtual void onSetDisplayName(Property* property, const std::string& displayName) override;
-
 };
 
-} //namespace
+}  // namespace inviwo
 
-#endif // IVW_BUTTONPROPERTYWIDGETQT_H
+#endif  // IVW_BUTTONPROPERTYWIDGETQT_H

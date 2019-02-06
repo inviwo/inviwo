@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/volume/volume.h>
@@ -42,17 +42,7 @@
 #include <gtest/gtest.h>
 #include <warn/pop>
 
-
 namespace inviwo {
-
-template <typename T, class Enable = void>
-struct HalfHack {
-    static T trans(const T& val) {return val;}
-};
-template <>
-struct HalfHack<half_float::half> {
-    static double trans(const half_float::half& val) {return val;}
-};
 
 template <typename T>
 void testVolumeLoad(Volume* volume) {
@@ -67,9 +57,9 @@ void testVolumeLoad(Volume* volume) {
     for (size_t z = 0; z < dim.z; z++) {
         for (size_t y = 0; y < dim.y; y++) {
             for (size_t x = 0; x < dim.x; x++) {
-                const auto ref = HalfHack<T>::trans(static_cast<T>(x+y+z));
-                const auto val = HalfHack<T>::trans(data[im(x, y, z)]);
-                ASSERT_EQ(ref, val) 
+                const auto ref = static_cast<double>(x + y + z);
+                const auto val = static_cast<double>(data[im(x, y, z)]);
+                ASSERT_EQ(ref, val)
                     << "Error at Voxel: " << x << ", " << y << ", " << z << "\n"
                     << "Dimensions:     " << dim.x << ", " << dim.y << ", " << dim.z;
             }
@@ -153,19 +143,19 @@ void testVolumeClone(Volume* volume) {
     for (size_t z = 0; z < dim.z; z++) {
         for (size_t y = 0; y < dim.y; y++) {
             for (size_t x = 0; x < dim.x; x++) {
-                const auto ref = HalfHack<T>::trans(static_cast<T>(x + y + z));
-                
-                const auto val = HalfHack<T>::trans(data[im(x, y, z)]);
+                const auto ref = static_cast<double>(x + y + z);
+
+                const auto val = static_cast<double>(data[im(x, y, z)]);
                 ASSERT_EQ(ref, val)
                     << "Error at Voxel: " << x << ", " << y << ", " << z << "\n"
                     << "Dimensions:     " << dim.x << ", " << dim.y << ", " << dim.z;
 
-                const auto val1 = HalfHack<T>::trans(data1[im(x, y, z)]);
+                const auto val1 = static_cast<double>(data1[im(x, y, z)]);
                 ASSERT_EQ(ref, val1)
                     << "Error at Voxel: " << x << ", " << y << ", " << z << "\n"
                     << "Dimensions:     " << dim.x << ", " << dim.y << ", " << dim.z;
 
-                const auto val2 = HalfHack<T>::trans(data2[im(x, y, z)]);
+                const auto val2 = static_cast<double>(data2[im(x, y, z)]);
                 ASSERT_EQ(ref, val2)
                     << "Error at Voxel: " << x << ", " << y << ", " << z << "\n"
                     << "Dimensions:     " << dim.x << ", " << dim.y << ", " << dim.z;
@@ -210,13 +200,8 @@ void testIvfVolumeClone(std::string filename) {
 // Test the .dat reader
 
 // 8 bit
-TEST(VolumeTest, DatReaderLoadTypeUINT8) {
-    testDatVolumeLoad<glm::uint8>("testdata.UINT8.dat");
-}
-TEST(VolumeTest, DatReaderLoadTypeINT8) {
-    testDatVolumeLoad<glm::int8>("testdata.INT8.dat");
-}
-
+TEST(VolumeTest, DatReaderLoadTypeUINT8) { testDatVolumeLoad<glm::uint8>("testdata.UINT8.dat"); }
+TEST(VolumeTest, DatReaderLoadTypeINT8) { testDatVolumeLoad<glm::int8>("testdata.INT8.dat"); }
 
 // 16 bit
 TEST(VolumeTest, DatReaderLoadTypeUINT16LittleEndian) {
@@ -238,7 +223,6 @@ TEST(VolumeTest, DatReaderLoadTypeFLOAT16BigEndian) {
     testDatVolumeLoad<half_float::half>("testdata.FLOAT16.BigEndian.dat");
 }
 
-
 // 32 bit
 TEST(VolumeTest, DatReaderLoadTypeUINT32) {
     testDatVolumeLoad<glm::uint32>("testdata.UINT32.LittleEndian.dat");
@@ -258,7 +242,6 @@ TEST(VolumeTest, DatReaderLoadTypeFLOAT32LittleEndian) {
 TEST(VolumeTest, DatReaderLoadTypeFLOAT32BigEndian) {
     testDatVolumeLoad<float>("testdata.FLOAT32.BigEndian.dat");
 }
-
 
 // 64 bit
 TEST(VolumeTest, DatReaderLoadTypeUINT64) {
@@ -280,16 +263,10 @@ TEST(VolumeTest, DatReaderLoadTypeFLOAT64BigEndian) {
     testDatVolumeLoad<double>("testdata.FLOAT64.BigEndian.dat");
 }
 
-
 // Test the .ivf reader
 // 8 bit
-TEST(VolumeTest, IvfReaderLoadTypeUINT8) {
-    testIvfVolumeLoad<glm::uint8>("testdata.UINT8.ivf");
-}
-TEST(VolumeTest, IvfReaderLoadTypeINT8) {
-    testIvfVolumeLoad<glm::int8>("testdata.INT8.ivf");
-}
-
+TEST(VolumeTest, IvfReaderLoadTypeUINT8) { testIvfVolumeLoad<glm::uint8>("testdata.UINT8.ivf"); }
+TEST(VolumeTest, IvfReaderLoadTypeINT8) { testIvfVolumeLoad<glm::int8>("testdata.INT8.ivf"); }
 
 // 16 bit
 TEST(VolumeTest, IvfReaderLoadTypeUINT16LittleEndian) {
@@ -311,7 +288,6 @@ TEST(VolumeTest, IvfReaderLoadTypeFLOAT16BigEndian) {
     testIvfVolumeLoad<half_float::half>("testdata.FLOAT16.BigEndian.ivf");
 }
 
-
 // 32 bit
 TEST(VolumeTest, IvfReaderLoadTypeUINT32) {
     testIvfVolumeLoad<glm::uint32>("testdata.UINT32.LittleEndian.ivf");
@@ -331,7 +307,6 @@ TEST(VolumeTest, IvfReaderLoadTypeFLOAT32LittleEndian) {
 TEST(VolumeTest, IvfReaderLoadTypeFLOAT32BigEndian) {
     testIvfVolumeLoad<float>("testdata.FLOAT32.BigEndian.ivf");
 }
-
 
 // 64 bit
 TEST(VolumeTest, IvfReaderLoadTypeUINT64) {
@@ -353,18 +328,12 @@ TEST(VolumeTest, IvfReaderLoadTypeFLOAT64BigEndian) {
     testIvfVolumeLoad<double>("testdata.FLOAT64.BigEndian.ivf");
 }
 
-
 // Test cloning ////////////////////////////////////////////////////////////////////////
 // Test the .dat reader
 
 // 8 bit
-TEST(VolumeTest, DatReaderCloneTypeUINT8) {
-    testDatVolumeClone<glm::uint8>("testdata.UINT8.dat");
-}
-TEST(VolumeTest, DatReaderCloneTypeINT8) {
-    testDatVolumeClone<glm::int8>("testdata.INT8.dat");
-}
-
+TEST(VolumeTest, DatReaderCloneTypeUINT8) { testDatVolumeClone<glm::uint8>("testdata.UINT8.dat"); }
+TEST(VolumeTest, DatReaderCloneTypeINT8) { testDatVolumeClone<glm::int8>("testdata.INT8.dat"); }
 
 // 16 bit
 TEST(VolumeTest, DatReaderCloneTypeUINT16LittleEndian) {
@@ -386,7 +355,6 @@ TEST(VolumeTest, DatReaderCloneTypeFLOAT16BigEndian) {
     testDatVolumeClone<half_float::half>("testdata.FLOAT16.BigEndian.dat");
 }
 
-
 // 32 bit
 TEST(VolumeTest, DatReaderCloneTypeUINT32) {
     testDatVolumeClone<glm::uint32>("testdata.UINT32.LittleEndian.dat");
@@ -406,7 +374,6 @@ TEST(VolumeTest, DatReaderCloneTypeFLOAT32LittleEndian) {
 TEST(VolumeTest, DatReaderCloneTypeFLOAT32BigEndian) {
     testDatVolumeClone<float>("testdata.FLOAT32.BigEndian.dat");
 }
-
 
 // 64 bit
 TEST(VolumeTest, DatReaderCloneTypeUINT64) {
@@ -428,16 +395,10 @@ TEST(VolumeTest, DatReaderCloneTypeFLOAT64BigEndian) {
     testDatVolumeClone<double>("testdata.FLOAT64.BigEndian.dat");
 }
 
-
 // Test the .ivf reader
 // 8 bit
-TEST(VolumeTest, IvfReaderCloneTypeUINT8) {
-    testIvfVolumeClone<glm::uint8>("testdata.UINT8.ivf");
-}
-TEST(VolumeTest, IvfReaderCloneTypeINT8) {
-    testIvfVolumeClone<glm::int8>("testdata.INT8.ivf");
-}
-
+TEST(VolumeTest, IvfReaderCloneTypeUINT8) { testIvfVolumeClone<glm::uint8>("testdata.UINT8.ivf"); }
+TEST(VolumeTest, IvfReaderCloneTypeINT8) { testIvfVolumeClone<glm::int8>("testdata.INT8.ivf"); }
 
 // 16 bit
 TEST(VolumeTest, IvfReaderCloneTypeUINT16LittleEndian) {
@@ -459,7 +420,6 @@ TEST(VolumeTest, IvfReaderCloneTypeFLOAT16BigEndian) {
     testIvfVolumeClone<half_float::half>("testdata.FLOAT16.BigEndian.ivf");
 }
 
-
 // 32 bit
 TEST(VolumeTest, IvfReaderCloneTypeUINT32) {
     testIvfVolumeClone<glm::uint32>("testdata.UINT32.LittleEndian.ivf");
@@ -479,7 +439,6 @@ TEST(VolumeTest, IvfReaderCloneTypeFLOAT32LittleEndian) {
 TEST(VolumeTest, IvfReaderCloneTypeFLOAT32BigEndian) {
     testIvfVolumeClone<float>("testdata.FLOAT32.BigEndian.ivf");
 }
-
 
 // 64 bit
 TEST(VolumeTest, IvfReaderCloneTypeUINT64) {
@@ -501,4 +460,4 @@ TEST(VolumeTest, IvfReaderCloneTypeFLOAT64BigEndian) {
     testIvfVolumeClone<double>("testdata.FLOAT64.BigEndian.ivf");
 }
 
-}
+}  // namespace inviwo

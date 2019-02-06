@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_DATAWRITER_H
@@ -37,13 +37,6 @@
 #include <inviwo/core/util/exception.h>
 
 namespace inviwo {
-
-class IVW_CORE_API DataWriterException : public Exception {
-public:
-    DataWriterException(const std::string& message = "",
-                        ExceptionContext context = ExceptionContext());
-    virtual ~DataWriterException() noexcept = default;
-};
 
 /**
  * \ingroup dataio
@@ -93,6 +86,6 @@ public:
     }
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_DATAWRITER_H
+#endif  // IVW_DATAWRITER_H

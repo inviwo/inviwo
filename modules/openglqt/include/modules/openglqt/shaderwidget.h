@@ -49,6 +49,6 @@ private:
     const ShaderObject* obj_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_SHADERWIDGET_H

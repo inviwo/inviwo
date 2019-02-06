@@ -32,8 +32,7 @@
 
 namespace inviwo {
 
-cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatId format)
-{
+cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatId format) {
     // Difference between SNORM/UNORM and SIGNED/UNSIGNED INT
     // SNORM/UNORM:
     // Each channel component is a normalized integer value
@@ -50,7 +49,8 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatId format)
 
     switch (format) {
         case DataFormatId::NotSpecialized:
-            throw OpenCLFormatException("Unsupported data format: NOT_SPECIALIZED", IvwContextCustom("dataFormatToCLImageFormat"));
+            throw OpenCLFormatException("Unsupported data format: NOT_SPECIALIZED",
+                                        IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
         case DataFormatId::Float16:
@@ -62,7 +62,8 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatId format)
             break;
 
         case DataFormatId::Float64:
-            throw OpenCLFormatException("Unsupported data format: FLOAT64", IvwContextCustom("dataFormatToCLImageFormat"));
+            throw OpenCLFormatException("Unsupported data format: FLOAT64",
+                                        IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
         case DataFormatId::Int8:
@@ -78,7 +79,8 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatId format)
             break;
 
         case DataFormatId::Int64:
-            throw OpenCLFormatException("Unsupported data format: INT64", IvwContextCustom("dataFormatToCLImageFormat"));
+            throw OpenCLFormatException("Unsupported data format: INT64",
+                                        IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
         case DataFormatId::UInt8:
@@ -94,7 +96,8 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatId format)
             break;
 
         case DataFormatId::UInt64:
-            throw OpenCLFormatException("Unsupported data format: UINT64", IvwContextCustom("dataFormatToCLImageFormat"));
+            throw OpenCLFormatException("Unsupported data format: UINT64",
+                                        IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
         case DataFormatId::Vec2Float16:
@@ -106,7 +109,8 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatId format)
             break;
 
         case DataFormatId::Vec2Float64:
-            throw OpenCLFormatException("Unsupported data format: Vec2FLOAT64", IvwContextCustom("dataFormatToCLImageFormat"));
+            throw OpenCLFormatException("Unsupported data format: Vec2FLOAT64",
+                                        IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
         case DataFormatId::Vec2Int8:
@@ -122,7 +126,8 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatId format)
             break;
 
         case DataFormatId::Vec2Int64:
-            throw OpenCLFormatException("Unsupported data format: Vec2INT64", IvwContextCustom("dataFormatToCLImageFormat"));
+            throw OpenCLFormatException("Unsupported data format: Vec2INT64",
+                                        IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
         case DataFormatId::Vec2UInt8:
@@ -138,51 +143,63 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatId format)
             break;
 
         case DataFormatId::Vec2UInt64:
-            throw OpenCLFormatException("Unsupported data format: Vec2UINT64", IvwContextCustom("dataFormatToCLImageFormat"));
+            throw OpenCLFormatException("Unsupported data format: Vec2UINT64",
+                                        IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
         case DataFormatId::Vec3Float16:
-            throw OpenCLFormatException("Unsupported data format: Vec3FLOAT16", IvwContextCustom("dataFormatToCLImageFormat"));
+            throw OpenCLFormatException("Unsupported data format: Vec3FLOAT16",
+                                        IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
         case DataFormatId::Vec3Float32:
-            throw OpenCLFormatException("Unsupported data format: Vec3FLOAT32", IvwContextCustom("dataFormatToCLImageFormat"));
+            throw OpenCLFormatException("Unsupported data format: Vec3FLOAT32",
+                                        IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
         case DataFormatId::Vec3Float64:
-            throw OpenCLFormatException("Unsupported data format: Vec3FLOAT64", IvwContextCustom("dataFormatToCLImageFormat"));
+            throw OpenCLFormatException("Unsupported data format: Vec3FLOAT64",
+                                        IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
         case DataFormatId::Vec3Int8:
-            throw OpenCLFormatException("Unsupported data format: Vec3INT8", IvwContextCustom("dataFormatToCLImageFormat"));
+            throw OpenCLFormatException("Unsupported data format: Vec3INT8",
+                                        IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
         case DataFormatId::Vec3Int16:
-            throw OpenCLFormatException("Unsupported data format: Vec3INT16", IvwContextCustom("dataFormatToCLImageFormat"));
+            throw OpenCLFormatException("Unsupported data format: Vec3INT16",
+                                        IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
         case DataFormatId::Vec3Int32:
-            throw OpenCLFormatException("Unsupported data format: Vec3INT32", IvwContextCustom("dataFormatToCLImageFormat"));
+            throw OpenCLFormatException("Unsupported data format: Vec3INT32",
+                                        IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
         case DataFormatId::Vec3Int64:
-            throw OpenCLFormatException("Unsupported data format: Vec3INT64", IvwContextCustom("dataFormatToCLImageFormat"));
+            throw OpenCLFormatException("Unsupported data format: Vec3INT64",
+                                        IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
         case DataFormatId::Vec3UInt8:
-            throw OpenCLFormatException("Unsupported data format: Vec3UINT8", IvwContextCustom("dataFormatToCLImageFormat"));
+            throw OpenCLFormatException("Unsupported data format: Vec3UINT8",
+                                        IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
         case DataFormatId::Vec3UInt16:
-            throw OpenCLFormatException("Unsupported data format: Vec3UINT16", IvwContextCustom("dataFormatToCLImageFormat"));
+            throw OpenCLFormatException("Unsupported data format: Vec3UINT16",
+                                        IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
         case DataFormatId::Vec3UInt32:
-            throw OpenCLFormatException("Unsupported data format: Vec3UINT32", IvwContextCustom("dataFormatToCLImageFormat"));
+            throw OpenCLFormatException("Unsupported data format: Vec3UINT32",
+                                        IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
         case DataFormatId::Vec3UInt64:
-            throw OpenCLFormatException("Unsupported data format: Vec3UINT64", IvwContextCustom("dataFormatToCLImageFormat"));
+            throw OpenCLFormatException("Unsupported data format: Vec3UINT64",
+                                        IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
         case DataFormatId::Vec4Float16:
@@ -194,7 +211,8 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatId format)
             break;
 
         case DataFormatId::Vec4Float64:
-            throw OpenCLFormatException("Unsupported data format: Vec4FLOAT64", IvwContextCustom("dataFormatToCLImageFormat"));
+            throw OpenCLFormatException("Unsupported data format: Vec4FLOAT64",
+                                        IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
         case DataFormatId::Vec4Int8:
@@ -210,12 +228,13 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatId format)
             break;
 
         case DataFormatId::Vec4Int64:
-            throw OpenCLFormatException("Unsupported data format: Vec4INT64", IvwContextCustom("dataFormatToCLImageFormat"));
+            throw OpenCLFormatException("Unsupported data format: Vec4INT64",
+                                        IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
         case DataFormatId::Vec4UInt8:
             clFormat = cl::ImageFormat(CL_RGBA, CL_UNORM_INT8);
-            break; // TODO: Find out why CL_UNORM_INT8 does not work
+            break;  // TODO: Find out why CL_UNORM_INT8 does not work
 
         case DataFormatId::Vec4UInt16:
             clFormat = cl::ImageFormat(CL_RGBA, CL_UNORM_INT16);
@@ -226,32 +245,33 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatId format)
             break;
 
         case DataFormatId::Vec4UInt64:
-            throw OpenCLFormatException("Unsupported data format: Vec4UINT64", IvwContextCustom("dataFormatToCLImageFormat"));
+            throw OpenCLFormatException("Unsupported data format: Vec4UINT64",
+                                        IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
         case DataFormatId::NumberOfFormats:
         default:
             // Should not be able to reach here
-            throw OpenCLFormatException("cl::ImageFormat typeToImageFormat. Format not implmented yet");
+            throw OpenCLFormatException(
+                "cl::ImageFormat typeToImageFormat. Format not implmented yet");
             break;
     }
 
 #ifdef IVW_DEBUG
 
     if (!inviwo::OpenCL::isValidImageFormat(inviwo::OpenCL::getPtr()->getContext(), clFormat)) {
-        LogErrorCustom("cl::ImageFormat typeToImageFormat", "OpenCL device does not support format");
-        ivwAssert(inviwo::OpenCL::isValidImageFormat(inviwo::OpenCL::getPtr()->getContext(), clFormat),
-                  "cl::ImageFormat typeToImageFormat: OpenCL device does not support format");
+        LogErrorCustom("cl::ImageFormat typeToImageFormat",
+                       "OpenCL device does not support format");
+        ivwAssert(
+            inviwo::OpenCL::isValidImageFormat(inviwo::OpenCL::getPtr()->getContext(), clFormat),
+            "cl::ImageFormat typeToImageFormat: OpenCL device does not support format");
     };
 
 #endif
     return clFormat;
 }
 
-
-bool operator!=(const CLFormats::CLFormat& a, const CLFormats::CLFormat& b) {
-    return !(a == b);
-}
+bool operator!=(const CLFormats::CLFormat& a, const CLFormats::CLFormat& b) { return !(a == b); }
 
 bool operator==(const CLFormats::CLFormat& a, const CLFormats::CLFormat& b) {
     return a.format.image_channel_order == b.format.image_channel_order &&
@@ -275,38 +295,61 @@ CLFormats::CLFormat::CLFormat()
     , scaling(1.f)
     , valid(false) {}
 
-
 CLFormats::CLFormats() {
-    //1 channel
-    CLFormatArray_[static_cast<size_t>(DataFormatId::Float16)] = CLFormat(CL_R, CL_HALF_FLOAT, Normalization::None);
-    CLFormatArray_[static_cast<size_t>(DataFormatId::Float32)] = CLFormat(CL_R, CL_FLOAT, Normalization::None);
-    CLFormatArray_[static_cast<size_t>(DataFormatId::Int8)] = CLFormat(CL_R, CL_SNORM_INT8, Normalization::SignNormalized);
-    CLFormatArray_[static_cast<size_t>(DataFormatId::Int16)] = CLFormat(CL_R, CL_SNORM_INT16, Normalization::SignNormalized);
-    CLFormatArray_[static_cast<size_t>(DataFormatId::Int32)] = CLFormat(CL_R, CL_SIGNED_INT32, Normalization::None);
-    CLFormatArray_[static_cast<size_t>(DataFormatId::UInt8)] = CLFormat(CL_R, CL_UNORM_INT8, Normalization::Normalized);
-    CLFormatArray_[static_cast<size_t>(DataFormatId::UInt16)] = CLFormat(CL_R, CL_UNORM_INT16, Normalization::Normalized);
-    CLFormatArray_[static_cast<size_t>(DataFormatId::UInt32)] = CLFormat(CL_R, CL_UNSIGNED_INT32, Normalization::None);
-    //2 channels
-    CLFormatArray_[static_cast<size_t>(DataFormatId::Vec2Float16)] = CLFormat(CL_RG, CL_HALF_FLOAT, Normalization::None);
-    CLFormatArray_[static_cast<size_t>(DataFormatId::Vec2Float32)] = CLFormat(CL_RG, CL_FLOAT, Normalization::None);
-    CLFormatArray_[static_cast<size_t>(DataFormatId::Vec2Int8)] = CLFormat(CL_RG, CL_SNORM_INT8, Normalization::SignNormalized);
-    CLFormatArray_[static_cast<size_t>(DataFormatId::Vec2Int16)] = CLFormat(CL_RG, CL_SNORM_INT16, Normalization::SignNormalized);
-    CLFormatArray_[static_cast<size_t>(DataFormatId::Vec2Int32)] = CLFormat(CL_RG, CL_SIGNED_INT32, Normalization::None);
-    CLFormatArray_[static_cast<size_t>(DataFormatId::Vec2UInt8)] = CLFormat(CL_RG, CL_UNORM_INT8, Normalization::Normalized);
-    CLFormatArray_[static_cast<size_t>(DataFormatId::Vec2UInt16)] = CLFormat(CL_RG, CL_UNORM_INT16, Normalization::Normalized);
-    CLFormatArray_[static_cast<size_t>(DataFormatId::Vec2UInt32)] = CLFormat(CL_RG, CL_UNSIGNED_INT32, Normalization::None);
-    //3 channels
+    // 1 channel
+    CLFormatArray_[static_cast<size_t>(DataFormatId::Float16)] =
+        CLFormat(CL_R, CL_HALF_FLOAT, Normalization::None);
+    CLFormatArray_[static_cast<size_t>(DataFormatId::Float32)] =
+        CLFormat(CL_R, CL_FLOAT, Normalization::None);
+    CLFormatArray_[static_cast<size_t>(DataFormatId::Int8)] =
+        CLFormat(CL_R, CL_SNORM_INT8, Normalization::SignNormalized);
+    CLFormatArray_[static_cast<size_t>(DataFormatId::Int16)] =
+        CLFormat(CL_R, CL_SNORM_INT16, Normalization::SignNormalized);
+    CLFormatArray_[static_cast<size_t>(DataFormatId::Int32)] =
+        CLFormat(CL_R, CL_SIGNED_INT32, Normalization::None);
+    CLFormatArray_[static_cast<size_t>(DataFormatId::UInt8)] =
+        CLFormat(CL_R, CL_UNORM_INT8, Normalization::Normalized);
+    CLFormatArray_[static_cast<size_t>(DataFormatId::UInt16)] =
+        CLFormat(CL_R, CL_UNORM_INT16, Normalization::Normalized);
+    CLFormatArray_[static_cast<size_t>(DataFormatId::UInt32)] =
+        CLFormat(CL_R, CL_UNSIGNED_INT32, Normalization::None);
+    // 2 channels
+    CLFormatArray_[static_cast<size_t>(DataFormatId::Vec2Float16)] =
+        CLFormat(CL_RG, CL_HALF_FLOAT, Normalization::None);
+    CLFormatArray_[static_cast<size_t>(DataFormatId::Vec2Float32)] =
+        CLFormat(CL_RG, CL_FLOAT, Normalization::None);
+    CLFormatArray_[static_cast<size_t>(DataFormatId::Vec2Int8)] =
+        CLFormat(CL_RG, CL_SNORM_INT8, Normalization::SignNormalized);
+    CLFormatArray_[static_cast<size_t>(DataFormatId::Vec2Int16)] =
+        CLFormat(CL_RG, CL_SNORM_INT16, Normalization::SignNormalized);
+    CLFormatArray_[static_cast<size_t>(DataFormatId::Vec2Int32)] =
+        CLFormat(CL_RG, CL_SIGNED_INT32, Normalization::None);
+    CLFormatArray_[static_cast<size_t>(DataFormatId::Vec2UInt8)] =
+        CLFormat(CL_RG, CL_UNORM_INT8, Normalization::Normalized);
+    CLFormatArray_[static_cast<size_t>(DataFormatId::Vec2UInt16)] =
+        CLFormat(CL_RG, CL_UNORM_INT16, Normalization::Normalized);
+    CLFormatArray_[static_cast<size_t>(DataFormatId::Vec2UInt32)] =
+        CLFormat(CL_RG, CL_UNSIGNED_INT32, Normalization::None);
+    // 3 channels
     // Not supported
 
-    //4 channels
-    CLFormatArray_[static_cast<size_t>(DataFormatId::Vec4Float16)] = CLFormat(CL_RGBA, CL_HALF_FLOAT, Normalization::None);
-    CLFormatArray_[static_cast<size_t>(DataFormatId::Vec4Float32)] = CLFormat(CL_RGBA, CL_FLOAT, Normalization::None);
-    CLFormatArray_[static_cast<size_t>(DataFormatId::Vec4Int8)] = CLFormat(CL_RGBA, CL_SNORM_INT8, Normalization::SignNormalized);
-    CLFormatArray_[static_cast<size_t>(DataFormatId::Vec4Int16)] = CLFormat(CL_RGBA, CL_SNORM_INT16, Normalization::SignNormalized);
-    CLFormatArray_[static_cast<size_t>(DataFormatId::Vec4Int32)] = CLFormat(CL_RGBA, CL_SIGNED_INT32, Normalization::None);
-    CLFormatArray_[static_cast<size_t>(DataFormatId::Vec4UInt8)] = CLFormat(CL_RGBA, CL_UNORM_INT8, Normalization::Normalized);
-    CLFormatArray_[static_cast<size_t>(DataFormatId::Vec4UInt16)] = CLFormat(CL_RGBA, CL_UNORM_INT16, Normalization::Normalized);
-    CLFormatArray_[static_cast<size_t>(DataFormatId::Vec4UInt32)] = CLFormat(CL_RGBA, CL_UNSIGNED_INT32, Normalization::None);
+    // 4 channels
+    CLFormatArray_[static_cast<size_t>(DataFormatId::Vec4Float16)] =
+        CLFormat(CL_RGBA, CL_HALF_FLOAT, Normalization::None);
+    CLFormatArray_[static_cast<size_t>(DataFormatId::Vec4Float32)] =
+        CLFormat(CL_RGBA, CL_FLOAT, Normalization::None);
+    CLFormatArray_[static_cast<size_t>(DataFormatId::Vec4Int8)] =
+        CLFormat(CL_RGBA, CL_SNORM_INT8, Normalization::SignNormalized);
+    CLFormatArray_[static_cast<size_t>(DataFormatId::Vec4Int16)] =
+        CLFormat(CL_RGBA, CL_SNORM_INT16, Normalization::SignNormalized);
+    CLFormatArray_[static_cast<size_t>(DataFormatId::Vec4Int32)] =
+        CLFormat(CL_RGBA, CL_SIGNED_INT32, Normalization::None);
+    CLFormatArray_[static_cast<size_t>(DataFormatId::Vec4UInt8)] =
+        CLFormat(CL_RGBA, CL_UNORM_INT8, Normalization::Normalized);
+    CLFormatArray_[static_cast<size_t>(DataFormatId::Vec4UInt16)] =
+        CLFormat(CL_RGBA, CL_UNORM_INT16, Normalization::Normalized);
+    CLFormatArray_[static_cast<size_t>(DataFormatId::Vec4UInt32)] =
+        CLFormat(CL_RGBA, CL_UNSIGNED_INT32, Normalization::None);
 }
 
 const CLFormats::CLFormat& CLFormats::getCLFormat(DataFormatId id) const {
@@ -327,5 +370,4 @@ const CLFormats::CLFormat& CLFormats::get(DataFormatId id) {
     return clFormats.getCLFormat(id);
 }
 
-} // namespace
-
+}  // namespace inviwo

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/cimg/cimgmodule.h>
@@ -38,17 +38,15 @@ namespace inviwo {
 CImgModule::CImgModule(InviwoApplication* app) : InviwoModule(app, "CImg") {
     // Register Data Readers
     registerDataReader(util::make_unique<CImgLayerReader>());
-    
-    //TODO: Test HDR format
-    //registerDataReader(new CImgVolumeReader());
-    
+
+    // TODO: Test HDR format
+    // registerDataReader(new CImgVolumeReader());
+
     // Register Data Writers
     registerDataWriter(util::make_unique<CImgLayerWriter>());
 
-
-    LogInfo("Using LibPNG Version " << cimgutil::getLibPNGVesrion());
     LogInfo("Using LibJPG Version " << cimgutil::getLibJPGVesrion());
     LogInfo("Using OpenEXR Version " << cimgutil::getOpenEXRVesrion());
 }
 
-} // namespace
+}  // namespace inviwo

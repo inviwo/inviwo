@@ -50,7 +50,10 @@ class IVW_CORE_API DataReader {
 public:
     DataReader() = default;
     DataReader(const DataReader& rhs) = default;
+    DataReader(DataReader&& rhs) noexcept = default;
     DataReader& operator=(const DataReader& that) = default;
+    DataReader& operator=(DataReader&& that) noexcept = default;
+
     virtual DataReader* clone() const = 0;
     virtual ~DataReader() = default;
 
@@ -71,7 +74,9 @@ class DataReaderType : public DataReader {
 public:
     DataReaderType() = default;
     DataReaderType(const DataReaderType& rhs) = default;
+    DataReaderType(DataReaderType&& rhs) noexcept = default;
     DataReaderType& operator=(const DataReaderType& that) = default;
+    DataReaderType& operator=(DataReaderType&& that) noexcept = default;
     virtual DataReaderType* clone() const = 0;
     virtual ~DataReaderType() = default;
 
@@ -79,7 +84,7 @@ public:
 
     /**
      * Optional overload that passed a MetaDataOwner to facilitate saving/loading state in the data
-     * reader the use is optional and the pointer can be null. 
+     * reader the use is optional and the pointer can be null.
      * @see RawVolumeReader
      */
     virtual std::shared_ptr<T> readData(const std::string& filePath, MetaDataOwner*) {

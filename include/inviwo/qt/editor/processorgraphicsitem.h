@@ -100,7 +100,6 @@ protected:
 
     void updateWidgets();
 
-
     void addInport(Inport* port);
     void addOutport(Outport* port);
     void removeInport(Inport* port);

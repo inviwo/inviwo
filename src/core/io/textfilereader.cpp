@@ -52,23 +52,9 @@ std::string TextFileReader::read() {
     if (!file.is_open()) {
         throw FileException("Could not open file: " + filePath_);
     }
+    filesystem::skipByteOrderMark(file);
 
-    file.open(filePath_.c_str());
     std::string data(iter(file), (iter()));
-
-    // When editing files using Visual Studio it may happen that the file is empty.
-    // Wait a bit and hope that the content is there later.
-    if (data.empty()) {
-        file.close();
-        std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(400));
-        
-        file = filesystem::ifstream(filePath_);
-        if (!file.is_open()) {
-            throw FileException("Could not open file: " + filePath_);
-        }
-        data = std::string(iter(file), (iter()));
-    }
-
     return data;
 }
 

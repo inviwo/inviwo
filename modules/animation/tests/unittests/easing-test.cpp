@@ -32,7 +32,6 @@
 #include <gtest/gtest.h>
 #include <warn/pop>
 
-
 #include <modules/animation/datastructures/easing.h>
 #include <inviwo/core/util/filesystem.h>
 
@@ -91,7 +90,6 @@ TEST(AnimationTests, Easing) {
     // Function Values
     std::vector<double> Y(X);
 
-    
     // Run over all easings
     for (const auto& ThisEasing : AllEasings) {
         // Compute
@@ -139,6 +137,6 @@ TEST(AnimationTests, Easing) {
     EXPECT_EQ(1, 1);
 }
 
-}  // namespace
+}  // namespace animation
 
-}  // namespace
+}  // namespace inviwo

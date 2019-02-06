@@ -24,31 +24,30 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_INVIWO_H
 #define IVW_INVIWO_H
 
-
 // Visual studio https://msdn.microsoft.com/en-us/library/23k5d385.aspx
 // List of all warnings messages and id for clang http://fuckingclangwarnings.com
 
 // Define a debug flag for inviwo called IVW_DEBUG
-#if defined(__clang__) || defined(__GNUC__) // sets NDEBUG when not debugging
-    #ifndef NDEBUG
-        #ifndef IVW_DEBUG
-            #define IVW_DEBUG
-        #endif
-    #endif
+#if defined(__clang__) || defined(__GNUC__)  // sets NDEBUG when not debugging
+#ifndef NDEBUG
+#ifndef IVW_DEBUG
+#define IVW_DEBUG
+#endif
+#endif
 #endif
 
 #ifdef _MSC_VER
-    #ifdef _DEBUG /// MVS sets _DEBUG when debugging
-        #ifndef IVW_DEBUG
-            #define IVW_DEBUG
-        #endif
-    #endif
+#ifdef _DEBUG  /// MVS sets _DEBUG when debugging
+#ifndef IVW_DEBUG
+#define IVW_DEBUG
+#endif
+#endif
 #endif
 
 #include <iostream>
@@ -77,8 +76,9 @@
 //#define IVW_DEPRECATION_WARNINGS
 
 #if defined(IVW_DEPRECATION_WARNINGS)
-#define ivwDeprecatedMethod(newFunction) \
-    std::cout << __FUNCTION__ << " is deprecated. Use " << newFunction << " instead." << std::endl; \
+#define ivwDeprecatedMethod(newFunction)                                              \
+    std::cout << __FUNCTION__ << " is deprecated. Use " << newFunction << " instead." \
+              << std::endl;                                                           \
     std::cout << "(" << __FILE__ << " - Line " << __LINE__ << ")." << std::endl;
 #else
 #define ivwDeprecatedMethod(newFunction)
@@ -90,4 +90,4 @@
 #endif
 #endif
 
-#endif // IVW_INVIWO_H
+#endif  // IVW_INVIWO_H

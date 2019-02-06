@@ -43,9 +43,8 @@ public:
     virtual ~Exception() throw() {}
 };
 
-}  // namespace
+}  // namespace hdf5
 
-}  // namespace
-
+}  // namespace inviwo
 
 #endif  // IVW_HDF5EXCEPTION_H

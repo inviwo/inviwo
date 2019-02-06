@@ -59,8 +59,8 @@ EigenUtilsModule::EigenUtilsModule(InviwoApplication* app) : InviwoModule(app, "
 
     // Ports
     registerDefaultsForDataType<Eigen::MatrixXf>();
-
-    registerPortInspector("EigenMatrixXfOutport",
+    
+    registerPortInspector(PortTraits<DataOutport<Eigen::MatrixXf>>::classIdentifier(),
                           this->getPath(ModulePath::PortInspectors) + "/eigenmatrix.inv");
 
     // PropertyWidgets
@@ -78,4 +78,4 @@ EigenUtilsModule::EigenUtilsModule(InviwoApplication* app) : InviwoModule(app, "
     // registerDrawer(util::make_unique_ptr<EigenUtilsDrawer>());
 }
 
-}  // namespace
+}  // namespace inviwo

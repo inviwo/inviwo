@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_IMAGEGRAYSCALE_H
@@ -38,21 +38,21 @@
 namespace inviwo {
 
 namespace LuminanceModels {
-    enum Models {
-        PerceivedLum, // Y = 0.299 R + 0.587 G + 0.114 B
-        RelativeLum,  // Y = 0.2126 R + 0.7152 G + 0.0722 B
-        AverageLum,   // Y = 0.3333 R + 0.3333 G + 0.3333 B
-        RedOnly,      // Y = R
-        GreenOnly,    // Y = G
-        BlueOnly,     // Y = B
-    };
+enum Models {
+    PerceivedLum,  // Y = 0.299 R + 0.587 G + 0.114 B
+    RelativeLum,   // Y = 0.2126 R + 0.7152 G + 0.0722 B
+    AverageLum,    // Y = 0.3333 R + 0.3333 G + 0.3333 B
+    RedOnly,       // Y = R
+    GreenOnly,     // Y = G
+    BlueOnly,      // Y = B
+};
 }
 
 /** \docpage{org.inviwo.ImageGrayscale, Image Grayscale}
  * Compute a gray-scale image from a color input image. The alpha channel is not touched.
  * ![](org.inviwo.ImageGrayscale.png?classIdentifier=org.inviwo.ImageGrayscale)
  * The input image is converted to gray-scale as follows
- * 
+ *
  *     grayValue = l.r * in.r + l.g * in.g + l.b * in.b
  *     out.rgb = vec3(grayValue)
  *     out.a = in.a
@@ -73,7 +73,7 @@ namespace LuminanceModels {
  *
  * ### Properties
  *   * __Luminance Model__ Model for converting the input to grayscale. Options are
- *                         perceived (default), relative, average, red only, green only, 
+ *                         perceived (default), relative, average, red only, green only,
  *                         and blue only.
  */
 
@@ -83,7 +83,7 @@ namespace LuminanceModels {
  *
  * This processor computes the gray-scale image from a color image according to either
  * perceived luminance (Y = 0.299 R + 0.587 G + 0.114 B) or relative luminance for XYZ color
- * space (Y = 0.2126 R + 0.7152 G + 0.0722 B) utilizing the ImageGLProcessor. 
+ * space (Y = 0.2126 R + 0.7152 G + 0.0722 B) utilizing the ImageGLProcessor.
  */
 class IVW_MODULE_BASEGL_API ImageGrayscale : public ImageGLProcessor {
 public:
@@ -99,6 +99,6 @@ private:
     OptionPropertyInt luminanceModel_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_IMAGEGRAYSCALE_H
+#endif  // IVW_IMAGEGRAYSCALE_H

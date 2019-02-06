@@ -321,8 +321,8 @@ std::shared_ptr<Mesh> MeshClipping::clipGeometryAgainstPlane(const Mesh* in,
             std::vector<vec3> newTexCoords;
             std::vector<vec4> newColors;
             std::vector<Edge3D> intersectionsEdges;
-            std::vector<std::pair<vec3, vec3> > intersectionTex;
-            std::vector<std::pair<vec3, vec4> > intersectionCol;
+            std::vector<std::pair<vec3, vec3>> intersectionTex;
+            std::vector<std::pair<vec3, vec4>> intersectionCol;
 
             for (unsigned int t = 0; t < triangleList->size() - 2; ++t) {
                 idx[0] = triangleList->at(t);
@@ -483,7 +483,7 @@ std::shared_ptr<Mesh> MeshClipping::clipGeometryAgainstPlane(const Mesh* in,
             // The points are not at same point, introduce threshold
             if (!uniqueintersectionsEdges.empty()) {
                 // Create closed polygons based on edges
-                std::vector<Polygon<Edge3D> > polygons;
+                std::vector<Polygon<Edge3D>> polygons;
                 std::vector<Edge3D> connectedEdges;
                 std::vector<Edge3D> unconnectEdges = uniqueintersectionsEdges;
 
@@ -559,29 +559,26 @@ std::shared_ptr<Mesh> MeshClipping::clipGeometryAgainstPlane(const Mesh* in,
                 // Calculate centroids per polygon
                 // First in the x-y plane and then in the x-z plane.
                 std::vector<vec3> polygonCentroids;
-                vec3 u, v;
+                vec3 u{0};
                 vec3 n = plane.getNormal();
 
                 for (auto& polygon : polygons) {
                     // Skip x-y plane if current plane is parallel to x-y plane
                     // or skip x-z plane if current plane is parallel to x-z plane
                     // or skip y-z if both skipXY and skip XZ are false
-                    vec3 p0, p1;
                     vec3 centroid = plane.getPoint();
-                    float signedArea = 0.f;
-                    float a = 0.f;
 
                     // X-Y Plane
                     if (!plane.perpendicularToPlane(vec3(0.f, 0.f, 1.f))) {
                         u = vec3(n.y, -n.z, 0.f);
                         centroid.x = 0.f;
                         centroid.y = 0.f;
-                        signedArea = 0.f;
+                        float signedArea = 0.f;
 
                         for (size_t i = 0; i < polygon.size(); ++i) {
-                            p0 = polygon.get(i).v1;
-                            p1 = polygon.get(i).v2;
-                            a = p0.x * p1.y - p1.x * p0.y;
+                            const auto p0 = polygon.get(i).v1;
+                            const auto p1 = polygon.get(i).v2;
+                            const auto a = p0.x * p1.y - p1.x * p0.y;
                             signedArea += a;
                             centroid.x += (p0.x + p1.x) * a;
                             centroid.y += (p0.y + p1.y) * a;
@@ -603,12 +600,12 @@ std::shared_ptr<Mesh> MeshClipping::clipGeometryAgainstPlane(const Mesh* in,
                         u = vec3(n.x, -n.y, 0.f);
                         centroid.x = 0.f;
                         centroid.z = 0.f;
-                        signedArea = 0.f;
+                        float signedArea = 0.f;
 
                         for (size_t i = 0; i < polygon.size(); ++i) {
-                            p0 = polygon.get(i).v1;
-                            p1 = polygon.get(i).v2;
-                            a = p0.x * p1.z - p1.x * p0.z;
+                            const auto p0 = polygon.get(i).v1;
+                            const auto p1 = polygon.get(i).v2;
+                            const auto a = p0.x * p1.z - p1.x * p0.z;
                             signedArea += a;
                             centroid.x += (p0.x + p1.x) * a;
                             centroid.z += (p0.z + p1.z) * a;
@@ -630,12 +627,12 @@ std::shared_ptr<Mesh> MeshClipping::clipGeometryAgainstPlane(const Mesh* in,
                         u = vec3(n.y, -n.z, 0.f);
                         centroid.y = 0.f;
                         centroid.z = 0.f;
-                        signedArea = 0.f;
+                        float signedArea = 0.f;
 
                         for (size_t i = 0; i < polygon.size(); ++i) {
-                            p0 = polygon.get(i).v1;
-                            p1 = polygon.get(i).v2;
-                            a = p0.y * p1.z - p1.y * p0.z;
+                            const auto p0 = polygon.get(i).v1;
+                            const auto p1 = polygon.get(i).v2;
+                            const auto a = p0.y * p1.z - p1.y * p0.z;
                             signedArea += a;
                             centroid.y += (p0.y + p1.y) * a;
                             centroid.z += (p0.z + p1.z) * a;
@@ -655,7 +652,7 @@ std::shared_ptr<Mesh> MeshClipping::clipGeometryAgainstPlane(const Mesh* in,
                     polygonCentroids.push_back(centroid);
                 }
 
-                v = glm::cross(plane.getNormal(), u);
+                const auto v = glm::cross(plane.getNormal(), u);
                 // Add new polygons as triangles to the mesh
                 std::vector<vec2> uv;
                 std::vector<float> baryW;

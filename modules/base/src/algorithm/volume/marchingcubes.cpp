@@ -533,8 +533,8 @@ std::array<std::vector<Triangle>, 256> cases = {
     std::vector<Triangle>{}};
 
 void evaluateCube(K3DTree<size_t, float> &vertexTree, IndexBufferRAM *indexBuffer,
-                  std::vector<vec3> &positions, std::vector<vec3> &normals, const std::array<vec3, 8> &pos,
-                  const std::array<double, 8> &values) {
+                  std::vector<vec3> &positions, std::vector<vec3> &normals,
+                  const std::array<vec3, 8> &pos, const std::array<double, 8> &values) {
     int index = 0;
 
     //  v7 ----- v6
@@ -625,8 +625,8 @@ std::shared_ptr<Mesh> marchingcubes(std::shared_ptr<const Volume> volume, double
                         values[l] = marching::getValue(src, size3_t(i, j, k) + o, dim, iso, invert);
                     }
 
-                    marchingcubes::evaluateCube(vertexTree, indexBuffer.get(), positions, normals, pos,
-                                                values);
+                    marchingcubes::evaluateCube(vertexTree, indexBuffer.get(), positions, normals,
+                                                pos, values);
                 }
             }
             if (progressCallback) {
@@ -635,8 +635,8 @@ std::shared_ptr<Mesh> marchingcubes(std::shared_ptr<const Volume> volume, double
         }
 
         if (enclose) {
-            marching::encloseSurfce(src, dim, indexBuffer.get(), positions, normals, iso, invert, dx, dy,
-                                    dz);
+            marching::encloseSurfce(src, dim, indexBuffer.get(), positions, normals, iso, invert,
+                                    dx, dy, dz);
         }
 
         ivwAssert(positions.size() == normals.size(), "positions_ and normals_ must be equal");
@@ -653,7 +653,6 @@ std::shared_ptr<Mesh> marchingcubes(std::shared_ptr<const Volume> volume, double
         if (progressCallback) progressCallback(1.0f);
 
         return mesh;
-
     });
 }
 }  // namespace util

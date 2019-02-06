@@ -29,6 +29,48 @@
  
 include(CMakeParseArguments)
 
+function(ivw_get_subdirs_recursive retval start) 
+    set(res "")
+    get_property(subdirs DIRECTORY ${start} PROPERTY SUBDIRECTORIES)
+    list(APPEND res ${subdirs})
+    foreach(subdir IN LISTS subdirs)
+        ivw_get_subdirs_recursive(ret ${subdir})
+        list(APPEND res ${ret})
+        list(REMOVE_DUPLICATES res)
+    endforeach()
+    set(${retval} ${res} PARENT_SCOPE)
+endfunction()
+
+function(ivw_get_include_dirs retval) 
+    set(res "")
+    ivw_get_subdirs_recursive(subdirs ${IVW_ROOT_DIR})
+    foreach(subdir IN LISTS subdirs)
+        get_property(targets DIRECTORY ${subdir} PROPERTY BUILDSYSTEM_TARGETS)
+        foreach(target IN LISTS targets)
+            ivw_get_target_property_recursive(dirs ${target} INTERFACE_INCLUDE_DIRECTORIES True)
+            list(APPEND res ${dirs})
+            ivw_get_target_property_recursive(dirs ${target} INCLUDE_DIRECTORIES False)
+            list(APPEND res ${dirs})
+            list(REMOVE_DUPLICATES res)
+        endforeach()
+    endforeach()
+
+    # filter generator expr
+    set(res2 "")
+    foreach(item IN LISTS res)
+        string(REGEX MATCH [=[^\$<BUILD_INTERFACE:([^$<>]+)>$]=] repl ${item})
+        if(CMAKE_MATCH_1)
+            list(APPEND res2 "\"${CMAKE_MATCH_1}\"")
+        endif()
+        string(REGEX MATCH [=[^[^$<>]*$]=] repl ${item})
+        if(CMAKE_MATCH_0)
+            list(APPEND "res2" "\"${CMAKE_MATCH_0}\"")
+        endif()
+    endforeach()
+    list(REMOVE_DUPLICATES res2)
+    set(${retval} ${res2} PARENT_SCOPE)
+endfunction()
+
 if(${MSVC})
     option(IVW_DOXYGEN_PROJECT "Create Inviwo doxygen files" OFF)
     if(${IVW_DOXYGEN_PROJECT})
@@ -81,6 +123,9 @@ function(ivw_private_make_doxyfile)
     ivw_private_format_doxy_arg(input_tags ${ARG_INPUT_TAGS})
     ivw_private_format_doxy_arg(filter_patterns ${ARG_FILTER_PATTERNS})
 
+    ivw_get_include_dirs(incpaths)
+    ivw_private_format_doxy_arg(incpaths ${incpaths})
+
     string(REGEX REPLACE ";" "\n" additional_flags "${ARG_ADDITIONAL_FLAGS}")
 
     string(TOLOWER ${ARG_NAME} name_lower)
@@ -95,7 +140,7 @@ WARNINGS               = YES
 WARN_NO_PARAMDOC       = NO
 WARN_IF_UNDOCUMENTED   = NO
 WARN_FORMAT            = \"${ARG_WARNING_FORMAT}\"
-QUIET                  = NO
+QUIET                  = YES
 CREATE_SUBDIRS         = NO
 ALLOW_UNICODE_NAMES    = YES
 JAVADOC_AUTOBRIEF      = NO
@@ -123,7 +168,7 @@ SEARCH_INCLUDES        = NO
 
 IMAGE_PATH             = ${image_paths}
 
-INCLUDE_PATH           = ${IVW_ROOT_DIR}/ext
+INCLUDE_PATH           = ${incpaths}
 
 EXTENSION_MAPPING      = no_extension=C++ frag=C++ vert=C++ geom=C++ glsl=C++
 
@@ -413,17 +458,23 @@ function(make_doxygen_target modules_var)
         GENERATE_IMG
     )
 
+    add_custom_target("DOXY-Clear"
+        COMMAND ${CMAKE_COMMAND} -E remove_directory "${output_dir}/inviwo"
+        WORKING_DIRECTORY ${output_dir}
+        COMMENT "Clear the old documentation"
+        VERBATIM
+    )
+    set_target_properties("DOXY-Clear" PROPERTIES FOLDER "doc" EXCLUDE_FROM_ALL TRUE)
 
     add_custom_target("DOXY-Inviwo"
-        COMMAND ${CMAKE_COMMAND} -E echo "Building doxygen Inviwo"
-        COMMAND ${CMAKE_COMMAND} -E remove_directory "${output_dir}/inviwo"
         COMMAND ${CMAKE_COMMAND} -E make_directory "${output_dir}/inviwo/html"
         COMMAND ${DOXYGEN_EXECUTABLE} "${output_dir}/inviwo.doxy"
         WORKING_DIRECTORY ${output_dir}
         COMMENT "Generating Inviwo API documentation with Doxygen"
         VERBATIM
     )
-
+    set_target_properties("DOXY-Inviwo" PROPERTIES FOLDER "doc" EXCLUDE_FROM_ALL TRUE)
+    add_dependencies("DOXY-ALL" "DOXY-Inviwo")
 
     if(${IVW_DOXYGEN_OPEN_HTML_AFTER_BUILD})
         if(WIN32)
@@ -433,7 +484,6 @@ function(make_doxygen_target modules_var)
         else()
             set(OPEN_COMMAND "xdg-open")
         endif()
-
         add_custom_command(TARGET DOXY-Inviwo 
             POST_BUILD
             COMMAND ${OPEN_COMMAND} 
@@ -441,21 +491,17 @@ function(make_doxygen_target modules_var)
         )
     endif()
 
-
-    set_target_properties("DOXY-Inviwo" PROPERTIES FOLDER "doc" EXCLUDE_FROM_ALL TRUE)
-    add_dependencies("DOXY-ALL" "DOXY-Inviwo")
-
-
     add_custom_target("DOXY-generate-processor-previews"
         COMMAND inviwo --save-previews "${output_dir}/inviwo/html" --quit
         WORKING_DIRECTORY ${output_dir}
         COMMENT "Generate preview images of processors to be used in Inviwo Doxygen API documentation"
         VERBATIM
     )
+    add_dependencies("DOXY-generate-processor-previews" "DOXY-Clear")
     set_target_properties("DOXY-generate-processor-previews" 
                             PROPERTIES FOLDER "doc" EXCLUDE_FROM_ALL TRUE)
-    add_dependencies("DOXY-ALL" "DOXY-generate-processor-previews")
-    add_dependencies("DOXY-generate-processor-previews" "DOXY-Inviwo")
+
+    add_dependencies("DOXY-Inviwo" "DOXY-generate-processor-previews" "DOXY-Clear")
 
     # Help, used for the help inside inviwo
     set(module_bases "")

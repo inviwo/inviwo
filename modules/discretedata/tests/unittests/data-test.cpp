@@ -51,9 +51,9 @@ struct TestVec3f {
 };
 
 TEST(CreatingCopyingIndexing, DataChannels) {
-    // ************************************************* \\
-    // Testing Indexing in Analytic/Buffer               \\
-    // ************************************************* \\
+    // *************************************************
+    // Testing Indexing in Analytic/Buffer
+    // *************************************************
     // - Create channels with (1, 0.1*idx, 0.01*idx^2)
     // - Compare results in analytic and buffer channel
     // - Copy, assign BufferChannel and test again

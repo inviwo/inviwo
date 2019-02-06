@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PORTCONNECTION_H
@@ -57,10 +57,8 @@ public:
     Outport* getOutport() const { return outport_; }
 
     bool involvesProcessor(Processor* processor) const {
-        return (inport_->getProcessor()==processor ||
-                outport_->getProcessor()==processor);
+        return (inport_->getProcessor() == processor || outport_->getProcessor() == processor);
     }
-
 
     virtual void serialize(Serializer& s) const;
     virtual void deserialize(Deserializer& d);
@@ -77,12 +75,11 @@ bool IVW_CORE_API operator==(const PortConnection& lhs, const PortConnection& rh
 bool IVW_CORE_API operator!=(const PortConnection& lhs, const PortConnection& rhs);
 bool IVW_CORE_API operator<(const PortConnection& lhs, const PortConnection& rhs);
 
-} // namespace
-
+}  // namespace inviwo
 
 namespace std {
 
-template<>
+template <>
 struct hash<inviwo::PortConnection> {
     size_t operator()(const inviwo::PortConnection& p) const {
         size_t h = 0;
@@ -94,5 +91,4 @@ struct hash<inviwo::PortConnection> {
 
 }  // namespace std
 
-
-#endif // IVW_PORTCONNECTION_H
+#endif  // IVW_PORTCONNECTION_H

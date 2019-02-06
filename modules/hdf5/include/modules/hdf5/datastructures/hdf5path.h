@@ -75,9 +75,8 @@ IVW_MODULE_HDF5_API std::basic_ostream<CTy, CTr> &operator<<(std::basic_ostream<
     return os << path.toString();
 }
 
-}  // namespace
+}  // namespace hdf5
 
-}  // namespace
-
+}  // namespace inviwo
 
 #endif  // IVW_HDF5PATH_H

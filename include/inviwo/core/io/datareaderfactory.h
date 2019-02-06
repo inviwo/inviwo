@@ -103,6 +103,6 @@ std::unique_ptr<DataReaderType<T>> DataReaderFactory::getReaderForTypeAndExtensi
     });
 }
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_DATAREADERFACTORY_H

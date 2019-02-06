@@ -78,11 +78,7 @@ PointRenderer::PointRenderer()
 }
 
 void PointRenderer::process() {
-    if (imageInport_.isReady()) {
-        utilgl::activateTargetAndCopySource(outport_, imageInport_, ImageType::ColorDepth);
-    } else {
-        utilgl::activateAndClearTarget(outport_, ImageType::ColorDepth);
-    }
+    utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
 
     utilgl::GlBoolState nvPointSize(GL_VERTEX_PROGRAM_POINT_SIZE_NV, true);
     utilgl::GlBoolState pointSprite(GL_POINT_SPRITE, true);

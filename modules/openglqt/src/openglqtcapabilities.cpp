@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/openglqt/openglqtcapabilities.h>
@@ -35,22 +35,23 @@
 
 namespace inviwo {
 
-#define OpenGLQtInfoNotFound(message) { LogInfo(message << " Info could not be retrieved"); }
+#define OpenGLQtInfoNotFound(message) \
+    { LogInfo(message << " Info could not be retrieved"); }
 
 OpenGLQtCapabilities::OpenGLQtCapabilities() {}
 
 OpenGLQtCapabilities::~OpenGLQtCapabilities() {}
 
 void OpenGLQtCapabilities::printInfo() {
-    //Qt General Info
+    // Qt General Info
 }
 
 std::vector<int> OpenGLQtCapabilities::getGLVersion() {
     const GLubyte* glversion = glGetString(GL_VERSION);
     std::string glVersionStr =
         std::string((glversion != nullptr ? reinterpret_cast<const char*>(glversion) : "INVALID"));
-    std::vector<std::string> versionInfoStr = splitString(glVersionStr,'.');
-    //ivwAssert(versionInfo.size()!=0, "Cannot retrieve GL version.");
+    std::vector<std::string> versionInfoStr = splitString(glVersionStr, '.');
+    // ivwAssert(versionInfo.size()!=0, "Cannot retrieve GL version.");
     std::string majorVersion = versionInfoStr[0];
     std::string minorVersion = versionInfoStr[1];
     int major = stringTo<int>(majorVersion);
@@ -61,4 +62,4 @@ std::vector<int> OpenGLQtCapabilities::getGLVersion() {
     return versionInfo;
 }
 
-} // namespace
+}  // namespace inviwo

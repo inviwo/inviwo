@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/basegl/processors/imageprocessing/findedges.h>
@@ -33,27 +33,21 @@
 namespace inviwo {
 
 const ProcessorInfo FindEdges::processorInfo_{
-    "org.inviwo.FindEdges",   // Class identifier
-    "Image Find Edges",       // Display name
-    "Image Operation",        // Category
-    CodeState::Stable,        // Code state
-    Tags::GL,                 // Tags
+    "org.inviwo.FindEdges",  // Class identifier
+    "Image Find Edges",      // Display name
+    "Image Operation",       // Category
+    CodeState::Stable,       // Code state
+    Tags::GL,                // Tags
 };
-const ProcessorInfo FindEdges::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo FindEdges::getProcessorInfo() const { return processorInfo_; }
 
 FindEdges::FindEdges()
-    : ImageGLProcessor("img_findedges.frag")
-    , alpha_("alpha", "Alpha", 0.5f, 0.0f, 1.0f) {
+    : ImageGLProcessor("img_findedges.frag"), alpha_("alpha", "Alpha", 0.5f, 0.0f, 1.0f) {
     addProperty(alpha_);
 }
 
 FindEdges::~FindEdges() = default;
 
-void FindEdges::preProcess(TextureUnitContainer &) {
-    shader_.setUniform("alpha_", alpha_.get());
-}
+void FindEdges::preProcess(TextureUnitContainer &) { shader_.setUniform("alpha_", alpha_.get()); }
 
-}  // namespace
-
+}  // namespace inviwo

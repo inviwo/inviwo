@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_GRADIENTVOLUMEPROCESSOR_H
@@ -37,14 +37,13 @@
 #include <inviwo/core/properties/cameraproperty.h>
 #include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
 
-
 namespace inviwo {
 
 /** \docpage{org.inviwo.VolumeGradient, Volume Gradient}
  * ![](org.inviwo.VolumeGradient.png?classIdentifier=org.inviwo.VolumeGradient)
- * Computes the gradient of one channel of a 3D scalar field. The input channel 
+ * Computes the gradient of one channel of a 3D scalar field. The input channel
  * can saved along with the gradient in the alpha channel of the output.
- * 
+ *
  * ### Inports
  *   * __inputVolume__ Input volume
  *
@@ -52,8 +51,9 @@ namespace inviwo {
  *   * __outputVolume__ Output volume
  *
  * ### Properties
- *   * __Channel__ Selects the channel used for the gradient computation 
- *   * __Store Input Data in Alpha__ Toggles whether the input data is saved in the alpha channel of the output
+ *   * __Channel__ Selects the channel used for the gradient computation
+ *   * __Store Input Data in Alpha__ Toggles whether the input data is saved in the alpha channel of
+ * the output
  *
  */
 
@@ -62,7 +62,7 @@ namespace inviwo {
  *
  * \brief computes the gradient of a 3D scalar field.
  */
-class IVW_MODULE_BASEGL_API VolumeGradientProcessor : public VolumeGLProcessor  { 
+class IVW_MODULE_BASEGL_API VolumeGradientProcessor : public VolumeGLProcessor {
 public:
     VolumeGradientProcessor();
     virtual ~VolumeGradientProcessor();
@@ -80,7 +80,6 @@ private:
     BoolProperty dataInChannel4_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_GRADIENTVOLUMEPROCESSOR_H
-
+#endif  // IVW_GRADIENTVOLUMEPROCESSOR_H

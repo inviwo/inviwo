@@ -40,9 +40,7 @@ ImageCL::~ImageCL() {}
 
 ImageCL* ImageCL::clone() const { return new ImageCL(*this); }
 
-size2_t ImageCL::getDimensions() const {
-    return layerCL_->getDimensions();
-}
+size2_t ImageCL::getDimensions() const { return layerCL_->getDimensions(); }
 
 LayerCL* ImageCL::getLayerCL() { return layerCL_; }
 
@@ -60,15 +58,11 @@ bool ImageCL::copyRepresentationsTo(ImageRepresentation* targetRep) const {
     return this->getLayerCL()->copyRepresentationsTo(targetCL->getLayerCL());
 }
 
-size_t ImageCL::priority() const {
-    return 250;
-}
+size_t ImageCL::priority() const { return 250; }
 
 std::type_index ImageCL::getTypeIndex() const { return std::type_index(typeid(ImageCL)); }
 
-bool ImageCL::isValid() const {
-    return layerCL_->isValid();
-}
+bool ImageCL::isValid() const { return layerCL_->isValid(); }
 
 void ImageCL::update(bool editable) {
     // TODO: Convert more then just first color layer
@@ -87,7 +81,7 @@ void ImageCL::update(bool editable) {
     }
 }
 
-}  // namespace
+}  // namespace inviwo
 
 namespace cl {
 

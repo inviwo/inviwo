@@ -38,7 +38,7 @@
 namespace inviwo {
 
 BaseOrdinalSpinBoxWidget::BaseOrdinalSpinBoxWidget() : editor_{new DoubleValueDragSpinBox(this)} {
-        
+
     setFocusPolicy(editor_->focusPolicy());
     setFocusProxy(editor_);
 
@@ -83,12 +83,12 @@ void BaseOrdinalSpinBoxWidget::applyValue() {
 }
 
 void BaseOrdinalSpinBoxWidget::applyRange() {
-    QSignalBlocker block{ editor_ };
-    editor_->setRange(minimumValue(), maximumValue()); 
+    QSignalBlocker block{editor_};
+    editor_->setRange(minimumValue(), maximumValue());
 }
 
 void BaseOrdinalSpinBoxWidget::applyIncrement() {
-    QSignalBlocker block{ editor_ };
+    QSignalBlocker block{editor_};
     editor_->setSingleStep(increment());
     editor_->setDecimals(spinnerDecimals());
 }

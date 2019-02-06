@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_CANVASPROCESSORWIDGETGLFW_H
@@ -42,7 +42,7 @@ class IVW_MODULE_GLFW_API CanvasProcessorWidgetGLFW : public CanvasProcessorWidg
 public:
     CanvasProcessorWidgetGLFW(Processor* p);
     virtual ~CanvasProcessorWidgetGLFW();
-    
+
     virtual void setVisible(bool visible) override;
     virtual void show() override;
     virtual void hide() override;
@@ -60,6 +60,6 @@ private:
     canvas_ptr canvas_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_CANVASPROCESSORWIDGETGLFW_H
+#endif  // IVW_CANVASPROCESSORWIDGETGLFW_H

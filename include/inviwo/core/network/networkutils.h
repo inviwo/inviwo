@@ -215,7 +215,8 @@ IVW_CORE_API bool addProcessorOnConnection(ProcessorNetwork* network,
                                            std::unique_ptr<Processor> processor,
                                            PortConnection connection);
 
-IVW_CORE_API void replaceProcessor(ProcessorNetwork* network, std::unique_ptr<Processor> newProcessor,
+IVW_CORE_API void replaceProcessor(ProcessorNetwork* network,
+                                   std::unique_ptr<Processor> newProcessor,
                                    Processor* oldProcessor);
 
 }  // namespace util

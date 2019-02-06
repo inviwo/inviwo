@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/io/datawriter.h>
 #include <inviwo/core/io/datawriterfactory.h>
+#include <inviwo/core/io/datawriterexception.h>
 
 namespace inviwo {
 
@@ -101,26 +102,26 @@ void Layer::copyRepresentationsTo(Layer* targetLayer) {
 
 LayerType Layer::getLayerType() const { return layerType_; }
 
-std::unique_ptr<std::vector<unsigned char>> Layer::getAsCodedBuffer(const std::string & fileExtension) const {
+std::unique_ptr<std::vector<unsigned char>> Layer::getAsCodedBuffer(
+    const std::string& fileExtension) const {
     if (auto writer = std::shared_ptr<DataWriterType<Layer>>(
-        InviwoApplication::getPtr()->getDataWriterFactory()->getWriterForTypeAndExtension<Layer>(
-            fileExtension))) {
+            InviwoApplication::getPtr()
+                ->getDataWriterFactory()
+                ->getWriterForTypeAndExtension<Layer>(fileExtension))) {
         try {
             return writer->writeDataToBuffer(this, fileExtension);
-        }
-        catch (DataWriterException const& e) {
+        } catch (DataWriterException const& e) {
             LogError(e.getMessage());
         }
-    }
-    else {
-        LogError("Could not find a writer for the specified file extension (\"" 
-                 << fileExtension << "\")");
+    } else {
+        LogError("Could not find a writer for the specified file extension (\"" << fileExtension
+                                                                                << "\")");
     }
 
     return std::unique_ptr<std::vector<unsigned char>>();
 }
 
-void Layer::setSwizzleMask(const SwizzleMask &mask) {
+void Layer::setSwizzleMask(const SwizzleMask& mask) {
     if ((layerType_ == LayerType::Color) && this->hasRepresentations()) {
         // update swizzle mask of all representations
         for (auto rep : representations_) {
@@ -141,7 +142,7 @@ std::shared_ptr<LayerRepresentation> Layer::createDefaultRepresentation() const 
     return createLayerRAM(getDimensions(), getLayerType(), getDataFormat(), getSwizzleMask());
 }
 
-void Layer::updateMetaFromRepresentation(const LayerRepresentation *layerRep) {
+void Layer::updateMetaFromRepresentation(const LayerRepresentation* layerRep) {
     if (layerRep) {
         StructuredGridEntity<2>::setDimensions(layerRep->getDimensions());
         layerType_ = layerRep->getLayerType();
@@ -152,4 +153,4 @@ void Layer::updateMetaFromRepresentation(const LayerRepresentation *layerRep) {
 template class IVW_CORE_TMPL_INST DataReaderType<Layer>;
 template class IVW_CORE_TMPL_INST DataWriterType<Layer>;
 
-}  // namespace
+}  // namespace inviwo

@@ -50,6 +50,6 @@ private:
     std::unique_ptr<Canvas> sharedCanvas_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_OPENGLQT_MODULE_H

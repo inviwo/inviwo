@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <warn/push>
@@ -34,46 +34,42 @@
 
 #include <modules/base/datastructures/kdtree.h>
 
-namespace inviwo{
+namespace inviwo {
 
-TEST(KDTreeTests, init) {
-    KDTree<3,char,float> tree;
-}
-
+TEST(KDTreeTests, init) { KDTree<3, char, float> tree; }
 
 TEST(KDTreeTests, randomPointsTest) {
-    srand(0); // seed to always be the same random numbers
+    srand(0);  // seed to always be the same random numbers
 
     K3DTree<int, float> tree;
     int size = 1000;
-    for(int i = 0;i<size;i++){
-        glm::vec3 p (rand()/float(RAND_MAX),rand()/float(RAND_MAX),rand()/float(RAND_MAX)); 
-        tree.insert(p,i);
+    for (int i = 0; i < size; i++) {
+        glm::vec3 p(rand() / float(RAND_MAX), rand() / float(RAND_MAX), rand() / float(RAND_MAX));
+        tree.insert(p, i);
     }
 
-    EXPECT_EQ(tree.size() , size);
+    EXPECT_EQ(tree.size(), size);
     EXPECT_FALSE(tree.empty());
 }
-
 
 TEST(KDTreeTests, minMaxTest) {
 
-    srand(0); // seed to always be the same random numbers
+    srand(0);  // seed to always be the same random numbers
 
     K3DTree<int, float> tree;
     int size = 1000;
-    for(int i = 0;i<size;i++){
-        glm::vec3 p (rand()/float(RAND_MAX),rand()/float(RAND_MAX),rand()/float(RAND_MAX)); 
-        tree.insert(p,i);
+    for (int i = 0; i < size; i++) {
+        glm::vec3 p(rand() / float(RAND_MAX), rand() / float(RAND_MAX), rand() / float(RAND_MAX));
+        tree.insert(p, i);
     }
 
-    EXPECT_EQ(tree.size() , size);
+    EXPECT_EQ(tree.size(), size);
     EXPECT_FALSE(tree.empty());
 
-    tree.insert(glm::vec3(1,1,1),1);
-    tree.insert(glm::vec3(0,0,0),1);
+    tree.insert(glm::vec3(1, 1, 1), 1);
+    tree.insert(glm::vec3(0, 0, 0), 1);
 
-    EXPECT_EQ(tree.size() , size+2);
+    EXPECT_EQ(tree.size(), size + 2);
 
     glm::vec3 min;
     glm::vec3 max;
@@ -85,19 +81,16 @@ TEST(KDTreeTests, minMaxTest) {
     max.y = tree.findMax(1)->getPosition()[1];
     max.z = tree.findMax(2)->getPosition()[2];
 
-    EXPECT_EQ(min.x , 0);
-    EXPECT_EQ(min.y , 0);
-    EXPECT_EQ(min.z , 0);
+    EXPECT_EQ(min.x, 0);
+    EXPECT_EQ(min.y, 0);
+    EXPECT_EQ(min.z, 0);
 
-    EXPECT_EQ(max.x , 1);
-    EXPECT_EQ(max.y , 1);
-    EXPECT_EQ(max.z , 1);
+    EXPECT_EQ(max.x, 1);
+    EXPECT_EQ(max.y, 1);
+    EXPECT_EQ(max.z, 1);
 
-
-    tree.insert(glm::vec3(2,3,4),1);
-    tree.insert(glm::vec3(-1,-2,-3),1);
-
-
+    tree.insert(glm::vec3(2, 3, 4), 1);
+    tree.insert(glm::vec3(-1, -2, -3), 1);
 
     min.x = tree.findMin(0)->getPosition()[0];
     min.y = tree.findMin(1)->getPosition()[1];
@@ -107,41 +100,37 @@ TEST(KDTreeTests, minMaxTest) {
     max.y = tree.findMax(1)->getPosition()[1];
     max.z = tree.findMax(2)->getPosition()[2];
 
-    EXPECT_EQ(max.x , 2);
-    EXPECT_EQ(max.y , 3);
-    EXPECT_EQ(max.z , 4);
+    EXPECT_EQ(max.x, 2);
+    EXPECT_EQ(max.y, 3);
+    EXPECT_EQ(max.z, 4);
 
-    EXPECT_EQ(min.x , -1);
-    EXPECT_EQ(min.y , -2);
-    EXPECT_EQ(min.z , -3);
+    EXPECT_EQ(min.x, -1);
+    EXPECT_EQ(min.y, -2);
+    EXPECT_EQ(min.z, -3);
 }
-
-
 
 TEST(KDTreeTests, findNClosests) {
 
-    srand(0); // seed to always be the same random numbers
+    srand(0);  // seed to always be the same random numbers
 
     K3DTree<int, float> tree;
     int size = 1000;
-    for(int i = 0;i<size;i++){
-        glm::vec3 p (rand()/float(RAND_MAX),rand()/float(RAND_MAX),rand()/float(RAND_MAX)); 
-        tree.insert(p,i);
+    for (int i = 0; i < size; i++) {
+        glm::vec3 p(rand() / float(RAND_MAX), rand() / float(RAND_MAX), rand() / float(RAND_MAX));
+        tree.insert(p, i);
     }
 
-    EXPECT_EQ(tree.size() , size);
+    EXPECT_EQ(tree.size(), size);
     EXPECT_FALSE(tree.empty());
 
-    glm::vec3 p(0.5f,0.5f,0.5f);
+    glm::vec3 p(0.5f, 0.5f, 0.5f);
 
-    std::vector< K3DTree<int, float>::Node*> n10 = tree.findNNearest(p,10);
-    EXPECT_EQ(n10.size() , 10);
-    std::vector<K3DTree<int, float>::Node*> n20 = tree.findNNearest(p,20);
-    EXPECT_EQ(n20.size() , 20);
-    std::vector<K3DTree<int, float>::Node*> n100 = tree.findNNearest(p,100);
-    EXPECT_EQ(n100.size() , 100);
+    std::vector<K3DTree<int, float>::Node*> n10 = tree.findNNearest(p, 10);
+    EXPECT_EQ(n10.size(), 10);
+    std::vector<K3DTree<int, float>::Node*> n20 = tree.findNNearest(p, 20);
+    EXPECT_EQ(n20.size(), 20);
+    std::vector<K3DTree<int, float>::Node*> n100 = tree.findNNearest(p, 100);
+    EXPECT_EQ(n100.size(), 100);
 }
 
-
-
-}
+}  // namespace inviwo

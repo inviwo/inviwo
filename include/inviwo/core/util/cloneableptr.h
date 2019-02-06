@@ -41,7 +41,7 @@ namespace util {
  * A resource handle for classes that should be cloned on copy and assignment
  */
 template <typename T>
-class cloneable_ptr { 
+class cloneable_ptr {
 public:
     cloneable_ptr() = default;
     cloneable_ptr(T* ptr);
@@ -61,7 +61,6 @@ public:
     T* operator->() const;
     explicit operator bool() const;
 
-
 private:
     std::unique_ptr<T> ptr_;
 };
@@ -72,7 +71,7 @@ cloneable_ptr<T>::cloneable_ptr(T* ptr) : ptr_(ptr) {}
 template <typename T>
 cloneable_ptr<T>& cloneable_ptr<T>::operator=(const cloneable_ptr<T>& that) {
     if (this != &that) {
-        ptr_.reset(that.ptr_? that.ptr_->clone() : nullptr);
+        ptr_.reset(that.ptr_ ? that.ptr_->clone() : nullptr);
     }
     return *this;
 }
@@ -85,8 +84,8 @@ cloneable_ptr<T>& cloneable_ptr<T>::operator=(cloneable_ptr<T>&& that) {
 }
 
 template <typename T>
-cloneable_ptr<T>::cloneable_ptr(const cloneable_ptr<T>& rhs) : 
-    ptr_(rhs.ptr_? rhs.ptr_->clone() : nullptr) {}
+cloneable_ptr<T>::cloneable_ptr(const cloneable_ptr<T>& rhs)
+    : ptr_(rhs.ptr_ ? rhs.ptr_->clone() : nullptr) {}
 
 template <typename T>
 cloneable_ptr<T>::cloneable_ptr(std::unique_ptr<T>&& ptr) : ptr_(std::move(ptr)) {}
@@ -111,16 +110,13 @@ void inviwo::util::cloneable_ptr<T>::reset(T* ptr) {
     ptr_.reset(ptr);
 }
 
-
 template <typename T>
 T* inviwo::util::cloneable_ptr<T>::get() const {
     return ptr_.get();
 }
 
+}  // namespace util
 
-} // namespace
+}  // namespace inviwo
 
-} // namespace
-
-#endif // IVW_CLONEABLEPTR_H
-
+#endif  // IVW_CLONEABLEPTR_H

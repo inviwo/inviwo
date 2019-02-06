@@ -274,9 +274,9 @@ void CropWidget::initMesh() {
 
 void CropWidget::createLineStripMesh() {
     auto linestrip = std::make_shared<Mesh>(DrawType::Lines, ConnectivityType::StripAdjacency);
-    auto vertices = std::make_shared<Buffer<vec3> >();
-    auto colors = std::make_shared<Buffer<vec4> >();
-    auto texCoords = std::make_shared<Buffer<vec2> >();
+    auto vertices = std::make_shared<Buffer<vec3>>();
+    auto colors = std::make_shared<Buffer<vec4>>();
+    auto texCoords = std::make_shared<Buffer<vec2>>();
 
     auto vBuffer = vertices->getEditableRAMRepresentation();
     auto colorBuffer = colors->getEditableRAMRepresentation();
@@ -284,7 +284,6 @@ void CropWidget::createLineStripMesh() {
 
     vec3 p(0.0f);
     vec2 t(0.0f, 0.0f);
-    vec4 color;
     vec3 mask[5] = {{0.0f, 0.0f, 0.0f},
                     {1.0f, 0.0f, 0.0f},
                     {1.0f, 1.0f, 0.0f},
@@ -643,8 +642,6 @@ void CropWidget::rangePositionHandlePicked(CropAxis &cropAxis, PickingEvent *p,
     auto refDepth = p->getPressedDepth();
     currNDC.z = refDepth;
     prevNDC.z = refDepth;
-
-    vec3 axis(volumeBasis_[static_cast<int>(cropAxis.axis)]);
 
     // project mouse delta onto axis
     vec2 delta(currNDC - prevNDC);

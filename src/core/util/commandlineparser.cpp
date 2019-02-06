@@ -32,20 +32,17 @@
 
 namespace inviwo {
 
-
 CommandLineArgHolder::CommandLineArgHolder(InviwoApplication* app, TCLAP::Arg& arg)
     : app_{app}, arg_{arg} {
     app_->getCommandLineParser().add(&arg);
 }
 
-CommandLineArgHolder::CommandLineArgHolder(InviwoApplication* app, TCLAP::Arg& arg, std::function<void()> callback,
-                     int priority)
+CommandLineArgHolder::CommandLineArgHolder(InviwoApplication* app, TCLAP::Arg& arg,
+                                           std::function<void()> callback, int priority)
     : app_{app}, arg_{arg} {
     app_->getCommandLineParser().add(&arg, std::move(callback), priority);
 }
-CommandLineArgHolder::~CommandLineArgHolder() {
-    app_->getCommandLineParser().remove(&arg_);
-}
+CommandLineArgHolder::~CommandLineArgHolder() { app_->getCommandLineParser().remove(&arg_); }
 
 CommandLineParser::CommandLineParser() : CommandLineParser(0, nullptr) {}
 
@@ -209,6 +206,14 @@ void CommandLineParser::add(TCLAP::Arg* arg) { cmd_.add(arg); }
 void CommandLineParser::add(TCLAP::Arg* arg, std::function<void()> callback, int priority) {
     cmd_.add(arg);
     callbacks_.push_back(std::make_tuple(priority, arg, callback));
+}
+
+void CommandLineParser::xorAdd(TCLAP::Arg* a, std::function<void()> callbackA, int priorityA,
+                               TCLAP::Arg* b, std::function<void()> callbackB, int priorityB) {
+    auto args = std::vector<TCLAP::Arg*>{a, b};
+    cmd_.xorAdd(args);
+    callbacks_.push_back(std::make_tuple(priorityA, a, callbackA));
+    callbacks_.push_back(std::make_tuple(priorityB, b, callbackB));
 }
 
 void CommandLineParser::remove(TCLAP::Arg* arg) {

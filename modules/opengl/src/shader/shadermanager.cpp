@@ -47,9 +47,7 @@ namespace inviwo {
 
 ShaderManager* ShaderManager::instance_ = nullptr;
 
-ShaderManager::ShaderManager() : uniformWarnings_(nullptr) {
-    openGLInfoRef_ = nullptr;
-}
+ShaderManager::ShaderManager() : uniformWarnings_(nullptr) { openGLInfoRef_ = nullptr; }
 
 void ShaderManager::setOpenGLSettings(OpenGLSettings* settings) {
     uniformWarnings_ = &(settings->uniformWarnings_);
@@ -66,9 +64,7 @@ void ShaderManager::setOpenGLSettings(OpenGLSettings* settings) {
     shaderObjectErrors_ = &(settings->shaderObjectErrors_);
 }
 
-Shader::OnError ShaderManager::getOnShaderError() const {
-    return shaderObjectErrors_->get();
-}
+Shader::OnError ShaderManager::getOnShaderError() const { return shaderObjectErrors_->get(); }
 
 void ShaderManager::registerShader(Shader* shader) {
     shaders_.push_back(shader);
@@ -81,37 +77,13 @@ void ShaderManager::unregisterShader(Shader* shader) {
     util::erase_remove(shaders_, shader);
 }
 
-std::string ShaderManager::getGlobalGLSLHeader() {
-    OpenGLCapabilities* glCaps = getOpenGLCapabilitiesObject();
-    return glCaps->getCurrentGlobalGLSLHeader();
-}
-
-std::string ShaderManager::getGlobalGLSLVertexDefines() {
-    OpenGLCapabilities* glCaps = getOpenGLCapabilitiesObject();
-    return glCaps->getCurrentGlobalGLSLVertexDefines();
-}
-
-std::string ShaderManager::getGlobalGLSLFragmentDefines() {
-    OpenGLCapabilities* glCaps = getOpenGLCapabilitiesObject();
-    return glCaps->getCurrentGlobalGLSLFragmentDefines();
+bool ShaderManager::isRegistered(Shader* shader) const {
+    return std::find(shaders_.begin(), shaders_.end(), shader) != shaders_.end();
 }
 
 int ShaderManager::getGlobalGLSLVersion() {
-    OpenGLCapabilities* glCaps = getOpenGLCapabilitiesObject();
+    OpenGLCapabilities* glCaps = getOpenGLCapabilities();
     return glCaps->getCurrentShaderVersion().getVersion();
-}
-
-void ShaderManager::bindCommonAttributes(unsigned int programID) {
-    int glslVersion = this->getGlobalGLSLVersion();
-    glBindAttribLocation(programID, 0, "in_Vertex");
-    glBindAttribLocation(programID, 1, "in_Normal");
-    glBindAttribLocation(programID, 2, "in_Color");
-    glBindAttribLocation(programID, 3, "in_TexCoord");
-
-    if (glslVersion >= 130) {
-        glBindFragDataLocation(programID, 0, "FragData0");
-        glBindFragDataLocation(programID, 1, "PickingData");
-    }
 }
 
 const std::vector<std::string>& ShaderManager::getShaderSearchPaths() { return shaderSearchPaths_; }
@@ -130,7 +102,7 @@ void ShaderManager::addShaderResource(std::string key, std::string src) {
 }
 
 void ShaderManager::addShaderResource(std::string key, std::unique_ptr<ShaderResource> resource) {
-    std::shared_ptr<ShaderResource> res(std::move(resource));   
+    std::shared_ptr<ShaderResource> res(std::move(resource));
     ownedResources_.push_back(res);
     shaderResources_[key] = std::weak_ptr<ShaderResource>(res);
 }
@@ -138,14 +110,14 @@ void ShaderManager::addShaderResource(std::string key, std::unique_ptr<ShaderRes
 std::shared_ptr<ShaderResource> ShaderManager::getShaderResource(std::string key) {
     auto it1 = shaderResources_.find(key);
     if (it1 != shaderResources_.end()) {
-        if(!it1->second.expired()) {
+        if (!it1->second.expired()) {
             return it1->second.lock();
         } else {
             shaderResources_.erase(it1);
         }
     }
 
-    std::string key2{ key };
+    std::string key2{key};
     replaceInString(key2, "/", "_");
     replaceInString(key2, ".", "_");
     auto it0 = shaderResources_.find(key2);
@@ -177,7 +149,7 @@ std::shared_ptr<ShaderResource> ShaderManager::getShaderResource(std::string key
     return nullptr;
 }
 
-OpenGLCapabilities* ShaderManager::getOpenGLCapabilitiesObject() {
+OpenGLCapabilities* ShaderManager::getOpenGLCapabilities() {
     if (!openGLInfoRef_) {
         if (auto openGLModule = InviwoApplication::getPtr()->getModuleByType<OpenGLModule>())
             openGLInfoRef_ = getTypeFromVector<OpenGLCapabilities>(openGLModule->getCapabilities());
@@ -204,4 +176,4 @@ bool ShaderManager::addShaderSearchPathImpl(const std::string& shaderSearchPath)
 
 const std::vector<Shader*>& ShaderManager::getShaders() const { return shaders_; }
 
-}  // namespace
+}  // namespace inviwo

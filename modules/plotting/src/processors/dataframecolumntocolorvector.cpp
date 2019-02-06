@@ -80,7 +80,6 @@ void DataFrameColumnToColorVector::process() {
                     }
 
                     return colors;
-
                 }));
 }
 

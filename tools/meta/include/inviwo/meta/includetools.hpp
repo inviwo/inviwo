@@ -41,4 +41,4 @@ namespace inviwo::meta::util {
  */
 INVIWO_META_API bool replaceInclude(std::filesystem::path file, std::string_view oldInclude,
                                     std::string_view newInclude);
-}
+}  // namespace inviwo::meta::util

@@ -56,7 +56,6 @@ private:
     std::ofstream fileStream_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_FILELOGGER_H
-
+#endif  // IVW_FILELOGGER_H

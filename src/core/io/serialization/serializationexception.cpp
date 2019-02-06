@@ -29,6 +29,8 @@
 
 #include <inviwo/core/io/serialization/serializationexception.h>
 
+#include <fmt/format.h>
+
 namespace inviwo {
 
 SerializationException::SerializationException(std::string message, ExceptionContext context,
@@ -45,6 +47,17 @@ const std::string& SerializationException::getId() const noexcept { return data_
 const SerializationException::SerializationExceptionData& SerializationException::getData() const
     noexcept {
     return data_;
+}
+
+std::string util::formatSerializationError(const std::string& name, const std::string& src,
+                                           const std::string& dst, const std::string& err) {
+    return fmt::format(
+        "Could not create {name} from:\n"
+        "   {src}\n"
+        "to\n"
+        "   {dst}\n"
+        "{err}",
+        fmt::arg("name", name), fmt::arg("src", src), fmt::arg("dst", dst), fmt::arg("err", err));
 }
 
 }  // namespace inviwo

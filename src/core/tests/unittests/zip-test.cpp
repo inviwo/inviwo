@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <warn/push>
@@ -130,7 +130,7 @@ void forwadTest(Zipped&& iter) {
     {
         auto i = iter.begin();
         auto j = iter.end();
-        EXPECT_FALSE(i==j);
+        EXPECT_FALSE(i == j);
         for (size_t c = 0; c < ints.size(); ++c) {
             auto ref = proxy<int, D>{ints[c], ds[c]};
             EXPECT_EQ(ref, *i);
@@ -141,7 +141,7 @@ void forwadTest(Zipped&& iter) {
     {
         auto i = iter.begin();
         auto j = iter.end();
-        EXPECT_FALSE(i==j);
+        EXPECT_FALSE(i == j);
         // InputIterator requirements
         EXPECT_EQ(true, i != j);
         EXPECT_EQ(false, i == j);
@@ -162,7 +162,7 @@ void forwadTest(Zipped&& iter) {
     {
         auto i = iter.begin();
         auto j = iter.end();
-        EXPECT_FALSE(i==j);
+        EXPECT_FALSE(i == j);
         for (size_t c = 0; c < ints.size(); ++c) {
             auto ref = proxy<int, D>{ints[c], ds[c]};
             EXPECT_EQ(ref, *i);
@@ -179,7 +179,7 @@ void bidirectionalTest(Zipped&& iter) {
     {
         auto i = iter.begin();
         auto j = iter.end();
-        EXPECT_FALSE(i==j);
+        EXPECT_FALSE(i == j);
         std::advance(i, 2);
 
         auto ref0 = proxy<int, D>{3, D{30}};
@@ -214,7 +214,7 @@ void bidirectionalTest(Zipped&& iter) {
             EXPECT_EQ(ref3, *j1);
             EXPECT_EQ(ref3, *j2);
             EXPECT_EQ(true, j1 == j2);
-            
+
             auto val = *j2--;
             EXPECT_EQ(true, val == *j1);
             --j1;
@@ -423,7 +423,7 @@ TEST(SequencerTest, increments1) {
     int count = 0;
     for (auto&& i : util::make_sequence(0, 20, 2)) {
         EXPECT_EQ(count, i);
-        count+=2;
+        count += 2;
     }
 }
 
@@ -442,4 +442,4 @@ TEST(SequencerTest, increments3) {
         count -= 2;
     }
 }
-}  // namespace
+}  // namespace inviwo

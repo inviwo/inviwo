@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/opencl/inviwoopencl.h>
@@ -41,16 +41,14 @@
 #include <sstream>
 #include <stdio.h>
 #include <fstream>
-#if !(WIN32 || __APPLE__) // LINUX
-#include <GL/glx.h> // glXCurrentContext()
+#if !(WIN32 || __APPLE__)  // LINUX
+#include <GL/glx.h>        // glXCurrentContext()
 #endif
 
 #include <stdlib.h>
 #include <stdio.h>
 
-namespace cl {
-
-}
+namespace cl {}
 
 namespace inviwo {
 
@@ -106,7 +104,7 @@ bool OpenCL::isValidVolumeFormat(const cl::Context& context, const cl::ImageForm
 bool OpenCL::isOpenGLSharingEnabled() const {
     auto contextProperties = gpuContext_.getInfo<CL_CONTEXT_PROPERTIES>();
     return (std::find_if(contextProperties.begin(), contextProperties.end(),
-                         [](const cl_context_properties & p) {
+                         [](const cl_context_properties& p) {
 #if __APPLE__
                              return p == CL_CONTEXT_PROPERTY_USE_CGL_SHAREGROUP_APPLE;
 #else
@@ -146,10 +144,11 @@ bool OpenCL::getBestGPUDeviceOnSystem(cl::Device& bestDevice, cl::Platform& onPl
             for (auto& d : devicesTmp) {
                 try {
                     devices.emplace_back(d);
-                } catch (cl::Error &e) {
+                } catch (cl::Error& e) {
                     // Error getting device info, continue with other devices
-                    LogWarnCustom("InviwoOpenCL","Failed to get device info, skipping this device: (" << e.what()
-                                                                                 << ")");
+                    LogWarnCustom(
+                        "InviwoOpenCL",
+                        "Failed to get device info, skipping this device: (" << e.what() << ")");
                 }
             }
 
@@ -160,7 +159,6 @@ bool OpenCL::getBestGPUDeviceOnSystem(cl::Device& bestDevice, cl::Platform& onPl
 
     if (devices.empty()) return false;
     std::sort(devices.begin(), devices.end(), [&](Device& a, Device& b) {
-
         if (a.vendor == glVendor && b.vendor != glVendor) return true;
         if (a.vendor != glVendor && b.vendor == glVendor) return false;
 
@@ -172,7 +170,6 @@ bool OpenCL::getBestGPUDeviceOnSystem(cl::Device& bestDevice, cl::Platform& onPl
         }
 
         return a.max_compute_units > b.max_compute_units;
-
     });
 
     bestDevice = devices.front().device;
@@ -192,7 +189,8 @@ void OpenCL::printBuildError(const std::vector<cl::Device>& devices, const cl::P
         }
     }
 }
-void OpenCL::printBuildError(const cl::Device& device, const cl::Program& program, const std::string& filename) {
+void OpenCL::printBuildError(const cl::Device& device, const cl::Program& program,
+                             const std::string& filename) {
     printBuildError(std::vector<cl::Device>(1, device), program, filename);
 }
 
@@ -241,12 +239,12 @@ std::vector<cl::Device> OpenCL::getAllDevices() {
 
     for (::size_t i = 0; i < platforms.size(); ++i) {
         // Use a set here to get unique devices.
-        // Some weird bug on NVIDIA cards causes duplicate platforms 
+        // Some weird bug on NVIDIA cards causes duplicate platforms
         // to be returned (when reinstalling CUDA 5.5...)
         bool foundDuplicate = false;
-        for (::size_t j = i+1; j < platforms.size(); j++) {
+        for (::size_t j = i + 1; j < platforms.size(); j++) {
             if (platforms[i]() == platforms[j]()) {
-                foundDuplicate = true; 
+                foundDuplicate = true;
                 break;
             }
         }
@@ -258,7 +256,7 @@ std::vector<cl::Device> OpenCL::getAllDevices() {
         try {
             platforms[i].getDevices(CL_DEVICE_TYPE_ALL, &devices);
             allDevices.insert(allDevices.end(), devices.begin(), devices.end());
-        }  catch (cl::Error&) {
+        } catch (cl::Error&) {
             // Error getting device, continue with others
         }
     }
@@ -282,12 +280,15 @@ cl::Program OpenCL::buildProgram(const std::string& fileName, const std::string&
     if (prog.size() > 3 && !header.empty()) {
         size_t offset = 0;
         // https://en.wikipedia.org/wiki/Byte_order_mark
-        std::array<char, 3> utf8 = {static_cast<char>(0xEFu), static_cast<char>(0xBBu), static_cast<char>(0xBFu)};
+        std::array<char, 3> utf8 = {static_cast<char>(0xEFu), static_cast<char>(0xBBu),
+                                    static_cast<char>(0xBFu)};
         std::array<char, 2> utf16BE = {static_cast<char>(0xFEu), static_cast<char>(0xFFu)};
         std::array<char, 2> utf16LE = {static_cast<char>(0xFEu), static_cast<char>(0xFEu)};
-        std::array<char, 4> utf32BE = {0x00, 0x00, static_cast<char>(0xFEu), static_cast<char>(0xFFu)};
-        std::array<char, 4> utf32LE = {static_cast<char>(0xFFu), static_cast<char>(0xFEu), 0x00, 0x00};
-        
+        std::array<char, 4> utf32BE = {0x00, 0x00, static_cast<char>(0xFEu),
+                                       static_cast<char>(0xFFu)};
+        std::array<char, 4> utf32LE = {static_cast<char>(0xFFu), static_cast<char>(0xFEu), 0x00,
+                                       0x00};
+
         if (std::equal(std::begin(utf8), std::end(utf8), std::begin(prog)))
             offset = utf8.size();
         else if (std::equal(std::begin(utf16BE), std::end(utf16BE), std::begin(prog)))
@@ -322,27 +323,29 @@ cl::Program OpenCL::buildProgram(const std::string& fileName, const std::string&
     return program;
 }
 
-cl::Program OpenCL::buildProgram(const std::string& fileName, const std::string& header /*= ""*/, const std::string& defines /*= ""*/){
+cl::Program OpenCL::buildProgram(const std::string& fileName, const std::string& header /*= ""*/,
+                                 const std::string& defines /*= ""*/) {
     return OpenCL::buildProgram(fileName, header, defines, OpenCL::getPtr()->getQueue());
 }
 
-void OpenCL::addCommonIncludeDirectory(const std::string& directoryPath){
-    if(filesystem::directoryExists(directoryPath))
-        includeDirectories_.push_back(directoryPath);
+void OpenCL::addCommonIncludeDirectory(const std::string& directoryPath) {
+    if (filesystem::directoryExists(directoryPath)) includeDirectories_.push_back(directoryPath);
 }
 
-void OpenCL::removeCommonIncludeDirectory(const std::string& directoryPath){
-    std::vector<std::string>::iterator it = std::find(includeDirectories_.begin(), includeDirectories_.end(), directoryPath);
+void OpenCL::removeCommonIncludeDirectory(const std::string& directoryPath) {
+    std::vector<std::string>::iterator it =
+        std::find(includeDirectories_.begin(), includeDirectories_.end(), directoryPath);
 
     if (it != includeDirectories_.end()) {
         includeDirectories_.erase(it);
     }
 }
 
-std::string OpenCL::getIncludeDefine() const{
+std::string OpenCL::getIncludeDefine() const {
     std::string result;
 
-    for (std::vector<std::string>::const_iterator it = includeDirectories_.begin(); it != includeDirectories_.end(); ++it) {
+    for (std::vector<std::string>::const_iterator it = includeDirectories_.begin();
+         it != includeDirectories_.end(); ++it) {
         result += " -I " + *it;
     }
 
@@ -378,7 +381,7 @@ void OpenCL::setDevice(cl::Device device, bool glSharing) {
         }
 
         std::array<cl_context_properties, 3> platformProperties = {
-            CL_CONTEXT_PLATFORM, (cl_context_properties)platform(), 0 };
+            CL_CONTEXT_PLATFORM, (cl_context_properties)platform(), 0};
         properties.insert(properties.end(), platformProperties.begin(), platformProperties.end());
 
         try {
@@ -444,206 +447,206 @@ std::string errorCodeToString(cl_int err) {
     switch (err) {
         case CL_SUCCESS:
             error = "CL_SUCCESS";
-            break; //                                                        0
+            break;  //                                                        0
 
         case CL_DEVICE_NOT_FOUND:
             error = "CL_DEVICE_NOT_FOUND";
-            break; //                                                       -1
+            break;  //                                                       -1
 
         case CL_DEVICE_NOT_AVAILABLE:
             error = "CL_DEVICE_NOT_AVAILABLE";
-            break; //                                                       -2
+            break;  //                                                       -2
 
         case CL_COMPILER_NOT_AVAILABLE:
             error = "CL_COMPILER_NOT_AVAILABLE";
-            break; //                                                       -3
+            break;  //                                                       -3
 
         case CL_MEM_OBJECT_ALLOCATION_FAILURE:
             error = "CL_MEM_OBJECT_ALLOCATION_FAILURE";
-            break; //                                                       -4
+            break;  //                                                       -4
 
         case CL_OUT_OF_RESOURCES:
             error = "CL_OUT_OF_RESOURCES";
-            break; //                                                       -5
+            break;  //                                                       -5
 
         case CL_OUT_OF_HOST_MEMORY:
             error = "CL_OUT_OF_HOST_MEMORY";
-            break; //                                                       -6
+            break;  //                                                       -6
 
         case CL_PROFILING_INFO_NOT_AVAILABLE:
             error = "CL_PROFILING_INFO_NOT_AVAILABLE";
-            break; //                                                       -7
+            break;  //                                                       -7
 
         case CL_MEM_COPY_OVERLAP:
             error = "CL_MEM_COPY_OVERLAP";
-            break; //                                                       -8
+            break;  //                                                       -8
 
         case CL_IMAGE_FORMAT_MISMATCH:
             error = "CL_IMAGE_FORMAT_MISMATCH";
-            break; //                                                       -9
+            break;  //                                                       -9
 
         case CL_IMAGE_FORMAT_NOT_SUPPORTED:
             error = "CL_IMAGE_FORMAT_NOT_SUPPORTED";
-            break; //                                                       -10
+            break;  //                                                       -10
 
         case CL_BUILD_PROGRAM_FAILURE:
             error = "CL_BUILD_PROGRAM_FAILURE";
-            break; //                                                       -11
+            break;  //                                                       -11
 
         case CL_MAP_FAILURE:
             error = "CL_MAP_FAILURE";
-            break; //                                                       -12
+            break;  //                                                       -12
 #if defined(CL_VERSION_1_1)
 
         case CL_MISALIGNED_SUB_BUFFER_OFFSET:
             error = "CL_MISALIGNED_SUB_BUFFER_OFFSET";
-            break; //                                                       -13
+            break;  //                                                       -13
 
         case CL_EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST:
             error = "CL_EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST";
-            break; //                                                       -14
+            break;  //                                                       -14
 #endif
 
         case CL_INVALID_VALUE:
             error = "CL_INVALID_VALUE";
-            break; //                                                       -30
+            break;  //                                                       -30
 
         case CL_INVALID_DEVICE_TYPE:
             error = "CL_INVALID_DEVICE_TYPE";
-            break; //                                                       -31
+            break;  //                                                       -31
 
         case CL_INVALID_PLATFORM:
             error = "CL_INVALID_PLATFORM";
-            break; //                                                       -32
+            break;  //                                                       -32
 
         case CL_INVALID_DEVICE:
             error = "CL_INVALID_DEVICE";
-            break; //                                                       -33
+            break;  //                                                       -33
 
         case CL_INVALID_CONTEXT:
             error = "CL_INVALID_CONTEXT";
-            break; //                                                       -34
+            break;  //                                                       -34
 
         case CL_INVALID_QUEUE_PROPERTIES:
             error = "CL_INVALID_QUEUE_PROPERTIES";
-            break; //                                                       -35
+            break;  //                                                       -35
 
         case CL_INVALID_COMMAND_QUEUE:
             error = "CL_INVALID_COMMAND_QUEUE";
-            break; //                                                       -36
+            break;  //                                                       -36
 
         case CL_INVALID_HOST_PTR:
             error = "CL_INVALID_HOST_PTR";
-            break; //                                                       -37
+            break;  //                                                       -37
 
         case CL_INVALID_MEM_OBJECT:
             error = "CL_INVALID_MEM_OBJECT";
-            break; //                                                       -38
+            break;  //                                                       -38
 
         case CL_INVALID_IMAGE_FORMAT_DESCRIPTOR:
             error = "CL_INVALID_IMAGE_FORMAT_DESCRIPTOR";
-            break; //                                                       -39
+            break;  //                                                       -39
 
         case CL_INVALID_IMAGE_SIZE:
             error = "CL_INVALID_IMAGE_SIZE";
-            break; //                                                       -40
+            break;  //                                                       -40
 
         case CL_INVALID_SAMPLER:
             error = "CL_INVALID_SAMPLER";
-            break; //                                                       -41
+            break;  //                                                       -41
 
         case CL_INVALID_BINARY:
             error = "CL_INVALID_BINARY";
-            break; //                                                       -42
+            break;  //                                                       -42
 
         case CL_INVALID_BUILD_OPTIONS:
             error = "CL_INVALID_BUILD_OPTIONS";
-            break; //                                                       -43
+            break;  //                                                       -43
 
         case CL_INVALID_PROGRAM:
             error = "CL_INVALID_PROGRAM";
-            break; //                                                       -44
+            break;  //                                                       -44
 
         case CL_INVALID_PROGRAM_EXECUTABLE:
             error = "CL_INVALID_PROGRAM_EXECUTABLE";
-            break; //                                                       -45
+            break;  //                                                       -45
 
         case CL_INVALID_KERNEL_NAME:
             error = "CL_INVALID_KERNEL_NAME";
-            break; //                                                       -46
+            break;  //                                                       -46
 
         case CL_INVALID_KERNEL_DEFINITION:
             error = "CL_INVALID_KERNEL_DEFINITION";
-            break; //                                                       -47
+            break;  //                                                       -47
 
         case CL_INVALID_KERNEL:
             error = "CL_INVALID_KERNEL";
-            break; //                                                       -48
+            break;  //                                                       -48
 
         case CL_INVALID_ARG_INDEX:
             error = "CL_INVALID_ARG_INDEX";
-            break; //                                                       -49
+            break;  //                                                       -49
 
         case CL_INVALID_ARG_VALUE:
             error = "CL_INVALID_ARG_VALUE";
-            break; //                                                       -50
+            break;  //                                                       -50
 
         case CL_INVALID_ARG_SIZE:
             error = "CL_INVALID_ARG_SIZE";
-            break; //                                                       -51
+            break;  //                                                       -51
 
         case CL_INVALID_KERNEL_ARGS:
             error = "CL_INVALID_KERNEL_ARGS";
-            break; //                                                       -52
+            break;  //                                                       -52
 
         case CL_INVALID_WORK_DIMENSION:
             error = "CL_INVALID_WORK_DIMENSION";
-            break; //                                                       -53
+            break;  //                                                       -53
 
         case CL_INVALID_WORK_GROUP_SIZE:
             error = "CL_INVALID_WORK_GROUP_SIZE";
-            break; //                                                       -54
+            break;  //                                                       -54
 
         case CL_INVALID_WORK_ITEM_SIZE:
             error = "CL_INVALID_WORK_ITEM_SIZE";
-            break; //                                                       -55
+            break;  //                                                       -55
 
         case CL_INVALID_GLOBAL_OFFSET:
             error = "CL_INVALID_GLOBAL_OFFSET";
-            break; //                                                       -56
+            break;  //                                                       -56
 
         case CL_INVALID_EVENT_WAIT_LIST:
             error = "CL_INVALID_EVENT_WAIT_LIST";
-            break; //                                                       -57
+            break;  //                                                       -57
 
         case CL_INVALID_EVENT:
             error = "CL_INVALID_EVENT";
-            break; //                                                       -58
+            break;  //                                                       -58
 
         case CL_INVALID_OPERATION:
             error = "CL_INVALID_OPERATION";
-            break; //                                                       -59
+            break;  //                                                       -59
 
         case CL_INVALID_GL_OBJECT:
             error = "CL_INVALID_GL_OBJECT";
-            break; //                                                       -60
+            break;  //                                                       -60
 
         case CL_INVALID_BUFFER_SIZE:
             error = "CL_INVALID_BUFFER_SIZE";
-            break; //                                                       -61
+            break;  //                                                       -61
 
         case CL_INVALID_MIP_LEVEL:
             error = "CL_INVALID_MIP_LEVEL";
-            break; //                                                       -62
+            break;  //                                                       -62
 
         case CL_INVALID_GLOBAL_WORK_SIZE:
             error = "CL_INVALID_GLOBAL_WORK_SIZE";
-            break; //                                                       -63
+            break;  //                                                       -63
 #if defined(CL_INVALID_PROPERTY)
 
         case CL_INVALID_PROPERTY:
             error = "CL_INVALID_PROPERTY";
-            break; //                                                       -64
+            break;  //                                                       -64
 #endif
 
         default:
@@ -654,7 +657,6 @@ std::string errorCodeToString(cl_int err) {
     return error;
 }
 
-
 std::string getCLErrorResolveHint(cl_int err) {
     // Add more hints when hint sources are discovered
     // Separate hints with comma:
@@ -664,206 +666,206 @@ std::string getCLErrorResolveHint(cl_int err) {
     switch (err) {
         case CL_SUCCESS:
             hint = "";
-            break; //                                                                      0
+            break;  //                                                                      0
 
         case CL_DEVICE_NOT_FOUND:
             hint = "";
-            break; //                                                             -1
+            break;  //                                                             -1
 
         case CL_DEVICE_NOT_AVAILABLE:
             hint = "";
-            break; //                                                         -2
+            break;  //                                                         -2
 
         case CL_COMPILER_NOT_AVAILABLE:
             hint = "";
-            break; //                                                       -3
+            break;  //                                                       -3
 
         case CL_MEM_OBJECT_ALLOCATION_FAILURE:
             hint = "";
-            break; //                                                -4
+            break;  //                                                -4
 
         case CL_OUT_OF_RESOURCES:
             hint = "";
-            break; //                                                             -5
+            break;  //                                                             -5
 
         case CL_OUT_OF_HOST_MEMORY:
             hint = "";
-            break; //                                                           -6
+            break;  //                                                           -6
 
         case CL_PROFILING_INFO_NOT_AVAILABLE:
             hint = "";
-            break; //                                                 -7
+            break;  //                                                 -7
 
         case CL_MEM_COPY_OVERLAP:
             hint = "";
-            break; //                                                             -8
+            break;  //                                                             -8
 
         case CL_IMAGE_FORMAT_MISMATCH:
             hint = "";
-            break; //                                                        -9
+            break;  //                                                        -9
 
         case CL_IMAGE_FORMAT_NOT_SUPPORTED:
             hint = "";
-            break; //                                                   -10
+            break;  //                                                   -10
 
         case CL_BUILD_PROGRAM_FAILURE:
             hint = "";
-            break; //                                                        -11
+            break;  //                                                        -11
 
         case CL_MAP_FAILURE:
             hint = "";
-            break; //                                                                  -12
+            break;  //                                                                  -12
 #if defined(CL_VERSION_1_1)
 
         case CL_MISALIGNED_SUB_BUFFER_OFFSET:
             hint = "";
-            break; //                                                 -13
+            break;  //                                                 -13
 
         case CL_EXEC_STATUS_ERROR_FOR_EVENTS_IN_WAIT_LIST:
             hint = "";
-            break; //                                    -14
+            break;  //                                    -14
 #endif
 
         case CL_INVALID_VALUE:
             hint = "";
-            break; //                                                                -30
+            break;  //                                                                -30
 
         case CL_INVALID_DEVICE_TYPE:
             hint = "";
-            break; //                                                          -31
+            break;  //                                                          -31
 
         case CL_INVALID_PLATFORM:
             hint = "";
-            break; //                                                             -32
+            break;  //                                                             -32
 
         case CL_INVALID_DEVICE:
             hint = "";
-            break; //                                                               -33
+            break;  //                                                               -33
 
         case CL_INVALID_CONTEXT:
             hint = "";
-            break; //                                                              -34
+            break;  //                                                              -34
 
         case CL_INVALID_QUEUE_PROPERTIES:
             hint = "";
-            break; //                                                     -35
+            break;  //                                                     -35
 
         case CL_INVALID_COMMAND_QUEUE:
             hint = "";
-            break; //                                                        -36
+            break;  //                                                        -36
 
         case CL_INVALID_HOST_PTR:
             hint = "";
-            break; //                                                             -37
+            break;  //                                                             -37
 
         case CL_INVALID_MEM_OBJECT:
             hint = "";
-            break; //                                                           -38
+            break;  //                                                           -38
 
         case CL_INVALID_IMAGE_FORMAT_DESCRIPTOR:
             hint = "";
-            break; //                                              -39
+            break;  //                                              -39
 
         case CL_INVALID_IMAGE_SIZE:
             hint = "";
-            break; //                                                           -40
+            break;  //                                                           -40
 
         case CL_INVALID_SAMPLER:
             hint = "";
-            break; //                                                              -41
+            break;  //                                                              -41
 
         case CL_INVALID_BINARY:
             hint = "";
-            break; //                                                               -42
+            break;  //                                                               -42
 
         case CL_INVALID_BUILD_OPTIONS:
             hint = "";
-            break; //                                                        -43
+            break;  //                                                        -43
 
         case CL_INVALID_PROGRAM:
             hint = "";
-            break; //                                                              -44
+            break;  //                                                              -44
 
         case CL_INVALID_PROGRAM_EXECUTABLE:
             hint = "";
-            break; //                                                   -45
+            break;  //                                                   -45
 
         case CL_INVALID_KERNEL_NAME:
             hint = "";
-            break; //                                                          -46
+            break;  //                                                          -46
 
         case CL_INVALID_KERNEL_DEFINITION:
             hint = "";
-            break; //                                                    -47
+            break;  //                                                    -47
 
         case CL_INVALID_KERNEL:
             hint = "";
-            break; //                                                               -48
+            break;  //                                                               -48
 
         case CL_INVALID_ARG_INDEX:
             hint = "";
-            break; //                                                            -49
+            break;  //                                                            -49
 
         case CL_INVALID_ARG_VALUE:
             hint = "";
-            break; //                                                            -50
+            break;  //                                                            -50
 
         case CL_INVALID_ARG_SIZE:
             hint = "";
-            break; //                                                             -51
+            break;  //                                                             -51
 
         case CL_INVALID_KERNEL_ARGS:
             hint = "Has all kernel argument values been specified?";
-            break; //            -52
+            break;  //            -52
 
         case CL_INVALID_WORK_DIMENSION:
             hint = "";
-            break; //                                                       -53
+            break;  //                                                       -53
 
         case CL_INVALID_WORK_GROUP_SIZE:
             hint = "";
-            break; //                                                      -54
+            break;  //                                                      -54
 
         case CL_INVALID_WORK_ITEM_SIZE:
             hint = "";
-            break; //                                                       -55
+            break;  //                                                       -55
 
         case CL_INVALID_GLOBAL_OFFSET:
             hint = "";
-            break; //                                                        -56
+            break;  //                                                        -56
 
         case CL_INVALID_EVENT_WAIT_LIST:
             hint = "";
-            break; //                                                      -57
+            break;  //                                                      -57
 
         case CL_INVALID_EVENT:
             hint = "";
-            break; //                                                                -58
+            break;  //                                                                -58
 
         case CL_INVALID_OPERATION:
             hint = "";
-            break; //                                                            -59
+            break;  //                                                            -59
 
         case CL_INVALID_GL_OBJECT:
             hint = "";
-            break; //                                                            -60
+            break;  //                                                            -60
 
         case CL_INVALID_BUFFER_SIZE:
             hint = "";
-            break; //                                                          -61
+            break;  //                                                          -61
 
         case CL_INVALID_MIP_LEVEL:
             hint = "";
-            break; //                                                            -62
+            break;  //                                                            -62
 
         case CL_INVALID_GLOBAL_WORK_SIZE:
             hint = "";
-            break; //                                                     -63
+            break;  //                                                     -63
 #if defined(CL_INVALID_PROPERTY)
 
         case CL_INVALID_PROPERTY:
             hint = "";
-            break; //                                                             -64
+            break;  //                                                             -64
 #endif
 
         default:
@@ -877,7 +879,7 @@ std::string getCLErrorResolveHint(cl_int err) {
 std::string getCLErrorString(const cl::Error& err) {
     std::ostringstream ss;
     ss << "Error:" << err.what() << "(" << err.err() << "), " << errorCodeToString(err.err()) << " "
-        << getCLErrorResolveHint(err.err()) << std::endl;
+       << getCLErrorResolveHint(err.err()) << std::endl;
     return ss.str();
 }
 
@@ -893,4 +895,4 @@ size2_t getGlobalWorkGroupSize(size2_t nItems, glm::size2_t localWorkGroupSize) 
 size3_t getGlobalWorkGroupSize(size3_t nItems, glm::size3_t localWorkGroupSize) {
     return localWorkGroupSize * size3_t(glm::ceil(vec3(nItems) / vec3(localWorkGroupSize)));
 }
-}
+}  // namespace inviwo

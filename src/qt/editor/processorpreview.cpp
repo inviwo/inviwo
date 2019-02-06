@@ -32,6 +32,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/processors/processorfactory.h>
+#include <inviwo/core/util/filesystem.h>
 #include <inviwo/qt/editor/processorgraphicsitem.h>
 #include <inviwo/qt/editor/processorportgraphicsitem.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
@@ -52,7 +53,6 @@
 
 namespace inviwo {
 
-
 QImage utilqt::generatePreview(const QString& classIdentifier) {
     std::string cid = classIdentifier.toLocal8Bit().constData();
 
@@ -63,7 +63,7 @@ QImage utilqt::generatePreview(const QString& classIdentifier) {
         scene->addItem(item);
 
         double yshift = 20.0;
-        double offset = processor->getInports().size()*yshift;
+        double offset = processor->getInports().size() * yshift;
 
         for (auto inport : processor->getInports()) {
             QFont classFont("Segoe", 8, QFont::Bold, true);
@@ -89,7 +89,7 @@ QImage utilqt::generatePreview(const QString& classIdentifier) {
             offset -= yshift;
         }
 
-        offset = processor->getOutports().size()*yshift;
+        offset = processor->getOutports().size() * yshift;
         for (auto outport : processor->getOutports()) {
             QFont classFont("Segoe", 8, QFont::Bold, true);
             classFont.setPixelSize(14);
@@ -146,7 +146,7 @@ QImage utilqt::generateProcessorPreview(Processor* processor, double opacity) {
         auto item = new ProcessorGraphicsItem(processor);
         auto scene = util::make_unique<QGraphicsScene>(nullptr);
         scene->addItem(item);
-                
+
         const float padBelow = 10.0f;
         const float padAbove = 10.0f;
 
@@ -173,12 +173,13 @@ QImage utilqt::generateProcessorPreview(Processor* processor, double opacity) {
     } catch (Exception&) {
         // We will just ignore this...
         return QImage();
-    }  
+    }
 }
 
 void utilqt::saveProcessorPreviews(InviwoApplication* app, std::string& path) {
 
     auto save = [&](const std::string& classIdentifier) {
+        filesystem::createDirectoryRecursively(path);
         QString imgname(QString::fromStdString(path + "/" + classIdentifier + ".png"));
         QImage img = utilqt::generatePreview(QString::fromStdString(classIdentifier));
         if (!img.isNull()) {
@@ -200,4 +201,4 @@ void utilqt::saveProcessorPreviews(InviwoApplication* app, std::string& path) {
     }
 }
 
-}  // namespace
+}  // namespace inviwo

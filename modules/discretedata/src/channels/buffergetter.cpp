@@ -29,6 +29,4 @@
 
 #include <modules/discretedata/channels/buffergetter.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

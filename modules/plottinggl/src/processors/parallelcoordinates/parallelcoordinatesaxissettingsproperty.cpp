@@ -66,22 +66,22 @@ std::string ParallelCoordinatesAxisSettingsProperty::getClassIdentifier() const 
 ParallelCoordinatesAxisSettingsProperty::ParallelCoordinatesAxisSettingsProperty(
     std::string identifier, std::string displayName)
     : BoolCompositeProperty(identifier, displayName, true)
-    , usePercentiles_("usePercentiles", "Use Percentiles", false)
-    , range_("range", "Axis Range") {
-    addProperty(range_);
-    addProperty(usePercentiles_);
+    , usePercentiles("usePercentiles", "Use Percentiles", false)
+    , range("range", "Axis Range") {
+    addProperty(range);
+    addProperty(usePercentiles);
 
     setCollapsed(true);
     setSerializationMode(PropertySerializationMode::All);
-    range_.setSerializationMode(PropertySerializationMode::All);
-    usePercentiles_.setSerializationMode(PropertySerializationMode::All);
+    range.setSerializationMode(PropertySerializationMode::All);
+    usePercentiles.setSerializationMode(PropertySerializationMode::All);
 }
 
 ParallelCoordinatesAxisSettingsProperty::ParallelCoordinatesAxisSettingsProperty(
     const ParallelCoordinatesAxisSettingsProperty& rhs)
-    : BoolCompositeProperty(rhs), usePercentiles_{rhs.usePercentiles_}, range_{rhs.range_} {
-    addProperty(range_);
-    addProperty(usePercentiles_);
+    : BoolCompositeProperty(rhs), usePercentiles{rhs.usePercentiles}, range{rhs.range} {
+    addProperty(range);
+    addProperty(usePercentiles);
 }
 
 ParallelCoordinatesAxisSettingsProperty& ParallelCoordinatesAxisSettingsProperty::operator=(
@@ -103,16 +103,16 @@ void ParallelCoordinatesAxisSettingsProperty::updateFromColumn(std::shared_ptr<c
             double minV = minMax.first.x;
             double maxV = minMax.second.x;
 
-            dvec2 prevVal = range_.get();
-            dvec2 prevRange = range_.getRange();
+            dvec2 prevVal = range.get();
+            dvec2 prevRange = range.getRange();
             double l = prevRange.y - prevRange.x;
 
             double prevMinRatio = (prevVal.x - prevRange.x) / (l);
             double prevMaxRatio = (prevVal.y - prevRange.x) / (l);
 
-            range_.setRange(glm::tvec2<T>(minV, maxV));
+            range.setRange(glm::tvec2<T>(minV, maxV));
             if (l > 0 && maxV != minV) {
-                range_.set(
+                range.set(
                     {minV + prevMinRatio * (maxV - minV), minV + prevMaxRatio * (maxV - minV)});
             }
             auto pecentiles = statsutil::percentiles(dataVector, {0., 0.25, 0.75, 1.});
@@ -125,18 +125,18 @@ void ParallelCoordinatesAxisSettingsProperty::updateFromColumn(std::shared_ptr<c
 }
 
 double ParallelCoordinatesAxisSettingsProperty::getNormalized(double v) const {
-    if (range_.getRangeMax() == range_.getRangeMin()) {
+    if (range.getRangeMax() == range.getRangeMin()) {
         return 0.5;
     }
-    const auto range = range_.getRange();
-    if (v <= range.x) {
+    const auto rangeTmp = range.getRange();
+    if (v <= rangeTmp.x) {
         return 0;
     }
-    if (v >= range.y) {
+    if (v >= rangeTmp.y) {
         return 1;
     }
-    if (!usePercentiles_.get()) {
-        return (v - range.x) / (range.y - range.x);
+    if (!usePercentiles.get()) {
+        return (v - rangeTmp.x) / (rangeTmp.y - rangeTmp.x);
     } else {
         double minV, maxV;
         double o, r;
@@ -167,15 +167,15 @@ double ParallelCoordinatesAxisSettingsProperty::getNormalizedAt(size_t idx) cons
 }
 
 double ParallelCoordinatesAxisSettingsProperty::getValue(double v) const {
-    const auto range = range_.getRange();
+    const auto rangeTmp = range.getRange();
     if (v <= 0) {
-        return range.x;
+        return rangeTmp.x;
     }
     if (v >= 1) {
-        return range.y;
+        return rangeTmp.y;
     }
-    if (!usePercentiles_.get()) {
-        return range.x + v * (range.y - range.x);
+    if (!usePercentiles.get()) {
+        return rangeTmp.x + v * (rangeTmp.y - rangeTmp.x);
     } else {
         if (v < 0.25) {
             v /= 0.25;
@@ -193,34 +193,34 @@ double ParallelCoordinatesAxisSettingsProperty::getValue(double v) const {
 }
 
 void ParallelCoordinatesAxisSettingsProperty::moveHandle(bool upper, double mouseY) {
-    auto range = range_.get();
+    auto rangeTmp = range.get();
     double value = getValue(mouseY);
 
     if (upper) {
-        if (value < range.x) {
-            value = range.x;
+        if (value < rangeTmp.x) {
+            value = rangeTmp.x;
         }
-        range.y = value;
+        rangeTmp.y = value;
     } else {
-        if (value > range.y) {
-            value = range.y;
+        if (value > rangeTmp.y) {
+            value = rangeTmp.y;
         }
-        range.x = value;
+        rangeTmp.x = value;
     }
-    range_.set(range);
+    range.set(rangeTmp);
 }
 
 void ParallelCoordinatesAxisSettingsProperty::updateBrushing(std::unordered_set<size_t>& brushed) {
     if (updating_) return;
-    auto range = range_.get();
+    auto rangeTmp = range.get();
     // Increase range to avoid conversion issues
     const static dvec2 off(-std::numeric_limits<float>::epsilon(),
                            std::numeric_limits<float>::epsilon());
-    range += off;
+    rangeTmp += off;
     upperBrushed_ = false;
     lowerBrushed_ = false;
     for (size_t i = 0; i < col_->getSize(); i++) {
-        auto filtered = detail::filterValue(at(i), range);
+        auto filtered = detail::filterValue(at(i), rangeTmp);
         if (filtered == detail::FilterResult::None) continue;
         brushed.insert(i);
         if (filtered == detail::FilterResult::Upper) upperBrushed_ = true;

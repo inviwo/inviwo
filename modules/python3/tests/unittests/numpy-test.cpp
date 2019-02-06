@@ -104,7 +104,7 @@ protected:
     void testBuffer(std::string numbers, size_t components) {
         std::stringstream src;
         src << "import numpy as np" << std::endl;
-        src << "a = np.array("<<numbers<<" , dtype = np." << GetParam() << " )" << std::endl;
+        src << "a = np.array(" << numbers << " , dtype = np." << GetParam() << " )" << std::endl;
 
         PythonScript s;
         s.setSource(src.str());
@@ -141,7 +141,6 @@ protected:
         src << "a = np.array(" << numbers << ", dtype=np." << GetParam() << ")" << std::endl;
         src << "a.shape = " << shape << std::endl;
 
-
         PythonScript s;
         s.setSource(src.str());
         bool status = false;
@@ -150,7 +149,7 @@ protected:
 
             auto ob = dict["a"];
             ASSERT_TRUE(pybind11::isinstance<pybind11::array>(ob));
-            
+
             auto arr = pybind11::cast<pybind11::array>(ob);
             auto layer = pyutil::createLayer(arr);
             EXPECT_EQ(components, layer->getDataFormat()->getComponents());
@@ -165,23 +164,19 @@ protected:
                         EXPECT_EQ(expected++, (int)util::glmcomp(v, i));
                     }
                 }
-
             });
 
             status = true;
         });
 
         EXPECT_TRUE(status);
-
-
     }
     void testVolume(std::string numbers, std::string shape, size_t components) {
-    
+
         std::stringstream src;
         src << "import numpy as np" << std::endl;
         src << "a = np.array(" << numbers << ", dtype=np." << GetParam() << ")" << std::endl;
         src << "a.shape = " << shape << std::endl;
-
 
         PythonScript s;
         s.setSource(src.str());
@@ -206,32 +201,45 @@ protected:
                         EXPECT_EQ(expected++, (int)util::glmcomp(v, i));
                     }
                 }
-
             });
 
             status = true;
         });
 
         EXPECT_TRUE(status);
-    
     }
 };
 
 TEST_P(DTypeTest, BufferTypeScalarTests) { testBuffer("[1,2,3]", 1); }
-TEST_P(DTypeTest, BufferTypeVec2Tests)  { testBuffer("[[1,2], [3,4], [5,6]]", 2); }
-TEST_P(DTypeTest, BufferTypeVec3Tests)  { testBuffer("[[1,2,3], [4,5,6], [7,8,9]]", 3); }
-TEST_P(DTypeTest, BufferTypeVec4Tests)  { testBuffer("[[1,2,3,4], [5,6,7,8], [9,10,11,12]]", 4); }
+TEST_P(DTypeTest, BufferTypeVec2Tests) { testBuffer("[[1,2], [3,4], [5,6]]", 2); }
+TEST_P(DTypeTest, BufferTypeVec3Tests) { testBuffer("[[1,2,3], [4,5,6], [7,8,9]]", 3); }
+TEST_P(DTypeTest, BufferTypeVec4Tests) { testBuffer("[[1,2,3,4], [5,6,7,8], [9,10,11,12]]", 4); }
 
-
-TEST_P(DTypeTest, LayerTypeScalarTests) { testLayer("[1,2,3,4]","(2,2)", 1); }
+TEST_P(DTypeTest, LayerTypeScalarTests) { testLayer("[1,2,3,4]", "(2,2)", 1); }
 TEST_P(DTypeTest, LayerTypeVec2Tests) { testLayer("[[1,2], [3,4], [5,6] , [7,8]]", "(2,2,2)", 2); }
-TEST_P(DTypeTest, LayerTypeVec3Tests) { testLayer("[[1,2,3], [4,5,6], [7,8,9] , [10,11,12]]", "(2,2,3)", 3); }
-TEST_P(DTypeTest, LayerTypeVec4Tests) { testLayer("[[1,2,3,4], [5,6,7,8], [9,10,11,12], [13,14,15,16]]", "(2,2,4)", 4); }
+TEST_P(DTypeTest, LayerTypeVec3Tests) {
+    testLayer("[[1,2,3], [4,5,6], [7,8,9] , [10,11,12]]", "(2,2,3)", 3);
+}
+TEST_P(DTypeTest, LayerTypeVec4Tests) {
+    testLayer("[[1,2,3,4], [5,6,7,8], [9,10,11,12], [13,14,15,16]]", "(2,2,4)", 4);
+}
 
 TEST_P(DTypeTest, VolumeTypeScalarTests) { testVolume("[1,2,3,4,5,6,7,8]", "(2,2,2)", 1); }
-TEST_P(DTypeTest, VolumeTypeVec2Tests) { testVolume("[[1,2], [3,4], [5,6] , [7,8] , [9, 10] , [11,12] , [13,14] , [15,16]]", "(2,2,2,2)", 2); }
-TEST_P(DTypeTest, VolumeTypeVec3Tests) { testVolume("[[1,2,3], [4,5,6], [7,8,9] , [10,11,12],[13,14,15], [16,17,18], [19,20,21] , [22,23,24]]", "(2,2,2,3)", 3); }
-TEST_P(DTypeTest, VolumeTypeVec4Tests) { testVolume("[[1,2,3,4], [5,6,7,8], [9,10,11,12], [13,14,15,16] , [17,18,19,20], [21,22,23,24], [25,26,27,28], [29,30,31,32]]", "(2,2,2,4)", 4); }
+TEST_P(DTypeTest, VolumeTypeVec2Tests) {
+    testVolume("[[1,2], [3,4], [5,6] , [7,8] , [9, 10] , [11,12] , [13,14] , [15,16]]", "(2,2,2,2)",
+               2);
+}
+TEST_P(DTypeTest, VolumeTypeVec3Tests) {
+    testVolume(
+        "[[1,2,3], [4,5,6], [7,8,9] , [10,11,12],[13,14,15], [16,17,18], [19,20,21] , [22,23,24]]",
+        "(2,2,2,3)", 3);
+}
+TEST_P(DTypeTest, VolumeTypeVec4Tests) {
+    testVolume(
+        "[[1,2,3,4], [5,6,7,8], [9,10,11,12], [13,14,15,16] , [17,18,19,20], [21,22,23,24], "
+        "[25,26,27,28], [29,30,31,32]]",
+        "(2,2,2,4)", 4);
+}
 
 const static std::vector<std::string> dtypes = {{"float16"}, {"float32"}, {"float64"}, {"int8"},
                                                 {"int16"},   {"int32"},   {"int64"},   {"uint8"},

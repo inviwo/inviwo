@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <warn/push>
@@ -82,15 +82,13 @@ void LabelGraphicsItem::updatePosition() {
     // horizontal alignment
     if (alignment_ & Qt::AlignHCenter) {
         x -= b.width() / 2.0;
-    }
-    else if (alignment_ & Qt::AlignRight) {
+    } else if (alignment_ & Qt::AlignRight) {
         x -= b.width();
     }
     // vertical alignment
     if (alignment_ & Qt::AlignVCenter) {
         y -= b.height() / 2.0;
-    }
-    else if (alignment_ & Qt::AlignBottom) {
+    } else if (alignment_ & Qt::AlignBottom) {
         y -= b.height();
     }
 
@@ -98,31 +96,23 @@ void LabelGraphicsItem::updatePosition() {
     setTransform(t);
 }
 
-QString LabelGraphicsItem::croppedText() const {
-    return toPlainText();
-}
+QString LabelGraphicsItem::croppedText() const { return toPlainText(); }
 
 void LabelGraphicsItem::setCrop(int width) {
     width_ = width;
     setText(orgText_);
 }
 
-bool LabelGraphicsItem::isCropped() const {
-    return (orgText_ != toPlainText());
-}
+bool LabelGraphicsItem::isCropped() const { return (orgText_ != toPlainText()); }
 
 int LabelGraphicsItem::usedTextWidth() const {
-     QFontMetrics fm = QFontMetrics(font());
-     return fm.tightBoundingRect(croppedText()).width();
+    QFontMetrics fm = QFontMetrics(font());
+    return fm.tightBoundingRect(croppedText()).width();
 }
 
-void LabelGraphicsItem::setNoFocusOut() {
-    focusOut_ = false;
-}
+void LabelGraphicsItem::setNoFocusOut() { focusOut_ = false; }
 
-bool LabelGraphicsItem::isFocusOut() const {
-    return focusOut_;
-}
+bool LabelGraphicsItem::isFocusOut() const { return focusOut_; }
 
 void LabelGraphicsItem::setAlignment(Qt::Alignment alignment) {
     QGraphicsTextItem::prepareGeometryChange();
@@ -161,7 +151,7 @@ void LabelGraphicsItemObservable::notifyObserversChanged(LabelGraphicsItem* item
 }
 
 void LabelGraphicsItemObservable::notifyObserversEdited(LabelGraphicsItem* item) {
-     forEachObserver([&](LabelGraphicsItemObserver* o) { o->onLabelGraphicsItemEdited(item); });
+    forEachObserver([&](LabelGraphicsItemObserver* o) { o->onLabelGraphicsItemEdited(item); });
 }
 
-} // namespace
+}  // namespace inviwo

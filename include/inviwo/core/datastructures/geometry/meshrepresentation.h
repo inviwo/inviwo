@@ -39,7 +39,7 @@ namespace inviwo {
 class Mesh;
 
 /**
- * \ingroup datastructures	
+ * \ingroup datastructures
  */
 class IVW_CORE_API MeshRepresentation : public DataGroupRepresentation<Mesh> {
 public:
@@ -60,6 +60,6 @@ protected:
     Mesh* owner_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_MESHREPRESENTATION_H

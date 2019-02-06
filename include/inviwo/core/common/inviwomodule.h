@@ -76,20 +76,21 @@ class VersionConverter;
 class DataVisualizer;
 
 enum class ModulePath {
-    Data,             // /data
-    Images,           // /data/images
-    PortInspectors,   // /data/portinspectors
-    Scripts,          // /data/scripts
-    Volumes,          // /data/volumes
-    Workspaces,       // /data/workspaces
-    Docs,             // /docs
-    Tests,            // /tests
-    TestImages,       // /tests/images
-    TestVolumes,      // /tests/volumes
-    UnitTests,        // /tests/unittests
-    RegressionTests,  // /tests/regression
-    GLSL,             // /glsl
-    CL                // /cl
+    Data,               // /data
+    Images,             // /data/images
+    PortInspectors,     // /data/portinspectors
+    Scripts,            // /data/scripts
+    TransferFunctions,  // /data/transferfunctions
+    Volumes,            // /data/volumes
+    Workspaces,         // /data/workspaces
+    Docs,               // /docs
+    Tests,              // /tests
+    TestImages,         // /tests/images
+    TestVolumes,        // /tests/volumes
+    UnitTests,          // /tests/unittests
+    RegressionTests,    // /tests/regression
+    GLSL,               // /glsl
+    CL                  // /cl
 };
 
 /**
@@ -215,7 +216,8 @@ protected:
      * Will register the following ports:
      *     DataInport<T>           Inport
      *     DataInport<T, 0>        Multi Inport (accepts multiple input connections)
-     *     DataInport<T, 0, true>  Flat Multi Inport (accepts input connections with vector<shared_ptr<T>>)
+     *     DataInport<T, 0, true>  Flat Multi Inport (accepts input connections with
+     *                             vector<shared_ptr<T>>)
      *     DataOutport<T>          Outport
      * and Sink and Source Processors:
      *     CompositeSink<DataInport<T>, DataOutport<T>>
@@ -351,7 +353,7 @@ void InviwoModule::registerDefaultsForDataType() {
     registerPort<DataInport<T, 0>>();
     registerPort<DataInport<T, 0, true>>();
     registerPort<DataOutport<T>>();
-    
+
     registerProcessor<CompositeSink<DataInport<T>, DataOutport<T>>>();
     registerProcessor<CompositeSource<DataInport<T>, DataOutport<T>>>();
 }
@@ -382,7 +384,7 @@ void InviwoModule::registerRepresentationConverter(
     if (auto factory = app_->getRepresentationConverterFactory<BaseRepr>()) {
         if (factory->registerObject(converter.get())) {
             representationConvertersUnRegFunctors_.push_back(
-                [ factory, conv = converter.get() ]() { factory->unRegisterObject(conv); });
+                [factory, conv = converter.get()]() { factory->unRegisterObject(conv); });
             representationConverters_.push_back(std::move(converter));
         }
     }

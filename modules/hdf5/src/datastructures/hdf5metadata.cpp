@@ -160,12 +160,10 @@ IVW_MODULE_HDF5_API const DataFormatBase* getDataFormat(const H5::DataType type)
     else
         return nullptr;
 }
-}
-
+}  // namespace util
 
 #include <warn/pop>
 
-}  // namespace
+}  // namespace hdf5
 
-}  // namespace
-
+}  // namespace inviwo

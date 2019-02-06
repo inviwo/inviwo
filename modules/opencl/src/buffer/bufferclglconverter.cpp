@@ -110,4 +110,4 @@ void BufferCLGL2CLConverter::update(std::shared_ptr<const BufferCLGL> src,
     }
 }
 
-}  // namespace
+}  // namespace inviwo

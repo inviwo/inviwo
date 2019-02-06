@@ -54,14 +54,12 @@ public:
     enum { Type = UserType + TFEditorPrimitive::TFControlPointConnectionType };
     int type() const { return Type; }
 
-    friend IVW_MODULE_QTWIDGETS_API bool operator==(
-        const TFControlPointConnection& lhs,
-        const TFControlPointConnection& rhs);
+    friend IVW_MODULE_QTWIDGETS_API bool operator==(const TFControlPointConnection& lhs,
+                                                    const TFControlPointConnection& rhs);
 
     // Compare points by their "x" value
-    friend IVW_MODULE_QTWIDGETS_API bool operator<(
-        const TFControlPointConnection& lhs,
-        const TFControlPointConnection& rhs);
+    friend IVW_MODULE_QTWIDGETS_API bool operator<(const TFControlPointConnection& lhs,
+                                                   const TFControlPointConnection& rhs);
 
     TFEditorControlPoint* left_;   // Non-owning reference
     TFEditorControlPoint* right_;  // Non-owning reference

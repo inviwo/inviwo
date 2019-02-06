@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_DATAEXPORT_H
@@ -38,6 +38,7 @@
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/io/datawriter.h>
+#include <inviwo/core/io/datawriterexception.h>
 #include <inviwo/core/io/datawriterfactory.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/fileextension.h>
@@ -53,21 +54,21 @@ class DataExport : public Processor {
 public:
     DataExport();
     virtual ~DataExport() = default;
-     
+
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override = 0;
 
 protected:
     void exportData();
-    
+
     virtual const DataType* getData() = 0;
-    
+
     PortType port_;
     FileProperty file_;
     ButtonProperty export_;
     BoolProperty overwrite_;
-    
+
     bool exportQueued_ = false;
 };
 
@@ -78,16 +79,16 @@ DataExport<DataType, PortType>::DataExport()
     , file_("file", "File name", "", "mesh")
     , export_("export", "Export")
     , overwrite_("overwrite", "Overwrite", false) {
-    
+
     for (auto& ext :
-        InviwoApplication::getPtr()->getDataWriterFactory()->getExtensionsForType<DataType>()) {
+         InviwoApplication::getPtr()->getDataWriterFactory()->getExtensionsForType<DataType>()) {
         file_.addNameFilter(ext.toString());
     }
 
     addPort(port_);
     addProperty(file_);
     file_.setAcceptMode(AcceptMode::Save);
-    export_.onChange([&](){exportQueued_ = true;});
+    export_.onChange([&]() { exportQueued_ = true; });
     addProperty(export_);
     addProperty(overwrite_);
 }
@@ -137,8 +138,6 @@ void DataExport<DataType, PortType>::process() {
     exportQueued_ = false;
 }
 
+}  // namespace inviwo
 
-} // namespace
-
-#endif // IVW_DATAEXPORT_H
-
+#endif  // IVW_DATAEXPORT_H

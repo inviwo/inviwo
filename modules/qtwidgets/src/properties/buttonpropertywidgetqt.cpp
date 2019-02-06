@@ -24,17 +24,22 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/qtwidgets/properties/buttonpropertywidgetqt.h>
 #include <inviwo/core/properties/buttonproperty.h>
+
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPushButton>
+#include <QInputDialog>
+#include <QMenu>
+#include <QAction>
 #include <warn/pop>
 
 namespace inviwo {
@@ -66,9 +71,22 @@ void ButtonPropertyWidgetQt::updateFromProperty() {
     button_->setText(QString::fromStdString(property_->getDisplayName()));
 }
 
-QPushButton* ButtonPropertyWidgetQt::getButton() {
-    return button_;
+QPushButton* ButtonPropertyWidgetQt::getButton() { return button_; }
+
+std::unique_ptr<QMenu> ButtonPropertyWidgetQt::getContextMenu() {
+    auto menu = PropertyWidgetQt::getContextMenu();
+
+    auto renameAction = menu->addAction(tr("&Rename"));
+    connect(renameAction, &QAction::triggered, this, [this]() {
+        bool ok;
+        const auto displayname = utilqt::toQString(property_->getDisplayName());
+        const auto name = utilqt::fromQString(QInputDialog::getText(
+            nullptr, "Rename", "Name of Property", QLineEdit::Normal, displayname, &ok));
+        if (ok) {
+            property_->setDisplayName(name);
+        }
+    });
+    return menu;
 }
 
-
-} //namespace
+}  // namespace inviwo

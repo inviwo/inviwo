@@ -121,4 +121,4 @@ void VolumeCLGL2GLConverter::update(std::shared_ptr<const VolumeCLGL> source,
     // Do nothing since they share data
 }
 
-}  // namespace
+}  // namespace inviwo

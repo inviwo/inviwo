@@ -1,5 +1,9 @@
 #--------------------------------------------------------------------
-# Inviwo GLFW Application
+# Inviwo integration tests
+if(NOT IVW_INTEGRATION_TESTS)
+    return()
+endif()
+
 project(inviwo-integrationtests)
 
 # Add source files
@@ -11,6 +15,7 @@ set(SOURCE_FILES
     processorcreation-test.cpp
     propertycreation-test.cpp
     volume-test.cpp
+    shader-test.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

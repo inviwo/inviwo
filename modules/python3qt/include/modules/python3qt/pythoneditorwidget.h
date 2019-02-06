@@ -88,14 +88,13 @@ public:
 
 protected:
     bool eventFilter(QObject* obj, QEvent* event) override;
-    virtual void closeEvent(QCloseEvent *event) override;
-    virtual void focusInEvent(QFocusEvent *event) override;
+    virtual void closeEvent(QCloseEvent* event) override;
+    virtual void focusInEvent(QFocusEvent* event) override;
 
 private:
-    void setFileName(const std::string &filename);
+    void setFileName(const std::string& filename);
     void updateTitleBar();
     void queryReloadFile();
-
 
     virtual void saveState() override;
 
@@ -120,10 +119,10 @@ private:
 
     static PythonEditorWidget* instance_;
 
-    InviwoApplication *app_;
+    InviwoApplication* app_;
     QAction* appendLog_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PYTHONEDITORYWIDGET_H

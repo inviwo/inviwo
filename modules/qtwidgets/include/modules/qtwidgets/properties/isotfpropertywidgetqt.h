@@ -42,7 +42,7 @@ class TFPushButton;
 
 class IVW_MODULE_QTWIDGETS_API IsoTFPropertyWidgetQt : public PropertyWidgetQt {
 public:
-    IsoTFPropertyWidgetQt(IsoTFProperty *property);
+    IsoTFPropertyWidgetQt(IsoTFProperty* property);
     virtual ~IsoTFPropertyWidgetQt();
 
     virtual void updateFromProperty() override;
@@ -50,6 +50,9 @@ public:
     virtual bool hasEditorWidget() const override;
 
     virtual void setReadOnly(bool readonly) override;
+
+protected:
+    virtual std::unique_ptr<QMenu> getContextMenu() override;
 
 private:
     EditableLabelQt* label_ = nullptr;

@@ -60,9 +60,8 @@ bool PropertyWidgetFactory::registerObject(PropertyWidgetFactoryObject* property
 
 bool PropertyWidgetFactory::unRegisterObject(PropertyWidgetFactoryObject* propertyWidget) {
     size_t removed = util::map_erase_remove_if(
-        widgetMap_, [propertyWidget](WidgetMap::value_type& elem) {
-            return elem.second == propertyWidget;
-        });
+        widgetMap_,
+        [propertyWidget](WidgetMap::value_type& elem) { return elem.second == propertyWidget; });
 
     return removed > 0;
 }
@@ -88,11 +87,10 @@ std::unique_ptr<PropertyWidget> PropertyWidgetFactory::create(Property* property
         }
     }
 
-    LogWarn("Can not find a property widget for property: " << property->getClassIdentifier() << "("
-                                                            << sematics << ")");
+    LogWarn("Cannot find a property widget for property: " << property->getClassIdentifier() << "("
+                                                           << sematics << ")");
     return std::unique_ptr<PropertyWidget>();
 }
-
 
 bool PropertyWidgetFactory::hasKey(Property* property) const {
     return util::has_key(widgetMap_, property->getClassIdentifierForWidget());
@@ -110,4 +108,4 @@ std::vector<PropertySemantics> PropertyWidgetFactory::getSupportedSemanicsForPro
     return semantics;
 }
 
-}  // namespace
+}  // namespace inviwo

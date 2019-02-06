@@ -43,15 +43,31 @@
 
 namespace inviwo {
 
-PickingController::PickingController() = default;
+PickingController::PickingController() : mouseState_{PickingManager::getPtr()} {}
+
+PickingController::~PickingController() = default;
 
 void PickingController::propagateEvent(Event* event, EventPropagator* propagator) {
     if (!propagator) return;
     if (!event) return;
+    if (!pickingEnabled()) return;
+
+    const auto pickId = [&](size2_t coord) -> size_t {
+        if (src_) {
+            const auto value = src_->readPixel(coord, LayerType::Picking);
+            if (value.a > 0.0) {
+                return PickingManager::colorToIndex(uvec3(value));
+            }
+        }
+        return 0;
+    };
 
     switch (event->hash()) {
         case MouseEvent::chash(): {
-            propagateEvent(static_cast<MouseEvent*>(event), propagator);
+            auto me = static_cast<MouseEvent*>(event);
+            const auto coord =
+                glm::clamp(me->pos(), dvec2(0.0), dvec2(me->canvasSize() - uvec2(1)));
+            mouseState_.propagateEvent(me, propagator, pickId(coord));
             break;
         }
         case WheelEvent::chash(): {
@@ -69,36 +85,6 @@ void PickingController::propagateEvent(Event* event, EventPropagator* propagator
     }
 }
 
-void PickingController::propagateEvent(MouseInteractionEvent* e, EventPropagator* propagator) {
-    auto ndc = e->ndc();
-    auto pa = mstate_.update(*this, e);
-
-    // Check if we have switched picking id, if so send a Finished event
-    if (mstate_.previousPickingAction.action &&
-        pa.index != mstate_.previousPickingAction.index) {
-        auto localId = mstate_.previousPickingAction.action->getLocalPickingId(
-            mstate_.previousPickingAction.index);
-        PickingEvent pickingEvent(mstate_.previousPickingAction.action,
-                                  PickingState::Finished, e, mstate_.pressNDC,
-                                  mstate_.previousNDC, localId);
-        propagator->propagateEvent(&pickingEvent, nullptr);
-    }
-
-    // if there was a picking action, then propagate a picking event.
-    if (pa.action) {
-        auto ps = pa.index == mstate_.previousPickingAction.index ? PickingState::Updated
-            : PickingState::Started;
-
-        auto localId = pa.action->getLocalPickingId(pa.index);
-        PickingEvent pickingEvent(pa.action, ps, e, mstate_.pressNDC, mstate_.previousNDC, localId);
-        propagator->propagateEvent(&pickingEvent, nullptr);
-        if (pickingEvent.hasBeenUsed()) e->markAsUsed();
-    }
-
-    mstate_.previousPickingAction = pa;
-    mstate_.previousNDC = ndc;
-}
-
 void PickingController::propagateEvent(TouchEvent* e, EventPropagator* propagator) {
     auto& touchPoints = e->touchPoints();
 
@@ -107,14 +93,14 @@ void PickingController::propagateEvent(TouchEvent* e, EventPropagator* propagato
     std::vector<int> usedPointIds;
 
     for (auto& point : touchPoints) {
-        auto coord = glm::clamp(point.pos(), dvec2(0.0), dvec2(e->canvasSize() - uvec2(1)));
+        const auto coord = glm::clamp(point.pos(), dvec2(0.0), dvec2(e->canvasSize() - uvec2(1)));
         if (point.state() == TouchState::Started) {
             auto pa = findPickingAction(coord);
             tstate_.pointIdToPickingId[point.id()] = pa;
             tstate_.pickingIdToPressNDC[pa.index] = point.ndc();
         }
 
-        auto it = tstate_.pointIdToPickingId.find(point.id());       
+        auto it = tstate_.pointIdToPickingId.find(point.id());
         auto pa = it != tstate_.pointIdToPickingId.end() ? it->second : findPickingAction(coord);
 
         if (pa.action) {
@@ -131,11 +117,19 @@ void PickingController::propagateEvent(TouchEvent* e, EventPropagator* propagato
         auto ps = TouchEvent::getPickingState(points);
 
         TouchEvent te(points, e->getDevice());
-        auto prevPos = te.centerNDC(); // Need so save here since te might be modified
-        auto localId = pickingIdToAction[pickingId]->getLocalPickingId(pickingId);
-        PickingEvent pickingEvent(pickingIdToAction[pickingId], ps, &te,
-                                  tstate_.pickingIdToPressNDC[pickingId],
-                                  tstate_.pickingIdToPreviousNDC[pickingId], localId);
+        auto prevPos = te.centerNDC();  // Need so save here since te might be modified
+
+        size_t currentId = 0;   // TODO
+        size_t pressedId = 0;   // TODO
+        size_t previousId = 0;  // TODO
+
+        PickingEvent pickingEvent(
+            pickingIdToAction[pickingId], &te, ps,
+            ps == PickingState::Started ? PickingPressState::Press : PickingPressState::Move,
+            PickingPressItem::Primary, PickingHoverState::None, PickingPressItem::Primary,
+            pickingId, currentId, pressedId, previousId, tstate_.pickingIdToPressNDC[pickingId],
+            tstate_.pickingIdToPreviousNDC[pickingId]);
+
         propagator->propagateEvent(&pickingEvent, nullptr);
         if (pickingEvent.hasBeenUsed() || te.hasBeenUsed()) {
             for (const auto& p : points) usedPointIds.push_back(p.id());
@@ -159,14 +153,17 @@ void PickingController::propagateEvent(TouchEvent* e, EventPropagator* propagato
     });
 
     // remove the "used" points from the event
-    util::erase_remove_if(touchPoints, [&](const auto& p) {
-        return util::contains(usedPointIds, p.id());
-    });
+    util::erase_remove_if(touchPoints,
+                          [&](const auto& p) { return util::contains(usedPointIds, p.id()); });
     if (touchPoints.empty()) e->markAsUsed();
 }
 
-void PickingController::propagateEvent(GestureEvent* /*event*/, EventPropagator* /*propagator*/) {
-    // TODO...
+void PickingController::propagateEvent(WheelEvent*, EventPropagator*) {
+    // TODO
+}
+
+void PickingController::propagateEvent(GestureEvent*, EventPropagator*) {
+    // TODO
 }
 
 void PickingController::setPickingSource(const std::shared_ptr<const Image>& src) { src_ = src; }
@@ -185,23 +182,4 @@ bool PickingController::pickingEnabled() const {
     return PickingManager::getPtr()->pickingEnabled();
 }
 
-PickingManager::Result PickingController::PCMouseState::update(PickingController& pc,
-                                                        MouseInteractionEvent* e) {
-    auto coord = glm::clamp(e->pos(), dvec2(0.0), dvec2(e->canvasSize() - uvec2(1)));
-
-    // Toggle states
-    if (!mousePressed && e->buttonState() != MouseButton::None) {
-        mousePressed = true;
-        pressedPickingAction = pc.findPickingAction(coord);
-        pressNDC = e->ndc();
-    } else if (mousePressed && e->buttonState() == MouseButton::None) {
-        mousePressed = false;
-        pressedPickingAction = {0, nullptr};
-        pressNDC = dvec3(0.0);
-    }
-
-    return mousePressed ? pressedPickingAction : pc.findPickingAction(coord);
-}
-
-} // namespace
-
+}  // namespace inviwo

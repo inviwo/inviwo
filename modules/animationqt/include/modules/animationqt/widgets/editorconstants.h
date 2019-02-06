@@ -50,12 +50,7 @@ constexpr int keyframeWidth = 15;
 constexpr int keyframeHeight = trackHeight;
 constexpr int widthPerSecond = 96;
 
-enum class ItemTypes {
-    Keyframe,
-    KeyframeSequence,
-    ControlTrack,
-    PropertyTrack
-};
+enum class ItemTypes { Keyframe, KeyframeSequence, ControlTrack, PropertyTrack };
 
 /// We snap to certain times depending on the scale (zoom) level and keyboard modifiers.
 /// It is important to supply scene coordinates to this function!

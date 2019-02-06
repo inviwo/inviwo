@@ -42,4 +42,4 @@ void VolumeDisk2RAMConverter::update(std::shared_ptr<const VolumeDisk> source,
     source->updateRepresentation(destination);
 }
 
-}  // namespace
+}  // namespace inviwo

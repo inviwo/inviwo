@@ -45,7 +45,6 @@ namespace inviwo {
 
 namespace util {
 
-
 /**
  *	Implementation of Euclidean Distance Transform according to Saito's algorithm:
  *  T. Saito and J.I. Toriwaki. New algorithms for Euclidean distance transformations
@@ -58,16 +57,15 @@ namespace util {
  *       is a "feature".
  *     * ValueTransform is a function of type (const U& squaredDist) -> U that is appiled to all
  *       squared distance values at the end of the calculation.
- *     * ProcessCallback is a function of type (double progress) -> void that is called with a value 
+ *     * ProcessCallback is a function of type (double progress) -> void that is called with a value
  *       from 0 to 1 to indicate the progress of the calculation.
  */
 template <typename T, typename U, typename Predicate, typename ValueTransform,
           typename ProgressCallback>
 void layerRAMDistanceTransform(const LayerRAMPrecision<T> *inLayer,
-                                LayerRAMPrecision<U> *outDistanceField,
-                                const Matrix<2, U> basis, const size2_t upsample,
-                                Predicate predicate, ValueTransform valueTransform,
-                                ProgressCallback callback);
+                               LayerRAMPrecision<U> *outDistanceField, const Matrix<2, U> basis,
+                               const size2_t upsample, Predicate predicate,
+                               ValueTransform valueTransform, ProgressCallback callback);
 
 template <typename T, typename U>
 void layerRAMDistanceTransform(const LayerRAMPrecision<T> *inVolume,
@@ -76,8 +74,8 @@ void layerRAMDistanceTransform(const LayerRAMPrecision<T> *inVolume,
 
 template <typename U, typename Predicate, typename ValueTransform, typename ProgressCallback>
 void layerDistanceTransform(const Layer *inLayer, LayerRAMPrecision<U> *outDistanceField,
-                                     const size2_t upsample, Predicate predicate,
-                                     ValueTransform valueTransform, ProgressCallback callback);
+                            const size2_t upsample, Predicate predicate,
+                            ValueTransform valueTransform, ProgressCallback callback);
 
 template <typename U, typename ProgressCallback>
 void layerDistanceTransform(const Layer *inLayer, LayerRAMPrecision<U> *outDistanceField,
@@ -89,7 +87,7 @@ void layerDistanceTransform(const Layer *inLayer, LayerRAMPrecision<U> *outDista
                             const size2_t upsample, double threshold, bool normalize, bool flip,
                             bool square, double scale);
 
-}  // namespace
+}  // namespace util
 
 template <typename T, typename U, typename Predicate, typename ValueTransform,
           typename ProgressCallback>
@@ -101,7 +99,7 @@ void util::layerRAMDistanceTransform(const LayerRAMPrecision<T> *inLayer,
 
 #ifndef __clang__
     omp_set_num_threads(std::thread::hardware_concurrency());
-#endif    
+#endif
 
     using int64 = glm::int64;
     using i64vec2 = glm::tvec2<int64>;
@@ -113,9 +111,9 @@ void util::layerRAMDistanceTransform(const LayerRAMPrecision<T> *inLayer,
     const T *src = inLayer->getDataTyped();
     U *dst = outDistanceField->getDataTyped();
 
-    const i64vec2 srcDim{ inLayer->getDimensions() };
-    const i64vec2 dstDim{ outDistanceField->getDimensions() };
-    const i64vec2 sm{ upsample };
+    const i64vec2 srcDim{inLayer->getDimensions()};
+    const i64vec2 dstDim{outDistanceField->getDimensions()};
+    const i64vec2 sm{upsample};
 
     const auto squareBasis = glm::transpose(basis) * basis;
     const Vector<2, U> squareBasisDiag{squareBasis[0][0], squareBasis[1][1]};
@@ -144,10 +142,10 @@ void util::layerRAMDistanceTransform(const LayerRAMPrecision<T> *inLayer,
     }
 
     if (srcDim * sm != dstDim) {
-        throw Exception("DistanceTransformRAM: Dimensions does not match src = " +
-                        toString(srcDim) + " dst = " + toString(dstDim) + " scaling = " +
-                        toString(sm),
-                        IvwContextCustom("layerRAMDistanceTransform"));
+        throw Exception(
+            "DistanceTransformRAM: Dimensions does not match src = " + toString(srcDim) +
+                " dst = " + toString(dstDim) + " scaling = " + toString(sm),
+            IvwContextCustom("layerRAMDistanceTransform"));
     }
 
     util::IndexMapper<2, int64> srcInd(srcDim);
@@ -157,9 +155,9 @@ void util::layerRAMDistanceTransform(const LayerRAMPrecision<T> *inLayer,
         return predicate(src[srcInd(x / sm.x, y / sm.y)]);
     };
 
-    // first pass, forward and backward scan along x
-    // result: min distance in x direction
-    #pragma omp parallel for
+// first pass, forward and backward scan along x
+// result: min distance in x direction
+#pragma omp parallel for
     for (int64 y = 0; y < dstDim.y; ++y) {
         // forward
         U dist = static_cast<U>(dstDim.x);
@@ -192,7 +190,7 @@ void util::layerRAMDistanceTransform(const LayerRAMPrecision<T> *inLayer,
     {
         std::vector<U> buff;
         buff.resize(dstDim.y);
-        #pragma omp for
+#pragma omp for
         for (int64 x = 0; x < dstDim.x; ++x) {
 
             // cache column data into temporary buffer
@@ -219,7 +217,7 @@ void util::layerRAMDistanceTransform(const LayerRAMPrecision<T> *inLayer,
     // scale data
     callback(0.9);
     const int64 layerSize = dstDim.x * dstDim.y;
-    #pragma omp parallel for
+#pragma omp parallel for
     for (int64 i = 0; i < layerSize; ++i) {
         dst[i] = valueTransform(dst[i]);
     }
@@ -242,22 +240,20 @@ void util::layerRAMDistanceTransform(const LayerRAMPrecision<T> *inLayer,
 
 template <typename U, typename Predicate, typename ValueTransform, typename ProgressCallback>
 void util::layerDistanceTransform(const Layer *inLayer, LayerRAMPrecision<U> *outDistanceField,
-                                     const size2_t upsample, Predicate predicate,
-                                     ValueTransform valueTransform, ProgressCallback callback) {
+                                  const size2_t upsample, Predicate predicate,
+                                  ValueTransform valueTransform, ProgressCallback callback) {
 
     const auto inputLayerRep = inLayer->getRepresentation<LayerRAM>();
     inputLayerRep->dispatch<void, dispatching::filter::Scalars>([&](const auto lrprecision) {
         layerRAMDistanceTransform(lrprecision, outDistanceField, inLayer->getBasis(), upsample,
                                   predicate, valueTransform, callback);
-
     });
 }
 
 template <typename U, typename ProgressCallback>
 void util::layerDistanceTransform(const Layer *inLayer, LayerRAMPrecision<U> *outDistanceField,
-                                   const size2_t upsample, double threshold, bool normalize,
-                                   bool flip, bool square, double scale,
-                                   ProgressCallback progress) {
+                                  const size2_t upsample, double threshold, bool normalize,
+                                  bool flip, bool square, double scale, ProgressCallback progress) {
 
     const auto inputLayerRep = inLayer->getRepresentation<LayerRAM>();
     inputLayerRep->dispatch<void, dispatching::filter::Scalars>([&](const auto lrprecision) {
@@ -282,28 +278,28 @@ void util::layerDistanceTransform(const Layer *inLayer, LayerRAMPrecision<U> *ou
 
         if (normalize && square && flip) {
             util::layerRAMDistanceTransform(lrprecision, outDistanceField, inLayer->getBasis(),
-                                             upsample, normPredicateIn, valTransIdent, progress);
+                                            upsample, normPredicateIn, valTransIdent, progress);
         } else if (normalize && square && !flip) {
             util::layerRAMDistanceTransform(lrprecision, outDistanceField, inLayer->getBasis(),
-                                             upsample, normPredicateOut, valTransIdent, progress);
+                                            upsample, normPredicateOut, valTransIdent, progress);
         } else if (normalize && !square && flip) {
             util::layerRAMDistanceTransform(lrprecision, outDistanceField, inLayer->getBasis(),
-                                             upsample, normPredicateIn, valTransSqrt, progress);
+                                            upsample, normPredicateIn, valTransSqrt, progress);
         } else if (normalize && !square && !flip) {
             util::layerRAMDistanceTransform(lrprecision, outDistanceField, inLayer->getBasis(),
-                                             upsample, normPredicateOut, valTransSqrt, progress);
+                                            upsample, normPredicateOut, valTransSqrt, progress);
         } else if (!normalize && square && flip) {
             util::layerRAMDistanceTransform(lrprecision, outDistanceField, inLayer->getBasis(),
-                                             upsample, predicateIn, valTransIdent, progress);
+                                            upsample, predicateIn, valTransIdent, progress);
         } else if (!normalize && square && !flip) {
             util::layerRAMDistanceTransform(lrprecision, outDistanceField, inLayer->getBasis(),
-                                             upsample, predicateOut, valTransIdent, progress);
+                                            upsample, predicateOut, valTransIdent, progress);
         } else if (!normalize && !square && flip) {
             util::layerRAMDistanceTransform(lrprecision, outDistanceField, inLayer->getBasis(),
-                                             upsample, predicateIn, valTransSqrt, progress);
+                                            upsample, predicateIn, valTransSqrt, progress);
         } else if (!normalize && !square && !flip) {
             util::layerRAMDistanceTransform(lrprecision, outDistanceField, inLayer->getBasis(),
-                                             upsample, predicateOut, valTransSqrt, progress);
+                                            upsample, predicateOut, valTransSqrt, progress);
         }
     });
 }
@@ -316,10 +312,6 @@ void util::layerDistanceTransform(const Layer *inLayer, LayerRAMPrecision<U> *ou
                                  square, scale, [](double d) {});
 }
 
-} // namespace
+}  // namespace inviwo
 
-
-
-
-#endif // IVW_LAYERRAMDISTANCETRANSFORM_H
-
+#endif  // IVW_LAYERRAMDISTANCETRANSFORM_H

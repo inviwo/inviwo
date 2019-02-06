@@ -36,19 +36,19 @@ namespace inviwo {
 AssimpModule::AssimpModule(InviwoApplication* app) : InviwoModule(app, "assimp") {
     // Add a directory to the search path of the Shadermanager
     // ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
-    
+
     // Register objects that can be shared with the rest of inviwo here:
-    
+
     // Processors
     // registerProcessor<assimp>();
-    
+
     // Properties
     // registerProperty<assimpProperty>();
-    
+
     // Readers and writes
     registerDataReader(util::make_unique<AssimpReader>());
     // registerDataWriter(new assimpWriter());
-    
+
     // Data converters
     // registerRepresentationConverter(new assimpDisk2RAMConverter());
 
@@ -58,20 +58,20 @@ AssimpModule::AssimpModule(InviwoApplication* app) : InviwoModule(app, "assimp")
 
     // PropertyWidgets
     // registerPropertyWidget(assimpPropertyWidgetQt, assimpProperty, "Default");
-    
+
     // Dialogs
     // registerDialog("assimp", assimpDialogQt);
-    
+
     // Other various things
     // registerCapabilities(Capabilities* info);
     // registerData(Data* data);
     // registerDataRepresentation(DataRepresentation* dataRepresentation);
     // registerSettings(new SystemSettings());
-    // registerMetaData(MetaData* meta);   
+    // registerMetaData(MetaData* meta);
     // registerPortInspector(PortInspector* portInspector);
     // registerProcessorWidget(std::string processorClassName, ProcessorWidget* processorWidget);
     // registerRenderer(GeometryRenderer* renderer);
-    // registerResource(Resource* resource);    
+    // registerResource(Resource* resource);
 }
 
-} // namespace
+}  // namespace inviwo

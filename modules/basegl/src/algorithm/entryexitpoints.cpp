@@ -37,7 +37,6 @@
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
 
-
 namespace inviwo {
 
 namespace algorithm {
@@ -46,9 +45,7 @@ EntryExitPointsHelper::EntryExitPointsHelper()
     : entryExitShader_("standard.vert", "standard.frag")
     , nearClipShader_("img_identity.vert", "capnearclipping.frag") {}
 
-void EntryExitPointsHelper::operator()(Image &entryPoints,
-                                       Image &exitPoints,
-                                       const Camera &camera,
+void EntryExitPointsHelper::operator()(Image &entryPoints, Image &exitPoints, const Camera &camera,
                                        const Mesh &mesh, bool capNearClip) {
     if (capNearClip) {
         createCappedEntryExitPoints(entryPoints, exitPoints, camera, mesh);
@@ -57,10 +54,8 @@ void EntryExitPointsHelper::operator()(Image &entryPoints,
     }
 }
 
-void EntryExitPointsHelper::createEntryExitPoints(Image &entryPoints,
-                                                  Image &exitPoints,
-                                                  const Camera &camera,
-                                                  const Mesh &mesh) {
+void EntryExitPointsHelper::createEntryExitPoints(Image &entryPoints, Image &exitPoints,
+                                                  const Camera &camera, const Mesh &mesh) {
     utilgl::DepthFuncState depthfunc(GL_ALWAYS);
     utilgl::PointSizeState pointsize(1.0f);
 
@@ -89,10 +84,8 @@ void EntryExitPointsHelper::createEntryExitPoints(Image &entryPoints,
     }
 }
 
-void EntryExitPointsHelper::createCappedEntryExitPoints(Image &entryPoints,
-                                                        Image &exitPoints,
-                                                        const Camera &camera,
-                                                        const Mesh &mesh) {
+void EntryExitPointsHelper::createCappedEntryExitPoints(Image &entryPoints, Image &exitPoints,
+                                                        const Camera &camera, const Mesh &mesh) {
     utilgl::DepthFuncState depthfunc(GL_ALWAYS);
     utilgl::PointSizeState pointsize(1.0f);
 
@@ -114,8 +107,7 @@ void EntryExitPointsHelper::createCappedEntryExitPoints(Image &entryPoints,
         // generate entry points
         if (!tmpEntry_ || tmpEntry_->getDimensions() != entryPoints.getDimensions() ||
             tmpEntry_->getDataFormat() != entryPoints.getDataFormat()) {
-            tmpEntry_.reset(
-                new Image(entryPoints.getDimensions(), entryPoints.getDataFormat()));
+            tmpEntry_.reset(new Image(entryPoints.getDimensions(), entryPoints.getDataFormat()));
         }
         utilgl::activateAndClearTarget(*tmpEntry_);
 
@@ -146,4 +138,4 @@ void EntryExitPointsHelper::createCappedEntryExitPoints(Image &entryPoints,
 
 }  // namespace algorithm
 
-} // namespace inviwo
+}  // namespace inviwo

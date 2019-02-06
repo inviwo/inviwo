@@ -38,7 +38,7 @@ const ProcessorInfo SeedPointGenerator2D::processorInfo_{
     "org.inviwo.SeedPointGenerator2D",  // Class identifier
     "Seed Point Generator 2D",          // Display name
     "Data Creation",                    // Category
-    CodeState::Stable,            // Code state
+    CodeState::Stable,                  // Code state
     "CPU, Seed Points, Generator",      // Tags
 };
 const ProcessorInfo SeedPointGenerator2D::getProcessorInfo() const { return processorInfo_; }

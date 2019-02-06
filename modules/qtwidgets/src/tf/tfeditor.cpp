@@ -38,6 +38,7 @@
 #include <modules/qtwidgets/tf/tfeditorisovalue.h>
 #include <modules/qtwidgets/tf/tfeditorprimitive.h>
 #include <modules/qtwidgets/tf/tfcontrolpointconnection.h>
+#include <modules/qtwidgets/tf/tfutils.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/properties/tfpropertyconcept.h>
@@ -119,7 +120,7 @@ TFEditor::TFEditor(util::TFPropertyConcept* tfProperty,
         for (auto p : *tfPropertyPtr_->getIsovalues()) {
             createIsovalueItem(p);
         }
-        // the next primitive inserted with Control+left click should be an isovalue, 
+        // the next primitive inserted with Control+left click should be an isovalue,
         // but only if there is not TF
         if (!tfPropertyPtr_->hasTF()) {
             lastInsertedPrimitiveType_ = TFEditorPrimitive::TFEditorIsovalueType;
@@ -524,7 +525,7 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             QString str = (i < 10 ? QString("Group &%1").arg(i) : "Group 1&0");
             auto action = groupSelectMenu->addAction(str);
             action->setEnabled(!groups_[i % 10].empty());
-            connect(action, &QAction::triggered, [ this, group = i % 10 ]() {
+            connect(action, &QAction::triggered, [this, group = i % 10]() {
                 auto selection = getSelectedPrimitiveItems();
 
                 const bool addToSelection = ((QGuiApplication::queryKeyboardModifiers() &
@@ -544,7 +545,7 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         for (auto&& i : util::make_sequence(1, 11, 1)) {
             QString str = (i < 10 ? QString("Group &%1").arg(i) : "Group 1&0");
             auto action = groupAssignMenu->addAction(str);
-            connect(action, &QAction::triggered, [ this, group = i % 10 ]() {
+            connect(action, &QAction::triggered, [this, group = i % 10]() {
                 groups_[group].clear();
                 for (auto& item : getSelectedPrimitiveItems()) {
                     groups_[group].push_back(item);
@@ -556,6 +557,11 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
     menu.addSeparator();
     auto tfMenu = menu.addMenu("&Transfer Function");
     {
+        if (tfPropertyPtr_->hasTF()) {
+            util::addTFPresetsMenu(e->widget(), tfMenu, tfPropertyPtr_->getTFProperty());
+            tfMenu->addSeparator();
+        }
+
         auto clearTF = tfMenu->addAction("&Clear");
         auto resetTF = tfMenu->addAction("&Reset");
 

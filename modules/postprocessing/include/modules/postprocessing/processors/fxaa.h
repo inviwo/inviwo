@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_FXAA_H
@@ -44,29 +44,28 @@ namespace inviwo {
 /** \docpage{org.inviwo.FXAA, FXAA}
  * ![](org.inviwo.FXAA.png?classIdentifier=org.inviwo.FXAA)
  * Applies Fast approximate anti-aliasing (FXAA) as a postprocessing operation
- * 
+ *
  *
  * ### Inports
  *   * __ImageInport__ Input image.
  *
  * ### Outports
  *   * __ImageOutport__ Output image.
- * 
+ *
  * ### Properties
  *   * __Dither__ Sets amount of dithering.
  *   * __Quality__ Sets the quality (number of samples) used. Performance vs. Quality
  */
 
-
 /**
  * \class FXAA
  * \brief Anti-aliasing post process
  */
-class IVW_MODULE_POSTPROCESSING_API FXAA : public Processor { 
+class IVW_MODULE_POSTPROCESSING_API FXAA : public Processor {
 public:
     FXAA();
     virtual ~FXAA();
-    
+
     virtual void initializeResources() override;
     virtual void process() override;
 
@@ -86,7 +85,7 @@ private:
 
     Shader fxaa_;
     Shader prepass_;
-    
+
     struct {
         GLuint fbo = 0;
         GLuint tex = 0;
@@ -95,7 +94,6 @@ private:
     } prepassFbo_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_FXAA_H
-
+#endif  // IVW_FXAA_H

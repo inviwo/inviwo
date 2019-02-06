@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_CIMGLAYERREADER_H
@@ -55,7 +55,8 @@ public:
     virtual std::shared_ptr<Layer> readData(const std::string& filePath) override;
 };
 
-class IVW_MODULE_CIMG_API CImgLayerRAMLoader : public DiskRepresentationLoader<LayerRepresentation> {
+class IVW_MODULE_CIMG_API CImgLayerRAMLoader
+    : public DiskRepresentationLoader<LayerRepresentation> {
 public:
     CImgLayerRAMLoader(LayerDisk* layerDisk);
     virtual CImgLayerRAMLoader* clone() const override;
@@ -80,6 +81,6 @@ private:
     LayerDisk* layerDisk_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_CIMGLAYERREADER_H

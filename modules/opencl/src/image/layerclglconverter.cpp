@@ -120,4 +120,4 @@ void LayerGL2CLGLConverter::update(std::shared_ptr<const LayerGL> layerSrc,
     }
 }
 
-}  // namespace
+}  // namespace inviwo

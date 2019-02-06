@@ -30,8 +30,10 @@
 #ifndef IVW_PYDATAFORMAT_H
 #define IVW_PYDATAFORMAT_H
 
+#include <warn/push>
+#include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
-
+#include <warn/pop>
 namespace inviwo {
 
 void exposeDataFormat(pybind11::module &m);

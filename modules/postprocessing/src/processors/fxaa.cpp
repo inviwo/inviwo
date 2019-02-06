@@ -64,20 +64,17 @@ const ProcessorInfo FXAA::processorInfo_{
     Tags::GL,           // Tags
 };
 
-const ProcessorInfo FXAA::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo FXAA::getProcessorInfo() const { return processorInfo_; }
 
 FXAA::FXAA()
     : Processor()
     , inport_("inport")
     , outport_("outport")
-    , enable_("enable","Enable Operation" , true)
+    , enable_("enable", "Enable Operation", true)
     , dither_("dither", "Dither")
     , quality_("quality", "Quality", 0.5f, 0.f, 1.f, 0.1f)
     , fxaa_("fullscreenquad.vert", "fxaa.frag", false)
-    , prepass_("fullscreenquad.vert", "rgbl.frag", true)
-{
+    , prepass_("fullscreenquad.vert", "rgbl.frag", true) {
     addPort(inport_);
     addPort(outport_);
 
@@ -99,7 +96,7 @@ FXAA::FXAA()
     dither_.onChange([this]() { invalidate(InvalidationLevel::InvalidResources); });
     quality_.onChange([this]() { invalidate(InvalidationLevel::InvalidResources); });
     inport_.onChange([this]() {
-        const DataFormatBase* format = inport_.getData()->getDataFormat();
+        const DataFormatBase *format = inport_.getData()->getDataFormat();
         const auto swizzleMask = inport_.getData()->getColorLayer()->getSwizzleMask();
 
         if (!outport_.hasEditableData() || format != outport_.getData()->getDataFormat() ||
@@ -133,7 +130,7 @@ void FXAA::initializeResources() {
     }
 
     auto quality_str = std::to_string(dither * 10 + static_cast<int>(quality));
-    
+
     auto frag = fxaa_.getShaderObject(ShaderType::Fragment);
     frag->addShaderDefine("FXAA_PC", "1");
     frag->addShaderDefine("FXAA_GLSL_130", "1");
@@ -144,7 +141,7 @@ void FXAA::initializeResources() {
 }
 
 void FXAA::process() {
-    if(!enable_.get()){
+    if (!enable_.get()) {
         outport_.setData(inport_.getData());
         return;
     }
@@ -218,5 +215,4 @@ void FXAA::initFramebuffer(int width, int height) {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-} // namespace
-
+}  // namespace inviwo

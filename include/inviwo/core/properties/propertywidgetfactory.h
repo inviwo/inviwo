@@ -35,18 +35,16 @@
 #include <inviwo/core/properties/propertywidgetfactoryobject.h>
 #include <inviwo/core/util/factory.h>
 
-
 namespace inviwo {
 
-class IVW_CORE_API PropertyWidgetFactory
-    : public Factory<PropertyWidget, Property*> {
+class IVW_CORE_API PropertyWidgetFactory : public Factory<PropertyWidget, Property*> {
 public:
     PropertyWidgetFactory();
     virtual ~PropertyWidgetFactory();
 
     virtual bool registerObject(PropertyWidgetFactoryObject* propertyWidget);
     virtual bool unRegisterObject(PropertyWidgetFactoryObject* propertyWidget);
-    
+
     std::unique_ptr<PropertyWidget> create(Property* property) const override;
     virtual bool hasKey(Property* property) const override;
 
@@ -58,6 +56,6 @@ private:
     mutable WidgetMap widgetMap_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PROPERTYWIDGETFACTORY_H

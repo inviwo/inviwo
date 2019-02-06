@@ -592,32 +592,6 @@ int getLogLineNumber(const std::string& compileLogLine) {
     return result;
 }
 
-std::string reformatInfoLog(
-    const std::vector<std::pair<std::string, unsigned int> >& lineNumberResolver,
-    const std::string compileLog) {
-
-    std::ostringstream result;
-    std::string curLine;
-    std::istringstream origShaderInfoLog(compileLog);
-
-    while (std::getline(origShaderInfoLog, curLine)) {
-        if (!curLine.empty()) {
-            int origLineNumber = getLogLineNumber(curLine);
-            if (origLineNumber > 0) {
-                auto lineNumber = lineNumberResolver[origLineNumber - 1].second;
-                auto fileName = lineNumberResolver[origLineNumber - 1].first;
-                result << "\n"
-                       << fileName << " (" << lineNumber
-                       << "): " << curLine.substr(curLine.find(":") + 1);
-            } else {
-                result << "\n" << curLine;
-            }
-        }
-    }
-
-    return result.str();
-}
-
 std::string getShaderInfoLog(GLuint id) {
     GLint maxLogLength;
     glGetShaderiv(id, GL_INFO_LOG_LENGTH, &maxLogLength);
@@ -656,6 +630,79 @@ std::shared_ptr<const ShaderResource> findShaderResource(const std::string& file
             IvwContextCustom("ShaderUtils"));
     }
     return resource;
+}
+
+std::vector<std::pair<ShaderType, std::shared_ptr<const ShaderResource>>> toShaderResources(
+    const std::vector<std::pair<ShaderType, std::string>>& items) {
+
+    std::vector<std::pair<ShaderType, std::shared_ptr<const ShaderResource>>> res;
+    for (auto& item : items) {
+        res.emplace_back(item.first, utilgl::findShaderResource(item.second));
+    }
+    return res;
+}
+
+std::string getGLSLTypeName(const DataFormatBase* format) {
+    if (format->getComponents() == 1) {
+        switch (format->getNumericType()) {
+            case NumericType::Float: {
+                switch (format->getPrecision()) {
+                    case 32:
+                        return "float";
+                    case 64:
+                        return "double";
+                    default:
+                        return "";
+                }
+            }
+            case NumericType::UnsignedInteger: {
+                if (format->getPrecision() < 64) {
+                    return "uint";
+                } else {
+                    return "";
+                }
+            }
+            case NumericType::SignedInteger: {
+                if (format->getPrecision() < 64) {
+                    return "int";
+                } else {
+                    return "";
+                }
+            }
+            default:
+                return "";
+        }
+    } else {
+        const auto comp = toString(format->getComponents());
+        switch (format->getNumericType()) {
+            case NumericType::Float: {
+                switch (format->getPrecision()) {
+                    case 32:
+                        return "vec" + comp;
+                    case 64:
+                        return "dvec" + comp;
+                    default:
+                        return "";
+                }
+            }
+            case NumericType::UnsignedInteger: {
+                if (format->getPrecision() < 64) {
+                    return "uvec" + comp;
+                } else {
+                    return "";
+                }
+            }
+            case NumericType::SignedInteger: {
+                if (format->getPrecision() < 64) {
+                    return "ivec" + comp;
+                } else {
+                    return "";
+                }
+            }
+            default:
+                return "";
+        }
+    }
 }
 
 }  // namespace utilgl

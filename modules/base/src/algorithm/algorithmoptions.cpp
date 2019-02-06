@@ -29,8 +29,4 @@
 
 #include <modules/base/algorithm/algorithmoptions.h>
 
-namespace inviwo {
-
-
-} // namespace
-
+namespace inviwo {}  // namespace inviwo

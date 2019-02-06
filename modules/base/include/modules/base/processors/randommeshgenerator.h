@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_RANDOMMESHGENERATOR_H
@@ -61,7 +61,7 @@ private:
         vec3 rotation;
         vec3 position;
         vec3 scale;
-        vec4 color; 
+        vec4 color;
     };
     struct Sphere {
         vec3 center;
@@ -92,10 +92,7 @@ private:
     vec3 randVec3(const float min = 0, const float max = 1);
 
     void addPickingBuffer(Mesh& mesh, size_t id);
-
     void handlePicking(PickingEvent* p, std::function<void(vec3)> callback);
-
-    static vec3 getDelta(const Camera& camera, PickingEvent* p);
 
     MeshOutport mesh_;
 
@@ -103,7 +100,7 @@ private:
     std::uniform_real_distribution<float> dis_;
 
     Int64Property seed_;
-    ButtonProperty reseed_; 
+    ButtonProperty reseed_;
 
     FloatProperty scale_;
     FloatProperty size_;
@@ -113,13 +110,11 @@ private:
     IntProperty numberOfCones_;
     IntProperty numberOfToruses_;
 
-
     std::vector<Box> boxes_;
     std::vector<Sphere> spheres_;
     std::vector<Cylinder> cylinders_;
     std::vector<Cone> cones_;
     std::vector<Torus> toruses_;
-
 
     BoolProperty enablePicking_;
     PickingMapper boxPicking_;
@@ -130,7 +125,6 @@ private:
     CameraProperty camera_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_RANDOMMESHGENERATOR_H
-
+#endif  // IVW_RANDOMMESHGENERATOR_H

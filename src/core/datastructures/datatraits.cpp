@@ -93,5 +93,4 @@ std::string util::appendIfNotEmpty(const std::string& a, const std::string& b) {
     }
 }
 
-} // namespace
-
+}  // namespace inviwo

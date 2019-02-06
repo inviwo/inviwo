@@ -156,8 +156,7 @@ void exposeMesh(pybind11::module &m) {
         .def("getVertices", &BasicMesh::getEditableVertices, py::return_value_policy::reference)
         .def("getTexCoords", &BasicMesh::getEditableTexCoords, py::return_value_policy::reference)
         .def("getColors", &BasicMesh::getEditableColors, py::return_value_policy::reference)
-        .def("getNormals", &BasicMesh::getEditableNormals, py::return_value_policy::reference)
-        ;
+        .def("getNormals", &BasicMesh::getEditableNormals, py::return_value_policy::reference);
 
     exposeStandardDataPorts<Mesh>(m, "Mesh");
 }

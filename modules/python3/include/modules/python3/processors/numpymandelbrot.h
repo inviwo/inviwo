@@ -43,33 +43,27 @@ namespace inviwo {
 //(\f$ Z_{n+1} = Z_{n}^p + C \f$)
 
 /** \docpage{org.inviwo.NumpyMandelbrot, NumPy Mandelbrot}
-* ![](org.inviwo.NumpyMandelbrot.png?classIdentifier=org.inviwo.NumpyMandelbrot)
-*
-* En example processor illustrating how Python can be used to create images.
-* Processor creates an "empty" image and passes it along to a python script. This python calculates
-* for each pixel if that pixel is part of the Mandelbrot set.
-* (https://en.wikipedia.org/wiki/Mandelbrot_set) and updates the pixel in the image accordingly.
-* See the Example workspace in File/Python3/mandelbrot.inv
-*
-*
-* ### Outports
-*   * __outport__ The final image, suitable for color mapping using the ImageMapping Processor
-*
-* ### Properties
-*   * __Size__ The size of the output image
-*   * __Real bounds__ Range of the real values used in the initial complex number mapped to the
-* x-axis
-*   * __Imaginary bounds__ Range of the imaginary values used in the initial complex number mapped
-* to the y-axis
-*   * __power__ To what power to raise Z in each iteration.
-*   * __Iterations__ Maximum iterations to use for testing membership.
-*
-*/
-
-/**
- * \class NumpyMandelbrot
- * \brief <brief description>
- * <Detailed description from a developer prespective>
+ * ![](org.inviwo.NumpyMandelbrot.png?classIdentifier=org.inviwo.NumpyMandelbrot)
+ *
+ * En example processor illustrating how Python can be used to create images.
+ * Processor creates an "empty" image and passes it along to a python script. This python calculates
+ * for each pixel if that pixel is part of the Mandelbrot set.
+ * (https://en.wikipedia.org/wiki/Mandelbrot_set) and updates the pixel in the image accordingly.
+ * See the Example workspace in File/Python3/mandelbrot.inv
+ *
+ *
+ * ### Outports
+ *   * __outport__ The final image, suitable for color mapping using the ImageMapping Processor
+ *
+ * ### Properties
+ *   * __Size__ The size of the output image
+ *   * __Real bounds__ Range of the real values used in the initial complex number mapped to the
+ * x-axis
+ *   * __Imaginary bounds__ Range of the imaginary values used in the initial complex number mapped
+ * to the y-axis
+ *   * __power__ To what power to raise Z in each iteration.
+ *   * __Iterations__ Maximum iterations to use for testing membership.
+ *
  */
 class IVW_MODULE_PYTHON3_API NumpyMandelbrot : public Processor {
 public:
@@ -93,6 +87,6 @@ private:
     PythonScriptDisk script_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_NUMPYMANDELBROT_H

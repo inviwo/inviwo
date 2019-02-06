@@ -29,6 +29,4 @@
 
 #include <inviwo/core/util/enumtraits.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

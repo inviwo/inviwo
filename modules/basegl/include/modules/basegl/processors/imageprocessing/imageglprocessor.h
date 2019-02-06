@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_IMAGEGLPROCESSOR_H
@@ -39,7 +39,6 @@
 
 namespace inviwo {
 
-
 /*! \class ImageGLProcessor
  *
  * \brief Base class for image processing on the GPU using OpenGL.
@@ -52,9 +51,8 @@ namespace inviwo {
  *
  * \see VolumeGLProcessor
  */
-class IVW_MODULE_BASEGL_API ImageGLProcessor : public Processor { 
+class IVW_MODULE_BASEGL_API ImageGLProcessor : public Processor {
 public:
-
     ImageGLProcessor(std::shared_ptr<const ShaderResource> fragmentShader, bool buildShader = true);
     ImageGLProcessor(const std::string &fragmentShader, bool buildShader = true);
     virtual ~ImageGLProcessor();
@@ -62,10 +60,11 @@ public:
     virtual void initializeResources() override;
 
     virtual void process() override;
+
 protected:
     void markInvalid();
 
-    /*! \brief this function gets called right before the actual processing but 
+    /*! \brief this function gets called right before the actual processing but
      *         after the shader has been activated
      *
      * overwrite this function in the derived class to perform things like custom shader setup
@@ -95,9 +94,9 @@ protected:
     ImageInport inport_;
     ImageOutport outport_;
 
-    const DataFormatBase* dataFormat_;
+    const DataFormatBase *dataFormat_;
     // if a custom data format is specified, i.e. dataFormat_ != nullptr, this swizzle mask is used
-    SwizzleMask swizzleMask_; 
+    SwizzleMask swizzleMask_;
 
     bool internalInvalid_;
 
@@ -106,7 +105,6 @@ protected:
     Shader shader_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_IMAGEGLPROCESSOR_H
-
+#endif  // IVW_IMAGEGLPROCESSOR_H

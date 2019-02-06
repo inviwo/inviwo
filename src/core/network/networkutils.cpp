@@ -431,7 +431,7 @@ bool addProcessorOnConnection(ProcessorNetwork* network, std::unique_ptr<Process
 }
 
 void replaceProcessor(ProcessorNetwork* network, std::unique_ptr<Processor> aNewProcessor,
-                                   Processor* oldProcessor) {
+                      Processor* oldProcessor) {
 
     auto newProcessor = network->addProcessor(std::move(aNewProcessor));
 

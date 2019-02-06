@@ -66,14 +66,13 @@ VolumeSequenceSingleTimestepSamplerProcessor::VolumeSequenceSingleTimestepSample
 
         auto newrange = util::getTimestampRange(*seq);
         float t = static_cast<float>((timestamp_.get() - timestamp_.getMinValue()) /
-                  (timestamp_.getMaxValue() - timestamp_.getMinValue()));
+                                     (timestamp_.getMaxValue() - timestamp_.getMinValue()));
 
         timestamp_.setMinValue(newrange.first);
         timestamp_.setMaxValue(newrange.second);
         timestamp_.setCurrentStateAsDefault();
 
         timestamp_.set(newrange.first + t * (newrange.second - newrange.first));
-
     });
 }
 

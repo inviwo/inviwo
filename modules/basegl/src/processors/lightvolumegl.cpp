@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/basegl/processors/lightvolumegl.h>
@@ -47,17 +47,11 @@ const ProcessorInfo LightVolumeGL::processorInfo_{
     CodeState::Experimental,     // Code state
     Tags::GL,                    // Tags
 };
-const ProcessorInfo LightVolumeGL::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo LightVolumeGL::getProcessorInfo() const { return processorInfo_; }
 
-GLfloat borderColor_[4] = {
-    1.f, 1.f, 1.f, 1.f
-};
+GLfloat borderColor_[4] = {1.f, 1.f, 1.f, 1.f};
 
-static const int faceAxis_[6] = {
-    0, 0, 1, 1, 2, 2
-};
+static const int faceAxis_[6] = {0, 0, 1, 1, 2, 2};
 
 /*
 static const vec3 faceCenters_[6] = {
@@ -70,21 +64,16 @@ static const vec3 faceCenters_[6] = {
 };
 */
 
-static const vec3 faceNormals_[6] = {
-    vec3(1.f, 0.f, 0.f),
-    vec3(-1.f, 0.f, 0.f),
-    vec3(0.f, 1.f, 0.f),
-    vec3(0.f, -1.f, 0.f),
-    vec3(0.f, 0.f, 1.f),
-    vec3(0.f, 0.f, -1.f)
-};
+static const vec3 faceNormals_[6] = {vec3(1.f, 0.f, 0.f), vec3(-1.f, 0.f, 0.f),
+                                     vec3(0.f, 1.f, 0.f), vec3(0.f, -1.f, 0.f),
+                                     vec3(0.f, 0.f, 1.f), vec3(0.f, 0.f, -1.f)};
 
-//Defines permutation axis based on face index for chosen propagation axis.
+// Defines permutation axis based on face index for chosen propagation axis.
 inline void definePermutationMatrices(mat4& permMat, mat4& permLightMat, int permFaceIndex) {
     permMat = mat4(0.f);
     permMat[3][3] = 1.f;
 
-    //Permutation of x and y
+    // Permutation of x and y
     switch (faceAxis_[permFaceIndex]) {
         case 0:
             permMat[0][2] = 1.f;
@@ -103,12 +92,12 @@ inline void definePermutationMatrices(mat4& permMat, mat4& permLightMat, int per
     }
 
     permLightMat = permMat;
-    //Permutation of z
+    // Permutation of z
     float closestAxisZ = (faceNormals_[permFaceIndex])[faceAxis_[permFaceIndex]];
     permMat[2][faceAxis_[permFaceIndex]] = closestAxisZ;
     permLightMat[2][faceAxis_[permFaceIndex]] = glm::abs<float>(closestAxisZ);
 
-    //For reverse axis-aligned
+    // For reverse axis-aligned
     if (closestAxisZ < 0.f) {
         permMat[3][faceAxis_[permFaceIndex]] = 1.f;
     }
@@ -274,13 +263,16 @@ bool LightVolumeGL::lightSourceChanged() {
                 propagationShader_.link();
             }
 
-            if (auto directionLight = dynamic_cast<const DirectionalLight*>(lightSource_.getData().get())) {
-                mat4 worldToTexture = inport_.getData()->getCoordinateTransformer().getWorldToTextureMatrix();
-                vec4 lightPositionTexture = worldToTexture * vec4(-directionLight->getDirection(), 1.f);
+            if (auto directionLight =
+                    dynamic_cast<const DirectionalLight*>(lightSource_.getData().get())) {
+                mat4 worldToTexture =
+                    inport_.getData()->getCoordinateTransformer().getWorldToTextureMatrix();
+                vec4 lightPositionTexture =
+                    worldToTexture * vec4(-directionLight->getDirection(), 1.f);
                 lightPos_ = vec3(lightPositionTexture);
                 lightDirection = lightPos_ - vec3(0.5f);
                 if (glm::length(lightDirection) == 0)
-                    lightDirection = vec3(1,0,0);
+                    lightDirection = vec3(1, 0, 0);
                 else
                     lightDirection = glm::normalize(lightDirection);
                 color = directionLight->getIntensity();
@@ -297,14 +289,14 @@ bool LightVolumeGL::lightSourceChanged() {
                 propagationShader_.link();
             }
 
-            
             if (auto pointLight = dynamic_cast<const PointLight*>(lightSource_.getData().get())) {
-                mat4 worldToTexture = inport_.getData()->getCoordinateTransformer().getWorldToTextureMatrix();
+                mat4 worldToTexture =
+                    inport_.getData()->getCoordinateTransformer().getWorldToTextureMatrix();
                 vec4 lightPositionTexture = worldToTexture * vec4(pointLight->getPosition(), 1.f);
                 lightPos_ = vec3(lightPositionTexture);
                 lightDirection = lightPos_ - vec3(0.5f);
                 if (glm::length(lightDirection) == 0)
-                    lightDirection = vec3(1,0,0);
+                    lightDirection = vec3(1, 0, 0);
                 else
                     lightDirection = glm::normalize(lightDirection);
                 color = pointLight->getIntensity();
@@ -399,7 +391,8 @@ bool LightVolumeGL::volumeChanged(bool lightColorChanged) {
 
 void LightVolumeGL::volumeSizeOptionChanged() {
     if (inport_.hasData()) {
-        if ((inport_.getData()->getDimensions()/size3_t(volumeSizeOption_.get())) != volumeDimOut_) {
+        if ((inport_.getData()->getDimensions() / size3_t(volumeSizeOption_.get())) !=
+            volumeDimOut_) {
             internalVolumesInvalid_ = true;
         }
     }
@@ -423,9 +416,7 @@ void LightVolumeGL::supportColoredLightChanged() {
     }
 }
 
-void LightVolumeGL::floatPrecisionChanged() {
-    internalVolumesInvalid_ = true;
-}
+void LightVolumeGL::floatPrecisionChanged() { internalVolumesInvalid_ = true; }
 
 void LightVolumeGL::borderColorTextureParameterFunction() {
     if (supportColoredLight_.get())
@@ -434,27 +425,26 @@ void LightVolumeGL::borderColorTextureParameterFunction() {
         glTexParameterfv(GL_TEXTURE_3D, GL_TEXTURE_BORDER_COLOR, borderColor_);
 }
 
-void LightVolumeGL::updatePermuationMatrices(const vec3& lightDir, PropagationParameters* closest, PropagationParameters* secondClosest) {
-    if(calculatedOnes_ && lightDir==lightDir_)
-        return;
+void LightVolumeGL::updatePermuationMatrices(const vec3& lightDir, PropagationParameters* closest,
+                                             PropagationParameters* secondClosest) {
+    if (calculatedOnes_ && lightDir == lightDir_) return;
 
     lightDir_ = lightDir;
 
-    //Calculate closest and second closest axis-aligned face.
+    // Calculate closest and second closest axis-aligned face.
     float thisVal = glm::dot(faceNormals_[0], -lightDir);
     float closestVal = thisVal;
     float secondClosestVal = 0.f;
     int closestFace = 0;
     int secondClosestFace = 0;
-    for(int i=1; i<6; ++i){
+    for (int i = 1; i < 6; ++i) {
         thisVal = glm::dot(faceNormals_[i], -lightDir);
-        if(thisVal > closestVal){
+        if (thisVal > closestVal) {
             secondClosestVal = closestVal;
             secondClosestFace = closestFace;
             closestVal = thisVal;
             closestFace = i;
-        }
-        else if(thisVal > secondClosestVal){
+        } else if (thisVal > secondClosestVal) {
             secondClosestVal = thisVal;
             secondClosestFace = i;
         }
@@ -462,26 +452,24 @@ void LightVolumeGL::updatePermuationMatrices(const vec3& lightDir, PropagationPa
 
     vec4 tmpLightDir = vec4(-lightDir.x, -lightDir.y, -lightDir.z, 1.f);
 
-    //Perform permutation calculation for closest face
+    // Perform permutation calculation for closest face
     definePermutationMatrices(closest->axisPermutation, closest->axisPermutationLight, closestFace);
-    //LogInfo("1st Axis Permutation: " << closest->axisPermutation);
+    // LogInfo("1st Axis Permutation: " << closest->axisPermutation);
     closest->axisPermutationINV = glm::inverse(closest->axisPermutation);
     closest->permutedLightDirection = closest->axisPermutationLight * tmpLightDir;
 
-    //Perform permutation calculation for second closest face
-    definePermutationMatrices(secondClosest->axisPermutation, secondClosest->axisPermutationLight, secondClosestFace);
-    //LogInfo("2nd Axis Permutation: " << secondClosest->axisPermutation);
+    // Perform permutation calculation for second closest face
+    definePermutationMatrices(secondClosest->axisPermutation, secondClosest->axisPermutationLight,
+                              secondClosestFace);
+    // LogInfo("2nd Axis Permutation: " << secondClosest->axisPermutation);
     secondClosest->axisPermutationINV = glm::inverse(secondClosest->axisPermutation);
     secondClosest->permutedLightDirection = secondClosest->axisPermutationLight * tmpLightDir;
 
-    //Calculate the blending factor
-    blendingFactor_ = static_cast<float>(1.f-(2.f*std::acos(closestVal)/M_PI));
-    //LogInfo("Blending Factor: " << blendingFactor_);
+    // Calculate the blending factor
+    blendingFactor_ = static_cast<float>(1.f - (2.f * std::acos(closestVal) / M_PI));
+    // LogInfo("Blending Factor: " << blendingFactor_);
 
     calculatedOnes_ = true;
 }
- 
 
-
-} // namespace
-
+}  // namespace inviwo

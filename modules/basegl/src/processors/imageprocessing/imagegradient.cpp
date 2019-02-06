@@ -75,5 +75,4 @@ void ImageGradient::preProcess(TextureUnitContainer &) {
     shader_.setUniform("renormalization_", renormalization_.get() ? 1 : 0);
 }
 
-} // namespace
-
+}  // namespace inviwo

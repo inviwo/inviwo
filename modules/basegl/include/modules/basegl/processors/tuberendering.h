@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_TUBERENDERING_H
@@ -37,41 +37,52 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
-#include <modules/opengl/shader/shader.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/interaction/cameratrackball.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/basegl/datastructures/meshshadercache.h>
 
 namespace inviwo {
 class MeshDrawerGL;
 
-class IVW_MODULE_BASEGL_API TubeRendering : public Processor { 
+class IVW_MODULE_BASEGL_API TubeRendering : public Processor {
 public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
     TubeRendering();
-    virtual ~TubeRendering(){}
-     
+    virtual ~TubeRendering() = default;
+
     virtual void process() override;
-    
+
     virtual void initializeResources() override;
 
 protected:
-    MeshInport mesh_;
+    void configureShader(Shader& shader);
+
+    MeshFlatMultiInport inport_;
     ImageInport imageInport_;
     ImageOutport outport_;
 
-    FloatProperty radius_;
+    CompositeProperty tubeProperties_;
+    BoolProperty forceRadius_;
+    FloatProperty defaultRadius_;
+    BoolProperty forceColor_;
+    FloatVec4Property defaultColor_;
+    BoolProperty useMetaColor_;
+    TransferFunctionProperty metaColor_;
+
     CameraProperty camera_;
     CameraTrackball trackball_;
-    SimpleLightingProperty light_;
-
-    Shader shader_;
-
-    std::unique_ptr<MeshDrawerGL> drawer_;
-    std::vector<size_t> indexBuffersToRender_;
+    SimpleLightingProperty lighting_;
+    std::vector<std::pair<ShaderType, std::string>> shaderItems_;
+    std::vector<MeshShaderCache::Requirement> shaderRequirements_;
+    MeshShaderCache adjacencyShaders_;
+    MeshShaderCache shaders_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_TUBERENDERING_H
-
+#endif  // IVW_TUBERENDERING_H

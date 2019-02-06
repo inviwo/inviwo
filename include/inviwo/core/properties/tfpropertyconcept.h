@@ -54,6 +54,8 @@ struct TFPropertyConcept {
     virtual bool hasTF() const = 0;
     virtual bool hasIsovalues() const = 0;
 
+    virtual TransferFunctionProperty* getTFProperty() const = 0;
+
     virtual TFPrimitiveSet* getTransferFunction() const = 0;
     virtual TFPrimitiveSet* getIsovalues() const = 0;
 
@@ -84,6 +86,10 @@ public:
 
     virtual bool hasTF() const override { return hasTFInternal(); }
     virtual bool hasIsovalues() const override { return hasIsovaluesInternal(); }
+
+    virtual TransferFunctionProperty* getTFProperty() const override {
+        return getTFPropertyInternal();
+    }
 
     virtual TFPrimitiveSet* getTransferFunction() const override { return getTFInternal(); }
     virtual TFPrimitiveSet* getIsovalues() const override { return getIsovaluesInternal(); }
@@ -121,6 +127,7 @@ private:
     TFPrimitiveSet* getIsovaluesInternal() const { return nullptr; }
     bool hasTFInternal() const { return false; }
     bool hasIsovaluesInternal() const { return false; }
+    TransferFunctionProperty* getTFPropertyInternal() const { return nullptr; }
 
     bool supportsMaskInternal() const { return true; }
     void setMaskInternal(double maskMin, double maskMax) { data_->setMask(maskMin, maskMax); }
@@ -135,6 +142,9 @@ template <>
 IVW_CORE_API TFPrimitiveSet* TFPropertyModel<TransferFunctionProperty*>::getTFInternal() const;
 template <>
 IVW_CORE_API bool TFPropertyModel<TransferFunctionProperty*>::hasTFInternal() const;
+template <>
+IVW_CORE_API TransferFunctionProperty*
+TFPropertyModel<TransferFunctionProperty*>::getTFPropertyInternal() const;
 
 // IsoValueProperty
 template <>
@@ -159,6 +169,9 @@ template <>
 IVW_CORE_API bool TFPropertyModel<IsoTFProperty*>::hasTFInternal() const;
 template <>
 IVW_CORE_API bool TFPropertyModel<IsoTFProperty*>::hasIsovaluesInternal() const;
+template <>
+IVW_CORE_API TransferFunctionProperty* TFPropertyModel<IsoTFProperty*>::getTFPropertyInternal()
+    const;
 
 }  // namespace util
 

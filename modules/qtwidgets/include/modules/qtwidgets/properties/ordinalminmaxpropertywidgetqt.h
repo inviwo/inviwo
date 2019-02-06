@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_ORDINALMINMAXPROPERTYWIDGETQT_H
@@ -137,13 +137,13 @@ OrdinalMinMaxPropertyWidgetQt<T>::OrdinalMinMaxPropertyWidgetQt(MinMaxProperty<T
     sliderWidget->setLayout(hSliderLayout);
     hSliderLayout->setContentsMargins(0, 0, 0, 0);
 
-    spinBoxMin_->setKeyboardTracking(false); // don't emit the valueChanged() signal while typing
+    spinBoxMin_->setKeyboardTracking(false);  // don't emit the valueChanged() signal while typing
     spinBoxMin_->setFixedWidth(50);
     hSliderLayout->addWidget(spinBoxMin_);
 
     hSliderLayout->addWidget(slider_);
 
-    spinBoxMax_->setKeyboardTracking(false); // don't emit the valueChanged() signal while typing
+    spinBoxMax_->setKeyboardTracking(false);  // don't emit the valueChanged() signal while typing
     spinBoxMax_->setFixedWidth(50);
     hSliderLayout->addWidget(spinBoxMax_);
 
@@ -168,7 +168,7 @@ OrdinalMinMaxPropertyWidgetQt<T>::OrdinalMinMaxPropertyWidgetQt(MinMaxProperty<T
     updateFromProperty();
 }
 
-template<typename T>
+template <typename T>
 void OrdinalMinMaxPropertyWidgetQt<T>::updateFromProperty() {
     const V val = minMaxProperty_->get();
     const V range = minMaxProperty_->getRange();
@@ -205,14 +205,14 @@ void OrdinalMinMaxPropertyWidgetQt<T>::updateFromSlider(int valMin, int valMax) 
     bool modified = false;
     V range = minMaxProperty_->get();
 
-    if (glm::abs(min - range.x) > glm::epsilon<T>()) {
+    if (!util::almostEqual(min, range.x)) {
         modified = true;
         range.x = min;
         QSignalBlocker minBlock(spinBoxMin_);
         spinBoxMin_->setValue(Transformer<T>::valueToSpinbox(minMaxProperty_, min));
     }
 
-    if (glm::abs(max - range.y) > glm::epsilon<T>()) {
+    if (!util::almostEqual(max, range.y)) {
         modified = true;
         range.y = max;
         QSignalBlocker maxBlock(spinBoxMax_);
@@ -232,7 +232,7 @@ void OrdinalMinMaxPropertyWidgetQt<T>::updateFromSpinBoxMin(double minVal) {
     const T sep = minMaxProperty_->getMinSeparation();
     V range = minMaxProperty_->get();
 
-    if (glm::abs(min - range.x) > glm::epsilon<T>()) {
+    if (!util::almostEqual(min, range.x)) {
         range.x = min;
 
         if (range.y - range.x < sep) {
@@ -259,7 +259,7 @@ void OrdinalMinMaxPropertyWidgetQt<T>::updateFromSpinBoxMax(double maxVal) {
     const T sep = minMaxProperty_->getMinSeparation();
     V range = minMaxProperty_->get();
 
-    if (glm::abs(max - range.y) > glm::epsilon<T>()) {
+    if (!util::almostEqual(max, range.y)) {
         range.y = max;
 
         if (range.y - range.x < sep) {
@@ -319,7 +319,6 @@ void OrdinalMinMaxPropertyWidgetQt<T>::showSettings() {
     settingsWidget_->showWidget();
 }
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_ORDINALMINMAXPROPERTYWIDGETQT_H
-
+#endif  // IVW_ORDINALMINMAXPROPERTYWIDGETQT_H

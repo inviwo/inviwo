@@ -41,7 +41,14 @@ namespace inviwo {
 namespace util {
 
 void updateWorkspaces(InviwoApplication* app) {
+    updateWorkspaces(app, filesystem::getPath(PathType::Workspaces));
 
+    for (const auto& m : app->getModules()) {
+        updateWorkspaces(app, m->getPath(ModulePath::Workspaces));
+    }
+}
+
+void updateWorkspaces(InviwoApplication* app, const std::string& path) {
     auto update = [&](const std::string& fileName) {
         auto errorCounter = std::make_shared<LogErrorCounter>();
         LogCentral::getPtr()->registerLogger(errorCounter);
@@ -63,7 +70,7 @@ void updateWorkspaces(InviwoApplication* app) {
 
                 if (errorCounter->getErrorCount() > 0) {
                     throw Exception("Error messages found!",
-                                    IvwContextCustom("utilqt::updateWorkspaces"));
+                                    IvwContextCustom("util::updateWorkspaces"));
                 }
             }
             {
@@ -90,7 +97,7 @@ void updateWorkspaces(InviwoApplication* app) {
              filesystem::getDirectoryContents(path, filesystem::ListMode::Files)) {
             if (filesystem::wildcardStringMatch("*.inv", file)) {
                 const auto workspace = path + "/" + file;
-                LogInfoCustom("utilqt::updateWorkspaces", "Updating workspace: " << workspace);
+                LogInfoCustom("util::updateWorkspaces", "Updating workspace: " << workspace);
                 update(workspace);
             }
         }
@@ -100,15 +107,9 @@ void updateWorkspaces(InviwoApplication* app) {
         }
     };
 
-    updatePath(filesystem::getPath(PathType::Workspaces));
-
-    for(const auto& m : app->getModules()) {
-        updatePath(m->getPath(ModulePath::Workspaces));
-    }
+    updatePath(path);
 }
 
+}  // namespace util
 
-} // namespace
-
-
-} // namespace
+}  // namespace inviwo

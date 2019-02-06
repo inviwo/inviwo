@@ -63,6 +63,12 @@ private:
     SerializationExceptionData data_;
 };
 
+namespace util {
+
+IVW_CORE_API std::string formatSerializationError(const std::string& name, const std::string& src,
+                                                  const std::string& dst, const std::string& err);
+}  // namespace util
+
 }  // namespace inviwo
 
 #endif  // IVW_SERIALIZATIONEXCEPTION_H

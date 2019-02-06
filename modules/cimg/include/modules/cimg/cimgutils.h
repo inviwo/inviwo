@@ -38,69 +38,69 @@
 namespace inviwo {
 
 namespace cimgutil {
-    enum class InterpolationType : int {
-        RawMemory = -1,       // raw memory resizing.
-        NoInterpolation = 0,  // additional space is filled according to boundary_conditions.
-        Nearest = 1,          // nearest - neighbor interpolation.
-        Moving = 2,           // moving average interpolation.
-        Linear = 3,           // linear interpolation.
-        Grid = 4,             // grid interpolation.
-        Cubic = 5,            // cubic interpolation.
-        Lanczos = 6           // lanczos interpolation.
-    };
+enum class InterpolationType : int {
+    RawMemory = -1,       // raw memory resizing.
+    NoInterpolation = 0,  // additional space is filled according to boundary_conditions.
+    Nearest = 1,          // nearest - neighbor interpolation.
+    Moving = 2,           // moving average interpolation.
+    Linear = 3,           // linear interpolation.
+    Grid = 4,             // grid interpolation.
+    Cubic = 5,            // cubic interpolation.
+    Lanczos = 6           // lanczos interpolation.
+};
 
-    /**
-    * Loads layer data from a specified filePath.
-    **/
-    IVW_MODULE_CIMG_API void* loadLayerData(void* dst, const std::string& filePath, uvec2& out_dim,
-                                            DataFormatId& formatId, bool rescaleToDim = false);
+/**
+ * Loads layer data from a specified filePath.
+ **/
+IVW_MODULE_CIMG_API void* loadLayerData(void* dst, const std::string& filePath, uvec2& out_dim,
+                                        DataFormatId& formatId, bool rescaleToDim = false);
 
-    /**
-    * Loads volume data from a specified filePath.
-    **/
-    IVW_MODULE_CIMG_API void* loadVolumeData(void* dst, const std::string& filePath,
-                                             size3_t& out_dim, DataFormatId& formatId);
+/**
+ * Loads volume data from a specified filePath.
+ **/
+IVW_MODULE_CIMG_API void* loadVolumeData(void* dst, const std::string& filePath, size3_t& out_dim,
+                                         DataFormatId& formatId);
 
-    /**
-    * Saves an layer of an image to a specified filename.
-    * @param filePath the path including filename and extension, which is used to determine the image format
-    * @param inputImage specifies the image that is to be saved.
-    **/
-    IVW_MODULE_CIMG_API void saveLayer(const std::string& filePath, const Layer* inputImage);
+/**
+ * Saves an layer of an image to a specified filename.
+ * @param filePath the path including filename and extension, which is used to determine the image
+ *format
+ * @param inputImage specifies the image that is to be saved.
+ **/
+IVW_MODULE_CIMG_API void saveLayer(const std::string& filePath, const Layer* inputImage);
 
-    /**
-    * Saves an layer of an unsigned char buffer.
-    * @param extension  specifies the output image format
-    * @param inputImage specifies the image that is to be saved.
-    **/
-    IVW_MODULE_CIMG_API std::unique_ptr<std::vector<unsigned char>> saveLayerToBuffer(
-        const std::string& extension, const Layer* inputImage);
+/**
+ * Saves an layer of an unsigned char buffer.
+ * @param extension  specifies the output image format
+ * @param inputImage specifies the image that is to be saved.
+ **/
+IVW_MODULE_CIMG_API std::unique_ptr<std::vector<unsigned char>> saveLayerToBuffer(
+    const std::string& extension, const Layer* inputImage);
 
-    /**
-     * \brief Rescales Layer of given image data
-     *
-     * @param inputLayer image data that needs to be rescaled
-     * @param dst_dim is destination dimensions
-     * @return rescaled raw data
-     */
-    IVW_MODULE_CIMG_API void* rescaleLayer(const Layer* inputLayer, uvec2 dst_dim);
+/**
+ * \brief Rescales Layer of given image data
+ *
+ * @param inputLayer image data that needs to be rescaled
+ * @param dst_dim is destination dimensions
+ * @return rescaled raw data
+ */
+IVW_MODULE_CIMG_API void* rescaleLayer(const Layer* inputLayer, uvec2 dst_dim);
 
-    /**
-     * \brief Rescales LayerRAM representation uses FILTER_BILINEAR by default.
-     *
-     * @param layerRam representation that needs rescaling
-     * @param dst_dim is destination dimensions
-     * @return rescaled raw data
-     */
-    IVW_MODULE_CIMG_API void* rescaleLayerRAM(const LayerRAM* layerRam, uvec2 dst_dim);
+/**
+ * \brief Rescales LayerRAM representation uses FILTER_BILINEAR by default.
+ *
+ * @param layerRam representation that needs rescaling
+ * @param dst_dim is destination dimensions
+ * @return rescaled raw data
+ */
+IVW_MODULE_CIMG_API void* rescaleLayerRAM(const LayerRAM* layerRam, uvec2 dst_dim);
 
-    IVW_MODULE_CIMG_API bool rescaleLayerRamToLayerRam(const LayerRAM* source, LayerRAM* target);
+IVW_MODULE_CIMG_API bool rescaleLayerRamToLayerRam(const LayerRAM* source, LayerRAM* target);
 
-    IVW_MODULE_CIMG_API std::string getLibPNGVesrion();
-    IVW_MODULE_CIMG_API std::string getLibJPGVesrion();
-    IVW_MODULE_CIMG_API std::string getOpenEXRVesrion();
+IVW_MODULE_CIMG_API std::string getLibJPGVesrion();
+IVW_MODULE_CIMG_API std::string getOpenEXRVesrion();
 
-    } // namespace cimgutil
+}  // namespace cimgutil
 
 }  // namespace inviwo
 

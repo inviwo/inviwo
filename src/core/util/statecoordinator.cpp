@@ -29,7 +29,4 @@
 
 #include <inviwo/core/util/statecoordinator.h>
 
-namespace inviwo {
-
-} // namespace
-
+namespace inviwo {}  // namespace inviwo

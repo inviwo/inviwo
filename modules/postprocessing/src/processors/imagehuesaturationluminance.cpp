@@ -57,4 +57,4 @@ void ImageHueSaturationLuminance::preProcess(TextureUnitContainer &) {
     utilgl::setUniforms(shader_, hue_, saturation_, luminance_);
 }
 
-}  // namespace
+}  // namespace inviwo

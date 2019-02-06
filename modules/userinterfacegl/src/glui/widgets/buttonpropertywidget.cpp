@@ -33,6 +33,9 @@ namespace inviwo {
 
 namespace glui {
 
+const std::string ButtonPropertyWidget::classIdentifier = "org.inviwo.glui.ButtonPropertyWidget";
+std::string ButtonPropertyWidget::getClassIdentifier() const { return classIdentifier; }
+
 ButtonPropertyWidget::ButtonPropertyWidget(ButtonProperty &property, Processor &processor,
                                            Renderer &uiRenderer, const ivec2 &extent)
     : Button(property.getDisplayName(), processor, uiRenderer, extent)
@@ -60,9 +63,7 @@ void ButtonPropertyWidget::onSetDisplayName(Property *, const std::string &displ
     property_->propertyModified();
 }
 
-void ButtonPropertyWidget::onSetReadOnly(Property *, bool readonly) {
-    setEnabled(!readonly);
-}
+void ButtonPropertyWidget::onSetReadOnly(Property *, bool readonly) { setEnabled(!readonly); }
 
 ToolButtonPropertyWidget::ToolButtonPropertyWidget(const std::string &imageFileName,
                                                    ButtonProperty &property, Processor &processor,
@@ -109,9 +110,7 @@ void ToolButtonPropertyWidget::onSetDisplayName(Property *, const std::string &d
     property_->propertyModified();
 }
 
-void ToolButtonPropertyWidget::onSetReadOnly(Property *, bool readonly) {
-    setEnabled(!readonly);
-}
+void ToolButtonPropertyWidget::onSetReadOnly(Property *, bool readonly) { setEnabled(!readonly); }
 
 }  // namespace glui
 

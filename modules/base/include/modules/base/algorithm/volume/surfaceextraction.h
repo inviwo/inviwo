@@ -38,7 +38,6 @@
 
 #include <modules/base/datastructures/kdtree.h>
 
-
 namespace inviwo {
 /*
 Common functions used in MarchingCubes and MarchingTetrahedron

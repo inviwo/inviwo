@@ -47,11 +47,11 @@ ALLOW_FLAGS_FOR_ENUM(GestureType)
 using GestureTypes = flags::flags<GestureType>;
 
 enum class GestureState {
-    NoGesture  = 1 << 0,
-    Started    = 1 << 2,
-    Updated    = 1 << 3,
-    Finished   = 1 << 4,
-    Canceled   = 1 << 5
+    NoGesture = 1 << 0,
+    Started = 1 << 2,
+    Updated = 1 << 3,
+    Finished = 1 << 4,
+    Canceled = 1 << 5
 };
 
 ALLOW_FLAGS_FOR_ENUM(GestureState)
@@ -96,8 +96,7 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 }
 
 template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             GestureTypes s) {
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, GestureTypes s) {
     std::copy(s.begin(), s.end(), util::make_ostream_joiner(ss, "+"));
 }
 
@@ -107,7 +106,6 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
     std::copy(s.begin(), s.end(), util::make_ostream_joiner(ss, "+"));
 }
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_GESTURESTATE_H
-
+#endif  // IVW_GESTURESTATE_H

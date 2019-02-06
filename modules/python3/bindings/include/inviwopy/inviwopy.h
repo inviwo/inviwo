@@ -30,11 +30,16 @@
 #ifndef IVW_INVIWOPY_H
 #define IVW_INVIWOPY_H
 
+#include <warn/push>
+#include <warn/ignore/shadow>
+
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
 #include <pybind11/pytypes.h>
 #include <pybind11/detail/common.h>
+
+#include <warn/pop>
 
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/canvasprocessor.h>
@@ -83,6 +88,5 @@ struct type_caster<std::vector<Layer *>> : ListCasterBase<Layer> {
 };
 }  // namespace detail
 }  // namespace pybind11
-
 
 #endif  // IVW_PYPROPERTIES_H

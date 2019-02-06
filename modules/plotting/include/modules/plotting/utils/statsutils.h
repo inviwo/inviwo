@@ -62,7 +62,7 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& o
  *
  * NaNs (Not a Numbers) are excluded from the computation.
  * The following example will return {1,2}
- * \code{.cpp} 
+ * \code{.cpp}
  *    auto percentiles = utilstats::percentiles({1, 0, 3, 2}, {0.25, 0.75});
  * \endcode
  * See also https://en.wikipedia.org/wiki/Percentile
@@ -75,7 +75,7 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& o
 template <typename T, typename std::enable_if<!util::is_floating_point<T>::value, int>::type = 0>
 std::vector<T> percentiles(std::vector<T> data, const std::vector<double>& percentiles) {
     std::sort(data.begin(), data.end());
-    std::vector<T> result; 
+    std::vector<T> result;
     result.reserve(percentiles.size());
     auto nElements = data.size();
     for (auto percentile : percentiles) {
@@ -83,16 +83,17 @@ std::vector<T> percentiles(std::vector<T> data, const std::vector<double>& perce
             throw Exception("Percentile must be between 0 and 1");
         }
         // Take care of percentile == 1 using std::min
-        result.push_back(data[static_cast<size_t>(std::max(std::ceil(nElements * percentile)-1., 0.))]);
+        result.push_back(
+            data[static_cast<size_t>(std::max(std::ceil(nElements * percentile) - 1., 0.))]);
     }
     return result;
 }
 
 // Float/double types have special values
-template <typename T,
-    typename std::enable_if<util::is_floating_point<T>::value, int>::type = 0>
+template <typename T, typename std::enable_if<util::is_floating_point<T>::value, int>::type = 0>
 std::vector<T> percentiles(std::vector<T> data, const std::vector<double>& percentiles) {
-    auto noNaN = std::partition(data.begin(), data.end(), [](const auto& a) { return util::isnan(a); });
+    auto noNaN =
+        std::partition(data.begin(), data.end(), [](const auto& a) { return util::isnan(a); });
     std::sort(noNaN, data.end());
     std::vector<T> result;
     result.reserve(percentiles.size());
@@ -102,13 +103,11 @@ std::vector<T> percentiles(std::vector<T> data, const std::vector<double>& perce
             throw std::invalid_argument("Percentile must be between 0 and 1");
         }
         // Take care of percentile == 1 using std::min
-        result.push_back(data[static_cast<size_t>(std::max(std::ceil(nElements * percentile)-1., 0.))]);
+        result.push_back(
+            data[static_cast<size_t>(std::max(std::ceil(nElements * percentile) - 1., 0.))]);
     }
     return result;
-
 }
-
-
 
 }  // namespace statsutil
 

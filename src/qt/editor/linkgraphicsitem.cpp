@@ -114,7 +114,8 @@ ProcessorGraphicsItem* LinkConnectionDragGraphicsItem::getSrcProcessorGraphicsIt
 
 QPointF LinkConnectionDragGraphicsItem::compare(const QPointF startLeft, const QPointF& startRight,
                                                 const QPointF& endLeft, const QPointF& endRight,
-                                                const QPointF& left,const QPointF& center, const QPointF& right) {
+                                                const QPointF& left, const QPointF& center,
+                                                const QPointF& right) {
 
     if (startLeft.x() > endRight.x()) {
         return left;

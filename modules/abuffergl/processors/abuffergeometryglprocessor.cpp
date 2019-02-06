@@ -54,9 +54,7 @@ const ProcessorInfo ABufferGeometryGLProcessor::processorInfo_{
     CodeState::Experimental,                  // Code state
     Tags::None,                               // Tags
 };
-const ProcessorInfo ABufferGeometryGLProcessor::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo ABufferGeometryGLProcessor::getProcessorInfo() const { return processorInfo_; }
 
 ABufferGeometryGLProcessor::ABufferGeometryGLProcessor()
     : Processor()
@@ -105,7 +103,8 @@ ABufferGeometryGLProcessor::ABufferGeometryGLProcessor()
     geomProperties_.addProperty(overrideColor_);
     overrideColor_.setSemantics(PropertySemantics::Color);
     overrideColor_.setVisible(false);
-    overrideColorBuffer_.onChange([this]() { overrideColor_.setVisible(overrideColorBuffer_.get()); });
+    overrideColorBuffer_.onChange(
+        [this]() { overrideColor_.setVisible(overrideColorBuffer_.get()); });
 
     addProperty(geomProperties_);
     addProperty(lightingProperty_);
@@ -187,8 +186,7 @@ void ABufferGeometryGLProcessor::process() {
         utilgl::CullFaceState culling(cullFace_.get());
 
         for (auto& drawer : drawers_) {
-            utilgl::setShaderUniforms(shader_, *(drawer.second->getMesh()),
-                                      "geometry");
+            utilgl::setShaderUniforms(shader_, *(drawer.second->getMesh()), "geometry");
             drawer.second->draw();
         }
 
@@ -209,8 +207,8 @@ void ABufferGeometryGLProcessor::process() {
 
 void ABufferGeometryGLProcessor::onAbufferSettingChanged() { updateRequried_ = true; }
 
-void ABufferGeometryGLProcessor::onAbufferTransparencyChanged() { /*updateRequried_ = true;*/ }
-
+void ABufferGeometryGLProcessor::onAbufferTransparencyChanged() { /*updateRequried_ = true;*/
+}
 
 void ABufferGeometryGLProcessor::updateDrawers() {
     auto changed = inport_.getChangedOutports();
@@ -228,7 +226,7 @@ void ABufferGeometryGLProcessor::updateDrawers() {
 
         if (util::contains(changed, elem.first) || ibegin == temp.end() ||
             static_cast<long>(elem.second.size()) !=
-            std::distance(ibegin, iend)) {  // data is changed or new.
+                std::distance(ibegin, iend)) {  // data is changed or new.
 
             for (auto geo : elem.second) {
                 auto factory = getNetwork()->getApplication()->getMeshDrawerFactory();
@@ -242,5 +240,4 @@ void ABufferGeometryGLProcessor::updateDrawers() {
     }
 }
 
-}  // namespace
-
+}  // namespace inviwo

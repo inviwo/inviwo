@@ -38,7 +38,7 @@
 namespace inviwo {
 namespace discretedata {
 
-/** 
+/**
  * \brief Data channel by function evaluated at each (linear) index.
  *
  * Realization of DataChannel.
@@ -56,7 +56,7 @@ public:
     using Function = typename std::function<void(Vec&, ind)>;
 
 public:
-    /** 
+    /**
      * \brief Direct construction
      * @param dataFunction Data generator, mapping of linear index to T*
      * @param numElements Total number of indexed positions
@@ -74,7 +74,7 @@ public:
 public:
     ind size() const override { return numElements_; }
 
-    /** 
+    /**
      * \brief Indexed point access, constant
      * Will write to the memory of dest via reinterpret_cast.
      * @param dest Position to write to, expect write of NumComponents many T

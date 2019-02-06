@@ -27,119 +27,142 @@
  *
  *********************************************************************************/
 
-#ifndef GLSL_VERSION_150
-#extension GL_EXT_gpu_shader4 : enable
-#extension GL_EXT_geometry_shader4 : enable
+// Owned by the TubeRendering Processor
+
+#include "utils/structs.glsl"
+#include "utils/pickingutils.glsl"
+
+#ifdef HAS_ADJACENCY
+#define SIZE 4
+#define BEGIN 1
+#define END 2
+layout(lines_adjacency) in;
+#else
+#define SIZE 2
+#define BEGIN 0
+#define END 1
+layout(lines) in;
 #endif
 
-#include "utils/structs.glsl"
-
-layout(lines_adjacency) in;
 layout(triangle_strip, max_vertices = 24) out;
-
-
-#include "utils/sampler3d.glsl"
-#include "utils/structs.glsl"
 
 uniform GeometryParameters geometry;
 uniform CameraParameters camera;
 
-
-uniform float radius;
-uniform mat4 ModelviewProjection;
-in vec3 worldPosition_[4]; 
-in vec3 normal_[4];   
-in vec4 vColor_[4];
-vec4 prismoid[8]; 
-
+in vec4 vColor_[SIZE];
+flat in float vRadius_[SIZE];
+flat in uint pickID_[SIZE];
 
 out vec4 color_;
+flat out vec4 pickColor_;
 out vec3 worldPos_;
 out vec3 startPos_;
 out vec3 endPos_;
 out vec3 gEndplanes[2];
+out float radius_;
 
-void emitV(int a){
-    color_ = vColor_[a <= 3 ? 1 : 2]; 
-    worldPos_ = prismoid[a].xyz;
-    gl_Position = camera.worldToClip * prismoid[a];  
+vec3 prismoid[8];
+vec4 color[2];
+vec4 pickColor;
+vec3 startPos;
+vec3 endPos;
+vec3 capNormals[2];
+float radius[2];
+
+void emitVertex(int a) { 
+    gl_Position = camera.worldToClip * vec4(prismoid[a], 1.0);  
+    color_ = color[a <= 3 ? 0 : 1];
+    pickColor_ = pickColor;
+    worldPos_ = prismoid[a];
+    startPos_ = startPos;
+    endPos_ = endPos;
+    gEndplanes[0] = capNormals[0];
+    gEndplanes[1] = capNormals[1];
+    radius_ = radius[a <= 3 ? 0 : 1];
     EmitVertex();
 }
 
-void emit(int a, int b, int c, int d)
-{
-    emitV(a);
-    emitV(b);
-    emitV(c);
-    emitV(d);
+void emitFace(int a, int b, int c, int d) {
+    emitVertex(a);
+    emitVertex(b);
+    emitVertex(c);
+    emitVertex(d);
     EndPrimitive(); 
 }
 
-vec3 getOrthogonalVector(vec3 v,vec3 A,vec3 B){
-    if(abs(1-dot(v,A))>0.001){
-        return normalize(cross(v,A));
-    }else{
-        return normalize(cross(v,B));
+// v should be normalized
+vec3 findOrthogonalVector(vec3 v) {
+    vec3 A = normalize((camera.viewToWorld * vec4(1,0,0,0)).xyz);
+    if (abs(dot(v,A)) > 0.5) {
+        return cross(v,A);
+    } else {
+        vec3 B = normalize((camera.viewToWorld * vec4(0,0,1,0)).xyz);
+        return cross(v,B);
     }
 }
 
-void main()
-{
-    // Compute orientation vectors for the two connecting faces:
-    vec3 p0, p1, p2, p3;
+/*  Corners of the prismoid;
+ *   
+ *        7------ 4                     
+ *       /|  p2  /|                 
+ *      / |  *  / |                 
+ *     /  6----/--5                 
+ *    3-------0  /                  
+ *    | / p1  | /                   
+ *    |/  *   |/                    
+ *    2-------1
+ *
+ * if we let p2-p1 -> z i -> x, and k -> y
+ */
 
-#ifndef GLSL_VERSION_150 
-    p0 = gl_PositionIn[0].xyz;
-    p1 = gl_PositionIn[1].xyz;
-    p2 = gl_PositionIn[2].xyz;
-    p3 = gl_PositionIn[3].xyz; 
+void main() {
+    color[0] = vColor_[BEGIN];
+    color[1] = vColor_[END];
+    radius[0] = vRadius_[BEGIN];
+    radius[1] = vRadius_[END];
+    pickColor = vec4(pickingIndexToColor(pickID_[BEGIN]), pickID_[BEGIN] == 0 ? 0.0 : 1.0);
+    startPos = gl_in[BEGIN].gl_Position.xyz;
+    endPos = gl_in[END].gl_Position.xyz;
+
+#ifdef HAS_ADJACENCY
+    vec3 prevPos = gl_in[0].gl_Position.xyz;
+    vec3 nextPos = gl_in[3].gl_Position.xyz;
 #else
-    p0 = gl_in[0].gl_Position.xyz;
-    p1 = gl_in[1].gl_Position.xyz;
-    p2 = gl_in[2].gl_Position.xyz;
-    p3 = gl_in[3].gl_Position.xyz;
+    vec3 prevPos = startPos;
+    vec3 nextPos = endPos;
 #endif
 
-    vec3 n0 = normalize(p1-p0);
-    vec3 n1 = normalize(p2-p1);
-    vec3 n2 = normalize(p3-p2);
-    vec3 u = normalize(n0+n1);
-    vec3 v = normalize(n1+n2);
-    gEndplanes[0] = u;
-    gEndplanes[1] = v;
+    if (startPos == endPos) return; // zero size segment
+  
+    vec3 prevDir = startPos-prevPos;
+    vec3 tubeDir = normalize(endPos-startPos);
+    vec3 nextDir = nextPos-endPos;
+    capNormals[0] = normalize(tubeDir + (prevDir != vec3(0) ? normalize(prevDir) : prevDir));
+    capNormals[1] = normalize(tubeDir + (nextDir != vec3(0) ? normalize(nextDir) : nextDir));
 
+    vec3 radialDir = findOrthogonalVector(tubeDir);
 
-    startPos_ = p1;
-    endPos_ = p2;
+    // Compute cap face 1 of 2:
+    vec3 k = radius[0] * normalize(cross(radialDir, capNormals[0])); 
+    vec3 i = radius[0] * normalize(cross(k, capNormals[0])); 
+    prismoid[0] = startPos + i + k;
+    prismoid[1] = startPos + i - k;
+    prismoid[2] = startPos - i - k;
+    prismoid[3] = startPos - i + k;
 
-
-    vec3 B = normalize((camera.viewToWorld * vec4(0,0,1,0)).xyz);
-    vec3 A = normalize((camera.viewToWorld * vec4(1,0,0,0)).xyz);
-    vec3 N1,N2; 
-    N1 = getOrthogonalVector(n1,A,B);
-    N2 = getOrthogonalVector(n2,A,B);
-
-    // Declare scratch variables for basis vectors:
-    vec3 i,j,k; float r = radius;
-
-    // Compute face 1 of 2:
-    j = u; i = N1; k = normalize(cross(i, j)); i = normalize(cross(k, j)); ; i *= r; k *= r;
-    prismoid[0] = vec4(p1 + i + k, 1);
-    prismoid[1] = vec4(p1 + i - k, 1);
-    prismoid[2] = vec4(p1 - i - k, 1);
-    prismoid[3] = vec4(p1 - i + k, 1);
-
-    // Compute face 2 of 2:
-    j = v; i = N2; k = normalize(cross(i, j)); i = normalize(cross(k, j)); i *= r; k *= r;
-    prismoid[4] = vec4(p2 + i + k, 1);
-    prismoid[5] = vec4(p2 + i - k, 1);
-    prismoid[6] = vec4(p2 - i - k, 1);
-    prismoid[7] = vec4(p2 - i + k, 1);
+    // Compute cap face 2 of 2:
+    k = radius[1] * normalize(cross(radialDir, capNormals[1])); 
+    i = radius[1] * normalize(cross(k, capNormals[1])); 
+    prismoid[4] = endPos + i + k;
+    prismoid[5] = endPos + i - k;
+    prismoid[6] = endPos - i - k;
+    prismoid[7] = endPos - i + k;
 
     // Emit the six faces of the prismoid:
-    emit(0,1,3,2); emit(5,4,6,7);
-    emit(4,5,0,1); emit(3,2,7,6);
-    emit(0,3,4,7); emit(2,1,6,5);
+    emitFace(0,1,3,2); 
+    emitFace(5,4,6,7);
+    emitFace(4,5,0,1); 
+    emitFace(3,2,7,6);
+    emitFace(0,3,4,7); 
+    emitFace(2,1,6,5);
 }
-
-

@@ -49,11 +49,14 @@
 #include <inviwo/qt/editor/networkeditorview.h>
 #include <inviwo/qt/editor/processorlistwidget.h>
 #include <inviwo/qt/editor/settingswidget.h>
+#include <inviwo/qt/editor/annotationswidget.h>
 #include <inviwo/qt/editor/networksearch.h>
 #include <inviwo/qt/editor/processorgraphicsitem.h>
 #include <inviwo/qt/editor/inviwoeditmenu.h>
+#include <inviwo/qt/editor/welcomewidget.h>
 #include <inviwo/qt/editor/resourcemanager/resourcemanagerdockwidget.h>
 #include <inviwo/qt/applicationbase/inviwoapplicationqt.h>
+#include <inviwo/qt/editor/workspaceannotationsqt.h>
 #include <modules/qtwidgets/inviwofiledialog.h>
 #include <modules/qtwidgets/propertylistwidget.h>
 #include <inviwo/core/metadata/processormetadata.h>
@@ -86,6 +89,9 @@
 #include <QToolBar>
 #include <QDropEvent>
 #include <QDragEnterEvent>
+#include <QBuffer>
+#include <QTabWidget>
+#include <QToolButton>
 
 #include <warn/pop>
 
@@ -124,7 +130,14 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
                              "path"}
     , openData_{"d", "data", "Try and open a data file", false, "", "file name"}
     , updateWorkspaces_{"", "update-workspaces",
-                        "Go through and update all workspaces to the latest version"}
+                        "Update workspaces of all modules to the latest version "
+                        "(located in '<module>/data/workspaces/*')"}
+    , updateWorkspacesInPath_{"",
+                              "update-workspaces-in-path",
+                              "Update all workspaces in path to the latest version",
+                              false,
+                              "",
+                              "path"}
     , undoManager_(this) {
 
     setObjectName("InviwoMainWindow");
@@ -196,19 +209,34 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
 
     app->getCommandLineParser().add(&updateWorkspaces_, [this]() { util::updateWorkspaces(app_); },
                                     1250);
+    app->getCommandLineParser().add(
+        &updateWorkspacesInPath_,
+        [this]() { util::updateWorkspaces(app_, updateWorkspacesInPath_.getValue()); }, 1250);
 
     networkEditorView_ = new NetworkEditorView(networkEditor_.get(), this);
     NetworkEditorObserver::addObservation(networkEditor_.get());
 
-    setCentralWidget(networkEditorView_);
+    centralWidget_ = new QTabWidget(this);
+    centralWidget_->setObjectName("CentralTabWidget");
+    centralWidget_->setTabPosition(QTabWidget::North);
+    centralWidget_->setMovable(true);
+    centralWidget_->setTabBarAutoHide(true);
+
+    centralWidget_->addTab(networkEditorView_, "Network Editor");
+    setCentralWidget(centralWidget_);
 
     settingsWidget_ = new SettingsWidget(this);
     addDockWidget(Qt::RightDockWidgetArea, settingsWidget_);
     settingsWidget_->setVisible(false);
     settingsWidget_->loadState();
 
+    annotationsWidget_ = new AnnotationsWidget(this);
+    tabifyDockWidget(settingsWidget_, annotationsWidget_);
+    annotationsWidget_->setVisible(true);
+    annotationsWidget_->loadState();
+
     helpWidget_ = new HelpWidget(this);
-    tabifyDockWidget(settingsWidget_, helpWidget_);
+    tabifyDockWidget(annotationsWidget_, helpWidget_);
     helpWidget_->setVisible(true);
     helpWidget_->loadState();
 
@@ -230,6 +258,34 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     addDockWidget(Qt::LeftDockWidgetArea, resourceManagerDockWidget_);
     resourceManagerDockWidget_->setVisible(false);
     resourceManagerDockWidget_->loadState();
+
+    // register workspace annotation serialization and deserialization as well as clear callback
+    annotationSerializationHandle_ = app_->getWorkspaceManager()->onSave(
+        [&](Serializer& s) {
+            const int fixedHeight = 256;
+
+            auto canvases = utilqt::getCanvasImages(app_->getProcessorNetwork(), false);
+            for (auto& img : canvases) {
+                img.second = img.second.scaledToHeight(fixedHeight);
+            }
+
+            annotationsWidget_->getAnnotations()
+                .setNetworkImage(networkEditorView_->exportViewToImage(
+                    true, true, QSize(fixedHeight, fixedHeight)));
+            annotationsWidget_->getAnnotations().setCanvasImages(canvases);
+
+            s.serialize("WorkspaceAnnotations", annotationsWidget_->getAnnotations());
+        },
+        WorkspaceSaveMode::Disk);
+
+    annotationDeserializationHandle_ = app_->getWorkspaceManager()->onLoad([&](Deserializer& d) {
+        d.deserialize("WorkspaceAnnotations", annotationsWidget_->getAnnotations());
+    });
+
+    annotationClearHandle_ = app_->getWorkspaceManager()->onClear([&]() {
+        annotationsWidget_->getAnnotations().resetAllPoperties();
+        annotationsWidget_->getAnnotations().setAuthor(app_->getSystemSettings().workspaceAuthor_);
+    });
 
     // load settings and restore window state
     loadWindowState();
@@ -296,6 +352,15 @@ void InviwoMainWindow::addActions() {
     networkToolBar->setObjectName("networkToolBar");
 
     // file menu entries
+
+    {
+        auto welcomeAction = new QAction(QIcon(":/icons/about.png"), tr("&Get Started"), this);
+        this->addAction(welcomeAction);
+        connect(welcomeAction, &QAction::triggered, this, &InviwoMainWindow::showWelcomeScreen);
+        fileMenuItem->addAction(welcomeAction);
+        fileMenuItem->addSeparator();
+    }
+
     {
         auto newAction = new QAction(QIcon(":/icons/newfile.png"), tr("&New Workspace"), this);
         newAction->setShortcut(QKeySequence::New);
@@ -312,7 +377,7 @@ void InviwoMainWindow::addActions() {
         openAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         this->addAction(openAction);
         connect(openAction, &QAction::triggered, this,
-                static_cast<void (InviwoMainWindow::*)()>(&InviwoMainWindow::openWorkspace));
+                static_cast<bool (InviwoMainWindow::*)()>(&InviwoMainWindow::openWorkspace));
         fileMenuItem->addAction(openAction);
         workspaceToolBar->addAction(openAction);
     }
@@ -409,6 +474,10 @@ void InviwoMainWindow::addActions() {
             // save empty list
             saveRecentWorkspaceList(QStringList());
             clearRecentWorkspaces_->setEnabled(false);
+
+            if (welcomeWidget_) {
+                welcomeWidget_->updateRecentWorkspaces();
+            }
         });
 
         connect(recentWorkspaceMenu, &QMenu::aboutToShow, this, [this]() {
@@ -577,6 +646,8 @@ void InviwoMainWindow::addActions() {
         viewMenuItem->addAction(processorTreeWidget_->toggleViewAction());
         propertyListWidget_->toggleViewAction()->setText(tr("&Property List"));
         viewMenuItem->addAction(propertyListWidget_->toggleViewAction());
+        annotationsWidget_->toggleViewAction()->setText(tr("&Workspace Annotations"));
+        viewMenuItem->addAction(annotationsWidget_->toggleViewAction());
         resourceManagerDockWidget_->toggleViewAction()->setText(tr("&Resource Manager"));
         viewMenuItem->addAction(resourceManagerDockWidget_->toggleViewAction());
         consoleWidget_->toggleViewAction()->setText(tr("&Output Console"));
@@ -749,6 +820,10 @@ void InviwoMainWindow::addToRecentWorkspaces(QString workspaceFileName) {
 
     if (recentFiles.size() > static_cast<int>(maxNumRecentFiles_)) recentFiles.removeLast();
     saveRecentWorkspaceList(recentFiles);
+
+    if (welcomeWidget_) {
+        welcomeWidget_->updateRecentWorkspaces();
+    }
 }
 
 QStringList InviwoMainWindow::getRecentWorkspaceList() const {
@@ -777,41 +852,57 @@ std::string InviwoMainWindow::getCurrentWorkspace() {
     return currentWorkspaceFileName_.toLocal8Bit().constData();
 }
 
-void InviwoMainWindow::newWorkspace() {
+bool InviwoMainWindow::newWorkspace() {
     if (currentWorkspaceFileName_ != "")
-        if (!askToSaveWorkspaceChanges()) return;
+        if (!askToSaveWorkspaceChanges()) return false;
 
     app_->getWorkspaceManager()->clear();
 
     setCurrentWorkspace(untitledWorkspaceName_);
     getNetworkEditor()->setModified(false);
+    return true;
 }
 
-void InviwoMainWindow::openWorkspace(QString workspaceFileName) {
-    openWorkspace(workspaceFileName, false);
+bool InviwoMainWindow::openWorkspace(QString workspaceFileName) {
+    return openWorkspace(workspaceFileName, false);
 }
 
 bool InviwoMainWindow::openWorkspaceAskToSave(QString workspaceFileName) {
     if (askToSaveWorkspaceChanges()) {
-        openWorkspace(workspaceFileName, false);
-        return true;
+        return openWorkspace(workspaceFileName, false);
     } else {
         return false;
     }
 }
 
+bool InviwoMainWindow::openExample(QString exampleFileName) {
+    return openWorkspace(exampleFileName, true);
+}
+
 void InviwoMainWindow::openLastWorkspace(std::string workspace) {
-    workspace = filesystem::cleanupPath(workspace);
-    if (!workspace.empty()) {
-        openWorkspace(utilqt::toQString(workspace));
-    } else if (!workspaceOnLastSuccessfulExit_.isEmpty()) {
-        openWorkspace(workspaceOnLastSuccessfulExit_);
-    } else {
-        newWorkspace();
+    QSettings settings;
+    settings.beginGroup(objectName());
+    const bool loadlastWorkspace = settings.value("autoloadLastWorkspace", true).toBool();
+    const bool showWelcomePage = settings.value("showWelcomePage", true).toBool();
+
+    const auto loadSuccessful = [&]() {
+        workspace = filesystem::cleanupPath(workspace);
+        if (!workspace.empty()) {
+            return openWorkspace(utilqt::toQString(workspace));
+        } else if (loadlastWorkspace && !workspaceOnLastSuccessfulExit_.isEmpty()) {
+            return openWorkspace(workspaceOnLastSuccessfulExit_);
+        } else {
+            newWorkspace();
+        }
+        return false;
+    }();
+
+    if (showWelcomePage && !loadSuccessful) {
+        showWelcomeScreen();
     }
 }
 
-void InviwoMainWindow::openWorkspace() {
+bool InviwoMainWindow::openWorkspace() {
     if (askToSaveWorkspaceChanges()) {
         InviwoFileDialog openFileDialog(this, "Open Workspace ...", "workspace");
         openFileDialog.addSidebarPath(PathType::Workspaces);
@@ -821,19 +912,20 @@ void InviwoMainWindow::openWorkspace() {
 
         if (openFileDialog.exec()) {
             QString path = openFileDialog.selectedFiles().at(0);
-            openWorkspace(path);
+            return openWorkspace(path);
         }
     }
+    return false;
 }
 
-void InviwoMainWindow::openWorkspace(QString workspaceFileName, bool exampleWorkspace) {
+bool InviwoMainWindow::openWorkspace(QString workspaceFileName, bool isExample) {
     std::string fileName{utilqt::fromQString(workspaceFileName)};
     fileName = filesystem::cleanupPath(fileName);
     workspaceFileName = utilqt::toQString(fileName);
 
     if (!filesystem::fileExists(fileName)) {
         LogError("Could not find workspace file: " << fileName);
-        return;
+        return false;
     }
 
     {
@@ -851,7 +943,7 @@ void InviwoMainWindow::openWorkspace(QString workspaceFileName, bool exampleWork
                 }
             });
 
-            if (exampleWorkspace) {
+            if (isExample) {
                 setCurrentWorkspace(untitledWorkspaceName_);
             } else {
                 setCurrentWorkspace(workspaceFileName);
@@ -868,6 +960,7 @@ void InviwoMainWindow::openWorkspace(QString workspaceFileName, bool exampleWork
     }
     saveWindowState();
     getNetworkEditor()->setModified(false);
+    return true;
 }
 
 void InviwoMainWindow::appendWorkspace(const std::string& file) {
@@ -886,6 +979,20 @@ void InviwoMainWindow::saveWorkspace(QString workspaceFileName) {
     fileName = filesystem::cleanupPath(fileName);
 
     try {
+        auto networkImageSerializationHandle = app_->getWorkspaceManager()->onSave(
+            [&](Serializer& s) {
+                const int fixedHeight = 256;
+                auto image = networkEditorView_->exportViewToImage(true, true, QSize(256, 256));
+
+                auto canvases = utilqt::getCanvasImages(app_->getProcessorNetwork());
+                for (auto& img : canvases) {
+                    img.second = img.second.scaledToHeight(fixedHeight);
+                }
+                WorkspaceAnnotationsQt p{image, canvases};
+                s.serialize("WorkspacePreview", p);
+            },
+            WorkspaceSaveMode::Disk);
+
         app_->getWorkspaceManager()->save(fileName, [&](ExceptionContext ec) {
             try {
                 throw;
@@ -955,6 +1062,39 @@ void InviwoMainWindow::saveWorkspaceAsCopy() {
         addToRecentWorkspaces(path);
     }
     saveWindowState();
+}
+
+void InviwoMainWindow::showWelcomeScreen() {
+    auto createTabCloseButton = [&](int tabIndex) {
+        QToolButton* closeBtn = new QToolButton();
+        closeBtn->setIcon(QIcon(":/stylesheets/images/close.png"));
+        closeBtn->setObjectName("dockBtn");
+        QObject::connect(closeBtn, &QToolButton::clicked, this, [&]() { hideWelcomeScreen(); });
+
+        centralWidget_->tabBar()->setTabButton(tabIndex, QTabBar::RightSide, closeBtn);
+    };
+
+    if (!welcomeWidget_) {
+        welcomeWidget_ = std::make_unique<WelcomeWidget>(this, centralWidget_);
+
+        centralWidget_->setUpdatesEnabled(false);
+        centralWidget_->insertTab(0, welcomeWidget_.get(), "Get Started");
+        createTabCloseButton(0);
+        centralWidget_->setUpdatesEnabled(true);
+    }
+    if (centralWidget_->indexOf(welcomeWidget_.get()) < 0) {
+        centralWidget_->insertTab(0, welcomeWidget_.get(), "Get Started");
+        createTabCloseButton(0);
+    }
+
+    centralWidget_->setCurrentWidget(welcomeWidget_.get());
+    welcomeWidget_->setFocus();
+}
+
+void InviwoMainWindow::hideWelcomeScreen() {
+    if (welcomeWidget_) {
+        centralWidget_->removeTab(centralWidget_->indexOf(welcomeWidget_.get()));
+    }
 }
 
 void InviwoMainWindow::onModifiedStatusChanged(const bool& /*newStatus*/) { updateWindowTitle(); }
@@ -1097,6 +1237,8 @@ ProcessorTreeWidget* InviwoMainWindow::getProcessorTreeWidget() const {
 PropertyListWidget* InviwoMainWindow::getPropertyListWidget() const { return propertyListWidget_; }
 
 ConsoleWidget* InviwoMainWindow::getConsoleWidget() const { return consoleWidget_.get(); }
+
+AnnotationsWidget* InviwoMainWindow::getAnnotationsWidget() const { return annotationsWidget_; }
 
 HelpWidget* InviwoMainWindow::getHelpWidget() const { return helpWidget_; }
 

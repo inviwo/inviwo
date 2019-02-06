@@ -55,6 +55,6 @@ public:
     virtual bool writeDataToRepresentation(const repr* src, repr* dst) const override;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_CIMGLAYERWRITER_H

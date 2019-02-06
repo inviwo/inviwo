@@ -35,11 +35,17 @@
 #include <inviwo/core/util/dispatcher.h>
 #include <inviwo/core/util/exception.h>
 
+#include <flags/flags.h>
+
 #include <iostream>
 
 namespace inviwo {
 
 class FactoryBase;
+
+enum class WorkspaceSaveMode { Disk = 1 << 0, Undo = 1 << 1 };
+ALLOW_FLAGS_FOR_ENUM(WorkspaceSaveMode)
+using WorkspaceSaveModes = flags::flags<WorkspaceSaveMode>;
 
 /**
  * The WorkspaceManager is responsible for clearing, loading, and saving a workspace. Different
@@ -47,22 +53,23 @@ class FactoryBase;
  * workspace. Other object can also register callbacks. It also responsible for keeping a list of
  * factories to use while deserializing. Other module can register factories that should be used
  * while deserializing.
- * The user interface should use the Workspace Manager to clear, load, and save workspaces. 
+ * The user interface should use the Workspace Manager to clear, load, and save workspaces.
  * instead of calling the Processor Network directly.
- * The workspace manager is owned by the InviwoApplication. 
+ * The workspace manager is owned by the InviwoApplication.
  */
 class IVW_CORE_API WorkspaceManager {
     using ClearDispatcher = Dispatcher<void()>;
-    using SerializationDispatcher = Dispatcher<void(Serializer&, const ExceptionHandler&)>;
+    using SerializationDispatcher =
+        Dispatcher<void(Serializer&, const ExceptionHandler&, WorkspaceSaveMode mode)>;
     using DeserializationDispatcher = Dispatcher<void(Deserializer&, const ExceptionHandler&)>;
 
 public:
     using ClearCallback = typename ClearDispatcher::Callback;
     using ClearHandle = typename ClearDispatcher::Handle;
-    
+
     using SerializationCallback = std::function<void(Serializer&)>;
     using SerializationHandle = typename SerializationDispatcher::Handle;
-    
+
     using DeserializationCallback = std::function<void(Deserializer&)>;
     using DeserializationHandle = typename DeserializationDispatcher::Handle;
 
@@ -80,51 +87,53 @@ public:
      * \param refPath a reference that that can be use by the serializer to store relative paths.
      *      The same refPath should be given when loading. Most often this should be the path to the
      *      saved file.
-     * \param exceptionHandler A callback for handling errors. 
+     * \param exceptionHandler A callback for handling errors.
      */
     void save(std::ostream& stream, const std::string& refPath,
-              const ExceptionHandler& exceptionHandler = StandardExceptionHandler());
+              const ExceptionHandler& exceptionHandler = StandardExceptionHandler(),
+              WorkspaceSaveMode mode = WorkspaceSaveMode::Disk);
 
     /**
      * Save the current workspace to a file
      * \param path the file to save into.
-     * \param exceptionHandler A callback for handling errors. 
+     * \param exceptionHandler A callback for handling errors.
      */
     void save(const std::string& path,
-              const ExceptionHandler& exceptionHandler = StandardExceptionHandler());
+              const ExceptionHandler& exceptionHandler = StandardExceptionHandler(),
+              WorkspaceSaveMode mode = WorkspaceSaveMode::Disk);
 
     /**
      * Load a workspace from a stream
      * \param stream the stream to read from.
-     * \param refPath a reference that that can be use by the deserializer to calculate relative 
-     *      paths. The same refPath should be given when loading. Most often this should be the 
+     * \param refPath a reference that that can be use by the deserializer to calculate relative
+     *      paths. The same refPath should be given when loading. Most often this should be the
      *      path to the saved file.
-     * \param exceptionHandler A callback for handling errors. 
+     * \param exceptionHandler A callback for handling errors.
      */
     void load(std::istream& stream, const std::string& refPath,
               const ExceptionHandler& exceptionHandler = StandardExceptionHandler());
 
-
     /**
      * Load a workspace from a file
      * \param path the file to read from.
-     * \param exceptionHandler A callback for handling errors. 
+     * \param exceptionHandler A callback for handling errors.
      */
     void load(const std::string& path,
               const ExceptionHandler& exceptionHandler = StandardExceptionHandler());
 
     /**
-     * Callback for clearing the workspace. 
+     * Callback for clearing the workspace.
      */
     ClearHandle onClear(const ClearCallback& callback);
-    
-    /**
-     * Callback for saving the workspace. 
-     */
-    SerializationHandle onSave(const SerializationCallback& callback);
 
     /**
-     * Callback for loading the workspace. 
+     * Callback for saving the workspace.
+     */
+    SerializationHandle onSave(const SerializationCallback& callback,
+                               WorkspaceSaveModes modes = WorkspaceSaveModes{flags::any});
+
+    /**
+     * Callback for loading the workspace.
      */
     DeserializationHandle onLoad(const DeserializationCallback& callback);
 
@@ -139,7 +148,7 @@ public:
     Deserializer createWorkspaceDeserializer(std::istream& stream,
                                              const std::string& refPath) const;
 
-private: 
+private:
     InviwoApplication* app_;
     std::vector<FactoryBase*> registeredFactories_;
 
@@ -148,7 +157,6 @@ private:
     DeserializationDispatcher deserializers_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_PROCESSORNETWORKMANAGER_H
-
+#endif  // IVW_PROCESSORNETWORKMANAGER_H

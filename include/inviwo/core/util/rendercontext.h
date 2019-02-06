@@ -90,9 +90,9 @@ template <typename C>
 void RenderContext::forEachContext(C callback) {
     for (const auto& item : contextRegistry_) {
         callback(item.first, item.second.name, item.second.canvas, item.second.threadId);
-    } 
+    }
 }
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_RENDERCONTEXT_H

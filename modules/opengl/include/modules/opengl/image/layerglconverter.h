@@ -54,6 +54,6 @@ public:
                         std::shared_ptr<LayerRAM> destination) const override;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_LAYERGLCONVERTER_H

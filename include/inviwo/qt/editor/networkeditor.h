@@ -160,6 +160,12 @@ protected:
     // Override for tooltips
     virtual void helpEvent(QGraphicsSceneHelpEvent* helpEvent) override;
 
+    // override these event drag functions since QGraphicsScene will set the drop action of the
+    // event to Qt::IgnoreAction if the event is not accepted by the scene
+    virtual void dragEnterEvent(QGraphicsSceneDragDropEvent*) override {}
+    virtual void dragMoveEvent(QGraphicsSceneDragDropEvent*) override {}
+    virtual void dragLeaveEvent(QGraphicsSceneDragDropEvent*) override {}
+
 private:
     friend class ProcessorGraphicsItem;
     friend class ConnectionGraphicsItem;
@@ -231,7 +237,6 @@ private:
     QList<QGraphicsItem*> clickedOnItems_;
     std::pair<bool, ivec2> clickedPosition_ = {false, ivec2{0, 0}};
     mutable std::pair<bool, ivec2> pastePos_ = {false, ivec2{0, 0}};
-
 
     InviwoMainWindow* mainwindow_;
     ProcessorNetwork* network_;

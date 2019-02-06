@@ -83,9 +83,11 @@ bool FontRenderingModule::Converter::convert(TxElement* root) {
     switch (version_) {
         case 0: {
             res |= xml::changeIdentifiers(root, repl);
+            [[fallthrough]];
         }
         case 1: {
             res |= xml::changeIdentifiers(root, repl2);
+            [[fallthrough]];
         }
         case 2: {
 

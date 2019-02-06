@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/basegl/processors/heightfieldprocessor.h>
@@ -177,7 +177,7 @@ void HeightFieldProcessor::updateDrawers() {
 
         if (util::contains(changed, elem.first) || ibegin == temp.end() ||
             static_cast<long>(elem.second.size()) !=
-            std::distance(ibegin, iend)) {  // data is changed or new.
+                std::distance(ibegin, iend)) {  // data is changed or new.
 
             for (auto geo : elem.second) {
                 auto factory = getNetwork()->getApplication()->getMeshDrawerFactory();
@@ -191,5 +191,4 @@ void HeightFieldProcessor::updateDrawers() {
     }
 }
 
-} // namespace
-
+}  // namespace inviwo

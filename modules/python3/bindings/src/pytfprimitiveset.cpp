@@ -62,7 +62,9 @@ void addPoints(TFPrimitiveSet *ps, pybind11::list values) {
                 color::hex2rgba(try_cast<std::string>(data[1], "expected a hex color code"));
             ps->add(pos, color);
         } else if (data.size() == 3) {
-            const auto pos = try_cast<double>(data[0], "expected a double (position)" + data[0].attr("__repr__")().cast<std::string>());
+            const auto pos =
+                try_cast<double>(data[0], "expected a double (position)" +
+                                              data[0].attr("__repr__")().cast<std::string>());
             const auto alpha = try_cast<double>(data[1], "expected a double (alpha)");
             const auto color =
                 color::hex2rgba(try_cast<std::string>(data[2], "expected a hex color code"));

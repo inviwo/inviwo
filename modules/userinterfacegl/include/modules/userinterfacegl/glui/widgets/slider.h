@@ -51,6 +51,9 @@ class Renderer;
  */
 class IVW_MODULE_USERINTERFACEGL_API Slider : public Element {
 public:
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
+
     Slider(const std::string &label, int value, int minValue, int maxValue, Processor &processor,
            Renderer &uiRenderer, const ivec2 &extent = ivec2(100, 24),
            UIOrientation orientation = UIOrientation::Horizontal);
@@ -68,12 +71,12 @@ protected:
     int getPreviousValue() const;
 
     /**
-    * \brief transform mouse movements from pixel to normalized slider range while also
-    * considering the slider orientation
-    *
-    * @param delta   (in screen coords, i.e. pixel)
-    * @return delta movement normalized to slider range
-    */
+     * \brief transform mouse movements from pixel to normalized slider range while also
+     * considering the slider orientation
+     *
+     * @param delta   (in screen coords, i.e. pixel)
+     * @return delta movement normalized to slider range
+     */
     double convertDeltaToSlider(const dvec2 &delta) const;
 
 private:

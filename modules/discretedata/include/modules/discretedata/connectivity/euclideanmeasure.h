@@ -38,7 +38,7 @@ namespace inviwo {
 namespace discretedata {
 namespace euclidean {
 
-/** 
+/**
  * \brief Get the measure (i.e., length, area, volume...) of an element
  * @param dim Dimension of element (edge, face, volume...)
  * @param index Index of respective element type
@@ -46,16 +46,16 @@ namespace euclidean {
  * @param positions Vertex positions
  */
 IVW_MODULE_DISCRETEDATA_API double getMeasure(const Connectivity& grid, const Channel& positions,
-                                             GridPrimitive dim, ind index);
+                                              GridPrimitive dim, ind index);
 
-/** 
+/**
  * \brief Get the measure (i.e., length, area, volume...) of an element
  * @param element Element to get measure of
  * @param positions Vertex positions
  */
 inline double getMeasure(const Channel& positions, const ElementIterator& element) {
     return getMeasure(*element.getGrid(), positions, element.getType(), element.getIndex());
-};
+}
 
 struct HexVolumeComputer {
     template <typename T>

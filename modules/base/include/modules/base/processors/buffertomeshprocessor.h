@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_BUFFERTOMESHPROCESSOR_H
@@ -68,30 +68,30 @@ namespace inviwo {
  * \brief Put buffers into mesh without copying data.
  * Supported buffer types are specified in BufferType
  */
-class IVW_MODULE_BASE_API BufferToMeshProcessor : public Processor { 
+class IVW_MODULE_BASE_API BufferToMeshProcessor : public Processor {
 public:
     BufferToMeshProcessor();
     virtual ~BufferToMeshProcessor() = default;
-     
+
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+
 private:
     // See BufferType for supported types
     BufferInport vertices_;
-    BufferInport indices_; // Optional
-    BufferInport vertexColors_; // Optional
-    BufferInport textureCoordinates_; // Optional
-    BufferInport normals_; // Optional
-    BufferInport curvature_; // Optional
+    BufferInport indices_;             // Optional
+    BufferInport vertexColors_;        // Optional
+    BufferInport textureCoordinates_;  // Optional
+    BufferInport normals_;             // Optional
+    BufferInport curvature_;           // Optional
     MeshOutport outport_;
 
-    TemplateOptionProperty<DrawType> drawType_; 
+    TemplateOptionProperty<DrawType> drawType_;
     TemplateOptionProperty<ConnectivityType> connectivity_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_BUFFERTOMESHPROCESSOR_H
-
+#endif  // IVW_BUFFERTOMESHPROCESSOR_H

@@ -30,8 +30,8 @@
 cmake_minimum_required(VERSION 3.2.0)
 cmake_policy(VERSION 3.2.0)
 
-if(POLICY CMP0042)
-    cmake_policy(SET CMP0042 NEW) # MacOSX rpath policy.
+if(POLICY CMP0042) # MacOSX rpath policy.
+    cmake_policy(SET CMP0042 NEW) 
 endif()
 
 if(POLICY CMP0043)
@@ -40,33 +40,30 @@ if(POLICY CMP0043)
     cmake_policy(SET CMP0043 NEW)
 endif()
 
-if(POLICY CMP0046)
-     # Warn when adding a missing dependency using add_dependencies()
+if(POLICY CMP0046) # Warn when adding a missing dependency using add_dependencies()
     cmake_policy(SET CMP0046 NEW)
 endif()
 
-if(POLICY CMP0051)
-    # include TARGET_OBJECTS expressions in a target's SOURCES property
+if(POLICY CMP0051) # include TARGET_OBJECTS expressions in a target's SOURCES property
     cmake_policy(SET CMP0051 NEW)
 endif()
 
-if(POLICY CMP0054)
-    # only interpret if() arguments as variables or keywords when unquoted
+if(POLICY CMP0054) # only interpret if() arguments as variables or keywords when unquoted
     cmake_policy(SET CMP0054 NEW)
 endif()
 
-if(POLICY CMP0057)
-    # CMake 3.3 adds support for the new IN_LIST operator.
+if(POLICY CMP0057) # CMake 3.3 adds support for the new IN_LIST operator.
     cmake_policy(SET CMP0057 NEW)
 endif()
 
-if(POLICY CMP0066)
-    # Honor per-config flags in ``try_compile()`` source-file signature.
+if(POLICY CMP0066) # Honor per-config flags in ``try_compile()`` source-file signature.
     cmake_policy(SET CMP0066 NEW)
 endif()
+if(POLICY CMP0067) # Honor language standard in try_compile() source-file signature.
+    cmake_policy(SET CMP0067 NEW)
+endif()
 
-if(POLICY CMP0074)
-    # find_package uses <PackageName>_ROOT variables
+if(POLICY CMP0074) # find_package uses <PackageName>_ROOT variables
     cmake_policy(SET CMP0074 NEW)
 endif()
 
@@ -74,13 +71,12 @@ string(TIMESTAMP timeStart "%Y-%m-%d %H:%M:%S")
 
 # option for setting the project/solution name of the Inviwo project
 set(IVW_PROJECT_NAME "inviwo-projects" CACHE STRING "Project/Solution name (default: inviwo-projects)")
+project(${IVW_PROJECT_NAME})
 
-if(IVW_PROJECT_NAME)
-    project(${IVW_PROJECT_NAME})
-else()
-    project(inviwo-projects)
-endif()
-# Build
+#Verify that git submodules has been cloned
+include(cmake/verifysubmodules.cmake)
+verify_submodules("${CMAKE_CURRENT_LIST_DIR}/.gitmodules")
+
 option(BUILD_SHARED_LIBS "Build shared libs, else static libs" ON)
 
 # Needed for find_package(PythonLibsNew 3), which is an improved version of CMake shipped find_pythonLibs
@@ -96,51 +92,30 @@ set(PythonLibsNew_FIND_VERSION 3)
 set(Python_ADDITIONAL_VERSIONS 3.5 3.6 3.7 3.8 3.9)
 find_package(PythonLibsNew 3)
 
-include(cmake/verifysubmodules.cmake)
-verify_submodules("${CMAKE_CURRENT_LIST_DIR}/.gitmodules")
-
 include(cmake/globalconfig.cmake)
 
-option(IVW_INTEGRATION_TESTS "Build inviwo integration test" ON)
-
 #--------------------------------------------------------------------
-# Applications/Qt
-option(IVW_QT_APPLICATION "Build Inviwo Qt network editor application" ON)
-option(IVW_QT_APPLICATION_BASE "Build base for Qt applications. Used by Inviwo Qt network editor and Qt minimal application" ON)
+# Application setup
+option(IVW_QT_APPLICATION_BASE   
+    "Build base for Qt apps. Used by the Qt network editor and the Tiny Qt app" ON)
+option(IVW_QT_APPLICATION        "Build Inviwo Qt network editor application" ON)
+option(IVW_INTEGRATION_TESTS     "Build inviwo integration test" ON)
+option(IVW_TINY_GLFW_APPLICATION "Build Inviwo Tiny GLFW Application" OFF)
+option(IVW_TINY_QT_APPLICATION   "Build Inviwo Tiny QT Application" OFF)
+
+if(IVW_QT_APPLICATION AND NOT IVW_QT_APPLICATION_BASE)
+    set(IVW_QT_APPLICATION_BASE ON CACHE BOOL "Build base for qt applications. \
+            Used by Qt network editor and Qt minimal application" FORCE)
+    message(STATUS "IVW_QT_APPLICATION_BASE was set to build, due to dependency towards IVW_QT_APPLICATION")
+endif()
+ivw_enable_modules_if(IVW_QT_APPLICATION QtWidgets)
+ivw_enable_modules_if(IVW_INTEGRATION_TESTS GLFW Base)
+ivw_enable_modules_if(IVW_TINY_GLFW_APPLICATION GLFW)
 
 # Try to find qt and add it if it is not already in CMAKE_PREFIX_PATH
 if(NOT "${CMAKE_PREFIX_PATH}" MATCHES "[Qq][Tt]")
-    if(NOT QT_QMAKE_EXECUTABLE)
-        find_program(QT_QMAKE_EXECUTABLE_FINDQT NAMES qmake qmake4 qmake-qt4 qmake5 qmake-qt5
-           PATHS "${QT_SEARCH_PATH}/bin" "$ENV{QTDIR}/bin")
-        set(QT_QMAKE_EXECUTABLE ${QT_QMAKE_EXECUTABLE_FINDQT} CACHE PATH "Qt qmake program.")
-    endif()
-
-    if(QT_QMAKE_EXECUTABLE)
-        execute_process(COMMAND ${QT_QMAKE_EXECUTABLE} -query "QT_INSTALL_PREFIX" OUTPUT_VARIABLE QT5_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)
-    else()
-        if(APPLE) # On OSX look for the usual brew installation. 
-            foreach(path "/usr/local/Cellar/qt" "/usr/local/Cellar/qt5")
-                if(EXISTS ${path})
-                    file(GLOB qtversions RELATIVE "${path}/" "${path}/?.*.*")
-                    list(LENGTH qtversions len)
-                    if(${len} GREATER 0)
-                        list(GET qtversions 0 qtlatest)
-                        foreach(ver IN LISTS qtversion)
-                            if(ver VERSION_GREATER qtlatest)
-                                set(qtlatest ${ver})
-                            endif()
-                        endforeach()
-                        if(EXISTS "${path}/${qtlatest}")
-                            set(QT5_PATH "${path}/${qtlatest}")
-                            break()
-                        endif()
-                    endif()
-                endif()
-            endforeach()
-        endif()
-    endif()
-
+    include(cmake/locateqt.cmake)
+    ivw_locateqt(QT5_PATH)
     if(QT5_PATH)
         ivw_debug_message(STATUS "Found qt at: ${QT5_PATH}") 
         list(APPEND CMAKE_PREFIX_PATH ${QT5_PATH}) 
@@ -156,9 +131,9 @@ endif()
 # It also ensures that we are in control of the used version 
 # and is built using the same, Inviwo, settings.
 add_subdirectory(ext/zlib-1.2.11) # Defines target ZLIB::ZLIB
-add_subdirectory(ext/libpng)  # Defines target inviwo::libpng and libpng
-add_subdirectory(ext/libjpeg) # Defines target inviwo::libjpeg and libjpeg
-add_subdirectory(ext/tiff)    # Defines target inviwo::tiff and tiff
+add_subdirectory(ext/libpng)      # Defines target inviwo::libpng and libpng
+add_subdirectory(ext/libjpeg)     # Defines target inviwo::libjpeg and libjpeg
+add_subdirectory(ext/tiff)        # Defines target inviwo::tiff and tiff
 add_subdirectory(ext/flags)
 add_subdirectory(ext/glm)
 add_subdirectory(ext/ticpp)
@@ -171,52 +146,19 @@ add_subdirectory(ext/half)
 add_subdirectory(ext/utf)
 add_subdirectory(ext/json)
 add_subdirectory(ext/fmt)
+add_subdirectory(ext/sml)
+add_subdirectory(ext/sigar)
+add_subdirectory(ext/stackwalker) # Add stackwalker for windows for stack traces in the log
 
-option(IVW_SIGAR "Use sigar to detect system capabilities" ON)
-if(IVW_SIGAR)
-    add_subdirectory(ext/sigar)
-endif()
+ivw_register_modules(all_modules)        # Add modules  
 
-#--------------------------------------------------------------------
-# Add stackwalker for windows for stack traces in the log
-if(WIN32)
-    add_subdirectory(ext/stackwalker)
-endif()
+add_subdirectory(tools/meta)             # Add Inviwo meta
+add_subdirectory(src/qt)                 # Add Qt
+add_subdirectory(apps)                   # Add applications
+ivw_add_external_projects()              # Add external projects
+add_subdirectory(tests/integrationtests) # Add integration tests project
+include(cmake/packaging.cmake)           # Package creation
 
-ivw_add_build_module_dependency(GLFW IVW_INTEGRATION_TESTS)
-ivw_add_build_module_dependency(Base IVW_INTEGRATION_TESTS)
-
-#--------------------------------------------------------------------
-# Add modules
-ivw_register_modules(all_modules)
-
-#--------------------------------------------------------------------
-# Add Inviwo meta
-add_subdirectory(tools/meta)
-
-#--------------------------------------------------------------------
-# Add Qt
-add_subdirectory(src/qt)
-
-#--------------------------------------------------------------------
-# Add applications
-add_subdirectory(apps)
-
-#--------------------------------------------------------------------
-# Add external projects
-ivw_add_external_projects()
-
-#--------------------------------------------------------------------
-# Add integration tests project
-if(IVW_INTEGRATION_TESTS)
-    add_subdirectory(tests/integrationtests)
-endif()
-
-#--------------------------------------------------------------------
-# Package creation
-include(cmake/packaging.cmake)
-
-#--------------------------------------------------------------------
 # Generate Doxygen setup. 
 include(tools/doxygen/doxygen.cmake)
 make_doxygen_target(all_modules)

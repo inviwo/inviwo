@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_EXAMPLEPROCESSOR_H
@@ -36,20 +36,19 @@
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/ports/volumeport.h>
 
-
 namespace inviwo {
 
 /** \docpage{org.inviwo.ExampleProcessor, Example Processor}
  * ![](org.inviwo.ExampleProcessor.png?classIdentifier=org.inviwo.ExampleProcessor)
  *
  * ...
- * 
+ *
  * ### Inports
  *   * __volume.inport__ ...
- * 
+ *
  * ### Outports
  *   * __geometry.outport__ ...
- * 
+ *
  *
  */
 class IVW_MODULE_EXAMPLE_API ExampleProcessor : public Processor {
@@ -68,6 +67,6 @@ private:
     MeshOutport outport_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_EXAMPLEPROCESSOR_H
+#endif  // IVW_EXAMPLEPROCESSOR_H

@@ -40,12 +40,10 @@ namespace inviwo {
 
 class IVW_CORE_API MouseEvent : public MouseInteractionEvent {
 public:
-    MouseEvent(MouseButton button = MouseButton::Left,
-               MouseState state = MouseState::Press,
+    MouseEvent(MouseButton button = MouseButton::Left, MouseState state = MouseState::Press,
                MouseButtons buttonState = MouseButtons(flags::empty),
-               KeyModifiers modifiers = KeyModifiers(flags::empty), 
-               dvec2 normalizedPosition = dvec2(0),
-               uvec2 canvasSize = uvec2(0),
+               KeyModifiers modifiers = KeyModifiers(flags::empty),
+               dvec2 normalizedPosition = dvec2(0), uvec2 canvasSize = uvec2(0),
                double depth = 1.0);
 
     MouseEvent(const MouseEvent& rhs) = default;
@@ -66,15 +64,13 @@ public:
     void setState(MouseState state);
 
     virtual uint64_t hash() const override;
-    static constexpr uint64_t chash() {
-        return util::constexpr_hash("org.inviwo.MouseEvent");
-    }
+    static constexpr uint64_t chash() { return util::constexpr_hash("org.inviwo.MouseEvent"); }
 
 private:
     MouseButton button_;
     MouseState state_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_MOUSEEVENT_H

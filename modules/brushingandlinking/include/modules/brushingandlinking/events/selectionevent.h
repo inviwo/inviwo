@@ -45,6 +45,6 @@ public:
     virtual ~SelectionEvent() = default;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_SELECTIONEVENT_H

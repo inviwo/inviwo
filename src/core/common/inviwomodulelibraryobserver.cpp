@@ -45,7 +45,7 @@ void InviwoModuleLibraryObserver::Observer::fileChanged(const std::string& dir) 
 }
 
 InviwoModuleLibraryObserver::InviwoModuleLibraryObserver(InviwoApplication* app) : app_(app) {}
- 
+
 void InviwoModuleLibraryObserver::observe(const std::string& file) {
     // We cannot create the observer in the constructor since
     // deriving applications will implement observer behavior

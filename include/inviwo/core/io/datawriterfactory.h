@@ -52,7 +52,7 @@ public:
 
     virtual std::unique_ptr<DataWriter> create(const std::string& key) const;
     virtual std::unique_ptr<DataWriter> create(const FileExtension& key) const override;
-    
+
     virtual bool hasKey(const std::string& key) const;
     virtual bool hasKey(const FileExtension& key) const override;
 
@@ -61,7 +61,7 @@ public:
 
     template <typename T>
     std::unique_ptr<DataWriterType<T>> getWriterForTypeAndExtension(const std::string& ext);
-    
+
     template <typename T>
     std::unique_ptr<DataWriterType<T>> getWriterForTypeAndExtension(const FileExtension& ext);
 
@@ -108,6 +108,6 @@ std::unique_ptr<DataWriterType<T>> DataWriterFactory::getWriterForTypeAndExtensi
     });
 }
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_DATAWRITERFACTORY_H

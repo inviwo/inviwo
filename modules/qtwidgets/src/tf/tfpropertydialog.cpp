@@ -39,7 +39,6 @@
 #include <modules/qtwidgets/tf/tfselectionwatcher.h>
 #include <modules/qtwidgets/tf/tflineedit.h>
 #include <modules/qtwidgets/tf/tfcoloredit.h>
-#include <modules/qtwidgets/inviwofiledialog.h>
 #include <modules/qtwidgets/rangesliderqt.h>
 #include <modules/qtwidgets/colorwheel.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
@@ -47,10 +46,9 @@
 #include <modules/qtwidgets/qtwidgetsmodule.h>
 #include <modules/qtwidgets/tfhelpwindow.h>
 
+#include <modules/qtwidgets/tf/tfutils.h>
+
 #include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/util/fileextension.h>
-#include <inviwo/core/io/datareaderexception.h>
-#include <inviwo/core/io/datawriter.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/qt/applicationbase/inviwoapplicationqt.h>
 
@@ -144,8 +142,10 @@ void TFPropertyDialog::initializeDialog() {
 
     connect(tfEditor_.get(), &TFEditor::selectionChanged, this,
             [this]() { tfSelectionWatcher_->updateSelection(tfEditor_->getSelectedPrimitives()); });
-    connect(tfEditor_.get(), &TFEditor::importTF, this, &TFPropertyDialog::importFromFile);
-    connect(tfEditor_.get(), &TFEditor::exportTF, this, &TFPropertyDialog::exportToFile);
+    connect(tfEditor_.get(), &TFEditor::importTF, this,
+            [&](auto& primitiveSet) { util::importFromFile(primitiveSet, this); });
+    connect(tfEditor_.get(), &TFEditor::exportTF, this,
+            [&](auto& primitiveSet) { util::exportToFile(primitiveSet, this); });
 
     tfEditorView_ = new TFEditorView(propertyPtr_.get(), tfEditor_.get());
 
@@ -240,7 +240,7 @@ void TFPropertyDialog::initializeDialog() {
                     });
                 primitivePos_->setValueMapping(allRelative, range);
 
-                zoomHSlider_->setTooltipFormat([ sliderRange = sliderRange_, range ](int, int val) {
+                zoomHSlider_->setTooltipFormat([sliderRange = sliderRange_, range](int, int val) {
                     return toString(
                         glm::mix(range.x, range.y, static_cast<double>(val) / sliderRange));
                 });
@@ -323,8 +323,8 @@ void TFPropertyDialog::initializeDialog() {
         colorDialog_->setWindowTitle(
             QString("TF Primitive Color - %1").arg(utilqt::toQString(property_->getDisplayName())));
 
-        connect(tfEditor_.get(), &TFEditor::showColorDialog,
-                colorDialog_.get(), [dialog = colorDialog_.get()]() {
+        connect(tfEditor_.get(), &TFEditor::showColorDialog, colorDialog_.get(),
+                [dialog = colorDialog_.get()]() {
 #ifdef __APPLE__
                     // OSX Bug workaround: hide the dialog, due to some Mac issues
                     dialog->hide();
@@ -332,17 +332,17 @@ void TFPropertyDialog::initializeDialog() {
                     dialog->show();
                 });
 
-        connect(
-            tfSelectionWatcher_.get(), &TFSelectionWatcher::updateWidgetColor,
-            colorDialog_.get(), [dialog = colorDialog_.get()](const QColor& c, bool /*ambiguous*/) {
-                QSignalBlocker block(dialog);
-                if (c.isValid()) {
-                    dialog->setCurrentColor(c);
-                } else {
-                    // nothing selected
-                    dialog->setCurrentColor(QColor("#95baff"));
-                }
-            });
+        connect(tfSelectionWatcher_.get(), &TFSelectionWatcher::updateWidgetColor,
+                colorDialog_.get(),
+                [dialog = colorDialog_.get()](const QColor& c, bool /*ambiguous*/) {
+                    QSignalBlocker block(dialog);
+                    if (c.isValid()) {
+                        dialog->setCurrentColor(c);
+                    } else {
+                        // nothing selected
+                        dialog->setCurrentColor(QColor("#95baff"));
+                    }
+                });
         connect(colorDialog_.get(), &QColorDialog::currentColorChanged, tfSelectionWatcher_.get(),
                 &TFSelectionWatcher::setColor);
     }
@@ -369,7 +369,7 @@ void TFPropertyDialog::initializeDialog() {
         chkShowHistogram_->setVisible(false);
     }
     loadState();
-}
+}  // namespace inviwo
 
 QSize TFPropertyDialog::minimumSizeHint() const { return TFPropertyDialog::sizeHint(); }
 
@@ -408,50 +408,6 @@ void TFPropertyDialog::changeHorizontalZoom(int zoomMin, int zoomMax) {
 
     propertyPtr_->setZoomH(zoomMinF, zoomMaxF);
     tfEditor_->setRelativeSceneOffset(getRelativeSceneOffset());
-}
-
-void TFPropertyDialog::importFromFile(TFPrimitiveSet& primitiveSet) {
-    InviwoFileDialog importFileDialog(this, "Import " + primitiveSet.getTitle(),
-                                      "transferfunction");
-    importFileDialog.setAcceptMode(AcceptMode::Open);
-    importFileDialog.setFileMode(FileMode::ExistingFile);
-    for (auto& ext : primitiveSet.getSupportedExtensions()) {
-        importFileDialog.addExtension(ext);
-    }
-    importFileDialog.addExtension("", "All files");  // this will add "All files (*)"
-
-    if (importFileDialog.exec()) {
-        const auto filename = utilqt::fromQString(importFileDialog.selectedFiles().at(0));
-        try {
-            NetworkLock lock(property_);
-            primitiveSet.load(filename, importFileDialog.getSelectedFileExtension());
-        } catch (DataReaderException& e) {
-            util::log(e.getContext(), e.getMessage(), LogLevel::Error, LogAudience::User);
-        }
-    }
-}
-
-void TFPropertyDialog::exportToFile(const TFPrimitiveSet& primitiveSet) {
-    InviwoFileDialog exportFileDialog(this, "Export " + primitiveSet.getTitle(),
-                                      "transferfunction");
-    exportFileDialog.setAcceptMode(AcceptMode::Save);
-    exportFileDialog.setFileMode(FileMode::AnyFile);
-    for (auto& ext : primitiveSet.getSupportedExtensions()) {
-        exportFileDialog.addExtension(ext);
-    }
-    exportFileDialog.addExtension("", "All files");  // this will add "All files (*)"
-
-    if (exportFileDialog.exec()) {
-        const auto filename = utilqt::fromQString(exportFileDialog.selectedFiles().at(0));
-        const auto fileExt = exportFileDialog.getSelectedFileExtension();
-        try {
-            primitiveSet.save(filename, fileExt);
-            util::log(IvwContext, "Data exported to disk: " + filename, LogLevel::Info,
-                      LogAudience::User);
-        } catch (DataWriterException& e) {
-            util::log(e.getContext(), e.getMessage(), LogLevel::Error, LogAudience::User);
-        }
-    }
 }
 
 void TFPropertyDialog::showHistogram(int type) {
@@ -531,8 +487,8 @@ void TFPropertyDialog::updateTFPreview() {
 
 dvec2 TFPropertyDialog::getRelativeSceneOffset() const {
     // to determine the offset in scene coords, map a square where each side has length
-    // defaultOffset_ to the scene. We assume that there is no rotation or non-linear view
-    // transformation.
+    // defaultOffset_ to the scene. We assume that there is no rotation or non-linear
+    // view transformation.
     auto rect =
         tfEditorView_->mapToScene(QRect(QPoint(0, 0), QSize(defaultOffset_, defaultOffset_)))
             .boundingRect();

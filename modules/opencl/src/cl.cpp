@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/opencl/inviwoopencl.h>
@@ -33,15 +33,8 @@
 // As much as possible of a extensions should be kept in the cpp file
 // such that we can merge it with the one from Khronos
 
-inline Device Device::getDefault(cl_int*)
-{
-    return inviwo::OpenCL::getPtr()->getDevice();
-}
+inline Device Device::getDefault(cl_int*) { return inviwo::OpenCL::getPtr()->getDevice(); }
 
-Context Context::getDefault(cl_int*) {
-    return inviwo::OpenCL::getPtr()->getContext();
-}
+Context Context::getDefault(cl_int*) { return inviwo::OpenCL::getPtr()->getContext(); }
 
-CommandQueue CommandQueue::getDefault(cl_int*) {
-    return inviwo::OpenCL::getPtr()->getQueue();
-}
+CommandQueue CommandQueue::getDefault(cl_int*) { return inviwo::OpenCL::getPtr()->getQueue(); }

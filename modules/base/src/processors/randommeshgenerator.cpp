@@ -45,7 +45,7 @@ const ProcessorInfo RandomMeshGenerator::processorInfo_{
     "Random Mesh Generator",           // Display name
     "Mesh Creation",                   // Category
     CodeState::Stable,                 // Code state
-    Tags::CPU,                        // Tags
+    Tags::CPU,                         // Tags
 };
 
 const ProcessorInfo RandomMeshGenerator::getProcessorInfo() const { return processorInfo_; }
@@ -136,54 +136,23 @@ void RandomMeshGenerator::addPickingBuffer(Mesh& mesh, size_t id) {
     auto pickBuffer = std::make_shared<Buffer<uint32_t>>(bufferRAM);
     auto& data = bufferRAM->getDataContainer();
     std::fill(data.begin(), data.end(), static_cast<uint32_t>(id));
-    mesh.addBuffer(Mesh::BufferInfo(BufferType::NumberOfBufferTypes, 4), pickBuffer);
+    mesh.addBuffer(BufferType::PickingAttrib, pickBuffer);
 }
 
 void RandomMeshGenerator::handlePicking(PickingEvent* p, std::function<void(vec3)> callback) {
-
-    if (enablePicking_) {
-        if (p->getState() == PickingState::Updated &&
-            p->getEvent()->hash() == MouseEvent::chash()) {
-            auto me = p->getEventAs<MouseEvent>();
-            if ((me->buttonState() & MouseButton::Left) && me->state() == MouseState::Move) {
-                auto delta = getDelta(camera_, p);
-                callback(delta);
-                invalidate(InvalidationLevel::InvalidOutput);
-                p->markAsUsed();
-            }
-        } else if (p->getState() == PickingState::Updated &&
-                   p->getEvent()->hash() == TouchEvent::chash()) {
-
-            auto te = p->getEventAs<TouchEvent>();
-            if (!te->touchPoints().empty() && te->touchPoints()[0].state() == TouchState::Updated) {
-                auto delta = getDelta(camera_, p);
-                callback(delta);
-                invalidate(InvalidationLevel::InvalidOutput);
-                p->markAsUsed();
-            }
-        }
+    if (p->getPressState() == PickingPressState::Move &&
+        p->getPressItems().count(PickingPressItem::Primary)) {
+        callback(vec3{p->getWorldSpaceDeltaAtPressDepth(camera_)});
+        p->markAsUsed();
+        invalidate(InvalidationLevel::InvalidOutput);
     }
-}
-
-vec3 RandomMeshGenerator::getDelta(const Camera& camera, PickingEvent* p) {
-    auto currNDC = p->getNDC();
-    auto prevNDC = p->getPreviousNDC();
-
-    // Use depth of initial press as reference to move in the image plane.
-    auto refDepth = p->getPressedDepth();
-    currNDC.z = refDepth;
-    prevNDC.z = refDepth;
-
-    auto corrWorld = camera.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(currNDC));
-    auto prevWorld = camera.getWorldPosFromNormalizedDeviceCoords(static_cast<vec3>(prevNDC));
-    return (corrWorld - prevWorld);
 }
 
 void RandomMeshGenerator::process() {
     rand_.seed(static_cast<std::mt19937::result_type>(seed_.get()));
 
     auto randPos = [&]() { return randVec3(-scale_.get(), scale_.get()); };
-    auto randSize = [&]() { return size_.get()*randVec3(0.1f, 1.0f); };
+    auto randSize = [&]() { return size_.get() * randVec3(0.1f, 1.0f); };
     auto randColor = [&]() { return vec4(randVec3(0.5f, 1.0f), 1); };
     auto randDir = [&]() { return glm::normalize(randVec3()); };
     auto randScale = [&]() { return size_.get() * rand(0.1f, 1.0f); };
@@ -209,7 +178,8 @@ void RandomMeshGenerator::process() {
         cylinderPicking_.resize(numberOfCylinders_);
         for (int i = 0; i < numberOfCylinders_.get(); i++) {
             const auto r = randPos();
-            cylinders_.push_back({r, r + 10.0f*randScale() * randDir(), randScale(), randColor()});
+            cylinders_.push_back(
+                {r, r + 10.0f * randScale() * randDir(), randScale(), randColor()});
         }
     }
     if (numberOfCones_.isModified() || dirty) {
@@ -217,7 +187,7 @@ void RandomMeshGenerator::process() {
         conePicking_.resize(numberOfCones_);
         for (int i = 0; i < numberOfCones_.get(); i++) {
             const auto r = randPos();
-            cones_.push_back({r, r + 10.0f*randScale() * randDir(), randScale(), randColor()});
+            cones_.push_back({r, r + 10.0f * randScale() * randDir(), randScale(), randColor()});
         }
     }
     if (numberOfToruses_.isModified() || dirty) {
@@ -270,7 +240,7 @@ void RandomMeshGenerator::process() {
     i = 0;
     for (const auto& torus : toruses_) {
         auto mesh2 = meshutil::torus(torus.center, torus.up, torus.radius1, torus.radius2,
-                                      ivec2(32, 8), torus.color);
+                                     ivec2(32, 8), torus.color);
         if (enablePicking_) addPickingBuffer(*mesh2, torusPicking_.getPickingId(i++));
         mesh->Mesh::append(*mesh2);
     }
@@ -278,4 +248,4 @@ void RandomMeshGenerator::process() {
     mesh_.setData(mesh);
 }
 
-}  // namespace
+}  // namespace inviwo

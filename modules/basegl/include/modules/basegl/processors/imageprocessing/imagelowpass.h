@@ -39,7 +39,7 @@
 
 namespace inviwo {
 
- /** \docpage{org.inviwo.ImageLowPass, Image Low Pass}
+/** \docpage{org.inviwo.ImageLowPass, Image Low Pass}
  * ![](org.inviwo.ImageLowPass.png?classIdentifier=org.inviwo.ImageLowPass)
  *
  * Applies a low pass filter on the input image.
@@ -54,13 +54,14 @@ namespace inviwo {
  * ### Properties
  *   * __Kernel Size__ Size of the kernel to use.
  *   * __Use Gaussian weights__ Whether to use Gaussian weights or constant weights.
- *   * __Sigma__ Controls the shape of the Gaussian bell curve. 
+ *   * __Sigma__ Controls the shape of the Gaussian bell curve.
  */
 
 /**
  * \class ImageLowPass
  *
- * \brief Applies a low pass filter on the input image using either constant weight or Gaussian weights
+ * \brief Applies a low pass filter on the input image using either constant weight or Gaussian
+ * weights
  */
 class IVW_MODULE_BASEGL_API ImageLowPass : public Processor {
 public:
@@ -83,6 +84,6 @@ private:
     ImageConvolution convolution_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_IMAGELOWPASS_H

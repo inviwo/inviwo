@@ -118,10 +118,7 @@ InviwoModule::~InviwoModule() {
 
     // Remove any potential ModuleCallbackAction associated with this module
     auto& callbackActions = app_->getCallbackActions();
-    util::erase_remove_if(callbackActions, [&](auto& a) {
-        return a->getModule() == this;
-    });
-
+    util::erase_remove_if(callbackActions, [&](auto& a) { return a->getModule() == this; });
 }
 
 std::string InviwoModule::getIdentifier() const { return identifier_; }
@@ -130,7 +127,7 @@ std::string InviwoModule::getPath() const {
     std::string moduleNameLowerCase = toLower(getIdentifier());
 
     const auto defaultPath = filesystem::findBasePath() + "/modules/" + moduleNameLowerCase;
-    
+
     // By default always use this one. i.e. the module folder in the deployed app
     if (filesystem::directoryExists(defaultPath)) {
         return defaultPath;
@@ -144,17 +141,19 @@ std::string InviwoModule::getPath() const {
         }
     }
     // In the case that there was no module folder, just return the default path
-    // This can happen in a deployed app without any installed resources in the module. 
+    // This can happen in a deployed app without any installed resources in the module.
     return defaultPath;
 }
 
 std::string InviwoModule::getPath(ModulePath type) const {
     std::string path = getPath();
+    // clang-format off
     switch (type) {
         case ModulePath::Data:               return path + "/data";
         case ModulePath::Images:             return path + "/data/images";
         case ModulePath::PortInspectors:     return path + "/data/portinspectors";
         case ModulePath::Scripts:            return path + "/data/scripts";
+        case ModulePath::TransferFunctions:  return path + "/data/transferfunctions";
         case ModulePath::Volumes:            return path + "/data/volumes";
         case ModulePath::Workspaces:         return path + "/data/workspaces";
         case ModulePath::Docs:               return path + "/docs";
@@ -167,15 +166,12 @@ std::string InviwoModule::getPath(ModulePath type) const {
         case ModulePath::CL:                 return path + "/cl";
         default:                             return path;
     }
+    // clang-format on
 }
 
-int InviwoModule::getVersion() const {
-    return 0;
-}
+int InviwoModule::getVersion() const { return 0; }
 
-std::unique_ptr<VersionConverter> InviwoModule::getConverter(int) const {
-    return nullptr;
-}
+std::unique_ptr<VersionConverter> InviwoModule::getConverter(int) const { return nullptr; }
 
 const std::vector<Capabilities*> InviwoModule::getCapabilities() const {
     return uniqueToPtr(capabilities_);
@@ -301,4 +297,4 @@ void InviwoModule::registerDataVisualizer(std::unique_ptr<DataVisualizer> visual
     dataVisualizers_.push_back(std::move(visualizer));
 }
 
-}  // namespace
+}  // namespace inviwo

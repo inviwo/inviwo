@@ -99,6 +99,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/interactionhandler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingaction.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingcontroller.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingcontrollermousestate.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingmanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingmapper.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingstate.h
@@ -109,6 +110,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/io/datareaderexception.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/datareaderfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/datawriter.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/io/datawriterexception.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/datawriterfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/imagewriterutil.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/rawvolumeramloader.h
@@ -146,6 +148,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/network/processornetworkevaluationobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/processornetworkevaluator.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/processornetworkobserver.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/network/workspaceannotations.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/workspacemanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/workspaceutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/bufferport.h
@@ -321,6 +324,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/threadpool.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/timer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/tinydirinterface.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/transformiterator.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/utilities.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/vectoroperations.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/volumeramutils.h
@@ -399,6 +403,7 @@ set(SOURCE_FILES
     interaction/interactionhandler.cpp
     interaction/pickingaction.cpp
     interaction/pickingcontroller.cpp
+    interaction/pickingcontrollermousestate.cpp
     interaction/pickingmanager.cpp
     interaction/pickingmapper.cpp
     interaction/trackball.cpp
@@ -407,6 +412,7 @@ set(SOURCE_FILES
     io/datareaderexception.cpp
     io/datareaderfactory.cpp
     io/datawriter.cpp
+    io/datawriterexception.cpp
     io/datawriterfactory.cpp
     io/imagewriterutil.cpp
     io/rawvolumeramloader.cpp
@@ -439,6 +445,7 @@ set(SOURCE_FILES
     network/processornetworkevaluationobserver.cpp
     network/processornetworkevaluator.cpp
     network/processornetworkobserver.cpp
+    network/workspaceannotations.cpp
     network/workspacemanager.cpp
     network/workspaceutils.cpp
     ports/imageport.cpp
@@ -609,6 +616,7 @@ set(TEST_FILES
     tests/unittests/metadata-test.cpp
     tests/unittests/network-evaluator-test.cpp
     tests/unittests/picking-test.cpp
+    tests/unittests/pickingcontroller-test.cpp
     tests/unittests/serialize-container-test.cpp
     tests/unittests/serializer-test.cpp
     tests/unittests/typedmesh-test.cpp
@@ -664,6 +672,8 @@ target_link_libraries(inviwo-core PUBLIC
     inviwo::tinydir
     inviwo::tclap
     inviwo::warn
+    inviwo::sml
+    fmt::fmt
     $<$<BOOL:${IVW_SIGAR}>:inviwo::sigar>
     $<$<BOOL:${WIN32}>:inviwo::stackwalker>
     $<$<BOOL:${UNIX}>:${CMAKE_DL_LIBS}>  # Required for dlopen
@@ -701,7 +711,13 @@ ivw_register_license_file(NAME "Flags" MODULE Core
     FILES ${IVW_EXTENSIONS_DIR}/flags/LICENSE
 )
 
-ivw_register_license_file(NAME "OpenGL Mathematics (GLM)" TARGET glm_dummy MODULE Core
+ivw_register_license_file(NAME "{fmt}" target fmt MODULE Core
+    URL "https://github.com/fmtlib/fmt"
+    TYPE "TBSD 2-Clause"
+    FILES  ${IVW_EXTENSIONS_DIR}/fmt/fmt/LICENSE.rst
+)
+
+ivw_register_license_file(NAME "OpenGL Mathematics (GLM)" VERSION 0.9.9.3 MODULE Core
     URL "https://glm.g-truc.net"
     TYPE "The MIT License"
     FILES  ${IVW_EXTENSIONS_DIR}/glm/LICENSE
@@ -710,7 +726,7 @@ ivw_register_license_file(NAME "OpenGL Mathematics (GLM)" TARGET glm_dummy MODUL
 ivw_register_license_file(NAME "half" TARGET half MODULE Core
     URL "http://half.sourceforge.net"
     TYPE "The MIT License"
-    FILES ${IVW_EXTENSIONS_DIR}/half/LICENSE
+    FILES ${IVW_EXTENSIONS_DIR}/half/LICENSE.txt
 )
 
 if(TARGET inviwo::sigar)
@@ -764,7 +780,7 @@ endif()
 ivw_register_license_file(NAME "warn" MODULE Core
     URL "https://github.com/petersteneteg/warn"
     TYPE "BSD 2-clause"
-    FILES ${IVW_ROOT_DIR}/tools/codegen/warn/warn/LICENSE
+    FILES ${IVW_TOOLS_DIR}/codegen/warn/warn/LICENSE
 )
 
 ivw_register_license_file(NAME "zlib" TARGET ZLIB::ZLIB MODULE Core
@@ -772,6 +788,32 @@ ivw_register_license_file(NAME "zlib" TARGET ZLIB::ZLIB MODULE Core
     TYPE "The zlib/libpng License"
     FILES ${IVW_EXTENSIONS_DIR}/zlib-1.2.11/LICENSE
 )
+
+if(IVW_UNITTESTS OR IVW_INTEGRATION_TESTS)
+    ivw_register_license_file(NAME "Google C++ Testing Framework" TARGET gtest MODULE Core
+        URL "https://github.com/google/googletest"
+        TYPE "BSD 3-clause"
+        FILES ${IVW_EXTENSIONS_DIR}/gtest/gtest/LICENSE
+    )
+endif()
+
+ivw_register_license_file(NAME "JSON for Modern C++" target nlohmann_json MODULE Core
+    URL "https://github.com/nlohmann/json"
+    TYPE "The MIT License"
+    FILES  ${IVW_EXTENSIONS_DIR}/json/LICENSE.MIT
+)
+
+ivw_register_license_file(NAME "inja" VERSION 1.0.0 target inja MODULE Core
+    URL "https://github.com/pantor/inja"
+    TYPE "The MIT License"
+    FILES ${IVW_TOOLS_DIR}/meta/ext/inja/LICENSE
+)
+ivw_register_license_file(NAME "PEGTL" VERSION 2.7.1 target taocpp::pegtl MODULE Core
+    URL "https://github.com/taocpp/PEGTL"
+    TYPE "The MIT License"
+    FILES ${IVW_TOOLS_DIR}/meta/ext/pegtl/LICENSE
+)
+
 
 #----------------------------------------------------------------
 # Generate build info - the build info will be updated during every compilation

@@ -131,7 +131,7 @@ public:
     ButtonProperty controlInsertPauseFrame;
 
 protected:
-    /// Low-level setting of @currentTime_. Use @eval() to set time in the public interface.
+    /// Low-level setting of currentTime_. Use eval() to set time in the public interface.
     void setTime(Seconds time);
 
     /// Called to cleanup after rendering
@@ -158,7 +158,7 @@ protected:
     /// Time span between two frames.
     Seconds deltaTime_;
 
-    /// Timer for calling the @tick function is regular intervals.
+    /// Timer for calling the tick function is regular intervals.
     Timer timer_;
 
     struct RenderCanvasSize {

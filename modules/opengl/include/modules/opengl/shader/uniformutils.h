@@ -45,13 +45,14 @@ namespace inviwo {
 
 namespace utilgl {
 
-template<typename T>
+template <typename T>
 struct dependent_false : std::false_type {};
 
 template <typename T>
 struct UniformSetter {
     static void set(...) {
-        static_assert(dependent_false<T>::value, "Unsupported type T. Missing specialization for setUniform (UniformSetter)");
+        static_assert(dependent_false<T>::value,
+                      "Unsupported type T. Missing specialization for setUniform (UniformSetter)");
     }
 };
 
@@ -77,93 +78,121 @@ struct UniformSetter<GLuint> {
 // signed int vector specializations
 template <>
 struct UniformSetter<ivec2> {
-    static void set(GLint loc, GLsizei count, const ivec2* ptr) { glUniform2iv(loc, count, glm::value_ptr(*ptr)); }
+    static void set(GLint loc, GLsizei count, const ivec2* ptr) {
+        glUniform2iv(loc, count, glm::value_ptr(*ptr));
+    }
     static void set(GLint loc, const ivec2& value) { set(loc, 1, &value); }
 };
 
 template <>
 struct UniformSetter<ivec3> {
-    static void set(GLint loc, GLsizei count, const ivec3* ptr) { glUniform3iv(loc, count, glm::value_ptr(*ptr)); }
+    static void set(GLint loc, GLsizei count, const ivec3* ptr) {
+        glUniform3iv(loc, count, glm::value_ptr(*ptr));
+    }
     static void set(GLint loc, const ivec3& value) { set(loc, 1, &value); }
 };
 
 template <>
 struct UniformSetter<ivec4> {
-    static void set(GLint loc, GLsizei count, const ivec4* ptr) { glUniform4iv(loc, count, glm::value_ptr(*ptr)); }
+    static void set(GLint loc, GLsizei count, const ivec4* ptr) {
+        glUniform4iv(loc, count, glm::value_ptr(*ptr));
+    }
     static void set(GLint loc, const ivec4& value) { set(loc, 1, &value); }
 };
 
 // unsigned int vector specializations
 template <>
 struct UniformSetter<uvec2> {
-    static void set(GLint loc, GLsizei count, const uvec2* ptr) { glUniform2uiv(loc, count, glm::value_ptr(*ptr)); }
+    static void set(GLint loc, GLsizei count, const uvec2* ptr) {
+        glUniform2uiv(loc, count, glm::value_ptr(*ptr));
+    }
     static void set(GLint loc, const uvec2& value) { set(loc, 1, &value); }
 };
 
 template <>
 struct UniformSetter<uvec3> {
-    static void set(GLint loc, GLsizei count, const uvec3* ptr) { glUniform3uiv(loc, count, glm::value_ptr(*ptr)); }
+    static void set(GLint loc, GLsizei count, const uvec3* ptr) {
+        glUniform3uiv(loc, count, glm::value_ptr(*ptr));
+    }
     static void set(GLint loc, const uvec3& value) { set(loc, 1, &value); }
 };
 
 template <>
 struct UniformSetter<uvec4> {
-    static void set(GLint loc, GLsizei count, const uvec4* ptr) { glUniform4uiv(loc, count, glm::value_ptr(*ptr)); }
+    static void set(GLint loc, GLsizei count, const uvec4* ptr) {
+        glUniform4uiv(loc, count, glm::value_ptr(*ptr));
+    }
     static void set(GLint loc, const uvec4& value) { set(loc, 1, &value); }
 };
 
 // float vector specializations
 template <>
 struct UniformSetter<vec2> {
-    static void set(GLint loc, GLsizei count, const vec2* ptr) { glUniform2fv(loc, count, glm::value_ptr(*ptr)); }
+    static void set(GLint loc, GLsizei count, const vec2* ptr) {
+        glUniform2fv(loc, count, glm::value_ptr(*ptr));
+    }
     static void set(GLint loc, const vec2& value) { set(loc, 1, &value); }
 };
 
 template <>
 struct UniformSetter<vec3> {
-    static void set(GLint loc, GLsizei count, const vec3* ptr) { glUniform3fv(loc, count, glm::value_ptr(*ptr)); }
+    static void set(GLint loc, GLsizei count, const vec3* ptr) {
+        glUniform3fv(loc, count, glm::value_ptr(*ptr));
+    }
     static void set(GLint loc, const vec3& value) { set(loc, 1, &value); }
 };
 
 template <>
 struct UniformSetter<vec4> {
-    static void set(GLint loc, GLsizei count, const vec4* ptr) { glUniform4fv(loc, count, glm::value_ptr(*ptr)); }
+    static void set(GLint loc, GLsizei count, const vec4* ptr) {
+        glUniform4fv(loc, count, glm::value_ptr(*ptr));
+    }
     static void set(GLint loc, const vec4& value) { set(loc, 1, &value); }
 };
 
 // matrix specializations
 template <>
 struct UniformSetter<mat2> {
-    static void set(GLint loc, GLsizei count, const mat2* ptr) { glUniformMatrix2fv(loc, count, GL_FALSE, glm::value_ptr(*ptr)); }
+    static void set(GLint loc, GLsizei count, const mat2* ptr) {
+        glUniformMatrix2fv(loc, count, GL_FALSE, glm::value_ptr(*ptr));
+    }
     static void set(GLint loc, const mat2& value) { set(loc, 1, &value); }
 };
 
 template <>
 struct UniformSetter<mat3> {
-    static void set(GLint loc, GLsizei count, const mat3* ptr) { glUniformMatrix3fv(loc, count, GL_FALSE, glm::value_ptr(*ptr)); }
+    static void set(GLint loc, GLsizei count, const mat3* ptr) {
+        glUniformMatrix3fv(loc, count, GL_FALSE, glm::value_ptr(*ptr));
+    }
     static void set(GLint loc, const mat3& value) { set(loc, 1, &value); }
 };
 
 template <>
 struct UniformSetter<mat4> {
-    static void set(GLint loc, GLsizei count, const mat4* ptr) { glUniformMatrix4fv(loc, count, GL_FALSE, glm::value_ptr(*ptr)); }
+    static void set(GLint loc, GLsizei count, const mat4* ptr) {
+        glUniformMatrix4fv(loc, count, GL_FALSE, glm::value_ptr(*ptr));
+    }
     static void set(GLint loc, const mat4& value) { set(loc, 1, &value); }
 };
 
 // specializations for std::vector and std::array for multiple values
 template <typename T>
-struct UniformSetter<std::vector<T> > {
-    static void set(GLint loc, const std::vector<T> &data) { UniformSetter<T>::set(loc, static_cast<GLsizei>(data.size()), data.data()); }
+struct UniformSetter<std::vector<T>> {
+    static void set(GLint loc, const std::vector<T>& data) {
+        UniformSetter<T>::set(loc, static_cast<GLsizei>(data.size()), data.data());
+    }
 };
 
 template <typename T, std::size_t N>
-struct UniformSetter<std::array<T, N> > {
-    static void set(GLint loc, const std::array<T, N> &data) { UniformSetter<T>::set(loc, N, data.data()); }
+struct UniformSetter<std::array<T, N>> {
+    static void set(GLint loc, const std::array<T, N>& data) {
+        UniformSetter<T>::set(loc, N, data.data());
+    }
 };
 
 // specializations for template properties
 template <typename T>
-struct UniformSetter<OrdinalProperty<T> > {
+struct UniformSetter<OrdinalProperty<T>> {
     static void set(GLint loc, const OrdinalProperty<T>& property) {
         UniformSetter<T>::set(loc, property.get());
     }
@@ -205,8 +234,8 @@ struct UniformSetter<bvec4> {
 };
 
 template <std::size_t N>
-struct UniformSetter<std::array<bool, N> > {
-    static void set(GLint loc, const std::array<bool, N> &data) {
+struct UniformSetter<std::array<bool, N>> {
+    static void set(GLint loc, const std::array<bool, N>& data) {
         std::array<int, N> values;
         for (std::size_t i = 0; i < N; ++i) {
             values[i] = static_cast<int>(data[i]);
@@ -222,15 +251,16 @@ struct UniformSetter<BoolProperty> {
     }
 };
 
-
 // specialization for TextureUnit
 template <>
 struct UniformSetter<TextureUnit> {
-    static void set(GLint loc, const TextureUnit& texUnit) { glUniform1i(loc, texUnit.getUnitNumber()); }
+    static void set(GLint loc, const TextureUnit& texUnit) {
+        glUniform1i(loc, texUnit.getUnitNumber());
+    }
 };
 
-} // namespace utilgl
+}  // namespace utilgl
 
-} // namespace inviwo
+}  // namespace inviwo
 
-#endif // IVW_UNIFORMUTILS_H
+#endif  // IVW_UNIFORMUTILS_H

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/basegl/processors/volumeprocessing/volumemapping.h>
@@ -44,12 +44,10 @@ const ProcessorInfo VolumeMapping::processorInfo_{
     "org.inviwo.VolumeMapping",  // Class identifier
     "Volume Mapping",            // Display name
     "Volume Operation",          // Category
-    CodeState::Stable,     // Code state
+    CodeState::Stable,           // Code state
     Tags::GL,                    // Tags
 };
-const ProcessorInfo VolumeMapping::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo VolumeMapping::getProcessorInfo() const { return processorInfo_; }
 
 VolumeMapping::VolumeMapping()
     : VolumeGLProcessor("volume_mapping.frag")
@@ -63,5 +61,4 @@ void VolumeMapping::preProcess(TextureUnitContainer &cont) {
     utilgl::bindAndSetUniforms(shader_, cont, tfProperty_);
 }
 
-}  // namespace
-
+}  // namespace inviwo

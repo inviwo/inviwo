@@ -165,7 +165,7 @@ void OrdinalMinMaxTextPropertyWidgetQt<BT, T>::updateFromMin() {
     V value = minMaxProperty_->get();
 
     // check for modification of range start
-    if (glm::abs(min - value.x) > glm::epsilon<T>()) {
+    if (!util::almostEqual(min, value.x)) {
         const T sep = minMaxProperty_->getMinSeparation();
         V range = minMaxProperty_->getRange();
 
@@ -211,7 +211,7 @@ void OrdinalMinMaxTextPropertyWidgetQt<BT, T>::updateFromMax() {
     V value = minMaxProperty_->get();
 
     // check for modification of range start
-    if (glm::abs(max - value.y) > glm::epsilon<T>()) {
+    if (!util::almostEqual(max, value.y)) {
         const T sep = minMaxProperty_->getMinSeparation();
         V range = minMaxProperty_->getRange();
 

@@ -51,7 +51,7 @@ public:
 
     using Parent::create;
     virtual std::unique_ptr<Property> create(const std::string &className) const override;
-    virtual bool hasKey(const std::string& key) const override;
+    virtual bool hasKey(const std::string &key) const override;
 };
 
 }  // namespace inviwo

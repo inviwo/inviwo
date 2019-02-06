@@ -312,10 +312,18 @@ bool InviwoApplicationQt::notify(QObject* receiver, QEvent* e) {
 void InviwoApplicationQt::setUndoTrigger(std::function<void()> func) { undoTrigger_ = func; }
 
 std::locale InviwoApplicationQt::getCurrentStdLocale() {
+    auto warnOnce = [](auto message) {
+        static bool hasWarned = false;
+        if (!hasWarned) {
+            LogWarnCustom("getStdLocale", message);
+            hasWarned = true;
+        }
+    };
+    
     std::locale loc;
     try {
         // use the system locale provided by Qt
-
+        
 #ifdef WIN32
         // need to change locale given by Qt from underscore to hyphenated ("sv_SE" to "sv-SE")
         // although std::locale should only accept locales with underscore, e.g. "sv_SE"
@@ -325,7 +333,10 @@ std::locale InviwoApplicationQt::getCurrentStdLocale() {
 #endif
         loc = std::locale(localeName.c_str());
     } catch (std::exception& e) {
-        LogWarnCustom("getStdLocale", "Locale could not be set. " << e.what());
+        warnOnce(std::string("Locale could not be set. ") + e.what());
+        try {
+            loc = std::locale("en_US.UTF8");
+        } catch (...) {}
     }
     return loc;
 }

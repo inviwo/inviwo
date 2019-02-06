@@ -167,7 +167,7 @@ std::type_index LayerCLGL::getTypeIndex() const { return std::type_index(typeid(
 
 dvec4 LayerCLGL::readPixel(size2_t pos, LayerType /*layer*/, size_t /*index*/) const {
     std::array<char, DataFormat<dvec4>::typesize> buffer;
-    auto ptr = static_cast<void *>(buffer.data());
+    auto ptr = static_cast<void*>(buffer.data());
 
     OpenCL::getPtr()->getQueue().enqueueReadImage(*clImage_, true, glm::size3_t(pos, 0),
                                                   glm::size3_t(1, 1, 1), 0, 0, ptr);
@@ -175,7 +175,7 @@ dvec4 LayerCLGL::readPixel(size2_t pos, LayerType /*layer*/, size_t /*index*/) c
     return getDataFormat()->valueToVec4Double(ptr);
 }
 
-void LayerCLGL::setSwizzleMask(const SwizzleMask &mask) {
+void LayerCLGL::setSwizzleMask(const SwizzleMask& mask) {
     if (texture_) {
         texture_->setSwizzleMask(mask);
     }
@@ -190,7 +190,7 @@ SwizzleMask LayerCLGL::getSwizzleMask() const {
     return swizzleMask_;
 }
 
-}  // namespace
+}  // namespace inviwo
 
 namespace cl {
 

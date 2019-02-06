@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_ORIENTATIONINDICATOR_H
@@ -49,7 +49,7 @@ class Mesh;
  *
  * ### Outport
  *   * __mesh__ The generated indicator mesh
- * 
+ *
  * ### Properties
  *   * __Base Color__ Color of the central sphere
  *   * __X axis Color__ Color of the first arrow
@@ -62,20 +62,18 @@ class Mesh;
  *   * __View Coords__ Where to put the widget in normalized image coordinates
  *   * __Offset__ Where to put the widget in world space
  */
-class IVW_MODULE_BASE_API OrientationIndicator : public Processor { 
+class IVW_MODULE_BASE_API OrientationIndicator : public Processor {
 public:
-    enum class Location {
-        ThreeD,
-        TwoD
-    };
+    enum class Location { ThreeD, TwoD };
 
     OrientationIndicator();
     virtual ~OrientationIndicator() = default;
-     
+
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+
 private:
     void updateMesh();
 
@@ -90,7 +88,6 @@ private:
     FloatVec3Property axisScale_;
     FloatProperty radius_;
 
-
     CompositeProperty location_;
     TemplateOptionProperty<Location> locationType_;
     FloatVec2Property viewCoords_;
@@ -101,7 +98,6 @@ private:
     std::shared_ptr<Mesh> mesh_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_ORIENTATIONINDICATOR_H
-
+#endif  // IVW_ORIENTATIONINDICATOR_H

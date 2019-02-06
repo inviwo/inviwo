@@ -40,9 +40,7 @@ const ProcessorInfo HeightFieldMapper::processorInfo_{
     CodeState::Experimental,         // Code state
     Tags::CPU,                       // Tags
 };
-const ProcessorInfo HeightFieldMapper::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo HeightFieldMapper::getProcessorInfo() const { return processorInfo_; }
 
 HeightFieldMapper::HeightFieldMapper()
     : Processor()
@@ -195,5 +193,4 @@ void HeightFieldMapper::process() {
     }
 }
 
-}  // namespace
-
+}  // namespace inviwo

@@ -32,7 +32,7 @@
 namespace inviwo {
 
 TouchPoint::TouchPoint(int id, TouchState touchState, dvec2 posNormalized, dvec2 prevPosNormalized,
-dvec2 pressedPosNormalized, uvec2 canvasSize, double pressure, double depth)
+                       dvec2 pressedPosNormalized, uvec2 canvasSize, double pressure, double depth)
     : id_(id)
     , state_(touchState)
     , posNormalized_(posNormalized)
@@ -42,19 +42,14 @@ dvec2 pressedPosNormalized, uvec2 canvasSize, double pressure, double depth)
     , canvasSize_(canvasSize)
     , depth_(depth) {}
 
-bool TouchPoint::operator ==(const TouchPoint& b) const {
-    return id_ == b.id_ && state_ == b.state_ &&
-    posNormalized_ == b.posNormalized_ &&
-    prevPosNormalized_ == b.prevPosNormalized_ &&
-    pressedPosNormalized_ == b.pressedPosNormalized_ &&
-    pressure_ == b.pressure_ &&
-    canvasSize_ == b.canvasSize_ &&
-    depth_ == b.depth_;
+bool TouchPoint::operator==(const TouchPoint& b) const {
+    return id_ == b.id_ && state_ == b.state_ && posNormalized_ == b.posNormalized_ &&
+           prevPosNormalized_ == b.prevPosNormalized_ &&
+           pressedPosNormalized_ == b.pressedPosNormalized_ && pressure_ == b.pressure_ &&
+           canvasSize_ == b.canvasSize_ && depth_ == b.depth_;
 }
-    
-bool TouchPoint::operator !=(const TouchPoint& b) const {
-    return !(*this == b);
-}
+
+bool TouchPoint::operator!=(const TouchPoint& b) const { return !(*this == b); }
 
 TouchState TouchPoint::state() const { return state_; }
 
@@ -105,9 +100,8 @@ void TouchPoint::setCanvasSize(uvec2 size) { canvasSize_ = size; }
 dvec3 TouchPoint::ndc() const {
     return dvec3(2.0 * posNormalized_.x - 1.0, 2.0 * posNormalized_.y - 1.0, depth_);
 }
-    
-TouchDevice::TouchDevice(DeviceType type, std::string name)
-    : type_(type), name_(name) {}
+
+TouchDevice::TouchDevice(DeviceType type, std::string name) : type_(type), name_(name) {}
 
 TouchEvent::TouchEvent() = default;
 
@@ -124,7 +118,7 @@ std::vector<TouchPoint>& TouchEvent::touchPoints() { return touchPoints_; }
 
 void TouchEvent::setTouchPoints(std::vector<TouchPoint> val) { touchPoints_ = val; }
 
-uvec2 TouchEvent::canvasSize() const { 
+uvec2 TouchEvent::canvasSize() const {
     if (touchPoints_.empty()) {
         return uvec2(0);
     } else {
@@ -160,9 +154,9 @@ dvec2 TouchEvent::prevCenterPointNormalized() const {
         return dvec2(0.0);
     } else {
         // Compute average position
-        auto sum = std::accumulate(
-            touchPoints_.begin(), touchPoints_.end(), dvec2(0.0),
-            [](dvec2 s, const TouchPoint& p) { return s + p.prevPosNormalized(); });
+        auto sum =
+            std::accumulate(touchPoints_.begin(), touchPoints_.end(), dvec2(0.0),
+                            [](dvec2 s, const TouchPoint& p) { return s + p.prevPosNormalized(); });
         return sum / static_cast<double>(touchPoints_.size());
     }
 }
@@ -240,4 +234,4 @@ std::vector<const TouchPoint*> TouchEvent::findClosestTwoTouchPoints() const {
 
 uint64_t TouchEvent::hash() const { return chash(); }
 
-}  // namespace
+}  // namespace inviwo

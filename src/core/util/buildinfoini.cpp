@@ -48,7 +48,7 @@ struct IniSeparator : std::ctype<char> {
     static const mask* makeTable() {
         // copy table of C locale
         static std::vector<mask> m(classic_table(), classic_table() + table_size);
-        m[' '] &= ~space; // remove space as whitespace
+        m[' '] &= ~space;  // remove space as whitespace
         m['='] |= space;
         return &m[0];
     }
@@ -79,14 +79,11 @@ BuildInfo getBuildInfo() {
         }
         if (line == "[date]") {
             currentSection = Section::Date;
-        }
-        else if (line == "[hashes]") {
+        } else if (line == "[hashes]") {
             currentSection = Section::Hashes;
-        }
-        else if (line[0] == '[') {
+        } else if (line[0] == '[') {
             currentSection = Section::Unknown;
-        }
-        else {
+        } else {
             // read in key value pairs
             iss.clear();
             iss.str(line);
@@ -97,31 +94,25 @@ BuildInfo getBuildInfo() {
                 continue;
             }
             switch (currentSection) {
-                case Section::Date:
-                {
+                case Section::Date: {
                     int valuei = std::stoi(value);
                     if (key == "year") {
                         buildInfo.year = valuei;
-                    }
-                    else if (key == "month") {
+                    } else if (key == "month") {
                         buildInfo.month = valuei;
-                    }
-                    else if (key == "day") {
+                    } else if (key == "day") {
                         buildInfo.day = valuei;
-                    }
-                    else if (key == "hour") {
+                    } else if (key == "hour") {
                         buildInfo.hour = valuei;
-                    }
-                    else if (key == "minute") {
+                    } else if (key == "minute") {
                         buildInfo.minute = valuei;
-                    }
-                    else if (key == "second") {
+                    } else if (key == "second") {
                         buildInfo.second = valuei;
                     }
                     break;
                 }
                 case Section::Hashes:
-                    buildInfo.githashes.push_back({ key, value });
+                    buildInfo.githashes.push_back({key, value});
                     break;
                 case Section::Unknown:
                 default:
@@ -132,6 +123,6 @@ BuildInfo getBuildInfo() {
     return buildInfo;
 }
 
-} // namespace util
+}  // namespace util
 
-} // namespace inviwo
+}  // namespace inviwo

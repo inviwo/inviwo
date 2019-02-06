@@ -64,7 +64,7 @@ void AnimationQtSupplier::registerTrackToWidgetMap(const std::string& trackId,
 
 void AnimationQtSupplier::registerTrackToSequenceEditorMap(const std::string& trackId,
                                                            const std::string& erditorId) {
-  getSequenceEditorFactory().registerTrackToSequenceEditorMap(trackId, erditorId);
+    getSequenceEditorFactory().registerTrackToSequenceEditorMap(trackId, erditorId);
 }
 
 void AnimationQtSupplier::unRegisterAll() {

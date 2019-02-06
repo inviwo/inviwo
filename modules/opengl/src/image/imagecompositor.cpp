@@ -70,5 +70,4 @@ void ImageCompositor::composite(ImageInport& source, ImageOutport& target, Image
     }
 }
 
-} // namespace
-
+}  // namespace inviwo

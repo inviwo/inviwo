@@ -75,7 +75,8 @@ void activateTargetAndCopySource(Image& targetImage, const Image& sourceImage, I
     outImageGL->activateBuffer(type);
 }
 
-void activateTargetAndCopySource(Image& targetImage, const ImageInport& sourceInport, ImageType type) {
+void activateTargetAndCopySource(Image& targetImage, const ImageInport& sourceInport,
+                                 ImageType type) {
     auto outImageGL = targetImage.getEditableRepresentation<ImageGL>();
 
     if (auto inImage = sourceInport.getData()) {
@@ -96,6 +97,25 @@ void activateTargetAndCopySource(ImageOutport& targetOutport, const ImageInport&
     }
     auto outImage = targetOutport.getEditableData();
     activateTargetAndCopySource(*outImage, sourceInport, type);
+}
+
+void activateTargetAndClearOrCopySource(Image& targetImage, const ImageInport& sourceInport,
+                                        ImageType type) {
+
+    if (sourceInport.isReady()) {
+        utilgl::activateTargetAndCopySource(targetImage, sourceInport, type);
+    } else {
+        utilgl::activateAndClearTarget(targetImage, type);
+    }
+}
+
+void activateTargetAndClearOrCopySource(ImageOutport& targetOutport,
+                                        const ImageInport& sourceInport, ImageType type) {
+    if (sourceInport.isReady()) {
+        utilgl::activateTargetAndCopySource(targetOutport, sourceInport, type);
+    } else {
+        utilgl::activateAndClearTarget(targetOutport, type);
+    }
 }
 
 void clearCurrentTarget() { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); }
@@ -414,8 +434,7 @@ void bindTexture(const IsoTFProperty& property, const TextureUnit& texUnit) {
     }
 }
 
-void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
-                        const IsoTFProperty& property) {
+void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const IsoTFProperty& property) {
     TextureUnit unit;
     bindTexture(property, unit);
     shader.setUniform(property.tf_.getIdentifier(), unit);
@@ -490,6 +509,6 @@ void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, ImageOutport
                         ImageType type) {
     bindAndSetUniforms(shader, cont, *port.getData(), port.getIdentifier(), type);
 }
-}
+}  // namespace utilgl
 
-}  // namespace
+}  // namespace inviwo

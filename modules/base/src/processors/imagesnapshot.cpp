@@ -35,7 +35,7 @@ namespace inviwo {
 const ProcessorInfo ImageSnapshot::processorInfo_{
     "org.inviwo.ImageSnapshot",  // Class identifier
     "Image Snapshot",            // Display name
-    "Image Operation",                 // Category
+    "Image Operation",           // Category
     CodeState::Experimental,     // Code state
     Tags::None,                  // Tags
 };
@@ -48,9 +48,8 @@ ImageSnapshot::ImageSnapshot()
     , outport2_("outport2")
     , outport1ImageIndex_("outport1ImageIndex", "Image 1 index", -1, -1, -1)
     , outport2ImageIndex_("outport2ImageIndex", "Image 2 index", -1, -1, -1)
-    , snapshot_("snapshot", "Snapshot") 
-    , clear_("clear","Clear")
-{
+    , snapshot_("snapshot", "Snapshot")
+    , clear_("clear", "Clear") {
     addPort(inport_);
     addPort(outport1_);
     addPort(outport2_);
@@ -62,16 +61,14 @@ ImageSnapshot::ImageSnapshot()
     outport1_.setHandleResizeEvents(false);
     outport2_.setHandleResizeEvents(false);
 
-    //outport1ImageIndex_.setSerializationMode(PropertySerializationMode::None);
-    //outport2ImageIndex_.setSerializationMode(PropertySerializationMode::None);
+    // outport1ImageIndex_.setSerializationMode(PropertySerializationMode::None);
+    // outport2ImageIndex_.setSerializationMode(PropertySerializationMode::None);
 
     snapshot_.onChange([&]() {
         outport1ImageIndex_.setMaxValue(static_cast<int>(snapshots_.size()));
         outport2ImageIndex_.setMaxValue(static_cast<int>(snapshots_.size()));
         snapshots_.emplace_back(inport_.getData()->clone());
     });
-
-
 
     clear_.onChange([&]() {
         snapshots_.clear();
@@ -85,27 +82,20 @@ void ImageSnapshot::process() {
     auto i2 = outport2ImageIndex_.get();
     if (i1 == -1) {
         outport1_.setData(inport_.getData());
-    }
-    else {
+    } else {
         outport1_.setData(snapshots_[i1]);
     }
 
     if (i2 == -1) {
         outport2_.setData(inport_.getData());
-    }
-    else {
+    } else {
         outport2_.setData(snapshots_[i2]);
     }
 }
-
-
 
 void ImageSnapshot::deserialize(Deserializer& d) {
     Processor::deserialize(d);
     clear_.pressButton();
 }
 
-
-
-
-}  // namespace
+}  // namespace inviwo

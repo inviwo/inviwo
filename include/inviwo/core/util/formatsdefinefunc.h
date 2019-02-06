@@ -24,9 +24,9 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
-
+// clang-format off
 #ifndef DataFormatIdMacro
 #define DataFormatIdMacro(i)
 #endif
@@ -75,3 +75,4 @@ DataFormatIdMacro(Vec4UInt16)
 DataFormatIdMacro(Vec4UInt32)
 DataFormatIdMacro(Vec4UInt64)
 #undef DataFormatIdMacro
+    // clang-format on

@@ -57,6 +57,6 @@ public:
     static const ProcessorInfo processorInfo_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_GEOMETRYSOURCE_H

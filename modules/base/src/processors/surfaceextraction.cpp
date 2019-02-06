@@ -89,8 +89,8 @@ SurfaceExtraction::SurfaceExtraction()
                                              std::max(mm.second, v->dataMap_.dataRange.y));
                                      });
 
-            isoValue_.setMinValue(static_cast<const float>(minmax.first));
-            isoValue_.setMaxValue(static_cast<const float>(minmax.second));
+            isoValue_.setMinValue(static_cast<float>(minmax.first));
+            isoValue_.setMaxValue(static_cast<float>(minmax.second));
         }
     });
 }

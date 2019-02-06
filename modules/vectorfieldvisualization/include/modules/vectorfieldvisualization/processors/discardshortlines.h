@@ -38,7 +38,6 @@
 
 namespace inviwo {
 
-
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API DiscardShortLines : public Processor {
 public:
     DiscardShortLines();

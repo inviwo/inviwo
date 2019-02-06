@@ -33,11 +33,11 @@ namespace inviwo {
 
 namespace hdf5 {
 
-
 #include <warn/push>
 #include <warn/ignore/switch-enum>
 
-IVW_MODULE_HDF5_API const DataFormatBase* util::getDataFormatFromDataSet(const H5::DataSet& dataset) {
+IVW_MODULE_HDF5_API const DataFormatBase* util::getDataFormatFromDataSet(
+    const H5::DataSet& dataset) {
     NumericType numerictype;
     const int components = 1;
     size_t presision = 8;
@@ -46,7 +46,6 @@ IVW_MODULE_HDF5_API const DataFormatBase* util::getDataFormatFromDataSet(const H
         case H5T_INTEGER: {
             H5::IntType type = dataset.getIntType();
             presision = type.getPrecision();
-
 
             switch (type.getSign()) {
                 case H5T_SGN_NONE: {
@@ -87,7 +86,6 @@ IVW_MODULE_HDF5_API const DataFormatBase* util::getDataFormatFromDataSet(const H
 
 #include <warn/pop>
 
-}  // namespace
+}  // namespace hdf5
 
-}  // namespace
-
+}  // namespace inviwo

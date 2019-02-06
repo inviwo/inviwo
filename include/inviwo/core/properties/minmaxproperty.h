@@ -35,6 +35,7 @@
 #include <inviwo/core/properties/templateproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <algorithm>
+#include <limits>
 
 namespace inviwo {
 
@@ -43,7 +44,7 @@ namespace inviwo {
  * A property representing a range.
  */
 template <typename T>
-class MinMaxProperty : public TemplateProperty<glm::tvec2<T, glm::defaultp> > {
+class MinMaxProperty : public TemplateProperty<glm::tvec2<T, glm::defaultp>> {
 public:
     typedef glm::tvec2<T, glm::defaultp> range_type;
     virtual std::string getClassIdentifier() const override;
@@ -430,10 +431,10 @@ auto MinMaxProperty<T>::validateValues(const range_type& v) -> std::pair<bool, r
     if (val.x > val.y) std::swap(val.x, val.y);
 
     // check whether updated min/max values are separated properly, i.e. > minSeparation_
-    if (glm::abs(val.y - val.x) < minSeparation_ - glm::epsilon<T>()) {
+    if (glm::abs(val.y - val.x) < minSeparation_ - std::numeric_limits<T>::epsilon()) {
         // adjust max value if possible, i.e. less equal than max range
-        if (val.x + minSeparation_ < range_.value.y + glm::epsilon<T>()) {
-            val.y = std::max(val.x + minSeparation_.value, val.y);
+        if (val.x + minSeparation_ < range_.value.y + std::numeric_limits<T>::epsilon()) {
+            val.y = glm::max(val.x + minSeparation_.value, val.y);
         } else {
             // otherwise adjust min value (min separation is at most rangeMax - rangeMin)
             val.y = range_.value.y;

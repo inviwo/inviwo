@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_INTERACTIONEVENT_H
@@ -35,6 +35,8 @@
 #include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/interaction/events/event.h>
 #include <inviwo/core/interaction/events/keyboardkeys.h>
+
+#include <functional>
 
 namespace inviwo {
 
@@ -50,10 +52,28 @@ public:
     void setModifiers(KeyModifiers modifiers);
     std::string modifierNames() const;
 
+    /**
+     * Display a tool tip using the optionally set tool tip callback.
+     * If no tool tip callback is set, the function does nothing.
+     * The supported formation depends on the used back end, but simple html is usually supported.
+     * Calling the function with an empty sting will hide any existing tool tip.
+     */
+    void setToolTip(const std::string& tooltip) const;
+
+    using ToolTipCallback = std::function<void(const std::string&)>;
+    /**
+     * Set a tool tip call back function. The function should display a tool tip with the given
+     * string at the position if of the event. This function is usually called by the originating
+     * event canvas, and not any regular user code.
+     */
+    void setToolTipCallback(ToolTipCallback callback);
+    const ToolTipCallback& getToolTipCallback() const;
+
 protected:
     KeyModifiers modifiers_;
+    ToolTipCallback tooltip_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
-#endif // IVW_INTERACTIONEVENT_H
+#endif  // IVW_INTERACTIONEVENT_H

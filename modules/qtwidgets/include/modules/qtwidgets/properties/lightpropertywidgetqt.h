@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_LIGHTPROPERTYWIDGETQT_H
@@ -58,6 +58,6 @@ private:
     void onRadiusSpinBoxChanged(double radius);
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_LightPropertyWidgetQt_H
+#endif  // IVW_LightPropertyWidgetQt_H

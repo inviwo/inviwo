@@ -37,6 +37,7 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QGraphicsView>
+#include <QImage>
 #include <warn/pop>
 
 class QDropEvent;
@@ -59,6 +60,7 @@ public:
     virtual void onNetworkEditorFileChanged(const std::string& newFilename) override;
 
     void exportViewToFile(const QString& filename, bool entireScene, bool backgroundVisible);
+    QImage exportViewToImage(bool entireScene, bool backgroundVisible, QSize size = QSize());
 
     TextLabelOverlay& getOverlay() const;
     NetworkSearch& getNetworkSearch() const;

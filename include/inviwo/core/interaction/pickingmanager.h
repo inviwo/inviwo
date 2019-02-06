@@ -47,6 +47,8 @@ public:
     struct Result {
         size_t index;
         const PickingAction* action;
+
+        size_t getLocalPickingId() const { return action->getLocalPickingId(index); };
     };
 
     PickingManager();
@@ -54,12 +56,14 @@ public:
     PickingManager& operator=(PickingManager const&) = delete;
     virtual ~PickingManager();
 
+    // clang-format off
     template <typename T>
     [[deprecated("was declared deprecated. Use `registerPickingAction(Processor*, PickingAction::Callback, size_t)` instead")]]
     PickingAction* registerPickingAction(Processor* processor, T* o,
                                          void (T::*m)(PickingEvent*), size_t size = 1);
-    PickingAction* registerPickingAction(Processor* processor,
-                                         PickingAction::Callback callback,
+    // clang-format on
+
+    PickingAction* registerPickingAction(Processor* processor, PickingAction::Callback callback,
                                          size_t size = 1);
 
     bool unregisterPickingAction(const PickingAction*);
@@ -69,6 +73,9 @@ public:
     static size_t colorToIndex(uvec3 color);
 
     Result getPickingActionFromColor(const uvec3& color);
+    Result getPickingActionFromIndex(size_t index);
+
+    bool isPickingActionRegistered(const PickingAction* action) const;
 
 private:
     // start indexing at 1, 0 maps to black {0,0,0} and indicated no picking.
@@ -85,15 +92,16 @@ private:
     static PickingManager* instance_;
 };
 
+// clang-format off
 template <typename T>
 [[deprecated("was declared deprecated. Use `registerPickingAction(Processor*, PickingAction::Callback, size_t)` instead")]]
 PickingAction* PickingManager::registerPickingAction(Processor* processor, T* o,
                                                      void (T::*m)(PickingEvent*),
-                                                     size_t size) {
+                                      size_t size) {
     using namespace std::placeholders;
     return registerPickingAction(processor, std::bind(m, o, _1), size);
 }
-
-}  // namespace
+// clang-format on
+}  // namespace inviwo
 
 #endif  // IVW_PICKINGMANAGER_H

@@ -83,7 +83,7 @@ class IVW_MODULE_EXAMPLE_API SimpleRaycaster : public Processor {
 public:
     SimpleRaycaster();
     virtual ~SimpleRaycaster() = default;
-    
+
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;

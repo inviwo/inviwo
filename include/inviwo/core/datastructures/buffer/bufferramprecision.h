@@ -37,7 +37,7 @@
 namespace inviwo {
 
 /**
- * \ingroup datastructures	
+ * \ingroup datastructures
  */
 template <typename T, BufferTarget Target = BufferTarget::Data>
 class BufferRAMPrecision : public BufferRAM {
@@ -77,7 +77,7 @@ public:
     virtual dvec2 getAsNormalizedDVec2(const size_t& pos) const override;
     virtual dvec3 getAsNormalizedDVec3(const size_t& pos) const override;
     virtual dvec4 getAsNormalizedDVec4(const size_t& pos) const override;
- 
+
     virtual void setFromNormalizedDouble(const size_t& pos, double val) override;
     virtual void setFromNormalizedDVec2(const size_t& pos, dvec2 val) override;
     virtual void setFromNormalizedDVec3(const size_t& pos, dvec3 val) override;
@@ -128,8 +128,7 @@ BufferRAMPrecision<T, Target>::BufferRAMPrecision(size_t size, BufferUsage usage
 
 template <typename T, BufferTarget Target>
 inviwo::BufferRAMPrecision<T, Target>::BufferRAMPrecision(std::vector<T> data, BufferUsage usage)
-    : BufferRAM(DataFormat<T>::get(), usage, Target)
-    , data_(std::move(data)) {}
+    : BufferRAM(DataFormat<T>::get(), usage, Target), data_(std::move(data)) {}
 
 template <typename T, BufferTarget Target>
 BufferRAMPrecision<T, Target>* BufferRAMPrecision<T, Target>::clone() const {
@@ -166,9 +165,8 @@ const std::vector<T>& BufferRAMPrecision<T, Target>::getDataContainer() const {
     return data_;
 }
 
-
 template <typename T, BufferTarget Target>
-void BufferRAMPrecision<T, Target>::reserve(size_t size){
+void BufferRAMPrecision<T, Target>::reserve(size_t size) {
     data_.reserve(size);
 }
 
@@ -294,6 +292,6 @@ void BufferRAMPrecision<T, Target>::clear() {
     data_.clear();
 }
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_BUFFERRAMPRECISION_H

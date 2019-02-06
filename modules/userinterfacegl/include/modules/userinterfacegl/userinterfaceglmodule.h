@@ -33,14 +33,26 @@
 #include <modules/userinterfacegl/userinterfaceglmoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
 
+#include <modules/userinterfacegl/glui/widgetsupplier.h>
+#include <modules/userinterfacegl/glui/widgetfactory.h>
+#include <modules/userinterfacegl/glui/widgetfactoryobject.h>
+#include <modules/userinterfacegl/glui/element.h>
+
 namespace inviwo {
 
-class IVW_MODULE_USERINTERFACEGL_API UserInterfaceGLModule : public InviwoModule {
+class IVW_MODULE_USERINTERFACEGL_API UserInterfaceGLModule : public InviwoModule,
+                                                             public glui::WidgetSupplier {
 public:
     UserInterfaceGLModule(InviwoApplication* app);
-    virtual ~UserInterfaceGLModule() = default;
+    virtual ~UserInterfaceGLModule();
+
+    glui::WidgetFactory& getGLUIWidgetFactory();
+    const glui::WidgetFactory& getGLUIWidgetFactory() const;
+
+private:
+    glui::WidgetFactory widgetFactory_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_USERINTERFACEGLMODULE_H
+#endif  // IVW_USERINTERFACEGLMODULE_H

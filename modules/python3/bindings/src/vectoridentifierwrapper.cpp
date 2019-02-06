@@ -29,6 +29,4 @@
 
 #include <inviwopy/vectoridentifierwrapper.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

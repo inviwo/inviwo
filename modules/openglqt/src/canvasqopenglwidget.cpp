@@ -124,4 +124,4 @@ void CanvasQOpenGLWidget::resizeEvent(QResizeEvent* event) {
     QOpenGLWidget::resizeEvent(event);
 }
 
-}  // namespace
+}  // namespace inviwo

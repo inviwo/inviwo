@@ -46,7 +46,7 @@ MeshVisualizer::MeshVisualizer(InviwoApplication* app) : DataVisualizer{}, app_(
 
 std::string MeshVisualizer::getName() const { return "Mesh Renderer"; }
 
-Document MeshVisualizer::getDescription() const { 
+Document MeshVisualizer::getDescription() const {
     Document doc;
     auto b = doc.append("html").append("body");
     b.append("", "Construct a standard mesh renderer");

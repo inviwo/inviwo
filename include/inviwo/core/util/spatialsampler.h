@@ -89,7 +89,7 @@ struct DataTraits<SpatialSampler<SpatialDims, DataDims, T>> {
                DataFormat<Vector<DataDims, T>>::str() + ">";
     }
     static uvec3 colorCode() { return uvec3(153, 0, 76); }
-    static Document info(const SpatialSampler<SpatialDims, DataDims, T>&) {
+    static Document info(const SpatialSampler<SpatialDims, DataDims, T> &) {
         Document doc;
         doc.append("p", dataName());
         return doc;
@@ -130,7 +130,8 @@ template <unsigned int SpatialDims, unsigned int DataDims, typename T>
 Vector<DataDims, T> SpatialSampler<SpatialDims, DataDims, T>::sample(
     const Vector<SpatialDims, double> &pos, Space space) const {
     if (space != Space::Data) {
-        const Matrix<SpatialDims+1,double> m{spatialEntity_.getCoordinateTransformer().getMatrix(space, Space::Data)};
+        const Matrix<SpatialDims + 1, double> m{
+            spatialEntity_.getCoordinateTransformer().getMatrix(space, Space::Data)};
         const auto p = m * Vector<SpatialDims + 1, double>(pos, 1.0);
         return sampleDataSpace(Vector<SpatialDims, double>(p) / p[SpatialDims]);
     } else {
@@ -164,7 +165,8 @@ template <unsigned int SpatialDims, unsigned int DataDims, typename T>
 bool SpatialSampler<SpatialDims, DataDims, T>::withinBounds(const Vector<SpatialDims, double> &pos,
                                                             Space space) const {
     if (space != Space::Data) {
-        const Matrix<SpatialDims+1,double> m{ spatialEntity_.getCoordinateTransformer().getMatrix(space, Space::Data) };
+        const Matrix<SpatialDims + 1, double> m{
+            spatialEntity_.getCoordinateTransformer().getMatrix(space, Space::Data)};
         const auto p = m * Vector<SpatialDims + 1, double>(pos, 1.0);
         return withinBoundsDataSpace(Vector<SpatialDims, double>(p) / p[SpatialDims]);
     } else {

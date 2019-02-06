@@ -62,7 +62,7 @@ namespace inviwo {
  */
 class IVW_MODULE_BASE_API SurfaceExtraction : public Processor, public ProgressBarOwner {
 public:
-    enum class Method{
+    enum class Method {
         MarchingCubes,
         MarchingCubesOpt,
         MarchingTetrahedron,
@@ -118,6 +118,6 @@ protected:
     bool dirty_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_SURFACEEXTRACTION_H

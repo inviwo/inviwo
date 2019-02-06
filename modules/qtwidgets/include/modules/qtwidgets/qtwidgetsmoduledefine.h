@@ -24,19 +24,19 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef _IVW_QTWIDGETS_DEFINE_H_
 #define _IVW_QTWIDGETS_DEFINE_H_
 
-#ifdef INVIWO_ALL_DYN_LINK //DYNAMIC
+#ifdef INVIWO_ALL_DYN_LINK  // DYNAMIC
 // If we are building DLL files we must declare dllexport/dllimport
 #ifdef IVW_MODULE_QTWIDGETS_EXPORTS
 #ifdef _WIN32
 #define IVW_MODULE_QTWIDGETS_API __declspec(dllexport)
-#else //UNIX (GCC)
-#define IVW_MODULE_QTWIDGETS_API __attribute__ ((visibility ("default")))
+#else  // UNIX (GCC)
+#define IVW_MODULE_QTWIDGETS_API __attribute__((visibility("default")))
 #endif
 #else
 #ifdef _WIN32
@@ -45,7 +45,7 @@
 #define IVW_MODULE_QTWIDGETS_API
 #endif
 #endif
-#else //STATIC
+#else  // STATIC
 #define IVW_MODULE_QTWIDGETS_API
 #endif
 

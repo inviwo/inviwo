@@ -33,21 +33,18 @@
 namespace inviwo {
 
 const ProcessorInfo Jacobian2D::processorInfo_{
-    "org.inviwo.Jacobian2D", // Class identifier
-    "Jacobian2D",            // Display name
-    "Image Operation",       // Category
-    CodeState::Stable,       // Code state
-    Tags::GL,                // Tags
+    "org.inviwo.Jacobian2D",  // Class identifier
+    "Jacobian2D",             // Display name
+    "Image Operation",        // Category
+    CodeState::Stable,        // Code state
+    Tags::GL,                 // Tags
 };
-const ProcessorInfo Jacobian2D::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo Jacobian2D::getProcessorInfo() const { return processorInfo_; }
 
 Jacobian2D::Jacobian2D()
     : ImageGLProcessor("img_jacobian.frag")
     , renormalization_("renormalization", "Renormalization", true)
-    , inverse_("inverse", "Invert Jacobian (J^-1)", false, InvalidationLevel::InvalidResources)
-{
+    , inverse_("inverse", "Invert Jacobian (J^-1)", false, InvalidationLevel::InvalidResources) {
     dataFormat_ = DataVec4Float32::get();
 
     addProperty(renormalization_);
@@ -56,15 +53,14 @@ Jacobian2D::Jacobian2D()
 void Jacobian2D::initializeResources() {
     if (inverse_.get()) {
         shader_.getFragmentShaderObject()->addShaderDefine("INVERT_JACOBIAN");
-    }
-    else {
+    } else {
         shader_.getFragmentShaderObject()->removeShaderDefine("INVERT_JACOBIAN");
     }
     ImageGLProcessor::initializeResources();
 }
-    
+
 void Jacobian2D::preProcess(TextureUnitContainer &) {
     shader_.setUniform("renormalization_", renormalization_.get() ? 1 : 0);
 }
 
-} // namespace inviwo
+}  // namespace inviwo

@@ -152,7 +152,7 @@ const cl::Image3DGL& VolumeCLGL::get() const { return *clImage_; }
 
 std::shared_ptr<Texture3D> VolumeCLGL::getTexture() const { return texture_; }
 
-}  // namespace
+}  // namespace inviwo
 
 namespace cl {
 

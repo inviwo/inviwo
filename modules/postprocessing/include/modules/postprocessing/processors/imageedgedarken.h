@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_IMAGEEDGEDARKEN_H
@@ -46,7 +46,7 @@ namespace inviwo {
  *
  * ### Outports
  *   * __ImageOutport__ Output image.
- * 
+ *
  * ### Properties
  *   * __Darken__ Enables/disables effect.
  *   * __Intensity__ Controls intensity.
@@ -56,11 +56,11 @@ namespace inviwo {
  * \class ImageEdgeDarken
  * \brief Darken edges in an image.
  */
-class IVW_MODULE_POSTPROCESSING_API ImageEdgeDarken : public ImageGLProcessor { 
+class IVW_MODULE_POSTPROCESSING_API ImageEdgeDarken : public ImageGLProcessor {
 public:
     ImageEdgeDarken();
     virtual ~ImageEdgeDarken() = default;
-    
+
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
@@ -72,7 +72,6 @@ private:
     FloatProperty intensity_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_IMAGEEDGEDARKEN_H
-
+#endif  // IVW_IMAGEEDGEDARKEN_H

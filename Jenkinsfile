@@ -1,200 +1,59 @@
-@NonCPS
-def getChangeString() {
-    MAX_MSG_LEN = 100
-    def changeString = ""
-
-    echo "Gathering SCM changes"
-    def changeLogSets = currentBuild.rawBuild.changeSets
-    for (int i = 0; i < changeLogSets.size(); i++) {
-        def entries = changeLogSets[i].items
-        for (int j = 0; j < entries.length; j++) {
-            def entry = entries[j]
-            truncated_msg = entry.msg.take(MAX_MSG_LEN)
-            changeString += "${new Date(entry.timestamp).format("yyyy-MM-dd HH:mm:ss")} "
-            changeString += "[${entry.commitId.take(8)}] ${entry.author}: ${truncated_msg}\n"
-        }
-    }
-
-    if (!changeString) {
-        changeString = " - No new changes"
-    }
-    return changeString
-}
-
-def nicelog(env = [], fun) {
-    withEnv(['TERM=xterm'] + env) {
-        ansiColor {
-            timestamps {
-                fun()
-            }
-        }
-    }
-}
-
-def nicecmd(stageName, dirName, env = [], fun) {
-    stage(stageName) {
-        dir(dirName) {
-            nicelog(env) {
-                fun()
-            }
-        }
-    }
-}
-
-
 node {
-    properties([
-        parameters([
-            booleanParam(
-                defaultValue: false, 
-                description: 'Do a clean build', 
-                name: 'Clean Build'
-            ),
-            choice(
-                choices: "Release\nDebug\nMinSizeRel\nRelWithDebInfo\n", // The first will be default
-                description: 'Select build configuration', 
-                name: 'Build Type'
-            )
-        ]),
-        pipelineTriggers([
-            [$class: 'GitHubPushTrigger']
-        ])
-    ])
-    
+    stage('Fetch') { 
+        dir('inviwo') {
+            checkout scm
+            sh 'git submodule sync --recursive' // needed when a submodule has a new url  
+            sh 'git submodule update --init --recursive'
+        }
+    }
+
+    Map state = [
+        env: env,
+        build: currentBuild, 
+        errors: [],
+        display: 0,
+        addLabel: {label -> 
+            println("Add label: ${label}")
+            if (env.CHANGE_ID  && (!label in pullRequest.labels)) {
+                pullRequest.addLabels([label])
+            }
+        },
+        removeLabel: {label -> 
+            println("Remove label: ${label}")
+            if (env.CHANGE_ID && label in pullRequest.labels) {
+                pullRequest.removeLabel([label])
+            }
+        }
+    ]
+
+    def util = load "${env.WORKSPACE}/inviwo/tools/jenkins/util.groovy"
+    if(!env.disabledProperties) properties(util.defaultProperties())
+
     try {
-        stage('Fetch') { 
-            echo "Building inviwo Running ${env.BUILD_ID} on ${env.JENKINS_URL}"
-            dir('inviwo') {
-                checkout scm
-                sh 'git submodule sync' // needed when a submodule has a new url  
-                sh 'git submodule update --init'
-            }
-        }
+        util.buildStandard(
+            state: state,
+            modulePaths: [], 
+            onModules: [],  
+            offModules: ["ABUFFERGL"],
+            opts: [:]
+        )
+        util.filterfiles()
+        util.format(state)
+        util.warn(state)
+        util.unittest(state)
+        util.integrationtest(state)        
+        util.regression(state, ["${env.WORKSPACE}/inviwo/modules"])
+        util.copyright(state)    
+        util.doxygen(state)
 
-        stage('Build') {
-            if (params['Clean Build']) {
-                echo "Clean build, removing build folder"
-                sh "rm -r build"
-            }
-            dir('build') {
-                nicelog {
-                    sh """
-                        ccache -z # reset ccache statistics
-                        # tell ccache where the project root is
-                        export CPATH=`pwd`
-                        export CCACHE_BASEDIR=`readlink -f \${CPATH}/..`
-                        
-                        cmake -G \"Ninja\" -LA \
-                              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-                              -DCMAKE_BUILD_TYPE=${params['Build Type']} \
-                              -DOpenCL_LIBRARY=/usr/local/cuda/lib64/libOpenCL.so  \
-                              -DOpenCL_INCLUDE_DIR=/usr/local/cuda/include/ \
-                              -DCMAKE_PREFIX_PATH=/opt/Qt/5.6/gcc_64 \
-                              -DIVW_CMAKE_DEBUG=ON \
-                              -DIVW_DOXYGEN_PROJECT=ON \
-                              -DBUILD_SHARED_LIBS=ON \
-                              -DIVW_MODULE_GLFW=ON \
-                              -DIVW_TINY_GLFW_APPLICATION=ON \
-                              -DIVW_TINY_QT_APPLICATION=ON \
-                              -DIVW_MODULE_ABUFFERGL=ON \
-                              -DIVW_MODULE_ANIMATION=ON \
-                              -DIVW_MODULE_ANIMATIONQT=ON \
-                              -DIVW_MODULE_PLOTTING=ON \
-                              -DIVW_MODULE_PLOTTINGGL=ON \
-                              -DIVW_MODULE_POSTPROCESSING=ON \
-                              -DIVW_MODULE_USERINTERFACEGL=ON \
-                              -DIVW_MODULE_HDF5=ON \
-                              -DIVW_MODULE_DISCRETEDATA=ON \
-                              -DIVW_UNITTESTS=ON \
-                              -DIVW_UNITTESTS_RUN_ON_BUILD=OFF \
-                              -DIVW_INTEGRATION_TESTS=ON \
-                              -DIVW_RUNTIME_MODULE_LOADING=ON \
-                              ../inviwo
-
-                        ninja
-
-                        ccache -s # print ccache statistics
-                    """
-                }
-            }
-        }
-
-        def display = 0           
-        nicecmd('Unit Tests', 'build/bin', ['DISPLAY=:' + display]) {
-            sh '''
-                rc=0
-                for unittest in inviwo-unittests-*
-                    do echo ==================================
-                    echo Running: ${unittest}
-                    ./${unittest} || rc=$?
-                done
-                exit ${rc}
-            '''    
-        }
-
-        nicecmd('Integration Tests', 'build/bin', ['DISPLAY=:' + display]) {
-            sh './inviwo-integrationtests'
-        }
-        
-        try {
-            nicecmd('Regression Tests', 'regress', ['DISPLAY=:' + display]) {
-                sh """
-                    python3 ../inviwo/tools/regression.py \
-                            --inviwo ../build/bin/inviwo \
-                            --header ${env.JENKINS_HOME}/inviwo-config/header.html \
-                            --output . \
-                            --repos ../inviwo
-                """
-            }
-        } catch (e) {
-            // Mark as unstable, if we mark as failed, the report will not be published.
-            currentBuild.result = 'UNSTABLE'
-        }
-
-        nicecmd('Copyright Check', 'inviwo') {
-            sh 'python3 tools/refactoring/check-copyright.py .'
-        }
-        
-        nicecmd('Doxygen', 'build', ['DISPLAY=:' + display]) {
-            sh 'ninja DOXY-ALL'
-        }
-        
-        stage('Publish') {
-            publishHTML([
-                allowMissing: true,
-                alwaysLinkToLastBuild: true,
-                keepAll: false,
-                reportDir: 'regress',
-                reportFiles: 'report.html',
-                reportName: 'Regression Report'
-            ])
-            publishHTML([
-                allowMissing: true,
-                alwaysLinkToLastBuild: true,
-                keepAll: false,
-                reportDir: 'build/doc/inviwo/html',
-                reportFiles: 'index.html',
-                reportName: 'Doxygen Documentation'
-            ])
-        }
-        currentBuild.result = 'SUCCESS'
+        state.build.result = state.errors.isEmpty() ? 'SUCCESS' : 'FAILURE'
     } catch (e) {
-        currentBuild.result = 'FAILURE'
+        state.build.result = 'FAILURE'
         throw e
     } finally {
-        stage('Slack') {
-            echo "result: ${currentBuild.result}"
-            def res2color = ['SUCCESS' : 'good', 'UNSTABLE' : 'warning' , 'FAILURE' : 'danger' ]
-            def color = res2color.containsKey(currentBuild.result) ? res2color[currentBuild.result] : 'warning'
-            slackSend(
-                color: color, 
-                channel: "#jenkins-branch-pr", 
-                message: "Inviwo branch: ${env.BRANCH_NAME}\n" + \
-                         "Status: ${currentBuild.result}\n" + \
-                         "Job: ${env.BUILD_URL} \n" + \
-                         "Regression: ${env.JOB_URL}Regression_Report/\n" + \
-                         "Changes: " + getChangeString() 
-            )
+        util.slack(state, "#jenkins-branch-pr")
+        if (!state.errors.isEmpty()) {
+            println "Errors in: ${state.errors.join(", ")}"
         }
     }
 }

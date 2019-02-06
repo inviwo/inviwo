@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_MESHCREATOR_H
@@ -62,13 +62,13 @@ class PickingEvent;
  *   * __Cone__,
  *   * __Cylinder__,
  *   * __Arrow__,
- *   * __CoordAxes__, 
+ *   * __CoordAxes__,
  *   * __Torus
- * 
- * 
+ *
+ *
  * ### Outports
  *   * __outport__ The generated mesh
- * 
+ *
  * ### Properties
  *   * __Mesh Type__ The type of mesh to generate.
  *   * __Color__ Color parameter.
@@ -77,7 +77,7 @@ class PickingEvent;
  *   * __Normal__ Normal direction for planes, etc.
  *   * __Size scaling__ Scale parameter for various mesh types.
  *   * __Mesh resolution__ Mesh resulution parameter for some meshes.
- 
+ 
  */
 class IVW_MODULE_BASE_API MeshCreator : public Processor {
 public:
@@ -105,7 +105,7 @@ private:
         Cone,
         Cylinder,
         Arrow,
-        CoordAxes, 
+        CoordAxes,
         Torus,
         SphereOpt
     };
@@ -113,7 +113,7 @@ private:
     void handlePicking(PickingEvent*);
 
     MeshOutport outport_;
-    
+
     FloatVec3Property position1_;
     FloatVec3Property position2_;
     BasisProperty basis_;
@@ -121,9 +121,9 @@ private:
     FloatVec4Property color_;
     FloatProperty torusRadius1_;
     FloatProperty torusRadius2_;
-    
-    FloatProperty meshScale_; // Scale size of mesh
-    IntVec2Property meshRes_; // mesh resolution
+
+    FloatProperty meshScale_;  // Scale size of mesh
+    IntVec2Property meshRes_;  // mesh resolution
     TemplateOptionProperty<MeshType> meshType_;
     BoolProperty enablePicking_;
     PickingMapper picking_;
@@ -131,6 +131,6 @@ private:
     std::function<void(PickingEvent*)> pickingUpdate_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_MESHCREATOR_H
+#endif  // IVW_MESHCREATOR_H

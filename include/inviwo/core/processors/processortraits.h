@@ -58,7 +58,7 @@ ProcessorInfo processorInfo() {
     return ProcessorInfo(T::CLASS_IDENTIFIER, T::DISPLAY_NAME, T::CATEGORY, T::CODE_STATE, T::TAGS);
 }
 
-}  // namesspace
+}  // namespace detail
 
 /**
  * \class ProcessorTraits
@@ -70,7 +70,7 @@ ProcessorInfo processorInfo() {
  *     struct ProcessorTraits<MyProcessor<T>> {
  *        static ProcessorInfo getProcessorInfo() {
  *           return generateMyProcessorInfo<T>();
- *        } 
+ *        }
  *     };
  *\endcode
  * The default behaviour returns the static member processorInfo_;
@@ -80,6 +80,6 @@ template <typename T>
 struct ProcessorTraits {
     static ProcessorInfo getProcessorInfo() { return detail::processorInfo<T>(); }
 };
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PROCESSORTRAITS_H

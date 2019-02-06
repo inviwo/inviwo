@@ -191,9 +191,10 @@ public:
      * the observers. Can be used to invalidate the internal state of derived classes.
      */
     virtual void invalidate() {}
-    
+
     virtual std::vector<FileExtension> getSupportedExtensions() const;
-    virtual void save(const std::string& filename, const FileExtension& ext = FileExtension()) const;
+    virtual void save(const std::string& filename,
+                      const FileExtension& ext = FileExtension()) const;
     virtual void load(const std::string& filename, const FileExtension& ext = FileExtension());
 
     friend bool operator==(const TFPrimitiveSet& lhs, const TFPrimitiveSet& rhs);

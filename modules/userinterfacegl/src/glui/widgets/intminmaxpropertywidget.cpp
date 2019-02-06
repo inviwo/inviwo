@@ -33,6 +33,10 @@ namespace inviwo {
 
 namespace glui {
 
+const std::string IntMinMaxPropertyWidget::classIdentifier =
+    "org.inviwo.glui.IntMinMaxPropertyWidget";
+std::string IntMinMaxPropertyWidget::getClassIdentifier() const { return classIdentifier; }
+
 IntMinMaxPropertyWidget::IntMinMaxPropertyWidget(IntMinMaxProperty &property, Processor &processor,
                                                  Renderer &uiRenderer, const ivec2 &extent,
                                                  UIOrientation orientation)
@@ -95,9 +99,7 @@ void IntMinMaxPropertyWidget::onSetDisplayName(Property *, const std::string &di
     property_->propertyModified();
 }
 
-void IntMinMaxPropertyWidget::onSetReadOnly(Property *, bool readonly) {
-    setEnabled(!readonly);
-}
+void IntMinMaxPropertyWidget::onSetReadOnly(Property *, bool readonly) { setEnabled(!readonly); }
 
 }  // namespace glui
 

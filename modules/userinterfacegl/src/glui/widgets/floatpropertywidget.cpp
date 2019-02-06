@@ -33,6 +33,9 @@ namespace inviwo {
 
 namespace glui {
 
+const std::string FloatPropertyWidget::classIdentifier = "org.inviwo.glui.FloatPropertyWidget";
+std::string FloatPropertyWidget::getClassIdentifier() const { return classIdentifier; }
+
 FloatPropertyWidget::FloatPropertyWidget(FloatProperty &property, Processor &processor,
                                          Renderer &uiRenderer, const ivec2 &extent,
                                          UIOrientation orientation)
@@ -75,9 +78,7 @@ void FloatPropertyWidget::onSetDisplayName(Property *, const std::string &displa
     property_->propertyModified();
 }
 
-void FloatPropertyWidget::onSetReadOnly(Property *, bool readonly) {
-    setEnabled(!readonly);
-}
+void FloatPropertyWidget::onSetReadOnly(Property *, bool readonly) { setEnabled(!readonly); }
 
 float FloatPropertyWidget::sliderToRepr(int val) const {
     return property_->getMinValue() +

@@ -44,7 +44,7 @@ namespace inviwo {
  * Copies web page into a Texture2D each time it has been painted by the browser and calls
  * onWebPageCopiedCallback afterwards.
  */
-class RenderHandlerGL : public CefRenderHandler {
+class IVW_MODULE_WEBBROWSER_API RenderHandlerGL : public CefRenderHandler {
 public:
     RenderHandlerGL(std::function<void()> onWebPageCopiedCallback);
     void updateCanvasSize(size2_t newSize);

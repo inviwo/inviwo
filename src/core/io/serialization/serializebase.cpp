@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/io/serialization/serializebase.h>
@@ -127,15 +127,9 @@ SerializeBase::SerializeBase(std::istream& stream, const std::string& path, bool
 const std::string& SerializeBase::getFileName() const { return fileName_; }
 
 bool SerializeBase::isPrimitiveType(const std::type_info& type) const {
-    if (type == typeid(bool)
-        || type == typeid(char)
-        || type == typeid(int)
-        || type == typeid(signed int)
-        || type == typeid(unsigned int)
-        || type == typeid(float)
-        || type == typeid(double)
-        || type == typeid(long double)
-        || type == typeid(std::string))
+    if (type == typeid(bool) || type == typeid(char) || type == typeid(int) ||
+        type == typeid(signed int) || type == typeid(unsigned int) || type == typeid(float) ||
+        type == typeid(double) || type == typeid(long double) || type == typeid(std::string))
         return true;
 
     return false;
@@ -180,4 +174,4 @@ NodeSwitch::~NodeSwitch() {
 
 NodeSwitch::operator bool() const { return serializer_.rootElement_ != nullptr; }
 
-} //namespace
+}  // namespace inviwo

@@ -1,31 +1,31 @@
 /*********************************************************************************
-*
-* Inviwo - Interactive Visualization Workshop
-*
-* Copyright (c) 2014-2018 Inviwo Foundation
-* All rights reserved.
-*
-* Redistribution and use in source and binary forms, with or without
-* modification, are permitted provided that the following conditions are met:
-*
-* 1. Redistributions of source code must retain the above copyright notice, this
-* list of conditions and the following disclaimer.
-* 2. Redistributions in binary form must reproduce the above copyright notice,
-* this list of conditions and the following disclaimer in the documentation
-* and/or other materials provided with the distribution.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-* ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-* WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-* DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
-* ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-* LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-* ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-* (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-* SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*
-*********************************************************************************/
+ *
+ * Inviwo - Interactive Visualization Workshop
+ *
+ * Copyright (c) 2014-2018 Inviwo Foundation
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *********************************************************************************/
 
 #ifndef _KDTREE_H_
 #define _KDTREE_H_
@@ -38,7 +38,7 @@
 
 namespace inviwo {
 
-    template <unsigned char N, typename T, typename P>
+template <unsigned char N, typename T, typename P>
 class KDTree;
 template <unsigned char N, typename T, typename P>
 class KDNode;
@@ -49,7 +49,6 @@ struct KDNodeDistWrapper {
     P sqDist;
     bool operator<(const KDNodeDistWrapper<N, T, P> &rhs) const { return sqDist > rhs.sqDist; }
 };
-
 
 template <unsigned char N, typename T = char, typename P = double>
 class KDNode {
@@ -99,10 +98,11 @@ public:
 
     KDNode<N, T, P> *findNearest(const P pos[N], KDNode *nearest);
     void findNNearest(const P pos[N], size_t amount,
-                      std::vector<KDNodeDistWrapper<N, T, P> > &current);
+                      std::vector<KDNodeDistWrapper<N, T, P>> &current);
     void findCloseTo(const P pos[N], const P squaredDistance, std::vector<KDNode *> &nodes);
 
-    static void swap(KDNode<N, T, P> *n0, KDNode<N, T, P> *n1, KDNode<N, T, P> *p0, KDNode<N, T, P> *p1);
+    static void swap(KDNode<N, T, P> *n0, KDNode<N, T, P> *n1, KDNode<N, T, P> *p0,
+                     KDNode<N, T, P> *p1);
 
     void getAsVector(std::vector<KDNode *> &nodes) {
         nodes.push_back(this);
@@ -159,8 +159,8 @@ public:
     std::vector<Node *> findNNearest(const P pos[N], int amount);
 };
 
-template <unsigned char N , typename T = char, typename P = double>
-class KDTreeGlm : public KDTree < N, T, P> {
+template <unsigned char N, typename T = char, typename P = double>
+class KDTreeGlm : public KDTree<N, T, P> {
 public:
     KDTreeGlm() : KDTree<N, T, P>() {}
     virtual ~KDTreeGlm() {}
@@ -171,43 +171,37 @@ public:
     Node *insert(const Vector<N, P> &pos, const T &data) {
         return Tree::insert(glm::value_ptr(pos), data);
     }
-    Node *find(const Vector<N, P> &pos) {
-        return Tree::find(glm::value_ptr(pos));
-    }
+    Node *find(const Vector<N, P> &pos) { return Tree::find(glm::value_ptr(pos)); }
 
-    Node *findNearest(const Vector<N, P> &pos) {
-        return Tree::findNearest(glm::value_ptr(pos));
-    }
+    Node *findNearest(const Vector<N, P> &pos) { return Tree::findNearest(glm::value_ptr(pos)); }
 
     std::vector<Node *> findNNearest(const Vector<N, P> &pos, const int &amount) {
         return Tree::findNNearest(glm::value_ptr(pos), amount);
     }
 
-    std::vector<Node*> findCloseTo(const Vector<N, P> &pos, const P distance) {
+    std::vector<Node *> findCloseTo(const Vector<N, P> &pos, const P distance) {
         return Tree::findCloseTo(glm::value_ptr(pos), distance);
     }
 };
 
 template <typename T = char, typename P = double>
-using K2DTree = KDTreeGlm < 2, T, P > ;
+using K2DTree = KDTreeGlm<2, T, P>;
 template <typename T = char, typename P = double>
-using K3DTree = KDTreeGlm < 3, T, P > ;
+using K3DTree = KDTreeGlm<3, T, P>;
 template <typename T = char, typename P = double>
-using K4DTree = KDTreeGlm < 4, T, P >;
-
+using K4DTree = KDTreeGlm<4, T, P>;
 
 template <unsigned char N, typename P = double>
-Vector<N, P>  ptrToVec(const P* f){ 
+Vector<N, P> ptrToVec(const P *f) {
     Vector<N, P> vec;
     for (size_t i = 0; i < N; ++i) vec[i] = f[i];
-    return vec; 
+    return vec;
 }
 
 // Tree Implementation
 
 template <unsigned char N, typename T, typename P>
-KDTree<N, T, P>::KDTree()
-    : root_(nullptr) {}
+KDTree<N, T, P>::KDTree() : root_(nullptr) {}
 
 template <unsigned char N, typename T, typename P>
 KDTree<N, T, P>::~KDTree() {
@@ -260,7 +254,6 @@ KDNode<N, T, P> *KDTree<N, T, P>::find(const P pos[N]) {
     return root_->find(pos);
 }
 
-
 template <unsigned char N, typename T, typename P>
 void KDTree<N, T, P>::erase(KDNode<N, T, P> *node, KDNode<N, T, P> *parent) {
     if (node == 0) {
@@ -271,15 +264,12 @@ void KDTree<N, T, P>::erase(KDNode<N, T, P> *node, KDNode<N, T, P> *parent) {
     if (node->isLeaf()) {
         if (node == root_) {  // Root node;
             root_ = 0;
-        }
-        else {
-            if (!parent)
-                parent = root_->findParent(node);
+        } else {
+            if (!parent) parent = root_->findParent(node);
 
             if (parent->leftChild_ == node) {
                 parent->leftChild_ = 0;
-            }
-            else if (parent->rightChild_ == node) {
+            } else if (parent->rightChild_ == node) {
                 parent->rightChild_ = 0;
             }
         }
@@ -288,8 +278,7 @@ void KDTree<N, T, P>::erase(KDNode<N, T, P> *node, KDNode<N, T, P> *parent) {
     }
 
     KDNode<N, T, P> *min;
-    if (!parent)
-        parent = root_->findParent(node);
+    if (!parent) parent = root_->findParent(node);
 
     if (!node->isRightLeaf()) {
         min = node->rightChild_->findMin(node->dimmension_);
@@ -335,7 +324,7 @@ void KDTree<N, T, P>::clear() {
 
 template <unsigned char N, typename T, typename P>
 std::vector<KDNode<N, T, P> *> KDTree<N, T, P>::findNNearest(const P pos[N], int amount) {
-    std::vector<KDNodeDistWrapper<N, T, P> > nearnodes;
+    std::vector<KDNodeDistWrapper<N, T, P>> nearnodes;
     std::vector<Node *> nodes;
     if (root_ == 0) return nodes;
     root_->findNNearest(pos, amount, nearnodes);
@@ -528,16 +517,13 @@ KDNode<N, T, P> *KDNode<N, T, P>::find(const P pos[N]) {
     }
 }
 
-
-
 template <unsigned char N, typename T, typename P>
 KDNode<N, T, P> *KDNode<N, T, P>::findParent(const KDNode *n) {
     if (leftChild_ == n) return this;
     if (rightChild_ == n) return this;
     if (goRight(n->pos_)) {
         return isRightLeaf() ? nullptr : rightChild_->findParent(n);
-    }
-    else {
+    } else {
         return isLeftLeaf() ? nullptr : leftChild_->findParent(n);
     }
 }
@@ -570,7 +556,7 @@ KDNode<N, T, P> *KDNode<N, T, P>::findNearest(const P pos[N], KDNode<N, T, P> *n
     }
 
     P d0, d1;
-    if (goRight(pos)) {  // pos is within right sub tree
+    if (goRight(pos)) {        // pos is within right sub tree
         if (!isRightLeaf()) {  // Look forit in right sub tree
             nearest = __closestTo<N, T, P>(pos, nearest, rightChild_->findNearest(pos, nearest));
         }
@@ -654,7 +640,8 @@ void KDNode<N, T, P>::findCloseTo(const P pos[N], const P sqDist, std::vector<KD
 
 #define __FF__ std::cout << "Failed at " << __FILE__ << "@" << __LINE__ << std::endl
 template <unsigned char N, typename T, typename P>
-void KDNode<N, T, P>::swap(KDNode<N, T, P> *n0, KDNode<N, T, P> *n1, KDNode<N, T, P> *p0, KDNode<N, T, P> *p1) {
+void KDNode<N, T, P>::swap(KDNode<N, T, P> *n0, KDNode<N, T, P> *n1, KDNode<N, T, P> *p0,
+                           KDNode<N, T, P> *p1) {
     if (n0 == n1 || n0 == 0 || n1 == 0) return;
 
     KDNode<N, T, P> *r0 = n0->rightChild_;
@@ -662,8 +649,8 @@ void KDNode<N, T, P>::swap(KDNode<N, T, P> *n0, KDNode<N, T, P> *n1, KDNode<N, T
     KDNode<N, T, P> *r1 = n1->rightChild_;
     KDNode<N, T, P> *l1 = n1->leftChild_;
 
-    if (p0 == n1) {  // if n0 is a child to n1
-        swap(n1, n0 , p1 , p0);  // swap in "other" direction
+    if (p0 == n1) {            // if n0 is a child to n1
+        swap(n1, n0, p1, p0);  // swap in "other" direction
         return;
     }
     if (p1 == n0) {  // n1 is a child to n0
@@ -674,7 +661,6 @@ void KDNode<N, T, P>::swap(KDNode<N, T, P> *n0, KDNode<N, T, P> *n1, KDNode<N, T
         n1->leftChild_ = left ? n0 : l0;
         n1->rightChild_ = left ? r0 : n0;
 
-        
         if (p0 != 0) {
             if (p0->leftChild_ == n0) p0->leftChild_ = n1;    //
             if (p0->rightChild_ == n0) p0->rightChild_ = n1;  //
@@ -707,7 +693,7 @@ void KDNode<N, T, P>::swap(KDNode<N, T, P> *n0, KDNode<N, T, P> *n1, KDNode<N, T
 
 template <unsigned char N, typename T, typename P>
 void KDNode<N, T, P>::findNNearest(const P pos[N], size_t amount,
-                                   std::vector<KDNodeDistWrapper<N, T, P> > &current) {
+                                   std::vector<KDNodeDistWrapper<N, T, P>> &current) {
     P sqDist = __sqDist<N, T, P>(pos, pos_);
     if (current.size() < amount) {
         KDNodeDistWrapper<N, T, P> holder;
@@ -755,5 +741,5 @@ void KDNode<N, T, P>::findNNearest(const P pos[N], size_t amount,
         leftChild_->findNNearest(pos, amount, current);
     }
 }
-}
+}  // namespace inviwo
 #endif

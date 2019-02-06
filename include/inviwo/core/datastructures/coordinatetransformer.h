@@ -35,7 +35,7 @@
 #include <inviwo/core/datastructures/camera.h>
 
 namespace inviwo {
-
+// clang-format off
 /**
  * This file is auto generated using tools/codegen/coordinatetransforms.nb
  *
@@ -1699,8 +1699,8 @@ template <unsigned int N>
 const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getWorldToViewMatrix() const {
     return getViewMatrix();
 }
+// clang-format on
 
+}  // namespace inviwo
 
-} // namespace
-
-#endif // IVW_COORDINATETRANSFORMER_H
+#endif  // IVW_COORDINATETRANSFORMER_H

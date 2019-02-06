@@ -44,8 +44,10 @@ void centerViewOnMeshes(const std::vector<std::shared_ptr<const Mesh>>& meshes,
     NetworkLock lock(&camera);
     // Make sure the new value is not clamped
     auto& lookTo = camera.lookTo_;
-    lookTo.set(newLookTo, glm::min(lookTo.getMinValue(), newLookTo - minMaxRatio * glm::abs(newLookTo)),
-               glm::max(lookTo.getMaxValue(), newLookTo + minMaxRatio * glm::abs(newLookTo)), lookTo.getIncrement());
+    lookTo.set(newLookTo,
+               glm::min(lookTo.getMinValue(), newLookTo - minMaxRatio * glm::abs(newLookTo)),
+               glm::max(lookTo.getMaxValue(), newLookTo + minMaxRatio * glm::abs(newLookTo)),
+               lookTo.getIncrement());
     // Adjust near/far planes if necessary
     auto nearFar = computeNearFarPlanes(minmax, camera);
     camera.setNearFarPlaneDist(nearFar.first, nearFar.second, minMaxRatio);

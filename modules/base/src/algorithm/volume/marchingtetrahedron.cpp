@@ -223,8 +223,8 @@ std::shared_ptr<Mesh> marchingtetrahedron(std::shared_ptr<const Volume> volume, 
         }
 
         if (enclose) {
-            marching::encloseSurfce(src, dim, indexBuffer.get(), positions, normals, iso, invert, dx, dy,
-                                    dz);
+            marching::encloseSurfce(src, dim, indexBuffer.get(), positions, normals, iso, invert,
+                                    dx, dy, dz);
         }
 
         ivwAssert(positions.size() == normals.size(), "positions_ and normals_ must be equal");
@@ -241,7 +241,6 @@ std::shared_ptr<Mesh> marchingtetrahedron(std::shared_ptr<const Volume> volume, 
         if (progressCallback) progressCallback(1.0f);
 
         return mesh;
-
     });
 }
 }  // namespace util

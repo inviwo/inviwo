@@ -24,12 +24,12 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/base/basemodule.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
- // Processors
+// Processors
 #include <modules/base/processors/buffertomeshprocessor.h>
 #include <modules/base/processors/convexhull2dprocessor.h>
 #include <modules/base/processors/cubeproxygeometryprocessor.h>
@@ -105,7 +105,6 @@
 #include <modules/base/processors/volumeinformation.h>
 #include <modules/base/processors/tfselector.h>
 
-
 namespace inviwo {
 
 using BasisTransformMesh = BasisTransform<Mesh>;
@@ -113,7 +112,6 @@ using BasisTransformVolume = BasisTransform<Volume>;
 
 using WorldTransformMesh = WorldTransform<Mesh>;
 using WorldTransformVolume = WorldTransform<Volume>;
-
 
 BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<ConvexHull2DProcessor>();
@@ -151,7 +149,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<VolumeSequenceElementSelectorProcessor>();
     registerProcessor<ImageSequenceElementSelectorProcessor>();
     registerProcessor<MeshSequenceElementSelectorProcessor>();
-    
+
     registerProcessor<VolumeBoundingBox>();
     registerProcessor<SingleVoxel>();
     registerProcessor<StereoCameraSyncer>();
@@ -190,7 +188,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
 
     registerProperty<Gaussian1DProperty>();
     registerProperty<Gaussian2DProperty>();
-    
+
     // Register Data readers
     registerDataReader(util::make_unique<DatVolumeSequenceReader>());
     registerDataReader(util::make_unique<IvfVolumeReader>());
@@ -201,13 +199,11 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerDataWriter(util::make_unique<StlWriter>());
     registerDataWriter(util::make_unique<BinarySTLWriter>());
     registerDataWriter(util::make_unique<WaveFrontWriter>());
-    
+
     util::for_each_type<OrdinalPropertyAnimator::Types>{}(RegHelper{}, *this);
 }
 
-int BaseModule::getVersion() const {
-    return 2;
-}
+int BaseModule::getVersion() const { return 2; }
 
 std::unique_ptr<VersionConverter> BaseModule::getConverter(int version) const {
     return util::make_unique<Converter>(version);
@@ -281,21 +277,21 @@ bool BaseModule::Converter::convert(TxElement* root) {
          "volume.outport",
          "outputVolume"}};
 
-    for (const auto& id : { "org.inviwo.FloatProperty", "org.inviwo.FloatVec2Property",
+    for (const auto& id : {"org.inviwo.FloatProperty", "org.inviwo.FloatVec2Property",
                            "org.inviwo.FloatVec3Property", "org.inviwo.FloatVec4Property",
                            "org.inviwo.DoubleProperty", "org.inviwo.DoubleVec2Property",
                            "org.inviwo.DoubleVec3Property", "org.inviwo.DoubleVec4Property",
                            "org.inviwo.IntProperty", "org.inviwo.IntVec2Property",
-                           "org.inviwo.IntVec3Property", "org.inviwo.IntVec4Property" }) {
+                           "org.inviwo.IntVec3Property", "org.inviwo.IntVec4Property"}) {
         xml::IdentifierReplacement ir1 = {
             {xml::Kind::processor("org.inviwo.OrdinalPropertyAnimator"), xml::Kind::property(id)},
             id,
-            dotSeperatedToPascalCase(id) };
+            dotSeperatedToPascalCase(id)};
         repl.push_back(ir1);
         xml::IdentifierReplacement ir2 = {
             {xml::Kind::processor("org.inviwo.OrdinalPropertyAnimator"), xml::Kind::property(id)},
             std::string(id) + "-Delta",
-            dotSeperatedToPascalCase(id) + "-Delta" };
+            dotSeperatedToPascalCase(id) + "-Delta"};
         repl.push_back(ir2);
     }
 
@@ -303,19 +299,18 @@ bool BaseModule::Converter::convert(TxElement* root) {
     switch (version_) {
         case 0: {
             res |= xml::changeIdentifiers(root, repl);
-        }case 1: {
-            res |= xml::changeAttribute(
-                root, { { xml::Kind::processor("org.inviwo.GeometeryGenerator") } },
-                "type",
-                "org.inviwo.GeometeryGenerator",
-                "org.inviwo.RandomMeshGenerator");
+            [[fallthrough]];
         }
+        case 1: {
+            res |= xml::changeAttribute(
+                root, {{xml::Kind::processor("org.inviwo.GeometeryGenerator")}}, "type",
+                "org.inviwo.GeometeryGenerator", "org.inviwo.RandomMeshGenerator");
             return res;
-
+        }
         default:
             return false;  // No changes
     }
     return true;
 }
 
-} // namespace
+}  // namespace inviwo

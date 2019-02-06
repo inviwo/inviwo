@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/basecl/baseclmodule.h>
@@ -44,10 +44,9 @@ BaseCLModule::BaseCLModule(InviwoApplication* app) : InviwoModule(app, "BaseCL")
     registerProcessor<VolumeFirstHitCLProcessor>();
     registerProcessor<VolumeMaxCLProcessor>();
     registerProcessor<VolumeRaycasterCLProcessor>();
-    
+
     OpenCL::getPtr()->addCommonIncludeDirectory(getPath(ModulePath::CL));
 }
-
 
 int BaseCLModule::getVersion() const { return 1; }
 
@@ -69,13 +68,12 @@ bool BaseCLModule::Converter::convert(TxElement* root) {
     switch (version_) {
         case 0: {
             res |= xml::changeIdentifiers(root, repl);
+            return res;
         }
-                return res;
-
         default:
             return false;  // No changes
     }
     return true;
 }
 
-} // namespace
+}  // namespace inviwo

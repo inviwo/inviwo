@@ -24,12 +24,11 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/processors/processorwidget.h>
 #include <inviwo/core/processors/processor.h>
-
 
 namespace inviwo {
 
@@ -38,7 +37,7 @@ ProcessorWidget::ProcessorWidget(Processor* p)
     , processor_(p)
     , metaData_(processor_->createMetaData<ProcessorWidgetMetaData>(
           ProcessorWidgetMetaData::CLASS_IDENTIFIER)) {
-        
+
     metaData_->addObserver(this);
 }
 
@@ -54,14 +53,10 @@ void ProcessorWidget::setVisible(bool visible) {
 
 bool ProcessorWidget::isVisible() const { return metaData_->isVisible(); }
 
-void ProcessorWidget::show() {
-    ProcessorWidget::setVisible(true);
-}
+void ProcessorWidget::show() { ProcessorWidget::setVisible(true); }
 
-void ProcessorWidget::hide() {
-    ProcessorWidget::setVisible(false);
-}
-    
+void ProcessorWidget::hide() { ProcessorWidget::setVisible(false); }
+
 Processor* ProcessorWidget::getProcessor() const { return processor_; }
 
 glm::ivec2 ProcessorWidget::getDimensions() const { return metaData_->getDimensions(); }
@@ -69,7 +64,6 @@ void ProcessorWidget::setDimensions(glm::ivec2 dimensions) { metaData_->setDimen
 
 glm::ivec2 ProcessorWidget::getPosition() const { return metaData_->getPosition(); }
 void ProcessorWidget::setPosition(glm::ivec2 pos) { metaData_->setPosition(pos); }
-
 
 void ProcessorWidget::onProcessorWidgetPositionChange(ProcessorWidgetMetaData*) {
     updatePosition(metaData_->getPosition());
@@ -81,6 +75,4 @@ void ProcessorWidget::onProcessorWidgetVisibilityChange(ProcessorWidgetMetaData*
     updateVisible(metaData_->isVisible());
 }
 
-
-
-}  // namespace
+}  // namespace inviwo

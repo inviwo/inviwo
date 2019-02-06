@@ -52,6 +52,9 @@ std::shared_ptr<plot::DataFrame> IVW_MODULE_PLOTTING_API
 combineDataFrames(std::vector<std::shared_ptr<plot::DataFrame>> histogramTimeDataFrame,
                   bool skipIndexColumn = false, std::string skipcol = "index");
 
+std::string IVW_MODULE_PLOTTING_API createToolTipForRow(const plot::DataFrame &dataframe,
+                                                        size_t rowId);
+
 }  // namespace dataframeutil
 
 }  // namespace inviwo

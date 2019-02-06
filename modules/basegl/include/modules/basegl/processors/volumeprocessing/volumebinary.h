@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_VOLUMEBINARY_H
@@ -41,9 +41,9 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.VolumeBinary, Volume Binary}
  * ![](org.inviwo.VolumeBinary.png?classIdentifier=org.inviwo.VolumeBinary)
- * Computes a binary volume of the input volume using a threshold. The output 
- * will contain "0" for all values below the threshold and "1" otherwise. 
- * 
+ * Computes a binary volume of the input volume using a threshold. The output
+ * will contain "0" for all values below the threshold and "1" otherwise.
+ *
  * ### Inports
  *   * __inputVolume__ Input volume
  *
@@ -54,18 +54,20 @@ namespace inviwo {
  *   * __Threshold__ Threshold used for the binarization of the input volume
  */
 
-
 /**
  * \class VolumeBinary
  *
  * \brief computes a binary volume of the input volume using a threshold.
  */
-class IVW_MODULE_BASEGL_API VolumeBinary : public VolumeGLProcessor { 
+class IVW_MODULE_BASEGL_API VolumeBinary : public VolumeGLProcessor {
 public:
-    enum class Operator{
-        GreaterThen, GreaterThenOrEqual,
-        LessThen, LessThenOrEqual,
-        Equal, NotEqual
+    enum class Operator {
+        GreaterThen,
+        GreaterThenOrEqual,
+        LessThen,
+        LessThenOrEqual,
+        Equal,
+        NotEqual
     };
 
     virtual const ProcessorInfo getProcessorInfo() const override;
@@ -81,10 +83,8 @@ protected:
 
     FloatProperty threshold_;
     TemplateOptionProperty<Operator> op_;
-
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_VOLUMEBINARY_H
-
+#endif  // IVW_VOLUMEBINARY_H

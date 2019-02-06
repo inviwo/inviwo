@@ -63,6 +63,6 @@ private:
     std::unordered_map<std::pair<std::string, std::string>, PropertyConverter *> converters_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PROPERTYCONVERTERMANAGER_H

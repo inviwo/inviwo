@@ -39,9 +39,9 @@
 
 namespace inviwo {
 
-typedef std::pair<std::shared_ptr<Texture>, std::shared_ptr<cl::Image2DGL> >
+typedef std::pair<std::shared_ptr<Texture>, std::shared_ptr<cl::Image2DGL>>
     TextureCLImageSharingPair;
-typedef std::map<std::shared_ptr<Texture>, std::shared_ptr<cl::Image2DGL> > CLTextureSharingMap;
+typedef std::map<std::shared_ptr<Texture>, std::shared_ptr<cl::Image2DGL>> CLTextureSharingMap;
 
 /** \class LayerCLGL
  *
@@ -74,15 +74,15 @@ public:
 
     std::shared_ptr<Texture2D> getTexture() const { return texture_; }
     /**
-    * This method will be called before the texture is initialized.
-    * Override it to add behavior.
-    */
+     * This method will be called before the texture is initialized.
+     * Override it to add behavior.
+     */
     virtual void notifyBeforeTextureInitialization() override;
 
     /**
-    * This method will be called after the texture has been initialized.
-    * Override it to add behavior.
-    */
+     * This method will be called after the texture has been initialized.
+     * Override it to add behavior.
+     */
     virtual void notifyAfterTextureInitialization() override;
 
     void aquireGLObject(std::vector<cl::Event>* syncEvents = nullptr) const {
@@ -96,7 +96,6 @@ public:
     }
     virtual std::type_index getTypeIndex() const override final;
 
-    
     /**
      * Read a single pixel value out of the specified layer at pos. Should only be used to read
      * single values not entire images.
@@ -104,12 +103,12 @@ public:
     virtual dvec4 readPixel(size2_t pos, LayerType layer, size_t index = 0) const;
 
     /**
-    * \brief update the swizzle mask of the channels for sampling color layers
-    * Needs to be overloaded by child classes.
-    *
-    * @param mask    new swizzle mask
-    */
-    virtual void setSwizzleMask(const SwizzleMask &mask) override;
+     * \brief update the swizzle mask of the channels for sampling color layers
+     * Needs to be overloaded by child classes.
+     *
+     * @param mask    new swizzle mask
+     */
+    virtual void setSwizzleMask(const SwizzleMask& mask) override;
     virtual SwizzleMask getSwizzleMask() const override;
 
 protected:
@@ -120,7 +119,7 @@ protected:
     SwizzleMask swizzleMask_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 namespace cl {
 

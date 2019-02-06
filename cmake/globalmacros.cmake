@@ -365,26 +365,29 @@ function(ivw_register_modules retval)
     # Save list of modules
     set(ivw_all_registered_modules ${ivw_module_names} CACHE INTERNAL "All registered inviwo modules")
 
-    # Save information for python tools.
-    ivw_mod_name_to_class(ivw_module_classes ${ivw_module_names})
-    ivw_private_create_pyconfig("${IVW_MODULE_DIR};${IVW_EXTERNAL_MODULES}" "${ivw_module_classes}")
-
     set(${retval} ${sorted_modules} PARENT_SCOPE)
 endfunction()
 
 #--------------------------------------------------------------------
-# Set module build option to true if the owner is built
-function(ivw_add_build_module_dependency the_module the_owner)
-    ivw_dir_to_mod_dep(mod ${the_module})
-    if(DEFINED ${mod}_opt)
-        if(NOT ${${mod}_opt} AND ${the_owner})
-            ivw_add_module_option_to_cache(${mod} ON FORCE)
-            message(STATUS "${${mod}_name} was set to build, due to dependency towards ${the_owner}") 
-        endif()
-    elseif(${the_owner})
-        set("${mod}_enableExternal" ON CACHE INTERNAL "Enable module for external dependency")
-        message(STATUS "${mod} was set to build, due to dependency towards ${the_owner}")
+# Set module to build by default if value is true
+# Example ivw_enable_modules_if(IVW_INTEGRATION_TESTS GLFW Base)
+# Needs to be called before ivw_register_modules
+function(ivw_enable_modules_if value)
+    if(NOT ${value}) 
+        return()
     endif()
+    foreach(name IN LISTS ARGN)
+        ivw_dir_to_mod_dep(mod ${name})
+        if(DEFINED ${mod}_opt)
+            if(NOT ${${mod}_opt})
+                ivw_add_module_option_to_cache(${mod} ON FORCE)
+                message(STATUS "${name} was set to on, due to dependency from ${value}")                
+            endif()
+        elseif(NOT ${mod}_enableExternal)
+            set("${mod}_enableExternal" ON CACHE INTERNAL "Enable module for external dependency" FORCE)
+            message(STATUS "${name} was set to on, due to dependency from ${value}")
+        endif()
+    endforeach()
 endfunction()
 
 #--------------------------------------------------------------------
@@ -598,7 +601,7 @@ endfunction()
 # depending targets.
 function(ivw_compile_optimize_on_target target)
     if(PRECOMPILED_HEADERS)
-        ivw_get_target_property_recursive(publicIgnorePaths ${target} COTIRE_PREFIX_HEADER_PUBLIC_IGNORE_PATH)
+        ivw_get_target_property_recursive(publicIgnorePaths ${target} COTIRE_PREFIX_HEADER_PUBLIC_IGNORE_PATH False)
         get_target_property(ignorePaths ${target} COTIRE_PREFIX_HEADER_IGNORE_PATH)
         if(NOT ignorePaths)
             set(ignorePaths "")
@@ -615,7 +618,7 @@ function(ivw_compile_optimize_on_target target)
         endif()
         list(REMOVE_DUPLICATES ignorePaths)
 
-        ivw_get_target_property_recursive(publicIncludePaths ${target} COTIRE_PREFIX_HEADER_PUBLIC_INCLUDE_PATH)
+        ivw_get_target_property_recursive(publicIncludePaths ${target} COTIRE_PREFIX_HEADER_PUBLIC_INCLUDE_PATH False)
         get_target_property(includePaths ${target} COTIRE_PREFIX_HEADER_INCLUDE_PATH)
         if(NOT includePaths)
             set(includePaths "")

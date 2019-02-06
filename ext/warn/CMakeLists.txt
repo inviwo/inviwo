@@ -14,7 +14,10 @@ source_group("CMake Files" FILES CMakeLists.txt)
 
 add_library(warn INTERFACE)
 add_library(inviwo::warn ALIAS warn)
-target_include_directories(warn INTERFACE include) 
+target_include_directories(warn INTERFACE 
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+) 
 
 add_custom_target(warn_dummy SOURCES ${HEADER_FILES} ${TEXT_FILES})
 ivw_folder(warn_dummy ext)

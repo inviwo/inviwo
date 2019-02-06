@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PROPERTYVISIBILITYMODE_H
@@ -36,8 +36,8 @@
 namespace inviwo {
 
 enum class UsageMode {
-    Application = 0, // Always show property
-    Development = 1, // Default, Only show in developer mode
+    Application = 0,  // Always show property
+    Development = 1,  // Default, Only show in developer mode
 };
 
 template <class Elem, class Traits>
@@ -54,6 +54,6 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
     return ss;
 }
 
-} //namespace
+}  // namespace inviwo
 
-#endif //IVW_PROPERTYVISIBILITYMODE_H
+#endif  // IVW_PROPERTYVISIBILITYMODE_H

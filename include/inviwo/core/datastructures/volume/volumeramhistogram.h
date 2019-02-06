@@ -44,9 +44,9 @@ HistogramContainer calculateVolumeHistogram(const T* data, size3_t dimensions, d
     typedef typename util::same_extent<T, double>::type D;
     // a size_t type with same extent as T
     typedef typename util::same_extent<T, size_t>::type I;
-    
+
     const size_t extent = util::rank<T>::value > 0 ? util::extent<T>::value : 1;
-    
+
     // check whether number of bins exceeds the data range only if it is an integral type
     if (!util::is_floating_point<T>::value) {
         bins = std::min(bins, static_cast<std::size_t>(dataRange.y - dataRange.x + 1));
@@ -93,7 +93,7 @@ HistogramContainer calculateVolumeHistogram(const T* data, size3_t dimensions, d
                     v = util::glmcomp(ind, i);
                     if (v < bins) {
                         histograms[i][v]++;
-                    } 
+                    }
                 }
             }
         }
@@ -117,8 +117,8 @@ HistogramContainer calculateVolumeHistogram(const T* data, size3_t dimensions, d
     return histograms;
 }
 
-} // util
+}  // namespace util
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_VOLUMERAMHISTOGRAM_H

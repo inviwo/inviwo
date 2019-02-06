@@ -79,6 +79,6 @@ private:
     CallBackList onChangeCallbacks_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_SIMPLEFILEOBSERVER_H

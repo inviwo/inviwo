@@ -51,8 +51,11 @@ class IVW_MODULE_USERINTERFACEGL_API FloatPropertyWidget : public Slider,
                                                            public PropertyWidget,
                                                            public PropertyObserver {
 public:
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
+
     FloatPropertyWidget(FloatProperty &property, Processor &processor, Renderer &uiRenderer,
-                        const ivec2 &extent = ivec2(24, 24),
+                        const ivec2 &extent = ivec2(100, 24),
                         UIOrientation orientation = UIOrientation::Horizontal);
     virtual ~FloatPropertyWidget() = default;
 

@@ -51,7 +51,7 @@ public:
                                        const float &kernelScale, ivec2 kernelSize);
 
     std::shared_ptr<Image> convolution_separable(const Layer &layer, std::function<float(float)>,
-                                                int kernelSize, const float &kernelScale);
+                                                 int kernelSize, const float &kernelScale);
 
     std::shared_ptr<Image> gaussianLowpass(const Layer &layer, int kernelSize);
     std::shared_ptr<Image> gaussianLowpass(const Layer &layer, float sigma);
@@ -67,6 +67,6 @@ protected:
                                                 const float &kernelScale);
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_IMAGECONVOLUTION_H

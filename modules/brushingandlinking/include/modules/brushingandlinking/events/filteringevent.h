@@ -46,6 +46,6 @@ public:
     virtual ~FilteringEvent() = default;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_FILTERINGEVENT_H

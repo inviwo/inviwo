@@ -60,8 +60,9 @@ const BufferGL* MeshGL::getBufferGL(size_t idx) const {
     return bufferGLs_[idx];
 }
 
-const Mesh::MeshInfo & MeshGL::getMeshInfoForIndexBuffer(size_t idx) const {
-    ivwAssert(idx < indexBuffers_.size(), "MeshGL::getMeshInfoForIndexBuffer(): index out of bounds");
+const Mesh::MeshInfo& MeshGL::getMeshInfoForIndexBuffer(size_t idx) const {
+    ivwAssert(idx < indexBuffers_.size(),
+              "MeshGL::getMeshInfoForIndexBuffer(): index out of bounds");
     return indexBuffers_[idx].first;
 }
 
@@ -89,11 +90,10 @@ void MeshGL::update(bool editable) {
     // update index buffers
     for (auto buf : owner->getIndexBuffers()) {
         const BufferGL* bufGL = editable ? buf.second->getEditableRepresentation<BufferGL>()
-            : buf.second->getRepresentation<BufferGL>();
-        indexBuffers_.push_back({ buf.first, bufGL });
+                                         : buf.second->getRepresentation<BufferGL>();
+        indexBuffers_.push_back({buf.first, bufGL});
     }
 }
-
 
 std::type_index MeshGL::getTypeIndex() const { return std::type_index(typeid(MeshGL)); }
 
@@ -101,4 +101,4 @@ bool MeshGL::isValid() const {
     return util::all_of(bufferGLs_, [](const auto& b) { return b->isValid(); });
 }
 
-}  // namespace
+}  // namespace inviwo

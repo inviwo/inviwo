@@ -35,7 +35,11 @@
 #include <inviwo/core/util/fileobserver.h>
 #include <inviwo/core/util/callback.h>
 
+#include <warn/push>
+#include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
+#include <warn/pop>
+
 #include <unordered_map>
 #include <string>
 

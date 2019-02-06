@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_OPENGLQTCAPABILITIES_H
@@ -36,16 +36,16 @@
 
 namespace inviwo {
 
-class IVW_MODULE_OPENGLQT_API OpenGLQtCapabilities : public Capabilities  {
+class IVW_MODULE_OPENGLQT_API OpenGLQtCapabilities : public Capabilities {
 public:
     OpenGLQtCapabilities();
     virtual ~OpenGLQtCapabilities();
     virtual void printInfo() override;
-    virtual void retrieveStaticInfo() override {};
-    virtual void retrieveDynamicInfo() override {};
+    virtual void retrieveStaticInfo() override{};
+    virtual void retrieveDynamicInfo() override{};
     std::vector<int> getGLVersion();
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_OPENGLQTCAPABILITIES_H
+#endif  // IVW_OPENGLQTCAPABILITIES_H

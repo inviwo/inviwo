@@ -106,10 +106,14 @@ bool ProcessorDragHelper::eventFilter(QObject*, QEvent* event) {
         }
     } else if (event->type() == QEvent::GraphicsSceneDrop) {
         auto e = static_cast<QGraphicsSceneDragDropEvent*>(event);
+        // for some reason, QGraphicsView accepts the event before it arrives in this event filter
+        // @see QGraphicsView::dropEvent(QDropEvent*)
+        e->setAccepted(false);
         if (auto mime = ProcessorMimeData::toProcessorMimeData(e->mimeData())) {
             return drop(e, mime);
         }
     }
+    event->ignore();
     return false;
 }
 

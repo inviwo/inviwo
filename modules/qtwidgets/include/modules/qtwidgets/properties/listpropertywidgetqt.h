@@ -50,7 +50,7 @@ class IvwPushButton;
  * This widget considers the UI flags of the property. If the property supports adding list
  * elements, a tool button is added next to the property name (indicated by a plus). In case
  * multiple prefab objects are registered with the property, a menu is shown. Alternatively, new
- * entries can be added using the context menu. 
+ * entries can be added using the context menu.
  * List entries can be removed via a small "x" tool button next to them, if enabled.
  */
 class IVW_MODULE_QTWIDGETS_API ListPropertyWidgetQt : public CompositePropertyWidgetQt {

@@ -240,11 +240,7 @@ IntegralLineVectorToMesh::IntegralLineVectorToMesh()
 
     auto updateVisibility = [&]() {
         for (auto &prop : getPropertiesByType<ColorByProperty>()) {
-            bool t = prop->getKey() == colorBy_.getSelectedIdentifier();
             prop->setVisible(prop->getKey() == colorBy_.getSelectedIdentifier());
-            LogWarn("visibility: " << prop->getKey()
-                                   << " (selected: " << colorBy_.getSelectedIdentifier() << ") "
-                                   << std::boolalpha << t);
         }
     };
     colorBy_.onChange(updateVisibility);
@@ -349,7 +345,7 @@ void IntegralLineVectorToMesh::process() {
 
         if (size == 0 || isFiltered(line, lineIdx)) continue;
 
-        auto indexBuffer = [&, this]() -> std::shared_ptr<IndexBufferRAM> {
+        auto indexBuffer = [&]() -> std::shared_ptr<IndexBufferRAM> {
             if (output == Output::Lines) {
                 auto ib = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);
                 ib->getDataContainer().reserve(size + 2);

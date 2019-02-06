@@ -53,6 +53,6 @@ public:
     virtual ~CameraTrackball();
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_CAMERATRACKBALL_H

@@ -24,13 +24,13 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_DEFAULTTOHIGHPERFORMANCEGPU_H
 #define IVW_DEFAULTTOHIGHPERFORMANCEGPU_H
-// Include this file once in your main.cpp to enable the application 
-// to default to the high performance GPU if multiple ones are 
+// Include this file once in your main.cpp to enable the application
+// to default to the high performance GPU if multiple ones are
 // available on the system.
 
 #ifdef WIN32
@@ -44,16 +44,16 @@
 
 // Corresponding for AMD
 // http://stackoverflow.com/questions/17458803/amd-equivalent-to-nvoptimusenablement
-// Select the high performance GPU as long as no profile exists 
+// Select the high performance GPU as long as no profile exists
 // that assigns the application to another GPU.
 
 // unsigned long == DWORD, so we don't have to include windows.h for the DWORD define.
 
 extern "C" {
-    __declspec(dllexport) unsigned long NvOptimusEnablement = 0x00000001;
-    __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
+__declspec(dllexport) unsigned long NvOptimusEnablement = 0x00000001;
+__declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 }
 
 #endif
 
-#endif // IVW_DEFAULTTOHIGHPERFORMANCEGPU_H
+#endif  // IVW_DEFAULTTOHIGHPERFORMANCEGPU_H

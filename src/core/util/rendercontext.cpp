@@ -82,9 +82,7 @@ void RenderContext::clearContext() {
             lock.unlock();
 
             canvas->releaseContext();
-            dispatchFront([canvas](){
-                delete canvas;
-            });
+            dispatchFront([canvas]() { delete canvas; });
         }
     }
 }
@@ -151,4 +149,4 @@ Canvas::ContextID RenderContext::activeContext() const {
 
 Canvas* RenderContext::getDefaultRenderContext() { return defaultContext_; }
 
-}  // namespace
+}  // namespace inviwo

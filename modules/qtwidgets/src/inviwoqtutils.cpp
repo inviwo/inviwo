@@ -32,6 +32,8 @@
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/io/imagewriterutil.h>
+#include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/processors/canvasprocessor.h>
 
 #include <inviwo/core/util/logcentral.h>
 #include <warn/push>
@@ -46,6 +48,8 @@
 #include <QMenuBar>
 #include <QPainter>
 #include <QLinearGradient>
+#include <QBuffer>
+#include <QByteArray>
 #include <warn/pop>
 
 #include <ios>
@@ -56,6 +60,14 @@ namespace inviwo {
 namespace utilqt {
 
 std::locale getCurrentStdLocale() {
+    auto warnOnce = [](auto message) {
+        static bool hasWarned = false;
+        if (!hasWarned) {
+            LogWarnCustom("getStdLocale", message);
+            hasWarned = true;
+        }
+    };
+    
     std::locale loc;
     try {
         // use the system locale provided by Qt
@@ -69,7 +81,10 @@ std::locale getCurrentStdLocale() {
 #endif
         loc = std::locale(localeName.c_str());
     } catch (std::exception& e) {
-        LogWarnCustom("getStdLocale", "Locale could not be set. " << e.what());
+        warnOnce(std::string("Locale could not be set. ") + e.what());
+        try {
+            loc = std::locale("en_US.UTF8");
+        } catch (...) {}
     }
     return loc;
 }
@@ -135,17 +150,15 @@ QMainWindow* getApplicationMainWindow() {
     }
 }
 
-QPixmap toQPixmap(const TransferFunctionProperty& tfproperty, const QSize& size) {
+QPixmap toQPixmap(const TransferFunction& tf, const QSize& size) {
     QVector<QGradientStop> gradientStops;
-    for (auto tfpoint : tfproperty.get()) {
+    for (auto tfpoint : tf) {
         vec4 curColor = tfpoint->getColor();
         // increase alpha to allow better visibility by 1 - (1 - a)^4
         curColor.a = 1.0f - std::pow(1.0f - curColor.a, 4.0f);
 
         gradientStops.append(QGradientStop(tfpoint->getPosition(), utilqt::toQColor(curColor)));
     }
-
-    const auto tfRange = tfproperty.get().getRange();
 
     // set bounds of the gradient
     QLinearGradient gradient;
@@ -171,6 +184,15 @@ QPixmap toQPixmap(const TransferFunctionProperty& tfproperty, const QSize& size)
     tfPainter.fillRect(r, QBrush(checkerBoard));
     // draw TF gradient on top
     tfPainter.fillRect(r, gradient);
+
+    return tfPixmap;
+}
+
+QPixmap toQPixmap(const TransferFunctionProperty& tfproperty, const QSize& size) {
+    auto tfPixmap = toQPixmap(tfproperty.get(), size);
+    QPainter tfPainter(&tfPixmap);
+
+    const auto tfRange = tfproperty.get().getRange();
 
     // draw masking indicators
     const QColor maskColor(25, 25, 25, 150);
@@ -484,6 +506,46 @@ void addImageActions(QMenu& menu, const Image& image, LayerType visibleLayer, si
 
     addAction("Picking Layer", image.getPickingLayer(), visibleLayer == LayerType::Picking);
     addAction("Depth Layer", image.getDepthLayer(), visibleLayer == LayerType::Depth);
+}
+
+std::string toBase64(const QImage& image) {
+    QByteArray byteArray;
+    QBuffer buffer{&byteArray};
+    buffer.open(QIODevice::WriteOnly);
+    image.save(&buffer, "PNG");
+    return std::string{byteArray.toBase64().data()};
+}
+
+std::vector<std::pair<std::string, QImage>> getCanvasImages(ProcessorNetwork* network, bool alpha) {
+    std::vector<std::pair<std::string, QImage>> images;
+    for (auto* p : network->getProcessorsByType<CanvasProcessor>()) {
+        if (p->isSink() && p->isReady()) {
+            auto img = utilqt::layerToQImage(*p->getVisibleLayer()).scaledToHeight(256);
+            images.push_back({p->getDisplayName(), img});
+        }
+    }
+
+    if (!alpha) {
+        for (auto& elem : images) {
+            QImage& img = elem.second;
+            if (img.hasAlphaChannel()) {
+                switch (img.format()) {
+                    case QImage::Format_Alpha8:
+                        img = img.convertToFormat(QImage::Format_Grayscale8);
+                        break;
+                    case QImage::Format_RGBA8888:
+                    case QImage::Format_RGBA8888_Premultiplied:
+                        img = img.convertToFormat(QImage::Format_RGBX8888);
+                        break;
+                    default:
+                        img = img.convertToFormat(QImage::Format_RGB32);
+                        break;
+                }
+            }
+        }
+    }
+
+    return images;
 }
 
 }  // namespace utilqt
