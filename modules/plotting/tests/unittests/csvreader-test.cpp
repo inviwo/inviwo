@@ -202,6 +202,22 @@ TEST(CSVdata, ignoreEmptyLine) {
     ASSERT_EQ(2, dataframe->getNumberOfRows()) << "row count does not match";
 }
 
+TEST(CSVdata, byteOrderMark) {
+    // Byte order mark should be detected and not treated as a value
+    const uint8_t bom[] = {0xef, 0xbb, 0xbf};
+    std::stringstream ss;
+    ss << bom << "1,2,3";
+
+    CSVReader reader;
+    reader.setFirstRowHeader(false);
+    auto dataframe = reader.readData(ss);
+
+    ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
+    ASSERT_EQ(1, dataframe->getNumberOfRows()) << "row count does not match";
+    auto value = dataframe->getColumn(1)->get(0, true)->toString();
+    EXPECT_EQ("1", value) << "Column 1";
+}
+
 TEST(CSVheader, withHeader) {
     const std::string data = "1,2,3\n4,5,6";
     std::istringstream ss("First Col,Second Col,Third Col\n" + data);
