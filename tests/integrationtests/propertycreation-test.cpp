@@ -109,7 +109,7 @@ TEST_P(PropertyCreationTests, Create) {
     }
 }
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     RegisteredProperties, PropertyCreationTests,
     ::testing::ValuesIn(InviwoApplication::getPtr()->getPropertyFactory()->getKeys()));
 }  // namespace inviwo
