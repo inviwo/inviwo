@@ -35,7 +35,7 @@
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
 #include <modules/qtwidgets/properties/propertysettingswidgetqt.h>
 #include <inviwo/core/properties/minmaxproperty.h>
-#include <modules/qtwidgets/customdoublespinboxqt.h>
+#include <modules/qtwidgets/numberlineedit.h>
 #include <modules/qtwidgets/editablelabelqt.h>
 #include <modules/qtwidgets/rangesliderqt.h>
 #include <inviwo/core/properties/propertyowner.h>
@@ -100,8 +100,8 @@ private:
 
     TemplateMinMaxPropertySettingsWidgetQt<T>* settingsWidget_;
     RangeSliderQt* slider_;
-    CustomDoubleSpinBoxQt* spinBoxMin_;
-    CustomDoubleSpinBoxQt* spinBoxMax_;
+    NumberLineEdit* spinBoxMin_;
+    NumberLineEdit* spinBoxMax_;
     EditableLabelQt* label_;
     MinMaxProperty<T>* minMaxProperty_;
 };
@@ -117,8 +117,8 @@ OrdinalMinMaxPropertyWidgetQt<T>::OrdinalMinMaxPropertyWidgetQt(MinMaxProperty<T
     : PropertyWidgetQt(property)
     , settingsWidget_(nullptr)
     , slider_(new RangeSliderQt(Qt::Horizontal, this))
-    , spinBoxMin_(new CustomDoubleSpinBoxQt(this))
-    , spinBoxMax_(new CustomDoubleSpinBoxQt(this))
+    , spinBoxMin_(new NumberLineEdit(std::is_integral<T>::value, this))
+    , spinBoxMax_(new NumberLineEdit(std::is_integral<T>::value, this))
     , label_(new EditableLabelQt(this, property_))
     , minMaxProperty_(property) {
 
@@ -158,11 +158,11 @@ OrdinalMinMaxPropertyWidgetQt<T>::OrdinalMinMaxPropertyWidgetQt(MinMaxProperty<T
             &OrdinalMinMaxPropertyWidgetQt<T>::updateFromSlider);
     connect(
         spinBoxMin_,
-        static_cast<void (CustomDoubleSpinBoxQt::*)(double)>(&CustomDoubleSpinBoxQt::valueChanged),
+        static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
         this, &OrdinalMinMaxPropertyWidgetQt<T>::updateFromSpinBoxMin);
     connect(
         spinBoxMax_,
-        static_cast<void (CustomDoubleSpinBoxQt::*)(double)>(&CustomDoubleSpinBoxQt::valueChanged),
+        static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
         this, &OrdinalMinMaxPropertyWidgetQt<T>::updateFromSpinBoxMax);
 
     updateFromProperty();

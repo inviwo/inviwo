@@ -32,14 +32,13 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <modules/qtwidgets/customdoublespinboxqt.h>
 #include <modules/qtwidgets/editablelabelqt.h>
 #include <modules/qtwidgets/lightpositionwidgetqt.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
 
-class CustomDoubleSpinBoxQt;
-
 namespace inviwo {
+
+class NumberLineEdit;
 
 class IVW_MODULE_QTWIDGETS_API LightPropertyWidgetQt : public PropertyWidgetQt {
 public:
@@ -51,7 +50,7 @@ public:
 private:
     FloatVec3Property* property_;
     LightPositionWidgetQt* lightWidget_;
-    CustomDoubleSpinBoxQt* radiusSpinBox_;
+    NumberLineEdit* radiusSpinBox_;
     EditableLabelQt* label_;
 
     void onPositionLightWidgetChanged();

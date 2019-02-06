@@ -47,6 +47,7 @@ set(HEADER_FILES
     include/modules/qtwidgets/inviwoqtutils.h
     include/modules/qtwidgets/keyboardutils.h
     include/modules/qtwidgets/labelgraphicsitem.h
+    include/modules/qtwidgets/numberlineedit.h
     include/modules/qtwidgets/ordinalbasewidget.h
     include/modules/qtwidgets/properties/anglepropertywidgetqt.h
     include/modules/qtwidgets/properties/boolcompositepropertywidgetqt.h
@@ -112,6 +113,7 @@ set(SOURCE_FILES
     src/labelgraphicsitem.cpp
     src/lightpositionwidgetqt.cpp
     src/lineeditqt.cpp
+    src/numberlineedit.cpp
     src/ordinalbasewidget.cpp
     src/ordinaleditorwidget.cpp
     src/processors/processordockwidgetqt.cpp

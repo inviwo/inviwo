@@ -34,12 +34,11 @@
 #include <inviwo/core/common/inviwo.h>
 
 #include <modules/qtwidgets/properties/indicatorwidget.h>
-#include <modules/qtwidgets/customdoublespinboxqt.h>
+#include <modules/qtwidgets/numberlineedit.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QWidget>
-#include <QSpinBox>
 #include <QTimerEvent>
 #include <QPaintEvent>
 #include <QMouseEvent>
@@ -58,10 +57,7 @@ namespace inviwo {
 template <typename T>
 class ValueDragger : public QWidget {
 public:
-    using SpinBoxType = typename std::conditional<std::is_integral<T>::value, QSpinBox,
-                                                  CustomDoubleSpinBoxQt>::type;
-
-    explicit ValueDragger(SpinBoxType *spinBox, QWidget *parent = nullptr);
+    explicit ValueDragger(NumberLineEdit *spinBox, QWidget *parent = nullptr);
     virtual ~ValueDragger() override = default;
 
     virtual QSize sizeHint() const override;
@@ -91,7 +87,7 @@ private:
     double defaultIncrement_ = 0.01;
     double exponent_ = 1.2;
 
-    SpinBoxType *spinBox_;
+    NumberLineEdit *spinBox_;
     IndicatorWidget *indicator_;
     int spinDeltaTimerId_ = -1;
     QPoint clickPos_;
@@ -103,7 +99,7 @@ private:
 };
 
 template <typename T>
-ValueDragger<T>::ValueDragger(SpinBoxType *spinBox, QWidget *parent)
+ValueDragger<T>::ValueDragger(NumberLineEdit *spinBox, QWidget *parent)
     : QWidget(parent), spinBox_(spinBox), indicator_(new IndicatorWidget()) {
     indicator_->setVisible(false);
     setObjectName("valueDragger");
@@ -127,7 +123,7 @@ void ValueDragger<T>::setValue(T i) {
 
 template <typename T>
 T ValueDragger<T>::value() const {
-    return spinBox_->value();
+    return static_cast<T>(spinBox_->value());
 }
 
 template <typename T>
@@ -245,6 +241,15 @@ void ValueDragger<T>::timerEvent(QTimerEvent *e) {
 
     if (doStep) {
         currentValue_ += delta_ * timerInterval_ / 1000;
+        if (spinBox_->wrapping()) {
+            auto remainder = std::remainder(currentValue_ - spinBox_->minimum(),
+                                            spinBox_->maximum() - spinBox_->minimum());
+            if (remainder < 0.0) {
+                remainder += spinBox_->maximum() - spinBox_->minimum();
+            }
+            currentValue_ = remainder + spinBox_->minimum();
+        }
+
         currentValue_ = std::max<double>(std::min<double>(currentValue_, spinBox_->maximum()),
                                          spinBox_->minimum());
 

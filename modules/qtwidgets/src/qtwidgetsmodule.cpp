@@ -204,6 +204,8 @@ QtWidgetsModule::QtWidgetsModule(InviwoApplication* app)
 
     registerPropertyWidget<FloatVec3PropertyWidgetQt, FloatVec3Property>("Spherical");
     registerPropertyWidget<DoubleVec3PropertyWidgetQt, DoubleVec3Property>("Spherical");
+    registerPropertyWidget<FloatVec3PropertyWidgetQt, FloatVec3Property>("SphericalSpinBox");
+    registerPropertyWidget<DoubleVec3PropertyWidgetQt, DoubleVec3Property>("SphericalSpinBox");
 
     registerPropertyWidget<LightPropertyWidgetQt, FloatVec3Property>("LightPosition");
 

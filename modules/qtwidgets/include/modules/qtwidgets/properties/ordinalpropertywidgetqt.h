@@ -109,9 +109,9 @@ public:
     virtual V value(V val) {
         return V(static_cast<T>(std::sqrt(
                      static_cast<double>(val[0] * val[0] + val[1] * val[1] + val[2] * val[2]))),
-                 arctan(val[2], static_cast<T>(std::sqrt(
-                                    static_cast<double>(val[0] * val[0] + val[1] * val[1])))),
-                 arctan(val[0], val[1]));
+                 std::atan2(static_cast<T>(std::sqrt(
+                                    static_cast<double>(val[0] * val[0] + val[1] * val[1]))), val[2]),
+                 std::atan2(val[1], val[0]));
     }
     virtual V min(V /*val*/) { return V(std::numeric_limits<T>::epsilon(), 0, -M_PI); }
     virtual V max(V val) {
@@ -130,19 +130,6 @@ public:
     virtual V invMin(V /*val*/) { return this->property_->getMinValue(); }
     virtual V invMax(V /*val*/) { return this->property_->getMaxValue(); }
     virtual V invInc(V /*val*/) { return this->property_->getIncrement(); }
-
-private:
-    T arctan(T x, T y) {
-        if (x == 0) {
-            return static_cast<T>(M_PI_2);
-        } else if (x < 0 && y > 0) {
-            return static_cast<T>(std::atan(static_cast<double>(y / x)) + M_PI);
-        } else if (x < 0 && y < 0) {
-            return static_cast<T>(std::atan(static_cast<double>(y / x)) - M_PI);
-        } else {
-            return static_cast<T>(std::atan(static_cast<double>(y / x)));
-        }
-    }
 };
 
 template <typename T>
@@ -176,7 +163,8 @@ OrdinalPropertyWidgetQt<T>::OrdinalPropertyWidgetQt(OrdinalProperty<T>* property
     , label_{new EditableLabelQt(this, property_)}
     , settingsWidget_(nullptr)
     , transformer_{[&]() -> std::unique_ptr<PropertyTransformer<T>> {
-        if (property->getSemantics() == PropertySemantics("Spherical")) {
+        if ((property->getSemantics() == PropertySemantics("Spherical")) ||
+            (property->getSemantics() == PropertySemantics("SphericalSpinBox"))) {
             return util::make_unique<SphericalPropertyTransformer<T>>(property);
         } else {
             return util::make_unique<IdentityPropertyTransformer<T>>(property);
@@ -203,7 +191,8 @@ OrdinalPropertyWidgetQt<T>::OrdinalPropertyWidgetQt(OrdinalProperty<T>* property
 
     auto signalMapperSetPropertyValue = new QSignalMapper(this);
 
-    if (ordinalproperty_->getSemantics() == PropertySemantics("SpinBox")) {
+    if ((ordinalproperty_->getSemantics() == PropertySemantics::SpinBox) ||
+        (ordinalproperty_->getSemantics() == PropertySemantics("SphericalSpinBox"))) {
         gridLayout->setHorizontalSpacing(5);
         for (size_t j = 0; j < ordinalproperty_->getDim().y; j++) {
             for (size_t i = 0; i < ordinalproperty_->getDim().x; i++) {
@@ -219,7 +208,15 @@ OrdinalPropertyWidgetQt<T>::OrdinalPropertyWidgetQt(OrdinalProperty<T>* property
                 if ((ordinalproperty_->getDim().y > 1) || (ordinalproperty_->getDim().x == 1)) {
                     gridLayout->addWidget(editor, static_cast<int>(i), static_cast<int>(j));
                 } else {
-                    gridLayout->addWidget(editor, static_cast<int>(j), static_cast<int>(i));
+                    if (ordinalproperty_->getSemantics() == PropertySemantics("SphericalSpinBox")) {
+                        editor->setWrapping(true);
+                        ivec2 index{static_cast<int>(i), static_cast<int>(j)};
+                        gridLayout->addWidget(new QLabel(sphericalChars[i], this), index.y,
+                                              2 * index.x);
+                        gridLayout->addWidget(editor, index.y, index.x * 2 + 1);
+                    } else {
+                        gridLayout->addWidget(editor, static_cast<int>(j), static_cast<int>(i));
+                    }
                 }
             }
         }
@@ -229,7 +226,7 @@ OrdinalPropertyWidgetQt<T>::OrdinalPropertyWidgetQt(OrdinalProperty<T>* property
                 QWidget* controlWidget;
 
                 if (ordinalproperty_->getDim().y > 1 ||
-                    ordinalproperty_->getSemantics() == PropertySemantics("Text")) {
+                    ordinalproperty_->getSemantics() == PropertySemantics::Text) {
 
                     auto editor = new OrdinalEditorWidget<BT>();
                     connect(editor, &OrdinalEditorWidget<BT>::valueChanged,
@@ -258,6 +255,10 @@ OrdinalPropertyWidgetQt<T>::OrdinalPropertyWidgetQt(OrdinalProperty<T>* property
                     edwidget->setLayout(edLayout);
                     edLayout->addWidget(new QLabel(sphericalChars[i], this));
                     edLayout->addWidget(static_cast<QWidget*>(controlWidget));
+                    // enable wrapping for phi and theta
+                    if (i > 0) {
+                        static_cast<SliderWidgetQt<BT>*>(controlWidget)->setWrapping(true);
+                    }
 
                     edwidget->setFocusPolicy(controlWidget->focusPolicy());
                     edwidget->setFocusProxy(controlWidget);
