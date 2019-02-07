@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,42 +27,17 @@
  *
  *********************************************************************************/
 
-#pragma once
+#include <modules/basegl/viewmanagerstate.h>
 
-#include <inviwo/meta/inviwometadefine.hpp>
-#include <algorithm>
-#include <string>
-#include <vector>
-#include <optional>
-#include <filesystem>
+namespace inviwo {
 
-#include <fmt/format.h>
+}  // namespace inviwo
 
-namespace inviwo::meta::util {
-
-template <typename T>
-auto toUpper(const T& s) {
-    std::string res;
-    std::transform(s.begin(), s.end(), std::back_inserter(res),
-                   [](char c) { return static_cast<char>(::toupper(c)); });
-    return res;
+IVW_MODULE_BASEGL_API void inviwo::vmsm::scaleEventToView(MouseEvent& me, const View& view) {
+    const auto oldSize = me.canvasSize();
+    const auto newSize = uvec2{view.size};
+    me.setCanvasSize(newSize);
+    const auto offset = dvec2{view.pos} / dvec2{oldSize - uvec2(1)};
+    const auto scale = dvec2{oldSize - uvec2(1)} / dvec2{newSize - uvec2(1)};
+    me.setPosNormalized(scale * (me.posNormalized() - offset));
 }
-template <typename T>
-auto toLower(const T& s) {
-    std::string res;
-    std::transform(s.begin(), s.end(), std::back_inserter(res),
-                   [](char c) { return static_cast<char>(::tolower(c)); });
-    return res;
-}
-
-INVIWO_META_API std::string removePrefix(std::string_view prefix, std::string_view str);
-
-INVIWO_META_API std::optional<std::filesystem::path> findShortestRelativePath(
-    const std::filesystem::path& path, std::vector<std::filesystem::path> bases);
-
-template <typename S, typename... Args>
-std::runtime_error makeError(S&& s, Args&&... args) {
-    return std::runtime_error{::fmt::format(std::forward<S>(s), std::forward<Args>(args)...)};
-}
-
-}  // namespace inviwo::meta::util

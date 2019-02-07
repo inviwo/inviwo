@@ -44,7 +44,14 @@ enum class MouseButton { None = 0, Left = 1 << 0, Middle = 1 << 1, Right = 1 << 
 ALLOW_FLAGS_FOR_ENUM(MouseButton)
 using MouseButtons = flags::flags<MouseButton>;
 
-enum class MouseState { Press = 1 << 0, Move = 1 << 1, Release = 1 << 2, DoubleClick = 1 << 3 };
+enum class MouseState {
+    Press = 1 << 0,
+    Move = 1 << 1,
+    Release = 1 << 2,
+    DoubleClick = 1 << 3,
+    Enter = 1 << 4,
+    Leave = 1 << 5
+};
 ALLOW_FLAGS_FOR_ENUM(MouseState)
 using MouseStates = flags::flags<MouseState>;
 
@@ -80,6 +87,12 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
             break;
         case MouseState::DoubleClick:
             ss << "DoubleClick";
+            break;
+        case MouseState::Enter:
+            ss << "Enter";
+            break;
+        case MouseState::Leave:
+            ss << "Leave";
             break;
     }
     return ss;

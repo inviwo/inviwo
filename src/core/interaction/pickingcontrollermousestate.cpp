@@ -83,6 +83,9 @@ struct Release : BaseEvent {
 struct DblClk : BaseEvent {
     using BaseEvent::BaseEvent;
 };
+struct Leave : BaseEvent {
+    using BaseEvent::BaseEvent;
+};
 
 PickingPressItem mouseButtonToPressItem(MouseButton mb) {
     switch (mb) {
@@ -147,6 +150,7 @@ struct Fsm {
         const auto uidm = uid<Move>();
         const auto uidp = uid<Press>();
         const auto uidr = uid<Release>();
+        const auto uidl = uid<Leave>();
 
         using S = PickingState;
         using P = PickingPressState;
@@ -184,6 +188,7 @@ struct Fsm {
             hasId + event<Move>  [zeroId] / (send<Move>(S::Finished, P::None, H::Exit), uidm) = idle,
             hasId + event<Move>  [diffId] / (send<Move>(S::Finished, P::None, H::Exit, false, false), uidm, send<Move>(S::Started, P::None, H::Enter)),
             hasId + event<Press> [sameId] / (ups, send<Press>(S::Updated, P::Press, H::None)) = pressing,
+            hasId + event<Leave> [zeroId] / (send<Leave>(S::Finished, P::None, H::Exit), uidl) = idle,
             hasId + sml::on_entry<_> / rps,
 
             pressing + event<Move>    [sameId]           / (send<Move>(S::Updated, P::Move, H::Move)),
@@ -237,6 +242,13 @@ void PickingControllerMouseState::propagateEvent(MouseEvent* e, EventPropagator*
         }
         case MouseState::DoubleClick: {
             msm->sm.process_event(fsm::DblClk{globalId, e, propagator});
+            break;
+        }
+        case MouseState::Enter: {
+            break;
+        }
+        case MouseState::Leave: {
+            msm->sm.process_event(fsm::Leave{0, e, propagator});
             break;
         }
     }

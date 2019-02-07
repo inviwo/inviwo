@@ -68,6 +68,7 @@ set(HEADER_FILES
     include/modules/basegl/processors/volumeraycaster.h
     include/modules/basegl/processors/volumeslicegl.h
     include/modules/basegl/viewmanager.h
+    include/modules/basegl/viewmanagerstate.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -136,6 +137,7 @@ set(SOURCE_FILES
     src/processors/volumeraycaster.cpp
     src/processors/volumeslicegl.cpp
     src/viewmanager.cpp
+    src/viewmanagerstate.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

@@ -67,7 +67,7 @@ void PickingController::propagateEvent(Event* event, EventPropagator* propagator
             auto me = static_cast<MouseEvent*>(event);
             const auto coord =
                 glm::clamp(me->pos(), dvec2(0.0), dvec2(me->canvasSize() - uvec2(1)));
-            mouseState_.propagateEvent(me, propagator, pickId(coord));
+            mouseState_.propagateEvent(me, propagator, coord == me->pos() ? pickId(coord) : 0);
             break;
         }
         case WheelEvent::chash(): {

@@ -34,6 +34,8 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/interaction/events/event.h>
 
+#include <limits>
+
 namespace inviwo {
 
 class MouseEvent;
@@ -41,6 +43,7 @@ class GestureEvent;
 class TouchEvent;
 class PickingEvent;
 class WheelEvent;
+class ViewManagerState;
 
 /**
  * \class ViewManager
@@ -66,7 +69,7 @@ class IVW_MODULE_BASEGL_API ViewManager {
 public:
     using Propagator = std::function<void(Event*, size_t ind)>;
 
-    struct View {
+    struct IVW_MODULE_BASEGL_API View {
         View(const ivec2& p, const ivec2& s) : pos(p), size(s){};
         View(const ivec4& m) : pos(m.x, m.y), size(m.z, m.w){};
 
@@ -75,8 +78,10 @@ public:
     };
     using ViewList = std::vector<View>;
     using ViewId = size_t;
+    static constexpr ViewId noView = std::numeric_limits<size_t>::max();
 
     ViewManager();
+    ~ViewManager();
 
     /**
      * \brief maps a propagates event to the selected view
@@ -85,12 +90,13 @@ public:
     bool propagateEvent(Event* event, Propagator propagator);
 
     /**
-     * \brief Returns a pair with a bool of whether a view was found, and the index of the found
-     * view.
+     * \brief returns a view id or noView if the view was not found
      */
-    std::pair<bool, ViewId> getSelectedView() const;
+    ViewId getSelectedView() const;
 
     const ViewList& getViews() const;
+
+    const View& getView(ViewId id) const;
 
     /**
      * \brief Add a viewport (x,y width,height) using the following coordinate system:
@@ -140,17 +146,18 @@ public:
      * @return ivec4&
      */
     View& operator[](ViewId ind);
+    const View& operator[](ViewId ind) const;
     size_t size() const;
     void clear();
 
 private:
     struct EventState {
-        std::pair<bool, ViewId> getView(ViewManager& m, const MouseEvent* me);
-        std::pair<bool, ViewId> getView(ViewManager& m, const GestureEvent* ge);
+        ViewId getView(ViewManager& m, const MouseEvent* me);
+        ViewId getView(ViewManager& m, const GestureEvent* ge);
         std::unordered_map<int, ViewManager::ViewId> getView(ViewManager& m, const TouchEvent* te);
 
         bool pressing_ = false;
-        std::pair<bool, ViewId> pressedView_ = {false, 0};
+        ViewId pressedView_ = noView;
         std::unordered_map<int, ViewId> touchpointIdToViewId_;
     };
 
@@ -160,12 +167,14 @@ private:
     bool propagateGestureEvent(GestureEvent* ge, Propagator propagator);
     bool propagateTouchEvent(TouchEvent* te, Propagator propagator);
 
-    std::pair<bool, ViewId> findView(ivec2 pos) const;
+    ViewId findView(ivec2 pos) const;
     static bool inView(const View& view, const ivec2& pos);
 
     EventState eventState_;
-    std::pair<bool, ViewId> selectedView_ = {false, 0};
+    ViewId selectedView_ = noView;
     ViewList views_;
+
+    std::unique_ptr<ViewManagerState> mouseState_;
 };
 
 }  // namespace inviwo

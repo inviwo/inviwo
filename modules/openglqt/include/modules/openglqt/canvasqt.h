@@ -103,6 +103,8 @@ private:
     bool mapMouseReleaseEvent(QMouseEvent* e);
     bool mapMouseMoveEvent(QMouseEvent* e);
     bool mapWheelEvent(QWheelEvent* e);
+    bool mapEnterEvent(QEvent* e);
+    bool mapLeaveEvent(QEvent* e);
     bool mapKeyPressEvent(QKeyEvent* keyEvent);
     bool mapKeyReleaseEvent(QKeyEvent* keyEvent);
     bool mapTouchEvent(QTouchEvent* e);
@@ -226,6 +228,10 @@ bool CanvasQtBase<T>::event(QEvent* e) {
             return mapMouseMoveEvent(static_cast<QMouseEvent*>(e));
         case QEvent::Wheel:
             return mapWheelEvent(static_cast<QWheelEvent*>(e));
+        case QEvent::Enter:
+            return mapEnterEvent(e);
+        case QEvent::Leave:
+            return mapLeaveEvent(e);
         case QEvent::TouchBegin:
             return mapTouchEvent(static_cast<QTouchEvent*>(e));
         case QEvent::TouchEnd:
@@ -340,6 +346,28 @@ bool CanvasQtBase<T>::mapWheelEvent(QWheelEvent* e) {
                           this->getImageDimensions(), this->getDepthValueAtNormalizedCoord(pos));
     e->accept();
     this->propagateEvent(&wheelEvent);
+    return true;
+}
+
+template <typename T>
+bool CanvasQtBase<T>::mapEnterEvent(QEvent* e) {
+    MouseEvent mouseEvent(MouseButton::None, MouseState::Enter, MouseButton::None,
+                          KeyModifier::None, dvec2(-1.0), this->getImageDimensions(),
+                          1.0);
+    e->accept();
+    this->propagateEvent(&mouseEvent);
+
+    return true;
+}
+
+template <typename T>
+bool CanvasQtBase<T>::mapLeaveEvent(QEvent* e) {
+    MouseEvent mouseEvent(MouseButton::None, MouseState::Leave, MouseButton::None,
+                          KeyModifier::None, dvec2(-1.0), this->getImageDimensions(),
+                          1.0);
+    e->accept();
+    this->propagateEvent(&mouseEvent);
+
     return true;
 }
 
