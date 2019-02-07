@@ -29,7 +29,4 @@
 
 #include <inviwo/core/interaction/events/eventutil.h>
 
-namespace inviwo {
-
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

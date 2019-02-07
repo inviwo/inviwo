@@ -67,7 +67,7 @@ public:
     virtual uint64_t hash() const override;
     static constexpr uint64_t chash();
 
-	virtual void print(std::ostream& ss) const override;
+    virtual void print(std::ostream& ss) const override;
 
 private:
     size2_t size_;

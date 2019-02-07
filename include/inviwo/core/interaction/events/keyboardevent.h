@@ -34,8 +34,6 @@
 #include <inviwo/core/interaction/events/interactionevent.h>
 #include <inviwo/core/interaction/events/keyboardkeys.h>
 #include <inviwo/core/util/constexprhash.h>
-#include <fmt/format.h>
-#include <fmt/ostream.h>
 
 namespace inviwo {
 /**

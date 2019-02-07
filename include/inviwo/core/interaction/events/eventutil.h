@@ -76,8 +76,8 @@ void printEvent(std::ostream& os, const std::string& event, Args... args) {
     fmt::print(os, "{:14} ", event);
     util::for_each_argument(
         [&os](auto&& item) {
-            detail::PrintEventHelper<std::tuple_size<std::remove_reference<decltype(item)>::type>::
-                                         value>::print(os, item);
+            detail::PrintEventHelper<std::tuple_size<
+                typename std::remove_reference<decltype(item)>::type>::value>::print(os, item);
         },
         args...);
 }

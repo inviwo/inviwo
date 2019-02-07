@@ -66,7 +66,7 @@ public:
     virtual uint64_t hash() const override;
     static constexpr uint64_t chash() { return util::constexpr_hash("org.inviwo.MouseEvent"); }
 
-	virtual void print(std::ostream& ss) const override;
+    virtual void print(std::ostream& ss) const override;
 
 private:
     MouseButton button_;

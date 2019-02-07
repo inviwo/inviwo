@@ -62,6 +62,7 @@ public:
     void markAsUnused();
 
     void markAsVisited(Processor*);
+    void markAsVisited(Event&);
     bool hasVisitedProcessor(Processor*) const;
     // Can be used to figure out where an event came from.
     // Processors are added in chronological order.
@@ -77,7 +78,7 @@ public:
         return ss;
     }
 
-    virtual void print(std::ostream& ss) const { ss << "Unknown Event. Hash:" << hash(); }
+    virtual void print(std::ostream& ss) const;
 
 protected:
     Event() = default;
