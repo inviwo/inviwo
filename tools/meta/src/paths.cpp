@@ -88,8 +88,6 @@ std::optional<std::filesystem::path> findInviwoUsingCMakeCache(
 }
 
 std::optional<std::filesystem::path> findInviwoPath(std::vector<std::filesystem::path> guesses) {
-    using path = std::filesystem::path;
-
     if (auto path = findInviwoUsingCMakeCache(guesses)) {
         return path;
     }

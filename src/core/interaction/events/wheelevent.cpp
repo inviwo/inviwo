@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/interaction/events/wheelevent.h>
+#include <inviwo/core/interaction/events/eventutil.h>
 
 namespace inviwo {
 
@@ -43,5 +44,12 @@ dvec2 WheelEvent::delta() const { return delta_; }
 void WheelEvent::setDelta(dvec2 delta) { delta_ = delta; }
 
 uint64_t WheelEvent::hash() const { return chash(); }
+
+void WheelEvent::print(std::ostream& ss) const {
+    util::printEvent(ss, "WheelEvent", std::make_pair("delta", delta_),
+                     std::make_pair("pos", pos()), std::make_pair("depth", depth()),
+                     std::make_pair("size", canvasSize()), std::make_pair("sState", buttonState()),
+                     std::make_pair("modifiers", modifiers_));
+}
 
 }  // namespace inviwo

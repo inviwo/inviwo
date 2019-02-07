@@ -34,6 +34,8 @@
 #include <inviwo/core/ports/outport.h>
 #include <inviwo/core/ports/imageport.h>
 
+#include <inviwo/core/interaction/events/eventutil.h>
+
 namespace inviwo {
 
 ResizeEvent::ResizeEvent(size2_t canvasSize)
@@ -61,5 +63,10 @@ void ResizeEvent::setSize(size2_t csize) { size_ = csize; }
 void ResizeEvent::setPreviousSize(size2_t previousSize) { previousSize_ = previousSize; }
 
 uint64_t ResizeEvent::hash() const { return chash(); }
+
+void ResizeEvent::print(std::ostream& ss) const {
+    util::printEvent(ss, "ResizeEvent", std::make_pair("size", size_),
+                     std::make_pair("prev", previousSize_));
+}
 
 }  // namespace inviwo

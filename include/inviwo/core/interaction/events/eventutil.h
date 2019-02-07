@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,28 +26,62 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <inviwo/core/interaction/events/interactionevent.h>
-#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/common/inviwo.h>
+
+#include <inviwo/core/util/foreacharg.h>
+#include <fmt/format.h>
+#include <fmt/ostream.h>
+
+#include <tuple>
+#include <utility>
 
 namespace inviwo {
 
-InteractionEvent::InteractionEvent(KeyModifiers modifiers) : Event(), modifiers_(modifiers) {}
+namespace util {
 
-KeyModifiers InteractionEvent::modifiers() const { return modifiers_; }
-void InteractionEvent::setModifiers(KeyModifiers modifiers) { modifiers_ = modifiers; }
+namespace detail {
 
-std::string InteractionEvent::modifierNames() const {
-    std::stringstream ss;
-    ss << modifiers_;
-    return ss.str();
+template <size_t N>
+struct PrintEventHelper;
+
+template <>
+struct PrintEventHelper<1> {
+    template <typename Arg>
+    static void print(std::ostream& os, Arg&& item) {
+        fmt::print(os, "{}", std::get<0>(item));
+    }
+};
+template <>
+struct PrintEventHelper<2> {
+    template <typename Arg>
+    static void print(std::ostream& os, Arg&& item) {
+        fmt::print(os, "{}: {:8} ", std::get<0>(item), std::get<1>(item));
+    }
+};
+template <>
+struct PrintEventHelper<3> {
+    template <typename Arg>
+    static void print(std::ostream& os, Arg&& item) {
+        fmt::print(os, "{}: {:{}} ", std::get<0>(item), std::get<1>(item), std::get<2>(item));
+    }
+};
+
+}  // namespace detail
+
+template <typename... Args>
+void printEvent(std::ostream& os, const std::string& event, Args... args) {
+    fmt::print(os, "{:14} ", event);
+    util::for_each_argument(
+        [&os](auto&& item) {
+            detail::PrintEventHelper<std::tuple_size<
+                typename std::remove_reference<decltype(item)>::type>::value>::print(os, item);
+        },
+        args...);
 }
 
-void InteractionEvent::setToolTip(const std::string& tooltip) const {
-    if (tooltip_) tooltip_(tooltip);
-}
-
-void InteractionEvent::setToolTipCallback(ToolTipCallback tooltip) { tooltip_ = tooltip; }
-auto InteractionEvent::getToolTipCallback() const -> const ToolTipCallback& { return tooltip_; }
+}  // namespace util
 
 }  // namespace inviwo

@@ -248,6 +248,8 @@ public:
     virtual uint64_t hash() const override;
     static constexpr uint64_t chash() { return util::constexpr_hash("org.inviwo.TouchEvent"); }
 
+    virtual void print(std::ostream& ss) const override;
+
 private:
     std::vector<TouchPoint> touchPoints_;
     const TouchDevice* device_ =
