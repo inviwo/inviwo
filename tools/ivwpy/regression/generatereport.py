@@ -598,6 +598,9 @@ class HtmlReport:
 		with open(toPath(self.basedir, "report.css"), 'w') as f:
 			f.write(lesscpy.compile(io.StringIO(cssdata.decode("utf-8"))))
 
+		with open(self.basedir + "/" + filename + ".raw..html", 'w') as f:
+			f.write(self.doc.getvalue())
+
 		with open(file, 'w') as f:
 			f.write(yattag.indent(self.doc.getvalue())) 
 

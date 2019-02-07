@@ -48,10 +48,11 @@ def defaultProperties() {
                 description: 'Select build configuration', 
                 name: 'Build_Type'
             )
-        ]),
+        ])
+        /*,
         pipelineTriggers([
             [$class: 'GitHubPushTrigger']
-        ])
+        ])*/
     ]
     return params
 }
@@ -180,7 +181,7 @@ def regression(def state, modulepaths) {
             sh """
                 python3 ../inviwo/tools/regression.py \
                         --config ../build/pyconfig.ini \
-                        --build_type ${state.env.Build_Type} \
+                        --build_type ${state.env.Build_Type?:"Release"} \
                         --header ${state.env.JENKINS_HOME}/inviwo-config/header.html \
                         --output . \
                         --modules ${modulepaths.join(' ')}
@@ -297,15 +298,12 @@ def build(Map args = [:]) {
         log {
             checked(args.state, 'Build', true) {
                 sh """
-                    ccache -z # reset ccache statistics
+                    ccache --zero-stats
                     # tell ccache where the project root is
-                    export CCACHE_BASEDIR=${args.state.env.WORKSPACE}/build
-                            
+                    export CCACHE_BASEDIR=${args.state.env.WORKSPACE}           
                     ${cmake(args)}
-    
                     ninja
-    
-                    ccache -s # print ccache statistics
+                    ccache --show-stats
                 """
             }
         }
@@ -320,17 +318,17 @@ def build(Map args = [:]) {
 // * offModules List of modules to disable (optional)
 def buildStandard(Map args = [:]) {
     stage('Build') {
-        if (args.state.env.Clean_Build) clean()
-        def defaultOpts = defaultCMakeOptions(args.state.env.Build_Type)
+        if (args.state.env.Clean_Build?.equals("true")) clean()
+        def defaultOpts = defaultCMakeOptions(args.state.env.Build_Type?:"Release")
         defaultOpts.putAll(envCMakeOptions(args.state.env))
-        if (args.state.env.Use_Ccache) defaultOpts.putAll(ccacheOption())
+        if (args.state.env.Use_Ccache?.equals("true")) defaultOpts.putAll(ccacheOption())
         if (args.state.env.opts) {
             def envopts = args.state.env.opts.tokenize(';').collect{it.tokenize('=')}.collectEntries()
             defaultOpts.putAll(envopts)
         }
         if (args.opts) defaultOpts.putAll(args.opts)
         args.opts = defaultOpts
-        args.printCMakeVars = args.state.env.Print_CMake_Variables
+        args.printCMakeVars = args.state.env.Print_CMake_Variables?.equals("true")
 
         if (args.state.env.offModules) args.offModules += args.state.env.offModules.tokenize(';')
         if (args.state.env.onModules) args.onModules += args.state.env.onModules.tokenize(';')

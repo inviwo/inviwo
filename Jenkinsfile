@@ -9,6 +9,7 @@ node {
 
     def util = load "${env.WORKSPACE}/inviwo/tools/jenkins/util.groovy"
     if(!env.disabledProperties) properties(util.defaultProperties())
+    println "Env:" + env.getEnvironment()?.collect{"${it.key.padLeft(25)} = ${it.value}"}?.join("\n") ?: ''
 
     Map state = [
         env: env,
