@@ -268,7 +268,7 @@ void TransferFunction::calcTransferValues() const {
     auto dataArray = dataRepr_->getDataTyped();
     const auto size = dataRepr_->getDimensions().x;
 
-	interpolateAndStoreColors(dataArray, size);
+    interpolateAndStoreColors(dataArray, size);
 
     for (size_t i = 0; i < size_t(maskMin_ * size); i++) dataArray[i].a = 0.0;
     for (size_t i = size_t(maskMax_ * size); i < size; i++) dataArray[i].a = 0.0;
