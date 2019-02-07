@@ -67,7 +67,7 @@ std::locale getCurrentStdLocale() {
             hasWarned = true;
         }
     };
-    
+
     std::locale loc;
     try {
         // use the system locale provided by Qt
@@ -84,7 +84,8 @@ std::locale getCurrentStdLocale() {
         warnOnce(std::string("Locale could not be set. ") + e.what());
         try {
             loc = std::locale("en_US.UTF8");
-        } catch (...) {}
+        } catch (...) {
+        }
     }
     return loc;
 }
@@ -546,6 +547,40 @@ std::vector<std::pair<std::string, QImage>> getCanvasImages(ProcessorNetwork* ne
     }
 
     return images;
+}
+
+QString windowTitleHelper(const QString& title, const QWidget* widget) {
+    if (title.isEmpty() || !widget) {
+        return title;
+    }
+
+    // implementation based on qt_setWindowTitle_helperHelper() in qwidget.cpp
+    QString cap = title;
+
+    QLatin1String placeHolder("[*]");
+    int index = cap.indexOf(placeHolder);
+
+    // here the magic begins
+    while (index != -1) {
+        index += placeHolder.size();
+        int count = 1;
+        while (cap.indexOf(placeHolder, index) == index) {
+            ++count;
+            index += placeHolder.size();
+        }
+        if (count % 2) {  // odd number of [*] -> replace last one
+            int lastIndex = cap.lastIndexOf(placeHolder, index - 1);
+            if (widget->isWindowModified() &&
+                widget->style()->styleHint(QStyle::SH_TitleBar_ModifyNotification, 0, widget))
+                cap.replace(lastIndex, 3, QWidget::tr("*"));
+            else
+                cap.remove(lastIndex, 3);
+        }
+        index = cap.indexOf(placeHolder, index);
+    }
+    cap.replace(QLatin1String("[*][*]"), placeHolder);
+
+    return cap;
 }
 
 }  // namespace utilqt

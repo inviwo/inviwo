@@ -179,9 +179,9 @@ IVW_MODULE_QTWIDGETS_API std::string toBase64(const QImage& image);
 
 /*
  * \brief retrieve the contents of all visible canvases as QImage. A canvas must be ready and
- * visible in order to be considered. 
+ * visible in order to be considered.
  *
- * @param network    visible canvases are extracted from this processor network 
+ * @param network    visible canvases are extracted from this processor network
  * @param alpha      the resulting images will retain their alpha channel if true
  * @return vector of pairs representing the display name and contents of the respective canvases
  */
@@ -191,6 +191,15 @@ IVW_MODULE_QTWIDGETS_API std::vector<std::pair<std::string, QImage>> getCanvasIm
 IVW_MODULE_QTWIDGETS_API void addImageActions(QMenu& menu, const Image& image,
                                               LayerType visibleLayer = LayerType::Color,
                                               size_t visibleIndex = 10000);
+
+/*
+ * \brief formats a title string similar to QWidget::setWindowTitle, i.e. "[*]" is replaced with
+ * either nothing or '*' depending on the modification state of \p widget
+ *
+ * @return title where "[*]" is replaced with '*' if the widget is modified, or '' otherwise
+ * \see QWidget::setWindowTitle
+ */
+IVW_MODULE_QTWIDGETS_API QString windowTitleHelper(const QString& title, const QWidget* widget);
 
 }  // namespace utilqt
 

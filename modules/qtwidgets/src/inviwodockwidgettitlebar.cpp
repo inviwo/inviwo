@@ -28,7 +28,9 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/inviwodockwidgettitlebar.h>
+
 #include <inviwo/core/util/raiiutils.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -82,13 +84,17 @@ InviwoDockWidgetTitleBar::InviwoDockWidgetTitleBar(QWidget *parent)
     layout->setSpacing(2);
     layout->setMargin(2);
 
-    this->setLayout(layout);
+    setLayout(layout);
 
+    QObject::connect(parent_, &QDockWidget::topLevelChanged, this,
+                     &InviwoDockWidgetTitleBar::floating);
     QObject::connect(stickyBtn_, &QToolButton::toggled, this,
                      &InviwoDockWidgetTitleBar::stickyBtnToggled);
     QObject::connect(floatBtn_, &QToolButton::clicked, this,
                      [&]() { parent_->setFloating(!parent_->isFloating()); });
     QObject::connect(closeBtn, &QToolButton::clicked, parent_, &QDockWidget::close);
+    
+    parent_->installEventFilter(this);
 }
 
 InviwoDockWidgetTitleBar::~InviwoDockWidgetTitleBar() {}
@@ -100,8 +106,6 @@ void InviwoDockWidgetTitleBar::paintEvent(QPaintEvent *) {
     // style()->drawControl(QStyle::CE_DockWidgetTitle, &opt, &p, this);
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 }
-
-void InviwoDockWidgetTitleBar::setLabel(const QString &str) { label_->setText(str); }
 
 void InviwoDockWidgetTitleBar::stickyBtnToggled(bool toggle) {
     util::KeepTrueWhileInScope guard(&internalStickyFlagUpdate_);
@@ -123,6 +127,13 @@ void InviwoDockWidgetTitleBar::showEvent(QShowEvent *) {
         // no docking, disable all areas
         parent_->setAllowedAreas(Qt::NoDockWidgetArea);
     }
+}
+
+bool InviwoDockWidgetTitleBar::eventFilter(QObject* obj, QEvent *event) {
+    if ((event->type() == QEvent::ModifiedChange) || (event->type() == QEvent::WindowTitleChange)) {
+        label_->setText(utilqt::windowTitleHelper(parent_->windowTitle(), parent_));
+    }
+    return QObject::eventFilter(obj, event);
 }
 
 void InviwoDockWidgetTitleBar::floating(bool floating) { floatBtn_->setChecked(floating); }
