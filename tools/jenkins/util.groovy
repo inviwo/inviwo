@@ -180,7 +180,7 @@ def regression(def state, modulepaths) {
             sh """
                 python3 ../inviwo/tools/regression.py \
                         --config ../build/pyconfig.ini \
-                        --build_type ${state.env.Build_Type} \
+                        --build_type ${state.env.Build_Type?:"Release"} \
                         --header ${state.env.JENKINS_HOME}/inviwo-config/header.html \
                         --output . \
                         --modules ${modulepaths.join(' ')}
@@ -297,15 +297,12 @@ def build(Map args = [:]) {
         log {
             checked(args.state, 'Build', true) {
                 sh """
-                    ccache -z # reset ccache statistics
+                    ccache --zero-stats
                     # tell ccache where the project root is
-                    export CCACHE_BASEDIR=${args.state.env.WORKSPACE}/build
-                            
+                    export CCACHE_BASEDIR=${args.state.env.WORKSPACE}           
                     ${cmake(args)}
-    
                     ninja
-    
-                    ccache -s # print ccache statistics
+                    ccache --show-stats
                 """
             }
         }
