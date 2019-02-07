@@ -84,7 +84,7 @@ inline T linearVectorInterpolation(const T &a, const T &b, P x) {
 
 template <typename T, typename P>
 inline T Interpolation<T, P>::linear(const T &a, const T &b, P x) {
-    return static_cast<T>(a + (b - a) * x);
+    return glm::mix(a, b, x);
 }
 
 template <typename T, typename P>
