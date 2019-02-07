@@ -199,6 +199,15 @@ public:
 
     friend bool operator==(const TFPrimitiveSet& lhs, const TFPrimitiveSet& rhs);
 
+    /**
+     * Interpolate the color between all neighboring pairs of TFPrimitives and write the result to
+     * dataArray. The range of all TFPrimitives is [0,1] when TF type is relative
+     *
+     * @param dataArray   write location for interpolated colors
+     * @param size   size of dataArray
+     */
+    void interpolateAndStoreColors(vec4* dataArray, const size_t size) const;
+
 protected:
     void add(std::unique_ptr<TFPrimitive> primitive);
     void remove(std::vector<std::unique_ptr<TFPrimitive>>::iterator it);

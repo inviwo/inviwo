@@ -268,47 +268,7 @@ void TransferFunction::calcTransferValues() const {
     auto dataArray = dataRepr_->getDataTyped();
     const auto size = dataRepr_->getDimensions().x;
 
-    auto toInd = [&](TFPrimitive* p) {
-        return static_cast<size_t>(ceil(p->getPosition() * (size - 1)));
-    };
-
-    if (sorted_.size() == 0) {  // in case of 0 points
-        for (size_t i = 0; i < size; i++) {
-            const auto val = static_cast<float>(i) / (size - 1);
-            dataArray[i] = vec4(val, val, val, 1.0);
-        }
-    } else if (sorted_.size() == 1) {  // in case of 1 point
-        const auto color = sorted_.front()->getColor();
-        for (size_t i = 0; i < size; ++i) {
-            dataArray[i] = color;
-        }
-    } else {  // in case of more than 1 points
-        size_t leftX = toInd(sorted_.front());
-        size_t rightX = toInd(sorted_.back());
-
-        for (size_t i = 0; i <= leftX; i++) dataArray[i] = sorted_.front()->getColor();
-        for (size_t i = rightX; i < size; i++) dataArray[i] = sorted_.back()->getColor();
-
-        auto pLeft = sorted_.begin();
-        auto pRight = sorted_.begin() + 1;
-
-        while (pRight != sorted_.end()) {
-            size_t n = toInd(*pLeft);
-
-            while (n < toInd(*pRight)) {
-                const auto lrgba = (*pLeft)->getColor();
-                const auto rrgba = (*pRight)->getColor();
-                const auto lx = (*pLeft)->getPosition() * (size - 1);
-                const auto rx = (*pRight)->getPosition() * (size - 1);
-                const float alpha = static_cast<float>((n - lx) / (rx - lx));
-                dataArray[n] = glm::mix(lrgba, rrgba, alpha);
-                n++;
-            }
-
-            pLeft++;
-            pRight++;
-        }
-    }
+    interpolateAndStoreColors(dataArray, size);
 
     for (size_t i = 0; i < size_t(maskMin_ * size); i++) dataArray[i].a = 0.0;
     for (size_t i = size_t(maskMax_ * size); i < size; i++) dataArray[i].a = 0.0;
