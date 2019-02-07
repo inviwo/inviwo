@@ -48,7 +48,8 @@ def defaultProperties() {
                 description: 'Select build configuration', 
                 name: 'Build_Type'
             )
-        ])/*,
+        ])
+        /*,
         pipelineTriggers([
             [$class: 'GitHubPushTrigger']
         ])*/
