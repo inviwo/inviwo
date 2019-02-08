@@ -50,6 +50,7 @@
 #include <QLinearGradient>
 #include <QBuffer>
 #include <QByteArray>
+#include <QStyle>
 #include <warn/pop>
 
 #include <ios>

@@ -35,6 +35,7 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QDockWidget>
+#include <QEvent>
 #include <QLabel>
 #include <QIcon>
 #include <QPixmap>
