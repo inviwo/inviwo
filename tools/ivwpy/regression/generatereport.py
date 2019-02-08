@@ -284,7 +284,7 @@ class TestRun:
 	def simple(self, key):
 		value = toString(self.report[key])
 		short = abr(value)
-		self.doc.asis(listItem(keyval(formatKey(key), short), value, 
+		self.doc.asis(listItem(keyval(formatKey(key), html.escape(short)), html.escape(value), 
 			                   status = self.status(key), 
 			             	   toggle = short != value))
 

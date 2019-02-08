@@ -382,7 +382,7 @@ void TFPrimitiveSet::interpolateAndStoreColors(vec4* dataArray, const size_t dat
         return static_cast<size_t>(ceil(p.getPosition() * (dataSize - 1)));
     };
 
-    if (size() == 0) {  // in case of 0 points
+    if (empty()) {  // in case of 0 points
         std::fill(dataArray, dataArray + dataSize, vec4(0.0f));
     } else if (size() == 1) {  // in case of 1 point
         std::fill(dataArray, dataArray + dataSize, front().getColor());
