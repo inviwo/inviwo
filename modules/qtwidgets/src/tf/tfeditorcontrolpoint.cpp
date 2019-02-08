@@ -40,15 +40,15 @@
 
 namespace inviwo {
 
-TFEditorControlPoint::TFEditorControlPoint(TFPrimitive* primitive, QGraphicsScene* scene,
+TFEditorControlPoint::TFEditorControlPoint(TFPrimitive& primitive, QGraphicsScene* scene,
                                            double size)
-    : TFEditorPrimitive(primitive, scene, vec2(primitive->getPosition(), primitive->getAlpha()),
+    : TFEditorPrimitive(primitive, scene, vec2(primitive.getPosition(), primitive.getAlpha()),
                         size) {
-    data_->addObserver(this);
+    data_.addObserver(this);
 }
 
-void TFEditorControlPoint::onTFPrimitiveChange(const TFPrimitive* p) {
-    setTFPosition(vec2(p->getPosition(), p->getAlpha()));
+void TFEditorControlPoint::onTFPrimitiveChange(const TFPrimitive& p) {
+    setTFPosition(vec2(p.getPosition(), p.getAlpha()));
 }
 
 QRectF TFEditorControlPoint::boundingRect() const {
@@ -131,13 +131,13 @@ QPointF TFEditorControlPoint::prepareItemPositionChange(const QPointF& pos) {
 }
 
 void TFEditorControlPoint::onItemPositionChange(const vec2& newPos) {
-    data_->setPositionAlpha(newPos);
+    data_.setPositionAlpha(newPos);
 }
 
 void TFEditorControlPoint::onItemSceneHasChanged() { onTFPrimitiveChange(data_); }
 
 bool operator==(const TFEditorControlPoint& lhs, const TFEditorControlPoint& rhs) {
-    return *lhs.data_ == *rhs.data_;
+    return lhs.data_ == rhs.data_;
 }
 
 bool operator!=(const TFEditorControlPoint& lhs, const TFEditorControlPoint& rhs) {

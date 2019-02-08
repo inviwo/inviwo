@@ -40,7 +40,7 @@ class TFPrimitive;
 
 class IVW_CORE_API TFPrimitiveObserver : public Observer {
 public:
-    virtual void onTFPrimitiveChange(const TFPrimitive* p);
+    virtual void onTFPrimitiveChange(const TFPrimitive& p);
 };
 
 struct IVW_CORE_API TFPrimitiveData {

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,47 +27,59 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ISOVALUECOLLECTION_H
-#define IVW_ISOVALUECOLLECTION_H
+#include <warn/push>
+#include <warn/ignore/all>
+#include <gtest/gtest.h>
+#include <warn/pop>
 
-#include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-
 #include <inviwo/core/datastructures/tfprimitiveset.h>
-#include <inviwo/core/util/fileextension.h>
+#include <inviwo/core/datastructures/transferfunction.h>
+
+#include <iostream>
 
 namespace inviwo {
 
-/**
- * \ingroup datastructures
- * \class IsoValueCollection
- * \brief data structure representing isovalues
- *
- * \see IsoValue
- */
-class IVW_CORE_API IsoValueCollection : public TFPrimitiveSet {
-public:
-    IsoValueCollection(const std::vector<TFPrimitiveData>& values = {},
-                       TFPrimitiveSetType type = TFPrimitiveSetType::Relative);
-    IsoValueCollection(const IsoValueCollection& rhs) = default;
-    IsoValueCollection(IsoValueCollection&& rhs) = default;
-    IsoValueCollection& operator=(const IsoValueCollection& rhs) = default;
-    virtual ~IsoValueCollection() = default;
+TEST(TFSampling, empty) {
+    TransferFunction tf;
 
-    virtual std::vector<FileExtension> getSupportedExtensions() const override;
+    EXPECT_EQ(vec4(0.0f), tf.sample(0.0));
+    EXPECT_EQ(vec4(0.0f), tf.sample(0.3));
+    EXPECT_EQ(vec4(0.0f), tf.sample(1.2));
+}
 
-    virtual void save(const std::string& filename,
-                      const FileExtension& ext = FileExtension()) const override;
-    virtual void load(const std::string& filename,
-                      const FileExtension& ext = FileExtension()) override;
+TEST(TFSampling, constant) {
+    vec4 color{1.0f, 0.0f, 0.5f, 1.0f};
+    TransferFunction tf{{{0.5, color}}};
 
-    virtual std::string getTitle() const override;
+    EXPECT_EQ(color, tf.sample(0.0));
+    EXPECT_EQ(color, tf.sample(0.3));
+    EXPECT_EQ(color, tf.sample(0.5));
+    EXPECT_EQ(color, tf.sample(1.0));
 
-protected:
-    virtual std::string serializationKey() const override;
-    virtual std::string serializationItemKey() const override;
-};
+    // check outside of TF boundaries
+    EXPECT_EQ(color, tf.sample(-0.3)) << "TF sampling < 0 not clamped to [0,1]";
+    EXPECT_EQ(color, tf.sample(1.3)) << "TF sampling > 1 not clamped to [0,1]";
+}
+
+TEST(TFSampling, step) {
+    vec4 color1{0.0f, 1.0f, 0.0f, 0.5f};
+    vec4 color2{1.0f, 0.0f, 0.5f, 1.0f};
+    TransferFunction tf{{{0.4999, color1}, {0.5, color2}}};
+
+    EXPECT_EQ(color1, tf.sample(0.4));
+    EXPECT_EQ(color2, tf.sample(0.6));
+}
+
+TEST(TFSampling, linear) {
+    vec4 color1{0.0f, 1.0f, 0.0f, 0.5f};
+    vec4 color2{1.0f, 0.0f, 0.5f, 1.0f};
+    TransferFunction tf{{{0.25, color1}, {0.75, color2}}};
+
+    EXPECT_EQ(color1, tf.sample(0.0));
+    EXPECT_EQ(color1, tf.sample(0.25));
+    EXPECT_EQ(glm::mix(color1, color2, 0.5), tf.sample(0.5));
+    EXPECT_EQ(color2, tf.sample(1.0));
+}
 
 }  // namespace inviwo
-
-#endif  // IVW_ISOVALUECOLLECTION_H

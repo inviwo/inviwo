@@ -154,12 +154,12 @@ QMainWindow* getApplicationMainWindow() {
 
 QPixmap toQPixmap(const TransferFunction& tf, const QSize& size) {
     QVector<QGradientStop> gradientStops;
-    for (auto tfpoint : tf) {
-        vec4 curColor = tfpoint->getColor();
+    for (const auto& tfpoint : tf) {
+        vec4 curColor = tfpoint.getColor();
         // increase alpha to allow better visibility by 1 - (1 - a)^4
         curColor.a = 1.0f - std::pow(1.0f - curColor.a, 4.0f);
 
-        gradientStops.append(QGradientStop(tfpoint->getPosition(), utilqt::toQColor(curColor)));
+        gradientStops.append(QGradientStop(tfpoint.getPosition(), utilqt::toQColor(curColor)));
     }
 
     // set bounds of the gradient
@@ -243,11 +243,11 @@ QPixmap toQPixmap(const IsoValueProperty& property, const QSize& size) {
     painter.setPen(QPen(Qt::black, 1.0, Qt::SolidLine));
     painter.setRenderHint(QPainter::Antialiasing);
     // add vertical lines for each isovalue
-    for (auto isovalue : property.get()) {
-        vec4 curColor = isovalue->getColor();
+    for (const auto& isovalue : property.get()) {
+        vec4 curColor = isovalue.getColor();
         // increase alpha to allow better visibility by 1 - (1 - a)^4
         curColor.a = 1.0f - std::pow(1.0f - curColor.a, 4.0f);
-        double pos = normalize(isovalue->getPosition()) * size.width();
+        double pos = normalize(isovalue.getPosition()) * size.width();
 
         painter.setBrush(utilqt::toQColor(curColor));
         painter.drawPolygon(QPolygonF(
@@ -278,12 +278,12 @@ QPixmap toQPixmap(const util::TFPropertyConcept& propertyConcept, const QSize& s
         // draw TF gradient on top
 
         QVector<QGradientStop> gradientStops;
-        for (auto tfpoint : *propertyConcept.getTransferFunction()) {
-            vec4 curColor = tfpoint->getColor();
+        for (const auto& tfpoint : *propertyConcept.getTransferFunction()) {
+            vec4 curColor = tfpoint.getColor();
             // increase alpha to allow better visibility by 1 - (1 - a)^4
             curColor.a = 1.0f - std::pow(1.0f - curColor.a, 4.0f);
 
-            gradientStops.append(QGradientStop(tfpoint->getPosition(), utilqt::toQColor(curColor)));
+            gradientStops.append(QGradientStop(tfpoint.getPosition(), utilqt::toQColor(curColor)));
         }
 
         // set bounds of the gradient
@@ -309,11 +309,11 @@ QPixmap toQPixmap(const util::TFPropertyConcept& propertyConcept, const QSize& s
 
         painter.setPen(QPen(Qt::black, 1.0, Qt::SolidLine));
         // add vertical lines for each isovalue
-        for (auto isovalue : *propertyConcept.getIsovalues()) {
-            vec4 curColor = isovalue->getColor();
+        for (const auto& isovalue : *propertyConcept.getIsovalues()) {
+            vec4 curColor = isovalue.getColor();
             // increase alpha to allow better visibility by 1 - (1 - a)^4
             curColor.a = 1.0f - std::pow(1.0f - curColor.a, 4.0f);
-            double pos = normalize(isovalue->getPosition()) * size.width();
+            double pos = normalize(isovalue.getPosition()) * size.width();
 
             painter.setBrush(utilqt::toQColor(curColor));
             painter.drawPolygon(QPolygonF(

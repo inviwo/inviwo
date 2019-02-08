@@ -94,7 +94,7 @@ public slots:
     void updateSelection(const std::vector<TFPrimitive *> selection);
 
 private:
-    virtual void onTFPrimitiveChange(const TFPrimitive *p) override;
+    virtual void onTFPrimitiveChange(const TFPrimitive &p) override;
 
     void informWidgets();
 

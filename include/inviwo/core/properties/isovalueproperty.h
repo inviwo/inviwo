@@ -90,9 +90,11 @@ public:
     // Overrides
     virtual void set(const IsoValueCollection& c) override;
     virtual void set(const Property* property) override;
-    virtual void onTFPrimitiveAdded(TFPrimitive* p) override;
-    virtual void onTFPrimitiveRemoved(TFPrimitive* p) override;
-    virtual void onTFPrimitiveChanged(const TFPrimitive* p) override;
+
+    // Overrides TFPrimitiveSetObserver
+    virtual void onTFPrimitiveAdded(TFPrimitive& p) override;
+    virtual void onTFPrimitiveRemoved(TFPrimitive& p) override;
+    virtual void onTFPrimitiveChanged(const TFPrimitive& p) override;
 
 private:
     ValueWrapper<dvec2> zoomH_;

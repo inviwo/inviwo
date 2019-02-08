@@ -62,8 +62,6 @@ TransferFunction::TransferFunction(const std::vector<TFPrimitiveData>& values,
     , dataRepr_{std::make_shared<LayerRAMPrecision<vec4>>(size2_t(textureSize, 1))}
     , data_(util::make_unique<Layer>(dataRepr_)) {
     clearMask();
-    setTitle("Transfer Function");
-    setSerializationKey("Points", "Point");
 }
 
 TransferFunction::TransferFunction(const TransferFunction& rhs)
@@ -100,9 +98,9 @@ size_t TransferFunction::getTextureSize() const { return dataRepr_->getDimension
 
 size_t TransferFunction::getNumPoints() const { return size(); }
 
-const TFPrimitive* TransferFunction::getPoint(size_t i) const { return get(i); }
+const TFPrimitive* TransferFunction::getPoint(size_t i) const { return &get(i); }
 
-TFPrimitive* TransferFunction::getPoint(size_t i) { return get(i); }
+TFPrimitive* TransferFunction::getPoint(size_t i) { return &get(i); }
 
 void TransferFunction::addPoint(const vec2& pos) { add(pos); }
 
@@ -118,7 +116,7 @@ void TransferFunction::addPoint(const TFPrimitiveData& point) { add(point); }
 
 void TransferFunction::addPoints(const std::vector<TFPrimitiveData>& points) { add(points); }
 
-void TransferFunction::removePoint(TFPrimitive* dataPoint) { remove(dataPoint); }
+void TransferFunction::removePoint(TFPrimitive* dataPoint) { remove(*dataPoint); }
 
 void TransferFunction::clearPoints() { clear(); }
 
@@ -277,6 +275,12 @@ void TransferFunction::calcTransferValues() const {
 
     invalidData_ = false;
 }
+
+std::string TransferFunction::getTitle() const { return "Transfer Function"; }
+
+std::string TransferFunction::serializationKey() const { return "Points"; }
+
+std::string TransferFunction::serializationItemKey() const { return "Point"; }
 
 bool operator==(const TransferFunction& lhs, const TransferFunction& rhs) {
     if (lhs.maskMin_ != rhs.maskMin_) return false;
