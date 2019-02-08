@@ -68,7 +68,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
-    message(WARNING "Inviwo is only supported for 64-bit architectures.")
+    message(FATAL_ERROR "Inviwo is only supported for 64-bit architectures. Resolve the error by deleting "
+	        "the cache (File->Delete Cache) and selecting 64-bit architecture when configuring.")
 endif()
 
 set_property(GLOBAL PROPERTY USE_FOLDERS On)
