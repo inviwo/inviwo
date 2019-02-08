@@ -52,8 +52,6 @@ class TFEditorPrimitive;
 
 class IVW_MODULE_QTWIDGETS_API TFEditorPrimitiveObserver : public Observer {
 public:
-    virtual ~TFEditorPrimitiveObserver() = default;
-
     virtual void onTFPrimitiveDoubleClicked(const TFEditorPrimitive* p);
 };
 
@@ -79,12 +77,13 @@ public:
      * @param pos      normalized position of primitive (scalar value and opacity)
      * @param size     base size of primitive
      */
-    TFEditorPrimitive(TFPrimitive* primitive = nullptr, QGraphicsScene* scene = nullptr,
+    TFEditorPrimitive(TFPrimitive& primitive, QGraphicsScene* scene = nullptr,
                       const vec2& pos = vec2(), double size = 14.0);
     virtual ~TFEditorPrimitive() = default;
 
-    void setPrimitive(TFPrimitive* primitive);
-    TFPrimitive* getPrimitive();
+    TFPrimitive& getPrimitive();
+    const TFPrimitive& getPrimitive() const;
+
 
     void setPosition(double pos);
     double getPosition() const;
@@ -169,7 +168,7 @@ protected:
     QPointF currentPos_;  //!< position within scene rect (not normalized)
     bool hovered_;
 
-    TFPrimitive* data_;
+    TFPrimitive& data_;
 
 private:
     void updatePosition(const QPointF& pos);

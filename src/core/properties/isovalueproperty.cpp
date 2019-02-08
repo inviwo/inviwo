@@ -167,17 +167,17 @@ void IsoValueProperty::set(const Property* property) {
     }
 }
 
-void IsoValueProperty::onTFPrimitiveAdded(TFPrimitive*) {
+void IsoValueProperty::onTFPrimitiveAdded(TFPrimitive&) {
     setInvalidationLevel(InvalidationLevel::InvalidResources);
     propertyModified();
 }
 
-void IsoValueProperty::onTFPrimitiveRemoved(TFPrimitive*) {
+void IsoValueProperty::onTFPrimitiveRemoved(TFPrimitive&) {
     setInvalidationLevel(InvalidationLevel::InvalidResources);
     propertyModified();
 }
 
-void IsoValueProperty::onTFPrimitiveChanged(const TFPrimitive*) {
+void IsoValueProperty::onTFPrimitiveChanged(const TFPrimitive&) {
     setInvalidationLevel(InvalidationLevel::InvalidOutput);
     propertyModified();
 }

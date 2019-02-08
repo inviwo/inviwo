@@ -109,10 +109,12 @@ public:
     // Override
     virtual void set(const TransferFunction& property) override;
     virtual void set(const Property* property) override;
-    virtual void onTFPrimitiveAdded(TFPrimitive* p) override;
-    virtual void onTFPrimitiveRemoved(TFPrimitive* p) override;
-    virtual void onTFPrimitiveChanged(const TFPrimitive* p) override;
-    virtual void onTFTypeChanged(const TFPrimitiveSet* primitiveSet) override;
+
+    // Override TFPrimitiveSetObserver
+    virtual void onTFPrimitiveAdded(TFPrimitive& p) override;
+    virtual void onTFPrimitiveRemoved(TFPrimitive& p) override;
+    virtual void onTFPrimitiveChanged(const TFPrimitive& p) override;
+    virtual void onTFTypeChanged(const TFPrimitiveSet& primitiveSet) override;
 
 private:
     ValueWrapper<dvec2> zoomH_;

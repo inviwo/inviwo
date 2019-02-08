@@ -229,12 +229,12 @@ void TransferFunctionProperty::set(const Property* property) {
     }
 }
 
-void TransferFunctionProperty::onTFPrimitiveAdded(TFPrimitive*) { propertyModified(); }
+void TransferFunctionProperty::onTFPrimitiveAdded(TFPrimitive&) { propertyModified(); }
 
-void TransferFunctionProperty::onTFPrimitiveRemoved(TFPrimitive*) { propertyModified(); }
+void TransferFunctionProperty::onTFPrimitiveRemoved(TFPrimitive&) { propertyModified(); }
 
-void TransferFunctionProperty::onTFPrimitiveChanged(const TFPrimitive*) { propertyModified(); }
+void TransferFunctionProperty::onTFPrimitiveChanged(const TFPrimitive&) { propertyModified(); }
 
-void TransferFunctionProperty::onTFTypeChanged(const TFPrimitiveSet*) { propertyModified(); }
+void TransferFunctionProperty::onTFTypeChanged(const TFPrimitiveSet&) { propertyModified(); }
 
 }  // namespace inviwo

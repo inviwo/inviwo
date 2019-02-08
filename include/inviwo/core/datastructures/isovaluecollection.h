@@ -60,6 +60,12 @@ public:
                       const FileExtension& ext = FileExtension()) const override;
     virtual void load(const std::string& filename,
                       const FileExtension& ext = FileExtension()) override;
+
+    virtual std::string getTitle() const override;
+
+protected:
+    virtual std::string serializationKey() const override;
+    virtual std::string serializationItemKey() const override;
 };
 
 }  // namespace inviwo

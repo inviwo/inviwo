@@ -66,14 +66,14 @@ namespace inviwo {
 
 class ControlPointEquals {
 public:
-    ControlPointEquals(const TFPrimitive* p) : p_(p) {}
+    ControlPointEquals(const TFPrimitive& p) : p_(p) {}
     bool operator()(TFEditorPrimitive* editorPoint) { return editorPoint->getPrimitive() == p_; }
     bool operator<(TFEditorPrimitive* editorPoint) {
-        return editorPoint->getPrimitive()->getPosition() < p_->getPosition();
+        return editorPoint->getPrimitive().getPosition() < p_.getPosition();
     }
 
 private:
-    const TFPrimitive* p_;
+    const TFPrimitive& p_;
 };
 
 TFEditor::TFEditor(util::TFPropertyConcept* tfProperty,
@@ -109,7 +109,7 @@ TFEditor::TFEditor(util::TFPropertyConcept* tfProperty,
 
     // initialize editor with current tf
     if (tfPropertyPtr_->hasTF()) {
-        for (auto p : *tfPropertyPtr_->getTransferFunction()) {
+        for (auto& p : *tfPropertyPtr_->getTransferFunction()) {
             createControlPointItem(p);
         }
         // the next primitive inserted with Control+left click should be a control point
@@ -117,7 +117,7 @@ TFEditor::TFEditor(util::TFPropertyConcept* tfProperty,
     }
     // and isovalues
     if (tfPropertyPtr_->hasIsovalues()) {
-        for (auto p : *tfPropertyPtr_->getIsovalues()) {
+        for (auto& p : *tfPropertyPtr_->getIsovalues()) {
             createIsovalueItem(p);
         }
         // the next primitive inserted with Control+left click should be an isovalue,
@@ -479,7 +479,7 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             auto selection = getSelectedPrimitiveItems();
             for (auto& elem : selection) {
                 addControlPoint(elem->pos().x() + relativeSceneOffset_.x * 5.0,
-                                elem->getPrimitive()->getColor());
+                                elem->getPrimitive().getColor());
                 // deselect source primitives
                 elem->setSelected(false);
             }
@@ -650,7 +650,7 @@ void TFEditor::addIsovalue(const QPointF& pos) {
 void TFEditor::removeControlPoint(TFEditorPrimitive* controlPoint) {
     NetworkLock lock(tfPropertyPtr_->getProperty());
     for (auto& elem : tfSets_) {
-        elem->remove(controlPoint->getPrimitive());
+        if (elem->remove(controlPoint->getPrimitive())) break;
     }
 }
 
@@ -667,7 +667,7 @@ TFEditorPrimitive* TFEditor::getTFPrimitiveItemAt(const QPointF& pos) const {
 
 void TFEditor::onTFPrimitiveDoubleClicked(const TFEditorPrimitive*) { emit showColorDialog(); }
 
-void TFEditor::onControlPointAdded(TFPrimitive* p) {
+void TFEditor::onControlPointAdded(TFPrimitive& p) {
     const bool isIsovalue =
         tfPropertyPtr_->hasIsovalues() && util::contains(*tfPropertyPtr_->getIsovalues(), p);
     const bool isTFpoint =
@@ -682,7 +682,7 @@ void TFEditor::onControlPointAdded(TFPrimitive* p) {
     }
 }
 
-void TFEditor::createControlPointItem(TFPrimitive* p) {
+void TFEditor::createControlPointItem(TFPrimitive& p) {
     auto newpoint = new TFEditorControlPoint(p, this, controlPointSize_);
     if (selectNewPrimitives_) {
         newpoint->setSelected(true);
@@ -692,7 +692,7 @@ void TFEditor::createControlPointItem(TFPrimitive* p) {
     updateConnections();
 }
 
-void TFEditor::createIsovalueItem(TFPrimitive* p) {
+void TFEditor::createIsovalueItem(TFPrimitive& p) {
     auto newpoint = new TFEditorIsovalue(p, this, controlPointSize_);
     if (selectNewPrimitives_) {
         newpoint->setSelected(true);
@@ -702,7 +702,7 @@ void TFEditor::createIsovalueItem(TFPrimitive* p) {
     it = isovalueItems_.insert(it, newpoint);
 }
 
-void TFEditor::onControlPointRemoved(TFPrimitive* p) {
+void TFEditor::onControlPointRemoved(TFPrimitive& p) {
     // remove point from all groups
     for (auto& elem : groups_) {
         auto it = std::find_if(elem.begin(), elem.end(), ControlPointEquals(p));
@@ -727,7 +727,7 @@ void TFEditor::onControlPointRemoved(TFPrimitive* p) {
     }
 }
 
-void TFEditor::onControlPointChanged(const TFPrimitive*) {}
+void TFEditor::onControlPointChanged(const TFPrimitive&) {}
 
 void TFEditor::updateConnections() {
     std::stable_sort(points_.begin(), points_.end(), comparePtr{});
@@ -778,7 +778,7 @@ std::vector<TFPrimitive*> TFEditor::getSelectedPrimitives() const {
     std::vector<TFPrimitive*> selection;
     for (auto& elem : selectedItems()) {
         if (auto p = qgraphicsitem_cast<TFEditorPrimitive*>(elem)) {
-            selection.push_back(p->getPrimitive());
+            selection.push_back(&p->getPrimitive());
         }
     }
 

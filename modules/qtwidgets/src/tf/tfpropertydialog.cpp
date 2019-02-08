@@ -252,7 +252,7 @@ void TFPropertyDialog::initializeDialog() {
             port->onDisconnect(portChange);
         }
         // update value mapping for position widget with respect to TF type and port
-        onTFTypeChanged(nullptr);
+        onTFTypeChangedInternal();
 
         primitiveAlpha_ = new TFLineEdit();
         // only accept values in [0, 1]
@@ -428,22 +428,24 @@ void TFPropertyDialog::showEvent(QShowEvent* event) {
     PropertyEditorWidgetQt::showEvent(event);
 }
 
-void TFPropertyDialog::onTFPrimitiveAdded(TFPrimitive* p) {
+void TFPropertyDialog::onTFPrimitiveAdded(TFPrimitive& p) {
     tfEditor_->onControlPointAdded(p);
     updateFromProperty();
 }
 
-void TFPropertyDialog::onTFPrimitiveRemoved(TFPrimitive* p) {
+void TFPropertyDialog::onTFPrimitiveRemoved(TFPrimitive& p) {
     tfEditor_->onControlPointRemoved(p);
     updateFromProperty();
 }
 
-void TFPropertyDialog::onTFPrimitiveChanged(const TFPrimitive* p) {
+void TFPropertyDialog::onTFPrimitiveChanged(const TFPrimitive& p) {
     tfEditor_->onControlPointChanged(p);
     updateFromProperty();
 }
 
-void TFPropertyDialog::onTFTypeChanged(const TFPrimitiveSet*) {
+void TFPropertyDialog::onTFTypeChanged(const TFPrimitiveSet&) { onTFTypeChangedInternal(); }
+
+void TFPropertyDialog::onTFTypeChangedInternal() {
     // adjust value mapping in primitive widget for position
     dvec2 valueRange(0.0, 1.0);
     if (auto port = propertyPtr_->getVolumeInport()) {

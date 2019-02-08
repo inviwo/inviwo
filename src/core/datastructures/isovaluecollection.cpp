@@ -41,8 +41,6 @@ namespace inviwo {
 IsoValueCollection::IsoValueCollection(const std::vector<TFPrimitiveData>& values,
                                        TFPrimitiveSetType type)
     : TFPrimitiveSet(values, type) {
-    setTitle("Isovalues");
-    setSerializationKey("IsoValues", "IsoValue");
 }
 
 std::vector<FileExtension> IsoValueCollection::getSupportedExtensions() const {
@@ -71,5 +69,11 @@ void IsoValueCollection::load(const std::string& filename, const FileExtension& 
         throw DataReaderException("Unsupported format for loading isovalues", IvwContext);
     }
 }
+
+std::string IsoValueCollection::getTitle() const { return "Isovalues"; }
+
+std::string IsoValueCollection::serializationKey() const { return "IsoValues"; }
+
+std::string IsoValueCollection::serializationItemKey() const { return "IsoValue"; }
 
 }  // namespace inviwo

@@ -153,7 +153,7 @@ void exposeTFPrimitiveSet(pybind11::module &m) {
         .def("__setitem__",
              [](TFPrimitiveSet &ps, size_t i, const TFPrimitiveData &primitive) {
                  if (i >= ps.size()) throw py::index_error();
-                 ps[i]->setData(primitive);
+                 ps[i].setData(primitive);
              })
         // sequence protocol operations
         .def("__iter__",
@@ -168,12 +168,12 @@ void exposeTFPrimitiveSet(pybind11::module &m) {
         .def("add", py::overload_cast<const TFPrimitiveData &>(&TFPrimitiveSet::add))
         .def("add", py::overload_cast<const std::vector<TFPrimitiveData> &>(&TFPrimitiveSet::add))
 
-        .def("remove", [](TFPrimitiveSet &ps, TFPrimitive *primitive) { ps.remove(primitive); })
+        .def("remove", [](TFPrimitiveSet &ps, TFPrimitive &primitive) { ps.remove(primitive); })
         .def("__repr__", [](const TFPrimitiveSet &ps) {
             std::ostringstream oss;
             oss << "<TFPrimitiveSet:  " << ps.size() << " primitives";
             for (auto &p : ps) {
-                oss << "\n    " << p->getPosition() << ", " << color::rgba2hex(p->getColor());
+                oss << "\n    " << p.getPosition() << ", " << color::rgba2hex(p.getColor());
             }
             oss << ">";
             return oss.str();
@@ -214,7 +214,7 @@ void exposeTFPrimitiveSet(pybind11::module &m) {
             std::ostringstream oss;
             oss << "<TransferFunction:  " << tf.size() << " points";
             for (auto &p : tf) {
-                oss << "\n    " << p->getPosition() << ", " << color::rgba2hex(p->getColor());
+                oss << "\n    " << p.getPosition() << ", " << color::rgba2hex(p.getColor());
             }
             oss << ">";
             return oss.str();
@@ -238,7 +238,7 @@ void exposeTFPrimitiveSet(pybind11::module &m) {
             std::ostringstream oss;
             oss << "<IsoValueCollection:  " << ivc.size() << " isovalues";
             for (auto &p : ivc) {
-                oss << "\n    " << p->getPosition() << ", " << color::rgba2hex(p->getColor());
+                oss << "\n    " << p.getPosition() << ", " << color::rgba2hex(p.getColor());
             }
             oss << ">";
             return oss.str();

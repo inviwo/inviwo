@@ -79,10 +79,11 @@ public:
     TFEditorView* getEditorView() const;
 
 protected:
-    virtual void onTFPrimitiveAdded(TFPrimitive* p) override;
-    virtual void onTFPrimitiveRemoved(TFPrimitive* p) override;
-    virtual void onTFPrimitiveChanged(const TFPrimitive* p) override;
-    virtual void onTFTypeChanged(const TFPrimitiveSet* primitiveSet) override;
+    virtual void onTFPrimitiveAdded(TFPrimitive& p) override;
+    virtual void onTFPrimitiveRemoved(TFPrimitive& p) override;
+    virtual void onTFPrimitiveChanged(const TFPrimitive& p) override;
+    virtual void onTFTypeChanged(const TFPrimitiveSet& primitiveSet) override;
+    void onTFTypeChangedInternal();
 
     virtual void onMaskChange(const dvec2& mask) override;
     virtual void onZoomHChange(const dvec2& zoomH) override;
