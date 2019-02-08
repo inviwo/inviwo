@@ -99,7 +99,7 @@ int NumberLineEditPrivate::getPrecision(int availableWidth, uint fontHash, const
 
     int precision = 16;
     QString str = locale_.toString(refValue, 'g', precision);
-    while ((precision > 0) && (fm.horizontalAdvance(str) > availableWidth)) {
+    while ((precision > 0) && (fm.boundingRect(str).width() > availableWidth)) {
         str = locale_.toString(refValue, 'g', --precision);
     }
     it->second[availableWidth] = precision;
@@ -205,12 +205,12 @@ QString NumberLineEdit::textFromValue(double value) const {
         QFontMetrics fm = lineEdit()->fontMetrics();
 
         auto str = formatNumber(value);
-        if (fm.horizontalAdvance(str) < availableWidth) {
+        if (fm.boundingRect(str).width() < availableWidth) {
             return str;
         }
 
         str = nlePrivate_->formatAsScientific(value, availableWidth, qHash(lineEdit()->font()), fm);
-        if (fm.horizontalAdvance(str) > availableWidth) {
+        if (fm.boundingRect(str).width() > availableWidth) {
             str = nlePrivate_->formatAsScientific(value, 1);
         }
         return str;
