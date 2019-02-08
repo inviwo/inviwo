@@ -297,6 +297,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/licenseinfo.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/logcentral.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/logerrorcounter.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/logfilter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/memoryfilehandle.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/moduleutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/observer.h
@@ -560,6 +561,7 @@ set(SOURCE_FILES
     util/licenseinfo.cpp
     util/logcentral.cpp
     util/logerrorcounter.cpp
+    util/logfilter.cpp
     util/memoryfilehandle.cpp
     util/moduleutils.cpp
     util/observer.cpp
