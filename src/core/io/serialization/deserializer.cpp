@@ -88,30 +88,7 @@ void Deserializer::deserialize(const std::string& key, unsigned char& data,
     data = static_cast<unsigned char>(val);
 }
 
-void Deserializer::setLogger(Logger* logger) { logger_ = logger; }
-
-Logger* Deserializer::getLogger() const { return logger_; }
-
 void Deserializer::setExceptionHandler(ExceptionHandler handler) { exceptionHandler_ = handler; }
-
-void Deserializer::log(std::string logSource, LogLevel logLevel, LogAudience audience,
-                       const char* file, const char* function, int line, std::string msg) {
-    logger_->log(logSource, logLevel, audience, file, function, line, msg);
-}
-
-void Deserializer::logProcessor(Processor* processor, LogLevel level, LogAudience audience,
-                                std::string msg, const char* file, const char* function, int line) {
-    logger_->logProcessor(processor, level, audience, msg, file, function, line);
-}
-
-void Deserializer::logNetwork(LogLevel level, LogAudience audience, std::string msg,
-                              const char* file, const char* function, int line) {
-    logger_->logNetwork(level, audience, msg, file, function, line);
-}
-
-void Deserializer::logAssertion(const char* file, const char* function, int line, std::string msg) {
-    logger_->logAssertion(file, function, line, msg);
-}
 
 void Deserializer::convertVersion(VersionConverter* converter) {
     if (converter->convert(rootElement_)) {
@@ -128,7 +105,7 @@ void Deserializer::handleError(const ExceptionContext& context) {
         try {
             throw;
         } catch (SerializationException& e) {
-            util::log(logger_, e.getContext(), e.getMessage(), LogLevel::Warn);
+            util::log(getLogger(), e.getContext(), e.getMessage(), LogLevel::Warn);
         }
     }
 }

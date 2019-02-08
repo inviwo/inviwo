@@ -33,6 +33,7 @@
 #include <inviwo/core/io/serialization/serializebase.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/logfilter.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/io/serialization/nodedebugger.h>
 
@@ -52,7 +53,7 @@ class FactoryBase;
 template <typename T, typename K>
 class ContainerWrapper;
 
-class IVW_CORE_API Deserializer : public SerializeBase, public Logger {
+class IVW_CORE_API Deserializer : public SerializeBase, public LogFilter {
 public:
     /**
      * \brief Deserializer constructor
@@ -240,25 +241,9 @@ public:
 
     template <class Base, class T, class D>
     void deserializeAs(const std::string& key, std::unique_ptr<T, D>& data);
-
-    void setLogger(Logger* logger);
-    Logger* getLogger() const;
-
+    
     void setExceptionHandler(ExceptionHandler handler);
     void handleError(const ExceptionContext& context);
-
-    virtual void log(std::string logSource, LogLevel logLevel, LogAudience audience,
-                     const char* file, const char* function, int line, std::string msg) override;
-
-    virtual void logProcessor(Processor* processor, LogLevel level, LogAudience audience,
-                              std::string msg, const char* file, const char* function,
-                              int line) override;
-
-    virtual void logNetwork(LogLevel level, LogAudience audience, std::string msg, const char* file,
-                            const char* function, int line) override;
-
-    virtual void logAssertion(const char* file, const char* function, int line,
-                              std::string msg) override;
 
     void convertVersion(VersionConverter* converter);
 
@@ -305,7 +290,6 @@ private:
     std::vector<FactoryBase*> registeredFactories_;
 
     int inviwoWorkspaceVersion_ = 0;
-    Logger* logger_ = LogCentral::getPtr();
 };
 
 /**

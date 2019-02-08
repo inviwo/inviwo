@@ -40,12 +40,15 @@ namespace inviwo {
  */
 class IVW_CORE_API LogFilter : public Logger {
 public:
-    LogFilter(Logger* logger);
+    LogFilter(Logger* logger = LogCentral::getPtr());
     LogFilter(Logger* logger, LogVerbosity verbosity);
     virtual ~LogFilter() = default;
 
     void setVerbosity(LogVerbosity verbosity);
     LogVerbosity getVerbosity();
+
+    void setLogger(Logger *logger);
+    Logger* getLogger() const;
 
     virtual void log(std::string logSource, LogLevel level, LogAudience audience,
                      const char* file, const char* function, int line, std::string msg) override;

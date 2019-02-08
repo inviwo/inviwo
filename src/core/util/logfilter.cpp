@@ -31,7 +31,7 @@
 
 namespace inviwo {
 
-LogFilter::LogFilter(Logger* logger) : LogFilter{logger, LogVerbosity::Info}  {}
+LogFilter::LogFilter(Logger* logger) : LogFilter{logger, LogVerbosity::Info} {}
 
 LogFilter::LogFilter(Logger* logger, LogVerbosity verbosity)
     : logVerbosity_{verbosity}, logger_{logger} {}
@@ -40,24 +40,28 @@ void LogFilter::setVerbosity(LogVerbosity verbosity) { logVerbosity_ = verbosity
 
 LogVerbosity LogFilter::getVerbosity() { return logVerbosity_; }
 
-void LogFilter::log(std::string logSource, LogLevel level, LogAudience audience,
-                    const char* file, const char* function, int line, std::string msg) {
+void LogFilter::setLogger(Logger* logger) { logger_ = logger; }
+
+Logger* LogFilter::getLogger() const { return logger_; }
+
+void LogFilter::log(std::string logSource, LogLevel level, LogAudience audience, const char* file,
+                    const char* function, int line, std::string msg) {
     if (level >= logVerbosity_) {
-        logger_->log(logSource, level, audience, file, function, line, msg);
+        logger_->log(logSource, level, audience, file, function, line, std::move(msg));
     }
 }
 
 void LogFilter::logProcessor(Processor* processor, LogLevel level, LogAudience audience,
                              std::string msg, const char* file, const char* function, int line) {
     if (level >= logVerbosity_) {
-        logger_->logProcessor(processor, level, audience, msg, file, function, line);
+        logger_->logProcessor(processor, level, audience, std::move(msg), file, function, line);
     }
 }
 
 void LogFilter::logNetwork(LogLevel level, LogAudience audience, std::string msg, const char* file,
                            const char* function, int line) {
     if (level >= logVerbosity_) {
-        logger_->logNetwork(level, audience, msg, file, function, line);
+        logger_->logNetwork(level, audience, std::move(msg), file, function, line);
     }
 }
 
