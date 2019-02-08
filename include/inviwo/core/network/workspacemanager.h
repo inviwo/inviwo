@@ -145,8 +145,8 @@ public:
     /**
      *	Create a deserializer for a workspace stream, and apply all needed version updates.
      */
-    Deserializer createWorkspaceDeserializer(std::istream& stream,
-                                             const std::string& refPath) const;
+    Deserializer createWorkspaceDeserializer(std::istream& stream, const std::string& refPath,
+                                             Logger* logger = LogCentral::getPtr()) const;
 
 private:
     InviwoApplication* app_;

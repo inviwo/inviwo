@@ -382,9 +382,10 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
     d.deserialize("ProcessorNetworkVersion", version);
 
     if (version != processorNetworkVersion_) {
-        LogNetworkWarn("Loading old workspace ("
-                       << d.getFileName() << ") Processor Network version: " << version
-                       << ". Updating to version: " << processorNetworkVersion_ << ".");
+        LogNetworkSpecial((&d), LogLevel::Warn,
+                          "Loading old workspace ("
+                              << d.getFileName() << ") Processor Network version: " << version
+                              << ". Updating to version: " << processorNetworkVersion_ << ".");
         ProcessorNetworkConverter nv(version);
         d.convertVersion(&nv);
     }
