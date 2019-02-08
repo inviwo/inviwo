@@ -90,19 +90,18 @@ TFPrimitiveSet& TFPrimitiveSet::operator=(const TFPrimitiveSet& rhs) {
     return *this;
 }
 
-void TFPrimitiveSet::set(const_iterator begin, const_iterator end) {
-    size_t i = 0;
-    while (begin != end) {
-        if (i < values_.size()) {
-            *values_[i] = *begin;
-        } else {
-            add(*begin);
-        }
-        ++begin;
-        ++i;
+void TFPrimitiveSet::set(const_iterator sbegin, const_iterator send) {
+    auto dbegin = values_.begin();
+    auto dend = values_.end();
+
+    while (dbegin != dend && sbegin != send) {
+        **dbegin++ = *sbegin++;
     }
-    while (values_.size() > i) {
-        remove(--values_.end());
+    while (sbegin != send) {
+        add(*sbegin++);
+    }
+    while (dbegin != dend) {
+        remove(--dend);
     }
     invalidate();
 }
@@ -169,13 +168,13 @@ TFPrimitive& TFPrimitiveSet::get(size_t i) { return *sorted_[i]; }
 
 const TFPrimitive& TFPrimitiveSet::get(size_t i) const { return *sorted_[i]; }
 
-TFPrimitive& TFPrimitiveSet::front() { *sorted_.front(); }
+TFPrimitive& TFPrimitiveSet::front() { return *sorted_.front(); }
 
-const TFPrimitive& TFPrimitiveSet::front() const { *sorted_.front(); }
+const TFPrimitive& TFPrimitiveSet::front() const { return *sorted_.front(); }
 
-TFPrimitive& TFPrimitiveSet::back() { *sorted_.back(); }
+TFPrimitive& TFPrimitiveSet::back() { return *sorted_.back(); }
 
-const TFPrimitive& TFPrimitiveSet::back() const { *sorted_.back(); }
+const TFPrimitive& TFPrimitiveSet::back() const { return *sorted_.back(); }
 
 std::vector<TFPrimitiveData> TFPrimitiveSet::get() const {
     std::vector<TFPrimitiveData> values;
