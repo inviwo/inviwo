@@ -32,6 +32,7 @@
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/io/serialization/deserializer.h>
 #include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/util/logfilter.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/properties/propertyfactory.h>
@@ -119,9 +120,11 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
         try {
             auto istream = filesystem::ifstream(utilqt::fromQString(filename));
             if (istream.is_open()) {
+                LogFilter logger{LogCentral::getPtr(), LogVerbosity::None};
                 auto d = mainWindow_->getInviwoApplication()
                              ->getWorkspaceManager()
-                             ->createWorkspaceDeserializer(istream, utilqt::fromQString(filename));
+                             ->createWorkspaceDeserializer(istream, utilqt::fromQString(filename),
+                                                           &logger);
                 d.setExceptionHandler([](const ExceptionContext) {});
                 d.deserialize("WorkspaceAnnotations", annotations);
             } else {

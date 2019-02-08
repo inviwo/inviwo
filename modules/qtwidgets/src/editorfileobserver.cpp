@@ -83,7 +83,7 @@ void EditorFileObserver::setReloadFileCallback(std::function<void()> cb) {
     reloadFileCallback_ = cb;
 }
 
-void EditorFileObserver::fileChanged(const std::string& fileName) {
+void EditorFileObserver::fileChanged(const std::string&) {
     if (ignoreNextUpdate_) {
         ignoreNextUpdate_ = false;
         return;
