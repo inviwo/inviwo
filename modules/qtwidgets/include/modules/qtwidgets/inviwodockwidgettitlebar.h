@@ -65,8 +65,6 @@ public:
 
     virtual void paintEvent(QPaintEvent *) override;
 
-    void setLabel(const QString &str);
-
     void setSticky(bool toggle);
     bool isSticky() const;
 
@@ -77,6 +75,9 @@ signals:
     void stickyFlagChanged(bool sticky);
 protected slots:
     virtual void showEvent(QShowEvent *event) override;
+
+protected:
+    virtual bool eventFilter(QObject* obj, QEvent *event) override;
 
 private:
     void stickyBtnToggled(bool toggle);

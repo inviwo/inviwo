@@ -49,10 +49,6 @@ InviwoDockWidget::InviwoDockWidget(QString title, QWidget *parent) : QDockWidget
     dockWidgetTitleBar_ = new InviwoDockWidgetTitleBar(this);
     setTitleBarWidget(dockWidgetTitleBar_);
 
-    QObject::connect(this, &QDockWidget::topLevelChanged, dockWidgetTitleBar_,
-                     &InviwoDockWidgetTitleBar::floating);
-    QObject::connect(this, &QDockWidget::windowTitleChanged,
-                     [&](const QString &str) { dockWidgetTitleBar_->setLabel(str); });
     QObject::connect(dockWidgetTitleBar_, &InviwoDockWidgetTitleBar::stickyFlagChanged, this,
                      &InviwoDockWidget::stickyFlagChanged);
     QObject::connect(this, &QDockWidget::allowedAreasChanged, dockWidgetTitleBar_,

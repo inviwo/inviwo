@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2018 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,38 +26,63 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#ifndef IVW_SHADERWIDGET_H
-#define IVW_SHADERWIDGET_H
-
-#include <modules/openglqt/openglqtmoduledefine.h>
+#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <modules/qtwidgets/inviwodockwidget.h>
-#include <modules/qtwidgets/editorfileobserver.h>
+
+#include <inviwo/core/util/fileobserver.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QObject>
+#include <warn/pop>
+
+#include <functional>
+
+class QWidget;
 
 namespace inviwo {
 
-class ShaderObject;
-class CodeEdit;
+namespace utilqt {
 
-class IVW_MODULE_OPENGLQT_API ShaderWidget : public InviwoDockWidget {
+class IVW_MODULE_QTWIDGETS_API EditorFileObserver : public QObject, public FileObserver {
 public:
-    ShaderWidget(const ShaderObject*, QWidget* parent = nullptr);
-    virtual ~ShaderWidget();
+    explicit EditorFileObserver(QWidget *parent, const QString &title = "Editor",
+                                const std::string filename = std::string{});
+    virtual ~EditorFileObserver() = default;
 
-protected:
-    virtual void closeEvent(QCloseEvent* event) override;
+    void setTitle(const QString &title);
+    const QString& getTitle() const;
+
+    void resumeObservingFile();
+    void suspendObservingFile();
+
+    void ignoreNextUpdate();
+
+    void setFileName(const std::string &filename);
+    const std::string &getFileName() const;
+
+    void setModifiedCallback(std::function<void(bool)> cb);
+    void setReloadFileCallback(std::function<void()> cb);
 
 private:
-    void save();
-    static std::string getFileName(const ShaderObject* obj);
+    virtual void fileChanged(const std::string &fileName) override;
+    virtual bool eventFilter(QObject *obj, QEvent *ev) override;
+    void queryReloadFile();
+    bool widgetIsFocused() const;
 
-    const ShaderObject* obj_;
-    utilqt::EditorFileObserver fileObserver_;
+    std::function<void(bool)> modifiedCallback_;
+    std::function<void()> reloadFileCallback_;
 
-    CodeEdit *shadercode_;
+    QWidget *parent_;
+    QString title_;
+    std::string filename_;
+    bool fileChangedInBackground_ = false;
+    bool reloadQueryInProgress_ = false;
+    bool ignoreNextUpdate_ = false;
 };
 
-}  // namespace inviwo
+}  // namespace utilqt
 
-#endif  // IVW_SHADERWIDGET_H
+}  // namespace inviwo

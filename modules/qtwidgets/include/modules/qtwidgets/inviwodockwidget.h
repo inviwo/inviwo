@@ -43,6 +43,14 @@ namespace inviwo {
 
 class InviwoDockWidgetTitleBar;
 
+/**
+ * \brief dock widget with a custom title bar and sticky status. Docking while dragging the widget
+ * is prevented if the sticky flag is false. In case the window title of the dock widget contains
+ * the string "[*]", this string will be replaced with either "*" or nothing based on the
+ * isWindowModified() state of the widget.
+ *
+ * \see QWidget::setWindowTitle
+ */
 class IVW_MODULE_QTWIDGETS_API InviwoDockWidget : public QDockWidget {
 #include <warn/push>
 #include <warn/ignore/all>
