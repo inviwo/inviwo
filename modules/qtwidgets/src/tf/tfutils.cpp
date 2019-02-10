@@ -39,6 +39,7 @@
 #include <inviwo/core/io/datareaderexception.h>
 #include <inviwo/core/io/datawriterexception.h>
 #include <inviwo/core/datastructures/transferfunction.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
 
 #include <modules/qtwidgets/inviwofiledialog.h>
 #include <modules/qtwidgets/inviwoqtutils.h>

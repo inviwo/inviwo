@@ -35,6 +35,8 @@
 #include <inviwo/core/datastructures/transferfunction.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/interaction/pickingmapper.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/ports/imageport.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/base/algorithm/dataminmax.h>

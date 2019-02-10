@@ -28,12 +28,17 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/inviwoqtutils.h>
-#include <inviwo/core/util/document.h>
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/io/imagewriterutil.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/processors/canvasprocessor.h>
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/datastructures/image/image.h>
+#include <inviwo/core/datastructures/transferfunction.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/properties/isovalueproperty.h>
+#include <inviwo/core/properties/tfpropertyconcept.h>
 
 #include <inviwo/core/util/logcentral.h>
 #include <warn/push>

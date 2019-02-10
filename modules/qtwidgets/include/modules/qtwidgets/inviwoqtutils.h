@@ -32,13 +32,7 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/util/document.h>
-#include <inviwo/core/datastructures/image/layer.h>
-#include <inviwo/core/datastructures/image/image.h>
-#include <inviwo/core/datastructures/transferfunction.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/core/properties/isovalueproperty.h>
-#include <inviwo/core/properties/tfpropertyconcept.h>
+#include <inviwo/core/datastructures/image/imagetypes.h>
 
 #include <locale>
 #include <ios>
@@ -60,6 +54,18 @@ namespace inviwo {
 
 class Property;
 class ProcessorNetwork;
+
+class TransferFunction;
+class TransferFunctionProperty;
+class IsoTFProperty;
+class IsoValueProperty;
+
+class Layer;
+class Image;
+
+namespace util {
+class TFPropertyConcept;
+}
 
 namespace utilqt {
 
