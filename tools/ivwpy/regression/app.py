@@ -33,6 +33,7 @@ import datetime
 import json
 import shutil
 import filecmp
+import logging
 
 from . import inviwoapp
 from . import test
@@ -43,6 +44,7 @@ from . imagecompare import *
 from . generatereport import *
 from . database import *
 from . reporttest import *
+from . logprinter import *
 
 
 def findModuleTest(path):
@@ -60,6 +62,13 @@ def findModuleTest(path):
     return tests
 
 class App:
+    class Summary:
+        def __init__(self):
+            self.successes = 0
+            self.failures = 0
+            self.skipped = 0
+            self.errors = []
+
     def __init__(self,
                  appPath,
                  moduleTestPaths,
@@ -76,6 +85,7 @@ class App:
         self.htmlFile = htmlFile
         self.sqlFile = sqlFile
         self.testSettings = testSettings
+        self.summary = App.Summary()
 
         tests = [findModuleTest(p) for p in moduleTestPaths]
         self.tests = list(itertools.chain(*tests))
@@ -137,33 +147,33 @@ class App:
 
     def runTests(self, testrange = slice(0,None), testfilter = lambda x: True, onlyRunFailed = False):
         selected, reasons = self.filterTests(testrange, testfilter, onlyRunFailed)
-
         run = self.db.addRun()
+        for i, test in enumerate(self.tests):
+            with LogPrinter(logging.getLogger(__name__)) as l:
+                if i in selected:
+                    l.pair("Running test {:3d} (Enabled: {:d}, Total: {:d})"
+                           .format(i, len(selected), len(self.tests)), test.toString())
 
-        for i,test in enumerate(self.tests):
-            print_info("#"*80)
-            if i in selected:
-                print_pair("Running test {:3d} (Enabled: {:d}, Total: {:d})"
-                            .format(i, len(selected), len(self.tests)),
-                    test.toString())
-
-                report = self.runTest(test, run)
-
-                self.reports[test.toString()] = report
-                for k,v in report.items():
-                    print_pair(k,str(v), width=15)
-
-                if len(report["failures"])>0:
-                    print_error("{:>15} : {}".format("Result", "Failed " + ", ".join(report["failures"].keys())))
+                    report = self.runTest(test, run)
+                    self.reports[test.toString()] = report
+                    for k,v in report.items():
+                        l.pair(k, str(v), width=15)
+    
+                    if len(report["failures"])>0:
+                        self.summary.failures += 1
+                        self.summary.errors.append(test.toString() + " Failures: " + ", ".join(report["failures"].keys()))
+                        l.success = False
+                        l.error("{:>15} : {}".format("Result", "Failed " + ", ".join(report["failures"].keys())))
+                    else:
+                        self.summary.successes += 1
+                        l.good("{:>15} : {}".format("Result", "Success"))
                 else:
-                    print_good("{:>15} : {}".format("Result", "Success"))
-                print()
-            else:
-                print_pair("Skipping test {:3d} (Enabled: {:d}, Total: {:d})"
-                            .format(i, len(selected), len(self.tests)),
-                    test.toString())
-                dbtest = self.db.getOrAddTest(test.module, test.name)
-                self.db.addSkipRun(run = run, test = dbtest, reason = reasons[i])
+                    self.summary.skipped += 1
+                    l.pair("Skipping test {:3d} (Enabled: {:d}, Total: {:d})"
+                                .format(i, len(selected), len(self.tests)),
+                           test.toString())
+                    dbtest = self.db.getOrAddTest(test.module, test.name)
+                    self.db.addSkipRun(run = run, test = dbtest, reason = reasons[i])
 
     def compareImages(self, test, report):
         refimgs = test.getImages()
@@ -263,6 +273,14 @@ class App:
                 if safeget(report, "config", "enabled", failure = True):
                     return False
         return True
+
+    def printSummary(self, out = sys.stdout):
+        if(self.success()):
+            print_good("Success: {0.successes}, Failues: {0.failures}, Skipped: {0.skipped}".format(self.summary), file=out)
+        else:
+            print_error("Success: {0.successes}, Failues: {0.failures}, Skipped: {0.skipped}".format(self.summary), file=out)
+        for i in self.summary.errors:
+            print_error(i, file=out)
 
     def updateDatabase(self, report, run):
         dbtest = self.db.getOrAddTest(report["module"], report["name"])

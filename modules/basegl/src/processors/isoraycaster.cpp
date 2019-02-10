@@ -30,9 +30,9 @@
 #include <modules/basegl/processors/isoraycaster.h>
 #include <modules/opengl/volume/volumegl.h>
 #include <modules/opengl/texture/textureunit.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/volume/volumeutils.h>
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/shader/shaderutils.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
 namespace inviwo {
 

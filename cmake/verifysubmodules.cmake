@@ -41,8 +41,10 @@ function(verify_submodules modules_file)
 			list(LENGTH dircontents len)
 			if(${len} EQUAL 0)
 				message(FATAL_ERROR "Inviwo found an emtpy submodule at '${CMAKE_MATCH_1}'. "
-					"This probably means that you have not cloned all submodules. Run \n" 
-					"git submodule update --init\nto clone them.")
+					"This probably means that you have not cloned all submodules. Run\n"
+					"git submodule sync --recursive\n" 
+					"git submodule update --init --recursive\n"
+					"to clone them.")
 			endif()
 		endif()
      endforeach()
