@@ -51,7 +51,7 @@ int main(int argc, char** argv) {
 #else
         ::testing::InitGoogleTest(&argc, argv);
 #endif
-        ConfigurableGTestEventListener::setup();
+        inviwo::ConfigurableGTestEventListener::setup();
         ret = RUN_ALL_TESTS();
     }
     return ret;
