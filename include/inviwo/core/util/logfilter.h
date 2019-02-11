@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,54 +26,47 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#ifdef _MSC_VER
-#pragma comment(linker, "/SUBSYSTEM:CONSOLE")
-#endif
-
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/logcentral.h>
-#include <inviwo/core/util/consolelogger.h>
-#include <inviwo/core/common/coremodulesharedlibrary.h>
-#include <modules/python3/python3modulesharedlibrary.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <gtest/gtest.h>
-#include <warn/pop>
+#include <string>
 
-using namespace inviwo;
+namespace inviwo {
 
-int main(int argc, char** argv) {
+class Processor;
 
-    LogCentral::init();
-    auto logger = std::make_shared<ConsoleLogger>();
-    LogCentral::getPtr()->setVerbosity(LogVerbosity::Error);
-    LogCentral::getPtr()->registerLogger(logger);
-    InviwoApplication app(argc, argv, "Inviwo-Unittests-Python");
+/**
+ * \class LogFilter
+ * \brief filters log messages based on the verbosity level. Messages below the selected verbosity
+ * will be ignored.
+ */
+class IVW_CORE_API LogFilter : public Logger {
+public:
+    LogFilter(Logger* logger = LogCentral::getPtr());
+    LogFilter(Logger* logger, LogVerbosity verbosity);
+    virtual ~LogFilter() = default;
 
-    {
-        std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules;
-        modules.emplace_back(createInviwoCore());
-        modules.emplace_back(createPython3Module());
-        app.registerModules(std::move(modules));
-    }
+    void setVerbosity(LogVerbosity verbosity);
+    LogVerbosity getVerbosity();
 
-    app.processFront();
+    void setLogger(Logger *logger);
+    Logger* getLogger() const;
 
-    int ret = -1;
-    {
+    virtual void log(std::string logSource, LogLevel level, LogAudience audience,
+                     const char* file, const char* function, int line, std::string msg) override;
 
-#ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
-        VLDDisable();
-        ::testing::InitGoogleTest(&argc, argv);
-        VLDEnable();
-#else
-        ::testing::InitGoogleTest(&argc, argv);
-#endif
-        ret = RUN_ALL_TESTS();
-    }
+    virtual void logProcessor(Processor* processor, LogLevel level, LogAudience audience,
+                              std::string msg, const char* file, const char* function,
+                              int line) override;
 
-    return ret;
-}
+    virtual void logNetwork(LogLevel level, LogAudience audience, std::string msg, const char* file,
+                            const char* function, int line) override;
+
+private:
+    LogVerbosity logVerbosity_;
+    Logger* logger_;
+};
+
+}  // namespace inviwo

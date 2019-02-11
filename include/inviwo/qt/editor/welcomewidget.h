@@ -33,9 +33,7 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-
 #include <QSplitter>
-
 #include <warn/pop>
 
 class QTabWidget;

@@ -105,7 +105,7 @@ void Deserializer::handleError(const ExceptionContext& context) {
         try {
             throw;
         } catch (SerializationException& e) {
-            util::log(e.getContext(), e.getMessage(), LogLevel::Warn);
+            util::log(getLogger(), e.getContext(), e.getMessage(), LogLevel::Warn);
         }
     }
 }
