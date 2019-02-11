@@ -151,7 +151,7 @@ def unittest(def state) {
             sh '''
                 rc=0
                 for unittest in inviwo-unittests-*
-                    ./${unittest} || rc=$?
+                do ./${unittest} || rc=$?
                 done
                 exit ${rc}
             '''
