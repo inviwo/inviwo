@@ -33,6 +33,8 @@
 
 #include <inviwo/core/common/inviwo.h>
 
+#include <inviwo/testutil/configurablegtesteventlistener.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <gtest/gtest.h>
@@ -50,6 +52,7 @@ int main(int argc, char** argv) {
 #else
         ::testing::InitGoogleTest(&argc, argv);
 #endif
+        ConfigurableGTestEventListener::setup();
         ret = RUN_ALL_TESTS();
     }
 
