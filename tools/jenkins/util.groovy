@@ -151,8 +151,6 @@ def unittest(def state) {
             sh '''
                 rc=0
                 for unittest in inviwo-unittests-*
-                    do echo ==================================
-                    echo Running: ${unittest}
                     ./${unittest} || rc=$?
                 done
                 exit ${rc}
