@@ -55,7 +55,7 @@ node {
         util.slack(state, "#jenkins-branch-pr")
         if (!state.errors.isEmpty()) {
             println "Errors in: ${state.errors.join(", ")}"
-            state.build.displayName = "#${state.build.number} Errors: ${state.errors.join(', ')}"
+            state.build.displayName = "#${state.build.number} Failure"
             state.build.description = "Errors in: ${state.errors.join(' ')}"
         } else {
             state.build.displayName = "#${state.build.number} Success"

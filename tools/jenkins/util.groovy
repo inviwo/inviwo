@@ -318,7 +318,7 @@ def buildStandard(Map args = [:]) {
         if (args.state.env.Clean_Build?.equals("true")) clean()
         def defaultOpts = defaultCMakeOptions(args.state.env.Build_Type?:"Release")
         defaultOpts.putAll(envCMakeOptions(args.state.env))
-        if (args.state.env.Use_Ccache?.equals("true")) defaultOpts.putAll(ccacheOption())
+        if (!args.state.env.Use_Ccache?.equals("false")) defaultOpts.putAll(ccacheOption())
         if (args.state.env.opts) {
             def envopts = args.state.env.opts.tokenize(';').collect{it.tokenize('=')}.collectEntries()
             defaultOpts.putAll(envopts)
