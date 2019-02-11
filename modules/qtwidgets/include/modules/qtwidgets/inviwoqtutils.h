@@ -64,7 +64,7 @@ class Layer;
 class Image;
 
 namespace util {
-class TFPropertyConcept;
+struct TFPropertyConcept;
 }
 
 namespace utilqt {
