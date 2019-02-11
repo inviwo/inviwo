@@ -1,4 +1,3 @@
-#include "..\include\inviwo\testutil\configurablegtesteventlistener.h"
 /*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
