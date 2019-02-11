@@ -49,10 +49,6 @@ def defaultProperties() {
                 name: 'Build_Type'
             )
         ])
-        /*,
-        pipelineTriggers([
-            [$class: 'GitHubPushTrigger']
-        ])*/
     ]
     return params
 }
@@ -184,6 +180,7 @@ def regression(def state, modulepaths) {
                         --build_type ${state.env.Build_Type?:"Release"} \
                         --header ${state.env.JENKINS_HOME}/inviwo-config/header.html \
                         --output . \
+                        --summary \
                         --modules ${modulepaths.join(' ')}
             """        
         }
