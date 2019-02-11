@@ -183,8 +183,8 @@ public:
 
     virtual void onTFPrimitiveChange(const TFPrimitive* p);
 
-    virtual void serialize(Serializer& s) const;
-    virtual void deserialize(Deserializer& d);
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
 
     /**
      * gets called every time when a primitive is added, removed, or changed before notifying
