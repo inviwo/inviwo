@@ -35,6 +35,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/geometry/geometrytype.h>
 #include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/polylineport.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -46,6 +47,9 @@
 #include <inviwo/core/properties/eventproperty.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/inviwoopengl.h>
+
+#include <memory>
+#include <inviwo/core/datastructures/buffer/buffer.h>
 
 namespace inviwo {
 
@@ -127,7 +131,9 @@ protected:
     void updateMaxSliceNumber();
 
     void renderPositionIndicator();
+    void renderPolyline();
     void updateIndicatorMesh();
+    void updatePolylineMesh();
 
     // updates the selected position, pos is given in normalized viewport coordinates, i.e. [0,1]
     void setVolPosFromScreenPos(vec2 pos);
@@ -148,10 +154,12 @@ private:
     void eventStepSliceDown(Event*);
     void eventGestureShiftSlice(Event*);
     void eventUpdateMousePos(Event*);
+    void eventAddPolylinePoint(Event*);
 
     void updateFromWorldPosition();
 
     VolumeInport inport_;
+    PolylineInport polyline_;
     ImageOutport outport_;
     Shader shader_;
     Shader indicatorShader_;
@@ -180,6 +188,7 @@ private:
     BoolProperty posPicking_;
     BoolProperty showIndicator_;
     FloatVec4Property indicatorColor_;
+    FloatProperty indicatorPointSize_;
 
     BoolProperty tfMappingEnabled_;
     TransferFunctionProperty transferFunction_;
@@ -199,6 +208,10 @@ private:
     EventProperty stepSliceDown_;
 
     EventProperty gestureShiftSlice_;
+    EventProperty mousePickPolylinePoint_;
+    BoolProperty enablePolylinePicking_;
+    FloatVec3Property lastPolylinePoint_;
+    std::shared_ptr<Buffer<vec2, BufferTarget::Data>> polylineVertexBuf_;
 
     std::unique_ptr<Mesh> meshCrossHair_;
 

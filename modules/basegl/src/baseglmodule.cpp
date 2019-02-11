@@ -32,6 +32,8 @@
 #include <modules/basegl/processors/axisalignedcutplane.h>
 #include <modules/basegl/processors/background.h>
 #include <modules/basegl/processors/cuberenderer.h>
+#include <modules/basegl/processors/coloroffset.h>
+#include <modules/basegl/processors/delaunaytriangulation2d.h>
 #include <modules/basegl/processors/drawlines.h>
 #include <modules/basegl/processors/drawpoints.h>
 #include <modules/basegl/processors/entryexitpointsprocessor.h>
@@ -65,6 +67,7 @@
 #include <modules/basegl/processors/meshrenderprocessorgl.h>
 #include <modules/basegl/processors/multichannelraycaster.h>
 #include <modules/basegl/processors/pointrenderer.h>
+#include <modules/basegl/processors/polylinegrabber.h>
 #include <modules/basegl/processors/redgreenprocessor.h>
 #include <modules/basegl/processors/sphererenderer.h>
 #include <modules/basegl/processors/splitimage.h>
@@ -100,6 +103,8 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerProcessor<AxisAlignedCutPlane>();
     registerProcessor<Background>();
     registerProcessor<CubeRenderer>();
+    registerProcessor<ColorOffset>();
+    registerProcessor<DelaunayTriangulation2D>();
     registerProcessor<DrawLines>();
     registerProcessor<DrawPoints>();
     registerProcessor<EntryExitPoints>();
@@ -119,6 +124,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerProcessor<MeshRenderProcessorGL>();
     registerProcessor<MultichannelRaycaster>();
     registerProcessor<PointRenderer>();
+    registerProcessor<PolylineGrabber>();
     registerProcessor<RedGreenProcessor>();
     registerProcessor<SphereRenderer>();
     registerProcessor<TubeRendering>();

@@ -7,6 +7,11 @@ ivw_module(BaseGL)
 set(HEADER_FILES
     include/modules/basegl/algorithm/entryexitpoints.h
     include/modules/basegl/algorithm/imageconvolution.h
+    include/modules/basegl/algorithm/delaunay.h
+    include/modules/basegl/algorithm/edge.h
+    include/modules/basegl/algorithm/numeric.h
+    include/modules/basegl/algorithm/triangle.h
+    include/modules/basegl/algorithm/vec2_indexed.h
     include/modules/basegl/baseglmodule.h
     include/modules/basegl/baseglmoduledefine.h
     include/modules/basegl/datastructures/meshshadercache.h
@@ -16,7 +21,9 @@ set(HEADER_FILES
     include/modules/basegl/datavisualizer/volumeslicevisualizer.h
     include/modules/basegl/processors/axisalignedcutplane.h
     include/modules/basegl/processors/background.h
+    include/modules/basegl/processors/coloroffset.h
     include/modules/basegl/processors/cuberenderer.h
+    include/modules/basegl/processors/delaunaytriangulation2d.h
     include/modules/basegl/processors/drawlines.h
     include/modules/basegl/processors/drawpoints.h
     include/modules/basegl/processors/entryexitpointsprocessor.h
@@ -50,6 +57,7 @@ set(HEADER_FILES
     include/modules/basegl/processors/meshrenderprocessorgl.h
     include/modules/basegl/processors/multichannelraycaster.h
     include/modules/basegl/processors/pointrenderer.h
+    include/modules/basegl/processors/polylinegrabber.h
     include/modules/basegl/processors/redgreenprocessor.h
     include/modules/basegl/processors/sphererenderer.h
     include/modules/basegl/processors/splitimage.h
@@ -76,6 +84,11 @@ ivw_group("Header Files" ${HEADER_FILES})
 set(SOURCE_FILES
     src/algorithm/entryexitpoints.cpp
     src/algorithm/imageconvolution.cpp
+    src/algorithm/delaunay.cpp
+    src/algorithm/edge.cpp
+    src/algorithm/numeric.cpp
+    src/algorithm/triangle.cpp
+    src/algorithm/vec2_indexed.cpp
     src/baseglmodule.cpp
     src/datastructures/meshshadercache.cpp
     src/datavisualizer/imagevisualizer.cpp
@@ -84,7 +97,9 @@ set(SOURCE_FILES
     src/datavisualizer/volumeslicevisualizer.cpp
     src/processors/axisalignedcutplane.cpp
     src/processors/background.cpp
+    src/processors/coloroffset.cpp
     src/processors/cuberenderer.cpp
+    src/processors/delaunaytriangulation2d.cpp
     src/processors/drawlines.cpp
     src/processors/drawpoints.cpp
     src/processors/entryexitpointsprocessor.cpp
@@ -118,6 +133,7 @@ set(SOURCE_FILES
     src/processors/meshrenderprocessorgl.cpp
     src/processors/multichannelraycaster.cpp
     src/processors/pointrenderer.cpp
+    src/processors/polylinegrabber.cpp
     src/processors/redgreenprocessor.cpp
     src/processors/sphererenderer.cpp
     src/processors/splitimage.cpp
