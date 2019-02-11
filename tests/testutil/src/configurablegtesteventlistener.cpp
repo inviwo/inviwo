@@ -41,7 +41,7 @@ ConfigurableGTestEventListener::ConfigurableGTestEventListener(
     showEnvironment = true;
 }
 ConfigurableGTestEventListener& ConfigurableGTestEventListener::setup() {
-    testing::TestEventListeners& listeners = testing::UnitTest::GetInstance()->listeners();
+    ::testing::TestEventListeners& listeners = testing::UnitTest::GetInstance()->listeners();
     auto default_printer = listeners.Release(listeners.default_result_printer());
 
     auto listener = new ConfigurableGTestEventListener(default_printer);

@@ -50,9 +50,8 @@ public:
 
     static ConfigurableGTestEventListener& setup();
 
-
     virtual void OnTestProgramStart(const ::testing::UnitTest& unit_test) override;
-    virtual void OnTestIterationStart(const ::testing::UnitTest& unit_test, int iteration);
+    virtual void OnTestIterationStart(const ::testing::UnitTest& unit_test, int iteration) override;
     virtual void OnEnvironmentsSetUpStart(const ::testing::UnitTest& unit_test) override;
     virtual void OnEnvironmentsSetUpEnd(const ::testing::UnitTest& unit_test) override;
     virtual void OnTestCaseStart(const ::testing::TestCase& test_case) override;
