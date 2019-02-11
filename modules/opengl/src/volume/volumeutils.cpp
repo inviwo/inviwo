@@ -31,9 +31,7 @@
 #include <modules/opengl/glformats.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/texture/textureutils.h>
-#include <inviwo/core/datastructures/volume/volume.h>
 #include <modules/opengl/texture/textureunit.h>
-#include <inviwo/core/ports/volumeport.h>
 
 namespace inviwo {
 
