@@ -161,7 +161,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     tableView_->verticalHeader()->setResizeContentsPrecision(0);
     tableView_->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
     const auto height = QFontMetrics(QFontDatabase::systemFont(QFontDatabase::FixedFont)).height();
-    const int margin = 2;
+    constexpr int margin = 2;
     tableView_->verticalHeader()->setMinimumSectionSize(height + margin);
     tableView_->verticalHeader()->setDefaultSectionSize(height + margin);
 
