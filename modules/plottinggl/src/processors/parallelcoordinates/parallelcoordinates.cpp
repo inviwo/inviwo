@@ -86,6 +86,7 @@ ParallelCoordinates::ParallelCoordinates()
                            vec4(.5f, .5f, .5f, 1))
     , tf_("tf", "Line Color")
     , tfSelection_("tfSelection", "Selection Color")
+    , enableHoverColor_("enableHoverColor", "Enable Hover Color", false)
 
     , filteringOptions_("filteringOptions", "Filtering Options")
     , showFiltered_("showFiltered", "Show Filtered", false)
@@ -149,6 +150,7 @@ ParallelCoordinates::ParallelCoordinates()
     addProperty(colors_);
     colors_.addProperty(selectedColorAxis_);
     colors_.addProperty(tfSelection_);
+    colors_.addProperty(enableHoverColor_);
     colors_.addProperty(alpha_);
     colors_.addProperty(filteredAlpha_);
     colors_.addProperty(falllofPower_);
@@ -221,6 +223,8 @@ ParallelCoordinates::ParallelCoordinates()
         margins_.setMargins(top + 1, right + 1, bottom + 1, left + 1);
         // plus 1 to avoid text at the directly at the borders
     });
+
+    enableHoverColor_.onChange([&]() { invalidate(InvalidationLevel::InvalidOutput); });
 
     TransferFunction tf;
     tf.clear();
@@ -573,6 +577,7 @@ void ParallelCoordinates::drawLines(size2_t size) {
 
     lineShader_.setUniform("selected", 0);
     lineShader_.setUniform("filtered", 0);
+    lineShader_.setUniform("hovered", 0);
     for (size_t i = 0; i < numLines; i++) {
         if (brushingAndLinking_.isFiltered(indexCol[i])) {
             if (showFiltered_) {
@@ -601,6 +606,12 @@ void ParallelCoordinates::drawLines(size2_t size) {
         if (brushingAndLinking_.isFiltered(indexCol[i])) continue;
         drawObject.draw(i);
     }
+
+    lineShader_.setUniform("hovered", 1);
+    lineShader_.setUniform("selected", 0);
+    lineShader_.setUniform("filtered", 0);
+    if (!brushingAndLinking_.isFiltered(hoveredLine_) && hoveredLine_ != -1)
+        drawObject.draw(hoveredLine_);
 
     lineShader_.deactivate();
 }
@@ -698,8 +709,14 @@ void ParallelCoordinates::linePicked(PickingEvent *p) {
         if (p->getHoverState() == PickingHoverState::Move ||
             p->getHoverState() == PickingHoverState::Enter) {
             p->setToolTip(dataframeutil::createToolTipForRow(*df, p->getPickedId()));
+            if (enableHoverColor_.get()) {
+                hoveredLine_ = p->getPickedId();
+                invalidate(InvalidationLevel::InvalidOutput);
+            }
         } else {
             p->setToolTip("");
+            hoveredLine_ = -1;
+            invalidate(InvalidationLevel::InvalidOutput);
         }
     }
 

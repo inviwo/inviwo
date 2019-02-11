@@ -10,6 +10,8 @@ uniform float lineWidth;
 uniform int selected;
 uniform vec4 selectedColor = vec4(1, 0, 0, 1);
 
+uniform int hovered;
+
 uniform int filtered;
 uniform int subtractiveBelnding;
 uniform vec4 filterColor;
@@ -35,6 +37,8 @@ void main() {
         if (additiveBlend) {
             res.a *= alpha * pow(lfalloffAlpha, falllofPower);
         }
+		if (hovered == 1)
+			res.xyz = texture(tfSelection, vec2(ltexCoord.y,0.5f)).xyz;
 
     }
 
