@@ -29,9 +29,13 @@
 #pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/logcentral.h>
+
+#include <string>
 
 namespace inviwo {
+
+class Processor;
 
 /**
  * \class LogFilter
