@@ -4,6 +4,7 @@ in float lfalloffAlpha;
 
 uniform bool additiveBlend;
 uniform float alpha;
+uniform float filteredAlpha;
 uniform float lineWidth;
 
 uniform int selected;
@@ -27,8 +28,10 @@ void main() {
         if(subtractiveBelnding == 1){
             res.rgb = 1-res.rgb;
         }
-        if (filtered == 1) 
+        if (filtered == 1) {
              res.xyz = mix(res.xyz, filterColor.xyz, filterIntensity);
+			 res.a = filteredAlpha;
+		}
         if (additiveBlend) {
             res.a *= alpha * pow(lfalloffAlpha, falllofPower);
         }

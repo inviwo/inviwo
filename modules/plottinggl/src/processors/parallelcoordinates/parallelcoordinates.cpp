@@ -94,6 +94,7 @@ ParallelCoordinates::ParallelCoordinates()
 
     , blendMode_("blendMode", "Blend Mode")
     , alpha_("alpha", "Alpha", 0.9f)
+    , filteredAlpha_("filteredAlpha", "Filtered Alpha", 0.5)
     , falllofPower_("falllofPower", "Falloff Power", 2.0f, 0.01f, 10.f, 0.01f)
     , lineWidth_("lineWidth", "Line Width", 7.0f, 1.0f, 10.0f)
     , selectedLineWidth_("selectedLineWidth", "Line Width (selected lines)", 3.0f, 1.0f, 10.0f)
@@ -149,6 +150,7 @@ ParallelCoordinates::ParallelCoordinates()
     colors_.addProperty(selectedColorAxis_);
     colors_.addProperty(tfSelection_);
     colors_.addProperty(alpha_);
+    colors_.addProperty(filteredAlpha_);
     colors_.addProperty(falllofPower_);
     colors_.addProperty(axisColor_);
     colors_.addProperty(handleBaseColor_);
@@ -548,6 +550,7 @@ void ParallelCoordinates::drawLines(size2_t size) {
 
     lineShader_.setUniform("additiveBlend", enableBlending);
     lineShader_.setUniform("alpha", alpha_.get());
+    lineShader_.setUniform("filteredAlpha", filteredAlpha_.get());
     lineShader_.setUniform("falllofPower", falllofPower_.get());
     lineShader_.setUniform("lineWidth", lineWidth_.get());
     lineShader_.setUniform("selectedLineWidth", selectedLineWidth_.get());

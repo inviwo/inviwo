@@ -130,6 +130,7 @@ private:
 
     TemplateOptionProperty<BlendMode> blendMode_;
     FloatProperty alpha_;
+    FloatProperty filteredAlpha_;
     FloatProperty falllofPower_;
     FloatProperty lineWidth_;
     FloatProperty selectedLineWidth_;
