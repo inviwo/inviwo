@@ -17,14 +17,14 @@ node {
         errors: [],
         display: 0,
         addLabel: {label -> 
-            println("Add label: ${label}")
             if (env.CHANGE_ID  && (!label in pullRequest.labels)) {
+                println("Add label: ${label}")
                 pullRequest.addLabels([label])
             }
         },
         removeLabel: {label -> 
-            println("Remove label: ${label}")
             if (env.CHANGE_ID && label in pullRequest.labels) {
+                println("Remove label: ${label}")
                 pullRequest.removeLabel([label])
             }
         }
@@ -55,6 +55,10 @@ node {
         util.slack(state, "#jenkins-branch-pr")
         if (!state.errors.isEmpty()) {
             println "Errors in: ${state.errors.join(", ")}"
+            state.build.displayName = "#${state.build.number} Failure"
+            state.build.description = "Errors in: ${state.errors.join(' ')}"
+        } else {
+            state.build.displayName = "#${state.build.number} Success"
         }
     }
 }

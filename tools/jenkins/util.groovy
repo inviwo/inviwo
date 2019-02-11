@@ -49,10 +49,6 @@ def defaultProperties() {
                 name: 'Build_Type'
             )
         ])
-        /*,
-        pipelineTriggers([
-            [$class: 'GitHubPushTrigger']
-        ])*/
     ]
     return params
 }
@@ -155,9 +151,7 @@ def unittest(def state) {
             sh '''
                 rc=0
                 for unittest in inviwo-unittests-*
-                    do echo ==================================
-                    echo Running: ${unittest}
-                    ./${unittest} || rc=$?
+                do ./${unittest} || rc=$?
                 done
                 exit ${rc}
             '''
@@ -184,6 +178,7 @@ def regression(def state, modulepaths) {
                         --build_type ${state.env.Build_Type?:"Release"} \
                         --header ${state.env.JENKINS_HOME}/inviwo-config/header.html \
                         --output . \
+                        --summary \
                         --modules ${modulepaths.join(' ')}
             """        
         }
@@ -321,7 +316,7 @@ def buildStandard(Map args = [:]) {
         if (args.state.env.Clean_Build?.equals("true")) clean()
         def defaultOpts = defaultCMakeOptions(args.state.env.Build_Type?:"Release")
         defaultOpts.putAll(envCMakeOptions(args.state.env))
-        if (args.state.env.Use_Ccache?.equals("true")) defaultOpts.putAll(ccacheOption())
+        if (!args.state.env.Use_Ccache?.equals("false")) defaultOpts.putAll(ccacheOption())
         if (args.state.env.opts) {
             def envopts = args.state.env.opts.tokenize(';').collect{it.tokenize('=')}.collectEntries()
             defaultOpts.putAll(envopts)

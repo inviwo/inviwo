@@ -30,6 +30,7 @@
 #include <modules/qtwidgets/codeedit.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/qtwidgets/qtwidgetssettings.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

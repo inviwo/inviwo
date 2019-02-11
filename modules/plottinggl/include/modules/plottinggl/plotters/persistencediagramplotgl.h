@@ -38,6 +38,7 @@
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/interaction/pickingmapper.h>
+#include <inviwo/core/ports/imageport.h>
 
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shader.h>

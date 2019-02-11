@@ -29,11 +29,16 @@
 
 #ifdef _MSC_VER
 #pragma comment(linker, "/SUBSYSTEM:CONSOLE")
+#ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
+#include <ext/vld/vld.h>
+#endif
 #endif
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/consolelogger.h>
+
+#include <inviwo/testutil/configurablegtesteventlistener.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -57,6 +62,7 @@ int main(int argc, char** argv) {
 #else
         ::testing::InitGoogleTest(&argc, argv);
 #endif
+        ConfigurableGTestEventListener::setup();
         ret = RUN_ALL_TESTS();
     }
 

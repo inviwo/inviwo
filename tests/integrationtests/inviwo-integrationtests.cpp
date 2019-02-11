@@ -42,11 +42,14 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/network/workspacemanager.h>
 #include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/utilities.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/logerrorcounter.h>
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/moduleregistration.h>
+
+#include <inviwo/testutil/configurablegtesteventlistener.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -86,6 +89,7 @@ int main(int argc, char** argv) {
         size_t errCount = logCounter->getErrorCount();
 
         ::testing::InitGoogleTest(&argc, argv);
+        ConfigurableGTestEventListener::setup();
         ret = RUN_ALL_TESTS();
 
         if (ret) {

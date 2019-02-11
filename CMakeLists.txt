@@ -149,6 +149,7 @@ add_subdirectory(ext/fmt)
 add_subdirectory(ext/sml)
 add_subdirectory(ext/sigar)
 add_subdirectory(ext/stackwalker) # Add stackwalker for windows for stack traces in the log
+add_subdirectory(tests/testutil) 
 
 ivw_register_modules(all_modules)        # Add modules  
 
