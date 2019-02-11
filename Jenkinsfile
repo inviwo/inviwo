@@ -59,7 +59,6 @@ node {
             state.build.description = "Errors in: ${state.errors.join(' ')}"
         } else {
             state.build.displayName = "#${state.build.number} Success"
-            state.build.description = "Successful build"
         }
     }
 }
