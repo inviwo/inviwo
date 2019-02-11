@@ -31,7 +31,6 @@
 
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shaderutils.h>
 
 namespace inviwo {

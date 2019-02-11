@@ -32,16 +32,13 @@
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/ports/volumeport.h>
 
 namespace inviwo {
 
 class Shader;
-class Volume;
 class TextureUnitContainer;
-
-template <typename T, size_t N, bool Flat>
-class DataInport;
-using VolumeInport = DataInport<Volume, 1, false>;
 
 namespace utilgl {
 
