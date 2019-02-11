@@ -7,7 +7,7 @@ import refactoring # Note: refactoring.py need to be in the current working dire
 
 
 ## NOTE: update copyright year here
-currentYear = 2018
+currentYear = 2019
 
 excludespatterns = ["*/ext/*", "*moc_*", "*/proteindocking/*", "*/proteindocking2/*", 
 					"*/genetree/*", "*.DS_Store", "*DS_mapp", ".md", "*.suo" , "*.h5",
