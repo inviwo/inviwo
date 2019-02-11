@@ -128,6 +128,8 @@ private:
     FloatVec4Property filterColor_;
     FloatProperty filterIntensity_;
 
+    ButtonProperty resetHandlePositions_;
+
     TemplateOptionProperty<BlendMode> blendMode_;
     FloatProperty alpha_;
     FloatProperty falllofPower_;

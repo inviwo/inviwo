@@ -92,6 +92,8 @@ ParallelCoordinates::ParallelCoordinates()
     , filterColor_("filterColor", "Filter Color", vec4(.6f, .6f, .6f, 1.f))
     , filterIntensity_("filterIntensity", "Filter Intensity", 0.5f, 0.01f, 1.0f, 0.001f)
 
+    , resetHandlePositions_("resetHandlePositions", "Reset Handle Positions")
+
     , blendMode_("blendMode", "Blend Mode")
     , alpha_("alpha", "Alpha", 0.9f)
     , falllofPower_("falllofPower", "Falloff Power", 2.0f, 0.01f, 10.f, 0.01f)
@@ -175,6 +177,8 @@ ParallelCoordinates::ParallelCoordinates()
     filteringOptions_.addProperty(filterColor_);
     filteringOptions_.addProperty(filterIntensity_);
     addProperty(filteringOptions_);
+
+    addProperty(resetHandlePositions_);
 
     labelPosition_.addOption("none", "None", LabelPosition::None);
     labelPosition_.addOption("above", "Above", LabelPosition::Above);
@@ -287,6 +291,13 @@ ParallelCoordinates::ParallelCoordinates()
         textCacheDirty_ = true;
     });
     selectedColorAxis_.onChange([&]() { recreateLines_ = true; });
+
+    resetHandlePositions_.onChange([&]() {
+        for (auto axis : axisVector_) {
+            axis->moveHandle(true, std::numeric_limits<double>::max());
+            axis->moveHandle(false, std::numeric_limits<double>::min());
+        }
+    });
 
     setAllPropertiesCurrentStateAsDefault();
 }
