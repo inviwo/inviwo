@@ -295,7 +295,7 @@ ParallelCoordinates::ParallelCoordinates()
     resetHandlePositions_.onChange([&]() {
         for (auto axis : axisVector_) {
             axis->moveHandle(true, std::numeric_limits<double>::max());
-            axis->moveHandle(false, std::numeric_limits<double>::min());
+            axis->moveHandle(false, std::numeric_limits<double>::lowest());
         }
     });
 
