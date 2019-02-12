@@ -24,22 +24,20 @@ uniform sampler2D tfSelection;
 void main() {
     vec4 res = vec4(1);
     if (selected > 0) {
-        res = texture(tfSelection, vec2(ltexCoord.y,0.5f));
+        res = texture(tfSelection, vec2(ltexCoord.y, 0.5f));
     } else {
-        res = texture(tf, vec2(ltexCoord.x,0.5f));
-        if(subtractiveBelnding == 1){
-            res.rgb = 1-res.rgb;
+        res = texture(tf, vec2(ltexCoord.x, 0.5f));
+        if (subtractiveBelnding == 1) {
+            res.rgb = 1 - res.rgb;
         }
         if (filtered == 1) {
-             res.xyz = mix(res.xyz, filterColor.xyz, filterIntensity);
-			 res.a = filteredAlpha;
-		}
+            res.xyz = mix(res.xyz, filterColor.xyz, filterIntensity);
+            res.a = filteredAlpha;
+        }
         if (additiveBlend) {
             res.a *= alpha * pow(lfalloffAlpha, falllofPower);
         }
-		if (hovered == 1)
-			res.xyz = texture(tfSelection, vec2(ltexCoord.y,0.5f)).xyz;
-
+        if (hovered == 1) res.xyz = texture(tfSelection, vec2(ltexCoord.y, 0.5f)).xyz;
     }
 
     PickingData = vec4(lpickColor, 1.0);
