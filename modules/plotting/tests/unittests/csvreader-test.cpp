@@ -205,7 +205,7 @@ TEST(CSVdata, ignoreEmptyLine) {
 TEST(CSVdata, byteOrderMark) {
     // Byte order mark should be detected and not treated as a value
     std::stringstream ss;
-    ss << (char)0xef << (char)0xbb << (char)0xbf << "1,2,3";
+    ss << '\xef' << '\xbb' << '\xbf' << "1,2,3";
 
     CSVReader reader;
     reader.setFirstRowHeader(false);
