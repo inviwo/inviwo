@@ -74,7 +74,7 @@ def cmd(stageName, dirName, env = [], fun) {
 }
 
 def printMap(String name, def map) {
-    println name + ": " + map?.collect{"${it.key.padLeft(25)} = ${it.value}"}?.join("\n") ?: ''
+    println name + ":\n" + map?.collect{"${it.key.padLeft(25)} = ${it.value}"}?.join("\n") ?: ''
 }
 
 // this uses global pipeline var pullRequest
@@ -83,13 +83,15 @@ def setLabel(def state, String label, Boolean add) {
         try {
             state.addLabel(label)
         } catch (e) {
-            println("Error adding label")
+            println "Error adding label"
+            println e.toString()
         }
     } else {
         try {
             state.removeLabel(label)
         } catch (e) {
-            println("Error adding label")
+            println "Error removing label"
+            println e.toString()
         }
     }       
 }
@@ -332,6 +334,12 @@ def build(Map args = [:]) {
 // * offModules List of modules to disable (optional)
 def buildStandard(Map args = [:]) {
     stage('Build') {
+        sh '''
+            printf "\e[31mHello\e[0m\n"
+            printf "\033[31mHello\033[0m\n"
+            printf "\x1b[31mHello\x1b[0m\n"
+        '''
+
         if (args.state.env.Clean_Build?.equals("true")) clean()
         def defaultOpts = defaultCMakeOptions(args.state.env.Build_Type?:"Release")
         defaultOpts.putAll(envCMakeOptions(args.state.env))

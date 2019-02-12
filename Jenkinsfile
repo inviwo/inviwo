@@ -9,7 +9,7 @@ node {
 
     def util = load "${env.WORKSPACE}/inviwo/tools/jenkins/util.groovy"
     if(!env.disabledProperties) properties(util.defaultProperties())
-    util.printMap("Env", env.getEnvironment())
+    util.printMap("Environment", env.getEnvironment())
     
     Map state = [
         env: env,
@@ -17,16 +17,16 @@ node {
         errors: [],
         display: 0,
         addLabel: {label -> 
-            println( "Add label: ${label}, changeid ${env.CHANGE_ID}, PR: ${pullRequest}")
+            println "Add label: ${label}, changeid ${env.CHANGE_ID}, PR: ${pullRequest}"
             if (env.CHANGE_ID  && (!label in pullRequest.labels)) {
-                println("Add label: ${label}")
+                println "Add label: ${label}"
                 pullRequest.addLabels([label])
             }
         },
         removeLabel: {label -> 
-            println( "Add label: ${label}, changeid ${env.CHANGE_ID}, PR: ${pullRequest}")
+            println  "Add label: ${label}, changeid ${env.CHANGE_ID}, PR: ${pullRequest}"
             if (env.CHANGE_ID && label in pullRequest.labels) {
-                println("Remove label: ${label}")
+                println "Remove label: ${label}"
                 pullRequest.removeLabel([label])
             }
         }
@@ -45,7 +45,7 @@ node {
         util.warn(state)
         util.unittest(state)
         util.integrationtest(state)        
-        util.regression(state, ["${env.WORKSPACE}/inviwo/modules"])
+        //util.regression(state, ["${env.WORKSPACE}/inviwo/modules"])
         util.copyright(state)    
         util.doxygen(state)
     }
