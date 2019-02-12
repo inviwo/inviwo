@@ -583,17 +583,21 @@ void ParallelCoordinates::drawLines(size2_t size) {
     auto iCol = dataFrame_.getData()->getIndexColumn();
     auto &indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
 
-    std::vector<size_t> filteredIndices;
     std::vector<size_t> selectIndices;
 
     lineShader_.setUniform("selected", 0);
+    lineShader_.setUniform("hovering", 0);
+    if (showFiltered_) {
+        lineShader_.setUniform("filtered", 1);
+        for (size_t i = 0; i < numLines; i++) {
+            if (brushingAndLinking_.isFiltered(indexCol[i]))
+                drawObject.draw(i);
+        }
+    }
+
     lineShader_.setUniform("filtered", 0);
-    lineShader_.setUniform("hovered", 0);
     for (size_t i = 0; i < numLines; i++) {
         if (brushingAndLinking_.isFiltered(indexCol[i])) {
-            if (showFiltered_) {
-                filteredIndices.push_back(i);
-            }
             continue;
         }
         if (brushingAndLinking_.isSelected(indexCol[i])) {
@@ -601,14 +605,6 @@ void ParallelCoordinates::drawLines(size2_t size) {
             continue;
         }
         drawObject.draw(i);
-    }
-
-    if (showFiltered_) {
-        lineShader_.setUniform("selected", 0);
-        lineShader_.setUniform("filtered", 1);
-        for (const auto &i : filteredIndices) {
-            drawObject.draw(i);
-        }
     }
 
     lineShader_.setUniform("selected", 1);
