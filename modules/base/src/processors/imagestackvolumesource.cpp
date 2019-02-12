@@ -30,8 +30,10 @@
 #include <modules/base/processors/imagestackvolumesource.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/datastructures/image/layerdisk.h>
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/datastructures/image/imageram.h>
+#include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/io/datareaderfactory.h>
