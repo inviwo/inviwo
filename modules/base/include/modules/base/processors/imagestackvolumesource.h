@@ -33,7 +33,6 @@
 #include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/filepatternproperty.h>
@@ -45,6 +44,7 @@
 namespace inviwo {
 
 class FileExtension;
+class Volume;
 
 /** \docpage{org.inviwo.ImageStackVolumeSource, Image-Stack Volume Source}
  * Converts a stack of 2D images to a 3D volume
