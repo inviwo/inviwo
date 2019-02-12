@@ -73,6 +73,10 @@ def cmd(stageName, dirName, env = [], fun) {
     }
 }
 
+def printMap(String name, def map) {
+    println name + ": " + map?.collect{"${it.key.padLeft(25)} = ${it.value}"}?.join("\n") ?: ''
+}
+
 // this uses global pipeline var pullRequest
 def setLabel(def state, String label, Boolean add) {
     if (add) {
@@ -107,6 +111,21 @@ def checked(def state, String label, Boolean fail, Closure fun) {
     }
 }
 
+def wrap(def state, String reportSlackChannel, Closure fun) {
+    try {
+        fun()
+        state.build.result = state.errors.isEmpty() ? 'SUCCESS' : 'UNSTABLE'
+    } catch (e) {
+        state.build.result = 'FAILURE'
+        throw e
+    } finally {
+        slack(state, reportSlackChannel)
+        if (!state.errors.isEmpty()) {
+            println "Errors in: ${state.errors.join(", ")}"
+            state.build.description = "Errors in: ${state.errors.join(' ')}"
+        } 
+    }
+}
 
 def filterfiles() {
     dir('build') {
