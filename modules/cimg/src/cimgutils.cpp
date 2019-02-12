@@ -402,8 +402,8 @@ struct CImgLoadVolumeDispatcher {
             throw Exception("CImgLoadVolumeDispatcher, could not find proper data type");
         }
 
-        // Image is flipped in x and y (at least for tif)
-        img.mirror("xy");
+        // Image is up-side-down
+        img.mirror("y");
 
         return CImgToVoidConvert<typename DF::primitive>::convert(dst, &img);
     }
