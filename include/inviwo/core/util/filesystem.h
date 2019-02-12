@@ -109,7 +109,7 @@ IVW_CORE_API std::ofstream ofstream(const std::string& filename,
                                     std::ios_base::openmode mode = std::ios_base::out);
 
 /**
- * Detects the UTF-8 byte order mark (BOM) and skips it if it exists. 
+ * Detects the UTF-8 byte order mark (BOM) and skips it if it exists.
  * Reads the first three characters to determine if the BOM exists.
  * Rewinds stream if no BOM exists and otherwise leaves the stream position
  * after the three BOM characters.

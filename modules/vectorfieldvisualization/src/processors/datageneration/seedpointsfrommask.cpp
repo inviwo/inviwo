@@ -100,7 +100,7 @@ void SeedPointsFromMask::process() {
                             const auto x = dis_(mt_);
                             const auto y = dis_(mt_);
                             const auto z = dis_(mt_);
-                            points->push_back((vec3(pos) + vec3{x,y,z}) * invDim);
+                            points->push_back((vec3(pos) + vec3{x, y, z}) * invDim);
                         }
                     } else {
                         points->push_back((vec3(pos) + 0.5f) * invDim);

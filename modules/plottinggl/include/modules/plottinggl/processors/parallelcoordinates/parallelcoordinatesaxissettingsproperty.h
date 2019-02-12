@@ -98,7 +98,6 @@ public:
 
     std::function<double(size_t)> at = [](size_t) { return 0.0; };
 
-
     BoolProperty usePercentiles;
     DoubleMinMaxProperty range;
 

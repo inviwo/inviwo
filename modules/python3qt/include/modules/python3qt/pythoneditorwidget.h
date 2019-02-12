@@ -105,7 +105,7 @@ private:
 
     PythonScript script_;
     std::string scriptFileName_;
-    
+
     std::shared_ptr<std::function<void()>> syntaxCallback_;
 
     static PythonEditorWidget* instance_;

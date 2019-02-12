@@ -62,4 +62,3 @@ void KeyboardEvent::print(std::ostream& ss) const {
 }
 
 }  // namespace inviwo
-

@@ -182,5 +182,5 @@ template class IVW_CORE_TMPL_INST DataInport<Volume>;
 template class IVW_CORE_TMPL_INST DataOutport<Volume>;
 template class IVW_CORE_TMPL_INST DataInport<VolumeSequence>;
 template class IVW_CORE_TMPL_INST DataOutport<VolumeSequence>;
-    
+
 }  // namespace inviwo
