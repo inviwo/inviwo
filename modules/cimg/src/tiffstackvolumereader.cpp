@@ -33,120 +33,44 @@
 
 #include <modules/cimg/cimgutils.h>
 #include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/io/datareaderexception.h>
+#include <inviwo/core/util/raiiutils.h>
 
 namespace inviwo {
 
-TiffStackVolumeReader::TiffStackVolumeReader() : DataReaderType<Volume>() {
+TIFFStackVolumeReaderException::TIFFStackVolumeReaderException(const std::string& message,
+                                                               ExceptionContext context)
+    : DataReaderException(message, context) {}
+
+TIFFStackVolumeReader::TIFFStackVolumeReader() : DataReaderType<Volume>() {
     addExtension(FileExtension("tif", "TIFF Stack"));
     addExtension(FileExtension("tiff", "TIFF Stack"));
 }
 
-TiffStackVolumeReader* TiffStackVolumeReader::clone() const {
-    return new TiffStackVolumeReader(*this);
+TIFFStackVolumeReader* TIFFStackVolumeReader::clone() const {
+    return new TIFFStackVolumeReader(*this);
 }
 
-std::shared_ptr<Volume> TiffStackVolumeReader::readData(const std::string& filePath) {
+std::shared_ptr<Volume> TIFFStackVolumeReader::readData(const std::string& filePath) {
     if (!filesystem::fileExists(filePath)) {
-        throw DataReaderException("Error could not find input file: " + filePath, IvwContext);
+        throw TIFFStackVolumeReaderException("Error could not find input file: " + filePath,
+                                             IvwContext);
     }
 
-    TIFF* tif = TIFFOpen(filePath.c_str(), "r");
-
-    uint32 x = 0, y = 0, z = 0;
-    size3_t dimension = size3_t(x, y, z);
-    const DataFormatBase* format = DataFormatBase::get();
-
-    if (!tif) {
-        throw DataReaderException("Error could not open input file: " + filePath, IvwContext);
-    }
-    TIFFSetDirectory(tif, 0);
-
-    // float xres,yres;
-    uint16 samplesPerPixel = 1, bitsPerSample = 8, sampleFormat = 1;
-
-    TIFFGetField(tif, TIFFTAG_BITSPERSAMPLE, &bitsPerSample);
-    TIFFGetField(tif, TIFFTAG_SAMPLESPERPIXEL, &samplesPerPixel);
-    TIFFGetField(tif, TIFFTAG_SAMPLEFORMAT, &sampleFormat);
-    // TIFFGetField(tif, TIFFTAG_XRESOLUTION, &xres);
-    // TIFFGetField(tif, TIFFTAG_YRESOLUTION, &yres);
-
-    if (sampleFormat != 1 || (bitsPerSample % 8) != 0) {
-        throw DataReaderException("Error: internal tif format not supported: " + filePath,
-                                  IvwContext);
-    }
-
-    switch (samplesPerPixel) {
-        case (4):
-            if (bitsPerSample == 8) {
-                format = DataVec4UInt8::get();
-            } else if (bitsPerSample == 16) {
-                format = DataVec4UInt16::get();
-            } else {
-                format = DataVec4UInt32::get();
-            }
-            break;
-        case (3):
-            if (bitsPerSample == 8) {
-                format = DataVec3UInt8::get();
-            } else if (bitsPerSample == 16) {
-                format = DataVec3UInt16::get();
-            } else {
-                format = DataVec3UInt32::get();
-            }
-            break;
-        case (2):
-            if (bitsPerSample == 8) {
-                format = DataVec2UInt8::get();
-            } else if (bitsPerSample == 16) {
-                format = DataVec2UInt16::get();
-            } else {
-                format = DataVec2UInt32::get();
-            }
-            break;
-        case (1):
-
-            if (bitsPerSample == 8) {
-                format = DataUInt8::get();
-            } else if (bitsPerSample == 16) {
-                format = DataUInt16::get();
-            } else {
-                format = DataUInt32::get();
-            }
-            break;
-        default:
-            format = DataVec3UInt32::get();
-    }
-
-    TIFFGetField(tif, TIFFTAG_IMAGEWIDTH, &x);
-    TIFFGetField(tif, TIFFTAG_IMAGELENGTH, &y);
-
-    // count the pictures
-    do {
-        ++z;
-    } while (TIFFReadDirectory(tif));
-
-    dimension = size3_t(x, y, z);
-
-    TIFFClose(tif);
-
-    auto volume = std::make_shared<Volume>(dimension, format);
-
-    auto volumeDisk = std::make_shared<VolumeDisk>(filePath, dimension, format);
-    volume->setDataFormat(format);
-    volumeDisk->setLoader(new TiffStackVolumeRAMLoader(volumeDisk.get()));
+    auto header = cimgutil::getTIFFHeader(filePath);
+    auto volume = std::make_shared<Volume>(header.dimensions, header.format);
+    auto volumeDisk = std::make_shared<VolumeDisk>(filePath, header.dimensions, header.format);
+    volume->setDataFormat(header.format);
+    volumeDisk->setLoader(new TIFFStackVolumeRAMLoader(volumeDisk.get()));
     volume->addRepresentation(volumeDisk);
 
     return volume;
 }
 
-TiffStackVolumeRAMLoader* TiffStackVolumeRAMLoader::clone() const {
-    return new TiffStackVolumeRAMLoader(*this);
+TIFFStackVolumeRAMLoader* TIFFStackVolumeRAMLoader::clone() const {
+    return new TIFFStackVolumeRAMLoader(*this);
 }
 
-std::shared_ptr<VolumeRepresentation> TiffStackVolumeRAMLoader::createRepresentation() const {
-    size3_t dimensions = volumeDisk_->getDimensions();
-
+std::shared_ptr<VolumeRepresentation> TIFFStackVolumeRAMLoader::createRepresentation() const {
     std::string fileName = volumeDisk_->getSourceFile();
 
     if (!filesystem::fileExists(fileName)) {
@@ -155,39 +79,40 @@ std::shared_ptr<VolumeRepresentation> TiffStackVolumeRAMLoader::createRepresenta
         if (filesystem::fileExists(newPath)) {
             fileName = newPath;
         } else {
-            throw DataReaderException("Error could not find input file: " + fileName, IvwContext);
+            throw TIFFStackVolumeReaderException("Error could not find input file: " + fileName,
+                                                 IvwContext);
         }
     }
-    // formatId makes no sense because it is determined by file extension, tiff supports multiple
-    // formats
-    DataFormatId formatId = volumeDisk_->getDataFormatId();
-    auto data = cimgutil::loadTiffVolumeData(nullptr, fileName, dimensions, formatId);
+    cimgutil::TIFFHeader header;
+    header.format = volumeDisk_->getDataFormat();
+    header.dimensions = volumeDisk_->getDimensions();
+    auto data = cimgutil::loadTIFFVolumeData(nullptr, fileName, header);
 
     return dispatching::dispatch<std::shared_ptr<VolumeRepresentation>, dispatching::filter::All>(
         volumeDisk_->getDataFormat()->getId(), *this, data);
 }
 
-void TiffStackVolumeRAMLoader::updateRepresentation(
+void TIFFStackVolumeRAMLoader::updateRepresentation(
     std::shared_ptr<VolumeRepresentation> dest) const {
     auto volumeDst = std::static_pointer_cast<VolumeRAM>(dest);
 
-    size3_t dimensions = volumeDisk_->getDimensions();
-    DataFormatId formatId = volumeDisk_->getDataFormatId();
-
     std::string fileName = volumeDisk_->getSourceFile();
-
     if (!filesystem::fileExists(fileName)) {
         std::string newPath = filesystem::addBasePath(fileName);
 
         if (filesystem::fileExists(newPath)) {
             fileName = newPath;
         } else {
-            throw DataReaderException("Error could not find input file: " + fileName, IvwContext);
+            throw TIFFStackVolumeReaderException("Error could not find input file: " + fileName,
+                                                 IvwContext);
         }
     }
-
-    cimgutil::loadTiffVolumeData(volumeDst->getData(), fileName, dimensions, formatId);
-    volumeDisk_->setDimensions(dimensions);
+    
+    cimgutil::TIFFHeader header;
+    header.format = volumeDisk_->getDataFormat();
+    header.dimensions = volumeDisk_->getDimensions();
+    cimgutil::loadTIFFVolumeData(volumeDst->getData(), fileName, header);
+    volumeDisk_->setDimensions(header.dimensions);
 }
 
 }  // namespace inviwo

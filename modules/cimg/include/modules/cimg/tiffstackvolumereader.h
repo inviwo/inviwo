@@ -32,26 +32,37 @@
 
 #include <modules/cimg/cimgmoduledefine.h>
 
-#include <modules/cimg/cimgvolumereader.h>
-#include <modules/cimg/cimgutils.h>
+#include <inviwo/core/io/datareader.h>
+#include <inviwo/core/io/datareaderexception.h>
+
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/datastructures/volume/volumedisk.h>
 
 namespace inviwo {
 
-class IVW_MODULE_CIMG_API TiffStackVolumeReader : public DataReaderType<Volume> {
+class IVW_MODULE_CIMG_API TIFFStackVolumeReaderException : public DataReaderException {
 public:
-    TiffStackVolumeReader();
-    virtual TiffStackVolumeReader* clone() const;
-    virtual ~TiffStackVolumeReader() = default;
+    TIFFStackVolumeReaderException(const std::string& message = "",
+                                   ExceptionContext context = ExceptionContext());
+    virtual ~TIFFStackVolumeReaderException() noexcept = default;
+};
+
+class IVW_MODULE_CIMG_API TIFFStackVolumeReader : public DataReaderType<Volume> {
+public:
+    TIFFStackVolumeReader();
+    virtual TIFFStackVolumeReader* clone() const;
+    virtual ~TIFFStackVolumeReader() = default;
 
     virtual std::shared_ptr<Volume> readData(const std::string& filePath);
 };
 
-class IVW_MODULE_CIMG_API TiffStackVolumeRAMLoader
+class IVW_MODULE_CIMG_API TIFFStackVolumeRAMLoader
     : public DiskRepresentationLoader<VolumeRepresentation> {
 public:
-    TiffStackVolumeRAMLoader(VolumeDisk* volumeDisk) : volumeDisk_(volumeDisk){};
-    virtual TiffStackVolumeRAMLoader* clone() const;
-    virtual ~TiffStackVolumeRAMLoader() = default;
+    TIFFStackVolumeRAMLoader(VolumeDisk* volumeDisk) : volumeDisk_(volumeDisk){};
+    virtual TIFFStackVolumeRAMLoader* clone() const;
+    virtual ~TIFFStackVolumeRAMLoader() = default;
 
     virtual std::shared_ptr<VolumeRepresentation> createRepresentation() const override;
     virtual void updateRepresentation(std::shared_ptr<VolumeRepresentation> dest) const override;
