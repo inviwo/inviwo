@@ -44,8 +44,8 @@ CImgModule::CImgModule(InviwoApplication* app) : InviwoModule(app, "CImg") {
     // Register Data Writers
     registerDataWriter(util::make_unique<CImgLayerWriter>());
 
-    LogInfo("Using LibJPG Version " << cimgutil::getLibJPGVesrion());
-    LogInfo("Using OpenEXR Version " << cimgutil::getOpenEXRVesrion());
+    LogInfo("Using LibJPG Version " << cimgutil::getLibJPGVersion());
+    LogInfo("Using OpenEXR Version " << cimgutil::getOpenEXRVersion());
 }
 
 }  // namespace inviwo

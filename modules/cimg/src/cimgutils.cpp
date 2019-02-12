@@ -549,7 +549,7 @@ bool rescaleLayerRamToLayerRam(const LayerRAM* source, LayerRAM* target) {
                                                                  disp, source, target);
 }
 
-std::string getLibJPGVesrion() {
+std::string getLibJPGVersion() {
 #ifdef cimg_use_jpeg
     std::ostringstream oss;
     oss << JPEG_LIB_VERSION_MAJOR << "." << JPEG_LIB_VERSION_MINOR;
@@ -559,7 +559,7 @@ std::string getLibJPGVesrion() {
 #endif
 }
 
-std::string getOpenEXRVesrion() {
+std::string getOpenEXRVersion() {
 #ifdef cimg_use_openexr
     std::ostringstream oss;
     oss << OPENEXR_VERSION_MAJOR << "." << OPENEXR_VERSION_MINOR << "." << OPENEXR_VERSION_PATCH;
