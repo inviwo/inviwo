@@ -32,6 +32,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/image/layerram.h>
+#include <inviwo/core/datastructures/image/layerramprecision.h>
 #include <inviwo/core/datastructures/image/imageram.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
@@ -246,8 +247,7 @@ void ImageStackVolumeSource::load(bool deserialized) {
                                 std::transform(
                                     layerData, layerData + sliceOffset,
                                     volData + slice * sliceOffset, [](auto value) {
-                                        return util::glm_convert_normalized<typename ValueType>(
-                                            value);
+                                        return util::glm_convert_normalized<ValueType>(value);
                                     });
                             });
 
