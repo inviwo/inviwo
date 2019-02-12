@@ -37,45 +37,36 @@
 
 namespace inviwo {
 
-/**
- * \class TiffStackVolumeReader
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
- */
 class IVW_MODULE_CIMG_API TiffStackVolumeReader : public DataReaderType<Volume> {
 public:
     TiffStackVolumeReader();
-	virtual TiffStackVolumeReader* clone() const;
+    virtual TiffStackVolumeReader* clone() const;
     virtual ~TiffStackVolumeReader() = default;
 
-	virtual std::shared_ptr<Volume> readData(const std::string& filePath);
+    virtual std::shared_ptr<Volume> readData(const std::string& filePath);
 };
-
-
 
 class IVW_MODULE_CIMG_API TiffStackVolumeRAMLoader
     : public DiskRepresentationLoader<VolumeRepresentation> {
 public:
-	TiffStackVolumeRAMLoader(VolumeDisk* volumeDisk) : volumeDisk_(volumeDisk) {};
-	virtual TiffStackVolumeRAMLoader* clone() const;
-	virtual ~TiffStackVolumeRAMLoader() = default;
+    TiffStackVolumeRAMLoader(VolumeDisk* volumeDisk) : volumeDisk_(volumeDisk){};
+    virtual TiffStackVolumeRAMLoader* clone() const;
+    virtual ~TiffStackVolumeRAMLoader() = default;
 
-	virtual std::shared_ptr<VolumeRepresentation> createRepresentation() const override;
-	virtual void updateRepresentation(std::shared_ptr<VolumeRepresentation> dest) const override;
+    virtual std::shared_ptr<VolumeRepresentation> createRepresentation() const override;
+    virtual void updateRepresentation(std::shared_ptr<VolumeRepresentation> dest) const override;
 
-	using type = std::shared_ptr<VolumeRAM>;
-	template <typename ReturnType, typename T>
-	std::shared_ptr<VolumeRAM> operator()(void* data) const {
-		using F = typename T::type;
-		return std::make_shared<VolumeRAMPrecision<F>>(static_cast<F*>(data),
-			volumeDisk_->getDimensions());
-	}
+    using type = std::shared_ptr<VolumeRAM>;
+    template <typename ReturnType, typename T>
+    std::shared_ptr<VolumeRAM> operator()(void* data) const {
+        using F = typename T::type;
+        return std::make_shared<VolumeRAMPrecision<F>>(static_cast<F*>(data),
+                                                       volumeDisk_->getDimensions());
+    }
 
 private:
-	VolumeDisk* volumeDisk_;
-
+    VolumeDisk* volumeDisk_;
 };
-
 
 }  // namespace inviwo
 
