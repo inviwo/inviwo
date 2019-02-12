@@ -19,7 +19,7 @@ node {
         addLabel: {label -> 
             println "Add label: ${label}, changeid ${env.CHANGE_ID}, PR: ${pullRequest}"
             println "labels: ${pullRequest?.labels?.join(', ') ?: 'None'}"
-            if (env.CHANGE_ID  && (!label in pullRequest.labels)) {
+            if (env.CHANGE_ID  && !(label in pullRequest.labels)) {
                 println "Add label: ${label}"
                 pullRequest.addLabels([label])
             }
@@ -27,7 +27,7 @@ node {
         removeLabel: {label -> 
             println "Add label: ${label}, changeid ${env.CHANGE_ID}, PR: ${pullRequest}"
             println "labels: ${pullRequest?.labels?.join(', ') ?: 'None'}"
-            if (env.CHANGE_ID && label in pullRequest.labels) {
+            if (env.CHANGE_ID && (label in pullRequest.labels)) {
                 println "Remove label: ${label}"
                 pullRequest.removeLabel([label])
             }
