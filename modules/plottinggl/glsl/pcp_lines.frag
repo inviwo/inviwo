@@ -32,7 +32,6 @@ void main() {
         }
         if (filtered == 1) {
             res = mix(res, filterColor, filterIntensity);
-            res.a = filterColor.w;
         }
         if (additiveBlend) {
             res.a *= alpha * pow(lfalloffAlpha, falllofPower);
