@@ -39,10 +39,6 @@ CImgLayerReader::CImgLayerReader() : DataReaderType<Layer>() {
     addExtension(FileExtension("jpg", "Joint Photographic Experts Group"));
     addExtension(FileExtension("jpeg", "Joint Photographic Experts Group"));
 #endif
-#ifdef cimg_use_tiff
-    addExtension(FileExtension("tif", "Tagged Image File Format"));
-    addExtension(FileExtension("tiff", "Tagged Image File Format"));
-#endif
     addExtension(FileExtension("bmp", "Windows bitmap"));
 #ifdef cimg_use_openexr
     addExtension(FileExtension("exr", "OpenEXR"));

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2018 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,28 +26,44 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <modules/cimg/cimgmodule.h>
-#include <modules/cimg/cimglayerreader.h>
-#include <modules/cimg/cimglayerwriter.h>
-#include <modules/cimg/cimgvolumereader.h>
-#include <modules/cimg/cimgutils.h>
-#include <modules/cimg/tifflayerreader.h>
-#include <modules/cimg/tiffstackvolumereader.h>
+#include <modules/cimg/cimgmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/io/datareader.h>
+#include <inviwo/core/io/datareaderexception.h>
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/datastructures/image/layerramprecision.h>
+#include <inviwo/core/datastructures/diskrepresentation.h>
+#include <inviwo/core/datastructures/image/layerdisk.h>
 
 namespace inviwo {
 
-CImgModule::CImgModule(InviwoApplication* app) : InviwoModule(app, "CImg") {
-    // Register Data Readers
-    registerDataReader(util::make_unique<CImgLayerReader>());
-    registerDataReader(util::make_unique<TIFFLayerReader>());
-    registerDataReader(util::make_unique<TIFFStackVolumeReader>());
+class IVW_MODULE_CIMG_API TIFFLayerReaderException : public DataReaderException {
+public:
+    TIFFLayerReaderException(const std::string& message = "",
+                             ExceptionContext context = ExceptionContext());
+    virtual ~TIFFLayerReaderException() noexcept = default;
+};
 
-    // Register Data Writers
-    registerDataWriter(util::make_unique<CImgLayerWriter>());
+class IVW_MODULE_CIMG_API TIFFLayerReader : public DataReaderType<Layer> {
+public:
+    TIFFLayerReader();
+    TIFFLayerReader(const TIFFLayerReader& rhs) = default;
+    TIFFLayerReader& operator=(const TIFFLayerReader& that) = default;
+    virtual TIFFLayerReader* clone() const override;
+    virtual ~TIFFLayerReader() = default;
 
-    LogInfo("Using LibJPG Version " << cimgutil::getLibJPGVersion());
-    LogInfo("Using OpenEXR Version " << cimgutil::getOpenEXRVersion());
-}
+    virtual std::shared_ptr<Layer> readData(const std::string& fileName) override;
+
+    template <typename Result, typename T>
+    std::shared_ptr<Layer> operator()(void* data, size2_t dims, SwizzleMask swizzleMask) const {
+        using F = typename T::type;
+        auto layerRAM = std::make_shared<LayerRAMPrecision<F>>(
+            static_cast<F*>(data), dims, LayerType::Color,
+            swizzleMask);
+        return std::make_shared<Layer>(layerRAM);
+    }
+};
 
 }  // namespace inviwo
