@@ -97,7 +97,7 @@ ParallelCoordinates::ParallelCoordinates()
 
     , blendMode_("blendMode", "Blend Mode")
     , alpha_("alpha", "Alpha", 0.9f)
-    , filteredAlpha_("filteredAlpha", "Filtered Alpha", 0.5)
+    , filteredAlpha_("filteredAlpha", "Filtered Alpha", 0.5f)
     , falllofPower_("falllofPower", "Falloff Power", 2.0f, 0.01f, 10.f, 0.01f)
     , lineWidth_("lineWidth", "Line Width", 7.0f, 1.0f, 10.0f)
     , selectedLineWidth_("selectedLineWidth", "Line Width (selected lines)", 3.0f, 1.0f, 10.0f)
@@ -621,7 +621,7 @@ void ParallelCoordinates::drawLines(size2_t size) {
     lineShader_.setUniform("hovered", 1);
     lineShader_.setUniform("selected", 0);
     lineShader_.setUniform("filtered", 0);
-    if (!brushingAndLinking_.isFiltered(hoveredLine_) && hoveredLine_ != -1)
+    if (hoveredLine_ != -1 && !brushingAndLinking_.isFiltered(hoveredLine_))
         drawObject.draw(hoveredLine_);
 
     lineShader_.deactivate();
