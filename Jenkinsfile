@@ -17,20 +17,10 @@ node {
         errors: [],
         display: 0,
         addLabel: {label -> 
-            println "Add label: ${label}, changeid ${env.CHANGE_ID}, PR: ${pullRequest}"
-            println "labels: ${pullRequest?.labels?.join(', ') ?: 'None'}"
-            if (env.CHANGE_ID  && !(label in pullRequest.labels)) {
-                println "Add label: ${label}"
-                pullRequest.addLabels([label])
-            }
+            if (env.CHANGE_ID  && !(label in pullRequest.labels)) pullRequest.addLabels([label])
         },
         removeLabel: {label -> 
-            println "Add label: ${label}, changeid ${env.CHANGE_ID}, PR: ${pullRequest}"
-            println "labels: ${pullRequest?.labels?.join(', ') ?: 'None'}"
-            if (env.CHANGE_ID && (label in pullRequest.labels)) {
-                println "Remove label: ${label}"
-                pullRequest.removeLabel([label])
-            }
+            if (env.CHANGE_ID && (label in pullRequest.labels)) pullRequest.removeLabel([label])  
         }
     ]
 
@@ -47,7 +37,7 @@ node {
         util.warn(state)
         util.unittest(state)
         util.integrationtest(state)        
-        //util.regression(state, ["${env.WORKSPACE}/inviwo/modules"])
+        util.regression(state, ["${env.WORKSPACE}/inviwo/modules"])
         util.copyright(state)    
         util.doxygen(state)
     }

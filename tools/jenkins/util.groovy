@@ -74,7 +74,7 @@ def cmd(stageName, dirName, env = [], fun) {
 }
 
 def printMap(String name, def map) {
-    println name + ":\n" + map?.collect{"${it.key.padLeft(25)} = ${it.value}"}?.join("\n") ?: ''
+    println name + ":\n" + map?.collect{"${it.key.padLeft(30)} = ${it.value}"}?.join("\n") ?: ''
 }
 
 // this uses global pipeline var pullRequest
@@ -121,8 +121,8 @@ def wrap(def state, String reportSlackChannel, Closure fun) {
         state.build.result = 'FAILURE'
         throw e
     } finally {
-        slack(state, reportSlackChannel)
-        if (!state.errors.isEmpty()) {
+        if(!reportSlackChannel.isEmpty()) slack(state, reportSlackChannel)
+        if(!state.errors.isEmpty()) {
             println "Errors in: ${state.errors.join(", ")}"
             state.build.description = "Errors in: ${state.errors.join(' ')}"
         } 
@@ -307,7 +307,7 @@ Map envCMakeOptions(env) {
 //Args state, opts, modulePaths, onModules, offModules
 def build(Map args = [:]) {
     dir('build') {
-        println "Options:\n  " + args.opts?.collect{"  ${it.key.padRight(30)} = ${it.value}"}?.join('\n  ') ?: ""
+        printMap("Options", args.opts)
         println "External:\n  ${args.modulePaths?.join('\n  ')?:""}"
         println "Modules On:\n  ${args.onModules?.join('\n  ')?:""}"
         println "Modules Off:\n  ${args.offModules?.join('\n  ')?:""}"
@@ -334,12 +334,6 @@ def build(Map args = [:]) {
 // * offModules List of modules to disable (optional)
 def buildStandard(Map args = [:]) {
     stage('Build') {
-        sh '''
-            printf "\\e[31mHello\\e[0m\n"
-            printf "\\033[31mHello\\033[0m\n"
-            printf "\\x1b[31mHello\\x1b[0m\n"
-        '''
-
         if (args.state.env.Clean_Build?.equals("true")) clean()
         def defaultOpts = defaultCMakeOptions(args.state.env.Build_Type?:"Release")
         defaultOpts.putAll(envCMakeOptions(args.state.env))
