@@ -154,7 +154,6 @@ ParallelCoordinates::ParallelCoordinates()
     colors_.addProperty(tfSelection_);
     colors_.addProperty(enableHoverColor_);
     colors_.addProperty(alpha_);
-    colors_.addProperty(filteredAlpha_);
     colors_.addProperty(falllofPower_);
     colors_.addProperty(axisColor_);
     colors_.addProperty(handleBaseColor_);
@@ -180,6 +179,7 @@ ParallelCoordinates::ParallelCoordinates()
     filteringOptions_.addProperty(showFiltered_);
     filteringOptions_.addProperty(filterColor_);
     filteringOptions_.addProperty(filterIntensity_);
+    filteringOptions_.addProperty(filteredAlpha_);
     addProperty(filteringOptions_);
 
     addProperty(resetHandlePositions_);
