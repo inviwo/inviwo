@@ -37,7 +37,9 @@
 
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/datastructures/volume/volumedisk.h>
+#include <inviwo/core/datastructures/volume/volumerepresentation.h>
 
 namespace inviwo {
 
