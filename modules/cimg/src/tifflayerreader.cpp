@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,27 +27,47 @@
  *
  *********************************************************************************/
 
-#include <modules/cimg/cimgmodule.h>
-#include <modules/cimg/cimglayerreader.h>
-#include <modules/cimg/cimglayerwriter.h>
-#include <modules/cimg/cimgvolumereader.h>
-#include <modules/cimg/cimgutils.h>
 #include <modules/cimg/tifflayerreader.h>
-#include <modules/cimg/tiffstackvolumereader.h>
+
+#include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/raiiutils.h>
+
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/datastructures/image/layerram.h>
+#include <inviwo/core/datastructures/image/layerramprecision.h>
+
+#include <modules/cimg/cimgutils.h>
+
+#include <tiff/libtiff/tiffio.h>
+
+#include <sstream>
 
 namespace inviwo {
 
-CImgModule::CImgModule(InviwoApplication* app) : InviwoModule(app, "CImg") {
-    // Register Data Readers
-    registerDataReader(util::make_unique<CImgLayerReader>());
-    registerDataReader(util::make_unique<TIFFLayerReader>());
-    registerDataReader(util::make_unique<TIFFStackVolumeReader>());
+TIFFLayerReaderException::TIFFLayerReaderException(const std::string& message,
+                                                   ExceptionContext context)
+    : DataReaderException(message, context) {}
 
-    // Register Data Writers
-    registerDataWriter(util::make_unique<CImgLayerWriter>());
+TIFFLayerReader::TIFFLayerReader() : DataReaderType<Layer>() {
+#ifdef cimg_use_tiff
+    addExtension(FileExtension("tif", "TIFF (Tagged Image File Format)"));
+    addExtension(FileExtension("tiff", "TIFF (Tagged Image File Format)"));
+#endif
+}
 
-    LogInfo("Using LibJPG Version " << cimgutil::getLibJPGVersion());
-    LogInfo("Using OpenEXR Version " << cimgutil::getOpenEXRVersion());
+TIFFLayerReader* TIFFLayerReader::clone() const { return new TIFFLayerReader(*this); }
+
+std::shared_ptr<inviwo::Layer> TIFFLayerReader::readData(const std::string& fileName) {
+    if (!filesystem::fileExists(fileName))
+        throw TIFFLayerReaderException("Failed to open file for reading, " + fileName, IVW_CONTEXT);
+
+    auto header = cimgutil::getTIFFHeader(fileName);  
+    auto data = cimgutil::loadTIFFLayerData(nullptr, fileName, header, false);
+
+    auto layer = dispatching::dispatch<std::shared_ptr<Layer>, dispatching::filter::All>(
+        header.format->getId(), *this, data, size2_t{header.dimensions}, header.swizzleMask);
+
+    return layer;
 }
 
 }  // namespace inviwo
