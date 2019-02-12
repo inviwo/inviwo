@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,22 +32,34 @@
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/datastructures/volume/volume.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/datastructures/image/imagetypes.h>
 #include <modules/opengl/inviwoopengl.h>
-#include <modules/opengl/shader/shader.h>
-#include <modules/opengl/texture/texture.h>
-#include <modules/opengl/texture/textureunit.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/core/properties/isotfproperty.h>
 
 namespace inviwo {
 
 class BufferObjectArray;
+class Texture;
 class Shader;
 class MeshGL;
 class Mesh;
+class TransferFunctionProperty;
+class IsoTFProperty;
+class TextureUnit;
+class TextureUnitContainer;
+class Shader;
+class Image;
+
+class ImageOutport;
+class Volume;
+
+template <typename T, size_t N, bool Flat>
+class DataInport;
+using VolumeInport = DataInport<Volume, 1, false>;
+
+template <size_t>
+class BaseImageInport;
+using ImageInport = BaseImageInport<1>;
+
 
 namespace utilgl {
 

@@ -34,6 +34,7 @@ target_link_libraries(inviwo-integrationtests PRIVATE
     inviwo::core
     inviwo::module::glfw
     inviwo::module::base
+    inviwo::testutil
     gtest
 )
 ivw_configure_application_module_dependencies(inviwo-integrationtests ${enabled_modules})

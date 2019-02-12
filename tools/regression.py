@@ -2,7 +2,7 @@
 #
 # Inviwo - Interactive Visualization Workshop
 #
-# Copyright (c) 2013-2018 Inviwo Foundation
+# Copyright (c) 2013-2019 Inviwo Foundation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -31,6 +31,7 @@ import os
 import sys
 import argparse
 import configparser
+import logging
 
 from ivwpy.util import *
 from ivwpy.colorprint import *
@@ -115,6 +116,8 @@ def makeCmdParser():
 	parser.add_argument('--header', type=str, action="store", dest="header", help='A optional report header', default=None)
 	parser.add_argument('--footer', type=str, action="store", dest="footer", help='A optional report footer', default=None)
 	parser.add_argument("-v", "--view", action="store_true", dest="view", help="Open the report when done")
+	parser.add_argument("--log", type=str, dest="log", help="Select log level: DEBUG, INFO, WARN, ERROR, CRITICAL (default: WARN)")
+	parser.add_argument("--summary", action="store_true", dest="summary", help="Print summary information")
 
 	return parser.parse_args()
 
@@ -156,6 +159,8 @@ if __name__ == '__main__':
 	args = makeCmdParser();
 	config = configparser.ConfigParser()
 	
+	logging.getLogger().setLevel(getattr(logging, str(args.log).upper(), logging.WARN))
+
 	if args.inviwo:
 		inviwopath = os.path.abspath(args.inviwo)
 		configpath = find_pyconfig(inviwopath)
@@ -242,11 +247,13 @@ if __name__ == '__main__':
 		if app.success():
 			print_info("Regression was successful")
 			print_info("Report: " + output+"/report.html")
+			if args.summary: app.printSummary()
 			if args.view: openWithDefaultApp(output+"/report.html")
 			sys.exit(0)
 		else: 
 			print_error("Regression was unsuccessful see report for details")
 			print_info("Report: " + output+"/report.html")
+			if args.summary: app.printSummary()
 			if args.view: openWithDefaultApp(output+"/report.html")
 			sys.exit(1)
 		

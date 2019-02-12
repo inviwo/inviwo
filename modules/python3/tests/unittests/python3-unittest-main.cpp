@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,6 +38,8 @@
 #include <inviwo/core/common/coremodulesharedlibrary.h>
 #include <modules/python3/python3modulesharedlibrary.h>
 
+#include <inviwo/testutil/configurablegtesteventlistener.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <gtest/gtest.h>
@@ -72,6 +74,7 @@ int main(int argc, char** argv) {
 #else
         ::testing::InitGoogleTest(&argc, argv);
 #endif
+        ConfigurableGTestEventListener::setup();
         ret = RUN_ALL_TESTS();
     }
 

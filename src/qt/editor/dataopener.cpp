@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,6 +35,7 @@
 #include <inviwo/core/rendering/datavisualizermanager.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 #include <modules/qtwidgets/inviwoqtutils.h>
 

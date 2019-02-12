@@ -34,12 +34,21 @@
 #endif
 #endif
 
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/consolelogger.h>
+#include <inviwo/testutil/configurablegtesteventlistener.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <gtest/gtest.h>
 #include <warn/pop>
 
 int main(int argc, char** argv) {
+    LogCentral::init();
+    auto logger = std::make_shared<ConsoleLogger>();
+    LogCentral::getPtr()->setVerbosity(LogVerbosity::Error);
+    LogCentral::getPtr()->registerLogger(logger);
+    
     int ret = -1;
     {
 #ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
@@ -49,6 +58,7 @@ int main(int argc, char** argv) {
 #else
         ::testing::InitGoogleTest(&argc, argv);
 #endif
+        inviwo::ConfigurableGTestEventListener::setup();
         ret = RUN_ALL_TESTS();
     }
     return ret;

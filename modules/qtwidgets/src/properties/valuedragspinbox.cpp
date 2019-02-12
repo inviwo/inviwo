@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -84,9 +84,9 @@ QString ValueDragSpinBox::text() const { return spinBox_->text(); }
 
 QString ValueDragSpinBox::cleanText() const { return spinBox_->cleanText(); }
 
-int ValueDragSpinBox::maximum() const { return spinBox_->maximum(); }
+int ValueDragSpinBox::maximum() const { return static_cast<int>(spinBox_->maximum()); }
 
-int ValueDragSpinBox::minimum() const { return spinBox_->minimum(); }
+int ValueDragSpinBox::minimum() const { return static_cast<int>(spinBox_->minimum()); }
 
 QString ValueDragSpinBox::prefix() const { return spinBox_->prefix(); }
 
@@ -102,11 +102,11 @@ void ValueDragSpinBox::setSingleStep(int val) { spinBox_->setSingleStep(val); }
 
 void ValueDragSpinBox::setSuffix(const QString &suffix) { spinBox_->setSuffix(suffix); }
 
-int ValueDragSpinBox::singleStep() const { return spinBox_->singleStep(); }
+int ValueDragSpinBox::singleStep() const { return static_cast<int>(spinBox_->singleStep()); }
 
 QString ValueDragSpinBox::suffix() const { return spinBox_->suffix(); }
 
-int ValueDragSpinBox::value() const { return spinBox_->value(); }
+int ValueDragSpinBox::value() const { return static_cast<int>(spinBox_->value()); }
 
 void ValueDragSpinBox::setValue(int value) { spinBox_->setValue(value); }
 
