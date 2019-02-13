@@ -162,7 +162,7 @@ NumberLineEdit::NumberLineEdit(bool intMode, QWidget *parent)
     validator_ = new QDoubleValidator(this);
     validator_->setNotation(QDoubleValidator::ScientificNotation);
     lineEdit()->setValidator(validator_);
-    // need a high precision in QDoubleSpinBox since min and max values are rounded using the 
+    // need a high precision in QDoubleSpinBox since min and max values are rounded using the
     // number of decimals
     QDoubleSpinBox::setDecimals(20);
 }
@@ -233,17 +233,11 @@ QValidator::State NumberLineEdit::validate(QString &text, int &pos) const {
 
 void NumberLineEdit::setDecimals(int decimals) { visibleDecimals_ = decimals; }
 
-void NumberLineEdit::setMinimum(double min) {
-    QDoubleSpinBox::setMinimum(min);
-}
+void NumberLineEdit::setMinimum(double min) { QDoubleSpinBox::setMinimum(min); }
 
-void NumberLineEdit::setMaximum(double max) {
-    QDoubleSpinBox::setMaximum(max);
-}
+void NumberLineEdit::setMaximum(double max) { QDoubleSpinBox::setMaximum(max); }
 
-void NumberLineEdit::setRange(double min, double max) {
-    QDoubleSpinBox::setRange(min, max);
-}
+void NumberLineEdit::setRange(double min, double max) { QDoubleSpinBox::setRange(min, max); }
 
 void NumberLineEdit::focusInEvent(QFocusEvent *e) {
     abbreviated_ = false;
