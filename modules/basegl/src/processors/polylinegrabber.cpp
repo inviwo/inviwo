@@ -129,6 +129,8 @@ namespace inviwo {
         }
 
         numPolylinePts_ = polyline_->size();
+
+        // TODO: mark event as used needed here?
     }
 
     void PolylineGrabber::addPoint(const vec3& pt)
