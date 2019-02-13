@@ -60,6 +60,16 @@ std::shared_ptr<Volume> TIFFStackVolumeReader::readData(const std::string& fileP
     auto volume = std::make_shared<Volume>(header.dimensions, header.format);
     auto volumeDisk = std::make_shared<VolumeDisk>(filePath, header.dimensions, header.format);
     volume->setDataFormat(header.format);
+    volume->dataMap_.dataRange = dvec2{header.format->getLowest(), header.format->getMax()};
+    volume->dataMap_.valueRange = dvec2{header.format->getLowest(), header.format->getMax()};
+
+    vec3 extent{vec3{header.dimensions} / vec3{header.resolution, glm::compMin(header.resolution)}};
+    if (header.resolutionUnit == cimgutil::TIFFResolutionUnit::Centimeter) {
+        extent *= 2.54f;
+    }
+    volume->setBasis(glm::scale(extent));
+    volume->setOffset(-extent * 0.5f);
+
     volumeDisk->setLoader(new TIFFStackVolumeRAMLoader(volumeDisk.get()));
     volume->addRepresentation(volumeDisk);
 
@@ -107,7 +117,7 @@ void TIFFStackVolumeRAMLoader::updateRepresentation(
                                                  IvwContext);
         }
     }
-    
+
     cimgutil::TIFFHeader header;
     header.format = volumeDisk_->getDataFormat();
     header.dimensions = volumeDisk_->getDimensions();

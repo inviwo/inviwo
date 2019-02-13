@@ -588,24 +588,25 @@ TIFFHeader getTIFFHeader(const std::string& filename) {
     TIFFSetDirectory(tif, 0);
 
     uint16 samplesPerPixel = 1, bitsPerSample = 8, sampleFormat = 1;
-    TIFFGetField(tif, TIFFTAG_BITSPERSAMPLE, &bitsPerSample);
-    TIFFGetField(tif, TIFFTAG_SAMPLESPERPIXEL, &samplesPerPixel);
-    TIFFGetField(tif, TIFFTAG_SAMPLEFORMAT, &sampleFormat);
+    TIFFGetFieldDefaulted(tif, TIFFTAG_BITSPERSAMPLE, &bitsPerSample);
+    TIFFGetFieldDefaulted(tif, TIFFTAG_SAMPLESPERPIXEL, &samplesPerPixel);
+    TIFFGetFieldDefaulted(tif, TIFFTAG_SAMPLEFORMAT, &sampleFormat);
 
-    std::array<unsigned int, 2> xres, yres;
+    std::array<unsigned int, 2> xres = {150, 1};
+    std::array<unsigned int, 2> yres = {150, 1};
     // X and Y resolution tags are stored as RATIONAL, i.e. a fractional value
     // (2 unsigned int values with the first being the numerator, the second the denominator)
-    TIFFGetField(tif, TIFFTAG_XRESOLUTION, xres.data());
-    TIFFGetField(tif, TIFFTAG_YRESOLUTION, yres.data());
+    TIFFGetFieldDefaulted(tif, TIFFTAG_XRESOLUTION, xres.data());
+    TIFFGetFieldDefaulted(tif, TIFFTAG_YRESOLUTION, yres.data());
     const dvec2 res{xres[0] / static_cast<double>(xres[1]), yres[0] / static_cast<double>(yres[1])};
 
-    uint16 resUnit;
-    TIFFGetField(tif, TIFFTAG_RESOLUTIONUNIT, &resUnit);
+    uint16 resUnit = 2;
+    TIFFGetFieldDefaulted(tif, TIFFTAG_RESOLUTIONUNIT, &resUnit);
     const TIFFResolutionUnit resolutionUnit = static_cast<TIFFResolutionUnit>(resUnit);
 
     uint32 x = 0, y = 0, z = 0;
-    TIFFGetField(tif, TIFFTAG_IMAGEWIDTH, &x);
-    TIFFGetField(tif, TIFFTAG_IMAGELENGTH, &y);
+    TIFFGetFieldDefaulted(tif, TIFFTAG_IMAGEWIDTH, &x);
+    TIFFGetFieldDefaulted(tif, TIFFTAG_IMAGELENGTH, &y);
     // count the images
     do {
         ++z;
