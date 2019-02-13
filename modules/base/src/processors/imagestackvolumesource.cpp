@@ -64,7 +64,7 @@ const ProcessorInfo ImageStackVolumeSource::processorInfo_{
 };
 const ProcessorInfo ImageStackVolumeSource::getProcessorInfo() const { return processorInfo_; }
 
-ImageStackVolumeSource::ImageStackVolumeSource()
+ImageStackVolumeSource::ImageStackVolumeSource(InviwoApplication* app)
     : Processor()
     , outport_("volume")
     , filePattern_("filePattern", "File Pattern", "####.jpeg", "")
@@ -73,7 +73,8 @@ ImageStackVolumeSource::ImageStackVolumeSource()
     , voxelSpacing_("voxelSpacing", "Voxel Spacing", vec3(1.0f), vec3(0.1f), vec3(10.0f),
                     vec3(0.1f))
     , basis_("Basis", "Basis and offset")
-    , information_("Information", "Data information") {
+    , information_("Information", "Data information")
+    , app_{app} {
 
     addPort(outport_);
     addProperty(filePattern_);
@@ -82,8 +83,7 @@ ImageStackVolumeSource::ImageStackVolumeSource()
     addProperty(information_);
     addProperty(basis_);
 
-    validExtensions_ =
-        InviwoApplication::getPtr()->getDataReaderFactory()->getExtensionsForType<Layer>();
+    validExtensions_ = app_->getDataReaderFactory()->getExtensionsForType<Layer>();
     filePattern_.onChange([this]() { load(); });
     voxelSpacing_.onChange([this]() {
         // update volume basis and offset
@@ -119,215 +119,124 @@ void ImageStackVolumeSource::load() { load(false); }
 void ImageStackVolumeSource::load(bool deserialized) {
     if (isDeserializing_) return;
 
-    std::vector<std::string> filesInDirectory = filePattern_.getFileList();
-    if (filesInDirectory.empty()) return;
-
-    std::vector<std::string> fileNames;
-    for (size_t i = 0; i < filesInDirectory.size(); i++) {
-        if (isValidImageFile(filesInDirectory[i])) {
-            fileNames.push_back(filesInDirectory[i]);
-        }
-    }
-    if (!fileNames.size()) {
-        LogWarn("No images found in '" << filePattern_.getFilePatternPath() << "'");
-        return;
-    }
+    const auto filesInDirectory = filePattern_.getFileList();
 
     using ReaderMap = std::map<std::string, std::unique_ptr<DataReaderType<Layer>>>;
     ReaderMap readerMap;
 
-    size_t numSlices = 0;
-    // determine number of slices and file readers for all images
-    for (auto file : fileNames) {
-        std::string fileExtension = toLower(filesystem::getFileExtension(file));
-        if (readerMap.find(fileExtension) != readerMap.end()) {
-            // reader already exists for this format
-            ++numSlices;
-            continue;
+    auto getReader = [&](const std::string& filename) {
+        std::string fileExtension = toLower(filesystem::getFileExtension(filename));
+        auto it = readerMap.find(fileExtension);
+        if (it != readerMap.end()) {
+            return it->second.get();
         }
-        auto reader = InviwoApplication::getPtr()
-                          ->getDataReaderFactory()
-                          ->getReaderForTypeAndExtension<Layer>(fileExtension);
-        if (!reader && skipUnsupportedFiles_.get()) {
-            // ignore file entirely
-            continue;
-        }
-        readerMap[fileExtension] = std::move(reader);
+        auto reader =
+            app_->getDataReaderFactory()->getReaderForTypeAndExtension<Layer>(fileExtension);
+        auto ptr = reader.get();
+        readerMap.insert({fileExtension, std::move(reader)});
+        return ptr;
+    };
 
-        ++numSlices;
+    std::vector<std::pair<std::string, DataReaderType<Layer>*>> slices;
+    slices.reserve(filesInDirectory.size());
+
+    for (const auto& file : filesInDirectory) {
+        auto reader = getReader(file);
+        if (skipUnsupportedFiles_ && !reader) {
+            continue;
+        }
+        slices.emplace_back(file, reader);
     }
 
-    if (readerMap.empty()) {
+    // identify first slice with a reader
+    auto it = slices.begin();
+    while (!it->second) {
+        ++it;
+    }
+    if (it == slices.end()) {
         // could not find any suitable data reader for the images
-        LogWarn("Image formats not supported");
+        LogWarn("No supported images found in '" << filePattern_.getFilePatternPath() << "'");
         return;
     }
 
-    auto getReaderIt = [&readerMap](const std::string& filename) {
-        return readerMap.find(toLower(filesystem::getFileExtension(filename)));
-    };
-
-    // use first image to determine the volume size
-    size2_t layerDims{0u, 0u};
-    //    const DataFormatBase* format = nullptr;
+    std::shared_ptr<Layer> referenceLayer;
     try {
-        size_t slice = 0;
+        referenceLayer = it->second->readData(it->first);
+    } catch (DataReaderException const& e) {
+        LogProcessorError("Could not load image: " << it->first << ", " << e.getMessage());
+        return;
+    }
 
-        // skip slices with unsupported image formats
-        while (getReaderIt(fileNames[slice]) == readerMap.end()) {
-            ++slice;
-        }
+    // Call getRepresentation here to enforce creating a ram representation.
+    // Otherwise the default image size, i.e. 256x256, will be reported since the LayerDisk
+    // does not provide metadata for all image formats.
+    auto layerRAM = referenceLayer->getRepresentation<LayerRAM>();
 
-        auto imgLayer = getReaderIt(fileNames[slice])->second->readData(fileNames[slice]);
-        // Call getRepresentation here to force read a ram representation.
-        // Otherwise the default image size, i.e. 256x265, will be reported
-        // until you do the conversion since the LayerDisk does not provide any metadata.
-        auto layerRAM = imgLayer->getRepresentation<LayerRAM>();
-        layerDims = imgLayer->getDimensions();
+    if (glm::compMul(layerRAM->getDimensions()) == 0) {
+        LogError("Could not extract valid image dimensions from '" << it->first << "'");
+        return;
+    }
 
-        if ((layerDims.x == 0) || (layerDims.y == 0)) {
-            LogError("Could not extract valid image dimensions from '" << fileNames[slice] << "'");
-            return;
-        }
+    volume_ =
+        layerRAM->dispatch<std::shared_ptr<Volume>, FloatOrIntMax32>([&](auto reflayerprecision) {
+            using ValueType = util::PrecsionValueType<decltype(reflayerprecision)>;
+            using PrimitiveType = typename DataFormat<ValueType>::primitive;
 
-        volume_ = layerRAM->dispatch<std::shared_ptr<Volume>, FloatOrIntMax32>(
-            [&](auto baselayerprecision) {
-                using ValueType = util::PrecsionValueType<decltype(baselayerprecision)>;
-                using PrimitiveType = typename DataFormat<ValueType>::primitive;
+            const size2_t layerDims = reflayerprecision->getDimensions();
+            const size_t sliceOffset = glm::compMul(layerDims);
 
-                const size3_t volSize(layerDims, numSlices);
-                // create matching volume representation
-                auto volumeRAM = std::make_shared<VolumeRAMPrecision<ValueType>>(volSize);
+            // create matching volume representation
+            auto volumeRAM =
+                std::make_shared<VolumeRAMPrecision<ValueType>>(size3_t{layerDims, slices.size()});
+            auto volData = volumeRAM->getDataTyped();
 
-                auto volume = std::make_shared<Volume>(volumeRAM);
-                volume->dataMap_.dataRange =
-                    dvec2{DataFormat<PrimitiveType>::lowest(), DataFormat<PrimitiveType>::max()};
-                volume->dataMap_.valueRange =
-                    dvec2{DataFormat<PrimitiveType>::lowest(), DataFormat<PrimitiveType>::max()};
+            auto volume = std::make_shared<Volume>(volumeRAM);
+            volume->dataMap_.dataRange =
+                dvec2{DataFormat<PrimitiveType>::lowest(), DataFormat<PrimitiveType>::max()};
+            volume->dataMap_.valueRange =
+                dvec2{DataFormat<PrimitiveType>::lowest(), DataFormat<PrimitiveType>::max()};
 
-                auto volData = volumeRAM->getDataTyped();
-                const size_t sliceOffset = glm::compMul(layerDims);
-                // initalize volume slices before current one
-                std::fill(volData, volData + slice * sliceOffset, ValueType{0});
-
-                // copy first image layer into volume
-                auto layerDataBase = baselayerprecision->getDataTyped();
-                std::copy(layerDataBase, layerDataBase + sliceOffset,
-                          volData + slice * sliceOffset);
-
-                // load remaining slices
-                ++slice;
-                while (slice < numSlices) {
-                    auto it = getReaderIt(fileNames[slice]);
-                    if (it == readerMap.end()) {
-                        // reader does not exist for this format
-                        std::fill(volData + slice * sliceOffset,
-                                  volData + (slice + 1) * sliceOffset, ValueType{0});
-                        ++slice;
-                        continue;
-                    }
-
+            size_t slice = 0;
+            for (auto& elem : slices) {
+                std::shared_ptr<Layer> layer;
+                if (elem.second) {
                     try {
-                        auto layer = (*it).second->readData(fileNames[slice]);
+                        layer = elem.second->readData(elem.first);
+
+                        if ((layer->getDataFormat()->getNumericType() != NumericType::Float) &&
+                            (layer->getDataFormat()->getPrecision() > 32)) {
+                            throw DataReaderException(
+                                std::string{"Unsupported integer bit depth ("} +
+                                std::to_string(layer->getDataFormat()->getPrecision()) + ")");
+                        }
+
+                        // rescale layer if necessary
                         if (layer->getDimensions() != layerDims) {
-                            // rescale layer if necessary
                             layer->setDimensions(layerDims);
                         }
                         layer->getRepresentation<LayerRAM>()->dispatch<void, FloatOrIntMax32>(
                             [&](auto layerpr) {
                                 using ValueTypeLayer = util::PrecsionValueType<decltype(layerpr)>;
-                                if ((DataFormat<ValueType>::numtype != NumericType::Float) &&
-                                    (DataFormat<ValueType>::compsize > 4)) {
-                                    throw DataReaderException(
-                                        std::string{"Unsupported integer bit depth ("} +
-                                        std::to_string(DataFormat<ValueType>::precision()) + ")");
-                                }
-
-                                auto layerData = layerpr->getDataTyped();
+                                auto data = layerpr->getDataTyped();
                                 std::transform(
-                                    layerData, layerData + sliceOffset,
-                                    volData + slice * sliceOffset, [](auto value) {
+                                    data, data + sliceOffset, volData + slice * sliceOffset,
+                                    [](auto value) {
                                         return util::glm_convert_normalized<ValueType>(value);
                                     });
                             });
-
                     } catch (DataReaderException const& e) {
-                        LogProcessorError("Could not load image: " << fileNames[slice] << ", "
+                        LogProcessorError("Could not load image: " << elem.first << ", "
                                                                    << e.getMessage());
-                        std::fill(volData + slice * sliceOffset,
-                                  volData + (slice + 1) * sliceOffset, ValueType{0});
                     }
-                    ++slice;
                 }
-                return volume;
-            });
-
-    } catch (DataReaderException const& e) {
-        LogProcessorError("Could not load image: " << fileNames.front() << ", " << e.getMessage());
-        return;
-    }
-    /*
-    if ((layerDims.x == 0) || (layerDims.y == 0) || !format) {
-        LogError("Invalid layer dimensions/format for volume");
-        return;
-    }
-
-    // create a volume GL representation
-    auto volumeRAM = createVolumeRAM(volSize, format);
-    volume_ = std::make_shared<Volume>(volumeRAM);
-    volume_->dataMap_.dataRange = dvec2{format->getLowest(), format->getMax()};
-    volume_->dataMap_.valueRange = dvec2{format->getLowest(), format->getMax()};
-
-    // set physical size of volume
-    updateVolumeBasis(deserialized);
-
-    volumeRAM->dispatch<void, FloatOrIntMax32>([&](auto volumeprecision) {
-        using ValueType = util::PrecsionValueType<decltype(volumeprecision)>;
-        using PrimitiveType = typename DataFormat<ValueType>::primitive;
-
-        auto volData = volumeprecision->getDataTyped();
-        const size_t sliceOffset = glm::compMul(layerDims);
-
-        size_t slice = 0;
-        for (auto file : fileNames) {
-            // load image into texture
-            std::string fileExtension = toLower(filesystem::getFileExtension(file));
-
-            auto it = readerMap.find(fileExtension);
-            if (it == readerMap.end()) {
-                // reader does not exist for this format
-                std::fill(volData + slice * sliceOffset, volData + (slice + 1) * sliceOffset,
-                          ValueType{0});
+                if (!layer) {
+                    std::fill(volData + slice * sliceOffset, volData + (slice + 1) * sliceOffset,
+                              ValueType{0});
+                }
                 ++slice;
-                continue;
             }
-
-            try {
-                auto layer = (*it).second->readData(file);
-                if (layer->getDimensions() != layerDims) {
-                    // rescale layer if necessary
-                    layer->setDimensions(layerDims);
-                }
-                layer->getRepresentation<LayerRAM>()->dispatch<void, FloatOrIntMax32>(
-                    [&](auto layerpr) {
-                        auto layerData = layerpr->getDataTyped();
-                        std::transform(
-                            layerData, layerData + sliceOffset, volData + slice * sliceOffset,
-                            [](auto value) {
-                                return util::glm_convert_normalized<typename ValueType>(value);
-                            });
-                    });
-
-            } catch (DataReaderException const& e) {
-                LogProcessorError("Could not load image: " << file << ", " << e.getMessage());
-                std::fill(volData + slice * sliceOffset, volData + (slice + 1) * sliceOffset,
-                          ValueType{0});
-            }
-
-            ++slice;
-        }
-    });
-    */
+            return volume;
+        });
 
     basis_.updateForNewEntity(*volume_, deserialized);
     information_.updateForNewVolume(*volume_, deserialized);
@@ -346,27 +255,9 @@ void ImageStackVolumeSource::updateVolumeBasis(bool deserialized) {
     if (!volume_) {
         return;
     }
-    size3_t layerDims{volume_->getDimensions()};
-    vec3 spacing{voxelSpacing_.get()};
-
-    double aspectRatio = static_cast<double>(layerDims.x) / static_cast<double>(layerDims.y);
-    // consider voxel spacing
-    aspectRatio *= spacing.x / spacing.y;
-
-    vec3 scale{2.0f};
-    if (aspectRatio > 1.0) {
-        scale.y /= static_cast<float>(aspectRatio);
-        scale.z = scale.x / (layerDims.x * spacing.x) * (layerDims.z * spacing.z);
-    } else {
-        scale.x *= static_cast<float>(aspectRatio);
-        scale.z = scale.y / (layerDims.y * spacing.y) * (layerDims.z * spacing.z);
-    }
-
-    mat3 basis(glm::scale(scale));
-    vec3 offset(-scale);
-    offset *= 0.5;
-    volume_->setBasis(basis);
-    volume_->setOffset(offset);
+    vec3 extent{voxelSpacing_.get() * vec3{volume_->getDimensions()}};
+    volume_->setBasis(glm::scale(extent));
+    volume_->setOffset(-extent * 0.5f);
 
     basis_.updateForNewEntity(*volume_, deserialized);
 }
