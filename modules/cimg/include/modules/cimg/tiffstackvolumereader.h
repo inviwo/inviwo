@@ -55,7 +55,7 @@ public:
     virtual TIFFStackVolumeReader* clone() const override;
     virtual ~TIFFStackVolumeReader() = default;
 
-    virtual std::shared_ptr<Volume> readData(const std::string& filePath);
+    virtual std::shared_ptr<Volume> readData(const std::string& filePath) override;
 };
 
 class IVW_MODULE_CIMG_API TIFFStackVolumeRAMLoader
