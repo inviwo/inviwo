@@ -159,7 +159,8 @@ CONV_TEST(unsigned_long_long2unsigned_long_long, unsigned long long, unsigned lo
 CONV_TEST(unsigned_long_long2signed_char, unsigned long long, signed char)
 CONV_TEST(unsigned_long_long2signed_short, unsigned long long, signed short)
 // CONV_TEST(unsigned_long_long2signed_int, unsigned long long, signed int) # clang failure
-// CONV_TEST(unsigned_long_long2signed_long_long, unsigned long long, signed long long) # clang failure
+// CONV_TEST(unsigned_long_long2signed_long_long, unsigned long long, signed long long) # clang
+// failure
 
 CONV_TEST(signed_char2float, signed char, float)
 CONV_TEST(signed_char2double, signed char, double)

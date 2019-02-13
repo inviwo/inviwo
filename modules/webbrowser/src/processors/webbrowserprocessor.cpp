@@ -116,7 +116,7 @@ WebBrowserProcessor::WebBrowserProcessor()
     CefWindowInfo window_info;
 
     CefBrowserSettings browserSettings;
-    
+
     // Enable loading files from other locations than where the .html file is
     browserSettings.file_access_from_file_urls = STATE_ENABLED;
 

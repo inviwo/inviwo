@@ -53,7 +53,7 @@ public:
     virtual ~EditorFileObserver() = default;
 
     void setTitle(const QString &title);
-    const QString& getTitle() const;
+    const QString &getTitle() const;
 
     void resumeObservingFile();
     void suspendObservingFile();

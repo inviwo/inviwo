@@ -142,9 +142,7 @@ void PerspectiveCamera::configureProperties(CompositeProperty* comp) {
         comp->addProperty(fov, true);
     }
 
-    fovCallbackHolder_= fov->onChangeScoped([this, fov]() {
-        setFovy(fov->get());
-    });
+    fovCallbackHolder_ = fov->onChangeScoped([this, fov]() { setFovy(fov->get()); });
 }
 
 bool operator==(const PerspectiveCamera& lhs, const PerspectiveCamera& rhs) {

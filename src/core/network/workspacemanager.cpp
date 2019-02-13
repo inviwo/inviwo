@@ -181,7 +181,8 @@ void WorkspaceManager::registerFactory(FactoryBase* factory) {
 }
 
 Deserializer WorkspaceManager::createWorkspaceDeserializer(std::istream& stream,
-                                                           const std::string& refPath, Logger *logger) const {
+                                                           const std::string& refPath,
+                                                           Logger* logger) const {
 
     Deserializer deserializer(stream, refPath);
     deserializer.setLogger(logger);
@@ -202,10 +203,12 @@ Deserializer WorkspaceManager::createWorkspaceDeserializer(std::istream& stream,
             if (minfo->version_ < module->getVersion()) {
                 auto converter = module->getConverter(minfo->version_);
                 deserializer.convertVersion(converter.get());
-                LogNetworkSpecial((&deserializer), LogLevel::Warn, "Loading old workspace ("
-                               << deserializer.getFileName() << ") " << module->getIdentifier()
-                               << "Module version: " << minfo->version_
-                               << ". Updating to version: " << module->getVersion() << ".");
+                LogNetworkSpecial((&deserializer), LogLevel::Warn,
+                                  "Loading old workspace ("
+                                      << deserializer.getFileName() << ") "
+                                      << module->getIdentifier()
+                                      << "Module version: " << minfo->version_
+                                      << ". Updating to version: " << module->getVersion() << ".");
             }
         }
     }

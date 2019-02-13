@@ -77,7 +77,7 @@ protected slots:
     virtual void showEvent(QShowEvent *event) override;
 
 protected:
-    virtual bool eventFilter(QObject* obj, QEvent *event) override;
+    virtual bool eventFilter(QObject *obj, QEvent *event) override;
 
 private:
     void stickyBtnToggled(bool toggle);

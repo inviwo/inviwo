@@ -55,7 +55,7 @@ private:
     const ShaderObject* obj_;
     utilqt::EditorFileObserver fileObserver_;
 
-    CodeEdit *shadercode_;
+    CodeEdit* shadercode_;
 };
 
 }  // namespace inviwo

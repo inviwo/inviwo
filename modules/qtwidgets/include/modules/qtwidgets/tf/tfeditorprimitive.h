@@ -84,7 +84,6 @@ public:
     TFPrimitive& getPrimitive();
     const TFPrimitive& getPrimitive() const;
 
-
     void setPosition(double pos);
     double getPosition() const;
 

@@ -812,17 +812,16 @@ struct almostEqual<glm::mat<C, R, T, Q>> {
 
 }  // namespace detail
 
-
 /**
-* Utility function to create a matrix filled with a constant.
-* For example: 
-* \code{.cpp}
-* auto m = util::filled<mat3>(3.16);
-* // | 3.16 3.16 3.16 |
-* // | 3.16 3.16 3.16 |
-* // | 3.16 3.16 3.16 |
-* \endcode
-*/
+ * Utility function to create a matrix filled with a constant.
+ * For example:
+ * \code{.cpp}
+ * auto m = util::filled<mat3>(3.16);
+ * // | 3.16 3.16 3.16 |
+ * // | 3.16 3.16 3.16 |
+ * // | 3.16 3.16 3.16 |
+ * \endcode
+ */
 template <typename M, typename T = typename M::value_type>
 M filled(T v) {
     return M{T(0)} + v;

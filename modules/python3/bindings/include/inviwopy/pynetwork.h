@@ -35,7 +35,6 @@
 #include <pybind11/pybind11.h>
 #include <warn/pop>
 
-
 #include <inviwo/core/ports/outport.h>
 
 namespace inviwo {
