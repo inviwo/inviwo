@@ -45,6 +45,7 @@ namespace inviwo {
 
 class FileExtension;
 class Volume;
+class InviwoApplication;
 
 /** \docpage{org.inviwo.ImageStackVolumeSource, Image-Stack Volume Source}
  * Converts a stack of 2D images to a 3D volume
@@ -73,7 +74,7 @@ class Volume;
  */
 class IVW_MODULE_BASE_API ImageStackVolumeSource : public Processor {
 public:
-    ImageStackVolumeSource();
+    ImageStackVolumeSource(InviwoApplication* app);
     virtual ~ImageStackVolumeSource() = default;
 
     virtual void process() override;
@@ -104,6 +105,8 @@ private:
     std::shared_ptr<Volume> volume_;
     bool isDeserializing_ = false;
     bool dirty_ = false;
+
+    InviwoApplication *app_;
 };
 
 }  // namespace inviwo

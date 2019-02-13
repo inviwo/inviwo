@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,6 @@
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/datastructures/volume/volumedisk.h>
-#include <inviwo/core/datastructures/volume/volumerepresentation.h>
 
 namespace inviwo {
 
@@ -53,7 +52,7 @@ public:
 class IVW_MODULE_CIMG_API TIFFStackVolumeReader : public DataReaderType<Volume> {
 public:
     TIFFStackVolumeReader();
-    virtual TIFFStackVolumeReader* clone() const;
+    virtual TIFFStackVolumeReader* clone() const override;
     virtual ~TIFFStackVolumeReader() = default;
 
     virtual std::shared_ptr<Volume> readData(const std::string& filePath);
@@ -63,7 +62,7 @@ class IVW_MODULE_CIMG_API TIFFStackVolumeRAMLoader
     : public DiskRepresentationLoader<VolumeRepresentation> {
 public:
     TIFFStackVolumeRAMLoader(VolumeDisk* volumeDisk) : volumeDisk_(volumeDisk){};
-    virtual TIFFStackVolumeRAMLoader* clone() const;
+    virtual TIFFStackVolumeRAMLoader* clone() const override;
     virtual ~TIFFStackVolumeRAMLoader() = default;
 
     virtual std::shared_ptr<VolumeRepresentation> createRepresentation() const override;
