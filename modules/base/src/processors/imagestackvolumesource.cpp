@@ -150,7 +150,7 @@ void ImageStackVolumeSource::load(bool deserialized) {
 
     // identify first slice with a reader
     auto it = slices.begin();
-    while (!it->second) {
+    while (it != slices.end() && !it->second) {
         ++it;
     }
     if (it == slices.end()) {
@@ -216,7 +216,6 @@ void ImageStackVolumeSource::load(bool deserialized) {
                         }
                         layer->getRepresentation<LayerRAM>()->dispatch<void, FloatOrIntMax32>(
                             [&](auto layerpr) {
-                                using ValueTypeLayer = util::PrecsionValueType<decltype(layerpr)>;
                                 auto data = layerpr->getDataTyped();
                                 std::transform(
                                     data, data + sliceOffset, volData + slice * sliceOffset,
