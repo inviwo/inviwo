@@ -63,6 +63,10 @@ bool BrushingAndLinkingManager::isFiltered(size_t idx) const { return filtered_.
 
 bool BrushingAndLinkingManager::isSelected(size_t idx) const { return selected_.has(idx); }
 
+bool BrushingAndLinkingManager::isColumnSelected(size_t idx) const {
+    return selectedColumn_.has(idx);
+}
+
 void BrushingAndLinkingManager::setSelected(const BrushingAndLinkingInport* src,
                                             const std::unordered_set<size_t>& indices) {
     selected_.set(src, indices);
@@ -71,6 +75,11 @@ void BrushingAndLinkingManager::setSelected(const BrushingAndLinkingInport* src,
 void BrushingAndLinkingManager::setFiltered(const BrushingAndLinkingInport* src,
                                             const std::unordered_set<size_t>& indices) {
     filtered_.set(src, indices);
+}
+
+void BrushingAndLinkingManager::setSelectedColumn(const BrushingAndLinkingInport* src,
+                                                  const std::unordered_set<size_t>& indices) {
+    selectedColumn_.set(src, indices);
 }
 
 const std::unordered_set<size_t>& BrushingAndLinkingManager::getSelectedIndices() const {

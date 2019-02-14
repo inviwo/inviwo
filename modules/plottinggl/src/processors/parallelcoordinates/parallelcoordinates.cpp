@@ -47,7 +47,6 @@
 #include <modules/opengl/image/imagegl.h>
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
-#include <modules/opengl/rendering/meshdrawergl.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <inviwo/core/io/datareaderfactory.h>
@@ -81,6 +80,8 @@ ParallelCoordinates::ParallelCoordinates()
     , axisProperties_("axisProps_", "Axis")
     , colors_("colors", "Colors")
     , axisColor_("axisColor", "Axis Color", vec4(.6f, .6f, .6f, 1))
+    , axisHoverColor_("axisHoverColor", "Axis Hover Color", vec4(.3f, .3f, .3f, 1))
+    , axisSelectedColor_("axisSelectedColor", "Axis Selected Color", vec4(.8f, .0f, .0f, 1))
     , handleBaseColor_("handleColor", "Handle Color (Not filtering)", vec4(.92f, .92f, .92f, 1))
     , handleFilteredColor_("handleFilteredColor", "Handle Color (When filtering)",
                            vec4(.5f, .5f, .5f, 1))
@@ -101,6 +102,9 @@ ParallelCoordinates::ParallelCoordinates()
     , falllofPower_("falllofPower", "Falloff Power", 2.0f, 0.01f, 10.f, 0.01f)
     , lineWidth_("lineWidth", "Line Width", 7.0f, 1.0f, 10.0f)
     , selectedLineWidth_("selectedLineWidth", "Line Width (selected lines)", 3.0f, 1.0f, 10.0f)
+    , axisWidth_("axisWidth", "Axis Width", 3.0f, 1.0f, 10.0f, 0.001f)
+    , selectedAxisWidth_("selectedAxisWidth", "Axis Width (selected axis)", 4.0f, 1.0f, 10.0f,
+                         0.001f)
 
     , handleSize_("handleSize", "Handle Size", vec2(handleW, handleH), vec2(1), vec2(100), vec2(1))
 
@@ -118,10 +122,11 @@ ParallelCoordinates::ParallelCoordinates()
     , valuesFontSize_("valuesFontSize", "Font size for min/max")
 
     , lineShader_("pcp_lines.vert", "pcp_lines.geom", "pcp_lines.frag")
-    , axisShader_("pcp_axis.vert", "pcp_axis.frag")
+    , axisShader_("pcp_axis.vert", "pcp_axis.geom", "pcp_axis.frag")
     , handleShader_("pcp_handle.vert", "pcp_handle.frag")
 
     , linePicking_(this, 1, [&](PickingEvent *p) { linePicked(p); })
+    , axisPicking_(this, 1, [&](PickingEvent *p) { axisPicked(p); })
     , handlePicking_(this, 1, [&](PickingEvent *p) { handlePicked(p); })
 
     , textRenderer_()
@@ -136,6 +141,8 @@ ParallelCoordinates::ParallelCoordinates()
     addPort(outport_);
 
     axisColor_.setSemantics(PropertySemantics::Color);
+    axisHoverColor_.setSemantics(PropertySemantics::Color);
+    axisSelectedColor_.setSemantics(PropertySemantics::Color);
     handleBaseColor_.setSemantics(PropertySemantics::Color);
     handleFilteredColor_.setSemantics(PropertySemantics::Color);
     filterColor_.setSemantics(PropertySemantics::Color);
@@ -156,12 +163,16 @@ ParallelCoordinates::ParallelCoordinates()
     colors_.addProperty(alpha_);
     colors_.addProperty(falllofPower_);
     colors_.addProperty(axisColor_);
+    colors_.addProperty(axisHoverColor_);
+    colors_.addProperty(axisSelectedColor_);
     colors_.addProperty(handleBaseColor_);
     colors_.addProperty(handleFilteredColor_);
     colors_.addProperty(tf_);
     colors_.addProperty(blendMode_);
     addProperty(lineWidth_);
     addProperty(selectedLineWidth_);
+    addProperty(axisWidth_);
+    addProperty(selectedAxisWidth_);
     addProperty(axisProperties_);
 
     addProperty(text_);
@@ -425,7 +436,8 @@ void ParallelCoordinates::buildLineMesh(
     std::vector<BasicMesh::Vertex> vertices;
     vertices.reserve(numberOfAxis * numberOfLines);
 
-    linePicking_.resize(dataFrame_.getData()->getNumberOfRows());
+    axisPicking_.resize(axisVector_.size());
+    linePicking_.resize(numberOfLines);
 
     auto sampler = tf_.get();
 
@@ -465,18 +477,40 @@ void ParallelCoordinates::buildLineMesh(
 
 void ParallelCoordinates::drawAxis(
     size2_t size, const std::vector<ParallelCoordinatesAxisSettingsProperty *> &enabledAxis) {
+    utilgl::GlBoolState blendOn(GL_BLEND, true);
+    utilgl::BlendModeEquationState blendEq(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_FUNC_ADD);
+
     axisShader_.activate();
 
     axisShader_.setUniform("dims", ivec2(size));
     axisShader_.setUniform("spacing", margins_.getAsVec4());
+    axisShader_.setUniform("axisWidth", axisWidth_.get());
+    axisShader_.setUniform("selectedAxisWidth", selectedAxisWidth_.get());
 
     float dx = 1.0f / (enabledAxis.size() - 1);
 
-    for (size_t i = 0; i < enabledAxis.size(); i++) {
-        float x = i * dx;
-        axisShader_.setUniform("x", x);
-        axisShader_.setUniform("color", axisColor_.get());
-        axisDrawer_->draw();
+    size_t axisCounter = 0;
+    size_t activeAxisCounter = 0;
+    for (auto &p : axisVector_) {
+        if (p->isChecked()) {
+            float x = activeAxisCounter * dx;
+            axisShader_.setUniform("x", x);
+            axisShader_.setUniform("selected", 0);
+            if (hoveredAxis_ == axisCounter) {
+                axisShader_.setUniform("color", axisHoverColor_.get());
+            } else if (brushingAndLinking_.isColumnSelected(axisCounter)) {
+                axisShader_.setUniform("color", axisSelectedColor_.get());
+            } else {
+                axisShader_.setUniform("color", axisColor_.get());
+            }
+            if (brushingAndLinking_.isColumnSelected(axisCounter))
+                axisShader_.setUniform("selected", 1);
+
+            axisShader_.setUniform("pickColor", axisPicking_.getColor(axisCounter));
+            axisDrawer_->draw();
+            activeAxisCounter++;
+        }
+        axisCounter++;
     }
 
     // Draw axis
@@ -743,6 +777,32 @@ void ParallelCoordinates::linePicked(PickingEvent *p) {
             brushingAndLinking_.sendSelectionEvent({indexCol[id]});
         }
 
+        p->markAsUsed();
+        invalidate(InvalidationLevel::InvalidOutput);
+    }
+}
+
+void ParallelCoordinates::axisPicked(PickingEvent *p) {
+    const auto pickedID = p->getPickedId();
+
+    if (p->getHoverState() == PickingHoverState::Move ||
+        p->getHoverState() == PickingHoverState::Enter) {
+        hoveredAxis_ = pickedID;
+        invalidate(InvalidationLevel::InvalidOutput);
+    } else {
+        hoveredAxis_ = -1;
+        invalidate(InvalidationLevel::InvalidOutput);
+    }
+
+    if (p->getState() == PickingState::Updated && p->getPressState() == PickingPressState::Press &&
+        p->getPressItem() == PickingPressItem::Primary) {
+
+        auto id = p->getPickedId();
+        if (brushingAndLinking_.isColumnSelected(pickedID)) {
+            brushingAndLinking_.sendColumnSelectionEvent({});
+        } else {
+            brushingAndLinking_.sendColumnSelectionEvent({pickedID});
+        }
         p->markAsUsed();
         invalidate(InvalidationLevel::InvalidOutput);
     }

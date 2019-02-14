@@ -27,59 +27,25 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_BRUSHINGANDLINKINGMANAGER_H
-#define IVW_BRUSHINGANDLINKINGMANAGER_H
+#ifndef IVW_COLUMNSELECTIONEVENT_H
+#define IVW_COLUMNSELECTIONEVENT_H
 
 #include <inviwo/core/common/inviwo.h>
 #include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
-#include <modules/brushingandlinking/datastructures/indexlist.h>
-#include <inviwo/core/properties/invalidationlevel.h>
+#include <modules/brushingandlinking/events/brushingandlinkingevent.h>
 
 namespace inviwo {
-class BrushingAndLinkingInport;
-class BrushingAndLinkingProcessor;
+
 /**
- * \class BrushingAndLinkingManager
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
+ * \class SelectionEvent
  */
-class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingManager {
+class IVW_MODULE_BRUSHINGANDLINKING_API ColumnSelectionEvent : public BrushingAndLinkingEvent {
 public:
-    BrushingAndLinkingManager(Processor* p,
-                              InvalidationLevel validationLevel = InvalidationLevel::InvalidOutput);
-    virtual ~BrushingAndLinkingManager();
-
-    size_t getNumberOfSelected() const;
-    size_t getNumberOfFiltered() const;
-
-    void remove(const BrushingAndLinkingInport* src);
-
-    bool isFiltered(size_t idx) const;
-    bool isSelected(size_t idx) const;
-
-    bool isColumnSelected(size_t idx) const;
-
-    void setSelected(const BrushingAndLinkingInport* src,
-                     const std::unordered_set<size_t>& indices);
-
-    void setFiltered(const BrushingAndLinkingInport* src,
-                     const std::unordered_set<size_t>& indices);
-
-    void setSelectedColumn(const BrushingAndLinkingInport* src,
-                           const std::unordered_set<size_t>& indices);
-
-    const std::unordered_set<size_t>& getSelectedIndices() const;
-    const std::unordered_set<size_t>& getFilteredIndices() const;
-
-private:
-    IndexList selected_;
-    IndexList filtered_;
-    IndexList selectedColumn_;
-
-    std::shared_ptr<std::function<void()>> callback1_;
-    std::shared_ptr<std::function<void()>> callback2_;
+    ColumnSelectionEvent(const BrushingAndLinkingInport* src,
+                         const std::unordered_set<size_t>& indices);
+    virtual ~ColumnSelectionEvent() = default;
 };
 
 }  // namespace inviwo
 
-#endif  // IVW_BRUSHINGANDLINKINGMANAGER_H
+#endif  // IVW_SELECTIONEVENT_H
