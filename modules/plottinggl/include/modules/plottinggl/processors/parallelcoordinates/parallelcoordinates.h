@@ -122,6 +122,7 @@ private:
     FloatVec4Property handleFilteredColor_;
     TransferFunctionProperty tf_;
     TransferFunctionProperty tfSelection_;
+    BoolProperty enableHoverColor_;
 
     CompositeProperty filteringOptions_;
     BoolProperty showFiltered_;
@@ -132,6 +133,7 @@ private:
 
     TemplateOptionProperty<BlendMode> blendMode_;
     FloatProperty alpha_;
+    FloatProperty filterAlpha_;
     FloatProperty falllofPower_;
     FloatProperty lineWidth_;
     FloatProperty selectedLineWidth_;
@@ -172,6 +174,8 @@ private:
     TextureQuadRenderer textureRenderer_;
 
     std::shared_ptr<Image> handleImg_;
+
+    int hoveredLine_ = -1;
 
     bool recreateLines_;
     bool textCacheDirty_;
