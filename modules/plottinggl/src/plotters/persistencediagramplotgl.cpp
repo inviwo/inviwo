@@ -168,7 +168,8 @@ PersistenceDiagramPlotGL::Properties *PersistenceDiagramPlotGL::Properties::clon
     return new Properties(*this);
 }
 
-PersistenceDiagramPlotGL::PersistenceDiagramPlotGL(Processor *processor)
+PersistenceDiagramPlotGL::PersistenceDiagramPlotGL(Processor *processor,
+                                                   BrushingAndLinkingInport *brushing)
     : properties_("persistenceDiagram", "PersistenceDiagram")
     , pointShader_("persistencediagram.vert", "scatterplot.geom", "scatterplot.frag")
     , lineShader_("persistencediagramlines.vert", "linerenderer.geom", "linerenderer.frag")
@@ -177,7 +178,8 @@ PersistenceDiagramPlotGL::PersistenceDiagramPlotGL(Processor *processor)
     , color_(nullptr)
     , axisRenderers_({{properties_.xAxis_, properties_.yAxis_}})
     , picking_(processor, 1, [this](PickingEvent *p) { objectPicked(p); })
-    , processor_(processor) {
+    , processor_(processor)
+    , brushing_(brushing) {
 
     if (processor_) {
         pointShader_.onReload(
@@ -536,6 +538,9 @@ void PersistenceDiagramPlotGL::objectPicked(PickingEvent *p) {
             if (me->state() == MouseState::Release) {
                 // print information on current element
                 logRowData();
+                if (brushing_) {
+                    brushing_->sendSelectionEvent({std::get<0>(rowIndex)});
+                }
             }
             me->markAsUsed();
         }

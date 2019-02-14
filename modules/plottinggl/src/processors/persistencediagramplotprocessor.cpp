@@ -52,7 +52,7 @@ PersistenceDiagramPlotProcessor::PersistenceDiagramPlotProcessor()
     , dataFrame_("dataFrame")
     , brushing_("brushing")
     , outport_("outport")
-    , persistenceDiagramPlot_(this)
+    , persistenceDiagramPlot_(this, &brushing_)
     , xAxis_("xAxis", "X-axis", dataFrame_, false, 1)
     , yAxis_("yAxis", "Y-axis", dataFrame_, false, 2)
     , colorCol_("colorCol", "Color column", dataFrame_, true, 3) {
