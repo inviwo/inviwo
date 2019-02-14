@@ -225,7 +225,7 @@ void ImageStackVolumeSource::load(bool deserialized) {
                     fill(slice);
                     continue;
                 }
-                const auto layerRAM = layer->getRepresentation<LayerRAM>();
+                const auto layerRAM = layer->template getRepresentation<LayerRAM>();
 
                 const auto format = layerRAM->getDataFormat();
                 if ((format->getNumericType() != NumericType::Float) &&
@@ -243,7 +243,7 @@ void ImageStackVolumeSource::load(bool deserialized) {
                     fill(slice);
                     continue;
                 }
-                layerRAM->dispatch<void, FloatOrIntMax32>([&](auto layerpr) {
+                layerRAM->template dispatch<void, FloatOrIntMax32>([&](auto layerpr) {
                     const auto data = layerpr->getDataTyped();
                     std::transform(
                         data, data + sliceOffset, volData + slice * sliceOffset,
