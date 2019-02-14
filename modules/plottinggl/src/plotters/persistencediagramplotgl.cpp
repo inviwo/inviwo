@@ -539,7 +539,7 @@ void PersistenceDiagramPlotGL::objectPicked(PickingEvent *p) {
                 // print information on current element
                 logRowData();
                 if (brushing_) {
-                    brushing_->sendSelectionEvent({std::get<0>(rowIndex)});
+                    brushing_->sendSelectionEvent({std::get<1>(rowIndex)});
                 }
             }
             me->markAsUsed();
