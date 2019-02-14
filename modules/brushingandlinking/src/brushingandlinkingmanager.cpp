@@ -41,11 +41,14 @@ BrushingAndLinkingManager::BrushingAndLinkingManager(Processor* p,
             op->onDisconnect([=]() {
                 selected_.update();
                 filtered_.update();
+                selectedColumns_.update();
             });
         }
     }
     callback1_ = selected_.onChange([p, validationLevel]() { p->invalidate(validationLevel); });
     callback2_ = filtered_.onChange([p, validationLevel]() { p->invalidate(validationLevel); });
+    callback3_ =
+        selectedColumns_.onChange([p, validationLevel]() { p->invalidate(validationLevel); });
 }
 
 BrushingAndLinkingManager::~BrushingAndLinkingManager() {}
@@ -57,6 +60,7 @@ size_t BrushingAndLinkingManager::getNumberOfFiltered() const { return filtered_
 void BrushingAndLinkingManager::remove(const BrushingAndLinkingInport* src) {
     selected_.remove(src);
     filtered_.remove(src);
+    selectedColumns_.remove(src);
 }
 
 bool BrushingAndLinkingManager::isFiltered(size_t idx) const { return filtered_.has(idx); }
@@ -64,7 +68,7 @@ bool BrushingAndLinkingManager::isFiltered(size_t idx) const { return filtered_.
 bool BrushingAndLinkingManager::isSelected(size_t idx) const { return selected_.has(idx); }
 
 bool BrushingAndLinkingManager::isColumnSelected(size_t idx) const {
-    return selectedColumn_.has(idx);
+    return selectedColumns_.has(idx);
 }
 
 void BrushingAndLinkingManager::setSelected(const BrushingAndLinkingInport* src,
@@ -79,7 +83,7 @@ void BrushingAndLinkingManager::setFiltered(const BrushingAndLinkingInport* src,
 
 void BrushingAndLinkingManager::setSelectedColumn(const BrushingAndLinkingInport* src,
                                                   const std::unordered_set<size_t>& indices) {
-    selectedColumn_.set(src, indices);
+    selectedColumns_.set(src, indices);
 }
 
 const std::unordered_set<size_t>& BrushingAndLinkingManager::getSelectedIndices() const {
@@ -88,6 +92,10 @@ const std::unordered_set<size_t>& BrushingAndLinkingManager::getSelectedIndices(
 
 const std::unordered_set<size_t>& BrushingAndLinkingManager::getFilteredIndices() const {
     return filtered_.getIndices();
+}
+
+const std::unordered_set<size_t>& BrushingAndLinkingManager::getSelectedColumns() const {
+    return selectedColumns_.getIndices();
 }
 
 }  // namespace inviwo

@@ -70,14 +70,16 @@ public:
 
     const std::unordered_set<size_t>& getSelectedIndices() const;
     const std::unordered_set<size_t>& getFilteredIndices() const;
+    const std::unordered_set<size_t>& getSelectedColumns() const;
 
 private:
     IndexList selected_;
     IndexList filtered_;
-    IndexList selectedColumn_;
+    IndexList selectedColumns_;
 
     std::shared_ptr<std::function<void()>> callback1_;
     std::shared_ptr<std::function<void()>> callback2_;
+    std::shared_ptr<std::function<void()>> callback3_;
 };
 
 }  // namespace inviwo

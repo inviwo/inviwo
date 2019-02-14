@@ -62,6 +62,7 @@ public:
 
     const std::unordered_set<size_t> &getSelectedIndices() const;
     const std::unordered_set<size_t> &getFilteredIndices() const;
+    const std::unordered_set<size_t> &getSelectedColumns() const;
 
     virtual std::string getClassIdentifier() const override;
 
