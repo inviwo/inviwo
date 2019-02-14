@@ -1,5 +1,9 @@
-uniform vec4 color;
+#include "pcp_common.glsl"
 
-void main(){
+uniform vec4 color;
+uniform vec3 pickColor;
+
+void main() {
     FragData0 = color;
+    PickingData = vec4(pickColor, 1);
 }
