@@ -30,14 +30,17 @@ node {
             modulePaths: [], 
             onModules: [],  
             offModules: ["ABUFFERGL"],
-            opts: [:]
+            opts: [
+                'CMAKE_CXX_COMPILER' : "/usr/local/Cellar/llvm/7.0.1/bin/clang++",   
+                'CMAKE_C_COMPILER'   : "/usr/local/Cellar/llvm/7.0.1/bin/clang"
+            ]
         )
         util.filterfiles()
         util.format(state)
         util.warn(state)
         util.unittest(state)
         util.integrationtest(state)        
-        util.regression(state, ["${env.WORKSPACE}/inviwo/modules"])
+        //util.regression(state, ["${env.WORKSPACE}/inviwo/modules"])
         util.copyright(state)    
         util.doxygen(state)
     }
