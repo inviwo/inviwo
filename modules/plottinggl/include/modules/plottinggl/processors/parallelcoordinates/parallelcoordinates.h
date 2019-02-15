@@ -140,8 +140,6 @@ private:
     FloatProperty falllofPower_;
     FloatProperty lineWidth_;
     FloatProperty selectedLineWidth_;
-    FloatProperty axisWidth_;
-    FloatProperty selectedAxisWidth_;
 
     FloatVec2Property handleSize_;
 

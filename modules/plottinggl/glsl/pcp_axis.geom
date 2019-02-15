@@ -12,17 +12,18 @@ in vec3 pickColor[2];
 in vec2 texCoord[2];
 vec4 triverts[4];
 float signValues[4];
+vec4 p[2];
 
-uniform float axisWidth;
+out float axisXpos;
 
 uniform int selected;
-uniform float selectedAxisWidth = 3;
 
 void emitV(int i) {
     gl_Position = triverts[i];
+	axisXpos = p[0].x;
     EmitVertex();
 }
-
+	
 void emit(int a, int b, int c, int d) {
     emitV(a);
     emitV(b);
@@ -32,9 +33,10 @@ void emit(int a, int b, int c, int d) {
 }
 
 void main() {
-    // Compute orientation vectors for the two connecting faces:
-    vec4 p[2];
 
+float axisWidth = 10;
+
+	// Compute orientation vectors for the two connecting faces:
 #ifndef GLSL_VERSION_150
     p[0] = gl_PositionIn[0];
     p[1] = gl_PositionIn[1];
@@ -47,11 +49,6 @@ void main() {
     // Assuming 2d
     vec3 j = vec3(0, 1, 0);
     float r = axisWidth * getPixelSpacing().x;
-    if (selected == 1) {
-        r = selectedAxisWidth * getPixelSpacing().x;
-    } else {
-        r = axisWidth * getPixelSpacing().x;
-    }
 
     j = vec3(r, 0, 0);
 

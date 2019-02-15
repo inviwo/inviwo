@@ -79,9 +79,9 @@ ParallelCoordinates::ParallelCoordinates()
     , outport_("outport")
     , axisProperties_("axisProps_", "Axis")
     , colors_("colors", "Colors")
-    , axisColor_("axisColor", "Axis Color", vec4(.6f, .6f, .6f, 1))
-    , axisHoverColor_("axisHoverColor", "Axis Hover Color", vec4(.3f, .3f, .3f, 1))
-    , axisSelectedColor_("axisSelectedColor", "Axis Selected Color", vec4(.8f, .0f, .0f, 1))
+    , axisColor_("axisColor", "Axis Color", vec4(.3f, .3f, .3f, 1))
+    , axisHoverColor_("axisHoverColor", "Axis Hover Color", vec4(.6f, .6f, .6f, 1))
+    , axisSelectedColor_("axisSelectedColor", "Axis Selected Color", vec4(.8f, .8f, .8f, 1))
     , handleBaseColor_("handleColor", "Handle Color (Not filtering)", vec4(.92f, .92f, .92f, 1))
     , handleFilteredColor_("handleFilteredColor", "Handle Color (When filtering)",
                            vec4(.5f, .5f, .5f, 1))
@@ -102,9 +102,6 @@ ParallelCoordinates::ParallelCoordinates()
     , falllofPower_("falllofPower", "Falloff Power", 2.0f, 0.01f, 10.f, 0.01f)
     , lineWidth_("lineWidth", "Line Width", 7.0f, 1.0f, 10.0f)
     , selectedLineWidth_("selectedLineWidth", "Line Width (selected lines)", 3.0f, 1.0f, 10.0f)
-    , axisWidth_("axisWidth", "Axis Width", 3.0f, 1.0f, 10.0f, 0.001f)
-    , selectedAxisWidth_("selectedAxisWidth", "Axis Width (selected axis)", 4.0f, 1.0f, 10.0f,
-                         0.001f)
 
     , handleSize_("handleSize", "Handle Size", vec2(handleW, handleH), vec2(1), vec2(100), vec2(1))
 
@@ -171,8 +168,6 @@ ParallelCoordinates::ParallelCoordinates()
     colors_.addProperty(blendMode_);
     addProperty(lineWidth_);
     addProperty(selectedLineWidth_);
-    addProperty(axisWidth_);
-    addProperty(selectedAxisWidth_);
     addProperty(axisProperties_);
 
     addProperty(text_);
@@ -484,8 +479,9 @@ void ParallelCoordinates::drawAxis(
 
     axisShader_.setUniform("dims", ivec2(size));
     axisShader_.setUniform("spacing", margins_.getAsVec4());
-    axisShader_.setUniform("axisWidth", axisWidth_.get());
-    axisShader_.setUniform("selectedAxisWidth", selectedAxisWidth_.get());
+    axisShader_.setUniform("color", axisColor_.get());
+    axisShader_.setUniform("hoverColor", axisHoverColor_.get());
+    axisShader_.setUniform("selectedColor", axisSelectedColor_.get());
 
     float dx = 1.0f / (enabledAxis.size() - 1);
 
@@ -495,14 +491,10 @@ void ParallelCoordinates::drawAxis(
         if (p->isChecked()) {
             float x = activeAxisCounter * dx;
             axisShader_.setUniform("x", x);
+            axisShader_.setUniform("hover", 0);
             axisShader_.setUniform("selected", 0);
-            if (hoveredAxis_ == axisCounter) {
-                axisShader_.setUniform("color", axisHoverColor_.get());
-            } else if (brushingAndLinking_.isColumnSelected(axisCounter)) {
-                axisShader_.setUniform("color", axisSelectedColor_.get());
-            } else {
-                axisShader_.setUniform("color", axisColor_.get());
-            }
+            if (hoveredAxis_ == axisCounter)
+                axisShader_.setUniform("hover", 1);
             if (brushingAndLinking_.isColumnSelected(axisCounter))
                 axisShader_.setUniform("selected", 1);
 
