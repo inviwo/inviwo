@@ -32,17 +32,11 @@ in vec3 texCoord_;
 uniform sampler2D img;
 uniform mat3 transformation;
 
-mat3 rotation2d(float angle) {
-    return mat3(
-        cos(angle), sin(angle), 0.0f,
-        -sin(angle), cos(angle), 0.0f,
-        0.0f, 0.0f, 1.0f
-    );
-}
-
 void main() {
-    vec2 uv = texCoord_.xy;
-    vec3 uv_transformed = transformation * vec3(uv, 1.0);
+    vec3 uv_transformed = transformation * vec3(texCoord_.xy, 1.0);
     vec4 color = texture(img, uv_transformed.xy);
+    if (any(lessThan(uv_transformed.xy, vec2(0.0))) || any(greaterThan(uv_transformed.xy, vec2(1.0)))) {
+        color = vec4(0.0);
+    }
     FragData0 = color;
 }
