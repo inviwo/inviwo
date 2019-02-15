@@ -66,6 +66,7 @@ set(HEADER_FILES
     include/modules/base/processors/imagetospatialsampler.h
     include/modules/base/processors/inputselector.h
     include/modules/base/processors/layerdistancetransformram.h
+    include/modules/base/processors/mathprocessor.h
     include/modules/base/processors/meshclipping.h
     include/modules/base/processors/meshconverterprocessor.h
     include/modules/base/processors/meshcreator.h
@@ -73,6 +74,7 @@ set(HEADER_FILES
     include/modules/base/processors/meshmapping.h
     include/modules/base/processors/meshsequenceelementselectorprocessor.h
     include/modules/base/processors/meshsource.h
+    include/modules/base/processors/multivolumesource.h
     include/modules/base/processors/noiseprocessor.h
     include/modules/base/processors/noisevolumeprocessor.h
     include/modules/base/processors/ordinalpropertyanimator.h
@@ -174,6 +176,7 @@ set(SOURCE_FILES
     src/processors/imagetospatialsampler.cpp
     src/processors/inputselector.cpp
     src/processors/layerdistancetransformram.cpp
+    src/processors/mathprocessor.cpp
     src/processors/meshclipping.cpp
     src/processors/meshconverterprocessor.cpp
     src/processors/meshcreator.cpp
@@ -181,6 +184,7 @@ set(SOURCE_FILES
     src/processors/meshmapping.cpp
     src/processors/meshsequenceelementselectorprocessor.cpp
     src/processors/meshsource.cpp
+    src/processors/multivolumesource.cpp
     src/processors/noiseprocessor.cpp
     src/processors/noisevolumeprocessor.cpp
     src/processors/ordinalpropertyanimator.cpp

@@ -38,7 +38,7 @@ const std::string VolumeInformationProperty::classIdentifier =
 std::string VolumeInformationProperty::getClassIdentifier() const { return classIdentifier; }
 
 auto VolumeInformationProperty::props() {
-    return std::tie(dimensions_, format_, channels_, numVoxels_);
+    return std::tie(dimensions_, voxelSpacing_, format_, channels_, numVoxels_);
 }
 
 VolumeInformationProperty::VolumeInformationProperty(std::string identifier,
@@ -49,6 +49,7 @@ VolumeInformationProperty::VolumeInformationProperty(std::string identifier,
     , dimensions_("dimensions", "Dimensions", size3_t(0), size3_t(0),
                   size3_t(std::numeric_limits<size_t>::max()), size3_t(1), InvalidationLevel::Valid,
                   PropertySemantics("Text"))
+    , voxelSpacing_("voxelSpacing", "Voxel Spacing", vec3(0.0f), vec3(0.0f), vec3(1e3f), vec3(1e-3f))
     , format_("format", "Format", "")
     , channels_("channels", "Channels", 0, 0, std::numeric_limits<size_t>::max(), 1,
                 InvalidationLevel::InvalidOutput, PropertySemantics("Text"))
@@ -81,6 +82,7 @@ VolumeInformationProperty::VolumeInformationProperty(std::string identifier,
 VolumeInformationProperty::VolumeInformationProperty(const VolumeInformationProperty& rhs)
     : CompositeProperty(rhs)
     , dimensions_(rhs.dimensions_)
+    , voxelSpacing_(rhs.voxelSpacing_)
     , format_(rhs.format_)
     , channels_(rhs.channels_)
     , numVoxels_(rhs.numVoxels_)
@@ -100,6 +102,7 @@ VolumeInformationProperty& VolumeInformationProperty::operator=(
     if (this != &that) {
         CompositeProperty::operator=(that);
         dimensions_ = that.dimensions_;
+        voxelSpacing_ = that.voxelSpacing_;
         format_ = that.format_;
         channels_ = that.channels_;
         numVoxels_ = that.numVoxels_;
@@ -118,6 +121,7 @@ void VolumeInformationProperty::updateForNewVolume(const Volume& volume, bool de
     const auto dim = volume.getDimensions();
 
     dimensions_.set(dim);
+    voxelSpacing_.set(volume.dataMap_.voxelSpacing);
     format_.set(volume.getDataFormat()->getString());
     channels_.set(volume.getDataFormat()->getComponents());
     numVoxels_.set(dim.x * dim.y * dim.z);

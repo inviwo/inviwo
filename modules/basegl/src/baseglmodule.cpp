@@ -57,6 +57,7 @@
 #include <modules/basegl/processors/imageprocessing/imageoverlaygl.h>
 #include <modules/basegl/processors/imageprocessing/imageresample.h>
 #include <modules/basegl/processors/imageprocessing/imagescaling.h>
+#include <modules/basegl/processors/imageprocessing/imagetransform.h>
 #include <modules/basegl/processors/imageprocessing/jacobian2d.h>
 #include <modules/basegl/processors/isoraycaster.h>
 #include <modules/basegl/processors/lightingraycaster.h>
@@ -65,10 +66,12 @@
 #include <modules/basegl/processors/mesh2drenderprocessorgl.h>
 #include <modules/basegl/processors/meshpicking.h>
 #include <modules/basegl/processors/meshrenderprocessorgl.h>
+#include <modules/basegl/processors/mprentryexitpointsprocessor.h>
 #include <modules/basegl/processors/multichannelraycaster.h>
 #include <modules/basegl/processors/pointrenderer.h>
 #include <modules/basegl/processors/polylinegrabber.h>
 #include <modules/basegl/processors/redgreenprocessor.h>
+#include <modules/basegl/processors/simplecrosshairoverlay.h>
 #include <modules/basegl/processors/sphererenderer.h>
 #include <modules/basegl/processors/splitimage.h>
 #include <modules/basegl/processors/tuberendering.h>
@@ -122,10 +125,12 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerProcessor<Mesh2DRenderProcessorGL>();
     registerProcessor<MeshPicking>();
     registerProcessor<MeshRenderProcessorGL>();
+    registerProcessor<MPREntryExitPoints>();
     registerProcessor<MultichannelRaycaster>();
     registerProcessor<PointRenderer>();
     registerProcessor<PolylineGrabber>();
     registerProcessor<RedGreenProcessor>();
+    registerProcessor<SimpleCrosshairOverlay>();
     registerProcessor<SphereRenderer>();
     registerProcessor<TubeRendering>();
     registerProcessor<VolumeRaycaster>();
@@ -145,6 +150,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerProcessor<ImageNormalizationProcessor>();
     registerProcessor<ImageResample>();
     registerProcessor<ImageScaling>();
+    registerProcessor<ImageTransform>();
     registerProcessor<SplitImage>();
 
     // volume processing

@@ -83,9 +83,6 @@ VolumeSource::VolumeSource(InviwoApplication* app, const std::string& file)
     addProperty(information_);
     addProperty(basis_);
     addProperty(volumeSequence_);
-
-    isReady_.setUpdate([this]() { return filesystem::fileExists(file_.get()); });
-    file_.onChange([this]() { isReady_.update(); });
 }
 
 void VolumeSource::load(bool deserialize) {
@@ -225,7 +222,7 @@ void VolumeSource::addFileNameFilters() {
     auto rf = app_->getDataReaderFactory();
 
     file_.clearNameFilters();
-    file_.addNameFilter(FileExtension::all());
+    file_.addNameFilter(FileExtension("*", "All Files"));
     file_.addNameFilters(rf->getExtensionsForType<Volume>());
     file_.addNameFilters(rf->getExtensionsForType<VolumeSequence>());
 }

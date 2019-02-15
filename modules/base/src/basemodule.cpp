@@ -46,12 +46,14 @@
 #include <modules/base/processors/imagesource.h>
 #include <modules/base/processors/imagesourceseries.h>
 #include <modules/base/processors/imagecontourprocessor.h>
+#include <modules/base/processors/mathprocessor.h>
 #include <modules/base/processors/meshclipping.h>
 #include <modules/base/processors/meshcreator.h>
 #include <modules/base/processors/meshexport.h>
 #include <modules/base/processors/meshmapping.h>
 #include <modules/base/processors/meshsequenceelementselectorprocessor.h>
 #include <modules/base/processors/meshsource.h>
+#include <modules/base/processors/multivolumesource.h>
 #include <modules/base/processors/noiseprocessor.h>
 #include <modules/base/processors/noisevolumeprocessor.h>
 #include <modules/base/processors/ordinalpropertyanimator.h>
@@ -128,9 +130,11 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<ImageSource>();
     registerProcessor<ImageSourceSeries>();
     registerProcessor<LayerDistanceTransformRAM>();
+    registerProcessor<MathProcessor>();
     registerProcessor<MeshClipping>();
     registerProcessor<MeshCreator>();
     registerProcessor<MeshMapping>();
+    registerProcessor<MultiVolumeSource>();
     registerProcessor<NoiseProcessor>();
     registerProcessor<PixelToBufferProcessor>();
     registerProcessor<PointLightSourceProcessor>();

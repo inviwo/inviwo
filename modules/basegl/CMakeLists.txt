@@ -47,6 +47,7 @@ set(HEADER_FILES
     include/modules/basegl/processors/imageprocessing/imageoverlaygl.h
     include/modules/basegl/processors/imageprocessing/imageresample.h
     include/modules/basegl/processors/imageprocessing/imagescaling.h
+    include/modules/basegl/processors/imageprocessing/imagetransform.h
     include/modules/basegl/processors/imageprocessing/jacobian2d.h
     include/modules/basegl/processors/isoraycaster.h
     include/modules/basegl/processors/lightingraycaster.h
@@ -55,10 +56,12 @@ set(HEADER_FILES
     include/modules/basegl/processors/mesh2drenderprocessorgl.h
     include/modules/basegl/processors/meshpicking.h
     include/modules/basegl/processors/meshrenderprocessorgl.h
+    include/modules/basegl/processors/mprentryexitpointsprocessor.h
     include/modules/basegl/processors/multichannelraycaster.h
     include/modules/basegl/processors/pointrenderer.h
     include/modules/basegl/processors/polylinegrabber.h
     include/modules/basegl/processors/redgreenprocessor.h
+    include/modules/basegl/processors/simplecrosshairoverlay.h
     include/modules/basegl/processors/sphererenderer.h
     include/modules/basegl/processors/splitimage.h
     include/modules/basegl/processors/tuberendering.h
@@ -123,6 +126,7 @@ set(SOURCE_FILES
     src/processors/imageprocessing/imageoverlaygl.cpp
     src/processors/imageprocessing/imageresample.cpp
     src/processors/imageprocessing/imagescaling.cpp
+    src/processors/imageprocessing/imagetransform.cpp
     src/processors/imageprocessing/jacobian2d.cpp
     src/processors/isoraycaster.cpp
     src/processors/lightingraycaster.cpp
@@ -131,10 +135,12 @@ set(SOURCE_FILES
     src/processors/mesh2drenderprocessorgl.cpp
     src/processors/meshpicking.cpp
     src/processors/meshrenderprocessorgl.cpp
+    src/processors/mprentryexitpointsprocessor.cpp
     src/processors/multichannelraycaster.cpp
     src/processors/pointrenderer.cpp
     src/processors/polylinegrabber.cpp
     src/processors/redgreenprocessor.cpp
+    src/processors/simplecrosshairoverlay.cpp
     src/processors/sphererenderer.cpp
     src/processors/splitimage.cpp
     src/processors/tuberendering.cpp
@@ -181,6 +187,7 @@ set(SHADER_FILES
     glsl/img_normalize.frag
     glsl/img_overlay.frag
     glsl/img_resample.frag
+    glsl/img_transform.frag
     glsl/lighting/lightingraycasting.frag
     glsl/lighting/lightpropagation.frag
     glsl/lighting/lightpropagation.geom
@@ -217,6 +224,7 @@ set(SHADER_FILES
     glsl/volumegradientmagnitude.frag
     glsl/volumemerger.frag
     glsl/volumeslice.frag
+    glsl/mpr_entry_exit_points.frag
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 

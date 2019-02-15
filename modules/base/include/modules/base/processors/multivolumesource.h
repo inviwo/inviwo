@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2018 Inviwo Foundation
+ * Copyright (c) 2014-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,55 +27,49 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMEINFORMATIONPROPERTY_H
-#define IVW_VOLUMEINFORMATIONPROPERTY_H
+#ifndef IVW_MULTIVOLUMESOURCE_H
+#define IVW_MULTIVOLUMESOURCE_H
 
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/directoryproperty.h>
+#include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+
+#include <future>
 
 namespace inviwo {
 
-/**
- * \ingroup properties
- * A CompositeProperty holding properties to show a information about a volume
- */
-class IVW_MODULE_BASE_API VolumeInformationProperty : public CompositeProperty {
+class IVW_MODULE_BASE_API MultiVolumeSource : public Processor {
 public:
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
-    VolumeInformationProperty(
-        std::string identifier, std::string displayName,
-        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
-        PropertySemantics semantics = PropertySemantics::Default);
-    VolumeInformationProperty(const VolumeInformationProperty& rhs);
-    VolumeInformationProperty& operator=(const VolumeInformationProperty& that);
-    virtual VolumeInformationProperty* clone() const override;
-    virtual ~VolumeInformationProperty() = default;
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
-    void updateForNewVolume(const Volume& volume, bool deserialize = false);
-    void updateVolume(Volume& volume);
+    MultiVolumeSource();
+    virtual ~MultiVolumeSource() = default;
 
-    // Read only used to show information
-    IntSize3Property dimensions_;
-    FloatVec3Property voxelSpacing_;
-    StringProperty format_;
-    IntSizeTProperty channels_;
-    IntSizeTProperty numVoxels_;
+    void serialize(Serializer& s) const override;
+    void deserialize(Deserializer& d) override;
 
-    // read / write
-    DoubleMinMaxProperty dataRange_;
-    DoubleMinMaxProperty valueRange_;
-    StringProperty valueUnit_;
+protected:
+    virtual void process() override;
 
 private:
-    auto props();
+    DirectoryProperty baseDirectory_;
+    IntSizeTProperty numElements_;
+
+    std::vector<std::tuple<CompositeProperty, StringProperty, FileProperty>> data_;
+
+    void setupComposites();
+    void addDataElementsToProcessor();
+    void removeDataElementsFromProcessor();
+    void resizeCompositeData(size_t n);
+    void findAndDeleteLinks();
+    void findAndDeleteLinks(Property& p);
 };
+}
 
-}  // namespace inviwo
-
-#endif  // IVW_VOLUMEINFORMATIONPROPERTY_H
+#endif  // IVW_MULTIVOLUMESOURCE_H

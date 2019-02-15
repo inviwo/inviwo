@@ -24,58 +24,45 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  *********************************************************************************/
 
-#ifndef IVW_VOLUMEINFORMATIONPROPERTY_H
-#define IVW_VOLUMEINFORMATIONPROPERTY_H
+#ifndef IVW_IMAGETRANSFORMPROCESSOR_H
+#define IVW_IMAGETRANSFORMPROCESSOR_H
 
-#include <modules/base/basemoduledefine.h>
+#include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/properties/compositeproperty.h>
+#include <modules/opengl/shader/shader.h>
+#include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/datastructures/volume/volume.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/ports/imageport.h>
 
 namespace inviwo {
 
-/**
- * \ingroup properties
- * A CompositeProperty holding properties to show a information about a volume
- */
-class IVW_MODULE_BASE_API VolumeInformationProperty : public CompositeProperty {
+class IVW_MODULE_BASEGL_API ImageTransform : public Processor {
 public:
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
-    VolumeInformationProperty(
-        std::string identifier, std::string displayName,
-        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
-        PropertySemantics semantics = PropertySemantics::Default);
-    VolumeInformationProperty(const VolumeInformationProperty& rhs);
-    VolumeInformationProperty& operator=(const VolumeInformationProperty& that);
-    virtual VolumeInformationProperty* clone() const override;
-    virtual ~VolumeInformationProperty() = default;
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
-    void updateForNewVolume(const Volume& volume, bool deserialize = false);
-    void updateVolume(Volume& volume);
+    ImageTransform();
+    virtual ~ImageTransform() = default;
 
-    // Read only used to show information
-    IntSize3Property dimensions_;
-    FloatVec3Property voxelSpacing_;
-    StringProperty format_;
-    IntSizeTProperty channels_;
-    IntSizeTProperty numVoxels_;
-
-    // read / write
-    DoubleMinMaxProperty dataRange_;
-    DoubleMinMaxProperty valueRange_;
-    StringProperty valueUnit_;
+    virtual void process() override;
 
 private:
-    auto props();
+    ImageInport inport_;
+    ImageOutport outport_;
+
+    FloatProperty scaling_;
+    FloatProperty rotation_;
+    FloatVec2Property translation_;
+    BoolProperty flipX_;
+    BoolProperty flipY_;
+
+    Shader shader_;
 };
 
-}  // namespace inviwo
+} // namespace
 
-#endif  // IVW_VOLUMEINFORMATIONPROPERTY_H
+#endif // IVW_IMAGETRANSFORMPROCESSOR_H
