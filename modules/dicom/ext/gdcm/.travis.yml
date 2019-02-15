@@ -1,0 +1,68 @@
+language: cpp
+# Use the faster container-based infrastructure.
+#sudo: false
+# https://github.com/travis-ci/travis-ci/issues/9033
+sudo: true
+env:
+  global:
+   # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+   #   via the "travis encrypt" command using the project repo's public key
+   - secure: "ClIqhtIIfQPhil8GH9bnJg70rvJfuYs7Z2Aq2SrdwQsIFNvvfFD5pVxQiaYbZI3nxNclggQ50BmGB96e6jLxbbd/xlIOjcU19W2nzyP6LGkXFHDHm8FwhqqDNpfYvirAOfqgjqf7khRe3ajF33jhrLrhb5QOO5640N93pdChu1sAvI0LZv8JFIUcN7A7To3+WYc7H4CK3U8B2V8nzqcBSHDZNBGAdeVdmldwrlBtQeWBg5wJAEzzUHn0x+kltqvuoPYi2ShpaUkEfHeUWYhOT1uoyXNRAqHXiM1jhiw3JCkqaf7sUKLzyx0ozjTnYntNMggtBzavKjuYg6RhdlNdNbdsi2nxrycCOyCZcF+d4limq+yDMqoP7g/DnPag7XFgjkG/ThULPu+pEK/6nV1NqGNWFu1CqgAwPW7hGbIUADPsMEb+Bz2L2KUof2wU1cdvGK4fzsM9Qpdipbagghn4b5eGtvyBzYzoCS02AKrYfimhcm8bVmlfaMVgd6PnJ19Y1+ADCWwStwaQL2S6udh66JVGNszY/kYSmZKn51RQQDkubmGpywzeNdn7gM9u8QR9s2Lsq0GaSdptcLOPmVNSg6mQJThbMRHM/H2UrSyo7/GLr28sNNbYNweGPevsnrRJPUdG2ENWVw5rg1sD1cLm8rLlD4H2f/b97X9NCl4bLxY="
+
+# -m32 is not supported 
+# no poppler, openjpeg, uuid, json
+# no swig
+matrix:
+  fast_finish: true
+  include:
+    - compiler: gcc
+      os: linux
+      env:
+        - CFLAGS="-Wall -Wextra -m64"
+        - CXXFLAGS="-Wall -Wextra -m64"
+        - CMAKE_EXTRA="-DCMAKE_INTERPROCEDURAL_OPTIMIZATION:BOOL=ON -DGDCM_USE_SYSTEM_OPENSSL:BOOL=ON -DGDCM_WRAP_PYTHON:BOOL=OFF -DGDCM_WRAP_CSHARP:BOOL=OFF -DGDCM_WRAP_JAVA:BOOL=OFF -DGDCM_WRAP_PHP:BOOL=OFF -DGDCM_USE_SYSTEM_EXPAT:BOOL=ON -DGDCM_USE_SYSTEM_JSON:BOOL=OFF -DGDCM_USE_SYSTEM_LIBXML2:BOOL=ON -DGDCM_USE_SYSTEM_OPENJPEG:BOOL=OFF -DGDCM_USE_SYSTEM_POPPLER:BOOL=OFF -DGDCM_USE_SYSTEM_UUID:BOOL=OFF -DGDCM_USE_SYSTEM_ZLIB:BOOL=ON -DGDCM_BUILD_DOCBOOK_MANPAGES:BOOL=OFF"
+        - B_NAME=system
+    - compiler: clang
+      os: linux
+      env:
+        - ASAN_OPTIONS=verbosity=1:log_threads=1
+        - CFLAGS="-Wall -Wextra -m64 -fsanitize=address,undefined"
+        - CXXFLAGS="-g -Wall -Wextra -m64 -fsanitize=address,undefined"
+        - CMAKE_EXTRA="-DGDCM_BUILD_DOCBOOK_MANPAGES:BOOL=OFF"
+        - B_NAME=fsanitize
+    - compiler: clang
+      os: osx
+      env:
+        - CFLAGS="-Wall -Wextra" # -m64 -fsanitize=address,undefined
+        - CXXFLAGS="-Wall -Wextra" # -m64 -fsanitize=address,undefined
+        - CMAKE_EXTRA="-DCMAKE_INTERPROCEDURAL_OPTIMIZATION:BOOL=ON -DGDCM_BUILD_DOCBOOK_MANPAGES:BOOL=OFF"
+        - B_NAME=fsanitize
+
+before_install:
+  #- env
+  - cmake --version
+  #- swig -version
+  # do not run the full test suite for now
+  - mv Testing/Data Testing/Data.old
+install: true
+before_script: true
+script:
+  - cmake -Wno-dev -G "Unix Makefiles" -DCMAKE_BUILD_TYPE:STRING=None -DGDCM_BUILD_TESTING:BOOL=ON -DGDCM_BUILD_APPLICATIONS:BOOL=ON -DGDCM_BUILD_SHARED_LIBS:BOOL=ON -DGDCM_ALLOW_INSOURCE_BUILD:BOOL=ON -DBUILDNAME:STRING=${TRAVIS_OS_NAME}-${TRAVIS_BRANCH}-${B_NAME} ${CMAKE_EXTRA} .
+  - ctest -D ExperimentalStart
+  - ctest -D ExperimentalBuild -j2
+  - ctest -D ExperimentalTest -j2 || true
+  - ctest -D ExperimentalSubmit || true
+
+after_success: true
+after_failure: true
+after_script: true
+
+addons:
+  coverity_scan:
+    project:
+      name: "malaterre/GDCM"
+      description: "Grassroots DICOM"
+    notification_email: mathieu.malaterre@gmail.com
+    build_command_prepend: cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE:STRING=RelWithDebInfo -DGDCM_BUILD_SHARED_LIBS:BOOL=ON -DGDCM_ALLOW_INSOURCE_BUILD:BOOL=ON -DGDCM_BUILD_DOCBOOK_MANPAGES:BOOL=OFF ..
+    build_command: cmake --build .
+    branch_pattern: coverity_scan

@@ -41,3 +41,6 @@
 [submodule "modules/assimp/ext/assimp/assimp"]
 	path = modules/assimp/ext/assimp/assimp
 	url = https://github.com/inviwo/assimp.git
+[submodule "modules/dicom/ext/gdcm"]
+	path = modules/dicom/ext/gdcm
+	url = https://git.code.sf.net/p/gdcm/gdcm
