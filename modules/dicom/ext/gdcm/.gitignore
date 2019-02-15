@@ -1,0 +1,12 @@
+# back-up
+*~
+*.bak
+
+# files when there are conflicts
+*.orig
+
+# qtcreator files
+CMakeLists.txt.user*
+
+# kdevelop files
+*.kdev*
