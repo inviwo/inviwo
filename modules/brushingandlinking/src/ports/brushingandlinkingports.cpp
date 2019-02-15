@@ -45,14 +45,14 @@ void BrushingAndLinkingInport::sendFilterEvent(const std::unordered_set<size_t> 
     if (filterCache_.size() == 0 && indices.size() == 0) return;
     filterCache_ = indices;
     FilteringEvent event(this, filterCache_);
-    getProcessor()->propagateEvent(&event, nullptr);
+    propagateEvent(&event, nullptr);
 }
 
 void BrushingAndLinkingInport::sendSelectionEvent(const std::unordered_set<size_t> &indices) {
     if (selectionCache_.size() == 0 && indices.size() == 0) return;
     selectionCache_ = indices;
     SelectionEvent event(this, selectionCache_);
-    getProcessor()->propagateEvent(&event, nullptr);
+    propagateEvent(&event, nullptr);
 }
 
 bool BrushingAndLinkingInport::isFiltered(size_t idx) const {
