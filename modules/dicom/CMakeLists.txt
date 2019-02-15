@@ -2,7 +2,7 @@
 set(GDCM_ALWAYS_TRACE_MACRO ON CACHE BOOL "enable errors/warnings/debug messages from GDCM" FORCE)
 set(GDCM_BUILD_DOCBOOK_MANPAGES OFF CACHE BOOL "disable build of docbook manpages" FORCE)
 
-set(GDCM_EXT_DIR ext/gdcm-2.8.7)
+set(GDCM_EXT_DIR ext/gdcm)
 
 add_subdirectory(${GDCM_EXT_DIR})
 
