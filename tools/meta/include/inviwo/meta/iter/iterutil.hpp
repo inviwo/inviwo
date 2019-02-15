@@ -29,6 +29,8 @@
 
 #pragma once
 
+#include <type_traits>
+
 namespace inviwo::meta {
 namespace iterutil {
 

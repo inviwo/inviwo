@@ -49,9 +49,6 @@ public:
     using pointer = typename std::iterator_traits<Iter>::pointer;
     using reference = typename std::iterator_traits<Iter>::reference;
 
-    template <typename Tag, typename Iterables>
-    using require_t = iterutil::require_t<Tag, Iter>;
-
     FilterIterator() = default;
     FilterIterator(Iter iterator, Iter end) : predicate_{}, iterator_{iterator}, end_{end} {
         satisfy_predicate();
@@ -73,13 +70,13 @@ public:
         return it;
     }
 
-    template <typename I = Iter, typename = require_t<std::bidirectional_iterator_tag, I>>
+    template <typename I = Iter, typename = iterutil::require_t<std::bidirectional_iterator_tag, I>>
     FilterIterator& operator--() {
         while (!predicate_(*--iterator_)) {
         }
         return *this;
     }
-    template <typename I = Iter, typename = require_t<std::bidirectional_iterator_tag, I>>
+    template <typename I = Iter, typename = iterutil::require_t<std::bidirectional_iterator_tag, I>>
     FilterIterator operator--(int) {
         auto it = this;
         operator--();
