@@ -27,32 +27,22 @@
  * 
  *********************************************************************************/
 
-in vec3 texCoord_; // Viewport coordinates in [0,1]
-//in vec2 uv; // Viewport coordinates in [0,1]
+in vec3 texCoord_;
 
 uniform sampler2D img;
-uniform float scale = 1.0;
-uniform float angle = 0.0;
-uniform vec2 offset = vec2(0.0);
-uniform vec2 img_size;
-uniform int flip_x = 0;
-uniform int flip_y = 0;
+uniform mat3 transformation;
 
-vec2 rotate2D(vec2 pt, float psi)
-{
-    return mat2(cos(psi), -sin(psi), sin(psi), cos(psi)) * pt;
+mat3 rotation2d(float angle) {
+    return mat3(
+        cos(angle), sin(angle), 0.0f,
+        -sin(angle), cos(angle), 0.0f,
+        0.0f, 0.0f, 1.0f
+    );
 }
 
 void main() {
     vec2 uv = texCoord_.xy;
-    //if (flip_x == 1) uv.x = 1.0 - uv.x;
-    //if (flip_y == 1) uv.y = 1.0 - uv.y;
-    float aspect_ratio = img_size.x / img_size.y;
-    vec2 uv_scaled = (uv - vec2(0.5)) * vec2(aspect_ratio, 1.0) * (1.0/ scale) - offset;
-    vec2 uv_transformed = rotate2D(uv_scaled, angle) + 0.5;
-    if (flip_x == 1) uv_transformed.x = 1.0 - uv_transformed.x;
-    if (flip_y == 1) uv_transformed.y = 1.0 - uv_transformed.y;
-    vec4 color = texture(img, uv_transformed);
-
+    vec3 uv_transformed = transformation * vec3(uv, 1.0);
+    vec4 color = texture(img, uv_transformed.xy);
     FragData0 = color;
 }
