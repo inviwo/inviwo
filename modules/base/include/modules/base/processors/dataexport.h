@@ -102,13 +102,8 @@ void DataExport<DataType, PortType>::exportData() {
     if (data && !file_.get().empty()) {
         auto factory = getNetwork()->getApplication()->getDataWriterFactory();
 
-        auto ext = file_.getSelectedExtension();
-        auto writer = factory->template getWriterForTypeAndExtension<DataType>(ext);
-
-        if (!writer) {
-            std::string fileExtension = filesystem::getFileExtension(file_.get());
-            writer = factory->template getWriterForTypeAndExtension<DataType>(fileExtension);
-        }
+        auto writer = factory->template getWriterForTypeAndExtension<DataType>(
+            file_.getSelectedExtension(), filesystem::getFileExtension(file_.get()));
 
         if (!writer) {
             LogProcessorError(

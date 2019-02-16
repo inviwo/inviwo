@@ -66,6 +66,7 @@ ImageSource::ImageSource(InviwoApplication* app, const std::string& file)
     imageDimension_.setReadOnly(true);
     addProperty(imageDimension_);
 
+    isSink_.setUpdate([]() { return true; });
     isReady_.setUpdate([this]() { return filesystem::fileExists(file_.get()); });
     file_.onChange([this]() { isReady_.update(); });
 }
@@ -73,9 +74,10 @@ ImageSource::ImageSource(InviwoApplication* app, const std::string& file)
 void ImageSource::process() {
     if (file_.get().empty()) return;
 
-    std::string ext = filesystem::getFileExtension(file_.get());
+    const auto sext = file_.getSelectedExtension();
+    const auto fext = filesystem::getFileExtension(file_.get());
     auto factory = app_->getDataReaderFactory();
-    if (auto reader = factory->getReaderForTypeAndExtension<Layer>(ext)) {
+    if (auto reader = factory->getReaderForTypeAndExtension<Layer>(sext, fext)) {
         try {
             auto outLayer = reader->readData(file_.get());
             // Call getRepresentation here to force read a ram representation.

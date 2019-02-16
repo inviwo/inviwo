@@ -59,6 +59,14 @@ public:
     std::unique_ptr<DataReaderType<T>> getReaderForTypeAndExtension(const std::string& ext);
     template <typename T>
     std::unique_ptr<DataReaderType<T>> getReaderForTypeAndExtension(const FileExtension& ext);
+    template <typename T>
+    std::unique_ptr<DataReaderType<T>> getReaderForTypeAndExtension(const FileExtension& ext,
+                                                                    const std::string& fallbackExt);
+
+    template <typename T>
+    bool hasReaderForTypeAndExtension(const std::string& ext);
+    template <typename T>
+    bool hasReaderForTypeAndExtension(const FileExtension& ext);
 
 protected:
     Map map_;
@@ -88,7 +96,7 @@ std::unique_ptr<DataReaderType<T>> DataReaderFactory::getReaderForTypeAndExtensi
             }
         }
     }
-    return std::unique_ptr<DataReaderType<T>>();
+    return std::unique_ptr<DataReaderType<T>>{};
 }
 
 template <typename T>
@@ -98,7 +106,40 @@ std::unique_ptr<DataReaderType<T>> DataReaderFactory::getReaderForTypeAndExtensi
         if (auto r = dynamic_cast<DataReaderType<T>*>(o)) {
             return std::unique_ptr<DataReaderType<T>>(r->clone());
         } else {
-            return std::unique_ptr<DataReaderType<T>>();
+            return std::unique_ptr<DataReaderType<T>>{};
+        }
+    });
+}
+
+template <typename T>
+std::unique_ptr<DataReaderType<T>> DataReaderFactory::getReaderForTypeAndExtension(
+    const FileExtension& ext, const std::string& fallbackExt) {
+    if (auto reader = getReaderForTypeAndExtension<T>(ext)) {
+        return reader;
+    }
+    return getReaderForTypeAndExtension<T>(fallbackExt);
+}
+
+template <typename T>
+bool DataReaderFactory::hasReaderForTypeAndExtension(const std::string& ext) {
+    auto lkey = toLower(ext);
+    for (auto& elem : map_) {
+        if (toLower(elem.first.extension_) == lkey) {
+            if (auto r = dynamic_cast<DataReaderType<T>*>(elem.second)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+template <typename T>
+bool DataReaderFactory::hasReaderForTypeAndExtension(const FileExtension& ext) {
+    return util::map_find_or_null(map_, ext, [](DataReader* o) {
+        if (auto r = dynamic_cast<DataReaderType<T>*>(o)) {
+            return true;
+        } else {
+            return false;
         }
     });
 }

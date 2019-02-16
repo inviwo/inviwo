@@ -65,6 +65,10 @@ public:
     template <typename T>
     std::unique_ptr<DataWriterType<T>> getWriterForTypeAndExtension(const FileExtension& ext);
 
+    template <typename T>
+    std::unique_ptr<DataWriterType<T>> getWriterForTypeAndExtension(const FileExtension& ext,
+                                                                    const std::string& fallbackExt);
+
 protected:
     Map map_;
 };
@@ -106,6 +110,15 @@ std::unique_ptr<DataWriterType<T>> DataWriterFactory::getWriterForTypeAndExtensi
             return std::unique_ptr<DataWriterType<T>>();
         }
     });
+}
+
+template <typename T>
+std::unique_ptr<DataWriterType<T>> DataWriterFactory::getWriterForTypeAndExtension(
+    const FileExtension& ext, const std::string& fallbackExt) {
+    if (auto writer = this->getWriterForTypeAndExtension<T>(ext)) {
+        return writer;
+    }
+    return this->getWriterForTypeAndExtension<T>(fallbackExt);
 }
 
 }  // namespace inviwo

@@ -105,8 +105,10 @@ void VolumeSequenceSource::loadFile(bool deserialize) {
     if (file_.get().empty()) return;
 
     auto rf = InviwoApplication::getPtr()->getDataReaderFactory();
-    std::string ext = filesystem::getFileExtension(file_.get());
-    if (auto reader = rf->getReaderForTypeAndExtension<VolumeSequence>(ext)) {
+
+    const auto sext = file_.getSelectedExtension();
+    const auto fext = filesystem::getFileExtension(file_.get());
+    if (auto reader = rf->getReaderForTypeAndExtension<VolumeSequence>(sext, fext)) {
         try {
             volumes_ = reader->readData(file_.get(), this);
         } catch (DataReaderException const& e) {

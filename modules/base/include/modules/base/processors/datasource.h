@@ -117,9 +117,10 @@ template <typename DataType, typename PortType>
 void DataSource<DataType, PortType>::load(bool deserialized) {
     if (file_.get().empty()) return;
 
-    std::string ext = filesystem::getFileExtension(file_.get());
+    const auto sext = file_.getSelectedExtension();
+    const auto fext = filesystem::getFileExtension(file_.get());
     auto rf = app_->getDataReaderFactory();
-    if (auto reader = rf->template getReaderForTypeAndExtension<DataType>(ext)) {
+    if (auto reader = rf->template getReaderForTypeAndExtension<DataType>(sext, fext)) {
         try {
             auto data = reader->readData(file_.get());
             port_.setData(data);
