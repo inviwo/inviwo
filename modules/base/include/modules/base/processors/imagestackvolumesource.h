@@ -35,6 +35,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/filepatternproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -75,6 +76,7 @@ class InviwoApplication;
 class IVW_MODULE_BASE_API ImageStackVolumeSource : public Processor {
 public:
     ImageStackVolumeSource(InviwoApplication* app);
+    void addFileNameFilters();
     virtual ~ImageStackVolumeSource() = default;
 
     virtual void process() override;
@@ -83,30 +85,24 @@ public:
     static const ProcessorInfo processorInfo_;
 
 protected:
-    void load();
-    void load(bool deserialized);
-
+    std::shared_ptr<Volume> load();
     bool isValidImageFile(std::string);
 
     virtual void deserialize(Deserializer& d) override;
 
-    void updateVolumeBasis(bool deserialized = false);
-
 private:
     VolumeOutport outport_;
     FilePatternProperty filePattern_;
+    ButtonProperty reload_;
     BoolProperty skipUnsupportedFiles_;
-    // volume parameters
-    FloatVec3Property voxelSpacing_;
+    
     BasisProperty basis_;
     VolumeInformationProperty information_;
 
-    std::vector<FileExtension> validExtensions_;
     std::shared_ptr<Volume> volume_;
-    bool isDeserializing_ = false;
-    bool dirty_ = false;
+    bool deserialized_ = false;
 
-    InviwoApplication *app_;
+    DataReaderFactory* readerFactory_;
 };
 
 }  // namespace inviwo

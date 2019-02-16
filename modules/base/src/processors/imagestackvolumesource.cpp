@@ -42,6 +42,7 @@
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/vectoroperations.h>
 #include <inviwo/core/util/zip.h>
+#include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/io/datareaderexception.h>
 
 #include <algorithm>
@@ -74,72 +75,76 @@ ImageStackVolumeSource::ImageStackVolumeSource(InviwoApplication* app)
     : Processor()
     , outport_("volume")
     , filePattern_("filePattern", "File Pattern", "####.jpeg", "")
+    , reload_("reload", "Reload data")
     , skipUnsupportedFiles_("skipUnsupportedFiles", "Skip Unsupported Files", false)
-    // volume parameters
-    , voxelSpacing_("voxelSpacing", "Voxel Spacing", vec3(1.0f), vec3(0.1f), vec3(10.0f),
-                    vec3(0.1f))
     , basis_("Basis", "Basis and offset")
     , information_("Information", "Data information")
-    , app_{app} {
+    , readerFactory_{app->getDataReaderFactory()} {
 
     addPort(outport_);
     addProperty(filePattern_);
+    addProperty(reload_);
     addProperty(skipUnsupportedFiles_);
-    addProperty(voxelSpacing_);
-    addProperty(information_);
     addProperty(basis_);
+    addProperty(information_);
 
-    validExtensions_ = app_->getDataReaderFactory()->getExtensionsForType<Layer>();
-    filePattern_.onChange([this]() { load(); });
-    voxelSpacing_.onChange([this]() {
-        // update volume basis and offset
-        updateVolumeBasis();
-        invalidate(InvalidationLevel::InvalidOutput);
-    });
-    filePattern_.onChange([&]() { isReady_.update(); });
+    isSink_.setUpdate([]() { return true; });
     isReady_.setUpdate([this]() { return !filePattern_.getFileList().empty(); });
+    filePattern_.onChange([&]() { isReady_.update(); });
+
+    addFileNameFilters();
+}
+
+void ImageStackVolumeSource::addFileNameFilters() {
+    filePattern_.clearNameFilters();
+    filePattern_.addNameFilter(FileExtension::all());
+    filePattern_.addNameFilters(readerFactory_->getExtensionsForType<Layer>());
 }
 
 void ImageStackVolumeSource::process() {
-    if (isDeserializing_) return;
+    util::OnScopeExit guard{[&]() { outport_.setData(nullptr); }};
 
-    if (dirty_) {
-        load();
-        dirty_ = false;
+    if (filePattern_.isModified() || reload_.isModified() || skipUnsupportedFiles_.isModified()) {
+        volume_ = load();
+        if (volume_) {
+            basis_.updateForNewEntity(*volume_, deserialized_);
+            information_.updateForNewVolume(*volume_, deserialized_);
+        }
+        deserialized_ = false;
     }
 
     if (volume_) {
         basis_.updateEntity(*volume_);
         information_.updateVolume(*volume_);
     }
+    outport_.setData(volume_);
+    guard.release();
 }
 
 bool ImageStackVolumeSource::isValidImageFile(std::string fileName) {
-    std::string fileExtension = toLower(filesystem::getFileExtension(fileName));
-    return util::contains_if(validExtensions_,
-                             [&](const FileExtension& e) { return e.extension_ == fileExtension; });
+    return readerFactory_->hasReaderForTypeAndExtension<Layer>(
+        filesystem::getFileExtension(fileName));
 }
 
-void ImageStackVolumeSource::load() { load(false); }
-
-void ImageStackVolumeSource::load(bool deserialized) {
-    if (isDeserializing_) return;
-
+std::shared_ptr<Volume> ImageStackVolumeSource::load() {
     const auto files = filePattern_.getFileList();
+    if (files.empty()) {
+        return nullptr;
+    }
 
     using ReaderMap = std::map<std::string, std::unique_ptr<DataReaderType<Layer>>>;
     ReaderMap readerMap;
 
     const auto getReader = [&](const std::string& filename) {
-        const auto fileExtension = toLower(filesystem::getFileExtension(filename));
-        const auto it = readerMap.find(fileExtension);
+        const auto fext = toLower(filesystem::getFileExtension(filename));
+        const auto it = readerMap.find(fext);
         if (it != readerMap.end()) {
             return it->second.get();
         }
-        auto reader =
-            app_->getDataReaderFactory()->getReaderForTypeAndExtension<Layer>(fileExtension);
+        const auto sext = filePattern_.getSelectedExtension();
+        auto reader = readerFactory_->getReaderForTypeAndExtension<Layer>(sext, fext);
         auto ptr = reader.get();
-        readerMap.insert({fileExtension, std::move(reader)});
+        readerMap.insert({fext, std::move(reader)});
         return ptr;
     };
 
@@ -170,22 +175,22 @@ void ImageStackVolumeSource::load(bool deserialized) {
     // Call getRepresentation here to enforce creating a ram representation.
     // Otherwise the default image size, i.e. 256x256, will be reported since the LayerDisk
     // does not provide meta data for all image formats.
-    const auto layerRAM = referenceLayer->getRepresentation<LayerRAM>();
-    if (glm::compMul(layerRAM->getDimensions()) == 0) {
+    const auto referenceRAM = referenceLayer->getRepresentation<LayerRAM>();
+    if (glm::compMul(referenceRAM->getDimensions()) == 0) {
         throw Exception(
             fmt::format("Could not extract valid image dimensions from '{}'", first->first),
             IVW_CONTEXT);
     }
 
-    const auto refFormat = layerRAM->getDataFormat();
+    const auto refFormat = referenceRAM->getDataFormat();
     if ((refFormat->getNumericType() != NumericType::Float) && (refFormat->getPrecision() > 32)) {
         throw DataReaderException(
             fmt::format("Unsupported integer bit depth ({})", refFormat->getPrecision()),
             IVW_CONTEXT);
     }
 
-    volume_ =
-        layerRAM->dispatch<std::shared_ptr<Volume>, FloatOrIntMax32>([&](auto reflayerprecision) {
+    return referenceRAM->dispatch<std::shared_ptr<Volume>, FloatOrIntMax32>(
+        [&](auto reflayerprecision) {
             using ValueType = util::PrecsionValueType<decltype(reflayerprecision)>;
             using PrimitiveType = typename DataFormat<ValueType>::primitive;
 
@@ -259,29 +264,12 @@ void ImageStackVolumeSource::load(bool deserialized) {
 
             return volume;
         });
-
-    basis_.updateForNewEntity(*volume_, deserialized);
-    information_.updateForNewVolume(*volume_, deserialized);
-
-    outport_.setData(volume_);
 }
 
 void ImageStackVolumeSource::deserialize(Deserializer& d) {
-    isDeserializing_ = true;
     Processor::deserialize(d);
-    isDeserializing_ = false;
-    dirty_ = true;
-}
-
-void ImageStackVolumeSource::updateVolumeBasis(bool deserialized) {
-    if (!volume_) {
-        return;
-    }
-    vec3 extent{voxelSpacing_.get() * vec3{volume_->getDimensions()}};
-    volume_->setBasis(glm::scale(extent));
-    volume_->setOffset(-extent * 0.5f);
-
-    basis_.updateForNewEntity(*volume_, deserialized);
+    addFileNameFilters();
+    deserialized_ = true;
 }
 
 }  // namespace inviwo
