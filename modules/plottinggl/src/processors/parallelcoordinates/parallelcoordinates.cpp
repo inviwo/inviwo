@@ -86,16 +86,18 @@ ParallelCoordinates::ParallelCoordinates()
                            vec4(.5f, .5f, .5f, 1))
     , tf_("tf", "Line Color")
     , tfSelection_("tfSelection", "Selection Color")
+    , enableHoverColor_("enableHoverColor", "Enable Hover Color", true)
 
     , filteringOptions_("filteringOptions", "Filtering Options")
     , showFiltered_("showFiltered", "Show Filtered", false)
-    , filterColor_("filterColor", "Filter Color", vec4(.6f, .6f, .6f, 1.f))
-    , filterIntensity_("filterIntensity", "Filter Intensity", 0.5f, 0.01f, 1.0f, 0.001f)
+    , filterColor_("filterColor", "Filter Color", vec4(.6f, .6f, .6f, 0.2f))
+    , filterIntensity_("filterIntensity", "Filter Intensity", 0.7f, 0.01f, 1.0f, 0.001f)
 
     , resetHandlePositions_("resetHandlePositions", "Reset Handle Positions")
 
     , blendMode_("blendMode", "Blend Mode")
     , alpha_("alpha", "Alpha", 0.9f)
+    , filterAlpha_("filterAlpha", "Filter Alpha", 0.2f)
     , falllofPower_("falllofPower", "Falloff Power", 2.0f, 0.01f, 10.f, 0.01f)
     , lineWidth_("lineWidth", "Line Width", 7.0f, 1.0f, 10.0f)
     , selectedLineWidth_("selectedLineWidth", "Line Width (selected lines)", 3.0f, 1.0f, 10.0f)
@@ -150,6 +152,7 @@ ParallelCoordinates::ParallelCoordinates()
     addProperty(colors_);
     colors_.addProperty(selectedColorAxis_);
     colors_.addProperty(tfSelection_);
+    colors_.addProperty(enableHoverColor_);
     colors_.addProperty(alpha_);
     colors_.addProperty(falllofPower_);
     colors_.addProperty(axisColor_);
@@ -176,7 +179,14 @@ ParallelCoordinates::ParallelCoordinates()
     filteringOptions_.addProperty(showFiltered_);
     filteringOptions_.addProperty(filterColor_);
     filteringOptions_.addProperty(filterIntensity_);
+    filteringOptions_.addProperty(filterAlpha_);
     addProperty(filteringOptions_);
+
+    filterColor_.onChange([&]() { filterAlpha_.set(filterColor_.get().w); });
+    filterAlpha_.onChange([&]() {
+        auto color = filterColor_.get();
+        filterColor_.set(vec4(color.x, color.y, color.z, filterAlpha_.get()));
+    });
 
     addProperty(resetHandlePositions_);
 
@@ -559,6 +569,7 @@ void ParallelCoordinates::drawLines(size2_t size) {
 
     lineShader_.setUniform("additiveBlend", enableBlending);
     lineShader_.setUniform("alpha", alpha_.get());
+    lineShader_.setUniform("filteredAlpha", filterAlpha_.get());
     lineShader_.setUniform("falllofPower", falllofPower_.get());
     lineShader_.setUniform("lineWidth", lineWidth_.get());
     lineShader_.setUniform("selectedLineWidth", selectedLineWidth_.get());
@@ -576,16 +587,20 @@ void ParallelCoordinates::drawLines(size2_t size) {
     auto iCol = dataFrame_.getData()->getIndexColumn();
     auto &indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
 
-    std::vector<size_t> filteredIndices;
     std::vector<size_t> selectIndices;
 
     lineShader_.setUniform("selected", 0);
+    lineShader_.setUniform("hovering", 0);
+    if (showFiltered_) {
+        lineShader_.setUniform("filtered", 1);
+        for (size_t i = 0; i < numLines; i++) {
+            if (brushingAndLinking_.isFiltered(indexCol[i])) drawObject.draw(i);
+        }
+    }
+
     lineShader_.setUniform("filtered", 0);
     for (size_t i = 0; i < numLines; i++) {
         if (brushingAndLinking_.isFiltered(indexCol[i])) {
-            if (showFiltered_) {
-                filteredIndices.push_back(i);
-            }
             continue;
         }
         if (brushingAndLinking_.isSelected(indexCol[i])) {
@@ -595,20 +610,18 @@ void ParallelCoordinates::drawLines(size2_t size) {
         drawObject.draw(i);
     }
 
-    if (showFiltered_) {
-        lineShader_.setUniform("selected", 0);
-        lineShader_.setUniform("filtered", 1);
-        for (const auto &i : filteredIndices) {
-            drawObject.draw(i);
-        }
-    }
-
     lineShader_.setUniform("selected", 1);
     lineShader_.setUniform("filtered", 0);
     for (const auto &i : selectIndices) {
         if (brushingAndLinking_.isFiltered(indexCol[i])) continue;
         drawObject.draw(i);
     }
+
+    lineShader_.setUniform("hovering", 1);
+    lineShader_.setUniform("selected", 0);
+    lineShader_.setUniform("filtered", 0);
+    if (hoveredLine_ != -1 && !brushingAndLinking_.isFiltered(hoveredLine_))
+        drawObject.draw(hoveredLine_);
 
     lineShader_.deactivate();
 }
@@ -706,8 +719,14 @@ void ParallelCoordinates::linePicked(PickingEvent *p) {
         if (p->getHoverState() == PickingHoverState::Move ||
             p->getHoverState() == PickingHoverState::Enter) {
             p->setToolTip(dataframeutil::createToolTipForRow(*df, p->getPickedId()));
+            if (enableHoverColor_.get()) {
+                hoveredLine_ = p->getPickedId();
+                invalidate(InvalidationLevel::InvalidOutput);
+            }
         } else {
             p->setToolTip("");
+            hoveredLine_ = -1;
+            invalidate(InvalidationLevel::InvalidOutput);
         }
     }
 

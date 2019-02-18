@@ -108,7 +108,7 @@ void TFPrimitiveSetWidgetQt::updateFromProperty() {
 
     // convert TF primitives to "position alpha #RRGGBB"
     std::ostringstream ss;
-    for (const auto& elem : propertyPtr_->get()) {
+    for (const auto &elem : propertyPtr_->get()) {
         // write color as HTML color code
         auto pos = elem.getPosition();
         if (performMapping) {

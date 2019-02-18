@@ -8,7 +8,8 @@ import refactoring # Note: refactoring.py need to be in the current working dire
 
 paths = [
 	"C:/Users/petst55/Work/Inviwo/Inviwo-dev",
-#	"C:/Users/petst55/Work/Inviwo/Inviwo-research"
+	"C:/Users/petst55/Work/Inviwo/Inviwo-research",
+	"C:/Users/petst55/Work/Inviwo/Inviwo-modules"
 ]
 
 excludespatterns = ["*/ext/*", "*moc_*", "*/proteindocking/*", "*/proteindocking2/*", 
@@ -20,6 +21,11 @@ excludespatterns = ["*/ext/*", "*moc_*", "*/proteindocking/*", "*/proteindocking
 					".gitattributes",  "*/AUTHORS", "" "*/tools/meta/templates/*", "*.natvis", "*/depends.cmake", 
 					"*moduledefine.h", "*moduledefine.hpp", "*/config.json", "*.js", "*/CMakeLists.txt"]
 
+copyright_replacements  = {
+	r"(\s*[*#]\s+Copyright \(c\) 201\d-)201[12345678]( Inviwo Foundation\s*)" : r"\g<1>2019\g<2>",
+	r"(\s*[*#]\s+Copyright \(c\) )(201[12345678])( Inviwo Foundation\s*)" : r"\g<1>\g<2>-2019\g<3>"
+}
+
 files = refactoring.find_files(paths, ['*'], excludes=excludespatterns)
 
 def replace(pattern, replacement) :
@@ -29,12 +35,6 @@ def replace(pattern, replacement) :
 	print("\n")
 	print("Replacing:")
 	refactoring.replace_matches(matches, pattern, replacement)
-
-
-copyright_replacements  = {
-	r"(\s*[*#]\s+Copyright \(c\) 201\d-)201[12345678]( Inviwo Foundation\s*)" : r"\g<1>2019\g<2>",
-	r"(\s*[*#]\s+Copyright \(c\) )(201[12345678])( Inviwo Foundation\s*)" : r"\g<1>\g<2>-2019\g<3>"
-}
 
 print("Looking in " + str(len(files)) + " files")
 

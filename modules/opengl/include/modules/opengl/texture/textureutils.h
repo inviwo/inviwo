@@ -60,7 +60,6 @@ template <size_t>
 class BaseImageInport;
 using ImageInport = BaseImageInport<1>;
 
-
 namespace utilgl {
 
 IVW_MODULE_OPENGL_API void activateTarget(Image& targetImage,

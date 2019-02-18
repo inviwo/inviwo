@@ -180,7 +180,7 @@ void Property::propertyModified() {
     NetworkLock lock(this);
     onChangeCallback_.invokeAll();
     setModified();
-    
+
     if (auto owner = getOwner()) {
         // Evaluate property links
         if (auto processor = owner->getProcessor()) {

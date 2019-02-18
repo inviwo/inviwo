@@ -133,8 +133,8 @@ bool operator!=(const TFPrimitiveData& lhs, const TFPrimitiveData& rhs) {
     return !operator==(lhs, rhs);
 }
 
-bool operator<(const TFPrimitiveData& lhs, const TFPrimitiveData& rhs) { 
-    return lhs.pos == rhs.pos ? lhs.color.a < rhs.color.a : lhs.pos < rhs.pos; 
+bool operator<(const TFPrimitiveData& lhs, const TFPrimitiveData& rhs) {
+    return lhs.pos == rhs.pos ? lhs.color.a < rhs.color.a : lhs.pos < rhs.pos;
 }
 
 bool operator>(const TFPrimitiveData& lhs, const TFPrimitiveData& rhs) { return rhs < lhs; }

@@ -77,7 +77,6 @@ class PickingEvent;
  *   * __Normal__ Normal direction for planes, etc.
  *   * __Size scaling__ Scale parameter for various mesh types.
  *   * __Mesh resolution__ Mesh resulution parameter for some meshes.
- 
  */
 class IVW_MODULE_BASE_API MeshCreator : public Processor {
 public:

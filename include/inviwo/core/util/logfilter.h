@@ -51,11 +51,11 @@ public:
     void setVerbosity(LogVerbosity verbosity);
     LogVerbosity getVerbosity();
 
-    void setLogger(Logger *logger);
+    void setLogger(Logger* logger);
     Logger* getLogger() const;
 
-    virtual void log(std::string logSource, LogLevel level, LogAudience audience,
-                     const char* file, const char* function, int line, std::string msg) override;
+    virtual void log(std::string logSource, LogLevel level, LogAudience audience, const char* file,
+                     const char* function, int line, std::string msg) override;
 
     virtual void logProcessor(Processor* processor, LogLevel level, LogAudience audience,
                               std::string msg, const char* file, const char* function,

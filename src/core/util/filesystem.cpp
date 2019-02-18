@@ -111,14 +111,14 @@ std::ofstream ofstream(const std::string& filename, std::ios_base::openmode mode
 #endif
 }
 
- bool skipByteOrderMark(std::istream& stream) {
+bool skipByteOrderMark(std::istream& stream) {
     // Check presence of BOM and skip it if it does
     std::array<uint8_t, 3> dataToCheck{0, 0, 0};
     std::streampos streamPos = stream.tellg();
     stream.read(reinterpret_cast<char*>(dataToCheck.data()), sizeof(dataToCheck));
     auto bytesRead = stream.gcount();
 
-    // UTF-8 byte order mark 
+    // UTF-8 byte order mark
     // https://en.wikipedia.org/wiki/Byte_order_mark
     std::array<uint8_t, 3> bom = {0xef, 0xbb, 0xbf};
 

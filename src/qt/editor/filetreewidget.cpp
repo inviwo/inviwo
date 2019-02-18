@@ -201,7 +201,7 @@ QString SectionDelegate::elidedText(const QString &str, const QFontMetrics &metr
 
 FileTreeWidget::FileTreeWidget(InviwoApplication *app, QWidget *parent)
     : QTreeWidget{parent}, inviwoApp_(app), fileIcon_{":/inviwo/inviwo_light.png"} {
-    
+
     setHeaderHidden(true);
     setColumnCount(2);
     setIconSize(QSize(24, 24));

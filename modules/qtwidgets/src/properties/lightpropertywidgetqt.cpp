@@ -61,10 +61,9 @@ LightPropertyWidgetQt::LightPropertyWidgetQt(FloatVec3Property* property)
     radiusSpinBox_->setSingleStep(0.1);
     // don't emit the valueChanged() signal while typing
     radiusSpinBox_->setKeyboardTracking(false);
-    connect(
-        radiusSpinBox_,
-        static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
-        this, &LightPropertyWidgetQt::onRadiusSpinBoxChanged);
+    connect(radiusSpinBox_,
+            static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this,
+            &LightPropertyWidgetQt::onRadiusSpinBoxChanged);
 
     // Assuming that minimum value is negative and maximum value is positive
     if (glm::any(glm::greaterThan(property_->getMinValue(), vec3(0.0f)))) {

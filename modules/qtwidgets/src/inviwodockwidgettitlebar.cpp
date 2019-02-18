@@ -94,7 +94,7 @@ InviwoDockWidgetTitleBar::InviwoDockWidgetTitleBar(QWidget *parent)
     QObject::connect(floatBtn_, &QToolButton::clicked, this,
                      [&]() { parent_->setFloating(!parent_->isFloating()); });
     QObject::connect(closeBtn, &QToolButton::clicked, parent_, &QDockWidget::close);
-    
+
     parent_->installEventFilter(this);
 }
 
@@ -130,7 +130,7 @@ void InviwoDockWidgetTitleBar::showEvent(QShowEvent *) {
     }
 }
 
-bool InviwoDockWidgetTitleBar::eventFilter(QObject* obj, QEvent *event) {
+bool InviwoDockWidgetTitleBar::eventFilter(QObject *obj, QEvent *event) {
     if ((event->type() == QEvent::ModifiedChange) || (event->type() == QEvent::WindowTitleChange)) {
         label_->setText(utilqt::windowTitleHelper(parent_->windowTitle(), parent_));
     }

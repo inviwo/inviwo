@@ -269,9 +269,8 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
                 img.second = img.second.scaledToHeight(fixedHeight);
             }
 
-            annotationsWidget_->getAnnotations()
-                .setNetworkImage(networkEditorView_->exportViewToImage(
-                    true, true, QSize(fixedHeight, fixedHeight)));
+            annotationsWidget_->getAnnotations().setNetworkImage(
+                networkEditorView_->exportViewToImage(true, true, QSize(fixedHeight, fixedHeight)));
             annotationsWidget_->getAnnotations().setCanvasImages(canvases);
 
             s.serialize("WorkspaceAnnotations", annotationsWidget_->getAnnotations());

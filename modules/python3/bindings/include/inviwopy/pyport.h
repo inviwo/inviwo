@@ -37,7 +37,6 @@
 #include <pybind11/stl_bind.h>
 #include <warn/pop>
 
-
 #include <inviwo/core/ports/port.h>
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/ports/outport.h>

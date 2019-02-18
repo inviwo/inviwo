@@ -73,19 +73,25 @@ def cmd(stageName, dirName, env = [], fun) {
     }
 }
 
+def printMap(String name, def map) {
+    println name + ":\n" + map?.collect{"${it.key.padLeft(30)} = ${it.value}"}?.join("\n") ?: ''
+}
+
 // this uses global pipeline var pullRequest
 def setLabel(def state, String label, Boolean add) {
     if (add) {
         try {
             state.addLabel(label)
         } catch (e) {
-            println("Error adding label")
+            println "Error adding label"
+            println e.toString()
         }
     } else {
         try {
             state.removeLabel(label)
         } catch (e) {
-            println("Error adding label")
+            println "Error removing label"
+            println e.toString()
         }
     }       
 }
@@ -107,6 +113,21 @@ def checked(def state, String label, Boolean fail, Closure fun) {
     }
 }
 
+def wrap(def state, String reportSlackChannel, Closure fun) {
+    try {
+        fun()
+        state.build.result = state.errors.isEmpty() ? 'SUCCESS' : 'UNSTABLE'
+    } catch (e) {
+        state.build.result = 'FAILURE'
+        throw e
+    } finally {
+        if(!reportSlackChannel.isEmpty()) slack(state, reportSlackChannel)
+        if(!state.errors.isEmpty()) {
+            println "Errors in: ${state.errors.join(", ")}"
+            state.build.description = "Errors in: ${state.errors.join(' ')}"
+        } 
+    }
+}
 
 def filterfiles() {
     dir('build') {
@@ -286,7 +307,7 @@ Map envCMakeOptions(env) {
 //Args state, opts, modulePaths, onModules, offModules
 def build(Map args = [:]) {
     dir('build') {
-        println "Options:\n  " + args.opts?.collect{"  ${it.key.padRight(30)} = ${it.value}"}?.join('\n  ') ?: ""
+        printMap("Options", args.opts)
         println "External:\n  ${args.modulePaths?.join('\n  ')?:""}"
         println "Modules On:\n  ${args.onModules?.join('\n  ')?:""}"
         println "Modules Off:\n  ${args.offModules?.join('\n  ')?:""}"

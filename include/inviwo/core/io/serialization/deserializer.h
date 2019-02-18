@@ -241,7 +241,7 @@ public:
 
     template <class Base, class T, class D>
     void deserializeAs(const std::string& key, std::unique_ptr<T, D>& data);
-    
+
     void setExceptionHandler(ExceptionHandler handler);
     void handleError(const ExceptionContext& context);
 

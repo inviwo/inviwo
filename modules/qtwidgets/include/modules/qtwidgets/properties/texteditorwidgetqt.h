@@ -65,7 +65,7 @@ protected:
     bool askSaveChanges();
 
     void save();
-    void saveToFile(const std::string &filename);
+    void saveToFile(const std::string& filename);
 
 private:
     FileProperty* fileProperty_;

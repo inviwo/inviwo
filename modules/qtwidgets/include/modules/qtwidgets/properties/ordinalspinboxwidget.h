@@ -55,7 +55,7 @@ class IVW_MODULE_QTWIDGETS_API BaseOrdinalSpinBoxWidget : public QWidget {
 #include <warn/pop>
 public:
     BaseOrdinalSpinBoxWidget();
-    virtual ~BaseOrdinalSpinBoxWidget();    
+    virtual ~BaseOrdinalSpinBoxWidget();
 
     void setWrapping(bool wrap);
     bool wrapping() const;

@@ -60,11 +60,11 @@ FilePathLineEditQt::FilePathLineEditQt(QWidget *parent)
             blockSignals(true);
             setText(str);
             setModified(str != utilqt::toQString(path_));
-            blockSignals(false);            
+            blockSignals(false);
         }
     };
 
-    QObject::connect(this, &QLineEdit::returnPressed, [this,trimFilename]() {
+    QObject::connect(this, &QLineEdit::returnPressed, [this, trimFilename]() {
         if (editingEnabled_) {
             cursorPos_ = -1;
             trimFilename();
@@ -72,7 +72,7 @@ FilePathLineEditQt::FilePathLineEditQt(QWidget *parent)
             setEditing(false);
         }
     });
-    QObject::connect(this, &QLineEdit::editingFinished, [this,trimFilename]() {
+    QObject::connect(this, &QLineEdit::editingFinished, [this, trimFilename]() {
         if (editingEnabled_) {
             cursorPos_ = this->cursorPosition();
             trimFilename();
