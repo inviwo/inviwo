@@ -2,8 +2,6 @@ include(CMakePushCheckState)
 include(CheckIncludeFileCXX)
 include(CheckCXXSourceCompiles)
 
-message("Filesystem : ${Filesystem_FIND_COMPONENTS}")
-
 cmake_push_check_state(RESET)
 set(CMAKE_CXX_STANDARD 17)
 
@@ -41,7 +39,7 @@ check_cxx_source_compiles("${code}" FILESYSTEM_CPPFS_NEEDED)
 cmake_pop_check_state()
 
 if(FILESYSTEM_HAVE_FS)
-    add_library(std::filesystem INTERFACE IMPORTED)
+    add_library(std::filesystem INTERFACE IMPORTED GLOBAL)
     target_compile_definitions(
         std::filesystem
         INTERFACE
