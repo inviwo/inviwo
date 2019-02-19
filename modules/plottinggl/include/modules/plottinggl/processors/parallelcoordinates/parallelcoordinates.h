@@ -91,6 +91,7 @@ public:
 
 protected:
     void linePicked(PickingEvent *p);
+    void axisPicked(PickingEvent *p);
     void handlePicked(PickingEvent *p);
 
 private:
@@ -118,6 +119,8 @@ private:
 
     CompositeProperty colors_;
     FloatVec4Property axisColor_;
+    FloatVec4Property axisHoverColor_;
+    FloatVec4Property axisSelectedColor_;
     FloatVec4Property handleBaseColor_;
     FloatVec4Property handleFilteredColor_;
     TransferFunctionProperty tf_;
@@ -168,6 +171,7 @@ private:
     std::vector<ParallelCoordinatesAxisSettingsProperty *> axisVector_;  // owned by axisProperty_
 
     PickingMapper linePicking_;
+    PickingMapper axisPicking_;
     PickingMapper handlePicking_;
 
     TextRenderer textRenderer_;
@@ -176,6 +180,7 @@ private:
     std::shared_ptr<Image> handleImg_;
 
     int hoveredLine_ = -1;
+    int hoveredAxis_ = -1;
 
     bool recreateLines_;
     bool textCacheDirty_;

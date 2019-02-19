@@ -57,21 +57,29 @@ public:
     bool isFiltered(size_t idx) const;
     bool isSelected(size_t idx) const;
 
+    bool isColumnSelected(size_t idx) const;
+
     void setSelected(const BrushingAndLinkingInport* src,
                      const std::unordered_set<size_t>& indices);
 
     void setFiltered(const BrushingAndLinkingInport* src,
                      const std::unordered_set<size_t>& indices);
 
+    void setSelectedColumn(const BrushingAndLinkingInport* src,
+                           const std::unordered_set<size_t>& indices);
+
     const std::unordered_set<size_t>& getSelectedIndices() const;
     const std::unordered_set<size_t>& getFilteredIndices() const;
+    const std::unordered_set<size_t>& getSelectedColumns() const;
 
 private:
     IndexList selected_;
     IndexList filtered_;
+    IndexList selectedColumns_;
 
     std::shared_ptr<std::function<void()>> callback1_;
     std::shared_ptr<std::function<void()>> callback2_;
+    std::shared_ptr<std::function<void()>> callback3_;
 };
 
 }  // namespace inviwo

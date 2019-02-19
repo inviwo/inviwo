@@ -38,6 +38,7 @@
 #include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
 #include <modules/brushingandlinking/events/filteringevent.h>
 #include <modules/brushingandlinking/events/selectionevent.h>
+#include <modules/brushingandlinking/events/columnselectionevent.h>
 #include <inviwo/core/datastructures/datatraits.h>
 
 namespace inviwo {
@@ -52,16 +53,22 @@ public:
 
     void sendSelectionEvent(const std::unordered_set<size_t> &indices);
 
+    void sendColumnSelectionEvent(const std::unordered_set<size_t> &indices);
+
     bool isFiltered(size_t idx) const;
     bool isSelected(size_t idx) const;
 
+    bool isColumnSelected(size_t idx) const;
+
     const std::unordered_set<size_t> &getSelectedIndices() const;
     const std::unordered_set<size_t> &getFilteredIndices() const;
+    const std::unordered_set<size_t> &getSelectedColumns() const;
 
     virtual std::string getClassIdentifier() const override;
 
     std::unordered_set<size_t> filterCache_;
     std::unordered_set<size_t> selectionCache_;
+    std::unordered_set<size_t> selectionColumnCache_;
 };
 
 class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingOutport

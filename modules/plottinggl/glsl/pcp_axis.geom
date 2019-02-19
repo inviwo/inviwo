@@ -12,24 +12,18 @@ in vec3 pickColor[2];
 in vec2 texCoord[2];
 vec4 triverts[4];
 float signValues[4];
+vec4 p[2];
 
-out vec3 lpickColor;
-out vec2 ltexCoord;
-out float lfalloffAlpha;
-
-uniform float lineWidth;
+out float axisXpos;
 
 uniform int selected;
-uniform float selectedLineWidth = 3;
 
 void emitV(int i) {
     gl_Position = triverts[i];
-    lfalloffAlpha = signValues[i];
-    lpickColor = pickColor[i % 2].rgb;
-    ltexCoord = texCoord[i % 2].xy;
+	axisXpos = p[0].x;
     EmitVertex();
 }
-
+	
 void emit(int a, int b, int c, int d) {
     emitV(a);
     emitV(b);
@@ -39,9 +33,10 @@ void emit(int a, int b, int c, int d) {
 }
 
 void main() {
-    // Compute orientation vectors for the two connecting faces:
-    vec4 p[2];
 
+float axisWidth = 10;
+
+	// Compute orientation vectors for the two connecting faces:
 #ifndef GLSL_VERSION_150
     p[0] = gl_PositionIn[0];
     p[1] = gl_PositionIn[1];
@@ -50,22 +45,12 @@ void main() {
     p[1] = gl_in[1].gl_Position;
 #endif
 
-	// Create a vector that is orthogonal to the line
-	vec3 orthogonalLine = p[0].xyz - p[1].xyz;
-	orthogonalLine = normalize(vec3(orthogonalLine.y, -orthogonalLine.x, orthogonalLine.z));
-
     //* selected * selectedLineWidth
     // Assuming 2d
-	// Scale the linewidth with the window dimensions
-    float r1 = lineWidth * getPixelSpacing().x;
-    if (selected == 1)
-        r1 = selectedLineWidth * getPixelSpacing().x;
-	float r2 = lineWidth * getPixelSpacing().y;
-    if (selected == 1)
-        r2 = selectedLineWidth * getPixelSpacing().y;
+    vec3 j = vec3(0, 1, 0);
+    float r = axisWidth * getPixelSpacing().x;
 
-	// Scale the orthogonal vector with the linewidth
-    vec3 j = vec3(orthogonalLine.x * r1, orthogonalLine.y * r2, orthogonalLine.z);
+    j = vec3(r, 0, 0);
 
     // Compute upper triangles
     signValues[0] = 1.0;
