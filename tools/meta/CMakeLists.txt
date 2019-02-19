@@ -6,14 +6,19 @@ if(NOT cxx_std_17 IN_LIST CMAKE_CXX_COMPILE_FEATURES)
 	message(STATUS "Will not build Inviwo meta since the used compiler does not have c++17 support")
 	return()
 endif()
+
+find_package(FileSystem REQUIRED)
+if(NOT FileSystem_FOUND) 
+	message(STATUS "Will not build Inviwo meta since the used compiler does not have c++ filesystem support")
+	return()
+endif()
+
 include(CheckIncludeFileCXX)
 CHECK_INCLUDE_FILE_CXX(filesystem found_variant)
 if(NOT found_variant)
 	message(STATUS "Will not build Inviwo meta since the used compiler does not have c++ variant support")
 	return()
 endif()
-
-find_package(FileSystem REQUIRED)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS On)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER cmake)
