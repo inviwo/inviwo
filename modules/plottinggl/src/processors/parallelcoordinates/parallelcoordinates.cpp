@@ -472,9 +472,6 @@ void ParallelCoordinates::buildLineMesh(
 
 void ParallelCoordinates::drawAxis(
     size2_t size, const std::vector<ParallelCoordinatesAxisSettingsProperty *> &enabledAxis) {
-    utilgl::GlBoolState blendOn(GL_BLEND, true);
-    utilgl::BlendModeEquationState blendEq(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_FUNC_ADD);
-
     axisShader_.activate();
 
     axisShader_.setUniform("dims", ivec2(size));
