@@ -35,6 +35,7 @@
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/datastructures/spatialdata.h>
 
@@ -59,13 +60,15 @@ public:
                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                   PropertySemantics semantics = PropertySemantics::Default);
 
+    void onResetOverride();
+
     BasisProperty(const BasisProperty& rhs);
     BasisProperty& operator=(const BasisProperty& that);
     virtual BasisProperty* clone() const override;
     virtual ~BasisProperty() = default;
 
-    void updateForNewEntity(const SpatialEntity<3>& volume, bool deserialize = false);
-    void updateForNewEntity(const StructuredGridEntity<3>& volume, bool deserialize = false);
+    void updateForNewEntity(const SpatialEntity<3>& volume, bool deserialize);
+    void updateForNewEntity(const StructuredGridEntity<3>& volume, bool deserialize);
 
     void updateEntity(SpatialEntity<3>& volume);
 
@@ -81,24 +84,28 @@ public:
     TemplateOptionProperty<BasisPropertyReference> reference_;
 
     BoolProperty overRideDefaults_;
-    BoolProperty autoCenter_;
+    BoolProperty updateForNewEntiry_;
+
     FloatVec3Property size_;
     FloatVec3Property a_;
     FloatVec3Property b_;
     FloatVec3Property c_;
+    BoolProperty autoCenter_;
     FloatVec3Property offset_;
+    ButtonProperty resetOverride_;
 
 private:
-    void update(const SpatialEntity<3>& volume, bool deserialize = false);
+    void update(const SpatialEntity<3>& volume, bool deserialize);
     void load();
     void save();
     void onModeChange();
     void onOverrideChange();
     void onAutoCenterChange();
 
-    vec3 dimensions_{1};
-    ValueWrapper<mat4> modelMatrix_;
-    ValueWrapper<mat4> overrideModelMatrix_;
+    vec3 dimensions_{1.0f};
+    mat4 model_{1.0f};
+    ValueWrapper<mat4> overrideModel_;
+    bool updateing_ = false;
 };
 
 }  // namespace inviwo

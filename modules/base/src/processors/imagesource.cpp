@@ -48,7 +48,7 @@ const ProcessorInfo ImageSource::getProcessorInfo() const { return processorInfo
 
 ImageSource::ImageSource(InviwoApplication* app, const std::string& file)
     : Processor()
-    , app_(app)
+    , rf_(app->getDataReaderFactory())
     , outport_("image", DataVec4UInt8::get(), false)
     , file_("imageFileName", "File name", file, "image")
     , imageDimension_("imageDimension_", "Dimension", ivec2(0), ivec2(0), ivec2(10000), ivec2(1),
@@ -56,10 +56,9 @@ ImageSource::ImageSource(InviwoApplication* app, const std::string& file)
 
     addPort(outport_);
 
-    auto rf = app_->getDataReaderFactory();
     file_.clearNameFilters();
     file_.addNameFilter(FileExtension::all());
-    file_.addNameFilters(rf->getExtensionsForType<Layer>());
+    file_.addNameFilters(rf_->getExtensionsForType<Layer>());
 
     addProperty(file_);
 
@@ -76,8 +75,7 @@ void ImageSource::process() {
 
     const auto sext = file_.getSelectedExtension();
     const auto fext = filesystem::getFileExtension(file_.get());
-    auto factory = app_->getDataReaderFactory();
-    if (auto reader = factory->getReaderForTypeAndExtension<Layer>(sext, fext)) {
+    if (auto reader = rf_->getReaderForTypeAndExtension<Layer>(sext, fext)) {
         try {
             auto outLayer = reader->readData(file_.get());
             // Call getRepresentation here to force read a ram representation.
@@ -106,10 +104,9 @@ void ImageSource::process() {
 
 void ImageSource::deserialize(Deserializer& d) {
     Processor::deserialize(d);
-    auto rf = app_->getDataReaderFactory();
     file_.clearNameFilters();
     file_.addNameFilter(FileExtension::all());
-    file_.addNameFilters(rf->getExtensionsForType<Layer>());
+    file_.addNameFilters(rf_->getExtensionsForType<Layer>());
 }
 
 }  // namespace inviwo

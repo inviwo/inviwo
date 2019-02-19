@@ -40,15 +40,15 @@ BasisProperty::BasisProperty(std::string identifier, std::string displayName,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , mode_("mode", "Mode",
-            {{"general", "General", BasisPropertyMode::General},
-             {"orthogonal", "Orthogonal", BasisPropertyMode::Orthogonal}},
+            {{"general", "General Basis", BasisPropertyMode::General},
+             {"orthogonal", "Orthogonal Basis", BasisPropertyMode::Orthogonal}},
             0, InvalidationLevel::Valid)
     , reference_("reference", "Reference",
                  {{"Volume", "Volume", BasisPropertyReference::Volume},
                   {"Voxel", "Voxel", BasisPropertyReference::Voxel}},
                  0, InvalidationLevel::Valid)
     , overRideDefaults_("override", "Override", false)
-    , autoCenter_("autoCenter", "Auto Center", true, InvalidationLevel::Valid)
+    , updateForNewEntiry_("update", "Update On New Data", true, InvalidationLevel::Valid)
     , size_("size", "Size", vec3(1.0f), vec3(0.0), vec3(std::numeric_limits<float>::max()),
             vec3{0.001f}, InvalidationLevel::Valid)
     , a_("a", "A", vec3(1.0f, 0.0f, 0.0f), vec3(std::numeric_limits<float>::lowest()),
@@ -57,20 +57,23 @@ BasisProperty::BasisProperty(std::string identifier, std::string displayName,
          vec3(std::numeric_limits<float>::max()), vec3{0.001f}, InvalidationLevel::Valid)
     , c_("c", "C", vec3(0.0f, 0.0f, 1.0f), vec3(std::numeric_limits<float>::lowest()),
          vec3(std::numeric_limits<float>::max()), vec3{0.001f}, InvalidationLevel::Valid)
-    , offset_("offset", "Offset", vec3(0.0f), vec3(std::numeric_limits<float>::lowest()),
+    , autoCenter_("autoCenter", "Center Automatically", true, InvalidationLevel::Valid)
+    , offset_("offset", "Offset", vec3(-0.5f), vec3(std::numeric_limits<float>::lowest()),
               vec3(std::numeric_limits<float>::max()), vec3{0.001f}, InvalidationLevel::Valid)
-    , modelMatrix_("model", mat4{1})
-    , overrideModelMatrix_("overrideModel", mat4{1}) {
+    , resetOverride_("restore", "Revert Override", InvalidationLevel::Valid)
+    , overrideModel_("overrideModel", mat4{1}) {
 
     addProperty(mode_);
     addProperty(reference_);
     addProperty(overRideDefaults_);
-    addProperty(autoCenter_);
+    addProperty(updateForNewEntiry_);
     addProperty(size_);
     addProperty(a_);
     addProperty(b_);
     addProperty(c_);
+    addProperty(autoCenter_);
     addProperty(offset_);
+    addProperty(resetOverride_);
 
     size_.setVisible(false);
 
@@ -78,6 +81,7 @@ BasisProperty::BasisProperty(std::string identifier, std::string displayName,
     reference_.onChange([&]() { load(); });
     overRideDefaults_.onChange([this]() { onOverrideChange(); });
     autoCenter_.onChange([&]() { onAutoCenterChange(); });
+    resetOverride_.onChange([&]() { onResetOverride(); });
     util::for_each_argument(
         [&](auto& elem) {
             elem.setReadOnly(true);
@@ -93,28 +97,34 @@ BasisProperty::BasisProperty(const BasisProperty& rhs)
     , mode_(rhs.mode_)
     , reference_(rhs.reference_)
     , overRideDefaults_(rhs.overRideDefaults_)
-    , autoCenter_(rhs.autoCenter_)
+    , updateForNewEntiry_(rhs.updateForNewEntiry_)
     , size_(rhs.size_)
     , a_(rhs.a_)
     , b_(rhs.b_)
     , c_(rhs.c_)
+    , autoCenter_(rhs.autoCenter_)
     , offset_(rhs.offset_)
-    , modelMatrix_(rhs.modelMatrix_)
-    , overrideModelMatrix_(rhs.overrideModelMatrix_) {
+    , resetOverride_(rhs.resetOverride_)
+    , model_(rhs.model_)
+    , overrideModel_(rhs.overrideModel_) {
+
     addProperty(mode_);
     addProperty(reference_);
     addProperty(overRideDefaults_);
-    addProperty(autoCenter_);
+    addProperty(updateForNewEntiry_);
     addProperty(size_);
     addProperty(a_);
     addProperty(b_);
     addProperty(c_);
+    addProperty(autoCenter_);
     addProperty(offset_);
+    addProperty(resetOverride_);
 
     mode_.onChange([&]() { onModeChange(); });
     reference_.onChange([&]() { load(); });
     overRideDefaults_.onChange([this]() { onOverrideChange(); });
     autoCenter_.onChange([&]() { onAutoCenterChange(); });
+    resetOverride_.onChange([&]() { onResetOverride(); });
     util::for_each_argument([&](auto& elem) { elem.onChange([&]() { save(); }); }, size_, a_, b_,
                             c_, offset_);
 }
@@ -131,8 +141,8 @@ BasisProperty& BasisProperty::operator=(const BasisProperty& that) {
         c_ = that.c_;
         offset_ = that.offset_;
         dimensions_ = that.dimensions_;
-        modelMatrix_ = that.modelMatrix_;
-        overrideModelMatrix_ = that.overrideModelMatrix_;
+        model_ = that.model_;
+        overrideModel_ = that.overrideModel_;
     }
     return *this;
 }
@@ -151,15 +161,19 @@ void BasisProperty::updateForNewEntity(const SpatialEntity<3>& entity, bool dese
 
 void BasisProperty::update(const SpatialEntity<3>& entity, bool deserialize) {
     // Set basis properties to the values from the new volume
-    modelMatrix_ = entity.getModelMatrix();
-    modelMatrix_.setAsDefault();
-    if (deserialize) {
-        overrideModelMatrix_ = entity.getModelMatrix();
-        overrideModelMatrix_.setAsDefault();
-    }
+    model_ = entity.getModelMatrix();
+
+    const auto org = overrideModel_.value;
+    overrideModel_.value = entity.getModelMatrix();
+    overrideModel_.setAsDefault();
     load();
     util::for_each_argument([&](auto& elem) { elem.setCurrentStateAsDefault(); }, size_, a_, b_, c_,
                             offset_);
+
+    if (deserialize || !updateForNewEntiry_) {
+        overrideModel_.value = org;
+        load();
+    }
 }
 
 void BasisProperty::load() {
@@ -167,22 +181,19 @@ void BasisProperty::load() {
     vec3 offset{0};
 
     if (overRideDefaults_) {
-        basis = mat3{overrideModelMatrix_.value};
-        offset = vec3{overrideModelMatrix_.value[3]};
+        basis = mat3{overrideModel_.value};
+        offset = vec3{overrideModel_.value[3]};
     } else {
-        basis = mat3{modelMatrix_.value};
-        offset = vec3{modelMatrix_.value[3]};
+        basis = mat3{model_};
+        offset = vec3{model_[3]};
     }
 
     if (reference_ == BasisPropertyReference::Voxel) {
         basis /= dimensions_;
         offset /= dimensions_;
     }
-    OnChangeBlocker a{a_};
-    OnChangeBlocker b{b_};
-    OnChangeBlocker c{c_};
-    OnChangeBlocker off{offset_};
-    OnChangeBlocker size{size_};
+
+    util::KeepTrueWhileInScope block(&updateing_);
     a_.set(basis[0]);
     b_.set(basis[1]);
     c_.set(basis[2]);
@@ -191,6 +202,8 @@ void BasisProperty::load() {
 }
 
 void BasisProperty::save() {
+    if (!overRideDefaults_ || updateing_) return;
+
     mat3 basis{1};
     vec3 offset{0};
     if (mode_ == BasisPropertyMode::Orthogonal) {
@@ -201,7 +214,7 @@ void BasisProperty::save() {
 
     if (autoCenter_) {
         offset = -0.5f * (basis[0] + basis[1] + basis[2]);
-        OnChangeBlocker off{offset_};
+        util::KeepTrueWhileInScope block(&updateing_);
         offset_ = offset;
     } else {
         offset = offset_.get();
@@ -214,24 +227,16 @@ void BasisProperty::save() {
 
     mat4 model(basis);
     model[3] = vec4(offset, 1.0f);
-
-    if (overRideDefaults_) {
-        if (overrideModelMatrix_ != model) {
-            overrideModelMatrix_ = model;
-            invalidate(InvalidationLevel::InvalidOutput);
-        }
-    } else {
-        if (modelMatrix_ != model) {
-            modelMatrix_ = model;
-            invalidate(InvalidationLevel::InvalidOutput);
-        }
+    if (overrideModel_ != model) {
+        overrideModel_ = model;
+        invalidate(InvalidationLevel::InvalidOutput);
     }
 }
 
 void BasisProperty::onOverrideChange() {
     util::for_each_argument([&](auto& elem) { elem.setReadOnly(!overRideDefaults_.get()); }, size_,
                             a_, b_, c_, offset_);
-    offset_.setReadOnly(autoCenter_ || overRideDefaults_);
+    offset_.setReadOnly(autoCenter_ || !overRideDefaults_);
     load();
 }
 
@@ -240,7 +245,7 @@ void BasisProperty::onAutoCenterChange() {
         const auto basis = mat3{getBasisAndOffset()};
         offset_ = -0.5f * (basis[0] + basis[1] + basis[2]);
     }
-    offset_.setReadOnly(autoCenter_ || overRideDefaults_);
+    offset_.setReadOnly(autoCenter_ || !overRideDefaults_);
 }
 
 void BasisProperty::onModeChange() {
@@ -264,39 +269,42 @@ void BasisProperty::onModeChange() {
     }
 }
 
+void BasisProperty::onResetOverride() {
+    if (overrideModel_ != model_) {
+        overrideModel_ = model_;
+        load();
+        invalidate(InvalidationLevel::InvalidOutput);
+    }
+}
+
 mat4 BasisProperty::getBasisAndOffset() const {
     if (overRideDefaults_) {
-        return overrideModelMatrix_.value;
+        return overrideModel_.value;
     } else {
-        return modelMatrix_.value;
+        return model_;
     }
 }
 
 void BasisProperty::serialize(Serializer& s) const {
-    modelMatrix_.serialize(s, serializationMode_);
-    overrideModelMatrix_.serialize(s, serializationMode_);
+    overrideModel_.serialize(s, PropertySerializationMode::All);
     CompositeProperty::serialize(s);
 }
 
 void BasisProperty::deserialize(Deserializer& d) {
-    bool modified = false;
-    modified |= modelMatrix_.deserialize(d, serializationMode_);
-    modified |= overrideModelMatrix_.deserialize(d, serializationMode_);
-    if (modified) propertyModified();
     CompositeProperty::deserialize(d);
+    const bool modified = overrideModel_.deserialize(d, PropertySerializationMode::All);
     load();
+    if (modified) propertyModified();
 }
 
 void BasisProperty::setCurrentStateAsDefault() {
     CompositeProperty::setCurrentStateAsDefault();
-    modelMatrix_.setAsDefault();
-    overrideModelMatrix_.setAsDefault();
+    overrideModel_.setAsDefault();
 }
 
 void BasisProperty::resetToDefaultState() {
     CompositeProperty::resetToDefaultState();
-    modelMatrix_.reset();
-    overrideModelMatrix_.reset();
+    overrideModel_.reset();
     load();
 }
 

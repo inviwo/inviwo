@@ -31,6 +31,7 @@
 #include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/io/datareaderexception.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 namespace inviwo {
 
@@ -44,8 +45,9 @@ const ProcessorInfo VolumeSequenceSource::processorInfo_{
 };
 const ProcessorInfo VolumeSequenceSource::getProcessorInfo() const { return processorInfo_; }
 
-VolumeSequenceSource::VolumeSequenceSource()
+VolumeSequenceSource::VolumeSequenceSource(InviwoApplication* app)
     : Processor()
+    , rf_{app->getDataReaderFactory()}
     , outport_("data")
     , inputType_("inputType", "Input type",
                  {{"singlefile", "Single File", InputType::SingleFile},
@@ -104,11 +106,10 @@ void VolumeSequenceSource::load(bool deserialize) {
 void VolumeSequenceSource::loadFile(bool deserialize) {
     if (file_.get().empty()) return;
 
-    auto rf = InviwoApplication::getPtr()->getDataReaderFactory();
 
     const auto sext = file_.getSelectedExtension();
     const auto fext = filesystem::getFileExtension(file_.get());
-    if (auto reader = rf->getReaderForTypeAndExtension<VolumeSequence>(sext, fext)) {
+    if (auto reader = rf_->getReaderForTypeAndExtension<VolumeSequence>(sext, fext)) {
         try {
             volumes_ = reader->readData(file_.get(), this);
         } catch (DataReaderException const& e) {
@@ -128,20 +129,19 @@ void VolumeSequenceSource::loadFolder(bool deserialize) {
     if (folder_.get().empty()) return;
 
     volumes_ = std::make_shared<VolumeSequence>();
-    auto rf = InviwoApplication::getPtr()->getDataReaderFactory();
-
+ 
     auto files = filesystem::getDirectoryContents(folder_.get());
     for (auto f : files) {
         auto file = folder_.get() + "/" + f;
         if (filesystem::wildcardStringMatch(filter_, file)) {
             std::string ext = filesystem::getFileExtension(file);
             try {
-                if (auto reader1 = rf->getReaderForTypeAndExtension<Volume>(ext)) {
+                if (auto reader1 = rf_->getReaderForTypeAndExtension<Volume>(ext)) {
                     auto volume = reader1->readData(file, this);
                     volume->setMetaData<StringMetaData>("filename", file);
                     volumes_->push_back(volume);
 
-                } else if (auto reader2 = rf->getReaderForTypeAndExtension<VolumeSequence>(ext)) {
+                } else if (auto reader2 = rf_->getReaderForTypeAndExtension<VolumeSequence>(ext)) {
                     auto volumes = reader2->readData(file, this);
                     for (auto volume : *volumes) {
                         volume->setMetaData<StringMetaData>("filename", file);
@@ -172,10 +172,9 @@ void VolumeSequenceSource::loadFolder(bool deserialize) {
 }
 
 void VolumeSequenceSource::addFileNameFilters() {
-    auto rf = InviwoApplication::getPtr()->getDataReaderFactory();
     file_.clearNameFilters();
     file_.addNameFilter(FileExtension::all());
-    file_.addNameFilters(rf->getExtensionsForType<VolumeSequence>());
+    file_.addNameFilters(rf_->getExtensionsForType<VolumeSequence>());
 }
 
 void VolumeSequenceSource::process() {

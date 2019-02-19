@@ -70,7 +70,7 @@ protected:
     // Called when we deserialized old data.
     virtual void dataDeserialized(std::shared_ptr<DataType> data){};
 
-    InviwoApplication* app_;
+    DataReaderFactory* rf_;
     PortType port_;
     FileProperty file_;
     ButtonProperty reload_;
@@ -84,7 +84,7 @@ template <typename DataType, typename PortType>
 DataSource<DataType, PortType>::DataSource(InviwoApplication* app, const std::string& file,
                                            const std::string& content)
     : Processor()
-    , app_(app)
+    , rf_(app->getDataReaderFactory())
     , port_("data")
     , file_("filename", "File", file, content)
     , reload_("reload", "Reload data") {
@@ -99,10 +99,9 @@ DataSource<DataType, PortType>::DataSource(InviwoApplication* app, const std::st
     addProperty(file_);
     addProperty(reload_);
 
-    auto rf = app_->getDataReaderFactory();
     file_.clearNameFilters();
     file_.addNameFilter(FileExtension::all());
-    file_.addNameFilters(rf->template getExtensionsForType<DataType>());
+    file_.addNameFilters(rf_->template getExtensionsForType<DataType>());
 }
 
 template <typename DataType, typename PortType>
@@ -119,8 +118,7 @@ void DataSource<DataType, PortType>::load(bool deserialized) {
 
     const auto sext = file_.getSelectedExtension();
     const auto fext = filesystem::getFileExtension(file_.get());
-    auto rf = app_->getDataReaderFactory();
-    if (auto reader = rf->template getReaderForTypeAndExtension<DataType>(sext, fext)) {
+    if (auto reader = rf_->template getReaderForTypeAndExtension<DataType>(sext, fext)) {
         try {
             auto data = reader->readData(file_.get());
             port_.setData(data);
@@ -141,10 +139,9 @@ void DataSource<DataType, PortType>::load(bool deserialized) {
 template <typename DataType, typename PortType>
 void DataSource<DataType, PortType>::deserialize(Deserializer& d) {
     Processor::deserialize(d);
-    auto rf = app_->getDataReaderFactory();
     file_.clearNameFilters();
     file_.addNameFilter(FileExtension::all());
-    file_.addNameFilters(rf->template getExtensionsForType<DataType>());
+    file_.addNameFilters(rf_->template getExtensionsForType<DataType>());
     deserialized_ = true;
 }
 
