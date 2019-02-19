@@ -61,7 +61,7 @@ public:
     std::unique_ptr<DataReaderType<T>> getReaderForTypeAndExtension(const FileExtension& ext);
 
     /**
-     * First lock for a reader using the FileExtension ext, and if no reader was found look for a reader
+     * First look for a reader using the FileExtension ext, and if no reader was found look for a reader
      * using the fallbackExt. This is often used with a file open dialog, where the dialog will have a
      * selectedFileExtension that will be used as ext, and the fallbackExt is taken from the file to
      * be opened. This way any selected reader will have priority over the file extension.
