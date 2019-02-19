@@ -66,7 +66,7 @@ public:
     std::unique_ptr<DataWriterType<T>> getWriterForTypeAndExtension(const FileExtension& ext);
 
     /**
-     * First lock for a writer using the FileExtension ext, and if no writer was found look for a
+     * First look for a writer using the FileExtension ext, and if no writer was found look for a
      * writer using the fallbackExt. This is often used with a file open dialog, where the dialog
      * will have a selectedFileExtension that will be used as ext, and the fallbackExt is taken from
      * the file to be written. This way any selected writer will have priority over the file
