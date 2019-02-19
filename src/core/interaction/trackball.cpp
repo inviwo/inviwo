@@ -546,7 +546,6 @@ void Trackball::stepPan(Direction dir) {
 }
 
 void Trackball::touchGesture(Event* event) {
-
     TouchEvent* touchEvent = static_cast<TouchEvent*>(event);
 
     // Use the two closest points to extract translation, scaling and rotation
