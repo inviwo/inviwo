@@ -99,9 +99,9 @@ def setLabel(def state, String label, Boolean add) {
 def checked(def state, String label, Boolean fail, Closure fun) {
     try {
         fun()
-        setLabel(state, "J:" + label  + " Failure", false)
+        setLabel(state, "J: " + label  + " Failure", false)
     } catch (e) {
-        setLabel(state, "J:" + label  + " Failure", true)
+        setLabel(state, "J: " + label  + " Failure", true)
         state.errors += label
         if (fail) {
             state.build.result = 'FAILURE'
