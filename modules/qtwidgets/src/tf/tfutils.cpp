@@ -113,6 +113,15 @@ QMenu* addTFPresetsMenu(QWidget* parent, QMenu* menu, TransferFunctionProperty* 
             for (auto file : files) {
                 for (auto& ext : property->get().getSupportedExtensions()) {
                     if (ext.matches(file)) {
+                        try {
+                            tf.load(file, ext);
+                        } catch (DataReaderException&) {
+                            // No reader found, ignore the TF
+                            continue;
+                        } catch (AbortException&) {
+                            // Failed to load, ignore the TF
+                            continue;
+                        }
                         // remove basepath and trailing directory separator from filename
                         auto action = presets->addAction(
                             utilqt::toQString(file.substr(basePath.length() + 1)));
@@ -121,7 +130,7 @@ QMenu* addTFPresetsMenu(QWidget* parent, QMenu* menu, TransferFunctionProperty* 
                                              NetworkLock lock(property);
                                              property->get().load(file, ext);
                                          });
-                        tf.load(file, ext);
+                        
                         action->setIcon(QIcon(utilqt::toQPixmap(tf, QSize(120, 20))));
                         break;
                     }
