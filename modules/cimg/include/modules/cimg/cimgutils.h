@@ -32,12 +32,16 @@
 
 #include <modules/cimg/cimgmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/datastructures/image/imagetypes.h>
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 
 namespace inviwo {
 
+class DataFormatBase;
+
 namespace cimgutil {
+
 enum class InterpolationType : int {
     RawMemory = -1,       // raw memory resizing.
     NoInterpolation = 0,  // additional space is filled according to boundary_conditions.
@@ -48,6 +52,18 @@ enum class InterpolationType : int {
     Cubic = 5,            // cubic interpolation.
     Lanczos = 6           // lanczos interpolation.
 };
+
+enum class TIFFResolutionUnit { None, Inch, Centimeter };
+
+struct IVW_MODULE_CIMG_API TIFFHeader {
+    const DataFormatBase* format;
+    size3_t dimensions;
+    dvec2 resolution;
+    TIFFResolutionUnit resolutionUnit;
+    SwizzleMask swizzleMask;
+};
+
+IVW_MODULE_CIMG_API TIFFHeader getTIFFHeader(const std::string& filename);
 
 /**
  * Loads layer data from a specified filePath.
@@ -64,18 +80,33 @@ IVW_MODULE_CIMG_API void* loadVolumeData(void* dst, const std::string& filePath,
 /**
  * Saves an layer of an image to a specified filename.
  * @param filePath the path including filename and extension, which is used to determine the image
- *format
+ * format
  * @param inputImage specifies the image that is to be saved.
- **/
+ */
 IVW_MODULE_CIMG_API void saveLayer(const std::string& filePath, const Layer* inputImage);
 
 /**
  * Saves an layer of an unsigned char buffer.
  * @param extension  specifies the output image format
  * @param inputImage specifies the image that is to be saved.
- **/
+ */
 IVW_MODULE_CIMG_API std::unique_ptr<std::vector<unsigned char>> saveLayerToBuffer(
     const std::string& extension, const Layer* inputImage);
+
+/**
+ * Load TIFF image data.
+ * \see TIFFLayerReader
+ * \see getTIFFHeader
+ */
+void* loadTIFFLayerData(void* dst, const std::string& filePath, TIFFHeader header,
+                        bool rescaleToDim = false);
+
+/**
+ * Load TIFF stack as volume.
+ * \see TIFFStackVolumeRAMLoader
+ * \see getTIFFHeader
+ */
+void* loadTIFFVolumeData(void* dst, const std::string& filePath, TIFFHeader header);
 
 /**
  * \brief Rescales Layer of given image data
@@ -97,8 +128,8 @@ IVW_MODULE_CIMG_API void* rescaleLayerRAM(const LayerRAM* layerRam, uvec2 dst_di
 
 IVW_MODULE_CIMG_API bool rescaleLayerRamToLayerRam(const LayerRAM* source, LayerRAM* target);
 
-IVW_MODULE_CIMG_API std::string getLibJPGVesrion();
-IVW_MODULE_CIMG_API std::string getOpenEXRVesrion();
+IVW_MODULE_CIMG_API std::string getLibJPGVersion();
+IVW_MODULE_CIMG_API std::string getOpenEXRVersion();
 
 }  // namespace cimgutil
 

@@ -60,6 +60,10 @@
 #pragma warning(disable : 4267)
 #endif
 
+#ifdef cimg_use_tiff
+#include <tiff/libtiff/tiffio.h>
+#endif
+
 // add CImg type specialization for half_float::half
 namespace cimg_library {
 namespace cimg {
@@ -403,7 +407,7 @@ struct CImgLoadVolumeDispatcher {
         }
 
         // Image is up-side-down
-        img.mirror('y');
+        img.mirror("y");
 
         return CImgToVoidConvert<typename DF::primitive>::convert(dst, &img);
     }
@@ -437,6 +441,23 @@ void* loadVolumeData(void* dst, const std::string& filePath, size3_t& dimensions
     CImgLoadVolumeDispatcher disp;
     return dispatching::dispatch<void*, dispatching::filter::All>(formatId, disp, dst, filePath,
                                                                   dimensions, formatId);
+}
+
+void* loadTIFFLayerData(void* dst, const std::string& filePath, TIFFHeader header,
+                        bool rescaleToDim) {
+    CImgLoadLayerDispatcher disp;
+    DataFormatId formatId = header.format->getId();
+    uvec2 dims{header.dimensions};
+    return dispatching::dispatch<void*, dispatching::filter::All>(formatId, disp, dst, filePath,
+                                                                  dims, formatId, rescaleToDim);
+}
+
+void* loadTIFFVolumeData(void* dst, const std::string& filePath, TIFFHeader header) {
+    CImgLoadVolumeDispatcher disp;
+    DataFormatId formatId = header.format->getId();
+    size3_t dims{header.dimensions};
+    return dispatching::dispatch<void*, dispatching::filter::All>(formatId, disp, dst, filePath,
+                                                                  dims, formatId);
 }
 
 void saveLayer(const std::string& filePath, const Layer* inputLayer) {
@@ -535,7 +556,7 @@ bool rescaleLayerRamToLayerRam(const LayerRAM* source, LayerRAM* target) {
                                                                  disp, source, target);
 }
 
-std::string getLibJPGVesrion() {
+std::string getLibJPGVersion() {
 #ifdef cimg_use_jpeg
     std::ostringstream oss;
     oss << JPEG_LIB_VERSION_MAJOR << "." << JPEG_LIB_VERSION_MINOR;
@@ -545,13 +566,94 @@ std::string getLibJPGVesrion() {
 #endif
 }
 
-std::string getOpenEXRVesrion() {
+std::string getOpenEXRVersion() {
 #ifdef cimg_use_openexr
     std::ostringstream oss;
     oss << OPENEXR_VERSION_MAJOR << "." << OPENEXR_VERSION_MINOR << "." << OPENEXR_VERSION_PATCH;
     return oss.str();
 #else
     return "OpenEXR not available";
+#endif
+}
+
+TIFFHeader getTIFFHeader(const std::string& filename) {
+#ifdef cimg_use_tiff
+    TIFF* tif = TIFFOpen(filename.c_str(), "r");
+    util::OnScopeExit closeFile([tif]() { TIFFClose(tif); });
+
+    if (!tif) {
+        throw DataReaderException("Error could not open input file: " + filename,
+                                  IVW_CONTEXT_CUSTOM("cimgutil::getTIFFDataFormat()"));
+    }
+    TIFFSetDirectory(tif, 0);
+
+    uint16 samplesPerPixel = 1, bitsPerSample = 8, sampleFormat = 1;
+    TIFFGetFieldDefaulted(tif, TIFFTAG_BITSPERSAMPLE, &bitsPerSample);
+    TIFFGetFieldDefaulted(tif, TIFFTAG_SAMPLESPERPIXEL, &samplesPerPixel);
+    TIFFGetFieldDefaulted(tif, TIFFTAG_SAMPLEFORMAT, &sampleFormat);
+
+    std::array<unsigned int, 2> xres = {150, 1};
+    std::array<unsigned int, 2> yres = {150, 1};
+    // X and Y resolution tags are stored as RATIONAL, i.e. a fractional value
+    // (2 unsigned int values with the first being the numerator, the second the denominator)
+    TIFFGetFieldDefaulted(tif, TIFFTAG_XRESOLUTION, xres.data());
+    TIFFGetFieldDefaulted(tif, TIFFTAG_YRESOLUTION, yres.data());
+    const dvec2 res{xres[0] / static_cast<double>(xres[1]), yres[0] / static_cast<double>(yres[1])};
+
+    uint16 resUnit = 2;
+    TIFFGetFieldDefaulted(tif, TIFFTAG_RESOLUTIONUNIT, &resUnit);
+    const TIFFResolutionUnit resolutionUnit = static_cast<TIFFResolutionUnit>(resUnit);
+
+    uint32 x = 0, y = 0, z = 0;
+    TIFFGetFieldDefaulted(tif, TIFFTAG_IMAGEWIDTH, &x);
+    TIFFGetFieldDefaulted(tif, TIFFTAG_IMAGELENGTH, &y);
+    // count the images
+    do {
+        ++z;
+    } while (TIFFReadDirectory(tif));
+
+    NumericType numericType;
+    switch (sampleFormat) {
+        case SAMPLEFORMAT_UINT:
+            numericType = NumericType::UnsignedInteger;
+            break;
+        case SAMPLEFORMAT_INT:
+            numericType = NumericType::SignedInteger;
+            break;
+        case SAMPLEFORMAT_IEEEFP:
+            numericType = NumericType::Float;
+            break;
+        case SAMPLEFORMAT_COMPLEXIEEEFP:
+            [[fallthrough]];
+        case SAMPLEFORMAT_COMPLEXINT:
+            throw DataReaderException("Unsupported TIFF format",
+                                      IVW_CONTEXT_CUSTOM("cimgutil::getTTIFFDataFormat()"));
+            break;
+        default:
+            numericType = NumericType::UnsignedInteger;
+            break;
+    }
+
+    SwizzleMask swizzleMask;
+    if (samplesPerPixel == 1) {
+        swizzleMask = swizzlemasks::luminance;
+    } else if (samplesPerPixel == 2) {
+        swizzleMask = swizzlemasks::luminanceAlpha;
+    } else if (samplesPerPixel == 3) {
+        swizzleMask = swizzlemasks::rgb;
+    } else if (samplesPerPixel == 4) {
+        swizzleMask = swizzlemasks::rgba;
+    } else {
+        throw DataReaderException("Unsupported TIFF format with more than 4 channels",
+                                  IVW_CONTEXT_CUSTOM("cimgutil::getTTIFFDataFormat()"));
+    }
+
+    auto df = DataFormatBase::get(numericType, samplesPerPixel, bitsPerSample);
+
+    return {df, size3_t{x, y, z}, res, resolutionUnit, swizzleMask};
+#else
+    throw Exception("TIFF not available", IVW_CONTEXT_CUSTOM("cimgutil::getTTIFFDataFormat()"));
+    return {};
 #endif
 }
 

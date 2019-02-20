@@ -185,6 +185,14 @@ int FilePatternProperty::getMinRange() const { return minIndex_.get(); }
 
 int FilePatternProperty::getMaxRange() const { return maxIndex_.get(); }
 
+const FileExtension& FilePatternProperty::getSelectedExtension() const {
+    return pattern_.getSelectedExtension();
+}
+
+void FilePatternProperty::setSelectedExtension(const FileExtension& ext) {
+    pattern_.setSelectedExtension(ext);
+}
+
 void FilePatternProperty::updateFileList() {
     files_.clear();
     outOfRangeMatches_ = false;
@@ -292,6 +300,8 @@ std::string FilePatternProperty::guessFilePattern() const {
     LogError("not implemented yet");
     return "";
 }
+
+void FilePatternProperty::clearNameFilters() { pattern_.clearNameFilters(); }
 
 void FilePatternProperty::addNameFilter(std::string filter) { pattern_.addNameFilter(filter); }
 

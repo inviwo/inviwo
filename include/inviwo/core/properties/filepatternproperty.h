@@ -91,6 +91,10 @@ public:
     int getMinRange() const;
     int getMaxRange() const;
 
+    const FileExtension& getSelectedExtension() const;
+    void setSelectedExtension(const FileExtension& ext);
+
+    void clearNameFilters();
     void addNameFilter(std::string filter);
     void addNameFilter(FileExtension filter);
     void addNameFilters(const std::vector<FileExtension>& filters);

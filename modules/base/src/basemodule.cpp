@@ -45,6 +45,7 @@
 #include <modules/base/processors/imagesource.h>
 #include <modules/base/processors/imagesourceseries.h>
 #include <modules/base/processors/imagecontourprocessor.h>
+#include <modules/base/processors/imagestackvolumesource.h>
 #include <modules/base/processors/meshclipping.h>
 #include <modules/base/processors/meshcreator.h>
 #include <modules/base/processors/meshexport.h>
@@ -104,6 +105,9 @@
 #include <modules/base/processors/volumeinformation.h>
 #include <modules/base/processors/tfselector.h>
 
+#include <fmt/format.h>
+#include <tuple>
+
 namespace inviwo {
 
 using BasisTransformMesh = BasisTransform<Mesh>;
@@ -124,6 +128,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<ImageSnapshot>();
     registerProcessor<ImageSource>();
     registerProcessor<ImageSourceSeries>();
+    registerProcessor<ImageStackVolumeSource>();
     registerProcessor<LayerDistanceTransformRAM>();
     registerProcessor<MeshClipping>();
     registerProcessor<MeshCreator>();
@@ -200,7 +205,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     util::for_each_type<OrdinalPropertyAnimator::Types>{}(RegHelper{}, *this);
 }
 
-int BaseModule::getVersion() const { return 2; }
+int BaseModule::getVersion() const { return 3; }
 
 std::unique_ptr<VersionConverter> BaseModule::getConverter(int version) const {
     return util::make_unique<Converter>(version);
@@ -302,8 +307,40 @@ bool BaseModule::Converter::convert(TxElement* root) {
             res |= xml::changeAttribute(
                 root, {{xml::Kind::processor("org.inviwo.GeometeryGenerator")}}, "type",
                 "org.inviwo.GeometeryGenerator", "org.inviwo.RandomMeshGenerator");
+            [[fallthrough]];
+        }
+        case 2: {
+            TraversingVersionConverter conv{[&](TxElement* node) -> bool {
+                std::string key;
+                node->GetValue(&key);
+                if (key != "Property") return true;
+                const auto type = node->GetAttributeOrDefault("type", "");
+                if (type != "org.inviwo.VolumeBasisProperty") return true;
+
+                TxElement newNode{"overrideModel"};
+                for (const auto& item :
+                     {std::make_tuple(0, "A", 0.0), std::make_tuple(1, "B", 0.0),
+                      std::make_tuple(2, "C", 0.0), std::make_tuple(3, "Offset", 1.0)}) {
+                    const auto path = fmt::format("Properties/Property&identifier=override{}/value",
+                                                  std::get<1>(item));
+                    if (auto elem = xml::getElement(node, path)) {
+                        auto data = elem->Clone();
+                        data->SetValue(fmt::format("col{}", std::get<0>(item)));
+                        data->ToElement()->SetAttribute("w", fmt::format("{:f}", std::get<2>(item)));
+                        newNode.InsertEndChild(*data);
+                    }
+                }
+
+                res = true; 
+                node->InsertEndChild(newNode);
+
+                return true;
+            }};
+
+            conv.convert(root);
             return res;
         }
+
         default:
             return false;  // No changes
     }
