@@ -114,7 +114,7 @@ bool PropertyCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<C
         if (nextValPos == std::string::npos) {
             LogWarn("Missing enclosing } in: " + requestStr);
         } else {
-            auto message = requestStr.substr(0, nextValPos);
+            auto message = requestStr.substr(0, nextValPos + 1);
             return (*widget)->onQuery(browser, frame, query_id, request, persistent, callback);
         }
     }
