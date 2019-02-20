@@ -96,7 +96,7 @@ ColorPropertyWidgetQt<T>::ColorPropertyWidgetQt(OrdinalProperty<T>* property)
 
     QHBoxLayout* hLayout = new QHBoxLayout();
     hLayout->setContentsMargins(0, 0, 0, 0);
-    hLayout->setSpacing(PropertyWidgetQt::spacing);
+    hLayout->setSpacing(getSpacing());
     setLayout(hLayout);
 
     QSizePolicy spBtn = sizePolicy();
@@ -122,7 +122,7 @@ ColorPropertyWidgetQt<T>::ColorPropertyWidgetQt(OrdinalProperty<T>* property)
         QHBoxLayout* widgetLayout = new QHBoxLayout();
         widget->setLayout(widgetLayout);
         widgetLayout->setContentsMargins(0, 0, 0, 0);
-        widgetLayout->setSpacing(PropertyWidgetQt::spacing);
+        widgetLayout->setSpacing(getSpacing());
 
         widgetLayout->addWidget(btnColor_);
         widgetLayout->addWidget(colorLineEdit_);

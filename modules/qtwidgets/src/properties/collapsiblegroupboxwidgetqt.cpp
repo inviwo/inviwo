@@ -141,12 +141,12 @@ CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(Property* property, Pro
     QObject::connect(checkBox_, &QCheckBox::clicked, this,
                      [&]() { setChecked(checkBox_->isChecked()); });
 
-    QHBoxLayout* heading = new QHBoxLayout();
+     QHBoxLayout* heading = new QHBoxLayout();
     heading->setContentsMargins(0, 0, 0, 0);
     heading->setSpacing(0);
     heading->addWidget(btnCollapse_);
     heading->addWidget(label_);
-    heading->addSpacing(PropertyWidgetQt::spacing);
+    heading->addSpacing(getSpacing());
     heading->addStretch(1);
     heading->addWidget(checkBox_);
     heading->addWidget(resetButton_);
@@ -252,14 +252,18 @@ std::unique_ptr<QMimeData> CollapsibleGroupBoxWidgetQt::getPropertyOwnerMimeData
 
 QSize CollapsibleGroupBoxWidgetQt::sizeHint() const {
     QSize size = layout()->sizeHint();
-    size.setWidth(std::max(PropertyWidgetQt::minimumWidth, size.width()));
+    const auto em = fontMetrics().boundingRect('M').width();
+
+    size.setWidth(std::max(static_cast<int>(PropertyWidgetQt::minimumWidthEm * em), size.width()));
     return size;
 }
 
 QSize CollapsibleGroupBoxWidgetQt::minimumSizeHint() const {
     QSize size = layout()->sizeHint();
     QSize minSize = layout()->minimumSize();
-    size.setWidth(std::max(PropertyWidgetQt::minimumWidth, minSize.width()));
+    const auto em = fontMetrics().boundingRect('M').width();
+    size.setWidth(
+        std::max(static_cast<int>(PropertyWidgetQt::minimumWidthEm * em), minSize.width()));
     return size;
 }
 
@@ -476,17 +480,17 @@ std::unique_ptr<QWidget> CollapsibleGroupBoxWidgetQt::createPropertyLayoutWidget
     auto propertyLayout = std::make_unique<QGridLayout>();
     propertyLayout->setObjectName("PropertyWidgetLayout");
     propertyLayout->setAlignment(Qt::AlignTop);
-    propertyLayout->setContentsMargins(PropertyWidgetQt::spacing * 2, PropertyWidgetQt::spacing, 0,
-                                       PropertyWidgetQt::spacing);
+    const auto space = getSpacing();
+    propertyLayout->setContentsMargins(space * 2, space, 0, space);
     propertyLayout->setHorizontalSpacing(0);
-    propertyLayout->setVerticalSpacing(PropertyWidgetQt::spacing);
+    propertyLayout->setVerticalSpacing(space);
 
     auto layout = propertyLayout.release();
     widget->setLayout(layout);
 
     // add default label to widget layout, this will also set the correct stretching and spacing
     layout->addWidget(defaultLabel_, 0, 0);
-    layout->addItem(new QSpacerItem(PropertyWidgetQt::spacing, 1, QSizePolicy::Fixed), 0, 1);
+    layout->addItem(new QSpacerItem(space, 1, QSizePolicy::Fixed), 0, 1);
     layout->setColumnStretch(0, 1);
     layout->setColumnStretch(1, 0);
 

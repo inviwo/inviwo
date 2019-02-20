@@ -589,6 +589,13 @@ QString windowTitleHelper(const QString& title, const QWidget* widget) {
     return cap;
 }
 
+int emToPx(const QWidget* w, double em) { return emToPx(w->fontMetrics(), em); }
+
+int emToPx(const QFontMetrics& m, double em) {
+    const auto pxPerEm = m.boundingRect('M').width();
+    return static_cast<int>(pxPerEm * em);
+}
+
 }  // namespace utilqt
 
 }  // namespace inviwo

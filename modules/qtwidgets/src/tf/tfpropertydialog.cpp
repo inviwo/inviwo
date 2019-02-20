@@ -303,8 +303,9 @@ void TFPropertyDialog::initializeDialog() {
 
     QWidget* mainPanel = new QWidget(this);
     QHBoxLayout* mainLayout = new QHBoxLayout();
-    mainLayout->setContentsMargins(7, 7, 7, 7);
-    mainLayout->setSpacing(7);
+    const auto space = utilqt::emToPx(this, 7.0 / 9.0);
+    mainLayout->setContentsMargins(space, space, space, space);
+    mainLayout->setSpacing(space);
     mainLayout->addWidget(leftPanel);
     mainLayout->addWidget(rightPanel);
     mainPanel->setLayout(mainLayout);
@@ -348,7 +349,7 @@ void TFPropertyDialog::initializeDialog() {
     }
 
     // ensure that the TF dialog has its minimal size when showing up for the first time
-    resize(100, 100);
+    resize(utilqt::emToPx(this, 14.0), utilqt::emToPx(this, 12.0));
 
     {
         // make sure the help dialog for the TF editor is shown once

@@ -86,6 +86,9 @@ PropertyListWidget::PropertyListWidget(QWidget* parent, InviwoApplication* app)
     sp.setHorizontalStretch(1);
     setSizePolicy(sp);
 
+    const auto em = fontMetrics().boundingRect('M').width();
+    const auto space = static_cast<int>(PropertyWidgetQt::spacingEm * em);
+
     scrollArea_ = new QScrollArea(this);
     scrollArea_->setWidgetResizable(true);
     scrollArea_->setMinimumWidth(320);
@@ -97,7 +100,7 @@ PropertyListWidget::PropertyListWidget(QWidget* parent, InviwoApplication* app)
     scrollArea_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 #endif
     scrollArea_->setFrameShape(QFrame::NoFrame);
-    scrollArea_->setContentsMargins(0, PropertyWidgetQt::spacing, 0, PropertyWidgetQt::spacing);
+    scrollArea_->setContentsMargins(0, space, 0, space);
 
     listWidget_ = new PropertyListFrame(this);
     listLayout_ = new QVBoxLayout();
@@ -105,11 +108,11 @@ PropertyListWidget::PropertyListWidget(QWidget* parent, InviwoApplication* app)
     listLayout_->setAlignment(Qt::AlignTop);
 #ifdef __APPLE__
     // Add some space for the scrollbar on mac
-    listLayout_->setContentsMargins(0, PropertyWidgetQt::spacing, 10, PropertyWidgetQt::spacing);
+    listLayout_->setContentsMargins(0, space, 10, space);
 #else
-    listLayout_->setContentsMargins(0, PropertyWidgetQt::spacing, 0, PropertyWidgetQt::spacing);
+    listLayout_->setContentsMargins(0, space, 0, space);
 #endif
-    listLayout_->setSpacing(PropertyWidgetQt::spacing);
+    listLayout_->setSpacing(space);
     listLayout_->setSizeConstraint(QLayout::SetMinAndMaxSize);
 
     scrollArea_->setWidget(listWidget_);

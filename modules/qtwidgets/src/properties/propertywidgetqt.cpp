@@ -64,6 +64,13 @@ const int PropertyWidgetQt::minimumWidth = 250;
 const int PropertyWidgetQt::spacing = 7;
 const int PropertyWidgetQt::margin = 0;
 
+
+
+// The factor should be 16.0 at font size 12pt, we use Segoe UI at 9pt which gives an em at 9.0px
+const double PropertyWidgetQt::minimumWidthEm = PropertyWidgetQt::minimumWidth / 9.0;
+const double PropertyWidgetQt::spacingEm = PropertyWidgetQt::spacing / 9.0;
+const double PropertyWidgetQt::marginEm = PropertyWidgetQt::margin / 9.0;
+
 PropertyWidgetQt::PropertyWidgetQt(Property* property)
     : QWidget()
     , PropertyWidget(property)
@@ -269,6 +276,10 @@ std::unique_ptr<QMimeData> PropertyWidgetQt::getPropertyMimeData() const {
     mimeData->setData(QString("application/x.vnd.inviwo.property+xml"), dataArray);
     mimeData->setData(QString("text/plain"), dataArray);
     return mimeData;
+}
+
+int PropertyWidgetQt::getSpacing() const {
+    return utilqt::emToPx(this, spacingEm);
 }
 
 void PropertyWidgetQt::addModuleMenuActions(QMenu* menu, InviwoApplication* app) {

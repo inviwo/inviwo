@@ -63,8 +63,11 @@ SettingsWidget::SettingsWidget(const QString& title, InviwoMainWindow* mainwindo
     mainWidget_ = new QWidget();
     layout_ = new QVBoxLayout(mainWidget_);
     layout_->setAlignment(Qt::AlignTop);
-    layout_->setContentsMargins(0, PropertyWidgetQt::spacing, 0, PropertyWidgetQt::spacing);
-    layout_->setSpacing(7);
+    const auto em = fontMetrics().boundingRect('M').width();
+    const auto space = static_cast<int>(PropertyWidgetQt::spacingEm * em);
+
+    layout_->setContentsMargins(0, space, 0, space);
+    layout_->setSpacing(space);
     scrollArea_->setWidget(mainWidget_);
 
     setWidget(scrollArea_);

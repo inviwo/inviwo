@@ -50,6 +50,8 @@
 #include <QPixmap>
 #include <warn/pop>
 
+class QFontMetrics;
+
 namespace inviwo {
 
 class Property;
@@ -213,6 +215,10 @@ IVW_MODULE_QTWIDGETS_API void addImageActions(QMenu& menu, const Image& image,
  * \see QWidget::setWindowTitle
  */
 IVW_MODULE_QTWIDGETS_API QString windowTitleHelper(const QString& title, const QWidget* widget);
+
+
+IVW_MODULE_QTWIDGETS_API int emToPx(const QWidget* w, double em);
+IVW_MODULE_QTWIDGETS_API int emToPx(const QFontMetrics& m, double em);
 
 }  // namespace utilqt
 
