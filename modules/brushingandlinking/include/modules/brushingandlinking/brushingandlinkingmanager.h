@@ -48,26 +48,26 @@ public:
                               InvalidationLevel validationLevel = InvalidationLevel::InvalidOutput);
     virtual ~BrushingAndLinkingManager();
     /* 
-     * Return number of selected rows.
+     * Return the number of selected items/rows.
      */
     size_t getNumberOfSelected() const;
     /* 
-     * Return number of filtered rows.
+     * Return the number of filtered items/rows, i.e. the number of items/rows that should not be displayed.
      */
     size_t getNumberOfFiltered() const;
 
     void remove(const BrushingAndLinkingInport* src);
 
-    bool isFiltered(size_t row) const;
-    bool isSelected(size_t row) const;
+    bool isFiltered(size_t idx) const;
+    bool isSelected(size_t idx) const;
 
     bool isColumnSelected(size_t column) const;
 
     void setSelected(const BrushingAndLinkingInport* src,
-                     const std::unordered_set<size_t>& rowIndices);
+                     const std::unordered_set<size_t>& idx);
 
     void setFiltered(const BrushingAndLinkingInport* src,
-                     const std::unordered_set<size_t>& rowIndices);
+                     const std::unordered_set<size_t>& idx);
 
     void setSelectedColumn(const BrushingAndLinkingInport* src,
                            const std::unordered_set<size_t>& columnIndices);
