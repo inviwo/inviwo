@@ -35,11 +35,12 @@
 
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/propertywidgetfactory.h>
+#include <inviwo/core/util/callback.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <include/cef_load_handler.h>
 #include "include/wrapper/cef_message_router.h"
+#include <include/cef_load_handler.h>
 #include <warn/pop>
 
 namespace inviwo {
@@ -71,22 +72,12 @@ class IVW_MODULE_WEBBROWSER_API PropertyCefSynchronizer
 public:
     explicit PropertyCefSynchronizer();
     virtual ~PropertyCefSynchronizer() = default;
+
     /**
      * Synchronizes all widgets and sets their frame, called when frame has loaded.
      */
     virtual void OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
-                           int httpStatusCode) override;
-    ///
-    // Called when a navigation fails or is canceled. This method may be called
-    // by itself if before commit or in combination with OnLoadStart/OnLoadEnd if
-    // after commit. |errorCode| is the error code number, |errorText| is the
-    // error text and |failedUrl| is the URL that failed to load.
-    // See net\base\net_error_list.h for complete descriptions of the error codes.
-    ///
-    /*--cef(optional_param=errorText)--*/
-    virtual void OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
-                             CefLoadHandler::ErrorCode errorCode, const CefString& errorText,
-                             const CefString& failedUrl) override;
+                           int httpStatusCode);
 
     /**
      * Called due to cefQuery execution in message_router.html.

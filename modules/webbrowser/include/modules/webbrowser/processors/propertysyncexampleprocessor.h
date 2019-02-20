@@ -70,12 +70,16 @@ namespace inviwo {
  * 2. Javascript functions must be added to the html page, see
  * /data/workspaces/web_property_sync.html
  */
-class IVW_MODULE_WEBBROWSER_API PropertySyncExampleProcessor : public Processor {
+class IVW_MODULE_WEBBROWSER_API PropertySyncExampleProcessor : public Processor, public CefLoadHandler {
 public:
     PropertySyncExampleProcessor();
     virtual ~PropertySyncExampleProcessor();
 
     virtual void process() override;
+
+        // Detect when page has loaded
+    virtual void OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bool isLoading, bool canGoBack,
+                                    bool canGoForward) override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
@@ -102,6 +106,9 @@ private:
     CefRefPtr<RenderHandlerGL> renderHandler_;
     CefRefPtr<WebBrowserClient> browserClient_;
     CefRefPtr<CefBrowser> browser_;
+    bool isBrowserLoading_ = true;
+
+    IMPLEMENT_REFCOUNTING(PropertySyncExampleProcessor)
 };
 
 }  // namespace inviwo
