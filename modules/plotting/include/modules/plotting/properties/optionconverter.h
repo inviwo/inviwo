@@ -44,7 +44,7 @@ protected:
 protected:
     virtual void convertimpl(const plot::DataFrameColumnProperty *src,
                              OptionProperty *dst) const override {
-        dst->setSelectedIndex(src->get());
+        dst->setSelectedIndex(src->getSelectedIndex());
     }
 };
 
