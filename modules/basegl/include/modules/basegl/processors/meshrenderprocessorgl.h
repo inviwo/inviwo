@@ -33,7 +33,7 @@
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/interaction/twoaxisvaluatortrackball.h>
+#include <inviwo/core/interaction/cameratrackball.h>
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -106,7 +106,7 @@ protected:
     ButtonProperty centerViewOnGeometry_;
     ButtonProperty setNearFarPlane_;
     ButtonProperty resetViewParams_;
-    TwoAxisValuatorTrackball trackball_;
+    CameraTrackball trackball_;
 
     BoolProperty overrideColorBuffer_;
     FloatVec4Property overrideColor_;
