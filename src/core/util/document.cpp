@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2016-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,13 +45,9 @@ std::string& Document::Element::content() { return data_; }
 
 const std::string& Document::Element::content() const { return data_; }
 
-bool Document::Element::emptyTag() const {
-    return util::contains(emptyTags_, data_);
-}
+bool Document::Element::emptyTag() const { return util::contains(emptyTags_, data_); }
 
-bool Document::Element::noIndent() const {
-    return util::contains(noIndentTags_, data_);
-}
+bool Document::Element::noIndent() const { return util::contains(noIndentTags_, data_); }
 
 const std::vector<std::string> Document::Element::noIndentTags_ = {"pre"};
 

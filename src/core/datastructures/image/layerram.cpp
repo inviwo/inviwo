@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,16 +40,17 @@ LayerRAM::LayerRAM(size2_t dimensions, LayerType type, const DataFormatBase* for
     : LayerRepresentation(dimensions, type, format) {}
 
 bool LayerRAM::copyRepresentationsTo(LayerRepresentation* targetLayerRam) const {
+    // We use a LayerDataWriter to copy/resize one representation into another. By asking for the
+    // bmp file-extension we will get the LayerWriter defined in the CImg module which implements
+    // the writeDataToRepresentation method
     static DataWriterType<Layer>* layerWriter_ = InviwoApplication::getPtr()
                                                      ->getDataWriterFactory()
-                                                     ->getWriterForTypeAndExtension<Layer>("png")
+                                                     ->getWriterForTypeAndExtension<Layer>("bmp")
                                                      .release();
 
     return layerWriter_->writeDataToRepresentation(this, targetLayerRam);
 }
 
-std::type_index LayerRAM::getTypeIndex() const {
-    return std::type_index(typeid(LayerRAM));
-}
+std::type_index LayerRAM::getTypeIndex() const { return std::type_index(typeid(LayerRAM)); }
 
-}  // namespace
+}  // namespace inviwo

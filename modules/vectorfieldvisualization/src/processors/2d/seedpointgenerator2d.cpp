@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,7 @@ const ProcessorInfo SeedPointGenerator2D::processorInfo_{
     "org.inviwo.SeedPointGenerator2D",  // Class identifier
     "Seed Point Generator 2D",          // Display name
     "Data Creation",                    // Category
-    CodeState::Stable,            // Code state
+    CodeState::Stable,                  // Code state
     "CPU, Seed Points, Generator",      // Tags
 };
 const ProcessorInfo SeedPointGenerator2D::getProcessorInfo() const { return processorInfo_; }

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2018 Inviwo Foundation
+ * Copyright (c) 2015-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,6 @@
 #include <QPaintEvent>
 #include <warn/pop>
 
-
 namespace inviwo {
 
 // Inspiration from http://www.krazer.com/?p=109
@@ -55,14 +54,14 @@ public:
     virtual ~HiddenCanvasQt() = default;
 
 protected:
-    virtual void initializeGL() override {};
-    virtual void resizeGL(int /*width*/, int /*height*/) override {};
-    virtual void paintGL() override {};
+    virtual void initializeGL() override{};
+    virtual void resizeGL(int /*width*/, int /*height*/) override{};
+    virtual void paintGL() override{};
 
-    virtual void resizeEvent(QResizeEvent *) override {};
-    virtual void paintEvent(QPaintEvent *) override {};
+    virtual void resizeEvent(QResizeEvent *) override{};
+    virtual void paintEvent(QPaintEvent *) override{};
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_HIDDENCANVASQT_H

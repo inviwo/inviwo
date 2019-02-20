@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -58,7 +58,6 @@ protected:
     // ValueKeyframeSequenceObserver overloads
     virtual void onValueKeyframeSequenceEasingChanged(ValueKeyframeSequence* seq) override;
     virtual void onValueKeyframeSequenceInterpolationChanged(ValueKeyframeSequence* seq) override;
-
 
     QComboBox* easingComboBox_{nullptr};
     QComboBox* interpolation_{nullptr};

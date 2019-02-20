@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2016-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,8 +42,8 @@ namespace util {
 IVW_MODULE_BASE_API std::shared_ptr<Volume> gradientVolume(std::shared_ptr<const Volume> volume,
                                                            int channel);
 
-}  // namespace
+}  // namespace util
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_VOLUMEGRADIENT_H

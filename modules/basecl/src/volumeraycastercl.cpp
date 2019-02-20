@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -227,8 +227,7 @@ void VolumeRaycasterCL::setLightingProperties(const SimpleLightingProperty& ligh
 }
 
 void VolumeRaycasterCL::setDefaultBackgroundColor(const vec4 color) {
-    LayerRAM* defaultBGRAM =
-        defaultBackground_.getEditableRepresentation<LayerRAM>();
+    LayerRAM* defaultBGRAM = defaultBackground_.getEditableRepresentation<LayerRAM>();
     unsigned char* data = static_cast<unsigned char*>(defaultBGRAM->getData());
     for (int i = 0; i < 4; ++i) {
         data[i] = static_cast<unsigned char>(glm::floor(color[i] * 255.f + 0.5f));
@@ -248,4 +247,4 @@ void VolumeRaycasterCL::compileKernel() {
     setKernelArguments();
 }
 
-}  // namespace
+}  // namespace inviwo

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2016-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -88,12 +88,14 @@ private:
 
 struct ErrorHandle {
     ErrorHandle(const InviwoSetupInfo& info, const std::string& filename)
-        : info_(info), filename_(filename){}
+        : info_(info), filename_(filename) {}
 
     ~ErrorHandle() {
         if (!messages.empty()) {
-            LogNetworkError("There were errors while loading workspace: " + filename_ + "\n" +
-                            joinString(messages, "\n"));
+            LogNetworkError("There were errors while loading workspace: " + filename_);
+            for (auto& message : messages) {
+                LogNetworkError(message);
+            }
         }
     }
 
@@ -123,23 +125,22 @@ struct ErrorHandle {
     std::string filename_;
 };
 
-
 WorkspaceManager::WorkspaceManager(InviwoApplication* app) : app_(app) {}
 
 WorkspaceManager::~WorkspaceManager() = default;
 
-void WorkspaceManager::clear() {
-    clears_.invoke();
-}
+void WorkspaceManager::clear() { clears_.invoke(); }
 
 void WorkspaceManager::save(std::ostream& stream, const std::string& refPath,
-                            const ExceptionHandler& exceptionHandler) {
+                            const ExceptionHandler& exceptionHandler, WorkspaceSaveMode mode) {
     Serializer serializer(refPath);
 
-    InviwoSetupInfo info(app_);
-    serializer.serialize("InviwoSetup", info);
+    if (mode != WorkspaceSaveMode::Undo) {
+        InviwoSetupInfo info(app_);
+        serializer.serialize("InviwoSetup", info);
+    }
 
-    serializers_.invoke(serializer, exceptionHandler);
+    serializers_.invoke(serializer, exceptionHandler, mode);
     serializer.writeFile(stream, true);
 }
 
@@ -147,19 +148,20 @@ void WorkspaceManager::load(std::istream& stream, const std::string& refPath,
                             const ExceptionHandler& exceptionHandler) {
 
     auto deserializer = createWorkspaceDeserializer(stream, refPath);
-    
+
     InviwoSetupInfo info;
     deserializer.deserialize("InviwoSetup", info);
-    
+
     DeserializationErrorHandle<ErrorHandle> errorHandle(deserializer, info, refPath);
 
     deserializers_.invoke(deserializer, exceptionHandler);
 }
 
-void WorkspaceManager::save(const std::string& path, const ExceptionHandler& exceptionHandler) {
+void WorkspaceManager::save(const std::string& path, const ExceptionHandler& exceptionHandler,
+                            WorkspaceSaveMode mode) {
     auto ostream = filesystem::ofstream(path);
     if (ostream.is_open()) {
-        save(ostream, path, exceptionHandler);
+        save(ostream, path, exceptionHandler, mode);
     } else {
         throw AbortException("Could not open workspace file: " + path, IvwContext);
     }
@@ -179,9 +181,11 @@ void WorkspaceManager::registerFactory(FactoryBase* factory) {
 }
 
 Deserializer WorkspaceManager::createWorkspaceDeserializer(std::istream& stream,
-                                                           const std::string& refPath) const {
+                                                           const std::string& refPath,
+                                                           Logger* logger) const {
 
     Deserializer deserializer(stream, refPath);
+    deserializer.setLogger(logger);
     for (const auto& factory : registeredFactories_) {
         deserializer.registerFactory(factory);
     }
@@ -199,10 +203,12 @@ Deserializer WorkspaceManager::createWorkspaceDeserializer(std::istream& stream,
             if (minfo->version_ < module->getVersion()) {
                 auto converter = module->getConverter(minfo->version_);
                 deserializer.convertVersion(converter.get());
-                LogNetworkWarn("Loading old workspace ("
-                               << deserializer.getFileName() << ") " << module->getIdentifier()
-                               << "Module version: " << minfo->version_
-                               << ". Updating to version: " << module->getVersion() << ".");
+                LogNetworkSpecial((&deserializer), LogLevel::Warn,
+                                  "Loading old workspace ("
+                                      << deserializer.getFileName() << ") "
+                                      << module->getIdentifier()
+                                      << "Module version: " << minfo->version_
+                                      << ". Updating to version: " << module->getVersion() << ".");
             }
         }
     }
@@ -215,9 +221,11 @@ WorkspaceManager::ClearHandle WorkspaceManager::onClear(const ClearCallback& cal
 }
 
 WorkspaceManager::SerializationHandle WorkspaceManager::onSave(
-    const SerializationCallback& callback) {
-    return serializers_.add(
-        [callback, this](Serializer& s, const ExceptionHandler& exceptionHandler) {
+    const SerializationCallback& callback, WorkspaceSaveModes modes) {
+    return serializers_.add([callback, modes, this](Serializer& s,
+                                                    const ExceptionHandler& exceptionHandler,
+                                                    WorkspaceSaveMode mode) {
+        if (modes.count(mode)) {
             IVW_UNUSED_PARAM(this);
             try {
                 callback(s);
@@ -226,7 +234,8 @@ WorkspaceManager::SerializationHandle WorkspaceManager::onSave(
             } catch (...) {
                 exceptionHandler(IVW_CONTEXT);
             }
-        });
+        }
+    });
 }
 
 WorkspaceManager::DeserializationHandle WorkspaceManager::onLoad(
@@ -244,5 +253,4 @@ WorkspaceManager::DeserializationHandle WorkspaceManager::onLoad(
         });
 }
 
-} // namespace
-
+}  // namespace inviwo

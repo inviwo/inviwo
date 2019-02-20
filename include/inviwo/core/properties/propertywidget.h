@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -58,7 +58,7 @@ public:
 
     /**
      * Implement this function to update the widget after the property has been modified.
-     */ 
+     */
     virtual void updateFromProperty() = 0;
 
     virtual PropertyEditorWidget* getEditorWidget() const;

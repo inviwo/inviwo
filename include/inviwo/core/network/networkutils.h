@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2018 Inviwo Foundation
+ * Copyright (c) 2015-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -215,7 +215,8 @@ IVW_CORE_API bool addProcessorOnConnection(ProcessorNetwork* network,
                                            std::unique_ptr<Processor> processor,
                                            PortConnection connection);
 
-IVW_CORE_API void replaceProcessor(ProcessorNetwork* network, std::unique_ptr<Processor> newProcessor,
+IVW_CORE_API void replaceProcessor(ProcessorNetwork* network,
+                                   std::unique_ptr<Processor> newProcessor,
                                    Processor* oldProcessor);
 
 }  // namespace util

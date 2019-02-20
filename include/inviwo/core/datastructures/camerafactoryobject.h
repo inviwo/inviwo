@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2018 Inviwo Foundation
+ * Copyright (c) 2015-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,11 +54,9 @@ public:
     CameraFactoryObjectTemplate(const std::string& classIdentifier)
         : CameraFactoryObject(classIdentifier) {}
 
-    virtual std::unique_ptr<Camera> create() override {
-        return util::make_unique<T>();
-    }
+    virtual std::unique_ptr<Camera> create() override { return util::make_unique<T>(); }
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_CAMERAFACTORYOBJECT_H

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,9 +43,10 @@ public:
     /**
      * Type of binding when setting glVertexAttrib*Pointer.
      *
-     * See <a href="https://www.khronos.org/opengl/wiki/GLAPI/glVertexAttribPointer">glVertexAttribPointer</a> 
-     * and <a href="https://www.khronos.org/opengl/wiki/Vertex_Specification#Component_type">Vertex Specification</>
-     * for details.
+     * See <a
+     * href="https://www.khronos.org/opengl/wiki/GLAPI/glVertexAttribPointer">glVertexAttribPointer</a>
+     * and <a href="https://www.khronos.org/opengl/wiki/Vertex_Specification#Component_type">Vertex
+     * Specification</> for details.
      */
     enum class BindingType {
         Native,      //!< uses glVertexAttribIPointer for integral types, glVertexAttribDPointer for
@@ -80,7 +81,7 @@ public:
      * This will bind the buffer object and then set the respective glVertexAttrib*Pointer.
      * By default, i.e. \p bindingType = BindingType::Native, glVertexAttribIPointer (note the 'I')
      * is used for scalar types and glVertexAttribPointer will be used for floating point
-     * types. This behavior can be overwritten by \p bindingType. Then the buffer is only accessible 
+     * types. This behavior can be overwritten by \p bindingType. Then the buffer is only accessible
      * using `float` in the shader.
      *
      * \see BindingType

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2018 Inviwo Foundation
+ * Copyright (c) 2015-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -75,12 +75,10 @@ public:
         bool allowLooping = true);
     virtual ~VolumeSequenceSampler();
 
-    void setAllowedLooping(bool allowed = true) {
-        allowLooping_ = allowed;
-    }
+    void setAllowedLooping(bool allowed = true) { allowLooping_ = allowed; }
 
 protected:
-    virtual dvec3 sampleDataSpace(const dvec4 &pos) const;// { return sample(pos).xyz(); }
+    virtual dvec3 sampleDataSpace(const dvec4 &pos) const;  // { return sample(pos).xyz(); }
     virtual bool withinBoundsDataSpace(const dvec4 &pos) const;
 
 private:
@@ -91,6 +89,6 @@ private:
     double totDuration_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_VOLUMESEQUENCESAMPLER_H

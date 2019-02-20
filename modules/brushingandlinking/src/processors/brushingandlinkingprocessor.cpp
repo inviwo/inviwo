@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2016-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,6 +54,9 @@ void BrushingAndLinkingProcessor::invokeEvent(Event* event) {
             event->markAsUsed();
         } else if (dynamic_cast<SelectionEvent*>(event)) {
             manager_->setSelected(brushingEvent->getSource(), brushingEvent->getIndices());
+            event->markAsUsed();
+        } else if (dynamic_cast<ColumnSelectionEvent*>(event)) {
+            manager_->setSelectedColumn(brushingEvent->getSource(), brushingEvent->getIndices());
             event->markAsUsed();
         }
     }

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2016-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,6 @@
 
 #include <modules/plottinggl/processors/parallelcoordinates/parallelcoordinatesaxissettingsproperty.h>
 
-
 namespace inviwo {
 
 PlottingGLModule::PlottingGLModule(InviwoApplication* app) : InviwoModule(app, "PlottingGL") {
@@ -57,7 +56,6 @@ PlottingGLModule::PlottingGLModule(InviwoApplication* app) : InviwoModule(app, "
     registerProcessor<plot::ScatterPlotMatrixProcessor>();
     registerProcessor<plot::ScatterPlotProcessor>();
     registerProcessor<plot::VolumeAxis>();
-
 
     registerProperty<plot::ParallelCoordinatesAxisSettingsProperty>();
 }

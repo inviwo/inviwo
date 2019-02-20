@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,7 +52,7 @@ public:
 
     virtual std::unique_ptr<DataWriter> create(const std::string& key) const;
     virtual std::unique_ptr<DataWriter> create(const FileExtension& key) const override;
-    
+
     virtual bool hasKey(const std::string& key) const;
     virtual bool hasKey(const FileExtension& key) const override;
 
@@ -61,9 +61,20 @@ public:
 
     template <typename T>
     std::unique_ptr<DataWriterType<T>> getWriterForTypeAndExtension(const std::string& ext);
-    
+
     template <typename T>
     std::unique_ptr<DataWriterType<T>> getWriterForTypeAndExtension(const FileExtension& ext);
+
+    /**
+     * First look for a writer using the FileExtension ext, and if no writer was found look for a
+     * writer using the fallbackExt. This is often used with a file open dialog, where the dialog
+     * will have a selectedFileExtension that will be used as ext, and the fallbackExt is taken from
+     * the file to be written. This way any selected writer will have priority over the file
+     * extension.
+     */
+    template <typename T>
+    std::unique_ptr<DataWriterType<T>> getWriterForTypeAndExtension(const FileExtension& ext,
+                                                                    const std::string& fallbackExt);
 
 protected:
     Map map_;
@@ -108,6 +119,15 @@ std::unique_ptr<DataWriterType<T>> DataWriterFactory::getWriterForTypeAndExtensi
     });
 }
 
-}  // namespace
+template <typename T>
+std::unique_ptr<DataWriterType<T>> DataWriterFactory::getWriterForTypeAndExtension(
+    const FileExtension& ext, const std::string& fallbackExt) {
+    if (auto writer = this->getWriterForTypeAndExtension<T>(ext)) {
+        return writer;
+    }
+    return this->getWriterForTypeAndExtension<T>(fallbackExt);
+}
+
+}  // namespace inviwo
 
 #endif  // IVW_DATAWRITERFACTORY_H

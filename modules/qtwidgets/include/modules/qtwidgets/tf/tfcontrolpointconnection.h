@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,14 +54,12 @@ public:
     enum { Type = UserType + TFEditorPrimitive::TFControlPointConnectionType };
     int type() const { return Type; }
 
-    friend IVW_MODULE_QTWIDGETS_API bool operator==(
-        const TFControlPointConnection& lhs,
-        const TFControlPointConnection& rhs);
+    friend IVW_MODULE_QTWIDGETS_API bool operator==(const TFControlPointConnection& lhs,
+                                                    const TFControlPointConnection& rhs);
 
     // Compare points by their "x" value
-    friend IVW_MODULE_QTWIDGETS_API bool operator<(
-        const TFControlPointConnection& lhs,
-        const TFControlPointConnection& rhs);
+    friend IVW_MODULE_QTWIDGETS_API bool operator<(const TFControlPointConnection& lhs,
+                                                   const TFControlPointConnection& rhs);
 
     TFEditorControlPoint* left_;   // Non-owning reference
     TFEditorControlPoint* right_;  // Non-owning reference

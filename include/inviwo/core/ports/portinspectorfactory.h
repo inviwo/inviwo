@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,6 @@
 #include <inviwo/core/ports/portinspector.h>
 #include <inviwo/core/ports/portinspectorfactoryobject.h>
 
-
 namespace inviwo {
 
 class IVW_CORE_API PortInspectorFactory
@@ -46,6 +45,6 @@ public:
     virtual ~PortInspectorFactory() = default;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PORTINSPECTORFACTORY_H

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,17 +41,14 @@ namespace inviwo {
 
 TEST(DocumentTest, Minimal) {
     Document doc;
-        
+
     doc.append("html").append("body").append("table").append("tr").append("td", "hej");
     std::string res{doc};
-    
+
     replaceInString(res, " ", "");
     replaceInString(res, "\n", "");
-    
+
     EXPECT_EQ("<html><body><table><tr><td>hej</td></tr></table></body></html>", res);
 }
 
-
-
-} // namespace
-
+}  // namespace inviwo

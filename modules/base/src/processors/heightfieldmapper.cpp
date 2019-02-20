@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,9 +40,7 @@ const ProcessorInfo HeightFieldMapper::processorInfo_{
     CodeState::Experimental,         // Code state
     Tags::CPU,                       // Tags
 };
-const ProcessorInfo HeightFieldMapper::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo HeightFieldMapper::getProcessorInfo() const { return processorInfo_; }
 
 HeightFieldMapper::HeightFieldMapper()
     : Processor()
@@ -195,5 +193,4 @@ void HeightFieldMapper::process() {
     }
 }
 
-}  // namespace
-
+}  // namespace inviwo

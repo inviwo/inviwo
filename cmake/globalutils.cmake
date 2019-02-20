@@ -2,7 +2,7 @@
 #
 # Inviwo - Interactive Visualization Workshop
 #
-# Copyright (c) 2013-2018 Inviwo Foundation
+# Copyright (c) 2013-2019 Inviwo Foundation
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -845,10 +845,10 @@ endmacro()
 
 #--------------------------------------------------------------------
 # Get target properties recursively by following all INTERFACE_LINK_LIBRARIES
-function(ivw_get_target_property_recursive retval target property)
+function(ivw_get_target_property_recursive retval target property alsoInterfaceTargets)
     set(res "")
     get_target_property(target_type ${target} TYPE)
-    if(NOT ${target_type} STREQUAL "INTERFACE_LIBRARY")
+    if(NOT ${target_type} STREQUAL "INTERFACE_LIBRARY" OR ${alsoInterfaceTargets})
         get_target_property(propval ${target} ${property})
         if(propval)
             list(APPEND res ${propval})
@@ -857,7 +857,7 @@ function(ivw_get_target_property_recursive retval target property)
         get_target_property(interface_link_libs ${target} INTERFACE_LINK_LIBRARIES)
         foreach(t ${interface_link_libs})
             if(TARGET ${t})
-                ivw_get_target_property_recursive(val ${t} ${property})
+                ivw_get_target_property_recursive(val ${t} ${property} ${alsoInterfaceTargets})
                 list(APPEND res ${val})
             endif()
         endforeach(t)
@@ -877,12 +877,29 @@ function(ivw_move_targets_in_dir_to_folder directory folder)
 
     get_property(dirs DIRECTORY ${directory} PROPERTY SUBDIRECTORIES)
     foreach(dir IN LISTS dirs) 
-        get_property(targets DIRECTORY ${dir} PROPERTY BUILDSYSTEM_TARGETS)
-        foreach(target IN LISTS targets)
-            get_target_property(type ${target} TYPE)
-            if(NOT ${type} STREQUAL INTERFACE_LIBRARY)
-                set_target_properties(${target} PROPERTIES FOLDER ${folder})
-            endif()
-        endforeach()
+        ivw_move_targets_in_dir_to_folder(${dir} ${folder})
     endforeach()
+endfunction()
+
+function(ivw_print_targets_in_dir_recursive directory)
+    get_property(targets DIRECTORY ${directory} PROPERTY BUILDSYSTEM_TARGETS)
+    message(STATUS "${directory}: ${targets}")
+    
+    get_property(dirs DIRECTORY ${directory} PROPERTY SUBDIRECTORIES)
+    foreach(dir IN LISTS dirs) 
+        ivw_print_targets_in_dir_recursive(${dir})
+    endforeach()
+endfunction()
+
+function(ivw_get_targets_in_dir_recursive retval directory)
+    set(res "")
+    get_property(targets DIRECTORY ${directory} PROPERTY BUILDSYSTEM_TARGETS)
+    list(APPEND res ${targets})
+    
+    get_property(dirs DIRECTORY ${directory} PROPERTY SUBDIRECTORIES)
+    foreach(dir IN LISTS dirs) 
+        ivw_get_targets_in_dir_recursive(targets ${dir})
+        list(APPEND res ${targets})
+    endforeach()
+    set(${retval} ${res} PARENT_SCOPE)
 endfunction()

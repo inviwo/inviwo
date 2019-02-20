@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -76,7 +76,7 @@ void LayerGL::bindTexture(GLenum texUnit) const {
     utilgl::bindTexture(*texture_, texUnit);
 }
 
-void LayerGL::bindTexture(const TextureUnit &texUnit) const {
+void LayerGL::bindTexture(const TextureUnit& texUnit) const {
     texUnit_ = texUnit.getEnum();
     utilgl::bindTexture(*texture_, texUnit_);
 }
@@ -114,15 +114,13 @@ void LayerGL::setDimensions(size2_t dimensions) {
     }
 }
 
-void LayerGL::setSwizzleMask(const SwizzleMask &mask) {
+void LayerGL::setSwizzleMask(const SwizzleMask& mask) {
     swizzleMask_ = mask;
     if (texture_) {
         texture_->setSwizzleMask(mask);
     }
 }
 
-SwizzleMask LayerGL::getSwizzleMask() const {
-    return swizzleMask_;
-}
+SwizzleMask LayerGL::getSwizzleMask() const { return swizzleMask_; }
 
-}  // namespace
+}  // namespace inviwo

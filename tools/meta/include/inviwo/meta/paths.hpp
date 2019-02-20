@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,6 +36,7 @@
 namespace inviwo::meta {
 
 INVIWO_META_API bool isInviwoDir(const std::filesystem::path& path);
-INVIWO_META_API std::optional<std::filesystem::path> findInviwoPath(std::vector<std::filesystem::path> guesses);
+INVIWO_META_API std::optional<std::filesystem::path> findInviwoPath(
+    std::vector<std::filesystem::path> guesses);
 
 }  // namespace inviwo::meta

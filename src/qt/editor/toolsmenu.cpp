@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -80,7 +80,7 @@ void createProcessorDocMenu(InviwoApplication *app, QMenu *docsMenu) {
                 const auto processor = factory->create(pfo->getClassIdentifier());
                 const auto &inports = processor->getInports();
                 const auto &outports = processor->getOutports();
-                const auto &properties = processor->getProperties();
+                const auto &properties = processor->getPropertiesRecursive();
                 const auto classID = processor->getClassIdentifier();
                 const auto &dispName = processor->getDisplayName();
 

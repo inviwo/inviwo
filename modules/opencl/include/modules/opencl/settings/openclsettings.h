@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_OPENCL_SETTINGS_H
@@ -45,16 +45,16 @@ public:
     OpenCLSettings(OpenCLCapabilities* openclInfo);
 
     bool isSharingEnabled() const { return enableOpenGLSharing_.get(); }
+
 protected:
     void changeDevice();
 
 private:
-    OptionPropertyInt openCLDeviceProperty_; // List of devices
+    OptionPropertyInt openCLDeviceProperty_;  // List of devices
     BoolProperty enableOpenGLSharing_;
     ButtonProperty btnOpenCLInfo_;
-
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_OPENCL_SETTINGS_H
+#endif  // IVW_OPENCL_SETTINGS_H

@@ -1,12 +1,3 @@
-if(IVW_QT_APPLICATION AND NOT IVW_MODULE_QTWIDGETS)
-    set(IVW_MODULE_QTWIDGETS ON CACHE BOOL "Build Inviwo Qt Widgets" FORCE)
-    message("IVW_MODULE_QTWIDGETS was set to build, due to dependency towards IVW_QT_APPLICATION")
-endif()
-if(IVW_QT_APPLICATION AND NOT IVW_QT_APPLICATION_BASE)
-    set(IVW_QT_APPLICATION_BASE ON CACHE BOOL "Build base for qt applications. Used by Qt network editor and Qt minimal application" FORCE)
-    message("IVW_QT_APPLICATION_BASE was set to build, due to dependency towards IVW_QT_APPLICATION")
-endif()
-
 if(IVW_QT_APPLICATION OR IVW_QT_APPLICATION_BASE)
     find_package(Qt5Core QUIET)
     if(NOT Qt5Core_FOUND) 
@@ -38,5 +29,4 @@ if(IVW_QT_APPLICATION OR IVW_QT_APPLICATION_BASE)
     if(IVW_QT_APPLICATION)
         add_subdirectory(editor)
     endif()
-    
 endif()

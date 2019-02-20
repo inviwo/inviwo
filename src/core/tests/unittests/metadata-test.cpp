@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -71,4 +71,4 @@ void testserialization(T def, T in) {
 #define MetaDataMacro(n, t, d, v) \
     TEST(MetaDataTest, n##SerializationTest) { testserialization<t, n##MetaData>(d, v); }
 #include <inviwo/core/metadata/metadatadefinefunc.h>
-}
+}  // namespace inviwo

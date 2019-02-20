@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,8 @@
 #ifdef WIN32
 #define NOMINMAX
 #define WIN32_LEAN_AND_MEAN
-struct IUnknown; // Workaround for "combaseapi.h(229): error C2187: syntax error: 'identifier' was unexpected here" when using /permissive-
+struct IUnknown;  // Workaround for "combaseapi.h(229): error C2187: syntax error: 'identifier' was
+                  // unexpected here" when using /permissive-
 #include <windows.h>
 #include <tchar.h>
 #include <direct.h>
@@ -108,6 +109,27 @@ std::ofstream ofstream(const std::string& filename, std::ios_base::openmode mode
 #else
     return std::ofstream(filename, mode);
 #endif
+}
+
+bool skipByteOrderMark(std::istream& stream) {
+    // Check presence of BOM and skip it if it does
+    std::array<uint8_t, 3> dataToCheck{0, 0, 0};
+    std::streampos streamPos = stream.tellg();
+    stream.read(reinterpret_cast<char*>(dataToCheck.data()), sizeof(dataToCheck));
+    auto bytesRead = stream.gcount();
+
+    // UTF-8 byte order mark
+    // https://en.wikipedia.org/wiki/Byte_order_mark
+    std::array<uint8_t, 3> bom = {0xef, 0xbb, 0xbf};
+
+    if (bytesRead == sizeof(dataToCheck) && dataToCheck == bom) {
+        // Contains BOM, skip it since it is not part of the data
+        return true;
+    } else {
+        // No BOM found, rewind to beginning of the stream
+        stream.seekg(streamPos, std::ios::beg);
+        return false;
+    }
 }
 
 std::string getWorkingDirectory() {
@@ -214,7 +236,7 @@ IVW_CORE_API std::string getInviwoUserSettingsPath() {
 }
 
 bool fileExists(const std::string& filePath) {
-    // http://stackoverflow.com/questions/12774207/fastest-way-to-check-if-a-file-exist-using-standard-c-c11-c
+// http://stackoverflow.com/questions/12774207/fastest-way-to-check-if-a-file-exist-using-standard-c-c11-c
 #if defined(_WIN32)
     struct _stat buffer;
     return (_wstat(util::toWstring(filePath).c_str(), &buffer) == 0);
@@ -225,10 +247,10 @@ bool fileExists(const std::string& filePath) {
 }
 
 bool directoryExists(const std::string& path) {
-    // If path contains the location of a directory, it cannot contain a trailing backslash.
-    // If it does, -1 will be returned and errno will be set to ENOENT.
-    // https://msdn.microsoft.com/en-us/library/14h5k7ff.aspx
-    // We therefore check if path ends with a backslash
+// If path contains the location of a directory, it cannot contain a trailing backslash.
+// If it does, -1 will be returned and errno will be set to ENOENT.
+// https://msdn.microsoft.com/en-us/library/14h5k7ff.aspx
+// We therefore check if path ends with a backslash
 #if defined(_WIN32)
     struct _stat buffer;
     int retVal = _wstat(util::toWstring(detail::removeTrailingSlash(path)).c_str(), &buffer);
@@ -257,7 +279,7 @@ std::time_t fileModificationTime(const std::string& filePath) {
         return buffer.st_mtime;
     } else {
         return 0;
-    }    
+    }
 }
 
 IVW_CORE_API bool copyFile(const std::string& src, const std::string& dst) {

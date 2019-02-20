@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2017-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -236,8 +236,8 @@ void PropertyPresetManager::saveApplicationPresets() {
         Serializer s(filesystem::getPath(PathType::Settings, "/PropertyPresets.ivs", true));
         s.serialize("PropertyPresets", appPresets_, "Preset");
         s.writeFile();
-    } catch (std::exception e) {
-        LogWarn("Could not write application presets");
+    } catch (const std::exception& e) {
+        LogWarn("Could not write application presets: " << e.what());
     }
 }
 

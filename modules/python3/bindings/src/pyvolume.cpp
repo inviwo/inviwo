@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2017-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,8 +37,11 @@
 #include <modules/python3/pybindutils.h>
 #include <inviwopy/pyport.h>
 
+#include <warn/push>
+#include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
+#include <warn/pop>
 
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>

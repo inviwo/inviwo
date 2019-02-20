@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -55,16 +55,15 @@ void main() {
         vec2 texCoords22 = texCoords11 - vec2( -x,  -y);
 
         vec4 samples[9];
-        const float weights[9] = float[9](
-                                        kernel[0][0], 
-                                        kernel[1][0],
-                                        kernel[2][0],
-                                        kernel[0][1],
-                                        kernel[1][1],
-                                        kernel[2][1],
-                                        kernel[0][2],
-                                        kernel[1][2],
-                                        kernel[2][2]);
+        float weights[9] = float[9](kernel[0][0],
+                                    kernel[1][0],
+                                    kernel[2][0],
+                                    kernel[0][1],
+                                    kernel[1][1],
+                                    kernel[2][1],
+                                    kernel[0][2],
+                                    kernel[1][2],
+                                    kernel[2][2]);
 
         samples[0] = texture(inport_, texCoords00);
         samples[1] = texture(inport_, texCoords10);

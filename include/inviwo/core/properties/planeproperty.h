@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -55,9 +55,8 @@ public:
     PlaneProperty(const std::string& identifier, const std::string& displayName,
                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                   PropertySemantics semantics = PropertySemantics::Default);
-    PlaneProperty(const std::string& identifier, const std::string& displayName,
-                  vec3 position, vec3 normal = vec3(0.0f, 0.0f, 1.0f),
-                  vec4 color = vec4(1.0f),
+    PlaneProperty(const std::string& identifier, const std::string& displayName, vec3 position,
+                  vec3 normal = vec3(0.0f, 0.0f, 1.0f), vec4 color = vec4(1.0f),
                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                   PropertySemantics semantics = PropertySemantics::Default);
 

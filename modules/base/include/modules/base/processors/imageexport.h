@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_IMAGEEXPORT_H
@@ -43,11 +43,11 @@ namespace inviwo {
  * ![](org.inviwo.ImageExport.png?classIdentifier=org.inviwo.ImageExport)
  *
  * A procesor to save images to disk
- * 
+ *
  * ### Inports
  *   * __image__ The image to save.
- * 
- * 
+ *
+ *
  * ### Properties
  *   * __Export Image__ Save the image to disk.
  *   * __Image file name__ Filename to use.
@@ -61,11 +61,11 @@ public:
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
-    
+
 protected:
     virtual const Layer* getData() override;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_IMAGEEXPORT_H
+#endif  // IVW_IMAGEEXPORT_H

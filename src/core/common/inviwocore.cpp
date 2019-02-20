@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,6 +30,11 @@
 #include <inviwo/core/common/inviwocore.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/filesystem.h>
+
+#include <warn/push>
+#include <warn/ignore/unused-function>
+#include <inviwo/core/properties/optionproperty.h>
+#include <warn/pop>
 
 // Cameras
 #include <inviwo/core/datastructures/camera.h>
@@ -77,7 +82,6 @@
 #include <inviwo/core/properties/listproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/multifileproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/planeproperty.h>
 #include <inviwo/core/properties/positionproperty.h>
@@ -140,7 +144,24 @@ struct OptionStringConverterRegFunctor {
     }
 };
 
+struct OptionIntConverterRegFunctor {
+    template <typename T>
+    auto operator()(std::function<void(std::unique_ptr<PropertyConverter>)> reg) {
+        reg(util::make_unique<OptionToIntConverter<TemplateOptionProperty<T>>>());
+    }
+};
+
+struct IntOptionConverterRegFunctor {
+    template <typename T>
+    auto operator()(std::function<void(std::unique_ptr<PropertyConverter>)> reg) {
+        reg(util::make_unique<IntToOptionConverter<TemplateOptionProperty<T>>>());
+    }
+};
+
 }  // namespace
+
+template class TemplateOptionProperty<OptionRegEnumInt>;
+template class TemplateOptionProperty<OptionRegEnumUInt>;
 
 InviwoCore::Observer::Observer(InviwoCore& core, InviwoApplication* app)
     : FileObserver(app), core_(core) {}
@@ -350,11 +371,14 @@ InviwoCore::InviwoCore(InviwoApplication* app)
 
     using OptionTypes = std::tuple<unsigned int, int, size_t, float, double, std::string>;
     util::for_each_type<OptionTypes>{}(OptionStringConverterRegFunctor{}, registerPC);
+    util::for_each_type<OptionTypes>{}(OptionIntConverterRegFunctor{}, registerPC);
+    util::for_each_type<OptionTypes>{}(IntOptionConverterRegFunctor{}, registerPC);
 
     using OptionEnumTypes = std::tuple<OptionRegEnumInt, OptionRegEnumUInt>;
     util::for_each_type<OptionEnumTypes>{}(OptionStringConverterRegFunctor{}, registerPC);
+    util::for_each_type<OptionEnumTypes>{}(OptionIntConverterRegFunctor{}, registerPC);
+    util::for_each_type<OptionEnumTypes>{}(IntOptionConverterRegFunctor{}, registerPC);
 
-    
     // Observe composite processors
     auto userCompositeDir = app_->getPath(PathType::Settings, "/composites");
     scanDirForComposites(userCompositeDir);

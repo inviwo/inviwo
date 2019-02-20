@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@ namespace inviwo {
 class Mesh;
 
 /**
- * \ingroup datastructures	
+ * \ingroup datastructures
  */
 class IVW_CORE_API MeshRepresentation : public DataGroupRepresentation<Mesh> {
 public:
@@ -60,6 +60,6 @@ protected:
     Mesh* owner_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_MESHREPRESENTATION_H

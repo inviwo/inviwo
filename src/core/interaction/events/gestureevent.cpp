@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/interaction/events/gestureevent.h>
+#include <inviwo/core/interaction/events/eventutil.h>
 
 namespace inviwo {
 
@@ -74,4 +75,12 @@ void GestureEvent::setScreenPosNormalized(dvec2 posNorm) { screenPosNorm_ = posN
 
 uint64_t GestureEvent::hash() const { return chash(); }
 
-}  // namespace
+void GestureEvent::print(std::ostream& ss) const {
+    util::printEvent(ss, "GestureEvent", std::make_pair("state", state_),
+                     std::make_pair("type", type_), std::make_pair("pos", screenPosNorm_),
+                     std::make_pair("depth", depth_), std::make_pair("canvasSize", canvasSize_),
+                     std::make_pair("deltaPos", deltaPos_),
+                     std::make_pair("modifiers", modifiers_));
+}
+
+}  // namespace inviwo

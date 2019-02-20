@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2017-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,8 @@ namespace inviwo {
 /** \docpage{org.inviwo.CameraFrustum, Camera Frustum}
  * ![](org.inviwo.CameraFrustum.png?classIdentifier=org.inviwo.CameraFrustum)
  *
- * Creates a line mesh of a frustum for a given camera. See Example Workspace Base/camera_furstum.inv
+ * Creates a line mesh of a frustum for a given camera. See Example Workspace
+ * Base/camera_furstum.inv
  *
  *
  * ### Outports

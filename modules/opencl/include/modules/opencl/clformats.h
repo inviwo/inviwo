@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2018 Inviwo Foundation
+ * Copyright (c) 2015-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,7 +51,7 @@ IVW_MODULE_OPENCL_API cl::ImageFormat dataFormatToCLImageFormat(DataFormatId for
 /**
  * \class CLFormats
  *
- * \brief Matches inviwo data formats to OpenCL image formats. 
+ * \brief Matches inviwo data formats to OpenCL image formats.
  *
  * 1, 2 and 4 channel data are supported by OpenCL.
  * One channel data will be possible to retrieve using the x component.
@@ -88,8 +88,6 @@ private:
 IVW_MODULE_OPENCL_API bool operator==(const CLFormats::CLFormat& a, const CLFormats::CLFormat& b);
 IVW_MODULE_OPENCL_API bool operator!=(const CLFormats::CLFormat& a, const CLFormats::CLFormat& b);
 
+}  // namespace inviwo
 
-} // namespace
-
-#endif // IVW_CLFORMATS_H
-
+#endif  // IVW_CLFORMATS_H

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2016-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -89,8 +89,8 @@ void forEachVoxelParallel(const VolumeRAM &v, C callback, size_t jobs = 0) {
     }
 }
 
-}  // namespace
+}  // namespace util
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_VOLUMERAMUTILS_H

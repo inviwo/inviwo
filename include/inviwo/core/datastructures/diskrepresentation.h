@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -115,6 +115,6 @@ public:
     virtual void updateRepresentation(std::shared_ptr<Repr> dest) const = 0;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_DISKREPRESENTATION_H

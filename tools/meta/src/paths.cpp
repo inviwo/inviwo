@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -68,7 +68,7 @@ std::optional<std::filesystem::path> findInviwoUsingCMakeCache(
                     if (line.size() > prefix.size() &&
                         std::string_view(line.data(), pattern.size()) == pattern) {
                         const auto ivwSrcPath = path{std::string_view{line.data() + prefix.size(),
-                                                                   line.size() - prefix.size()}};
+                                                                      line.size() - prefix.size()}};
                         const auto ivwPath = ivwSrcPath.parent_path();
                         if (isInviwoDir(ivwPath)) {
                             return ivwPath;
@@ -88,12 +88,9 @@ std::optional<std::filesystem::path> findInviwoUsingCMakeCache(
 }
 
 std::optional<std::filesystem::path> findInviwoPath(std::vector<std::filesystem::path> guesses) {
-    using path = std::filesystem::path;
-
     if (auto path = findInviwoUsingCMakeCache(guesses)) {
         return path;
     }
-
 
     while (!guesses.empty()) {
         for (const auto& guess : guesses) {

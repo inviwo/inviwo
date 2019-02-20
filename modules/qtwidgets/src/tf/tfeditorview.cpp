@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -295,9 +295,8 @@ const HistogramContainer* TFEditorView::getNormalizedHistograms() {
                     update();
                 };
 
-                const auto histcalc =
-                    [& stop = stopHistCalculation_, volume = volumeInport_->getData(), done ]()
-                        ->void {
+                const auto histcalc = [& stop = stopHistCalculation_,
+                                       volume = volumeInport_->getData(), done]() -> void {
                     auto ram = volume->getRepresentation<VolumeRAM>();
                     ram->calculateHistograms(2048, size3_t(1), stop);
                     dispatchFront(done);

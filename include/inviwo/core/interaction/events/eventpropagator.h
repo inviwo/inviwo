@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,13 +41,12 @@ class Outport;
  * \class EventPropagator
  * \brief Abstract base class for a event propagator.
  */
-class IVW_CORE_API EventPropagator { 
+class IVW_CORE_API EventPropagator {
 public:
     virtual ~EventPropagator() = default;
     virtual void propagateEvent(Event* event, Outport* source) = 0;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_EVENTPROPAGATOR_H
-
+#endif  // IVW_EVENTPROPAGATOR_H

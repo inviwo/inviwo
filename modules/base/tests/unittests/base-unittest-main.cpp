@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,9 +29,13 @@
 
 #ifdef _MSC_VER
 #pragma comment(linker, "/SUBSYSTEM:CONSOLE")
+#ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
+#include <ext/vld/vld.h>
+#endif
 #endif
 
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/testutil/configurablegtesteventlistener.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -51,6 +55,7 @@ int main(int argc, char** argv) {
 #else
         ::testing::InitGoogleTest(&argc, argv);
 #endif
+        ConfigurableGTestEventListener::setup();
         ret = RUN_ALL_TESTS();
     }
 

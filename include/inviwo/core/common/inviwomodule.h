@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -216,7 +216,8 @@ protected:
      * Will register the following ports:
      *     DataInport<T>           Inport
      *     DataInport<T, 0>        Multi Inport (accepts multiple input connections)
-     *     DataInport<T, 0, true>  Flat Multi Inport (accepts input connections with vector<shared_ptr<T>>)
+     *     DataInport<T, 0, true>  Flat Multi Inport (accepts input connections with
+     *                             vector<shared_ptr<T>>)
      *     DataOutport<T>          Outport
      * and Sink and Source Processors:
      *     CompositeSink<DataInport<T>, DataOutport<T>>

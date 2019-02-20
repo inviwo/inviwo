@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,7 @@
 namespace inviwo {
 
 /**
- * \ingroup datastructures	
+ * \ingroup datastructures
  */
 class IVW_CORE_API VolumeDisk : public VolumeRepresentation,
                                 public DiskRepresentation<VolumeRepresentation> {
@@ -56,6 +56,7 @@ public:
 
     virtual void setDimensions(size3_t dimensions) override;
     virtual const size3_t& getDimensions() const override;
+
 private:
     size3_t dimensions_;
 };
@@ -65,6 +66,6 @@ struct representation_traits<Volume, kind::Disk> {
     using type = VolumeDisk;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_VOLUMEDISK_H

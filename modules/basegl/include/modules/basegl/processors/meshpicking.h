@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -69,9 +69,9 @@ class PickingEvent;
  */
 
 /**
-* \brief Composite image with geometry where geometry repositioned through picking
-*
-*/
+ * \brief Composite image with geometry where geometry repositioned through picking
+ *
+ */
 
 class IVW_MODULE_BASEGL_API MeshPicking : public Processor {
 public:
@@ -111,6 +111,6 @@ private:
     bool highlight_ = false;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_POSITIONWIDGETPROCESSOR_H

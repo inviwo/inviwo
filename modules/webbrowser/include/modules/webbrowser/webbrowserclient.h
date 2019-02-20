@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,14 +49,16 @@ namespace inviwo {
 /* \class WebBrowserClient
  * CefClient with custom render handler
  */
-class WebBrowserClient : public CefClient, public CefLifeSpanHandler, public CefRequestHandler {
+class IVW_MODULE_WEBBROWSER_API WebBrowserClient : public CefClient,
+                                                   public CefLifeSpanHandler,
+                                                   public CefRequestHandler {
 public:
     WebBrowserClient(CefRefPtr<RenderHandlerGL> renderHandler);
 
     virtual CefRefPtr<CefLoadHandler> GetLoadHandler() override { return propertyCefSynchronizer_; }
     virtual CefRefPtr<CefRenderHandler> GetRenderHandler() override { return renderHandler_; }
     virtual CefRefPtr<CefRequestHandler> GetRequestHandler() override { return this; }
-    
+
     void SetRenderHandler(CefRefPtr<RenderHandlerGL> renderHandler);
 
     CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() override { return this; }
@@ -70,10 +72,8 @@ public:
     void OnBeforeClose(CefRefPtr<CefBrowser> browser) override;
 
     // CefRequestHandler methods:
-    virtual bool OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
-                                CefRefPtr<CefFrame> frame,
-                                CefRefPtr<CefRequest> request,
-                                bool user_gesture,
+    virtual bool OnBeforeBrowse(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
+                                CefRefPtr<CefRequest> request, bool user_gesture,
                                 bool is_redirect) override;
 
     void OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,

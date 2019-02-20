@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2017-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -174,18 +174,17 @@ void MeshMapping::process() {
         // fill color vector
         std::vector<vec4> colorsOut(srcBuffer->getSize());
 
-        srcBuffer->dispatch<void>([
-            comp = component_.getSelectedIndex(),
-            range = useCustomDataRange_.get() ? customDataRange_.get() : dataRange_.get(),
-            dst = &colorsOut, tf = &tf_.get()
-        ](auto pBuffer) {
-            auto& vec = pBuffer->getDataContainer();
-            std::transform(vec.begin(), vec.end(), dst->begin(), [&](auto& v) {
-                auto value = util::glmcomp(v, comp);
-                double pos = (static_cast<double>(value) - range.x) / (range.y - range.x);
-                return tf->sample(pos);
+        srcBuffer->dispatch<void>(
+            [comp = component_.getSelectedIndex(),
+             range = useCustomDataRange_.get() ? customDataRange_.get() : dataRange_.get(),
+             dst = &colorsOut, tf = &tf_.get()](auto pBuffer) {
+                auto& vec = pBuffer->getDataContainer();
+                std::transform(vec.begin(), vec.end(), dst->begin(), [&](auto& v) {
+                    auto value = util::glmcomp(v, comp);
+                    double pos = (static_cast<double>(value) - range.x) / (range.y - range.x);
+                    return tf->sample(pos);
+                });
             });
-        });
 
         // create a new mesh containing all buffers of the input mesh
         // The first color buffer, if existing, is replaced with the mapped colors.

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2018 Inviwo Foundation
+ * Copyright (c) 2015-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,17 +39,15 @@ const ProcessorInfo ImageResample::processorInfo_{
     CodeState::Stable,           // Code state
     Tags::GL,                    // Tags
 };
-const ProcessorInfo ImageResample::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo ImageResample::getProcessorInfo() const { return processorInfo_; }
 
 ImageResample::ImageResample()
     : ImageGLProcessor("img_resample.frag")
     , interpolationType_("interpolationType", "Interpolation Type")
     , outputSizeMode_("outputSizeMode", "Output Size Mode")
     , targetResolution_("targetResolution", "Target Resolution", ivec2(256, 256), ivec2(32, 32),
-                  ivec2(4096, 4096), ivec2(1, 1)) {
-        
+                        ivec2(4096, 4096), ivec2(1, 1)) {
+
     interpolationType_.addOption("bilinear", "Bilinear", 0);
     interpolationType_.addOption("bicubic", "Bicubic", 1);
     interpolationType_.set(0);
@@ -118,5 +116,4 @@ void ImageResample::dimensionSourceChanged() {
     }
 }
 
-}  // namespace
-
+}  // namespace inviwo

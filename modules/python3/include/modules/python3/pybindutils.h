@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2017-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,6 +35,7 @@
 
 // push/pop warning state to prevent disabling some warnings by pybind headers
 #include <warn/push>
+#include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 #include <warn/pop>
@@ -65,9 +66,8 @@ void checkDataFormat(const DataFormatBase *format, const Vector<Dim, size_t> &di
     namespace py = pybind11;
     const auto expectedType = pyutil::toNumPyFormat(format);
     if (!data.dtype().is(expectedType)) {
-        throw py::value_error("Invalid data format, got: '" +
-                              data.dtype().cast<std::string>() + "' expected: '" +
-                              expectedType.cast<std::string>() + "'");
+        throw py::value_error("Invalid data format, got: '" + data.dtype().cast<std::string>() +
+                              "' expected: '" + expectedType.cast<std::string>() + "'");
     }
 
     const auto expectedComponents = format->getComponents();

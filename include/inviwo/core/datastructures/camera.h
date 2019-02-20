@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -105,21 +105,21 @@ public:
     const mat4& getInverseProjectionMatrix() const;
 
     /**
-    * \brief Convert from normalized device coordinates (xyz in [-1 1]) to world coordinates.
-    * @param ndcCoords Coordinates in [-1 1]
-    * @return World space position
-    */
+     * \brief Convert from normalized device coordinates (xyz in [-1 1]) to world coordinates.
+     * @param ndcCoords Coordinates in [-1 1]
+     * @return World space position
+     */
     vec3 getWorldPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const;
 
     /**
-    * \brief Convert from normalized device coordinates (xyz in [-1 1]) to clip coordinates,
-    * where z value of -1 correspond to the near plane and 1 to the far plane.
-    * Coordinates outside of the [-1 1]^3 range will be clipped.
-    *
-    * @param ndcCoords xyz clip-coordinates in [-1 1]^3, and the clip w-coordinate used for
-    * perspective division.
-    * @return Clip space position
-    */
+     * \brief Convert from normalized device coordinates (xyz in [-1 1]) to clip coordinates,
+     * where z value of -1 correspond to the near plane and 1 to the far plane.
+     * Coordinates outside of the [-1 1]^3 range will be clipped.
+     *
+     * @param ndcCoords xyz clip-coordinates in [-1 1]^3, and the clip w-coordinate used for
+     * perspective division.
+     * @return Clip space position
+     */
     vec4 getClipPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const;
 
     vec3 getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
@@ -172,7 +172,6 @@ public:
     virtual bool update(const Camera* source) override;
     virtual void configureProperties(CompositeProperty* comp) override;
 
-
     friend bool operator==(const PerspectiveCamera& lhs, const PerspectiveCamera& rhs);
     friend bool operator!=(const PerspectiveCamera& lhs, const PerspectiveCamera& rhs);
 
@@ -189,6 +188,7 @@ protected:
 
     float fovy_;
     float aspectRatio_;
+    std::shared_ptr<std::function<void()>> fovCallbackHolder_;
 };
 
 bool operator==(const PerspectiveCamera& lhs, const PerspectiveCamera& rhs);
@@ -235,6 +235,7 @@ protected:
 
     // Left, right, bottom, top view volume
     vec4 frustum_;
+    std::shared_ptr<std::function<void()>> widthCallbackHolder_;
 };
 
 bool operator==(const OrthographicCamera& lhs, const OrthographicCamera& rhs);
@@ -267,18 +268,18 @@ public:
 
     const vec4& getFrustum() const;
     /**
-    * \brief Left, right, bottom, top view volume
-    *
-    * Set view frustum used for projection matrix calculation.
-    */
+     * \brief Left, right, bottom, top view volume
+     *
+     * Set view frustum used for projection matrix calculation.
+     */
     void setFrustum(vec4 val);
 
     const vec2& getFrustumOffset() const;
     /**
-    * \brief Left, right, bottom, top view volume
-    *
-    * Set view frustum used for projection matrix calculation.
-    */
+     * \brief Left, right, bottom, top view volume
+     *
+     * Set view frustum used for projection matrix calculation.
+     */
     void setFrustumOffset(vec2 val);
     virtual float getAspectRatio() const override;
     virtual void setAspectRatio(float val) override;
@@ -292,11 +293,12 @@ protected:
     // Left, right, bottom, top view volume
     vec4 frustum_;
     vec2 frustumSkewOffset_;
+    std::shared_ptr<std::function<void()>> widthCallbackHolder_;
+    std::shared_ptr<std::function<void()>> offsetCallbackHolder_;
 };
 
 bool operator==(const SkewedPerspectiveCamera& lhs, const SkewedPerspectiveCamera& rhs);
 bool operator!=(const SkewedPerspectiveCamera& lhs, const SkewedPerspectiveCamera& rhs);
-
 
 // Implementation details
 inline const vec3& Camera::getLookFrom() const { return lookFrom_; }
@@ -368,13 +370,12 @@ inline void SkewedPerspectiveCamera::setFrustum(inviwo::vec4 val) {
     invalidateProjectionMatrix();
 }
 
-
 inline const vec2& SkewedPerspectiveCamera::getFrustumOffset() const { return frustumSkewOffset_; }
 inline void SkewedPerspectiveCamera::setFrustumOffset(vec2 offset) {
     frustumSkewOffset_ = offset;
     invalidateProjectionMatrix();
 }
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_CAMERA_H

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -62,7 +62,7 @@ namespace inviwo {
  */
 class IVW_MODULE_BASE_API SurfaceExtraction : public Processor, public ProgressBarOwner {
 public:
-    enum class Method{
+    enum class Method {
         MarchingCubes,
         MarchingCubesOpt,
         MarchingTetrahedron,
@@ -118,6 +118,6 @@ protected:
     bool dirty_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_SURFACEEXTRACTION_H

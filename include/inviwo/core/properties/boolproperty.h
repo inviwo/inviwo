@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_BOOLPROPERTY_H
@@ -34,7 +34,7 @@
 #include <inviwo/core/properties/templateproperty.h>
 
 namespace inviwo {
-/** 
+/**
  * \ingroup properties
  * \brief The BoolProperty class provides a property holding boolean values
  *
@@ -59,6 +59,6 @@ public:
     virtual ~BoolProperty();
 };
 
-}  // namespace
+}  // namespace inviwo
 
-#endif // IVW_BOOLPROPERTY_H
+#endif  // IVW_BOOLPROPERTY_H

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2017-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -123,8 +123,6 @@ const cimg_library::CImg<T>& saveCImgToFileStream(FILE* handle, const cimg_libra
         return img.save_rgb(handle);
     else if (!cimg_library::cimg::strcasecmp(ext, "rgba"))
         return img.save_rgba(handle);
-    else if (!cimg_library::cimg::strcasecmp(ext, "png"))
-        return img.save_png(handle);
     else if (!cimg_library::cimg::strcasecmp(ext, "pgm") ||
              !cimg_library::cimg::strcasecmp(ext, "ppm") ||
              !cimg_library::cimg::strcasecmp(ext, "pnm"))

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -58,7 +58,6 @@ public:
      */
     virtual dvec4 readPixel(size2_t pos, LayerType layer, size_t index = 0) const override;
 
-
     virtual std::type_index getTypeIndex() const override final;
     virtual bool isValid() const override;
     virtual void update(bool) override;
@@ -67,7 +66,7 @@ private:
     LayerCL* layerCL_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 namespace cl {
 

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,9 +41,7 @@ const ProcessorInfo VolumeSubsample::processorInfo_{
     CodeState::Experimental,       // Code state
     Tags::CPU,                     // Tags
 };
-const ProcessorInfo VolumeSubsample::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo VolumeSubsample::getProcessorInfo() const { return processorInfo_; }
 
 VolumeSubsample::VolumeSubsample()
     : Processor()
@@ -118,5 +116,4 @@ void VolumeSubsample::invalidate(InvalidationLevel invalidationLevel, Property* 
     notifyObserversInvalidationEnd(this);
 }
 
-}  // inviwo namespace
-
+}  // namespace inviwo

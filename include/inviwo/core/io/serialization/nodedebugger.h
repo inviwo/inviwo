@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,7 @@
 #include <vector>
 
 namespace ticpp {
-    class Element;
+class Element;
 }
 
 typedef ticpp::Element TxElement;
@@ -63,7 +63,6 @@ struct IVW_CORE_API NodeDebugger {
     std::vector<Node> nodes_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_NODEDEBUGGER_H
-
+#endif  // IVW_NODEDEBUGGER_H

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -99,9 +99,9 @@ void LogGLError(const char* fileName, const char* functionName, int lineNumber) 
     // https://www.opengl.org/sdk/docs/man2/xhtml/glGetError.xml
     while ((err = glGetError()) != GL_NO_ERROR && maxErrors--) {
         inviwo::LogCentral::getPtr()->log("OpenGL", LogLevel::Error, LogAudience::Developer,
-            fileName, functionName, lineNumber,
-            getGLErrorString(err));
+                                          fileName, functionName, lineNumber,
+                                          getGLErrorString(err));
     }
 }
 
-}  // namespace
+}  // namespace inviwo

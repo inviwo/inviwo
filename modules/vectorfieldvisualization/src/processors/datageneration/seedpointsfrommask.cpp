@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2016-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -97,11 +97,10 @@ void SeedPointsFromMask::process() {
                 if (util::glm_convert_normalized<double>(data[index(pos)]) > threshold_.get()) {
                     if (enableSuperSample_.get()) {
                         for (int j = 0; j < superSample_.get(); j++) {
-                            vec3 off;
-                            off.x = dis_(mt_);
-                            off.y = dis_(mt_);
-                            off.z = dis_(mt_);
-                            points->push_back((vec3(pos) + off) * invDim);
+                            const auto x = dis_(mt_);
+                            const auto y = dis_(mt_);
+                            const auto z = dis_(mt_);
+                            points->push_back((vec3(pos) + vec3{x, y, z}) * invDim);
                         }
                     } else {
                         points->push_back((vec3(pos) + 0.5f) * invDim);

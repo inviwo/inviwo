@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,6 +39,7 @@
 #include <inviwo/core/io/datareaderexception.h>
 #include <inviwo/core/io/datawriterexception.h>
 #include <inviwo/core/datastructures/transferfunction.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
 
 #include <modules/qtwidgets/inviwofiledialog.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
@@ -112,15 +113,24 @@ QMenu* addTFPresetsMenu(QWidget* parent, QMenu* menu, TransferFunctionProperty* 
             for (auto file : files) {
                 for (auto& ext : property->get().getSupportedExtensions()) {
                     if (ext.matches(file)) {
+                        try {
+                            tf.load(file, ext);
+                        } catch (DataReaderException&) {
+                            // No reader found, ignore the TF
+                            continue;
+                        } catch (AbortException&) {
+                            // Failed to load, ignore the TF
+                            continue;
+                        }
                         // remove basepath and trailing directory separator from filename
                         auto action = presets->addAction(
                             utilqt::toQString(file.substr(basePath.length() + 1)));
                         QObject::connect(action, &QAction::triggered, parent,
-                                         [parent, property, file, ext]() {
+                                         [property, file, ext]() {
                                              NetworkLock lock(property);
                                              property->get().load(file, ext);
                                          });
-                        tf.load(file, ext);
+                        
                         action->setIcon(QIcon(utilqt::toQPixmap(tf, QSize(120, 20))));
                         break;
                     }

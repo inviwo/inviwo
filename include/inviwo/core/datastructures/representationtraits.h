@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2018 Inviwo Foundation
+ * Copyright (c) 2015-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@ namespace kind {
 struct Base {};
 struct Disk {};
 struct RAM {};
-}
+}  // namespace kind
 
 template <typename DataType, typename Kind>
 struct representation_traits {
@@ -50,6 +50,6 @@ struct representation_traits {
 template <typename DataType, typename Kind>
 using representation_traits_t = typename representation_traits<DataType, Kind>::type;
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_REPRESENTATIONTRAITS_H

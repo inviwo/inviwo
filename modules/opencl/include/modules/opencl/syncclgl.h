@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,7 @@
 // Define function clCreateEventFromGLsync (vendor extension)
 typedef cl_event (*pfnclCreateEventFromSyncKHR)(cl_context context, cl_GLsync sync,
                                                 cl_int* errcode_ret);
-#endif // CL_VERSION_1_1
+#endif  // CL_VERSION_1_1
 
 namespace inviwo {
 /** \class SyncCLGL

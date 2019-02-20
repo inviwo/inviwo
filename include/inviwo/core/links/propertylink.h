@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,7 +52,7 @@ public:
 
     Property* getSource() const { return src_; }
     Property* getDestination() const { return dst_; }
-        
+
     bool involves(Processor* processor) const;
     bool involves(Property* property) const;
 
@@ -71,7 +71,7 @@ bool IVW_CORE_API operator==(const PropertyLink& lhs, const PropertyLink& rhs);
 bool IVW_CORE_API operator!=(const PropertyLink& lhs, const PropertyLink& rhs);
 bool IVW_CORE_API operator<(const PropertyLink& lhs, const PropertyLink& rhs);
 
-}  // namespace
+}  // namespace inviwo
 
 namespace std {
 

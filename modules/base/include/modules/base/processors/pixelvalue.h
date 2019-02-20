@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2016-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,10 +40,10 @@
 
 namespace inviwo {
 
- /** docpage{org.inviwo.PixelValue, Pixel Value}
+/** docpage{org.inviwo.PixelValue, Pixel Value}
  * ![](org.inviwo.PixelValue.png?classIdentifier=org.inviwo.PixelValue)
  * Read the pixel value under the mouse of the image that is passed through the processor
- * 
+ *
  * ### Inport
  *   * __inport___ Input image
  *
@@ -90,6 +90,6 @@ private:
     EventProperty mouseMove_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PIXELVALUE_H

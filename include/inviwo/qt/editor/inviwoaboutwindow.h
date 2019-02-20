@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2017-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,13 +38,12 @@ namespace inviwo {
 
 class InviwoMainWindow;
 
-class IVW_QTEDITOR_API InviwoAboutWindow : public InviwoDockWidget { 
+class IVW_QTEDITOR_API InviwoAboutWindow : public InviwoDockWidget {
 public:
     InviwoAboutWindow(InviwoMainWindow* parent);
     virtual ~InviwoAboutWindow() = default;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_INVIWOABOUTWINDOW_H
-
+#endif  // IVW_INVIWOABOUTWINDOW_H

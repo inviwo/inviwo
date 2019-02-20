@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -55,7 +55,7 @@ void exposeDataFormat(pybind11::module &m) {
 
     py::enum_<DataFormatId> dfid(m, "DataFormatId");
     dfid.value("NotSpecialized", DataFormatId::NotSpecialized);
-    for(int i = 1; i < static_cast<int>(DataFormatId::NumberOfFormats); ++i) {
+    for (int i = 1; i < static_cast<int>(DataFormatId::NumberOfFormats); ++i) {
         auto format = DataFormatBase::get(static_cast<DataFormatId>(i));
         dfid.value(format->getString(), static_cast<DataFormatId>(i));
     }

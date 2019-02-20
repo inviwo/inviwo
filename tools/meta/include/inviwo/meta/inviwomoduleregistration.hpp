@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,9 +43,9 @@ public:
 
     void addInclude(const std::filesystem::path& incPath);
     void registerProcessor(std::string_view name, const std::filesystem::path& incPath);
-    
+
     std::filesystem::path modulecpp;
     std::string file;
 };
 
-}
+}  // namespace inviwo::meta

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,7 @@
 #define IVW_TICPP_H
 
 #ifndef TIXML_USE_TICPP
-#  define TIXML_USE_TICPP
+#define TIXML_USE_TICPP
 #endif
 
 #include <warn/push>
@@ -51,7 +51,6 @@ typedef ticpp::Attribute TxAttribute;
 typedef ticpp::Iterator<TxElement> TxEIt;
 typedef ticpp::Iterator<TxAttribute> TxAIt;
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_TICPP_H
-
+#endif  // IVW_TICPP_H

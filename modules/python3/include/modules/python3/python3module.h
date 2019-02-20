@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,6 @@
 #include <modules/python3/pythonlogger.h>
 #include <string>
 
-
 namespace inviwo {
 class PythonInterpreter;
 
@@ -53,6 +52,6 @@ private:
     PythonLogger pythonLogger_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PYTHON3MODULE_H

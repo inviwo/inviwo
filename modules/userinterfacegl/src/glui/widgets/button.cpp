@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2017-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,6 +42,9 @@
 namespace inviwo {
 
 namespace glui {
+
+const std::string Button::classIdentifier = "org.inviwo.glui.Button";
+std::string Button::getClassIdentifier() const { return classIdentifier; }
 
 Button::Button(const std::string &label, Processor &processor, Renderer &uiRenderer,
                const ivec2 &extent)

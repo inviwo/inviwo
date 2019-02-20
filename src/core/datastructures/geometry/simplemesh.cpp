@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -62,8 +62,7 @@ void SimpleMesh::addIndex(unsigned int idx) {
 void SimpleMesh::setIndicesInfo(DrawType dt, ConnectivityType ct) {
     if (indices_.empty()) {
         addIndicies(Mesh::MeshInfo(dt, ct), std::make_shared<IndexBuffer>());
-    }
-    else {
+    } else {
         indices_[0].first = Mesh::MeshInfo(dt, ct);
     }
 }
@@ -82,4 +81,4 @@ const Buffer<vec4>* SimpleMesh::getColorList() const {
 
 const IndexBuffer* SimpleMesh::getIndexList() const { return indices_[0].second.get(); }
 
-}  // namespace
+}  // namespace inviwo

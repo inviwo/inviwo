@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,6 +50,7 @@ double getMeasure(const Connectivity& grid, const Channel& positions, GridPrimit
 
                 return measure;
             }
+            [[fallthrough]];
         default:
             return -1.0;
     }

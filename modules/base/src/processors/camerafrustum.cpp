@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2017-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,8 +54,6 @@ CameraFrustum::CameraFrustum()
     addProperty(camera_);
 }
 
-void CameraFrustum::process() { 
-    mesh_.setData(meshutil::cameraFrustum(camera_, color_)); 
-}
+void CameraFrustum::process() { mesh_.setData(meshutil::cameraFrustum(camera_, color_)); }
 
 }  // namespace inviwo

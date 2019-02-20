@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -72,10 +72,10 @@ OrdinalPropertyWidgetCEF<T>::OrdinalPropertyWidgetCEF(OrdinalProperty<T>* proper
 
 template <typename T>
 void OrdinalPropertyWidgetCEF<T>::updateFromProperty() {
-	// Frame might be null if for example webpage is not found on startup
+    // Frame might be null if for example webpage is not found on startup
     if (!PropertyWidgetCEF::frame_) {
-		return;
-	}
+        return;
+    }
     // LogInfo("updateFromProperty");
     auto property = static_cast<OrdinalProperty<T>*>(this->getProperty());
 

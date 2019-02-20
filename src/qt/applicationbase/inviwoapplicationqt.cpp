@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -312,6 +312,14 @@ bool InviwoApplicationQt::notify(QObject* receiver, QEvent* e) {
 void InviwoApplicationQt::setUndoTrigger(std::function<void()> func) { undoTrigger_ = func; }
 
 std::locale InviwoApplicationQt::getCurrentStdLocale() {
+    auto warnOnce = [](auto message) {
+        static bool hasWarned = false;
+        if (!hasWarned) {
+            LogWarnCustom("getStdLocale", message);
+            hasWarned = true;
+        }
+    };
+
     std::locale loc;
     try {
         // use the system locale provided by Qt
@@ -325,7 +333,11 @@ std::locale InviwoApplicationQt::getCurrentStdLocale() {
 #endif
         loc = std::locale(localeName.c_str());
     } catch (std::exception& e) {
-        LogWarnCustom("getStdLocale", "Locale could not be set. " << e.what());
+        warnOnce(std::string("Locale could not be set. ") + e.what());
+        try {
+            loc = std::locale("en_US.UTF8");
+        } catch (...) {
+        }
     }
     return loc;
 }

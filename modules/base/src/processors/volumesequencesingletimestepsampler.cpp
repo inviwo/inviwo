@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2017-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -66,14 +66,13 @@ VolumeSequenceSingleTimestepSamplerProcessor::VolumeSequenceSingleTimestepSample
 
         auto newrange = util::getTimestampRange(*seq);
         float t = static_cast<float>((timestamp_.get() - timestamp_.getMinValue()) /
-                  (timestamp_.getMaxValue() - timestamp_.getMinValue()));
+                                     (timestamp_.getMaxValue() - timestamp_.getMinValue()));
 
         timestamp_.setMinValue(newrange.first);
         timestamp_.setMaxValue(newrange.second);
         timestamp_.setCurrentStateAsDefault();
 
         timestamp_.set(newrange.first + t * (newrange.second - newrange.first));
-
     });
 }
 

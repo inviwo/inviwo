@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2017-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -55,7 +55,7 @@ FontProperty::FontProperty(const std::string& identifier, const std::string& dis
     fontFace_.setCurrentStateAsDefault();
 
     fontSize_.setSemantics(PropertySemantics("Fontsize"));
-    
+
     addProperty(fontFace_);
     addProperty(fontSize_);
     addProperty(lineSpacing_);

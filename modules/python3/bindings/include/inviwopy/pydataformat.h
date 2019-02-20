@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,8 +30,10 @@
 #ifndef IVW_PYDATAFORMAT_H
 #define IVW_PYDATAFORMAT_H
 
+#include <warn/push>
+#include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
-
+#include <warn/pop>
 namespace inviwo {
 
 void exposeDataFormat(pybind11::module &m);

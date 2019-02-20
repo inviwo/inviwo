@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,7 @@ namespace discretedata {
 //! Discretedata index type
 using ind = signed long long;
 
-/** 
+/**
  * Mapping structure name to respective dimension.
  * Assign channels to any dimensions this way.
  * If these do not suffice, cast the respective short.

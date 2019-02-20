@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@ namespace inviwo {
  * Copies web page into a Texture2D each time it has been painted by the browser and calls
  * onWebPageCopiedCallback afterwards.
  */
-class RenderHandlerGL : public CefRenderHandler {
+class IVW_MODULE_WEBBROWSER_API RenderHandlerGL : public CefRenderHandler {
 public:
     RenderHandlerGL(std::function<void()> onWebPageCopiedCallback);
     void updateCanvasSize(size2_t newSize);

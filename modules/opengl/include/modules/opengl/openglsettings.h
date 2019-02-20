@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2018 Inviwo Foundation
+ * Copyright (c) 2015-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_OPENGLSETTINGS_H
@@ -57,6 +57,6 @@ public:
     TemplateOptionProperty<utilgl::debug::BreakLevel> breakOnMessage_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_OPENGLSETTINGS_H
+#endif  // IVW_OPENGLSETTINGS_H

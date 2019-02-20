@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2016-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,28 +34,23 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VolumeGradientCPUProcessor::processorInfo_{
-    "org.inviwo.VolumeGradientCPUProcessor",      // Class identifier
-    "Volume Gradient",                // Display name
-    "Volume Operation",              // Category
-    CodeState::Experimental,  // Code state
-    Tags::CPU,               // Tags
+    "org.inviwo.VolumeGradientCPUProcessor",  // Class identifier
+    "Volume Gradient",                        // Display name
+    "Volume Operation",                       // Category
+    CodeState::Experimental,                  // Code state
+    Tags::CPU,                                // Tags
 };
-const ProcessorInfo VolumeGradientCPUProcessor::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo VolumeGradientCPUProcessor::getProcessorInfo() const { return processorInfo_; }
 
 VolumeGradientCPUProcessor::VolumeGradientCPUProcessor()
-    : Processor()
-    , inport_("inport")
-    , outport_("outport") {
+    : Processor(), inport_("inport"), outport_("outport") {
 
     addPort(inport_);
     addPort(outport_);
 }
-    
+
 void VolumeGradientCPUProcessor::process() {
-    outport_.setData(util::gradientVolume(inport_.getData(),0));
+    outport_.setData(util::gradientVolume(inport_.getData(), 0));
 }
 
-} // namespace
-
+}  // namespace inviwo

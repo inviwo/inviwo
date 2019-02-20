@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,4 +50,4 @@ void LayerDisk2RAMConverter::update(std::shared_ptr<const LayerDisk> source,
     source->updateRepresentation(destination);
 }
 
-}  // namespace
+}  // namespace inviwo

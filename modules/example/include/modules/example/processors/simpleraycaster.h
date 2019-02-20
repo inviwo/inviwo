@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -83,7 +83,7 @@ class IVW_MODULE_EXAMPLE_API SimpleRaycaster : public Processor {
 public:
     SimpleRaycaster();
     virtual ~SimpleRaycaster() = default;
-    
+
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;

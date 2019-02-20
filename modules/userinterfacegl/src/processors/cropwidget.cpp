@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2016-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -274,9 +274,9 @@ void CropWidget::initMesh() {
 
 void CropWidget::createLineStripMesh() {
     auto linestrip = std::make_shared<Mesh>(DrawType::Lines, ConnectivityType::StripAdjacency);
-    auto vertices = std::make_shared<Buffer<vec3> >();
-    auto colors = std::make_shared<Buffer<vec4> >();
-    auto texCoords = std::make_shared<Buffer<vec2> >();
+    auto vertices = std::make_shared<Buffer<vec3>>();
+    auto colors = std::make_shared<Buffer<vec4>>();
+    auto texCoords = std::make_shared<Buffer<vec2>>();
 
     auto vBuffer = vertices->getEditableRAMRepresentation();
     auto colorBuffer = colors->getEditableRAMRepresentation();
@@ -642,8 +642,6 @@ void CropWidget::rangePositionHandlePicked(CropAxis &cropAxis, PickingEvent *p,
     auto refDepth = p->getPressedDepth();
     currNDC.z = refDepth;
     prevNDC.z = refDepth;
-
-    vec3 axis(volumeBasis_[static_cast<int>(cropAxis.axis)]);
 
     // project mouse delta onto axis
     vec2 delta(currNDC - prevNDC);

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -79,10 +79,11 @@ public:
     TFEditorView* getEditorView() const;
 
 protected:
-    virtual void onTFPrimitiveAdded(TFPrimitive* p) override;
-    virtual void onTFPrimitiveRemoved(TFPrimitive* p) override;
-    virtual void onTFPrimitiveChanged(const TFPrimitive* p) override;
-    virtual void onTFTypeChanged(const TFPrimitiveSet* primitiveSet) override;
+    virtual void onTFPrimitiveAdded(TFPrimitive& p) override;
+    virtual void onTFPrimitiveRemoved(TFPrimitive& p) override;
+    virtual void onTFPrimitiveChanged(const TFPrimitive& p) override;
+    virtual void onTFTypeChanged(const TFPrimitiveSet& primitiveSet) override;
+    void onTFTypeChangedInternal();
 
     virtual void onMaskChange(const dvec2& mask) override;
     virtual void onZoomHChange(const dvec2& zoomH) override;
@@ -116,7 +117,7 @@ private:
     std::unique_ptr<ColorWheel> colorWheel_;
     std::unique_ptr<QColorDialog> colorDialog_;
 
-    std::unique_ptr<TFEditor> tfEditor_; //!< inherited from QGraphicsScene
+    std::unique_ptr<TFEditor> tfEditor_;  //!< inherited from QGraphicsScene
 
     std::unique_ptr<TFSelectionWatcher> tfSelectionWatcher_;
 

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -74,7 +74,7 @@ public:
     virtual IsoTFProperty* clone() const override;
 
     virtual std::string getClassIdentifierForWidget() const override;
-    
+
     void setMask(double maskMin, double maskMax);
     const dvec2 getMask() const;
     void clearMask();

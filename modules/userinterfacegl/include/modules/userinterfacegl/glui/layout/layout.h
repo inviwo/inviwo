@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2017-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -57,14 +57,21 @@ public:
     virtual ivec2 getExtent() const = 0;
 
     void setMargins(int top, int left, int bottom, int right);
+    /**
+     * \brief set layout margins. \p margins correspond to margins in the order: top, left, bottom,
+     * and right.
+     *
+     * @param margins   new margins (top, left, bottom, right)
+     */
+    void setMargins(const ivec4 &margins);
     const ivec4 &getMargins() const;
 
     /**
-    * \brief apply the given scaling factor to all widgets
-    *
-    * @param factor   scaling factor for widget extents
-    * @see Element::setScalingFactor
-    */
+     * \brief apply the given scaling factor to all widgets
+     *
+     * @param factor   scaling factor for widget extents
+     * @see Element::setScalingFactor
+     */
     virtual void setScalingFactor(double factor) = 0;
 
     /**

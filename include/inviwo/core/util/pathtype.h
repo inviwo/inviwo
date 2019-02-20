@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2018 Inviwo Foundation
+ * Copyright (c) 2015-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,11 +46,11 @@ enum class PathType {
     TransferFunctions,  // /data/transferfunctions
     Settings,           // path to the current users settings
     Modules,            // Module libraries folder, i.e. /appdata/inviwo/modules on Windows.
-                        // Install your module there to make it load when runtime loading is enabled.
-    Help,               // /data/help
-    Tests               // /tests
+              // Install your module there to make it load when runtime loading is enabled.
+    Help,  // /data/help
+    Tests  // /tests
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PATHTYPE_H

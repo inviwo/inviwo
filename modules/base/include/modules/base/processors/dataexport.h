@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2016-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_DATAEXPORT_H
@@ -54,21 +54,21 @@ class DataExport : public Processor {
 public:
     DataExport();
     virtual ~DataExport() = default;
-     
+
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override = 0;
 
 protected:
     void exportData();
-    
+
     virtual const DataType* getData() = 0;
-    
+
     PortType port_;
     FileProperty file_;
     ButtonProperty export_;
     BoolProperty overwrite_;
-    
+
     bool exportQueued_ = false;
 };
 
@@ -79,16 +79,16 @@ DataExport<DataType, PortType>::DataExport()
     , file_("file", "File name", "", "mesh")
     , export_("export", "Export")
     , overwrite_("overwrite", "Overwrite", false) {
-    
+
     for (auto& ext :
-        InviwoApplication::getPtr()->getDataWriterFactory()->getExtensionsForType<DataType>()) {
+         InviwoApplication::getPtr()->getDataWriterFactory()->getExtensionsForType<DataType>()) {
         file_.addNameFilter(ext.toString());
     }
 
     addPort(port_);
     addProperty(file_);
     file_.setAcceptMode(AcceptMode::Save);
-    export_.onChange([&](){exportQueued_ = true;});
+    export_.onChange([&]() { exportQueued_ = true; });
     addProperty(export_);
     addProperty(overwrite_);
 }
@@ -102,13 +102,8 @@ void DataExport<DataType, PortType>::exportData() {
     if (data && !file_.get().empty()) {
         auto factory = getNetwork()->getApplication()->getDataWriterFactory();
 
-        auto ext = file_.getSelectedExtension();
-        auto writer = factory->template getWriterForTypeAndExtension<DataType>(ext);
-
-        if (!writer) {
-            std::string fileExtension = filesystem::getFileExtension(file_.get());
-            writer = factory->template getWriterForTypeAndExtension<DataType>(fileExtension);
-        }
+        auto writer = factory->template getWriterForTypeAndExtension<DataType>(
+            file_.getSelectedExtension(), filesystem::getFileExtension(file_.get()));
 
         if (!writer) {
             LogProcessorError(
@@ -138,8 +133,6 @@ void DataExport<DataType, PortType>::process() {
     exportQueued_ = false;
 }
 
+}  // namespace inviwo
 
-} // namespace
-
-#endif // IVW_DATAEXPORT_H
-
+#endif  // IVW_DATAEXPORT_H

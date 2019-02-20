@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2018 Inviwo Foundation
+ * Copyright (c) 2015-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,33 +27,33 @@
  *
  *********************************************************************************/
 
+// Owned by the SphereRenderer Processor
+
 #include "utils/structs.glsl"
 uniform GeometryParameters geometry;
 
-uniform vec4 customColor = vec4(1, 0, 0, 1);
-uniform float customRadius = 0.1f;
+uniform vec4 defaultColor = vec4(1, 0, 0, 1);
+uniform float defaultRadius = 0.1f;
+uniform sampler2D metaColor;
 
 out vec4 worldPosition_;
 out vec4 sphereColor_;
 flat out float sphereRadius_;
 flat out uint pickID_;
 
-uniform sampler2D metaColor;
-
 void main(void) {
-
-#if defined(HAS_SCALARMETA) && !defined(UNIFORM_COLOR)
+#if defined(HAS_SCALARMETA) && defined(USE_SCALARMETACOLOR) && !defined(FORCE_COLOR)
     sphereColor_ = texture(metaColor, vec2(in_ScalarMeta, 0.5));
-#elif defined(HAS_COLOR) && !defined(UNIFORM_COLOR)
+#elif defined(HAS_COLOR) && !defined(FORCE_COLOR)
     sphereColor_ = in_Color;
 #else
-    sphereColor_ = customColor;
+    sphereColor_ = defaultColor;
 #endif
 
-#if defined(HAS_RADII) && !defined(UNIFORM_RADIUS)
+#if defined(HAS_RADII) && !defined(FORCE_RADIUS)
     sphereRadius_ = in_Radii;
 #else 
-    sphereRadius_ = customRadius;
+    sphereRadius_ = defaultRadius;
 #endif
 
 #if defined(HAS_PICKING)

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2017-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -218,10 +218,12 @@ void exposeProperties(py::module &m) {
         .def("load",
              [](TransferFunctionProperty *tf, std::string filename) { tf->get().load(filename); })
         .def("clear", [](TransferFunctionProperty &tp) { tp.get().clear(); })
-        .def_property("value",
-                      py::cpp_function([](TransferFunctionProperty &tp)->TransferFunction & { return tp.get(); },
-                                       py::return_value_policy::reference_internal),
-                      py::overload_cast<const TransferFunction &>(&TransferFunctionProperty::set))
+        .def_property(
+            "value",
+            py::cpp_function(
+                [](TransferFunctionProperty &tp) -> TransferFunction & { return tp.get(); },
+                py::return_value_policy::reference_internal),
+            py::overload_cast<const TransferFunction &>(&TransferFunctionProperty::set))
 
         .def("add", [](TransferFunctionProperty &tp, double value,
                        const vec4 &color) { tp.get().add(value, color); })
@@ -242,7 +244,7 @@ void exposeProperties(py::module &m) {
             std::ostringstream oss;
             oss << "<TransferFunctionProperty:  " << tp.get().size() << " TF points";
             for (auto &p : tp.get()) {
-                oss << "\n    " << p->getPosition() << ", " << color::rgba2hex(p->getColor());
+                oss << "\n    " << p.getPosition() << ", " << color::rgba2hex(p.getColor());
             }
             oss << ">";
             return oss.str();
@@ -266,7 +268,8 @@ void exposeProperties(py::module &m) {
         .def("clear", [](IsoValueProperty &ivp) { ivp.get().clear(); })
         .def_property(
             "value",
-            py::cpp_function([](IsoValueProperty &tp)->IsoValueCollection & { return tp.get(); }, py::return_value_policy::reference_internal),
+            py::cpp_function([](IsoValueProperty &tp) -> IsoValueCollection & { return tp.get(); },
+                             py::return_value_policy::reference_internal),
             py::overload_cast<const IsoValueCollection &>(&IsoValueProperty::set))
         .def("add", [](IsoValueProperty &ivp, double value,
                        const vec4 &color) { ivp.get().add(value, color); })
@@ -285,7 +288,7 @@ void exposeProperties(py::module &m) {
             std::ostringstream oss;
             oss << "<IsoValueProperty:  " << ivp.get().size() << " isovalues";
             for (auto &p : ivp.get()) {
-                oss << "\n    " << p->getPosition() << ", " << color::rgba2hex(p->getColor());
+                oss << "\n    " << p.getPosition() << ", " << color::rgba2hex(p.getColor());
             }
             oss << ">";
             return oss.str();

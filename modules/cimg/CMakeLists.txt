@@ -15,6 +15,8 @@ set(HEADER_FILES
     include/modules/cimg/cimgsavebuffer.h
     include/modules/cimg/cimgutils.h
     include/modules/cimg/cimgvolumereader.h
+    include/modules/cimg/tifflayerreader.h
+    include/modules/cimg/tiffstackvolumereader.h
 )
 
 #--------------------------------------------------------------------
@@ -26,6 +28,8 @@ set(SOURCE_FILES
     src/cimgsavebuffer.cpp
     src/cimgutils.cpp
     src/cimgvolumereader.cpp
+    src/tifflayerreader.cpp
+    src/tiffstackvolumereader.cpp
 )
 
 #--------------------------------------------------------------------
@@ -39,24 +43,37 @@ ivw_add_unittest(${TEST_FILES})
 #--------------------------------------------------------------------
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
-target_link_libraries(inviwo-module-cimg PUBLIC
-    ZLIB::ZLIB
-    inviwo::libjpeg
-    inviwo::libpng
-    inviwo::tiff
-    openexr-half
-    openexr-iex
-    openexr-iexmath
-    openexr-imath
-    openexr-ilmthread
-    openexr-ilmimf
-    openexr-ilmimfutil
-    inviwo::cimg
+target_link_libraries(inviwo-module-cimg 
+    PRIVATE
+        inviwo::cimg
+    
+        ZLIB::ZLIB
+        inviwo::libjpeg
+        inviwo::tiff
+
+        IlmBase::Half
+        IlmBase::Iex
+        IlmBase::IexMath
+        IlmBase::Imath
+        IlmBase::IlmThread
+        OpenEXR::IlmImf
+        OpenEXR::IlmImfUtil
+)
+target_include_directories(inviwo-module-cimg PRIVATE 
+    ${CMAKE_CURRENT_BINARY_DIR}/ext/openexr/openexr/IlmBase/config
+    ${CMAKE_CURRENT_SOURCE_DIR}/ext/openexr/openexr/IlmBase/Half
+    ${CMAKE_CURRENT_SOURCE_DIR}/ext/openexr/openexr/IlmBase/Iex
+    ${CMAKE_CURRENT_SOURCE_DIR}/ext/openexr/openexr/IlmBase/IexMath
+    ${CMAKE_CURRENT_SOURCE_DIR}/ext/openexr/openexr/IlmBase/Imath
+    ${CMAKE_CURRENT_SOURCE_DIR}/ext/openexr/openexr/IlmBase/IlmThread
+    ${CMAKE_CURRENT_BINARY_DIR}/ext/openexr/openexr/OpenEXR/config
+    ${CMAKE_CURRENT_SOURCE_DIR}/ext/openexr/openexr/OpenEXR/IlmImf
+    ${CMAKE_CURRENT_SOURCE_DIR}/ext/openexr/openexr/OpenEXR/IlmImfUtil
 )
 
-target_compile_definitions(inviwo-module-cimg PUBLIC 
+
+target_compile_definitions(inviwo-module-cimg PRIVATE
     cimg_use_cpp11
-    cimg_use_png
     cimg_use_jpeg
     cimg_use_zlib
     cimg_use_openexr
@@ -68,15 +85,10 @@ ivw_register_license_file(NAME CImg VERSION 2.1.5 MODULE CImg TYPE CeCILL-C
     FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/cimg/Licence_CeCILL-C_V1-en.txt
 )
 
-ivw_register_license_file(NAME "OpenEXR" TARGET openexr-ilmimf MODULE CImg
+ivw_register_license_file(NAME "OpenEXR" TARGET OpenEXR::IlmImf MODULE CImg
     URL "http://www.openexr.com"
     TYPE "Modified BSD License"
-    FILES ext/openexr/openexr-2.2.0/LICENSE
-)
-
-ivw_register_license_file(NAME libpng TARGET inviwo::libpng MODULE CImg TYPE "libpng (BSD-style)"
-    URL http://www.libpng.org/pub/png/libpng.html
-    FILES ${IVW_EXTENSIONS_DIR}/libpng/LICENSE.txt
+    FILES ext/openexr/openexr/LICENSE
 )
 
 ivw_register_license_file(NAME libjpeg-turbo TARGET inviwo::libjpeg MODULE CImg
@@ -87,9 +99,8 @@ ivw_register_license_file(NAME libjpeg-turbo TARGET inviwo::libjpeg MODULE CImg
 
 ivw_register_license_file(NAME tiff TARGET inviwo::tiff MODULE CImg
     TYPE "The MIT License"
-    URL http://www.libtiff.org/ 
+    URL http://www.libtiff.org/
     FILES ${IVW_EXTENSIONS_DIR}/tiff/COPYRIGHT
 )
 
 ivw_make_package(InviwoCImgModule inviwo-module-cimg)
-

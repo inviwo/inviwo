@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -67,6 +67,11 @@ void PropertyCefSynchronizer::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr
 void PropertyCefSynchronizer::OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
                                           CefLoadHandler::ErrorCode errorCode,
                                           const CefString& errorText, const CefString& failedUrl) {
+    if (errorCode == ERR_ABORTED) {
+        // Ignore page loading aborted (occurs during deserialization).
+        // Prevents error page from showing after deserialization.
+        return;
+    }
     std::stringstream ss;
     ss << "<html><head><title>Page failed to load</title></head>"
           "<body bgcolor=\"white\">"
@@ -79,7 +84,6 @@ void PropertyCefSynchronizer::OnLoadError(CefRefPtr<CefBrowser> browser, CefRefP
     if (!errorText.empty()) {
         ss << "<br/>Description: " << errorText.ToString();
     }
-
     ss << "</body></html>";
 
     frame->LoadURL(WebBrowserModule::getDataURI(ss.str(), "text/html"));
@@ -110,7 +114,7 @@ bool PropertyCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<C
         if (nextValPos == std::string::npos) {
             LogWarn("Missing enclosing } in: " + requestStr);
         } else {
-            auto message = requestStr.substr(0, nextValPos);
+            auto message = requestStr.substr(0, nextValPos + 1);
             return (*widget)->onQuery(browser, frame, query_id, request, persistent, callback);
         }
     }

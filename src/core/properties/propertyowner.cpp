@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -281,7 +281,7 @@ void PropertyOwner::setAllPropertiesCurrentStateAsDefault() {
 }
 
 void PropertyOwner::resetAllPoperties() {
-    for (auto& elem : properties_) (elem)->resetToDefaultState();
+    for (auto& elem : properties_) elem->resetToDefaultState();
 }
 
 std::vector<std::string> PropertyOwner::getPath() const { return std::vector<std::string>(); }

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2017-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,9 +43,6 @@ std::shared_ptr<Image> ImageReuseCache::getUnused() {
     }
 }
 
-void ImageReuseCache::add(std::shared_ptr<Image> image) {
-    imageCache_.push_back(image);
-}
+void ImageReuseCache::add(std::shared_ptr<Image> image) { imageCache_.push_back(image); }
 
-} // namespace
-
+}  // namespace inviwo

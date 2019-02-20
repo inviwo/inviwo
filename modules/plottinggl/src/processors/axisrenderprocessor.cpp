@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2017-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,7 +42,7 @@ const ProcessorInfo AxisRenderProcessor::processorInfo_{
     "org.inviwo.AxisRenderProcessor",  // Class identifier
     "Axis Render Processor",           // Display name
     "Plotting",                        // Category
-    CodeState::Stable,           // Code state
+    CodeState::Stable,                 // Code state
     "GL, Plotting, Demo",              // Tags
 };
 const ProcessorInfo AxisRenderProcessor::getProcessorInfo() const { return processorInfo_; }

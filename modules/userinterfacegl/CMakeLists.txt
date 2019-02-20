@@ -11,6 +11,8 @@ set(HEADER_FILES
     include/modules/userinterfacegl/glui/layout/layout.h
     include/modules/userinterfacegl/glui/layout/vboxlayout.h
     include/modules/userinterfacegl/glui/renderer.h
+    include/modules/userinterfacegl/glui/widgetfactory.h
+    include/modules/userinterfacegl/glui/widgetfactoryobject.h
     include/modules/userinterfacegl/glui/widgets/abstractbutton.h
     include/modules/userinterfacegl/glui/widgets/boolpropertywidget.h
     include/modules/userinterfacegl/glui/widgets/button.h
@@ -23,8 +25,10 @@ set(HEADER_FILES
     include/modules/userinterfacegl/glui/widgets/rangeslider.h
     include/modules/userinterfacegl/glui/widgets/slider.h
     include/modules/userinterfacegl/glui/widgets/toolbutton.h
+    include/modules/userinterfacegl/glui/widgetsupplier.h
     include/modules/userinterfacegl/processors/camerawidget.h
     include/modules/userinterfacegl/processors/cropwidget.h
+    include/modules/userinterfacegl/processors/gluiprocessor.h
     include/modules/userinterfacegl/processors/gluitestprocessor.h
     include/modules/userinterfacegl/processors/presentationprocessor.h
     include/modules/userinterfacegl/userinterfaceglmodule.h
@@ -41,6 +45,8 @@ set(SOURCE_FILES
     src/glui/layout/layout.cpp
     src/glui/layout/vboxlayout.cpp
     src/glui/renderer.cpp
+    src/glui/widgetfactory.cpp
+    src/glui/widgetfactoryobject.cpp
     src/glui/widgets/abstractbutton.cpp
     src/glui/widgets/boolpropertywidget.cpp
     src/glui/widgets/button.cpp
@@ -53,8 +59,10 @@ set(SOURCE_FILES
     src/glui/widgets/rangeslider.cpp
     src/glui/widgets/slider.cpp
     src/glui/widgets/toolbutton.cpp
+    src/glui/widgetsupplier.cpp
     src/processors/camerawidget.cpp
     src/processors/cropwidget.cpp
+    src/processors/gluiprocessor.cpp
     src/processors/gluitestprocessor.cpp
     src/processors/presentationprocessor.cpp
     src/userinterfaceglmodule.cpp

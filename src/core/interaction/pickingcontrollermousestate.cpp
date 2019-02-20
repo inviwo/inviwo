@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -175,8 +175,9 @@ struct Fsm {
 
         // clang-format off
         return sml::make_transition_table(
-           *idle + event<Move>  [!zeroId] / (uidm, send<Move> (S::Started, P::None,  H::Enter)) = hasId,
+           *idle + event<Move>  [!zeroId && zeroMB] / (uidm, send<Move>(S::Started, P::None, H::Enter)) = hasId,
             idle + event<Press> [!zeroId] / (uidp, send<Press>(S::Updated, P::Press, H::Enter)) = pressing,
+            idle + event<Release> [!zeroId] / (uidr,  send<Release>(S::Started, P::None, H::Enter)) = hasId,
             idle + sml::on_entry<_> / rps,
              
             hasId + event<Move>  [sameId] / (send<Move>(S::Updated,  P::None, H::Move)),
@@ -186,12 +187,12 @@ struct Fsm {
             hasId + sml::on_entry<_> / rps,
 
             pressing + event<Move>    [sameId]           / (send<Move>(S::Updated, P::Move, H::Move)),
-            pressing + event<Move>    [diffId]           / (send<Move>(S::Updated, P::Move, H::Exit, true, false), send<Move>(S::Updated, P::Move, H::Enter)),
-            pressing + event<Move>    [zeroId]           / (send<Move>(S::Updated, P::Move, H::Exit)),
+            pressing + event<Move>    [diffId]           / (send<Move>(S::Updated, P::Move, H::Move)),
+            pressing + event<Move>    [zeroId]           / (send<Move>(S::Updated, P::Move, H::Move)),
 
             pressing + event<Release> [sameId && zeroMB] / (send<Release>(S::Updated,  P::Release, H::None)) = hasId,
-            pressing + event<Release> [zeroId && zeroMB] / (send<Release>(S::Finished, P::Release, H::None), uidr) = idle,
-            pressing + event<Release> [diffId && zeroMB] / (send<Release>(S::Finished, P::Release, H::None, true, false), uidr, send<Release>(S::Started, P::None, H::None)) = hasId,
+            pressing + event<Release> [zeroId && zeroMB] / (send<Release>(S::Finished, P::Release, H::Exit), uidr) = idle,
+            pressing + event<Release> [diffId && zeroMB] / (send<Release>(S::Finished, P::Release, H::Exit, true, false), uidr, send<Release>(S::Started, P::None, H::Enter)) = hasId,
             pressing + event<Release> [!zeroMB]          / (send<Release>(S::Updated,  P::Release, H::None)),
             pressing + event<Press>                      / (send<Press>  (S::Updated,  P::Press,   H::None)),
          
@@ -223,11 +224,7 @@ void PickingControllerMouseState::propagateEvent(MouseEvent* e, EventPropagator*
                                                  size_t globalId) {
     switch (e->state()) {
         case MouseState::Press: {
-            if (e->button() == MouseButton::Left) {
-                msm->sm.process_event(fsm::Press{globalId, e, propagator});
-            } else if (e->button() == MouseButton::Right) {
-                msm->sm.process_event(fsm::Press{globalId, e, propagator});
-            }
+            msm->sm.process_event(fsm::Press{globalId, e, propagator});
             break;
         }
         case MouseState::Move: {
@@ -235,11 +232,7 @@ void PickingControllerMouseState::propagateEvent(MouseEvent* e, EventPropagator*
             break;
         }
         case MouseState::Release: {
-            if (e->button() == MouseButton::Left) {
-                msm->sm.process_event(fsm::Release{globalId, e, propagator});
-            } else if (e->button() == MouseButton::Right) {
-                msm->sm.process_event(fsm::Release{globalId, e, propagator});
-            }
+            msm->sm.process_event(fsm::Release{globalId, e, propagator});
             break;
         }
         case MouseState::DoubleClick: {

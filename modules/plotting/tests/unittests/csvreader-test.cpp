@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -115,10 +115,11 @@ TEST(CSVdata, emptyRowsAtEnd) {
 
 TEST(CSVdata, emptyFields) {
     // test for empty fields in both categorical and numeric columns
-    std::istringstream ss("Number,Name,Category\n"
-                          "1,Apple,Fruit\n"
-                          "2,Banana,\n" // -> 2, "Banana", ""
-                          ",,Vegetable"); // -> nan, "", "Vegetable"
+    std::istringstream ss(
+        "Number,Name,Category\n"
+        "1,Apple,Fruit\n"
+        "2,Banana,\n"    // -> 2, "Banana", ""
+        ",,Vegetable");  // -> nan, "", "Vegetable"
 
     CSVReader reader;
     reader.setFirstRowHeader(true);
@@ -199,6 +200,21 @@ TEST(CSVdata, ignoreEmptyLine) {
     auto dataframe = reader.readData(ss);
     ASSERT_EQ(5, dataframe->getNumberOfColumns()) << "column count does not match";
     ASSERT_EQ(2, dataframe->getNumberOfRows()) << "row count does not match";
+}
+
+TEST(CSVdata, byteOrderMark) {
+    // Byte order mark should be detected and not treated as a value
+    std::stringstream ss;
+    ss << '\xef' << '\xbb' << '\xbf' << "1,2,3";
+
+    CSVReader reader;
+    reader.setFirstRowHeader(false);
+    auto dataframe = reader.readData(ss);
+
+    ASSERT_EQ(4, dataframe->getNumberOfColumns()) << "column count does not match";
+    ASSERT_EQ(1, dataframe->getNumberOfRows()) << "row count does not match";
+    auto value = dataframe->getColumn(1)->get(0, true)->toString();
+    EXPECT_EQ("1", value) << "Column 1";
 }
 
 TEST(CSVheader, withHeader) {

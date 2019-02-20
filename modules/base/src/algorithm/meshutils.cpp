@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2017-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -614,7 +614,8 @@ std::shared_ptr<BasicMesh> boundingbox(const mat4& basisandoffset, const vec4& c
 }
 
 //! [Using PosTexColorMesh]
-std::shared_ptr<PosTexColorMesh> boundingBoxAdjacency(const mat4& basisandoffset, const vec4& color) {
+std::shared_ptr<PosTexColorMesh> boundingBoxAdjacency(const mat4& basisandoffset,
+                                                      const vec4& color) {
     auto mesh = std::make_shared<PosTexColorMesh>();
     mesh->setModelMatrix(basisandoffset);
 

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,7 +51,7 @@ public:
      * Update HTML widget using calls javascript oninput() function on element.
      * Assumes that widget is HTML input attribute.
      */
-	virtual void updateFromProperty() override;
+    virtual void updateFromProperty() override;
 };
 
 }  // namespace inviwo

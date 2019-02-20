@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,13 +53,14 @@ void foreach_helper(std::true_type, IT a, IT b, Callback callback, size_t startI
 
 template <typename Callback, typename IT>
 auto foreach_helper_pool(std::true_type, IT a, IT b, Callback callback, size_t startIndex = 0) {
-    return dispatchPool([id=startIndex, c = std::move(callback), a, b]() mutable {
-      std::for_each(a, b, [&](auto v) { c(v, id++); });
+    return dispatchPool([id = startIndex, c = std::move(callback), a, b]() mutable {
+        std::for_each(a, b, [&](auto v) { c(v, id++); });
     });
 }
 
 template <typename Callback, typename IT>
-auto foreach_helper_pool(std::false_type, IT a, IT b, Callback callback, size_t /*startIndex*/ = 0) {
+auto foreach_helper_pool(std::false_type, IT a, IT b, Callback callback,
+                         size_t /*startIndex*/ = 0) {
     return dispatchPool([c = std::move(callback), a, b]() { std::for_each(a, b, c); });
 }
 

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,9 +33,9 @@ namespace inviwo {
 
 namespace hdf5 {
 
-Exception::Exception(const std::string& message,
-                     ExceptionContext context): ::inviwo::Exception(message, context) {}
+Exception::Exception(const std::string& message, ExceptionContext context)
+    : ::inviwo::Exception(message, context) {}
 
-}  // namespace
+}  // namespace hdf5
 
-}  // namespace
+}  // namespace inviwo

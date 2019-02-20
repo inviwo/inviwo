@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2017-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -75,8 +75,9 @@ KeyframeEditorWidget::KeyframeEditorWidget(Keyframe &keyframe, SequenceEditorWid
         auto baseProperty = propTrack->getProperty();
         property_.reset(baseProperty->clone());
         propTrack->setOtherProperty(property_.get(), &keyframe);
-        property_->onChange([p = property_.get(), t = propTrack,
-                             k = &keyframe_]() { t->updateKeyframeFromProperty(p, k); });
+        property_->onChange([p = property_.get(), t = propTrack, k = &keyframe_]() {
+            t->updateKeyframeFromProperty(p, k);
+        });
         property_->setOwner(nullptr);
 
         auto propWidget =

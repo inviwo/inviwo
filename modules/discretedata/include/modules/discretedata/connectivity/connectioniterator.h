@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,7 @@ namespace discretedata {
 class ConnectionRange;
 class Connectivity;
 
-/** 
+/**
  * Iterates over one GridPrimitive type in a Connectivity.
  */
 class IVW_MODULE_DISCRETEDATA_API ConnectionIterator {
@@ -98,7 +98,7 @@ public:
 
     /**
      * Compare. Has false positives with iterators started from different elements but suffices for
-     * iteration 
+     * iteration
      */
     bool operator==(ConnectionIterator& other) {
         return other.parent_ == parent_  // Compare pointers.
@@ -109,7 +109,7 @@ public:
     //! GridPrimitive type the iterator walks through
     GridPrimitive getType() const { return toDimension_; }
 
-    //! The current index. Equivalent to dereferencing. 
+    //! The current index. Equivalent to dereferencing.
     ind getIndex() const { return connection_->at(toIndex_); }
 
     //! Iterate over connected GridPrimitives (neighbors etc)

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,15 +30,19 @@
 #include <inviwo/core/util/glm.h>
 
 namespace inviwo {
-    
+
 namespace util {
 
-template<>
-bool isfinite(const half_float::half& v) { return half_float::isfinite(v); }
+template <>
+bool isfinite(const half_float::half& v) {
+    return half_float::isfinite(v);
+}
 
-template<>
-bool isnan(const half_float::half& v) { return half_float::isnan(v); }
-    
+template <>
+bool isnan(const half_float::half& v) {
+    return half_float::isnan(v);
+}
+
 }  // namespace util
 
 }  // namespace inviwo

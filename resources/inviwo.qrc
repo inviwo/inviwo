@@ -1,29 +1,35 @@
 <!DOCTYPE RCC><RCC version="1.0">
     <qresource prefix="/">
+        <file>changelog.html</file>
         <file>icons/about.png</file>
         <file>icons/composite-create.png</file>
         <file>icons/composite-expand.png</file>
         <file>icons/console-clear.png</file>
         <file>icons/console-clear16.png</file>
         <file>icons/developermode.png</file>
-        <file>icons/edit.png</file>
         <file>icons/edit-copy.png</file>
         <file>icons/edit-cut.png</file>
         <file>icons/edit-delete.png</file>
         <file>icons/edit-paste.png</file>
         <file>icons/edit-selectall.png</file>
-        <file>icons/error.png</file>
+        <file>icons/edit.png</file>
         <file>icons/error-grey.png</file>
+        <file>icons/error.png</file>
         <file>icons/exit.png</file>
         <file>icons/filewarning.png</file>
-        <file>icons/find.png</file>
-        <file>icons/find16.png</file>
         <file>icons/find-clear.png</file>
         <file>icons/find-clear16.png</file>
+        <file>icons/find.png</file>
+        <file>icons/find16.png</file>
         <file>icons/findprocessor.png</file>
         <file>icons/help.png</file>
-        <file>icons/info.png</file>
         <file>icons/info-grey.png</file>
+        <file>icons/info.png</file>
+        <file>icons/large/left.png</file>
+        <file>icons/large/newfile.png</file>
+        <file>icons/large/open.png</file>
+        <file>icons/large/right.png</file>
+        <file>icons/left.png</file>
         <file>icons/linkarrow_bidirectional.png</file>
         <file>icons/linkarrow_left.png</file>
         <file>icons/linkarrow_right.png</file>
@@ -33,19 +39,20 @@
         <file>icons/log-clearonrun.png</file>
         <file>icons/newfile.png</file>
         <file>icons/open.png</file>
-        <file>icons/precompiled.png</file>
         <file>icons/precompiled-disabled.png</file>
+        <file>icons/precompiled.png</file>
+        <file>icons/processor-add.png</file>
         <file>icons/processor_broken.png</file>
         <file>icons/processor_deprecated.png</file>
         <file>icons/processor_experimental.png</file>
         <file>icons/processor_stable.png</file>
-        <file>icons/processor-add.png</file>
-        <file>icons/python.png</file>
         <file>icons/python-run.png</file>
+        <file>icons/python.png</file>
         <file>icons/redo.png</file>
-        <file>icons/reset.png</file>
         <file>icons/reset-dark.png</file>
+        <file>icons/reset.png</file>
         <file>icons/revert.png</file>
+        <file>icons/right.png</file>
         <file>icons/save.png</file>
         <file>icons/saveas.png</file>
         <file>icons/savecopy.png</file>
@@ -54,8 +61,8 @@
         <file>icons/undo.png</file>
         <file>icons/unlocked.png</file>
         <file>icons/usermode.png</file>
-        <file>icons/warning.png</file>
         <file>icons/warning-grey.png</file>
+        <file>icons/warning.png</file>
 
         <file>inviwo/inviwo_dark.ico</file>
         <file>inviwo/inviwo_dark.png</file>

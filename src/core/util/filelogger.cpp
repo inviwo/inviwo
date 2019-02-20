@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2017-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,20 +40,19 @@ FileLogger::FileLogger(std::string logPath) : Logger() {
     }
 
     fileStream_ << "<style>" << std::endl
-        << ".warn{" << std::endl
-        << "    color: orange;" << std::endl
-        << "}" << std::endl
-        << ".error{" << std::endl
-        << "    color: red;" << std::endl
-        << "}" << std::endl
-        << ".level{" << std::endl
-        << "    font-weight: bold;" << std::endl
-        << "}" << std::endl
-        << "</style>" << std::endl;
-
+                << ".warn{" << std::endl
+                << "    color: orange;" << std::endl
+                << "}" << std::endl
+                << ".error{" << std::endl
+                << "    color: red;" << std::endl
+                << "}" << std::endl
+                << ".level{" << std::endl
+                << "    font-weight: bold;" << std::endl
+                << "}" << std::endl
+                << "</style>" << std::endl;
 
     fileStream_ << "<div class ='info'>Inviwo (V " << IVW_VERSION << ") Log File</div>"
-        << std::endl;
+                << std::endl;
 
     auto t = std::time(nullptr);
     auto tm = *std::localtime(&t);
@@ -95,5 +94,4 @@ void FileLogger::log(std::string logSource, LogLevel logLevel, LogAudience /*aud
     fileStream_ << "</div>" << std::endl;
 }
 
-} // namespace
-
+}  // namespace inviwo

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2018 Inviwo Foundation
+ * Copyright (c) 2015-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -132,7 +132,8 @@ void NoiseProcessor::process() {
                                     levels_.get().y, mt_);
             break;
         case NoiseType::PoissonDisk:
-            img = util::poissonDisk(size_.get(), poissonDotsAlongX_.get(), poissonMaxPoints_.get(), mt_);
+            img = util::poissonDisk(size_.get(), poissonDotsAlongX_.get(), poissonMaxPoints_.get(),
+                                    mt_);
             break;
         case NoiseType::HaltonSequence:
             img = util::haltonSequence<float>(size_.get(), haltonNumPoints_.get(),

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,6 +34,8 @@
 #include <inviwo/core/ports/outport.h>
 #include <inviwo/core/ports/imageport.h>
 
+#include <inviwo/core/interaction/events/eventutil.h>
+
 namespace inviwo {
 
 ResizeEvent::ResizeEvent(size2_t canvasSize)
@@ -52,24 +54,19 @@ bool ResizeEvent::shouldPropagateTo(Inport* inport, Processor* processor, Outpor
     return false;
 }
 
-size2_t ResizeEvent::size() const {
-    return size_;
+size2_t ResizeEvent::size() const { return size_; }
+
+size2_t ResizeEvent::previousSize() const { return previousSize_; }
+
+void ResizeEvent::setSize(size2_t csize) { size_ = csize; }
+
+void ResizeEvent::setPreviousSize(size2_t previousSize) { previousSize_ = previousSize; }
+
+uint64_t ResizeEvent::hash() const { return chash(); }
+
+void ResizeEvent::print(std::ostream& ss) const {
+    util::printEvent(ss, "ResizeEvent", std::make_pair("size", size_),
+                     std::make_pair("prev", previousSize_));
 }
 
-size2_t ResizeEvent::previousSize() const {
-    return previousSize_;
-}
-
-void ResizeEvent::setSize(size2_t csize) {
-    size_ = csize;
-}
-
-void ResizeEvent::setPreviousSize(size2_t previousSize) {
-    previousSize_ = previousSize;
-}
-
-uint64_t ResizeEvent::hash() const {
-    return chash();
-}
-
-}  // namespace
+}  // namespace inviwo

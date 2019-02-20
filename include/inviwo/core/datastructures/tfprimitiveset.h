@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,6 +37,7 @@
 #include <inviwo/core/util/observer.h>
 #include <inviwo/core/properties/valuewrapper.h>
 #include <inviwo/core/util/fileextension.h>
+#include <inviwo/core/util/transformiterator.h>
 
 namespace inviwo {
 
@@ -49,17 +50,17 @@ class TFPrimitiveSet;
 
 class IVW_CORE_API TFPrimitiveSetObserver : public Observer {
 public:
-    virtual void onTFPrimitiveAdded(TFPrimitive* p);
-    virtual void onTFPrimitiveRemoved(TFPrimitive* p);
-    virtual void onTFPrimitiveChanged(const TFPrimitive* p);
-    virtual void onTFTypeChanged(const TFPrimitiveSet* primitiveSet);
+    virtual void onTFPrimitiveAdded(TFPrimitive& p);
+    virtual void onTFPrimitiveRemoved(TFPrimitive& p);
+    virtual void onTFPrimitiveChanged(const TFPrimitive& p);
+    virtual void onTFTypeChanged(const TFPrimitiveSet& primitiveSet);
 };
 class IVW_CORE_API TFPrimitiveSetObservable : public Observable<TFPrimitiveSetObserver> {
 protected:
-    void notifyTFPrimitiveAdded(TFPrimitive* p);
-    void notifyTFPrimitiveRemoved(TFPrimitive* p);
-    void notifyTFPrimitiveChanged(const TFPrimitive* p);
-    void notifyTFTypeChanged(const TFPrimitiveSet* primitiveSet);
+    void notifyTFPrimitiveAdded(TFPrimitive& p);
+    void notifyTFPrimitiveRemoved(TFPrimitive& p);
+    void notifyTFPrimitiveChanged(const TFPrimitive& p);
+    void notifyTFTypeChanged(const TFPrimitiveSet& primitiveSet);
 };
 
 /**
@@ -73,8 +74,13 @@ class IVW_CORE_API TFPrimitiveSet : public Serializable,
                                     public TFPrimitiveSetObservable,
                                     public TFPrimitiveObserver {
 public:
-    using iterator = std::vector<TFPrimitive*>::iterator;
-    using const_iterator = std::vector<TFPrimitive*>::const_iterator;
+    using transform_t = TFPrimitive& (*)(TFPrimitive*);
+    using const_transform_t = const TFPrimitive& (*)(const TFPrimitive*);
+    using iterator =
+        util::TransformIterator<transform_t, typename std::vector<TFPrimitive*>::iterator>;
+    using const_iterator =
+        util::TransformIterator<const_transform_t,
+                                typename std::vector<TFPrimitive*>::const_iterator>;
 
     TFPrimitiveSet(const std::vector<TFPrimitiveData>& values = {},
                    TFPrimitiveSetType type = TFPrimitiveSetType::Relative);
@@ -86,8 +92,7 @@ public:
     void setType(TFPrimitiveSetType type);
     TFPrimitiveSetType getType() const;
 
-    void setTitle(const std::string& title);
-    const std::string& getTitle() const;
+    virtual std::string getTitle() const;
 
     /**
      * returns the range of the TF.  For a relative TF this will return [0,1]. In case of an
@@ -103,8 +108,17 @@ public:
     bool empty() const;
 
     // functions for accessing individual TF primitives which are sorted according to their position
-    TFPrimitive* operator[](size_t i);
-    const TFPrimitive* operator[](size_t i) const;
+    TFPrimitive& operator[](size_t i);
+    const TFPrimitive& operator[](size_t i) const;
+
+    TFPrimitive& get(size_t i);
+    const TFPrimitive& get(size_t i) const;
+
+    TFPrimitive& front();
+    const TFPrimitive& front() const;
+
+    TFPrimitive& back();
+    const TFPrimitive& back() const;
 
     iterator begin();
     iterator end();
@@ -113,13 +127,16 @@ public:
     const_iterator cbegin() const;
     const_iterator cend() const;
 
-    TFPrimitive* get(size_t i);
-    const TFPrimitive* get(size_t i) const;
-
+    // get a list of TF primitives in the sorted order
     std::vector<TFPrimitiveData> get() const;
 
     // get a list of TF primitives in the order they were created
     std::vector<TFPrimitiveData> getUnsorted() const;
+
+    /**
+     * Set/update the list of TFPrimitives from given range
+     */
+    void set(const_iterator begin, const_iterator end);
 
     /**
      * Access TFPrimitives as pair of vectors which can be used, e.g., for setting uniforms of a
@@ -173,7 +190,11 @@ public:
      */
     void add(const std::vector<TFPrimitiveData>& primitives);
 
-    void remove(TFPrimitive* primitive);
+    /**
+     * Removes a primitive from the set
+     * @returns if a primitive was found and removed
+     */
+    bool remove(const TFPrimitive& primitive);
 
     void clear();
 
@@ -181,26 +202,36 @@ public:
     void setAlpha(const std::vector<TFPrimitive*> primitives, double alpha);
     void setColor(const std::vector<TFPrimitive*> primitives, const vec3& color);
 
-    virtual void onTFPrimitiveChange(const TFPrimitive* p);
+    virtual void onTFPrimitiveChange(const TFPrimitive& p) override;
 
-    virtual void serialize(Serializer& s) const;
-    virtual void deserialize(Deserializer& d);
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
 
     /**
      * gets called every time when a primitive is added, removed, or changed before notifying
      * the observers. Can be used to invalidate the internal state of derived classes.
      */
     virtual void invalidate() {}
-    
+
     virtual std::vector<FileExtension> getSupportedExtensions() const;
-    virtual void save(const std::string& filename, const FileExtension& ext = FileExtension()) const;
+    virtual void save(const std::string& filename,
+                      const FileExtension& ext = FileExtension()) const;
     virtual void load(const std::string& filename, const FileExtension& ext = FileExtension());
 
     friend bool operator==(const TFPrimitiveSet& lhs, const TFPrimitiveSet& rhs);
 
+    /**
+     * Interpolate the color between all neighboring pairs of TFPrimitives and write the result to
+     * dataArray. The range of all TFPrimitives is [0,1] when TF type is relative
+     *
+     * @param dataArray   write location for interpolated colors
+     * @param size   size of dataArray
+     */
+    void interpolateAndStoreColors(vec4* dataArray, const size_t size) const;
+
 protected:
     void add(std::unique_ptr<TFPrimitive> primitive);
-    void remove(std::vector<std::unique_ptr<TFPrimitive>>::iterator it);
+    bool remove(std::vector<std::unique_ptr<TFPrimitive>>::iterator it);
     void sort();
 
     /**
@@ -213,21 +244,17 @@ protected:
      */
     vec4 interpolateColor(double t) const;
 
-    void setSerializationKey(const std::string& key, const std::string& itemKey);
+    virtual std::string serializationKey() const;
+    virtual std::string serializationItemKey() const;
 
     std::vector<std::unique_ptr<TFPrimitive>> values_;
     std::vector<TFPrimitive*> sorted_;
 
 private:
     ValueWrapper<TFPrimitiveSetType> type_;
-    std::string serializationKey_ = "TFPrimitives";
-    std::string serializationItemKey_ = "TFPrimitive";
-
-    std::string title_ = "TFPrimitiveSet";
 };
 
 inline TFPrimitiveSetType TFPrimitiveSet::getType() const { return type_; }
-inline const std::string& TFPrimitiveSet::getTitle() const { return title_; }
 
 bool operator==(const TFPrimitiveSet& lhs, const TFPrimitiveSet& rhs);
 bool operator!=(const TFPrimitiveSet& lhs, const TFPrimitiveSet& rhs);

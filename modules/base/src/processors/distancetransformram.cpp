@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -151,17 +151,13 @@ void DistanceTransformRAM::updateOutport() {
         });
     };
 
-    auto calc =
-        [
-            pb = &progressBar_,
-            upsample = uniformUpsampling_.get() ? size3_t(upsampleFactorUniform_.get())
-                                                : upsampleFactorVec3_.get(),
-            threshold = threshold_.get(), normalize = normalize_.get(), flip = flip_.get(),
-            square = resultSquaredDist_.get(), scale = resultDistScale_.get(),
-            dataRangeMode = dataRangeMode_.get(), customDataRange = customDataRange_.get(), done
-        ](std::shared_ptr<const Volume> volume)
-            ->std::shared_ptr<const Volume> {
-
+    auto calc = [pb = &progressBar_,
+                 upsample = uniformUpsampling_.get() ? size3_t(upsampleFactorUniform_.get())
+                                                     : upsampleFactorVec3_.get(),
+                 threshold = threshold_.get(), normalize = normalize_.get(), flip = flip_.get(),
+                 square = resultSquaredDist_.get(), scale = resultDistScale_.get(),
+                 dataRangeMode = dataRangeMode_.get(), customDataRange = customDataRange_.get(),
+                 done](std::shared_ptr<const Volume> volume) -> std::shared_ptr<const Volume> {
         auto volDim = glm::max(volume->getDimensions(), size3_t(1u));
         auto dstRepr = std::make_shared<VolumeRAMPrecision<float>>(upsample * volDim);
 

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,8 +31,11 @@
 
 #include <inviwo/core/util/glm.h>
 
+#include <warn/push>
+#include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl_bind.h>
+#include <warn/pop>
 
 // Manually expand PYBIND11_MAKE_OPAQUE because macros and commas in template arguments mix poorly.
 namespace pybind11 {
@@ -149,4 +152,3 @@ using namespace inviwo;
 namespace inviwo {
 void exposeGLMTypes(pybind11::module &m);
 }
-

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -73,14 +73,14 @@ void ProcessorMetaData::serialize(Serializer& s) const {
 }
 
 void ProcessorMetaData::deserialize(Deserializer& d) {
-    ivec2 position{0,0};
+    ivec2 position{0, 0};
     d.deserialize("position", position);
     setPosition(position);
-    
+
     bool visibility{true};
     d.deserialize("visibility", visibility);
     setVisible(visibility);
-    
+
     bool selection{false};
     d.deserialize("selection", selection);
     setSelected(selection);
@@ -97,4 +97,4 @@ bool ProcessorMetaData::equal(const MetaData& rhs) const {
 
 const std::string ProcessorMetaData::CLASS_IDENTIFIER = "org.inviwo.ProcessorMetaData";
 
-}  // namespace
+}  // namespace inviwo

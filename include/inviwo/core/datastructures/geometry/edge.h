@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -67,6 +67,6 @@ typedef EdgeDataFormat<DataUInt32::type> EdgeIndex;
 typedef EdgeDataFormat<DataVec2Float32::type> Edge2D;
 typedef EdgeDataFormat<DataVec3Float32::type> Edge3D;
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_EDGE_H

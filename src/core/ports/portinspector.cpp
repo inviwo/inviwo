@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -85,7 +85,6 @@ PortInspector::PortInspector(std::string portClassIdentifier,
         // Store the processor links.
         propertyLinks_ = network.getLinks();
 
-
         // Manually clear the network so out processors won't get deleted.
         for (auto processor : processors_) {
             network.removeProcessor(processor);
@@ -139,4 +138,4 @@ void PortInspector::deserialize(Deserializer& d) {
     d.deserialize("Canvas", canvasProcessor_);
 }
 
-}  // namespace
+}  // namespace inviwo

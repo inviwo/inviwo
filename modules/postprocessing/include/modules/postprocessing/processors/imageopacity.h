@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2016-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -63,11 +63,11 @@ namespace inviwo {
 class IVW_MODULE_POSTPROCESSING_API ImageOpacity : public ImageGLProcessor {
 public:
     ImageOpacity();
-    virtual ~ImageOpacity() = default; 
-    
+    virtual ~ImageOpacity() = default;
+
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
-    
+
 protected:
     virtual void preProcess(TextureUnitContainer &cont) override;
 
@@ -75,6 +75,6 @@ private:
     FloatProperty alpha_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_IMAGEOPACITY_H

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,13 +32,13 @@
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <modules/opengl/texture/textureunit.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/ports/volumeport.h>
 
 namespace inviwo {
 
 class Shader;
+class TextureUnitContainer;
 
 namespace utilgl {
 
@@ -53,8 +53,8 @@ IVW_MODULE_OPENGL_API void bindAndSetUniforms(Shader& shader, TextureUnitContain
 
 IVW_MODULE_OPENGL_API void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
                                               const Volume& volume, const std::string& samplerID);
-}
+}  // namespace utilgl
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_VOLUMEUTILSGL_H

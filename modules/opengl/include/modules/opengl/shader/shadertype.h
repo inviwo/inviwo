@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2018 Inviwo Foundation
+ * Copyright (c) 2015-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@ namespace inviwo {
  * \class ShaderType
  * \brief Encapsulate a GLenum shader type, and related information.
  */
-class IVW_MODULE_OPENGL_API ShaderType { 
+class IVW_MODULE_OPENGL_API ShaderType {
 public:
     ShaderType() = default;
     explicit ShaderType(GLenum type);
@@ -69,16 +69,15 @@ private:
 
 bool operator==(const ShaderType& lhs, const ShaderType& rhs);
 
-} // namespace
+}  // namespace inviwo
 
 namespace std {
-template<>
+template <>
 struct hash<inviwo::ShaderType> {
     size_t operator()(const inviwo::ShaderType& type) const {
         return std::hash<GLenum>()(static_cast<GLenum>(type));
     }
 };
-}  // namespace
+}  // namespace std
 
-#endif // IVW_SHADERTYPE_H
-
+#endif  // IVW_SHADERTYPE_H

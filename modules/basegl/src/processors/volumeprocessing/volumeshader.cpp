@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,15 +49,14 @@ void VolumeShader::initializeResources() {
 const ProcessorInfo VolumeShader::getProcessorInfo() const { return processorInfo_; }
 
 VolumeShader::VolumeShader()
-    : VolumeShader(
-          std::make_shared<StringShaderResource>("volume_shader.frag", getDefaultFragmentShader())) {
-}
+    : VolumeShader(std::make_shared<StringShaderResource>("volume_shader.frag",
+                                                          getDefaultFragmentShader())) {}
 
 VolumeShader::VolumeShader(std::shared_ptr<StringShaderResource> fragmentShader)
     : VolumeGLProcessor(fragmentShader, false)
     , fragmentShader_(fragmentShader)
-    , fragmentSrc_("shader", "Shader", getDefaultFragmentShader(), InvalidationLevel::InvalidResources,
-                   PropertySemantics::ShaderEditor) {
+    , fragmentSrc_("shader", "Shader", getDefaultFragmentShader(),
+                   InvalidationLevel::InvalidResources, PropertySemantics::ShaderEditor) {
     addProperty(fragmentSrc_);
 
     fragmentSrc_.onChange([&]() { fragmentShader_->setSource(fragmentSrc_.get()); });

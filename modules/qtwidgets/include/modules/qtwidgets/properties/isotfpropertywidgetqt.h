@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,7 +42,7 @@ class TFPushButton;
 
 class IVW_MODULE_QTWIDGETS_API IsoTFPropertyWidgetQt : public PropertyWidgetQt {
 public:
-    IsoTFPropertyWidgetQt(IsoTFProperty *property);
+    IsoTFPropertyWidgetQt(IsoTFProperty* property);
     virtual ~IsoTFPropertyWidgetQt();
 
     virtual void updateFromProperty() override;

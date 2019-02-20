@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,11 +42,14 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/network/workspacemanager.h>
 #include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/utilities.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/logerrorcounter.h>
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/moduleregistration.h>
+
+#include <inviwo/testutil/configurablegtesteventlistener.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -77,7 +80,7 @@ int main(int argc, char** argv) {
         inviwoApp.registerModules(inviwo::getModuleList());
         inviwoApp.resizePool(0);
         inviwoApp.printApplicationInfo();
-        
+
         auto& cmdparser = inviwoApp.getCommandLineParser();
 
         cmdparser.processCallbacks();  // run any command line callbacks from modules.
@@ -86,6 +89,7 @@ int main(int argc, char** argv) {
         size_t errCount = logCounter->getErrorCount();
 
         ::testing::InitGoogleTest(&argc, argv);
+        ConfigurableGTestEventListener::setup();
         ret = RUN_ALL_TESTS();
 
         if (ret) {

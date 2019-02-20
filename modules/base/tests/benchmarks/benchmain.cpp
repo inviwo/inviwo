@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,6 +40,9 @@
 #include <benchmark/benchmark.h>
 
 #include <cmath>
+
+#include <warn/push>
+#include <warn/ignore/unused-function>
 
 using namespace inviwo;
 
@@ -148,3 +151,5 @@ int main(int argc, char** argv) {
 
     return 0;
 }
+
+#include <warn/pop>

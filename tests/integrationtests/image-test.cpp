@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -89,7 +89,7 @@ TEST(ImageTests, ImageLoadWhite) {
 
 TEST(ImageTests, ImageLoadRGB) {
     auto imgFile = TestImgs::rgb();
-    
+
     ASSERT_TRUE(filesystem::fileExists(imgFile));
 
     auto disk = std::make_shared<LayerDisk>(imgFile);
@@ -202,4 +202,4 @@ TEST(ImageTests, ImageResize) {
 
     EXPECT_TRUE(layerRam == layerRam2);
 }
-}
+}  // namespace inviwo

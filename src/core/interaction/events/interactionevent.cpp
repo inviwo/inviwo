@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,6 +41,10 @@ std::string InteractionEvent::modifierNames() const {
     std::stringstream ss;
     ss << modifiers_;
     return ss.str();
+}
+
+void InteractionEvent::setToolTip(const std::string& tooltip) const {
+    if (tooltip_) tooltip_(tooltip);
 }
 
 void InteractionEvent::setToolTipCallback(ToolTipCallback tooltip) { tooltip_ = tooltip; }

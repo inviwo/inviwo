@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2017-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,6 +32,10 @@
 namespace inviwo {
 
 namespace glui {
+
+const std::string FloatMinMaxPropertyWidget::classIdentifier =
+    "org.inviwo.glui.FloatMinMaxPropertyWidget";
+std::string FloatMinMaxPropertyWidget::getClassIdentifier() const { return classIdentifier; }
 
 FloatMinMaxPropertyWidget::FloatMinMaxPropertyWidget(FloatMinMaxProperty &property,
                                                      Processor &processor, Renderer &uiRenderer,
@@ -84,7 +88,6 @@ FloatMinMaxPropertyWidget::FloatMinMaxPropertyWidget(FloatMinMaxProperty &proper
 }
 
 void FloatMinMaxPropertyWidget::updateFromProperty() {
-    const auto value(property_->get());
     set(reprToSlider(property_->get()), 0, sliderMax_, reprSeparationToSlider());
     setEnabled(!property_->getReadOnly());
 }
@@ -96,9 +99,7 @@ void FloatMinMaxPropertyWidget::onSetDisplayName(Property *, const std::string &
     property_->propertyModified();
 }
 
-void FloatMinMaxPropertyWidget::onSetReadOnly(Property *, bool readonly) {
-    setEnabled(!readonly);
-}
+void FloatMinMaxPropertyWidget::onSetReadOnly(Property *, bool readonly) { setEnabled(!readonly); }
 
 float FloatMinMaxPropertyWidget::sliderToRepr(int val) const {
     return property_->getRangeMin() +

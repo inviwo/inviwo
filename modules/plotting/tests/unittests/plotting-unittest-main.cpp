@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifdef _MSC_VER
@@ -32,6 +32,8 @@
 #endif
 
 #include <inviwo/core/common/inviwo.h>
+
+#include <inviwo/testutil/configurablegtesteventlistener.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -50,6 +52,7 @@ int main(int argc, char** argv) {
 #else
         ::testing::InitGoogleTest(&argc, argv);
 #endif
+        ConfigurableGTestEventListener::setup();
         ret = RUN_ALL_TESTS();
     }
 

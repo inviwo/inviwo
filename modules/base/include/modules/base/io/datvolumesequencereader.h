@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -57,11 +57,12 @@ namespace inviwo {
  *  The tag names are case insensitive and should always be followed by a ":"
  *  Anything after a '#' will be considered a comment.
  *
- * Supports reading VolumeSequence (for example time-varying volume data) by specifying multiple .dat files.
+ * Supports reading VolumeSequence (for example time-varying volume data) by specifying multiple
+ *.dat files.
  * Example:
- * Datfile: sequence0.dat
- * Datfile: sequence1.dat
- * Datfile: sequence2.dat
+ *     Datfile: sequence0.dat
+ *     Datfile: sequence1.dat
+ *     Datfile: sequence2.dat
  */
 class IVW_MODULE_BASE_API DatVolumeSequenceReader
     : public DataReaderType<std::vector<std::shared_ptr<Volume>>> {

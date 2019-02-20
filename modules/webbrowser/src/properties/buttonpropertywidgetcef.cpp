@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,10 +36,10 @@ ButtonPropertyWidgetCEF::ButtonPropertyWidgetCEF(ButtonProperty* property,
     : PropertyWidgetCEF(property, frame, htmlId) {}
 
 inline void ButtonPropertyWidgetCEF::updateFromProperty() {
-	// Frame might be null if for example webpage is not found on startup
-	if (!frame_) {
-		return;
-	}
+    // Frame might be null if for example webpage is not found on startup
+    if (!frame_) {
+        return;
+    }
     std::stringstream script;
     // Send click button event
     script << "var property = document.getElementById(\"" << htmlId_ << "\");";

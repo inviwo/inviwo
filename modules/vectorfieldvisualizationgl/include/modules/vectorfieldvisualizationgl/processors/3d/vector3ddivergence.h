@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2018 Inviwo Foundation
+ * Copyright (c) 2015-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,6 @@
 #include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
 
 namespace inviwo {
-
 
 class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API Vector3DDivergence : public VolumeGLProcessor {
 public:

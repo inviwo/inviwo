@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,31 +24,21 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/opengl/buffer/renderbufferobject.h>
 
 namespace inviwo {
 
-RenderBufferObject::RenderBufferObject() {
-    glGenRenderbuffersEXT(1, &id_);
-}
+RenderBufferObject::RenderBufferObject() { glGenRenderbuffersEXT(1, &id_); }
 
-RenderBufferObject::~RenderBufferObject() {
-    glDeleteRenderbuffersEXT(1, &id_);
-}
+RenderBufferObject::~RenderBufferObject() { glDeleteRenderbuffersEXT(1, &id_); }
 
-void RenderBufferObject::activate() {
-    glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, id_);
-}
+void RenderBufferObject::activate() { glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, id_); }
 
-void RenderBufferObject::deactivate() {
-    glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);
-}
+void RenderBufferObject::deactivate() { glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0); }
 
-unsigned int RenderBufferObject::getID() const {
-    return id_;
-}
+unsigned int RenderBufferObject::getID() const { return id_; }
 
-} // namespace
+}  // namespace inviwo

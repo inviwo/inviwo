@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2017-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,6 +32,9 @@
 namespace inviwo {
 
 namespace glui {
+
+const std::string BoolPropertyWidget::classIdentifier = "org.inviwo.glui.BoolPropertyWidget";
+std::string BoolPropertyWidget::getClassIdentifier() const { return classIdentifier; }
 
 BoolPropertyWidget::BoolPropertyWidget(BoolProperty &property, Processor &processor,
                                        Renderer &uiRenderer, const ivec2 &extent)

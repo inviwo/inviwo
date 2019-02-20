@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -99,6 +99,8 @@ public:
      * even to all connected outport, otherwise only to target.
      */
     virtual void propagateEvent(Event* event, Outport* target = nullptr);
+
+    // clang-format off
     /**
      * The on change call back is invoked before Processor::process after a port has been connected,
      * disconnected, or has changed its validation level. Note it is only called if process is also
@@ -130,6 +132,8 @@ public:
     template <typename T>
     [[deprecated("was declared deprecated. Use `removeOnInvalid(const BaseCallBack*)` instead")]]
     void removeOnInvalid(T* o);
+
+    // clang-format on
 
     void removeOnConnect(const BaseCallBack* callback);
     void removeOnDisconnect(const BaseCallBack* callback);
@@ -178,6 +182,8 @@ private:
     CallBackList onDisconnectCallback_;
 };
 
+// clang-format off
+
 template <typename T>
 [[deprecated("was declared deprecated. Use `onChange(std::function<void()>)` instead")]]
 const BaseCallBack* Inport::onChange(T* o, void (T::*m)()) {
@@ -201,6 +207,8 @@ template <typename T>
 void Inport::removeOnInvalid(T* o) {
     onInvalidCallback_.removeMemberFunction(o);
 }
+
+// clang-format on
 
 }  // namespace inviwo
 

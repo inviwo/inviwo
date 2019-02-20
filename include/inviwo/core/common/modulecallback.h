@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_MODULECALLBACK_H
@@ -39,7 +39,7 @@ class IVW_CORE_API CallbackWithSingleArgument {
 public:
     CallbackWithSingleArgument() {}
     virtual ~CallbackWithSingleArgument() {}
-    virtual void invoke(void*) const =  0;
+    virtual void invoke(void*) const = 0;
 };
 
 template <typename T, typename U>
@@ -91,6 +91,6 @@ private:
     std::unique_ptr<CallbackWithSingleArgument> callBack_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_MODULECALLBACK_H
+#endif  // IVW_MODULECALLBACK_H

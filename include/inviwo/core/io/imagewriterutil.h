@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2017-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,10 +45,8 @@ IVW_CORE_API void saveLayer(const Layer& layer, const std::string& path,
 
 IVW_CORE_API void saveLayer(const Layer& layer);
 
-} // namespace
+}  // namespace util
 
+}  // namespace inviwo
 
-} // namespace
-
-#endif // IVW_IMAGEWRITERUTIL_H
-
+#endif  // IVW_IMAGEWRITERUTIL_H

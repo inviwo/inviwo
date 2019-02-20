@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,11 +24,12 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/qtwidgets/properties/lightpropertywidgetqt.h>
 #include <modules/qtwidgets/properties/compositepropertywidgetqt.h>
+#include <modules/qtwidgets/numberlineedit.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -44,7 +45,7 @@ LightPropertyWidgetQt::LightPropertyWidgetQt(FloatVec3Property* property)
     : PropertyWidgetQt(property)
     , property_(property)
     , lightWidget_{new LightPositionWidgetQt()}
-    , radiusSpinBox_{new CustomDoubleSpinBoxQt(this)}
+    , radiusSpinBox_{new NumberLineEdit(this)}
     , label_{new EditableLabelQt(this, property_)} {
 
     setFocusPolicy(radiusSpinBox_->focusPolicy());
@@ -60,10 +61,9 @@ LightPropertyWidgetQt::LightPropertyWidgetQt(FloatVec3Property* property)
     radiusSpinBox_->setSingleStep(0.1);
     // don't emit the valueChanged() signal while typing
     radiusSpinBox_->setKeyboardTracking(false);
-    connect(
-        radiusSpinBox_,
-        static_cast<void (CustomDoubleSpinBoxQt::*)(double)>(&CustomDoubleSpinBoxQt::valueChanged),
-        this, &LightPropertyWidgetQt::onRadiusSpinBoxChanged);
+    connect(radiusSpinBox_,
+            static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this,
+            &LightPropertyWidgetQt::onRadiusSpinBoxChanged);
 
     // Assuming that minimum value is negative and maximum value is positive
     if (glm::any(glm::greaterThan(property_->getMinValue(), vec3(0.0f)))) {
@@ -124,4 +124,4 @@ void LightPropertyWidgetQt::updateFromProperty() {
     }
 }
 
-} // namespace
+}  // namespace inviwo

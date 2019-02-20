@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -96,7 +96,7 @@ Texture2D* Texture2D::clone() const { return new Texture2D(*this); }
 void Texture2D::initialize(const void* data) {
     // Notify observers
     forEachObserver([](TextureObserver* o) { o->notifyBeforeTextureInitialization(); });
-    
+
     bind();
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     glTexImage2D(GL_TEXTURE_2D, level_, internalformat_, static_cast<GLsizei>(dimensions_.x),
@@ -128,4 +128,4 @@ void Texture2D::default2DTextureParameterFunction(Texture* tex) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, tex->getFiltering());
 }
 
-}  // namespace
+}  // namespace inviwo

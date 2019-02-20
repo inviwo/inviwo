@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2017-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -85,7 +85,6 @@ public:
      * (application_name-enabled-modules.txt) containing the names of the modules to load.
      */
     void registerModules(RuntimeModuleLoading);
-
 
     /**
      * \brief Removes all modules not marked as protected by the application.

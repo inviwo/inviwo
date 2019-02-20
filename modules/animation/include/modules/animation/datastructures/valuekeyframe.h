@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -74,7 +74,7 @@ bool operator==(const ValueKeyframe<T>& a, const ValueKeyframe<T>& b) {
 }
 template <typename T>
 bool operator!=(const ValueKeyframe<T>& a, const ValueKeyframe<T>& b) {
-    return !(a==b);
+    return !(a == b);
 }
 
 template <typename T>

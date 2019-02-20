@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,23 +41,24 @@ namespace inviwo {
 
 class NetworkTest : public ::testing::Test {
 public:
-    NetworkTest() : network(InviwoApplication::getPtr()) {};
+    NetworkTest() : network(InviwoApplication::getPtr()){};
+
 protected:
     virtual void SetUp() {
-       Processor* p1 = new VolumeSource(InviwoApplication::getPtr());
-       p1->setIdentifier("volumeSource");
-       network.addProcessor(p1);
+        Processor* p1 = new VolumeSource(InviwoApplication::getPtr());
+        p1->setIdentifier("volumeSource");
+        network.addProcessor(p1);
 
-       Processor* p2 = new CubeProxyGeometry();
-       p2->setIdentifier("cubeProxyGeometry");
-       network.addProcessor(p2); 
+        Processor* p2 = new CubeProxyGeometry();
+        p2->setIdentifier("cubeProxyGeometry");
+        network.addProcessor(p2);
 
-       Processor* p3 = new VolumeSlice();
-       p3->setIdentifier("volumeSlice");
-       network.addProcessor(p3);
+        Processor* p3 = new VolumeSlice();
+        p3->setIdentifier("volumeSlice");
+        network.addProcessor(p3);
 
-       network.addConnection(p1->getOutport("data"), p2->getInport("volume"));
-       network.addConnection(p1->getOutport("data"), p3->getInport("inputVolume"));
+        network.addConnection(p1->getOutport("data"), p2->getInport("volume"));
+        network.addConnection(p1->getOutport("data"), p3->getInport("inputVolume"));
     }
 
     // virtual void TearDown() {}
@@ -114,7 +115,7 @@ TEST_F(NetworkTest, ProcessorGetPropertyByType) {
     ASSERT_TRUE(p != nullptr);
 
     const std::vector<FloatVec3Property*> props = p->getPropertiesByType<FloatVec3Property>(true);
-    ASSERT_EQ(8, props.size());
+    ASSERT_EQ(5, props.size());
 
     ASSERT_TRUE(props[0] != nullptr);
 }
@@ -131,4 +132,4 @@ TEST_F(NetworkTest, ProcessorGetProperty) {
     ASSERT_TRUE(prop != nullptr);
 }
 
-}
+}  // namespace inviwo

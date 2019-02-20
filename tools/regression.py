@@ -2,7 +2,7 @@
 #
 # Inviwo - Interactive Visualization Workshop
 #
-# Copyright (c) 2013-2018 Inviwo Foundation
+# Copyright (c) 2013-2019 Inviwo Foundation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -31,6 +31,7 @@ import os
 import sys
 import argparse
 import configparser
+import logging
 
 from ivwpy.util import *
 from ivwpy.colorprint import *
@@ -75,7 +76,7 @@ if len(missing_modules)>0:
 	print_error("Error: Missing python modules:")
 	for k,v in missing_modules.items():
 		print_error("    {:20s} {}".format(k,v))	
-	print_info("    To install run: 'pip3 install {}'".format(" ".join(missing_modules.keys())))
+	print_info("    To install run: 'python -m pip install {}'".format(" ".join(missing_modules.keys())))
 	exit()
 
 import ivwpy.regression.app
@@ -90,9 +91,11 @@ def makeCmdParser():
 		description="Run regression tests",
 		formatter_class=argparse.ArgumentDefaultsHelpFormatter
 	)
-	parser.add_argument('-i', '--inviwo', type=str, required=True, action="store", dest="inviwo",
+	parser.add_argument('-i', '--inviwo', type=str, action="store", dest="inviwo",
 						help='Paths to inviwo executable')
 	parser.add_argument('-c', '--config', type=str, action="store", dest="config", help='A configure file', default="")
+	parser.add_argument('-b', '--build_type', type=str, action="store", dest="build_type", 
+		help='Specify the build type (Debug, Release, ...)', default="")
 	parser.add_argument('-o', '--output', type=str, action="store", dest="output", help='Path to output')
 	
 	parser.add_argument('-r', '--repos', type=str, nargs='*', action="store", dest="repos",
@@ -113,6 +116,8 @@ def makeCmdParser():
 	parser.add_argument('--header', type=str, action="store", dest="header", help='A optional report header', default=None)
 	parser.add_argument('--footer', type=str, action="store", dest="footer", help='A optional report footer', default=None)
 	parser.add_argument("-v", "--view", action="store_true", dest="view", help="Open the report when done")
+	parser.add_argument("--log", type=str, dest="log", help="Select log level: DEBUG, INFO, WARN, ERROR, CRITICAL (default: WARN)")
+	parser.add_argument("--summary", action="store_true", dest="summary", help="Print summary information")
 
 	return parser.parse_args()
 
@@ -144,32 +149,49 @@ def makeFilter(inc, exc):
 
 	return filter
 
+
+def execonf(file, build):
+	parts = os.path.splitext(file)
+	return parts[0] + "-" + build + parts[1]
+
 if __name__ == '__main__':
 
 	args = makeCmdParser();
+	config = configparser.ConfigParser()
+	
+	logging.getLogger().setLevel(getattr(logging, str(args.log).upper(), logging.WARN))
 
-	inviwopath = os.path.abspath(args.inviwo)
+	if args.inviwo:
+		inviwopath = os.path.abspath(args.inviwo)
+		configpath = find_pyconfig(inviwopath)
+		config.read([
+			configpath if configpath else "", 
+			args.config if args.config else ""
+		])
+	elif args.config and args.build_type:
+		readfiles = config.read([args.config, execonf(args.config, args.build_type)])
+		inviwopath = config.get("Inviwo", "executable")
+	else:
+		print_error("Regression.py needs either a either an inviwo executable using \
+			'--inviwo' or a config and build_type using '--config' and '--build_type'")
+		sys.exit(1)
+
+
 	if not os.path.exists(inviwopath):
 		print_error("Regression.py was unable to find inviwo executable at " + inviwopath)
 		sys.exit(1)
 
-	configpath = find_pyconfig(inviwopath)
-	config = configparser.ConfigParser()
-	config.read([
-		configpath if configpath else "", 
-		args.config if args.config else ""
-	])
 
 	modulePaths = []
-	if args.repos: 
-		modulePaths = searchRepoPaths(args.repos)
+	if args.repos or args.modules:
+		if args.repos: 
+			modulePaths = searchRepoPaths(args.repos)
+		if args.modules:
+			modulePaths += args.modules
 	elif config.has_option("Inviwo", "modulepaths"):
 		modulePaths = config.get("Inviwo", "modulepaths").split(";")
 
-	if args.modules:
-		modulePaths += args.modules
-
-	modulePaths = list(map(os.path.abspath, modulePaths))
+	modulePaths = list(set(map(os.path.abspath, modulePaths)))
 
 	if args.output:
 		output = os.path.abspath(args.output)
@@ -225,11 +247,13 @@ if __name__ == '__main__':
 		if app.success():
 			print_info("Regression was successful")
 			print_info("Report: " + output+"/report.html")
+			if args.summary: app.printSummary()
 			if args.view: openWithDefaultApp(output+"/report.html")
 			sys.exit(0)
 		else: 
 			print_error("Regression was unsuccessful see report for details")
 			print_info("Report: " + output+"/report.html")
+			if args.summary: app.printSummary()
 			if args.view: openWithDefaultApp(output+"/report.html")
 			sys.exit(1)
 		

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@ namespace inviwo {
 class BoolCompositeProperty;
 
 class IVW_MODULE_QTWIDGETS_API BoolCompositePropertyWidgetQt : public CollapsibleGroupBoxWidgetQt,
-                                                        public CompositePropertyObserver {
+                                                               public CompositePropertyObserver {
 public:
     BoolCompositePropertyWidgetQt(BoolCompositeProperty* property);
 
@@ -50,7 +50,7 @@ public:
     virtual void onSetDisplayName(Property* property, const std::string& displayName) override;
     virtual void onSetCollapsed(bool value) override;
 
-    virtual void initState() override; 
+    virtual void initState() override;
 
 protected:
     // override from CollapsibleGroupBoxWidgetQt
@@ -61,6 +61,6 @@ private:
     BoolCompositeProperty* boolCompProperty_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_BOOLCOMPOSITEPROPERTYWIDGETQT_H

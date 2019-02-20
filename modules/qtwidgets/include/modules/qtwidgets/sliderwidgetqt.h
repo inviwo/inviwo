@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_SLIDETWIDGETQT_H
@@ -44,7 +44,7 @@ class QSlider;
 
 namespace inviwo {
 
-class CustomDoubleSpinBoxQt;
+class NumberLineEdit;
 
 class IVW_MODULE_QTWIDGETS_API BaseSliderWidgetQt : public QWidget {
 #include <warn/push>
@@ -52,8 +52,11 @@ class IVW_MODULE_QTWIDGETS_API BaseSliderWidgetQt : public QWidget {
     Q_OBJECT
 #include <warn/pop>
 public:
-    BaseSliderWidgetQt();
+    BaseSliderWidgetQt(bool intMode = false);
     virtual ~BaseSliderWidgetQt() = default;
+
+    void setWrapping(bool wrap);
+    bool wrapping() const;
 
 protected:
     virtual double transformValueToSpinner() = 0;
@@ -96,9 +99,9 @@ private:
      */
     void updateSlider();
 
-    virtual bool eventFilter(QObject *watched, QEvent *event) override;
+    virtual bool eventFilter(QObject* watched, QEvent* event) override;
 
-    CustomDoubleSpinBoxQt* spinBox_;
+    NumberLineEdit* spinBox_;
     QSlider* slider_;
     double spinnerValue_;
     int sliderValue_;
@@ -108,7 +111,11 @@ template <typename T>
 class TemplateSliderWidget : public BaseSliderWidgetQt, public OrdinalBaseWidget<T> {
 public:
     TemplateSliderWidget()
-        : BaseSliderWidgetQt(), value_(0), minValue_(0), maxValue_(0), increment_(0) {}
+        : BaseSliderWidgetQt(std::is_integral<T>::value)
+        , value_(0)
+        , minValue_(0)
+        , maxValue_(0)
+        , increment_(0) {}
     virtual ~TemplateSliderWidget() = default;
 
     virtual T getValue() override;
@@ -312,7 +319,6 @@ void TemplateSliderWidget<T>::setIncrement(T increment) {
     }
 }
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_SLIDETWIDGETQT_H
-
+#endif  // IVW_SLIDETWIDGETQT_H

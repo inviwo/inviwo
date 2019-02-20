@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -62,6 +62,12 @@ public:
 private:
     SerializationExceptionData data_;
 };
+
+namespace util {
+
+IVW_CORE_API std::string formatSerializationError(const std::string& name, const std::string& src,
+                                                  const std::string& dst, const std::string& err);
+}  // namespace util
 
 }  // namespace inviwo
 

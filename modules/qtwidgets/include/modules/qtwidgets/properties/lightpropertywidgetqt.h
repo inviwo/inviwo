@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_LIGHTPROPERTYWIDGETQT_H
@@ -32,14 +32,13 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <modules/qtwidgets/customdoublespinboxqt.h>
 #include <modules/qtwidgets/editablelabelqt.h>
 #include <modules/qtwidgets/lightpositionwidgetqt.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
 
-class CustomDoubleSpinBoxQt;
-
 namespace inviwo {
+
+class NumberLineEdit;
 
 class IVW_MODULE_QTWIDGETS_API LightPropertyWidgetQt : public PropertyWidgetQt {
 public:
@@ -51,13 +50,13 @@ public:
 private:
     FloatVec3Property* property_;
     LightPositionWidgetQt* lightWidget_;
-    CustomDoubleSpinBoxQt* radiusSpinBox_;
+    NumberLineEdit* radiusSpinBox_;
     EditableLabelQt* label_;
 
     void onPositionLightWidgetChanged();
     void onRadiusSpinBoxChanged(double radius);
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_LightPropertyWidgetQt_H
+#endif  // IVW_LightPropertyWidgetQt_H

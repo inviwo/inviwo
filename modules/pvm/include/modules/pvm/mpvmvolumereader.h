@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2018 Inviwo Foundation
+ * Copyright (c) 2015-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_MPVMVOLUMEREADER_H
@@ -41,7 +41,7 @@ namespace inviwo {
  *
  *  Format consists of a configuration filenames to multiple PVM files
  */
- class IVW_MODULE_PVM_API MPVMVolumeReader : public DataReaderType<Volume> {
+class IVW_MODULE_PVM_API MPVMVolumeReader : public DataReaderType<Volume> {
 public:
     MPVMVolumeReader();
     MPVMVolumeReader(const MPVMVolumeReader& rhs) = default;
@@ -50,13 +50,12 @@ public:
     virtual ~MPVMVolumeReader() = default;
 
     virtual std::shared_ptr<Volume> readData(const std::string& filePath) override;
-    
- protected:
-     void printPVMMeta(const Volume&, std::string) const;
-     void printMetaInfo(const MetaDataOwner&, std::string) const;
 
+protected:
+    void printPVMMeta(const Volume&, std::string) const;
+    void printMetaInfo(const MetaDataOwner&, std::string) const;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_MPVMVOLUMEREADER_H

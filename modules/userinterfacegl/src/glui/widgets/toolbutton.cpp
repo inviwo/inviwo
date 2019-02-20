@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2017-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,6 +47,9 @@
 namespace inviwo {
 
 namespace glui {
+
+const std::string ToolButton::classIdentifier = "org.inviwo.glui.ToolButton";
+std::string ToolButton::getClassIdentifier() const { return classIdentifier; }
 
 ToolButton::ToolButton(const std::string &filename, Processor &processor, Renderer &uiRenderer,
                        const ivec2 &extent)

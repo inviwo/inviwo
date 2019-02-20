@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2018 Inviwo Foundation
+ * Copyright (c) 2015-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -56,7 +56,7 @@ class IVW_MODULE_OPENGLQT_API CanvasQGLWidget : public QGLWidget, public CanvasG
 public:
     using QtBase = QGLWidget;
 
-    explicit CanvasQGLWidget(QGLWidget* parent = nullptr, size2_t dim = size2_t(256,256));
+    explicit CanvasQGLWidget(QGLWidget* parent = nullptr, size2_t dim = size2_t(256, 256));
     ~CanvasQGLWidget();
 
     static void defineDefaultContextFormat();
@@ -82,8 +82,6 @@ private:
     static QGLFormat sharedFormat_;
 };
 
+}  // namespace inviwo
 
-} // namespace
-
-#endif // IVW_CANVASQGLWIDGET_H
-
+#endif  // IVW_CANVASQGLWIDGET_H

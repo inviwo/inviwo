@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,9 +38,8 @@ namespace inviwo {
 class IVW_MODULE_ASSIMP_API AssimpModule : public InviwoModule {
 public:
     AssimpModule(InviwoApplication* app);
-
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_ASSIMPMODULE_H
+#endif  // IVW_ASSIMPMODULE_H

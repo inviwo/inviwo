@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2018 Inviwo Foundation
+ * Copyright (c) 2015-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -110,7 +110,7 @@ PathLinesDeprecated::PathLinesDeprecated()
 }
 
 void PathLinesDeprecated::process() {
-    auto sampler = [&]() -> std::shared_ptr<const Spatial4DSampler<3, double> > {
+    auto sampler = [&]() -> std::shared_ptr<const Spatial4DSampler<3, double>> {
         if (sampler_.isConnected()) {
             if (allowLooping_.getVisible()) {
                 allowLooping_.setVisible(false);

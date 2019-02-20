@@ -83,6 +83,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/eventlistener.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/eventmatcher.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/eventpropagator.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/eventutil.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/gestureevent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/gesturestate.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/interactionevent.h
@@ -148,6 +149,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/network/processornetworkevaluationobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/processornetworkevaluator.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/processornetworkobserver.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/network/workspaceannotations.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/workspacemanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/network/workspaceutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/bufferport.h
@@ -295,6 +297,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/licenseinfo.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/logcentral.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/logerrorcounter.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/logfilter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/memoryfilehandle.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/moduleutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/observer.h
@@ -388,6 +391,7 @@ set(SOURCE_FILES
     interaction/events/eventhandler.cpp
     interaction/events/eventlistener.cpp
     interaction/events/eventmatcher.cpp
+    interaction/events/eventutil.cpp
     interaction/events/gestureevent.cpp
     interaction/events/interactionevent.cpp
     interaction/events/keyboardevent.cpp
@@ -442,6 +446,7 @@ set(SOURCE_FILES
     network/processornetworkevaluationobserver.cpp
     network/processornetworkevaluator.cpp
     network/processornetworkobserver.cpp
+    network/workspaceannotations.cpp
     network/workspacemanager.cpp
     network/workspaceutils.cpp
     ports/imageport.cpp
@@ -556,6 +561,7 @@ set(SOURCE_FILES
     util/licenseinfo.cpp
     util/logcentral.cpp
     util/logerrorcounter.cpp
+    util/logfilter.cpp
     util/memoryfilehandle.cpp
     util/moduleutils.cpp
     util/observer.cpp
@@ -613,6 +619,7 @@ set(TEST_FILES
     tests/unittests/pickingcontroller-test.cpp
     tests/unittests/serialize-container-test.cpp
     tests/unittests/serializer-test.cpp
+    tests/unittests/tfprimitiveset-test.cpp
     tests/unittests/typedmesh-test.cpp
     tests/unittests/utilities-test.cpp
     tests/unittests/volumesequenceutils-tests.cpp

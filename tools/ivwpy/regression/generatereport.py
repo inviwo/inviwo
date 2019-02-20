@@ -2,7 +2,7 @@
 #
 # Inviwo - Interactive Visualization Workshop
 #
-# Copyright (c) 2013-2018 Inviwo Foundation
+# Copyright (c) 2013-2019 Inviwo Foundation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -193,19 +193,22 @@ def testImages(testimg, refimg, diffimg, maskimg):
 
 	with tag('div', klass="zoomset"):
 		with tag('div', klass="slider"):
-			with tag('div', klass="imgtestlabel"): text("Test")
-			with tag('div', klass="imgtestlabel"): text("Reference")
-			with tag('div', klass="imgtestlabel"): text("Difference * 10") 
-			with tag('div', klass="imgtestlabel"): text("Mask") 
-		with tag('div', klass="slider"):
-			with tag('div', klass ="zoom"):
-				doc.asis(image(testimg, alt = "test image", klass ="test"))
-			with tag('div', klass ="zoom"):
-				doc.asis(image(refimg,  alt = "reference image", klass ="test"))
-			with tag('div', klass ="zoom"):
-				doc.asis(image(diffimg, alt = "difference image", klass ="diff"))
-			with tag('div', klass ="zoom"):
-				doc.asis(image(maskimg, alt = "mask image", klass ="diff"))
+			with tag('div'):
+				with tag('div', klass="imgtestlabel"): text("Test")
+				with tag('div', klass ="zoom"):
+					doc.asis(image(testimg, alt = "test image", klass ="test"))
+			with tag('div'):
+				with tag('div', klass="imgtestlabel"): text("Reference")
+				with tag('div', klass ="zoom"):
+					doc.asis(image(refimg,  alt = "reference image", klass ="test"))
+			with tag('div'):
+				with tag('div', klass="imgtestlabel"): text("Difference * 10") 
+				with tag('div', klass ="zoom"):
+					doc.asis(image(diffimg, alt = "difference image", klass ="diff"))
+			with tag('div'):
+				with tag('div', klass="imgtestlabel"): text("Mask") 
+				with tag('div', klass ="zoom"):
+					doc.asis(image(maskimg, alt = "mask image", klass ="diff"))
 	return doc.getvalue()
 
 def dataToJsArray(data):
@@ -281,7 +284,7 @@ class TestRun:
 	def simple(self, key):
 		value = toString(self.report[key])
 		short = abr(value)
-		self.doc.asis(listItem(keyval(formatKey(key), short), value, 
+		self.doc.asis(listItem(keyval(formatKey(key), html.escape(short)), html.escape(value), 
 			                   status = self.status(key), 
 			             	   toggle = short != value))
 
@@ -594,6 +597,9 @@ class HtmlReport:
 		cssdata = pkgutil.get_data('ivwpy', 'regression/resources/report.css')		
 		with open(toPath(self.basedir, "report.css"), 'w') as f:
 			f.write(lesscpy.compile(io.StringIO(cssdata.decode("utf-8"))))
+
+		with open(self.basedir + "/" + filename + ".raw..html", 'w') as f:
+			f.write(self.doc.getvalue())
 
 		with open(file, 'w') as f:
 			f.write(yattag.indent(self.doc.getvalue())) 

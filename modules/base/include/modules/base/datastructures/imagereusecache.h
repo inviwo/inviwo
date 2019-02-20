@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2017-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@
 
 namespace inviwo {
 
-class IVW_MODULE_BASE_API ImageReuseCache { 
+class IVW_MODULE_BASE_API ImageReuseCache {
 public:
     ImageReuseCache() = default;
 
@@ -75,7 +75,6 @@ std::pair<std::shared_ptr<Image>, LayerRAMPrecision<T>*> ImageReuseCache::getTyp
     return res;
 }
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_BASE_DATASTRUCTUES_IMAGECACHE_H
-
+#endif  // IVW_BASE_DATASTRUCTUES_IMAGECACHE_H

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,9 +38,10 @@ namespace inviwo {
 namespace meshutil {
 /**
  * \brief Compute bounding box of meshes aligned to principal axes of world space.
- * 
+ *
  * @param meshes Meshes to consider
- * @return Minimum and maximum vertex points of meshes in (x,y,z) world space, or zero if vector is empty.
+ * @return Minimum and maximum vertex points of meshes in (x,y,z) world space, or zero if vector is
+ * empty.
  */
 IVW_MODULE_BASE_API std::pair<vec3, vec3> axisAlignedBoundingBox(
     const std::vector<std::shared_ptr<const Mesh>>& meshes);

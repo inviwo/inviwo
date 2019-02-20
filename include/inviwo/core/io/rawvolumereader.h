@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -57,7 +57,8 @@ public:
                                DataMapper dataMapper, size_t dataOffset = 0u);
 
     virtual std::shared_ptr<Volume> readData(const std::string& filePath) override;
-    virtual std::shared_ptr<Volume> readData(const std::string& filePath, MetaDataOwner* metadata) override;
+    virtual std::shared_ptr<Volume> readData(const std::string& filePath,
+                                             MetaDataOwner* metadata) override;
 
     bool haveReadLittleEndian() const { return littleEndian_; }
     const DataFormatBase* getFormat() const { return format_; }

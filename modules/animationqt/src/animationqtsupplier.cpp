@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -64,7 +64,7 @@ void AnimationQtSupplier::registerTrackToWidgetMap(const std::string& trackId,
 
 void AnimationQtSupplier::registerTrackToSequenceEditorMap(const std::string& trackId,
                                                            const std::string& erditorId) {
-  getSequenceEditorFactory().registerTrackToSequenceEditorMap(trackId, erditorId);
+    getSequenceEditorFactory().registerTrackToSequenceEditorMap(trackId, erditorId);
 }
 
 void AnimationQtSupplier::unRegisterAll() {

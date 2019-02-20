@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,6 +35,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <modules/opengl/shader/shader.h>
 
@@ -44,7 +45,7 @@ namespace inviwo {
  * ![](org.inviwo.Fog.png?classIdentifier=org.inviwo.Fog)
  * Use any image with a proper depth channel as input. It will apply a colored fog to the
  * color-layer based on the normalized and linearized depth. The fog is computed from an exponential
- * function and the shape/curve of this exponential function is controlled by the FogExponent.
+ * function and the shape/curve of this exponential function is controlled by the density.
  *
  * ### Inports
  *   * __ImageInport__ Input Image.
@@ -53,8 +54,9 @@ namespace inviwo {
  *   * __ImageOutport__ Output Image.
  *
  * ### Properties
- *   * __Color__ The color of the fog
- *   * __Density__ The density of the fog
+ *   * __Color__    The color of the fog
+ *   * __Density__  The density of the fog
+ *   * __Range__    range of the fog [0,1] with respect to near and far clip plane of the camera
  */
 
 /**
@@ -77,6 +79,7 @@ private:
     ImageOutport output_;
     FloatVec3Property color_;
     FloatProperty density_;
+    FloatMinMaxProperty range_;
     CameraProperty camera_;
     Shader shader_;
 };

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@ namespace inviwo {
  * A property representing a range.
  */
 template <typename T>
-class MinMaxProperty : public TemplateProperty<glm::tvec2<T, glm::defaultp> > {
+class MinMaxProperty : public TemplateProperty<glm::tvec2<T, glm::defaultp>> {
 public:
     typedef glm::tvec2<T, glm::defaultp> range_type;
     virtual std::string getClassIdentifier() const override;

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2016-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,7 +42,6 @@ uniform vec4 borderColor_;
 
 uniform vec4 viewport_ = vec4(0, 128, 128, 128);
 
-
 in vec3 texCoord_;
 
 void main() {
@@ -78,16 +77,16 @@ void main() {
 #if !defined(BLENDMODE_REPLACE)
     // if a blend mode other than "replace" is used, discard output for transparent fragments
     if ((srcColor.a == 0.0) && !border) {
-	    discard;
+        discard;
     }
 #endif
 
-    FragData0 = mix(srcColor, borderColor_, border);
+    FragData0 = mix(srcColor, borderColor_, bvec4(border));
 
 #ifdef ADDITIONAL_COLOR_LAYERS
     ADDITIONAL_COLOR_LAYER_WRITE
 #endif
 
-    PickingData = mix(texture(picking_, texCoord), vec4(0.0), border);
+    PickingData = mix(texture(picking_, texCoord), vec4(0.0), bvec4(border));
     gl_FragDepth = mix(texture(depth_, texCoord).r, 1.0, border);
 }

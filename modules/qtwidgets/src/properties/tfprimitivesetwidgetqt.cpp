@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -108,13 +108,13 @@ void TFPrimitiveSetWidgetQt::updateFromProperty() {
 
     // convert TF primitives to "position alpha #RRGGBB"
     std::ostringstream ss;
-    for (auto elem : propertyPtr_->get()) {
+    for (const auto &elem : propertyPtr_->get()) {
         // write color as HTML color code
-        auto pos = elem->getPosition();
+        auto pos = elem.getPosition();
         if (performMapping) {
             pos = mapPos(pos);
         }
-        ss << pos << " " << elem->getAlpha() << " " << color::rgb2hex(elem->getColor()) << "\n";
+        ss << pos << " " << elem.getAlpha() << " " << color::rgb2hex(elem.getColor()) << "\n";
     }
 
     QString newContents(utilqt::toQString(ss.str()));

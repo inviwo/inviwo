@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -61,34 +61,36 @@ public:
     const Layer* getData() const;
     size_t getTextureSize() const;
 
-    [[deprecated("was declared deprecated. Use `size()` instead")]]
+    // clang-format off
+    [[deprecated("was declared deprecated (20180418). Use `size()` instead")]]
     size_t getNumPoints() const;
 
-    [[deprecated("was declared deprecated. Use `get(size_t i)` instead")]]
+    [[deprecated("was declared deprecated (20180418). Use `get(size_t i)` instead")]]
     TFPrimitive* getPoint(size_t i);
-    [[deprecated("was declared deprecated. Use `get(size_t i) const` instead")]]
+    [[deprecated("was declared deprecated (20180418). Use `get(size_t i) const` instead")]]
     const TFPrimitive* getPoint(size_t i) const;
 
-    [[deprecated("was declared deprecated. Use `add(const double& pos, const vec4& color)` instead")]]
+    [[deprecated("was declared deprecated (20180418). Use `add(const double& pos, const vec4& color)` instead")]]
     void addPoint(const float& pos, const vec4& color);
 
-    [[deprecated("was declared deprecated. Use `add(const TFPrimitiveData& data)` instead")]]
+    [[deprecated("was declared deprecated (20180418). Use `add(const TFPrimitiveData& data)` instead")]]
     void addPoint(const TFPrimitiveData& point);
 
-    [[deprecated("was declared deprecated. Use `add(const dvec2& pos)` instead")]]
+    [[deprecated("was declared deprecated (20180418). Use `add(const dvec2& pos)` instead")]]
     void addPoint(const vec2& pos);
 
-    [[deprecated("was declared deprecated. Use `add(const std::vector<TFPrimitiveData>& primitives)` instead")]]
+    [[deprecated("was declared deprecated (20180418). Use `add(const std::vector<TFPrimitiveData>& primitives)` instead")]]
     void addPoints(const std::vector<TFPrimitiveData>& points);
 
-    [[deprecated("was declared deprecated. Use `add(const double& pos, const vec4& color)` instead")]]
+    [[deprecated("was declared deprecated (20180418). Use `add(const double& pos, const vec4& color)` instead")]]
     void addPoint(const vec2& pos, const vec4& color);
 
-    [[deprecated("was declared deprecated. Use `remove(TFPrimitive* primitive)` instead")]]
+    [[deprecated("was declared deprecated (20180418). Use `remove(TFPrimitive* primitive)` instead")]]
     void removePoint(TFPrimitive* dataPoint);
 
-    [[deprecated("was declared deprecated. Use `clear()` instead")]]
+    [[deprecated("was declared deprecated (20180418). Use `clear()` instead")]]
     void clearPoints();
+    // clang-format on
 
     void setMaskMin(double maskMin);
     double getMaskMin() const;
@@ -125,11 +127,18 @@ public:
     friend bool operator==(const TransferFunction& lhs, const TransferFunction& rhs);
 
     virtual std::vector<FileExtension> getSupportedExtensions() const override;
-    virtual void save(const std::string& filename, const FileExtension& ext = FileExtension()) const override;
-    virtual void load(const std::string& filename, const FileExtension& ext = FileExtension()) override;
+    virtual void save(const std::string& filename,
+                      const FileExtension& ext = FileExtension()) const override;
+    virtual void load(const std::string& filename,
+                      const FileExtension& ext = FileExtension()) override;
+
+    virtual std::string getTitle() const override;
 
 protected:
     void calcTransferValues() const;
+
+    virtual std::string serializationKey() const override;
+    virtual std::string serializationItemKey() const override;
 
 private:
     double maskMin_;

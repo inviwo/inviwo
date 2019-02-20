@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_IMAGESOURCE_H
@@ -39,19 +39,21 @@
 
 namespace inviwo {
 
+class DataReaderFactory;
+class InviwoApplication;
+
 /** \docpage{org.inviwo.ImageSource, Image Source}
  * ![](org.inviwo.ImageSource.png?classIdentifier=org.inviwo.ImageSource)
  *
  * Loads a image
- * 
+ *
  * ### Outports
  *   * __Outport__ The loaded image
- * 
+ *
  * ### Properties
  *   * __File name__ The name of the file to load
  *   * __Dimensions__ Readonly, the dimensions of the loaded image.
  */
-
 class IVW_MODULE_BASE_API ImageSource : public Processor {
 public:
     ImageSource(InviwoApplication* app, const std::string& file = "");
@@ -64,12 +66,12 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
 private:
-    InviwoApplication* app_;
+    DataReaderFactory* rf_;
     ImageOutport outport_;
     FileProperty file_;
     IntVec2Property imageDimension_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_IMAGESOURCE_H
+#endif  // IVW_IMAGESOURCE_H

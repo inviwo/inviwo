@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,6 +37,7 @@
 #include <inviwo/core/network/processornetworkobserver.h>
 #include <inviwo/core/util/fileobserver.h>
 #include <modules/qtwidgets/inviwodockwidget.h>
+#include <modules/qtwidgets/editorfileobserver.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -58,7 +59,6 @@ class SyntaxHighligther;
 class CodeEdit;
 
 class IVW_MODULE_PYTHON3QT_API PythonEditorWidget : public InviwoDockWidget,
-                                                    public FileObserver,
                                                     public PythonExecutionOutputObeserver {
 
 public:
@@ -66,13 +66,10 @@ public:
     virtual ~PythonEditorWidget();
 
     void appendToOutput(const std::string& msg, bool error = false);
-    virtual void fileChanged(const std::string& fileName) override;
     void loadFile(std::string fileName, bool askForSave = true);
 
     virtual void onPyhonExecutionOutput(const std::string& msg,
                                         PythonOutputType outputType) override;
-
-    bool hasFocus() const;
 
     void save();
     void saveAs();
@@ -87,15 +84,13 @@ public:
     virtual void loadState() override;
 
 protected:
-    bool eventFilter(QObject* obj, QEvent* event) override;
-    virtual void closeEvent(QCloseEvent *event) override;
-    virtual void focusInEvent(QFocusEvent *event) override;
+    virtual void closeEvent(QCloseEvent* event) override;
 
 private:
-    void setFileName(const std::string &filename);
-    void updateTitleBar();
-    void queryReloadFile();
-
+    void setFileName(const std::string& filename);
+    void updateWindowTitle();
+    void readFile();
+    bool askSaveChanges();
 
     virtual void saveState() override;
 
@@ -111,19 +106,15 @@ private:
     PythonScript script_;
     std::string scriptFileName_;
 
-    bool unsavedChanges_;
-    bool fileChangedInBackground_ = false;
-    bool reloadQueryInProgress_ = false;
-    void readFile();
-
     std::shared_ptr<std::function<void()>> syntaxCallback_;
 
     static PythonEditorWidget* instance_;
 
-    InviwoApplication *app_;
+    InviwoApplication* app_;
     QAction* appendLog_;
+    utilqt::EditorFileObserver fileObserver_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PYTHONEDITORYWIDGET_H

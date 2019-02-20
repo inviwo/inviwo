@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2017-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,8 +46,6 @@
 #include <modules/opengl/shader/shader.h>
 #include <modules/basegl/datastructures/meshshadercache.h>
 
-#include <map>
-
 namespace inviwo {
 
 /** \docpage{org.inviwo.SphereRenderer, Sphere Renderer}
@@ -58,10 +56,10 @@ namespace inviwo {
  * ### Inports
  *   * __geometry__ Input meshes
  *       The input mesh uses the following buffers:
-         * PositionAttrib vec3 
-         * ColorAttrib    vec4   (optional will fall-back to use __Custom Color__)
-         * RadiiAttrib    float  (optional will fall-back to use __Custom Radius__)
-         * PickingAttrib  uint32 (optional will fall-back to not draw any picking)
+ * PositionAttrib vec3
+ * ColorAttrib    vec4   (optional will fall-back to use __Custom Color__)
+ * RadiiAttrib    float  (optional will fall-back to use __Custom Radius__)
+ * PickingAttrib  uint32 (optional will fall-back to not draw any picking)
  *   * __imageInport__ Optional background image
  *
  * ### Outports
@@ -72,10 +70,10 @@ namespace inviwo {
  *   * __Clip Mode__                 defines the handling of spheres clipped at the camera
  *   * __Clip Surface Adjustment__   brighten/darken glyph color on clip surface
  *   * __Shaded Clipped Area__       enable illumination computations for the clipped surface
- *   * __Overwrite Sphere Radius__   enable a fixed user-defined radius for all spheres
- *   * __Custom Radius__             radius of the rendered spheres (in world coordinates)
- *   * __Overwrite Color__           if enabled, all spheres will share the same custom color
- *   * __Custom Color__              custom color when overwriting the input colors
+ *   * __Force Radius__              enable a fixed user-defined radius for all spheres
+ *   * __Default Radius__            radius of the rendered spheres (in world coordinates)
+ *   * __Force Color__               if enabled, all spheres will share the same custom color
+ *   * __Default Color__             custom color when overwriting the input colors
  */
 
 /**
@@ -99,7 +97,6 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    Shader& getShader(const Mesh& mesh);
     void configureShader(Shader& shader);
 
     enum class RenderMode {
@@ -128,16 +125,17 @@ private:
     BoolProperty shadeClippedArea_;
 
     CompositeProperty sphereProperties_;
-    BoolProperty overrideSphereRadius_;
-    FloatProperty customRadius_;
-    BoolProperty overrideSphereColor_;
-    FloatVec4Property customColor_;
+    BoolProperty forceRadius_;
+    FloatProperty defaultRadius_;
+    BoolProperty forceColor_;
+    FloatVec4Property defaultColor_;
     BoolProperty useMetaColor_;
     TransferFunctionProperty metaColor_;
+
     CameraProperty camera_;
+    CameraTrackball trackball_;
     SimpleLightingProperty lighting_;
 
-    CameraTrackball trackball_;
     MeshShaderCache shaders_;
 };
 

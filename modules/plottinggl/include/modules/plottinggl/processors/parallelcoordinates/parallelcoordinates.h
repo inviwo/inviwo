@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2016-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -91,6 +91,7 @@ public:
 
 protected:
     void linePicked(PickingEvent *p);
+    void axisPicked(PickingEvent *p);
     void handlePicked(PickingEvent *p);
 
 private:
@@ -118,18 +119,24 @@ private:
 
     CompositeProperty colors_;
     FloatVec4Property axisColor_;
+    FloatVec4Property axisHoverColor_;
+    FloatVec4Property axisSelectedColor_;
     FloatVec4Property handleBaseColor_;
     FloatVec4Property handleFilteredColor_;
     TransferFunctionProperty tf_;
     TransferFunctionProperty tfSelection_;
+    BoolProperty enableHoverColor_;
 
     CompositeProperty filteringOptions_;
     BoolProperty showFiltered_;
     FloatVec4Property filterColor_;
     FloatProperty filterIntensity_;
 
+    ButtonProperty resetHandlePositions_;
+
     TemplateOptionProperty<BlendMode> blendMode_;
     FloatProperty alpha_;
+    FloatProperty filterAlpha_;
     FloatProperty falllofPower_;
     FloatProperty lineWidth_;
     FloatProperty selectedLineWidth_;
@@ -161,15 +168,19 @@ private:
     std::unique_ptr<Mesh> lines_;
     std::unique_ptr<MeshDrawerGL> linesDrawer_;
 
-    std::vector<ParallelCoordinatesAxisSettingsProperty *> axisVector_; // owned by axisProperty_
+    std::vector<ParallelCoordinatesAxisSettingsProperty *> axisVector_;  // owned by axisProperty_
 
     PickingMapper linePicking_;
+    PickingMapper axisPicking_;
     PickingMapper handlePicking_;
 
     TextRenderer textRenderer_;
     TextureQuadRenderer textureRenderer_;
 
     std::shared_ptr<Image> handleImg_;
+
+    int hoveredLine_ = -1;
+    int hoveredAxis_ = -1;
 
     bool recreateLines_;
     bool textCacheDirty_;

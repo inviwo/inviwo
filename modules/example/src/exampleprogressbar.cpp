@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,9 +39,7 @@ const ProcessorInfo ExampleProgressBar::processorInfo_{
     CodeState::Experimental,          // Code state
     Tags::None,                       // Tags
 };
-const ProcessorInfo ExampleProgressBar::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo ExampleProgressBar::getProcessorInfo() const { return processorInfo_; }
 
 ExampleProgressBar::ExampleProgressBar()
     : Processor(), inport_("inputImage"), outport_("outputImage") {
@@ -77,5 +75,4 @@ void ExampleProgressBar::process() {
     outport_.setData(inport_.getData());
 }
 
-}  // inviwo namespace
-
+}  // namespace inviwo

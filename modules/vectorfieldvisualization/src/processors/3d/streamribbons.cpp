@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2018 Inviwo Foundation
+ * Copyright (c) 2015-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -142,7 +142,7 @@ void StreamRibbonsDeprecated::process() {
     ImageSampler tf(tf_.get().getData());
     tracer.addMetaDataSampler("vorticity", vorticitySampler);
     //  mat3 invBasis = glm::inverse(vectorVolume_.getData()->getBasis());
-    mat3 invBasis;
+    mat3 invBasis{1};
     std::vector<BasicMesh::Vertex> vertices;
 
     bool hasColors = colors_.hasData();

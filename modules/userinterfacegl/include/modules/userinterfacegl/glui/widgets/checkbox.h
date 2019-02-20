@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2017-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,6 +49,9 @@ class Renderer;
  */
 class IVW_MODULE_USERINTERFACEGL_API CheckBox : public Element {
 public:
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
+
     CheckBox(const std::string &label, Processor &processor, Renderer &uiRenderer,
              const ivec2 &extent = ivec2(24, 24));
     virtual ~CheckBox() = default;

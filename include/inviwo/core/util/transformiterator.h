@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@ struct require : std::enable_if<std::is_base_of<Tag, typename Iter::iterator_cat
 template <typename Tag, typename Iter>
 using require_t = typename require<Tag, Iter>::type;
 
-}
+}  // namespace detail
 
 template <typename Transform, typename Iter>
 struct TransformIterator {
@@ -54,11 +54,11 @@ struct TransformIterator {
     using base_value = typename std::iterator_traits<Iter>::value_type;
     using base_reference = typename std::iterator_traits<Iter>::reference;
     using base_pointer = typename std::iterator_traits<Iter>::pointer;
-    
+
     using reference = std::result_of_t<Transform(base_reference)>;
     using value_type = std::remove_reference_t<reference>;
     using pointer = std::add_pointer_t<value_type>;
-    
+
     TransformIterator() = default;
     TransformIterator(Iter iterator) : transform_{}, iterator_(iterator) {}
     TransformIterator(Transform transform, Iter iterator)
@@ -70,7 +70,7 @@ struct TransformIterator {
         ++iterator_;
         return *this;
     }
-    TransformIterator operator++(int) { return {iterator_++}; }
+    TransformIterator operator++(int) { return {transform_, iterator_++}; }
 
     template <typename I = Iter, typename = detail::require_t<std::bidirectional_iterator_tag, I>>
     TransformIterator& operator--() {
@@ -79,7 +79,7 @@ struct TransformIterator {
     }
     template <typename I = Iter, typename = detail::require_t<std::bidirectional_iterator_tag, I>>
     TransformIterator operator--(int) {
-        return {iterator_--};
+        return {transform_, iterator_--};
     }
 
     template <typename I = Iter, typename = detail::require_t<std::random_access_iterator_tag, I>>
@@ -153,4 +153,4 @@ auto makeTransformIterator(Transform&& transform, Iter iter) {
 
 }  // namespace util
 
-} // namespace inviwo
+}  // namespace inviwo

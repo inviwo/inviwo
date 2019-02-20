@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -216,6 +216,11 @@ public:
     }
 };
 
+/**
+ * \ingroup typedmesh
+ * BufferTrait for picking buffers (uint32)
+ * \see PickingMapper
+ */
 class PickingBuffer
     : public TypedMeshBufferBase<uint32_t, 1, static_cast<int>(BufferType::PickingAttrib)> {
 public:
@@ -230,6 +235,12 @@ public:
     }
 };
 
+/**
+ * \ingroup typedmesh
+ * BufferTrait for scalar meta data buffers (float)
+ * Useful the pass additional information the rendering
+ * \see SphereRenderer
+ */
 class ScalarMetaBuffer
     : public TypedMeshBufferBase<float, 1, static_cast<int>(BufferType::ScalarMetaAttrib)> {
 public:
@@ -239,8 +250,8 @@ public:
     std::shared_ptr<const Buffer<Base::type>> getScalarMeta() const { return Base::buffer_; }
     std::shared_ptr<Buffer<Base::type>> getEditableScalarMeta() { return Base::buffer_; }
 
-    void setVertexScalarMeta(size_t index, float id) {
-        getEditableScalarMeta()->getEditableRAMRepresentation()->set(index, id);
+    void setVertexScalarMeta(size_t index, float value) {
+        getEditableScalarMeta()->getEditableRAMRepresentation()->set(index, value);
     }
 };
 
@@ -343,7 +354,9 @@ public:
     TypedMesh(DrawType dt = DrawType::Points, ConnectivityType ct = ConnectivityType::None)
         : Mesh(dt, ct), BufferTraits(*static_cast<Mesh *>(this))... {}
 
-    TypedMesh(const TypedMesh &rhs) : Mesh(rhs) { copyConstrHelper<0, BufferTraits...>(); }
+    TypedMesh(const TypedMesh &rhs) : Mesh(rhs), BufferTraits()... {
+        copyConstrHelper<0, BufferTraits...>();
+    }
     TypedMesh &operator=(const TypedMesh &that) {
         if (this != &that) {
             Mesh::operator=(that);
@@ -394,7 +407,7 @@ public:
      * @return uint32_t the position of the new vertex is the buffers.
      */
     template <typename... Args>
-    uint32_t addVertex(Args&&... args);
+    uint32_t addVertex(Args &&... args);
 
     /**
      * \brief Sets a specific vertex.
@@ -406,7 +419,7 @@ public:
      * @param args the arguments, needs to match the buffers of the mesh
      */
     template <typename... Args>
-    void setVertex(size_t index, Args&&... args);
+    void setVertex(size_t index, Args &&... args);
 
     /**
      * \brief Updates the a specific value in specific buffer
@@ -487,7 +500,6 @@ public:
     }
 
 private:
-
     template <unsigned I>
     void copyConstrHelper() {}  // sink
 
@@ -560,9 +572,9 @@ void TypedMesh<BufferTraits...>::setVertex(size_t index, const Vertex &vertex) {
 
 template <typename... BufferTraits>
 template <typename... Args>
-uint32_t TypedMesh<BufferTraits...>::addVertex(Args&&... args) {
+uint32_t TypedMesh<BufferTraits...>::addVertex(Args &&... args) {
     detail::helper<TypedMesh<BufferTraits...>, sizeof...(BufferTraits)>::addVertexImplVertex(
-        *this, TypedMesh<BufferTraits...>::Vertex{ args... });
+        *this, TypedMesh<BufferTraits...>::Vertex{args...});
 
     using BT = typename std::tuple_element<0, Traits>::type;
     return static_cast<uint32_t>(getTypedBuffer<BT>()->getSize() - 1);
@@ -572,10 +584,8 @@ template <typename... BufferTraits>
 template <typename... Args>
 void TypedMesh<BufferTraits...>::setVertex(size_t index, Args &&... args) {
     detail::helper<TypedMesh<BufferTraits...>, sizeof...(BufferTraits)>::setVertexImplVertex(
-        *this, index, TypedMesh<BufferTraits...>::Vertex{ args... });
+        *this, index, TypedMesh<BufferTraits...>::Vertex{args...});
 }
-
-
 
 /**
  * \ingroup typedmesh

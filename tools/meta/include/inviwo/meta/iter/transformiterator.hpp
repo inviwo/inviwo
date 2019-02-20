@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,66 +44,63 @@ struct TransformIterator {
     using base_value = typename std::iterator_traits<Iter>::value_type;
     using base_reference = typename std::iterator_traits<Iter>::reference;
     using base_pointer = typename std::iterator_traits<Iter>::pointer;
-    
+
     using reference = std::invoke_result_t<Transform, base_reference>;
     using value_type = std::remove_reference_t<reference>;
     using pointer = std::add_pointer_t<value_type>;
-    
-    template <typename Tag, typename Iterables>
-    using require_t = iterutil::require_t<Tag, Iter>;
+
 
     TransformIterator() = default;
     TransformIterator(Iter iterator) : transform_{}, iterator_(iterator) {}
     TransformIterator(Transform transform, Iter iterator)
         : transform_{std::move(transform)}, iterator_(iterator) {
-    
+
         static_assert(std::is_same_v<base_reference, decltype(*std::declval<Iter>())>);
-    
     }
 
     TransformIterator& operator++() {
         ++iterator_;
         return *this;
     }
-    TransformIterator operator++(int) { return {iterator_++}; }
+    TransformIterator operator++(int) { return {transform_, iterator_++}; }
 
-    template <typename I = Iter, typename = require_t<std::bidirectional_iterator_tag, I>>
+    template <typename I = Iter, typename = iterutil::require_t<std::bidirectional_iterator_tag, I>>
     TransformIterator& operator--() {
         --iterator_;
         return *this;
     }
-    template <typename I = Iter, typename = require_t<std::bidirectional_iterator_tag, I>>
+    template <typename I = Iter, typename = iterutil::require_t<std::bidirectional_iterator_tag, I>>
     TransformIterator operator--(int) {
-        return {iterator_--};
+        return {transform_, iterator_--};
     }
 
-    template <typename I = Iter, typename = require_t<std::random_access_iterator_tag, I>>
+    template <typename I = Iter, typename = iterutil::require_t<std::random_access_iterator_tag, I>>
     TransformIterator& operator+=(difference_type rhs) {
         iterator_ += rhs;
         return *this;
     }
-    template <typename I = Iter, typename = require_t<std::random_access_iterator_tag, I>>
+    template <typename I = Iter, typename = iterutil::require_t<std::random_access_iterator_tag, I>>
     TransformIterator& operator-=(difference_type rhs) {
         iterator_ -= rhs;
         return *this;
     }
 
-    template <typename I = Iter, typename = require_t<std::random_access_iterator_tag, I>>
+    template <typename I = Iter, typename = iterutil::require_t<std::random_access_iterator_tag, I>>
     difference_type operator-(const TransformIterator& rhs) const {
         return iterator_ - rhs.iterator_;
     }
-    template <typename I = Iter, typename = require_t<std::random_access_iterator_tag, I>>
+    template <typename I = Iter, typename = iterutil::require_t<std::random_access_iterator_tag, I>>
     TransformIterator operator+(difference_type i) const {
         auto iter = *this;
         return iter += i;
     }
-    template <typename I = Iter, typename = require_t<std::random_access_iterator_tag, I>>
+    template <typename I = Iter, typename = iterutil::require_t<std::random_access_iterator_tag, I>>
     TransformIterator operator-(difference_type i) const {
         auto iter = *this;
         return iter -= i;
     }
 
-    template <typename I = Iter, typename = require_t<std::random_access_iterator_tag, I>>
+    template <typename I = Iter, typename = iterutil::require_t<std::random_access_iterator_tag, I>>
     reference operator[](difference_type i) const {
         return *iterator_[i];
     }
@@ -118,19 +115,19 @@ struct TransformIterator {
 
     bool operator!=(const TransformIterator& rhs) const { return iterator_ != rhs.iterator_; }
 
-    template <typename I = Iter, typename = require_t<std::random_access_iterator_tag, I>>
+    template <typename I = Iter, typename = iterutil::require_t<std::random_access_iterator_tag, I>>
     bool operator>(const TransformIterator& rhs) const {
         return iterator_ > rhs.iterator_;
     }
-    template <typename I = Iter, typename = require_t<std::random_access_iterator_tag, I>>
+    template <typename I = Iter, typename = iterutil::require_t<std::random_access_iterator_tag, I>>
     bool operator<(const TransformIterator& rhs) const {
         return iterator_ < rhs.iterator_;
     }
-    template <typename I = Iter, typename = require_t<std::random_access_iterator_tag, I>>
+    template <typename I = Iter, typename = iterutil::require_t<std::random_access_iterator_tag, I>>
     bool operator>=(const TransformIterator& rhs) const {
         return iterator_ >= rhs.iterator_;
     }
-    template <typename I = Iter, typename = require_t<std::random_access_iterator_tag, I>>
+    template <typename I = Iter, typename = iterutil::require_t<std::random_access_iterator_tag, I>>
     bool operator<=(const TransformIterator& rhs) const {
         return iterator_ <= rhs.iterator_;
     }

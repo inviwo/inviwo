@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,7 +42,7 @@ namespace discretedata {
  */
 class IVW_MODULE_DISCRETEDATA_API PeriodicGrid : public StructuredGrid {
 public:
-    /** 
+    /**
      * \brief Create an nD grid
      * @param gridDimension Dimension of grid (not vertices)
      * @param gridSize Number of cells in each dimension, expect size gridDimension+1

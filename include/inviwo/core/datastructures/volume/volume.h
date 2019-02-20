@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,6 +41,8 @@
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/io/datawriter.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/dataoutport.h>
 
 namespace inviwo {
 
@@ -152,6 +154,11 @@ using VolumeSequence = std::vector<std::shared_ptr<Volume>>;
 extern template class IVW_CORE_TMPL_EXP DataReaderType<Volume>;
 extern template class IVW_CORE_TMPL_EXP DataWriterType<Volume>;
 extern template class IVW_CORE_TMPL_EXP DataReaderType<VolumeSequence>;
+
+extern template class IVW_CORE_TMPL_EXP DataInport<Volume>;
+extern template class IVW_CORE_TMPL_EXP DataOutport<Volume>;
+extern template class IVW_CORE_TMPL_EXP DataInport<VolumeSequence>;
+extern template class IVW_CORE_TMPL_EXP DataOutport<VolumeSequence>;
 
 }  // namespace inviwo
 

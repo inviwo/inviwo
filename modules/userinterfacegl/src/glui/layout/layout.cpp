@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2017-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,6 +38,8 @@ Layout::Layout() {}
 void Layout::setMargins(int top, int left, int bottom, int right) {
     margins_ = ivec4(top, left, bottom, right);
 }
+
+void Layout::setMargins(const ivec4& margins) { margins_ = margins; }
 
 const ivec4& Layout::getMargins() const { return margins_; }
 

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -80,14 +80,11 @@ void FileProperty::serialize(Serializer& s) const {
     /*
     We always use absolute paths inside of inviwo but serialize
     several version to have a higher success rate when moving stuff around.
-    
-
 
     Saved path versions:
      1) Absolute
      2) Relative workspace
      3) Relative filesystem::getPath(PathType::Data)
-
     */
     Property::serialize(s);
 

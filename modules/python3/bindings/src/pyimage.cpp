@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2017-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,8 +44,10 @@
 #include <modules/python3/pybindutils.h>
 #include <inviwopy/pyport.h>
 
-#include <pybind11/pybind11.h>
+#include <warn/push>
+#include <warn/ignore/shadow>
 #include <pybind11/numpy.h>
+#include <warn/pop>
 
 namespace py = pybind11;
 
@@ -77,17 +79,18 @@ void exposeImage(py::module &m) {
         .def("clone", [](Layer &self) { return self.clone(); })
         .def(py::init([](py::array data) { return pyutil::createLayer(data).release(); }))
         .def_property_readonly("dimensions", &Layer::getDimensions)
-        .def("save", [](Layer& self, std::string filepath) {
-            auto ext = filesystem::getFileExtension(filepath);
+        .def("save",
+             [](Layer &self, std::string filepath) {
+                 auto ext = filesystem::getFileExtension(filepath);
 
-            auto writer = InviwoApplication::getPtr()
-                              ->getDataWriterFactory()
-                              ->getWriterForTypeAndExtension<Layer>(ext);
-            if (!writer) {
-                throw Exception("No write for extension " + ext);
-            }
-            writer->writeData(&self, filepath);
-        })
+                 auto writer = InviwoApplication::getPtr()
+                                   ->getDataWriterFactory()
+                                   ->getWriterForTypeAndExtension<Layer>(ext);
+                 if (!writer) {
+                     throw Exception("No write for extension " + ext);
+                 }
+                 writer->writeData(&self, filepath);
+             })
         .def_property(
             "data",
             [&](Layer *layer) -> py::array {

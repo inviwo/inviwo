@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_INVIWOOPENGL_H
@@ -73,6 +73,6 @@ IVW_MODULE_OPENGL_API void LogGLError(const char* fileName, const char* function
 #define LGL_ERROR_SUPPRESS
 #endif
 
-}
+}  // namespace inviwo
 
-#endif // IVW_INVIWOOPENGL_H
+#endif  // IVW_INVIWOOPENGL_H

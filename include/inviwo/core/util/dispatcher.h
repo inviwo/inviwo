@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2018 Inviwo Foundation
+ * Copyright (c) 2015-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -79,11 +79,12 @@ public:
             });
         }
     }
+
 private:
     std::vector<std::weak_ptr<std::function<C>>> callbacks;
     int32_t concurrent_dispatcher_count = 0;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_DISPATCHER_H

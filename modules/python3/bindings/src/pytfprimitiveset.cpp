@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -62,7 +62,9 @@ void addPoints(TFPrimitiveSet *ps, pybind11::list values) {
                 color::hex2rgba(try_cast<std::string>(data[1], "expected a hex color code"));
             ps->add(pos, color);
         } else if (data.size() == 3) {
-            const auto pos = try_cast<double>(data[0], "expected a double (position)" + data[0].attr("__repr__")().cast<std::string>());
+            const auto pos =
+                try_cast<double>(data[0], "expected a double (position)" +
+                                              data[0].attr("__repr__")().cast<std::string>());
             const auto alpha = try_cast<double>(data[1], "expected a double (alpha)");
             const auto color =
                 color::hex2rgba(try_cast<std::string>(data[2], "expected a hex color code"));
@@ -151,7 +153,7 @@ void exposeTFPrimitiveSet(pybind11::module &m) {
         .def("__setitem__",
              [](TFPrimitiveSet &ps, size_t i, const TFPrimitiveData &primitive) {
                  if (i >= ps.size()) throw py::index_error();
-                 ps[i]->setData(primitive);
+                 ps[i].setData(primitive);
              })
         // sequence protocol operations
         .def("__iter__",
@@ -166,12 +168,12 @@ void exposeTFPrimitiveSet(pybind11::module &m) {
         .def("add", py::overload_cast<const TFPrimitiveData &>(&TFPrimitiveSet::add))
         .def("add", py::overload_cast<const std::vector<TFPrimitiveData> &>(&TFPrimitiveSet::add))
 
-        .def("remove", [](TFPrimitiveSet &ps, TFPrimitive *primitive) { ps.remove(primitive); })
+        .def("remove", [](TFPrimitiveSet &ps, TFPrimitive &primitive) { ps.remove(primitive); })
         .def("__repr__", [](const TFPrimitiveSet &ps) {
             std::ostringstream oss;
             oss << "<TFPrimitiveSet:  " << ps.size() << " primitives";
             for (auto &p : ps) {
-                oss << "\n    " << p->getPosition() << ", " << color::rgba2hex(p->getColor());
+                oss << "\n    " << p.getPosition() << ", " << color::rgba2hex(p.getColor());
             }
             oss << ">";
             return oss.str();
@@ -212,7 +214,7 @@ void exposeTFPrimitiveSet(pybind11::module &m) {
             std::ostringstream oss;
             oss << "<TransferFunction:  " << tf.size() << " points";
             for (auto &p : tf) {
-                oss << "\n    " << p->getPosition() << ", " << color::rgba2hex(p->getColor());
+                oss << "\n    " << p.getPosition() << ", " << color::rgba2hex(p.getColor());
             }
             oss << ">";
             return oss.str();
@@ -236,7 +238,7 @@ void exposeTFPrimitiveSet(pybind11::module &m) {
             std::ostringstream oss;
             oss << "<IsoValueCollection:  " << ivc.size() << " isovalues";
             for (auto &p : ivc) {
-                oss << "\n    " << p->getPosition() << ", " << color::rgba2hex(p->getColor());
+                oss << "\n    " << p.getPosition() << ", " << color::rgba2hex(p.getColor());
             }
             oss << ">";
             return oss.str();

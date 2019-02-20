@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -321,8 +321,8 @@ std::shared_ptr<Mesh> MeshClipping::clipGeometryAgainstPlane(const Mesh* in,
             std::vector<vec3> newTexCoords;
             std::vector<vec4> newColors;
             std::vector<Edge3D> intersectionsEdges;
-            std::vector<std::pair<vec3, vec3> > intersectionTex;
-            std::vector<std::pair<vec3, vec4> > intersectionCol;
+            std::vector<std::pair<vec3, vec3>> intersectionTex;
+            std::vector<std::pair<vec3, vec4>> intersectionCol;
 
             for (unsigned int t = 0; t < triangleList->size() - 2; ++t) {
                 idx[0] = triangleList->at(t);
@@ -483,7 +483,7 @@ std::shared_ptr<Mesh> MeshClipping::clipGeometryAgainstPlane(const Mesh* in,
             // The points are not at same point, introduce threshold
             if (!uniqueintersectionsEdges.empty()) {
                 // Create closed polygons based on edges
-                std::vector<Polygon<Edge3D> > polygons;
+                std::vector<Polygon<Edge3D>> polygons;
                 std::vector<Edge3D> connectedEdges;
                 std::vector<Edge3D> unconnectEdges = uniqueintersectionsEdges;
 

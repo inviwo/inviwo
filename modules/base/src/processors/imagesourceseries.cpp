@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@ const ProcessorInfo ImageSourceSeries::processorInfo_{
 };
 const ProcessorInfo ImageSourceSeries::getProcessorInfo() const { return processorInfo_; }
 
-ImageSourceSeries::ImageSourceSeries()
+ImageSourceSeries::ImageSourceSeries(InviwoApplication* app)
     : Processor()
     , outport_("outputImage", DataVec4UInt8::get(), false)
     , findFilesButton_("findFiles", "Update File List")
@@ -55,6 +55,7 @@ ImageSourceSeries::ImageSourceSeries()
     , currentImageIndex_("currentImageIndex", "Image Index", 1, 1, 1, 1)
     , imageFileName_("imageFileName", "Image File Name") {
 
+    isSink_.setUpdate([]() { return true; });
     isReady_.setUpdate([this]() { return !fileList_.empty(); });
 
     addPort(outport_);
@@ -63,12 +64,17 @@ ImageSourceSeries::ImageSourceSeries()
     addProperty(currentImageIndex_);
     addProperty(imageFileName_);
 
-    validExtensions_ =
-        InviwoApplication::getPtr()->getDataReaderFactory()->getExtensionsForType<Layer>();
+    validExtensions_ = app->getDataReaderFactory()->getExtensionsForType<Layer>();
     imageFilePattern_.addNameFilters(validExtensions_);
 
-    imageFilePattern_.onChange([&]() { onFindFiles(); });
-    findFilesButton_.onChange([&]() { onFindFiles(); });
+    imageFilePattern_.onChange([&]() {
+        onFindFiles();
+        isReady_.update();
+    });
+    findFilesButton_.onChange([&]() {
+        onFindFiles();
+        isReady_.update();
+    });
 
     imageFileName_.setReadOnly(true);
 }
@@ -101,11 +107,12 @@ void ImageSourceSeries::process() {
         return;
     }
 
-    const std::string currentFileName = fileList_[index];
-    const std::string ext = filesystem::getFileExtension(currentFileName);
+    const auto currentFileName = fileList_[index];
+    const auto fext = filesystem::getFileExtension(currentFileName);
+    const auto sext = imageFilePattern_.getSelectedExtension();
 
     auto factory = getNetwork()->getApplication()->getDataReaderFactory();
-    auto reader = factory->getReaderForTypeAndExtension<Layer>(ext);
+    auto reader = factory->getReaderForTypeAndExtension<Layer>(sext, fext);
 
     // there should always be a reader since we asked the reader for valid extensions
     ivwAssert(reader != nullptr, "Could not find reader for \"" << currentFileName << "\"");
@@ -152,7 +159,7 @@ void ImageSourceSeries::updateProperties() {
     if (fileList_.size() < static_cast<std::size_t>(currentImageIndex_.get())) {
         currentImageIndex_.set(1);
     }
-    currentImageIndex_.setMaxValue(std::max(static_cast<const int>(fileList_.size()), 1));
+    currentImageIndex_.setMaxValue(std::max(static_cast<int>(fileList_.size()), 1));
     updateFileName();
     isReady_.update();
 }

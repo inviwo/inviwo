@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2016-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,7 @@ void InviwoModuleLibraryObserver::Observer::fileChanged(const std::string& dir) 
 }
 
 InviwoModuleLibraryObserver::InviwoModuleLibraryObserver(InviwoApplication* app) : app_(app) {}
- 
+
 void InviwoModuleLibraryObserver::observe(const std::string& file) {
     // We cannot create the observer in the constructor since
     // deriving applications will implement observer behavior

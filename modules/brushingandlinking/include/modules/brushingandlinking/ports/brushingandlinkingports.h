@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2016-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -70,6 +70,10 @@ public:
     const std::unordered_set<int> &getClusterSelectedIndices() const;
     const std::unordered_set<int> &getSomeOtherSelectedIndices() const;
     const std::vector<vec2> &getFilterRanges() const;
+
+    const std::unordered_set<size_t> &getSelectedIndices() const;
+    const std::unordered_set<size_t> &getFilteredIndices() const;
+    const std::unordered_set<size_t> &getSelectedColumns() const;
 
     virtual std::string getClassIdentifier() const override;
 

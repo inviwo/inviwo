@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,4 +49,4 @@ VolumeBorders::VolumeBorders(size_t front, size_t back, size_t left, size_t righ
 VolumeBorders::VolumeBorders()
     : llf(size3_t(0, 0, 0)), urb(size3_t(0, 0, 0)), numVoxels(0), hasBorder(false) {}
 
-}  // namespace
+}  // namespace inviwo

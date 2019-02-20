@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@
 namespace inviwo {
 
 /**
- * \ingroup datastructures	
+ * \ingroup datastructures
  */
 class IVW_MODULE_OPENGL_API BufferGL : public BufferRepresentation {
 public:
@@ -84,6 +84,6 @@ protected:
     size_t size_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_BUFFERGL_H

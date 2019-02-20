@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,8 +41,8 @@
 
 namespace inviwo {
 
-typedef std::pair<std::shared_ptr<BufferObject>, std::shared_ptr<cl::BufferGL> > BufferSharingPair;
-typedef std::map<std::shared_ptr<BufferObject>, std::shared_ptr<cl::BufferGL> > CLBufferSharingMap;
+typedef std::pair<std::shared_ptr<BufferObject>, std::shared_ptr<cl::BufferGL>> BufferSharingPair;
+typedef std::map<std::shared_ptr<BufferObject>, std::shared_ptr<cl::BufferGL>> CLBufferSharingMap;
 
 class IVW_MODULE_OPENCL_API BufferCLGL : public BufferCLBase,
                                          public BufferRepresentation,
@@ -110,7 +110,7 @@ protected:
     std::shared_ptr<cl::BufferGL> clBuffer_;  ///< Potentially shared with other BufferCLGL
 };
 
-}  // namespace
+}  // namespace inviwo
 
 namespace cl {
 

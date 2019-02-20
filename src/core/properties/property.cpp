@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -181,10 +181,9 @@ void Property::propertyModified() {
     onChangeCallback_.invokeAll();
     setModified();
 
-    PropertyOwner* owner = getOwner();
-    if (owner) {
+    if (auto owner = getOwner()) {
         // Evaluate property links
-        if (Processor* processor = owner->getProcessor()) {
+        if (auto processor = owner->getProcessor()) {
             processor->notifyObserversAboutPropertyChange(this);
         }
 

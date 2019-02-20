@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,6 +37,7 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QGraphicsView>
+#include <QImage>
 #include <warn/pop>
 
 class QDropEvent;
@@ -59,6 +60,7 @@ public:
     virtual void onNetworkEditorFileChanged(const std::string& newFilename) override;
 
     void exportViewToFile(const QString& filename, bool entireScene, bool backgroundVisible);
+    QImage exportViewToImage(bool entireScene, bool backgroundVisible, QSize size = QSize());
 
     TextLabelOverlay& getOverlay() const;
     NetworkSearch& getNetworkSearch() const;

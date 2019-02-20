@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2018 Inviwo Foundation
+ * Copyright (c) 2015-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -84,7 +84,7 @@ inline T linearVectorInterpolation(const T &a, const T &b, P x) {
 
 template <typename T, typename P>
 inline T Interpolation<T, P>::linear(const T &a, const T &b, P x) {
-    return static_cast<T>(a + (b - a) * x);
+    return glm::mix(a, b, x);
 }
 
 template <typename T, typename P>

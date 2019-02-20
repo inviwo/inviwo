@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2017-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -55,7 +55,6 @@ public:
     virtual void setPosition(const ivec2& pos) = 0;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_PROPERTYEDITORWIDGET_H
-
+#endif  // IVW_PROPERTYEDITORWIDGET_H

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,8 +38,7 @@
 
 namespace inviwo {
 
-class IVW_CORE_API MeshDrawerFactory
-    : public Factory<MeshDrawer, const Mesh*> {
+class IVW_CORE_API MeshDrawerFactory : public Factory<MeshDrawer, const Mesh*> {
 public:
     MeshDrawerFactory() = default;
     virtual ~MeshDrawerFactory() = default;
@@ -53,6 +52,6 @@ private:
     std::set<MeshDrawer*> drawers_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_GEOMETRY_DRAWER_FACTORY_H

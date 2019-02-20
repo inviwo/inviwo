@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2018 Inviwo Foundation
+ * Copyright (c) 2015-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,8 +39,8 @@ namespace util {
 
 void IVW_CORE_API readBytesIntoBuffer(const std::string& file, size_t offset, size_t bytes,
                                       bool littleEndian, size_t elementSize, void* dest);
-}  // namespace
+}  // namespace util
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_BYTEREADERUTIL_H

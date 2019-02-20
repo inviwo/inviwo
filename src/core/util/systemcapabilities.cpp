@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -68,9 +68,7 @@ void SystemCapabilities::retrieveDynamicInfo() {
     successProcessMemoryInfo_ = lookupProcessMemoryInfo();
 }
 
-const util::BuildInfo& SystemCapabilities::getBuildInfo() const {
-    return buildInfo_;
-}
+const util::BuildInfo& SystemCapabilities::getBuildInfo() const { return buildInfo_; }
 
 bool SystemCapabilities::lookupOSInfo() {
 #ifdef IVW_SIGAR

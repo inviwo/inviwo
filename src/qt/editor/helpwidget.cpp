@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -265,7 +265,7 @@ QVariant HelpBrowser::loadResource(int type, const QUrl& name) {
                 image.scaled(std::max(200, width() - 60), image.height(), Qt::KeepAspectRatio)};
 
             if (name.toString().contains("form_")) {
-                
+
                 for (int y = 0; y < resized.height(); y++) {
                     for (int x = 0; x < resized.width(); x++) {
                         auto p = resized.pixelColor(x, y);

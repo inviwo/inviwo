@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2018 Inviwo Foundation
+ * Copyright (c) 2015-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -75,5 +75,4 @@ void ImageGradient::preProcess(TextureUnitContainer &) {
     shader_.setUniform("renormalization_", renormalization_.get() ? 1 : 0);
 }
 
-} // namespace
-
+}  // namespace inviwo

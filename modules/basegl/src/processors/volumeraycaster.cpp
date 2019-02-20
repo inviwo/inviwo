@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -168,7 +168,7 @@ void VolumeRaycaster::process() {
         utilgl::bindAndSetUniforms(shader_, units, backgroundPort_, ImageType::ColorDepthPicking);
     }
     utilgl::setUniforms(shader_, outport_, camera_, lighting_, raycasting_, positionIndicator_,
-                        channel_);
+                        channel_, isotfComposite_);
 
     utilgl::singleDrawImagePlaneRect();
 

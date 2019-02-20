@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2017-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -55,9 +55,9 @@ std::shared_ptr<VolumeSequence> IvfSequenceVolumeReader::readData(const std::str
 
     std::vector<std::string> filenames;
     Deserializer d(fileName);
-    d.deserialize("volumes", filenames , "volume");
+    d.deserialize("volumes", filenames, "volume");
     for (auto filename : filenames) {
-        auto abs = filesystem::cleanupPath( dir + "/" + filename);
+        auto abs = filesystem::cleanupPath(dir + "/" + filename);
         volumes->push_back(reader_.readData(abs));
     }
 

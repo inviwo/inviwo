@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,14 +46,7 @@ enum class ImageType {
 
 enum class LayerType { Color = 0, Depth = 1, Picking = 2 };
 
-enum class ImageChannel {
-    Red,
-    Green,
-    Blue,
-    Alpha,
-    Zero,
-    One
-};
+enum class ImageChannel { Red, Green, Blue, Alpha, Zero, One };
 
 using SwizzleMask = std::array<ImageChannel, 4>;
 
@@ -65,8 +58,8 @@ constexpr SwizzleMask rgb = {
 constexpr SwizzleMask rgba = {
     {ImageChannel::Red, ImageChannel::Green, ImageChannel::Blue, ImageChannel::Alpha}};
 
-constexpr SwizzleMask rgbZeroAlpha ={
-    { ImageChannel::Red, ImageChannel::Green, ImageChannel::Blue, ImageChannel::Zero } };
+constexpr SwizzleMask rgbZeroAlpha = {
+    {ImageChannel::Red, ImageChannel::Green, ImageChannel::Blue, ImageChannel::Zero}};
 
 constexpr SwizzleMask luminance = {
     {ImageChannel::Red, ImageChannel::Red, ImageChannel::Red, ImageChannel::One}};
@@ -96,6 +89,6 @@ inline bool IVW_CORE_API typeContainsPicking(ImageType type) {
     return (type == ImageType::ColorPicking || type == ImageType::ColorDepthPicking);
 }
 #include <warn/pop>
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_IMAGETYPES_H

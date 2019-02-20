@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,12 +33,10 @@
 
 namespace inviwo {
 
-std::unique_ptr<Property> PropertyFactory::create(const std::string &className) const {
+std::unique_ptr<Property> PropertyFactory::create(const std::string& className) const {
     return Parent::create(className, "", "");
 }
 
-bool PropertyFactory::hasKey(const std::string& key) const {
-    return Parent::hasKey(key);
-}
+bool PropertyFactory::hasKey(const std::string& key) const { return Parent::hasKey(key); }
 
 }  // namespace inviwo

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2016-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,7 @@ namespace inviwo {
  *
  * @see TemplateProperty, FileProperty
  */
-class IVW_CORE_API MultiFileProperty : public TemplateProperty<std::vector<std::string> > {
+class IVW_CORE_API MultiFileProperty : public TemplateProperty<std::vector<std::string>> {
 public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;

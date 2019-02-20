@@ -42,11 +42,7 @@ endfunction()
 
 #--------------------------------------------------------------------
 # generete python config file
-function(ivw_private_create_pyconfig modulepaths activemodules)
-    # template vars:
-    set(MODULEPATHS ${modulepaths})
-    set(ACTIVEMODULES ${activemodules})
-
+function(ivw_private_create_pyconfig modulepaths activemodules target)
     find_package(Git QUIET)
     if(GIT_FOUND)
         ivw_debug_message(STATUS "git found: ${GIT_EXECUTABLE}")
@@ -54,8 +50,24 @@ function(ivw_private_create_pyconfig modulepaths activemodules)
         set(GIT_EXECUTABLE "")
     endif()
 
-    configure_file(${IVW_CMAKE_TEMPLATES}/pyconfig_template.ini 
-                   ${CMAKE_BINARY_DIR}/pyconfig.ini @ONLY)
+    string(CONCAT content
+        "[Inviwo]\n"
+        "modulepaths   = ${modulepaths}\n"
+        "activemodules = ${activemodules}\n"
+        "binpath       = ${EXECUTABLE_OUTPUT_PATH}\n"
+        "builds        = ${CMAKE_CONFIGURATION_TYPES}\n"
+        "\n"
+        "[CMake]\n"
+        "path          = ${CMAKE_COMMAND}\n"
+        "binary_dir    = ${CMAKE_BINARY_DIR}\n"
+        "source_dir    = ${CMAKE_SOURCE_DIR}\n"
+        "\n"
+        "[Git]\n"
+        "path          = ${GIT_EXECUTABLE}\n")
+
+    file(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/pyconfig.ini CONTENT "${content}")
+    file(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/pyconfig-$<CONFIG>.ini CONTENT "[Inviwo]\nexecutable = $<TARGET_FILE:${target}>\n")
+
 endfunction()
 
 #--------------------------------------------------------------------

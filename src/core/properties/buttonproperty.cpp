@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@ ButtonProperty::ButtonProperty(
     InvalidationLevel invalidationLevel /*=InvalidationLevel::InvalidOutput*/,
     PropertySemantics semantics /*= PropertySemantics::Default*/)
     : Property(identifier, displayName, invalidationLevel, semantics) {
-    setValid(); // the initial state for a button should be valid
+    setValid();  // the initial state for a button should be valid
 }
 
 ButtonProperty::ButtonProperty(const ButtonProperty& rhs) : Property(rhs) {}
@@ -59,15 +59,15 @@ ButtonProperty::~ButtonProperty() {}
 void ButtonProperty::set(const Property* src) {
     bool* ptr = nullptr;
     if (auto boolprop = dynamic_cast<const ButtonProperty*>(src)) {
-        if(boolprop->buttonPressed_) ptr = &buttonPressed_;
-    }    
+        if (boolprop->buttonPressed_) ptr = &buttonPressed_;
+    }
     util::KeepTrueWhileInScope guard(ptr);
     Property::set(src);
 }
 
-void ButtonProperty::pressButton() { 
+void ButtonProperty::pressButton() {
     util::KeepTrueWhileInScope guard(&buttonPressed_);
-    propertyModified(); 
+    propertyModified();
 }
 
 void ButtonProperty::propertyModified() {
@@ -77,4 +77,4 @@ void ButtonProperty::propertyModified() {
 
 void ButtonProperty::resetToDefaultState() {}
 
-}  // namespace
+}  // namespace inviwo

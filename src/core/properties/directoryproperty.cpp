@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,9 +46,7 @@ DirectoryProperty::DirectoryProperty(std::string identifier, std::string display
 
 DirectoryProperty::DirectoryProperty(const DirectoryProperty& rhs) = default;
 DirectoryProperty& DirectoryProperty::operator=(const DirectoryProperty& that) = default;
-DirectoryProperty* DirectoryProperty::clone() const {
-    return new DirectoryProperty(*this);
-}
+DirectoryProperty* DirectoryProperty::clone() const { return new DirectoryProperty(*this); }
 
 DirectoryProperty::~DirectoryProperty() = default;
 std::string DirectoryProperty::getClassIdentifierForWidget() const {

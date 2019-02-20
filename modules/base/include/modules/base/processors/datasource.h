@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,9 +48,9 @@ namespace inviwo {
 template <typename DataType, typename PortType>
 class DataSource : public Processor {
 public:
-    /** 
+    /**
      * Construct a DataSource
-     * @param app An InviwoApplication. 
+     * @param app An InviwoApplication.
      * @param file A filename passed into the FileProperty
      * @param content A content type passed into the FileProperty, usually 'volume', 'image' etc.
      * @see FileProperty
@@ -70,7 +70,7 @@ protected:
     // Called when we deserialized old data.
     virtual void dataDeserialized(std::shared_ptr<DataType> data){};
 
-    InviwoApplication* app_;
+    DataReaderFactory* rf_;
     PortType port_;
     FileProperty file_;
     ButtonProperty reload_;
@@ -84,7 +84,7 @@ template <typename DataType, typename PortType>
 DataSource<DataType, PortType>::DataSource(InviwoApplication* app, const std::string& file,
                                            const std::string& content)
     : Processor()
-    , app_(app)
+    , rf_(app->getDataReaderFactory())
     , port_("data")
     , file_("filename", "File", file, content)
     , reload_("reload", "Reload data") {
@@ -99,10 +99,9 @@ DataSource<DataType, PortType>::DataSource(InviwoApplication* app, const std::st
     addProperty(file_);
     addProperty(reload_);
 
-    auto rf = app_->getDataReaderFactory();
     file_.clearNameFilters();
     file_.addNameFilter(FileExtension::all());
-    file_.addNameFilters(rf->template getExtensionsForType<DataType>());
+    file_.addNameFilters(rf_->template getExtensionsForType<DataType>());
 }
 
 template <typename DataType, typename PortType>
@@ -117,9 +116,9 @@ template <typename DataType, typename PortType>
 void DataSource<DataType, PortType>::load(bool deserialized) {
     if (file_.get().empty()) return;
 
-    std::string ext = filesystem::getFileExtension(file_.get());
-    auto rf = app_->getDataReaderFactory();
-    if (auto reader = rf->template getReaderForTypeAndExtension<DataType>(ext)) {
+    const auto sext = file_.getSelectedExtension();
+    const auto fext = filesystem::getFileExtension(file_.get());
+    if (auto reader = rf_->template getReaderForTypeAndExtension<DataType>(sext, fext)) {
         try {
             auto data = reader->readData(file_.get());
             port_.setData(data);
@@ -140,10 +139,9 @@ void DataSource<DataType, PortType>::load(bool deserialized) {
 template <typename DataType, typename PortType>
 void DataSource<DataType, PortType>::deserialize(Deserializer& d) {
     Processor::deserialize(d);
-    auto rf = app_->getDataReaderFactory();
     file_.clearNameFilters();
     file_.addNameFilter(FileExtension::all());
-    file_.addNameFilters(rf->template getExtensionsForType<DataType>());
+    file_.addNameFilters(rf_->template getExtensionsForType<DataType>());
     deserialized_ = true;
 }
 

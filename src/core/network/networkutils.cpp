@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2018 Inviwo Foundation
+ * Copyright (c) 2015-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -431,7 +431,7 @@ bool addProcessorOnConnection(ProcessorNetwork* network, std::unique_ptr<Process
 }
 
 void replaceProcessor(ProcessorNetwork* network, std::unique_ptr<Processor> aNewProcessor,
-                                   Processor* oldProcessor) {
+                      Processor* oldProcessor) {
 
     auto newProcessor = network->addProcessor(std::move(aNewProcessor));
 

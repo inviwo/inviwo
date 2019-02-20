@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2017-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,7 +42,9 @@
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
 #include <modules/opengl/shader/shader.h>
+#include <modules/basegl/datastructures/meshshadercache.h>
 
 namespace inviwo {
 
@@ -61,10 +63,6 @@ namespace inviwo {
  *   * __image__    output image containing the rendered cubes and the optional input image
  *
  * ### Properties
- *   * __Render Mode__               render only input meshes marked as points or everything
- *   * __Clip Mode__                 defines the handling of cubes clipped at the camera
- *   * __Clip Surface Adjustment__   brighten/darken glyph color on clip surface
- *   * __Shaded Clipped Area__       enable illumination computations for the clipped surface
  *   * __Overwrite Cube Size__   enable a fixed user-defined size for all cubes
  *   * __Custom Size__          size of the rendered cubes (in world coordinates)
  *   * __Overwrite Color__     if enabled, all cubes will share the same custom color
@@ -88,38 +86,25 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    void drawMeshes();
-
-    enum class RenderMode {
-        EntireMesh,  //!< render all vertices of the input mesh as glyphs
-        PointsOnly,  //!< render only parts of mesh with DrawType::Points
-    };
-    /**
-     * \enum GlyphClippingMode
-     * defines how glyphs are rendering if the first intersection, i.e. the front side,
-     * lies behind the near clip plane of the camera.
-     */
-    enum class GlyphClippingMode {
-        Discard,  //!< glyph is not rendered
-        Cut,      //!< the cut surface is visible
-    };
+    void configureShader(Shader& shader);
 
     MeshFlatMultiInport inport_;
     ImageInport imageInport_;
     ImageOutport outport_;
 
     CompositeProperty cubeProperties_;
-    BoolProperty overrideCubeSize_;
-    FloatProperty customSize_;
-    BoolProperty overrideCubeColor_;
-    FloatVec4Property customColor_;
-	TemplateOptionProperty<GLint> culling_;
+    BoolProperty forceSize_;
+    FloatProperty defaultSize_;
+    BoolProperty forceColor_;
+    FloatVec4Property defaultColor_;
+    BoolProperty useMetaColor_;
+    TransferFunctionProperty metaColor_;
+
     CameraProperty camera_;
+    CameraTrackball trackball_;
     SimpleLightingProperty lighting_;
 
-    CameraTrackball trackball_;
-
-    Shader shader_;
+    MeshShaderCache shaders_;
 };
 
 }  // namespace inviwo

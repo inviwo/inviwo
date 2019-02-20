@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -79,7 +79,7 @@ public:
     virtual ~BasisTransform() = default;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
-    
+
     virtual void deserialize(Deserializer& d) override;
 
 protected:
@@ -154,6 +154,6 @@ void BasisTransform<T>::process() {
     }
 }
 
-}  // namespace
+}  // namespace inviwo
 
 #endif

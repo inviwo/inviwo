@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,12 +40,13 @@ namespace inviwo {
 
 class IVW_CORE_API ProcessorMetaDataObserver : public Observer {
 public:
-    virtual void onProcessorMetaDataPositionChange() {};
-    virtual void onProcessorMetaDataVisibilityChange() {};
-    virtual void onProcessorMetaDataSelectionChange() {};
+    virtual void onProcessorMetaDataPositionChange(){};
+    virtual void onProcessorMetaDataVisibilityChange(){};
+    virtual void onProcessorMetaDataSelectionChange(){};
 };
 
-class IVW_CORE_API ProcessorMetaData : public MetaData, public Observable<ProcessorMetaDataObserver>{
+class IVW_CORE_API ProcessorMetaData : public MetaData,
+                                       public Observable<ProcessorMetaDataObserver> {
 public:
     ProcessorMetaData();
     ProcessorMetaData(const ProcessorMetaData& rhs) = default;
@@ -74,6 +75,6 @@ private:
     bool selection_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_PROCESSORMETADATA_H

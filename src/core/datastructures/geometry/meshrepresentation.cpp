@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,4 +37,4 @@ Mesh* MeshRepresentation::getOwner() { return owner_; }
 
 const Mesh* MeshRepresentation::getOwner() const { return owner_; }
 
-}  // namespace
+}  // namespace inviwo

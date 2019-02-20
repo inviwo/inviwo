@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_ORDINALMINMAXPROPERTYWIDGETQT_H
@@ -35,7 +35,7 @@
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
 #include <modules/qtwidgets/properties/propertysettingswidgetqt.h>
 #include <inviwo/core/properties/minmaxproperty.h>
-#include <modules/qtwidgets/customdoublespinboxqt.h>
+#include <modules/qtwidgets/numberlineedit.h>
 #include <modules/qtwidgets/editablelabelqt.h>
 #include <modules/qtwidgets/rangesliderqt.h>
 #include <inviwo/core/properties/propertyowner.h>
@@ -100,8 +100,8 @@ private:
 
     TemplateMinMaxPropertySettingsWidgetQt<T>* settingsWidget_;
     RangeSliderQt* slider_;
-    CustomDoubleSpinBoxQt* spinBoxMin_;
-    CustomDoubleSpinBoxQt* spinBoxMax_;
+    NumberLineEdit* spinBoxMin_;
+    NumberLineEdit* spinBoxMax_;
     EditableLabelQt* label_;
     MinMaxProperty<T>* minMaxProperty_;
 };
@@ -117,8 +117,8 @@ OrdinalMinMaxPropertyWidgetQt<T>::OrdinalMinMaxPropertyWidgetQt(MinMaxProperty<T
     : PropertyWidgetQt(property)
     , settingsWidget_(nullptr)
     , slider_(new RangeSliderQt(Qt::Horizontal, this))
-    , spinBoxMin_(new CustomDoubleSpinBoxQt(this))
-    , spinBoxMax_(new CustomDoubleSpinBoxQt(this))
+    , spinBoxMin_(new NumberLineEdit(std::is_integral<T>::value, this))
+    , spinBoxMax_(new NumberLineEdit(std::is_integral<T>::value, this))
     , label_(new EditableLabelQt(this, property_))
     , minMaxProperty_(property) {
 
@@ -137,13 +137,13 @@ OrdinalMinMaxPropertyWidgetQt<T>::OrdinalMinMaxPropertyWidgetQt(MinMaxProperty<T
     sliderWidget->setLayout(hSliderLayout);
     hSliderLayout->setContentsMargins(0, 0, 0, 0);
 
-    spinBoxMin_->setKeyboardTracking(false); // don't emit the valueChanged() signal while typing
+    spinBoxMin_->setKeyboardTracking(false);  // don't emit the valueChanged() signal while typing
     spinBoxMin_->setFixedWidth(50);
     hSliderLayout->addWidget(spinBoxMin_);
 
     hSliderLayout->addWidget(slider_);
 
-    spinBoxMax_->setKeyboardTracking(false); // don't emit the valueChanged() signal while typing
+    spinBoxMax_->setKeyboardTracking(false);  // don't emit the valueChanged() signal while typing
     spinBoxMax_->setFixedWidth(50);
     hSliderLayout->addWidget(spinBoxMax_);
 
@@ -156,19 +156,17 @@ OrdinalMinMaxPropertyWidgetQt<T>::OrdinalMinMaxPropertyWidgetQt(MinMaxProperty<T
 
     connect(slider_, &RangeSliderQt::valuesChanged, this,
             &OrdinalMinMaxPropertyWidgetQt<T>::updateFromSlider);
-    connect(
-        spinBoxMin_,
-        static_cast<void (CustomDoubleSpinBoxQt::*)(double)>(&CustomDoubleSpinBoxQt::valueChanged),
-        this, &OrdinalMinMaxPropertyWidgetQt<T>::updateFromSpinBoxMin);
-    connect(
-        spinBoxMax_,
-        static_cast<void (CustomDoubleSpinBoxQt::*)(double)>(&CustomDoubleSpinBoxQt::valueChanged),
-        this, &OrdinalMinMaxPropertyWidgetQt<T>::updateFromSpinBoxMax);
+    connect(spinBoxMin_,
+            static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this,
+            &OrdinalMinMaxPropertyWidgetQt<T>::updateFromSpinBoxMin);
+    connect(spinBoxMax_,
+            static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this,
+            &OrdinalMinMaxPropertyWidgetQt<T>::updateFromSpinBoxMax);
 
     updateFromProperty();
 }
 
-template<typename T>
+template <typename T>
 void OrdinalMinMaxPropertyWidgetQt<T>::updateFromProperty() {
     const V val = minMaxProperty_->get();
     const V range = minMaxProperty_->getRange();
@@ -319,7 +317,6 @@ void OrdinalMinMaxPropertyWidgetQt<T>::showSettings() {
     settingsWidget_->showWidget();
 }
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_ORDINALMINMAXPROPERTYWIDGETQT_H
-
+#endif  // IVW_ORDINALMINMAXPROPERTYWIDGETQT_H

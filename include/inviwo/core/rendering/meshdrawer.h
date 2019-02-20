@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,11 +54,11 @@ class MeshDrawerFactory;
  *        }
  *        virtual const Mesh* getMesh() const { return geomToRender_; }
  *    protected:
- *        virtual DerivedDrawer* create(const Mesh* geom) const { 
- *            return new DerivedDrawer(static_cast<const DerivedMesh*>(geom)); 
+ *        virtual DerivedDrawer* create(const Mesh* geom) const {
+ *            return new DerivedDrawer(static_cast<const DerivedMesh*>(geom));
  *        }
- *        virtual bool canRender(const Mesh* geom) const { 
- *            return dynamic_cast<const DerivedMesh*>(geom) != nullptr; 
+ *        virtual bool canRender(const Mesh* geom) const {
+ *            return dynamic_cast<const DerivedMesh*>(geom) != nullptr;
  *        }
  *    private:
  *        const DerivedMesh* geomToRender_;
@@ -109,6 +109,6 @@ protected:
     virtual bool canDraw(const Mesh* geom) const = 0;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_GEOMETRY_DRAWER_H

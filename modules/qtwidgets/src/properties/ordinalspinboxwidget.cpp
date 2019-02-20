@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,7 @@
 namespace inviwo {
 
 BaseOrdinalSpinBoxWidget::BaseOrdinalSpinBoxWidget() : editor_{new DoubleValueDragSpinBox(this)} {
-        
+
     setFocusPolicy(editor_->focusPolicy());
     setFocusProxy(editor_);
 
@@ -62,6 +62,10 @@ BaseOrdinalSpinBoxWidget::BaseOrdinalSpinBoxWidget() : editor_{new DoubleValueDr
 
 BaseOrdinalSpinBoxWidget::~BaseOrdinalSpinBoxWidget() = default;
 
+void BaseOrdinalSpinBoxWidget::setWrapping(bool wrap) { editor_->setWrapping(wrap); }
+
+bool BaseOrdinalSpinBoxWidget::wrapping() const { return editor_->wrapping(); }
+
 void BaseOrdinalSpinBoxWidget::updateEditor() {
     QSignalBlocker block{editor_};
     editor_->setRange(minimumValue(), maximumValue());
@@ -83,12 +87,12 @@ void BaseOrdinalSpinBoxWidget::applyValue() {
 }
 
 void BaseOrdinalSpinBoxWidget::applyRange() {
-    QSignalBlocker block{ editor_ };
-    editor_->setRange(minimumValue(), maximumValue()); 
+    QSignalBlocker block{editor_};
+    editor_->setRange(minimumValue(), maximumValue());
 }
 
 void BaseOrdinalSpinBoxWidget::applyIncrement() {
-    QSignalBlocker block{ editor_ };
+    QSignalBlocker block{editor_};
     editor_->setSingleStep(increment());
     editor_->setDecimals(spinnerDecimals());
 }

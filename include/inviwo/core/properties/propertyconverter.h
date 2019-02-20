@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,6 +36,8 @@
 #include <inviwo/core/properties/templateproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 
 namespace inviwo {
 
@@ -112,6 +114,23 @@ protected:
         } else {
             dst->set("");
         }
+    }
+};
+
+template <typename OptionProperty>
+class OptionToIntConverter : public TemplatePropertyConverter<OptionProperty, IntProperty> {
+protected:
+    virtual void convertimpl(const OptionProperty *src, IntProperty *dst) const override {
+        dst->set(static_cast<int>(src->getSelectedIndex()), 0, static_cast<int>(src->size()) - 1,
+                 1);
+    }
+};
+
+template <typename OptionProperty>
+class IntToOptionConverter : public TemplatePropertyConverter<IntProperty, OptionProperty> {
+protected:
+    virtual void convertimpl(const IntProperty *src, OptionProperty *dst) const override {
+        dst->setSelectedIndex(src->get());
     }
 };
 

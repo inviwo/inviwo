@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,8 +33,8 @@
 
 namespace inviwo {
 
-void ProcessorWidgetObserver::onProcessorWidgetShow(ProcessorWidget*){}
-void ProcessorWidgetObserver::onProcessorWidgetHide(ProcessorWidget*){}
+void ProcessorWidgetObserver::onProcessorWidgetShow(ProcessorWidget*) {}
+void ProcessorWidgetObserver::onProcessorWidgetHide(ProcessorWidget*) {}
 
 void ProcessorWidgetObservable::notifyObserversAboutShow(ProcessorWidget* p) {
     forEachObserver([&](ProcessorWidgetObserver* o) { o->onProcessorWidgetShow(p); });
@@ -43,4 +43,4 @@ void ProcessorWidgetObservable::notifyObserversAboutHide(ProcessorWidget* p) {
     forEachObserver([&](ProcessorWidgetObserver* o) { o->onProcessorWidgetHide(p); });
 }
 
-}  // namespace
+}  // namespace inviwo

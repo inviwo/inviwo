@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -57,6 +57,6 @@ public:
                         std::shared_ptr<LayerRAM> destination) const override;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_LAYERCLCONVERTER_H

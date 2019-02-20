@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2016-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -64,7 +64,6 @@ public:
 
 IVW_MODULE_ANIMATION_API bool operator==(const Interpolation& a, const Interpolation& b);
 IVW_MODULE_ANIMATION_API bool operator!=(const Interpolation& a, const Interpolation& b);
-
 
 /** \class InterpolationTyped
  *	Base class for interpolation between key frames.

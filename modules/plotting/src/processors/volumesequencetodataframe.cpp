@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2016-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@ namespace plot {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VolumeSequenceToDataFrame::processorInfo_{
     "org.inviwo.VolumeSequenceToDataFrame",  // Class identifier
-    "Volume Sequence To DataFrame",         // Display name
+    "Volume Sequence To DataFrame",          // Display name
     "Data Creation",                         // Category
     CodeState::Experimental,                 // Code state
     "CPU, DataFrame, Volume",                // Tags

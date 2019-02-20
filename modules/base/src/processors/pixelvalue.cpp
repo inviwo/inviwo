@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2016-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -170,7 +170,7 @@ PixelValue::PixelValue()
         }
     });
 
-    for (auto &p : getProperties()) {
+    for (auto& p : getProperties()) {
         p->setSerializationMode(PropertySerializationMode::None);
     }
 }
@@ -186,7 +186,7 @@ void PixelValue::mouseMoveEvent(Event* theevent) {
         auto numCh = img->getNumberOfColorLayers();
         auto p = mouseEvent->posNormalized();
         if (glm::any(glm::lessThan(p, dvec2(0, 0))) || glm::any(glm::greaterThan(p, dvec2(1, 1)))) {
-            //This can happen a lot when having a image layout
+            // This can happen a lot when having a image layout
             return;
         }
         size2_t pos = static_cast<size2_t>(p * dvec2(dims - size2_t(1)));
@@ -215,4 +215,4 @@ void PixelValue::mouseMoveEvent(Event* theevent) {
     }
 }
 
-}  // namespace
+}  // namespace inviwo

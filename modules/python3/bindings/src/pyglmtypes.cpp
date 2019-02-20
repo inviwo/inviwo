@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,9 +33,12 @@
 
 #include <inviwopy/pyglmmattypes.h>
 
+#include <warn/push>
+#include <warn/ignore/shadow>
 #include <pybind11/operators.h>
 #include <pybind11/numpy.h>
 #include <pybind11/stl_bind.h>
+#include <warn/pop>
 
 #include <map>
 #include <string>

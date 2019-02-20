@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,8 +35,8 @@ LogErrorCounter::LogErrorCounter() = default;
 LogErrorCounter::~LogErrorCounter() = default;
 
 void LogErrorCounter::log(std::string /*logSource*/, LogLevel logLevel, LogAudience /*audience*/,
-                          const char* /*fileName*/, const char* /*functionName*/, int /*lineNumber*/,
-                          std::string /*logMsg*/) {
+                          const char* /*fileName*/, const char* /*functionName*/,
+                          int /*lineNumber*/, std::string /*logMsg*/) {
     messageCount_[static_cast<LogLevel>(logLevel)]++;
 }
 
@@ -58,4 +58,4 @@ void LogErrorCounter::reset() {
     }
 }
 
-}  // namespace
+}  // namespace inviwo

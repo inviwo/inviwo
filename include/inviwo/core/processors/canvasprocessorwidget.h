@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,13 +43,12 @@ class Canvas;
  * \brief A processor widget that has a canvas.
  * CanvasProcessorWidget is the base class for all processor widgets with canvases.
  */
-class IVW_CORE_API CanvasProcessorWidget : public ProcessorWidget { 
+class IVW_CORE_API CanvasProcessorWidget : public ProcessorWidget {
 public:
     CanvasProcessorWidget(Processor* p) : ProcessorWidget(p) {}
     virtual Canvas* getCanvas() const = 0;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_CANVASPROCESSORWIDGET_H
-
+#endif  // IVW_CANVASPROCESSORWIDGET_H

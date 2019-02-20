@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_BASEMODULE_H
@@ -47,7 +47,6 @@ public:
     virtual std::unique_ptr<VersionConverter> getConverter(int version) const override;
 
 private:
-
     struct RegHelper {
         template <typename T>
         void operator()(BaseModule& base) {
@@ -65,6 +64,6 @@ private:
     };
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_BASEMODULE_H
+#endif  // IVW_BASEMODULE_H

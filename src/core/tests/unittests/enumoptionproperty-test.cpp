@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,16 +45,16 @@ enum class MyEnumA { a, b };
 
 enum class MyEnumB { a, b };
 
-}
+}  // namespace
 
 template <>
 struct EnumTraits<MyEnumB> {
-    static std::string name() {return "MyEnumB"; }
+    static std::string name() { return "MyEnumB"; }
 };
 
 TEST(EnumOptionProperty, Test1) {
-    TemplateOptionProperty<MyEnumA> pA("test","test");
-    TemplateOptionProperty<MyEnumB> pB("test","test");
+    TemplateOptionProperty<MyEnumA> pA("test", "test");
+    TemplateOptionProperty<MyEnumB> pB("test", "test");
 
     auto idA = pA.getClassIdentifier();
     auto idB = pB.getClassIdentifier();
@@ -65,7 +65,8 @@ TEST(EnumOptionProperty, Test1) {
     PropertyFactoryObjectTemplate<TemplateOptionProperty<MyEnumB>> factoryObj;
     factory.registerObject(&factoryObj);
 
-    std::unique_ptr<Property> propA = std::make_unique<TemplateOptionProperty<MyEnumB>>("test", "test");
+    std::unique_ptr<Property> propA =
+        std::make_unique<TemplateOptionProperty<MyEnumB>>("test", "test");
     propA->setSerializationMode(PropertySerializationMode::All);
     std::stringstream ss;
     Serializer s("");
@@ -78,7 +79,6 @@ TEST(EnumOptionProperty, Test1) {
     d.deserialize("property", propB);
 
     EXPECT_TRUE(propB != nullptr);
-
 }
 
 }  // namespace inviwo

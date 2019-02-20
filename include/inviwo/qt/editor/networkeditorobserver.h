@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2018 Inviwo Foundation
+ * Copyright (c) 2015-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,11 +38,11 @@ namespace inviwo {
 
 class IVW_QTEDITOR_API NetworkEditorObserver : public Observer {
 public:
-    virtual void onNetworkEditorFileChanged(const std::string& /*newFilename*/) {};
-    virtual void onModifiedStatusChanged(const bool& /*newStatus*/) {};
-    virtual void onSceneSizeChanged() {};
+    virtual void onNetworkEditorFileChanged(const std::string& /*newFilename*/){};
+    virtual void onModifiedStatusChanged(const bool& /*newStatus*/){};
+    virtual void onSceneSizeChanged(){};
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_NETWORKEDITOROBSERVER_H

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2017-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,7 @@ namespace inviwo {
  *
  * Supports reader a volume sequence from disk.
  *
- * The expected structure of the ivfs sequence files is: 
+ * The expected structure of the ivfs sequence files is:
  * \verbatim
 <?xml version="1.0" ?>
 <InviwoWorkspace version="2">

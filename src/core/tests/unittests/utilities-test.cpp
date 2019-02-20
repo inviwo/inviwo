@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,12 +48,7 @@ TEST(UtilitiesTests, StripIndentifierTest) {
     EXPECT_EQ("foo123_", util::stripIdentifier("foo123_"));
     EXPECT_EQ("foo123", util::stripIdentifier("(foo123)"));
     EXPECT_EQ("_1abc123", util::stripIdentifier("1abc123"));
-    EXPECT_EQ(
-        "_1abc123",
-        util::stripIdentifier("1abc123&!-=\"#%&/()=?`+@${[]}~*'-.,;:<>|"));
+    EXPECT_EQ("_1abc123", util::stripIdentifier("1abc123&!-=\"#%&/()=?`+@${[]}~*'-.,;:<>|"));
 }
 
-
-
-} // namespace
-
+}  // namespace inviwo

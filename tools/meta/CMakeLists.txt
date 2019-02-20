@@ -7,11 +7,13 @@ if(NOT cxx_std_17 IN_LIST CMAKE_CXX_COMPILE_FEATURES)
 	return()
 endif()
 include(CheckIncludeFileCXX)
-CHECK_INCLUDE_FILE_CXX(filesystem found_fileystem)
-if(NOT found_fileystem)
-	message(STATUS "Will not build Inviwo meta since the used compiler does not have c++ filesystem support")
+CHECK_INCLUDE_FILE_CXX(filesystem found_variant)
+if(NOT found_variant)
+	message(STATUS "Will not build Inviwo meta since the used compiler does not have c++ variant support")
 	return()
 endif()
+
+find_package(FileSystem REQUIRED)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS On)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER cmake)
@@ -56,7 +58,8 @@ set_target_properties(inviwo-meta PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIR
 ivw_define_standard_properties(inviwo-meta)
 ivw_define_standard_definitions(${PROJECT_NAME} inviwo-meta)
 
-target_link_libraries(inviwo-meta PUBLIC 
+target_link_libraries(inviwo-meta PUBLIC
+	std::filesystem 
 	inviwo::warn
 	fmt::fmt
 	nlohmann_json::nlohmann_json

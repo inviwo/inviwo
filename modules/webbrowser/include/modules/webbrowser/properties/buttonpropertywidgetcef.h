@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,12 +48,13 @@ public:
                             std::string htmlId = "");
     virtual ~ButtonPropertyWidgetCEF() = default;
 
-	virtual void updateFromProperty() override;
+    virtual void updateFromProperty() override;
 
     // Override callback from javascript, use pressButton instead of deserialize
-    virtual bool onQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 query_id,
-                         const CefString& request, bool persistent,
-		CefRefPtr<CefMessageRouterBrowserSide::Handler::Callback> callback) override;
+    virtual bool onQuery(
+        CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 query_id,
+        const CefString& request, bool persistent,
+        CefRefPtr<CefMessageRouterBrowserSide::Handler::Callback> callback) override;
 };
 
 }  // namespace inviwo

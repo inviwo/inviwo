@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/image/layerrepresentation.h>
@@ -36,16 +36,12 @@ LayerRepresentation::LayerRepresentation(size2_t dimensions, LayerType type,
                                          const DataFormatBase* format)
     : DataRepresentation(format), dimensions_(dimensions), layerType_(type) {}
 
-size2_t LayerRepresentation::getDimensions() const {
-    return dimensions_;
-}
+size2_t LayerRepresentation::getDimensions() const { return dimensions_; }
 
-LayerType LayerRepresentation::getLayerType() const {
-    return layerType_;
-}
+LayerType LayerRepresentation::getLayerType() const { return layerType_; }
 
 void LayerRepresentation::updateBaseMetaFromRepresentation() {
     getOwner()->updateMetaFromRepresentation(this);
 }
 
-} // namespace
+}  // namespace inviwo

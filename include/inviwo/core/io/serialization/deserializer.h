@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,6 +33,7 @@
 #include <inviwo/core/io/serialization/serializebase.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/logfilter.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/io/serialization/nodedebugger.h>
 
@@ -52,7 +53,7 @@ class FactoryBase;
 template <typename T, typename K>
 class ContainerWrapper;
 
-class IVW_CORE_API Deserializer : public SerializeBase {
+class IVW_CORE_API Deserializer : public SerializeBase, public LogFilter {
 public:
     /**
      * \brief Deserializer constructor

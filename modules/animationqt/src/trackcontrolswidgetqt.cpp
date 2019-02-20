@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2017-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -87,7 +87,7 @@ TrackControlsWidgetQt::TrackControlsWidgetQt(QStandardItem*, Track& track,
             iconSize, QIcon::Normal, QIcon::On);
         QAction* lock = new QAction(lockTrackIcon, "Lock/Unlock Track", this);
         connect(lock, &QAction::triggered, this, [this]() {
-            IVW_UNUSED_PARAM(this); // needed for the LogWarn
+            IVW_UNUSED_PARAM(this);  // needed for the LogWarn
             LogWarn("Locking tracks is not implemented yet.");
         });
         lock->setCheckable(true);

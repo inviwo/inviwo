@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2017-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -131,17 +131,13 @@ void LayerDistanceTransformRAM::updateOutport() {
         });
     };
 
-    auto calc =
-        [
-            pb = &progressBar_,
-            upsample = uniformUpsampling_.get() ? size3_t(upsampleFactorUniform_.get())
-                                                : upsampleFactorVec2_.get(),
-            threshold = threshold_.get(), normalize = normalize_.get(), flip = flip_.get(),
-            square = resultSquaredDist_.get(), scale = resultDistScale_.get(), done,
-            &cache = imageCache_
-        ](std::shared_ptr<const Image> image)
-            ->std::shared_ptr<Image> {
-
+    auto calc = [pb = &progressBar_,
+                 upsample = uniformUpsampling_.get() ? size3_t(upsampleFactorUniform_.get())
+                                                     : upsampleFactorVec2_.get(),
+                 threshold = threshold_.get(), normalize = normalize_.get(), flip = flip_.get(),
+                 square = resultSquaredDist_.get(), scale = resultDistScale_.get(), done,
+                 &cache =
+                     imageCache_](std::shared_ptr<const Image> image) -> std::shared_ptr<Image> {
         auto imgDim = glm::max(image->getDimensions(), size2_t(1u));
 
         auto res = cache.getTypedUnused<float>(upsample * imgDim);

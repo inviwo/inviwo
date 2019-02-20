@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,8 @@ public:
     SequenceEditorFactoryObject(const std::string& classIdentifier);
     virtual ~SequenceEditorFactoryObject() = default;
 
-    virtual std::unique_ptr<SequenceEditorWidget> create(KeyframeSequence&, Track&, AnimationManager&) const = 0;
+    virtual std::unique_ptr<SequenceEditorWidget> create(KeyframeSequence&, Track&,
+                                                         AnimationManager&) const = 0;
     const std::string& getClassIdentifier() const;
 
 protected:
@@ -62,8 +63,8 @@ public:
         : SequenceEditorFactoryObject(classIdentifier){};
     virtual ~SequenceEditorFactoryObjectTemplate() = default;
 
-    virtual std::unique_ptr<SequenceEditorWidget> create(KeyframeSequence& sequence,
-                                                         Track& track, AnimationManager& manager) const override {
+    virtual std::unique_ptr<SequenceEditorWidget> create(KeyframeSequence& sequence, Track& track,
+                                                         AnimationManager& manager) const override {
         return std::make_unique<T>(sequence, track, manager);
     }
 };

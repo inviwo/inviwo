@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2016-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,13 +38,11 @@
 
 namespace inviwo {
 
-class IVW_CORE_API WheelEvent : public MouseInteractionEvent { 
+class IVW_CORE_API WheelEvent : public MouseInteractionEvent {
 public:
     WheelEvent(MouseButtons buttonState = MouseButtons(flags::empty),
-               KeyModifiers modifiers = KeyModifiers(flags::empty), 
-               dvec2 delta = dvec2(0),
-               dvec2 normalizedPosition = dvec2(0),
-               uvec2 canvasSize = uvec2(0),
+               KeyModifiers modifiers = KeyModifiers(flags::empty), dvec2 delta = dvec2(0),
+               dvec2 normalizedPosition = dvec2(0), uvec2 canvasSize = uvec2(0),
                double depth = 1.0);
 
     WheelEvent(const WheelEvent& rhs) = default;
@@ -57,15 +55,14 @@ public:
     void setDelta(dvec2 delta);
 
     virtual uint64_t hash() const override;
-    static constexpr uint64_t chash() {
-        return util::constexpr_hash("org.inviwo.WheelEvent");
-    }
+    static constexpr uint64_t chash() { return util::constexpr_hash("org.inviwo.WheelEvent"); }
+
+    virtual void print(std::ostream& ss) const override;
 
 private:
     dvec2 delta_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_WHEELEVENT_H
-
+#endif  // IVW_WHEELEVENT_H

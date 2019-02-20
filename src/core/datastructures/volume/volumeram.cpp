@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,8 +38,6 @@ void VolumeRAM::setValuesFromVolume(const VolumeRAM* src, const size3_t& dstOffs
     setValuesFromVolume(src, dstOffset, src->getDimensions(), size3_t(0));
 }
 
-std::type_index VolumeRAM::getTypeIndex() const {
-     return std::type_index(typeid(VolumeRAM));
-}
+std::type_index VolumeRAM::getTypeIndex() const { return std::type_index(typeid(VolumeRAM)); }
 
-}  // namespace
+}  // namespace inviwo

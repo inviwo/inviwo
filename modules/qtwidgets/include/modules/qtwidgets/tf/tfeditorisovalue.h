@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,16 +38,16 @@
 namespace inviwo {
 
 class IVW_MODULE_QTWIDGETS_API TFEditorIsovalue : public TFEditorPrimitive,
-                                                      public TFPrimitiveObserver {
+                                                  public TFPrimitiveObserver {
 public:
-    TFEditorIsovalue(TFPrimitive* primitive, QGraphicsScene* scene, double size = 14.0);
+    TFEditorIsovalue(TFPrimitive& primitive, QGraphicsScene* scene, double size = 14.0);
     ~TFEditorIsovalue() = default;
 
     // override for qgraphicsitem_cast (refer qt documentation)
     enum { Type = UserType + TFEditorPrimitive::TFEditorIsovalueType };
     int type() const override { return Type; }
 
-    virtual void onTFPrimitiveChange(const TFPrimitive* p) override;
+    virtual void onTFPrimitiveChange(const TFPrimitive& p) override;
 
     friend IVW_MODULE_QTWIDGETS_API bool operator==(const TFEditorIsovalue& lhs,
                                                     const TFEditorIsovalue& rhs);
@@ -85,18 +85,12 @@ private:
     double getVerticalSceneScaling() const;
 };
 
-IVW_MODULE_QTWIDGETS_API bool operator==(const TFEditorIsovalue& lhs,
-                                         const TFEditorIsovalue& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator!=(const TFEditorIsovalue& lhs,
-                                         const TFEditorIsovalue& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator<(const TFEditorIsovalue& lhs,
-                                        const TFEditorIsovalue& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator>(const TFEditorIsovalue& lhs,
-                                        const TFEditorIsovalue& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator<=(const TFEditorIsovalue& lhs,
-                                         const TFEditorIsovalue& rhs);
-IVW_MODULE_QTWIDGETS_API bool operator>=(const TFEditorIsovalue& lhs,
-                                         const TFEditorIsovalue& rhs);
+IVW_MODULE_QTWIDGETS_API bool operator==(const TFEditorIsovalue& lhs, const TFEditorIsovalue& rhs);
+IVW_MODULE_QTWIDGETS_API bool operator!=(const TFEditorIsovalue& lhs, const TFEditorIsovalue& rhs);
+IVW_MODULE_QTWIDGETS_API bool operator<(const TFEditorIsovalue& lhs, const TFEditorIsovalue& rhs);
+IVW_MODULE_QTWIDGETS_API bool operator>(const TFEditorIsovalue& lhs, const TFEditorIsovalue& rhs);
+IVW_MODULE_QTWIDGETS_API bool operator<=(const TFEditorIsovalue& lhs, const TFEditorIsovalue& rhs);
+IVW_MODULE_QTWIDGETS_API bool operator>=(const TFEditorIsovalue& lhs, const TFEditorIsovalue& rhs);
 
 }  // namespace inviwo
 

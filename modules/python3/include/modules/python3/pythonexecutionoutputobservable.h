@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,8 +40,7 @@ enum class PythonOutputType { sysstdout, sysstderr };
 
 class IVW_MODULE_PYTHON3_API PythonExecutionOutputObeserver : public Observer {
 public:
-    virtual void onPyhonExecutionOutput(const std::string &msg,
-                                        PythonOutputType outputType) = 0;
+    virtual void onPyhonExecutionOutput(const std::string &msg, PythonOutputType outputType) = 0;
 };
 
 class IVW_MODULE_PYTHON3_API PythonExecutionOutputObservable

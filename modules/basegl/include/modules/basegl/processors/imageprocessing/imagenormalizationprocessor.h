@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_IMAGENORMALIZATIONPROCESSOR_H
@@ -37,7 +37,6 @@
 #include <inviwo/core/properties/stringproperty.h>
 #include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
 #include <modules/opengl/inviwoopengl.h>
-    
 
 namespace inviwo {
 
@@ -52,7 +51,8 @@ namespace inviwo {
  *   * __outputImage__ Filtered input image
  *
  * ### Properties
- *   * __Normalize Channels Separately__ If true, each channel will be normalized on its own. Otherwise the global min/max values are used for all channels.
+ *   * __Normalize Channels Separately__ If true, each channel will be normalized on its own.
+ * Otherwise the global min/max values are used for all channels.
  *   * __Centered at Zero__ Toggles normalization centered at zero to range [-max, max]
  *   * __Min value__ Min value of the input image (read-only)
  *   * __Max Value__ Max value of the input image (read-only)
@@ -80,6 +80,6 @@ private:
     dvec4 max_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_IMAGENORMALIZATIONPROCESSOR_H

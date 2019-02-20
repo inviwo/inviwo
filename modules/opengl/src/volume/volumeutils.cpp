@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,13 +24,14 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/opengl/volume/volumeutils.h>
 #include <modules/opengl/glformats.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/texture/textureunit.h>
 
 namespace inviwo {
 
@@ -65,9 +66,8 @@ void setShaderUniforms(Shader& shader, const Volume& volume, const std::string& 
     //             0                   0               gradientSpacing.z }
     // which means that the transformation is equal to scaling
     // the world to texture matrix.
-    shader.setUniform(
-        samplerID + ".textureSpaceGradientSpacing",
-        mat3(glm::scale(ct.getWorldToTextureMatrix(), gradientSpacing)));
+    shader.setUniform(samplerID + ".textureSpaceGradientSpacing",
+                      mat3(glm::scale(ct.getWorldToTextureMatrix(), gradientSpacing)));
 
     vec3 dimF = static_cast<vec3>(volume.getDimensions());
     shader.setUniform(samplerID + ".dimensions", dimF);
@@ -116,7 +116,7 @@ void setShaderUniforms(Shader& shader, const Volume& volume, const std::string& 
     shader.setUniform(samplerID + ".formatOffset", static_cast<float>(offset));
 
     shader.setUniform(samplerID + ".signedFormatScaling",
-                       static_cast<float>(1.0 - signedScalingFactor));
+                      static_cast<float>(1.0 - signedScalingFactor));
     shader.setUniform(samplerID + ".signedFormatOffset", static_cast<float>(signedOffset));
 }
 
@@ -141,6 +141,6 @@ IVW_MODULE_OPENGL_API void bindAndSetUniforms(Shader& shader, TextureUnitContain
     cont.push_back(std::move(unit));
 }
 
-}  // namespace
+}  // namespace utilgl
 
-}  // namespace
+}  // namespace inviwo

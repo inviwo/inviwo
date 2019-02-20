@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,7 @@
  * 
  *********************************************************************************/
 
-layout(location = 4) in uint in_PickId;
+layout(location = 7) in uint in_PickId;
 
 #include "utils/structs.glsl"
 #include "utils/pickingutils.glsl"

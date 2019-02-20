@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_EXAMPLEPROGRESSBAR_H
@@ -44,13 +44,13 @@ namespace inviwo {
  * ![](org.inviwo.ExampleProgressBar.png?classIdentifier=org.inviwo.ExampleProgressBar)
  *
  * ...
- * 
+ *
  * ### Inports
  *   * __image.inport__ ...
- * 
+ *
  * ### Outports
  *   * __image.outport__ ...
- * 
+ *
  *
  */
 class IVW_MODULE_EXAMPLE_API ExampleProgressBar : public Processor, public ProgressBarOwner {
@@ -64,11 +64,11 @@ public:
 protected:
     virtual void process() override;
 
-private:    
+private:
     ImageInport inport_;
     ImageOutport outport_;
 };
 
-}
+}  // namespace inviwo
 
-#endif //IVW_EXAMPLEPROGRESSBAR_H
+#endif  // IVW_EXAMPLEPROGRESSBAR_H

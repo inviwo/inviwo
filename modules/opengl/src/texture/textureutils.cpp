@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,8 +29,8 @@
 
 #include <inviwo/core/datastructures/geometry/mesh.h>
 
-#include <modules/opengl/canvasgl.h>
 #include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/canvasgl.h>
 #include <modules/opengl/volume/volumegl.h>
 #include <modules/opengl/geometry/meshgl.h>
 #include <modules/opengl/buffer/bufferobjectarray.h>
@@ -40,6 +40,16 @@
 #include <modules/opengl/buffer/bufferobjectarray.h>
 #include <modules/opengl/sharedopenglresources.h>
 #include <modules/opengl/openglutils.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/properties/isotfproperty.h>
+#include <inviwo/core/datastructures/image/image.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/texture/texture.h>
+#include <modules/opengl/texture/textureunit.h>
 
 namespace inviwo {
 
@@ -75,7 +85,8 @@ void activateTargetAndCopySource(Image& targetImage, const Image& sourceImage, I
     outImageGL->activateBuffer(type);
 }
 
-void activateTargetAndCopySource(Image& targetImage, const ImageInport& sourceInport, ImageType type) {
+void activateTargetAndCopySource(Image& targetImage, const ImageInport& sourceInport,
+                                 ImageType type) {
     auto outImageGL = targetImage.getEditableRepresentation<ImageGL>();
 
     if (auto inImage = sourceInport.getData()) {
@@ -96,6 +107,25 @@ void activateTargetAndCopySource(ImageOutport& targetOutport, const ImageInport&
     }
     auto outImage = targetOutport.getEditableData();
     activateTargetAndCopySource(*outImage, sourceInport, type);
+}
+
+void activateTargetAndClearOrCopySource(Image& targetImage, const ImageInport& sourceInport,
+                                        ImageType type) {
+
+    if (sourceInport.isReady()) {
+        utilgl::activateTargetAndCopySource(targetImage, sourceInport, type);
+    } else {
+        utilgl::activateAndClearTarget(targetImage, type);
+    }
+}
+
+void activateTargetAndClearOrCopySource(ImageOutport& targetOutport,
+                                        const ImageInport& sourceInport, ImageType type) {
+    if (sourceInport.isReady()) {
+        utilgl::activateTargetAndCopySource(targetOutport, sourceInport, type);
+    } else {
+        utilgl::activateAndClearTarget(targetOutport, type);
+    }
 }
 
 void clearCurrentTarget() { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); }
@@ -414,8 +444,7 @@ void bindTexture(const IsoTFProperty& property, const TextureUnit& texUnit) {
     }
 }
 
-void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
-                        const IsoTFProperty& property) {
+void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const IsoTFProperty& property) {
     TextureUnit unit;
     bindTexture(property, unit);
     shader.setUniform(property.tf_.getIdentifier(), unit);
@@ -490,6 +519,6 @@ void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, ImageOutport
                         ImageType type) {
     bindAndSetUniforms(shader, cont, *port.getData(), port.getIdentifier(), type);
 }
-}
+}  // namespace utilgl
 
-}  // namespace
+}  // namespace inviwo

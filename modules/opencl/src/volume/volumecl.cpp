@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,6 @@
 #include <modules/opencl/clformats.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/util/stdextensions.h>  // make_unique is c++14 but works on some compilers
-
 
 namespace inviwo {
 
@@ -102,7 +101,7 @@ const cl::Image3D& VolumeCL::get() const { return *clImage_; }
 
 std::type_index VolumeCL::getTypeIndex() const { return std::type_index(typeid(VolumeCL)); }
 
-}  // namespace
+}  // namespace inviwo
 
 namespace cl {
 

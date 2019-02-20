@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,6 +34,7 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
 
 namespace inviwo {
 
@@ -46,6 +47,7 @@ class InviwoApplication;
 class IVW_CORE_API SystemSettings : public Settings {
 public:
     SystemSettings(InviwoApplication* app);
+    StringProperty workspaceAuthor_;
     TemplateOptionProperty<UsageMode> applicationUsageMode_;
     IntSizeTProperty poolSize_;
     BoolProperty enablePortInspectors_;

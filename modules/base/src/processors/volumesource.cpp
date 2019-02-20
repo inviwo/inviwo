@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -81,7 +81,7 @@ VolumeSource::VolumeSource(InviwoApplication* app, const std::string& file)
     addProperty(information_);
     addProperty(basis_);
     addProperty(volumeSequence_);
-    
+
     isReady_.setUpdate([this]() { return filesystem::fileExists(file_.get()); });
     file_.onChange([this]() { isReady_.update(); });
 }
@@ -91,7 +91,9 @@ void VolumeSource::load(bool deserialize) {
 
     auto rf = app_->getDataReaderFactory();
     auto rm = app_->getResourceManager();
-    std::string ext = filesystem::getFileExtension(file_.get());
+
+    const auto sext = file_.getSelectedExtension();
+    const auto fext = filesystem::getFileExtension(file_.get());
 
     // use resource unless the "Reload data"-button (reload_) was pressed,
     // Note: reload_ will be marked as modified when deserializing.
@@ -100,11 +102,11 @@ void VolumeSource::load(bool deserialize) {
         volumes_ = rm->getResource<VolumeSequence>(file_.get());
     } else {
         try {
-            if (auto volVecReader = rf->getReaderForTypeAndExtension<VolumeSequence>(ext)) {
+            if (auto volVecReader = rf->getReaderForTypeAndExtension<VolumeSequence>(sext, fext)) {
                 auto volumes = volVecReader->readData(file_.get(), this);
                 std::swap(volumes, volumes_);
                 rm->addResource(file_.get(), volumes_, reload_.isModified());
-            } else if (auto volreader = rf->getReaderForTypeAndExtension<Volume>(ext)) {
+            } else if (auto volreader = rf->getReaderForTypeAndExtension<Volume>(sext, fext)) {
                 auto volume = volreader->readData(file_.get(), this);
                 auto volumes = std::make_shared<VolumeSequence>();
                 volumes->push_back(volume);

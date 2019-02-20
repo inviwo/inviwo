@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -65,7 +65,9 @@ namespace inviwo {
  *
  *
  */
-class PropertyCefSynchronizer : public CefMessageRouterBrowserSide::Handler, public CefLoadHandler {
+class IVW_MODULE_WEBBROWSER_API PropertyCefSynchronizer
+    : public CefMessageRouterBrowserSide::Handler,
+      public CefLoadHandler {
 public:
     explicit PropertyCefSynchronizer();
     virtual ~PropertyCefSynchronizer() = default;
@@ -82,10 +84,8 @@ public:
     // See net\base\net_error_list.h for complete descriptions of the error codes.
     ///
     /*--cef(optional_param=errorText)--*/
-    virtual void OnLoadError(CefRefPtr<CefBrowser> browser,
-                             CefRefPtr<CefFrame> frame,
-                             CefLoadHandler::ErrorCode errorCode,
-                             const CefString& errorText,
+    virtual void OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
+                             CefLoadHandler::ErrorCode errorCode, const CefString& errorText,
                              const CefString& failedUrl) override;
 
     /**
@@ -118,16 +118,15 @@ public:
      * @param property Property to remove
      */
     void stopSynchronize(Property* property);
-    
+
     // Use own widget factory for now. Multiple widget types are not supported in Inviwo yet
     template <typename T, typename P>
     void registerPropertyWidget(PropertySemantics semantics);
-    
+
     PropertyWidgetFactory htmlWidgetFactory_;
+
 private:
-
     std::vector<std::unique_ptr<PropertyWidgetFactoryObject>> propertyWidgets_;
-
 
     std::vector<std::unique_ptr<PropertyWidgetCEF>> widgets_;
     IMPLEMENT_REFCOUNTING(PropertyCefSynchronizer)

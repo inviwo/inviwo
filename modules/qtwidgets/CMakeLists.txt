@@ -43,10 +43,12 @@ set(MOC_FILES
 set(HEADER_FILES
     ${MOC_FILES}
     include/modules/qtwidgets/codeedit.h
+    include/modules/qtwidgets/editorfileobserver.h
     include/modules/qtwidgets/eventconverterqt.h
     include/modules/qtwidgets/inviwoqtutils.h
     include/modules/qtwidgets/keyboardutils.h
     include/modules/qtwidgets/labelgraphicsitem.h
+    include/modules/qtwidgets/numberlineedit.h
     include/modules/qtwidgets/ordinalbasewidget.h
     include/modules/qtwidgets/properties/anglepropertywidgetqt.h
     include/modules/qtwidgets/properties/boolcompositepropertywidgetqt.h
@@ -101,6 +103,7 @@ set(SOURCE_FILES
     src/colorwheel.cpp
     src/customdoublespinboxqt.cpp
     src/editablelabelqt.cpp
+    src/editorfileobserver.cpp
     src/eventconverterqt.cpp
     src/filepathlineeditqt.cpp
     src/inviwodockwidget.cpp
@@ -112,6 +115,7 @@ set(SOURCE_FILES
     src/labelgraphicsitem.cpp
     src/lightpositionwidgetqt.cpp
     src/lineeditqt.cpp
+    src/numberlineedit.cpp
     src/ordinalbasewidget.cpp
     src/ordinaleditorwidget.cpp
     src/processors/processordockwidgetqt.cpp

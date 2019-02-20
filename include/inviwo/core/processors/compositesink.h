@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2017-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -91,7 +91,7 @@ public:
 
 private:
     InportType inport_;
-    OutportType superOutport_; ///< To be added to CompositeProcessor, not itself
+    OutportType superOutport_;  ///< To be added to CompositeProcessor, not itself
 };
 
 template <typename InportType, typename OutportType>
@@ -105,9 +105,9 @@ struct ProcessorTraits<CompositeSink<InportType, OutportType>> {
         return {
             id,                 // Class identifier
             name,               // Display name
-            "Composite",             // Category
+            "Composite",        // Category
             CodeState::Stable,  // Code state
-            "Composite",             // Tags
+            "Composite",        // Tags
             false               // Visible
         };
     }

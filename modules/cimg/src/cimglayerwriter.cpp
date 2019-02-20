@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2018 Inviwo Foundation
+ * Copyright (c) 2015-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,9 +34,6 @@
 namespace inviwo {
 
 CImgLayerWriter::CImgLayerWriter() : DataWriterType<Layer>() {
-#ifdef cimg_use_png
-    addExtension(FileExtension("png", "Portable Network Graphics"));
-#endif
 #ifdef cimg_use_jpeg
     addExtension(FileExtension("jpg", "Joint Photographic Experts Group"));
     addExtension(FileExtension("jpeg", "Joint Photographic Experts Group"));
@@ -76,4 +73,4 @@ bool CImgLayerWriter::writeDataToRepresentation(const repr* src, repr* dst) cons
     return cimgutil::rescaleLayerRamToLayerRam(source, target);
 }
 
-}  // namespace
+}  // namespace inviwo

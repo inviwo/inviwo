@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -55,7 +55,7 @@ public:
     void setSyntax(SyntaxType type);
 
     // QPlainTextEdit overrides
-    virtual void keyPressEvent(QKeyEvent* keyEvent) override;
+    virtual void keyPressEvent(QKeyEvent *keyEvent) override;
 
     void setLineAnnotation(std::function<std::string(int)>);
     void setAnnotationSpace(std::function<int(int)>);

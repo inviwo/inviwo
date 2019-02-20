@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2016-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,7 @@ bool operator<=(const Keyframe& a, const Keyframe& b) { return a.getTime() <= b.
 
 bool operator<(const Keyframe& a, const Seconds& b) { return a.getTime() < b; }
 bool operator<=(const Keyframe& a, const Seconds& b) { return a.getTime() <= b; }
-bool operator>(const Keyframe& a, const Seconds& b) { return  a.getTime() > b; }
+bool operator>(const Keyframe& a, const Seconds& b) { return a.getTime() > b; }
 bool operator>=(const Keyframe& a, const Seconds& b) { return a.getTime() >= b; }
 
 bool operator<(const Seconds& a, const Keyframe& b) { return a < b.getTime(); }

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2016-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -79,9 +79,9 @@ protected:
     virtual void preProcess(TextureUnitContainer &cont) override;
 
 private:
-    std::array<mat3, 2> kernels_ = { {mat3(vec3(-1, -1, -1), vec3(-1, 8, -1), vec3(-1, -1, -1)),
-                                    mat3(vec3(0, -1, 0), vec3(-1, 4, -1), vec3(0, -1, 0))} };
-    
+    std::array<mat3, 2> kernels_ = {{mat3(vec3(-1, -1, -1), vec3(-1, 8, -1), vec3(-1, -1, -1)),
+                                     mat3(vec3(0, -1, 0), vec3(-1, 4, -1), vec3(0, -1, 0))}};
+
     FloatMat3Property kernel_;
     BoolProperty sharpen_;
     OptionPropertyInt filter_;

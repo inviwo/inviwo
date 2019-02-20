@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,10 +48,10 @@ namespace inviwo {
 class ShaderObject;
 
 class IVW_MODULE_OPENGLQT_API OpenGLQtMenu : public QMenu {
-    #include <warn/push>
-    #include <warn/ignore/all>
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
-    #include <warn/pop>
+#include <warn/pop>
 public:
     OpenGLQtMenu(QWidget* parent);
     virtual ~OpenGLQtMenu() = default;
@@ -59,17 +59,17 @@ public:
 private:
     void showShader(const ShaderObject* obj);
     void shadersReload();
-   
+
     void addShaderObjects(Shader* shader, QMenu* menuItem);
 
-    //QMenu* menu_;
+    // QMenu* menu_;
     std::unordered_map<unsigned int, QMenu*> shadersItems_;
     std::unordered_map<unsigned int, std::unique_ptr<ShaderWidget>> editors_;
-    
+
     std::shared_ptr<ShaderManager::Callback> onAddShader_;
     std::shared_ptr<ShaderManager::Callback> onRemoveShader_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_OPENGLQTMENU_H

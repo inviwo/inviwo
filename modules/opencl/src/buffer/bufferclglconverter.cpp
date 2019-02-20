@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -110,4 +110,4 @@ void BufferCLGL2CLConverter::update(std::shared_ptr<const BufferCLGL> src,
     }
 }
 
-}  // namespace
+}  // namespace inviwo

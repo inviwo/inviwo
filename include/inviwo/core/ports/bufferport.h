@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,6 +47,6 @@ using BufferInport = DataInport<BufferBase>;
  */
 using BufferOutport = DataOutport<BufferBase>;
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_BUFFER_PORT_H

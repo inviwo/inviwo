@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2016-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,8 +31,7 @@
 
 namespace inviwo {
 
-void PythonLogger::onPyhonExecutionOutput(const std::string &msg,
-                                          PythonOutputType outputType) {
+void PythonLogger::onPyhonExecutionOutput(const std::string &msg, PythonOutputType outputType) {
     switch (outputType) {
         case PythonOutputType::sysstderr:
             LogError(msg);
@@ -43,4 +42,4 @@ void PythonLogger::onPyhonExecutionOutput(const std::string &msg,
     }
 }
 
-}  // namespace
+}  // namespace inviwo
