@@ -40,16 +40,20 @@ class BrushingAndLinkingInport;
 class BrushingAndLinkingProcessor;
 /**
  * \class BrushingAndLinkingManager
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
+ * \brief Manages row filtering, row selection and column selection from multiple sources.
  */
 class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingManager {
 public:
     BrushingAndLinkingManager(Processor* p,
                               InvalidationLevel validationLevel = InvalidationLevel::InvalidOutput);
     virtual ~BrushingAndLinkingManager();
-
+    /* 
+     * Return the number of selected items/rows.
+     */
     size_t getNumberOfSelected() const;
+    /* 
+     * Return the number of filtered items/rows, i.e. the number of items/rows that should not be displayed.
+     */
     size_t getNumberOfFiltered() const;
 
     void remove(const BrushingAndLinkingInport* src);
@@ -57,29 +61,28 @@ public:
     bool isFiltered(size_t idx) const;
     bool isSelected(size_t idx) const;
 
-    bool isColumnSelected(size_t idx) const;
+    bool isColumnSelected(size_t column) const;
 
     void setSelected(const BrushingAndLinkingInport* src,
-                     const std::unordered_set<size_t>& indices);
+                     const std::unordered_set<size_t>& idx);
 
     void setFiltered(const BrushingAndLinkingInport* src,
-                     const std::unordered_set<size_t>& indices);
+                     const std::unordered_set<size_t>& idx);
 
     void setSelectedColumn(const BrushingAndLinkingInport* src,
-                           const std::unordered_set<size_t>& indices);
+                           const std::unordered_set<size_t>& columnIndices);
 
     const std::unordered_set<size_t>& getSelectedIndices() const;
     const std::unordered_set<size_t>& getFilteredIndices() const;
     const std::unordered_set<size_t>& getSelectedColumns() const;
 
 private:
-    IndexList selected_;
-    IndexList filtered_;
-    IndexList selectedColumns_;
+    std::unordered_set<size_t> selected_;
+    std::unordered_set<size_t> selectedColumns_;
+    IndexList filtered_;  // Use IndexList to be able to remove filtered rows on port disconnection
 
-    std::shared_ptr<std::function<void()>> callback1_;
-    std::shared_ptr<std::function<void()>> callback2_;
-    std::shared_ptr<std::function<void()>> callback3_;
+    Processor* owner_;  // Non-owning reference
+    InvalidationLevel invalidationLevel_;
 };
 
 }  // namespace inviwo
