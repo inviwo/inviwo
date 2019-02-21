@@ -77,7 +77,7 @@ public:
      * Synchronizes all widgets and sets their frame, called when frame has loaded.
      */
     virtual void OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
-                           int httpStatusCode);
+                           int httpStatusCode) override;
 
     /**
      * Called due to cefQuery execution in message_router.html.

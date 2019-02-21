@@ -129,11 +129,11 @@ void WebBrowserClient::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
     messageRouter_->OnRenderProcessTerminated(browser);
 }
 
-inline void WebBrowserClient::addLoadHandler(CefLoadHandler* loadHandler) {
+void WebBrowserClient::addLoadHandler(CefLoadHandler* loadHandler) {
     loadHandlers_.emplace_back(loadHandler);
 }
 
-inline void WebBrowserClient::removeLoadHandler(CefLoadHandler* loadHandler) {
+void WebBrowserClient::removeLoadHandler(CefLoadHandler* loadHandler) {
     util::erase_remove(loadHandlers_, loadHandler);
 }
 
