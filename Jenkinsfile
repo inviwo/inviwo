@@ -28,7 +28,7 @@ node {
         util.buildStandard(
             state: state,
             modulePaths: [], 
-            onModules: ["WebBrowser"],  
+            onModules: [],  
             offModules: ["ABUFFERGL"],
             opts: [:]
         )
