@@ -20,7 +20,7 @@ node {
             if (env.CHANGE_ID  && !(label in pullRequest.labels)) pullRequest.addLabels([label])
         },
         removeLabel: {label -> 
-            if (env.CHANGE_ID && (label in pullRequest.labels)) pullRequest.removeLabel([label])  
+            if (env.CHANGE_ID && (label in pullRequest.labels)) pullRequest.removeLabel(label)  
         }
     ]
 
