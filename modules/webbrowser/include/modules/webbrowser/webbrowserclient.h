@@ -100,7 +100,7 @@ public:
     ///
     /*--cef()--*/
     virtual void OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bool isLoading, bool canGoBack,
-                                      bool canGoForward);
+                                      bool canGoForward) override;
     /**
      * Synchronizes all widgets and sets their frame, called when frame has loaded.
      */
