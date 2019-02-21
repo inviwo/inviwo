@@ -28,8 +28,8 @@ node {
         util.buildStandard(
             state: state,
             modulePaths: [], 
-            onModules: [],  
-            offModules: ["ABUFFERGL"],
+            onModules: ["DiscreteData", "HDF5", "OpenCL", "BaseCL", "WebBrowser", "Example"],  
+            offModules: ["ABufferGL"],
             opts: [:]
         )
         util.filterfiles()

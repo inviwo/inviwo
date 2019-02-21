@@ -266,8 +266,8 @@ def cmake(Map args = [:]) {
         (args.printCMakeVars ? " -LA " : "") +
         (args.opts?.collect{" -D${it.key}=${it.value}"}?.join('') ?: "") + 
         (args.modulePaths ? " -DIVW_EXTERNAL_MODULES=" + args.modulePaths.join(";") : "" ) +
-        (args.onModules?.collect{" -DIVW_MODULE_${it}=ON"}?.join('') ?: "") +
-        (args.offModules?.collect{" -DIVW_MODULE_${it}=OFF"}?.join('') ?: "") +
+        (args.onModules?.collect{" -DIVW_MODULE_${it.toUpperCase()}=ON"}?.join('') ?: "") +
+        (args.offModules?.collect{" -DIVW_MODULE_${it.toUpperCase()}=OFF"}?.join('') ?: "") +
         " ../inviwo"
 }
 
