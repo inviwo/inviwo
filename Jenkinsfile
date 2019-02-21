@@ -29,7 +29,7 @@ node {
             state: state,
             modulePaths: [], 
             onModules: [],  
-            offModules: ["ABUFFERGL"],
+            offModules: ["ABUFFERGL", "WebBrowser"],
             opts: [:]
         )
         util.filterfiles()
