@@ -51,6 +51,9 @@ class Texture2D;
 
 namespace plot {
 
+/*
+ *\brief Renders AxisProperty and CategoricalAxisProperty 
+ */
 class IVW_MODULE_PLOTTINGGL_API AxisRendererBase {
 public:
     AxisRendererBase(const AxisProperty& property);

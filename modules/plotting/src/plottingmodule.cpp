@@ -36,6 +36,7 @@
 #include <modules/plotting/processors/volumetodataframe.h>
 #include <modules/plotting/processors/volumesequencetodataframe.h>
 #include <modules/plotting/properties/axisproperty.h>
+#include <modules/plotting/properties/categoricalaxisproperty.h>
 #include <modules/plotting/properties/dataframeproperty.h>
 #include <modules/plotting/properties/marginproperty.h>
 #include <modules/plotting/properties/plottextproperty.h>
@@ -73,6 +74,7 @@ PlottingModule::PlottingModule(InviwoApplication* app) : InviwoModule(app, "Plot
     registerProcessor<plot::VolumeToDataFrame>();
     registerProcessor<plot::VolumeSequenceToDataFrame>();
     registerProperty<plot::AxisProperty>();
+    registerProperty<plot::CategoricalAxisProperty>();
     registerProperty<plot::DataFrameColumnProperty>();
     registerProperty<plot::MajorTickProperty>();
     registerProperty<plot::MarginProperty>();

@@ -19,6 +19,7 @@ set(HEADER_FILES
     include/modules/plotting/processors/volumesequencetodataframe.h
     include/modules/plotting/processors/volumetodataframe.h
     include/modules/plotting/properties/axisproperty.h
+    include/modules/plotting/properties/categoricalaxisproperty.h
     include/modules/plotting/properties/dataframeproperty.h
     include/modules/plotting/properties/marginproperty.h
     include/modules/plotting/properties/optionconverter.h
@@ -45,6 +46,7 @@ set(SOURCE_FILES
     src/processors/volumesequencetodataframe.cpp
     src/processors/volumetodataframe.cpp
     src/properties/axisproperty.cpp
+    src/properties/categoricalaxisproperty.cpp
     src/properties/dataframeproperty.cpp
     src/properties/marginproperty.cpp
     src/properties/plottextproperty.cpp

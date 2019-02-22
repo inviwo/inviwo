@@ -201,6 +201,11 @@ public:
     virtual void set(size_t idx, const std::string &str);
 
     virtual void add(const std::string &value) override;
+    
+    /**
+     * Returns the unique set of categorical values.
+     */
+    const std::vector<std::string> &getCategories() const { return lookUpTable_; }
 
 private:
     virtual glm::uint32_t addOrGetID(const std::string &str);
