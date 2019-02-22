@@ -51,11 +51,11 @@ SettingsWidget::SettingsWidget(const QString& title, InviwoMainWindow* mainwindo
     : InviwoDockWidget(title, mainwindow, "SettingsWidget"), mainwindow_(mainwindow) {
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    resize(QSize(500, 500));  // default size
+    resize(utilqt::emToPx(this, QSizeF(60, 60)));  // default size
 
     scrollArea_ = new QScrollArea();
     scrollArea_->setWidgetResizable(true);
-    scrollArea_->setMinimumWidth(300);
+    scrollArea_->setMinimumWidth(utilqt::emToPx(this, 35));
     scrollArea_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     scrollArea_->setFrameShape(QFrame::NoFrame);
     scrollArea_->setContentsMargins(0, 0, 0, 0);
@@ -63,9 +63,7 @@ SettingsWidget::SettingsWidget(const QString& title, InviwoMainWindow* mainwindo
     mainWidget_ = new QWidget();
     layout_ = new QVBoxLayout(mainWidget_);
     layout_->setAlignment(Qt::AlignTop);
-    const auto em = fontMetrics().boundingRect('M').width();
-    const auto space = static_cast<int>(PropertyWidgetQt::spacingEm * em);
-
+    const auto space = utilqt::refSpacePx(this);
     layout_->setContentsMargins(0, space, 0, space);
     layout_->setSpacing(space);
     scrollArea_->setWidget(mainWidget_);

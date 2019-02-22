@@ -49,7 +49,7 @@ AnnotationsWidget::AnnotationsWidget(const QString &title, InviwoMainWindow *mai
     : InviwoDockWidget{title, mainwindow, "AnnotationsWidget"}, mainwindow_(mainwindow) {
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    resize(QSize(500, 500));  // default size
+    resize(utilqt::emToPx(this, QSizeF(60, 60)));  // default size
 
     scrollArea_ = new QScrollArea();
     scrollArea_->setWidgetResizable(true);
@@ -62,11 +62,9 @@ AnnotationsWidget::AnnotationsWidget(const QString &title, InviwoMainWindow *mai
     layout_ = new QVBoxLayout(mainWidget_);
     layout_->setAlignment(Qt::AlignTop);
 
-    const auto em = fontMetrics().boundingRect('M').width();
-    const auto space = static_cast<int>(PropertyWidgetQt::spacingEm * em);
-
+    const auto space = utilqt::refSpacePx(this);
     layout_->setContentsMargins(0, space, 0, space);
-    layout_->setSpacing(7);
+    layout_->setSpacing(space);
     scrollArea_->setWidget(mainWidget_);
 
     setWidget(scrollArea_);

@@ -205,7 +205,7 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
     }
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    resize(QSize(500, 700));  // default size
+    resize(utilqt::emToPx(this, QSizeF(50, 70)));  // default size
     updateWindowTitle();
 }
 

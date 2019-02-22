@@ -127,11 +127,11 @@ HelpWidget::HelpWidget(InviwoMainWindow* mainwindow)
     , helpBrowser_(nullptr) {
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    resize(QSize(500, 500));  // default size
+    resize(utilqt::emToPx(this, QSizeF(60, 60)));  // default size
 
     QWidget* centralWidget = new QWidget();
     QVBoxLayout* vLayout = new QVBoxLayout(centralWidget);
-    vLayout->setSpacing(7);
+    vLayout->setSpacing(utilqt::refSpacePx(this));
     vLayout->setContentsMargins(0, 0, 0, 0);
 
     auto app = mainwindow->getInviwoApplication();

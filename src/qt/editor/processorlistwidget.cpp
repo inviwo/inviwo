@@ -141,12 +141,13 @@ ProcessorTreeWidget::ProcessorTreeWidget(InviwoMainWindow* parent, HelpWidget* h
     , helpWidget_{helpWidget} {
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    resize(QSize(400, 700));  // default size
+    resize(utilqt::emToPx(this, QSizeF(50, 80)));  // default size
 
     QWidget* centralWidget = new QWidget();
     QVBoxLayout* vLayout = new QVBoxLayout(centralWidget);
-    vLayout->setSpacing(7);
-    vLayout->setContentsMargins(7, 7, 7, 7);
+    const auto space = utilqt::refSpacePx(this);
+    vLayout->setSpacing(space);
+    vLayout->setContentsMargins(space, space, space, space);
     lineEdit_ = new QLineEdit(centralWidget);
     lineEdit_->setPlaceholderText("Filter processor list...");
     lineEdit_->setClearButtonEnabled(true);

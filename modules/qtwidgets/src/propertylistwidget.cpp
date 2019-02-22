@@ -34,6 +34,7 @@
 #include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
 #include <inviwo/core/processors/processor.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -79,19 +80,18 @@ PropertyListWidget::PropertyListWidget(QWidget* parent, InviwoApplication* app)
     : InviwoDockWidget(tr("Properties"), parent, "PropertyListWidget"), app_{app} {
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    resize(QSize(400, 700));  // default size
+    resize(utilqt::emToPx(this, QSizeF(45, 80)));  // default size
 
     QSizePolicy sp(QSizePolicy::Fixed, QSizePolicy::MinimumExpanding);
     sp.setVerticalStretch(1);
     sp.setHorizontalStretch(1);
     setSizePolicy(sp);
 
-    const auto em = fontMetrics().boundingRect('M').width();
-    const auto space = static_cast<int>(PropertyWidgetQt::spacingEm * em);
+    const auto space = utilqt::refSpacePx(this);
 
     scrollArea_ = new QScrollArea(this);
     scrollArea_->setWidgetResizable(true);
-    scrollArea_->setMinimumWidth(320);
+    scrollArea_->setMinimumWidth(utilqt::emToPx(this, 36));
     scrollArea_->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 #ifdef __APPLE__
     // Scrollbars are overlayed in different way on mac...

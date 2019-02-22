@@ -165,7 +165,7 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
         connect(editor_, &CodeEdit::redoAvailable, redo, &QAction::setEnabled);
     }
 
-    resize(QSize(500, 500));  // default size
+    resize(utilqt::emToPx(this, QSizeF(60, 60)));  // default size
     setVisible(false);
     updateFromProperty();
     loadState();

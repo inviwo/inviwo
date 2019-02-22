@@ -119,7 +119,7 @@ TemplatePropertySettingsWidgetQt<T>::TemplatePropertySettingsWidgetQt(OrdinalPro
     this->setWindowFlags(flags);
 
     auto gridLayout = new QGridLayout();
-    const auto space = utilqt::emToPx(this, 7.0 / 9.0);
+    const auto space = utilqt::refSpacePx(this);
     gridLayout->setContentsMargins(space, space, space, space);
     gridLayout->setSpacing(space);
 
@@ -305,7 +305,7 @@ TemplateMinMaxPropertySettingsWidgetQt<T>::TemplateMinMaxPropertySettingsWidgetQ
     this->setWindowFlags(flags);
 
     auto gridLayout = new QGridLayout();
-    const auto space = utilqt::emToPx(this, 7.0 / 9.0);
+    const auto space = utilqt::refSpacePx(this);
     gridLayout->setContentsMargins(space, space, space, space);
     gridLayout->setSpacing(space);
 

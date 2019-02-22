@@ -77,7 +77,8 @@ NetworkEditorView::NetworkEditorView(NetworkEditor* networkEditor, InviwoMainWin
     QGraphicsView::setScene(editor_);
 
     auto grid = new QGridLayout(viewport());
-    grid->setContentsMargins(7, 7, 7, 7);
+    const auto space = utilqt::refSpacePx(this);
+    grid->setContentsMargins(space, space, space, space);
 
     {
         grid->addWidget(overlay_, 0, 0, Qt::AlignTop | Qt::AlignLeft);
@@ -98,6 +99,9 @@ NetworkEditorView::NetworkEditorView(NetworkEditor* networkEditor, InviwoMainWin
     setDragMode(QGraphicsView::RubberBandDrag);
     setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
     setCacheMode(QGraphicsView::CacheBackground);
+
+    const auto scale = utilqt::emToPx(this, 1.0) / static_cast<double>(utilqt::refEm());
+    setTransform(QTransform::fromScale(scale, scale), false);
 
     setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 
@@ -210,29 +214,22 @@ NetworkSearch& NetworkEditorView::getNetworkSearch() const { return *search_; }
 void NetworkEditorView::resizeEvent(QResizeEvent* e) { QGraphicsView::resizeEvent(e); }
 
 void NetworkEditorView::fitNetwork() {
-    const auto network = mainwindow_->getInviwoApplication()->getProcessorNetwork();
-    if (network) {
+    const auto scale = utilqt::emToPx(this, 1.0) / static_cast<double>(utilqt::refEm());
+    setTransform(QTransform::fromScale(scale, scale), false);
+
+    if (const auto network = mainwindow_->getInviwoApplication()->getProcessorNetwork()) {
         if (network->getProcessors().size() > 0) {
-            QRectF br = editor_->getProcessorsBoundingRect().adjusted(-50, -50, 50, 50);
-            QSizeF viewsize = size();
-            QSizeF brsize = br.size();
-
-            if (brsize.width() < viewsize.width()) {
-                br.setLeft(br.left() - 0.5 * (viewsize.width() - brsize.width()));
-                br.setRight(br.right() + 0.5 * (viewsize.width() - brsize.width()));
-            }
-            if (brsize.height() < viewsize.height()) {
-                br.setTop(br.top() - 0.5 * (viewsize.height() - brsize.height()));
-                br.setBottom(br.bottom() + 0.5 * (viewsize.height() - brsize.height()));
-            }
-
+            const auto br = editor_->getProcessorsBoundingRect().adjusted(-50, -50, 50, 50);
             setSceneRect(br);
-            fitInView(br, Qt::KeepAspectRatio);
+            fitInView(br, Qt::KeepAspectRatio);               
         } else {
             QRectF r{rect()};
             r.moveCenter(QPointF(0, 0));
             setSceneRect(rect());
             fitInView(rect(), Qt::KeepAspectRatio);
+        }
+        if (matrix().m11() > scale) {
+            setTransform(QTransform::fromScale(scale, scale), false);
         }
     }
 }

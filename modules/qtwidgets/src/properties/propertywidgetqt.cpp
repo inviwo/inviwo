@@ -68,7 +68,7 @@ const int PropertyWidgetQt::margin = 0;
 
 // The factor should be 16.0 at font size 12pt, we use Segoe UI at 9pt which gives an em at 9.0px
 const double PropertyWidgetQt::minimumWidthEm = PropertyWidgetQt::minimumWidth / 9.0;
-const double PropertyWidgetQt::spacingEm = PropertyWidgetQt::spacing / 9.0;
+const double PropertyWidgetQt::spacingEm = utilqt::refSpaceEm();
 const double PropertyWidgetQt::marginEm = PropertyWidgetQt::margin / 9.0;
 
 PropertyWidgetQt::PropertyWidgetQt(Property* property)
@@ -452,9 +452,12 @@ bool PropertyWidgetQt::event(QEvent* event) {
     return QWidget::event(event);
 }
 
-void PropertyWidgetQt::setSpacingAndMargins(QLayout* layout) {
-    layout->setContentsMargins(margin, margin, margin, margin);
-    layout->setSpacing(spacing);
+void PropertyWidgetQt::setSpacingAndMargins(QLayout* layout) { setSpacingAndMargins(this, layout); }
+
+void PropertyWidgetQt::setSpacingAndMargins(QWidget* w, QLayout* layout) {
+    const auto m = utilqt::emToPx(w, marginEm);
+    layout->setContentsMargins(m, m, m, m);
+    layout->setSpacing(utilqt::emToPx(w, spacingEm));
 }
 
 QSize PropertyWidgetQt::minimumSizeHint() const { return PropertyWidgetQt::sizeHint(); }

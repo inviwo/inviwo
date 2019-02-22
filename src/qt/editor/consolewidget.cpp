@@ -100,7 +100,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     , mainwindow_(parent) {
 
     setAllowedAreas(Qt::BottomDockWidgetArea);
-    resize(QSize(500, 300));  // default size
+    resize(utilqt::emToPx(this, QSizeF(60, 60)));  // default size
 
     qRegisterMetaType<LogTableModelEntry>("LogTableModelEntry");
 
@@ -290,7 +290,8 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     layout->addWidget(tableView_);
     layout->addLayout(statusBar);
 
-    layout->setContentsMargins(3, 0, 0, 3);
+    const auto space = utilqt::emToPx(this, 3 / 9.0);
+    layout->setContentsMargins(space, 0, 0, space);
 
     QWidget* w = new QWidget();
     w->setLayout(layout);

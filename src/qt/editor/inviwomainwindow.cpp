@@ -175,7 +175,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     auto screen = dw.screenGeometry(this);
     const float maxRatio = 0.8f;
 
-    QSize size(1920, 1080);
+    QSize size = utilqt::emToPx(this, QSizeF(192, 108));
     size.setWidth(std::min(size.width(), static_cast<int>(screen.width() * maxRatio)));
     size.setHeight(std::min(size.height(), static_cast<int>(screen.height() * maxRatio)));
 

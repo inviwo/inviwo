@@ -110,7 +110,7 @@ QToolButton:hover#resetButton {
 }
 
 QToolButton#ColorButton {
-    border: 0.0625em solid black;
+    border: 0.0625em solid #1b1b1d;
     border-radius: 0.125em;
 } 
 
@@ -119,7 +119,7 @@ QDockWidget
 ************************/
 QDockWidget::close-button, QDockWidget::float-button {
     padding: 0em;
-    icon-size: 0.8em;
+    icon-size: 1.0em;
 }
 QDockWidget::title, inviwo--InviwoDockWidgetTitleBar {
     padding: 0.25em;
@@ -146,6 +146,10 @@ QDockWidget {
     titlebar-normal-icon: url(:/stylesheets/images/undock.png);
     background-color: #222;
     border-width: 0.125em;
+}
+QLabel#InviwoDockWidgetTitleBarLabel {
+    padding-left: 0.3125em; 
+    background-color: 'transparent';
 }
 
 /************************ 
@@ -303,7 +307,7 @@ QToolTip {
     color: #9d9995;
     background-color: #323235;  
     border-radius: 0.1875em;
-    border: 0.0625em solid black;
+    border: 0.0625em solid #1b1b1d;
     padding: 0.1875em; 
 }
 
@@ -343,7 +347,7 @@ QLineEdit#ColorLineEdit[input="invalid"] {
  QPushButton 
 ************************/
 QPushButton {
-    border: 0.0625em solid black;
+    border: 0.0625em solid #1b1b1d;
     border-radius: 0.25em;
     min-height: 1.25em;
     min-width: 5em;
@@ -429,7 +433,7 @@ QListView::item:selected {
  QTreeView 
 ************************/
 QTreeView {
-    border: 0.0625em solid #4a4a4f;
+    border: 0em;
     show-decoration-selected: 1;
     outline: 0;
 }
@@ -501,7 +505,7 @@ QProgressBar::chunk {
 QProgressBar {
     padding: 0.0625em;;
     text-align: top;
-    border: 0.0625em; solid black;
+    border: 0.0625em; solid #1b1b1d;
     border-bottom-right-radius: 0.5em;
     border-bottom-left-radius: 0.5em;
     background: QLinearGradient(x1: 0, y1: 0, x2: 1, y2: 0,
@@ -510,7 +514,7 @@ QProgressBar {
     width: 1em;
 }
 QProgressBar::chunk {
-    border: 0.0625em solid black;
+    border: 0.0625em solid #1b1b1d;
     border-bottom-right-radius: 0.5em;
     border-bottom-left-radius: 0.5em;
     background: QLinearGradient(x1: 0, y1: 0, x2: 1, y2: 0,

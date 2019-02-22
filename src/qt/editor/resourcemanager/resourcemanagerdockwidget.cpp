@@ -82,7 +82,7 @@ public:
 ResourceManagerDockWidget::ResourceManagerDockWidget(QWidget *parent, ResourceManager &manager)
     : InviwoDockWidget("Resource Manager", parent, "ResourceManager"), manager_(manager) {
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    resize(QSize(400, 700));  // default size
+    resize(utilqt::emToPx(this, QSizeF(40, 70)));  // default size
 
     manager_.addObserver(this);
 

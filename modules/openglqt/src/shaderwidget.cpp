@@ -56,7 +56,7 @@ ShaderWidget::ShaderWidget(const ShaderObject* obj, QWidget* parent)
     , fileObserver_(this, "Shader Editor", getFileName(obj)) {
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    resize(QSize(500, 700));  // default size
+    resize(utilqt::emToPx(this, QSizeF(50, 70)));  // default size
     setFloating(true);
     setSticky(false);
 

@@ -272,7 +272,7 @@ void TFPropertyDialog::initializeDialog() {
     QFrame* leftPanel = new QFrame(this);
     QGridLayout* leftLayout = new QGridLayout();
     leftLayout->setContentsMargins(0, 0, 0, 0);
-    leftLayout->setSpacing(7);
+    leftLayout->setSpacing(utilqt::refSpacePx(this));
     leftLayout->addWidget(zoomVSlider_, 0, 0);
     leftLayout->addWidget(tfEditorView_, 0, 1);
     leftLayout->addWidget(zoomHSlider_, 1, 1);
@@ -282,7 +282,7 @@ void TFPropertyDialog::initializeDialog() {
     QFrame* rightPanel = new QFrame(this);
     QVBoxLayout* rightLayout = new QVBoxLayout();
     rightLayout->setContentsMargins(0, 0, 0, 0);
-    rightLayout->setSpacing(7);
+    rightLayout->setSpacing(utilqt::refSpacePx(this));
     rightLayout->setAlignment(Qt::AlignTop);
     rightLayout->addWidget(chkShowHistogram_);
     rightLayout->addWidget(pointMoveMode_);
@@ -303,7 +303,7 @@ void TFPropertyDialog::initializeDialog() {
 
     QWidget* mainPanel = new QWidget(this);
     QHBoxLayout* mainLayout = new QHBoxLayout();
-    const auto space = utilqt::emToPx(this, 7.0 / 9.0);
+    const auto space = utilqt::refSpacePx(this);
     mainLayout->setContentsMargins(space, space, space, space);
     mainLayout->setSpacing(space);
     mainLayout->addWidget(leftPanel);

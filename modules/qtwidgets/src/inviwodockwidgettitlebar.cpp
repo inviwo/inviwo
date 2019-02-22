@@ -53,7 +53,7 @@ InviwoDockWidgetTitleBar::InviwoDockWidgetTitleBar(QWidget *parent)
     , allowedDockAreas_(parent_->allowedAreas())
     , internalStickyFlagUpdate_(false) {
     label_ = new QLabel(parent->windowTitle());
-    label_->setStyleSheet("QWidget { padding-left: 5px; background-color: 'transparent'; }");
+    label_->setObjectName("InviwoDockWidgetTitleBarLabel");
 
     stickyBtn_ = new QToolButton();
     QIcon icon;
@@ -82,8 +82,8 @@ InviwoDockWidgetTitleBar::InviwoDockWidgetTitleBar(QWidget *parent)
     layout->addWidget(stickyBtn_);
     layout->addWidget(floatBtn_);
     layout->addWidget(closeBtn);
-    layout->setSpacing(2);
-    layout->setMargin(2);
+    layout->setSpacing(utilqt::emToPx(this, 0.2));
+    layout->setMargin(utilqt::emToPx(this, 0.2));
 
     setLayout(layout);
 
@@ -98,7 +98,7 @@ InviwoDockWidgetTitleBar::InviwoDockWidgetTitleBar(QWidget *parent)
     parent_->installEventFilter(this);
 }
 
-InviwoDockWidgetTitleBar::~InviwoDockWidgetTitleBar() {}
+InviwoDockWidgetTitleBar::~InviwoDockWidgetTitleBar() = default;
 
 void InviwoDockWidgetTitleBar::paintEvent(QPaintEvent *) {
     QStyleOption opt;

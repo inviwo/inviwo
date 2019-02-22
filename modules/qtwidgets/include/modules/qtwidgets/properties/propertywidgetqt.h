@@ -66,7 +66,9 @@ public:
     static const int minimumWidth;
     static const int spacing;
     static const int margin;
-    static void setSpacingAndMargins(QLayout* layout);
+
+    void setSpacingAndMargins(QLayout* layout);
+    static void setSpacingAndMargins(QWidget* w, QLayout* layout);
 
     virtual void onChildVisibilityChange(PropertyWidgetQt* child);
 
