@@ -44,7 +44,10 @@ protected:
 protected:
     virtual void convertimpl(const plot::DataFrameColumnProperty *src,
                              OptionProperty *dst) const override {
-        dst->setSelectedIndex(src->getSelectedIndex());
+        if (src->getSelectedIndex() > dst->getValues().size())
+            dst->setSelectedIndex(dst->getValues().size() - 1);
+        else
+            dst->setSelectedIndex(src->getSelectedIndex());
     }
 };
 
@@ -55,7 +58,10 @@ protected:
 protected:
     virtual void convertimpl(const OptionProperty *src,
                              plot::DataFrameColumnProperty *dst) const override {
-        dst->setSelectedIndex(src->getSelectedIndex());
+        if (src->getSelectedIndex() > dst->getValues().size())
+            dst->setSelectedIndex(dst->getValues().size() - 1);
+        else
+            dst->setSelectedIndex(src->getSelectedIndex());
     }
 };
 
