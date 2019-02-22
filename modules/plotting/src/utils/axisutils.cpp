@@ -290,8 +290,8 @@ std::shared_ptr<Mesh> generateMinorTicksMesh(const AxisProperty& property, const
 }
 
 std::shared_ptr<Mesh> generateAxisMesh(const AxisProperty& property, const vec2& startPos,
-                                       const vec2& endPos) {
-    return generateAxisMesh3D(property, vec3(startPos, 0.0f), vec3(endPos, 0.0f));
+                                       const vec2& endPos, const vec3& pickingColor) {
+    return generateAxisMesh3D(property, vec3(startPos, 0.0f), vec3(endPos, 0.0f), pickingColor);
 }
 
 std::shared_ptr<Mesh> generateMajorTicksMesh3D(const AxisProperty& property, const vec3& startPos,
@@ -315,21 +315,24 @@ std::shared_ptr<Mesh> generateMinorTicksMesh3D(const AxisProperty& property, con
 }
 
 std::shared_ptr<Mesh> generateAxisMesh3D(const AxisProperty& property, const vec3& startPos,
-                                         const vec3& endPos) {
+                                         const vec3& endPos, const vec3& pickingColor) {
     auto mesh = std::make_shared<Mesh>(DrawType::Lines, ConnectivityType::None);
 
     auto posBuffer = std::make_shared<Buffer<vec3>>(2u, BufferUsage::Static);
     auto colBuffer = std::make_shared<Buffer<vec4>>(2u, BufferUsage::Static);
+    auto pickingBuffer = std::make_shared<Buffer<vec3>>(2u, BufferUsage::Static);
     auto& vertices = posBuffer->getEditableRAMRepresentation()->getDataContainer();
     auto& colors = colBuffer->getEditableRAMRepresentation()->getDataContainer();
+    auto& picking = pickingBuffer->getEditableRAMRepresentation()->getDataContainer();
 
     std::fill(colors.begin(), colors.end(), property.color_.get());
-
+    std::fill(picking.begin(), picking.end(), pickingColor);
     vertices[0] = startPos;
     vertices[1] = endPos;
 
     mesh->addBuffer(BufferType::PositionAttrib, posBuffer);
     mesh->addBuffer(BufferType::ColorAttrib, colBuffer);
+    mesh->addBuffer(BufferType::PickingAttrib, pickingBuffer);
 
     mesh->addIndicies(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::None),
                       inviwo::util::makeIndexBuffer({0, 1}));

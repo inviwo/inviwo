@@ -44,12 +44,14 @@ PlotTextProperty::PlotTextProperty(const std::string& identifier, const std::str
     , color_("color", "Color", vec4(vec3(0.0f), 1.0f), vec4(0.0f), vec4(1.0f))
     , position_("position", "Position", 0.5f, 0.0f, 1.0f)
     , offset_("offset", "Offset", 10.0f, 0.0f, 100.0f)
+    , rotation_("rotation", "Rotation", 0.f, 0.f, 360.f, 10.f, InvalidationLevel::InvalidOutput)
     , font_("font", "Font") {
     color_.setSemantics(PropertySemantics::Color);
     addProperty(title_);
     addProperty(color_);
     addProperty(offset_);
     addProperty(position_);
+    addProperty(rotation_);
     addProperty(font_);
 }
 
@@ -59,6 +61,7 @@ PlotTextProperty::PlotTextProperty(const PlotTextProperty& rhs)
     , color_(rhs.color_)
     , position_(rhs.position_)
     , offset_(rhs.offset_)
+    , rotation_(rhs.rotation_)
     , font_(rhs.font_) {
 
     color_.setSemantics(PropertySemantics::Color);

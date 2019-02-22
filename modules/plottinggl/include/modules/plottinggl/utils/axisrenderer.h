@@ -64,30 +64,34 @@ public:
     std::shared_ptr<Mesh> getMesh() const;
     std::shared_ptr<Texture2D> getLabelAtlasTexture() const;
 
+    size2_t getCaptionTextSize() const;
+    void setAxisPickingColor(vec3 color) { axisPickingColor_ = color; }
+
 protected:
     void renderAxis(Camera* camera, const size2_t& outputDims, bool antialiasing);
 
     void invalidateInternalState(bool positionChange);
 
-    void updateCaptionTexture();
-    void updateLabelAtlas();
+    void updateCaptionTexture() const; // const to allow lazy initialization
+    void updateLabelAtlas() const; // const to allow lazy initialization
 
     virtual void invalidateLabelPositions() = 0;
 
     const AxisProperty& property_;
 
-    TextRenderer textRenderer_;
+    mutable TextRenderer textRenderer_; // mutable to enable lazy initialization
     TextureQuadRenderer quadRenderer_;
 
     Shader lineShader_;
+    vec3 axisPickingColor_ = vec3(-1.f);
 
     std::shared_ptr<Mesh> axisMesh_;
     std::shared_ptr<Mesh> majorTicksMesh_;
     std::shared_ptr<Mesh> minorTicksMesh_;
 
-    std::shared_ptr<Texture2D> axisCaptionTex_;
+    mutable std::shared_ptr<Texture2D> axisCaptionTex_; // mutable for lazy initialization
 
-    util::TextureAtlas labelTexAtlas_;
+    mutable util::TextureAtlas labelTexAtlas_; // mutable for lazy initialization
 };
 
 class IVW_MODULE_PLOTTINGGL_API AxisRenderer : public AxisRendererBase {

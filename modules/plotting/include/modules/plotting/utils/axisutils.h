@@ -85,7 +85,7 @@ std::shared_ptr<Mesh> IVW_MODULE_PLOTTING_API generateMinorTicksMesh(const AxisP
 
 std::shared_ptr<Mesh> IVW_MODULE_PLOTTING_API generateAxisMesh(const AxisProperty& property,
                                                                const vec2& startPos,
-                                                               const vec2& endPos);
+                                                               const vec2& endPos, const vec3& pickingColor);
 
 std::shared_ptr<Mesh> IVW_MODULE_PLOTTING_API generateMajorTicksMesh3D(const AxisProperty& property,
                                                                        const vec3& startPos,
@@ -99,7 +99,7 @@ std::shared_ptr<Mesh> IVW_MODULE_PLOTTING_API generateMinorTicksMesh3D(const Axi
 
 std::shared_ptr<Mesh> IVW_MODULE_PLOTTING_API generateAxisMesh3D(const AxisProperty& property,
                                                                  const vec3& startPos,
-                                                                 const vec3& endPos);
+                                                                 const vec3& endPos, const vec3& pickingColor);
 
 /**
  * \brief utility function to create a mesh for a given set of tick mark positions
