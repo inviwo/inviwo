@@ -531,20 +531,22 @@ void ParallelCoordinates::drawAxis(size2_t size, const std::vector<ColumnAxis *>
     float dx = 1.0f / (enabledAxis.size() - 1);
 
     for (size_t i = 0; i < enabledAxis.size(); i++) {
-
         auto &axis = std::get<1>(axisVector_[i]);
         if (hoveredAxis_ == i) {
             axis->color_.set(axisHoverColor_.get());
             axis->ticks_.majorTicks_.color_.set(axisHoverColor_.get());
             axis->ticks_.minorTicks_.color_.set(axisHoverColor_.get());
+            axis->width_.set(4);
         } else if (brushingAndLinking_.isColumnSelected(i)) {
             axis->color_.set(axisSelectedColor_.get());
             axis->ticks_.majorTicks_.color_.set(axisSelectedColor_.get());
             axis->ticks_.minorTicks_.color_.set(axisSelectedColor_.get());
+            axis->width_.set(6);
         } else {
             axis->color_.set(axisColor_.get());
             axis->ticks_.majorTicks_.color_.set(axisColor_.get());
             axis->ticks_.minorTicks_.color_.set(axisColor_.get());
+            axis->width_.set(2);
         }
         auto x = static_cast<size_t>(i * dx * (upperRight.x - lowerLeft.x));
         auto &renderer(std::get<2>(*enabledAxis[i]));
