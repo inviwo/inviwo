@@ -34,6 +34,7 @@
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/camera.h>
 
+#include <modules/plotting/properties/categoricalaxisproperty.h>
 #include <modules/plotting/utils/axisutils.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/geometry/meshgl.h>
@@ -245,22 +246,30 @@ void AxisRendererBase::updateLabelAtlas() {
         return;
     }
 
-    // fill map with all labels
-    std::array<char, 100> buf;
-    const char* format = property_.labels_.title_.get().c_str();
-
     const vec4 color(property_.labels_.color_.get());
 
     std::vector<TexAtlasEntry> atlasEntries;
     atlasEntries.reserve(tickmarks.size());
-    for (auto& tick : tickmarks) {
-        // convert current tick value into string
-        snprintf(buf.data(), buf.size(), format, tick);
-        const ivec2 size(textRenderer_.computeTextSize(buf.data()));
 
-        atlasEntries.push_back({buf.data(), ivec2(0), size, color});
+    
+    if (auto categoricalAxis = dynamic_cast<const CategoricalAxisProperty*>(&property_)) {
+        for (auto& tick : categoricalAxis->getCategories()) {
+            const ivec2 size(textRenderer_.computeTextSize(tick));
+            atlasEntries.push_back({tick, ivec2(0), size, color});
+        }
+    } else {
+        const char* format = property_.labels_.title_.get().c_str();
+        std::array<char, 100> buf;
+        for (auto& tick : tickmarks) {
+            // convert current tick value into string
+            snprintf(buf.data(), buf.size(), format, tick);
+            const ivec2 size(textRenderer_.computeTextSize(buf.data()));
+
+            atlasEntries.push_back({buf.data(), ivec2(0), size, color});
+        }
     }
 
+    // fill map with all labels
     labelTexAtlas_.fillAtlas(textRenderer_, atlasEntries);
 }
 
