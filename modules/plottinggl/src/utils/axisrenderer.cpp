@@ -223,10 +223,18 @@ std::shared_ptr<Mesh> AxisRendererBase::getMesh() const {
 }
 
 std::shared_ptr<Texture2D> AxisRendererBase::getLabelAtlasTexture() const {
+    if (!labelTexAtlas_.valid()) {
+        updateLabelAtlas();
+    }
     return labelTexAtlas_.getTexture();
 }
 
-void AxisRendererBase::updateCaptionTexture() {
+size2_t AxisRendererBase::getCaptionTextSize() const {
+    if (!axisCaptionTex_) updateCaptionTexture();
+    return axisCaptionTex_->getDimensions();
+}
+
+void AxisRendererBase::updateCaptionTexture() const {
     // set up text renderer
     textRenderer_.setFont(property_.caption_.font_.fontFace_.get());
     textRenderer_.setFontSize(property_.caption_.font_.fontSize_.get());
@@ -235,7 +243,7 @@ void AxisRendererBase::updateCaptionTexture() {
                                               property_.caption_.color_);
 }
 
-void AxisRendererBase::updateLabelAtlas() {
+void AxisRendererBase::updateLabelAtlas() const {
     textRenderer_.setFont(property_.labels_.font_.fontFace_.get());
     textRenderer_.setFontSize(property_.labels_.font_.fontSize_.get());
 
@@ -313,14 +321,17 @@ void AxisRenderer::renderText(const size2_t& outputDims, const size2_t& startPos
         const vec2 texDims(axisCaptionTex_->getDimensions());
         const auto anchor(property_.caption_.font_.anchorPos_.get());
 
-        const auto rotation = property_.orientation_ == AxisProperty::Orientation::Vertical
-                                  ? glm::rotate(glm::half_pi<float>(), vec3(0.0f, 0.0f, 1.0f))
-                                  : glm::mat4{1};
+        auto angle = glm::radians(property_.caption_.rotation_.get()) + 
+            (property_.orientation_ == AxisProperty::Orientation::Vertical ? glm::half_pi<float>() : 0.f);
+        const auto rotation = glm::rotate(angle, vec3(0.0f, 0.0f, 1.0f));
 
         const auto offset =
-            property_.orientation_ == AxisProperty::Orientation::Vertical
-                ? vec2(-texDims.y, texDims.x) * 0.5f * (vec2(-anchor.x, anchor.y) + vec2(1.0f))
-                : texDims * 0.5f * (anchor + vec2(1.0f));
+            vec2(rotation * vec4(texDims * 0.5f * (anchor + vec2(1.0f)), 0.f, 1.f));
+
+        //const auto offset =
+        //    property_.orientation_ == AxisProperty::Orientation::Vertical
+        //        ? vec2(-texDims.y, texDims.x) * 0.5f * (vec2(-anchor.x, anchor.y) + vec2(1.0f))
+        //        : texDims * 0.5f * (anchor + vec2(1.0f));
 
         const ivec2 posi(plot::getAxisCaptionPosition(property_, startPos, endPos) - offset);
         quadRenderer_.render(axisCaptionTex_, posi, outputDims, rotation);
@@ -346,7 +357,7 @@ void AxisRenderer::renderText(const size2_t& outputDims, const size2_t& startPos
 
 void AxisRenderer::updateMeshes(const size2_t& startPos, const size2_t& endPos) {
     if (!axisMesh_) {
-        axisMesh_ = plot::generateAxisMesh(property_, startPos, endPos);
+        axisMesh_ = plot::generateAxisMesh(property_, startPos, endPos, axisPickingColor_);
     }
     if (!majorTicksMesh_) {
         majorTicksMesh_ = plot::generateMajorTicksMesh(property_, startPos, endPos);
@@ -444,7 +455,7 @@ void AxisRenderer3D::renderText(Camera* camera, const size2_t& outputDims, const
 void AxisRenderer3D::updateMeshes(const vec3& startPos, const vec3& endPos,
                                   const vec3& tickDirection) {
     if (!axisMesh_) {
-        axisMesh_ = plot::generateAxisMesh3D(property_, startPos, endPos);
+        axisMesh_ = plot::generateAxisMesh3D(property_, startPos, endPos, axisPickingColor_);
     }
     if (!majorTicksMesh_) {
         majorTicksMesh_ =

@@ -50,9 +50,12 @@
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/rendering/texturequadrenderer.h>
 #include <modules/fontrendering/textrenderer.h>
+
+#include <modules/plotting/properties/categoricalaxisproperty.h>
 #include <modules/plotting/properties/dataframeproperty.h>
 #include <modules/plotting/properties/marginproperty.h>
 
+#include <modules/plottinggl/utils/axisrenderer.h>
 #include <modules/plottinggl/processors/parallelcoordinates/parallelcoordinatesaxissettingsproperty.h>
 
 namespace inviwo {
@@ -89,19 +92,22 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
+    virtual void invokeEvent(Event* event) override;
+
 protected:
     void linePicked(PickingEvent *p);
     void axisPicked(PickingEvent *p);
     void handlePicked(PickingEvent *p);
 
 private:
+    using ColumnAxis = std::tuple<ParallelCoordinatesAxisSettingsProperty *,
+                                  std::unique_ptr<AxisProperty>, std::unique_ptr<AxisRenderer>>;
     void createOrUpdateProperties();
 
-    void buildLineMesh(const std::vector<ParallelCoordinatesAxisSettingsProperty *> &enabledAxis);
-    void drawAxis(size2_t size,
-                  const std::vector<ParallelCoordinatesAxisSettingsProperty *> &enabledAxis);
+    void buildLineMesh(const std::vector<ColumnAxis*> &enabledAxis);
+    void drawAxis(size2_t size, const std::vector<ColumnAxis*>& enabledAxis);
     void drawHandles(size2_t size,
-                     const std::vector<ParallelCoordinatesAxisSettingsProperty *> &enabledAxis);
+                     const std::vector<ColumnAxis*> &enabledAxis);
     void drawLines(size2_t size);
 
     void buildTextCache(const std::vector<ParallelCoordinatesAxisSettingsProperty *> &enabledAxis);
@@ -110,6 +116,8 @@ private:
                     const std::vector<ParallelCoordinatesAxisSettingsProperty *> &enabledAxis);
 
     void updateBrushing();
+
+    void updateAxesLayout(); // Call every time image size or margin changes
 
     DataInport<DataFrame> dataFrame_;
     BrushingAndLinkingInport brushingAndLinking_;
@@ -168,7 +176,8 @@ private:
     std::unique_ptr<Mesh> lines_;
     std::unique_ptr<MeshDrawerGL> linesDrawer_;
 
-    std::vector<ParallelCoordinatesAxisSettingsProperty *> axisVector_;  // owned by axisProperty_
+
+    std::vector<ColumnAxis> axisVector_;  
 
     PickingMapper linePicking_;
     PickingMapper axisPicking_;
