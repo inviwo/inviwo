@@ -37,6 +37,7 @@
 
 #include <modules/plotting/properties/axisproperty.h>
 #include <modules/opengl/shader/shader.h>
+#include <modules/basegl/datastructures/meshshadercache.h>
 #include <modules/opengl/rendering/texturequadrenderer.h>
 #include <modules/fontrendering/textrenderer.h>
 #include <modules/fontrendering/util/textureatlas.h>
@@ -65,10 +66,13 @@ public:
     std::shared_ptr<Texture2D> getLabelAtlasTexture() const;
 
     size2_t getCaptionTextSize() const;
-    void setAxisPickingColor(vec3 color) { axisPickingColor_ = color; }
+    void setAxisPickingId(size_t id) { axisPickingId_ = id; }
+    size_t getAxisPickingId() const { return axisPickingId_; }
 
 protected:
     void renderAxis(Camera* camera, const size2_t& outputDims, bool antialiasing);
+
+	void AxisRendererBase::configureShader(Shader& shader);
 
     void invalidateInternalState(bool positionChange);
 
@@ -82,8 +86,8 @@ protected:
     mutable TextRenderer textRenderer_; // mutable to enable lazy initialization
     TextureQuadRenderer quadRenderer_;
 
-    Shader lineShader_;
-    vec3 axisPickingColor_ = vec3(-1.f);
+    MeshShaderCache lineShaders_;
+    size_t axisPickingId_ = std::numeric_limits<size_t>::max(); // max == unused
 
     std::shared_ptr<Mesh> axisMesh_;
     std::shared_ptr<Mesh> majorTicksMesh_;

@@ -82,10 +82,12 @@ std::shared_ptr<Mesh> IVW_MODULE_PLOTTING_API generateMajorTicksMesh(const AxisP
 std::shared_ptr<Mesh> IVW_MODULE_PLOTTING_API generateMinorTicksMesh(const AxisProperty& property,
                                                                      const vec2& startPos,
                                                                      const vec2& endPos);
-
-std::shared_ptr<Mesh> IVW_MODULE_PLOTTING_API generateAxisMesh(const AxisProperty& property,
-                                                               const vec2& startPos,
-                                                               const vec2& endPos, const vec3& pickingColor);
+/**
+ * No picking buffer will be generated id pickingId = std::numeric_limits<size_t>::max()
+ */
+std::shared_ptr<Mesh> IVW_MODULE_PLOTTING_API
+generateAxisMesh(const AxisProperty& property, const vec2& startPos, const vec2& endPos,
+                 const size_t& pickingId = std::numeric_limits<size_t>::max());
 
 std::shared_ptr<Mesh> IVW_MODULE_PLOTTING_API generateMajorTicksMesh3D(const AxisProperty& property,
                                                                        const vec3& startPos,
@@ -96,10 +98,12 @@ std::shared_ptr<Mesh> IVW_MODULE_PLOTTING_API generateMinorTicksMesh3D(const Axi
                                                                        const vec3& startPos,
                                                                        const vec3& endPos,
                                                                        const vec3& tickDirection);
-
-std::shared_ptr<Mesh> IVW_MODULE_PLOTTING_API generateAxisMesh3D(const AxisProperty& property,
-                                                                 const vec3& startPos,
-                                                                 const vec3& endPos, const vec3& pickingColor);
+/**
+ * No picking buffer will be generated id pickingId = std::numeric_limits<size_t>::max()
+ */
+std::shared_ptr<Mesh> IVW_MODULE_PLOTTING_API
+generateAxisMesh3D(const AxisProperty& property, const vec3& startPos, const vec3& endPos,
+                   const size_t& pickingId = std::numeric_limits<size_t>::max());
 
 /**
  * \brief utility function to create a mesh for a given set of tick mark positions

@@ -37,6 +37,7 @@
 #include <modules/plotting/properties/categoricalaxisproperty.h>
 #include <modules/plotting/utils/axisutils.h>
 #include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/shader/shadertype.h>
 #include <modules/opengl/geometry/meshgl.h>
 #include <modules/opengl/texture/texture2d.h>
 #include <modules/opengl/openglutils.h>
@@ -52,21 +53,38 @@ namespace plot {
 
 AxisRendererBase::AxisRendererBase(const AxisProperty& property)
     : property_(property)
-    , lineShader_("linerenderer.vert", "linerenderer.geom", "linerenderer.frag", false) {
-    lineShader_.getGeometryShaderObject()->addShaderDefine("ENABLE_ADJACENCY", "0");
-    lineShader_.build();
-}
+    , lineShaders_{
+          {{ShaderType::Vertex, "linerenderer.vert"},
+           {ShaderType::Geometry, "linerenderer.geom"},
+           {ShaderType::Fragment, "linerenderer.frag"}},
+
+          {{BufferType::PositionAttrib, MeshShaderCache::Mandatory, "vec3"},
+           {BufferType::ColorAttrib, MeshShaderCache::Mandatory, "vec4"},
+           {BufferType::PickingAttrib, MeshShaderCache::Optional, "uint"}},
+
+          [&](Shader& shader) -> void {
+              configureShader(shader);
+          }} {}
 
 AxisRendererBase::AxisRendererBase(const AxisRendererBase& rhs)
-    : property_(rhs.property_), lineShader_(rhs.lineShader_) {}
+    : property_(rhs.property_)
+    , lineShaders_{{{ShaderType::Vertex, "linerenderer.vert"},
+                    {ShaderType::Geometry, "linerenderer.geom"},
+                    {ShaderType::Fragment, "linerenderer.frag"}},
+
+                   {{BufferType::PositionAttrib, MeshShaderCache::Mandatory, "vec3"},
+                    {BufferType::ColorAttrib, MeshShaderCache::Mandatory, "vec4"},
+                    {BufferType::PickingAttrib, MeshShaderCache::Optional, "uint"}},
+
+                   [&](Shader& shader) -> void { configureShader(shader); }} {}
 
 void AxisRendererBase::renderAxis(Camera* camera, const size2_t& outputDims, bool antialiasing) {
     if (!axisMesh_ && !majorTicksMesh_ && !minorTicksMesh_) return;
-
-    lineShader_.activate();
-    lineShader_.setUniform("screenDim", vec2(outputDims));
+    auto& lineShader = lineShaders_.getShader(*axisMesh_);
+    lineShader.activate();
+    lineShader.setUniform("screenDim", vec2(outputDims));
     if (camera) {
-        utilgl::setShaderUniforms(lineShader_, *camera, "camera");
+        utilgl::setShaderUniforms(lineShader, *camera, "camera");
     }
 
     // returns thickness of antialiased edge based on the global antialiasing flag
@@ -80,12 +98,12 @@ void AxisRendererBase::renderAxis(Camera* camera, const size2_t& outputDims, boo
     };
 
     auto drawMesh = [&](const MeshGL* meshgl, float lineWidth, bool caps) {
-        lineShader_.setUniform("lineWidth", lineWidth);
+        lineShader.setUniform("lineWidth", lineWidth);
         auto mesh = meshgl->getOwner();
         MeshDrawerGL::DrawObject drawer(meshgl, mesh->getDefaultMeshInfo());
-        utilgl::setShaderUniforms(lineShader_, *mesh, "geometry");
-        lineShader_.setUniform("antialiasing", antialiasWidth(lineWidth));
-        lineShader_.setUniform("roundCaps", caps);
+        utilgl::setShaderUniforms(lineShader, *mesh, "geometry");
+        lineShader.setUniform("antialiasing", antialiasWidth(lineWidth));
+        lineShader.setUniform("roundCaps", caps);
         drawer.draw();
     };
 
@@ -117,7 +135,12 @@ void AxisRendererBase::renderAxis(Camera* camera, const size2_t& outputDims, boo
                  property_.ticks_.minorTicks_.tickWidth_.get(), true);
     }
 
-    lineShader_.deactivate();
+    lineShader.deactivate();
+}
+
+void AxisRendererBase::configureShader(Shader & shader) {
+    shader.getGeometryShaderObject()->addShaderDefine("ENABLE_ADJACENCY", "0");
+    shader.build();
 }
 
 void AxisRendererBase::invalidateInternalState(bool positionChange) {
@@ -357,7 +380,7 @@ void AxisRenderer::renderText(const size2_t& outputDims, const size2_t& startPos
 
 void AxisRenderer::updateMeshes(const size2_t& startPos, const size2_t& endPos) {
     if (!axisMesh_) {
-        axisMesh_ = plot::generateAxisMesh(property_, startPos, endPos, axisPickingColor_);
+        axisMesh_ = plot::generateAxisMesh(property_, startPos, endPos, axisPickingId_);
     }
     if (!majorTicksMesh_) {
         majorTicksMesh_ = plot::generateMajorTicksMesh(property_, startPos, endPos);
@@ -455,7 +478,7 @@ void AxisRenderer3D::renderText(Camera* camera, const size2_t& outputDims, const
 void AxisRenderer3D::updateMeshes(const vec3& startPos, const vec3& endPos,
                                   const vec3& tickDirection) {
     if (!axisMesh_) {
-        axisMesh_ = plot::generateAxisMesh3D(property_, startPos, endPos, axisPickingColor_);
+        axisMesh_ = plot::generateAxisMesh3D(property_, startPos, endPos, axisPickingId_);
     }
     if (!majorTicksMesh_) {
         majorTicksMesh_ =
