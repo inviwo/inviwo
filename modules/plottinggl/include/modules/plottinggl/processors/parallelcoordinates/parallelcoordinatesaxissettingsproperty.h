@@ -116,9 +116,6 @@ private:
     bool updating_ = false;
 
     std::string name_;
-    std::shared_ptr<Texture2D> labelTexture_;   //! Texture cache used by ParallelCoordiantes
-    std::shared_ptr<Texture2D> minValTexture_;  //! Texture cache used by ParallelCoordiantes
-    std::shared_ptr<Texture2D> maxValTexture_;  //! Texture cache used by ParallelCoordiantes
 };
 
 }  // namespace plot

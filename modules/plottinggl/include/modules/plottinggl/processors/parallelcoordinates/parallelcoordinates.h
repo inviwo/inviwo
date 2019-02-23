@@ -110,11 +110,6 @@ private:
                      const std::vector<ColumnAxis*> &enabledAxis);
     void drawLines(size2_t size);
 
-    void buildTextCache(const std::vector<ParallelCoordinatesAxisSettingsProperty *> &enabledAxis);
-
-    void renderText(size2_t size,
-                    const std::vector<ParallelCoordinatesAxisSettingsProperty *> &enabledAxis);
-
     void updateBrushing();
 
     void updateAxesLayout(); // Call every time image size or margin changes
@@ -183,16 +178,12 @@ private:
     PickingMapper axisPicking_;
     PickingMapper handlePicking_;
 
-    TextRenderer textRenderer_;
-    TextureQuadRenderer textureRenderer_;
-
     std::shared_ptr<Image> handleImg_;
 
     int hoveredLine_ = -1;
     int hoveredAxis_ = -1;
 
     bool recreateLines_;
-    bool textCacheDirty_;
     bool brushingDirty_;
 };
 
