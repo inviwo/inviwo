@@ -351,11 +351,6 @@ void AxisRenderer::renderText(const size2_t& outputDims, const size2_t& startPos
         const auto offset =
             vec2(rotation * vec4(texDims * 0.5f * (anchor + vec2(1.0f)), 0.f, 1.f));
 
-        //const auto offset =
-        //    property_.orientation_ == AxisProperty::Orientation::Vertical
-        //        ? vec2(-texDims.y, texDims.x) * 0.5f * (vec2(-anchor.x, anchor.y) + vec2(1.0f))
-        //        : texDims * 0.5f * (anchor + vec2(1.0f));
-
         const ivec2 posi(plot::getAxisCaptionPosition(property_, startPos, endPos) - offset);
         quadRenderer_.render(axisCaptionTex_, posi, outputDims, rotation);
     }
