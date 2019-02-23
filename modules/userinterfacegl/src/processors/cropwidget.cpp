@@ -242,10 +242,17 @@ void CropWidget::initializeResources() {
     utilgl::addShaderDefines(shader_, lightingProperty_);
     shader_.build();
 
-    lineShader_.getGeometryShaderObject()->addShaderDefine("ENABLE_ADJACENCY", "1");
-    lineShader_.getFragmentShaderObject()->addShaderDefine("ENABLE_ROUND_DEPTH_PROFILE");
-    lineShader_.build();
+    lineShader_[ShaderType::Geometry]->addShaderDefine("ENABLE_ADJACENCY", "1");
+    lineShader_[ShaderType::Fragment]->addShaderDefine("ENABLE_ROUND_DEPTH_PROFILE");
 
+    // See createLineStripMesh()
+    lineShader_[ShaderType::Vertex]->addInDeclaration("in_" + toString(BufferType::PositionAttrib),
+                                                      0, "vec3");
+    lineShader_[ShaderType::Vertex]->addInDeclaration("in_" + toString(BufferType::ColorAttrib), 0,
+                                                      "vec4");
+    lineShader_[ShaderType::Vertex]->addInDeclaration("in_" + toString(BufferType::TexcoordAttrib),
+                                                      0, "vec2");
+    lineShader_.build();
     lineShader_.activate();
     lineShader_.setUniform("antialiasing", 1.0f);
     lineShader_.setUniform("miterLimit", 1.0f);
