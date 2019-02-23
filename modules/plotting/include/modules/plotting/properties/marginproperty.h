@@ -61,7 +61,9 @@ public:
     virtual MarginProperty *clone() const override;
 
     virtual ~MarginProperty() = default;
-
+    /*
+	 * Set margins and adjust min/max values if necessary
+	 */
     void setMargins(float top, float right, float bottom, float left);
 
     void setTop(float top);

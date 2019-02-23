@@ -76,10 +76,14 @@ MarginProperty& MarginProperty::operator=(const MarginProperty& that) {
 MarginProperty* MarginProperty::clone() const { return new MarginProperty(*this); }
 
 void MarginProperty::setMargins(float top, float right, float bottom, float left) {
-    top_.set(top);
-    right_.set(right);
-    bottom_.set(bottom);
-    left_.set(left);
+    top_.set(top, std::min(top_.getMinValue(), top), std::max(top_.getMaxValue(), top * 1.1f),
+             top_.getIncrement());
+    right_.set(right, std::min(right_.getMinValue(), top),
+               std::max(right_.getMaxValue(), top * 1.1f), right_.getIncrement());
+    bottom_.set(bottom, std::min(bottom_.getMinValue(), top),
+                std::max(bottom_.getMaxValue(), top * 1.1f), bottom_.getIncrement());
+    left_.set(left, std::min(left_.getMinValue(), top), std::max(left_.getMaxValue(), top * 1.1f),
+              left_.getIncrement());
 }
 
 void MarginProperty::setTop(float top) { top_.set(top); }
