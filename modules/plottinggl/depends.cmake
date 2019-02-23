@@ -4,6 +4,7 @@
 set(dependencies
     InviwoPlottingModule
     InviwoOpenGLModule
+	InviwoBaseGLModule
     InviwoBaseModule
     InviwoBrushingAndLinkingModule  
     InviwoFontRenderingModule  
