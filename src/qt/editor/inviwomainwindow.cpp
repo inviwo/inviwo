@@ -63,6 +63,8 @@
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
 #include <inviwo/core/network/workspaceutils.h>
 #include <inviwo/core/network/networklock.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorwidget.h>
 #include <inviwo/core/processors/compositeprocessor.h>
 #include <inviwo/core/processors/compositeprocessorutils.h>
 
@@ -339,6 +341,7 @@ void InviwoMainWindow::addActions() {
     auto viewMenuItem = menu->addMenu(tr("&View"));
     auto networkMenuItem = menu->addMenu(tr("&Network"));
     menu->addMenu(toolsMenu_);
+    auto windowMenuItem = menu->addMenu("&Windows");
     auto helpMenuItem = menu->addMenu(tr("&Help"));
 
     auto workspaceToolBar = addToolBar("File");
@@ -798,6 +801,51 @@ void InviwoMainWindow::addActions() {
         networkMenuItem->addAction(resetTimeMeasurementsAction);
     }
 #endif
+
+    // Windows
+    {
+        QObject::connect(windowMenuItem, &QMenu::aboutToShow, this, [this, windowMenuItem]() {
+            windowMenuItem->clear();
+            auto showAllAction = windowMenuItem->addAction("&Show All");
+            auto hideAllAction = windowMenuItem->addAction("&Hide All");
+
+            QObject::connect(showAllAction, &QAction::triggered, this, [this]() {
+                auto widgetProcessors =
+                    util::copy_if(app_->getProcessorNetwork()->getProcessors(),
+                                  [](const auto p) { return p->hasProcessorWidget(); });
+                for (const auto p : widgetProcessors) {
+                    p->getProcessorWidget()->show();
+                }
+            });
+            QObject::connect(hideAllAction, &QAction::triggered, this, [this]() {
+                auto widgetProcessors =
+                    util::copy_if(app_->getProcessorNetwork()->getProcessors(),
+                                  [](const auto p) { return p->hasProcessorWidget(); });
+                for (const auto p : widgetProcessors) {
+                    p->getProcessorWidget()->hide();
+                }
+            });
+
+            auto widgetProcessors =
+                util::copy_if(app_->getProcessorNetwork()->getProcessors(),
+                              [](const auto p) { return p->hasProcessorWidget(); });
+
+            if (!widgetProcessors.empty()) {
+                windowMenuItem->addSeparator();
+            }
+            for (const auto p : widgetProcessors) {
+                auto action =
+                    windowMenuItem->addAction(QString("%1 (%2)")
+                                                  .arg(utilqt::toQString(p->getDisplayName()))
+                                                  .arg(utilqt::toQString(p->getIdentifier())));
+                action->setCheckable(true);
+                action->setChecked(p->getProcessorWidget()->isVisible());
+                QObject::connect(action, &QAction::toggled, this, [this, p](bool toggle) {
+                    p->getProcessorWidget()->setVisible(toggle);
+                });
+            }
+        });
+    }
 
     // Help
     {
