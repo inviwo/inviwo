@@ -62,7 +62,7 @@ namespace plot {
 static const float handleW = 40;
 static const float handleH = 20;
 
-static const size_t handleCaptionMargin = 5;  // Distance between caption text and handle
+static const size_t handleCaptionMargin = 0;  // Distance between caption text and handle
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo ParallelCoordinates::processorInfo_{
@@ -182,6 +182,8 @@ ParallelCoordinates::ParallelCoordinates()
     text_.addProperty(color_);
     text_.addProperty(fontSize_);
     text_.addProperty(valuesFontSize_);
+    text_
+        .onChange([&]() { autoMargins_.pressButton(); });
 
     axisProperties_.setCollapsed(true);
     axisProperties_.onChange([&]() { recreateLines_ = true; });
@@ -205,7 +207,7 @@ ParallelCoordinates::ParallelCoordinates()
     labelPosition_.addOption("none", "None", LabelPosition::None);
     labelPosition_.addOption("above", "Above", LabelPosition::Above);
     labelPosition_.addOption("below", "Below", LabelPosition::Below);
-    labelPosition_.onChange([&]() { autoMargins_.pressButton(); });
+    //labelPosition_.onChange([&]() { autoMargins_.pressButton(); });
     labelPosition_.setSelectedIndex(2);
 
     showValue_.onChange([&]() { autoMargins_.pressButton(); });
@@ -233,13 +235,13 @@ ParallelCoordinates::ParallelCoordinates()
                                   : 0;
                 if (labelPosition_.get() != LabelPosition::None) {
                     // Caption might stick out next to the handle
-                    auto captionX = (renderer->getCaptionTextSize().x - handleSize_.get().x) / 2.f;
+                    auto captionX = static_cast<float>(0.5f*renderer->getCaptionTextSize().x);
                     if (leftLabelWidth == 0) {
                         leftLabelWidth = std::max(labelX, captionX);
                     }
                     rightLabelWidth = std::max(labelX, captionX);
                     maxLabelHeight = std::max(
-                        maxLabelHeight, renderer->getCaptionTextSize().y + handleCaptionMargin);
+                        maxLabelHeight, 2 *renderer->getCaptionTextSize().y + handleCaptionMargin);
                 }
                 if (showValue_.get()) {
                     right = labelX;
@@ -378,8 +380,9 @@ void ParallelCoordinates::process() {
     utilgl::activateAndClearTarget(outport_, ImageType::ColorPicking);
     utilgl::GlBoolState depthTest(GL_DEPTH_TEST, false);
 
-    drawAxis(dims, enabledAxis);
+
     drawLines(dims);
+	drawAxis(dims, enabledAxis);
     drawHandles(dims, enabledAxis);
 
     utilgl::deactivateCurrentTarget();
@@ -527,11 +530,6 @@ void ParallelCoordinates::drawAxis(size2_t size, const std::vector<ColumnAxis *>
         auto &axis(std::get<1>(*enabledAxis[i]));
         auto &renderer(std::get<2>(*enabledAxis[i]));
         auto columnId = std::get<0>(*enabledAxis[i])->columnId_;
-        axis->setValid();
-        axis->color_.setValid();
-        axis->ticks_.majorTicks_.color_.setValid();
-        axis->ticks_.minorTicks_.color_.setValid();
-        axis->width_.setValid();
         if (hoveredAxis_ == columnId) {
             axis->color_.set(axisHoverColor_.get());
             axis->ticks_.majorTicks_.color_.set(axisHoverColor_.get());
@@ -826,20 +824,27 @@ void ParallelCoordinates::updateAxesLayout() {
         prop->caption_.font_.fontSize_.set(fontSize_.get());
         prop->caption_.setChecked(labelPosition_.get() != LabelPosition::None);
         const auto &renderer = std::get<2>(p);
-        auto dims = outport_.getDimensions();
-        float x = 0.f - 0.5f * renderer->getCaptionTextSize().x;
+
+		// Horizontal offset is given in pixels and since we are using vertical alignment
+		// it is the height of the text
+        float x = (0.f - 0.5f*renderer->getCaptionTextSize().y);
+        // Vertical offset is given with respect to axis length
+        auto axisLength = outport_.getDimensions().y - margins_.getTop() - margins_.getBottom();
         float y = (renderer->getCaptionTextSize().y + handleSize_.get().y + handleCaptionMargin) /
-                  static_cast<float>(dims.y);
+                  static_cast<float>(axisLength);
 
         if (labelPosition_.get() == LabelPosition::Above) {
             y += 1.f;
         } else if (labelPosition_.get() == LabelPosition::Below) {
             y = -y;
         }
+
         vec2 captionPos(x, y);
 
-        prop->caption_.position_.set(captionPos.y, captionPos.y - 0.1f, captionPos.y + .1f, 0.05f);
+		// Horizontal offset
         prop->caption_.offset_.set(captionPos.x, captionPos.x - 0.1f, captionPos.x + 0.1f, 0.05f);
+		// Vertical offset
+		prop->caption_.position_.set(captionPos.y, captionPos.y - 0.1f, captionPos.y + .1f, 0.05f);
     }
 }
 
