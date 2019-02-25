@@ -346,10 +346,16 @@ void AxisRenderer::renderText(const size2_t& outputDims, const size2_t& startPos
 
         auto angle = glm::radians(property_.caption_.rotation_.get()) + 
             (property_.orientation_ == AxisProperty::Orientation::Vertical ? glm::half_pi<float>() : 0.f);
-        const auto rotation = glm::rotate(angle, vec3(0.0f, 0.0f, 1.0f));
+		// Rotate around center
+        const auto rotation = glm::translate(
+            glm::rotate(angle, vec3(0.0f, 0.0f, 1.0f)), vec3(-0.5f * vec2(texDims), 0.f));
 
-        const auto offset =
-            vec2(rotation * vec4(texDims * 0.5f * (anchor + vec2(1.0f)), 0.f, 1.f));
+		// Translate back after rotation and offset according to anchor
+		auto offset =
+            property_.orientation_ == AxisProperty::Orientation::Vertical
+                          ? vec2(-texDims.y, texDims.x) * 0.5f * vec2(-anchor.x, anchor.y)
+                : texDims * 0.5f * anchor;
+
 
         const ivec2 posi(plot::getAxisCaptionPosition(property_, startPos, endPos) - offset);
         quadRenderer_.render(axisCaptionTex_, posi, outputDims, rotation);
