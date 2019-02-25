@@ -39,6 +39,7 @@
 #include <inviwo/core/util/licenseinfo.h>
 #include <inviwo/core/util/vectoroperations.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/network/workspacemanager.h>
 #include <inviwo/qt/editor/consolewidget.h>
 #include <inviwo/qt/editor/helpwidget.h>
@@ -829,6 +830,9 @@ void InviwoMainWindow::addActions() {
             auto widgetProcessors =
                 util::copy_if(app_->getProcessorNetwork()->getProcessors(),
                               [](const auto p) { return p->hasProcessorWidget(); });
+            std::sort(widgetProcessors.begin(), widgetProcessors.end(), [](auto a, auto b) {
+                return iCaseLess(a->getDisplayName(), b->getDisplayName());
+            });
 
             if (!widgetProcessors.empty()) {
                 windowMenuItem->addSeparator();
