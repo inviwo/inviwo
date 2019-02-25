@@ -80,7 +80,8 @@ private:
     std::unordered_set<size_t> selected_;
     std::unordered_set<size_t> selectedColumns_;
     IndexList filtered_;  // Use IndexList to be able to remove filtered rows on port disconnection
-
+    std::shared_ptr<std::function<void()>> onFilteringChangeCallback_;
+    
     Processor* owner_;  // Non-owning reference
     InvalidationLevel invalidationLevel_;
 };

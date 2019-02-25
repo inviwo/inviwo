@@ -44,7 +44,7 @@ BrushingAndLinkingManager::BrushingAndLinkingManager(Processor* p,
             });
         }
     }
-    filtered_.onChange([p, validationLevel]() { p->invalidate(validationLevel); });
+    onFilteringChangeCallback_ = filtered_.onChange([p, validationLevel]() { p->invalidate(validationLevel); });
 }
 
 BrushingAndLinkingManager::~BrushingAndLinkingManager() {}
