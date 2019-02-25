@@ -515,11 +515,11 @@ void addImageActions(QMenu& menu, const Image& image, LayerType visibleLayer, si
     addAction("Depth Layer", image.getDepthLayer(), visibleLayer == LayerType::Depth);
 }
 
-std::string toBase64(const QImage& image) {
+std::string toBase64(const QImage& image, const std::string& format, int quality) {
     QByteArray byteArray;
     QBuffer buffer{&byteArray};
     buffer.open(QIODevice::WriteOnly);
-    image.save(&buffer, "PNG");
+    image.save(&buffer, format.empty() ? nullptr : format.c_str(), quality);
     return std::string{byteArray.toBase64().data()};
 }
 
