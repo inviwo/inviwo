@@ -512,6 +512,21 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         } else if (auto processor = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
             clickedProcessor = processor;
 
+            if (processor->getProcessor()->hasProcessorWidget()) {
+                QAction* showAction = menu.addAction(tr("&Show Widget"));
+                showAction->setCheckable(true);
+                if (auto processorWidget = processor->getProcessor()->getProcessorWidget()) {
+                    showAction->setChecked(processorWidget->isVisible());
+                }
+                connect(showAction, &QAction::triggered, [processor]() {
+                    if (processor->getProcessor()->getProcessorWidget()->isVisible()) {
+                        processor->getProcessor()->getProcessorWidget()->hide();
+                    } else {
+                        processor->getProcessor()->getProcessorWidget()->show();
+                    }
+                });
+            }
+
             auto editName = menu.addAction(tr("Edit Name"));
             connect(editName, &QAction::triggered, [this, processor]() {
                 clearSelection();
@@ -531,21 +546,6 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             connect(resetTimeMeasurementsAction, &QAction::triggered,
                     [processor]() { processor->resetTimeMeasurements(); });
 #endif
-
-            if (processor->getProcessor()->hasProcessorWidget()) {
-                QAction* showAction = menu.addAction(tr("&Show Widget"));
-                showAction->setCheckable(true);
-                if (auto processorWidget = processor->getProcessor()->getProcessorWidget()) {
-                    showAction->setChecked(processorWidget->isVisible());
-                }
-                connect(showAction, &QAction::triggered, [processor]() {
-                    if (processor->getProcessor()->getProcessorWidget()->isVisible()) {
-                        processor->getProcessor()->getProcessorWidget()->hide();
-                    } else {
-                        processor->getProcessor()->getProcessorWidget()->show();
-                    }
-                });
-            }
 
             QAction* delprocessor = menu.addAction(tr("Delete && &Keep Connections"));
             connect(delprocessor, &QAction::triggered, [this, processor]() {

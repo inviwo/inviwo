@@ -189,11 +189,11 @@ void CanvasQtBase<T>::doContextMenu(QMouseEvent* event) {
 
         QMenu menu(this);
 
-        this->connect(menu.addAction("Select Processor"), &QAction::triggered, this, [&]() {
+        this->connect(menu.addAction("&Select Processor"), &QAction::triggered, this, [&]() {
             canvasProcessor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)
                 ->setSelected(true);
         });
-        this->connect(menu.addAction("Hide Widget"), &QAction::triggered, this,
+        this->connect(menu.addAction("&Hide Canvas"), &QAction::triggered, this,
                       [&]() { this->ownerWidget_->setVisible(false); });
 
         if (this->image_) {
