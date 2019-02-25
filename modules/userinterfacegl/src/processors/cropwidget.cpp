@@ -248,10 +248,10 @@ void CropWidget::initializeResources() {
     // See createLineStripMesh()
     lineShader_[ShaderType::Vertex]->addInDeclaration("in_" + toString(BufferType::PositionAttrib),
                                                       0, "vec3");
-    lineShader_[ShaderType::Vertex]->addInDeclaration("in_" + toString(BufferType::ColorAttrib), 0,
+    lineShader_[ShaderType::Vertex]->addInDeclaration("in_" + toString(BufferType::ColorAttrib), 1,
                                                       "vec4");
     lineShader_[ShaderType::Vertex]->addInDeclaration("in_" + toString(BufferType::TexcoordAttrib),
-                                                      0, "vec2");
+                                                      2, "vec2");
     lineShader_.build();
     lineShader_.activate();
     lineShader_.setUniform("antialiasing", 1.0f);
