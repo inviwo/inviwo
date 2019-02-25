@@ -365,7 +365,11 @@ void InviwoMainWindow::addActions() {
         newAction->setShortcut(QKeySequence::New);
         newAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         this->addAction(newAction);
-        connect(newAction, &QAction::triggered, this, &InviwoMainWindow::newWorkspace);
+        connect(newAction, &QAction::triggered, this, [this]() {
+            if (newWorkspace()) {
+                hideWelcomeScreen();
+            }
+        });
         fileMenuItem->addAction(newAction);
         workspaceToolBar->addAction(newAction);
     }
@@ -375,8 +379,11 @@ void InviwoMainWindow::addActions() {
         openAction->setShortcut(QKeySequence::Open);
         openAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         this->addAction(openAction);
-        connect(openAction, &QAction::triggered, this,
-                static_cast<bool (InviwoMainWindow::*)()>(&InviwoMainWindow::openWorkspace));
+        connect(openAction, &QAction::triggered, this, [this]() {
+            if (openWorkspace()) {
+                hideWelcomeScreen();
+            }
+        });
         fileMenuItem->addAction(openAction);
         workspaceToolBar->addAction(openAction);
     }
@@ -460,7 +467,11 @@ void InviwoMainWindow::addActions() {
             action->setVisible(false);
             recentWorkspaceMenu->addAction(action);
             connect(action, &QAction::triggered, this, [this, action]() {
-                if (askToSaveWorkspaceChanges()) openWorkspace(action->data().toString());
+                if (askToSaveWorkspaceChanges()) {
+                    if (openWorkspace(action->data().toString())) {
+                        hideWelcomeScreen();
+                    }
+                }
             });
         }
         // action for clearing the recent file menu
@@ -519,7 +530,9 @@ void InviwoMainWindow::addActions() {
                     // open as regular workspace with proper filename if control is pressed
                     bool controlPressed = (app_->keyboardModifiers() == Qt::ControlModifier);
                     if (askToSaveWorkspaceChanges()) {
-                        openWorkspace(path, !controlPressed);
+                        if (openWorkspace(path, !controlPressed)) {
+                            hideWelcomeScreen();
+                        }
                     }
                 });
             }
@@ -978,20 +991,6 @@ void InviwoMainWindow::saveWorkspace(QString workspaceFileName) {
     fileName = filesystem::cleanupPath(fileName);
 
     try {
-        auto networkImageSerializationHandle = app_->getWorkspaceManager()->onSave(
-            [&](Serializer& s) {
-                const int fixedHeight = 256;
-                auto image = networkEditorView_->exportViewToImage(true, true, QSize(256, 256));
-
-                auto canvases = utilqt::getCanvasImages(app_->getProcessorNetwork());
-                for (auto& img : canvases) {
-                    img.second = img.second.scaledToHeight(fixedHeight);
-                }
-                WorkspaceAnnotationsQt p{image, canvases};
-                s.serialize("WorkspacePreview", p);
-            },
-            WorkspaceSaveMode::Disk);
-
         app_->getWorkspaceManager()->save(fileName, [&](ExceptionContext ec) {
             try {
                 throw;
