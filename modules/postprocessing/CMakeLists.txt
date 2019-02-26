@@ -14,6 +14,7 @@ set(HEADER_FILES
     include/modules/postprocessing/processors/imagebrightnesscontrast.h
     include/modules/postprocessing/processors/imageedgedarken.h
     include/modules/postprocessing/processors/imagehuesaturationluminance.h
+    include/modules/postprocessing/processors/imagewindowlevelwidth.h
     include/modules/postprocessing/processors/imageopacity.h
     include/modules/postprocessing/processors/imagesharpen.h
     include/modules/postprocessing/processors/ssao.h
@@ -32,6 +33,7 @@ set(SOURCE_FILES
     src/processors/imagebrightnesscontrast.cpp
     src/processors/imageedgedarken.cpp
     src/processors/imagehuesaturationluminance.cpp
+    src/processors/imagewindowlevelwidth.cpp
     src/processors/imageopacity.cpp
     src/processors/imagesharpen.cpp
     src/processors/ssao.cpp
@@ -70,6 +72,7 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/rgbl.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/tonemapping.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/viewnormal.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/windowlevelwidth.frag
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 
