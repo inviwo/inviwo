@@ -54,12 +54,12 @@ VolumeMask::VolumeMask()
     , volumeAnnotationInport_("volume_annotation_inport")
     , volumeOutport_("volume_outport")
     , enableMasking_("enableMasking", "Enable Masking", true)
-    , idx_("idx", "idx", 0, 0, 10000000000, 1, InvalidationLevel::Valid)
+    , idx_("idx", "Index", 0, 0, 10000000000, 1, InvalidationLevel::Valid)
     , addIdx_("addIdx", "Add Index")
     , removeIdx_("removeIdx", "Remove Index")
     , clearIdxList_("clearIdxList", "Clear Index List")
     , idxList_("idxList", "Index List")
-    , idxTableFile_("idxTableFile", "Idx File") {
+    , idxTableFile_("idxTableFile", "Idx File (1 index per row)") {
 
     addPort(volumeInport_);
     addPort(volumeAnnotationInport_);
@@ -99,6 +99,7 @@ VolumeMask::VolumeMask()
     addProperty(idxList_);
 
     idxTableFile_.onChange([this]() {
+        // read index file line by line, each line contains 1 index
         std::ifstream file_stream(idxTableFile_);
         if (file_stream.is_open()) {
             idxList_.clearOptions();
@@ -143,6 +144,7 @@ void VolumeMask::process() {
                     for (size_t x = 0; x < dims.x; ++x) {
                         P annoValue = anno[indexMapper(x, y, z)];
 
+                        // check if index is in reference volume
                         const size3_t pos{x, y, z};
                         bool contains{false};
                         for (const auto& refIdx : refIdxList) {
@@ -152,6 +154,7 @@ void VolumeMask::process() {
                             }
                         }
 
+                        // copy if index is valid, otherwise set to zero
                         if (contains) {
                             vOutRAM->setFromDVec4(pos, vInRAM->getAsDVec4(pos));
                             numMatchingVoxels++;
