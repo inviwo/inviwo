@@ -147,9 +147,9 @@ std::unordered_map<std::string, DataFormatId> extToBaseTypeMap_ = {{"jpg", DataF
 template <typename T>
 struct CImgToVoidConvert {
     static void* convert(void* dst, cimg_library::CImg<T>* img) {
-        // Inviwo store pixels interleaved (RGBRGBRGB), CImg stores pixels in a planer format
+        // Inviwo store pixels interleaved (RGBRGBRGB), CImg stores pixels in a planar format
         // (RRRRGGGGBBBB).
-        // Permute from planer to interleaved format, does we need to specify cxyz as input instead
+        // Permute from planar to interleaved format, does we need to specify cxyz as input instead
         // of xyzc
         if (img->spectrum() > 1) {
             img->permute_axes("cxyz");
@@ -171,7 +171,8 @@ struct CImgToVoidConvert {
 template <typename T>
 struct LayerToCImg {
     static std::unique_ptr<cimg_library::CImg<T>> convert(const LayerRAM* inputLayerRAM,
-                                                          bool /*permute*/ = true) {
+                                                          bool /*permute*/ = true,
+                                                          bool /*skipAlpha*/ = false) {
         // Single channel means we can do xyzc, as no permutation is needed
         auto img = util::make_unique<cimg_library::CImg<T>>(
             static_cast<const T*>(inputLayerRAM->getData()),
@@ -186,13 +187,14 @@ struct LayerToCImg {
 template <glm::length_t L, typename T, glm::qualifier Q>
 struct LayerToCImg<glm::vec<L, T, Q>> {
     static std::unique_ptr<cimg_library::CImg<T>> convert(const LayerRAM* inputLayerRAM,
-                                                          bool permute = true) {
+                                                          bool permute = true,
+                                                          bool skipAlpha = false) {
         auto dataFormat = inputLayerRAM->getDataFormat();
         auto typedDataPtr = static_cast<const glm::vec<L, T, Q>*>(inputLayerRAM->getData());
 
-        // Inviwo store pixels interleaved (RGBRGBRGB), CImg stores pixels in a planer format
+        // Inviwo store pixels interleaved (RGBRGBRGB), CImg stores pixels in a planar format
         // (RRRRGGGGBBBB).
-        // Permute from interleaved to planer format, does we need to specify yzcx as input instead
+        // Permute from interleaved to planar format, i.e specify yzcx as input instead
         // of cxyz
         auto img = util::make_unique<cimg_library::CImg<T>>(
             glm::value_ptr(*typedDataPtr), static_cast<unsigned int>(dataFormat->getComponents()),
@@ -200,6 +202,9 @@ struct LayerToCImg<glm::vec<L, T, Q>> {
             static_cast<unsigned int>(inputLayerRAM->getDimensions().y), 1u, false);
 
         if (permute) img->permute_axes("yzcx");
+        if (skipAlpha && img->spectrum() > 1) {
+            img->channels(0, img->spectrum() - 2);
+        }
 
         return img;
     }
@@ -268,11 +273,13 @@ struct CImgSaveLayerDispatcher {
     using type = void;
     template <typename Result, typename T>
     void operator()(const std::string& filePath, const LayerRAM* inputLayer) {
-        auto img = LayerToCImg<typename T::type>::convert(inputLayer);
+        const std::string fileExtension = toLower(filesystem::getFileExtension(filePath));
+        const bool isJpeg = (fileExtension == "jpg") || (fileExtension == "jpeg");
+        const bool skipAlpha = isJpeg && ((T::comp == 2) || (T::comp == 4));
+        auto img = LayerToCImg<typename T::type>::convert(inputLayer, true, skipAlpha);
 
         // Should rescale values based on output format i.e. PNG/JPG is 0-255, HDR different.
         const DataFormatBase* outFormat = DataFloat32::get();
-        std::string fileExtension = toLower(filesystem::getFileExtension(filePath));
         if (extToBaseTypeMap_.find(fileExtension) != extToBaseTypeMap_.end()) {
             outFormat = DataFormatBase::get(extToBaseTypeMap_[fileExtension]);
         }
@@ -323,11 +330,13 @@ struct CImgSaveLayerToBufferDispatcher {
     using type = std::unique_ptr<std::vector<unsigned char>>;
     template <typename Result, typename T>
     type operator()(const LayerRAM* inputLayer, const std::string& extension) {
-        auto img = LayerToCImg<typename T::type>::convert(inputLayer);
+        const std::string fileExtension = toLower(extension);
+        const bool isJpeg = (fileExtension == "jpg") || (fileExtension == "jpeg");
+        const bool skipAlpha = isJpeg && ((T::comp == 2) || (T::comp == 4));
+        auto img = LayerToCImg<typename T::type>::convert(inputLayer, true, skipAlpha);
 
         // Should rescale values based on output format i.e. PNG/JPG is 0-255, HDR different.
         const DataFormatBase* outFormat = DataFloat32::get();
-        std::string fileExtension = toLower(extension);
         if (extToBaseTypeMap_.find(fileExtension) != extToBaseTypeMap_.end()) {
             outFormat = DataFormatBase::get(extToBaseTypeMap_[fileExtension]);
         }
@@ -522,8 +531,8 @@ struct CImgRescaleLayerRamToLayerRamDispatcher {
                            resized);
         } else {
             // Inviwo store pixels interleaved (RGBRGBRGB),
-            // CImg stores pixels in a planer format (RRRRGGGGBBBB).
-            // Permute from interleaved to planer format,
+            // CImg stores pixels in a planar format (RRRRGGGGBBBB).
+            // Permute from interleaved to planar format,
             // we need to specify yzcx as input instead of cxyz
 
             size_t comp = util::extent<E>::value;
