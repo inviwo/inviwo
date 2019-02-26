@@ -74,6 +74,7 @@ set(HEADER_FILES
     include/modules/basegl/processors/volumeprocessing/volumegradientprocessor.h
     include/modules/basegl/processors/volumeprocessing/volumelowpass.h
     include/modules/basegl/processors/volumeprocessing/volumemapping.h
+    include/modules/basegl/processors/volumeprocessing/volumemask.h
     include/modules/basegl/processors/volumeprocessing/volumemerger.h
     include/modules/basegl/processors/volumeprocessing/volumeshader.h
     include/modules/basegl/processors/volumeraycaster.h
@@ -153,6 +154,7 @@ set(SOURCE_FILES
     src/processors/volumeprocessing/volumegradientprocessor.cpp
     src/processors/volumeprocessing/volumelowpass.cpp
     src/processors/volumeprocessing/volumemapping.cpp
+    src/processors/volumeprocessing/volumemask.cpp
     src/processors/volumeprocessing/volumemerger.cpp
     src/processors/volumeprocessing/volumeshader.cpp
     src/processors/volumeraycaster.cpp
