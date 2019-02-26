@@ -278,16 +278,23 @@ struct CImgSaveLayerDispatcher {
         const bool skipAlpha = isJpeg && ((T::comp == 2) || (T::comp == 4));
         auto img = LayerToCImg<typename T::type>::convert(inputLayer, true, skipAlpha);
 
+        const DataFormatBase* inFormat = inputLayer->getDataFormat();
         // Should rescale values based on output format i.e. PNG/JPG is 0-255, HDR different.
         const DataFormatBase* outFormat = DataFloat32::get();
         if (extToBaseTypeMap_.find(fileExtension) != extToBaseTypeMap_.end()) {
             outFormat = DataFormatBase::get(extToBaseTypeMap_[fileExtension]);
+        } else if ((fileExtension == "tif") || (fileExtension == "tiff")) {
+            // use the same data format as the input. TIFF supports 8 and 16 bit integer formats as
+            // well as 32 bit floating point
+            const size_t maxPrecision =
+                (inFormat->getNumericType() == NumericType::Float) ? 32 : 16;
+            const size_t bitsPerSample = std::min<size_t>(inFormat->getPrecision(), maxPrecision);
+            outFormat = DataFormatBase::get(inFormat->getNumericType(), T::comp, bitsPerSample);
         }
 
         // Image is up-side-down
         img->mirror('y');
 
-        const DataFormatBase* inFormat = inputLayer->getDataFormat();
         double inMin = inFormat->getMin();
         double inMax = inFormat->getMax();
         double outMin = outFormat->getMin();
