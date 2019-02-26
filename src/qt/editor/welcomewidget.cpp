@@ -174,7 +174,7 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
             body.append("p").append(
                 "img", "",
                 {{"height", std::to_string(std::min(fixedImgHeight, item.size.y))},
-                 {"src", "data:image/png;base64," + item.base64png}});
+                 {"src", "data:image/jpeg;base64," + item.base64jpeg}});
         };
 
         for (auto &elem : annotations.getCanvasImages()) {

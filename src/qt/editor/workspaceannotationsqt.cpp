@@ -56,8 +56,8 @@ void WorkspaceAnnotationsQt::setNetworkImage(const QImage &network) {
     network_ = Base64Image{"Network"};
 
     if (!network.isNull()) {
-        network_ =
-            Base64Image{"Network", utilqt::toBase64(network), network.width(), network.height()};
+        network_ = Base64Image{"Network", utilqt::toBase64(network, "JPEG", 95), network.width(),
+                               network.height()};
     }
 }
 
@@ -66,8 +66,8 @@ void WorkspaceAnnotationsQt::setCanvasImages(const QImageVector &canvasImages) {
     images.reserve(canvasImages.size());
 
     for (auto &elem : canvasImages) {
-        images.push_back(
-            {elem.first, utilqt::toBase64(elem.second), elem.second.width(), elem.second.height()});
+        images.push_back({elem.first, utilqt::toBase64(elem.second, "JPEG", 90),
+                          elem.second.width(), elem.second.height()});
     }
     setCanvasImages(images);
 }
