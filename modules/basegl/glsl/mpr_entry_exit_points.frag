@@ -41,7 +41,7 @@ uniform float correction_angle;
 uniform vec3 volume_dimensions;
 uniform vec3 volume_spacing;
 
-in vec2 uv; // Viewport coordinates in [0,1]
+in vec3 texCoord_;
 
 vec2 rotate2D(vec2 pt, float angle)
 {
@@ -59,9 +59,9 @@ float minmin(vec3 v)
 }
 
 void main() {
+    vec2 uv = texCoord_.xy;
     vec2 uv_offset = (uv - p_screen) * vec2(aspect_ratio, 1.0);
     vec2 uv_rotated = rotate2D(uv_offset, correction_angle);
-    //vec2 uv_rotated = uv_offset;
 
     vec3 vd = volume_dimensions / maxmax(volume_dimensions);
     vec3 vs = volume_spacing / minmin(volume_spacing);

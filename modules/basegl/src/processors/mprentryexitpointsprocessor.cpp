@@ -120,7 +120,7 @@ MPREntryExitPoints::MPREntryExitPoints()
     , mprBasisR_("mprBasisR_", "mprBasisR_", vec3(0.0f), vec3(-1.0f), vec3(1.0f))
     , mprBasisU_("mprBasisU_", "mprBasisU_", vec3(0.0f), vec3(-1.0f), vec3(1.0f))
     , mprBasisN_("mprBasisN_", "mprBasisN_", vec3(0.0f), vec3(-1.0f), vec3(1.0f))
-    , shader_("uv_pass_through.vert", "mpr_entry_exit_points.frag")
+    , shader_("mpr_entry_exit_points.frag")
     , mouseWheelStepSize_("mouseWheelStepSize_", "Mouse Wheel Step Size", 0.01f, 0.001f, 0.1f, 0.001f)
     , mouseWheelEvent_("mouseWheelEvent_", "Mouse Wheel Event",
         [this](Event* e) { mouseWheelEventHandler(e); },
@@ -180,10 +180,6 @@ MPREntryExitPoints::MPREntryExitPoints()
 }
 
 void MPREntryExitPoints::process() {
-    auto const quad = util::makeBuffer<vec2>({
-        { -1.0f, -1.0f },{ 1.0f, -1.0f },{ -1.0f, 1.0f },{ 1.0f, 1.0f } 
-    });
-
     // generate entry points
     utilgl::activateAndClearTarget(*entryPort_.getEditableData().get(), ImageType::ColorOnly);
     shader_.activate();
@@ -204,19 +200,18 @@ void MPREntryExitPoints::process() {
     shader_.setUniform("volume_dimensions", vec3(volumeDimensions_.get()));
     shader_.setUniform("volume_spacing", volumeSpacing_.get());
 
-    auto quadGL = quad->getRepresentation<BufferGL>();
-    quadGL->enable();
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    // draw entry points
+    utilgl::singleDrawImagePlaneRect();
 
     // generate exit points
     utilgl::activateAndClearTarget(*exitPort_.getEditableData().get(), ImageType::ColorOnly);
     shader_.setUniform("thickness_offset", offset1_.get());
     shader_.setUniform("thickness_offset_other", offset0_.get());
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    quadGL->disable();
+
+    // draw exit points
+    utilgl::singleDrawImagePlaneRect();
 
     shader_.deactivate();
-
     utilgl::deactivateCurrentTarget();
 }
 
