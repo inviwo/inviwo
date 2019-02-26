@@ -52,7 +52,6 @@ namespace inviwo {
                                     [this](Event* e) { processClickEvent(e); },
                                     MouseButton::Left | MouseButton::Right)
         , clearPolyline_("clearpolyline", "Clear Points")
-        , loadExamplePolyline_("loadexamplepolyline", "Load Example Polyline")
         , polyline_(std::make_shared<std::vector<vec3>>())
         , pointRemovalDistanceThreshold_("pointRemovalDistanceThreshold", "Point Removal Distance Threshold", 0.02f, 0.0f, 1.0f)
         , numPolylinePts_("numPolylinePts", "Num. Points", 0)
@@ -62,29 +61,12 @@ namespace inviwo {
         outport_.setData(polyline_);
         addPort(outport_);
 
-        clearPolyline_.onChange([this]() { 
+        clearPolyline_.onChange([this]() {
             polyline_->clear();
+            numPolylinePts_ = polyline_->size();
             invalidate(InvalidationLevel::InvalidOutput);
         });
         addProperty(clearPolyline_);
-
-        loadExamplePolyline_.onChange([this]() {
-            polyline_->clear();
-
-            // volume 2143.dat dimensions: 256 x 256 x 255
-            std::ifstream inputStream("D:/data/2134.dijkstra");
-            if (inputStream.is_open()) {
-                vec3 pt;
-                while (inputStream >> pt.x >> pt.y >> pt.z) {
-                    LogInfo("point = " << pt);
-                    addPoint(pt / vec3(256, 256, 255));
-                }
-            }
-            inputStream.close();
-
-            invalidate(InvalidationLevel::InvalidOutput);
-        });
-        addProperty(loadExamplePolyline_);
 
         numPolylinePts_.setReadOnly(true);
         numPolylinePts_.setSemantics(PropertySemantics::Text);

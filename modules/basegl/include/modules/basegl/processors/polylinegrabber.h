@@ -72,7 +72,6 @@ namespace inviwo {
         FloatProperty pointRemovalDistanceThreshold_;
 
         ButtonProperty clearPolyline_;
-        ButtonProperty loadExamplePolyline_;
 
         std::shared_ptr<std::vector<vec3>> polyline_;
         IntSizeTProperty numPolylinePts_;
