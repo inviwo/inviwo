@@ -176,12 +176,12 @@ void VolumeSource::load(bool deserialize) {
                     const size3_t pt{x, y, center_slice_idx};
 
                     const auto value = volumeRAM->getAsDouble(pt); // in data range
-                    double value_HU = value * datamap.rescaleSlope + datamap.rescaleIntercept;
-                    double value_normalized =
+                    const auto value_HU = value * datamap.rescaleSlope + datamap.rescaleIntercept;
+                    const auto value_normalized =
                         windowConversionSuccessful ? (value_HU - windowMin) / windowWidth
                                                   : (value - datamap.dataRange.x) /
                                                         (datamap.dataRange.y - datamap.dataRange.x);
-                    double value_clamped = glm::clamp(value_normalized, 0.0, 1.0);
+                    const auto value_clamped = glm::clamp(value_normalized, 0.0, 1.0);
 
                     const auto img_value = static_cast<unsigned char>(value_clamped * 255.0);
 

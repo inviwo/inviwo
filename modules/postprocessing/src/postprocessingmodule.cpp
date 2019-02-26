@@ -36,6 +36,7 @@
 #include <modules/postprocessing/processors/imagebrightnesscontrast.h>
 #include <modules/postprocessing/processors/imageedgedarken.h>
 #include <modules/postprocessing/processors/imagehuesaturationluminance.h>
+#include <modules/postprocessing/processors/imagewindowlevelwidth.h>
 #include <modules/postprocessing/processors/imageopacity.h>
 #include <modules/postprocessing/processors/imagesharpen.h>
 #include <modules/postprocessing/processors/depthdarkening.h>
@@ -61,6 +62,7 @@ PostProcessingModule::PostProcessingModule(InviwoApplication* app)
     registerProcessor<ImageEdgeDarken>();
     registerProcessor<DepthDarkening>();
     registerProcessor<ImageHueSaturationLuminance>();
+    registerProcessor<ImageWindowLevelWidth>();
     registerProcessor<ImageSharpen>();
     registerProcessor<ImageOpacity>();
 
