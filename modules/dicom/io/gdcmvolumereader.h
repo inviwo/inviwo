@@ -57,6 +57,10 @@ struct DICOMDIRImage {
     std::string windowCenter = "";
     std::string windowWidth = "";
     std::string sliceThickness = "";
+    std::string orientationPatient = "";
+    std::string positionPatient = "";
+    float zPos = -std::numeric_limits<float>::infinity();  // relative slice position, used to
+                                                            // sort slices in volume
 };
 
 struct DICOMDIRSeries {
@@ -183,7 +187,7 @@ public:
     std::shared_ptr<VolumeRAM> dispatch() const;
 
 private:
-    void getVolumeData(const DICOMDIRSeries& series, void* outData) const; // static here?
+    void getVolumeData(const DICOMDIRSeries& series, void* outData) const;  // static here?
     std::string file_;  // only relevant for single volumes
     size3_t dimension_;
     const DataFormatBase* format_;
