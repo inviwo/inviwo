@@ -48,7 +48,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
     VolumeMask();
-    virtual ~VolumeMask();
+    virtual ~VolumeMask() = default;
 
     virtual void process() override;
 
@@ -63,6 +63,7 @@ private:
 
     ButtonProperty addIdx_;
     ButtonProperty removeIdx_;
+    ButtonProperty clearIdxList_;
     OptionPropertySize_t idxList_;
     FileProperty idxTableFile_;
 };

@@ -54,9 +54,10 @@ VolumeMask::VolumeMask()
     , volumeAnnotationInport_("volume_annotation_inport")
     , volumeOutport_("volume_outport")
     , enableMasking_("enableMasking", "Enable Masking", true)
-    , idx_("idx", "idx", 0, 0, 10000000000, 1)
+    , idx_("idx", "idx", 0, 0, 10000000000, 1, InvalidationLevel::Valid)
     , addIdx_("addIdx", "Add Index")
     , removeIdx_("removeIdx", "Remove Index")
+    , clearIdxList_("clearIdxList", "Clear Index List")
     , idxList_("idxList", "Index List")
     , idxTableFile_("idxTableFile", "Idx File") {
 
@@ -88,6 +89,12 @@ VolumeMask::VolumeMask()
         idxList_.removeOption(idxList_.getSelectedIndex());
     });
 
+    addProperty(clearIdxList_);
+    clearIdxList_.onChange([this]() {
+        idxList_.clearOptions();
+        idxList_.propertyModified();
+    });
+
     idxList_.setCurrentStateAsDefault();
     addProperty(idxList_);
 
@@ -105,8 +112,6 @@ VolumeMask::VolumeMask()
     addProperty(idxTableFile_);
 }
 
-VolumeMask::~VolumeMask() {}
-
 void VolumeMask::process() {
     if (enableMasking_.get()) {
         const auto volumeIn = volumeInport_.getData();
@@ -120,6 +125,7 @@ void VolumeMask::process() {
             using ValueType = util::PrecsionValueType<decltype(annoVol)>;
             using P = typename util::same_extent<ValueType, unsigned int>::type;
 
+            // pre-convert, saves a lot of time
             std::vector<P> refIdxList;
             refIdxList.reserve(idxList_.getValues().size());
             for (const auto& idx : idxList_.getValues()) {
@@ -131,7 +137,8 @@ void VolumeMask::process() {
             const auto anno = annoVol->getDataTyped();
 
             size_t numMatchingVoxels{0};
-            for (size_t z = 0; z < dims.z; ++z) {
+#pragma omp parallel for
+            for (long z = 0; z < dims.z; ++z) {
                 for (size_t y = 0; y < dims.y; ++y) {
                     for (size_t x = 0; x < dims.x; ++x) {
                         P annoValue = anno[indexMapper(x, y, z)];
