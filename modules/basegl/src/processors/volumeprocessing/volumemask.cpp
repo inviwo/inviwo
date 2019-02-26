@@ -34,6 +34,7 @@
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/util/indexmapper.h>
 
+#include <fstream>
 #include <limits>
 
 namespace inviwo {
@@ -56,7 +57,8 @@ VolumeMask::VolumeMask()
     , idx_("idx", "idx", 0, 0, 10000000000, 1)
     , addIdx_("addIdx", "Add Index")
     , removeIdx_("removeIdx", "Remove Index")
-    , idxList_("idxList", "Index List") {
+    , idxList_("idxList", "Index List")
+    , idxTableFile_("idxTableFile", "Idx File") {
 
     addPort(volumeInport_);
     addPort(volumeAnnotationInport_);
@@ -88,6 +90,19 @@ VolumeMask::VolumeMask()
 
     idxList_.setCurrentStateAsDefault();
     addProperty(idxList_);
+
+    idxTableFile_.onChange([this]() {
+        std::ifstream file_stream(idxTableFile_);
+        if (file_stream.is_open()) {
+            idxList_.clearOptions();
+            size_t idx;
+            while (file_stream >> idx) {
+                const auto str = std::to_string(idx);
+                idxList_.addOption(str, str, idx);
+            }
+        }
+    });
+    addProperty(idxTableFile_);
 }
 
 VolumeMask::~VolumeMask() {}

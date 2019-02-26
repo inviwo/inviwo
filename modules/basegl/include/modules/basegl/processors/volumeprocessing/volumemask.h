@@ -38,6 +38,7 @@
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/fileproperty.h>
 
 namespace inviwo {
 
@@ -63,6 +64,7 @@ private:
     ButtonProperty addIdx_;
     ButtonProperty removeIdx_;
     OptionPropertySize_t idxList_;
+    FileProperty idxTableFile_;
 };
 
 }  // namespace inviwo
