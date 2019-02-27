@@ -33,6 +33,7 @@
 #include <inviwo/qt/editor/networkeditor.h>
 
 #include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

@@ -122,5 +122,8 @@ target_include_directories(inviwo-module-opencl PUBLIC
     $<BUILD_INTERFACE:${OpenCL_INCLUDE_DIR}>
 )
 target_compile_definitions(inviwo-module-opencl PUBLIC __CL_ENABLE_EXCEPTIONS)
+if(APPLE)
+    target_compile_definitions(inviwo-module-opencl PUBLIC CL_SILENCE_DEPRECATION)
+enfid()
 
 ivw_make_package(InviwoOpenCLModule inviwo-module-opencl)
