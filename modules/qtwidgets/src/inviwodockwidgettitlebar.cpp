@@ -148,11 +148,11 @@ bool InviwoDockWidgetTitleBar::eventFilter(QObject *obj, QEvent *event) {
 
 void InviwoDockWidgetTitleBar::floating(bool floating) { floatBtn_->setChecked(floating); }
 
-inline void InviwoDockWidgetTitleBar::setIconSize(double size) {
+void InviwoDockWidgetTitleBar::setIconSize(double size) {
     iconSize_ = size;
     const auto iconsize = utilqt::emToPx(this, QSizeF(iconSize_, iconSize_));
 
-    for (auto tb : layout()->findChildren<QToolButton*>()) {
+    for (auto tb : layout()->findChildren<QToolButton *>()) {
         tb->setIconSize(iconsize);
     }
 }

@@ -743,7 +743,7 @@ void ParallelCoordinates::linePicked(PickingEvent *p) {
             p->getHoverState() == PickingHoverState::Enter) {
             p->setToolTip(dataframeutil::createToolTipForRow(*df, p->getPickedId()));
             if (enableHoverColor_.get()) {
-                hoveredLine_ = p->getPickedId();
+                hoveredLine_ = static_cast<int>(p->getPickedId());
                 invalidate(InvalidationLevel::InvalidOutput);
             }
         } else {
@@ -776,7 +776,7 @@ void ParallelCoordinates::axisPicked(PickingEvent *p) {
 
     if (p->getHoverState() == PickingHoverState::Move ||
         p->getHoverState() == PickingHoverState::Enter) {
-        hoveredAxis_ = pickedID;
+        hoveredAxis_ = static_cast<int>(pickedID);
         invalidate(InvalidationLevel::InvalidOutput);
     } else {
         hoveredAxis_ = -1;
@@ -786,7 +786,6 @@ void ParallelCoordinates::axisPicked(PickingEvent *p) {
     if (p->getState() == PickingState::Updated && p->getPressState() == PickingPressState::Press &&
         p->getPressItem() == PickingPressItem::Primary) {
 
-        auto id = p->getPickedId();
         if (brushingAndLinking_.isColumnSelected(pickedID)) {
             brushingAndLinking_.sendColumnSelectionEvent({});
         } else {

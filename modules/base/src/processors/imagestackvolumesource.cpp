@@ -262,7 +262,7 @@ std::shared_ptr<Volume> ImageStackVolumeSource::load() {
             volume->dataMap_.valueRange =
                 dvec2{DataFormat<PrimitiveType>::lowest(), DataFormat<PrimitiveType>::max()};
 
-            const auto size = vec3(0.01) * static_cast<vec3>(volumeRAM->getDimensions());
+            const auto size = vec3(0.01f) * static_cast<vec3>(volumeRAM->getDimensions());
             volume->setBasis(glm::diagonal3x3(size));
             volume->setOffset(-0.5 * size);
 
