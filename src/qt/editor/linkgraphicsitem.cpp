@@ -36,6 +36,7 @@
 #include <QSvgRenderer>
 #include <QPainter>
 #include <QImage>
+#include <QGraphicsScene>
 #include <warn/pop>
 
 #include <inviwo/qt/editor/linkgraphicsitem.h>
