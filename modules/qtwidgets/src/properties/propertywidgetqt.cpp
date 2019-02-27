@@ -60,7 +60,7 @@
 
 namespace inviwo {
 
-const int PropertyWidgetQt::minimumWidth = 250;
+const int PropertyWidgetQt::minimumWidth = 200;
 const int PropertyWidgetQt::spacing = 7;
 const int PropertyWidgetQt::margin = 0;
 

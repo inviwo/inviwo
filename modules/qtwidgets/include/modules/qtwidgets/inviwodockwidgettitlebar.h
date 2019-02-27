@@ -96,7 +96,7 @@ private:
     Qt::DockWidgetAreas allowedDockAreas_;
 
     bool internalStickyFlagUpdate_;
-    double iconSize_ = 1.0;
+    double iconSize_ = 1.2;
 };
 
 }  // namespace inviwo

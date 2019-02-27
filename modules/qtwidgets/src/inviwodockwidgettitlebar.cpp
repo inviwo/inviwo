@@ -91,7 +91,7 @@ InviwoDockWidgetTitleBar::InviwoDockWidgetTitleBar(QWidget *parent)
     layout->addWidget(stickyBtn_);
     layout->addWidget(floatBtn_);
     layout->addWidget(closeBtn_);
-    layout->setSpacing(utilqt::emToPx(this, 0.2));
+    layout->setSpacing(0);
     layout->setMargin(utilqt::emToPx(this, 0.2));
 
     setLayout(layout);

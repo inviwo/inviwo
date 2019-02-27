@@ -171,13 +171,13 @@ inviwo--InviwoDockWidgetTitleBar {
 }
 QLabel#InviwoDockWidgetTitleBarLabel {
     padding-left: 0.3125em; 
-    background-color: 'transparent';
+    background-color: transparent;
     font-weight: 400;
     color: #e9e4de;
 }
 inviwo--InviwoDockWidgetTitleBar > QToolButton {
     background-color: transparent;
-    padding: 0.1em;
+    padding: 0.03125em;
     border: 0.0625em solid transparent;
 }
 inviwo--InviwoDockWidgetTitleBar > QToolButton:hover {
