@@ -45,6 +45,8 @@
         <file>svgicons/arrow-right-disabled.svg</file>
         <file>svgicons/arrow-up-enabled.svg</file>
         <file>svgicons/arrow-up-disabled.svg</file>
+        <file>svgicons/arrow-menu-enabled.svg</file>
+        <file>svgicons/arrow-menu-disabled.svg</file>
         
         <file>svgicons/composite-expand-enabled.svg</file>
         <file>svgicons/composite-expand-disabled.svg</file>

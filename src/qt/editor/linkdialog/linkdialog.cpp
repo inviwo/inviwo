@@ -94,6 +94,7 @@ LinkDialog::LinkDialog(Processor* srcProcessor, Processor* dstProcessor, QWidget
 
     // smart link button
     auto smartLink = new QToolButton(this);
+    smartLink->setObjectName("smartLinkButton");
     smartLink->setText("SmartLink");
     smartLink->setPopupMode(QToolButton::MenuButtonPopup);
     smartLink->setToolButtonStyle(Qt::ToolButtonTextOnly);

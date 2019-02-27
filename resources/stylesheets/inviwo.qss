@@ -110,10 +110,54 @@ QToolButton:hover#resetButton {
     height: 0.8em;
     image: url(:/svgicons/reset.svg);
 }
-
 QToolButton#ColorButton {
     border: 0.0625em solid #1b1b1d;
     border-radius: 0.125em;
+}
+QToolButton[popupMode="1"] { /* only for MenuButtonPopup */
+    padding-right: 0.5em; /* make way for the popup button */
+}
+QToolButton::menu-button {
+    subcontrol-position: right center;
+    image: none; /* need this to "hide" the default blue background and arrow tip */
+}
+QToolButton::menu-arrow {
+    background: none;
+    image: none;
+    image: url(:/svgicons/arrow-menu-enabled.svg);
+    border-left: 0.0625em solid #424245;
+    margin-left: 0.1em;
+}
+QToolButton::menu-arrow:open, QToolButton::menu-arrow:pressed {
+    position: relative;
+    top: 2px; left: 2px;
+}
+QToolButton#smartLinkButton {
+    border: 0.0625em solid #1b1b1d;
+    border-radius: 0.25em;
+    min-height: 1.25em;
+    min-width: 5em;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #6f6f75, stop:0.1 #323235, stop:0.9 #323235, stop:1 #222224);
+}
+QToolButton#smartLinkButton:default {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #6f6f75, stop:0.1 #144c72, stop:0.9 #144c72, stop:1 #222224);
+}
+QToolButton#smartLinkButton:pressed {
+    padding-top: 0.0625em;
+    padding-left: 0.0625em;
+    background: qlineargradient(x1:0, y1:1, x2:0, y2:0,
+                                stop:0 #6f6f75, stop:0.15 #323235, stop:0.95 #323235, stop:1 #222224);
+}
+QToolButton#smartLinkButton:disabled{
+    color: #666;
+    border: 0.0625em solid #25272a;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #6f6f75, stop:0.1 #3a3a3e, stop:0.9 #3a3a3e, stop:1 #222224);
+}
+QToolButton#smartLinkButton:hover {
+    border: 0.0625em solid #268bd2;
 }
 
 /************************ 
@@ -185,13 +229,13 @@ QTabBar::tab:bottom:selected {
     background: #323235;
     border: 0.0625em solid #323235;
     color: #e9e4de;
-    font-weight: 500;
+    font-weight: 350;
 }
 QTabBar::tab:top:selected {
     background: #323235;
     border: 0.0625em solid #323235;
     color: #e9e4de;
-    font-weight: 500;
+    font-weight: 350;
 }
 QTabBar::tab:bottom:!selected:hover {
     border: 0.0625em solid #268bd2;
