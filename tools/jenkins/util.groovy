@@ -80,7 +80,7 @@ def printMap(String name, def map) {
 // this uses global pipeline var pullRequest
 def setLabel(def state, String label, Boolean add) {
     try {
-        println "setlabel: ${label} add: ${add}"
+        //println "setlabel: ${label} add: ${add}"
         if (add) {
             state.addLabel(label)
         } else {
