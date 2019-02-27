@@ -21,8 +21,8 @@ node {
         },
         removeLabel: {label -> 
             if (env.CHANGE_ID) {
-                println "remove ${label}, ${pullRequest.labels}"
-                pullRequest.removeLabel([label])  
+                println "remove ${label}, ${pullRequest.labels.join(', ')}"
+                pullRequest.removeLabel(label)  
             }
         }
     ]
