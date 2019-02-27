@@ -38,6 +38,7 @@
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/network/networklock.h>
 #include <modules/qtwidgets/qstringhelper.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

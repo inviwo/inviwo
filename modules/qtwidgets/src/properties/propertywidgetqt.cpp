@@ -70,8 +70,6 @@ const double PropertyWidgetQt::minimumWidthEm =
 const double PropertyWidgetQt::spacingEm = utilqt::refSpaceEm();
 const double PropertyWidgetQt::marginEm =
     PropertyWidgetQt::margin / static_cast<double>(utilqt::refEm());
-;
-;
 
 PropertyWidgetQt::PropertyWidgetQt(Property* property)
     : QWidget()
