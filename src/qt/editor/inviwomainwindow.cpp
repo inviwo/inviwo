@@ -357,7 +357,8 @@ void InviwoMainWindow::addActions() {
     // file menu entries
 
     {
-        auto welcomeAction = new QAction(QIcon(":/svgicons/about-enabled.svg"), tr("&Get Started"), this);
+        auto welcomeAction =
+            new QAction(QIcon(":/svgicons/about-enabled.svg"), tr("&Get Started"), this);
         this->addAction(welcomeAction);
         connect(welcomeAction, &QAction::triggered, this, &InviwoMainWindow::showWelcomeScreen);
         fileMenuItem->addAction(welcomeAction);
@@ -676,7 +677,8 @@ void InviwoMainWindow::addActions() {
         // application/developer mode menu entries
         QIcon visibilityModeIcon;
         visibilityModeIcon.addFile(":/svgicons/usermode.svg", QSize(), QIcon::Normal, QIcon::Off);
-        visibilityModeIcon.addFile(":/svgicons/developermode.svg", QSize(), QIcon::Normal, QIcon::On);
+        visibilityModeIcon.addFile(":/svgicons/developermode.svg", QSize(), QIcon::Normal,
+                                   QIcon::On);
         visibilityModeAction_ = new QAction(visibilityModeIcon, tr("&Application Mode"), this);
         visibilityModeAction_->setToolTip("Switch to Application Mode");
         visibilityModeAction_->setCheckable(true);
@@ -725,8 +727,8 @@ void InviwoMainWindow::addActions() {
             }
         });
 
-        auto compAction = networkMenuItem->addAction(QIcon(":/svgicons/composite-create-enabled.svg"),
-                                                     tr("&Create Composite"));
+        auto compAction = networkMenuItem->addAction(
+            QIcon(":/svgicons/composite-create-enabled.svg"), tr("&Create Composite"));
         compAction->setEnabled(false);
         networkToolBar->addAction(compAction);
         compAction->setShortcut(Qt::ControlModifier + Qt::Key_G);
@@ -734,8 +736,8 @@ void InviwoMainWindow::addActions() {
             util::replaceSelectionWithCompositeProcessor(*(app_->getProcessorNetwork()));
         });
 
-        auto expandAction = networkMenuItem->addAction(QIcon(":/svgicons/composite-expand-enabled.svg"),
-                                                       tr("&Expand Composite"));
+        auto expandAction = networkMenuItem->addAction(
+            QIcon(":/svgicons/composite-expand-enabled.svg"), tr("&Expand Composite"));
         networkToolBar->addAction(expandAction);
         expandAction->setShortcut(Qt::ControlModifier + Qt::ShiftModifier + Qt::Key_G);
         expandAction->setEnabled(false);
@@ -855,7 +857,8 @@ void InviwoMainWindow::addActions() {
     {
         helpMenuItem->addAction(helpWidget_->toggleViewAction());
 
-        auto aboutBoxAction = new QAction(QIcon(":/svgicons/about-enabled.svg"), tr("&About"), this);
+        auto aboutBoxAction =
+            new QAction(QIcon(":/svgicons/about-enabled.svg"), tr("&About"), this);
         connect(aboutBoxAction, &QAction::triggered, this, &InviwoMainWindow::showAboutBox);
         helpMenuItem->addAction(aboutBoxAction);
     }

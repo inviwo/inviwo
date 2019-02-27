@@ -490,8 +490,7 @@ void ParallelCoordinates::drawAxis(
             axisShader_.setUniform("x", x);
             axisShader_.setUniform("hover", 0);
             axisShader_.setUniform("selected", 0);
-            if (hoveredAxis_ == axisCounter)
-                axisShader_.setUniform("hover", 1);
+            if (hoveredAxis_ == axisCounter) axisShader_.setUniform("hover", 1);
             if (brushingAndLinking_.isColumnSelected(axisCounter))
                 axisShader_.setUniform("selected", 1);
 

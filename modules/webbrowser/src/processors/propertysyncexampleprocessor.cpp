@@ -148,8 +148,9 @@ std::string PropertySyncExampleProcessor::getTestWebpageUrl() {
     return "file://" + path;
 }
 
-void PropertySyncExampleProcessor::OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bool isLoading,
-                                               bool /*canGoBack*/, bool /*canGoForward*/) {
+void PropertySyncExampleProcessor::OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
+                                                        bool isLoading, bool /*canGoBack*/,
+                                                        bool /*canGoForward*/) {
     if (browser_ && browser->GetIdentifier() == browser_->GetIdentifier()) {
         isBrowserLoading_ = isLoading;
         isReady_.update();

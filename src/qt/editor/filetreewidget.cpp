@@ -142,8 +142,7 @@ std::tuple<QRect, QRect, QRect> SectionDelegate::getTextBoundingBox(
     // set rect height to zero, since the font metric will calculate the required height of the text
     textRect.setHeight(0);
 
-    auto filenameRect =
-        fm.boundingRect(textRect, Qt::AlignLeft | Qt::AlignTop, filename);
+    auto filenameRect = fm.boundingRect(textRect, Qt::AlignLeft | Qt::AlignTop, filename);
 
     textRect.setTop(filenameRect.bottom() + textSpacing);
     auto pathRect = option.fontMetrics.boundingRect(textRect, Qt::AlignLeft | Qt::AlignTop, path);
@@ -196,7 +195,7 @@ QString SectionDelegate::elidedText(const QString &str, const QFontMetrics &metr
                             return str;
                         });
     return strFirst + "/..." + result;
-}   
+}
 
 }  // namespace
 

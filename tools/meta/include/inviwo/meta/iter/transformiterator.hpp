@@ -49,7 +49,6 @@ struct TransformIterator {
     using value_type = std::remove_reference_t<reference>;
     using pointer = std::add_pointer_t<value_type>;
 
-
     TransformIterator() = default;
     TransformIterator(Iter iterator) : transform_{}, iterator_(iterator) {}
     TransformIterator(Transform transform, Iter iterator)

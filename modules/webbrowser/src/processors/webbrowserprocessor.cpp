@@ -104,7 +104,7 @@ WebBrowserProcessor::WebBrowserProcessor()
         }
         browser_->GetMainFrame()->LoadURL(getSource());
     });
-    fileName_.onChange([this]() { browser_->GetMainFrame()->LoadURL(getSource()); }); 
+    fileName_.onChange([this]() { browser_->GetMainFrame()->LoadURL(getSource()); });
     url_.onChange([this]() { browser_->GetMainFrame()->LoadURL(getSource()); });
     reload_.onChange([this]() { browser_->GetMainFrame()->LoadURL(getSource()); });
 

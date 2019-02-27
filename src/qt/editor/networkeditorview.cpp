@@ -221,7 +221,7 @@ void NetworkEditorView::fitNetwork() {
         if (network->getProcessors().size() > 0) {
             const auto br = editor_->getProcessorsBoundingRect().adjusted(-50, -50, 50, 50);
             setSceneRect(br);
-            fitInView(br, Qt::KeepAspectRatio);               
+            fitInView(br, Qt::KeepAspectRatio);
         } else {
             QRectF r{rect()};
             r.moveCenter(QPointF(0, 0));

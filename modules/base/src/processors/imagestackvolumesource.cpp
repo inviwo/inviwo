@@ -255,7 +255,7 @@ std::shared_ptr<Volume> ImageStackVolumeSource::load() {
                         [](auto value) { return util::glm_convert_normalized<ValueType>(value); });
                 });
             }
-            
+
             auto volume = std::make_shared<Volume>(volumeRAM);
             volume->dataMap_.dataRange =
                 dvec2{DataFormat<PrimitiveType>::lowest(), DataFormat<PrimitiveType>::max()};

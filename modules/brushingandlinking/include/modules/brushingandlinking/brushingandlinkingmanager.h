@@ -47,12 +47,13 @@ public:
     BrushingAndLinkingManager(Processor* p,
                               InvalidationLevel validationLevel = InvalidationLevel::InvalidOutput);
     virtual ~BrushingAndLinkingManager();
-    /* 
+    /*
      * Return the number of selected items/rows.
      */
     size_t getNumberOfSelected() const;
-    /* 
-     * Return the number of filtered items/rows, i.e. the number of items/rows that should not be displayed.
+    /*
+     * Return the number of filtered items/rows, i.e. the number of items/rows that should not be
+     * displayed.
      */
     size_t getNumberOfFiltered() const;
 
@@ -63,11 +64,9 @@ public:
 
     bool isColumnSelected(size_t column) const;
 
-    void setSelected(const BrushingAndLinkingInport* src,
-                     const std::unordered_set<size_t>& idx);
+    void setSelected(const BrushingAndLinkingInport* src, const std::unordered_set<size_t>& idx);
 
-    void setFiltered(const BrushingAndLinkingInport* src,
-                     const std::unordered_set<size_t>& idx);
+    void setFiltered(const BrushingAndLinkingInport* src, const std::unordered_set<size_t>& idx);
 
     void setSelectedColumn(const BrushingAndLinkingInport* src,
                            const std::unordered_set<size_t>& columnIndices);
@@ -81,7 +80,7 @@ private:
     std::unordered_set<size_t> selectedColumns_;
     IndexList filtered_;  // Use IndexList to be able to remove filtered rows on port disconnection
     std::shared_ptr<std::function<void()>> onFilteringChangeCallback_;
-    
+
     Processor* owner_;  // Non-owning reference
     InvalidationLevel invalidationLevel_;
 };

@@ -141,7 +141,7 @@ CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(Property* property, Pro
     QObject::connect(checkBox_, &QCheckBox::clicked, this,
                      [&]() { setChecked(checkBox_->isChecked()); });
 
-     QHBoxLayout* heading = new QHBoxLayout();
+    QHBoxLayout* heading = new QHBoxLayout();
     heading->setContentsMargins(0, 0, 0, 0);
     heading->setSpacing(0);
     heading->addWidget(btnCollapse_);

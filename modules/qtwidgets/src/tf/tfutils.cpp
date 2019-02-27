@@ -130,7 +130,7 @@ QMenu* addTFPresetsMenu(QWidget* parent, QMenu* menu, TransferFunctionProperty* 
                                              NetworkLock lock(property);
                                              property->get().load(file, ext);
                                          });
-                        
+
                         action->setIcon(QIcon(utilqt::toQPixmap(tf, QSize(120, 20))));
                         break;
                     }

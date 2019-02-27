@@ -145,7 +145,7 @@ PropertySequenceEditor::PropertySequenceEditor(KeyframeSequence &sequence, Track
 
     sequence.addObserver(this);
 
-    const auto space  = utilqt::refSpacePx(this);
+    const auto space = utilqt::refSpacePx(this);
     setContentsMargins(space, space, 0, space);
 
     auto layout = new QVBoxLayout();

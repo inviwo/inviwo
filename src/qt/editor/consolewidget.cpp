@@ -171,8 +171,10 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     auto makeIcon = [](const QString& file, bool checkable = false) {
         auto icon = QIcon();
         if (checkable) {
-            icon.addPixmap(QPixmap(":/svgicons/" + file + "-enabled.svg"), QIcon::Normal, QIcon::On);
-            icon.addPixmap(QPixmap(":/svgicons/" + file + "-disabled.svg"), QIcon::Normal, QIcon::Off);
+            icon.addPixmap(QPixmap(":/svgicons/" + file + "-enabled.svg"), QIcon::Normal,
+                           QIcon::On);
+            icon.addPixmap(QPixmap(":/svgicons/" + file + "-disabled.svg"), QIcon::Normal,
+                           QIcon::Off);
         } else {
             icon.addPixmap(QPixmap(":/svgicons/" + file + ".svg"));
         }

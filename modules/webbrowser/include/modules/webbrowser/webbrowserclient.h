@@ -107,14 +107,14 @@ public:
     virtual void OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
                            int httpStatusCode) override;
     ///
-    // Inviwo: First forwards the call to addded load handlers and then 
+    // Inviwo: First forwards the call to addded load handlers and then
     // displays an error page in the given frame.
     // Called when a navigation fails or is canceled. This method may be called
     // by itself if before commit or in combination with OnLoadStart/OnLoadEnd if
     // after commit. |errorCode| is the error code number, |errorText| is the
     // error text and |failedUrl| is the URL that failed to load.
     // See net\base\net_error_list.h for complete descriptions of the error codes.
-    // 
+    //
     ///
     /*--cef(optional_param=errorText)--*/
     virtual void OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,

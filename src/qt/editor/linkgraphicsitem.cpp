@@ -265,7 +265,6 @@ void LinkConnectionGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
     const auto imgBi = img(":/svgicons/link-bidirectional.svg");
     const auto imgLeft = img(":/svgicons/link-left.svg");
 
-    using H = utildoc::TableBuilder::Header;
     using A = utildoc::TableBuilder::ArrributeWrapper;
     using P = Document::PathComponent;
     Document doc;

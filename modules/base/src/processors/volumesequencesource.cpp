@@ -106,7 +106,6 @@ void VolumeSequenceSource::load(bool deserialize) {
 void VolumeSequenceSource::loadFile(bool deserialize) {
     if (file_.get().empty()) return;
 
-
     const auto sext = file_.getSelectedExtension();
     const auto fext = filesystem::getFileExtension(file_.get());
     if (auto reader = rf_->getReaderForTypeAndExtension<VolumeSequence>(sext, fext)) {
@@ -129,7 +128,7 @@ void VolumeSequenceSource::loadFolder(bool deserialize) {
     if (folder_.get().empty()) return;
 
     volumes_ = std::make_shared<VolumeSequence>();
- 
+
     auto files = filesystem::getDirectoryContents(folder_.get());
     for (auto f : files) {
         auto file = folder_.get() + "/" + f;
