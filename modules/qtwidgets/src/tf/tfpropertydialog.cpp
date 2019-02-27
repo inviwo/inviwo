@@ -120,9 +120,10 @@ void TFPropertyDialog::initializeDialog() {
     if (auto titlebar = dynamic_cast<InviwoDockWidgetTitleBar*>(titleBarWidget())) {
         if (auto layout = dynamic_cast<QHBoxLayout*>(titlebar->layout())) {
             QToolButton* helpBtn = new QToolButton();
-            helpBtn->setIcon(QIcon(":/stylesheets/images/dock-help.png"));
-            helpBtn->setObjectName("helpBtn");
-
+            helpBtn->setIcon(QIcon(":/svgicons/dock-help.svg"));
+            const auto iconsize =
+                utilqt::emToPx(this, QSizeF(titlebar->getIconSize(), titlebar->getIconSize()));
+            helpBtn->setIconSize(iconsize);
             layout->insertWidget(1, helpBtn);
 
             auto module = util::getInviwoApplication(property_)->getModuleByType<QtWidgetsModule>();

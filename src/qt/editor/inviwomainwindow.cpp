@@ -357,7 +357,7 @@ void InviwoMainWindow::addActions() {
     // file menu entries
 
     {
-        auto welcomeAction = new QAction(QIcon(":/icons/about.png"), tr("&Get Started"), this);
+        auto welcomeAction = new QAction(QIcon(":/svgicons/about-enabled.svg"), tr("&Get Started"), this);
         this->addAction(welcomeAction);
         connect(welcomeAction, &QAction::triggered, this, &InviwoMainWindow::showWelcomeScreen);
         fileMenuItem->addAction(welcomeAction);
@@ -365,7 +365,7 @@ void InviwoMainWindow::addActions() {
     }
 
     {
-        auto newAction = new QAction(QIcon(":/icons/newfile.png"), tr("&New Workspace"), this);
+        auto newAction = new QAction(QIcon(":/svgicons/newfile.svg"), tr("&New Workspace"), this);
         newAction->setShortcut(QKeySequence::New);
         newAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         this->addAction(newAction);
@@ -379,7 +379,7 @@ void InviwoMainWindow::addActions() {
     }
 
     {
-        auto openAction = new QAction(QIcon(":/icons/open.png"), tr("&Open Workspace"), this);
+        auto openAction = new QAction(QIcon(":/svgicons/open.svg"), tr("&Open Workspace"), this);
         openAction->setShortcut(QKeySequence::Open);
         openAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         this->addAction(openAction);
@@ -393,7 +393,7 @@ void InviwoMainWindow::addActions() {
     }
 
     {
-        auto saveAction = new QAction(QIcon(":/icons/save.png"), tr("&Save Workspace"), this);
+        auto saveAction = new QAction(QIcon(":/svgicons/save.svg"), tr("&Save Workspace"), this);
         saveAction->setShortcut(QKeySequence::Save);
         saveAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         this->addAction(saveAction);
@@ -405,7 +405,7 @@ void InviwoMainWindow::addActions() {
 
     {
         auto saveAsAction =
-            new QAction(QIcon(":/icons/saveas.png"), tr("&Save Workspace As"), this);
+            new QAction(QIcon(":/svgicons/save-as.svg"), tr("&Save Workspace As"), this);
         saveAsAction->setShortcut(QKeySequence::SaveAs);
         saveAsAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         this->addAction(saveAsAction);
@@ -416,7 +416,7 @@ void InviwoMainWindow::addActions() {
 
     {
         auto workspaceActionSaveAsCopy =
-            new QAction(QIcon(":/icons/savecopy.png"), tr("&Save Workspace As Copy"), this);
+            new QAction(QIcon(":/svgicons/save-as-copy.svg"), tr("&Save Workspace As Copy"), this);
         connect(workspaceActionSaveAsCopy, &QAction::triggered, this,
                 &InviwoMainWindow::saveWorkspaceAsCopy);
         fileMenuItem->addAction(workspaceActionSaveAsCopy);
@@ -603,7 +603,7 @@ void InviwoMainWindow::addActions() {
 
     {
         fileMenuItem->addSeparator();
-        auto exitAction = new QAction(QIcon(":/icons/exit.png"), tr("&Exit"), this);
+        auto exitAction = new QAction(QIcon(":/svgicons/exit.svg"), tr("&Exit"), this);
         exitAction->setShortcut(QKeySequence::Close);
         connect(exitAction, &QAction::triggered, this, &InviwoMainWindow::close);
         fileMenuItem->addAction(exitAction);
@@ -620,7 +620,7 @@ void InviwoMainWindow::addActions() {
 
         editMenu_->addSeparator();
         auto searchNetwork =
-            editMenu_->addAction(QIcon(":/icons/searchnetwork.png"), tr("&Search Network"));
+            editMenu_->addAction(QIcon(":/svgicons/find-network.svg"), tr("&Search Network"));
         searchNetwork->setShortcut(Qt::ShiftModifier + Qt::ControlModifier + Qt::Key_F);
         connect(searchNetwork, &QAction::triggered, [this]() {
             networkEditorView_->getNetworkSearch().setVisible(true);
@@ -628,7 +628,7 @@ void InviwoMainWindow::addActions() {
         });
 
         auto findAction =
-            editMenu_->addAction(QIcon(":/icons/findprocessor.png"), tr("&Find Processor"));
+            editMenu_->addAction(QIcon(":/svgicons/find-processor.svg"), tr("&Find Processor"));
         findAction->setShortcut(QKeySequence::Find);
         connect(findAction, &QAction::triggered, this, [this]() {
             processorTreeWidget_->show();
@@ -636,7 +636,7 @@ void InviwoMainWindow::addActions() {
         });
 
         auto addProcessorAction =
-            editMenu_->addAction(QIcon(":/icons/processor-add.png"), tr("&Add Processor"));
+            editMenu_->addAction(QIcon(":/svgicons/processor-add.svg"), tr("&Add Processor"));
         addProcessorAction->setShortcut(Qt::ControlModifier + Qt::Key_D);
         connect(addProcessorAction, &QAction::triggered, this,
                 [this]() { processorTreeWidget_->addSelectedProcessor(); });
@@ -675,8 +675,8 @@ void InviwoMainWindow::addActions() {
     {
         // application/developer mode menu entries
         QIcon visibilityModeIcon;
-        visibilityModeIcon.addFile(":/icons/usermode.png", QSize(), QIcon::Normal, QIcon::Off);
-        visibilityModeIcon.addFile(":/icons/developermode.png", QSize(), QIcon::Normal, QIcon::On);
+        visibilityModeIcon.addFile(":/svgicons/usermode.svg", QSize(), QIcon::Normal, QIcon::Off);
+        visibilityModeIcon.addFile(":/svgicons/developermode.svg", QSize(), QIcon::Normal, QIcon::On);
         visibilityModeAction_ = new QAction(visibilityModeIcon, tr("&Application Mode"), this);
         visibilityModeAction_->setToolTip("Switch to Application Mode");
         visibilityModeAction_->setCheckable(true);
@@ -703,8 +703,8 @@ void InviwoMainWindow::addActions() {
     // Network
     {
         QIcon enableDisableIcon;
-        enableDisableIcon.addFile(":/icons/unlocked.png", QSize(), QIcon::Active, QIcon::Off);
-        enableDisableIcon.addFile(":/icons/locked.png", QSize(), QIcon::Active, QIcon::On);
+        enableDisableIcon.addFile(":/svgicons/locked.svg", QSize(), QIcon::Active, QIcon::Off);
+        enableDisableIcon.addFile(":/svgicons/unlocked.svg", QSize(), QIcon::Active, QIcon::On);
         auto disableEvalAction =
             new QAction(enableDisableIcon, tr("Disable &Network Evaluation"), this);
         disableEvalAction->setCheckable(true);
@@ -725,7 +725,7 @@ void InviwoMainWindow::addActions() {
             }
         });
 
-        auto compAction = networkMenuItem->addAction(QIcon(":/icons/composite-create.png"),
+        auto compAction = networkMenuItem->addAction(QIcon(":/svgicons/composite-create-enabled.svg"),
                                                      tr("&Create Composite"));
         compAction->setEnabled(false);
         networkToolBar->addAction(compAction);
@@ -734,7 +734,7 @@ void InviwoMainWindow::addActions() {
             util::replaceSelectionWithCompositeProcessor(*(app_->getProcessorNetwork()));
         });
 
-        auto expandAction = networkMenuItem->addAction(QIcon(":/icons/composite-expand.png"),
+        auto expandAction = networkMenuItem->addAction(QIcon(":/svgicons/composite-expand-enabled.svg"),
                                                        tr("&Expand Composite"));
         networkToolBar->addAction(expandAction);
         expandAction->setShortcut(Qt::ControlModifier + Qt::ShiftModifier + Qt::Key_G);
@@ -792,7 +792,7 @@ void InviwoMainWindow::addActions() {
     {
         networkMenuItem->addSeparator();
         auto resetTimeMeasurementsAction =
-            new QAction(QIcon(":/icons/timer.png"), tr("Reset All Time Measurements"), this);
+            new QAction(QIcon(":/svgicons/timer.svg"), tr("Reset All Time Measurements"), this);
         resetTimeMeasurementsAction->setCheckable(false);
 
         connect(resetTimeMeasurementsAction, &QAction::triggered,
@@ -855,7 +855,7 @@ void InviwoMainWindow::addActions() {
     {
         helpMenuItem->addAction(helpWidget_->toggleViewAction());
 
-        auto aboutBoxAction = new QAction(QIcon(":/icons/about.png"), tr("&About"), this);
+        auto aboutBoxAction = new QAction(QIcon(":/svgicons/about-enabled.svg"), tr("&About"), this);
         connect(aboutBoxAction, &QAction::triggered, this, &InviwoMainWindow::showAboutBox);
         helpMenuItem->addAction(aboutBoxAction);
     }
@@ -1116,9 +1116,13 @@ void InviwoMainWindow::saveWorkspaceAsCopy() {
 
 void InviwoMainWindow::showWelcomeScreen() {
     auto createTabCloseButton = [&](int tabIndex) {
-        QToolButton* closeBtn = new QToolButton();
-        closeBtn->setIcon(QIcon(":/stylesheets/images/close.png"));
-        closeBtn->setObjectName("dockBtn");
+        const auto iconsize = utilqt::emToPx(this, QSizeF(1.2, 1.2));
+        auto closeBtn = new QToolButton();
+        QIcon icon;
+        icon.addFile(":/svgicons/close.svg", iconsize);
+        closeBtn->setIcon(icon);
+        closeBtn->setIconSize(iconsize);
+
         QObject::connect(closeBtn, &QToolButton::clicked, this, [&]() { hideWelcomeScreen(); });
 
         centralWidget_->tabBar()->setTabButton(tabIndex, QTabBar::RightSide, closeBtn);

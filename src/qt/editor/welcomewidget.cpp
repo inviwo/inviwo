@@ -229,7 +229,7 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
         return button;
     };
 
-    loadWorkspaceBtn_ = createButton("Load", ":/icons/large/open.png");
+    loadWorkspaceBtn_ = createButton("Load", ":/svgicons/open.svg");
     loadWorkspaceBtn_->setObjectName("LoadWorkspaceToolButton");
 
     horizontalLayout_2->addWidget(loadWorkspaceBtn_);
@@ -239,7 +239,7 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
 
     horizontalLayout_2->addItem(horizontalSpacer);
 
-    auto toolButton = createButton("New", ":/icons/large/newfile.png");
+    auto toolButton = createButton("New", ":/svgicons/newfile.svg");
     toolButton->setObjectName("NewWorkspaceToolButton");
     QObject::connect(toolButton, &QToolButton::clicked, this, [window]() {
         if (window->newWorkspace()) {
@@ -249,7 +249,7 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
 
     horizontalLayout_2->addWidget(toolButton);
 
-    auto toolButton_2 = createButton("Open", ":/icons/large/open.png");
+    auto toolButton_2 = createButton("Open", ":/svgicons/open.svg");
     toolButton_2->setObjectName("OpenWorkspaceToolButton");
     QObject::connect(toolButton_2, &QToolButton::clicked, this, [window]() {
         if (window->openWorkspace()) {

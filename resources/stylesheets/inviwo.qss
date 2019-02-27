@@ -57,11 +57,12 @@ QMainWindow {
     background: #252527;
 }
 QMainWindow::separator {
-    background: #444;
-    width: 0.125em;
-    height: 0.125em;
-    border-style: outset;
-    border-width: 0.0625em;
+    background: #2b2b2d;
+    width: 0.15em;
+    height: 0.15em;
+}
+QMainWindow::separator:hover {
+    background: #1b1b1d;
 }
 
 /************************ 
@@ -71,11 +72,12 @@ QToolBar {
     spacing: 0.1875em;
     padding: 0.0625em;
     border: none;
+    border-bottom: 0.125em solid #2b2b2d;
     padding-right: 0.5em;
     background-color: #323235;
 }
 QToolBar::handle {
-    background-image: url(:/stylesheets/images/dense6pattern.png);
+    background-image: url(:/icons/dense6pattern.png);
     background-repeat: repeat-xy;
     background-color: #404042;
     border: 0.0625em solid #333;
@@ -91,8 +93,8 @@ QToolButton
 QToolBar > QToolButton {
     background-color: transparent;
     padding: 0.2em;
-    width: 1em;
-    height: 1em;
+    width: 1.2em;
+    height: 1.2em;
 }
 QToolButton {
     border: 0.0625em solid transparent;
@@ -101,66 +103,53 @@ QToolButton {
 QToolButton#resetButton {
     width: 0.8em;
     height: 0.8em;
-    image: url(:/icons/reset-dark.png);
+    image: url(:/svgicons/reset-dark.svg);
 }
 QToolButton:hover#resetButton {
     width: 0.8em;
     height: 0.8em;
-    image: url(:/icons/reset.png);
+    image: url(:/svgicons/reset.svg);
 }
 
 QToolButton#ColorButton {
     border: 0.0625em solid #1b1b1d;
     border-radius: 0.125em;
-} 
+}
 
 /************************ 
 QDockWidget
 ************************/
-QDockWidget::close-button, QDockWidget::float-button {
-    padding: 0em;
-    icon-size: 1.0em;
-}
-QDockWidget::title, inviwo--InviwoDockWidgetTitleBar {
-    padding: 0.25em;
-    padding-left: 0.3125em;
-    border-radius: 0em;
-    border-top: 0.0625em solid #888;
-    border-left: 0.0625em solid qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                stop:0 #888, stop: 0.1 #888, stop:.5 #00888888);
-    border-right: 0.0625em solid qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                stop:0 #888, stop: 0.1 #888, stop:.8 #00888888);
-    border-bottom: 0em;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                stop:0 #4a4a4e, stop:0.8 #323235, stop:1 #222224);
-}
-QToolButton#dockBtn:hover {
-    margin-left: 0.0625em;
-    margin-top: 0.0625em;
-    border: 0.0625em solid #268bd2;
-    border-radius: 0.1875em;
-}
-QDockWidget {
-    color: #999999;
-    titlebar-close-icon: url(:/stylesheets/images/close.png);
-    titlebar-normal-icon: url(:/stylesheets/images/undock.png);
-    background-color: #222;
-    border-width: 0.125em;
+inviwo--InviwoDockWidgetTitleBar {
+    padding: 0.125em;
+    border: none;
+    background: #424245;
+    qproperty-iconSize: 1.2;
 }
 QLabel#InviwoDockWidgetTitleBarLabel {
     padding-left: 0.3125em; 
     background-color: 'transparent';
+    font-weight: 500;
+    color: #e9e4de;
+}
+inviwo--InviwoDockWidgetTitleBar > QToolButton {
+    background-color: transparent;
+    padding: 0.1em;
+    border: 0.0625em solid transparent;
+}
+inviwo--InviwoDockWidgetTitleBar > QToolButton:hover {
+    margin-left: 0.0625em;
+    margin-top: 0.0625em;
+    border: 0.0625em solid #268bd2;
 }
 
 /************************ 
  QTabWidget 
 ************************/
-QTabWidget {}
-QTabWidget::pane:bottom {
-    border-bottom: 0.125em solid #414145;
-    /* cannot use other color than default background here because of QDockWidgets */
+
+QTabWidget::pane {
+    border: none;
 }
-QTabWidget::pane:top {}
+
 QTabWidget::pane QWidget, QTabWidget::pane QDockWidget QWidget {
     /* docked QDockWidgets ignore QTabWidget */
     background: transparent;
@@ -171,63 +160,46 @@ QTabWidget::pane QGraphicsView {
     border: none;
 }
 QTabWidget::tab-bar {
-    left: 0.3125em;
+    border: none;
 }
 QTabBar {
+    border: none;
     /* docked QDockWidgets ignore QTabWidget */
     background: #252527;
 }
+
 QTabBar::tab {
     min-height: 1.25em;
     min-width: 5em;
-    border: 0.0625em solid #4a4a4f;
-    border-radius: 0.1875em;
     padding: 0.125em 0.625em 0em 0.625em;
-    margin: 0em 0.0625em 0.0625em 0.125em; /* top, right (spacing between tabs), bottom, left */
+    border: 0.0625em solid #252527;
+    margin: 0em 0em 0em 0em;
+    background: #252527;
 }
 QTabBar::tab:bottom {
-    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                               stop: 0 #1a1a1a, stop:0.3 #37373a, stop:0.9 #323235, stop:1 #222224);
-    border-top-width: 0em;
-    border-top-left-radius: 0em;
-    border-top-right-radius: 0em;
-
-    margin-top: 0.0625em;
 }
 QTabBar::tab:top {
-    background-color: qlineargradient(x1:0, y1:1, x2:0, y2:0,
-                               stop: 0 #2a2a2a, stop:0.18 #323235, stop:0.88 #37373a, stop:1 #505058);
-    border-bottom-width: 0em;
-    border-bottom-left-radius: 0em;
-    border-bottom-right-radius: 0em;
-
-    margin-bottom: 0.0625em;
-    margin-top: 0.125em;
+    min-width: 7em;
 }
-QTabBar::tab:bottom:selected{
-    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                stop:0 #323235, stop:0.9 #3c3c40, stop:1 #222224);
-    border: 0.0625em solid #888;
+QTabBar::tab:bottom:selected {
+    background: #323235;
+    border: 0.0625em solid #323235;
     color: #e9e4de;
-    margin-top: -0.125em;
+    font-weight: 500;
 }
-QTabBar::tab:top:selected{
-    background-color: qlineargradient(x1:0, y1:1, x2:0, y2:0,
-                                stop:0 #323235, stop:0.88 #3c3c40, stop:1 #5f5f5f);
-    border: 0.0625em solid #888;
+QTabBar::tab:top:selected {
+    background: #323235;
+    border: 0.0625em solid #323235;
     color: #e9e4de;
-    margin-bottom: -0.125em;
+    font-weight: 500;
 }
-QTabBar::tab:bottom:hover {
-    border-left: 0.0625em solid #268bd2;
-    border-right: 0.0625em solid #268bd2;
-    border-bottom: 0.0625em solid #268bd2;
+QTabBar::tab:bottom:!selected:hover {
+    border: 0.0625em solid #268bd2;
 }
-QTabBar::tab:top:hover {
-    border-left: 0.0625em solid #268bd2;
-    border-right: 0.0625em solid #268bd2;
-    border-top: 0.0625em solid #268bd2;
+QTabBar::tab:top:!selected:hover {
+    border: 0.0625em solid #268bd2;
 }
+QTabBar::tab:top:!selected {}
 QTabBar::tab:bottom:!selected {}
 
 /************************ 
@@ -235,7 +207,7 @@ QMenu
 ************************/
 QMenuBar, QMenuBar::item {
     color: #999999;
-    background-color: #252527;
+    background-color: #323235;
     selection-background-color: #3a3a3d;
 }
 QMenu, QMenu::item, QMenu::item::selected {
@@ -413,12 +385,14 @@ QListView {
     background: transparent;
     /*using border here breaks the QCombobox */
 }
+
 QDockWidget#AnimationEditorWidget QListView {
     margin: 0em;
     padding: 0em;
     border: none;
     background: transparent; 
 }
+
 QListView::item {
     border: 0em;
 }
@@ -446,12 +420,12 @@ QTreeView::item:selected, QTreeView::branch:selected {
 QTreeView::branch:has-children:!has-siblings:closed,
 QTreeView::branch:closed:has-children:has-siblings {
     border-image: none;
-    image: url(:/stylesheets/images/arrow_lighter_right.png);
+    image: url(:/svgicons/arrow-right-enabled.svg);
 }
 QTreeView::branch:open:has-children:!has-siblings,
 QTreeView::branch:open:has-children:has-siblings  {
     border-image: none;
-    image: url(:/stylesheets/images/arrow_lighter_down.png);
+    image: url(:/svgicons/arrow-down-enabled.svg);
 }
 
 /************************ 
@@ -480,10 +454,10 @@ QComboBox::drop-down:hover {
     background-color: #47474b;
 }
 QComboBox::down-arrow {
-     image: url(:/stylesheets/images/arrow_lighter_down.png);
+     image: url(:/svgicons/arrow-down-enabled.svg);
 }
 QComboBox::down-arrow:disabled {
-     image: url(:/stylesheets/images/arrow_down.png);
+     image: url(:/svgicons/arrow-down-disabled.svg);
 }
 
 
@@ -525,21 +499,9 @@ QProgressBar::chunk {
 /************************ 
 QRadioButton and QCheckBox
 ************************/
-QRadioButton::indicator, QCheckBox::indicator {
+QCheckBox::indicator {
     width: 0.8em;
     height: 0.8em;
-}
-QRadioButton::indicator::unchecked {
-    image: url(:/stylesheets/images/circle_gray.png);
-}
-QRadioButton::indicator::unchecked:disabled {
-    image: url(:/stylesheets/images/circle_gray_disabled.png);
-}
-QRadioButton::indicator::checked {
-    image: url(:/stylesheets/images/circle.png);
-}
-QRadioButton::indicator::checked:disabled {
-    image: url(:/stylesheets/images/circle_disabled.png);
 }
 QCheckBox::indicator {
     border: 0.0625em solid #1b1b1d;
@@ -589,16 +551,16 @@ QLineEdit {
 QAbstractSpinBox 
 ************************/
 QAbstractSpinBox::up-button {
-     image: url(:/stylesheets/images/arrow_lighter_up.png);
+     image: url(:/svgicons/arrow-up-enabled.svg);
 }
 QAbstractSpinBox::down-button {
-     image: url(:/stylesheets/images/arrow_lighter_down.png);
+     image: url(:/svgicons/arrow-down-enabled.svg);
 }
 QAbstractSpinBox::up-button:disabled {
-     image: url(:/stylesheets/images/arrow_up.png);
+     image: url(:/svgicons/arrow-up-disabled.svg);
 }
 QAbstractSpinBox::down-button:disabled {
-     image: url(:/stylesheets/images/arrow_down.png);
+     image: url(:svgicons/arrow-down-disabled.svg);
 }
 
 /************************ 
@@ -845,22 +807,23 @@ QWidget#CompositeWidget QToolButton#addListItemButton:hover {
     border: 0.0625em solid #268bd2;
 }
 QWidget#CompositeWidget QToolButton#collapseButton:open {
-    image: url(:/stylesheets/images/arrow_lighter_right-small.png);
+    image: url(:/svgicons/arrow-right-enabled.svg);
 }
 QWidget#CompositeWidget QToolButton#collapseButton:closed {
-    image: url(:/stylesheets/images/arrow_lighter_down-small.png);
+    image: url(:/svgicons/arrow-down-enabled.svg);
 }
 QWidget#CompositeWidget QToolButton#addListItemButton {
-    image: url(:/stylesheets/images/addlistitem.png);
+    image: url(:svgicons/listitem-add-enabled.svg);
 }
 QWidget#CompositeWidget QToolButton#addListItemButton:disabled {
-    image: url(:/stylesheets/images/addlistitem_disabled.png);
+    image: url(:svgicons/listitem-add-disabled.svg);
 }
 
 
 /************************ 
 ConsoleWidget
 ************************/
+
 QDockWidget#ConsoleWidget QTextEdit {
     border: none;
     border-bottom: 0.125em ridge #4a4a4f;
@@ -901,6 +864,7 @@ QFrame#htmlEditorOutput {
 /************************ 
 ResourceManager
 ************************/
+
 QDockWidget#ResourceManager QTableView {
     border: none;
     color: #999999;

@@ -174,13 +174,13 @@ std::unique_ptr<QMenu> CollapsibleGroupBoxWidgetQt::getContextMenu() {
         menu->addAction(utilqt::toQString(displayName_));
         menu->addSeparator();
 
-        auto copyAction = menu->addAction(QIcon(":/icons/edit-copy.png"), "&Copy");
+        auto copyAction = menu->addAction(QIcon(":/svgicons/edit-copy.svg"), "&Copy");
         connect(copyAction, &QAction::triggered, this, [this]() {
             if (!propertyOwner_) return;
             QApplication::clipboard()->setMimeData(getPropertyOwnerMimeData().release());
         });
 
-        auto pasteAction = menu->addAction(QIcon(":/icons/edit-paste.png"), "&Paste");
+        auto pasteAction = menu->addAction(QIcon(":/svgicons/edit-paste.svg"), "&Paste");
         pasteAction->setEnabled(QApplication::clipboard()->mimeData()->formats().contains(
             QString("application/x.vnd.inviwo.propertyowner+xml")));
 

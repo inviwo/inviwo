@@ -91,7 +91,7 @@ PropertyListWidget::PropertyListWidget(QWidget* parent, InviwoApplication* app)
 
     scrollArea_ = new QScrollArea(this);
     scrollArea_->setWidgetResizable(true);
-    scrollArea_->setMinimumWidth(utilqt::emToPx(this, 36));
+    scrollArea_->setMinimumWidth(utilqt::emToPx(this, 30));
     scrollArea_->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 #ifdef __APPLE__
     // Scrollbars are overlayed in different way on mac...

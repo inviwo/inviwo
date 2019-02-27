@@ -95,7 +95,7 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
     fileObserver_.setModifiedCallback([this](bool m) { editor_->document()->setModified(m); });
 
     {
-        auto save = toolBar->addAction(QIcon(":/icons/save.png"), tr("&Save"));
+        auto save = toolBar->addAction(QIcon(":/svgicons/save.svg"), tr("&Save"));
         save->setShortcut(QKeySequence::Save);
         save->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         mainWindow->addAction(save);
@@ -105,7 +105,7 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
     if (fileProperty_) {
         propertyCallback_ = fileProperty_->onChangeScoped([this]() { propertyModified(); });
 
-        auto saveas = toolBar->addAction(QIcon(":/icons/saveas.png"), tr("&Save Script As..."));
+        auto saveas = toolBar->addAction(QIcon(":/svgicons/saveas.svg"), tr("&Save Script As..."));
         saveas->setShortcut(QKeySequence::SaveAs);
         saveas->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         saveas->setToolTip("Save Script As...");
@@ -135,7 +135,7 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
     }
 
     {
-        auto revert = toolBar->addAction(QIcon(":/icons/revert.png"), tr("Revert"));
+        auto revert = toolBar->addAction(QIcon(":/svgicons/revert.svg"), tr("Revert"));
         revert->setToolTip("Revert changes");
         revert->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         revert->setEnabled(false);
@@ -146,7 +146,7 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
     }
 
     {
-        auto undo = toolBar->addAction(QIcon(":/icons/undo.png"), tr("Undo"));
+        auto undo = toolBar->addAction(QIcon(":/svgicons/undo.svg"), tr("Undo"));
         undo->setShortcut(QKeySequence::Undo);
         undo->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         undo->setEnabled(false);
@@ -156,7 +156,7 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
     }
 
     {
-        auto redo = toolBar->addAction(QIcon(":/icons/redo.png"), tr("Redo"));
+        auto redo = toolBar->addAction(QIcon(":/svgicons/redo.svg"), tr("Redo"));
         redo->setShortcut(QKeySequence::Redo);
         redo->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         redo->setEnabled(false);

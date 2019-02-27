@@ -64,12 +64,14 @@ const int PropertyWidgetQt::minimumWidth = 250;
 const int PropertyWidgetQt::spacing = 7;
 const int PropertyWidgetQt::margin = 0;
 
-
-
 // The factor should be 16.0 at font size 12pt, we use Segoe UI at 9pt which gives an em at 9.0px
-const double PropertyWidgetQt::minimumWidthEm = PropertyWidgetQt::minimumWidth / 9.0;
+const double PropertyWidgetQt::minimumWidthEm =
+    PropertyWidgetQt::minimumWidth / static_cast<double>(utilqt::refEm());
 const double PropertyWidgetQt::spacingEm = utilqt::refSpaceEm();
-const double PropertyWidgetQt::marginEm = PropertyWidgetQt::margin / 9.0;
+const double PropertyWidgetQt::marginEm =
+    PropertyWidgetQt::margin / static_cast<double>(utilqt::refEm());
+;
+;
 
 PropertyWidgetQt::PropertyWidgetQt(Property* property)
     : QWidget()
@@ -141,13 +143,13 @@ std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
         menu->addSeparator();
 
         {
-            auto copyAction = menu->addAction(QIcon(":/icons/edit-copy.png"), "&Copy");
+            auto copyAction = menu->addAction(QIcon(":/svgicons/edit-copy.svg"), "&Copy");
             connect(copyAction, &QAction::triggered, this, [this]() {
                 if (!property_) return;
                 QApplication::clipboard()->setMimeData(getPropertyMimeData().release());
             });
 
-            auto pasteAction = menu->addAction(QIcon(":/icons/edit-paste.png"), "&Paste");
+            auto pasteAction = menu->addAction(QIcon(":/svgicons/edit-paste.svg"), "&Paste");
             if (property_->getReadOnly()) pasteAction->setEnabled(false);
             connect(pasteAction, &QAction::triggered, this, [this, app]() {
                 if (!property_) return;
@@ -278,9 +280,7 @@ std::unique_ptr<QMimeData> PropertyWidgetQt::getPropertyMimeData() const {
     return mimeData;
 }
 
-int PropertyWidgetQt::getSpacing() const {
-    return utilqt::emToPx(this, spacingEm);
-}
+int PropertyWidgetQt::getSpacing() const { return utilqt::emToPx(this, spacingEm); }
 
 void PropertyWidgetQt::addModuleMenuActions(QMenu* menu, InviwoApplication* app) {
     std::map<std::string, std::vector<const ModuleCallbackAction*>> callbackMapPerModule;

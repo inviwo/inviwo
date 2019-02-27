@@ -121,7 +121,7 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
     fileObserver_.setModifiedCallback([this](bool m) { pythonCode_->document()->setModified(m); });
 
     {
-        runAction_ = toolBar->addAction(QIcon(":/icons/python.png"), "Compile and Run");
+        runAction_ = toolBar->addAction(QIcon(":/svgicons/run-script.svg"), "Compile and Run");
         runAction_->setShortcut(QKeySequence(tr("F5")));
         runAction_->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         runAction_->setToolTip("Compile and Run Script");
@@ -129,7 +129,7 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
         connect(runAction_, &QAction::triggered, [this]() { run(); });
     }
     {
-        auto action = toolBar->addAction(QIcon(":/icons/newfile.png"), tr("&New Script"));
+        auto action = toolBar->addAction(QIcon(":/svgicons/newfile.svg"), tr("&New Script"));
         action->setShortcut(QKeySequence::New);
         action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         action->setToolTip("New Script");
@@ -137,7 +137,7 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
         connect(action, &QAction::triggered, [this]() { setDefaultText(); });
     }
     {
-        auto action = toolBar->addAction(QIcon(":/icons/open.png"), tr("&Open Script"));
+        auto action = toolBar->addAction(QIcon(":/svgicons/open.svg"), tr("&Open Script"));
         action->setShortcut(QKeySequence::Open);
         action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         action->setToolTip("Open Script");
@@ -146,7 +146,7 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
     }
 
     {
-        auto action = toolBar->addAction(QIcon(":/icons/save.png"), tr("&Save Script"));
+        auto action = toolBar->addAction(QIcon(":/svgicons/save.svg"), tr("&Save Script"));
         action->setShortcut(QKeySequence::Save);
         action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         action->setToolTip("Save Script");
@@ -154,7 +154,7 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
         connect(action, &QAction::triggered, [this]() { save(); });
     }
     {
-        auto action = toolBar->addAction(QIcon(":/icons/saveas.png"), tr("&Save Script As..."));
+        auto action = toolBar->addAction(QIcon(":/svgicons/save-as.svg"), tr("&Save Script As..."));
         action->setShortcut(QKeySequence::SaveAs);
         action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         action->setToolTip("Save Script As...");
@@ -163,13 +163,13 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
     }
     {
         toolBar->addSeparator();
-        auto undo = toolBar->addAction(QIcon(":/icons/undo.png"), "&Undo");
+        auto undo = toolBar->addAction(QIcon(":/svgicons/undo.svg"), "&Undo");
         undo->setShortcut(QKeySequence::Undo);
         undo->setEnabled(false);
         QObject::connect(undo, &QAction::triggered, this, [this]() { pythonCode_->undo(); });
         QObject::connect(pythonCode_, &QPlainTextEdit::undoAvailable, undo, &QAction::setEnabled);
 
-        auto redo = toolBar->addAction(QIcon(":/icons/redo.png"), "&Redo");
+        auto redo = toolBar->addAction(QIcon(":/svgicons/redo.svg"), "&Redo");
         redo->setShortcut(QKeySequence::Redo);
         redo->setEnabled(false);
         QObject::connect(redo, &QAction::triggered, this, [this]() { pythonCode_->redo(); });
@@ -178,8 +178,8 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
     {
         toolBar->addSeparator();
         QIcon icon;
-        icon.addFile(":/icons/log-append.png", QSize(), QIcon::Normal, QIcon::On);
-        icon.addFile(":/icons/log-clearonrun.png", QSize(), QIcon::Normal, QIcon::Off);
+        icon.addFile(":/svgicons/log-append.svg", QSize(), QIcon::Normal, QIcon::On);
+        icon.addFile(":/svgicons/log-clear-on-run.svg", QSize(), QIcon::Normal, QIcon::Off);
 
         appendLog_ = toolBar->addAction(icon, "Append Log");
         appendLog_->setShortcut(Qt::ControlModifier + Qt::Key_E);
@@ -196,7 +196,7 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
         });
     }
     {
-        auto action = toolBar->addAction(QIcon(":/icons/log-clear.png"), "Clear Log Output");
+        auto action = toolBar->addAction(QIcon(":/svgicons/log-clear.svg"), "Clear Log Output");
         action->setShortcut(Qt::ControlModifier + Qt::Key_E);
         action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         action->setToolTip("Clear Log Output");
