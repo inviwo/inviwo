@@ -79,21 +79,17 @@ def printMap(String name, def map) {
 
 // this uses global pipeline var pullRequest
 def setLabel(def state, String label, Boolean add) {
-    if (add) {
-        try {
+    try {
+        println "setlabel: ${label} add: ${add}"
+        if (add) {
             state.addLabel(label)
-        } catch (e) {
-            println "Error adding label"
-            println e.toString()
-        }
-    } else {
-        try {
+        } else {
             state.removeLabel(label)
-        } catch (e) {
-            println "Error removing label"
-            println e.toString()
         }
-    }       
+    } catch (e) {
+        println "Error adding label: ${label} add: ${add}"
+        println e.toString()
+    }      
 }
 
 def checked(def state, String label, Boolean fail, Closure fun) {
