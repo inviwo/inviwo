@@ -35,6 +35,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/settings/settings.h>
 #include <inviwo/qt/editor/inviwomainwindow.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -55,7 +56,7 @@ SettingsWidget::SettingsWidget(const QString& title, InviwoMainWindow* mainwindo
 
     scrollArea_ = new QScrollArea();
     scrollArea_->setWidgetResizable(true);
-    scrollArea_->setMinimumWidth(utilqt::emToPx(this, 35));
+    scrollArea_->setMinimumWidth(utilqt::emToPx(this, 30));
     scrollArea_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     scrollArea_->setFrameShape(QFrame::NoFrame);
     scrollArea_->setContentsMargins(0, 0, 0, 0);
