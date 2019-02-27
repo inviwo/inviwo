@@ -16,13 +16,16 @@ node {
         build: currentBuild, 
         errors: [],
         display: 0,
-        addLabel: {label -> 
+        addLabel: {String label -> 
             if (env.CHANGE_ID  && !(label in pullRequest.labels)) pullRequest.addLabels([label])
         },
-        removeLabel: {label -> 
+        removeLabel: {String label -> 
             if (env.CHANGE_ID) {
-                println "remove ${label}, ${pullRequest.labels.join(', ')}"
-                pullRequest.removeLabel(label)  
+                println "remove '${label}', existing: ${pullRequest.labels.join(', ')}"
+                def labels = pullRequest.labels
+                labels.removeAll(label)
+                pullRequest.labels = labels
+                //pullRequest.removeLabel(label)
             }
         }
     ]
@@ -40,7 +43,7 @@ node {
         util.warn(state)
         util.unittest(state)
         util.integrationtest(state)        
-        util.regression(state, ["${env.WORKSPACE}/inviwo/modules"])
+        //util.regression(state, ["${env.WORKSPACE}/inviwo/modules"])
         util.copyright(state)    
         util.doxygen(state)
     }
