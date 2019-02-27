@@ -346,18 +346,16 @@ void AxisRenderer::renderText(const size2_t& outputDims, const size2_t& startPos
 
         auto angle = glm::radians(property_.caption_.rotation_.get()) + 
             (property_.orientation_ == AxisProperty::Orientation::Vertical ? glm::half_pi<float>() : 0.f);
-		// Rotate around center
-        const auto rotation = glm::translate(
-            glm::rotate(angle, vec3(0.0f, 0.0f, 1.0f)), vec3(-0.5f * vec2(texDims), 0.f));
+		// Rotate around center 
+        auto rotation = glm::translate(mat4(1.f), vec3(0.5f * texDims, 0.f)) * glm::rotate(angle, vec3(0.0f, 0.0f, 1.0f)) * glm::translate(mat4(1.f), vec3(-0.5f * texDims, 0.f));
 
-		// Translate back after rotation and offset according to anchor
-		auto offset =
+        const auto offset =
             property_.orientation_ == AxisProperty::Orientation::Vertical
-                          ? vec2(-texDims.y, texDims.x) * 0.5f * vec2(-anchor.x, anchor.y)
-                : texDims * 0.5f * anchor;
+                ? (vec2(texDims.y, texDims.x) * 0.5f * (vec2(-anchor.x, anchor.y) - vec2(1.0f, 0.f)) - 0.5f*texDims)
+                : -texDims * 0.5f * (anchor + vec2(1.0f));
 
 
-        const ivec2 posi(plot::getAxisCaptionPosition(property_, startPos, endPos) - offset);
+        const ivec2 posi(plot::getAxisCaptionPosition(property_, startPos, endPos) + offset);
         quadRenderer_.render(axisCaptionTex_, posi, outputDims, rotation);
     }
 
@@ -371,11 +369,17 @@ void AxisRenderer::renderText(const size2_t& outputDims, const size2_t& startPos
         if (labelPos_.empty()) {
             updateLabelPositions(startPos, endPos);
         }
+        
+        const vec2 texDims(labelTexAtlas_.getRenderInfo().size.front());
+        auto angle = glm::radians(property_.labels_.rotation_.get());
+        
+        // Rotate around center
+        auto rotation = glm::translate(mat4(1.f), vec3(0.5f * texDims, 0.f)) * glm::rotate(angle, vec3(0.0f, 0.0f, 1.0f)) * glm::translate(mat4(1.f), vec3(-0.5f * texDims, 0.f));
 
         // render axis labels
         const auto& renderInfo = labelTexAtlas_.getRenderInfo();
         quadRenderer_.renderToRect(labelTexAtlas_.getTexture(), labelPos_, renderInfo.size,
-                                   renderInfo.texTransform, outputDims);
+                                   renderInfo.texTransform, outputDims, rotation);
     }
 }
 
