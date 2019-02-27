@@ -43,7 +43,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/quaternion.hpp>
-#include <glm/gtc/quaternion.hpp>
 #include <glm/ext/quaternion_trigonometric.hpp>
 
 namespace inviwo {
@@ -341,9 +340,6 @@ std::pair<bool, vec3> Trackball::getTrackBallIntersection(const vec2 pos) const 
                                            direction, 0.0f, std::numeric_limits<float>::max());
     return {res.first, rayOrigin + direction * res.second};
 }
-
-/* \brief Checks for epsilon equality with floats (Pretty high default epsilon!) */
-bool epsEq(float a, float b, float eps=3e-3) { return abs(a - b) < eps; }
 
 /* \brief Passes the mouse event on to the chosen rotation method */
 void Trackball::rotate(Event* event) {
