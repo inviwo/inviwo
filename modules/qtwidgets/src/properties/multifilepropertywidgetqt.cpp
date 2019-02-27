@@ -97,7 +97,7 @@ MultiFilePropertyWidgetQt::MultiFilePropertyWidgetQt(MultiFileProperty* property
     hWidgetLayout->addWidget(lineEdit_);
 
     auto revealButton = new QToolButton(this);
-    revealButton->setIcon(QIcon(":/icons/about.png"));
+    revealButton->setIcon(QIcon(":/svgicons/about-enabled.svg"));
     hWidgetLayout->addWidget(revealButton);
     connect(revealButton, &QToolButton::pressed, this, [&]() {
         auto fileName = (!property_->get().empty() ? property_->get().front() : "");
@@ -109,7 +109,7 @@ MultiFilePropertyWidgetQt::MultiFilePropertyWidgetQt(MultiFileProperty* property
     });
 
     auto openButton = new QToolButton(this);
-    openButton->setIcon(QIcon(":/icons/open.png"));
+    openButton->setIcon(QIcon(":/svgicons/open.svg"));
     hWidgetLayout->addWidget(openButton);
     connect(openButton, &QToolButton::pressed, this, &MultiFilePropertyWidgetQt::setPropertyValue);
 

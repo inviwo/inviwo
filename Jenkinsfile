@@ -16,11 +16,15 @@ node {
         build: currentBuild, 
         errors: [],
         display: 0,
-        addLabel: {label -> 
+        addLabel: {String label -> 
             if (env.CHANGE_ID  && !(label in pullRequest.labels)) pullRequest.addLabels([label])
         },
-        removeLabel: {label -> 
-            if (env.CHANGE_ID && (label in pullRequest.labels)) pullRequest.removeLabel(label)  
+        removeLabel: {String label -> 
+            if (env.CHANGE_ID && !(label in pullRequest.labels)) {
+                def labels = pullRequest.labels.collect { it }
+                labels.removeAll { it == label }
+                pullRequest.labels = labels
+            }
         }
     ]
 

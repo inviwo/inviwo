@@ -44,7 +44,10 @@ namespace inviwo {
 RawDataReaderDialogQt::RawDataReaderDialogQt() {
     setWindowTitle("Importing Raw Data");
     QGridLayout* mainLayout = new QGridLayout(this);
-    mainLayout->setContentsMargins(15, 15, 15, 15);
+    {
+        const auto space = utilqt::emToPx(this, 15.0 / 9.0);
+        mainLayout->setContentsMargins(space, space, space, space);
+    }
     QLabel* fileNameLabel = new QLabel("Importing file:");
     fileName_ = new QLabel();
     QGridLayout* dataTypeLayout = new QGridLayout();

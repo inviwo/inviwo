@@ -125,24 +125,24 @@ std::tuple<QRect, QRect, QRect> SectionDelegate::getTextBoundingBox(
     const QStyleOptionViewItem &option, const QModelIndex &index) const {
     if (!index.isValid()) return {};
 
-    const int marginLeft = 6;
-    const int textSpacing = 4;
-    const int margin = 10;
-    const int marginRight = 6;
-
     const auto filename = index.data(FileTreeWidget::ItemRoles::FileName).toString();
     const auto path = index.data(FileTreeWidget::ItemRoles::Path).toString();
 
     auto fontFilename = option.font;
     fontFilename.setBold(true);
+    const auto fm = QFontMetrics(fontFilename);
+
+    const int marginLeft = utilqt::emToPx(fm, 6.0 / utilqt::refEm());
+    const int textSpacing = utilqt::emToPx(fm, 4.0 / utilqt::refEm());
+    const int margin = utilqt::emToPx(fm, 10.0 / utilqt::refEm());
+    const int marginRight = utilqt::emToPx(fm, 6.0 / utilqt::refEm());
 
     auto textRect = (option.rect.isValid() ? option.rect : QRect());
     textRect.adjust(marginLeft + option.decorationSize.width(), margin, -marginRight, 0);
     // set rect height to zero, since the font metric will calculate the required height of the text
     textRect.setHeight(0);
 
-    auto filenameRect =
-        QFontMetrics(fontFilename).boundingRect(textRect, Qt::AlignLeft | Qt::AlignTop, filename);
+    auto filenameRect = fm.boundingRect(textRect, Qt::AlignLeft | Qt::AlignTop, filename);
 
     textRect.setTop(filenameRect.bottom() + textSpacing);
     auto pathRect = option.fontMetrics.boundingRect(textRect, Qt::AlignLeft | Qt::AlignTop, path);
@@ -203,19 +203,18 @@ FileTreeWidget::FileTreeWidget(InviwoApplication *app, QWidget *parent)
     : QTreeWidget{parent}, inviwoApp_(app), fileIcon_{":/inviwo/inviwo_light.png"} {
 
     setHeaderHidden(true);
-    setColumnCount(2);
-    setIconSize(QSize(24, 24));
-    setIndentation(10);
-    setColumnWidth(0, 10);
+    setColumnCount(1);
+    setIconSize(utilqt::emToPx(this, QSize(3, 3)));
+    setIndentation(utilqt::emToPx(this, 1.0));
     setItemDelegate(new SectionDelegate(this));
 
     QObject::connect(
         this, &QTreeWidget::currentItemChanged, this,
         [this](QTreeWidgetItem *current, QTreeWidgetItem *) {
-            if (current && (current->data(1, ItemRoles::Type) == ListElemType::File)) {
-                const auto filename = current->data(1, ItemRoles::Path).toString() + "/" +
-                                      current->data(1, ItemRoles::FileName).toString();
-                const auto isExample = current->data(1, ItemRoles::ExampleWorkspace).toBool();
+            if (current && (current->data(0, ItemRoles::Type) == ListElemType::File)) {
+                const auto filename = current->data(0, ItemRoles::Path).toString() + "/" +
+                                      current->data(0, ItemRoles::FileName).toString();
+                const auto isExample = current->data(0, ItemRoles::ExampleWorkspace).toBool();
                 emit selectedFileChanged(filename, isExample);
             } else {
                 emit selectedFileChanged("", false);
@@ -224,10 +223,10 @@ FileTreeWidget::FileTreeWidget(InviwoApplication *app, QWidget *parent)
 
     QObject::connect(
         this, &QTreeWidget::itemDoubleClicked, this, [this](QTreeWidgetItem *item, int) {
-            if (item && (item->data(1, ItemRoles::Type) == ListElemType::File)) {
-                const auto filename = item->data(1, ItemRoles::Path).toString() + "/" +
-                                      item->data(1, ItemRoles::FileName).toString();
-                const auto isExample = item->data(1, ItemRoles::ExampleWorkspace).toBool();
+            if (item && (item->data(0, ItemRoles::Type) == ListElemType::File)) {
+                const auto filename = item->data(0, ItemRoles::Path).toString() + "/" +
+                                      item->data(0, ItemRoles::FileName).toString();
+                const auto isExample = item->data(0, ItemRoles::ExampleWorkspace).toBool();
                 emit loadFile(filename, isExample);
             }
         });
@@ -317,12 +316,12 @@ QTreeWidgetItem *FileTreeWidget::createFileEntry(const QIcon &icon, const std::s
         path = ".";
     }
     auto item = new QTreeWidgetItem({"", utilqt::toQString(filename)}, ListElemType::File);
-    item->setData(1, ItemRoles::Type, ListElemType::File);
-    item->setData(1, ItemRoles::FileName, utilqt::toQString(file));
-    item->setData(1, ItemRoles::Path, utilqt::toQString(path));
-    item->setData(1, ItemRoles::ExampleWorkspace, isExample);
-    item->setData(1, Qt::ToolTipRole, item->data(1, ItemRoles::Path));
-    item->setData(1, Qt::DecorationRole, icon);
+    item->setData(0, ItemRoles::Type, ListElemType::File);
+    item->setData(0, ItemRoles::FileName, utilqt::toQString(file));
+    item->setData(0, ItemRoles::Path, utilqt::toQString(path));
+    item->setData(0, ItemRoles::ExampleWorkspace, isExample);
+    item->setData(0, Qt::ToolTipRole, item->data(1, ItemRoles::Path));
+    item->setData(0, Qt::DecorationRole, icon);
     return item;
 }
 

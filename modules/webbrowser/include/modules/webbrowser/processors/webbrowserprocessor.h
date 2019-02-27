@@ -105,7 +105,7 @@ public:
 
     // Detect when page has loaded
     virtual void OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bool isLoading, bool canGoBack,
-                                    bool canGoForward) override;
+                                      bool canGoForward) override;
 
     ImageInport background_;
     ImageOutport outport_;

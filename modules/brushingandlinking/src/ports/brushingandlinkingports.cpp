@@ -105,12 +105,10 @@ const std::unordered_set<size_t> &BrushingAndLinkingInport::getFilteredIndices()
 const std::unordered_set<size_t> &BrushingAndLinkingInport::getSelectedColumns() const {
     if (isConnected()) {
         return getData()->getSelectedColumns();
-    }
-    else {
+    } else {
         return selectionColumnCache_;
     }
 }
-
 
 std::string BrushingAndLinkingInport::getClassIdentifier() const {
     return PortTraits<BrushingAndLinkingInport>::classIdentifier();

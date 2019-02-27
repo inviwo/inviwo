@@ -92,7 +92,7 @@ StringPropertyWidgetQt::StringPropertyWidgetQt(StringProperty* property)
         property_->getSemantics() == PropertySemantics::ShaderEditor ||
         property_->getSemantics() == PropertySemantics::PythonEditor) {
         auto edit = new QToolButton();
-        edit->setIcon(QIcon(":/icons/edit.png"));
+        edit->setIcon(QIcon(":/svgicons/edit.svg"));
         edit->setToolTip("Edit text");
         hWidgetLayout->addWidget(edit);
         connect(edit, &QToolButton::clicked, this, [this]() {

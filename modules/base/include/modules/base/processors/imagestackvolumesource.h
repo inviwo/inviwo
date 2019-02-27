@@ -95,7 +95,7 @@ private:
     FilePatternProperty filePattern_;
     ButtonProperty reload_;
     BoolProperty skipUnsupportedFiles_;
-    
+
     BasisProperty basis_;
     VolumeInformationProperty information_;
 

@@ -41,7 +41,7 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QInputDialog>
-#include <Qmenu>
+#include <QMenu>
 #include <warn/pop>
 
 namespace inviwo {

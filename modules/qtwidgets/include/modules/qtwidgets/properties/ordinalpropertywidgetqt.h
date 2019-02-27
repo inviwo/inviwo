@@ -174,7 +174,7 @@ OrdinalPropertyWidgetQt<T>::OrdinalPropertyWidgetQt(OrdinalProperty<T>* property
 
     QHBoxLayout* hLayout = new QHBoxLayout();
     hLayout->setContentsMargins(0, 0, 0, 0);
-    hLayout->setSpacing(PropertyWidgetQt::spacing);
+    hLayout->setSpacing(getSpacing());
     hLayout->addWidget(label_);
 
     const std::array<QString, 3> sphericalChars{QString("r"), QString("<html>&theta;</html>"),

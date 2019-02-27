@@ -59,10 +59,16 @@ public:
     // Should be called first thing after the property has been added to a layout.
     virtual void initState();
 
+    static const double minimumWidthEm;
+    static const double spacingEm;
+    static const double marginEm;
+
     static const int minimumWidth;
     static const int spacing;
     static const int margin;
-    static void setSpacingAndMargins(QLayout* layout);
+
+    void setSpacingAndMargins(QLayout* layout);
+    static void setSpacingAndMargins(QWidget* w, QLayout* layout);
 
     virtual void onChildVisibilityChange(PropertyWidgetQt* child);
 
@@ -105,6 +111,8 @@ protected:
     virtual void paintEvent(QPaintEvent* pe) override;
 
     QPoint mousePressedPosition_;  /// Assigned on mousePressEvent
+
+    int getSpacing() const;
 
 private:
     void addModuleMenuActions(QMenu* menu, InviwoApplication* app);

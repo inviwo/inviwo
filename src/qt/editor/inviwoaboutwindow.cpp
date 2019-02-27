@@ -37,6 +37,7 @@
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/common/inviwomodule.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -73,11 +74,11 @@ InviwoAboutWindow::InviwoAboutWindow(InviwoMainWindow* mainwindow)
     : InviwoDockWidget("About", mainwindow, "AboutWidget") {
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    resize(QSize(500, 500));  // default size
+    resize(utilqt::emToPx(this, QSizeF(60, 60)));  // default size
 
     auto centralWidget = new QWidget();
     auto vLayout = new QVBoxLayout(centralWidget);
-    vLayout->setSpacing(7);
+    vLayout->setSpacing(utilqt::refSpacePx(this));
     vLayout->setContentsMargins(0, 0, 0, 0);
 
     auto app = mainwindow->getInviwoApplication();

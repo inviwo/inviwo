@@ -56,7 +56,7 @@ ShaderWidget::ShaderWidget(const ShaderObject* obj, QWidget* parent)
     , fileObserver_(this, "Shader Editor", getFileName(obj)) {
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    resize(QSize(500, 700));  // default size
+    resize(utilqt::emToPx(this, QSizeF(50, 70)));  // default size
     setFloating(true);
     setSticky(false);
 
@@ -72,15 +72,15 @@ ShaderWidget::ShaderWidget(const ShaderObject* obj, QWidget* parent)
     shadercode_->setObjectName("shaderwidgetcode");
     shadercode_->setPlainText(utilqt::toQString(obj->print(false, false)));
 
-    auto save = toolBar->addAction(QIcon(":/icons/save.png"), tr("&Save Shader"));
+    auto save = toolBar->addAction(QIcon(":/svgicons/save.svg"), tr("&Save Shader"));
     save->setShortcut(QKeySequence::Save);
     save->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mainWindow->addAction(save);
 
     connect(save, &QAction::triggered, this, &ShaderWidget::save);
 
-    QPixmap enabled(":/icons/precompiled.png");
-    QPixmap disabled(":/icons/precompiled-disabled.png");
+    QPixmap enabled(":/svgicons/precompiled-enabled.svg");
+    QPixmap disabled(":/svgicons/precompiled-disabled.svg");
     QIcon preicon;
     preicon.addPixmap(enabled, QIcon::Normal, QIcon::Off);
     preicon.addPixmap(disabled, QIcon::Normal, QIcon::On);
@@ -89,7 +89,7 @@ ShaderWidget::ShaderWidget(const ShaderObject* obj, QWidget* parent)
     preprocess->setChecked(false);
     preprocess->setCheckable(true);
 
-    auto revert = toolBar->addAction(QIcon(":/icons/revert.png"), tr("Revert"));
+    auto revert = toolBar->addAction(QIcon(":/svgicons/revert.svg"), tr("Revert"));
     revert->setToolTip("Revert changes");
     revert->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     revert->setEnabled(false);
@@ -97,13 +97,13 @@ ShaderWidget::ShaderWidget(const ShaderObject* obj, QWidget* parent)
                      &QAction::setEnabled);
 
     toolBar->addSeparator();
-    auto undo = toolBar->addAction(QIcon(":/icons/undo.png"), "&Undo");
+    auto undo = toolBar->addAction(QIcon(":/svgicons/undo.svg"), "&Undo");
     undo->setShortcut(QKeySequence::Undo);
     undo->setEnabled(false);
     QObject::connect(undo, &QAction::triggered, this, [this]() { shadercode_->undo(); });
     QObject::connect(shadercode_, &QPlainTextEdit::undoAvailable, undo, &QAction::setEnabled);
 
-    auto redo = toolBar->addAction(QIcon(":/icons/redo.png"), "&Redo");
+    auto redo = toolBar->addAction(QIcon(":/svgicons/redo.svg"), "&Redo");
     redo->setShortcut(QKeySequence::Redo);
     redo->setEnabled(false);
     QObject::connect(redo, &QAction::triggered, this, [this]() { shadercode_->redo(); });

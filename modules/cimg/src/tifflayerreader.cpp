@@ -61,7 +61,7 @@ std::shared_ptr<inviwo::Layer> TIFFLayerReader::readData(const std::string& file
     if (!filesystem::fileExists(fileName))
         throw TIFFLayerReaderException("Failed to open file for reading, " + fileName, IVW_CONTEXT);
 
-    auto header = cimgutil::getTIFFHeader(fileName);  
+    auto header = cimgutil::getTIFFHeader(fileName);
     auto data = cimgutil::loadTIFFLayerData(nullptr, fileName, header, false);
 
     auto layer = dispatching::dispatch<std::shared_ptr<Layer>, dispatching::filter::All>(
