@@ -21,8 +21,8 @@ node {
         },
         removeLabel: {String label -> 
             if (env.CHANGE_ID) {
-                println "remove '${label}', existing: ${pullRequest.labels.join(', ')}"
-                List<String> labels = pullRequest.labels.findAll { it != label }
+                def labels = pullRequest.labels.collect { it }
+                labels.removeAll { it == label }
                 pullRequest.labels = labels
             }
         }

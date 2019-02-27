@@ -88,9 +88,7 @@ def setLabel(def state, String label, Boolean add) {
         }
     } catch (e) {
         println "Error adding label: ${label} add: ${add}"
-        println(e.toString());
-        println(e.getMessage());
-        println(e.getStackTrace());
+        println e.toString()
     }      
 }
 
