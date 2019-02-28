@@ -118,6 +118,14 @@ void VolumeMask::process() {
         volumeOutport_.setData(volumeInport_.getData());
         return;
     }
+
+    if (volumeInport_.getData()->getDimensions() !=
+        volumeAnnotationInport_.getData()->getDimensions()) {
+        LogWarn("volume dimensions do not match, no masking performed!");
+        volumeOutport_.setData(volumeInport_.getData());
+        return;
+    }
+
     const auto volumeIn = volumeInport_.getData();
     auto volumeOut = volumeIn->clone();
 
