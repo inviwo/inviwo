@@ -145,14 +145,14 @@ void VolumeMask::process() {
         }
 
         const size3_t dims{vInRAM->getDimensions()};
-        util::IndexMapper3D indexMapper(dims);
+        const util::IndexMapper3D indexMapper(dims);
         const auto anno = annoVol->getDataTyped();
 
 #pragma omp parallel for
         for (long z = 0; z < dims.z; ++z) {
             for (size_t y = 0; y < dims.y; ++y) {
                 for (size_t x = 0; x < dims.x; ++x) {
-                    P annoValue = anno[indexMapper(x, y, z)];
+                    const P annoValue = anno[indexMapper(x, y, z)];
 
                     // check if index is in reference volume
                     const size3_t pos{x, y, z};

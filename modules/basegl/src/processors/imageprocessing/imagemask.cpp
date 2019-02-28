@@ -45,7 +45,7 @@ const ProcessorInfo ImageMask::getProcessorInfo() const { return processorInfo_;
 
 ImageMask::ImageMask()
     : Processor()
-    , imageInport_("iamge_inport", true)
+    , imageInport_("image_inport", true)
     , imageAnnotationInport_("image_annotation_inport", true)
     , imageOutport_("image_outport", false)
     , enableMasking_("enableMasking", "Enable Masking", true)
@@ -130,8 +130,8 @@ void ImageMask::process() {
     const auto imageSize = imgAnnoRAM->getDimensions();
 
 #pragma omp parallel for
-    for (long x = 0; x < imageSize.x; ++x) {
-        for (size_t y = 0; y < imageSize.y; ++y) {
+    for (long y = 0; y < imageSize.y; ++y) {
+        for (size_t x = 0; x < imageSize.x; ++x) {
             const size2_t pos{x, y};
             const auto annoValue = static_cast<uint32_t>(imgAnnoRAM->getAsDouble(pos));
 
