@@ -45,9 +45,9 @@ const ProcessorInfo ImageMask::getProcessorInfo() const { return processorInfo_;
 
 ImageMask::ImageMask()
     : Processor()
-    , imageInport_("iamge_inport")
-    , imageAnnotationInport_("image_annotation_inport")
-    , imageOutport_("image_outport")
+    , imageInport_("iamge_inport", true)
+    , imageAnnotationInport_("image_annotation_inport", true)
+    , imageOutport_("image_outport", false)
     , enableMasking_("enableMasking", "Enable Masking", true)
     , fillColor_("fillColor", "Fill Color", vec4{0.0}, vec4{0.0}, vec4{1.0}, vec4{1e-3})
     , idx_("idx", "Index", 0, 0, 10000000000, 1, InvalidationLevel::Valid)
@@ -113,6 +113,12 @@ ImageMask::ImageMask()
 
 void ImageMask::process() {
     if (!enableMasking_) {
+        imageOutport_.setData(imageInport_.getData());
+        return;
+    }
+
+    if (imageAnnotationInport_.getData()->getDimensions() != imageInport_.getData()->getDimensions()) {
+        LogWarn("image dimensions do not match, no masking performed!");
         imageOutport_.setData(imageInport_.getData());
         return;
     }
