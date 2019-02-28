@@ -595,7 +595,9 @@ std::string getOpenEXRVersion() {
 TIFFHeader getTIFFHeader(const std::string& filename) {
 #ifdef cimg_use_tiff
     TIFF* tif = TIFFOpen(filename.c_str(), "r");
-    util::OnScopeExit closeFile([tif]() { TIFFClose(tif); });
+    util::OnScopeExit closeFile([tif]() {
+        if (tif) TIFFClose(tif);
+    });
 
     if (!tif) {
         throw DataReaderException("Error could not open input file: " + filename,
