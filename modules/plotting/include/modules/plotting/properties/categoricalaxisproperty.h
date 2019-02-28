@@ -58,7 +58,7 @@ public:
     /* 
      * Returns the categories displayed at the major ticks.
      */
-    const std::vector<std::string>& getCategories() const { return categories_; }
+    const std::vector<std::string>& getCategories() const;
     /*
      * Sets the categories to display at major ticks and updates the AxisProperty::range property to
      * match the number of categories.

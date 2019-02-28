@@ -62,7 +62,8 @@ public:
     FloatVec4Property color_;
     FloatProperty position_;  //!< position along axis [0,1]
     FloatProperty offset_;    //!< offset from axis
-    FloatProperty rotation_;  //!< Degrees of rotation
+    FloatProperty rotation_;  //!< Counter-clockwise rotation in degrees,
+                              //!  0 degrees means horizontal orientation
     FontProperty font_;
 
     // Inherited via PlotTextSettings

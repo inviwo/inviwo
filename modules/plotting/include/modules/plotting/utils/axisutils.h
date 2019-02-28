@@ -83,7 +83,7 @@ IVW_MODULE_PLOTTING_API std::shared_ptr<Mesh> generateMinorTicksMesh(const AxisS
                                                                      const vec2& startPos,
                                                                      const vec2& endPos);
 /**
- * No picking buffer will be generated id pickingId = std::numeric_limits<size_t>::max()
+ * No picking buffer will be generated if pickingId = std::numeric_limits<size_t>::max()
  */
 IVW_MODULE_PLOTTING_API std::shared_ptr<Mesh> generateAxisMesh(
     const AxisSettings& property, const vec2& startPos, const vec2& endPos,
