@@ -55,10 +55,10 @@ public:
 private:
     VolumeInport volumeInport_;
     VolumeInport volumeAnnotationInport_;
-
     VolumeOutport volumeOutport_;
 
     BoolProperty enableMasking_;
+    DoubleVec4Property fillColor_;
     IntSizeTProperty idx_;
 
     ButtonProperty addIdx_;

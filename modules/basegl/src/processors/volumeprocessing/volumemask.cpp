@@ -34,15 +34,12 @@
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/util/indexmapper.h>
 
-#include <fstream>
-#include <limits>
-
 namespace inviwo {
 
 const ProcessorInfo VolumeMask::processorInfo_{
     "org.inviwo.VolumeMask",  // Class identifier
     "Volume Mask",            // Display name
-    "Mesh Rendering",         // Category
+    "Volume Operation",         // Category
     CodeState::Experimental,  // Code state
     Tags::CPU,                // Tags
 };
@@ -54,6 +51,7 @@ VolumeMask::VolumeMask()
     , volumeAnnotationInport_("volume_annotation_inport")
     , volumeOutport_("volume_outport")
     , enableMasking_("enableMasking", "Enable Masking", true)
+    , fillColor_("fillColor", "Fill Color", vec4{0.0}, vec4{0.0}, vec4{1.0}, vec4{1e-3})
     , idx_("idx", "Index", 0, 0, 10000000000, 1, InvalidationLevel::Valid)
     , addIdx_("addIdx", "Add Index")
     , removeIdx_("removeIdx", "Remove Index")
@@ -66,6 +64,8 @@ VolumeMask::VolumeMask()
     addPort(volumeOutport_);
 
     addProperty(enableMasking_);
+    fillColor_.setSemantics(PropertySemantics::Color);
+    addProperty(fillColor_);
     addProperty(idx_);
 
     addProperty(addIdx_);
@@ -114,64 +114,57 @@ VolumeMask::VolumeMask()
 }
 
 void VolumeMask::process() {
-    if (enableMasking_.get()) {
-        const auto volumeIn = volumeInport_.getData();
-        auto volumeOut = volumeIn->clone();
+    if (!enableMasking_) {
+        volumeOutport_.setData(volumeInport_.getData());
+        return;
+    }
+    const auto volumeIn = volumeInport_.getData();
+    auto volumeOut = volumeIn->clone();
 
-        const auto vInRAM = volumeIn->getRepresentation<VolumeRAM>();
-        auto vOutRAM = volumeOut->getEditableRepresentation<VolumeRAM>();
-        const auto annoInRAM = volumeAnnotationInport_.getData()->getRepresentation<VolumeRAM>();
+    const auto vInRAM = volumeIn->getRepresentation<VolumeRAM>();
+    const auto annoInRAM = volumeAnnotationInport_.getData()->getRepresentation<VolumeRAM>();
+    auto vOutRAM = volumeOut->getEditableRepresentation<VolumeRAM>();
 
-        annoInRAM->dispatch<void>([this, &vInRAM, &vOutRAM](auto annoVol) {
-            using ValueType = util::PrecsionValueType<decltype(annoVol)>;
-            using P = typename util::same_extent<ValueType, unsigned int>::type;
+    annoInRAM->dispatch<void>([this, &vInRAM, &vOutRAM](auto annoVol) {
+        using ValueType = util::PrecsionValueType<decltype(annoVol)>;
+        using P = typename util::same_extent<ValueType, unsigned int>::type;
 
-            // pre-convert, saves a lot of time
-            std::vector<P> refIdxList;
-            refIdxList.reserve(idxList_.getValues().size());
-            for (const auto& idx : idxList_.getValues()) {
-                refIdxList.push_back(P(idx));
-            }
+        // pre-convert, saves a lot of time
+        std::vector<P> refIdxList;
+        refIdxList.reserve(idxList_.getValues().size());
+        for (const auto& idx : idxList_.getValues()) {
+            refIdxList.push_back(P(idx));
+        }
 
-            const size3_t dims{vInRAM->getDimensions()};
-            util::IndexMapper3D indexMapper(dims);
-            const auto anno = annoVol->getDataTyped();
+        const size3_t dims{vInRAM->getDimensions()};
+        util::IndexMapper3D indexMapper(dims);
+        const auto anno = annoVol->getDataTyped();
 
-            size_t numMatchingVoxels{0};
 #pragma omp parallel for
-            for (long z = 0; z < dims.z; ++z) {
-                for (size_t y = 0; y < dims.y; ++y) {
-                    for (size_t x = 0; x < dims.x; ++x) {
-                        P annoValue = anno[indexMapper(x, y, z)];
+        for (long z = 0; z < dims.z; ++z) {
+            for (size_t y = 0; y < dims.y; ++y) {
+                for (size_t x = 0; x < dims.x; ++x) {
+                    P annoValue = anno[indexMapper(x, y, z)];
 
-                        // check if index is in reference volume
-                        const size3_t pos{x, y, z};
-                        bool contains{false};
-                        for (const auto& refIdx : refIdxList) {
-                            if (glm::all(annoValue == refIdx)) {
-                                contains = true;
-                                break;
-                            }
+                    // check if index is in reference volume
+                    const size3_t pos{x, y, z};
+                    bool contains{false};
+                    for (const auto& refIdx : refIdxList) {
+                        if (glm::all(annoValue == refIdx)) {
+                            contains = true;
+                            break;
                         }
+                    }
 
-                        // copy if index is valid, otherwise set to zero
-                        if (contains) {
-                            vOutRAM->setFromDVec4(pos, vInRAM->getAsDVec4(pos));
-                            numMatchingVoxels++;
-                        } else {
-                            vOutRAM->setFromDouble(pos, 0.0);
-                        }
+                    if (!contains) {
+                        vOutRAM->setFromDVec4(pos, fillColor_.get());
                     }
                 }
             }
+        }
+    });
 
-            LogInfo(numMatchingVoxels << " voxels match index, avg value");
-        });
-
-        volumeOutport_.setData(volumeOut);
-    } else {
-        volumeOutport_.setData(volumeInport_.getData());
-    }
+    volumeOutport_.setData(volumeOut);
 }
 
 }  // namespace inviwo
