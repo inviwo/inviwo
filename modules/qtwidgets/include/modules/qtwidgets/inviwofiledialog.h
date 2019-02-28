@@ -86,7 +86,7 @@ public:
     virtual void setCurrentDirectory(const std::string &path) override;
 
     virtual FileExtension getSelectedFileExtension() const override;
-    virtual void setSelectedExtenstion(const FileExtension &ext) override;
+    virtual void setSelectedExtension(const FileExtension &ext) override;
 
     virtual void addExtension(const FileExtension &fileExt) override;
     virtual void addExtension(const std::string &ext, const std::string &description) override;

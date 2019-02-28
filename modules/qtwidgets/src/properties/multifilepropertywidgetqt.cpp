@@ -135,7 +135,7 @@ void MultiFilePropertyWidgetQt::setPropertyValue() {
     importFileDialog.setFileMode(property_->getFileMode());
 
     auto ext = property_->getSelectedExtension();
-    if (!ext.empty()) importFileDialog.setSelectedExtenstion(ext);
+    if (!ext.empty()) importFileDialog.setSelectedExtension(ext);
 
     if (importFileDialog.exec()) {
         std::vector<std::string> filenames;

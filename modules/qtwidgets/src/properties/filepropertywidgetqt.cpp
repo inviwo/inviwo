@@ -145,11 +145,11 @@ void FilePropertyWidgetQt::setPropertyValue() {
     importFileDialog.setFileMode(property_->getFileMode());
 
     auto ext = property_->getSelectedExtension();
-    if (!ext.empty()) importFileDialog.setSelectedExtenstion(ext);
+    if (!ext.empty()) importFileDialog.setSelectedExtension(ext);
 
     if (importFileDialog.exec()) {
-        property_->set(importFileDialog.getSelectedFile());
         property_->setSelectedExtension(importFileDialog.getSelectedFileExtension());
+        property_->set(importFileDialog.getSelectedFile());
     }
 
     updateFromProperty();
