@@ -42,6 +42,7 @@ set(HEADER_FILES
     include/modules/basegl/processors/imageprocessing/imagelayoutgl.h
     include/modules/basegl/processors/imageprocessing/imagelowpass.h
     include/modules/basegl/processors/imageprocessing/imagemapping.h
+    include/modules/basegl/processors/imageprocessing/imagemask.h
     include/modules/basegl/processors/imageprocessing/imagemixer.h
     include/modules/basegl/processors/imageprocessing/imagenormalizationprocessor.h
     include/modules/basegl/processors/imageprocessing/imageoverlaygl.h
@@ -122,6 +123,7 @@ set(SOURCE_FILES
     src/processors/imageprocessing/imagelayoutgl.cpp
     src/processors/imageprocessing/imagelowpass.cpp
     src/processors/imageprocessing/imagemapping.cpp
+    src/processors/imageprocessing/imagemask.cpp
     src/processors/imageprocessing/imagemixer.cpp
     src/processors/imageprocessing/imagenormalizationprocessor.cpp
     src/processors/imageprocessing/imageoverlaygl.cpp

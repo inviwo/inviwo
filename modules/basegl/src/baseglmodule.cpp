@@ -52,6 +52,7 @@
 #include <modules/basegl/processors/imageprocessing/imagelayoutgl.h>
 #include <modules/basegl/processors/imageprocessing/imagelowpass.h>
 #include <modules/basegl/processors/imageprocessing/imagemapping.h>
+#include <modules/basegl/processors/imageprocessing/imagemask.h>
 #include <modules/basegl/processors/imageprocessing/imagemixer.h>
 #include <modules/basegl/processors/imageprocessing/imagenormalizationprocessor.h>
 #include <modules/basegl/processors/imageprocessing/imageoverlaygl.h>
@@ -148,6 +149,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerProcessor<ImageLayer>();
     registerProcessor<ImageLowPass>();
     registerProcessor<ImageMapping>();
+    registerProcessor<ImageMask>();
     registerProcessor<ImageNormalizationProcessor>();
     registerProcessor<ImageResample>();
     registerProcessor<ImageScaling>();
