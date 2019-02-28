@@ -51,7 +51,7 @@ VolumeMask::VolumeMask()
     , volumeAnnotationInport_("volume_annotation_inport")
     , volumeOutport_("volume_outport")
     , enableMasking_("enableMasking", "Enable Masking", true)
-    , fillColor_("fillColor", "Fill Color", vec4{0.0}, vec4{0.0}, vec4{1.0}, vec4{1e-3})
+    , fillColor_("fillColor", "Fill Color", vec4{0.0}, vec4{0.0}, vec4{65535.0}, vec4{1e-3})
     , idx_("idx", "Index", 0, 0, 10000000000, 1, InvalidationLevel::Valid)
     , addIdx_("addIdx", "Add Index")
     , removeIdx_("removeIdx", "Remove Index")
@@ -64,7 +64,6 @@ VolumeMask::VolumeMask()
     addPort(volumeOutport_);
 
     addProperty(enableMasking_);
-    fillColor_.setSemantics(PropertySemantics::Color);
     addProperty(fillColor_);
     addProperty(idx_);
 
