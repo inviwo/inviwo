@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,46 +26,39 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#ifndef IVW_FONTPROPERTY_H
-#define IVW_FONTPROPERTY_H
-
-#include <modules/fontrendering/fontrenderingmoduledefine.h>
+#include <modules/plotting/plottingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <modules/fontrendering/datastructures/fontsettings.h>
+#include <modules/plotting/datastructures/majorticksettings.h>
 
 namespace inviwo {
 
-class IVW_MODULE_FONTRENDERING_API FontProperty : public FontSettings, public CompositeProperty {
+namespace plot {
+
+class IVW_MODULE_PLOTTING_API MajorTickData : public MajorTickSettings {
 public:
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    MajorTickData() = default;
+    virtual ~MajorTickData() = default;
 
-    FontProperty(const std::string& identifier, const std::string& displayName,
-                 InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-                 PropertySemantics semantics = PropertySemantics::Default);
-    FontProperty(const FontProperty& rhs);
-    FontProperty& operator=(const FontProperty& rhs) = default;
-    virtual FontProperty* clone() const override;
-    virtual ~FontProperty() = default;
+    // Inherited via MajorTickSettings
+    virtual TickStyle getStyle() const override;
+    virtual vec4 getColor() const override;
+    virtual float getTickLength() const override;
+    virtual float getTickWidth() const override;
+    virtual double getTickDelta() const override;
+    virtual bool getRangeBasedTicks() const override;
 
-    OptionPropertyString fontFace_;
-    IntProperty fontSize_;
-    FloatProperty lineSpacing_;
-    FloatVec2Property anchorPos_;
+    TickStyle style = TickStyle::Both;
+    vec4 color = vec4{0.0f, 0.0f, 0.0f, 1.0f};
+    float tickLength = 8.0f;
+    float tickWidth = 2.5f;
+    double tickDelta = 0.0;
+    bool rangeBasedTicks = false;
 
-    // Inherited via FontSettings
-    virtual std::string getFontFace() const override;
-    virtual int getFontSize() const override;
-    virtual float getLineSpacing() const override;
-    virtual vec2 getAnchorPos() const override;
 };
 
-}  // namespace inviwo
+}
 
-#endif  // IVW_FONTPROPERTY_H
+}  // namespace inviwo

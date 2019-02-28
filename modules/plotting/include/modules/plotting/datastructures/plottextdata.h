@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,44 +26,21 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_PLOTTEXTPROPERTY_H
-#define IVW_PLOTTEXTPROPERTY_H
+#pragma once
 
 #include <modules/plotting/plottingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-
-#include <inviwo/core/properties/boolcompositeproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <modules/fontrendering/properties/fontproperty.h>
 #include <modules/plotting/datastructures/plottextsettings.h>
+#include <modules/fontrendering/datastructures/fontdata.h>
 
 namespace inviwo {
 
 namespace plot {
 
-class IVW_MODULE_PLOTTING_API PlotTextProperty : public PlotTextSettings, public BoolCompositeProperty {
+class IVW_MODULE_PLOTTING_API PlotTextData : public PlotTextSettings {
 public:
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
-
-    PlotTextProperty(const std::string& identifier, const std::string& displayName,
-                     bool checked = false,
-                     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-                     PropertySemantics semantics = PropertySemantics::Default);
-    PlotTextProperty(const PlotTextProperty& rhs);
-    PlotTextProperty& operator=(const PlotTextProperty& rhs) = default;
-    virtual PlotTextProperty* clone() const override;
-    virtual ~PlotTextProperty() = default;
-
-    StringProperty title_;
-    FloatVec4Property color_;
-    FloatProperty position_;  //!< position along axis [0,1]
-    FloatProperty offset_;    //!< offset from axis
-    FloatProperty rotation_;  //!< Degrees of rotation
-    FontProperty font_;
+    PlotTextData() = default;
+    virtual ~PlotTextData() = default;
 
     // Inherited via PlotTextSettings
     virtual std::string getTitle() const override;
@@ -72,10 +49,15 @@ public:
     virtual float getOffset() const override;
     virtual float getRotation() const override;
     virtual const FontSettings& getFont() const override;
+
+    std::string title = "";
+    vec4 color = vec4{0.0f, 0.0f, 0.0f, 1.0f};
+    float position = 0.5f;
+    float offset = 10.0f;
+    float rotation = 0.0f;
+    FontData font;
 };
 
 }  // namespace plot
 
 }  // namespace inviwo
-
-#endif  // IVW_PLOTTEXTPROPERTY_H

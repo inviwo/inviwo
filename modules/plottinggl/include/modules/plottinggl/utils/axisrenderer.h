@@ -72,7 +72,7 @@ public:
 protected:
     void renderAxis(Camera* camera, const size2_t& outputDims, bool antialiasing);
 
-	void configureShader(Shader& shader);
+    void configureShader(Shader& shader);
 
     void invalidateInternalState(bool positionChange);
 

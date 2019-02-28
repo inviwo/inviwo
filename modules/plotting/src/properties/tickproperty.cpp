@@ -85,6 +85,18 @@ MajorTickProperty::MajorTickProperty(const MajorTickProperty& rhs)
 
 MajorTickProperty* MajorTickProperty::clone() const { return new MajorTickProperty(*this); }
 
+TickStyle MajorTickProperty::getStyle() const { return style_.getSelectedValue(); }
+
+vec4 MajorTickProperty::getColor() const { return color_.get(); }
+
+float MajorTickProperty::getTickLength() const { return tickLength_.get(); }
+
+float MajorTickProperty::getTickWidth() const { return tickWidth_.get(); }
+
+double MajorTickProperty::getTickDelta() const { return tickDelta_.get(); }
+
+bool MajorTickProperty::getRangeBasedTicks() const { return rangeBasedTicks_.get(); }
+
 MinorTickProperty::MinorTickProperty(const std::string& identifier, const std::string& displayName,
                                      InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
@@ -127,6 +139,18 @@ MinorTickProperty::MinorTickProperty(const MinorTickProperty& rhs)
 }
 
 MinorTickProperty* MinorTickProperty::clone() const { return new MinorTickProperty(*this); }
+
+TickStyle MinorTickProperty::getStyle() const { return style_.getSelectedValue(); }
+
+bool MinorTickProperty::getFillAxis() const { return fillAxis_.get(); }
+
+vec4 MinorTickProperty::getColor() const { return color_.get(); }
+
+float MinorTickProperty::getTickLength() const { return tickLength_.get(); }
+
+float MinorTickProperty::getTickWidth() const { return tickWidth_.get(); }
+
+int MinorTickProperty::getTickFrequency() const { return tickFrequency_.get(); }
 
 TickProperty::TickProperty(const std::string& identifier, const std::string& displayName,
                            InvalidationLevel invalidationLevel, PropertySemantics semantics)

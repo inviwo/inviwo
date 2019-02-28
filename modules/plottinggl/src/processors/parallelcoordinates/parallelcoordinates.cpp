@@ -182,8 +182,7 @@ ParallelCoordinates::ParallelCoordinates()
     text_.addProperty(color_);
     text_.addProperty(fontSize_);
     text_.addProperty(valuesFontSize_);
-    text_
-        .onChange([&]() { autoMargins_.pressButton(); });
+    text_.onChange([&]() { autoMargins_.pressButton(); });
 
     axisProperties_.setCollapsed(true);
     axisProperties_.onChange([&]() { recreateLines_ = true; });
@@ -207,7 +206,7 @@ ParallelCoordinates::ParallelCoordinates()
     labelPosition_.addOption("none", "None", LabelPosition::None);
     labelPosition_.addOption("above", "Above", LabelPosition::Above);
     labelPosition_.addOption("below", "Below", LabelPosition::Below);
-    //labelPosition_.onChange([&]() { autoMargins_.pressButton(); });
+    // labelPosition_.onChange([&]() { autoMargins_.pressButton(); });
     labelPosition_.setSelectedIndex(2);
 
     showValue_.onChange([&]() { autoMargins_.pressButton(); });
@@ -235,13 +234,13 @@ ParallelCoordinates::ParallelCoordinates()
                                   : 0;
                 if (labelPosition_.get() != LabelPosition::None) {
                     // Caption might stick out next to the handle
-                    auto captionX = static_cast<float>(0.5f*renderer->getCaptionTextSize().x);
+                    auto captionX = static_cast<float>(0.5f * renderer->getCaptionTextSize().x);
                     if (leftLabelWidth == 0) {
                         leftLabelWidth = std::max(labelX, captionX);
                     }
                     rightLabelWidth = std::max(labelX, captionX);
                     maxLabelHeight = std::max(
-                        maxLabelHeight, 2 *renderer->getCaptionTextSize().y + handleCaptionMargin);
+                        maxLabelHeight, 2 * renderer->getCaptionTextSize().y + handleCaptionMargin);
                 }
                 if (showValue_.get()) {
                     right = labelX;
@@ -380,9 +379,8 @@ void ParallelCoordinates::process() {
     utilgl::activateAndClearTarget(outport_, ImageType::ColorPicking);
     utilgl::GlBoolState depthTest(GL_DEPTH_TEST, false);
 
-
     drawLines(dims);
-	drawAxis(dims, enabledAxis);
+    drawAxis(dims, enabledAxis);
     drawHandles(dims, enabledAxis);
 
     utilgl::deactivateCurrentTarget();
@@ -825,9 +823,9 @@ void ParallelCoordinates::updateAxesLayout() {
         prop->caption_.setChecked(labelPosition_.get() != LabelPosition::None);
         const auto &renderer = std::get<2>(p);
 
-		// Horizontal offset is given in pixels and since we are using vertical alignment
-		// it is the height of the text
-        float x = (0.f - 0.5f*renderer->getCaptionTextSize().y);
+        // Horizontal offset is given in pixels and since we are using vertical alignment
+        // it is the height of the text
+        float x = (0.f - 0.5f * renderer->getCaptionTextSize().y);
         // Vertical offset is given with respect to axis length
         auto axisLength = outport_.getDimensions().y - margins_.getTop() - margins_.getBottom();
         float y = (renderer->getCaptionTextSize().y + handleSize_.get().y + handleCaptionMargin) /
@@ -841,10 +839,10 @@ void ParallelCoordinates::updateAxesLayout() {
 
         vec2 captionPos(x, y);
 
-		// Horizontal offset
+        // Horizontal offset
         prop->caption_.offset_.set(captionPos.x, captionPos.x - 0.1f, captionPos.x + 0.1f, 0.05f);
-		// Vertical offset
-		prop->caption_.position_.set(captionPos.y, captionPos.y - 0.1f, captionPos.y + .1f, 0.05f);
+        // Vertical offset
+        prop->caption_.position_.set(captionPos.y, captionPos.y - 0.1f, captionPos.y + .1f, 0.05f);
     }
 }
 

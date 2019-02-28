@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,56 +26,38 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_PLOTTEXTPROPERTY_H
-#define IVW_PLOTTEXTPROPERTY_H
+#pragma once
 
 #include <modules/plotting/plottingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
-#include <inviwo/core/properties/boolcompositeproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <modules/fontrendering/properties/fontproperty.h>
-#include <modules/plotting/datastructures/plottextsettings.h>
+#include <modules/plotting/datastructures/minorticksettings.h>
 
 namespace inviwo {
 
 namespace plot {
 
-class IVW_MODULE_PLOTTING_API PlotTextProperty : public PlotTextSettings, public BoolCompositeProperty {
+class IVW_MODULE_PLOTTING_API MinorTickData : public MinorTickSettings {
 public:
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    MinorTickData() = default;
+    virtual ~MinorTickData() = default;
 
-    PlotTextProperty(const std::string& identifier, const std::string& displayName,
-                     bool checked = false,
-                     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-                     PropertySemantics semantics = PropertySemantics::Default);
-    PlotTextProperty(const PlotTextProperty& rhs);
-    PlotTextProperty& operator=(const PlotTextProperty& rhs) = default;
-    virtual PlotTextProperty* clone() const override;
-    virtual ~PlotTextProperty() = default;
+    TickStyle style = TickStyle::Outside;
+    bool fillAxis = true;
+    vec4 color = vec4{0.0f, 0.0f, 0.0f, 1.0f};
+    float tickLength = 6.0f;
+    float tickWidth = 1.5f;
+    int tickFrequency = 2;
 
-    StringProperty title_;
-    FloatVec4Property color_;
-    FloatProperty position_;  //!< position along axis [0,1]
-    FloatProperty offset_;    //!< offset from axis
-    FloatProperty rotation_;  //!< Degrees of rotation
-    FontProperty font_;
-
-    // Inherited via PlotTextSettings
-    virtual std::string getTitle() const override;
+    // Inherited via MinorTickSettings
+    virtual TickStyle getStyle() const override;
+    virtual bool getFillAxis() const override;
     virtual vec4 getColor() const override;
-    virtual float getPosition() const override;
-    virtual float getOffset() const override;
-    virtual float getRotation() const override;
-    virtual const FontSettings& getFont() const override;
+    virtual float getTickLength() const override;
+    virtual float getTickWidth() const override;
+    virtual int getTickFrequency() const override;
 };
 
 }  // namespace plot
 
 }  // namespace inviwo
-
-#endif  // IVW_PLOTTEXTPROPERTY_H

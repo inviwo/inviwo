@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,46 +26,29 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_FONTPROPERTY_H
-#define IVW_FONTPROPERTY_H
+#pragma once
 
 #include <modules/fontrendering/fontrenderingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
 #include <modules/fontrendering/datastructures/fontsettings.h>
 
 namespace inviwo {
 
-class IVW_MODULE_FONTRENDERING_API FontProperty : public FontSettings, public CompositeProperty {
+class IVW_MODULE_FONTRENDERING_API FontData : public FontSettings {
 public:
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
-
-    FontProperty(const std::string& identifier, const std::string& displayName,
-                 InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-                 PropertySemantics semantics = PropertySemantics::Default);
-    FontProperty(const FontProperty& rhs);
-    FontProperty& operator=(const FontProperty& rhs) = default;
-    virtual FontProperty* clone() const override;
-    virtual ~FontProperty() = default;
-
-    OptionPropertyString fontFace_;
-    IntProperty fontSize_;
-    FloatProperty lineSpacing_;
-    FloatVec2Property anchorPos_;
+    FontData() = default;
+    virtual ~FontData() = default;
 
     // Inherited via FontSettings
     virtual std::string getFontFace() const override;
     virtual int getFontSize() const override;
     virtual float getLineSpacing() const override;
     virtual vec2 getAnchorPos() const override;
+
+    std::string fontFace = "Montserrat-Medium";
+    int fontSize = 14;
+    float lineSpacing = 0.0f;
+    vec2 anchorPos = vec2(-1.0f);
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_FONTPROPERTY_H

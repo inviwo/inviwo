@@ -139,7 +139,7 @@ AxisProperty* AxisProperty::clone() const { return new AxisProperty(*this); }
 
 void AxisProperty::setTitle(const std::string& title) { caption_.title_.set(title); }
 
-const std::string& AxisProperty::getTitle() const { return caption_.title_.get(); }
+std::string AxisProperty::getTitle() const { return caption_.title_.get(); }
 
 void AxisProperty::setLabelFormat(const std::string& formatStr) { labels_.title_.set(formatStr); }
 
@@ -168,6 +168,30 @@ void AxisProperty::adjustAlignment() {
     labels_.font_.anchorPos_.set(anchor);
     caption_.font_.anchorPos_.set(anchor);
 }
+
+bool AxisProperty::getVisible() const { return visible_.get(); }
+
+vec4 AxisProperty::getColor() const { return color_.get(); }
+
+float AxisProperty::getWidth() const { return width_.get(); }
+
+bool AxisProperty::getUseDataRange() const { return useDataRange_.get(); }
+
+dvec2 AxisProperty::getRange() const { return range_.get(); }
+
+AxisSettings::Orientation AxisProperty::getOrientation() const {
+    return orientation_.getSelectedValue();
+}
+
+AxisSettings::Placement AxisProperty::getPlacement() const { return placement_.getSelectedValue(); }
+
+const PlotTextSettings& AxisProperty::getCaption() const { return caption_; }
+
+const PlotTextSettings& AxisProperty::getLabels() const { return labels_; }
+
+const MajorTickSettings& AxisProperty::getMajorTicks() const { return ticks_.majorTicks_; }
+
+const MinorTickSettings& AxisProperty::getMinorTicks() const { return ticks_.minorTicks_; }
 
 }  // namespace plot
 

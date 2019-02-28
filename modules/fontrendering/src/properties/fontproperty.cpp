@@ -76,4 +76,12 @@ FontProperty::FontProperty(const FontProperty& rhs)
 
 FontProperty* FontProperty::clone() const { return new FontProperty(*this); }
 
+std::string FontProperty::getFontFace() const { return fontFace_.getSelectedValue(); }
+
+int FontProperty::getFontSize() const { return fontSize_.get(); }
+
+float FontProperty::getLineSpacing() const { return lineSpacing_.get(); }
+
+vec2 FontProperty::getAnchorPos() const { return anchorPos_.get(); }
+
 }  // namespace inviwo

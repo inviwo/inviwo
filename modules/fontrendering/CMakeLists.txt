@@ -7,6 +7,8 @@ ivw_module(FontRendering)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
+    include/modules/fontrendering/datastructures/fontdata.h
+    include/modules/fontrendering/datastructures/fontsettings.h
     include/modules/fontrendering/datastructures/texatlasentry.h
     include/modules/fontrendering/fontrenderingmodule.h
     include/modules/fontrendering/fontrenderingmoduledefine.h
@@ -21,6 +23,8 @@ ivw_group("Header Files" ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
+    src/datastructures/fontdata.cpp
+    src/datastructures/fontsettings.cpp
     src/datastructures/texatlasentry.cpp
     src/fontrenderingmodule.cpp
     src/processors/textoverlaygl.cpp

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,56 +26,55 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_PLOTTEXTPROPERTY_H
-#define IVW_PLOTTEXTPROPERTY_H
+#pragma once
 
 #include <modules/plotting/plottingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
-#include <inviwo/core/properties/boolcompositeproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <modules/fontrendering/properties/fontproperty.h>
-#include <modules/plotting/datastructures/plottextsettings.h>
+#include <modules/plotting/datastructures/axissettings.h>
+
+#include <modules/plotting/datastructures/plottextdata.h>
+#include <modules/plotting/datastructures/majortickdata.h>
+#include <modules/plotting/datastructures/minortickdata.h>
 
 namespace inviwo {
 
 namespace plot {
 
-class IVW_MODULE_PLOTTING_API PlotTextProperty : public PlotTextSettings, public BoolCompositeProperty {
+class IVW_MODULE_PLOTTING_API AxisData : public AxisSettings {
 public:
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    AxisData() = default;
+    virtual ~AxisData() = default;
 
-    PlotTextProperty(const std::string& identifier, const std::string& displayName,
-                     bool checked = false,
-                     InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-                     PropertySemantics semantics = PropertySemantics::Default);
-    PlotTextProperty(const PlotTextProperty& rhs);
-    PlotTextProperty& operator=(const PlotTextProperty& rhs) = default;
-    virtual PlotTextProperty* clone() const override;
-    virtual ~PlotTextProperty() = default;
+    std::string title;
+    bool visible;
+    vec4 color;
+    float width;
+    bool useDataRange;
+    dvec2 range;
 
-    StringProperty title_;
-    FloatVec4Property color_;
-    FloatProperty position_;  //!< position along axis [0,1]
-    FloatProperty offset_;    //!< offset from axis
-    FloatProperty rotation_;  //!< Degrees of rotation
-    FontProperty font_;
+    Orientation orientation;
+    Placement placement;
+  
+    PlotTextData caption;
+    PlotTextData labels;
+    MajorTickData majorTicks;
+    MinorTickData minorticks;
 
-    // Inherited via PlotTextSettings
+    // Inherited via AxisSettings
     virtual std::string getTitle() const override;
+    virtual bool getVisible() const override;
     virtual vec4 getColor() const override;
-    virtual float getPosition() const override;
-    virtual float getOffset() const override;
-    virtual float getRotation() const override;
-    virtual const FontSettings& getFont() const override;
+    virtual float getWidth() const override;
+    virtual bool getUseDataRange() const override;
+    virtual dvec2 getRange() const override;
+    virtual Orientation getOrientation() const override;
+    virtual Placement getPlacement() const override;
+    virtual const PlotTextSettings& getCaption() const override;
+    virtual const PlotTextSettings& getLabels() const override;
+    virtual const MajorTickSettings& getMajorTicks() const override;
+    virtual const MinorTickSettings& getMinorTicks() const override;
 };
 
 }  // namespace plot
-
 }  // namespace inviwo
-
-#endif  // IVW_PLOTTEXTPROPERTY_H

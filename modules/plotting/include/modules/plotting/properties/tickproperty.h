@@ -38,13 +38,15 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 
+#include <modules/plotting/datastructures/majorticksettings.h>
+#include <modules/plotting/datastructures/minorticksettings.h>
+
 namespace inviwo {
 
 namespace plot {
 
-enum class TickStyle { None, Inside, Outside, Both };
 
-class IVW_MODULE_PLOTTING_API MajorTickProperty : public CompositeProperty {
+class IVW_MODULE_PLOTTING_API MajorTickProperty : public MajorTickSettings, public CompositeProperty {
 public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
@@ -63,9 +65,18 @@ public:
     FloatProperty tickWidth_;
     DoubleProperty tickDelta_;
     BoolProperty rangeBasedTicks_;
+
+    // Inherited via MajorTickSettings
+    virtual TickStyle getStyle() const override;
+    virtual vec4 getColor() const override;
+    virtual float getTickLength() const override;
+    virtual float getTickWidth() const override;
+    virtual double getTickDelta() const override;
+    virtual bool getRangeBasedTicks() const override;
 };
 
-class IVW_MODULE_PLOTTING_API MinorTickProperty : public CompositeProperty {
+class IVW_MODULE_PLOTTING_API MinorTickProperty
+    : public MinorTickSettings, public CompositeProperty {
 public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
@@ -84,6 +95,14 @@ public:
     FloatProperty tickLength_;
     FloatProperty tickWidth_;
     IntProperty tickFrequency_;
+
+    // Inherited via MinorTickSettings
+    virtual TickStyle getStyle() const override;
+    virtual bool getFillAxis() const override;
+    virtual vec4 getColor() const override;
+    virtual float getTickLength() const override;
+    virtual float getTickWidth() const override;
+    virtual int getTickFrequency() const override;
 };
 
 class IVW_MODULE_PLOTTING_API TickProperty : public CompositeProperty {
