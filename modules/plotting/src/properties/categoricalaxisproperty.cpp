@@ -60,6 +60,10 @@ CategoricalAxisProperty* CategoricalAxisProperty::clone() const {
     return new CategoricalAxisProperty(*this);
 }
 
+const std::vector<std::string>& CategoricalAxisProperty::getCategories() const {
+  return categories_;
+}
+
 void CategoricalAxisProperty::setCategories(std::vector<std::string> categories) {
     categories_ = categories;
     range_.set({0, static_cast<double>(categories_.size() - 1)},

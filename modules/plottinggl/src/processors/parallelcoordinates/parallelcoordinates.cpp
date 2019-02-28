@@ -62,7 +62,7 @@ namespace plot {
 static const float handleW = 40;
 static const float handleH = 20;
 
-static const size_t handleCaptionMargin = 0;  // Distance between caption text and handle
+static const size_t handleCaptionMargin = 2;  // Distance between caption text and handle
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo ParallelCoordinates::processorInfo_{
@@ -182,8 +182,7 @@ ParallelCoordinates::ParallelCoordinates()
     text_.addProperty(color_);
     text_.addProperty(fontSize_);
     text_.addProperty(valuesFontSize_);
-    text_
-        .onChange([&]() { autoMargins_.pressButton(); });
+    text_.onChange([&]() { autoMargins_.pressButton(); });
 
     axisProperties_.setCollapsed(true);
     axisProperties_.onChange([&]() { recreateLines_ = true; });
@@ -207,7 +206,6 @@ ParallelCoordinates::ParallelCoordinates()
     labelPosition_.addOption("none", "None", LabelPosition::None);
     labelPosition_.addOption("above", "Above", LabelPosition::Above);
     labelPosition_.addOption("below", "Below", LabelPosition::Below);
-    //labelPosition_.onChange([&]() { autoMargins_.pressButton(); });
     labelPosition_.setSelectedIndex(2);
 
     showValue_.onChange([&]() { autoMargins_.pressButton(); });
@@ -382,7 +380,7 @@ void ParallelCoordinates::process() {
 
 
     drawLines(dims);
-	drawAxis(dims, enabledAxis);
+    drawAxis(dims, enabledAxis);
     drawHandles(dims, enabledAxis);
 
     utilgl::deactivateCurrentTarget();
@@ -569,27 +567,31 @@ void ParallelCoordinates::drawHandles(size2_t size, const std::vector<ColumnAxis
 
     const auto filteredColor = handleFilteredColor_.get();
     const auto notFilteredColor = handleBaseColor_.get();
-
+    const size2_t lowerLeft(margins_.getLeft(), margins_.getBottom());
+    const size2_t upperRight(size.x - 1 - margins_.getRight(), size.y - 1 - margins_.getTop());
     float dx = 1.0f / (enabledAxis.size() - 1);
     size_t i = 0;
     for (auto elem : enabledAxis) {
         auto axes = std::get<0>(*elem);
-        float x = i++ * dx;
+        float x = std::floor(i++ * dx * (upperRight.x - lowerLeft.x) + lowerLeft.x);
+        float y = std::floor(axes->getNormalized(axes->range.get().x) * (upperRight.y - lowerLeft.y)  + lowerLeft.y);
         auto pickingID = axes->columnId_ * 2;
-
+        x = x / (size.x / 2.f) - 1.f;
+        y = y / (size.y / 2.f) - 1.f;
         // lower
         handleShader_.setUniform("color", axes->lowerBrushed_ ? filteredColor : notFilteredColor);
         handleShader_.setUniform("x", x);
         handleShader_.setUniform("w", handleSize_.get().x);
         handleShader_.setUniform("h", handleSize_.get().y);
-        handleShader_.setUniform("y", static_cast<float>(axes->getNormalized(axes->range.get().x)));
+        handleShader_.setUniform("y", y);
         handleShader_.setUniform("flipped", 0);
         handleShader_.setUniform("pickColor", handlePicking_.getColor(pickingID + 0));
 
         handleDrawer_->draw();
-
+        y = std::floor(axes->getNormalized(axes->range.get().y) * (upperRight.y - lowerLeft.y)  + lowerLeft.y);
+                y = y / (size.y / 2.f) - 1.f;
         handleShader_.setUniform("color", axes->upperBrushed_ ? filteredColor : notFilteredColor);
-        handleShader_.setUniform("y", static_cast<float>(axes->getNormalized(axes->range.get().y)));
+        handleShader_.setUniform("y", y);
         handleShader_.setUniform("flipped", 1);
         handleShader_.setUniform("pickColor", handlePicking_.getColor(pickingID + 1));
 
@@ -808,12 +810,13 @@ void ParallelCoordinates::updateAxesLayout() {
     auto firstVisible = true;
     for (auto &p : axisVector_) {
         auto &prop = std::get<1>(p);
-        // Place labels on the left side of axis for the first and right side for the others
+        // Place labels on the left side of the first
+        // and right side for the others
         if (firstVisible && prop->visible_) {
-            prop->placement_.set(AxisProperty::Placement::Outside);
-            firstVisible = false;
+          prop->placement_.set(AxisProperty::Placement::Outside);
+          firstVisible = false;
         } else {
-            prop->placement_.set(AxisProperty::Placement::Inside);
+          prop->placement_.set(AxisProperty::Placement::Inside);
         }
         prop->labels_.setChecked(showValue_.get());
         prop->labels_.color_.set(color_.get());
@@ -825,12 +828,12 @@ void ParallelCoordinates::updateAxesLayout() {
         prop->caption_.setChecked(labelPosition_.get() != LabelPosition::None);
         const auto &renderer = std::get<2>(p);
 
-		// Horizontal offset is given in pixels and since we are using vertical alignment
-		// it is the height of the text
+        // Horizontal offset is given in pixels and since we are using vertical alignment
+        // it is the height of the text
         float x = (0.f - 0.5f*renderer->getCaptionTextSize().y);
         // Vertical offset is given with respect to axis length
         auto axisLength = outport_.getDimensions().y - margins_.getTop() - margins_.getBottom();
-        float y = (renderer->getCaptionTextSize().y + handleSize_.get().y + handleCaptionMargin) /
+        float y = (renderer->getCaptionTextSize().y/2 + handleSize_.get().y + handleCaptionMargin) /
                   static_cast<float>(axisLength);
 
         if (labelPosition_.get() == LabelPosition::Above) {
@@ -838,13 +841,10 @@ void ParallelCoordinates::updateAxesLayout() {
         } else if (labelPosition_.get() == LabelPosition::Below) {
             y = -y;
         }
-
-        vec2 captionPos(x, y);
-
-		// Horizontal offset
-        prop->caption_.offset_.set(captionPos.x, captionPos.x - 0.1f, captionPos.x + 0.1f, 0.05f);
-		// Vertical offset
-		prop->caption_.position_.set(captionPos.y, captionPos.y - 0.1f, captionPos.y + .1f, 0.05f);
+        // Horizontal offset, clamp to pixel position to avoid blur
+        prop->caption_.offset_.set(static_cast<int>(x), x - 10.f, x + 10.f, 1.f);
+        // Vertical offset
+        prop->caption_.position_.set(y, y - 0.1f, y + .1f, 0.05f);
     }
 }
 

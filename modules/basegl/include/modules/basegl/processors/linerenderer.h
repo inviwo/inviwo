@@ -116,7 +116,7 @@ private:
     CameraProperty camera_;
     CameraTrackball trackball_;
 
-	MeshShaderCache lineShaders_;
+    MeshShaderCache lineShaders_;
 };
 
 }  // namespace inviwo
