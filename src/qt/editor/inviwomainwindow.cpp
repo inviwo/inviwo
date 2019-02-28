@@ -267,14 +267,20 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
         [&](Serializer& s) {
             const int fixedHeight = 256;
 
-            auto canvases = utilqt::getCanvasImages(app_->getProcessorNetwork(), false);
-            for (auto& img : canvases) {
-                img.second = img.second.scaledToHeight(fixedHeight);
-            }
+            try {
+                auto canvases = utilqt::getCanvasImages(app_->getProcessorNetwork(), false);
+                for (auto& img : canvases) {
+                    img.second = img.second.scaledToHeight(fixedHeight);
+                }
+                annotationsWidget_->getAnnotations().setCanvasImages(canvases);
 
-            annotationsWidget_->getAnnotations().setNetworkImage(
-                networkEditorView_->exportViewToImage(true, true, QSize(fixedHeight, fixedHeight)));
-            annotationsWidget_->getAnnotations().setCanvasImages(canvases);
+                annotationsWidget_->getAnnotations().setNetworkImage(
+                    networkEditorView_->exportViewToImage(true, true,
+                                                          QSize(fixedHeight, fixedHeight)));
+            } catch (...) {
+                // something went wrong fetching the canvas images, 
+                // continue saving workspace file without any images
+            }
 
             s.serialize("WorkspaceAnnotations", annotationsWidget_->getAnnotations());
         },
