@@ -196,6 +196,22 @@ protected:
     vec4 oldColor_;
 };
 
+struct IVW_MODULE_OPENGL_API ClearDepth {
+    ClearDepth() = delete;
+    ClearDepth(ClearDepth const&) = delete;
+    ClearDepth& operator=(ClearDepth const& that) = delete;
+
+    ClearDepth(float depth);
+    ClearDepth(ClearDepth&& rhs);
+    ClearDepth& operator=(ClearDepth&& that);
+
+    virtual ~ClearDepth();
+
+protected:
+    float depth_;
+    float oldDepth_;
+};
+
 struct IVW_MODULE_OPENGL_API Viewport {
     Viewport() : view_({{0, 0, 0, 0}}) {}
     Viewport(GLint x, GLint y, GLsizei width, GLsizei height) : view_({{x, y, width, height}}) {}
