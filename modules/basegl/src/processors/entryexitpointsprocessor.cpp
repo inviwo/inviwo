@@ -28,8 +28,6 @@
  *********************************************************************************/
 
 #include <modules/basegl/processors/entryexitpointsprocessor.h>
-#include <inviwo/core/interaction/cameratrackball.h>
-#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
 
 namespace inviwo {
@@ -60,10 +58,10 @@ EntryExitPoints::EntryExitPoints()
     addProperty(trackball_);
     entryPort_.addResizeEventListener(&camera_);
 
-    entryExitHelper_.getEntryExitShader().onReload(
+    for (auto& shader : entryExitHelper_.getShaders()) {
+        shader.get().onReload(
         [this]() { invalidate(InvalidationLevel::InvalidResources); });
-    entryExitHelper_.getNearClipShader().onReload(
-        [this]() { invalidate(InvalidationLevel::InvalidResources); });
+    }
 }
 
 EntryExitPoints::~EntryExitPoints() {}

@@ -47,7 +47,7 @@ void main() {
     float exit = texture(exitDepth, texCoord_.xy).r;
     vec4 color;
 
-    if (entry > exit) {
+    if ((entry > exit) && (exit > 0.0)) {
         // entry points are clipped by near plane
         // Convert texture coordinates to normalized device coordinates (ndc).
         // The z value will always be -1 on the clipping plane
