@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,30 +27,32 @@
  *
  *********************************************************************************/
 
-#include <modules/basegl/processors/entryexitpointsprocessor.h>
-#include <inviwo/core/io/serialization/versionconverter.h>
+#include <modules/basegl/processors/geometryentryexitpoints.h>
 
 namespace inviwo {
 
-const ProcessorInfo EntryExitPoints::processorInfo_{
-    "org.inviwo.EntryExitPoints",  // Class identifier
-    "Entry Exit Points",           // Display name
-    "Mesh Rendering",              // Category
-    CodeState::Stable,             // Code state
-    Tags::GL,                      // Tags
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo GeometryEntryExitPoints::processorInfo_{
+    "org.inviwo.GeometryEntryExitPoints",  // Class identifier
+    "Geometry Entry Exit Points",          // Display name
+    "Mesh Rendering",                      // Category
+    CodeState::Stable,                     // Code state
+    Tags::GL,                              // Tags
 };
-const ProcessorInfo EntryExitPoints::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo GeometryEntryExitPoints::getProcessorInfo() const { return processorInfo_; }
 
-EntryExitPoints::EntryExitPoints()
+GeometryEntryExitPoints::GeometryEntryExitPoints()
     : Processor()
-    , inport_("geometry")
+    , volumeInport_("volume")
+    , meshInport_("geometry")
     , entryPort_("entry", DataVec4UInt16::get())
     , exitPort_("exit", DataVec4UInt16::get())
     , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
-              vec3(0.0f, 1.0f, 0.0f), &inport_)
+              vec3(0.0f, 1.0f, 0.0f), &meshInport_)
     , capNearClipping_("capNearClipping", "Cap near plane clipping", true)
     , trackball_(&camera_) {
-    addPort(inport_);
+    addPort(volumeInport_);
+    addPort(meshInport_);
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");
     addProperty(capNearClipping_);
@@ -63,16 +65,10 @@ EntryExitPoints::EntryExitPoints()
     }
 }
 
-EntryExitPoints::~EntryExitPoints() {}
-
-void EntryExitPoints::process() {
+void GeometryEntryExitPoints::process() {
     entryExitHelper_(*entryPort_.getEditableData().get(), *exitPort_.getEditableData().get(),
-                     camera_.get(), *inport_.getData().get(), capNearClipping_.get());
-}
-
-void EntryExitPoints::deserialize(Deserializer& d) {
-    util::renamePort(d, {{&entryPort_, "entry-points"}, {&exitPort_, "exit-points"}});
-    Processor::deserialize(d);
+                     camera_.get(), *volumeInport_.getData().get(), *meshInport_.getData().get(),
+                     capNearClipping_.get());
 }
 
 }  // namespace inviwo

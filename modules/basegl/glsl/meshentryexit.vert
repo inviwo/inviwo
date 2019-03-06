@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,38 +27,12 @@
  * 
  *********************************************************************************/
 
-#include "utils/structs.glsl"
-#include "utils/sampler2d.glsl"
+uniform mat4 dataToClip = mat4(1);
+uniform mat4 meshDataToVolData = mat4(1);
 
-uniform sampler2D entryColor;
-uniform sampler2D entryDepth;
-uniform ImageParameters entryParameters;
-uniform sampler2D exitColor;
-uniform sampler2D exitDepth;
-uniform ImageParameters exitParameters;
-
-uniform mat4 NDCToTextureMat; // Normalized device coordinates to volume texture coordinates
-uniform float nearDist;
-
-in vec3 texCoord_;
+out vec4 color_;
 
 void main() {
-    float entry = texture(entryDepth, texCoord_.xy).r;
-    float exit = texture(exitDepth, texCoord_.xy).r;
-    vec4 color;
-
-    if ((entry > exit) && (exit > 0.0)) {
-        // entry points are clipped by near plane
-        // Convert texture coordinates to normalized device coordinates (ndc).
-        // The z value will always be -1 on the clipping plane
-        vec4 cameraCoordinates = vec4(2.0f*texCoord_.xy-1.0f, -1.0f, 1.0f);
-        // convert the ndc back to the volume texture coordinates
-        color = NDCToTextureMat * cameraCoordinates * nearDist;
-        entry = 0.0f;
-    } else {
-        color = texture(entryColor, texCoord_.xy);
-    }
-
-    FragData0 = color;
-    gl_FragDepth = entry;
+    color_ = meshDataToVolData * in_Vertex;
+    gl_Position = dataToClip * in_Vertex;
 }

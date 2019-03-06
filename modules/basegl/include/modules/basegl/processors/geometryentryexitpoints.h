@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,30 +27,31 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ENTRYEXITPOINTSPROCESSOR_H
-#define IVW_ENTRYEXITPOINTSPROCESSOR_H
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
-#include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/interaction/cameratrackball.h>
 
 #include <modules/basegl/algorithm/entryexitpoints.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.EntryExitPoints, Entry exit points}
- * ![](org.inviwo.EntryExitPoints.png?classIdentifier=org.inviwo.EntryExitPoints)
- * Computes the entry and exit points of a triangle mesh from the camera position in texture space.
- * The output color will be zero if no intersection is found, otherwise.
+/** \docpage{org.inviwo.GeometryEntryExitPoints, Geometry Entry Exit Points}
+ * ![](org.inviwo.GeometryEntryExitPoints.png?classIdentifier=org.inviwo.GeometryEntryExitPoints)
+ * Computes entry and exit points of a given mesh based on the current camera parameters.
+ * The positions of the input geometry are mapped to Data space, i.e. texture coordinates, of the
+ * input volume. The output color will be zero if no intersection is found, otherwise.
  *
  * ### Inports
- *   * __geometry__   The input mesh used for determining entry and exit points
+ *   * __volume__     Input volume used to map geometry positions to Data space
+ *   * __geometry__   Input mesh used for determining entry and exit points
  *
  * ### Outports
  *   * __entry__ The first hit point in texture coordinates [0,1]
@@ -60,21 +61,19 @@ namespace inviwo {
  *   * __Camera__   Scene camera
  */
 
-class IVW_MODULE_BASEGL_API EntryExitPoints : public Processor {
+class IVW_MODULE_BASEGL_API GeometryEntryExitPoints : public Processor {
 public:
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-    EntryExitPoints();
-    virtual ~EntryExitPoints();
+    GeometryEntryExitPoints();
+    virtual ~GeometryEntryExitPoints() = default;
 
     virtual void process() override;
 
-    // override to do member renaming.
-    virtual void deserialize(Deserializer& d) override;
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
 private:
-    MeshInport inport_;
+    VolumeInport volumeInport_;
+    MeshInport meshInport_;
     ImageOutport entryPort_;
     ImageOutport exitPort_;
 
@@ -86,5 +85,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_ENTRYEXITPOINTSPROCESSOR_H

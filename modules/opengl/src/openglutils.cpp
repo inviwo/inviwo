@@ -82,7 +82,7 @@ SwizzleMask convertSwizzleMaskFromGL(const std::array<GLint, 4>& maskGL) {
     return mask;
 }
 
-PolygonModeState& utilgl::PolygonModeState::operator=(PolygonModeState&& that) {
+PolygonModeState& PolygonModeState::operator=(PolygonModeState&& that) {
     if (this != &that) {
         mode_ = that.mode_;
         lineWidth_ = that.lineWidth_;
@@ -96,7 +96,7 @@ PolygonModeState& utilgl::PolygonModeState::operator=(PolygonModeState&& that) {
     return *this;
 }
 
-utilgl::PolygonModeState::PolygonModeState(PolygonModeState&& rhs)
+PolygonModeState::PolygonModeState(PolygonModeState&& rhs)
     : mode_(rhs.mode_)
     , lineWidth_(rhs.lineWidth_)
     , pointSize_(rhs.pointSize_)
@@ -106,7 +106,7 @@ utilgl::PolygonModeState::PolygonModeState(PolygonModeState&& rhs)
     rhs.mode_ = GL_NONE;
 }
 
-utilgl::PolygonModeState::PolygonModeState(GLenum mode, GLfloat lineWidth, GLfloat pointSize)
+PolygonModeState::PolygonModeState(GLenum mode, GLfloat lineWidth, GLfloat pointSize)
     : mode_(mode)
     , lineWidth_(lineWidth)
     , pointSize_(pointSize)
@@ -139,7 +139,7 @@ utilgl::PolygonModeState::PolygonModeState(GLenum mode, GLfloat lineWidth, GLflo
     }
 }
 
-utilgl::PolygonModeState::~PolygonModeState() {
+PolygonModeState::~PolygonModeState() {
     if (mode_ != GL_NONE) {
         switch (mode_) {
             case GL_POINT: {
@@ -162,7 +162,7 @@ utilgl::PolygonModeState::~PolygonModeState() {
     }
 }
 
-CullFaceState& utilgl::CullFaceState::operator=(CullFaceState&& that) {
+CullFaceState& CullFaceState::operator=(CullFaceState&& that) {
     if (this != &that) {
         GlBoolState::operator=(std::move(that));
         mode_ = that.mode_;
@@ -172,13 +172,12 @@ CullFaceState& utilgl::CullFaceState::operator=(CullFaceState&& that) {
     return *this;
 }
 
-utilgl::CullFaceState::CullFaceState(CullFaceState&& rhs)
+CullFaceState::CullFaceState(CullFaceState&& rhs)
     : GlBoolState(std::move(rhs)), mode_(rhs.mode_), oldMode_(rhs.oldMode_) {
     rhs.mode_ = rhs.oldMode_;
 }
 
-utilgl::CullFaceState::CullFaceState(GLint mode)
-    : GlBoolState(GL_CULL_FACE, mode != GL_NONE), mode_(mode) {
+CullFaceState::CullFaceState(GLint mode) : GlBoolState(GL_CULL_FACE, mode != GL_NONE), mode_(mode) {
     if (state_) {
         glGetIntegerv(GL_CULL_FACE_MODE, &oldMode_);
         if (oldMode_ != mode) {
@@ -187,15 +186,15 @@ utilgl::CullFaceState::CullFaceState(GLint mode)
     }
 }
 
-utilgl::CullFaceState::~CullFaceState() {
+CullFaceState::~CullFaceState() {
     if (state_ && oldMode_ != mode_) {
         glCullFace(oldMode_);
     }
 }
 
-GLint utilgl::CullFaceState::getMode() { return mode_; }
+GLint CullFaceState::getMode() { return mode_; }
 
-GlBoolState& utilgl::GlBoolState::operator=(GlBoolState&& that) {
+GlBoolState& GlBoolState::operator=(GlBoolState&& that) {
     if (this != &that) {
         target_ = 0;
         std::swap(target_, that.target_);
@@ -206,13 +205,12 @@ GlBoolState& utilgl::GlBoolState::operator=(GlBoolState&& that) {
     return *this;
 }
 
-utilgl::GlBoolState::GlBoolState(GlBoolState&& rhs)
+GlBoolState::GlBoolState(GlBoolState&& rhs)
     : target_(rhs.target_), oldState_(rhs.oldState_), state_(rhs.state_) {
     rhs.state_ = rhs.oldState_;
 }
 
-utilgl::GlBoolState::GlBoolState(GLenum target, bool state)
-    : target_(target), oldState_{}, state_(state) {
+GlBoolState::GlBoolState(GLenum target, bool state) : target_(target), oldState_{}, state_(state) {
     oldState_ = (glIsEnabled(target_) == GL_TRUE);
     if (oldState_ != state_) {
         if (state)
@@ -222,9 +220,9 @@ utilgl::GlBoolState::GlBoolState(GLenum target, bool state)
     }
 }
 
-utilgl::GlBoolState::operator bool() { return state_; }
+GlBoolState::operator bool() { return state_; }
 
-utilgl::GlBoolState::~GlBoolState() {
+GlBoolState::~GlBoolState() {
     if (oldState_ != state_) {
         if (oldState_)
             glEnable(target_);
@@ -233,7 +231,7 @@ utilgl::GlBoolState::~GlBoolState() {
     }
 }
 
-TexParameter& utilgl::TexParameter::operator=(TexParameter&& that) {
+TexParameter& TexParameter::operator=(TexParameter&& that) {
     if (this != &that) {
         unit_ = 0;
         std::swap(unit_, that.unit_);
@@ -245,12 +243,12 @@ TexParameter& utilgl::TexParameter::operator=(TexParameter&& that) {
     return *this;
 }
 
-utilgl::TexParameter::TexParameter(TexParameter&& rhs)
+TexParameter::TexParameter(TexParameter&& rhs)
     : unit_(rhs.unit_), target_(rhs.target_), name_(rhs.name_), oldValue_(rhs.oldValue_) {
     rhs.target_ = 0;
 }
 
-utilgl::TexParameter::TexParameter(const TextureUnit& unit, GLenum target, GLenum name, GLint value)
+TexParameter::TexParameter(const TextureUnit& unit, GLenum target, GLenum name, GLint value)
     : unit_(unit.getEnum()), target_(target), name_(name), oldValue_{} {
     glActiveTexture(unit_);
     glGetTexParameteriv(target_, name_, &oldValue_);
@@ -258,7 +256,7 @@ utilgl::TexParameter::TexParameter(const TextureUnit& unit, GLenum target, GLenu
     TextureUnit::setZeroUnit();
 }
 
-utilgl::TexParameter::~TexParameter() {
+TexParameter::~TexParameter() {
     if (unit_ != 0 && target_ != 0) {
         glActiveTexture(unit_);
         glTexParameteri(target_, name_, oldValue_);
@@ -266,8 +264,10 @@ utilgl::TexParameter::~TexParameter() {
     }
 }
 
-TexEnv& utilgl::TexEnv::operator=(TexEnv&& that) {
+TexEnv& TexEnv::operator=(TexEnv&& that) {
     if (this != &that) {
+        unit_ = 0;
+        std::swap(unit_, that.unit_);
         target_ = 0;
         std::swap(target_, that.target_);
         name_ = that.name_;
@@ -276,25 +276,27 @@ TexEnv& utilgl::TexEnv::operator=(TexEnv&& that) {
     return *this;
 }
 
-utilgl::TexEnv::TexEnv(TexEnv&& rhs)
-    : target_(rhs.target_), name_(rhs.name_), oldValue_(rhs.oldValue_) {
+TexEnv::TexEnv(TexEnv&& rhs)
+    : unit_(rhs.unit_), target_(rhs.target_), name_(rhs.name_), oldValue_(rhs.oldValue_) {
     rhs.target_ = 0;
 }
 
-utilgl::TexEnv::TexEnv(GLenum target, GLenum name, GLint value)
-    : target_(target), name_(name), oldValue_{} {
+TexEnv::TexEnv(const TextureUnit& unit, GLenum target, GLenum name, GLint value)
+    : unit_(unit.getEnum()), target_(target), name_(name), oldValue_{} {
     glGetTexEnviv(target_, name_, &oldValue_);
     glTexEnvi(target_, name_, value);
     TextureUnit::setZeroUnit();
 }
 
-utilgl::TexEnv::~TexEnv() {
-    if (target_ != 0) {
+TexEnv::~TexEnv() {
+    if (unit_ != 0 && target_ != 0) {
+        glActiveTexture(unit_);
         glTexEnvi(target_, name_, oldValue_);
+        TextureUnit::setZeroUnit();
     }
 }
 
-utilgl::BlendModeState::BlendModeState(GLenum smode, GLenum dmode)
+BlendModeState::BlendModeState(GLenum smode, GLenum dmode)
     : GlBoolState(GL_BLEND, smode != GL_NONE), smode_(smode), dmode_(dmode) {
     if (state_) {
         glGetIntegerv(GL_BLEND_SRC, &oldsMode_);
@@ -305,7 +307,7 @@ utilgl::BlendModeState::BlendModeState(GLenum smode, GLenum dmode)
     }
 }
 
-BlendModeState& utilgl::BlendModeState::operator=(BlendModeState&& that) {
+BlendModeState& BlendModeState::operator=(BlendModeState&& that) {
     if (this != &that) {
         GlBoolState::operator=(std::move(that));
         smode_ = that.smode_;
@@ -319,7 +321,7 @@ BlendModeState& utilgl::BlendModeState::operator=(BlendModeState&& that) {
     return *this;
 }
 
-utilgl::BlendModeState::BlendModeState(BlendModeState&& rhs)
+BlendModeState::BlendModeState(BlendModeState&& rhs)
     : GlBoolState(std::move(rhs))
     , smode_(rhs.smode_)
     , dmode_(rhs.dmode_)
@@ -329,13 +331,13 @@ utilgl::BlendModeState::BlendModeState(BlendModeState&& rhs)
     rhs.dmode_ = rhs.olddMode_;
 }
 
-utilgl::BlendModeState::~BlendModeState() {
+BlendModeState::~BlendModeState() {
     if (state_ && (oldsMode_ != smode_ || olddMode_ != dmode_)) {
         glBlendFunc(oldsMode_, olddMode_);
     }
 }
 
-utilgl::BlendModeEquationState::BlendModeEquationState(GLenum smode, GLenum dmode, GLenum eqn)
+BlendModeEquationState::BlendModeEquationState(GLenum smode, GLenum dmode, GLenum eqn)
     : BlendModeState(smode, dmode), eqn_(eqn) {
     if (state_) {
         glGetIntegerv(GL_BLEND_EQUATION_RGB, &oldEqn_);
@@ -345,7 +347,7 @@ utilgl::BlendModeEquationState::BlendModeEquationState(GLenum smode, GLenum dmod
     }
 }
 
-BlendModeEquationState& utilgl::BlendModeEquationState::operator=(BlendModeEquationState&& that) {
+BlendModeEquationState& BlendModeEquationState::operator=(BlendModeEquationState&& that) {
     if (this != &that) {
         BlendModeState::operator=(std::move(that));
         eqn_ = that.eqn_;
@@ -355,29 +357,29 @@ BlendModeEquationState& utilgl::BlendModeEquationState::operator=(BlendModeEquat
     return *this;
 }
 
-utilgl::BlendModeEquationState::BlendModeEquationState(BlendModeEquationState&& rhs)
+BlendModeEquationState::BlendModeEquationState(BlendModeEquationState&& rhs)
     : BlendModeState(std::move(rhs)), eqn_(rhs.eqn_), oldEqn_(rhs.oldEqn_) {
     rhs.eqn_ = rhs.oldEqn_;
 }
 
-utilgl::BlendModeEquationState::~BlendModeEquationState() {
+BlendModeEquationState::~BlendModeEquationState() {
     if (state_ && (oldEqn_ != eqn_)) {
         glBlendEquation(oldEqn_);
     }
 }
 
-utilgl::ClearColor::ClearColor(vec4 color) : color_(color) {
+ClearColor::ClearColor(vec4 color) : color_(color) {
     glGetFloatv(GL_COLOR_CLEAR_VALUE, glm::value_ptr(oldColor_));
     if (oldColor_ != color_) {
         glClearColor(color_.x, color_.y, color_.z, color_.w);
     }
 }
 
-utilgl::ClearColor::ClearColor(ClearColor&& rhs) : color_(rhs.color_), oldColor_(rhs.oldColor_) {
+ClearColor::ClearColor(ClearColor&& rhs) : color_(rhs.color_), oldColor_(rhs.oldColor_) {
     rhs.color_ = rhs.oldColor_;
 }
 
-ClearColor& utilgl::ClearColor::operator=(ClearColor&& that) {
+ClearColor& ClearColor::operator=(ClearColor&& that) {
     if (this != &that) {
         color_ = that.color_;
         oldColor_ = that.oldColor_;
@@ -386,13 +388,39 @@ ClearColor& utilgl::ClearColor::operator=(ClearColor&& that) {
     return *this;
 }
 
-utilgl::ClearColor::~ClearColor() {
+ClearColor::~ClearColor() {
     if (oldColor_ != color_) {
         glClearColor(oldColor_.x, oldColor_.y, oldColor_.z, oldColor_.w);
     }
 }
 
-ViewportState& utilgl::ViewportState::operator=(ViewportState&& that) {
+ClearDepth::ClearDepth(float depth) : depth_(depth) {
+    glGetFloatv(GL_DEPTH_CLEAR_VALUE, &oldDepth_);
+    if (oldDepth_ != depth_) {
+        glClearDepth(depth_);
+    }
+}
+
+ClearDepth::ClearDepth(ClearDepth&& rhs) : depth_(rhs.depth_), oldDepth_(rhs.oldDepth_) {
+    rhs.depth_ = rhs.oldDepth_;
+}
+
+ClearDepth& ClearDepth::operator=(ClearDepth&& that) {
+    if (this != &that) {
+        depth_ = that.depth_;
+        oldDepth_ = that.oldDepth_;
+        that.depth_ = that.oldDepth_;
+    }
+    return *this;
+}
+
+ClearDepth::~ClearDepth() {
+    if (oldDepth_ != depth_) {
+        glClearDepth(oldDepth_);
+    }
+}
+
+ViewportState& ViewportState::operator=(ViewportState&& that) {
     if (this != &that) {
         coords_ = {0, 0, 0, 0};
         std::swap(coords_, that.coords_);
@@ -402,22 +430,22 @@ ViewportState& utilgl::ViewportState::operator=(ViewportState&& that) {
     return *this;
 }
 
-utilgl::ViewportState::ViewportState(ViewportState&& rhs)
+ViewportState::ViewportState(ViewportState&& rhs)
     : coords_(rhs.coords_), oldCoords_(rhs.oldCoords_) {}
 
-utilgl::ViewportState::ViewportState(GLint x, GLint y, GLsizei width, GLsizei height)
+ViewportState::ViewportState(GLint x, GLint y, GLsizei width, GLsizei height)
     : coords_{x, y, width, height}, oldCoords_{} {
     oldCoords_.get();
     coords_.set();
 }
 
-utilgl::ViewportState::ViewportState(const ivec4& coords)
+ViewportState::ViewportState(const ivec4& coords)
     : coords_{coords.x, coords.y, coords.z, coords.w}, oldCoords_{} {
     oldCoords_.get();
     coords_.set();
 }
 
-utilgl::ViewportState::~ViewportState() {
+ViewportState::~ViewportState() {
     if (coords_ != oldCoords_) {
         oldCoords_.set();
     }
@@ -427,7 +455,7 @@ void Viewport::get() { glGetIntegerv(GL_VIEWPORT, view_.data()); }
 
 void Viewport::set() { glViewport(x(), y(), width(), height()); }
 
-ScissorState& utilgl::ScissorState::operator=(ScissorState&& that) {
+ScissorState& ScissorState::operator=(ScissorState&& that) {
     if (this != &that) {
         box_ = {0, 0, 0, 0};
         std::swap(box_, that.box_);
@@ -437,21 +465,21 @@ ScissorState& utilgl::ScissorState::operator=(ScissorState&& that) {
     return *this;
 }
 
-utilgl::ScissorState::ScissorState(ScissorState&& rhs) : box_(rhs.box_), oldBox_(rhs.oldBox_) {}
+ScissorState::ScissorState(ScissorState&& rhs) : box_(rhs.box_), oldBox_(rhs.oldBox_) {}
 
-utilgl::ScissorState::ScissorState(GLint x, GLint y, GLsizei width, GLsizei height)
+ScissorState::ScissorState(GLint x, GLint y, GLsizei width, GLsizei height)
     : box_{x, y, width, height}, oldBox_{} {
     oldBox_.get();
     box_.set();
 }
 
-utilgl::ScissorState::ScissorState(const ivec4& coords)
+ScissorState::ScissorState(const ivec4& coords)
     : box_{coords.x, coords.y, coords.z, coords.w}, oldBox_{} {
     oldBox_.get();
     box_.set();
 }
 
-utilgl::ScissorState::~ScissorState() {
+ScissorState::~ScissorState() {
     if (box_ != oldBox_) {
         oldBox_.set();
     }
@@ -460,6 +488,94 @@ utilgl::ScissorState::~ScissorState() {
 void ScissorBox::get() { glGetIntegerv(GL_SCISSOR_BOX, box_.data()); }
 
 void ScissorBox::set() { glScissor(x(), y(), width(), height()); }
+
+
+
+
+ColorMaskState& ColorMaskState::operator=(ColorMaskState&& that) {
+    if (this != &that) {
+        mask_ = { GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE };
+        std::swap(mask_, that.mask_);
+        oldMask_ = { GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE };
+        std::swap(oldMask_, that.oldMask_);
+    }
+    return *this;
+}
+
+ColorMaskState::ColorMaskState(ColorMaskState&& rhs) : mask_(rhs.mask_), oldMask_(rhs.oldMask_) {}
+
+ColorMaskState::ColorMaskState(GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha)
+    : mask_{red, green, blue, alpha}, oldMask_{} {
+    oldMask_.get();
+    mask_.set();
+}
+
+ColorMaskState::ColorMaskState(const bvec4& mask)
+    : mask_{mask.x, mask.y, mask.z, mask.w}, oldMask_{} {
+    oldMask_.get();
+    mask_.set();
+}
+
+ColorMaskState::~ColorMaskState() {
+    if (mask_ != oldMask_) {
+        oldMask_.set();
+    }
+}
+
+void ColorMask::get() { glGetBooleanv(GL_COLOR_WRITEMASK, mask_.data()); }
+
+void ColorMask::set() { glColorMask(red(), green(), blue(), alpha()); }
+
+ColorMaskiState& ColorMaskiState::operator=(ColorMaskiState&& that) {
+    if (this != &that) {
+        buf_ = that.buf_;
+        mask_ = { GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE };
+        std::swap(mask_, that.mask_);
+        oldMask_ = { GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE };
+        std::swap(oldMask_, that.oldMask_);
+    }
+    return *this;
+}
+
+ColorMaskiState::ColorMaskiState(ColorMaskiState&& rhs) : buf_(rhs.buf_), mask_(rhs.mask_), oldMask_(rhs.oldMask_) {}
+
+ColorMaskiState::ColorMaskiState(GLuint buf, GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha)
+    : buf_{buf}, mask_{red, green, blue, alpha}, oldMask_{} {
+    oldMask_.get();
+    mask_.set();
+}
+
+ColorMaskiState::ColorMaskiState(GLuint buf, const bvec4& mask)
+    : buf_{buf}, mask_{mask.x, mask.y, mask.z, mask.w}, oldMask_{} {
+    oldMask_.get();
+    mask_.set();
+}
+
+ColorMaskiState::~ColorMaskiState() {
+    if (mask_ != oldMask_) {
+        oldMask_.set();
+    }
+}
+
+void ColorMaski::get() {
+    // save the state of all draw buffers
+    GLint maxDrawBuffers = 8;
+    glGetIntegerv(GL_MAX_DRAW_BUFFERS, &maxDrawBuffers);
+    std::vector<GLenum> drawBuffers(static_cast<size_t>(maxDrawBuffers), GL_NONE);
+    for (int i = 0; i < maxDrawBuffers; ++i) {
+        GLint value;
+        glGetIntegerv(GL_DRAW_BUFFER0 + i, &value);
+        drawBuffers[i] = static_cast<GLenum>(value);
+    }    
+
+    glDrawBuffer(buf_);
+    glGetBooleanv(GL_COLOR_WRITEMASK, mask_.data()); 
+
+    // restore draw buffers
+    glDrawBuffers(maxDrawBuffers, drawBuffers.data());
+}
+
+void ColorMaski::set() { glColorMaski(buf_, red(), green(), blue(), alpha()); }
 
 IVW_MODULE_OPENGL_API GLfloat validateLineWidth(GLfloat width) {
     float s_sizes[2];
@@ -470,4 +586,5 @@ IVW_MODULE_OPENGL_API GLfloat validateLineWidth(GLfloat width) {
 }
 
 }  // namespace utilgl
+
 }  // namespace inviwo
