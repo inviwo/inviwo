@@ -280,9 +280,6 @@ QMenu::separator {
     border-top: 0.125em groove #383838;
     margin-left: 1.5675em;
 }
-QMenu#TF {
-    icon-size: 7.5em;
-}
 
 /************************ 
 QScrollBar 
