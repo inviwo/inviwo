@@ -51,7 +51,7 @@ namespace inviwo {
  *
  * ### Inports
  *   * __volume__     Input volume used to map geometry positions to Data space
- *   * __geometry__   Input geometry used for determining entry and exit points
+ *   * __geometry__   Input mesh used for determining entry and exit points
  *
  * ### Outports
  *   * __entry__ The first hit point in texture coordinates [0,1]
@@ -61,10 +61,6 @@ namespace inviwo {
  *   * __Camera__   Scene camera
  */
 
-/**
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
- */
 class IVW_MODULE_BASEGL_API GeometryEntryExitPoints : public Processor {
 public:
     GeometryEntryExitPoints();

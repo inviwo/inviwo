@@ -266,6 +266,8 @@ TexParameter::~TexParameter() {
 
 TexEnv& TexEnv::operator=(TexEnv&& that) {
     if (this != &that) {
+        unit_ = 0;
+        std::swap(unit_, that.unit_);
         target_ = 0;
         std::swap(target_, that.target_);
         name_ = that.name_;
@@ -274,20 +276,23 @@ TexEnv& TexEnv::operator=(TexEnv&& that) {
     return *this;
 }
 
-TexEnv::TexEnv(TexEnv&& rhs) : target_(rhs.target_), name_(rhs.name_), oldValue_(rhs.oldValue_) {
+TexEnv::TexEnv(TexEnv&& rhs)
+    : unit_(rhs.unit_), target_(rhs.target_), name_(rhs.name_), oldValue_(rhs.oldValue_) {
     rhs.target_ = 0;
 }
 
-TexEnv::TexEnv(GLenum target, GLenum name, GLint value)
-    : target_(target), name_(name), oldValue_{} {
+TexEnv::TexEnv(const TextureUnit& unit, GLenum target, GLenum name, GLint value)
+    : unit_(unit.getEnum()), target_(target), name_(name), oldValue_{} {
     glGetTexEnviv(target_, name_, &oldValue_);
     glTexEnvi(target_, name_, value);
     TextureUnit::setZeroUnit();
 }
 
 TexEnv::~TexEnv() {
-    if (target_ != 0) {
+    if (unit_ != 0 && target_ != 0) {
+        glActiveTexture(unit_);
         glTexEnvi(target_, name_, oldValue_);
+        TextureUnit::setZeroUnit();
     }
 }
 
@@ -483,6 +488,94 @@ ScissorState::~ScissorState() {
 void ScissorBox::get() { glGetIntegerv(GL_SCISSOR_BOX, box_.data()); }
 
 void ScissorBox::set() { glScissor(x(), y(), width(), height()); }
+
+
+
+
+ColorMaskState& ColorMaskState::operator=(ColorMaskState&& that) {
+    if (this != &that) {
+        mask_ = { GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE };
+        std::swap(mask_, that.mask_);
+        oldMask_ = { GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE };
+        std::swap(oldMask_, that.oldMask_);
+    }
+    return *this;
+}
+
+ColorMaskState::ColorMaskState(ColorMaskState&& rhs) : mask_(rhs.mask_), oldMask_(rhs.oldMask_) {}
+
+ColorMaskState::ColorMaskState(GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha)
+    : mask_{red, green, blue, alpha}, oldMask_{} {
+    oldMask_.get();
+    mask_.set();
+}
+
+ColorMaskState::ColorMaskState(const bvec4& mask)
+    : mask_{mask.x, mask.y, mask.z, mask.w}, oldMask_{} {
+    oldMask_.get();
+    mask_.set();
+}
+
+ColorMaskState::~ColorMaskState() {
+    if (mask_ != oldMask_) {
+        oldMask_.set();
+    }
+}
+
+void ColorMask::get() { glGetBooleanv(GL_COLOR_WRITEMASK, mask_.data()); }
+
+void ColorMask::set() { glColorMask(red(), green(), blue(), alpha()); }
+
+ColorMaskiState& ColorMaskiState::operator=(ColorMaskiState&& that) {
+    if (this != &that) {
+        buf_ = that.buf_;
+        mask_ = { GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE };
+        std::swap(mask_, that.mask_);
+        oldMask_ = { GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE };
+        std::swap(oldMask_, that.oldMask_);
+    }
+    return *this;
+}
+
+ColorMaskiState::ColorMaskiState(ColorMaskiState&& rhs) : buf_(rhs.buf_), mask_(rhs.mask_), oldMask_(rhs.oldMask_) {}
+
+ColorMaskiState::ColorMaskiState(GLuint buf, GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha)
+    : buf_{buf}, mask_{red, green, blue, alpha}, oldMask_{} {
+    oldMask_.get();
+    mask_.set();
+}
+
+ColorMaskiState::ColorMaskiState(GLuint buf, const bvec4& mask)
+    : buf_{buf}, mask_{mask.x, mask.y, mask.z, mask.w}, oldMask_{} {
+    oldMask_.get();
+    mask_.set();
+}
+
+ColorMaskiState::~ColorMaskiState() {
+    if (mask_ != oldMask_) {
+        oldMask_.set();
+    }
+}
+
+void ColorMaski::get() {
+    // save the state of all draw buffers
+    GLint maxDrawBuffers = 8;
+    glGetIntegerv(GL_MAX_DRAW_BUFFERS, &maxDrawBuffers);
+    std::vector<GLenum> drawBuffers(static_cast<size_t>(maxDrawBuffers), GL_NONE);
+    for (int i = 0; i < maxDrawBuffers; ++i) {
+        GLint value;
+        glGetIntegerv(GL_DRAW_BUFFER0 + i, &value);
+        drawBuffers[i] = static_cast<GLenum>(value);
+    }    
+
+    glDrawBuffer(buf_);
+    glGetBooleanv(GL_COLOR_WRITEMASK, mask_.data()); 
+
+    // restore draw buffers
+    glDrawBuffers(maxDrawBuffers, drawBuffers.data());
+}
+
+void ColorMaski::set() { glColorMaski(buf_, red(), green(), blue(), alpha()); }
 
 IVW_MODULE_OPENGL_API GLfloat validateLineWidth(GLfloat width) {
     float s_sizes[2];

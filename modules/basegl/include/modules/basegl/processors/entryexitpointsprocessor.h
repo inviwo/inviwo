@@ -50,7 +50,7 @@ namespace inviwo {
  * The output color will be zero if no intersection is found, otherwise.
  *
  * ### Inports
- *   * __geometry__     The input geometry used for determining entry and exit points
+ *   * __geometry__   The input mesh used for determining entry and exit points
  *
  * ### Outports
  *   * __entry__ The first hit point in texture coordinates [0,1]

@@ -59,8 +59,7 @@ EntryExitPoints::EntryExitPoints()
     entryPort_.addResizeEventListener(&camera_);
 
     for (auto& shader : entryExitHelper_.getShaders()) {
-        shader.get().onReload(
-        [this]() { invalidate(InvalidationLevel::InvalidResources); });
+        shader.get().onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
     }
 }
 

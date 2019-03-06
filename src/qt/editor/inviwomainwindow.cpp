@@ -278,7 +278,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
                     networkEditorView_->exportViewToImage(true, true,
                                                           QSize(fixedHeight, fixedHeight)));
             } catch (...) {
-                // something went wrong fetching the canvas images, 
+                // something went wrong fetching the canvas images,
                 // continue saving workspace file without any images
             }
 
