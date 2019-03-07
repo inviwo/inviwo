@@ -44,6 +44,7 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/ports/imageport.h>
+#include <modules/plotting/datastructures/dataframe.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -109,6 +110,7 @@ public:
 
     ImageInport background_;
     ImageOutport outport_;
+    plot::DataFrameMultiInport dataFrames_;
 
     FileProperty fileName_;
     StringProperty url_;     ///< Web page to show

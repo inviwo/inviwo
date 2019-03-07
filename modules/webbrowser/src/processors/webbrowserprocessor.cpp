@@ -36,10 +36,15 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/utilities.h>
 
+#include <inviwo/core/common/inviwo.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
+#include <nlohmann/json.hpp>
 #include <include/cef_app.h>
 #include <warn/pop>
+
+//c:\Users\albin\Documents\Github\inviwo\ext\json\single_include\nlohmann\json.hpp
 
 namespace inviwo {
 
@@ -58,6 +63,7 @@ WebBrowserProcessor::WebBrowserProcessor()
     // Output from CEF is 8-bits per channel
     , background_("background")
     , outport_("webpage", DataVec4UInt8::get())
+    , dataFrames_("dataFrames")
     , fileName_("fileName", "HTML file", "")
     , url_("URL", "URL", "http://www.inviwo.org")
     , reload_("reload", "Reload")
@@ -83,6 +89,8 @@ WebBrowserProcessor::WebBrowserProcessor()
     addPort(background_);
     background_.setOptional(true);
     addPort(outport_);
+    addPort(dataFrames_);
+    dataFrames_.setOptional(true);
 
     addProperty(sourceType_);
     addProperty(fileName_);
@@ -239,6 +247,39 @@ void WebBrowserProcessor::OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bo
 void WebBrowserProcessor::process() {
     // Vertical flip of CEF output image
     cefToInviwoImageConverter_.convert(renderHandler_->getTexture2D(), outport_, &background_);
+
+    if (dataFrames_.isConnected() && dataFrames_.hasData()) {
+
+        auto frame = browser_->GetMainFrame();
+        
+        size_t dataframeNr = 0;
+        for (auto data : dataFrames_.getVectorData()) {
+            
+            using json = nlohmann::json;
+            json root;//       = json::array();
+        
+            for (auto row = 0; row < data->getNumberOfRows(); ++row) {
+                json node = json::object();
+
+                auto items = data->getDataItem(row, true);
+                int i = 1;
+                for (auto col = ++items.begin(); col != items.end(); ++col) {
+                    node[data->getHeader(i++)] = (*col)->toString();
+                }
+                root.emplace_back(node);
+            }
+            
+            std::stringstream data("var data = ", std::ios_base::app | std::ios_base::out);
+            data << root.dump();
+            
+            data << ";onInviwoDataChanged" << dataframeNr++ << "(data);";
+
+            frame->ExecuteJavaScript(data.str(), frame->GetURL(), 0);
+        }
+    }
+
+    //browser_->GetMainFrame()->ExecuteJavaScript();
+
 }
 
 }  // namespace inviwo

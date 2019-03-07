@@ -139,6 +139,7 @@ target_link_libraries(inviwo-module-webbrowser PUBLIC
     $<$<NOT:$<BOOL:${OS_MACOSX}>>:libcef_lib>
     libcef_dll_wrapper 
     ${CEF_STANDARD_LIBS}
+	nlohmann_json::nlohmann_json
 )
 
 #--------------------------------------------------------------------
