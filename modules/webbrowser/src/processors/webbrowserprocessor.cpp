@@ -247,7 +247,7 @@ void WebBrowserProcessor::process() {
     cefToInviwoImageConverter_.convert(renderHandler_->getTexture2D(), outport_, &background_);
 
     // If any dataframes are connected, send their input in json to individual javascript functions
-    if (dataFrames_.isConnected() && dataFrames_.hasData()) {
+    if (dataFrames_.isConnected() && dataFrames_.hasData() && dataFrames_.isChanged()) {
         auto frame = browser_->GetMainFrame();
         size_t dataframeNr = 0;
         for (auto dataFrame : dataFrames_.getVectorData()) {
