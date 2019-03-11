@@ -79,29 +79,25 @@ def printMap(String name, def map) {
 
 // this uses global pipeline var pullRequest
 def setLabel(def state, String label, Boolean add) {
-    if (add) {
-        try {
+    try {
+        //println "setlabel: ${label} add: ${add}"
+        if (add) {
             state.addLabel(label)
-        } catch (e) {
-            println "Error adding label"
-            println e.toString()
-        }
-    } else {
-        try {
+        } else {
             state.removeLabel(label)
-        } catch (e) {
-            println "Error removing label"
-            println e.toString()
         }
-    }       
+    } catch (e) {
+        println "Error adding label: ${label} add: ${add}"
+        println e.toString()
+    }      
 }
 
 def checked(def state, String label, Boolean fail, Closure fun) {
     try {
         fun()
-        setLabel(state, "J:" + label  + " Failure", false)
+        setLabel(state, "J: " + label  + " Failure", false)
     } catch (e) {
-        setLabel(state, "J:" + label  + " Failure", true)
+        setLabel(state, "J: " + label  + " Failure", true)
         state.errors += label
         if (fail) {
             state.build.result = 'FAILURE'
@@ -266,8 +262,8 @@ def cmake(Map args = [:]) {
         (args.printCMakeVars ? " -LA " : "") +
         (args.opts?.collect{" -D${it.key}=${it.value}"}?.join('') ?: "") + 
         (args.modulePaths ? " -DIVW_EXTERNAL_MODULES=" + args.modulePaths.join(";") : "" ) +
-        (args.onModules?.collect{" -DIVW_MODULE_${it}=ON"}?.join('') ?: "") +
-        (args.offModules?.collect{" -DIVW_MODULE_${it}=OFF"}?.join('') ?: "") +
+        (args.onModules?.collect{" -DIVW_MODULE_${it.toUpperCase()}=ON"}?.join('') ?: "") +
+        (args.offModules?.collect{" -DIVW_MODULE_${it.toUpperCase()}=OFF"}?.join('') ?: "") +
         " ../inviwo"
 }
 

@@ -515,11 +515,11 @@ void addImageActions(QMenu& menu, const Image& image, LayerType visibleLayer, si
     addAction("Depth Layer", image.getDepthLayer(), visibleLayer == LayerType::Depth);
 }
 
-std::string toBase64(const QImage& image) {
+std::string toBase64(const QImage& image, const std::string& format, int quality) {
     QByteArray byteArray;
     QBuffer buffer{&byteArray};
     buffer.open(QIODevice::WriteOnly);
-    image.save(&buffer, "PNG");
+    image.save(&buffer, format.empty() ? nullptr : format.c_str(), quality);
     return std::string{byteArray.toBase64().data()};
 }
 
@@ -587,6 +587,22 @@ QString windowTitleHelper(const QString& title, const QWidget* widget) {
     cap.replace(QLatin1String("[*][*]"), placeHolder);
 
     return cap;
+}
+
+int refSpacePx(const QWidget* w) { return emToPx(w, refSpaceEm()); }
+
+QSize emToPx(const QWidget* w, QSizeF ems) {
+    return QSize{emToPx(w, ems.width()), emToPx(w, ems.height())};
+}
+
+int emToPx(const QWidget* w, double em) {
+    w->ensurePolished();
+    return emToPx(w->fontMetrics(), em);
+}
+
+int emToPx(const QFontMetrics& m, double em) {
+    const auto pxPerEm = m.boundingRect(QString(100, 'M')).width() / 100.0;
+    return static_cast<int>(std::round(pxPerEm * em));
 }
 
 }  // namespace utilqt

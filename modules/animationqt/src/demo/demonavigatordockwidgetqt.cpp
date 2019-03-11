@@ -60,7 +60,7 @@ DemoNavigatorDockWidgetQt::DemoNavigatorDockWidgetQt(DemoController& controller,
 
     setFloating(true);
     setSticky(false);
-    resize(QSize(300, 100));  // default size
+    resize(utilqt::emToPx(this, QSizeF(30, 10)));  // default size
     setWindowIcon(
         QIcon(":/animation/icons/arrow_next_player_previous_recording_right_icon_128.png"));
 

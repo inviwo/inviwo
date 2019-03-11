@@ -16,11 +16,15 @@ node {
         build: currentBuild, 
         errors: [],
         display: 0,
-        addLabel: {label -> 
+        addLabel: {String label -> 
             if (env.CHANGE_ID  && !(label in pullRequest.labels)) pullRequest.addLabels([label])
         },
-        removeLabel: {label -> 
-            if (env.CHANGE_ID && (label in pullRequest.labels)) pullRequest.removeLabel([label])  
+        removeLabel: {String label -> 
+            if (env.CHANGE_ID && !(label in pullRequest.labels)) {
+                def labels = pullRequest.labels.collect { it }
+                labels.removeAll { it == label }
+                pullRequest.labels = labels
+            }
         }
     ]
 
@@ -28,8 +32,8 @@ node {
         util.buildStandard(
             state: state,
             modulePaths: [], 
-            onModules: [],  
-            offModules: ["ABUFFERGL"],
+            onModules: ["DiscreteData", "HDF5", "OpenCL", "BaseCL", "WebBrowser", "Example"],  
+            offModules: ["ABufferGL"],
             opts: [:]
         )
         util.filterfiles()

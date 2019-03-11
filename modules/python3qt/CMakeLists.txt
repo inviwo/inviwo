@@ -5,6 +5,7 @@ ivw_module(Python3Qt)
 find_package(Qt5Core QUIET REQUIRED)
 find_package(Qt5Gui QUIET REQUIRED)
 find_package(Qt5Widgets QUIET REQUIRED)
+find_package(Qt5Svg QUIET REQUIRED)
 
 #--------------------------------------------------------------------
 # Add MOC files
@@ -35,7 +36,7 @@ ivw_group("Source Files" ${SOURCE_FILES})
 
 # Create module
 ivw_create_module(NO_PCH ${SOURCE_FILES} ${MOCED_FILES} ${HEADER_FILES})
-target_link_libraries(inviwo-module-python3qt PRIVATE Qt5::Core Qt5::Gui Qt5::Widgets)
+target_link_libraries(inviwo-module-python3qt PRIVATE Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Svg)
 
 ivw_compile_optimize_on_target(inviwo-module-python3qt)
 

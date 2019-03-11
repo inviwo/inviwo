@@ -32,14 +32,12 @@
 #include <inviwo/png/pngmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/io/datareader.h>
+#include <inviwo/core/io/datareaderexception.h>
 #include <inviwo/core/datastructures/image/layer.h>
-#include <inviwo/core/datastructures/image/layerramprecision.h>
-#include <inviwo/core/datastructures/diskrepresentation.h>
-#include <inviwo/core/datastructures/image/layerdisk.h>
 
 namespace inviwo {
 
-class IVW_MODULE_PNG_API PNGLayerReaderException : public Exception {
+class IVW_MODULE_PNG_API PNGLayerReaderException : public DataReaderException {
 public:
     PNGLayerReaderException(const std::string& message = "",
                             ExceptionContext context = ExceptionContext());

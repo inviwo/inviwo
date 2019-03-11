@@ -48,7 +48,7 @@ const ProcessorInfo ImageSource::getProcessorInfo() const { return processorInfo
 
 ImageSource::ImageSource(InviwoApplication* app, const std::string& file)
     : Processor()
-    , app_(app)
+    , rf_(app->getDataReaderFactory())
     , outport_("image", DataVec4UInt8::get(), false)
     , file_("imageFileName", "File name", file, "image")
     , imageDimension_("imageDimension_", "Dimension", ivec2(0), ivec2(0), ivec2(10000), ivec2(1),
@@ -56,16 +56,16 @@ ImageSource::ImageSource(InviwoApplication* app, const std::string& file)
 
     addPort(outport_);
 
-    auto rf = app_->getDataReaderFactory();
     file_.clearNameFilters();
     file_.addNameFilter(FileExtension::all());
-    file_.addNameFilters(rf->getExtensionsForType<Layer>());
+    file_.addNameFilters(rf_->getExtensionsForType<Layer>());
 
     addProperty(file_);
 
     imageDimension_.setReadOnly(true);
     addProperty(imageDimension_);
 
+    isSink_.setUpdate([]() { return true; });
     isReady_.setUpdate([this]() { return filesystem::fileExists(file_.get()); });
     file_.onChange([this]() { isReady_.update(); });
 }
@@ -73,9 +73,9 @@ ImageSource::ImageSource(InviwoApplication* app, const std::string& file)
 void ImageSource::process() {
     if (file_.get().empty()) return;
 
-    std::string ext = filesystem::getFileExtension(file_.get());
-    auto factory = app_->getDataReaderFactory();
-    if (auto reader = factory->getReaderForTypeAndExtension<Layer>(ext)) {
+    const auto sext = file_.getSelectedExtension();
+    const auto fext = filesystem::getFileExtension(file_.get());
+    if (auto reader = rf_->getReaderForTypeAndExtension<Layer>(sext, fext)) {
         try {
             auto outLayer = reader->readData(file_.get());
             // Call getRepresentation here to force read a ram representation.
@@ -104,10 +104,9 @@ void ImageSource::process() {
 
 void ImageSource::deserialize(Deserializer& d) {
     Processor::deserialize(d);
-    auto rf = app_->getDataReaderFactory();
     file_.clearNameFilters();
     file_.addNameFilter(FileExtension::all());
-    file_.addNameFilters(rf->getExtensionsForType<Layer>());
+    file_.addNameFilters(rf_->getExtensionsForType<Layer>());
 }
 
 }  // namespace inviwo

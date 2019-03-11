@@ -45,11 +45,11 @@ namespace inviwo {
 TFHelpWindow::TFHelpWindow(QWidget* parent)
     : InviwoDockWidget("Help: Transfer Function Editor", parent, "TFHelpWidget") {
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    resize(QSize(500, 500));  // default size
+    resize(utilqt::emToPx(this, QSizeF(60, 60)));  // default size
 
     auto centralWidget = new QWidget();
     auto vLayout = new QVBoxLayout(centralWidget);
-    vLayout->setSpacing(7);
+    vLayout->setSpacing(utilqt::refSpacePx(this));
     vLayout->setContentsMargins(0, 0, 0, 0);
 
     auto textedit = new QTextEdit(this);

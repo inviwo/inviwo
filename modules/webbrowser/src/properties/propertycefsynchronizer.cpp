@@ -64,31 +64,6 @@ void PropertyCefSynchronizer::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr
     }
 }
 
-void PropertyCefSynchronizer::OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
-                                          CefLoadHandler::ErrorCode errorCode,
-                                          const CefString& errorText, const CefString& failedUrl) {
-    if (errorCode == ERR_ABORTED) {
-        // Ignore page loading aborted (occurs during deserialization).
-        // Prevents error page from showing after deserialization.
-        return;
-    }
-    std::stringstream ss;
-    ss << "<html><head><title>Page failed to load</title></head>"
-          "<body bgcolor=\"white\">"
-          "<h3>Page failed to load.</h3>"
-          "URL: <a href=\""
-       << failedUrl.ToString() << "\">" << failedUrl.ToString()
-       << "</a><br/>Error: " << WebBrowserModule::getCefErrorString(errorCode) << " (" << errorCode
-       << ")";
-
-    if (!errorText.empty()) {
-        ss << "<br/>Description: " << errorText.ToString();
-    }
-    ss << "</body></html>";
-
-    frame->LoadURL(WebBrowserModule::getDataURI(ss.str(), "text/html"));
-}
-
 bool PropertyCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
                                       int64 query_id, const CefString& request, bool persistent,
                                       CefRefPtr<Callback> callback) {
@@ -114,7 +89,7 @@ bool PropertyCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<C
         if (nextValPos == std::string::npos) {
             LogWarn("Missing enclosing } in: " + requestStr);
         } else {
-            auto message = requestStr.substr(0, nextValPos);
+            auto message = requestStr.substr(0, nextValPos + 1);
             return (*widget)->onQuery(browser, frame, query_id, request, persistent, callback);
         }
     }

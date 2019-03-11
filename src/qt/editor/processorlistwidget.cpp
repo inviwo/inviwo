@@ -141,12 +141,13 @@ ProcessorTreeWidget::ProcessorTreeWidget(InviwoMainWindow* parent, HelpWidget* h
     , helpWidget_{helpWidget} {
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    resize(QSize(400, 700));  // default size
+    resize(utilqt::emToPx(this, QSizeF(50, 80)));  // default size
 
     QWidget* centralWidget = new QWidget();
     QVBoxLayout* vLayout = new QVBoxLayout(centralWidget);
-    vLayout->setSpacing(7);
-    vLayout->setContentsMargins(7, 7, 7, 7);
+    const auto space = utilqt::refSpacePx(this);
+    vLayout->setSpacing(space);
+    vLayout->setContentsMargins(space, space, space, space);
     lineEdit_ = new QLineEdit(centralWidget);
     lineEdit_->setPlaceholderText("Filter processor list...");
     lineEdit_->setClearButtonEnabled(true);
@@ -169,20 +170,20 @@ ProcessorTreeWidget::ProcessorTreeWidget(InviwoMainWindow* parent, HelpWidget* h
     listViewLayout->addWidget(listView_);
     vLayout->addLayout(listViewLayout);
 
-    iconStable_ = QIcon(":/icons/processor_stable.png");
-    iconExperimental_ = QIcon(":/icons/processor_experimental.png");
-    iconBroken_ = QIcon(":/icons/processor_broken.png");
-    iconDeprecated_ = QIcon(":/icons/processor_deprecated.png");
+    iconStable_ = QIcon(":/svgicons/processor-stable.svg");
+    iconExperimental_ = QIcon(":/svgicons/processor-experimental.svg");
+    iconBroken_ = QIcon(":/svgicons/processor-broken.svg");
+    iconDeprecated_ = QIcon(":/svgicons/processor-deprecated.svg");
 
     processorTree_ = new ProcessorTree(this);
     processorTree_->setHeaderHidden(true);
     processorTree_->setColumnCount(2);
-    processorTree_->setIndentation(10);
+    processorTree_->setIndentation(utilqt::emToPx(this, 1.0));
     processorTree_->setAnimated(true);
     processorTree_->header()->setStretchLastSection(false);
     processorTree_->header()->setSectionResizeMode(0, QHeaderView::Stretch);
     processorTree_->header()->setSectionResizeMode(1, QHeaderView::Fixed);
-    processorTree_->header()->setDefaultSectionSize(40);
+    processorTree_->header()->setDefaultSectionSize(utilqt::emToPx(this, 4.0));
 
     connect(processorTree_, &ProcessorTree::currentItemChanged, this,
             &ProcessorTreeWidget::currentItemChanged);

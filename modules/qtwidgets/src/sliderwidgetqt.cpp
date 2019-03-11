@@ -29,6 +29,7 @@
 
 #include <modules/qtwidgets/sliderwidgetqt.h>
 #include <modules/qtwidgets/numberlineedit.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <limits>
 #include <cmath>
@@ -68,7 +69,7 @@ BaseSliderWidgetQt::BaseSliderWidgetQt(bool intMode)
     hLayout->addWidget(slider_);
     hLayout->addWidget(spinBox_);
     hLayout->setContentsMargins(0, 0, 0, 0);
-    hLayout->setSpacing(5);
+    hLayout->setSpacing(utilqt::refSpacePx(this));
     hLayout->setStretch(0, 3);
     hLayout->setStretch(1, 1);
 

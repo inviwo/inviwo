@@ -100,7 +100,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     , mainwindow_(parent) {
 
     setAllowedAreas(Qt::BottomDockWidgetArea);
-    resize(QSize(500, 300));  // default size
+    resize(utilqt::emToPx(this, QSizeF(60, 60)));  // default size
 
     qRegisterMetaType<LogTableModelEntry>("LogTableModelEntry");
 
@@ -117,7 +117,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     tableView_->setCornerButtonEnabled(false);
 
     tableView_->setContextMenuPolicy(Qt::ActionsContextMenu);
-    clearAction_ = new QAction(QIcon(":/icons/console-clear.png"), tr("&Clear Log"), this);
+    clearAction_ = new QAction(QIcon(":/svgicons/log-clear.svg"), tr("&Clear Log"), this);
     clearAction_->setShortcut(Qt::ControlModifier + Qt::Key_E);
     connect(clearAction_, &QAction::triggered, [&]() { clear(); });
 
@@ -171,10 +171,12 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     auto makeIcon = [](const QString& file, bool checkable = false) {
         auto icon = QIcon();
         if (checkable) {
-            icon.addPixmap(QPixmap(":/icons/" + file + ".png"), QIcon::Normal, QIcon::On);
-            icon.addPixmap(QPixmap(":/icons/" + file + "-grey.png"), QIcon::Normal, QIcon::Off);
+            icon.addPixmap(QPixmap(":/svgicons/" + file + "-enabled.svg"), QIcon::Normal,
+                           QIcon::On);
+            icon.addPixmap(QPixmap(":/svgicons/" + file + "-disabled.svg"), QIcon::Normal,
+                           QIcon::Off);
         } else {
-            icon.addPixmap(QPixmap(":/icons/" + file + ".png"));
+            icon.addPixmap(QPixmap(":/svgicons/" + file + ".svg"));
         }
         return icon;
     };
@@ -245,7 +247,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     statusBar->addWidget(filterPattern_, 1);
     statusBar->addSpacing(5);
 
-    auto clearFilter = new QAction(makeIcon("find-clear16"), "C&lear Filter", this);
+    auto clearFilter = new QAction(makeIcon("find-clear"), "C&lear Filter", this);
     clearFilter->setEnabled(false);
 
     connect(filterPattern_, &QLineEdit::textChanged,
@@ -257,7 +259,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
 
     connect(clearFilter, &QAction::triggered, [this]() { filterPattern_->setText(""); });
 
-    auto filterAction = new QAction(makeIcon("find16"), "&Filter", this);
+    auto filterAction = new QAction(makeIcon("find"), "&Filter", this);
     filterAction->setShortcut(Qt::ControlModifier + Qt::AltModifier + Qt::Key_F);
     connect(filterAction, &QAction::triggered, [this]() {
         raise();
@@ -272,7 +274,7 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
         return separator;
     };
 
-    auto copyAction = new QAction(QIcon(":/icons/edit-copy.png"), tr("&Copy"), this);
+    auto copyAction = new QAction(QIcon(":/svgicons/edit-copy.svg"), tr("&Copy"), this);
     copyAction->setEnabled(true);
     connect(copyAction, &QAction::triggered, this, &ConsoleWidget::copy);
 
@@ -290,7 +292,8 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     layout->addWidget(tableView_);
     layout->addLayout(statusBar);
 
-    layout->setContentsMargins(3, 0, 0, 3);
+    const auto space = utilqt::emToPx(this, 3 / 9.0);
+    layout->setContentsMargins(space, 0, 0, space);
 
     QWidget* w = new QWidget();
     w->setLayout(layout);

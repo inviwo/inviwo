@@ -115,7 +115,7 @@ TEST_F(NetworkTest, ProcessorGetPropertyByType) {
     ASSERT_TRUE(p != nullptr);
 
     const std::vector<FloatVec3Property*> props = p->getPropertiesByType<FloatVec3Property>(true);
-    ASSERT_EQ(8, props.size());
+    ASSERT_EQ(5, props.size());
 
     ASSERT_TRUE(props[0] != nullptr);
 }

@@ -115,7 +115,7 @@ AnimationLabelViewQt::AnimationLabelViewQt(AnimationController& controller)
                 }
             });
 
-    auto deleteAction = new QAction(QIcon(":/icons/edit-delete.png"), tr("&Delete"), this);
+    auto deleteAction = new QAction(QIcon(":/svgicons/edit-delete.svg"), tr("&Delete"), this);
     deleteAction->setShortcuts(QKeySequence::Delete);
     deleteAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     addAction(deleteAction);

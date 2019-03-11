@@ -34,6 +34,7 @@
 #include <inviwo/core/datastructures/image/layerramprecision.h>
 
 #include <png.h>
+#include <algorithm>
 
 namespace inviwo {
 
@@ -44,6 +45,38 @@ void writeToBuffer(png_structp png_ptr, png_bytep data, png_size_t length) {
     for (png_size_t i = 0; i < length; i++) {
         buffer->push_back(static_cast<unsigned char>(data[i]));
     }
+}
+
+template <typename Result, typename T>
+std::vector<Result> convert(const T* data, const size_t size, const T min, const T max) {
+    std::vector<Result> newData(size);
+    std::transform(data, data + size, newData.begin(), [min, max](const T& value) {
+        return util::glm_convert_normalized<Result>(glm::clamp(value, min, max));
+    });
+    return newData;
+}
+
+template <typename T, typename valueType = typename util::value_type<T>::type,
+          typename = typename std::enable_if<std::is_same_v<valueType, bool>>::type>
+auto convertToUnsigned(const T* data, const size_t size, const T min, const T max)
+    -> std::vector<typename util::same_extent<T, unsigned char>::type> {
+    using T2 = typename util::same_extent<T, unsigned char>::type;
+    return convert<T2>(data, size, min, max);
+}
+
+template <typename T, typename valueType = typename util::value_type<T>::type,
+          typename = typename std::enable_if<!std::is_same_v<valueType, bool> &&
+                                             std::is_integral_v<valueType>>::type>
+auto convertToUnsigned(const T* data, const size_t size, const T min, const T max)
+    -> std::vector<typename util::same_extent<T, std::make_unsigned_t<valueType>>::type> {
+    using T2 = typename util::same_extent<T, std::make_unsigned_t<valueType>>::type;
+    return convert<T2>(data, size, min, max);
+}
+
+template <typename T, typename valueType = typename util::value_type<T>::type,
+          typename = typename std::enable_if<!std::is_integral_v<valueType>>::type>
+auto convertToUnsigned(const T*, const size_t, const T, const T) -> std::vector<T> {
+    return {};
 }
 
 template <typename T>
@@ -60,7 +93,7 @@ void write(const LayerRAMPrecision<T>* ram, png_voidp ioPtr, png_rw_ptr writeFun
     png_set_error_fn(
         png_ptr, nullptr,
         [](png_structp, png_const_charp message) {
-            throw PNGLayerWriterException(std::string("Error witting PNG: ") + message);
+            throw PNGLayerWriterException(std::string("Error writing PNG: ") + message);
         },
         [](png_structp, png_const_charp message) { LogWarnCustom("PNGWriter", message); });
 
@@ -92,6 +125,17 @@ void write(const LayerRAMPrecision<T>* ram, png_voidp ioPtr, png_rw_ptr writeFun
     const auto size = ram->getDimensions();
     const auto bit_depth = df->getPrecision();
 
+    auto writePNG = [&](auto pixels) {
+        std::vector<png_bytep> rows(size.y);
+        for (png_uint_32 r = 0; r < size.y; ++r) {
+            // Inviwo images are upside down compared to how libpng expects them
+            rows[size.y - r - 1] = reinterpret_cast<png_bytep>(pixels + r * size.x);
+        }
+        png_write_image(png_ptr, rows.data());
+        png_write_end(png_ptr, nullptr);
+    };
+
+    const auto data = ram->getDataTyped();
     if (df->getNumericType() == NumericType::Float) {
         png_set_IHDR(png_ptr, info_ptr, static_cast<int>(size.x), static_cast<int>(size.y), 16,
                      color_type, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE,
@@ -100,40 +144,30 @@ void write(const LayerRAMPrecision<T>* ram, png_voidp ioPtr, png_rw_ptr writeFun
         png_write_info(png_ptr, info_ptr);
         png_set_swap(png_ptr);
 
-        const auto pixels = ram->getDataTyped();
-
         using T2 = typename util::same_extent<T, glm::uint16>::type;
-        std::vector<T2> newData(size.x * size.y);
-        for (size_t i = 0; i < size.x * size.y; i++) {
-            newData[i] = util::glm_convert_normalized<T2>(glm::clamp(pixels[i], T{0}, T{1}));
-        }
-
-        std::vector<png_bytep> rows(size.y);
-        for (png_uint_32 r = 0; r < size.y; ++r) {
-            rows[size.y - r - 1] = reinterpret_cast<png_bytep>(newData.data() + r * size.x);
-        }
-
-        png_write_image(png_ptr, rows.data());
-
+        auto newData = convert<T2>(data, glm::compMul(size), T{0}, T{1});
+        writePNG(newData.data());
     } else {
         png_set_IHDR(png_ptr, info_ptr, static_cast<int>(size.x), static_cast<int>(size.y),
-                     static_cast<int>(bit_depth), color_type, PNG_INTERLACE_NONE,
-                     PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
+                     static_cast<int>(std::min<size_t>(bit_depth, 16)), color_type,
+                     PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
 
         png_write_info(png_ptr, info_ptr);
         png_set_swap(png_ptr);
 
-        auto pixels = const_cast<T*>(ram->getDataTyped());
-        std::vector<png_bytep> rows(size.y);
-        for (png_uint_32 r = 0; r < size.y; ++r) {
-            // Inviwo images are upside down compared to how libpng expects them
-            rows[size.y - r - 1] = reinterpret_cast<png_bytep>(pixels + r * size.x);
+        if (bit_depth > 16) {
+            using T2 = typename util::same_extent<T, glm::uint16>::type;
+            auto newData = convert<T2>(data, glm::compMul(size), DataFormat<T>::lowest(),
+                                       DataFormat<T>::max());
+            writePNG(newData.data());
+        } else if (df->getNumericType() == NumericType::SignedInteger) {
+            auto newData = convertToUnsigned(data, glm::compMul(size), DataFormat<T>::lowest(),
+                                             DataFormat<T>::max());
+            writePNG(newData.data());
+        } else {
+            writePNG(const_cast<T*>(ram->getDataTyped()));
         }
-
-        png_write_image(png_ptr, rows.data());
     }
-
-    png_write_end(png_ptr, NULL);
 }
 
 }  // namespace detail

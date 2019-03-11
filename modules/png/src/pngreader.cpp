@@ -30,6 +30,7 @@
 #include <inviwo/png/pngreader.h>
 
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/raiiutils.h>
 
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/image/layerram.h>
@@ -43,7 +44,7 @@ namespace inviwo {
 
 PNGLayerReaderException::PNGLayerReaderException(const std::string& message,
                                                  ExceptionContext context)
-    : Exception(message, context) {}
+    : DataReaderException(message, context) {}
 
 PNGLayerReader::PNGLayerReader() : DataReaderType<Layer>() {
     addExtension(FileExtension("png", "Portable Network Graphics"));

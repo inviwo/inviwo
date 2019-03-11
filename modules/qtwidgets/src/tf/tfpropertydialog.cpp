@@ -120,9 +120,10 @@ void TFPropertyDialog::initializeDialog() {
     if (auto titlebar = dynamic_cast<InviwoDockWidgetTitleBar*>(titleBarWidget())) {
         if (auto layout = dynamic_cast<QHBoxLayout*>(titlebar->layout())) {
             QToolButton* helpBtn = new QToolButton();
-            helpBtn->setIcon(QIcon(":/stylesheets/images/dock-help.png"));
-            helpBtn->setObjectName("helpBtn");
-
+            helpBtn->setIcon(QIcon(":/svgicons/dock-help.svg"));
+            const auto iconsize =
+                utilqt::emToPx(this, QSizeF(titlebar->getIconSize(), titlebar->getIconSize()));
+            helpBtn->setIconSize(iconsize);
             layout->insertWidget(1, helpBtn);
 
             auto module = util::getInviwoApplication(property_)->getModuleByType<QtWidgetsModule>();
@@ -272,7 +273,7 @@ void TFPropertyDialog::initializeDialog() {
     QFrame* leftPanel = new QFrame(this);
     QGridLayout* leftLayout = new QGridLayout();
     leftLayout->setContentsMargins(0, 0, 0, 0);
-    leftLayout->setSpacing(7);
+    leftLayout->setSpacing(utilqt::refSpacePx(this));
     leftLayout->addWidget(zoomVSlider_, 0, 0);
     leftLayout->addWidget(tfEditorView_, 0, 1);
     leftLayout->addWidget(zoomHSlider_, 1, 1);
@@ -282,7 +283,7 @@ void TFPropertyDialog::initializeDialog() {
     QFrame* rightPanel = new QFrame(this);
     QVBoxLayout* rightLayout = new QVBoxLayout();
     rightLayout->setContentsMargins(0, 0, 0, 0);
-    rightLayout->setSpacing(7);
+    rightLayout->setSpacing(utilqt::refSpacePx(this));
     rightLayout->setAlignment(Qt::AlignTop);
     rightLayout->addWidget(chkShowHistogram_);
     rightLayout->addWidget(pointMoveMode_);
@@ -303,8 +304,9 @@ void TFPropertyDialog::initializeDialog() {
 
     QWidget* mainPanel = new QWidget(this);
     QHBoxLayout* mainLayout = new QHBoxLayout();
-    mainLayout->setContentsMargins(7, 7, 7, 7);
-    mainLayout->setSpacing(7);
+    const auto space = utilqt::refSpacePx(this);
+    mainLayout->setContentsMargins(space, space, space, space);
+    mainLayout->setSpacing(space);
     mainLayout->addWidget(leftPanel);
     mainLayout->addWidget(rightPanel);
     mainPanel->setLayout(mainLayout);
@@ -348,7 +350,7 @@ void TFPropertyDialog::initializeDialog() {
     }
 
     // ensure that the TF dialog has its minimal size when showing up for the first time
-    resize(100, 100);
+    resize(utilqt::emToPx(this, 14.0), utilqt::emToPx(this, 12.0));
 
     {
         // make sure the help dialog for the TF editor is shown once

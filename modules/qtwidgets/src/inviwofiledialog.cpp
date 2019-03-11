@@ -253,7 +253,7 @@ void InviwoFileDialog::filterSelectionChanged(const QString &filter) {
 
 FileExtension InviwoFileDialog::getSelectedFileExtension() const { return selectedFilter_; }
 
-void InviwoFileDialog::setSelectedExtenstion(const FileExtension &ext) { selectedFilter_ = ext; }
+void InviwoFileDialog::setSelectedExtension(const FileExtension &ext) { selectedFilter_ = ext; }
 
 FileExtension InviwoFileDialog::getMatchingFileExtension(const QString &extStr) {
     // try to find matching filter in extension map

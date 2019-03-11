@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/webbrowser/webbrowserclient.h>
+#include <modules/webbrowser/webbrowsermodule.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -61,6 +62,7 @@ void WebBrowserClient::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
 
         // Register handlers with the router.
         propertyCefSynchronizer_ = new PropertyCefSynchronizer();
+        addLoadHandler(propertyCefSynchronizer_);
         messageRouter_->AddHandler(propertyCefSynchronizer_.get(), false);
     }
 
@@ -81,6 +83,7 @@ void WebBrowserClient::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
     if (--browserCount_ == 0) {
         // Free the router when the last browser is closed.
         messageRouter_->RemoveHandler(propertyCefSynchronizer_.get());
+        removeLoadHandler(propertyCefSynchronizer_);
         propertyCefSynchronizer_ = nullptr;
         messageRouter_ = NULL;
     }
@@ -124,6 +127,56 @@ void WebBrowserClient::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
     }
 
     messageRouter_->OnRenderProcessTerminated(browser);
+}
+
+void WebBrowserClient::addLoadHandler(CefLoadHandler* loadHandler) {
+    loadHandlers_.emplace_back(loadHandler);
+}
+
+void WebBrowserClient::removeLoadHandler(CefLoadHandler* loadHandler) {
+    util::erase_remove(loadHandlers_, loadHandler);
+}
+
+void WebBrowserClient::OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bool isLoading,
+                                            bool canGoBack, bool canGoForward) {
+    for (const auto& loadHandler : loadHandlers_) {
+        loadHandler->OnLoadingStateChange(browser, isLoading, canGoBack, canGoForward);
+    }
+}
+
+void WebBrowserClient::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
+                                 int httpStatusCode) {
+    for (const auto& loadHandler : loadHandlers_) {
+        loadHandler->OnLoadEnd(browser, frame, httpStatusCode);
+    }
+}
+
+void WebBrowserClient::OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
+                                   CefLoadHandler::ErrorCode errorCode, const CefString& errorText,
+                                   const CefString& failedUrl) {
+    for (const auto& loadHandler : loadHandlers_) {
+        loadHandler->OnLoadError(browser, frame, errorCode, errorText, failedUrl);
+    }
+    if (errorCode == ERR_ABORTED) {
+        // Ignore page loading aborted (occurs during deserialization).
+        // Prevents error page from showing after deserialization.
+        return;
+    }
+    std::stringstream ss;
+    ss << "<html><head><title>Page failed to load</title></head>"
+          "<body bgcolor=\"white\">"
+          "<h3>Page failed to load.</h3>"
+          "URL: <a href=\""
+       << failedUrl.ToString() << "\">" << failedUrl.ToString()
+       << "</a><br/>Error: " << WebBrowserModule::getCefErrorString(errorCode) << " (" << errorCode
+       << ")";
+
+    if (!errorText.empty()) {
+        ss << "<br/>Description: " << errorText.ToString();
+    }
+    ss << "</body></html>";
+
+    frame->LoadURL(WebBrowserModule::getDataURI(ss.str(), "text/html"));
 }
 
 }  // namespace inviwo
