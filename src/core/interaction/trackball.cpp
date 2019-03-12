@@ -38,7 +38,6 @@
 #include <inviwo/core/interaction/trackballobject.h>
 #include <inviwo/core/util/intersection/raysphereintersection.h>
 #include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/util/settings/systemsettings.h>
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
@@ -96,8 +95,7 @@ Trackball::Trackball(TrackballObject* object)
     , touchGesture_("touchGesture", "Touch", [this](Event* e) { touchGesture(e); }, util::make_unique<GeneralEventMatcher>([](Event* e) { return e->hash() == TouchEvent::chash(); }))
 
     , evaluated_(true)
-    , timer_(std::chrono::milliseconds{30}, [this]() { animate(); })
-    , followObjectDuringRotation_(true) {
+    , timer_(std::chrono::milliseconds{30}, [this]() { animate(); }) {
 
     mouseReset_.setVisible(false);
     mouseReset_.setCurrentStateAsDefault();
@@ -105,6 +103,7 @@ Trackball::Trackball(TrackballObject* object)
     trackballMethod_.addOption("tb_tav", "Two Axis Valuator Trackball", 0);
     trackballMethod_.addOption("tb_vt",  "Virtual Trackball", 1);
     trackballMethod_.addOption("tb_fps", "First Person Camera", 2);
+    trackballMethod_.addOption("tb_fodr", "Object follows Finger", 3);
     addProperty(trackballMethod_);
     addProperty(sensitivity_);
     addProperty(movementSpeed_);
@@ -137,13 +136,6 @@ Trackball::Trackball(TrackballObject* object)
     touchGesture_.setVisible(false);  // No options to change button combination to trigger event
 
     setCollapsed(true);
-
-    auto systemSettings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
-    followObjectDuringRotation_ = systemSettings->followObjectDuringRotation_.get();
-    systemSettings->followObjectDuringRotation_.onChange([this]() {
-        auto systemSettings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
-        followObjectDuringRotation_ = systemSettings->followObjectDuringRotation_.get();
-    });
 }
 
 Trackball::Trackball(const Trackball& rhs)
@@ -179,8 +171,7 @@ Trackball::Trackball(const Trackball& rhs)
     , stepPanUp_(rhs.stepPanUp_), stepPanLeft_(rhs.stepPanLeft_), stepPanDown_(rhs.stepPanDown_), stepPanRight_(rhs.stepPanRight_)
     , touchGesture_(rhs.touchGesture_)
     , evaluated_(true)
-    , timer_(std::chrono::milliseconds{30}, [this]() { animate(); })
-    , followObjectDuringRotation_(rhs.followObjectDuringRotation_) {
+    , timer_(std::chrono::milliseconds{30}, [this]() { animate(); }) {
 
     mouseReset_.setVisible(false);
     mouseReset_.setCurrentStateAsDefault();
@@ -219,13 +210,6 @@ Trackball::Trackball(const Trackball& rhs)
     touchGesture_.setVisible(false);  // No options to change button combination to trigger event
 
     setCollapsed(true);
-
-    auto systemSettings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
-    followObjectDuringRotation_ = systemSettings->followObjectDuringRotation_.get();
-    systemSettings->followObjectDuringRotation_.onChange([this]() {
-        auto systemSettings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
-        followObjectDuringRotation_ = systemSettings->followObjectDuringRotation_.get();
-    });
 }
 
 Trackball& Trackball::operator=(const Trackball& that) {
@@ -271,7 +255,6 @@ Trackball& Trackball::operator=(const Trackball& that) {
         stepPanDown_ = that.stepPanDown_;
         stepPanRight_ = that.stepPanRight_;
         touchGesture_ = that.touchGesture_;
-        followObjectDuringRotation_ = that.followObjectDuringRotation_;
     }
     return *this;
 }
@@ -341,12 +324,14 @@ std::pair<bool, vec3> Trackball::getTrackBallIntersection(const vec2 pos) const 
     return {res.first, rayOrigin + direction * res.second};
 }
 
-/* \brief Passes the mouse event on to the chosen rotation method */
+/* \brief Passes the mouse event (no touch events!) on to the chosen rotation method */
 void Trackball::rotate(Event* event) {
     switch(trackballMethod_){
         case 0:  rotateTAV(event); break;
         case 1:  rotateArc(event); break;
         case 2:  rotateFPS(event); break;
+        case 3: // Object follows Finger (Formerly Follow Object During Rotation)
+            rotateArc(event, true); break;
         default: rotateTAV(event);
     }
 }
@@ -392,8 +377,11 @@ void Trackball::rotateTAV(Event* event){
     event->markAsUsed();
 }
 
-/* \brief Maps the mouse inputs to camera movement according to the Arcball method */
-void Trackball::rotateArc(Event* event){
+/* \brief Maps the mouse inputs to camera movement according to the Arcball method
+ *
+ * @param followObjectDuringRotation Ensures the finger stays on the same position on the object surface
+ */
+void Trackball::rotateArc(Event* event, bool followObjectDuringRotation){
     if (!allowHorizontalRotation_ && !allowVerticalRotation_) return;
     timer_.stop();
 
@@ -401,12 +389,13 @@ void Trackball::rotateArc(Event* event){
     const auto ndc = static_cast<vec3>(mouseEvent->ndc());
 
     const auto curNDC =
-        vec3(allowHorizontalRotation_ ? ndc.x : 0.0f, allowVerticalRotation_ ? ndc.y : 0.0f,
-             followObjectDuringRotation_ ? ndc.z : 1);
+        vec3(allowHorizontalRotation_ ?   ndc.x : 0.0f,
+             allowVerticalRotation_ ?     ndc.y : 0.0f,
+             followObjectDuringRotation ? ndc.z : 1.0f);
 
-    const auto& to = getLookTo();
+    const auto& to =   getLookTo();
     const auto& from = getLookFrom();
-    const auto& up = getLookUp();
+    const auto& up =   getLookUp();
 
     // disable movements on first press
     if (!isMouseBeingPressedAndHold_) {
@@ -417,7 +406,7 @@ void Trackball::rotateArc(Event* event){
     } else {
         // Compute coordinates on a sphere to rotate from and to
         const auto lastTBI = getTrackBallIntersection(vec2(lastNDC_));
-        const auto curTBI = getTrackBallIntersection(vec2(curNDC));
+        const auto curTBI =  getTrackBallIntersection(vec2(curNDC));
 
         if (lastTBI.first && curTBI.first && gestureStartNDCDepth_ < 1) {
             const auto Pa = glm::normalize(lastTBI.second - to);
@@ -430,7 +419,8 @@ void Trackball::rotateArc(Event* event){
             lastRot_ = glm::quat(Pc, Pa);
         }
         lastRotTime_ = std::chrono::system_clock::now();
-        setLook(getLookTo() + glm::rotate(lastRot_, from - to), to, glm::rotate(lastRot_, up));
+
+        setLook(to + glm::rotate(lastRot_, from - to), to, glm::rotate(lastRot_, up));
     }
     // update mouse positions
     lastNDC_ = curNDC;
@@ -688,6 +678,10 @@ void Trackball::stepPan(Direction dir) {
     setLook(getLookFrom() - boundedTranslation, getLookTo() - boundedTranslation, getLookUp());
 }
 
+/* \brief Maps touch input to rotation
+ * This implicitly uses the Object follows Finger method.
+ * The Trackball Method Dropdown is NOT influencing touch inputs!
+ */
 void Trackball::touchGesture(Event* event) {
 
     TouchEvent* touchEvent = static_cast<TouchEvent*>(event);
@@ -731,9 +725,9 @@ void Trackball::touchGesture(Event* event) {
         const auto curNDC = vec3(allowHorizontalRotation_ ? ndc.x : 0.0f,
                                  allowVerticalRotation_ ? ndc.y : 0.0f, ndc.z);
 
-        const auto& to = getLookTo();
+        const auto& to =   getLookTo();
         const auto& from = getLookFrom();
-        const auto& up = getLookUp();
+        const auto& up =   getLookUp();
 
         // disable movements on first press
         if (!isMouseBeingPressedAndHold_ || point.state() == TouchState::Started) {

@@ -103,7 +103,7 @@ protected:
 
     void rotate(Event* event);
     void rotateTAV(Event* event);
-    void rotateArc(Event* event);
+    void rotateArc(Event* event, bool followObjectDuringRotation=false);
     void rotateFPS(Event* event);
     void zoom(Event* event);
     void pan(Event* event);
@@ -157,11 +157,12 @@ protected:
     double gestureStartNDCDepth_;
     float trackBallWorldSpaceRadius_;
 
-    OptionPropertyInt trackballMethod_; /// Chooses which trackball method to use
+    OptionPropertyInt trackballMethod_; /// Chooses which trackball method to use (mouse only, touch always follows finger)
     FloatProperty sensitivity_; /// Controls the rotation sensitivity
     FloatProperty verticalAngleLimit_; /// Limits the angle between world up and view direction when fixUp is True
     FloatProperty movementSpeed_;
     BoolProperty fixUp_; /// Fixes the up vector to world_up in all rotation methods
+
 
     // Interaction restrictions
     BoolProperty handleInteractionEvents_;
@@ -199,8 +200,6 @@ protected:
     std::chrono::system_clock::time_point lastRotTime_;
     bool evaluated_;
     Timer timer_;
-
-    bool followObjectDuringRotation_;
 };
 
 }  // namespace inviwo

@@ -56,7 +56,6 @@ public:
     BoolProperty enablePickingProperty_;
     BoolProperty enableSoundProperty_;
     BoolProperty logStackTraceProperty_;
-    BoolProperty followObjectDuringRotation_;
     BoolProperty runtimeModuleReloading_;
     BoolProperty enableResourceManager_;
     TemplateOptionProperty<MessageBreakLevel> breakOnMessage_;
