@@ -49,6 +49,10 @@ void BrushingAndLinkingInport::sendFilterEvent(const std::unordered_set<size_t> 
 }
 
 void BrushingAndLinkingInport::sendSelectionEvent(const std::unordered_set<size_t> &indices) {
+    bool noRemoteSelections = false;
+    if(isConnected() && hasData())
+        noRemoteSelections = getData()->getSelectedIndices().empty();
+    if (selectionColumnCache_.empty() && indices.empty() && noRemoteSelections) return;
     if (selectionCache_.size() == 0 && indices.size() == 0) return;
     selectionCache_ = indices;
     SelectionEvent event(this, selectionCache_);
@@ -56,8 +60,10 @@ void BrushingAndLinkingInport::sendSelectionEvent(const std::unordered_set<size_
 }
 
 void BrushingAndLinkingInport::sendColumnSelectionEvent(const std::unordered_set<size_t> &indices) {
-    auto remoteSelections = getData()->getSelectedColumns();
-    if (selectionColumnCache_.size() == 0 && indices.size() == 0 && remoteSelections.size() == 0) return;
+    bool noRemoteSelections = false;
+    if (isConnected() && hasData())
+        noRemoteSelections = getData()->getSelectedIndices().empty();
+    if (selectionColumnCache_.empty() && indices.empty() && noRemoteSelections) return;
     selectionColumnCache_ = indices;
     ColumnSelectionEvent event(this, selectionColumnCache_);
     propagateEvent(&event, nullptr);
