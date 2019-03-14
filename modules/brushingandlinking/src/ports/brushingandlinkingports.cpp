@@ -56,7 +56,8 @@ void BrushingAndLinkingInport::sendSelectionEvent(const std::unordered_set<size_
 }
 
 void BrushingAndLinkingInport::sendColumnSelectionEvent(const std::unordered_set<size_t> &indices) {
-    if (selectionColumnCache_.size() == 0 && indices.size() == 0) return;
+    auto remoteSelections = getData()->getSelectedColumns();
+    if (selectionColumnCache_.size() == 0 && indices.size() == 0 && remoteSelections.size() == 0) return;
     selectionColumnCache_ = indices;
     ColumnSelectionEvent event(this, selectionColumnCache_);
     propagateEvent(&event, nullptr);
