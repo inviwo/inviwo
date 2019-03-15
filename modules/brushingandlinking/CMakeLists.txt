@@ -12,6 +12,7 @@ set(HEADER_FILES
     include/modules/brushingandlinking/events/brushingandlinkingevent.h
     include/modules/brushingandlinking/events/filteringevent.h
     include/modules/brushingandlinking/events/selectionevent.h
+    include/modules/brushingandlinking/events/columnselectionevent.h
     include/modules/brushingandlinking/ports/brushingandlinkingports.h
     include/modules/brushingandlinking/processors/brushingandlinkingprocessor.h
 )
@@ -26,6 +27,7 @@ set(SOURCE_FILES
     src/events/brushingandlinkingevent.cpp
     src/events/filteringevent.cpp
     src/events/selectionevent.cpp
+    src/events/columnselectionevent.cpp
     src/ports/brushingandlinkingports.cpp
     src/processors/brushingandlinkingprocessor.cpp
 )

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -85,10 +85,10 @@ void TFSelectionWatcher::updateSelection(const std::vector<TFPrimitive *> select
     informWidgets();
 }
 
-void TFSelectionWatcher::onTFPrimitiveChange(const TFPrimitive *p) {
+void TFSelectionWatcher::onTFPrimitiveChange(const TFPrimitive &p) {
     if (updateInProgress_) return;
 
-    if (selectedPrimitives_.empty() || !util::contains(selectedPrimitives_, p)) {
+    if (selectedPrimitives_.empty() || !util::contains(selectedPrimitives_, &p)) {
         throw Exception("TF primitive callback detected on non-selected primitive", IvwContext);
     }
 

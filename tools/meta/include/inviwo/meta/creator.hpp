@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,15 +49,16 @@ namespace json = ::nlohmann;
 class INVIWO_META_API Creator {
 public:
     struct Options {
-        const bool verbose = false;
-        const bool dryrun = false;
-        const bool force = false;
-        std::ostream& log = std::cout;
+        const bool verbose;
+        const bool dryrun;
+        const bool force;
+        std::ostream& log;
     };
 
     Creator(const std::filesystem::path& inviwoRepo,
             std::optional<std::filesystem::path> templateDir = {},
-            std::optional<std::filesystem::path> configFile = {}, Options opts = Options{});
+            std::optional<std::filesystem::path> configFile = {},
+            Options opts = {false, false, false, std::cout});
 
     void createModule(const std::filesystem::path& modulePath, std::string_view org) const;
     void createFile(const std::filesystem::path& filePath) const;

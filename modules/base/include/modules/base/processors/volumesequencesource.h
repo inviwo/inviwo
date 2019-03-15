@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2018 Inviwo Foundation
+ * Copyright (c) 2015-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,6 +43,8 @@
 #include <inviwo/core/properties/stringproperty.h>
 
 namespace inviwo {
+class InviwoApplication;
+class DataReaderFactory;
 
 /** \docpage{org.inviwo.VolumeSequenceSource, Volume Vector Source}
  * ![](org.inviwo.VolumeSequenceSource.png?classIdentifier=org.inviwo.VolumeSequenceSource)
@@ -71,7 +73,7 @@ class IVW_MODULE_BASE_API VolumeSequenceSource : public Processor {
 public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
-    VolumeSequenceSource();
+    VolumeSequenceSource(InviwoApplication* app);
     virtual ~VolumeSequenceSource() = default;
 
     virtual void deserialize(Deserializer& d) override;
@@ -83,6 +85,7 @@ private:
     void loadFolder(bool deserialize = false);
     void addFileNameFilters();
 
+    DataReaderFactory* rf_;
     std::shared_ptr<VolumeSequence> volumes_;
 
     VolumeSequenceOutport outport_;

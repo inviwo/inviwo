@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,14 +49,14 @@ MeshShaderCache::MeshShaderCache(
 
     for (auto& requirement : requirements) {
         stateFunctors_.emplace_back(
-            [this, requirement](const Mesh& mesh) -> int {
+            [requirement](const Mesh& mesh) -> int {
                 const auto res = mesh.findBuffer(requirement.bufferType);
                 if (res.first) {
                     return res.second;
                 } else if (requirement.required == Mandatory) {
                     throw Exception("Unsupported mesh type, a " + toString(requirement.bufferType) +
                                         " is needed",
-                                    IVW_CONTEXT);
+                                    IVW_CONTEXT_CUSTOM("MeshShaderCache"));
                 } else {
                     return -1;
                 }

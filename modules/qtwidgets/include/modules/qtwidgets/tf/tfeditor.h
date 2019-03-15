@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -70,9 +70,9 @@ public:
              QWidget* parent = nullptr);
     virtual ~TFEditor();
 
-    virtual void onControlPointAdded(TFPrimitive* p);
-    virtual void onControlPointRemoved(TFPrimitive* p);
-    virtual void onControlPointChanged(const TFPrimitive* p);
+    virtual void onControlPointAdded(TFPrimitive& p);
+    virtual void onControlPointRemoved(TFPrimitive& p);
+    virtual void onControlPointChanged(const TFPrimitive& p);
 
     void updateConnections();
 
@@ -153,8 +153,8 @@ protected:
 private:
     std::vector<TFEditorPrimitive*> getSelectedPrimitiveItems() const;
 
-    void createControlPointItem(TFPrimitive* p);
-    void createIsovalueItem(TFPrimitive* p);
+    void createControlPointItem(TFPrimitive& p);
+    void createIsovalueItem(TFPrimitive& p);
 
     double controlPointSize_ = 15.0;           //!< size of TF primitives
     dvec2 relativeSceneOffset_ = dvec2(10.0);  //!< offset for duplicating TF primitives

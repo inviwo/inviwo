@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -79,9 +79,9 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
     , errorTextColor_(255, 107, 107)
     , runAction_(nullptr)
     , script_()
-    , unsavedChanges_(false)
     , app_(app)
-    , appendLog_(nullptr) {
+    , appendLog_(nullptr)
+    , fileObserver_(this, "Python Editor") {
     setWindowIcon(QIcon(":/icons/python.png"));
 
     mainWindow_ = new QMainWindow();
@@ -92,6 +92,33 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
     toolBar->setMovable(false);
     setWidget(mainWindow_);
     mainWindow_->statusBar();
+
+    QSplitter* splitter = new QSplitter(nullptr);
+    splitter->setOrientation(Qt::Vertical);
+    pythonCode_ = new CodeEdit{Python};
+    setDefaultText();
+
+    pythonOutput_ = new CodeEdit(None, nullptr);
+    pythonOutput_->setReadOnly(true);
+    pythonOutput_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+
+    splitter->addWidget(pythonCode_);
+    splitter->addWidget(pythonOutput_);
+    splitter->setStretchFactor(0, 1);
+    splitter->setStretchFactor(1, 0);
+    splitter->setHandleWidth(2);
+    // enable QSplitter:hover stylesheet
+    // QTBUG-13768 https://bugreports.qt.io/browse/QTBUG-13768
+    splitter->handle(1)->setAttribute(Qt::WA_Hover);
+    mainWindow_->setCentralWidget(splitter);
+
+    QObject::connect(pythonCode_, &CodeEdit::textChanged, this, &PythonEditorWidget::onTextChange);
+    QObject::connect(pythonCode_, &CodeEdit::modificationChanged, this,
+                     [this](bool b) { setWindowModified(b); });
+    pythonCode_->installEventFilter(&fileObserver_);
+
+    fileObserver_.setReloadFileCallback([this]() { readFile(); });
+    fileObserver_.setModifiedCallback([this](bool m) { pythonCode_->document()->setModified(m); });
 
     {
         runAction_ = toolBar->addAction(QIcon(":/icons/python.png"), "Compile and Run");
@@ -135,6 +162,21 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
         connect(action, &QAction::triggered, [this]() { saveAs(); });
     }
     {
+        toolBar->addSeparator();
+        auto undo = toolBar->addAction(QIcon(":/icons/undo.png"), "&Undo");
+        undo->setShortcut(QKeySequence::Undo);
+        undo->setEnabled(false);
+        QObject::connect(undo, &QAction::triggered, this, [this]() { pythonCode_->undo(); });
+        QObject::connect(pythonCode_, &QPlainTextEdit::undoAvailable, undo, &QAction::setEnabled);
+
+        auto redo = toolBar->addAction(QIcon(":/icons/redo.png"), "&Redo");
+        redo->setShortcut(QKeySequence::Redo);
+        redo->setEnabled(false);
+        QObject::connect(redo, &QAction::triggered, this, [this]() { pythonCode_->redo(); });
+        QObject::connect(pythonCode_, &QPlainTextEdit::redoAvailable, redo, &QAction::setEnabled);
+    }
+    {
+        toolBar->addSeparator();
         QIcon icon;
         icon.addFile(":/icons/log-append.png", QSize(), QIcon::Normal, QIcon::On);
         icon.addFile(":/icons/log-clearonrun.png", QSize(), QIcon::Normal, QIcon::Off);
@@ -162,78 +204,35 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent, InviwoApplication* app)
         connect(action, &QAction::triggered, [this]() { clearOutput(); });
     }
 
-    // Done creating buttons
-    QSplitter* splitter = new QSplitter(nullptr);
-    splitter->setOrientation(Qt::Vertical);
-    pythonCode_ = new CodeEdit{Python};
-
-    setDefaultText();
-    pythonOutput_ = new CodeEdit(None, nullptr);
-    pythonOutput_->setReadOnly(true);
-    pythonOutput_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-
-    splitter->addWidget(pythonCode_);
-    splitter->addWidget(pythonOutput_);
-    splitter->setStretchFactor(0, 1);
-    splitter->setStretchFactor(1, 0);
-    splitter->setHandleWidth(2);
-    // enable QSplitter:hover stylesheet
-    // QTBUG-13768 https://bugreports.qt.io/browse/QTBUG-13768
-    splitter->handle(1)->setAttribute(Qt::WA_Hover);
-    mainWindow_->setCentralWidget(splitter);
-
-    QObject::connect(pythonCode_, &CodeEdit::textChanged, this, &PythonEditorWidget::onTextChange);
-    pythonCode_->installEventFilter(this);
-
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     resize(QSize(500, 700));  // default size
-
-    unsavedChanges_ = false;
+    updateWindowTitle();
 }
 
 PythonEditorWidget::~PythonEditorWidget() = default;
 
 void PythonEditorWidget::closeEvent(QCloseEvent* event) {
-    if (unsavedChanges_) {
-        int ret = QMessageBox::question(this, "Python Editor",
-                                        "Do you want to save unsaved changes?", "Save", "Discard");
-        if (ret == 0) save();
+    if (pythonCode_->document()->isModified()) {
+        QMessageBox msgBox(QMessageBox::Question, "Python Editor",
+                           "Do you want to save unsaved changes?",
+                           QMessageBox::Save | QMessageBox::Discard, this);
+
+        int retval = msgBox.exec();
+        if (retval == static_cast<int>(QMessageBox::Save)) {
+            save();
+        } else if (retval == static_cast<int>(QMessageBox::Cancel)) {
+            return;
+        }
     }
     InviwoDockWidget::closeEvent(event);
-}
-
-bool PythonEditorWidget::eventFilter(QObject* obj, QEvent* event) {
-    if (event->type() == QEvent::FocusIn) {
-        if (fileChangedInBackground_) {
-            queryReloadFile();
-        }
-        return false;
-    } else {
-        // standard event processing
-        return QObject::eventFilter(obj, event);
-    }
-}
-
-void PythonEditorWidget::focusInEvent(QFocusEvent* event) {
-    InviwoDockWidget::focusInEvent(event);
-    if (fileChangedInBackground_) {
-        queryReloadFile();
-    }
 }
 
 void PythonEditorWidget::appendToOutput(const std::string& msg, bool) {
     pythonOutput_->appendPlainText(utilqt::toQString(msg));
 }
 
-void PythonEditorWidget::fileChanged(const std::string& /*fileName*/) {
-    if (!fileChangedInBackground_) {
-        fileChangedInBackground_ = true;
-        queryReloadFile();
-    }
-}
-
 void PythonEditorWidget::loadFile(std::string fileName, bool askForSave) {
-    if (askForSave && unsavedChanges_) {
+    if (askForSave && pythonCode_->document()->isModified()) {
         QMessageBox msgBox(QMessageBox::Question, "Python Editor",
                            "Do you want to save unsaved changes?",
                            QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel, this);
@@ -246,32 +245,8 @@ void PythonEditorWidget::loadFile(std::string fileName, bool askForSave) {
         }
     }
 
-    stopFileObservation(scriptFileName_);
     setFileName(fileName);
-    startFileObservation(scriptFileName_);
     readFile();
-}
-
-void PythonEditorWidget::queryReloadFile() {
-    if (this->hasFocus() && fileChangedInBackground_ && !reloadQueryInProgress_) {
-        reloadQueryInProgress_ = true;
-        std::string msg =
-            "The file " + filesystem::getFileNameWithExtension(scriptFileName_) +
-            " has been modified outside of Inwivo, do you want to reload its contents?";
-
-        QMessageBox msgBox(QMessageBox::Question, "Python Editor", utilqt::toQString(msg),
-                           QMessageBox::Yes | QMessageBox::No, this);
-        msgBox.setWindowModality(Qt::WindowModal);
-
-        if (msgBox.exec() == static_cast<int>(QMessageBox::Yes)) {
-            readFile();
-        } else {
-            unsavedChanges_ = true;
-            // set code change to true so that we can quick save without making more changes
-        }
-        fileChangedInBackground_ = false;
-        reloadQueryInProgress_ = false;
-    }
 }
 
 void PythonEditorWidget::onPyhonExecutionOutput(const std::string& msg,
@@ -284,17 +259,15 @@ void PythonEditorWidget::save() {
 
     if (scriptFileName_.empty()) {
         saveAs();
-    } else if (unsavedChanges_) {
-        stopFileObservation(scriptFileName_);
+    } else if (pythonCode_->document()->isModified()) {
+        fileObserver_.ignoreNextUpdate();
 
         auto file = filesystem::ofstream(scriptFileName_);
         file << utilqt::fromQString(pythonCode_->toPlainText());
         file.close();
 
-        startFileObservation(scriptFileName_);
+        pythonCode_->document()->setModified(false);
         mainWindow_->statusBar()->showMessage(utilqt::toQString("Saved " + scriptFileName_));
-        unsavedChanges_ = false;
-        updateTitleBar();
     }
 }
 
@@ -306,16 +279,6 @@ void PythonEditorWidget::readFile() {
     pythonCode_->setPlainText(utilqt::toQString(text));
     script_.setSource(text);
     script_.setFilename(scriptFileName_);
-    unsavedChanges_ = false;
-    updateTitleBar();
-}
-
-bool PythonEditorWidget::hasFocus() const {
-    if (InviwoDockWidget::hasFocus()) return true;
-
-    if (pythonCode_->hasFocus()) return true;
-
-    return false;
 }
 
 void PythonEditorWidget::saveAs() {
@@ -333,23 +296,13 @@ void PythonEditorWidget::saveAs() {
         if (!path.endsWith(".py")) path.append(".py");
 
         setFileName(utilqt::fromQString(path));
-        unsavedChanges_ = true;
         save();
     }
 }
 
 void PythonEditorWidget::open() {
-    if (unsavedChanges_) {
-        QMessageBox msgBox(QMessageBox::Question, "Python Editor",
-                           "Do you want to save unsaved changes?",
-                           QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel, this);
-
-        int retval = msgBox.exec();
-        if (retval == static_cast<int>(QMessageBox::Save)) {
-            save();
-        } else if (retval == static_cast<int>(QMessageBox::Cancel)) {
-            return;
-        }
+    if (!askSaveChanges()) {
+        return;
     }
 
     InviwoFileDialog openFileDialog(this, "Open Python Script ...", "script");
@@ -358,7 +311,6 @@ void PythonEditorWidget::open() {
     openFileDialog.addExtension("py", "Python Script");
 
     if (openFileDialog.exec()) {
-        unsavedChanges_ = false;
         loadFile(utilqt::fromQString(openFileDialog.selectedFiles().at(0)), false);
     }
 }
@@ -396,21 +348,12 @@ void PythonEditorWidget::show() {
 }
 
 void PythonEditorWidget::setDefaultText() {
-    if (unsavedChanges_) {
-        int ret =
-            QMessageBox::information(this, "Python Editor", "Do you want to save unsaved changes?",
-                                     "Save", "Discard Changes", "Cancel");
-
-        if (ret == 0)
-            save();
-        else if (ret == 2)  // cancel
-            return;
+    if (!askSaveChanges()) {
+        return;
     }
 
     pythonCode_->setPlainText(utilqt::toQString(defaultSource));
-    unsavedChanges_ = false;
     script_.setSource(defaultSource);
-    stopFileObservation(scriptFileName_);
     setFileName("");
 }
 
@@ -418,19 +361,17 @@ void PythonEditorWidget::clearOutput() { pythonOutput_->setPlainText(""); }
 
 void PythonEditorWidget::onTextChange() {
     std::string source = utilqt::fromQString(pythonCode_->toPlainText());
-
     script_.setSource(source);
-    unsavedChanges_ = true;
-    updateTitleBar();
 }
 
 void PythonEditorWidget::setFileName(const std::string& filename) {
     scriptFileName_ = filename;
     script_.setFilename(filename);
-    updateTitleBar();
+    fileObserver_.setFileName(filename);
+    updateWindowTitle();
 }
 
-void PythonEditorWidget::updateTitleBar() {
+void PythonEditorWidget::updateWindowTitle() {
     QString str;
     if (scriptFileName_.empty()) {
         str = "(unnamed file)";
@@ -438,7 +379,7 @@ void PythonEditorWidget::updateTitleBar() {
         str = QString::fromStdString(scriptFileName_);
     }
 
-    setWindowTitle(QString("Python Editor - %1%2").arg(str).arg(unsavedChanges_ ? "*" : ""));
+    setWindowTitle(QString("Python Editor - %1[*]").arg(str));
 }
 
 void PythonEditorWidget::saveState() {
@@ -475,6 +416,22 @@ void PythonEditorWidget::loadState() {
     appendLog_->setChecked(append);
 
     settings.endGroup();
+}
+
+bool PythonEditorWidget::askSaveChanges() {
+    if (pythonCode_->document()->isModified()) {
+        QMessageBox msgBox(QMessageBox::Question, "Python Editor",
+                           "Do you want to save unsaved changes?",
+                           QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel, this);
+
+        int retval = msgBox.exec();
+        if (retval == static_cast<int>(QMessageBox::Save)) {
+            save();
+        } else if (retval == static_cast<int>(QMessageBox::Cancel)) {
+            return false;
+        }
+    }
+    return true;
 }
 
 }  // namespace inviwo

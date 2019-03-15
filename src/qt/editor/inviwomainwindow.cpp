@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,6 +39,7 @@
 #include <inviwo/core/util/licenseinfo.h>
 #include <inviwo/core/util/vectoroperations.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/network/workspacemanager.h>
 #include <inviwo/qt/editor/consolewidget.h>
 #include <inviwo/qt/editor/helpwidget.h>
@@ -63,6 +64,8 @@
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
 #include <inviwo/core/network/workspaceutils.h>
 #include <inviwo/core/network/networklock.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/processorwidget.h>
 #include <inviwo/core/processors/compositeprocessor.h>
 #include <inviwo/core/processors/compositeprocessorutils.h>
 
@@ -269,9 +272,8 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
                 img.second = img.second.scaledToHeight(fixedHeight);
             }
 
-            annotationsWidget_->getAnnotations()
-                .setNetworkImage(networkEditorView_->exportViewToImage(
-                    true, true, QSize(fixedHeight, fixedHeight)));
+            annotationsWidget_->getAnnotations().setNetworkImage(
+                networkEditorView_->exportViewToImage(true, true, QSize(fixedHeight, fixedHeight)));
             annotationsWidget_->getAnnotations().setCanvasImages(canvases);
 
             s.serialize("WorkspaceAnnotations", annotationsWidget_->getAnnotations());
@@ -340,6 +342,7 @@ void InviwoMainWindow::addActions() {
     auto viewMenuItem = menu->addMenu(tr("&View"));
     auto networkMenuItem = menu->addMenu(tr("&Network"));
     menu->addMenu(toolsMenu_);
+    auto windowMenuItem = menu->addMenu("&Windows");
     auto helpMenuItem = menu->addMenu(tr("&Help"));
 
     auto workspaceToolBar = addToolBar("File");
@@ -366,7 +369,11 @@ void InviwoMainWindow::addActions() {
         newAction->setShortcut(QKeySequence::New);
         newAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         this->addAction(newAction);
-        connect(newAction, &QAction::triggered, this, &InviwoMainWindow::newWorkspace);
+        connect(newAction, &QAction::triggered, this, [this]() {
+            if (newWorkspace()) {
+                hideWelcomeScreen();
+            }
+        });
         fileMenuItem->addAction(newAction);
         workspaceToolBar->addAction(newAction);
     }
@@ -376,8 +383,11 @@ void InviwoMainWindow::addActions() {
         openAction->setShortcut(QKeySequence::Open);
         openAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         this->addAction(openAction);
-        connect(openAction, &QAction::triggered, this,
-                static_cast<bool (InviwoMainWindow::*)()>(&InviwoMainWindow::openWorkspace));
+        connect(openAction, &QAction::triggered, this, [this]() {
+            if (openWorkspace()) {
+                hideWelcomeScreen();
+            }
+        });
         fileMenuItem->addAction(openAction);
         workspaceToolBar->addAction(openAction);
     }
@@ -461,7 +471,11 @@ void InviwoMainWindow::addActions() {
             action->setVisible(false);
             recentWorkspaceMenu->addAction(action);
             connect(action, &QAction::triggered, this, [this, action]() {
-                if (askToSaveWorkspaceChanges()) openWorkspace(action->data().toString());
+                if (askToSaveWorkspaceChanges()) {
+                    if (openWorkspace(action->data().toString())) {
+                        hideWelcomeScreen();
+                    }
+                }
             });
         }
         // action for clearing the recent file menu
@@ -520,7 +534,9 @@ void InviwoMainWindow::addActions() {
                     // open as regular workspace with proper filename if control is pressed
                     bool controlPressed = (app_->keyboardModifiers() == Qt::ControlModifier);
                     if (askToSaveWorkspaceChanges()) {
-                        openWorkspace(path, !controlPressed);
+                        if (openWorkspace(path, !controlPressed)) {
+                            hideWelcomeScreen();
+                        }
                     }
                 });
             }
@@ -787,6 +803,54 @@ void InviwoMainWindow::addActions() {
     }
 #endif
 
+    // Windows
+    {
+        QObject::connect(windowMenuItem, &QMenu::aboutToShow, this, [this, windowMenuItem]() {
+            windowMenuItem->clear();
+            auto showAllAction = windowMenuItem->addAction("&Show All");
+            auto hideAllAction = windowMenuItem->addAction("&Hide All");
+
+            QObject::connect(showAllAction, &QAction::triggered, this, [this]() {
+                auto widgetProcessors =
+                    util::copy_if(app_->getProcessorNetwork()->getProcessors(),
+                                  [](const auto p) { return p->hasProcessorWidget(); });
+                for (const auto p : widgetProcessors) {
+                    p->getProcessorWidget()->show();
+                }
+            });
+            QObject::connect(hideAllAction, &QAction::triggered, this, [this]() {
+                auto widgetProcessors =
+                    util::copy_if(app_->getProcessorNetwork()->getProcessors(),
+                                  [](const auto p) { return p->hasProcessorWidget(); });
+                for (const auto p : widgetProcessors) {
+                    p->getProcessorWidget()->hide();
+                }
+            });
+
+            auto widgetProcessors =
+                util::copy_if(app_->getProcessorNetwork()->getProcessors(),
+                              [](const auto p) { return p->hasProcessorWidget(); });
+            std::sort(widgetProcessors.begin(), widgetProcessors.end(), [](auto a, auto b) {
+                return iCaseLess(a->getDisplayName(), b->getDisplayName());
+            });
+
+            if (!widgetProcessors.empty()) {
+                windowMenuItem->addSeparator();
+            }
+            for (const auto p : widgetProcessors) {
+                auto action =
+                    windowMenuItem->addAction(QString("%1 (%2)")
+                                                  .arg(utilqt::toQString(p->getDisplayName()))
+                                                  .arg(utilqt::toQString(p->getIdentifier())));
+                action->setCheckable(true);
+                action->setChecked(p->getProcessorWidget()->isVisible());
+                QObject::connect(action, &QAction::toggled, this, [this, p](bool toggle) {
+                    p->getProcessorWidget()->setVisible(toggle);
+                });
+            }
+        });
+    }
+
     // Help
     {
         helpMenuItem->addAction(helpWidget_->toggleViewAction());
@@ -979,20 +1043,6 @@ void InviwoMainWindow::saveWorkspace(QString workspaceFileName) {
     fileName = filesystem::cleanupPath(fileName);
 
     try {
-        auto networkImageSerializationHandle = app_->getWorkspaceManager()->onSave(
-            [&](Serializer& s) {
-                const int fixedHeight = 256;
-                auto image = networkEditorView_->exportViewToImage(true, true, QSize(256, 256));
-
-                auto canvases = utilqt::getCanvasImages(app_->getProcessorNetwork());
-                for (auto& img : canvases) {
-                    img.second = img.second.scaledToHeight(fixedHeight);
-                }
-                WorkspaceAnnotationsQt p{image, canvases};
-                s.serialize("WorkspacePreview", p);
-            },
-            WorkspaceSaveMode::Disk);
-
         app_->getWorkspaceManager()->save(fileName, [&](ExceptionContext ec) {
             try {
                 throw;

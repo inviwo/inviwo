@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -109,7 +109,7 @@ TEST_P(PropertyCreationTests, Create) {
     }
 }
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     RegisteredProperties, PropertyCreationTests,
     ::testing::ValuesIn(InviwoApplication::getPtr()->getPropertyFactory()->getKeys()));
 }  // namespace inviwo

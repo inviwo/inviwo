@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2016-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,6 +34,7 @@
 #include <inviwo/core/interaction/events/gestureevent.h>
 #include <inviwo/core/interaction/events/touchevent.h>
 #include <inviwo/core/datastructures/camera.h>
+#include <inviwo/core/interaction/events/eventutil.h>
 
 namespace inviwo {
 
@@ -269,5 +270,15 @@ const InteractionEvent::ToolTipCallback& PickingEvent::getToolTipCallback() cons
 void PickingEvent::setToolTip(const std::string& tooltip) const { event_->setToolTip(tooltip); }
 
 const PickingAction* PickingEvent::getPickingAction() const { return pickingAction_; }
+
+void PickingEvent::print(std::ostream& ss) const {
+    util::printEvent(
+        ss, "PickingEvent", std::make_pair("state", state_),
+        std::make_pair("pressState", pressState_), std::make_pair("pressItem", pressItem_),
+        std::make_pair("hoverState", hoverState_), std::make_pair("pressedState", pressedState_),
+        std::make_tuple("GlobalID"), std::make_tuple("pick", pickedGlobalId_, 4),
+        std::make_tuple("curr", currentGlobalId_, 4), std::make_tuple("pres", pressedGlobalId_, 4),
+        std::make_tuple("prev", previousGlobalId_, 4), std::make_pair("NDC", getNDC()));
+}
 
 }  // namespace inviwo

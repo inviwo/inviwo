@@ -48,9 +48,6 @@ def defaultProperties() {
                 description: 'Select build configuration', 
                 name: 'Build_Type'
             )
-        ]),
-        pipelineTriggers([
-            [$class: 'GitHubPushTrigger']
         ])
     ]
     return params
@@ -76,19 +73,25 @@ def cmd(stageName, dirName, env = [], fun) {
     }
 }
 
+def printMap(String name, def map) {
+    println name + ":\n" + map?.collect{"${it.key.padLeft(30)} = ${it.value}"}?.join("\n") ?: ''
+}
+
 // this uses global pipeline var pullRequest
 def setLabel(def state, String label, Boolean add) {
     if (add) {
         try {
             state.addLabel(label)
         } catch (e) {
-            println("Error adding label")
+            println "Error adding label"
+            println e.toString()
         }
     } else {
         try {
             state.removeLabel(label)
         } catch (e) {
-            println("Error adding label")
+            println "Error removing label"
+            println e.toString()
         }
     }       
 }
@@ -96,9 +99,9 @@ def setLabel(def state, String label, Boolean add) {
 def checked(def state, String label, Boolean fail, Closure fun) {
     try {
         fun()
-        setLabel(state, "J:" + label  + " Failure", false)
+        setLabel(state, "J: " + label  + " Failure", false)
     } catch (e) {
-        setLabel(state, "J:" + label  + " Failure", true)
+        setLabel(state, "J: " + label  + " Failure", true)
         state.errors += label
         if (fail) {
             state.build.result = 'FAILURE'
@@ -110,6 +113,21 @@ def checked(def state, String label, Boolean fail, Closure fun) {
     }
 }
 
+def wrap(def state, String reportSlackChannel, Closure fun) {
+    try {
+        fun()
+        state.build.result = state.errors.isEmpty() ? 'SUCCESS' : 'UNSTABLE'
+    } catch (e) {
+        state.build.result = 'FAILURE'
+        throw e
+    } finally {
+        if(!reportSlackChannel.isEmpty()) slack(state, reportSlackChannel)
+        if(!state.errors.isEmpty()) {
+            println "Errors in: ${state.errors.join(", ")}"
+            state.build.description = "Errors in: ${state.errors.join(' ')}"
+        } 
+    }
+}
 
 def filterfiles() {
     dir('build') {
@@ -154,9 +172,7 @@ def unittest(def state) {
             sh '''
                 rc=0
                 for unittest in inviwo-unittests-*
-                    do echo ==================================
-                    echo Running: ${unittest}
-                    ./${unittest} || rc=$?
+                do ./${unittest} || rc=$?
                 done
                 exit ${rc}
             '''
@@ -180,9 +196,10 @@ def regression(def state, modulepaths) {
             sh """
                 python3 ../inviwo/tools/regression.py \
                         --config ../build/pyconfig.ini \
-                        --build_type ${state.env.Build_Type} \
+                        --build_type ${state.env.Build_Type?:"Release"} \
                         --header ${state.env.JENKINS_HOME}/inviwo-config/header.html \
                         --output . \
+                        --summary \
                         --modules ${modulepaths.join(' ')}
             """        
         }
@@ -249,8 +266,8 @@ def cmake(Map args = [:]) {
         (args.printCMakeVars ? " -LA " : "") +
         (args.opts?.collect{" -D${it.key}=${it.value}"}?.join('') ?: "") + 
         (args.modulePaths ? " -DIVW_EXTERNAL_MODULES=" + args.modulePaths.join(";") : "" ) +
-        (args.onModules?.collect{" -DIVW_MODULE_${it}=ON"}?.join('') ?: "") +
-        (args.offModules?.collect{" -DIVW_MODULE_${it}=OFF"}?.join('') ?: "") +
+        (args.onModules?.collect{" -DIVW_MODULE_${it.toUpperCase()}=ON"}?.join('') ?: "") +
+        (args.offModules?.collect{" -DIVW_MODULE_${it.toUpperCase()}=OFF"}?.join('') ?: "") +
         " ../inviwo"
 }
 
@@ -290,22 +307,19 @@ Map envCMakeOptions(env) {
 //Args state, opts, modulePaths, onModules, offModules
 def build(Map args = [:]) {
     dir('build') {
-        println "Options:\n  " + args.opts?.collect{"  ${it.key.padRight(30)} = ${it.value}"}?.join('\n  ') ?: ""
+        printMap("Options", args.opts)
         println "External:\n  ${args.modulePaths?.join('\n  ')?:""}"
         println "Modules On:\n  ${args.onModules?.join('\n  ')?:""}"
         println "Modules Off:\n  ${args.offModules?.join('\n  ')?:""}"
         log {
             checked(args.state, 'Build', true) {
                 sh """
-                    ccache -z # reset ccache statistics
+                    ccache --zero-stats
                     # tell ccache where the project root is
-                    export CCACHE_BASEDIR=${args.state.env.WORKSPACE}/build
-                            
+                    export CCACHE_BASEDIR=${args.state.env.WORKSPACE}           
                     ${cmake(args)}
-    
                     ninja
-    
-                    ccache -s # print ccache statistics
+                    ccache --show-stats
                 """
             }
         }
@@ -320,17 +334,17 @@ def build(Map args = [:]) {
 // * offModules List of modules to disable (optional)
 def buildStandard(Map args = [:]) {
     stage('Build') {
-        if (args.state.env.Clean_Build) clean()
-        def defaultOpts = defaultCMakeOptions(args.state.env.Build_Type)
+        if (args.state.env.Clean_Build?.equals("true")) clean()
+        def defaultOpts = defaultCMakeOptions(args.state.env.Build_Type?:"Release")
         defaultOpts.putAll(envCMakeOptions(args.state.env))
-        if (args.state.env.Use_Ccache) defaultOpts.putAll(ccacheOption())
+        if (!args.state.env.Use_Ccache?.equals("false")) defaultOpts.putAll(ccacheOption())
         if (args.state.env.opts) {
             def envopts = args.state.env.opts.tokenize(';').collect{it.tokenize('=')}.collectEntries()
             defaultOpts.putAll(envopts)
         }
         if (args.opts) defaultOpts.putAll(args.opts)
         args.opts = defaultOpts
-        args.printCMakeVars = args.state.env.Print_CMake_Variables
+        args.printCMakeVars = args.state.env.Print_CMake_Variables?.equals("true")
 
         if (args.state.env.offModules) args.offModules += args.state.env.offModules.tokenize(';')
         if (args.state.env.onModules) args.onModules += args.state.env.onModules.tokenize(';')

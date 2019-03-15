@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -812,17 +812,16 @@ struct almostEqual<glm::mat<C, R, T, Q>> {
 
 }  // namespace detail
 
-
 /**
-* Utility function to create a matrix filled with a constant.
-* For example: 
-* \code{.cpp}
-* auto m = util::filled<mat3>(3.16);
-* // | 3.16 3.16 3.16 |
-* // | 3.16 3.16 3.16 |
-* // | 3.16 3.16 3.16 |
-* \endcode
-*/
+ * Utility function to create a matrix filled with a constant.
+ * For example:
+ * \code{.cpp}
+ * auto m = util::filled<mat3>(3.16);
+ * // | 3.16 3.16 3.16 |
+ * // | 3.16 3.16 3.16 |
+ * // | 3.16 3.16 3.16 |
+ * \endcode
+ */
 template <typename M, typename T = typename M::value_type>
 M filled(T v) {
     return M{T(0)} + v;

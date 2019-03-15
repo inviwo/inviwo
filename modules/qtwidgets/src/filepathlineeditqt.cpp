@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2016-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,16 +54,28 @@ FilePathLineEditQt::FilePathLineEditQt(QWidget *parent)
     warningLabel_->setToolTip("Invalid File: Could not locate file");
     warningLabel_->hide();
 
-    QObject::connect(this, &QLineEdit::returnPressed, [this]() {
+    auto trimFilename = [this]() {
+        auto str = text().trimmed();
+        if (str != text()) {
+            blockSignals(true);
+            setText(str);
+            setModified(str != utilqt::toQString(path_));
+            blockSignals(false);
+        }
+    };
+
+    QObject::connect(this, &QLineEdit::returnPressed, [this, trimFilename]() {
         if (editingEnabled_) {
             cursorPos_ = -1;
-            path_ = utilqt::fromQString(text());
+            trimFilename();
+            path_ = utilqt::fromQString(text().trimmed());
             setEditing(false);
         }
     });
-    QObject::connect(this, &QLineEdit::editingFinished, [this]() {
+    QObject::connect(this, &QLineEdit::editingFinished, [this, trimFilename]() {
         if (editingEnabled_) {
             cursorPos_ = this->cursorPosition();
+            trimFilename();
             path_ = utilqt::fromQString(text());
             setEditing(false);
         }
@@ -152,13 +164,13 @@ void FilePathLineEditQt::updateIcon() {
     // update visibility of warning icon
 
     bool hasWildcard = (path_.find_first_of("*?#", 0) != std::string::npos);
-    bool visible = true;
+    bool visible = false;
     QString tooltip;
     if (hasWildcard) {
         // check, if the parent directory is valid
         visible = !filesystem::fileExists(filesystem::getFileDirectory(path_));
         tooltip = "Invalid Path";
-    } else {
+    } else if (!path_.empty()) {
         // no wildcards, check for file existence
         visible = !filesystem::fileExists(path_);
         tooltip = "Invalid File: Could not locate file";

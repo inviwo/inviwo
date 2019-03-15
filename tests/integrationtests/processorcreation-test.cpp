@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,16 +44,22 @@ namespace inviwo {
 namespace {
 
 struct LogErrorCheck {
-    LogErrorCheck()
+    LogErrorCheck(const std::string& procName)
         : logCounter_{std::make_shared<LogErrorCounter>()}
-        , stringLog_{std::make_shared<StringLogger>()} {
+        , stringLog_{std::make_shared<StringLogger>()}
+        , procName_{procName} {
         LogCentral::getPtr()->registerLogger(logCounter_);
         LogCentral::getPtr()->registerLogger(stringLog_);
     }
-    ~LogErrorCheck() { EXPECT_EQ(0, logCounter_->getErrorCount()) << stringLog_->getLog(); }
+    ~LogErrorCheck() {
+        EXPECT_EQ(0, logCounter_->getErrorCount())
+            << "Processor " << procName_ << " produced errors: " << stringLog_->getLog();
+    }
 
     std::shared_ptr<LogErrorCounter> logCounter_;
     std::shared_ptr<StringLogger> stringLog_;
+
+    const std::string procName_;
 };
 
 }  // namespace
@@ -71,23 +77,25 @@ protected:
 
     ProcessorNetwork* network_;
     ProcessorFactory* factory_;
-};  
-    
+};
+
 TEST_P(ProcessorCreationTests, ProcesorCreateAndResetAndAddToNetwork) {
-    LogErrorCheck checklog;
+    LogErrorCheck checklog(GetParam());
     auto s = factory_->create(GetParam());
-    ASSERT_TRUE(s.get() != nullptr);
+    ASSERT_TRUE(s.get() != nullptr) << "Could not create processor " << GetParam();
     s->resetAllPoperties();
 
     const size_t sizeBefore = network_->getProcessors().size();
     auto p = s.release();
     network_->addProcessor(p);
-    EXPECT_EQ(sizeBefore + 1, network_->getProcessors().size());
+    EXPECT_EQ(sizeBefore + 1, network_->getProcessors().size())
+        << "Could not add processor " << GetParam();
     network_->removeAndDeleteProcessor(p);
-    EXPECT_EQ(sizeBefore, network_->getProcessors().size());
+    EXPECT_EQ(sizeBefore, network_->getProcessors().size())
+        << "Could not remove processor " << GetParam();
 }
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     RegisteredProcessors, ProcessorCreationTests,
     ::testing::ValuesIn(InviwoApplication::getPtr()->getProcessorFactory()->getKeys()));
 }  // namespace inviwo

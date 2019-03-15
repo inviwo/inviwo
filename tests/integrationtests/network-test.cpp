@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -115,7 +115,7 @@ TEST_F(NetworkTest, ProcessorGetPropertyByType) {
     ASSERT_TRUE(p != nullptr);
 
     const std::vector<FloatVec3Property*> props = p->getPropertiesByType<FloatVec3Property>(true);
-    ASSERT_EQ(8, props.size());
+    ASSERT_EQ(5, props.size());
 
     ASSERT_TRUE(props[0] != nullptr);
 }

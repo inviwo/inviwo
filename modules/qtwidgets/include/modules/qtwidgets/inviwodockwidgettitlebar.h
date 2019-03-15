@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -65,8 +65,6 @@ public:
 
     virtual void paintEvent(QPaintEvent *) override;
 
-    void setLabel(const QString &str);
-
     void setSticky(bool toggle);
     bool isSticky() const;
 
@@ -77,6 +75,9 @@ signals:
     void stickyFlagChanged(bool sticky);
 protected slots:
     virtual void showEvent(QShowEvent *event) override;
+
+protected:
+    virtual bool eventFilter(QObject *obj, QEvent *event) override;
 
 private:
     void stickyBtnToggled(bool toggle);

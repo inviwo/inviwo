@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2016-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,14 +45,21 @@ void BrushingAndLinkingInport::sendFilterEvent(const std::unordered_set<size_t> 
     if (filterCache_.size() == 0 && indices.size() == 0) return;
     filterCache_ = indices;
     FilteringEvent event(this, filterCache_);
-    getProcessor()->propagateEvent(&event, nullptr);
+    propagateEvent(&event, nullptr);
 }
 
 void BrushingAndLinkingInport::sendSelectionEvent(const std::unordered_set<size_t> &indices) {
     if (selectionCache_.size() == 0 && indices.size() == 0) return;
     selectionCache_ = indices;
     SelectionEvent event(this, selectionCache_);
-    getProcessor()->propagateEvent(&event, nullptr);
+    propagateEvent(&event, nullptr);
+}
+
+void BrushingAndLinkingInport::sendColumnSelectionEvent(const std::unordered_set<size_t> &indices) {
+    if (selectionColumnCache_.size() == 0 && indices.size() == 0) return;
+    selectionColumnCache_ = indices;
+    ColumnSelectionEvent event(this, selectionColumnCache_);
+    propagateEvent(&event, nullptr);
 }
 
 bool BrushingAndLinkingInport::isFiltered(size_t idx) const {
@@ -71,6 +78,14 @@ bool BrushingAndLinkingInport::isSelected(size_t idx) const {
     }
 }
 
+bool BrushingAndLinkingInport::isColumnSelected(size_t idx) const {
+    if (isConnected()) {
+        return getData()->isColumnSelected(idx);
+    } else {
+        return selectionColumnCache_.find(idx) != selectionColumnCache_.end();
+    }
+}
+
 const std::unordered_set<size_t> &BrushingAndLinkingInport::getSelectedIndices() const {
     if (isConnected()) {
         return getData()->getSelectedIndices();
@@ -86,6 +101,16 @@ const std::unordered_set<size_t> &BrushingAndLinkingInport::getFilteredIndices()
         return filterCache_;
     }
 }
+
+const std::unordered_set<size_t> &BrushingAndLinkingInport::getSelectedColumns() const {
+    if (isConnected()) {
+        return getData()->getSelectedColumns();
+    }
+    else {
+        return selectionColumnCache_;
+    }
+}
+
 
 std::string BrushingAndLinkingInport::getClassIdentifier() const {
     return PortTraits<BrushingAndLinkingInport>::classIdentifier();

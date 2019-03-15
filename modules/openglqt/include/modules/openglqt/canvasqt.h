@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -189,11 +189,11 @@ void CanvasQtBase<T>::doContextMenu(QMouseEvent* event) {
 
         QMenu menu(this);
 
-        this->connect(menu.addAction("Select Processor"), &QAction::triggered, this, [&]() {
+        this->connect(menu.addAction("&Select Processor"), &QAction::triggered, this, [&]() {
             canvasProcessor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)
                 ->setSelected(true);
         });
-        this->connect(menu.addAction("Hide Widget"), &QAction::triggered, this,
+        this->connect(menu.addAction("&Hide Canvas"), &QAction::triggered, this,
                       [&]() { this->ownerWidget_->setVisible(false); });
 
         if (this->image_) {
@@ -536,7 +536,8 @@ void CanvasQtBase<T>::propagateEvent(Event* e) {
 template <typename T>
 void CanvasQtBase<T>::propagateEvent(MouseInteractionEvent* e) {
     e->setToolTipCallback([this](const std::string& tooltip) -> void {
-        // Save tooltip text to be displayed when Qt raises a QHelpEvent (mouse is still for a while)
+        // Save tooltip text to be displayed when Qt raises a QHelpEvent (mouse is still for a
+        // while)
         toolTipText_ = tooltip;
     });
 

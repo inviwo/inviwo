@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2017-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -244,7 +244,7 @@ void exposeProperties(py::module &m) {
             std::ostringstream oss;
             oss << "<TransferFunctionProperty:  " << tp.get().size() << " TF points";
             for (auto &p : tp.get()) {
-                oss << "\n    " << p->getPosition() << ", " << color::rgba2hex(p->getColor());
+                oss << "\n    " << p.getPosition() << ", " << color::rgba2hex(p.getColor());
             }
             oss << ">";
             return oss.str();
@@ -288,7 +288,7 @@ void exposeProperties(py::module &m) {
             std::ostringstream oss;
             oss << "<IsoValueProperty:  " << ivp.get().size() << " isovalues";
             for (auto &p : ivp.get()) {
-                oss << "\n    " << p->getPosition() << ", " << color::rgba2hex(p->getColor());
+                oss << "\n    " << p.getPosition() << ", " << color::rgba2hex(p.getColor());
             }
             oss << ">";
             return oss.str();

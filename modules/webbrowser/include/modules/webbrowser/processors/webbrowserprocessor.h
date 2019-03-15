@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -91,7 +91,7 @@ namespace inviwo {
  * \class WebBrowser
  * \brief Render webpage into the color and picking layers (OpenGL).
  */
-class IVW_MODULE_WEBBROWSER_API WebBrowserProcessor : public Processor {
+class IVW_MODULE_WEBBROWSER_API WebBrowserProcessor : public Processor, public CefLoadHandler {
 public:
     WebBrowserProcessor();
     virtual ~WebBrowserProcessor();
@@ -102,6 +102,10 @@ public:
     static const ProcessorInfo processorInfo_;
 
     void deserialize(Deserializer& d) override;
+
+    // Detect when page has loaded
+    virtual void OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bool isLoading, bool canGoBack,
+                                    bool canGoForward) override;
 
     ImageInport background_;
     ImageOutport outport_;
@@ -128,6 +132,9 @@ protected:
     CefRefPtr<RenderHandlerGL> renderHandler_;
     CefRefPtr<WebBrowserClient> browserClient_;
     CefRefPtr<CefBrowser> browser_;
+    bool isBrowserLoading_ = true;
+
+    IMPLEMENT_REFCOUNTING(WebBrowserProcessor)
 };
 
 }  // namespace inviwo

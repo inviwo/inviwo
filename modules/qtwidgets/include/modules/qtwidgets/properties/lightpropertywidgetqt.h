@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,14 +32,13 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <modules/qtwidgets/customdoublespinboxqt.h>
 #include <modules/qtwidgets/editablelabelqt.h>
 #include <modules/qtwidgets/lightpositionwidgetqt.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
 
-class CustomDoubleSpinBoxQt;
-
 namespace inviwo {
+
+class NumberLineEdit;
 
 class IVW_MODULE_QTWIDGETS_API LightPropertyWidgetQt : public PropertyWidgetQt {
 public:
@@ -51,7 +50,7 @@ public:
 private:
     FloatVec3Property* property_;
     LightPositionWidgetQt* lightWidget_;
-    CustomDoubleSpinBoxQt* radiusSpinBox_;
+    NumberLineEdit* radiusSpinBox_;
     EditableLabelQt* label_;
 
     void onPositionLightWidgetChanged();

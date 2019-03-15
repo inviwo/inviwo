@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -112,10 +112,9 @@ VolumeInformation::VolumeInformation()
                       util::filled<mat3>(std::numeric_limits<float>::lowest()),
                       util::filled<mat3>(std::numeric_limits<float>::max()),
                       util::filled<mat3>(0.001f), InvalidationLevel::Valid)
-    , basis_("basis", "Basis", mat3(1.0f),
-             util::filled<mat3>(std::numeric_limits<float>::lowest()),
-             util::filled<mat3>(std::numeric_limits<float>::max()),
-             util::filled<mat3>(0.001f), InvalidationLevel::Valid)
+    , basis_("basis", "Basis", mat3(1.0f), util::filled<mat3>(std::numeric_limits<float>::lowest()),
+             util::filled<mat3>(std::numeric_limits<float>::max()), util::filled<mat3>(0.001f),
+             InvalidationLevel::Valid)
     , offset_("offset", "Offset", vec3(0.0f), vec3(std::numeric_limits<float>::lowest()),
               vec3(std::numeric_limits<float>::max()), vec3(0.001f), InvalidationLevel::Valid,
               PropertySemantics::Text)

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/interaction/events/keyboardevent.h>
+#include <inviwo/core/interaction/events/eventutil.h>
 
 namespace inviwo {
 
@@ -54,5 +55,10 @@ uint32_t KeyboardEvent::getNativeVirtualKey() const { return nativeVirtualKey_; 
 void KeyboardEvent::setNativeVirtualKey(uint32_t key) { nativeVirtualKey_ = key; }
 
 uint64_t KeyboardEvent::hash() const { return chash(); }
+
+void KeyboardEvent::print(std::ostream& ss) const {
+    util::printEvent(ss, "KeyboardEvent", std::make_pair("state", state_),
+                     std::make_pair("key", key_), std::make_pair("modifiers", modifiers_));
+}
 
 }  // namespace inviwo

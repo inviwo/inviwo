@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,6 +42,7 @@
 namespace inviwo {
 
 class FileExtension;
+class InviwoApplication;
 
 /** \docpage{org.inviwo.ImageSourceSeries, Image Series Source}
  * ![](org.inviwo.ImageSourceSeries.png?classIdentifier=org.inviwo.ImageSourceSeries)
@@ -61,7 +62,7 @@ class FileExtension;
  */
 class IVW_MODULE_BASE_API ImageSourceSeries : public Processor {
 public:
-    ImageSourceSeries();
+    ImageSourceSeries(InviwoApplication* app);
     virtual ~ImageSourceSeries() = default;
 
     virtual const ProcessorInfo getProcessorInfo() const override;

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,10 +40,7 @@ namespace inviwo {
 
 IsoValueCollection::IsoValueCollection(const std::vector<TFPrimitiveData>& values,
                                        TFPrimitiveSetType type)
-    : TFPrimitiveSet(values, type) {
-    setTitle("Isovalues");
-    setSerializationKey("IsoValues", "IsoValue");
-}
+    : TFPrimitiveSet(values, type) {}
 
 std::vector<FileExtension> IsoValueCollection::getSupportedExtensions() const {
     return {{"iiv", "Inviwo Isovalues"}};
@@ -71,5 +68,11 @@ void IsoValueCollection::load(const std::string& filename, const FileExtension& 
         throw DataReaderException("Unsupported format for loading isovalues", IvwContext);
     }
 }
+
+std::string IsoValueCollection::getTitle() const { return "Isovalues"; }
+
+std::string IsoValueCollection::serializationKey() const { return "IsoValues"; }
+
+std::string IsoValueCollection::serializationItemKey() const { return "IsoValue"; }
 
 }  // namespace inviwo

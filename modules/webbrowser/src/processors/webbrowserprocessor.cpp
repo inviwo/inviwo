@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -102,8 +102,11 @@ WebBrowserProcessor::WebBrowserProcessor()
                 url_.setVisible(true);
                 break;
         }
-        invalidate(InvalidationLevel::InvalidResources);
+        browser_->GetMainFrame()->LoadURL(getSource());
     });
+    fileName_.onChange([this]() { browser_->GetMainFrame()->LoadURL(getSource()); }); 
+    url_.onChange([this]() { browser_->GetMainFrame()->LoadURL(getSource()); });
+    reload_.onChange([this]() { browser_->GetMainFrame()->LoadURL(getSource()); });
 
     // Do not serialize options, they are generated in code
     type_.setSerializationMode(PropertySerializationMode::None);
@@ -116,7 +119,7 @@ WebBrowserProcessor::WebBrowserProcessor()
     CefWindowInfo window_info;
 
     CefBrowserSettings browserSettings;
-    
+
     // Enable loading files from other locations than where the .html file is
     browserSettings.file_access_from_file_urls = STATE_ENABLED;
 
@@ -130,7 +133,10 @@ WebBrowserProcessor::WebBrowserProcessor()
     // destructor
     browser_ = CefBrowserHost::CreateBrowserSync(window_info, browserClient_, getSource(),
                                                  browserSettings, nullptr);
-
+    // Observe when page has loaded
+    browserClient_->addLoadHandler(this);
+    // Do not process until frame is loaded
+    isReady_.setUpdate([this]() { return allInportsAreReady() && !isBrowserLoading_; });
     // Inject events into CEF browser_
     cefInteractionHandler_.setHost(browser_->GetHost());
     cefInteractionHandler_.setRenderHandler(renderHandler_);
@@ -199,6 +205,7 @@ std::string WebBrowserProcessor::getSource() {
 }
 
 WebBrowserProcessor::~WebBrowserProcessor() {
+    browserClient_->removeLoadHandler(this);
     // Force close browser
     browser_->GetHost()->CloseBrowser(true);
     // Remove render handler since browserClient_ might not be destroyed until CefShutdown() is
@@ -221,12 +228,15 @@ void WebBrowserProcessor::deserialize(Deserializer& d) {
     browser_->GetMainFrame()->LoadURL(getSource());
 }
 
-void WebBrowserProcessor::process() {
-    if (fileName_.isModified() || url_.isModified() || reload_.isModified() ||
-        sourceType_.isModified()) {
-        browser_->GetMainFrame()->LoadURL(getSource());
+void WebBrowserProcessor::OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bool isLoading,
+                                               bool /*canGoBack*/, bool /*canGoForward*/) {
+    if (browser_ && browser->GetIdentifier() == browser_->GetIdentifier()) {
+        isBrowserLoading_ = isLoading;
+        isReady_.update();
     }
+}
 
+void WebBrowserProcessor::process() {
     // Vertical flip of CEF output image
     cefToInviwoImageConverter_.convert(renderHandler_->getTexture2D(), outport_, &background_);
 }

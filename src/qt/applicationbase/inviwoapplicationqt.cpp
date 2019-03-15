@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -319,11 +319,11 @@ std::locale InviwoApplicationQt::getCurrentStdLocale() {
             hasWarned = true;
         }
     };
-    
+
     std::locale loc;
     try {
         // use the system locale provided by Qt
-        
+
 #ifdef WIN32
         // need to change locale given by Qt from underscore to hyphenated ("sv_SE" to "sv-SE")
         // although std::locale should only accept locales with underscore, e.g. "sv_SE"
@@ -336,7 +336,8 @@ std::locale InviwoApplicationQt::getCurrentStdLocale() {
         warnOnce(std::string("Locale could not be set. ") + e.what());
         try {
             loc = std::locale("en_US.UTF8");
-        } catch (...) {}
+        } catch (...) {
+        }
     }
     return loc;
 }

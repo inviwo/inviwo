@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -109,10 +109,12 @@ public:
     // Override
     virtual void set(const TransferFunction& property) override;
     virtual void set(const Property* property) override;
-    virtual void onTFPrimitiveAdded(TFPrimitive* p) override;
-    virtual void onTFPrimitiveRemoved(TFPrimitive* p) override;
-    virtual void onTFPrimitiveChanged(const TFPrimitive* p) override;
-    virtual void onTFTypeChanged(const TFPrimitiveSet* primitiveSet) override;
+
+    // Override TFPrimitiveSetObserver
+    virtual void onTFPrimitiveAdded(TFPrimitive& p) override;
+    virtual void onTFPrimitiveRemoved(TFPrimitive& p) override;
+    virtual void onTFPrimitiveChanged(const TFPrimitive& p) override;
+    virtual void onTFTypeChanged(const TFPrimitiveSet& primitiveSet) override;
 
 private:
     ValueWrapper<dvec2> zoomH_;
