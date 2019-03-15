@@ -108,8 +108,8 @@ public:
     BoolProperty fullScreen_;
     EventProperty fullScreenEvent_;
     EventProperty saveLayerEvent_;
-
     BoolProperty allowContextMenu_;
+    ButtonProperty showCanvas_;
 
 private:
     void sizeChanged();
