@@ -370,16 +370,16 @@ void ImageLabelWidget::generateWidget() {
     editorLayout->setMargin(0);
     toolBar_ = new QToolBar();
     saveButton_ = new QToolButton();
-    saveButton_->setIcon(QIcon(":/icons/save.png"));  // Temporary icon
+    saveButton_->setIcon(QIcon(":/svgicons/save.svg"));  // Temporary icon
     saveButton_->setToolTip("Save file");
     unDoButton_ = new QToolButton();
-    unDoButton_->setIcon(QIcon(":/icons/arrow_left.png"));  // Temporary icon
+    unDoButton_->setIcon(QIcon(":/svgicons/undo.svg"));  // Temporary icon
     unDoButton_->setToolTip("Undo");
     reDoButton_ = new QToolButton();
-    reDoButton_->setIcon(QIcon(":/icons/arrow_right.png"));  // Temporary icon
+    reDoButton_->setIcon(QIcon(":/svgicons/redo.svg"));  // Temporary icon
     reDoButton_->setToolTip("Redo");
     reLoadButton_ = new QToolButton();
-    reLoadButton_->setIcon(QIcon(":/icons/inviwo_tmp.png"));  // Temporary icon
+    reLoadButton_->setIcon(QIcon(":/svgicons/revert.png"));  // Temporary icon
     reLoadButton_->setToolTip("Reload");
     toolBar_->addWidget(saveButton_);
     toolBar_->addSeparator();
@@ -530,7 +530,7 @@ void ImageEditorWidgetQt::generateWidget() {
     hLayout->setSpacing(0);
 
     btnEdit_ = new QToolButton();
-    btnEdit_->setIcon(QIcon(":/icons/edit.png"));
+    btnEdit_->setIcon(QIcon(":/svgicons/edit.svg"));
 
     if (dynamic_cast<FileProperty*>(property_)) {
         fileWidget_ = new FilePropertyWidgetQt(static_cast<FileProperty*>(property_));

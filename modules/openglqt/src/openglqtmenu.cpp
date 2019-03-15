@@ -45,7 +45,7 @@
 namespace inviwo {
 
 OpenGLQtMenu::OpenGLQtMenu(QWidget* parent) : QMenu(tr("&Shaders"), parent) {
-    QAction* reloadShaders = addAction(QIcon(":/icons/revert.png"), "&Reload All");
+    QAction* reloadShaders = addAction(QIcon(":/svgicons/revert.svg"), "&Reload All");
     connect(reloadShaders, &QAction::triggered, [&]() { shadersReload(); });
 
     onAddShader_ = ShaderManager::getPtr()->onDidAddShader([this](GLuint id) {

@@ -34,6 +34,7 @@
 #include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
 #include <inviwo/core/processors/processor.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -79,16 +80,18 @@ PropertyListWidget::PropertyListWidget(QWidget* parent, InviwoApplication* app)
     : InviwoDockWidget(tr("Properties"), parent, "PropertyListWidget"), app_{app} {
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    resize(QSize(400, 700));  // default size
+    resize(utilqt::emToPx(this, QSizeF(45, 80)));  // default size
 
     QSizePolicy sp(QSizePolicy::Fixed, QSizePolicy::MinimumExpanding);
     sp.setVerticalStretch(1);
     sp.setHorizontalStretch(1);
     setSizePolicy(sp);
 
+    const auto space = utilqt::refSpacePx(this);
+
     scrollArea_ = new QScrollArea(this);
     scrollArea_->setWidgetResizable(true);
-    scrollArea_->setMinimumWidth(320);
+    scrollArea_->setMinimumWidth(utilqt::emToPx(this, 30));
     scrollArea_->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 #ifdef __APPLE__
     // Scrollbars are overlayed in different way on mac...
@@ -97,7 +100,7 @@ PropertyListWidget::PropertyListWidget(QWidget* parent, InviwoApplication* app)
     scrollArea_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 #endif
     scrollArea_->setFrameShape(QFrame::NoFrame);
-    scrollArea_->setContentsMargins(0, PropertyWidgetQt::spacing, 0, PropertyWidgetQt::spacing);
+    scrollArea_->setContentsMargins(0, space, 0, space);
 
     listWidget_ = new PropertyListFrame(this);
     listLayout_ = new QVBoxLayout();
@@ -105,11 +108,11 @@ PropertyListWidget::PropertyListWidget(QWidget* parent, InviwoApplication* app)
     listLayout_->setAlignment(Qt::AlignTop);
 #ifdef __APPLE__
     // Add some space for the scrollbar on mac
-    listLayout_->setContentsMargins(0, PropertyWidgetQt::spacing, 10, PropertyWidgetQt::spacing);
+    listLayout_->setContentsMargins(0, space, 10, space);
 #else
-    listLayout_->setContentsMargins(0, PropertyWidgetQt::spacing, 0, PropertyWidgetQt::spacing);
+    listLayout_->setContentsMargins(0, space, 0, space);
 #endif
-    listLayout_->setSpacing(PropertyWidgetQt::spacing);
+    listLayout_->setSpacing(space);
     listLayout_->setSizeConstraint(QLayout::SetMinAndMaxSize);
 
     scrollArea_->setWidget(listWidget_);

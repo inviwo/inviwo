@@ -335,12 +335,13 @@ bool BaseModule::Converter::convert(TxElement* root) {
                     if (auto elem = xml::getElement(node, path)) {
                         auto data = elem->Clone();
                         data->SetValue(fmt::format("col{}", std::get<0>(item)));
-                        data->ToElement()->SetAttribute("w", fmt::format("{:f}", std::get<2>(item)));
+                        data->ToElement()->SetAttribute("w",
+                                                        fmt::format("{:f}", std::get<2>(item)));
                         newNode.InsertEndChild(*data);
                     }
                 }
 
-                res = true; 
+                res = true;
                 node->InsertEndChild(newNode);
 
                 return true;

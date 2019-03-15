@@ -29,6 +29,7 @@
 
 #include <modules/qtwidgets/editablelabelqt.h>
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/core/properties/property.h>
 
 #include <warn/push>
@@ -115,7 +116,7 @@ void EditableLabelQt::edit() {
     le->setFocus();
 }
 
-QSize EditableLabelQt::sizeHint() const { return QSize(18, 18); }
+QSize EditableLabelQt::sizeHint() const { return utilqt::emToPx(this, QSizeF(2.0, 2.0)); }
 QSize EditableLabelQt::minimumSizeHint() const { return sizeHint(); }
 
 void EditableLabelQt::resizeEvent(QResizeEvent* event) {

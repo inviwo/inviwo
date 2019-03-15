@@ -255,14 +255,14 @@ std::shared_ptr<Volume> ImageStackVolumeSource::load() {
                         [](auto value) { return util::glm_convert_normalized<ValueType>(value); });
                 });
             }
-            
+
             auto volume = std::make_shared<Volume>(volumeRAM);
             volume->dataMap_.dataRange =
                 dvec2{DataFormat<PrimitiveType>::lowest(), DataFormat<PrimitiveType>::max()};
             volume->dataMap_.valueRange =
                 dvec2{DataFormat<PrimitiveType>::lowest(), DataFormat<PrimitiveType>::max()};
 
-            const auto size = vec3(0.01) * static_cast<vec3>(volumeRAM->getDimensions());
+            const auto size = vec3(0.01f) * static_cast<vec3>(volumeRAM->getDimensions());
             volume->setBasis(glm::diagonal3x3(size));
             volume->setOffset(-0.5 * size);
 

@@ -106,8 +106,12 @@ QMenu* addTFPresetsMenu(QWidget* parent, QMenu* menu, TransferFunctionProperty* 
     auto presets = menu->addMenu("&TF Presets");
     presets->setObjectName("TF");
     presets->setEnabled(!property->getReadOnly());
+    const int iconWidth = utilqt::emToPx(presets, 11);
+    // need to set the stylesheet explicitely since Qt _only_ supports 'px' for icon sizes
+    presets->setStyleSheet(QString("QMenu { icon-size: %1px; }").arg(iconWidth));
     if (!property->getReadOnly()) {
-        auto addPresetActions = [presets, parent, property](const std::string& basePath) {
+        auto addPresetActions = [presets, parent, property,
+                                 iconWidth](const std::string& basePath) {
             TransferFunction tf;
             auto files = filesystem::getDirectoryContentsRecursively(basePath);
             for (auto file : files) {
@@ -130,8 +134,8 @@ QMenu* addTFPresetsMenu(QWidget* parent, QMenu* menu, TransferFunctionProperty* 
                                              NetworkLock lock(property);
                                              property->get().load(file, ext);
                                          });
-                        
-                        action->setIcon(QIcon(utilqt::toQPixmap(tf, QSize(120, 20))));
+
+                        action->setIcon(QIcon(utilqt::toQPixmap(tf, QSize{iconWidth, 20})));
                         break;
                     }
                 }

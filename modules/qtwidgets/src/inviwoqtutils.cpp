@@ -589,6 +589,22 @@ QString windowTitleHelper(const QString& title, const QWidget* widget) {
     return cap;
 }
 
+int refSpacePx(const QWidget* w) { return emToPx(w, refSpaceEm()); }
+
+QSize emToPx(const QWidget* w, QSizeF ems) {
+    return QSize{emToPx(w, ems.width()), emToPx(w, ems.height())};
+}
+
+int emToPx(const QWidget* w, double em) {
+    w->ensurePolished();
+    return emToPx(w->fontMetrics(), em);
+}
+
+int emToPx(const QFontMetrics& m, double em) {
+    const auto pxPerEm = m.boundingRect(QString(100, 'M')).width() / 100.0;
+    return static_cast<int>(std::round(pxPerEm * em));
+}
+
 }  // namespace utilqt
 
 }  // namespace inviwo

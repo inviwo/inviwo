@@ -114,6 +114,7 @@ find_package(Qt5Core QUIET REQUIRED)
 find_package(Qt5Gui QUIET REQUIRED)
 find_package(Qt5Widgets QUIET REQUIRED)
 find_package(Qt5Help QUIET REQUIRED)
+find_package(Qt5Svg QUIET REQUIRED)
 
 qt5_wrap_cpp(MOCED_FILES ${MOC_FILES})
 source_group("MOC Files" FILES ${MOCED_FILES})
@@ -127,6 +128,7 @@ target_link_libraries(inviwo-qteditor PUBLIC
     Qt5::Gui 
     Qt5::Widgets 
     Qt5::Help
+    Qt5::Svg
 )
 if(TARGET inviwo::meta)
     target_link_libraries(inviwo-qteditor PUBLIC inviwo::meta)
@@ -164,7 +166,7 @@ endif()
 #--------------------------------------------------------------------
 # Make package (for other projects to find)
 ivw_default_install_comp_targets(qt_editor inviwo-qteditor)
-ivw_qt_add_to_install(qt_editor Qt5Core Qt5Gui Qt5Widgets Qt5Help Qt5Sql) # Qt5Sql is needed by Qt5Help
+ivw_qt_add_to_install(qt_editor Qt5Core Qt5Gui Qt5Widgets Qt5Help Qt5Sql Qt5Svg) # Qt5Sql is needed by Qt5Help
 ivw_make_package(InviwoQtEditor inviwo-qteditor)
 
 ivw_register_license_file(NAME "DocumentWindow" MODULE QtEditor

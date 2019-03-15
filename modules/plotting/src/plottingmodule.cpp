@@ -86,8 +86,8 @@ PlottingModule::PlottingModule(InviwoApplication* app) : InviwoModule(app, "Plot
     // is protected in the inviwo module
     std::function<void(std::unique_ptr<PropertyConverter>)> registerPC =
         [this](std::unique_ptr<PropertyConverter> propertyConverter) {
-        InviwoModule::registerPropertyConverter(std::move(propertyConverter));
-    };
+            InviwoModule::registerPropertyConverter(std::move(propertyConverter));
+        };
 
     using OptionTypes = std::tuple<unsigned int, int, size_t, float, double, std::string>;
     util::for_each_type<OptionTypes>{}(DataFrameColumnOptionConverterRegFunctor{}, registerPC);

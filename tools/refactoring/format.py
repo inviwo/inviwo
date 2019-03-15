@@ -7,7 +7,7 @@ colorama.init()
 import refactoring # Note: refactoring.py need to be in the current working directory
 
 paths = [
-	"C:/Users/petst55/Work/Inviwo/Inviwo-dev"
+	"C:/Users/petst55.AD/Documents/Inviwo/inviwo"
 ]
 
 excludespatterns = ["*/ext/*", "*/templates/*", "*/tools/codegen/*" , "*moc_*", "*cmake*"];

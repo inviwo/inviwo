@@ -3,6 +3,7 @@
 ivw_module(OpenGLQt)
 
 find_package(Qt5OpenGL QUIET REQUIRED)
+find_package(Qt5Svg QUIET REQUIRED)
 
 #--------------------------------------------------------------------
 # Add MOC files
@@ -44,7 +45,7 @@ source_group("MOC Files" FILES ${MOCED_FILES})
 
 # Create module
 ivw_create_module(NO_PCH ${SOURCE_FILES} ${MOCED_FILES} ${HEADER_FILES})
-target_link_libraries(inviwo-module-openglqt PRIVATE Qt5::OpenGL)
+target_link_libraries(inviwo-module-openglqt PRIVATE Qt5::OpenGL Qt5::Svg)
 
 ivw_compile_optimize_on_target(inviwo-module-openglqt)
 

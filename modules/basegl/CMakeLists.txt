@@ -28,6 +28,7 @@ set(HEADER_FILES
     include/modules/basegl/processors/drawpoints.h
     include/modules/basegl/processors/entryexitpointsprocessor.h
     include/modules/basegl/processors/firstivwprocessor.h
+    include/modules/basegl/processors/geometryentryexitpoints.h
     include/modules/basegl/processors/heightfieldprocessor.h
     include/modules/basegl/processors/imageprocessing/findedges.h
     include/modules/basegl/processors/imageprocessing/imagebinary.h
@@ -109,6 +110,7 @@ set(SOURCE_FILES
     src/processors/drawpoints.cpp
     src/processors/entryexitpointsprocessor.cpp
     src/processors/firstivwprocessor.cpp
+    src/processors/geometryentryexitpoints.cpp
     src/processors/heightfieldprocessor.cpp
     src/processors/imageprocessing/findedges.cpp
     src/processors/imageprocessing/imagebinary.cpp
@@ -204,6 +206,7 @@ set(SHADER_FILES
     glsl/linerenderer.vert
     glsl/mesh2drendering.frag
     glsl/mesh2drendering.vert
+    glsl/meshentryexit.vert
     glsl/meshrendering.frag
     glsl/meshrendering.vert
     glsl/multichannelraycaster.frag

@@ -137,22 +137,23 @@ void WebBrowserClient::removeLoadHandler(CefLoadHandler* loadHandler) {
     util::erase_remove(loadHandlers_, loadHandler);
 }
 
-void WebBrowserClient::OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bool isLoading, bool canGoBack, bool canGoForward) {
+void WebBrowserClient::OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bool isLoading,
+                                            bool canGoBack, bool canGoForward) {
     for (const auto& loadHandler : loadHandlers_) {
         loadHandler->OnLoadingStateChange(browser, isLoading, canGoBack, canGoForward);
     }
 }
 
 void WebBrowserClient::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
-                                        int httpStatusCode) {
+                                 int httpStatusCode) {
     for (const auto& loadHandler : loadHandlers_) {
         loadHandler->OnLoadEnd(browser, frame, httpStatusCode);
     }
 }
 
 void WebBrowserClient::OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
-                                          CefLoadHandler::ErrorCode errorCode,
-                                          const CefString& errorText, const CefString& failedUrl) {
+                                   CefLoadHandler::ErrorCode errorCode, const CefString& errorText,
+                                   const CefString& failedUrl) {
     for (const auto& loadHandler : loadHandlers_) {
         loadHandler->OnLoadError(browser, frame, errorCode, errorText, failedUrl);
     }

@@ -39,12 +39,11 @@ BrushingAndLinkingManager::BrushingAndLinkingManager(Processor* p,
     auto outPorts = p->getOutports();
     for (auto& op : outPorts) {
         if (dynamic_cast<BrushingAndLinkingOutport*>(op)) {
-            op->onDisconnect([=]() {
-                filtered_.update();
-            });
+            op->onDisconnect([=]() { filtered_.update(); });
         }
     }
-    onFilteringChangeCallback_ = filtered_.onChange([p, validationLevel]() { p->invalidate(validationLevel); });
+    onFilteringChangeCallback_ =
+        filtered_.onChange([p, validationLevel]() { p->invalidate(validationLevel); });
 }
 
 BrushingAndLinkingManager::~BrushingAndLinkingManager() {}
