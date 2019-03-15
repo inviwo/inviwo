@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,6 +47,7 @@ void PropertySemantics::deserialize(Deserializer& d) {
 
 const PropertySemantics PropertySemantics::Default("Default");
 const PropertySemantics PropertySemantics::Text("Text");
+const PropertySemantics PropertySemantics::SpinBox("SpinBox");
 const PropertySemantics PropertySemantics::Color("Color");
 const PropertySemantics PropertySemantics::LightPosition("LightPosition");
 const PropertySemantics PropertySemantics::Multiline("Multiline");

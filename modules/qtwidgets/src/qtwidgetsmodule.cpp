@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -208,6 +208,8 @@ QtWidgetsModule::QtWidgetsModule(InviwoApplication* app)
 
     registerPropertyWidget<FloatVec3PropertyWidgetQt, FloatVec3Property>("Spherical");
     registerPropertyWidget<DoubleVec3PropertyWidgetQt, DoubleVec3Property>("Spherical");
+    registerPropertyWidget<FloatVec3PropertyWidgetQt, FloatVec3Property>("SphericalSpinBox");
+    registerPropertyWidget<DoubleVec3PropertyWidgetQt, DoubleVec3Property>("SphericalSpinBox");
 
     registerPropertyWidget<LightPropertyWidgetQt, FloatVec3Property>("LightPosition");
 

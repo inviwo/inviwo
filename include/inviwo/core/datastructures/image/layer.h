@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -113,5 +113,5 @@ extern template class IVW_CORE_TMPL_EXP DataReaderType<Layer>;
 extern template class IVW_CORE_TMPL_EXP DataWriterType<Layer>;
 
 }  // namespace inviwo
-	
+
 #endif  // IVW_LAYER_H

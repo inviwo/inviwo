@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2018 Inviwo Foundation
+ * Copyright (c) 2015-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,10 +38,6 @@ CImgLayerReader::CImgLayerReader() : DataReaderType<Layer>() {
 #ifdef cimg_use_jpeg
     addExtension(FileExtension("jpg", "Joint Photographic Experts Group"));
     addExtension(FileExtension("jpeg", "Joint Photographic Experts Group"));
-#endif
-#ifdef cimg_use_tiff
-    addExtension(FileExtension("tif", "Tagged Image File Format"));
-    addExtension(FileExtension("tiff", "Tagged Image File Format"));
 #endif
     addExtension(FileExtension("bmp", "Windows bitmap"));
 #ifdef cimg_use_openexr

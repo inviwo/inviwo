@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,10 @@ namespace inviwo {
 RawDataReaderDialogQt::RawDataReaderDialogQt() {
     setWindowTitle("Importing Raw Data");
     QGridLayout* mainLayout = new QGridLayout(this);
-    mainLayout->setContentsMargins(15, 15, 15, 15);
+    {
+        const auto space = utilqt::emToPx(this, 15.0 / 9.0);
+        mainLayout->setContentsMargins(space, space, space, space);
+    }
     QLabel* fileNameLabel = new QLabel("Importing file:");
     fileName_ = new QLabel();
     QGridLayout* dataTypeLayout = new QGridLayout();

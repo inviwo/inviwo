@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -70,7 +70,7 @@ struct TransformIterator {
         ++iterator_;
         return *this;
     }
-    TransformIterator operator++(int) { return {iterator_++}; }
+    TransformIterator operator++(int) { return {transform_, iterator_++}; }
 
     template <typename I = Iter, typename = detail::require_t<std::bidirectional_iterator_tag, I>>
     TransformIterator& operator--() {
@@ -79,7 +79,7 @@ struct TransformIterator {
     }
     template <typename I = Iter, typename = detail::require_t<std::bidirectional_iterator_tag, I>>
     TransformIterator operator--(int) {
-        return {iterator_--};
+        return {transform_, iterator_--};
     }
 
     template <typename I = Iter, typename = detail::require_t<std::random_access_iterator_tag, I>>

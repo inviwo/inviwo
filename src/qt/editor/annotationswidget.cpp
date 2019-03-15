@@ -33,6 +33,7 @@
 #include <inviwo/qt/editor/networkeditor.h>
 
 #include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -49,7 +50,7 @@ AnnotationsWidget::AnnotationsWidget(const QString &title, InviwoMainWindow *mai
     : InviwoDockWidget{title, mainwindow, "AnnotationsWidget"}, mainwindow_(mainwindow) {
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    resize(QSize(500, 500));  // default size
+    resize(utilqt::emToPx(this, QSizeF(60, 60)));  // default size
 
     scrollArea_ = new QScrollArea();
     scrollArea_->setWidgetResizable(true);
@@ -61,8 +62,10 @@ AnnotationsWidget::AnnotationsWidget(const QString &title, InviwoMainWindow *mai
     mainWidget_ = new QWidget();
     layout_ = new QVBoxLayout(mainWidget_);
     layout_->setAlignment(Qt::AlignTop);
-    layout_->setContentsMargins(0, PropertyWidgetQt::spacing, 0, PropertyWidgetQt::spacing);
-    layout_->setSpacing(7);
+
+    const auto space = utilqt::refSpacePx(this);
+    layout_->setContentsMargins(0, space, 0, space);
+    layout_->setSpacing(space);
     scrollArea_->setWidget(mainWidget_);
 
     setWidget(scrollArea_);

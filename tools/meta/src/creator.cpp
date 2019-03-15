@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -132,7 +132,7 @@ void Creator::generate(InviwoModule& im, const std::filesystem::path& filePath,
     auto settings = createSettings(im, name);
 
     const fs::path incpath =
-        files.header ? im.getHeaderInclude(path / (lname + "." + files.header->extension))
+        files.header ? fs::path{im.getHeaderInclude(path / (lname + "." + files.header->extension))}
                      : fs::path{"NOT_USED"};
     settings["file"]["include"] = incpath.generic_string();
 

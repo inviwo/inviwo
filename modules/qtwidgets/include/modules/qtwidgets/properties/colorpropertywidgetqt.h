@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -96,7 +96,7 @@ ColorPropertyWidgetQt<T>::ColorPropertyWidgetQt(OrdinalProperty<T>* property)
 
     QHBoxLayout* hLayout = new QHBoxLayout();
     hLayout->setContentsMargins(0, 0, 0, 0);
-    hLayout->setSpacing(PropertyWidgetQt::spacing);
+    hLayout->setSpacing(getSpacing());
     setLayout(hLayout);
 
     QSizePolicy spBtn = sizePolicy();
@@ -122,7 +122,7 @@ ColorPropertyWidgetQt<T>::ColorPropertyWidgetQt(OrdinalProperty<T>* property)
         QHBoxLayout* widgetLayout = new QHBoxLayout();
         widget->setLayout(widgetLayout);
         widgetLayout->setContentsMargins(0, 0, 0, 0);
-        widgetLayout->setSpacing(PropertyWidgetQt::spacing);
+        widgetLayout->setSpacing(getSpacing());
 
         widgetLayout->addWidget(btnColor_);
         widgetLayout->addWidget(colorLineEdit_);

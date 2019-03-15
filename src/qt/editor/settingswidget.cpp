@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,6 +35,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/settings/settings.h>
 #include <inviwo/qt/editor/inviwomainwindow.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -51,11 +52,11 @@ SettingsWidget::SettingsWidget(const QString& title, InviwoMainWindow* mainwindo
     : InviwoDockWidget(title, mainwindow, "SettingsWidget"), mainwindow_(mainwindow) {
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    resize(QSize(500, 500));  // default size
+    resize(utilqt::emToPx(this, QSizeF(60, 60)));  // default size
 
     scrollArea_ = new QScrollArea();
     scrollArea_->setWidgetResizable(true);
-    scrollArea_->setMinimumWidth(300);
+    scrollArea_->setMinimumWidth(utilqt::emToPx(this, 30));
     scrollArea_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     scrollArea_->setFrameShape(QFrame::NoFrame);
     scrollArea_->setContentsMargins(0, 0, 0, 0);
@@ -63,8 +64,9 @@ SettingsWidget::SettingsWidget(const QString& title, InviwoMainWindow* mainwindo
     mainWidget_ = new QWidget();
     layout_ = new QVBoxLayout(mainWidget_);
     layout_->setAlignment(Qt::AlignTop);
-    layout_->setContentsMargins(0, PropertyWidgetQt::spacing, 0, PropertyWidgetQt::spacing);
-    layout_->setSpacing(7);
+    const auto space = utilqt::refSpacePx(this);
+    layout_->setContentsMargins(0, space, 0, space);
+    layout_->setSpacing(space);
     scrollArea_->setWidget(mainWidget_);
 
     setWidget(scrollArea_);

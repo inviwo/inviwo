@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -225,7 +225,7 @@ VolumeSliceGL::VolumeSliceGL()
     tfGroup_.addProperty(tfMappingEnabled_);
     // Make sure that opacity does not affect the mapped color.
     if (!transferFunction_.get().empty()) {
-        transferFunction_.get()[0]->setAlpha(1.f);
+        transferFunction_.get()[0].setAlpha(1.f);
     }
     transferFunction_.setCurrentStateAsDefault();
     tfGroup_.addProperty(transferFunction_);

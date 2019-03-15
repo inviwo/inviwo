@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2016-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,17 +35,20 @@
 
 #include <modules/opengl/shader/shader.h>
 
+#include <functional>
+
 namespace inviwo {
 
 class Camera;
 class Image;
 class Mesh;
+class Volume;
 
 namespace algorithm {
 
 /**
  * \class EntryExitPointsHelper
- * \brief Helper class for creating
+ * \brief Helper class for creating entry and exit points for a mesh
  */
 class IVW_MODULE_BASEGL_API EntryExitPointsHelper {
 public:
@@ -53,29 +56,49 @@ public:
     ~EntryExitPointsHelper() = default;
 
     /**
-     * \brief computes entry and exit points for raycasting using the
-     * given camera and bounding geometry
+     * \brief computes entry and exit points for raycasting using the given \p camera and bounding
+     * geometry \p mesh. The color components of \p mesh are interpreted as positions in Data
+     * space.
      *
      * @param entryPoints  entry points for raycasting the bounding geometry
      * @param exitPoints   exit points for raycasting the bounding geometry
      * @param camera       camera
+     * @param mesh         mesh containing the bounding geometry, color must correspond to
+     *                     Data space
+     * @param capNearClip  if true and the near clip plane of the camera is inside the volume, an
+     *                     additional plane will be used to close the volume in front of the camera
+     */
+    void operator()(Image& entryPoints, Image& exitPoints, const Camera& camera, const Mesh& mesh,
+                    bool capNearClip);
+
+    /**
+     * \brief computes entry and exit points for raycasting using the given \p camera and bounding
+     * geometry \p mesh. Positions of \p mesh are mapped to Data space (texture coordinates) of the
+     * volume by using the Model to Data space transformation of \p volume.
+     *
+     * @param entryPoints  entry points for raycasting the bounding geometry
+     * @param exitPoints   exit points for raycasting the bounding geometry
+     * @param camera       camera
+     * @param volume       used to determine the transformation of mesh positions to Data space
      * @param mesh         mesh containing the bounding geometry
      * @param capNearClip  if true and the near clip plane of the camera is inside the volume, an
      *                     additional plane will be used to close the volume in front of the camera
      */
-    void operator()(Image &entryPoints, Image &exitPoints, const Camera &camera, const Mesh &mesh,
-                    bool capNearClip);
+    void operator()(Image& entryPoints, Image& exitPoints, const Camera& camera,
+                    const Volume& volume, const Mesh& mesh, bool capNearClip);
 
-    Shader &getEntryExitShader() { return entryExitShader_; }
-    Shader &getNearClipShader() { return nearClipShader_; }
+    std::vector<std::reference_wrapper<Shader>> getShaders();
 
 private:
-    void createEntryExitPoints(Image &entryPoints, Image &exitPoints, const Camera &camera,
-                               const Mesh &mesh);
-    void createCappedEntryExitPoints(Image &entryPoints, Image &exitPoints, const Camera &camera,
-                                     const Mesh &mesh);
+    void createEntryExitPoints(Image& entryPoints, Image& exitPoints, const Camera& camera,
+                               const Mesh& mesh, bool applyTrafo = false,
+                               const mat4& meshDataToVolumeData = mat4(1.0f));
+    void createCappedEntryExitPoints(Image& entryPoints, Image& exitPoints, const Camera& camera,
+                                     const Mesh& mesh, bool applyTrafo = false,
+                                     const mat4& meshDataToVolumeData = mat4(1.0f));
 
     Shader entryExitShader_;
+    Shader meshEntryExitShader_;
     Shader nearClipShader_;
 
     std::unique_ptr<Image> tmpEntry_;

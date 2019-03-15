@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2018 Inviwo Foundation
+ * Copyright (c) 2015-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -59,7 +59,7 @@ EigenUtilsModule::EigenUtilsModule(InviwoApplication* app) : InviwoModule(app, "
 
     // Ports
     registerDefaultsForDataType<Eigen::MatrixXf>();
-    
+
     registerPortInspector(PortTraits<DataOutport<Eigen::MatrixXf>>::classIdentifier(),
                           this->getPath(ModulePath::PortInspectors) + "/eigenmatrix.inv");
 

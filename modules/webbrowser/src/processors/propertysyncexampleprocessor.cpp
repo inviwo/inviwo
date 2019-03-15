@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -89,6 +89,11 @@ PropertySyncExampleProcessor::PropertySyncExampleProcessor()
     // some render errors, in context-menu and plugins.
     window_info.SetAsWindowless(nullptr);  // nullptr means no transparency (site background colour)
 
+    // Observe when page has loaded
+    browserClient_->addLoadHandler(this);
+    // Do not process until frame is loaded
+    isReady_.setUpdate([this]() { return allInportsAreReady() && !isBrowserLoading_; });
+
     // Note that browserClient_ outlives this class so make sure to remove renderHandler_ in
     // destructor
     auto url = getTestWebpageUrl();
@@ -98,6 +103,8 @@ PropertySyncExampleProcessor::PropertySyncExampleProcessor()
     url_.setReadOnly(true);
     addProperty(url_);
     addProperty(reload_);
+    url_.onChange([this]() { browser_->GetMainFrame()->LoadURL(url_.get()); });
+    reload_.onChange([this]() { browser_->GetMainFrame()->LoadURL(url_.get()); });
     // Inject events into CEF browser_
     cefInteractionHandler_.setHost(browser_->GetHost());
     cefInteractionHandler_.setRenderHandler(renderHandler_);
@@ -116,6 +123,7 @@ PropertySyncExampleProcessor::PropertySyncExampleProcessor()
 }
 
 PropertySyncExampleProcessor::~PropertySyncExampleProcessor() {
+    browserClient_->removeLoadHandler(this);
     // Force close browser
     browser_->GetHost()->CloseBrowser(true);
     // Remove render handler since browserClient_ might not be destroyed until CefShutdown() is
@@ -124,10 +132,6 @@ PropertySyncExampleProcessor::~PropertySyncExampleProcessor() {
 }
 
 void PropertySyncExampleProcessor::process() {
-    if (url_.isModified() || reload_.isModified()) {
-        browser_->GetMainFrame()->LoadURL(url_.get());
-    }
-
     // Vertical flip of CEF output image
     cefToInviwoImageConverter_.convert(renderHandler_->getTexture2D(), outport_, &background_);
 }
@@ -142,6 +146,15 @@ std::string PropertySyncExampleProcessor::getTestWebpageUrl() {
         throw Exception("Could not find " + path);
     }
     return "file://" + path;
+}
+
+void PropertySyncExampleProcessor::OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
+                                                        bool isLoading, bool /*canGoBack*/,
+                                                        bool /*canGoForward*/) {
+    if (browser_ && browser->GetIdentifier() == browser_->GetIdentifier()) {
+        isBrowserLoading_ = isLoading;
+        isReady_.update();
+    }
 }
 
 }  // namespace inviwo

@@ -2,7 +2,7 @@
 #
 # Inviwo - Interactive Visualization Workshop
 #
-# Copyright (c) 2013-2018 Inviwo Foundation
+# Copyright (c) 2013-2019 Inviwo Foundation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -284,7 +284,7 @@ class TestRun:
 	def simple(self, key):
 		value = toString(self.report[key])
 		short = abr(value)
-		self.doc.asis(listItem(keyval(formatKey(key), short), value, 
+		self.doc.asis(listItem(keyval(formatKey(key), html.escape(short)), html.escape(value), 
 			                   status = self.status(key), 
 			             	   toggle = short != value))
 
@@ -597,6 +597,9 @@ class HtmlReport:
 		cssdata = pkgutil.get_data('ivwpy', 'regression/resources/report.css')		
 		with open(toPath(self.basedir, "report.css"), 'w') as f:
 			f.write(lesscpy.compile(io.StringIO(cssdata.decode("utf-8"))))
+
+		with open(self.basedir + "/" + filename + ".raw..html", 'w') as f:
+			f.write(self.doc.getvalue())
 
 		with open(file, 'w') as f:
 			f.write(yattag.indent(self.doc.getvalue())) 

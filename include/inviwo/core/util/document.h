@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2016-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -262,7 +262,6 @@ public:
         ArrributeWrapper(const std::unordered_map<std::string, std::string>& attributes, T&& data)
             : Wrapper(std::forward<T>(data)), attributes_(attributes) {}
         std::unordered_map<std::string, std::string> attributes_;
-        std::string data_;
     };
     struct IVW_CORE_API Header : Wrapper {
         template <typename T>

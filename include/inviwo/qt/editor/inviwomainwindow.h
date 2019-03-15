@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -147,9 +147,9 @@ public:
 
     void showWelcomeScreen();
     void hideWelcomeScreen();
-    
+
     /**
-     * \brief query the Qt settings for recent workspaces 
+     * \brief query the Qt settings for recent workspaces
      */
     QStringList getRecentWorkspaceList() const;
 
@@ -167,8 +167,8 @@ private:
      * loads the workspace \p workspaceFileName. In case there are unsaved changes, the user will
      * be asked to save or discard them, or cancel the loading.
      *
-     * @param isExample    if true, the workspace file name will not be set. Thereby preventing 
-     *                     the user from accidentally overwriting the original file. In addition, 
+     * @param isExample    if true, the workspace file name will not be set. Thereby preventing
+     *                     the user from accidentally overwriting the original file. In addition,
      *                     the workspace is _not_ added to the recent file list.
      * @return true if the workspace was opened, otherwise false.
      * @see askToSaveWorkspaceChanges

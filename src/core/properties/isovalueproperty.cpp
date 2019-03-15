@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -167,17 +167,17 @@ void IsoValueProperty::set(const Property* property) {
     }
 }
 
-void IsoValueProperty::onTFPrimitiveAdded(TFPrimitive*) {
+void IsoValueProperty::onTFPrimitiveAdded(TFPrimitive&) {
     setInvalidationLevel(InvalidationLevel::InvalidResources);
     propertyModified();
 }
 
-void IsoValueProperty::onTFPrimitiveRemoved(TFPrimitive*) {
+void IsoValueProperty::onTFPrimitiveRemoved(TFPrimitive&) {
     setInvalidationLevel(InvalidationLevel::InvalidResources);
     propertyModified();
 }
 
-void IsoValueProperty::onTFPrimitiveChanged(const TFPrimitive*) {
+void IsoValueProperty::onTFPrimitiveChanged(const TFPrimitive&) {
     setInvalidationLevel(InvalidationLevel::InvalidOutput);
     propertyModified();
 }

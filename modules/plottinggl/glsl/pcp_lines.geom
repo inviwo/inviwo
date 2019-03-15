@@ -50,17 +50,22 @@ void main() {
     p[1] = gl_in[1].gl_Position;
 #endif
 
+	// Create a vector that is orthogonal to the line
+	vec3 orthogonalLine = p[0].xyz - p[1].xyz;
+	orthogonalLine = normalize(vec3(orthogonalLine.y, -orthogonalLine.x, orthogonalLine.z));
+
     //* selected * selectedLineWidth
     // Assuming 2d
-    vec3 j = vec3(0, 1, 0);
-    float r = lineWidth * getPixelSpacing().y;
-    if (selected == 1) {
-        r = selectedLineWidth * getPixelSpacing().y;
-    } else {
-        r = lineWidth * getPixelSpacing().y;
-    }
+	// Scale the linewidth with the window dimensions
+    float r1 = lineWidth * getPixelSpacing().x;
+    if (selected == 1)
+        r1 = selectedLineWidth * getPixelSpacing().x;
+	float r2 = lineWidth * getPixelSpacing().y;
+    if (selected == 1)
+        r2 = selectedLineWidth * getPixelSpacing().y;
 
-    j = vec3(0, r, 0);
+	// Scale the orthogonal vector with the linewidth
+    vec3 j = vec3(orthogonalLine.x * r1, orthogonalLine.y * r2, orthogonalLine.z);
 
     // Compute upper triangles
     signValues[0] = 1.0;

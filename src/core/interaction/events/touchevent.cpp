@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,6 +28,8 @@
  *********************************************************************************/
 
 #include <inviwo/core/interaction/events/touchevent.h>
+
+#include <inviwo/core/interaction/events/eventutil.h>
 
 namespace inviwo {
 
@@ -233,5 +235,16 @@ std::vector<const TouchPoint*> TouchEvent::findClosestTwoTouchPoints() const {
 }
 
 uint64_t TouchEvent::hash() const { return chash(); }
+
+void TouchEvent::print(std::ostream& ss) const {
+    util::printEvent(ss, "TouchEvent", std::make_pair("points", touchPoints_.size()),
+                     std::make_pair("size", canvasSize()), std::make_pair("modifiers", modifiers_));
+
+    for (const auto& p : touchPoints()) {
+        util::printEvent(ss, "\n  TouchPoint", std::make_tuple("id", p.id(), 2),
+                         std::make_pair("state", p.state()), std::make_pair("depth", p.depth()),
+                         std::make_pair("pos", p.pos()), std::make_pair("prev", p.prevPos()));
+    }
+}
 
 }  // namespace inviwo

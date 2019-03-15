@@ -40,8 +40,8 @@ class IVW_CORE_API WorkspaceAnnotations : public PropertyOwner {
 public:
     struct IVW_CORE_API Base64Image : public Serializable {
         Base64Image() = default;
-        Base64Image(std::string name, std::string base64png, int w, int h);
-        Base64Image(std::string name, std::string base64png = "", ivec2 size = ivec2{0});
+        Base64Image(std::string name, std::string base64jpeg, int w, int h);
+        Base64Image(std::string name, std::string base64jpeg = "", ivec2 size = ivec2{0});
         virtual ~Base64Image() = default;
 
         bool isValid() const;
@@ -50,7 +50,7 @@ public:
         virtual void deserialize(Deserializer &d) override;
 
         std::string name;
-        std::string base64png;
+        std::string base64jpeg;
         ivec2 size = ivec2{0};
     };
 

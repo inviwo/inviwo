@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2017-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,28 +45,28 @@ namespace inviwo {
 
 InviwoEditMenu::InviwoEditMenu(InviwoMainWindow* win) : QMenu(tr("&Edit"), win) {
     {
-        auto cutAction = addAction(QIcon(":/icons/edit-cut.png"), tr("Cu&t"));
+        auto cutAction = addAction(QIcon(":/svgicons/edit-cut.svg"), tr("Cu&t"));
         actions_[MenuItemType::cut] = cutAction;
         cutAction->setShortcut(QKeySequence::Cut);
     }
     {
-        auto copyAction = addAction(QIcon(":/icons/edit-copy.png"), tr("&Copy"));
+        auto copyAction = addAction(QIcon(":/svgicons/edit-copy.svg"), tr("&Copy"));
         actions_[MenuItemType::copy] = copyAction;
         copyAction->setShortcut(QKeySequence::Copy);
     }
     {
-        auto pasteAction = addAction(QIcon(":/icons/edit-paste.png"), tr("&Paste"));
+        auto pasteAction = addAction(QIcon(":/svgicons/edit-paste.svg"), tr("&Paste"));
         actions_[MenuItemType::paste] = pasteAction;
         pasteAction->setShortcut(QKeySequence::Paste);
     }
     {
-        auto deleteAction = addAction(QIcon(":/icons/edit-delete.png"), tr("&Delete"));
+        auto deleteAction = addAction(QIcon(":/svgicons/edit-delete.svg"), tr("&Delete"));
         actions_[MenuItemType::del] = deleteAction;
         deleteAction->setShortcuts(QList<QKeySequence>(
             {QKeySequence::Delete, QKeySequence(Qt::ControlModifier + Qt::Key_Backspace)}));
     }
     {
-        auto selectAllAction = addAction(QIcon(":/icons/edit-selectall.png"), tr("&Select All"));
+        auto selectAllAction = addAction(QIcon(":/svgicons/edit-selectall.svg"), tr("&Select All"));
         actions_[MenuItemType::select] = selectAllAction;
         selectAllAction->setShortcut(QKeySequence::SelectAll);
     }

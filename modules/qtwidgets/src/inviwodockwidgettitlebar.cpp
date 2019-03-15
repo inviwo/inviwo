@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,11 +28,14 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/inviwodockwidgettitlebar.h>
+
 #include <inviwo/core/util/raiiutils.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QDockWidget>
+#include <QEvent>
 #include <QLabel>
 #include <QIcon>
 #include <QPixmap>
@@ -50,48 +53,61 @@ InviwoDockWidgetTitleBar::InviwoDockWidgetTitleBar(QWidget *parent)
     , allowedDockAreas_(parent_->allowedAreas())
     , internalStickyFlagUpdate_(false) {
     label_ = new QLabel(parent->windowTitle());
-    label_->setStyleSheet("QWidget { padding-left: 5px; background-color: 'transparent'; }");
+    label_->setObjectName("InviwoDockWidgetTitleBarLabel");
 
-    stickyBtn_ = new QToolButton();
-    QIcon icon;
-    icon.addPixmap(QPixmap(":/stylesheets/images/dock-unsticky.png"), QIcon::Normal, QIcon::Off);
-    icon.addPixmap(QPixmap(":/stylesheets/images/dock-sticky.png"), QIcon::Normal, QIcon::On);
-    stickyBtn_->setIcon(icon);
-    stickyBtn_->setCheckable(true);
-    stickyBtn_->setChecked(true);
-    stickyBtn_->setObjectName("dockBtn");
+    const auto iconsize = utilqt::emToPx(this, QSizeF(iconSize_, iconSize_));
 
-    floatBtn_ = new QToolButton();
-    QIcon icon2;
-    icon2.addPixmap(QPixmap(":/stylesheets/images/dock-docked.png"), QIcon::Normal, QIcon::Off);
-    icon2.addPixmap(QPixmap(":/stylesheets/images/dock-floating.png"), QIcon::Normal, QIcon::On);
-    floatBtn_->setIcon(icon2);
-    floatBtn_->setCheckable(true);
-    floatBtn_->setChecked(parent_->isFloating());
-    floatBtn_->setObjectName("dockBtn");
+    {
+        stickyBtn_ = new QToolButton();
+        QIcon icon;
+        icon.addFile(":/svgicons/dock-unsticky.svg", iconsize, QIcon::Normal, QIcon::Off);
+        icon.addFile(":/svgicons/dock-sticky.svg", iconsize, QIcon::Normal, QIcon::On);
+        stickyBtn_->setIcon(icon);
+        stickyBtn_->setCheckable(true);
+        stickyBtn_->setChecked(true);
+        stickyBtn_->setIconSize(iconsize);
+    }
+    {
+        floatBtn_ = new QToolButton();
+        QIcon icon;
+        icon.addFile(":/svgicons/dock-docked.svg", iconsize, QIcon::Normal, QIcon::Off);
+        icon.addFile(":/svgicons/dock-floating.svg", iconsize, QIcon::Normal, QIcon::On);
+        floatBtn_->setIcon(icon);
+        floatBtn_->setCheckable(true);
+        floatBtn_->setChecked(parent_->isFloating());
+        floatBtn_->setIconSize(iconsize);
+    }
 
-    QToolButton *closeBtn = new QToolButton();
-    closeBtn->setIcon(QIcon(":/stylesheets/images/close.png"));
-    closeBtn->setObjectName("dockBtn");
+    {
+        closeBtn_ = new QToolButton();
+        QIcon icon;
+        icon.addFile(":/svgicons/close.svg", iconsize);
+        closeBtn_->setIcon(icon);
+        closeBtn_->setIconSize(iconsize);
+    }
 
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->addWidget(label_, 1);
     layout->addWidget(stickyBtn_);
     layout->addWidget(floatBtn_);
-    layout->addWidget(closeBtn);
-    layout->setSpacing(2);
-    layout->setMargin(2);
+    layout->addWidget(closeBtn_);
+    layout->setSpacing(0);
+    layout->setMargin(utilqt::emToPx(this, 0.2));
 
-    this->setLayout(layout);
+    setLayout(layout);
 
+    QObject::connect(parent_, &QDockWidget::topLevelChanged, this,
+                     &InviwoDockWidgetTitleBar::floating);
     QObject::connect(stickyBtn_, &QToolButton::toggled, this,
                      &InviwoDockWidgetTitleBar::stickyBtnToggled);
     QObject::connect(floatBtn_, &QToolButton::clicked, this,
                      [&]() { parent_->setFloating(!parent_->isFloating()); });
-    QObject::connect(closeBtn, &QToolButton::clicked, parent_, &QDockWidget::close);
+    QObject::connect(closeBtn_, &QToolButton::clicked, parent_, &QDockWidget::close);
+
+    parent_->installEventFilter(this);
 }
 
-InviwoDockWidgetTitleBar::~InviwoDockWidgetTitleBar() {}
+InviwoDockWidgetTitleBar::~InviwoDockWidgetTitleBar() = default;
 
 void InviwoDockWidgetTitleBar::paintEvent(QPaintEvent *) {
     QStyleOption opt;
@@ -100,8 +116,6 @@ void InviwoDockWidgetTitleBar::paintEvent(QPaintEvent *) {
     // style()->drawControl(QStyle::CE_DockWidgetTitle, &opt, &p, this);
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 }
-
-void InviwoDockWidgetTitleBar::setLabel(const QString &str) { label_->setText(str); }
 
 void InviwoDockWidgetTitleBar::stickyBtnToggled(bool toggle) {
     util::KeepTrueWhileInScope guard(&internalStickyFlagUpdate_);
@@ -125,7 +139,23 @@ void InviwoDockWidgetTitleBar::showEvent(QShowEvent *) {
     }
 }
 
+bool InviwoDockWidgetTitleBar::eventFilter(QObject *obj, QEvent *event) {
+    if ((event->type() == QEvent::ModifiedChange) || (event->type() == QEvent::WindowTitleChange)) {
+        label_->setText(utilqt::windowTitleHelper(parent_->windowTitle(), parent_));
+    }
+    return QObject::eventFilter(obj, event);
+}
+
 void InviwoDockWidgetTitleBar::floating(bool floating) { floatBtn_->setChecked(floating); }
+
+void InviwoDockWidgetTitleBar::setIconSize(double size) {
+    iconSize_ = size;
+    const auto iconsize = utilqt::emToPx(this, QSizeF(iconSize_, iconSize_));
+
+    for (auto tb : layout()->findChildren<QToolButton *>()) {
+        tb->setIconSize(iconsize);
+    }
+}
 
 void InviwoDockWidgetTitleBar::setSticky(bool toggle) { stickyBtn_->setChecked(toggle); }
 

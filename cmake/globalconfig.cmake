@@ -2,7 +2,7 @@
 #
 # Inviwo - Interactive Visualization Workshop
 #
-# Copyright (c) 2013-2018 Inviwo Foundation
+# Copyright (c) 2013-2019 Inviwo Foundation
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -68,7 +68,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
-    message(WARNING "Inviwo is only supported for 64-bit architectures.")
+    message(FATAL_ERROR "Inviwo is only supported for 64-bit architectures. Resolve the error by deleting "
+	        "the cache (File->Delete Cache) and selecting 64-bit architecture when configuring.")
 endif()
 
 set_property(GLOBAL PROPERTY USE_FOLDERS On)
@@ -307,8 +308,22 @@ endif()
 
 #--------------------------------------------------------------------
 # force colors when using clang and ninja https://github.com/ninja-build/ninja/wiki/FAQ
-if (${CMAKE_GENERATOR} STREQUAL "Ninja" AND "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-    add_compile_options(-fcolor-diagnostics)
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR
+    "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR
+    "${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
+    if (${CMAKE_GENERATOR} STREQUAL "Ninja")
+        option (IVW_FORCE_COLORED_OUTPUT "Always produce ANSI-colored output (GNU/Clang only)." ON)
+    else()
+        option (IVW_FORCE_COLORED_OUTPUT "Always produce ANSI-colored output (GNU/Clang only)." OFF)
+    endif()
+    if (IVW_FORCE_COLORED_OUTPUT)
+        if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+            add_compile_options (-fdiagnostics-color=always)
+        elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR
+            "${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
+            add_compile_options (-fcolor-diagnostics)
+        endif()
+    endif()
 endif()
 
 #--------------------------------------------------------------------

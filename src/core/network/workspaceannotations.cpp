@@ -31,27 +31,27 @@
 
 namespace inviwo {
 
-WorkspaceAnnotations::Base64Image::Base64Image(std::string name, std::string base64png, int w,
+WorkspaceAnnotations::Base64Image::Base64Image(std::string name, std::string base64jpeg, int w,
                                                int h)
-    : Base64Image{name, base64png, ivec2{w, h}} {}
+    : Base64Image{name, base64jpeg, ivec2{w, h}} {}
 
-WorkspaceAnnotations::Base64Image::Base64Image(std::string name, std::string base64png, ivec2 size)
-    : name(name), base64png(base64png), size(size) {}
+WorkspaceAnnotations::Base64Image::Base64Image(std::string name, std::string base64jpeg, ivec2 size)
+    : name(name), base64jpeg(base64jpeg), size(size) {}
 
 bool WorkspaceAnnotations::Base64Image::isValid() const {
-    return !base64png.empty() && glm::compMul(size) > 0;
+    return !base64jpeg.empty() && glm::compMul(size) > 0;
 }
 
 void WorkspaceAnnotations::Base64Image::serialize(Serializer &s) const {
     s.serialize("name", name);
     s.serialize("size", size);
-    s.serialize("base64", base64png);
+    s.serialize("base64", base64jpeg);
 }
 
 void WorkspaceAnnotations::Base64Image::deserialize(Deserializer &d) {
     d.deserialize("name", name);
     d.deserialize("size", size);
-    d.deserialize("base64", base64png);
+    d.deserialize("base64", base64jpeg);
 }
 
 WorkspaceAnnotations::WorkspaceAnnotations() : WorkspaceAnnotations(ImageVector{}) {}

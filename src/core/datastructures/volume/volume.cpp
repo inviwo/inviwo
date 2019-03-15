@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -182,5 +182,5 @@ template class IVW_CORE_TMPL_INST DataInport<Volume>;
 template class IVW_CORE_TMPL_INST DataOutport<Volume>;
 template class IVW_CORE_TMPL_INST DataInport<VolumeSequence>;
 template class IVW_CORE_TMPL_INST DataOutport<VolumeSequence>;
-    
+
 }  // namespace inviwo

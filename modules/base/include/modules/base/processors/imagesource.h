@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,6 +39,9 @@
 
 namespace inviwo {
 
+class DataReaderFactory;
+class InviwoApplication;
+
 /** \docpage{org.inviwo.ImageSource, Image Source}
  * ![](org.inviwo.ImageSource.png?classIdentifier=org.inviwo.ImageSource)
  *
@@ -51,7 +54,6 @@ namespace inviwo {
  *   * __File name__ The name of the file to load
  *   * __Dimensions__ Readonly, the dimensions of the loaded image.
  */
-
 class IVW_MODULE_BASE_API ImageSource : public Processor {
 public:
     ImageSource(InviwoApplication* app, const std::string& file = "");
@@ -64,7 +66,7 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
 private:
-    InviwoApplication* app_;
+    DataReaderFactory* rf_;
     ImageOutport outport_;
     FileProperty file_;
     IntVec2Property imageDimension_;

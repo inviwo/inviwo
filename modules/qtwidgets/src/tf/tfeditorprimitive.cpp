@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,7 @@ namespace inviwo {
 
 void TFEditorPrimitiveObserver::onTFPrimitiveDoubleClicked(const TFEditorPrimitive*) {}
 
-TFEditorPrimitive::TFEditorPrimitive(TFPrimitive* primitive, QGraphicsScene* scene, const vec2& pos,
+TFEditorPrimitive::TFEditorPrimitive(TFPrimitive& primitive, QGraphicsScene* scene, const vec2& pos,
                                      double size)
     : size_(size), isEditingPoint_(false), hovered_(false), data_(primitive), mouseDrag_(false) {
     setFlags(ItemIgnoresTransformations | ItemIsFocusable | ItemIsMovable | ItemIsSelectable |
@@ -76,21 +76,21 @@ TFEditorPrimitive::TFEditorPrimitive(TFPrimitive* primitive, QGraphicsScene* sce
     }
 }
 
-void TFEditorPrimitive::setPrimitive(TFPrimitive* primitive) { data_ = primitive; }
+TFPrimitive& TFEditorPrimitive::getPrimitive() { return data_; }
 
-TFPrimitive* TFEditorPrimitive::getPrimitive() { return data_; }
+const TFPrimitive& TFEditorPrimitive::getPrimitive() const { return data_; }
 
-void TFEditorPrimitive::setPosition(double pos) { data_->setPosition(pos); }
+void TFEditorPrimitive::setPosition(double pos) { data_.setPosition(pos); }
 
-double TFEditorPrimitive::getPosition() const { return data_->getPosition(); }
+double TFEditorPrimitive::getPosition() const { return data_.getPosition(); }
 
-void TFEditorPrimitive::setColor(const vec4& color) { data_->setColor(color); }
+void TFEditorPrimitive::setColor(const vec4& color) { data_.setColor(color); }
 
-void TFEditorPrimitive::setColor(const vec3& color) { data_->setColor(color); }
+void TFEditorPrimitive::setColor(const vec3& color) { data_.setColor(color); }
 
-void TFEditorPrimitive::setAlpha(float alpha) { data_->setAlpha(alpha); }
+void TFEditorPrimitive::setAlpha(float alpha) { data_.setAlpha(alpha); }
 
-const vec4& TFEditorPrimitive::getColor() const { return data_->getColor(); }
+const vec4& TFEditorPrimitive::getColor() const { return data_.getColor(); }
 
 void TFEditorPrimitive::setTFPosition(const dvec2& tfpos) {
     if (!isEditingPoint_) {

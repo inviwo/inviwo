@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,6 +36,8 @@
 #include <optional>
 #include <filesystem>
 
+#include <fmt/format.h>
+
 namespace inviwo::meta::util {
 
 template <typename T>
@@ -44,14 +46,14 @@ auto toUpper(const T& s) {
     std::transform(s.begin(), s.end(), std::back_inserter(res),
                    [](char c) { return static_cast<char>(::toupper(c)); });
     return res;
-};
+}
 template <typename T>
 auto toLower(const T& s) {
     std::string res;
     std::transform(s.begin(), s.end(), std::back_inserter(res),
                    [](char c) { return static_cast<char>(::tolower(c)); });
     return res;
-};
+}
 
 INVIWO_META_API std::string removePrefix(std::string_view prefix, std::string_view str);
 

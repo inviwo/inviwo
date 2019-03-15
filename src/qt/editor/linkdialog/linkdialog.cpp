@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,6 +37,8 @@
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/core/properties/compositeproperty.h>
 
+#include <modules/qtwidgets/inviwoqtutils.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QSettings>
@@ -60,8 +62,10 @@ LinkDialog::LinkDialog(Processor* srcProcessor, Processor* dstProcessor, QWidget
     setFloating(true);
     setAttribute(Qt::WA_DeleteOnClose);
     setAllowedAreas(Qt::NoDockWidgetArea);
-    setFixedWidth(linkdialog::dialogWidth);
-    setMinimumHeight(linkdialog::dialogHeight);
+    setFixedWidth(
+        utilqt::emToPx(this, linkdialog::dialogWidth / static_cast<double>(utilqt::refEm())));
+    setMinimumHeight(
+        utilqt::emToPx(this, linkdialog::dialogHeight / static_cast<double>(utilqt::refEm())));
 
     auto scene =
         new LinkDialogGraphicsScene(this, srcProcessor->getNetwork(), srcProcessor, dstProcessor);
@@ -72,10 +76,11 @@ LinkDialog::LinkDialog(Processor* srcProcessor, Processor* dstProcessor, QWidget
     view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     view->setScene(scene);
+    const auto scale = utilqt::emToPx(this, 1.0) / static_cast<double>(utilqt::refEm());
+    view->setTransform(QTransform::fromScale(scale, scale), false);
 
-    auto frame = new QFrame{};
-    setWidget(frame);
-    auto mainLayout = new QVBoxLayout(frame);
+    auto mainLayout = new QVBoxLayout();
+    setContents(mainLayout);
     mainLayout->addWidget(view);
 
     auto smartLinkPushButtonLayout = new QHBoxLayout{};
@@ -89,6 +94,7 @@ LinkDialog::LinkDialog(Processor* srcProcessor, Processor* dstProcessor, QWidget
 
     // smart link button
     auto smartLink = new QToolButton(this);
+    smartLink->setObjectName("smartLinkButton");
     smartLink->setText("SmartLink");
     smartLink->setPopupMode(QToolButton::MenuButtonPopup);
     smartLink->setToolButtonStyle(Qt::ToolButtonTextOnly);
@@ -179,7 +185,8 @@ LinkDialog::LinkDialog(Processor* srcProcessor, Processor* dstProcessor, QWidget
 
 QSize LinkDialog::sizeHint() const {
     QSize size = layout()->sizeHint();
-    size.setHeight(linkdialog::dialogHeight);
+    size.setHeight(
+        utilqt::emToPx(this, linkdialog::dialogHeight / static_cast<double>(utilqt::refEm())));
     return size;
 }
 

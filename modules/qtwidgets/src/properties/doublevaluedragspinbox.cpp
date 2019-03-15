@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,7 @@
 
 #include <modules/qtwidgets/properties/doublevaluedragspinbox.h>
 #include <modules/qtwidgets/properties/valuedragger.h>
-#include <modules/qtwidgets/customdoublespinboxqt.h>
+#include <modules/qtwidgets/numberlineedit.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -40,9 +40,11 @@ namespace inviwo {
 
 DoubleValueDragSpinBox::DoubleValueDragSpinBox(QWidget *parent)
     : QWidget(parent)
-    , spinBox_(new CustomDoubleSpinBoxQt())
+    , spinBox_(new NumberLineEdit())
     , valueDragger_(new ValueDragger<double>(spinBox_)) {
     setObjectName("valueDragSpinBox");
+    spinBox_->setButtonSymbols(QAbstractSpinBox::NoButtons);
+
     auto layout = new QHBoxLayout();
     layout->setSpacing(2);
     layout->setMargin(0);
@@ -55,7 +57,6 @@ DoubleValueDragSpinBox::DoubleValueDragSpinBox(QWidget *parent)
     spinBox_->setFocusPolicy(Qt::WheelFocus);
     setFocusProxy(spinBox_);
     setFocusPolicy(spinBox_->focusPolicy());
-    spinBox_->setButtonSymbols(QAbstractSpinBox::NoButtons);
 
     connect(spinBox_, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
             this,

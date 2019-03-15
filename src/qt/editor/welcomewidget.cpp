@@ -32,6 +32,7 @@
 #include <inviwo/core/util/document.h>
 #include <inviwo/core/io/serialization/deserializer.h>
 #include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/util/logfilter.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/properties/propertyfactory.h>
@@ -82,8 +83,10 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
     auto leftWidget = new QWidget(this);
 
     auto gridLayout = new QGridLayout();
-    gridLayout->setContentsMargins(9, 0, 0, 9);
-    gridLayout->setSpacing(6);
+    const auto space = utilqt::refSpacePx(this);
+    gridLayout->setContentsMargins(static_cast<int>(space * 1.5), 0, 0,
+                                   static_cast<int>(space * 1.5));
+    gridLayout->setSpacing(space);
 
     // heading: logo + "get started"
     auto horizontalLayout = new QHBoxLayout();
@@ -119,9 +122,11 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
         try {
             auto istream = filesystem::ifstream(utilqt::fromQString(filename));
             if (istream.is_open()) {
+                LogFilter logger{LogCentral::getPtr(), LogVerbosity::None};
                 auto d = mainWindow_->getInviwoApplication()
                              ->getWorkspaceManager()
-                             ->createWorkspaceDeserializer(istream, utilqt::fromQString(filename));
+                             ->createWorkspaceDeserializer(istream, utilqt::fromQString(filename),
+                                                           &logger);
                 d.setExceptionHandler([](const ExceptionContext) {});
                 d.deserialize("WorkspaceAnnotations", annotations);
             } else {
@@ -171,7 +176,7 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
             body.append("p").append(
                 "img", "",
                 {{"height", std::to_string(std::min(fixedImgHeight, item.size.y))},
-                 {"src", "data:image/png;base64," + item.base64png}});
+                 {"src", "data:image/jpeg;base64," + item.base64jpeg}});
         };
 
         for (auto &elem : annotations.getCanvasImages()) {
@@ -207,7 +212,7 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
     details_->setObjectName("NetworkDetails");
     details_->setReadOnly(true);
     details_->setFrameShape(QFrame::NoFrame);
-    details_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    details_->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 
     gridLayout->addWidget(details_, 1, 1, 1, 1);
 
@@ -215,25 +220,26 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
     auto horizontalLayout_2 = new QHBoxLayout();
     horizontalLayout_2->setSpacing(6);
 
-    auto createButton = [leftWidget](const QString &str, auto iconpath) {
+    auto createButton = [leftWidget, this](const QString &str, auto iconpath) {
         auto button = new QToolButton(leftWidget);
         button->setText(str);
         button->setIcon(QIcon(iconpath));
-        button->setIconSize(QSize(48, 48));
+        button->setIconSize(utilqt::emToPx(this, QSize(7, 7)));
         button->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
         return button;
     };
 
-    loadWorkspaceBtn_ = createButton("Load", ":/icons/large/open.png");
+    loadWorkspaceBtn_ = createButton("Load", ":/svgicons/open.svg");
     loadWorkspaceBtn_->setObjectName("LoadWorkspaceToolButton");
 
     horizontalLayout_2->addWidget(loadWorkspaceBtn_);
 
-    auto horizontalSpacer = new QSpacerItem(18, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+    auto horizontalSpacer = new QSpacerItem(utilqt::emToPx(this, 2.0), utilqt::emToPx(this, 2.0),
+                                            QSizePolicy::Expanding, QSizePolicy::Minimum);
 
     horizontalLayout_2->addItem(horizontalSpacer);
 
-    auto toolButton = createButton("New Workspace", ":/icons/large/newfile.png");
+    auto toolButton = createButton("New", ":/svgicons/newfile.svg");
     toolButton->setObjectName("NewWorkspaceToolButton");
     QObject::connect(toolButton, &QToolButton::clicked, this, [window]() {
         if (window->newWorkspace()) {
@@ -243,7 +249,7 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
 
     horizontalLayout_2->addWidget(toolButton);
 
-    auto toolButton_2 = createButton("Open Workspace", ":/icons/large/open.png");
+    auto toolButton_2 = createButton("Open", ":/svgicons/open.svg");
     toolButton_2->setObjectName("OpenWorkspaceToolButton");
     QObject::connect(toolButton_2, &QToolButton::clicked, this, [window]() {
         if (window->openWorkspace()) {
@@ -256,7 +262,8 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
     gridLayout->addLayout(horizontalLayout_2, 2, 1, 1, 1);
 
     // add some space between center and right column
-    auto horizontalSpacer_2 = new QSpacerItem(20, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+    auto horizontalSpacer_2 = new QSpacerItem(utilqt::emToPx(this, 2.0), utilqt::emToPx(this, 2.0),
+                                              QSizePolicy::Fixed, QSizePolicy::Minimum);
     gridLayout->addItem(horizontalSpacer_2, 1, 2, 1, 1);
 
     leftWidget->setLayout(gridLayout);
@@ -270,7 +277,8 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
     auto rightColumn = new QFrame(this);
     rightColumn->setObjectName("WelcomeRightColumn");
     auto verticalLayout_3 = new QVBoxLayout(rightColumn);
-    verticalLayout_3->setContentsMargins(20, 0, 0, 11);
+    verticalLayout_3->setContentsMargins(utilqt::emToPx(this, 2.0), 0, 0,
+                                         utilqt::emToPx(this, 1.0));
     changelog_ = new QTextEdit(rightColumn);
     changelog_->setObjectName("Changelog");
     QSizePolicy sizePolicy1(changelog_->sizePolicy());
@@ -281,7 +289,8 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
 
     verticalLayout_3->addWidget(changelog_);
 
-    auto verticalSpacer_2 = new QSpacerItem(20, 30, QSizePolicy::Minimum, QSizePolicy::Fixed);
+    auto verticalSpacer_2 = new QSpacerItem(utilqt::emToPx(this, 2.0), utilqt::emToPx(this, 3.0),
+                                            QSizePolicy::Minimum, QSizePolicy::Fixed);
     verticalLayout_3->addItem(verticalSpacer_2);
 
     QSettings settings;

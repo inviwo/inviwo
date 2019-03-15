@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/util/fileobserver.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -127,11 +128,11 @@ HelpWidget::HelpWidget(InviwoMainWindow* mainwindow)
     , helpBrowser_(nullptr) {
 
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    resize(QSize(500, 500));  // default size
+    resize(utilqt::emToPx(this, QSizeF(60, 60)));  // default size
 
     QWidget* centralWidget = new QWidget();
     QVBoxLayout* vLayout = new QVBoxLayout(centralWidget);
-    vLayout->setSpacing(7);
+    vLayout->setSpacing(utilqt::refSpacePx(this));
     vLayout->setContentsMargins(0, 0, 0, 0);
 
     auto app = mainwindow->getInviwoApplication();

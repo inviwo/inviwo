@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -91,6 +91,10 @@ public:
     int getMinRange() const;
     int getMaxRange() const;
 
+    const FileExtension& getSelectedExtension() const;
+    void setSelectedExtension(const FileExtension& ext);
+
+    void clearNameFilters();
     void addNameFilter(std::string filter);
     void addNameFilter(FileExtension filter);
     void addNameFilters(const std::vector<FileExtension>& filters);

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -229,12 +229,12 @@ void TransferFunctionProperty::set(const Property* property) {
     }
 }
 
-void TransferFunctionProperty::onTFPrimitiveAdded(TFPrimitive*) { propertyModified(); }
+void TransferFunctionProperty::onTFPrimitiveAdded(TFPrimitive&) { propertyModified(); }
 
-void TransferFunctionProperty::onTFPrimitiveRemoved(TFPrimitive*) { propertyModified(); }
+void TransferFunctionProperty::onTFPrimitiveRemoved(TFPrimitive&) { propertyModified(); }
 
-void TransferFunctionProperty::onTFPrimitiveChanged(const TFPrimitive*) { propertyModified(); }
+void TransferFunctionProperty::onTFPrimitiveChanged(const TFPrimitive&) { propertyModified(); }
 
-void TransferFunctionProperty::onTFTypeChanged(const TFPrimitiveSet*) { propertyModified(); }
+void TransferFunctionProperty::onTFTypeChanged(const TFPrimitiveSet&) { propertyModified(); }
 
 }  // namespace inviwo

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -70,12 +70,14 @@ struct move {
     int dir = 0;
 };
 
+/* // for debugging
 auto enter = [](std::string state) {
     return [state]() { std::cout << "enter: " << state << std::endl; };
 };
 auto exit = [](std::string state) {
     return [state]() { std::cout << "exit:  " << state << std::endl; };
 };
+*/
 
 auto moveGuardUp = [](move e) -> bool { return e.dir >= 0; };
 auto moveGuardDown = [](move e) -> bool { return e.dir < 0; };

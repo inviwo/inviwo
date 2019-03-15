@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2016-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,38 +34,42 @@
 namespace inviwo {
 
 BrushingAndLinkingManager::BrushingAndLinkingManager(Processor* p,
-                                                     InvalidationLevel validationLevel) {
+                                                     InvalidationLevel validationLevel)
+    : owner_{p}, invalidationLevel_{validationLevel} {
     auto outPorts = p->getOutports();
     for (auto& op : outPorts) {
         if (dynamic_cast<BrushingAndLinkingOutport*>(op)) {
-            op->onDisconnect([=]() {
-                selected_.update();
-                filtered_.update();
-            });
+            op->onDisconnect([=]() { filtered_.update(); });
         }
     }
-    callback1_ = selected_.onChange([p, validationLevel]() { p->invalidate(validationLevel); });
-    callback2_ = filtered_.onChange([p, validationLevel]() { p->invalidate(validationLevel); });
+    onFilteringChangeCallback_ =
+        filtered_.onChange([p, validationLevel]() { p->invalidate(validationLevel); });
 }
 
 BrushingAndLinkingManager::~BrushingAndLinkingManager() {}
 
-size_t BrushingAndLinkingManager::getNumberOfSelected() const { return selected_.getSize(); }
+size_t BrushingAndLinkingManager::getNumberOfSelected() const { return selected_.size(); }
 
 size_t BrushingAndLinkingManager::getNumberOfFiltered() const { return filtered_.getSize(); }
 
 void BrushingAndLinkingManager::remove(const BrushingAndLinkingInport* src) {
-    selected_.remove(src);
     filtered_.remove(src);
 }
 
 bool BrushingAndLinkingManager::isFiltered(size_t idx) const { return filtered_.has(idx); }
 
-bool BrushingAndLinkingManager::isSelected(size_t idx) const { return selected_.has(idx); }
+bool BrushingAndLinkingManager::isSelected(size_t idx) const {
+    return selected_.find(idx) != selected_.end();
+}
 
-void BrushingAndLinkingManager::setSelected(const BrushingAndLinkingInport* src,
+bool BrushingAndLinkingManager::isColumnSelected(size_t idx) const {
+    return selectedColumns_.find(idx) != selectedColumns_.end();
+}
+
+void BrushingAndLinkingManager::setSelected(const BrushingAndLinkingInport*,
                                             const std::unordered_set<size_t>& indices) {
-    selected_.set(src, indices);
+    selected_ = indices;
+    owner_->invalidate(invalidationLevel_);
 }
 
 void BrushingAndLinkingManager::setFiltered(const BrushingAndLinkingInport* src,
@@ -73,12 +77,22 @@ void BrushingAndLinkingManager::setFiltered(const BrushingAndLinkingInport* src,
     filtered_.set(src, indices);
 }
 
+void BrushingAndLinkingManager::setSelectedColumn(const BrushingAndLinkingInport*,
+                                                  const std::unordered_set<size_t>& indices) {
+    selectedColumns_ = indices;
+    owner_->invalidate(invalidationLevel_);
+}
+
 const std::unordered_set<size_t>& BrushingAndLinkingManager::getSelectedIndices() const {
-    return selected_.getIndices();
+    return selected_;
 }
 
 const std::unordered_set<size_t>& BrushingAndLinkingManager::getFilteredIndices() const {
     return filtered_.getIndices();
+}
+
+const std::unordered_set<size_t>& BrushingAndLinkingManager::getSelectedColumns() const {
+    return selectedColumns_;
 }
 
 }  // namespace inviwo
