@@ -129,7 +129,6 @@ std::shared_ptr<Image> eigenMatToImage(const T& m, bool flipY = false, std::stri
             }
         }
     }
-
     if (name != "") {
         img->template setMetaData<StringMetaData>("name", name);
     }
