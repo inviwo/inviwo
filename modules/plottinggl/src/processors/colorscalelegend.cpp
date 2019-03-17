@@ -242,7 +242,7 @@ void ColorScaleLegend::updateLegendState() {
 
     // update the legend range if a volume is connected to inport
     if (volumeInport_.isChanged() && volumeInport_.hasData()) {
-        axis_.setRange(volumeInport_.getData()->dataMap_.dataRange);
+        axis_.setRange(volumeInport_.getData()->dataMap_.valueRange);
     } else if (!volumeInport_.isConnected()) {
         axis_.setRange(vec2(0, 1));
     }
