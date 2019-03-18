@@ -107,36 +107,30 @@ auto eigen2glm(const Eigen::Matrix<T, Cols, Cols>& m) {
 template <typename T>
 std::shared_ptr<Image> eigenMatToImage(const T& m, bool flipY = false, std::string name = "") {
     using Type = typename T::value_type;
+    if (!T::IsRowMajor) {
+        using RowMajorM =
+            Eigen::Matrix<Type, T::RowsAtCompileTime, T::ColsAtCompileTime, Eigen::RowMajor>;
+        return eigenMatToImage(RowMajorM(m), flipY, name);
+    }
 
     auto img = std::make_shared<Image>(size2_t(m.cols(), m.rows()), DataFormat<Type>::get());
-
-    auto rep = dynamic_cast<LayerRAMPrecision<Type>*>(
-        img->getColorLayer(0)->template getEditableRepresentation<LayerRAM>());
-    auto data = rep->getDataTyped();
-
-    size_t idx = 0;
-
-    if (flipY) {
-        for (auto i = m.rows() - 1; i >= 0; i--) {
-            for (auto j = 0; j < m.cols(); j++) {
-                data[idx++] = m.coeff(i, j);
-            }
-        }
-    } else {
-        for (auto i = 0; i < m.rows(); i++) {
-            for (auto j = 0; j < m.cols(); j++) {
-                data[idx++] = m.coeff(i, j);
-            }
-        }
-    }
+    img->getColorLayer()->setSwizzleMask(swizzlemasks::luminance);
     if (name != "") {
         img->template setMetaData<StringMetaData>("name", name);
     }
 
-    img->getColorLayer(0)->setSwizzleMask(swizzlemasks::luminance);
+    auto rep = dynamic_cast<LayerRAMPrecision<Type>*>(
+        img->getColorLayer(0)->template getEditableRepresentation<LayerRAM>());
+    auto data = rep->getDataTyped();
+    if (flipY) {
+        std::copy_n(m.colwise().reverse().eval().data(), m.rows() * m.cols(), data);
+    } else {
+        std::copy_n(m.data(), m.rows() * m.cols(), data);
+    }
 
     return img;
 }
+
 }  // namespace util
 
 }  // namespace inviwo
