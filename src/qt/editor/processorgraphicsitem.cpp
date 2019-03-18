@@ -444,6 +444,7 @@ void ProcessorGraphicsItem::onProcessorPortRemoved(Processor*, Port* port) {
 void ProcessorGraphicsItem::onProcessorAboutToProcess(Processor*) {
     processCount_++;
     countLabel_->setText(QString::number(processCount_));
+    clock_.reset();
     clock_.start();
 }
 
