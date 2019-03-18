@@ -49,7 +49,8 @@ namespace plot {
 
 /** \docpage{org.inviwo.ColorScaleLegend, Color Scale Legend}
  * ![](org.inviwo.ColorScaleLegend.png?classIdentifier=org.inviwo.ColorScaleLegend)
- * Explanation of how to use the processor.
+ * Displays a color legend axis based o the linked transfer function. 
+ * The corresponding values of the colors can be displayed next to the colors.
  *
  * ### Inports
  *   * __<ImageInport>__ Inport image.
