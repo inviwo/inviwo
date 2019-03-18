@@ -301,6 +301,25 @@ public:
         });
     }
 
+    /* \brief sets readonly depending another property `prop`, according to `callback`
+     * @param prop is the property on which the readonly state depends
+     * @param callback is a function that outputs a readonly boolean value. The function gets `prop` as parameter
+     *
+     * Checks the expression in `callback` every time `prop` is changed and sets the
+     * readonly state accordingly. Note that this registers an onChange callback on `prop`, which
+     * might result in poor performance when `prop` is a very frequently changed property.
+     */
+    template<typename P, typename DecisionFunc>
+    const BaseCallBack* readonlyDependsOn(P& prop, DecisionFunc callback) {
+        typename std::result_of<DecisionFunc(P&)>::type b = true;
+        static_assert(std::is_same<decltype(b), bool>::value, "The readonly callback must return a boolean!");
+        static_assert(std::is_base_of<Property, P>::value, "P must be a Property!");
+        return prop.onChange([callback, &prop, this](){
+            bool readonly = callback(prop);
+            this->setReadOnly(readonly);
+        });
+    }
+
     virtual Document getDescription() const;
 
     template <typename T, typename U>
