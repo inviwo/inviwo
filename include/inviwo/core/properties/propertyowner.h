@@ -56,8 +56,11 @@ public:
     PropertyOwner& operator=(const PropertyOwner& that);
     virtual ~PropertyOwner() = default;
 
-    virtual void addProperty(Property* property, bool owner = true);
-    virtual void addProperty(Property& property);
+    virtual Property& addProperty(Property* property, bool owner = true);
+    virtual Property& addProperty(Property& property);
+
+    template <typename... Ts>
+    void addProperties(Ts&... properties);
 
     /**
      * \brief insert property \p property at position \p index
@@ -166,6 +169,23 @@ std::vector<T*> PropertyOwner::getPropertiesByType(bool recursiveSearch /* = fal
     }
     return foundProperties;
 }
+
+namespace detail {
+    inline void addPropertyHelper(PropertyOwner& owner) {
+    }
+    template <typename... Ts>
+    void addPropertyHelper(PropertyOwner& owner, Property& p, Ts&... props) {
+        owner.addProperty(p);
+        addPropertyHelper(owner, props...);
+    }
+
+}
+
+    template <typename... Ts>
+    void PropertyOwner::addProperties(Ts&... properties) {
+        detail::addPropertyHelper(*this, properties...);
+    }
+
 
 }  // namespace inviwo
 

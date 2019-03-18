@@ -208,12 +208,14 @@ void ListProperty::addProperty(size_t prefabIndex) {
     }
 }
 
-void ListProperty::addProperty(Property* property, bool owner) {
+Property& ListProperty::addProperty(Property* property, bool owner) {
     insertProperty(getProperties().size(), property, owner);
+    return *property;
 }
 
-void ListProperty::addProperty(Property& property) {
+Property& ListProperty::addProperty(Property& property) {
     insertProperty(getProperties().size(), &property, false);
+    return property;
 }
 
 void ListProperty::insertProperty(size_t index, Property* property, bool owner) {
