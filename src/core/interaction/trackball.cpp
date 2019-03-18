@@ -102,8 +102,8 @@ Trackball::Trackball(TrackballObject* object)
     mouseReset_.setVisible(false);
     mouseReset_.setCurrentStateAsDefault();
 
-    trackballMethod_.addOption("tb_tav", "Two Axis Valuator Trackball", 0);
-    trackballMethod_.addOption("tb_vt", "Virtual Trackball", 1);
+    trackballMethod_.addOption("tb_vt", "Virtual Trackball", 0);
+    trackballMethod_.addOption("tb_tav", "Two Axis Valuator Trackball", 1);
     trackballMethod_.addOption("tb_fps", "First Person Camera", 2);
     trackballMethod_.addOption("tb_fodr", "Object follows Cursor", 3);
     addProperty(trackballMethod_);
@@ -368,10 +368,10 @@ std::pair<bool, vec3> Trackball::getTrackBallIntersection(const vec2 pos) const 
 void Trackball::rotate(Event* event) {
     switch (trackballMethod_) {
         case 0:
-            rotateTAV(event);
+            rotateArc(event);
             break;
         case 1:
-            rotateArc(event);
+            rotateTAV(event);
             break;
         case 2:
             rotateFPS(event);
