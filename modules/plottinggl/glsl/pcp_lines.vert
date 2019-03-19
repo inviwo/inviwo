@@ -1,11 +1,14 @@
 #include "pcp_common.glsl"
 
-out vec3 pickColor;
-out vec2 texCoord;
+out float vScalarMeta;
+flat out uint vPicking;
 
+uniform float axisPositions[NUMBER_OF_AXIS];
 
 void main() {
-    pickColor = in_Normal.rgb;
-    texCoord = in_TexCoord.xy;
-    gl_Position = vec4(getPosWithSpacing(vec2(in_Vertex.xy)), 0, 1);
+    vScalarMeta = in_ScalarMeta;
+    vPicking = in_Picking;
+
+    float xPos = axisPositions[gl_VertexID % NUMBER_OF_AXIS];   
+    gl_Position = vec4(getPosWithSpacing(vec2(xPos, in_Vertex)), 0.0, 1.0);
 }

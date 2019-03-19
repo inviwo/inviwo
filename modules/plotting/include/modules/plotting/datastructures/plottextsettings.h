@@ -41,13 +41,20 @@ public:
     PlotTextSettings() = default;
     virtual ~PlotTextSettings() = default;
 
-    virtual std::string getTitle() const = 0;
+    virtual bool isEnabled() const = 0;
     virtual vec4 getColor() const = 0;
     virtual float getPosition() const = 0;  //!< position along axis [0,1]
-    virtual float getOffset() const = 0;    //!< offset from axis
+    virtual vec2 getOffset() const = 0;    //!< offset from axis
     virtual float getRotation() const = 0;  //!< Degrees of rotation
     virtual const FontSettings& getFont() const = 0;
+
+    // utility
+    operator bool() const;
 };
+
+
+IVW_MODULE_PLOTTING_API bool operator==(const PlotTextSettings& a, const PlotTextSettings& b);
+IVW_MODULE_PLOTTING_API bool operator!=(const PlotTextSettings& a, const PlotTextSettings& b);
 
 }  // namespace plot
 

@@ -27,9 +27,10 @@
  *
  *********************************************************************************/
 
+#include <modules/plotting/datastructures/dataframe.h>
+
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
-#include <modules/plotting/datastructures/dataframe.h>
 #include <modules/plotting/datastructures/datapoint.h>
 #include <inviwo/core/util/formatdispatching.h>
 

@@ -67,10 +67,10 @@ public:
     FontProperty font_;
 
     // Inherited via PlotTextSettings
-    virtual std::string getTitle() const override;
+    virtual bool isEnabled() const override;
     virtual vec4 getColor() const override;
     virtual float getPosition() const override;
-    virtual float getOffset() const override;
+    virtual vec2 getOffset() const override;
     virtual float getRotation() const override;
     virtual const FontSettings& getFont() const override;
 };

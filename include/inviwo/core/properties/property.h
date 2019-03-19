@@ -279,7 +279,7 @@ public:
     virtual PropertySerializationMode getSerializationMode() const;
 
     virtual void setVisible(bool val);
-    virtual bool getVisible();
+    virtual bool getVisible() const;
 
     virtual Document getDescription() const;
 

@@ -30,6 +30,11 @@
 #include <modules/fontrendering/datastructures/fontdata.h>
 
 namespace inviwo {
+FontData::FontData(const FontSettings& s)
+    : fontFace{s.getFontFace()}
+    , fontSize{s.getFontSize()}
+    , lineSpacing{s.getLineSpacing()}
+    , anchorPos{s.getAnchorPos()} {}
 std::string FontData::getFontFace() const { return fontFace; }
 int FontData::getFontSize() const { return fontSize; }
 float FontData::getLineSpacing() const { return lineSpacing; }

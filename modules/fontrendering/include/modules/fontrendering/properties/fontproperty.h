@@ -49,6 +49,13 @@ public:
     FontProperty(const std::string& identifier, const std::string& displayName,
                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                  PropertySemantics semantics = PropertySemantics::Default);
+
+    FontProperty(const std::string& identifier, const std::string& displayName,
+                 const std::string& fontFace, int size = 14, float lineSpacing = 0.0f,
+                 vec2 ancharPos = vec2{-1.0f},
+                 InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                 PropertySemantics semantics = PropertySemantics::Default);
+
     FontProperty(const FontProperty& rhs);
     FontProperty& operator=(const FontProperty& rhs) = default;
     virtual FontProperty* clone() const override;

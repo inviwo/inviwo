@@ -41,10 +41,10 @@ MarginProperty::MarginProperty(
     float left, InvalidationLevel invalidationLevel /*= InvalidationLevel::InvalidOutput*/,
     PropertySemantics semantics /*= PropertySemantics::Default*/)
     : CompositeProperty(identifier, displayName)
-    , top_("top", "Top", top, 0, 100, 1, invalidationLevel, semantics)
-    , right_("right_", "Right", right, 0, 100, 1, invalidationLevel, semantics)
-    , bottom_("bottom", "Bottom", bottom, 0, 100, 1, invalidationLevel, semantics)
-    , left_("left", "Left", left, 0, 100, 1, invalidationLevel, semantics) {
+    , top_("top", "Top", top, 0.0f, 100.0f, 1.0f, invalidationLevel, semantics)
+    , right_("right_", "Right", right, 0.0f, 100.0f, 1.0f, invalidationLevel, semantics)
+    , bottom_("bottom", "Bottom", bottom, 0.0f, 100.0f, 1.0f, invalidationLevel, semantics)
+    , left_("left", "Left", left, 0.0f, 100.0f, 1.0f, invalidationLevel, semantics) {
     addProperty(top_);
     addProperty(right_);
     addProperty(bottom_);
@@ -76,13 +76,13 @@ MarginProperty& MarginProperty::operator=(const MarginProperty& that) {
 MarginProperty* MarginProperty::clone() const { return new MarginProperty(*this); }
 
 void MarginProperty::setMargins(float top, float right, float bottom, float left) {
-    top_.set(top, std::min(top_.getMinValue(), top), std::max(top_.getMaxValue(), top * 1.1f),
+    top_.set(top, std::min(top_.getMinValue(), top), std::max(top_.getMaxValue(), top * 2.0f),
              top_.getIncrement());
-    right_.set(right, std::min(right_.getMinValue(), top),
-               std::max(right_.getMaxValue(), top * 1.1f), right_.getIncrement());
-    bottom_.set(bottom, std::min(bottom_.getMinValue(), top),
-                std::max(bottom_.getMaxValue(), top * 1.1f), bottom_.getIncrement());
-    left_.set(left, std::min(left_.getMinValue(), top), std::max(left_.getMaxValue(), top * 1.1f),
+    right_.set(right, std::min(right_.getMinValue(), right),
+               std::max(right_.getMaxValue(), right * 2.0f), right_.getIncrement());
+    bottom_.set(bottom, std::min(bottom_.getMinValue(), bottom),
+                std::max(bottom_.getMaxValue(), bottom * 2.0f), bottom_.getIncrement());
+    left_.set(left, std::min(left_.getMinValue(), left), std::max(left_.getMaxValue(), left * 2.0f),
               left_.getIncrement());
 }
 
@@ -102,8 +102,30 @@ float MarginProperty::getBottom() const { return bottom_.get(); }
 
 float MarginProperty::getLeft() const { return left_.get(); }
 
-inviwo::vec4 MarginProperty::getAsVec4() const {
+vec2 MarginProperty::getLowerLeftMargin() const { return {left_, bottom_}; }
+
+vec2 MarginProperty::getUpperRightMargin() const { return {right_, top_}; }
+
+void MarginProperty::setLowerLeftMargin(vec2 lowerLeft) {
+    left_.set(lowerLeft.x);
+    bottom_.set(lowerLeft.y);
+}
+
+void MarginProperty::setUpperRightMargin(vec2 upperRight) {
+    right_.set(upperRight.x);
+    top_.set(upperRight.y);
+}
+
+vec4 MarginProperty::getAsVec4() const {
     return vec4(top_.get(), right_.get(), bottom_.get(), left_.get());
+}
+
+std::pair<vec2, vec2> MarginProperty::getRect(vec2 size) const {
+    return {vec2{left_, bottom_}, size - vec2{right_, top_}};
+}
+
+vec2 MarginProperty::getSize(vec2 size) const {
+    return size - vec2{left_, bottom_} - vec2{right_, top_};
 }
 
 }  // namespace plot

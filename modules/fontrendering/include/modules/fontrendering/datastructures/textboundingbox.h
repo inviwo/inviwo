@@ -26,31 +26,42 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <modules/plotting/datastructures/majortickdata.h>
+#include <modules/fontrendering/fontrenderingmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
 
 namespace inviwo {
 
-namespace plot {
-MajorTickData::MajorTickData(const MajorTickSettings& s)
-    : style{s.getStyle()}
-    , color{s.getColor()}
-    , tickLength{s.getTickLength()}
-    , tickWidth{s.getTickWidth()}
-    , tickDelta{s.getTickDelta()}
-    , rangeBasedTicks{s.getRangeBasedTicks()} {}
-TickStyle MajorTickData::getStyle() const { return style; }
+/**
+ * \struct TextBoundingBox
+ *
+ * \brief struct for holding bounding box information for a specific text
+ *
+ * The textual bounding box for a string has its origin (0,0) at the bottom-left corner and is
+ * given by its extent. The bounding box enclosing all glyphs has its own origin relative to (0,0).
+ * The first line starts at (0,0) + textExtent.y - ascender (i.e. getBaseLineOffset()).
+ *
+ * The glyph bounding box might be larger than the textual bounding box. It is guaranteed to
+ * enclose all glyphs including overhang, e.g. caused by italic glyphs or glyphs exceeding
+ * ascend and descend.
+ */
+struct IVW_MODULE_FONTRENDERING_API TextBoundingBox {
 
-vec4 MajorTickData::getColor() const { return color; }
+    TextBoundingBox() = default;
 
-float MajorTickData::getTickLength() const { return tickLength; }
+    TextBoundingBox(const size2_t &textExt, const ivec2 &glyphsOrigin, const size2_t &glyphsExt,
+                    int baselineOffset);
 
-float MajorTickData::getTickWidth() const { return tickWidth; }
+    size2_t textExtent{0};  //<! extent of textual bounding box
 
-double MajorTickData::getTickDelta() const { return tickDelta; }
+    ivec2 glyphsOrigin{0};    //!< relative origin of bottom-left most glyph
+    size2_t glyphsExtent{0};  //!< extent of bbox containing all glyphs extending to top right corner
 
-bool MajorTickData::getRangeBasedTicks() const { return rangeBasedTicks; }
+    ivec2 glyphPenOffset{0};  //!< pen offset to align first glyph perfectly on first baseline
 
-}  // namespace plot
+    void updateGlyphPenOffset(int baselineOffset);
+};
+
 
 }  // namespace inviwo

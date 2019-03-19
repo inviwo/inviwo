@@ -30,4 +30,10 @@
 #include <modules/fontrendering/datastructures/fontsettings.h>
 
 namespace inviwo {
+bool operator==(const FontSettings& a, const FontSettings& b) {
+    return a.getFontSize() == b.getFontSize() && a.getFontFace() == b.getFontFace() &&
+           a.getLineSpacing() == b.getLineSpacing() && a.getAnchorPos() == b.getAnchorPos();
+}
+bool operator!=(const FontSettings& a, const FontSettings& b) { return !(a == b); }
+
 }  // namespace inviwo

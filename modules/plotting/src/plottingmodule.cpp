@@ -44,6 +44,7 @@
 #include <modules/plotting/properties/optionconverter.h>
 
 #include <modules/plotting/datastructures/dataframe.h>
+#include <modules/plotting/utils/csvreader.h>
 
 namespace inviwo {
 
@@ -83,6 +84,8 @@ PlottingModule::PlottingModule(InviwoApplication* app) : InviwoModule(app, "Plot
     registerProperty<plot::TickProperty>();
 
     registerDefaultsForDataType<plot::DataFrame>();
+
+    registerDataReader(util::make_unique<CSVReader>());
 
     // We create a std::function to register the created converter since the registration function
     // is protected in the inviwo module

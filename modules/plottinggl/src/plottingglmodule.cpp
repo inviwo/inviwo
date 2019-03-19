@@ -40,8 +40,9 @@
 #include <modules/plottinggl/processors/scatterplotprocessor.h>
 #include <modules/plottinggl/processors/volumeaxis.h>
 #include <modules/plottinggl/processors/persistencediagramplotprocessor.h>
+#include <modules/plottinggl/processors/parallelcoordinates/pcpaxissettings.h>
 
-#include <modules/plottinggl/processors/parallelcoordinates/parallelcoordinatesaxissettingsproperty.h>
+#include <modules/plottinggl/datavisualizer/pcpdataframevisualizer.h>
 
 namespace inviwo {
 
@@ -57,7 +58,9 @@ PlottingGLModule::PlottingGLModule(InviwoApplication* app) : InviwoModule(app, "
     registerProcessor<plot::ScatterPlotProcessor>();
     registerProcessor<plot::VolumeAxis>();
 
-    registerProperty<plot::ParallelCoordinatesAxisSettingsProperty>();
+    registerProperty<plot::PCPAxisSettings>();
+
+    registerDataVisualizer(std::make_unique<PCPDataFrameVisualizer>(app));
 }
 
 }  // namespace inviwo

@@ -44,4 +44,8 @@ public:
     virtual vec2 getAnchorPos() const = 0;
 };
 
+IVW_MODULE_FONTRENDERING_API bool operator==(const FontSettings& a, const FontSettings& b);
+
+IVW_MODULE_FONTRENDERING_API bool operator!=(const FontSettings& a, const FontSettings& b);
+
 }  // namespace inviwo

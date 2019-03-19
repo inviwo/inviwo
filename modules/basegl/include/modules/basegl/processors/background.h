@@ -79,9 +79,6 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-private:
-    void updateShaderInputs();
-
     enum class BlendMode { BackToFront, AlphaMixing };
     enum class BackgroundStyle {
         LinearHorizontal,
@@ -102,6 +99,8 @@ private:
 
     TemplateOptionProperty<BlendMode> blendMode_;
 
+private:
+    void updateShaderInputs();
     Shader shader_;
     bool hadData_;
 };

@@ -30,7 +30,21 @@
 
 #include <modules/plotting/plottingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <modules/plotting/properties/axisproperty.h>
+
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+
+#include <modules/plotting/properties/tickproperty.h>
+
+#include <modules/plotting/datastructures/majortickdata.h>
+#include <modules/plotting/datastructures/minortickdata.h>
+
+#include <modules/plotting/properties/plottextproperty.h>
+#include <modules/plotting/datastructures/axissettings.h>
 
 namespace inviwo {
 
@@ -40,22 +54,25 @@ namespace plot {
  * Will set the AxisProperty::range to match the number of categories and make it read-only.
  * minorTicks will be made invisible.
  */
-class IVW_MODULE_PLOTTING_API CategoricalAxisProperty : public AxisProperty {
-public: 
+class IVW_MODULE_PLOTTING_API CategoricalAxisProperty : public AxisSettings,
+                                                        public CompositeProperty {
+public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
     CategoricalAxisProperty(const std::string& identifier, const std::string& displayName,
                             std::vector<std::string> categories = {"Category"},
-                 Orientation orientation = Orientation::Horizontal,
-                 InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-                 PropertySemantics semantics = PropertySemantics::Default);
+                            Orientation orientation = Orientation::Horizontal,
+                            InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                            PropertySemantics semantics = PropertySemantics::Default);
     CategoricalAxisProperty(const CategoricalAxisProperty& rhs);
     CategoricalAxisProperty& operator=(const CategoricalAxisProperty& rhs) = default;
     virtual CategoricalAxisProperty* clone() const override;
     virtual ~CategoricalAxisProperty() = default;
 
-    /* 
+    
+
+    /*
      * Returns the categories displayed at the major ticks.
      */
     const std::vector<std::string>& getCategories() const;
@@ -65,8 +82,44 @@ public:
      */
     void setCategories(std::vector<std::string> categories);
 
-protected:
+    // Inherited via AxisSettings
+    virtual dvec2 getRange() const override;
+    virtual bool getUseDataRange() const override;
+
+    virtual bool getVisible() const override;
+    virtual vec4 getColor() const override;
+    virtual float getWidth() const override;
+    virtual Orientation getOrientation() const override;
+    virtual Placement getPlacement() const override;
+
+    virtual const std::string& getCaption() const override;
+    virtual const PlotTextSettings& getCaptionSettings() const override;
+
+    virtual const std::vector<std::string>& getLabels() const override;
+    virtual const PlotTextSettings& getLabelSettings() const override;
+
+    virtual const MajorTickSettings& getMajorTicks() const override;
+    virtual const MinorTickSettings& getMinorTicks() const override;
+
+    // general properties
+    BoolProperty visible_;
+    FloatVec4Property color_;
+    FloatProperty width_;
+
+    TemplateOptionProperty<Orientation> orientation_;
+    TemplateOptionProperty<Placement> placement_;
+
+    // caption besides axis
+    PlotTextProperty captionSettings_;
+    // labels showing numbers along axis
+    PlotTextProperty labelSettings_;
+
+    MajorTickProperty majorTicks_;
+    MinorTickData minorTicks_;
+
+private:
     std::vector<std::string> categories_;
+    void adjustAlignment();
 };
 
 }  // namespace plot

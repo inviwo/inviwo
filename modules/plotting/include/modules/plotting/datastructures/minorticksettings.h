@@ -50,6 +50,8 @@ public:
     virtual int getTickFrequency() const = 0;
 };
 
+IVW_MODULE_PLOTTING_API bool operator==(const MinorTickSettings& a, const MinorTickSettings& b);
+IVW_MODULE_PLOTTING_API bool operator!=(const MinorTickSettings& a, const MinorTickSettings& b);
 }  // namespace plot
 
 }  // namespace inviwo

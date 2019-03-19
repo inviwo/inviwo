@@ -95,7 +95,7 @@ public:
     T get(size_t index) const;
     T& get(size_t index);
 
-    void clear();
+    virtual void clear() override;
 
 private:
     std::vector<T> data_;

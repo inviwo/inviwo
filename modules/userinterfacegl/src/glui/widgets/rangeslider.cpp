@@ -182,7 +182,7 @@ void RangeSlider::renderWidget(const ivec2 &origin, const size2_t &) {
     const ivec2 extent(getWidgetExtentScaled());
 
     // render groove first
-    {
+    if (showGroove_) {
         grooveTextures_->bind();
         uiShader.setUniform("origin", vec2(origin + widgetPos_));
         uiShader.setUniform("extent", vec2(extent));
@@ -306,6 +306,10 @@ double RangeSlider::getHandleWidth() const {
                          static_cast<double>(uiTextures_->getDimensions().y);
     return ratio * (orientation_ == UIOrientation::Horizontal ? ext.y : ext.x);
 }
+
+bool RangeSlider::getShowGroove() const { return showGroove_; }
+
+void RangeSlider::setShowGroove(bool show) { showGroove_ = show; }
 
 vec2 RangeSlider::getSliderPos() const {
     const dvec2 ext(getWidgetExtentScaled());

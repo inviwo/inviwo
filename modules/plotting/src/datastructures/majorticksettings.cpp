@@ -30,6 +30,15 @@
 #include <modules/plotting/datastructures/majorticksettings.h>
 
 namespace inviwo {
+namespace plot {
 
+bool operator==(const MajorTickSettings& a, const MajorTickSettings& b) {
+    return a.getStyle() == b.getStyle() && a.getColor() == b.getColor() &&
+           a.getTickLength() == b.getTickLength() && a.getTickWidth() == b.getTickWidth() &&
+           a.getTickDelta() == b.getTickDelta() && a.getRangeBasedTicks() == b.getRangeBasedTicks();
+}
 
+bool operator!=(const MajorTickSettings& a, const MajorTickSettings& b) { return !(a == b); }
+
+}  // namespace plot
 }  // namespace inviwo

@@ -40,9 +40,8 @@ class BrushingAndLinkingManager;
 
 class IVW_MODULE_BRUSHINGANDLINKING_API IndexList {
 public:
-    IndexList();
-    virtual ~IndexList();
-
+    IndexList() = default;
+    
     size_t getSize() const;
     bool has(size_t idx) const;
 
@@ -61,6 +60,8 @@ private:
     std::unordered_set<size_t> indices_;
     Dispatcher<void()> onUpdate_;
 };
+
+inline bool IndexList::has(size_t idx) const { return indices_.find(idx) != indices_.end(); }
 
 }  // namespace inviwo
 

@@ -40,20 +40,21 @@ namespace plot {
 class IVW_MODULE_PLOTTING_API PlotTextData : public PlotTextSettings {
 public:
     PlotTextData() = default;
+    PlotTextData(const PlotTextSettings& s);
     virtual ~PlotTextData() = default;
 
     // Inherited via PlotTextSettings
-    virtual std::string getTitle() const override;
+    virtual bool isEnabled() const override;
     virtual vec4 getColor() const override;
     virtual float getPosition() const override;
-    virtual float getOffset() const override;
+    virtual vec2 getOffset() const override;
     virtual float getRotation() const override;
     virtual const FontSettings& getFont() const override;
 
-    std::string title = "";
+    bool enabled = true;
     vec4 color = vec4{0.0f, 0.0f, 0.0f, 1.0f};
     float position = 0.5f;
-    float offset = 10.0f;
+    vec2 offset = vec2{10.0f, 0.0f};
     float rotation = 0.0f;
     FontData font;
 };

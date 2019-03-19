@@ -54,8 +54,6 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-
-
     AxisProperty(const std::string& identifier, const std::string& displayName,
                  Orientation orientation = Orientation::Horizontal,
                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
@@ -65,7 +63,8 @@ public:
     virtual AxisProperty* clone() const override;
     virtual ~AxisProperty() = default;
 
-    void setTitle(const std::string& title);
+    virtual void setCaption(const std::string& title);
+    
     void setLabelFormat(const std::string& formatStr);
     /**
      * \brief sets range property of axis and ensures the min/max limits are adjusted accordingly
@@ -74,16 +73,21 @@ public:
     void setRange(const dvec2& range);
 
     // Inherited via AxisSettings
-    virtual std::string getTitle() const override;
+    virtual dvec2 getRange() const override;
+    virtual bool getUseDataRange() const override;
+    
     virtual bool getVisible() const override;
     virtual vec4 getColor() const override;
     virtual float getWidth() const override;
-    virtual bool getUseDataRange() const override;
-    virtual dvec2 getRange() const override;
     virtual Orientation getOrientation() const override;
     virtual Placement getPlacement() const override;
-    virtual const PlotTextSettings& getCaption() const override;
-    virtual const PlotTextSettings& getLabels() const override;
+    
+    virtual const std::string& getCaption() const override;
+    virtual const PlotTextSettings& getCaptionSettings() const override;
+
+    virtual const std::vector<std::string>& getLabels() const override;
+    virtual const PlotTextSettings& getLabelSettings() const override;
+
     virtual const MajorTickSettings& getMajorTicks() const override;
     virtual const MinorTickSettings& getMinorTicks() const override;
 
@@ -98,15 +102,17 @@ public:
     TemplateOptionProperty<Placement> placement_;
 
     // caption besides axis
-    PlotTextProperty caption_;
+    PlotTextProperty captionSettings_;
     // labels showing numbers along axis
-    PlotTextProperty labels_;
+    PlotTextProperty labelSettings_;
+    std::vector<std::string> categories_;
 
-    TickProperty ticks_;
-
-
+    MajorTickProperty majorTicks_;
+    MinorTickProperty minorTicks_;
 
 private:
+    virtual void updateLabels();
+
     void adjustAlignment();
 };
 

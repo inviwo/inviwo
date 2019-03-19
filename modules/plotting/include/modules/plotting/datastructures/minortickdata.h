@@ -40,6 +40,7 @@ namespace plot {
 class IVW_MODULE_PLOTTING_API MinorTickData : public MinorTickSettings {
 public:
     MinorTickData() = default;
+    MinorTickData(const MinorTickSettings& s);
     virtual ~MinorTickData() = default;
 
     TickStyle style = TickStyle::Outside;

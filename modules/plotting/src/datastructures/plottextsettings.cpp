@@ -31,5 +31,19 @@
 
 namespace inviwo {
 
-    
+namespace plot {
+
+PlotTextSettings::operator bool() const { return isEnabled(); }
+
+bool operator==(const PlotTextSettings& a, const PlotTextSettings& b) {
+    return a.isEnabled() == b.isEnabled() && a.getColor() == b.getColor() &&
+           a.getPosition() == b.getPosition() && a.getOffset() == b.getOffset() &&
+           a.getRotation() == b.getRotation() && a.getFont() == b.getFont();
+    ;
+}
+
+bool operator!=(const PlotTextSettings& a, const PlotTextSettings& b) { return !(a == b); }
+
+}  // namespace plot
+
 }  // namespace inviwo

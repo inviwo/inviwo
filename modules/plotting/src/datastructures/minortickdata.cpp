@@ -33,7 +33,13 @@ namespace inviwo {
 
 namespace plot {
 
-
+MinorTickData::MinorTickData(const MinorTickSettings& s)
+    : style{s.getStyle()}
+    , fillAxis{s.getFillAxis()}
+    , color{s.getColor()}
+    , tickLength{s.getTickLength()}
+    , tickWidth{s.getTickWidth()}
+    , tickFrequency{s.getTickFrequency()} {}
 
 TickStyle MinorTickData::getStyle() const { return style; }
 

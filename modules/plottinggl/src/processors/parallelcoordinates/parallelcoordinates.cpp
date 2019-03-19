@@ -28,11 +28,9 @@
  *********************************************************************************/
 
 #include <modules/plottinggl/processors/parallelcoordinates/parallelcoordinates.h>
+#include <modules/plottinggl/processors/parallelcoordinates/pcpaxissettings.h>
 #include <modules/plottinggl/plottingglmodule.h>
 
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/datastructures/geometry/basicmesh.h>
-#include <inviwo/core/datastructures/geometry/simplemesh.h>
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/image/imageram.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
@@ -54,15 +52,11 @@
 #include <modules/plotting/utils/statsutils.h>
 #include <modules/plotting/datastructures/dataframeutil.h>
 #include <inviwo/core/util/utilities.h>
+#include <inviwo/core/util/zip.h>
 
 namespace inviwo {
 
 namespace plot {
-
-static const float handleW = 40;
-static const float handleH = 20;
-
-static const size_t handleCaptionMargin = 2;  // Distance between caption text and handle
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo ParallelCoordinates::processorInfo_{
@@ -74,535 +68,404 @@ const ProcessorInfo ParallelCoordinates::processorInfo_{
 };
 const ProcessorInfo ParallelCoordinates::getProcessorInfo() const { return processorInfo_; }
 
-void ParallelCoordinates::invokeEvent(Event *event) {
-    Processor::invokeEvent(event);
-    if (event->getAs<ResizeEvent>()) {
-        updateAxesLayout();
-    }
-}
-
 ParallelCoordinates::ParallelCoordinates()
     : Processor()
-    , dataFrame_("dataFrame")
-    , brushingAndLinking_("brushingAndLinking")
-    , outport_("outport")
-    , axisProperties_("axisProps_", "Axis")
-    , colors_("colors", "Colors")
-    , axisColor_("axisColor", "Axis Color", vec4(.3f, .3f, .3f, 1))
-    , axisHoverColor_("axisHoverColor", "Axis Hover Color", vec4(.6f, .6f, .6f, 1))
-    , axisSelectedColor_("axisSelectedColor", "Axis Selected Color", vec4(.8f, .8f, .8f, 1))
-    , handleBaseColor_("handleColor", "Handle Color (Not filtering)", vec4(.92f, .92f, .92f, 1))
-    , handleFilteredColor_("handleFilteredColor", "Handle Color (When filtering)",
-                           vec4(.5f, .5f, .5f, 1))
-    , tf_("tf", "Line Color")
-    , tfSelection_("tfSelection", "Selection Color")
-    , enableHoverColor_("enableHoverColor", "Enable Hover Color", true)
+    , dataFrame_{"dataFrame"}
+    , brushingAndLinking_{"brushingAndLinking"}
+    , outport_{"outport"}
 
-    , filteringOptions_("filteringOptions", "Filtering Options")
+    , axisProperties_{"axisProps_", "Axis"}
+    , selectedColorAxis_{"selectedColorAxis", "Selected Color Axis", dataFrame_, false, 1}
+
+    , tf_{"tf", "Line Color",
+          TransferFunction{
+              {{0.0, vec4{1, 0, 0, 1}}, {0.5, vec4{1, 1, 0, 1}}, {1.0, vec4{0, 1, 0, 1}}}}}
+
+    , lineSettings_{"lines", "Line Settings"}
+    , blendMode_("blendMode", "Blend Mode",
+                 {{"additive", "Additive", BlendMode::Additive},
+                  {"subractive", "Subractive", BlendMode::Sutractive},
+                  {"regular", "Regular", BlendMode::Regular},
+                  {"noblend", "None", BlendMode::None}},
+                 2)
+    , falllofPower_("falllofPower", "Falloff Power", 1.0f, 0.01f, 3.f, 0.01f)
+    , lineWidth_("lineWidth", "Line Width", 7.0f, 1.0f, 20.0f)
+    , selectedLineWidth_("selectedLineWidth", "Selected Line Width", 10.0f, 1.0f, 20.0f)
     , showFiltered_("showFiltered", "Show Filtered", false)
-    , filterColor_("filterColor", "Filter Color", vec4(.6f, .6f, .6f, 0.2f))
-    , filterIntensity_("filterIntensity", "Filter Intensity", 0.7f, 0.01f, 1.0f, 0.001f)
+    , filterColor_("filterColor", "Filter Color", vec3(.2f, .2f, .2f), vec3(0.0f), vec3(1.0f),
+                   vec4(0.01f), InvalidationLevel::InvalidOutput, PropertySemantics::Color)
+    , filterAlpha_("filterAlpha", "Filter Alpha", 0.75f)
+    , filterIntensity_("filterIntensity", "Filter Mixing", 0.7f, 0.01f, 1.0f, 0.001f)
 
-    , resetHandlePositions_("resetHandlePositions", "Reset Handle Positions")
+    , captionSettings_("captions", "Caption Settings", "Montserrat-Medium", 24, 0.0f,
+                       vec2{0.0f, -1.0f})
+    , captionPosition_("position", "Position",
+                       {{"none", "None", LabelPosition::None},
+                        {"above", "Above", LabelPosition::Above},
+                        {"below", "Below", LabelPosition::Below}},
+                       1)
+    , captionOffset_("offset", "Offset", 15.0f, -50.0f, 50.0f, 0.1f)
+    , captionColor_("color", "Color", vec4(.0, .0f, .0f, 1.0f), vec4(0.0f), vec4(1.0f), vec4(0.01f),
+                    InvalidationLevel::InvalidOutput, PropertySemantics::Color)
 
-    , blendMode_("blendMode", "Blend Mode")
-    , alpha_("alpha", "Alpha", 0.9f)
-    , filterAlpha_("filterAlpha", "Filter Alpha", 0.2f)
-    , falllofPower_("falllofPower", "Falloff Power", 2.0f, 0.01f, 10.f, 0.01f)
-    , lineWidth_("lineWidth", "Line Width", 7.0f, 1.0f, 10.0f)
-    , selectedLineWidth_("selectedLineWidth", "Line Width (selected lines)", 3.0f, 1.0f, 10.0f)
+    , labelSettings_("labels", "Label Settings", "Montserrat-Medium", 20, 0.0f, vec2{-1.0f, 0.0f})
+    , showLabels_("show", "Display min/max", true)
+    , labelOffset_("offset", "Offset", 15.0f, -50.0, 50.0f)
+    , labelFormat_("format", "Format", "%.4f")
+    , labelColor_("color", "Color", vec4(.0, .0f, .0f, 1), vec4(0.0f), vec4(1.0f), vec4(0.01f),
+                  InvalidationLevel::InvalidOutput, PropertySemantics::Color)
 
-    , handleSize_("handleSize", "Handle Size", vec2(handleW, handleH), vec2(1), vec2(100), vec2(1))
+    , axesSettings_("axesSettings", "Axes Settings")
+    , axisSize_("axisSize", "Size", 6.0f, 0.0f, 50.0f, 0.01f)
+    , axisColor_("axisColor", "Color", vec4(.3f, .3f, .3f, 1), vec4(0.0f), vec4(1.0f), vec4(0.01f),
+                 InvalidationLevel::InvalidOutput, PropertySemantics::Color)
+    , axisHoverColor_("axisHoverColor", "Hover Color", vec4(.6f, .6f, .6f, 1), vec4(0.0f),
+                      vec4(1.0f), vec4(0.01f), InvalidationLevel::InvalidOutput,
+                      PropertySemantics::Color)
+    , axisSelectedColor_("axisSelectedColor", "Selected Color", vec4(.8f, .8f, .8f, 1), vec4(0.0f),
+                         vec4(1.0f), vec4(0.01f), InvalidationLevel::InvalidOutput,
+                         PropertySemantics::Color)
+    , handleSize_("handleSize", "Handle Size", 20.0f, 15.0f, 100.0f)
+    , handleColor_("handleColor", "Handle Color (Not filtering)", vec4(.92f, .92f, .92f, 1),
+                   vec4(0.0f), vec4(1.0f), vec4(0.01f), InvalidationLevel::InvalidOutput,
+                   PropertySemantics::Color)
+    , handleFilteredColor_("handleFilteredColor", "Handle Color (When filtering)",
+                           vec4(.5f, .5f, .5f, 1), vec4(0.0f), vec4(1.0f), vec4(0.01f),
+                           InvalidationLevel::InvalidOutput, PropertySemantics::Color)
 
     , margins_("margins", "Margins", 0, 0, 0, 0)
-    , autoMargins_("autoMargins", "Auto")
+    , autoMargins_("autoMargins", "Auto Margins", true)
+    , resetHandlePositions_("resetHandlePositions", "Reset Handle Positions")
 
-    , selectedColorAxis_("selectedColorAxis", "Selected Color Axis", dataFrame_, false, 1)
-
-    , text_("labels", "Labels")
-    , labelPosition_("labelPosition", "Label Position")
-    , showValue_("showValue", "Display min/max", true)
-    , color_("color_", "Color", vec4(0.0f, 0.0f, 0.0f, 1.0f), vec4(0.0f), vec4(1.0f), vec4(0.01f),
-             InvalidationLevel::InvalidOutput, PropertySemantics::Color)
-    , fontSize_("fontSize", "Font size")
-    , valuesFontSize_("valuesFontSize", "Font size for min/max")
-
-    , lineShader_("pcp_lines.vert", "pcp_lines.geom", "pcp_lines.frag")
-    , axisShader_("pcp_axis.vert", "pcp_axis.geom", "pcp_axis.frag")
-    , handleShader_("pcp_handle.vert", "pcp_handle.frag")
-
-    , linePicking_(this, 1, [&](PickingEvent *p) { linePicked(p); })
-    , axisPicking_(this, 1, [&](PickingEvent *p) { axisPicked(p); })
-    , handlePicking_(this, 1, [&](PickingEvent *p) { handlePicked(p); })
-
-    , handleImg_(nullptr)
-    , recreateLines_(true)
+    , linePicking_(this, 1, [&](PickingEvent* p) { linePicked(p); })
+    , axisPicking_(this, 1, [&](PickingEvent* p) { axisPicked(p); })
+    , lineShader_("pcp_lines.vert", "pcp_lines.geom", "pcp_lines.frag", false)
+    , lines_{}
     , brushingDirty_(true)  // needs to be true after deserialization
 {
     addPort(dataFrame_);
     addPort(brushingAndLinking_);
     addPort(outport_);
 
-    axisColor_.setSemantics(PropertySemantics::Color);
-    axisHoverColor_.setSemantics(PropertySemantics::Color);
-    axisSelectedColor_.setSemantics(PropertySemantics::Color);
-    handleBaseColor_.setSemantics(PropertySemantics::Color);
-    handleFilteredColor_.setSemantics(PropertySemantics::Color);
-    filterColor_.setSemantics(PropertySemantics::Color);
+    addProperty(axisProperties_);
+    addProperty(selectedColorAxis_);
+    addProperty(tf_);
 
-    blendMode_.addOption("additive", "Additive", BlendMode::Additive);
-    blendMode_.addOption("subractive", "Subractive", BlendMode::Sutractive);
-    blendMode_.addOption("regular", "Regular", BlendMode::Regular);
-    blendMode_.addOption("noblend", "None", BlendMode::None);
-    blendMode_.setSelectedIndex(2);
-    blendMode_.setCurrentStateAsDefault();
+    addProperty(lineSettings_);
+    lineSettings_.addProperty(blendMode_);
+    lineSettings_.addProperty(falllofPower_);
+    lineSettings_.addProperty(lineWidth_);
+    lineSettings_.addProperty(selectedLineWidth_);
+    lineSettings_.addProperty(showFiltered_);
+    lineSettings_.addProperty(filterColor_);
+    lineSettings_.addProperty(filterAlpha_);
+    lineSettings_.addProperty(filterIntensity_);
+
+    addProperty(captionSettings_);
+    captionSettings_.addProperty(captionPosition_);
+    captionSettings_.addProperty(captionOffset_);
+    captionSettings_.addProperty(captionColor_);
+
+    addProperty(labelSettings_);
+    labelSettings_.addProperty(showLabels_);
+    labelSettings_.addProperty(labelOffset_);
+    labelSettings_.addProperty(labelFormat_);
+    labelSettings_.addProperty(labelColor_);
+
+    addProperty(axesSettings_);
+    axesSettings_.addProperty(axisSize_);
+    axesSettings_.addProperty(axisColor_);
+    axesSettings_.addProperty(axisHoverColor_);
+    axesSettings_.addProperty(axisSelectedColor_);
+    axesSettings_.addProperty(handleSize_);
+    axesSettings_.addProperty(handleColor_);
+    axesSettings_.addProperty(handleFilteredColor_);
 
     addProperty(margins_);
     margins_.addProperty(autoMargins_);
-    addProperty(colors_);
-    colors_.addProperty(selectedColorAxis_);
-    colors_.addProperty(tfSelection_);
-    colors_.addProperty(enableHoverColor_);
-    colors_.addProperty(alpha_);
-    colors_.addProperty(falllofPower_);
-    colors_.addProperty(axisColor_);
-    colors_.addProperty(axisHoverColor_);
-    colors_.addProperty(axisSelectedColor_);
-    colors_.addProperty(handleBaseColor_);
-    colors_.addProperty(handleFilteredColor_);
-    colors_.addProperty(tf_);
-    colors_.addProperty(blendMode_);
-    addProperty(lineWidth_);
-    addProperty(selectedLineWidth_);
-    addProperty(axisProperties_);
-
-    addProperty(text_);
-    text_.addProperty(labelPosition_);
-    text_.addProperty(showValue_);
-    text_.addProperty(color_);
-    text_.addProperty(fontSize_);
-    text_.addProperty(valuesFontSize_);
-    text_.onChange([&]() { autoMargins_.pressButton(); });
-
-    axisProperties_.setCollapsed(true);
-    axisProperties_.onChange([&]() { recreateLines_ = true; });
-
-    addProperty(handleSize_);
-
-    filteringOptions_.addProperty(showFiltered_);
-    filteringOptions_.addProperty(filterColor_);
-    filteringOptions_.addProperty(filterIntensity_);
-    filteringOptions_.addProperty(filterAlpha_);
-    addProperty(filteringOptions_);
-
-    filterColor_.onChange([&]() { filterAlpha_.set(filterColor_.get().w); });
-    filterAlpha_.onChange([&]() {
-        auto color = filterColor_.get();
-        filterColor_.set(vec4(color.x, color.y, color.z, filterAlpha_.get()));
-    });
-
     addProperty(resetHandlePositions_);
 
-    labelPosition_.addOption("none", "None", LabelPosition::None);
-    labelPosition_.addOption("above", "Above", LabelPosition::Above);
-    labelPosition_.addOption("below", "Below", LabelPosition::Below);
-    labelPosition_.setSelectedIndex(2);
+    captionSettings_.lineSpacing_.setVisible(false);
+    labelSettings_.lineSpacing_.setVisible(false);
 
-    showValue_.onChange([&]() { autoMargins_.pressButton(); });
+    {
+        auto vs = lineShader_.getVertexShaderObject();
+        vs->clearInDeclarations();
+        vs->addInDeclaration("in_Vertex", buffertraits::PositionsBuffer1D::bi().location, "float");
+        vs->addInDeclaration("in_Picking", buffertraits::PickingBuffer::bi().location, "uint");
+        vs->addInDeclaration("in_ScalarMeta", buffertraits::ScalarMetaBuffer::bi().location,
+                             "float");
+        vs->addShaderDefine("NUMBER_OF_AXIS", toString(1));
 
-    autoMargins_.onChange([&]() {
-        float left = 0;
-        float right = 0;
-        float top = 0;
-        float bottom = 0;
-
-        float leftLabelWidth = 0;
-        float rightLabelWidth = 0;
-        size_t maxLabelHeight = 0;
-
-        for (auto &elem : axisVector_) {
-            auto p = std::get<0>(elem);
-            if (p->isChecked()) {
-                const auto &renderer = std::get<2>(elem);
-                const auto &axisProp = std::get<1>(elem);
-
-                // Label offset by tick mark
-                auto tickMarkOffset = axisProp->labels_.font_.anchorPos_.get().x;
-                auto labelX = showValue_.get()
-                                  ? (tickMarkOffset + renderer->getLabelAtlasTexture()->getWidth())
-                                  : 0;
-                if (labelPosition_.get() != LabelPosition::None) {
-                    // Caption might stick out next to the handle
-                    auto captionX = static_cast<float>(0.5f * renderer->getCaptionTextSize().x);
-                    if (leftLabelWidth == 0) {
-                        leftLabelWidth = std::max(labelX, captionX);
-                    }
-                    rightLabelWidth = std::max(labelX, captionX);
-                    maxLabelHeight = std::max(
-                        maxLabelHeight, 2 * renderer->getCaptionTextSize().y + handleCaptionMargin);
-                }
-                if (showValue_.get()) {
-                    right = labelX;
-                }
-            }
-        }
-        if (labelPosition_.get() == LabelPosition::Above) {
-            top = static_cast<float>(maxLabelHeight);
-        } else if (labelPosition_.get() == LabelPosition::Below) {
-            bottom = static_cast<float>(maxLabelHeight);
-        }
-
-        left = std::max(leftLabelWidth, handleSize_.get().x / 2.f);
-        right = std::max(rightLabelWidth, right + handleSize_.get().x / 2.f);
-        top += handleSize_.get().y;
-        bottom += handleSize_.get().y;
-        margins_.setMargins(top + 1, right + 1, bottom + 1, left + 1);
-        // plus 1 to avoid text at the directly at the borders
-
-        updateAxesLayout();
-    });
-
-    TransferFunction tf;
-    tf.clear();
-    tf.add(0.0, vec4(1, 0, 0, 1));
-    tf.add(0.5, vec4(1, 1, 0, 1));
-    tf.add(1.0, vec4(0, 1, 0, 1));
-    tf_.set(tf);
-    tf_.setCurrentStateAsDefault();
-
-    tf.clear();
-    tf.add(0.5, vec4(1, 0, 0, 1));
-    tfSelection_.set(tf);
-    tfSelection_.setCurrentStateAsDefault();
-
-    handle_ = util::make_unique<SimpleMesh>(DrawType::Triangles, ConnectivityType::Strip);
-    auto handleMesh = dynamic_cast<SimpleMesh *>(handle_.get());
-    handleMesh->addVertex(vec3(0, 0, 0), vec3(0, 0, 0), vec4(0, 0, 0, 0));
-    handleMesh->addVertex(vec3(0, 1, 0), vec3(0, 1, 0), vec4(0, 0, 0, 0));
-    handleMesh->addVertex(vec3(1, 0, 0), vec3(1, 0, 0), vec4(0, 0, 0, 0));
-    handleMesh->addVertex(vec3(1, 1, 0), vec3(1, 1, 0), vec4(0, 0, 0, 0));
-    handleMesh->addIndices(0, 1, 2, 3);
-
-    axis_ = util::make_unique<SimpleMesh>(DrawType::Lines, ConnectivityType::None);
-    auto axisMesh = dynamic_cast<SimpleMesh *>(axis_.get());
-    axisMesh->addVertex(vec3(0, 0, 0), vec3(0, 0, 0), vec4(1, 0, 0, 1));
-    axisMesh->addVertex(vec3(0, 1, 0), vec3(0, 1, 0), vec4(0, 1, 0, 1));
-    axisMesh->addIndices(0, 1);
-
-    std::vector<int> fontSizes = {8, 10, 11, 12, 14, 16, 20, 24, 28, 36, 48, 60, 72, 96};
-    for (auto size : fontSizes) {
-        std::string str = toString(size);
-        fontSize_.addOption(str, str, size);
-        valuesFontSize_.addOption(str, str, size);
-    }
-    fontSize_.setSelectedIndex(6);
-    fontSize_.setCurrentStateAsDefault();
-    valuesFontSize_.setSelectedIndex(4);
-    valuesFontSize_.setCurrentStateAsDefault();
-
-    fontSize_.onChange([this]() { updateAxesLayout(); });
-    valuesFontSize_.onChange([this]() { updateAxesLayout(); });
-
-    auto app = InviwoApplication::getPtr();
-    auto module = app->getModuleByType<PlottingGLModule>();
-    auto path = module->getPath(ModulePath::Images);
-    std::string filename = path + "/pcp_handle.png";
-    auto factory = app->getDataReaderFactory();
-    if (auto reader = factory->getReaderForTypeAndExtension<Layer>("png")) {
-        auto outLayer = reader->readData(filename);
-        auto ram = outLayer->getRepresentation<LayerRAM>();
-        outLayer->setDataFormat(ram->getDataFormat());
-
-        handleImg_ = std::make_shared<Image>(outLayer);
-        handleImg_->getRepresentation<ImageRAM>();
-    } else {
-        LogError("Failed to read handle image");
+        lineShader_.onReload([&]() { this->invalidate(InvalidationLevel::InvalidOutput); });
+        lineShader_.build();
     }
 
-    lineShader_.onReload([&]() { this->invalidate(InvalidationLevel::InvalidOutput); });
-    axisShader_.onReload([&]() { this->invalidate(InvalidationLevel::InvalidOutput); });
-    handleShader_.onReload([&]() { this->invalidate(InvalidationLevel::InvalidOutput); });
-
-    dataFrame_.onChange([&]() {
-        createOrUpdateProperties();
-        recreateLines_ = true;
-    });
-    selectedColorAxis_.onChange([&]() { recreateLines_ = true; });
+    dataFrame_.onChange([&]() { createOrUpdateProperties(); });
 
     resetHandlePositions_.onChange([&]() {
-        for (auto &elem : axisVector_) {
-            auto axis = std::get<0>(elem);
-            axis->moveHandle(true, std::numeric_limits<double>::max());
-            axis->moveHandle(false, std::numeric_limits<double>::lowest());
+        for (auto& axis : axes_) {
+            axis.pcp->moveHandle(true, std::numeric_limits<double>::max());
+            axis.pcp->moveHandle(false, std::numeric_limits<double>::lowest());
         }
     });
 
     setAllPropertiesCurrentStateAsDefault();
 }
 
-ParallelCoordinates::~ParallelCoordinates() {}
+void ParallelCoordinates::autoAdjustMargins() {
+    if (enabledAxes_.empty() || isDragging_) return;
+
+    const auto dim = outport_.getDimensions();
+
+    auto llMargin = margins_.getLowerLeftMargin();
+    auto urMargin = margins_.getUpperRightMargin();
+
+    do {
+        std::pair<vec2, vec2> bRect = {vec2{dim} * 0.5f, vec2{dim} * 0.5f};
+        for (auto& axis : axes_) {
+            if (axis.pcp->isChecked()) {
+                const auto ap = axisPos(axis.pcp->columnId());
+                const auto axisBRect = axis.axisRender->boundingRect(ap.first, ap.second);
+                bRect.first = glm::min(bRect.first, axisBRect.first);
+                bRect.second = glm::max(bRect.second, axisBRect.second);
+            }
+        }
+
+        const float padding = 5.0f;
+        const auto rect = margins_.getRect(vec2{dim} - 1.0f);
+        llMargin = rect.first - glm::floor(bRect.first) + vec2{padding};
+        urMargin = glm::ceil(bRect.second) - rect.second + vec2{padding};
+
+        margins_.setLowerLeftMargin(llMargin);
+        margins_.setUpperRightMargin(urMargin);
+
+    } while (margins_.getLowerLeftMargin() != llMargin ||
+             margins_.getUpperRightMargin() != urMargin);
+}
+
+ParallelCoordinates::~ParallelCoordinates() = default;
 
 void ParallelCoordinates::process() {
-    auto dims = outport_.getDimensions();
+    const auto dims = outport_.getDimensions();
 
-    std::vector<ColumnAxis *> enabledAxis;
-    for (auto &elem : axisVector_) {
-        auto axis = std::get<0>(elem);
-        if (axis->isChecked()) {
-            enabledAxis.push_back(&elem);
+    enabledAxesModified_ |= [&]() {
+        std::vector<ColumnAxis*> enabledAxes{enabledAxes_};
+        util::erase_remove_if(enabledAxes, [](auto axis) { return !axis->pcp->isChecked(); });
+        for (auto& axis : axes_) {
+            if (axis.pcp->isChecked() && !util::contains(enabledAxes, &axis)) {
+                enabledAxes.push_back(&axis);
+            }
         }
-    }
+        const auto modified = enabledAxes != enabledAxes_;
+        enabledAxes_.swap(enabledAxes);
+        return modified;
+    }();
 
-    if (brushingDirty_) {
-        updateBrushing();
+    if (brushingDirty_) updateBrushing();
+    if (selectedColorAxis_.isModified() || dataFrame_.isChanged()) {
+        buildLineMesh();
+    } else if (enabledAxesModified_) {
+        buildLineIndices();
+    } else if (brushingAndLinking_.isChanged() || axisProperties_.isModified()) {
+        partitionLines();
     }
+    if (autoMargins_) autoAdjustMargins();
 
-    if (!lines_ || recreateLines_) {
-        buildLineMesh(enabledAxis);
-    }
-    if (!handleDrawer_) {
-        handleDrawer_ =
-            getNetwork()->getApplication()->getMeshDrawerFactory()->create(handle_.get());
-    }
-    if (!axisDrawer_) {
-        axisDrawer_ = getNetwork()->getApplication()->getMeshDrawerFactory()->create(axis_.get());
-    }
-
-    vec4 backgroundColor(0.0);
-    if (blendMode_.get() == BlendMode::Sutractive) {
-        backgroundColor = vec4(1.0f);
-    }
-
+    const vec4 backgroundColor(blendMode_.get() == BlendMode::Sutractive ? 1.0f : 0.0f);
     utilgl::ClearColor clearColor(backgroundColor);
-
     utilgl::activateAndClearTarget(outport_, ImageType::ColorPicking);
     utilgl::GlBoolState depthTest(GL_DEPTH_TEST, false);
 
     drawLines(dims);
-    drawAxis(dims, enabledAxis);
-    drawHandles(dims, enabledAxis);
+    drawAxis(dims);
+    drawHandles(dims);
 
     utilgl::deactivateCurrentTarget();
 }
 
 void ParallelCoordinates::createOrUpdateProperties() {
-    axisVector_.clear();
-    for (auto &p : axisProperties_.getProperties()) {
+    axes_.clear();
+    for (auto& p : axisProperties_.getProperties()) {
         p->setVisible(false);
     }
-    if (dataFrame_.hasData()) {
-        auto data = dataFrame_.getData();
-        if (!data->getNumberOfRows()) return;
-        if (!data->getNumberOfColumns()) return;
 
-        axisPicking_.resize(data->getNumberOfColumns());
-        for (size_t i = 0; i < data->getNumberOfColumns(); i++) {
-            auto c = data->getColumn(i);
-            std::string displayName = c->getHeader();
-            std::string identifier = util::stripIdentifier(displayName);
-            // Create axis for filtering
-            auto prop = [&]() -> ParallelCoordinatesAxisSettingsProperty * {
-                if (auto p = axisProperties_.getPropertyByIdentifier(identifier)) {
-                    if (auto pcasp = dynamic_cast<ParallelCoordinatesAxisSettingsProperty *>(p)) {
-                        return pcasp;
-                    }
-                    throw inviwo::Exception(
-                        "Failed to convert property to "
-                        "ParallelCoordinatesAxisSettingsProperty");
-                } else {
-                    auto newProp = std::make_unique<ParallelCoordinatesAxisSettingsProperty>(
-                        identifier, displayName);
-                    auto ptr = newProp.get();
-                    axisProperties_.addProperty(newProp.release());
-                    return ptr;
+    if (!dataFrame_.hasData()) return;
+    auto data = dataFrame_.getData();
+    if (!data->getNumberOfRows()) return;
+    if (!data->getNumberOfColumns()) return;
+
+    axisPicking_.resize(data->getNumberOfColumns());
+    for (size_t i = 0; i < data->getNumberOfColumns(); i++) {
+        auto c = data->getColumn(i);
+        std::string displayName = c->getHeader();
+        std::string identifier = util::stripIdentifier(displayName);
+        // Create axis for filtering
+        auto prop = [&]() -> PCPAxisSettings* {
+            if (auto p = axisProperties_.getPropertyByIdentifier(identifier)) {
+                if (auto pcasp = dynamic_cast<PCPAxisSettings*>(p)) {
+                    return pcasp;
                 }
-            }();
-            // Name will be empty string first time this is called
-            if (prop->name_.empty()) {
-                prop->name_ = c->getHeader();
-                prop->range.onChange([&]() { this->updateBrushing(); });
+                axisProperties_.removeProperty(identifier);
             }
-            prop->columnId_ = axisVector_.size();
-            prop->setVisible(true);
-            prop->updateFromColumn(c);
+            auto newProp = std::make_unique<PCPAxisSettings>(identifier, displayName, axes_.size());
+            auto ptr = newProp.get();
+            axisProperties_.addProperty(newProp.release());
+            return ptr;
+        }();
+        prop->setParallelCoordinates(this);
+        prop->setColumnId(axes_.size());
+        prop->setVisible(true);
+        prop->updateFromColumn(c);
 
-            // Create axis for rendering
-            auto categoricalColumn = dynamic_cast<const CategoricalColumn *>(c.get());
-            std::unique_ptr<AxisProperty> axisProp(
-                (categoricalColumn != nullptr)
-                    ? new CategoricalAxisProperty(identifier, displayName,
-                                                  categoricalColumn->getCategories(),
-                                                  AxisProperty::Orientation::Vertical)
-                    : new AxisProperty(identifier, displayName,
-                                       AxisProperty::Orientation::Vertical));
-            axisProp->caption_.title_ = c->getHeader();
-            axisProp->ticks_.minorTicks_.style_.setSelectedValue(TickStyle::None);
-            // Horizontal caption for vertical axis
-            axisProp->caption_.rotation_.set(270.f);
-            axisProp->caption_.position_.set(0.f);
-            axisProp->caption_.setChecked(labelPosition_.getSelectedValue() != LabelPosition::None);
-            axisProp->range_.set(dvec2{prop->range.getRangeMin(), prop->range.getRangeMax()},
-                                 dvec2{prop->range.getRangeMin(), prop->range.getRangeMax()},
-                                 0.1 * (prop->range.getRangeMax() - prop->range.getRangeMin()), 0);
+        // Create axis for rendering
+        auto renderer = std::make_unique<AxisRenderer>(*prop);
+        renderer->setAxisPickingId(axisPicking_.getPickingId(i));
 
-            auto renderer = std::make_unique<AxisRenderer>(*axisProp);
+        auto slider = std::make_unique<glui::DoubleMinMaxPropertyWidget>(
+            prop->range, *this, sliderWidgetRenderer_, ivec2{100, handleSize_.get()},
+            glui::UIOrientation::Vertical);
 
-            renderer->setAxisPickingId(axisPicking_.getPickingId(i));
-            axisVector_.emplace_back(
-                std::make_tuple(prop, std::move(axisProp), std::move(renderer)));
-        }
-        updateAxesLayout();
-        handlePicking_.resize(axisVector_.size() * 2);
+        slider->setLabelVisible(false);
+        slider->setShowGroove(false);
+        axes_.push_back({prop, std::move(renderer), std::move(slider)});
     }
 }
 
-void ParallelCoordinates::buildLineMesh(const std::vector<ColumnAxis *> &enabledAxis) {
-    lines_ = util::make_unique<BasicMesh>();
+void ParallelCoordinates::buildLineMesh() {
+    auto& mesh = lines_.mesh;
 
-    if (!enabledAxis.size()) {
-        auto mesh = static_cast<BasicMesh *>(lines_.get());
-        linesDrawer_ = std::make_unique<MeshDrawerGL>(mesh);
-        recreateLines_ = false;
-        LogWarn("DataFrame is empty. No axis to draw.");
-        return;
+    for (auto& item : mesh.getBuffers()) {
+        item.second->getEditableRepresentation<BufferRAM>()->clear();
     }
 
-    auto numberOfAxis = enabledAxis.size();
-    auto numberOfLines = dataFrame_.getData()->getNumberOfRows();
+    const auto numberOfAxis = axes_.size();
+    const auto numberOfLines = dataFrame_.getData()->getNumberOfRows();
 
-    auto mesh = static_cast<BasicMesh *>(lines_.get());
-    mesh->reserveIndexBuffers(numberOfLines);
-
-    std::vector<BasicMesh::Vertex> vertices;
-    vertices.reserve(numberOfAxis * numberOfLines);
-
+    mesh.reserveSizeInVertexBuffer(numberOfAxis * numberOfLines);
     linePicking_.resize(numberOfLines);
 
-    auto sampler = tf_.get();
+    const auto metaAxisId = selectedColorAxis_.get();
+    const auto metaAxes = axes_[glm::clamp(metaAxisId, 0, static_cast<int>(axes_.size()) - 1)].pcp;
 
-    auto colorAxisId = selectedColorAxis_.get();
-
-    auto colorAxes =
-        std::get<0>(axisVector_[glm::clamp(colorAxisId, 0, (int)axisVector_.size() - 1)]);
-
-    float dx = 1.0f / (numberOfAxis - 1);
+    const float dx = 1.0f / (numberOfAxis - 1);
     for (size_t i = 0; i < numberOfLines; i++) {
-        //   if (brushingAndLinking_.isFiltered(i)) continue;
-        auto ib = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::Strip);
-        auto &ivVector = ib->getDataContainer();
-        ivVector.reserve(enabledAxis.size());
-        size_t col = 0;
-
-        float valueForColor = static_cast<float>(colorAxes->getNormalizedAt(i));
-        vec3 texCoord(valueForColor);
-        auto color = sampler.sample(valueForColor);
-        if (blendMode_.get() == BlendMode::Sutractive) {
-            color.r = 1 - color.r;
-            color.g = 1 - color.g;
-            color.b = 1 - color.b;
-        }
-        vec3 pickColor = linePicking_.getColor(i);
-
-        for (auto &elem : enabledAxis) {
-            auto axes = std::get<0>(*elem);
-            vec3 pos(col++ * dx, axes->getNormalizedAt(i), 0);
-            ivVector.push_back(static_cast<glm::uint32_t>(vertices.size()));
-            vertices.push_back({pos, pickColor, texCoord, color});
+        const auto meta = static_cast<float>(metaAxes->getNormalizedAt(i));
+        const auto picking = static_cast<uint32_t>(linePicking_.getPickingId(i));
+        for (auto& axis : axes_) {
+            mesh.addVertex(static_cast<float>(axis.pcp->getNormalizedAt(i)), picking, meta);
         }
     }
-    mesh->addVertices(vertices);
 
-    linesDrawer_ = std::make_unique<MeshDrawerGL>(mesh);
-    recreateLines_ = false;
+    lineShader_.getVertexShaderObject()->addShaderDefine("NUMBER_OF_AXIS", toString(numberOfAxis));
+    lineShader_.build();
+
+    buildLineIndices();
 }
 
-void ParallelCoordinates::drawAxis(size2_t size, const std::vector<ColumnAxis *> &enabledAxis) {
-    const size2_t lowerLeft(margins_.getLeft(), margins_.getBottom());
-    const size2_t upperRight(size.x - 1 - margins_.getRight(), size.y - 1 - margins_.getTop());
+void ParallelCoordinates::buildLineIndices() {
+    enabledAxesModified_ = false;
+    const auto numberOfAxis = axes_.size();
+    const auto numberOfEnabledAxis = enabledAxes_.size();
+    const auto numberOfLines = dataFrame_.getData()->getNumberOfRows();
 
-    const auto padding = 0;
-    float dx = 1.0f / (enabledAxis.size() - 1);
+    lines_.sizes.resize(numberOfLines, static_cast<int>(numberOfEnabledAxis));
+    if (!lines_.sizes.empty() && lines_.sizes.front() != numberOfEnabledAxis) {
+        std::fill(lines_.sizes.begin(), lines_.sizes.end(),
+                  static_cast<GLsizei>(numberOfEnabledAxis));
+    }
 
-    for (size_t i = 0; i < enabledAxis.size(); i++) {
-        auto &axis(std::get<1>(*enabledAxis[i]));
-        auto &renderer(std::get<2>(*enabledAxis[i]));
-        auto columnId = std::get<0>(*enabledAxis[i])->columnId_;
-        if (hoveredAxis_ == columnId) {
-            axis->color_.set(axisHoverColor_.get());
-            axis->ticks_.majorTicks_.color_.set(axisHoverColor_.get());
-            axis->ticks_.minorTicks_.color_.set(axisHoverColor_.get());
-            axis->width_.set(4);
-        } else if (brushingAndLinking_.isColumnSelected(columnId)) {
-            axis->color_.set(axisSelectedColor_.get());
-            axis->ticks_.majorTicks_.color_.set(axisSelectedColor_.get());
-            axis->ticks_.minorTicks_.color_.set(axisSelectedColor_.get());
-            axis->width_.set(6);
+    auto& indices = lines_.indices.getEditableRAMRepresentation()->getDataContainer();
+
+    indices.clear();
+    indices.reserve(numberOfEnabledAxis * numberOfLines);
+    for (size_t i = 0; i < numberOfLines; i++) {
+        for (auto axis : enabledAxes_) {
+            indices.push_back(static_cast<uint32_t>(i * numberOfAxis + axis->pcp->columnId()));
+        }
+    }
+
+    lines_.starts.clear();
+    if (!indices.empty()) {
+        lines_.starts.reserve(numberOfLines);
+        for (size_t i = 0; i < numberOfLines; i++) {
+            lines_.starts.push_back(Lines::indexToOffset(i, numberOfEnabledAxis));
+        }
+    }
+
+    buildAxisPositions();
+    partitionLines();
+}
+
+void ParallelCoordinates::buildAxisPositions() {
+    const auto numberOfAxis = axes_.size();
+    const auto numberOfEnabledAxis = enabledAxes_.size();
+
+    lines_.axisPositions.resize(numberOfAxis, 0.0f);
+    for (auto&& item : util::enumerate(enabledAxes_)) {
+        lines_.axisPositions[item.second()->pcp->columnId()] =
+            item.first() / float(numberOfEnabledAxis - 1);
+    }
+}
+
+void ParallelCoordinates::partitionLines() {
+    const auto numberOfEnabledAxis = enabledAxes_.size();
+
+    const auto iCol = dataFrame_.getData()->getIndexColumn();
+    const auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+
+    const auto lastFilteredIt =
+        std::partition(lines_.starts.begin(), lines_.starts.end(), [&](auto ind) {
+            return brushingAndLinking_.isFiltered(
+                indexCol[Lines::offsetToIndex(ind, numberOfEnabledAxis)]);
+        });
+    const auto lastRegularIt = std::partition(lastFilteredIt, lines_.starts.end(), [&](auto ind) {
+        return !brushingAndLinking_.isSelected(
+            indexCol[Lines::offsetToIndex(ind, numberOfEnabledAxis)]);
+    });
+
+    lines_.offsets[0] = 0;
+    lines_.offsets[1] = std::distance(lines_.starts.begin(), lastFilteredIt);
+    lines_.offsets[2] = std::distance(lines_.starts.begin(), lastRegularIt);
+    lines_.offsets[3] = lines_.starts.size();
+}
+
+void ParallelCoordinates::drawAxis(size2_t size) {
+    for (auto& axis : axes_) {
+        if (!axis.pcp->isChecked()) continue;
+        const auto ap = axisPos(axis.pcp->columnId());
+        axis.axisRender->render(size, ap.first, ap.second);
+    }
+}
+
+void ParallelCoordinates::drawHandles(size2_t size) {
+    sliderWidgetRenderer_.setHoverColor(axisHoverColor_);
+
+    for (auto& axis : axes_) {
+        if (!axis.pcp->isChecked()) continue;
+
+        const auto i = axis.pcp->columnId();
+        const auto ap = axisPos(i);
+        const auto handleWidth = axis.sliderWidget->getHandleWidth();
+
+        axis.sliderWidget->setWidgetExtent(
+            ivec2{handleSize_.get(), ap.second.y - ap.first.y + handleWidth});
+
+        if (brushingAndLinking_.isColumnSelected(i)) {
+            sliderWidgetRenderer_.setUIColor(axisSelectedColor_);
+        } else if (axis.pcp->isFiltering()) {
+            sliderWidgetRenderer_.setUIColor(handleFilteredColor_);
         } else {
-            axis->color_.set(axisColor_.get());
-            axis->ticks_.majorTicks_.color_.set(axisColor_.get());
-            axis->ticks_.minorTicks_.color_.set(axisColor_.get());
-            axis->width_.set(2);
+            sliderWidgetRenderer_.setUIColor(handleColor_);
         }
-        auto x = static_cast<size_t>(i * dx * (upperRight.x - lowerLeft.x));
 
-        renderer->render(size, lowerLeft + size2_t(x, padding),
-                         size2_t(lowerLeft.x + x, upperRight.y - padding));
+        axis.sliderWidget->render(ivec2{ap.first} - ivec2{handleSize_.get(), handleWidth} / 2,
+                                  size);
     }
-}
-
-void ParallelCoordinates::drawHandles(size2_t size, const std::vector<ColumnAxis *> &enabledAxis) {
-    utilgl::GlBoolState blendOn(GL_BLEND, true);
-    utilgl::BlendModeEquationState blendEq(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_FUNC_ADD);
-
-    handleShader_.activate();
-
-    // Draw axis
-    handleShader_.setUniform("dims", ivec2(size));
-    handleShader_.setUniform("spacing", margins_.getAsVec4());
-
-    TextureUnitContainer cont;
-    utilgl::bindAndSetUniforms(handleShader_, cont, *(handleImg_.get()), "tex",
-                               ImageType::AllLayers);
-
-    const auto filteredColor = handleFilteredColor_.get();
-    const auto notFilteredColor = handleBaseColor_.get();
-    const size2_t lowerLeft(margins_.getLeft(), margins_.getBottom());
-    const size2_t upperRight(size.x - 1 - margins_.getRight(), size.y - 1 - margins_.getTop());
-    float dx = 1.0f / (enabledAxis.size() - 1);
-    size_t i = 0;
-    for (auto elem : enabledAxis) {
-        auto axes = std::get<0>(*elem);
-        float x = std::floor(i++ * dx * (upperRight.x - lowerLeft.x) + lowerLeft.x);
-        float y = std::floor(axes->getNormalized(axes->range.get().x) * (upperRight.y - lowerLeft.y)  + lowerLeft.y);
-        auto pickingID = axes->columnId_ * 2;
-        x = x / (size.x / 2.f) - 1.f;
-        y = y / (size.y / 2.f) - 1.f;
-        // lower
-        handleShader_.setUniform("color", axes->lowerBrushed_ ? filteredColor : notFilteredColor);
-        handleShader_.setUniform("x", x);
-        handleShader_.setUniform("w", handleSize_.get().x);
-        handleShader_.setUniform("h", handleSize_.get().y);
-        handleShader_.setUniform("y", y);
-        handleShader_.setUniform("flipped", 0);
-        handleShader_.setUniform("pickColor", handlePicking_.getColor(pickingID + 0));
-
-        handleDrawer_->draw();
-        y = std::floor(axes->getNormalized(axes->range.get().y) * (upperRight.y - lowerLeft.y)  + lowerLeft.y);
-                y = y / (size.y / 2.f) - 1.f;
-        handleShader_.setUniform("color", axes->upperBrushed_ ? filteredColor : notFilteredColor);
-        handleShader_.setUniform("y", y);
-        handleShader_.setUniform("flipped", 1);
-        handleShader_.setUniform("pickColor", handlePicking_.getColor(pickingID + 1));
-
-        handleDrawer_->draw();
-    }
-
-    handleShader_.deactivate();
 }
 
 void ParallelCoordinates::drawLines(size2_t size) {
     lineShader_.activate();
-    lineShader_.setUniform("spacing", margins_.getAsVec4());
 
     auto state = [&]() {
         switch (blendMode_.get()) {
@@ -629,83 +492,72 @@ void ParallelCoordinates::drawLines(size2_t size) {
 
     // Draw lines
 
-    TextureUnitContainer unit, unit1;
+    TextureUnitContainer unit;
     utilgl::bindAndSetUniforms(lineShader_, unit, tf_);
-    utilgl::bindAndSetUniforms(lineShader_, unit1, tfSelection_);
 
     bool enableBlending =
         (blendMode_.get() == BlendMode::Additive || blendMode_.get() == BlendMode::Sutractive ||
          blendMode_.get() == BlendMode::Regular);
-
-    lineShader_.setUniform("additiveBlend", enableBlending);
-    lineShader_.setUniform("alpha", alpha_.get());
-    lineShader_.setUniform("filteredAlpha", filterAlpha_.get());
-    lineShader_.setUniform("falllofPower", falllofPower_.get());
-    lineShader_.setUniform("lineWidth", lineWidth_.get());
-    lineShader_.setUniform("selectedLineWidth", selectedLineWidth_.get());
+    // pcp_common.glsl
+    lineShader_.setUniform("spacing", margins_.getAsVec4());
     lineShader_.setUniform("dims", ivec2(size));
+    // pcp_lines.vert
+    lineShader_.setUniform("axisPositions", lines_.axisPositions.size(),
+                           lines_.axisPositions.data());
+    // pcp_lines.geom
+    // lineWidth;
 
-    lineShader_.setUniform("subtractiveBelnding",
-                           blendMode_.get() == BlendMode::Sutractive ? 1 : 0);
-    lineShader_.setUniform("filterColor", filterColor_.get());
+    // pcp_lines.frag
+    lineShader_.setUniform("additiveBlend", enableBlending);
+    lineShader_.setUniform("subtractiveBelnding", blendMode_.get() == BlendMode::Sutractive);
+    lineShader_.setUniform("falllofPower", falllofPower_.get());
+    lineShader_.setUniform("color", vec4{filterColor_.get(), filterAlpha_.get()});
     lineShader_.setUniform("filterIntensity", filterIntensity_.get());
 
-    auto numLines = lines_->getIndexBuffers().size();
+    {
+        auto meshGL = lines_.mesh.getRepresentation<MeshGL>();
+        utilgl::Enable<MeshGL> enable{meshGL};
+        lines_.indices.getRepresentation<BufferGL>()->bind();
 
-    auto drawObject = linesDrawer_->getDrawObject();
+        std::array<float, 3> width = {lineWidth_, lineWidth_, selectedLineWidth_};
+        std::array<float, 3> mixColor = {filterIntensity_, 0.0f, 0.0f};
+        std::array<float, 3> mixAlpha = {1.0, 0.0f, 0.0f};
 
-    auto iCol = dataFrame_.getData()->getIndexColumn();
-    auto &indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+        for (int i = showFiltered_ ? 0 : 1; i < lines_.offsets.size() - 1; ++i) {
+            auto begin = lines_.offsets[i];
+            auto end = lines_.offsets[i + 1];
+            if (end == begin) continue;
 
-    std::vector<size_t> selectIndices;
+            lineShader_.setUniform("lineWidth", width[i]);
+            lineShader_.setUniform("mixColor", mixColor[i]);
+            lineShader_.setUniform("mixAlpha", mixAlpha[i]);
 
-    lineShader_.setUniform("selected", 0);
-    lineShader_.setUniform("hovering", 0);
-    if (showFiltered_) {
-        lineShader_.setUniform("filtered", 1);
-        for (size_t i = 0; i < numLines; i++) {
-            if (brushingAndLinking_.isFiltered(indexCol[i])) drawObject.draw(i);
+            glMultiDrawElements(
+                GL_LINE_STRIP, lines_.sizes.data() + begin, GL_UNSIGNED_INT,
+                reinterpret_cast<const GLvoid* const*>(lines_.starts.data() + begin),
+                static_cast<GLsizei>(end - begin));
+        }
+
+        if (hoveredLine_ != -1 && !brushingAndLinking_.isFiltered(hoveredLine_)) {
+            lineShader_.setUniform("falllofPower", 0.5f * falllofPower_.get());
+
+            glDrawElements(GL_LINE_STRIP, lines_.sizes[hoveredLine_], GL_UNSIGNED_INT,
+                           reinterpret_cast<GLvoid*>(
+                               Lines::indexToOffset(hoveredLine_, lines_.sizes[hoveredLine_])));
         }
     }
-
-    lineShader_.setUniform("filtered", 0);
-    for (size_t i = 0; i < numLines; i++) {
-        if (brushingAndLinking_.isFiltered(indexCol[i])) {
-            continue;
-        }
-        if (brushingAndLinking_.isSelected(indexCol[i])) {
-            selectIndices.push_back(i);
-            continue;
-        }
-        drawObject.draw(i);
-    }
-
-    lineShader_.setUniform("selected", 1);
-    lineShader_.setUniform("filtered", 0);
-    for (const auto &i : selectIndices) {
-        if (brushingAndLinking_.isFiltered(indexCol[i])) continue;
-        drawObject.draw(i);
-    }
-
-    lineShader_.setUniform("hovering", 1);
-    lineShader_.setUniform("selected", 0);
-    lineShader_.setUniform("filtered", 0);
-    if (hoveredLine_ != -1 && !brushingAndLinking_.isFiltered(hoveredLine_))
-        drawObject.draw(hoveredLine_);
-
     lineShader_.deactivate();
 }
 
-void ParallelCoordinates::linePicked(PickingEvent *p) {
+void ParallelCoordinates::linePicked(PickingEvent* p) {
     if (auto df = dataFrame_.getData()) {
         // Show tooltip about current line
         if (p->getHoverState() == PickingHoverState::Move ||
             p->getHoverState() == PickingHoverState::Enter) {
             p->setToolTip(dataframeutil::createToolTipForRow(*df, p->getPickedId()));
-            if (enableHoverColor_.get()) {
-                hoveredLine_ = static_cast<int>(p->getPickedId());
-                invalidate(InvalidationLevel::InvalidOutput);
-            }
+            hoveredLine_ = static_cast<int>(p->getPickedId());
+            invalidate(InvalidationLevel::InvalidOutput);
+
         } else {
             p->setToolTip("");
             hoveredLine_ = -1;
@@ -717,7 +569,7 @@ void ParallelCoordinates::linePicked(PickingEvent *p) {
         p->getPressItem() == PickingPressItem::Primary) {
 
         auto iCol = dataFrame_.getData()->getIndexColumn();
-        auto &indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+        auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
 
         auto id = p->getPickedId();
         if (brushingAndLinking_.isSelected(indexCol[id])) {
@@ -731,122 +583,116 @@ void ParallelCoordinates::linePicked(PickingEvent *p) {
     }
 }
 
-void ParallelCoordinates::axisPicked(PickingEvent *p) {
+void ParallelCoordinates::axisPicked(PickingEvent* p) {
     const auto pickedID = p->getPickedId();
 
-    if (p->getHoverState() == PickingHoverState::Move ||
-        p->getHoverState() == PickingHoverState::Enter) {
+    if (p->getHoverState() == PickingHoverState::Enter) {
         hoveredAxis_ = static_cast<int>(pickedID);
         invalidate(InvalidationLevel::InvalidOutput);
-    } else {
+    } else if (p->getHoverState() == PickingHoverState::Exit) {
         hoveredAxis_ = -1;
         invalidate(InvalidationLevel::InvalidOutput);
     }
 
-    if (p->getState() == PickingState::Updated && p->getPressState() == PickingPressState::Press &&
-        p->getPressItem() == PickingPressItem::Primary) {
+    if (p->getPressState() == PickingPressState::Release &&
+        p->getPressItem() == PickingPressItem::Primary &&
+        p->getPressedGlobalPickingId() == p->getCurrentGlobalPickingId()) {
+
+        auto selection = brushingAndLinking_.getSelectedColumns();
 
         if (brushingAndLinking_.isColumnSelected(pickedID)) {
-            brushingAndLinking_.sendColumnSelectionEvent({});
+            selection.erase(pickedID);
         } else {
-            brushingAndLinking_.sendColumnSelectionEvent({pickedID});
+            selection.insert(pickedID);
         }
+
+        brushingAndLinking_.sendColumnSelectionEvent(selection);
         p->markAsUsed();
+        invalidate(InvalidationLevel::InvalidOutput);
+    }
+
+    const auto swap = [&](size_t a, size_t b) {
+        if (a < enabledAxes_.size() || b < enabledAxes_.size()) {
+            std::swap(enabledAxes_[a], enabledAxes_[b]);
+            p->markAsUsed();
+            buildAxisPositions();
+            enabledAxesModified_ = true;
+            invalidate(InvalidationLevel::InvalidOutput);
+        }
+    };
+
+    if (p->getPressState() == PickingPressState::Move &&
+        p->getPressItems().count(PickingPressItem::Primary)) {
+        isDragging_ = true;
+
+        const auto it = util::find(enabledAxes_, &axes_[pickedID]);
+        if (it != enabledAxes_.end()) {
+            const auto id = std::distance(enabledAxes_.begin(), it);
+            if (id > 0 && pickedID > 0 &&
+                p->getPosition().x * p->getCanvasSize().x <
+                    static_cast<float>(axisPos(enabledAxes_[id - 1]->pcp->columnId()).first.x)) {
+                swap(id, id - 1);
+            } else if (id + 1 < enabledAxes_.size() && pickedID + 1 < axes_.size() &&
+                       p->getPosition().x * p->getCanvasSize().x >
+                           static_cast<float>(
+                               axisPos(enabledAxes_[id + 1]->pcp->columnId()).first.x)) {
+                swap(id, id + 1);
+            } else if (pickedID < axes_.size()) {
+                const auto rect = margins_.getRect(outport_.getDimensions());
+                lines_.axisPositions[pickedID] =
+                    glm::clamp(float(p->getPosition().x * p->getCanvasSize().x - rect.first.x) /
+                                   (rect.second.x - rect.first.x),
+                               0.0f, 1.0f);
+                invalidate(InvalidationLevel::InvalidOutput);
+            }
+        }
+    }
+    if (p->getPressState() == PickingPressState::Release &&
+        p->getPressItem() == PickingPressItem::Primary) {
+        buildAxisPositions();
+        isDragging_ = false;
         invalidate(InvalidationLevel::InvalidOutput);
     }
 }
 
-void ParallelCoordinates::handlePicked(PickingEvent *p) {
-    const auto pickedID = p->getPickedId();
-    const auto axisID = pickedID / 2;
-    const bool upper = pickedID % 2 == 1;
-    if (p->getHoverState() == PickingHoverState::Move ||
-        p->getHoverState() == PickingHoverState::Enter) {
-        auto axis = std::get<0>(axisVector_[axisID]);
-        const auto rangeValue =
-            axis->getValue(upper ? axis->range.getRangeMax() : axis->range.getRangeMin());
-        p->setToolTip(std::to_string(rangeValue));
-    } else {
-        p->setToolTip("");
-    }
-
-    if (p->getState() == PickingState::Updated && p->getPressState() == PickingPressState::Move &&
-        p->getPressItems().count(PickingPressItem::Primary)) {
-        // move axis range handle
-        auto canvasSize = outport_.getDimensions();
-        auto marigins = margins_.getAsVec4();
-
-        const auto pos = p->getPosition() * dvec2(p->getCanvasSize());
-
-        auto newY = (pos.y - marigins[2]) / (canvasSize.y - marigins[2] - marigins[0]);
-        newY = glm::clamp(newY, 0.0, 1.0);
-        auto axis = std::get<0>(axisVector_[axisID]);
-        axis->moveHandle(upper, newY);
-        p->markAsUsed();
-    }
-}
+void ParallelCoordinates::updateBrushing(PCPAxisSettings&) { updateBrushing(); }
 
 void ParallelCoordinates::updateBrushing() {
     brushingDirty_ = false;
-    std::unordered_set<size_t> brushed;
 
-    for (auto &elem : axisVector_) {
-        auto axis = std::get<0>(elem);
-        axis->updateBrushing(brushed);
+    auto iCol = dataFrame_.getData()->getIndexColumn();
+    auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+
+    const auto nRows = indexCol.size();
+
+    std::vector<bool> brushed(nRows, false);
+
+    for (auto& axis : axes_) {
+        auto& brushedAxis = axis.pcp->getBrushed();
+        for (size_t i = 0; i < nRows; ++i) {
+            brushed[i] = brushed[i] || brushedAxis[i];
+        }
     }
 
     std::unordered_set<size_t> brushedID;
-    auto iCol = dataFrame_.getData()->getIndexColumn();
-    auto &indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
-
-    std::for_each(brushed.begin(), brushed.end(),
-                  [&](const auto &id) { brushedID.insert(indexCol[id]); });
-
+    for (size_t i = 0; i < nRows; ++i) {
+        if (brushed[i]) brushedID.insert(indexCol[i]);
+    }
     brushingAndLinking_.sendFilterEvent(brushedID);
 }
 
-void ParallelCoordinates::updateAxesLayout() {
-    auto firstVisible = true;
-    for (auto &p : axisVector_) {
-        auto &prop = std::get<1>(p);
-        // Place labels on the left side of the first
-        // and right side for the others
-        if (firstVisible && prop->visible_) {
-          prop->placement_.set(AxisProperty::Placement::Outside);
-          firstVisible = false;
-        } else {
-          prop->placement_.set(AxisProperty::Placement::Inside);
-        }
-        prop->labels_.setChecked(showValue_.get());
-        prop->labels_.color_.set(color_.get());
-        prop->labels_.font_.fontSize_.set(valuesFontSize_.get());
+std::pair<size2_t, size2_t> ParallelCoordinates::axisPos(size_t columnId) const {
+    const auto dim = outport_.getDimensions();
+    const auto rect = margins_.getRect(vec2{dim} - 1.0f);
+    const size2_t lowerLeft(rect.first);
+    const size2_t upperRight(rect.second);
 
-        prop->color_.set(axisColor_.get());
-        prop->caption_.color_.set(color_.get());
-        prop->caption_.font_.fontSize_.set(fontSize_.get());
-        prop->caption_.setChecked(labelPosition_.get() != LabelPosition::None);
-        const auto &renderer = std::get<2>(p);
+    const auto dx = columnId < lines_.axisPositions.size() ? lines_.axisPositions[columnId] : 0.0f;
+    const auto x = static_cast<size_t>(dx * (upperRight.x - lowerLeft.x));
+    const auto startPos = lowerLeft + size2_t(x, 0);
+    const auto endPos = size2_t(lowerLeft.x + x, upperRight.y);
 
-        // Horizontal offset is given in pixels and since we are using vertical alignment
-        // it is the height of the text
-        float x = (0.f - 0.5f*renderer->getCaptionTextSize().y);
-
-        // Vertical offset is given with respect to axis length
-        auto axisLength = outport_.getDimensions().y - margins_.getTop() - margins_.getBottom();
-        float y = (renderer->getCaptionTextSize().y/2 + handleSize_.get().y + handleCaptionMargin) /
-                  static_cast<float>(axisLength);
-
-        if (labelPosition_.get() == LabelPosition::Above) {
-            y += 1.f;
-        } else if (labelPosition_.get() == LabelPosition::Below) {
-            y = -y;
-        }
-
-        // Horizontal offset, clamp to pixel position to avoid blur
-        prop->caption_.offset_.set(static_cast<int>(x), x - 10.f, x + 10.f, 1.f);
-        // Vertical offset
-        prop->caption_.position_.set(y, y - 0.1f, y + .1f, 0.05f);
-    }
+    return {startPos, endPos};
 }
 
 }  // namespace plot

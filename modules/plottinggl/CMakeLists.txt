@@ -5,6 +5,7 @@ ivw_module(PlottingGL)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
+    include/modules/plottinggl/datavisualizer/pcpdataframevisualizer.h
     include/modules/plottinggl/plotters/persistencediagramplotgl.h
     include/modules/plottinggl/plotters/scatterplotgl.h
     include/modules/plottinggl/plottingglmodule.h
@@ -12,7 +13,7 @@ set(HEADER_FILES
     include/modules/plottinggl/processors/axisrenderprocessor.h
     include/modules/plottinggl/processors/colorscalelegend.h
     include/modules/plottinggl/processors/parallelcoordinates/parallelcoordinates.h
-    include/modules/plottinggl/processors/parallelcoordinates/parallelcoordinatesaxissettingsproperty.h
+    include/modules/plottinggl/processors/parallelcoordinates/pcpaxissettings.h
     include/modules/plottinggl/processors/persistencediagramplotprocessor.h
     include/modules/plottinggl/processors/scatterplotmatrixprocessor.h
     include/modules/plottinggl/processors/scatterplotprocessor.h
@@ -24,13 +25,14 @@ ivw_group("Header Files" ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
+    src/datavisualizer/pcpdataframevisualizer.cpp
     src/plotters/persistencediagramplotgl.cpp
     src/plotters/scatterplotgl.cpp
     src/plottingglmodule.cpp
     src/processors/axisrenderprocessor.cpp
     src/processors/colorscalelegend.cpp
     src/processors/parallelcoordinates/parallelcoordinates.cpp
-    src/processors/parallelcoordinates/parallelcoordinatesaxissettingsproperty.cpp
+    src/processors/parallelcoordinates/pcpaxissettings.cpp
     src/processors/persistencediagramplotprocessor.cpp
     src/processors/scatterplotmatrixprocessor.cpp
     src/processors/scatterplotprocessor.cpp
@@ -44,12 +46,7 @@ ivw_group("Source Files" ${SOURCE_FILES})
 # Add shaders
 set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/legend.frag
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/pcp_axis.frag
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/pcp_axis.geom
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/pcp_axis.vert
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/pcp_common.glsl
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/pcp_handle.frag
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/pcp_handle.vert
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/pcp_lines.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/pcp_lines.geom
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/pcp_lines.vert

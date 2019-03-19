@@ -30,6 +30,14 @@
 #include <modules/plotting/datastructures/minorticksettings.h>
 
 namespace inviwo {
+namespace plot {
 
+bool operator!=(const MinorTickSettings& a, const MinorTickSettings& b) { return !(a == b); }
 
+bool operator==(const MinorTickSettings& a, const MinorTickSettings& b) {
+    return a.getStyle() == b.getStyle() && a.getFillAxis() == b.getFillAxis() &&
+           a.getColor() == b.getColor() && a.getTickLength() == b.getTickLength() &&
+           a.getTickWidth() == b.getTickWidth() && a.getTickFrequency() == b.getTickFrequency();
+}
+}  // namespace plot
 }  // namespace inviwo

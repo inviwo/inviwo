@@ -48,11 +48,11 @@ const ProcessorInfo CSVSource::processorInfo_{
 };
 const ProcessorInfo CSVSource::getProcessorInfo() const { return processorInfo_; }
 
-CSVSource::CSVSource()
+CSVSource::CSVSource(const std::string& file)
     : Processor()
     , data_("data")
     , firstRowIsHeaders_("firstRowIsHeaders", "First Row Contains Column Headers", true)
-    , inputFile_("inputFile_", "CSV File", "", "dataframe")
+    , inputFile_("inputFile_", "CSV File", file, "dataframe")
     , delimiters_("delimiters", "Delimiters", ",")
     , reloadData_("reloadData", "Reload Data") {
 

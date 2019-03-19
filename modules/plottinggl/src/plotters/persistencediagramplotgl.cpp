@@ -412,12 +412,12 @@ void PersistenceDiagramPlotGL::renderPoints(const size2_t &dims,
                    indices.data());
 }
 
-void PersistenceDiagramPlotGL::setXAxisLabel(const std::string &label) {
-    properties_.xAxis_.setTitle(label);
+void PersistenceDiagramPlotGL::setXAxisLabel(const std::string &caption) {
+    properties_.xAxis_.setCaption(caption);
 }
 
-void PersistenceDiagramPlotGL::setYAxisLabel(const std::string &label) {
-    properties_.yAxis_.setTitle(label);
+void PersistenceDiagramPlotGL::setYAxisLabel(const std::string &caption) {
+    properties_.yAxis_.setCaption(caption);
 }
 
 void PersistenceDiagramPlotGL::setXAxis(std::shared_ptr<const plot::Column> col) {
@@ -524,9 +524,9 @@ void PersistenceDiagramPlotGL::objectPicked(PickingEvent *p) {
     auto logRowData = [&]() {
         if (std::get<0>(rowIndex) && xAxis_ && yAxis_) {
             LogWarn("Index: " << std::get<1>(rowIndex) << "\n"
-                              << properties_.xAxis_.getTitle() << ": "
+                              << properties_.xAxis_.getCaption() << ": "
                               << xAxis_->getRepresentation<BufferRAM>()->getAsDouble(id) << "\n"
-                              << properties_.yAxis_.getTitle() << ": "
+                              << properties_.yAxis_.getCaption() << ": "
                               << yAxis_->getRepresentation<BufferRAM>()->getAsDouble(id));
         }
     };

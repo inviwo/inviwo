@@ -32,8 +32,20 @@
 namespace inviwo {
 
 namespace plot {
-
-std::string AxisData::getTitle() const { return title; }
+AxisData::AxisData(const AxisSettings& s)
+    : range{s.getRange()}
+    , useDataRange{s.getUseDataRange()}
+    , visible{s.getVisible()}
+    , color{s.getColor()}
+    , width{s.getWidth()}
+    , orientation{s.getOrientation()}
+    , placement{s.getPlacement()}
+    , caption{s.getCaption()}
+    , captionSettings{s.getCaptionSettings()}
+    , labels{s.getLabels()}
+    , labelSettings{s.getLabelSettings()}
+    , majorTicks{s.getMajorTicks()}
+    , minorticks{s.getMinorTicks()} {}
 
 bool AxisData::getVisible() const { return visible; }
 
@@ -49,9 +61,13 @@ AxisSettings::Orientation AxisData::getOrientation() const { return orientation;
 
 AxisSettings::Placement AxisData::getPlacement() const { return placement; }
 
-const PlotTextSettings& AxisData::getCaption() const { return caption; }
+const std::string& AxisData::getCaption() const { return caption; }
 
-const PlotTextSettings& AxisData::getLabels() const { return labels; }
+const PlotTextSettings& AxisData::getCaptionSettings() const { return captionSettings; }
+
+const std::vector<std::string>& AxisData::getLabels() const { return labels; }
+
+const PlotTextSettings& AxisData::getLabelSettings() const { return labelSettings; }
 
 const MajorTickSettings& AxisData::getMajorTicks() const { return majorTicks; }
 

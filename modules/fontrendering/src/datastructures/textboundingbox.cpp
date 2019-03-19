@@ -27,30 +27,22 @@
  *
  *********************************************************************************/
 
-#include <modules/plotting/datastructures/majortickdata.h>
+#include <modules/fontrendering/datastructures/textboundingbox.h>
 
 namespace inviwo {
 
-namespace plot {
-MajorTickData::MajorTickData(const MajorTickSettings& s)
-    : style{s.getStyle()}
-    , color{s.getColor()}
-    , tickLength{s.getTickLength()}
-    , tickWidth{s.getTickWidth()}
-    , tickDelta{s.getTickDelta()}
-    , rangeBasedTicks{s.getRangeBasedTicks()} {}
-TickStyle MajorTickData::getStyle() const { return style; }
+TextBoundingBox::TextBoundingBox(const size2_t &textExt, const ivec2 &glyphsOrigin,
+                                 const size2_t &glyphsExt, int baselineOffset)
+    : textExtent(textExt), glyphsOrigin(glyphsOrigin), glyphsExtent(glyphsExt) {
+    updateGlyphPenOffset(baselineOffset);
+}
 
-vec4 MajorTickData::getColor() const { return color; }
-
-float MajorTickData::getTickLength() const { return tickLength; }
-
-float MajorTickData::getTickWidth() const { return tickWidth; }
-
-double MajorTickData::getTickDelta() const { return tickDelta; }
-
-bool MajorTickData::getRangeBasedTicks() const { return rangeBasedTicks; }
-
-}  // namespace plot
+void TextBoundingBox::updateGlyphPenOffset(int baselineOffset) {
+    // determine vertical offset from top between text bounding box and glyph bounding box
+    int vertOffset =
+        static_cast<int>(textExtent.y) - glyphsOrigin.y - static_cast<int>(glyphsExtent.y);
+    // pen offset is determined by left-most and top-most glyphs
+    glyphPenOffset = ivec2(glyphsOrigin.x, baselineOffset - vertOffset);
+}
 
 }  // namespace inviwo

@@ -26,31 +26,35 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <modules/plotting/datastructures/majortickdata.h>
+#include <modules/plottinggl/plottingglmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/rendering/datavisualizer.h>
 
 namespace inviwo {
 
-namespace plot {
-MajorTickData::MajorTickData(const MajorTickSettings& s)
-    : style{s.getStyle()}
-    , color{s.getColor()}
-    , tickLength{s.getTickLength()}
-    , tickWidth{s.getTickWidth()}
-    , tickDelta{s.getTickDelta()}
-    , rangeBasedTicks{s.getRangeBasedTicks()} {}
-TickStyle MajorTickData::getStyle() const { return style; }
+class IVW_MODULE_PLOTTINGGL_API PCPDataFrameVisualizer : public DataVisualizer {
+public:
+    PCPDataFrameVisualizer(InviwoApplication* app);
+    virtual ~PCPDataFrameVisualizer() = default;
 
-vec4 MajorTickData::getColor() const { return color; }
+    // Inherited via DataVisualizer
+    virtual std::string getName() const override;
+    virtual Document getDescription() const override;
+    virtual std::vector<FileExtension> getSupportedFileExtensions() const override;
+    virtual bool isOutportSupported(const Outport* port) const override;
+    virtual bool hasSourceProcessor() const override;
+    virtual bool hasVisualizerNetwork() const override;
+    virtual std::pair<Processor*, Outport*> addSourceProcessor(
+        const std::string& filename, ProcessorNetwork* network) const override;
+    virtual std::vector<Processor*> addVisualizerNetwork(Outport* outport,
+                                                         ProcessorNetwork* network) const override;
+    virtual std::vector<Processor*> addSourceAndVisualizerNetwork(
+        const std::string& filename, ProcessorNetwork* network) const override;
 
-float MajorTickData::getTickLength() const { return tickLength; }
-
-float MajorTickData::getTickWidth() const { return tickWidth; }
-
-double MajorTickData::getTickDelta() const { return tickDelta; }
-
-bool MajorTickData::getRangeBasedTicks() const { return rangeBasedTicks; }
-
-}  // namespace plot
+private:
+    InviwoApplication* app_;
+};
 
 }  // namespace inviwo

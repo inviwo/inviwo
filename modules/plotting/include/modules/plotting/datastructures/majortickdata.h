@@ -40,6 +40,7 @@ namespace plot {
 class IVW_MODULE_PLOTTING_API MajorTickData : public MajorTickSettings {
 public:
     MajorTickData() = default;
+    MajorTickData(const MajorTickSettings& s);
     virtual ~MajorTickData() = default;
 
     // Inherited via MajorTickSettings

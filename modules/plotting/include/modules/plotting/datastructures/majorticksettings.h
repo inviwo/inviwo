@@ -49,7 +49,8 @@ public:
     virtual double getTickDelta() const = 0;
     virtual bool getRangeBasedTicks() const = 0;
 };
-
+IVW_MODULE_PLOTTING_API bool operator==(const MajorTickSettings& a, const MajorTickSettings& b);
+IVW_MODULE_PLOTTING_API bool operator!=(const MajorTickSettings& a, const MajorTickSettings& b);
 }  // namespace plot
 
 }  // namespace inviwo

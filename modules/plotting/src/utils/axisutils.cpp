@@ -32,6 +32,7 @@
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/util/assertion.h>
 
 #include <algorithm>
@@ -51,12 +52,10 @@ struct AxisTickRange {
     size_t numTicks;
 };
 
-AxisTickRange getMajorTickRange(const AxisSettings& settings) {
-    const auto& ticks = settings.getMajorTicks();
-
+AxisTickRange getMajorTickRange(const MajorTickSettings& ticks, dvec2 range) {
     // calculate number of major ticks
-    double startValue = settings.getRange().x;
-    double endValue = settings.getRange().y;
+    double startValue = range.x;
+    double endValue = range.y;
 
     if (ticks.getTickDelta() <= 0.0) {
         return {startValue, endValue, endValue - startValue, 2u};
@@ -77,8 +76,7 @@ AxisTickRange getMajorTickRange(const AxisSettings& settings) {
     double tickDelta = ticks.getTickDelta();
 
     size_t numTicks = 0u;
-    if ((startValue - settings.getRange().y > glm::epsilon<double>()) ||
-        (ticks.getTickDelta() <= 0.0)) {
+    if ((startValue - range.y > glm::epsilon<double>()) || (ticks.getTickDelta() <= 0.0)) {
         numTicks = 0u;
         endValue = startValue;
     } else if (std::abs(axisLength) < glm::epsilon<double>()) {
@@ -96,27 +94,15 @@ AxisTickRange getMajorTickRange(const AxisSettings& settings) {
 
 }  // namespace tickutil
 
-bool isAxisFlipped(const AxisSettings& settings) {
-    // flip tick placement if axis is either vertical or placement is inside (top/right)
-    return (settings.getOrientation() == AxisSettings::Orientation::Vertical) !=
-           (settings.getPlacement() == AxisSettings::Placement::Inside);
-}
-
-std::vector<double> getMajorTickPositions(const AxisSettings& settings) {
-    const auto& ticks = settings.getMajorTicks();
-
+std::vector<double> getMajorTickPositions(const MajorTickSettings& ticks, dvec2 range) {
     if (ticks.getStyle() == TickStyle::None) {
         return {};
     }
 
     // calculate number of major ticks
-    tickutil::AxisTickRange tickRange = tickutil::getMajorTickRange(settings);
+    tickutil::AxisTickRange tickRange = tickutil::getMajorTickRange(ticks, range);
 
-    if (tickRange.numTicks == 0u) {
-        LogWarnCustom("Axis Plotting", "Invalid axis range or tick delta. No major ticks ("
-                                           << settings.getTitle() << ")");
-        return {};
-    }
+    if (tickRange.numTicks == 0u) return {};
 
     std::vector<double> tickPositions(tickRange.numTicks);
     // compute tick positions
@@ -126,9 +112,8 @@ std::vector<double> getMajorTickPositions(const AxisSettings& settings) {
     return tickPositions;
 }
 
-std::vector<double> getMinorTickPositions(const AxisSettings& settings) {
-    const auto& ticks = settings.getMinorTicks();
-
+std::vector<double> getMinorTickPositions(const MinorTickSettings& ticks,
+                                          const MajorTickSettings& majorTicks, dvec2 range) {
     if ((ticks.getStyle() == TickStyle::None) || (ticks.getTickFrequency() < 2)) {
         // a tick frequency of 1 would draw the minor ticks directly on top of the major ticks
         return {};
@@ -150,7 +135,7 @@ std::vector<double> getMinorTickPositions(const AxisSettings& settings) {
     //
 
     // calculate number of major ticks
-    tickutil::AxisTickRange majorTickRange = tickutil::getMajorTickRange(settings);
+    const auto majorTickRange = tickutil::getMajorTickRange(majorTicks, range);
 
     const auto minorTickDelta =
         majorTickRange.delta / static_cast<double>(ticks.getTickFrequency());
@@ -163,13 +148,13 @@ std::vector<double> getMinorTickPositions(const AxisSettings& settings) {
         // need to figure out first and last minor tick positions beyond major ticks
 
         // first minor tick
-        auto n = std::floor((majorTickRange.start - settings.getRange().x) / minorTickDelta);
+        auto n = std::floor((majorTickRange.start - range.x) / minorTickDelta);
         startMinor = majorTickRange.start - n * minorTickDelta;
         // save index for later
         nextMajorTickIndex = static_cast<size_t>(n + 0.5);
 
         // last minor tick
-        n = std::floor((settings.getRange().y - majorTickRange.end) / minorTickDelta);
+        n = std::floor((range.y - majorTickRange.end) / minorTickDelta);
 
         stopMinor = majorTickRange.end + n * minorTickDelta;
     } else {
@@ -203,7 +188,7 @@ std::vector<double> getMinorTickPositions(const AxisSettings& settings) {
     return tickPositions;
 }
 
-std::shared_ptr<Mesh> generateTicksMesh(const std::vector<double> tickmarks, dvec2 axisRange,
+std::unique_ptr<Mesh> generateTicksMesh(const std::vector<double>& tickmarks, dvec2 axisRange,
                                         const vec3& startPos, const vec3& endPos,
                                         const vec3& tickDirection, float tickLength,
                                         TickStyle style, const vec4& color, bool flip) {
@@ -250,7 +235,7 @@ std::shared_ptr<Mesh> generateTicksMesh(const std::vector<double> tickmarks, dve
         vertices[2 * i + 1] = pos + tickDir * tickOffset.y;
     }
 
-    auto mesh = std::make_shared<Mesh>(DrawType::Lines, ConnectivityType::None);
+    auto mesh = std::make_unique<Mesh>(DrawType::Lines, ConnectivityType::None);
     mesh->addBuffer(BufferType::PositionAttrib, posBuffer);
     mesh->addBuffer(BufferType::ColorAttrib, colBuffer);
 
@@ -263,102 +248,186 @@ std::shared_ptr<Mesh> generateTicksMesh(const std::vector<double> tickmarks, dve
     return mesh;
 }
 
-std::shared_ptr<Mesh> generateMajorTicksMesh(const AxisSettings& settings, const vec2& startPos,
-                                             const vec2& endPos) {
-    const auto& ticks = settings.getMajorTicks();
-    const auto tickPositions = getMajorTickPositions(settings);
+std::pair<vec2, vec2> tickBoundingRect(const AxisSettings& settings, const vec2& startPos,
+                                       const vec2& endPos) {
+    vec2 lowerLeft = glm::min(startPos, endPos);
+    vec2 upperRight = glm::max(startPos, endPos);
 
     const auto axisDir = glm::normalize(endPos - startPos);
-    const auto tickDir = vec3(-axisDir.y, axisDir.x, 0.0f);
+    const auto tickDirection = vec3(-axisDir.y, axisDir.x, 0.0f);
 
-    return generateTicksMesh(tickPositions, settings.getRange(), vec3(startPos, 0.0f),
-                             vec3(endPos, 0.0f), tickDir, ticks.getTickLength(), ticks.getStyle(),
-                             ticks.getColor(), isAxisFlipped(settings));
-}
+    const auto axisRange = settings.getRange();
 
-std::shared_ptr<Mesh> generateMinorTicksMesh(const AxisSettings& settings, const vec2& startPos,
-                                             const vec2& endPos) {
-    const auto& ticks = settings.getMinorTicks();
-    const auto tickPositions = getMinorTickPositions(settings);
+    const auto screenLength(glm::distance(endPos, startPos));
+    const auto axisLength = axisRange.y - axisRange.x;
+    const vec2 scaling(axisDir * static_cast<float>(screenLength / axisLength));
 
-    const auto axisDir = glm::normalize(endPos - startPos);
-    const auto tickDir = vec3(-axisDir.y, axisDir.x, 0.0f);
+    const auto& majorTicks = settings.getMajorTicks();
+    const auto& minorTicks = settings.getMinorTicks();
 
-    return generateTicksMesh(tickPositions, settings.getRange(), vec3(startPos, 0.0f),
-                             vec3(endPos, 0.0f), tickDir, ticks.getTickLength(), ticks.getStyle(),
-                             ticks.getColor(), isAxisFlipped(settings));
-}
+    auto getSize = [](vec2 pos, vec2 tickDir, TickStyle style, bool flip) -> std::pair<vec2, vec2> {
+        vec2 tickOffset;
+        switch (style) {
+            case TickStyle::Inside:
+                tickOffset = vec2(0.0f, 1.0f);
+                break;
+            case TickStyle::Outside:
+                tickOffset = vec2(-1.0f, 0.0f);
+                break;
+            case TickStyle::Both:
+            default:
+                tickOffset = vec2(-1.0f, 1.0f);
+                break;
+        }
+        if (flip) {
+            tickOffset = -tickOffset;
+        }
+        return {pos + tickDir * tickOffset.x, pos + tickDir * tickOffset.y};
+    };
 
-std::shared_ptr<Mesh> generateAxisMesh(const AxisSettings& settings, const vec2& startPos,
-                                       const vec2& endPos, const size_t& pickingId) {
-    return generateAxisMesh3D(settings, vec3(startPos, 0.0f), vec3(endPos, 0.0f), pickingId);
-}
+    {
+        const auto tickPositions = getMajorTickPositions(majorTicks, settings.getRange());
+        if (!tickPositions.empty()) {
+            const auto pos1 =
+                startPos + scaling * static_cast<float>(tickPositions.front() - axisRange.x);
+            const vec2 pos2 =
+                startPos + scaling * static_cast<float>(tickPositions.back() - axisRange.x);
 
-std::shared_ptr<Mesh> generateMajorTicksMesh3D(const AxisSettings& settings, const vec3& startPos,
-                                               const vec3& endPos, const vec3& tickDirection) {
-    const auto& ticks = settings.getMajorTicks();
-    const auto tickPositions = getMajorTickPositions(settings);
+            const auto ext1 =
+                getSize(pos1, tickDirection, majorTicks.getStyle(), settings.isAxisFlipped());
+            const auto ext2 =
+                getSize(pos2, tickDirection, majorTicks.getStyle(), settings.isAxisFlipped());
 
-    return generateTicksMesh(tickPositions, settings.getRange(), startPos, endPos, tickDirection,
-                             ticks.getTickLength(), ticks.getStyle(), ticks.getColor(),
-                             isAxisFlipped(settings));
-}
+            lowerLeft = glm::min(lowerLeft, ext1.first);
+            lowerLeft = glm::min(lowerLeft, ext1.second);
+            lowerLeft = glm::min(lowerLeft, ext2.first);
+            lowerLeft = glm::min(lowerLeft, ext2.second);
 
-std::shared_ptr<Mesh> generateMinorTicksMesh3D(const AxisSettings& settings, const vec3& startPos,
-                                               const vec3& endPos, const vec3& tickDirection) {
-    const auto& ticks = settings.getMinorTicks();
-    const auto tickPositions = getMinorTickPositions(settings);
-
-    return generateTicksMesh(tickPositions, settings.getRange(), startPos, endPos, tickDirection,
-                             ticks.getTickLength(), ticks.getStyle(), ticks.getColor(),
-                             isAxisFlipped(settings));
-}
-
-std::shared_ptr<Mesh> generateAxisMesh3D(const AxisSettings& settings, const vec3& startPos,
-                                         const vec3& endPos, const size_t& pickingId) {
-    auto mesh = std::make_shared<Mesh>(DrawType::Lines, ConnectivityType::None);
-
-    auto posBuffer = std::make_shared<Buffer<vec3>>(2u, BufferUsage::Static);
-    auto colBuffer = std::make_shared<Buffer<vec4>>(2u, BufferUsage::Static);
-
-    auto& vertices = posBuffer->getEditableRAMRepresentation()->getDataContainer();
-    auto& colors = colBuffer->getEditableRAMRepresentation()->getDataContainer();
-
-    std::fill(colors.begin(), colors.end(), settings.getColor());
-
-    vertices[0] = startPos;
-    vertices[1] = endPos;
-
-    mesh->addBuffer(BufferType::PositionAttrib, posBuffer);
-    mesh->addBuffer(BufferType::ColorAttrib, colBuffer);
-
-    if (pickingId != std::numeric_limits<size_t>::max()) {
-        auto pickingBuffer = std::make_shared<Buffer<unsigned int>>(2u, BufferUsage::Static);
-        auto& picking = pickingBuffer->getEditableRAMRepresentation()->getDataContainer();
-        std::fill(picking.begin(), picking.end(), static_cast<unsigned int>(pickingId));
-        mesh->addBuffer(BufferType::PickingAttrib, pickingBuffer);
+            upperRight = glm::max(upperRight, ext1.first);
+            upperRight = glm::max(upperRight, ext1.second);
+            upperRight = glm::max(upperRight, ext2.first);
+            upperRight = glm::max(upperRight, ext2.second);
+        }
     }
 
-    mesh->addIndicies(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::None),
-                      inviwo::util::makeIndexBuffer({0, 1}));
+    {
+        const auto tickPositions =
+            getMinorTickPositions(minorTicks, majorTicks, settings.getRange());
+        if (!tickPositions.empty()) {
+            const auto pos1 =
+                startPos + scaling * static_cast<float>(tickPositions.front() - axisRange.x);
+            const vec2 pos2 =
+                startPos + scaling * static_cast<float>(tickPositions.back() - axisRange.x);
 
-    return mesh;
+            const auto ext1 =
+                getSize(pos1, tickDirection, minorTicks.getStyle(), settings.isAxisFlipped());
+            const auto ext2 =
+                getSize(pos2, tickDirection, minorTicks.getStyle(), settings.isAxisFlipped());
+
+            lowerLeft = glm::min(lowerLeft, ext1.first);
+            lowerLeft = glm::min(lowerLeft, ext1.second);
+            lowerLeft = glm::min(lowerLeft, ext2.first);
+            lowerLeft = glm::min(lowerLeft, ext2.second);
+
+            upperRight = glm::max(upperRight, ext1.first);
+            upperRight = glm::max(upperRight, ext1.second);
+            upperRight = glm::max(upperRight, ext2.first);
+            upperRight = glm::max(upperRight, ext2.second);
+        }
+    }
+
+    return {lowerLeft, upperRight};
+}
+
+std::unique_ptr<Mesh> generateMajorTicksMesh(const AxisSettings& settings, const vec2& startPos,
+                                             const vec2& endPos) {
+    const auto& ticks = settings.getMajorTicks();
+    const auto tickPositions = getMajorTickPositions(ticks, settings.getRange());
+
+    const auto axisDir = glm::normalize(endPos - startPos);
+    const auto tickDir = vec3(-axisDir.y, axisDir.x, 0.0f);
+
+    return generateTicksMesh(tickPositions, settings.getRange(), vec3(startPos, 0.0f),
+                             vec3(endPos, 0.0f), tickDir, ticks.getTickLength(), ticks.getStyle(),
+                             ticks.getColor(), settings.isAxisFlipped());
+}
+
+std::unique_ptr<Mesh> generateMinorTicksMesh(const AxisSettings& settings, const vec2& startPos,
+                                             const vec2& endPos) {
+    const auto& ticks = settings.getMinorTicks();
+    const auto tickPositions =
+        getMinorTickPositions(ticks, settings.getMajorTicks(), settings.getRange());
+
+    const auto axisDir = glm::normalize(endPos - startPos);
+    const auto tickDir = vec3(-axisDir.y, axisDir.x, 0.0f);
+
+    return generateTicksMesh(tickPositions, settings.getRange(), vec3(startPos, 0.0f),
+                             vec3(endPos, 0.0f), tickDir, ticks.getTickLength(), ticks.getStyle(),
+                             ticks.getColor(), settings.isAxisFlipped());
+}
+
+std::unique_ptr<Mesh> generateAxisMesh(const vec2& startPos, const vec2& endPos, const vec4& color,
+                                       const size_t& pickingId) {
+    return generateAxisMesh3D(vec3(startPos, 0.0f), vec3(endPos, 0.0f), color, pickingId);
+}
+
+std::unique_ptr<Mesh> generateMajorTicksMesh3D(const AxisSettings& settings, const vec3& startPos,
+                                               const vec3& endPos, const vec3& tickDirection) {
+    const auto& ticks = settings.getMajorTicks();
+    const auto tickPositions = getMajorTickPositions(ticks, settings.getRange());
+
+    return generateTicksMesh(tickPositions, settings.getRange(), startPos, endPos, tickDirection,
+                             ticks.getTickLength(), ticks.getStyle(), ticks.getColor(),
+                             settings.isAxisFlipped());
+}
+
+std::unique_ptr<Mesh> generateMinorTicksMesh3D(const AxisSettings& settings, const vec3& startPos,
+                                               const vec3& endPos, const vec3& tickDirection) {
+    const auto& ticks = settings.getMinorTicks();
+    const auto tickPositions =
+        getMinorTickPositions(ticks, settings.getMajorTicks(), settings.getRange());
+
+    return generateTicksMesh(tickPositions, settings.getRange(), startPos, endPos, tickDirection,
+                             ticks.getTickLength(), ticks.getStyle(), ticks.getColor(),
+                             settings.isAxisFlipped());
+}
+
+std::unique_ptr<Mesh> generateAxisMesh3D(const vec3& startPos, const vec3& endPos,
+                                         const vec4& color, const size_t& pickingId) {
+
+    auto verticesBuffer = util::makeBuffer<vec3>({startPos, endPos});
+    auto colorBuffer = util::makeBuffer<vec4>({color, color});
+
+    auto m = util::make_unique<Mesh>();
+    m->addBuffer(BufferType::PositionAttrib, verticesBuffer);
+    m->addBuffer(BufferType::ColorAttrib, colorBuffer);
+
+    if (pickingId != std::numeric_limits<size_t>::max()) {
+        const auto id = static_cast<uint32_t>(pickingId);
+        auto pickingBuffer = util::makeBuffer<uint32_t>({id, id});
+        m->addBuffer(BufferType::PickingAttrib, pickingBuffer);
+    }
+    m->addIndicies(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::None),
+                   util::makeIndexBuffer({0, 1}));
+
+    return m;
 }
 
 vec2 getAxisCaptionPosition(const AxisSettings& settings, const vec2& startPos,
                             const vec2& endPos) {
 
-    const vec2 axisPos = glm::mix(startPos, endPos, settings.getCaption().getPosition());
+    const vec2 axisPos = glm::mix(startPos, endPos, settings.getCaptionSettings().getPosition());
 
     const auto axisDir = glm::normalize(endPos - startPos);
     auto normal = vec2(axisDir.y, -axisDir.x);
 
-    if (isAxisFlipped(settings)) {
+    if (settings.isAxisFlipped()) {
         // reverse normal as labels are supposed to be on the other side of the axis
         normal = -normal;
     }
 
-    return axisPos + normal * settings.getCaption().getOffset();
+    return axisPos + normal * settings.getCaptionSettings().getOffset().x +
+           axisDir * settings.getCaptionSettings().getOffset().y;
 }
 
 std::vector<std::pair<double, vec2>> getLabelPositions(const AxisSettings& settings,
@@ -372,13 +441,14 @@ std::vector<std::pair<double, vec2>> getLabelPositions(const AxisSettings& setti
     const auto axisDir = glm::normalize(endPos - startPos);
     auto normal = vec2(axisDir.y, -axisDir.x);
 
-    if (isAxisFlipped(settings)) {
+    if (settings.isAxisFlipped()) {
         // reverse normal as labels are supposed to be on the other side of the axis
         normal = -normal;
     }
 
     // determine position of left-most label
-    const vec2 labelOrigin(startPos + normal * settings.getLabels().getOffset());
+    const vec2 labelOrigin(startPos + normal * settings.getLabelSettings().getOffset().x +
+                           axisDir * settings.getLabelSettings().getOffset().y);
 
     // position a label below each tick
     const auto axisRange = settings.getRange();
@@ -397,15 +467,16 @@ std::vector<std::pair<double, vec2>> getLabelPositions(const AxisSettings& setti
 
 vec3 getAxisCaptionPosition3D(const AxisSettings& settings, const vec3& startPos,
                               const vec3& endPos, const vec3& tickDirection) {
-    const vec3 axisPos(glm::mix(startPos, endPos, settings.getCaption().getPosition()));
+    const vec3 axisPos(glm::mix(startPos, endPos, settings.getCaptionSettings().getPosition()));
     auto normal = -glm::normalize(tickDirection);
 
-    if (isAxisFlipped(settings)) {
+    if (settings.isAxisFlipped()) {
         // reverse normal as labels are supposed to be on the other side of the axis
         normal = -normal;
     }
 
-    return axisPos + normal * settings.getCaption().getOffset();
+    return axisPos + normal * settings.getCaptionSettings().getOffset().x +
+           glm::normalize(endPos - startPos) * settings.getCaptionSettings().getOffset().y;
 }
 
 std::vector<std::pair<double, vec3>> getLabelPositions3D(const AxisSettings& settings,
@@ -420,13 +491,14 @@ std::vector<std::pair<double, vec3>> getLabelPositions3D(const AxisSettings& set
     const auto axisDir = glm::normalize(endPos - startPos);
     auto normal = -glm::normalize(tickDirection);
 
-    if (isAxisFlipped(settings)) {
+    if (settings.isAxisFlipped()) {
         // reverse normal as labels are supposed to be on the other side of the axis
         normal = -normal;
     }
 
     // determine position of left-most label
-    const vec3 labelOrigin(startPos + normal * settings.getLabels().getOffset());
+    const vec3 labelOrigin(startPos + normal * settings.getLabelSettings().getOffset().x +
+                           axisDir * settings.getLabelSettings().getOffset().y);
 
     // position a label below each tick
     const auto axisRange = settings.getRange();

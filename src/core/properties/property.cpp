@@ -259,7 +259,7 @@ void Property::setUsageMode(UsageMode usageMode) {
     }
 }
 
-bool Property::getVisible() { return visible_; }
+bool Property::getVisible() const { return visible_; }
 void Property::setVisible(bool visible) {
     if (visible_ != visible) {
         visible_ = visible;

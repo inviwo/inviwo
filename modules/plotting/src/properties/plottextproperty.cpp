@@ -74,16 +74,11 @@ PlotTextProperty::PlotTextProperty(const PlotTextProperty& rhs)
 
 PlotTextProperty* PlotTextProperty::clone() const { return new PlotTextProperty(*this); }
 
-std::string PlotTextProperty::getTitle() const { return title_.get(); }
-
+bool PlotTextProperty::isEnabled() const { return isChecked(); }
 vec4 PlotTextProperty::getColor() const { return color_.get(); }
-
 float PlotTextProperty::getPosition() const { return position_.get(); }
-
-float PlotTextProperty::getOffset() const { return offset_.get(); }
-
+vec2 PlotTextProperty::getOffset() const { return {offset_.get(), 0.0f}; }
 float PlotTextProperty::getRotation() const { return rotation_.get(); }
-
 const FontSettings& PlotTextProperty::getFont() const { return font_; }
 
 }  // namespace plot

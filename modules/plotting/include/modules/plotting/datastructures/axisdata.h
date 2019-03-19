@@ -44,34 +44,43 @@ namespace plot {
 class IVW_MODULE_PLOTTING_API AxisData : public AxisSettings {
 public:
     AxisData() = default;
+    AxisData(const AxisSettings& settings);
     virtual ~AxisData() = default;
 
-    std::string title;
-    bool visible;
-    vec4 color;
-    float width;
-    bool useDataRange;
-    dvec2 range;
+    dvec2 range = dvec2{100.0, 100.0};
+    bool useDataRange = true;
 
-    Orientation orientation;
-    Placement placement;
-  
-    PlotTextData caption;
-    PlotTextData labels;
+    bool visible = true;
+    vec4 color = vec4{0.0f, 0.0f, 0.0f, 1.0f};
+    float width = 2.5f;
+    Orientation orientation = Orientation::Horizontal;
+    Placement placement = Placement::Outside;
+
+    std::string caption;
+    PlotTextData captionSettings;
+
+    std::vector<std::string> labels;
+    PlotTextData labelSettings;
+
     MajorTickData majorTicks;
     MinorTickData minorticks;
 
     // Inherited via AxisSettings
-    virtual std::string getTitle() const override;
+    virtual dvec2 getRange() const override;
+    virtual bool getUseDataRange() const override;
+
     virtual bool getVisible() const override;
     virtual vec4 getColor() const override;
     virtual float getWidth() const override;
-    virtual bool getUseDataRange() const override;
-    virtual dvec2 getRange() const override;
     virtual Orientation getOrientation() const override;
     virtual Placement getPlacement() const override;
-    virtual const PlotTextSettings& getCaption() const override;
-    virtual const PlotTextSettings& getLabels() const override;
+
+    virtual const std::string& getCaption() const override;
+    virtual const PlotTextSettings& getCaptionSettings() const override;
+
+    virtual const std::vector<std::string>& getLabels() const override;
+    virtual const PlotTextSettings& getLabelSettings() const override;
+
     virtual const MajorTickSettings& getMajorTicks() const override;
     virtual const MinorTickSettings& getMinorTicks() const override;
 };

@@ -154,6 +154,7 @@ public:
      */
     void setAction(const std::function<void()> &action);
 
+protected:
     /**
      * \brief updates the UI state and triggers the callback action set by setAction().
      * This function is called when the user releases the mouse button.
@@ -180,7 +181,6 @@ public:
      */
     bool moveAction(const dvec2 &delta);
 
-protected:
     void updateExtent();
     void updateLabelPos();
     void updateLabel();
