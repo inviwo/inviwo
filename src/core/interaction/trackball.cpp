@@ -71,10 +71,12 @@ Trackball::Trackball(TrackballObject* object)
     , animate_("animate", "Animate rotations", false)
     // clang-format off
     , mouseRotate_("trackballRotate", "Rotate", [this](Event* e) { rotate(e); }, MouseButton::Left, MouseState::Press | MouseState::Move)
-    , mouseZoom_("trackballZoom", "Zoom",       [this](Event* e) { zoomWheel(e); }, util::make_unique<WheelEventMatcher>())
     , mousePan_("trackballPan", "Pan",          [this](Event* e) { pan(e); }, MouseButton::Middle, MouseState::Press | MouseState::Move)
     , mouseReset_("mouseReset", "Reset",        [this](Event* e) { reset(e); }, MouseButtons(flags::any), MouseState::Release)
     , mouseRecenterFocusPoint_("mouseRecenterFocusPoint", "Recenter Focus Point", [this](Event* e) { recenterFocusPoint(e); }, MouseButton::Left, MouseState::DoubleClick)
+
+    , wheelZoom_("wheelZoom", "Zoom (Steps)",      [this](Event* e) { zoomWheel(e); }, util::make_unique<WheelEventMatcher>())
+    , mouseZoom_("mouseZoom", "Zoom (Continuous)", [this](Event* e) { zoom(e); }, MouseButton::Right, MouseState::Press | MouseState::Move)
 
     , moveLeft_("moveLeft", "Move Left",    [this](Event* e) { moveLeft(e); },  IvwKey::A, KeyState::Press)
     , moveRight_("moveRight", "Move Right", [this](Event* e) { moveRight(e); }, IvwKey::D, KeyState::Press)
@@ -130,6 +132,8 @@ Trackball::Trackball(TrackballObject* object)
     addProperty(mousePan_);
     addProperty(mouseRecenterFocusPoint_);
     addProperty(mouseReset_);
+    addProperty(wheelZoom_);
+    wheelZoom_.setVisible(false); // Is not displayed properly
 
     addProperty(moveUp_);
     addProperty(moveLeft_);
@@ -177,6 +181,7 @@ Trackball::Trackball(const Trackball& rhs)
     , animate_(rhs.animate_)
     , mouseRotate_(rhs.mouseRotate_)
     , mouseZoom_(rhs.mouseZoom_)
+    , wheelZoom_(rhs.wheelZoom_)
     , mousePan_(rhs.mousePan_)
     , mouseRecenterFocusPoint_(rhs.mouseRecenterFocusPoint_)
     , mouseReset_(rhs.mouseReset_)
@@ -227,6 +232,8 @@ Trackball::Trackball(const Trackball& rhs)
     addProperty(mousePan_);
     addProperty(mouseRecenterFocusPoint_);
     addProperty(mouseReset_);
+    addProperty(wheelZoom_);
+    wheelZoom_.setVisible(false); // Is not displayed properly
     addProperty(moveLeft_);
     addProperty(moveRight_);
     addProperty(moveUp_);
@@ -273,6 +280,7 @@ Trackball& Trackball::operator=(const Trackball& that) {
         animate_ = that.animate_;
         mouseRotate_ = that.mouseRotate_;
         mouseZoom_ = that.mouseZoom_;
+        wheelZoom_ = that.wheelZoom_;
         mousePan_ = that.mousePan_;
         mouseRecenterFocusPoint_ = that.mouseRecenterFocusPoint_;
         mouseReset_ = that.mouseReset_;
@@ -367,16 +375,16 @@ std::pair<bool, vec3> Trackball::getTrackBallIntersection(const vec2 pos) const 
 /* \brief Passes the mouse event (no touch events!) on to the chosen rotation method */
 void Trackball::rotate(Event* event) {
     switch (trackballMethod_) {
-        case 0:
+        case 0:  // Virtual Trackball
             rotateArc(event);
             break;
-        case 1:
+        case 1:  // Two Axis Valuator
             rotateTAV(event);
             break;
-        case 2:
+        case 2:  // First Person Camera
             rotateFPS(event);
             break;
-        case 3:  // Object follows Finger (Formerly Follow Object During Rotation)
+        case 3:  // Object follows Cursor (Formerly Follow Object During Rotation)
             rotateArc(event, true);
             break;
         default:

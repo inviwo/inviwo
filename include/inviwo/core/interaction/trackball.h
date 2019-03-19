@@ -186,10 +186,12 @@ protected:
 
     // Event Properties.
     EventProperty mouseRotate_;
-    EventProperty mouseZoom_;
     EventProperty mousePan_;
     EventProperty mouseRecenterFocusPoint_;
     EventProperty mouseReset_;
+
+    EventProperty mouseZoom_;
+    EventProperty wheelZoom_;
 
     EventProperty moveLeft_;
     EventProperty moveRight_;
