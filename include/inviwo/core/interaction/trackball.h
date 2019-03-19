@@ -121,7 +121,7 @@ protected:
     mat4 yaw(const float radians) const;
 
     void stepRotate(Direction dir);
-    void stepZoom(Direction dir);
+    void stepZoom(Direction dir, const int numSteps=1);
     void stepPan(Direction dir);
 
     void rotateLeft(Event* event);
@@ -135,8 +135,8 @@ protected:
     void panDown(Event* event);
 
     void zoomWheel(Event* event);
-    void zoomIn(Event* event);
-    void zoomOut(Event* event);
+    void zoomIn(Event* event, const int numSteps=1);
+    void zoomOut(Event* event, const int numSteps=1);
 
     void recenterFocusPoint(Event* event);
 
@@ -185,12 +185,31 @@ protected:
     BoolProperty animate_;
 
     // Event Properties.
-    EventProperty mouseRotate_, mouseZoom_, mousePan_, mouseRecenterFocusPoint_, mouseReset_;
+    EventProperty mouseRotate_;
+    EventProperty mouseZoom_;
+    EventProperty mousePan_;
+    EventProperty mouseRecenterFocusPoint_;
+    EventProperty mouseReset_;
 
-    EventProperty moveLeft_, moveRight_, moveUp_, moveDown_, moveForward_, moveBackward_;
-    EventProperty stepRotateUp_, stepRotateLeft_, stepRotateDown_, stepRotateRight_;
-    EventProperty stepZoomIn_, stepZoomOut_;
-    EventProperty stepPanUp_, stepPanLeft_, stepPanDown_, stepPanRight_;
+    EventProperty moveLeft_;
+    EventProperty moveRight_;
+    EventProperty moveUp_;
+    EventProperty moveDown_;
+    EventProperty moveForward_;
+    EventProperty moveBackward_;
+
+    EventProperty stepRotateUp_;
+    EventProperty stepRotateLeft_;
+    EventProperty stepRotateDown_;
+    EventProperty stepRotateRight_;
+
+    EventProperty stepZoomIn_;
+    EventProperty stepZoomOut_;
+
+    EventProperty stepPanUp_;
+    EventProperty stepPanLeft_;
+    EventProperty stepPanDown_;
+    EventProperty stepPanRight_;
 
     EventProperty touchGesture_;
 

@@ -531,43 +531,49 @@ mat4 Trackball::roll(const float radians) const {
 /* \brief Moves camera along -cam_right */
 void Trackball::moveLeft(Event* event) {
     const vec3 right = getLookRight();
-    setLookFrom(getLookFrom() - movementSpeed_.get() * right);
-    setLookTo(getLookTo() - movementSpeed_.get() * right);
+    setLook(getLookFrom() - movementSpeed_.get() * right,
+            getLookTo()   - movementSpeed_.get() * right,
+            getLookUp());
 }
 
 /* \brief Moves camera along cam_right */
 void Trackball::moveRight(Event* event) {
     const vec3 right = getLookRight();
-    setLookFrom(getLookFrom() + movementSpeed_.get() * right);
-    setLookTo(getLookTo() + movementSpeed_.get() * right);
+    setLook(getLookFrom() + movementSpeed_.get() * right,
+            getLookTo()   + movementSpeed_.get() * right,
+            getLookUp());
 }
 
 /* \brief Moves camera along cam_up */
 void Trackball::moveUp(Event* event) {
     const vec3 up = getLookUp();
-    setLookFrom(getLookFrom() + movementSpeed_.get() * up);
-    setLookTo(getLookTo() + movementSpeed_.get() * up);
+    setLook(getLookFrom() + movementSpeed_.get() * up,
+            getLookTo()   + movementSpeed_.get() * up,
+            getLookUp());
 }
 
 /* \brief Moves camera along -cam_up */
 void Trackball::moveDown(Event* event) {
     const vec3 up = getLookUp();
-    setLookFrom(getLookFrom() - movementSpeed_.get() * up);
-    setLookTo(getLookTo() - movementSpeed_.get() * up);
+    setLook(getLookFrom() - movementSpeed_.get() * up,
+            getLookTo()   - movementSpeed_.get() * up,
+            getLookUp());
 }
 
 /* \brief Moves camera along view_dir */
 void Trackball::moveForward(Event* event) {
     const vec3 viewDir = glm::normalize(getLookTo() - getLookFrom());
-    setLookFrom(getLookFrom() + movementSpeed_.get() * viewDir);
-    setLookTo(getLookTo() + movementSpeed_.get() * viewDir);
+    setLook(getLookFrom() + movementSpeed_.get() * viewDir,
+            getLookTo()   + movementSpeed_.get() * viewDir,
+            getLookUp());
 }
 
 /* \brief Moves camera along -view_dir */
 void Trackball::moveBackward(Event* event) {
     const vec3 viewDir = glm::normalize(getLookTo() - getLookFrom());
-    setLookFrom(getLookFrom() - movementSpeed_.get() * viewDir);
-    setLookTo(getLookTo() - movementSpeed_.get() * viewDir);
+    setLook(getLookFrom() - movementSpeed_.get() * viewDir,
+            getLookTo()   - movementSpeed_.get() * viewDir,
+            getLookUp());
 }
 
 /* \brief zoom based on mouse move event
@@ -679,7 +685,7 @@ void Trackball::stepRotate(Direction dir) {
     rotateTrackBall(trackballOrigin, trackballDirection);
 }
 
-void Trackball::stepZoom(Direction dir) {
+void Trackball::stepZoom(Direction dir, const int numSteps) {
     if (!allowZooming_) return;
 
     // compute direction vector
@@ -687,9 +693,9 @@ void Trackball::stepZoom(Direction dir) {
     const auto directionLength = glm::length(direction);
     auto zoom = 0.0f;
     if (dir == Direction::Up) {
-        zoom = stepsize * directionLength;
+        zoom = stepsize * numSteps * directionLength;
     } else if (dir == Direction::Down) {
-        zoom = -stepsize * directionLength;
+        zoom = -stepsize * numSteps * directionLength;
     }
 
     // zoom by moving the camera
@@ -1031,20 +1037,19 @@ void Trackball::zoomWheel(Event* event) {
     auto wheelEvent = static_cast<WheelEvent*>(event);
     int steps = static_cast<int>(wheelEvent->delta().y);
 
-    for (size_t i = 0; i < abs(steps); ++i)
-        if (steps > 0)
-            zoomIn(event);
-        else
-            zoomOut(event);
+    if (steps > 0)
+        zoomIn(event, abs(steps));
+    else
+        zoomOut(event, abs(steps));
 }
 
-void Trackball::zoomIn(Event* event) {
-    stepZoom(Direction::Up);
+void Trackball::zoomIn(Event* event, const int numSteps) {
+    stepZoom(Direction::Up, numSteps);
     event->markAsUsed();
 }
 
-void Trackball::zoomOut(Event* event) {
-    stepZoom(Direction::Down);
+void Trackball::zoomOut(Event* event, const int numSteps) {
+    stepZoom(Direction::Down, numSteps);
     event->markAsUsed();
 }
 
