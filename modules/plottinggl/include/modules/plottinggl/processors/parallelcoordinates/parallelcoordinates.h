@@ -142,7 +142,8 @@ public:
 
 protected:
     void linePicked(PickingEvent* p);
-    void axisPicked(PickingEvent* p);
+    enum class PickType {Axis, Lower, Upper, Groove};
+    void axisPicked(PickingEvent* p, size_t pickedID, PickType pt);
 
 private:
     struct ColumnAxis {

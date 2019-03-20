@@ -270,9 +270,14 @@ bool PCPAxisSettings::getUseDataRange() const { return false; }
 bool PCPAxisSettings::getVisible() const { return BoolCompositeProperty::getVisible(); }
 
 vec4 PCPAxisSettings::getColor() const {
-    if (pcp_->getHoveredAxis() == columnId_) {
+    const auto hover = pcp_->getHoveredAxis() == columnId_;
+    const auto selected = pcp_->brushingAndLinking_.isColumnSelected(columnId_);
+
+    if (hover && selected) {
+        return glm::mix(pcp_->axisHoverColor_.get(), pcp_->axisSelectedColor_.get(), 0.5f);
+    } else if (hover) {
         return pcp_->axisHoverColor_;
-    } else if (pcp_->brushingAndLinking_.isColumnSelected(columnId_)) {
+    } else if (selected) {
         return pcp_->axisSelectedColor_;
     } else {
         return pcp_->axisColor_;
@@ -325,8 +330,8 @@ const FontSettings& PCPLabelSettings::getFont() const { return settings_->pcp_->
 
 TickStyle PCPMajorTickSettings::getStyle() const { return TickStyle::Both; }
 vec4 PCPMajorTickSettings::getColor() const { return settings_->getColor(); }
-float PCPMajorTickSettings::getTickLength() const { return settings_->pcp_->axisSize_ * 3.0f; }
-float PCPMajorTickSettings::getTickWidth() const { return settings_->pcp_->axisSize_; }
+float PCPMajorTickSettings::getTickLength() const { return settings_->pcp_->axisSize_ * 2.0f; }
+float PCPMajorTickSettings::getTickWidth() const { return settings_->getWidth(); }
 double PCPMajorTickSettings::getTickDelta() const { return 0.0; }
 bool PCPMajorTickSettings::getRangeBasedTicks() const { return false; }
 

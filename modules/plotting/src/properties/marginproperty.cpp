@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/plotting/properties/marginproperty.h>
+#include <inviwo/core/network/networklock.h>
 
 namespace inviwo {
 
@@ -76,6 +77,7 @@ MarginProperty& MarginProperty::operator=(const MarginProperty& that) {
 MarginProperty* MarginProperty::clone() const { return new MarginProperty(*this); }
 
 void MarginProperty::setMargins(float top, float right, float bottom, float left) {
+    NetworkLock lock(this);
     top_.set(top, std::min(top_.getMinValue(), top), std::max(top_.getMaxValue(), top * 2.0f),
              top_.getIncrement());
     right_.set(right, std::min(right_.getMinValue(), right),
@@ -86,13 +88,25 @@ void MarginProperty::setMargins(float top, float right, float bottom, float left
               left_.getIncrement());
 }
 
-void MarginProperty::setTop(float top) { top_.set(top); }
+void MarginProperty::setTop(float top) {
+    top_.set(top, std::min(top_.getMinValue(), top), std::max(top_.getMaxValue(), top * 2.0f),
+             top_.getIncrement());
+}
 
-void MarginProperty::setRight(float right) { right_.set(right); }
+void MarginProperty::setRight(float right) {
+    right_.set(right, std::min(right_.getMinValue(), right),
+               std::max(right_.getMaxValue(), right * 2.0f), right_.getIncrement());
+}
 
-void MarginProperty::setBottom(float bottom) { bottom_.set(bottom); }
+void MarginProperty::setBottom(float bottom) {
+    bottom_.set(bottom, std::min(bottom_.getMinValue(), bottom),
+                std::max(bottom_.getMaxValue(), bottom * 2.0f), bottom_.getIncrement());
+}
 
-void MarginProperty::setLeft(float left) { left_.set(left); }
+void MarginProperty::setLeft(float left) {
+    left_.set(left, std::min(left_.getMinValue(), left), std::max(left_.getMaxValue(), left * 2.0f),
+              left_.getIncrement());
+}
 
 float MarginProperty::getTop() const { return top_.get(); }
 
@@ -107,13 +121,25 @@ vec2 MarginProperty::getLowerLeftMargin() const { return {left_, bottom_}; }
 vec2 MarginProperty::getUpperRightMargin() const { return {right_, top_}; }
 
 void MarginProperty::setLowerLeftMargin(vec2 lowerLeft) {
-    left_.set(lowerLeft.x);
-    bottom_.set(lowerLeft.y);
+    auto left = lowerLeft.x;
+    auto bottom = lowerLeft.y;
+
+    NetworkLock lock(this);
+    left_.set(left, std::min(left_.getMinValue(), left), std::max(left_.getMaxValue(), left * 2.0f),
+              left_.getIncrement());
+    bottom_.set(bottom, std::min(bottom_.getMinValue(), bottom),
+                std::max(bottom_.getMaxValue(), bottom * 2.0f), bottom_.getIncrement());
 }
 
 void MarginProperty::setUpperRightMargin(vec2 upperRight) {
-    right_.set(upperRight.x);
-    top_.set(upperRight.y);
+    auto right = upperRight.x;
+    auto top = upperRight.y;
+
+    NetworkLock lock(this);
+    right_.set(right, std::min(right_.getMinValue(), right),
+               std::max(right_.getMaxValue(), right * 2.0f), right_.getIncrement());
+    top_.set(top, std::min(top_.getMinValue(), top), std::max(top_.getMaxValue(), top * 2.0f),
+             top_.getIncrement());
 }
 
 vec4 MarginProperty::getAsVec4() const {

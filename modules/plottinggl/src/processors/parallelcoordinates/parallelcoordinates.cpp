@@ -116,21 +116,21 @@ ParallelCoordinates::ParallelCoordinates()
                   InvalidationLevel::InvalidOutput, PropertySemantics::Color)
 
     , axesSettings_("axesSettings", "Axes Settings")
-    , axisSize_("axisSize", "Size", 6.0f, 0.0f, 50.0f, 0.01f)
+    , axisSize_("axisSize", "Size", 4.0f, 0.0f, 50.0f, 0.01f)
     , axisColor_("axisColor", "Color", vec4(.3f, .3f, .3f, 1), vec4(0.0f), vec4(1.0f), vec4(0.01f),
                  InvalidationLevel::InvalidOutput, PropertySemantics::Color)
-    , axisHoverColor_("axisHoverColor", "Hover Color", vec4(.6f, .6f, .6f, 1), vec4(0.0f),
+    , axisHoverColor_("axisHoverColor", "Hover Color", vec4(.8f, .8f, .8f, 1), vec4(0.0f),
                       vec4(1.0f), vec4(0.01f), InvalidationLevel::InvalidOutput,
                       PropertySemantics::Color)
-    , axisSelectedColor_("axisSelectedColor", "Selected Color", vec4(.8f, .8f, .8f, 1), vec4(0.0f),
+    , axisSelectedColor_("axisSelectedColor", "Selected Color", vec4(.8f, .2f, .2f, 1), vec4(0.0f),
                          vec4(1.0f), vec4(0.01f), InvalidationLevel::InvalidOutput,
                          PropertySemantics::Color)
     , handleSize_("handleSize", "Handle Size", 20.0f, 15.0f, 100.0f)
-    , handleColor_("handleColor", "Handle Color (Not filtering)", vec4(.92f, .92f, .92f, 1),
+    , handleColor_("handleColor", "Handle Color (Not filtering)", vec4(.4f, .4f, .4f, 1),
                    vec4(0.0f), vec4(1.0f), vec4(0.01f), InvalidationLevel::InvalidOutput,
                    PropertySemantics::Color)
     , handleFilteredColor_("handleFilteredColor", "Handle Color (When filtering)",
-                           vec4(.5f, .5f, .5f, 1), vec4(0.0f), vec4(1.0f), vec4(0.01f),
+                           vec4(.6f, .6f, .6f, 1), vec4(0.0f), vec4(1.0f), vec4(0.01f),
                            InvalidationLevel::InvalidOutput, PropertySemantics::Color)
 
     , margins_("margins", "Margins", 0, 0, 0, 0)
@@ -138,7 +138,8 @@ ParallelCoordinates::ParallelCoordinates()
     , resetHandlePositions_("resetHandlePositions", "Reset Handle Positions")
 
     , linePicking_(this, 1, [&](PickingEvent* p) { linePicked(p); })
-    , axisPicking_(this, 1, [&](PickingEvent* p) { axisPicked(p); })
+    , axisPicking_(this, 1,
+                   [&](PickingEvent* p) { axisPicked(p, p->getPickedId(), PickType::Axis); })
     , lineShader_("pcp_lines.vert", "pcp_lines.geom", "pcp_lines.frag", false)
     , lines_{}
     , brushingDirty_(true)  // needs to be true after deserialization
@@ -182,7 +183,16 @@ ParallelCoordinates::ParallelCoordinates()
     axesSettings_.addProperty(handleFilteredColor_);
 
     addProperty(margins_);
-    margins_.addProperty(autoMargins_);
+    margins_.insertProperty(0, autoMargins_);
+    const auto makeMarginReadonly = [&]() {
+        margins_.left_.setReadOnly(autoMargins_);
+        margins_.bottom_.setReadOnly(autoMargins_);
+        margins_.right_.setReadOnly(autoMargins_);
+        margins_.top_.setReadOnly(autoMargins_);
+    };
+    makeMarginReadonly();
+    autoMargins_.onChange(makeMarginReadonly);
+
     addProperty(resetHandlePositions_);
 
     captionSettings_.lineSpacing_.setVisible(false);
@@ -325,9 +335,13 @@ void ParallelCoordinates::createOrUpdateProperties() {
         auto slider = std::make_unique<glui::DoubleMinMaxPropertyWidget>(
             prop->range, *this, sliderWidgetRenderer_, ivec2{100, handleSize_.get()},
             glui::UIOrientation::Vertical);
-
         slider->setLabelVisible(false);
         slider->setShowGroove(false);
+
+        slider->setPickingEventAction([this, id = axes_.size()](PickingEvent* e) {
+            axisPicked(e, id, static_cast<PickType>(e->getPickedId() + 1));
+        });
+
         axes_.push_back({prop, std::move(renderer), std::move(slider)});
     }
 }
@@ -572,19 +586,21 @@ void ParallelCoordinates::linePicked(PickingEvent* p) {
         auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
 
         auto id = p->getPickedId();
+
+        auto selection = brushingAndLinking_.getSelectedIndices();
         if (brushingAndLinking_.isSelected(indexCol[id])) {
-            brushingAndLinking_.sendSelectionEvent({});
+            selection.erase(indexCol[id]);
         } else {
-            brushingAndLinking_.sendSelectionEvent({indexCol[id]});
+            selection.insert(indexCol[id]);
         }
+        brushingAndLinking_.sendSelectionEvent(selection);
 
         p->markAsUsed();
         invalidate(InvalidationLevel::InvalidOutput);
     }
 }
 
-void ParallelCoordinates::axisPicked(PickingEvent* p) {
-    const auto pickedID = p->getPickedId();
+void ParallelCoordinates::axisPicked(PickingEvent* p, size_t pickedID, PickType pt) {
 
     if (p->getHoverState() == PickingHoverState::Enter) {
         hoveredAxis_ = static_cast<int>(pickedID);
@@ -596,17 +612,18 @@ void ParallelCoordinates::axisPicked(PickingEvent* p) {
 
     if (p->getPressState() == PickingPressState::Release &&
         p->getPressItem() == PickingPressItem::Primary &&
-        p->getPressedGlobalPickingId() == p->getCurrentGlobalPickingId()) {
+        p->getPressedGlobalPickingId() == p->getCurrentGlobalPickingId() &&
+        glm::length2(p->getDeltaPressedPosition()) < 0.01 && pt != PickType::Lower &&
+        pt != PickType::Upper) {
 
         auto selection = brushingAndLinking_.getSelectedColumns();
-
         if (brushingAndLinking_.isColumnSelected(pickedID)) {
             selection.erase(pickedID);
         } else {
             selection.insert(pickedID);
         }
-
         brushingAndLinking_.sendColumnSelectionEvent(selection);
+
         p->markAsUsed();
         invalidate(InvalidationLevel::InvalidOutput);
     }
@@ -622,29 +639,38 @@ void ParallelCoordinates::axisPicked(PickingEvent* p) {
     };
 
     if (p->getPressState() == PickingPressState::Move &&
-        p->getPressItems().count(PickingPressItem::Primary)) {
+        p->getPressItems().count(PickingPressItem::Primary) && pt != PickType::Lower &&
+        pt != PickType::Upper) {
         isDragging_ = true;
 
-        const auto it = util::find(enabledAxes_, &axes_[pickedID]);
-        if (it != enabledAxes_.end()) {
-            const auto id = std::distance(enabledAxes_.begin(), it);
-            if (id > 0 && pickedID > 0 &&
-                p->getPosition().x * p->getCanvasSize().x <
-                    static_cast<float>(axisPos(enabledAxes_[id - 1]->pcp->columnId()).first.x)) {
-                swap(id, id - 1);
-            } else if (id + 1 < enabledAxes_.size() && pickedID + 1 < axes_.size() &&
-                       p->getPosition().x * p->getCanvasSize().x >
-                           static_cast<float>(
-                               axisPos(enabledAxes_[id + 1]->pcp->columnId()).first.x)) {
-                swap(id, id + 1);
-            } else if (pickedID < axes_.size()) {
-                const auto rect = margins_.getRect(outport_.getDimensions());
-                lines_.axisPositions[pickedID] =
-                    glm::clamp(float(p->getPosition().x * p->getCanvasSize().x - rect.first.x) /
-                                   (rect.second.x - rect.first.x),
-                               0.0f, 1.0f);
-                invalidate(InvalidationLevel::InvalidOutput);
+        auto delta = glm::abs(p->getDeltaPressedPosition());
+
+        if (delta.x > delta.y) {
+            const auto it = util::find(enabledAxes_, &axes_[pickedID]);
+            if (it != enabledAxes_.end()) {
+                const auto id = std::distance(enabledAxes_.begin(), it);
+                if (id > 0 && pickedID > 0 &&
+                    p->getPosition().x * p->getCanvasSize().x <
+                        static_cast<float>(
+                            axisPos(enabledAxes_[id - 1]->pcp->columnId()).first.x)) {
+                    swap(id, id - 1);
+                } else if (id + 1 < enabledAxes_.size() && pickedID + 1 < axes_.size() &&
+                           p->getPosition().x * p->getCanvasSize().x >
+                               static_cast<float>(
+                                   axisPos(enabledAxes_[id + 1]->pcp->columnId()).first.x)) {
+                    swap(id, id + 1);
+                } else if (pickedID < axes_.size()) {
+                    const auto rect = margins_.getRect(outport_.getDimensions());
+                    lines_.axisPositions[pickedID] =
+                        glm::clamp(float(p->getPosition().x * p->getCanvasSize().x - rect.first.x) /
+                                       (rect.second.x - rect.first.x),
+                                   0.0f, 1.0f);
+                    invalidate(InvalidationLevel::InvalidOutput);
+                }
             }
+        } else {
+            buildAxisPositions();
+            invalidate(InvalidationLevel::InvalidOutput);
         }
     }
     if (p->getPressState() == PickingPressState::Release &&

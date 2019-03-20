@@ -244,7 +244,7 @@ void AxisRenderer::renderText(const size2_t& outputDims, const size2_t& startPos
         auto& pos = labels_.getLabelPos(settings_, size3_t{startPos, 0}, size3_t{endPos, 0},
                                         textRenderer_, vec3{1});
 
-        auto atlas =
+        auto& atlas =
             labels_.getAtlas(settings_, size3_t{startPos, 0}, size3_t{endPos, 0}, textRenderer_);
 
         const auto anchor = labels.getFont().getAnchorPos();
@@ -309,7 +309,7 @@ std::pair<vec2, vec2> AxisRenderer::boundingRect(const size2_t& startPos, const 
         auto& positions = labels_.getLabelPos(settings_, size3_t{startPos, 0}, size3_t{endPos, 0},
                                               textRenderer_, vec3{1});
 
-        auto atlas =
+        auto& atlas =
             labels_.getAtlas(settings_, size3_t{startPos, 0}, size3_t{endPos, 0}, textRenderer_);
 
         const auto anchor = labels.getFont().getAnchorPos();
