@@ -158,7 +158,7 @@ public:
      * @param owner        if true, the list property takes ownership of the property
      * @throw Exception    if the type of \p property does not match any prefab object
      */
-    virtual Property& addProperty(Property* property, bool owner = true) override;
+    virtual void addProperty(Property* property, bool owner = true) override;
 
     /**
      * \brief add \p property as new list entry. The type of the property must match one of the
@@ -168,7 +168,7 @@ public:
      * @param property     property to be added
      * @throw Exception    if the type of \p property does not match any prefab object
      */
-    virtual Property& addProperty(Property& property) override;
+    virtual void addProperty(Property& property) override;
 
     /**
      * \brief insert \p property in the list at position \p index

@@ -299,6 +299,7 @@ public:
             bool visible = callback(prop);
             this->setVisible(visible);
         });
+        this->setVisible(callback(prop));
     }
 
     /* \brief sets readonly depending another property `prop`, according to `callback`
@@ -318,6 +319,7 @@ public:
             bool readonly = callback(prop);
             this->setReadOnly(readonly);
         });
+        this->setReadOnly(callback(prop));
     }
 
     virtual Document getDescription() const;

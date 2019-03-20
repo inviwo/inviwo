@@ -60,14 +60,12 @@ PropertyOwner& PropertyOwner::operator=(const PropertyOwner& that) {
     return *this;
 }
 
-Property& PropertyOwner::addProperty(Property* property, bool owner) {
+void PropertyOwner::addProperty(Property* property, bool owner) {
     insertProperty(properties_.size(), property, owner);
-    return *property;
 }
 
-Property& PropertyOwner::addProperty(Property& property) {
+void PropertyOwner::addProperty(Property& property) {
     insertProperty(properties_.size(), &property, false);
-    return property;
 }
 
 void PropertyOwner::insertProperty(size_t index, Property* property, bool owner) {
