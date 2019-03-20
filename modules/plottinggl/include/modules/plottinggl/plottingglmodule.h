@@ -32,6 +32,7 @@
 
 #include <modules/plottinggl/plottingglmoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/io/serialization/versionconverter.h>
 
 namespace inviwo {
 

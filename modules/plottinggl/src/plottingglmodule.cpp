@@ -31,7 +31,6 @@
 #include <modules/plotting/plottingmodule.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/io/serialization/versionconverter.h>
 #include <modules/opengl/shader/shadermanager.h>
 
 #include <modules/plottinggl/processors/axisrenderprocessor.h>

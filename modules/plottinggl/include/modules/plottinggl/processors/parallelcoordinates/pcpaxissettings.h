@@ -42,7 +42,7 @@ namespace plot {
 
 class Column;
 class ParallelCoordinates;
-
+class CategoricalColumn;
 class PCPAxisSettings;
 
 class IVW_MODULE_PLOTTINGGL_API PCPLabelSettings : public PlotTextSettings {
