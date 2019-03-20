@@ -38,6 +38,7 @@
 #include <modules/plotting/processors/csvsource.h>
 #include <modules/basegl/processors/background.h>
 #include <modules/opengl/canvasprocessorgl.h>
+#include <inviwo/core/io/datareaderfactory.h>
 
 namespace inviwo {
 
