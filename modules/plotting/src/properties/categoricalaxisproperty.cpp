@@ -55,7 +55,7 @@ CategoricalAxisProperty::CategoricalAxisProperty(const std::string& identifier,
                    "Orientation",
                    {{"horizontal", "Horizontal", Orientation::Horizontal},
                     {"vertical", "Vertical", Orientation::Vertical}},
-                   orientation == Orientation::Horizontal ? 0 : 1}
+                   orientation == Orientation::Horizontal ? size_t{0} : size_t{1}}
     , placement_{"placement",
                  "Placement",
                  {{"outside", "Bottom / Left", Placement::Outside},
