@@ -96,26 +96,29 @@ void CompositeProperty::setValid() {
     subPropertyInvalidationLevel_ = InvalidationLevel::Valid;
 }
 
-void CompositeProperty::setCurrentStateAsDefault() {
+CompositeProperty& CompositeProperty::setCurrentStateAsDefault() {
     Property::setCurrentStateAsDefault();
     for (auto& elem : properties_) {
         elem->setCurrentStateAsDefault();
     }
+    return *this;
 }
 
-void CompositeProperty::resetToDefaultState() {
+CompositeProperty& CompositeProperty::resetToDefaultState() {
     NetworkLock lock(this);
     for (auto& elem : properties_) {
         elem->resetToDefaultState();
     }
     Property::resetToDefaultState();
+    return *this;
 }
 
-void CompositeProperty::setReadOnly(bool value) {
+CompositeProperty& CompositeProperty::setReadOnly(bool value) {
     Property::setReadOnly(value);
     for (auto& elem : properties_) {
         elem->setReadOnly(value);
     }
+    return *this;
 }
 
 void CompositeProperty::serialize(Serializer& s) const {

@@ -6,7 +6,7 @@
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
+ * modification, are permitted provided that thvoide following conditions are met:
  *
  * 1. Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
@@ -57,7 +57,7 @@ public:
 
     virtual std::string getClassIdentifier() const override = 0;
 
-    virtual void clearOptions() = 0;
+    virtual BaseOptionProperty& clearOptions() = 0;
 
     virtual size_t size() const = 0;
     virtual size_t getSelectedIndex() const = 0;
@@ -150,16 +150,18 @@ public:
      * Adds a option to the property and stores it as a struct in the options_
      * The option name is the name of the option that will be displayed in the widget.
      */
-    void addOption(const std::string& identifier, const std::string& displayName, const T& value);
+    TemplateOptionProperty& addOption(const std::string& identifier, const std::string& displayName, const T& value);
     template <typename U = T,
               class = typename std::enable_if<std::is_same<U, std::string>::value, void>::type>
-    void addOption(const std::string& identifier, const std::string& displayName) {
+    TemplateOptionProperty& addOption(const std::string& identifier,
+                                      const std::string& displayName) {
         addOption(identifier, displayName, identifier);
+        return *this;
     }
 
-    virtual void removeOption(const std::string& identifier);
-    virtual void removeOption(size_t index);
-    virtual void clearOptions() override;
+    virtual TemplateOptionProperty& removeOption(const std::string& identifier);
+    virtual TemplateOptionProperty& removeOption(size_t index);
+    virtual TemplateOptionProperty& clearOptions() override;
 
     virtual size_t size() const override;
     virtual size_t getSelectedIndex() const override;
@@ -180,10 +182,10 @@ public:
     virtual bool setSelectedIdentifier(const std::string& identifier) override;
     virtual bool setSelectedDisplayName(const std::string& name) override;
     bool setSelectedValue(const T& val);
-    virtual void replaceOptions(const std::vector<std::string>& ids,
+    virtual TemplateOptionProperty& replaceOptions(const std::vector<std::string>& ids,
                                 const std::vector<std::string>& displayNames,
                                 const std::vector<T>& values);
-    virtual void replaceOptions(std::vector<OptionPropertyOption<T>> options);
+    virtual TemplateOptionProperty& replaceOptions(std::vector<OptionPropertyOption<T>> options);
 
     virtual bool isSelectedIndex(size_t index) const override;
     virtual bool isSelectedIdentifier(const std::string& identifier) const override;
@@ -199,8 +201,8 @@ public:
      * function after adding all the default options, usually in the processor constructor.
      * @see Property::setCurrentStateAsDefault()
      */
-    virtual void setCurrentStateAsDefault() override;
-    virtual void resetToDefaultState() override;
+    virtual TemplateOptionProperty& setCurrentStateAsDefault() override;
+    virtual TemplateOptionProperty& resetToDefaultState() override;
 
     virtual std::string getClassIdentifierForWidget() const override;
     virtual void serialize(Serializer& s) const override;
@@ -386,8 +388,9 @@ template <typename T>
 TemplateOptionProperty<T>::~TemplateOptionProperty() = default;
 
 template <typename T>
-void TemplateOptionProperty<T>::addOption(const std::string& identifier,
-                                          const std::string& displayName, const T& value) {
+TemplateOptionProperty<T>& TemplateOptionProperty<T>::addOption(const std::string& identifier,
+                                                             const std::string& displayName,
+                                                             const T& value) {
     options_.push_back(OptionPropertyOption<T>(identifier, displayName, value));
 
     // in case we add the first option, we also select it
@@ -396,22 +399,24 @@ void TemplateOptionProperty<T>::addOption(const std::string& identifier,
     }
 
     propertyModified();
+    return *this;
 }
 
 template <typename T>
-void TemplateOptionProperty<T>::removeOption(size_t index) {
-    if (options_.empty()) return;
+TemplateOptionProperty<T>& TemplateOptionProperty<T>::removeOption(size_t index) {
+    if (options_.empty()) return *this;
     std::string id = getSelectedIdentifier();
     options_.erase(options_.begin() + index);
     if (!setSelectedIdentifier(id)) {
         selectedIndex_ = 0;
     }
     propertyModified();
+    return *this;
 }
 
 template <typename T>
-void TemplateOptionProperty<T>::removeOption(const std::string& identifier) {
-    if (options_.empty()) return;
+TemplateOptionProperty<T>& TemplateOptionProperty<T>::removeOption(const std::string& identifier) {
+    if (options_.empty()) return *this;
     std::string id = getSelectedIdentifier();
     util::erase_remove_if(
         options_, [&](const OptionPropertyOption<T>& opt) { return opt.id_ == identifier; });
@@ -419,12 +424,14 @@ void TemplateOptionProperty<T>::removeOption(const std::string& identifier) {
         selectedIndex_ = 0;
     }
     propertyModified();
+    return *this;
 }
 
 template <typename T>
-void TemplateOptionProperty<T>::clearOptions() {
+TemplateOptionProperty<T>& TemplateOptionProperty<T>::clearOptions() {
     options_.clear();
     selectedIndex_ = 0;
+    return *this;
 }
 
 // Getters
@@ -579,9 +586,9 @@ bool TemplateOptionProperty<T>::setSelectedValue(const T& val) {
 }
 
 template <typename T>
-void TemplateOptionProperty<T>::replaceOptions(const std::vector<std::string>& ids,
-                                               const std::vector<std::string>& displayNames,
-                                               const std::vector<T>& values) {
+TemplateOptionProperty<T>& TemplateOptionProperty<T>::replaceOptions(
+    const std::vector<std::string>& ids, const std::vector<std::string>& displayNames,
+    const std::vector<T>& values) {
     std::string selectId{};
     if (!options_.empty()) selectId = getSelectedIdentifier();
 
@@ -596,10 +603,12 @@ void TemplateOptionProperty<T>::replaceOptions(const std::vector<std::string>& i
         selectedIndex_ = 0;
     }
     propertyModified();
+    return *this;
 }
 
 template <typename T>
-void TemplateOptionProperty<T>::replaceOptions(std::vector<OptionPropertyOption<T>> options) {
+TemplateOptionProperty<T>& TemplateOptionProperty<T>::replaceOptions(
+    std::vector<OptionPropertyOption<T>> options) {
     std::string selectId{};
     if (!options_.empty()) selectId = getSelectedIdentifier();
 
@@ -611,6 +620,7 @@ void TemplateOptionProperty<T>::replaceOptions(std::vector<OptionPropertyOption<
         selectedIndex_ = 0;
     }
     propertyModified();
+    return *this;
 }
 
 // Is...
@@ -651,7 +661,7 @@ void TemplateOptionProperty<T>::set(const Property* srcProperty) {
 }
 
 template <typename T>
-void TemplateOptionProperty<T>::resetToDefaultState() {
+TemplateOptionProperty<T>& TemplateOptionProperty<T>::resetToDefaultState() {
     options_ = defaultOptions_;
     selectedIndex_ = defaultSelectedIndex_;
 
@@ -662,13 +672,15 @@ void TemplateOptionProperty<T>::resetToDefaultState() {
     }
 
     Property::resetToDefaultState();
+    return *this;
 }
 
 template <typename T>
-void TemplateOptionProperty<T>::setCurrentStateAsDefault() {
+TemplateOptionProperty<T>& TemplateOptionProperty<T>::setCurrentStateAsDefault() {
     Property::setCurrentStateAsDefault();
     defaultSelectedIndex_ = selectedIndex_;
     defaultOptions_ = options_;
+    return *this;
 }
 
 template <typename T>

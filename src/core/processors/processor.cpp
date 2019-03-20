@@ -82,9 +82,6 @@ void Processor::addPortInternal(Inport* port, const std::string& portGroup) {
     isReady_.update();
 }
 
-void Processor::addPort(Inport& port, const std::string& portGroup) {
-    addPortInternal(&port, portGroup);
-}
 void Processor::addPort(std::unique_ptr<Inport> port, const std::string& portGroup) {
     addPortInternal(port.get(), portGroup);
     ownedInports_.push_back(std::move(port));
@@ -108,10 +105,6 @@ void Processor::addPortInternal(Outport* port, const std::string& portGroup) {
     notifyObserversProcessorPortAdded(this, port);
     isSink_.update();
     isReady_.update();
-}
-
-void Processor::addPort(Outport& port, const std::string& portDependencySet) {
-    addPortInternal(&port, portDependencySet);
 }
 
 void Processor::addPort(std::unique_ptr<Outport> port, const std::string& portGroup) {

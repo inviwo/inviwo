@@ -137,14 +137,14 @@ public:
      * of a PropertyOwner. Property identifiers should only contain alpha numeric
      * characters, "-" and "_".
      */
-    virtual void setIdentifier(const std::string& identifier);
+    virtual Property& setIdentifier(const std::string& identifier);
     virtual std::string getIdentifier() const;
     virtual std::vector<std::string> getPath() const;
 
     /**
      * \brief A property's name displayed to the user
      */
-    virtual void setDisplayName(const std::string& displayName);
+    virtual Property& setDisplayName(const std::string& displayName);
     virtual std::string getDisplayName() const;
 
     /**
@@ -155,16 +155,16 @@ public:
      */
     virtual std::string getClassIdentifierForWidget() const;
 
-    virtual void setSemantics(const PropertySemantics& semantics);
+    virtual Property& setSemantics(const PropertySemantics& semantics);
     virtual PropertySemantics getSemantics() const;
 
     /**
      * \brief Enable or disable editing of property
      */
-    virtual void setReadOnly(bool value);
+    virtual Property& setReadOnly(bool value);
     virtual bool getReadOnly() const;
 
-    virtual void setInvalidationLevel(InvalidationLevel invalidationLevel);
+    virtual Property& setInvalidationLevel(InvalidationLevel invalidationLevel);
     virtual InvalidationLevel getInvalidationLevel() const;
 
     virtual void setOwner(PropertyOwner* owner);
@@ -222,18 +222,18 @@ public:
      * It is important that all overriding properties make sure to call the base class
      * implementation.
      */
-    virtual void setCurrentStateAsDefault();
+    virtual Property& setCurrentStateAsDefault();
 
     /**
      * Reset the state of the property back to it's default value.
      * It is important that all overriding properties make sure to call the base class
      * implementation.
      */
-    virtual void resetToDefaultState();
+    virtual Property& resetToDefaultState();
 
-    virtual void propertyModified();
+    virtual Property& propertyModified();
     virtual void setValid();
-    virtual void setModified();
+    virtual Property& setModified();
     virtual bool isModified() const;
     virtual void set(const Property* src);
 
@@ -273,13 +273,13 @@ public:
     void removeOnChange(T* object);
     // clang-format on
 
-    virtual void setUsageMode(UsageMode usageMode);
+    virtual Property& setUsageMode(UsageMode usageMode);
     virtual UsageMode getUsageMode() const;
 
     virtual void setSerializationMode(PropertySerializationMode mode);
     virtual PropertySerializationMode getSerializationMode() const;
 
-    virtual void setVisible(bool val);
+    virtual Property& setVisible(bool val);
     virtual bool getVisible() const;
 
     /* \brief sets visibility depending another property `prop`, according to `callback`
@@ -291,15 +291,16 @@ public:
      * might result in poor performance when `prop` is a very frequently changed property.
      */
     template<typename P, typename DecisionFunc>
-    const BaseCallBack* visibilityDependsOn(P& prop, DecisionFunc callback) {
+    Property& visibilityDependsOn(P& prop, DecisionFunc callback) {
         typename std::result_of<DecisionFunc(P&)>::type b = true;
         static_assert(std::is_same<decltype(b), bool>::value, "The visibility callback must return a boolean!");
         static_assert(std::is_base_of<Property, P>::value, "P must be a Property!");
         this->setVisible(callback(prop));
-        return prop.onChange([callback, &prop, this](){
+        prop.onChange([callback, &prop, this](){
             bool visible = callback(prop);
             this->setVisible(visible);
         });
+        return *this;
     }
 
     /* \brief sets readonly depending another property `prop`, according to `callback`
@@ -311,15 +312,16 @@ public:
      * might result in poor performance when `prop` is a very frequently changed property.
      */
     template<typename P, typename DecisionFunc>
-    const BaseCallBack* readonlyDependsOn(P& prop, DecisionFunc callback) {
+    Property& readonlyDependsOn(P& prop, DecisionFunc callback) {
         typename std::result_of<DecisionFunc(P&)>::type b = true;
         static_assert(std::is_same<decltype(b), bool>::value, "The readonly callback must return a boolean!");
         static_assert(std::is_base_of<Property, P>::value, "P must be a Property!");
         this->setReadOnly(callback(prop));
-        return prop.onChange([callback, &prop, this](){
+        prop.onChange([callback, &prop, this](){
             bool readonly = callback(prop);
             this->setReadOnly(readonly);
         });
+        return *this;
     }
 
     virtual Document getDescription() const;
@@ -328,7 +330,7 @@ public:
     static void setStateAsDefault(T& property, const U& state);
 
     template <typename P>
-    void autoLinkToProperty(const std::string& propertyPath);
+    Property& autoLinkToProperty(const std::string& propertyPath);
     const std::vector<std::pair<std::string, std::string>>& getAutoLinkToProperty() const;
 
     class IVW_CORE_API OnChangeBlocker {
@@ -399,9 +401,10 @@ void Property::setStateAsDefault(T& property, const U& state) {
 }
 
 template <typename P>
-void Property::autoLinkToProperty(const std::string& propertyPath) {
+Property& Property::autoLinkToProperty(const std::string& propertyPath) {
     autoLinkTo_.push_back(
         std::make_pair(ProcessorTraits<P>::getProcessorInfo().classIdentifier, propertyPath));
+    return *this;
 }
 
 }  // namespace inviwo

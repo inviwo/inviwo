@@ -70,11 +70,12 @@ void ButtonProperty::pressButton() {
     propertyModified();
 }
 
-void ButtonProperty::propertyModified() {
-    if (!buttonPressed_) return;
+ButtonProperty& ButtonProperty::propertyModified() {
+    if (!buttonPressed_) return *this;
     Property::propertyModified();
+    return *this;
 }
 
-void ButtonProperty::resetToDefaultState() {}
+ButtonProperty& ButtonProperty::resetToDefaultState() { return *this;}
 
 }  // namespace inviwo

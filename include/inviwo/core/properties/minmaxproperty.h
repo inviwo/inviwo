@@ -77,15 +77,15 @@ public:
     virtual void set(const range_type& value) override;
     virtual void set(const Property* srcProperty) override;
 
-    void setStart(const T& value);
-    void setEnd(const T& value);
+    MinMaxProperty<T>& setStart(const T& value);
+    MinMaxProperty<T>& setEnd(const T& value);
 
-    void setRangeMin(const T& value);
-    void setRangeMax(const T& value);
-    void setIncrement(const T& value);
-    void setMinSeparation(const T& value);
+    MinMaxProperty<T>& setRangeMin(const T& value);
+    MinMaxProperty<T>& setRangeMax(const T& value);
+    MinMaxProperty<T>& setIncrement(const T& value);
+    MinMaxProperty<T>& setMinSeparation(const T& value);
 
-    void setRange(const range_type& value);
+    MinMaxProperty<T>& setRange(const range_type& value);
 
     /**
      * \brief set all parameters of the range property at the same time with only a
@@ -98,13 +98,13 @@ public:
              const T& minSep);
 
     // set a new range, and maintains the same relative values as before.
-    void setRangeNormalized(const range_type& newRange);
+    MinMaxProperty<T>& setRangeNormalized(const range_type& newRange);
 
     const BaseCallBack* onRangeChange(std::function<void()> callback);
     void removeOnRangeChange(const BaseCallBack* callback);
 
-    virtual void setCurrentStateAsDefault() override;
-    virtual void resetToDefaultState() override;
+    virtual MinMaxProperty<T>& setCurrentStateAsDefault() override;
+    virtual MinMaxProperty<T>& resetToDefaultState() override;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& s) override;
@@ -228,17 +228,19 @@ void MinMaxProperty<T>::set(const range_type& value) {
 }
 
 template <typename T>
-void MinMaxProperty<T>::setStart(const T& value) {
+MinMaxProperty<T>& MinMaxProperty<T>::setStart(const T& value) {
     auto val = TemplateProperty<range_type>::value_.value;
     val.x = value;
     set(val);
+    return *this;
 }
 
 template <typename T>
-void MinMaxProperty<T>::setEnd(const T& value) {
+MinMaxProperty<T>& MinMaxProperty<T>::setEnd(const T& value) {
     auto val = TemplateProperty<range_type>::value_.value;
     val.y = value;
     set(val);
+    return *this;
 }
 
 template <typename T>
@@ -259,8 +261,8 @@ void MinMaxProperty<T>::set(const Property* srcProperty) {
 }
 
 template <typename T>
-void MinMaxProperty<T>::setRangeMin(const T& value) {
-    if (range_.value.x == value) return;
+MinMaxProperty<T>& MinMaxProperty<T>::setRangeMin(const T& value) {
+    if (range_.value.x == value) return *this;
 
     range_.value.x = value;
     // ensure that rangeMax is greater equal than rangeMin
@@ -269,11 +271,12 @@ void MinMaxProperty<T>::setRangeMin(const T& value) {
     value_.value = validateValues(value_.value).second;
     MinMaxProperty<T>::propertyModified();
     onRangeChangeCallback_.invokeAll();
+    return *this;
 }
 
 template <typename T>
-void MinMaxProperty<T>::setRangeMax(const T& value) {
-    if (range_.value.y == value) return;
+MinMaxProperty<T>& MinMaxProperty<T>::setRangeMax(const T& value) {
+    if (range_.value.y == value) return *this;
 
     range_.value.y = value;
     // ensure that rangeMin is less equal than rangeMax
@@ -282,18 +285,20 @@ void MinMaxProperty<T>::setRangeMax(const T& value) {
     value_.value = validateValues(value_.value).second;
     MinMaxProperty<T>::propertyModified();
     onRangeChangeCallback_.invokeAll();
+    return *this;
 }
 
 template <typename T>
-void MinMaxProperty<T>::setIncrement(const T& value) {
-    if (increment_ == value) return;
+MinMaxProperty<T>& MinMaxProperty<T>::setIncrement(const T& value) {
+    if (increment_ == value) return *this;
     increment_ = value;
     MinMaxProperty<T>::propertyModified();
+    return *this;
 }
 
 template <typename T>
-void MinMaxProperty<T>::setMinSeparation(const T& value) {
-    if (minSeparation_ == value) return;
+MinMaxProperty<T>& MinMaxProperty<T>::setMinSeparation(const T& value) {
+    if (minSeparation_ == value) return *this;
     minSeparation_ = value;
 
     // ensure that min separation is not larger than the entire range
@@ -303,11 +308,12 @@ void MinMaxProperty<T>::setMinSeparation(const T& value) {
 
     value_.value = validateValues(value_.value).second;
     MinMaxProperty<T>::propertyModified();
+    return *this;
 }
 
 template <typename T>
-void MinMaxProperty<T>::setRange(const range_type& value) {
-    if (value == range_.value) return;
+MinMaxProperty<T>& MinMaxProperty<T>::setRange(const range_type& value) {
+    if (value == range_.value) return *this;
 
     if (value.x < value.y) {
         range_.value = value;
@@ -318,6 +324,7 @@ void MinMaxProperty<T>::setRange(const range_type& value) {
     value_.value = validateValues(value_.value).second;
     MinMaxProperty<T>::propertyModified();
     onRangeChangeCallback_.invokeAll();
+    return *this;
 }
 
 template <typename T>
@@ -363,7 +370,7 @@ void MinMaxProperty<T>::set(const T& start, const T& end, const T& rangeMin, con
 }
 
 template <typename T>
-void MinMaxProperty<T>::setRangeNormalized(const range_type& newRange) {
+MinMaxProperty<T>& MinMaxProperty<T>::setRangeNormalized(const range_type& newRange) {
     dvec2 val = this->get();
 
     val = (val - static_cast<double>(range_.value.x)) /
@@ -375,14 +382,16 @@ void MinMaxProperty<T>::setRangeNormalized(const range_type& newRange) {
         static_cast<double>(range_.value.x);
 
     this->set(newVal);
+    return *this;
 }
 
 template <typename T>
-void MinMaxProperty<T>::resetToDefaultState() {
+MinMaxProperty<T>& MinMaxProperty<T>::resetToDefaultState() {
     range_.reset();
     increment_.reset();
     minSeparation_.reset();
     TemplateProperty<range_type>::resetToDefaultState();
+    return *this;
 }
 
 template <typename T>
@@ -396,11 +405,12 @@ void MinMaxProperty<T>::removeOnRangeChange(const BaseCallBack* callback) {
 }
 
 template <typename T>
-void MinMaxProperty<T>::setCurrentStateAsDefault() {
+MinMaxProperty<T>& MinMaxProperty<T>::setCurrentStateAsDefault() {
     TemplateProperty<range_type>::setCurrentStateAsDefault();
     range_.setAsDefault();
     increment_.setAsDefault();
     minSeparation_.setAsDefault();
+    return *this;
 }
 
 template <typename T>

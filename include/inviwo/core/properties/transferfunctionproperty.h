@@ -88,22 +88,22 @@ public:
     virtual TransferFunctionProperty* clone() const override;
     virtual ~TransferFunctionProperty();
 
-    void setMask(double maskMin, double maskMax);
+    TransferFunctionProperty& setMask(double maskMin, double maskMax);
     const dvec2 getMask() const;
-    void clearMask();
+    TransferFunctionProperty& clearMask();
 
-    void setZoomH(double zoomHMin, double zoomHMax);
+    TransferFunctionProperty& setZoomH(double zoomHMin, double zoomHMax);
     const dvec2& getZoomH() const;
 
-    void setZoomV(double zoomVMin, double zoomVMax);
+    TransferFunctionProperty& setZoomV(double zoomVMin, double zoomVMax);
     const dvec2& getZoomV() const;
 
-    void setHistogramMode(HistogramMode type);
+    TransferFunctionProperty& setHistogramMode(HistogramMode type);
     HistogramMode getHistogramMode();
     VolumeInport* getVolumeInport();
 
-    virtual void setCurrentStateAsDefault() override;
-    virtual void resetToDefaultState() override;
+    virtual TransferFunctionProperty& setCurrentStateAsDefault() override;
+    virtual TransferFunctionProperty& resetToDefaultState() override;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
