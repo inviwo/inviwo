@@ -49,13 +49,13 @@ BrushingAndLinkingManager::BrushingAndLinkingManager(Processor* p,
 BrushingAndLinkingManager::~BrushingAndLinkingManager() {}
 
 size_t BrushingAndLinkingManager::getNumberOfSelected() const { return selected_.size(); }
+size_t BrushingAndLinkingManager::getNumberOfHovered() const { return hovered_.size(); }
 
 size_t BrushingAndLinkingManager::getNumberOfFiltered() const { return filtered_.getSize(); }
 
 void BrushingAndLinkingManager::remove(const BrushingAndLinkingInport* src) {
     filtered_.remove(src);
 }
-
 bool BrushingAndLinkingManager::isColumnSelected(size_t idx) const {
     return selectedColumns_.find(idx) != selectedColumns_.end();
 }
@@ -63,6 +63,12 @@ bool BrushingAndLinkingManager::isColumnSelected(size_t idx) const {
 void BrushingAndLinkingManager::setSelected(const BrushingAndLinkingInport*,
                                             const std::unordered_set<size_t>& indices) {
     selected_ = indices;
+    owner_->invalidate(invalidationLevel_);
+}
+
+void BrushingAndLinkingManager::setHovered(const BrushingAndLinkingInport*,
+                                           const std::unordered_set<size_t>& indices) {
+    hovered_ = indices;
     owner_->invalidate(invalidationLevel_);
 }
 
@@ -79,6 +85,10 @@ void BrushingAndLinkingManager::setSelectedColumn(const BrushingAndLinkingInport
 
 const std::unordered_set<size_t>& BrushingAndLinkingManager::getSelectedIndices() const {
     return selected_;
+}
+
+const std::unordered_set<size_t>& BrushingAndLinkingManager::getHoveredIndices() const {
+    return hovered_;
 }
 
 const std::unordered_set<size_t>& BrushingAndLinkingManager::getFilteredIndices() const {

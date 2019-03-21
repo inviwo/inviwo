@@ -10,6 +10,7 @@ set(HEADER_FILES
     include/modules/brushingandlinking/brushingandlinkingmoduledefine.h
     include/modules/brushingandlinking/datastructures/indexlist.h
     include/modules/brushingandlinking/events/brushingandlinkingevent.h
+    include/modules/brushingandlinking/events/hoverevent.h
     include/modules/brushingandlinking/events/filteringevent.h
     include/modules/brushingandlinking/events/selectionevent.h
     include/modules/brushingandlinking/events/columnselectionevent.h
@@ -25,6 +26,7 @@ set(SOURCE_FILES
     src/brushingandlinkingmodule.cpp
     src/datastructures/indexlist.cpp
     src/events/brushingandlinkingevent.cpp
+    src/events/hoverevent.cpp
     src/events/filteringevent.cpp
     src/events/selectionevent.cpp
     src/events/columnselectionevent.cpp

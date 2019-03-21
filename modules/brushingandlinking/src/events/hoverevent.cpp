@@ -27,46 +27,12 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_BRUSHINGLIST_H
-#define IVW_BRUSHINGLIST_H
-
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/util/dispatcher.h>
-#include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
+#include <modules/brushingandlinking/events/hoverevent.h>
 
 namespace inviwo {
-class BrushingAndLinkingInport;
-class BrushingAndLinkingManager;
 
-class IVW_MODULE_BRUSHINGANDLINKING_API IndexList {
-public:
-    IndexList() = default;
-    
-    size_t getSize() const;
-    bool has(size_t idx) const;
-
-    void set(const BrushingAndLinkingInport *src, const std::unordered_set<size_t> &incices);
-    void remove(const BrushingAndLinkingInport *src);
-
-    std::shared_ptr<std::function<void()>> onChange(std::function<void()> V);
-
-    void update();
-    void clear();
-    const std::unordered_set<size_t> &getIndices() const { return indices_; }
-
-    const std::unordered_map<const BrushingAndLinkingInport *, std::unordered_set<size_t>>& getIndexBySource() const{
-        return indicesBySource_;
-    }
-
-private:
-    std::unordered_map<const BrushingAndLinkingInport *, std::unordered_set<size_t>>
-        indicesBySource_;
-    std::unordered_set<size_t> indices_;
-    Dispatcher<void()> onUpdate_;
-};
-
-inline bool IndexList::has(size_t idx) const { return indices_.find(idx) != indices_.end(); }
+HoverEvent::HoverEvent(const BrushingAndLinkingInport* src,
+                               const std::unordered_set<size_t>& indices)
+    : BrushingAndLinkingEvent(src, indices) {}
 
 }  // namespace inviwo
-
-#endif  // IVW_BRUSHINGLIST_H

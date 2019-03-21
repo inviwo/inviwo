@@ -27,60 +27,25 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_BRUSHINGANDLINKINGPROCESSOR_H
-#define IVW_BRUSHINGANDLINKINGPROCESSOR_H
+#ifndef IVW_HOVEREVENT_H
+#define IVW_HOVEREVENT_H
 
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <modules/brushingandlinking/brushingandlinkingmanager.h>
 #include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
-#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+
+#include <modules/brushingandlinking/events/brushingandlinkingevent.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.BrushingAndLinkingProcessor, Brushing And Linking Processor}
- * ![](org.inviwo.BrushingAndLinkingProcessor.png?classIdentifier=org.inviwo.BrushingAndLinkingProcessor)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
+/**
+ * \class HoverEvent
  */
-class IVW_MODULE_BRUSHINGANDLINKING_API BrushingAndLinkingProcessor : public Processor {
+class IVW_MODULE_BRUSHINGANDLINKING_API HoverEvent : public BrushingAndLinkingEvent {
 public:
-    BrushingAndLinkingProcessor();
-    virtual ~BrushingAndLinkingProcessor() = default;
-
-    virtual void process() override;
-
-    virtual const ProcessorInfo getProcessorInfo() const override;
-
-    virtual void invokeEvent(Event* event) override;
-
-    static const ProcessorInfo processorInfo_;
-
-    BrushingAndLinkingOutport& getOutport() { return outport_; }
-
-
-private:
-    BrushingAndLinkingOutport outport_;
-    IntSizeTProperty numberOfSelectedIndices_;
-    IntSizeTProperty numberOfFilterdIndices_;
-    IntSizeTProperty numberOfHoveredIndices_;
-    CompositeProperty sources_;
-    std::shared_ptr<BrushingAndLinkingManager> manager_;
-
+    HoverEvent(const BrushingAndLinkingInport* src, const std::unordered_set<size_t>& indices);
+    virtual ~HoverEvent() = default;
 };
 
 }  // namespace inviwo
 
-#endif  // IVW_BRUSHINGANDLINKINGPROCESSOR_H
+#endif  // IVW_HOVEREVENT_H

@@ -47,24 +47,35 @@ public:
     BrushingAndLinkingManager(Processor* p,
                               InvalidationLevel validationLevel = InvalidationLevel::InvalidOutput);
     virtual ~BrushingAndLinkingManager();
+
     /*
      * Return the number of selected items/rows.
      */
     size_t getNumberOfSelected() const;
+
     /*
-     * Return the number of filtered items/rows, i.e. the number of items/rows that should not be
-     * displayed.
-     */
+    * Return the number of filtered items/rows, i.e. the number of items/rows that should not be
+    * displayed.
+    */
     size_t getNumberOfFiltered() const;
+
+    /*
+    * Return the number of hovered items/rows.
+    */
+    size_t getNumberOfHovered() const;
 
     void remove(const BrushingAndLinkingInport* src);
 
     bool isFiltered(size_t idx) const;
     bool isSelected(size_t idx) const;
+    bool isHovered(size_t idx) const;
 
     bool isColumnSelected(size_t column) const;
 
     void setSelected(const BrushingAndLinkingInport* src, const std::unordered_set<size_t>& idx);
+    void setHovered(const BrushingAndLinkingInport* src, const std::unordered_set<size_t>& idx);
+
+
 
     void setFiltered(const BrushingAndLinkingInport* src, const std::unordered_set<size_t>& idx);
 
@@ -72,11 +83,18 @@ public:
                            const std::unordered_set<size_t>& columnIndices);
 
     const std::unordered_set<size_t>& getSelectedIndices() const;
+    const std::unordered_set<size_t>& getHoveredIndices() const;
     const std::unordered_set<size_t>& getFilteredIndices() const;
     const std::unordered_set<size_t>& getSelectedColumns() const;
 
+    const std::unordered_map<const BrushingAndLinkingInport*, std::unordered_set<size_t>>&
+    getFilteredIndicesBySource() const {
+        return filtered_.getIndexBySource();
+    }
+
 private:
     std::unordered_set<size_t> selected_;
+    std::unordered_set<size_t> hovered_;
     std::unordered_set<size_t> selectedColumns_;
     IndexList filtered_;  // Use IndexList to be able to remove filtered rows on port disconnection
     std::shared_ptr<std::function<void()>> onFilteringChangeCallback_;
@@ -85,13 +103,15 @@ private:
     InvalidationLevel invalidationLevel_;
 };
 
-
 inline bool BrushingAndLinkingManager::isFiltered(size_t idx) const { return filtered_.has(idx); }
 
 inline bool BrushingAndLinkingManager::isSelected(size_t idx) const {
     return selected_.find(idx) != selected_.end();
 }
 
+inline bool BrushingAndLinkingManager::isHovered(size_t idx) const {
+    return hovered_.find(idx) != hovered_.end();
+}
 
 }  // namespace inviwo
 

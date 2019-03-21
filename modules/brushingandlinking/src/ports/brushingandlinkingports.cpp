@@ -38,6 +38,7 @@ BrushingAndLinkingInport::BrushingAndLinkingInport(std::string identifier)
     onConnect([&]() {
         sendFilterEvent(filterCache_);
         sendSelectionEvent(selectionCache_);
+        sendHoverEvent(selectionCache_);
     });
 }
 
@@ -48,7 +49,8 @@ void BrushingAndLinkingInport::sendFilterEvent(const std::unordered_set<size_t> 
     propagateEvent(&event, nullptr);
 }
 
-void BrushingAndLinkingInport::sendSelectionEvent(const std::unordered_set<size_t> &indices) {
+void BrushingAndLinkingInport::sendSelectionEvent(const std::unordered_set<size_t> &indices,
+                                                  bool append) {
     bool noRemoteSelections = false;
     if (isConnected() && hasData()) {
         noRemoteSelections = getData()->getSelectedIndices().empty();
@@ -56,8 +58,20 @@ void BrushingAndLinkingInport::sendSelectionEvent(const std::unordered_set<size_
     if (selectionCache_.empty() && indices.empty() && noRemoteSelections) {
         return;
     }
-    selectionCache_ = indices;
+    if (append) {
+        selectionCache_ = getSelectedIndices();
+        selectionCache_.insert(indices.begin(), indices.end());
+    } else {
+        selectionCache_ = indices;
+    }
     SelectionEvent event(this, selectionCache_);
+    propagateEvent(&event, nullptr);
+}
+
+void BrushingAndLinkingInport::sendHoverEvent(const std::unordered_set<size_t> &indices) {
+    if (hoverCache_.size() == 0 && indices.size() == 0) return;
+    hoverCache_ = indices;
+    HoverEvent event(this, hoverCache_);
     propagateEvent(&event, nullptr);
 }
 
@@ -87,6 +101,14 @@ const std::unordered_set<size_t> &BrushingAndLinkingInport::getSelectedIndices()
         return getData()->getSelectedIndices();
     } else {
         return selectionCache_;
+    }
+}
+
+const std::unordered_set<size_t> &BrushingAndLinkingInport::getHoveredIndices() const {
+    if (isConnected()) {
+        return getData()->getHoveredIndices();
+    } else {
+        return hoverCache_;
     }
 }
 

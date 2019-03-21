@@ -37,6 +37,7 @@
 #include <modules/brushingandlinking/brushingandlinkingmanager.h>
 #include <modules/brushingandlinking/brushingandlinkingmoduledefine.h>
 #include <modules/brushingandlinking/events/filteringevent.h>
+#include <modules/brushingandlinking/events/hoverevent.h>
 #include <modules/brushingandlinking/events/selectionevent.h>
 #include <modules/brushingandlinking/events/columnselectionevent.h>
 #include <inviwo/core/datastructures/datatraits.h>
@@ -51,22 +52,27 @@ public:
 
     void sendFilterEvent(const std::unordered_set<size_t> &indices);
 
-    void sendSelectionEvent(const std::unordered_set<size_t> &indices);
+    void sendSelectionEvent(const std::unordered_set<size_t> &indices, bool append = false);
+
+    void sendHoverEvent(const std::unordered_set<size_t> &indices);
 
     void sendColumnSelectionEvent(const std::unordered_set<size_t> &indices);
 
     bool isFiltered(size_t idx) const;
     bool isSelected(size_t idx) const;
+    bool isHovered(size_t idx) const;
 
     bool isColumnSelected(size_t idx) const;
 
     const std::unordered_set<size_t> &getSelectedIndices() const;
+    const std::unordered_set<size_t> &getHoveredIndices() const;
     const std::unordered_set<size_t> &getFilteredIndices() const;
     const std::unordered_set<size_t> &getSelectedColumns() const;
 
     virtual std::string getClassIdentifier() const override;
 
     std::unordered_set<size_t> filterCache_;
+    std::unordered_set<size_t> hoverCache_;
     std::unordered_set<size_t> selectionCache_;
     std::unordered_set<size_t> selectionColumnCache_;
 };
@@ -99,6 +105,7 @@ struct DataTraits<BrushingAndLinkingManager> {
         Document doc;
         std::ostringstream oss;
         oss << "Number of selected indices: " << data.getNumberOfSelected() << std::endl;
+        oss << "Number of hovered indices: " << data.getNumberOfHovered() << std::endl;
         oss << "Number of filtered indices: " << data.getNumberOfFiltered();
         doc.append("p", oss.str());
         return doc;
@@ -119,6 +126,14 @@ inline bool BrushingAndLinkingInport::isSelected(size_t idx) const {
         return getData()->isSelected(idx);
     } else {
         return selectionCache_.find(idx) != selectionCache_.end();
+    }
+}
+
+inline bool BrushingAndLinkingInport::isHovered(size_t idx) const {
+    if (isConnected()) {
+        return getData()->isHovered(idx);
+    } else {
+        return hoverCache_.find(idx) != hoverCache_.end();
     }
 }
 
