@@ -40,6 +40,7 @@
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
 #include <modules/plotting/properties/dataframeproperty.h>
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 
 namespace inviwo {
 
@@ -72,10 +73,12 @@ public:
 
 private:
     DataInport<DataFrame> dataFrame_;
+    BrushingAndLinkingInport brushing_;
     DataOutport<std::vector<vec4>> colors_;
 
     DataFrameColumnProperty selectedColorAxis_;
     TransferFunctionProperty tf_;
+    BoolProperty useSelectedColumnFromBrushing_;
 };
 
 }  // namespace plot

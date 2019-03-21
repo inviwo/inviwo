@@ -48,13 +48,17 @@ const ProcessorInfo DataFrameColumnToColorVector::getProcessorInfo() const {
 DataFrameColumnToColorVector::DataFrameColumnToColorVector()
     : Processor()
     , dataFrame_("dataFrame")
+    , brushing_("brushing")
     , colors_("colors")
     , selectedColorAxis_("selectedColorAxis", "Selected Color Axis", dataFrame_)
     , tf_("tf", "Color Mapping",
           TransferFunction(
-              {{0.0f, vec4(1, 0, 0, 1)}, {0.5f, vec4(1, 1, 0, 1)}, {1.0f, vec4(0, 1, 0, 1)}})) {
+              {{0.0f, vec4(1, 0, 0, 1)}, {0.5f, vec4(1, 1, 0, 1)}, {1.0f, vec4(0, 1, 0, 1)}}))
+    , useSelectedColumnFromBrushing_("useSelectedColumnFromBrushing",
+                                     "Use Selected Column From Brushing port", true) {
 
     addPort(dataFrame_);
+    addPort(brushing_);
     addPort(colors_);
     addProperty(selectedColorAxis_);
     addProperty(tf_);
@@ -62,6 +66,16 @@ DataFrameColumnToColorVector::DataFrameColumnToColorVector()
 
 void DataFrameColumnToColorVector::process() {
     auto dataFrame = dataFrame_.getData();
+
+    if (useSelectedColumnFromBrushing_.get() && brushing_.isConnected()) {
+        auto selectedCols = brushing_.getSelectedColumns();
+        if (selectedCols.size() > 2) {
+            LogWarn("Multiple Columns selected, using only first");
+        }
+        if (!selectedCols.empty()) {
+            selectedColorAxis_.setSelectedIndex(*selectedCols.begin());
+        }
+    }
 
     colors_.setData(
         selectedColorAxis_.getBuffer()
