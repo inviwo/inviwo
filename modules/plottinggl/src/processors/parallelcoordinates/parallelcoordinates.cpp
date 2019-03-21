@@ -47,6 +47,7 @@
 #include <modules/opengl/rendering/meshdrawergl.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/buffer/buffergl.h>
 #include <inviwo/core/io/datareaderfactory.h>
 
 #include <modules/plotting/utils/statsutils.h>
@@ -362,7 +363,6 @@ void ParallelCoordinates::buildLineMesh() {
     const auto metaAxisId = selectedColorAxis_.get();
     const auto metaAxes = axes_[glm::clamp(metaAxisId, 0, static_cast<int>(axes_.size()) - 1)].pcp;
 
-    const float dx = 1.0f / (numberOfAxis - 1);
     for (size_t i = 0; i < numberOfLines; i++) {
         const auto meta = static_cast<float>(metaAxes->getNormalizedAt(i));
         const auto picking = static_cast<uint32_t>(linePicking_.getPickingId(i));
@@ -384,7 +384,7 @@ void ParallelCoordinates::buildLineIndices() {
     const auto numberOfLines = dataFrame_.getData()->getNumberOfRows();
 
     lines_.sizes.resize(numberOfLines, static_cast<int>(numberOfEnabledAxis));
-    if (!lines_.sizes.empty() && lines_.sizes.front() != numberOfEnabledAxis) {
+    if (!lines_.sizes.empty() && lines_.sizes.front() != static_cast<int>(numberOfEnabledAxis)) {
         std::fill(lines_.sizes.begin(), lines_.sizes.end(),
                   static_cast<GLsizei>(numberOfEnabledAxis));
     }
@@ -537,7 +537,7 @@ void ParallelCoordinates::drawLines(size2_t size) {
         std::array<float, 3> mixColor = {filterIntensity_, 0.0f, 0.0f};
         std::array<float, 3> mixAlpha = {1.0, 0.0f, 0.0f};
 
-        for (int i = showFiltered_ ? 0 : 1; i < lines_.offsets.size() - 1; ++i) {
+        for (size_t i = showFiltered_ ? 0 : 1; i < lines_.offsets.size() - 1; ++i) {
             auto begin = lines_.offsets[i];
             auto end = lines_.offsets[i + 1];
             if (end == begin) continue;
@@ -648,7 +648,7 @@ void ParallelCoordinates::axisPicked(PickingEvent* p, size_t pickedID, PickType 
         if (delta.x > delta.y) {
             const auto it = util::find(enabledAxes_, &axes_[pickedID]);
             if (it != enabledAxes_.end()) {
-                const auto id = std::distance(enabledAxes_.begin(), it);
+                const auto id = static_cast<size_t>(std::distance(enabledAxes_.begin(), it));
                 if (id > 0 && pickedID > 0 &&
                     p->getPosition().x * p->getCanvasSize().x <
                         static_cast<float>(

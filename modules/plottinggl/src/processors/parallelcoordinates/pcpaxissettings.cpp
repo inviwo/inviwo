@@ -33,6 +33,7 @@
 #include <modules/base/algorithm/dataminmax.h>
 #include <modules/plotting/utils/statsutils.h>
 #include <modules/plottinggl/processors/parallelcoordinates/parallelcoordinates.h>
+#include <modules/plotting/utils/axisutils.h>
 
 #include <fmt/format.h>
 #include <fmt/printf.h>
@@ -270,7 +271,7 @@ bool PCPAxisSettings::getUseDataRange() const { return false; }
 bool PCPAxisSettings::getVisible() const { return BoolCompositeProperty::getVisible(); }
 
 vec4 PCPAxisSettings::getColor() const {
-    const auto hover = pcp_->getHoveredAxis() == columnId_;
+    const auto hover = pcp_->getHoveredAxis() == static_cast<int>(columnId_);
     const auto selected = pcp_->brushingAndLinking_.isColumnSelected(columnId_);
 
     if (hover && selected) {
@@ -285,7 +286,7 @@ vec4 PCPAxisSettings::getColor() const {
 }
 
 float PCPAxisSettings::getWidth() const {
-    if (pcp_->getHoveredAxis() == columnId_) {
+    if (pcp_->getHoveredAxis() == static_cast<int>(columnId_)) {
         return 1.5f * pcp_->axisSize_;
     } else if (pcp_->brushingAndLinking_.isColumnSelected(columnId_)) {
         return 1.5f * pcp_->axisSize_;
