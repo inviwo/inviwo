@@ -42,16 +42,37 @@ const ProcessorInfo EigenMatrixToImage::processorInfo_{
 const ProcessorInfo EigenMatrixToImage::getProcessorInfo() const { return processorInfo_; }
 
 EigenMatrixToImage::EigenMatrixToImage()
-    : Processor(), matrix_("matrix"), image_("image"), flipY_("flipy", "Flip Y-axis", true) {
+    : Processor()
+    , matrix_("matrix")
+    , image_("image")
+    , flipY_("flipy", "Flip Y-axis", true)
+    , usePortSize_("usePortSize", "Use port size (when Matrix is larger)" , true)
+{
 
     addPort(matrix_);
     addPort(image_);
 
     addProperty(flipY_);
+    addProperty(usePortSize_);
+
+    usePortSize_.onChange([this](){
+        
+    });
 }
 
 void EigenMatrixToImage::process() {
-    image_.setData(util::eigenMatToImage(*matrix_.getData(), flipY_.get()));
+    auto m = matrix_.getData();
+
+    auto portSize = image_.getDimensions();
+
+    if(usePortSize_.get() && ( portSize.x < m->cols() || portSize.y < m->rows() ) ){
+        auto numRows = std::min<Eigen::Index>(portSize.y , m->rows());
+        auto numCols = std::min<Eigen::Index>(portSize.x , m->cols());
+        auto newM = util::downsample(*m, numRows,numCols);
+        image_.setData(util::eigenMatToImage( newM, flipY_.get()));
+    }else{
+        image_.setData(util::eigenMatToImage(*m, flipY_.get()));
+    }
 }
 
 }  // namespace inviwo

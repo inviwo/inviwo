@@ -54,6 +54,7 @@ private:
     ImageOutport image_;
 
     BoolProperty flipY_;
+    BoolProperty usePortSize_;
 };
 
 }  // namespace inviwo

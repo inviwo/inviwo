@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2019 Inviwo Foundation
+ * Copyright (c) 2015-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,39 +27,16 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_EIGENPORTS_H
-#define IVW_EIGENPORTS_H
-
-#include <modules/eigenutils/eigenutilsmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <modules/eigenutils/eigenutils.h>
-#include <inviwo/core/datastructures/datatraits.h>
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/ports/dataoutport.h>
+
 
 namespace inviwo {
 
-using EigenMatrixOutport = DataOutport<Eigen::MatrixXf>;
-using EigenMatrixInport = DataInport<Eigen::MatrixXf>;
 
-template <>
-struct DataTraits<Eigen::MatrixXf> {
-    static std::string classIdentifier() { return "org.inviwo.EigenMatrixXf"; }
-    static std::string dataName() { return "EigenMatrixXf"; }
-    static uvec3 colorCode() { return uvec3(141, 211, 199); }
-    static Document info(const Eigen::MatrixXf& data) {
-        Document doc;
-        std::ostringstream oss;
-        oss << "Eigen MatrixXf<br />";
-        oss << "Size, rows:" << data.rows()  << ", cols: " << data.cols() << "<br />";
-        oss << "Min coeff:" << data.minCoeff()  << "<br />";
-        oss << "Max coeff:" << data.maxCoeff()  << "<br />";
-
-        doc.append("p", oss.str());
-        return doc;
+    EigenException::EigenException(const std::string& message,ExceptionContext context)
+        : Exception(message,context)
+    {
+        
     }
-};
 
 }  // namespace inviwo
-
-#endif  // IVW_PORTS_H

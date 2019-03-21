@@ -20,6 +20,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 # Add source files
 set(SOURCE_FILES
     src/eigenutilsmodule.cpp
+    src/eigenutils.cpp
     src/processors/eigenmatrixtoimage.cpp
     src/processors/eigenmix.cpp
     src/processors/eigennormalize.cpp

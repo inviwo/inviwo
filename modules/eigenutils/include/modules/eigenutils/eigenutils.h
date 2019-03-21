@@ -44,6 +44,12 @@
 
 namespace inviwo {
 
+class IVW_MODULE_EIGENUTILS_API EigenException : public Exception {
+public:
+    EigenException(const std::string& message = "", ExceptionContext context = ExceptionContext());
+    virtual ~EigenException() noexcept = default;
+};
+
 namespace util {
 
 template <typename T, typename std::enable_if<util::rank<T>::value == 1, int>::type = 0>
@@ -129,6 +135,49 @@ std::shared_ptr<Image> eigenMatToImage(const T& m, bool flipY = false, std::stri
     }
 
     return img;
+}
+
+enum class DownsampleAggreationMode {
+    First
+    //,Min,Max,Avg
+};
+
+template <typename T>
+Eigen::Matrix<T, -1, -1> downsample(
+    const Eigen::Matrix<T, -1, -1>& src, Eigen::Index rows, Eigen::Index cols,
+    DownsampleAggreationMode mode = DownsampleAggreationMode::First) {
+    if (rows == src.rows() && cols == src.cols()) return src;
+    if (rows > src.rows() || cols > src.cols()) {
+        throw EigenException("Size of output matrix is larger than input matrix, can't downsample",
+                             IvwContextCustom("eigen::downsample"));
+    }
+
+
+    Eigen::Matrix<T, -1, -1> dst(rows, cols);
+
+    double dx = static_cast<double>(src.cols()) /  static_cast<double>(cols); 
+    double dy = static_cast<double>(src.rows()) /  static_cast<double>(rows); 
+
+    switch (mode)
+    {
+    case inviwo::util::DownsampleAggreationMode::First:
+    {
+        // eigen matrices are col major
+        for(int col = 0; col<cols;col++ ){
+            auto readCol = static_cast<int>(col*dx);
+            for(int row = 0; row<rows;row++ ){
+                auto readRow = static_cast<int>(row*dy);
+                dst(row,col) = src(readRow,readCol);
+            }}
+    }
+        break;
+    default:
+        break;
+    }
+
+    return dst;
+
+
 }
 
 }  // namespace util
