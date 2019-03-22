@@ -29,38 +29,34 @@
 
 #include <modules/eigenutils/processors/testmatrix.h>
 
-
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo TestMatrix::processorInfo_{
-    "org.inviwo.TestMatrix",      // Class identifier
-    "Test Matrix",                // Display name
-    "Undefined",              // Category
-    CodeState::Experimental,  // Code state
-    Tags::None,               // Tags
+    "org.inviwo.TestMatrix",  // Class identifier
+    "Test Matrix",            // Display name
+    "Eigen",                  // Category
+    CodeState::Stable,        // Code state
+    "Testing",                // Tags
 };
 const ProcessorInfo TestMatrix::getProcessorInfo() const { return processorInfo_; }
 
 TestMatrix::TestMatrix()
-    : Processor()
-    , matrix_("matrix_")
-    , size_("size","Matrix size (square)" , 10 , 1 , 1000)
-{
+    : Processor(), matrix_("matrix_"), size_("size", "Matrix size (square)", 10, 1, 1000) {
     addPort(matrix_);
     addProperty(size_);
 }
 
 void TestMatrix::process() {
-    
-    auto m = std::make_shared<Eigen::MatrixXf>(size_.get(),size_.get());
-    for(int y = 0;y<size_.get();y++){
-        float Y = y / static_cast<float>(size_.get()-1);
+
+    auto m = std::make_shared<Eigen::MatrixXf>(size_.get(), size_.get());
+    for (int y = 0; y < size_.get(); y++) {
+        float Y = y / static_cast<float>(size_.get() - 1);
         Y *= Y * 0.5f;
-        for(int x = 0;x<size_.get();x++){
-            float X = x / static_cast<float>(size_.get()-1);
+        for (int x = 0; x < size_.get(); x++) {
+            float X = x / static_cast<float>(size_.get() - 1);
             X *= X;
-            (*m)(y,x) = glm::mix( Y , 1.0f , X);
+            (*m)(y, x) = glm::mix(Y, 1.0f, X);
         }
     }
     matrix_.setData(m);
