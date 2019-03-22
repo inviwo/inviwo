@@ -39,22 +39,7 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.TestMatrix, Test Matrix}
  * ![](org.inviwo.TestMatrix.png?classIdentifier=org.inviwo.TestMatrix)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
-
-/**
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
+ * Processor crating an matrix useful for regression testing.
  */
 class IVW_MODULE_EIGENUTILS_API TestMatrix : public Processor {
 public:
