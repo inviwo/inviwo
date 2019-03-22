@@ -42,7 +42,7 @@ std::shared_ptr<BufferBase> cloneBufferRange(std::shared_ptr<const BufferBase> b
 
     return buffer->getRepresentation<BufferRAM>()->dispatch<std::shared_ptr<BufferBase>>(
         [&](auto typed) {
-            using ValueType = util::PrecsionValueType<decltype(typed)>;
+            using ValueType = util::PrecisionValueType<decltype(typed)>;
             auto newBuffer = std::make_shared<Buffer<ValueType>>();
             auto &vecOut = newBuffer->getEditableRAMRepresentation()->getDataContainer();
             auto &vecIn = typed->getDataContainer();
@@ -60,7 +60,7 @@ void copyBufferRange(std::shared_ptr<const BufferBase> src, std::shared_ptr<Buff
 
     if (src->getDataFormat()->getId() == dst->getDataFormat()->getId()) {
         dst->getEditableRepresentation<BufferRAM>()->dispatch<void>([&](auto typed) {
-            using ValueType = util::PrecsionValueType<decltype(typed)>;
+            using ValueType = util::PrecisionValueType<decltype(typed)>;
             auto typedInBuf = static_cast<const Buffer<ValueType> *>(src.get());
             auto &vecIn = typedInBuf->getRAMRepresentation()->getDataContainer();
             auto &vecOut = typed->getDataContainer();
@@ -139,7 +139,7 @@ std::shared_ptr<plot::DataFrame> combineDataFrames(
             ->getRepresentation<BufferRAM>()
             ->dispatch<void, dispatching::filter::Scalars>([&](auto typedBuf) {
                 IVW_UNUSED_PARAM(typedBuf);
-                using ValueType = util::PrecsionValueType<decltype(typedBuf)>;
+                using ValueType = util::PrecisionValueType<decltype(typedBuf)>;
                 columns[col->getHeader()] = newDataFrame->addColumn<ValueType>(col->getHeader());
             });
     }
@@ -151,7 +151,7 @@ std::shared_ptr<plot::DataFrame> combineDataFrames(
                 ->getBuffer()
                 ->getEditableRepresentation<BufferRAM>()
                 ->dispatch<void>([&](auto typedBuf) {
-                    using ValueType = util::PrecsionValueType<decltype(typedBuf)>;
+                    using ValueType = util::PrecisionValueType<decltype(typedBuf)>;
 
                     auto typedBuffer =
                         static_cast<const Buffer<ValueType> *>(col->getBuffer().get());

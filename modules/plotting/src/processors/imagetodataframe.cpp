@@ -165,7 +165,7 @@ void ImageToDataFrame::process() {
             static const vec3 avgLum(1.0f / 3.0f);
 
             layer->dispatch<void>([&](const auto lr) {
-                using ValueType = util::PrecsionValueType<decltype(lr)>;
+                using ValueType = util::PrecisionValueType<decltype(lr)>;
                 const auto im = util::IndexMapper2D(dims);
                 const auto data = lr->getDataTyped();
 
@@ -206,7 +206,7 @@ void ImageToDataFrame::process() {
         case Mode::Rows: {
             auto dataFrame = std::make_shared<plot::DataFrame>(static_cast<glm::u32>(dims.x));
             layer->dispatch<void>([&](const auto lr) {
-                using ValueType = util::PrecsionValueType<decltype(lr)>;
+                using ValueType = util::PrecisionValueType<decltype(lr)>;
                 const auto im = util::IndexMapper2D(dims);
                 const auto data = lr->getDataTyped();
                 for (size_t j = range_.getStart(); j < range_.getEnd(); ++j) {
@@ -227,7 +227,7 @@ void ImageToDataFrame::process() {
         case Mode::Columns: {
             auto dataFrame = std::make_shared<plot::DataFrame>(static_cast<glm::u32>(dims.y));
             layer->dispatch<void>([&](const auto lr) {
-                using ValueType = util::PrecsionValueType<decltype(lr)>;
+                using ValueType = util::PrecisionValueType<decltype(lr)>;
                 const auto im = util::IndexMapper2D(dims);
                 const auto data = lr->getDataTyped();
                 for (size_t i = range_.getStart(); i < range_.getEnd(); ++i) {

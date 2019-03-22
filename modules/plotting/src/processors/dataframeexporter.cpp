@@ -162,7 +162,7 @@ void DataFrameExporter::exportAsCSV(bool separateVectorTypesIntoColumns) {
             col->getBuffer()
                 ->getRepresentation<BufferRAM>()
                 ->dispatch<void, dispatching::filter::Vecs>([&printers, delimiter](auto br) {
-                    using ValueType = util::PrecsionValueType<decltype(br)>;
+                    using ValueType = util::PrecisionValueType<decltype(br)>;
                     printers.push_back([br, delimiter](std::ostream& os, size_t index) {
                         auto oj = util::make_ostream_joiner(os, delimiter);
                         for (size_t i = 0; i < util::flat_extent<ValueType>::value; ++i) {

@@ -96,8 +96,8 @@ public:
      * ```{.cpp}
      * LayerRam* layerram = ...; // of some glm vector type.
      * auto count = layerram->dispatch<size_t, dispatching::filter::Vecs>([](auto lrprecision) {
-     *     using LayerType = util::PrecsionType<decltype(lrprecision)>;
-     *     using ValueType = util::PrecsionValueType<decltype(lrprecision)>;
+     *     using LayerType = util::PrecisionType<decltype(lrprecision)>;
+     *     using ValueType = util::PrecisionValueType<decltype(lrprecision)>;
      *
      *     T* data = lrprecision->getDataTyped();
      *     auto dim = lrprecision->getDimensions();

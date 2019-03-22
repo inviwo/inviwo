@@ -297,7 +297,7 @@ void util::volumeDistanceTransform(const Volume *inVolume, VolumeRAMPrecision<U>
 
     const auto inputVolumeRep = inVolume->getRepresentation<VolumeRAM>();
     inputVolumeRep->dispatch<void, dispatching::filter::Scalars>([&](const auto vrprecision) {
-        using ValueType = util::PrecsionValueType<decltype(vrprecision)>;
+        using ValueType = util::PrecisionValueType<decltype(vrprecision)>;
 
         const auto predicateIn = [threshold](const ValueType &val) { return val < threshold; };
         const auto predicateOut = [threshold](const ValueType &val) { return val > threshold; };

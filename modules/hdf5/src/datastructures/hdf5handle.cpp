@@ -193,7 +193,7 @@ std::shared_ptr<Volume> Handle::getVolumeAtPathAsType(const Path& path,
 
     auto minmax = volumeram->dispatch<std::pair<dvec4, dvec4>, dispatching::filter::Scalars>(
         [&](auto vrprecision) {
-            using ValueType = ::inviwo::util::PrecsionValueType<decltype(vrprecision)>;
+            using ValueType = ::inviwo::util::PrecisionValueType<decltype(vrprecision)>;
 
             ValueType* data = vrprecision->getDataTyped();
 

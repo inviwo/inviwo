@@ -56,7 +56,7 @@ std::shared_ptr<Column> DataFrame::addColumnFromBuffer(const std::string &identi
                                                        std::shared_ptr<const BufferBase> buffer) {
     return buffer->getRepresentation<BufferRAM>()
         ->dispatch<std::shared_ptr<Column>, dispatching::filter::Scalars>([&](auto buf) {
-            using ValueType = util::PrecsionValueType<decltype(buf)>;
+            using ValueType = util::PrecisionValueType<decltype(buf)>;
             auto col = this->addColumn<ValueType>(identifier);
             auto newBuf = col->getTypedBuffer();
             auto &newVec = newBuf->getEditableRAMRepresentation()->getDataContainer();

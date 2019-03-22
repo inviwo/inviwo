@@ -127,7 +127,7 @@ void VolumeToDataFrame::process() {
 
             volume->getRepresentation<VolumeRAM>()->dispatch<void>([&](auto vr) {
                 const auto im = util::IndexMapper3D(vr->getDimensions());
-                using ValueType = util::PrecsionValueType<decltype(vr)>;
+                using ValueType = util::PrecisionValueType<decltype(vr)>;
                 const auto data = vr->getDataTyped();
                 auto i = 0;
                 size3_t ind;
@@ -165,7 +165,7 @@ void VolumeToDataFrame::process() {
 
             volume->getRepresentation<VolumeRAM>()->dispatch<void>([this, dataFrame,
                                                                     size](const auto vr) {
-                using ValueType = util::PrecsionValueType<decltype(vr)>;
+                using ValueType = util::PrecisionValueType<decltype(vr)>;
                 const auto im = util::IndexMapper3D(vr->getDimensions());
                 const auto data = vr->getDataTyped();
                 size3_t ind;
@@ -193,7 +193,7 @@ void VolumeToDataFrame::process() {
 
             volume->getRepresentation<VolumeRAM>()->dispatch<void>(
                 [this, dataFrame, size](const auto vr) {
-                    using ValueType = util::PrecsionValueType<decltype(vr)>;
+                    using ValueType = util::PrecisionValueType<decltype(vr)>;
                     const auto im = util::IndexMapper3D(vr->getDimensions());
                     const auto data = vr->getDataTyped();
                     size3_t ind;
@@ -221,7 +221,7 @@ void VolumeToDataFrame::process() {
 
             volume->getRepresentation<VolumeRAM>()->dispatch<void>(
                 [this, dataFrame, size](const auto vr) {
-                    using ValueType = util::PrecsionValueType<decltype(vr)>;
+                    using ValueType = util::PrecisionValueType<decltype(vr)>;
                     const auto im = util::IndexMapper3D(vr->getDimensions());
                     const auto data = vr->getDataTyped();
                     size3_t ind;
