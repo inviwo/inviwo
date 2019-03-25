@@ -203,6 +203,12 @@ function(ivw_private_setup_module_data)
     # In that case set to INVIWO<NAME>MODULE_description
     if(EXISTS "${${mod}_path}/readme.md")
         file(READ "${${mod}_path}/readme.md" description)
+        # truncate description since some readme files are quite substantial
+        string(LENGTH "${description}" desc_len)
+        if(desc_len GREATER 250)
+            string(SUBSTRING "${description}" 0 250 description)
+            string(JOIN "" description "${description}" "...")
+        endif()
         # encode linebreaks, i.e. '\n', and semicolon in description for
         # proper handling in CMAKE
         encodeLineBreaks(cdescription ${description})
