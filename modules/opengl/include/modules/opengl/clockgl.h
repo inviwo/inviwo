@@ -106,7 +106,7 @@ public:
      * @return accumulated time in milliseconds
      * \see getElapsedTime
      */
-    double getElapsedMiliseconds(std::chrono::seconds timeout = std::chrono::seconds{30});
+    double getElapsedMilliseconds(std::chrono::seconds timeout = std::chrono::seconds{30});
 
     /**
      * returns the accumulated time. If the clock is running the result is accumulated

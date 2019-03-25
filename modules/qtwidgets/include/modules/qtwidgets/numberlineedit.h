@@ -70,6 +70,13 @@ public:
     void setMaximum(double max);
     void setRange(double min, double max);
 
+    /**
+    * \brief Overrides the timerEvent to prevent
+    * spinbox to be updated twice in case of
+    * calculations being slows
+    */
+    virtual void timerEvent(QTimerEvent* event);
+
 protected:
     virtual QValidator::State validate(QString &text, int &pos) const override;
     virtual void focusInEvent(QFocusEvent *e) override;

@@ -136,7 +136,7 @@ void ClockGL::collectTiming() {
                           [](auto& query) { return query.state == State::Unused; });
 }
 
-double ClockGL::getElapsedMiliseconds(std::chrono::seconds timeout) {
+double ClockGL::getElapsedMilliseconds(std::chrono::seconds timeout) {
     using duration_double = std::chrono::duration<double, std::chrono::milliseconds::period>;
     return std::chrono::duration_cast<duration_double>(getElapsedTime(timeout)).count();
 }
