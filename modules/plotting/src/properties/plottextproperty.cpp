@@ -69,6 +69,7 @@ PlotTextProperty::PlotTextProperty(const PlotTextProperty& rhs)
     addProperty(color_);
     addProperty(offset_);
     addProperty(position_);
+    addProperty(rotation_);
     addProperty(font_);
 }
 

@@ -118,6 +118,7 @@ AxisProperty::AxisProperty(const std::string& identifier, const std::string& dis
     orientation_.onChange([this]() { adjustAlignment(); });
     placement_.onChange([this]() { adjustAlignment(); });
     majorTicks_.onChange([this]() { updateLabels(); });
+    range_.onChange([this]() { updateLabels(); });
     // update label alignment to match current status
     adjustAlignment();
     updateLabels();
@@ -156,6 +157,7 @@ AxisProperty::AxisProperty(const AxisProperty& rhs)
     orientation_.onChange([this]() { adjustAlignment(); });
     placement_.onChange([this]() { adjustAlignment(); });
     majorTicks_.onChange([this]() { updateLabels(); });
+    range_.onChange([this]() { updateLabels(); });
     // update label alignment to match current status
     adjustAlignment();
     updateLabels();

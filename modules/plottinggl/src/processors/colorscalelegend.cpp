@@ -136,7 +136,10 @@ ColorScaleLegend::ColorScaleLegend()
     axis_.setCaption(title_.get());
     axis_.captionSettings_.setChecked(true);
     axis_.labelSettings_.font_.fontFace_.set(axis_.captionSettings_.font_.fontFace_.get());
-    axis_.captionSettings_.offset_.set(8);
+    axis_.captionSettings_.offset_.set(20);
+    axis_.captionSettings_.font_.anchorPos_.set(vec2{0.0f, 0.0f});
+    axis_.setCurrentStateAsDefault();
+
     fontSize_.propertyModified();
 
     legendPlacement_.onChange([&]() { updateLegendState(); });

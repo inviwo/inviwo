@@ -44,9 +44,11 @@ class Mesh;
 namespace plot {
 
 IVW_MODULE_PLOTTING_API std::vector<double> getMajorTickPositions(const MajorTickSettings& ticks,
-                                                                  dvec2 range);
+                                                                  dvec2 range,
+                                                                  size_t maxTicks = 1000);
 IVW_MODULE_PLOTTING_API std::vector<double> getMinorTickPositions(
-    const MinorTickSettings& minorTicks, const MajorTickSettings& majorTicks, dvec2 range);
+    const MinorTickSettings& minorTicks, const MajorTickSettings& majorTicks, dvec2 range,
+    size_t maxTicks = 10000);
 
 /**
  * \brief returns tick positions along the axis range defined in the axis property
@@ -54,12 +56,14 @@ IVW_MODULE_PLOTTING_API std::vector<double> getMinorTickPositions(
  * @param property   axis property used for tick settings
  * @return positions of tick marks
  */
-inline std::vector<double> getMajorTickPositions(const AxisSettings& settings) {
-    return getMajorTickPositions(settings.getMajorTicks(), settings.getRange());
+inline std::vector<double> getMajorTickPositions(const AxisSettings& settings,
+                                                 size_t maxTicks = 1000) {
+    return getMajorTickPositions(settings.getMajorTicks(), settings.getRange(), maxTicks);
 }
-inline std::vector<double> getMinorTickPositions(const AxisSettings& settings) {
+inline std::vector<double> getMinorTickPositions(const AxisSettings& settings,
+                                                 size_t maxTicks = 1000) {
     return getMinorTickPositions(settings.getMinorTicks(), settings.getMajorTicks(),
-                                 settings.getRange());
+                                 settings.getRange(), maxTicks);
 }
 
 vec2 IVW_MODULE_PLOTTING_API getAxisCaptionPosition(const AxisSettings& settings,
@@ -136,8 +140,8 @@ IVW_MODULE_PLOTTING_API std::unique_ptr<Mesh> generateTicksMesh(
     const vec3& tickDirection, float tickLength, TickStyle style, const vec4& color, bool flip);
 
 IVW_MODULE_PLOTTING_API std::pair<vec2, vec2> tickBoundingRect(const AxisSettings& settings,
-                                                                 const vec2& startPos,
-                                                                 const vec2& endPos);
+                                                               const vec2& startPos,
+                                                               const vec2& endPos);
 
 }  // namespace plot
 

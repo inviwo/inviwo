@@ -98,7 +98,7 @@ ParallelCoordinates::ParallelCoordinates()
     , filterAlpha_("filterAlpha", "Filter Alpha", 0.75f)
     , filterIntensity_("filterIntensity", "Filter Mixing", 0.7f, 0.01f, 1.0f, 0.001f)
 
-    , captionSettings_("captions", "Caption Settings", "Montserrat-Medium", 24, 0.0f,
+    , captionSettings_("captions", "Caption Settings", "Montserrat-Regular", 24, 0.0f,
                        vec2{0.0f, -1.0f})
     , captionPosition_("position", "Position",
                        {{"none", "None", LabelPosition::None},
@@ -109,7 +109,7 @@ ParallelCoordinates::ParallelCoordinates()
     , captionColor_("color", "Color", vec4(.0, .0f, .0f, 1.0f), vec4(0.0f), vec4(1.0f), vec4(0.01f),
                     InvalidationLevel::InvalidOutput, PropertySemantics::Color)
 
-    , labelSettings_("labels", "Label Settings", "Montserrat-Medium", 20, 0.0f, vec2{-1.0f, 0.0f})
+    , labelSettings_("labels", "Label Settings", "Montserrat-Regular", 20, 0.0f, vec2{-1.0f, 0.0f})
     , showLabels_("show", "Display min/max", true)
     , labelOffset_("offset", "Offset", 15.0f, -50.0, 50.0f)
     , labelFormat_("format", "Format", "%.4f")
@@ -162,17 +162,34 @@ ParallelCoordinates::ParallelCoordinates()
     lineSettings_.addProperty(filterColor_);
     lineSettings_.addProperty(filterAlpha_);
     lineSettings_.addProperty(filterIntensity_);
+    lineSettings_.setCollapsed(true);
 
     addProperty(captionSettings_);
-    captionSettings_.addProperty(captionPosition_);
+    captionSettings_.insertProperty(0, captionPosition_);
     captionSettings_.addProperty(captionOffset_);
     captionSettings_.addProperty(captionColor_);
+    captionPosition_.onChange([&]() {
+        auto pos = captionSettings_.anchorPos_.get();
+        auto offset = captionOffset_.get();
+        if (captionPosition_ == ParallelCoordinates::LabelPosition::Above) {
+            pos.y = -glm::abs(pos.y);
+            offset = glm::abs(offset);
+        } else if (captionPosition_ == ParallelCoordinates::LabelPosition::Below) {
+            pos.y = glm::abs(pos.y);
+            offset = -glm::abs(offset);
+        }
+
+        captionSettings_.anchorPos_.set(pos);
+        captionOffset_.set(offset);
+    });
+    captionSettings_.setCollapsed(true);
 
     addProperty(labelSettings_);
-    labelSettings_.addProperty(showLabels_);
+    labelSettings_.insertProperty(0, showLabels_);
     labelSettings_.addProperty(labelOffset_);
     labelSettings_.addProperty(labelFormat_);
     labelSettings_.addProperty(labelColor_);
+    labelSettings_.setCollapsed(true);
 
     addProperty(axesSettings_);
     axesSettings_.addProperty(axisSize_);
@@ -182,6 +199,7 @@ ParallelCoordinates::ParallelCoordinates()
     axesSettings_.addProperty(handleSize_);
     axesSettings_.addProperty(handleColor_);
     axesSettings_.addProperty(handleFilteredColor_);
+    axesSettings_.setCollapsed(true);
 
     addProperty(margins_);
     margins_.insertProperty(0, autoMargins_);
@@ -193,6 +211,7 @@ ParallelCoordinates::ParallelCoordinates()
     };
     makeMarginReadonly();
     autoMargins_.onChange(makeMarginReadonly);
+    margins_.setCollapsed(true);
 
     addProperty(resetHandlePositions_);
 
@@ -281,7 +300,10 @@ void ParallelCoordinates::process() {
     } else if (brushingAndLinking_.isChanged() || axisProperties_.isModified()) {
         partitionLines();
     }
-    if (autoMargins_) autoAdjustMargins();
+    if (autoMargins_ && (enabledAxesModified_ || captionSettings_.isModified() ||
+                         labelSettings_.isModified() || axesSettings_.isModified())) {
+        autoAdjustMargins();
+    }
 
     const vec4 backgroundColor(blendMode_.get() == BlendMode::Sutractive ? 1.0f : 0.0f);
     utilgl::ClearColor clearColor(backgroundColor);
@@ -460,8 +482,11 @@ void ParallelCoordinates::drawHandles(size2_t size) {
 
         const auto i = axis.pcp->columnId();
         const auto ap = axisPos(i);
-        const auto handleWidth = axis.sliderWidget->getHandleWidth();
 
+        // Need to call setWidgetExtent twice, since getHandleWidth needs the extent width and
+        // we need the handle width for the extent hight.
+        axis.sliderWidget->setWidgetExtent(ivec2{handleSize_.get(), ap.second.y - ap.first.y});
+        const auto handleWidth = axis.sliderWidget->getHandleWidth();
         axis.sliderWidget->setWidgetExtent(
             ivec2{handleSize_.get(), ap.second.y - ap.first.y + handleWidth});
 
@@ -712,7 +737,7 @@ std::pair<size2_t, size2_t> ParallelCoordinates::axisPos(size_t columnId) const 
     const auto rect = margins_.getRect(vec2{dim} - 1.0f);
     const size2_t lowerLeft(rect.first);
     const size2_t upperRight(rect.second);
-
+    
     const auto dx = columnId < lines_.axisPositions.size() ? lines_.axisPositions[columnId] : 0.0f;
     const auto x = static_cast<size_t>(dx * (upperRight.x - lowerLeft.x));
     const auto startPos = lowerLeft + size2_t(x, 0);

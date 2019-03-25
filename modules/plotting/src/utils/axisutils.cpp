@@ -52,7 +52,7 @@ struct AxisTickRange {
     size_t numTicks;
 };
 
-AxisTickRange getMajorTickRange(const MajorTickSettings& ticks, dvec2 range) {
+AxisTickRange getMajorTickRange(const MajorTickSettings& ticks, dvec2 range, size_t maxTicks) {
     // calculate number of major ticks
     double startValue = range.x;
     double endValue = range.y;
@@ -89,18 +89,24 @@ AxisTickRange getMajorTickRange(const MajorTickSettings& ticks, dvec2 range) {
         tickDelta = glm::min(ticks.getTickDelta(), axisLength);
     }
 
+    while (numTicks > maxTicks) {
+        numTicks /= 2;
+        tickDelta *= 2.0f;
+    }
+
     return {startValue, endValue, tickDelta, numTicks};
 }
 
 }  // namespace tickutil
 
-std::vector<double> getMajorTickPositions(const MajorTickSettings& ticks, dvec2 range) {
+std::vector<double> getMajorTickPositions(const MajorTickSettings& ticks, dvec2 range,
+                                          size_t maxTicks) {
     if (ticks.getStyle() == TickStyle::None) {
         return {};
     }
 
     // calculate number of major ticks
-    tickutil::AxisTickRange tickRange = tickutil::getMajorTickRange(ticks, range);
+    tickutil::AxisTickRange tickRange = tickutil::getMajorTickRange(ticks, range, maxTicks);
 
     if (tickRange.numTicks == 0u) return {};
 
@@ -113,7 +119,7 @@ std::vector<double> getMajorTickPositions(const MajorTickSettings& ticks, dvec2 
 }
 
 std::vector<double> getMinorTickPositions(const MinorTickSettings& ticks,
-                                          const MajorTickSettings& majorTicks, dvec2 range) {
+                                          const MajorTickSettings& majorTicks, dvec2 range, size_t maxTicks) {
     if ((ticks.getStyle() == TickStyle::None) || (ticks.getTickFrequency() < 2)) {
         // a tick frequency of 1 would draw the minor ticks directly on top of the major ticks
         return {};
@@ -135,7 +141,7 @@ std::vector<double> getMinorTickPositions(const MinorTickSettings& ticks,
     //
 
     // calculate number of major ticks
-    const auto majorTickRange = tickutil::getMajorTickRange(majorTicks, range);
+    const auto majorTickRange = tickutil::getMajorTickRange(majorTicks, range, maxTicks);
 
     const auto minorTickDelta =
         majorTickRange.delta / static_cast<double>(ticks.getTickFrequency());

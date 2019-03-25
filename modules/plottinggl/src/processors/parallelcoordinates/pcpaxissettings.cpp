@@ -142,7 +142,7 @@ void PCPAxisSettings::updateFromColumn(std::shared_ptr<const Column> col) {
     {
         const auto tickmarks = plot::getMajorTickPositions(major_, range);
         labels_.clear();
-        const auto& format = "%.1f";
+        const auto& format = pcp_->labelFormat_.get();
         std::transform(tickmarks.begin(), tickmarks.end(), std::back_inserter(labels_),
                        [&](auto tick) { return fmt::sprintf(format, tick); });
     }
@@ -316,6 +316,7 @@ float PCPCaptionSettings::getPosition() const {
                ? 1.0f
                : 0.0f;
 }
+
 vec2 PCPCaptionSettings::getOffset() const { return {0.0f, settings_->pcp_->captionOffset_}; }
 float PCPCaptionSettings::getRotation() const { return 270.f; }
 const FontSettings& PCPCaptionSettings::getFont() const {
@@ -333,7 +334,7 @@ TickStyle PCPMajorTickSettings::getStyle() const { return TickStyle::Both; }
 vec4 PCPMajorTickSettings::getColor() const { return settings_->getColor(); }
 float PCPMajorTickSettings::getTickLength() const { return settings_->pcp_->axisSize_ * 2.0f; }
 float PCPMajorTickSettings::getTickWidth() const { return settings_->getWidth(); }
-double PCPMajorTickSettings::getTickDelta() const { return 0.0; }
+double PCPMajorTickSettings::getTickDelta() const { return settings_->catCol_ ? 1.0 : 0.0; }
 bool PCPMajorTickSettings::getRangeBasedTicks() const { return false; }
 
 TickStyle PCPMinorTickSettings::getStyle() const { return TickStyle::None; }
