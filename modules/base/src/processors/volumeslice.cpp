@@ -141,7 +141,7 @@ void VolumeSlice::process() {
                 [axis = static_cast<CartesianCoordinateAxis>(sliceAlongAxis_.get()),
                  slice = static_cast<size_t>(sliceNumber_.get() - 1),
                  &cache = imageCache_](const auto vrprecision) {
-                    using T = util::PrecsionValueType<decltype(vrprecision)>;
+                    using T = util::PrecisionValueType<decltype(vrprecision)>;
 
                     const T* voldata = vrprecision->getDataTyped();
                     const auto voldim = vrprecision->getDimensions();
