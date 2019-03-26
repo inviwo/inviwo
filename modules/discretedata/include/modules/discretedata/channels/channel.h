@@ -34,9 +34,13 @@
 #include <inviwo/core/metadata/metadataowner.h>
 
 #include <modules/discretedata/discretedatatypes.h>
+#include <modules/discretedata/channels/channeldispatching.h>
 
 namespace inviwo {
 namespace discretedata {
+
+template <typename T, ind N>
+class DataChannel;
 
 /**
  * \brief An untyped scalar or vector component of a data set.
@@ -87,6 +91,35 @@ protected:
      */
     void setNumComponents(ind);
 
+public:
+    /**
+     * Dispatching a function that gets a templated DataChannel as first argument.
+     */
+    template <typename Result, template <class> class Predicate, ind Min, ind Max,
+              typename Callable, typename... Args>
+    auto dispatch(Callable&& callable, Args&&... args) -> Result;
+
+    /**
+     * Dispatching a function that gets a templated DataChannel as first argument.
+     */
+    template <typename Result, template <class> class Predicate, ind Min, ind Max,
+              typename Callable, typename... Args>
+    auto dispatch(Callable&& callable, Args&&... args) const -> Result;
+
+    /**
+     * Dispatching a function that gets a templated DataChannel as first argument.
+     * Standard filter and dimension range.
+     */
+    template <typename Result, typename Callable, typename... Args>
+    auto dispatch(Callable&& callable, Args&&... args) -> Result;
+
+    /**
+     * Dispatching a function that gets a templated DataChannel as first argument.
+     * Standard filter and dimension range.
+     */
+    template <typename Result, typename Callable, typename... Args>
+    auto dispatch(Callable&& callable, Args&&... args) const -> Result;
+
 private:
     std::string name_;
     const DataFormatBase* format_;
@@ -94,5 +127,67 @@ private:
     ind numComponents_;
 };
 
+// template <typename Result, template <class> class Predicate, ind Min, ind Max, typename Callable,
+//           typename... Args>
+// auto channeldispatching::dispatch(DataFormatId format, ind numComponents, Callable &&obj, Args
+// &&... args) -> Result;
+
+namespace detail {
+struct ChannelDispatcher {
+    template <typename Result, typename T, ind N, typename Callable, typename... Args>
+    Result operator()(Callable&& obj, Channel* channel, Args... args) {
+        return obj(dynamic_cast<DataChannel<typename T::type, N>*>(channel),
+                   std::forward<Args>(args)...);
+        //.template operator()<T, N>
+    }
+};
+
+struct ChannelConstDispatcher {
+    template <typename Result, typename T, ind N, typename Callable, typename... Args>
+    Result operator()(Callable&& obj, const Channel* channel, Args... args) {
+        static_assert(N > 0);
+        return obj(dynamic_cast<const DataChannel<typename T::type, N>*>(channel),
+                   std::forward<Args>(args)...);
+    }
+};
+}  // namespace detail
+
+// Variants with filter and dimension range.
+
+template <typename Result, template <class> class Predicate, ind Min, ind Max, typename Callable,
+          typename... Args>
+auto Channel::dispatch(Callable&& callable, Args&&... args) -> Result {
+    detail::ChannelDispatcher dispatcher;
+    return channeldispatching::dispatch<Result, Predicate, Min, Max>(
+        getDataFormatId(), getNumComponents(), dispatcher, std::forward<Callable>(callable), this,
+        std::forward<Args>(args)...);
+}
+
+template <typename Result, template <class> class Predicate, ind Min, ind Max, typename Callable,
+          typename... Args>
+auto Channel::dispatch(Callable&& callable, Args&&... args) const -> Result {
+    detail::ChannelConstDispatcher dispatcher;
+    return channeldispatching::dispatch<Result, Predicate, Min, Max>(
+        getDataFormatId(), getNumComponents(), dispatcher, std::forward<Callable>(callable), this,
+        std::forward<Args>(args)...);
+}
+
+// Variants filtering for Scalars x [1,4].
+
+template <typename Result, typename Callable, typename... Args>
+auto Channel::dispatch(Callable&& callable, Args&&... args) -> Result {
+    detail::ChannelDispatcher dispatcher;
+    return channeldispatching::dispatch<Result, dispatching::filter::Scalars, 1, 4>(
+        getDataFormatId(), getNumComponents(), dispatcher, std::forward<Callable>(callable), this,
+        std::forward<Args>(args)...);
+}
+
+template <typename Result, typename Callable, typename... Args>
+auto Channel::dispatch(Callable&& callable, Args&&... args) const -> Result {
+    detail::ChannelConstDispatcher dispatcher;
+    return channeldispatching::dispatch<Result, dispatching::filter::Scalars, 1, 4>(
+        getDataFormatId(), getNumComponents(), dispatcher, std::forward<Callable>(callable), this,
+        std::forward<Args>(args)...);
+}
 }  // namespace discretedata
 }  // namespace inviwo

@@ -132,13 +132,14 @@ protected:
 
 class ConnectionRange {
 public:
+
     ConnectionRange(ind fromIndex, GridPrimitive fromDim, GridPrimitive toDim,
                     const Connectivity* parent);
 
-    ConnectionIterator begin() {
+    ConnectionIterator begin() const {
         return ConnectionIterator(parent_, toDimension_, connections_, 0);
     }
-    ConnectionIterator end() {
+    ConnectionIterator end() const {
         return ConnectionIterator(parent_, toDimension_, connections_, connections_->size());
     }
     ind size() { return connections_->size(); }
