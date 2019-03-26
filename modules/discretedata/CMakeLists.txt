@@ -20,6 +20,12 @@ set(HEADER_FILES
     include/modules/discretedata/connectivity/euclideanmeasure.h
     include/modules/discretedata/connectivity/periodicgrid.h
     include/modules/discretedata/connectivity/structuredgrid.h
+    include/modules/discretedata/ports/datasetport.h
+    include/modules/discretedata/processors/computegridmeasure.h
+    include/modules/discretedata/processors/datasetfrombase.h
+    include/modules/discretedata/processors/segmentationvoxelizer.h
+    include/modules/discretedata/processors/volumefromdataset.h
+    include/modules/discretedata/properties/datachannelproperty.h
     include/modules/discretedata/dataset.h
     include/modules/discretedata/discretedatamodule.h
     include/modules/discretedata/discretedatamoduledefine.h
@@ -41,6 +47,11 @@ set(SOURCE_FILES
     src/connectivity/euclideanmeasure.cpp
     src/connectivity/periodicgrid.cpp
     src/connectivity/structuredgrid.cpp
+    src/processors/computegridmeasure.cpp
+    src/processors/datasetfrombase.cpp
+    src/processors/segmentationvoxelizer.cpp
+    src/processors/volumefromdataset.cpp
+    src/properties/datachannelproperty.cpp
     src/dataset.cpp
     src/discretedatamodule.cpp
     src/discretedatatypes.cpp
