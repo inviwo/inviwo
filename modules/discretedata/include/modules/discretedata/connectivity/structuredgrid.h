@@ -31,6 +31,8 @@
 
 #include <modules/discretedata/connectivity/connectivity.h>
 #include <modules/discretedata/util.h>
+#include <modules/discretedata/channels/analyticchannel.h>
+#include <inviwo/core/datastructures/spatialdata.h>
 
 namespace inviwo {
 namespace discretedata {
@@ -65,8 +67,44 @@ public:
 
     static std::vector<ind> indexFromLinear(ind idxLin, const std::vector<ind>& size);
 
+    static ind indexToLinear(const std::vector<ind>& idx, const std::vector<ind>& size);
+
 protected:
     std::vector<ind> numCellsPerDimension_;
+};
+
+// Making use of Matrix<N + 1, float> StructuredGridEntity<N>::getIndexMatrix() const
+template <typename T, ind N, typename Vec = glm::vec<N, T>>
+struct IVW_MODULE_DISCRETEDATA_API CurvilinearPositions {  //  : AnalyticChannel<T, N, Vec>
+    using VecTN = glm::vec<N, T>;
+    using VecIN = glm::vec<N, ind>;
+    using VecTNp = glm::vec<N + 1, ind>;
+    using MatTNp = Matrix<N + 1, T>;
+
+    CurvilinearPositions(const MatTNp& baseMatrix, const VecIN& size)
+        : baseMatrix_(baseMatrix), size_(size) {}
+
+    CurvilinearPositions(const StructuredGridEntity<N>& grid)
+        : baseMatrix_(grid.getIndexMatrix()), size_(grid.getDimensions()) {}
+
+    void operator()(Vec& val, ind idx) const {
+        // Get vectorial index.
+        VecTNp idxVec;
+        for (ind dim = 0; dim < N; ++dim) {
+            idxVec[dim] = idx % size_[dim];
+            idx /= size_[dim];
+        }
+
+        // Homogeneous multiply.
+        idxVec[N] = 1;
+        VecTNp pos = baseMatrix_ * idxVec;
+        pos /= pos[N];
+
+        for (ind dim = 0; dim < N; ++dim) val[dim] = pos[dim];
+    }
+
+    const MatTNp baseMatrix_;
+    const VecIN size_;
 };
 
 }  // namespace discretedata

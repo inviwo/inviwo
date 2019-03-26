@@ -30,6 +30,8 @@
 
 #include <modules/discretedata/discretedatamoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <unordered_map>
+#include <string>
 
 namespace inviwo {
 namespace discretedata {
@@ -40,9 +42,9 @@ using ind = signed long long;
 /**
  * Mapping structure name to respective dimension.
  * Assign channels to any dimensions this way.
- * If these do not suffice, cast the respective short.
+ * If these do not suffice, cast the respective ind.
  */
-enum class GridPrimitive : ind {
+enum class GridPrimitive : int {
     Undef = -1,
     Vertex = 0,
     Edge = 1,
@@ -51,5 +53,49 @@ enum class GridPrimitive : ind {
     HyperVolume = 4
 };
 
+inline std::string primitiveName(GridPrimitive primitive) {
+    switch (primitive) {
+        case GridPrimitive::Vertex:
+            return "Vertex";
+        case GridPrimitive::Edge:
+            return "Edge";
+        case GridPrimitive::Face:
+            return "Face";
+        case GridPrimitive::Volume:
+            return "Volume";
+        case GridPrimitive::HyperVolume:
+            return "HyperVolume";
+        default:
+            std::string nD = std::to_string(static_cast<ind>(primitive));
+            nD += 'D';
+            return nD;
+    }
+}
+
 }  // namespace discretedata
+
+template <>
+struct InviwoDefaults<discretedata::ind> {
+    static InviwoDefaultData<discretedata::ind> get() {
+        return {"ind",
+                uvec2(1, 1),
+                discretedata::ind(1),
+                discretedata::ind(-100),
+                discretedata::ind(100),
+                discretedata::ind(1)};
+    }
+};
+
+template <>
+struct InviwoDefaults<discretedata::GridPrimitive> {
+    static InviwoDefaultData<discretedata::GridPrimitive> get() {
+        return {"GridPrimitive",
+                uvec2(1, 1),
+                discretedata::GridPrimitive::Vertex,
+                discretedata::GridPrimitive::Vertex,
+                discretedata::GridPrimitive::HyperVolume,
+                static_cast<discretedata::GridPrimitive>(1)};
+    }
+};
+
 }  // namespace inviwo

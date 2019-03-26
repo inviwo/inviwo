@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2021 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,26 +27,55 @@
  *
  *********************************************************************************/
 
-#include <modules/discretedata/discretedatamodule.h>
-#include <modules/discretedata/processors/datasetfrombase.h>
-#include <modules/discretedata/processors/computegridmeasure.h>
-#include <modules/discretedata/processors/volumefromdataset.h>
-#include <modules/discretedata/processors/segmentationvoxelizer.h>
+#pragma once
+
+#include <modules/discretedata/discretedatamoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <modules/discretedata/ports/datasetport.h>
 
 namespace inviwo {
+namespace discretedata {
 
-DiscreteDataModule::DiscreteDataModule(InviwoApplication* app) : InviwoModule(app, "discretedata") {
-    // Processors
-    registerProcessor<discretedata::DataSetFromVolume>();
-    registerProcessor<discretedata::ComputeGridMeasure>();
-    registerProcessor<discretedata::VolumeFromDataSet>();
-    registerProcessor<discretedata::SegmentationVoxelizer>();
+/** \class ComputeGridMeasure
+    \brief Compute the edge length, face area, volume etc. of a dataset grid
 
-    // Properties
+    Choose a grid element to compute the size of.
+    The data will be appended as ChannelBuffer in the dataset.
+
+    @author Anke Friederici & Tino Weinkauf
+*/
+class IVW_MODULE_DISCRETEDATA_API ComputeGridMeasure : public Processor {
+    // Friends
+    // Types
+public:
+    // Construction / Deconstruction
+public:
+    ComputeGridMeasure();
+    virtual ~ComputeGridMeasure() = default;
+
+    // Methods
+public:
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+protected:
+    /// Our main computation function
+    virtual void process() override;
+    void updatePrimitiveOptions();
 
     // Ports
-    registerPort<discretedata::DataSetOutport>();
-    registerPort<discretedata::DataSetInport>();
-}
+public:
+    DataSetInport dataInport;
+    DataSetOutport dataOutport;
 
+    // Properties
+public:
+    OptionPropertyInt dimensionToMeasure;
+    // Attributes
+private:
+};
+
+}  // namespace discretedata
 }  // namespace inviwo

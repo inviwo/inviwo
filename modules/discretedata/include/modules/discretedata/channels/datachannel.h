@@ -34,6 +34,8 @@
 #include <modules/discretedata/channels/channel.h>
 #include <modules/discretedata/channels/channelgetter.h>
 #include <modules/discretedata/channels/channeliterator.h>
+#include <inviwo/core/util/glm.h>
+#include <array>
 
 namespace inviwo {
 namespace discretedata {

@@ -64,7 +64,7 @@ class IVW_MODULE_DISCRETEDATA_API DataSet {
 public:
     DataSet(const std::shared_ptr<const Connectivity> grid) : grid(grid) {}
 
-    DataSet(GridPrimitive size, std::vector<ind>& numCellsPerDim)
+    DataSet(GridPrimitive size, const std::vector<ind>& numCellsPerDim)
         : grid(std::make_shared<StructuredGrid>(size, numCellsPerDim)) {}
     virtual ~DataSet() = default;
 
@@ -82,13 +82,18 @@ public:
         return std::dynamic_pointer_cast<const G, const Connectivity>(grid);
     }
 
+    // /**
+    //  * Returns a typed shared pointer to the grid, if casting is possible.
+    //  */
+    // template <typename G>
+    // std::shared_ptr<G> getGrid() {
+    //     return std::dynamic_pointer_cast<G, Connectivity>(grid));
+    // }
+
     /**
-     * Returns a typed shared pointer to the grid, if casting is possible.
+     * Returns a shared pointer to the virtual grid.
      */
-    template <typename G>
-    std::shared_ptr<G> getGrid() {
-        return grid;
-    }
+    std::shared_ptr<const Connectivity> getGrid() const { return grid; }
 
     // Channels
 

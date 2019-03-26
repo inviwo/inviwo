@@ -66,8 +66,8 @@ class IVW_MODULE_DISCRETEDATA_API Connectivity {
 public:
     Connectivity(GridPrimitive gridDimension)
         : gridDimension_(gridDimension)
-        , numGridPrimitives_(static_cast<ind>(gridDimension) + 1, -1) {
-    }  // Initialize sizes with -1. Overwrite when known.
+        , numGridPrimitives_(static_cast<ind>(gridDimension) + 1, 0) {
+    }  // Initialize sizes with 0. Overwrite when known.
     virtual ~Connectivity() = default;
 
     //! Returns the maximal dimension of the grid

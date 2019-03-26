@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2021 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,26 +27,49 @@
  *
  *********************************************************************************/
 
-#include <modules/discretedata/discretedatamodule.h>
-#include <modules/discretedata/processors/datasetfrombase.h>
-#include <modules/discretedata/processors/computegridmeasure.h>
-#include <modules/discretedata/processors/volumefromdataset.h>
-#include <modules/discretedata/processors/segmentationvoxelizer.h>
+#pragma once
+
+#include <modules/discretedata/discretedatamoduledefine.h>
+#include <modules/discretedata/ports/datasetport.h>
+#include <modules/discretedata/properties/datachannelproperty.h>
+
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/properties/stringproperty.h>
 
 namespace inviwo {
+namespace discretedata {
 
-DiscreteDataModule::DiscreteDataModule(InviwoApplication* app) : InviwoModule(app, "discretedata") {
-    // Processors
-    registerProcessor<discretedata::DataSetFromVolume>();
-    registerProcessor<discretedata::ComputeGridMeasure>();
-    registerProcessor<discretedata::VolumeFromDataSet>();
-    registerProcessor<discretedata::SegmentationVoxelizer>();
+class IVW_MODULE_DISCRETEDATA_API DataSetFromVolume : public Processor {
 
-    // Properties
+public:
+    DataSetFromVolume();
+    virtual ~DataSetFromVolume() = default;
 
-    // Ports
-    registerPort<discretedata::DataSetOutport>();
-    registerPort<discretedata::DataSetInport>();
-}
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
+protected:
+    virtual void process() override;
+
+private:
+    /// Data to be processed
+    VolumeInport portInData;
+
+    /// DataSet to add to, not necessary
+    DataSetInport portInDataSet;
+
+    /// DataSet output
+    DataSetOutport portOutData;
+
+    /// Name given to inout data in DataSet
+    StringProperty channelName;
+
+    /// Which kind of primitive to save to.
+    GridPrimitiveProperty saveToPrimitive;
+};
+
+}  // namespace discretedata
 }  // namespace inviwo

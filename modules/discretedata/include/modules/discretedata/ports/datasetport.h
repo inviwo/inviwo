@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2021 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,26 +27,16 @@
  *
  *********************************************************************************/
 
-#include <modules/discretedata/discretedatamodule.h>
-#include <modules/discretedata/processors/datasetfrombase.h>
-#include <modules/discretedata/processors/computegridmeasure.h>
-#include <modules/discretedata/processors/volumefromdataset.h>
-#include <modules/discretedata/processors/segmentationvoxelizer.h>
+#pragma once
+
+#include <modules/discretedata/discretedatamoduledefine.h>
+#include <modules/discretedata/dataset.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/dataoutport.h>
 
 namespace inviwo {
-
-DiscreteDataModule::DiscreteDataModule(InviwoApplication* app) : InviwoModule(app, "discretedata") {
-    // Processors
-    registerProcessor<discretedata::DataSetFromVolume>();
-    registerProcessor<discretedata::ComputeGridMeasure>();
-    registerProcessor<discretedata::VolumeFromDataSet>();
-    registerProcessor<discretedata::SegmentationVoxelizer>();
-
-    // Properties
-
-    // Ports
-    registerPort<discretedata::DataSetOutport>();
-    registerPort<discretedata::DataSetInport>();
-}
-
+namespace discretedata {
+using DataSetInport = DataInport<DataSet>;
+using DataSetOutport = DataOutport<DataSet>;
+}  // namespace discretedata
 }  // namespace inviwo
