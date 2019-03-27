@@ -33,7 +33,10 @@
 #include <modules/eigenutils/processors/eigenmix.h>
 #include <modules/eigenutils/processors/eigennormalize.h>
 
+#include <modules/base/processors/inputselector.h>
 #include <modules/eigenutils/processors/testmatrix.h>
+
+
 namespace inviwo {
 
 EigenUtilsModule::EigenUtilsModule(InviwoApplication* app) : InviwoModule(app, "EigenUtils") {
@@ -41,6 +44,10 @@ EigenUtilsModule::EigenUtilsModule(InviwoApplication* app) : InviwoModule(app, "
     registerProcessor<EigenMix>();
     registerProcessor<EigenNormalize>();
     registerProcessor<TestMatrix>();
+    
+    registerProcessor<InputSelector<MultiDataInport<Eigen::MatrixXf>, DataOutport<Eigen::MatrixXf>>>();
+
+
     // Add a directory to the search path of the Shadermanager
     // ShaderManager::getPtr()->addShaderSearchPath(PathType::Modules, "/eigenutils/glsl");
 
