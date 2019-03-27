@@ -116,6 +116,7 @@ protected:
     void moveForward(Event* event);
     void moveBackward(Event* event);
 
+    const vec3 getWorldUp() const;
     mat4 roll(const float radians) const;
     mat4 pitch(const float radians) const;
     mat4 yaw(const float radians) const;
@@ -164,6 +165,7 @@ protected:
                                          /// when fixUp is True
     FloatProperty movementSpeed_;
     BoolProperty fixUp_;  /// Fixes the up vector to world_up in all rotation methods
+    OptionPropertyInt worldUp_; /// Defines which axis is considered up in world space
 
     // Interaction restrictions
     BoolProperty handleInteractionEvents_;
