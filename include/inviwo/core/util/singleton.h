@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/stringconversion.h>
 
 #include <sstream>
 #include <vector>
@@ -58,19 +59,19 @@ public:
 
     static void init() {
         if (T::instance_) {
-            throw SingletonException("Singleton already initialized",
+            throw SingletonException(name() + " Singleton already initialized",
                                      IvwContextCustom("Singleton"));
         }
         T::instance_ = util::defaultConstructType<T>();
         if (!T::instance_) {
-            throw SingletonException("Was not able to initialize singleton",
+            throw SingletonException("Was not able to initialize " + name() + "singleton",
                                      IvwContextCustom("Singleton"));
         }
     };
 
     static void init(T* instance) {
         if (T::instance_) {
-            throw SingletonException("Singleton already initialized",
+            throw SingletonException(name() + " Singleton already initialized",
                                      IvwContextCustom("Singleton"));
         }
         if (!instance) {
@@ -82,8 +83,9 @@ public:
     static T* getPtr() {
         if (!T::instance_) {
             throw SingletonException(
-                "Singleton not initialized. Ensure that init() is called in a thread-safe "
-                "environment. ",
+                name() +
+                    " Singleton not initialized. Ensure that init() is called in a thread-safe "
+                    "environment. ",
                 IvwContextCustom("Singleton"));
         }
         return T::instance_;
@@ -97,6 +99,9 @@ public:
     static bool isInitialized() { return T::instance_ != nullptr; }
 
     virtual ~Singleton() { T::instance_ = nullptr; };
+
+private:
+    static std::string name() { return parseTypeIdName(typeid(T).name()); }
 };
 
 }  // namespace inviwo

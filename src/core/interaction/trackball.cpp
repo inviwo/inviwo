@@ -53,11 +53,11 @@ Trackball::Trackball(TrackballObject* object)
     , lastNDC_(vec3(0.0))
     , gestureStartNDCDepth_(-1)
     , trackballMethod_("trackballMethod", "Trackball Method")
-    , fixUp_("fixUp", "Fix Up Vector", false)
     , sensitivity_("sensitivity", "Sensitivity", 3.0f, 0.0f, 10.0f, 0.25f)
     , verticalAngleLimit_("verticalAngleLimit", "Vertical Angle Limit", 0.125f, 0.0f,
                           glm::pi<float>() / 2.0f, 0.05f)
     , movementSpeed_("movementSpeed", "Movement Speed", 0.025, 0.0f, 1.0f)
+    , fixUp_("fixUp", "Fix Up Vector", false)
     , handleInteractionEvents_("handleEvents", "Handle interaction events", true,
                                InvalidationLevel::Valid)
     , allowHorizontalPanning_("allowHorizontalPanning", "Horizontal panning enabled", true)
@@ -72,11 +72,11 @@ Trackball::Trackball(TrackballObject* object)
     // clang-format off
     , mouseRotate_("trackballRotate", "Rotate", [this](Event* e) { rotate(e); }, MouseButton::Left, MouseState::Press | MouseState::Move)
     , mousePan_("trackballPan", "Pan",          [this](Event* e) { pan(e); }, MouseButton::Middle, MouseState::Press | MouseState::Move)
-    , mouseReset_("mouseReset", "Reset",        [this](Event* e) { reset(e); }, MouseButtons(flags::any), MouseState::Release)
     , mouseRecenterFocusPoint_("mouseRecenterFocusPoint", "Recenter Focus Point", [this](Event* e) { recenterFocusPoint(e); }, MouseButton::Left, MouseState::DoubleClick)
+    , mouseReset_("mouseReset", "Reset",        [this](Event* e) { reset(e); }, MouseButtons(flags::any), MouseState::Release)
 
-    , wheelZoom_("wheelZoom", "Zoom (Steps)",      [this](Event* e) { zoomWheel(e); }, util::make_unique<WheelEventMatcher>())
     , mouseZoom_("mouseZoom", "Zoom (Continuous)", [this](Event* e) { zoom(e); }, MouseButton::Right, MouseState::Press | MouseState::Move)
+    , wheelZoom_("wheelZoom", "Zoom (Steps)",      [this](Event* e) { zoomWheel(e); }, util::make_unique<WheelEventMatcher>())
 
     , moveLeft_("moveLeft", "Move Left",    [this](Event* e) { moveLeft(e); },  IvwKey::A, KeyState::Press)
     , moveRight_("moveRight", "Move Right", [this](Event* e) { moveRight(e); }, IvwKey::D, KeyState::Press)
@@ -99,7 +99,7 @@ Trackball::Trackball(TrackballObject* object)
     , touchGesture_("touchGesture", "Touch", [this](Event* e) { touchGesture(e); }, util::make_unique<GeneralEventMatcher>([](Event* e) { return e->hash() == TouchEvent::chash(); }))
     // clang-format on
     , evaluated_(true)
-    , timer_(std::chrono::milliseconds{30}, [this]() { animate(); }) {
+    , timer_{std::chrono::milliseconds{30LL}, [this]() { animate(); }} {
 
     mouseReset_.setVisible(false);
     mouseReset_.setCurrentStateAsDefault();
@@ -133,7 +133,7 @@ Trackball::Trackball(TrackballObject* object)
     addProperty(mouseRecenterFocusPoint_);
     addProperty(mouseReset_);
     addProperty(wheelZoom_);
-    wheelZoom_.setVisible(false); // Is not displayed properly
+    wheelZoom_.setVisible(false);  // Is not displayed properly
 
     addProperty(moveUp_);
     addProperty(moveLeft_);
@@ -165,10 +165,10 @@ Trackball::Trackball(const Trackball& rhs)
     , lastNDC_(vec3(0.0))
     , gestureStartNDCDepth_(-1)
     , trackballMethod_(rhs.trackballMethod_)
-    , fixUp_(rhs.fixUp_)
     , sensitivity_(rhs.sensitivity_)
     , verticalAngleLimit_(rhs.verticalAngleLimit_)
     , movementSpeed_(rhs.movementSpeed_)
+    , fixUp_(rhs.fixUp_)
     , handleInteractionEvents_(rhs.handleInteractionEvents_)
     , allowHorizontalPanning_(rhs.allowHorizontalPanning_)
     , allowVerticalPanning_(rhs.allowVerticalPanning_)
@@ -180,11 +180,11 @@ Trackball::Trackball(const Trackball& rhs)
     , allowRecenterView_(rhs.allowRecenterView_)
     , animate_(rhs.animate_)
     , mouseRotate_(rhs.mouseRotate_)
-    , mouseZoom_(rhs.mouseZoom_)
-    , wheelZoom_(rhs.wheelZoom_)
     , mousePan_(rhs.mousePan_)
     , mouseRecenterFocusPoint_(rhs.mouseRecenterFocusPoint_)
     , mouseReset_(rhs.mouseReset_)
+    , mouseZoom_(rhs.mouseZoom_)
+    , wheelZoom_(rhs.wheelZoom_)
     , moveLeft_(rhs.moveLeft_)
     , moveRight_(rhs.moveRight_)
     , moveUp_(rhs.moveUp_)
@@ -203,7 +203,7 @@ Trackball::Trackball(const Trackball& rhs)
     , stepPanRight_(rhs.stepPanRight_)
     , touchGesture_(rhs.touchGesture_)
     , evaluated_(true)
-    , timer_(std::chrono::milliseconds{30}, [this]() { animate(); }) {
+    , timer_(std::chrono::milliseconds{30LL}, [this]() { animate(); }) {
 
     mouseReset_.setVisible(false);
     mouseReset_.setCurrentStateAsDefault();
@@ -233,7 +233,7 @@ Trackball::Trackball(const Trackball& rhs)
     addProperty(mouseRecenterFocusPoint_);
     addProperty(mouseReset_);
     addProperty(wheelZoom_);
-    wheelZoom_.setVisible(false); // Is not displayed properly
+    wheelZoom_.setVisible(false);  // Is not displayed properly
     addProperty(moveLeft_);
     addProperty(moveRight_);
     addProperty(moveUp_);
@@ -537,51 +537,45 @@ mat4 Trackball::roll(const float radians) const {
 }
 
 /* \brief Moves camera along -cam_right */
-void Trackball::moveLeft(Event* event) {
+void Trackball::moveLeft(Event*) {
     const vec3 right = getLookRight();
     setLook(getLookFrom() - movementSpeed_.get() * right,
-            getLookTo()   - movementSpeed_.get() * right,
-            getLookUp());
+            getLookTo() - movementSpeed_.get() * right, getLookUp());
 }
 
 /* \brief Moves camera along cam_right */
-void Trackball::moveRight(Event* event) {
+void Trackball::moveRight(Event*) {
     const vec3 right = getLookRight();
     setLook(getLookFrom() + movementSpeed_.get() * right,
-            getLookTo()   + movementSpeed_.get() * right,
-            getLookUp());
+            getLookTo() + movementSpeed_.get() * right, getLookUp());
 }
 
 /* \brief Moves camera along cam_up */
-void Trackball::moveUp(Event* event) {
+void Trackball::moveUp(Event*) {
     const vec3 up = getLookUp();
-    setLook(getLookFrom() + movementSpeed_.get() * up,
-            getLookTo()   + movementSpeed_.get() * up,
+    setLook(getLookFrom() + movementSpeed_.get() * up, getLookTo() + movementSpeed_.get() * up,
             getLookUp());
 }
 
 /* \brief Moves camera along -cam_up */
-void Trackball::moveDown(Event* event) {
+void Trackball::moveDown(Event*) {
     const vec3 up = getLookUp();
-    setLook(getLookFrom() - movementSpeed_.get() * up,
-            getLookTo()   - movementSpeed_.get() * up,
+    setLook(getLookFrom() - movementSpeed_.get() * up, getLookTo() - movementSpeed_.get() * up,
             getLookUp());
 }
 
 /* \brief Moves camera along view_dir */
-void Trackball::moveForward(Event* event) {
+void Trackball::moveForward(Event*) {
     const vec3 viewDir = glm::normalize(getLookTo() - getLookFrom());
     setLook(getLookFrom() + movementSpeed_.get() * viewDir,
-            getLookTo()   + movementSpeed_.get() * viewDir,
-            getLookUp());
+            getLookTo() + movementSpeed_.get() * viewDir, getLookUp());
 }
 
 /* \brief Moves camera along -view_dir */
-void Trackball::moveBackward(Event* event) {
+void Trackball::moveBackward(Event*) {
     const vec3 viewDir = glm::normalize(getLookTo() - getLookFrom());
     setLook(getLookFrom() - movementSpeed_.get() * viewDir,
-            getLookTo()   - movementSpeed_.get() * viewDir,
-            getLookUp());
+            getLookTo() - movementSpeed_.get() * viewDir, getLookUp());
 }
 
 /* \brief zoom based on mouse move event
@@ -1080,7 +1074,7 @@ void Trackball::recenterFocusPoint(Event* event) {
     event->markAsUsed();
 }
 
-void inviwo::Trackball::animate() {
+void Trackball::animate() {
     if (this->evaluated_) {
         this->evaluated_ = false;
         dispatchFront([this]() {
