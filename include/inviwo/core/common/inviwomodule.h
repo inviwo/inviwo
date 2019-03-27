@@ -187,6 +187,8 @@ protected:
     template <typename T>
     void registerProcessor();
 
+    void registerProcessor(std::unique_ptr<ProcessorFactoryObject> pfo);
+
     /**
      * Register a workspace file as a CompositeProcessor.
      * The CompositeProcessor will load the file as its sub network on construction.
@@ -320,10 +322,7 @@ void InviwoModule::registerDialog(std::string classIdentifier) {
 
 template <typename T>
 void InviwoModule::registerProcessor() {
-    auto processor = util::make_unique<ProcessorFactoryObjectTemplate<T>>();
-    if (app_->getProcessorFactory()->registerObject(processor.get())) {
-        processors_.push_back(std::move(processor));
-    }
+    registerProcessor(util::make_unique<ProcessorFactoryObjectTemplate<T>>());
 }
 
 template <typename T, typename P>

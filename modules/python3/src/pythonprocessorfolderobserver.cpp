@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,34 +27,53 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PYTHON3MODULE_H
-#define IVW_PYTHON3MODULE_H
-
-#include <modules/python3/python3moduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
-#include <modules/python3/pythonlogger.h>
 #include <modules/python3/pythonprocessorfolderobserver.h>
-#include <string>
+#include <modules/python3/pythonprocessorfactoryobject.h>
+
+#include <inviwo/core/util/filesystem.h>
+
+#include <algorithm>
 
 namespace inviwo {
-class PythonInterpreter;
 
-class IVW_MODULE_PYTHON3_API Python3Module : public InviwoModule {
-public:
-    Python3Module(InviwoApplication* app);
-    virtual ~Python3Module();
+PythonProcessorFolderObserver::PythonProcessorFolderObserver(
+    InviwoApplication* app, const std::string& directory,
+    std::function<void(std::unique_ptr<ProcessorFactoryObject>)> onNew)
+    : FileObserver(app), app_(app), directory_{directory}, onNew_{onNew} {
 
-    PythonInterpreter* getPythonInterpreter();
+    if (filesystem::directoryExists(directory)) {
+        auto files = filesystem::getDirectoryContents(directory);
+        for (const auto& file : files) {
+            registerFile(directory + "/" + file);
+        }
+    }
 
-private:
-    std::unique_ptr<PythonInterpreter> pythonInterpreter_;
-    TCLAP::ValueArg<std::string> pythonScriptArg_;
-    CommandLineArgHolder argHolder_;
-    PythonLogger pythonLogger_;
-    PythonProcessorFolderObserver ppfObserver_;
+    startFileObservation(directory);
+}
 
-};
+bool PythonProcessorFolderObserver::registerFile(const std::string& filename) {
+    if (std::count(registeredFiles_.begin(), registeredFiles_.end(), filename) == 0) {
+        try {
+            auto pfo = std::make_unique<PythonProcessorFactoryObject>(app_, filename);
+            registeredFiles_.push_back(filename);
+            onNew_(std::move(pfo));
+            return true;
+        } catch (const std::exception& e) {
+            LogError(e.what());
+        }
+    }
+    return false;
+}
+
+void PythonProcessorFolderObserver::fileChanged(const std::string&) {
+    if (filesystem::directoryExists(directory_)) {
+        auto files = filesystem::getDirectoryContents(directory_);
+        for (const auto& file : files) {
+            if (registerFile(directory_ + "/" + file)) {
+                LogInfo("Loaded python processor: " << directory_ + "/" + file);
+            }
+        }
+    }
+}
 
 }  // namespace inviwo
-
-#endif  // IVW_PYTHON3MODULE_H

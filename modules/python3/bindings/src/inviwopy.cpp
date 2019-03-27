@@ -31,6 +31,7 @@
 
 #include <modules/python3/python3module.h>
 #include <modules/python3/pybindutils.h>
+#include <modules/python3/pythoninterpreter.h>
 
 #include <inviwopy/pydataformat.h>
 #include <inviwopy/pyinviwoapplication.h>
@@ -50,6 +51,7 @@
 #include <inviwopy/pypickingmapper.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/consolelogger.h>
 
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/core/util/settings/settings.h>
@@ -72,6 +74,14 @@ PYBIND11_MODULE(inviwopy, m) {
 
     using namespace inviwo;
     m.doc() = "Python interface for Inviwo";
+
+    py::class_<ConsoleLogger, std::shared_ptr<ConsoleLogger>>(m, "ConsoleLogger")
+        .def(py::init<>())
+        .def("log", &ConsoleLogger::log);
+
+    if (!LogCentral::isInitialized()) {
+        LogCentral::init();
+    }
 
     exposeGLMTypes(m);
 
@@ -105,14 +115,25 @@ PYBIND11_MODULE(inviwopy, m) {
     m.def("logError", [](const std::string& msg) { LogErrorCustom("inviwopy", msg); });
     m.def("debugBreak", []() { util::debugBreak(); });
 
-    try {
-        if (auto app = util::getInviwoApplication()) {
-            m.attr("app") = py::cast(app, py::return_value_policy::reference);
-        }
-    } catch (SingletonException&) {
-        LogErrorCustom("inviwopy",
-                       "Failed to get Inviwo application, inviwopy will not function as expected");
+    if (InviwoApplication::isInitialized()) {
+        m.attr("app") = py::cast(InviwoApplication::getPtr(), py::return_value_policy::reference);
     }
+
+    m.def("getApp", []() { return InviwoApplication::getPtr(); },
+          py::return_value_policy::reference);
+
+    m.def("handlePythonOutput", [](const std::string& msg, int isStderr) {
+        // auto tmsg = trim(msg);
+        // if (tmsg.empty()) return;
+
+        if (auto module = InviwoApplication::getPtr()->getModuleByType<Python3Module>()) {
+            if (auto interpreter = module->getPythonInterpreter()) {
+                interpreter->pythonExecutionOutputEvent(msg, (isStderr == 0)
+                                                                 ? PythonOutputType::sysstdout
+                                                                 : PythonOutputType::sysstderr);
+            }
+        }
+    });
 
 #ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
     VLDEnable();

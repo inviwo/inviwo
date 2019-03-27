@@ -275,6 +275,12 @@ void InviwoModule::registerSettings(std::unique_ptr<Settings> settings) {
     settings_.push_back(std::move(settings));
 }
 
+void InviwoModule::registerProcessor(std::unique_ptr<ProcessorFactoryObject> pfo) {
+    if (app_->getProcessorFactory()->registerObject(pfo.get())) {
+        processors_.push_back(std::move(pfo));
+    }
+}
+
 void InviwoModule::registerCompositeProcessor(const std::string& file) {
     auto processor = util::make_unique<CompositeProcessorFactoryObject>(file);
     if (app_->getProcessorFactory()->registerObject(processor.get())) {

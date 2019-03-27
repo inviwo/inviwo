@@ -93,6 +93,15 @@ public:
     }
 };
 
+/*
+    template <>
+      struct ProcessorTraits<ProcessorTrampoline> {
+         static ProcessorInfo getProcessorInfo() {
+            return generateMyProcessorInfo<T>();
+         }
+      };
+      */
+
 void exposeProcessors(pybind11::module &m) {
     namespace py = pybind11;
 
@@ -187,15 +196,25 @@ void exposeProcessors(pybind11::module &m) {
         .def("getInport", &Processor::getInport, py::return_value_policy::reference)
         .def("getOutport", &Processor::getOutport, py::return_value_policy::reference)
         .def("addInport",
-             [](Processor &p, Inport *port, const std::string &group = "default") {
-                 p.addPort(std::unique_ptr<Inport>(port), group);
+             [](Processor &p, Inport *port, const std::string &group, bool owner) {
+                 if (owner) {
+                     p.addPort(std::unique_ptr<Inport>(port), group);
+                 } else {
+                     p.addPort(*port, group);
+                 }
              },
-             py::arg("inport"), py::arg("group") = "default", py::keep_alive<1, 2>{})
+             py::arg("inport"), py::arg("group") = "default", py::arg("owner") = true,
+             py::keep_alive<1, 2>{})
         .def("addOutport",
-             [](Processor &p, Outport *port, const std::string &group = "default") {
-                 p.addPort(std::unique_ptr<Outport>(port), group);
+             [](Processor &p, Outport *port, const std::string &group, bool owner) {
+                 if (owner) {
+                     p.addPort(std::unique_ptr<Outport>(port), group);
+                 } else {
+                     p.addPort(*port, group);
+                 }
              },
-             py::arg("outport"), py::arg("group") = "default", py::keep_alive<1, 2>{})
+             py::arg("outport"), py::arg("group") = "default", py::arg("owner") = true,
+             py::keep_alive<1, 2>{})
         .def("removeInport", [](Processor &p, Inport *port) { return p.removePort(port); })
         .def("removeOutport", [](Processor &p, Outport *port) { return p.removePort(port); })
 

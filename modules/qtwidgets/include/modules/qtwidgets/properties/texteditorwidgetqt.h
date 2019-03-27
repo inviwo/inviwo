@@ -62,7 +62,6 @@ protected:
 
     void updateWindowTitle();
     void propertyModified();
-    bool askSaveChanges();
 
     void save();
     void saveToFile(const std::string& filename);

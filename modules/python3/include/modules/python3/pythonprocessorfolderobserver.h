@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,32 +26,31 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_PYTHONINTERPRETER_H
-#define IVW_PYTHONINTERPRETER_H
+#pragma once
 
 #include <modules/python3/python3moduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <modules/python3/pythonexecutionoutputobservable.h>
+
+#include <inviwo/core/util/fileobserver.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 
 namespace inviwo {
-class Python3Module;
 
-class IVW_MODULE_PYTHON3_API PythonInterpreter : public PythonExecutionOutputObservable {
+class IVW_MODULE_PYTHON3_API PythonProcessorFolderObserver : public FileObserver {
 public:
-    PythonInterpreter(Python3Module* module);
-    virtual ~PythonInterpreter();
-
-    void addModulePath(const std::string& path);
-    void importModule(const std::string& moduleName);
-
-    bool runString(std::string code);
+    PythonProcessorFolderObserver(
+        InviwoApplication* app, const std::string& directory,
+        std::function<void(std::unique_ptr<ProcessorFactoryObject>)> onNew);
+    virtual ~PythonProcessorFolderObserver() = default;
 
 private:
-    bool embedded_;
-    bool isInit_;
+    bool registerFile(const std::string& filename);
+    virtual void fileChanged(const std::string& filename) override;
+
+    InviwoApplication* app_;
+    std::string directory_;
+    std::vector<std::string> registeredFiles_;
+    std::function<void(std::unique_ptr<ProcessorFactoryObject>)> onNew_;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PYINVIWO_H

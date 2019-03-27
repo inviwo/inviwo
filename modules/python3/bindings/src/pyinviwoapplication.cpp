@@ -36,6 +36,22 @@
 
 namespace inviwo {
 
+class InviwoApplicationTrampoline : public InviwoApplication {
+public:
+    using InviwoApplication::InviwoApplication;
+
+    virtual void closeInviwoApplication() override {
+        PYBIND11_OVERLOAD(void, InviwoApplication, closeInviwoApplication);
+    };
+    virtual void startFileObservation(std::string fileName) override {
+                PYBIND11_OVERLOAD(void, InviwoApplication, startFileObservation, fileName);
+    };
+    virtual void stopFileObservation(std::string fileName) override {
+            PYBIND11_OVERLOAD(void, InviwoApplication, stopFileObservation, fileName);
+    };
+};
+
+
 void exposeInviwoApplication(pybind11::module &m) {
     namespace py = pybind11;
 
@@ -58,8 +74,12 @@ void exposeInviwoApplication(pybind11::module &m) {
         m, "ModuleVectorWrapper");
 
     py::class_<InviwoApplication>(m, "InviwoApplication")
+        //.def(py::init<>())
+        //.def(py::init<std::string>())
+        .def("getBasePath", &InviwoApplication::getBasePath)
         .def("getPath", &InviwoApplication::getPath, py::arg("pathType"), py::arg("suffix") = "",
              py::arg("createFolder") = false)
+    
         .def("getModuleByIdentifier", &InviwoApplication::getModuleByIdentifier,
              py::return_value_policy::reference)
         .def("getModuleSettings", &InviwoApplication::getModuleSettings,

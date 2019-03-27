@@ -24,6 +24,8 @@ set(HEADER_FILES
     include/modules/python3/pythonexecutionoutputobservable.h
     include/modules/python3/pythoninterpreter.h
     include/modules/python3/pythonlogger.h
+    include/modules/python3/pythonprocessorfactoryobject.h
+    include/modules/python3/pythonprocessorfolderobserver.h
     include/modules/python3/pythonscript.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
@@ -40,6 +42,8 @@ set(SOURCE_FILES
     src/pythonexecutionoutputobservable.cpp
     src/pythoninterpreter.cpp
     src/pythonlogger.cpp
+    src/pythonprocessorfactoryobject.cpp
+    src/pythonprocessorfolderobserver.cpp
     src/pythonscript.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})

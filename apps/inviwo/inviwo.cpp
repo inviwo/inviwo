@@ -64,14 +64,8 @@ int main(int argc, char** argv) {
     qputenv("QT_STYLE_OVERRIDE", "");
 #endif
     inviwo::InviwoApplicationQt inviwoApp(argc, argv, "Inviwo");
-    inviwoApp.setWindowIcon(QIcon(":/inviwo/inviwo_light.png"));
-    inviwoApp.setAttribute(Qt::AA_NativeWindows);
-    QFile styleSheetFile(":/stylesheets/inviwo.qss");
-    styleSheetFile.open(QFile::ReadOnly);
-    QString styleSheet = QString::fromUtf8(styleSheetFile.readAll());
-    inviwoApp.setStyleSheet(styleSheet);
-    styleSheetFile.close();
-
+    inviwoApp.setStyleSheetFile(":/stylesheets/inviwo.qss");
+    
     auto& clp = inviwoApp.getCommandLineParser();
 
     inviwo::InviwoMainWindow mainWin(&inviwoApp);

@@ -36,6 +36,7 @@
 #include <vector>
 
 class QMenu;
+class InviwoModule;
 
 namespace inviwo {
 
@@ -44,7 +45,7 @@ class InviwoApplication;
 
 class IVW_MODULE_PYTHON3QT_API PythonMenu {
 public:
-    PythonMenu(InviwoApplication* app);
+    PythonMenu(InviwoModule* module, InviwoApplication* app);
     virtual ~PythonMenu();
 
 private:
