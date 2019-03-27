@@ -41,7 +41,7 @@ namespace inviwo {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo SeedsFromMaskSequence::processorInfo_{
     "org.inviwo.SeedsFromMaskSequence",  // Class identifier
-    "Seeds From Mask Sequence",          // Display name
+    "Seed Points From Mask Sequence",    // Display name
     "Seed Points",                       // Category
     CodeState::Stable,                   // Code state
     Tags::CPU,                           // Tags
@@ -80,12 +80,13 @@ void SeedsFromMaskSequence::process() {
             }
             auto data = typedVol->getDataTyped();
             auto dim = typedVol->getDimensions();
+            vec3 invDim = vec3(1.0f) / vec3(dim);
             util::IndexMapper3D index(dim);
             util::forEachVoxel(*typedVol, [&](const size3_t &pos) {
                 if (dis(gen) > randomSampling_.get()) return;
                 auto v = util::glm_convert<float>(data[index(pos)]);
                 if (v > 0) {
-                    points.emplace_back(vec3(pos) / vec3(dim - size3_t(1, 1, 1)), t);
+                    points.emplace_back((vec3(pos) + 0.5f) * invDim ,t);
                 }
             });
             volID++;

@@ -39,7 +39,7 @@ namespace inviwo {
 const ProcessorInfo SeedPointsFromMask::processorInfo_{
     "org.inviwo.SeedPointsFromMask",  // Class identifier
     "Seed Points From Mask",          // Display name
-    "Vector Field Visualization",     // Category
+    "Seed Points",                    // Category
     CodeState::Stable,                // Code state
     Tags::CPU,                        // Tags
 };
@@ -56,12 +56,14 @@ SeedPointsFromMask::SeedPointsFromMask()
     , randomness_("randomness", "Randomness")
     , useSameSeed_("useSameSeed", "Use same seed", true)
     , seed_("seed", "Seed", 1, 0, 1000)
+    , transformToWorld_("transformToWorld", "Transform To World Space", false)
     , mt_()
     , dis_(.0f, 1.f) {
     addPort(volumes_);
     addPort(seedPoints_);
 
     addProperty(threshold_);
+    addProperty(transformToWorld_);
 
     addProperty(enableSuperSample_);
     addProperty(superSample_);
@@ -93,6 +95,15 @@ void SeedPointsFromMask::process() {
             util::IndexMapper3D index(dim);
             vec3 invDim = vec3(1.0f) / vec3(dim);
 
+            std::function<vec3(vec3)> noTransform = [&](vec3 p) -> vec3 { return p; };
+            std::function<vec3(vec3)> withTransform = [&](vec3 p) -> vec3 {
+                auto m = v->getCoordinateTransformer().getDataToWorldMatrix();
+                vec4 WP = m * vec4(p, 1.0f);
+                return vec3(WP) / WP.w;
+            };
+
+            auto transform = transformToWorld_.get() ? withTransform : noTransform;
+
             util::forEachVoxel(*volPrecision, [&](const size3_t &pos) {
                 if (util::glm_convert_normalized<double>(data[index(pos)]) > threshold_.get()) {
                     if (enableSuperSample_.get()) {
@@ -100,17 +111,16 @@ void SeedPointsFromMask::process() {
                             const auto x = dis_(mt_);
                             const auto y = dis_(mt_);
                             const auto z = dis_(mt_);
-                            points->push_back((vec3(pos) + vec3{x, y, z}) * invDim);
+                            points->push_back(transform((vec3(pos) + vec3{x, y, z}) * invDim));
                         }
                     } else {
-                        points->push_back((vec3(pos) + 0.5f) * invDim);
+                        points->push_back(transform((vec3(pos) + 0.5f) * invDim));
                     }
                 }
             });
         });
-
-        seedPoints_.setData(points);
     }
+    seedPoints_.setData(points);
 }
 
 }  // namespace inviwo
