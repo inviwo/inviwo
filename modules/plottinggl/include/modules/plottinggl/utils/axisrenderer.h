@@ -55,6 +55,17 @@ namespace plot {
 
 namespace detail {
 
+/*
+ * Utilities for caching the state of the axis renderer
+ * Each state is wrapped in a Guard. When the rendering is called Guard::check is called with the
+ * new state. If the state is changed the guard will call reset on all its guarded objects, forcing
+ * them to be updated to the new state.
+ * For example the AxisCaption caches a TextTextureObject by using two guards, one for the string:
+ * caption_, and one for the text settings: settings_. When ever AxisCaption::getCaption is called
+ * the guards are checked, and if they are changed the TextTextureObject is reset and the texture is
+ * recreated. 
+ */
+
 struct Resetter {
 
     void operator()(TextTextureObject& text) { text.texture.reset(); }
@@ -267,6 +278,10 @@ public:
 
     void render(const size2_t& outputDims, const size2_t& startPos, const size2_t& endPos,
                 bool antialiasing = true);
+
+    /**
+    * Returns the bounding rect (lower left, upper right) of the axis in pixels. 
+    */
 
     std::pair<vec2, vec2> boundingRect(const size2_t& startPos, const size2_t& endPos);
 

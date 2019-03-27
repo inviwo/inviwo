@@ -9,7 +9,7 @@ uniform vec4 color;
 uniform float mixColor;
 uniform float mixAlpha;
 
-uniform float falllofPower = 2.0;
+uniform float fallofPower = 2.0;
 
 uniform sampler2D tf;
 
@@ -24,7 +24,7 @@ void main() {
     res.a = mix(res.a, color.a, mixAlpha);
 
     if (additiveBlend) {
-        res.a *= pow(lFalloffAlpha, falllofPower);
+        res.a *= pow(lFalloffAlpha, fallofPower);
     }
 
     PickingData = lPickColor;

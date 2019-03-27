@@ -48,7 +48,7 @@ IVW_MODULE_PLOTTING_API std::vector<double> getMajorTickPositions(const MajorTic
                                                                   size_t maxTicks = 1000);
 IVW_MODULE_PLOTTING_API std::vector<double> getMinorTickPositions(
     const MinorTickSettings& minorTicks, const MajorTickSettings& majorTicks, dvec2 range,
-    size_t maxTicks = 10000);
+    size_t maxTicks = 1000);
 
 /**
  * \brief returns tick positions along the axis range defined in the axis property

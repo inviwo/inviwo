@@ -155,7 +155,9 @@ public:
     void setAction(const std::function<void()> &action);
 
     /**
-     * Sets a called for picking events to implement custom behaviors
+     * Sets a callback function for picking events to enable custom behaviors
+     * This function is called (if set) in the picking event handling after the internal event
+     * handling is done.
      */
     void setPickingEventAction(std::function<void(PickingEvent *e)> pickingAction);
 

@@ -47,7 +47,7 @@ public:
     AxisData(const AxisSettings& settings);
     virtual ~AxisData() = default;
 
-    dvec2 range = dvec2{100.0, 100.0};
+    dvec2 range = dvec2{0.0, 100.0};
     bool useDataRange = true;
 
     bool visible = true;

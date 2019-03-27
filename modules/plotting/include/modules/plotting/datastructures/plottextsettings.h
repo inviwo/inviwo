@@ -48,7 +48,7 @@ public:
     virtual float getRotation() const = 0;  //!< Degrees of rotation
     virtual const FontSettings& getFont() const = 0;
 
-    // utility
+    // Conversion to bool for enabled state
     operator bool() const;
 };
 

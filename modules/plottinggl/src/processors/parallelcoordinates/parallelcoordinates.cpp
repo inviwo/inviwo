@@ -549,7 +549,7 @@ void ParallelCoordinates::drawLines(size2_t size) {
     // pcp_lines.frag
     lineShader_.setUniform("additiveBlend", enableBlending);
     lineShader_.setUniform("subtractiveBelnding", blendMode_.get() == BlendMode::Sutractive);
-    lineShader_.setUniform("falllofPower", falllofPower_.get());
+    lineShader_.setUniform("fallofPower", falllofPower_.get());
     lineShader_.setUniform("color", vec4{filterColor_.get(), filterAlpha_.get()});
     lineShader_.setUniform("filterIntensity", filterIntensity_.get());
 
@@ -578,7 +578,7 @@ void ParallelCoordinates::drawLines(size2_t size) {
         }
 
         if (hoveredLine_ != -1 && !brushingAndLinking_.isFiltered(hoveredLine_)) {
-            lineShader_.setUniform("falllofPower", 0.5f * falllofPower_.get());
+            lineShader_.setUniform("fallofPower", 0.5f * falllofPower_.get());
 
             glDrawElements(GL_LINE_STRIP, lines_.sizes[hoveredLine_], GL_UNSIGNED_INT,
                            reinterpret_cast<GLvoid*>(
