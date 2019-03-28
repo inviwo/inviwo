@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2019 Inviwo Foundation
+ * Copyright (c) 2012-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -59,6 +59,7 @@ VolumeSource::VolumeSource(InviwoApplication* app, const std::string& file)
     , app_(app)
     , outport_("data")
     , file_("filename", "File", file, "volume")
+    , directory_("directoryname", "Directory", file, "volume")
     , reload_("reload", "Reload data")
     , volumeIndex_("volumeindex", "Volume Index", 0, 0, 0, 1)
     , basis_("Basis", "Basis and offset")
@@ -71,6 +72,8 @@ VolumeSource::VolumeSource(InviwoApplication* app, const std::string& file)
     file_.setContentType("volume");
     file_.setDisplayName("Volume file");
 
+    directory_.setDisplayName("Volume directory");
+
     volumeSequence_.setVisible(false);
 
     addFileNameFilters();
@@ -78,44 +81,49 @@ VolumeSource::VolumeSource(InviwoApplication* app, const std::string& file)
     addPort(outport_);
 
     addProperty(file_);
+    addProperty(directory_);
     addProperty(reload_);
     addProperty(volumeIndex_);
     addProperty(information_);
     addProperty(basis_);
     addProperty(volumeSequence_);
-
-    isReady_.setUpdate([this]() { return filesystem::fileExists(file_.get()); });
-    file_.onChange([this]() { isReady_.update(); });
 }
 
 void VolumeSource::load(bool deserialize) {
-    if (file_.get().empty()) return;
+    std::string path;
+    if (file_.isModified() && !file_.get().empty()) {
+        path = file_.get();
+        directory_.set("");
+    } else if (directory_.isModified() && !directory_.get().empty()) {
+        path = directory_.get();
+        file_.set("");
+    } else {
+        return;
+    }
 
     auto rf = app_->getDataReaderFactory();
     auto rm = app_->getResourceManager();
-
-    const auto sext = file_.getSelectedExtension();
-    const auto fext = filesystem::getFileExtension(file_.get());
+    std::string ext = filesystem::getFileExtension(path);
 
     // use resource unless the "Reload data"-button (reload_) was pressed,
     // Note: reload_ will be marked as modified when deserializing.
     bool checkResource = deserialized_ || !reload_.isModified();
-    if (checkResource && rm->hasResource<VolumeSequence>(file_.get())) {
-        volumes_ = rm->getResource<VolumeSequence>(file_.get());
+    if (checkResource && rm->hasResource<VolumeSequence>(path)) {
+        volumes_ = rm->getResource<VolumeSequence>(path);
     } else {
         try {
-            if (auto volVecReader = rf->getReaderForTypeAndExtension<VolumeSequence>(sext, fext)) {
-                auto volumes = volVecReader->readData(file_.get(), this);
+            if (auto volVecReader = rf->getReaderForTypeAndExtension<VolumeSequence>(ext)) {
+                auto volumes = volVecReader->readData(path, this);
                 std::swap(volumes, volumes_);
-                rm->addResource(file_.get(), volumes_, reload_.isModified());
-            } else if (auto volreader = rf->getReaderForTypeAndExtension<Volume>(sext, fext)) {
-                auto volume = volreader->readData(file_.get(), this);
+                rm->addResource(path, volumes_, reload_.isModified());
+            } else if (auto volreader = rf->getReaderForTypeAndExtension<Volume>(ext)) {
+                auto volume = volreader->readData(path, this);
                 auto volumes = std::make_shared<VolumeSequence>();
                 volumes->push_back(volume);
                 std::swap(volumes, volumes_);
-                rm->addResource(file_.get(), volumes_, reload_.isModified());
+                rm->addResource(path, volumes_, reload_.isModified());
             } else {
-                LogProcessorError("Could not find a data reader for file: " << file_.get());
+                LogProcessorError("Could not find a data reader for file: " << path);
             }
         } catch (DataReaderException const& e) {
             LogProcessorError(e.getMessage());
@@ -135,7 +143,7 @@ void VolumeSource::load(bool deserialize) {
         // store filename in metadata
         for (auto volume : *volumes_) {
             if (!volume->hasMetaData<StringMetaData>("filename"))
-                volume->setMetaData<StringMetaData>("filename", file_.get());
+                volume->setMetaData<StringMetaData>("filename", path);
 
             const auto volume_dim = volume->getDimensions();
             const auto center_slice_idx = glm::max((volume_dim.z - 1) / 2, 0ULL);
@@ -180,13 +188,14 @@ void VolumeSource::load(bool deserialize) {
                 for (size_t x{0}; x < volume_dim.x; x += step_size.x) {
                     const size3_t pt{x, y, center_slice_idx};
 
-                    const auto value = volumeRAM->getAsDouble(pt); // in data range
-                    double value_HU = value * datamap.rescaleSlope + datamap.rescaleIntercept;
-                    double value_normalized =
-                        windowConversionSuccessful ? (value_HU - windowMin) / windowWidth
-                                                  : (value - datamap.dataRange.x) /
-                                                        (datamap.dataRange.y - datamap.dataRange.x);
-                    double value_clamped = glm::clamp(value_normalized, 0.0, 1.0);
+                    const auto value = volumeRAM->getAsDouble(pt);  // in data range
+                    const auto value_HU = value * datamap.rescaleSlope + datamap.rescaleIntercept;
+                    const auto value_normalized =
+                        windowConversionSuccessful
+                            ? (value_HU - windowMin) / windowWidth
+                            : (value - datamap.dataRange.x) /
+                                  (datamap.dataRange.y - datamap.dataRange.x);
+                    const auto value_clamped = glm::clamp(value_normalized, 0.0, 1.0);
 
                     const auto img_value = static_cast<unsigned char>(value_clamped * 255.0);
 
@@ -201,9 +210,26 @@ void VolumeSource::load(bool deserialize) {
 
             auto volumeDescription = std::make_shared<VolumeDesriptionProperty>(
                 std::string("VolumeDescription") + std::to_string(volumeIdx),
-                std::string("Volume Description ") + std::to_string(volumeIdx), volumeIdx,
-                center_slice_img_data_[volumeIdx].data(), // sliceData,
-                volume_dim);
+                !volume->dataMap_.dataName_.empty()
+                    ? volume->dataMap_.dataName_
+                    : std::string("VolumeDescription") + std::to_string(volumeIdx),
+                volumeIdx,
+                center_slice_img_data_[volumeIdx].data(),  // sliceData,
+                size2_t(volume_dim));
+
+            volumeDescription->metadata_.dimension_ = volume_dim;
+            volumeDescription->metadata_.format_ = volume->getDataFormat()->getString();
+            volumeDescription->metadata_.numChannels_ = volume->getDataFormat()->getComponents();
+            volumeDescription->metadata_.numVoxels_ = volume_dim.x * volume_dim.y * volume_dim.z;
+            volumeDescription->metadata_.dataRange_ = volume->dataMap_.dataRange;
+            volumeDescription->metadata_.valueRange_ = volume->dataMap_.valueRange;
+            volumeDescription->metadata_.valueUnit_ = volume->dataMap_.valueUnit;
+            volumeDescription->metadata_.basis_ = volume->getBasis();
+            volumeDescription->metadata_.offset_ = volume->getOffset();
+            volumeDescription->metadata_.patientBasisX_.set(volume->dataMap_.patientBasisX_);
+            volumeDescription->metadata_.patientBasisY_.set(volume->dataMap_.patientBasisY_);
+            volumeDescription->metadata_.patientBasisZ_.set(volume->dataMap_.patientBasisZ_);
+
             volumeDescriptions_.emplace_back(volumeDescription);
             auto prop = volumeDescriptions_.back();
             addProperty(*prop);
@@ -227,13 +253,13 @@ void VolumeSource::addFileNameFilters() {
     auto rf = app_->getDataReaderFactory();
 
     file_.clearNameFilters();
-    file_.addNameFilter(FileExtension::all());
+    file_.addNameFilter(FileExtension("*", "All Files"));
     file_.addNameFilters(rf->getExtensionsForType<Volume>());
     file_.addNameFilters(rf->getExtensionsForType<VolumeSequence>());
 }
 
 void VolumeSource::process() {
-    if (file_.isModified() || reload_.isModified()) {
+    if (file_.isModified() || directory_.isModified() || reload_.isModified()) {
         load(deserialized_);
         deserialized_ = false;
     }

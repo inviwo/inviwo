@@ -78,6 +78,7 @@ SharedVolume GdcmVolumeReader::getVolumeDescription(DICOMDIRSeries& series) {
     double sliceThickness = std::numeric_limits<double>::infinity();
     vec3 orientationPatientX = vec3(1, 0, 0);
     vec3 orientationPatientY = vec3(0, 1, 0);
+    std::string patientName, patientSpecies, patientBreed;
 
     for (DICOMDIRImage& imgInfo : series.images) {
         gdcm::ImageReader imageReader;
@@ -223,6 +224,42 @@ SharedVolume GdcmVolumeReader::getVolumeDescription(DICOMDIRSeries& series) {
 
                         imgInfo.zPos =
                             dot(positionPatient, cross(orientationPatientX, orientationPatientY));
+                    }
+                }
+            }
+
+            {  // read patient name
+                const gdcm::Tag patName(0x0010, 0x0010);
+                if (dataset.FindDataElement(patName)) {
+                    const auto el = dataset.GetDataElement(patName);
+                    if (!el.IsEmpty() && el.GetVR() == gdcm::VR::PN) {  // person name
+                        std::stringstream tmp;
+                        el.GetValue().Print(tmp);
+                        patientName = tmp.str();
+                    }
+                }
+            }
+
+            {  // read patient species
+                const gdcm::Tag tag(0x0010, 0x2201);
+                if (dataset.FindDataElement(tag)) {
+                    const auto el = dataset.GetDataElement(tag);
+                    if (!el.IsEmpty() && el.GetVR() == gdcm::VR::LO) {  // long string
+                        std::stringstream tmp;
+                        el.GetValue().Print(tmp);
+                        patientSpecies = tmp.str();
+                    }
+                }
+            }
+
+            {  // read patient breed
+                const gdcm::Tag tag(0x0010, 0x2292);
+                if (dataset.FindDataElement(tag)) {
+                    const auto el = dataset.GetDataElement(tag);
+                    if (!el.IsEmpty() && el.GetVR() == gdcm::VR::LO) {  // long string
+                        std::stringstream tmp;
+                        el.GetValue().Print(tmp);
+                        patientBreed = tmp.str();
                     }
                 }
             }
@@ -373,12 +410,31 @@ SharedVolume GdcmVolumeReader::getVolumeDescription(DICOMDIRSeries& series) {
         outputVolume->dataMap_.windowWidths.push_back(imgInfo.windowWidth);
     }
 
-    // TODO use spacing for basis and origin for world
+    outputVolume->dataMap_.patientBasisX_ = orientationPatientX;
+    outputVolume->dataMap_.patientBasisY_ = orientationPatientY;
+    outputVolume->dataMap_.patientBasisZ_ = cross(orientationPatientX, orientationPatientY);
+
+    // If no patient name found, set data name to empty string
+    // so that volume source can choose and display appropriate default string
+    if (patientName.empty())
+        outputVolume->dataMap_.dataName_ = "";
+    else {
+        outputVolume->dataMap_.dataName_ = patientName;
+        if (!patientSpecies.empty()) {
+            outputVolume->dataMap_.dataName_ += " (" + patientSpecies;
+            if (!patientBreed.empty())
+                outputVolume->dataMap_.dataName_ += ", " + patientBreed + ")";
+            else
+                outputVolume->dataMap_.dataName_ += ")";
+        }
+    }
+
     outputVolume->setBasis(glm::scale(vec3(1.0 / spacing)) *
                            mat4(vec4(orientationPatientX, 0), vec4(orientationPatientY, 0),
                                 vec4(cross(orientationPatientX, orientationPatientY), 0),
                                 vec4(0, 0, 0, 1)));  // ModelMatrix (data -> model)
-    outputVolume->setWorldMatrix(mat4{1});           // WorldMatrx (model -> world)
+    // TODO set -origin as translation in world matrix
+    outputVolume->setWorldMatrix(mat4{1});  // WorldMatrx (model -> world)
 
     return outputVolume;
 
@@ -655,11 +711,20 @@ SharedVolumeSequence GdcmVolumeReader::readData(const std::string& filePath) {
         }
     }
 
-    const auto directory = filesystem::getFileDirectory(path);
-    // TODO sequence source calls here for each file in a folder
-    if (directory == this->file_) {
-        return this->volumes_;  // doesnt work
+    std::string directory;
+    if (filesystem::directoryExists(path)) {
+
+        // Path is directoy itself
+        directory = path;
+
+    } else {
+        directory = filesystem::getFileDirectory(path);
+        // TODO sequence source calls here for each file in a folder
+        if (directory == this->file_) {
+            return this->volumes_;  // doesnt work
+        }
     }
+
     gdcm::Trace::DebugOff();  // prevent gdcm from spamming inviwo console
 
     // Try several dicom file structures

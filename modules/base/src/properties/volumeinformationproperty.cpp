@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2019 Inviwo Foundation
+ * Copyright (c) 2015-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,7 @@ const std::string VolumeInformationProperty::classIdentifier =
 std::string VolumeInformationProperty::getClassIdentifier() const { return classIdentifier; }
 
 auto VolumeInformationProperty::props() {
-    return std::tie(dimensions_, format_, channels_, numVoxels_);
+    return std::tie(dimensions_, voxelSpacing_, format_, channels_, numVoxels_);
 }
 
 VolumeInformationProperty::VolumeInformationProperty(std::string identifier,
@@ -49,6 +49,7 @@ VolumeInformationProperty::VolumeInformationProperty(std::string identifier,
     , dimensions_("dimensions", "Dimensions", size3_t(0), size3_t(0),
                   size3_t(std::numeric_limits<size_t>::max()), size3_t(1), InvalidationLevel::Valid,
                   PropertySemantics("Text"))
+    , voxelSpacing_("voxelSpacing", "Voxel Spacing", vec3(0.0f), vec3(0.0f), vec3(1e3f), vec3(1e-3f))
     , format_("format", "Format", "")
     , channels_("channels", "Channels", 0, 0, std::numeric_limits<size_t>::max(), 1,
                 InvalidationLevel::InvalidOutput, PropertySemantics("Text"))
@@ -58,7 +59,10 @@ VolumeInformationProperty::VolumeInformationProperty(std::string identifier,
                  0.0, InvalidationLevel::InvalidOutput, PropertySemantics("Text"))
     , valueRange_("valueRange", "Value range", 0., 255.0, -DataFloat64::max(), DataFloat64::max(),
                   0.0, 0.0, InvalidationLevel::InvalidOutput, PropertySemantics("Text"))
-    , valueUnit_("valueUnit", "Value unit", "arb. unit.") {
+    , valueUnit_("valueUnit", "Value unit", "arb. unit.")
+    , patientBasisX_("patientBasisX", "Patient Basis X", vec3(1, 0, 0), vec3(-1), vec3(1))
+    , patientBasisY_("patientBasisY", "Patient Basis Y", vec3(0, 1, 0), vec3(-1), vec3(1))
+    , patientBasisZ_("patientBasisZ", "Patient Basis Z", vec3(0, 0, 1), vec3(-1), vec3(1)) {
 
     util::for_each_in_tuple(
         [&](auto& e) {
@@ -76,23 +80,41 @@ VolumeInformationProperty::VolumeInformationProperty(std::string identifier,
     addProperty(dataRange_);
     addProperty(valueRange_);
     addProperty(valueUnit_);
+
+    addProperty(patientBasisX_);
+    patientBasisX_.setReadOnly(true);
+    addProperty(patientBasisY_);
+    patientBasisY_.setReadOnly(true);
+    addProperty(patientBasisZ_);
+    patientBasisZ_.setReadOnly(true);
 }
 
 VolumeInformationProperty::VolumeInformationProperty(const VolumeInformationProperty& rhs)
     : CompositeProperty(rhs)
     , dimensions_(rhs.dimensions_)
+    , voxelSpacing_(rhs.voxelSpacing_)
     , format_(rhs.format_)
     , channels_(rhs.channels_)
     , numVoxels_(rhs.numVoxels_)
     , dataRange_(rhs.dataRange_)
     , valueRange_(rhs.valueRange_)
-    , valueUnit_(rhs.valueUnit_) {
+    , valueUnit_(rhs.valueUnit_)
+    , patientBasisX_("patientBasisX", "Patient Basis X", vec3(1, 0, 0), vec3(-1), vec3(1))
+    , patientBasisY_("patientBasisY", "Patient Basis Y", vec3(0, 1, 0), vec3(-1), vec3(1))
+    , patientBasisZ_("patientBasisZ", "Patient Basis Z", vec3(0, 0, 1), vec3(-1), vec3(1)) {
 
     util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props());
 
     addProperty(dataRange_);
     addProperty(valueRange_);
     addProperty(valueUnit_);
+
+    addProperty(patientBasisX_);
+    patientBasisX_.setReadOnly(true);
+    addProperty(patientBasisY_);
+    patientBasisY_.setReadOnly(true);
+    addProperty(patientBasisZ_);
+    patientBasisZ_.setReadOnly(true);
 }
 
 VolumeInformationProperty& VolumeInformationProperty::operator=(
@@ -100,6 +122,7 @@ VolumeInformationProperty& VolumeInformationProperty::operator=(
     if (this != &that) {
         CompositeProperty::operator=(that);
         dimensions_ = that.dimensions_;
+        voxelSpacing_ = that.voxelSpacing_;
         format_ = that.format_;
         channels_ = that.channels_;
         numVoxels_ = that.numVoxels_;
@@ -118,6 +141,7 @@ void VolumeInformationProperty::updateForNewVolume(const Volume& volume, bool de
     const auto dim = volume.getDimensions();
 
     dimensions_.set(dim);
+    voxelSpacing_.set(volume.dataMap_.voxelSpacing);
     format_.set(volume.getDataFormat()->getString());
     channels_.set(volume.getDataFormat()->getComponents());
     numVoxels_.set(dim.x * dim.y * dim.z);
@@ -128,6 +152,11 @@ void VolumeInformationProperty::updateForNewVolume(const Volume& volume, bool de
         Property::setStateAsDefault(dataRange_, volume.dataMap_.dataRange);
         Property::setStateAsDefault(valueRange_, volume.dataMap_.valueRange);
         Property::setStateAsDefault(valueUnit_, volume.dataMap_.valueUnit);
+
+        Property::setStateAsDefault(patientBasisX_, volume.dataMap_.patientBasisX_);
+        Property::setStateAsDefault(patientBasisY_, volume.dataMap_.patientBasisY_);
+        Property::setStateAsDefault(patientBasisZ_, volume.dataMap_.patientBasisZ_);
+
     } else {
         dataRange_.set(volume.dataMap_.dataRange);
         valueRange_.set(volume.dataMap_.valueRange);
@@ -135,6 +164,10 @@ void VolumeInformationProperty::updateForNewVolume(const Volume& volume, bool de
         dataRange_.setCurrentStateAsDefault();
         valueRange_.setCurrentStateAsDefault();
         valueUnit_.setCurrentStateAsDefault();
+
+        patientBasisX_.set(volume.dataMap_.patientBasisX_);
+        patientBasisY_.set(volume.dataMap_.patientBasisY_);
+        patientBasisZ_.set(volume.dataMap_.patientBasisZ_);
     }
 }
 

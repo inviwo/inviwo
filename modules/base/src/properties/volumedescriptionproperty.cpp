@@ -36,7 +36,7 @@ namespace inviwo {
     std::string VolumeDesriptionMetadataProperty::getClassIdentifier() const { return classIdentifier; }
 
     VolumeDesriptionMetadataProperty::VolumeDesriptionMetadataProperty(
-        std::string identifier,
+        std::string identifier, 
         std::string displayName,
         InvalidationLevel invalidationLevel,
         PropertySemantics semantics) : CompositeProperty(identifier, displayName, invalidationLevel, semantics),
@@ -47,8 +47,10 @@ namespace inviwo {
         dataRange_{"datarange", "Data Range"},
         valueRange_{"valuerange", "Value Range"},
         valueUnit_{"valueuunit", "Value Unit"},
-        basis_{"basis", "Basis"},
-        offset_{"offset", "Offset"}
+        basis_{"basis", "Basis"}, offset_{"offset", "Offset"},
+        patientBasisX_("patientBasisX", "Patient Basis X", vec3(1, 0, 0), vec3(-1), vec3(1)),
+        patientBasisY_("patientBasisY", "Patient Basis Y", vec3(0, 1, 0), vec3(-1), vec3(1)),
+        patientBasisZ_("patientBasisZ", "Patient Basis Z", vec3(0, 0, 1), vec3(-1), vec3(1))
     {
         addProperty(dimension_);
         addProperty(format_);
@@ -60,6 +62,10 @@ namespace inviwo {
         addProperty(basis_);
         addProperty(offset_);
 
+        addProperty(patientBasisX_);
+        addProperty(patientBasisY_);
+        addProperty(patientBasisZ_);
+
         dimension_.setReadOnly(true);
         format_.setReadOnly(true);
         numChannels_.setReadOnly(true);
@@ -69,6 +75,10 @@ namespace inviwo {
         valueUnit_.setReadOnly(true);
         basis_.setReadOnly(true);
         offset_.setReadOnly(true);
+
+        patientBasisX_.setReadOnly(true);
+        patientBasisY_.setReadOnly(true);
+        patientBasisZ_.setReadOnly(true);
 
         dimension_.setSemantics(PropertySemantics::Text);
         numChannels_.setSemantics(PropertySemantics::Text);
@@ -88,7 +98,10 @@ namespace inviwo {
         , valueRange_(rhs.valueRange_)
         , valueUnit_(rhs.valueUnit_)
         , basis_(rhs.basis_)
-        , offset_(rhs.offset_) {
+        , offset_(rhs.offset_)
+        , patientBasisX_("patientBasisX", "Patient Basis X", vec3(1, 0, 0), vec3(-1), vec3(1))
+        , patientBasisY_("patientBasisY", "Patient Basis Y", vec3(0, 1, 0), vec3(-1), vec3(1))
+        , patientBasisZ_("patientBasisZ", "Patient Basis Z", vec3(0, 0, 1), vec3(-1), vec3(1)) {
 
         addProperty(dimension_);
         addProperty(format_);
@@ -99,6 +112,14 @@ namespace inviwo {
         addProperty(valueUnit_);
         addProperty(basis_);
         addProperty(offset_);
+
+        addProperty(patientBasisX_);
+        addProperty(patientBasisY_);
+        addProperty(patientBasisZ_);
+
+        patientBasisX_.setReadOnly(true);
+        patientBasisY_.setReadOnly(true);
+        patientBasisZ_.setReadOnly(true);
     }
 
     VolumeDesriptionMetadataProperty& VolumeDesriptionMetadataProperty::operator=(const VolumeDesriptionMetadataProperty& that) {
@@ -126,15 +147,13 @@ namespace inviwo {
         size2_t imgSize,
         InvalidationLevel invalidationLevel,
         PropertySemantics semantics) : CompositeProperty(identifier, displayName, invalidationLevel, semantics),
-        name_{"name", "Name"},
         image_{"image", "Image", volumeIdx, imgData, imgSize},
         metadata_{"metadata", "Metadata"}
         //basis_{"basis", "Basis and Offset"},
         //information_{"metadata", "Metadata"}
     {
-        addProperty(name_);
-        name_.setReadOnly(true);
         addProperty(image_);
+
         addProperty(metadata_);
         metadata_.setCollapsed(true);
         /*addProperty(basis_);
@@ -145,15 +164,12 @@ namespace inviwo {
 
     VolumeDesriptionProperty::VolumeDesriptionProperty(const VolumeDesriptionProperty& rhs)
         : CompositeProperty(rhs)
-        , name_(rhs.name_)
         , image_(rhs.image_)
         , metadata_(rhs.metadata_)
         //, basis_(rhs.basis_)
         //, information_(rhs.information_)
     {
-        addProperty(name_);
         addProperty(image_);
-        addProperty(metadata_);
         //addProperty(basis_);
         //addProperty(information_);
     }

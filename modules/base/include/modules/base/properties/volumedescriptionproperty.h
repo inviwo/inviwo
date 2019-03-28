@@ -58,7 +58,6 @@ namespace inviwo {
         virtual VolumeDesriptionMetadataProperty* clone() const override;
         virtual ~VolumeDesriptionMetadataProperty() = default;
 
-    private:
         IntVec3Property dimension_;
         StringProperty format_;
         IntProperty numChannels_;
@@ -68,6 +67,10 @@ namespace inviwo {
         StringProperty valueUnit_;
         FloatMat3Property basis_;
         FloatVec3Property offset_;
+
+        FloatVec3Property patientBasisX_;
+        FloatVec3Property patientBasisY_;
+        FloatVec3Property patientBasisZ_;
     };
 
     class IVW_MODULE_BASE_API VolumeDesriptionProperty : public CompositeProperty {
@@ -88,7 +91,6 @@ namespace inviwo {
         virtual VolumeDesriptionProperty* clone() const override;
         virtual ~VolumeDesriptionProperty() = default;
 
-        StringProperty name_; // ToDo: remove and replace with Name attribute as title of CompositeProperty itself
         ImageProperty image_; // ToDo: rename to thumbnail
         VolumeDesriptionMetadataProperty metadata_;
         /*BasisProperty basis_;

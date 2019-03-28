@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2019 Inviwo Foundation
+ * Copyright (c) 2012-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,6 +37,8 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/directoryproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/ports/volumeport.h>
 
@@ -83,6 +85,7 @@ private:
 
     VolumeOutport outport_;
     FileProperty file_;
+    DirectoryProperty directory_; // volumes may consist of many single files
     std::vector<std::shared_ptr<VolumeDesriptionProperty>> volumeDescriptions_;
     ButtonProperty reload_;
     IntSizeTProperty volumeIndex_;

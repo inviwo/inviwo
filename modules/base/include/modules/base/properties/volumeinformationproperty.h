@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2019 Inviwo Foundation
+ * Copyright (c) 2015-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -62,6 +62,7 @@ public:
 
     // Read only used to show information
     IntSize3Property dimensions_;
+    FloatVec3Property voxelSpacing_;
     StringProperty format_;
     IntSizeTProperty channels_;
     IntSizeTProperty numVoxels_;
@@ -70,6 +71,10 @@ public:
     DoubleMinMaxProperty dataRange_;
     DoubleMinMaxProperty valueRange_;
     StringProperty valueUnit_;
+
+    FloatVec3Property patientBasisX_;
+    FloatVec3Property patientBasisY_;
+    FloatVec3Property patientBasisZ_;
 
 private:
     auto props();
