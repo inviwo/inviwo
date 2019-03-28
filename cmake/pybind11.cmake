@@ -31,16 +31,10 @@
 
 # Needed for the function pybind11_add_module and dependency pybind11::module 
 
- set(_allPyBindWrappers "" CACHE INTERNAL  "")
-
+set(_allPyBindWrappers "" CACHE INTERNAL  "")
 if(PYTHONLIBS_FOUND)
     add_subdirectory(${IVW_EXTENSIONS_DIR}/pybind11)
-
-    if(MSVC)
-        # Prevent setting the /GL and -LTCG flag 
-        set(PYBIND11_LTO_CXX_FLAGS "" CACHE INTERNAL "")
-        set(PYBIND11_LTO_LINKER_FLAGS "" CACHE INTERNAL "")
-    elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
         # Workaround
         CHECK_CXX_COMPILER_FLAG("-flto-partition=none" HAS_LTO_PARTITION_FLAG)
         if(HAS_LTO_PARTITION_FLAG)
@@ -49,7 +43,6 @@ if(PYTHONLIBS_FOUND)
         endif(HAS_LTO_PARTITION_FLAG)
     endif()
 endif(PYTHONLIBS_FOUND)
-
 
 function (ivw_add_py_wrapper target)
     if(IVW_MODULE_PYTHON3)

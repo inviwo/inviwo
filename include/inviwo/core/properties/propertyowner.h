@@ -171,7 +171,7 @@ std::vector<T*> PropertyOwner::getPropertiesByType(bool recursiveSearch /* = fal
 }
 
 namespace detail {
-inline void addPropertyHelper(PropertyOwner& owner) {}
+inline void addPropertyHelper(PropertyOwner&) {}
 template <typename... Ts>
 void addPropertyHelper(PropertyOwner& owner, Property& p, Ts&... props) {
     owner.addProperty(p);
