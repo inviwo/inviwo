@@ -32,6 +32,8 @@
 #include <modules/opengl/texture/texture2d.h>
 #include <modules/opengl/openglutils.h>
 
+#include <inviwo/core/util/zip.h>
+
 #include <array>
 #include <algorithm>
 #include <numeric>
@@ -43,62 +45,79 @@ namespace util {
 
 bool TextureAtlas::valid() const { return (atlasTex_ != nullptr); }
 
-bool TextureAtlas::empty() const { return entries_.empty(); }
+void TextureAtlas::clear() { atlasTex_ = nullptr; }
 
-void TextureAtlas::clear() {
-    atlasTex_ = nullptr;
-    entries_.clear();
+void TextureAtlas::fillAtlas(TextRenderer& textRenderer, std::vector<TexAtlasEntry>& entries) {
+
+    std::vector<TextBoundingBox> bboxes;
+    std::transform(entries.begin(), entries.end(), std::back_inserter(bboxes),
+                   [&](const auto& s) { return textRenderer.computeBoundingBox(s.value); });
+
+    fillAtlas(textRenderer, entries, bboxes);
 }
 
-void TextureAtlas::fillAtlas(TextRenderer& textRenderer, std::vector<TexAtlasEntry>& atlas) {
-    entries_ = atlas;
+void TextureAtlas::fillAtlas(TextRenderer& textRenderer, const std::vector<std::string>& strings,
+                             vec4 color) {
+
+    std::vector<TextBoundingBox> bboxes;
+    std::transform(strings.begin(), strings.end(), std::back_inserter(bboxes),
+                   [&](const std::string& s) { return textRenderer.computeBoundingBox(s); });
+
+    std::vector<TexAtlasEntry> entries;
+    for (auto&& item : util::zip(strings, bboxes)) {
+        entries.push_back({item.first(), ivec2{0}, item.second().glyphsExtent, color});
+    }
+
+    fillAtlas(textRenderer, entries, bboxes);
+}
+
+void TextureAtlas::fillAtlas(TextRenderer& textRenderer, std::vector<TexAtlasEntry>& entries,
+                             std::vector<TextBoundingBox>& bboxes) {
 
     const auto minArea = std::accumulate(
-        entries_.begin(), entries_.end(), 0.0, [&](double sum, const TexAtlasEntry& te) {
-            return sum + (te.texExtent.x + margin_) * (te.texExtent.y + margin_);
+        bboxes.begin(), bboxes.end(), 0.0, [&](double sum, const TextBoundingBox& bbox) {
+            return sum + (bbox.glyphsExtent.x + margin_) * (bbox.glyphsExtent.y + margin_);
         });
 
     if (minArea > static_cast<double>(maxTexSize_ * maxTexSize_)) {
         throw Exception("Max size for texture atlas exceeded");
     }
 
-    std::vector<size_t> indices(entries_.size());
+    std::vector<size_t> indices(bboxes.size());
     std::iota(indices.begin(), indices.end(), 0u);
 
     // sort labels according to width then height
     std::sort(indices.begin(), indices.end(), [&](auto a, auto b) {
-        const auto& extA(entries_[a].texExtent);
-        const auto& extB(entries_[b].texExtent);
+        const auto& extA(bboxes[a].glyphsExtent);
+        const auto& extB(bboxes[b].glyphsExtent);
 
         return ((extA.x > extB.x) || ((extA.x == extA.x) && (extA.y > extA.y)));
     });
 
-    ivec2 texSize = calcTexLayout(indices, minArea);
+    const auto texSize = calcTexLayout(indices, entries, minArea);
 
-    if (!atlasTex_ || (size2_t(texSize) != atlasTex_->getDimensions())) {
-        initTexture(size2_t(texSize));
+    if (!atlasTex_) {
+        atlasTex_ = std::make_shared<Texture2D>(static_cast<size2_t>(texSize), GL_RGBA, GL_RGBA,
+                                                GL_UNSIGNED_BYTE, GL_LINEAR);
+        atlasTex_->initialize(nullptr);
+
+    } else if (glm::any(glm::lessThan(atlasTex_->getDimensions(), size2_t(texSize)))) {
+        atlasTex_->resize(texSize);
     }
 
-    initAtlas(textRenderer);
-}
-
-void TextureAtlas::initTexture(const size2_t& dims) {
-    auto tex = std::make_shared<Texture2D>(dims, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_LINEAR);
-    std::vector<unsigned char> data(dims.x * dims.y * 4, 0);
-    tex->initialize(data.data());
-
-    atlasTex_ = tex;
+    initAtlas(textRenderer, entries, std::move(bboxes));
 }
 
 std::shared_ptr<Texture2D> TextureAtlas::getTexture() const { return atlasTex_; }
 
-const std::vector<TexAtlasEntry>& TextureAtlas::getEntries() const { return entries_; }
-
 const TexAtlasRenderInfo& TextureAtlas::getRenderInfo() const { return renderInfo_; }
 
-ivec2 TextureAtlas::calcTexLayout(const std::vector<size_t> indices, double minArea) {
+ivec2 TextureAtlas::calcTexLayout(const std::vector<size_t> indices,
+                                  std::vector<TexAtlasEntry>& entries, double minArea) {
+    if (entries.empty()) return {1, 1};
+
     const int width = [&](int w) {
-        const auto maxEntryWidth = entries_[indices.front()].texExtent.x;
+        const auto maxEntryWidth = entries[indices.front()].texExtent.x;
         const int minWidth = static_cast<int>(std::sqrt(minArea));
         while ((w < minWidth || w < maxEntryWidth) && w < maxTexSize_) {
             w *= 2;
@@ -114,13 +133,13 @@ ivec2 TextureAtlas::calcTexLayout(const std::vector<size_t> indices, double minA
     // Fill each line by putting each element after the previous one.
     // If an element does not fit, start new line.
     for (auto i : indices) {
-        const auto& extent = entries_[i].texExtent + 2 * margin_;
+        const auto& extent = entries[i].texExtent + 2 * margin_;
         size_t line = 0;
         while (line < lineLengths.size()) {
             if (lineLengths[line] + extent.x < width) {
                 // found a position with enough space, for now we only know the x coord,
                 // use y component to store current line
-                entries_[i].texPos = ivec2(lineLengths[line] + margin_, line);
+                entries[i].texPos = ivec2(lineLengths[line] + margin_, line);
                 lineLengths[line] += extent.x;
                 lineHeights[line] = std::max(extent.y, lineHeights[line]);
                 break;
@@ -129,7 +148,7 @@ ivec2 TextureAtlas::calcTexLayout(const std::vector<size_t> indices, double minA
         }
         if (line == lineLengths.size()) {
             // no space found, create new line
-            entries_[i].texPos = ivec2(margin_, line);
+            entries[i].texPos = ivec2(margin_, line);
             lineLengths.push_back(extent.x);
             lineHeights.push_back(extent.y);
             conservativeHeight += extent.y;
@@ -141,7 +160,7 @@ ivec2 TextureAtlas::calcTexLayout(const std::vector<size_t> indices, double minA
     // update y positions of all elements
     std::partial_sum(lineHeights.begin(), lineHeights.end(), lineHeights.begin());
     lineHeights.insert(lineHeights.begin(), 0);
-    for (auto& elem : entries_) {
+    for (auto& elem : entries) {
         elem.texPos.y = lineHeights[elem.texPos.y] + margin_;
     }
 
@@ -158,20 +177,21 @@ ivec2 TextureAtlas::calcTexLayout(const std::vector<size_t> indices, double minA
     return {width, height};
 }
 
-void TextureAtlas::initAtlas(TextRenderer& textRenderer) {
+void TextureAtlas::initAtlas(TextRenderer& textRenderer, const std::vector<TexAtlasEntry>& entries,
+                             std::vector<TextBoundingBox>&& bboxes) {
     // render labels into texture
     {
         utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-        textRenderer.renderToTexture(atlasTex_, entries_);
+        textRenderer.renderToTexture(atlasTex_, entries);
     }
 
     // prepare render info for all elements of the atlas
     // compute transformation matrix to map texCoords [0,1] to atlas entry
     renderInfo_.texTransform.clear();
-    renderInfo_.texTransform.reserve(entries_.size());
+    renderInfo_.texTransform.reserve(entries.size());
     const vec2 texDim(atlasTex_->getDimensions());
 
-    std::transform(entries_.begin(), entries_.end(), std::back_inserter(renderInfo_.texTransform),
+    std::transform(entries.begin(), entries.end(), std::back_inserter(renderInfo_.texTransform),
                    [&](auto& elem) {
                        mat4 m(glm::scale(vec3(vec2(elem.texExtent) / texDim, 1.0f)));
                        m[3] = vec4(vec2(elem.texPos) / texDim, 0.0f, 1.0f);
@@ -179,9 +199,11 @@ void TextureAtlas::initAtlas(TextRenderer& textRenderer) {
                    });
 
     renderInfo_.size.clear();
-    renderInfo_.size.reserve(entries_.size());
-    std::transform(entries_.begin(), entries_.end(), std::back_inserter(renderInfo_.size),
+    renderInfo_.size.reserve(entries.size());
+    std::transform(entries.begin(), entries.end(), std::back_inserter(renderInfo_.size),
                    [](auto& a) { return a.texExtent; });
+
+    renderInfo_.boundingBoxes = std::move(bboxes);
 }
 
 }  // namespace util

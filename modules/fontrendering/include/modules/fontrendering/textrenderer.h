@@ -34,6 +34,7 @@
 #include <modules/fontrendering/fontrenderingmoduledefine.h>
 #include <modules/fontrendering/util/fontutils.h>
 #include <modules/fontrendering/datastructures/texatlasentry.h>
+#include <modules/fontrendering/datastructures/fontsettings.h>
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
@@ -42,6 +43,7 @@
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
 #include <modules/opengl/buffer/framebufferobject.h>
+#include <modules/fontrendering/datastructures/textboundingbox.h>
 
 #include <unordered_map>
 #include <tuple>
@@ -52,36 +54,6 @@
 namespace inviwo {
 
 class Texture2D;
-
-/**
- * \struct TextBoundingBox
- *
- * \brief struct for holding bounding box information for a specific text
- *
- * The textual bounding box for a string has its origin (0,0) at the bottom-left corner and is
- * given by its extent. The bounding box enclosing all glyphs has its own origin relative to (0,0).
- * The first line starts at (0,0) + textExtent.y - ascender (i.e. getBaseLineOffset()).
- *
- * The glyph bounding box might be larger than the textual bounding box. It is guaranteed to
- * enclose all glyphs including overhang, e.g. caused by italic glyphs or glyphs exceeding
- * ascend and descend.
- */
-struct TextBoundingBox {
-
-    TextBoundingBox() = default;
-
-    TextBoundingBox(const size2_t &textExt, const ivec2 &glyphsOrigin, const size2_t &glyphsExt,
-                    int baselineOffset);
-
-    size2_t textExtent;  //<! extent of textual bounding box
-
-    ivec2 glyphsOrigin;    //!< relative origin of bottom-left most glyph
-    size2_t glyphsExtent;  //!< extent of bbox containing all glyphs extending to top right corner
-
-    ivec2 glyphPenOffset;  //!< pen offset to align first glyph perfectly on first baseline
-
-    void updateGlyphPenOffset(int baselineOffset);
-};
 
 struct TextTextureObject {
     std::shared_ptr<Texture2D> texture;
@@ -269,7 +241,11 @@ public:
      */
     int getBaseLineDescender() const;
 
+    void configure(const FontSettings &settings);
+
 protected:
+    static std::shared_ptr<Shader> getShader();
+
     struct GlyphEntry {
 
         /**
@@ -341,7 +317,7 @@ protected:
     double lineSpacing_;  //!< spacing between two lines in percent (default = 0.2)
 
     const int glyphMargin_;
-    Shader shader_;
+    std::shared_ptr<Shader> shader_;
 
     FrameBufferObject fbo_;
     std::shared_ptr<Texture2D>

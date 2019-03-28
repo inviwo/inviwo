@@ -28,7 +28,6 @@
  *********************************************************************************/
 
 #include "utils/structs.glsl"
-#include "utils/pickingutils.glsl"
 
 uniform GeometryParameters geometry;
 
@@ -43,12 +42,12 @@ uniform uint pickId;
 
 out vec4 worldPosition_;
 out vec4 vertexColor_;
-flat out vec4 pickColors_;
+flat out uint pickID_;
  
 void main() {
     vertexColor_ = (pickingEnabled ? vec4(0) : color);
 
     worldPosition_ = geometry.dataToWorld * in_Vertex;
     gl_Position = camera.worldToClip * worldPosition_;
-    pickColors_ = mix(vec4(0.0), vec4(pickingIndexToColor(pickId), 1.0), bvec4(pickingEnabled));
+    pickID_ = pickingEnabled ? pickId : 0;
 }

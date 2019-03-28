@@ -74,22 +74,6 @@ void BrushingAndLinkingInport::sendColumnSelectionEvent(const std::unordered_set
     propagateEvent(&event, nullptr);
 }
 
-bool BrushingAndLinkingInport::isFiltered(size_t idx) const {
-    if (isConnected()) {
-        return getData()->isFiltered(idx);
-    } else {
-        return filterCache_.find(idx) != filterCache_.end();
-    }
-}
-
-bool BrushingAndLinkingInport::isSelected(size_t idx) const {
-    if (isConnected()) {
-        return getData()->isSelected(idx);
-    } else {
-        return selectionCache_.find(idx) != selectionCache_.end();
-    }
-}
-
 bool BrushingAndLinkingInport::isColumnSelected(size_t idx) const {
     if (isConnected()) {
         return getData()->isColumnSelected(idx);

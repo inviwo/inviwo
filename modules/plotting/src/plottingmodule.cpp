@@ -36,6 +36,7 @@
 #include <modules/plotting/processors/volumetodataframe.h>
 #include <modules/plotting/processors/volumesequencetodataframe.h>
 #include <modules/plotting/properties/axisproperty.h>
+#include <modules/plotting/properties/categoricalaxisproperty.h>
 #include <modules/plotting/properties/dataframeproperty.h>
 #include <modules/plotting/properties/marginproperty.h>
 #include <modules/plotting/properties/plottextproperty.h>
@@ -43,6 +44,7 @@
 #include <modules/plotting/properties/optionconverter.h>
 
 #include <modules/plotting/datastructures/dataframe.h>
+#include <modules/plotting/utils/csvreader.h>
 
 namespace inviwo {
 
@@ -73,6 +75,7 @@ PlottingModule::PlottingModule(InviwoApplication* app) : InviwoModule(app, "Plot
     registerProcessor<plot::VolumeToDataFrame>();
     registerProcessor<plot::VolumeSequenceToDataFrame>();
     registerProperty<plot::AxisProperty>();
+    registerProperty<plot::CategoricalAxisProperty>();
     registerProperty<plot::DataFrameColumnProperty>();
     registerProperty<plot::MajorTickProperty>();
     registerProperty<plot::MarginProperty>();
@@ -81,6 +84,8 @@ PlottingModule::PlottingModule(InviwoApplication* app) : InviwoModule(app, "Plot
     registerProperty<plot::TickProperty>();
 
     registerDefaultsForDataType<plot::DataFrame>();
+
+    registerDataReader(util::make_unique<CSVReader>());
 
     // We create a std::function to register the created converter since the registration function
     // is protected in the inviwo module

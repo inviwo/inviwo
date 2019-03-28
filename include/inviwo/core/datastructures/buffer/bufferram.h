@@ -53,6 +53,7 @@ public:
     virtual const void* getData() const = 0;
 
     virtual void reserve(size_t size) = 0;
+    virtual void clear() = 0;
 
     // uniform getters and setters
     virtual double getAsDouble(const size_t& pos) const = 0;

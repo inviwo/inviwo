@@ -40,8 +40,9 @@
 #include <modules/plottinggl/processors/scatterplotprocessor.h>
 #include <modules/plottinggl/processors/volumeaxis.h>
 #include <modules/plottinggl/processors/persistencediagramplotprocessor.h>
+#include <modules/plottinggl/processors/parallelcoordinates/pcpaxissettings.h>
 
-#include <modules/plottinggl/processors/parallelcoordinates/parallelcoordinatesaxissettingsproperty.h>
+#include <modules/plottinggl/datavisualizer/pcpdataframevisualizer.h>
 
 namespace inviwo {
 
@@ -57,7 +58,54 @@ PlottingGLModule::PlottingGLModule(InviwoApplication* app) : InviwoModule(app, "
     registerProcessor<plot::ScatterPlotProcessor>();
     registerProcessor<plot::VolumeAxis>();
 
-    registerProperty<plot::ParallelCoordinatesAxisSettingsProperty>();
+    registerProperty<plot::PCPAxisSettings>();
+
+    registerDataVisualizer(std::make_unique<PCPDataFrameVisualizer>(app));
+}
+
+int PlottingGLModule::getVersion() const { return 1; }
+
+std::unique_ptr<VersionConverter> PlottingGLModule::getConverter(int version) const {
+    return std::make_unique<Converter>(version);
+}
+
+PlottingGLModule::Converter::Converter(int version) : version_(version) {}
+
+bool PlottingGLModule::Converter::convert(TxElement* root) {
+    bool res = false;
+    switch (version_) {
+        case 0: {
+            TraversingVersionConverter conv{[&](TxElement* node) -> bool {
+                std::string key;
+                node->GetValue(&key);
+                if (key != "Processor") return true;
+                const auto type = node->GetAttributeOrDefault("type", "");
+                if (type != "org.inviwo.ParallelCoordinates") return true;
+
+                auto props = xml::getElement(node, "Properties");
+                if (auto tf = xml::getElement(node,
+                                              "Properties/Property&identifier=colors/Properties/"
+                                              "Property&identifier=tf")) {
+                    props->InsertEndChild(*tf);
+                }
+
+                if (auto color = xml::getElement(node,
+                                                 "Properties/Property&identifier=colors/Properties/"
+                                                 "Property&identifier=selectedColorAxis")) {
+                    props->InsertEndChild(*color);
+                }
+
+                res = true;
+                return true;
+            }};
+
+            conv.convert(root);
+            return res;
+        }
+
+        default:
+            return false;  // No changes
+    }
 }
 
 }  // namespace inviwo

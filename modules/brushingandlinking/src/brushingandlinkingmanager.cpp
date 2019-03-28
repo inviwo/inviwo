@@ -56,12 +56,6 @@ void BrushingAndLinkingManager::remove(const BrushingAndLinkingInport* src) {
     filtered_.remove(src);
 }
 
-bool BrushingAndLinkingManager::isFiltered(size_t idx) const { return filtered_.has(idx); }
-
-bool BrushingAndLinkingManager::isSelected(size_t idx) const {
-    return selected_.find(idx) != selected_.end();
-}
-
 bool BrushingAndLinkingManager::isColumnSelected(size_t idx) const {
     return selectedColumns_.find(idx) != selectedColumns_.end();
 }

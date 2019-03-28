@@ -88,7 +88,7 @@ private:
     void drawHandlebar();
     void updateMesh();
     void updateTriMesh();
-    void handlePickingEvent(PickingEvent *e);
+    void handlePickingEvent(PickingEvent* e);
 
     ImageInport inport0_;
     ImageInport inport1_;

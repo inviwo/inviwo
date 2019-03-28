@@ -72,7 +72,19 @@ LineRenderer::LineRenderer()
     , stippling_("stippling", "Stippling")
     , camera_("camera", "Camera")
     , trackball_(&camera_)
-    , shader_("linerenderer.vert", "linerenderer.geom", "linerenderer.frag", false) {
+    , lineShaders_{
+          {{ShaderType::Vertex, "linerenderer.vert"},
+           {ShaderType::Geometry, "linerenderer.geom"},
+           {ShaderType::Fragment, "linerenderer.frag"}},
+
+          {{BufferType::PositionAttrib, MeshShaderCache::Mandatory, "vec3"},
+           {BufferType::ColorAttrib, MeshShaderCache::Mandatory, "vec4"},
+           {BufferType::PickingAttrib, MeshShaderCache::Optional, "uint"}},
+
+          [&](Shader& shader) -> void {
+              shader.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+              configureShader(shader);
+          }} {
     outport_.addResizeEventListener(&camera_);
 
     addPort(inport_);
@@ -99,21 +111,25 @@ LineRenderer::LineRenderer()
         bool noAdjacencySupport = (drawMode_.get() == LineDrawMode::LineLoop);
         useAdjacency_.setReadOnly(noAdjacencySupport);
     });
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
 
 void LineRenderer::initializeResources() {
+    for (auto& item : lineShaders_.getShaders()) {
+        configureShader(item.second);
+    }
+}
+
+void LineRenderer::configureShader(Shader& shader) {
     bool adjacencySupport = (drawMode_.get() != LineDrawMode::LineLoop);
 
-    shader_.getGeometryShaderObject()->addShaderDefine(
+    shader[ShaderType::Geometry]->addShaderDefine(
         "ENABLE_ADJACENCY", useAdjacency_.get() && adjacencySupport ? "1" : "0");
 
-    auto fragShader = shader_.getFragmentShaderObject();
-    fragShader->setShaderDefine("ENABLE_PSEUDO_LIGHTING", pseudoLighting_);
-    fragShader->setShaderDefine("ENABLE_ROUND_DEPTH_PROFILE", roundDepthProfile_);
+    shader[ShaderType::Fragment]->setShaderDefine("ENABLE_PSEUDO_LIGHTING", pseudoLighting_);
+    shader[ShaderType::Fragment]->setShaderDefine("ENABLE_ROUND_DEPTH_PROFILE", roundDepthProfile_);
 
-    utilgl::addShaderDefines(shader_, stippling_);
-    shader_.build();
+    utilgl::addShaderDefines(shader, stippling_);
+    shader.build();
 }
 
 void LineRenderer::process() {
@@ -124,14 +140,8 @@ void LineRenderer::process() {
 
     utilgl::DepthFuncState depthFunc(GL_LEQUAL);
 
-    shader_.activate();
-    shader_.setUniform("screenDim", vec2(outport_.getDimensions()));
-    utilgl::setUniforms(shader_, camera_, lineWidth_, antialiasing_, miterLimit_, roundCaps_,
-                        stippling_);
-
     drawMeshes();
 
-    shader_.deactivate();
     utilgl::deactivateCurrentTarget();
 }
 
@@ -140,14 +150,20 @@ void LineRenderer::drawMeshes() {
     auto drawmode = util::getDrawMode(drawMode_.get(), useAdjacency_.get());
 
     for (const auto& elem : inport_) {
+        auto& shader = lineShaders_.getShader(*elem);
+        shader.activate();
+        shader.setUniform("screenDim", vec2(outport_.getDimensions()));
+        utilgl::setUniforms(shader, camera_, lineWidth_, antialiasing_, miterLimit_, roundCaps_,
+                            stippling_);
         MeshDrawerGL::DrawObject drawer(elem->getRepresentation<MeshGL>(),
                                         elem->getDefaultMeshInfo());
-        utilgl::setShaderUniforms(shader_, *elem, "geometry");
+        utilgl::setShaderUniforms(shader, *elem, "geometry");
         if (autoDrawMode) {
             drawer.draw();
         } else {
             drawer.draw(drawmode);
         }
+        shader.deactivate();
     }
 }
 

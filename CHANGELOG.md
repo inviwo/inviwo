@@ -3,6 +3,16 @@ Here we document changes that affect the public API or changes that needs to be 
 ## 2019-03-06 
 New processor `Geometry Entry Exit Points` generates entry point and exit point images from any closed mesh to be used in raycasting. The positions of the input mesh are directly mapped to texture coordinates of a volume. This enables volume rendering within arbitrary bounding geometry.
 
+## 2019-02-24 Unified line rendering
+Line renderer vertex shader outputs `flat out uint pickID_;` and geometry shader takes `flat in uint pickID_[];` as input.
+Vertex shaders depending on linerenderer.geom must write the pickID_ instead of the picking color.
+
+Geometry shaders depending on previous linerenderer.vert should add the following:
+`#include "utils/pickingutils.glsl"`
+
+and modify the output to for example:
+`pickColor_ = vec4(pickingIndexToColor(pickID_[0]), pickID_[0] == 0 ? 0.0 : 1.0);`
+
 ## 2019-01-17 Get Started and Workspace Annotations
 Get Started screen provides an overview over recently used workspaces and available examples next to the latest changes.
 

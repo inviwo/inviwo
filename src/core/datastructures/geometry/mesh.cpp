@@ -36,7 +36,7 @@ Mesh::Mesh(DrawType dt, ConnectivityType ct)
     : DataGroup<Mesh, MeshRepresentation>()
     , SpatialEntity<3>()
     , MetaDataOwner()
-    , meshInfo_(MeshInfo(dt, ct)) {}
+    , meshInfo_{dt, ct} {}
 
 Mesh::Mesh(const Mesh& rhs)
     : DataGroup<Mesh, MeshRepresentation>(rhs)

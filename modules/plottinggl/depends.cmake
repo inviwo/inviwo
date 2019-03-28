@@ -4,8 +4,10 @@
 set(dependencies
     InviwoPlottingModule
     InviwoOpenGLModule
+    InviwoBaseGLModule
     InviwoBaseModule
     InviwoBrushingAndLinkingModule  
-    InviwoFontRenderingModule  
+    InviwoFontRenderingModule
+    InviwoUserInterfaceGLModule
 )
 set(EnableByDefault ON)

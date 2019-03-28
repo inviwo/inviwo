@@ -100,21 +100,26 @@ public:
 
 /**
  * \ingroup typedmesh
- * BufferTrait for Position buffers (glm::vec3)
+ * BufferTrait for Position buffers
  */
-class PositionsBuffer
-    : public TypedMeshBufferBase<float, 3, static_cast<int>(BufferType::PositionAttrib)> {
+template <unsigned DIMS>
+class PositionsBufferBase
+    : public TypedMeshBufferBase<float, DIMS, static_cast<int>(BufferType::PositionAttrib)> {
 public:
-    using Base = TypedMeshBufferBase<float, 3, static_cast<int>(BufferType::PositionAttrib)>;
+    using Base = TypedMeshBufferBase<float, DIMS, static_cast<int>(BufferType::PositionAttrib)>;
     using Base::Base;
 
-    std::shared_ptr<const Buffer<Base::type>> getVertices() const { return Base::buffer_; }
-    std::shared_ptr<Buffer<Base::type>> getEditableVertices() { return Base::buffer_; }
+    std::shared_ptr<const Buffer<typename Base::type>> getVertices() const { return Base::buffer_; }
+    std::shared_ptr<Buffer<typename Base::type>> getEditableVertices() { return Base::buffer_; }
 
-    void setVertexPosition(size_t index, vec3 pos) {
+    void setVertexPosition(size_t index, typename Base::type pos) {
         getEditableVertices()->getEditableRAMRepresentation()->set(index, pos);
     }
 };
+using PositionsBuffer = PositionsBufferBase<3>;
+using PositionsBuffer3D = PositionsBufferBase<3>;
+using PositionsBuffer2D = PositionsBufferBase<2>;
+using PositionsBuffer1D = PositionsBufferBase<1>;
 
 /**
  * \ingroup typedmesh
@@ -353,6 +358,14 @@ public:
 
     TypedMesh(DrawType dt = DrawType::Points, ConnectivityType ct = ConnectivityType::None)
         : Mesh(dt, ct), BufferTraits(*static_cast<Mesh *>(this))... {}
+
+    TypedMesh(DrawType dt, ConnectivityType ct, const std::vector<Vertex>& vertices,
+              std::vector<std::uint32_t>&& indices)
+        : Mesh(dt, ct), BufferTraits(*static_cast<Mesh *>(this))... {
+    
+        addVertices(vertices);
+        this->addIndices(MeshInfo{dt,ct}, util::makeIndexBuffer(std::move(indices)));
+    }
 
     TypedMesh(const TypedMesh &rhs) : Mesh(rhs), BufferTraits()... {
         copyConstrHelper<0, BufferTraits...>();

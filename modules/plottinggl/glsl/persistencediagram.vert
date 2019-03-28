@@ -31,7 +31,6 @@ layout(location = 4) in uint in_PickId;
 
 #include "plotting/common.glsl"
 #include "utils/structs.glsl"
-#include "utils/pickingutils.glsl"
 
 uniform vec2 minmaxX;
 uniform vec2 minmaxY;
@@ -43,7 +42,7 @@ uniform bool pickingEnabled = false;
 out vec4 vColor;
 out float vRadius;
 out float vDepth;
-flat out vec4 pickColors_;
+flat out uint pickID_;
 
 float norm(in float v, in vec2 mm) { 
     return (v - mm.x) / (mm.y - mm.x); 
@@ -56,5 +55,5 @@ void main(void) {
     
     vec2 point = vec2(norm(in_Vertex.x, minmaxX), norm(in_Vertex.y, minmaxY));
     gl_Position = vec4(point, 0.5, 1.0);
-    pickColors_ = vec4(pickingIndexToColor(in_PickId), pickingEnabled ? 1.0 : 0.0);
+    pickID_ = pickingEnabled ? in_PickId : 0;
 }

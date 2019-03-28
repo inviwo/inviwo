@@ -30,13 +30,8 @@
 #include <modules/opengl/buffer/framebufferobject.h>
 #include <inviwo/core/util/assertion.h>
 
-#if defined(IVW_DEBUG)
-#define IS_ACTIVE_CHECK_ATTACH ivwAssert(isActive(), "FBO not active when attaching texture")
-#define IS_ACTIVE_CHECK_DETACH ivwAssert(isActive(), "FBO not active when detaching texture")
-#else
-#define IS_ACTIVE_CHECK_ATTACH
-#define IS_ACTIVE_CHECK_DETACH
-#endif  // IVW_DEBUG
+#define IS_ACTIVE_CHECK_ATTACH IVW_ASSERT(isActive(), "FBO not active when attaching texture")
+#define IS_ACTIVE_CHECK_DETACH IVW_ASSERT(isActive(), "FBO not active when detaching texture")
 
 namespace inviwo {
 

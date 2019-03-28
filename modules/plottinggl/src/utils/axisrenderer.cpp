@@ -34,8 +34,10 @@
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/camera.h>
 
+#include <modules/plotting/properties/categoricalaxisproperty.h>
 #include <modules/plotting/utils/axisutils.h>
 #include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/shader/shadertype.h>
 #include <modules/opengl/geometry/meshgl.h>
 #include <modules/opengl/texture/texture2d.h>
 #include <modules/opengl/openglutils.h>
@@ -44,33 +46,114 @@
 #include <array>
 #include <algorithm>
 #include <numeric>
+#include <functional>
 
 namespace inviwo {
 
 namespace plot {
 
-AxisRendererBase::AxisRendererBase(const AxisProperty& property)
-    : property_(property)
-    , lineShader_("linerenderer.vert", "linerenderer.geom", "linerenderer.frag", false) {
-    lineShader_.getGeometryShaderObject()->addShaderDefine("ENABLE_ADJACENCY", "0");
-    lineShader_.build();
+namespace detail {
+
+AxisMeshes::AxisMeshes() = default;
+
+Mesh* AxisMeshes::getAxis(const AxisSettings& settings, const size3_t& start, const size3_t& end,
+                          size_t pickId) {
+    startPos_.check(*this, start);
+    endPos_.check(*this, end);
+    color_.check(*this, settings.getColor());
+    pickId_.check(*this, pickId);
+
+    if (!axisMesh_) {
+        axisMesh_ = plot::generateAxisMesh3D(startPos_.get(), endPos_.get(), color_, pickId_);
+    }
+    return axisMesh_.get();
 }
 
+Mesh* AxisMeshes::getMajor(const AxisSettings& settings, const size3_t& start, const size3_t& end,
+                           const vec3& tickDirection) {
+    startPos_.check(*this, start);
+    endPos_.check(*this, end);
+    range_.check(*this, settings.getRange());
+    flip_.check(*this, settings.isAxisFlipped());
+    major_.check(*this, settings.getMajorTicks());
+    tickDirection_.check(*this, tickDirection);
+    if (!majorMesh_) {
+        const auto tickPositions = getMajorTickPositions(major_, range_);
+        majorMesh_ = generateTicksMesh(tickPositions, range_, startPos_.get(), endPos_.get(),
+                                       tickDirection_, major_.get().getTickLength(),
+                                       major_.get().getStyle(), major_.get().getColor(), flip_);
+    }
+    return majorMesh_.get();
+}
+
+Mesh* AxisMeshes::getMinor(const AxisSettings& settings, const size3_t& start, const size3_t& end,
+                           const vec3& tickDirection) {
+    startPos_.check(*this, start);
+    endPos_.check(*this, end);
+    range_.check(*this, settings.getRange());
+    flip_.check(*this, settings.isAxisFlipped());
+    major_.check(*this, settings.getMajorTicks());
+    minor_.check(*this, settings.getMinorTicks());
+    tickDirection_.check(*this, tickDirection);
+    if (!minorMesh_) {
+        const auto tickPositions = getMinorTickPositions(minor_, major_, range_);
+        minorMesh_ = generateTicksMesh(tickPositions, range_, startPos_.get(), endPos_.get(),
+                                       tickDirection, minor_.get().getTickLength(),
+                                       minor_.get().getStyle(), minor_.get().getColor(), flip_);
+    }
+    return minorMesh_.get();
+}
+
+}  // namespace detail
+
+std::vector<std::pair<ShaderType, std::string>> AxisRendererBase::shaderItems_ = {
+    {ShaderType::Vertex, "linerenderer.vert"},
+    {ShaderType::Geometry, "linerenderer.geom"},
+    {ShaderType::Fragment, "linerenderer.frag"}};
+
+std::vector<MeshShaderCache::Requirement> AxisRendererBase::shaderRequirements_ = {
+    {BufferType::PositionAttrib, MeshShaderCache::Mandatory, "vec3"},
+    {BufferType::ColorAttrib, MeshShaderCache::Mandatory, "vec4"},
+    {BufferType::PickingAttrib, MeshShaderCache::Optional, "uint"}};
+
+AxisRendererBase::AxisRendererBase(const AxisSettings& settings)
+    : settings_(settings), shaders_{getShaders()} {}
+
 AxisRendererBase::AxisRendererBase(const AxisRendererBase& rhs)
-    : property_(rhs.property_), lineShader_(rhs.lineShader_) {}
+    : settings_{rhs.settings_}, shaders_{getShaders()} {}
 
-void AxisRendererBase::renderAxis(Camera* camera, const size2_t& outputDims, bool antialiasing) {
-    if (!axisMesh_ && !majorTicksMesh_ && !minorTicksMesh_) return;
+std::shared_ptr<MeshShaderCache> AxisRendererBase::getShaders() {
+    static std::weak_ptr<MeshShaderCache> cache_;
 
-    lineShader_.activate();
-    lineShader_.setUniform("screenDim", vec2(outputDims));
+    if (auto cache = cache_.lock()) {
+        return cache;
+    } else {
+        cache = std::make_shared<MeshShaderCache>(
+            AxisRendererBase::shaderItems_, AxisRendererBase::shaderRequirements_,
+            [&](Shader& shader) -> void {
+                shader.getGeometryShaderObject()->addShaderDefine("ENABLE_ADJACENCY", "0");
+                shader.build();
+            });
+        cache_ = cache;
+        return cache;
+    }
+}
+void AxisRendererBase::renderAxis(Camera* camera, const size3_t& start, const size3_t& end,
+                                  const vec3& tickdir, const size2_t& outputDims,
+                                  bool antialiasing) {
+    auto axisMesh = meshes_.getAxis(settings_, start, end, axisPickingId_);
+    if (!axisMesh) return;
+
+    auto& lineShader = shaders_->getShader(*axisMesh);
+    lineShader.activate();
+    lineShader.setUniform("screenDim", vec2(outputDims));
     if (camera) {
-        utilgl::setShaderUniforms(lineShader_, *camera, "camera");
+        utilgl::setShaderUniforms(lineShader, *camera, "camera");
     }
 
     // returns thickness of antialiased edge based on the global antialiasing flag
     // and whether the line is 1px wide
-    auto antialiasWidth = [&](float lineWidth) {
+    const auto antialiasWidth = [&](float lineWidth) {
         if (!antialiasing || (std::abs(lineWidth - 1.0f) < 0.01f)) {
             return 0.0f;
         } else {
@@ -78,384 +161,233 @@ void AxisRendererBase::renderAxis(Camera* camera, const size2_t& outputDims, boo
         }
     };
 
-    auto drawMesh = [&](const MeshGL* meshgl, float lineWidth, bool caps) {
-        lineShader_.setUniform("lineWidth", lineWidth);
-        auto mesh = meshgl->getOwner();
+    // compute matrix to transform meshes from screen coords to clip space
+    const auto m = !camera ? mat4(vec4(2.0f / outputDims.x, 0.0f, 0.0f, 0.0f),
+                                  vec4(0.0f, 2.0f / outputDims.y, 0.0f, 0.0f),
+                                  vec4(0.0f, 0.0f, 0.0f, 0.0f), vec4(-1.0f, -1.0f, 0.0f, 1.0f))
+                           : mat4{1};
+
+    auto drawMesh = [&](Mesh* mesh, float lineWidth, bool caps) {
+        if (!mesh) return;
+        mesh->setWorldMatrix(m);
+        auto meshgl = mesh->getRepresentation<MeshGL>();
+        lineShader.setUniform("lineWidth", lineWidth);
         MeshDrawerGL::DrawObject drawer(meshgl, mesh->getDefaultMeshInfo());
-        utilgl::setShaderUniforms(lineShader_, *mesh, "geometry");
-        lineShader_.setUniform("antialiasing", antialiasWidth(lineWidth));
-        lineShader_.setUniform("roundCaps", caps);
+        utilgl::setShaderUniforms(lineShader, *mesh, "geometry");
+        lineShader.setUniform("antialiasing", antialiasWidth(lineWidth));
+        lineShader.setUniform("roundCaps", caps);
         drawer.draw();
     };
 
-    mat4 m(1.0f);
-    if (!camera) {
-        // compute matrix to transform meshes from screen coords to clip space
-        m = mat4(vec4(2.0f / outputDims.x, 0.0f, 0.0f, 0.0f),
-                 vec4(0.0f, 2.0f / outputDims.y, 0.0f, 0.0f), vec4(0.0f, 0.0f, 0.0f, 0.0f),
-                 vec4(-1.0f, -1.0f, 0.0f, 1.0f));
-    }
+    drawMesh(axisMesh, settings_.getWidth(), false);
+    auto majorMesh = meshes_.getMajor(settings_, start, end, tickdir);
+    drawMesh(majorMesh, settings_.getMajorTicks().getTickWidth(), true);
+    auto minorMesh = meshes_.getMinor(settings_, start, end, tickdir);
+    drawMesh(minorMesh, settings_.getMinorTicks().getTickWidth(), true);
 
-    // draw axis
-    if (axisMesh_) {
-        axisMesh_->setWorldMatrix(m);
-        drawMesh(axisMesh_->getRepresentation<MeshGL>(), property_.width_.get(), false);
-    }
-
-    // draw major ticks
-    if (majorTicksMesh_) {
-        majorTicksMesh_->setWorldMatrix(m);
-        drawMesh(majorTicksMesh_->getRepresentation<MeshGL>(),
-                 property_.ticks_.majorTicks_.tickWidth_.get(), true);
-    }
-
-    // draw minor ticks
-    if (minorTicksMesh_) {
-        minorTicksMesh_->setWorldMatrix(m);
-        drawMesh(minorTicksMesh_->getRepresentation<MeshGL>(),
-                 property_.ticks_.minorTicks_.tickWidth_.get(), true);
-    }
-
-    lineShader_.deactivate();
+    lineShader.deactivate();
 }
 
-void AxisRendererBase::invalidateInternalState(bool positionChange) {
-    // figure out which parts have been invalidated due to property modifications
-    bool invalidateAxis = false;
-    bool invalidateCaption = false;
-    bool invalidateMajorTicks = false;
-    bool invalidateMinorTicks = false;
-    bool invalidateLabelAtlas = false;
-    bool invalidateLabelPos = false;
-
-    auto isModified = [](const std::vector<const Property*>& props) {
-        return util::any_of(props, [](const auto& p) { return p->isModified(); });
-    };
-
-    // start and end position of axis
-    if (positionChange) {
-        // invalidate axis, major tick mesh, minor tick mesh, and label positions
-        invalidateAxis = true;
-        invalidateMajorTicks = true;
-        invalidateMinorTicks = true;
-        invalidateLabelPos = true;
-    }
-    // check axis range
-    if (property_.range_.isModified()) {
-        invalidateMajorTicks = true;
-        invalidateMinorTicks = true;
-        invalidateLabelPos = true;
-        invalidateLabelAtlas = true;
-    }
-
-    if (property_.color_.isModified()) {
-        invalidateAxis = true;
-    }
-
-    // check caption
-    if (isModified({&property_.caption_.title_, &property_.caption_.color_,
-                    &property_.caption_.font_.fontFace_, &property_.caption_.font_.fontSize_})) {
-        // invalidate caption
-        invalidateCaption = true;
-    }
-    // labels
-    if (isModified({&property_.labels_.title_, &property_.labels_.color_,
-                    &property_.labels_.font_.fontFace_, &property_.labels_.font_.fontSize_})) {
-        // invalidate labels
-        invalidateLabelAtlas = true;
-    }
-    if (isModified({&property_.labels_.offset_, &property_.labels_.font_.anchorPos_})) {
-        invalidateLabelPos = true;
-    }
-    // major ticks
-    if (isModified({&property_.range_, &property_.ticks_.majorTicks_.style_,
-                    &property_.ticks_.majorTicks_.rangeBasedTicks_,
-                    &property_.ticks_.majorTicks_.color_, &property_.ticks_.majorTicks_.tickLength_,
-                    &property_.ticks_.majorTicks_.tickDelta_})) {
-        // invalidate labels and tick meshes
-        invalidateMajorTicks = true;
-        invalidateMinorTicks = true;
-        invalidateLabelAtlas = true;
-    }
-    // minor ticks
-    if (isModified({&property_.ticks_.minorTicks_.style_, &property_.ticks_.minorTicks_.color_,
-                    &property_.ticks_.minorTicks_.tickLength_,
-                    &property_.ticks_.minorTicks_.tickFrequency_,
-                    &property_.ticks_.minorTicks_.fillAxis_})) {
-        // invalidate minor tick mesh
-        invalidateMinorTicks = true;
-    }
-
-    if (invalidateAxis) {
-        axisMesh_ = nullptr;
-    }
-    if (invalidateCaption) {
-        axisCaptionTex_ = nullptr;
-    }
-    if (invalidateMajorTicks) {
-        majorTicksMesh_ = nullptr;
-    }
-    if (invalidateMinorTicks) {
-        minorTicksMesh_ = nullptr;
-    }
-    if (invalidateLabelPos) {
-        invalidateLabelPositions();
-    }
-    if (invalidateLabelAtlas) {
-        labelTexAtlas_.clear();
-    }
-}
-
-std::shared_ptr<Mesh> AxisRendererBase::getMesh() const {
-    if (!axisMesh_) return std::make_shared<Mesh>();
-
-    auto mesh = std::shared_ptr<Mesh>(axisMesh_->clone());
-
-    if (majorTicksMesh_ && (majorTicksMesh_->getNumberOfBuffers() > 0)) {
-        mesh->append(*majorTicksMesh_.get());
-    }
-    if (minorTicksMesh_ && (minorTicksMesh_->getNumberOfBuffers() > 0)) {
-        mesh->append(*minorTicksMesh_.get());
-    }
-
-    return mesh;
-}
-
-std::shared_ptr<Texture2D> AxisRendererBase::getLabelAtlasTexture() const {
-    return labelTexAtlas_.getTexture();
-}
-
-void AxisRendererBase::updateCaptionTexture() {
-    // set up text renderer
-    textRenderer_.setFont(property_.caption_.font_.fontFace_.get());
-    textRenderer_.setFontSize(property_.caption_.font_.fontSize_.get());
-
-    axisCaptionTex_ = util::createTextTexture(textRenderer_, property_.caption_.title_.get(),
-                                              property_.caption_.color_);
-}
-
-void AxisRendererBase::updateLabelAtlas() {
-    textRenderer_.setFont(property_.labels_.font_.fontFace_.get());
-    textRenderer_.setFontSize(property_.labels_.font_.fontSize_.get());
-
-    const auto tickmarks = plot::getMajorTickPositions(property_);
-    if (tickmarks.empty()) {
-        // create a dummy texture
-        labelTexAtlas_.initTexture(size2_t(1u));
-        return;
-    }
-
-    // fill map with all labels
-    std::array<char, 100> buf;
-    const char* format = property_.labels_.title_.get().c_str();
-
-    const vec4 color(property_.labels_.color_.get());
-
-    std::vector<TexAtlasEntry> atlasEntries;
-    atlasEntries.reserve(tickmarks.size());
-    for (auto& tick : tickmarks) {
-        // convert current tick value into string
-        snprintf(buf.data(), buf.size(), format, tick);
-        const ivec2 size(textRenderer_.computeTextSize(buf.data()));
-
-        atlasEntries.push_back({buf.data(), ivec2(0), size, color});
-    }
-
-    labelTexAtlas_.fillAtlas(textRenderer_, atlasEntries);
-}
-
-// ---------------------------------------
-
-AxisRenderer::AxisRenderer(const AxisProperty& property)
-    : AxisRendererBase(property), prevStartPos_(0u), prevEndPos_(0u) {}
-
-AxisRenderer::AxisRenderer(const AxisRenderer& rhs) : AxisRendererBase(rhs) {}
+AxisRenderer::AxisRenderer(const AxisSettings& settings)
+    : AxisRendererBase(settings)
+    , labels_{[](Labels::LabelPos& labelPos, util::TextureAtlas&, const AxisSettings& settings,
+                 const size3_t& start, const size3_t& end, const vec3&) {
+        const auto tickmarks = plot::getLabelPositions(settings, start, end);
+        labelPos.resize(tickmarks.size());
+        std::transform(tickmarks.begin(), tickmarks.end(), labelPos.begin(),
+                       [&](auto&& p) { return p.second; });
+    }} {}
 
 void AxisRenderer::render(const size2_t& outputDims, const size2_t& startPos, const size2_t& endPos,
                           bool antialiasing) {
-    if (!property_.visible_.get()) {
+    if (!settings_.getVisible()) {
         return;
     }
 
-    bool posChange = ((startPos != prevStartPos_) || (endPos != prevEndPos_));
-    if (posChange) {
-        prevStartPos_ = startPos;
-        prevEndPos_ = endPos;
-    }
-
-    invalidateInternalState(posChange);
-
-    updateMeshes(startPos, endPos);
-
     utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-    renderAxis(nullptr, outputDims, antialiasing);
+
+    const auto axisDir = glm::normalize(vec2{endPos} - vec2{startPos});
+    const auto tickDir = vec3(-axisDir.y, axisDir.x, 0.0f);
+    renderAxis(nullptr, size3_t{startPos, 0}, size3_t{endPos, 0}, tickDir, outputDims,
+               antialiasing);
     renderText(outputDims, startPos, endPos);
 }
 
 void AxisRenderer::renderText(const size2_t& outputDims, const size2_t& startPos,
                               const size2_t& endPos) {
     // axis caption
-    if (property_.caption_.isChecked()) {
-        if (!axisCaptionTex_) {
-            updateCaptionTexture();
-        }
+    if (const auto& captionSettings = settings_.getCaptionSettings()) {
+        auto& captex = caption_.getCaption(settings_.getCaption(), captionSettings, textRenderer_);
 
         // render axis caption centered at the axis using the offset
-        const vec2 texDims(axisCaptionTex_->getDimensions());
-        const auto anchor(property_.caption_.font_.anchorPos_.get());
+        const auto anchor = captionSettings.getFont().getAnchorPos();
 
-        const auto rotation = property_.orientation_ == AxisProperty::Orientation::Vertical
-                                  ? glm::rotate(glm::half_pi<float>(), vec3(0.0f, 0.0f, 1.0f))
-                                  : glm::mat4{1};
+        // The anchor position in the texture;
+        const auto anchorPos = vec2{captex.bbox.textExtent} * (anchor + vec2{1.0f}) * 0.5f -
+                               vec2{captex.bbox.glyphsOrigin};
 
-        const auto offset =
-            property_.orientation_ == AxisProperty::Orientation::Vertical
-                ? vec2(-texDims.y, texDims.x) * 0.5f * (vec2(-anchor.x, anchor.y) + vec2(1.0f))
-                : texDims * 0.5f * (anchor + vec2(1.0f));
+        const auto angle = glm::radians(captionSettings.getRotation()) +
+                           (settings_.isVertical() ? glm::half_pi<float>() : 0.0f);
 
-        const ivec2 posi(plot::getAxisCaptionPosition(property_, startPos, endPos) - offset);
-        quadRenderer_.render(axisCaptionTex_, posi, outputDims, rotation);
+        // translate to anchor pos and apply rotation
+        const auto transform =
+            glm::rotate(angle, vec3(0.0f, 0.0f, 1.0f)) * glm::translate(vec3(-anchorPos, 0.f));
+
+        const auto pos = plot::getAxisCaptionPosition(settings_, startPos, endPos);
+
+        const auto posi = glm::ivec2{glm::round(pos)};
+        quadRenderer_.render(*captex.texture, posi, outputDims, transform);
     }
 
     // axis labels
-    if (property_.labels_.isChecked()) {
-        if (!labelTexAtlas_.valid()) {
-            updateLabelAtlas();
-            labelPos_.clear();
-        }
+    if (const auto& labels = settings_.getLabelSettings()) {
+        auto& pos = labels_.getLabelPos(settings_, size3_t{startPos, 0}, size3_t{endPos, 0},
+                                        textRenderer_, vec3{1});
 
-        if (labelPos_.empty()) {
-            updateLabelPositions(startPos, endPos);
-        }
+        auto& atlas =
+            labels_.getAtlas(settings_, size3_t{startPos, 0}, size3_t{endPos, 0}, textRenderer_);
+
+        const auto anchor = labels.getFont().getAnchorPos();
+        const auto angle = glm::radians(labels.getRotation());
+
+        // translate to anchor pos and apply rotation
+        std::vector<mat4> transforms;
+        const auto& ri = atlas.getRenderInfo();
+        std::transform(ri.boundingBoxes.begin(), ri.boundingBoxes.end(),
+                       std::back_inserter(transforms), [&](const TextBoundingBox& bb) {
+                           const auto anchorPos =
+                               vec2{bb.textExtent} * (anchor + vec2{1.0f}) * 0.5f -
+                               vec2{bb.glyphsOrigin};
+                           return glm::rotate(angle, vec3(0.0f, 0.0f, 1.0f)) *
+                                  glm::translate(vec3(-anchorPos, 0.f));
+                       });
 
         // render axis labels
-        const auto& renderInfo = labelTexAtlas_.getRenderInfo();
-        quadRenderer_.renderToRect(labelTexAtlas_.getTexture(), labelPos_, renderInfo.size,
-                                   renderInfo.texTransform, outputDims);
+        quadRenderer_.renderToRect(*atlas.getTexture(), pos, ri.size, ri.texTransform, outputDims,
+                                   transforms);
     }
 }
 
-void AxisRenderer::updateMeshes(const size2_t& startPos, const size2_t& endPos) {
-    if (!axisMesh_) {
-        axisMesh_ = plot::generateAxisMesh(property_, startPos, endPos);
+std::pair<vec2, vec2> AxisRenderer::boundingRect(const size2_t& startPos, const size2_t& endPos) {
+
+    auto bRect = tickBoundingRect(settings_, startPos, endPos);
+
+    if (const auto& captionSettings = settings_.getCaptionSettings()) {
+        
+        
+        auto& captex = caption_.getCaption(settings_.getCaption(), captionSettings, textRenderer_);
+        const auto texDims(captex.texture->getDimensions());
+
+        const auto anchor = captionSettings.getFont().getAnchorPos();
+
+        // The anchor position in the texture;
+        const auto anchorPos = vec2{captex.bbox.textExtent} * (anchor + vec2{1.0f}) * 0.5f -
+                               vec2{captex.bbox.glyphsOrigin};
+
+        const auto angle = glm::radians(captionSettings.getRotation()) +
+                           (settings_.isVertical() ? glm::half_pi<float>() : 0.0f);
+
+        // translate to anchor pos and apply rotation
+        const auto transform =
+            glm::rotate(angle, vec3(0.0f, 0.0f, 1.0f)) * glm::translate(vec3(-anchorPos, 0.f));
+
+        const auto pos = plot::getAxisCaptionPosition(settings_, startPos, endPos);
+
+            
+        const auto pos1 = pos + vec2{transform * vec4{0.0f, 0.0f, 0.0f, 1.0f}};
+        const auto pos2 = pos + vec2{transform * vec4{texDims.x, texDims.y, 0.0f, 1.0f}};
+
+        bRect.first = glm::min(bRect.first, pos1);
+        bRect.first = glm::min(bRect.first, pos2);
+
+        bRect.second = glm::max(bRect.second, pos1);
+        bRect.second = glm::max(bRect.second, pos2);
     }
-    if (!majorTicksMesh_) {
-        majorTicksMesh_ = plot::generateMajorTicksMesh(property_, startPos, endPos);
+
+    // axis labels
+    if (const auto& labels = settings_.getLabelSettings()) {
+        auto& positions = labels_.getLabelPos(settings_, size3_t{startPos, 0}, size3_t{endPos, 0},
+                                              textRenderer_, vec3{1});
+
+        auto& atlas =
+            labels_.getAtlas(settings_, size3_t{startPos, 0}, size3_t{endPos, 0}, textRenderer_);
+
+        const auto anchor = labels.getFont().getAnchorPos();
+        const auto angle = glm::radians(labels.getRotation());
+
+        // render axis labels
+        const auto& ri = atlas.getRenderInfo();
+
+        for (auto&& item : util::zip(positions, ri.boundingBoxes)) {
+            const auto& pos = item.first();
+            const auto& bb = item.second();
+            const auto anchorPos =
+                vec2{bb.textExtent} * (anchor + vec2{1.0f}) * 0.5f - vec2{bb.glyphsOrigin};
+            const auto transform =
+                glm::rotate(angle, vec3(0.0f, 0.0f, 1.0f)) * glm::translate(vec3(-anchorPos, 0.f));
+            const auto pos1 = vec2{pos} + vec2{transform * vec4{0.0f, 0.0f, 0.0f, 1.0f}};
+            const auto pos2 = vec2{pos} + vec2{transform * vec4{bb.glyphsExtent, 0.0f, 1.0f}};
+
+            bRect.first = glm::min(bRect.first, pos1);
+            bRect.first = glm::min(bRect.first, pos2);
+
+            bRect.second = glm::max(bRect.second, pos1);
+            bRect.second = glm::max(bRect.second, pos2);
+        }
     }
-    if (!minorTicksMesh_) {
-        minorTicksMesh_ = plot::generateMinorTicksMesh(property_, startPos, endPos);
-    }
+
+    return bRect;
 }
 
-void AxisRenderer::invalidateLabelPositions() { labelPos_.clear(); }
+AxisRenderer3D::AxisRenderer3D(const AxisSettings& settings)
+    : AxisRendererBase(settings)
+    , labels_{[](Labels::LabelPos& labelPos, util::TextureAtlas&, const AxisSettings& settings,
+                 const size3_t& start, const size3_t& end, const vec3& tickDirection) {
+        const auto tickmarks = plot::getLabelPositions3D(settings, start, end, tickDirection);
+        labelPos.resize(tickmarks.size());
 
-void AxisRenderer::updateLabelPositions(const size2_t& startPos, const size2_t& endPos) {
-    const auto& tickmarks = plot::getLabelPositions(property_, startPos, endPos);
-    labelPos_.resize(tickmarks.size());
-
-    const vec2 anchorPos(property_.labels_.font_.anchorPos_.get());
-
-    auto v = util::zip(labelTexAtlas_.getEntries(), tickmarks);
-    std::transform(v.begin(), v.end(), labelPos_.begin(), [&](auto&& p) {
-        const vec2 size(get<0>(p).texExtent);
-        const vec2 offset = 0.5f * size * (anchorPos + vec2(1.0f, 1.0f));
-
-        return ivec2(get<1>(p).second - offset);
-    });
-}
-
-// ---------------------------------------
-
-AxisRenderer3D::AxisRenderer3D(const AxisProperty& property)
-    : AxisRendererBase(property), prevStartPos_(0.0f), prevEndPos_(0.0f) {}
-
-AxisRenderer3D::AxisRenderer3D(const AxisRenderer3D& rhs) : AxisRendererBase(rhs) {}
+        std::transform(tickmarks.begin(), tickmarks.end(), labelPos.begin(),
+                       [](auto& tick) { return tick.second; });
+    }} {}
 
 void AxisRenderer3D::render(Camera* camera, const size2_t& outputDims, const vec3& startPos,
                             const vec3& endPos, const vec3& tickDirection, bool antialiasing) {
-    if (!property_.visible_.get()) {
-        return;
-    }
-
-    bool posChange = ((startPos != prevStartPos_) || (endPos != prevEndPos_) ||
-                      (tickDirection != prevTickDirection_));
-    if (posChange) {
-        prevStartPos_ = startPos;
-        prevEndPos_ = endPos;
-        prevTickDirection_ = tickDirection;
-    }
-
-    invalidateInternalState(posChange);
-
-    updateMeshes(startPos, endPos, tickDirection);
+    if (!settings_.getVisible()) return;
 
     utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-    renderAxis(camera, outputDims, antialiasing);
+    renderAxis(camera, startPos, endPos, tickDirection, outputDims, antialiasing);
     renderText(camera, outputDims, startPos, endPos, tickDirection);
 }
 
 void AxisRenderer3D::renderText(Camera* camera, const size2_t& outputDims, const vec3& startPos,
                                 const vec3& endPos, const vec3& tickDirection) {
     // axis caption
-    if (property_.caption_.isChecked()) {
-        if (!axisCaptionTex_) {
-            updateCaptionTexture();
-        }
+    if (const auto& captionSettings = settings_.getCaptionSettings()) {
+        auto captex = caption_.getCaption(settings_.getCaption(), captionSettings, textRenderer_);
 
         // render axis caption centered at the axis using the offset
-        const vec2 texDims(axisCaptionTex_->getDimensions());
-        const auto anchor(property_.caption_.font_.anchorPos_.get());
+        const vec2 texDims(captex.texture->getDimensions());
+        const auto anchor(captionSettings.getFont().getAnchorPos());
 
-        const vec3 pos(plot::getAxisCaptionPosition3D(property_, startPos, endPos, tickDirection));
+        const vec3 pos(plot::getAxisCaptionPosition3D(settings_, startPos, endPos, tickDirection));
 
-        quadRenderer_.renderToRect3D(*camera, axisCaptionTex_, pos,
-                                     ivec2(axisCaptionTex_->getDimensions()), outputDims, anchor);
+        quadRenderer_.renderToRect3D(*camera, *captex.texture, pos,
+                                     ivec2(captex.texture->getDimensions()), outputDims, anchor);
     }
 
     // axis labels
-    if (property_.labels_.isChecked()) {
-        if (!labelTexAtlas_.valid()) {
-            updateLabelAtlas();
-            labelPos_.clear();
-        }
+    if (const auto& labels = settings_.getLabelSettings()) {
+        const auto& pos =
+            labels_.getLabelPos(settings_, startPos, endPos, textRenderer_, tickDirection);
 
-        if (labelPos_.empty()) {
-            updateLabelPositions(startPos, endPos, tickDirection);
-        }
+        auto atlas = labels_.getAtlas(settings_, startPos, endPos, textRenderer_);
 
         // render axis labels
-        const vec2 anchorPos(property_.labels_.font_.anchorPos_.get());
-        const auto& renderInfo = labelTexAtlas_.getRenderInfo();
-        quadRenderer_.renderToRect3D(*camera, labelTexAtlas_.getTexture(), labelPos_,
-                                     renderInfo.size, renderInfo.texTransform, outputDims,
-                                     anchorPos);
+        const vec2 anchorPos(labels.getFont().getAnchorPos());
+        const auto& renderInfo = atlas.getRenderInfo();
+        quadRenderer_.renderToRect3D(*camera, *atlas.getTexture(), pos, renderInfo.size,
+                                     renderInfo.texTransform, outputDims, anchorPos);
     }
-}
-
-void AxisRenderer3D::updateMeshes(const vec3& startPos, const vec3& endPos,
-                                  const vec3& tickDirection) {
-    if (!axisMesh_) {
-        axisMesh_ = plot::generateAxisMesh3D(property_, startPos, endPos);
-    }
-    if (!majorTicksMesh_) {
-        majorTicksMesh_ =
-            plot::generateMajorTicksMesh3D(property_, startPos, endPos, tickDirection);
-    }
-    if (!minorTicksMesh_) {
-        minorTicksMesh_ =
-            plot::generateMinorTicksMesh3D(property_, startPos, endPos, tickDirection);
-    }
-}
-
-void AxisRenderer3D::invalidateLabelPositions() { labelPos_.clear(); }
-
-void AxisRenderer3D::updateLabelPositions(const vec3& startPos, const vec3& endPos,
-                                          const vec3& tickDirection) {
-    const auto& tickmarks = plot::getLabelPositions3D(property_, startPos, endPos, tickDirection);
-    labelPos_.resize(tickmarks.size());
-
-    std::transform(tickmarks.begin(), tickmarks.end(), labelPos_.begin(),
-                   [](auto& tick) { return tick.second; });
 }
 
 }  // namespace plot

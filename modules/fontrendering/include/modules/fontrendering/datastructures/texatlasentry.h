@@ -32,6 +32,7 @@
 
 #include <modules/fontrendering/fontrenderingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <modules/fontrendering/datastructures/textboundingbox.h>
 
 namespace inviwo {
 
@@ -45,6 +46,7 @@ struct IVW_MODULE_FONTRENDERING_API TexAtlasEntry {
 struct IVW_MODULE_FONTRENDERING_API TexAtlasRenderInfo {
     std::vector<ivec2> size;
     std::vector<mat4> texTransform;
+    std::vector<TextBoundingBox> boundingBoxes;
 };
 
 }  // namespace inviwo

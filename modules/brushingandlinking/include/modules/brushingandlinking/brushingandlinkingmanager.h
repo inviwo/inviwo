@@ -85,6 +85,14 @@ private:
     InvalidationLevel invalidationLevel_;
 };
 
+
+inline bool BrushingAndLinkingManager::isFiltered(size_t idx) const { return filtered_.has(idx); }
+
+inline bool BrushingAndLinkingManager::isSelected(size_t idx) const {
+    return selected_.find(idx) != selected_.end();
+}
+
+
 }  // namespace inviwo
 
 #endif  // IVW_BRUSHINGANDLINKINGMANAGER_H

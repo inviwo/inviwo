@@ -116,27 +116,30 @@ ColorScaleLegend::ColorScaleLegend()
 
     rotation_.onChange([&]() { updateLegendState(); });
 
-    title_.onChange([&]() { axis_.caption_.title_.set(title_.get()); });
+    title_.onChange([&]() { axis_.setCaption(title_.get()); });
 
     fontSize_.onChange([&]() {
         // the caption should be bigger than labels
-        axis_.caption_.font_.fontSize_.set(fontSize_.get() + 2);
-        axis_.labels_.font_.fontSize_.set(fontSize_.get());
+        axis_.captionSettings_.font_.fontSize_.set(fontSize_.get() + 2);
+        axis_.labelSettings_.font_.fontSize_.set(fontSize_.get());
     });
 
     color_.onChange([&]() {
         axis_.color_.set(color_.get());
-        axis_.caption_.color_.set(color_.get());
-        axis_.labels_.color_.set(color_.get());
-        axis_.ticks_.majorTicks_.color_.set(color_.get());
-        axis_.ticks_.minorTicks_.color_.set(color_.get());
+        axis_.captionSettings_.color_.set(color_.get());
+        axis_.labelSettings_.color_.set(color_.get());
+        axis_.majorTicks_.color_.set(color_.get());
+        axis_.minorTicks_.color_.set(color_.get());
     });
     // set initial axis parameters
     axis_.width_ = 0;
-    axis_.caption_.title_.set(title_.get());
-    axis_.caption_.setChecked(true);
-    axis_.labels_.font_.fontFace_.set(axis_.caption_.font_.fontFace_.get());
-    axis_.caption_.offset_.set(8);
+    axis_.setCaption(title_.get());
+    axis_.captionSettings_.setChecked(true);
+    axis_.labelSettings_.font_.fontFace_.set(axis_.captionSettings_.font_.fontFace_.get());
+    axis_.captionSettings_.offset_.set(20);
+    axis_.captionSettings_.font_.anchorPos_.set(vec2{0.0f, 0.0f});
+    axis_.setCurrentStateAsDefault();
+
     fontSize_.propertyModified();
 
     legendPlacement_.onChange([&]() { updateLegendState(); });
@@ -164,7 +167,7 @@ vec2 ColorScaleLegend::getRealSize() {
 
 // this function handles the legend rotation and updates the axis thereafter
 std::pair<ivec2, ivec2> ColorScaleLegend::getAxisPosition() {
-    const float ticsWidth = ceil(axis_.ticks_.majorTicks_.tickWidth_.get());
+    const float ticsWidth = ceil(axis_.majorTicks_.tickWidth_.get());
     const auto borderWidth = borderWidth_.get();
 
     const ivec2 dimensions = outport_.getDimensions();
