@@ -140,6 +140,9 @@ public:
 
     int getHoveredAxis() const { return hoveredAxis_; }
 
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
+
 protected:
     void linePicked(PickingEvent* p);
     enum class PickType {Axis, Lower, Upper, Groove};
@@ -170,7 +173,7 @@ private:
     std::vector<ColumnAxis> axes_;
 
     bool enabledAxesModified_ = false;
-    std::vector<ColumnAxis*> enabledAxes_;
+    std::vector<size_t> enabledAxes_;
     
     PickingMapper linePicking_;
     PickingMapper axisPicking_;

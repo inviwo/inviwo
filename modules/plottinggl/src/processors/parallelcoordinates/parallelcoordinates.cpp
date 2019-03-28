@@ -244,7 +244,7 @@ ParallelCoordinates::ParallelCoordinates()
 }
 
 void ParallelCoordinates::autoAdjustMargins() {
-    if (enabledAxes_.empty() || isDragging_) return;
+    if (enabledAxes_.empty()) return;
 
     const auto dim = outport_.getDimensions();
 
@@ -280,11 +280,13 @@ void ParallelCoordinates::process() {
     const auto dims = outport_.getDimensions();
 
     enabledAxesModified_ |= [&]() {
-        std::vector<ColumnAxis*> enabledAxes{enabledAxes_};
-        util::erase_remove_if(enabledAxes, [](auto axis) { return !axis->pcp->isChecked(); });
+        std::vector<size_t> enabledAxes{enabledAxes_};
+        util::erase_remove_if(enabledAxes, [&](auto id) {
+            return id >= axes_.size() || !axes_[id].pcp->isChecked();
+        });
         for (auto& axis : axes_) {
-            if (axis.pcp->isChecked() && !util::contains(enabledAxes, &axis)) {
-                enabledAxes.push_back(&axis);
+            if (axis.pcp->isChecked() && !util::contains(enabledAxes, axis.pcp->columnId())) {
+                enabledAxes.push_back(axis.pcp->columnId());
             }
         }
         const auto modified = enabledAxes != enabledAxes_;
@@ -300,8 +302,9 @@ void ParallelCoordinates::process() {
     } else if (brushingAndLinking_.isChanged() || axisProperties_.isModified()) {
         partitionLines();
     }
-    if (autoMargins_ && (enabledAxesModified_ || captionSettings_.isModified() ||
-                         labelSettings_.isModified() || axesSettings_.isModified())) {
+    if (autoMargins_ && (!isDragging_ || enabledAxesModified_) &&
+        (enabledAxesModified_ || captionSettings_.isModified() || labelSettings_.isModified() ||
+         axesSettings_.isModified())) {
         autoAdjustMargins();
     }
 
@@ -315,6 +318,8 @@ void ParallelCoordinates::process() {
     drawHandles(dims);
 
     utilgl::deactivateCurrentTarget();
+
+    enabledAxesModified_ = false;
 }
 
 void ParallelCoordinates::createOrUpdateProperties() {
@@ -400,7 +405,6 @@ void ParallelCoordinates::buildLineMesh() {
 }
 
 void ParallelCoordinates::buildLineIndices() {
-    enabledAxesModified_ = false;
     const auto numberOfAxis = axes_.size();
     const auto numberOfEnabledAxis = enabledAxes_.size();
     const auto numberOfLines = dataFrame_.getData()->getNumberOfRows();
@@ -416,8 +420,8 @@ void ParallelCoordinates::buildLineIndices() {
     indices.clear();
     indices.reserve(numberOfEnabledAxis * numberOfLines);
     for (size_t i = 0; i < numberOfLines; i++) {
-        for (auto axis : enabledAxes_) {
-            indices.push_back(static_cast<uint32_t>(i * numberOfAxis + axis->pcp->columnId()));
+        for (auto id : enabledAxes_) {
+            indices.push_back(static_cast<uint32_t>(i * numberOfAxis + id));
         }
     }
 
@@ -439,8 +443,7 @@ void ParallelCoordinates::buildAxisPositions() {
 
     lines_.axisPositions.resize(numberOfAxis, 0.0f);
     for (auto&& item : util::enumerate(enabledAxes_)) {
-        lines_.axisPositions[item.second()->pcp->columnId()] =
-            item.first() / float(numberOfEnabledAxis - 1);
+        lines_.axisPositions[item.second()] = item.first() / float(numberOfEnabledAxis - 1);
     }
 }
 
@@ -671,18 +674,15 @@ void ParallelCoordinates::axisPicked(PickingEvent* p, size_t pickedID, PickType 
         auto delta = glm::abs(p->getDeltaPressedPosition());
 
         if (delta.x > delta.y) {
-            const auto it = util::find(enabledAxes_, &axes_[pickedID]);
+            const auto it = util::find(enabledAxes_, pickedID);
             if (it != enabledAxes_.end()) {
                 const auto id = static_cast<size_t>(std::distance(enabledAxes_.begin(), it));
-                if (id > 0 && pickedID > 0 &&
-                    p->getPosition().x * p->getCanvasSize().x <
-                        static_cast<float>(
-                            axisPos(enabledAxes_[id - 1]->pcp->columnId()).first.x)) {
+                if (id > 0 && p->getPosition().x * p->getCanvasSize().x <
+                                  static_cast<float>(axisPos(enabledAxes_[id - 1]).first.x)) {
                     swap(id, id - 1);
-                } else if (id + 1 < enabledAxes_.size() && pickedID + 1 < axes_.size() &&
+                } else if (id + 1 < enabledAxes_.size() &&
                            p->getPosition().x * p->getCanvasSize().x >
-                               static_cast<float>(
-                                   axisPos(enabledAxes_[id + 1]->pcp->columnId()).first.x)) {
+                               static_cast<float>(axisPos(enabledAxes_[id + 1]).first.x)) {
                     swap(id, id + 1);
                 } else if (pickedID < axes_.size()) {
                     const auto rect = margins_.getRect(outport_.getDimensions());
@@ -737,13 +737,25 @@ std::pair<size2_t, size2_t> ParallelCoordinates::axisPos(size_t columnId) const 
     const auto rect = margins_.getRect(vec2{dim} - 1.0f);
     const size2_t lowerLeft(rect.first);
     const size2_t upperRight(rect.second);
-    
+
     const auto dx = columnId < lines_.axisPositions.size() ? lines_.axisPositions[columnId] : 0.0f;
     const auto x = static_cast<size_t>(dx * (upperRight.x - lowerLeft.x));
     const auto startPos = lowerLeft + size2_t(x, 0);
     const auto endPos = size2_t(lowerLeft.x + x, upperRight.y);
 
     return {startPos, endPos};
+}
+
+void ParallelCoordinates::serialize(Serializer& s) const {
+    Processor::serialize(s);
+    s.serialize("enabledAxes", enabledAxes_, "axis");
+}
+
+void ParallelCoordinates::deserialize(Deserializer& d) {
+    Processor::deserialize(d);
+    decltype(enabledAxes_) old{enabledAxes_};
+    d.deserialize("enabledAxes", enabledAxes_, "axis");
+    enabledAxesModified_ |= old != enabledAxes_;
 }
 
 }  // namespace plot
