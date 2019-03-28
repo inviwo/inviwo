@@ -63,6 +63,7 @@ set(HEADER_FILES
     include/modules/base/processors/imagesnapshot.h
     include/modules/base/processors/imagesource.h
     include/modules/base/processors/imagesourceseries.h
+    include/modules/base/processors/imagestackvolumesource.h
     include/modules/base/processors/imagetospatialsampler.h
     include/modules/base/processors/inputselector.h
     include/modules/base/processors/layerdistancetransformram.h
@@ -173,6 +174,7 @@ set(SOURCE_FILES
     src/processors/imagesnapshot.cpp
     src/processors/imagesource.cpp
     src/processors/imagesourceseries.cpp
+    src/processors/imagestackvolumesource.cpp
     src/processors/imagetospatialsampler.cpp
     src/processors/inputselector.cpp
     src/processors/layerdistancetransformram.cpp

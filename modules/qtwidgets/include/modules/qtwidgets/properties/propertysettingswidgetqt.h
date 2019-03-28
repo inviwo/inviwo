@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,6 +38,7 @@
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/network/networklock.h>
 #include <modules/qtwidgets/qstringhelper.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -119,8 +120,9 @@ TemplatePropertySettingsWidgetQt<T>::TemplatePropertySettingsWidgetQt(OrdinalPro
     this->setWindowFlags(flags);
 
     auto gridLayout = new QGridLayout();
-    gridLayout->setContentsMargins(10, 10, 10, 10);
-    gridLayout->setSpacing(10);
+    const auto space = utilqt::refSpacePx(this);
+    gridLayout->setContentsMargins(space, space, space, space);
+    gridLayout->setSpacing(space);
 
     const std::array<QString, 5> labels = {"Component", "Min", "Value", "Max", "Increment"};
     for (size_t i = 0; i < labels.size(); ++i) {
@@ -304,8 +306,9 @@ TemplateMinMaxPropertySettingsWidgetQt<T>::TemplateMinMaxPropertySettingsWidgetQ
     this->setWindowFlags(flags);
 
     auto gridLayout = new QGridLayout();
-    gridLayout->setContentsMargins(10, 10, 10, 10);
-    gridLayout->setSpacing(10);
+    const auto space = utilqt::refSpacePx(this);
+    gridLayout->setContentsMargins(space, space, space, space);
+    gridLayout->setSpacing(space);
 
     const std::array<QString, 7> labels = {"Component", "Min Bound",     "Start",    "End",
                                            "Max Bound", "MinSeparation", "Increment"};

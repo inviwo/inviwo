@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2016-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -78,7 +78,7 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationManager& manag
     : InviwoDockWidget(utilqt::toQString(widgetName), parent, "AnimationEditorWidget")
     , controller_{manager.getAnimationController()} {
 
-    resize(QSize(1000, 400));  // default size
+    resize(utilqt::emToPx(this, QSizeF(100, 40)));  // default size
     setAllowedAreas(Qt::BottomDockWidgetArea);
 
     setFloating(true);
@@ -108,7 +108,8 @@ AnimationEditorDockWidgetQt::AnimationEditorDockWidgetQt(AnimationManager& manag
     {
         overlay->setParent(animationView_->viewport());
         auto grid = new QGridLayout(animationView_->viewport());
-        grid->setContentsMargins(7, 7, 7, 7);
+        auto const space = utilqt::refSpacePx(this);
+        grid->setContentsMargins(space, space, space, space);
         grid->addWidget(overlay, 0, 0, Qt::AlignTop | Qt::AlignLeft);
         auto sp = overlay->sizePolicy();
         sp.setHorizontalStretch(10);

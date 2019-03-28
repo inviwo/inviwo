@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,7 @@
 
 namespace inviwo {
 
-void TFPrimitiveObserver::onTFPrimitiveChange(const TFPrimitive*) {}
+void TFPrimitiveObserver::onTFPrimitiveChange(const TFPrimitive&) {}
 
 TFPrimitive::TFPrimitive(double pos, const vec4& color)
     : Observable<TFPrimitiveObserver>(), data_({pos, color}) {}
@@ -109,7 +109,7 @@ void TFPrimitive::setColor(const vec4& color) {
 }
 
 void TFPrimitive::notifyTFPrimitiveObservers() {
-    forEachObserver([&](TFPrimitiveObserver* o) { o->onTFPrimitiveChange(this); });
+    forEachObserver([&](TFPrimitiveObserver* o) { o->onTFPrimitiveChange(*this); });
 }
 
 void TFPrimitive::serialize(Serializer& s) const {
@@ -133,7 +133,9 @@ bool operator!=(const TFPrimitiveData& lhs, const TFPrimitiveData& rhs) {
     return !operator==(lhs, rhs);
 }
 
-bool operator<(const TFPrimitiveData& lhs, const TFPrimitiveData& rhs) { return lhs.pos < rhs.pos; }
+bool operator<(const TFPrimitiveData& lhs, const TFPrimitiveData& rhs) {
+    return lhs.pos == rhs.pos ? lhs.color.a < rhs.color.a : lhs.pos < rhs.pos;
+}
 
 bool operator>(const TFPrimitiveData& lhs, const TFPrimitiveData& rhs) { return rhs < lhs; }
 

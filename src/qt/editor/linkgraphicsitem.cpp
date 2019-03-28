@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,6 +33,11 @@
 #include <QPainter>
 #include <QString>
 #include <QPainterPath>
+#include <QSvgRenderer>
+#include <QPainter>
+#include <QImage>
+#include <QGraphicsScene>
+#include <QGraphicsView>
 #include <warn/pop>
 
 #include <inviwo/qt/editor/linkgraphicsitem.h>
@@ -44,6 +49,9 @@
 #include <inviwo/core/network/processornetwork.h>
 
 #include <modules/qtwidgets/inviwoqtutils.h>
+#include <inviwo/core/util/document.h>
+
+#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -226,19 +234,6 @@ ProcessorGraphicsItem* LinkConnectionGraphicsItem::getDestProcessorGraphicsItem(
     return inLink_->getProcessorGraphicsItem();
 }
 
-std::string getLinkInfoTableRows(const std::vector<PropertyLink>& links,
-                                 const std::string& imgName) {
-    std::string str;
-    for (auto& item : links) {
-        auto srcProperty = item.getSource();
-        auto dstProperty = item.getDestination();
-        str += "<tr><td align='center'>" + srcProperty->getDisplayName() +
-               "</td><td width='30px' align='center' valign='middle'><img src='" + imgName +
-               "'></td><td align='center'>" + dstProperty->getDisplayName() + "</td></tr>";
-    }
-    return str;
-}
-
 class LinkConnectionGraphicsItemMatchReverse {
 public:
     LinkConnectionGraphicsItemMatchReverse(PropertyLink link) : link_(link) {}
@@ -252,63 +247,47 @@ private:
 };
 
 void LinkConnectionGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
-    Processor* p1 = inLink_->getProcessorGraphicsItem()->getProcessor();
-    Processor* p2 = outLink_->getProcessorGraphicsItem()->getProcessor();
+    auto p1 = inLink_->getProcessorGraphicsItem()->getProcessor();
+    auto p2 = outLink_->getProcessorGraphicsItem()->getProcessor();
+    auto network = p1->getNetwork();
 
-    auto propertyLinks =
-        InviwoApplication::getPtr()->getProcessorNetwork()->getLinksBetweenProcessors(p1, p2);
+    const auto w = scene()->views().front();
+    const auto size = utilqt::emToPx(w, 1.5);
+    auto img = [&](const auto& file) {
+        QSvgRenderer renderer(utilqt::toQString(file));
+        QImage image(size, size, QImage::Format_ARGB32);
+        image.fill(0);
+        QPainter painter(&image);
+        renderer.render(&painter);
+        return fmt::format("<img src = 'data:image/png;base64,{}'/>", utilqt::toBase64(image));
+    };
+    const auto imgRight = img(":/svgicons/link-right.svg");
+    const auto imgBi = img(":/svgicons/link-bidirectional.svg");
+    const auto imgLeft = img(":/svgicons/link-left.svg");
 
-    // collect all links based on their direction
+    using A = utildoc::TableBuilder::ArrributeWrapper;
+    using P = Document::PathComponent;
+    Document doc;
+    utildoc::TableBuilder tb(doc.handle(), P::end());
+    tb(A{{{"style", "color:white;"}, {"align", "right"}}, p1->getIdentifier()}, "",
+       A{{{"style", "color:white;"}, {"align", "left"}}, p2->getIdentifier()});
 
-    std::vector<PropertyLink> bidirectional;
-    std::vector<PropertyLink> outgoing;  // from processor 1
-    std::vector<PropertyLink> incoming;  // toward processor 1
-
-    for (const auto& propertyLink : propertyLinks) {
-        Processor* linkSrc =
-            dynamic_cast<Processor*>(propertyLink.getSource()->getOwner()->getProcessor());
-
-        if (linkSrc == p1) {
-            // forward link
-            auto sit = std::find_if(incoming.begin(), incoming.end(),
-                                    LinkConnectionGraphicsItemMatchReverse(propertyLink));
-            if (sit != incoming.end()) {
-                bidirectional.push_back(propertyLink);
-                incoming.erase(sit);
-            } else {
-                outgoing.push_back(propertyLink);
+    std::unordered_map<std::string, std::string> right = {{"align", "right"}};
+    std::unordered_map<std::string, std::string> left = {{"align", "left"}};
+    for (const auto& link : network->getLinksBetweenProcessors(p1, p2)) {
+        auto src = link.getSource();
+        auto dst = link.getDestination();
+        if (network->isLinkedBidirectional(src, dst)) {
+            if (src > dst) {
+                tb(A{right, src->getDisplayName()}, imgBi, A{left, dst->getDisplayName()});
             }
-        } else {  // if (linkSrc == processorB)
-            auto sit = std::find_if(outgoing.begin(), outgoing.end(),
-                                    LinkConnectionGraphicsItemMatchReverse(propertyLink));
-            if (sit != outgoing.end()) {
-                bidirectional.push_back(propertyLink);
-                outgoing.erase(sit);
-            } else {
-                incoming.push_back(propertyLink);
-            }
+        } else if (src->getOwner()->getProcessor() == p1) {
+            tb(A{right, src->getDisplayName()}, imgRight, A{left, dst->getDisplayName()});
+        } else {
+            tb(A{right, src->getDisplayName()}, imgLeft, A{left, dst->getDisplayName()});
         }
     }
-
-    // set up a HTML table containing three columns:
-    //    props of outProcesser, link indicator, props of inProcessor
-    std::string info =
-        "<html><head/><body style=''>\
-           <table border='0' cellspacing='2' cellpadding='0' style='border-color:white;white-space:pre;'>";
-    // put in the table header consisting of both processor names
-    info += "<tr style='color:#bbb;font-weight:bold;'><td align='center'>" + p1->getIdentifier() +
-            "</td><td align='center'></td><td align='center'>" + p2->getIdentifier() + "</td></tr>";
-
-    // add outgoing links first
-    info.append(getLinkInfoTableRows(outgoing, ":/icons/linkarrow_right.png"));
-    // add bidirectional links
-    info.append(getLinkInfoTableRows(bidirectional, ":/icons/linkarrow_bidirectional.png"));
-    // add incoming links
-    info.append(getLinkInfoTableRows(incoming, ":/icons/linkarrow_left.png"));
-
-    info.append("</table></body></html>");
-
-    showToolTipHelper(e, QString(info.c_str()));
+    showToolTipHelper(e, utilqt::toQString(doc));
 }
 
 }  // namespace inviwo

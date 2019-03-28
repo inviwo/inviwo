@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -82,7 +82,7 @@ public:
 ResourceManagerDockWidget::ResourceManagerDockWidget(QWidget *parent, ResourceManager &manager)
     : InviwoDockWidget("Resource Manager", parent, "ResourceManager"), manager_(manager) {
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    resize(QSize(400, 700));  // default size
+    resize(utilqt::emToPx(this, QSizeF(40, 70)));  // default size
 
     manager_.addObserver(this);
 
@@ -145,7 +145,7 @@ void ResourceManagerDockWidget::onResourceAdded(const std::string &key, const st
     auto rowID = model_->rowCount();
     model_->appendRow(row);
     auto btn = new QToolButton();
-    btn->setIcon(QIcon(":/icons/edit-delete.png"));
+    btn->setIcon(QIcon(":/svgicons/edit-delete.svg"));
     btn->setToolTip("Remove resource");
     tableView_->setIndexWidget(model_->index(rowID, 2), btn);
 

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -97,7 +97,7 @@ MultiFilePropertyWidgetQt::MultiFilePropertyWidgetQt(MultiFileProperty* property
     hWidgetLayout->addWidget(lineEdit_);
 
     auto revealButton = new QToolButton(this);
-    revealButton->setIcon(QIcon(":/icons/about.png"));
+    revealButton->setIcon(QIcon(":/svgicons/about-enabled.svg"));
     hWidgetLayout->addWidget(revealButton);
     connect(revealButton, &QToolButton::pressed, this, [&]() {
         auto fileName = (!property_->get().empty() ? property_->get().front() : "");
@@ -109,7 +109,7 @@ MultiFilePropertyWidgetQt::MultiFilePropertyWidgetQt(MultiFileProperty* property
     });
 
     auto openButton = new QToolButton(this);
-    openButton->setIcon(QIcon(":/icons/open.png"));
+    openButton->setIcon(QIcon(":/svgicons/open.svg"));
     hWidgetLayout->addWidget(openButton);
     connect(openButton, &QToolButton::pressed, this, &MultiFilePropertyWidgetQt::setPropertyValue);
 
@@ -135,7 +135,7 @@ void MultiFilePropertyWidgetQt::setPropertyValue() {
     importFileDialog.setFileMode(property_->getFileMode());
 
     auto ext = property_->getSelectedExtension();
-    if (!ext.empty()) importFileDialog.setSelectedExtenstion(ext);
+    if (!ext.empty()) importFileDialog.setSelectedExtension(ext);
 
     if (importFileDialog.exec()) {
         std::vector<std::string> filenames;

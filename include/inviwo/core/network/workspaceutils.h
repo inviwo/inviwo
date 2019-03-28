@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2017-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,7 @@ namespace util {
 
 void IVW_CORE_API updateWorkspaces(InviwoApplication* app);
 
-void IVW_CORE_API updateWorkspaces(InviwoApplication* app, const std::string &path);
+void IVW_CORE_API updateWorkspaces(InviwoApplication* app, const std::string& path);
 
 }  // namespace util
 

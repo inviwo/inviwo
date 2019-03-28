@@ -2,7 +2,7 @@
  #
  # Inviwo - Interactive Visualization Workshop
  #
- # Copyright (c) 2014-2018 Inviwo Foundation
+ # Copyright (c) 2014-2019 Inviwo Foundation
  # All rights reserved.
  # 
  # Redistribution and use in source and binary forms, with or without
@@ -134,7 +134,7 @@ function(ivw_private_make_doxyfile)
 PROJECT_NAME           = \"${ARG_NAME}\"
 PROJECT_NUMBER         = \"${IVW_VERSION}\"
 PROJECT_BRIEF          = \"${ARG_BRIEF}\"
-PROJECT_LOGO           = \"${IVW_RESOURCES_DIR}/icons/inviwo_dark.png\"
+PROJECT_LOGO           = \"${IVW_RESOURCES_DIR}/inviwo/inviwo_dark.png\"
 OUTPUT_DIRECTORY       = \"${ARG_OUTPUT_DIR}/${name_lower}\"
 WARNINGS               = YES
 WARN_NO_PARAMDOC       = NO

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -77,6 +77,8 @@ public:
 
     virtual uint64_t hash() const override;
     static constexpr uint64_t chash() { return util::constexpr_hash("org.inviwo.GestureEvent"); }
+
+    virtual void print(std::ostream& ss) const override;
 
 private:
     GestureType type_;

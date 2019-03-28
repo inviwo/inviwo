@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -204,9 +204,8 @@ TEST(CSVdata, ignoreEmptyLine) {
 
 TEST(CSVdata, byteOrderMark) {
     // Byte order mark should be detected and not treated as a value
-    const uint8_t bom[] = {0xef, 0xbb, 0xbf};
     std::stringstream ss;
-    ss << bom << "1,2,3";
+    ss << '\xef' << '\xbb' << '\xbf' << "1,2,3";
 
     CSVReader reader;
     reader.setFirstRowHeader(false);

@@ -23,9 +23,8 @@
    <string notr="true">/*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
- * Version 0.6b
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,52 +49,780 @@
  * 
  *********************************************************************************/
 
-/* General styles */
+/*
+ * Overall background #323235
+ * Overall foreground #9d9995
+ */
+
+/************************ 
+General
+************************/
 QWidget {
-    font-family: &quot;Calibra&quot;;
+    font-family: &quot;Segoe UI&quot;;
     color: #9d9995;
-    background-color: #252528;/*#313136;*/ /*#4d4d4d;*/
+    background: transparent;
+}
+
+QDockWidget &gt; .QWidget, 
+QDockWidget &gt; .QScrollArea, 
+QDockWidget &gt; .QSplitter, 
+QDialog,
+QStatusBar,
+QSplitter#WelcomeWidget {
     background-color: #323235;
-    /*background: transparent;*/
 }
 
-/* set a common background color for all central widgets of dock widgets.
-   All other QWidgets will have a transparent background. */
-QDockWidget &gt; .QWidget, QDockWidget &gt; .QScrollArea, QDialog, QDockWidget#PythonInfoWidget &gt; .QWidget QScrollArea {
-    background-color: #323235;
-}
-
-QDockWidget#PythonInfoWidget &gt; .QWidget {
-    background-color: #252527;
-}
-QDockWidget#PythonInfoWidget &gt; .QWidget QScrollArea {
-    /*border: none;*/
-}
-
-
-QStatusBar {
-    background-color: #252527;
+/************************ 
+QMainWindow
+************************/
+QMainWindow {
+    background: #252527;
 }
 QMainWindow::separator {
-    background: #444;
-    width: 2px;
-    height: 2px;
-    border-style: outset;
-    border-width: 1px;
+    background: #2b2b2d;
+    width: 0.15em;
+    height: 0.15em;
+}
+QMainWindow::separator:hover {
+    background: #1b1b1d;
 }
 
-QWidget#PropertyWidget {
+/************************ 
+QToolBar
+************************/
+QToolBar {
+    spacing: 0.1875em;
+    padding: 0.0625em;
+    border: none;
+    border-bottom: 0.125em solid #2b2b2d;
+    padding-right: 0.5em;
+    background-color: #323235;
+}
+QToolBar::handle {
+    background-image: url(:/icons/dense6pattern.png);
+    background-repeat: repeat-xy;
+    background-color: #404042;
+    border: 0.0625em solid #333;
+    width: 0.1875em;
+    margin: 0.0625em;
+    margin-right: 0.0625em;
+    padding: 0.0625em;
+    border-radius: 0.125em;
+}
+/************************ 
+QToolButton
+************************/
+QToolBar &gt; QToolButton {
+    background-color: transparent;
+    padding: 0.2em;
+    width: 1.2em;
+    height: 1.2em;
+}
+QToolButton {
+    border: 0.0625em solid transparent;
+    background-color: transparent;
+}
+QToolButton#resetButton {
+    width: 0.8em;
+    height: 0.8em;
+    image: url(:/svgicons/reset-dark.svg);
+}
+QToolButton:hover#resetButton {
+    width: 0.8em;
+    height: 0.8em;
+    image: url(:/svgicons/reset.svg);
+}
+QToolButton#ColorButton {
+    border: 0.0625em solid #1b1b1d;
+    border-radius: 0.125em;
+}
+QToolButton[popupMode=&quot;1&quot;] { /* only for MenuButtonPopup */
+    padding-right: 0.5em; /* make way for the popup button */
+}
+QToolButton::menu-button {
+    subcontrol-position: right center;
+    image: none; /* need this to &quot;hide&quot; the default blue background and arrow tip */
+}
+QToolButton::menu-arrow {
+    background: none;
+    image: none;
+    image: url(:/svgicons/arrow-menu-enabled.svg);
+    border-left: 0.0625em solid #424245;
+    margin-left: 0.1em;
+}
+QToolButton::menu-arrow:open, QToolButton::menu-arrow:pressed {
+    position: relative;
+    top: 2px; left: 2px;
+}
+QToolButton#smartLinkButton {
+    border: 0.0625em solid #1b1b1d;
+    border-radius: 0.25em;
+    min-height: 1.25em;
+    min-width: 5em;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #6f6f75, stop:0.1 #323235, stop:0.9 #323235, stop:1 #222224);
+}
+QToolButton#smartLinkButton:default {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #6f6f75, stop:0.1 #144c72, stop:0.9 #144c72, stop:1 #222224);
+}
+QToolButton#smartLinkButton:pressed {
+    padding-top: 0.0625em;
+    padding-left: 0.0625em;
+    background: qlineargradient(x1:0, y1:1, x2:0, y2:0,
+                                stop:0 #6f6f75, stop:0.15 #323235, stop:0.95 #323235, stop:1 #222224);
+}
+QToolButton#smartLinkButton:disabled{
+    color: #666;
+    border: 0.0625em solid #25272a;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #6f6f75, stop:0.1 #3a3a3e, stop:0.9 #3a3a3e, stop:1 #222224);
+}
+QToolButton#smartLinkButton:hover {
+    border: 0.0625em solid #268bd2;
 }
 
-/* Composite property */
+/************************ 
+QDockWidget
+************************/
+inviwo--InviwoDockWidgetTitleBar {
+    padding: 0.125em;
+    border: none;
+    background: #424245;
+    qproperty-iconSize: 1.2;
+}
+QLabel#InviwoDockWidgetTitleBarLabel {
+    padding-left: 0.3125em; 
+    background-color: 'transparent';
+    font-weight: 600;
+    color: #e9e4de;
+}
+inviwo--InviwoDockWidgetTitleBar &gt; QToolButton {
+    background-color: transparent;
+    padding: 0.1em;
+    border: 0.0625em solid transparent;
+}
+inviwo--InviwoDockWidgetTitleBar &gt; QToolButton:hover {
+    margin-left: 0.0625em;
+    margin-top: 0.0625em;
+    border: 0.0625em solid #268bd2;
+}
+
+/************************ 
+ QTabWidget 
+************************/
+
+QTabWidget::pane {
+    border: none;
+}
+
+QTabWidget::pane QWidget, QTabWidget::pane QDockWidget QWidget {
+    /* docked QDockWidgets ignore QTabWidget */
+    background: transparent;
+}
+QTabWidget::pane QGraphicsView {
+    /* need to set the background otherwise the scrollbars will have a white background */
+    background: #323235;
+    border: none;
+}
+QTabWidget::tab-bar {
+    border: none;
+}
+QTabBar {
+    border: none;
+    /* docked QDockWidgets ignore QTabWidget */
+    background: #252527;
+}
+
+QTabBar::tab {
+    min-height: 1.25em;
+    min-width: 5em;
+    padding: 0.125em 0.625em 0em 0.625em;
+    border: 0.0625em solid #252527;
+    margin: 0em 0em 0em 0em;
+    background: #252527;
+}
+QTabBar::tab:bottom {
+}
+QTabBar::tab:top {
+    min-width: 7em;
+}
+QTabBar::tab:bottom:selected {
+    background: #323235;
+    border: 0.0625em solid #323235;
+    color: #e9e4de;
+    font-weight: 350;
+}
+QTabBar::tab:top:selected {
+    background: #323235;
+    border: 0.0625em solid #323235;
+    color: #e9e4de;
+    font-weight: 350;
+}
+QTabBar::tab:bottom:!selected:hover {
+    border: 0.0625em solid #268bd2;
+}
+QTabBar::tab:top:!selected:hover {
+    border: 0.0625em solid #268bd2;
+}
+QTabBar::tab:top:!selected {}
+QTabBar::tab:bottom:!selected {}
+
+/************************ 
+QMenu
+************************/
+QMenuBar, QMenuBar::item {
+    color: #999999;
+    background-color: #323235;
+    selection-background-color: #3a3a3d;
+}
+QMenu, QMenu::item, QMenu::item::selected {
+    color: #999999;
+    selection-color: #999;
+    background-color: #3a3a3d;
+    selection-background-color: #47474b;
+}
+QMenu::item::disabled {
+    color: #555;
+}
+QMenu {
+    border: 0.0625em solid #666;
+}
+QMenuBar::item::selected {
+    color: white;
+    background-color: #3a3a3d;   
+    border-top: 0.0625em solid #6a6a6f;
+    border-left: 0.0625em solid #6a6a6f;
+    border-right: 0.0625em solid #6a6a6f;
+}
+QMenu::separator {
+    height: 0em;
+    margin-top: 0.125em;
+    margin-bottom: 0.125em;
+    border-top: 0.125em groove #383838;
+    margin-left: 1.5675em;
+}
+QMenu#TF {
+    icon-size: 7.5em;
+}
+
+/************************ 
+QScrollBar 
+************************/
+QScrollBar {
+    border: 0em;
+    padding: 0.125em;
+}
+QScrollBar:horizontal {
+    height: 0.75em;
+}
+QScrollBar:vertical {
+    width: 0.75em;
+}
+QScrollBar::handle {
+    background: #5b5f62;
+    border-width: 0.125em;
+    border-radius: 0.25em;
+    border: 0em;
+}
+QScrollBar::handle:hover {
+    background: #1e70a8;
+}
+QScrollBar::handle:horizontal {
+    min-width: 10.125em;
+}
+QScrollBar::handle:vertical {
+    min-height: 1.625em;
+}
+QScrollBar::add-page, QScrollBar::add-line, QScrollBar::sub-page, QScrollBar::sub-line{
+    background: none;
+}
+
+/************************ 
+QToolTip 
+************************/
+QToolTip {
+    color: #9d9995;
+    background-color: #323235;  
+    border-radius: 0.1875em;
+    border: 0.0625em solid #1b1b1d;
+    padding: 0.1875em; 
+}
+
+/************************ 
+Common defines for flat property editors
+************************/
+QLineEdit, QAbstractSpinBox, QComboBox {
+    color: #c8ccd0;
+    background: transparent;
+    /* change the border color to transparent here, if borders around properties 
+      should be invisible. DO NOT adjust the border width as the widgets will then 
+      jump on hover!
+      */
+    border: 0.0625em solid transparent;
+}
+QLineEdit:disabled, QAbstractSpinBox:disabled, QComboBox:disabled, QCheckBox:disabled {
+    color: #777;
+    background: transparent;
+}
+QLineEdit:focus, QLineEdit:hover, QAbstractSpinBox:focus, QAbstractSpinBox:hover, 
+QComboBox:on, QComboBox:focus, QComboBox:hover {
+    background: #47474b;
+    border: 0.0625em solid #268bd2;
+}
+QPushButton:hover, QToolButton:hover, QCheckBox:indicator:hover {
+    border: 0.0625em solid #268bd2;
+}
+
+QLineEdit#ColorLineEdit[input=&quot;valid&quot;] {
+    border: 0.0625em solid #1a800d;
+}
+QLineEdit#ColorLineEdit[input=&quot;invalid&quot;] {
+    border: 0.0625em solid #801717;
+}
+
+/************************ 
+ QPushButton 
+************************/
+QPushButton {
+    border: 0.0625em solid #1b1b1d;
+    border-radius: 0.25em;
+    min-height: 1.25em;
+    min-width: 5em;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #6f6f75, stop:0.1 #323235, stop:0.9 #323235, stop:1 #222224);
+} 
+QWidget#CompositeWidget &gt; .QPushButton {
+    /* overwrite minimum size for push buttons within the composite properties */
+    min-height: 0.3125em;
+    min-width: 2.5em;    
+}
+QPushButton:default {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #6f6f75, stop:0.1 #144c72, stop:0.9 #144c72, stop:1 #222224);
+}
+QPushButton:pressed {
+    padding-top: 0.0625em;
+    padding-left: 0.0625em;
+    background: qlineargradient(x1:0, y1:1, x2:0, y2:0,
+                                stop:0 #6f6f75, stop:0.15 #323235, stop:0.95 #323235, stop:1 #222224);
+}
+QPushButton:disabled{
+    color: #666;
+    border: 0.0625em solid #25272a;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #6f6f75, stop:0.1 #3a3a3e, stop:0.9 #3a3a3e, stop:1 #222224);
+}
+QPushButton:flat {
+     border: none; /* no border for a flat push button */
+}
+
+/************************ 
+ QLabel 
+************************/
+QLabel {
+    border: 0em;
+}
+
+QLabel#TextLabelOverlay {
+    color: #c8ccd0;
+    font-weight: 600;
+    font-size: 10pt;
+}
+
+/************************ 
+QGroupBox
+************************/
+QGroupBox {
+    border: 0.0625em solid #999999;
+    border-radius: 0.3125em;
+    margin-top: 1ex;
+}
+QGroupBox::title {
+    top: -7ex;
+    left: 0.625em;
+    subcontrol-origin: border
+}
+
+/************************ 
+ QListView 
+************************/
+QListView {
+    background: transparent;
+    /*using border here breaks the QCombobox */
+}
+
+QDockWidget#AnimationEditorWidget QListView {
+    margin: 0em;
+    padding: 0em;
+    border: none;
+    background: transparent; 
+}
+
+QListView::item {
+    border: 0em;
+}
+QListView::item:hover {
+    background-color: #47474b;
+}
+QListView::item:selected {
+    background-color: #65696d;
+}
+
+/************************ 
+ QTreeView 
+************************/
+QTreeView {
+    border: 0em;
+    show-decoration-selected: 1;
+    outline: 0;
+}
+QTreeView::branch:hover, QTreeView::item:hover {
+    background-color: #47474b;
+}
+QTreeView::item:selected, QTreeView::branch:selected {
+    background-color: #65696d;
+}
+QTreeView::branch:has-children:!has-siblings:closed,
+QTreeView::branch:closed:has-children:has-siblings {
+    border-image: none;
+    image: url(:/svgicons/arrow-right-enabled.svg);
+}
+QTreeView::branch:open:has-children:!has-siblings,
+QTreeView::branch:open:has-children:has-siblings  {
+    border-image: none;
+    image: url(:/svgicons/arrow-down-enabled.svg);
+}
+
+/************************ 
+QComboBox
+************************/
+QComboBox {
+    border-radius: 0.0625em;
+}
+QComboBox QAbstractItemView {
+    /* Do NOT modify the border here! This will break the repainting in the dropdown */
+    background-color: #3a3a3d;
+    selection-background-color: #47474b;
+    outline: 0;
+}
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 1.25em;
+    border-top: 0em;
+    border-top-right-radius: 0em;
+    border-bottom-right-radius: 0em;
+    outline: 0;
+    border:none;
+}
+QComboBox::drop-down:hover {
+    background-color: #47474b;
+}
+QComboBox::down-arrow {
+     image: url(:/svgicons/arrow-down-enabled.svg);
+}
+QComboBox::down-arrow:disabled {
+     image: url(:/svgicons/arrow-down-disabled.svg);
+}
+
+
+/************************ 
+QProgressBar
+************************/
+QProgressBar {
+    border: 0.125em solid rgb(75, 75, 75);
+    border-radius: 0.3125em;
+    margin-right: 1.875em;
+    color: rgb(200, 200, 200);
+    text-align: right;
+}
+QProgressBar::chunk {
+    background-color: qlineargradient(spread:pad, x1:0.506, y1:1, x2:0.489, y2:0,
+                                      stop:0 rgba(14, 124, 36, 255), stop:1 rgba(255, 255, 255, 255));
+    width: 1.25em;
+}
+QProgressBar {
+    padding: 0.0625em;;
+    text-align: top;
+    border: 0.0625em; solid #1b1b1d;
+    border-bottom-right-radius: 0.5em;
+    border-bottom-left-radius: 0.5em;
+    background: QLinearGradient(x1: 0, y1: 0, x2: 1, y2: 0,
+                                stop:0 #fff, stop:0.4999 #eee,
+                                stop:0.5 #ddd, stop:1 #eee);
+    width: 1em;
+}
+QProgressBar::chunk {
+    border: 0.0625em solid #1b1b1d;
+    border-bottom-right-radius: 0.5em;
+    border-bottom-left-radius: 0.5em;
+    background: QLinearGradient(x1: 0, y1: 0, x2: 1, y2: 0,
+                                stop:0 #78d, stop:0.4999 #46a,
+                                stop:0.5 #45a, stop:1 #238);
+}
+
+/************************ 
+QRadioButton and QCheckBox
+************************/
+QCheckBox::indicator {
+    width: 0.8em;
+    height: 0.8em;
+}
+QCheckBox::indicator {
+    border: 0.0625em solid #1b1b1d;
+    background: #47474b;
+    background: #9d9995;
+    border-radius: 0.0625em;
+}
+QCheckBox::indicator:checked {
+    background: #1e70a8;
+}
+QCheckBox::indicator:hover {
+    border: 0.0625em solid #268bd2;
+}
+QCheckBox::indicator:disabled {
+    border-color: #3c3c40;
+    background-color: #4f555b;
+}
+QCheckBox::indicator:checked:disabled {
+    background-color: #65696d;
+}
+
+QCheckBox:indicator:hover {
+    border: 0.0625em solid #268bd2;
+}
+
+QTextBrowser {
+    border-color: #444;
+    border: 0em;
+}
+
+QPlainTextEdit {
+    border: 0.0625em solid #444;
+}
+QPlainTextEdit:hover  {
+    background: #47474b;
+    border: 0.0625em solid #268bd2;
+}
+
+/************************ 
+QLineEdit
+************************/
+QLineEdit {
+    border-radius: 0.0625em;
+}
+
+/************************ 
+QAbstractSpinBox 
+************************/
+QAbstractSpinBox::up-button {
+     image: url(:/svgicons/arrow-up-enabled.svg);
+}
+QAbstractSpinBox::down-button {
+     image: url(:/svgicons/arrow-down-enabled.svg);
+}
+QAbstractSpinBox::up-button:disabled {
+     image: url(:/svgicons/arrow-up-disabled.svg);
+}
+QAbstractSpinBox::down-button:disabled {
+     image: url(:svgicons/arrow-down-disabled.svg);
+}
+
+/************************ 
+valueDragger handle
+************************/
+QWidget#valueDragger {
+    color: #9d9995;
+}
+QWidget#valueDragger:hover {
+    background: #268bd2;
+}
+QWidget#valueDragSpinBox:hover {
+    border: 0.0625em solid #268bd2;    
+}
+
+/************************ 
+QSplitter 
+************************/
+QSplitter:handle {
+    background: #5b5f62;
+    border: 0.0625em solid #5b5f62;
+}
+QSplitter::handle:pressed, QSplitter::handle:hover {
+    background: #268bd2;
+    border: 0.0625em solid #268bd2;
+}
+
+
+/************************ 
+QSlider 
+************************/
+/* slim slider styles and part of the QSplitter styles */
+QSlider::sub-page:horizontal, QSlider::add-page:vertical, 
+QSplitter[Vertical=&quot;false&quot;]#RangeSliderQt QFrame#valueArea, 
+QSplitter[Vertical=&quot;true&quot;]#RangeSliderQt QFrame#valueArea {
+    border: 0em;
+    background: #99a0a7;
+    background: #1e70a8;
+    border-radius: 0.125em;
+}
+QSlider::sub-page:horizontal, 
+QSplitter[Vertical=&quot;false&quot;]#RangeSliderQt QFrame#valueArea {
+    margin: -0.0625em 0em -0.0625em 0em;
+}
+QSlider::add-page:vertical,
+QSplitter[Vertical=&quot;true&quot;]#RangeSliderQt QFrame#valueArea {
+    margin: 0em -0.0625em 0em -0.0625em;
+}
+QSlider::groove, QSlider::add-page:horizontal, QSlider::sub-page:vertical, 
+QSplitter[Vertical=&quot;false&quot;]#RangeSliderQt QFrame, 
+QSplitter[Vertical=&quot;true&quot;]#RangeSliderQt QFrame {
+    border: 0em;
+    background: #65696d;
+    border-radius:0.0625em
+}
+QSlider::groove:horizontal,
+QSlider::add-page:horizontal, 
+QSplitter[Vertical=&quot;false&quot;]#RangeSliderQt QFrame {
+    height: 0.1875em;
+}
+QSlider::groove:vertical,
+QSlider::sub-page:vertical,
+QSplitter[Vertical=&quot;true&quot;]#RangeSliderQt QFrame {
+    width: 0.1875em;
+}
+
+QSlider::handle {
+    background: #c8ccd0;
+    border: 0.125em solid #c8ccd0;
+    border-radius: 0.3125em;
+}
+QSlider::handle:hover {
+    background: #268bd2;
+    border: 0.125em solid #268bd2;
+}
+QSlider::handle:horizontal {
+    width: 0.5em;
+    margin: -0.25em 0em; 
+}
+QSlider::handle:vertical {
+    height: 0.5em;
+    margin: 0em -0.25em; 
+}
+
+
+/* disabled slider / QSplitter */
+QSlider::sub-page:horizontal:disabled, 
+QSplitter[Vertical=&quot;false&quot;]#RangeSliderQt QFrame:disabled#valueArea, 
+QSlider::add-page:vertical:disabled, 
+QSplitter[Vertical=&quot;true&quot;]#RangeSliderQt QFrame:disabled#valueArea {
+    background: #4f555b;
+}
+
+QSlider::groove:disabled,
+QSlider::add-page:horizontal:disabled, 
+QSlider::sub-page:vertical:disabled, 
+QSplitter:disabled[Vertical=&quot;false&quot;]#RangeSliderQt QFrame, 
+QSplitter:disabled[Vertical=&quot;true&quot;]#RangeSliderQt QFrame {
+    background: #404246;
+}
+
+QSlider::handle:disabled {
+    background: #5d656b;
+    border: 0.125em solid #5d656b;
+}
+
+/* main color definition for splitters is done with QSlider (see above) 
+   only cosmetics are done here (rounded corners)!
+*/
+QSplitter[Vertical=&quot;false&quot;]#RangeSliderQt QFrame#valueArea, 
+QSplitter[Vertical=&quot;true&quot;]#RangeSliderQt QFrame#valueArea {
+    border: 0em;
+    background: #99a0a7;
+    background: #1e70a8;
+    border-radius:0em;
+}
+
+QSplitter#RangeSliderQt QFrame, QSplitter#RangeSliderQt QFrame#valueArea {
+    border-radius: 0em;    
+    background-clip: content;
+}
+QSplitter[Vertical=&quot;true&quot;]#RangeSliderQt QFrame {
+    margin: 0em 0.25em; 
+    min-width: 0.25em;
+    max-width: 0.25em;
+}
+QSplitter[Vertical=&quot;false&quot;]#RangeSliderQt QFrame {
+    margin: 0.25em 0em; 
+    min-height: 0.25em;
+    max-height: 0.25em;
+}
+QSplitter[Vertical=&quot;true&quot;]#RangeSliderQt QFrame[LeftPart=&quot;false&quot;] {
+    /* lower part of splitter */
+    border-bottom-left-radius: 0.25em;
+    border-bottom-right-radius: 0.25em;
+}
+QSplitter[Vertical=&quot;true&quot;]#RangeSliderQt QFrame[LeftPart=&quot;true&quot;] {
+    /* upper part of splitter */
+    border-top-left-radius: 0.25em;
+    border-top-right-radius: 0.25em;
+}
+QSplitter[Vertical=&quot;false&quot;]#RangeSliderQt QFrame[LeftPart=&quot;true&quot;] {
+    /* left part of splitter */
+    border-top-left-radius: 0.25em;
+    border-bottom-left-radius: 0.25em;
+}
+QSplitter[Vertical=&quot;false&quot;]#RangeSliderQt QFrame[LeftPart=&quot;false&quot;] {
+    /* right part of splitter */
+    border-top-right-radius: 0.25em;
+    border-bottom-right-radius: 0.25em;
+}
+QSplitter[Vertical=&quot;true&quot;]#RangeSliderQt QFrame#valueArea {
+    margin: 0em 0.1875em; 
+    min-width: 0.375em;
+    max-width: 0.375em;
+}
+QSplitter[Vertical=&quot;false&quot;]#RangeSliderQt QFrame#valueArea {
+    margin: 0.1875em em; 
+    min-height: 0.375em;
+    max-height: 0.375em;
+}
+
+QSplitter::handle#RangeSliderQt {
+    background: #c8ccd0;
+    border: 0.125em solid #c8ccd0;
+    border-radius: 0.375em;
+}
+
+QSplitter::handle:horizontal#RangeSliderQt {
+    width: 0.3125em;
+    height: 0.3125em;
+}
+
+QSplitter::handle:vertical#RangeSliderQt {
+    height: 0.3125em;
+    width: 0.3125em;
+}
+
+QSplitter::handle:pressed#RangeSliderQt, 
+QSplitter::handle:hover#RangeSliderQt {
+    background: #268bd2;
+    border: 0.125em solid #268bd2;
+}
+
+/* out-of-bounds indication */
+QSlider::handle[outOfBounds=&quot;true&quot;], QSplitter::handle[outOfBounds=&quot;true&quot;] { 
+    border: 0.125em solid #b41b1b;
+}
+
+/************************ 
+Composite property 
+************************/
 QWidget#CompositeWidget {
-    /*border: 1px solid #4a4a4f;*/
-    border: 1px solid red;
     border: none;
     background: #2b2b2d;
-    /*background: steelblue;*/
 }
-
 /* default background for nested composite properties with depth &gt; 4 */
 QWidget#CompositeWidget &gt; .QWidget {
     background: lime;
@@ -108,752 +835,146 @@ QWidget[bgType=&quot;toplevel&quot;]#CompositeWidget {
 QWidget[bgType=&quot;toplevel&quot;]#CompositeWidget &gt; .QWidget, 
 QWidget[bgType=&quot;3&quot;]#CompositeWidget,
 QWidget[bgType=&quot;0&quot;]#CompositeWidget &gt; .QWidget {
-    background-color: #323235;
     background-color: #2a2a2e;
 }
 QWidget[bgType=&quot;0&quot;]#CompositeWidget, QWidget[bgType=&quot;1&quot;]#CompositeWidget &gt; .QWidget {
-    background-color: #38383c;
     background-color: #242428;
-    /*background-color: darkslategray;*/
 }
 QWidget[bgType=&quot;1&quot;]#CompositeWidget, QWidget[bgType=&quot;2&quot;]#CompositeWidget &gt; .QWidget {
-    background: #323235;
     background-color: #2a2a2e;
-    /*background-color: darkslateblue;*/
 }
 QWidget[bgType=&quot;2&quot;]#CompositeWidget, QWidget[bgType=&quot;3&quot;]#CompositeWidget &gt; .QWidget {
-    background: #3a3a3d;
     background-color: #242428;
-    /*background-color: maroon;*/
 }
-
-
-/*
-QWidget#CompositeContents {
-    border: 1px solid steelblue;
-    background: #2b2b2d;
-    background: red;
-}
-*/
-
 
 QWidget#CompositeContents &gt; QWidget {
-    border: 0px solid red;
-    /*background: #2b2b2d;*/
+    border: 0em;
+}
+
+QWidget#compositeLabel QLabel {
+    font-weight: 650;
+}
+
+QWidget#CompositeWidget QToolButton#collapseButton {
+    border: 0.0625em solid transparent;
+    background-color: transparent;
+    width: 0.5em;
+    height: 0.8em;
+    margin-right: 0.0625em;
+}
+QWidget#CompositeWidget QToolButton#addListItemButton {
+    border: 0.0625em solid transparent;
+    background-color: transparent;
+    width: 0.75em;
+    height: 0.75em;
+}
+QWidget#CompositeWidget QToolButton#collapseButton:hover,
+QWidget#CompositeWidget QToolButton#addListItemButton:hover {
+    border: 0.0625em solid #268bd2;
+}
+QWidget#CompositeWidget QToolButton#collapseButton:open {
+    image: url(:/svgicons/arrow-right-enabled.svg);
+}
+QWidget#CompositeWidget QToolButton#collapseButton:closed {
+    image: url(:/svgicons/arrow-down-enabled.svg);
+}
+QWidget#CompositeWidget QToolButton#addListItemButton {
+    image: url(:svgicons/listitem-add-enabled.svg);
+}
+QWidget#CompositeWidget QToolButton#addListItemButton:disabled {
+    image: url(:svgicons/listitem-add-disabled.svg);
 }
 
 
-/* Common defines for flat property editors, both active and disabled */
-QLineEdit, QAbstractSpinBox, QComboBox {
-    color: #c8ccd0;
-    background: transparent;
-    /* make background barely visible */
-    /*background: #3a3a3d;*/
-    /* change the border color to transparent here, if borders around properties 
-      should be invisible. DO NOT adjust the border width as the widgets will then 
-      jump on hover!
-      */
-    border: 1px solid #3a3a3e;
-    border: 1px solid #3e3e3f;
-    /*border: 1px solid transparent; */
-}
-QLineEdit:disabled, QAbstractSpinBox:disabled, QComboBox:disabled, QCheckBox:disabled {
-    color: #777;
-    /*border-color: #3c3c40;*/
-    background: transparent;
-}
-QLineEdit:focus, QLineEdit:hover, QAbstractSpinBox:focus, QAbstractSpinBox:hover, QComboBox:on, QComboBox:focus, QComboBox:hover {
-    background: #47474b;
-    border: 1px solid #268bd2;
-}
-
-
-
-/* this renders all backgrounds unusable (labels, lineedit, etc.) due to specialization */
-/*
-QWidget#CompositeWidget QLabel, QWidget#CompositeWidget QWidget {
-    border: none;
-    background: transparent;
-}
-*/
+/************************ 
+ConsoleWidget
+************************/
 
 QDockWidget#ConsoleWidget QTextEdit {
     border: none;
-    border-bottom: 2px ridge #4a4a4f;
+    border-bottom: 0.125em ridge #4a4a4f;
 }
-
-/* QToolBar styles */
-QToolBar {
-    spacing: 3px;
-    padding: 1px;
-    border: 1px solid black;
-    background-color: #3a3a3e;
-}
-QToolBar::handle {
-    background-image: url(:/stylesheets/images/dense6pattern.png);
-    background-repeat: repeat-xy;
-    background-color: #4a4a4f;
-    border: 1px solid #333;
-    width: 5px;
-    margin:1px;
-    margin-right: 3px;
-    padding:1px;
-   border-radius: 2px;
-}
-
-/* QToolButton */
-
-QToolBar &gt; QToolButton {
-    background-color: #3a3a3e;
-    padding:2px;
-}
-QToolButton {
-    border: 1px solid transparent;
-    background-color: transparent;
-}
-
-
-
-QToolButton#resetButton {
-    width: 13px;
-    height: 13px;
-    image: url(:/icons/reset-dark.png);
-}
-QToolButton:hover#resetButton {
-    width: 13px;
-    height: 13px;
-    image: url(:/icons/reset.png);
-}
-
-/*QToolTop */
-QToolTip {
-    /*font-family: &quot;Courier&quot;;*/    
-    color: #9d9995;
-    background-color: #323235;  
-    border-radius: 3px;
-    border: 1px solid black;
-    font-size: 14px;
-    padding: 3px;   
-}
-
-/* QPushButton styles */
-QPushButton {
-    border: 1px solid black;
-    border-radius: 4px;
-    min-height: 20px;
-    min-width: 80px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                stop:0 #6f6f75, stop:0.1 #323235, stop:0.9 #323235, stop:1 #222224);
-} 
-QWidget#CompositeWidget &gt; .QPushButton {
-    /* overwrite minimum size for push buttons within the composite properties */
-    min-height: 5px;
-    min-width: 40px;    
-}
-QPushButton:default {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                stop:0 #6f6f75, stop:0.1 #144c72, stop:0.9 #144c72, stop:1 #222224);
-}
-QPushButton:pressed {
-    padding-top: 1px;
-    padding-left: 1px;
-    background: qlineargradient(x1:0, y1:1, x2:0, y2:0,
-                                stop:0 #6f6f75, stop:0.15 #323235, stop:0.95 #323235, stop:1 #222224);
-}
-QPushButton:focus{
-/*    border: 1px solid #268bd2;*/
-}
-QPushButton:disabled{
-    color: #666;
-    border: 1px solid #25272a;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                stop:0 #6f6f75, stop:0.1 #3a3a3e, stop:0.9 #3a3a3e, stop:1 #222224);
-}
-QPushButton:flat {
-     border: none; /* no border for a flat push button */
- }
-
-
-/* QDockWidget styles */
-QDockWidget::close-button, QDockWidget::float-button {
-    padding: 0px;
-    icon-size: 13px;
-}
-QDockWidget::title, inviwo--InviwoDockWidgetTitleBar {
-    padding: 4px;
-    padding-left: 5px;
-    border-radius: 0px;
-    border-top: 1px solid #888;
-    border-left: 1px solid qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                stop:0 #888, stop: 0.1 #888, stop:.5 #00888888);
-    border-right: 1px solid qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                stop:0 #888, stop: 0.1 #888, stop:.8 #00888888);
-    border-bottom: 0px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                stop:0 #4a4a4e, stop:0.8 #323235, stop:1 #222224);
-    /* smooth transition at the bottom */
-/*
-    padding-top: 6px;
-    padding-bottom:-4px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                stop:0 #555, stop:0.7 #333, stop:.9 #222, stop: 1 #4D4D4D);
-*/
-}
-QToolButton#dockBtn:hover {
-    margin-left: 1px;
-    margin-top: 1px;
-    border: 1px solid #268bd2;
-    border-radius: 3px;
-}
-QDockWidget {
-    color: #999999;
-    /*border: 0px;*/
-    titlebar-close-icon: url(:/stylesheets/images/close.png);
-    titlebar-normal-icon: url(:/stylesheets/images/undock.png);
-
-    background-color: #222;
-    border-width: 2px;
-    /* border style does not work here... */
-    /*
-    border-color: white;
-    border-style: dashed;
-    */
-}
-
-
-QTabWidget {
-}
-QTabWidget::pane:bottom {
-    border-bottom: 2px solid #414145;
-    /*background: #414145; */ 
-    /* cannot use other color than default background here because of QDockWidgets */
-    /*background: #252527;*/
-}
-QTabWidget::pane:top {
-    /*border-top: 2px solid #414145;*/
-}
-QTabWidget::pane QWidget, QTabWidget::pane QDockWidget QWidget {
-    /* docked QDockWidgets ignore QTabWidget */
-    background: transparent; /*#252527*/
-}
-
-QTabWidget::tab-bar {
-    left: 5px;
-}
-QTabBar {
-    /* docked QDockWidgets ignore QTabWidget */
-    background: #252527;
-}
-QTabBar::tab {
-    min-height: 20px;
-    min-width: 80px;
-    border: 1px solid #4a4a4f; /*#252527;*/
-    border-radius: 3px;
-    padding: 2px 10px 0px 10px;
-    margin: 0px 1px 1px 2px; /* top, right (spacing between tabs), bottom, left */
-}
-QTabBar::tab:bottom {
-    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                               stop: 0 #1a1a1a, stop:0.3 #37373a, stop:0.9 #323235, stop:1 #222224);
-    border-top-width: 0px;
-    border-top-left-radius: 0px;
-    border-top-right-radius: 0px;
-
-    margin-top: 1px;
-}
-QTabBar::tab:top {
-    background-color: qlineargradient(x1:0, y1:1, x2:0, y2:0,
-                               stop: 0 #2a2a2a, stop:0.18 #323235, stop:0.88 #37373a, stop:1 #505058);
-    border-bottom-width: 0px;
-    border-bottom-left-radius: 0px;
-    border-bottom-right-radius: 0px;
-
-    margin-bottom: 1px;
-}
-
-QTabBar::tab:bottom:selected{
-    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                stop:0 #323235, stop:0.9 #3c3c40, stop:1 #222224);
-    border: 1px solid #888;
-    color: #e9e4de;
-    margin-top: -2px;
-    /*font-weight: bold;*/
-}
-QTabBar::tab:top:selected{
-    background-color: qlineargradient(x1:0, y1:1, x2:0, y2:0,
-                                stop:0 #323235, stop:0.88 #3c3c40, stop:1 #5f5f5f);
-    border: 1px solid #888;
-    color: #e9e4de;
-    margin-bottom: -2px;
-    /*font-weight: bold;*/
-}
-QTabBar::tab:bottom:hover {
-    border-left: 1px solid #268bd2;
-    border-right: 1px solid #268bd2;
-    border-bottom: 1px solid #268bd2;
-    /*margin-top: -2px;*/ /* tab moves up a bit to indicate interaction */
-}
-QTabBar::tab:top:hover {
-    border-left: 1px solid #268bd2;
-    border-right: 1px solid #268bd2;
-    border-top: 1px solid #268bd2;
-    /*margin-top: -2px;*/ /* tab moves up a bit to indicate interaction */
-}
-QTabBar::tab:bottom:!selected {
-}
-
-/* QMenu styles */
-QMenuBar,QMenuBar::item {
-    color: #999999;
-    background-color: #252527;
-    selection-background-color: #3a3a3d;
-}
-QMenu,QMenu::item, QMenu::item::selected {
+QDockWidget#ConsoleWidget QTableView {
+    border: none;
     color: #999999;
     selection-color: #999;
-    background-color: #3a3a3d;
     selection-background-color: #47474b;
+    border-bottom: 0.125em ridge #4a4a4f;
 }
-QMenu::item::disabled {
-    color: #555;
-}
-QMenu {
-    border: 1px solid #666;
-}
-QMenuBar::item::selected {
-    color: white;
-    background-color: #3a3a3d;   
-    border-top: 1px solid #6a6a6f;
-    border-left: 1px solid #6a6a6f;
-    border-right: 1px solid #6a6a6f;
-}
-QMenu::separator {
-    height: 0px;
-    margin-top: 2px;
-    margin-bottom: 2px;
-    border-top: 2px groove #383838;
-    margin-left: 25px;
+QDockWidget#ConsoleWidget QTableView QHeaderView::section {
+    padding: 0.1875em;
+    border: none;
+    border-bottom: 0.125em ridge #4a4a4f;
+    background: transparent;
 }
 
-
-/* QLabel styles */
-QLabel {
-    border: 0px;
-}
-
-
-/* QListView styles */
-QListView::item:selected {
-    border: 0px;
-    background-color: #47474b;
-}
-
-
-/* QGroupBox styles */
-QGroupBox {
-    border: 1px solid #999999;
-    border-radius: 5px;
-    margin-top: 1ex;
-}
-
-QGroupBox::title {
-    top: -7 ex;
-    left: 10px;
-    subcontrol-origin: border
-}
-
-/* QTreeView styles */
-QTreeView {
-    border: 1px solid #4a4a4f;
-    show-decoration-selected: 1;
-    selection-background-color: #65696d;
-    outline: 0;
-}
-
-QTreeView::branch:hover{
-    background-color: #47474b;
-}
-QTreeView::item:hover {
-    background-color: #47474b;
-}
-QTreeView::item:selected, QTreeView::branch:selected {
-    background-color: #65696d;
-}
-QTreeView::branch:has-children:!has-siblings:closed,
- QTreeView::branch:closed:has-children:has-siblings {
-    border-image: none;
-    image: url(:/stylesheets/images/arrow_lighter_right.png);
- }
-
- QTreeView::branch:open:has-children:!has-siblings,
- QTreeView::branch:open:has-children:has-siblings  {
-    border-image: none;
-    image: url(:/stylesheets/images/arrow_lighter_down.png);
- }
-
-/* QRadioButton and QCheckBox styles */
-QRadioButton::indicator, QCheckBox::indicator {
-    width: 13px;
-    height: 13px;
-}
-QRadioButton::indicator::unchecked {
-    image: url(:/stylesheets/images/circle_gray.png);
-}
-QRadioButton::indicator::unchecked:disabled {
-    image: url(:/stylesheets/images/circle_gray_disabled.png);
-}
-QRadioButton::indicator::checked {
-    image: url(:/stylesheets/images/circle.png);
-}
-QRadioButton::indicator::checked:disabled {
-    image: url(:/stylesheets/images/circle_disabled.png);
-}
-QCheckBox::indicator {
-    border: 1px solid #1b1b1d;
-    background: #47474b;
-    background: #9d9995;
-    border-radius: 1px;
-}
-QCheckBox::indicator:checked {
-    background: #1e70a8;
-}
-QCheckBox::indicator:hover {
-    border: 1px solid #268bd2;
-}
-QCheckBox::indicator:disabled {
-    border-color: #3c3c40;
-    background-color: #4f555b;
-}
-QCheckBox::indicator:checked:disabled {
-    background-color: #65696d;
-}
-
-QCheckBox:indicator:hover {
-    border: 1px solid #268bd2;
-}
-
-
-
-/* QScrollBar styles */
-QScrollBar {
-    border: 0px;
-    padding: 2px;
-}
-QScrollBar:horizontal {
-    height: 12px;
-}
-QScrollBar:vertical {
-    width: 12px;
-}
-QScrollBar::handle {
-    background: #1f1f21; /* dark */
-    background: #625e5b; /* brownish / text */
-    background: #5b5f62; /* blueish / background */
-    border-width: 2px;
-    border-radius: 4px;
-    border: 0px;
-}
-QScrollBar::handle:hover {
-    background: #1e70a8;
-}
-QScrollBar::handle:horizontal {
-    min-width: 12px;
-}
-QScrollBar::handle:vertical {
-    min-height: 26px;
-}
-QScrollBar::add-page, QScrollBar::add-line, QScrollBar::sub-page, QScrollBar::sub-line{
-    background: none;
-}
-
-QTextBrowser {
-    border-color: #444;
-    border: 0px;
-}
-
-QPlainTextEdit {
-    border: 1px solid #444;
-}
-QPlainTextEdit:hover  {
-    background: #47474b;
-    border: 1px solid #268bd2;
-}
-
-/* QLineEdit styles */
-QLineEdit {
-    border-radius: 1px;
-}
-
-QSplitter:handle {
-    background: #c8ccd0;
-    border: 1px solid #c8ccd0;
-}
-QSplitter::handle:pressed, QSplitter::handle:hover {
-    background: #268bd2;
-    border: 1px solid #268bd2;
-}
-
-
-
-/* QAbstractSpinBox styles */
-QAbstractSpinBox {
-    margin-left: 5px;
-}
-QAbstractSpinBox::up-button {
-     image: url(:/stylesheets/images/arrow_lighter_up.png);
-}
-QAbstractSpinBox::down-button {
-     image: url(:/stylesheets/images/arrow_lighter_down.png);
-}
-QAbstractSpinBox::up-button:disabled {
-     image: url(:/stylesheets/images/arrow_up.png);
-}
-QAbstractSpinBox::down-button:disabled {
-     image: url(:/stylesheets/images/arrow_down.png);
-}
-
-/* slim slider styles and part of the QSplitter styles */
-QSlider::sub-page:horizontal, QSlider::add-page:vertical, 
-QSplitter[Vertical=&quot;false&quot;]#RangeSliderQt QFrame#valueArea, 
-QSplitter[Vertical=&quot;true&quot;]#RangeSliderQt QFrame#valueArea {
-    border: 0px;
-    background: #99a0a7;
-    background: #1e70a8;
-    border-radius:2px;
-}
-QSlider::sub-page:horizontal, QSplitter[Vertical=&quot;false&quot;]#RangeSliderQt QFrame#valueArea {
-    margin: -1px 0px -1px 0px;
-}
-QSlider::add-page:vertical, QSplitter[Vertical=&quot;true&quot;]#RangeSliderQt QFrame#valueArea {
-    margin: 0px -1px 0px -1px;
-}
-QSlider::groove, QSlider::add-page:horizontal, QSlider::sub-page:vertical, 
-QSplitter[Vertical=&quot;false&quot;]#RangeSliderQt QFrame, QSplitter[Vertical=&quot;true&quot;]#RangeSliderQt QFrame {
-    border: 0px;
-    background: #65696d;
-    border-radius:1px;
-}
-QSlider::groove:horizontal, QSlider::add-page:horizontal, QSplitter[Vertical=&quot;false&quot;]#RangeSliderQt QFrame {
-    height: 3px;
-}
-QSlider::groove:vertical, QSlider::sub-page:vertical, QSplitter[Vertical=&quot;true&quot;]#RangeSliderQt QFrame {
-    width: 3px;
-}
-
-QSlider::handle {
-    background: #c8ccd0;
-    border: 2px solid #c8ccd0;
-    border-radius: 5px;
-}
-QSlider::handle:hover {
-    background: #268bd2;
-    border: 2px solid #268bd2;
-}
-QSlider::handle:horizontal {
-    width: 8px;
-    margin: -4px 0px; 
-}
-QSlider::handle:vertical {
-    height: 8px;
-    margin: 0px -4px; 
-}
-
-
-/* disabled slider / QSplitter */
-QSlider::sub-page:horizontal:disabled, QSplitter[Vertical=&quot;false&quot;]#RangeSliderQt QFrame:disabled#valueArea, 
-QSlider::add-page:vertical:disabled, QSplitter[Vertical=&quot;true&quot;]#RangeSliderQt QFrame:disabled#valueArea {
-    background: #4f555b;
-}
-
-QSlider::groove:disabled, QSlider::add-page:horizontal:disabled, QSlider::sub-page:vertical:disabled, 
-QSplitter:disabled[Vertical=&quot;false&quot;]#RangeSliderQt QFrame, QSplitter:disabled[Vertical=&quot;true&quot;]#RangeSliderQt QFrame {
-    background: #404246;
-}
-
-QSlider::handle:disabled {
-    background: #5d656b;
-    border: 2px solid #5d656b;
-}
-
-
-/* QSplitter styles */
-/*
-QSplitter:vertical {
-    height: 10px;
-}
-QSplitter:horizontal {
-    width: 10px;
-}
-*/
-/* main color definition for splitters is done with QSlider (see above) 
-   only cosmetics are done here (rounded corners)!
-*/
-
-
-
-QSplitter[Vertical=&quot;false&quot;]#RangeSliderQt QFrame#valueArea, 
-QSplitter[Vertical=&quot;true&quot;]#RangeSliderQt QFrame#valueArea {
-    border: 0px;
-    background: #99a0a7;
-    background: #1e70a8;
-    border-radius:0px;
-}
-
-QSplitter#RangeSliderQt QFrame, QSplitter#RangeSliderQt QFrame#valueArea {
-    border-radius: 0px;    
-    background-clip: content;
-}
-QSplitter[Vertical=&quot;true&quot;]#RangeSliderQt QFrame {
-    margin: 0px 4px; 
-    min-width: 4px;
-    max-width: 4px;
-}
-QSplitter[Vertical=&quot;false&quot;]#RangeSliderQt QFrame {
-    margin: 4px 0px; 
-    min-height: 4px;
-    max-height: 4px;
-}
-QSplitter[Vertical=&quot;true&quot;]#RangeSliderQt QFrame[LeftPart=&quot;false&quot;] {
-    /* lower part of splitter */
-    border-bottom-left-radius: 4px;
-    border-bottom-right-radius: 4px;
-}
-QSplitter[Vertical=&quot;true&quot;]#RangeSliderQt QFrame[LeftPart=&quot;true&quot;] {
-    /* upper part of splitter */
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
-}
-QSplitter[Vertical=&quot;false&quot;]#RangeSliderQt QFrame[LeftPart=&quot;true&quot;] {
-    /* left part of splitter */
-    border-top-left-radius: 4px;
-    border-bottom-left-radius: 4px;
-}
-QSplitter[Vertical=&quot;false&quot;]#RangeSliderQt QFrame[LeftPart=&quot;false&quot;] {
-    /* right part of splitter */
-    border-top-right-radius: 4px;
-    border-bottom-right-radius: 4px;
-}
-QSplitter[Vertical=&quot;true&quot;]#RangeSliderQt QFrame#valueArea {
-    margin: 0px 3px; 
-    min-width: 6px;
-    max-width: 6px;
-}
-QSplitter[Vertical=&quot;false&quot;]#RangeSliderQt QFrame#valueArea {
-    margin: 3px 0px; 
-    min-height: 6px;
-    max-height: 6px;
-}
-
-QSplitter::handle#RangeSliderQt {
-    background: #c8ccd0;
-    border: 2px solid #c8ccd0;
-    border-radius: 6px;
-}
-
-QSplitter::handle:horizontal#RangeSliderQt {
-    width: 5px;
-    height: 5px;
-}
-
-QSplitter::handle:vertical#RangeSliderQt {
-    height: 5px;
-    width: 5px;
-}
-
-
-QSplitter::handle:pressed#RangeSliderQt, 
-QSplitter::handle:hover#RangeSliderQt {
-    background: #268bd2;
-    border: 2px solid #268bd2;
-}
-
-QSplitter QFrame#pythonEditor, QFrame#htmlEditor, QTreeWidget#htmlTree {
+/************************ 
+Editors
+************************/
+QFrame#modifiedWidgetTextEdit, 
+QFrame#shaderwidgetcode, 
+QFrame#htmlEditor, 
+QTreeWidget#htmlTree  {
     font-family: &quot;Calibra&quot;;
-    background-color: #b0b0bc;
+    background-color: #2b2c27;
     color: #111111;
-    border: 1px solid #9d9995;
-}
-QSplitter QFrame#pythonConsole, QFrame#htmlEditorOutput {
+    border: 0.0625em solid #9d9995;
+} 
+QFrame#htmlEditorOutput {
     font-family: &quot;Calibra&quot;;
     color: #999999;
     background-color: #4d4d4d;
-    border: 1px solid #6a6a6f;
+    border: 0.0625em solid #6a6a6f;
 }
 
+/************************ 
+ResourceManager
+************************/
 
-/* out-of-bounds indication */
-QSlider::handle[outOfBounds=&quot;true&quot;], QSplitter::handle[outOfBounds=&quot;true&quot;] { 
-    border: 2px solid #b41b1b;
-}
-
-/* QComboBox styles */
-QComboBox {
-    border-radius: 1px;
-}
-QComboBox QAbstractItemView {
-    /* Do NOT modify the border here! This will break the repainting in the dropdown */
-    background-color: #3a3a3d;
+QDockWidget#ResourceManager QTableView {
+    border: none;
+    color: #999999;
+    selection-color: #999;
     selection-background-color: #47474b;
-    outline: 0;
-}
-QComboBox::drop-down {
-    subcontrol-origin: padding;
-    subcontrol-position: top right;
-    width: 20px;
-    border-top: 0px;
-    border-top-right-radius: 0px;
-    border-bottom-right-radius: 0px;
-    outline: 0;
-    border:none;
-}
-QComboBox::drop-down:hover {
-    background-color: #47474b;
-}
-QComboBox::down-arrow {
-     image: url(:/stylesheets/images/arrow_lighter_down.png);
-}
-QComboBox::down-arrow:disabled {
-     image: url(:/stylesheets/images/arrow_down.png);
+    border-bottom: 0.125em ridge #4a4a4f;
 }
 
-
-/* QProgressBar styles */
-QProgressBar {
-    border: 2px solid rgb(75, 75, 75);
-    border-radius: 5px;
-    margin-right: 30px;
-    color: rgb(200, 200, 200);
-    text-align: right;
-}
-QProgressBar::chunk {
-    background-color: qlineargradient(spread:pad, x1:0.506, y1:1, x2:0.489, y2:0,
-                                      stop:0 rgba(14, 124, 36, 255), stop:1 rgba(255, 255, 255, 255));
-    width: 20px;
-}
-QProgressBar {
-    padding: 1px;
-    text-align: top;
-    border: 1px solid black;
-    border-bottom-right-radius: 7px;
-    border-bottom-left-radius: 7px;
-    background: QLinearGradient(x1: 0, y1: 0, x2: 1, y2: 0,
-                                stop:0 #fff, stop:0.4999 #eee,
-                                stop:0.5 #ddd, stop:1 #eee);
-    width: 15px;
-}
-QProgressBar::chunk {
-    border: 1px solid black;
-    border-bottom-right-radius: 7px;
-    border-bottom-left-radius: 7px;
-    background: QLinearGradient(x1: 0, y1: 0, x2: 1, y2: 0,
-                                stop:0 #78d, stop:0.4999 #46a,
-                                stop:0.5 #45a, stop:1 #238);
+QDockWidget#ResourceManager QTableView QHeaderView::section {
+    padding: 0.1875em;
+    border: none;
+    border-bottom: 0.125em ridge #4a4a4f;
+    background: transparent;
 }
 
+/************************ 
+WelcomeWidget
+************************/
+QLabel#WelcomeHeader {
+    font-size: 50pt;
+    color: #268bd2;
+}
 
-QPushButton:hover, QToolButton:hover, QComboBox:hover, QLineEdit:hover, QCheckBox:indicator:hover, QAbstractSpinBox:hover {
-    border: 1px solid #268bd2;
-}</string>
+QFrame#WelcomeRightColumn {
+    background-color: #434345;
+}
+
+QTreeWidget#FileTreeWidget {
+    border: 0.0625em solid transparent;
+}
+
+QSplitter#WelcomeWidget::handle {
+    background: #434345;
+    border: none;
+}
+
+QSplitter#WelcomeWidget::handle:horizontal:hover {
+    background: #5b5f62;
+}
+
+QSplitter#WelcomeWidget::handle:horizontal:pressed {
+    background: #1e70a8;
+}
+</string>
   </property>
   <property name="documentMode">
    <bool>true</bool>
@@ -873,26 +994,6 @@ QPushButton:hover, QToolButton:hover, QComboBox:hover, QLineEdit:hover, QCheckBo
     </property>
     <property name="flat">
      <bool>false</bool>
-    </property>
-   </widget>
-   <widget class="QToolButton" name="toolButton">
-    <property name="geometry">
-     <rect>
-      <x>190</x>
-      <y>120</y>
-      <width>25</width>
-      <height>19</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>...</string>
-    </property>
-    <property name="icon">
-     <iconset resource="../inviwo.qrc">
-      <normaloff>:/stylesheets/images/dock-docked.png</normaloff>:/stylesheets/images/dock-docked.png</iconset>
-    </property>
-    <property name="autoRaise">
-     <bool>true</bool>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox">
@@ -1214,13 +1315,13 @@ QPushButton:hover, QToolButton:hover, QComboBox:hover, QLineEdit:hover, QCheckBo
      <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Calibra'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The standard Lorem Ipsum passage, used since the 1500s&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&amp;quot;Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.&amp;quot;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Section 1.10.32 of &amp;quot;de Finibus Bonorum et Malorum&amp;quot;, written by Cicero in 45 BC&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&amp;quot;Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Segoe UI'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Calibra';&quot;&gt;The standard Lorem Ipsum passage, used since the 1500s&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Calibra';&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Calibra';&quot;&gt;&amp;quot;Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.&amp;quot;&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Calibra';&quot;&gt;Section 1.10.32 of &amp;quot;de Finibus Bonorum et Malorum&amp;quot;, written by Cicero in 45 BC&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Calibra';&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Calibra';&quot;&gt;&amp;quot;Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?&amp;quot;&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="lineEdit">
@@ -1278,7 +1379,7 @@ p, li { white-space: pre-wrap; }
      <string>...</string>
     </property>
     <property name="icon">
-     <iconset resource="../inviwo.qrc">
+     <iconset>
       <normaloff>:/stylesheets/images/dock-sticky.png</normaloff>:/stylesheets/images/dock-sticky.png</iconset>
     </property>
     <property name="autoRaise">
@@ -1298,7 +1399,7 @@ p, li { white-space: pre-wrap; }
      <string>...</string>
     </property>
     <property name="icon">
-     <iconset resource="../inviwo.qrc">
+     <iconset>
       <normaloff>:/stylesheets/images/close.png</normaloff>:/stylesheets/images/close.png</iconset>
     </property>
     <property name="autoRaise">
@@ -1841,9 +1942,48 @@ QComboBox QAbstractItemView {
      </property>
     </item>
    </widget>
+   <widget class="QToolButton" name="toolButton_4">
+    <property name="geometry">
+     <rect>
+      <x>180</x>
+      <y>120</y>
+      <width>21</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="../inviwo.qrc">
+      <normaloff>:/svgicons/newfile.svg</normaloff>:/svgicons/newfile.svg</iconset>
+    </property>
+   </widget>
+   <widget class="QToolButton" name="smartLinkButton">
+    <property name="geometry">
+     <rect>
+      <x>210</x>
+      <y>120</y>
+      <width>71</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Test</string>
+    </property>
+    <property name="icon">
+     <iconset resource="../inviwo.qrc">
+      <normaloff>:/svgicons/about-enabled.svg</normaloff>:/svgicons/about-enabled.svg</iconset>
+    </property>
+    <property name="popupMode">
+     <enum>QToolButton::MenuButtonPopup</enum>
+    </property>
+    <property name="toolButtonStyle">
+     <enum>Qt::ToolButtonTextBesideIcon</enum>
+    </property>
+   </widget>
    <zorder>widget</zorder>
    <zorder>pushButton</zorder>
-   <zorder>toolButton</zorder>
    <zorder>checkBox</zorder>
    <zorder>radioButton</zorder>
    <zorder>radioButton_2</zorder>
@@ -1867,6 +2007,8 @@ QComboBox QAbstractItemView {
    <zorder>horizontalLayoutWidget</zorder>
    <zorder>comboBox_2</zorder>
    <zorder>comboBox_4</zorder>
+   <zorder>toolButton_4</zorder>
+   <zorder>smartLinkButton</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -1874,7 +2016,7 @@ QComboBox QAbstractItemView {
      <x>0</x>
      <y>0</y>
      <width>1101</width>
-     <height>20</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -1910,7 +2052,7 @@ QComboBox QAbstractItemView {
    <property name="minimumSize">
     <size>
      <width>200</width>
-     <height>39</height>
+     <height>44</height>
     </size>
    </property>
    <property name="windowTitle">
@@ -2070,7 +2212,7 @@ QComboBox QAbstractItemView {
   <widget class="QDockWidget" name="dockWidget_3">
    <property name="minimumSize">
     <size>
-     <width>137</width>
+     <width>182</width>
      <height>200</height>
     </size>
    </property>
@@ -2137,22 +2279,22 @@ QComboBox QAbstractItemView {
             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Calibra'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The standard Lorem Ipsum passage, used since the 1500s&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&amp;quot;Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.&amp;quot;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Section 1.10.32 of &amp;quot;de Finibus Bonorum et Malorum&amp;quot;, written by Cicero in 45 BC&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&amp;quot;Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?&amp;quot;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;1914 translation by H. Rackham&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&amp;quot;But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure. To take a trivial example, which of us ever undertakes laborious physical exercise, except to obtain some advantage from it? But who has any right to find fault with a man who chooses to enjoy a pleasure that has no annoying consequences, or one who avoids a pain that produces no resultant pleasure?&amp;quot;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Section 1.10.33 of &amp;quot;de Finibus Bonorum et Malorum&amp;quot;, written by Cicero in 45 BC&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&amp;quot;At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Segoe UI'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Calibra';&quot;&gt;The standard Lorem Ipsum passage, used since the 1500s&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Calibra';&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Calibra';&quot;&gt;&amp;quot;Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.&amp;quot;&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Calibra';&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Calibra'; font-weight:600;&quot;&gt;Section 1.10.32 of &amp;quot;de Finibus Bonorum et Malorum&amp;quot;, written by Cicero in 45 BC&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Calibra';&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Calibra';&quot;&gt;&amp;quot;Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?&amp;quot;&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Calibra';&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Calibra'; font-weight:600;&quot;&gt;1914 translation by H. Rackham&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Calibra';&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Calibra';&quot;&gt;&amp;quot;But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure. To take a trivial example, which of us ever undertakes laborious physical exercise, except to obtain some advantage from it? But who has any right to find fault with a man who chooses to enjoy a pleasure that has no annoying consequences, or one who avoids a pain that produces no resultant pleasure?&amp;quot;&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Calibra';&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Calibra'; font-weight:600;&quot;&gt;Section 1.10.33 of &amp;quot;de Finibus Bonorum et Malorum&amp;quot;, written by Cicero in 45 BC&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Calibra';&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Calibra';&quot;&gt;&amp;quot;At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.&amp;quot;&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
           </widget>
          </item>
@@ -2343,7 +2485,7 @@ p, li { white-space: pre-wrap; }
   <action name="actionTest">
    <property name="icon">
     <iconset resource="../inviwo.qrc">
-     <normaloff>:/icons/new.png</normaloff>:/icons/new.png</iconset>
+     <normaloff>:/svgicons/open.svg</normaloff>:/svgicons/open.svg</iconset>
    </property>
    <property name="text">
     <string>test</string>
@@ -2352,7 +2494,7 @@ p, li { white-space: pre-wrap; }
   <action name="actionTest2">
    <property name="icon">
     <iconset resource="../inviwo.qrc">
-     <normaloff>:/icons/open.png</normaloff>:/icons/open.png</iconset>
+     <normaloff>:/svgicons/newfile.svg</normaloff>:/svgicons/newfile.svg</iconset>
    </property>
    <property name="text">
     <string>test2</string>
@@ -2361,7 +2503,7 @@ p, li { white-space: pre-wrap; }
   <action name="actionSave">
    <property name="icon">
     <iconset resource="../inviwo.qrc">
-     <normaloff>:/icons/save.png</normaloff>:/icons/save.png</iconset>
+     <normaloff>:/svgicons/save-as.svg</normaloff>:/svgicons/save-as.svg</iconset>
    </property>
    <property name="text">
     <string>save</string>

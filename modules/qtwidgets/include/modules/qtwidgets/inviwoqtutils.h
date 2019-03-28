@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,13 +32,7 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/util/document.h>
-#include <inviwo/core/datastructures/image/layer.h>
-#include <inviwo/core/datastructures/image/image.h>
-#include <inviwo/core/datastructures/transferfunction.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/core/properties/isovalueproperty.h>
-#include <inviwo/core/properties/tfpropertyconcept.h>
+#include <inviwo/core/datastructures/image/imagetypes.h>
 
 #include <locale>
 #include <ios>
@@ -56,10 +50,24 @@
 #include <QPixmap>
 #include <warn/pop>
 
+class QFontMetrics;
+
 namespace inviwo {
 
 class Property;
 class ProcessorNetwork;
+
+class TransferFunction;
+class TransferFunctionProperty;
+class IsoTFProperty;
+class IsoValueProperty;
+
+class Layer;
+class Image;
+
+namespace util {
+struct TFPropertyConcept;
+}
 
 namespace utilqt {
 
@@ -170,18 +178,25 @@ IVW_MODULE_QTWIDGETS_API QMenu* getMenu(std::string menuName, bool createIfNotFo
 IVW_MODULE_QTWIDGETS_API QImage layerToQImage(const Layer& layer);
 
 /*
- * \brief save the given QImage \p image as png in a base64-encoded string
+ * \brief save the given QImage \p image as base64-encoded string using the image file format \p
+ * format and image \p quality.
  *
  * @param image    image to be encoded
- * @return base64 string of the corresponding png image
+ * @param format   image file format
+ * @param quality  image quality [0,100] (0 - small compressed, 100 - large uncompressed),
+ *                 -1 uses default settings
+ * @return base64 string of the corresponding image
+ *
+ * \see QImage::save()
  */
-IVW_MODULE_QTWIDGETS_API std::string toBase64(const QImage& image);
+IVW_MODULE_QTWIDGETS_API std::string toBase64(const QImage& image,
+                                              const std::string& format = "PNG", int quality = -1);
 
 /*
  * \brief retrieve the contents of all visible canvases as QImage. A canvas must be ready and
- * visible in order to be considered. 
+ * visible in order to be considered.
  *
- * @param network    visible canvases are extracted from this processor network 
+ * @param network    visible canvases are extracted from this processor network
  * @param alpha      the resulting images will retain their alpha channel if true
  * @return vector of pairs representing the display name and contents of the respective canvases
  */
@@ -191,6 +206,24 @@ IVW_MODULE_QTWIDGETS_API std::vector<std::pair<std::string, QImage>> getCanvasIm
 IVW_MODULE_QTWIDGETS_API void addImageActions(QMenu& menu, const Image& image,
                                               LayerType visibleLayer = LayerType::Color,
                                               size_t visibleIndex = 10000);
+
+/*
+ * \brief formats a title string similar to QWidget::setWindowTitle, i.e. "[*]" is replaced with
+ * either nothing or '*' depending on the modification state of \p widget
+ *
+ * @return title where "[*]" is replaced with '*' if the widget is modified, or '' otherwise
+ * \see QWidget::setWindowTitle
+ */
+IVW_MODULE_QTWIDGETS_API QString windowTitleHelper(const QString& title, const QWidget* widget);
+
+// In a non high dpi system an 'M' measures 11 px. Hence all our old pixels sizes, can be converted
+// to Em sizes by dividing by 11
+constexpr int refEm() { return 11; }
+constexpr double refSpaceEm() { return 7.0 / refEm(); }
+IVW_MODULE_QTWIDGETS_API int refSpacePx(const QWidget* w);
+IVW_MODULE_QTWIDGETS_API QSize emToPx(const QWidget* w, QSizeF);
+IVW_MODULE_QTWIDGETS_API int emToPx(const QWidget* w, double em);
+IVW_MODULE_QTWIDGETS_API int emToPx(const QFontMetrics& m, double em);
 
 }  // namespace utilqt
 

@@ -7,34 +7,33 @@ node {
         }
     }
 
+    def util = load "${env.WORKSPACE}/inviwo/tools/jenkins/util.groovy"
+    if(!env.disabledProperties) properties(util.defaultProperties())
+    util.printMap("Environment", env.getEnvironment())
+    
     Map state = [
         env: env,
         build: currentBuild, 
         errors: [],
         display: 0,
-        addLabel: {label -> 
-            println("Add label: ${label}")
-            if (env.CHANGE_ID  && (!label in pullRequest.labels)) {
-                pullRequest.addLabels([label])
-            }
+        addLabel: {String label -> 
+            if (env.CHANGE_ID  && !(label in pullRequest.labels)) pullRequest.addLabels([label])
         },
-        removeLabel: {label -> 
-            println("Remove label: ${label}")
-            if (env.CHANGE_ID && label in pullRequest.labels) {
-                pullRequest.removeLabel([label])
+        removeLabel: {String label -> 
+            if (env.CHANGE_ID && !(label in pullRequest.labels)) {
+                def labels = pullRequest.labels.collect { it }
+                labels.removeAll { it == label }
+                pullRequest.labels = labels
             }
         }
     ]
 
-    def util = load "${env.WORKSPACE}/inviwo/tools/jenkins/util.groovy"
-    if(!env.disabledProperties) properties(util.defaultProperties())
-
-    try {
+    util.wrap(state, "#jenkins-branch-pr") {
         util.buildStandard(
             state: state,
             modulePaths: [], 
-            onModules: [],  
-            offModules: ["ABUFFERGL"],
+            onModules: ["DiscreteData", "HDF5", "OpenCL", "BaseCL", "WebBrowser", "Example"],  
+            offModules: ["ABufferGL"],
             opts: [:]
         )
         util.filterfiles()
@@ -45,15 +44,5 @@ node {
         util.regression(state, ["${env.WORKSPACE}/inviwo/modules"])
         util.copyright(state)    
         util.doxygen(state)
-
-        state.build.result = state.errors.isEmpty() ? 'SUCCESS' : 'FAILURE'
-    } catch (e) {
-        state.build.result = 'FAILURE'
-        throw e
-    } finally {
-        util.slack(state, "#jenkins-branch-pr")
-        if (!state.errors.isEmpty()) {
-            println "Errors in: ${state.errors.join(", ")}"
-        }
     }
 }

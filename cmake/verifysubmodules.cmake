@@ -2,7 +2,7 @@
 #
 # Inviwo - Interactive Visualization Workshop
 #
-# Copyright (c) 2013-2018 Inviwo Foundation
+# Copyright (c) 2013-2019 Inviwo Foundation
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -41,8 +41,10 @@ function(verify_submodules modules_file)
 			list(LENGTH dircontents len)
 			if(${len} EQUAL 0)
 				message(FATAL_ERROR "Inviwo found an emtpy submodule at '${CMAKE_MATCH_1}'. "
-					"This probably means that you have not cloned all submodules. Run \n" 
-					"git submodule update --init\nto clone them.")
+					"This probably means that you have not cloned all submodules. Run\n"
+					"git submodule sync --recursive\n" 
+					"git submodule update --init --recursive\n"
+					"to clone them.")
 			endif()
 		endif()
      endforeach()

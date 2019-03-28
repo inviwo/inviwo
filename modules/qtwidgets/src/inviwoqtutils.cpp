@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,12 +28,17 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/inviwoqtutils.h>
-#include <inviwo/core/util/document.h>
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/io/imagewriterutil.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/processors/canvasprocessor.h>
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/datastructures/image/image.h>
+#include <inviwo/core/datastructures/transferfunction.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/properties/isovalueproperty.h>
+#include <inviwo/core/properties/tfpropertyconcept.h>
 
 #include <inviwo/core/util/logcentral.h>
 #include <warn/push>
@@ -50,6 +55,7 @@
 #include <QLinearGradient>
 #include <QBuffer>
 #include <QByteArray>
+#include <QStyle>
 #include <warn/pop>
 
 #include <ios>
@@ -67,7 +73,7 @@ std::locale getCurrentStdLocale() {
             hasWarned = true;
         }
     };
-    
+
     std::locale loc;
     try {
         // use the system locale provided by Qt
@@ -84,7 +90,8 @@ std::locale getCurrentStdLocale() {
         warnOnce(std::string("Locale could not be set. ") + e.what());
         try {
             loc = std::locale("en_US.UTF8");
-        } catch (...) {}
+        } catch (...) {
+        }
     }
     return loc;
 }
@@ -152,12 +159,12 @@ QMainWindow* getApplicationMainWindow() {
 
 QPixmap toQPixmap(const TransferFunction& tf, const QSize& size) {
     QVector<QGradientStop> gradientStops;
-    for (auto tfpoint : tf) {
-        vec4 curColor = tfpoint->getColor();
+    for (const auto& tfpoint : tf) {
+        vec4 curColor = tfpoint.getColor();
         // increase alpha to allow better visibility by 1 - (1 - a)^4
         curColor.a = 1.0f - std::pow(1.0f - curColor.a, 4.0f);
 
-        gradientStops.append(QGradientStop(tfpoint->getPosition(), utilqt::toQColor(curColor)));
+        gradientStops.append(QGradientStop(tfpoint.getPosition(), utilqt::toQColor(curColor)));
     }
 
     // set bounds of the gradient
@@ -241,11 +248,11 @@ QPixmap toQPixmap(const IsoValueProperty& property, const QSize& size) {
     painter.setPen(QPen(Qt::black, 1.0, Qt::SolidLine));
     painter.setRenderHint(QPainter::Antialiasing);
     // add vertical lines for each isovalue
-    for (auto isovalue : property.get()) {
-        vec4 curColor = isovalue->getColor();
+    for (const auto& isovalue : property.get()) {
+        vec4 curColor = isovalue.getColor();
         // increase alpha to allow better visibility by 1 - (1 - a)^4
         curColor.a = 1.0f - std::pow(1.0f - curColor.a, 4.0f);
-        double pos = normalize(isovalue->getPosition()) * size.width();
+        double pos = normalize(isovalue.getPosition()) * size.width();
 
         painter.setBrush(utilqt::toQColor(curColor));
         painter.drawPolygon(QPolygonF(
@@ -276,12 +283,12 @@ QPixmap toQPixmap(const util::TFPropertyConcept& propertyConcept, const QSize& s
         // draw TF gradient on top
 
         QVector<QGradientStop> gradientStops;
-        for (auto tfpoint : *propertyConcept.getTransferFunction()) {
-            vec4 curColor = tfpoint->getColor();
+        for (const auto& tfpoint : *propertyConcept.getTransferFunction()) {
+            vec4 curColor = tfpoint.getColor();
             // increase alpha to allow better visibility by 1 - (1 - a)^4
             curColor.a = 1.0f - std::pow(1.0f - curColor.a, 4.0f);
 
-            gradientStops.append(QGradientStop(tfpoint->getPosition(), utilqt::toQColor(curColor)));
+            gradientStops.append(QGradientStop(tfpoint.getPosition(), utilqt::toQColor(curColor)));
         }
 
         // set bounds of the gradient
@@ -307,11 +314,11 @@ QPixmap toQPixmap(const util::TFPropertyConcept& propertyConcept, const QSize& s
 
         painter.setPen(QPen(Qt::black, 1.0, Qt::SolidLine));
         // add vertical lines for each isovalue
-        for (auto isovalue : *propertyConcept.getIsovalues()) {
-            vec4 curColor = isovalue->getColor();
+        for (const auto& isovalue : *propertyConcept.getIsovalues()) {
+            vec4 curColor = isovalue.getColor();
             // increase alpha to allow better visibility by 1 - (1 - a)^4
             curColor.a = 1.0f - std::pow(1.0f - curColor.a, 4.0f);
-            double pos = normalize(isovalue->getPosition()) * size.width();
+            double pos = normalize(isovalue.getPosition()) * size.width();
 
             painter.setBrush(utilqt::toQColor(curColor));
             painter.drawPolygon(QPolygonF(
@@ -508,11 +515,11 @@ void addImageActions(QMenu& menu, const Image& image, LayerType visibleLayer, si
     addAction("Depth Layer", image.getDepthLayer(), visibleLayer == LayerType::Depth);
 }
 
-std::string toBase64(const QImage& image) {
+std::string toBase64(const QImage& image, const std::string& format, int quality) {
     QByteArray byteArray;
     QBuffer buffer{&byteArray};
     buffer.open(QIODevice::WriteOnly);
-    image.save(&buffer, "PNG");
+    image.save(&buffer, format.empty() ? nullptr : format.c_str(), quality);
     return std::string{byteArray.toBase64().data()};
 }
 
@@ -546,6 +553,56 @@ std::vector<std::pair<std::string, QImage>> getCanvasImages(ProcessorNetwork* ne
     }
 
     return images;
+}
+
+QString windowTitleHelper(const QString& title, const QWidget* widget) {
+    if (title.isEmpty() || !widget) {
+        return title;
+    }
+
+    // implementation based on qt_setWindowTitle_helperHelper() in qwidget.cpp
+    QString cap = title;
+
+    QLatin1String placeHolder("[*]");
+    int index = cap.indexOf(placeHolder);
+
+    // here the magic begins
+    while (index != -1) {
+        index += placeHolder.size();
+        int count = 1;
+        while (cap.indexOf(placeHolder, index) == index) {
+            ++count;
+            index += placeHolder.size();
+        }
+        if (count % 2) {  // odd number of [*] -> replace last one
+            int lastIndex = cap.lastIndexOf(placeHolder, index - 1);
+            if (widget->isWindowModified() &&
+                widget->style()->styleHint(QStyle::SH_TitleBar_ModifyNotification, 0, widget))
+                cap.replace(lastIndex, 3, QWidget::tr("*"));
+            else
+                cap.remove(lastIndex, 3);
+        }
+        index = cap.indexOf(placeHolder, index);
+    }
+    cap.replace(QLatin1String("[*][*]"), placeHolder);
+
+    return cap;
+}
+
+int refSpacePx(const QWidget* w) { return emToPx(w, refSpaceEm()); }
+
+QSize emToPx(const QWidget* w, QSizeF ems) {
+    return QSize{emToPx(w, ems.width()), emToPx(w, ems.height())};
+}
+
+int emToPx(const QWidget* w, double em) {
+    w->ensurePolished();
+    return emToPx(w->fontMetrics(), em);
+}
+
+int emToPx(const QFontMetrics& m, double em) {
+    const auto pxPerEm = m.boundingRect(QString(100, 'M')).width() / 100.0;
+    return static_cast<int>(std::round(pxPerEm * em));
 }
 
 }  // namespace utilqt

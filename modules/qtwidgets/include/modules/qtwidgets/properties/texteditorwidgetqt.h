@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,7 @@
 
 #include <modules/qtwidgets/properties/propertywidgetqt.h>
 #include <modules/qtwidgets/properties/propertyeditorwidgetqt.h>
-#include <inviwo/core/util/fileobserver.h>
+#include <modules/qtwidgets/editorfileobserver.h>
 
 namespace inviwo {
 
@@ -60,25 +60,20 @@ protected:
 
     virtual void setReadOnly(bool readonly) override;
 
-    void setTitle(bool modified);
-    void fileChanged();
+    void updateWindowTitle();
+    void propertyModified();
+    bool askSaveChanges();
+
+    void save();
+    void saveToFile(const std::string& filename);
 
 private:
-    class ScriptObserver : public FileObserver {
-    public:
-        ScriptObserver(TextEditorDockWidget& widget, InviwoApplication* app);
-        virtual void fileChanged(const std::string& dir) override;
-
-    private:
-        TextEditorDockWidget& widget_;
-    };
-
     FileProperty* fileProperty_;
     StringProperty* stringProperty_;
     CodeEdit* editor_;
     SyntaxHighligther* syntaxHighligther_;
-    ScriptObserver observer_;
     std::shared_ptr<std::function<void()>> propertyCallback_;
+    utilqt::EditorFileObserver fileObserver_;
 };
 
 }  // namespace inviwo

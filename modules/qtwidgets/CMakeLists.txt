@@ -5,6 +5,7 @@ ivw_module(QtWidgets)
 find_package(Qt5Core QUIET REQUIRED)
 find_package(Qt5Gui QUIET REQUIRED)
 find_package(Qt5Widgets QUIET REQUIRED)
+find_package(Qt5Svg QUIET REQUIRED)
 
 #-------------------------------------------------------------------- 
 # Add MOC files
@@ -43,10 +44,12 @@ set(MOC_FILES
 set(HEADER_FILES
     ${MOC_FILES}
     include/modules/qtwidgets/codeedit.h
+    include/modules/qtwidgets/editorfileobserver.h
     include/modules/qtwidgets/eventconverterqt.h
     include/modules/qtwidgets/inviwoqtutils.h
     include/modules/qtwidgets/keyboardutils.h
     include/modules/qtwidgets/labelgraphicsitem.h
+    include/modules/qtwidgets/numberlineedit.h
     include/modules/qtwidgets/ordinalbasewidget.h
     include/modules/qtwidgets/properties/anglepropertywidgetqt.h
     include/modules/qtwidgets/properties/boolcompositepropertywidgetqt.h
@@ -102,6 +105,7 @@ set(SOURCE_FILES
     src/colorwheel.cpp
     src/customdoublespinboxqt.cpp
     src/editablelabelqt.cpp
+    src/editorfileobserver.cpp
     src/eventconverterqt.cpp
     src/filepathlineeditqt.cpp
     src/inviwodockwidget.cpp
@@ -113,6 +117,7 @@ set(SOURCE_FILES
     src/labelgraphicsitem.cpp
     src/lightpositionwidgetqt.cpp
     src/lineeditqt.cpp
+    src/numberlineedit.cpp
     src/ordinalbasewidget.cpp
     src/ordinaleditorwidget.cpp
     src/processors/processordockwidgetqt.cpp
@@ -190,12 +195,12 @@ source_group("Resource Files" FILES
 #--------------------------------------------------------------------
 # Create module
 ivw_create_module(NO_PCH ${SOURCE_FILES} ${MOCED_FILES} ${QRC_FILE} ${HEADER_FILES})
-target_link_libraries(inviwo-module-qtwidgets PRIVATE Qt5::Core Qt5::Gui Qt5::Widgets)
+target_link_libraries(inviwo-module-qtwidgets PRIVATE Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Svg)
 
 ivw_compile_optimize_on_target(inviwo-module-qtwidgets)
 
 ivw_make_package(InviwoQtWidgetsModule inviwo-module-qtwidgets)
-ivw_qt_add_to_install(qt_widgets Qt5Core Qt5Gui Qt5Widgets)
+ivw_qt_add_to_install(qt_widgets Qt5Core Qt5Gui Qt5Widgets Qt5Svg)
 
 ivw_register_license_file(NAME "Qt" VERSION ${Qt5Widgets_VERSION} MODULE QtWidgets TYPE "LGPLv3"
     URL https://www.qt.io/

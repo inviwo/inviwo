@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,6 +34,7 @@
 #include <inviwo/core/io/serialization/serializable.h>
 #include <vector>
 #include <cstdint>
+#include <ostream>
 
 namespace inviwo {
 
@@ -61,6 +62,7 @@ public:
     void markAsUnused();
 
     void markAsVisited(Processor*);
+    void markAsVisited(Event&);
     bool hasVisitedProcessor(Processor*) const;
     // Can be used to figure out where an event came from.
     // Processors are added in chronological order.
@@ -70,6 +72,13 @@ public:
     EventType* getAs();
     template <typename EventType>
     const EventType* getAs() const;
+
+    friend std::ostream& operator<<(std::ostream& ss, const Event& e) {
+        e.print(ss);
+        return ss;
+    }
+
+    virtual void print(std::ostream& ss) const;
 
 protected:
     Event() = default;

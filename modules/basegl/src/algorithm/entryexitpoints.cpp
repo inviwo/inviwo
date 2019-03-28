@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2016-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,6 +32,7 @@
 #include <inviwo/core/datastructures/camera.h>
 #include <inviwo/core/datastructures/coordinatetransformer.h>
 #include <inviwo/core/datastructures/image/image.h>
+#include <inviwo/core/datastructures/volume/volume.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/openglutils.h>
@@ -43,10 +44,11 @@ namespace algorithm {
 
 EntryExitPointsHelper::EntryExitPointsHelper()
     : entryExitShader_("standard.vert", "standard.frag")
+    , meshEntryExitShader_("meshentryexit.vert", "standard.frag")
     , nearClipShader_("img_identity.vert", "capnearclipping.frag") {}
 
-void EntryExitPointsHelper::operator()(Image &entryPoints, Image &exitPoints, const Camera &camera,
-                                       const Mesh &mesh, bool capNearClip) {
+void EntryExitPointsHelper::operator()(Image& entryPoints, Image& exitPoints, const Camera& camera,
+                                       const Mesh& mesh, bool capNearClip) {
     if (capNearClip) {
         createCappedEntryExitPoints(entryPoints, exitPoints, camera, mesh);
     } else {
@@ -54,19 +56,43 @@ void EntryExitPointsHelper::operator()(Image &entryPoints, Image &exitPoints, co
     }
 }
 
-void EntryExitPointsHelper::createEntryExitPoints(Image &entryPoints, Image &exitPoints,
-                                                  const Camera &camera, const Mesh &mesh) {
-    utilgl::DepthFuncState depthfunc(GL_ALWAYS);
+void EntryExitPointsHelper::operator()(Image& entryPoints, Image& exitPoints, const Camera& camera,
+                                       const Volume& volume, const Mesh& mesh, bool capNearClip) {
+    const mat4 meshDataToVolumeData =
+        volume.getCoordinateTransformer(camera).getWorldToDataMatrix() *
+        mesh.getCoordinateTransformer().getDataToWorldMatrix();
+
+    if (capNearClip) {
+        createCappedEntryExitPoints(entryPoints, exitPoints, camera, mesh, true,
+                                    meshDataToVolumeData);
+    } else {
+        createEntryExitPoints(entryPoints, exitPoints, camera, mesh, true, meshDataToVolumeData);
+    }
+}
+
+std::vector<std::reference_wrapper<Shader>> EntryExitPointsHelper::getShaders() {
+    return {entryExitShader_, meshEntryExitShader_, nearClipShader_};
+}
+
+void EntryExitPointsHelper::createEntryExitPoints(Image& entryPoints, Image& exitPoints,
+                                                  const Camera& camera, const Mesh& mesh,
+                                                  bool applyTrafo,
+                                                  const mat4& meshDataToVolumeData) {
     utilgl::PointSizeState pointsize(1.0f);
 
-    entryExitShader_.activate();
-    mat4 modelMatrix = mesh.getCoordinateTransformer(camera).getDataToClipMatrix();
-    entryExitShader_.setUniform("dataToClip", modelMatrix);
+    Shader& shader = applyTrafo ? meshEntryExitShader_ : entryExitShader_;
+
+    shader.activate();
+    const mat4 dataToClipMatrix = mesh.getCoordinateTransformer(camera).getDataToClipMatrix();
+    shader.setUniform("dataToClip", dataToClipMatrix);
+    shader.setUniform("meshDataToVolData", meshDataToVolumeData);
 
     auto drawer = MeshDrawerGL::getDrawObject(&mesh);
 
     {
         // generate exit points
+        utilgl::DepthFuncState depthfunc(GL_GREATER);
+        utilgl::ClearDepth clearDepth(0.0f);
         utilgl::activateAndClearTarget(exitPoints, ImageType::ColorDepth);
         utilgl::CullFaceState cull(GL_FRONT);
         drawer.draw();
@@ -75,28 +101,35 @@ void EntryExitPointsHelper::createEntryExitPoints(Image &entryPoints, Image &exi
 
     {
         // generate entry points
+        utilgl::DepthFuncState depthfunc(GL_LESS);
         utilgl::activateAndClearTarget(entryPoints, ImageType::ColorDepth);
 
         utilgl::CullFaceState cull(GL_BACK);
         drawer.draw();
-        entryExitShader_.deactivate();
         utilgl::deactivateCurrentTarget();
     }
+    shader.deactivate();
 }
 
-void EntryExitPointsHelper::createCappedEntryExitPoints(Image &entryPoints, Image &exitPoints,
-                                                        const Camera &camera, const Mesh &mesh) {
-    utilgl::DepthFuncState depthfunc(GL_ALWAYS);
+void EntryExitPointsHelper::createCappedEntryExitPoints(Image& entryPoints, Image& exitPoints,
+                                                        const Camera& camera, const Mesh& mesh,
+                                                        bool applyTrafo,
+                                                        const mat4& meshDataToVolumeData) {
     utilgl::PointSizeState pointsize(1.0f);
 
-    entryExitShader_.activate();
-    mat4 modelMatrix = mesh.getCoordinateTransformer(camera).getDataToClipMatrix();
-    entryExitShader_.setUniform("dataToClip", modelMatrix);
+    Shader& shader = applyTrafo ? meshEntryExitShader_ : entryExitShader_;
+
+    shader.activate();
+    const mat4 dataToClipMatrix = mesh.getCoordinateTransformer(camera).getDataToClipMatrix();
+    shader.setUniform("dataToClip", dataToClipMatrix);
+    shader.setUniform("meshDataToVolData", meshDataToVolumeData);
 
     auto drawer = MeshDrawerGL::getDrawObject(&mesh);
 
     {
         // generate exit points
+        utilgl::DepthFuncState depthfunc(GL_GREATER);
+        utilgl::ClearDepth clearDepth(0.0f);
         utilgl::activateAndClearTarget(exitPoints, ImageType::ColorDepth);
         utilgl::CullFaceState cull(GL_FRONT);
         drawer.draw();
@@ -105,6 +138,7 @@ void EntryExitPointsHelper::createCappedEntryExitPoints(Image &entryPoints, Imag
 
     {
         // generate entry points
+        utilgl::DepthFuncState depthfunc(GL_LESS);
         if (!tmpEntry_ || tmpEntry_->getDimensions() != entryPoints.getDimensions() ||
             tmpEntry_->getDataFormat() != entryPoints.getDataFormat()) {
             tmpEntry_.reset(new Image(entryPoints.getDimensions(), entryPoints.getDataFormat()));
@@ -113,7 +147,6 @@ void EntryExitPointsHelper::createCappedEntryExitPoints(Image &entryPoints, Imag
 
         utilgl::CullFaceState cull(GL_BACK);
         drawer.draw();
-        entryExitShader_.deactivate();
         utilgl::deactivateCurrentTarget();
     }
 

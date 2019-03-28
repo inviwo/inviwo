@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -93,7 +93,7 @@ FilePropertyWidgetQt::FilePropertyWidgetQt(FileProperty* property)
 
     {
         auto revealButton = new QToolButton(this);
-        revealButton->setIcon(QIcon(":/icons/about.png"));
+        revealButton->setIcon(QIcon(":/svgicons/about-enabled.svg"));
         hWidgetLayout->addWidget(revealButton);
         connect(revealButton, &QToolButton::pressed, this, [&]() {
             auto dir = filesystem::directoryExists(property_->get())
@@ -107,7 +107,7 @@ FilePropertyWidgetQt::FilePropertyWidgetQt(FileProperty* property)
 
     {
         auto openButton = new QToolButton(this);
-        openButton->setIcon(QIcon(":/icons/open.png"));
+        openButton->setIcon(QIcon(":/svgicons/open.svg"));
         hWidgetLayout->addWidget(openButton);
         connect(openButton, &QToolButton::pressed, this, &FilePropertyWidgetQt::setPropertyValue);
     }
@@ -116,7 +116,7 @@ FilePropertyWidgetQt::FilePropertyWidgetQt(FileProperty* property)
         property_->getSemantics() == PropertySemantics::ShaderEditor ||
         property_->getSemantics() == PropertySemantics::PythonEditor) {
         auto edit = new QToolButton();
-        edit->setIcon(QIcon(":/icons/edit.png"));
+        edit->setIcon(QIcon(":/svgicons/edit.svg"));
         edit->setToolTip("Edit String");
         hWidgetLayout->addWidget(edit);
         connect(edit, &QToolButton::clicked, this, [this]() {
@@ -145,11 +145,11 @@ void FilePropertyWidgetQt::setPropertyValue() {
     importFileDialog.setFileMode(property_->getFileMode());
 
     auto ext = property_->getSelectedExtension();
-    if (!ext.empty()) importFileDialog.setSelectedExtenstion(ext);
+    if (!ext.empty()) importFileDialog.setSelectedExtension(ext);
 
     if (importFileDialog.exec()) {
-        property_->set(importFileDialog.getSelectedFile());
         property_->setSelectedExtension(importFileDialog.getSelectedFileExtension());
+        property_->set(importFileDialog.getSelectedFile());
     }
 
     updateFromProperty();

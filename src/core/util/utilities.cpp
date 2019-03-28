@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -71,22 +71,30 @@ void saveAllCanvases(ProcessorNetwork* network, const std::string& dir, const st
     // Save them
     int i = 0;
     for (auto cp : allConsideredCanvases) {
-        std::stringstream ss;
-        ss << dir << "/";
-
-        if (name == "") {
-            ss << cp->getIdentifier();
-        } else if (name.find("UPN") != std::string::npos) {
-            std::string tmp = name;
-            replaceInString(tmp, "UPN", cp->getIdentifier());
-            ss << tmp;
+        if (!cp->isValid() || !cp->isReady()) {
+            std::ostringstream msg;
+            msg << "Canvas is not ready or not valid, no image saved" << std::endl;
+            msg << "    Display Name: " << cp->getDisplayName() << std::endl;
+            msg << "    Identifier: " << cp->getIdentifier() << std::endl;
+            LogErrorCustom("util::saveAllCanvases", msg.str());
         } else {
-            ss << name << ((allConsideredCanvases.size() > 1) ? std::to_string(i + 1) : "");
-        }
-        ss << ((ext.size() && ext[0] != '.') ? "." : "") << ext;
+            std::stringstream ss;
+            ss << dir << "/";
 
-        LogInfoCustom("Inviwo", "Saving canvas to: " + ss.str());
-        cp->saveImageLayer(ss.str());
+            if (name == "") {
+                ss << cp->getIdentifier();
+            } else if (name.find("UPN") != std::string::npos) {
+                std::string tmp = name;
+                replaceInString(tmp, "UPN", cp->getIdentifier());
+                ss << tmp;
+            } else {
+                ss << name << ((allConsideredCanvases.size() > 1) ? std::to_string(i + 1) : "");
+            }
+            ss << ((ext.size() && ext[0] != '.') ? "." : "") << ext;
+
+            LogInfoCustom("util::saveAllCanvases", "Saving canvas to: " + ss.str());
+            cp->saveImageLayer(ss.str());
+        }
         i++;
     }
 }

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,8 +38,12 @@
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/eventproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 
 #include <inviwo/core/util/timer.h>
+
+#include <glm/gtx/vec_swizzle.hpp>
+#include <glm/gtc/epsilon.hpp>
 
 namespace inviwo {
 
@@ -60,9 +64,10 @@ public:
 
     virtual void invokeEvent(Event* event) override;
 
-    const vec3& getLookTo() const;
-    const vec3& getLookFrom() const;
-    const vec3& getLookUp() const;
+    const vec3 getLookTo() const;
+    const vec3 getLookFrom() const;
+    const vec3 getLookUp() const;
+    const vec3 getLookRight() const;
 
     const vec3 getLookFromMinValue() const;
     const vec3 getLookFromMaxValue() const;
@@ -97,12 +102,26 @@ protected:
     std::pair<bool, vec3> getTrackBallIntersection(const vec2 pos) const;
 
     void rotate(Event* event);
+    void rotateTAV(Event* event);
+    void rotateArc(Event* event, bool followObjectDuringRotation = false);
+    void rotateFPS(Event* event);
     void zoom(Event* event);
     void pan(Event* event);
     void reset(Event* event);
 
+    void moveLeft(Event* event);
+    void moveRight(Event* event);
+    void moveUp(Event* event);
+    void moveDown(Event* event);
+    void moveForward(Event* event);
+    void moveBackward(Event* event);
+
+    mat4 roll(const float radians) const;
+    mat4 pitch(const float radians) const;
+    mat4 yaw(const float radians) const;
+
     void stepRotate(Direction dir);
-    void stepZoom(Direction dir);
+    void stepZoom(Direction dir, const int numSteps=1);
     void stepPan(Direction dir);
 
     void rotateLeft(Event* event);
@@ -115,8 +134,9 @@ protected:
     void panUp(Event* event);
     void panDown(Event* event);
 
-    void zoomIn(Event* event);
-    void zoomOut(Event* event);
+    void zoomWheel(Event* event);
+    void zoomIn(Event* event, const int numSteps=1);
+    void zoomOut(Event* event, const int numSteps=1);
 
     void recenterFocusPoint(Event* event);
 
@@ -136,6 +156,14 @@ protected:
 
     double gestureStartNDCDepth_;
     float trackBallWorldSpaceRadius_;
+
+    OptionPropertyInt trackballMethod_;  /// Chooses which trackball method to use (mouse only,
+                                         /// touch always follows finger)
+    FloatProperty sensitivity_;          /// Controls the rotation sensitivity
+    FloatProperty verticalAngleLimit_;   /// Limits the angle between world up and view direction
+                                         /// when fixUp is True
+    FloatProperty movementSpeed_;
+    BoolProperty fixUp_;  /// Fixes the up vector to world_up in all rotation methods
 
     // Interaction restrictions
     BoolProperty handleInteractionEvents_;
@@ -158,10 +186,19 @@ protected:
 
     // Event Properties.
     EventProperty mouseRotate_;
-    EventProperty mouseZoom_;
     EventProperty mousePan_;
     EventProperty mouseRecenterFocusPoint_;
     EventProperty mouseReset_;
+
+    EventProperty mouseZoom_;
+    EventProperty wheelZoom_;
+
+    EventProperty moveLeft_;
+    EventProperty moveRight_;
+    EventProperty moveUp_;
+    EventProperty moveDown_;
+    EventProperty moveForward_;
+    EventProperty moveBackward_;
 
     EventProperty stepRotateUp_;
     EventProperty stepRotateLeft_;
@@ -170,6 +207,7 @@ protected:
 
     EventProperty stepZoomIn_;
     EventProperty stepZoomOut_;
+
     EventProperty stepPanUp_;
     EventProperty stepPanLeft_;
     EventProperty stepPanDown_;
@@ -184,8 +222,6 @@ protected:
     std::chrono::system_clock::time_point lastRotTime_;
     bool evaluated_;
     Timer timer_;
-
-    bool followObjectDuringRotation_;
 };
 
 }  // namespace inviwo

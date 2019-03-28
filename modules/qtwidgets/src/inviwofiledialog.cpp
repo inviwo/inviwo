@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -253,7 +253,7 @@ void InviwoFileDialog::filterSelectionChanged(const QString &filter) {
 
 FileExtension InviwoFileDialog::getSelectedFileExtension() const { return selectedFilter_; }
 
-void InviwoFileDialog::setSelectedExtenstion(const FileExtension &ext) { selectedFilter_ = ext; }
+void InviwoFileDialog::setSelectedExtension(const FileExtension &ext) { selectedFilter_ = ext; }
 
 FileExtension InviwoFileDialog::getMatchingFileExtension(const QString &extStr) {
     // try to find matching filter in extension map

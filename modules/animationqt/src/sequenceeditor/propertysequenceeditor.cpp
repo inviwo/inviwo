@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -71,7 +71,7 @@ public:
 
         auto layout = new QHBoxLayout();
         layout->setContentsMargins(0, 0, 0, 0);
-        layout->setSpacing(7);
+        layout->setSpacing(utilqt::refSpacePx(this));
 
         timeSpinner_ = new QDoubleSpinBox();
         timeSpinner_->setValue(keyframe.getTime().count());
@@ -145,11 +145,12 @@ PropertySequenceEditor::PropertySequenceEditor(KeyframeSequence &sequence, Track
 
     sequence.addObserver(this);
 
-    setContentsMargins(7, 7, 0, 7);
+    const auto space = utilqt::refSpacePx(this);
+    setContentsMargins(space, space, 0, space);
 
     auto layout = new QVBoxLayout();
     layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(7);
+    layout->setSpacing(space);
 
     setLayout(layout);
 
@@ -161,7 +162,7 @@ PropertySequenceEditor::PropertySequenceEditor(KeyframeSequence &sequence, Track
 
     keyframesLayout_ = new QVBoxLayout();
     keyframesLayout_->setContentsMargins(0, 0, 0, 0);
-    keyframesLayout_->setSpacing(7);
+    keyframesLayout_->setSpacing(space);
 
     layout->addLayout(keyframesLayout_);
 

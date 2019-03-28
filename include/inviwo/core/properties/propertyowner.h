@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -58,6 +58,9 @@ public:
 
     virtual void addProperty(Property* property, bool owner = true);
     virtual void addProperty(Property& property);
+
+    template <typename... Ts>
+    void addProperties(Ts&... properties);
 
     /**
      * \brief insert property \p property at position \p index
@@ -167,6 +170,19 @@ std::vector<T*> PropertyOwner::getPropertiesByType(bool recursiveSearch /* = fal
     return foundProperties;
 }
 
+namespace detail {
+inline void addPropertyHelper(PropertyOwner& owner) {}
+template <typename... Ts>
+void addPropertyHelper(PropertyOwner& owner, Property& p, Ts&... props) {
+    owner.addProperty(p);
+    addPropertyHelper(owner, props...);
+}
+}  // namespace detail
+
+template <typename... Ts>
+void PropertyOwner::addProperties(Ts&... properties) {
+    detail::addPropertyHelper(*this, properties...);
+}
 }  // namespace inviwo
 
 #endif  // IVW_PROPERTYOWNER_H

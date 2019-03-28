@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2018 Inviwo Foundation
+ * Copyright (c) 2015-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,6 +35,8 @@
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/datastructures/spatialdata.h>
 
 namespace inviwo {
@@ -45,36 +47,65 @@ namespace inviwo {
  */
 class IVW_MODULE_BASE_API BasisProperty : public CompositeProperty {
 public:
+    enum class BasisPropertyMode {
+        General,
+        Orthogonal,
+    };
+    enum class BasisPropertyReference { Volume, Voxel };
+
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
     BasisProperty(std::string identifier, std::string displayName,
                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                   PropertySemantics semantics = PropertySemantics::Default);
+
+    void onResetOverride();
+
     BasisProperty(const BasisProperty& rhs);
     BasisProperty& operator=(const BasisProperty& that);
     virtual BasisProperty* clone() const override;
     virtual ~BasisProperty() = default;
 
-    void updateForNewEntity(const SpatialEntity<3>& volume, bool deserialize = false);
+    void updateForNewEntity(const SpatialEntity<3>& volume, bool deserialize);
+    void updateForNewEntity(const StructuredGridEntity<3>& volume, bool deserialize);
 
     void updateEntity(SpatialEntity<3>& volume);
 
+    mat4 getBasisAndOffset() const;
+
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
+
+    virtual void setCurrentStateAsDefault() override;
+    virtual void resetToDefaultState() override;
+
+    TemplateOptionProperty<BasisPropertyMode> mode_;
+    TemplateOptionProperty<BasisPropertyReference> reference_;
+
     BoolProperty overRideDefaults_;
+    BoolProperty updateForNewEntiry_;
+
+    FloatVec3Property size_;
     FloatVec3Property a_;
     FloatVec3Property b_;
     FloatVec3Property c_;
+    BoolProperty autoCenter_;
     FloatVec3Property offset_;
-
-    FloatVec3Property overrideA_;
-    FloatVec3Property overrideB_;
-    FloatVec3Property overrideC_;
-    FloatVec3Property overrideOffset_;
-
-    mat4 getBasisAndOffset() const;
+    ButtonProperty resetOverride_;
 
 private:
+    void update(const SpatialEntity<3>& volume, bool deserialize);
+    void load();
+    void save();
+    void onModeChange();
     void onOverrideChange();
+    void onAutoCenterChange();
+
+    vec3 dimensions_{1.0f};
+    mat4 model_{1.0f};
+    ValueWrapper<mat4> overrideModel_;
+    bool updateing_ = false;
 };
 
 }  // namespace inviwo

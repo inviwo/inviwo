@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -512,6 +512,21 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         } else if (auto processor = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
             clickedProcessor = processor;
 
+            if (processor->getProcessor()->hasProcessorWidget()) {
+                QAction* showAction = menu.addAction(tr("&Show Widget"));
+                showAction->setCheckable(true);
+                if (auto processorWidget = processor->getProcessor()->getProcessorWidget()) {
+                    showAction->setChecked(processorWidget->isVisible());
+                }
+                connect(showAction, &QAction::triggered, [processor]() {
+                    if (processor->getProcessor()->getProcessorWidget()->isVisible()) {
+                        processor->getProcessor()->getProcessorWidget()->hide();
+                    } else {
+                        processor->getProcessor()->getProcessorWidget()->show();
+                    }
+                });
+            }
+
             auto editName = menu.addAction(tr("Edit Name"));
             connect(editName, &QAction::triggered, [this, processor]() {
                 clearSelection();
@@ -531,21 +546,6 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             connect(resetTimeMeasurementsAction, &QAction::triggered,
                     [processor]() { processor->resetTimeMeasurements(); });
 #endif
-
-            if (processor->getProcessor()->hasProcessorWidget()) {
-                QAction* showAction = menu.addAction(tr("&Show Widget"));
-                showAction->setCheckable(true);
-                if (auto processorWidget = processor->getProcessor()->getProcessorWidget()) {
-                    showAction->setChecked(processorWidget->isVisible());
-                }
-                connect(showAction, &QAction::triggered, [processor]() {
-                    if (processor->getProcessor()->getProcessorWidget()->isVisible()) {
-                        processor->getProcessor()->getProcessorWidget()->hide();
-                    } else {
-                        processor->getProcessor()->getProcessorWidget()->show();
-                    }
-                });
-            }
 
             QAction* delprocessor = menu.addAction(tr("Delete && &Keep Connections"));
             connect(delprocessor, &QAction::triggered, [this, processor]() {
@@ -591,7 +591,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             });
             menu.addSeparator();
 
-            QAction* helpAction = menu.addAction(QIcon(":/icons/help.png"), tr("Show &Help"));
+            QAction* helpAction = menu.addAction(QIcon(":/svgicons/help.svg"), tr("Show &Help"));
             connect(helpAction, &QAction::triggered, [this, processor]() {
                 showProcessorHelp(processor->getProcessor()->getClassIdentifier(), true);
             });
@@ -623,14 +623,14 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
     clickedPosition_ = {true, utilqt::toGLM(e->scenePos())};
     {
         menu.addSeparator();
-        auto compAction =
-            menu.addAction(QIcon(":/icons/composite-create.png"), tr("&Create Composite"));
+        auto compAction = menu.addAction(QIcon(":/svgicons/composite-create-enabled.svg"),
+                                         tr("&Create Composite"));
         connect(compAction, &QAction::triggered, this,
                 [this]() { util::replaceSelectionWithCompositeProcessor(*network_); });
         compAction->setEnabled(selectedProcessors.size() > 1);
 
-        auto expandAction =
-            menu.addAction(QIcon(":/icons/composite-expand.png"), tr("&Expand Composite"));
+        auto expandAction = menu.addAction(QIcon(":/svgicons/composite-expand-enabled.svg"),
+                                           tr("&Expand Composite"));
         std::unordered_set<CompositeProcessor*> selectedComposites;
         for (auto& p : selectedProcessors) {
             if (auto comp = dynamic_cast<CompositeProcessor*>(p.first)) {
@@ -651,7 +651,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         });
         expandAction->setDisabled(selectedComposites.empty());
 
-        auto saveCompAction = menu.addAction(tr("&Save Composite"));
+        auto saveCompAction = menu.addAction(QIcon(":/svgicons/save.svg"), tr("&Save Composite"));
         connect(saveCompAction, &QAction::triggered, this, [this, selectedComposites]() {
             for (auto& p : selectedComposites) {
                 const auto compDir = mainwindow_->getInviwoApplication()->getPath(
@@ -673,7 +673,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         saveCompAction->setDisabled(selectedComposites.empty());
 
         menu.addSeparator();
-        auto cutAction = menu.addAction(QIcon(":/icons/edit-cut.png"), tr("Cu&t"));
+        auto cutAction = menu.addAction(QIcon(":/svgicons/edit-cut.svg"), tr("Cu&t"));
         cutAction->setEnabled(clickedProcessor || selectedItems().size() > 0);
         connect(cutAction, &QAction::triggered, this, [this]() {
             auto data = cut();
@@ -683,7 +683,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             QApplication::clipboard()->setMimeData(mimedata.release());
         });
 
-        auto copyAction = menu.addAction(QIcon(":/icons/edit-copy.png"), tr("&Copy"));
+        auto copyAction = menu.addAction(QIcon(":/svgicons/edit-copy.svg"), tr("&Copy"));
         copyAction->setEnabled(clickedProcessor || selectedItems().size() > 0);
         connect(copyAction, &QAction::triggered, this, [this]() {
             auto data = copy();
@@ -693,7 +693,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             QApplication::clipboard()->setMimeData(mimedata.release());
         });
 
-        auto pasteAction = menu.addAction(QIcon(":/icons/edit-paste.png"), tr("&Paste"));
+        auto pasteAction = menu.addAction(QIcon(":/svgicons/edit-paste.svg"), tr("&Paste"));
         auto clipboard = QApplication::clipboard();
         auto mimeData = clipboard->mimeData();
         if (mimeData->formats().contains(utilqt::toQString(getMimeTag()))) {
@@ -715,7 +715,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
 
         menu.addSeparator();
 
-        auto deleteAction = menu.addAction(QIcon(":/icons/edit-delete.png"), tr("&Delete"));
+        auto deleteAction = menu.addAction(QIcon(":/svgicons/edit-delete.svg"), tr("&Delete"));
         deleteAction->setEnabled(clickedOnItems_.size() + selectedItems().size() > 0);
         connect(deleteAction, &QAction::triggered, this, [this]() { deleteSelection(); });
     }

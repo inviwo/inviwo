@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,10 +45,19 @@ void Event::markAsUnused() { used_ = false; }
 
 void Event::markAsVisited(Processor* p) { util::push_back_unique(visitedProcessors_, p); }
 
+void Event::markAsVisited(Event& e) {
+    visitedProcessors_.reserve(visitedProcessors_.size() + e.visitedProcessors_.size());
+    for (auto p : e.visitedProcessors_) {
+        util::push_back_unique(visitedProcessors_, p);
+    }
+}
+
 bool Event::hasVisitedProcessor(Processor* p) const {
     return util::contains(visitedProcessors_, p);
 }
 
 const std::vector<Processor*>& Event::getVisitedProcessors() const { return visitedProcessors_; }
+
+void Event::print(std::ostream& ss) const { ss << "Unknown Event. Hash:" << hash(); }
 
 }  // namespace inviwo

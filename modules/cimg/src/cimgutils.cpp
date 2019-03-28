@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2018 Inviwo Foundation
+ * Copyright (c) 2015-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -58,6 +58,10 @@
 #if (_MSC_VER)
 #pragma warning(disable : 4297)
 #pragma warning(disable : 4267)
+#endif
+
+#ifdef cimg_use_tiff
+#include <tiff/libtiff/tiffio.h>
 #endif
 
 // add CImg type specialization for half_float::half
@@ -143,9 +147,9 @@ std::unordered_map<std::string, DataFormatId> extToBaseTypeMap_ = {{"jpg", DataF
 template <typename T>
 struct CImgToVoidConvert {
     static void* convert(void* dst, cimg_library::CImg<T>* img) {
-        // Inviwo store pixels interleaved (RGBRGBRGB), CImg stores pixels in a planer format
+        // Inviwo store pixels interleaved (RGBRGBRGB), CImg stores pixels in a planar format
         // (RRRRGGGGBBBB).
-        // Permute from planer to interleaved format, does we need to specify cxyz as input instead
+        // Permute from planar to interleaved format, does we need to specify cxyz as input instead
         // of xyzc
         if (img->spectrum() > 1) {
             img->permute_axes("cxyz");
@@ -167,7 +171,8 @@ struct CImgToVoidConvert {
 template <typename T>
 struct LayerToCImg {
     static std::unique_ptr<cimg_library::CImg<T>> convert(const LayerRAM* inputLayerRAM,
-                                                          bool /*permute*/ = true) {
+                                                          bool /*permute*/ = true,
+                                                          bool /*skipAlpha*/ = false) {
         // Single channel means we can do xyzc, as no permutation is needed
         auto img = util::make_unique<cimg_library::CImg<T>>(
             static_cast<const T*>(inputLayerRAM->getData()),
@@ -182,13 +187,14 @@ struct LayerToCImg {
 template <glm::length_t L, typename T, glm::qualifier Q>
 struct LayerToCImg<glm::vec<L, T, Q>> {
     static std::unique_ptr<cimg_library::CImg<T>> convert(const LayerRAM* inputLayerRAM,
-                                                          bool permute = true) {
+                                                          bool permute = true,
+                                                          bool skipAlpha = false) {
         auto dataFormat = inputLayerRAM->getDataFormat();
         auto typedDataPtr = static_cast<const glm::vec<L, T, Q>*>(inputLayerRAM->getData());
 
-        // Inviwo store pixels interleaved (RGBRGBRGB), CImg stores pixels in a planer format
+        // Inviwo store pixels interleaved (RGBRGBRGB), CImg stores pixels in a planar format
         // (RRRRGGGGBBBB).
-        // Permute from interleaved to planer format, does we need to specify yzcx as input instead
+        // Permute from interleaved to planar format, i.e specify yzcx as input instead
         // of cxyz
         auto img = util::make_unique<cimg_library::CImg<T>>(
             glm::value_ptr(*typedDataPtr), static_cast<unsigned int>(dataFormat->getComponents()),
@@ -196,6 +202,9 @@ struct LayerToCImg<glm::vec<L, T, Q>> {
             static_cast<unsigned int>(inputLayerRAM->getDimensions().y), 1u, false);
 
         if (permute) img->permute_axes("yzcx");
+        if (skipAlpha && img->spectrum() > 1) {
+            img->channels(0, img->spectrum() - 2);
+        }
 
         return img;
     }
@@ -264,19 +273,28 @@ struct CImgSaveLayerDispatcher {
     using type = void;
     template <typename Result, typename T>
     void operator()(const std::string& filePath, const LayerRAM* inputLayer) {
-        auto img = LayerToCImg<typename T::type>::convert(inputLayer);
+        const std::string fileExtension = toLower(filesystem::getFileExtension(filePath));
+        const bool isJpeg = (fileExtension == "jpg") || (fileExtension == "jpeg");
+        const bool skipAlpha = isJpeg && ((T::comp == 2) || (T::comp == 4));
+        auto img = LayerToCImg<typename T::type>::convert(inputLayer, true, skipAlpha);
 
+        const DataFormatBase* inFormat = inputLayer->getDataFormat();
         // Should rescale values based on output format i.e. PNG/JPG is 0-255, HDR different.
         const DataFormatBase* outFormat = DataFloat32::get();
-        std::string fileExtension = toLower(filesystem::getFileExtension(filePath));
         if (extToBaseTypeMap_.find(fileExtension) != extToBaseTypeMap_.end()) {
             outFormat = DataFormatBase::get(extToBaseTypeMap_[fileExtension]);
+        } else if ((fileExtension == "tif") || (fileExtension == "tiff")) {
+            // use the same data format as the input. TIFF supports 8 and 16 bit integer formats as
+            // well as 32 bit floating point
+            const size_t maxPrecision =
+                (inFormat->getNumericType() == NumericType::Float) ? 32 : 16;
+            const size_t bitsPerSample = std::min<size_t>(inFormat->getPrecision(), maxPrecision);
+            outFormat = DataFormatBase::get(inFormat->getNumericType(), T::comp, bitsPerSample);
         }
 
         // Image is up-side-down
         img->mirror('y');
 
-        const DataFormatBase* inFormat = inputLayer->getDataFormat();
         double inMin = inFormat->getMin();
         double inMax = inFormat->getMax();
         double outMin = outFormat->getMin();
@@ -319,11 +337,13 @@ struct CImgSaveLayerToBufferDispatcher {
     using type = std::unique_ptr<std::vector<unsigned char>>;
     template <typename Result, typename T>
     type operator()(const LayerRAM* inputLayer, const std::string& extension) {
-        auto img = LayerToCImg<typename T::type>::convert(inputLayer);
+        const std::string fileExtension = toLower(extension);
+        const bool isJpeg = (fileExtension == "jpg") || (fileExtension == "jpeg");
+        const bool skipAlpha = isJpeg && ((T::comp == 2) || (T::comp == 4));
+        auto img = LayerToCImg<typename T::type>::convert(inputLayer, true, skipAlpha);
 
         // Should rescale values based on output format i.e. PNG/JPG is 0-255, HDR different.
         const DataFormatBase* outFormat = DataFloat32::get();
-        std::string fileExtension = toLower(extension);
         if (extToBaseTypeMap_.find(fileExtension) != extToBaseTypeMap_.end()) {
             outFormat = DataFormatBase::get(extToBaseTypeMap_[fileExtension]);
         }
@@ -403,7 +423,7 @@ struct CImgLoadVolumeDispatcher {
         }
 
         // Image is up-side-down
-        img.mirror('y');
+        img.mirror("y");
 
         return CImgToVoidConvert<typename DF::primitive>::convert(dst, &img);
     }
@@ -437,6 +457,23 @@ void* loadVolumeData(void* dst, const std::string& filePath, size3_t& dimensions
     CImgLoadVolumeDispatcher disp;
     return dispatching::dispatch<void*, dispatching::filter::All>(formatId, disp, dst, filePath,
                                                                   dimensions, formatId);
+}
+
+void* loadTIFFLayerData(void* dst, const std::string& filePath, TIFFHeader header,
+                        bool rescaleToDim) {
+    CImgLoadLayerDispatcher disp;
+    DataFormatId formatId = header.format->getId();
+    uvec2 dims{header.dimensions};
+    return dispatching::dispatch<void*, dispatching::filter::All>(formatId, disp, dst, filePath,
+                                                                  dims, formatId, rescaleToDim);
+}
+
+void* loadTIFFVolumeData(void* dst, const std::string& filePath, TIFFHeader header) {
+    CImgLoadVolumeDispatcher disp;
+    DataFormatId formatId = header.format->getId();
+    size3_t dims{header.dimensions};
+    return dispatching::dispatch<void*, dispatching::filter::All>(formatId, disp, dst, filePath,
+                                                                  dims, formatId);
 }
 
 void saveLayer(const std::string& filePath, const Layer* inputLayer) {
@@ -501,8 +538,8 @@ struct CImgRescaleLayerRamToLayerRamDispatcher {
                            resized);
         } else {
             // Inviwo store pixels interleaved (RGBRGBRGB),
-            // CImg stores pixels in a planer format (RRRRGGGGBBBB).
-            // Permute from interleaved to planer format,
+            // CImg stores pixels in a planar format (RRRRGGGGBBBB).
+            // Permute from interleaved to planar format,
             // we need to specify yzcx as input instead of cxyz
 
             size_t comp = util::extent<E>::value;
@@ -535,7 +572,7 @@ bool rescaleLayerRamToLayerRam(const LayerRAM* source, LayerRAM* target) {
                                                                  disp, source, target);
 }
 
-std::string getLibJPGVesrion() {
+std::string getLibJPGVersion() {
 #ifdef cimg_use_jpeg
     std::ostringstream oss;
     oss << JPEG_LIB_VERSION_MAJOR << "." << JPEG_LIB_VERSION_MINOR;
@@ -545,13 +582,96 @@ std::string getLibJPGVesrion() {
 #endif
 }
 
-std::string getOpenEXRVesrion() {
+std::string getOpenEXRVersion() {
 #ifdef cimg_use_openexr
     std::ostringstream oss;
     oss << OPENEXR_VERSION_MAJOR << "." << OPENEXR_VERSION_MINOR << "." << OPENEXR_VERSION_PATCH;
     return oss.str();
 #else
     return "OpenEXR not available";
+#endif
+}
+
+TIFFHeader getTIFFHeader(const std::string& filename) {
+#ifdef cimg_use_tiff
+    TIFF* tif = TIFFOpen(filename.c_str(), "r");
+    util::OnScopeExit closeFile([tif]() {
+        if (tif) TIFFClose(tif);
+    });
+
+    if (!tif) {
+        throw DataReaderException("Error could not open input file: " + filename,
+                                  IVW_CONTEXT_CUSTOM("cimgutil::getTIFFDataFormat()"));
+    }
+    TIFFSetDirectory(tif, 0);
+
+    uint16 samplesPerPixel = 1, bitsPerSample = 8, sampleFormat = 1;
+    TIFFGetFieldDefaulted(tif, TIFFTAG_BITSPERSAMPLE, &bitsPerSample);
+    TIFFGetFieldDefaulted(tif, TIFFTAG_SAMPLESPERPIXEL, &samplesPerPixel);
+    TIFFGetFieldDefaulted(tif, TIFFTAG_SAMPLEFORMAT, &sampleFormat);
+
+    std::array<unsigned int, 2> xres = {150, 1};
+    std::array<unsigned int, 2> yres = {150, 1};
+    // X and Y resolution tags are stored as RATIONAL, i.e. a fractional value
+    // (2 unsigned int values with the first being the numerator, the second the denominator)
+    TIFFGetFieldDefaulted(tif, TIFFTAG_XRESOLUTION, xres.data());
+    TIFFGetFieldDefaulted(tif, TIFFTAG_YRESOLUTION, yres.data());
+    const dvec2 res{xres[0] / static_cast<double>(xres[1]), yres[0] / static_cast<double>(yres[1])};
+
+    uint16 resUnit = 2;
+    TIFFGetFieldDefaulted(tif, TIFFTAG_RESOLUTIONUNIT, &resUnit);
+    const TIFFResolutionUnit resolutionUnit = static_cast<TIFFResolutionUnit>(resUnit);
+
+    uint32 x = 0, y = 0, z = 0;
+    TIFFGetFieldDefaulted(tif, TIFFTAG_IMAGEWIDTH, &x);
+    TIFFGetFieldDefaulted(tif, TIFFTAG_IMAGELENGTH, &y);
+    // count the images
+    do {
+        ++z;
+    } while (TIFFReadDirectory(tif));
+
+    NumericType numericType;
+    switch (sampleFormat) {
+        case SAMPLEFORMAT_UINT:
+            numericType = NumericType::UnsignedInteger;
+            break;
+        case SAMPLEFORMAT_INT:
+            numericType = NumericType::SignedInteger;
+            break;
+        case SAMPLEFORMAT_IEEEFP:
+            numericType = NumericType::Float;
+            break;
+        case SAMPLEFORMAT_COMPLEXIEEEFP:
+            [[fallthrough]];
+        case SAMPLEFORMAT_COMPLEXINT:
+            throw DataReaderException("Unsupported TIFF format",
+                                      IVW_CONTEXT_CUSTOM("cimgutil::getTTIFFDataFormat()"));
+            break;
+        default:
+            numericType = NumericType::UnsignedInteger;
+            break;
+    }
+
+    SwizzleMask swizzleMask;
+    if (samplesPerPixel == 1) {
+        swizzleMask = swizzlemasks::luminance;
+    } else if (samplesPerPixel == 2) {
+        swizzleMask = swizzlemasks::luminanceAlpha;
+    } else if (samplesPerPixel == 3) {
+        swizzleMask = swizzlemasks::rgb;
+    } else if (samplesPerPixel == 4) {
+        swizzleMask = swizzlemasks::rgba;
+    } else {
+        throw DataReaderException("Unsupported TIFF format with more than 4 channels",
+                                  IVW_CONTEXT_CUSTOM("cimgutil::getTTIFFDataFormat()"));
+    }
+
+    auto df = DataFormatBase::get(numericType, samplesPerPixel, bitsPerSample);
+
+    return {df, size3_t{x, y, z}, res, resolutionUnit, swizzleMask};
+#else
+    throw Exception("TIFF not available", IVW_CONTEXT_CUSTOM("cimgutil::getTTIFFDataFormat()"));
+    return {};
 #endif
 }
 

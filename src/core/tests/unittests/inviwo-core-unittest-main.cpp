@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2018 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,6 +37,7 @@
 #include <inviwo/core/util/consolelogger.h>
 #include <inviwo/core/common/coremodulesharedlibrary.h>
 #include <inviwo/core/util/settings/systemsettings.h>
+#include <inviwo/testutil/configurablegtesteventlistener.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -49,7 +50,7 @@ int main(int argc, char** argv) {
 
     LogCentral::init();
     auto logger = std::make_shared<ConsoleLogger>();
-    LogCentral::getPtr()->setLogLevel(LogLevel::Error);
+    LogCentral::getPtr()->setVerbosity(LogVerbosity::Error);
     LogCentral::getPtr()->registerLogger(logger);
     InviwoApplication app(argc, argv, "Inviwo-Unittests-Core");
     app.getSystemSettings().stackTraceInException_.set(true);
@@ -71,6 +72,7 @@ int main(int argc, char** argv) {
 #else
         ::testing::InitGoogleTest(&argc, argv);
 #endif
+        ConfigurableGTestEventListener::setup();
         ret = RUN_ALL_TESTS();
     }
 

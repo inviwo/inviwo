@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -407,10 +407,12 @@ auto copy_if(const T& cont, P pred) -> std::vector<typename T::value_type> {
 template <typename T, typename UnaryOperation>
 auto transform(const T& cont, UnaryOperation op)
     -> std::vector<typename std::result_of<UnaryOperation(typename T::value_type)>::type> {
+    using std::begin;
+    using std::end;
 
     std::vector<typename std::result_of<UnaryOperation(typename T::value_type)>::type> res;
-    res.reserve(cont.size());
-    std::transform(cont.begin(), cont.end(), std::back_inserter(res), op);
+    res.reserve(std::distance(begin(cont), end(cont)));
+    std::transform(begin(cont), end(cont), std::back_inserter(res), op);
     return res;
 }
 
@@ -419,10 +421,10 @@ auto ordering(T& cont, Pred pred) -> std::vector<size_t> {
     using std::begin;
     using std::end;
 
-    std::vector<size_t> res(cont.size());
+    std::vector<size_t> res(std::distance(begin(cont), end(cont)));
     std::iota(res.begin(), res.end(), 0);
     std::sort(res.begin(), res.end(),
-              [&](const size_t& a, const size_t& b) { return pred(cont[a], cont[b]); });
+              [&](const size_t& a, const size_t& b) { return pred(begin(cont)[a], begin(cont)[b]); });
 
     return res;
 }

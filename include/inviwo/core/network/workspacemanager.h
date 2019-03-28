@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2016-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -145,8 +145,8 @@ public:
     /**
      *	Create a deserializer for a workspace stream, and apply all needed version updates.
      */
-    Deserializer createWorkspaceDeserializer(std::istream& stream,
-                                             const std::string& refPath) const;
+    Deserializer createWorkspaceDeserializer(std::istream& stream, const std::string& refPath,
+                                             Logger* logger = LogCentral::getPtr()) const;
 
 private:
     InviwoApplication* app_;

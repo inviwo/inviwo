@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2018 Inviwo Foundation
+ * Copyright (c) 2015-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,21 +32,22 @@
 #include <modules/cimg/cimglayerwriter.h>
 #include <modules/cimg/cimgvolumereader.h>
 #include <modules/cimg/cimgutils.h>
+#include <modules/cimg/tifflayerreader.h>
+#include <modules/cimg/tiffstackvolumereader.h>
 
 namespace inviwo {
 
 CImgModule::CImgModule(InviwoApplication* app) : InviwoModule(app, "CImg") {
     // Register Data Readers
     registerDataReader(util::make_unique<CImgLayerReader>());
-
-    // TODO: Test HDR format
-    // registerDataReader(new CImgVolumeReader());
+    registerDataReader(util::make_unique<TIFFLayerReader>());
+    registerDataReader(util::make_unique<TIFFStackVolumeReader>());
 
     // Register Data Writers
     registerDataWriter(util::make_unique<CImgLayerWriter>());
 
-    LogInfo("Using LibJPG Version " << cimgutil::getLibJPGVesrion());
-    LogInfo("Using OpenEXR Version " << cimgutil::getOpenEXRVesrion());
+    LogInfo("Using LibJPG Version " << cimgutil::getLibJPGVersion());
+    LogInfo("Using OpenEXR Version " << cimgutil::getOpenEXRVersion());
 }
 
 }  // namespace inviwo

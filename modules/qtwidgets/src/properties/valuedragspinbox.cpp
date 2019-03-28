@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,18 +29,22 @@
 
 #include <modules/qtwidgets/properties/valuedragspinbox.h>
 #include <modules/qtwidgets/properties/valuedragger.h>
+#include <modules/qtwidgets/numberlineedit.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QSpinBox>
 #include <QHBoxLayout>
 #include <warn/pop>
 
 namespace inviwo {
 
 ValueDragSpinBox::ValueDragSpinBox(QWidget *parent)
-    : QWidget(parent), spinBox_(new QSpinBox()), valueDragger_(new ValueDragger<int>(spinBox_)) {
+    : QWidget(parent)
+    , spinBox_(new NumberLineEdit())
+    , valueDragger_(new ValueDragger<int>(spinBox_)) {
     setObjectName("valueDragSpinBox");
+    spinBox_->setButtonSymbols(QAbstractSpinBox::NoButtons);
+
     auto layout = new QHBoxLayout();
     layout->setSpacing(0);
     layout->setMargin(0);
@@ -52,12 +56,12 @@ ValueDragSpinBox::ValueDragSpinBox(QWidget *parent)
     setFocusProxy(spinBox_);
     spinBox_->setFocusPolicy(Qt::WheelFocus);
     valueDragger_->setFocusPolicy(Qt::ClickFocus);
-    spinBox_->setButtonSymbols(QAbstractSpinBox::NoButtons);
 
-    connect(spinBox_, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this,
-            static_cast<void (ValueDragSpinBox::*)(int)>(&ValueDragSpinBox::valueChanged));
+    connect(spinBox_, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
+            this, [&](double value) { emit valueChanged(static_cast<int>(value)); });
     connect(
-        spinBox_, static_cast<void (QSpinBox::*)(const QString &)>(&QSpinBox::valueChanged), this,
+        spinBox_,
+        static_cast<void (QDoubleSpinBox::*)(const QString &)>(&QDoubleSpinBox::valueChanged), this,
         static_cast<void (ValueDragSpinBox::*)(const QString &)>(&ValueDragSpinBox::valueChanged));
     connect(spinBox_, &QSpinBox::editingFinished, this, &ValueDragSpinBox::editingFinished);
 }
@@ -80,15 +84,11 @@ QString ValueDragSpinBox::text() const { return spinBox_->text(); }
 
 QString ValueDragSpinBox::cleanText() const { return spinBox_->cleanText(); }
 
-int ValueDragSpinBox::displayIntegerBase() const { return spinBox_->displayIntegerBase(); }
+int ValueDragSpinBox::maximum() const { return static_cast<int>(spinBox_->maximum()); }
 
-int ValueDragSpinBox::maximum() const { return spinBox_->maximum(); }
-
-int ValueDragSpinBox::minimum() const { return spinBox_->minimum(); }
+int ValueDragSpinBox::minimum() const { return static_cast<int>(spinBox_->minimum()); }
 
 QString ValueDragSpinBox::prefix() const { return spinBox_->prefix(); }
-
-void ValueDragSpinBox::setDisplayIntegerBase(int base) { spinBox_->setDisplayIntegerBase(base); }
 
 void ValueDragSpinBox::setMaximum(int max) { spinBox_->setMaximum(max); }
 
@@ -102,11 +102,11 @@ void ValueDragSpinBox::setSingleStep(int val) { spinBox_->setSingleStep(val); }
 
 void ValueDragSpinBox::setSuffix(const QString &suffix) { spinBox_->setSuffix(suffix); }
 
-int ValueDragSpinBox::singleStep() const { return spinBox_->singleStep(); }
+int ValueDragSpinBox::singleStep() const { return static_cast<int>(spinBox_->singleStep()); }
 
 QString ValueDragSpinBox::suffix() const { return spinBox_->suffix(); }
 
-int ValueDragSpinBox::value() const { return spinBox_->value(); }
+int ValueDragSpinBox::value() const { return static_cast<int>(spinBox_->value()); }
 
 void ValueDragSpinBox::setValue(int value) { spinBox_->setValue(value); }
 

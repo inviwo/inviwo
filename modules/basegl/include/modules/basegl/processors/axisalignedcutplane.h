@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2018 Inviwo Foundation
+ * Copyright (c) 2015-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/ports/dataoutport.h>
 
@@ -42,6 +43,7 @@
 #include <modules/opengl/shader/shaderutils.h>
 #include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/rendering/meshdrawerfactory.h>
 #include <inviwo/core/rendering/meshdrawer.h>
 #include <inviwo/core/interaction/cameratrackball.h>
@@ -118,8 +120,6 @@ protected:
 
     void createBoundingBox();
     void drawBoundingBox();
-
-private:
 };
 
 template <AxisAlignedCutPlane::Axis axis>

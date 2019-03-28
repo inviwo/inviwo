@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2018 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -58,14 +58,14 @@ class IVW_MODULE_QTWIDGETS_API InviwoDockWidgetTitleBar : public QWidget {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT
+    Q_PROPERTY(double iconSize READ getIconSize WRITE setIconSize DESIGNABLE true SCRIPTABLE true)
 #include <warn/pop>
+
 public:
-    InviwoDockWidgetTitleBar(QWidget *parent = nullptr);
+    InviwoDockWidgetTitleBar(QWidget* parent = nullptr);
     virtual ~InviwoDockWidgetTitleBar();
 
-    virtual void paintEvent(QPaintEvent *) override;
-
-    void setLabel(const QString &str);
+    virtual void paintEvent(QPaintEvent*) override;
 
     void setSticky(bool toggle);
     bool isSticky() const;
@@ -73,22 +73,30 @@ public:
     void allowedAreasChanged(Qt::DockWidgetAreas areas);
     void floating(bool floating);
 
+    double getIconSize() const { return iconSize_; }
+    void setIconSize(double size);
+
 signals:
     void stickyFlagChanged(bool sticky);
 protected slots:
-    virtual void showEvent(QShowEvent *event) override;
+    virtual void showEvent(QShowEvent* event) override;
+
+protected:
+    virtual bool eventFilter(QObject* obj, QEvent* event) override;
 
 private:
     void stickyBtnToggled(bool toggle);
 
-    QDockWidget *parent_;
+    QDockWidget* parent_;
 
-    QLabel *label_;
-    QToolButton *stickyBtn_;
-    QToolButton *floatBtn_;
+    QLabel* label_;
+    QToolButton* stickyBtn_;
+    QToolButton* floatBtn_;
+    QToolButton* closeBtn_;
     Qt::DockWidgetAreas allowedDockAreas_;
 
     bool internalStickyFlagUpdate_;
+    double iconSize_ = 1.2;
 };
 
 }  // namespace inviwo

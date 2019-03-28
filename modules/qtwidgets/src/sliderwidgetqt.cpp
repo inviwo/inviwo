@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,8 @@
  *********************************************************************************/
 
 #include <modules/qtwidgets/sliderwidgetqt.h>
-#include <modules/qtwidgets/customdoublespinboxqt.h>
+#include <modules/qtwidgets/numberlineedit.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <limits>
 #include <cmath>
@@ -44,9 +45,9 @@
 
 namespace inviwo {
 
-BaseSliderWidgetQt::BaseSliderWidgetQt()
+BaseSliderWidgetQt::BaseSliderWidgetQt(bool intMode)
     : QWidget()
-    , spinBox_(new CustomDoubleSpinBoxQt())
+    , spinBox_(new NumberLineEdit(intMode))
     , slider_(new QSlider())
     , spinnerValue_(0.0)
     , sliderValue_(0) {
@@ -68,18 +69,23 @@ BaseSliderWidgetQt::BaseSliderWidgetQt()
     hLayout->addWidget(slider_);
     hLayout->addWidget(spinBox_);
     hLayout->setContentsMargins(0, 0, 0, 0);
-    hLayout->setSpacing(5);
+    hLayout->setSpacing(utilqt::refSpacePx(this));
+    hLayout->setStretch(0, 3);
+    hLayout->setStretch(1, 1);
+
     setLayout(hLayout);
     connect(slider_, &QSlider::valueChanged, this, &BaseSliderWidgetQt::updateFromSlider);
-    connect(
-        spinBox_,
-        static_cast<void (CustomDoubleSpinBoxQt::*)(double)>(&CustomDoubleSpinBoxQt::valueChanged),
-        this, &BaseSliderWidgetQt::updateFromSpinBox);
+    connect(spinBox_, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
+            this, &BaseSliderWidgetQt::updateFromSpinBox);
 
     QSizePolicy sp = sizePolicy();
     sp.setVerticalPolicy(QSizePolicy::Fixed);
     setSizePolicy(sp);
 }
+
+void BaseSliderWidgetQt::setWrapping(bool wrap) { spinBox_->setWrapping(wrap); }
+
+bool BaseSliderWidgetQt::wrapping() const { return spinBox_->wrapping(); }
 
 void BaseSliderWidgetQt::applyInit() {
     updateSlider();
