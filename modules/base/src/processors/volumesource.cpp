@@ -243,7 +243,7 @@ void VolumeSource::process() {
             return;
         }
 
-        basis_.updateForNewEntity(*vol);
+        basis_.updateForNewEntity(*vol, deserialized_);
         information_.updateForNewVolume(*vol);
 
         outport_.setData(vol);

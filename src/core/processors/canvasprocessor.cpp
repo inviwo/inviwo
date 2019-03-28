@@ -77,6 +77,7 @@ CanvasProcessor::CanvasProcessor()
     , saveLayerEvent_("saveLayerEvent", "Save Image Layer", [this](Event*) { saveImageLayer(); },
                       IvwKey::Undefined, KeyState::Press)
     , allowContextMenu_("allowContextMenu", "Allow Context Menu", true)
+    , showCanvas_("showCanvas", "Show Canvas", InvalidationLevel::Valid)
     , previousImageSize_(customInputDimensions_)
     , widgetMetaData_{
           createMetaData<ProcessorWidgetMetaData>(ProcessorWidgetMetaData::CLASS_IDENTIFIER)} {
@@ -161,9 +162,15 @@ CanvasProcessor::CanvasProcessor()
             c->setFullScreen(fullScreen_.get());
         }
     });
+
     addProperty(fullScreenEvent_);
     addProperty(saveLayerEvent_);
     addProperty(allowContextMenu_);
+
+    addProperty(showCanvas_);
+    showCanvas_.onChange([this]() {
+        getCanvas()->getProcessorWidgetOwner()->setVisible(true);
+    });
 
     inport_.onChange([&]() {
         int layers = static_cast<int>(inport_.getData()->getNumberOfColorLayers());

@@ -27,13 +27,13 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMEMASK_H
-#define IVW_VOLUMEMASK_H
+#ifndef IVW_IMAGEMASK_H
+#define IVW_IMAGEMASK_H
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
 
-#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
@@ -42,20 +42,20 @@
 
 namespace inviwo {
 
-class IVW_MODULE_BASEGL_API VolumeMask : public Processor {
+class IVW_MODULE_BASEGL_API ImageMask : public Processor {
 public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    VolumeMask();
-    virtual ~VolumeMask() = default;
+    ImageMask();
+    virtual ~ImageMask() = default;
 
     virtual void process() override;
 
 private:
-    VolumeInport volumeInport_;
-    VolumeInport volumeAnnotationInport_;
-    VolumeOutport volumeOutport_;
+    ImageInport imageInport_;
+    ImageInport imageAnnotationInport_;
+    ImageOutport imageOutport_;
 
     BoolProperty enableMasking_;
     DoubleVec4Property fillColor_;
@@ -70,4 +70,4 @@ private:
 
 }  // namespace inviwo
 
-#endif  // IVW_VOLUMEMASK_H
+#endif  // IVW_IMAGEMASK_H

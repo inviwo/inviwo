@@ -27,29 +27,27 @@
  *
  *********************************************************************************/
 
-#include <modules/basegl/processors/volumeprocessing/volumemask.h>
+#include <modules/basegl/processors/imageprocessing/imagemask.h>
 
-#include <inviwo/core/datastructures/volume/volume.h>
-#include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/datastructures/volume/volumeramprecision.h>
-#include <inviwo/core/util/indexmapper.h>
+#include <inviwo/core/datastructures/image/image.h>
+#include <inviwo/core/datastructures/image/imageram.h>
 
 namespace inviwo {
 
-const ProcessorInfo VolumeMask::processorInfo_{
-    "org.inviwo.VolumeMask",  // Class identifier
-    "Volume Mask",            // Display name
-    "Volume Operation",         // Category
+const ProcessorInfo ImageMask::processorInfo_{
+    "org.inviwo.ImageMask",  // Class identifier
+    "Image Mask",            // Display name
+    "Image Operation",         // Category
     CodeState::Experimental,  // Code state
     Tags::CPU,                // Tags
 };
-const ProcessorInfo VolumeMask::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo ImageMask::getProcessorInfo() const { return processorInfo_; }
 
-VolumeMask::VolumeMask()
+ImageMask::ImageMask()
     : Processor()
-    , volumeInport_("volume_inport")
-    , volumeAnnotationInport_("volume_annotation_inport")
-    , volumeOutport_("volume_outport")
+    , imageInport_("image_inport", true)
+    , imageAnnotationInport_("image_annotation_inport", true)
+    , imageOutport_("image_outport", false)
     , enableMasking_("enableMasking", "Enable Masking", true)
     , fillColor_("fillColor", "Fill Color", vec4{0.0}, vec4{0.0}, vec4{65535.0}, vec4{1e-3})
     , idx_("idx", "Index", 0, 0, 10000000000, 1, InvalidationLevel::Valid)
@@ -59,9 +57,9 @@ VolumeMask::VolumeMask()
     , idxList_("idxList", "Index List")
     , idxTableFile_("idxTableFile", "Idx File (1 index per row)") {
 
-    addPort(volumeInport_);
-    addPort(volumeAnnotationInport_);
-    addPort(volumeOutport_);
+    addPort(imageInport_);
+    addPort(imageAnnotationInport_);
+    addPort(imageOutport_);
 
     addProperty(enableMasking_);
     addProperty(fillColor_);
@@ -112,66 +110,45 @@ VolumeMask::VolumeMask()
     addProperty(idxTableFile_);
 }
 
-void VolumeMask::process() {
+void ImageMask::process() {
     if (!enableMasking_) {
-        volumeOutport_.setData(volumeInport_.getData());
+        imageOutport_.setData(imageInport_.getData());
         return;
     }
 
-    if (volumeInport_.getData()->getDimensions() !=
-        volumeAnnotationInport_.getData()->getDimensions()) {
-        LogWarn("volume dimensions do not match, no masking performed!");
-        volumeOutport_.setData(volumeInport_.getData());
+    if (imageAnnotationInport_.getData()->getDimensions() != imageInport_.getData()->getDimensions()) {
+        LogWarn("image dimensions do not match, no masking performed!");
+        imageOutport_.setData(imageInport_.getData());
         return;
     }
 
-    const auto volumeIn = volumeInport_.getData();
-    auto volumeOut = volumeIn->clone();
-
-    const auto vInRAM = volumeIn->getRepresentation<VolumeRAM>();
-    const auto annoInRAM = volumeAnnotationInport_.getData()->getRepresentation<VolumeRAM>();
-    auto vOutRAM = volumeOut->getEditableRepresentation<VolumeRAM>();
-
-    annoInRAM->dispatch<void>([this, &vInRAM, &vOutRAM](auto annoVol) {
-        using ValueType = util::PrecsionValueType<decltype(annoVol)>;
-        using P = typename util::same_extent<ValueType, unsigned int>::type;
-
-        // pre-convert, saves a lot of time
-        std::vector<P> refIdxList;
-        refIdxList.reserve(idxList_.getValues().size());
-        for (const auto& idx : idxList_.getValues()) {
-            refIdxList.push_back(P(idx));
-        }
-
-        const size3_t dims{vInRAM->getDimensions()};
-        const util::IndexMapper3D indexMapper(dims);
-        const auto anno = annoVol->getDataTyped();
+    const auto imgAnnoRAM =
+        imageAnnotationInport_.getData()->getColorLayer()->getRepresentation<LayerRAM>();
+    auto imgOut = imageInport_.getData()->clone();
+    auto imgOutRAM = imgOut->getColorLayer()->getEditableRepresentation<LayerRAM>();
+    const auto imageSize = imgAnnoRAM->getDimensions();
 
 #pragma omp parallel for
-        for (long z = 0; z < dims.z; ++z) {
-            for (size_t y = 0; y < dims.y; ++y) {
-                for (size_t x = 0; x < dims.x; ++x) {
-                    const P annoValue = anno[indexMapper(x, y, z)];
+    for (long y = 0; y < imageSize.y; ++y) {
+        for (size_t x = 0; x < imageSize.x; ++x) {
+            const size2_t pos{x, y};
+            const auto annoValue = static_cast<uint32_t>(imgAnnoRAM->getAsDouble(pos));
 
-                    // check if index is in reference volume
-                    const size3_t pos{x, y, z};
-                    bool contains{false};
-                    for (const auto& refIdx : refIdxList) {
-                        if (glm::all(annoValue == refIdx)) {
-                            contains = true;
-                            break;
-                        }
-                    }
-
-                    if (!contains) {
-                        vOutRAM->setFromDVec4(pos, fillColor_.get());
-                    }
+            bool contains{false};
+            for (const auto& refIdx : idxList_.getValues()) {
+                if (annoValue == refIdx) {
+                    contains = true;
+                    break;
                 }
             }
-        }
-    });
 
-    volumeOutport_.setData(volumeOut);
+            if (!contains) {
+                imgOutRAM->setFromDVec4(pos, fillColor_.get());
+            }
+        }
+    }
+
+    imageOutport_.setData(imgOut);
 }
 
 }  // namespace inviwo
