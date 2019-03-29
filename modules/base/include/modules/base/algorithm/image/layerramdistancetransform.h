@@ -309,7 +309,7 @@ void util::layerDistanceTransform(const Layer *inLayer, LayerRAMPrecision<U> *ou
                                   const size2_t upsample, double threshold, bool normalize,
                                   bool flip, bool square, double scale) {
     util::layerDistanceTransform(inLayer, outDistanceField, upsample, threshold, normalize, flip,
-                                 square, scale, [](double d) {});
+                                 square, scale, [](double) {});
 }
 
 }  // namespace inviwo

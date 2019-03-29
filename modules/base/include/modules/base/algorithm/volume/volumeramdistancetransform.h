@@ -349,7 +349,7 @@ void util::volumeDistanceTransform(const Volume *inVolume, VolumeRAMPrecision<U>
                                    const size3_t upsample, double threshold, bool normalize,
                                    bool flip, bool square, double scale) {
     util::volumeDistanceTransform(inVolume, outDistanceField, upsample, threshold, normalize, flip,
-                                  square, scale, [](double d) {});
+                                  square, scale, [](double) {});
 }
 
 }  // namespace inviwo
