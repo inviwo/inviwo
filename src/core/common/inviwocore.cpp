@@ -356,6 +356,11 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerPropertyConverter(std::make_unique<FileToStringConverter>());
     registerPropertyConverter(std::make_unique<StringToFileConverter>());
 
+    registerPropertyConverter(std::make_unique<TransferfunctionToIsoTFConverter>());
+    registerPropertyConverter(std::make_unique<IsoTFToTransferfunctionConverter>());
+    registerPropertyConverter(std::make_unique<IsovalueToIsoTFConverter>());
+    registerPropertyConverter(std::make_unique<IsoTFToIsovalueConverter>());
+
     // for_each_type_pair will call the functor with all permutation of types, and supplied
     // arguments like: ConverterRegFunctor<float, float>(registerPC), ConverterRegFunctor<float,
     // double>(registerPC), ...

@@ -41,6 +41,8 @@
 
 namespace inviwo {
 
+class IsoTFProperty;
+
 class IVW_CORE_API TFPropertyObserver : public Observer {
 public:
     virtual void onMaskChange(const dvec2& mask);
@@ -108,6 +110,7 @@ public:
 
     // Override
     virtual void set(const TransferFunction& property) override;
+    void set(const IsoTFProperty& p);
     virtual void set(const Property* property) override;
 
     // Override TFPrimitiveSetObserver

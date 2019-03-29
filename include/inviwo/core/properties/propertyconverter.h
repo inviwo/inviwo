@@ -38,12 +38,15 @@
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/isotfproperty.h>
+#include <inviwo/core/properties/isovalueproperty.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
 
 namespace inviwo {
 
 class IVW_CORE_API PropertyConverter {
 public:
-    PropertyConverter(const std::string &srcClassIdentifier, const std::string &dstClassIdentifier);
+    PropertyConverter(const std::string& srcClassIdentifier, const std::string& dstClassIdentifier);
     virtual ~PropertyConverter();
 
     std::string getSourcePropertyClassIdenetifier() const;
@@ -53,7 +56,7 @@ public:
      * convert requires that srcProperty and dstProperty has the same class identifiers as
      * srcClassIdentifier and dstClassIdentifier, given in the constructor, i.e. the same types.
      */
-    virtual void convert(const Property *srcProperty, Property *dstProperty) const;
+    virtual void convert(const Property* srcProperty, Property* dstProperty) const;
 
 protected:
     std::string srcClassIdentifier_;
@@ -68,20 +71,20 @@ public:
                             PropertyTraits<DstProperty>::classIdentifier()) {}
     virtual ~TemplatePropertyConverter() = default;
 
-    virtual void convert(const Property *src, Property *dst) const override {
+    virtual void convert(const Property* src, Property* dst) const override {
         // Static cast will work here since we will only use the converter for its registered
         // property types
-        convertimpl(static_cast<const SrcProperty *>(src), static_cast<DstProperty *>(dst));
+        convertimpl(static_cast<const SrcProperty*>(src), static_cast<DstProperty*>(dst));
     }
 
 protected:
-    virtual void convertimpl(const SrcProperty *src, DstProperty *dst) const = 0;
+    virtual void convertimpl(const SrcProperty* src, DstProperty* dst) const = 0;
 };
 
 template <typename SrcProperty, typename DstProperty>
 class OrdinalPropertyConverter : public TemplatePropertyConverter<SrcProperty, DstProperty> {
 protected:
-    virtual void convertimpl(const SrcProperty *src, DstProperty *dst) const override {
+    virtual void convertimpl(const SrcProperty* src, DstProperty* dst) const override {
         dst->setMinValue(static_cast<typename DstProperty::value_type>(src->getMinValue()));
         dst->setMaxValue(static_cast<typename DstProperty::value_type>(src->getMaxValue()));
         dst->setIncrement(static_cast<typename DstProperty::value_type>(src->getIncrement()));
@@ -92,7 +95,7 @@ protected:
 template <typename SrcProperty>
 class ScalarToStringConverter : public TemplatePropertyConverter<SrcProperty, StringProperty> {
 protected:
-    virtual void convertimpl(const SrcProperty *src, StringProperty *dst) const override {
+    virtual void convertimpl(const SrcProperty* src, StringProperty* dst) const override {
         dst->set(toString(src->get()));
     }
 };
@@ -100,7 +103,7 @@ protected:
 template <typename SrcProperty>
 class VectorToStringConverter : public TemplatePropertyConverter<SrcProperty, StringProperty> {
 protected:
-    virtual void convertimpl(const SrcProperty *src, StringProperty *dst) const override {
+    virtual void convertimpl(const SrcProperty* src, StringProperty* dst) const override {
         dst->set(glm::to_string(src->get()));
     }
 };
@@ -108,7 +111,7 @@ protected:
 template <typename OptionProperty>
 class OptionToStringConverter : public TemplatePropertyConverter<OptionProperty, StringProperty> {
 protected:
-    virtual void convertimpl(const OptionProperty *src, StringProperty *dst) const override {
+    virtual void convertimpl(const OptionProperty* src, StringProperty* dst) const override {
         if (src->size() > 0) {
             dst->set(src->getSelectedDisplayName());
         } else {
@@ -120,7 +123,7 @@ protected:
 template <typename OptionProperty>
 class OptionToIntConverter : public TemplatePropertyConverter<OptionProperty, IntProperty> {
 protected:
-    virtual void convertimpl(const OptionProperty *src, IntProperty *dst) const override {
+    virtual void convertimpl(const OptionProperty* src, IntProperty* dst) const override {
         dst->set(static_cast<int>(src->getSelectedIndex()), 0, static_cast<int>(src->size()) - 1,
                  1);
     }
@@ -129,22 +132,55 @@ protected:
 template <typename OptionProperty>
 class IntToOptionConverter : public TemplatePropertyConverter<IntProperty, OptionProperty> {
 protected:
-    virtual void convertimpl(const IntProperty *src, OptionProperty *dst) const override {
+    virtual void convertimpl(const IntProperty* src, OptionProperty* dst) const override {
         dst->setSelectedIndex(src->get());
     }
 };
 
 class FileToStringConverter : public TemplatePropertyConverter<FileProperty, StringProperty> {
 protected:
-    virtual void convertimpl(const FileProperty *src, StringProperty *dst) const override {
+    virtual void convertimpl(const FileProperty* src, StringProperty* dst) const override {
         dst->set(src->get());
     }
 };
 
 class StringToFileConverter : public TemplatePropertyConverter<StringProperty, FileProperty> {
 protected:
-    virtual void convertimpl(const StringProperty *src, FileProperty *dst) const override {
+    virtual void convertimpl(const StringProperty* src, FileProperty* dst) const override {
         dst->set(src->get());
+    }
+};
+
+// conversion between various TF and isovalue properties
+class TransferfunctionToIsoTFConverter
+    : public TemplatePropertyConverter<TransferFunctionProperty, IsoTFProperty> {
+protected:
+    virtual void convertimpl(const TransferFunctionProperty* src,
+                             IsoTFProperty* dst) const override {
+        dst->set(*src);
+    }
+};
+
+class IsoTFToTransferfunctionConverter
+    : public TemplatePropertyConverter<IsoTFProperty, TransferFunctionProperty> {
+protected:
+    virtual void convertimpl(const IsoTFProperty* src,
+                             TransferFunctionProperty* dst) const override {
+        dst->set(*src);
+    }
+};
+
+class IsovalueToIsoTFConverter : public TemplatePropertyConverter<IsoValueProperty, IsoTFProperty> {
+protected:
+    virtual void convertimpl(const IsoValueProperty* src, IsoTFProperty* dst) const override {
+        dst->set(*src);
+    }
+};
+
+class IsoTFToIsovalueConverter : public TemplatePropertyConverter<IsoTFProperty, IsoValueProperty> {
+protected:
+    virtual void convertimpl(const IsoTFProperty* src, IsoValueProperty* dst) const override {
+        dst->set(*src);
     }
 };
 

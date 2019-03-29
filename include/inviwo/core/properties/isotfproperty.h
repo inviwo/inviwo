@@ -75,6 +75,10 @@ public:
 
     virtual std::string getClassIdentifierForWidget() const override;
 
+    virtual void set(const Property* property) override;
+    void set(const IsoValueProperty& p);
+    void set(const TransferFunctionProperty& p);
+
     void setMask(double maskMin, double maskMax);
     const dvec2 getMask() const;
     void clearMask();
