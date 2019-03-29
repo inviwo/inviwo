@@ -711,8 +711,8 @@ void InviwoMainWindow::addActions() {
     // Network
     {
         QIcon enableDisableIcon;
-        enableDisableIcon.addFile(":/svgicons/locked.svg", QSize(), QIcon::Normal, QIcon::Off);
-        enableDisableIcon.addFile(":/svgicons/unlocked.svg", QSize(), QIcon::Normal, QIcon::On);
+        enableDisableIcon.addFile(":/svgicons/unlocked.svg", QSize(), QIcon::Normal, QIcon::Off);
+        enableDisableIcon.addFile(":/svgicons/locked.svg", QSize(), QIcon::Normal, QIcon::On);
         auto disableEvalAction =
             new QAction(enableDisableIcon, tr("Disable &Network Evaluation"), this);
         disableEvalAction->setCheckable(true);
