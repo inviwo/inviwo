@@ -151,6 +151,7 @@ WebBrowserProcessor::WebBrowserProcessor()
                             filesystem::getFileExtension(prop->getClassIdentifier()), type_.size());
         }
     }
+    type_.setCurrentStateAsDefault();
     propertyHtmlId_ = type_.getSelectedDisplayName();
     type_.onChange([&]() { propertyHtmlId_ = type_.getSelectedDisplayName(); });
 

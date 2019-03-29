@@ -38,12 +38,13 @@
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <modules/fontrendering/properties/fontproperty.h>
+#include <modules/plotting/datastructures/plottextsettings.h>
 
 namespace inviwo {
 
 namespace plot {
 
-class IVW_MODULE_PLOTTING_API PlotTextProperty : public BoolCompositeProperty {
+class IVW_MODULE_PLOTTING_API PlotTextProperty : public PlotTextSettings, public BoolCompositeProperty {
 public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
@@ -61,7 +62,17 @@ public:
     FloatVec4Property color_;
     FloatProperty position_;  //!< position along axis [0,1]
     FloatProperty offset_;    //!< offset from axis
+    FloatProperty rotation_;  //!< Counter-clockwise rotation in degrees,
+                              //!  0 degrees means horizontal orientation
     FontProperty font_;
+
+    // Inherited via PlotTextSettings
+    virtual bool isEnabled() const override;
+    virtual vec4 getColor() const override;
+    virtual float getPosition() const override;
+    virtual vec2 getOffset() const override;
+    virtual float getRotation() const override;
+    virtual const FontSettings& getFont() const override;
 };
 
 }  // namespace plot

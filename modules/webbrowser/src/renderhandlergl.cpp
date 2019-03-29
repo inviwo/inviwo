@@ -44,7 +44,7 @@ bool RenderHandlerGL::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) 
     return true;
 }
 
-void RenderHandlerGL::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type,
+void RenderHandlerGL::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType,
                               const RectList& dirtyRects, const void* buffer, int width,
                               int height) {
     auto dims = texture2D_.getDimensions();

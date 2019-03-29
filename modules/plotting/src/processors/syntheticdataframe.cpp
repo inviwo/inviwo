@@ -63,14 +63,12 @@ SyntheticDataFrame::SyntheticDataFrame()
 }
 
 void SyntheticDataFrame::process() {
-    auto dataframe = std::make_shared<DataFrame>();
-
     using rdist = std::uniform_real_distribution<float>;
 
+    auto dataframe = std::make_shared<DataFrame>();
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_real_distribution<float> dis(-1, 1);
-    std::vector<rdist> rdists = {rdist{0.0f, 0.0f},  rdist{-0.1f, 0.1f}, rdist{-0.2f, 0.2f},
+    std::vector<rdist> rdists = {rdist{-1.0f, 1.0f}, rdist{-0.1f, 0.1f}, rdist{-0.2f, 0.2f},
                                  rdist{-0.3f, 0.3f}, rdist{-0.4f, 0.4f}, rdist{-0.5f, 0.5f},
                                  rdist{-0.6f, 0.6f}, rdist{-0.7f, 0.7f}, rdist{-0.8f, 0.8f},
                                  rdist{-0.9f, 0.9f}, rdist{-1.0f, 1.0f}
@@ -81,24 +79,18 @@ void SyntheticDataFrame::process() {
         gen.seed(seed_.get());
     }
 
-    std::vector<std::vector<float> *> cols;
-    for (size_t j = 0; j < rdists.size(); j++) {
+    for (auto& dist : rdists) {
         std::ostringstream oss;
-        oss << "Column " << (j + 1);
+        oss << "Column " << (dataframe->getNumberOfColumns() + 1);
         auto col = dataframe->addColumn<float>(oss.str());
-        cols.push_back(&col->getTypedBuffer()->getEditableRAMRepresentation()->getDataContainer());
-    }
-
-    for (size_t i = 0; i < numRow_.get(); i++) {
-        float p = dis(gen);
-        for (size_t j = 0; j < cols.size(); j++) {
-            float v = j % 2 == 0 ? p : -p;
-            cols[j]->push_back(v + rdists[j](gen));
+        auto& data = col->getTypedBuffer()->getEditableRAMRepresentation()->getDataContainer();
+        data.reserve(numRow_);
+        for (size_t i = 0; i < numRow_.get(); i++) {
+            data.push_back(dist(gen));
         }
     }
 
     dataframe->updateIndexBuffer();
-
     dataFrame_.setData(dataframe);
 }
 

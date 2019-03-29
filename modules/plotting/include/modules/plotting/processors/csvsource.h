@@ -59,7 +59,7 @@ namespace plot {
 
 class IVW_MODULE_PLOTTING_API CSVSource : public Processor {
 public:
-    CSVSource();
+    CSVSource(const std::string& file = "");
     virtual ~CSVSource() = default;
 
     virtual void process() override;

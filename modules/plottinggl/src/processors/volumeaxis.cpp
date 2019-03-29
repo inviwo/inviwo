@@ -87,9 +87,9 @@ VolumeAxis::VolumeAxis()
     rangeYaxis_.setSemantics(PropertySemantics::Text);
     rangeZaxis_.setSemantics(PropertySemantics::Text);
 
-    xAxis_.caption_.title_.set("x");
-    yAxis_.caption_.title_.set("y");
-    zAxis_.caption_.title_.set("z");
+    xAxis_.setCaption("x");
+    yAxis_.setCaption("y");
+    zAxis_.setCaption("z");
 
     addProperty(xAxis_);
     addProperty(yAxis_);
@@ -103,20 +103,21 @@ VolumeAxis::VolumeAxis()
     // initialize axes
     const float majorTick = 0.3f;
     const float minorTick = 0.15f;
-    for (auto property : std::vector<AxisProperty*>({&xAxis_, &yAxis_, &zAxis_})) {
-        property->caption_.offset_.set(0.7f);
-        property->caption_.position_.set(0.5f);
-        property->labels_.offset_.set(0.7f);
+    for (auto property : {&xAxis_, &yAxis_, &zAxis_}) {
+        property->captionSettings_.offset_.set(0.7f);
+        property->captionSettings_.position_.set(0.5f);
+        property->labelSettings_.offset_.set(0.7f);
 
-        property->ticks_.majorTicks_.tickLength_.set(majorTick);
-        property->ticks_.majorTicks_.tickWidth_.set(1.5f);
-        property->ticks_.majorTicks_.style_.set(TickStyle::Outside);
+        property->majorTicks_.tickLength_.set(majorTick);
+        property->majorTicks_.tickWidth_.set(1.5f);
+        property->majorTicks_.style_.set(TickStyle::Outside);
+        property->majorTicks_.setCurrentStateAsDefault();
 
-        property->ticks_.minorTicks_.tickLength_.set(minorTick);
-        property->ticks_.minorTicks_.tickWidth_.set(1.3f);
-        property->ticks_.minorTicks_.style_.set(TickStyle::Outside);
+        property->minorTicks_.tickLength_.set(minorTick);
+        property->minorTicks_.tickWidth_.set(1.3f);
+        property->minorTicks_.style_.set(TickStyle::Outside);
+        property->minorTicks_.setCurrentStateAsDefault();
 
-        property->ticks_.setCurrentStateAsDefault();
     }
 
     auto linkAxisRanges = [this](DoubleMinMaxProperty& from, DoubleMinMaxProperty& to) {

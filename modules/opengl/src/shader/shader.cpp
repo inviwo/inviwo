@@ -246,7 +246,7 @@ Shader &Shader::operator=(Shader &&that) {
 }
 
 Shader::~Shader() {
-    if (ShaderManager::getPtr()->isRegistered(this)) {
+    if (ShaderManager::isInitialized() && ShaderManager::getPtr()->isRegistered(this)) {
         ShaderManager::getPtr()->unregisterShader(this);
     }
 }

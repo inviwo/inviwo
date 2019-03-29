@@ -31,6 +31,8 @@
 #define IVW_LINERENDERER_H
 
 #include <modules/basegl/baseglmoduledefine.h>
+#include <modules/basegl/datastructures/meshshadercache.h>
+
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/interaction/cameratrackball.h>
@@ -42,7 +44,7 @@
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/stipplingproperty.h>
-#include <modules/opengl/shader/shader.h>
+
 #include <vector>
 
 namespace inviwo {
@@ -88,10 +90,10 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-protected:
     virtual void initializeResources() override;
 
 private:
+    void configureShader(Shader& shader);
     void drawMeshes();
 
     MeshFlatMultiInport inport_;
@@ -114,7 +116,7 @@ private:
     CameraProperty camera_;
     CameraTrackball trackball_;
 
-    Shader shader_;
+    MeshShaderCache lineShaders_;
 };
 
 }  // namespace inviwo

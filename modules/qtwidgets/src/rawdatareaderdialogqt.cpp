@@ -30,6 +30,8 @@
 #include <modules/qtwidgets/rawdatareaderdialogqt.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
+#include <inviwo/core/util/rendercontext.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QDialogButtonBox>
@@ -217,7 +219,11 @@ RawDataReaderDialogQt::RawDataReaderDialogQt() {
 
 RawDataReaderDialogQt::~RawDataReaderDialogQt() = default;
 
-bool RawDataReaderDialogQt::show() { return QDialog::exec() == QDialog::Accepted; }
+bool RawDataReaderDialogQt::show() {
+    auto res = QDialog::exec();
+    RenderContext::getPtr()->activateDefaultRenderContext();
+    return res == QDialog::Accepted;
+}
 
 void RawDataReaderDialogQt::setFile(std::string fileName) {
     fileName_->setText(QString::fromStdString(fileName));

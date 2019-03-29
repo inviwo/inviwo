@@ -354,9 +354,13 @@ void ScatterPlotGL::plot(const size2_t &dims, IndexBuffer *indexBuffer, bool use
     renderAxis(dims);
 }
 
-void ScatterPlotGL::setXAxisLabel(const std::string &label) { properties_.xAxis_.setTitle(label); }
+void ScatterPlotGL::setXAxisLabel(const std::string &label) {
+    properties_.xAxis_.setCaption(label);
+}
 
-void ScatterPlotGL::setYAxisLabel(const std::string &label) { properties_.yAxis_.setTitle(label); }
+void ScatterPlotGL::setYAxisLabel(const std::string &label) {
+    properties_.yAxis_.setCaption(label);
+}
 
 void ScatterPlotGL::setXAxis(std::shared_ptr<const plot::Column> col) {
     setXAxisLabel(col->getHeader());
@@ -478,9 +482,9 @@ void ScatterPlotGL::objectPicked(PickingEvent *p) {
         if (std::get<0>(rowIndex) && xAxis_ && yAxis_) {
             std::ostringstream ss;
             ss << "Index: " << std::get<1>(rowIndex) << "\n"
-               << properties_.xAxis_.getTitle() << ": "
+               << properties_.xAxis_.getCaption() << ": "
                << xAxis_->getRepresentation<BufferRAM>()->getAsDouble(id) << "\n"
-               << properties_.yAxis_.getTitle() << ": "
+               << properties_.yAxis_.getCaption() << ": "
                << yAxis_->getRepresentation<BufferRAM>()->getAsDouble(id);
             if (color_) {
                 ss << "\nColor Value: " << color_->getRepresentation<BufferRAM>()->getAsDouble(id);

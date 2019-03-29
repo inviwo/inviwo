@@ -280,7 +280,7 @@ public:
     virtual PropertySerializationMode getSerializationMode() const;
 
     virtual void setVisible(bool val);
-    virtual bool getVisible();
+    virtual bool getVisible() const;
 
     /* \brief sets visibility depending another property `prop`, according to `callback`
      * @param prop is the property on which the visibility depends

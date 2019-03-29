@@ -54,7 +54,6 @@ AxisRenderProcessor::AxisRenderProcessor()
     , margins_("margins", "Margins")
     , axisMargin_("axisMargin", "Axis Margin", 15.0f, 0.0f, 50.0f)
     , antialiasing_("antialias", "Antialiasing", true)
-    , renderAtlas_("renderAtlas", "Render Texture Atlas", false)
     , axis1_("axis1", "Axis 1")
     , axis2_("axis2", "Axis 2")
     , axis3_("axis3", "Axis 3", AxisProperty::Orientation::Vertical)
@@ -69,7 +68,6 @@ AxisRenderProcessor::AxisRenderProcessor()
     addProperty(axisMargin_);
 
     addProperty(antialiasing_);
-    addProperty(renderAtlas_);
 
     addProperty(axis1_);
     addProperty(axis2_);
@@ -77,11 +75,7 @@ AxisRenderProcessor::AxisRenderProcessor()
 }
 
 void AxisRenderProcessor::process() {
-    if (inport_.isReady()) {
-        utilgl::activateTargetAndCopySource(outport_, inport_, ImageType::ColorDepth);
-    } else {
-        utilgl::activateAndClearTarget(outport_, ImageType::ColorDepth);
-    }
+    utilgl::activateTargetAndClearOrCopySource(outport_, inport_, ImageType::ColorDepth);
 
     const auto dims = outport_.getDimensions();
     const size2_t lowerLeft(margins_.getLeft(), margins_.getBottom());
@@ -101,11 +95,6 @@ void AxisRenderProcessor::process() {
     // draw vertically
     axisRenderers_[2].render(dims, lowerLeft + size2_t(0, padding),
                              size2_t(lowerLeft.x, upperRight.y - padding), antialiasing_.get());
-
-    if (renderAtlas_.get()) {
-        TextureQuadRenderer texRenderer;
-        texRenderer.render(axisRenderers_[0].getLabelAtlasTexture(), ivec2(0), dims);
-    }
 
     utilgl::deactivateCurrentTarget();
 }

@@ -5,10 +5,18 @@ ivw_module(Plotting)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
+    include/modules/plotting/datastructures/axisdata.h
+    include/modules/plotting/datastructures/axissettings.h
     include/modules/plotting/datastructures/column.h
     include/modules/plotting/datastructures/dataframe.h
     include/modules/plotting/datastructures/dataframeutil.h
     include/modules/plotting/datastructures/datapoint.h
+    include/modules/plotting/datastructures/majortickdata.h
+    include/modules/plotting/datastructures/majorticksettings.h
+    include/modules/plotting/datastructures/minortickdata.h
+    include/modules/plotting/datastructures/minorticksettings.h
+    include/modules/plotting/datastructures/plottextdata.h
+    include/modules/plotting/datastructures/plottextsettings.h
     include/modules/plotting/plottingmodule.h
     include/modules/plotting/plottingmoduledefine.h
     include/modules/plotting/processors/csvsource.h
@@ -19,6 +27,7 @@ set(HEADER_FILES
     include/modules/plotting/processors/volumesequencetodataframe.h
     include/modules/plotting/processors/volumetodataframe.h
     include/modules/plotting/properties/axisproperty.h
+    include/modules/plotting/properties/categoricalaxisproperty.h
     include/modules/plotting/properties/dataframeproperty.h
     include/modules/plotting/properties/marginproperty.h
     include/modules/plotting/properties/optionconverter.h
@@ -33,9 +42,17 @@ ivw_group("Header Files" ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
+    src/datastructures/axisdata.cpp
+    src/datastructures/axissettings.cpp
     src/datastructures/column.cpp
     src/datastructures/dataframe.cpp
     src/datastructures/dataframeutil.cpp
+    src/datastructures/majortickdata.cpp
+    src/datastructures/majorticksettings.cpp
+    src/datastructures/minortickdata.cpp
+    src/datastructures/minorticksettings.cpp
+    src/datastructures/plottextdata.cpp
+    src/datastructures/plottextsettings.cpp
     src/plottingmodule.cpp
     src/processors/csvsource.cpp
     src/processors/dataframecolumntocolorvector.cpp
@@ -45,6 +62,7 @@ set(SOURCE_FILES
     src/processors/volumesequencetodataframe.cpp
     src/processors/volumetodataframe.cpp
     src/properties/axisproperty.cpp
+    src/properties/categoricalaxisproperty.cpp
     src/properties/dataframeproperty.cpp
     src/properties/marginproperty.cpp
     src/properties/plottextproperty.cpp

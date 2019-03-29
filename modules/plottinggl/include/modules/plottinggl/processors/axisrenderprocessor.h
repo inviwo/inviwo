@@ -73,7 +73,6 @@ private:
     MarginProperty margins_;
     FloatProperty axisMargin_;
     BoolProperty antialiasing_;
-    BoolProperty renderAtlas_;
 
     AxisProperty axis1_;
     AxisProperty axis2_;
