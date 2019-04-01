@@ -76,7 +76,7 @@ private:
     std::string htmlId_;
     PropertyWidgetCEF* widget_;
     const CefRefPtr<CefFrame> frame_;
-    IMPLEMENT_REFCOUNTING(CefDOMSearchId);
+    IMPLEMENT_REFCOUNTING(CefDOMSearchId)
 };
 
 PropertyWidgetCEF::PropertyWidgetCEF(Property* prop, CefRefPtr<CefFrame> frame, std::string htmlId)

@@ -273,8 +273,7 @@ std::pair<vec2, vec2> AxisRenderer::boundingRect(const size2_t& startPos, const 
     auto bRect = tickBoundingRect(settings_, startPos, endPos);
 
     if (const auto& captionSettings = settings_.getCaptionSettings()) {
-        
-        
+
         auto& captex = caption_.getCaption(settings_.getCaption(), captionSettings, textRenderer_);
         const auto texDims(captex.texture->getDimensions());
 
@@ -293,7 +292,6 @@ std::pair<vec2, vec2> AxisRenderer::boundingRect(const size2_t& startPos, const 
 
         const auto pos = plot::getAxisCaptionPosition(settings_, startPos, endPos);
 
-            
         const auto pos1 = pos + vec2{transform * vec4{0.0f, 0.0f, 0.0f, 1.0f}};
         const auto pos2 = pos + vec2{transform * vec4{texDims.x, texDims.y, 0.0f, 1.0f}};
 

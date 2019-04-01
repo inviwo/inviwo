@@ -117,7 +117,6 @@ VolumeAxis::VolumeAxis()
         property->minorTicks_.tickWidth_.set(1.3f);
         property->minorTicks_.style_.set(TickStyle::Outside);
         property->minorTicks_.setCurrentStateAsDefault();
-
     }
 
     auto linkAxisRanges = [this](DoubleMinMaxProperty& from, DoubleMinMaxProperty& to) {

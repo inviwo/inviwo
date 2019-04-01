@@ -32,19 +32,25 @@
 namespace inviwo {
 
 namespace plot {
+
 PlotTextData::PlotTextData(const PlotTextSettings& s)
     : enabled{s.isEnabled()}
     , color{s.getColor()}
     , position{s.getPosition()}
     , offset{s.getOffset()}
     , rotation{s.getRotation()}
-    , font{s.getFont()} {
-}
+    , font{s.getFont()} {}
+
 bool PlotTextData::isEnabled() const { return enabled; }
+
 vec4 PlotTextData::getColor() const { return color; }
+
 float PlotTextData::getPosition() const { return position; }
+
 vec2 PlotTextData::getOffset() const { return offset; }
+
 float PlotTextData::getRotation() const { return rotation; }
+
 const FontSettings& PlotTextData::getFont() const { return font; }
 
 }  // namespace plot

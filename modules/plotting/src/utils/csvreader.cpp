@@ -40,7 +40,8 @@ namespace inviwo {
 CSVDataReaderException::CSVDataReaderException(const std::string& message, ExceptionContext context)
     : DataReaderException("CSVReader: " + message, context) {}
 
-CSVReader::CSVReader() : DataReaderType<plot::DataFrame>(),  delimiters_(","), firstRowHeader_(true) {
+CSVReader::CSVReader()
+    : DataReaderType<plot::DataFrame>(), delimiters_(","), firstRowHeader_(true) {
     addExtension(FileExtension("csv", "Comma Separated Values"));
 }
 

@@ -119,7 +119,8 @@ std::vector<double> getMajorTickPositions(const MajorTickSettings& ticks, dvec2 
 }
 
 std::vector<double> getMinorTickPositions(const MinorTickSettings& ticks,
-                                          const MajorTickSettings& majorTicks, dvec2 range, size_t maxTicks) {
+                                          const MajorTickSettings& majorTicks, dvec2 range,
+                                          size_t maxTicks) {
     if ((ticks.getStyle() == TickStyle::None) || (ticks.getTickFrequency() < 2)) {
         // a tick frequency of 1 would draw the minor ticks directly on top of the major ticks
         return {};
