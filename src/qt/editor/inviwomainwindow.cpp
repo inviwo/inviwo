@@ -852,7 +852,7 @@ void InviwoMainWindow::addActions() {
                                                   .arg(utilqt::toQString(p->getIdentifier())));
                 action->setCheckable(true);
                 action->setChecked(p->getProcessorWidget()->isVisible());
-                QObject::connect(action, &QAction::toggled, this, [this, p](bool toggle) {
+                QObject::connect(action, &QAction::toggled, this, [p](bool toggle) {
                     p->getProcessorWidget()->setVisible(toggle);
                 });
             }

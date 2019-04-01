@@ -396,7 +396,8 @@ void TextureQuadRenderer::renderToRect(const Texture2D &texture, const std::vect
 
     shader_->deactivate();
 }
-void TextureQuadRenderer::renderToRect(const Texture2D &texture, const std::vector<ivec2> &positions,
+void TextureQuadRenderer::renderToRect(const Texture2D &texture,
+                                       const std::vector<ivec2> &positions,
                                        const std::vector<ivec2> &extent,
                                        const std::vector<mat4> &texTransform,
                                        const size2_t &canvasSize,

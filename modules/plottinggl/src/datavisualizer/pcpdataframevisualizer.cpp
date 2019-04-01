@@ -82,12 +82,12 @@ std::vector<Processor*> PCPDataFrameVisualizer::addVisualizerNetwork(
     Outport* outport, ProcessorNetwork* network) const {
 
     auto pcp = network->addProcessor(util::makeProcessor<plot::ParallelCoordinates>(GP{0, 3}));
-    
+
     auto back = util::makeProcessor<Background>(GP{0, 6});
     back->backgroundStyle_.setSelectedValue(Background::BackgroundStyle::Uniform);
     back->bgColor1_ = vec4{1.0f, 1.0f, 1.0f, 1.0f};
     auto bak = network->addProcessor(std::move(back));
-    
+
     auto canvas = util::makeProcessor<CanvasProcessorGL>(GP{0, 9});
     canvas->dimensions_ = ivec2{800, 400};
     auto cvs = network->addProcessor(std::move(canvas));

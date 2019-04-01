@@ -75,7 +75,7 @@ public:
     * spinbox to be updated twice in case of
     * calculations being slows
     */
-    virtual void timerEvent(QTimerEvent* event);
+    virtual void timerEvent(QTimerEvent* event) override;
 
 protected:
     virtual QValidator::State validate(QString &text, int &pos) const override;
