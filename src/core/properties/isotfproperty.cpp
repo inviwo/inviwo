@@ -74,7 +74,7 @@ std::string IsoTFProperty::getClassIdentifierForWidget() const {
 
 void IsoTFProperty::set(const Property* property) {
     if (const auto isotfprop = dynamic_cast<const CompositeProperty*>(property)) {
-        set(isotfprop);
+        CompositeProperty::set(isotfprop);
     } else if (auto isoprop = dynamic_cast<const IsoValueProperty*>(property)) {
         isovalues_.set(isoprop);
     } else if (auto tfprop = dynamic_cast<const TransferFunctionProperty*>(property)) {
