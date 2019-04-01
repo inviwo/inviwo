@@ -71,6 +71,21 @@ VolumeCombiner::VolumeCombiner()
     , removeScale_("removeScale", "Remove Scale Factor")
     , useWorldSpace_("useWorldSpaceCoordinateSystem", "World Space", false)
     , borderValue_("borderValue", "Border value", vec4(0.f), vec4(0.f), vec4(1.f), vec4(0.1f))
+    , dataRange_("dataRange", "Data Range")
+    , rangeMode_("rangeMode", "Mode")
+    , outputDataRange_("outputDataRange", "Output Data Range", 0.0, 1.0,
+                       std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max(),
+                       0.01, 0.0, InvalidationLevel::Valid, PropertySemantics::Text)
+    , outputValueRange_("outputValueRange", "Output ValueRange", 0.0, 1.0,
+                        std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max(),
+                        0.01, 0.0, InvalidationLevel::Valid, PropertySemantics::Text)
+    , customRange_("customRange", "Custom Range")
+    , customDataRange_("customDataRange", "Custom Data Range", 0.0, 1.0,
+                       std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max(),
+                       0.01, 0.0, InvalidationLevel::InvalidOutput, PropertySemantics::Text)
+    , customValueRange_("customValueRange", "Custom Value Range", 0.0, 1.0,
+                        std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max(),
+                        0.01, 0.0, InvalidationLevel::InvalidOutput, PropertySemantics::Text)
     , fragment_{std::make_shared<StringShaderResource>("volumecombiner.frag", "")}
     , shader_({{ShaderType::Vertex, utilgl::findShaderResource("volume_gpu.vert")},
                {ShaderType::Geometry, utilgl::findShaderResource("volume_gpu.geom")},
@@ -95,6 +110,20 @@ VolumeCombiner::VolumeCombiner()
     addProperty(useWorldSpace_);
 
     useWorldSpace_.addProperty(borderValue_);
+
+    addProperty(dataRange_);
+    dataRange_.addProperties(rangeMode_, outputDataRange_, outputValueRange_, customRange_,
+                             customDataRange_, customValueRange_);
+
+    outputDataRange_.setReadOnly(true);
+    outputValueRange_.setReadOnly(true);
+
+    customRange_.onChange([&]() {
+        customDataRange_.setReadOnly(!customRange_.get());
+        customValueRange_.setReadOnly(!customRange_.get());
+    });
+    customDataRange_.setReadOnly(!customRange_.get());
+    customValueRange_.setReadOnly(!customRange_.get());
 
     normalizationMode_.onChange([&]() { dirty_ = true; });
 
@@ -209,11 +238,17 @@ void VolumeCombiner::buildShader(const std::string& eqn) {
 
 void VolumeCombiner::updateProperties() {
     std::stringstream desc;
+    std::vector<OptionPropertyIntOption> options;
     for (const auto& p : util::enumerate(inport_.getConnectedOutports())) {
-        desc << "v" + toString(p.first() + 1) + ": " + p.second()->getProcessor()->getDisplayName()
-             << "\n";
+        const std::string str =
+            "v" + toString(p.first() + 1) + ": " + p.second()->getProcessor()->getDisplayName();
+        desc << str << "\n";
+        options.emplace_back("v" + toString(p.first() + 1), str, static_cast<int>(p.first()));
     }
+    options.emplace_back("maxRange", "min/max {v1, v2, ...}", -1);
     description_.set(desc.str());
+
+    rangeMode_.replaceOptions(options);
 }
 
 void VolumeCombiner::process() {
@@ -227,6 +262,8 @@ void VolumeCombiner::process() {
         volume_->dataMap_ = inport_.getData()->dataMap_;
         outport_.setData(volume_);
     }
+
+    updateDataRange();
 
     if (dirty_) {
         dirty_ = false;
@@ -270,6 +307,35 @@ void VolumeCombiner::process() {
     shader_.deactivate();
     fbo_.deactivate();
     isReady_.update();
+}
+
+void VolumeCombiner::updateDataRange() {
+    dvec2 dataRange = inport_.getData()->dataMap_.dataRange;
+    dvec2 valueRange = inport_.getData()->dataMap_.valueRange;
+
+    if (rangeMode_.getSelectedIdentifier() == "maxRange") {
+        auto minmax = [](const dvec2& a, const dvec2& b) {
+            return dvec2{std::min(a.x, b.x), std::max(a.y, b.y)};
+        };
+
+        for (const auto& vol : inport_) {
+            dataRange = minmax(dataRange, vol->dataMap_.dataRange);
+            valueRange = minmax(valueRange, vol->dataMap_.valueRange);
+        }
+    } else {
+        dataRange = inport_.getVectorData()[rangeMode_.getSelectedValue()]->dataMap_.dataRange;
+        valueRange = inport_.getVectorData()[rangeMode_.getSelectedValue()]->dataMap_.valueRange;
+    }
+    outputDataRange_.set(dataRange);
+    outputValueRange_.set(valueRange);
+
+    if (customRange_) {
+        dataRange = customDataRange_;
+        valueRange = customValueRange_;
+    }
+
+    volume_->dataMap_.dataRange = dataRange;
+    volume_->dataMap_.valueRange = valueRange;
 }
 
 }  // namespace inviwo
