@@ -93,7 +93,7 @@ std::unique_ptr<QMenu> IsoTFPropertyWidgetQt::getContextMenu() {
 
     util::addTFPresetsMenu(this, menu.get(), &static_cast<IsoTFProperty*>(property_)->tf_);
 
-    auto clearTF = menu->addAction("&Clear TF & Isovalues");
+    auto clearTF = menu->addAction("&Clear TF && Isovalues");
     clearTF->setEnabled(!property_->getReadOnly());
 
     connect(clearTF, &QAction::triggered, this, [this]() {
