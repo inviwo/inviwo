@@ -11,6 +11,7 @@ c++98-compat                      | *same* (3.2)       | *no*                 | 
 c++98-compat-pedantic             | *same* (3.2)       | *no*                 | *no*              
 cast-align                        | *same* (3.2)       | *same* (3.4)         | *no*              
 catch-semantic-changed            | *no*               | *no*                 | C4571 (13)        
+char-subscripts                   | *same* (3.2)       | *same* (3.4)         | *no*              
 conditional-uninitialized         | *same* (3.2)       | *no*                 | *no*              
 constant-conditional              | *no*               | *no*                 | C4127 (13)        
 constant-conversion               | *same* (3.2)       | *no*                 | *no*              
