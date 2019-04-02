@@ -54,17 +54,17 @@ void foreach_helper(std::true_type, IT a, IT b, Callback callback, size_t startI
 template <typename Callback, typename IT, typename OnDoneCallback>
 auto foreach_helper_pool(std::true_type, IT a, IT b, Callback callback, size_t startIndex = 0,
                          OnDoneCallback onTaskDone = []() {}) {
-    return dispatchPool(
-        [id = startIndex, c = std::move(callback), onTaskDone = std::move(onTaskDone), a, b]() mutable {
-            std::for_each(a, b, [&](auto v) { c(v, id++); });
-            onTaskDone();
-        });
+    return dispatchPool([id = startIndex, c = std::move(callback),
+                         onTaskDone = std::move(onTaskDone), a, b]() mutable {
+        std::for_each(a, b, [&](auto v) { c(v, id++); });
+        onTaskDone();
+    });
 }
 
 template <typename Callback, typename IT, typename OnDoneCallback>
 auto foreach_helper_pool(std::false_type, IT a, IT b, Callback callback, size_t /*startIndex*/ = 0,
                          OnDoneCallback onTaskDone = []() {}) {
-    return dispatchPool([c = std::move(callback), a, b]() {
+    return dispatchPool([onTaskDone = std::move(callback), a, b]() {
         std::for_each(a, b, c);
         onTaskDone();
     });
