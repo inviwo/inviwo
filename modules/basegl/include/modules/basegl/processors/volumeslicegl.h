@@ -180,6 +180,7 @@ private:
     BoolProperty posPicking_;
     BoolProperty showIndicator_;
     FloatVec4Property indicatorColor_;
+    FloatProperty indicatorSize_;
 
     BoolProperty tfMappingEnabled_;
     TransferFunctionProperty transferFunction_;

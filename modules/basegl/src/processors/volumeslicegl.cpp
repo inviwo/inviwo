@@ -92,6 +92,8 @@ VolumeSliceGL::VolumeSliceGL()
     , indicatorColor_("indicatorColor", "Indicator Color", vec4(1.0f, 0.8f, 0.1f, 0.8f), vec4(0.0f),
                       vec4(1.0f), vec4(0.01f), InvalidationLevel::InvalidOutput,
                       PropertySemantics::Color)
+    , indicatorSize_("indicatorSize", "Indicator Size", 4.0f, 0.0f, 100.0f, 0.01f,
+                     InvalidationLevel::InvalidOutput)
     , tfMappingEnabled_("tfMappingEnabled", "Enable Transfer Function", true,
                         InvalidationLevel::InvalidResources)
     , transferFunction_("transferFunction", "Transfer Function", &inport_)
@@ -107,20 +109,23 @@ VolumeSliceGL::VolumeSliceGL()
                     PropertySemantics::Text)
     , handleInteractionEvents_("handleEvents", "Handle Interaction Events", true,
                                InvalidationLevel::Valid)
-    , mouseShiftSlice_("mouseShiftSlice", "Mouse Slice Shift",
-                       [this](Event* e) { eventShiftSlice(e); },
-                       util::make_unique<WheelEventMatcher>())
+    , mouseShiftSlice_(
+          "mouseShiftSlice", "Mouse Slice Shift", [this](Event* e) { eventShiftSlice(e); },
+          util::make_unique<WheelEventMatcher>())
 
-    , mouseSetMarker_("mouseSetMarker", "Mouse Set Marker", [this](Event* e) { eventSetMarker(e); },
-                      MouseButton::Left, MouseState::Press | MouseState::Move)
-    , mousePositionTracker_("mousePositionTracker", "Mouse Position Tracker",
-                            [this](Event* e) { eventUpdateMousePos(e); }, MouseButton::None,
-                            MouseState::Move)
+    , mouseSetMarker_(
+          "mouseSetMarker", "Mouse Set Marker", [this](Event* e) { eventSetMarker(e); },
+          MouseButton::Left, MouseState::Press | MouseState::Move)
+    , mousePositionTracker_(
+          "mousePositionTracker", "Mouse Position Tracker",
+          [this](Event* e) { eventUpdateMousePos(e); }, MouseButton::None, MouseState::Move)
 
-    , stepSliceUp_("stepSliceUp", "Key Slice Up", [this](Event* e) { eventStepSliceUp(e); },
-                   IvwKey::W, KeyState::Press)
-    , stepSliceDown_("stepSliceDown", "Key Slice Down", [this](Event* e) { eventStepSliceDown(e); },
-                     IvwKey::S, KeyState::Press)
+    , stepSliceUp_(
+          "stepSliceUp", "Key Slice Up", [this](Event* e) { eventStepSliceUp(e); }, IvwKey::W,
+          KeyState::Press)
+    , stepSliceDown_(
+          "stepSliceDown", "Key Slice Down", [this](Event* e) { eventStepSliceDown(e); }, IvwKey::S,
+          KeyState::Press)
     , gestureShiftSlice_(
           "gestureShiftSlice", "Gesture Slice Shift",
           [this](Event* e) { eventGestureShiftSlice(e); },
@@ -213,9 +218,12 @@ VolumeSliceGL::VolumeSliceGL()
     pickGroup_.addProperty(posPicking_);
     pickGroup_.addProperty(showIndicator_);
     pickGroup_.addProperty(indicatorColor_);
+    pickGroup_.addProperty(indicatorSize_);
+
 
     posPicking_.onChange([this]() { modeChange(); });
     indicatorColor_.onChange([this]() { invalidateMesh(); });
+    indicatorSize_.onChange([this]() { invalidateMesh(); });
     showIndicator_.setReadOnly(posPicking_.get());
     indicatorColor_.setSemantics(PropertySemantics::Color);
 
@@ -470,7 +478,7 @@ void VolumeSliceGL::renderPositionIndicator() {
 
     utilgl::GlBoolState smooth(GL_LINE_SMOOTH, true);
     utilgl::BlendModeState blend(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    utilgl::LineWidthState linewidth(2.5f);
+    //utilgl::LineWidthState linewidth(2.5f); // Doesn't seem to make a difference
 
     indicatorShader_.activate();
     indicatorShader_.setUniform("dataToClip", mat4(1.0f));
@@ -484,7 +492,8 @@ void VolumeSliceGL::updateIndicatorMesh() {
     const vec2 pos = getScreenPosFromVolPos();
 
     const size2_t canvasSize(outport_.getDimensions());
-    const vec2 indicatorSize = vec2(4.0f / canvasSize.x, 4.0f / canvasSize.y);
+    const vec2 indicatorSize =
+        vec2(indicatorSize_.get() / canvasSize.x, indicatorSize_.get() / canvasSize.y);
     const vec4 color(indicatorColor_.get());
 
     meshCrossHair_ = util::make_unique<Mesh>();
