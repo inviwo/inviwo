@@ -42,7 +42,7 @@ using ind = signed long long;
 /**
  * Mapping structure name to respective dimension.
  * Assign channels to any dimensions this way.
- * If these do not suffice, cast the respective ind.
+ * If these do not suffice, cast the respective int.
  */
 enum class GridPrimitive : int {
     Undef = -1,
@@ -73,18 +73,6 @@ inline std::string primitiveName(GridPrimitive primitive) {
 }
 
 }  // namespace discretedata
-
-template <>
-struct InviwoDefaults<discretedata::ind> {
-    static InviwoDefaultData<discretedata::ind> get() {
-        return {"ind",
-                uvec2(1, 1),
-                discretedata::ind(1),
-                discretedata::ind(-100),
-                discretedata::ind(100),
-                discretedata::ind(1)};
-    }
-};
 
 template <>
 struct InviwoDefaults<discretedata::GridPrimitive> {
