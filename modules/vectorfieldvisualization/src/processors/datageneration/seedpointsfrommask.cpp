@@ -95,9 +95,8 @@ void SeedPointsFromMask::process() {
             util::IndexMapper3D index(dim);
             vec3 invDim = vec3(1.0f) / vec3(dim);
 
-            std::function<vec3(vec3)> noTransform = [&](vec3 p) -> vec3 { return p; };
-            std::function<vec3(vec3)> withTransform = [&](vec3 p) -> vec3 {
-                auto m = v->getCoordinateTransformer().getDataToWorldMatrix();
+            std::function<vec3(vec3)> noTransform = [](vec3 p) -> vec3 { return p; };
+            std::function<vec3(vec3)> withTransform = [m = v->getCoordinateTransformer().getDataToWorldMatrix()](vec3 p) -> vec3 {
                 vec4 WP = m * vec4(p, 1.0f);
                 return vec3(WP) / WP.w;
             };
