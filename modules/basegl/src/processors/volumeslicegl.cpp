@@ -478,7 +478,6 @@ void VolumeSliceGL::renderPositionIndicator() {
 
     utilgl::GlBoolState smooth(GL_LINE_SMOOTH, true);
     utilgl::BlendModeState blend(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    //utilgl::LineWidthState linewidth(2.5f); // Doesn't seem to make a difference
 
     indicatorShader_.activate();
     indicatorShader_.setUniform("dataToClip", mat4(1.0f));
