@@ -36,6 +36,7 @@
 #include <inviwo/core/properties/templateproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/core/properties/directoryproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/isotfproperty.h>
@@ -181,6 +182,25 @@ class IsoTFToIsovalueConverter : public TemplatePropertyConverter<IsoTFProperty,
 protected:
     virtual void convertimpl(const IsoTFProperty* src, IsoValueProperty* dst) const override {
         dst->set(*src);
+    }
+};
+
+class ButtonToFileConverter : public TemplatePropertyConverter<ButtonProperty, FileProperty> {
+protected:
+    virtual void convertimpl(const ButtonProperty* src, FileProperty* dst) const override {
+        if (src->isModified()) {
+            dst->requestFile();
+        }
+    }
+};
+
+class ButtonToDirectoryConverter
+    : public TemplatePropertyConverter<ButtonProperty, DirectoryProperty> {
+protected:
+    virtual void convertimpl(const ButtonProperty* src, DirectoryProperty* dst) const override {
+        if (src->isModified()) {
+            dst->requestFile();
+        }
     }
 };
 
