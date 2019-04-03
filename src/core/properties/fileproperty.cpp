@@ -30,6 +30,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 namespace inviwo {
 
@@ -82,9 +83,9 @@ void FileProperty::serialize(Serializer& s) const {
     several version to have a higher success rate when moving stuff around.
 
     Saved path versions:
-     1) Absolute
-     2) Relative workspace
-     3) Relative filesystem::getPath(PathType::Data)
+    1) Absolute
+    2) Relative workspace
+    3) Relative filesystem::getPath(PathType::Data)
     */
     Property::serialize(s);
 
@@ -201,6 +202,27 @@ void FileProperty::requestFile() {
     for (auto widget : getWidgets()) {
         if (auto filerequestable = dynamic_cast<FileRequestable*>(widget)) {
             if (filerequestable->requestFile()) return;
+        }
+    }
+    if (getWidgets().empty()) {
+
+        const std::string filename{this->get()};
+
+        // Setup Extensions
+        std::vector<FileExtension> filters = this->getNameFilters();
+
+        auto fileDialog = util::dynamic_unique_ptr_cast<FileDialog>(
+            InviwoApplication::getPtr()->getDialogFactory()->create("FileDialog"));
+        if (!fileDialog) {
+            return;
+        }
+        fileDialog->setTitle("Open File");
+        fileDialog->setAcceptMode(AcceptMode::Open);
+        fileDialog->setFileMode(FileMode::AnyFile);
+        fileDialog->addExtension(FileExtension::all());
+
+        if (fileDialog->show()) {
+            set(fileDialog->getSelectedFile());
         }
     }
 }
