@@ -39,7 +39,7 @@ namespace discretedata {
 const ProcessorInfo VolumeFromDataSet::processorInfo_{
     "org.inviwo.VolumeFromDataSet",  // Class identifier
     "Volume From Data Set",          // Display name
-    "Undefined",                     // Category
+    "Data Set",                     // Category
     CodeState::Experimental,         // Code state
     Tags::None,                      // Tags
 };

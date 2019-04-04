@@ -70,7 +70,6 @@ void DataSetFromVolume::process() {
 
     auto dims = dataRAM->getDimensions();
     size3_t dimGrid = dims;
-    if (dimensionTo == GridPrimitive::Vertex) dimGrid = {dims.x - 1, dims.y - 1, dims.z - 1};
 
     ind numElements = dimGrid.x * dimGrid.y * dimGrid.z;
 
@@ -81,7 +80,7 @@ void DataSetFromVolume::process() {
     else {
         // Build a new grid.
         dataSet = new DataSet(GridPrimitive::Volume,
-                              std::vector<ind>({(ind)dimGrid.x, (ind)dimGrid.y, (ind)dimGrid.z}));
+                              std::vector<ind>({(ind)dimGrid.x-1, (ind)dimGrid.y-1, (ind)dimGrid.z-1}));
     }
 
     // Copy data.
@@ -92,7 +91,6 @@ void DataSetFromVolume::process() {
     DataFormatId type = dataRAM->getDataFormatId();
     Channel *channel = nullptr;
 
-    LogWarn("Doing the thing.");
     switch (type) {
         case DataFormatId::Float16:
             channel =

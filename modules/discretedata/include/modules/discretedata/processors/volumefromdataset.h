@@ -116,6 +116,8 @@ inviwo::Volume* VolumeFromDataSet::convertTo(const Channel& channel, const Struc
     ivec3 size(grid.getNumCellsInDimension(0) + offset, grid.getNumCellsInDimension(1) + offset,
                grid.getNumCellsInDimension(2) + offset);
 
+    ivwAssert(buffer->size() == size.x * size.y * size.z, "Inconsistency with buffer sizes.");
+
     To* data = new To[buffer->size()];
     if (std::is_same<T, To>()) {
         memcpy(data, buffer->data().data(), buffer->size() * sizeof(T));
