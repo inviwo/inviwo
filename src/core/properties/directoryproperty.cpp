@@ -29,6 +29,7 @@
 
 #include <inviwo/core/properties/directoryproperty.h>
 #include <inviwo/core/util/filedialogstate.h>
+#include <inviwo/core/util/filesystem.h>
 
 namespace inviwo {
 
