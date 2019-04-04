@@ -72,11 +72,7 @@ void DirectoryProperty::requestFile() {
         if (!fileDialog) {
             return;
         }
-        fileDialog->setTitle("Open Folder");
-        fileDialog->setAcceptMode(AcceptMode::Open);
         fileDialog->setFileMode(FileMode::DirectoryOnly);
-
-        fileDialog->addExtension(FileExtension::all());
 
         if (fileDialog->show()) {
             set(fileDialog->getSelectedFile());

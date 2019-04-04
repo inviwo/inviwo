@@ -55,6 +55,8 @@ public:
     DirectoryProperty& operator=(const DirectoryProperty& that);
     virtual DirectoryProperty* clone() const override;
 
+    // Override the FileProperty's function requestFile() to load a directory instead of a single
+    // file.
     virtual void requestFile() override;
 
     virtual ~DirectoryProperty();
