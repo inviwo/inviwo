@@ -55,6 +55,8 @@ public:
     DirectoryProperty& operator=(const DirectoryProperty& that);
     virtual DirectoryProperty* clone() const override;
 
+    virtual void requestFile() override;
+
     virtual ~DirectoryProperty();
 
     virtual std::string getClassIdentifierForWidget() const override;
