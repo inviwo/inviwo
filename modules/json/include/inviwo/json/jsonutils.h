@@ -33,25 +33,26 @@
 #include <modules/plotting/datastructures/dataframe.h>
 #include <nlohmann/json.hpp>
 
-namespace inviwo {
+namespace nlohmann {
 
-template <typename T>
-std::string dataframeToJsonString(std::vector<std::shared_ptr<const T>> dataFrame) {
+using json = nlohmann::json;
 
-    using json = nlohmann::json;
-    json root;  // = json::array();
+namespace ns {
 
-    for (auto row = 0; row < dataFrame->getNumberOfRows(); ++row) {
+// Converts a DataFrame to a JSON object.
+void to_json(json& j, const inviwo::plot::DataFrame* df) {
+    for (auto row = 0; row < df->getNumberOfRows(); ++row) {
         json node = json::object();
-        auto items = dataFrame->getDataItem(row, true);
+        auto items = df->getDataItem(row, true);
+        // Row 0 in the dataframe contains the row indices, which is not needed in the json object.
         int i = 1;
         for (auto col = ++items.begin(); col != items.end(); ++col) {
-            node[dataFrame->getHeader(i++)] = (*col)->toString();
+            node[df->getHeader(i++)] = (*col)->toString();
         }
-        root.emplace_back(node);
+        j.emplace_back(node);
     }
-
-    return root.dump();
 }
 
-}  // namespace inviwo
+}  // namespace ns
+
+}  // namespace nlohmann
