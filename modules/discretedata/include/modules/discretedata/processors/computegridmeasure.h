@@ -33,7 +33,9 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <modules/discretedata/ports/datasetport.h>
+#include <modules/discretedata/properties/datachannelproperty.h>
 
 namespace inviwo {
 namespace discretedata {
@@ -72,7 +74,15 @@ public:
 
     // Properties
 public:
+    /// Input coordinates of the vertices
+    DataChannelProperty propChannelCoordinates;
+
+    /// Which dimension are we computing? Volume, Area, ...
     OptionPropertyInt dimensionToMeasure;
+
+    ///Whether to map it back to vertices.
+    BoolProperty propMapToVertices;
+
     // Attributes
 private:
 };

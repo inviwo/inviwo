@@ -48,67 +48,104 @@ ComputeGridMeasure::ComputeGridMeasure()
     : Processor()
     , dataInport("InputData")
     , dataOutport("ExtendedData")
-    , dimensionToMeasure("dimensionToMeasure", "Grid Primitive to compute Measure on") {
+    , propChannelCoordinates(dataInport, "ChannelCoordinates", "Coordinates",
+        [](const std::shared_ptr<const Channel> a) {return (a->getGridPrimitiveType() == GridPrimitive::Vertex && a->getNumComponents() == 3);})
+    , dimensionToMeasure("dimensionToMeasure", "Grid Primitive to compute Measure on")
+    , propMapToVertices("MapToVertices", "Map to Vertices", true)
+{
     addPort(dataInport);
     addPort(dataOutport);
+    addProperty(propChannelCoordinates);
     addProperty(dimensionToMeasure);
+    addProperty(propMapToVertices);
 
     dataInport.onConnect([this]() { this->updatePrimitiveOptions(); });
     dataInport.onChange([this]() { this->updatePrimitiveOptions(); });
 }
 
 void ComputeGridMeasure::updatePrimitiveOptions() {
-    std::shared_ptr<const Connectivity> grid;
     dimensionToMeasure.clearOptions();
 
     // Nothing connected, nothing to choose
-    if (!dataInport.getData() || (grid = dataInport.getData()->grid)) return;
+    if (!dataInport.getData()) return;
+    std::shared_ptr<const Connectivity> grid = dataInport.getData()->grid;
+    if (!grid) return;
 
-    for (int dim = 1; dim < (ind)grid->getDimension(); ++dim) {
+    for (int dim = 1; dim <= (ind)grid->getDimension(); dim++) {
         std::string dimString = "" + std::to_string(dim) + "D";
-        std::string addString = "";
+        std::string displayString = dimString;
         switch (dim) {
             case 1:
-                addString = " (Edges)";
+                displayString = "Length of Edges";
                 break;
             case 2:
-                addString = " (Faces)";
+                displayString = "Area of Faces";
                 break;
             case 3:
-                addString = " (Volumes)";
+                displayString = "Volume of Voxels / Tetrahedra";
                 break;
             default:
                 break;
         }
-        dimensionToMeasure.addOption(dimString, dimString + addString, dim);
+        dimensionToMeasure.addOption(dimString, displayString, dim);
         dimensionToMeasure.set((int)grid->getDimension());
     }
 }
 
 void ComputeGridMeasure::process() {
+
+    updatePrimitiveOptions();
+
     if (!dataInport.getData()) return;
     const auto& grid = dataInport.getData()->grid;
     GridPrimitive dimensionToProcess = (GridPrimitive)dimensionToMeasure.get();
-
     if ((ind)dimensionToProcess < 1 || dimensionToProcess > grid->getDimension()) return;
 
-    // TODO: Dropdown.
-    auto vertices = dataInport.getData()->getChannel("Position", dimensionToProcess);
-    if (!vertices) return;
+    auto VertexCoordinates = propChannelCoordinates.getCurrentChannel();
+    if (!VertexCoordinates) return;
+
+    //Generate output data
+    auto outData = std::make_shared<DataSet>(*dataInport.getData());
 
     // Setup buffer to store data in
-    ind numElements = grid->getNumElements(dimensionToProcess);
-    auto volumeBuffer = std::make_shared<BufferChannel<double, 1>>(
-        numElements, "Measure" + dimensionToMeasure.getDisplayName(), dimensionToProcess);
+    const ind numElements = grid->getNumElements(dimensionToProcess);
+    auto VolumeBuffer = std::make_shared<BufferChannel<double, 1>>(
+        numElements, "Measure " + dimensionToMeasure.getSelectedDisplayName(), dimensionToProcess);
 
     // Compute measures per element
     for (auto element : grid->all(dimensionToProcess))
-        (volumeBuffer->get(element.getIndex())) = euclidean::getMeasure(*vertices, element);
-    // grid->getPrimitiveMeasure(element);
+    {
+        (VolumeBuffer->get(element.getIndex())) = euclidean::getMeasure(*VertexCoordinates, element);
+    }
 
-    auto outData = std::make_shared<DataSet>(*dataInport.getData());
+    //Add to output
+    outData->addChannel(VolumeBuffer);
 
-    outData->addChannel(volumeBuffer);
+    //Map back to vertices?
+    if (propMapToVertices.get() && dimensionToProcess == GridPrimitive::Volume)
+    {
+        // Map volume from cell to vertices
+        std::vector<ind> CellNeighs;
+        auto VolumeDataVert = std::make_shared<BufferChannel<double>>(grid->getNumElements(GridPrimitive::Vertex), "Volume", GridPrimitive::Vertex);
+        for (const auto& Vertex : grid->all(GridPrimitive::Vertex))
+        {
+            // For all cells neighboring the vertex
+            grid->getConnections(CellNeighs, Vertex.getIndex(), GridPrimitive::Vertex, GridPrimitive::Volume);
+
+            // Each vertex gets an eigth of each neighboring cube
+            double VertexVolume(0);
+            for (const auto& Cell : CellNeighs)
+            {
+                VertexVolume += VolumeBuffer->get(Cell) / 8.0;
+            }
+
+            // Set it
+            VolumeDataVert->get(Vertex.getIndex()) = VertexVolume;
+        }
+
+        outData->addChannel(VolumeDataVert);
+    }
+
     dataOutport.setData(outData);
 }
 
