@@ -29,14 +29,21 @@
 
 #include <inviwo/json/io/jsonreader.h>
 #include <inviwo/json/jsonutils.h>
+#include <inviwo/core/util/filesystem.h>
 
 using json = nlohmann::json;
 
 namespace inviwo {
 
-JSONReader* JSONReader::clone() const { return new CSVReader(*this); }
+JSONReader::JSONReader() {
+    addExtension(FileExtension("json", "JavaScript Object Notation (JSON)"));
+}
 
-std::shared_ptr<plot::DataFrame> JSONReader::JSONReader(const std::string& fileName) {
+JSONReader* JSONReader::clone() const {
+    return new JSONReader(*this);
+}
+
+std::shared_ptr<plot::DataFrame> JSONReader::readData(const std::string& fileName) {
     auto file = filesystem::ifstream(fileName);
 
     if (!file.is_open()) {
@@ -55,12 +62,6 @@ std::shared_ptr<plot::DataFrame> JSONReader::JSONReader(const std::string& fileN
 }
 
 std::shared_ptr<plot::DataFrame> JSONReader::readData(std::istream& stream) const {
-    // Skip BOM if it exists. 
-    filesystem::skipByteOrderMark(stream);
-
-    if (stream.bad() || stream.fail()) {
-        throw FileException("Input stream in a bad state", IvwContext);
-    }
     json j;
     stream >> j;
     auto dataFrame = std::make_shared<plot::DataFrame>();

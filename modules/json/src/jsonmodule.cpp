@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/json/jsonmodule.h>
+#include <inviwo/json/io/jsonreader.h>
 
 namespace inviwo {
 
@@ -44,7 +45,7 @@ jsonModule::jsonModule(InviwoApplication* app) : InviwoModule(app, "json") {
     // registerProperty<jsonProperty>();
 
     // Readers and writes
-    // registerDataReader(util::make_unique<jsonReader>());
+    registerDataReader(util::make_unique<JSONReader>());
     // registerDataWriter(util::make_unique<jsonWriter>());
 
     // Data converters

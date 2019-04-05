@@ -33,8 +33,6 @@
 #include <modules/plotting/datastructures/dataframe.h>
 #include <nlohmann/json.hpp>
 
-namespace nlohmann {
-
 using json = nlohmann::json;
 
 namespace inviwo {
@@ -44,20 +42,23 @@ namespace plot {
 /**
  * Converts a DataFrame to a JSON object. 
  * Usage example:
+ * \code{.cpp}
  * Dataframe df;
  * json j = df;
+ * \endcode
  */
 IVW_MODULE_JSON_API void to_json(json& j, const DataFrame* df);
 
 /**
  * Converts a JSON object to a DataFrame. 
  * Usage example:
+ * \code{.cpp}
  * auto df = j.get<inviwo::DataFrame>();
+ * \endcode
  */
-IVW_MODULE_JSON_API void from_json(const json& j, :DataFrame& df);
+IVW_MODULE_JSON_API void from_json(const json& j, DataFrame& df);
 
 } // namespace plot
 
 }  // namespace inviwo
 
-}  // namespace nlohmann
