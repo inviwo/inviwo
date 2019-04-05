@@ -27,7 +27,6 @@ ivw_group("Shader Files" ${SHADER_FILES})
 #--------------------------------------------------------------------
 # Add Unittests
 set(TEST_FILES
-    tests/unittests/json-unittest-main.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 

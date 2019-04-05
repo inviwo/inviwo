@@ -39,8 +39,9 @@ using json = nlohmann::json;
 
 namespace ns {
 
-// Converts a DataFrame to a JSON object.
-void to_json(json& j, const inviwo::plot::DataFrame* df) {
+// Converts a DataFrame to a JSON object, possible to convert through assignment operator like json
+// j = Dataframe;
+IVW_MODULE_JSON_API void to_json(json& j, const inviwo::plot::DataFrame* df) {
     for (auto row = 0; row < df->getNumberOfRows(); ++row) {
         json node = json::object();
         auto items = df->getDataItem(row, true);
