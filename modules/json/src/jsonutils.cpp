@@ -28,10 +28,7 @@
  *********************************************************************************/
 #pragma once
 
-#include <inviwo/json/jsonmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <modules/plotting/datastructures/dataframe.h>
-#include <nlohmann/json.hpp>
+#include <inviwo/json/jsonutils.h>
 
 namespace nlohmann {
 
@@ -39,9 +36,18 @@ using json = nlohmann::json;
 
 namespace ns {
 
-// Converts a DataFrame to a JSON object, possible to convert through assignment operator like json
-// j = Dataframe;
-IVW_MODULE_JSON_API void to_json(json& j, const inviwo::plot::DataFrame* df);
+void to_json(json& j, const inviwo::plot::DataFrame* df) {
+    for (auto row = 0; row < df->getNumberOfRows(); ++row) {
+        json node = json::object();
+        auto items = df->getDataItem(row, true);
+        // Row 0 in the dataframe contains the row indices, which is not needed in the json object.
+        int i = 1;
+        for (auto col = ++items.begin(); col != items.end(); ++col) {
+            node[df->getHeader(i++)] = (*col)->toString();
+        }
+        j.emplace_back(node);
+    }
+}
 
 }  // namespace ns
 
