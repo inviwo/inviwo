@@ -14,7 +14,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-    src/jsonmodule.cpp
+	src/jsonmodule.cpp
 	src/jsonutils.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
