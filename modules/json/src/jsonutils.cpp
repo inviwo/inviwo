@@ -36,14 +36,14 @@ using json = nlohmann::json;
 
 namespace ns {
 
-void to_json(json& j, const inviwo::plot::DataFrame* df) {
-    for (auto row = 0; row < df->getNumberOfRows(); ++row) {
+void to_json(json& j, const inviwo::plot::DataFrame& df) {
+    for (auto row = 0; row < df.getNumberOfRows(); ++row) {
         json node = json::object();
-        auto items = df->getDataItem(row, true);
+        auto items = df.getDataItem(row, true);
         // Row 0 in the dataframe contains the row indices, which is not needed in the json object.
         int i = 1;
         for (auto col = ++items.begin(); col != items.end(); ++col) {
-            node[df->getHeader(i++)] = (*col)->toString();
+            node[df.getHeader(i++)] = (*col)->toString();
         }
         j.emplace_back(node);
     }
