@@ -39,9 +39,7 @@ JSONReader::JSONReader() {
     addExtension(FileExtension("json", "JavaScript Object Notation (JSON)"));
 }
 
-JSONReader* JSONReader::clone() const {
-    return new JSONReader(*this);
-}
+JSONReader* JSONReader::clone() const { return new JSONReader(*this); }
 
 std::shared_ptr<plot::DataFrame> JSONReader::readData(const std::string& fileName) {
     auto file = filesystem::ifstream(fileName);

@@ -26,43 +26,35 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <inviwo/json/jsonmoduledefine.h>
+#ifdef _MSC_VER
+#pragma comment(linker, "/SUBSYSTEM:CONSOLE")
+#endif
+
 #include <inviwo/core/common/inviwo.h>
-#include <modules/plotting/datastructures/dataframe.h>
-#include <nlohmann/json.hpp>
 
-using json = nlohmann::json;
+#include <inviwo/testutil/configurablegtesteventlistener.h>
 
-namespace inviwo {
+#include <warn/push>
+#include <warn/ignore/all>
+#include <gtest/gtest.h>
+#include <warn/pop>
 
-namespace plot {
+using namespace inviwo;
 
-/**
- * Converts a DataFrame to a JSON object. 
- * Usage example:
- * \code{.cpp}
- * Dataframe df;
- * json j = df;
- * \endcode
- */
-IVW_MODULE_JSON_API void to_json(json& j, const DataFrame* df);
+int main(int argc, char** argv) {
+    int ret = -1;
+    {
+#ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
+        VLDDisable();
+        ::testing::InitGoogleTest(&argc, argv);
+        VLDEnable();
+#else
+        ::testing::InitGoogleTest(&argc, argv);
+#endif
+        ConfigurableGTestEventListener::setup();
+        ret = RUN_ALL_TESTS();
+    }
 
-/**
- * Converts a JSON object to a DataFrame. 
- * Expects object layout:
- * [ {"Col1": val11, "Col2": val12 }, 
- *   {"Col1": val21, "Col2": val22 } ]
- *
- * Usage example:
- * \code{.cpp}
- * auto df = j.get<DataFrame>();
- * \endcode
- */
-IVW_MODULE_JSON_API void from_json(const json& j, DataFrame& df);
-
-} // namespace plot
-
-}  // namespace inviwo
-
+    return ret;
+}

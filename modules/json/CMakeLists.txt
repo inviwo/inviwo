@@ -9,6 +9,7 @@ set(HEADER_FILES
     include/inviwo/json/jsonmodule.h
     include/inviwo/json/jsonmoduledefine.h
     include/inviwo/json/jsonutils.h
+    include/inviwo/json/processors/dataframesource.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -18,6 +19,7 @@ set(SOURCE_FILES
     src/io/jsonreader.cpp
     src/jsonmodule.cpp
     src/jsonutils.cpp
+    src/processors/dataframesource.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
@@ -30,6 +32,8 @@ ivw_group("Shader Files" ${SHADER_FILES})
 #--------------------------------------------------------------------
 # Add Unittests
 set(TEST_FILES
+    tests/unittests/json-unittest-main.cpp
+    tests/unittests/jsonreader-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 

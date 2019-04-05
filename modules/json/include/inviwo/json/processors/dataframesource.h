@@ -26,43 +26,35 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+
 #pragma once
 
 #include <inviwo/json/jsonmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/ports/dataoutport.h>
+#include <modules/base/processors/datasource.h>
 #include <modules/plotting/datastructures/dataframe.h>
-#include <nlohmann/json.hpp>
-
-using json = nlohmann::json;
 
 namespace inviwo {
 
-namespace plot {
-
-/**
- * Converts a DataFrame to a JSON object. 
- * Usage example:
- * \code{.cpp}
- * Dataframe df;
- * json j = df;
- * \endcode
- */
-IVW_MODULE_JSON_API void to_json(json& j, const DataFrame* df);
-
-/**
- * Converts a JSON object to a DataFrame. 
- * Expects object layout:
- * [ {"Col1": val11, "Col2": val12 }, 
- *   {"Col1": val21, "Col2": val22 } ]
+/** \docpage{org.inviwo.DataFrameSource, Data Frame Source}
+ * ![](org.inviwo.DataFrameSource.png?classIdentifier=org.inviwo.DataFrameSource)
+ * Loads a DataFrame from file.
  *
- * Usage example:
- * \code{.cpp}
- * auto df = j.get<DataFrame>();
- * \endcode
+ * ### Outports
+ *   * __Outport__ The loaded DataFrame
+ *
+ * ### Properties
+ *   * __File name__ File to load.
  */
-IVW_MODULE_JSON_API void from_json(const json& j, DataFrame& df);
+class IVW_MODULE_JSON_API DataFrameSource
+    : public DataSource<plot::DataFrame, DataOutport<plot::DataFrame>> {
+public:
+    DataFrameSource(InviwoApplication* app, const std::string& file = "");
+    virtual ~DataFrameSource() = default;
 
-} // namespace plot
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+};
 
 }  // namespace inviwo
-

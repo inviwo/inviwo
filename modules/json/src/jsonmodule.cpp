@@ -29,6 +29,7 @@
 
 #include <inviwo/json/jsonmodule.h>
 #include <inviwo/json/io/jsonreader.h>
+#include <inviwo/json/processors/dataframesource.h>
 
 namespace inviwo {
 
@@ -39,6 +40,7 @@ jsonModule::jsonModule(InviwoApplication* app) : InviwoModule(app, "json") {
     // Register objects that can be shared with the rest of inviwo here:
 
     // Processors
+    registerProcessor<DataFrameSource>();
     // registerProcessor<jsonProcessor>();
 
     // Properties

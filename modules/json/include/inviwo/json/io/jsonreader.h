@@ -53,12 +53,9 @@ public:
     /**
      * read a JSON file from a file
      *
-     * @param fileName   name of the input CSV file
+     * @param fileName   name of the input file
      * @return a plot::DataFrame containing the JSON data
      * @throws FileException if the file cannot be accessed
-     * @throws CSVDataReaderException if the file contains no data, the first row
-     *   should hold column headers, but they cannot be found, or if there are
-     *   unmatched quotes at the end of the file
      */
     virtual std::shared_ptr<plot::DataFrame> readData(const std::string& fileName) override;
 
@@ -66,12 +63,8 @@ public:
      * read a CSV file from a input stream, e.g. a std::ifstream. In case
      * file streams are used, the file must have be opened prior calling this function.
      *
-     * @param stream    input stream with the CSV data
-     * @return a plot::DataFrame containing the CSV data
-     * @throws CSVDataReaderException if the given stream is in a bad state,
-     *   the stream contains no data, the first row should hold column headers,
-     *   but they cannot be found, or if there are unmateched quotes at the end of
-     *   the stream
+     * @param stream    input stream with the json data
+     * @return a plot::DataFrame containing the data
      */
     std::shared_ptr<plot::DataFrame> readData(std::istream& stream) const;
 };
