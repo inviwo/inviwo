@@ -34,7 +34,7 @@ namespace nlohmann {
 
 using json = nlohmann::json;
 
-namespace ns {
+namespace inviwo {
 
 void to_json(json& j, const inviwo::plot::DataFrame& df) {
     for (auto row = 0; row < df.getNumberOfRows(); ++row) {
@@ -47,6 +47,11 @@ void to_json(json& j, const inviwo::plot::DataFrame& df) {
         }
         j.emplace_back(node);
     }
+}
+
+
+void from_json(const json& j, inviwo::plot::DataFrame& p) {
+    // TODO: Implement conversion
 }
 
 }  // namespace ns

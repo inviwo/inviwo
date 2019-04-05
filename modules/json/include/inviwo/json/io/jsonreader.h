@@ -30,34 +30,50 @@
 
 #include <inviwo/json/jsonmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/io/datareader.h>
 #include <modules/plotting/datastructures/dataframe.h>
-#include <nlohmann/json.hpp>
-
-namespace nlohmann {
-
-using json = nlohmann::json;
 
 namespace inviwo {
 
-namespace plot {
-
 /**
- * Converts a DataFrame to a JSON object. 
- * Usage example:
- * Dataframe df;
- * json j = df;
+ * \class JSONReader
+ * \ingroup dataio
+ * Reads a json file into DataFrame
  */
-IVW_MODULE_JSON_API void to_json(json& j, const DataFrame* df);
+class IVW_MODULE_JSON_API JSONReader : public DataReaderType<plot::DataFrame> {
+public:
+    JSONReader();
+    JSONReader(const JSONReader&) = default;
+    JSONReader(JSONReader&&) noexcept = default;
+    JSONReader& operator=(const JSONReader&) = default;
+    JSONReader& operator=(JSONReader&&) noexcept = default;
+    virtual JSONReader* clone() const override;
+    virtual ~JSONReader() = default;
 
-/**
- * Converts a JSON object to a DataFrame. 
- * Usage example:
- * auto df = j.get<inviwo::DataFrame>();
- */
-IVW_MODULE_JSON_API void from_json(const json& j, :DataFrame& df);
+    /**
+     * read a JSON file from a file
+     *
+     * @param fileName   name of the input CSV file
+     * @return a plot::DataFrame containing the JSON data
+     * @throws FileException if the file cannot be accessed
+     * @throws CSVDataReaderException if the file contains no data, the first row
+     *   should hold column headers, but they cannot be found, or if there are
+     *   unmatched quotes at the end of the file
+     */
+    virtual std::shared_ptr<plot::DataFrame> readData(const std::string& fileName) override;
 
-} // namespace plot
+    /**
+     * read a CSV file from a input stream, e.g. a std::ifstream. In case
+     * file streams are used, the file must have be opened prior calling this function.
+     *
+     * @param stream    input stream with the CSV data
+     * @return a plot::DataFrame containing the CSV data
+     * @throws CSVDataReaderException if the given stream is in a bad state,
+     *   the stream contains no data, the first row should hold column headers,
+     *   but they cannot be found, or if there are unmateched quotes at the end of
+     *   the stream
+     */
+    std::shared_ptr<plot::DataFrame> readData(std::istream& stream) const;
+};
 
 }  // namespace inviwo
-
-}  // namespace nlohmann

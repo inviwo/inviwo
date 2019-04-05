@@ -26,38 +26,47 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <inviwo/json/jsonmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <modules/plotting/datastructures/dataframe.h>
-#include <nlohmann/json.hpp>
-
-namespace nlohmann {
+#include <inviwo/json/io/jsonreader.h>
+#include <inviwo/json/jsonutils.h>
 
 using json = nlohmann::json;
 
 namespace inviwo {
 
-namespace plot {
+JSONReader* JSONReader::clone() const { return new CSVReader(*this); }
 
-/**
- * Converts a DataFrame to a JSON object. 
- * Usage example:
- * Dataframe df;
- * json j = df;
- */
-IVW_MODULE_JSON_API void to_json(json& j, const DataFrame* df);
+std::shared_ptr<plot::DataFrame> JSONReader::JSONReader(const std::string& fileName) {
+    auto file = filesystem::ifstream(fileName);
 
-/**
- * Converts a JSON object to a DataFrame. 
- * Usage example:
- * auto df = j.get<inviwo::DataFrame>();
- */
-IVW_MODULE_JSON_API void from_json(const json& j, :DataFrame& df);
+    if (!file.is_open()) {
+        throw FileException(std::string("JSONReader: Could not open file \"" + fileName + "\"."),
+                            IvwContext);
+    }
+    file.seekg(0, std::ios::end);
+    std::streampos len = file.tellg();
+    file.seekg(0, std::ios::beg);
 
-} // namespace plot
+    if (len == std::streampos(0)) {
+        throw FileException("Empty file, no data", IvwContext);
+    }
+
+    return readData(file);
+}
+
+std::shared_ptr<plot::DataFrame> JSONReader::readData(std::istream& stream) const {
+    // Skip BOM if it exists. 
+    filesystem::skipByteOrderMark(stream);
+
+    if (stream.bad() || stream.fail()) {
+        throw FileException("Input stream in a bad state", IvwContext);
+    }
+    json j;
+    stream >> j;
+    auto dataFrame = std::make_shared<plot::DataFrame>();
+    *dataFrame = j;
+
+    return dataFrame;
+}
 
 }  // namespace inviwo
-
-}  // namespace nlohmann
