@@ -43,7 +43,8 @@ namespace discretedata {
 struct ChannelCompare {
     bool operator()(const std::pair<std::string, GridPrimitive>& u,
                     const std::pair<std::string, GridPrimitive>& v) const {
-        return (u.second < v.second) || u.first.compare(v.first) < 0;
+        return (u.second < v.second)
+            || (u.second == v.second && u.first.compare(v.first) < 0);
     }
 };
 // Map used for storing and querying channels by name and GridPrimitive type.
