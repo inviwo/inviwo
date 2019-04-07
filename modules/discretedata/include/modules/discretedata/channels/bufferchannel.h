@@ -99,6 +99,7 @@ public:
     virtual ind size() const override { return buffer_.size() / N; }
 
     const std::vector<T>& data() const { return buffer_; }
+    std::vector<T>& data() { return buffer_; }
 
     /**
      * \brief Indexed point access
