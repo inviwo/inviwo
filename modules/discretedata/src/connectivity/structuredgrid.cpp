@@ -102,6 +102,8 @@ void StructuredGrid::sameLevelConnection(std::vector<ind>& result, const ind idx
 
 void StructuredGrid::getConnections(std::vector<ind>& result, ind idxLin, GridPrimitive from,
                                     GridPrimitive to, bool) const {
+    result.clear();
+
     if (from == to && from == gridDimension_) {
         // Linear Index to nD Cell Index.
         sameLevelConnection(result, idxLin, numCellsPerDimension_);
@@ -123,7 +125,6 @@ void StructuredGrid::getConnections(std::vector<ind>& result, ind idxLin, GridPr
 
     // From D-1 to D (face->voxel, edge->face etc).
     if (from == Dminus && to == gridDimension_) {
-        result.clear();
 
         ind idxLeft = idxLin;
         auto numElements = numCellsPerDimension_;
@@ -157,7 +158,6 @@ void StructuredGrid::getConnections(std::vector<ind>& result, ind idxLin, GridPr
 
     // From D to D-1 (face<-voxel, edge<-face etc).
     if (from == gridDimension_ && to == Dminus) {
-        result.clear();
 
         auto numElements = numCellsPerDimension_;
         std::vector<ind> idxVec = indexFromLinear(idxLin, numCellsPerDimension_);
@@ -181,7 +181,6 @@ void StructuredGrid::getConnections(std::vector<ind>& result, ind idxLin, GridPr
 
     // From D-1 to 0 (face->vertex, edge->vertex etc).
     if (from == Dminus && to == GridPrimitive::Vertex) {
-        result.clear();
 
         ind idxLeft = idxLin;
         auto numElements = numCellsPerDimension_;
