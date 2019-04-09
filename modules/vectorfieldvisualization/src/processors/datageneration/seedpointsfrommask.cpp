@@ -95,13 +95,15 @@ void SeedPointsFromMask::process() {
             util::IndexMapper3D index(dim);
             vec3 invDim = vec3(1.0f) / vec3(dim);
 
-            std::function<vec3(vec3)> noTransform = [](vec3 p) -> vec3 { return p; };
-            std::function<vec3(vec3)> withTransform = [m = v->getCoordinateTransformer().getDataToWorldMatrix()](vec3 p) -> vec3 {
-                vec4 WP = m * vec4(p, 1.0f);
-                return vec3(WP) / WP.w;
+            auto transform = [transformToWorld = transformToWorld_.get(),
+                              m = v->getCoordinateTransformer().getDataToWorldMatrix()](auto p) {
+                if (transformToWorld) {
+                    vec4 WP = m * vec4(p, 1.0f);
+                    return vec3(WP) / WP.w;
+                } else {
+                    return p;
+                }
             };
-
-            auto transform = transformToWorld_.get() ? withTransform : noTransform;
 
             util::forEachVoxel(*volPrecision, [&](const size3_t &pos) {
                 if (util::glm_convert_normalized<double>(data[index(pos)]) > threshold_.get()) {

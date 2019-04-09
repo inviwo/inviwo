@@ -52,8 +52,9 @@ void foreach_helper(std::true_type, IT a, IT b, Callback callback, size_t startI
 }
 
 template <typename Callback, typename IT, typename OnDoneCallback>
-auto foreach_helper_pool(std::true_type, IT a, IT b, Callback callback, size_t startIndex = 0,
-                         OnDoneCallback onTaskDone = []() {}) {
+auto foreach_helper_pool(
+    std::true_type, IT a, IT b, Callback callback, size_t startIndex = 0,
+    OnDoneCallback onTaskDone = []() {}) {
     return dispatchPool([id = startIndex, c = std::move(callback),
                          onTaskDone = std::move(onTaskDone), a, b]() mutable {
         std::for_each(a, b, [&](auto v) { c(v, id++); });
@@ -62,10 +63,10 @@ auto foreach_helper_pool(std::true_type, IT a, IT b, Callback callback, size_t s
 }
 
 template <typename Callback, typename IT, typename OnDoneCallback>
-auto foreach_helper_pool(std::false_type, IT a, IT b, Callback callback, size_t /*startIndex*/ = 0,
-                         OnDoneCallback onTaskDone = []() {}) {
-    return dispatchPool([a, b, c = std::move(callback),
-                         onTaskDone = std::move(onTaskDone)]() {
+auto foreach_helper_pool(
+    std::false_type, IT a, IT b, Callback callback, size_t /*startIndex*/ = 0,
+    OnDoneCallback onTaskDone = []() {}) {
+    return dispatchPool([onTaskDone = std::move(callback), a, b]() {
         std::for_each(a, b, c);
         onTaskDone();
     });
@@ -90,9 +91,9 @@ auto foreach_helper_pool(std::false_type, IT a, IT b, Callback callback, size_t 
  */
 template <typename Iterable, typename T = typename Iterable::value_type, typename Callback,
           typename OnDoneCallback = std::function<void()>>
-std::vector<std::future<void>> forEachParallelAsync(const Iterable& iterable, Callback callback,
-                                                    size_t jobs = 0,
-                                                    OnDoneCallback onTaskDone = []() {}) {
+std::vector<std::future<void>> forEachParallelAsync(
+    const Iterable& iterable, Callback callback, size_t jobs = 0,
+    OnDoneCallback onTaskDone = []() {}) {
     auto settings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
     auto poolSize = settings->poolSize_.get();
     using IncludeIndexType = typename std::conditional<util::is_callable_with<T, size_t>(callback),
