@@ -32,6 +32,7 @@
 #include <modules/plotting/datastructures/column.h>
 #include <modules/plotting/datastructures/dataframe.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/stringconversion.h>
 
 #include <fstream>
 
@@ -159,7 +160,7 @@ std::shared_ptr<plot::DataFrame> CSVReader::readData(std::istream& stream) const
         values.push_back(val.first);
         while (!val.second && !in.eof()) {
             val = extractField();
-            values.push_back(val.first);
+            values.push_back(trim(val.first));
         }
         // ignore last field _if_ it is empty and would be inserted in the maxColCount+1 column
         if (values.back().empty() && (values.size() - 1 == maxColCount)) {

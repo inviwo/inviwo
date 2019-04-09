@@ -49,12 +49,18 @@ SyntheticDataFrame::SyntheticDataFrame()
     : Processor()
     , dataFrame_("dataFrame_")
     , numRow_("numRow", "Number of Rows", 1000, 3, 100000)
+    , includeSingleValueColumnsFloat_("includeSingleValueColumnsFloat",
+                                      "Include Single Value Column (float)", false)
+    , includeSingleValueColumnsInt_("includeSingleValueColumnsInt",
+                                    "Include Single Value Column (int)", false)
     , randomParams_("randomParams", "Random Generator Settings")
     , useSameSeed_("useSameSeed", "Use same seed", true)
     , seed_("seed", "Seed", 1, 0, 1000) {
 
     addPort(dataFrame_);
     addProperty(numRow_);
+    addProperty(includeSingleValueColumnsFloat_);
+    addProperty(includeSingleValueColumnsInt_);
 
     addProperty(randomParams_);
     randomParams_.addProperty(useSameSeed_);
@@ -87,6 +93,22 @@ void SyntheticDataFrame::process() {
         data.reserve(numRow_);
         for (size_t i = 0; i < numRow_.get(); i++) {
             data.push_back(dist(gen));
+        }
+    }
+
+    if (includeSingleValueColumnsFloat_.get()) {
+        auto col = dataframe->addColumn<float>("Single value float");
+        auto& vec = col->getTypedBuffer()->getEditableRAMRepresentation()->getDataContainer();
+        for (size_t i = 0; i < numRow_.get(); i++) {
+            vec.push_back(3.14f);
+        }
+    }
+
+    if (includeSingleValueColumnsInt_.get()) {
+        auto col = dataframe->addColumn<glm::uint8>("Single value int");
+        auto& vec = col->getTypedBuffer()->getEditableRAMRepresentation()->getDataContainer();
+        for (size_t i = 0; i < numRow_.get(); i++) {
+            vec.push_back(3);
         }
     }
 

@@ -51,17 +51,25 @@ void foreach_helper(std::true_type, IT a, IT b, Callback callback, size_t startI
     std::for_each(a, b, [&](auto v) { callback(v, startIndex++); });
 }
 
-template <typename Callback, typename IT>
-auto foreach_helper_pool(std::true_type, IT a, IT b, Callback callback, size_t startIndex = 0) {
-    return dispatchPool([id = startIndex, c = std::move(callback), a, b]() mutable {
+template <typename Callback, typename IT, typename OnDoneCallback>
+auto foreach_helper_pool(
+    std::true_type, IT a, IT b, Callback callback, size_t startIndex = 0,
+    OnDoneCallback onTaskDone = []() {}) {
+    return dispatchPool([id = startIndex, a, b, c = std::move(callback),
+                         onTaskDone = std::move(onTaskDone)]() mutable {
         std::for_each(a, b, [&](auto v) { c(v, id++); });
+        onTaskDone();
     });
 }
 
-template <typename Callback, typename IT>
-auto foreach_helper_pool(std::false_type, IT a, IT b, Callback callback,
-                         size_t /*startIndex*/ = 0) {
-    return dispatchPool([c = std::move(callback), a, b]() { std::for_each(a, b, c); });
+template <typename Callback, typename IT, typename OnDoneCallback>
+auto foreach_helper_pool(
+    std::false_type, IT a, IT b, Callback callback, size_t /*startIndex*/ = 0,
+    OnDoneCallback onTaskDone = []() {}) {
+    return dispatchPool([a, b, c = std::move(callback), onTaskDone = std::move(callback)]() {
+        std::for_each(a, b, c);
+        onTaskDone();
+    });
 }
 
 }  // namespace detail
@@ -78,17 +86,21 @@ auto foreach_helper_pool(std::false_type, IT a, IT b, Callback callback,
  * the data structure
  * @param jobs optional parameter specifying how many jobs to create, if jobs==0 (default) it will
  * create pool size * 4 jobs
+ * @param onTaskDone callback that will be called when each job is done
  * @return a vector of futures, one for each job created.
  */
-template <typename Iterable, typename T = typename Iterable::value_type, typename Callback>
-std::vector<std::future<void>> forEachParallelAsync(const Iterable& iterable, Callback callback,
-                                                    size_t jobs = 0) {
+template <typename Iterable, typename T = typename Iterable::value_type, typename Callback,
+          typename OnDoneCallback = std::function<void()>>
+std::vector<std::future<void>> forEachParallelAsync(
+    const Iterable& iterable, Callback callback, size_t jobs = 0,
+    OnDoneCallback onTaskDone = []() {}) {
     auto settings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
     auto poolSize = settings->poolSize_.get();
     using IncludeIndexType = typename std::conditional<util::is_callable_with<T, size_t>(callback),
                                                        std::true_type, std::false_type>::type;
     if (poolSize == 0) {
         detail::foreach_helper(IncludeIndexType(), iterable.begin(), iterable.end(), callback);
+        onTaskDone();
         return {};
     }
 
@@ -103,7 +115,8 @@ std::vector<std::future<void>> forEachParallelAsync(const Iterable& iterable, Ca
         size_t end = (s * (job + 1)) / jobs;
         auto a = iterable.begin() + start;
         auto b = iterable.begin() + end;
-        futures.push_back(detail::foreach_helper_pool(IncludeIndexType(), a, b, callback, start));
+        futures.push_back(
+            detail::foreach_helper_pool(IncludeIndexType(), a, b, callback, start, onTaskDone));
     }
     return futures;
 }
