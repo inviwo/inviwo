@@ -252,7 +252,7 @@ protected:
 
     const AxisSettings& settings_;
 
-    TextRenderer textRenderer_;  // mutable to enable lazy initialization
+    TextRenderer textRenderer_;
     TextureQuadRenderer quadRenderer_;
 
     size_t axisPickingId_ = std::numeric_limits<size_t>::max();  // max == unused

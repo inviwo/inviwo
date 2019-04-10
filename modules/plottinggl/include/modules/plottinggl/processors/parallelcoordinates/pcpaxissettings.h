@@ -207,6 +207,7 @@ private:
 
     PCPCaptionSettings captionSettings_;
     std::vector<std::string> labels_;
+    std::shared_ptr<std::function<void()>> labelUpdateCallback_;
     PCPLabelSettings labelSettings_;
 
     PCPMajorTickSettings major_;

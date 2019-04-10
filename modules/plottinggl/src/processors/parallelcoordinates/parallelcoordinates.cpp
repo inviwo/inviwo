@@ -303,7 +303,7 @@ void ParallelCoordinates::process() {
         partitionLines();
     }
     if (autoMargins_ && (!isDragging_ || enabledAxesModified_) &&
-        (enabledAxesModified_ || captionSettings_.isModified() || labelSettings_.isModified() ||
+        (autoMargins_.isModified() || enabledAxesModified_ || captionSettings_.isModified() || labelSettings_.isModified() ||
          axesSettings_.isModified())) {
         autoAdjustMargins();
     }
@@ -435,6 +435,8 @@ void ParallelCoordinates::buildLineIndices() {
 
     buildAxisPositions();
     partitionLines();
+
+    hoveredLine_ = -1; // reset the hover line since the sizes might have changed.
 }
 
 void ParallelCoordinates::buildAxisPositions() {
@@ -580,7 +582,8 @@ void ParallelCoordinates::drawLines(size2_t size) {
                 static_cast<GLsizei>(end - begin));
         }
 
-        if (hoveredLine_ != -1 && !brushingAndLinking_.isFiltered(hoveredLine_)) {
+        if (hoveredLine_ >= 0 && hoveredLine_ < lines_.sizes.size() &&
+            !brushingAndLinking_.isFiltered(hoveredLine_)) {
             lineShader_.setUniform("fallofPower", 0.5f * falllofPower_.get());
 
             glDrawElements(GL_LINE_STRIP, lines_.sizes[hoveredLine_], GL_UNSIGNED_INT,
@@ -642,7 +645,7 @@ void ParallelCoordinates::axisPicked(PickingEvent* p, size_t pickedID, PickType 
         p->getPressItem() == PickingPressItem::Primary &&
         p->getPressedGlobalPickingId() == p->getCurrentGlobalPickingId() &&
         glm::length2(p->getDeltaPressedPosition()) < 0.01 && pt != PickType::Lower &&
-        pt != PickType::Upper) {
+        pt != PickType::Upper && !isDragging_) {
 
         auto selection = brushingAndLinking_.getSelectedColumns();
         if (brushingAndLinking_.isColumnSelected(pickedID)) {
