@@ -40,7 +40,9 @@
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/util/metadatatoproperty.h>
 #include <modules/base/properties/volumeinformationproperty.h>
+#include <modules/base/properties/imageinformationproperty.h>
 
 namespace inviwo {
 
@@ -88,10 +90,8 @@ private:
     CompositeProperty metaDataProperty_;
 
     DoubleVec3Property voxelSize_;
-
-    std::unordered_map<std::string, std::function<void(const std::string& key, const MetaData*,
-                                                       CompositeProperty&)>>
-        factory_;
+    
+    util::MetaDataToProperty metaDataProps_;
 };
 
 }  // namespace inviwo
