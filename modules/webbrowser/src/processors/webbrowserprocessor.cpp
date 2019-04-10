@@ -115,15 +115,14 @@ WebBrowserProcessor::WebBrowserProcessor()
         reload();
     });
     fileName_.onChange([this, reload]() {
-        fileObserver_.setFilename(fileName_);
         if (autoReloadFile_) {
-            fileObserver_.start();
+            fileObserver_.setFilename(fileName_);
         }
         reload();
     });
     autoReloadFile_.onChange([this]() {
         if (autoReloadFile_) {
-            fileObserver_.start();
+            fileObserver_.setFilename(fileName_);
         } else {
             fileObserver_.stop();
         }
