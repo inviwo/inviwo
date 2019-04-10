@@ -38,7 +38,10 @@ SingleFileObserver::SingleFileObserver(std::string filename) : FileObserver(), f
 
 SingleFileObserver::~SingleFileObserver() {}
 
-void SingleFileObserver::start() { startFileObservation(filename_); }
+void SingleFileObserver::start() {
+    if (filename_.empty()) return;
+    startFileObservation(filename_);
+}
 
 void SingleFileObserver::stop() { stopFileObservation(filename_); }
 
@@ -48,6 +51,13 @@ const inviwo::BaseCallBack* SingleFileObserver::onChange(std::function<void()> c
 
 void SingleFileObserver::removeOnChange(const BaseCallBack* callback) {
     onChangeCallbacks_.remove(callback);
+}
+
+void SingleFileObserver::setFilename(const std::string& filename) {
+    if (filename == filename_) return;
+    stop();
+    filename_ = filename;
+    start();
 }
 
 const std::string& SingleFileObserver::getFilename() const { return filename_; }
