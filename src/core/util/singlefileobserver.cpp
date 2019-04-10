@@ -54,7 +54,6 @@ void SingleFileObserver::removeOnChange(const BaseCallBack* callback) {
 }
 
 void SingleFileObserver::setFilename(const std::string& filename) {
-    if (filename == filename_) return;
     stop();
     filename_ = filename;
     start();
