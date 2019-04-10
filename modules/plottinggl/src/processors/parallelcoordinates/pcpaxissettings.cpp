@@ -118,6 +118,11 @@ void PCPAxisSettings::updateFromColumn(std::shared_ptr<const Column> col) {
             double minV = minMax.first.x;
             double maxV = minMax.second.x;
 
+            if (std::abs(maxV - minV) == 0.0) {
+                minV -= 1.0;
+                maxV += 1.0;
+            }
+
             dvec2 prevVal = range.get();
             dvec2 prevRange = range.getRange();
             double l = prevRange.y - prevRange.x;
@@ -139,13 +144,16 @@ void PCPAxisSettings::updateFromColumn(std::shared_ptr<const Column> col) {
             at = [vec = &dataVector](size_t idx) { return static_cast<double>(vec->at(idx)); };
         });
 
-    {
+    auto updateLables = [this](){
         const auto tickmarks = plot::getMajorTickPositions(major_, range);
         labels_.clear();
         const auto& format = pcp_->labelFormat_.get();
         std::transform(tickmarks.begin(), tickmarks.end(), std::back_inserter(labels_),
                        [&](auto tick) { return fmt::sprintf(format, tick); });
-    }
+    };
+    labelUpdateCallback_ = pcp_->labelFormat_.onChangeScoped(updateLables);
+    updateLables();
+
     range.propertyModified();
 }
 
