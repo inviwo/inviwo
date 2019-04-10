@@ -65,6 +65,8 @@ ImageInformationProperty::ImageInformationProperty(std::string identifier, std::
 
     addProperty(layers_);
     layers_.setCollapsed(true);
+
+    layers_.setCurrentStateAsDefault();
 }
 
 ImageInformationProperty::ImageInformationProperty(const ImageInformationProperty& rhs)
@@ -74,6 +76,7 @@ ImageInformationProperty::ImageInformationProperty(const ImageInformationPropert
     , numColorLayers_(rhs.numColorLayers_)
     , layers_(rhs.layers_) {
     util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props());
+    addProperty(layers_);
 }
 
 ImageInformationProperty& ImageInformationProperty::operator=(
