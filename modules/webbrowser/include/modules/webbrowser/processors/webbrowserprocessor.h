@@ -43,6 +43,7 @@
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/ports/imageport.h>
 
 #include <warn/push>
@@ -111,6 +112,7 @@ public:
     ImageOutport outport_;
 
     FileProperty fileName_;
+    BoolProperty autoReloadFile_;
     StringProperty url_;     ///< Web page to show
     ButtonProperty reload_;  ///< Force reload url
     CompositeProperty addPropertyGroup_;
@@ -133,6 +135,8 @@ protected:
     CefRefPtr<WebBrowserClient> browserClient_;
     CefRefPtr<CefBrowser> browser_;
     bool isBrowserLoading_ = true;
+
+    SingleFileObserver fileObserver_;
 
     IMPLEMENT_REFCOUNTING(WebBrowserProcessor)
 };

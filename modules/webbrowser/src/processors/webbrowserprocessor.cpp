@@ -59,6 +59,7 @@ WebBrowserProcessor::WebBrowserProcessor()
     , background_("background")
     , outport_("webpage", DataVec4UInt8::get())
     , fileName_("fileName", "HTML file", "")
+    , autoReloadFile_("autoReloadFile", "Auto Reload", true)
     , url_("URL", "URL", "http://www.inviwo.org")
     , reload_("reload", "Reload")
     , addPropertyGroup_("addProperty", "Add property to synchronize")
@@ -86,27 +87,46 @@ WebBrowserProcessor::WebBrowserProcessor()
 
     addProperty(sourceType_);
     addProperty(fileName_);
+    addProperty(autoReloadFile_);
     addProperty(url_);
     url_.setVisible(false);
     addProperty(reload_);
 
+    auto updateVisibility = [this]() {
+        fileName_.setVisible(sourceType_ == SourceType::LocalFile);
+        autoReloadFile_.setVisible(sourceType_ == SourceType::LocalFile);
+        url_.setVisible(sourceType_ == SourceType::WebAddress);
+    };
+    updateVisibility();
+
+    auto reload = [this]() { browser_->GetMainFrame()->LoadURL(getSource()); };
+
     sourceType_.onChange([&]() {
-        switch (sourceType_.get()) {
-            default:
-            case SourceType::LocalFile:
-                fileName_.setVisible(true);
-                url_.setVisible(false);
-                break;
-            case SourceType::WebAddress:
-                fileName_.setVisible(false);
-                url_.setVisible(true);
-                break;
-        }
-        browser_->GetMainFrame()->LoadURL(getSource());
+        updateVisibility();
+        reload();
     });
-    fileName_.onChange([this]() { browser_->GetMainFrame()->LoadURL(getSource()); });
-    url_.onChange([this]() { browser_->GetMainFrame()->LoadURL(getSource()); });
-    reload_.onChange([this]() { browser_->GetMainFrame()->LoadURL(getSource()); });
+    fileName_.onChange([this, reload]() {
+        fileObserver_.setFilename(fileName_);
+        if (autoReloadFile_) {
+            fileObserver_.start();
+        }
+        reload();
+    });
+    autoReloadFile_.onChange([this]() {
+        if (autoReloadFile_) {
+            fileObserver_.start();
+        } else {
+            fileObserver_.stop();
+        }
+    });
+    url_.onChange(reload);
+    reload_.onChange(reload);
+
+    fileObserver_.onChange([this, reload]() {
+        if (sourceType_ == SourceType::LocalFile) {
+            reload();
+        }
+    });
 
     // Do not serialize options, they are generated in code
     type_.setSerializationMode(PropertySerializationMode::None);
