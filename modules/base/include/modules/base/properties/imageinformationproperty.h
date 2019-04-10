@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,55 +26,53 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_VOLUMEINFORMATIONPROPERTY_H
-#define IVW_VOLUMEINFORMATIONPROPERTY_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/datastructures/volume/volume.h>
 
 namespace inviwo {
 
+class Layer;
+class Image;
+
 /**
  * \ingroup properties
- * A CompositeProperty holding properties to show a information about a volume
+ * \brief A CompositeProperty holding properties to show a information about an image
  */
-class IVW_MODULE_BASE_API VolumeInformationProperty : public CompositeProperty {
+class IVW_MODULE_BASE_API ImageInformationProperty : public CompositeProperty {
 public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
-    VolumeInformationProperty(
+
+    ImageInformationProperty(
         std::string identifier, std::string displayName,
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
         PropertySemantics semantics = PropertySemantics::Default);
-    VolumeInformationProperty(const VolumeInformationProperty& rhs);
-    VolumeInformationProperty& operator=(const VolumeInformationProperty& that);
-    virtual VolumeInformationProperty* clone() const override;
-    virtual ~VolumeInformationProperty() = default;
+    ImageInformationProperty(const ImageInformationProperty& rhs);
+    ImageInformationProperty& operator=(const ImageInformationProperty& that);
+    virtual ImageInformationProperty* clone() const override;
+    virtual ~ImageInformationProperty() = default;
 
-    void updateForNewVolume(const Volume& volume, bool deserialize = false);
-    void updateVolume(Volume& volume);
+    void updateForNewImage(const Image& image, bool deserialize = false);
+
     // Read only used to show information
-
-    IntSize3Property dimensions_;
-    StringProperty format_;
-    IntSizeTProperty channels_;
-    IntSizeTProperty numVoxels_;
-
-    // read / write
-    DoubleMinMaxProperty dataRange_;
-    DoubleMinMaxProperty valueRange_;
-    StringProperty valueUnit_;
-
+    IntSize2Property dimensions_;
+    StringProperty imageType_;
+    IntSizeTProperty numColorLayers_;
+    BoolProperty hasDepth_;
+    BoolProperty hasPicking_;
+    CompositeProperty layers_;
+    
 private:
     auto props();
 };
 
-}  // namespace inviwo
 
-#endif  // IVW_VOLUMEINFORMATIONPROPERTY_H
+
+}  // namespace inviwo
