@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,54 +27,47 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMEINFORMATIONPROPERTY_H
-#define IVW_VOLUMEINFORMATIONPROPERTY_H
+#pragma once
 
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/datastructures/volume/volume.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/util/metadatatoproperty.h>
+#include <modules/base/properties/imageinformationproperty.h>
 
 namespace inviwo {
 
-/**
- * \ingroup properties
- * A CompositeProperty holding properties to show a information about a volume
+/** \docpage{org.inviwo.ImageInformation, Image Information}
+ * ![](org.inviwo.ImageInformation.png?classIdentifier=org.inviwo.ImageInformation)
+ * Shows available information provided by input image including metadata.
+ *
+ * ### Inports
+ *   * __image__   input image
  */
-class IVW_MODULE_BASE_API VolumeInformationProperty : public CompositeProperty {
+
+/**
+ * \class ImageInformation
+ * \brief provides information on input image
+ */
+class IVW_MODULE_BASE_API ImageInformation : public Processor {
 public:
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
-    VolumeInformationProperty(
-        std::string identifier, std::string displayName,
-        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
-        PropertySemantics semantics = PropertySemantics::Default);
-    VolumeInformationProperty(const VolumeInformationProperty& rhs);
-    VolumeInformationProperty& operator=(const VolumeInformationProperty& that);
-    virtual VolumeInformationProperty* clone() const override;
-    virtual ~VolumeInformationProperty() = default;
+    ImageInformation();
+    virtual ~ImageInformation() = default;
 
-    void updateForNewVolume(const Volume& volume, bool deserialize = false);
-    void updateVolume(Volume& volume);
-    // Read only used to show information
+    virtual void process() override;
 
-    IntSize3Property dimensions_;
-    StringProperty format_;
-    IntSizeTProperty channels_;
-    IntSizeTProperty numVoxels_;
-
-    // read / write
-    DoubleMinMaxProperty dataRange_;
-    DoubleMinMaxProperty valueRange_;
-    StringProperty valueUnit_;
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
 private:
-    auto props();
+    ImageInport image_;
+
+    ImageInformationProperty imageInfo_;
+    CompositeProperty metaDataProperty_;
+
+    util::MetaDataToProperty metaDataProps_;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMEINFORMATIONPROPERTY_H

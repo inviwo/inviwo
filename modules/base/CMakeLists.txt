@@ -58,6 +58,7 @@ set(HEADER_FILES
     include/modules/base/processors/heightfieldmapper.h
     include/modules/base/processors/imagecontourprocessor.h
     include/modules/base/processors/imageexport.h
+    include/modules/base/processors/imageinformation.h
     include/modules/base/processors/imagesequenceelementselectorprocessor.h
     include/modules/base/processors/imagesnapshot.h
     include/modules/base/processors/imagesource.h
@@ -109,6 +110,8 @@ set(HEADER_FILES
     include/modules/base/processors/worldtransform.h
     include/modules/base/properties/basisproperty.h
     include/modules/base/properties/gaussianproperty.h
+    include/modules/base/properties/imageinformationproperty.h
+    include/modules/base/properties/layerinformationproperty.h
     include/modules/base/properties/sequencetimerproperty.h
     include/modules/base/properties/volumeinformationproperty.h
 )
@@ -165,6 +168,7 @@ set(SOURCE_FILES
     src/processors/heightfieldmapper.cpp
     src/processors/imagecontourprocessor.cpp
     src/processors/imageexport.cpp
+    src/processors/imageinformation.cpp
     src/processors/imagesequenceelementselectorprocessor.cpp
     src/processors/imagesnapshot.cpp
     src/processors/imagesource.cpp
@@ -213,6 +217,8 @@ set(SOURCE_FILES
     src/processors/volumetospatialsampler.cpp
     src/properties/basisproperty.cpp
     src/properties/gaussianproperty.cpp
+    src/properties/imageinformationproperty.cpp
+    src/properties/layerinformationproperty.cpp
     src/properties/sequencetimerproperty.cpp
     src/properties/volumeinformationproperty.cpp
 )
