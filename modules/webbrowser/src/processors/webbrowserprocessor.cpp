@@ -66,6 +66,8 @@ WebBrowserProcessor::WebBrowserProcessor()
     , type_("property", "Property")
     , propertyHtmlId_("propertyHtmlId", "Html id")
     , add_("add", "Add")
+    , runJS_("runJS", "Run JS")
+    , js_("js", "JavaScript", "", InvalidationLevel::Valid)
     , sourceType_("sourceType", "Source",
                   {{"localFile", "Local File", SourceType::LocalFile},
                    {"webAddress", "Web Address", SourceType::WebAddress}})
@@ -91,6 +93,13 @@ WebBrowserProcessor::WebBrowserProcessor()
     addProperty(url_);
     url_.setVisible(false);
     addProperty(reload_);
+
+    addProperty(runJS_);
+    addProperty(js_);
+
+    runJS_.onChange([this]() {
+        browser_->GetMainFrame()->ExecuteJavaScript(js_.get(), "", 1);
+    });
 
     auto updateVisibility = [this]() {
         fileName_.setVisible(sourceType_ == SourceType::LocalFile);

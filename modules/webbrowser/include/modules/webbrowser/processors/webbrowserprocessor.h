@@ -45,6 +45,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/util/singlefileobserver.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -119,6 +120,9 @@ public:
     OptionPropertySize_t type_;      ///< List of all supported properties
     StringProperty propertyHtmlId_;  ///< Html id of property to add
     ButtonProperty add_;
+
+    ButtonProperty runJS_;
+    StringProperty js_;
 
 protected:
     std::string getSource();
