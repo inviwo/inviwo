@@ -295,11 +295,11 @@ public:
         typename std::result_of<DecisionFunc(P&)>::type b = true;
         static_assert(std::is_same<decltype(b), bool>::value, "The visibility callback must return a boolean!");
         static_assert(std::is_base_of<Property, P>::value, "P must be a Property!");
+        this->setVisible(callback(prop));
         return prop.onChange([callback, &prop, this](){
             bool visible = callback(prop);
             this->setVisible(visible);
         });
-        this->setVisible(callback(prop));
     }
 
     /* \brief sets readonly depending another property `prop`, according to `callback`
@@ -315,11 +315,11 @@ public:
         typename std::result_of<DecisionFunc(P&)>::type b = true;
         static_assert(std::is_same<decltype(b), bool>::value, "The readonly callback must return a boolean!");
         static_assert(std::is_base_of<Property, P>::value, "P must be a Property!");
+        this->setReadOnly(callback(prop));
         return prop.onChange([callback, &prop, this](){
             bool readonly = callback(prop);
             this->setReadOnly(readonly);
         });
-        this->setReadOnly(callback(prop));
     }
 
     virtual Document getDescription() const;
