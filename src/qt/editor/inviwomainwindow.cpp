@@ -572,7 +572,11 @@ void InviwoMainWindow::addActions() {
                     auto action = menu->addAction(QString::fromStdString(item));
                     auto path = QString::fromStdString(testdir + "/" + item);
                     connect(action, &QAction::triggered, this, [this, path]() {
-                        if (askToSaveWorkspaceChanges()) openWorkspace(path);
+                        if (askToSaveWorkspaceChanges()) {
+                            if (openWorkspace(path)) {
+                                hideWelcomeScreen();
+                            }
+                        }
                     });
                 }
             }
