@@ -144,7 +144,7 @@ void PCPAxisSettings::updateFromColumn(std::shared_ptr<const Column> col) {
             at = [vec = &dataVector](size_t idx) { return static_cast<double>(vec->at(idx)); };
         });
 
-    auto updateLables = [this](){
+    auto updateLables = [this]() {
         const auto tickmarks = plot::getMajorTickPositions(major_, range);
         labels_.clear();
         const auto& format = pcp_->labelFormat_.get();
