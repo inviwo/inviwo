@@ -98,7 +98,7 @@ WebBrowserProcessor::WebBrowserProcessor()
     addProperty(js_);
 
     runJS_.onChange([this]() {
-        browser_->GetMainFrame()->ExecuteJavaScript(js_.get(), "", 1);
+        runJSrequested_ = true;
     });
 
     auto updateVisibility = [this]() {
@@ -266,6 +266,11 @@ void WebBrowserProcessor::OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bo
 }
 
 void WebBrowserProcessor::process() {
+    if (!isBrowserLoading_ && runJSrequested_) {        
+        browser_->GetMainFrame()->ExecuteJavaScript(js_.get(), "", 1);
+        runJSrequested_ = false;
+    }
+
     // Vertical flip of CEF output image
     cefToInviwoImageConverter_.convert(renderHandler_->getTexture2D(), outport_, &background_);
 }
