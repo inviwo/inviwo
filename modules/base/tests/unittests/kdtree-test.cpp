@@ -38,6 +38,47 @@ namespace inviwo {
 
 TEST(KDTreeTests, init) { KDTree<3, char, float> tree; }
 
+TEST(KDTreeTests, copyConstruct) {
+    K3DTree<char, float> tree;
+    K3DTree<char, float> copy(tree);
+    EXPECT_EQ(0, tree.size());
+    EXPECT_EQ(0, tree.depth());
+    EXPECT_EQ(0, copy.size());
+    EXPECT_EQ(0, copy.depth());
+
+    tree.insert(vec3(0, 0, 0), 'a');
+    EXPECT_EQ(1, tree.size());
+    EXPECT_EQ(1, tree.depth());
+    EXPECT_EQ(0, copy.size());
+    EXPECT_EQ(0, copy.depth());
+
+    K3DTree<char, float> copy2(tree);
+    EXPECT_EQ(1, tree.size());
+    EXPECT_EQ(1, tree.depth());
+    EXPECT_EQ(0, copy.size());
+    EXPECT_EQ(0, copy.depth());
+    EXPECT_EQ(1, copy2.size());
+    EXPECT_EQ(1, copy2.depth());
+
+    tree.insert(vec3(1, 0, 0), 'b');
+    EXPECT_EQ(2, tree.size());
+    EXPECT_EQ(2, tree.depth());
+    EXPECT_EQ(0, copy.size());
+    EXPECT_EQ(0, copy.depth());
+    EXPECT_EQ(1, copy2.size());
+    EXPECT_EQ(1, copy2.depth());
+
+    copy2.insert(vec3(-1, 0, 0), 'c');
+    copy2.insert(vec3(-2, 0, 0), 'd');
+
+    EXPECT_EQ(2, tree.size());
+    EXPECT_EQ(2, tree.depth());
+    EXPECT_EQ(0, copy.size());
+    EXPECT_EQ(0, copy.depth());
+    EXPECT_EQ(3, copy2.size());
+    EXPECT_EQ(3, copy2.depth());
+}
+
 TEST(KDTreeTests, randomPointsTest) {
     srand(0);  // seed to always be the same random numbers
 

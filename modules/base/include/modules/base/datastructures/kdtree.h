@@ -125,11 +125,21 @@ public:
     KDTree();
     virtual ~KDTree();
 
-    KDTree(const KDTree &tree) { root_ = tree.root_->clone(); }
+    KDTree(const KDTree &tree) {
+        if (tree.root_) {
+            root_ = tree.root_->clone();
+        } else {
+            root_ = nullptr;
+        }
+    }
     KDTree &operator=(const KDTree &rhs) {
         if (this != &rhs) {
             delete root_;
-            root_ = rhs.root_->clone();
+            if (rhs.root_ != nullptr) {
+                root_ = rhs.root_->clone();
+            } else {
+                root_ = nullptr;
+            }
         }
         return *this;
     }
