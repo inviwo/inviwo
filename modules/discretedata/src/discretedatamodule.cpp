@@ -32,6 +32,7 @@
 #include <modules/discretedata/processors/computegridmeasure.h>
 #include <modules/discretedata/processors/volumefromdataset.h>
 #include <modules/discretedata/processors/segmentationvoxelizer.h>
+#include <modules/discretedata/processors/createchannel.h>
 
 namespace inviwo {
 
@@ -40,6 +41,7 @@ DiscreteDataModule::DiscreteDataModule(InviwoApplication* app) : InviwoModule(ap
     registerProcessor<discretedata::DataSetFromVolume>();
     registerProcessor<discretedata::ComputeGridMeasure>();
     registerProcessor<discretedata::VolumeFromDataSet>();
+    registerProcessor<discretedata::CreateConstantChannel>();
     registerProcessor<discretedata::SegmentationVoxelizer>();
 
     // Properties
