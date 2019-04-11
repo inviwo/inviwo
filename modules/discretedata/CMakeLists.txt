@@ -22,6 +22,7 @@ set(HEADER_FILES
     include/modules/discretedata/connectivity/structuredgrid.h
     include/modules/discretedata/ports/datasetport.h
     include/modules/discretedata/processors/computegridmeasure.h
+    include/modules/discretedata/processors/createchannel.h
     include/modules/discretedata/processors/datasetfrombase.h
     include/modules/discretedata/processors/segmentationvoxelizer.h
     include/modules/discretedata/processors/volumefromdataset.h
@@ -48,6 +49,7 @@ set(SOURCE_FILES
     src/connectivity/periodicgrid.cpp
     src/connectivity/structuredgrid.cpp
     src/processors/computegridmeasure.cpp
+    src/processors/createchannel.cpp
     src/processors/datasetfrombase.cpp
     src/processors/segmentationvoxelizer.cpp
     src/processors/volumefromdataset.cpp
