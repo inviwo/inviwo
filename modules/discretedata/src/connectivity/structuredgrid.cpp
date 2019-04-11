@@ -316,12 +316,12 @@ ind StructuredGrid::getNumCellsInDimension(ind dim) const {
 void StructuredGrid::getNumCells(std::vector<ind>& result) const {
     result.clear();
     for (ind numCells : numCellsPerDimension_) {
-        if (numCells > 0)
-            result.push_back(numCells);
-        else {
+        //if (numCells > 0)
+        result.push_back(numCells);
+        /*else {
             result.clear();
             return;
-        }
+        }*/
     }
 }
 
