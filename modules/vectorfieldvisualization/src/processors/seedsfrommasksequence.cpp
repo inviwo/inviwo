@@ -86,7 +86,7 @@ void SeedsFromMaskSequence::process() {
                 if (dis(gen) > randomSampling_.get()) return;
                 auto v = util::glm_convert<float>(data[index(pos)]);
                 if (v > 0) {
-                    points.emplace_back((vec3(pos) + 0.5f) * invDim ,t);
+                    points.emplace_back((vec3(pos) + 0.5f) * invDim, t);
                 }
             });
             volID++;

@@ -303,8 +303,8 @@ void ParallelCoordinates::process() {
         partitionLines();
     }
     if (autoMargins_ && (!isDragging_ || enabledAxesModified_) &&
-        (autoMargins_.isModified() || enabledAxesModified_ || captionSettings_.isModified() || labelSettings_.isModified() ||
-         axesSettings_.isModified())) {
+        (autoMargins_.isModified() || enabledAxesModified_ || captionSettings_.isModified() ||
+         labelSettings_.isModified() || axesSettings_.isModified())) {
         autoAdjustMargins();
     }
 
@@ -436,7 +436,7 @@ void ParallelCoordinates::buildLineIndices() {
     buildAxisPositions();
     partitionLines();
 
-    hoveredLine_ = -1; // reset the hover line since the sizes might have changed.
+    hoveredLine_ = -1;  // reset the hover line since the sizes might have changed.
 }
 
 void ParallelCoordinates::buildAxisPositions() {

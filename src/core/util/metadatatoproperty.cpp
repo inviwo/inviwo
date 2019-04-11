@@ -79,7 +79,7 @@ struct RegisterOrdinalPropertyForMetaData {
 };
 
 MetaDataToProperty::MetaDataToProperty() {
-        using ordinalMetaTypes =
+    using ordinalMetaTypes =
         std::tuple<int, float, double, vec2, vec3, vec4, dvec2, dvec3, dvec4, ivec2, ivec3, ivec4,
                    uvec2, uvec3, uvec4, mat2, mat3, mat4, dmat2, dmat3, dmat4>;
     util::for_each_type<ordinalMetaTypes>{}(RegisterOrdinalPropertyForMetaData{}, factory_);
@@ -149,7 +149,6 @@ void MetaDataToProperty::updateProperty(CompositeProperty& parent, const MetaDat
         }
     }
 }
-
 
 }  // namespace util
 

@@ -66,7 +66,7 @@ template <typename Callback, typename IT, typename OnDoneCallback>
 auto foreach_helper_pool(
     std::false_type, IT a, IT b, Callback callback, size_t /*startIndex*/ = 0,
     OnDoneCallback onTaskDone = []() {}) {
-    return dispatchPool([a, b, c = std::move(callback), onTaskDone = std::move(callback)]() {
+    return dispatchPool([a, b, c = std::move(callback), onTaskDone = std::move(onTaskDone)]() {
         std::for_each(a, b, c);
         onTaskDone();
     });

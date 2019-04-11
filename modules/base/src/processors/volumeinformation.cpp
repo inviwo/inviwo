@@ -159,7 +159,7 @@ void VolumeInformation::process() {
         minMaxChannel3_.set(minMaxC);
         minMaxChannel4_.set(minMaxD);
     }
-        
+
     metaDataProps_.updateProperty(metaDataProperty_, volume->getMetaDataMap());
 }
 

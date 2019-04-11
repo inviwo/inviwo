@@ -67,7 +67,7 @@ VolumeAxis::VolumeAxis()
     , zAxis_("zAxis", "Z Axis")
     , camera_("camera", "Camera")
     , trackball_(&camera_)
-    , axisRenderers_({xAxis_, yAxis_, zAxis_})
+    , axisRenderers_({{xAxis_, yAxis_, zAxis_}})
     , propertyUpdate_(false) {
     imageInport_.setOptional(true);
     addPort(inport_);
