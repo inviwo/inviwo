@@ -91,7 +91,7 @@ FILE* fopen(const std::string& filename, const char* mode) {
 #if defined(_WIN32)
     return _wfopen(util::toWstring(filename).c_str(), util::toWstring(mode).c_str());
 #else
-    return fopen(filename.c_str(), mode);
+    return ::fopen(filename.c_str(), mode);
 #endif
 }
 
