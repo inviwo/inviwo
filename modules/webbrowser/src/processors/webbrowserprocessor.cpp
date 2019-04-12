@@ -97,10 +97,6 @@ WebBrowserProcessor::WebBrowserProcessor()
     addProperty(runJS_);
     addProperty(js_);
 
-    runJS_.onChange([this]() {
-        runJSrequested_ = true;
-    });
-
     auto updateVisibility = [this]() {
         fileName_.setVisible(sourceType_ == SourceType::LocalFile);
         autoReloadFile_.setVisible(sourceType_ == SourceType::LocalFile);
@@ -266,9 +262,8 @@ void WebBrowserProcessor::OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bo
 }
 
 void WebBrowserProcessor::process() {
-    if (!isBrowserLoading_ && runJSrequested_) {        
+    if (js_.isModified()) {
         browser_->GetMainFrame()->ExecuteJavaScript(js_.get(), "", 1);
-        runJSrequested_ = false;
     }
 
     // Vertical flip of CEF output image

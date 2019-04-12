@@ -139,7 +139,6 @@ protected:
     CefRefPtr<WebBrowserClient> browserClient_;
     CefRefPtr<CefBrowser> browser_;
     bool isBrowserLoading_ = true;
-    bool runJSrequested_ = false;
 
     SingleFileObserver fileObserver_;
 
