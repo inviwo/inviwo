@@ -36,10 +36,32 @@
 
 #include <vector>
 #include <fstream>
+#include <cstdio>
 
 namespace inviwo {
 
 namespace filesystem {
+
+/**
+ * Creates and returns a FILE pointer for the given file name (utf-8 encoded). The call
+ * `auto f = filesystem::fopen(filename, mode);` is functionally equivalent to the
+ * statement `fopen(filename, mode);` or `_wfopen();`, respectively.
+ * No checks whether the file exists or was successfully opened are performed. That is the caller
+ * has to check it. For more details check the documentation of fopen.
+ *
+ * Since all strings within Inviwo are utf-8 encoded, this function should be used to create a
+ * file handle when reading from/writing to files.
+ *
+ * On Windows, the file name is first converted from a utf-8 string to std::wstring and then the
+ * file handle is created using the std::wstring as fopen(const char*) does not support utf-8.
+ *
+ * @param filename  utf-8 encoded string
+ * @param mode      mode to open the file (input or output)
+ * @return file handle for the given file, i.e. `fopen(filename, mode);`
+ *
+ * \see fopen, _wfopen
+ */
+IVW_CORE_API FILE* fopen(const std::string& filename, const char* mode);
 
 /**
  * Creates and returns a std::fstream for the given file name (utf-8 encoded). The call

@@ -44,6 +44,7 @@
 #include <warn/pop>
 
 int main(int argc, char** argv) {
+    using namespace inviwo;
     LogCentral::init();
     auto logger = std::make_shared<ConsoleLogger>();
     LogCentral::getPtr()->setVerbosity(LogVerbosity::Error);

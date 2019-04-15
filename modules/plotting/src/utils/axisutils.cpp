@@ -34,6 +34,7 @@
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/util/assertion.h>
+#include <inviwo/core/util/zip.h>
 
 #include <algorithm>
 #include <tuple>
@@ -461,14 +462,24 @@ std::vector<std::pair<double, vec2>> getLabelPositions(const AxisSettings& setti
     const auto axisRange = settings.getRange();
     const auto screenLength(glm::distance(endPos, startPos));
     const auto axisLength = axisRange.y - axisRange.x;
-    const vec2 scaling(axisDir * static_cast<float>(screenLength / axisLength));
-
     std::vector<std::pair<double, vec2>> labelPositions(tickmarks.size());
-    std::transform(tickmarks.begin(), tickmarks.end(), labelPositions.begin(),
-                   [&](double pos) -> std::pair<double, vec2> {
-                       return {pos, labelOrigin + scaling * static_cast<float>(pos - axisRange.x)};
-                   });
 
+    if (axisLength != 0.0) {
+        const vec2 scaling(axisDir * static_cast<float>(screenLength / axisLength));
+        std::transform(
+            tickmarks.begin(), tickmarks.end(), labelPositions.begin(),
+            [&](double pos) -> std::pair<double, vec2> {
+                return {pos, labelOrigin + scaling * static_cast<float>(pos - axisRange.x)};
+            });
+
+    } else {
+        const vec2 scaling(axisDir * static_cast<float>(screenLength / (tickmarks.size() - 1)));
+        auto seq = util::make_sequence(size_t{0}, tickmarks.size(), size_t{1});
+        std::transform(tickmarks.begin(), tickmarks.end(), seq.begin(), labelPositions.begin(),
+                       [&](double pos, size_t i) -> std::pair<double, vec2> {
+                           return {pos, labelOrigin + scaling * static_cast<double>(i)};
+                       });
+    }
     return labelPositions;
 }
 

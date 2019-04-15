@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,52 +26,47 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#ifndef IVW_SEEDPOINTSFROMMASK_H
-#define IVW_SEEDPOINTSFROMMASK_H
-
-#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
+#include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
 
-#include <modules/vectorfieldvisualization/ports/seedpointsport.h>
-
-#include <random>
+#include <unordered_map>
+#include <functional>
 
 namespace inviwo {
 
-class IVW_MODULE_VECTORFIELDVISUALIZATION_API SeedPointsFromMask : public Processor {
+class MetaData;
+class MetaDataMap;
+class CompositeProperty;
+
+namespace util {
+
+/** 
+ * \class MetaDataToProperty
+ * Helper class for adding and caching metadata properties, i.e. creating properties matching the data given in a metadata map.
+ *
+ * \see VolumeInformation, ImageInformation
+ */
+class IVW_CORE_API MetaDataToProperty {
 public:
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-    SeedPointsFromMask();
-    virtual ~SeedPointsFromMask() {}
+    MetaDataToProperty();
 
-protected:
-    virtual void process() override;
-
-    DataInport<Volume, 0> volumes_;
-    SeedPoints3DOutport seedPoints_;
-
-    DoubleProperty threshold_;
-
-    BoolProperty enableSuperSample_;
-    IntProperty superSample_;
-
-    CompositeProperty randomness_;
-    BoolProperty useSameSeed_;
-    IntProperty seed_;
-    BoolProperty transformToWorld_;
+    /**
+     * \brief Adds one subproperty to the CompositeProperty \p parent for each entry in \p
+     * metaDataMap. Note that \p parent will hold only sub properties matching the meta data and
+     * nothing else. That is additional subproperties will be removed.
+     */
+    void updateProperty(CompositeProperty& parent, const MetaDataMap* metaDataMap);
 
 private:
-    std::mt19937 mt_;
-    std::uniform_real_distribution<float> dis_;
+    using PropertyMap =
+        std::unordered_map<std::string, std::function<void(const std::string& key, const MetaData*,
+                                                           CompositeProperty&)>>;
+
+    PropertyMap factory_;
 };
 
-}  // namespace inviwo
+}  // namespace util
 
-#endif  // IVW_SEEDPOINTSFROMMASK_H
+}  // namespace inviwo

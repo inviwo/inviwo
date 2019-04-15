@@ -116,12 +116,13 @@ protected:
     void moveForward(Event* event);
     void moveBackward(Event* event);
 
+    const vec3 getWorldUp() const;
     mat4 roll(const float radians) const;
     mat4 pitch(const float radians) const;
     mat4 yaw(const float radians) const;
 
     void stepRotate(Direction dir);
-    void stepZoom(Direction dir, const int numSteps=1);
+    void stepZoom(Direction dir, const int numSteps = 1);
     void stepPan(Direction dir);
 
     void rotateLeft(Event* event);
@@ -135,8 +136,8 @@ protected:
     void panDown(Event* event);
 
     void zoomWheel(Event* event);
-    void zoomIn(Event* event, const int numSteps=1);
-    void zoomOut(Event* event, const int numSteps=1);
+    void zoomIn(Event* event, const int numSteps = 1);
+    void zoomOut(Event* event, const int numSteps = 1);
 
     void recenterFocusPoint(Event* event);
 
@@ -163,7 +164,9 @@ protected:
     FloatProperty verticalAngleLimit_;   /// Limits the angle between world up and view direction
                                          /// when fixUp is True
     FloatProperty movementSpeed_;
-    BoolProperty fixUp_;  /// Fixes the up vector to world_up in all rotation methods
+    BoolProperty fixUp_;               /// Fixes the up vector to world_up in all rotation methods
+    OptionPropertyInt worldUp_;        /// Defines which axis is considered up in world space
+    FloatVec3Property customWorldUp_;  /// The custom world up direction (normalized)
 
     // Interaction restrictions
     BoolProperty handleInteractionEvents_;

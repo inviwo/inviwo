@@ -572,7 +572,11 @@ void InviwoMainWindow::addActions() {
                     auto action = menu->addAction(QString::fromStdString(item));
                     auto path = QString::fromStdString(testdir + "/" + item);
                     connect(action, &QAction::triggered, this, [this, path]() {
-                        if (askToSaveWorkspaceChanges()) openWorkspace(path);
+                        if (askToSaveWorkspaceChanges()) {
+                            if (openWorkspace(path)) {
+                                hideWelcomeScreen();
+                            }
+                        }
                     });
                 }
             }
@@ -852,9 +856,8 @@ void InviwoMainWindow::addActions() {
                                                   .arg(utilqt::toQString(p->getIdentifier())));
                 action->setCheckable(true);
                 action->setChecked(p->getProcessorWidget()->isVisible());
-                QObject::connect(action, &QAction::toggled, this, [p](bool toggle) {
-                    p->getProcessorWidget()->setVisible(toggle);
-                });
+                QObject::connect(action, &QAction::toggled, this,
+                                 [p](bool toggle) { p->getProcessorWidget()->setVisible(toggle); });
             }
         });
     }

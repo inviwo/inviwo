@@ -120,11 +120,11 @@ private:
 struct IVW_MODULE_PLOTTINGGL_API AxisMeshes {
     AxisMeshes();
 
-    Mesh* getAxis(const AxisSettings& settings, const size3_t& start, const size3_t& end,
+    Mesh* getAxis(const AxisSettings& settings, const vec3& start, const vec3& end,
                   size_t pickId);
-    Mesh* getMajor(const AxisSettings& settings, const size3_t& start, const size3_t& end,
+    Mesh* getMajor(const AxisSettings& settings, const vec3& start, const vec3& end,
                    const vec3& tickDirection);
-    Mesh* getMinor(const AxisSettings& settings, const size3_t& start, const size3_t& end,
+    Mesh* getMinor(const AxisSettings& settings, const vec3& start, const vec3& end,
                    const vec3& tickDirection);
 
 private:
@@ -136,8 +136,8 @@ private:
     using MPMajor = MemPtr<AxisMeshes, std::unique_ptr<Mesh>, &AxisMeshes::majorMesh_>;
     using MPMinor = MemPtr<AxisMeshes, std::unique_ptr<Mesh>, &AxisMeshes::minorMesh_>;
 
-    Guard<size3_t, MPAxis, MPMajor, MPMinor> startPos_;
-    Guard<size3_t, MPAxis, MPMajor, MPMinor> endPos_;
+    Guard<vec3, MPAxis, MPMajor, MPMinor> startPos_;
+    Guard<vec3, MPAxis, MPMajor, MPMinor> endPos_;
     Guard<vec4, MPAxis> color_;
     Guard<size_t, MPAxis> pickId_;
     Guard<dvec2, MPMajor, MPMinor> range_;
@@ -151,12 +151,12 @@ template <typename P>
 struct AxisLabels {
     using LabelPos = std::vector<P>;
     using Updater = std::function<void(LabelPos&, util::TextureAtlas&, const AxisSettings&,
-                                       const size3_t&, const size3_t&, const vec3&)>;
+                                       const vec3&, const vec3&, const vec3&)>;
 
     AxisLabels(Updater updatePos) : updatePos_{updatePos} {}
 
-    util::TextureAtlas& getAtlas(const AxisSettings& settings, const size3_t& start,
-                                 const size3_t& end, TextRenderer& renderer) {
+    util::TextureAtlas& getAtlas(const AxisSettings& settings, const vec3& start,
+                                 const vec3& end, TextRenderer& renderer) {
         startPos_.check(*this, start);
         endPos_.check(*this, end);
         range_.check(*this, settings.getRange());
@@ -174,8 +174,8 @@ struct AxisLabels {
 
     const util::TextureAtlas& getCurrentAtlas() const { return atlas_; }
 
-    const LabelPos& getLabelPos(const AxisSettings& settings, const size3_t& start,
-                                const size3_t& end, TextRenderer& renderer,
+    const LabelPos& getLabelPos(const AxisSettings& settings, const vec3& start,
+                                const vec3& end, TextRenderer& renderer,
                                 const vec3& tickDirection) {
 
         startPos_.check(*this, start);
@@ -201,8 +201,8 @@ protected:
     using MPAtlas = MemPtr<AxisLabels, bool, &AxisLabels::validAtlas_>;
     using MPLabel = MemPtr<AxisLabels, LabelPos, &AxisLabels::positions_>;
 
-    Guard<size3_t, MPAtlas, MPLabel> startPos_;
-    Guard<size3_t, MPAtlas, MPLabel> endPos_;
+    Guard<vec3, MPAtlas, MPLabel> startPos_;
+    Guard<vec3, MPAtlas, MPLabel> endPos_;
     Guard<dvec2, MPAtlas, MPLabel> range_;
     Guard<PlotTextData, MPAtlas, MPLabel> labelsSettings_;
     Guard<std::vector<std::string>, MPAtlas> labels_;
@@ -247,12 +247,12 @@ public:
     size_t getAxisPickingId() const { return axisPickingId_; }
 
 protected:
-    void renderAxis(Camera* camera, const size3_t& start, const size3_t& end, const vec3& tickdir,
+    void renderAxis(Camera* camera, const vec3& start, const vec3& end, const vec3& tickdir,
                     const size2_t& outputDims, bool antialiasing);
 
     const AxisSettings& settings_;
 
-    TextRenderer textRenderer_;  // mutable to enable lazy initialization
+    TextRenderer textRenderer_;
     TextureQuadRenderer quadRenderer_;
 
     size_t axisPickingId_ = std::numeric_limits<size_t>::max();  // max == unused

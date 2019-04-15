@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,51 +27,47 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SEEDPOINTSFROMMASK_H
-#define IVW_SEEDPOINTSFROMMASK_H
+#pragma once
 
-#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
+#include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
-
-#include <modules/vectorfieldvisualization/ports/seedpointsport.h>
-
-#include <random>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/util/metadatatoproperty.h>
+#include <modules/base/properties/imageinformationproperty.h>
 
 namespace inviwo {
 
-class IVW_MODULE_VECTORFIELDVISUALIZATION_API SeedPointsFromMask : public Processor {
-public:
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-    SeedPointsFromMask();
-    virtual ~SeedPointsFromMask() {}
+/** \docpage{org.inviwo.ImageInformation, Image Information}
+ * ![](org.inviwo.ImageInformation.png?classIdentifier=org.inviwo.ImageInformation)
+ * Shows available information provided by input image including metadata.
+ *
+ * ### Inports
+ *   * __image__   input image
+ */
 
-protected:
+/**
+ * \class ImageInformation
+ * \brief provides information on input image
+ */
+class IVW_MODULE_BASE_API ImageInformation : public Processor {
+public:
+    ImageInformation();
+    virtual ~ImageInformation() = default;
+
     virtual void process() override;
 
-    DataInport<Volume, 0> volumes_;
-    SeedPoints3DOutport seedPoints_;
-
-    DoubleProperty threshold_;
-
-    BoolProperty enableSuperSample_;
-    IntProperty superSample_;
-
-    CompositeProperty randomness_;
-    BoolProperty useSameSeed_;
-    IntProperty seed_;
-    BoolProperty transformToWorld_;
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
 private:
-    std::mt19937 mt_;
-    std::uniform_real_distribution<float> dis_;
+    ImageInport image_;
+
+    ImageInformationProperty imageInfo_;
+    CompositeProperty metaDataProperty_;
+
+    util::MetaDataToProperty metaDataProps_;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_SEEDPOINTSFROMMASK_H

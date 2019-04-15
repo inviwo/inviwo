@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 
 #include <array>
+#include <ostream>
 
 namespace inviwo {
 
@@ -49,6 +50,81 @@ enum class LayerType { Color = 0, Depth = 1, Picking = 2 };
 enum class ImageChannel { Red, Green, Blue, Alpha, Zero, One };
 
 using SwizzleMask = std::array<ImageChannel, 4>;
+
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, ImageType type) {
+    switch (type) {
+        case ImageType::ColorOnly:
+            ss << "Color Only";
+            break;
+        case ImageType::ColorDepth:
+            ss << "Color + Depth";
+            break;
+        case ImageType::ColorPicking:
+            ss << "Color + Picking";
+            break;
+        case ImageType::ColorDepthPicking:
+        default:
+            ss << "Color + Depth + Picking";
+            break;
+    }
+    return ss;
+}
+
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, LayerType type) {
+    switch (type) {
+        case LayerType::Color:
+            ss << "Color";
+            break;
+        case LayerType::Depth:
+            ss << "Depth";
+            break;
+        case LayerType::Picking:
+            ss << "Picking";
+            break;
+        default:
+            ss << "Unknown";
+            break;
+    }
+    return ss;
+}
+
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
+                                             ImageChannel channel) {
+    switch (channel) {
+        case ImageChannel::Red:
+            ss << "r";
+            break;
+        case ImageChannel::Green:
+            ss << "g";
+            break;
+        case ImageChannel::Blue:
+            ss << "b";
+            break;
+        case ImageChannel::Alpha:
+            ss << "a";
+            break;
+        case ImageChannel::Zero:
+            ss << "0";
+            break;
+        case ImageChannel::One:
+        default:
+            ss << "1";
+            break;
+    }
+    return ss;
+}
+
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
+                                             SwizzleMask mask) {
+    for (const auto c : mask) {
+        ss << c;
+    }
+    return ss;
+}
 
 namespace swizzlemasks {
 

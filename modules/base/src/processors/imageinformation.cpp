@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,51 +27,42 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SEEDPOINTSFROMMASK_H
-#define IVW_SEEDPOINTSFROMMASK_H
-
-#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-
-#include <modules/vectorfieldvisualization/ports/seedpointsport.h>
-
-#include <random>
+#include <modules/base/processors/imageinformation.h>
 
 namespace inviwo {
 
-class IVW_MODULE_VECTORFIELDVISUALIZATION_API SeedPointsFromMask : public Processor {
-public:
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-    SeedPointsFromMask();
-    virtual ~SeedPointsFromMask() {}
-
-protected:
-    virtual void process() override;
-
-    DataInport<Volume, 0> volumes_;
-    SeedPoints3DOutport seedPoints_;
-
-    DoubleProperty threshold_;
-
-    BoolProperty enableSuperSample_;
-    IntProperty superSample_;
-
-    CompositeProperty randomness_;
-    BoolProperty useSameSeed_;
-    IntProperty seed_;
-    BoolProperty transformToWorld_;
-
-private:
-    std::mt19937 mt_;
-    std::uniform_real_distribution<float> dis_;
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo ImageInformation::processorInfo_{
+    "org.inviwo.ImageInformation",  // Class identifier
+    "Image Information",            // Display name
+    "Information",                  // Category
+    CodeState::Stable,              // Code state
+    "CPU, Image, Layer",            // Tags
 };
+const ProcessorInfo ImageInformation::getProcessorInfo() const { return processorInfo_; }
+
+ImageInformation::ImageInformation()
+    : Processor()
+    , image_("image")
+    , imageInfo_("dataInformation", "Data Information")
+    , metaDataProperty_("metaData", "Meta Data") {
+
+    addPort(image_);
+    addProperty(imageInfo_);
+    addProperty(metaDataProperty_);
+
+    imageInfo_.setReadOnly(true);
+    imageInfo_.setSerializationMode(PropertySerializationMode::None);
+
+    setAllPropertiesCurrentStateAsDefault();
+}
+
+void ImageInformation::process() {
+    auto image = image_.getData();
+
+    imageInfo_.updateForNewImage(*(image.get()));
+
+    metaDataProps_.updateProperty(metaDataProperty_, image->getMetaDataMap());
+}
 
 }  // namespace inviwo
-
-#endif  // IVW_SEEDPOINTSFROMMASK_H

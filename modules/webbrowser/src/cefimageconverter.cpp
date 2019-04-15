@@ -45,7 +45,7 @@ void CefImageConverter::convert(const Texture2D& fromCefOutput, ImageOutport& to
     } else {
         utilgl::activateAndClearTarget(toInviwOutput, ImageType::ColorPicking);
     }
-    utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    utilgl::BlendModeState blendModeStateGL(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
     shader_.activate();
 

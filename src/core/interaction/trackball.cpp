@@ -52,12 +52,24 @@ Trackball::Trackball(TrackballObject* object)
     , isMouseBeingPressedAndHold_(false)
     , lastNDC_(vec3(0.0f))
     , gestureStartNDCDepth_(-1)
-    , trackballMethod_("trackballMethod", "Trackball Method")
+    , trackballMethod_("trackballMethod", "Trackball Method",
+                       {{"tb_vt", "Virtual Trackball", 0},
+                        {"tb_tav", "Two Axis Valuator Trackball", 1},
+                        {"tb_fps", "First Person Camera", 2},
+                        {"tb_fodr", "Object follows Cursor", 3}},
+                       0)
     , sensitivity_("sensitivity", "Sensitivity", 3.0f, 0.0f, 10.0f, 0.25f)
     , verticalAngleLimit_("verticalAngleLimit", "Vertical Angle Limit", 0.125f, 0.0f,
                           glm::pi<float>() / 2.0f, 0.05f)
     , movementSpeed_("movementSpeed", "Movement Speed", 0.025f, 0.0f, 1.0f)
     , fixUp_("fixUp", "Fix Up Vector", false)
+    , worldUp_("worldUp", "World Up",
+               {{"xAxis", "X Axis", 0},
+                {"yAxis", "Y Axis", 1},
+                {"zAxis", "Z Axis", 2},
+                {"custom", "Custom", 3}},
+               1)
+    , customWorldUp_("customWup", "Custom World Up", vec3(0, 1, 0), vec3(-1, -1, -1), vec3(1, 1, 1))
     , handleInteractionEvents_("handleEvents", "Handle interaction events", true,
                                InvalidationLevel::Valid)
     , allowHorizontalPanning_("allowHorizontalPanning", "Horizontal panning enabled", true)
@@ -102,17 +114,23 @@ Trackball::Trackball(TrackballObject* object)
     , timer_{std::chrono::milliseconds{30LL}, [this]() { animate(); }} {
 
     mouseReset_.setVisible(false);
-    mouseReset_.setCurrentStateAsDefault();
 
-    trackballMethod_.addOption("tb_vt", "Virtual Trackball", 0);
-    trackballMethod_.addOption("tb_tav", "Two Axis Valuator Trackball", 1);
-    trackballMethod_.addOption("tb_fps", "First Person Camera", 2);
-    trackballMethod_.addOption("tb_fodr", "Object follows Cursor", 3);
     addProperty(trackballMethod_);
     addProperty(sensitivity_);
     addProperty(movementSpeed_);
     addProperty(fixUp_);
+    addProperty(worldUp_);
+    addProperty(customWorldUp_);
     addProperty(verticalAngleLimit_);
+    customWorldUp_.visibilityDependsOn(
+        worldUp_, [](const OptionPropertyInt& opt) { return opt == 3 && opt.getVisible(); });
+    worldUp_.visibilityDependsOn(trackballMethod_,
+                                 [](const OptionPropertyInt& opt) { return opt == 1 || opt == 2; });
+    auto isTAV = [](const OptionPropertyInt& opt) { return opt == 1; };
+    verticalAngleLimit_.visibilityDependsOn(trackballMethod_, isTAV);
+    fixUp_.visibilityDependsOn(trackballMethod_, isTAV);
+    movementSpeed_.visibilityDependsOn(trackballMethod_,
+                                       [](const OptionPropertyInt& opt) { return opt == 2; });
 
     addProperty(handleInteractionEvents_);
 
@@ -169,6 +187,8 @@ Trackball::Trackball(const Trackball& rhs)
     , verticalAngleLimit_(rhs.verticalAngleLimit_)
     , movementSpeed_(rhs.movementSpeed_)
     , fixUp_(rhs.fixUp_)
+    , worldUp_(rhs.worldUp_)
+    , customWorldUp_(rhs.customWorldUp_)
     , handleInteractionEvents_(rhs.handleInteractionEvents_)
     , allowHorizontalPanning_(rhs.allowHorizontalPanning_)
     , allowVerticalPanning_(rhs.allowVerticalPanning_)
@@ -211,6 +231,8 @@ Trackball::Trackball(const Trackball& rhs)
     addProperty(trackballMethod_);
     addProperty(sensitivity_);
     addProperty(fixUp_);
+    addProperty(worldUp_);
+    addProperty(customWorldUp_);
     addProperty(verticalAngleLimit_);
 
     addProperty(handleInteractionEvents_);
@@ -322,6 +344,22 @@ const vec3 Trackball::getLookRight() const {
     return glm::normalize(glm::cross(getLookTo() - getLookFrom(), getLookUp()));
 }
 
+/* \brief Returns the World Up Vector according to `worldUp_` property. */
+const vec3 Trackball::getWorldUp() const {
+    switch (worldUp_) {
+        case 0:
+            return vec3(1, 0, 0);
+        case 1:
+            return vec3(0, 1, 0);
+        case 2:
+            return vec3(0, 0, 1);
+        case 3:
+            return glm::normalize(customWorldUp_.get());
+        default:
+            return vec3(0, 1, 0);
+    }
+}
+
 const vec3 Trackball::getLookFromMinValue() const { return object_->getLookFromMinValue(); }
 
 const vec3 Trackball::getLookFromMaxValue() const { return object_->getLookFromMaxValue(); }
@@ -405,7 +443,7 @@ void Trackball::rotateTAV(Event* event) {
         isMouseBeingPressedAndHold_ = true;
     } else {
         const vec2 diff = glm::xy(curNDC - this->lastNDC_);
-        const vec3 wUp = vec3(0, 1, 0);  // world up
+        const vec3 wUp = getWorldUp();  // world up
         // Get vector to camera
         vec3 camDir = getLookFrom() - getLookTo();
         const float dist =
@@ -507,9 +545,9 @@ void Trackball::rotateFPS(Event* event) {
         const mat4 matYaw = yaw(-diff.x);
         const mat4 matPitch = pitch(diff.y);
         const vec3 newLookTo = vec3(matYaw * matPitch * vec4(to, 1.f));
-        const vec3 yDir = vec3(0, 1, 0);
+        const vec3 wUp = getWorldUp();
         const vec3 viewDir = glm::normalize(newLookTo - from);
-        const vec3 rightDir = glm::normalize(glm::cross(viewDir, yDir));
+        const vec3 rightDir = glm::normalize(glm::cross(viewDir, wUp));
         const vec3 newLookUp = glm::normalize(glm::cross(rightDir, viewDir));
         setLook(from, newLookTo, newLookUp);
     }
@@ -526,7 +564,7 @@ mat4 Trackball::pitch(const float radians) const {
 
 mat4 Trackball::yaw(const float radians) const {
     return glm::translate(getLookFrom())  // to origin
-           * glm::rotate(radians, fixUp_ ? vec3(0.f, 1.f, 0.f) : getLookUp()) *
+           * glm::rotate(radians, fixUp_ ? getWorldUp() : getLookUp()) *
            glm::translate(-getLookFrom());  // translate back
 }
 

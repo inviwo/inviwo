@@ -87,6 +87,14 @@ std::string removeTrailingSlash(const std::string& path) {
 
 namespace filesystem {
 
+FILE* fopen(const std::string& filename, const char* mode) {
+#if defined(_WIN32)
+    return _wfopen(util::toWstring(filename).c_str(), util::toWstring(mode).c_str());
+#else
+    return ::fopen(filename.c_str(), mode);
+#endif
+}
+
 std::fstream fstream(const std::string& filename, std::ios_base::openmode mode) {
 #if defined(_WIN32)
     return std::fstream(util::toWstring(filename), mode);

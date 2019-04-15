@@ -68,10 +68,13 @@ private:
     DataOutport<DataFrame> dataFrame_;
 
     IntSizeTProperty numRow_;
+    BoolProperty includeSingleValueColumnsFloat_;
+    BoolProperty includeSingleValueColumnsInt_;
 
     CompositeProperty randomParams_;
     BoolProperty useSameSeed_;  ///< Use the same seed for each call to process.
     IntProperty seed_;          ///<  The seed used to initialize the random sequence
+    
 };
 
 }  // namespace plot
