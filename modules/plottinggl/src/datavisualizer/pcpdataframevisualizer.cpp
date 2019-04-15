@@ -31,11 +31,11 @@
 
 #include <modules/plottinggl/processors/parallelcoordinates/parallelcoordinates.h>
 
-#include <modules/plotting/datastructures/dataframe.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
 #include <inviwo/core/processors/processorutils.h>
 #include <inviwo/core/properties/optionproperty.h>
 
-#include <modules/plotting/processors/csvsource.h>
+#include <inviwo/dataframe/processors/csvsource.h>
 #include <modules/basegl/processors/background.h>
 #include <modules/opengl/canvasprocessorgl.h>
 #include <inviwo/core/io/datareaderfactory.h>

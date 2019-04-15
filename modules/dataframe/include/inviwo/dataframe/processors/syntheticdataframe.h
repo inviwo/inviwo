@@ -27,43 +27,37 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DATAFRAMECOLUMNTOCOLORVECTOR_H
-#define IVW_DATAFRAMECOLUMNTOCOLORVECTOR_H
+#ifndef IVW_SYNTHETICDATAFRAME_H
+#define IVW_SYNTHETICDATAFRAME_H
 
-#include <modules/plotting/plottingmoduledefine.h>
+#include <inviwo/dataframe/dataframemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/ports/dataoutport.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
-#include <modules/plotting/properties/dataframeproperty.h>
 
 namespace inviwo {
 
 namespace plot {
 
-/** \docpage{org.inviwo.DataFrameColumnToColorVector, DataFrame Column To Color Vector}
- * ![](org.inviwo.DataFrameColumnToColorVector.png?classIdentifier=org.inviwo.DataFrameColumnToColorVector)
- * This processor maps column values of a DataFrame to colors using a 1D transfer function.
- *
- * ### Inports
- *   * __dataFrame__ input data
+/** \docpage{org.inviwo.SyntheticDataFrame, Synthetic DataFrame}
+ * ![](org.inviwo.SyntheticDataFrame.png?classIdentifier=org.inviwo.SyntheticDataFrame)
+ * This processor generates a DataFrame filled with random values.
  *
  * ### Outports
- *   * __colors__   resulting vector of colors matching the selected DataFrame column
+ *   * __Outport__   resulting DataFrame containing n rows with random values
  *
  * ### Properties
- *   * __Selected Color Axis__   selects DataFrame column
- *   * __Color Mapping__   mapping data values to colors via a transfer function
+ *   * __Number of Rows__  defines the size of the generated DataFrame
  */
 
-class IVW_MODULE_PLOTTING_API DataFrameColumnToColorVector : public Processor {
+class IVW_MODULE_DATAFRAME_API SyntheticDataFrame : public Processor {
 public:
-    DataFrameColumnToColorVector();
-    virtual ~DataFrameColumnToColorVector() = default;
+    SyntheticDataFrame();
+    virtual ~SyntheticDataFrame() = default;
 
     virtual void process() override;
 
@@ -71,15 +65,17 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    DataInport<DataFrame> dataFrame_;
-    DataOutport<std::vector<vec4>> colors_;
+    DataOutport<DataFrame> dataFrame_;
 
-    DataFrameColumnProperty selectedColorAxis_;
-    TransferFunctionProperty tf_;
+    IntSizeTProperty numRow_;
+
+    CompositeProperty randomParams_;
+    BoolProperty useSameSeed_;  ///< Use the same seed for each call to process.
+    IntProperty seed_;          ///<  The seed used to initialize the random sequence
 };
 
 }  // namespace plot
 
 }  // namespace inviwo
 
-#endif  // IVW_DATAFRAMECOLUMNTOCOLORVECTOR_H
+#endif  // IVW_SYNTHETICDATAFRAME_H

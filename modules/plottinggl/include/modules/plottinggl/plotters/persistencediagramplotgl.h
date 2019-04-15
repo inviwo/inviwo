@@ -44,7 +44,7 @@
 #include <modules/opengl/shader/shader.h>
 #include <modules/base/algorithm/dataminmax.h>
 
-#include <modules/plotting/datastructures/dataframe.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
 #include <modules/plotting/properties/marginproperty.h>
 #include <modules/plotting/properties/axisproperty.h>
 #include <modules/plottinggl/utils/axisrenderer.h>

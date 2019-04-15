@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,60 +26,43 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#ifndef IVW_DATAFRAMECOLUMNTOCOLORVECTOR_H
-#define IVW_DATAFRAMECOLUMNTOCOLORVECTOR_H
-
-#include <modules/plotting/plottingmoduledefine.h>
+#include <inviwo/dataframe/dataframemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/ports/dataoutport.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
-#include <modules/plotting/properties/dataframeproperty.h>
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 
 namespace inviwo {
 
 namespace plot {
 
-/** \docpage{org.inviwo.DataFrameColumnToColorVector, DataFrame Column To Color Vector}
- * ![](org.inviwo.DataFrameColumnToColorVector.png?classIdentifier=org.inviwo.DataFrameColumnToColorVector)
- * This processor maps column values of a DataFrame to colors using a 1D transfer function.
- *
- * ### Inports
- *   * __dataFrame__ input data
- *
- * ### Outports
- *   * __colors__   resulting vector of colors matching the selected DataFrame column
- *
- * ### Properties
- *   * __Selected Color Axis__   selects DataFrame column
- *   * __Color Mapping__   mapping data values to colors via a transfer function
+/**
+ * Converts a DataFrame to a JSON object. 
+ * Usage example:
+ * \code{.cpp}
+ * Dataframe df;
+ * json j = df;
+ * \endcode
  */
+IVW_MODULE_DATAFRAME_API void to_json(json& j, const DataFrame* df);
 
-class IVW_MODULE_PLOTTING_API DataFrameColumnToColorVector : public Processor {
-public:
-    DataFrameColumnToColorVector();
-    virtual ~DataFrameColumnToColorVector() = default;
+/**
+ * Converts a JSON object to a DataFrame. 
+ * Expects object layout:
+ * [ {"Col1": val11, "Col2": val12 }, 
+ *   {"Col1": val21, "Col2": val22 } ]
+ *
+ * Usage example:
+ * \code{.cpp}
+ * auto df = j.get<DataFrame>();
+ * \endcode
+ */
+IVW_MODULE_DATAFRAME_API void from_json(const json& j, DataFrame& df);
 
-    virtual void process() override;
-
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-private:
-    DataInport<DataFrame> dataFrame_;
-    DataOutport<std::vector<vec4>> colors_;
-
-    DataFrameColumnProperty selectedColorAxis_;
-    TransferFunctionProperty tf_;
-};
-
-}  // namespace plot
+} // namespace plot
 
 }  // namespace inviwo
 
-#endif  // IVW_DATAFRAMECOLUMNTOCOLORVECTOR_H

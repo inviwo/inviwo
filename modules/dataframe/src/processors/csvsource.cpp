@@ -27,54 +27,57 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DATAFRAMEPROPERTY_H
-#define IVW_DATAFRAMEPROPERTY_H
+#include <inviwo/dataframe/processors/csvsource.h>
+#include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 
-#include <modules/plotting/plottingmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/dataframe/datastructures/dataframe.h>
+#include <inviwo/dataframe/io/csvreader.h>
 
 namespace inviwo {
 
 namespace plot {
 
-class IVW_MODULE_PLOTTING_API DataFrameColumnProperty : public OptionPropertyInt {
-public:
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
-
-    DataFrameColumnProperty(std::string identifier, std::string displayName, bool allowNone = false,
-                            size_t firstIndex = 0);
-    DataFrameColumnProperty(std::string identifier, std::string displayName,
-                            DataInport<DataFrame>& port, bool allowNone = false,
-                            size_t firstIndex = 0);
-
-    DataFrameColumnProperty(const DataFrameColumnProperty& rhs);
-    DataFrameColumnProperty& operator=(const DataFrameColumnProperty& that);
-    virtual DataFrameColumnProperty* clone() const override;
-
-    virtual ~DataFrameColumnProperty() = default;
-
-    void setOptions(std::shared_ptr<const DataFrame> dataframe);
-
-    std::shared_ptr<const Column> getColumn();
-    std::shared_ptr<const BufferBase> getBuffer();
-
-    virtual std::string getClassIdentifierForWidget() const override {
-        return TemplateOptionProperty<int>::getClassIdentifier();
-    }
-
-    virtual void set(const Property* p) override;
-
-private:
-    std::shared_ptr<const DataFrame> dataframe_;
-    bool allowNone_;
-    size_t firstIndex_;
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo CSVSource::processorInfo_{
+    "org.inviwo.CSVSource",                   // Class identifier
+    "CSV Source",                             // Display name
+    "Data Input",                             // Category
+    CodeState::Stable,                        // Code state
+    "CPU, Plotting, Source, CSV, DataFrame",  // Tags
 };
+const ProcessorInfo CSVSource::getProcessorInfo() const { return processorInfo_; }
+
+CSVSource::CSVSource(const std::string& file)
+    : Processor()
+    , data_("data")
+    , firstRowIsHeaders_("firstRowIsHeaders", "First Row Contains Column Headers", true)
+    , inputFile_("inputFile_", "CSV File", file, "dataframe")
+    , delimiters_("delimiters", "Delimiters", ",")
+    , reloadData_("reloadData", "Reload Data") {
+
+    addPort(data_);
+
+    addProperty(inputFile_);
+    addProperty(firstRowIsHeaders_);
+    addProperty(delimiters_);
+    addProperty(reloadData_);
+
+    isReady_.setUpdate([this]() { return filesystem::fileExists(inputFile_.get()); });
+    inputFile_.onChange([this]() { isReady_.update(); });
+}
+
+void CSVSource::process() {
+    if (inputFile_.get().empty()) return;
+
+    CSVReader reader;
+
+    reader.setDelimiters(delimiters_.get());
+    reader.setFirstRowHeader(firstRowIsHeaders_.get());
+
+    data_.setData(reader.readData(inputFile_.get()));
+}
 
 }  // namespace plot
 
 }  // namespace inviwo
-
-#endif  // IVW_DATAFRAMEPROPERTY_H

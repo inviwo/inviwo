@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2019 Inviwo Foundation
+ * Copyright (c) 2017-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,54 +27,49 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DATAFRAMEPROPERTY_H
-#define IVW_DATAFRAMEPROPERTY_H
-
-#include <modules/plotting/plottingmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/dataframe/datastructures/dataframe.h>
+#include <inviwo/dataframe/datastructures/column.h>
 
 namespace inviwo {
 
 namespace plot {
 
-class IVW_MODULE_PLOTTING_API DataFrameColumnProperty : public OptionPropertyInt {
-public:
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
+CategoricalColumn::CategoricalColumn(const std::string &header)
+    : TemplateColumn<std::uint32_t>(header) {}
 
-    DataFrameColumnProperty(std::string identifier, std::string displayName, bool allowNone = false,
-                            size_t firstIndex = 0);
-    DataFrameColumnProperty(std::string identifier, std::string displayName,
-                            DataInport<DataFrame>& port, bool allowNone = false,
-                            size_t firstIndex = 0);
+plot::CategoricalColumn *CategoricalColumn::clone() const { return new CategoricalColumn(*this); }
 
-    DataFrameColumnProperty(const DataFrameColumnProperty& rhs);
-    DataFrameColumnProperty& operator=(const DataFrameColumnProperty& that);
-    virtual DataFrameColumnProperty* clone() const override;
+std::string CategoricalColumn::getAsString(size_t idx) const {
+    auto index = getTypedBuffer()->getRAMRepresentation()->getDataContainer()[idx];
+    return lookUpTable_[index];
+}
 
-    virtual ~DataFrameColumnProperty() = default;
-
-    void setOptions(std::shared_ptr<const DataFrame> dataframe);
-
-    std::shared_ptr<const Column> getColumn();
-    std::shared_ptr<const BufferBase> getBuffer();
-
-    virtual std::string getClassIdentifierForWidget() const override {
-        return TemplateOptionProperty<int>::getClassIdentifier();
+std::shared_ptr<DataPointBase> CategoricalColumn::get(size_t idx, bool getStringsAsStrings) const {
+    if (getStringsAsStrings) {
+        return std::make_shared<DataPoint<std::string>>(getAsString(idx));
+    } else {
+        return TemplateColumn<std::uint32_t>::get(idx, getStringsAsStrings);
     }
+}
 
-    virtual void set(const Property* p) override;
+void CategoricalColumn::set(size_t idx, const std::string &str) {
+    auto id = addOrGetID(str);
+    getTypedBuffer()->getEditableRAMRepresentation()->set(idx, id);
+}
 
-private:
-    std::shared_ptr<const DataFrame> dataframe_;
-    bool allowNone_;
-    size_t firstIndex_;
-};
+void CategoricalColumn::add(const std::string &value) {
+    auto id = addOrGetID(value);
+    getTypedBuffer()->getEditableRAMRepresentation()->add(id);
+}
+
+glm::uint32_t CategoricalColumn::addOrGetID(const std::string &str) {
+    auto it = std::find(lookUpTable_.begin(), lookUpTable_.end(), str);
+    if (it != lookUpTable_.end()) {
+        return static_cast<glm::uint32_t>(std::distance(lookUpTable_.begin(), it));
+    }
+    lookUpTable_.push_back(str);
+    return static_cast<glm::uint32_t>(lookUpTable_.size() - 1);
+}
 
 }  // namespace plot
 
 }  // namespace inviwo
-
-#endif  // IVW_DATAFRAMEPROPERTY_H

@@ -27,43 +27,40 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DATAFRAMECOLUMNTOCOLORVECTOR_H
-#define IVW_DATAFRAMECOLUMNTOCOLORVECTOR_H
+#ifndef IVW_CSVSOURCE_H
+#define IVW_CSVSOURCE_H
 
-#include <modules/plotting/plottingmoduledefine.h>
+#include <inviwo/dataframe/dataframemoduledefine.h>
+
+#include <inviwo/dataframe/datastructures/dataframe.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/ports/dataoutport.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/dataframe/datastructures/dataframe.h>
-#include <modules/plotting/properties/dataframeproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
 
 namespace inviwo {
 
 namespace plot {
 
-/** \docpage{org.inviwo.DataFrameColumnToColorVector, DataFrame Column To Color Vector}
- * ![](org.inviwo.DataFrameColumnToColorVector.png?classIdentifier=org.inviwo.DataFrameColumnToColorVector)
- * This processor maps column values of a DataFrame to colors using a 1D transfer function.
- *
- * ### Inports
- *   * __dataFrame__ input data
+/** \docpage{org.inviwo.CSVSource, CSVSource}
+ * ![](org.inviwo.CSVSource.png?classIdentifier=org.inviwo.CSVSource)
+ * Reads comma separated values (CSV) and converts it into a DataFrame.
  *
  * ### Outports
- *   * __colors__   resulting vector of colors matching the selected DataFrame column
+ *   * __data__  DataFrame representation of the CSV input file
  *
  * ### Properties
- *   * __Selected Color Axis__   selects DataFrame column
- *   * __Color Mapping__   mapping data values to colors via a transfer function
+ *   * __First Row Headers__   if true, the first row is used as column names in the DataFrame
+ *   * __Delimiters__          defines the delimiter between values (default ',')
  */
 
-class IVW_MODULE_PLOTTING_API DataFrameColumnToColorVector : public Processor {
+class IVW_MODULE_DATAFRAME_API CSVSource : public Processor {
 public:
-    DataFrameColumnToColorVector();
-    virtual ~DataFrameColumnToColorVector() = default;
+    CSVSource(const std::string& file = "");
+    virtual ~CSVSource() = default;
 
     virtual void process() override;
 
@@ -71,15 +68,15 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    DataInport<DataFrame> dataFrame_;
-    DataOutport<std::vector<vec4>> colors_;
-
-    DataFrameColumnProperty selectedColorAxis_;
-    TransferFunctionProperty tf_;
+    DataOutport<DataFrame> data_;
+    BoolProperty firstRowIsHeaders_;
+    FileProperty inputFile_;
+    StringProperty delimiters_;
+    ButtonProperty reloadData_;
 };
 
 }  // namespace plot
 
 }  // namespace inviwo
 
-#endif  // IVW_DATAFRAMECOLUMNTOCOLORVECTOR_H
+#endif  // IVW_CSVSOURCE_H

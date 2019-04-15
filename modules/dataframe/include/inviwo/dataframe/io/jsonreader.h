@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,55 +26,47 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#ifndef IVW_DATAFRAMEPROPERTY_H
-#define IVW_DATAFRAMEPROPERTY_H
-
-#include <modules/plotting/plottingmoduledefine.h>
+#include <inviwo/dataframe/dataframemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/io/datareader.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
 
 namespace inviwo {
 
-namespace plot {
-
-class IVW_MODULE_PLOTTING_API DataFrameColumnProperty : public OptionPropertyInt {
+/**
+ * \class JSONDataFrameReader
+ * \ingroup dataio
+ * Reads a json file into DataFrame
+ */
+class IVW_MODULE_DATAFRAME_API JSONDataFrameReader : public DataReaderType<plot::DataFrame> {
 public:
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    JSONDataFrameReader();
+    JSONDataFrameReader(const JSONDataFrameReader&) = default;
+    JSONDataFrameReader(JSONDataFrameReader&&) noexcept = default;
+    JSONDataFrameReader& operator=(const JSONDataFrameReader&) = default;
+    JSONDataFrameReader& operator=(JSONDataFrameReader&&) noexcept = default;
+    virtual JSONDataFrameReader* clone() const override;
+    virtual ~JSONDataFrameReader() = default;
 
-    DataFrameColumnProperty(std::string identifier, std::string displayName, bool allowNone = false,
-                            size_t firstIndex = 0);
-    DataFrameColumnProperty(std::string identifier, std::string displayName,
-                            DataInport<DataFrame>& port, bool allowNone = false,
-                            size_t firstIndex = 0);
+    /**
+     * read a JSON file from a file
+     *
+     * @param fileName   name of the input file
+     * @return a plot::DataFrame containing the JSON data
+     * @throws FileException if the file cannot be accessed
+     */
+    virtual std::shared_ptr<plot::DataFrame> readData(const std::string& fileName) override;
 
-    DataFrameColumnProperty(const DataFrameColumnProperty& rhs);
-    DataFrameColumnProperty& operator=(const DataFrameColumnProperty& that);
-    virtual DataFrameColumnProperty* clone() const override;
-
-    virtual ~DataFrameColumnProperty() = default;
-
-    void setOptions(std::shared_ptr<const DataFrame> dataframe);
-
-    std::shared_ptr<const Column> getColumn();
-    std::shared_ptr<const BufferBase> getBuffer();
-
-    virtual std::string getClassIdentifierForWidget() const override {
-        return TemplateOptionProperty<int>::getClassIdentifier();
-    }
-
-    virtual void set(const Property* p) override;
-
-private:
-    std::shared_ptr<const DataFrame> dataframe_;
-    bool allowNone_;
-    size_t firstIndex_;
+    /**
+     * read a CSV file from a input stream, e.g. a std::ifstream. In case
+     * file streams are used, the file must have be opened prior calling this function.
+     *
+     * @param stream    input stream with the json data
+     * @return a plot::DataFrame containing the data
+     */
+    std::shared_ptr<plot::DataFrame> readData(std::istream& stream) const;
 };
 
-}  // namespace plot
-
 }  // namespace inviwo
-
-#endif  // IVW_DATAFRAMEPROPERTY_H

@@ -45,7 +45,7 @@
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
-#include <modules/plotting/datastructures/dataframe.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/rendering/texturequadrenderer.h>
 #include <modules/fontrendering/textrenderer.h>

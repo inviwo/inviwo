@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2019 Inviwo Foundation
+ * Copyright (c) 2016-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,49 +27,47 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PERSISTENCEDIAGRAMPLOTPROCESSOR_H
-#define IVW_PERSISTENCEDIAGRAMPLOTPROCESSOR_H
+#ifndef IVW_IMAGETODATAFRAME_H
+#define IVW_IMAGETODATAFRAME_H
 
-#include <modules/plottinggl/plottingglmoduledefine.h>
+#include <inviwo/dataframe/dataframemoduledefine.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
+
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/ports/imageport.h>
-
-#include <inviwo/dataframe/datastructures/dataframe.h>
-#include <modules/plottinggl/plotters/persistencediagramplotgl.h>
-#include <modules/plotting/properties/dataframeproperty.h>
-#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
-
-#include <set>
+#include <inviwo/core/ports/dataoutport.h>
 
 namespace inviwo {
 
 namespace plot {
 
-/** \docpage{org.inviwo.PersistenceDiagramPlotProcessor, Persistence Diagram Plot Processor}
- * ![](org.inviwo.PersistenceDiagramPlotProcessor.png?classIdentifier=org.inviwo.PersistenceDiagramPlotProcessor)
- * Plots a persistence diagram of extremum-saddle pairs. It uses x-y pairs and draws vertical lines
- * from y_low(x) = x to y_high(x) = y. Thus, the x coordinate of each pair corresponds
- * to the birth of the extremum pair as well as the lower y coordinate. The higher y coordinate
- * matches the point of death.
+/** \docpage{org.inviwo.ImageToDataFrame, Image To DataFrame}
+ * ![](org.inviwo.ImageToDataFrame.png?classIdentifier=org.inviwo.ImageToDataFrame)
+ * This processor converts an image into a DataFrame.
  *
  * ### Inports
- *   * __DataFrame__  DataFrame with at least two columns corresponding to birth and death of
- *                    extremum-saddle pairs
- *   * __BrushingAndLinking__   inport for brushing & linking interactions
+ *   * __image__  source image
  *
  * ### Outports
- *   * __outport__    rendered image of the persistence diagram
+ *   * __outport__  generated DataFrame
+ *
+ * ### Properties
+ *   * __Mode__  The processor can operate in 3 modes: Analytics, where data for each pixel is
+ *               outputted, or Rows/Columns where one column for each line of pixel in the
+ *               specified direction is outputted.
+ *   * __Layer__ The image layer to use
+ *   * __Color Index__ The color layer index
+ *   * __Range__ range of rows/columns to use.
  */
 
-/**
- * \class PersistenceDiagramPlotProcessor
- * \brief plots a persistence diagram of extremum-saddle pairs with vertical lines
- */
-class IVW_MODULE_PLOTTINGGL_API PersistenceDiagramPlotProcessor : public Processor {
+class IVW_MODULE_DATAFRAME_API ImageToDataFrame : public Processor {
 public:
-    PersistenceDiagramPlotProcessor();
-    virtual ~PersistenceDiagramPlotProcessor() = default;
+    ImageToDataFrame();
+    virtual ~ImageToDataFrame() = default;
 
     virtual void process() override;
 
@@ -77,23 +75,19 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    void onXAxisChange();
-    void onYAxisChange();
-    void onColorChange();
+    enum class Mode { Analytics, Rows, Columns };
 
-    DataFrameInport dataFrame_;
-    BrushingAndLinkingInport brushing_;
-    ImageOutport outport_;
+    ImageInport inport_;
+    DataOutport<DataFrame> outport_;
+    TemplateOptionProperty<Mode> mode_;
+    TemplateOptionProperty<LayerType> layer_;
+    IntSizeTProperty layerIndex_;
 
-    PersistenceDiagramPlotGL persistenceDiagramPlot_;
-
-    DataFrameColumnProperty xAxis_;
-    DataFrameColumnProperty yAxis_;
-    DataFrameColumnProperty colorCol_;
+    IntSizeTMinMaxProperty range_;
 };
 
 }  // namespace plot
 
 }  // namespace inviwo
 
-#endif  // IVW_PERSISTENCEDIAGRAMPLOTPROCESSOR_H
+#endif  // IVW_IMAGETODATAFRAME_H
