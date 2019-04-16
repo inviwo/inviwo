@@ -98,7 +98,11 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/ext/pybind11/too
 # again resulting in Python 2.x binaries will be used. 
 set(PythonLibsNew_FIND_VERSION 3)
 set(Python_ADDITIONAL_VERSIONS 3.5 3.6 3.7 3.8 3.9)
-find_package(PythonLibsNew 3)
+if(IVW_MODULE_PYTHON3)
+	find_package(PythonLibsNew 3 REQUIRED)
+else()
+	find_package(PythonLibsNew 3)
+endif()
 
 include(cmake/globalconfig.cmake)
 
