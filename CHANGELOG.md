@@ -1,5 +1,28 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2019-04-16 Moved DataFrame datastructure from Plotting to new module (DataFrame)
+Types of breaking changes:
+```c++
+    #include <modules/plotting/datastructures/dataframe.h>
+	#include <modules/plotting/datastructures/dataframeutil.h>
+	#include <modules/plotting/datastructures/column.h>
+
+    plot::DataFrame
+    plot::Column
+```
+
+which need to be changed to 
+```c++
+    #include <inviwo/dataframe/datastructures/dataframe.h>
+	#include <inviwo/dataframe/datastructures/dataframeutil.h>
+	#include <inviwo/dataframe/datastructures/column.h>
+    // Namespace plot removed
+    DataFrame
+    Column
+```
+
+Also added a reader for JSON-files which outputs a DataFrame.
+
 ## 2019-03-06 
 New processor `Geometry Entry Exit Points` generates entry point and exit point images from any closed mesh to be used in raycasting. The positions of the input mesh are directly mapped to texture coordinates of a volume. This enables volume rendering within arbitrary bounding geometry.
 

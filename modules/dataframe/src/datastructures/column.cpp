@@ -36,7 +36,7 @@ namespace inviwo {
 CategoricalColumn::CategoricalColumn(const std::string &header)
     : TemplateColumn<std::uint32_t>(header) {}
 
-plot::CategoricalColumn *CategoricalColumn::clone() const { return new CategoricalColumn(*this); }
+CategoricalColumn *CategoricalColumn::clone() const { return new CategoricalColumn(*this); }
 
 std::string CategoricalColumn::getAsString(size_t idx) const {
     auto index = getTypedBuffer()->getRAMRepresentation()->getDataContainer()[idx];

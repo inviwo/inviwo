@@ -73,7 +73,7 @@ bool PCPDataFrameVisualizer::hasVisualizerNetwork() const { return true; }
 std::pair<Processor*, Outport*> PCPDataFrameVisualizer::addSourceProcessor(
     const std::string& filename, ProcessorNetwork* network) const {
 
-    auto source = network->addProcessor(util::makeProcessor<plot::CSVSource>(GP{0, 0}, filename));
+    auto source = network->addProcessor(util::makeProcessor<CSVSource>(GP{0, 0}, filename));
     auto outport = source->getOutports().front();
     return {source, outport};
 }

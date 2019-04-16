@@ -229,7 +229,7 @@ std::shared_ptr<DataFrame> CSVReader::readData(std::istream& stream) const {
         }
     }
 
-    auto dataFrame = plot::createDataFrame(exampleRows, headers);
+    auto dataFrame = createDataFrame(exampleRows, headers);
 
     size_t rowIndex = firstRowHeader_ ? 1 : 0;
     auto row = extractRow(maxColCount);
