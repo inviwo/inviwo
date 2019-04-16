@@ -4,8 +4,8 @@ Here we document changes that affect the public API or changes that needs to be 
 Types of breaking changes:
 ```c++
     #include <modules/plotting/datastructures/dataframe.h>
-	#include <modules/plotting/datastructures/dataframeutil.h>
-	#include <modules/plotting/datastructures/column.h>
+    #include <modules/plotting/datastructures/dataframeutil.h>
+    #include <modules/plotting/datastructures/column.h>
 
     plot::DataFrame
     plot::Column
@@ -14,8 +14,8 @@ Types of breaking changes:
 which need to be changed to 
 ```c++
     #include <inviwo/dataframe/datastructures/dataframe.h>
-	#include <inviwo/dataframe/datastructures/dataframeutil.h>
-	#include <inviwo/dataframe/datastructures/column.h>
+    #include <inviwo/dataframe/datastructures/dataframeutil.h>
+    #include <inviwo/dataframe/datastructures/column.h>
     // Namespace plot removed
     DataFrame
     Column

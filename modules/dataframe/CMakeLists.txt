@@ -5,8 +5,8 @@ ivw_module(DataFrame)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    include/inviwo/dataframe/dataframemodule.h
-    include/inviwo/dataframe/dataframemoduledefine.h
+	include/inviwo/dataframe/dataframemodule.h
+	include/inviwo/dataframe/dataframemoduledefine.h
 	include/inviwo/dataframe/jsondataframeconversion.h
 	include/inviwo/dataframe/datastructures/column.h
 	include/inviwo/dataframe/datastructures/dataframe.h
@@ -15,32 +15,32 @@ set(HEADER_FILES
 	include/inviwo/dataframe/io/csvreader.h
 	include/inviwo/dataframe/io/jsonreader.h
 	include/inviwo/dataframe/processors/csvsource.h
-    include/inviwo/dataframe/processors/dataframesource.h
+	include/inviwo/dataframe/processors/dataframesource.h
 	include/inviwo/dataframe/processors/dataframeexporter.h
-    include/inviwo/dataframe/processors/imagetodataframe.h
-    include/inviwo/dataframe/processors/syntheticdataframe.h
-    include/inviwo/dataframe/processors/volumesequencetodataframe.h
-    include/inviwo/dataframe/processors/volumetodataframe.h
+	include/inviwo/dataframe/processors/imagetodataframe.h
+	include/inviwo/dataframe/processors/syntheticdataframe.h
+	include/inviwo/dataframe/processors/volumesequencetodataframe.h
+	include/inviwo/dataframe/processors/volumetodataframe.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-    src/dataframemodule.cpp
+	src/dataframemodule.cpp
 	src/jsondataframeconversion.cpp
 	src/datastructures/column.cpp
-    src/datastructures/dataframe.cpp
-    src/datastructures/dataframeutil.cpp
+	src/datastructures/dataframe.cpp
+	src/datastructures/dataframeutil.cpp
 	src/io/csvreader.cpp
 	src/io/jsonreader.cpp
 	src/processors/csvsource.cpp
 	src/processors/dataframeexporter.cpp
 	src/processors/dataframesource.cpp
-    src/processors/imagetodataframe.cpp
-    src/processors/syntheticdataframe.cpp
-    src/processors/volumesequencetodataframe.cpp
-    src/processors/volumetodataframe.cpp
+	src/processors/imagetodataframe.cpp
+	src/processors/syntheticdataframe.cpp
+	src/processors/volumesequencetodataframe.cpp
+	src/processors/volumetodataframe.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
@@ -53,7 +53,7 @@ ivw_group("Shader Files" ${SHADER_FILES})
 #--------------------------------------------------------------------
 # Add Unittests
 set(TEST_FILES
-    tests/unittests/dataframe-unittest-main.cpp
+	tests/unittests/dataframe-unittest-main.cpp
 	tests/unittests/jsonreader-test.cpp
 	tests/unittests/csvreader-test.cpp
 )
@@ -70,7 +70,7 @@ target_link_libraries(inviwo-module-dataframe PUBLIC
 #--------------------------------------------------------------------
 # Register license for external library
 ivw_register_license_file(NAME "JSON for Modern C++" target nlohmann_json MODULE DataFrame
-    URL "https://github.com/nlohmann/json"
-    TYPE "The MIT License"
-    FILES  ${IVW_EXTENSIONS_DIR}/json/LICENSE.MIT
+	URL "https://github.com/nlohmann/json"
+	TYPE "The MIT License"
+	FILES  ${IVW_EXTENSIONS_DIR}/json/LICENSE.MIT
 )
