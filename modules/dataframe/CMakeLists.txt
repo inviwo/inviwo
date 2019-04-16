@@ -21,7 +21,6 @@ set(HEADER_FILES
     include/inviwo/dataframe/processors/syntheticdataframe.h
     include/inviwo/dataframe/processors/volumesequencetodataframe.h
     include/inviwo/dataframe/processors/volumetodataframe.h
-
 )
 ivw_group("Header Files" ${HEADER_FILES})
 

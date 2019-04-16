@@ -39,6 +39,10 @@ namespace inviwo {
  * \class JSONDataFrameReader
  * \ingroup dataio
  * Reads a json file into DataFrame
+ * Expects object layout:
+ * [ {"Col1": val11, "Col2": val12 },
+ *   {"Col1": val21, "Col2": val22 } ]
+ * The example above contains two rows and two columns.
  */
 class IVW_MODULE_DATAFRAME_API JSONDataFrameReader : public DataReaderType<plot::DataFrame> {
 public:
@@ -52,6 +56,10 @@ public:
 
     /**
      * read a JSON file from a file
+     * Expects object layout:
+     * [ {"Col1": val11, "Col2": val12 },
+     *   {"Col1": val21, "Col2": val22 } ]
+     * The example above contains two rows and two columns.
      *
      * @param fileName   name of the input file
      * @return a plot::DataFrame containing the JSON data
@@ -60,8 +68,12 @@ public:
     virtual std::shared_ptr<plot::DataFrame> readData(const std::string& fileName) override;
 
     /**
-     * read a CSV file from a input stream, e.g. a std::ifstream. In case
+     * read DataFrame from a JSON-encoded input stream, e.g. a std::ifstream. In case
      * file streams are used, the file must have be opened prior calling this function.
+     * Expects object layout:
+     * [ {"Col1": val11, "Col2": val12 },
+     *   {"Col1": val21, "Col2": val22 } ]
+     * The example above contains two rows and two columns.
      *
      * @param stream    input stream with the json data
      * @return a plot::DataFrame containing the data

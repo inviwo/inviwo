@@ -37,6 +37,10 @@ namespace inviwo {
 
 namespace plot {
 
+JSONConversionException::JSONConversionException(const std::string& message,
+                                                 ExceptionContext context)
+    : DataReaderException("JSONConversion: " + message, context) {}
+
 namespace detail {
 
 // Helper for adding columns based on json item type
@@ -47,9 +51,11 @@ void addDataFrameColumnHelper(json::value_t valueType, std::string header, DataF
             break;
         case json::value_t::object:  ///< object (unordered set of name/value pairs)
             // Not supported
+            throw JSONConversionException("Object (ordered collection of values) is unsupported");
             break;
         case json::value_t::array:  ///< array (ordered collection of values)
             // Not supported
+            throw JSONConversionException("Array (ordered collection of values) is unsupported");
             break;
         case json::value_t::string:  ///< string value
             df.addCategoricalColumn(header, 0u);
@@ -69,7 +75,9 @@ void addDataFrameColumnHelper(json::value_t valueType, std::string header, DataF
             break;
         case json::value_t::number_float:  ///< number value (floating-point)
             df.addColumn<float>(header, 0u);
+            break;
         case json::value_t::discarded:  ///< discarded by the the parser callback function
+            throw JSONConversionException("Value was discarded by the the parser callback function");
             break;
     }
 }
@@ -101,12 +109,14 @@ void from_json(const json& j, DataFrame& df) {
         switch (col.value().type()) {
             case json::value_t::null: {  ///< null value
                 // need to check more rows to know type
-                auto c = std::distance(firstRow.items().begin(), col);
-
                 for (const auto& row : j) {
                     auto item = row.find(col.key());
                     if (item->type() != json::value_t::null) {
-                        detail::addDataFrameColumnHelper(item.value().type(), col.key(), df);
+                        try {
+                            detail::addDataFrameColumnHelper(item.value().type(), col.key(), df);
+                        } catch (JSONConversionException& e) {
+                            throw e;
+                        }
                         // Stop searching when we found a non-null item
                         break;
                     }
@@ -115,9 +125,13 @@ void from_json(const json& j, DataFrame& df) {
             }
             case json::value_t::object:  ///< object (unordered set of name/value pairs)
                 // Not supported
+                throw JSONConversionException(
+                    "Object (unordered set of name/value pairs) is unsupported");
                 break;
             case json::value_t::array:  ///< array (ordered collection of values)
                 // Not supported
+                throw JSONConversionException(
+                    "Array (ordered collection of values) is unsupported");
                 break;
             case json::value_t::string:           ///< string value
             case json::value_t::boolean:          ///< boolean value
@@ -127,6 +141,8 @@ void from_json(const json& j, DataFrame& df) {
                 detail::addDataFrameColumnHelper(col.value().type(), col.key(), df);
                 break;
             case json::value_t::discarded:  ///< discarded by the the parser callback function
+                throw JSONConversionException(
+                    "Value was discarded by the the parser callback function");
                 break;
         }
     }
