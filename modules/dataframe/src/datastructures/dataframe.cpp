@@ -36,7 +36,7 @@
 
 namespace inviwo {
 
-namespace plot {
+
 
 /*
  * This creates a table with one column: The index column
@@ -225,6 +225,6 @@ std::shared_ptr<DataFrame> createDataFrame(const std::vector<std::vector<std::st
     return dataFrame;
 }
 
-}  // namespace plot
+
 
 }  // namespace inviwo

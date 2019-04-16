@@ -41,7 +41,7 @@
 
 namespace inviwo {
 
-namespace plot {
+
 
 /** \docpage{org.inviwo.SyntheticDataFrame, Synthetic DataFrame}
  * ![](org.inviwo.SyntheticDataFrame.png?classIdentifier=org.inviwo.SyntheticDataFrame)
@@ -77,7 +77,7 @@ private:
     
 };
 
-}  // namespace plot
+
 
 }  // namespace inviwo
 

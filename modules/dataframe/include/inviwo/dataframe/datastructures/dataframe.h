@@ -47,7 +47,7 @@ class DataPointBase;
 class BufferBase;
 class BufferRAM;
 
-namespace plot {
+
 
 class IVW_MODULE_DATAFRAME_API InvalidColCount : public Exception {
 public:
@@ -181,14 +181,14 @@ std::shared_ptr<TemplateColumn<T>> DataFrame::addColumn(const std::string &heade
     return col;
 }
 
-}  // namespace plot
+
 
 template <>
-struct DataTraits<plot::DataFrame> {
+struct DataTraits<DataFrame> {
     static std::string classIdentifier() { return "org.inviwo.DataFrame"; }
     static std::string dataName() { return "DataFrame"; }
     static uvec3 colorCode() { return uvec3(153, 76, 0); }
-    static Document info(const plot::DataFrame &data) {
+    static Document info(const DataFrame &data) {
         using H = utildoc::TableBuilder::Header;
         using P = Document::PathComponent;
         Document doc;

@@ -105,9 +105,9 @@ public:
 
     void setYAxisLabel(const std::string &label);
 
-    void setXAxis(std::shared_ptr<const plot::Column> col);
+    void setXAxis(std::shared_ptr<const Column> col);
 
-    void setYAxis(std::shared_ptr<const plot::Column> col);
+    void setYAxis(std::shared_ptr<const Column> col);
 
     void setXAxisData(std::shared_ptr<const BufferBase> buffer);
     void setYAxisData(std::shared_ptr<const BufferBase> buffer);

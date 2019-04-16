@@ -43,7 +43,7 @@
 
 namespace inviwo {
 
-namespace plot {
+
 
 /** \docpage{org.inviwo.ImageToDataFrame, Image To DataFrame}
  * ![](org.inviwo.ImageToDataFrame.png?classIdentifier=org.inviwo.ImageToDataFrame)
@@ -86,7 +86,7 @@ private:
     IntSizeTMinMaxProperty range_;
 };
 
-}  // namespace plot
+
 
 }  // namespace inviwo
 

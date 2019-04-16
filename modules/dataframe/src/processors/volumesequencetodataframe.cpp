@@ -41,7 +41,7 @@
 
 namespace inviwo {
 
-namespace plot {
+
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VolumeSequenceToDataFrame::processorInfo_{
@@ -178,7 +178,7 @@ void VolumeSequenceToDataFrame::process() {
     auto dims = first->getDimensions();
     size_t size = dims.x * dims.y * dims.z;
 
-    auto dataFrame = std::make_shared<plot::DataFrame>(static_cast<std::uint32_t>(
+    auto dataFrame = std::make_shared<DataFrame>(static_cast<std::uint32_t>(
         reduce_.get() || omitOutliers_.get() ? filteredIDs_.size() : size));
 
     auto indexMapper = util::IndexMapper3D(dims);
@@ -211,6 +211,6 @@ void VolumeSequenceToDataFrame::process() {
     outport_.setData(dataFrame);
 }
 
-}  // namespace plot
+
 
 }  // namespace inviwo

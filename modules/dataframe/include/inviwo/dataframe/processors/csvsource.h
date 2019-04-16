@@ -43,7 +43,7 @@
 
 namespace inviwo {
 
-namespace plot {
+
 
 /** \docpage{org.inviwo.CSVSource, CSVSource}
  * ![](org.inviwo.CSVSource.png?classIdentifier=org.inviwo.CSVSource)
@@ -75,7 +75,7 @@ private:
     ButtonProperty reloadData_;
 };
 
-}  // namespace plot
+
 
 }  // namespace inviwo
 

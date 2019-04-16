@@ -48,11 +48,11 @@ void IVW_MODULE_DATAFRAME_API copyBufferRange(std::shared_ptr<const BufferBase> 
                                              std::shared_ptr<BufferBase> dst, ivec2 range,
                                              size_t dstStart = 0);
 
-std::shared_ptr<plot::DataFrame> IVW_MODULE_DATAFRAME_API
-combineDataFrames(std::vector<std::shared_ptr<plot::DataFrame>> histogramTimeDataFrame,
+std::shared_ptr<DataFrame> IVW_MODULE_DATAFRAME_API
+combineDataFrames(std::vector<std::shared_ptr<DataFrame>> histogramTimeDataFrame,
                   bool skipIndexColumn = false, std::string skipcol = "index");
 
-std::string IVW_MODULE_DATAFRAME_API createToolTipForRow(const plot::DataFrame &dataframe,
+std::string IVW_MODULE_DATAFRAME_API createToolTipForRow(const DataFrame &dataframe,
                                                         size_t rowId);
 
 }  // namespace dataframeutil

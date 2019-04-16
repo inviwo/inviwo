@@ -48,7 +48,7 @@ namespace inviwo {
  *   * __File name__ File to load.
  */
 class IVW_MODULE_DATAFRAME_API DataFrameSource
-    : public DataSource<plot::DataFrame, DataOutport<plot::DataFrame>> {
+    : public DataSource<DataFrame, DataOutport<DataFrame>> {
 public:
     DataFrameSource(InviwoApplication* app, const std::string& file = "");
     virtual ~DataFrameSource() = default;

@@ -58,12 +58,12 @@ Document PCPDataFrameVisualizer::getDescription() const {
 
 std::vector<FileExtension> PCPDataFrameVisualizer::getSupportedFileExtensions() const {
     auto rf = app_->getDataReaderFactory();
-    auto exts = rf->getExtensionsForType<plot::DataFrame>();
+    auto exts = rf->getExtensionsForType<DataFrame>();
     return exts;
 }
 
 bool PCPDataFrameVisualizer::isOutportSupported(const Outport* port) const {
-    return dynamic_cast<const plot::DataFrameOutport*>(port) != nullptr;
+    return dynamic_cast<const DataFrameOutport*>(port) != nullptr;
 }
 
 bool PCPDataFrameVisualizer::hasSourceProcessor() const { return true; }

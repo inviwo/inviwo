@@ -42,7 +42,7 @@ CSVDataReaderException::CSVDataReaderException(const std::string& message, Excep
     : DataReaderException("CSVReader: " + message, context) {}
 
 CSVReader::CSVReader()
-    : DataReaderType<plot::DataFrame>(), delimiters_(","), firstRowHeader_(true) {
+    : DataReaderType<DataFrame>(), delimiters_(","), firstRowHeader_(true) {
     addExtension(FileExtension("csv", "Comma Separated Values"));
 }
 
@@ -52,7 +52,7 @@ void CSVReader::setDelimiters(const std::string& delim) { delimiters_ = delim; }
 
 void CSVReader::setFirstRowHeader(bool hasHeader) { firstRowHeader_ = hasHeader; }
 
-std::shared_ptr<plot::DataFrame> CSVReader::readData(const std::string& fileName) {
+std::shared_ptr<DataFrame> CSVReader::readData(const std::string& fileName) {
     auto file = filesystem::ifstream(fileName);
 
     if (!file.is_open()) {
@@ -70,7 +70,7 @@ std::shared_ptr<plot::DataFrame> CSVReader::readData(const std::string& fileName
     return readData(file);
 }
 
-std::shared_ptr<plot::DataFrame> CSVReader::readData(std::istream& stream) const {
+std::shared_ptr<DataFrame> CSVReader::readData(std::istream& stream) const {
     // Skip BOM if it exists. Added by for example Excel when saving csv files.
     filesystem::skipByteOrderMark(stream);
 

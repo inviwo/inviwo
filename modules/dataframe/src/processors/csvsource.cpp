@@ -36,7 +36,7 @@
 
 namespace inviwo {
 
-namespace plot {
+
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo CSVSource::processorInfo_{
@@ -78,6 +78,6 @@ void CSVSource::process() {
     data_.setData(reader.readData(inputFile_.get()));
 }
 
-}  // namespace plot
+
 
 }  // namespace inviwo

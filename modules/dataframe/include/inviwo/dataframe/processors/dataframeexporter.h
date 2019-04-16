@@ -49,7 +49,7 @@
 
 namespace inviwo {
 
-namespace plot {
+
 
 /** \docpage{org.inviwo.DataFrameExporter, DataFrame Exporter}
  * ![](org.inviwo.DataFrameExporter.png?classIdentifier=org.inviwo.DataFrameExporter)
@@ -93,7 +93,7 @@ private:
     bool export_;
 };
 
-}  // namespace plot
+
 
 }  // namespace inviwo
 

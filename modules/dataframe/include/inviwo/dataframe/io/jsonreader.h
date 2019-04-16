@@ -44,7 +44,7 @@ namespace inviwo {
  *   {"Col1": val21, "Col2": val22 } ]
  * The example above contains two rows and two columns.
  */
-class IVW_MODULE_DATAFRAME_API JSONDataFrameReader : public DataReaderType<plot::DataFrame> {
+class IVW_MODULE_DATAFRAME_API JSONDataFrameReader : public DataReaderType<DataFrame> {
 public:
     JSONDataFrameReader();
     JSONDataFrameReader(const JSONDataFrameReader&) = default;
@@ -62,10 +62,10 @@ public:
      * The example above contains two rows and two columns.
      *
      * @param fileName   name of the input file
-     * @return a plot::DataFrame containing the JSON data
+     * @return a DataFrame containing the JSON data
      * @throws FileException if the file cannot be accessed
      */
-    virtual std::shared_ptr<plot::DataFrame> readData(const std::string& fileName) override;
+    virtual std::shared_ptr<DataFrame> readData(const std::string& fileName) override;
 
     /**
      * read DataFrame from a JSON-encoded input stream, e.g. a std::ifstream. In case
@@ -76,9 +76,9 @@ public:
      * The example above contains two rows and two columns.
      *
      * @param stream    input stream with the json data
-     * @return a plot::DataFrame containing the data
+     * @return a DataFrame containing the data
      */
-    std::shared_ptr<plot::DataFrame> readData(std::istream& stream) const;
+    std::shared_ptr<DataFrame> readData(std::istream& stream) const;
 };
 
 }  // namespace inviwo

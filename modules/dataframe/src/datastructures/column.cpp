@@ -31,7 +31,7 @@
 
 namespace inviwo {
 
-namespace plot {
+
 
 CategoricalColumn::CategoricalColumn(const std::string &header)
     : TemplateColumn<std::uint32_t>(header) {}
@@ -70,6 +70,6 @@ glm::uint32_t CategoricalColumn::addOrGetID(const std::string &str) {
     return static_cast<glm::uint32_t>(lookUpTable_.size() - 1);
 }
 
-}  // namespace plot
+
 
 }  // namespace inviwo

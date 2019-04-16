@@ -52,8 +52,6 @@ public:
     virtual ~InvalidConversion() throw() {}
 };
 
-namespace plot {
-
 /**
  * \class Column
  * \brief pure interface for representing a data column, i.e. a Buffer with a name
@@ -379,8 +377,6 @@ template <typename T>
 size_t TemplateColumn<T>::getSize() const {
     return buffer_->getSize();
 }
-
-}  // namespace plot
 
 }  // namespace inviwo
 

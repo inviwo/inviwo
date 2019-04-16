@@ -39,7 +39,7 @@ using json = nlohmann::json;
 
 namespace inviwo {
 
-namespace plot {
+
 /**
  * \class JSONConversionException
  *

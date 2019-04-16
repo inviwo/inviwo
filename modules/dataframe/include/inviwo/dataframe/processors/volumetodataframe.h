@@ -45,7 +45,7 @@
 #include <inviwo/dataframe/datastructures/dataframe.h>
 
 namespace inviwo {
-namespace plot {
+
 
 /** \docpage{org.inviwo.VolumeToDataFrame, Volume To DataFrame}
  * ![](org.inviwo.VolumeToDataFrame.png?classIdentifier=org.inviwo.VolumeToDataFrame)
@@ -87,7 +87,7 @@ private:
     IntSizeTMinMaxProperty rangeZ_;
 };
 
-}  // namespace plot
+
 
 }  // namespace inviwo
 

@@ -6,8 +6,6 @@
 
 namespace inviwo {
 
-namespace plot {
-
 class DataPointBase {
 public:
     DataPointBase() = default;
@@ -46,8 +44,6 @@ std::string DataPoint<T>::toString() const {
     ss << data_;
     return ss.str();
 }
-
-}  // namespace plot
 
 }  // namespace inviwo
 

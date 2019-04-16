@@ -35,7 +35,7 @@
 
 namespace inviwo {
 
-namespace plot {
+
 
 JSONConversionException::JSONConversionException(const std::string& message,
                                                  ExceptionContext context)
@@ -165,6 +165,6 @@ void from_json(const json& j, DataFrame& df) {
     df.updateIndexBuffer();
 }
 
-}  // namespace plot
+
 
 }  // namespace inviwo

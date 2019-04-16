@@ -33,7 +33,7 @@
 
 namespace inviwo {
 
-namespace plot {
+
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VolumeToDataFrame::processorInfo_{
@@ -86,7 +86,7 @@ void VolumeToDataFrame::process() {
                               (rangeY_.getEnd() - rangeY_.getStart()) *
                               (rangeZ_.getEnd() - rangeZ_.getStart());
 
-            auto dataFrame = std::make_shared<plot::DataFrame>(static_cast<glm::u32>(size));
+            auto dataFrame = std::make_shared<DataFrame>(static_cast<glm::u32>(size));
             std::vector<std::vector<float>*> channelBuffer_;
             const auto numCh = volume->getDataFormat()->getComponents();
             for (size_t c = 0; c < numCh; c++) {
@@ -161,7 +161,7 @@ void VolumeToDataFrame::process() {
         }
         case Mode::XDir: {
             const auto size = rangeX_.getEnd() - rangeY_.getStart();
-            auto dataFrame = std::make_shared<plot::DataFrame>(static_cast<glm::u32>(size));
+            auto dataFrame = std::make_shared<DataFrame>(static_cast<glm::u32>(size));
 
             volume->getRepresentation<VolumeRAM>()->dispatch<void>([this, dataFrame,
                                                                     size](const auto vr) {
@@ -189,7 +189,7 @@ void VolumeToDataFrame::process() {
         }
         case Mode::YDir: {
             const auto size = rangeY_.getEnd() - rangeY_.getStart();
-            auto dataFrame = std::make_shared<plot::DataFrame>(static_cast<glm::u32>(size));
+            auto dataFrame = std::make_shared<DataFrame>(static_cast<glm::u32>(size));
 
             volume->getRepresentation<VolumeRAM>()->dispatch<void>(
                 [this, dataFrame, size](const auto vr) {
@@ -217,7 +217,7 @@ void VolumeToDataFrame::process() {
         }
         case Mode::ZDir: {
             const auto size = rangeZ_.getEnd() - rangeZ_.getStart();
-            auto dataFrame = std::make_shared<plot::DataFrame>(static_cast<glm::u32>(size));
+            auto dataFrame = std::make_shared<DataFrame>(static_cast<glm::u32>(size));
 
             volume->getRepresentation<VolumeRAM>()->dispatch<void>(
                 [this, dataFrame, size](const auto vr) {
@@ -246,6 +246,6 @@ void VolumeToDataFrame::process() {
     }
 }
 
-}  // namespace plot
+
 
 }  // namespace inviwo

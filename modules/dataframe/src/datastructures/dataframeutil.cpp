@@ -74,15 +74,15 @@ void copyBufferRange(std::shared_ptr<const BufferBase> src, std::shared_ptr<Buff
     }
 }
 
-std::shared_ptr<plot::DataFrame> combineDataFrames(
-    std::vector<std::shared_ptr<plot::DataFrame>> dataFrames, bool skipIndexColumn,
+std::shared_ptr<DataFrame> combineDataFrames(
+    std::vector<std::shared_ptr<DataFrame>> dataFrames, bool skipIndexColumn,
     std::string skipcol) {
     if (dataFrames.empty()) {
         throw inviwo::Exception("data frames vector is empty",
                                 IvwContextCustom("dataframeutil::combineDataFrames"));
     }
     if (dataFrames.size() == 1) {  // just one df, clone it;
-        return std::make_shared<plot::DataFrame>(*dataFrames.front().get());
+        return std::make_shared<DataFrame>(*dataFrames.front().get());
     }
 
     size_t newSize = 0;
@@ -131,9 +131,9 @@ std::shared_ptr<plot::DataFrame> combineDataFrames(
         }
     }
 
-    std::unordered_map<std::string, std::shared_ptr<plot::Column>> columns;
-    std::shared_ptr<plot::DataFrame> newDataFrame =
-        std::make_shared<plot::DataFrame>(static_cast<glm::u32>(newSize));
+    std::unordered_map<std::string, std::shared_ptr<Column>> columns;
+    std::shared_ptr<DataFrame> newDataFrame =
+        std::make_shared<DataFrame>(static_cast<glm::u32>(newSize));
     for (auto col : first) {
         col->getBuffer()
             ->getRepresentation<BufferRAM>()
@@ -164,7 +164,7 @@ std::shared_ptr<plot::DataFrame> combineDataFrames(
     return newDataFrame;
 }
 
-std::string createToolTipForRow(const plot::DataFrame &dataframe, size_t rowId) {
+std::string createToolTipForRow(const DataFrame &dataframe, size_t rowId) {
     std::ostringstream oss;
     for (size_t i = 0; i < dataframe.getNumberOfColumns(); i++) {
         oss << dataframe.getHeader(i) << ": " << dataframe.getColumn(i)->getAsString(rowId)

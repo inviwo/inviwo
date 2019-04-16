@@ -59,10 +59,10 @@ struct OptionDataFrameColumnConverterRegFunctor {
 PlottingModule::PlottingModule(InviwoApplication* app) : InviwoModule(app, "Plotting") {
 
 
-    registerProcessor<plot::DataFrameColumnToColorVector>();
+    registerProcessor<DataFrameColumnToColorVector>();
     registerProperty<plot::AxisProperty>();
     registerProperty<plot::CategoricalAxisProperty>();
-    registerProperty<plot::DataFrameColumnProperty>();
+    registerProperty<DataFrameColumnProperty>();
     registerProperty<plot::MajorTickProperty>();
     registerProperty<plot::MarginProperty>();
     registerProperty<plot::MinorTickProperty>();

@@ -40,7 +40,7 @@
 
 namespace inviwo {
 
-namespace plot {
+
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo ImageToDataFrame::processorInfo_{
@@ -111,7 +111,7 @@ void ImageToDataFrame::process() {
         case Mode::Analytics: {
 
             auto size = dims.x * dims.y;
-            auto dataFrame = std::make_shared<plot::DataFrame>(static_cast<glm::u32>(size));
+            auto dataFrame = std::make_shared<DataFrame>(static_cast<glm::u32>(size));
 
             std::vector<std::vector<float>*> channelBuffer_;
             auto numCh = layer->getDataFormat()->getComponents();
@@ -204,7 +204,7 @@ void ImageToDataFrame::process() {
             break;
         }
         case Mode::Rows: {
-            auto dataFrame = std::make_shared<plot::DataFrame>(static_cast<glm::u32>(dims.x));
+            auto dataFrame = std::make_shared<DataFrame>(static_cast<glm::u32>(dims.x));
             layer->dispatch<void>([&](const auto lr) {
                 using ValueType = util::PrecisionValueType<decltype(lr)>;
                 const auto im = util::IndexMapper2D(dims);
@@ -225,7 +225,7 @@ void ImageToDataFrame::process() {
             break;
         }
         case Mode::Columns: {
-            auto dataFrame = std::make_shared<plot::DataFrame>(static_cast<glm::u32>(dims.y));
+            auto dataFrame = std::make_shared<DataFrame>(static_cast<glm::u32>(dims.y));
             layer->dispatch<void>([&](const auto lr) {
                 using ValueType = util::PrecisionValueType<decltype(lr)>;
                 const auto im = util::IndexMapper2D(dims);
@@ -247,6 +247,6 @@ void ImageToDataFrame::process() {
     }
 }
 
-}  // namespace plot
+
 
 }  // namespace inviwo

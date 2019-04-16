@@ -38,7 +38,7 @@
 
 namespace inviwo {
 
-namespace plot {
+
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo DataFrameExporter::processorInfo_{
@@ -217,6 +217,6 @@ void DataFrameExporter::exportAsXML() {
     LogInfo("XML file exported to " << exportFile_);
 }
 
-}  // namespace plot
+
 
 }  // namespace inviwo

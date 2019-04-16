@@ -41,7 +41,7 @@ JSONDataFrameReader::JSONDataFrameReader() {
 
 JSONDataFrameReader* JSONDataFrameReader::clone() const { return new JSONDataFrameReader(*this); }
 
-std::shared_ptr<plot::DataFrame> JSONDataFrameReader::readData(const std::string& fileName) {
+std::shared_ptr<DataFrame> JSONDataFrameReader::readData(const std::string& fileName) {
     auto file = filesystem::ifstream(fileName);
 
     if (!file.is_open()) {
@@ -59,10 +59,10 @@ std::shared_ptr<plot::DataFrame> JSONDataFrameReader::readData(const std::string
     return readData(file);
 }
 
-std::shared_ptr<plot::DataFrame> JSONDataFrameReader::readData(std::istream& stream) const {
+std::shared_ptr<DataFrame> JSONDataFrameReader::readData(std::istream& stream) const {
     json j;
     stream >> j;
-    auto dataFrame = std::make_shared<plot::DataFrame>();
+    auto dataFrame = std::make_shared<DataFrame>();
     *dataFrame = j;
 
     return dataFrame;

@@ -48,15 +48,15 @@ DataFrameModule::DataFrameModule(InviwoApplication* app) : InviwoModule(app, "Da
     // Register objects that can be shared with the rest of inviwo here:
 
     // Processors
-    registerProcessor<plot::CSVSource>();
+    registerProcessor<CSVSource>();
     registerProcessor<DataFrameSource>();
-    registerProcessor<plot::DataFrameExporter>();
-    registerProcessor<plot::ImageToDataFrame>();
-    registerProcessor<plot::SyntheticDataFrame>();
-    registerProcessor<plot::VolumeToDataFrame>();
-    registerProcessor<plot::VolumeSequenceToDataFrame>();
+    registerProcessor<DataFrameExporter>();
+    registerProcessor<ImageToDataFrame>();
+    registerProcessor<SyntheticDataFrame>();
+    registerProcessor<VolumeToDataFrame>();
+    registerProcessor<VolumeSequenceToDataFrame>();
 
-    registerDefaultsForDataType<plot::DataFrame>();
+    registerDefaultsForDataType<DataFrame>();
     // Properties
     // registerProperty<DataFrameProperty>();
 

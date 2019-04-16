@@ -42,8 +42,8 @@ const ProcessorInfo DataFrameSource::processorInfo_{
 const ProcessorInfo DataFrameSource::getProcessorInfo() const { return processorInfo_; }
 
 DataFrameSource::DataFrameSource(InviwoApplication* app, const std::string& file)
-    : DataSource<plot::DataFrame, DataOutport<plot::DataFrame>>(app, file, "spreadsheet") {
-    DataSource<plot::DataFrame, DataOutport<plot::DataFrame>>::file_.setDisplayName(
+    : DataSource<DataFrame, DataOutport<DataFrame>>(app, file, "spreadsheet") {
+    DataSource<DataFrame, DataOutport<DataFrame>>::file_.setDisplayName(
         "Spreadsheet file");
 }
 

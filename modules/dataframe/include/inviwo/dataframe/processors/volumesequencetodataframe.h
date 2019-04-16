@@ -46,7 +46,7 @@
 
 namespace inviwo {
 
-namespace plot {
+
 
 /** \docpage{org.inviwo.VolumeSequenceToDataFrame, Volume To DataFrame}
  * ![](org.inviwo.VolumeSequenceToDataFrame.png?classIdentifier=org.inviwo.VolumeSequenceToDataFrame)
@@ -84,7 +84,7 @@ private:
     void recomputeReduceBuffer();
 };
 
-}  // namespace plot
+
 
 }  // namespace inviwo
 
