@@ -27,59 +27,74 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DATAFRAMECOLUMNTOCOLORVECTOR_H
-#define IVW_DATAFRAMECOLUMNTOCOLORVECTOR_H
+#ifndef IVW_DATAFRAMETOCSVEXPORTER_H
+#define IVW_DATAFRAMETOCSVEXPORTER_H
 
-#include <modules/plotting/plottingmoduledefine.h>
+#include <inviwo/dataframe/dataframemoduledefine.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
+
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/ports/imageport.h>
+
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/dataframe/datastructures/dataframe.h>
-#include <modules/plotting/properties/dataframeproperty.h>
+
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/util/fileextension.h>
 
 namespace inviwo {
 
-namespace plot {
 
-/** \docpage{org.inviwo.DataFrameColumnToColorVector, DataFrame Column To Color Vector}
- * ![](org.inviwo.DataFrameColumnToColorVector.png?classIdentifier=org.inviwo.DataFrameColumnToColorVector)
- * This processor maps column values of a DataFrame to colors using a 1D transfer function.
+
+/** \docpage{org.inviwo.DataFrameExporter, DataFrame Exporter}
+ * ![](org.inviwo.DataFrameExporter.png?classIdentifier=org.inviwo.DataFrameExporter)
+ * This processor exports a DataFrame into a CSV or XML file.
  *
  * ### Inports
- *   * __dataFrame__ input data
+ *   * __<Inport>__ source DataFrame which is saved as CSV or XML file
  *
- * ### Outports
- *   * __colors__   resulting vector of colors matching the selected DataFrame column
- *
- * ### Properties
- *   * __Selected Color Axis__   selects DataFrame column
- *   * __Color Mapping__   mapping data values to colors via a transfer function
  */
 
-class IVW_MODULE_PLOTTING_API DataFrameColumnToColorVector : public Processor {
+class IVW_MODULE_DATAFRAME_API DataFrameExporter : public Processor {
 public:
-    DataFrameColumnToColorVector();
-    virtual ~DataFrameColumnToColorVector() = default;
+    DataFrameExporter();
+    virtual ~DataFrameExporter() = default;
 
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-private:
-    DataInport<DataFrame> dataFrame_;
-    DataOutport<std::vector<vec4>> colors_;
+protected:
+    void exportNow();
 
-    DataFrameColumnProperty selectedColorAxis_;
-    TransferFunctionProperty tf_;
+private:
+    void exportAsCSV(bool separateVectorTypesIntoColumns = true);
+    void exportAsXML();
+
+    DataInport<DataFrame> dataFrame_;
+
+    FileProperty exportFile_;
+    ButtonProperty exportButton_;
+    BoolProperty overwrite_;
+    BoolProperty exportIndexCol_;
+    BoolProperty separateVectorTypesIntoColumns_;
+    BoolProperty quoteStrings_;
+    StringProperty delimiter_;
+
+    static FileExtension csvExtension_;
+    static FileExtension xmlExtension_;
+
+    bool export_;
 };
 
-}  // namespace plot
+
 
 }  // namespace inviwo
 
-#endif  // IVW_DATAFRAMECOLUMNTOCOLORVECTOR_H
+#endif  // IVW_DATAFRAMETOCSVEXPORTER_H

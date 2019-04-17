@@ -362,12 +362,12 @@ void ScatterPlotGL::setYAxisLabel(const std::string &label) {
     properties_.yAxis_.setCaption(label);
 }
 
-void ScatterPlotGL::setXAxis(std::shared_ptr<const plot::Column> col) {
+void ScatterPlotGL::setXAxis(std::shared_ptr<const Column> col) {
     setXAxisLabel(col->getHeader());
     setXAxisData(col->getBuffer());
 }
 
-void ScatterPlotGL::setYAxis(std::shared_ptr<const plot::Column> col) {
+void ScatterPlotGL::setYAxis(std::shared_ptr<const Column> col) {
     setYAxisLabel(col->getHeader());
     setYAxisData(col->getBuffer());
 }

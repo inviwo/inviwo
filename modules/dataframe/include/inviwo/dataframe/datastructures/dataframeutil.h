@@ -27,59 +27,36 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DATAFRAMECOLUMNTOCOLORVECTOR_H
-#define IVW_DATAFRAMECOLUMNTOCOLORVECTOR_H
+#ifndef IVW_DATAFRAMEUTIL_H
+#define IVW_DATAFRAMEUTIL_H
 
-#include <modules/plotting/plottingmoduledefine.h>
+#include <inviwo/dataframe/dataframemoduledefine.h>
+
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/ports/dataoutport.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
-#include <modules/plotting/properties/dataframeproperty.h>
 
 namespace inviwo {
 
-namespace plot {
+namespace dataframeutil {
 
-/** \docpage{org.inviwo.DataFrameColumnToColorVector, DataFrame Column To Color Vector}
- * ![](org.inviwo.DataFrameColumnToColorVector.png?classIdentifier=org.inviwo.DataFrameColumnToColorVector)
- * This processor maps column values of a DataFrame to colors using a 1D transfer function.
- *
- * ### Inports
- *   * __dataFrame__ input data
- *
- * ### Outports
- *   * __colors__   resulting vector of colors matching the selected DataFrame column
- *
- * ### Properties
- *   * __Selected Color Axis__   selects DataFrame column
- *   * __Color Mapping__   mapping data values to colors via a transfer function
- */
+std::shared_ptr<BufferBase> IVW_MODULE_DATAFRAME_API
+cloneBufferRange(std::shared_ptr<const BufferBase> buffer, ivec2 range);
 
-class IVW_MODULE_PLOTTING_API DataFrameColumnToColorVector : public Processor {
-public:
-    DataFrameColumnToColorVector();
-    virtual ~DataFrameColumnToColorVector() = default;
+void IVW_MODULE_DATAFRAME_API copyBufferRange(std::shared_ptr<const BufferBase> src,
+                                             std::shared_ptr<BufferBase> dst, ivec2 range,
+                                             size_t dstStart = 0);
 
-    virtual void process() override;
+std::shared_ptr<DataFrame> IVW_MODULE_DATAFRAME_API
+combineDataFrames(std::vector<std::shared_ptr<DataFrame>> histogramTimeDataFrame,
+                  bool skipIndexColumn = false, std::string skipcol = "index");
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
+std::string IVW_MODULE_DATAFRAME_API createToolTipForRow(const DataFrame &dataframe,
+                                                        size_t rowId);
 
-private:
-    DataInport<DataFrame> dataFrame_;
-    DataOutport<std::vector<vec4>> colors_;
-
-    DataFrameColumnProperty selectedColorAxis_;
-    TransferFunctionProperty tf_;
-};
-
-}  // namespace plot
+}  // namespace dataframeutil
 
 }  // namespace inviwo
 
-#endif  // IVW_DATAFRAMECOLUMNTOCOLORVECTOR_H
+#endif  // IVW_DATAFRAMEUTIL_H

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,55 +26,60 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#ifndef IVW_DATAFRAMEPROPERTY_H
-#define IVW_DATAFRAMEPROPERTY_H
-
-#include <modules/plotting/plottingmoduledefine.h>
+#include <inviwo/dataframe/dataframemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/io/datareaderexception.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
+
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 
 namespace inviwo {
 
-namespace plot {
-
-class IVW_MODULE_PLOTTING_API DataFrameColumnProperty : public OptionPropertyInt {
+/**
+ * \class JSONConversionException
+ *
+ * \brief This exception is thrown by the to_json(json& j, const DataFrame* df) in case the input is unsupported.
+ * This includes empty sources, unmatched quotes, missing headers.
+ * \see JSONDataFrameReader
+ */
+class IVW_MODULE_DATAFRAME_API JSONConversionException : public DataReaderException {
 public:
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
-
-    DataFrameColumnProperty(std::string identifier, std::string displayName, bool allowNone = false,
-                            size_t firstIndex = 0);
-    DataFrameColumnProperty(std::string identifier, std::string displayName,
-                            DataInport<DataFrame>& port, bool allowNone = false,
-                            size_t firstIndex = 0);
-
-    DataFrameColumnProperty(const DataFrameColumnProperty& rhs);
-    DataFrameColumnProperty& operator=(const DataFrameColumnProperty& that);
-    virtual DataFrameColumnProperty* clone() const override;
-
-    virtual ~DataFrameColumnProperty() = default;
-
-    void setOptions(std::shared_ptr<const DataFrame> dataframe);
-
-    std::shared_ptr<const Column> getColumn();
-    std::shared_ptr<const BufferBase> getBuffer();
-
-    virtual std::string getClassIdentifierForWidget() const override {
-        return TemplateOptionProperty<int>::getClassIdentifier();
-    }
-
-    virtual void set(const Property* p) override;
-
-private:
-    std::shared_ptr<const DataFrame> dataframe_;
-    bool allowNone_;
-    size_t firstIndex_;
+    JSONConversionException(const std::string& message = "",
+                           ExceptionContext context = ExceptionContext());
 };
 
-}  // namespace plot
+/**
+ * Converts a DataFrame to a JSON object. 
+ * Will write the DataFrame to an JSON object layout:
+ * [ {"Col1": val11, "Col2": val12 },
+ *   {"Col1": val21, "Col2": val22 } ]
+ * The example above contains two rows and two columns.
+ *
+ * Usage example:
+ * \code{.cpp}
+ * Dataframe df;
+ * json j = df;
+ * \endcode
+ */
+IVW_MODULE_DATAFRAME_API void to_json(json& j, const DataFrame* df);
+
+/**
+ * Converts a JSON object to a DataFrame. 
+ * Expects object layout:
+ * [ {"Col1": val11, "Col2": val12 },
+ *   {"Col1": val21, "Col2": val22 } ]
+ * The example above contains two rows and two columns.
+ *
+ * Usage example:
+ * \code{.cpp}
+ * auto df = j.get<DataFrame>();
+ * \endcode
+ */
+IVW_MODULE_DATAFRAME_API void from_json(const json& j, DataFrame& df);
 
 }  // namespace inviwo
 
-#endif  // IVW_DATAFRAMEPROPERTY_H

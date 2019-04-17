@@ -29,7 +29,7 @@
 
 #include <modules/plottinggl/processors/parallelcoordinates/pcpaxissettings.h>
 
-#include <modules/plotting/datastructures/column.h>
+#include <inviwo/dataframe/datastructures/column.h>
 #include <modules/base/algorithm/dataminmax.h>
 #include <modules/plotting/utils/statsutils.h>
 #include <modules/plottinggl/processors/parallelcoordinates/parallelcoordinates.h>

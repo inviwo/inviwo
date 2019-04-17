@@ -420,12 +420,12 @@ void PersistenceDiagramPlotGL::setYAxisLabel(const std::string &caption) {
     properties_.yAxis_.setCaption(caption);
 }
 
-void PersistenceDiagramPlotGL::setXAxis(std::shared_ptr<const plot::Column> col) {
+void PersistenceDiagramPlotGL::setXAxis(std::shared_ptr<const Column> col) {
     setXAxisLabel(col->getHeader());
     setXAxisData(col->getBuffer());
 }
 
-void PersistenceDiagramPlotGL::setYAxis(std::shared_ptr<const plot::Column> col) {
+void PersistenceDiagramPlotGL::setYAxis(std::shared_ptr<const Column> col) {
     setYAxisLabel(col->getHeader());
     setYAxisData(col->getBuffer());
 }

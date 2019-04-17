@@ -38,11 +38,13 @@
 #include <modules/plotting/datastructures/axissettings.h>
 
 namespace inviwo {
-namespace plot {
 
 class Column;
-class ParallelCoordinates;
 class CategoricalColumn;
+
+namespace plot {
+
+class ParallelCoordinates;
 class PCPAxisSettings;
 
 class IVW_MODULE_PLOTTINGGL_API PCPLabelSettings : public PlotTextSettings {

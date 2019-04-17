@@ -31,11 +31,11 @@
 
 #include <modules/plottinggl/processors/parallelcoordinates/parallelcoordinates.h>
 
-#include <modules/plotting/datastructures/dataframe.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
 #include <inviwo/core/processors/processorutils.h>
 #include <inviwo/core/properties/optionproperty.h>
 
-#include <modules/plotting/processors/csvsource.h>
+#include <inviwo/dataframe/processors/csvsource.h>
 #include <modules/basegl/processors/background.h>
 #include <modules/opengl/canvasprocessorgl.h>
 #include <inviwo/core/io/datareaderfactory.h>
@@ -58,12 +58,12 @@ Document PCPDataFrameVisualizer::getDescription() const {
 
 std::vector<FileExtension> PCPDataFrameVisualizer::getSupportedFileExtensions() const {
     auto rf = app_->getDataReaderFactory();
-    auto exts = rf->getExtensionsForType<plot::DataFrame>();
+    auto exts = rf->getExtensionsForType<DataFrame>();
     return exts;
 }
 
 bool PCPDataFrameVisualizer::isOutportSupported(const Outport* port) const {
-    return dynamic_cast<const plot::DataFrameOutport*>(port) != nullptr;
+    return dynamic_cast<const DataFrameOutport*>(port) != nullptr;
 }
 
 bool PCPDataFrameVisualizer::hasSourceProcessor() const { return true; }
@@ -73,7 +73,7 @@ bool PCPDataFrameVisualizer::hasVisualizerNetwork() const { return true; }
 std::pair<Processor*, Outport*> PCPDataFrameVisualizer::addSourceProcessor(
     const std::string& filename, ProcessorNetwork* network) const {
 
-    auto source = network->addProcessor(util::makeProcessor<plot::CSVSource>(GP{0, 0}, filename));
+    auto source = network->addProcessor(util::makeProcessor<CSVSource>(GP{0, 0}, filename));
     auto outport = source->getOutports().front();
     return {source, outport};
 }

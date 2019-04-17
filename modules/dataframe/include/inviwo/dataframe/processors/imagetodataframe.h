@@ -27,43 +27,47 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DATAFRAMECOLUMNTOCOLORVECTOR_H
-#define IVW_DATAFRAMECOLUMNTOCOLORVECTOR_H
+#ifndef IVW_IMAGETODATAFRAME_H
+#define IVW_IMAGETODATAFRAME_H
 
-#include <modules/plotting/plottingmoduledefine.h>
+#include <inviwo/dataframe/dataframemoduledefine.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
+
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/dataframe/datastructures/dataframe.h>
-#include <modules/plotting/properties/dataframeproperty.h>
 
 namespace inviwo {
 
-namespace plot {
 
-/** \docpage{org.inviwo.DataFrameColumnToColorVector, DataFrame Column To Color Vector}
- * ![](org.inviwo.DataFrameColumnToColorVector.png?classIdentifier=org.inviwo.DataFrameColumnToColorVector)
- * This processor maps column values of a DataFrame to colors using a 1D transfer function.
+
+/** \docpage{org.inviwo.ImageToDataFrame, Image To DataFrame}
+ * ![](org.inviwo.ImageToDataFrame.png?classIdentifier=org.inviwo.ImageToDataFrame)
+ * This processor converts an image into a DataFrame.
  *
  * ### Inports
- *   * __dataFrame__ input data
+ *   * __image__  source image
  *
  * ### Outports
- *   * __colors__   resulting vector of colors matching the selected DataFrame column
+ *   * __outport__  generated DataFrame
  *
  * ### Properties
- *   * __Selected Color Axis__   selects DataFrame column
- *   * __Color Mapping__   mapping data values to colors via a transfer function
+ *   * __Mode__  The processor can operate in 3 modes: Analytics, where data for each pixel is
+ *               outputted, or Rows/Columns where one column for each line of pixel in the
+ *               specified direction is outputted.
+ *   * __Layer__ The image layer to use
+ *   * __Color Index__ The color layer index
+ *   * __Range__ range of rows/columns to use.
  */
 
-class IVW_MODULE_PLOTTING_API DataFrameColumnToColorVector : public Processor {
+class IVW_MODULE_DATAFRAME_API ImageToDataFrame : public Processor {
 public:
-    DataFrameColumnToColorVector();
-    virtual ~DataFrameColumnToColorVector() = default;
+    ImageToDataFrame();
+    virtual ~ImageToDataFrame() = default;
 
     virtual void process() override;
 
@@ -71,15 +75,19 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    DataInport<DataFrame> dataFrame_;
-    DataOutport<std::vector<vec4>> colors_;
+    enum class Mode { Analytics, Rows, Columns };
 
-    DataFrameColumnProperty selectedColorAxis_;
-    TransferFunctionProperty tf_;
+    ImageInport inport_;
+    DataOutport<DataFrame> outport_;
+    TemplateOptionProperty<Mode> mode_;
+    TemplateOptionProperty<LayerType> layer_;
+    IntSizeTProperty layerIndex_;
+
+    IntSizeTMinMaxProperty range_;
 };
 
-}  // namespace plot
+
 
 }  // namespace inviwo
 
-#endif  // IVW_DATAFRAMECOLUMNTOCOLORVECTOR_H
+#endif  // IVW_IMAGETODATAFRAME_H
