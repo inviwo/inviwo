@@ -32,6 +32,7 @@
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/qtwidgets/inviwofiledialog.h>
 #include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/util/filesystem.h>
 
 #include <fmt/format.h>
 #include <fmt/ostream.h>
@@ -88,8 +89,8 @@ PythonMenu::PythonMenu(InviwoModule* pymodule, InviwoApplication* app) {
 
         auto newPythonProcessor =
             menu_->addAction(QIcon(":/svgicons/processor-new.svg"), "&New Python Processor");
-        win->connect(newPythonProcessor, &QAction::triggered, [pymodule, win, app]() {
-            InviwoFileDialog saveFileDialog(nullptr, "Create Python Processor");
+        win->connect(newPythonProcessor, &QAction::triggered, [pymodule]() {
+            InviwoFileDialog saveFileDialog(nullptr, "Create Python Processor", "PythonProcessor");
             saveFileDialog.setFileMode(FileMode::AnyFile);
             saveFileDialog.setAcceptMode(AcceptMode::Save);
             saveFileDialog.setConfirmOverwrite(true);

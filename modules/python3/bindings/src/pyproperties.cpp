@@ -307,17 +307,53 @@ void exposeProperties(py::module &m) {
                     py::arg("semantics") = PropertySemantics::Default);
     pyTemplateProperty<std::string, StringProperty>(strProperty);
 
+    py::enum_<AcceptMode>(m, "AcceptMode")
+        .value("Open", AcceptMode::Open)
+        .value("Save", AcceptMode::Save);
+
+    py::enum_<FileMode>(m, "FileMode")
+        .value("AnyFile", FileMode::AnyFile)
+        .value("ExistingFile", FileMode::ExistingFile)
+        .value("Directory", FileMode::Directory)
+        .value("ExistingFiles", FileMode::ExistingFiles)
+        .value("DirectoryOnly", FileMode::DirectoryOnly);
+
+    py::class_<FileExtension>(m, "FileExtension")
+        .def(py::init<>())
+        .def(py::init<std::string, std::string>())
+        .def("toString", &FileExtension::toString)
+        .def("empty", &FileExtension::empty)
+        .def("matchesAll", &FileExtension::matchesAll)
+        .def("matches", &FileExtension::matches)
+        .def_static("all", &FileExtension::all)
+        .def_readwrite("extension", &FileExtension::extension_)
+        .def_readwrite("description", &FileExtension::description_);
+
     PyPropertyClass<FileProperty, Property> fileProperty(m, "FileProperty");
-    fileProperty.def(py::init([](const std::string &identifier, const std::string &displayName,
-                                 const std::string &value, const std::string &contentType,
-                                 InvalidationLevel invalidationLevel, PropertySemantics semantics) {
-                         return new FileProperty(identifier, displayName, value, contentType,
-                                                 invalidationLevel, semantics);
-                     }),
-                     py::arg("identifier"), py::arg("displayName"), py::arg("value") = "",
-                     py::arg("contentType") = "default",
-                     py::arg("invalidationLevel") = InvalidationLevel::InvalidResources,
-                     py::arg("semantics") = PropertySemantics::Default);
+    fileProperty
+        .def(py::init([](const std::string &identifier, const std::string &displayName,
+                         const std::string &value, const std::string &contentType,
+                         InvalidationLevel invalidationLevel, PropertySemantics semantics) {
+                 return new FileProperty(identifier, displayName, value, contentType,
+                                         invalidationLevel, semantics);
+             }),
+             py::arg("identifier"), py::arg("displayName"), py::arg("value") = "",
+             py::arg("contentType") = "default",
+             py::arg("invalidationLevel") = InvalidationLevel::InvalidResources,
+             py::arg("semantics") = PropertySemantics::Default)
+        .def("requestFile", &FileProperty::requestFile)
+        .def("addNameFilter",
+             static_cast<void (FileProperty::*)(std::string)>(&FileProperty::addNameFilter))
+        .def("addNameFilter",
+             static_cast<void (FileProperty::*)(FileExtension)>(&FileProperty::addNameFilter))
+        .def("clearNameFilters", &FileProperty::clearNameFilters)
+
+        .def("getNameFilters", &FileProperty::getNameFilters)
+        .def_property("acceptMode", &FileProperty::getAcceptMode, &FileProperty::setAcceptMode)
+        .def_property("fileMode", &FileProperty::getFileMode, &FileProperty::setFileMode)
+        .def_property("contentType", &FileProperty::getContentType, &FileProperty::setContentType)
+        .def_property("selectedExtension", &FileProperty::getSelectedExtension,
+                      &FileProperty::setSelectedExtension);
     pyTemplateProperty<std::string, FileProperty>(fileProperty);
 
     PyPropertyClass<DirectoryProperty, FileProperty> dirProperty(m, "DirectoryProperty");

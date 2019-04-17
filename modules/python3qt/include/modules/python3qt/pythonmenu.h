@@ -36,10 +36,10 @@
 #include <vector>
 
 class QMenu;
-class InviwoModule;
 
 namespace inviwo {
 
+class InviwoModule;
 class PythonEditorWidget;
 class InviwoApplication;
 

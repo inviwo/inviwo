@@ -30,6 +30,7 @@
 #include <modules/python3/pythonprocessorfolderobserver.h>
 #include <modules/python3/pythonprocessorfactoryobject.h>
 
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/filesystem.h>
 
 #include <algorithm>
@@ -52,7 +53,16 @@ PythonProcessorFolderObserver::PythonProcessorFolderObserver(
 }
 
 bool PythonProcessorFolderObserver::registerFile(const std::string& filename) {
+    const auto isEmpty = [](const std::string& file) {
+        auto ifs = filesystem::ifstream(file);
+        ifs.seekg(0, std::ios::end);
+        return  ifs.tellg() == std::streampos(0);
+    };
+
     if (std::count(registeredFiles_.begin(), registeredFiles_.end(), filename) == 0) {
+        if (!filesystem::fileExists(filename)) return false;
+        if (isEmpty(filename)) return false;
+
         try {
             auto pfo = std::make_unique<PythonProcessorFactoryObject>(app_, filename);
             registeredFiles_.push_back(filename);

@@ -75,7 +75,18 @@ PYBIND11_MODULE(inviwopy, m) {
     using namespace inviwo;
     m.doc() = "Python interface for Inviwo";
 
-    py::class_<ConsoleLogger, std::shared_ptr<ConsoleLogger>>(m, "ConsoleLogger")
+    py::class_<Logger, std::shared_ptr<Logger>>(m, "Logger")
+        .def("log", &Logger::log)
+        .def("logProcessor", &Logger::logProcessor)
+        .def("logNetwork", &Logger::logNetwork)
+        .def("logAssertion", &Logger::logAssertion);
+
+    py::class_<LogCentral, Logger, std::shared_ptr<LogCentral>>(m, "LogCentral")
+        .def("registerLogger", [](LogCentral* lc, std::shared_ptr<Logger> logger){ lc->registerLogger(logger); })
+        .def_static("get", &LogCentral::getPtr, py::return_value_policy::reference);
+
+
+    py::class_<ConsoleLogger, Logger, std::shared_ptr<ConsoleLogger>>(m, "ConsoleLogger")
         .def(py::init<>())
         .def("log", &ConsoleLogger::log);
 
@@ -123,9 +134,6 @@ PYBIND11_MODULE(inviwopy, m) {
           py::return_value_policy::reference);
 
     m.def("handlePythonOutput", [](const std::string& msg, int isStderr) {
-        // auto tmsg = trim(msg);
-        // if (tmsg.empty()) return;
-
         if (auto module = InviwoApplication::getPtr()->getModuleByType<Python3Module>()) {
             if (auto interpreter = module->getPythonInterpreter()) {
                 interpreter->pythonExecutionOutputEvent(msg, (isStderr == 0)

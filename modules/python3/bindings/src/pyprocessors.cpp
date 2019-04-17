@@ -53,54 +53,26 @@ public:
 
     /* Trampoline (need one for each virtual function) */
     virtual void initializeResources() override {
-        pybind11::gil_scoped_acquire gil;
-        if (auto overload = pybind11::get_overload(static_cast<const Processor *>(this),
-                                                   "initializeResources")) {
-            if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-                static pybind11::detail::overload_caster_t<void> caster;
-                return pybind11::detail::cast_ref<void>(overload(), caster);
-            } else {
-                return pybind11::detail::cast_safe<void>(overload());
-            }
-        }
-        Processor::initializeResources();
+        PYBIND11_OVERLOAD(void, Processor, initializeResources, );
     }
-    virtual void process() override {
-        pybind11::gil_scoped_acquire gil;
-        if (auto overload =
-                pybind11::get_overload(static_cast<const Processor *>(this), "process")) {
-            if (pybind11::detail::cast_is_temporary_value_reference<void>::value) {
-                static pybind11::detail::overload_caster_t<void> caster;
-                return pybind11::detail::cast_ref<void>(overload(), caster);
-            } else {
-                return pybind11::detail::cast_safe<void>(overload());
-            }
-        }
-        Processor::process();
+    virtual void process() override { PYBIND11_OVERLOAD(void, Processor, process, ); }
+    virtual void doIfNotReady() override { PYBIND11_OVERLOAD(void, Processor, doIfNotReady, ); }
+    virtual void setValid() override { PYBIND11_OVERLOAD(void, Processor, setValid, ); }
+    virtual void invalidate(InvalidationLevel invalidationLevel,
+                            Property *modifiedProperty = nullptr) override {
+        PYBIND11_OVERLOAD(void, Processor, invalidate, invalidationLevel, modifiedProperty);
     }
     virtual const ProcessorInfo getProcessorInfo() const override {
-        pybind11::gil_scoped_acquire gil;
-        if (auto overload =
-                pybind11::get_overload(static_cast<const Processor *>(this), "getProcessorInfo")) {
-            if (pybind11::detail::cast_is_temporary_value_reference<const ProcessorInfo>::value) {
-                static pybind11::detail::overload_caster_t<const ProcessorInfo> caster;
-                return pybind11::detail::cast_ref<const ProcessorInfo>(overload(), caster);
-            } else {
-                return pybind11::detail::cast_safe<const ProcessorInfo>(overload());
-            }
-        }
-        pybind11::pybind11_fail("Tried to call pure virtual function Processor::getProcessorInfo");
+        PYBIND11_OVERLOAD_PURE(const ProcessorInfo, Processor, getProcessorInfo, );
+    }
+
+    virtual void invokeEvent(Event *event) override {
+        PYBIND11_OVERLOAD(void, Processor, invokeEvent, event);
+    }
+    virtual void propagateEvent(Event *event, Outport *source) override {
+        PYBIND11_OVERLOAD(void, Processor, propagateEvent, event, source);
     }
 };
-
-/*
-    template <>
-      struct ProcessorTraits<ProcessorTrampoline> {
-         static ProcessorInfo getProcessorInfo() {
-            return generateMyProcessorInfo<T>();
-         }
-      };
-      */
 
 void exposeProcessors(pybind11::module &m) {
     namespace py = pybind11;
@@ -128,10 +100,17 @@ void exposeProcessors(pybind11::module &m) {
         .def("getMatches", &Tags::getMatches)
         .def_readwrite("tags", &Tags::tags_)
         .def(py::self == py::self)
-        .def(py::self < py::self);
+        .def(py::self < py::self)
+        .def_readonly_static("CPU", &Tags::CPU)
+        .def_readonly_static("GL", &Tags::GL)
+        .def_readonly_static("CL", &Tags::CL)
+        .def_readonly_static("PY", &Tags::PY);
+        
 
     py::class_<ProcessorInfo>(m, "ProcessorInfo")
-        .def(py::init<std::string, std::string, std::string, CodeState, Tags, bool>())
+        .def(py::init<std::string, std::string, std::string, CodeState, Tags, bool>(),
+             py::arg("classIdentifier"), py::arg("displayName"), py::arg("category") = "Python",
+             py::arg("codeState") = CodeState::Stable, py::arg("tags") = Tags::PY, py::arg("visible") = true)
         .def_readonly("classIdentifier", &ProcessorInfo::classIdentifier)
         .def_readonly("displayName", &ProcessorInfo::displayName)
         .def_readonly("category", &ProcessorInfo::category)
@@ -217,15 +196,31 @@ void exposeProcessors(pybind11::module &m) {
              py::keep_alive<1, 2>{})
         .def("removeInport", [](Processor &p, Inport *port) { return p.removePort(port); })
         .def("removeOutport", [](Processor &p, Outport *port) { return p.removePort(port); })
+        .def("getPortGroup", &Processor::getPortGroup)
+        .def("getPortGroups", &Processor::getPortGroups)
+        .def("getPortsInGroup", &Processor::getPortsInGroup)
+        .def("getPortsInSameGroup", &Processor::getPortsInSameGroup)
+        .def("allInportsConnected", &Processor::allInportsConnected)
+        .def("allInportsAreReady", &Processor::allInportsAreReady)
 
+        .def("isSource", &Processor::isSource)
+        .def("isSink", &Processor::isSink)
+        .def("isReady", &Processor::isReady)
+
+        .def("initializeResources", &Processor::initializeResources)
+        .def("process", &Processor::process)
+        .def("doIfNotReady", &Processor::doIfNotReady)
+        .def("setValid", &Processor::setValid)
+        .def("invalidate", &Processor::invalidate, py::arg("invalidationLevel"),
+             py::arg("modifiedProperty") = nullptr)
+        .def("invokeEvent", &Processor::invokeEvent)
+        .def("propagateEvent", &Processor::propagateEvent)
         .def_property_readonly(
             "meta",
             [](Processor *p) {
                 return p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
             },
-            py::return_value_policy::reference)
-        .def("initializeResources", &Processor::initializeResources)
-        .def("process", &Processor::process);
+            py::return_value_policy::reference);
 
     py::class_<CanvasProcessor, Processor, ProcessorPtr<CanvasProcessor>>(m, "CanvasProcessor")
         .def_property("size", &CanvasProcessor::getCanvasSize, &CanvasProcessor::setCanvasSize)

@@ -29,6 +29,7 @@
 
 #include <modules/python3/pythonprocessorfactoryobject.h>
 
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/filesystem.h>
 

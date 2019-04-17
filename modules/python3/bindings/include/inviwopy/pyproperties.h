@@ -179,14 +179,19 @@ struct OrdinalPropertyHelper {
 
         py::class_<P, Property, PropertyPtr<P>> prop(m, classname.c_str());
         prop.def(py::init([](const std::string &identifier, const std::string &name, const T &value,
-                             const T &min, const T &max, const T &increment) {
-                     return new P(identifier, name, value, min, max, increment);
+                             const T &min, const T &max, const T &increment,
+                             InvalidationLevel invalidationLevel, PropertySemantics semantics) {
+                     return new P(identifier, name, value, min, max, increment, invalidationLevel,
+                                  semantics);
                  }),
                  py::arg("identifier"), py::arg("name"),
                  py::arg("value") = Defaultvalues<T>::getVal(),
                  py::arg("min") = Defaultvalues<T>::getMin(),
                  py::arg("max") = Defaultvalues<T>::getMax(),
-                 py::arg("increment") = Defaultvalues<T>::getInc())
+                 py::arg("increment") = Defaultvalues<T>::getInc(),
+                 py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
+                 py::arg("semantics") = PropertySemantics::Default)
+
             .def_property("minValue", &P::getMinValue, &P::setMinValue)
             .def_property("maxValue", &P::getMaxValue, &P::setMaxValue)
             .def_property("increment", &P::getIncrement, &P::setIncrement);
@@ -210,16 +215,19 @@ struct MinMaxHelper {
         py::class_<P, Property, PropertyPtr<P>> prop(m, classname.c_str());
         prop.def(py::init([](const std::string &identifier, const std::string &name,
                              const T &valueMin, const T &valueMax, const T &rangeMin,
-                             const T &rangeMax, const T &increment, const T &minSeperation = 0) {
+                             const T &rangeMax, const T &increment, const T &minSeperation,
+                             InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                      return new P(identifier, name, valueMin, valueMax, rangeMin, rangeMax,
-                                  increment, minSeperation);
+                                  increment, minSeperation, invalidationLevel, semantics);
                  }),
                  py::arg("identifier"), py::arg("name"),
                  py::arg("valueMin") = Defaultvalues<T>::getMin(),
                  py::arg("valueMax") = Defaultvalues<T>::getMax(),
                  py::arg("rangeMin") = Defaultvalues<T>::getMin(),
                  py::arg("rangeMax") = Defaultvalues<T>::getMax(),
-                 py::arg("increment") = Defaultvalues<T>::getInc(), py::arg("minSeperation") = 0)
+                 py::arg("increment") = Defaultvalues<T>::getInc(), py::arg("minSeperation") = 0,
+                 py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
+                 py::arg("semantics") = PropertySemantics::Default)
             .def_property("rangeMin", &P::getRangeMin, &P::setRangeMin)
             .def_property("rangeMax", &P::getRangeMax, &P::setRangeMax)
             .def_property("increment", &P::getIncrement, &P::setIncrement)
@@ -251,7 +259,19 @@ struct OptionPropertyHelper {
             .def_readwrite("value", &O::value_);
 
         py::class_<P, BaseOptionProperty, PropertyPtr<P>> prop(m, classname.c_str());
-        prop.def(py::init<const std::string &, const std::string &>())
+        prop.def(py::init([](const std::string &identifier, const std::string &name,
+                             InvalidationLevel invalidationLevel,
+                             std::vector<OptionPropertyOption<T>> options, size_t selectedIndex,
+                             PropertySemantics semantics) {
+                     return new P(identifier, name, options, selectedIndex, invalidationLevel,
+                                  semantics);
+                 }),
+                 py::arg("identifier"), py::arg("name"),
+                 py::arg("options") = std::vector<OptionPropertyOption<T>>{},
+                 py::arg("selectedIndex") = 0,
+                 py::arg("invalidationLevel") = InvalidationLevel::InvalidOutput,
+                 py::arg("semantics") = PropertySemantics::Default)
+
             .def("addOption", [](P *p, const std::string &id, const std::string &displayName,
                                  const T &t) { p->addOption(id, displayName, t); })
 

@@ -59,8 +59,9 @@ void exposePropertyOwner(pybind11::module &m) {
         .def_property_readonly(
             "properties", [](PropertyOwner &po) { return PropertyVecWrapper(po.getProperties()); })
         .def("getPropertiesRecursive", &PropertyOwner::getPropertiesRecursive)
-        .def("addProperty", [](PropertyOwner &po, Property *prop, bool owner = true) { po.addProperty(prop, owner); },
-             py::keep_alive<1, 2>{})
+        .def("addProperty",
+             [](PropertyOwner &po, Property *prop, bool owner) { po.addProperty(prop, owner); },
+             py::arg("prop"), py::arg("owner") = true, py::keep_alive<1, 2>{})
         .def("removeProperty",
              [](PropertyOwner &po, Property *prop) { return po.removeProperty(prop); })
         .def("getPropertyByIdentifier", &PropertyOwner::getPropertyByIdentifier,
