@@ -61,11 +61,10 @@ void addDataFrameColumnHelper(json::value_t valueType, std::string header, DataF
             df.addCategoricalColumn(header, 0u);
             break;
         case json::value_t::boolean:  ///< boolean value
-            // FIXME: Get compile error when trying to add bool column
-            // Error C2039 'data' : is not a member of 'std::vector<bool,std::allocator<_Ty>>' 
-            // \inviwo\core\datastructures\buffer\bufferramprecision.h 155	
+            // We do not support buffers<bool> (std::vector<bool>)  since they are packed bit arrays.
+            // Use unsigned char instead.
             //df.addColumn<bool>(header, 0u);
-            df.addColumn<int32_t>(header, 0u);
+            df.addColumn<uint8_t>(header, 0u);
             break;
         case json::value_t::number_integer:  ///< number value (signed integer)
             df.addColumn<int32_t>(header, 0u);
