@@ -32,6 +32,7 @@
 #include <modules/webbrowser/webbrowsermodule.h>
 #include <modules/opengl/image/layergl.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/propertyfactory.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/utilities.h>

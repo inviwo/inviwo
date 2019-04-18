@@ -84,6 +84,7 @@ set(HEADER_FILES
     include/modules/webbrowser/properties/boolpropertywidgetcef.h
     include/modules/webbrowser/properties/buttonpropertywidgetcef.h
     include/modules/webbrowser/properties/ordinalpropertywidgetcef.h
+	include/modules/webbrowser/properties/minmaxpropertywidgetcef.h
     include/modules/webbrowser/properties/propertycefsynchronizer.h
     include/modules/webbrowser/properties/propertywidgetcef.h
     include/modules/webbrowser/properties/stringpropertywidgetcef.h
@@ -107,6 +108,7 @@ set(SOURCE_FILES
     src/properties/boolpropertywidgetcef.cpp
     src/properties/buttonpropertywidgetcef.cpp
     src/properties/ordinalpropertywidgetcef.cpp
+	src/properties/minmaxpropertywidgetcef.cpp
     src/properties/propertycefsynchronizer.cpp
     src/properties/propertywidgetcef.cpp
     src/properties/stringpropertywidgetcef.cpp
@@ -138,6 +140,7 @@ target_include_directories(inviwo-module-webbrowser PUBLIC ${CEF_INCLUDE_PATH})
 target_link_libraries(inviwo-module-webbrowser PUBLIC
     $<$<NOT:$<BOOL:${OS_MACOSX}>>:libcef_lib>
     libcef_dll_wrapper 
+	nlohmann_json::nlohmann_json
     ${CEF_STANDARD_LIBS}
 )
 

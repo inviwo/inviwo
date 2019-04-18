@@ -31,6 +31,7 @@
 #include <modules/webbrowser/properties/boolpropertywidgetcef.h>
 #include <modules/webbrowser/properties/buttonpropertywidgetcef.h>
 #include <modules/webbrowser/properties/ordinalpropertywidgetcef.h>
+#include <modules/webbrowser/properties/minmaxpropertywidgetcef.h>
 #include <modules/webbrowser/properties/stringpropertywidgetcef.h>
 
 #include <modules/webbrowser/webbrowsermodule.h>
@@ -51,6 +52,12 @@ PropertyCefSynchronizer::PropertyCefSynchronizer() {
     registerPropertyWidget<IntSizeTPropertyWidgetCEF, IntSizeTProperty>(
         PropertySemantics("Default"));
     registerPropertyWidget<Int64PropertyWidgetCEF, Int64Property>(PropertySemantics("Default"));
+
+    registerPropertyWidget<FloatMinMaxPropertyWidgetCEF, FloatMinMaxProperty>(PropertySemantics("Default"));
+    registerPropertyWidget<DoubleMinMaxPropertyWidgetCEF, DoubleMinMaxProperty>(PropertySemantics("Default"));
+    registerPropertyWidget<IntMinMaxPropertyWidgetCEF, IntMinMaxProperty>(PropertySemantics("Default"));
+    registerPropertyWidget<IntSizeTMinMaxPropertyWidgetCEF, IntSizeTMinMaxProperty>(PropertySemantics("Default"));
+    registerPropertyWidget<Int64MinMaxPropertyWidgetCEF, Int64MinMaxProperty>(PropertySemantics("Default"));
 
     registerPropertyWidget<StringPropertyWidgetCEF, StringProperty>(PropertySemantics("Default"));
 };
