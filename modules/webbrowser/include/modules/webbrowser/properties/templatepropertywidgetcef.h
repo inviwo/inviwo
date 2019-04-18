@@ -35,8 +35,10 @@
 #include <inviwo/core/properties/templateproperty.h>
 #include <nlohmann/json.hpp>
 
-namespace inviwo {
+using json = nlohmann::json;
 
+namespace inviwo {
+    
 /**
  * \class TemplatePropertyWidgetCEF
  * \brief CEF property widget for TemplateProperty<T>
@@ -61,41 +63,19 @@ public:
             callback->Success("");
             return true;
         }
-
-        auto json = nlohmann::json::parse(std::string(request));
-        
-        getProperty()->setInitiatingWidget(this);
-        
-        getProperty()->set(json.get<T>());
-        //auto hej = *getProperty();
-        //hej = json;
-
-        //static_cast<TemplateProperty<T>*>(getProperty()) = json;
-        
-        //static_cast<TemplateProperty<T>*>(getProperty())->set(value);
-        callback->Success("");
-        getProperty()->clearInitiatingWidget();
-
-        //    callback->Failure(0, "Failed to parse value " + requestStr);
-
-        //value_type value;
-        //const std::string& requestStr = request;
-        //auto key = std::string(R"("value":")");
-        //auto start = requestStr.find(key, 0) + key.length();
-        //auto end = requestStr.find(R"("})", start);
-        //if (end == std::string::npos) {
-        //    callback->Failure(0, "Failed to parse value " + requestStr);
-        //    return true;
-        //}
-        //auto stream = std::stringstream(requestStr.substr(start, end - start));
-        //if (stream >> value) {
-        //    getProperty()->setInitiatingWidget(this);
-        //    static_cast<TemplateProperty<T>*>(getProperty())->set(value);
-        //    callback->Success("");
-        //    getProperty()->clearInitiatingWidget();
-        //} else {
-        //    callback->Failure(0, "Failed to parse value " + requestStr);
-        //}
+        const std::string& requestString = request;
+        auto j = json::parse(requestString);
+        try {
+            T value = j.at("value").get<T>();
+            auto p = static_cast<TemplateProperty<T>*>(getProperty());
+            p->setInitiatingWidget(this);
+            p->set(value);
+            p->clearInitiatingWidget();
+            callback->Success("");
+        } catch (json::exception& ex) {
+            LogError(ex.what());
+            callback->Failure(0, ex.what());
+        }
 
         return true;
     }

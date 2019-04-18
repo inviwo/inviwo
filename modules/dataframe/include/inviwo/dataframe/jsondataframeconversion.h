@@ -65,7 +65,7 @@ public:
  * json j = df;
  * \endcode
  */
-IVW_MODULE_DATAFRAME_API void to_json(json& j, const DataFrame* df);
+IVW_MODULE_DATAFRAME_API void to_json(json& j, const DataFrame& df);
 
 /**
  * Converts a JSON object to a DataFrame. 
@@ -80,20 +80,6 @@ IVW_MODULE_DATAFRAME_API void to_json(json& j, const DataFrame* df);
  * \endcode
  */
 IVW_MODULE_DATAFRAME_API void from_json(const json& j, DataFrame& df);
-
-
-/**
- * Converts a JSON object to a Property
- * expects json object to have one or several of the following:
- * "value", "start", "end"
- *
- * Usage example:
- * \vode{.cpp}
- * auto property = j;
- * \endcode
-*/
-IVW_MODULE_DATAFRAME_API void from_json(const json& j, Property& p);
-IVW_MODULE_DATAFRAME_API void to_json(const json& j, Property& p);
 
 }  // namespace inviwo
 

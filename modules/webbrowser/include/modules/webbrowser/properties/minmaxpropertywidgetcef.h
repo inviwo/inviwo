@@ -37,14 +37,18 @@
 
 namespace inviwo {
 
-/** \class OrdinalPropertyWidgetCEF
+/** \class MinMaxPropertyWidgetCEF
  * Widget for synchronizing HTML elements:
  * <input type="range">
  * <input type="number">
- * where there is a start, end, min and max attribute
+ * where there are min and max attributes.
+ * The min and max attributes correspond to MinMaxProperty<T>::value
+ * Optionally, there may also be start, end, step and minSeparation attributes.
+ *
+ * @see MinMaxProperty<T>
  */
 template <typename T>
-class MinMaxPropertyWidgetCEF : public TemplatePropertyWidgetCEF<glm::tvec2<T, glm::defaultp>> {
+class MinMaxPropertyWidgetCEF : public PropertyWidgetCEF {
 public:
     MinMaxPropertyWidgetCEF() = default;
 
@@ -64,12 +68,49 @@ public:
      * Assumes that widget is HTML input attribute.
      */
     virtual void updateFromProperty() override;
+    
+    virtual bool onQuery(
+                         CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 /*query_id*/,
+                         const CefString& request, bool /*persistent*/,
+                         CefRefPtr<CefMessageRouterBrowserSide::Handler::Callback> callback) override {
+        // Check if we are blocking queries
+        if (onQueryBlocker_ > 0) {
+            onQueryBlocker_--;
+            callback->Success("");
+            return true;
+        }
+        const std::string& requestString = request;
+        auto j = json::parse(requestString);
+        
+        try {
+            glm::tvec2<T> value{j.at("min").get<T>(),
+                                j.at("max").get<T>()};
+            auto p = static_cast<MinMaxProperty<T>*>(getProperty());
+            
+            // Optional parameters
+            T rmin = j.count("start") > 0 ? j.at("start").get<T>() : p->getRangeMin();
+            T rmax = j.count("end") > 0 ? j.at("end").get<T>() : p->getRangeMax();
+            glm::tvec2<T> range{rmin, rmax};
+            T increment = j.count("step") > 0 ? j.at("step").get<T>() : p->getIncrement();
+            T minSep = j.count("minSeparation") > 0 ? j.at("minSeparation").get<T>() : p->getMinSeparation();
+            
+            p->setInitiatingWidget(this);
+            p->set(value, range, increment, minSep);
+            p->clearInitiatingWidget();
+            callback->Success("");
+        } catch (json::exception& ex) {
+            LogError(ex.what());
+            callback->Failure(0, ex.what());
+        }
+        
+        return true;
+    }
 };
 
 template <typename T>
 MinMaxPropertyWidgetCEF<T>::MinMaxPropertyWidgetCEF(MinMaxProperty<T>* property,
                                                     CefRefPtr<CefFrame> frame, std::string htmlId)
-    : TemplatePropertyWidgetCEF<glm::tvec2<T, glm::defaultp>>(property, frame, htmlId) {}
+    : PropertyWidgetCEF(property, frame, htmlId) {}
 
 template <typename T>
 void MinMaxPropertyWidgetCEF<T>::updateFromProperty() {
@@ -88,6 +129,7 @@ void MinMaxPropertyWidgetCEF<T>::updateFromProperty() {
     script << "property.step=" << property->getIncrement() << ";";
     script << "property.start=" << property->getStart() << ";";
     script << "property.end=" << property->getEnd() << ";";
+    script << "property.minSeparation=" << property->getMinSeparation() << ";";
     // Send oninput event to update element
     script << "property.oninput();";
     script << "}";
