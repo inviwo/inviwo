@@ -37,6 +37,7 @@
 #include <inviwo/qt/applicationbase/inviwoapplicationqt.h>
 #include <inviwo/core/util/consolelogger.h>
 #include <inviwo/core/moduleregistration.h>
+#include <inviwo/core/network/processornetwork.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -51,10 +52,47 @@ PYBIND11_MODULE(inviwopyapp, m) {
     using namespace inviwo;
 
     auto inviwopy = py::module::import("inviwopy");
+    auto inviwoApplicationClass = static_cast<py::object>(inviwopy.attr("InviwoApplication"));
+    py::class_<InviwoApplicationQt, InviwoApplication>(m, "InviwoApplicationQt",
+                                                       py::multiple_inheritance{})
+        .def(py::init([]() {
+            int argc = 0;
+            auto app = new InviwoApplicationQt(argc, nullptr, "inviwo");
+            app->setStyleSheetFile(":/stylesheets/inviwo.qss");
+
+            auto win = new QMainWindow();
+            win->setObjectName("InviwoMainWindow");
+            app->setMainWindow(win);
+            win->hide();
+
+            return app;
+        }))
+        .def("run",
+             [](InviwoApplicationQt* app) {
+                 auto timer = new QTimer(app);
+                 QObject::connect(timer, &QTimer::timeout, [app]() {
+                     try {
+                         py::exec("lambda x: 1");
+                     } catch (...) {
+                         LogInfoCustom("InviwoPyApp",
+                                       "Abort qt event loop, to restart call 'app.run()'");
+                         app->quit();
+                     }
+                 });
+                 timer->start(100);
+
+                 app->exec();
+             })
+        .def("update", [](InviwoApplicationQt* app) { app->processEvents(); })
+        .def("registerModules",
+             [](InviwoApplicationQt* app) { app->registerModules(inviwo::getModuleList()); })
+        .def("registerRuntimeModules",
+             [](InviwoApplicationQt* app) { app->registerModules(RuntimeModuleLoading{}); });
 
     m.add_object("py", inviwopy);
     m.doc() = "Python inviwo application";
 
+    /*
     auto logger = std::make_shared<inviwo::ConsoleLogger>();
     LogCentral::getPtr()->registerLogger(logger);
     m.attr("consoleLogger") = py::cast(logger);
@@ -69,6 +107,11 @@ PYBIND11_MODULE(inviwopyapp, m) {
     win->hide();
 
     app->registerModules(inviwo::getModuleList());
+    
+
+
+
+
 
     m.def("run",
           [app]() {
@@ -87,4 +130,6 @@ PYBIND11_MODULE(inviwopyapp, m) {
               app->exec();
           },
           "Run the inviwo event loop");
+
+     */
 }
