@@ -73,6 +73,11 @@ public:
     void setMinSeparation(int sep);
     int getMinSeparation() const;
 
+    double getHandleWidth() const;
+
+    bool getShowGroove() const;
+    void setShowGroove(bool show);
+
 protected:
     virtual void renderWidget(const ivec2 &origin, const size2_t &canvasDim) override;
 
@@ -93,13 +98,14 @@ private:
     virtual vec2 marginScale() const override;
     virtual void pushStateChanged() override;
 
-    double getHandleWidth() const;
     vec2 getSliderPos() const;
 
     Texture2DArray *uiTextures_;
     Texture2DArray *centerTextures_;
     Texture2DArray *grooveTextures_;
     std::array<int, 9> uiTextureMap_;
+
+    bool showGroove_ = true;
 
     ivec2 value_;
     int min_;

@@ -137,7 +137,8 @@ std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
     std::unique_ptr<QMenu> menu = std::make_unique<QMenu>();
 
     if (auto app = util::getInviwoApplication(property_)) {
-        menu->addAction(QString::fromStdString(property_->getDisplayName()));
+        // need to replace all '&' with '&&'. Otherwise Qt will interpret it as keyboard shortcut.
+        menu->addAction(QString::fromStdString(property_->getDisplayName()).replace("&", "&&"));
         menu->addSeparator();
 
         {

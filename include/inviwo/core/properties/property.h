@@ -44,6 +44,7 @@
 #include <inviwo/core/util/introspection.h>
 
 #include <functional>
+#include <type_traits>
 
 namespace inviwo {
 
@@ -268,7 +269,7 @@ public:
     [[deprecated("was declared deprecated. Use `onChange(std::function<void()>)` instead")]]
     const BaseCallBack* onChange(T* object, void (T::*method)());
     template <typename T>
-    [[deprecated("was declared deprecated. Use `removeOnChange(const BaseCallBack*)` instead")]] 
+    [[deprecated("was declared deprecated. Use `removeOnChange(const BaseCallBack*)` instead")]]
     void removeOnChange(T* object);
     // clang-format on
 
@@ -279,7 +280,47 @@ public:
     virtual PropertySerializationMode getSerializationMode() const;
 
     virtual void setVisible(bool val);
-    virtual bool getVisible();
+    virtual bool getVisible() const;
+
+    /* \brief sets visibility depending another property `prop`, according to `callback`
+     * @param prop is the property on which the visibility depends
+     * @param callback is a function that outputs a visibility boolean value. The function gets `prop` as parameter
+     *
+     * Checks the expression in `callback` every time `prop` is changed and sets the
+     * visibility accordingly. Note that this registers an onChange callback on `prop`, which
+     * might result in poor performance when `prop` is a very frequently changed property.
+     */
+    template<typename P, typename DecisionFunc>
+    const BaseCallBack* visibilityDependsOn(P& prop, DecisionFunc callback) {
+        typename std::result_of<DecisionFunc(P&)>::type b = true;
+        static_assert(std::is_same<decltype(b), bool>::value, "The visibility callback must return a boolean!");
+        static_assert(std::is_base_of<Property, P>::value, "P must be a Property!");
+        this->setVisible(callback(prop));
+        return prop.onChange([callback, &prop, this](){
+            bool visible = callback(prop);
+            this->setVisible(visible);
+        });
+    }
+
+    /* \brief sets readonly depending another property `prop`, according to `callback`
+     * @param prop is the property on which the readonly state depends
+     * @param callback is a function that outputs a readonly boolean value. The function gets `prop` as parameter
+     *
+     * Checks the expression in `callback` every time `prop` is changed and sets the
+     * readonly state accordingly. Note that this registers an onChange callback on `prop`, which
+     * might result in poor performance when `prop` is a very frequently changed property.
+     */
+    template<typename P, typename DecisionFunc>
+    const BaseCallBack* readonlyDependsOn(P& prop, DecisionFunc callback) {
+        typename std::result_of<DecisionFunc(P&)>::type b = true;
+        static_assert(std::is_same<decltype(b), bool>::value, "The readonly callback must return a boolean!");
+        static_assert(std::is_base_of<Property, P>::value, "P must be a Property!");
+        this->setReadOnly(callback(prop));
+        return prop.onChange([callback, &prop, this](){
+            bool readonly = callback(prop);
+            this->setReadOnly(readonly);
+        });
+    }
 
     virtual Document getDescription() const;
 
@@ -335,7 +376,7 @@ private:
 
 // clang-format off
 template <typename T>
-[[deprecated("was declared deprecated. Use `onChange(std::function<void()>)` instead")]] 
+[[deprecated("was declared deprecated. Use `onChange(std::function<void()>)` instead")]]
 const BaseCallBack* Property::onChange(T* o, void (T::*m)()) {
     return onChangeCallback_.addLambdaCallback([o, m]() {
         if (m) (*o.*m)();
@@ -343,7 +384,7 @@ const BaseCallBack* Property::onChange(T* o, void (T::*m)()) {
 }
 
 template <typename T>
-[[deprecated("was declared deprecated. Use `removeOnChange(const BaseCallBack*)` instead")]] 
+[[deprecated("was declared deprecated. Use `removeOnChange(const BaseCallBack*)` instead")]]
 void Property::removeOnChange(T* o) {
     onChangeCallback_.removeMemberFunction(o);
 }

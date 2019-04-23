@@ -195,7 +195,7 @@ inviwo::vec3 PointLightInteractionHandler::getLookToMaxValue() const {
 void PointLightInteractionHandler::setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) {
     lightPosition_->set(lookFrom);
     lookTo_ = lookTo;
-    lookUp = lookUp;
+    lookUp_ = lookUp;
 }
 
 float PointLightInteractionHandler::getNearPlaneDist() const { return camera_->getNearPlaneDist(); }

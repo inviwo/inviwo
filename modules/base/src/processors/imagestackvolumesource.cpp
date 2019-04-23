@@ -191,7 +191,7 @@ std::shared_ptr<Volume> ImageStackVolumeSource::load() {
 
     return referenceRAM->dispatch<std::shared_ptr<Volume>, FloatOrIntMax32>(
         [&](auto reflayerprecision) {
-            using ValueType = util::PrecsionValueType<decltype(reflayerprecision)>;
+            using ValueType = util::PrecisionValueType<decltype(reflayerprecision)>;
             using PrimitiveType = typename DataFormat<ValueType>::primitive;
 
             const size2_t layerDims = reflayerprecision->getDimensions();

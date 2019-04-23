@@ -50,8 +50,6 @@ SystemSettings::SystemSettings(InviwoApplication* app)
     , enablePickingProperty_("enablePicking", "Enable picking", true)
     , enableSoundProperty_("enableSound", "Enable sound", true)
     , logStackTraceProperty_("logStackTraceProperty", "Error stack trace log", false)
-    , followObjectDuringRotation_("followObjectDuringRotation",
-                                  "Follow Object During Camera Rotation", false)
     , runtimeModuleReloading_("runtimeModuleReloding", "Runtime Module Reloading", false)
     , enableResourceManager_("enableResourceManager", "Enable Resource Manager", false)
     , breakOnMessage_{"breakOnMessage",
@@ -71,7 +69,6 @@ SystemSettings::SystemSettings(InviwoApplication* app)
     addProperty(enablePickingProperty_);
     addProperty(enableSoundProperty_);
     addProperty(logStackTraceProperty_);
-    addProperty(followObjectDuringRotation_);
     addProperty(runtimeModuleReloading_);
     addProperty(enableResourceManager_);
     addProperty(breakOnMessage_);

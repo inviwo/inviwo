@@ -453,7 +453,7 @@ std::shared_ptr<Mesh> marchingCubesOpt(std::shared_ptr<const Volume> volume, dou
     if (progressCallback) progressCallback(0.0f);
 
     const auto mc = [&](auto ram, auto isoTest, auto mapValue) {
-        using T = util::PrecsionValueType<decltype(ram)>;
+        using T = util::PrecisionValueType<decltype(ram)>;
         static const marching::Config cube{};
 
         const T *src = ram->getDataTyped();
@@ -543,7 +543,7 @@ std::shared_ptr<Mesh> marchingCubesOpt(std::shared_ptr<const Volume> volume, dou
     if (invert) {
         volume->getRepresentation<VolumeRAM>()->dispatch<void, dispatching::filter::Scalars>(
             [&](auto ram) {
-                using ValueType = util::PrecsionValueType<decltype(ram)>;
+                using ValueType = util::PrecisionValueType<decltype(ram)>;
                 mc(ram,
                    [tiso = util::glm_convert<ValueType>(iso)](auto &&val) { return val > tiso; },
                    [iso](auto &&val) { return util::glm_convert<double>(val) - iso; });
@@ -551,7 +551,7 @@ std::shared_ptr<Mesh> marchingCubesOpt(std::shared_ptr<const Volume> volume, dou
     } else {
         volume->getRepresentation<VolumeRAM>()->dispatch<void, dispatching::filter::Scalars>(
             [&](auto ram) {
-                using ValueType = util::PrecsionValueType<decltype(ram)>;
+                using ValueType = util::PrecisionValueType<decltype(ram)>;
                 mc(ram,
                    [tiso = util::glm_convert<ValueType>(iso)](auto &&val) { return val < tiso; },
                    [iso](auto &&val) { return -(util::glm_convert<double>(val) - iso); });

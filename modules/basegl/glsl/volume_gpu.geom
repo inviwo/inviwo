@@ -40,6 +40,7 @@ in vec2 texCoord2D_[3];
 
 out vec4 texCoord_; 
 out vec4 dataposition_;
+out vec4 worldPos_;
 out vec4 permutedPosInv_;
 out vec4 permutedPosInvSec_;
 
@@ -49,7 +50,6 @@ void main() {
     dataposition_.z = instanceID_[0] * reciprocalz;
     texCoord_.z = (instanceID_[0] * volumeParameters.reciprocalDimensions.z)
         + (0.5 * volumeParameters.reciprocalDimensions.z);
-
     texCoord_.w = 1.f;
     dataposition_.w = 1.f;
     gl_Layer = instanceID_[0];
@@ -59,6 +59,7 @@ void main() {
         texCoord_.xy = texCoord2D_[i];
         dataposition_.xy = texCoord2D_[i] - volumeParameters.reciprocalDimensions.xy * 0.5f;
         dataposition_.xy /= 1.0f-volumeParameters.reciprocalDimensions.xy;
+        worldPos_ = volumeParameters.textureToWorld * texCoord_;
         EmitVertex();
     }
 

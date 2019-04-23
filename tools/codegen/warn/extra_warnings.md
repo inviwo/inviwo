@@ -13,3 +13,4 @@ null-pointer-arithmetic               | *same*       | *no*             | *no*  
 gnu-zero-variadic-macro-arguments     | *same*       | *no*             | *no*   |
 int-in-bool-context                   | *no*         | *same*           | *no*   |
 ignored-attributes                    | *same*       | *same*           | *no*   |
+char-subscripts                       | *same*       | *same*           | *no*   |

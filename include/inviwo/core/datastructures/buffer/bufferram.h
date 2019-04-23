@@ -53,6 +53,7 @@ public:
     virtual const void* getData() const = 0;
 
     virtual void reserve(size_t size) = 0;
+    virtual void clear() = 0;
 
     // uniform getters and setters
     virtual double getAsDouble(const size_t& pos) const = 0;
@@ -88,8 +89,8 @@ public:
      * ```{.cpp}
      * BufferRam* bufferram = ...; // of some glm vector type.
      * auto count = bufferram->dispatch<size_t, dispatching::filter::Vecs>([](auto brprecision) {
-     *     using BufferType = util::PrecsionType<decltype(brprecision)>;
-     *     using ValueType = util::PrecsionValueType<decltype(brprecision)>;
+     *     using BufferType = util::PrecisionType<decltype(brprecision)>;
+     *     using ValueType = util::PrecisionValueType<decltype(brprecision)>;
      *
      *     std::vector<ValueType>& data = brprecision->getDataContainer();
      *     return std::count_if(data.begin(), data.end(), [](auto x){return x > ValueType{0};});

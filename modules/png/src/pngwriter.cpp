@@ -32,6 +32,7 @@
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/datastructures/image/layerramprecision.h>
+#include <inviwo/core/util/filesystem.h>
 
 #include <png.h>
 #include <algorithm>
@@ -174,7 +175,7 @@ void write(const LayerRAMPrecision<T>* ram, png_voidp ioPtr, png_rw_ptr writeFun
 
 PNGLayerWriterException::PNGLayerWriterException(const std::string& message,
                                                  ExceptionContext context)
-    : Exception(message, context) {}
+    : DataWriterException(message, context) {}
 
 PNGLayerWriter::PNGLayerWriter() : DataWriterType<Layer>() {
     addExtension(FileExtension("png", "Portable Network Graphics"));
@@ -184,7 +185,7 @@ PNGLayerWriter* PNGLayerWriter::clone() const { return new PNGLayerWriter(*this)
 
 void PNGLayerWriter::writeData(const Layer* data, const std::string filePath) const {
     data->getRepresentation<LayerRAM>()->dispatch<void>([&](auto ram) {
-        FILE* fp = fopen(filePath.c_str(), "wb");
+        FILE* fp = filesystem::fopen(filePath, "wb");
         if (!fp) throw PNGLayerWriterException("Failed to open file for writing, " + filePath);
         util::OnScopeExit closeFile([&fp]() { fclose(fp); });
 

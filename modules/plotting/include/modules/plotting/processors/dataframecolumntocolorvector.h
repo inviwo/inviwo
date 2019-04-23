@@ -38,7 +38,7 @@
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
-#include <modules/plotting/datastructures/dataframe.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
 #include <modules/plotting/properties/dataframeproperty.h>
 
 namespace inviwo {

@@ -32,6 +32,7 @@
 #include <modules/webbrowser/webbrowsermodule.h>
 #include <modules/opengl/image/layergl.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/propertyfactory.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/utilities.h>
@@ -59,12 +60,15 @@ WebBrowserProcessor::WebBrowserProcessor()
     , background_("background")
     , outport_("webpage", DataVec4UInt8::get())
     , fileName_("fileName", "HTML file", "")
+    , autoReloadFile_("autoReloadFile", "Auto Reload", true)
     , url_("URL", "URL", "http://www.inviwo.org")
     , reload_("reload", "Reload")
     , addPropertyGroup_("addProperty", "Add property to synchronize")
     , type_("property", "Property")
     , propertyHtmlId_("propertyHtmlId", "Html id")
     , add_("add", "Add")
+    , runJS_("runJS", "Run JS")
+    , js_("js", "JavaScript", "", InvalidationLevel::Valid)
     , sourceType_("sourceType", "Source",
                   {{"localFile", "Local File", SourceType::LocalFile},
                    {"webAddress", "Web Address", SourceType::WebAddress}})
@@ -86,27 +90,48 @@ WebBrowserProcessor::WebBrowserProcessor()
 
     addProperty(sourceType_);
     addProperty(fileName_);
+    addProperty(autoReloadFile_);
     addProperty(url_);
     url_.setVisible(false);
     addProperty(reload_);
 
-    sourceType_.onChange([&]() {
-        switch (sourceType_.get()) {
-            default:
-            case SourceType::LocalFile:
-                fileName_.setVisible(true);
-                url_.setVisible(false);
-                break;
-            case SourceType::WebAddress:
-                fileName_.setVisible(false);
-                url_.setVisible(true);
-                break;
-        }
-        browser_->GetMainFrame()->LoadURL(getSource());
+    addProperty(runJS_);
+    addProperty(js_);
+
+    auto updateVisibility = [this]() {
+        fileName_.setVisible(sourceType_ == SourceType::LocalFile);
+        autoReloadFile_.setVisible(sourceType_ == SourceType::LocalFile);
+        url_.setVisible(sourceType_ == SourceType::WebAddress);
+    };
+    updateVisibility();
+
+    auto reload = [this]() { browser_->GetMainFrame()->LoadURL(getSource()); };
+
+    sourceType_.onChange([this, reload, updateVisibility]() {
+        updateVisibility();
+        reload();
     });
-    fileName_.onChange([this]() { browser_->GetMainFrame()->LoadURL(getSource()); });
-    url_.onChange([this]() { browser_->GetMainFrame()->LoadURL(getSource()); });
-    reload_.onChange([this]() { browser_->GetMainFrame()->LoadURL(getSource()); });
+    fileName_.onChange([this, reload]() {
+        if (autoReloadFile_) {
+            fileObserver_.setFilename(fileName_);
+        }
+        reload();
+    });
+    autoReloadFile_.onChange([this]() {
+        if (autoReloadFile_) {
+            fileObserver_.setFilename(fileName_);
+        } else {
+            fileObserver_.stop();
+        }
+    });
+    url_.onChange(reload);
+    reload_.onChange(reload);
+
+    fileObserver_.onChange([this, reload]() {
+        if (sourceType_ == SourceType::LocalFile) {
+            reload();
+        }
+    });
 
     // Do not serialize options, they are generated in code
     type_.setSerializationMode(PropertySerializationMode::None);
@@ -151,6 +176,7 @@ WebBrowserProcessor::WebBrowserProcessor()
                             filesystem::getFileExtension(prop->getClassIdentifier()), type_.size());
         }
     }
+    type_.setCurrentStateAsDefault();
     propertyHtmlId_ = type_.getSelectedDisplayName();
     type_.onChange([&]() { propertyHtmlId_ = type_.getSelectedDisplayName(); });
 
@@ -237,6 +263,10 @@ void WebBrowserProcessor::OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bo
 }
 
 void WebBrowserProcessor::process() {
+    if (js_.isModified() && !js_.get().empty()) {
+        browser_->GetMainFrame()->ExecuteJavaScript(js_.get(), "", 1);
+    }
+
     // Vertical flip of CEF output image
     cefToInviwoImageConverter_.convert(renderHandler_->getTexture2D(), outport_, &background_);
 }

@@ -39,6 +39,7 @@
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <modules/opengl/shader/shader.h>
@@ -90,6 +91,8 @@ private:
     void buildShader(const std::string& eqn);
     void updateProperties();
 
+    void updateDataRange();
+
     DataInport<Volume, 0> inport_;
     VolumeOutport outport_;
     std::shared_ptr<Volume> volume_;
@@ -102,6 +105,14 @@ private:
 
     BoolCompositeProperty useWorldSpace_;
     FloatVec4Property borderValue_;
+
+    CompositeProperty dataRange_;
+    OptionPropertyInt rangeMode_;
+    DoubleMinMaxProperty outputDataRange_;
+    DoubleMinMaxProperty outputValueRange_;
+    BoolProperty customRange_;
+    DoubleMinMaxProperty customDataRange_;
+    DoubleMinMaxProperty customValueRange_;
 
     std::shared_ptr<StringShaderResource> fragment_;
     Shader shader_;

@@ -42,19 +42,19 @@ void main() {
 
     vec3 Fx = (getVoxel(volume, volumeParameters, texCoord_.xyz + ox).xyz -
                getVoxel(volume, volumeParameters, texCoord_.xyz - ox).xyz) /
-              2.0f;
+              (2.0f*volumeParameters.worldSpaceGradientSpacing.x);
     vec3 Fy = (getVoxel(volume, volumeParameters, texCoord_.xyz + oy).xyz -
                getVoxel(volume, volumeParameters, texCoord_.xyz - oy).xyz) /
-              2.0f;
+              (2.0f*volumeParameters.worldSpaceGradientSpacing.y);
     vec3 Fz = (getVoxel(volume, volumeParameters, texCoord_.xyz + oz).xyz -
                getVoxel(volume, volumeParameters, texCoord_.xyz - oz).xyz) /
-              2.0f;
+              (2.0f*volumeParameters.worldSpaceGradientSpacing.z);
 
     vec3 c;
     
-    c.x = Fy.z - Fz.y;
-    c.y = Fz.x - Fx.z;
-    c.z = Fx.y - Fy.x;
+    c.x = (Fy.z - Fz.y);
+    c.y = (Fz.x - Fx.z);
+    c.z = (Fx.y - Fy.x);
 
     FragData0 = vec4(c, length(c));
 }

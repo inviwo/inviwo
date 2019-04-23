@@ -62,7 +62,7 @@ std::unique_ptr<Volume> divergenceVolume(const Volume& volume) {
 
     volume.getRepresentation<VolumeRAM>()->dispatch<void, dispatching::filter::Vec3s>(
         [&](auto vol) {
-            using ValueType = util::PrecsionValueType<decltype(vol)>;
+            using ValueType = util::PrecisionValueType<decltype(vol)>;
             using ComponentType = typename ValueType::value_type;
 
             util::IndexMapper3D index(volume.getDimensions());

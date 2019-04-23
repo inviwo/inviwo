@@ -37,10 +37,11 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
+#include <modules/fontrendering/datastructures/fontsettings.h>
 
 namespace inviwo {
 
-class IVW_MODULE_FONTRENDERING_API FontProperty : public CompositeProperty {
+class IVW_MODULE_FONTRENDERING_API FontProperty : public FontSettings, public CompositeProperty {
 public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
@@ -48,6 +49,13 @@ public:
     FontProperty(const std::string& identifier, const std::string& displayName,
                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                  PropertySemantics semantics = PropertySemantics::Default);
+
+    FontProperty(const std::string& identifier, const std::string& displayName,
+                 const std::string& fontFace, int size = 14, float lineSpacing = 0.0f,
+                 vec2 ancharPos = vec2{-1.0f},
+                 InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                 PropertySemantics semantics = PropertySemantics::Default);
+
     FontProperty(const FontProperty& rhs);
     FontProperty& operator=(const FontProperty& rhs) = default;
     virtual FontProperty* clone() const override;
@@ -57,6 +65,12 @@ public:
     IntProperty fontSize_;
     FloatProperty lineSpacing_;
     FloatVec2Property anchorPos_;
+
+    // Inherited via FontSettings
+    virtual std::string getFontFace() const override;
+    virtual int getFontSize() const override;
+    virtual float getLineSpacing() const override;
+    virtual vec2 getAnchorPos() const override;
 };
 
 }  // namespace inviwo

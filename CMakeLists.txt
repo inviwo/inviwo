@@ -67,6 +67,14 @@ if(POLICY CMP0074) # find_package uses <PackageName>_ROOT variables
     cmake_policy(SET CMP0074 NEW)
 endif()
 
+if(POLICY CMP0075)
+    cmake_policy(SET CMP0075 NEW)
+endif()
+
+if(POLICY CMP0077)
+     cmake_policy(SET CMP0077 NEW)
+endif()
+
 string(TIMESTAMP timeStart "%Y-%m-%d %H:%M:%S")
 
 # option for setting the project/solution name of the Inviwo project
@@ -90,7 +98,11 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/ext/pybind11/too
 # again resulting in Python 2.x binaries will be used. 
 set(PythonLibsNew_FIND_VERSION 3)
 set(Python_ADDITIONAL_VERSIONS 3.5 3.6 3.7 3.8 3.9)
-find_package(PythonLibsNew 3)
+if(IVW_MODULE_PYTHON3)
+	find_package(PythonLibsNew 3 REQUIRED)
+else()
+	find_package(PythonLibsNew 3)
+endif()
 
 include(cmake/globalconfig.cmake)
 

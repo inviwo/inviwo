@@ -90,7 +90,7 @@ private:
  * @param args Any extra arguments to supply to the Processor constructor
  */
 template <typename T, typename... Args>
-std::unique_ptr<Processor> makeProcessor(ivec2 pos, Args&&... args) {
+std::unique_ptr<T> makeProcessor(ivec2 pos, Args&&... args) {
     auto name = ProcessorTraits<T>::getProcessorInfo().displayName;
     auto p = std::make_unique<T>(std::forward<Args>(args)...);
     if (p->getIdentifier().empty()) p->setIdentifier(name);

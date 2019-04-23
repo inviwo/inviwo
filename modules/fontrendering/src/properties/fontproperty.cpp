@@ -38,12 +38,13 @@ const std::string FontProperty::classIdentifier = "org.inviwo.FontProperty";
 std::string FontProperty::getClassIdentifier() const { return classIdentifier; }
 
 FontProperty::FontProperty(const std::string& identifier, const std::string& displayName,
+                           const std::string& fontFace, int size, float lineSpacing, vec2 ancharPos,
                            InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , fontFace_("fontFace", "Font Face")
-    , fontSize_("fontSize", "Font size", 14, 0, 144, 1)
-    , lineSpacing_("lineSpacing", "Line Spacing", 0.0f, -1.0f, 2.0f)
-    , anchorPos_("anchor", "Anchor", vec2(-1.0f), vec2(-1.0f), vec2(1.0f), vec2(0.01f)) {
+    , fontSize_("fontSize", "Font Size", size, 0, 144, 1)
+    , lineSpacing_("lineSpacing", "Line Spacing", lineSpacing, -1.0f, 2.0f)
+    , anchorPos_("anchor", "Anchor", ancharPos, vec2(-1.5f), vec2(1.5f), vec2(0.01f)) {
     auto fonts = util::getAvailableFonts();
 
     for (auto font : fonts) {
@@ -51,9 +52,8 @@ FontProperty::FontProperty(const std::string& identifier, const std::string& dis
         // use the file name w/o extension as identifier
         fontFace_.addOption(name, font.first, font.second);
     }
-    fontFace_.setSelectedIdentifier("Montserrat-Medium");
+    fontFace_.setSelectedIdentifier(fontFace);
     fontFace_.setCurrentStateAsDefault();
-
     fontSize_.setSemantics(PropertySemantics("Fontsize"));
 
     addProperty(fontFace_);
@@ -61,6 +61,11 @@ FontProperty::FontProperty(const std::string& identifier, const std::string& dis
     addProperty(lineSpacing_);
     addProperty(anchorPos_);
 }
+
+FontProperty::FontProperty(const std::string& identifier, const std::string& displayName,
+                           InvalidationLevel invalidationLevel, PropertySemantics semantics)
+    : FontProperty(identifier, displayName, "Montserrat-Medium", 14, 0.0f, vec2{-1.0f},
+                   invalidationLevel, semantics) {}
 
 FontProperty::FontProperty(const FontProperty& rhs)
     : CompositeProperty(rhs)
@@ -75,5 +80,13 @@ FontProperty::FontProperty(const FontProperty& rhs)
 }
 
 FontProperty* FontProperty::clone() const { return new FontProperty(*this); }
+
+std::string FontProperty::getFontFace() const { return fontFace_.getSelectedValue(); }
+
+int FontProperty::getFontSize() const { return fontSize_.get(); }
+
+float FontProperty::getLineSpacing() const { return lineSpacing_.get(); }
+
+vec2 FontProperty::getAnchorPos() const { return anchorPos_.get(); }
 
 }  // namespace inviwo

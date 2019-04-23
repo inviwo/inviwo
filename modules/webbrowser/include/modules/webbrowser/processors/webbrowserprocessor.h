@@ -43,7 +43,9 @@
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/util/singlefileobserver.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -111,12 +113,16 @@ public:
     ImageOutport outport_;
 
     FileProperty fileName_;
+    BoolProperty autoReloadFile_;
     StringProperty url_;     ///< Web page to show
     ButtonProperty reload_;  ///< Force reload url
     CompositeProperty addPropertyGroup_;
     OptionPropertySize_t type_;      ///< List of all supported properties
     StringProperty propertyHtmlId_;  ///< Html id of property to add
     ButtonProperty add_;
+
+    ButtonProperty runJS_;
+    StringProperty js_;
 
 protected:
     std::string getSource();
@@ -133,6 +139,8 @@ protected:
     CefRefPtr<WebBrowserClient> browserClient_;
     CefRefPtr<CefBrowser> browser_;
     bool isBrowserLoading_ = true;
+
+    SingleFileObserver fileObserver_;
 
     IMPLEMENT_REFCOUNTING(WebBrowserProcessor)
 };

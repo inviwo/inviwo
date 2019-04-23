@@ -572,7 +572,11 @@ void InviwoMainWindow::addActions() {
                     auto action = menu->addAction(QString::fromStdString(item));
                     auto path = QString::fromStdString(testdir + "/" + item);
                     connect(action, &QAction::triggered, this, [this, path]() {
-                        if (askToSaveWorkspaceChanges()) openWorkspace(path);
+                        if (askToSaveWorkspaceChanges()) {
+                            if (openWorkspace(path)) {
+                                hideWelcomeScreen();
+                            }
+                        }
                     });
                 }
             }
@@ -711,8 +715,8 @@ void InviwoMainWindow::addActions() {
     // Network
     {
         QIcon enableDisableIcon;
-        enableDisableIcon.addFile(":/svgicons/locked.svg", QSize(), QIcon::Normal, QIcon::Off);
-        enableDisableIcon.addFile(":/svgicons/unlocked.svg", QSize(), QIcon::Normal, QIcon::On);
+        enableDisableIcon.addFile(":/svgicons/unlocked.svg", QSize(), QIcon::Normal, QIcon::Off);
+        enableDisableIcon.addFile(":/svgicons/locked.svg", QSize(), QIcon::Normal, QIcon::On);
         auto disableEvalAction =
             new QAction(enableDisableIcon, tr("Disable &Network Evaluation"), this);
         disableEvalAction->setCheckable(true);
@@ -852,9 +856,8 @@ void InviwoMainWindow::addActions() {
                                                   .arg(utilqt::toQString(p->getIdentifier())));
                 action->setCheckable(true);
                 action->setChecked(p->getProcessorWidget()->isVisible());
-                QObject::connect(action, &QAction::toggled, this, [this, p](bool toggle) {
-                    p->getProcessorWidget()->setVisible(toggle);
-                });
+                QObject::connect(action, &QAction::toggled, this,
+                                 [p](bool toggle) { p->getProcessorWidget()->setVisible(toggle); });
             }
         });
     }

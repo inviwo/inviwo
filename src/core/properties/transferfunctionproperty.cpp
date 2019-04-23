@@ -30,6 +30,7 @@
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/network/networklock.h>
+#include <inviwo/core/properties/isotfproperty.h>
 
 namespace inviwo {
 
@@ -223,9 +224,13 @@ void TransferFunctionProperty::set(const TransferFunction& value) {
     this->value_.value.addObserver(this);
 }
 
+void TransferFunctionProperty::set(const IsoTFProperty& p) { set(p.tf_.get()); }
+
 void TransferFunctionProperty::set(const Property* property) {
     if (auto tfp = dynamic_cast<const TransferFunctionProperty*>(property)) {
         TemplateProperty<TransferFunction>::set(tfp);
+    } else if (auto isotfprop = dynamic_cast<const IsoTFProperty*>(property)) {
+        TemplateProperty<TransferFunction>::set(&isotfprop->tf_);
     }
 }
 

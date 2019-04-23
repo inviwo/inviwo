@@ -12,6 +12,7 @@ set(HEADER_FILES
     include/modules/eigenutils/processors/eigenmatrixtoimage.h
     include/modules/eigenutils/processors/eigenmix.h
     include/modules/eigenutils/processors/eigennormalize.h
+    include/modules/eigenutils/processors/testmatrix.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -22,6 +23,7 @@ set(SOURCE_FILES
     src/processors/eigenmatrixtoimage.cpp
     src/processors/eigenmix.cpp
     src/processors/eigennormalize.cpp
+    src/processors/testmatrix.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

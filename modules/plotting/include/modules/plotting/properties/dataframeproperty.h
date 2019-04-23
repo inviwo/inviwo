@@ -33,7 +33,7 @@
 #include <modules/plotting/plottingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/optionproperty.h>
-#include <modules/plotting/datastructures/dataframe.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
 
 namespace inviwo {
 

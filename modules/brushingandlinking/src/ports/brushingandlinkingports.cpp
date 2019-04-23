@@ -49,33 +49,29 @@ void BrushingAndLinkingInport::sendFilterEvent(const std::unordered_set<size_t> 
 }
 
 void BrushingAndLinkingInport::sendSelectionEvent(const std::unordered_set<size_t> &indices) {
-    if (selectionCache_.size() == 0 && indices.size() == 0) return;
+    bool noRemoteSelections = false;
+    if (isConnected() && hasData()) {
+        noRemoteSelections = getData()->getSelectedIndices().empty();
+    }
+    if (selectionCache_.empty() && indices.empty() && noRemoteSelections) {
+        return;
+    }
     selectionCache_ = indices;
     SelectionEvent event(this, selectionCache_);
     propagateEvent(&event, nullptr);
 }
 
 void BrushingAndLinkingInport::sendColumnSelectionEvent(const std::unordered_set<size_t> &indices) {
-    if (selectionColumnCache_.size() == 0 && indices.size() == 0) return;
+    bool noRemoteSelections = false;
+    if (isConnected() && hasData()) {
+        noRemoteSelections = getData()->getSelectedColumns().empty();
+    }
+    if (selectionColumnCache_.empty() && indices.empty() && noRemoteSelections) {
+        return;
+    }
     selectionColumnCache_ = indices;
     ColumnSelectionEvent event(this, selectionColumnCache_);
     propagateEvent(&event, nullptr);
-}
-
-bool BrushingAndLinkingInport::isFiltered(size_t idx) const {
-    if (isConnected()) {
-        return getData()->isFiltered(idx);
-    } else {
-        return filterCache_.find(idx) != filterCache_.end();
-    }
-}
-
-bool BrushingAndLinkingInport::isSelected(size_t idx) const {
-    if (isConnected()) {
-        return getData()->isSelected(idx);
-    } else {
-        return selectionCache_.find(idx) != selectionCache_.end();
-    }
 }
 
 bool BrushingAndLinkingInport::isColumnSelected(size_t idx) const {

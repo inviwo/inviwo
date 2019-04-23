@@ -42,6 +42,8 @@
 
 namespace inviwo {
 
+class IsoTFProperty;
+
 /**
  * \ingroup properties
  * \class IsoValueProperty
@@ -89,6 +91,7 @@ public:
 
     // Overrides
     virtual void set(const IsoValueCollection& c) override;
+    void set(const IsoTFProperty& p);
     virtual void set(const Property* property) override;
 
     // Overrides TFPrimitiveSetObserver

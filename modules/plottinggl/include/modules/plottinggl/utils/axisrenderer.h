@@ -35,8 +35,10 @@
 
 #include <inviwo/core/properties/optionproperty.h>
 
-#include <modules/plotting/properties/axisproperty.h>
+#include <modules/plotting/datastructures/axissettings.h>
+#include <modules/plotting/datastructures/axisdata.h>
 #include <modules/opengl/shader/shader.h>
+#include <modules/basegl/datastructures/meshshadercache.h>
 #include <modules/opengl/rendering/texturequadrenderer.h>
 #include <modules/fontrendering/textrenderer.h>
 #include <modules/fontrendering/util/textureatlas.h>
@@ -51,90 +53,260 @@ class Texture2D;
 
 namespace plot {
 
-class IVW_MODULE_PLOTTINGGL_API AxisRendererBase {
-public:
-    AxisRendererBase(const AxisProperty& property);
-    AxisRendererBase(const AxisRendererBase& rhs);
-    AxisRendererBase& operator=(const AxisRendererBase& rhs) = default;
-    virtual ~AxisRendererBase() = default;
+namespace detail {
 
-    std::shared_ptr<Mesh> getMesh() const;
-    std::shared_ptr<Texture2D> getLabelAtlasTexture() const;
+/*
+ * Utilities for caching the state of the axis renderer
+ * Each state is wrapped in a Guard. When the rendering is called Guard::check is called with the
+ * new state. If the state is changed the guard will call reset on all its guarded objects, forcing
+ * them to be updated to the new state.
+ * For example the AxisCaption caches a TextTextureObject by using two guards, one for the string:
+ * caption_, and one for the text settings: settings_. When ever AxisCaption::getCaption is called
+ * the guards are checked, and if they are changed the TextTextureObject is reset and the texture is
+ * recreated. 
+ */
+
+struct Resetter {
+
+    void operator()(TextTextureObject& text) { text.texture.reset(); }
+    void operator()(util::TextureAtlas& atlas) { atlas.clear(); }
+    void operator()(bool& valid) { valid = false; }
+    template <typename T>
+    void operator()(T& arg) {
+        arg.reset();
+    }
+    template <typename T>
+    void operator()(std::vector<T>& arg) {
+        arg.clear();
+    }
+};
+
+template <typename Cls, typename MP, typename... MPs>
+struct GuardHelper {
+    static void reset(Cls& obj) {
+        Resetter{}(MP::get(obj));
+        GuardHelper<Cls, MPs...>::reset(obj);
+    }
+};
+template <typename Cls, typename MP>
+struct GuardHelper<Cls, MP> {
+    static void reset(Cls& obj) { Resetter{}(MP::get(obj)); }
+};
+
+template <typename C, typename T, T C::*memptr>
+struct MemPtr {
+    using Cls = C;
+    static T& get(C& obj) { return obj.*memptr; }
+};
+
+template <typename T, typename MP, typename... MPs>
+struct Guard {
+    using Cls = typename MP::Cls&;
+    Guard(T val = T{}) : value_{val} {}
+    void check(Cls& obj, const T& value) {
+        if (value_ != value) {
+            GuardHelper<Cls, MP, MPs...>::reset(obj);
+            value_ = value;
+        }
+    }
+
+    operator const T&() const { return value_; }
+    const T& get() const { return value_; }
+
+private:
+    T value_ = T{};
+};
+
+struct IVW_MODULE_PLOTTINGGL_API AxisMeshes {
+    AxisMeshes();
+
+    Mesh* getAxis(const AxisSettings& settings, const vec3& start, const vec3& end,
+                  size_t pickId);
+    Mesh* getMajor(const AxisSettings& settings, const vec3& start, const vec3& end,
+                   const vec3& tickDirection);
+    Mesh* getMinor(const AxisSettings& settings, const vec3& start, const vec3& end,
+                   const vec3& tickDirection);
+
+private:
+    std::unique_ptr<Mesh> axisMesh_;
+    std::unique_ptr<Mesh> majorMesh_;
+    std::unique_ptr<Mesh> minorMesh_;
+
+    using MPAxis = MemPtr<AxisMeshes, std::unique_ptr<Mesh>, &AxisMeshes::axisMesh_>;
+    using MPMajor = MemPtr<AxisMeshes, std::unique_ptr<Mesh>, &AxisMeshes::majorMesh_>;
+    using MPMinor = MemPtr<AxisMeshes, std::unique_ptr<Mesh>, &AxisMeshes::minorMesh_>;
+
+    Guard<vec3, MPAxis, MPMajor, MPMinor> startPos_;
+    Guard<vec3, MPAxis, MPMajor, MPMinor> endPos_;
+    Guard<vec4, MPAxis> color_;
+    Guard<size_t, MPAxis> pickId_;
+    Guard<dvec2, MPMajor, MPMinor> range_;
+    Guard<bool, MPMajor, MPMinor> flip_;
+    Guard<MajorTickData, MPMajor, MPMinor> major_;
+    Guard<MinorTickData, MPMinor> minor_;
+    Guard<vec3, MPMajor, MPMinor> tickDirection_;
+};
+
+template <typename P>
+struct AxisLabels {
+    using LabelPos = std::vector<P>;
+    using Updater = std::function<void(LabelPos&, util::TextureAtlas&, const AxisSettings&,
+                                       const vec3&, const vec3&, const vec3&)>;
+
+    AxisLabels(Updater updatePos) : updatePos_{updatePos} {}
+
+    util::TextureAtlas& getAtlas(const AxisSettings& settings, const vec3& start,
+                                 const vec3& end, TextRenderer& renderer) {
+        startPos_.check(*this, start);
+        endPos_.check(*this, end);
+        range_.check(*this, settings.getRange());
+        labelsSettings_.check(*this, settings.getLabelSettings());
+        major_.check(*this, settings.getMajorTicks());
+        labels_.check(*this, settings.getLabels());
+
+        if (!validAtlas_) {
+            renderer.configure(labelsSettings_.get().getFont());
+            atlas_.fillAtlas(renderer, labels_, labelsSettings_.get().getColor());
+            validAtlas_ = true;
+        }
+        return atlas_;
+    }
+
+    const util::TextureAtlas& getCurrentAtlas() const { return atlas_; }
+
+    const LabelPos& getLabelPos(const AxisSettings& settings, const vec3& start,
+                                const vec3& end, TextRenderer& renderer,
+                                const vec3& tickDirection) {
+
+        startPos_.check(*this, start);
+        endPos_.check(*this, end);
+        range_.check(*this, settings.getRange());
+        labelsSettings_.check(*this, settings.getLabelSettings());
+        major_.check(*this, settings.getMajorTicks());
+        tickDirection_.check(*this, tickDirection);
+
+        if (positions_.empty()) {
+            auto& atlas = getAtlas(settings, start, end, renderer);
+            updatePos_(positions_, atlas, settings, start, end, tickDirection);
+        }
+        return positions_;
+    }
 
 protected:
-    void renderAxis(Camera* camera, const size2_t& outputDims, bool antialiasing);
+    Updater updatePos_;
+    util::TextureAtlas atlas_;
+    bool validAtlas_ = false;
+    LabelPos positions_;
 
-    void invalidateInternalState(bool positionChange);
+    using MPAtlas = MemPtr<AxisLabels, bool, &AxisLabels::validAtlas_>;
+    using MPLabel = MemPtr<AxisLabels, LabelPos, &AxisLabels::positions_>;
 
-    void updateCaptionTexture();
-    void updateLabelAtlas();
+    Guard<vec3, MPAtlas, MPLabel> startPos_;
+    Guard<vec3, MPAtlas, MPLabel> endPos_;
+    Guard<dvec2, MPAtlas, MPLabel> range_;
+    Guard<PlotTextData, MPAtlas, MPLabel> labelsSettings_;
+    Guard<std::vector<std::string>, MPAtlas> labels_;
+    Guard<MajorTickData, MPAtlas, MPLabel> major_;
+    Guard<vec3, MPLabel> tickDirection_;
+};
 
-    virtual void invalidateLabelPositions() = 0;
+struct IVW_MODULE_PLOTTINGGL_API AxisCaption {
+    AxisCaption() = default;
+    TextTextureObject& getCaption(const std::string& caption, const PlotTextSettings& settings,
+                                  TextRenderer& renderer) {
+        caption_.check(*this, caption);
+        settings_.check(*this, settings);
+        if (!axisCaption_.texture) {
+            renderer.configure(settings_.get().getFont());
+            axisCaption_ =
+                util::createTextTextureObject(renderer, caption_, settings_.get().getColor());
+        }
+        return axisCaption_;
+    }
 
-    const AxisProperty& property_;
+private:
+    TextTextureObject axisCaption_;
+    using MPCap = MemPtr<AxisCaption, TextTextureObject, &AxisCaption::axisCaption_>;
+    Guard<std::string, MPCap> caption_;
+    Guard<PlotTextData, MPCap> settings_;
+};
+
+}  // namespace detail
+
+/*
+ *\brief Renders AxisProperty and CategoricalAxisProperty
+ */
+class IVW_MODULE_PLOTTINGGL_API AxisRendererBase {
+public:
+    AxisRendererBase(const AxisSettings& settings);
+    AxisRendererBase(const AxisRendererBase& rhs);
+    AxisRendererBase& operator=(const AxisRendererBase& rhs) = delete;
+    virtual ~AxisRendererBase() = default;
+
+    void setAxisPickingId(size_t id) { axisPickingId_ = id; }
+    size_t getAxisPickingId() const { return axisPickingId_; }
+
+protected:
+    void renderAxis(Camera* camera, const vec3& start, const vec3& end, const vec3& tickdir,
+                    const size2_t& outputDims, bool antialiasing);
+
+    const AxisSettings& settings_;
 
     TextRenderer textRenderer_;
     TextureQuadRenderer quadRenderer_;
 
-    Shader lineShader_;
+    size_t axisPickingId_ = std::numeric_limits<size_t>::max();  // max == unused
 
-    std::shared_ptr<Mesh> axisMesh_;
-    std::shared_ptr<Mesh> majorTicksMesh_;
-    std::shared_ptr<Mesh> minorTicksMesh_;
+    detail::AxisMeshes meshes_;
+    detail::AxisCaption caption_;
 
-    std::shared_ptr<Texture2D> axisCaptionTex_;
+    static std::shared_ptr<MeshShaderCache> getShaders();
+    std::shared_ptr<MeshShaderCache> shaders_;
 
-    util::TextureAtlas labelTexAtlas_;
+private:
+    static std::vector<std::pair<ShaderType, std::string>> shaderItems_;
+    static std::vector<MeshShaderCache::Requirement> shaderRequirements_;
 };
 
 class IVW_MODULE_PLOTTINGGL_API AxisRenderer : public AxisRendererBase {
 public:
-    AxisRenderer(const AxisProperty& property);
-    AxisRenderer(const AxisRenderer& rhs);
-    AxisRenderer& operator=(const AxisRenderer& rhs) = default;
+    using Labels = detail::AxisLabels<ivec2>;
+    AxisRenderer(const AxisSettings& settings);
+    AxisRenderer(const AxisRenderer& rhs) = default;
+    AxisRenderer& operator=(const AxisRenderer& rhs) = delete;
     virtual ~AxisRenderer() = default;
 
     void render(const size2_t& outputDims, const size2_t& startPos, const size2_t& endPos,
                 bool antialiasing = true);
 
-private:
-    void updateMeshes(const size2_t& startPos, const size2_t& endPos);
+    /**
+    * Returns the bounding rect (lower left, upper right) of the axis in pixels. 
+    */
 
+    std::pair<vec2, vec2> boundingRect(const size2_t& startPos, const size2_t& endPos);
+
+private:
     void renderText(const size2_t& outputDims, const size2_t& startPos, const size2_t& endPos);
 
-    virtual void invalidateLabelPositions() override;
-    void updateLabelPositions(const size2_t& startPos, const size2_t& endPos);
-
-    std::vector<ivec2> labelPos_;
-
-    size2_t prevStartPos_;
-    size2_t prevEndPos_;
+    Labels labels_;
 };
 
 class IVW_MODULE_PLOTTINGGL_API AxisRenderer3D : public AxisRendererBase {
 public:
-    AxisRenderer3D(const AxisProperty& property);
-    AxisRenderer3D(const AxisRenderer3D& rhs);
-    AxisRenderer3D& operator=(const AxisRenderer3D& rhs) = default;
+    using Labels = detail::AxisLabels<vec3>;
+    AxisRenderer3D(const AxisSettings& property);
+    AxisRenderer3D(const AxisRenderer3D& rhs) = default;
+    AxisRenderer3D& operator=(const AxisRenderer3D& rhs) = delete;
     virtual ~AxisRenderer3D() = default;
 
     void render(Camera* camera, const size2_t& outputDims, const vec3& startPos, const vec3& endPos,
                 const vec3& tickDirection, bool antialiasing = true);
 
 private:
-    void updateMeshes(const vec3& startPos, const vec3& endPos, const vec3& tickDirection);
-
     void renderText(Camera* camera, const size2_t& outputDims, const vec3& startPos,
                     const vec3& endPos, const vec3& tickDirection);
 
-    virtual void invalidateLabelPositions() override;
-    void updateLabelPositions(const vec3& startPos, const vec3& endPos, const vec3& tickDirection);
-
-    std::vector<vec3> labelPos_;
-
-    vec3 prevStartPos_;
-    vec3 prevEndPos_;
-    vec3 prevTickDirection_;
+    Labels labels_;
 };
 
 }  // namespace plot

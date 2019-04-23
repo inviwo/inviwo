@@ -31,6 +31,7 @@
 #include <modules/webbrowser/properties/boolpropertywidgetcef.h>
 #include <modules/webbrowser/properties/buttonpropertywidgetcef.h>
 #include <modules/webbrowser/properties/ordinalpropertywidgetcef.h>
+#include <modules/webbrowser/properties/minmaxpropertywidgetcef.h>
 #include <modules/webbrowser/properties/stringpropertywidgetcef.h>
 
 #include <modules/webbrowser/webbrowsermodule.h>
@@ -52,6 +53,12 @@ PropertyCefSynchronizer::PropertyCefSynchronizer() {
         PropertySemantics("Default"));
     registerPropertyWidget<Int64PropertyWidgetCEF, Int64Property>(PropertySemantics("Default"));
 
+    registerPropertyWidget<FloatMinMaxPropertyWidgetCEF, FloatMinMaxProperty>(PropertySemantics("Default"));
+    registerPropertyWidget<DoubleMinMaxPropertyWidgetCEF, DoubleMinMaxProperty>(PropertySemantics("Default"));
+    registerPropertyWidget<IntMinMaxPropertyWidgetCEF, IntMinMaxProperty>(PropertySemantics("Default"));
+    registerPropertyWidget<IntSizeTMinMaxPropertyWidgetCEF, IntSizeTMinMaxProperty>(PropertySemantics("Default"));
+    registerPropertyWidget<Int64MinMaxPropertyWidgetCEF, Int64MinMaxProperty>(PropertySemantics("Default"));
+
     registerPropertyWidget<StringPropertyWidgetCEF, StringProperty>(PropertySemantics("Default"));
 };
 
@@ -70,29 +77,19 @@ bool PropertyCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<C
 
     const std::string& requestStr = request;
     // Assume format "id":"htmlId"
-    auto key = std::string(R"("id":")");
-    auto keyStart = requestStr.find(key);
-    if (keyStart == std::string::npos) {
-        LogWarn(R"(No id found. Expected {"id":"elementId", "value":"x"})" + requestStr);
-        return false;
-    }
-    size_t offset = keyStart + key.length();
-    auto idEnd = requestStr.find('"', offset);
-    if (idEnd == std::string::npos) {
-        return false;
-    }
-    auto id = requestStr.substr(offset, idEnd - offset);
-    auto widget = std::find_if(std::begin(widgets_), std::end(widgets_),
-                               [id](const auto& widget) { return id == widget->getHtmlId(); });
-    if (widget != widgets_.end()) {
-        auto nextValPos = requestStr.find("}", idEnd);
-        if (nextValPos == std::string::npos) {
-            LogWarn("Missing enclosing } in: " + requestStr);
-        } else {
-            auto message = requestStr.substr(0, nextValPos + 1);
+    auto j = json::parse(requestStr);
+    try {
+        auto id = j.at("id").get<std::string>();
+        auto widget = std::find_if(std::begin(widgets_), std::end(widgets_),
+                                   [id](const auto& widget) { return id == widget->getHtmlId(); });
+        if (widget != widgets_.end()) {
             return (*widget)->onQuery(browser, frame, query_id, request, persistent, callback);
         }
+    } catch (json::exception& ex) {
+        LogError(ex.what());
+        callback->Failure(0, ex.what());
     }
+    
     return false;
 }
 
