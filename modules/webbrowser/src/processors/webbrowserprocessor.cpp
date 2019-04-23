@@ -32,6 +32,7 @@
 #include <modules/webbrowser/webbrowsermodule.h>
 #include <modules/opengl/image/layergl.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/propertyfactory.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/utilities.h>
@@ -262,7 +263,7 @@ void WebBrowserProcessor::OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bo
 }
 
 void WebBrowserProcessor::process() {
-    if (js_.isModified()) {
+    if (js_.isModified() && !js_.get().empty()) {
         browser_->GetMainFrame()->ExecuteJavaScript(js_.get(), "", 1);
     }
 

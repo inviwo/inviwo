@@ -5,9 +5,8 @@
 <script language="JavaScript">
 
 function checkboxInput(val) {
-     
 	window.cefQuery({
-		request: '{"id":"boolProperty", "value":"' + (+val) + '"}',
+		request: JSON.stringify({"id":"boolProperty", "value": val }),
 		onSuccess: function(response) {
 			$("#boolProperty").fadeOut("fast");  
 			$("#boolProperty").fadeIn("fast");
@@ -18,21 +17,21 @@ function checkboxInput(val) {
 }
 
 function buttonClicked(val) { 
-	// Indicate that button was clicked using JQuery animation
-	$("#buttonProperty").fadeOut("fast");  
-	$("#buttonProperty").fadeIn("fast");
+
 	window.cefQuery({
-		request: '{"id":"buttonProperty"}',
-		onSuccess: function(response) {},
+		request: JSON.stringify({"id":"buttonProperty"}),
+		onSuccess: function(response) {
+			// Indicate that button was clicked using JQuery animation
+			$("#buttonProperty").fadeOut("fast");  
+			$("#buttonProperty").fadeIn("fast");
+		},
 		onFailure: function(error_code, error_message) {}
-		
 	});
 }
 function textInput(val) {  
 	window.cefQuery({
-		request: '{"id":"stringProperty", "value":"' + val + '"}',
+		request: JSON.stringify({"id":"stringProperty", "value": val}),
 		onSuccess: function(response) {
-			document.getElementById("stringProperty").focus();
 		},
 		onFailure: function(error_code, error_message) {}
 		
@@ -58,7 +57,9 @@ output.innerHTML = slider.value;
 slider.oninput = function() {
   	  
       window.cefQuery({
-		request: '{"id":"ordinalProperty", "value":"' + document.getElementById("ordinalProperty").value + '"}',
+      	// Note value is returnted as string so we cannot use JSON.stringify
+      	// since the value will be interpreted as as string.
+		request: '{"id":"ordinalProperty", "value":' + document.getElementById("ordinalProperty").value + '}',
 		onSuccess: function(response) {
 		  
 		},

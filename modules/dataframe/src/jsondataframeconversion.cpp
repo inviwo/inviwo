@@ -164,6 +164,4 @@ void from_json(const json& j, DataFrame& df) {
     df.updateIndexBuffer();
 }
 
-
-
 }  // namespace inviwo

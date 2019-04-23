@@ -27,32 +27,6 @@
  *
  *********************************************************************************/
 
-#include <modules/webbrowser/properties/boolpropertywidgetcef.h>
+#include <modules/webbrowser/properties/minmaxpropertywidgetcef.h>
 
-namespace inviwo {
-
-BoolPropertyWidgetCEF::BoolPropertyWidgetCEF(BoolProperty* property, CefRefPtr<CefFrame> frame,
-                                             std::string htmlId)
-    : TemplatePropertyWidgetCEF<bool>(property, frame, htmlId) {}
-
-void BoolPropertyWidgetCEF::updateFromProperty() {
-    // Frame might be null if for example webpage is not found on startup
-    if (!frame_) {
-        return;
-    }
-    // LogInfo("updateFromProperty");
-    auto property = static_cast<BoolProperty*>(property_);
-
-    std::stringstream script;
-    script << "var property = document.getElementById(\"" << htmlId_ << "\");";
-    // Use click instead of setting value to make sure that appropriate events are fired.
-    script << "if (property!=null){property.checked ="<< (property->get() ? "false" : "true;")
-           << "property.click();}";
-    // Need to figure out how to make sure the frame is drawn after changing values.
-    // script << "window.focus();";
-    // Block OnQuery, called due to property.oninput()
-    onQueryBlocker_++;
-    frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);
-}
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

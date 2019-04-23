@@ -65,7 +65,7 @@ public:
  * json j = df;
  * \endcode
  */
-IVW_MODULE_DATAFRAME_API void to_json(json& j, const DataFrame* df);
+IVW_MODULE_DATAFRAME_API void to_json(json& j, const DataFrame& df);
 
 /**
  * Converts a JSON object to a DataFrame. 
