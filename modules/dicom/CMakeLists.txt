@@ -21,18 +21,21 @@ ivw_module(DICOM)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/io/gdcmvolumereader.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/io/mevisvolumereader.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/errorlogging.h
+    include/modules/dicom/io/gdcmvolumereader.h
+    include/modules/dicom/io/mevisvolumereader.h
+    include/modules/dicom/dicommodule.h
+    include/modules/dicom/dicommoduledefine.h
+    include/modules/dicom/errorlogging.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/io/gdcmvolumereader.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/io/mevisvolumereader.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/errorlogging.cpp
+    src/io/gdcmvolumereader.cpp
+    src/io/mevisvolumereader.cpp
+    src/dicommodule.cpp
+    src/errorlogging.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
