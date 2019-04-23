@@ -84,7 +84,7 @@ set(HEADER_FILES
     include/modules/webbrowser/properties/boolpropertywidgetcef.h
     include/modules/webbrowser/properties/buttonpropertywidgetcef.h
     include/modules/webbrowser/properties/ordinalpropertywidgetcef.h
-	include/modules/webbrowser/properties/minmaxpropertywidgetcef.h
+    include/modules/webbrowser/properties/minmaxpropertywidgetcef.h
     include/modules/webbrowser/properties/propertycefsynchronizer.h
     include/modules/webbrowser/properties/propertywidgetcef.h
     include/modules/webbrowser/properties/stringpropertywidgetcef.h
@@ -108,7 +108,7 @@ set(SOURCE_FILES
     src/properties/boolpropertywidgetcef.cpp
     src/properties/buttonpropertywidgetcef.cpp
     src/properties/ordinalpropertywidgetcef.cpp
-	src/properties/minmaxpropertywidgetcef.cpp
+    src/properties/minmaxpropertywidgetcef.cpp
     src/properties/propertycefsynchronizer.cpp
     src/properties/propertywidgetcef.cpp
     src/properties/stringpropertywidgetcef.cpp
@@ -140,7 +140,7 @@ target_include_directories(inviwo-module-webbrowser PUBLIC ${CEF_INCLUDE_PATH})
 target_link_libraries(inviwo-module-webbrowser PUBLIC
     $<$<NOT:$<BOOL:${OS_MACOSX}>>:libcef_lib>
     libcef_dll_wrapper 
-	nlohmann_json::nlohmann_json
+    nlohmann_json::nlohmann_json
     ${CEF_STANDARD_LIBS}
 )
 
@@ -163,11 +163,11 @@ if (OS_MACOSX)
             DESTINATION "Inviwo.app/Contents/Frameworks/Chromium Embedded Framework.framework"
             COMPONENT inviwo-module-webbrowser) 
 elseif (WIN32)
-	if(USE_SANDBOX)
-		# Logical target used to link the cef_sandbox library.
-		ADD_LOGICAL_TARGET("cef_sandbox_lib" "${CEF_SANDBOX_LIB_DEBUG}" "${CEF_SANDBOX_LIB_RELEASE}")
-		target_link_libraries(inviwo-module-webbrowser PRIVATE cef_sandbox_lib ${CEF_SANDBOX_STANDARD_LIBS})
-	endif()
+    if(USE_SANDBOX)
+        # Logical target used to link the cef_sandbox library.
+        ADD_LOGICAL_TARGET("cef_sandbox_lib" "${CEF_SANDBOX_LIB_DEBUG}" "${CEF_SANDBOX_LIB_RELEASE}")
+        target_link_libraries(inviwo-module-webbrowser PRIVATE cef_sandbox_lib ${CEF_SANDBOX_STANDARD_LIBS})
+    endif()
 
     # Copy CEF binary and resource files to the target output directory.
     COPY_FILES("inviwo-module-webbrowser" "${CEF_BINARY_FILES}" "${CEF_BINARY_DIR}" "${CEF_TARGET_OUT_DIR}")
@@ -180,18 +180,18 @@ elseif (WIN32)
             COMPONENT inviwo-module-webbrowser)
 
 else () # Linux
-	# Set rpath so that libraries can be placed next to the executable.
-	set_target_properties(inviwo-module-webbrowser PROPERTIES 
+    # Set rpath so that libraries can be placed next to the executable.
+    set_target_properties(inviwo-module-webbrowser PROPERTIES 
         INSTALL_RPATH "$ORIGIN"
         BUILD_WITH_INSTALL_RPATH TRUE
         RUNTIME_OUTPUT_DIRECTORY ${CEF_TARGET_OUT_DIR}
     )
-	# Copy CEF binary and resource files to the target output directory.
+    # Copy CEF binary and resource files to the target output directory.
     COPY_FILES("inviwo-module-webbrowser" "${CEF_BINARY_FILES}" "${CEF_BINARY_DIR}" "${CEF_TARGET_OUT_DIR}")
     COPY_FILES("inviwo-module-webbrowser" "${CEF_RESOURCE_FILES}" "${CEF_RESOURCE_DIR}" "${CEF_TARGET_OUT_DIR}")
 
-	# Set SUID permissions on the chrome-sandbox target.
-	SET_LINUX_SUID_PERMISSIONS("inviwo-module-webbrowser" "${CEF_TARGET_OUT_DIR}/chrome-sandbox")
+    # Set SUID permissions on the chrome-sandbox target.
+    SET_LINUX_SUID_PERMISSIONS("inviwo-module-webbrowser" "${CEF_TARGET_OUT_DIR}/chrome-sandbox")
 
     # Copy files into the bin directory (used by installer)
     install(DIRECTORY "${CEF_BINARY_DIR}/" # Note importance of / in the end to not put files into subfolder
