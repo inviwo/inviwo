@@ -62,10 +62,10 @@ std::unique_ptr<Processor> PythonProcessorFactoryObject::create(InviwoApplicatio
         return p;
 
     } catch (std::exception& e) {
-        LogError(e.what())
+        throw Exception(
+            "Failed to create processor " + name_ + " from script: " + file_ + ".\n" + e.what(),
+            IVW_CONTEXT_CUSTOM("Python"));
     }
-
-    return nullptr;
 }
 
 void PythonProcessorFactoryObject::fileChanged(const std::string&) {
@@ -90,7 +90,9 @@ void PythonProcessorFactoryObject::reloadProcessors() {
         if (p->getClassIdentifier() == getProcessorInfo().classIdentifier) {
             LogInfo("Updating python processor: \"" << name_ << "\" id: \"" << p->getIdentifier()
                                                     << "\"");
-            util::replaceProcessor(net, create(app_), p);
+            if (auto replacement = create(app_)) {
+                util::replaceProcessor(net, std::move(replacement), p);
+            }
         }
     }
 }
@@ -116,9 +118,9 @@ PythonProcessorFactoryObjectData PythonProcessorFactoryObject::load(const std::s
 
     try {
         py::exec(script);
-    } catch (std::exception& e) {
+    } catch (const std::exception& e) {
         throw Exception(
-            "Failed to load processor " + name + " from script: " + file + "\n error: " + e.what(),
+            "Failed to load processor " + name + " from script: " + file + ".\n" + e.what(),
             IVW_CONTEXT_CUSTOM("Python"));
     }
 
@@ -128,10 +130,16 @@ PythonProcessorFactoryObjectData PythonProcessorFactoryObject::load(const std::s
             IVW_CONTEXT_CUSTOM("Python"));
     }
 
-    py::object proc = py::eval<py::eval_expr>(name + ".processorInfo()");
-    auto p = proc.cast<ProcessorInfo>();
-    proc.release();
-    return {p, name, file};
+    try {
+        py::object proc = py::eval<py::eval_expr>(name + ".processorInfo()");
+        auto p = proc.cast<ProcessorInfo>();
+        proc.release();
+        return {p, name, file};
+    } catch (const std::exception& e) {
+        throw Exception("Failed to get processor info for processor " + name +
+                            " from script: " + file + ".\n" + e.what(),
+                        IVW_CONTEXT_CUSTOM("Python"));
+    }
 }
 
 PythonProcessorFactoryObjectBase::PythonProcessorFactoryObjectBase(

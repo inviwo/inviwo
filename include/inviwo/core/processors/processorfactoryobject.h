@@ -46,7 +46,7 @@ class Processor;
 
 class IVW_CORE_API ProcessorFactoryObject {
 public:
-    ProcessorFactoryObject(const ProcessorInfo info) : info_(info) {}
+    ProcessorFactoryObject(ProcessorInfo info) : info_(std::move(info)) {}
     virtual ~ProcessorFactoryObject() = default;
 
     virtual std::unique_ptr<Processor> create(InviwoApplication* app) = 0;

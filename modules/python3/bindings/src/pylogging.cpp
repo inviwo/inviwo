@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,31 +26,39 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <modules/python3/python3moduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwopy/pylogging.h>
 
-#include <inviwo/core/util/fileobserver.h>
-#include <inviwo/core/processors/processorfactoryobject.h>
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/consolelogger.h>
+#include <inviwo/core/processors/processor.h>
 
 namespace inviwo {
 
-class IVW_MODULE_PYTHON3_API PythonProcessorFolderObserver : public FileObserver {
-public:
-    PythonProcessorFolderObserver(InviwoApplication* app, const std::string& directory,
-                                  InviwoModule& module);
-    virtual ~PythonProcessorFolderObserver() = default;
+void exposeLogging(pybind11::module& m) {
+    namespace py = pybind11;
 
-private:
-    bool registerFile(const std::string& filename);
-    virtual void fileChanged(const std::string& filename) override;
+    py::class_<Logger, std::shared_ptr<Logger>>(m, "Logger")
+        .def("log", &Logger::log)
+        .def("logProcessor", &Logger::logProcessor)
+        .def("logNetwork", &Logger::logNetwork)
+        .def("logAssertion", &Logger::logAssertion);
 
-    InviwoApplication* app_;
-    std::string directory_;
-    std::vector<std::string> registeredFiles_;
-    InviwoModule& module_;
-};
+    py::class_<LogCentral, Logger, std::shared_ptr<LogCentral>>(m, "LogCentral")
+        .def(py::init([]() {
+            auto lc = std::make_unique<LogCentral>();
+            if (!LogCentral::isInitialized()) {
+                LogCentral::init(lc.get());
+            }
+            return lc;
+        }))
+        .def("registerLogger",
+             [](LogCentral* lc, std::shared_ptr<Logger> logger) { lc->registerLogger(logger); })
+        .def_static("get", &LogCentral::getPtr, py::return_value_policy::reference);
+
+    py::class_<ConsoleLogger, Logger, std::shared_ptr<ConsoleLogger>>(m, "ConsoleLogger")
+        .def(py::init<>())
+        .def("log", &ConsoleLogger::log);
+}
 
 }  // namespace inviwo

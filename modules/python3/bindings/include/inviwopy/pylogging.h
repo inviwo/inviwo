@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,31 +26,16 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+
 #pragma once
 
-#include <modules/python3/python3moduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/common/inviwomodule.h>
-
-#include <inviwo/core/util/fileobserver.h>
-#include <inviwo/core/processors/processorfactoryobject.h>
+#include <warn/push>
+#include <warn/ignore/shadow>
+#include <pybind11/pybind11.h>
+#include <warn/pop>
 
 namespace inviwo {
 
-class IVW_MODULE_PYTHON3_API PythonProcessorFolderObserver : public FileObserver {
-public:
-    PythonProcessorFolderObserver(InviwoApplication* app, const std::string& directory,
-                                  InviwoModule& module);
-    virtual ~PythonProcessorFolderObserver() = default;
-
-private:
-    bool registerFile(const std::string& filename);
-    virtual void fileChanged(const std::string& filename) override;
-
-    InviwoApplication* app_;
-    std::string directory_;
-    std::vector<std::string> registeredFiles_;
-    InviwoModule& module_;
-};
+void exposeLogging(pybind11::module& m);
 
 }  // namespace inviwo

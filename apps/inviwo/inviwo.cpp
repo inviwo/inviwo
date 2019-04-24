@@ -65,7 +65,7 @@ int main(int argc, char** argv) {
 #endif
     inviwo::InviwoApplicationQt inviwoApp(argc, argv, "Inviwo");
     inviwoApp.setStyleSheetFile(":/stylesheets/inviwo.qss");
-    
+
     auto& clp = inviwoApp.getCommandLineParser();
 
     inviwo::InviwoMainWindow mainWin(&inviwoApp);

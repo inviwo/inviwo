@@ -260,9 +260,8 @@ struct OptionPropertyHelper {
 
         py::class_<P, BaseOptionProperty, PropertyPtr<P>> prop(m, classname.c_str());
         prop.def(py::init([](const std::string &identifier, const std::string &name,
-                             InvalidationLevel invalidationLevel,
                              std::vector<OptionPropertyOption<T>> options, size_t selectedIndex,
-                             PropertySemantics semantics) {
+                             InvalidationLevel invalidationLevel, PropertySemantics semantics) {
                      return new P(identifier, name, options, selectedIndex, invalidationLevel,
                                   semantics);
                  }),

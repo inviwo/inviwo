@@ -56,8 +56,7 @@ PYBIND11_MODULE(inviwopyapp, m) {
     py::class_<InviwoApplicationQt, InviwoApplication>(m, "InviwoApplicationQt",
                                                        py::multiple_inheritance{})
         .def(py::init([]() {
-            int argc = 0;
-            auto app = new InviwoApplicationQt(argc, nullptr, "inviwo");
+            auto app = new InviwoApplicationQt("inviwo");
             app->setStyleSheetFile(":/stylesheets/inviwo.qss");
 
             auto win = new QMainWindow();
@@ -74,8 +73,7 @@ PYBIND11_MODULE(inviwopyapp, m) {
                      try {
                          py::exec("lambda x: 1");
                      } catch (...) {
-                         LogInfoCustom("InviwoPyApp",
-                                       "Abort qt event loop, to restart call 'app.run()'");
+                         LogInfoCustom("InviwoPyApp", "Aborted Qt event loop");
                          app->quit();
                      }
                  });
@@ -91,45 +89,4 @@ PYBIND11_MODULE(inviwopyapp, m) {
 
     m.add_object("py", inviwopy);
     m.doc() = "Python inviwo application";
-
-    /*
-    auto logger = std::make_shared<inviwo::ConsoleLogger>();
-    LogCentral::getPtr()->registerLogger(logger);
-    m.attr("consoleLogger") = py::cast(logger);
-
-    int argc = 0;
-    auto app = new InviwoApplicationQt(argc, nullptr, "inviwo");
-    app->setStyleSheetFile(":/stylesheets/inviwo.qss");
-
-    auto win = new QMainWindow();
-    win->setObjectName("InviwoMainWindow");
-    app->setMainWindow(win);
-    win->hide();
-
-    app->registerModules(inviwo::getModuleList());
-    
-
-
-
-
-
-    m.def("run",
-          [app]() {
-              auto timer = new QTimer(app);
-              QObject::connect(timer, &QTimer::timeout, [app]() {
-                  try {
-                      py::exec("lambda x: 1");
-                  } catch (...) {
-                      LogInfoCustom("inviwopyapp",
-                                    "Abort qt event loop, to restart call 'inviwopyapp.run()'");
-                      app->quit();
-                  }
-              });
-              timer->start(100);
-
-              app->exec();
-          },
-          "Run the inviwo event loop");
-
-     */
 }

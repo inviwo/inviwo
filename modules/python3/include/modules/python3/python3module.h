@@ -51,7 +51,8 @@ private:
     TCLAP::ValueArg<std::string> pythonScriptArg_;
     CommandLineArgHolder argHolder_;
     PythonLogger pythonLogger_;
-    PythonProcessorFolderObserver ppfObserver_;
+    PythonProcessorFolderObserver pythonFolderObserver_;
+    PythonProcessorFolderObserver settingsFolderObserver_;
 
 };
 

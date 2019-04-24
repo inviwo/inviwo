@@ -55,7 +55,19 @@
 
 namespace inviwo {
 
-InviwoApplicationQt::InviwoApplicationQt(int argc, char** argv, const std::string& displayName)
+namespace {
+
+int dummyArgc = 1;
+
+char** dummyArgs() {
+    static char* dummyArgv = new char[7];
+    sprintf(dummyArgv, "inviwo");
+    return &dummyArgv;
+}
+
+}  // namespace
+
+InviwoApplicationQt::InviwoApplicationQt(int& argc, char** argv, const std::string& displayName)
     : QApplication(argc, argv)
     , InviwoApplication(argc, argv, displayName)
     , mainWindow_(nullptr)
@@ -68,8 +80,7 @@ InviwoApplicationQt::InviwoApplicationQt(int argc, char** argv, const std::strin
     QCoreApplication::setOrganizationDomain("inviwo.org");
     QCoreApplication::setApplicationName(displayName.c_str());
 
-    setPostEnqueueFront([this]() {
-        postEvent(this, new InviwoQtEvent()); });
+    setPostEnqueueFront([this]() { postEvent(this, new InviwoQtEvent()); });
 
     fileWatcher_ = new QFileSystemWatcher(this);
     connect(fileWatcher_, &QFileSystemWatcher::fileChanged, this,
@@ -101,7 +112,7 @@ InviwoApplicationQt::InviwoApplicationQt(int argc, char** argv, const std::strin
 }
 
 InviwoApplicationQt::InviwoApplicationQt(const std::string& displayName)
-    : InviwoApplicationQt(0, nullptr, displayName) {}
+    : InviwoApplicationQt(dummyArgc, dummyArgs(), displayName) {}
 
 void InviwoApplicationQt::setMainWindow(QMainWindow* mainWindow) {
     mainWindow_ = mainWindow;

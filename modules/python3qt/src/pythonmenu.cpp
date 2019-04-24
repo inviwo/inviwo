@@ -81,20 +81,23 @@ PythonMenu::PythonMenu(InviwoModule* pymodule, InviwoApplication* app) {
             editors_.push_back(std::move(editor));
         });
 
-        auto pyPropertoes = menu_->addAction("&List unexposed properties");
-        win->connect(pyPropertoes, &QAction::triggered, [app]() {
+        auto pyProperties = menu_->addAction("&List unexposed properties");
+        win->connect(pyProperties, &QAction::triggered, [app]() {
             auto mod = app->getModuleByType<Python3Module>();
             PythonScriptDisk(mod->getPath() + "/scripts/list_not_exposed_properties.py").run();
         });
 
         auto newPythonProcessor =
             menu_->addAction(QIcon(":/svgicons/processor-new.svg"), "&New Python Processor");
-        win->connect(newPythonProcessor, &QAction::triggered, [pymodule]() {
+        win->connect(newPythonProcessor, &QAction::triggered, [pymodule, app]() {
             InviwoFileDialog saveFileDialog(nullptr, "Create Python Processor", "PythonProcessor");
             saveFileDialog.setFileMode(FileMode::AnyFile);
             saveFileDialog.setAcceptMode(AcceptMode::Save);
             saveFileDialog.setConfirmOverwrite(true);
             saveFileDialog.addExtension("*.py", "Python file");
+            const auto dir = app->getPath(PathType::Settings) + "/python_processors";
+            filesystem::createDirectoryRecursively(dir);
+            saveFileDialog.setCurrentDirectory(dir);
 
             if (saveFileDialog.exec()) {
                 QString qpath = saveFileDialog.selectedFiles().at(0);
@@ -111,7 +114,7 @@ PythonMenu::PythonMenu(InviwoModule* pymodule, InviwoApplication* app) {
 
                 auto ofs = filesystem::ofstream(path);
                 fmt::print(ofs, script, fmt::arg("name", name));
-                
+
                 QDesktopServices::openUrl(QUrl("file:///" + qpath, QUrl::TolerantMode));
             }
         });

@@ -1,8 +1,8 @@
-# Name: PythonExampleProcessor 
+# Name: PythonExample 
 
 import inviwopy as ivw
 
-class PythonExampleProcessor(ivw.Processor):
+class PythonExample(ivw.Processor):
     def __init__(self, id, name):
         ivw.Processor.__init__(self, id, name)
         self.inport = ivw.data.VolumeInport("inport")
@@ -16,16 +16,15 @@ class PythonExampleProcessor(ivw.Processor):
     @staticmethod
     def processorInfo():
         return ivw.ProcessorInfo(
-    		"org.inviwo.PythonExampleProcessor",  # Class identifier
-    		"Python Example Processor",           # Display name
-    		"Python",                             # Category
-    		ivw.CodeState.Stable, 				  # Code state
-    		ivw.Tags("Python"),                   # Tags
-    		True                                  # Visible   
+            classIdentifier = "org.inviwo.PythonExample",
+            displayName = "Python Example", 
+            category = "Python",
+            codeState = ivw.CodeState.Stable,
+            tags = ivw.Tags.PY
    		)
 
     def getProcessorInfo(self):
-        return PythonExampleProcessor.processorInfo()
+        return PythonExample.processorInfo()
 
     def initializeResources(self):
         print("init")

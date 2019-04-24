@@ -49,16 +49,15 @@
 #include <inviwopy/pymesh.h>
 #include <inviwopy/pytfprimitiveset.h>
 #include <inviwopy/pypickingmapper.h>
+#include <inviwopy/pylogging.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/util/consolelogger.h>
+#include <inviwo/core/util/commandlineparser.h>
 
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/core/util/settings/settings.h>
 #include <inviwo/core/util/exception.h>
 
-#include <inviwo/core/util/commandlineparser.h>
-#include <inviwo/core/util/logcentral.h>
 
 namespace py = pybind11;
 
@@ -75,25 +74,6 @@ PYBIND11_MODULE(inviwopy, m) {
     using namespace inviwo;
     m.doc() = "Python interface for Inviwo";
 
-    py::class_<Logger, std::shared_ptr<Logger>>(m, "Logger")
-        .def("log", &Logger::log)
-        .def("logProcessor", &Logger::logProcessor)
-        .def("logNetwork", &Logger::logNetwork)
-        .def("logAssertion", &Logger::logAssertion);
-
-    py::class_<LogCentral, Logger, std::shared_ptr<LogCentral>>(m, "LogCentral")
-        .def("registerLogger", [](LogCentral* lc, std::shared_ptr<Logger> logger){ lc->registerLogger(logger); })
-        .def_static("get", &LogCentral::getPtr, py::return_value_policy::reference);
-
-
-    py::class_<ConsoleLogger, Logger, std::shared_ptr<ConsoleLogger>>(m, "ConsoleLogger")
-        .def(py::init<>())
-        .def("log", &ConsoleLogger::log);
-
-    if (!LogCentral::isInitialized()) {
-        LogCentral::init();
-    }
-
     exposeGLMTypes(m);
 
     auto propertiesModule = m.def_submodule("properties", "Exposing various Inviwo Properties");
@@ -102,8 +82,8 @@ PYBIND11_MODULE(inviwopy, m) {
     auto formatsModule =
         dataModule.def_submodule("formats", "Module containing the various data formats");
 
+    exposeLogging(m);
     exposeInviwoApplication(m);
-    exposeInviwoModule(m);
     exposeDataFormat(formatsModule);
     exposePropertyOwner(propertiesModule);
     exposeProperties(propertiesModule);
@@ -118,6 +98,7 @@ PYBIND11_MODULE(inviwopy, m) {
     exposeBuffer(dataModule);
     exposeMesh(dataModule);
     exposeTFPrimitiveSet(dataModule);
+    exposeInviwoModule(m);
 
     py::class_<Settings, PropertyOwner, std::unique_ptr<Settings, py::nodelete>>(m, "Settings");
 

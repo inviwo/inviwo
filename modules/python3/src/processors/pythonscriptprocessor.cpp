@@ -39,8 +39,8 @@ const ProcessorInfo PythonScriptProcessor::processorInfo_{
     "org.inviwo.PythonScriptProcessor",  // Class identifier
     "Python Script Processor",           // Display name
     "Python",                            // Category
-    CodeState::Experimental,             // Code state
-    "Python, CPU",                       // Tags
+    CodeState::Deprecated,               // Code state
+    "PY",                                // Tags
 };
 const ProcessorInfo PythonScriptProcessor::getProcessorInfo() const { return processorInfo_; }
 

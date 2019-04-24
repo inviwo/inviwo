@@ -64,6 +64,16 @@ PythonInterpreter::PythonInterpreter(Python3Module* module) : embedded_{false}, 
             throw ModuleInitException("Python is not Initialized", IvwContext);
         }
 
+#if defined(__unix__) || defined(__APPLE__)
+        auto execpath = filesystem::getExecutablePath();
+        auto folder = filesystem::getFileDirectory(execpath);
+        addModulePath(folder);
+#endif
+#if defined(__APPLE__)
+        // On OSX the path returned by getExecutablePath includes folder-paths inside the app-binary
+        addModulePath(folder + "/../../../");
+#endif
+
         try {
             py::exec(R"(
 import sys
@@ -95,16 +105,6 @@ sys.stderr = OutputRedirector(1)
     }
 
     addModulePath(module->getPath() + "/scripts");
-
-#if defined(__unix__) || defined(__APPLE__)
-    auto execpath = filesystem::getExecutablePath();
-    auto folder = filesystem::getFileDirectory(execpath);
-    addModulePath(folder);
-#endif
-#if defined(__APPLE__)
-    // On OSX the path returned by getExecutablePath includes folder-paths inside the app-binary
-    addModulePath(folder + "/../../../");
-#endif
 }
 
 PythonInterpreter::~PythonInterpreter() {

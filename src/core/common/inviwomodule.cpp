@@ -238,6 +238,12 @@ void InviwoModule::registerCapabilities(std::unique_ptr<Capabilities> info) {
     capabilities_.push_back(std::move(info));
 }
 
+void InviwoModule::registerCamera(std::unique_ptr<CameraFactoryObject> camera) {
+    if (app_->getCameraFactory()->registerObject(camera.get())) {
+        cameras_.push_back(std::move(camera));
+    }
+}
+
 void InviwoModule::registerDataReader(std::unique_ptr<DataReader> dataReader) {
     if (app_->getDataReaderFactory()->registerObject(dataReader.get())) {
         dataReaders_.push_back(std::move(dataReader));
@@ -248,6 +254,11 @@ void InviwoModule::registerDataWriter(std::unique_ptr<DataWriter> dataWriter) {
         dataWriters_.push_back(std::move(dataWriter));
     }
 }
+void InviwoModule::registerDialog(std::unique_ptr<DialogFactoryObject> dialog) {
+    if (app_->getDialogFactory()->registerObject(dialog.get())) {
+        dialogs_.push_back(std::move(dialog));
+    }
+}
 void InviwoModule::registerDrawer(std::unique_ptr<MeshDrawer> drawer) {
     if (app_->getMeshDrawerFactory()->registerObject(drawer.get())) {
         drawers_.push_back(std::move(drawer));
@@ -256,6 +267,17 @@ void InviwoModule::registerDrawer(std::unique_ptr<MeshDrawer> drawer) {
 void InviwoModule::registerMetaData(std::unique_ptr<MetaData> meta) {
     if (app_->getMetaDataFactory()->registerObject(meta.get())) {
         metadata_.push_back(std::move(meta));
+    }
+}
+void InviwoModule::registerProperty(std::unique_ptr<PropertyFactoryObject> property) {
+    if (app_->getPropertyFactory()->registerObject(property.get())) {
+        properties_.push_back(std::move(property));
+    }
+}
+void InviwoModule::registerPropertyWidget(
+    std::unique_ptr<PropertyWidgetFactoryObject> propertyWidget) {
+    if (app_->getPropertyWidgetFactory()->registerObject(propertyWidget.get())) {
+        propertyWidgets_.push_back(std::move(propertyWidget));
     }
 }
 void InviwoModule::registerPropertyConverter(std::unique_ptr<PropertyConverter> propertyConverter) {
@@ -275,6 +297,8 @@ void InviwoModule::registerSettings(std::unique_ptr<Settings> settings) {
     settings_.push_back(std::move(settings));
 }
 
+InviwoApplication* InviwoModule::getInviwoApplication() const { return app_; }
+
 void InviwoModule::registerProcessor(std::unique_ptr<ProcessorFactoryObject> pfo) {
     if (app_->getProcessorFactory()->registerObject(pfo.get())) {
         processors_.push_back(std::move(pfo));
@@ -285,6 +309,12 @@ void InviwoModule::registerCompositeProcessor(const std::string& file) {
     auto processor = util::make_unique<CompositeProcessorFactoryObject>(file);
     if (app_->getProcessorFactory()->registerObject(processor.get())) {
         processors_.push_back(std::move(processor));
+    }
+}
+
+void InviwoModule::registerProcessorWidget(std::unique_ptr<ProcessorWidgetFactoryObject> widget) {
+    if (app_->getProcessorWidgetFactory()->registerObject(widget.get())) {
+        processorWidgets_.push_back(std::move(widget));
     }
 }
 
@@ -301,6 +331,18 @@ void InviwoModule::registerPortInspector(std::string portClassIdentifier,
 void InviwoModule::registerDataVisualizer(std::unique_ptr<DataVisualizer> visualizer) {
     app_->getDataVisualizerManager()->registerObject(visualizer.get());
     dataVisualizers_.push_back(std::move(visualizer));
+}
+
+void InviwoModule::registerInport(std::unique_ptr<InportFactoryObject> inport) {
+    if (app_->getInportFactory()->registerObject(inport.get())) {
+        inports_.push_back(std::move(inport));
+    }
+}
+
+void InviwoModule::registerOutport(std::unique_ptr<OutportFactoryObject> outport) {
+    if (app_->getOutportFactory()->registerObject(outport.get())) {
+        outports_.push_back(std::move(outport));
+    }
 }
 
 }  // namespace inviwo

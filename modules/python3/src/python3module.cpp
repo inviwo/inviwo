@@ -68,10 +68,8 @@ Python3Module::Python3Module(InviwoApplication* app)
                  },
                  100}
     , pythonLogger_{}
-    , ppfObserver_{app, getPath() + "/processors",
-                   [this](std::unique_ptr<ProcessorFactoryObject> pfo) {
-                       registerProcessor(std::move(pfo));
-                   }} {
+    , pythonFolderObserver_{app, getPath() + "/processors", *this}
+    , settingsFolderObserver_{app, app->getPath(PathType::Settings, "/python_processors", true), *this} {
 
     pythonInterpreter_->addObserver(&pythonLogger_);
 

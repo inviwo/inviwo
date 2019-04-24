@@ -38,9 +38,13 @@
 #include <inviwo/core/ports/port.h>
 #include <inviwo/core/ports/inport.h>
 
+#include <inviwopy/vectoridentifierwrapper.h>
+
 namespace py = pybind11;
 
 namespace inviwo {
+
+using ProcessorVecWrapper = VectorIdentifierWrapper<std::vector<Processor*>>;
 
 void exposeNetwork(py::module &m) {
     py::class_<PortConnection>(m, "PortConnection")
@@ -57,7 +61,7 @@ void exposeNetwork(py::module &m) {
         .def_property_readonly("destination", &PropertyLink::getDestination,
                                py::return_value_policy::reference);
 
-    py::class_<ProcessorNetwork>(m, "ProcessorNetwork")
+    py::class_<ProcessorNetwork>(m, "ProcessorNetwork")       
         .def_property_readonly("processors", &ProcessorNetwork::getProcessors,
                                py::return_value_policy::reference)
         .def("getProcessorByIdentifier", &ProcessorNetwork::getProcessorByIdentifier,

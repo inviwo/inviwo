@@ -34,7 +34,10 @@
 
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorfactory.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/core/processors/processorwidget.h>
+#include <inviwo/core/processors/processorwidgetfactory.h>
+#include <inviwo/core/processors/processorwidgetfactoryobject.h>
 #include <inviwo/core/metadata/processormetadata.h>
 
 #include <inviwo/core/datastructures/image/layer.h>
@@ -74,6 +77,39 @@ public:
     }
 };
 
+class ProcessorFactoryObjectTrampoline : public ProcessorFactoryObject {
+public:
+    using ProcessorFactoryObject::ProcessorFactoryObject;
+
+    virtual pybind11::object createProcessor(InviwoApplication *app) {
+        PYBIND11_OVERLOAD(pybind11::object, ProcessorFactoryObjectTrampoline, createProcessor, app);
+    }
+
+    virtual std::unique_ptr<Processor> create(InviwoApplication *app) override {
+        auto proc = createProcessor(app);
+        auto p = std::unique_ptr<Processor>(proc.cast<Processor *>());
+        proc.release();
+        return p;
+    }
+};
+
+class ProcessorWidgetFactoryObjectTrampoline : public ProcessorWidgetFactoryObject {
+public:
+    using ProcessorWidgetFactoryObject::ProcessorWidgetFactoryObject;
+
+    virtual pybind11::object createWidget(Processor *processor) {
+        PYBIND11_OVERLOAD(pybind11::object, ProcessorWidgetFactoryObjectTrampoline, createWidget,
+                          processor);
+    }
+
+    virtual std::unique_ptr<ProcessorWidget> create(Processor *processor) override {
+        auto proc = createWidget(processor);
+        auto p = std::unique_ptr<ProcessorWidget>(proc.cast<ProcessorWidget *>());
+        proc.release();
+        return p;
+    }
+};
+
 void exposeProcessors(pybind11::module &m) {
     namespace py = pybind11;
 
@@ -105,12 +141,12 @@ void exposeProcessors(pybind11::module &m) {
         .def_readonly_static("GL", &Tags::GL)
         .def_readonly_static("CL", &Tags::CL)
         .def_readonly_static("PY", &Tags::PY);
-        
 
     py::class_<ProcessorInfo>(m, "ProcessorInfo")
         .def(py::init<std::string, std::string, std::string, CodeState, Tags, bool>(),
              py::arg("classIdentifier"), py::arg("displayName"), py::arg("category") = "Python",
-             py::arg("codeState") = CodeState::Stable, py::arg("tags") = Tags::PY, py::arg("visible") = true)
+             py::arg("codeState") = CodeState::Stable, py::arg("tags") = Tags::PY,
+             py::arg("visible") = true)
         .def_readonly("classIdentifier", &ProcessorInfo::classIdentifier)
         .def_readonly("displayName", &ProcessorInfo::displayName)
         .def_readonly("category", &ProcessorInfo::category)
@@ -118,21 +154,29 @@ void exposeProcessors(pybind11::module &m) {
         .def_readonly("tags", &ProcessorInfo::tags)
         .def_readonly("visible", &ProcessorInfo::visible);
 
+    py::class_<ProcessorFactoryObject, ProcessorFactoryObjectTrampoline>(m,
+                                                                         "ProcessorFactoryObject")
+        .def(py::init<ProcessorInfo>())
+        .def("getProcessorInfo", &ProcessorFactoryObject::getProcessorInfo);
+
     py::class_<ProcessorFactory>(m, "ProcessorFactory")
-        .def("hasKey", [](ProcessorFactory *pf, std::string key) { return pf->hasKey(key); })
-        .def_property_readonly("keys", [](ProcessorFactory *pf) { return pf->getKeys(); })
+        .def("hasKey", &ProcessorFactory::hasKey)
+        .def_property_readonly("keys", &ProcessorFactory::getKeys)
         .def("create",
              [](ProcessorFactory *pf, std::string key) { return pf->create(key).release(); })
-        .def("create", [](ProcessorFactory *pf, std::string key, ivec2 pos) {
-            auto p = pf->create(key);
-            if (!p) {
-                throw py::key_error("failed to create processor of type '" + key + "'");
-            }
-            p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)
-                ->setPosition(pos);
+        .def("create",
+             [](ProcessorFactory *pf, std::string key, ivec2 pos) {
+                 auto p = pf->create(key);
+                 if (!p) {
+                     throw py::key_error("failed to create processor of type '" + key + "'");
+                 }
+                 p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)
+                     ->setPosition(pos);
 
-            return p.release();
-        });
+                 return p.release();
+             })
+        .def("registerObject", &ProcessorFactory::registerObject)
+        .def("unRegisterObject", &ProcessorFactory::unRegisterObject);
 
     py::class_<ProcessorWidget>(m, "ProcessorWidget")
         .def_property("visibility", &ProcessorWidget::isVisible, &ProcessorWidget::setVisible)
@@ -141,6 +185,18 @@ void exposeProcessors(pybind11::module &m) {
         .def_property("position", &ProcessorWidget::getPosition, &ProcessorWidget::setPosition)
         .def("show", &ProcessorWidget::show)
         .def("hide", &ProcessorWidget::hide);
+
+    py::class_<ProcessorWidgetFactory>(m, "ProcessorWidgetFactory")
+        .def("registerObject", &ProcessorWidgetFactory::registerObject)
+        .def("unRegisterObject", &ProcessorWidgetFactory::unRegisterObject)
+        .def("create", [](ProcessorWidgetFactory *pf, Processor *p) { return pf->create(p); })
+        .def("hasKey", &ProcessorWidgetFactory::hasKey)
+        .def("getkeys", &ProcessorWidgetFactory::getKeys);
+
+    py::class_<ProcessorWidgetFactoryObject, ProcessorWidgetFactoryObjectTrampoline>(
+        m, "ProcessorWidgetFactoryObject")
+        .def(py::init<const std::string &>())
+        .def("getClassIdentifier", &ProcessorWidgetFactoryObject::getClassIdentifier);
 
     py::class_<ProcessorMetaData>(m, "ProcessorMetaData")
         .def_property("position", &ProcessorMetaData::getPosition, &ProcessorMetaData::setPosition)
@@ -154,8 +210,9 @@ void exposeProcessors(pybind11::module &m) {
     exposeVectorIdentifierWrapper<std::vector<Outport *>>(m, "OutportVectorWrapper");
 
     py::class_<Processor, ProcessorTrampoline, PropertyOwner, ProcessorPtr<Processor>>(
-        m, "Processor", py::dynamic_attr{})
+        m, "Processor", py::dynamic_attr{}, py::multiple_inheritance{})
         .def(py::init<const std::string &, const std::string &>())
+        .def("__repr__", &Processor::getIdentifier)
         .def_property_readonly("classIdentifier", &Processor::getClassIdentifier)
         .def_property("displayName", &Processor::getDisplayName, &Processor::setDisplayName)
         .def("getProcessorInfo", &Processor::getProcessorInfo)
