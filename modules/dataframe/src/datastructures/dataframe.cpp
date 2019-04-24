@@ -155,11 +155,13 @@ const std::vector<std::pair<std::string, const DataFormatBase *>> DataFrame::get
     return headers;
 }
 
-std::string DataFrame::getHeader(size_t idx) const { return columns_[idx]->getHeader(); }
+std::string DataFrame::getHeader(size_t idx) const { return columns_.at(idx)->getHeader(); }
 
-std::shared_ptr<const Column> DataFrame::getColumn(size_t index) const { return columns_[index]; }
+std::shared_ptr<const Column> DataFrame::getColumn(size_t index) const { 
+    return columns_.at(index);
+}
 
-std::shared_ptr<Column> DataFrame::getColumn(size_t index) { return columns_[index]; }
+std::shared_ptr<Column> DataFrame::getColumn(size_t index) { return columns_.at(index); }
 
 std::shared_ptr<const TemplateColumn<std::uint32_t>> DataFrame::getIndexColumn() const {
     return std::dynamic_pointer_cast<const TemplateColumn<std::uint32_t>>(columns_[0]);
