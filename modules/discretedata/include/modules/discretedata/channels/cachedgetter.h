@@ -52,24 +52,24 @@ struct CachedGetter : public ChannelGetter<typename Parent::value_type, Parent::
         assert(this->parent_ && "No channel to iterate is set.");
 
         // Is the data up to date?
-        if (dataIndex != index) {
-            this->parent_->fill(data, index);
-            dataIndex = index;
+        if (dataIndex_ != index) {
+            this->parent_->fill(data_, index);
+            dataIndex_ = index;
         }
 
         // Always return data.
         // If the iterator is changed and dereferenced, the pointer becomes invalid.
-        return data.data();
+        return data_.data();
     }
 
 protected:
     virtual Channel* parent() const override { return parent_; }
 
     //! Memory is invalidated on iteration
-    std::array<value_type, num_comp> data;
+    std::array<value_type, num_comp> data_;
 
     //! Index that is currently pointed to
-    ind dataIndex;
+    ind dataIndex_;
 
     Parent* parent_;
 };

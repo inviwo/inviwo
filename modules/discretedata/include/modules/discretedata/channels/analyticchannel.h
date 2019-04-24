@@ -80,9 +80,11 @@ public:
      * @param dest Position to write to, expect write of NumComponents many T
      * @param index Linear point index
      */
-    void fillRaw(T* dest, ind index) const override {
-        Vec& destVec = *reinterpret_cast<Vec*>(dest);
-        dataFunction_(destVec, index);
+    void fillRaw(T* dest, ind index, ind numElements = 1) const override {
+        for (ind i = 0; i < numElements; ++i) {
+            Vec& destVec = *reinterpret_cast<Vec*>(dest + i);
+            dataFunction_(destVec, index + i);
+        }
     }
 
 protected:

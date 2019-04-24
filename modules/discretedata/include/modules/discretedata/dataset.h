@@ -43,8 +43,7 @@ namespace discretedata {
 struct ChannelCompare {
     bool operator()(const std::pair<std::string, GridPrimitive>& u,
                     const std::pair<std::string, GridPrimitive>& v) const {
-        return (u.second < v.second)
-            || (u.second == v.second && u.first.compare(v.first) < 0);
+        return (u.second < v.second) || (u.second == v.second && u.first.compare(v.first) < 0);
     }
 };
 // Map used for storing and querying channels by name and GridPrimitive type.
@@ -206,7 +205,7 @@ std::shared_ptr<const BufferChannel<T, N>> DataSet::getAsBuffer(const std::strin
     std::shared_ptr<const Channel> channel = getChannel(name, definedOn);
 
     // Data is not present in this data set.
-    if (!channel) return std::shared_ptr<const BufferChannel<T, N>>();
+    if (!channel) return std::shared_ptr<const BufferChannel<T, N>>(nullptr);
 
     // Try to cast the channel to DataChannel<T, N>.
     // Return empty shared_ptr if unsuccessful.
@@ -214,7 +213,7 @@ std::shared_ptr<const BufferChannel<T, N>> DataSet::getAsBuffer(const std::strin
         std::dynamic_pointer_cast<const DataChannel<T, N>, const Channel>(channel);
 
     // Check for nullptr inside
-    if (!dataChannel) return std::shared_ptr<const BufferChannel<T, N>>();
+    if (!dataChannel) return std::shared_ptr<const BufferChannel<T, N>>(nullptr);
 
     // Try to cast the channel to buffer directly.
     // If successful, return a shared pointer to the buffer directly.
@@ -226,13 +225,14 @@ std::shared_ptr<const BufferChannel<T, N>> DataSet::getAsBuffer(const std::strin
     if (bufferChannel) return bufferChannel;
 
     // Copy data over.
-    BufferChannel<T, N>* buffer = new BufferChannel<T, N>(dataChannel->size(), name, definedOn);
-    for (ind element = 0; element < dataChannel->size(); ++element)
-        dataChannel->fill(buffer->template get<std::array<T, N>>(element), element);
+    // BufferChannel<T, N>* buffer = new BufferChannel<T, N>(dataChannel->size(), name, definedOn);
+    // for (ind element = 0; element < dataChannel->size(); ++element)
+    //     dataChannel->fill(buffer->template get<std::array<T, N>>(element), element);
 
-    buffer->copyMetaDataFrom(*dataChannel.get());
+    // buffer->copyMetaDataFrom(*dataChannel.get());
 
-    return std::shared_ptr<const BufferChannel<T, N>>(buffer);
+    // return std::shared_ptr<const BufferChannel<T, N>>(buffer);
+    return std::make_shared<const BufferChannel<T, N>>(dataChannel);
 }
 
 }  // namespace discretedata
