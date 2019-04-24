@@ -48,7 +48,7 @@ public:
         : Channel(N, name, dataFormat, definedOn) {}
 
 protected:
-    virtual void fillRaw(T* dest, ind index) const = 0;
+    virtual void fillRaw(T* dest, ind index, ind numElements = 1) const = 0;
     virtual ChannelGetter<T, N>* newIterator() = 0;
 };
 
@@ -97,10 +97,10 @@ public:
      * @param index Linear point index
      */
     template <typename VecNT>
-    void fill(VecNT& dest, ind index) const {
+    void fill(VecNT& dest, ind index, ind numElements = 1) const {
         static_assert(sizeof(VecNT) == sizeof(T) * N,
                       "Size and type do not agree with the vector type.");
-        this->fillRaw(reinterpret_cast<T*>(&dest), index);
+        this->fillRaw(reinterpret_cast<T*>(&dest), index, numElements);
     }
 
     template <typename VecNT>

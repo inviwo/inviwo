@@ -96,6 +96,16 @@ public:
                   GridPrimitive definedOn = GridPrimitive::Vertex)
         : DataChannel<T, N>(name, definedOn), buffer_(data, data + numElements * N) {}
 
+    /**
+     * \brief Copy construction from any kind of DataChannel
+     * @param channel DataChannel to copy from
+     */
+    BufferChannel(const typename DataChannel<T, N>& channel)
+        : DataChannel<T, N>(channel.getName(), channel.getGridPrimitiveType())
+        , buffer_(channel.size() * N) {
+        channel.fillRaw(buffer_.data(), 0, channel.size());
+    }
+
     virtual ind size() const override { return buffer_.size() / N; }
 
     const std::vector<T>& data() const { return buffer_; }
@@ -153,8 +163,8 @@ protected:
      * @param dest Position to write to, expect write of NumComponents many T
      * @param index Linear point index
      */
-    virtual void fillRaw(T* dest, ind index) const override {
-        memcpy(dest, &buffer_[index * N], sizeof(T) * N);
+    virtual void fillRaw(T* dest, ind index, ind numElements) const override {
+        memcpy(dest, buffer_.data() + index * N, sizeof(T) * N * numElements);
     }
 
     /**
