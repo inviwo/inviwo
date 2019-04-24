@@ -104,6 +104,8 @@ public:
     DataFrameColumnProperty selectedColorAxis_;
     TransferFunctionProperty tf_;
 
+    BoolProperty multipleAxisSelection_;
+
     CompositeProperty lineSettings_;
     TemplateOptionProperty<BlendMode> blendMode_;
     FloatProperty falllofPower_;
