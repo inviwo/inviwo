@@ -81,6 +81,7 @@ class IVW_MODULE_PLOTTINGGL_API ParallelCoordinates : public Processor {
 public:
     enum class BlendMode { None = 0, Additive = 1, Sutractive = 2, Regular = 3 };
     enum class LabelPosition { None, Above, Below };
+    enum class AxisSelection { Single, Multiple, None };
 
 public:
     ParallelCoordinates();
@@ -103,6 +104,8 @@ public:
 
     DataFrameColumnProperty selectedColorAxis_;
     TransferFunctionProperty tf_;
+
+    TemplateOptionProperty<AxisSelection> axisSelection_;
 
     CompositeProperty lineSettings_;
     TemplateOptionProperty<BlendMode> blendMode_;

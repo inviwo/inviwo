@@ -82,6 +82,11 @@ ParallelCoordinates::ParallelCoordinates()
           TransferFunction{
               {{0.0, vec4{1, 0, 0, 1}}, {0.5, vec4{1, 1, 0, 1}}, {1.0, vec4{0, 1, 0, 1}}}}}
 
+    , axisSelection_("axisSelction", "Axis Selection",
+                    {{"single", "Single", AxisSelection::Single},
+                     {"multiple", "Multiple", AxisSelection::Multiple},
+                     {"none", "None", AxisSelection::None}},
+                    1)
     , lineSettings_{"lines", "Line Settings"}
     , blendMode_("blendMode", "Blend Mode",
                  {{"additive", "Additive", BlendMode::Additive},
@@ -152,6 +157,8 @@ ParallelCoordinates::ParallelCoordinates()
     addProperty(axisProperties_);
     addProperty(selectedColorAxis_);
     addProperty(tf_);
+
+    addProperty(axisSelection_);
 
     addProperty(lineSettings_);
     lineSettings_.addProperty(blendMode_);
@@ -650,7 +657,10 @@ void ParallelCoordinates::axisPicked(PickingEvent* p, size_t pickedID, PickType 
         auto selection = brushingAndLinking_.getSelectedColumns();
         if (brushingAndLinking_.isColumnSelected(pickedID)) {
             selection.erase(pickedID);
-        } else {
+        } else if (axisSelection_.get() == AxisSelection::Multiple) {
+            selection.insert(pickedID);
+        } else if (axisSelection_.get() == AxisSelection::Single) {
+            selection.clear();
             selection.insert(pickedID);
         }
         brushingAndLinking_.sendColumnSelectionEvent(selection);
