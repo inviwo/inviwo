@@ -161,7 +161,7 @@ void StructuredGrid::getConnections(std::vector<ind>& result, ind idxLin, GridPr
 
         auto numElements = numCellsPerDimension_;
         std::vector<ind> idxVec = indexFromLinear(idxLin, numCellsPerDimension_);
-        // idxVec.reserve(Dmax);
+
         ind dimOffset = 0;
         for (ind dim = 0; dim < Dmax; ++dim) {
             numElements[dim]++;
@@ -316,12 +316,7 @@ ind StructuredGrid::getNumCellsInDimension(ind dim) const {
 void StructuredGrid::getNumCells(std::vector<ind>& result) const {
     result.clear();
     for (ind numCells : numCellsPerDimension_) {
-        //if (numCells > 0)
         result.push_back(numCells);
-        /*else {
-            result.clear();
-            return;
-        }*/
     }
 }
 
