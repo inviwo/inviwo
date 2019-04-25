@@ -131,6 +131,7 @@ ParallelCoordinates::ParallelCoordinates()
     , axisSelectedColor_("axisSelectedColor", "Selected Color", vec4(.8f, .2f, .2f, 1), vec4(0.0f),
                          vec4(1.0f), vec4(0.01f), InvalidationLevel::InvalidOutput,
                          PropertySemantics::Color)
+    , handlesVisible_("handlesVisible", "Handles Visible", true)
     , handleSize_("handleSize", "Handle Size", 20.0f, 15.0f, 100.0f)
     , handleColor_("handleColor", "Handle Color (Not filtering)", vec4(.4f, .4f, .4f, 1),
                    vec4(0.0f), vec4(1.0f), vec4(0.01f), InvalidationLevel::InvalidOutput,
@@ -203,6 +204,7 @@ ParallelCoordinates::ParallelCoordinates()
     axesSettings_.addProperty(axisColor_);
     axesSettings_.addProperty(axisHoverColor_);
     axesSettings_.addProperty(axisSelectedColor_);
+    axesSettings_.addProperty(handlesVisible_);
     axesSettings_.addProperty(handleSize_);
     axesSettings_.addProperty(handleColor_);
     axesSettings_.addProperty(handleFilteredColor_);
@@ -504,6 +506,8 @@ void ParallelCoordinates::drawAxis(size2_t size) {
 }
 
 void ParallelCoordinates::drawHandles(size2_t size) {
+    if (!handlesVisible_) return;
+
     sliderWidgetRenderer_.setHoverColor(axisHoverColor_);
 
     for (auto& axis : axes_) {

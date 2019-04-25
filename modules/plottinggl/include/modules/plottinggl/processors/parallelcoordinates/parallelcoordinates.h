@@ -133,6 +133,7 @@ public:
     FloatVec4Property axisColor_;
     FloatVec4Property axisHoverColor_;
     FloatVec4Property axisSelectedColor_;
+    BoolProperty handlesVisible_;
     FloatProperty handleSize_;
     FloatVec4Property handleColor_;
     FloatVec4Property handleFilteredColor_;
