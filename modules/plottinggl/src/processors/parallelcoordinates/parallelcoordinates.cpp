@@ -358,10 +358,8 @@ void ParallelCoordinates::createOrUpdateProperties() {
             axisProperties_.addProperty(newProp.release());
             return ptr;
         }();
-        prop->setParallelCoordinates(this);
         prop->setColumnId(axes_.size());
         prop->setVisible(true);
-        prop->updateFromColumn(c);
 
         // Create axis for rendering
         auto renderer = std::make_unique<AxisRenderer>(*prop);
@@ -379,6 +377,12 @@ void ParallelCoordinates::createOrUpdateProperties() {
 
         axes_.push_back({prop, std::move(renderer), std::move(slider)});
     }
+
+    for (auto& axis : axes_) {
+        axis.pcp->updateFromColumn(data->getColumn(axis.pcp->columnId()));
+        axis.pcp->setParallelCoordinates(this);
+    }
+    updateBrushing();
 }
 
 void ParallelCoordinates::buildLineMesh() {

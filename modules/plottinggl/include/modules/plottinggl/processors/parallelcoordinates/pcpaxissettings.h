@@ -166,13 +166,7 @@ public:
     size_t columnId() const { return columnId_; }
     void setColumnId(size_t id) { columnId_ = id; }
 
-    void setParallelCoordinates(ParallelCoordinates* pcp) {
-        pcp_ = pcp;
-        labelSettings_.setSettings(this);
-        captionSettings_.setSettings(this);
-        major_.setSettings(this);
-        minor_.setSettings(this);
-    }
+    void setParallelCoordinates(ParallelCoordinates* pcp);
 
     const std::vector<bool>& getBrushed() const { return brushed_; }
 
