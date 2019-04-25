@@ -33,19 +33,14 @@ namespace inviwo {
 
 namespace plot {
 
-bool AxisSettings::isAxisFlipped() const {
-    // flip tick placement if axis is either vertical or placement is inside (top/right)
-    return (getOrientation() == Orientation::Vertical) != (getPlacement() == Placement::Inside);
-}
-
 bool AxisSettings::isVertical() const { return getOrientation() == Orientation::Vertical; }
 
 bool operator==(const AxisSettings& a, const AxisSettings& b) {
     return a.getCaption() == b.getCaption() && a.getLabels() == b.getLabels() &&
-           a.getVisible() == b.getVisible() && a.getColor() == b.getColor() &&
-           a.getWidth() == b.getWidth() && a.getUseDataRange() == b.getUseDataRange() &&
-           a.getRange() == b.getRange() && a.getOrientation() == b.getOrientation() &&
-           a.getPlacement() == b.getPlacement() &&
+           a.getVisible() == b.getVisible() && a.getFlipped() == b.getFlipped() &&
+           a.getColor() == b.getColor() && a.getWidth() == b.getWidth() &&
+           a.getUseDataRange() == b.getUseDataRange() && a.getRange() == b.getRange() &&
+           a.getOrientation() == b.getOrientation() && a.getPlacement() == b.getPlacement() &&
            a.getCaptionSettings() == b.getCaptionSettings() &&
            a.getLabelSettings() == b.getLabelSettings() && a.getMajorTicks() == b.getMajorTicks() &&
            a.getMinorTicks() == b.getMinorTicks();

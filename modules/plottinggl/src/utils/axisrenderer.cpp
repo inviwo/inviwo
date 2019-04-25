@@ -74,7 +74,7 @@ Mesh* AxisMeshes::getMajor(const AxisSettings& settings, const vec3& start, cons
     startPos_.check(*this, start);
     endPos_.check(*this, end);
     range_.check(*this, settings.getRange());
-    flip_.check(*this, settings.isAxisFlipped());
+    flip_.check(*this, settings.getFlipped());
     major_.check(*this, settings.getMajorTicks());
     tickDirection_.check(*this, tickDirection);
     if (!majorMesh_) {
@@ -91,7 +91,7 @@ Mesh* AxisMeshes::getMinor(const AxisSettings& settings, const vec3& start, cons
     startPos_.check(*this, start);
     endPos_.check(*this, end);
     range_.check(*this, settings.getRange());
-    flip_.check(*this, settings.isAxisFlipped());
+    flip_.check(*this, settings.getFlipped());
     major_.check(*this, settings.getMajorTicks());
     minor_.check(*this, settings.getMinorTicks());
     tickDirection_.check(*this, tickDirection);

@@ -341,6 +341,7 @@ void ParallelCoordinates::createOrUpdateProperties() {
     if (!data->getNumberOfColumns()) return;
 
     axisPicking_.resize(data->getNumberOfColumns());
+    lines_.axisFlipped.resize(data->getNumberOfColumns());
     for (size_t i = 0; i < data->getNumberOfColumns(); i++) {
         auto c = data->getColumn(i);
         std::string displayName = c->getHeader();
@@ -370,10 +371,18 @@ void ParallelCoordinates::createOrUpdateProperties() {
             glui::UIOrientation::Vertical);
         slider->setLabelVisible(false);
         slider->setShowGroove(false);
+        slider->setFlipped(prop->invertRange);
 
         slider->setPickingEventAction([this, id = axes_.size()](PickingEvent* e) {
             axisPicked(e, id, static_cast<PickType>(e->getPickedId() + 1));
         });
+
+        prop->invertRange.onChange([this, i, s = slider.get(), prop]() {
+            s->setFlipped(prop->invertRange);
+            lines_.axisFlipped[i] = prop->invertRange;
+        });
+        // initialize corresponding flipped flag for the line shader
+        lines_.axisFlipped[i] = prop->invertRange;
 
         axes_.push_back({prop, std::move(renderer), std::move(slider)});
     }
@@ -486,7 +495,11 @@ void ParallelCoordinates::drawAxis(size2_t size) {
     for (auto& axis : axes_) {
         if (!axis.pcp->isChecked()) continue;
         const auto ap = axisPos(axis.pcp->columnId());
-        axis.axisRender->render(size, ap.first, ap.second);
+        if (axis.pcp->invertRange) {
+            axis.axisRender->render(size, ap.second, ap.first);
+        } else {
+            axis.axisRender->render(size, ap.first, ap.second);
+        }
     }
 }
 
@@ -500,7 +513,7 @@ void ParallelCoordinates::drawHandles(size2_t size) {
         const auto ap = axisPos(i);
 
         // Need to call setWidgetExtent twice, since getHandleWidth needs the extent width and
-        // we need the handle width for the extent hight.
+        // we need the handle width for the extent height.
         axis.sliderWidget->setWidgetExtent(ivec2{handleSize_.get(), ap.second.y - ap.first.y});
         const auto handleWidth = axis.sliderWidget->getHandleWidth();
         axis.sliderWidget->setWidgetExtent(
@@ -514,8 +527,13 @@ void ParallelCoordinates::drawHandles(size2_t size) {
             sliderWidgetRenderer_.setUIColor(handleColor_);
         }
 
-        axis.sliderWidget->render(ivec2{ap.first} - ivec2{handleSize_.get(), handleWidth} / 2,
-                                  size);
+        if (axis.pcp->invertRange) {
+            axis.sliderWidget->render(ivec2{ap.first} - ivec2{handleSize_.get(), handleWidth} / 2,
+                                      size);
+        } else {
+            axis.sliderWidget->render(ivec2{ap.first} - ivec2{handleSize_.get(), handleWidth} / 2,
+                                      size);
+        }
     }
 }
 
@@ -559,6 +577,8 @@ void ParallelCoordinates::drawLines(size2_t size) {
     // pcp_lines.vert
     lineShader_.setUniform("axisPositions", lines_.axisPositions.size(),
                            lines_.axisPositions.data());
+    lineShader_.setUniform("axisFlipped", lines_.axisFlipped.size(),
+                           lines_.axisFlipped.data());
     // pcp_lines.geom
     // lineWidth;
 

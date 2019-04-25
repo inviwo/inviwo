@@ -194,8 +194,9 @@ private:
 
         // startFilter, startRegular, startSelected, end
         std::array<size_t, 4> offsets;
-
+        
         std::vector<float> axisPositions;
+        std::vector<float> axisFlipped;
 
         inline static size_t offsetToIndex(size_t offset, size_t cols) {
             return offset / (cols * sizeof(uint32_t));

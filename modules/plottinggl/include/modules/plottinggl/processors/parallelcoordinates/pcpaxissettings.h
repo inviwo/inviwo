@@ -177,6 +177,7 @@ public:
     virtual bool getUseDataRange() const override;
 
     virtual bool getVisible() const override;
+    virtual bool getFlipped() const override;
     virtual vec4 getColor() const override;
     virtual float getWidth() const override;
     virtual Orientation getOrientation() const override;
@@ -192,6 +193,7 @@ public:
     virtual const MinorTickSettings& getMinorTicks() const override;
 
     BoolProperty usePercentiles;
+    BoolProperty invertRange;
     DoubleMinMaxProperty range;
     
     ParallelCoordinates* pcp_ = nullptr;

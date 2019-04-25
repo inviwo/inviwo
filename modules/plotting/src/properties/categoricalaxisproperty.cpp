@@ -51,6 +51,7 @@ CategoricalAxisProperty::CategoricalAxisProperty(const std::string& identifier,
     , color_{"color",    "Color",     vec4{vec3{0.0f}, 1.0f},           vec4{0.0f},
              vec4{1.0f}, vec4{0.01f}, InvalidationLevel::InvalidOutput, PropertySemantics::Color}
     , width_{"width", "Width", 2.5f, 0.0f, 20.0f}
+    , flipped_{"flipped", "Swap Label Position", false}
     , orientation_{"orientation",
                    "Orientation",
                    {{"horizontal", "Horizontal", Orientation::Horizontal},
@@ -70,6 +71,7 @@ CategoricalAxisProperty::CategoricalAxisProperty(const std::string& identifier,
     addProperty(visible_);
     addProperty(color_);
     addProperty(width_);
+    addProperty(flipped_);
     addProperty(orientation_);
     addProperty(placement_);
 
@@ -111,6 +113,7 @@ CategoricalAxisProperty::CategoricalAxisProperty(const CategoricalAxisProperty& 
     , visible_{rhs.visible_}
     , color_{rhs.color_}
     , width_{rhs.width_}
+    , flipped_{rhs.flipped_}
     , orientation_{rhs.orientation_}
     , placement_{rhs.placement_}
     , captionSettings_{rhs.captionSettings_}
@@ -121,6 +124,7 @@ CategoricalAxisProperty::CategoricalAxisProperty(const CategoricalAxisProperty& 
     addProperty(visible_);
     addProperty(color_);
     addProperty(width_);
+    addProperty(flipped_);
     addProperty(orientation_);
     addProperty(placement_);
 
@@ -165,6 +169,8 @@ void CategoricalAxisProperty::adjustAlignment() {
 }
 
 bool CategoricalAxisProperty::getVisible() const { return visible_.get(); }
+
+bool CategoricalAxisProperty::getFlipped() const { return flipped_.get(); }
 
 vec4 CategoricalAxisProperty::getColor() const { return color_.get(); }
 
