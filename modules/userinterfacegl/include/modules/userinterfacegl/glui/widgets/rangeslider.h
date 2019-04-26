@@ -47,7 +47,9 @@ class Renderer;
 
 /**
  * \class RangeSlider
- * \brief glui::element representing a range slider, the label is positioned to the right
+ * \brief glui::element representing a range slider, the label is positioned to the right. If the
+ * flipped flag is set, the range slider uses the inverted range, i.e. the positions of the min/max
+ * values are swapped.
  */
 class IVW_MODULE_USERINTERFACEGL_API RangeSlider : public Element {
 public:
@@ -75,8 +77,11 @@ public:
 
     double getHandleWidth() const;
 
-    bool getShowGroove() const;
     void setShowGroove(bool show);
+    bool getShowGroove() const;
+
+    void setFlipped(bool flipped);
+    bool getFlipped() const;
 
 protected:
     virtual void renderWidget(const ivec2 &origin, const size2_t &canvasDim) override;
@@ -90,7 +95,7 @@ protected:
      * @param delta   (in screen coords, i.e. pixel)
      * @return delta movement normalized to slider range
      */
-    double convertDeltaToSlider(const dvec2 &delta) const;
+    double convertDeltaToSlider(dvec2 delta) const;
 
 private:
     virtual ivec2 computeLabelPos(int descent) const override;
@@ -106,6 +111,7 @@ private:
     std::array<int, 9> uiTextureMap_;
 
     bool showGroove_ = true;
+    bool flipped_ = false;
 
     ivec2 value_;
     int min_;

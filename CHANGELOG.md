@@ -1,6 +1,9 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
-## 2019-04-16 Moved DataFrame datastructure from Plotting to new module (DataFrame)
+## 2019-04-26 Parallel Coordinate Plot Update: flipped axes
+Axes of the parallel coordinate plot can now be inverted via a double click with the left mouse button or using the corresponding `Invert Range` property of the axis. In addition, the filtering handles can be hidden if necessary (`Axes Settings` → `Handles Visible`).
+
+## 2019-04-16 Moved DataFrame data structure from Plotting to new module (DataFrame)
 Types of breaking changes:
 ```c++
     #include <modules/plotting/datastructures/dataframe.h>

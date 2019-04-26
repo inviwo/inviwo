@@ -87,6 +87,7 @@ public:
     virtual bool getUseDataRange() const override;
 
     virtual bool getVisible() const override;
+    virtual bool getFlipped() const override;
     virtual vec4 getColor() const override;
     virtual float getWidth() const override;
     virtual Orientation getOrientation() const override;
@@ -106,6 +107,7 @@ public:
     FloatVec4Property color_;
     FloatProperty width_;
 
+    BoolProperty flipped_;
     TemplateOptionProperty<Orientation> orientation_;
     TemplateOptionProperty<Placement> placement_;
 

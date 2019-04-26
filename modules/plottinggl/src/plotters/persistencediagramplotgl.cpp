@@ -102,6 +102,7 @@ PersistenceDiagramPlotGL::Properties::Properties(std::string identifier, std::st
 
     addProperty(xAxis_);
     addProperty(yAxis_);
+    yAxis_.flipped_.set(true);
 
     pointColor_.setVisible(true);
     tf_.setVisible(!pointColor_.getVisible());

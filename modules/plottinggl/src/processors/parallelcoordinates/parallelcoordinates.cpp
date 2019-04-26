@@ -131,6 +131,7 @@ ParallelCoordinates::ParallelCoordinates()
     , axisSelectedColor_("axisSelectedColor", "Selected Color", vec4(.8f, .2f, .2f, 1), vec4(0.0f),
                          vec4(1.0f), vec4(0.01f), InvalidationLevel::InvalidOutput,
                          PropertySemantics::Color)
+    , handlesVisible_("handlesVisible", "Handles Visible", true)
     , handleSize_("handleSize", "Handle Size", 20.0f, 15.0f, 100.0f)
     , handleColor_("handleColor", "Handle Color (Not filtering)", vec4(.4f, .4f, .4f, 1),
                    vec4(0.0f), vec4(1.0f), vec4(0.01f), InvalidationLevel::InvalidOutput,
@@ -203,6 +204,7 @@ ParallelCoordinates::ParallelCoordinates()
     axesSettings_.addProperty(axisColor_);
     axesSettings_.addProperty(axisHoverColor_);
     axesSettings_.addProperty(axisSelectedColor_);
+    axesSettings_.addProperty(handlesVisible_);
     axesSettings_.addProperty(handleSize_);
     axesSettings_.addProperty(handleColor_);
     axesSettings_.addProperty(handleFilteredColor_);
@@ -341,6 +343,7 @@ void ParallelCoordinates::createOrUpdateProperties() {
     if (!data->getNumberOfColumns()) return;
 
     axisPicking_.resize(data->getNumberOfColumns());
+    lines_.axisFlipped.resize(data->getNumberOfColumns());
     for (size_t i = 0; i < data->getNumberOfColumns(); i++) {
         auto c = data->getColumn(i);
         std::string displayName = c->getHeader();
@@ -358,10 +361,8 @@ void ParallelCoordinates::createOrUpdateProperties() {
             axisProperties_.addProperty(newProp.release());
             return ptr;
         }();
-        prop->setParallelCoordinates(this);
         prop->setColumnId(axes_.size());
         prop->setVisible(true);
-        prop->updateFromColumn(c);
 
         // Create axis for rendering
         auto renderer = std::make_unique<AxisRenderer>(*prop);
@@ -372,13 +373,27 @@ void ParallelCoordinates::createOrUpdateProperties() {
             glui::UIOrientation::Vertical);
         slider->setLabelVisible(false);
         slider->setShowGroove(false);
+        slider->setFlipped(prop->invertRange);
 
         slider->setPickingEventAction([this, id = axes_.size()](PickingEvent* e) {
             axisPicked(e, id, static_cast<PickType>(e->getPickedId() + 1));
         });
 
+        prop->invertRange.onChange([this, i, s = slider.get(), prop]() {
+            s->setFlipped(prop->invertRange);
+            lines_.axisFlipped[i] = static_cast<int>(prop->invertRange);
+        });
+        // initialize corresponding flipped flag for the line shader
+        lines_.axisFlipped[i] = static_cast<int>(prop->invertRange);
+
         axes_.push_back({prop, std::move(renderer), std::move(slider)});
     }
+
+    for (auto& axis : axes_) {
+        axis.pcp->updateFromColumn(data->getColumn(axis.pcp->columnId()));
+        axis.pcp->setParallelCoordinates(this);
+    }
+    updateBrushing();
 }
 
 void ParallelCoordinates::buildLineMesh() {
@@ -482,11 +497,17 @@ void ParallelCoordinates::drawAxis(size2_t size) {
     for (auto& axis : axes_) {
         if (!axis.pcp->isChecked()) continue;
         const auto ap = axisPos(axis.pcp->columnId());
-        axis.axisRender->render(size, ap.first, ap.second);
+        if (axis.pcp->invertRange) {
+            axis.axisRender->render(size, ap.second, ap.first);
+        } else {
+            axis.axisRender->render(size, ap.first, ap.second);
+        }
     }
 }
 
 void ParallelCoordinates::drawHandles(size2_t size) {
+    if (!handlesVisible_) return;
+
     sliderWidgetRenderer_.setHoverColor(axisHoverColor_);
 
     for (auto& axis : axes_) {
@@ -496,7 +517,7 @@ void ParallelCoordinates::drawHandles(size2_t size) {
         const auto ap = axisPos(i);
 
         // Need to call setWidgetExtent twice, since getHandleWidth needs the extent width and
-        // we need the handle width for the extent hight.
+        // we need the handle width for the extent height.
         axis.sliderWidget->setWidgetExtent(ivec2{handleSize_.get(), ap.second.y - ap.first.y});
         const auto handleWidth = axis.sliderWidget->getHandleWidth();
         axis.sliderWidget->setWidgetExtent(
@@ -555,6 +576,7 @@ void ParallelCoordinates::drawLines(size2_t size) {
     // pcp_lines.vert
     lineShader_.setUniform("axisPositions", lines_.axisPositions.size(),
                            lines_.axisPositions.data());
+    lineShader_.setUniform("axisFlipped", lines_.axisFlipped.size(), lines_.axisFlipped.data());
     // pcp_lines.geom
     // lineWidth;
 
@@ -661,6 +683,22 @@ void ParallelCoordinates::axisPicked(PickingEvent* p, size_t pickedID, PickType 
             selection.insert(pickedID);
         } else if (axisSelection_.get() == AxisSelection::Single) {
             selection.clear();
+            selection.insert(pickedID);
+        }
+        brushingAndLinking_.sendColumnSelectionEvent(selection);
+
+        p->markAsUsed();
+        invalidate(InvalidationLevel::InvalidOutput);
+    }
+    if (p->getPressState() == PickingPressState::DoubleClick &&
+        p->getPressItem() == PickingPressItem::Primary) {
+
+        axes_[pickedID].pcp->invertRange.set(!axes_[pickedID].pcp->invertRange);
+        // undo spurious axis selection caused by the single click event prior to the double click
+        auto selection = brushingAndLinking_.getSelectedColumns();
+        if (brushingAndLinking_.isColumnSelected(pickedID)) {
+            selection.erase(pickedID);
+        } else {
             selection.insert(pickedID);
         }
         brushingAndLinking_.sendColumnSelectionEvent(selection);
