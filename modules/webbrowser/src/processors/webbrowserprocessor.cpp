@@ -36,6 +36,7 @@
 #include <inviwo/core/properties/propertyfactory.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/utilities.h>
+#include <nlohmann/json.hpp>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -58,6 +59,7 @@ WebBrowserProcessor::WebBrowserProcessor()
     : Processor()
     // Output from CEF is 8-bits per channel
     , background_("background")
+    , dataFrames_("dataFrames")
     , outport_("webpage", DataVec4UInt8::get())
     , fileName_("fileName", "HTML file", "")
     , autoReloadFile_("autoReloadFile", "Auto Reload", true)
@@ -86,6 +88,8 @@ WebBrowserProcessor::WebBrowserProcessor()
     , browserClient_(new WebBrowserClient(renderHandler_)) {
     addPort(background_);
     background_.setOptional(true);
+    addPort(dataFrames_);
+    dataFrames_.setOptional(true);
     addPort(outport_);
 
     addProperty(sourceType_);
@@ -265,6 +269,18 @@ void WebBrowserProcessor::OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bo
 void WebBrowserProcessor::process() {
     if (js_.isModified() && !js_.get().empty()) {
         browser_->GetMainFrame()->ExecuteJavaScript(js_.get(), "", 1);
+    }
+
+    if (dataFrames_.isReady()) {
+        auto frame = browser_->GetMainFrame();
+        size_t dataFrameNr = 0;
+        for (const auto& dataFrame : dataFrames_) {
+            nlohmann::json jsonString = *dataFrame;
+            std::stringstream data("var data = ", std::ios_base::app | std::ios_base::out);
+            data << jsonString.dump();
+            data << ";onInviwoDataChanged" << dataFrameNr++ << "(data);";
+            frame->ExecuteJavaScript(data.str(), frame->GetURL(), 0);
+        }
     }
 
     // Vertical flip of CEF output image

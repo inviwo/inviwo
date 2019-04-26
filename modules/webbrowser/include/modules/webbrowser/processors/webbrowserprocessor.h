@@ -45,6 +45,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/ports/imageport.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
 #include <inviwo/core/util/singlefileobserver.h>
 
 #include <warn/push>
@@ -110,6 +111,7 @@ public:
                                       bool canGoForward) override;
 
     ImageInport background_;
+    DataFrameMultiInport dataFrames_;
     ImageOutport outport_;
 
     FileProperty fileName_;
