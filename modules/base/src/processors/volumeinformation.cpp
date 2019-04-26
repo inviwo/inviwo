@@ -42,7 +42,7 @@ const ProcessorInfo VolumeInformation::processorInfo_{
     "Volume Information",            // Display name
     "Information",                   // Category
     CodeState::Stable,               // Code state
-    "CPU, Volume",                   // Tags
+    "CPU, Volume, Information",      // Tags
 };
 const ProcessorInfo VolumeInformation::getProcessorInfo() const { return processorInfo_; }
 

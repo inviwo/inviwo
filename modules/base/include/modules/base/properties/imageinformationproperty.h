@@ -59,7 +59,7 @@ public:
 
     void updateForNewImage(const Image& image);
 
-    // Read only used to show information
+    // Read-only used to show information
     IntSize2Property dimensions_;
     StringProperty imageType_;
     IntSizeTProperty numColorLayers_;
