@@ -150,6 +150,8 @@ void LineRenderer::drawMeshes() {
     auto drawmode = util::getDrawMode(drawMode_.get(), useAdjacency_.get());
 
     for (const auto& elem : inport_) {
+        if (elem->getNumberOfBuffers() == 0) continue;
+
         auto& shader = lineShaders_.getShader(*elem);
         shader.activate();
         shader.setUniform("screenDim", vec2(outport_.getDimensions()));

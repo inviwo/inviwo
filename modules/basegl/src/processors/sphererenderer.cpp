@@ -147,6 +147,8 @@ void SphereRenderer::process() {
     utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
 
     for (const auto& mesh : inport_) {
+        if (mesh->getNumberOfBuffers() == 0) continue;
+
         auto& shader = shaders_.getShader(*mesh);
 
         shader.activate();
