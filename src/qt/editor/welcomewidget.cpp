@@ -336,6 +336,7 @@ void WelcomeWidget::showEvent(QShowEvent *event) {
     if (!event->spontaneous()) {
         updateRecentWorkspaces();
         filetree_->updateExampleEntries();
+        filetree_->updateRegressionTestEntries();
 
         // select first entry of recent workspaces, if existing
         filetree_->selectRecentWorkspace(0);
