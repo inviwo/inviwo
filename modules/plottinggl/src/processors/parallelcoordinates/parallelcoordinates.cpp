@@ -696,6 +696,22 @@ void ParallelCoordinates::axisPicked(PickingEvent* p, size_t pickedID, PickType 
         p->markAsUsed();
         invalidate(InvalidationLevel::InvalidOutput);
     }
+    if (p->getPressState() == PickingPressState::DoubleClick &&
+        p->getPressItem() == PickingPressItem::Primary) {
+                
+        axes_[pickedID].pcp->invertRange.set(!axes_[pickedID].pcp->invertRange);
+        // undo spurious axis selection caused by the single click event prior to the double click
+        auto selection = brushingAndLinking_.getSelectedColumns();
+        if (brushingAndLinking_.isColumnSelected(pickedID)) {
+            selection.erase(pickedID);
+        } else {
+            selection.insert(pickedID);
+        }
+        brushingAndLinking_.sendColumnSelectionEvent(selection);
+        
+        p->markAsUsed();
+        invalidate(InvalidationLevel::InvalidOutput);
+    }
 
     const auto swap = [&](size_t a, size_t b) {
         if (a < enabledAxes_.size() || b < enabledAxes_.size()) {

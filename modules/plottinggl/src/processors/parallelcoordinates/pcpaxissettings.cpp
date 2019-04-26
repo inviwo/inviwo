@@ -240,7 +240,7 @@ void PCPAxisSettings::moveHandle(bool upper, double mouseY) {
     range.set(rangeTmp);
 }
 
-inline void PCPAxisSettings::setParallelCoordinates(ParallelCoordinates* pcp) {
+void PCPAxisSettings::setParallelCoordinates(ParallelCoordinates* pcp) {
     pcp_ = pcp;
     labelSettings_.setSettings(this);
     captionSettings_.setSettings(this);
