@@ -381,10 +381,10 @@ void ParallelCoordinates::createOrUpdateProperties() {
 
         prop->invertRange.onChange([this, i, s = slider.get(), prop]() {
             s->setFlipped(prop->invertRange);
-            lines_.axisFlipped[i] = prop->invertRange;
+            lines_.axisFlipped[i] = static_cast<int>(prop->invertRange);
         });
         // initialize corresponding flipped flag for the line shader
-        lines_.axisFlipped[i] = prop->invertRange;
+        lines_.axisFlipped[i] = static_cast<int>(prop->invertRange);
 
         axes_.push_back({prop, std::move(renderer), std::move(slider)});
     }
@@ -531,13 +531,8 @@ void ParallelCoordinates::drawHandles(size2_t size) {
             sliderWidgetRenderer_.setUIColor(handleColor_);
         }
 
-        if (axis.pcp->invertRange) {
-            axis.sliderWidget->render(ivec2{ap.first} - ivec2{handleSize_.get(), handleWidth} / 2,
-                                      size);
-        } else {
-            axis.sliderWidget->render(ivec2{ap.first} - ivec2{handleSize_.get(), handleWidth} / 2,
-                                      size);
-        }
+        axis.sliderWidget->render(ivec2{ap.first} - ivec2{handleSize_.get(), handleWidth} / 2,
+                                  size);
     }
 }
 
@@ -581,8 +576,7 @@ void ParallelCoordinates::drawLines(size2_t size) {
     // pcp_lines.vert
     lineShader_.setUniform("axisPositions", lines_.axisPositions.size(),
                            lines_.axisPositions.data());
-    lineShader_.setUniform("axisFlipped", lines_.axisFlipped.size(),
-                           lines_.axisFlipped.data());
+    lineShader_.setUniform("axisFlipped", lines_.axisFlipped.size(), lines_.axisFlipped.data());
     // pcp_lines.geom
     // lineWidth;
 
@@ -698,7 +692,7 @@ void ParallelCoordinates::axisPicked(PickingEvent* p, size_t pickedID, PickType 
     }
     if (p->getPressState() == PickingPressState::DoubleClick &&
         p->getPressItem() == PickingPressItem::Primary) {
-                
+
         axes_[pickedID].pcp->invertRange.set(!axes_[pickedID].pcp->invertRange);
         // undo spurious axis selection caused by the single click event prior to the double click
         auto selection = brushingAndLinking_.getSelectedColumns();
@@ -708,7 +702,7 @@ void ParallelCoordinates::axisPicked(PickingEvent* p, size_t pickedID, PickType 
             selection.insert(pickedID);
         }
         brushingAndLinking_.sendColumnSelectionEvent(selection);
-        
+
         p->markAsUsed();
         invalidate(InvalidationLevel::InvalidOutput);
     }
