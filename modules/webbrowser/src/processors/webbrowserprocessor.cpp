@@ -277,8 +277,9 @@ void WebBrowserProcessor::process() {
         for (const auto& dataFrame : dataFrames_) {
             nlohmann::json jsonString = *dataFrame;
             std::stringstream data("var data = ", std::ios_base::app | std::ios_base::out);
-            data << jsonString.dump();
-            data << ";onInviwoDataChanged" << dataFrameNr++ << "(data);";
+            data << jsonString.dump() << ";";
+            data << "var dataFrameNr = " << dataFrameNr++ << ";";
+            data << "onInviwoDataChanged(data, dataFrameNr);";
             frame->ExecuteJavaScript(data.str(), frame->GetURL(), 0);
         }
     }
