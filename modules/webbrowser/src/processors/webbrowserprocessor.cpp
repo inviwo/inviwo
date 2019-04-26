@@ -37,6 +37,7 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/utilities.h>
 #include <nlohmann/json.hpp>
+#include <inviwo/dataframe/jsondataframeconversion.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
