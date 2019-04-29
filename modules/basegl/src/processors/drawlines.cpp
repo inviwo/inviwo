@@ -91,7 +91,6 @@ void DrawLines::process() {
     utilgl::activateTargetAndCopySource(outport_, inport_, ImageType::ColorOnly);
     {
         utilgl::GlBoolState linesmooth(GL_LINE_SMOOTH, false);
-        utilgl::LineWidthState linewidth(lineSize_);
 
         lineShader_.activate();
         lineShader_.setUniform("color", lineColor_);
