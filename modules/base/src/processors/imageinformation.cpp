@@ -59,7 +59,7 @@ ImageInformation::ImageInformation()
 void ImageInformation::process() {
     auto image = image_.getData();
 
-    imageInfo_.updateForNewImage(*(image.get()));
+    imageInfo_.updateForNewImage(*image);
 
     metaDataProps_.updateProperty(metaDataProperty_, image->getMetaDataMap());
 }

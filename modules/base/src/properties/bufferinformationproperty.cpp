@@ -64,7 +64,7 @@ BufferInformationProperty::BufferInformationProperty(std::string identifier,
             e.setCurrentStateAsDefault();
             this->addProperty(e);
         },
-        std::tie(format_, size_, usage_, target_));
+        props());
 }
 
 BufferInformationProperty::BufferInformationProperty(const BufferInformationProperty& rhs)
@@ -73,18 +73,14 @@ BufferInformationProperty::BufferInformationProperty(const BufferInformationProp
     , size_(rhs.size_)
     , usage_(rhs.usage_)
     , target_(rhs.target_) {
-    util::for_each_in_tuple([&](auto& e) { this->addProperty(e); },
-                            std::tie(format_, size_, usage_, target_));
+    util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props());
 }
 
 BufferInformationProperty& BufferInformationProperty::operator=(
     const BufferInformationProperty& that) {
     if (this != &that) {
         CompositeProperty::operator=(that);
-        format_ = that.format_;
-        size_ = that.size_;
-        usage_ = that.usage_;
-        target_ = that.target_;
+        util::for_each_in_tuple([](auto& dst, auto& src) { dst = src; }, props(), that.props());
     }
     return *this;
 }
@@ -119,21 +115,20 @@ MeshBufferInformationProperty::MeshBufferInformationProperty(std::string identif
             e.setCurrentStateAsDefault();
             this->insertProperty(i++, e);
         },
-        std::tie(type_, location_));
+        props());
 }
 
 MeshBufferInformationProperty::MeshBufferInformationProperty(
     const MeshBufferInformationProperty& rhs)
     : BufferInformationProperty(rhs), type_(rhs.type_), location_(rhs.location_) {
-    util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, std::tie(type_, location_));
+    util::for_each_in_tuple([&, i = 0](auto& e) mutable { this->insertProperty(i++, e); }, props());
 }
 
 MeshBufferInformationProperty& MeshBufferInformationProperty::operator=(
     const MeshBufferInformationProperty& that) {
     if (this != &that) {
         BufferInformationProperty::operator=(that);
-        type_ = that.type_;
-        location_ = that.location_;
+        util::for_each_in_tuple([](auto& dst, auto& src) { dst = src; }, props(), that.props());
     }
     return *this;
 }
@@ -168,22 +163,20 @@ IndexBufferInformationProperty::IndexBufferInformationProperty(std::string ident
             e.setCurrentStateAsDefault();
             insertProperty(i++, e);
         },
-        std::tie(drawType_, connectivity_));
+        props());
 }
 
 IndexBufferInformationProperty::IndexBufferInformationProperty(
     const IndexBufferInformationProperty& rhs)
     : BufferInformationProperty(rhs), drawType_(rhs.drawType_), connectivity_(rhs.connectivity_) {
-    util::for_each_in_tuple([&](auto& e) { this->addProperty(e); },
-                            std::tie(drawType_, connectivity_));
+    util::for_each_in_tuple([&, i = 0](auto& e) mutable { this->insertProperty(i++, e); }, props());
 }
 
 IndexBufferInformationProperty& IndexBufferInformationProperty::operator=(
     const IndexBufferInformationProperty& that) {
     if (this != &that) {
         BufferInformationProperty::operator=(that);
-        drawType_ = that.drawType_;
-        connectivity_ = that.connectivity_;
+        util::for_each_in_tuple([](auto& dst, auto& src) { dst = src; }, props(), that.props());
     }
     return *this;
 }

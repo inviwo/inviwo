@@ -63,6 +63,10 @@ public:
     IntSizeTProperty size_;
     StringProperty usage_;
     StringProperty target_;
+
+private:
+    auto props() { return std::tie(format_, size_, usage_, target_); }
+    auto props() const { return std::tie(format_, size_, usage_, target_); }
 };
 
 class IVW_MODULE_BASE_API MeshBufferInformationProperty : public BufferInformationProperty {
@@ -80,9 +84,13 @@ public:
     virtual ~MeshBufferInformationProperty() = default;
 
     void updateFromBuffer(Mesh::BufferInfo info, const BufferBase& buffer);
-    
+
     StringProperty type_;
     IntProperty location_;
+
+private:
+    auto props() { return std::tie(type_, location_); }
+    auto props() const { return std::tie(type_, location_); }
 };
 
 class IVW_MODULE_BASE_API IndexBufferInformationProperty : public BufferInformationProperty {
@@ -100,9 +108,13 @@ public:
     virtual ~IndexBufferInformationProperty() = default;
 
     void updateFromBuffer(Mesh::MeshInfo info, const BufferBase& buffer);
-    
+
     StringProperty drawType_;
     StringProperty connectivity_;
+
+private:
+    auto props() { return std::tie(drawType_, connectivity_); }
+    auto props() const { return std::tie(drawType_, connectivity_); }
 };
 
 }  // namespace inviwo

@@ -39,11 +39,6 @@ namespace inviwo {
 const std::string MeshInformationProperty::classIdentifier = "org.inviwo.MeshInformationProperty";
 std::string MeshInformationProperty::getClassIdentifier() const { return classIdentifier; }
 
-auto MeshInformationProperty::props() {
-    return std::tie(defaultDrawType_, defaultConnectivity_, numBuffers_, numIndexBuffers_,
-                    modelTransform_, worldTransform_, basis_, offset_, min_, max_, extent_);
-}
-
 MeshInformationProperty::MeshInformationProperty(std::string identifier, std::string displayName,
                                                  InvalidationLevel invalidationLevel,
                                                  PropertySemantics semantics)
@@ -106,7 +101,7 @@ MeshInformationProperty::MeshInformationProperty(std::string identifier, std::st
             e.setCollapsed(true);
             e.setCurrentStateAsDefault();
         },
-        std::tie(transformations_, meshProperties_, buffers_, indexBuffers_));
+        compositeProps());
 }
 
 MeshInformationProperty::MeshInformationProperty(const MeshInformationProperty& rhs)
@@ -138,22 +133,9 @@ MeshInformationProperty::MeshInformationProperty(const MeshInformationProperty& 
 MeshInformationProperty& MeshInformationProperty::operator=(const MeshInformationProperty& that) {
     if (this != &that) {
         CompositeProperty::operator=(that);
-        defaultMeshInfo_ = that.defaultMeshInfo_;
-        defaultDrawType_ = that.defaultDrawType_;
-        defaultConnectivity_ = that.defaultConnectivity_;
-        numBuffers_ = that.numBuffers_;
-        numIndexBuffers_ = that.numIndexBuffers_;
-        transformations_ = that.transformations_;
-        modelTransform_ = that.modelTransform_;
-        worldTransform_ = that.worldTransform_;
-        basis_ = that.basis_;
-        offset_ = that.offset_;
-        meshProperties_ = that.meshProperties_;
-        min_ = that.min_;
-        max_ = that.max_;
-        extent_ = that.extent_;
-        buffers_ = that.buffers_;
-        indexBuffers_ = that.indexBuffers_;
+        util::for_each_in_tuple([](auto& dst, auto& src) { dst = src; }, props(), that.props());
+        util::for_each_in_tuple([](auto& dst, auto& src) { dst = src; }, compositeProps(),
+                                that.compositeProps());
     }
     return *this;
 }

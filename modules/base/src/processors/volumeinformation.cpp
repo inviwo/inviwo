@@ -116,7 +116,7 @@ VolumeInformation::VolumeInformation()
 void VolumeInformation::process() {
     auto volume = volume_.getData();
 
-    volumeInfo_.updateForNewVolume(*(volume.get()));
+    volumeInfo_.updateForNewVolume(*volume);
 
     auto volumeRAM = volume->getRepresentation<VolumeRAM>();
 

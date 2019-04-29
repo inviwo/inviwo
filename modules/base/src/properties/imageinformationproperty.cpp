@@ -38,10 +38,6 @@ namespace inviwo {
 const std::string ImageInformationProperty::classIdentifier = "org.inviwo.ImageInformationProperty";
 std::string ImageInformationProperty::getClassIdentifier() const { return classIdentifier; }
 
-auto ImageInformationProperty::props() {
-    return std::tie(dimensions_, imageType_, numColorLayers_);
-}
-
 ImageInformationProperty::ImageInformationProperty(std::string identifier, std::string displayName,
                                                    InvalidationLevel invalidationLevel,
                                                    PropertySemantics semantics)
@@ -83,10 +79,7 @@ ImageInformationProperty& ImageInformationProperty::operator=(
     const ImageInformationProperty& that) {
     if (this != &that) {
         CompositeProperty::operator=(that);
-        dimensions_ = that.dimensions_;
-        imageType_ = that.imageType_;
-        numColorLayers_ = that.numColorLayers_;
-        layers_ = that.layers_;
+        util::for_each_in_tuple([](auto& dst, auto& src) { dst = src; }, props(), that.props());
     }
     return *this;
 }

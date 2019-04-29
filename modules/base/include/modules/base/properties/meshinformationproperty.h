@@ -65,7 +65,7 @@ public:
     StringProperty defaultConnectivity_;
     IntSizeTProperty numBuffers_;
     IntSizeTProperty numIndexBuffers_;
-    
+
     CompositeProperty transformations_;
     FloatMat4Property modelTransform_;
     FloatMat4Property worldTransform_;
@@ -75,15 +75,29 @@ public:
     BoolCompositeProperty meshProperties_;
     FloatVec3Property min_;
     FloatVec3Property max_;
-    FloatVec3Property extent_;    
+    FloatVec3Property extent_;
 
     CompositeProperty buffers_;
     CompositeProperty indexBuffers_;
-    
+
 private:
     const size_t maxShownIndexBuffers_ = 15;
-
-    auto props();
+    
+    auto props() {
+        return std::tie(defaultDrawType_, defaultConnectivity_, numBuffers_, numIndexBuffers_,
+                        modelTransform_, worldTransform_, basis_, offset_, min_, max_, extent_);
+    }
+    auto props() const {
+        return std::tie(defaultDrawType_, defaultConnectivity_, numBuffers_, numIndexBuffers_,
+                        modelTransform_, worldTransform_, basis_, offset_, min_, max_, extent_);
+    }
+    
+    auto compositeProps() {
+        return std::tie(transformations_, meshProperties_, buffers_, indexBuffers_);
+    }
+    auto compositeProps() const {
+        return std::tie(transformations_, meshProperties_, buffers_, indexBuffers_);
+    }
 };
 
 }  // namespace inviwo

@@ -64,11 +64,10 @@ public:
     StringProperty imageType_;
     IntSizeTProperty numColorLayers_;
     CompositeProperty layers_;
-    
+
 private:
-    auto props();
+    auto props() { return std::tie(dimensions_, imageType_, numColorLayers_); }
+    auto props() const { return std::tie(dimensions_, imageType_, numColorLayers_); }
 };
-
-
 
 }  // namespace inviwo

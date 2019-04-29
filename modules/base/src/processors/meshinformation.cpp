@@ -59,7 +59,7 @@ MeshInformation::MeshInformation()
 void MeshInformation::process() {
     auto mesh = mesh_.getData();
 
-    meshInfo_.updateForNewMesh(*(mesh.get()));
+    meshInfo_.updateForNewMesh(*mesh);
 
     metaDataProps_.updateProperty(metaDataProperty_, mesh->getMetaDataMap());
 }
