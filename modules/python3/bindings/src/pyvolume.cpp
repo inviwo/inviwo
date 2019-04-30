@@ -43,15 +43,27 @@
 #include <pybind11/numpy.h>
 #include <warn/pop>
 
+#include <modules/base/io/ivfvolumewriter.h>
+#include <modules/base/io/ivfsequencevolumewriter.h>
+
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/ports/volumeport.h>
 
+#include <modules/base/algorithm/volume/volumecurl.h>
+#include <modules/base/algorithm/volume/volumedivergence.h>
+
+
+PYBIND11_MAKE_OPAQUE(inviwo::VolumeSequence);
+
 namespace inviwo {
 
 void exposeVolume(pybind11::module &m) {
     namespace py = pybind11;
+    m.def("curlVolume", [](Volume &vol) { return util::curlVolume(vol).release(); });
+    m.def("divergenceVolume", [](Volume &vol) { return util::divergenceVolume(vol).release(); });
+
     py::class_<Volume, std::shared_ptr<Volume>>(m, "Volume")
         .def(py::init<size3_t, const DataFormatBase *>())
         .def(py::init([](py::array data) { return pyutil::createVolume(data).release(); }))
@@ -96,8 +108,59 @@ void exposeVolume(pybind11::module &m) {
                 << volume.dataMap_.valueUnit << "\"> >";
             return oss.str();
         });
+    
 
+   // py::bind_vector<VolumeSequence>(m, "VolumeSequence");
     exposeStandardDataPorts<Volume>(m, "Volume");
+
+    pybind11::class_<VolumeSequenceOutport, Outport, PortPtr<VolumeSequenceOutport>>(m, "VolumeSequenceOutport")
+        .def(py::init<std::string>())
+        .def("getData",[](VolumeSequenceOutport &self){
+        py::list l;
+        for(auto &v : *self.getData()){
+            l.append(py::cast(v,py::return_value_policy::reference));
+        }
+        return l;
+    } , py::return_value_policy::reference)
+        .def("detatchData", &VolumeSequenceOutport::detachData)
+        //.def("setData", [](VolumeSequenceOutport* port, std::shared_ptr<VolumeSequence> data) { port->setData(data); })
+        .def("hasData", &VolumeSequenceOutport::hasData);
+
+
+
+    py::class_<DataWriter>(m, "DataWriter")
+        .def_property("overwrite", &DataWriter::getOverwrite, &DataWriter::setOverwrite);
+
+    py::class_<IvfVolumeWriter, DataWriter>(m, "IvfVolumeWriter")
+        .def(py::init<>())
+        .def("save", &IvfVolumeWriter::writeData);
+
+    m.def("saveIvfVolumeSequence", &util::writeIvfVolumeSequence);
+    m.def("saveIvfVolumeSequence", [](py::list list, std::string name,
+        std::string path, std::string reltivePathToTimesteps,
+        bool overwrite){
+        VolumeSequence seq;
+        for(const auto &v : list){
+            seq.push_back( v.cast<std::shared_ptr<Volume>>() );
+        }
+
+        return util::writeIvfVolumeSequence(seq,name,path,reltivePathToTimesteps,overwrite);
+
+    });
+
+    py::class_<IvfSequenceVolumeWriter>(m, "IvfSequenceVolumeWriter")
+        .def(py::init<>())
+        .def_property("overwrite", &IvfSequenceVolumeWriter::getOverwrite,
+            &IvfSequenceVolumeWriter::setOverwrite)
+        .def("save", [&](IvfSequenceVolumeWriter &self, const VolumeSequence *data,
+            const std::string filePath) { self.writeData(data, filePath); })
+        .def("save",
+            [&](IvfSequenceVolumeWriter &self, const VolumeSequence *data, std::string name,
+                std::string path, std::string reltivePathToTimesteps = "") {
+        self.writeData(data, name, path, reltivePathToTimesteps);
+    });
+
+
 }
 
 }  // namespace inviwo
