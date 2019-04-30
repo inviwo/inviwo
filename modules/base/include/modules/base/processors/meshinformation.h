@@ -26,48 +26,48 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+
 #pragma once
 
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/util/metadatatoproperty.h>
+#include <modules/base/properties/meshinformationproperty.h>
 
 namespace inviwo {
 
-class Layer;
-class Image;
+/** \docpage{org.inviwo.MeshInformation, Mesh Information}
+ * ![](org.inviwo.MeshInformation.png?classIdentifier=org.inviwo.MeshInformation)
+ * Shows available information provided by the input mesh including metadata.
+ *
+ * ### Inports
+ *   * __mesh__   input mesh
+ */
 
 /**
- * \ingroup properties
- * \brief A CompositeProperty holding properties to show a information about an image
+ * \class MeshInformation
+ * \brief provides information on the input mesh
  */
-class IVW_MODULE_BASE_API ImageInformationProperty : public CompositeProperty {
+class IVW_MODULE_BASE_API MeshInformation : public Processor {
 public:
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    MeshInformation();
+    virtual ~MeshInformation() = default;
 
-    ImageInformationProperty(
-        std::string identifier, std::string displayName,
-        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
-        PropertySemantics semantics = PropertySemantics::Default);
-    ImageInformationProperty(const ImageInformationProperty& rhs);
-    ImageInformationProperty& operator=(const ImageInformationProperty& that);
-    virtual ImageInformationProperty* clone() const override;
-    virtual ~ImageInformationProperty() = default;
+    virtual void process() override;
 
-    void updateForNewImage(const Image& image);
-
-    // Read-only used to show information
-    IntSize2Property dimensions_;
-    StringProperty imageType_;
-    IntSizeTProperty numColorLayers_;
-    CompositeProperty layers_;
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
 private:
-    auto props() { return std::tie(dimensions_, imageType_, numColorLayers_); }
-    auto props() const { return std::tie(dimensions_, imageType_, numColorLayers_); }
+    MeshInport mesh_;
+
+    MeshInformationProperty meshInfo_;
+    CompositeProperty metaDataProperty_;
+
+    util::MetaDataToProperty metaDataProps_;
 };
 
 }  // namespace inviwo

@@ -31,43 +31,73 @@
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 
 namespace inviwo {
 
-class Layer;
-class Image;
+class Mesh;
 
 /**
  * \ingroup properties
- * \brief A CompositeProperty holding properties to show a information about an image
+ * \brief A CompositeProperty holding properties to show a information about a mesh
  */
-class IVW_MODULE_BASE_API ImageInformationProperty : public CompositeProperty {
+class IVW_MODULE_BASE_API MeshInformationProperty : public CompositeProperty {
 public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    ImageInformationProperty(
+    MeshInformationProperty(
         std::string identifier, std::string displayName,
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
         PropertySemantics semantics = PropertySemantics::Default);
-    ImageInformationProperty(const ImageInformationProperty& rhs);
-    ImageInformationProperty& operator=(const ImageInformationProperty& that);
-    virtual ImageInformationProperty* clone() const override;
-    virtual ~ImageInformationProperty() = default;
+    MeshInformationProperty(const MeshInformationProperty& rhs);
+    MeshInformationProperty& operator=(const MeshInformationProperty& that);
+    virtual MeshInformationProperty* clone() const override;
+    virtual ~MeshInformationProperty() = default;
 
-    void updateForNewImage(const Image& image);
+    void updateForNewMesh(const Mesh& mesh);
 
     // Read-only used to show information
-    IntSize2Property dimensions_;
-    StringProperty imageType_;
-    IntSizeTProperty numColorLayers_;
-    CompositeProperty layers_;
+    CompositeProperty defaultMeshInfo_;
+    StringProperty defaultDrawType_;
+    StringProperty defaultConnectivity_;
+    IntSizeTProperty numBuffers_;
+    IntSizeTProperty numIndexBuffers_;
+
+    CompositeProperty transformations_;
+    FloatMat4Property modelTransform_;
+    FloatMat4Property worldTransform_;
+    FloatMat3Property basis_;
+    FloatVec3Property offset_;
+
+    BoolCompositeProperty meshProperties_;
+    FloatVec3Property min_;
+    FloatVec3Property max_;
+    FloatVec3Property extent_;
+
+    CompositeProperty buffers_;
+    CompositeProperty indexBuffers_;
 
 private:
-    auto props() { return std::tie(dimensions_, imageType_, numColorLayers_); }
-    auto props() const { return std::tie(dimensions_, imageType_, numColorLayers_); }
+    const size_t maxShownIndexBuffers_ = 15;
+    
+    auto props() {
+        return std::tie(defaultDrawType_, defaultConnectivity_, numBuffers_, numIndexBuffers_,
+                        modelTransform_, worldTransform_, basis_, offset_, min_, max_, extent_);
+    }
+    auto props() const {
+        return std::tie(defaultDrawType_, defaultConnectivity_, numBuffers_, numIndexBuffers_,
+                        modelTransform_, worldTransform_, basis_, offset_, min_, max_, extent_);
+    }
+    
+    auto compositeProps() {
+        return std::tie(transformations_, meshProperties_, buffers_, indexBuffers_);
+    }
+    auto compositeProps() const {
+        return std::tie(transformations_, meshProperties_, buffers_, indexBuffers_);
+    }
 };
 
 }  // namespace inviwo

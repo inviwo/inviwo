@@ -172,8 +172,8 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 }
 
 template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, BufferUsage ut) {
-    switch (ut) {
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, BufferUsage bu) {
+    switch (bu) {
         case BufferUsage::Static:
             ss << "Static";
             break;
@@ -182,6 +182,21 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
             break;
         default:
             ss << "Usage not specified";
+    }
+    return ss;
+}
+
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, BufferTarget bt) {
+    switch (bt) {
+        case BufferTarget::Data :
+            ss << "Data";
+            break;
+        case BufferTarget::Index:
+            ss << "Index";
+            break;
+        default:
+            ss << "Target not specified";
     }
     return ss;
 }
