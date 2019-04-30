@@ -2,7 +2,11 @@
 # Inviwo Python3 Module
 ivw_module(Python3)
 
-#Check if numpy exist 
+
+set(IVW_PYTHON_PATH_TO_VIRTUAL_ENV_ACTIVATION_SCRIPT "" CACHE FILEPATH
+"Path to a python virtual environment activation script (activate_this.py)")
+
+#Check if numpy exist
 execute_process(COMMAND "${PYTHON_EXECUTABLE}" "-c"
                 "try: import numpy; print(numpy.__version__);\nexcept: print('failed')\n"
                 RESULT_VARIABLE NUMPY_STATUS
@@ -10,6 +14,15 @@ execute_process(COMMAND "${PYTHON_EXECUTABLE}" "-c"
                 ERROR_VARIABLE NUMPY_ERROR
                 OUTPUT_STRIP_TRAILING_WHITESPACE
                )
+
+
+#execute_process(COMMAND "${PYTHON_EXECUTABLE}" "E:/github-master-repo/code/py/list-installed-pkgs.py")
+#execute_process(COMMAND "${PYTHON_EXECUTABLE}" "${IVW_PYTHON_PATH_TO_VIRTUAL_ENV_ACTIVATION_SCRIPT}"
+                #COMMAND "${PYTHON_EXECUTABLE}" "E:/github-master-repo/code/py/list-installed-pkgs.py"
+#    )
+#execute_process(COMMAND "${PYTHON_EXECUTABLE}" "E:/github-master-repo/code/py/list-installed-pkgs.py")
+
+
 
 #--------------------------------------------------------------------
 # Add header files
@@ -84,14 +97,19 @@ ivw_add_unittest(${TEST_FILES})
 #--------------------------------------------------------------------
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SCRIPT_FILES})
-target_link_libraries(inviwo-module-python3 PUBLIC 
-    pybind11::embed 
+target_link_libraries(inviwo-module-python3 PUBLIC
+    pybind11::embed
     $<BUILD_INTERFACE:${PYTHON_LIBRARIES}>
 )
 target_include_directories(inviwo-module-python3 PUBLIC
     ${PYTHON_INCLUDE_DIR}
     ${IVW_EXTENSIONS_DIR}/pybind11/include
 )
+
+
+if(IVW_PYTHON_PATH_TO_VIRTUAL_ENV_ACTIVATION_SCRIPT)
+  target_compile_definitions(inviwo-module-python3 PUBLIC -DIVW_PY_VIRTENV_ACTIVATION_SCRIPT="${IVW_PYTHON_PATH_TO_VIRTUAL_ENV_ACTIVATION_SCRIPT}")
+endif()
 
 add_subdirectory(bindings)
 
@@ -114,7 +132,7 @@ if(IVW_PACKAGE_PROJECT AND BUILD_SHARED_LIBS)
                 message(FATAL_ERROR "Could not download python embedd: ${py_url}")
             endif()
         endif()
-       
+
         file(MAKE_DIRECTORY "${py_dir}/python")
         execute_process(COMMAND ${CMAKE_COMMAND} -E tar "xf" ${py_file}
                         WORKING_DIRECTORY "${py_dir}/python")
