@@ -86,6 +86,81 @@
 </head>
 <body >
 <h1>Latest Changes</h1>
+<h2>2019-04-30 Python Processors</h2>
+<p>Inviwo Processors can now be implemented directly in Python by creating a python class and deriving from inviwopy.Processor.<br />
+Bellow follows an example of a python processor:</p>
+<div class="highlight"><pre><span></span><span class="c1"># Name: PythonExample </span>
+
+<span class="kn">import</span> <span class="nn">inviwopy</span> <span class="kn">as</span> <span class="nn">ivw</span>
+
+<span class="k">class</span> <span class="nc">PythonExample</span><span class="p">(</span><span class="n">ivw</span><span class="o">.</span><span class="n">Processor</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="n">ivw</span><span class="o">.</span><span class="n">Processor</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inport</span> <span class="o">=</span> <span class="n">ivw</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">VolumeInport</span><span class="p">(</span><span class="s2">&quot;inport&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addInport</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inport</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outport</span> <span class="o">=</span> <span class="n">ivw</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">VolumeOutport</span><span class="p">(</span><span class="s2">&quot;outport&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addOutport</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outport</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider</span> <span class="o">=</span> <span class="n">ivw</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">IntProperty</span><span class="p">(</span><span class="s2">&quot;slider&quot;</span><span class="p">,</span> <span class="s2">&quot;slider&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addProperty</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">processorInfo</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">ivw</span><span class="o">.</span><span class="n">ProcessorInfo</span><span class="p">(</span>
+            <span class="n">classIdentifier</span> <span class="o">=</span> <span class="s2">&quot;org.inviwo.PythonExample&quot;</span><span class="p">,</span>
+            <span class="n">displayName</span> <span class="o">=</span> <span class="s2">&quot;Python Example&quot;</span><span class="p">,</span> 
+            <span class="n">category</span> <span class="o">=</span> <span class="s2">&quot;Python&quot;</span><span class="p">,</span>
+            <span class="n">codeState</span> <span class="o">=</span> <span class="n">ivw</span><span class="o">.</span><span class="n">CodeState</span><span class="o">.</span><span class="n">Stable</span><span class="p">,</span>
+            <span class="n">tags</span> <span class="o">=</span> <span class="n">ivw</span><span class="o">.</span><span class="n">Tags</span><span class="o">.</span><span class="n">PY</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">getProcessorInfo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">PythonExample</span><span class="o">.</span><span class="n">processorInfo</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">initializeResources</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;init&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;process: &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outport</span><span class="o">.</span><span class="n">setData</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inport</span><span class="o">.</span><span class="n">getData</span><span class="p">())</span>
+</pre></div>
+
+
+<p>The initial '# Name:' comment is needed for Inviwo to know what python class that is should look for.<br />
+To register an Inviwo python processor one can put in in the <user setttings folder>/python_processor or by adding a <code>PythonProcessorFolderObserver</code> to an Inviwo module and have that observe a folder.</p>
+<h2>Python Applictions</h2>
+<p>It is now possible to run inviwo directly from python using a new inviwopyapp python package found in <code>apps/inviwopyapp</code>.<br />
+An example of running inviwo can be found in <code>apps/inviwopyapp/inviwo.py</code>. </p>
+<div class="highlight"><pre><span></span>    <span class="kn">import</span> <span class="nn">inviwopy</span> <span class="kn">as</span> <span class="nn">ivw</span>
+    <span class="kn">import</span> <span class="nn">inviwopyapp</span> <span class="kn">as</span> <span class="nn">qt</span>
+
+    <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+        <span class="c1"># Inviwo requires that a logcentral is created.</span>
+        <span class="n">lc</span> <span class="o">=</span> <span class="n">ivw</span><span class="o">.</span><span class="n">LogCentral</span><span class="p">()</span>
+
+        <span class="c1"># Create and register a console logger</span>
+        <span class="n">cl</span> <span class="o">=</span> <span class="n">ivw</span><span class="o">.</span><span class="n">ConsoleLogger</span><span class="p">()</span>
+        <span class="n">lc</span><span class="o">.</span><span class="n">registerLogger</span><span class="p">(</span><span class="n">cl</span><span class="p">)</span>
+
+        <span class="c1"># Create the inviwo application</span>
+        <span class="n">app</span> <span class="o">=</span> <span class="n">qt</span><span class="o">.</span><span class="n">InviwoApplicationQt</span><span class="p">()</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">registerModules</span><span class="p">()</span>
+
+        <span class="c1"># load a workspace</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">getPath</span><span class="p">(</span><span class="n">ivw</span><span class="o">.</span><span class="n">PathType</span><span class="o">.</span><span class="n">Workspaces</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;/boron.inv&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Make sure the app is ready</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">waitForPool</span><span class="p">()</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+        <span class="c1"># Save a snapshot</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Canvas</span><span class="o">.</span><span class="n">snapshot</span><span class="p">(</span><span class="s2">&quot;snapshot.png&quot;</span><span class="p">)</span> 
+
+        <span class="c1"># run the app event loop</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+
+
 <h2>2019-04-26 Parallel Coordinate Plot Update: flipped axes</h2>
 <p>Axes of the parallel coordinate plot can now be inverted via a double click with the left mouse button or using the corresponding <code>Invert Range</code> property of the axis. In addition, the filtering handles can be hidden if necessary (<code>Axes Settings</code> → <code>Handles Visible</code>).</p>
 <h2>2019-04-16 Moved DataFrame data structure from Plotting to new module (DataFrame)</h2>
