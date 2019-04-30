@@ -112,6 +112,7 @@ public:
     FloatProperty falllofPower_;
     FloatProperty lineWidth_;
     FloatProperty selectedLineWidth_;
+    FloatVec3Property selectedColor_;
     BoolProperty showFiltered_;
     FloatVec3Property filterColor_;
     FloatProperty filterAlpha_;

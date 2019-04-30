@@ -97,6 +97,9 @@ ParallelCoordinates::ParallelCoordinates()
     , falllofPower_("falllofPower", "Falloff Power", 1.0f, 0.01f, 3.f, 0.01f)
     , lineWidth_("lineWidth", "Line Width", 7.0f, 1.0f, 20.0f)
     , selectedLineWidth_("selectedLineWidth", "Selected Line Width", 10.0f, 1.0f, 20.0f)
+    , selectedColor_("selectedColor", "Selected Color", vec3(.2f, .2f, 1.0f), vec3(0.0f),
+                     vec3(1.0f), vec4(0.01f), InvalidationLevel::InvalidOutput,
+                     PropertySemantics::Color)
     , showFiltered_("showFiltered", "Show Filtered", false)
     , filterColor_("filterColor", "Filter Color", vec3(.2f, .2f, .2f), vec3(0.0f), vec3(1.0f),
                    vec4(0.01f), InvalidationLevel::InvalidOutput, PropertySemantics::Color)
@@ -166,6 +169,7 @@ ParallelCoordinates::ParallelCoordinates()
     lineSettings_.addProperty(falllofPower_);
     lineSettings_.addProperty(lineWidth_);
     lineSettings_.addProperty(selectedLineWidth_);
+    lineSettings_.addProperty(selectedColor_);
     lineSettings_.addProperty(showFiltered_);
     lineSettings_.addProperty(filterColor_);
     lineSettings_.addProperty(filterAlpha_);
@@ -586,7 +590,6 @@ void ParallelCoordinates::drawLines(size2_t size) {
     lineShader_.setUniform("additiveBlend", enableBlending);
     lineShader_.setUniform("subtractiveBelnding", blendMode_.get() == BlendMode::Sutractive);
     lineShader_.setUniform("fallofPower", falllofPower_.get());
-    lineShader_.setUniform("color", vec4{filterColor_.get(), filterAlpha_.get()});
     lineShader_.setUniform("filterIntensity", filterIntensity_.get());
 
     {
@@ -595,8 +598,10 @@ void ParallelCoordinates::drawLines(size2_t size) {
         lines_.indices.getRepresentation<BufferGL>()->bind();
 
         std::array<float, 3> width = {lineWidth_, lineWidth_, selectedLineWidth_};
-        std::array<float, 3> mixColor = {filterIntensity_, 0.0f, 0.0f};
-        std::array<float, 3> mixAlpha = {1.0, 0.0f, 0.0f};
+        std::array<vec4, 3> mixColor = {vec4{filterColor_.get(), filterAlpha_.get()}, vec4{1.0f},
+                                        vec4{selectedColor_.get(), 1}};
+        std::array<float, 3> mixWeight = {filterIntensity_, 0.0f, 1.0f};
+        std::array<float, 3> mixAlpha = {1.0, 0.0f, 1.0f};
 
         for (size_t i = showFiltered_ ? 0 : 1; i < lines_.offsets.size() - 1; ++i) {
             auto begin = lines_.offsets[i];
@@ -604,7 +609,8 @@ void ParallelCoordinates::drawLines(size2_t size) {
             if (end == begin) continue;
 
             lineShader_.setUniform("lineWidth", width[i]);
-            lineShader_.setUniform("mixColor", mixColor[i]);
+            lineShader_.setUniform("color", mixColor[i]);
+            lineShader_.setUniform("mixColor", mixWeight[i]);
             lineShader_.setUniform("mixAlpha", mixAlpha[i]);
 
             glMultiDrawElements(

@@ -12,17 +12,18 @@ vec4 triverts[4];
 float signValues[4];
 
 out vec4 lPickColor;
-out float lScalarMeta;
+out vec4 lMapedColor;
 out float lFalloffAlpha;
 
 uniform float lineWidth = 3;
 
+uniform sampler2D tf;
 
 void emitV(int i) {
     gl_Position = triverts[i];
     lFalloffAlpha = signValues[i];
     lPickColor = vec4(pickingIndexToColor(vPicking[i % 2]), vPicking[i % 2] == 0 ? 0.0 : 1.0);
-    lScalarMeta = vScalarMeta[i % 2];
+    lMapedColor = texture(tf, vec2(vScalarMeta[i % 2], 0.5f));
     EmitVertex();
 }
 
