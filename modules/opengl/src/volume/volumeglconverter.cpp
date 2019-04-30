@@ -30,6 +30,8 @@
 #include <modules/opengl/volume/volumeglconverter.h>
 #include <inviwo/core/datastructures/volume/volumerepresentation.h>
 
+#include <inviwo/core/util/rendercontext.h>
+
 namespace inviwo {
 
 std::shared_ptr<VolumeGL> VolumeRAM2GLConverter::createFrom(
@@ -53,6 +55,7 @@ std::shared_ptr<VolumeRAM> VolumeGL2RAMConverter::createFrom(
     auto volume = createVolumeRAM(volumeGL->getDimensions(), volumeGL->getDataFormat());
 
     if (volume) {
+        RenderContext::getPtr()->activateLocalRenderContext();
         volumeGL->getTexture()->download(volume->getData());
         return volume;
     } else {
@@ -64,10 +67,12 @@ std::shared_ptr<VolumeRAM> VolumeGL2RAMConverter::createFrom(
 
 void VolumeGL2RAMConverter::update(std::shared_ptr<const VolumeGL> volumeSrc,
                                    std::shared_ptr<VolumeRAM> volumeDst) const {
+    
     if (volumeSrc->getDimensions() != volumeDst->getDimensions()) {
         volumeDst->setDimensions(volumeSrc->getDimensions());
     }
 
+    RenderContext::getPtr()->activateLocalRenderContext();
     volumeSrc->getTexture()->download(volumeDst->getData());
 
     if (volumeDst->hasHistograms()) volumeDst->getHistograms()->setValid(false);
