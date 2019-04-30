@@ -110,7 +110,10 @@ WebBrowserProcessor::WebBrowserProcessor()
     };
     updateVisibility();
 
-    auto reload = [this]() { browser_->GetMainFrame()->LoadURL(getSource()); };
+    auto reload = [this]() {
+        browser_->GetMainFrame()->LoadURL(getSource());
+        reloadAllDataframes_ = true;
+    };
 
     sourceType_.onChange([this, reload, updateVisibility]() {
         updateVisibility();
@@ -273,20 +276,28 @@ void WebBrowserProcessor::process() {
     }
 
     if (dataFrames_.isReady()) {
-        auto frame = browser_->GetMainFrame();
-        size_t dataFrameNr = 0;
-        for (const auto& dataFrame : dataFrames_) {
-            nlohmann::json jsonString = *dataFrame;
-            std::stringstream data("var data = ", std::ios_base::app | std::ios_base::out);
-            data << jsonString.dump() << ";";
-            data << "var dataFrameNr = " << dataFrameNr++ << ";";
-            data << "onInviwoDataChanged(data, dataFrameNr);";
-            frame->ExecuteJavaScript(data.str(), frame->GetURL(), 0);
+        if (dataFrames_.isChanged() || reloadAllDataframes_) {
+            size_t dataFrameNr = 0;
+            for (auto d : dataFrames_) {
+                uploadDataframe(d, dataFrameNr++);
+            }
         }
+        reloadAllDataframes_ = false;
     }
 
     // Vertical flip of CEF output image
     cefToInviwoImageConverter_.convert(renderHandler_->getTexture2D(), outport_, &background_);
 }
+
+void WebBrowserProcessor::uploadDataframe(std::shared_ptr<const DataFrame> dataFrame, size_t dataFrameNr) {
+    auto frame = browser_->GetMainFrame();
+    nlohmann::json jsonString = *dataFrame;
+    std::stringstream data("var data = ", std::ios_base::app | std::ios_base::out);
+    data << jsonString.dump() << ";";
+    data << "var dataFrameNr = " << dataFrameNr << ";";
+    data << "onInviwoDataChanged(data, dataFrameNr);";
+    frame->ExecuteJavaScript(data.str(), frame->GetURL(), 0);
+}
+
 
 }  // namespace inviwo

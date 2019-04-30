@@ -141,8 +141,11 @@ protected:
     CefRefPtr<WebBrowserClient> browserClient_;
     CefRefPtr<CefBrowser> browser_;
     bool isBrowserLoading_ = true;
+    bool reloadAllDataframes_ = true;
 
     SingleFileObserver fileObserver_;
+
+    void uploadDataframe(std::shared_ptr<const DataFrame> dataFrame, size_t dataFrameNr);
 
     IMPLEMENT_REFCOUNTING(WebBrowserProcessor)
 };
