@@ -4,6 +4,7 @@
 set(dependencies
     #InviwoOpenGLModule
     InviwoDataFrameModule  
+    InviwoBrushingAndLinkingModule
     InviwoFontRenderingModule
 )
 set(EnableByDefault ON)

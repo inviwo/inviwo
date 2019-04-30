@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
@@ -79,6 +80,7 @@ private:
     DataFrameColumnProperty selectedColorAxis_;
     TransferFunctionProperty tf_;
     BoolProperty useSelectedColumnFromBrushing_;
+    BoolProperty autoSetTF_;
 };
 
 }  // namespace plot
