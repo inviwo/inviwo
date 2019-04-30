@@ -215,6 +215,7 @@ private:
     int hoveredAxis_ = -1;
 
     bool brushingDirty_;
+    bool updating_ = false;
 };
 
 }  // namespace plot

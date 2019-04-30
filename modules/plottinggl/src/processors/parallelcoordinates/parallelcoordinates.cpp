@@ -342,6 +342,7 @@ void ParallelCoordinates::createOrUpdateProperties() {
     if (!data->getNumberOfRows()) return;
     if (!data->getNumberOfColumns()) return;
 
+    updating_ = true;
     axisPicking_.resize(data->getNumberOfColumns());
     lines_.axisFlipped.resize(data->getNumberOfColumns());
     for (size_t i = 0; i < data->getNumberOfColumns(); i++) {
@@ -393,6 +394,7 @@ void ParallelCoordinates::createOrUpdateProperties() {
         axis.pcp->updateFromColumn(data->getColumn(axis.pcp->columnId()));
         axis.pcp->setParallelCoordinates(this);
     }
+    updating_ = false;
     updateBrushing();
 }
 
@@ -760,6 +762,8 @@ void ParallelCoordinates::axisPicked(PickingEvent* p, size_t pickedID, PickType 
 void ParallelCoordinates::updateBrushing(PCPAxisSettings&) { updateBrushing(); }
 
 void ParallelCoordinates::updateBrushing() {
+    if (updating_) return;
+
     brushingDirty_ = false;
 
     auto iCol = dataFrame_.getData()->getIndexColumn();
