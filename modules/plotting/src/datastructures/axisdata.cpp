@@ -49,6 +49,8 @@ AxisData::AxisData(const AxisSettings& s)
 
 bool AxisData::getVisible() const { return visible; }
 
+bool AxisData::getFlipped() const { return flipped; }
+
 vec4 AxisData::getColor() const { return color; }
 
 float AxisData::getWidth() const { return width; }

@@ -93,18 +93,30 @@ TEST_P(PropertyCreationTests, Create) {
         auto cComp = dynamic_cast<CompositeProperty*>(c.get());
         ASSERT_NE(cComp, nullptr);
 
-        EXPECT_EQ(sComp->isCollapsed(), cComp->isCollapsed());
+        EXPECT_EQ(sComp->isCollapsed(), cComp->isCollapsed())
+            << "Collapse state mismatch in property copy \'" << GetParam() << "\'";
 
         auto sProps = sComp->getPropertiesRecursive();
         auto cProps = cComp->getPropertiesRecursive();
-        ASSERT_EQ(sProps.size(), cProps.size());
+        ASSERT_EQ(sProps.size(), cProps.size())
+            << "Number of subproperties does not match for property copy \'" << GetParam()
+            << "\'";
 
         for (auto&& item : util::zip(sProps, cProps)) {
-            EXPECT_EQ(item.first()->getIdentifier(), item.second()->getIdentifier());
-            EXPECT_EQ(item.first()->getPath(), item.second()->getPath());
-            EXPECT_EQ(item.first()->getDisplayName(), item.second()->getDisplayName());
-            EXPECT_EQ(item.first()->getClassIdentifier(), item.second()->getClassIdentifier());
-            EXPECT_EQ(item.first()->getSemantics(), item.second()->getSemantics());
+            const std::string errorMsg = " in property copy \'" +
+                                         item.first()->getClassIdentifier() +
+                                         "\' (base property: \'" + GetParam() + "\')";
+
+            EXPECT_EQ(item.first()->getIdentifier(), item.second()->getIdentifier())
+                << "Identifier mismatch" << errorMsg;
+            EXPECT_EQ(item.first()->getPath(), item.second()->getPath())
+                << "Property path mismatch" << errorMsg;
+            EXPECT_EQ(item.first()->getDisplayName(), item.second()->getDisplayName())
+                << "DisplayName mismatch" << errorMsg;
+            EXPECT_EQ(item.first()->getClassIdentifier(), item.second()->getClassIdentifier())
+                << "ClassIdentifier mismatch" << errorMsg;
+            EXPECT_EQ(item.first()->getSemantics(), item.second()->getSemantics())
+                << "Semantics mismatch" << errorMsg;
         }
     }
 }

@@ -33,11 +33,11 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo ImageInformation::processorInfo_{
-    "org.inviwo.ImageInformation",  // Class identifier
-    "Image Information",            // Display name
-    "Information",                  // Category
-    CodeState::Stable,              // Code state
-    "CPU, Image, Layer",            // Tags
+    "org.inviwo.ImageInformation",     // Class identifier
+    "Image Information",               // Display name
+    "Information",                     // Category
+    CodeState::Stable,                 // Code state
+    "CPU, Image, Layer, Information",  // Tags
 };
 const ProcessorInfo ImageInformation::getProcessorInfo() const { return processorInfo_; }
 
@@ -51,7 +51,6 @@ ImageInformation::ImageInformation()
     addProperty(imageInfo_);
     addProperty(metaDataProperty_);
 
-    imageInfo_.setReadOnly(true);
     imageInfo_.setSerializationMode(PropertySerializationMode::None);
 
     setAllPropertiesCurrentStateAsDefault();
@@ -60,7 +59,7 @@ ImageInformation::ImageInformation()
 void ImageInformation::process() {
     auto image = image_.getData();
 
-    imageInfo_.updateForNewImage(*(image.get()));
+    imageInfo_.updateForNewImage(*image);
 
     metaDataProps_.updateProperty(metaDataProperty_, image->getMetaDataMap());
 }

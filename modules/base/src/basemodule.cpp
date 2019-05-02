@@ -50,6 +50,7 @@
 #include <modules/base/processors/meshclipping.h>
 #include <modules/base/processors/meshcreator.h>
 #include <modules/base/processors/meshexport.h>
+#include <modules/base/processors/meshinformation.h>
 #include <modules/base/processors/meshmapping.h>
 #include <modules/base/processors/meshsequenceelementselectorprocessor.h>
 #include <modules/base/processors/meshsource.h>
@@ -92,6 +93,8 @@
 #include <modules/base/properties/gaussianproperty.h>
 #include <modules/base/properties/imageinformationproperty.h>
 #include <modules/base/properties/layerinformationproperty.h>
+#include <modules/base/properties/meshinformationproperty.h>
+#include <modules/base/properties/bufferinformationproperty.h>
 #include <modules/base/properties/volumeinformationproperty.h>
 #include <modules/base/properties/sequencetimerproperty.h>
 
@@ -136,6 +139,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<LayerDistanceTransformRAM>();
     registerProcessor<MeshClipping>();
     registerProcessor<MeshCreator>();
+    registerProcessor<MeshInformation>();
     registerProcessor<MeshMapping>();
     registerProcessor<NoiseProcessor>();
     registerProcessor<PixelToBufferProcessor>();
@@ -192,6 +196,10 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProperty<BasisProperty>();
     registerProperty<ImageInformationProperty>();
     registerProperty<LayerInformationProperty>();
+    registerProperty<MeshInformationProperty>();
+    registerProperty<BufferInformationProperty>();
+    registerProperty<MeshBufferInformationProperty>();
+    registerProperty<IndexBufferInformationProperty>();
     registerProperty<VolumeInformationProperty>();
 
     registerProperty<Gaussian1DProperty>();

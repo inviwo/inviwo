@@ -51,6 +51,7 @@ public:
     bool useDataRange = true;
 
     bool visible = true;
+    bool flipped = false;
     vec4 color = vec4{0.0f, 0.0f, 0.0f, 1.0f};
     float width = 2.5f;
     Orientation orientation = Orientation::Horizontal;
@@ -70,6 +71,7 @@ public:
     virtual bool getUseDataRange() const override;
 
     virtual bool getVisible() const override;
+    virtual bool getFlipped() const override;
     virtual vec4 getColor() const override;
     virtual float getWidth() const override;
     virtual Orientation getOrientation() const override;

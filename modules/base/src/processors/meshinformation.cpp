@@ -26,48 +26,42 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
+#include <modules/base/processors/meshinformation.h>
 
 namespace inviwo {
 
-class Layer;
-class Image;
-
-/**
- * \ingroup properties
- * \brief A CompositeProperty holding properties to show a information about an image
- */
-class IVW_MODULE_BASE_API ImageInformationProperty : public CompositeProperty {
-public:
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
-
-    ImageInformationProperty(
-        std::string identifier, std::string displayName,
-        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
-        PropertySemantics semantics = PropertySemantics::Default);
-    ImageInformationProperty(const ImageInformationProperty& rhs);
-    ImageInformationProperty& operator=(const ImageInformationProperty& that);
-    virtual ImageInformationProperty* clone() const override;
-    virtual ~ImageInformationProperty() = default;
-
-    void updateForNewImage(const Image& image);
-
-    // Read-only used to show information
-    IntSize2Property dimensions_;
-    StringProperty imageType_;
-    IntSizeTProperty numColorLayers_;
-    CompositeProperty layers_;
-
-private:
-    auto props() { return std::tie(dimensions_, imageType_, numColorLayers_); }
-    auto props() const { return std::tie(dimensions_, imageType_, numColorLayers_); }
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo MeshInformation::processorInfo_{
+    "org.inviwo.MeshInformation",        // Class identifier
+    "Mesh Information",                  // Display name
+    "Information",                       // Category
+    CodeState::Stable,                   // Code state
+    "CPU, Mesh, Geometry, Information",  // Tags
 };
+const ProcessorInfo MeshInformation::getProcessorInfo() const { return processorInfo_; }
+
+MeshInformation::MeshInformation()
+    : Processor()
+    , mesh_("mesh")
+    , meshInfo_("dataInformation", "Data Information")
+    , metaDataProperty_("metaData", "Meta Data") {
+
+    addPort(mesh_);
+    addProperty(meshInfo_);
+    addProperty(metaDataProperty_);
+
+    meshInfo_.setSerializationMode(PropertySerializationMode::None);
+
+    setAllPropertiesCurrentStateAsDefault();
+}
+
+void MeshInformation::process() {
+    auto mesh = mesh_.getData();
+
+    meshInfo_.updateForNewMesh(*mesh);
+
+    metaDataProps_.updateProperty(metaDataProperty_, mesh->getMetaDataMap());
+}
 
 }  // namespace inviwo

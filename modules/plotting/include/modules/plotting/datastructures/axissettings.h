@@ -46,11 +46,12 @@ public:
 
     AxisSettings() = default;
     virtual ~AxisSettings() = default;
-   
+
     virtual dvec2 getRange() const = 0;
     virtual bool getUseDataRange() const = 0;
 
     virtual bool getVisible() const = 0;
+    virtual bool getFlipped() const = 0;
     virtual vec4 getColor() const = 0;
     virtual float getWidth() const = 0;
 
@@ -60,7 +61,7 @@ public:
     // caption besides axis
     virtual const std::string& getCaption() const = 0;
     virtual const PlotTextSettings& getCaptionSettings() const = 0;
-    
+
     // labels showing numbers along axis
     virtual const std::vector<std::string>& getLabels() const = 0;
     virtual const PlotTextSettings& getLabelSettings() const = 0;
@@ -69,10 +70,8 @@ public:
     virtual const MinorTickSettings& getMinorTicks() const = 0;
 
     // Utility functions
-    bool isAxisFlipped() const;
     bool isVertical() const;
 };
-
 
 IVW_MODULE_PLOTTING_API bool operator==(const AxisSettings& a, const AxisSettings& b);
 IVW_MODULE_PLOTTING_API bool operator!=(const AxisSettings& a, const AxisSettings& b);

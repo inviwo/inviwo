@@ -184,6 +184,7 @@ struct AxisLabels {
         labelsSettings_.check(*this, settings.getLabelSettings());
         major_.check(*this, settings.getMajorTicks());
         tickDirection_.check(*this, tickDirection);
+        flipped_.check(*this, settings.getFlipped());
 
         if (positions_.empty()) {
             auto& atlas = getAtlas(settings, start, end, renderer);
@@ -208,6 +209,7 @@ protected:
     Guard<std::vector<std::string>, MPAtlas> labels_;
     Guard<MajorTickData, MPAtlas, MPLabel> major_;
     Guard<vec3, MPLabel> tickDirection_;
+    Guard<bool, MPLabel> flipped_;
 };
 
 struct IVW_MODULE_PLOTTINGGL_API AxisCaption {

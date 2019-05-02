@@ -86,6 +86,30 @@
 </head>
 <body >
 <h1>Latest Changes</h1>
+<h2>2019-04-26 Parallel Coordinate Plot Update: flipped axes</h2>
+<p>Axes of the parallel coordinate plot can now be inverted via a double click with the left mouse button or using the corresponding <code>Invert Range</code> property of the axis. In addition, the filtering handles can be hidden if necessary (<code>Axes Settings</code> → <code>Handles Visible</code>).</p>
+<h2>2019-04-16 Moved DataFrame data structure from Plotting to new module (DataFrame)</h2>
+<p>Types of breaking changes:</p>
+<div class="highlight"><pre><span></span>    <span class="cp">#include</span> <span class="cpf">&lt;modules/plotting/datastructures/dataframe.h&gt;</span><span class="cp"></span>
+    <span class="cp">#include</span> <span class="cpf">&lt;modules/plotting/datastructures/dataframeutil.h&gt;</span><span class="cp"></span>
+    <span class="cp">#include</span> <span class="cpf">&lt;modules/plotting/datastructures/column.h&gt;</span><span class="cp"></span>
+
+    <span class="n">plot</span><span class="o">::</span><span class="n">DataFrame</span>
+    <span class="n">plot</span><span class="o">::</span><span class="n">Column</span>
+</pre></div>
+
+
+<p>which need to be changed to </p>
+<div class="highlight"><pre><span></span>    <span class="cp">#include</span> <span class="cpf">&lt;inviwo/dataframe/datastructures/dataframe.h&gt;</span><span class="cp"></span>
+    <span class="cp">#include</span> <span class="cpf">&lt;inviwo/dataframe/datastructures/dataframeutil.h&gt;</span><span class="cp"></span>
+    <span class="cp">#include</span> <span class="cpf">&lt;inviwo/dataframe/datastructures/column.h&gt;</span><span class="cp"></span>
+    <span class="c1">// Namespace plot removed</span>
+    <span class="n">DataFrame</span>
+    <span class="n">Column</span>
+</pre></div>
+
+
+<p>Also added a reader for JSON-files which outputs a DataFrame.</p>
 <h2>2019-03-06</h2>
 <p>New processor <code>Geometry Entry Exit Points</code> generates entry point and exit point images from any closed mesh to be used in raycasting. The positions of the input mesh are directly mapped to texture coordinates of a volume. This enables volume rendering within arbitrary bounding geometry.</p>
 <h2>2019-02-24 Unified line rendering</h2>

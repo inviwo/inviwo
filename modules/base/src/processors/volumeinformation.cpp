@@ -42,7 +42,7 @@ const ProcessorInfo VolumeInformation::processorInfo_{
     "Volume Information",            // Display name
     "Information",                   // Category
     CodeState::Stable,               // Code state
-    "CPU, Volume",                   // Tags
+    "CPU, Volume, Information",      // Tags
 };
 const ProcessorInfo VolumeInformation::getProcessorInfo() const { return processorInfo_; }
 
@@ -116,7 +116,7 @@ VolumeInformation::VolumeInformation()
 void VolumeInformation::process() {
     auto volume = volume_.getData();
 
-    volumeInfo_.updateForNewVolume(*(volume.get()));
+    volumeInfo_.updateForNewVolume(*volume);
 
     auto volumeRAM = volume->getRepresentation<VolumeRAM>();
 

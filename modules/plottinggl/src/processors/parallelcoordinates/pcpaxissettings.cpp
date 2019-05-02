@@ -70,15 +70,18 @@ std::string PCPAxisSettings::getClassIdentifier() const { return classIdentifier
 PCPAxisSettings::PCPAxisSettings(std::string identifier, std::string displayName, size_t columnId)
     : BoolCompositeProperty(identifier, displayName, true)
     , usePercentiles("usePercentiles", "Use Percentiles", false)
+    , invertRange("invertRange", "Invert Range")
     , range("range", "Axis Range")
     , columnId_{columnId} {
 
     addProperty(range);
+    addProperty(invertRange);
     addProperty(usePercentiles);
 
     setCollapsed(true);
     setSerializationMode(PropertySerializationMode::All);
     range.setSerializationMode(PropertySerializationMode::All);
+    invertRange.setSerializationMode(PropertySerializationMode::All);
     usePercentiles.setSerializationMode(PropertySerializationMode::All);
 
     range.onChange([this]() {
@@ -90,10 +93,12 @@ PCPAxisSettings::PCPAxisSettings(std::string identifier, std::string displayName
 PCPAxisSettings::PCPAxisSettings(const PCPAxisSettings& rhs)
     : BoolCompositeProperty(rhs)
     , usePercentiles{rhs.usePercentiles}
+    , invertRange(rhs.invertRange)
     , range{rhs.range}
     , columnId_{rhs.columnId_} {
 
     addProperty(range);
+    addProperty(invertRange);
     addProperty(usePercentiles);
 
     range.onChange([this]() {
@@ -144,16 +149,6 @@ void PCPAxisSettings::updateFromColumn(std::shared_ptr<const Column> col) {
             at = [vec = &dataVector](size_t idx) { return static_cast<double>(vec->at(idx)); };
         });
 
-    auto updateLables = [this]() {
-        const auto tickmarks = plot::getMajorTickPositions(major_, range);
-        labels_.clear();
-        const auto& format = pcp_->labelFormat_.get();
-        std::transform(tickmarks.begin(), tickmarks.end(), std::back_inserter(labels_),
-                       [&](auto tick) { return fmt::sprintf(format, tick); });
-    };
-    labelUpdateCallback_ = pcp_->labelFormat_.onChangeScoped(updateLables);
-    updateLables();
-
     range.propertyModified();
 }
 
@@ -198,6 +193,10 @@ double PCPAxisSettings::getNormalized(double v) const {
 double PCPAxisSettings::getNormalizedAt(size_t idx) const { return getNormalized(at(idx)); }
 
 double PCPAxisSettings::getValue(double v) const {
+    if (invertRange) {
+        v = 1.0 - v;
+    }
+
     const auto rangeTmp = range.getRange();
     if (v <= 0) {
         return rangeTmp.x;
@@ -241,6 +240,24 @@ void PCPAxisSettings::moveHandle(bool upper, double mouseY) {
     range.set(rangeTmp);
 }
 
+void PCPAxisSettings::setParallelCoordinates(ParallelCoordinates* pcp) {
+    pcp_ = pcp;
+    labelSettings_.setSettings(this);
+    captionSettings_.setSettings(this);
+    major_.setSettings(this);
+    minor_.setSettings(this);
+
+    auto updateLabels = [this]() {
+        const auto tickmarks = plot::getMajorTickPositions(major_, range);
+        labels_.clear();
+        const auto& format = pcp_->labelFormat_.get();
+        std::transform(tickmarks.begin(), tickmarks.end(), std::back_inserter(labels_),
+                       [&](auto tick) { return fmt::sprintf(format, tick); });
+    };
+    labelUpdateCallback_ = pcp_->labelFormat_.onChangeScoped(updateLabels);
+    updateLabels();
+}
+
 void PCPAxisSettings::updateBrushing() {
     if (!col_) return;
 
@@ -277,6 +294,8 @@ dvec2 PCPAxisSettings::getRange() const {
 bool PCPAxisSettings::getUseDataRange() const { return false; }
 
 bool PCPAxisSettings::getVisible() const { return BoolCompositeProperty::getVisible(); }
+
+bool PCPAxisSettings::getFlipped() const { return invertRange.get(); }
 
 vec4 PCPAxisSettings::getColor() const {
     const auto hover = pcp_->getHoveredAxis() == static_cast<int>(columnId_);
@@ -320,12 +339,15 @@ bool PCPCaptionSettings::isEnabled() const {
 }
 vec4 PCPCaptionSettings::getColor() const { return settings_->pcp_->captionColor_; }
 float PCPCaptionSettings::getPosition() const {
-    return settings_->pcp_->captionPosition_.get() == ParallelCoordinates::LabelPosition::Above
+    return (settings_->pcp_->captionPosition_.get() == ParallelCoordinates::LabelPosition::Above) !=
+                   settings_->getFlipped()
                ? 1.0f
                : 0.0f;
 }
 
-vec2 PCPCaptionSettings::getOffset() const { return {0.0f, settings_->pcp_->captionOffset_}; }
+vec2 PCPCaptionSettings::getOffset() const {
+    return {0.0f, settings_->pcp_->captionOffset_ * (settings_->getFlipped() ? -1.0f : 1.0f)};
+}
 float PCPCaptionSettings::getRotation() const { return 270.f; }
 const FontSettings& PCPCaptionSettings::getFont() const {
     return settings_->pcp_->captionSettings_;
