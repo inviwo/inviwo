@@ -103,7 +103,11 @@ TFSelector::TFSelector()
                 tfPresets_.getPropertyByIdentifier(selectedTF_.getSelectedIdentifier()));
             tfOut_.set(p->get());
             // ensure that if the TF is modified, the output is in sync
-            p->onChange([this, p]() { tfOut_.set(p->get()); });
+            p->onChange([this, p]() {
+                if (p->getIdentifier() == selectedTF_.getSelectedIdentifier()) {
+                    tfOut_.set(p->get());
+                }
+            });
         }
     });
 
