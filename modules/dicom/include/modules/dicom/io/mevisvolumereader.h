@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_MEVISVOLUMEREADER_H
@@ -45,8 +45,8 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <DataStructureAndEncodingDefinition/gdcmTag.h>
-#include <DataStructureAndEncodingDefinition/gdcmAttribute.h>
+#include <gdcmTag.h>
+#include <gdcmAttribute.h>
 #include <warn/pop>
 
 #include <functional>
@@ -87,26 +87,26 @@ public:
         virtual void updateRepresentation(std::shared_ptr<VolumeRepresentation> dest) const override {
             auto volumeDst = std::static_pointer_cast<VolumeRAM>(dest);
             auto data = volumeDst->getData();
-            
+
             readDataInto(reinterpret_cast<void*>(data));
-            
+
         }
-        
+
         using type = std::shared_ptr<VolumeRAM>;
-        
+
         template <class T>
         std::shared_ptr<VolumeRAM> dispatch() const {
             typedef typename T::type F;
-            
+
             const std::size_t size = dimension_[0] * dimension_[1] * dimension_[2];
-            
+
             auto data = util::make_unique<F[]>(size);
             readDataInto(reinterpret_cast<char*>(data.get()));
             auto repr = std::make_shared<VolumeRAMPrecision<F>>(data.get(), dimension_);
             data.release();
             return repr;
         }
-        
+
 private:
         void readDataInto(void* destination) const;
         std::string tif_file_;

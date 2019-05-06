@@ -21,7 +21,7 @@
 	#define GDCM_ALWAYS_TRACE_MACRO
 #endif
 
-#include <Common/gdcmTrace.h>
+#include <gdcmTrace.h>
 
 namespace inviwo {
 
@@ -203,7 +203,7 @@ void enable_libtiff4_errorlogging(void)
 		/*
 		TIFFSetErrorHandler((TIFFErrorHandler)mevisLibtiffErrorHandler);
 		TIFFSetWarningHandler((TIFFErrorHandler)mevisLibtiffWarningHandler);
-		
+
 #if defined(IVW_DEBUG)
 		// currently crashes inviwo in 64bit build
 		TIFFError("Test", "libtiff error logging available.%s %i %s", "test", 32, "test");

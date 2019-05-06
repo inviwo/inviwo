@@ -62,10 +62,10 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <MediaStorageAndFileFormat/gdcmImage.h>
-#include <MediaStorageAndFileFormat/gdcmImageReader.h>
-#include <DataStructureAndEncodingDefinition/gdcmAttribute.h>
-#include <DataStructureAndEncodingDefinition/gdcmMediaStorage.h>
+#include <gdcmImage.h>
+#include <gdcmImageReader.h>
+#include <gdcmAttribute.h>
+#include <gdcmMediaStorage.h>
 #include <warn/pop>
 
 namespace inviwo {
@@ -94,21 +94,21 @@ std::shared_ptr<Volume> MevisVolumeReader::readData(const std::string& filePath)
 	if (false == this->setFilenames(filePath)) {
 		throw DataReaderException("Error could not find tif or dcm file to read Mevis DICOM format.");
 	}
-	
+
 	// c to disable strip chopping
 	TIFF *tiffimage = TIFFOpen(tif_file_.c_str(), "rc");
 	if (nullptr == tiffimage)
 	{
 		throw DataReaderException("Invalid tif file (" + tif_file_ + ").");
 	}
-	
+
 	tifRAII closeTiffImg([&]() {
 		if (nullptr != tiffimage) {
 			TIFFClose(tiffimage);
 			tiffimage = nullptr;
 		}
 	});
-	
+
 	unsigned int samplecount = 1;
 	unsigned int bitspersample = 16;
 	{ // get some info out of the tif file
@@ -124,18 +124,18 @@ std::shared_ptr<Volume> MevisVolumeReader::readData(const std::string& filePath)
 		{
 			dimension_.z = 1;
 		}
-		
+
 		if (!TIFFGetField(tiffimage, TIFFTAG_SAMPLESPERPIXEL, &samplecount))
 		{
 			throw DataReaderException("failed to get TIFFTAG_SAMPLESPERPIXEL.");
 		}
-		
+
 		if (!TIFFGetField(tiffimage, TIFFTAG_BITSPERSAMPLE, &bitspersample))
 		{
 			throw DataReaderException("failed to get TIFFTAG_BITSPERSAMPLE.");
 		}
 	}
-	
+
 	// the gdcm image reader *will* fail - saying no pixel data found
 	gdcm::ImageReader reader;
 	reader.SetFileName(dcm_file_.c_str());
@@ -147,14 +147,14 @@ std::shared_ptr<Volume> MevisVolumeReader::readData(const std::string& filePath)
 		LogInfo("You can savely ignore the last \"no pixel data found!\" warning from gdcm.");
 		// as a alternative call gdcm::Trace::WarningOff(); before reader.Read()
 	}
-	
+
 	// due to conflicting information from tif/dcm and problems like the one mentioned below
 	// we trust the gdcm library and do only minimal comparative checking between tif and dcm.
 	// :: voxel spacing problem:
 	//  - http://sourceforge.net/p/gdcm/mailman/gdcm-developers/thread/31ddba770805020102l17919e28h5f7f9b6f79ef46e6@mail.gmail.com/
 	//  - http://gdcm.sourceforge.net/wiki/index.php/Using_GDCM_API
 	//  - http://itk-users.7.n7.nabble.com/How-to-calculate-volume-of-an-image-td17195.html
-	
+
 	// to prevent code duplication call our gdcm reader
 	GdcmVolumeReader gdcmreader;
 	gdcm::Image &image = reader.GetImage();
@@ -162,38 +162,38 @@ std::shared_ptr<Volume> MevisVolumeReader::readData(const std::string& filePath)
 	std::shared_ptr<Volume> volume(gdcmreader.generateVolume(image, file));
 
 	// TODO: check that everything else is also freed (reader instance that got cloned in generateVolume...)
- 
-	
+
+
 
 	this->format = (gdcmreader.getFormat());
-	
+
 	{ // compare gdcm's info to that stored in the tif file
 		if ((this->dimension_) != gdcmreader.getDimension()) {
 			LogInfo("tif volume size: " << dimension_.x << "x" << dimension_.y << "x" << dimension_.z);
 			throw DataReaderException("tif and dcm info differ (size)");
 		}
-		
+
 		if (samplecount != format->getComponents()) {
 			LogInfo("tif component/sample count: " << samplecount);
 			throw DataReaderException("tif and dcm info differ (components)");
 		}
-		
+
 		if (bitspersample != 8 * (format->getSize())) {
 			LogInfo("tif bitspersample: " << bitspersample);
 			throw DataReaderException("tif and dcm info differ (bitspersample)");
 		}
 	}
-	
+
 	closeTiffImg.done();
-	
-	
+
+
 	auto vd = std::make_shared<VolumeDisk>(tif_file_, dimension_, format);
 	vd->setLoader(new MevisVolumeRAMLoader(tif_file_, dimension_, format));
 	volume->addRepresentation(vd);
-	
+
 	return volume;
 }
-	
+
 void MevisVolumeRAMLoader::readDataInto(void* destination) const {
 	// currently only packed, tiled volume data is supported
 
@@ -314,11 +314,11 @@ void MevisVolumeRAMLoader::readDataInto(void* destination) const {
 			}
 		}
 	}
-		
+
 	FreeTileBuf.done();
 	closeTiffImg.done();
 }
-	
+
 bool MevisVolumeReader::setFilenames(std::string filePath) {
 	if (!filesystem::fileExists(filePath)) {
 		std::string newPath = filesystem::addBasePath(filePath);
@@ -365,5 +365,5 @@ bool MevisVolumeReader::setFilenames(std::string filePath) {
 
 	return true;
 }
-	
+
 } // namespace inviwo

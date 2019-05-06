@@ -44,7 +44,7 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <MediaStorageAndFileFormat/gdcmImageReader.h>
+#include <gdcmImageReader.h>
 #include <warn/pop>
 
 #include <string>
