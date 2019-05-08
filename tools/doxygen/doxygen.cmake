@@ -135,7 +135,7 @@ function(ivw_private_make_doxyfile)
 
     string(TOLOWER ${ARG_NAME} name_lower)
 
-    string(JOIN " \\ \n" example_paths ${IVW_EXTERNAL_MODULES} )
+    ivw_private_format_doxy_arg(example_paths ${IVW_EXTERNAL_MODULES})
 
     set(doxyfile "\
 PROJECT_NAME           = \"${ARG_NAME}\"
