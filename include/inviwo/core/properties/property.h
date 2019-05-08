@@ -122,7 +122,7 @@ class PropertyOwner;
  *  * __PropertyWidget__: A property can have one or multiple PropertyWidgets. The widget are used
  *    in the user interface to implement interactivity
  */
-class IVW_CORE_API Property : public PropertyObservable, public Serializable, public MetaDataOwner {
+class IVW_CORE_API Property : public PropertyObservable, public virtual Serializable, public MetaDataOwner {
 public:
     virtual std::string getClassIdentifier() const = 0;
 
