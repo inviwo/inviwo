@@ -53,7 +53,8 @@ IVW_MODULE_PLOTTING_API std::vector<double> getMinorTickPositions(
 /**
  * \brief returns tick positions along the axis range defined in the axis property
  *
- * @param property   axis property used for tick settings
+ * @param settings   axis property used for tick settings
+ * @param maxTicks maximum number of ticks
  * @return positions of tick marks
  */
 inline std::vector<double> getMajorTickPositions(const AxisSettings& settings,
@@ -84,7 +85,7 @@ IVW_MODULE_PLOTTING_API std::vector<std::pair<double, vec3>> getLabelPositions3D
  * \brief creates a mesh containing major ticks for an axis extending from start to
  * end position
  *
- * @param property    axis property used for tick settings
+ * @param settings    axis property used for tick settings
  * @param startPos  start position of axis
  * @param endPos    end position of axis
  * @return mesh containing of ticks, each tick is represented by two positions and matching colors

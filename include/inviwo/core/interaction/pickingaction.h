@@ -66,7 +66,7 @@ public:
     /**
      * Returns the local picking index, the local index converted from the global index by
      * subtracting the start id making it range from 0 to size-1
-     * \param id the global picking index
+     * \param globalId the global picking index
      */
     size_t getLocalPickingId(size_t globalId = 0) const;
 

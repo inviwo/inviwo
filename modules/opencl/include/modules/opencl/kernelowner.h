@@ -78,11 +78,11 @@ public:
      * Only provide the file name as the file will be searched for in all the include paths.
      *
      * @note Do not delete the returned kernel
-     * @param filePath Name of the file containing kernel, i.e. myfile.cl
+     * @param fileName Name of the file containing kernel, i.e. myfile.cl
      * @param kernelName Name of kernel
      * @param header Added before file contents. Example usage "#define DataType float \n"
      * @param defines Defines to be set when building kernel
-     * @return bool Kernel if successfully built, otherwise nullptr
+     * @return Kernel if successfully built, otherwise nullptr
      */
     cl::Kernel* addKernel(const std::string& fileName, const std::string& kernelName,
                           const std::string& header = "", const std::string& defines = "");
@@ -90,7 +90,7 @@ public:
     /**
      * \brief Remove kernel and effectively stop observing the kernel
      *
-     * @param cl::Kernel * kernel Kernel owned by the KernelOwner
+     * @param kernel Kernel owned by the KernelOwner
      */
     void removeKernel(cl::Kernel* kernel);
 

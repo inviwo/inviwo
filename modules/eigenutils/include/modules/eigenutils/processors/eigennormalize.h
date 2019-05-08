@@ -65,7 +65,7 @@ namespace inviwo {
  * \brief A processor to normalize an Eigen::MatrixXf
  * A processor to normalize an Eigen::MatrixXf, supports following methods:
  * * MaxElement: Divide in element in the matrix by the value of the largest element
- * * MniMaxElement: Normalize each element based on the min and max value of the matrix
+ * * MinMaxElement: Normalize each element based on the min and max value of the matrix
  * * Normalize: Uses the Eigens provided normalization method
  */
 class IVW_MODULE_EIGENUTILS_API EigenNormalize : public Processor {

@@ -142,7 +142,8 @@ struct DispatchHelper<Result, B, E, std::tuple<Formats...>> {
  * # Example
  * \snippet src/core/datastructures/buffer/bufferram.cpp Format Dispatching Example
  *
- * @param callable This should be a struct with a generic call operator taking two template
+ * @param format ID if for the dataformat to dispatch on
+ * @param obj This should be a struct with a generic call operator taking two template
  * arguments the result type and DataFormat type. The callable will be called with the supplied
  * arguments (`args`).
  * @param args Any arguments that should be passed on to the lambda.

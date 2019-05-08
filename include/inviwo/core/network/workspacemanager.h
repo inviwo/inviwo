@@ -88,6 +88,7 @@ public:
      *      The same refPath should be given when loading. Most often this should be the path to the
      *      saved file.
      * \param exceptionHandler A callback for handling errors.
+     * \param mode to indicate if we are saving to disk or undo-stack
      */
     void save(std::ostream& stream, const std::string& refPath,
               const ExceptionHandler& exceptionHandler = StandardExceptionHandler(),
@@ -97,6 +98,7 @@ public:
      * Save the current workspace to a file
      * \param path the file to save into.
      * \param exceptionHandler A callback for handling errors.
+     * \param mode to indicate if we are saving to disk or undo-stack
      */
     void save(const std::string& path,
               const ExceptionHandler& exceptionHandler = StandardExceptionHandler(),
