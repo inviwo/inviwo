@@ -503,6 +503,21 @@ function(ivw_create_module)
     add_library(${${mod}_alias} ALIAS ${${mod}_target})
 
     get_filename_component(base_parent ${${mod}_base} PATH)
+
+    #NICE NAME FOLDER START
+    if(${base_parent} STREQUAL ${IVW_ROOT_DIR})
+        set(nicename "core")
+    else()
+        get_filename_component(nicename ${${mod}_base} NAME )       
+        if(${nicename} STREQUAL modules)
+            get_filename_component(moddir ${${mod}_base} DIRECTORY )
+            get_filename_component(nicename ${moddir} NAME )      
+        endif()
+    endif()
+    ivw_folder(${${mod}_target} modules/${nicename})
+    #NICE NAME FOLDER END
+
+
     target_include_directories(${${mod}_target} PUBLIC 
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
