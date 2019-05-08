@@ -135,6 +135,8 @@ function(ivw_private_make_doxyfile)
 
     string(TOLOWER ${ARG_NAME} name_lower)
 
+    string(JOIN " \\ \n" example_paths ${IVW_EXTERNAL_MODULES} )
+
     set(doxyfile "\
 PROJECT_NAME           = \"${ARG_NAME}\"
 PROJECT_NUMBER         = \"${IVW_VERSION}\"
@@ -208,7 +210,8 @@ USE_MDFILE_AS_MAINPAGE = ${IVW_ROOT_DIR}/README.md
 
 HTML_EXTRA_FILES       = ${ivw_doxy_dir}/style/img_downArrow.png
 
-EXAMPLE_PATH           = ${IVW_ROOT_DIR}
+EXAMPLE_PATH           = ${IVW_ROOT_DIR} \\
+                         ${example_paths} 
 
 HTML_COLORSTYLE_HUE    = 240
 HTML_COLORSTYLE_SAT    = 6
