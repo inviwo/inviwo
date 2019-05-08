@@ -35,7 +35,26 @@
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/formatdispatching.h>
 
+#include <tuple>
+#include <variant>
+
 namespace inviwo {
+
+
+    template <typename T>
+    class LayerRAMPrecision;
+
+    template <typename Tuple>
+    struct get_layer_variant;
+
+    template <typename... Ts>
+    struct get_layer_variant<std::tuple<Ts...>> {
+        using variant = std::variant<LayerRAMPrecision<Ts>*...>;
+        using const_variant = std::variant<const LayerRAMPrecision<Ts>*...>;
+    };
+
+    using LayerVariant = get_layer_variant<DefaultDataFormatTypes>::variant;
+    using ConstLayerVariant = get_layer_variant<DefaultDataFormatTypes>::const_variant;
 
 /**
  * \ingroup datastructures
@@ -56,6 +75,9 @@ public:
 
     virtual void* getData() = 0;
     virtual const void* getData() const = 0;
+
+    virtual LayerVariant getVariant() = 0;
+    virtual ConstLayerVariant getVariant() const = 0;
 
     // Takes ownership of data pointer
     virtual void setData(void* data, size2_t dimensions) = 0;

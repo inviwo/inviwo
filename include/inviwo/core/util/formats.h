@@ -534,6 +534,18 @@ template<> constexpr DataFormatId DataVec4UInt64::id() { return DataFormatId::Ve
 
 // clang-format on
 
+namespace detail {
+
+    template <typename Tuple>
+    struct get_types;
+
+    template <typename... DataFormats>
+    struct get_types<std::tuple<DataFormats...>>
+    {
+        using type = std::tuple<typename DataFormats::type...>;
+    };
+}
+
 using DefaultDataFormats = std::tuple<
     DataFloat16, DataFloat32, DataFloat64, DataInt8, DataInt16, DataInt32, DataInt64, DataUInt8,
     DataUInt16, DataUInt32, DataUInt64, DataVec2Float16, DataVec2Float32, DataVec2Float64,
@@ -543,9 +555,12 @@ using DefaultDataFormats = std::tuple<
     DataVec3UInt64, DataVec4Float16, DataVec4Float32, DataVec4Float64, DataVec4Int8, DataVec4Int16,
     DataVec4Int32, DataVec4Int64, DataVec4UInt8, DataVec4UInt16, DataVec4UInt32, DataVec4UInt64>;
 
+using DefaultDataFormatTypes = detail::get_types<DefaultDataFormats>::type;
+
 namespace util {
 
 namespace detail {
+
 
 template <typename T, typename Formats>
 struct HasDataFormatImpl;

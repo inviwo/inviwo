@@ -37,7 +37,26 @@
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/formatdispatching.h>
 
+#include <tuple>
+#include <variant>
+
 namespace inviwo {
+
+
+    template <typename T>
+    class VolumeRAMPrecision;
+
+    template <typename Tuple>
+    struct get_volume_variant;
+
+    template <typename... Ts>
+    struct get_volume_variant<std::tuple<Ts...>> {
+        using variant = std::variant<VolumeRAMPrecision<Ts>*...>;
+        using const_variant = std::variant<const VolumeRAMPrecision<Ts>*...>;
+    };
+
+    using VolumeVariant = get_volume_variant<DefaultDataFormatTypes>::variant;
+    using ConstVolumeVariant = get_volume_variant<DefaultDataFormatTypes>::const_variant;
 
 /**
  * \ingroup datastructures
@@ -54,6 +73,9 @@ public:
     virtual const void* getData() const = 0;
     virtual void* getData(size_t) = 0;
     virtual const void* getData(size_t) const = 0;
+
+    virtual VolumeVariant getVariant() = 0;
+    virtual ConstVolumeVariant getVariant() const = 0;
 
     /**
      * \brief Takes ownership of data pointer

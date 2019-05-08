@@ -59,6 +59,10 @@ public:
 
     virtual void* getData() override;
     virtual const void* getData() const override;
+
+    virtual LayerVariant getVariant() override { return LayerVariant{this}; };
+    virtual ConstLayerVariant getVariant() const override { return ConstLayerVariant{this}; };
+
     virtual void setData(void* data, size2_t dimensions) override;
 
     /**

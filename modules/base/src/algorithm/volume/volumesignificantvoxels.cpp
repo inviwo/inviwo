@@ -36,7 +36,8 @@
 namespace inviwo {
 
 size_t util::volumeSignificantVoxels(const VolumeRAM* volume, IgnoreSpecialValues ignore) {
-    return volume->dispatch<size_t>([&ignore](auto vr) -> size_t {
+
+    return std::visit([&ignore](auto vr) -> size_t {
         using ValueType = util::PrecisionValueType<decltype(vr)>;
 
         const auto data = vr->getDataTyped();
@@ -49,9 +50,9 @@ size_t util::volumeSignificantVoxels(const VolumeRAM* volume, IgnoreSpecialValue
             });
         } else {
             return std::count_if(data, data + size,
-                                 [](const auto& v) { return util::any(v != ValueType(0)); });
+                [](const auto& v) { return util::any(v != ValueType(0)); });
         }
-    });
+    }, volume->getVariant());
 }
 
 }  // namespace inviwo

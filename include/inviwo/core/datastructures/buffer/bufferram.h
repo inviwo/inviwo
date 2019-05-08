@@ -35,7 +35,27 @@
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/formatdispatching.h>
 
+#include <tuple>
+#include <variant>
+
 namespace inviwo {
+
+template <typename T, BufferTarget Target>
+class BufferRAMPrecision;
+
+template <typename Tuple>
+struct get_buffer_variant;
+
+template <typename... Ts>
+struct get_buffer_variant<std::tuple<Ts...>> {
+    using variant = std::variant<BufferRAMPrecision<Ts, BufferTarget::Data>*...,
+                                 BufferRAMPrecision<Ts, BufferTarget::Index>*...>;
+    using const_variant = std::variant<const BufferRAMPrecision<Ts, BufferTarget::Data>*...,
+                                       const BufferRAMPrecision<Ts, BufferTarget::Index>*...>;
+};
+
+using BufferVariant = get_buffer_variant<DefaultDataFormatTypes>::variant;
+using ConstBufferVariant = get_buffer_variant<DefaultDataFormatTypes>::const_variant;
 
 /**
  * \ingroup datastructures
@@ -51,6 +71,9 @@ public:
 
     virtual void* getData() = 0;
     virtual const void* getData() const = 0;
+
+    virtual BufferVariant getVariant() = 0;
+    virtual ConstBufferVariant getVariant() const = 0;
 
     virtual void reserve(size_t size) = 0;
     virtual void clear() = 0;

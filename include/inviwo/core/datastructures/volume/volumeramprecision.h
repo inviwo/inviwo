@@ -62,6 +62,9 @@ public:
     virtual void* getData(size_t) override;
     virtual const void* getData(size_t) const override;
 
+    virtual VolumeVariant getVariant() override { return VolumeVariant{this}; };
+    virtual ConstVolumeVariant getVariant() const override { return ConstVolumeVariant{this}; };
+
     virtual void setData(void* data, size3_t dimensions) override;
 
     virtual void removeDataOwnership() override;

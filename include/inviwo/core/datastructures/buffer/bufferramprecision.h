@@ -58,6 +58,10 @@ public:
 
     virtual void* getData() override;
     virtual const void* getData() const override;
+
+    virtual BufferVariant getVariant() override { return BufferVariant(this); }
+    virtual ConstBufferVariant getVariant() const override {  return ConstBufferVariant(this);   }
+
     std::vector<T>& getDataContainer();
     const std::vector<T>& getDataContainer() const;
 
