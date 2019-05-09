@@ -51,7 +51,6 @@ int main(int argc, char** argv) {
 
     InviwoApplicationQt inviwoApp(argc, argv, "Inviwo-Qt");
     inviwoApp.printApplicationInfo();
-    inviwoApp.setAttribute(Qt::AA_NativeWindows);
     inviwoApp.setProgressCallback([](std::string m) {
         LogCentral::getPtr()->log("InviwoApplication", LogLevel::Info, LogAudience::User, "", "", 0,
                                   m);

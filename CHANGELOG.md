@@ -1,5 +1,82 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2019-04-30 Python Processors
+Inviwo Processors can now be implemented directly in Python by creating a python class and deriving from inviwopy.Processor.
+Bellow follows an example of a python processor:
+```py
+# Name: PythonExample 
+
+import inviwopy as ivw
+
+class PythonExample(ivw.Processor):
+    def __init__(self, id, name):
+        ivw.Processor.__init__(self, id, name)
+        self.inport = ivw.data.VolumeInport("inport")
+        self.addInport(self.inport)
+        self.outport = ivw.data.VolumeOutport("outport")
+        self.addOutport(self.outport)
+
+        self.slider = ivw.properties.IntProperty("slider", "slider", 0, 0, 100, 1)
+        self.addProperty(self.slider)
+
+    @staticmethod
+    def processorInfo():
+        return ivw.ProcessorInfo(
+            classIdentifier = "org.inviwo.PythonExample",
+            displayName = "Python Example", 
+            category = "Python",
+            codeState = ivw.CodeState.Stable,
+            tags = ivw.Tags.PY
+        )
+
+    def getProcessorInfo(self):
+        return PythonExample.processorInfo()
+
+    def initializeResources(self):
+        print("init")
+
+    def process(self):
+        print("process: ", self.slider.value)
+        self.outport.setData(self.inport.getData())
+
+```
+The initial '# Name:' comment is needed for Inviwo to know what python class that is should look for.
+To register an Inviwo python processor one can put in in the <user setttings folder>/python_processor or by adding a `PythonProcessorFolderObserver` to an Inviwo module and have that observe a folder.
+
+
+## 2019-04-30 Python Applications
+It is now possible to run inviwo directly from python using a new inviwopyapp python package found in `apps/inviwopyapp`.
+An example of running inviwo can be found in `apps/inviwopyapp/inviwo.py`. 
+```py
+    import inviwopy as ivw
+    import inviwopyapp as qt
+    
+    if __name__ == '__main__':
+        # Inviwo requires that a logcentral is created.
+        lc = ivw.LogCentral()
+        
+        # Create and register a console logger
+        cl = ivw.ConsoleLogger()
+        lc.registerLogger(cl)
+    
+        # Create the inviwo application
+        app = qt.InviwoApplicationQt()
+        app.registerModules()
+    
+        # load a workspace
+        app.network.load(app.getPath(ivw.PathType.Workspaces) + "/boron.inv")
+    
+        # Make sure the app is ready
+        app.update()
+        app.waitForPool()
+        app.update()
+        # Save a snapshot
+        app.network.Canvas.snapshot("snapshot.png") 
+    
+        # run the app event loop
+        app.run()
+```
+
 ## 2019-04-26 Parallel Coordinate Plot Update: flipped axes
 Axes of the parallel coordinate plot can now be inverted via a double click with the left mouse button or using the corresponding `Invert Range` property of the axis. In addition, the filtering handles can be hidden if necessary (`Axes Settings` → `Handles Visible`).
 

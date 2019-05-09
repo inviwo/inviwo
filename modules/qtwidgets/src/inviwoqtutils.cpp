@@ -478,6 +478,8 @@ QMenu* getMenu(std::string menuName, bool createIfNotFound) {
             return *menuItem;
         } else if (createIfNotFound) {
             return addMenu(menuName);
+        } else {
+            return nullptr;
         }
     }
     throw Exception("No Qt main window found");

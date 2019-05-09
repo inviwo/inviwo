@@ -37,6 +37,8 @@
 #include <pybind11/pybind11.h>
 #include <warn/pop>
 #include <memory>
+#include <sstream>
+#include <inviwo/core/util/ostreamjoiner.h>
 
 namespace inviwo {
 
@@ -74,6 +76,16 @@ public:
                }) != end(vector_);
     }
 
+    std::string repr() const {
+        std::stringstream ss;
+        ss << "[";
+        auto j = util::make_ostream_joiner(ss, ", ");
+        std::transform(vector_.begin(), vector_.end(), j,
+                       [](auto& elem) { return elem->getIdentifier(); });
+        ss << "]";
+        return ss.str();
+    }
+
 private:
     const V& vector_;
 };
@@ -87,7 +99,8 @@ void exposeVectorIdentifierWrapper(pybind11::module& m, const std::string& name)
         .def("__getattr__", &VecWrapper::getFromIdentifier, py::return_value_policy::reference)
         .def("__getitem__", &VecWrapper::getFromIndex, py::return_value_policy::reference)
         .def("__len__", &VecWrapper::size)
-        .def("__contains__", &VecWrapper::contains);
+        .def("__contains__", &VecWrapper::contains)
+        .def("__repr__", &VecWrapper::repr);
 }
 
 }  // namespace inviwo

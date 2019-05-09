@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,32 +26,51 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_PYTHONINTERPRETER_H
-#define IVW_PYTHONINTERPRETER_H
+#pragma once
 
 #include <modules/python3/python3moduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <modules/python3/pythonexecutionoutputobservable.h>
+
+#include <inviwo/core/processors/processorfactoryobject.h>
+#include <inviwo/core/util/fileobserver.h>
 
 namespace inviwo {
-class Python3Module;
 
-class IVW_MODULE_PYTHON3_API PythonInterpreter : public PythonExecutionOutputObservable {
+class InviwoApplication;
+
+
+struct IVW_MODULE_PYTHON3_API PythonProcessorFactoryObjectData {
+    ProcessorInfo info;
+    std::string name;
+    std::string file;
+};
+
+
+class IVW_MODULE_PYTHON3_API PythonProcessorFactoryObjectBase : public ProcessorFactoryObject {
 public:
-    PythonInterpreter(Python3Module* module);
-    virtual ~PythonInterpreter();
+    PythonProcessorFactoryObjectBase(PythonProcessorFactoryObjectData data); 
+    virtual ~PythonProcessorFactoryObjectBase() = default;
 
-    void addModulePath(const std::string& path);
-    void importModule(const std::string& moduleName);
+protected:
+    std::string name_;
+    std::string file_;
+};
 
-    bool runString(std::string code);
+class IVW_MODULE_PYTHON3_API PythonProcessorFactoryObject
+    : public PythonProcessorFactoryObjectBase, public FileObserver {
+public:
+    PythonProcessorFactoryObject(InviwoApplication* app, const std::string& file);
+    virtual ~PythonProcessorFactoryObject() = default;
+
+    virtual std::unique_ptr<Processor> create(InviwoApplication* app) override;
 
 private:
-    bool embedded_;
-    bool isInit_;
+    InviwoApplication* app_;
+    virtual void fileChanged(const std::string& filename) override;
+
+    void reloadProcessors();
+
+    static PythonProcessorFactoryObjectData load(const std::string& file);
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PYINVIWO_H

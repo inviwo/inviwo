@@ -31,6 +31,7 @@
 
 #include <modules/python3/python3module.h>
 #include <modules/python3/pybindutils.h>
+#include <modules/python3/pythoninterpreter.h>
 
 #include <inviwopy/pydataformat.h>
 #include <inviwopy/pyinviwoapplication.h>
@@ -48,15 +49,15 @@
 #include <inviwopy/pymesh.h>
 #include <inviwopy/pytfprimitiveset.h>
 #include <inviwopy/pypickingmapper.h>
+#include <inviwopy/pylogging.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/commandlineparser.h>
 
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/core/util/settings/settings.h>
 #include <inviwo/core/util/exception.h>
 
-#include <inviwo/core/util/commandlineparser.h>
-#include <inviwo/core/util/logcentral.h>
 
 namespace py = pybind11;
 
@@ -81,8 +82,8 @@ PYBIND11_MODULE(inviwopy, m) {
     auto formatsModule =
         dataModule.def_submodule("formats", "Module containing the various data formats");
 
+    exposeLogging(m);
     exposeInviwoApplication(m);
-    exposeInviwoModule(m);
     exposeDataFormat(formatsModule);
     exposePropertyOwner(propertiesModule);
     exposeProperties(propertiesModule);
@@ -97,6 +98,7 @@ PYBIND11_MODULE(inviwopy, m) {
     exposeBuffer(dataModule);
     exposeMesh(dataModule);
     exposeTFPrimitiveSet(dataModule);
+    exposeInviwoModule(m);
 
     py::class_<Settings, PropertyOwner, std::unique_ptr<Settings, py::nodelete>>(m, "Settings");
 
@@ -105,14 +107,22 @@ PYBIND11_MODULE(inviwopy, m) {
     m.def("logError", [](const std::string& msg) { LogErrorCustom("inviwopy", msg); });
     m.def("debugBreak", []() { util::debugBreak(); });
 
-    try {
-        if (auto app = util::getInviwoApplication()) {
-            m.attr("app") = py::cast(app, py::return_value_policy::reference);
-        }
-    } catch (SingletonException&) {
-        LogErrorCustom("inviwopy",
-                       "Failed to get Inviwo application, inviwopy will not function as expected");
+    if (InviwoApplication::isInitialized()) {
+        m.attr("app") = py::cast(InviwoApplication::getPtr(), py::return_value_policy::reference);
     }
+
+    m.def("getApp", []() { return InviwoApplication::getPtr(); },
+          py::return_value_policy::reference);
+
+    m.def("handlePythonOutput", [](const std::string& msg, int isStderr) {
+        if (auto module = InviwoApplication::getPtr()->getModuleByType<Python3Module>()) {
+            if (auto interpreter = module->getPythonInterpreter()) {
+                interpreter->pythonExecutionOutputEvent(msg, (isStderr == 0)
+                                                                 ? PythonOutputType::sysstdout
+                                                                 : PythonOutputType::sysstderr);
+            }
+        }
+    });
 
 #ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
     VLDEnable();

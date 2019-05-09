@@ -65,6 +65,7 @@ private:
 class IVW_QTAPPLICATIONBASE_API InviwoApplicationQt : public QApplication,
                                                       public InviwoApplication {
 public:
+    InviwoApplicationQt(const std::string& displayName = "Inviwo");
     InviwoApplicationQt(int& argc, char** argv, const std::string& displayName);
     virtual ~InviwoApplicationQt() = default;
 
@@ -97,6 +98,7 @@ public:
     void setUndoTrigger(std::function<void()> func);
     virtual void resizePool(size_t newSize) override;
     virtual void printApplicationInfo() override;
+    void setStyleSheetFile(QString file);
 
 private:
     void fileChanged(QString fileName);

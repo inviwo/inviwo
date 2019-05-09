@@ -55,11 +55,26 @@
 
 namespace inviwo {
 
+namespace {
+
+// QApplication always needs some argc and argv
+int dummyArgc = 1;
+char** dummyArgs() {
+    static char* dummyArgv = new char[7];
+    sprintf(dummyArgv, "inviwo");
+    return &dummyArgv;
+}
+
+}  // namespace
+
 InviwoApplicationQt::InviwoApplicationQt(int& argc, char** argv, const std::string& displayName)
     : QApplication(argc, argv)
     , InviwoApplication(argc, argv, displayName)
     , mainWindow_(nullptr)
     , uiLocal_(getCurrentStdLocale()) {
+
+    setAttribute(Qt::AA_NativeWindows);
+    setWindowIcon(QIcon(":/inviwo/inviwo_light.png"));
 
     QCoreApplication::setOrganizationName("Inviwo Foundation");
     QCoreApplication::setOrganizationDomain("inviwo.org");
@@ -95,6 +110,9 @@ InviwoApplicationQt::InviwoApplicationQt(int& argc, char** argv, const std::stri
     // Make qt write errors in the console;
     qInstallMessageHandler(&InviwoApplicationQt::logQtMessages);
 }
+
+InviwoApplicationQt::InviwoApplicationQt(const std::string& displayName)
+    : InviwoApplicationQt(dummyArgc, dummyArgs(), displayName) {}
 
 void InviwoApplicationQt::setMainWindow(QMainWindow* mainWindow) {
     mainWindow_ = mainWindow;
@@ -156,6 +174,14 @@ std::locale InviwoApplicationQt::getUILocale() const { return uiLocal_; }
 void InviwoApplicationQt::printApplicationInfo() {
     InviwoApplication::printApplicationInfo();
     LogInfoCustom("InviwoInfo", "Qt Version " << QT_VERSION_STR);
+}
+
+void InviwoApplicationQt::setStyleSheetFile(QString file) {
+    QFile styleSheetFile(file);
+    styleSheetFile.open(QFile::ReadOnly);
+    QString styleSheet = QString::fromUtf8(styleSheetFile.readAll());
+    setStyleSheet(styleSheet);
+    styleSheetFile.close();
 }
 
 void InviwoApplicationQt::resizePool(size_t newSize) {

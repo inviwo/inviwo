@@ -602,12 +602,8 @@ void InviwoMainWindow::addActions() {
         connect(reloadStyle, &QAction::triggered, [this](bool /*state*/) {
             // The following code snippet allows to reload the Qt style sheets during
             // runtime, which is handy while we change them.
-            QFile styleSheetFile(QString::fromStdString(app_->getPath(PathType::Resources) +
-                                                        "/stylesheets/inviwo.qss"));
-            styleSheetFile.open(QFile::ReadOnly);
-            QString styleSheet = QString::fromUtf8(styleSheetFile.readAll());
-            app_->setStyleSheet(styleSheet);
-            styleSheetFile.close();
+            app_->setStyleSheetFile(QString::fromStdString(app_->getPath(PathType::Resources) +
+                                                           "/stylesheets/inviwo.qss"));
         });
     }
 #endif

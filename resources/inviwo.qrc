@@ -14,7 +14,8 @@
         <file>svgicons/save-as-copy.svg</file>
         
         <file>svgicons/exit.svg</file>
-
+        
+        <file>svgicons/processor-new.svg</file>
         <file>svgicons/processor-add.svg</file>
         <file>svgicons/find.svg</file>
         <file>svgicons/find-clear.svg</file>

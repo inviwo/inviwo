@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2019 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,31 +27,15 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PYTHONINTERPRETER_H
-#define IVW_PYTHONINTERPRETER_H
+#pragma once
 
-#include <modules/python3/python3moduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <modules/python3/pythonexecutionoutputobservable.h>
+#include <warn/push>
+#include <warn/ignore/shadow>
+#include <pybind11/pybind11.h>
+#include <warn/pop>
 
 namespace inviwo {
-class Python3Module;
 
-class IVW_MODULE_PYTHON3_API PythonInterpreter : public PythonExecutionOutputObservable {
-public:
-    PythonInterpreter(Python3Module* module);
-    virtual ~PythonInterpreter();
-
-    void addModulePath(const std::string& path);
-    void importModule(const std::string& moduleName);
-
-    bool runString(std::string code);
-
-private:
-    bool embedded_;
-    bool isInit_;
-};
+void exposeLogging(pybind11::module& m);
 
 }  // namespace inviwo
-
-#endif  // IVW_PYINVIWO_H

@@ -47,6 +47,8 @@
 #include <modules/python3/pythonlogger.h>
 #include <modules/python3/processors/pythonscriptprocessor.h>
 
+#include <modules/python3/pythonprocessorfactoryobject.h>
+
 namespace inviwo {
 
 Python3Module::Python3Module(InviwoApplication* app)
@@ -65,7 +67,9 @@ Python3Module::Python3Module(InviwoApplication* app)
                      s.run();
                  },
                  100}
-    , pythonLogger_{} {
+    , pythonLogger_{}
+    , pythonFolderObserver_{app, getPath() + "/processors", *this}
+    , settingsFolderObserver_{app, app->getPath(PathType::Settings, "/python_processors", true), *this} {
 
     pythonInterpreter_->addObserver(&pythonLogger_);
 
