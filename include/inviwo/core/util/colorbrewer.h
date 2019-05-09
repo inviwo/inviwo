@@ -27,10 +27,10 @@
  *
  *********************************************************************************/
 
-/**
+/*
 This complete file is auto-generated with python script
 tools/codegen/colorbrewer/colorbrewer.py
-**/
+*/
 
 #ifndef IWW_COLORBREWER_H
 #define IWW_COLORBREWER_H

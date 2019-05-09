@@ -324,14 +324,14 @@ public:
  * The following code snippet uses a SimpleMesh2 to create bounding box for a given basisandoffset
  * matrix. It is the code used in meshutil::boundingBoxAdjacency
  *
- * \snippet modules/base/algorithm/meshutils.cpp Using PosTexColorMesh
+ * \snippet modules/base/src/algorithm/meshutils.cpp Using PosTexColorMesh
  *
  *
  * ## Creating camera frustum
  * The following code snippet is another example where we create a camera frustum mesh for a given
  * camera. It is the code used in meshutil::cameraFrustum
  *
- * \snippet modules/base/algorithm/meshutils.cpp Using Colored Mesh
+ * \snippet modules/base/src/algorithm/meshutils.cpp Using Colored Mesh
  *
  */
 template <typename... BufferTraits>
@@ -612,7 +612,7 @@ using SphereMesh =
  * \ingroup typedmesh
  * Type definition of a TypedMesh having only positions(vec3) and colors(vec4).
  * Example usage:
- * \snippet modules/base/algorithm/meshutils.cpp Using Colored Mesh
+ * \snippet modules/base/src/algorithm/meshutils.cpp Using Colored Mesh
  */
 using ColoredMesh = TypedMesh<buffertraits::PositionsBuffer, buffertraits::ColorsBuffer>;
 
@@ -628,7 +628,7 @@ using BasicMesh = TypedMesh<buffertraits::PositionsBuffer, buffertraits::NormalB
  * \ingroup typedmesh
  * Type definition of a TypedMesh having positions(vec3), texture
  * coordinates(vec3) and colors(vec4). Example usage:
- * \snippet modules/base/algorithm/meshutils.cpp Using PosTexColorMesh
+ * \snippet modules/base/src/algorithm/meshutils.cpp Using PosTexColorMesh
  */
 using PosTexColorMesh = TypedMesh<buffertraits::PositionsBuffer, buffertraits::TexcoordBuffer<3>,
                                   buffertraits::ColorsBuffer>;
