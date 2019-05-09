@@ -57,8 +57,8 @@ namespace inviwo {
 
 namespace {
 
+// QApplication always needs some argc and argv
 int dummyArgc = 1;
-
 char** dummyArgs() {
     static char* dummyArgv = new char[7];
     sprintf(dummyArgv, "inviwo");

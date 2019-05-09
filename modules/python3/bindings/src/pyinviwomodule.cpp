@@ -132,8 +132,7 @@ void exposeInviwoModule(pybind11::module &m) {
         .def("registerProcessor", [](InviwoModule *m, py::object pfo) {
             m->registerProcessor(std::make_unique<ProcessorFactoryObjectPythonWrapper>(pfo));
         });
-    //.def("registerDataReader", &InviwoModule::registerDataReader)
-    //.def("registerDataWriter", &InviwoModule::registerDataWriter);
+
 
     py::class_<InviwoModuleFactoryObject, InviwoModuleFactoryObjectTrampoline>(
         m, "InviwoModuleFactoryObject")
@@ -158,7 +157,9 @@ void exposeInviwoModule(pybind11::module &m) {
         .def_readonly("licenses", &InviwoModuleFactoryObject::licenses)
         .def_readonly("protectedModule", &InviwoModuleFactoryObject::protectedModule);
 
-    /*
+    /* TODO implement these, need to figure out how to handle the unique_ptrs.
+    .def("registerDataReader", &InviwoModule::registerDataReader)
+    .def("registerDataWriter", &InviwoModule::registerDataWriter);
     .def("registerCamera",
          static_cast<void (InviwoModule::*)(std::unique_ptr<CameraFactoryObject>)>(
              &InviwoModule::registerCamera))

@@ -40,7 +40,7 @@ const ProcessorInfo PythonScriptProcessor::processorInfo_{
     "Python Script Processor",           // Display name
     "Python",                            // Category
     CodeState::Deprecated,               // Code state
-    "PY",                                // Tags
+    Tags::PY,                            // Tags
 };
 const ProcessorInfo PythonScriptProcessor::getProcessorInfo() const { return processorInfo_; }
 

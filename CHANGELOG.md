@@ -44,7 +44,7 @@ The initial '# Name:' comment is needed for Inviwo to know what python class tha
 To register an Inviwo python processor one can put in in the <user setttings folder>/python_processor or by adding a `PythonProcessorFolderObserver` to an Inviwo module and have that observe a folder.
 
 
-## Python Applictions
+## 2019-04-30 Python Applications
 It is now possible to run inviwo directly from python using a new inviwopyapp python package found in `apps/inviwopyapp`.
 An example of running inviwo can be found in `apps/inviwopyapp/inviwo.py`. 
 ```py

@@ -44,8 +44,6 @@ namespace py = pybind11;
 
 namespace inviwo {
 
-using ProcessorVecWrapper = VectorIdentifierWrapper<std::vector<Processor*>>;
-
 void exposeNetwork(py::module &m) {
     py::class_<PortConnection>(m, "PortConnection")
         .def(py::init<Outport *, Inport *>())
