@@ -509,11 +509,11 @@ function(make_doxygen_target modules_var)
     set_target_properties("DOXY-generate-processor-previews" 
                             PROPERTIES FOLDER "doc" EXCLUDE_FROM_ALL TRUE)
 
-    option(IVW_DOXYGEN_OPTIONAL_PROCESSOR_PREVIEWS "Turn on this to disable generating processor previews when building doxygen documentation (DOXY-Inviwo)" OFF)
-    if(${IVW_DOXYGEN_OPTIONAL_PROCESSOR_PREVIEWS})    
-        add_dependencies("DOXY-Inviwo" "DOXY-Clear")
-    else()
+    option(IVW_ENFORCE_PROCESSOR_PREVIEWS "Turn on this to disable generating processor previews when building doxygen documentation (DOXY-Inviwo)" OFF)
+    if(${IVW_ENFORCE_PROCESSOR_PREVIEWS})    
         add_dependencies("DOXY-Inviwo" "DOXY-generate-processor-previews" "DOXY-Clear")
+    else()
+        add_dependencies("DOXY-Inviwo" "DOXY-Clear")
     endif()
 
     # Help, used for the help inside inviwo
