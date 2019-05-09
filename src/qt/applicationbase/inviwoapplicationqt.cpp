@@ -285,7 +285,7 @@ bool InviwoApplicationQt::notify(QObject* receiver, QEvent* e) {
 
     switch (e->type()) {
         case QEvent::MouseButtonRelease: {
-            undoTrigger_();
+            //undoTrigger_(); // caused crash
             break;
         }
         case QEvent::TouchEnd: {
@@ -305,7 +305,7 @@ bool InviwoApplicationQt::notify(QObject* receiver, QEvent* e) {
         default:
             break;
     }
-    return res;
+    return res; // crash when alt-tab + click, or when changing filename
 }
 #include <warn/pop>
 
