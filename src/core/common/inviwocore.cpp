@@ -355,6 +355,8 @@ InviwoCore::InviwoCore(InviwoApplication* app)
 
     registerPropertyConverter(std::make_unique<FileToStringConverter>());
     registerPropertyConverter(std::make_unique<StringToFileConverter>());
+    registerPropertyConverter(std::make_unique<DirectoryToStringConverter>());
+    registerPropertyConverter(std::make_unique<StringToDirectoryConverter>());
 
     registerPropertyConverter(std::make_unique<TransferfunctionToIsoTFConverter>());
     registerPropertyConverter(std::make_unique<IsoTFToTransferfunctionConverter>());

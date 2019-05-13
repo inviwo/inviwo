@@ -35,6 +35,7 @@
 
 #include <inviwo/core/properties/templateproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/directoryproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -137,6 +138,7 @@ protected:
     }
 };
 
+// conversion between String and File/Directory properties
 class FileToStringConverter : public TemplatePropertyConverter<FileProperty, StringProperty> {
 protected:
     virtual void convertimpl(const FileProperty* src, StringProperty* dst) const override {
@@ -147,6 +149,20 @@ protected:
 class StringToFileConverter : public TemplatePropertyConverter<StringProperty, FileProperty> {
 protected:
     virtual void convertimpl(const StringProperty* src, FileProperty* dst) const override {
+        dst->set(src->get());
+    }
+};
+
+class DirectoryToStringConverter : public TemplatePropertyConverter<DirectoryProperty, StringProperty> {
+protected:
+    virtual void convertimpl(const DirectoryProperty* src, StringProperty* dst) const override {
+        dst->set(src->get());
+    }
+};
+
+class StringToDirectoryConverter : public TemplatePropertyConverter<StringProperty, DirectoryProperty> {
+protected:
+    virtual void convertimpl(const StringProperty* src, DirectoryProperty* dst) const override {
         dst->set(src->get());
     }
 };
