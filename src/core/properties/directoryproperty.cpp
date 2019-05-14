@@ -28,7 +28,6 @@
  *********************************************************************************/
 
 #include <inviwo/core/properties/directoryproperty.h>
-#include <inviwo/core/util/filedialog.h>
 #include <inviwo/core/util/filedialogstate.h>
 
 namespace inviwo {
@@ -53,6 +52,5 @@ DirectoryProperty::~DirectoryProperty() = default;
 std::string DirectoryProperty::getClassIdentifierForWidget() const {
     return FileProperty::getClassIdentifier();
 }
-
 
 }  // namespace inviwo
