@@ -206,19 +206,30 @@ void FileProperty::requestFile() {
         }
     }
     if (getWidgets().empty()) {
-
-        const std::string filename{this->get()};
-
-        // Setup Extensions
-        std::vector<FileExtension> filters = this->getNameFilters();
-
+        // Currently, the only difference between using the widget (Qt) and the FileDialog directly
+        // is that the Qt widget stores the previously used directory
         auto fileDialog = util::dynamic_unique_ptr_cast<FileDialog>(
             InviwoApplication::getPtr()->getDialogFactory()->create("FileDialog"));
         if (!fileDialog) {
-            return;
+            throw Exception(
+                "Failed to create FileDialog. Ensure that one has been added to "
+                "InviwoApplication::DialogFactory");
         }
 
+        // Setup Extensions
+        std::vector<FileExtension> filters = this->getNameFilters();
+        fileDialog->addExtensions(filters);
+
+        fileDialog->setCurrentFile(get());
+        fileDialog->setTitle(getDisplayName());
+        fileDialog->setAcceptMode(getAcceptMode());
+        fileDialog->setFileMode(getFileMode());
+
+        auto ext = getSelectedExtension();
+        if (!ext.empty()) fileDialog->setSelectedExtension(ext);
+
         if (fileDialog->show()) {
+            setSelectedExtension(fileDialog->getSelectedFileExtension());
             set(fileDialog->getSelectedFile());
         }
     }

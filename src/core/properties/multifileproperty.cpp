@@ -264,6 +264,34 @@ void MultiFileProperty::requestFile() {
             if (filerequestable->requestFile()) return;
         }
     }
+    if (getWidgets().empty()) {
+        // Currently, the only difference between using the widget (Qt) and the FileDialog directly
+        // is that the Qt widget remembers the previously used directory
+        auto fileDialog = util::dynamic_unique_ptr_cast<FileDialog>(
+            InviwoApplication::getPtr()->getDialogFactory()->create("FileDialog"));
+        if (!fileDialog) {
+            throw Exception(
+                "Failed to create FileDialog. Ensure that one has been added to "
+                "InviwoApplication::DialogFactory");
+        }
+
+        // Setup Extensions
+        std::vector<FileExtension> filters = this->getNameFilters();
+        fileDialog->addExtensions(filters);
+
+        fileDialog->setCurrentFile(get().empty() ? "" : get().front());
+        fileDialog->setTitle(getDisplayName());
+        fileDialog->setAcceptMode(getAcceptMode());
+        fileDialog->setFileMode(getFileMode());
+
+        auto ext = getSelectedExtension();
+        if (!ext.empty()) fileDialog->setSelectedExtension(ext);
+
+        if (fileDialog->show()) {
+            setSelectedExtension(fileDialog->getSelectedFileExtension());
+            set(fileDialog->getSelectedFiles());
+        }
+    }
 }
 
 const FileExtension& MultiFileProperty::getSelectedExtension() const { return selectedExtension_; }

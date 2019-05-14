@@ -54,31 +54,5 @@ std::string DirectoryProperty::getClassIdentifierForWidget() const {
     return FileProperty::getClassIdentifier();
 }
 
-void DirectoryProperty::requestFile() {
-    for (auto widget : getWidgets()) {
-        if (auto filerequestable = dynamic_cast<FileRequestable*>(widget)) {
-            if (filerequestable->requestFile()) return;
-        }
-    }
-    if (getWidgets().empty()) {
-
-        const std::string filename{ this->get() };
-
-        // Setup Extensions
-        std::vector<FileExtension> filters = this->getNameFilters();
-
-        auto fileDialog = util::dynamic_unique_ptr_cast<FileDialog>(
-            InviwoApplication::getPtr()->getDialogFactory()->create("FileDialog"));
-        if (!fileDialog) {
-            return;
-        }
-        fileDialog->setFileMode(FileMode::DirectoryOnly);
-
-        if (fileDialog->show()) {
-            set(fileDialog->getSelectedFile());
-        }
-    }
-}
-
 
 }  // namespace inviwo
