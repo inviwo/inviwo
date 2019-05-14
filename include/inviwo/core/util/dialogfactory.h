@@ -34,7 +34,6 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/factory.h>
 #include <inviwo/core/util/dialog.h>
-#include <inviwo/core/util/dialogfactory.h>
 #include <inviwo/core/util/dialogfactoryobject.h>
 
 namespace inviwo {
