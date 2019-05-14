@@ -29,6 +29,7 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/properties/multifileproperty.h>
+#include <inviwo/core/util/filedialog.h>
 #include <inviwo/core/util/filesystem.h>
 
 namespace inviwo {
