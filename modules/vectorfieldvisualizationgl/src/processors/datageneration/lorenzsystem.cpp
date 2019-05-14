@@ -49,6 +49,8 @@ const ProcessorInfo LorenzSystem::getProcessorInfo() const { return processorInf
 LorenzSystem::LorenzSystem()
     : Processor()
     , outport_("outport")
+    , curlOutport_("curl")
+    , divOutport_("divergence")
 
     , size_("size", "Volume size", size3_t(32, 32, 32), size3_t(1, 1, 1), size3_t(1024, 1024, 1024))
     , xRange_("xRange", "X Range", -20, 20, -100, 100)
@@ -56,10 +58,12 @@ LorenzSystem::LorenzSystem()
     , zRange_("zRange", "Z Range", 0, 50, 0, 100)
     , rhoValue_("rho", "&rho; Value", 28, 0, 100)
     , sigmaValue_("sigma", "&sigma; Value", 10, 0, 100)
-    , betaValue_("beta", "&beta; Value", 8.0f / 3, 0, 100)
+    , betaValue_("beta", "&beta; Value", 8.0f / 3.0f, 0, 100)
     , shader_("volume_gpu.vert", "volume_gpu.geom", "lorenzsystem.frag")
     , fbo_() {
     addPort(outport_);
+    addPort(curlOutport_);
+    addPort(divOutport_);
 
     addProperty(size_);
 
@@ -70,24 +74,49 @@ LorenzSystem::LorenzSystem()
     addProperty(rhoValue_);
     addProperty(sigmaValue_);
     addProperty(betaValue_);
+
+    shader_.onReload([&]() { invalidate(InvalidationLevel::InvalidOutput); });
 }
 
 LorenzSystem::~LorenzSystem() {}
 
 void LorenzSystem::process() {
-    volume_ = std::make_shared<Volume>(size_.get(), DataVec3Float32::get());
-    volume_->dataMap_.dataRange = vec2(0, 1);
-    volume_->dataMap_.valueRange = vec2(-1, 1);
-    outport_.setData(volume_);
+    auto volume = std::make_shared<Volume>(size_.get(), DataVec3Float32::get());
+    volume->dataMap_.dataRange = vec2(0, 1);
+    volume->dataMap_.valueRange = vec2(-1, 1);
+
+    auto curlvolume = std::make_shared<Volume>(size_.get(), DataVec3Float32::get());
+    curlvolume->dataMap_.dataRange = vec2(0, 1);
+    curlvolume->dataMap_.valueRange = vec2(-1, 1);
+
+    auto divvolume = std::make_shared<Volume>(size_.get(), DataFloat32::get());
+    divvolume->dataMap_.dataRange = vec2(0, 1);
+    divvolume->dataMap_.valueRange = vec2(-1, 1);
+
+    // Basis and offset
+    vec3 corners[4];
+    corners[0] = vec3(xRange_.get().x, yRange_.get().x, zRange_.get().x);
+    corners[1] = vec3(xRange_.get().y, yRange_.get().x, zRange_.get().x);
+    corners[2] = vec3(xRange_.get().x, yRange_.get().y, zRange_.get().x);
+    corners[3] = vec3(xRange_.get().x, yRange_.get().x, zRange_.get().y);
+
+    mat3 basis(corners[1] - corners[0], corners[2] - corners[0], corners[3] - corners[0]);
+
+    volume->setBasis(basis);
+    volume->setOffset(corners[0]);
+    curlvolume->setBasis(basis);
+    curlvolume->setOffset(corners[0]);
+    divvolume->setBasis(basis);
+    divvolume->setOffset(corners[0]);
+
+    outport_.setData(volume);
+    curlOutport_.setData(curlvolume);
+    divOutport_.setData(divvolume);
 
     shader_.activate();
     TextureUnitContainer cont;
     utilgl::bindAndSetUniforms(shader_, cont, *outport_.getData(), "volume");
-    shader_.setUniformWarningLevel(Shader::UniformWarning::Warn);
 
-    utilgl::setShaderUniforms(shader_, xRange_);
-    utilgl::setShaderUniforms(shader_, yRange_);
-    utilgl::setShaderUniforms(shader_, zRange_);
     utilgl::setShaderUniforms(shader_, rhoValue_);
     utilgl::setShaderUniforms(shader_, sigmaValue_);
     utilgl::setShaderUniforms(shader_, betaValue_);
@@ -95,34 +124,18 @@ void LorenzSystem::process() {
     fbo_.activate();
     glViewport(0, 0, static_cast<GLsizei>(dim.x), static_cast<GLsizei>(dim.y));
 
-    VolumeGL* outVolumeGL = volume_->getEditableRepresentation<VolumeGL>();
-    fbo_.attachColorTexture(outVolumeGL->getTexture().get(), 0);
+    VolumeGL* volGL = volume->getEditableRepresentation<VolumeGL>();
+    fbo_.attachColorTexture(volGL->getTexture().get(), 0);
+
+    VolumeGL* curlGL = curlvolume->getEditableRepresentation<VolumeGL>();
+    fbo_.attachColorTexture(curlGL->getTexture().get(), 1);
+
+    VolumeGL* divGL = divvolume->getEditableRepresentation<VolumeGL>();
+    fbo_.attachColorTexture(divGL->getTexture().get(), 2);
+
+    fbo_.defineDrawBuffers();
 
     utilgl::multiDrawImagePlaneRect(static_cast<int>(dim.z));
-
-    vec3 corners[5];
-    corners[0] = vec3(xRange_.get().x, yRange_.get().x, zRange_.get().x);
-    corners[1] = vec3(xRange_.get().y, yRange_.get().x, zRange_.get().x);
-    corners[2] = vec3(xRange_.get().x, yRange_.get().y, zRange_.get().x);
-    corners[3] = vec3(xRange_.get().x, yRange_.get().x, zRange_.get().y);
-    corners[4] = vec3(xRange_.get().y, yRange_.get().y, zRange_.get().y);
-
-    mat3 basis;
-    vec3 basisX = corners[1] - corners[0];
-    vec3 basisY = corners[2] - corners[0];
-    vec3 basisZ = corners[3] - corners[0];
-
-    basis[0][0] = basisX.x;
-    basis[0][1] = basisX.y;
-    basis[0][2] = basisX.z;
-    basis[1][0] = basisY.x;
-    basis[1][1] = basisY.y;
-    basis[1][2] = basisY.z;
-    basis[2][0] = basisZ.x;
-    basis[2][1] = basisZ.y;
-    basis[2][2] = basisZ.z;
-    volume_->setBasis(basis);
-    volume_->setOffset(corners[0]);
 
     shader_.deactivate();
     fbo_.deactivate();

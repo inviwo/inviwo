@@ -38,11 +38,13 @@
 #include <modules/plotting/datastructures/axissettings.h>
 
 namespace inviwo {
-namespace plot {
 
 class Column;
-class ParallelCoordinates;
 class CategoricalColumn;
+
+namespace plot {
+
+class ParallelCoordinates;
 class PCPAxisSettings;
 
 class IVW_MODULE_PLOTTINGGL_API PCPLabelSettings : public PlotTextSettings {
@@ -164,13 +166,7 @@ public:
     size_t columnId() const { return columnId_; }
     void setColumnId(size_t id) { columnId_ = id; }
 
-    void setParallelCoordinates(ParallelCoordinates* pcp) {
-        pcp_ = pcp;
-        labelSettings_.setSettings(this);
-        captionSettings_.setSettings(this);
-        major_.setSettings(this);
-        minor_.setSettings(this);
-    }
+    void setParallelCoordinates(ParallelCoordinates* pcp);
 
     const std::vector<bool>& getBrushed() const { return brushed_; }
 
@@ -181,6 +177,7 @@ public:
     virtual bool getUseDataRange() const override;
 
     virtual bool getVisible() const override;
+    virtual bool getFlipped() const override;
     virtual vec4 getColor() const override;
     virtual float getWidth() const override;
     virtual Orientation getOrientation() const override;
@@ -196,6 +193,7 @@ public:
     virtual const MinorTickSettings& getMinorTicks() const override;
 
     BoolProperty usePercentiles;
+    BoolProperty invertRange;
     DoubleMinMaxProperty range;
     
     ParallelCoordinates* pcp_ = nullptr;
@@ -207,6 +205,7 @@ private:
 
     PCPCaptionSettings captionSettings_;
     std::vector<std::string> labels_;
+    std::shared_ptr<std::function<void()>> labelUpdateCallback_;
     PCPLabelSettings labelSettings_;
 
     PCPMajorTickSettings major_;

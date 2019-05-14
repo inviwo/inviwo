@@ -109,23 +109,20 @@ VolumeSliceGL::VolumeSliceGL()
                     PropertySemantics::Text)
     , handleInteractionEvents_("handleEvents", "Handle Interaction Events", true,
                                InvalidationLevel::Valid)
-    , mouseShiftSlice_(
-          "mouseShiftSlice", "Mouse Slice Shift", [this](Event* e) { eventShiftSlice(e); },
-          util::make_unique<WheelEventMatcher>())
+    , mouseShiftSlice_("mouseShiftSlice", "Mouse Slice Shift",
+                       [this](Event* e) { eventShiftSlice(e); },
+                       util::make_unique<WheelEventMatcher>())
 
-    , mouseSetMarker_(
-          "mouseSetMarker", "Mouse Set Marker", [this](Event* e) { eventSetMarker(e); },
-          MouseButton::Left, MouseState::Press | MouseState::Move)
-    , mousePositionTracker_(
-          "mousePositionTracker", "Mouse Position Tracker",
-          [this](Event* e) { eventUpdateMousePos(e); }, MouseButton::None, MouseState::Move)
+    , mouseSetMarker_("mouseSetMarker", "Mouse Set Marker", [this](Event* e) { eventSetMarker(e); },
+                      MouseButton::Left, MouseState::Press | MouseState::Move)
+    , mousePositionTracker_("mousePositionTracker", "Mouse Position Tracker",
+                            [this](Event* e) { eventUpdateMousePos(e); }, MouseButton::None,
+                            MouseState::Move)
 
-    , stepSliceUp_(
-          "stepSliceUp", "Key Slice Up", [this](Event* e) { eventStepSliceUp(e); }, IvwKey::W,
-          KeyState::Press)
-    , stepSliceDown_(
-          "stepSliceDown", "Key Slice Down", [this](Event* e) { eventStepSliceDown(e); }, IvwKey::S,
-          KeyState::Press)
+    , stepSliceUp_("stepSliceUp", "Key Slice Up", [this](Event* e) { eventStepSliceUp(e); },
+                   IvwKey::W, KeyState::Press)
+    , stepSliceDown_("stepSliceDown", "Key Slice Down", [this](Event* e) { eventStepSliceDown(e); },
+                     IvwKey::S, KeyState::Press)
     , gestureShiftSlice_(
           "gestureShiftSlice", "Gesture Slice Shift",
           [this](Event* e) { eventGestureShiftSlice(e); },
@@ -219,7 +216,6 @@ VolumeSliceGL::VolumeSliceGL()
     pickGroup_.addProperty(showIndicator_);
     pickGroup_.addProperty(indicatorColor_);
     pickGroup_.addProperty(indicatorSize_);
-
 
     posPicking_.onChange([this]() { modeChange(); });
     indicatorColor_.onChange([this]() { invalidateMesh(); });

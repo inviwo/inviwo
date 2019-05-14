@@ -41,34 +41,39 @@ function(ivw_get_subdirs_recursive retval start)
     set(${retval} ${res} PARENT_SCOPE)
 endfunction()
 
+set(ivw_doxy_all_dirs "" CACHE INTERNAL "")
 function(ivw_get_include_dirs retval) 
-    set(res "")
-    ivw_get_subdirs_recursive(subdirs ${IVW_ROOT_DIR})
-    foreach(subdir IN LISTS subdirs)
-        get_property(targets DIRECTORY ${subdir} PROPERTY BUILDSYSTEM_TARGETS)
-        foreach(target IN LISTS targets)
-            ivw_get_target_property_recursive(dirs ${target} INTERFACE_INCLUDE_DIRECTORIES True)
-            list(APPEND res ${dirs})
-            ivw_get_target_property_recursive(dirs ${target} INCLUDE_DIRECTORIES False)
-            list(APPEND res ${dirs})
-            list(REMOVE_DUPLICATES res)
+    list(LENGTH ivw_doxy_all_dirs len)
+    if(${len} EQUAL 0)
+        set(temp "")
+        ivw_get_subdirs_recursive(subdirs ${IVW_ROOT_DIR})
+        foreach(subdir IN LISTS subdirs)
+            get_property(targets DIRECTORY ${subdir} PROPERTY BUILDSYSTEM_TARGETS)
+            foreach(target IN LISTS targets)
+                ivw_get_target_property_recursive(dirs ${target} INTERFACE_INCLUDE_DIRECTORIES True)
+                list(APPEND temp ${dirs})
+                ivw_get_target_property_recursive(dirs ${target} INCLUDE_DIRECTORIES False)
+                list(APPEND temp ${dirs})
+                list(REMOVE_DUPLICATES temp)
+            endforeach()
         endforeach()
-    endforeach()
-
-    # filter generator expr
-    set(res2 "")
-    foreach(item IN LISTS res)
-        string(REGEX MATCH [=[^\$<BUILD_INTERFACE:([^$<>]+)>$]=] repl ${item})
-        if(CMAKE_MATCH_1)
-            list(APPEND res2 "\"${CMAKE_MATCH_1}\"")
-        endif()
-        string(REGEX MATCH [=[^[^$<>]*$]=] repl ${item})
-        if(CMAKE_MATCH_0)
-            list(APPEND "res2" "\"${CMAKE_MATCH_0}\"")
-        endif()
-    endforeach()
-    list(REMOVE_DUPLICATES res2)
-    set(${retval} ${res2} PARENT_SCOPE)
+    
+        # filter generator expr
+        set(inc_dirs "")
+        foreach(item IN LISTS temp)
+            string(REGEX MATCH [=[^\$<BUILD_INTERFACE:([^$<>]+)>$]=] repl ${item})
+            if(CMAKE_MATCH_1)
+                list(APPEND inc_dirs "\"${CMAKE_MATCH_1}\"")
+            endif()
+            string(REGEX MATCH [=[^[^$<>]*$]=] repl ${item})
+            if(CMAKE_MATCH_0)
+                list(APPEND "inc_dirs" "\"${CMAKE_MATCH_0}\"")
+            endif()
+        endforeach()
+        list(REMOVE_DUPLICATES inc_dirs)
+        set(ivw_doxy_all_dirs ${inc_dirs} CACHE INTERNAL "")
+    endif()
+    set(${retval} ${ivw_doxy_all_dirs} PARENT_SCOPE)
 endfunction()
 
 if(${MSVC})
@@ -129,6 +134,8 @@ function(ivw_private_make_doxyfile)
     string(REGEX REPLACE ";" "\n" additional_flags "${ARG_ADDITIONAL_FLAGS}")
 
     string(TOLOWER ${ARG_NAME} name_lower)
+
+    ivw_private_format_doxy_arg(example_paths ${IVW_EXTERNAL_MODULES})
 
     set(doxyfile "\
 PROJECT_NAME           = \"${ARG_NAME}\"
@@ -203,7 +210,8 @@ USE_MDFILE_AS_MAINPAGE = ${IVW_ROOT_DIR}/README.md
 
 HTML_EXTRA_FILES       = ${ivw_doxy_dir}/style/img_downArrow.png
 
-EXAMPLE_PATH           = ${IVW_ROOT_DIR}
+EXAMPLE_PATH           = ${IVW_ROOT_DIR} \\
+                         ${example_paths} 
 
 HTML_COLORSTYLE_HUE    = 240
 HTML_COLORSTYLE_SAT    = 6
@@ -501,7 +509,12 @@ function(make_doxygen_target modules_var)
     set_target_properties("DOXY-generate-processor-previews" 
                             PROPERTIES FOLDER "doc" EXCLUDE_FROM_ALL TRUE)
 
-    add_dependencies("DOXY-Inviwo" "DOXY-generate-processor-previews" "DOXY-Clear")
+    option(IVW_ENFORCE_PROCESSOR_PREVIEWS "Turn on to enforce generating processor previews when building doxygen documentation (DOXY-Inviwo)" ON)
+    if(${IVW_ENFORCE_PROCESSOR_PREVIEWS})    
+        add_dependencies("DOXY-Inviwo" "DOXY-generate-processor-previews" "DOXY-Clear")
+    else()
+        add_dependencies("DOXY-Inviwo" "DOXY-Clear")
+    endif()
 
     # Help, used for the help inside inviwo
     set(module_bases "")

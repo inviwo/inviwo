@@ -290,6 +290,45 @@ void FileTreeWidget::updateExampleEntries() {
     }
 }
 
+void FileTreeWidget::updateRegressionTestEntries() {
+    QList<QTreeWidgetItem *> tests;
+    for (const auto &module : inviwoApp_->getModules()) {
+        auto moduleRegressionTestsPath = module->getPath(ModulePath::RegressionTests);
+        if (!filesystem::directoryExists(moduleRegressionTestsPath)) continue;
+        QList<QTreeWidgetItem *> moduleTests;
+        for (auto item : filesystem::getDirectoryContentsRecursively(moduleRegressionTestsPath)) {
+            // only accept inviwo workspace files
+            if (filesystem::getFileExtension(item) != "inv") continue;
+            moduleTests.append(
+                createFileEntry(fileIcon_, item, true));
+        }
+        if (!moduleTests.isEmpty()) {
+            auto category = createCategory(utilqt::toQString(module->getIdentifier()),
+                                           ListElemType::SubSection);
+            category->addChildren(moduleTests);
+            tests.push_back(category);
+        }
+    }
+    if (!regressionTestsItem_) {
+        regressionTestsItem_ = createCategory("Regression Tests");
+        addTopLevelItem(regressionTestsItem_);
+        regressionTestsItem_->setFirstColumnSpanned(true);
+        regressionTestsItem_->setExpanded(false);
+    }
+    regressionTestsItem_->setHidden(tests.isEmpty());
+
+    if (!tests.isEmpty()) {
+        setUpdatesEnabled(false);
+        removeChildren(regressionTestsItem_);
+        regressionTestsItem_->addChildren(tests);
+        for (auto elem : tests) {
+            elem->setExpanded(true);
+            elem->setFirstColumnSpanned(true);
+        }
+        setUpdatesEnabled(true);
+    }
+}
+
 bool FileTreeWidget::selectRecentWorkspace(int index) {
     if (!recentWorkspaceItem_) return false;
     if (recentWorkspaceItem_->childCount() < index) return false;

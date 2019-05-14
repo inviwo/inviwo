@@ -17,6 +17,11 @@
 
 
 /**
+ * \namespace inviwo::color color
+ */
+
+
+/**
  * \namespace inviwo::util util
  */
 

@@ -261,9 +261,9 @@ void RangeSlider::renderWidget(const ivec2 &origin, const size2_t &) {
         };
 
         // first handle
-        drawHandle(sliderPos.x, 0);
+        drawHandle(sliderPos.x, flipped_ ? 1 : 0);
         // second handle
-        drawHandle(sliderPos.y, 1);
+        drawHandle(sliderPos.y, flipped_ ? 0 : 1);
     }
 }
 
@@ -307,9 +307,13 @@ double RangeSlider::getHandleWidth() const {
     return ratio * (orientation_ == UIOrientation::Horizontal ? ext.y : ext.x);
 }
 
+void RangeSlider::setShowGroove(bool show) { showGroove_ = show; }
+
 bool RangeSlider::getShowGroove() const { return showGroove_; }
 
-void RangeSlider::setShowGroove(bool show) { showGroove_ = show; }
+void RangeSlider::setFlipped(bool flipped) { flipped_ = flipped; }
+
+bool RangeSlider::getFlipped() const { return flipped_; }
 
 vec2 RangeSlider::getSliderPos() const {
     const dvec2 ext(getWidgetExtentScaled());
@@ -318,18 +322,30 @@ vec2 RangeSlider::getSliderPos() const {
     const double sliderLength =
         (orientation_ == UIOrientation::Vertical ? ext.y - handleWidth : ext.x - handleWidth);
 
-    auto calcPos = [this, sliderLength](int pos) {
-        return (glm::clamp(pos, min_, max_) - min_) / static_cast<double>(max_ - min_) *
-               sliderLength;
-    };
+    if (flipped_) {
+        auto calcPos = [this, sliderLength](int pos) {
+            return (max_ - glm::clamp(pos, min_, max_)) / static_cast<double>(max_ - min_) *
+                   sliderLength;
+        };
 
-    return vec2(calcPos(value_.x), calcPos(value_.y));
+        return vec2(calcPos(value_.y), calcPos(value_.x));
+    } else {
+        auto calcPos = [this, sliderLength](int pos) {
+            return (glm::clamp(pos, min_, max_) - min_) / static_cast<double>(max_ - min_) *
+                   sliderLength;
+        };
+
+        return vec2(calcPos(value_.x), calcPos(value_.y));
+    }
 }
 
-double RangeSlider::convertDeltaToSlider(const dvec2 &delta) const {
+double RangeSlider::convertDeltaToSlider(dvec2 delta) const {
     const auto ext = getWidgetExtentScaled();
     // account for the width of the handle
     const double handleWidth = uiTextures_->getDimensions().x * scalingFactor_;
+    if (flipped_) {
+        delta *= -1.0;
+    }
     if (orientation_ == UIOrientation::Vertical) {
         return delta.y / static_cast<double>(ext.y - handleWidth);
     } else {

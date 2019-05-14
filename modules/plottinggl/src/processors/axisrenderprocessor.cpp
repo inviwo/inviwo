@@ -51,7 +51,7 @@ AxisRenderProcessor::AxisRenderProcessor()
     : Processor()
     , inport_("inport")
     , outport_("outport")
-    , margins_("margins", "Margins")
+    , margins_("margins", "Margins", 20.0f, 20.0f, 35.0f, 50.0f)
     , axisMargin_("axisMargin", "Axis Margin", 15.0f, 0.0f, 50.0f)
     , antialiasing_("antialias", "Antialiasing", true)
     , axis1_("axis1", "Axis 1")
@@ -72,6 +72,8 @@ AxisRenderProcessor::AxisRenderProcessor()
     addProperty(axis1_);
     addProperty(axis2_);
     addProperty(axis3_);
+
+    axis3_.flipped_.set(true);
 }
 
 void AxisRenderProcessor::process() {

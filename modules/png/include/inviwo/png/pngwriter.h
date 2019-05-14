@@ -33,10 +33,11 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/io/datawriter.h>
 #include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/io/datawriterexception.h>
 
 namespace inviwo {
 
-class IVW_MODULE_PNG_API PNGLayerWriterException : public Exception {
+class IVW_MODULE_PNG_API PNGLayerWriterException : public DataWriterException {
 public:
     PNGLayerWriterException(const std::string& message = "",
                             ExceptionContext context = ExceptionContext());

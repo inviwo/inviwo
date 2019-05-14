@@ -59,8 +59,8 @@ public:
 
     void updateForNewVolume(const Volume& volume, bool deserialize = false);
     void updateVolume(Volume& volume);
-
     // Read only used to show information
+
     IntSize3Property dimensions_;
     StringProperty format_;
     IntSizeTProperty channels_;

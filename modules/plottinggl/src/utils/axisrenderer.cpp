@@ -56,7 +56,7 @@ namespace detail {
 
 AxisMeshes::AxisMeshes() = default;
 
-Mesh* AxisMeshes::getAxis(const AxisSettings& settings, const size3_t& start, const size3_t& end,
+Mesh* AxisMeshes::getAxis(const AxisSettings& settings, const vec3& start, const vec3& end,
                           size_t pickId) {
     startPos_.check(*this, start);
     endPos_.check(*this, end);
@@ -69,12 +69,12 @@ Mesh* AxisMeshes::getAxis(const AxisSettings& settings, const size3_t& start, co
     return axisMesh_.get();
 }
 
-Mesh* AxisMeshes::getMajor(const AxisSettings& settings, const size3_t& start, const size3_t& end,
+Mesh* AxisMeshes::getMajor(const AxisSettings& settings, const vec3& start, const vec3& end,
                            const vec3& tickDirection) {
     startPos_.check(*this, start);
     endPos_.check(*this, end);
     range_.check(*this, settings.getRange());
-    flip_.check(*this, settings.isAxisFlipped());
+    flip_.check(*this, settings.getFlipped());
     major_.check(*this, settings.getMajorTicks());
     tickDirection_.check(*this, tickDirection);
     if (!majorMesh_) {
@@ -86,12 +86,12 @@ Mesh* AxisMeshes::getMajor(const AxisSettings& settings, const size3_t& start, c
     return majorMesh_.get();
 }
 
-Mesh* AxisMeshes::getMinor(const AxisSettings& settings, const size3_t& start, const size3_t& end,
+Mesh* AxisMeshes::getMinor(const AxisSettings& settings, const vec3& start, const vec3& end,
                            const vec3& tickDirection) {
     startPos_.check(*this, start);
     endPos_.check(*this, end);
     range_.check(*this, settings.getRange());
-    flip_.check(*this, settings.isAxisFlipped());
+    flip_.check(*this, settings.getFlipped());
     major_.check(*this, settings.getMajorTicks());
     minor_.check(*this, settings.getMinorTicks());
     tickDirection_.check(*this, tickDirection);
@@ -138,7 +138,7 @@ std::shared_ptr<MeshShaderCache> AxisRendererBase::getShaders() {
         return cache;
     }
 }
-void AxisRendererBase::renderAxis(Camera* camera, const size3_t& start, const size3_t& end,
+void AxisRendererBase::renderAxis(Camera* camera, const vec3& start, const vec3& end,
                                   const vec3& tickdir, const size2_t& outputDims,
                                   bool antialiasing) {
     auto axisMesh = meshes_.getAxis(settings_, start, end, axisPickingId_);
@@ -149,6 +149,17 @@ void AxisRendererBase::renderAxis(Camera* camera, const size3_t& start, const si
     lineShader.setUniform("screenDim", vec2(outputDims));
     if (camera) {
         utilgl::setShaderUniforms(lineShader, *camera, "camera");
+    } else {
+        const auto m = mat4(1.0f);
+        lineShader.setUniform("camera.worldToView", m);
+        lineShader.setUniform("camera.viewToWorld", m);
+        lineShader.setUniform("camera.worldToClip", m);
+        lineShader.setUniform("camera.viewToClip", m);
+        lineShader.setUniform("camera.clipToView", m);
+        lineShader.setUniform("camera.clipToWorld", m);
+        lineShader.setUniform("camera.position", vec3(0.0f));
+        lineShader.setUniform("camera.nearPlane", 0.0f);
+        lineShader.setUniform("camera.farPlane", 1.0f);
     }
 
     // returns thickness of antialiased edge based on the global antialiasing flag
@@ -191,7 +202,7 @@ void AxisRendererBase::renderAxis(Camera* camera, const size3_t& start, const si
 AxisRenderer::AxisRenderer(const AxisSettings& settings)
     : AxisRendererBase(settings)
     , labels_{[](Labels::LabelPos& labelPos, util::TextureAtlas&, const AxisSettings& settings,
-                 const size3_t& start, const size3_t& end, const vec3&) {
+                 const vec3& start, const vec3& end, const vec3&) {
         const auto tickmarks = plot::getLabelPositions(settings, start, end);
         labelPos.resize(tickmarks.size());
         std::transform(tickmarks.begin(), tickmarks.end(), labelPos.begin(),
@@ -208,8 +219,7 @@ void AxisRenderer::render(const size2_t& outputDims, const size2_t& startPos, co
 
     const auto axisDir = glm::normalize(vec2{endPos} - vec2{startPos});
     const auto tickDir = vec3(-axisDir.y, axisDir.x, 0.0f);
-    renderAxis(nullptr, size3_t{startPos, 0}, size3_t{endPos, 0}, tickDir, outputDims,
-               antialiasing);
+    renderAxis(nullptr, vec3{startPos, 0}, vec3{endPos, 0}, tickDir, outputDims, antialiasing);
     renderText(outputDims, startPos, endPos);
 }
 
@@ -241,11 +251,11 @@ void AxisRenderer::renderText(const size2_t& outputDims, const size2_t& startPos
 
     // axis labels
     if (const auto& labels = settings_.getLabelSettings()) {
-        auto& pos = labels_.getLabelPos(settings_, size3_t{startPos, 0}, size3_t{endPos, 0},
+        auto& pos = labels_.getLabelPos(settings_, vec3{startPos, 0}, vec3{endPos, 0},
                                         textRenderer_, vec3{1});
 
         auto& atlas =
-            labels_.getAtlas(settings_, size3_t{startPos, 0}, size3_t{endPos, 0}, textRenderer_);
+            labels_.getAtlas(settings_, vec3{startPos, 0}, vec3{endPos, 0}, textRenderer_);
 
         const auto anchor = labels.getFont().getAnchorPos();
         const auto angle = glm::radians(labels.getRotation());
@@ -304,11 +314,11 @@ std::pair<vec2, vec2> AxisRenderer::boundingRect(const size2_t& startPos, const 
 
     // axis labels
     if (const auto& labels = settings_.getLabelSettings()) {
-        auto& positions = labels_.getLabelPos(settings_, size3_t{startPos, 0}, size3_t{endPos, 0},
+        auto& positions = labels_.getLabelPos(settings_, vec3{startPos, 0}, vec3{endPos, 0},
                                               textRenderer_, vec3{1});
 
         auto& atlas =
-            labels_.getAtlas(settings_, size3_t{startPos, 0}, size3_t{endPos, 0}, textRenderer_);
+            labels_.getAtlas(settings_, vec3{startPos, 0}, vec3{endPos, 0}, textRenderer_);
 
         const auto anchor = labels.getFont().getAnchorPos();
         const auto angle = glm::radians(labels.getRotation());
@@ -340,7 +350,7 @@ std::pair<vec2, vec2> AxisRenderer::boundingRect(const size2_t& startPos, const 
 AxisRenderer3D::AxisRenderer3D(const AxisSettings& settings)
     : AxisRendererBase(settings)
     , labels_{[](Labels::LabelPos& labelPos, util::TextureAtlas&, const AxisSettings& settings,
-                 const size3_t& start, const size3_t& end, const vec3& tickDirection) {
+                 const vec3& start, const vec3& end, const vec3& tickDirection) {
         const auto tickmarks = plot::getLabelPositions3D(settings, start, end, tickDirection);
         labelPos.resize(tickmarks.size());
 

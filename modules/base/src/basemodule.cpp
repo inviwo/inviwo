@@ -37,6 +37,7 @@
 #include <modules/base/processors/directionallightsourceprocessor.h>
 #include <modules/base/processors/distancetransformram.h>
 #include <modules/base/processors/heightfieldmapper.h>
+#include <modules/base/processors/imageinformation.h>
 #include <modules/base/processors/inputselector.h>
 #include <modules/base/processors/layerdistancetransformram.h>
 #include <modules/base/processors/imageexport.h>
@@ -49,6 +50,7 @@
 #include <modules/base/processors/meshclipping.h>
 #include <modules/base/processors/meshcreator.h>
 #include <modules/base/processors/meshexport.h>
+#include <modules/base/processors/meshinformation.h>
 #include <modules/base/processors/meshmapping.h>
 #include <modules/base/processors/meshsequenceelementselectorprocessor.h>
 #include <modules/base/processors/meshsource.h>
@@ -89,6 +91,10 @@
 // Properties
 #include <modules/base/properties/basisproperty.h>
 #include <modules/base/properties/gaussianproperty.h>
+#include <modules/base/properties/imageinformationproperty.h>
+#include <modules/base/properties/layerinformationproperty.h>
+#include <modules/base/properties/meshinformationproperty.h>
+#include <modules/base/properties/bufferinformationproperty.h>
 #include <modules/base/properties/volumeinformationproperty.h>
 #include <modules/base/properties/sequencetimerproperty.h>
 
@@ -125,6 +131,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<MeshSource>();
     registerProcessor<HeightFieldMapper>();
     registerProcessor<ImageExport>();
+    registerProcessor<ImageInformation>();
     registerProcessor<ImageSnapshot>();
     registerProcessor<ImageSource>();
     registerProcessor<ImageSourceSeries>();
@@ -132,6 +139,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<LayerDistanceTransformRAM>();
     registerProcessor<MeshClipping>();
     registerProcessor<MeshCreator>();
+    registerProcessor<MeshInformation>();
     registerProcessor<MeshMapping>();
     registerProcessor<NoiseProcessor>();
     registerProcessor<PixelToBufferProcessor>();
@@ -186,6 +194,12 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
 
     registerProperty<SequenceTimerProperty>();
     registerProperty<BasisProperty>();
+    registerProperty<ImageInformationProperty>();
+    registerProperty<LayerInformationProperty>();
+    registerProperty<MeshInformationProperty>();
+    registerProperty<BufferInformationProperty>();
+    registerProperty<MeshBufferInformationProperty>();
+    registerProperty<IndexBufferInformationProperty>();
     registerProperty<VolumeInformationProperty>();
 
     registerProperty<Gaussian1DProperty>();

@@ -45,7 +45,7 @@
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
-#include <modules/plotting/datastructures/dataframe.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/rendering/texturequadrenderer.h>
 #include <modules/fontrendering/textrenderer.h>
@@ -81,6 +81,7 @@ class IVW_MODULE_PLOTTINGGL_API ParallelCoordinates : public Processor {
 public:
     enum class BlendMode { None = 0, Additive = 1, Sutractive = 2, Regular = 3 };
     enum class LabelPosition { None, Above, Below };
+    enum class AxisSelection { Single, Multiple, None };
 
 public:
     ParallelCoordinates();
@@ -103,6 +104,8 @@ public:
 
     DataFrameColumnProperty selectedColorAxis_;
     TransferFunctionProperty tf_;
+
+    TemplateOptionProperty<AxisSelection> axisSelection_;
 
     CompositeProperty lineSettings_;
     TemplateOptionProperty<BlendMode> blendMode_;
@@ -130,6 +133,7 @@ public:
     FloatVec4Property axisColor_;
     FloatVec4Property axisHoverColor_;
     FloatVec4Property axisSelectedColor_;
+    BoolProperty handlesVisible_;
     FloatProperty handleSize_;
     FloatVec4Property handleColor_;
     FloatVec4Property handleFilteredColor_;
@@ -191,8 +195,12 @@ private:
 
         // startFilter, startRegular, startSelected, end
         std::array<size_t, 4> offsets;
-
+        
         std::vector<float> axisPositions;
+        // using int here for performance reasons since bool is not supported as GLSL uniform
+        // A bool vector would internally be converted to an int array prior setting the uniform.
+        // \see UniformSetter<std::array<bool, N>>
+        std::vector<int> axisFlipped;
 
         inline static size_t offsetToIndex(size_t offset, size_t cols) {
             return offset / (cols * sizeof(uint32_t));
@@ -207,6 +215,7 @@ private:
     int hoveredAxis_ = -1;
 
     bool brushingDirty_;
+    bool updating_ = false;
 };
 
 }  // namespace plot

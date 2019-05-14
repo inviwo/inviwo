@@ -34,7 +34,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/imageport.h>
-#include <modules/plotting/datastructures/dataframe.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
 #include <modules/plottinggl/plotters/scatterplotgl.h>
 #include <modules/plotting/properties/dataframeproperty.h>
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>

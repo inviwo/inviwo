@@ -36,6 +36,9 @@
 #include <modules/python3qt/pythoneditorwidget.h>
 #include <modules/python3qt/pythonmenu.h>
 
+#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/propertylistwidget.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QInputDialog>
@@ -61,15 +64,30 @@ pybind11::object prompt(std::string title, std::string message, std::string defa
 }  // namespace
 
 Python3QtModule::Python3QtModule(InviwoApplication* app)
-    : InviwoModule(app, "Python3Qt"), menu_(util::make_unique<PythonMenu>(app)) {
+    : InviwoModule(app, "Python3Qt"), menu_(util::make_unique<PythonMenu>(this, app)) {
+    namespace py = pybind11;
 
     try {
-        auto inviwopy = pybind11::module::import("inviwopy");
+        auto inviwopy = py::module::import("inviwopy");
         auto m = inviwopy.def_submodule("qt", "Qt dependent stuff");
 
-        m.def("prompt", &prompt, pybind11::arg("title"), pybind11::arg("message"),
-              pybind11::arg("defaultResponse") = "");
+        m.def("prompt", &prompt, py::arg("title"), py::arg("message"),
+              py::arg("defaultResponse") = "");
         m.def("update", []() { QCoreApplication::instance()->processEvents(); });
+
+        py::class_<PropertyListWidget>(m, "PropertyListWidget")
+            .def(py::init([](InviwoApplication* app) {
+                auto mainwin = utilqt::getApplicationMainWindow();
+                auto plw = new PropertyListWidget(mainwin, app);
+                plw->setFloating(true);
+                return plw;
+            }))
+            .def("addProcessorProperties", &PropertyListWidget::addProcessorProperties)
+            .def("removeProcessorProperties", &PropertyListWidget::removeProcessorProperties)
+            .def("show", &PropertyListWidget::show)
+            .def("hide", &PropertyListWidget::hide)
+            .def("move", [](PropertyListWidget* w, int x, int y) { w->move(x, y); });
+
     } catch (const std::exception& e) {
         throw ModuleInitException(e.what(), IvwContext);
     }

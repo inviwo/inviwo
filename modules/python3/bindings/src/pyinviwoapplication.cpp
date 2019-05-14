@@ -31,10 +31,25 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/common/inviwomodule.h>
-
+#include <inviwo/core/network/processornetwork.h>
 #include <inviwopy/vectoridentifierwrapper.h>
 
 namespace inviwo {
+
+class InviwoApplicationTrampoline : public InviwoApplication {
+public:
+    using InviwoApplication::InviwoApplication;
+
+    virtual void closeInviwoApplication() override {
+        PYBIND11_OVERLOAD(void, InviwoApplication, closeInviwoApplication, );
+    };
+    virtual void startFileObservation(std::string fileName) override {
+        PYBIND11_OVERLOAD(void, InviwoApplication, startFileObservation, fileName);
+    };
+    virtual void stopFileObservation(std::string fileName) override {
+        PYBIND11_OVERLOAD(void, InviwoApplication, stopFileObservation, fileName);
+    };
+};
 
 void exposeInviwoApplication(pybind11::module &m) {
     namespace py = pybind11;
@@ -57,23 +72,31 @@ void exposeInviwoApplication(pybind11::module &m) {
     exposeVectorIdentifierWrapper<std::vector<std::unique_ptr<InviwoModule>>>(
         m, "ModuleVectorWrapper");
 
-    py::class_<InviwoApplication>(m, "InviwoApplication")
+    py::class_<InviwoApplication>(m, "InviwoApplication", py::multiple_inheritance{})
+        .def(py::init<>())
+        .def(py::init<std::string>())
+        .def("getBasePath", &InviwoApplication::getBasePath)
         .def("getPath", &InviwoApplication::getPath, py::arg("pathType"), py::arg("suffix") = "",
              py::arg("createFolder") = false)
+        .def_property_readonly("basePath", &InviwoApplication::getBasePath)
+        .def_property_readonly("displayName", &InviwoApplication::getDisplayName)
+
+        .def_property_readonly(
+            "modules", [](InviwoApplication *app) { return ModuleVecWrapper(app->getModules()); })
         .def("getModuleByIdentifier", &InviwoApplication::getModuleByIdentifier,
              py::return_value_policy::reference)
         .def("getModuleSettings", &InviwoApplication::getModuleSettings,
              py::return_value_policy::reference)
+
         .def("waitForPool", &InviwoApplication::waitForPool)
         .def("closeInviwoApplication", &InviwoApplication::closeInviwoApplication)
+
         .def("getOutputPath",
              [](InviwoApplication *app) { return app->getCommandLineParser().getOutputPath(); })
+
         .def_property_readonly("network", &InviwoApplication::getProcessorNetwork,
-                               py::return_value_policy::reference)
-        .def_property_readonly("basePath", &InviwoApplication::getBasePath)
-        .def_property_readonly("displayName", &InviwoApplication::getDisplayName)
-        .def_property_readonly(
-            "modules", [](InviwoApplication *app) { return ModuleVecWrapper(app->getModules()); })
+                               "Get the processor network", py::return_value_policy::reference)
+
         .def_property_readonly("processorFactory", &InviwoApplication::getProcessorFactory,
                                py::return_value_policy::reference)
         .def_property_readonly("propertyFactory", &InviwoApplication::getPropertyFactory,

@@ -45,7 +45,7 @@ class CompositeProperty;
 class InviwoApplication;
 
 class IVW_CORE_API PropertyOwner : public PropertyOwnerObservable,
-                                   public Serializable,
+                                   public virtual Serializable,
                                    public EventListener {
 public:
     using iterator = std::vector<Property*>::iterator;

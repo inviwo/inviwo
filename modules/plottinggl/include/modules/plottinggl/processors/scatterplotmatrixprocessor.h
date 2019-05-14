@@ -40,7 +40,7 @@
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/properties/eventproperty.h>
 
-#include <modules/plotting/datastructures/dataframe.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
 #include <modules/plottinggl/plotters/scatterplotgl.h>
 #include <modules/plotting/properties/dataframeproperty.h>
 #include <modules/opengl/texture/texture2d.h>
@@ -123,7 +123,7 @@ private:
      * Test wether a given column should be included in the rendering or not. Does this by looking
      * up or creating a bool property in parameters_.
      */
-    bool isIncluded(std::shared_ptr<plot::Column> col);
+    bool isIncluded(std::shared_ptr<Column> col);
 };
 
 }  // namespace plot

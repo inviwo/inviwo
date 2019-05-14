@@ -47,13 +47,13 @@ public:
         : Exception(message, context) {}
 };
 
-/*
+/**
  * T must have a static T* instance_ member variable.
  */
 template <class T>
 class Singleton {
 public:
-    Singleton<T>(){};
+    Singleton<T>() = default;
     Singleton<T>(Singleton<T> const&) = delete;
     void operator=(Singleton<T> const&) = delete;
 
@@ -98,7 +98,11 @@ public:
 
     static bool isInitialized() { return T::instance_ != nullptr; }
 
-    virtual ~Singleton() { T::instance_ = nullptr; };
+    virtual ~Singleton() {
+        if (this == T::instance_) {
+            T::instance_ = nullptr;
+        }
+    };
 
 private:
     static std::string name() { return parseTypeIdName(typeid(T).name()); }

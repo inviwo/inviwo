@@ -62,6 +62,7 @@ AxisProperty::AxisProperty(const std::string& identifier, const std::string& dis
              0.0,
              InvalidationLevel::InvalidOutput,
              PropertySemantics::Text}
+    , flipped_{"flipped", "Swap Label Position", false}
     , orientation_{"orientation",
                    "Orientation",
                    {{"horizontal", "Horizontal", Orientation::Horizontal},
@@ -84,6 +85,7 @@ AxisProperty::AxisProperty(const std::string& identifier, const std::string& dis
     addProperty(width_);
     addProperty(useDataRange_);
     addProperty(range_);
+    addProperty(flipped_);
     addProperty(orientation_);
     addProperty(placement_);
 
@@ -119,6 +121,7 @@ AxisProperty::AxisProperty(const std::string& identifier, const std::string& dis
     placement_.onChange([this]() { adjustAlignment(); });
     majorTicks_.onChange([this]() { updateLabels(); });
     range_.onChange([this]() { updateLabels(); });
+    labelSettings_.title_.onChange([this]() { updateLabels(); });
     // update label alignment to match current status
     adjustAlignment();
     updateLabels();
@@ -131,6 +134,7 @@ AxisProperty::AxisProperty(const AxisProperty& rhs)
     , width_{rhs.width_}
     , useDataRange_{rhs.useDataRange_}
     , range_{rhs.range_}
+    , flipped_{rhs.flipped_}
     , orientation_{rhs.orientation_}
     , placement_{rhs.placement_}
     , captionSettings_{rhs.captionSettings_}
@@ -143,6 +147,7 @@ AxisProperty::AxisProperty(const AxisProperty& rhs)
     addProperty(width_);
     addProperty(useDataRange_);
     addProperty(range_);
+    addProperty(flipped_);
     addProperty(orientation_);
     addProperty(placement_);
 
@@ -158,6 +163,7 @@ AxisProperty::AxisProperty(const AxisProperty& rhs)
     placement_.onChange([this]() { adjustAlignment(); });
     majorTicks_.onChange([this]() { updateLabels(); });
     range_.onChange([this]() { updateLabels(); });
+    labelSettings_.title_.onChange([this]() { updateLabels(); });
     // update label alignment to match current status
     adjustAlignment();
     updateLabels();
@@ -208,6 +214,8 @@ void AxisProperty::adjustAlignment() {
 }
 
 bool AxisProperty::getVisible() const { return visible_.get(); }
+
+bool AxisProperty::getFlipped() const { return flipped_.get(); }
 
 vec4 AxisProperty::getColor() const { return color_.get(); }
 

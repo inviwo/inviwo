@@ -572,7 +572,11 @@ void InviwoMainWindow::addActions() {
                     auto action = menu->addAction(QString::fromStdString(item));
                     auto path = QString::fromStdString(testdir + "/" + item);
                     connect(action, &QAction::triggered, this, [this, path]() {
-                        if (askToSaveWorkspaceChanges()) openWorkspace(path);
+                        if (askToSaveWorkspaceChanges()) {
+                            if (openWorkspace(path)) {
+                                hideWelcomeScreen();
+                            }
+                        }
                     });
                 }
             }
@@ -598,12 +602,8 @@ void InviwoMainWindow::addActions() {
         connect(reloadStyle, &QAction::triggered, [this](bool /*state*/) {
             // The following code snippet allows to reload the Qt style sheets during
             // runtime, which is handy while we change them.
-            QFile styleSheetFile(QString::fromStdString(app_->getPath(PathType::Resources) +
-                                                        "/stylesheets/inviwo.qss"));
-            styleSheetFile.open(QFile::ReadOnly);
-            QString styleSheet = QString::fromUtf8(styleSheetFile.readAll());
-            app_->setStyleSheet(styleSheet);
-            styleSheetFile.close();
+            app_->setStyleSheetFile(QString::fromStdString(app_->getPath(PathType::Resources) +
+                                                           "/stylesheets/inviwo.qss"));
         });
     }
 #endif
@@ -852,9 +852,8 @@ void InviwoMainWindow::addActions() {
                                                   .arg(utilqt::toQString(p->getIdentifier())));
                 action->setCheckable(true);
                 action->setChecked(p->getProcessorWidget()->isVisible());
-                QObject::connect(action, &QAction::toggled, this, [p](bool toggle) {
-                    p->getProcessorWidget()->setVisible(toggle);
-                });
+                QObject::connect(action, &QAction::toggled, this,
+                                 [p](bool toggle) { p->getProcessorWidget()->setVisible(toggle); });
             }
         });
     }

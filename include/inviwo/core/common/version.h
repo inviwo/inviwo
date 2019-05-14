@@ -72,18 +72,6 @@ public:
     ~Version() = default;
 
     /**
-     * \brief Compares major, minor, patch and build versions in order.
-     * @return bool true if lhs is less than rhs, false otherwise.
-     */
-    friend bool operator<(const Version& lhs, const Version& rhs);
-
-    /**
-     * \brief Compares major, minor, patch and build versions in order.
-     * @return bool true if lhs is exactly the same as rhs, false otherwise.
-     */
-    friend bool operator==(const Version& lhs, const Version& rhs);
-
-    /**
      * Major version >= 1: Return true if major and minor versions are equal, false otherwise.
      * Major version < 1: Return true if major, minor and patch versions are equal, false otherwise.
      * @note Major version zero (0.y.z) is for initial development. Anything may change at any time.
@@ -98,8 +86,19 @@ public:
         0;  ///< Increases when you add functionality in a backwards-compatible manner
     unsigned int patch = 0;  ///< Increases when you make backwards-compatible bug fixes
     unsigned int build = 0;  ///< Version metadata
-private:
 };
+
+/**
+ * \brief Compares major, minor, patch and build versions in order.
+ * @return bool true if lhs is less than rhs, false otherwise.
+ */
+IVW_CORE_API bool operator<(const Version& lhs, const Version& rhs);
+
+/**
+ * \brief Compares major, minor, patch and build versions in order.
+ * @return bool true if lhs is exactly the same as rhs, false otherwise.
+ */
+IVW_CORE_API bool operator==(const Version& lhs, const Version& rhs);
 
 IVW_CORE_API bool operator!=(const Version& lhs, const Version& rhs);
 IVW_CORE_API bool operator>(const Version& lhs, const Version& rhs);

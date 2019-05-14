@@ -113,6 +113,7 @@ const Tags Tags::None("");
 const Tags Tags::GL("GL");
 const Tags Tags::CL("CL");
 const Tags Tags::CPU("CPU");
+const Tags Tags::PY("PY");
 
 namespace util {
 
@@ -126,6 +127,9 @@ Tags getPlatformTags(const Tags& t) {
             result.addTag(tag);
         }
         if (util::contains(Tags::CPU.tags_, tag)) {
+            result.addTag(tag);
+        }
+        if (util::contains(Tags::PY.tags_, tag)) {
             result.addTag(tag);
         }
     }

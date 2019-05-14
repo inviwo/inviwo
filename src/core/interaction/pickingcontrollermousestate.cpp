@@ -184,6 +184,7 @@ struct Fsm {
             hasId + event<Move>  [zeroId] / (send<Move>(S::Finished, P::None, H::Exit), uidm) = idle,
             hasId + event<Move>  [diffId] / (send<Move>(S::Finished, P::None, H::Exit, false, false), uidm, send<Move>(S::Started, P::None, H::Enter)),
             hasId + event<Press> [sameId] / (ups, send<Press>(S::Updated, P::Press, H::None)) = pressing,
+            hasId + event<Press> [diffId] / (send<Press>(S::Finished, P::None, H::Exit, false, false), ups, uidp, send<Press>(S::Updated, P::Press, H::Enter)) = pressing,
             hasId + sml::on_entry<_> / rps,
 
             pressing + event<Move>    [sameId]           / (send<Move>(S::Updated, P::Move, H::Move)),
