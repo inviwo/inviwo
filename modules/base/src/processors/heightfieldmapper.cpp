@@ -46,36 +46,29 @@ HeightFieldMapper::HeightFieldMapper()
     : Processor()
     , inport_("image", true)
     , outport_("heightfield", DataFloat32::get())
-    , scalingModeProp_("scalingmode", "Scaling Mode")
+    , scalingModeProp_("scalingmode", "Scaling Mode",
+                       {{"scaleFixed", "Fixed Range [0:1]", HeightFieldScaling::FixedRange},
+                        {"scaleRange", "Data Range", HeightFieldScaling::DataRange},
+                        {"scaleSeaLevel", "Sea Level", HeightFieldScaling::SeaLevel}},
+                       0)
     , heightRange_("heightrange", "Height Range", 0.0f, 1.0f, -1.0e1f, 1.0e1f)
     , maxHeight_("maxheight", "Maximum Height", 1.0f, 0.0f, 1.0e1f)
     , seaLevel_("sealevel", "Sea Level", 0.0f, -1.0e1f, 1.0e1f) {
     addPort(inport_);
     addPort(outport_);
 
-    scalingModeProp_.addOption("scaleFixed", "Fixed Range [0:1]", HeightFieldScaling::FixedRange);
-    scalingModeProp_.addOption("scaleRange", "Data Range", HeightFieldScaling::DataRange);
-    scalingModeProp_.addOption("scaleSeaLevel", "Sea Level", HeightFieldScaling::SeaLevel);
-    scalingModeProp_.set(HeightFieldScaling::FixedRange);
+    heightRange_.visibilityDependsOn(scalingModeProp_, [](const OptionPropertyInt &opt) {
+        return opt == HeightFieldScaling::DataRange;
+    });
+    maxHeight_.visibilityDependsOn(scalingModeProp_, [](const OptionPropertyInt &opt) {
+        return opt == HeightFieldScaling::SeaLevel;
+    });
+    seaLevel_.visibilityDependsOn(scalingModeProp_, [](const OptionPropertyInt &opt) {
+        return opt == HeightFieldScaling::SeaLevel;
+    });
 
-    auto scalingModeChanged = [this]() {
-        int mode = scalingModeProp_.get();
-        heightRange_.setVisible(mode == HeightFieldScaling::DataRange);
-        maxHeight_.setVisible(mode == HeightFieldScaling::SeaLevel);
-        seaLevel_.setVisible(mode == HeightFieldScaling::SeaLevel);
-    };
-
-    scalingModeProp_.onChange(scalingModeChanged);
-
-    addProperty(scalingModeProp_);
-    addProperty(heightRange_);
-    addProperty(maxHeight_);
-    addProperty(seaLevel_);
-
+    addProperties(scalingModeProp_, heightRange_, maxHeight_, seaLevel_);
     setAllPropertiesCurrentStateAsDefault();
-
-    // update UI state
-    scalingModeChanged();
 }
 
 HeightFieldMapper::~HeightFieldMapper() {}

@@ -91,19 +91,17 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
                         InvalidationLevel::InvalidResources)
     , shader_("meshrendering.vert", "meshrendering.frag", false) {
 
-    addPort(inport_);
-    addPort(imageInport_);
-    addPort(outport_);
+    addPort(inport_).onChange([this]() { updateDrawers(); });
+    addPort(imageInport_).setOptional(true);
+    addPort(outport_).addResizeEventListener(&camera_);
 
-    imageInport_.setOptional(true);
-
-    addProperty(camera_);
+    addProperties(camera_, centerViewOnGeometry_, setNearFarPlane_, resetViewParams_);
+    addProperties(geomProperties_, lightingProperty_, trackball_, layers_);
 
     centerViewOnGeometry_.onChange([&]() {
         if (!inport_.hasData()) return;
         meshutil::centerViewOnMeshes(inport_.getVectorData(), camera_);
     });
-    addProperty(centerViewOnGeometry_);
     setNearFarPlane_.onChange([&]() {
         if (!inport_.hasData()) return;
         auto nearFar = meshutil::computeNearFarPlanes(
@@ -111,29 +109,14 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
         camera_.setNearFarPlaneDist(nearFar.first, nearFar.second);
     });
 
-    addProperty(setNearFarPlane_);
     resetViewParams_.onChange([this]() { camera_.resetCamera(); });
-    addProperty(resetViewParams_);
-    outport_.addResizeEventListener(&camera_);
-    inport_.onChange([this]() { updateDrawers(); });
+    geomProperties_.addProperties(cullFace_, enableDepthTest_, overrideColorBuffer_, overrideColor_);
 
-    geomProperties_.addProperty(cullFace_);
-    geomProperties_.addProperty(enableDepthTest_);
-    geomProperties_.addProperty(overrideColorBuffer_);
-    geomProperties_.addProperty(overrideColor_);
-    overrideColor_.setSemantics(PropertySemantics::Color);
-    overrideColor_.setVisible(false);
-    overrideColorBuffer_.onChange([&]() { overrideColor_.setVisible(overrideColorBuffer_.get()); });
+    overrideColor_
+        .setSemantics(PropertySemantics::Color)
+        .visibilityDependsOn(overrideColorBuffer_, [](const BoolProperty p) { return p.get(); });
 
-    addProperty(geomProperties_);
-    addProperty(lightingProperty_);
-    addProperty(trackball_);
-
-    addProperty(layers_);
-    layers_.addProperty(colorLayer_);
-    layers_.addProperty(texCoordLayer_);
-    layers_.addProperty(normalsLayer_);
-    layers_.addProperty(viewNormalsLayer_);
+    layers_.addProperties(colorLayer_, texCoordLayer_, normalsLayer_, viewNormalsLayer_);
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
