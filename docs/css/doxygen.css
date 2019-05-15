@@ -563,7 +563,7 @@ table.memberdecls {
 .memberdecls td.glow,
 .fieldtable tr.glow {
     background-color: #87caf3;
-    box-shadow: none; 
+    box-shadow: none;
 }
 
 .mdescLeft,
@@ -1920,4 +1920,10 @@ samp {
 
 u {
     text-decoration: underline;
+}
+
+.sponsor-images a div img{
+    width: 200px;
+    float: left;
+    margin: 10px;
 }

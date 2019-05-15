@@ -209,6 +209,7 @@ FILTER_PATTERNS        = ${filter_patterns}
 USE_MDFILE_AS_MAINPAGE = ${IVW_ROOT_DIR}/README.md
 
 HTML_EXTRA_FILES       = ${ivw_doxy_dir}/style/img_downArrow.png
+                         ${IVW_ROOT_DIR}/docs/images
 
 EXAMPLE_PATH           = ${IVW_ROOT_DIR} \\
                          ${example_paths}
@@ -417,7 +418,10 @@ function(make_doxygen_target modules_var)
         "docpage{1}=\"\\ingroup processors \\n \#\\1\""
         "docpage{2}=\"\\ingroup processors \\n \#\\2\""
     )
-    set(image_path_list "${IVW_ROOT_DIR}/data/help/images")
+    set(image_path_list
+        "${IVW_ROOT_DIR}/data/help/images"
+        "${IVW_ROOT_DIR}/docs/images"
+    )
     set(all_input
         "${IVW_INCLUDE_DIR}"
         "${IVW_SOURCE_DIR}"
