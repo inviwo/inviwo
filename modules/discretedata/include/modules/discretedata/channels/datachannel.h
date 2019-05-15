@@ -41,7 +41,12 @@ namespace inviwo {
 namespace discretedata {
 
 template <typename T, ind N>
+class BufferChannel;
+
+template <typename T, ind N>
 class BaseChannel : public Channel {
+    friend class BufferChannel<T, N>;
+
 public:
     BaseChannel(const std::string& name, DataFormatId dataFormat,
                 GridPrimitive definedOn = GridPrimitive::Vertex)
@@ -91,7 +96,7 @@ public:
     virtual ~DataChannel() = default;
 
     /**
-     * \brief Indexed point access, copy data
+     * \brief Indexed point access, copy dataerror
      * Thread safe.
      * @param dest Position to write to, expect T[NumComponents]
      * @param index Linear point index
