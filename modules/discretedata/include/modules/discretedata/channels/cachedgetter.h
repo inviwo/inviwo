@@ -44,7 +44,7 @@ struct CachedGetter : public ChannelGetter<typename Parent::value_type, Parent::
     static constexpr int num_comp = Parent::num_comp;
 
     CachedGetter(Parent* parent)
-        : ChannelGetter<value_type, num_comp>(), dataIndex(-1), parent_{parent} {}
+        : ChannelGetter<value_type, num_comp>(), dataIndex_(-1), parent_{parent} {}
     virtual ~CachedGetter() = default;
     virtual CachedGetter* clone() const override { return new CachedGetter(parent_); }
 

@@ -232,7 +232,7 @@ std::shared_ptr<const BufferChannel<T, N>> DataSet::getAsBuffer(const std::strin
     // buffer->copyMetaDataFrom(*dataChannel.get());
 
     // return std::shared_ptr<const BufferChannel<T, N>>(buffer);
-    return std::make_shared<const BufferChannel<T, N>>(dataChannel);
+    return std::make_shared<const BufferChannel<T, N>>(*dataChannel);
 }
 
 }  // namespace discretedata
