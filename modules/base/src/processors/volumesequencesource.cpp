@@ -52,7 +52,7 @@ VolumeSequenceSource::VolumeSequenceSource(InviwoApplication* app)
     , inputType_("inputType", "Input type",
                  {{"singlefile", "Single File", InputType::SingleFile},
                   {"folder", "Folder", InputType::Folder}},
-                 0)
+                 1)
     , file_("filename", "Volume file")
     , folder_("folder", "Volume folder")
     , filter_("filter_", "Filter", "*.*")

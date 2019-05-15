@@ -107,9 +107,9 @@ public:
     void setSelectedExtension(const FileExtension& ext);
 
     /**
-     *	Request a file from the user through the use of a widget.
+     *	Request a file from the user through the use of a widget or a FileDialog.
      */
-    void requestFile();
+    virtual void requestFile();
 
     virtual Document getDescription() const override;
 
