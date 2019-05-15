@@ -298,15 +298,17 @@ void BasisProperty::deserialize(Deserializer& d) {
     if (modified) propertyModified();
 }
 
-void BasisProperty::setCurrentStateAsDefault() {
+BasisProperty& BasisProperty::setCurrentStateAsDefault() {
     CompositeProperty::setCurrentStateAsDefault();
     overrideModel_.setAsDefault();
+    return *this;
 }
 
-void BasisProperty::resetToDefaultState() {
+BasisProperty& BasisProperty::resetToDefaultState() {
     CompositeProperty::resetToDefaultState();
     overrideModel_.reset();
     load();
+    return *this;
 }
 
 void BasisProperty::updateEntity(SpatialEntity<3>& volume) {

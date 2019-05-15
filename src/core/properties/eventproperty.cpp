@@ -96,12 +96,14 @@ void EventProperty::setEventMatcher(std::unique_ptr<EventMatcher> matcher) {
 
 void EventProperty::setAction(Action action) { action_ = std::move(action); }
 
-void EventProperty::setCurrentStateAsDefault() {
+EventProperty& EventProperty::setCurrentStateAsDefault() {
     if (matcher_) matcher_->setCurrentStateAsDefault();
+    return *this;
 }
 
-void EventProperty::resetToDefaultState() {
+EventProperty& EventProperty::resetToDefaultState() {
     if (matcher_) matcher_->resetToDefaultState();
+    return *this;
 }
 
 void EventProperty::serialize(Serializer& s) const {

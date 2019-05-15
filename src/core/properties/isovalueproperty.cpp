@@ -120,19 +120,21 @@ HistogramMode IsoValueProperty::getHistogramMode() { return histogramMode_; }
 
 VolumeInport* IsoValueProperty::getVolumeInport() { return volumeInport_; }
 
-void IsoValueProperty::setCurrentStateAsDefault() {
+IsoValueProperty& IsoValueProperty::setCurrentStateAsDefault() {
     TemplateProperty<IsoValueCollection>::setCurrentStateAsDefault();
     zoomH_.setAsDefault();
     zoomV_.setAsDefault();
     histogramMode_.setAsDefault();
+    return *this;
 }
 
-void IsoValueProperty::resetToDefaultState() {
+IsoValueProperty& IsoValueProperty::resetToDefaultState() {
     NetworkLock lock(this);
     zoomH_.reset();
     zoomV_.reset();
     histogramMode_.reset();
     TemplateProperty<IsoValueCollection>::resetToDefaultState();
+    return *this;
 }
 
 void IsoValueProperty::serialize(Serializer& s) const {

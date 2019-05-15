@@ -337,21 +337,20 @@ public:
     virtual void deserialize(Deserializer& d) override;
 
     /**
-     * Add inport to processor.
+     * Add port to processor.
      * @note Port group is a concept for event propagation. Currently only used for
      * ResizeEvents, which only propagate from outports to inports in the same port group
      * @param port to add
      * @param portGroup name of group to propagate events through (defaults to "default")
      */
-    void addPort(Inport& port, const std::string& portGroup = "default");
-    /**
-     * Add outport to processor.
-     * @note Port group is a concept for event propagation. Currently only used for
-     * ResizeEvents, which only propagate from outports to inports in the same port group
-     * @param port to add
-     * @param portGroup name of group to propagate events through (defaults to "default")
-     */
-    void addPort(Outport& port, const std::string& portGroup = "default");
+    template <typename T>
+    T& addPort(T& port, const std::string& portGroup = "default"){
+        static_assert(std::is_base_of<Inport,  T>::value ||
+                      std::is_base_of<Outport, T>::value,
+                      "T must be an Inport or Outport");
+        addPortInternal(&port, portGroup);
+        return port;
+    }
 
     // Assume ownership of port, needed for dynamic ports
     void addPort(std::unique_ptr<Inport> port, const std::string& portGroup = "default");

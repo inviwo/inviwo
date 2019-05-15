@@ -83,8 +83,8 @@ public:
 
     VolumeInport* getVolumeInport();
 
-    virtual void setCurrentStateAsDefault() override;
-    virtual void resetToDefaultState() override;
+    virtual IsoValueProperty& setCurrentStateAsDefault() override;
+    virtual IsoValueProperty& resetToDefaultState() override;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
