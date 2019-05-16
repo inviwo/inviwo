@@ -360,13 +360,19 @@ public:
     }
 };
 
+
+/**
+* Class for property observers, that get notified when properties are dynamically added or removed.
+* Can be registered on property owners, i.e. processors or composite properties.
+* The observer is only interested in one property of the owner.
+*/
 class DynamicPropObserver : public PropertyOwnerObserver {
 
-    const PropDesc propDesc_;
-    const Config config_;
-    ProcessorNetwork* network_;
-    CustomPropertyListWidget* propList_;
-    unsigned int index_;
+    const PropDesc propDesc_; // descriptor of property that this observer is interested in
+    const Config config_; // config containing the descriptor
+    ProcessorNetwork* network_; // network containing the property
+    CustomPropertyListWidget* propList_; // GUI where the property should appear
+    unsigned int index_; // place in the GUI
 
 public:
     DynamicPropObserver(const PropDesc propDesc, const Config config, ProcessorNetwork* network,
@@ -384,12 +390,13 @@ protected:
 };
 
 void DynamicPropObserver::onDidAddProperty(Property* addedProp, size_t index) {
-    bool isRelated = addedProp->getIdentifier() == propDesc_.id;
-    if (!isRelated) {
+    // Check if interested in the added property
+    bool interested = addedProp->getIdentifier() == propDesc_.id;
+    if (!interested) {
         CompositeProperty* composite = dynamic_cast<CompositeProperty*>(addedProp);
-        if (composite) isRelated = composite->getPropertyByIdentifier(propDesc_.id) != nullptr;
+        if (composite) interested = composite->getPropertyByIdentifier(propDesc_.id) != nullptr;
     }
-    if (isRelated) {
+    if (interested) {
         Property* myProp = getProp(propDesc_, config_, network_);
         if (myProp) propList_->setAtIndex(index_, myProp);
     }
@@ -398,7 +405,9 @@ void DynamicPropObserver::onDidAddProperty(Property* addedProp, size_t index) {
 void DynamicPropObserver::onWillRemoveProperty(Property* property, size_t index) {
     LogCentral::getPtr()->log("GUI", LogLevel::Info, LogAudience::Developer, "", "", 0,
                               property->getIdentifier() + " removed");
+    //TODO implement and test dynamic removal
 }
+
 
 /**
  * Configurable GUI
@@ -414,10 +423,12 @@ class ConfigGUI : public QMainWindow {
     std::string getWorkspaceName() {
         return std::filesystem::path(workspaceFile_).filename().string();
     }
-    std::string getConfigName() { return std::filesystem::path(configFile_).filename().string(); }
+    std::string getConfigName() {
+        return std::filesystem::path(configFile_).filename().string();
+    }
 
     void logWarn(std::string str) {
-        LogCentral::getPtr()->log("GUI", LogLevel::Warn, LogAudience::Developer, "", "", 0,
+        LogCentral::getPtr()->log("ConfigGUI", LogLevel::Warn, LogAudience::Developer, "", "", 0,
                                   str + " (" + getWorkspaceName() + ", " + getConfigName() + ")");
     }
 
@@ -491,7 +502,7 @@ class ConfigGUI : public QMainWindow {
             delete propList_;
             propList_ = nullptr;
         }
-        // for (const auto& observer : observers_) delete observer;
+        for (const auto& observer : observers_) delete observer;
     }
 
 private:
@@ -517,10 +528,13 @@ private:
 
     // Load workspace with file chooser
     void slot_loadWorkspace() {
+
+        // Continue from last path
         const auto dir = workspaceFile_.empty() ? "." : workspaceFile_.c_str();
         const auto fileName = QFileDialog::getOpenFileName(this, tr("Load Workspace..."), dir,
                                                            tr("Inviwo Workspace (*.inv)"));
         const auto fileNameUTF8 = std::string(fileName.toUtf8().constData());
+
         if (fileNameUTF8.empty()) return;  // chooser was closed
 
         // Clear property widgets now, because successful workspace loading will destroy processors
@@ -528,23 +542,26 @@ private:
         // deleted properties
         clearPropList();
 
-        inv_->getProcessorNetwork()->clear();  // does this prevent crashes on cleanup()
+        // Destroy all processors and properties in the old workspace
+        //inv_->getProcessorNetwork()->clear();  // does this prevent crashes ???
+        inv_->getWorkspaceManager()->clear();
 
+        // Try to load
         if (!loadWorkspace(fileNameUTF8, inv_->getWorkspaceManager())) {
-
-            // Workspace file could not be loaded
-
             QMessageBox msgBox;
             msgBox.setText("Workspace could not be loaded. Infos in console.");
             msgBox.exec();
             return;
         }
 
-        // Workspace file successfully loaded
-        workspaceFile_ = fileNameUTF8;  // save to be able to browse at same location later
-        configFile_ = workspaceFile_.substr(0, workspaceFile_.length() - 4) +
-                      ".cfg";  // try to load a matching config
+        // Success!
+
+        // Try to load a matching config
+        configFile_ = workspaceFile_.substr(0, workspaceFile_.length() - 4) + ".cfg";
         slot_reloadConfig();
+
+        // Save path globally
+        workspaceFile_ = fileNameUTF8;
 
         const std::string title = getWorkspaceName() + " - " + getConfigName();
         this->setWindowTitle(title.c_str());
@@ -553,10 +570,9 @@ private:
     // Save workspace with file chooser
     void slot_saveWorkspaceAs() {
         const auto fileName = QFileDialog::getSaveFileName(this, tr("Save Workspace As..."), ".",
-                                                           tr("Inviwo Workspace (*.inv)"))
-                                  .toUtf8()
-                                  .constData();
-        inv_->getWorkspaceManager()->save(fileName);
+                                                           tr("Inviwo Workspace (*.inv)"));
+        const auto fileNameUTF8 = std::string(fileName.toUtf8().constData());
+        inv_->getWorkspaceManager()->save(fileNameUTF8);
     }
 
 public:
@@ -571,13 +587,13 @@ public:
 
         QMenu* fileMenu = menuBar->addMenu("File");
 
+        QAction* loadWorkspace = fileMenu->addAction("Open Workspace...");
+        connect(loadWorkspace, &QAction::triggered, this, &ConfigGUI::slot_loadWorkspace);
+        loadWorkspace->setShortcuts(QKeySequence::Open);
+
         QAction* saveWorkspaceAs = fileMenu->addAction("Save Workspace As...");
         connect(saveWorkspaceAs, &QAction::triggered, this, &ConfigGUI::slot_saveWorkspaceAs);
         saveWorkspaceAs->setShortcuts(QKeySequence::Save);
-
-        QAction* loadWorkspace = fileMenu->addAction("Load Workspace...");
-        connect(loadWorkspace, &QAction::triggered, this, &ConfigGUI::slot_loadWorkspace);
-        loadWorkspace->setShortcuts(QKeySequence::Open);
 
         QAction* loadConfig = fileMenu->addAction("Load Config...");
         connect(loadConfig, &QAction::triggered, this, &ConfigGUI::slot_loadConfig);
@@ -593,6 +609,10 @@ public:
         this->setWindowTitle(title.c_str());
         this->setMinimumHeight(700);
         this->show();
+    }
+
+    ~ConfigGUI() {
+        clearPropList();
     }
 };
 
