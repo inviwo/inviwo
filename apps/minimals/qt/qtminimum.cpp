@@ -351,6 +351,16 @@ public:
         return index;
     }
 
+    int addButton(std::string label, std::function<void()> onclick) {
+        auto button = new QPushButton(this);
+        button->setText(QString(label.c_str()));
+        connect(button, &QPushButton::clicked, onclick);
+        listLayout_->insertWidget(-1, button, 0, Qt::AlignTop);
+        int index = (int)elements_.size();
+        elements_.push_back(button);
+        return index;
+    }
+
     void setAtIndex(unsigned int index, Property* prop) {
         auto factory = InviwoApplication::getPtr()->getPropertyWidgetFactory();
         if (auto propertyWidget = static_cast<PropertyWidgetQt*>(factory->create(prop).release())) {
@@ -360,19 +370,18 @@ public:
     }
 };
 
-
 /**
-* Class for property observers, that get notified when properties are dynamically added or removed.
-* Can be registered on property owners, i.e. processors or composite properties.
-* The observer is only interested in one property of the owner.
-*/
+ * Class for property observers, that get notified when properties are dynamically added or removed.
+ * Can be registered on property owners, i.e. processors or composite properties.
+ * The observer is only interested in one property of the owner.
+ */
 class DynamicPropObserver : public PropertyOwnerObserver {
 
-    const PropDesc propDesc_; // descriptor of property that this observer is interested in
-    const Config config_; // config containing the descriptor
-    ProcessorNetwork* network_; // network containing the property
-    CustomPropertyListWidget* propList_; // GUI where the property should appear
-    unsigned int index_; // place in the GUI
+    const PropDesc propDesc_;    // descriptor of property that this observer is interested in
+    const Config config_;        // config containing the descriptor
+    ProcessorNetwork* network_;  // network containing the property
+    CustomPropertyListWidget* propList_;  // GUI where the property should appear
+    unsigned int index_;                  // place in the GUI
 
 public:
     DynamicPropObserver(const PropDesc propDesc, const Config config, ProcessorNetwork* network,
@@ -405,9 +414,8 @@ void DynamicPropObserver::onDidAddProperty(Property* addedProp, size_t index) {
 void DynamicPropObserver::onWillRemoveProperty(Property* property, size_t index) {
     LogCentral::getPtr()->log("GUI", LogLevel::Info, LogAudience::Developer, "", "", 0,
                               property->getIdentifier() + " removed");
-    //TODO implement and test dynamic removal
+    // TODO implement and test dynamic removal
 }
-
 
 /**
  * Configurable GUI
@@ -423,9 +431,7 @@ class ConfigGUI : public QMainWindow {
     std::string getWorkspaceName() {
         return std::filesystem::path(workspaceFile_).filename().string();
     }
-    std::string getConfigName() {
-        return std::filesystem::path(configFile_).filename().string();
-    }
+    std::string getConfigName() { return std::filesystem::path(configFile_).filename().string(); }
 
     void logWarn(std::string str) {
         LogCentral::getPtr()->log("ConfigGUI", LogLevel::Warn, LogAudience::Developer, "", "", 0,
@@ -435,6 +441,18 @@ class ConfigGUI : public QMainWindow {
     void buildPropListFromConfig(const Config config) {
 
         propList_ = new CustomPropertyListWidget(this);
+
+        if (!config.parseSuccess) {
+            // Show empty state
+            // - GUI has just been started, or
+            // - config file was not found, or
+            // - config file had errors
+            propList_->addPlaceholder("Workspace or Config could not be loaded");
+            propList_->addButton("Open Workpace...", [this]() { this->slot_loadWorkspace(); });
+            propList_->addButton("Load Config...", [this]() { this->slot_loadConfig(); });
+            propList_->addButton("Reload Config", [this]() { this->slot_reloadConfig(); });
+            return;
+        }
 
         const auto network = inv_->getProcessorNetwork();
 
@@ -488,21 +506,19 @@ class ConfigGUI : public QMainWindow {
                 owner->addObserver(observers_.back());
             }
         }
-
-        // TODO check config.parseSuccess. When false:
-        // - GUI has just been started, or
-        // - config file was not found, or
-        // - config file had errors
-        // show message and "load workspace/config again" buttons
     }
 
     void clearPropList() {
+        for (const auto& observer : observers_) {
+            delete observer;
+        }
+        observers_.clear();
+
         if (propList_ != nullptr) {
             // Delete safe to use here (Qt destructur cleans up all child widgets)
             delete propList_;
             propList_ = nullptr;
         }
-        for (const auto& observer : observers_) delete observer;
     }
 
 private:
@@ -519,7 +535,7 @@ private:
     void slot_loadConfig() {
         const auto dir = configFile_.empty() ? "." : workspaceFile_.c_str();
         const auto fileName = QFileDialog::getOpenFileName(
-            this, tr("Load Config..."), dir, tr("Inviwo Application GUI Config (*.cfg)"));
+            this, tr("Load Config..."), dir, tr("Inviwo Application GUI Config (*.cfg *.txt)"));
         const auto fileNameUTF8 = std::string(fileName.toUtf8().constData());
         if (fileNameUTF8.empty()) return;  // chooser was closed
         configFile_ = fileNameUTF8;
@@ -542,8 +558,8 @@ private:
         // deleted properties
         clearPropList();
 
-        // Destroy all processors and properties in the old workspace
-        //inv_->getProcessorNetwork()->clear();  // does this prevent crashes ???
+        // Destroy all processors and properties in the old workspace (hopefully releasing all taken memory)
+        inv_->getProcessorNetwork()->clear();
         inv_->getWorkspaceManager()->clear();
 
         // Try to load
@@ -556,12 +572,12 @@ private:
 
         // Success!
 
+        // Save path globally
+        workspaceFile_ = fileNameUTF8;
+
         // Try to load a matching config
         configFile_ = workspaceFile_.substr(0, workspaceFile_.length() - 4) + ".cfg";
         slot_reloadConfig();
-
-        // Save path globally
-        workspaceFile_ = fileNameUTF8;
 
         const std::string title = getWorkspaceName() + " - " + getConfigName();
         this->setWindowTitle(title.c_str());
@@ -611,9 +627,7 @@ public:
         this->show();
     }
 
-    ~ConfigGUI() {
-        clearPropList();
-    }
+    ~ConfigGUI() { clearPropList(); }
 };
 
 /**
@@ -666,6 +680,7 @@ int main(int argc, char** argv) {
     // Need to clear the network and (will delete processors and processorwidgets)
     // before QMainWindoes is deleted, otherwise it will delete all processorWidgets
     // before Processor can delete them.
+    // TODO investigate crash on closing window after having loaded new workspace
     util::OnScopeExit clearNetwork([&]() { inviwoApp.getProcessorNetwork()->clear(); });
 
     inviwoApp.getProcessorNetwork()->lock();
