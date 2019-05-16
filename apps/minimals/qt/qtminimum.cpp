@@ -94,7 +94,7 @@ struct Config {
     std::vector<PropDesc> props;
 };
 
-// test config file under: C:\Users\ulm_VISCOMSTUD7\Documents\kircher\inviwo\build\apps\minimals\qt
+// test config file under: \inviwo\build\apps\minimals\qt
 
 /**
  * Load config from file
@@ -502,16 +502,6 @@ private:
         this->addDockWidget(Qt::RightDockWidgetArea, propList_);
         const std::string title = getWorkspaceName() + " - " + getConfigName();
         this->setWindowTitle(title.c_str());
-
-        // TODO FIXME volume description properties (DYNAMIC properties):
-        // - is no composite
-        // - get added dynamically after loading volume
-        // - widgets are added internally when using CollapsibleGroupBoxWidget with processor as
-        // owner
-        // - Problem is that we may have multiple widgets for this processor and it shows up in each
-        // - Normally we dont want to have groups but a list of properties: how to add descriptions
-        // then?
-        // - Find out how owner is notified!
     }
 
     // Load config with file chooser
