@@ -3,5 +3,4 @@ inviwo-log.html
 *.pyc
 pyconfig.ini
 .idea
-*.qch
 .vscode
