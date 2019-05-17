@@ -39,7 +39,6 @@ namespace inviwo {
 Property::Property(const std::string& identifier, const std::string& displayName,
                    InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : PropertyObservable()
-    , Serializable()
     , MetaDataOwner()
     , serializationMode_(PropertySerializationMode::Default)
     , identifier_(identifier)
@@ -58,7 +57,6 @@ Property::Property(const std::string& identifier, const std::string& displayName
 
 Property::Property(const Property& rhs)
     : PropertyObservable(rhs)
-    , Serializable(rhs)
     , MetaDataOwner(rhs)
     , serializationMode_(rhs.serializationMode_)
     , identifier_(rhs.identifier_)

@@ -50,17 +50,17 @@ SimpleLightingProperty::SimpleLightingProperty(std::string identifier, std::stri
                    5, InvalidationLevel::InvalidResources)
     , referenceFrame_("referenceFrame", "Space")
     , lightPosition_("lightPosition", "Position", vec3(0.0f, 5.0f, 5.0f), vec3(-10, -10, -10),
-                     vec3(10, 10, 10), vec3(0.1), InvalidationLevel::InvalidOutput,
+                     vec3(10, 10, 10), vec3(0.1f), InvalidationLevel::InvalidOutput,
                      PropertySemantics::LightPosition)
     , lightAttenuation_("lightAttenuation", "Attenuation", vec3(1.0f, 0.0f, 0.0f))
     , applyLightAttenuation_("applyLightAttenuation", "Enable Light Attenuation", false)
 
-    , ambientColor_("lightColorAmbient", "Ambient color", vec3(0.15f), vec3(0), vec3(1), vec3(0.1),
+    , ambientColor_("lightColorAmbient", "Ambient color", vec3(0.15f), vec3(0), vec3(1), vec3(0.1f),
                     InvalidationLevel::InvalidOutput, PropertySemantics::Color)
-    , diffuseColor_("lightColorDiffuse", "Diffuse color", vec3(0.6f), vec3(0), vec3(1), vec3(0.1),
+    , diffuseColor_("lightColorDiffuse", "Diffuse color", vec3(0.6f), vec3(0), vec3(1), vec3(0.1f),
                     InvalidationLevel::InvalidOutput, PropertySemantics::Color)
     , specularColor_("lightColorSpecular", "Specular color", vec3(0.4f), vec3(0), vec3(1),
-                     vec3(0.1), InvalidationLevel::InvalidOutput, PropertySemantics::Color)
+                     vec3(0.1f), InvalidationLevel::InvalidOutput, PropertySemantics::Color)
     , specularExponent_("materialShininess", "Shininess", 60.0f, 1.0f, 180.0f)
     , camera_(camera) {
 
