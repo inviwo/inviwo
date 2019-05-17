@@ -308,10 +308,10 @@ function(ivw_private_make_help)
     )
 
     set(additional_flags_list
-        "LAYOUT_FILE            = ${ivw_doxy_dir}/help/layout.xml"
-        "HTML_STYLESHEET        = ${ivw_doxy_dir}/help/stylesheet.css"
-        "HTML_HEADER            = ${ivw_doxy_dir}/help/header.html"
-        "HTML_FOOTER            = ${ivw_doxy_dir}/help/footer.html"
+        "LAYOUT_FILE            = ${HARG_HTML_DIR}/layout.xml"
+        "HTML_STYLESHEET        = ${HARG_HTML_DIR}/stylesheet.css"
+        "HTML_HEADER            = ${HARG_HTML_DIR}/header.html"
+        "HTML_FOOTER            = ${HARG_HTML_DIR}/footer.html"
         "AUTOLINK_SUPPORT       = NO"
         "HIDE_SCOPE_NAMES       = YES"
         "SHOW_INCLUDE_FILES     = NO"
