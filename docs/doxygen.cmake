@@ -208,8 +208,7 @@ FILTER_PATTERNS        = ${filter_patterns}
 
 USE_MDFILE_AS_MAINPAGE = ${IVW_ROOT_DIR}/README.md
 
-HTML_EXTRA_FILES       = ${ivw_doxy_dir}/style/img_downArrow.png
-                         ${IVW_ROOT_DIR}/docs/images
+HTML_EXTRA_FILES       = ${ivw_doxy_dir}/images
 
 EXAMPLE_PATH           = ${IVW_ROOT_DIR} \\
                          ${example_paths}
@@ -309,10 +308,10 @@ function(ivw_private_make_help)
     )
 
     set(additional_flags_list
-        "LAYOUT_FILE            = ${HARG_HTML_DIR}/layout.xml"
-        "HTML_STYLESHEET        = ${HARG_HTML_DIR}/stylesheet.css"
-        "HTML_HEADER            = ${HARG_HTML_DIR}/header.html"
-        "HTML_FOOTER            = ${HARG_HTML_DIR}/footer.html"
+        "LAYOUT_FILE            = ${ivw_doxy_dir}/help/layout.xml"
+        "HTML_STYLESHEET        = ${ivw_doxy_dir}/help/stylesheet.css"
+        "HTML_HEADER            = ${ivw_doxy_dir}/help/header.html"
+        "HTML_FOOTER            = ${ivw_doxy_dir}/help/footer.html"
         "AUTOLINK_SUPPORT       = NO"
         "HIDE_SCOPE_NAMES       = YES"
         "SHOW_INCLUDE_FILES     = NO"
@@ -391,7 +390,7 @@ function(make_doxygen_target modules_var)
         get_filename_component(DOXYGEN_DOT_PATH ${DOXYGEN_DOT_EXECUTABLE} PATH)
     endif()
 
-    set(ivw_doxy_dir ${IVW_ROOT_DIR}/tools/doxygen)
+    set(ivw_doxy_dir ${IVW_ROOT_DIR}/docs)
     set(IVW_DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/doc"
         CACHE PATH "Path to put the doxygen output")
     set(output_dir ${IVW_DOXYGEN_OUTPUT_DIRECTORY})
@@ -484,11 +483,18 @@ function(make_doxygen_target modules_var)
         WORKING_DIRECTORY ${output_dir}
         COMMENT "Generating Inviwo API documentation with Doxygen"
         VERBATIM
-        COMMAND ${CMAKE_COMMAND} -E copy "${IVW_ROOT_DIR}/docs/css/doxygen.css" "${output_dir}/inviwo/html/doxygen.css"
-        COMMAND ${CMAKE_COMMAND} -E copy "${IVW_ROOT_DIR}/docs/css/navtree.css" "${output_dir}/inviwo/html/navtree.css"
-        COMMAND ${CMAKE_COMMAND} -E copy "${IVW_ROOT_DIR}/docs/css/search.css" "${output_dir}/inviwo/html/search.css"
-        COMMAND ${CMAKE_COMMAND} -E copy "${IVW_ROOT_DIR}/docs/css/tabs.css" "${output_dir}/inviwo/html/tabs.css"
+        # Copy over custom CSS. HTML_EXTRA_STYLESHEET does not override everything correctly.
+        COMMAND ${CMAKE_COMMAND} -E copy "${ivw_doxy_dir}/style/doxygen.css" "${output_dir}/inviwo/html/doxygen.css"
+        COMMAND ${CMAKE_COMMAND} -E copy "${ivw_doxy_dir}/style/navtree.css" "${output_dir}/inviwo/html/navtree.css"
+        COMMAND ${CMAKE_COMMAND} -E copy "${ivw_doxy_dir}/style/search.css" "${output_dir}/inviwo/html/search.css"
+        COMMAND ${CMAKE_COMMAND} -E copy "${ivw_doxy_dir}/style/tabs.css" "${output_dir}/inviwo/html/tabs.css"
+        COMMAND ${CMAKE_COMMAND} -E copy "${ivw_doxy_dir}/style/Montserrat-Regular.ttf" "${output_dir}/inviwo/html/Montserrat-Regular.ttf"
+        COMMAND ${CMAKE_COMMAND} -E copy "${ivw_doxy_dir}/style/Montserrat-Bold.ttf" "${output_dir}/inviwo/html/Montserrat-Bold.ttf"
+        COMMAND ${CMAKE_COMMAND} -E copy "${ivw_doxy_dir}/style/Merriweather-Regular.ttf" "${output_dir}/inviwo/html/Merriweather-Regular.ttf"
+
     )
+
+
     set_target_properties("DOXY-Inviwo" PROPERTIES FOLDER "doc" EXCLUDE_FROM_ALL TRUE)
     add_dependencies("DOXY-ALL" "DOXY-Inviwo")
 

@@ -3,7 +3,11 @@
 [![Build Status](http://jenkins.inviwo.org:8080/buildStatus/icon?job=inviwo-pub/master)](http://jenkins.inviwo.org:8080/job/inviwo-pub/job/master/) [![BSD licensed](https://img.shields.io/badge/license-BSD-blue.svg?maxAge=2592000)](https://github.com/inviwo/inviwo/blob/master/LICENSE)
 [![Release version](https://img.shields.io/github/release/inviwo/inviwo.svg?maxAge=86400)](https://github.com/inviwo/inviwo/releases/latest)
 
-![](docs/images/inviwo-screenshot.png) <!-- .element width="600px" -->
+<div class="inviwo-screenshot">
+
+![](docs/images/inviwo-screenshot.png)
+
+</div>
 
 Inviwo is a software framework for rapid visualization prototyping.
 
@@ -44,10 +48,16 @@ This work was supported by Linköping University,  KTH Royal Institute of Techno
 
 <div class="sponsor-images">
 
-[![](docs/images/liu-black.png)](http://www.liu.se)
-[![](docs/images/kth.png)](http://www.kth.se)
-[![](docs/images/serc.png)](http://e-science.se)
-[![](docs/images/uulm.png)](http://www.uni-ulm.de/en/)
+[![](docs/images/liu-600x600.png)](http://www.liu.se)
+
+
+[![](docs/images/kth-600x600.png)](http://www.kth.se)
+
+
+[![](docs/images/serc-600x600.png)](http://e-science.se)
+
+
+[![](docs/images/uulm-600x600.png)](http://www.uni-ulm.de/en/)
 
 
 </div>
