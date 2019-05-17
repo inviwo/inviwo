@@ -44,6 +44,8 @@ namespace inviwo {
  * Copies web page into a Texture2D each time it has been painted by the browser and calls
  * onWebPageCopiedCallback afterwards.
  */
+#include <warn/push>
+#include <warn/ignore/dll-interface-base> // Fine if dependent libs use the same CEF lib binaries
 class IVW_MODULE_WEBBROWSER_API RenderHandlerGL : public CefRenderHandler {
 public:
     RenderHandlerGL(std::function<void()> onWebPageCopiedCallback);
@@ -80,7 +82,7 @@ private:
 public:
     IMPLEMENT_REFCOUNTING(RenderHandlerGL)
 };
-
+#include <warn/pop>
 };  // namespace inviwo
 
 #endif  // IVW_RENDERHANDLERGL_H

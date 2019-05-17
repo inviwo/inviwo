@@ -93,6 +93,8 @@ namespace inviwo {
  * \class WebBrowser
  * \brief Render webpage into the color and picking layers (OpenGL).
  */
+#include <warn/push>
+#include <warn/ignore/dll-interface-base>  // Fine if dependent libs use the same CEF lib binaries
 class IVW_MODULE_WEBBROWSER_API WebBrowserProcessor : public Processor, public CefLoadHandler {
 public:
     WebBrowserProcessor();
@@ -144,7 +146,7 @@ protected:
 
     IMPLEMENT_REFCOUNTING(WebBrowserProcessor)
 };
-
+#include <warn/pop>
 }  // namespace inviwo
 
 #endif  // IVW_WEBBROWSERPROCESSOR_H

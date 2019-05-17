@@ -70,6 +70,8 @@ namespace inviwo {
  * 2. Javascript functions must be added to the html page, see
  * /data/workspaces/web_property_sync.html
  */
+#include <warn/push>
+#include <warn/ignore/dll-interface-base>  // Fine if dependent libs use the same CEF lib binaries
 class IVW_MODULE_WEBBROWSER_API PropertySyncExampleProcessor : public Processor,
                                                                public CefLoadHandler {
 public:
@@ -111,7 +113,7 @@ private:
 
     IMPLEMENT_REFCOUNTING(PropertySyncExampleProcessor)
 };
-
+#include <warn/pop>
 }  // namespace inviwo
 
 #endif  // IVW_PROPERTYSYNCEXAMPLEPROCESSOR_H

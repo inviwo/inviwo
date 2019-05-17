@@ -66,6 +66,8 @@ namespace inviwo {
  *
  *
  */
+#include <warn/push>
+#include <warn/ignore/dll-interface-base>  // Fine if dependent libs use the same CEF lib binaries
 class IVW_MODULE_WEBBROWSER_API PropertyCefSynchronizer
     : public CefMessageRouterBrowserSide::Handler,
       public CefLoadHandler {
@@ -122,6 +124,7 @@ private:
     std::vector<std::unique_ptr<PropertyWidgetCEF>> widgets_;
     IMPLEMENT_REFCOUNTING(PropertyCefSynchronizer)
 };
+#include <warn/pop>
 
 template <typename T, typename P>
 void PropertyCefSynchronizer::registerPropertyWidget(PropertySemantics semantics) {
