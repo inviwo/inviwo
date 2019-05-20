@@ -224,6 +224,8 @@ public:
     auto dispatchFront(F&& f, Args&&... args)
         -> std::future<typename std::result_of<F(Args...)>::type>;
 
+    void dispatchFrontAndForget(std::function<void()> fun);
+
     virtual void processFront();
 
     /**
@@ -365,6 +367,11 @@ auto dispatchFront(F&& f, Args&&... args)
     return InviwoApplication::getPtr()->dispatchFront(std::forward<F>(f),
                                                       std::forward<Args>(args)...);
 }
+
+inline void dispatchFrontAndForget(std::function<void()> fun) {
+    InviwoApplication::getPtr()->dispatchFrontAndForget(std::move(fun));
+}
+
 template <class F, class... Args>
 auto dispatchPool(F&& f, Args&&... args) -> std::future<typename std::result_of<F(Args...)>::type> {
     return InviwoApplication::getPtr()->dispatchPool(std::forward<F>(f),

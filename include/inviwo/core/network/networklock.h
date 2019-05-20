@@ -47,8 +47,12 @@ struct IVW_CORE_API NetworkLock {
 
     NetworkLock(NetworkLock const&) = delete;
     NetworkLock& operator=(NetworkLock const& that) = delete;
-    NetworkLock(NetworkLock&& rhs) = delete;
-    NetworkLock& operator=(NetworkLock&& that) = delete;
+    NetworkLock(NetworkLock&& rhs) : network_(rhs.network_) { rhs.network_ = nullptr; };
+    NetworkLock& operator=(NetworkLock&& that) {
+        NetworkLock lock(std::move(that));
+        std::swap(network_, lock.network_);
+        return *this;
+    }
 
 private:
     ProcessorNetwork* network_;

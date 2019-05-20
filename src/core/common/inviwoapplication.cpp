@@ -354,6 +354,14 @@ void InviwoApplication::onResourceManagerEnableStateChanged() {
 
 std::locale InviwoApplication::getUILocale() const { return std::locale(); }
 
+void InviwoApplication::dispatchFrontAndForget(std::function<void()> fun) {
+    {
+        std::unique_lock<std::mutex> lock(queue_.mutex);
+        queue_.tasks.push(std::move(fun));
+    }
+    if (queue_.postEnqueue) queue_.postEnqueue();
+}
+
 void InviwoApplication::processFront() {
     NetworkLock netlock(processorNetwork_.get());
     std::function<void()> task;
