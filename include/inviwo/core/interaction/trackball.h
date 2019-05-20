@@ -161,12 +161,12 @@ protected:
     OptionPropertyInt trackballMethod_;  /// Chooses which trackball method to use (mouse only,
                                          /// touch always follows finger)
     FloatProperty sensitivity_;          /// Controls the rotation sensitivity
-    FloatProperty verticalAngleLimit_;   /// Limits the angle between world up and view direction
-                                         /// when fixUp is True
     FloatProperty movementSpeed_;
     BoolProperty fixUp_;               /// Fixes the up vector to world_up in all rotation methods
     OptionPropertyInt worldUp_;        /// Defines which axis is considered up in world space
     FloatVec3Property customWorldUp_;  /// The custom world up direction (normalized)
+    FloatProperty verticalAngleLimit_;   /// Limits the angle between world up and view direction
+                                         /// when fixUp is True
 
     // Interaction restrictions
     BoolProperty handleInteractionEvents_;
@@ -174,8 +174,8 @@ protected:
     BoolProperty allowHorizontalPanning_;  ///< Enable/disable horizontal panning
     BoolProperty allowVerticalPanning_;    ///< Enable/disable vertical panning
     BoolProperty allowZooming_;            ///< Enable/disable zooming
+    BoolProperty allowWheelZooming_;       ///< Enable/disable zooming using the mouse wheel
 
-    FloatProperty maxZoomInDistance_;  ///< Cannot zoom in closer than this distance
     // Options to restrict rotation around view-space axes.
     BoolProperty allowHorizontalRotation_;  ///< Enable/disable rotation around horizontal axis
     BoolProperty allowVerticalRotation_;    ///< Enable/disable rotation around vertical axis
@@ -189,17 +189,16 @@ protected:
 
     // Event Properties.
     EventProperty mouseRotate_;
+    EventProperty mouseZoom_;
+    EventProperty wheelZoom_;
     EventProperty mousePan_;
     EventProperty mouseRecenterFocusPoint_;
     EventProperty mouseReset_;
 
-    EventProperty mouseZoom_;
-    EventProperty wheelZoom_;
-
-    EventProperty moveLeft_;
-    EventProperty moveRight_;
     EventProperty moveUp_;
+    EventProperty moveLeft_;
     EventProperty moveDown_;
+    EventProperty moveRight_;
     EventProperty moveForward_;
     EventProperty moveBackward_;
 
@@ -225,6 +224,37 @@ protected:
     std::chrono::system_clock::time_point lastRotTime_;
     bool evaluated_;
     Timer timer_;
+
+private:
+    auto props() {
+        return std::tie(trackballMethod_, sensitivity_, movementSpeed_, fixUp_,
+                        worldUp_, customWorldUp_, verticalAngleLimit_, handleInteractionEvents_, allowHorizontalPanning_,
+                        allowVerticalPanning_, allowZooming_, allowWheelZooming_,
+                        allowHorizontalRotation_, allowVerticalRotation_,
+                        allowViewDirectionRotation_, allowRecenterView_, animate_);
+    }
+    auto props() const {
+        return std::tie(trackballMethod_, sensitivity_, movementSpeed_, fixUp_,
+                        worldUp_, customWorldUp_, verticalAngleLimit_, handleInteractionEvents_, allowHorizontalPanning_,
+                        allowVerticalPanning_, allowZooming_, allowWheelZooming_,
+                        allowHorizontalRotation_, allowVerticalRotation_,
+                        allowViewDirectionRotation_, allowRecenterView_, animate_);
+    }
+
+    auto eventprops() {
+        return std::tie(mouseRotate_, mouseZoom_, wheelZoom_, mousePan_, mouseRecenterFocusPoint_,
+                        mouseReset_, moveUp_, moveLeft_, moveDown_, moveRight_, moveForward_,
+                        moveBackward_, stepRotateUp_, stepRotateLeft_, stepRotateDown_,
+                        stepRotateRight_, stepZoomIn_, stepZoomOut_, stepPanUp_, stepPanLeft_,
+                        stepPanDown_, stepPanRight_, touchGesture_);
+    }
+    auto eventprops() const {
+        return std::tie(mouseRotate_, mouseZoom_, wheelZoom_, mousePan_, mouseRecenterFocusPoint_,
+                        mouseReset_, moveUp_, moveLeft_, moveDown_, moveRight_, moveForward_,
+                        moveBackward_, stepRotateUp_, stepRotateLeft_, stepRotateDown_,
+                        stepRotateRight_, stepZoomIn_, stepZoomOut_, stepPanUp_, stepPanLeft_,
+                        stepPanDown_, stepPanRight_, touchGesture_);
+    }
 };
 
 }  // namespace inviwo
