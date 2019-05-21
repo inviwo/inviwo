@@ -50,6 +50,8 @@ namespace inviwo {
 /* \class WebBrowserClient
  * CefClient with custom render handler
  */
+#include <warn/push>
+#include <warn/ignore/dll-interface-base>  // Fine if dependent libs use the same CEF lib binaries
 class IVW_MODULE_WEBBROWSER_API WebBrowserClient : public CefClient,
                                                    public CefLifeSpanHandler,
                                                    public CefRequestHandler,
@@ -138,7 +140,7 @@ private:
     IMPLEMENT_REFCOUNTING(WebBrowserClient)
     DISALLOW_COPY_AND_ASSIGN(WebBrowserClient);
 };
-
+#include <warn/pop>
 }  // namespace inviwo
 
 #endif  // IVW_WEBBROWSERCLIENT_H
