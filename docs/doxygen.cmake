@@ -167,7 +167,7 @@ BUILTIN_STL_SUPPORT    = YES
 
 CASE_SENSE_NAMES       = YES
 
-INPUT                  = ${IVW_ROOT_DIR}/README.md \\
+INPUT                  = ${ivw_doxy_dir}/markdown/Index.md \\
                          ${inputs}
 
 ENABLE_PREPROCESSING   = YES
@@ -206,7 +206,7 @@ EXCLUDE_SYMBOLS        = cl::* \\
 
 FILTER_PATTERNS        = ${filter_patterns}
 
-USE_MDFILE_AS_MAINPAGE = ${IVW_ROOT_DIR}/README.md
+USE_MDFILE_AS_MAINPAGE = ${ivw_doxy_dir}/markdown/Index.md
 
 HTML_EXTRA_FILES       = ${ivw_doxy_dir}/images
 

@@ -46,7 +46,18 @@ For help and general discussion join us on our [Slack](https://join.slack.com/t/
 #### Sponsors
 This work was supported by Linköping University,  KTH Royal Institute of Technology, Ulm University, and through grants from the Swedish e-Science Research Centre (SeRC).
 
-<a href='http://www.liu.se'><img src="docs/images/liu-600x600.png" width="200" style="margin-right:10px;"></a>
-<a href='http://www.kth.se'><img src="docs/images/kth-600x600.png" width="200" style="margin-right:10px;"></a>
-<a href='http://e-science.se'><img src="docs/images/serc-600x600.png" width="200" style="margin-right:10px;"></a>
-<a href='http://www.uni-ulm.de/en/'><img src="docs/images/uulm-600x600.png" width="200" style="margin-right:10px;"></a>
+<div class="sponsor-images">
+
+[![](liu-200x200.png)](http://www.liu.se)
+
+
+[![](kth-200x200.png)](http://www.kth.se)
+
+
+[![](serc-200x200.png)](http://e-science.se)
+
+
+[![](uulm-200x200.png)](http://www.uni-ulm.de/en/)
+
+
+</div>
