@@ -38,8 +38,6 @@ Below follow some general information about the framework:
 
 #### Documentation
   - [Manual](https://github.com/inviwo/inviwo/wiki/Manual)
-  - [API](https://inviwo.github.io/inviwo/doc/)
-  - [Changelog](/CHANGELOG.md)
 
 For help and general discussion join us on our [Slack](https://join.slack.com/t/inviwo/shared_invite/enQtNTc2Nzc2NDQwNzIxLWM0N2VlYmNiZGU2MThiY2I5MGMwZTc3NzI2MjRkODg2M2NmMzRlYjRhNjU3YzUwNGQ1OWE0ZGE1NTAwZGU2YzI) server
 
