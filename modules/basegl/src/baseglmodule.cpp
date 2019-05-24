@@ -40,6 +40,9 @@
 #include <modules/basegl/processors/heightfieldprocessor.h>
 #include <modules/basegl/processors/imageprocessing/findedges.h>
 #include <modules/basegl/processors/imageprocessing/imagebinary.h>
+#include <modules/basegl/processors/imageprocessing/imagechannelcombine.h>
+#include <modules/basegl/processors/imageprocessing/imagechannelreplicate.h>
+#include <modules/basegl/processors/imageprocessing/imagechannelselect.h>
 #include <modules/basegl/processors/imageprocessing/imagecompositeprocessorgl.h>
 #include <modules/basegl/processors/imageprocessing/imagegamma.h>
 #include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
@@ -130,6 +133,9 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     // image processing
     registerProcessor<FindEdges>();
     registerProcessor<ImageBinary>();
+    registerProcessor<ImageChannelCombine>();
+    registerProcessor<ImageChannelReplicate>();
+    registerProcessor<ImageChannelSelect>();
     registerProcessor<ImageGamma>();
     registerProcessor<ImageGradient>();
     registerProcessor<ImageGrayscale>();
