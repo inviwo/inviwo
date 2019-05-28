@@ -145,7 +145,7 @@ void util::layerRAMDistanceTransform(const LayerRAMPrecision<T> *inLayer,
         throw Exception(
             "DistanceTransformRAM: Dimensions does not match src = " + toString(srcDim) +
                 " dst = " + toString(dstDim) + " scaling = " + toString(sm),
-            IvwContextCustom("layerRAMDistanceTransform"));
+            IVW_CONTEXT_CUSTOM("layerRAMDistanceTransform"));
     }
 
     util::IndexMapper<2, int64> srcInd(srcDim);

@@ -53,7 +53,7 @@ TIFFStackVolumeReader* TIFFStackVolumeReader::clone() const {
 std::shared_ptr<Volume> TIFFStackVolumeReader::readData(const std::string& filePath) {
     if (!filesystem::fileExists(filePath)) {
         throw TIFFStackVolumeReaderException("Error could not find input file: " + filePath,
-                                             IvwContext);
+                                             IVW_CONTEXT);
     }
 
     auto header = cimgutil::getTIFFHeader(filePath);
@@ -90,7 +90,7 @@ std::shared_ptr<VolumeRepresentation> TIFFStackVolumeRAMLoader::createRepresenta
             fileName = newPath;
         } else {
             throw TIFFStackVolumeReaderException("Error could not find input file: " + fileName,
-                                                 IvwContext);
+                                                 IVW_CONTEXT);
         }
     }
     cimgutil::TIFFHeader header;
@@ -114,7 +114,7 @@ void TIFFStackVolumeRAMLoader::updateRepresentation(
             fileName = newPath;
         } else {
             throw TIFFStackVolumeReaderException("Error could not find input file: " + fileName,
-                                                 IvwContext);
+                                                 IVW_CONTEXT);
         }
     }
 

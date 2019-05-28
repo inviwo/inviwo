@@ -258,7 +258,7 @@ std::unique_ptr<QMenu> PropertyWidgetQt::getContextMenu() {
 }
 
 std::unique_ptr<QMimeData> PropertyWidgetQt::getPropertyMimeData() const {
-    auto mimeData = util::make_unique<QMimeData>();
+    auto mimeData = std::make_unique<QMimeData>();
     if (!property_) return mimeData;
 
     Serializer serializer("");

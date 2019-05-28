@@ -70,7 +70,7 @@ void updateWorkspaces(InviwoApplication* app, const std::string& path) {
 
                 if (errorCounter->getErrorCount() > 0) {
                     throw Exception("Error messages found!",
-                                    IvwContextCustom("util::updateWorkspaces"));
+                                    IVW_CONTEXT_CUSTOM("util::updateWorkspaces"));
                 }
             }
             {

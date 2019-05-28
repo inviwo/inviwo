@@ -58,8 +58,8 @@ CompositeProcessor::CompositeProcessor(const std::string& identifier,
                                        const std::string& file)
     : Processor(identifier, displayName)
     , app_{app}
-    , subNetwork_{util::make_unique<ProcessorNetwork>(app)}
-    , evaluator_{util::make_unique<ProcessorNetworkEvaluator>(subNetwork_.get())} {
+    , subNetwork_{std::make_unique<ProcessorNetwork>(app)}
+    , evaluator_{std::make_unique<ProcessorNetworkEvaluator>(subNetwork_.get())} {
 
     subNetwork_->addObserver(this);
 
@@ -164,7 +164,7 @@ Property* CompositeProcessor::addSuperProperty(Property* orgProp) {
             return handlers_[orgProp]->superProperty;
         } else {
             throw Exception("Could not find property " + joinString(orgProp->getPath(), "."),
-                            IvwContext);
+                            IVW_CONTEXT);
         }
     }
 }

@@ -45,14 +45,14 @@ enum class OptionRegEnumUInt : unsigned int {};
 struct DataFrameColumnOptionConverterRegFunctor {
     template <typename T>
     auto operator()(std::function<void(std::unique_ptr<PropertyConverter>)> reg) {
-        reg(util::make_unique<DataFrameColumnToOptionConverter<TemplateOptionProperty<T>>>());
+        reg(std::make_unique<DataFrameColumnToOptionConverter<TemplateOptionProperty<T>>>());
     }
 };
 
 struct OptionDataFrameColumnConverterRegFunctor {
     template <typename T>
     auto operator()(std::function<void(std::unique_ptr<PropertyConverter>)> reg) {
-        reg(util::make_unique<OptionToDataFrameColumnConverter<TemplateOptionProperty<T>>>());
+        reg(std::make_unique<OptionToDataFrameColumnConverter<TemplateOptionProperty<T>>>());
     }
 };
 
@@ -92,7 +92,7 @@ PlottingModule::PlottingModule(InviwoApplication* app) : InviwoModule(app, "Plot
 int PlottingModule::getVersion() const { return 1; }
 
 std::unique_ptr<VersionConverter> PlottingModule::getConverter(int version) const {
-    return util::make_unique<Converter>(version);
+    return std::make_unique<Converter>(version);
 }
 
 PlottingModule::Converter::Converter(int version) : version_(version) {}

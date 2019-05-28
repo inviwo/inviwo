@@ -215,19 +215,19 @@ std::pair<std::vector<float>, std::vector<vec4>> TFPrimitiveSet::getVectorsf() c
 }
 
 void TFPrimitiveSet::add(const TFPrimitive& primitive) {
-    add(util::make_unique<TFPrimitive>(primitive));
+    add(std::make_unique<TFPrimitive>(primitive));
 }
 
 void TFPrimitiveSet::add(double pos, const vec4& color) {
-    add(util::make_unique<TFPrimitive>(pos, color));
+    add(std::make_unique<TFPrimitive>(pos, color));
 }
 
 void TFPrimitiveSet::add(const dvec2& pos) {
     const vec4 color(vec3(interpolateColor(pos.x)), static_cast<float>(pos.y));
-    add(util::make_unique<TFPrimitive>(pos.x, color));
+    add(std::make_unique<TFPrimitive>(pos.x, color));
 }
 
-void TFPrimitiveSet::add(const TFPrimitiveData& data) { add(util::make_unique<TFPrimitive>(data)); }
+void TFPrimitiveSet::add(const TFPrimitiveData& data) { add(std::make_unique<TFPrimitive>(data)); }
 
 void TFPrimitiveSet::add(const std::vector<TFPrimitiveData>& primitives) {
     for (auto& v : primitives) {
@@ -247,7 +247,7 @@ void TFPrimitiveSet::add(std::unique_ptr<TFPrimitive> primitive) {
         ((primitive->getPosition() < 0.0f) || (primitive->getPosition() > 1.0f))) {
         throw RangeException("Adding TFPrimitive at " + std::to_string(primitive->getPosition()) +
                                  " outside of range [0,1]",
-                             IvwContext);
+                             IVW_CONTEXT);
     }
 
     primitive->addObserver(this);

@@ -57,14 +57,14 @@ std::shared_ptr<DataFrame> CSVReader::readData(const std::string& fileName) {
 
     if (!file.is_open()) {
         throw FileException(std::string("CSVReader: Could not open file \"" + fileName + "\"."),
-                            IvwContext);
+                            IVW_CONTEXT);
     }
     file.seekg(0, std::ios::end);
     std::streampos len = file.tellg();
     file.seekg(0, std::ios::beg);
 
     if (len == std::streampos(0)) {
-        throw CSVDataReaderException("Empty file, no data", IvwContext);
+        throw CSVDataReaderException("Empty file, no data", IVW_CONTEXT);
     }
 
     return readData(file);
@@ -75,14 +75,14 @@ std::shared_ptr<DataFrame> CSVReader::readData(std::istream& stream) const {
     filesystem::skipByteOrderMark(stream);
 
     if (stream.bad() || stream.fail()) {
-        throw CSVDataReaderException("Input stream in a bad state", IvwContext);
+        throw CSVDataReaderException("Input stream in a bad state", IVW_CONTEXT);
     }
 
     // create a string stream from input stream for buffering
     std::stringstream in;
     in << stream.rdbuf();
     if (in.fail()) {
-        throw CSVDataReaderException("No data", IvwContext);
+        throw CSVDataReaderException("No data", IVW_CONTEXT);
     }
 
     // current line

@@ -213,7 +213,7 @@ IVW_CORE_API std::string getInviwoUserSettingsPath() {
         ss << std::string(ch) << "/Inviwo";
     } else {
         throw Exception("SHGetKnownFolderPath failed to get settings folder",
-                        IvwContextCustom("filesystem"));
+                        IVW_CONTEXT_CUSTOM("filesystem"));
     }
 
 #elif defined(__unix__)

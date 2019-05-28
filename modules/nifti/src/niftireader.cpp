@@ -85,7 +85,7 @@ std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(const std::st
                                             nifti_image_free);
     if (!niftiImage) {
         throw DataReaderException("Error: failed to read NIfTI image in file: " + filePath,
-                                  IvwContextCustom("NiftiReader"));
+                                  IVW_CONTEXT_CUSTOM("NiftiReader"));
     }
 
     const DataFormatBase* format = nullptr;
@@ -99,7 +99,7 @@ std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(const std::st
         dims << dim;
         throw DataReaderException(
             "Error: Unsupported dimension (" + dims.str() + ") in nifti file: " + filePath,
-            IvwContextCustom("NiftiReader"));
+            IVW_CONTEXT_CUSTOM("NiftiReader"));
     }
     glm::mat4 basisAndOffset(2.0f);
     glm::vec3 spacing(niftiImage->pixdim[1], niftiImage->pixdim[2], niftiImage->pixdim[3]);
@@ -109,7 +109,7 @@ std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(const std::st
         std::string datatype(nifti_datatype_string(niftiImage->datatype));
         throw DataReaderException(
             "Error: Unsupported format (" + datatype + ") in nifti file: " + filePath,
-            IvwContextCustom("NiftiReader"));
+            IVW_CONTEXT_CUSTOM("NiftiReader"));
     }
 
     auto volume = std::make_shared<Volume>(dim);
@@ -338,14 +338,14 @@ void NiftiVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresenta
     auto volumeDst = std::static_pointer_cast<VolumeRAM>(dest);
 
     if (size3_t{region_size[0], region_size[1], region_size[2]} != volumeDst->getDimensions()) {
-        throw Exception("Mismatching volume dimensions, can't update", IvwContext);
+        throw Exception("Mismatching volume dimensions, can't update", IVW_CONTEXT);
     }
     auto data = volumeDst->getData();
     auto readBytes = nifti_read_subregion_image(nim.get(), const_cast<int*>(start_index.data()),
                                                 const_cast<int*>(region_size.data()), &data);
     if (readBytes < 0) {
         throw DataReaderException(
-            "Error: Could not read data from file: " + std::string(nim->fname), IvwContext);
+            "Error: Could not read data from file: " + std::string(nim->fname), IVW_CONTEXT);
     }
     // Flip data along axes if necessary
     if (flipAxis[0] || flipAxis[1] || flipAxis[2]) {

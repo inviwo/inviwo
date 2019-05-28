@@ -301,7 +301,7 @@ void PropertyTrack<Prop, Key>::setProperty(Property* property) {
         this->setIdentifier(property_->getIdentifier());
         this->setName(property_->getDisplayName());
     } else {
-        throw Exception("Invalid property set to track", IvwContext);
+        throw Exception("Invalid property set to track", IVW_CONTEXT);
     }
 }
 

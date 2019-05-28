@@ -45,10 +45,10 @@ namespace inviwo {
 
 OpenGLModule::OpenGLModule(InviwoApplication* app)
     : InviwoModule(app, "OpenGL")
-    , shaderManager_{util::make_unique<ShaderManager>()}
-    , sharedResources_{util::make_unique<SharedOpenGLResources>()} {
+    , shaderManager_{std::make_unique<ShaderManager>()}
+    , sharedResources_{std::make_unique<SharedOpenGLResources>()} {
 
-    auto settings = util::make_unique<OpenGLSettings>();
+    auto settings = std::make_unique<OpenGLSettings>();
 
     ShaderManager::init(shaderManager_.get());
     SharedOpenGLResources::init(sharedResources_.get());
@@ -60,18 +60,18 @@ OpenGLModule::OpenGLModule(InviwoApplication* app)
     registerRepresentationConverter<LayerRepresentation>(util::make_unique<LayerGL2RAMConverter>());
 
     registerRepresentationConverter<VolumeRepresentation>(
-        util::make_unique<VolumeRAM2GLConverter>());
+        std::make_unique<VolumeRAM2GLConverter>());
     registerRepresentationConverter<VolumeRepresentation>(
-        util::make_unique<VolumeGL2RAMConverter>());
+        std::make_unique<VolumeGL2RAMConverter>());
 
     registerRepresentationConverter<BufferRepresentation>(
-        util::make_unique<BufferRAM2GLConverter>());
+        std::make_unique<BufferRAM2GLConverter>());
     registerRepresentationConverter<BufferRepresentation>(
-        util::make_unique<BufferGL2RAMConverter>());
+        std::make_unique<BufferGL2RAMConverter>());
 
     registerProcessor<CanvasProcessorGL>();
 
-    auto openGLCap = util::make_unique<OpenGLCapabilities>(settings.get());
+    auto openGLCap = std::make_unique<OpenGLCapabilities>(settings.get());
     shaderManager_.get()->setOpenGLSettings(settings.get());
 
     registerSettings(std::move(settings));

@@ -167,7 +167,7 @@ T* DataGroup<Self, Repr>::getRepresentation(bool editable) const {
         throw Exception(
             "Trying to create an invalid group representation: " + std::string(typeid(T).name()) +
                 " for data: " + std::string(typeid(this).name()),
-            IvwContext);
+            IVW_CONTEXT);
     }
     representation->setOwner(static_cast<Self*>(const_cast<DataGroup<Self, Repr>*>(this)));
     representation->update(editable);

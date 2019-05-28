@@ -45,11 +45,11 @@ NiftiModule::NiftiModule(InviwoApplication* app) : InviwoModule(app, "Nifti") {
     // registerProperty<NiftiProperty>());
 
     // Readers and writes
-    registerDataReader(util::make_unique<NiftiReader>());
-    // registerDataWriter(util::make_unique<NiftiWriter>());
+    registerDataReader(std::make_unique<NiftiReader>());
+    // registerDataWriter(std::make_unique<NiftiWriter>());
 
     // Data converters
-    // registerRepresentationConverter(util::make_unique<NiftiDisk2RAMConverter>());
+    // registerRepresentationConverter(std::make_unique<NiftiDisk2RAMConverter>());
 
     // Ports
     // registerPort<NiftiOutport>());
@@ -62,9 +62,9 @@ NiftiModule::NiftiModule(InviwoApplication* app) : InviwoModule(app, "Nifti") {
     // registerDialog<NiftiDialog>(NiftiOutport));
 
     // Other varius things
-    // registerCapabilities(util::make_unique<NiftiCapabilities>()));
-    // registerSettings(util::make_unique<NiftiSettings>());
-    // registerMetaData(util::make_unique<NiftiMetaData>());
+    // registerCapabilities(std::make_unique<NiftiCapabilities>()));
+    // registerSettings(std::make_unique<NiftiSettings>());
+    // registerMetaData(std::make_unique<NiftiMetaData>());
     // registerPortInspector("NiftiOutport", "path/workspace.inv");
     // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget>
     // processorWidget); registerDrawer(util::make_unique_ptr<NiftiDrawer>());

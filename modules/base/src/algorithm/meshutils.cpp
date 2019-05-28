@@ -95,7 +95,7 @@ std::shared_ptr<BasicMesh> ellipse(const vec3& center, const vec3& majorAxis, co
 
         float k;
         vec3 o;
-        auto tube = util::make_unique<BasicMesh>();
+        auto tube = std::make_unique<BasicMesh>();
         auto inds = tube->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
         for (std::uint32_t j = 0; j < segments; ++j) {
             k = static_cast<float>(j);

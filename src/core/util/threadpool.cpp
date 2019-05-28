@@ -38,13 +38,13 @@ ThreadPool::ThreadPool(size_t threads, std::function<void()> onThreadStart,
                        std::function<void()> onThreadStop)
     : onThreadStart_{std::move(onThreadStart)}, onThreadStop_{std::move(onThreadStop)} {
     while (workers.size() < threads) {
-        workers.push_back(util::make_unique<Worker>(*this));
+        workers.push_back(std::make_unique<Worker>(*this));
     }
 }
 
 size_t ThreadPool::trySetSize(size_t size) {
     while (workers.size() < size) {
-        workers.push_back(util::make_unique<Worker>(*this));
+        workers.push_back(std::make_unique<Worker>(*this));
     }
 
     if (workers.size() > size) {

@@ -46,14 +46,14 @@ std::shared_ptr<DataFrame> JSONDataFrameReader::readData(const std::string& file
 
     if (!file.is_open()) {
         throw FileException(std::string("JSONDataFrameReader: Could not open file \"" + fileName + "\"."),
-                            IvwContext);
+                            IVW_CONTEXT);
     }
     file.seekg(0, std::ios::end);
     std::streampos len = file.tellg();
     file.seekg(0, std::ios::beg);
 
     if (len == std::streampos(0)) {
-        throw FileException("Empty file, no data", IvwContext);
+        throw FileException("Empty file, no data", IVW_CONTEXT);
     }
 
     return readData(file);

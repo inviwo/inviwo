@@ -144,10 +144,10 @@ LightVolumeGL::LightVolumeGL()
     mergeShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
     for (auto& elem : propParams_) {
-        elem.fbo = util::make_unique<FrameBufferObject>();
+        elem.fbo = std::make_unique<FrameBufferObject>();
     }
 
-    mergeFBO_ = util::make_unique<FrameBufferObject>();
+    mergeFBO_ = std::make_unique<FrameBufferObject>();
     supportColoredLightChanged();
 }
 

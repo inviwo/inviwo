@@ -43,7 +43,7 @@ AnimationManager& getAnimationManager(InviwoApplication* app) {
         }
     }
     throw Exception("Was not able to find the animation manager",
-                    IvwContextCustom("AnimationSupplier"));
+                    IVW_CONTEXT_CUSTOM("AnimationSupplier"));
 }
 
 AnimationSupplier::AnimationSupplier(AnimationManager& manager) : manager_(manager) {}

@@ -45,7 +45,7 @@ AnimationQtSupplier::AnimationQtSupplier(InviwoApplication* app)
             }
         }
         throw Exception("Was not able to find the animation qt module",
-                        IvwContextCustom("AnimationQtSupplier"));
+                        IVW_CONTEXT_CUSTOM("AnimationQtSupplier"));
     }()} {}
 
 AnimationQtSupplier::~AnimationQtSupplier() { unRegisterAll(); }

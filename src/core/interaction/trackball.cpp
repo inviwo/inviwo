@@ -85,11 +85,10 @@ Trackball::Trackball(TrackballObject* object)
     // clang-format off
     , mouseRotate_("trackballRotate", "Rotate", [this](Event* e) { rotate(e); }, MouseButton::Left, MouseState::Press | MouseState::Move)
     , mouseZoom_("mouseZoom", "Zoom (Continuous)", [this](Event* e) { zoom(e); }, MouseButton::Right, MouseState::Press | MouseState::Move)
-    , wheelZoom_("wheelZoom", "Zoom (Steps)",      [this](Event* e) { zoomWheel(e); }, util::make_unique<WheelEventMatcher>())
+    , wheelZoom_("wheelZoom", "Zoom (Steps)",      [this](Event* e) { zoomWheel(e); }, std::make_unique<WheelEventMatcher>())
     , mousePan_("trackballPan", "Pan",          [this](Event* e) { pan(e); }, MouseButton::Middle, MouseState::Press | MouseState::Move)
     , mouseRecenterFocusPoint_("mouseRecenterFocusPoint", "Recenter Focus Point", [this](Event* e) { recenterFocusPoint(e); }, MouseButton::Left, MouseState::DoubleClick)
     , mouseReset_("mouseReset", "Reset",        [this](Event* e) { reset(e); }, MouseButtons(flags::any), MouseState::Release)
-    
     , moveUp_("moveUp", "Move Up",          [this](Event* e) { moveUp(e); },    IvwKey::R, KeyState::Press)
     , moveLeft_("moveLeft", "Move Left",    [this](Event* e) { moveLeft(e); },  IvwKey::A, KeyState::Press)
     , moveDown_("moveDown", "Move Down",    [this](Event* e) { moveDown(e); },  IvwKey::F, KeyState::Press)
@@ -108,7 +107,7 @@ Trackball::Trackball(TrackballObject* object)
     , stepPanLeft_("stepPanLeft", "Pan left",    [this](Event* e) { panRight(e); }, IvwKey::A, KeyState::Press, KeyModifier::Shift) // Left <-> Right switched for buttons
     , stepPanDown_("stepPanDown", "Pan down",    [this](Event* e) { panDown(e); },  IvwKey::S, KeyState::Press, KeyModifier::Shift)
     , stepPanRight_("stepPanRight", "Pan right", [this](Event* e) { panLeft(e); },  IvwKey::D, KeyState::Press, KeyModifier::Shift) // Left <-> Right switched for buttons
-    , touchGesture_("touchGesture", "Touch", [this](Event* e) { touchGesture(e); }, util::make_unique<GeneralEventMatcher>([](Event* e) { return e->hash() == TouchEvent::chash(); }))
+    , touchGesture_("touchGesture", "Touch", [this](Event* e) { touchGesture(e); }, std::make_unique<GeneralEventMatcher>([](Event* e) { return e->hash() == TouchEvent::chash(); }))
     // clang-format on
     , evaluated_(true)
     , timer_{std::chrono::milliseconds{30LL}, [this]() { animate(); }} {

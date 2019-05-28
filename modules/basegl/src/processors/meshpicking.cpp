@@ -145,7 +145,7 @@ void MeshPicking::updatePosition(PickingEvent* p) {
 void MeshPicking::process() {
     if (meshInport_.isChanged()) {
         mesh_ = meshInport_.getData();
-        drawer_ = util::make_unique<MeshDrawerGL>(mesh_.get());
+        drawer_ = std::make_unique<MeshDrawerGL>(mesh_.get());
     }
 
     utilgl::activateAndClearTarget(outport_, ImageType::ColorDepthPicking);

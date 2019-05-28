@@ -57,7 +57,7 @@ std::shared_ptr<Volume> MPVMVolumeReader::readData(const std::string& filePath) 
     {
         auto f = filesystem::ifstream(filePath);
         if (!f.is_open()) {
-            throw FileException("Could not open input file: " + filePath, IvwContext);
+            throw FileException("Could not open input file: " + filePath, IVW_CONTEXT);
         }
 
         while (!f.eof()) {
@@ -68,11 +68,11 @@ std::shared_ptr<Volume> MPVMVolumeReader::readData(const std::string& filePath) 
     }
 
     if (files.empty())
-        throw DataReaderException("Error: No PVM files found in " + filePath, IvwContext);
+        throw DataReaderException("Error: No PVM files found in " + filePath, IVW_CONTEXT);
 
     if (files.size() > 4)
         throw DataReaderException("Error: Maximum 4 pvm files are supported, file: " + filePath,
-                                  IvwContext);
+                                  IVW_CONTEXT);
 
     // Read all pvm volumes
     std::vector<std::shared_ptr<Volume>> volumes;
@@ -86,7 +86,7 @@ std::shared_ptr<Volume> MPVMVolumeReader::readData(const std::string& filePath) 
 
     if (volumes.empty())
         throw DataReaderException("No PVM volumes could be read from file: " + filePath,
-                                  IvwContext);
+                                  IVW_CONTEXT);
 
     if (volumes.size() == 1) {
         printPVMMeta(*volumes[0], fileDirectory + "/" + files[0]);

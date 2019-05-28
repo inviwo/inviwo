@@ -45,7 +45,7 @@ EventProperty::EventProperty(const std::string& identifier, const std::string& d
                              Action action, IvwKey key, KeyStates states, KeyModifiers modifiers,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : EventProperty(identifier, displayName, std::move(action),
-                    util::make_unique<KeyboardEventMatcher>(key, states, modifiers),
+                    std::make_unique<KeyboardEventMatcher>(key, states, modifiers),
                     invalidationLevel, semantics) {}
 
 EventProperty::EventProperty(const std::string& identifier, const std::string& displayName,
@@ -53,7 +53,7 @@ EventProperty::EventProperty(const std::string& identifier, const std::string& d
                              KeyModifiers modifiers, InvalidationLevel invalidationLevel,
                              PropertySemantics semantics)
     : EventProperty(identifier, displayName, std::move(action),
-                    util::make_unique<MouseEventMatcher>(buttons, states, modifiers),
+                    std::make_unique<MouseEventMatcher>(buttons, states, modifiers),
                     invalidationLevel, semantics) {}
 
 EventProperty::EventProperty(const EventProperty& rhs)

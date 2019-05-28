@@ -169,7 +169,7 @@ HelpWidget::HelpWidget(InviwoMainWindow* mainwindow)
         throw Exception("Failed to setup the help engine:" + error);
     }
 
-    fileObserver_ = util::make_unique<QCHFileObserver>(helpEngine_);
+    fileObserver_ = std::make_unique<QCHFileObserver>(helpEngine_);
 
     onModulesDidRegister_ =
         app->getModuleManager().onModulesDidRegister([this]() { registerQCHFiles(); });

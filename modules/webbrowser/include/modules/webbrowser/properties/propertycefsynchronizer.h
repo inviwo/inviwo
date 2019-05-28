@@ -128,7 +128,7 @@ private:
 
 template <typename T, typename P>
 void PropertyCefSynchronizer::registerPropertyWidget(PropertySemantics semantics) {
-    auto propertyWidget = util::make_unique<PropertyWidgetFactoryObjectTemplate<T, P>>(semantics);
+    auto propertyWidget = std::make_unique<PropertyWidgetFactoryObjectTemplate<T, P>>(semantics);
     if (htmlWidgetFactory_.registerObject(propertyWidget.get())) {
         propertyWidgets_.push_back(std::move(propertyWidget));
     }

@@ -36,7 +36,7 @@ namespace inviwo {
 MeshDrawerGL::MeshDrawerGL() : meshToDraw_(nullptr) {}
 
 MeshDrawerGL::MeshDrawerGL(const Mesh* mesh) : meshToDraw_(mesh) {
-    if (mesh == nullptr) throw NullPointerException("input mesh is null", IvwContext);
+    if (mesh == nullptr) throw NullPointerException("input mesh is null", IVW_CONTEXT);
 }
 
 MeshDrawerGL::DrawObject MeshDrawerGL::getDrawObject() const {
@@ -241,7 +241,7 @@ void MeshDrawerGL::DrawObject::draw(std::size_t index) {
     if (index >= numIndexBuffers) {
         throw RangeException("Index (" + std::to_string(index) + ") for indexbuffer of size " +
                                  std::to_string(numIndexBuffers) + " is out-of-range.",
-                             IvwContext);
+                             IVW_CONTEXT);
     }
     const auto indexBuffer = meshGL_->getIndexBuffer(index);
     const auto numIndices = indexBuffer->getSize();
@@ -258,7 +258,7 @@ void MeshDrawerGL::DrawObject::draw(DrawMode drawMode, std::size_t index) {
     if (index >= numIndexBuffers) {
         throw RangeException("Index (" + std::to_string(index) + ") for indexbuffer of size " +
                                  std::to_string(numIndexBuffers) + " is out-of-range.",
-                             IvwContext);
+                             IVW_CONTEXT);
     }
     const auto indexBuffer = meshGL_->getIndexBuffer(index);
     const auto numIndices = indexBuffer->getSize();

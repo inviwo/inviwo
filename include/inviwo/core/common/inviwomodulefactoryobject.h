@@ -83,7 +83,7 @@ public:
                                       ProtectedModule protectedModule);
 
     virtual std::unique_ptr<InviwoModule> create(InviwoApplication* app) override {
-        return util::make_unique<T>(app);
+        return std::make_unique<T>(app);
     }
 };
 

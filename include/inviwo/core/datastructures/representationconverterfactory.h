@@ -94,7 +94,7 @@ template <typename BaseRepr>
 bool RepresentationConverterFactory<BaseRepr>::registerObject(
     RepresentationConverter<BaseRepr>* converter) {
     if (!util::insert_unique(converters_, converter->getConverterID(), converter))
-        throw(ConverterException("Converter with supplied ID already registered", IvwContext));
+        throw(ConverterException("Converter with supplied ID already registered", IVW_CONTEXT));
 
     return true;
 }
@@ -206,7 +206,7 @@ RepresentationConverterFactory<BaseRepr>::createConverterPackage(ConverterID id)
 
     if (!S.empty() && S.back()->getConverterID().first == source &&
         S.front()->getConverterID().second == target) {
-        auto package = util::make_unique<RepresentationConverterPackage<BaseRepr>>();
+        auto package = std::make_unique<RepresentationConverterPackage<BaseRepr>>();
         for (auto it = S.crbegin(); it != S.crend(); it++) {
             package->addConverter(*it);
         }

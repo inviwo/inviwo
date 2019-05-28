@@ -165,7 +165,7 @@ std::shared_ptr<Mesh> marchingtetrahedron(std::shared_ptr<const Volume> volume, 
 
         if (!maskingCallback) {
             throw Exception("Masking callback not set",
-                            IvwContextCustom("util::marchingtetrahedron"));
+                            IVW_CONTEXT_CUSTOM("util::marchingtetrahedron"));
         }
 
         K3DTree<size_t, float> vertexTree;

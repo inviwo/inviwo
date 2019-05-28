@@ -60,7 +60,7 @@ TransferFunction::TransferFunction(const std::vector<TFPrimitiveData>& values,
     , maskMax_(1.0)
     , invalidData_(true)
     , dataRepr_{std::make_shared<LayerRAMPrecision<vec4>>(size2_t(textureSize, 1))}
-    , data_(util::make_unique<Layer>(dataRepr_)) {
+    , data_(std::make_unique<Layer>(dataRepr_)) {
     clearMask();
 }
 
@@ -70,13 +70,13 @@ TransferFunction::TransferFunction(const TransferFunction& rhs)
     , maskMax_(rhs.maskMax_)
     , invalidData_(true)
     , dataRepr_(std::shared_ptr<LayerRAMPrecision<vec4>>(rhs.dataRepr_->clone()))
-    , data_(util::make_unique<Layer>(dataRepr_)) {}
+    , data_(std::make_unique<Layer>(dataRepr_)) {}
 
 TransferFunction& TransferFunction::operator=(const TransferFunction& rhs) {
     if (this != &rhs) {
         if (dataRepr_->getDimensions() != rhs.dataRepr_->getDimensions()) {
             dataRepr_ = std::make_shared<LayerRAMPrecision<vec4>>(rhs.dataRepr_->getDimensions());
-            data_ = util::make_unique<Layer>(dataRepr_);
+            data_ = std::make_unique<Layer>(dataRepr_);
         }
         maskMin_ = rhs.maskMin_;
         maskMax_ = rhs.maskMax_;
@@ -178,7 +178,7 @@ void TransferFunction::save(const std::string& filename, const FileExtension& ex
         // Convert layer to UINT8
         auto uint8DataRepr =
             std::make_shared<LayerRAMPrecision<glm::u8vec4>>(dataRepr_->getDimensions());
-        auto unit8Data = util::make_unique<Layer>(uint8DataRepr);
+        auto unit8Data = std::make_unique<Layer>(uint8DataRepr);
 
         const auto size = glm::compMul(dataRepr_->getDimensions());
         const auto sptr = dataRepr_->getDataTyped();
@@ -195,7 +195,7 @@ void TransferFunction::save(const std::string& filename, const FileExtension& ex
             writer = factory->getWriterForTypeAndExtension<Layer>(extension);
         }
         if (!writer) {
-            throw DataWriterException("Data writer not found for requested format", IvwContext);
+            throw DataWriterException("Data writer not found for requested format", IVW_CONTEXT);
         }
         writer->setOverwrite(true);
         writer->writeData(unit8Data.get(), filename);
@@ -215,7 +215,7 @@ void TransferFunction::load(const std::string& filename, const FileExtension& ex
             reader = factory->getReaderForTypeAndExtension<Layer>(extension);
         }
         if (!reader) {
-            throw DataReaderException("Data reader not found for requested format", IvwContext);
+            throw DataReaderException("Data reader not found for requested format", IVW_CONTEXT);
         }
         auto layer = reader->readData(filename);
 

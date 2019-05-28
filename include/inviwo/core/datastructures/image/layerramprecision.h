@@ -149,7 +149,7 @@ LayerRAMPrecision<T>& LayerRAMPrecision<T>::operator=(const LayerRAMPrecision<T>
         LayerRAM::operator=(that);
 
         const auto dim = that.dimensions_;
-        auto data = util::make_unique<T[]>(dim.x * dim.y);
+        auto data = std::make_unique<T[]>(dim.x * dim.y);
         std::memcpy(data.get(), that.data_.get(), dim.x * dim.y * sizeof(T));
         data_.swap(data);
 
@@ -193,7 +193,7 @@ void inviwo::LayerRAMPrecision<T>::setData(void* d, size2_t dimensions) {
 template <typename T>
 void LayerRAMPrecision<T>::setDimensions(size2_t dimensions) {
     if (dimensions != dimensions_) {
-        auto data = util::make_unique<T[]>(dimensions.x * dimensions.y);
+        auto data = std::make_unique<T[]>(dimensions.x * dimensions.y);
         data_.swap(data);
         std::swap(dimensions, dimensions_);
     }

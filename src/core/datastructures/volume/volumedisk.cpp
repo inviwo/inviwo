@@ -46,7 +46,7 @@ VolumeDisk* VolumeDisk::clone() const { return new VolumeDisk(*this); }
 std::type_index VolumeDisk::getTypeIndex() const { return std::type_index(typeid(VolumeDisk)); }
 
 void VolumeDisk::setDimensions(size3_t) {
-    throw Exception("Can not set dimension of a Volume Disk", IvwContext);
+    throw Exception("Can not set dimension of a Volume Disk", IVW_CONTEXT);
 }
 
 const size3_t& VolumeDisk::getDimensions() const { return dimensions_; }

@@ -406,7 +406,7 @@ std::unique_ptr<Mesh> generateAxisMesh3D(const vec3& startPos, const vec3& endPo
     auto verticesBuffer = util::makeBuffer<vec3>({startPos, endPos});
     auto colorBuffer = util::makeBuffer<vec4>({color, color});
 
-    auto m = util::make_unique<Mesh>();
+    auto m = std::make_unique<Mesh>();
     m->addBuffer(BufferType::PositionAttrib, verticesBuffer);
     m->addBuffer(BufferType::ColorAttrib, colorBuffer);
 

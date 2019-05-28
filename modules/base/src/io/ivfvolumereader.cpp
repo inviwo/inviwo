@@ -51,7 +51,7 @@ IvfVolumeReader* IvfVolumeReader::clone() const { return new IvfVolumeReader(*th
 
 std::shared_ptr<Volume> IvfVolumeReader::readData(const std::string& filePath) {
     if (!filesystem::fileExists(filePath)) {
-        throw DataReaderException("Error could not find input file: " + filePath, IvwContext);
+        throw DataReaderException("Error could not find input file: " + filePath, IVW_CONTEXT);
     }
 
     std::string fileDirectory = filesystem::getFileDirectory(filePath);
@@ -82,7 +82,7 @@ std::shared_ptr<Volume> IvfVolumeReader::readData(const std::string& filePath) {
     littleEndian_ = volume->getMetaData<BoolMetaData>("LittleEndian", littleEndian_);
     auto vd = std::make_shared<VolumeDisk>(filePath, dimensions_, format_);
 
-    auto loader = util::make_unique<RawVolumeRAMLoader>(rawFile_, filePos_, dimensions_,
+    auto loader = std::make_unique<RawVolumeRAMLoader>(rawFile_, filePos_, dimensions_,
                                                         littleEndian_, format_);
     vd->setLoader(loader.release());
 

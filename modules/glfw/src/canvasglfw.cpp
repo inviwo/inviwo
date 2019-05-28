@@ -72,7 +72,7 @@ CanvasGLFW::CanvasGLFW(std::string windowTitle, uvec2 dimensions)
 
     if (!glWindow_) {
         glfwTerminate();
-        throw Exception("Could not create GLFW window.", IvwContext);
+        throw Exception("Could not create GLFW window.", IVW_CONTEXT);
     }
 
     if (!sharedContext_) sharedContext_ = glWindow_;
@@ -306,7 +306,7 @@ KeyModifiers CanvasGLFW::mapModifiers(int modifiersGLFW) {
 
 std::unique_ptr<Canvas> CanvasGLFW::createHiddenCanvas() {
     auto res = dispatchFront(
-        [&]() { return util::make_unique<CanvasGLFW>("Background", screenDimensions_); });
+        [&]() { return std::make_unique<CanvasGLFW>("Background", screenDimensions_); });
     return res.get();
 }
 

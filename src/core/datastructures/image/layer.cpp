@@ -96,7 +96,7 @@ void Layer::copyRepresentationsTo(Layer* targetLayer) {
     targetLayer->StructuredGridEntity<2>::setDimensions(clone->getDimensions());
 
     if (!lastValidRepresentation_->copyRepresentationsTo(clone.get())) {
-        throw Exception("Failed to copy Layer Representation", IvwContext);
+        throw Exception("Failed to copy Layer Representation", IVW_CONTEXT);
     }
 }
 

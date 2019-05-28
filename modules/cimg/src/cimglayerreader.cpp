@@ -50,7 +50,7 @@ CImgLayerReader* CImgLayerReader::clone() const { return new CImgLayerReader(*th
 
 std::shared_ptr<Layer> CImgLayerReader::readData(const std::string& filePath) {
     if (!filesystem::fileExists(filePath)) {
-        throw DataReaderException("Error could not find input file: " + filePath, IvwContext);
+        throw DataReaderException("Error could not find input file: " + filePath, IVW_CONTEXT);
     }
 
     auto layerDisk = std::make_shared<LayerDisk>(filePath);
@@ -77,7 +77,7 @@ std::shared_ptr<LayerRepresentation> CImgLayerRAMLoader::createRepresentation() 
         if (filesystem::fileExists(newPath)) {
             fileName = newPath;
         } else {
-            throw DataReaderException("Error could not find input file: " + fileName, IvwContext);
+            throw DataReaderException("Error could not find input file: " + fileName, IVW_CONTEXT);
         }
     }
 
@@ -115,7 +115,7 @@ void CImgLayerRAMLoader::updateRepresentation(std::shared_ptr<LayerRepresentatio
         if (filesystem::fileExists(newPath)) {
             fileName = newPath;
         } else {
-            throw DataReaderException("Error could not find input file: " + fileName, IvwContext);
+            throw DataReaderException("Error could not find input file: " + fileName, IVW_CONTEXT);
         }
     }
 

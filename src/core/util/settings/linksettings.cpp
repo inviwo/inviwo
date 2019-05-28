@@ -74,7 +74,7 @@ void LinkSettings::registerProperty(std::string property) {
     if (it != propertyMap_.end()) {
         it->second->setVisible(true);
     } else {
-        auto linkPropery = util::make_unique<BoolProperty>(ids, property, enabled);
+        auto linkPropery = std::make_unique<BoolProperty>(ids, property, enabled);
         linkPropery->setSerializationMode(PropertySerializationMode::All);
         propertyMap_[ids] = linkPropery.get();
         linkProperties_.addProperty(linkPropery.release(), true);

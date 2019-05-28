@@ -157,7 +157,7 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     moduleManager_.onModulesDidRegister([this]() {
         if (resourceManager_->isEnabled() && resourceManager_->numberOfResources() > 0) {
             LogWarn(
-                "Resource manager was not empty when reloading modules. The beaviour of resources "
+                "Resource manager was not empty when reloading modules. The behavior of resources "
                 "of data structures that has changed is undefined and may effect stability");
         }
     });

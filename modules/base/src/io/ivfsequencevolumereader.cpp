@@ -45,7 +45,7 @@ std::shared_ptr<VolumeSequence> IvfSequenceVolumeReader::readData(const std::str
         if (filesystem::fileExists(newPath)) {
             fileName = newPath;
         } else {
-            throw DataReaderException("Error could not find input file: " + fileName, IvwContext);
+            throw DataReaderException("Error could not find input file: " + fileName, IVW_CONTEXT);
         }
     }
 

@@ -60,11 +60,11 @@ public:
         using F = typename T::type;
 
         std::size_t size = dimensions_.x * dimensions_.y * dimensions_.z;
-        auto data = util::make_unique<F[]>(size);
+        auto data = std::make_unique<F[]>(size);
 
         if (!data) {
             throw DataReaderException(
-                "Error: Could not allocate memory for loading raw file: " + rawFile_, IvwContext);
+                "Error: Could not allocate memory for loading raw file: " + rawFile_, IVW_CONTEXT);
         }
 
         util::readBytesIntoBuffer(rawFile_, offset_, size * format_->getSize(), littleEndian_,

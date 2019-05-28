@@ -136,7 +136,7 @@ TemplatePropertySettingsWidgetQt<T>::TemplatePropertySettingsWidgetQt(OrdinalPro
         for (size_t j = 0; j < components.y; j++) {
             std::stringstream ss;
             ss << desc[i] << (components.y == 1 ? "" : (std::string{", "} + desc[j]));
-            settings_.push_back(util::make_unique<SinglePropertySetting>(this, ss.str()));
+            settings_.push_back(std::make_unique<SinglePropertySetting>(this, ss.str()));
             gridLayout->addWidget(settings_[count]->label_, count + 1, 0);
 
             for (int k = 0; k < 4; ++k) {
@@ -323,7 +323,7 @@ TemplateMinMaxPropertySettingsWidgetQt<T>::TemplateMinMaxPropertySettingsWidgetQ
         for (size_t j = 0; j < components.y; j++) {
             std::stringstream ss;
             ss << desc[i] << (components.y == 1 ? "" : (std::string{", "} + desc[j]));
-            settings_.push_back(util::make_unique<SinglePropertySetting>(this, ss.str()));
+            settings_.push_back(std::make_unique<SinglePropertySetting>(this, ss.str()));
             gridLayout->addWidget(settings_[count]->label_, count + 1, 0);
 
             for (int k = 0; k < 6; ++k) {

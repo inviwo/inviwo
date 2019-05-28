@@ -45,7 +45,7 @@ TFLineEdit::TFLineEdit(QWidget* parent)
     : QLineEdit(parent)
     , value_(0.0)
     , ambiguous_(true)
-    , validator_(util::make_unique<QDoubleValidator>()) {
+    , validator_(std::make_unique<QDoubleValidator>()) {
     validator_->setDecimals(10);
     setValidator(validator_.get());
 

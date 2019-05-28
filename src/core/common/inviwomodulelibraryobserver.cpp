@@ -51,7 +51,7 @@ void InviwoModuleLibraryObserver::observe(const std::string& file) {
     // deriving applications will implement observer behavior
     // and they will not have been created when InviwoApplication
     // constructor is called.
-    if (!observer_) observer_ = util::make_unique<Observer>(*this, app_);
+    if (!observer_) observer_ = std::make_unique<Observer>(*this, app_);
     if (observing_.count(file) != 0) return;
     auto dir = filesystem::getFileDirectory(file);
     if (!observer_->isObserved(dir)) observer_->startFileObservation(dir);

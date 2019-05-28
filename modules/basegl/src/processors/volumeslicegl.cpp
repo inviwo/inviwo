@@ -111,7 +111,7 @@ VolumeSliceGL::VolumeSliceGL()
                                InvalidationLevel::Valid)
     , mouseShiftSlice_("mouseShiftSlice", "Mouse Slice Shift",
                        [this](Event* e) { eventShiftSlice(e); },
-                       util::make_unique<WheelEventMatcher>())
+                       std::make_unique<WheelEventMatcher>())
 
     , mouseSetMarker_("mouseSetMarker", "Mouse Set Marker", [this](Event* e) { eventSetMarker(e); },
                       MouseButton::Left, MouseState::Press | MouseState::Move)
@@ -126,7 +126,7 @@ VolumeSliceGL::VolumeSliceGL()
     , gestureShiftSlice_(
           "gestureShiftSlice", "Gesture Slice Shift",
           [this](Event* e) { eventGestureShiftSlice(e); },
-          util::make_unique<GestureEventMatcher>(GestureType::Pan, GestureStates(flags::any), 3))
+          std::make_unique<GestureEventMatcher>(GestureType::Pan, GestureStates(flags::any), 3))
     , meshDirty_(true)
     , updating_(false)
     , sliceRotation_(1.0f)
@@ -491,7 +491,7 @@ void VolumeSliceGL::updateIndicatorMesh() {
         vec2(indicatorSize_.get() / canvasSize.x, indicatorSize_.get() / canvasSize.y);
     const vec4 color(indicatorColor_.get());
 
-    meshCrossHair_ = util::make_unique<Mesh>();
+    meshCrossHair_ = std::make_unique<Mesh>();
     meshCrossHair_->setModelMatrix(mat4(1.0f));
     // add two vertical and two horizontal lines with a gap around the selected position
     auto posBuf = util::makeBuffer<vec2>(

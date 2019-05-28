@@ -56,7 +56,7 @@ PickingAction* PickingManager::registerPickingAction(Processor* processor,
     }
 
     if (!pickObj) {
-        pickingActions_.push_back(util::make_unique<PickingAction>(lastIndex_, size));
+        pickingActions_.push_back(std::make_unique<PickingAction>(lastIndex_, size));
         lastIndex_ += size;
         // we can only differentiate up to 2^24-1 picking IDs due to the use of u8vec3 for picking
         // colors

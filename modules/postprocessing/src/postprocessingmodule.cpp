@@ -68,11 +68,11 @@ PostProcessingModule::PostProcessingModule(InviwoApplication* app)
     // registerProperty<PostProcessingProperty>();
 
     // Readers and writes
-    // registerDataReader(util::make_unique<PostProcessingReader>());
-    // registerDataWriter(util::make_unique<PostProcessingWriter>());
+    // registerDataReader(std::make_unique<PostProcessingReader>());
+    // registerDataWriter(std::make_unique<PostProcessingWriter>());
 
     // Data converters
-    // registerRepresentationConverter(util::make_unique<PostProcessingDisk2RAMConverter>());
+    // registerRepresentationConverter(std::make_unique<PostProcessingDisk2RAMConverter>());
 
     // Ports
     // registerPort<PostProcessingOutport>();
@@ -85,9 +85,9 @@ PostProcessingModule::PostProcessingModule(InviwoApplication* app)
     // registerDialog<PostProcessingDialog>(PostProcessingOutport);
 
     // Other varius things
-    // registerCapabilities(util::make_unique<PostProcessingCapabilities>());
-    // registerSettings(util::make_unique<PostProcessingSettings>());
-    // registerMetaData(util::make_unique<PostProcessingMetaData>());
+    // registerCapabilities(std::make_unique<PostProcessingCapabilities>());
+    // registerSettings(std::make_unique<PostProcessingSettings>());
+    // registerMetaData(std::make_unique<PostProcessingMetaData>());
     // registerPortInspector("PostProcessingOutport", "path/workspace.inv");
     // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget>
     // processorWidget);

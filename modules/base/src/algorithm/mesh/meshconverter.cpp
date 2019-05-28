@@ -47,7 +47,7 @@ std::unique_ptr<Mesh> toPointMesh(const Mesh& mesh) {
     });
 
     if (posIt == mesh.getBuffers().end()) {
-        throw Exception("Error: could not find a position buffer", IvwContextCustom("toPointMesh"));
+        throw Exception("Error: could not find a position buffer", IVW_CONTEXT_CUSTOM("toPointMesh"));
     }
 
     res->addBuffer(posIt->first, std::shared_ptr<BufferBase>(posIt->second->clone()));
@@ -77,7 +77,7 @@ std::unique_ptr<Mesh> toLineMesh(const Mesh& mesh) {
     });
 
     if (posIt == mesh.getBuffers().end()) {
-        throw Exception("Error: could not find a position buffer", IvwContextCustom("toPointMesh"));
+        throw Exception("Error: could not find a position buffer", IVW_CONTEXT_CUSTOM("toPointMesh"));
     }
 
     res->addBuffer(posIt->first, std::shared_ptr<BufferBase>(posIt->second->clone()));

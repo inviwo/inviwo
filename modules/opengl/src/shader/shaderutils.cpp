@@ -608,7 +608,7 @@ std::string getShaderInfoLog(GLuint id) {
     LGL_ERROR;
 
     if (maxLogLength > 1) {
-        auto shaderInfoLog = util::make_unique<GLchar[]>(maxLogLength);
+        auto shaderInfoLog = std::make_unique<GLchar[]>(maxLogLength);
         GLsizei logLength{0};
         glGetShaderInfoLog(id, maxLogLength, &logLength, shaderInfoLog.get());
         return std::string(shaderInfoLog.get(), logLength);
@@ -623,7 +623,7 @@ std::string getProgramInfoLog(GLuint id) {
     LGL_ERROR;
 
     if (maxLogLength > 1) {
-        auto shaderInfoLog = util::make_unique<GLchar[]>(maxLogLength);
+        auto shaderInfoLog = std::make_unique<GLchar[]>(maxLogLength);
         GLsizei logLength{0};
         glGetProgramInfoLog(id, maxLogLength, &logLength, shaderInfoLog.get());
         return std::string(shaderInfoLog.get(), logLength);
@@ -637,7 +637,7 @@ std::shared_ptr<const ShaderResource> findShaderResource(const std::string& file
     if (!resource) {
         throw OpenGLException(
             "Shader file: " + fileName + " not found in shader search paths or shader resources.",
-            IvwContextCustom("ShaderUtils"));
+            IVW_CONTEXT_CUSTOM("ShaderUtils"));
     }
     return resource;
 }

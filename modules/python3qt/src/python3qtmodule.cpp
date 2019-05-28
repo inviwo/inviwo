@@ -64,7 +64,7 @@ pybind11::object prompt(std::string title, std::string message, std::string defa
 }  // namespace
 
 Python3QtModule::Python3QtModule(InviwoApplication* app)
-    : InviwoModule(app, "Python3Qt"), menu_(util::make_unique<PythonMenu>(this, app)) {
+    : InviwoModule(app, "Python3Qt"), menu_(std::make_unique<PythonMenu>(this, app)) {
     namespace py = pybind11;
 
     try {
@@ -89,7 +89,7 @@ Python3QtModule::Python3QtModule(InviwoApplication* app)
             .def("move", [](PropertyListWidget* w, int x, int y) { w->move(x, y); });
 
     } catch (const std::exception& e) {
-        throw ModuleInitException(e.what(), IvwContext);
+        throw ModuleInitException(e.what(), IVW_CONTEXT);
     }
 }
 

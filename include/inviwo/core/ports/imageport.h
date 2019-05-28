@@ -267,7 +267,7 @@ std::string BaseImageInport<N>::getClassIdentifier() const {
 template <size_t N>
 void BaseImageInport<N>::connectTo(Outport* outport) {
     if (this->getNumberOfConnections() + 1 > this->getMaxNumberOfConnections())
-        throw Exception("Trying to connect to a full port.", IvwContext);
+        throw Exception("Trying to connect to a full port.", IVW_CONTEXT);
 
     if (requestedDimensionsMap_.find(outport) != requestedDimensionsMap_.end()) {
         ResizeEvent resizeEvent(requestedDimensionsMap_[outport]);

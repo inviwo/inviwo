@@ -60,7 +60,7 @@ TFEditorPrimitive::TFEditorPrimitive(TFPrimitive& primitive, QGraphicsScene* sce
     }
 
     // create label for annotating TF primitives
-    tfPrimitiveLabel_ = util::make_unique<QGraphicsSimpleTextItem>(this);
+    tfPrimitiveLabel_ = std::make_unique<QGraphicsSimpleTextItem>(this);
     tfPrimitiveLabel_->setVisible(hovered_);
     QFont font(tfPrimitiveLabel_->font());
     font.setPixelSize(14);

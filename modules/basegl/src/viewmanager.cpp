@@ -241,7 +241,7 @@ void ViewManager::replace(ViewId ind, View view) {
     if (ind < views_.size()) {
         views_[ind] = view;
     } else {
-        throw Exception("Out of range", IvwContext);
+        throw Exception("Out of range", IVW_CONTEXT);
     }
 }
 

@@ -61,12 +61,12 @@ DataFrameModule::DataFrameModule(InviwoApplication* app) : InviwoModule(app, "Da
     // registerProperty<DataFrameProperty>();
 
     // Readers and writes
-    registerDataReader(util::make_unique<CSVReader>());
-    registerDataReader(util::make_unique<JSONDataFrameReader>());
-    //registerDataWriter(util::make_unique<JSONDataFrameWriter>());
+    registerDataReader(std::make_unique<CSVReader>());
+    registerDataReader(std::make_unique<JSONDataFrameReader>());
+    //registerDataWriter(std::make_unique<JSONDataFrameWriter>());
 
     // Data converters
-    // registerRepresentationConverter(util::make_unique<DataFrameDisk2RAMConverter>());
+    // registerRepresentationConverter(std::make_unique<DataFrameDisk2RAMConverter>());
 
     // Ports
     // registerPort<DataFrameOutport>();
@@ -79,9 +79,9 @@ DataFrameModule::DataFrameModule(InviwoApplication* app) : InviwoModule(app, "Da
     // registerDialog<DataFrameDialog>(DataFrameOutport);
 
     // Other things
-    // registerCapabilities(util::make_unique<DataFrameCapabilities>());
-    // registerSettings(util::make_unique<DataFrameSettings>());
-    // registerMetaData(util::make_unique<DataFrameMetaData>());
+    // registerCapabilities(std::make_unique<DataFrameCapabilities>());
+    // registerSettings(std::make_unique<DataFrameSettings>());
+    // registerMetaData(std::make_unique<DataFrameMetaData>());
     // registerPortInspector("DataFrameOutport", "path/workspace.inv");
     // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget> processorWidget); 
     // registerDrawer(util::make_unique_ptr<DataFrameDrawer>());

@@ -331,7 +331,7 @@ void BaseTrack<Seq>::add(std::unique_ptr<KeyframeSequence> sequence) {
     if (auto s = util::dynamic_unique_ptr_cast<Seq>(std::move(sequence))) {
         add(std::move(s));
     } else {
-        throw Exception("Invalid sequence type", IvwContext);
+        throw Exception("Invalid sequence type", IVW_CONTEXT);
     }
 }
 
@@ -342,11 +342,11 @@ void BaseTrack<Seq>::add(std::unique_ptr<Seq> sequence) {
 
     if (it != sequences_.begin()) {
         if ((*std::prev(it))->getLastTime() > sequence->getFirstTime()) {
-            throw Exception("Overlapping Sequence", IvwContext);
+            throw Exception("Overlapping Sequence", IVW_CONTEXT);
         }
     }
     if (it != sequences_.end() && (*it)->getFirstTime() < sequence->getFirstTime()) {
-        throw Exception("Overlapping Sequence", IvwContext);
+        throw Exception("Overlapping Sequence", IVW_CONTEXT);
     }
 
     auto inserted = sequences_.insert(it, std::move(sequence));
