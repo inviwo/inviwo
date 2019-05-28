@@ -115,6 +115,9 @@ def wrap(def state, String reportSlackChannel, Closure fun) {
         state.build.result = state.errors.isEmpty() ? 'SUCCESS' : 'UNSTABLE'
     } catch (e) {
         state.build.result = 'FAILURE'
+        println "State: ${state.build.result}"
+        println "Errors: ${state.errors.join(", ")}"
+        println "Except: ${e}"
         throw e
     } finally {
         if(!reportSlackChannel.isEmpty()) slack(state, reportSlackChannel)
@@ -144,19 +147,13 @@ def format(def state) {
     }
 }
 
-def warn(def state, refjob = 'inviwo/master') {
-    stage("Warn Tests") {
-        dir('build') {
-            // disabled for now, has some macro issues.
-            //sh '''cppcheck --enable=all --inconclusive --xml --xml-version=2 \
-            //      --project=compile_commands.json 2> cppcheck.xml'''    
-        }    
-        dir('inviwo') {
-            recordIssues failedNewAll: 0, referenceJobName: refjob, sourceCodeEncoding: 'UTF-8', 
-                tools: [gcc4(name: 'GCC', reportEncoding: 'UTF-8'), 
-                        clang(name: 'Clang', reportEncoding: 'UTF-8')]
-            //recordIssues referenceJobName: refjob, sourceCodeEncoding: 'UTF-8', 
-            //    tools: [cppCheck(name: 'CPPCheck', pattern: '../build/cppcheck.xml')]
+def warn(def state, refjob = 'daily/appleclang') {
+    cmd('Warn Tests', 'inviwo') {
+        checked(state, 'Warn Tests', false) {
+            recordIssues qualityGates: [[threshold: 1, type: 'NEW', unstable: true]], 
+                         referenceJobName: refjob, 
+                         sourceCodeEncoding: 'UTF-8', 
+                         tools: [clang(name: 'Clang')]   
         }
     }
 }
