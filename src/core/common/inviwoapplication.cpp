@@ -128,6 +128,7 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     , propertyConverterManager_{std::make_unique<PropertyConverterManager>()}
     , propertyFactory_{std::make_unique<PropertyFactory>()}
     , propertyWidgetFactory_{std::make_unique<PropertyWidgetFactory>()}
+    , representationMetaFactory_{std::make_unique<RepresentationMetaFactory>()}
     , representationConverterMetaFactory_{std::make_unique<RepresentationConverterMetaFactory>()}
     , systemSettings_{std::make_unique<SystemSettings>(this)}
     , systemCapabilities_{std::make_unique<SystemCapabilities>()}

@@ -450,7 +450,7 @@ public:
      */
     template <typename BT>
     void setVertex(size_t index, const typename BT::type &v) {
-        getTypedDataContainer<BT>().at(index) = v;
+        getTypedDataContainer<BT>()[index] = v;
     }
 
     /**
@@ -547,7 +547,7 @@ struct helper {
     }
     static void setVertexImplVertex(F &f, size_t index, const typename F::Vertex &v) {
         using BT = std::tuple_element_t<I - 1, typename F::Traits>;
-        f.template getTypedDataContainer<BT>().at(index) = std::get<I - 1>(v);
+        f.template getTypedDataContainer<BT>()[index] = std::get<I - 1>(v);
 
         helper<F, I - 1>::setVertexImplVertex(f, index, v);
     }

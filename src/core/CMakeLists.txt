@@ -64,6 +64,9 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/representationconverter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/representationconverterfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/representationconvertermetafactory.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/representationfactory.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/representationfactoryobject.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/representationmetafactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/representationtraits.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/spatialdata.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/tfprimitive.h
@@ -378,6 +381,9 @@ set(SOURCE_FILES
     datastructures/isovaluecollection.cpp
     datastructures/light/baselightsource.cpp
     datastructures/representationconvertermetafactory.cpp
+    datastructures/representationfactory.cpp
+    datastructures/representationfactoryobject.cpp
+    datastructures/representationmetafactory.cpp
     datastructures/spatialdata.cpp
     datastructures/tfprimitive.cpp
     datastructures/tfprimitiveset.cpp

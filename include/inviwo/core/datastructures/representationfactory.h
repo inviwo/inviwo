@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,48 +26,48 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_REPRESENTATIONCONVERTERMETAFACTORY_H
-#define IVW_REPRESENTATIONCONVERTERMETAFACTORY_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/util/factory.h>
+#include <inviwo/core/datastructures/representationfactoryobject.h>
+
+#include <typeindex>
 
 namespace inviwo {
 
-/**
- * \class RepresentationConverterMetaFactory
- * \brief A class to manage RepresentationConverterFactories
- */
-class IVW_CORE_API RepresentationConverterMetaFactory {
+class IVW_CORE_API BaseRepresentationFactory {
 public:
-    using BaseReprId = BaseRepresentationConverterFactory::BaseReprId;
-    using FactoryMap = std::unordered_map<BaseReprId, BaseRepresentationConverterFactory*>;
+    using BaseReprId = std::type_index;
 
-    RepresentationConverterMetaFactory() = default;
-    ~RepresentationConverterMetaFactory() = default;
-
-    bool registerObject(BaseRepresentationConverterFactory* factory);
-    bool unRegisterObject(BaseRepresentationConverterFactory* factory);
-
-    template <typename BaseRepr>
-    RepresentationConverterFactory<BaseRepr>* getConverterFactory() const;
-
-private:
-    FactoryMap map_;
+    BaseRepresentationFactory() = default;
+    virtual ~BaseRepresentationFactory() = default;
+    virtual BaseReprId getBaseReprId() const = 0;
 };
 
-template <typename BaseRepr>
-RepresentationConverterFactory<BaseRepr>* RepresentationConverterMetaFactory::getConverterFactory()
-    const {
-    const auto it = map_.find(BaseReprId(typeid(BaseRepr)));
-    if (it != map_.end()) {
-        return static_cast<RepresentationConverterFactory<BaseRepr>*>(it->second);
+template <typename Representation>
+class RepresentationFactory
+    : public BaseRepresentationFactory,
+      public StandardFactory<Representation, RepresentationFactoryObject<Representation>,
+                             std::type_index, const typename Representation::ReprOwner*> {
+public:
+    RepresentationFactory(BaseReprId defaultRepresentation)
+        : BaseRepresentationFactory{}, defaultRepresentation_{defaultRepresentation} {};
+    virtual ~RepresentationFactory() = default;
+
+    virtual BaseReprId getBaseReprId() const override { return BaseReprId{typeid(Representation)}; }
+
+    std::unique_ptr<Representation> createOrDefault(
+        BaseReprId id, const typename Representation::ReprOwner* owner) {
+        if (auto repr = this->create(id, owner)) {
+            return repr;
+        } else {
+            return this->create(defaultRepresentation_, owner);
+        }
     }
-    return nullptr;
-}
+
+private:
+    BaseReprId defaultRepresentation_;
+};
 
 }  // namespace inviwo
-
-#endif  // IVW_REPRESENTATIONCONVERTERMETAFACTORY_H

@@ -106,6 +106,12 @@ InviwoModule::~InviwoModule() {
     for (auto& elem : propertyWidgets_) {
         app_->getPropertyWidgetFactory()->unRegisterObject(elem.get());
     }
+    for (auto& unRegFunctor : representationUnRegFunctors_) {
+        unRegFunctor();
+    }
+    for (auto& elem : representationFactories_) {
+        app_->getRepresentationMetaFactory()->unRegisterObject(elem.get());
+    }
     for (auto& unRegFunctor : representationConvertersUnRegFunctors_) {
         unRegFunctor();
     }
@@ -213,6 +219,13 @@ const std::vector<PropertyFactoryObject*> InviwoModule::getProperties() const {
 const std::vector<PropertyWidgetFactoryObject*> InviwoModule::getPropertyWidgets() const {
     return uniqueToPtr(propertyWidgets_);
 }
+const std::vector<BaseRepresentationFactoryObject*> InviwoModule::getRepresentationFactoryObjects()
+    const {
+    return uniqueToPtr(representationFactoryObjects_);
+}
+const std::vector<BaseRepresentationFactory*> InviwoModule::getRepresentationFactories() const {
+    return uniqueToPtr(representationFactories_);
+}
 const std::vector<BaseRepresentationConverter*> InviwoModule::getRepresentationConverters() const {
     return uniqueToPtr(representationConverters_);
 }
@@ -283,6 +296,13 @@ void InviwoModule::registerPropertyWidget(
 void InviwoModule::registerPropertyConverter(std::unique_ptr<PropertyConverter> propertyConverter) {
     if (app_->getPropertyConverterManager()->registerObject(propertyConverter.get())) {
         propertyConverters_.push_back(std::move(propertyConverter));
+    }
+}
+
+void InviwoModule::registerRepresentationFactory(
+    std::unique_ptr<BaseRepresentationFactory> representationFactory) {
+    if (app_->getRepresentationMetaFactory()->registerObject(representationFactory.get())) {
+        representationFactories_.push_back(std::move(representationFactory));
     }
 }
 
