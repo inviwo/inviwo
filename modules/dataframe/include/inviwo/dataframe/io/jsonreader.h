@@ -53,6 +53,7 @@ public:
     JSONDataFrameReader& operator=(JSONDataFrameReader&&) noexcept = default;
     virtual JSONDataFrameReader* clone() const override;
     virtual ~JSONDataFrameReader() = default;
+    using DataReaderType<DataFrame>::readData;
 
     /**
      * read a JSON file from a file

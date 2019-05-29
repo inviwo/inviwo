@@ -26,16 +26,12 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
-
 #include <inviwo/dataframe/jsondataframeconversion.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <iterator>
 #include <vector>
 
 namespace inviwo {
-
-
 
 JSONConversionException::JSONConversionException(const std::string& message,
                                                  ExceptionContext context)
@@ -61,9 +57,9 @@ void addDataFrameColumnHelper(json::value_t valueType, std::string header, DataF
             df.addCategoricalColumn(header, 0u);
             break;
         case json::value_t::boolean:  ///< boolean value
-            // We do not support buffers<bool> (std::vector<bool>)  since they are packed bit arrays.
-            // Use unsigned char instead.
-            //df.addColumn<bool>(header, 0u);
+            // We do not support buffers<bool> (std::vector<bool>)  since they are packed bit
+            // arrays. Use unsigned char instead.
+            // df.addColumn<bool>(header, 0u);
             df.addColumn<uint8_t>(header, 0u);
             break;
         case json::value_t::number_integer:  ///< number value (signed integer)
@@ -76,7 +72,8 @@ void addDataFrameColumnHelper(json::value_t valueType, std::string header, DataF
             df.addColumn<float>(header, 0u);
             break;
         case json::value_t::discarded:  ///< discarded by the the parser callback function
-            throw JSONConversionException("Value was discarded by the the parser callback function");
+            throw JSONConversionException(
+                "Value was discarded by the the parser callback function");
             break;
     }
 }
@@ -84,7 +81,7 @@ void addDataFrameColumnHelper(json::value_t valueType, std::string header, DataF
 }  // namespace detail
 
 void to_json(json& j, const DataFrame& df) {
-    for (auto row = 0; row < df.getNumberOfRows(); ++row) {
+    for (size_t row = 0; row < df.getNumberOfRows(); ++row) {
         json node = json::object();
         auto items = df.getDataItem(row, true);
         // Row 0 in the dataframe contains the row indices, which is not needed in the json object.

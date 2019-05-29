@@ -613,7 +613,7 @@ void ParallelCoordinates::drawLines(size2_t size) {
                 static_cast<GLsizei>(end - begin));
         }
 
-        if (hoveredLine_ >= 0 && hoveredLine_ < lines_.sizes.size() &&
+        if (hoveredLine_ >= 0 && hoveredLine_ < static_cast<int>(lines_.sizes.size()) &&
             !brushingAndLinking_.isFiltered(hoveredLine_)) {
             lineShader_.setUniform("fallofPower", 0.5f * falllofPower_.get());
 
