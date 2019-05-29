@@ -31,6 +31,7 @@
 #include <modules/fontrendering/fontrenderingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <modules/fontrendering/datastructures/fontsettings.h>
+#include <modules/fontrendering/util/fontutils.h>
 
 namespace inviwo {
 
@@ -46,7 +47,7 @@ public:
     virtual float getLineSpacing() const override;
     virtual vec2 getAnchorPos() const override;
 
-    std::string fontFace = "Montserrat-Medium";
+    std::string fontFace = util::getDefaultFontPath() + "/Montserrat-Medium.otf";
     int fontSize = 14;
     float lineSpacing = 0.0f;
     vec2 anchorPos = vec2(-1.0f);
