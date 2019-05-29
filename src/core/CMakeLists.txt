@@ -284,6 +284,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formats.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formatsdefinefunc.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/glm.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/hashcombine.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/imagecache.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/imageramutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/imagesampler.h
@@ -554,6 +555,7 @@ set(SOURCE_FILES
     util/formatdispatching.cpp
     util/formats.cpp
     util/glm.cpp
+    util/hashcombine.cpp
     util/imagecache.cpp
     util/imageramutils.cpp
     util/imagesampler.cpp

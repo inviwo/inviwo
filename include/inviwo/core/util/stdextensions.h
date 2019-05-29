@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/glm.h>
 #include <inviwo/core/util/foreacharg.h>
+#include <inviwo/core/util/hashcombine.h>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <memory>
@@ -561,16 +562,6 @@ struct is_callable<F(A...)> : is_callable<F, A...> {};
 template <typename... A, typename F>
 constexpr detail::is_callable<F, A...> is_callable_with(F&&) {
     return detail::is_callable<F(A...)>{};
-}
-
-/**
- *    Function to combine several hash values
- *    http://stackoverflow.com/questions/2590677/how-do-i-combine-hash-values-in-c0x
- */
-template <class T>
-inline void hash_combine(std::size_t& seed, const T& v) {
-    std::hash<T> hasher;
-    seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
 
 namespace hashtuple {
