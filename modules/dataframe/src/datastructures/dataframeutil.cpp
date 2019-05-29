@@ -70,7 +70,7 @@ void copyBufferRange(std::shared_ptr<const BufferBase> src, std::shared_ptr<Buff
         });
     } else {
         throw inviwo::Exception("Data Formats needs to be of same type",
-                                IvwContextCustom("dataframeutil::copyBufferRange"));
+                                IVW_CONTEXT_CUSTOM("dataframeutil::copyBufferRange"));
     }
 }
 
@@ -79,7 +79,7 @@ std::shared_ptr<DataFrame> combineDataFrames(
     std::string skipcol) {
     if (dataFrames.empty()) {
         throw inviwo::Exception("data frames vector is empty",
-                                IvwContextCustom("dataframeutil::combineDataFrames"));
+                                IVW_CONTEXT_CUSTOM("dataframeutil::combineDataFrames"));
     }
     if (dataFrames.size() == 1) {  // just one df, clone it;
         return std::make_shared<DataFrame>(*dataFrames.front().get());
@@ -92,7 +92,7 @@ std::shared_ptr<DataFrame> combineDataFrames(
 
     if (newSize == 0) {
         throw inviwo::Exception("All Input data frames are empty",
-                                IvwContextCustom("dataframeutil::combineDataFrames"));
+                                IVW_CONTEXT_CUSTOM("dataframeutil::combineDataFrames"));
     }
 
     auto first = *dataFrames.front();
@@ -114,7 +114,7 @@ std::shared_ptr<DataFrame> combineDataFrames(
                         << " did not exist in first data frame but in at least one of the other "
                            "data frames";
                     throw inviwo::Exception(oss.str(),
-                                            IvwContextCustom("dataframeutil::combineDataFrames"));
+                                            IVW_CONTEXT_CUSTOM("dataframeutil::combineDataFrames"));
                 }
                 if (it->second != col->getBuffer()->getDataFormat()) {
                     if (it == columnType.end()) {
@@ -124,7 +124,7 @@ std::shared_ptr<DataFrame> combineDataFrames(
                             << it->second->getString() << " and "
                             << col->getBuffer()->getDataFormat()->getSize() << ")";
                         throw inviwo::Exception(
-                            oss.str(), IvwContextCustom("dataframeutil::combineDataFrames"));
+                            oss.str(), IVW_CONTEXT_CUSTOM("dataframeutil::combineDataFrames"));
                     }
                 }
             }

@@ -46,7 +46,7 @@ GLFWModule::GLFWModule(InviwoApplication* app) : InviwoModule(app, "GLFW") {
     }
     if (!glfwInit()) throw GLFWInitException("GLFW could not be initialized.");
 
-    GLFWSharedCanvas_ = util::make_unique<CanvasGLFW>(app->getDisplayName());
+    GLFWSharedCanvas_ = std::make_unique<CanvasGLFW>(app->getDisplayName());
     GLFWSharedCanvas_->activate();
     OpenGLCapabilities::initializeGLEW();
     GLFWSharedCanvas_->defaultGLState();

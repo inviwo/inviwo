@@ -215,7 +215,7 @@ const T* Data<Self, Repr>::getRepresentation() const {
         lock.unlock();
         auto repr = createDefaultRepresentation();
         lock.lock();
-        if (!repr) throw Exception("Failed to create default representation", IvwContext);
+        if (!repr) throw Exception("Failed to create default representation", IVW_CONTEXT);
         lastValidRepresentation_ = addRepresentationInternal(repr);
     }
 
@@ -245,13 +245,13 @@ const T* Data<Self, Repr>::getValidRepresentation() const {
                 lastValidRepresentation_->setValid(true);
             } else {  // No representation found, create it
                 auto result = converter->createFrom(lastValidRepresentation_);
-                if (!result) throw ConverterException("Converter failed to create", IvwContext);
+                if (!result) throw ConverterException("Converter failed to create", IVW_CONTEXT);
                 lastValidRepresentation_ = addRepresentationInternal(result);
             }
         }
         return dynamic_cast<const T*>(lastValidRepresentation_.get());
     } else {
-        throw ConverterException("Found no converters", IvwContext);
+        throw ConverterException("Found no converters", IVW_CONTEXT);
     }
 }
 
@@ -283,7 +283,7 @@ void Data<Self, Repr>::invalidateAllOther(const Repr* repr) {
             lastValidRepresentation_ = elem.second;
         }
     }
-    if (!found) throw Exception("Called with representation not in representations.", IvwContext);
+    if (!found) throw Exception("Called with representation not in representations.", IVW_CONTEXT);
 }
 
 template <typename Self, typename Repr>

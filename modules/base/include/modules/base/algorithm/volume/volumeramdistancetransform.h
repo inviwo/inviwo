@@ -143,7 +143,7 @@ void util::volumeRAMDistanceTransform(const VolumeRAMPrecision<T> *inVolume,
         throw Exception(
             "DistanceTransformRAM: Dimensions does not match src = " + toString(srcDim) +
                 " dst = " + toString(dstDim) + " scaling = " + toString(sm),
-            IvwContextCustom("volumeRAMDistanceTransform"));
+            IVW_CONTEXT_CUSTOM("volumeRAMDistanceTransform"));
     }
 
     util::IndexMapper<3, int64> srcInd(srcDim);

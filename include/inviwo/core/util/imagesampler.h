@@ -205,7 +205,7 @@ TemplateImageSampler<T, P>::TemplateImageSampler(const LayerRAM *ram)
         oss << "Type mismatch when trying to initialize TemplateImageSampler. Image is "
             << ram->getDataFormat()->getString() << " but expected "
             << DataFormat<T>::get()->getString();
-        throw Exception(oss.str(), IvwContext);
+        throw Exception(oss.str(), IVW_CONTEXT);
     }
 }
 

@@ -163,7 +163,7 @@ void WorkspaceManager::save(const std::string& path, const ExceptionHandler& exc
     if (ostream.is_open()) {
         save(ostream, path, exceptionHandler, mode);
     } else {
-        throw AbortException("Could not open workspace file: " + path, IvwContext);
+        throw AbortException("Could not open workspace file: " + path, IVW_CONTEXT);
     }
 }
 
@@ -172,7 +172,7 @@ void WorkspaceManager::load(const std::string& path, const ExceptionHandler& exc
     if (istream.is_open()) {
         load(istream, path, exceptionHandler);
     } else {
-        throw AbortException("Could not open workspace file: " + path, IvwContext);
+        throw AbortException("Could not open workspace file: " + path, IVW_CONTEXT);
     }
 }
 

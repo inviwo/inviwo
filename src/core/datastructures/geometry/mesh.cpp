@@ -132,7 +132,7 @@ void Mesh::reserveIndexBuffers(size_t size) { indices_.reserve(size); }
 
 const BufferBase* Mesh::getBuffer(size_t idx) const {
     if (idx >= buffers_.size()) {
-        throw RangeException("Index out of range", IvwContext);
+        throw RangeException("Index out of range", IVW_CONTEXT);
     }
     return buffers_[idx].second.get();
 }
@@ -151,28 +151,28 @@ bool Mesh::hasBuffer(BufferType type) const { return findBuffer(type).first != n
 
 Mesh::BufferInfo Mesh::getBufferInfo(size_t idx) const {
     if (idx >= buffers_.size()) {
-        throw RangeException("Index out of range", IvwContext);
+        throw RangeException("Index out of range", IVW_CONTEXT);
     }
     return buffers_[idx].first;
 }
 
 const IndexBuffer* Mesh::getIndices(size_t idx) const {
     if (idx >= indices_.size()) {
-        throw RangeException("Index out of range", IvwContext);
+        throw RangeException("Index out of range", IVW_CONTEXT);
     }
     return indices_[idx].second.get();
 }
 
 BufferBase* Mesh::getBuffer(size_t idx) {
     if (idx >= buffers_.size()) {
-        throw RangeException("Index out of range", IvwContext);
+        throw RangeException("Index out of range", IVW_CONTEXT);
     }
     return buffers_[idx].second.get();
 }
 
 IndexBuffer* Mesh::getIndices(size_t idx) {
     if (idx >= indices_.size()) {
-        throw RangeException("Index out of range", IvwContext);
+        throw RangeException("Index out of range", IVW_CONTEXT);
     }
     return indices_[idx].second.get();
 }
@@ -181,7 +181,7 @@ Mesh::MeshInfo Mesh::getDefaultMeshInfo() const { return meshInfo_; }
 
 Mesh::MeshInfo Mesh::getIndexMeshInfo(size_t idx) const {
     if (idx >= indices_.size()) {
-        throw RangeException("Index out of range", IvwContext);
+        throw RangeException("Index out of range", IVW_CONTEXT);
     }
     return indices_[idx].first;
 }
@@ -192,12 +192,12 @@ size_t Mesh::getNumberOfIndicies() const { return indices_.size(); }
 
 void Mesh::append(const Mesh& mesh) {
     if (buffers_.size() != mesh.buffers_.size()) {
-        throw Exception("Mismatched meshed, number of buffer does not match", IvwContext);
+        throw Exception("Mismatched meshed, number of buffer does not match", IVW_CONTEXT);
     }
     for (size_t i = 0; i < buffers_.size(); ++i) {
         if (buffers_[i].first != mesh.buffers_[i].first ||
             buffers_[i].second->getDataFormat() != mesh.buffers_[i].second->getDataFormat()) {
-            throw Exception("Mismatched meshed, buffer types does not match", IvwContext);
+            throw Exception("Mismatched meshed, buffer types does not match", IVW_CONTEXT);
         }
     }
     size_t size = buffers_[0].second->getSize();

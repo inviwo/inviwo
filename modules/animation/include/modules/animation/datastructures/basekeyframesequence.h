@@ -172,7 +172,7 @@ void BaseKeyframeSequence<Key>::add(std::unique_ptr<Keyframe> key) {
     if (auto k = util::dynamic_unique_ptr_cast<Key>(std::move(key))) {
         add(std::move(k));
     } else {
-        throw Exception("Invalid key type", IvwContext);
+        throw Exception("Invalid key type", IVW_CONTEXT);
     }
 }
 

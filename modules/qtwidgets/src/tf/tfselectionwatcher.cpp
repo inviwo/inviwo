@@ -89,7 +89,7 @@ void TFSelectionWatcher::onTFPrimitiveChange(const TFPrimitive &p) {
     if (updateInProgress_) return;
 
     if (selectedPrimitives_.empty() || !util::contains(selectedPrimitives_, &p)) {
-        throw Exception("TF primitive callback detected on non-selected primitive", IvwContext);
+        throw Exception("TF primitive callback detected on non-selected primitive", IVW_CONTEXT);
     }
 
     informWidgets();

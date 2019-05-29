@@ -198,7 +198,7 @@ std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &o
             os << "InOutBounce";
             break;
         default:
-            throw inviwo::Exception("Unknown Easing type", IvwContextCustom("Easing::operator<<"));
+            throw inviwo::Exception("Unknown Easing type", IVW_CONTEXT_CUSTOM("Easing::operator<<"));
             break;
     }
 

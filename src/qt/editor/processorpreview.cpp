@@ -59,7 +59,7 @@ QImage utilqt::generatePreview(const QString& classIdentifier) {
     try {
         auto processor = InviwoApplication::getPtr()->getProcessorFactory()->create(cid);
         auto item = new ProcessorGraphicsItem(processor.get());
-        auto scene = util::make_unique<QGraphicsScene>(nullptr);
+        auto scene = std::make_unique<QGraphicsScene>(nullptr);
         scene->addItem(item);
 
         double yshift = 20.0;
@@ -144,7 +144,7 @@ QImage utilqt::generateProcessorPreview(const QString& classIdentifier, double o
 QImage utilqt::generateProcessorPreview(Processor* processor, double opacity) {
     try {
         auto item = new ProcessorGraphicsItem(processor);
-        auto scene = util::make_unique<QGraphicsScene>(nullptr);
+        auto scene = std::make_unique<QGraphicsScene>(nullptr);
         scene->addItem(item);
 
         const float padBelow = 10.0f;

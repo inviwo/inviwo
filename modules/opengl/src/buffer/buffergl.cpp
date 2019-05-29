@@ -73,7 +73,7 @@ void BufferGL::download(void* data) const { buffer_->download(data); }
 
 void BufferGL::enable() const {
     if (!bufferArray_) {
-        bufferArray_ = util::make_unique<BufferObjectArray>();
+        bufferArray_ = std::make_unique<BufferObjectArray>();
         bufferArray_->attachBufferObject(buffer_.get(), 0);
     }
     bufferArray_->bind();

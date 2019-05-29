@@ -35,16 +35,14 @@ bool RepresentationConverterMetaFactory::registerObject(
     BaseRepresentationConverterFactory* factory) {
     if (!util::insert_unique(map_, factory->getBaseReprId(), factory))
         throw(ConverterException(
-            "RepresentationConverterFactory with supplied ID already registered", IvwContext));
+            "RepresentationConverterFactory with supplied ID already registered", IVW_CONTEXT));
     return true;
 }
 
 bool RepresentationConverterMetaFactory::unRegisterObject(
     BaseRepresentationConverterFactory* factory) {
-
     size_t removed = util::map_erase_remove_if(
         map_, [factory](const auto& elem) { return elem.second == factory; });
-
     return removed > 0;
 }
 

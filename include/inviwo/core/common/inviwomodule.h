@@ -276,14 +276,13 @@ private:
     }
     template <typename T, typename std::enable_if<std::is_base_of<Inport, T>::value, int>::type = 0>
     void registerPortInternal() {
-        registerInport(util::make_unique<InportFactoryObjectTemplate<T>>());
-
+        registerInport(std::make_unique<InportFactoryObjectTemplate<T>>());
     }
 
     template <typename T,
               typename std::enable_if<std::is_base_of<Outport, T>::value, int>::type = 0>
     void registerPortInternal() {
-        registerOutport(util::make_unique<OutportFactoryObjectTemplate<T>>());
+        registerOutport(std::make_unique<OutportFactoryObjectTemplate<T>>());
     }
 
     const std::string identifier_;  ///< Module folder name
@@ -313,22 +312,22 @@ private:
 
 template <typename T>
 void InviwoModule::registerCamera(const std::string& classIdentifier) {
-    registerCamera(util::make_unique<CameraFactoryObjectTemplate<T>>(classIdentifier));
+    registerCamera(std::make_unique<CameraFactoryObjectTemplate<T>>(classIdentifier));
 }
 
 template <typename T>
 void InviwoModule::registerDialog(std::string classIdentifier) {
-    registerDialog(util::make_unique<DialogFactoryObjectTemplate<T>>(classIdentifier));
+    registerDialog(std::make_unique<DialogFactoryObjectTemplate<T>>(classIdentifier));
 }
 
 template <typename T>
 void InviwoModule::registerProcessor() {
-    registerProcessor(util::make_unique<ProcessorFactoryObjectTemplate<T>>());
+    registerProcessor(std::make_unique<ProcessorFactoryObjectTemplate<T>>());
 }
 
 template <typename T, typename P>
 void InviwoModule::registerProcessorWidget() {
-    registerProcessorWidget(util::make_unique<ProcessorWidgetFactoryObjectTemplate<T, P>>());
+    registerProcessorWidget(std::make_unique<ProcessorWidgetFactoryObjectTemplate<T, P>>());
 }
 
 template <typename T>
@@ -357,11 +356,11 @@ void InviwoModule::registerDefaultsForDataType() {
 
 template <typename T>
 void InviwoModule::registerProperty() {
-    registerProperty(util::make_unique<PropertyFactoryObjectTemplate<T>>());
+    registerProperty(std::make_unique<PropertyFactoryObjectTemplate<T>>());
 }
 template <typename T, typename P>
 void InviwoModule::registerPropertyWidget(PropertySemantics semantics) {
-    registerPropertyWidget(util::make_unique<PropertyWidgetFactoryObjectTemplate<T, P>>(semantics));
+    registerPropertyWidget(std::make_unique<PropertyWidgetFactoryObjectTemplate<T, P>>(semantics));
 }
 template <typename T, typename P>
 void InviwoModule::registerPropertyWidget(std::string semantics) {

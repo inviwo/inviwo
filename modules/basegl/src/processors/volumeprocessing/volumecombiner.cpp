@@ -129,7 +129,7 @@ VolumeCombiner::VolumeCombiner()
 
     addScale_.onChange([&]() {
         size_t i = scales_.size();
-        auto p = util::make_unique<FloatProperty>("scale" + toString(i), "s" + toString(i + 1),
+        auto p = std::make_unique<FloatProperty>("scale" + toString(i), "s" + toString(i + 1),
                                                   1.0f, -2.f, 2.f, 0.01f);
         p->setSerializationMode(PropertySerializationMode::All);
         scales_.addProperty(p.release());
@@ -273,7 +273,7 @@ void VolumeCombiner::process() {
         } catch (Exception& e) {
             valid_ = false;
             isReady_.update();
-            throw Exception(e.getMessage() + ": " + eqn_.get(), IvwContext);
+            throw Exception(e.getMessage() + ": " + eqn_.get(), IVW_CONTEXT);
         }
     }
 

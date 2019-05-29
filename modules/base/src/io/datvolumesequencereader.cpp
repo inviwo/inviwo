@@ -89,7 +89,7 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
         if (filesystem::fileExists(newPath)) {
             fileName = newPath;
         } else {
-            throw DataReaderException("Error could not find input file: " + fileName, IvwContext);
+            throw DataReaderException("Error could not find input file: " + fileName, IVW_CONTEXT);
         }
     }
 
@@ -100,7 +100,7 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
     auto f = filesystem::ifstream(fileName);
 
     if (!f.is_open()) {
-        throw DataReaderException("Error could open file: " + fileName, IvwContext);
+        throw DataReaderException("Error could open file: " + fileName, IVW_CONTEXT);
     }
 
     std::string textLine;
@@ -225,7 +225,7 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
 
     if (!datFiles.empty()) {
         for (size_t t = 0; t < datFiles.size(); ++t) {
-            auto datVolReader = util::make_unique<DatVolumeSequenceReader>();
+            auto datVolReader = std::make_unique<DatVolumeSequenceReader>();
             datVolReader->enableLogOutput_ = false;
             auto v = datVolReader->readData(datFiles[t]);
 
@@ -238,10 +238,10 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
     } else {
         if (dimensions_ == size3_t(0))
             throw DataReaderException(
-                "Error: Unable to find \"Resolution\" tag in .dat file: " + fileName, IvwContext);
+                "Error: Unable to find \"Resolution\" tag in .dat file: " + fileName, IVW_CONTEXT);
         else if (format_ == nullptr)
             throw DataReaderException(
-                "Error: Unable to find \"Format\" tag in .dat file: " + fileName, IvwContext);
+                "Error: Unable to find \"Format\" tag in .dat file: " + fileName, IVW_CONTEXT);
         else if (format_->getId() == DataFormatId::NotSpecialized)
             throw DataReaderException(
                 "Error: Invalid format string found: " + formatFlag + " in " + fileName +
@@ -253,12 +253,12 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
                     "Vec3INT64, Vec3UINT8, Vec3UINT16, Vec3UINT32, Vec3UINT64, Vec4FLOAT16, "
                     "Vec4FLOAT32, Vec4FLOAT64, Vec4INT8, Vec4INT16, Vec4INT32, Vec4INT64, "
                     "Vec4UINT8, Vec4UINT16, Vec4UINT32, Vec4UINT64",
-                IvwContext);
+                IVW_CONTEXT);
 
         else if (rawFile_ == "")
             throw DataReaderException(
                 "Error: Unable to find \"ObjectFilename\" tag in .dat file: " + fileName,
-                IvwContext);
+                IVW_CONTEXT);
 
         if (spacing != vec3(0.0f)) {
             basis[0][0] = dimensions_.x * spacing.x;
@@ -315,7 +315,7 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
             auto diskRepr = std::make_shared<VolumeDisk>(fileName, dimensions_, format_);
             filePos_ = t * bytes;
 
-            auto loader = util::make_unique<RawVolumeRAMLoader>(rawFile_, filePos_, dimensions_,
+            auto loader = std::make_unique<RawVolumeRAMLoader>(rawFile_, filePos_, dimensions_,
                                                                 littleEndian_, format_);
             diskRepr->setLoader(loader.release());
             volumes->back()->addRepresentation(diskRepr);

@@ -219,7 +219,7 @@ void OpenGLCapabilities::initializeGLEW() {
                 std::stringstream ss;
                 ss << "Initialized GLEW but failed to retrieve OpenGL Version, glError"
                    << getGLErrorString(glGetError());
-                throw OpenGLInitException(ss.str(), IvwContextCustom("OpenGLCapabilities"));
+                throw OpenGLInitException(ss.str(), IVW_CONTEXT_CUSTOM("OpenGLCapabilities"));
             }
             glVersionStr_ = std::string(
                 (glversion != nullptr ? reinterpret_cast<const char*>(glversion) : "INVALID"));
@@ -227,7 +227,7 @@ void OpenGLCapabilities::initializeGLEW() {
         } else {
             std::stringstream ss;
             ss << "Failed to initialize GLEW: " << glewGetErrorString(glewError);
-            throw OpenGLInitException(ss.str(), IvwContextCustom("OpenGLCapabilities"));
+            throw OpenGLInitException(ss.str(), IVW_CONTEXT_CUSTOM("OpenGLCapabilities"));
         }
         LGL_ERROR_SUPPRESS;
         glewInitialized_ = true;

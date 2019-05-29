@@ -50,7 +50,7 @@ Deserializer::Deserializer(std::string fileName, bool allowReference)
         rootElement_->GetAttribute(SerializeConstants::VersionAttribute, &inviwoWorkspaceVersion_,
                                    false);
     } catch (TxException& e) {
-        throw AbortException(e.what(), IvwContext);
+        throw AbortException(e.what(), IVW_CONTEXT);
     }
 }
 
@@ -61,7 +61,7 @@ Deserializer::Deserializer(std::istream& stream, const std::string& path, bool a
         rootElement_ = doc_.FirstChildElement();
         storeReferences(rootElement_);
     } catch (TxException& e) {
-        throw AbortException(e.what(), IvwContext);
+        throw AbortException(e.what(), IVW_CONTEXT);
     }
 }
 

@@ -45,7 +45,7 @@ CImgVolumeReader* CImgVolumeReader::clone() const { return new CImgVolumeReader(
 
 std::shared_ptr<Volume> CImgVolumeReader::readData(const std::string& filePath) {
     if (!filesystem::fileExists(filePath)) {
-        throw DataReaderException("Error could not find input file: " + filePath, IvwContext);
+        throw DataReaderException("Error could not find input file: " + filePath, IVW_CONTEXT);
     }
 
     auto volume = std::make_shared<Volume>();
@@ -82,7 +82,7 @@ std::shared_ptr<VolumeRepresentation> CImgVolumeRAMLoader::createRepresentation(
         if (filesystem::fileExists(newPath)) {
             fileName = newPath;
         } else {
-            throw DataReaderException("Error could not find input file: " + fileName, IvwContext);
+            throw DataReaderException("Error could not find input file: " + fileName, IVW_CONTEXT);
         }
     }
 
@@ -107,7 +107,7 @@ void CImgVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentat
         if (filesystem::fileExists(newPath)) {
             fileName = newPath;
         } else {
-            throw DataReaderException("Error could not find input file: " + fileName, IvwContext);
+            throw DataReaderException("Error could not find input file: " + fileName, IVW_CONTEXT);
         }
     }
 

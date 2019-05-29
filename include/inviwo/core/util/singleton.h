@@ -60,22 +60,22 @@ public:
     static void init() {
         if (T::instance_) {
             throw SingletonException(name() + " Singleton already initialized",
-                                     IvwContextCustom("Singleton"));
+                                     IVW_CONTEXT_CUSTOM("Singleton"));
         }
         T::instance_ = util::defaultConstructType<T>();
         if (!T::instance_) {
             throw SingletonException("Was not able to initialize " + name() + "singleton",
-                                     IvwContextCustom("Singleton"));
+                                     IVW_CONTEXT_CUSTOM("Singleton"));
         }
     };
 
     static void init(T* instance) {
         if (T::instance_) {
             throw SingletonException(name() + " Singleton already initialized",
-                                     IvwContextCustom("Singleton"));
+                                     IVW_CONTEXT_CUSTOM("Singleton"));
         }
         if (!instance) {
-            throw SingletonException("Null pointer passed", IvwContextCustom("Singleton"));
+            throw SingletonException("Null pointer passed", IVW_CONTEXT_CUSTOM("Singleton"));
         }
         T::instance_ = instance;
     };
@@ -86,7 +86,7 @@ public:
                 name() +
                     " Singleton not initialized. Ensure that init() is called in a thread-safe "
                     "environment. ",
-                IvwContextCustom("Singleton"));
+                IVW_CONTEXT_CUSTOM("Singleton"));
         }
         return T::instance_;
     };

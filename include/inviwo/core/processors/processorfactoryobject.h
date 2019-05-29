@@ -97,7 +97,7 @@ std::unique_ptr<Processor> makeProcessor(const std::string& id, const std::strin
 template <typename T>
 std::unique_ptr<Processor> makeProcessor(empty_constructor, const std::string& id,
                                          const std::string& name, InviwoApplication*) {
-    auto p = util::make_unique<T>();
+    auto p = std::make_unique<T>();
     if (p->getIdentifier().empty()) p->setIdentifier(id);
     if (p->getDisplayName().empty()) p->setDisplayName(name);
     return std::move(p);
@@ -106,7 +106,7 @@ std::unique_ptr<Processor> makeProcessor(empty_constructor, const std::string& i
 template <typename T>
 std::unique_ptr<Processor> makeProcessor(app_constructor, const std::string& id,
                                          const std::string& name, InviwoApplication* app) {
-    auto p = util::make_unique<T>(app);
+    auto p = std::make_unique<T>(app);
     if (p->getIdentifier().empty()) p->setIdentifier(id);
     if (p->getDisplayName().empty()) p->setDisplayName(name);
     return std::move(p);
@@ -115,13 +115,13 @@ std::unique_ptr<Processor> makeProcessor(app_constructor, const std::string& id,
 template <typename T>
 std::unique_ptr<Processor> makeProcessor(id_name_constructor, const std::string& id,
                                          const std::string& name, InviwoApplication*) {
-    return util::make_unique<T>(id, name);
+    return std::make_unique<T>(id, name);
 }
 
 template <typename T>
 std::unique_ptr<Processor> makeProcessor(id_name_app_constructor, const std::string& id,
                                          const std::string& name, InviwoApplication* app) {
-    return util::make_unique<T>(id, name, app);
+    return std::make_unique<T>(id, name, app);
 }
 
 }  // namespace detail

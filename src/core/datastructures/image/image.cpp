@@ -229,7 +229,7 @@ void Image::copyRepresentationsTo(Image* targetImage) const {
     // Fallback. If no representation exist, create ImageRAM one
     const ImageRAM* imageRAM = this->getRepresentation<ImageRAM>();
     if (!imageRAM->copyRepresentationsTo(targetImage->getEditableRepresentation<ImageRAM>())) {
-        throw Exception("Failed to copy Image Representation", IvwContext);
+        throw Exception("Failed to copy Image Representation", IVW_CONTEXT);
     }
 }
 

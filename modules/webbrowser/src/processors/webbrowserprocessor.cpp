@@ -186,7 +186,7 @@ WebBrowserProcessor::WebBrowserProcessor()
 
         auto id = propertyHtmlId_.get();
         try {
-            util::validateIdentifier(id, "Property", IvwContext);
+            util::validateIdentifier(id, "Property", IVW_CONTEXT);
         } catch (Exception& ex) {
             LogError(ex.getMessage());
             return;

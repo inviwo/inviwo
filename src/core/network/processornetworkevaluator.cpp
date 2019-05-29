@@ -114,7 +114,7 @@ void ProcessorNetworkEvaluator::evaluate() {
                         inport->callOnChangeIfChanged();
                     }
                 } catch (...) {
-                    exceptionHandler_(processor, EvaluationType::InitResource, IvwContext);
+                    exceptionHandler_(processor, EvaluationType::InitResource, IVW_CONTEXT);
                     processor->setValid();
                     continue;
                 }
@@ -126,7 +126,7 @@ void ProcessorNetworkEvaluator::evaluate() {
                     // do the actual processing
                     processor->process();
                 } catch (...) {
-                    exceptionHandler_(processor, EvaluationType::Process, IvwContext);
+                    exceptionHandler_(processor, EvaluationType::Process, IVW_CONTEXT);
                 }
 
                 // Set processor as valid only if we still are ready.
@@ -140,7 +140,7 @@ void ProcessorNetworkEvaluator::evaluate() {
                 try {
                     processor->doIfNotReady();
                 } catch (...) {
-                    exceptionHandler_(processor, EvaluationType::NotReady, IvwContext);
+                    exceptionHandler_(processor, EvaluationType::NotReady, IVW_CONTEXT);
                 }
             }
         }

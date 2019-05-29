@@ -80,7 +80,7 @@ void recursiveTopologicalModuleFactoryObjectSort(
 
     if (visited.find(lname) != visited.end()) return;  // Already visited;
     if (tmpVisited.find(lname) != tmpVisited.end()) {
-        throw Exception("Dependency graph not a DAG", IvwContextCustom("TopologicalModuleSort"));
+        throw Exception("Dependency graph not a DAG", IVW_CONTEXT_CUSTOM("TopologicalModuleSort"));
     }
 
     tmpVisited.insert(lname);

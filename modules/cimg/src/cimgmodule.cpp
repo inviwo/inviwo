@@ -39,12 +39,12 @@ namespace inviwo {
 
 CImgModule::CImgModule(InviwoApplication* app) : InviwoModule(app, "CImg") {
     // Register Data Readers
-    registerDataReader(util::make_unique<CImgLayerReader>());
-    registerDataReader(util::make_unique<TIFFLayerReader>());
-    registerDataReader(util::make_unique<TIFFStackVolumeReader>());
+    registerDataReader(std::make_unique<CImgLayerReader>());
+    registerDataReader(std::make_unique<TIFFLayerReader>());
+    registerDataReader(std::make_unique<TIFFStackVolumeReader>());
 
     // Register Data Writers
-    registerDataWriter(util::make_unique<CImgLayerWriter>());
+    registerDataWriter(std::make_unique<CImgLayerWriter>());
 
     LogInfo("Using LibJPG Version " << cimgutil::getLibJPGVersion());
     LogInfo("Using OpenEXR Version " << cimgutil::getOpenEXRVersion());

@@ -117,7 +117,7 @@ struct ConverterRegFunctor {
     auto operator()(InviwoModule& m) {
         if (!std::is_same<T, U>::value) {
             m.registerPropertyConverter(
-                util::make_unique<
+                std::make_unique<
                     OrdinalPropertyConverter<OrdinalProperty<T>, OrdinalProperty<U>>>());
         }
     }
@@ -126,14 +126,14 @@ struct ScalarStringConverterRegFunctor {
     template <typename T>
     auto operator()(InviwoModule& m) {
         m.registerPropertyConverter(
-            util::make_unique<ScalarToStringConverter<OrdinalProperty<T>>>());
+            std::make_unique<ScalarToStringConverter<OrdinalProperty<T>>>());
     }
 };
 struct VectorStringConverterRegFunctor {
     template <typename T>
     auto operator()(InviwoModule& m) {
         m.registerPropertyConverter(
-            util::make_unique<VectorToStringConverter<OrdinalProperty<T>>>());
+            std::make_unique<VectorToStringConverter<OrdinalProperty<T>>>());
     }
 };
 
@@ -144,7 +144,7 @@ struct OptionStringConverterRegFunctor {
     template <typename T>
     auto operator()(InviwoModule& m) {
         m.registerPropertyConverter(
-            util::make_unique<OptionToStringConverter<TemplateOptionProperty<T>>>());
+            std::make_unique<OptionToStringConverter<TemplateOptionProperty<T>>>());
     }
 };
 
@@ -152,7 +152,7 @@ struct OptionIntConverterRegFunctor {
     template <typename T>
     auto operator()(InviwoModule& m) {
         m.registerPropertyConverter(
-            util::make_unique<OptionToIntConverter<TemplateOptionProperty<T>>>());
+            std::make_unique<OptionToIntConverter<TemplateOptionProperty<T>>>());
     }
 };
 
@@ -160,7 +160,7 @@ struct IntOptionConverterRegFunctor {
     template <typename T>
     auto operator()(InviwoModule& m) {
         m.registerPropertyConverter(
-            util::make_unique<IntToOptionConverter<TemplateOptionProperty<T>>>());
+            std::make_unique<IntToOptionConverter<TemplateOptionProperty<T>>>());
     }
 };
 
@@ -177,69 +177,69 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     : InviwoModule(app, "Core"), compositeDirObserver_{*this, app} {
     // Register Converter Factories
     registerRepresentationConverterFactory(
-        util::make_unique<RepresentationConverterFactory<VolumeRepresentation>>());
+        std::make_unique<RepresentationConverterFactory<VolumeRepresentation>>());
     registerRepresentationConverterFactory(
-        util::make_unique<RepresentationConverterFactory<LayerRepresentation>>());
+        std::make_unique<RepresentationConverterFactory<LayerRepresentation>>());
     registerRepresentationConverterFactory(
-        util::make_unique<RepresentationConverterFactory<BufferRepresentation>>());
+        std::make_unique<RepresentationConverterFactory<BufferRepresentation>>());
 
     // Register Converters
     registerRepresentationConverter<VolumeRepresentation>(
-        util::make_unique<VolumeDisk2RAMConverter>());
+        std::make_unique<VolumeDisk2RAMConverter>());
     registerRepresentationConverter<LayerRepresentation>(
-        util::make_unique<LayerDisk2RAMConverter>());
+        std::make_unique<LayerDisk2RAMConverter>());
 
     // Register MetaData
-    registerMetaData(util::make_unique<BoolMetaData>());
-    registerMetaData(util::make_unique<IntMetaData>());
-    registerMetaData(util::make_unique<FloatMetaData>());
-    registerMetaData(util::make_unique<DoubleMetaData>());
-    registerMetaData(util::make_unique<StringMetaData>());
-    registerMetaData(util::make_unique<SizeMetaData>());
-    registerMetaData(util::make_unique<FloatVec2MetaData>());
-    registerMetaData(util::make_unique<FloatVec3MetaData>());
-    registerMetaData(util::make_unique<FloatVec4MetaData>());
-    registerMetaData(util::make_unique<DoubleVec2MetaData>());
-    registerMetaData(util::make_unique<DoubleVec3MetaData>());
-    registerMetaData(util::make_unique<DoubleVec4MetaData>());
-    registerMetaData(util::make_unique<IntVec2MetaData>());
-    registerMetaData(util::make_unique<IntVec3MetaData>());
-    registerMetaData(util::make_unique<IntVec4MetaData>());
-    registerMetaData(util::make_unique<UIntVec2MetaData>());
-    registerMetaData(util::make_unique<UIntVec3MetaData>());
-    registerMetaData(util::make_unique<UIntVec4MetaData>());
-    registerMetaData(util::make_unique<FloatMat2MetaData>());
-    registerMetaData(util::make_unique<FloatMat3MetaData>());
-    registerMetaData(util::make_unique<FloatMat4MetaData>());
-    registerMetaData(util::make_unique<DoubleMat2MetaData>());
-    registerMetaData(util::make_unique<DoubleMat4MetaData>());
-    registerMetaData(util::make_unique<DoubleMat3MetaData>());
-    registerMetaData(util::make_unique<Size2MetaData>());
-    registerMetaData(util::make_unique<Size3MetaData>());
-    registerMetaData(util::make_unique<Size4MetaData>());
-    registerMetaData(util::make_unique<VectorMetaData<2, float>>());
-    registerMetaData(util::make_unique<VectorMetaData<3, float>>());
-    registerMetaData(util::make_unique<VectorMetaData<4, float>>());
-    registerMetaData(util::make_unique<VectorMetaData<2, double>>());
-    registerMetaData(util::make_unique<VectorMetaData<3, double>>());
-    registerMetaData(util::make_unique<VectorMetaData<4, double>>());
-    registerMetaData(util::make_unique<VectorMetaData<2, int>>());
-    registerMetaData(util::make_unique<VectorMetaData<3, int>>());
-    registerMetaData(util::make_unique<VectorMetaData<4, int>>());
-    registerMetaData(util::make_unique<VectorMetaData<2, unsigned int>>());
-    registerMetaData(util::make_unique<VectorMetaData<3, unsigned int>>());
-    registerMetaData(util::make_unique<VectorMetaData<4, unsigned int>>());
-    registerMetaData(util::make_unique<MatrixMetaData<2, float>>());
-    registerMetaData(util::make_unique<MatrixMetaData<3, float>>());
-    registerMetaData(util::make_unique<MatrixMetaData<4, float>>());
-    registerMetaData(util::make_unique<MatrixMetaData<2, double>>());
-    registerMetaData(util::make_unique<MatrixMetaData<3, double>>());
-    registerMetaData(util::make_unique<MatrixMetaData<4, double>>());
-    registerMetaData(util::make_unique<PositionMetaData>());
-    registerMetaData(util::make_unique<ProcessorMetaData>());
-    registerMetaData(util::make_unique<ProcessorWidgetMetaData>());
-    registerMetaData(util::make_unique<StdUnorderedMapMetaData<std::string, std::string>>());
-    registerMetaData(util::make_unique<StdVectorMetaData<std::string>>());
+    registerMetaData(std::make_unique<BoolMetaData>());
+    registerMetaData(std::make_unique<IntMetaData>());
+    registerMetaData(std::make_unique<FloatMetaData>());
+    registerMetaData(std::make_unique<DoubleMetaData>());
+    registerMetaData(std::make_unique<StringMetaData>());
+    registerMetaData(std::make_unique<SizeMetaData>());
+    registerMetaData(std::make_unique<FloatVec2MetaData>());
+    registerMetaData(std::make_unique<FloatVec3MetaData>());
+    registerMetaData(std::make_unique<FloatVec4MetaData>());
+    registerMetaData(std::make_unique<DoubleVec2MetaData>());
+    registerMetaData(std::make_unique<DoubleVec3MetaData>());
+    registerMetaData(std::make_unique<DoubleVec4MetaData>());
+    registerMetaData(std::make_unique<IntVec2MetaData>());
+    registerMetaData(std::make_unique<IntVec3MetaData>());
+    registerMetaData(std::make_unique<IntVec4MetaData>());
+    registerMetaData(std::make_unique<UIntVec2MetaData>());
+    registerMetaData(std::make_unique<UIntVec3MetaData>());
+    registerMetaData(std::make_unique<UIntVec4MetaData>());
+    registerMetaData(std::make_unique<FloatMat2MetaData>());
+    registerMetaData(std::make_unique<FloatMat3MetaData>());
+    registerMetaData(std::make_unique<FloatMat4MetaData>());
+    registerMetaData(std::make_unique<DoubleMat2MetaData>());
+    registerMetaData(std::make_unique<DoubleMat4MetaData>());
+    registerMetaData(std::make_unique<DoubleMat3MetaData>());
+    registerMetaData(std::make_unique<Size2MetaData>());
+    registerMetaData(std::make_unique<Size3MetaData>());
+    registerMetaData(std::make_unique<Size4MetaData>());
+    registerMetaData(std::make_unique<VectorMetaData<2, float>>());
+    registerMetaData(std::make_unique<VectorMetaData<3, float>>());
+    registerMetaData(std::make_unique<VectorMetaData<4, float>>());
+    registerMetaData(std::make_unique<VectorMetaData<2, double>>());
+    registerMetaData(std::make_unique<VectorMetaData<3, double>>());
+    registerMetaData(std::make_unique<VectorMetaData<4, double>>());
+    registerMetaData(std::make_unique<VectorMetaData<2, int>>());
+    registerMetaData(std::make_unique<VectorMetaData<3, int>>());
+    registerMetaData(std::make_unique<VectorMetaData<4, int>>());
+    registerMetaData(std::make_unique<VectorMetaData<2, unsigned int>>());
+    registerMetaData(std::make_unique<VectorMetaData<3, unsigned int>>());
+    registerMetaData(std::make_unique<VectorMetaData<4, unsigned int>>());
+    registerMetaData(std::make_unique<MatrixMetaData<2, float>>());
+    registerMetaData(std::make_unique<MatrixMetaData<3, float>>());
+    registerMetaData(std::make_unique<MatrixMetaData<4, float>>());
+    registerMetaData(std::make_unique<MatrixMetaData<2, double>>());
+    registerMetaData(std::make_unique<MatrixMetaData<3, double>>());
+    registerMetaData(std::make_unique<MatrixMetaData<4, double>>());
+    registerMetaData(std::make_unique<PositionMetaData>());
+    registerMetaData(std::make_unique<ProcessorMetaData>());
+    registerMetaData(std::make_unique<ProcessorWidgetMetaData>());
+    registerMetaData(std::make_unique<StdUnorderedMapMetaData<std::string, std::string>>());
+    registerMetaData(std::make_unique<StdVectorMetaData<std::string>>());
 
     // Register Cameras
     registerCamera<PerspectiveCamera>("PerspectiveCamera");
@@ -247,7 +247,7 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerCamera<SkewedPerspectiveCamera>("SkewedPerspectiveCamera");
 
     // Register Data readers
-    registerDataReader(util::make_unique<RawVolumeReader>());
+    registerDataReader(std::make_unique<RawVolumeReader>());
     // Register Data writers
 
     // Register Ports
@@ -397,7 +397,7 @@ InviwoCore::InviwoCore(InviwoApplication* app)
 
     // Register Settings
     // Do this after the property registration since the settings use properties.
-    registerSettings(util::make_unique<LinkSettings>("Link Settings", app_->getPropertyFactory()));
+    registerSettings(std::make_unique<LinkSettings>("Link Settings", app_->getPropertyFactory()));
 }
 
 std::string InviwoCore::getPath() const { return filesystem::findBasePath(); }

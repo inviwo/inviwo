@@ -151,7 +151,7 @@ VolumeRAMPrecision<T>& VolumeRAMPrecision<T>::operator=(const VolumeRAMPrecision
     if (this != &that) {
         VolumeRAM::operator=(that);
         auto dim = that.dimensions_;
-        auto data = util::make_unique<T[]>(dim.x * dim.y * dim.z);
+        auto data = std::make_unique<T[]>(dim.x * dim.y * dim.z);
         std::memcpy(data.get(), that.data_.get(), dim.x * dim.y * dim.z * sizeof(T));
         data_.swap(data);
         std::swap(dim, dimensions_);
@@ -226,7 +226,7 @@ size_t VolumeRAMPrecision<T>::getNumberOfBytes() const {
 
 template <typename T>
 void VolumeRAMPrecision<T>::setDimensions(size3_t dimensions) {
-    auto data = util::make_unique<T[]>(dimensions.x * dimensions.y * dimensions.z);
+    auto data = std::make_unique<T[]>(dimensions.x * dimensions.y * dimensions.z);
     data_.swap(data);
     dimensions_ = dimensions;
     if (!ownsDataPtr_) data.release();

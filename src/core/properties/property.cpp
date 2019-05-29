@@ -52,7 +52,7 @@ Property::Property(const std::string& identifier, const std::string& displayName
     , owner_(nullptr)
     , initiatingWidget_(nullptr) {
 
-    util::validateIdentifier(identifier, "Property", IvwContext);
+    util::validateIdentifier(identifier, "Property", IVW_CONTEXT);
 }
 
 Property::Property(const Property& rhs)
@@ -95,7 +95,7 @@ Property& Property::setIdentifier(const std::string& identifier) {
     if (identifier_ != identifier) {
         identifier_ = identifier;
 
-        util::validateIdentifier(identifier, "Property", IvwContext);
+        util::validateIdentifier(identifier, "Property", IVW_CONTEXT);
 
         notifyObserversOnSetIdentifier(this, identifier_);
         notifyAboutChange();

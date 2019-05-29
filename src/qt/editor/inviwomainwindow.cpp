@@ -152,7 +152,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     // make sure, tooltips are always shown (this includes port inspectors as well)
     this->setAttribute(Qt::WA_AlwaysShowToolTips, true);
 
-    networkEditor_ = util::make_unique<NetworkEditor>(this);
+    networkEditor_ = std::make_unique<NetworkEditor>(this);
 
     currentWorkspaceFileName_ = "";
 
@@ -531,7 +531,7 @@ void InviwoMainWindow::addActions() {
         for (const auto& module : app_->getModules()) {
             auto moduleWorkspacePath = module->getPath(ModulePath::Workspaces);
             if (!filesystem::directoryExists(moduleWorkspacePath)) continue;
-            auto menu = util::make_unique<QMenu>(QString::fromStdString(module->getIdentifier()));
+            auto menu = std::make_unique<QMenu>(QString::fromStdString(module->getIdentifier()));
             for (auto item : filesystem::getDirectoryContents(moduleWorkspacePath)) {
                 // only accept inviwo workspace files
                 if (filesystem::getFileExtension(item) != "inv") continue;
@@ -561,7 +561,7 @@ void InviwoMainWindow::addActions() {
         for (const auto& module : app_->getModules()) {
             auto moduleTestPath = module->getPath(ModulePath::RegressionTests);
             if (!filesystem::directoryExists(moduleTestPath)) continue;
-            auto menu = util::make_unique<QMenu>(QString::fromStdString(module->getIdentifier()));
+            auto menu = std::make_unique<QMenu>(QString::fromStdString(module->getIdentifier()));
             for (auto test : filesystem::getDirectoryContents(moduleTestPath,
                                                               filesystem::ListMode::Directories)) {
                 std::string testdir = moduleTestPath + "/" + test;

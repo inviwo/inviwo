@@ -94,7 +94,7 @@ std::shared_ptr<Volume> RawVolumeReader::readData(const std::string& filePath) {
 std::shared_ptr<Volume> RawVolumeReader::readData(const std::string& filePath,
                                                   MetaDataOwner* metadata) {
     if (!filesystem::fileExists(filePath)) {
-        throw DataReaderException("Error could not find input file: " + filePath, IvwContext);
+        throw DataReaderException("Error could not find input file: " + filePath, IVW_CONTEXT);
     }
 
     rawFile_ = filePath;
@@ -103,7 +103,7 @@ std::shared_ptr<Volume> RawVolumeReader::readData(const std::string& filePath,
         auto readerDialog = util::dynamic_unique_ptr_cast<VolumeDataReaderDialog>(
             InviwoApplication::getPtr()->getDialogFactory()->create("RawVolumeReader"));
         if (!readerDialog) {
-            throw DataReaderException("No data reader dialog found.", IvwContext);
+            throw DataReaderException("No data reader dialog found.", IVW_CONTEXT);
         }
         readerDialog->setFile(rawFile_);
 
@@ -154,7 +154,7 @@ std::shared_ptr<Volume> RawVolumeReader::readData(const std::string& filePath,
             }
 
         } else {
-            throw DataReaderException("Raw data import terminated by user", IvwContext);
+            throw DataReaderException("Raw data import terminated by user", IVW_CONTEXT);
         }
     }
 
@@ -177,7 +177,7 @@ std::shared_ptr<Volume> RawVolumeReader::readData(const std::string& filePath,
         volume->setDataFormat(format_);
         auto vd = std::make_shared<VolumeDisk>(filePath, dimensions_, format_);
 
-        auto loader = util::make_unique<RawVolumeRAMLoader>(rawFile_, dataOffset_, dimensions_,
+        auto loader = std::make_unique<RawVolumeRAMLoader>(rawFile_, dataOffset_, dimensions_,
                                                             littleEndian_, format_);
         vd->setLoader(loader.release());
         volume->addRepresentation(vd);
@@ -188,7 +188,7 @@ std::shared_ptr<Volume> RawVolumeReader::readData(const std::string& filePath,
         LogInfo("Loaded volume: " << filePath << " size: " << size);
         return volume;
     } else {
-        throw DataReaderException("Raw data import could not determine format", IvwContext);
+        throw DataReaderException("Raw data import could not determine format", IVW_CONTEXT);
     }
 }
 

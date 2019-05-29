@@ -174,7 +174,7 @@ struct LayerToCImg {
                                                           bool /*permute*/ = true,
                                                           bool /*skipAlpha*/ = false) {
         // Single channel means we can do xyzc, as no permutation is needed
-        auto img = util::make_unique<cimg_library::CImg<T>>(
+        auto img = std::make_unique<cimg_library::CImg<T>>(
             static_cast<const T*>(inputLayerRAM->getData()),
             static_cast<unsigned int>(inputLayerRAM->getDimensions().x),
             static_cast<unsigned int>(inputLayerRAM->getDimensions().y), 1, 1, false);
@@ -196,7 +196,7 @@ struct LayerToCImg<glm::vec<L, T, Q>> {
         // (RRRRGGGGBBBB).
         // Permute from interleaved to planar format, i.e specify yzcx as input instead
         // of cxyz
-        auto img = util::make_unique<cimg_library::CImg<T>>(
+        auto img = std::make_unique<cimg_library::CImg<T>>(
             glm::value_ptr(*typedDataPtr), static_cast<unsigned int>(dataFormat->getComponents()),
             static_cast<unsigned int>(inputLayerRAM->getDimensions().x),
             static_cast<unsigned int>(inputLayerRAM->getDimensions().y), 1u, false);
@@ -224,7 +224,7 @@ struct CImgNormalizedLayerDispatcher {
             normalizedImg.mirror('y');
         }
 
-        auto data = util::make_unique<std::vector<unsigned char>>(
+        auto data = std::make_unique<std::vector<unsigned char>>(
             &normalizedImg[0], &normalizedImg[normalizedImg.size()]);
 
         return data;
@@ -256,7 +256,7 @@ struct CImgLoadLayerDispatcher {
                 formatId = loadedDataFormat->getId();
             } else {
                 throw DataReaderException(
-                    "CImgLoadLayerDispatcher, could not find proper data type", IvwContext);
+                    "CImgLoadLayerDispatcher, could not find proper data type", IVW_CONTEXT);
             }
 
             // Image is up-side-down
@@ -264,7 +264,7 @@ struct CImgLoadLayerDispatcher {
 
             return CImgToVoidConvert<P>::convert(dst, &img);
         } catch (cimg_library::CImgIOException& e) {
-            throw DataReaderException(std::string(e.what()), IvwContext);
+            throw DataReaderException(std::string(e.what()), IVW_CONTEXT);
         }
     }
 };
@@ -328,7 +328,7 @@ struct CImgSaveLayerDispatcher {
         } catch (cimg_library::CImgIOException& e) {
             throw DataWriterException(
                 "Failed to save image to: " + filePath + " Reason: " + std::string(e.what()),
-                IvwContext);
+                IVW_CONTEXT);
         }
     }
 };
@@ -385,7 +385,7 @@ struct CImgSaveLayerToBufferDispatcher {
                 std::move(cimgutil::saveCImgToBuffer(*img.get(), extension)));
         } catch (cimg_library::CImgIOException& e) {
             throw DataWriterException(
-                "Failed to save image to buffer. Reason: " + std::string(e.what()), IvwContext);
+                "Failed to save image to buffer. Reason: " + std::string(e.what()), IVW_CONTEXT);
         }
     }
 };

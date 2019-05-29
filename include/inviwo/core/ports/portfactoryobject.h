@@ -61,10 +61,10 @@ public:
 
     virtual ~InportFactoryObjectTemplate() = default;
 
-    virtual std::unique_ptr<Inport> create() override { return util::make_unique<T>(className_); }
+    virtual std::unique_ptr<Inport> create() override { return std::make_unique<T>(className_); }
 
     virtual std::unique_ptr<Inport> create(const std::string& identifier) override {
-        return util::make_unique<T>(identifier);
+        return std::make_unique<T>(identifier);
     }
 };
 
@@ -90,10 +90,10 @@ public:
 
     virtual ~OutportFactoryObjectTemplate() = default;
 
-    virtual std::unique_ptr<Outport> create() override { return util::make_unique<T>(className_); }
+    virtual std::unique_ptr<Outport> create() override { return std::make_unique<T>(className_); }
 
     virtual std::unique_ptr<Outport> create(const std::string& identifier) override {
-        return util::make_unique<T>(identifier);
+        return std::make_unique<T>(identifier);
     }
 };
 

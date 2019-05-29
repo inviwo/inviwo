@@ -40,7 +40,7 @@ PortInspectorFactoryObject::PortInspectorFactoryObject(
 std::string PortInspectorFactoryObject::getClassIdentifier() const { return portClassIdentifier_; }
 
 std::unique_ptr<PortInspector> PortInspectorFactoryObject::create() {
-    return util::make_unique<PortInspector>(portClassIdentifier_, inspectorWorkspaceFileName_);
+    return std::make_unique<PortInspector>(portClassIdentifier_, inspectorWorkspaceFileName_);
 }
 
 }  // namespace inviwo

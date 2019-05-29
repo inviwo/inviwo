@@ -137,9 +137,9 @@ void TFPropertyDialog::initializeDialog() {
         tf->addObserver(this);
     }
 
-    tfEditor_ = util::make_unique<TFEditor>(propertyPtr_.get(), tfSets_, this);
+    tfEditor_ = std::make_unique<TFEditor>(propertyPtr_.get(), tfSets_, this);
     tfSelectionWatcher_ =
-        util::make_unique<TFSelectionWatcher>(tfEditor_.get(), property_, tfSets_);
+        std::make_unique<TFSelectionWatcher>(tfEditor_.get(), property_, tfSets_);
 
     connect(tfEditor_.get(), &TFEditor::selectionChanged, this,
             [this]() { tfSelectionWatcher_->updateSelection(tfEditor_->getSelectedPrimitives()); });
@@ -184,7 +184,7 @@ void TFPropertyDialog::initializeDialog() {
 
     // set up color wheel
     {
-        colorWheel_ = util::make_unique<ColorWheel>(QSize(150, 150));
+        colorWheel_ = std::make_unique<ColorWheel>(QSize(150, 150));
         connect(tfSelectionWatcher_.get(), &TFSelectionWatcher::updateWidgetColor,
                 colorWheel_.get(), [cw = colorWheel_.get()](const QColor& c, bool /*ambiguous*/) {
                     QSignalBlocker block(cw);
@@ -315,7 +315,7 @@ void TFPropertyDialog::initializeDialog() {
 
     // set up color dialog
     {
-        colorDialog_ = util::make_unique<QColorDialog>(this);
+        colorDialog_ = std::make_unique<QColorDialog>(this);
         colorDialog_->hide();
         colorDialog_->setAttribute(Qt::WA_DeleteOnClose, false);
         // we don't want to see alpha in the color dialog

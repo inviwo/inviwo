@@ -130,7 +130,7 @@ const DataFormatBase* DataFormatBase::get(DataFormatId id) {
         static_cast<int>(id) >= 0) {
         return getPointer(id);
     } else {
-        throw DataFormatException("Invalid format id", IvwContextCustom("DataFormat"));
+        throw DataFormatException("Invalid format id", IVW_CONTEXT_CUSTOM("DataFormat"));
     }
 }
 
@@ -155,7 +155,7 @@ const DataFormatBase* DataFormatBase::get(const std::string& name) {
         return it->second;
     } else {
         throw DataFormatException("Invalid format string: '" + name + "'",
-                                  IvwContextCustom("DataFormat"));
+                                  IVW_CONTEXT_CUSTOM("DataFormat"));
     }
 }
 

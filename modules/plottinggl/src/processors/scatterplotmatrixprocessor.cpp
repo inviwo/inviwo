@@ -371,7 +371,7 @@ bool ScatterPlotMatrixProcessor::isIncluded(std::shared_ptr<Column> col) {
             bp->setSerializationMode(PropertySerializationMode::All);
             return bp->get();
         }
-        throw inviwo::Exception("Not a bool property", IvwContext);
+        throw inviwo::Exception("Not a bool property", IVW_CONTEXT);
     } else {
         auto newProp = new BoolProperty(identifier, displayName, true);
         newProp->setSerializationMode(PropertySerializationMode::All);

@@ -58,7 +58,7 @@ ShaderObject::ShaderObject(ShaderType shaderType, std::shared_ptr<const ShaderRe
     : shaderType_{shaderType}, id_{glCreateShader(shaderType)}, resource_{resource} {
     if (!shaderType_) {
         glDeleteShader(id_);
-        throw OpenGLException("Invalid shader type", IvwContext);
+        throw OpenGLException("Invalid shader type", IVW_CONTEXT);
     }
 
     // Help developer to spot errors
@@ -282,7 +282,7 @@ void ShaderObject::addIncludes(std::ostringstream& source,
                     std::ostringstream oss;
                     oss << "Found more than one include on line " << localLineNumber
                         << " in resource " << resource->key();
-                    throw OpenGLException(oss.str(), IvwContext);
+                    throw OpenGLException(oss.str(), IVW_CONTEXT);
                 }
 
                 // ignore everything after a line-comment "//" (unless it is inside a block comment)
@@ -310,7 +310,7 @@ void ShaderObject::addIncludes(std::ostringstream& source,
                     if (!inc) {
                         throw OpenGLException(
                             "Include file " + incfile + " not found in shader search paths.",
-                            IvwContext);
+                            IVW_CONTEXT);
                     }
                     auto it = util::find(includeResources_, inc);
                     if (it == includeResources_.end()) {  // Only include files once.

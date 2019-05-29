@@ -47,7 +47,7 @@ PythonInterpreter::PythonInterpreter(Python3Module* module) : embedded_{false}, 
     namespace py = pybind11;
 
     if (isInit_) {
-        throw ModuleInitException("Python already initialized", IvwContext);
+        throw ModuleInitException("Python already initialized", IVW_CONTEXT);
     }
 
     if (!Py_IsInitialized()) {
@@ -61,7 +61,7 @@ PythonInterpreter::PythonInterpreter(Python3Module* module) : embedded_{false}, 
         embedded_ = true;
 
         if (!Py_IsInitialized()) {
-            throw ModuleInitException("Python is not Initialized", IvwContext);
+            throw ModuleInitException("Python is not Initialized", IVW_CONTEXT);
         }
 
 #if defined(__unix__) || defined(__APPLE__)
@@ -100,7 +100,7 @@ sys.stderr = OutputRedirector(1)
 )",
                      py::globals());
         } catch (const py::error_already_set& e) {
-            throw ModuleInitException(e.what(), IvwContext);
+            throw ModuleInitException(e.what(), IVW_CONTEXT);
         }
     }
 

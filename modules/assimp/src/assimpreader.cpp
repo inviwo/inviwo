@@ -174,12 +174,12 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::string& filePath) {
     }
 
     if (!scene) {
-        throw DataReaderException(importer.GetErrorString(), IvwContext);
+        throw DataReaderException(importer.GetErrorString(), IVW_CONTEXT);
     }
 
     // at least one mesh
     if (0 == scene->mNumMeshes) {
-        throw DataReaderException("there are no meshes!", IvwContext);
+        throw DataReaderException("there are no meshes!", IVW_CONTEXT);
     }
 
     // because we use aiProcess_PreTransformVertices we can safely ignore the scenegraph,

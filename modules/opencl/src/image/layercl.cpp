@@ -70,7 +70,7 @@ void LayerCL::initialize(const void* texels) {
         // glm::size3_t(dimensions_, 1), 0, 0, mappedMem);
         // OpenCL::getPtr()->getQueue().enqueueUnmapMemObject(pinnedMem, mappedMem);
         // This should also use pinned memory...
-        clImage_ = util::make_unique<cl::Image2D>(
+        clImage_ = std::make_unique<cl::Image2D>(
             OpenCL::getPtr()->getContext(),
             CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR | CL_MEM_ALLOC_HOST_PTR, getFormat(),
             static_cast<size_t>(dimensions_.x), static_cast<size_t>(dimensions_.y), 0,
@@ -81,7 +81,7 @@ void LayerCL::initialize(const void* texels) {
         // OpenCL::getPtr()->getQueue().enqueueWriteLayer(*layer2D_, true, glm::size3_t(0),
         // glm::size3_t(dimensions_, 1), 0, 0, texels);
     } else {
-        clImage_ = util::make_unique<cl::Image2D>(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE,
+        clImage_ = std::make_unique<cl::Image2D>(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE,
                                                   getFormat(), static_cast<size_t>(dimensions_.x),
                                                   static_cast<size_t>(dimensions_.y));
     }

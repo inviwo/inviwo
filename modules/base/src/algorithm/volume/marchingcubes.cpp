@@ -581,7 +581,7 @@ std::shared_ptr<Mesh> marchingcubes(std::shared_ptr<const Volume> volume, double
         if (progressCallback) progressCallback(0.0f);
 
         if (!maskingCallback) {
-            throw Exception("Masking callback not set", IvwContextCustom("util::marchingcubes"));
+            throw Exception("Masking callback not set", IVW_CONTEXT_CUSTOM("util::marchingcubes"));
         }
 
         K3DTree<size_t, float> vertexTree;

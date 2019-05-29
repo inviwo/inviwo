@@ -306,7 +306,7 @@ void InviwoModule::registerProcessor(std::unique_ptr<ProcessorFactoryObject> pfo
 }
 
 void InviwoModule::registerCompositeProcessor(const std::string& file) {
-    auto processor = util::make_unique<CompositeProcessorFactoryObject>(file);
+    auto processor = std::make_unique<CompositeProcessorFactoryObject>(file);
     if (app_->getProcessorFactory()->registerObject(processor.get())) {
         processors_.push_back(std::move(processor));
     }
@@ -321,7 +321,7 @@ void InviwoModule::registerProcessorWidget(std::unique_ptr<ProcessorWidgetFactor
 void InviwoModule::registerPortInspector(std::string portClassIdentifier,
                                          std::string inspectorPath) {
     auto portInspector =
-        util::make_unique<PortInspectorFactoryObject>(portClassIdentifier, inspectorPath);
+        std::make_unique<PortInspectorFactoryObject>(portClassIdentifier, inspectorPath);
 
     if (app_->getPortInspectorFactory()->registerObject(portInspector.get())) {
         portInspectors_.push_back(std::move(portInspector));

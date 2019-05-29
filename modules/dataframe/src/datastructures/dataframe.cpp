@@ -77,13 +77,13 @@ std::shared_ptr<CategoricalColumn> DataFrame::addCategoricalColumn(const std::st
 
 void DataFrame::addRow(const std::vector<std::string> &data) {
     if (columns_.size() <= 1) {
-        throw NoColumns("DataFrame: DataFrame has no columns", IvwContext);
+        throw NoColumns("DataFrame: DataFrame has no columns", IVW_CONTEXT);
     } else if (columns_.size() != data.size() + 1) {  // consider index column of DataFrame
         std::ostringstream oss;
         oss << "Data does not match column count, DataFrame has " << (columns_.size() - 1)
             << " columns while input data has " << data.size();
         oss << ". Input data is : " << joinString(data, " | ");
-        throw InvalidColCount(oss.str(), IvwContext);
+        throw InvalidColCount(oss.str(), IVW_CONTEXT);
     }
     // Try to match up input data with columns.
     std::vector<size_t> columnIdForDataTypeErrors;
@@ -104,7 +104,7 @@ void DataFrame::addRow(const std::vector<std::string> &data) {
         errStr << ")" << std::endl
                << " DataFrame will be in an invalid state since since all columns must be of equal "
                   "size.";
-        throw DataTypeMismatch(errStr.str(), IvwContext);
+        throw DataTypeMismatch(errStr.str(), IVW_CONTEXT);
     }
 }
 
@@ -182,7 +182,7 @@ std::shared_ptr<DataFrame> createDataFrame(const std::vector<std::vector<std::st
 
     if (exampleRows.empty()) {
         throw InvalidColCount("No example data to derive columns from",
-                              IvwContextCustom("DataFrame::createDataFrame"));
+                              IVW_CONTEXT_CUSTOM("DataFrame::createDataFrame"));
     }
 
     // Guess type of each column, ordinal or nominal
@@ -194,7 +194,7 @@ std::shared_ptr<DataFrame> createDataFrame(const std::vector<std::vector<std::st
             std::ostringstream oss;
             oss << "Number of headers does not match column count, number of headers: "
                 << colHeaders.size() << ", number of columns: " << rowData.size();
-            throw InvalidColCount(oss.str(), IvwContextCustom("DataFrame::createDataFrame"));
+            throw InvalidColCount(oss.str(), IVW_CONTEXT_CUSTOM("DataFrame::createDataFrame"));
         }
         for (auto column = 0u; column < rowData.size(); ++column) {
             std::istringstream iss(trim(rowData[column]));

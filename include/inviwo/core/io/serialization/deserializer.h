@@ -319,7 +319,7 @@ public:
                 d.deserialize(itemKey_, item.value);
                 item.callback(item.value);
             } catch (...) {
-                d.handleError(IvwContext);
+                d.handleError(IVW_CONTEXT);
             }
         }
     }
@@ -642,7 +642,7 @@ std::basic_istream<Elem, Traits>& operator>>(std::basic_istream<Elem, Traits>& i
             is.setstate(std::ios_base::failbit);
 
         throw SerializationException("Error deserializing value: \"" + tmp + "\"",
-                                     IvwContextCustom("Deserialization"));
+                                     IVW_CONTEXT_CUSTOM("Deserialization"));
     }
 
     return is;
@@ -687,7 +687,7 @@ void Deserializer::deserialize(const std::string& key, T& data, const Serializat
             }
         }
     } catch (...) {
-        handleError(IvwContext);
+        handleError(IVW_CONTEXT);
     }
 }
 
@@ -718,7 +718,7 @@ void Deserializer::deserialize(const std::string& key, Vec& data) {
             try {
                 getSafeValue(SerializeConstants::VectorAttributes[i], data[i]);
             } catch (...) {
-                handleError(IvwContext);
+                handleError(IVW_CONTEXT);
             }
         }
     }
@@ -763,13 +763,13 @@ void Deserializer::deserialize(const std::string& key, std::vector<T*>& vector,
                 vector.push_back(item);
             } catch (...) {
                 delete item;
-                handleError(IvwContext);
+                handleError(IVW_CONTEXT);
             }
         } else {
             try {
                 deserialize(itemKey, vector[i]);
             } catch (...) {
-                handleError(IvwContext);
+                handleError(IVW_CONTEXT);
             }
         }
         i++;
@@ -795,7 +795,7 @@ void Deserializer::deserialize(const std::string& key, std::vector<std::unique_p
                 vector.emplace_back(item);
             } catch (...) {
                 delete item;
-                handleError(IvwContext);
+                handleError(IVW_CONTEXT);
             }
         } else {
             try {
@@ -806,7 +806,7 @@ void Deserializer::deserialize(const std::string& key, std::vector<std::unique_p
                     vector[i].reset(ptr);
                 }
             } catch (...) {
-                handleError(IvwContext);
+                handleError(IVW_CONTEXT);
             }
         }
         i++;
@@ -832,7 +832,7 @@ void Deserializer::deserialize(const std::string& key, std::vector<T*>& vector,
                 deserialize(itemKey, *it);
                 lastInsertion = it;
             } catch (...) {
-                handleError(IvwContext);
+                handleError(IVW_CONTEXT);
             }
         } else {  // No item in vector matches item on disk, create a new one.
             T* item = nullptr;
@@ -844,7 +844,7 @@ void Deserializer::deserialize(const std::string& key, std::vector<T*>& vector,
                 lastInsertion = vector.insert(lastInsertion, item);
             } catch (...) {
                 delete item;
-                handleError(IvwContext);
+                handleError(IVW_CONTEXT);
             }
         }
     }
@@ -872,7 +872,7 @@ void Deserializer::deserialize(const std::string& key, std::vector<T>& vector,
                 deserialize(itemKey, vector[i]);
             }
         } catch (...) {
-            handleError(IvwContext);
+            handleError(IVW_CONTEXT);
         }
         i++;
     }
@@ -896,7 +896,7 @@ void Deserializer::deserialize(const std::string& key, std::unordered_set<T>& se
             set.insert(std::move(item));
 
         } catch (...) {
-            handleError(IvwContext);
+            handleError(IVW_CONTEXT);
         }
     }
 }
@@ -922,7 +922,7 @@ void Deserializer::deserialize(const std::string& key, std::list<T>& container,
                 deserialize(itemKey, *std::next(container.begin(), i));
             }
         } catch (...) {
-            handleError(IvwContext);
+            handleError(IVW_CONTEXT);
         }
         i++;
     }
@@ -933,7 +933,7 @@ void Deserializer::deserialize(const std::string& key, std::map<K, V, C, A>& map
                                const std::string& itemKey,
                                const std::string& comparisionAttribute) {
     if (!isPrimitiveType(typeid(K)) || comparisionAttribute.empty())
-        throw SerializationException("Error: map key has to be a primitive type", IvwContext);
+        throw SerializationException("Error: map key has to be a primitive type", IVW_CONTEXT);
 
     NodeSwitch mapNodeSwitch(*this, key);
     if (!mapNodeSwitch) return;
@@ -953,7 +953,7 @@ void Deserializer::deserialize(const std::string& key, std::map<K, V, C, A>& map
             deserialize(itemKey, value);
             map[childkey] = value;
         } catch (...) {
-            handleError(IvwContext);
+            handleError(IVW_CONTEXT);
         }
     }
 }
@@ -964,7 +964,7 @@ void Deserializer::deserialize(const std::string& key, std::map<K, V*, C, A>& ma
                                const std::string& itemKey,
                                const std::string& comparisionAttribute) {
     if (!isPrimitiveType(typeid(K)) || comparisionAttribute.empty())
-        throw SerializationException("Error: map key has to be a primitive type", IvwContext);
+        throw SerializationException("Error: map key has to be a primitive type", IVW_CONTEXT);
 
     NodeSwitch mapNodeSwitch(*this, key);
     if (!mapNodeSwitch) return;
@@ -984,7 +984,7 @@ void Deserializer::deserialize(const std::string& key, std::map<K, V*, C, A>& ma
             deserialize(itemKey, value);
             map[childkey] = value;
         } catch (...) {
-            handleError(IvwContext);
+            handleError(IVW_CONTEXT);
         }
     }
 }
@@ -995,7 +995,7 @@ void Deserializer::deserialize(const std::string& key, std::map<K, std::unique_p
                                const std::string& itemKey,
                                const std::string& comparisionAttribute) {
     if (!isPrimitiveType(typeid(K)) || comparisionAttribute.empty())
-        throw SerializationException("Error: map key has to be a primitive type", IvwContext);
+        throw SerializationException("Error: map key has to be a primitive type", IVW_CONTEXT);
 
     NodeSwitch mapNodeSwitch(*this, key);
     if (!mapNodeSwitch) return;
@@ -1018,7 +1018,7 @@ void Deserializer::deserialize(const std::string& key, std::map<K, std::unique_p
                     it->second.reset(ptr);
                 }
             } catch (...) {
-                handleError(IvwContext);
+                handleError(IVW_CONTEXT);
             }
         } else {
             V* ptr = nullptr;
@@ -1027,7 +1027,7 @@ void Deserializer::deserialize(const std::string& key, std::map<K, std::unique_p
                 map.emplace(childkey, std::unique_ptr<V>(ptr));
             } catch (...) {
                 delete ptr;
-                handleError(IvwContext);
+                handleError(IVW_CONTEXT);
             }
         }
     }
@@ -1052,11 +1052,11 @@ void Deserializer::deserialize(const std::string& key, T*& data) {
                 if (it != referenceLookup_.end()) {
                     NodeDebugger error(keyNode);
                     throw SerializationException(
-                        "Reference to " + error.toString(0) + " not instantiated", IvwContext,
+                        "Reference to " + error.toString(0) + " not instantiated", IVW_CONTEXT,
                         error[0].key, error[0].type, error[0].identifier, it->second);
                 } else {
                     throw SerializationException(
-                        "Could not find reference to " + key + ": " + type_attr, IvwContext, key,
+                        "Could not find reference to " + key + ": " + type_attr, IVW_CONTEXT, key,
                         type_attr);
                 }
             }
@@ -1076,7 +1076,7 @@ void Deserializer::deserialize(const std::string& key, T*& data) {
                 throw SerializationException(
                     "Could not create " + error.toString(0) + ". Reason: \"" + type_attr +
                         "\" Not found in factory.",
-                    IvwContext, key, type_attr, error[0].identifier, keyNode);
+                    IVW_CONTEXT, key, type_attr, error[0].identifier, keyNode);
             }
 
         } else {
@@ -1092,7 +1092,7 @@ void Deserializer::deserialize(const std::string& key, T*& data) {
                 NodeDebugger error(keyNode);
                 throw SerializationException("Could not create " + error.toString(0) +
                                                  ". Reason: No default constructor found.",
-                                             IvwContext, key, type_attr, error[0].identifier,
+                                             IVW_CONTEXT, key, type_attr, error[0].identifier,
                                              keyNode);
             }
         }
@@ -1143,7 +1143,7 @@ void Deserializer::deserializeAs(const std::string& key, T*& data) {
         } else {
             delete ptr;
             throw SerializationException(
-                "Could not deserialize \"" + key + "\" types does not match", IvwContext);
+                "Could not deserialize \"" + key + "\" types does not match", IVW_CONTEXT);
         }
     }
 }
@@ -1161,7 +1161,7 @@ void Deserializer::deserializeAs(const std::string& key, std::unique_ptr<T, D>& 
         } else {
             delete ptr;
             throw SerializationException(
-                "Could not deserialize \"" + key + "\" types does not match", IvwContext);
+                "Could not deserialize \"" + key + "\" types does not match", IVW_CONTEXT);
         }
     }
 }

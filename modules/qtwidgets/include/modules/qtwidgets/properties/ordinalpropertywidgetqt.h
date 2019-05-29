@@ -166,9 +166,9 @@ OrdinalPropertyWidgetQt<T>::OrdinalPropertyWidgetQt(OrdinalProperty<T>* property
     , transformer_{[&]() -> std::unique_ptr<PropertyTransformer<T>> {
         if ((property->getSemantics() == PropertySemantics("Spherical")) ||
             (property->getSemantics() == PropertySemantics("SphericalSpinBox"))) {
-            return util::make_unique<SphericalPropertyTransformer<T>>(property);
+            return std::make_unique<SphericalPropertyTransformer<T>>(property);
         } else {
-            return util::make_unique<IdentityPropertyTransformer<T>>(property);
+            return std::make_unique<IdentityPropertyTransformer<T>>(property);
         }
     }()} {
 

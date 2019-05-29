@@ -93,12 +93,12 @@ PortInspector::PortInspector(std::string portClassIdentifier,
         if (!canvasProcessor_) {
             throw Exception(
                 "Could not find canvas for port inspector: " + inspectorNetworkFileName_,
-                IvwContext);
+                IVW_CONTEXT);
         }
 
     } else {
         throw Exception("Could not open port inspector file: " + inspectorNetworkFileName_,
-                        IvwContext);
+                        IVW_CONTEXT);
     }
 }
 

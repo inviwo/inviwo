@@ -512,7 +512,7 @@ void ConsoleWidget::copy() {
         }
         prevrow = ind.row();
     }
-    auto mimedata = util::make_unique<QMimeData>();
+    auto mimedata = std::make_unique<QMimeData>();
     mimedata->setData(QString("text/plain"), text.toUtf8());
     QApplication::clipboard()->setMimeData(mimedata.release());
 }

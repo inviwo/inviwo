@@ -108,7 +108,7 @@ struct DispatchHelper<Result, B, E, std::tuple<Formats...>> {
         if (B > E)
             throw DispatchException(
                 "Format " + std::string(DataFormatBase::get(id)->getString()) + " not supported",
-                IvwContextCustom("Dispatching"));
+                IVW_CONTEXT_CUSTOM("Dispatching"));
 
         if (id == Format::id()) {
 #ifdef _WIN32  // TODO: remove win fix when VS does the right thing...

@@ -164,7 +164,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
 int BaseGLModule::getVersion() const { return 4; }
 
 std::unique_ptr<VersionConverter> BaseGLModule::getConverter(int version) const {
-    return util::make_unique<Converter>(version);
+    return std::make_unique<Converter>(version);
 }
 
 BaseGLModule::Converter::Converter(int version) : version_(version) {}

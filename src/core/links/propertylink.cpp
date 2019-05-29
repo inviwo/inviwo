@@ -72,21 +72,21 @@ void PropertyLink::deserialize(Deserializer& d) {
         const auto message = util::formatSerializationError(
             "Property Link", srcError.data.nd.getDescription(), dstError.data.nd.getDescription(),
             "Source and destination properties not found.");
-        throw SerializationException(message, IvwContext, "PropertyLink");
+        throw SerializationException(message, IVW_CONTEXT, "PropertyLink");
 
     } else if (srcError.error) {
         const auto message = util::formatSerializationError(
             "Property Link", srcError.data.nd.getDescription(), joinString(dst_->getPath(), "."),
             "Source property not found.");
 
-        throw SerializationException(message, IvwContext, "PropertyLink");
+        throw SerializationException(message, IVW_CONTEXT, "PropertyLink");
 
     } else if (dstError.error) {
         const auto message = util::formatSerializationError(
             "Property Link", joinString(src_->getPath(), "."), dstError.data.nd.getDescription(),
             "Destination property not found.");
 
-        throw SerializationException(message, IvwContext, "PropertyLink");
+        throw SerializationException(message, IVW_CONTEXT, "PropertyLink");
     }
 }
 

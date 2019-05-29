@@ -206,15 +206,15 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProperty<Gaussian2DProperty>();
 
     // Register Data readers
-    registerDataReader(util::make_unique<DatVolumeSequenceReader>());
-    registerDataReader(util::make_unique<IvfVolumeReader>());
-    registerDataReader(util::make_unique<IvfSequenceVolumeReader>());
+    registerDataReader(std::make_unique<DatVolumeSequenceReader>());
+    registerDataReader(std::make_unique<IvfVolumeReader>());
+    registerDataReader(std::make_unique<IvfSequenceVolumeReader>());
     // Register Data writers
-    registerDataWriter(util::make_unique<DatVolumeWriter>());
-    registerDataWriter(util::make_unique<IvfVolumeWriter>());
-    registerDataWriter(util::make_unique<StlWriter>());
-    registerDataWriter(util::make_unique<BinarySTLWriter>());
-    registerDataWriter(util::make_unique<WaveFrontWriter>());
+    registerDataWriter(std::make_unique<DatVolumeWriter>());
+    registerDataWriter(std::make_unique<IvfVolumeWriter>());
+    registerDataWriter(std::make_unique<StlWriter>());
+    registerDataWriter(std::make_unique<BinarySTLWriter>());
+    registerDataWriter(std::make_unique<WaveFrontWriter>());
 
     util::for_each_type<OrdinalPropertyAnimator::Types>{}(RegHelper{}, *this);
 }
@@ -222,7 +222,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
 int BaseModule::getVersion() const { return 3; }
 
 std::unique_ptr<VersionConverter> BaseModule::getConverter(int version) const {
-    return util::make_unique<Converter>(version);
+    return std::make_unique<Converter>(version);
 }
 
 BaseModule::Converter::Converter(int version) : version_(version) {}

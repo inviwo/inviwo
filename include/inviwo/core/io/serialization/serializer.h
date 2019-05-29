@@ -156,7 +156,7 @@ void Serializer::serialize(const std::string& key, const std::vector<T>& vector,
                            const std::string& itemKey) {
     if (vector.empty()) return;
 
-    auto node = util::make_unique<TxElement>(key);
+    auto node = std::make_unique<TxElement>(key);
     rootElement_->LinkEndChild(node.get());
     NodeSwitch nodeSwitch(*this, node.get());
 
@@ -170,7 +170,7 @@ void Serializer::serialize(const std::string& key, const std::unordered_set<T>& 
                            const std::string& itemKey) {
     if (set.empty()) return;
 
-    auto node = util::make_unique<TxElement>(key);
+    auto node = std::make_unique<TxElement>(key);
     rootElement_->LinkEndChild(node.get());
     NodeSwitch nodeSwitch(*this, node.get());
 
@@ -184,7 +184,7 @@ void Serializer::serialize(const std::string& key, const std::list<T>& container
                            const std::string& itemKey) {
     if (container.empty()) return;
 
-    auto node = util::make_unique<TxElement>(key);
+    auto node = std::make_unique<TxElement>(key);
     rootElement_->LinkEndChild(node.get());
 
     NodeSwitch nodeSwitch(*this, node.get());
@@ -197,11 +197,11 @@ template <typename K, typename V, typename C, typename A>
 void Serializer::serialize(const std::string& key, const std::map<K, V, C, A>& map,
                            const std::string& itemKey) {
     if (!isPrimitiveType(typeid(K)))
-        throw SerializationException("Error: map key has to be a primitive type", IvwContext);
+        throw SerializationException("Error: map key has to be a primitive type", IVW_CONTEXT);
 
     if (map.empty()) return;
 
-    auto node = util::make_unique<TxElement>(key);
+    auto node = std::make_unique<TxElement>(key);
     rootElement_->LinkEndChild(node.get());
     NodeSwitch nodeSwitch(*this, node.get());
 
@@ -216,11 +216,11 @@ template <typename K, typename V, typename H, typename C, typename A>
 void Serializer::serialize(const std::string& key, const std::unordered_map<K, V, H, C, A>& map,
                            const std::string& itemKey) {
     if (!isPrimitiveType(typeid(K)))
-        throw SerializationException("Error: map key has to be a primitive type", IvwContext);
+        throw SerializationException("Error: map key has to be a primitive type", IVW_CONTEXT);
 
     if (map.empty()) return;
 
-    auto node = util::make_unique<TxElement>(key);
+    auto node = std::make_unique<TxElement>(key);
     rootElement_->LinkEndChild(node.get());
     NodeSwitch nodeSwitch(*this, node.get());
 
@@ -263,7 +263,7 @@ void Serializer::serialize(const std::string& key, const T& data,
     if (target == SerializationTarget::Attribute) {
         rootElement_->SetAttribute(key, data);
     } else {
-        auto node = util::make_unique<TxElement>(key);
+        auto node = std::make_unique<TxElement>(key);
         rootElement_->LinkEndChild(node.get());
         node->SetAttribute(SerializeConstants::ContentAttribute, data);
     }
@@ -288,7 +288,7 @@ void Serializer::serialize(const std::string& key, const flags::flags<T>& data,
 // glm vector types
 template <typename Vec, typename std::enable_if<util::rank<Vec>::value == 1, int>::type>
 void Serializer::serialize(const std::string& key, const Vec& data) {
-    auto node = util::make_unique<TxElement>(key);
+    auto node = std::make_unique<TxElement>(key);
     rootElement_->LinkEndChild(node.get());
     for (size_t i = 0; i < util::extent<Vec, 0>::value; ++i) {
         node->SetAttribute(SerializeConstants::VectorAttributes[i], data[i]);
@@ -298,7 +298,7 @@ void Serializer::serialize(const std::string& key, const Vec& data) {
 // glm matrix types
 template <typename Mat, typename std::enable_if<util::rank<Mat>::value == 2, int>::type>
 void Serializer::serialize(const std::string& key, const Mat& data) {
-    auto node = util::make_unique<TxElement>(key);
+    auto node = std::make_unique<TxElement>(key);
     rootElement_->LinkEndChild(node.get());
 
     NodeSwitch nodeSwitch(*this, node.get());

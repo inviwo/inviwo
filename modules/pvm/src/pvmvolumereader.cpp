@@ -46,7 +46,7 @@ PVMVolumeReader* PVMVolumeReader::clone() const { return new PVMVolumeReader(*th
 
 std::shared_ptr<Volume> PVMVolumeReader::readData(const std::string& filePath) {
     if (!filesystem::fileExists(filePath)) {
-        throw DataReaderException("Error could not find input file: " + filePath, IvwContext);
+        throw DataReaderException("Error could not find input file: " + filePath, IVW_CONTEXT);
     }
     auto volume = readPVMData(filePath);
 
@@ -92,7 +92,7 @@ std::shared_ptr<Volume> PVMVolumeReader::readPVMData(std::string filePath) {
 
     if (data == nullptr) {
         throw DataReaderException("Error: Could not read data in PVM file: " + filePath,
-                                  IvwContextCustom("PVMVolumeReader"));
+                                  IVW_CONTEXT_CUSTOM("PVMVolumeReader"));
     }
 
     const DataFormatBase* format = nullptr;
@@ -110,12 +110,12 @@ std::shared_ptr<Volume> PVMVolumeReader::readPVMData(std::string filePath) {
         default:
             throw DataReaderException(
                 "Error: Unsupported format (bytes per voxel) in .pvm file: " + filePath,
-                IvwContextCustom("PVMVolumeReader"));
+                IVW_CONTEXT_CUSTOM("PVMVolumeReader"));
     }
 
     if (dim == size3_t(0)) {
         throw DataReaderException("Error: Unable to find dimensions in .pvm file: " + filePath,
-                                  IvwContextCustom("PVMVolumeReader"));
+                                  IVW_CONTEXT_CUSTOM("PVMVolumeReader"));
     }
 
     auto volume = std::make_shared<Volume>();

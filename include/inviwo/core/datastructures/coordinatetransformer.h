@@ -648,7 +648,7 @@ Matrix<N + 1, float> SpatialCoordinateTransformer<N>::getMatrix(CoordinateSpace 
                     return getDataToWorldMatrix();
                 default:
                     throw Exception("getMatrix is not available for the given spaces: " + 
-                                    toString(CoordinateSpace::Data) + " to " + toString(to), IvwContext);
+                                    toString(CoordinateSpace::Data) + " to " + toString(to), IVW_CONTEXT);
             }
         case CoordinateSpace::Model: 
             switch (to) {
@@ -660,7 +660,7 @@ Matrix<N + 1, float> SpatialCoordinateTransformer<N>::getMatrix(CoordinateSpace 
                     return getModelToWorldMatrix();
                 default:
                     throw Exception("getMatrix is not available for the given spaces: " + 
-                                    toString(CoordinateSpace::Model) + " to " + toString(to), IvwContext);
+                                    toString(CoordinateSpace::Model) + " to " + toString(to), IVW_CONTEXT);
             }
         case CoordinateSpace::World: 
             switch (to) {
@@ -672,10 +672,10 @@ Matrix<N + 1, float> SpatialCoordinateTransformer<N>::getMatrix(CoordinateSpace 
                     return Matrix<N + 1, float>(1.0f);
                 default:
                     throw Exception("getMatrix is not available for the given spaces: " + 
-                                    toString(CoordinateSpace::World) + " to " + toString(to), IvwContext);
+                                    toString(CoordinateSpace::World) + " to " + toString(to), IVW_CONTEXT);
             }
         default:
-            throw Exception("getMatrix is not available for the given space: " + toString(from), IvwContext);
+            throw Exception("getMatrix is not available for the given space: " + toString(from), IVW_CONTEXT);
     }
 }
 
@@ -694,7 +694,7 @@ Matrix<N + 1, float> StructuredCoordinateTransformer<N>::getMatrix(CoordinateSpa
                     return getIndexToWorldMatrix();
                 default:
                     throw Exception("getMatrix is not available for the given spaces: " + 
-                                    toString(CoordinateSpace::Index) + " to " + toString(to), IvwContext);
+                                    toString(CoordinateSpace::Index) + " to " + toString(to), IVW_CONTEXT);
             }
         case CoordinateSpace::Data: 
             switch (to) {
@@ -708,7 +708,7 @@ Matrix<N + 1, float> StructuredCoordinateTransformer<N>::getMatrix(CoordinateSpa
                     return getDataToWorldMatrix();
                 default:
                     throw Exception("getMatrix is not available for the given spaces: " + 
-                                    toString(CoordinateSpace::Data) + " to " + toString(to), IvwContext);
+                                    toString(CoordinateSpace::Data) + " to " + toString(to), IVW_CONTEXT);
             }
         case CoordinateSpace::Model: 
             switch (to) {
@@ -722,7 +722,7 @@ Matrix<N + 1, float> StructuredCoordinateTransformer<N>::getMatrix(CoordinateSpa
                     return getModelToWorldMatrix();
                 default:
                     throw Exception("getMatrix is not available for the given spaces: " + 
-                                    toString(CoordinateSpace::Model) + " to " + toString(to), IvwContext);
+                                    toString(CoordinateSpace::Model) + " to " + toString(to), IVW_CONTEXT);
             }
         case CoordinateSpace::World: 
             switch (to) {
@@ -736,10 +736,10 @@ Matrix<N + 1, float> StructuredCoordinateTransformer<N>::getMatrix(CoordinateSpa
                     return Matrix<N + 1, float>(1.0f);
                 default:
                     throw Exception("getMatrix is not available for the given spaces: " + 
-                                    toString(CoordinateSpace::World) + " to " + toString(to), IvwContext);
+                                    toString(CoordinateSpace::World) + " to " + toString(to), IVW_CONTEXT);
             }
         default:
-            throw Exception("getMatrix is not available for the given space: " + toString(from), IvwContext);
+            throw Exception("getMatrix is not available for the given space: " + toString(from), IVW_CONTEXT);
     }
 }
 
@@ -760,7 +760,7 @@ Matrix<N + 1, float> SpatialCameraCoordinateTransformer<N>::getMatrix(Coordinate
                     return getDataToClipMatrix();
                 default:
                     throw Exception("getMatrix is not available for the given spaces: " + 
-                                    toString(CoordinateSpace::Data) + " to " + toString(to), IvwContext);
+                                    toString(CoordinateSpace::Data) + " to " + toString(to), IVW_CONTEXT);
             }
         case CoordinateSpace::Model: 
             switch (to) {
@@ -776,7 +776,7 @@ Matrix<N + 1, float> SpatialCameraCoordinateTransformer<N>::getMatrix(Coordinate
                     return getModelToClipMatrix();
                 default:
                     throw Exception("getMatrix is not available for the given spaces: " + 
-                                    toString(CoordinateSpace::Model) + " to " + toString(to), IvwContext);
+                                    toString(CoordinateSpace::Model) + " to " + toString(to), IVW_CONTEXT);
             }
         case CoordinateSpace::World: 
             switch (to) {
@@ -792,7 +792,7 @@ Matrix<N + 1, float> SpatialCameraCoordinateTransformer<N>::getMatrix(Coordinate
                     return getWorldToClipMatrix();
                 default:
                     throw Exception("getMatrix is not available for the given spaces: " + 
-                                    toString(CoordinateSpace::World) + " to " + toString(to), IvwContext);
+                                    toString(CoordinateSpace::World) + " to " + toString(to), IVW_CONTEXT);
             }
         case CoordinateSpace::View: 
             switch (to) {
@@ -808,7 +808,7 @@ Matrix<N + 1, float> SpatialCameraCoordinateTransformer<N>::getMatrix(Coordinate
                     return getViewToClipMatrix();
                 default:
                     throw Exception("getMatrix is not available for the given spaces: " + 
-                                    toString(CoordinateSpace::View) + " to " + toString(to), IvwContext);
+                                    toString(CoordinateSpace::View) + " to " + toString(to), IVW_CONTEXT);
             }
         case CoordinateSpace::Clip: 
             switch (to) {
@@ -824,10 +824,10 @@ Matrix<N + 1, float> SpatialCameraCoordinateTransformer<N>::getMatrix(Coordinate
                     return Matrix<N + 1, float>(1.0f);
                 default:
                     throw Exception("getMatrix is not available for the given spaces: " + 
-                                    toString(CoordinateSpace::Clip) + " to " + toString(to), IvwContext);
+                                    toString(CoordinateSpace::Clip) + " to " + toString(to), IVW_CONTEXT);
             }
         default:
-            throw Exception("getMatrix is not available for the given space: " + toString(from), IvwContext);
+            throw Exception("getMatrix is not available for the given space: " + toString(from), IVW_CONTEXT);
     }
 }
 
@@ -850,7 +850,7 @@ Matrix<N + 1, float> StructuredCameraCoordinateTransformer<N>::getMatrix(Coordin
                     return getIndexToClipMatrix();
                 default:
                     throw Exception("getMatrix is not available for the given spaces: " + 
-                                    toString(CoordinateSpace::Index) + " to " + toString(to), IvwContext);
+                                    toString(CoordinateSpace::Index) + " to " + toString(to), IVW_CONTEXT);
             }
         case CoordinateSpace::Data: 
             switch (to) {
@@ -868,7 +868,7 @@ Matrix<N + 1, float> StructuredCameraCoordinateTransformer<N>::getMatrix(Coordin
                     return getDataToClipMatrix();
                 default:
                     throw Exception("getMatrix is not available for the given spaces: " + 
-                                    toString(CoordinateSpace::Data) + " to " + toString(to), IvwContext);
+                                    toString(CoordinateSpace::Data) + " to " + toString(to), IVW_CONTEXT);
             }
         case CoordinateSpace::Model: 
             switch (to) {
@@ -886,7 +886,7 @@ Matrix<N + 1, float> StructuredCameraCoordinateTransformer<N>::getMatrix(Coordin
                     return getModelToClipMatrix();
                 default:
                     throw Exception("getMatrix is not available for the given spaces: " + 
-                                    toString(CoordinateSpace::Model) + " to " + toString(to), IvwContext);
+                                    toString(CoordinateSpace::Model) + " to " + toString(to), IVW_CONTEXT);
             }
         case CoordinateSpace::World: 
             switch (to) {
@@ -904,7 +904,7 @@ Matrix<N + 1, float> StructuredCameraCoordinateTransformer<N>::getMatrix(Coordin
                     return getWorldToClipMatrix();
                 default:
                     throw Exception("getMatrix is not available for the given spaces: " + 
-                                    toString(CoordinateSpace::World) + " to " + toString(to), IvwContext);
+                                    toString(CoordinateSpace::World) + " to " + toString(to), IVW_CONTEXT);
             }
         case CoordinateSpace::View: 
             switch (to) {
@@ -922,7 +922,7 @@ Matrix<N + 1, float> StructuredCameraCoordinateTransformer<N>::getMatrix(Coordin
                     return getViewToClipMatrix();
                 default:
                     throw Exception("getMatrix is not available for the given spaces: " + 
-                                    toString(CoordinateSpace::View) + " to " + toString(to), IvwContext);
+                                    toString(CoordinateSpace::View) + " to " + toString(to), IVW_CONTEXT);
             }
         case CoordinateSpace::Clip: 
             switch (to) {
@@ -940,10 +940,10 @@ Matrix<N + 1, float> StructuredCameraCoordinateTransformer<N>::getMatrix(Coordin
                     return Matrix<N + 1, float>(1.0f);
                 default:
                     throw Exception("getMatrix is not available for the given spaces: " + 
-                                    toString(CoordinateSpace::Clip) + " to " + toString(to), IvwContext);
+                                    toString(CoordinateSpace::Clip) + " to " + toString(to), IVW_CONTEXT);
             }
         default:
-            throw Exception("getMatrix is not available for the given space: " + toString(from), IvwContext);
+            throw Exception("getMatrix is not available for the given space: " + toString(from), IVW_CONTEXT);
     }
 }
 #include <warn/pop>

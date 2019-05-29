@@ -53,7 +53,7 @@ namespace inviwo {
 
 Python3Module::Python3Module(InviwoApplication* app)
     : InviwoModule(app, "Python3")
-    , pythonInterpreter_(util::make_unique<PythonInterpreter>(this))
+    , pythonInterpreter_(std::make_unique<PythonInterpreter>(this))
     , pythonScriptArg_("p", "pythonScript", "Specify a python script to run at startup", false, "",
                        "python script")
     , argHolder_{app, pythonScriptArg_,
@@ -83,7 +83,7 @@ Python3Module::Python3Module(InviwoApplication* app)
     try {
         pybind11::module::import("inviwopy");
     } catch (const std::exception& e) {
-        throw ModuleInitException(e.what(), IvwContext);
+        throw ModuleInitException(e.what(), IVW_CONTEXT);
     }
 }
 
