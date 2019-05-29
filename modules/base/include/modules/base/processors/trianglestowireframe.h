@@ -44,15 +44,10 @@ namespace inviwo {
  * keeps lines from the inout mesh as is.
  *
  * ### Inports
- *   * __mesh__ <description>.
+ *   * __mesh__ Input mesh.
  *
  * ### Outports
- *   * __wireframe__ <description>.
- */
-
-/**
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
+ *   * __wireframe__ Wireframe mesh.
  */
 class IVW_MODULE_BASE_API TrianglesToWireframe : public Processor {
 public:

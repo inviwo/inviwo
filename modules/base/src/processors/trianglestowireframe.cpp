@@ -37,8 +37,8 @@ const ProcessorInfo TrianglesToWireframe::processorInfo_{
     "org.inviwo.TrianglesToWireframe",  // Class identifier
     "Triangles To Wireframe",           // Display name
     "Mesh Operation",                   // Category
-    CodeState::Experimental,            // Code state
-    Tags::None,                         // Tags
+    CodeState::Stable,                  // Code state
+    Tags::CPU,                          // Tags
 };
 const ProcessorInfo TrianglesToWireframe::getProcessorInfo() const { return processorInfo_; }
 
