@@ -57,13 +57,13 @@ void exposeLogging(pybind11::module& m) {
              [](LogCentral* lc, std::shared_ptr<Logger> logger) { lc->registerLogger(logger); })
         .def_static("get", &LogCentral::getPtr, py::return_value_policy::reference);
 
-        py::class_<ConsoleLogger, Logger, std::shared_ptr<ConsoleLogger>>(m, "ConsoleLogger")
-            .def(py::init<>())
-            .def("log", &ConsoleLogger::log);
+    py::class_<ConsoleLogger, Logger, std::shared_ptr<ConsoleLogger>>(m, "ConsoleLogger")
+        .def(py::init<>())
+        .def("log", &ConsoleLogger::log);
 
-        py::class_<FileLogger, Logger, std::shared_ptr<FileLogger>>(m, "FileLogger")
-            .def(py::init<std::string>())
-            .def("log", &FileLogger::log);
+    py::class_<FileLogger, Logger, std::shared_ptr<FileLogger>>(m, "FileLogger")
+        .def(py::init<std::string>())
+        .def("log", &FileLogger::log);
 }
 
 }  // namespace inviwo
