@@ -109,12 +109,12 @@ void forEachTriangle(const Mesh::MeshInfo& info, const IndexBuffer& ib, Callback
     if (info.dt != DrawType::Triangles) {
         std::ostringstream errMsg;
         errMsg << "Only works for triangles, got " << info.dt;
-        throw inviwo::Exception(errMsg.str(), IvwContextCustom("meshutil::forEachTriangle"));
+        throw inviwo::Exception(errMsg.str(), IVW_CONTEXT_CUSTOM("meshutil::forEachTriangle"));
     }
 
     if (ram.size() < 3) {
         throw inviwo::Exception("Not enough indices to create a single triangle",
-                                IvwContextCustom("meshutil::forEachTriangle"));
+                                IVW_CONTEXT_CUSTOM("meshutil::forEachTriangle"));
     }
 
     if (info.ct == ConnectivityType::None) {
@@ -139,7 +139,7 @@ void forEachTriangle(const Mesh::MeshInfo& info, const IndexBuffer& ib, Callback
     else {
         std::ostringstream errMsg;
         errMsg << "ConnectivityType " << info.ct << " not supported";
-        throw inviwo::Exception(errMsg.str(), IvwContextCustom("meshutil::forEachTriangle"));
+        throw inviwo::Exception(errMsg.str(), IVW_CONTEXT_CUSTOM("meshutil::forEachTriangle"));
     }
 }
 
@@ -149,12 +149,12 @@ void forEachLineSegment(const Mesh::MeshInfo& info, const IndexBuffer& ib, Callb
     if (info.dt != DrawType::Lines) {
         std::ostringstream errMsg;
         errMsg << "Only works for lines, got " << info.dt;
-        throw inviwo::Exception(errMsg.str(), IvwContextCustom("meshutil::forEachLineSegment"));
+        throw inviwo::Exception(errMsg.str(), IVW_CONTEXT_CUSTOM("meshutil::forEachLineSegment"));
     }
 
     if (ram.size() < 2) {
         throw inviwo::Exception("Not enough indices to create a single line segment",
-                                IvwContextCustom("meshutil::forEachLineSegment"));
+                                IVW_CONTEXT_CUSTOM("meshutil::forEachLineSegment"));
     }
 
     if (info.ct == ConnectivityType::None) {
@@ -179,7 +179,7 @@ void forEachLineSegment(const Mesh::MeshInfo& info, const IndexBuffer& ib, Callb
     else {
         std::ostringstream errMsg;
         errMsg << "ConnectivityType " << info.ct << " not supported";
-        throw inviwo::Exception(errMsg.str(), IvwContextCustom("meshutil::forEachLineSegment"));
+        throw inviwo::Exception(errMsg.str(), IVW_CONTEXT_CUSTOM("meshutil::forEachLineSegment"));
     }
 }
 
