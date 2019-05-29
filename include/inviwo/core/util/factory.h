@@ -115,13 +115,26 @@ protected:
     Map map_;
 };
 
+namespace detail {
+template <typename T>
+typename std::enable_if<util::is_stream_insertable<T>::value, const T&>::type filter(const T& val) {
+    return val;
+}
+
+template <typename T>
+typename std::enable_if<!util::is_stream_insertable<T>::value, std::string>::type filter(const T&) {
+    return "???";
+}
+
+}  // namespace detail
+
 template <typename T, typename M, typename K, typename... Args>
 bool StandardFactory<T, M, K, Args...>::registerObject(M* obj) {
     if (util::insert_unique(map_, obj->getClassIdentifier(), obj)) {
         this->notifyObserversOnRegister(obj);
         return true;
     } else {
-        LogWarn("Failed to register object \"" << obj->getClassIdentifier()
+        LogWarn("Failed to register object \"" << detail::filter(obj->getClassIdentifier())
                                                << "\", already registered");
         return false;
     }

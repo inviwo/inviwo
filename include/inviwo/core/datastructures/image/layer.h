@@ -90,9 +90,6 @@ public:
     void setSwizzleMask(const SwizzleMask& mask);
     SwizzleMask getSwizzleMask() const;
 
-protected:
-    virtual std::shared_ptr<LayerRepresentation> createDefaultRepresentation() const override;
-
 private:
     friend class LayerRepresentation;
 

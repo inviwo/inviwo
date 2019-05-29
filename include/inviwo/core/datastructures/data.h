@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/datastructures/representationfactory.h>
 #include <inviwo/core/datastructures/representationconverterfactory.h>
 #include <typeindex>
 
@@ -174,7 +175,6 @@ protected:
     Data(const Data<Self, Repr>& rhs);
     Data<Self, Repr>& operator=(const Data<Self, Repr>& rhs);
 
-    virtual std::shared_ptr<Repr> createDefaultRepresentation() const = 0;
     template <typename T>
     const T* getValidRepresentation() const;
     void copyRepresentationsTo(Data<Self, Repr>* targetData) const;
@@ -213,7 +213,9 @@ const T* Data<Self, Repr>::getRepresentation() const {
     std::unique_lock<std::mutex> lock(mutex_);
     if (representations_.empty()) {
         lock.unlock();
-        auto repr = createDefaultRepresentation();
+        auto factory = InviwoApplication::getPtr()->getRepresentationFactory<Repr>();
+        auto repr = std::shared_ptr<Repr>{
+            factory->createOrDefault(std::type_index(typeid(T)), static_cast<const Self*>(this))};
         lock.lock();
         if (!repr) throw Exception("Failed to create default representation", IvwContext);
         lastValidRepresentation_ = addRepresentationInternal(repr);

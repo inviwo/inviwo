@@ -44,6 +44,8 @@
 #include <inviwo/core/util/pathtype.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/dispatcher.h>
+#include <inviwo/core/datastructures/representationfactory.h>
+#include <inviwo/core/datastructures/representationmetafactory.h>
 #include <inviwo/core/datastructures/representationconverterfactory.h>
 #include <inviwo/core/datastructures/representationconvertermetafactory.h>
 #include <inviwo/core/network/workspacemanager.h>
@@ -264,8 +266,11 @@ public:
     PropertyWidgetFactory* getPropertyWidgetFactory() const;
 
     template <typename BaseRepr>
-    RepresentationConverterFactory<BaseRepr>* getRepresentationConverterFactory() const;
+    RepresentationFactory<BaseRepr>* getRepresentationFactory() const;
+    RepresentationMetaFactory* getRepresentationMetaFactory() const;
 
+    template <typename BaseRepr>
+    RepresentationConverterFactory<BaseRepr>* getRepresentationConverterFactory() const;
     RepresentationConverterMetaFactory* getRepresentationConverterMetaFactory() const;
     ProcessorWidgetFactory* getProcessorWidgetFactory() const;
 
@@ -335,6 +340,7 @@ protected:
     std::unique_ptr<PropertyConverterManager> propertyConverterManager_;
     std::unique_ptr<PropertyFactory> propertyFactory_;
     std::unique_ptr<PropertyWidgetFactory> propertyWidgetFactory_;
+    std::unique_ptr<RepresentationMetaFactory> representationMetaFactory_;
     std::unique_ptr<RepresentationConverterMetaFactory> representationConverterMetaFactory_;
     std::unique_ptr<SystemSettings> systemSettings_;
     std::unique_ptr<SystemCapabilities> systemCapabilities_;
@@ -481,6 +487,15 @@ inline PropertyFactory* InviwoApplication::getPropertyFactory() const {
 
 inline PropertyWidgetFactory* InviwoApplication::getPropertyWidgetFactory() const {
     return propertyWidgetFactory_.get();
+}
+
+inline RepresentationMetaFactory* InviwoApplication::getRepresentationMetaFactory() const {
+    return representationMetaFactory_.get();
+}
+
+template <typename BaseRepr>
+RepresentationFactory<BaseRepr>* InviwoApplication::getRepresentationFactory() const {
+    return representationMetaFactory_->getRepresentationFactory<BaseRepr>();
 }
 
 template <typename BaseRepr>

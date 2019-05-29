@@ -29,7 +29,6 @@
 
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/image/layerram.h>
-#include <inviwo/core/datastructures/image/layerramprecision.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/io/datawriter.h>
@@ -136,10 +135,6 @@ SwizzleMask Layer::getSwizzleMask() const {
         return lastValidRepresentation_->getSwizzleMask();
     }
     return swizzleMask_;
-}
-
-std::shared_ptr<LayerRepresentation> Layer::createDefaultRepresentation() const {
-    return createLayerRAM(getDimensions(), getLayerType(), getDataFormat(), getSwizzleMask());
 }
 
 void Layer::updateMetaFromRepresentation(const LayerRepresentation* layerRep) {

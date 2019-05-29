@@ -40,8 +40,14 @@
 #include <inviwo/core/datastructures/camera.h>
 
 // Data Structures
+#include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/datastructures/volume/volumeramconverter.h>
+#include <inviwo/core/datastructures/image/layerramprecision.h>
 #include <inviwo/core/datastructures/image/layerramconverter.h>
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
+
+#include <inviwo/core/datastructures/representationfactory.h>
+#include <inviwo/core/datastructures/representationfactoryobject.h>
 #include <inviwo/core/datastructures/representationconverterfactory.h>
 
 // Meta Data
@@ -164,6 +170,77 @@ struct IntOptionConverterRegFunctor {
     }
 };
 
+
+class BufferRAMFactoryObject
+    : public RepresentationFactoryObjectTemplate<BufferRepresentation, BufferRAM> {
+public:
+    virtual std::unique_ptr<BufferRepresentation> create(
+        const typename BufferRepresentation::ReprOwner* buffer) {
+        return dispatching::dispatch<std::unique_ptr<BufferRepresentation>,
+                                     dispatching::filter::All>(buffer->getDataFormat()->getId(),
+                                                               Dispatcher{}, buffer);
+    }
+
+private:
+    struct Dispatcher {
+        template <typename Result, typename Format>
+        Result operator()(const BufferBase* buffer) {
+            switch (buffer->getBufferTarget()) {
+                case BufferTarget::Index:
+                    return std::make_unique<
+                        BufferRAMPrecision<typename Format::type, BufferTarget::Index>>(
+                        buffer->getSize(), buffer->getBufferUsage());
+
+                case BufferTarget::Data:
+                default:
+                    return std::make_unique<
+                        BufferRAMPrecision<typename Format::type, BufferTarget::Data>>(
+                        buffer->getSize(), buffer->getBufferUsage());
+            }
+        }
+    };
+};
+
+class LayerRAMFactoryObject
+    : public RepresentationFactoryObjectTemplate<LayerRepresentation, LayerRAM> {
+public:
+    virtual std::unique_ptr<LayerRepresentation> create(
+        const typename LayerRepresentation::ReprOwner* layer) {
+        return dispatching::dispatch<std::unique_ptr<LayerRepresentation>,
+                                     dispatching::filter::All>(layer->getDataFormat()->getId(),
+                                                               Dispatcher{}, layer);
+    }
+
+private:
+    struct Dispatcher {
+        template <typename Result, typename Format>
+        Result operator()(const Layer* layer) {
+            return std::make_unique<LayerRAMPrecision<typename Format::type>>(
+                layer->getDimensions(), layer->getLayerType(), layer->getSwizzleMask());
+        }
+    };
+};
+
+class VolumeRAMFactoryObject
+    : public RepresentationFactoryObjectTemplate<VolumeRepresentation, VolumeRAM> {
+public:
+    virtual std::unique_ptr<VolumeRepresentation> create(
+        const typename VolumeRepresentation::ReprOwner* volume) {
+        return dispatching::dispatch<std::unique_ptr<VolumeRepresentation>,
+                                     dispatching::filter::All>(volume->getDataFormat()->getId(),
+                                                               Dispatcher{}, volume);
+    }
+
+private:
+    struct Dispatcher {
+        template <typename Result, typename Format>
+        Result operator()(const Volume* volume) {
+            return std::make_unique<VolumeRAMPrecision<typename Format::type>>(
+                volume->getDimensions());
+        }
+    };
+};
+
 }  // namespace
 
 template class TemplateOptionProperty<OptionRegEnumInt>;
@@ -175,6 +252,23 @@ void InviwoCore::Observer::fileChanged(const std::string& dir) { core_.scanDirFo
 
 InviwoCore::InviwoCore(InviwoApplication* app)
     : InviwoModule(app, "Core"), compositeDirObserver_{*this, app} {
+
+    // Register representation Factories
+    registerRepresentationFactory(
+        std::make_unique<RepresentationFactory<BufferRepresentation>>(typeid(BufferRAM)));
+    registerRepresentationFactory(
+        std::make_unique<RepresentationFactory<LayerRepresentation>>(typeid(LayerRAM)));
+    registerRepresentationFactory(
+        std::make_unique<RepresentationFactory<VolumeRepresentation>>(typeid(VolumeRAM)));
+
+    // Register RAM Representations
+    registerRepresentationFactoryObject<BufferRepresentation>(
+        std::make_unique<BufferRAMFactoryObject>());
+    registerRepresentationFactoryObject<LayerRepresentation>(
+        std::make_unique<LayerRAMFactoryObject>());
+    registerRepresentationFactoryObject<VolumeRepresentation>(
+        std::make_unique<VolumeRAMFactoryObject>());
+
     // Register Converter Factories
     registerRepresentationConverterFactory(
         util::make_unique<RepresentationConverterFactory<VolumeRepresentation>>());

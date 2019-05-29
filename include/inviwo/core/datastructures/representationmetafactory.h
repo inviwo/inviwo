@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,48 +26,39 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_REPRESENTATIONCONVERTERMETAFACTORY_H
-#define IVW_REPRESENTATIONCONVERTERMETAFACTORY_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/datastructures/representationfactory.h>
 
 namespace inviwo {
 
-/**
- * \class RepresentationConverterMetaFactory
- * \brief A class to manage RepresentationConverterFactories
- */
-class IVW_CORE_API RepresentationConverterMetaFactory {
+class IVW_CORE_API RepresentationMetaFactory {
 public:
-    using BaseReprId = BaseRepresentationConverterFactory::BaseReprId;
-    using FactoryMap = std::unordered_map<BaseReprId, BaseRepresentationConverterFactory*>;
+    using BaseReprId = BaseRepresentationFactory::BaseReprId;
+    using FactoryMap = std::unordered_map<BaseReprId, BaseRepresentationFactory*>;
 
-    RepresentationConverterMetaFactory() = default;
-    ~RepresentationConverterMetaFactory() = default;
+    RepresentationMetaFactory() = default;
+    ~RepresentationMetaFactory() = default;
 
-    bool registerObject(BaseRepresentationConverterFactory* factory);
-    bool unRegisterObject(BaseRepresentationConverterFactory* factory);
+    // Does not take ownership
+    bool registerObject(BaseRepresentationFactory* factory);
+    bool unRegisterObject(BaseRepresentationFactory* factory);
 
     template <typename BaseRepr>
-    RepresentationConverterFactory<BaseRepr>* getConverterFactory() const;
+    RepresentationFactory<BaseRepr>* getRepresentationFactory() const;
 
 private:
     FactoryMap map_;
 };
 
 template <typename BaseRepr>
-RepresentationConverterFactory<BaseRepr>* RepresentationConverterMetaFactory::getConverterFactory()
-    const {
+RepresentationFactory<BaseRepr>* RepresentationMetaFactory::getRepresentationFactory() const {
     const auto it = map_.find(BaseReprId(typeid(BaseRepr)));
     if (it != map_.end()) {
-        return static_cast<RepresentationConverterFactory<BaseRepr>*>(it->second);
+        return static_cast<RepresentationFactory<BaseRepr>*>(it->second);
     }
     return nullptr;
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_REPRESENTATIONCONVERTERMETAFACTORY_H
