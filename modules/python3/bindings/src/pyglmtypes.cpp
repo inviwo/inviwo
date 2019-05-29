@@ -44,6 +44,9 @@
 #include <string>
 #include <algorithm>
 
+#include <warn/push>
+#include <warn/ignore/self-assign-overloaded>
+
 namespace inviwo {
 
 namespace py = pybind11;
@@ -220,3 +223,5 @@ void exposeGLMTypes(py::module &m) {
     exposeGLMMatTypes(glmModule);
 }
 }  // namespace inviwo
+
+#include <warn/pop>

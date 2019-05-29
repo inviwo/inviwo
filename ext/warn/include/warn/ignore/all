@@ -98,6 +98,7 @@
 #include <warn/ignore/parentheses>
 #include <warn/ignore/pedantic>
 #include <warn/ignore/return-type>
+#include <warn/ignore/self-assign-overloaded>
 #include <warn/ignore/shadow>
 #include <warn/ignore/shorten-64-to-32>
 #include <warn/ignore/sign-compare>

@@ -107,7 +107,7 @@ WebBrowserProcessor::WebBrowserProcessor()
 
     auto reload = [this]() { browser_->GetMainFrame()->LoadURL(getSource()); };
 
-    sourceType_.onChange([this, reload, updateVisibility]() {
+    sourceType_.onChange([reload, updateVisibility]() {
         updateVisibility();
         reload();
     });

@@ -71,6 +71,7 @@ padded                            | *same* (3.2)       | *same* (3.4)         | 
 parentheses                       | *same* (3.2)       | *same* (3.4)         | *no*              
 pedantic                          | *same* (3.2)       | *same* (4.8)         | *no*              
 return-type                       | *same* (3.2)       | *same* (3.4)         | *no*              
+self-assign-overloaded            | *same* (7)         | *no*                 | *no*              
 shadow                            | *same* (3.2)       | *same* (3.4)         | *no*              
 shorten-64-to-32                  | *same* (3.2)       | *no*                 | *no*              
 sign-compare                      | *same* (3.2)       | *same* (3.4)         | C4389 (12)        
