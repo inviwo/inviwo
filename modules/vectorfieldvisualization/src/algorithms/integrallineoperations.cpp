@@ -44,8 +44,8 @@ IntegralLineSet curvature(const IntegralLineSet &lines) {
 
 void curvature(IntegralLine &line, dmat4 toWorld) {
     if (line.hasMetaData("curvature")) return;
+    if (line.getPositions().size() <= 1) return;
     auto positions = line.getPositions();  // note, this creates a copy, we modify it below
-    if (positions.size() <= 1) return;
     auto dt = static_cast<float>(positions.size() - 1);
     dt = 1 / dt;
 
@@ -65,7 +65,7 @@ void curvature(IntegralLine &line, dmat4 toWorld) {
         if (cur == positions.begin()) {
             // first
             K.emplace_back(0);
-        } else if (cur == positions.end() - 1) {
+        } else if (cur + 1 == positions.end()) {
             // last, copy second to last
             K.emplace_back(K.back());
         } else {
