@@ -89,6 +89,7 @@ set(HEADER_FILES
     include/modules/base/processors/stereocamerasyncer.h
     include/modules/base/processors/surfaceextraction.h
     include/modules/base/processors/tfselector.h
+    include/modules/base/processors/trianglestowireframe.h
     include/modules/base/processors/vectorelementselectorprocessor.h
     include/modules/base/processors/volumebasistransformer.h
     include/modules/base/processors/volumeboundingbox.h
@@ -202,6 +203,7 @@ set(SOURCE_FILES
     src/processors/stereocamerasyncer.cpp
     src/processors/surfaceextraction.cpp
     src/processors/tfselector.cpp
+    src/processors/trianglestowireframe.cpp
     src/processors/volumeboundingbox.cpp
     src/processors/volumecreator.cpp
     src/processors/volumecurlcpuprocessor.cpp

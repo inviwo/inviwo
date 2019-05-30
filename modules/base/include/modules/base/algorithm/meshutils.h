@@ -103,6 +103,86 @@ IVW_MODULE_BASE_API std::shared_ptr<ColoredMesh> cameraFrustum(
     const Camera& camera, vec4 color,
     std::shared_ptr<ColoredMesh> mesh = std::make_shared<ColoredMesh>());
 
+template <typename Callback>
+void forEachTriangle(const Mesh::MeshInfo& info, const IndexBuffer& ib, Callback callback) {
+    auto& ram = ib.getRAMRepresentation()->getDataContainer();
+    if (info.dt != DrawType::Triangles) {
+        std::ostringstream errMsg;
+        errMsg << "Only works for triangles, got " << info.dt;
+        throw inviwo::Exception(errMsg.str(), IVW_CONTEXT_CUSTOM("meshutil::forEachTriangle"));
+    }
+
+    if (ram.size() < 3) {
+        throw inviwo::Exception("Not enough indices to create a single triangle",
+                                IVW_CONTEXT_CUSTOM("meshutil::forEachTriangle"));
+    }
+
+    if (info.ct == ConnectivityType::None) {
+        for (size_t i = 0; i < ram.size(); i += 3) {
+            callback(ram[i], ram[i + 1], ram[i + 2]);
+        }
+    }
+
+    else if (info.ct == ConnectivityType::Strip) {
+        for (size_t i = 0; i < ram.size() - 2; i++) {
+            callback(ram[i], ram[i + 1], ram[i + 2]);
+        }
+    }
+
+    else if (info.ct == ConnectivityType::Fan) {
+        uint32_t a = static_cast<uint32_t>(ram.front());
+        for (size_t i = 1; i < ram.size(); i++) {
+            callback(a, ram[i], ram[i + 1]);
+        }
+    }
+
+    else {
+        std::ostringstream errMsg;
+        errMsg << "ConnectivityType " << info.ct << " not supported";
+        throw inviwo::Exception(errMsg.str(), IVW_CONTEXT_CUSTOM("meshutil::forEachTriangle"));
+    }
+}
+
+template <typename Callback>
+void forEachLineSegment(const Mesh::MeshInfo& info, const IndexBuffer& ib, Callback callback) {
+    auto& ram = ib.getRAMRepresentation()->getDataContainer();
+    if (info.dt != DrawType::Lines) {
+        std::ostringstream errMsg;
+        errMsg << "Only works for lines, got " << info.dt;
+        throw inviwo::Exception(errMsg.str(), IVW_CONTEXT_CUSTOM("meshutil::forEachLineSegment"));
+    }
+
+    if (ram.size() < 2) {
+        throw inviwo::Exception("Not enough indices to create a single line segment",
+                                IVW_CONTEXT_CUSTOM("meshutil::forEachLineSegment"));
+    }
+
+    if (info.ct == ConnectivityType::None) {
+        for (size_t i = 0; i < ram.size(); i += 2) {
+            callback(ram[i], ram[i + 1]);
+        }
+    }
+
+    else if (info.ct == ConnectivityType::Strip) {
+        for (size_t i = 0; i < ram.size() - 1; i++) {
+            callback(ram[i], ram[i + 1]);
+        }
+    }
+
+    else if (info.ct == ConnectivityType::Loop) {
+        for (size_t i = 0; i < ram.size() - 1; i++) {
+            callback(ram[i], ram[i + 1]);
+        }
+        callback(ram.back(), ram.front());
+    }
+
+    else {
+        std::ostringstream errMsg;
+        errMsg << "ConnectivityType " << info.ct << " not supported";
+        throw inviwo::Exception(errMsg.str(), IVW_CONTEXT_CUSTOM("meshutil::forEachLineSegment"));
+    }
+}
+
 }  // namespace meshutil
 
 }  // namespace inviwo

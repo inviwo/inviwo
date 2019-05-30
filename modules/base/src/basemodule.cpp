@@ -67,6 +67,7 @@
 #include <modules/base/processors/spotlightsourceprocessor.h>
 #include <modules/base/processors/stereocamerasyncer.h>
 #include <modules/base/processors/surfaceextraction.h>
+#include <modules/base/processors/trianglestowireframe.h>
 #include <modules/base/processors/volumecreator.h>
 #include <modules/base/processors/volumesequenceelementselectorprocessor.h>
 #include <modules/base/processors/volumesource.h>
@@ -151,6 +152,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<VolumeExport>();
     registerProcessor<BasisTransformMesh>();
     registerProcessor<BasisTransformVolume>();
+    registerProcessor<TrianglesToWireframe>();
     registerProcessor<WorldTransformMesh>();
     registerProcessor<WorldTransformVolume>();
     registerProcessor<VolumeSlice>();
