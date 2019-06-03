@@ -4,16 +4,16 @@
  #
  # Copyright (c) 2014-2019 Inviwo Foundation
  # All rights reserved.
- # 
+ #
  # Redistribution and use in source and binary forms, with or without
- # modification, are permitted provided that the following conditions are met: 
- # 
+ # modification, are permitted provided that the following conditions are met:
+ #
  # 1. Redistributions of source code must retain the above copyright notice, this
- # list of conditions and the following disclaimer. 
+ # list of conditions and the following disclaimer.
  # 2. Redistributions in binary form must reproduce the above copyright notice,
  # this list of conditions and the following disclaimer in the documentation
- # and/or other materials provided with the distribution. 
- # 
+ # and/or other materials provided with the distribution.
+ #
  # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  # ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  # WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -24,12 +24,12 @@
  # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- # 
+ #
  #################################################################################
- 
+
 include(CMakeParseArguments)
 
-function(ivw_get_subdirs_recursive retval start) 
+function(ivw_get_subdirs_recursive retval start)
     set(res "")
     get_property(subdirs DIRECTORY ${start} PROPERTY SUBDIRECTORIES)
     list(APPEND res ${subdirs})
@@ -42,7 +42,7 @@ function(ivw_get_subdirs_recursive retval start)
 endfunction()
 
 set(ivw_doxy_all_dirs "" CACHE INTERNAL "")
-function(ivw_get_include_dirs retval) 
+function(ivw_get_include_dirs retval)
     list(LENGTH ivw_doxy_all_dirs len)
     if(${len} EQUAL 0)
         set(temp "")
@@ -57,7 +57,7 @@ function(ivw_get_include_dirs retval)
                 list(REMOVE_DUPLICATES temp)
             endforeach()
         endforeach()
-    
+
         # filter generator expr
         set(inc_dirs "")
         foreach(item IN LISTS temp)
@@ -79,7 +79,7 @@ endfunction()
 if(${MSVC})
     option(IVW_DOXYGEN_PROJECT "Create Inviwo doxygen files" OFF)
     if(${IVW_DOXYGEN_PROJECT})
-        message(STATUS 
+        message(STATUS
             "In Visual Studio the doxygen project will rerun every time you run\n"
             "\"ALL_BUILD\" even if it is up to date. Hence, you propbably want\n"
             "to disable generation of doxygen on each build this can be done\n"
@@ -101,21 +101,21 @@ endfunction()
 
 
 function(ivw_private_make_doxyfile)
-    set(options 
-        GENERATE_IMG 
+    set(options
+        GENERATE_IMG
         GENERATE_QHP
     )
-    set(oneValueArgs 
-        NAME 
-        BRIEF 
-        OUTPUT_DIR 
-        WARNING_FORMAT 
-        TAG_FILE 
+    set(oneValueArgs
+        NAME
+        BRIEF
+        OUTPUT_DIR
+        WARNING_FORMAT
+        TAG_FILE
     )
-    set(multiValueArgs 
-        INPUTS 
-        IMAGE_PATHS 
-        ALIASES 
+    set(multiValueArgs
+        INPUTS
+        IMAGE_PATHS
+        ALIASES
         INPUT_TAGS
         FILTER_PATTERNS
         ADDITIONAL_FLAGS
@@ -167,7 +167,7 @@ BUILTIN_STL_SUPPORT    = YES
 
 CASE_SENSE_NAMES       = YES
 
-INPUT                  = ${IVW_ROOT_DIR}/README.md \\
+INPUT                  = ${ivw_doxy_dir}/markdown/Index.md \\
                          ${inputs}
 
 ENABLE_PREPROCESSING   = YES
@@ -206,12 +206,12 @@ EXCLUDE_SYMBOLS        = cl::* \\
 
 FILTER_PATTERNS        = ${filter_patterns}
 
-USE_MDFILE_AS_MAINPAGE = ${IVW_ROOT_DIR}/README.md
+USE_MDFILE_AS_MAINPAGE = ${ivw_doxy_dir}/markdown/Index.md
 
-HTML_EXTRA_FILES       = ${ivw_doxy_dir}/style/img_downArrow.png
+HTML_EXTRA_FILES       = ${ivw_doxy_dir}/images
 
 EXAMPLE_PATH           = ${IVW_ROOT_DIR} \\
-                         ${example_paths} 
+                         ${example_paths}
 
 HTML_COLORSTYLE_HUE    = 240
 HTML_COLORSTYLE_SAT    = 6
@@ -264,7 +264,7 @@ DIRECTORY_GRAPH        = NO
 DOT_IMAGE_FORMAT       = png
 INTERACTIVE_SVG        = ${ARG_GENERATE_IMG}
 DOT_PATH               = \"${DOXYGEN_DOT_PATH}\"
-DOTFILE_DIRS           = 
+DOTFILE_DIRS           =
 DOT_GRAPH_MAX_NODES    = 200
 MAX_DOT_GRAPH_DEPTH    = 0
 DOT_TRANSPARENT        = NO
@@ -286,14 +286,14 @@ endfunction()
  # Help, used for the help inside inviwo
 function(ivw_private_make_help)
     set(options "")
-    set(oneValueArgs 
+    set(oneValueArgs
         NAME
         HTML_DIR
-        WARNING_FORMAT 
+        WARNING_FORMAT
         OUTPUT_DIR
         DOC_DIR
     )
-    set(multiValueArgs 
+    set(multiValueArgs
         INPUTS
         IMAGE_PATHS
         FILTER_PATTERNS
@@ -307,7 +307,7 @@ function(ivw_private_make_help)
         "docpage{2}=\"\\page docpage-\\1 \\2\""
     )
 
-    set(additional_flags_list 
+    set(additional_flags_list
         "LAYOUT_FILE            = ${HARG_HTML_DIR}/layout.xml"
         "HTML_STYLESHEET        = ${HARG_HTML_DIR}/stylesheet.css"
         "HTML_HEADER            = ${HARG_HTML_DIR}/header.html"
@@ -358,7 +358,7 @@ function(ivw_private_make_help)
 
         COMMAND ${CMAKE_COMMAND} -E echo "Building ${name_lower}.qch"
         COMMAND ${CMAKE_COMMAND} -E echo "Running: ${IVW_DOXY_QHELPGENERATOR} -o ${HARG_OUTPUT_DIR}/${name_lower}.qch ${HARG_OUTPUT_DIR}/${name_lower}/html/index-stripped.qhp"
-        COMMAND ${IVW_DOXY_QHELPGENERATOR} "-o" "${HARG_OUTPUT_DIR}/${name_lower}.qch" 
+        COMMAND ${IVW_DOXY_QHELPGENERATOR} "-o" "${HARG_OUTPUT_DIR}/${name_lower}.qch"
                                             "${HARG_OUTPUT_DIR}/${name_lower}/html/index-stripped.qhp"
 
         COMMAND ${CMAKE_COMMAND} -E make_directory "${HARG_DOC_DIR}"
@@ -390,15 +390,15 @@ function(make_doxygen_target modules_var)
         get_filename_component(DOXYGEN_DOT_PATH ${DOXYGEN_DOT_EXECUTABLE} PATH)
     endif()
 
-    set(ivw_doxy_dir ${IVW_ROOT_DIR}/tools/doxygen)
-    set(IVW_DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/doc" 
+    set(ivw_doxy_dir ${IVW_ROOT_DIR}/docs)
+    set(IVW_DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/doc"
         CACHE PATH "Path to put the doxygen output")
     set(output_dir ${IVW_DOXYGEN_OUTPUT_DIRECTORY})
     set(tag_files "")
     set(dependency_list "")
 
     set(GENERATE_IMG "YES")
-    
+
     if(PYTHONINTERP_FOUND)
         #set(PREFIX_PYTHON "")
         set(PREFIX_PYTHON "${PYTHON_EXECUTABLE} ") # This is sometimes needed but gives errors on win7
@@ -417,8 +417,11 @@ function(make_doxygen_target modules_var)
         "docpage{1}=\"\\ingroup processors \\n \#\\1\""
         "docpage{2}=\"\\ingroup processors \\n \#\\2\""
     )
-    set(image_path_list "${IVW_ROOT_DIR}/data/help/images")
-    set(all_input 
+    set(image_path_list
+        "${IVW_ROOT_DIR}/data/help/images"
+        "${IVW_ROOT_DIR}/docs/images"
+    )
+    set(all_input
         "${IVW_INCLUDE_DIR}"
         "${IVW_SOURCE_DIR}"
         "${IVW_CORE_INCLUDE_DIR}"
@@ -480,7 +483,18 @@ function(make_doxygen_target modules_var)
         WORKING_DIRECTORY ${output_dir}
         COMMENT "Generating Inviwo API documentation with Doxygen"
         VERBATIM
+        # Copy over custom CSS. HTML_EXTRA_STYLESHEET does not override everything correctly.
+        COMMAND ${CMAKE_COMMAND} -E copy "${ivw_doxy_dir}/style/doxygen.css" "${output_dir}/inviwo/html/doxygen.css"
+        COMMAND ${CMAKE_COMMAND} -E copy "${ivw_doxy_dir}/style/navtree.css" "${output_dir}/inviwo/html/navtree.css"
+        COMMAND ${CMAKE_COMMAND} -E copy "${ivw_doxy_dir}/style/search.css" "${output_dir}/inviwo/html/search.css"
+        COMMAND ${CMAKE_COMMAND} -E copy "${ivw_doxy_dir}/style/tabs.css" "${output_dir}/inviwo/html/tabs.css"
+        COMMAND ${CMAKE_COMMAND} -E copy "${ivw_doxy_dir}/style/Montserrat-Regular.ttf" "${output_dir}/inviwo/html/Montserrat-Regular.ttf"
+        COMMAND ${CMAKE_COMMAND} -E copy "${ivw_doxy_dir}/style/Montserrat-Bold.ttf" "${output_dir}/inviwo/html/Montserrat-Bold.ttf"
+        COMMAND ${CMAKE_COMMAND} -E copy "${ivw_doxy_dir}/style/Merriweather-Regular.ttf" "${output_dir}/inviwo/html/Merriweather-Regular.ttf"
+
     )
+
+
     set_target_properties("DOXY-Inviwo" PROPERTIES FOLDER "doc" EXCLUDE_FROM_ALL TRUE)
     add_dependencies("DOXY-ALL" "DOXY-Inviwo")
 
@@ -492,9 +506,9 @@ function(make_doxygen_target modules_var)
         else()
             set(OPEN_COMMAND "xdg-open")
         endif()
-        add_custom_command(TARGET DOXY-Inviwo 
+        add_custom_command(TARGET DOXY-Inviwo
             POST_BUILD
-            COMMAND ${OPEN_COMMAND} 
+            COMMAND ${OPEN_COMMAND}
             ARGS "${output_dir}/inviwo/html/index.html"
         )
     endif()
@@ -506,11 +520,11 @@ function(make_doxygen_target modules_var)
         VERBATIM
     )
     add_dependencies("DOXY-generate-processor-previews" "DOXY-Clear")
-    set_target_properties("DOXY-generate-processor-previews" 
+    set_target_properties("DOXY-generate-processor-previews"
                             PROPERTIES FOLDER "doc" EXCLUDE_FROM_ALL TRUE)
 
     option(IVW_ENFORCE_PROCESSOR_PREVIEWS "Turn on to enforce generating processor previews when building doxygen documentation (DOXY-Inviwo)" ON)
-    if(${IVW_ENFORCE_PROCESSOR_PREVIEWS})    
+    if(${IVW_ENFORCE_PROCESSOR_PREVIEWS})
         add_dependencies("DOXY-Inviwo" "DOXY-generate-processor-previews" "DOXY-Clear")
     else()
         add_dependencies("DOXY-Inviwo" "DOXY-Clear")
@@ -529,7 +543,7 @@ function(make_doxygen_target modules_var)
              ivw_private_make_help(
                 NAME ${${mod}_class}
                 OUTPUT_DIR "${output_dir}/help"
-                HTML_DIR "${ivw_doxy_dir}/help" 
+                HTML_DIR "${ivw_doxy_dir}/help"
                 DOC_DIR "${${mod}_path}/docs"
                 INPUTS "${${mod}_path}"
                 IMAGE_PATHS "${image_path}"
