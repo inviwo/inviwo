@@ -37,8 +37,15 @@
 namespace inviwo {
 
 /**
- * \class RepresentationConverterMetaFactory
- * \brief A class to manage RepresentationConverterFactories
+ * The Representation Converter Meta Factory holds RepresentationConverterFactories for
+ * various kinds of representations (Volume Representation, Layer Representation, Buffer
+ * Representation, etc)
+ * @see Data
+ * @see DataRepresentation
+ * @see RepresentationConverter
+ * @see RepresentationConverterFactory
+ * @see InviwoApplication::getRepresentationConverterMetaFactory()
+ * @see InviwoModule::registerRepresentationConverterFactory()
  */
 class IVW_CORE_API RepresentationConverterMetaFactory {
 public:

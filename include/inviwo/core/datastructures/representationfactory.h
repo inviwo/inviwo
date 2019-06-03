@@ -45,6 +45,17 @@ public:
     virtual BaseReprId getBaseReprId() const = 0;
 };
 
+/**
+ * Factory for representations of a specific base type (Volume Representation, Layer Representation,
+ * Buffer Representation, etc)
+ * @see Data
+ * @see DataRepresentation
+ * @see RepresentationFactoryObject
+ * @see RepresentationMetaFactory
+ * @see InviwoApplication::getRepresentationFactory()
+ * @see InviwoModule::registerRepresentationFactoryObject()
+ * @see InviwoModule::registerRepresentationFactory()
+ */
 template <typename Representation>
 class RepresentationFactory
     : public BaseRepresentationFactory,

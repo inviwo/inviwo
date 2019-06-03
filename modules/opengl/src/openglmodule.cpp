@@ -49,7 +49,8 @@
 namespace inviwo {
 
 namespace {
-class BufferRepresentationFactoryObject
+
+class BufferGLFactoryObject
     : public RepresentationFactoryObjectTemplate<BufferRepresentation, BufferGL> {
 public:
     virtual std::unique_ptr<BufferRepresentation> create(
@@ -59,7 +60,7 @@ public:
     }
 };
 
-class LayerRAMFactoryObject
+class LayerGLFactoryObject
     : public RepresentationFactoryObjectTemplate<LayerRepresentation, LayerGL> {
 public:
     virtual std::unique_ptr<LayerRepresentation> create(
@@ -72,7 +73,7 @@ public:
     }
 };
 
-class VolumeRepresentationFactoryObject
+class VolumeGLFactoryObject
     : public RepresentationFactoryObjectTemplate<VolumeRepresentation, VolumeGL> {
 public:
     virtual std::unique_ptr<VolumeRepresentation> create(
@@ -99,11 +100,11 @@ OpenGLModule::OpenGLModule(InviwoApplication* app)
 
     // Register GL Representations
     registerRepresentationFactoryObject<BufferRepresentation>(
-        std::make_unique<BufferRepresentationFactoryObject>());
+        std::make_unique<BufferGLFactoryObject>());
     registerRepresentationFactoryObject<LayerRepresentation>(
-        std::make_unique<LayerRAMFactoryObject>());
+        std::make_unique<LayerGLFactoryObject>());
     registerRepresentationFactoryObject<VolumeRepresentation>(
-        std::make_unique<VolumeRepresentationFactoryObject>());
+        std::make_unique<VolumeGLFactoryObject>());
 
     registerDrawer(std::make_unique<MeshDrawerGL>());
     registerRepresentationConverter<LayerRepresentation>(std::make_unique<LayerRAM2GLConverter>());

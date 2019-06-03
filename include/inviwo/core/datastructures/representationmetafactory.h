@@ -33,6 +33,17 @@
 
 namespace inviwo {
 
+/**
+ * The Representation Meta Factory holds RepresentationFactories for
+ * various kinds of representations (Volume Representation, Layer Representation, Buffer
+ * Representation, etc)
+ * @see Data
+ * @see DataRepresentation
+ * @see RepresentationFactoryObject
+ * @see RepresentationFactory
+ * @see InviwoApplication::getRepresentationMetaFactory()
+ * @see InviwoModule::registerRepresentationFactory()
+ */
 class IVW_CORE_API RepresentationMetaFactory {
 public:
     using BaseReprId = BaseRepresentationFactory::BaseReprId;

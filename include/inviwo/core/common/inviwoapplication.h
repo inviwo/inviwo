@@ -246,33 +246,154 @@ public:
     /**
      * Returns the ResourceManager owned the InviwoApplication
      *
-     * @see inviwo::ResourceManager
+     * @see ResourceManager
      */
     ResourceManager* getResourceManager();
 
-    // Factory getters
+ 
+    /** @name Factories */
+    ///@{
+
+    /**
+     * Camera factory
+     * @see Camera
+     * @see CameraFactory
+     */
     CameraFactory* getCameraFactory() const;
+
+    /**
+     * DataReader factory
+     * @see DataReader
+     * @see DataReaderFactory
+     */
     DataReaderFactory* getDataReaderFactory() const;
+
+    /**
+     * DataWriter factory
+     * @see DataWriter
+     * @see DataWriterFactory
+     */
     DataWriterFactory* getDataWriterFactory() const;
+
+    /**
+     * Dialog factory
+     * @see Dialog
+     * @see DialogFactory
+     */
     DialogFactory* getDialogFactory() const;
+
+    /**
+     * MeshDrawer factory
+     * @see MeshDrawer
+     * @see MeshDrawerFactory
+     */
     MeshDrawerFactory* getMeshDrawerFactory() const;
+    /**
+     * MetaData factory
+     * @see MetaData
+     * @see MetaDataFactory
+     */
     MetaDataFactory* getMetaDataFactory() const;
+
+    /**
+     * Inport factory
+     * @see Inport
+     * @see InportFactory
+     */
     InportFactory* getInportFactory() const;
+
+    /**
+     * Outport factory
+     * @see Outport
+     * @see OutportFactory
+     */
     OutportFactory* getOutportFactory() const;
+
+    /**
+     * PortInspector factory
+     * @see PortInspector
+     * @see PortInspectorFactory
+     */
     PortInspectorFactory* getPortInspectorFactory() const;
+
+    /**
+     * Processor factory
+     * @see Processor
+     * @see ProcessorFactory
+     */
     ProcessorFactory* getProcessorFactory() const;
+
+    /**
+     * ProcessorWidget factory
+     * @see ProcessorWidget
+     * @see ProcessorWidgetFactory
+     */
+    ProcessorWidgetFactory* getProcessorWidgetFactory() const;
+
+    /**
+     * PropertyConverterManager
+     * @see PropertyConverter
+     * @see PropertyConverterManager
+     */
     PropertyConverterManager* getPropertyConverterManager() const;
+
+    /**
+     * Property factory
+     * @see Property
+     * @see PropertyFactory
+     */
     PropertyFactory* getPropertyFactory() const;
+
+    /**
+     * PropertyWidget factory
+     * @see PropertyWidget
+     * @see PropertyWidgetFactory
+     */
     PropertyWidgetFactory* getPropertyWidgetFactory() const;
 
+    /**
+     * Get a Representation factory for a specific kind of representation (Volume Representation,
+     * Layer Representation, Buffer Representation, etc)
+     * @see Data
+     * @see DataRepresentation
+     * @see RepresentationFactory
+     */
     template <typename BaseRepr>
     RepresentationFactory<BaseRepr>* getRepresentationFactory() const;
+
+    /**
+     * The Representation Meta Factory holds RepresentationFactories for various kinds of
+     * representations (Volume Representation, Layer Representation, Buffer Representation, etc)
+     * @see Data
+     * @see DataRepresentation
+     * @see RepresentationFactory
+     * @see RepresentationMetaFactory
+     */
     RepresentationMetaFactory* getRepresentationMetaFactory() const;
 
+    /**
+     * Get a Representation converter factory for a specific kind of representation (Volume
+     * Representation, Layer Representation, Buffer Representation, etc)
+     * @see Data
+     * @see RepresentationConverter
+     * @see RepresentationConverterFactory
+     */
     template <typename BaseRepr>
     RepresentationConverterFactory<BaseRepr>* getRepresentationConverterFactory() const;
+
+    /**
+     * The Representation Converter Meta Factory holds RepresentationConverterFactories for
+     * various kinds of representations (Volume Representation, Layer Representation, Buffer
+     * Representation, etc)
+     * @see Data
+     * @see DataRepresentation
+     * @see RepresentationConverter
+     * @see RepresentationConverterFactory
+     * @see RepresentationConverterMetaFactory
+     */
     RepresentationConverterMetaFactory* getRepresentationConverterMetaFactory() const;
-    ProcessorWidgetFactory* getProcessorWidgetFactory() const;
+
+     ///@}
 
     // Methods to be implemented by deriving classes
     virtual void closeInviwoApplication();
