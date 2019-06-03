@@ -35,12 +35,23 @@
 
 namespace inviwo {
 
+/**
+ * Base class for RepresentationFactoryObject
+ * @see RepresentationFactoryObject
+ */
 class IVW_CORE_API BaseRepresentationFactoryObject {
 public:
     BaseRepresentationFactoryObject() = default;
     virtual ~BaseRepresentationFactoryObject() = default;
 };
 
+/**
+ * Factory object for creating DataRepresentations
+ * @see Data
+ * @see DataRepresentation
+ * @see RepresentationFactory
+ * @see InviwoModule::registerRepresentationFactoryObject()
+ */
 template <typename Representation>
 class RepresentationFactoryObject : public BaseRepresentationFactoryObject {
 public:

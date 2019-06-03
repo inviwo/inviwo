@@ -45,18 +45,39 @@ public:
     virtual BaseReprId getBaseReprId() const = 0;
 };
 
+/**
+ * Factory for representations of a specific base type (Volume Representation, Layer Representation,
+ * Buffer Representation, etc)
+ * @tparam Representation the base representation type for the factory. All registered
+ * representation has to derive from this base class (for example @see VolumeRepresentation)
+ * @see Data
+ * @see DataRepresentation
+ * @see RepresentationFactoryObject
+ * @see RepresentationMetaFactory
+ * @see InviwoApplication::getRepresentationFactory()
+ * @see InviwoModule::registerRepresentationFactoryObject()
+ * @see InviwoModule::registerRepresentationFactory()
+ */
 template <typename Representation>
 class RepresentationFactory
     : public BaseRepresentationFactory,
       public StandardFactory<Representation, RepresentationFactoryObject<Representation>,
                              std::type_index, const typename Representation::ReprOwner*> {
 public:
+    /**
+     * Create a RepresentationFactory
+     * @param defaultRepresentation Id of the default representation type to use in the factory
+     */
     RepresentationFactory(BaseReprId defaultRepresentation)
         : BaseRepresentationFactory{}, defaultRepresentation_{defaultRepresentation} {};
     virtual ~RepresentationFactory() = default;
 
     virtual BaseReprId getBaseReprId() const override { return BaseReprId{typeid(Representation)}; }
 
+    /**
+     * Try to create a representation of the requested type, if that type was not found, return a
+     * representation of the default type.
+     */
     std::unique_ptr<Representation> createOrDefault(
         BaseReprId id, const typename Representation::ReprOwner* owner) {
         if (auto repr = this->create(id, owner)) {
