@@ -41,6 +41,39 @@
 
 namespace inviwo {
 
+namespace detail {
+
+template <typename T>
+void setFromMetaData(std::true_type, T *item, StringProperty &name, DoubleProperty &timestamp) {
+    static_assert(std::is_convertible_v<T, MetaDataOwner>);
+
+    auto metadataowner = static_cast<const MetaDataOwner *>(item);
+    if (metadataowner->hasMetaData<StringMetaData>("name")) {
+        name.set(metadataowner->getMetaData<StringMetaData>("name")->get());
+        name.setVisible(true);
+    } else {
+        name.setVisible(false);
+    }
+
+    if (metadataowner->hasMetaData<DoubleMetaData>("timestamp") ||
+        metadataowner->hasMetaData<FloatMetaData>("timestamp")) {
+        if (auto metadata1 = metadataowner->getMetaData<DoubleMetaData>("timestamp")) {
+            timestamp.set(metadata1->get());
+            timestamp.setVisible(true);
+        } else if (auto metadata2 = metadataowner->getMetaData<FloatMetaData>("timestamp")) {
+            timestamp.set(static_cast<double>(metadata2->get()));
+            timestamp.setVisible(true);
+        }
+    } else {
+        timestamp.setVisible(false);
+    }
+}
+
+template <typename T>
+void setFromMetaData(std::false_type, T *, StringProperty &, DoubleProperty &) {}
+
+}  // namespace detail
+
 /**
  * Template for processors that want to select an element from an
  * input vector and set it as output.
@@ -94,32 +127,13 @@ VectorElementSelectorProcessor<T, OutportType>::VectorElementSelectorProcessor()
 
     timeStep_.onChange([this]() {
         if (auto data = inport_.getData()) {
+
             size_t index =
                 std::min(data->size() - 1, static_cast<size_t>(timeStep_.index_.get() - 1));
             auto selectedData = data->at(index).get();
-            if (auto metadataowner = dynamic_cast<const MetaDataOwner*>(selectedData)) {
-                if (metadataowner->hasMetaData<StringMetaData>("name")) {
-                    name_.set(metadataowner->getMetaData<StringMetaData>("name")->get());
-                    name_.setVisible(true);
-                } else {
-                    name_.setVisible(false);
-                }
 
-                if (metadataowner->hasMetaData<DoubleMetaData>("timestamp") ||
-                    metadataowner->hasMetaData<FloatMetaData>("timestamp")) {
-                    if (auto metadata1 = metadataowner->getMetaData<DoubleMetaData>("timestamp")) {
-                        timestamp_.set(metadata1->get());
-                        timestamp_.setVisible(true);
-                    } else if (auto metadata2 =
-                                   metadataowner->getMetaData<FloatMetaData>("timestamp")) {
-                        timestamp_.set(static_cast<double>(metadata2->get()));
-                        timestamp_.setVisible(true);
-                    }
-                } else {
-                    timestamp_.setVisible(false);
-                }
-            }
-
+            detail::setFromMetaData(typename std::is_convertible<T, MetaDataOwner>::type(), selectedData,
+                                    name_, timestamp_);
         } else {
             name_.setVisible(false);
             timestamp_.setVisible(false);
