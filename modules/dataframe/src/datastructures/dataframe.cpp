@@ -36,8 +36,6 @@
 
 namespace inviwo {
 
-
-
 /*
  * This creates a table with one column: The index column
  */
@@ -155,13 +153,23 @@ const std::vector<std::pair<std::string, const DataFormatBase *>> DataFrame::get
     return headers;
 }
 
-std::string DataFrame::getHeader(size_t idx) const { return columns_.at(idx)->getHeader(); }
-
-std::shared_ptr<const Column> DataFrame::getColumn(size_t index) const { 
-    return columns_.at(index);
+std::string DataFrame::getHeader(size_t idx) const {
+    IVW_ASSERT(!columns_.empty(), "Dataframe has no columns");
+    IVW_ASSERT(idx < columns_.size(), "Index out of range");
+    return columns_[idx]->getHeader();
 }
 
-std::shared_ptr<Column> DataFrame::getColumn(size_t index) { return columns_.at(index); }
+std::shared_ptr<const Column> DataFrame::getColumn(size_t idx) const {
+    IVW_ASSERT(!columns_.empty(), "Dataframe has no columns");
+    IVW_ASSERT(idx < columns_.size(), "Index out of range");
+    return columns_[idx];
+}
+
+std::shared_ptr<Column> DataFrame::getColumn(size_t idx) {
+    IVW_ASSERT(!columns_.empty(), "Dataframe has no columns");
+    IVW_ASSERT(idx < columns_.size(), "Index out of range");
+    return columns_[idx];
+}
 
 std::shared_ptr<const TemplateColumn<std::uint32_t>> DataFrame::getIndexColumn() const {
     return std::dynamic_pointer_cast<const TemplateColumn<std::uint32_t>>(columns_[0]);
@@ -226,7 +234,5 @@ std::shared_ptr<DataFrame> createDataFrame(const std::vector<std::vector<std::st
     }
     return dataFrame;
 }
-
-
 
 }  // namespace inviwo
