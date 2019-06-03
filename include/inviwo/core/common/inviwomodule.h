@@ -253,9 +253,19 @@ public:
     void registerRepresentationConverterFactory(
         std::unique_ptr<BaseRepresentationConverterFactory> converterFactory);
 
+    /**
+     * Register a Settings class and hand over ownership.
+     * @see Settings
+     * @see InviwoApplication::getModuleSettings()
+     */
     void registerSettings(std::unique_ptr<Settings> settings);
+
+    /**
+     * Register a Settings class.
+     * @see Settings
+     * @see InviwoApplication::getModuleSettings()
+     */
     void registerSettings(Settings* settings);
-    void unRegisterSettings(Settings* settings);
 
     InviwoApplication* getInviwoApplication() const;
 

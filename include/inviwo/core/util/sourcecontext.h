@@ -42,12 +42,37 @@ namespace inviwo {
  */
 class IVW_CORE_API SourceContext {
 public:
+    /**
+     * Construct a SourceContext, this is usually not done manually, but rather one of the macros
+     * bellow is used to automatically get the right arguments. SourceContext copies its arguments,
+     * for a more lightweight version @see SourceLocation
+     * @param caller usually the class name of *this in the current scope.
+     * @param file filename path of the source file
+     * @param function name of the function in the current scope
+     * @param line line number in the current source file
+     */
     SourceContext(std::string caller = "", std::string file = "", std::string function = "",
                   int line = 0)
         : caller_(caller), file_(file), function_(function), line_(line) {}
+
+    /**
+     * Usually the class name of *this in the current scope.
+     */
     const std::string& getCaller() const { return caller_; };
+
+    /**
+     * The name and path the the source file
+     */
     const std::string& getFile() const { return file_; };
+
+    /**
+     * Name of the function in the current scope
+     */
     const std::string& getFunction() const { return function_; };
+
+    /**
+     * Line number in the current source file
+     */
     int getLine() const { return line_; };
 
 private:
@@ -79,13 +104,38 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 #define IvwContextCustom(source) \
     SourceContext(source, std::string(__FILE__), std::string(__FUNCTION__), __LINE__)
 
+/**
+ * Represents a location in source code, similar to SourceContext but much more lightweight.
+ * SourceLocation does not take ownership of its given string, and assumes they are in static
+ * storage, which is the case for the file and function macros used below. But care has to be taken
+ * if one uses this class directly. The reason for this it so allow it to be fast, lightweight and
+ * constexpr. And to avoid unnecessary copies of file and function names. For a owning version @see
+ * SourceContext
+ */
 class IVW_CORE_API SourceLocation {
 public:
+    /**
+     * This function does now take ownership of file and function!
+     * @param file filename path of the source file
+     * @param function name of the function in the current scope
+     * @param line line number in the current source file
+     */
     constexpr SourceLocation(const char* file, const char* function, int line)
         : file_{file}, function_{function}, line_{line} {}
 
+    /**
+     * The name and path the the source file
+     */
     constexpr const char* getFile() const noexcept { return file_; };
+
+    /**
+     * Name of the function in the current scope
+     */
     constexpr const char* getFunction() const noexcept { return function_; };
+
+    /**
+     * Line number in the current source file
+     */
     constexpr int getLine() const noexcept { return line_; };
 
 private:

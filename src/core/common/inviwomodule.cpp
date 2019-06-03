@@ -300,10 +300,6 @@ void InviwoModule::registerSettings(std::unique_ptr<Settings> settings) {
 
 void InviwoModule::registerSettings(Settings* settings) { settings_.push_back(settings); }
 
-void InviwoModule::unRegisterSettings(Settings* settings) {
-    settings_.erase(std::remove(settings_.begin(), settings_.end(), settings), settings_.end());
-}
-
 InviwoApplication* InviwoModule::getInviwoApplication() const { return app_; }
 
 void InviwoModule::registerProcessor(std::unique_ptr<ProcessorFactoryObject> pfo) {

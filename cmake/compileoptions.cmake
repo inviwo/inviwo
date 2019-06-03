@@ -117,6 +117,7 @@ macro(ivw_define_standard_definitions project_name target)
             _CRT_SECURE_NO_DEPRECATE
             _SCL_SECURE_NO_WARNINGS
             _SILENCE_CXX17_RESULT_OF_DEPRECATION_WARNING
+            _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
             NOMINMAX
             WIN32_LEAN_AND_MEAN
             UNICODE

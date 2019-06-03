@@ -78,7 +78,8 @@ ivw_register_license_file(NAME tiff TARGET inviwo::tiff MODULE CImg
 )
 
 
-
+# The current OpenEXR has some problems with regards to packaging. So for now we make it optional.
+# When the packaging is fixed this option should be removed.
 option(IVW_CIMG_USE_OPENEXR  "Add OpenEXR image format support (HDR images) " ON)
 if(IVW_CIMG_USE_OPENEXR)
     add_subdirectory(ext/openexr)
