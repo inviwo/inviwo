@@ -92,6 +92,7 @@ void SettingsWidget::updateSettingsWidget() {
 
     for (auto setting : settings) {
         auto settingsGroup = new CollapsibleGroupBoxWidgetQt(setting);
+        settingsGroup->setShowIfEmpty(true);
         layout_->addWidget(settingsGroup);
         settingsGroup->initState();
 

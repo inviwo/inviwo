@@ -26,31 +26,9 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <modules/fontrendering/fontrenderingmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <modules/fontrendering/datastructures/fontsettings.h>
-#include <modules/fontrendering/util/fontutils.h>
+#include <inviwo/core/util/sourcecontext.h>
 
 namespace inviwo {
-
-class IVW_MODULE_FONTRENDERING_API FontData : public FontSettings {
-public:
-    FontData() = default;
-    FontData(const FontSettings& s);
-    virtual ~FontData() = default;
-
-    // Inherited via FontSettings
-    virtual std::string getFontFace() const override;
-    virtual int getFontSize() const override;
-    virtual float getLineSpacing() const override;
-    virtual vec2 getAnchorPos() const override;
-
-    std::string fontFace = util::getDefaultFontPath() + "/Montserrat-Medium.otf";
-    int fontSize = 14;
-    float lineSpacing = 0.0f;
-    vec2 anchorPos = vec2(-1.0f);
-};
 
 }  // namespace inviwo

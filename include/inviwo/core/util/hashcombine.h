@@ -28,29 +28,21 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/fontrendering/fontrenderingmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <modules/fontrendering/datastructures/fontsettings.h>
-#include <modules/fontrendering/util/fontutils.h>
+#include <functional>
 
 namespace inviwo {
 
-class IVW_MODULE_FONTRENDERING_API FontData : public FontSettings {
-public:
-    FontData() = default;
-    FontData(const FontSettings& s);
-    virtual ~FontData() = default;
+namespace util {
+/**
+ *    Function to combine several hash values
+ *    http://stackoverflow.com/questions/2590677/how-do-i-combine-hash-values-in-c0x
+ */
+template <class T>
+constexpr void hash_combine(std::size_t& seed, const T& v) noexcept {
+    std::hash<T> hasher;
+    seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+}
 
-    // Inherited via FontSettings
-    virtual std::string getFontFace() const override;
-    virtual int getFontSize() const override;
-    virtual float getLineSpacing() const override;
-    virtual vec2 getAnchorPos() const override;
-
-    std::string fontFace = util::getDefaultFontPath() + "/Montserrat-Medium.otf";
-    int fontSize = 14;
-    float lineSpacing = 0.0f;
-    vec2 anchorPos = vec2(-1.0f);
-};
+}  // namespace util
 
 }  // namespace inviwo

@@ -165,7 +165,7 @@ public:
     const std::vector<BaseRepresentationConverter*> getRepresentationConverters() const;
     const std::vector<BaseRepresentationConverterFactory*> getRepresentationConverterFactories()
         const;
-    const std::vector<Settings*> getSettings() const;
+    const std::vector<Settings*>& getSettings() const;
 
     void registerCapabilities(std::unique_ptr<Capabilities> info);
 
@@ -181,7 +181,6 @@ public:
     void registerDrawer(std::unique_ptr<MeshDrawer> drawer);
     void registerMetaData(std::unique_ptr<MetaData> meta);
 
-    
     void registerProcessor(std::unique_ptr<ProcessorFactoryObject> pfo);
     template <typename T>
     void registerProcessor();
@@ -254,7 +253,19 @@ public:
     void registerRepresentationConverterFactory(
         std::unique_ptr<BaseRepresentationConverterFactory> converterFactory);
 
+    /**
+     * Register a Settings class and hand over ownership.
+     * @see Settings
+     * @see InviwoApplication::getModuleSettings()
+     */
     void registerSettings(std::unique_ptr<Settings> settings);
+
+    /**
+     * Register a Settings class.
+     * @see Settings
+     * @see InviwoApplication::getModuleSettings()
+     */
+    void registerSettings(Settings* settings);
 
     InviwoApplication* getInviwoApplication() const;
 
@@ -304,9 +315,12 @@ private:
     std::vector<std::unique_ptr<PropertyWidgetFactoryObject>> propertyWidgets_;
     std::vector<std::unique_ptr<BaseRepresentationConverter>> representationConverters_;
     std::vector<std::function<void()>> representationConvertersUnRegFunctors_;
+
     std::vector<std::unique_ptr<BaseRepresentationConverterFactory>>
         representationConverterFactories_;
-    std::vector<std::unique_ptr<Settings>> settings_;
+
+    std::vector<std::unique_ptr<Settings>> ownedSettings_;
+    std::vector<Settings*> settings_;
     std::vector<std::unique_ptr<DataVisualizer>> dataVisualizers_;
 };
 
