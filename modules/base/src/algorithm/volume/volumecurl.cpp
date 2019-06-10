@@ -64,14 +64,17 @@ std::unique_ptr<Volume> curlVolume(const Volume& volume) {
         [&](auto vol) {
             using ValueType = util::PrecisionValueType<decltype(vol)>;
             using ComponentType = typename ValueType::value_type;
+            using FloatType =
+                typename std::conditional_t<std::is_same_v<float, ComponentType>, float, double>;
+            using Sampler = TemplateVolumeSampler<ValueType, FloatType>;
 
             util::IndexMapper3D index(volume.getDimensions());
             auto data = newVolumeRep->getDataTyped();
             float minV = std::numeric_limits<float>::max();
             float maxV = std::numeric_limits<float>::lowest();
 
-            const auto worldSpace = TemplateVolumeSampler<ValueType, ComponentType>::Space::World;
-            const TemplateVolumeSampler<ValueType, ComponentType> sampler(volume, worldSpace);
+            const auto worldSpace = Sampler::Space::World;
+            const Sampler sampler(volume, worldSpace);
 
             util::forEachVoxel(*vol, [&](const size3_t& pos) {
                 const vec3 world{m *
