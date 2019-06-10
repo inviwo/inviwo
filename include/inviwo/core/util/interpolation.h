@@ -37,6 +37,7 @@ namespace inviwo {
 
 template <typename T, typename P = double>
 class Interpolation {
+     static_assert(std::is_floating_point_v<P>, "P needs to be a floating point type");
 public:
     Interpolation() = delete;
 
@@ -84,7 +85,15 @@ inline T linearVectorInterpolation(const T &a, const T &b, P x) {
 
 template <typename T, typename P>
 inline T Interpolation<T, P>::linear(const T &a, const T &b, P x) {
-    return glm::mix(a, b, x);
+    using VT = util::value_type<T>::type;
+    if constexpr (std::is_same_v<T, VT> || std::is_signed_v<VT> ) {
+        // GLM fails at correctly linearly interpolate between vectors of unsigned types when the
+        // difference is negative
+        return glm::mix(a, b, x);
+    } else {
+        using V = typename util::same_extent<T, double>::type;
+        return util::glm_convert<T>(glm::mix(util::glm_convert<V>(a), util::glm_convert<V>(b), x));
+    }
 }
 
 template <typename T, typename P>
