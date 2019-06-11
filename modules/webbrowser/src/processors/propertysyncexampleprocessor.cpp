@@ -59,12 +59,6 @@ PropertySyncExampleProcessor::PropertySyncExampleProcessor()
     , outport_("webpage", DataVec4UInt8::get())
     , url_("URL", "URL", getTestWebpageUrl())
     , reload_("reload", "Reload")
-    // Properties, note that InvalidationLevel::Valid is used to not get
-    // invalidations from both CEF (html) and Qt
-    , ordinalProp_("ordinalProperty", "Ordinal", 1.f, 0.f, 2.f, 0.1f, InvalidationLevel::Valid)
-    , boolProp_("boolProperty", "Bool", true, InvalidationLevel::Valid)
-    , buttonProp_("buttonProperty", "Button", InvalidationLevel::Valid)
-    , stringProp_("stringProperty", "String", "Edit me", InvalidationLevel::Valid)
     , picking_(this, 1, [&](PickingEvent* p) { cefInteractionHandler_.handlePickingEvent(p); })
     , cefToInviwoImageConverter_(picking_.getColor())
     , renderHandler_(new RenderHandlerGL([&]() {
@@ -109,17 +103,6 @@ PropertySyncExampleProcessor::PropertySyncExampleProcessor()
     cefInteractionHandler_.setHost(browser_->GetHost());
     cefInteractionHandler_.setRenderHandler(renderHandler_);
     addInteractionHandler(&cefInteractionHandler_);
-    // Add property to processor before propertyCefSynchronizer to
-    // include processor in property path
-    addProperty(ordinalProp_);
-    addProperty(boolProp_);
-    addProperty(buttonProp_);
-    addProperty(stringProp_);
-
-    browserClient_->propertyCefSynchronizer_->startSynchronize(&ordinalProp_);
-    browserClient_->propertyCefSynchronizer_->startSynchronize(&boolProp_);
-    browserClient_->propertyCefSynchronizer_->startSynchronize(&buttonProp_);
-    browserClient_->propertyCefSynchronizer_->startSynchronize(&stringProp_);
 }
 
 PropertySyncExampleProcessor::~PropertySyncExampleProcessor() {

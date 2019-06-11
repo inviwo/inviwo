@@ -2,41 +2,11 @@
 <head>
 <title>Inviwo property syncing example</title>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="../js/inviwoapi.js"></script>
+
 <script language="JavaScript">
-
-function checkboxInput(val) {
-	window.cefQuery({
-		request: JSON.stringify({"id":"boolProperty", "value": val }),
-		onSuccess: function(response) {
-			$("#boolProperty").fadeOut("fast");  
-			$("#boolProperty").fadeIn("fast");
-		},
-		onFailure: function(error_code, error_message) {}
-		
-	});
-}
-
-function buttonClicked(val) { 
-
-	window.cefQuery({
-		request: JSON.stringify({"id":"buttonProperty"}),
-		onSuccess: function(response) {
-			// Indicate that button was clicked using JQuery animation
-			$("#buttonProperty").fadeOut("fast");  
-			$("#buttonProperty").fadeIn("fast");
-		},
-		onFailure: function(error_code, error_message) {}
-	});
-}
-function textInput(val) {  
-	window.cefQuery({
-		request: JSON.stringify({"id":"stringProperty", "value": val}),
-		onSuccess: function(response) {
-		},
-		onFailure: function(error_code, error_message) {}
-		
-	});
-}
+// Initialize Inviwo API so that we can use it to synchronize properties
+var inviwo = new InviwoAPI();
 </script>
 
 </head>
@@ -44,31 +14,24 @@ function textInput(val) {
 <h3>HTML<->Inviwo synchronization (javascript & JSON)</h3>
 <div class="slidecontainer">
   <p>Range<input type="range" min="1" max="100" value="50" class="slider" id="ordinalProperty">
-  <span id="demo"></span></p>
+  <span id="ordinalPropertyValue"></span></p>
 </div>
-  <p><input type="button" value="Button" id="buttonProperty" onclick="buttonClicked(this.value)"></p>
-  <p>Checkbox <input type="checkbox" value="Checkbox" id="boolProperty" onchange="checkboxInput(this.checked)"></p>
-  <p>Text <input type="text" id="stringProperty" value="not changed" oninput="textInput(this.value)"></p>
+  <p><input type="button" value="Button" id="buttonProperty" onclick="inviwo.setProperty('Background.switchColors', {value: this.value})"></p>
+  <p>Checkbox <input type="checkbox" value="Checkbox" id="boolProperty" onchange="inviwo.setProperty('TextOverlay.enable', {value: this.checked})"></p>
+  <p>Text <input type="text" id="stringProperty" value="not changed" oninput="inviwo.setProperty('TextOverlay.text', {value: this.value})" ></p>
 <script>
+	
 var slider = document.getElementById("ordinalProperty");
-var output = document.getElementById("demo");
-output.innerHTML = slider.value;
+var ordinalPropertyValue = document.getElementById("ordinalPropertyValue");
 
 slider.oninput = function() {
-  	  
-      window.cefQuery({
-      	// Note value is returnted as string so we cannot use JSON.stringify
-      	// since the value will be interpreted as as string.
-		request: '{"id":"ordinalProperty", "value":' + document.getElementById("ordinalProperty").value + '}',
-		onSuccess: function(response) {
-		  
-		},
-		onFailure: function(error_code, error_message) {}
-		
-	});
-    output.innerHTML = document.getElementById("ordinalProperty").value;
+	inviwo.setProperty("MeshCreator.torusRadius2_", {value: Number(this.value)});
+    ordinalPropertyValue.innerHTML = this.value;
 }
-
+// Update html inputs when corresponding Inviwo properties change
+inviwo.subscribe("ordinalProperty", "MeshCreator.torusRadius2_");
+inviwo.subscribe("boolProperty", "TextOverlay.enable");
+inviwo.subscribe("stringProperty", "TextOverlay.text");
 </script>
 </body>
 </html>

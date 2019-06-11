@@ -96,11 +96,6 @@ private:
     StringProperty url_;     ///< Web page to show
     ButtonProperty reload_;  ///< Force reload url
 
-    FloatProperty ordinalProp_;
-    BoolProperty boolProp_;
-    ButtonProperty buttonProp_;
-    StringProperty stringProp_;
-
     CEFInteractionHandler cefInteractionHandler_;
     PickingMapper picking_;
     CefImageConverter cefToInviwoImageConverter_;

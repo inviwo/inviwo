@@ -118,10 +118,6 @@ public:
     BoolProperty autoReloadFile_;
     StringProperty url_;     ///< Web page to show
     ButtonProperty reload_;  ///< Force reload url
-    CompositeProperty addPropertyGroup_;
-    OptionPropertySize_t type_;      ///< List of all supported properties
-    StringProperty propertyHtmlId_;  ///< Html id of property to add
-    ButtonProperty add_;
 
     ButtonProperty runJS_;
     StringProperty js_;

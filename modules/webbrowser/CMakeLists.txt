@@ -127,6 +127,13 @@ set(SHADER_FILES
 ivw_group("Shader Files" ${SHADER_FILES})
 
 #--------------------------------------------------------------------
+# Add javascript
+set(JS_FILES
+    data/js/inviwoapi.js
+)
+ivw_group("JS Files" ${JS_FILES})
+
+#--------------------------------------------------------------------
 # Add Unittests
 set(TEST_FILES
     #${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/webbrowser-test.cpp
@@ -135,7 +142,7 @@ ivw_add_unittest(${TEST_FILES})
 
 #--------------------------------------------------------------------
 # Create module
-ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
+ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES} ${JS_FILES})
 target_include_directories(inviwo-module-webbrowser PUBLIC ${CEF_INCLUDE_PATH})
 target_link_libraries(inviwo-module-webbrowser PUBLIC
     $<$<NOT:$<BOOL:${OS_MACOSX}>>:libcef_lib>
@@ -147,6 +154,8 @@ target_link_libraries(inviwo-module-webbrowser PUBLIC
 #--------------------------------------------------------------------
 # Package or build shaders into resources
 ivw_handle_shader_resources(${CMAKE_CURRENT_SOURCE_DIR}/glsl ${SHADER_FILES})
+
+ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/data/js)
 
 # Inviwo: CEF only provides release/debug configurations. Set RelWithDebInfo and MinSizeRel to use release 
 set(CEF_BINARY_DIR "${_CEF_ROOT}/$<$<CONFIG:RelWithDebInfo>:Release>$<$<CONFIG:MinSizeRel>:Release>$<$<CONFIG:Debug>:Debug>$<$<CONFIG:Release>:Release>")

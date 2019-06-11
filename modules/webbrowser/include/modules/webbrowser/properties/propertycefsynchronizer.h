@@ -83,21 +83,29 @@ public:
 
     /**
      * Called due to cefQuery execution in message_router.html.
-     * Expects the request for be a JSON-format with key "id" of the property to change.
-     * Example {"id":"PropertyIdentifier", "value":"0.5"}
+     * Expects the request for be a JSON-format. See inviwoapi.js:
+     * {command: "subscribe", "path": propertyPath, "id":htmlId}
+     * for synchronizing property to change.
+     * {command: "property.set", "path":"PropertyIdentifier", "value":0.5}
+     * for setting a value
+     * {command: "property.get", "path": propertyPath}
+     * for getting a value.
      * Currently only supports a single property in the request.
      * @see PropertyWidgetCEF
      */
     virtual bool OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 query_id,
                          const CefString& request, bool persistent,
                          CefRefPtr<Callback> callback) override;
-    /**
-     * Add property to synchronize using property identifier as HTML-element id.
-     * Stops synchronizing property when this object
-     * is destroyed or when stopSynchronize is called.
-     * @param property Property to synchronize
-     */
-    void startSynchronize(Property* property);
+
+
+
+    // Use own widget factory for now. Multiple widget types are not supported in Inviwo yet
+    template <typename T, typename P>
+    void registerPropertyWidget(PropertySemantics semantics);
+
+    PropertyWidgetFactory htmlWidgetFactory_;
+
+private:
     /**
      * Add property to synchronize using supplied identifier as HTML-element id.
      * Stops synchronizing property when this object
@@ -111,14 +119,6 @@ public:
      * @param property Property to remove
      */
     void stopSynchronize(Property* property);
-
-    // Use own widget factory for now. Multiple widget types are not supported in Inviwo yet
-    template <typename T, typename P>
-    void registerPropertyWidget(PropertySemantics semantics);
-
-    PropertyWidgetFactory htmlWidgetFactory_;
-
-private:
     std::vector<std::unique_ptr<PropertyWidgetFactoryObject>> propertyWidgets_;
 
     std::vector<std::unique_ptr<PropertyWidgetCEF>> widgets_;

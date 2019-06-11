@@ -1,5 +1,22 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2019-06-11 Webbrowser property synchronization
+Changed way of synchronizing/setting properties in javascript. Instead of adding properties to the webbrowser processor one can now set them using their path from javascript.
+See web_property_sync.html in the Webbrowser module
+
+This means that you need to update workspaces/webpages which used the Webbrowser processor.
+```js
+// Update html inputs when corresponding Inviwo properties change
+inviwo.subscribe("ordinalProperty", "MeshCreator.torusRadius2_");
+var slider = document.getElementById("ordinalProperty");
+var ordinalPropertyValue = document.getElementById("ordinalPropertyValue");
+
+slider.oninput = function() {
+    inviwo.setProperty("MeshCreator.torusRadius2_", {value: Number(this.value)});
+    ordinalPropertyValue.innerHTML = this.value;
+}
+```
+
 ## 2019-04-30 Python Processors
 Inviwo Processors can now be implemented directly in Python by creating a python class and deriving from inviwopy.Processor.
 Bellow follows an example of a python processor:

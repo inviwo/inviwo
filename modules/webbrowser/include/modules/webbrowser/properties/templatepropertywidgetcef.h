@@ -66,12 +66,24 @@ public:
         const std::string& requestString = request;
         auto j = json::parse(requestString);
         try {
-            T value = j.at("value").get<T>();
+            auto command = j.at("command").get<std::string>();
             auto p = static_cast<TemplateProperty<T>*>(getProperty());
-            p->setInitiatingWidget(this);
-            p->set(value);
-            p->clearInitiatingWidget();
-            callback->Success("");
+            if (command == "property.set") {
+                T value = j.at("value").get<T>();
+                
+                p->setInitiatingWidget(this);
+                p->set(value);
+                p->clearInitiatingWidget();
+                callback->Success("");
+            } else if (command == "property.get") {
+                if constexpr (std::is_same_v<T, bool>) {
+                    json res = {"value",  p->get() ? "true" : "false" };
+                    callback->Success(res.dump());
+                } else {
+                    json res = {"value", p->get()};
+                    callback->Success(res.dump());
+                }
+            }
         } catch (json::exception& ex) {
             LogError(ex.what());
             callback->Failure(0, ex.what());
