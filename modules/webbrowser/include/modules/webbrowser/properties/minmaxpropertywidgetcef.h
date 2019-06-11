@@ -83,21 +83,34 @@ public:
         auto j = json::parse(requestString);
         
         try {
-            glm::tvec2<T> value{j.at("min").get<T>(),
-                                j.at("max").get<T>()};
+            auto command = j.at("command").get<std::string>();
             auto p = static_cast<MinMaxProperty<T>*>(getProperty());
-            
-            // Optional parameters
-            T rmin = j.count("start") > 0 ? j.at("start").get<T>() : p->getRangeMin();
-            T rmax = j.count("end") > 0 ? j.at("end").get<T>() : p->getRangeMax();
-            glm::tvec2<T> range{rmin, rmax};
-            T increment = j.count("step") > 0 ? j.at("step").get<T>() : p->getIncrement();
-            T minSep = j.count("minSeparation") > 0 ? j.at("minSeparation").get<T>() : p->getMinSeparation();
-            
-            p->setInitiatingWidget(this);
-            p->set(value, range, increment, minSep);
-            p->clearInitiatingWidget();
-            callback->Success("");
+            if (command == "property.set") {
+                glm::tvec2<T> value{j.at("min").get<T>(),
+                                    j.at("max").get<T>()};
+
+                
+                // Optional parameters
+                T rmin = j.count("start") > 0 ? j.at("start").get<T>() : p->getRangeMin();
+                T rmax = j.count("end") > 0 ? j.at("end").get<T>() : p->getRangeMax();
+                glm::tvec2<T> range{rmin, rmax};
+                T increment = j.count("increment") > 0 ? j.at("increment").get<T>() : p->getIncrement();
+                T minSep = j.count("minSeparation") > 0 ? j.at("minSeparation").get<T>() : p->getMinSeparation();
+                
+                p->setInitiatingWidget(this);
+                p->set(value, range, increment, minSep);
+                p->clearInitiatingWidget();
+                callback->Success("");
+            } else if (command == "property.get") {
+                json res = {
+                        "min", p->getRangeMin(),
+                        "max", p->getRangeMax(),
+                        "increment", p->getIncrement(),
+                        "minSeparation", p->getMinSeparation(),
+                        "start", p->getStart(),
+                        "end", p->getEnd()};
+                callback->Success(res.dump());
+            }
         } catch (json::exception& ex) {
             LogError(ex.what());
             callback->Failure(0, ex.what());
