@@ -133,11 +133,11 @@ void registerCoreRepresentationsHelper(T& obj) {
         std::make_unique<RepresentationFactory<VolumeRepresentation>>(typeid(VolumeRAM)));
 
     // Register RAM Representations
-    obj.registerRepresentationFactoryObject<BufferRepresentation>(
+    obj.template registerRepresentationFactoryObject<BufferRepresentation>(
         std::make_unique<BufferRAMFactoryObject>());
-    obj.registerRepresentationFactoryObject<LayerRepresentation>(
+    obj.template registerRepresentationFactoryObject<LayerRepresentation>(
         std::make_unique<LayerRAMFactoryObject>());
-    obj.registerRepresentationFactoryObject<VolumeRepresentation>(
+    obj.template registerRepresentationFactoryObject<VolumeRepresentation>(
         std::make_unique<VolumeRAMFactoryObject>());
 
     // Register Converter Factories
@@ -149,9 +149,9 @@ void registerCoreRepresentationsHelper(T& obj) {
         std::make_unique<RepresentationConverterFactory<BufferRepresentation>>());
 
     // Register Converters
-    obj.registerRepresentationConverter<VolumeRepresentation>(
+    obj.template registerRepresentationConverter<VolumeRepresentation>(
         std::make_unique<VolumeDisk2RAMConverter>());
-    obj.registerRepresentationConverter<LayerRepresentation>(
+    obj.template registerRepresentationConverter<LayerRepresentation>(
         std::make_unique<LayerDisk2RAMConverter>());
 }
 
