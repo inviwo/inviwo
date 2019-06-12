@@ -179,7 +179,7 @@ struct hash<::inviwo::SourceLocation> {
 
 template <>
 struct hash<::inviwo::SourceContext> {
-    constexpr size_t operator()(const ::inviwo::SourceContext& sl) const noexcept {
+    size_t operator()(const ::inviwo::SourceContext& sl) const noexcept {
         size_t h = 0;
         ::inviwo::util::hash_combine(h, sl.getCaller());
         ::inviwo::util::hash_combine(h, sl.getFile());
