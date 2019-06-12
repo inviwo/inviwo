@@ -38,7 +38,32 @@
 using json = nlohmann::json;
 
 namespace inviwo {
-    
+// TODO: Remove when moved to c++17
+#if __cplusplus < 201703L
+namespace detail {
+template<class T>
+json toJSON(
+             TemplateProperty<T>* p,
+             typename std::enable_if<
+             std::is_same<T, bool>::value
+             >::type* = 0
+             ){
+    json res = {"value",  p->get() ? "true" : "false" };
+    return res;
+}
+template<class T>
+json toJSON(
+             TemplateProperty<T>* p,
+             typename std::enable_if<
+             !std::is_same<T, bool>::value
+             >::type* = 0
+             ){
+    json res = {"value", p->get()};
+    return res;
+}
+
+} // detail
+#endif
 /**
  * \class TemplatePropertyWidgetCEF
  * \brief CEF property widget for TemplateProperty<T>
@@ -52,7 +77,8 @@ public:
     TemplatePropertyWidgetCEF(TemplateProperty<T>* prop, CefRefPtr<CefFrame> frame = nullptr,
                               std::string htmlId = "")
         : PropertyWidgetCEF(prop, frame, htmlId){};
-
+    virtual ~TemplatePropertyWidgetCEF() = default;
+    
     virtual bool onQuery(
         CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 /*query_id*/,
         const CefString& request, bool /*persistent*/,
@@ -76,6 +102,8 @@ public:
                 p->clearInitiatingWidget();
                 callback->Success("");
             } else if (command == "property.get") {
+                // TODO: Remove when moved to c++17
+                #if __cplusplus >= 201703L
                 if constexpr (std::is_same_v<T, bool>) {
                     json res = {"value",  p->get() ? "true" : "false" };
                     callback->Success(res.dump());
@@ -83,6 +111,11 @@ public:
                     json res = {"value", p->get()};
                     callback->Success(res.dump());
                 }
+                #else
+                json res = detail::toJSON(p);
+                callback->Success(res.dump());
+                #endif
+
             }
         } catch (json::exception& ex) {
             LogError(ex.what());
