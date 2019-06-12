@@ -26,18 +26,22 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_DATA_H
-#define IVW_DATA_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/datastructures/representationfactory.h>
 #include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/datastructures/representationfactorymanager.h>
+
 #include <typeindex>
+#include <mutex>
+#include <unordered_map>
+#include <memory>
 
 namespace inviwo {
+
+class DataFormatBase;
+
 /**
  * \defgroup datastructures Datastructures
  */
@@ -171,7 +175,7 @@ public:
     const DataFormatBase* getDataFormat() const;
 
 protected:
-    Data(const DataFormatBase*);
+    Data(const DataFormatBase* format);
     Data(const Data<Self, Repr>& rhs);
     Data<Self, Repr>& operator=(const Data<Self, Repr>& rhs);
 
@@ -190,11 +194,11 @@ protected:
 
 template <typename Self, typename Repr>
 Data<Self, Repr>::Data(const DataFormatBase* format)
-    : lastValidRepresentation_(), dataFormatBase_(format) {}
+    : lastValidRepresentation_{nullptr}, dataFormatBase_{format} {}
 
 template <typename Self, typename Repr>
 Data<Self, Repr>::Data(const Data<Self, Repr>& rhs)
-    : lastValidRepresentation_(), dataFormatBase_(rhs.dataFormatBase_) {
+    : lastValidRepresentation_{nullptr}, dataFormatBase_{rhs.dataFormatBase_} {
     rhs.copyRepresentationsTo(this);
 }
 
@@ -213,7 +217,7 @@ const T* Data<Self, Repr>::getRepresentation() const {
     std::unique_lock<std::mutex> lock(mutex_);
     if (representations_.empty()) {
         lock.unlock();
-        auto factory = InviwoApplication::getPtr()->getRepresentationFactory<Repr>();
+        auto factory = RepresentationFactoryManager::getRepresentationFactory<Repr>();
         auto repr = std::shared_ptr<Repr>{
             factory->createOrDefault(std::type_index(typeid(T)), static_cast<const Self*>(this))};
         lock.lock();
@@ -233,11 +237,9 @@ const T* Data<Self, Repr>::getRepresentation() const {
 template <typename Self, typename Repr>
 template <typename T>
 const T* Data<Self, Repr>::getValidRepresentation() const {
-    auto factory = InviwoApplication::getPtr()->getRepresentationConverterFactory<Repr>();
-    auto package = factory->getRepresentationConverter(lastValidRepresentation_->getTypeIndex(),
-                                                       std::type_index(typeid(T)));
-
-    if (package) {
+    auto factory = RepresentationFactoryManager::getRepresentationConverterFactory<Repr>();
+    if (auto package = factory->getRepresentationConverter(lastValidRepresentation_->getTypeIndex(),
+                                                           std::type_index(typeid(T)))) {
         for (auto converter : package->getConverters()) {
             auto dest = converter->getConverterID().second;
             auto it = representations_.find(dest);
@@ -379,5 +381,3 @@ const DataFormatBase* Data<Self, Repr>::getDataFormat() const {
 }
 
 }  // namespace inviwo
-
-#endif  // IVW_DATA_H

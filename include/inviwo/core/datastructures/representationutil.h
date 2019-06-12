@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,39 +26,21 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#ifdef _MSC_VER
-#pragma comment(linker, "/SUBSYSTEM:CONSOLE")
-#ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
-#include <ext/vld/vld.h>
-#endif
-#endif
+#include <inviwo/core/common/inviwocoredefine.h>
 
-#include <inviwo/testutil/configurablegtesteventlistener.h>
 
-#include <inviwo/core/datastructures/representationutil.h>
-#include <inviwo/core/datastructures/representationfactorymanager.h>
+namespace inviwo {
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <gtest/gtest.h>
-#include <warn/pop>
+class InviwoModule;
+class RepresentationFactoryManager;
 
-int main(int argc, char** argv) {
-    inviwo::RepresentationFactoryManager rfm;
-    inviwo::util::registerCoreRepresentations(rfm);
+namespace util {
 
-    int ret = -1;
-    {
-#ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
-        VLDDisable();
-        ::testing::InitGoogleTest(&argc, argv);
-        VLDEnable();
-#else
-        ::testing::InitGoogleTest(&argc, argv);
-#endif
-        inviwo::ConfigurableGTestEventListener::setup();
-        ret = RUN_ALL_TESTS();
-    }
-    return ret;
-}
+IVW_CORE_API void registerCoreRepresentations(InviwoModule& obj);
+IVW_CORE_API void registerCoreRepresentations(RepresentationFactoryManager& obj);
+
+}  // namespace util
+
+}  // namespace inviwo
