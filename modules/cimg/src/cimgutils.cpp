@@ -606,20 +606,31 @@ TIFFHeader getTIFFHeader(const std::string& filename) {
     TIFFSetDirectory(tif, 0);
 
     uint16 samplesPerPixel = 1, bitsPerSample = 8, sampleFormat = 1;
-    TIFFGetFieldDefaulted(tif, TIFFTAG_BITSPERSAMPLE, &bitsPerSample);
-    TIFFGetFieldDefaulted(tif, TIFFTAG_SAMPLESPERPIXEL, &samplesPerPixel);
-    TIFFGetFieldDefaulted(tif, TIFFTAG_SAMPLEFORMAT, &sampleFormat);
+    if (!TIFFGetFieldDefaulted(tif, TIFFTAG_BITSPERSAMPLE, &bitsPerSample)) {
+        bitsPerSample = 8;
+    }
+    if (!TIFFGetFieldDefaulted(tif, TIFFTAG_SAMPLESPERPIXEL, &samplesPerPixel)) {
+        samplesPerPixel = 1;
+    }
+    if (!TIFFGetFieldDefaulted(tif, TIFFTAG_SAMPLEFORMAT, &sampleFormat)) {
+        sampleFormat = 1;
+    }
 
-    std::array<unsigned int, 2> xres = {150, 1};
-    std::array<unsigned int, 2> yres = {150, 1};
-    // X and Y resolution tags are stored as RATIONAL, i.e. a fractional value
-    // (2 unsigned int values with the first being the numerator, the second the denominator)
-    TIFFGetFieldDefaulted(tif, TIFFTAG_XRESOLUTION, xres.data());
-    TIFFGetFieldDefaulted(tif, TIFFTAG_YRESOLUTION, yres.data());
-    const dvec2 res{xres[0] / static_cast<double>(xres[1]), yres[0] / static_cast<double>(yres[1])};
+    float xres = 1.0f;
+    float yres = 1.0f;
+    // X and Y resolution tags are stored as float
+    if (!TIFFGetFieldDefaulted(tif, TIFFTAG_XRESOLUTION, &xres)) {
+        xres = 1.0f;
+    }
+    if (!TIFFGetFieldDefaulted(tif, TIFFTAG_YRESOLUTION, &yres)) {
+        yres = 1.0f;
+    }
+    const dvec2 res{xres, yres};
 
     uint16 resUnit = 2;
-    TIFFGetFieldDefaulted(tif, TIFFTAG_RESOLUTIONUNIT, &resUnit);
+    if (!TIFFGetFieldDefaulted(tif, TIFFTAG_RESOLUTIONUNIT, &resUnit)) {
+        resUnit = 2;
+    }
     const TIFFResolutionUnit resolutionUnit = static_cast<TIFFResolutionUnit>(resUnit);
 
     uint32 x = 0, y = 0, z = 0;
@@ -645,7 +656,7 @@ TIFFHeader getTIFFHeader(const std::string& filename) {
             [[fallthrough]];
         case SAMPLEFORMAT_COMPLEXINT:
             throw DataReaderException("Unsupported TIFF format",
-                                      IVW_CONTEXT_CUSTOM("cimgutil::getTTIFFDataFormat()"));
+                                      IVW_CONTEXT_CUSTOM("cimgutil::getTIFFDataFormat()"));
             break;
         default:
             numericType = NumericType::UnsignedInteger;
@@ -663,14 +674,14 @@ TIFFHeader getTIFFHeader(const std::string& filename) {
         swizzleMask = swizzlemasks::rgba;
     } else {
         throw DataReaderException("Unsupported TIFF format with more than 4 channels",
-                                  IVW_CONTEXT_CUSTOM("cimgutil::getTTIFFDataFormat()"));
+                                  IVW_CONTEXT_CUSTOM("cimgutil::getTIFFDataFormat()"));
     }
 
     auto df = DataFormatBase::get(numericType, samplesPerPixel, bitsPerSample);
 
     return {df, size3_t{x, y, z}, res, resolutionUnit, swizzleMask};
 #else
-    throw Exception("TIFF not available", IVW_CONTEXT_CUSTOM("cimgutil::getTTIFFDataFormat()"));
+    throw Exception("TIFF not available", IVW_CONTEXT_CUSTOM("cimgutil::getTIFFDataFormat()"));
     return {};
 #endif
 }
