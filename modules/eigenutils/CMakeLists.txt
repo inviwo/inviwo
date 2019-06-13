@@ -47,3 +47,11 @@ ivw_register_license_file(NAME Eigen VERSION 3.3.90 MODULE EigenUtils
         ${CMAKE_CURRENT_SOURCE_DIR}/ext/eigen/COPYING.MPL2
 )
 ivw_make_package(InviwoEigenUtilsModule inviwo-module-eigenutils)
+
+#  HACK: have the files showing in the IDE, under the name 'eigen'
+file(GLOB_RECURSE EIGEN_SOURCES "ext/eigen/Eigen/*")
+ivw_group("Header Files" BASE "${CMAKE_CURRENT_SOURCE_DIR}/ext/eigen/Eigen" ${EIGEN_SOURCES})
+add_custom_target(eigen_dummy SOURCES ${EIGEN_SOURCES})
+
+# Creates VS folder structure
+ivw_folder(eigen_dummy ext)
