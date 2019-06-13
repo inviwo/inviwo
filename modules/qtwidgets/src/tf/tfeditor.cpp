@@ -95,6 +95,8 @@ TFEditor::TFEditor(util::TFPropertyConcept* tfProperty,
     if (auto port = tfProperty->getVolumeInport()) {
 
         const auto portChange = [this, port]() {
+            // Early out when this object was already destroyed to workaround crash
+            if (points_.empty() && connections_.empty() && isovalueItems_.empty()) return;
             dataMap_ = port->hasData() ? port->getData()->dataMap_ : DataMapper{};
         };
 

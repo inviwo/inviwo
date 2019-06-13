@@ -135,6 +135,9 @@ private:
 
     RangeSliderQt* zoomVSlider_;
     RangeSliderQt* zoomHSlider_;
+
+    // Need this because lambdas trigger after destructor was called
+    bool isDestroyed_;
 };
 
 }  // namespace inviwo

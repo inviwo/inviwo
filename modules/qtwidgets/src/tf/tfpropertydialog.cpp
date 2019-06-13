@@ -76,7 +76,8 @@ TFPropertyDialog::TFPropertyDialog(TransferFunctionProperty* property,
     : PropertyEditorWidgetQt(property, "Transfer Function Editor", "TFEditorWidget")
     , sliderRange_(static_cast<int>(property->get().getTextureSize()))
     , propertyPtr_(std::make_unique<util::TFPropertyModel<TransferFunctionProperty*>>(property))
-    , tfSets_(primitiveSets) {
+    , tfSets_(primitiveSets)
+    , isDestroyed_(false) {
     if (tfSets_.empty()) {
         // no sets given, make sure that the primitive set of the property is used
         tfSets_.push_back(&property->get());
@@ -89,7 +90,8 @@ TFPropertyDialog::TFPropertyDialog(IsoValueProperty* property,
     : PropertyEditorWidgetQt(property, "Transfer Function Editor", "TFEditorWidget")
     , sliderRange_(1024)
     , propertyPtr_(std::make_unique<util::TFPropertyModel<IsoValueProperty*>>(property))
-    , tfSets_(primitiveSets) {
+    , tfSets_(primitiveSets)
+    , isDestroyed_(false) {
     if (tfSets_.empty()) {
         // no sets given, make sure that the primitive set of the property is used
         tfSets_.push_back(&property->get());
@@ -102,7 +104,8 @@ TFPropertyDialog::TFPropertyDialog(IsoTFProperty* property,
     : PropertyEditorWidgetQt(property, "Transfer Function Editor", "TFEditorWidget")
     , sliderRange_(static_cast<int>(property->tf_.get().getTextureSize()))
     , propertyPtr_(std::make_unique<util::TFPropertyModel<IsoTFProperty*>>(property))
-    , tfSets_(primitiveSets) {
+    , tfSets_(primitiveSets)
+    , isDestroyed_(false) {
     if (tfSets_.empty()) {
         // no sets given, make sure that the primitive sets of the property are used
         tfSets_.push_back(&property->tf_.get());
@@ -114,6 +117,7 @@ TFPropertyDialog::TFPropertyDialog(IsoTFProperty* property,
 TFPropertyDialog::~TFPropertyDialog() {
     tfEditor_->disconnect();
     hide();
+    isDestroyed_ = true;
 }
 
 void TFPropertyDialog::initializeDialog() {
@@ -231,6 +235,8 @@ void TFPropertyDialog::initializeDialog() {
         // ensure that the range of primitive scalar is matching value range of volume data
         if (auto port = propertyPtr_->getVolumeInport()) {
             const auto portChange = [this, port]() {
+                // Early out if this object was already destroyed to workaround crash
+                if (isDestroyed_) return;
                 auto range =
                     port->hasData() ? port->getData()->dataMap_.valueRange : dvec2(0.0, 1.0);
                 // TODO: how to handle different TF types?
