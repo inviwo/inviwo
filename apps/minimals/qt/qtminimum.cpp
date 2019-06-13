@@ -364,7 +364,8 @@ public:
     void setAtIndex(unsigned int index, Property* prop) {
         auto factory = InviwoApplication::getPtr()->getPropertyWidgetFactory();
         if (auto propertyWidget = static_cast<PropertyWidgetQt*>(factory->create(prop).release())) {
-            listLayout_->removeWidget(elements_[index]);
+            delete elements_[index]; // also removes it from the layout
+            elements_[index] = propertyWidget;
             listLayout_->insertWidget(index, propertyWidget, 0, Qt::AlignTop);
         }
     }
@@ -377,23 +378,23 @@ public:
  */
 class DynamicPropObserver : public PropertyOwnerObserver {
 
-    const PropDesc propDesc_;    // descriptor of property that this observer is interested in
-    const Config config_;        // config containing the descriptor
-    ProcessorNetwork* network_;  // network containing the property
-    CustomPropertyListWidget* propList_;  // GUI where the property should appear
-    unsigned int index_;                  // place in the GUI
+    const PropDesc propDesc_;    // description of prop to be observed
+    const Config config_;        // config object containing prop relations
+    ProcessorNetwork* network_;  // processor network where the prop is searched
+    CustomPropertyListWidget* propList_;  // Qt widget where the prop widget is shown
+    unsigned int index_;                  // position in the Qt widget
 
 public:
     DynamicPropObserver(const PropDesc propDesc, const Config config, ProcessorNetwork* network,
                         CustomPropertyListWidget* propList, unsigned int index)
-        : propDesc_(propDesc)
-        , config_(config)
-        , network_(network)
-        , propList_(propList)
-        , index_(index) {}
+        : propDesc_(propDesc) // description of prop to be observed
+        , config_(config) // config object containing all prop relations
+        , network_(network) // processor network where the prop is searched
+        , propList_(propList) // Qt widget where the prop widget is shown
+        , index_(index) {} // position in the Qt widget
 
 protected:
-    // Overridden from PropertyOwnerObserver to add and remove properties dynamically
+    // Dynamic addition and removal methods (overridden from PropertyOwnerObserver)
     void onDidAddProperty(Property* property, size_t index) override;
     void onWillRemoveProperty(Property* property, size_t index) override;
 };
@@ -418,7 +419,10 @@ void DynamicPropObserver::onWillRemoveProperty(Property* property, size_t index)
 }
 
 /**
- * Configurable GUI
+ * Configurable GUI:
+ * Can be constructed from InviwoApplicationQt and a config file.
+ * Shows a small property list based on a workspace and a config,
+ * besides the canvas and the console.
  */
 class ConfigGUI : public QMainWindow {
 
@@ -443,7 +447,7 @@ class ConfigGUI : public QMainWindow {
         propList_ = new CustomPropertyListWidget(this);
 
         if (!config.parseSuccess) {
-            // Show empty state
+            // Show empty state when
             // - GUI has just been started, or
             // - config file was not found, or
             // - config file had errors
@@ -475,7 +479,7 @@ class ConfigGUI : public QMainWindow {
             int index = -1;
 
             if (!proc)
-                logWarn(procDesc.id + " processor not found");
+                logWarn(procDesc.id + " - processor declared in config file, but not found in workspace");
             else if (propDesc.id == "*")
                 index = propList_->addPropertyGroup(proc);
             else {
@@ -487,8 +491,8 @@ class ConfigGUI : public QMainWindow {
 
                 if (!prop) {
                     // Prop from config not found in network
-                    logWarn(propDesc.id + " property not found");
-                    index = propList_->addPlaceholder(propDesc.id);
+                    logWarn(propDesc.id + " - property declared in config file, but not found in workspace");
+                    index = propList_->addPlaceholder(propDesc.id + " - property not found");
                 } else if (composite) {
                     // Add all props of composite
                     index = propList_->addPropertyGroup(composite);
@@ -499,7 +503,7 @@ class ConfigGUI : public QMainWindow {
             }
 
             if (index < 0) {
-                logWarn(procDesc.id + " widget could not be added");
+                logWarn(procDesc.id + " - widget could not be added");
             } else {
                 observers_.push_back(
                     new DynamicPropObserver(propDesc, config, network, propList_, index));
