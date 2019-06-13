@@ -33,6 +33,7 @@
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <modules/qtwidgets/tf/tfeditorprimitive.h>
 #include <inviwo/core/datastructures/datamapper.h>
+#include <inviwo/core/util/callback.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -179,6 +180,10 @@ private:
     bool selectNewPrimitives_;
     TFEditorPrimitive::ItemType lastInsertedPrimitiveType_ =
         TFEditorPrimitive::TFEditorUnknownPrimitiveType;
+
+    const BaseCallBack* volumeChangeListener_;
+    const BaseCallBack* volumeConnectListener_;
+    const BaseCallBack* volumeDisconnectListener_;
 };
 
 inline double TFEditor::getControlPointSize() const { return controlPointSize_; }

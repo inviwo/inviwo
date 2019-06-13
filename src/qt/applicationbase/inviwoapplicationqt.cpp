@@ -288,7 +288,7 @@ bool InviwoApplicationQt::notify(QObject* receiver, QEvent* e) {
             // Uncomment to workaround crash
             // Crash was bad_function_call, because undoTrigger was not initialized
             // Happend when alt-tab + click, or when changing filename
-            // undoTrigger_();
+            if (undoTrigger_) undoTrigger_();
             break;
         }
         case QEvent::TouchEnd: {
@@ -296,13 +296,13 @@ bool InviwoApplicationQt::notify(QObject* receiver, QEvent* e) {
             if (util::all_of(te->touchPoints(), [](const QTouchEvent::TouchPoint& tp) {
                     return tp.state() == Qt::TouchPointReleased;
                 })) {
-                // undoTrigger_();
+                if (undoTrigger_) undoTrigger_();
                 break;
             }
             break;
         }
         case QEvent::KeyRelease: {
-            // undoTrigger_();
+            if (undoTrigger_) undoTrigger_();
             break;
         }
         default:

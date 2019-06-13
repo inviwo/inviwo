@@ -95,14 +95,12 @@ TFEditor::TFEditor(util::TFPropertyConcept* tfProperty,
     if (auto port = tfProperty->getVolumeInport()) {
 
         const auto portChange = [this, port]() {
-            // Early out when this object was already destroyed to workaround crash
-            if (points_.empty() && connections_.empty() && isovalueItems_.empty()) return;
             dataMap_ = port->hasData() ? port->getData()->dataMap_ : DataMapper{};
         };
 
-        port->onChange(portChange);
-        port->onConnect(portChange);
-        port->onDisconnect(portChange);
+        volumeChangeListener_ = port->onChange(portChange);
+        volumeConnectListener_ = port->onConnect(portChange);
+        volumeDisconnectListener_ = port->onDisconnect(portChange);
 
         if (port->hasData()) {
             dataMap_ = port->getData()->dataMap_;
@@ -143,6 +141,13 @@ TFEditor::~TFEditor() {
 
     for (auto& item : isovalueItems_) delete item;
     isovalueItems_.clear();
+
+    if (auto port = tfPropertyPtr_->getVolumeInport()) {
+        // Prevent lambdas being called after desctructor to prevent crash
+        port->removeOnChange(volumeChangeListener_);
+        port->removeOnConnect(volumeConnectListener_);
+        port->removeOnDisconnect(volumeDisconnectListener_);
+    }
 }
 
 void TFEditor::mousePressEvent(QGraphicsSceneMouseEvent* e) {
