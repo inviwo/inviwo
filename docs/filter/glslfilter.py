@@ -86,26 +86,32 @@ re_blockcode_start = re.compile('(?<=[\*]class\s)\w+', re.I | re.VERBOSE)
 #   - add FILTER_PATTERNS: "*.frag=glslfilter.py", "*.vert=glslfilter.py", "*.geom=glslfilter.py", "*.glsl=glslfilter.py"
 # latest version on <a href="http://www.grasmo.de">www.grasmo.de</a>
 
-##run regex on a single line
-# @returns either a found result or None
 def getRegSearchLine(str, regex):
+    '''
+    run regex on a single line
+    @returns either a found result or None
+    '''
     search = regex.search(str)
     if search is not None:
         return search.group(0)
     return None
 
-##run regex on an string array
-# @returns either a found result or None
 def getRegSearch(txt, regex):
+    '''
+    run regex on an string array
+    @returns either a found result or None
+    '''
     for str in txt:
         search = regex.search(str)
         if search is not None:
             return search.group(0)
     return None
 
-# generate a class name from filename
-# @return just the filename - no extension and no path
 def generateName(filename):
+    '''
+    generate a class name from filename
+    @return just the filename - no extension and no path
+    '''
     root, ext = os.path.splitext(filename)
     head, tail = os.path.split(root)
     return tail
@@ -113,33 +119,50 @@ def generateName(filename):
 def writeLine(txt):
     sys.stdout.write(txt)
     
+def writeLines(r):
+    '''dump all lines to stdout'''
+    for s in r:
+        sys.stdout.write(s)
+
 ## parse a shader and generate needed information along on the way
 ## - if comments contain a namespace move it the classname
 def parseShader(filename, txt, type = None):
+    hasIncludeGuard = False
+    ifCount = 0
     # extract name from doxygen-tag or use generic GLSL namespace
     namespace = getRegSearch(txt, re_doxy_namespace)
     if namespace is None:
         namespace = "glsl"
-    else:
-        #remove namespace line from txt
+    else: #remove namespace line from txt
         txt = [str for str in txt if getRegSearchLine(str, re_doxy_namespace) is None]
 
     # extract className from doxygen-tag or use filename
     className = getRegSearch(txt, re_doxy_class)
     if className is None:
         className = generateName(filename)
-    else:
-        #remove calssName line from txt
+    else: #remove calssName line from txt
         txt = [str for str in txt if getRegSearchLine(str, re_doxy_class) is None]
 
-    if len(txt) > 0:
-        if txt[0].strip() == "/*********************************************************************************" \
-            and txt[27].strip() ==  "*********************************************************************************/":
-            showLines(txt[0:28])
+    while len(txt) > 0 and txt[0].isspace():
+        writeLine(txt.pop(0))
+
+    if len(txt) > 0: # Comment block      
+        if (txt[0].strip() == "/" + '*' * 81)  and (txt[27].strip() ==  '*' * 81 + "/"):
+            writeLines(txt[0:28])
             txt = txt[28:]
-            
-    if (len(txt)>0):
-        while txt[0].isspace() or txt[0].find("#include") >= 0:
+
+    while len(txt) > 0 and txt[0].isspace():
+        writeLine(txt.pop(0))
+
+    if len(txt) >= 2:
+        if txt[0].strip().startswith("#ifndef") and txt[1].strip().startswith("#define") >= 0:
+            hasIncludeGuard = True
+            ifCount += 1
+            writeLine(txt.pop(0))
+            writeLine(txt.pop(0))
+
+    if len(txt) > 0:
+        while txt[0].isspace() or txt[0].strip().startswith("#include"):
             writeLine(txt.pop(0))
 
     comment = []
@@ -153,37 +176,37 @@ def parseShader(filename, txt, type = None):
                 
     # dump the file and pad it with namespace/name class information
     # 1st: namespace + class padding, also declare everything public
-    writeLine("/** @namespace " + namespace + " */")
-    writeLine("public class " + namespace+"::"+className + "{")
-    writeLine("public:")
+    writeLine("/** @namespace " + namespace + " */ ")
+    writeLine("public class " + namespace + "::" + className + " { public: ")
     # 2nd: dump original commentblock
-    showLines(comment)
+    writeLines(comment)
     # 3rd: add type-remark and classname
     if type is not None:
         writeLine("/** @remark <b>" + type + "</b> */")
-    writeLine("/** @class " + namespace+"::"+className + " */")
-    # 4th: dump remaining file 
-    showLines(txt)
-    # 5th: close dummy class
-    writeLine("}\n")
+    writeLine("/** @class " + namespace + "::" + className + " */\n")
+    # 4th: dump remaining file
 
-## @returns the complete file content as an array of lines
-def readFile(filename):
-    f = open(filename)
-    r = f.readlines()
-    f.close()
-    return r
-    
-## dump all lines to stdout
-def showLines(r):
-    for s in r:
-        sys.stdout.write(s)
-        
-## main method - open a file and see what can be done
+    while len(txt) > 0:
+        if txt[0].strip().startswith("#if"): ifCount += 1
+        if txt[0].strip().startswith("#endif"): ifCount -= 1
+
+        if hasIncludeGuard and ifCount == 0:
+            writeLine("}\n")
+        writeLine(txt.pop(0))
+
+    # 5th: close dummy class
+    if not hasIncludeGuard:
+        writeLine("}\n")
+
+    writeLine("\n")
+            
 def filter(filename):
+    '''main method - open a file and see what can be done'''
     try:
         root, ext = os.path.splitext(filename)
-        txt = readFile(filename)
+        with open(filename, 'r') as f:
+            txt = f.readlines()
+
         if (ext.lower() == ".frag"):
             parseShader(filename, txt, "Fragment-Shader")
         elif (ext.lower() == ".vert"):
@@ -193,14 +216,15 @@ def filter(filename):
         elif (ext.lower() == ".glsl"):
             parseShader(filename, txt, "GLSL-Shader")
         else:
-            showLines(txt)
+            writeLines(txt)
     except IOError as e:
         sys.stderr.write(e[1]+"\n")
 
-if len(sys.argv) != 2:
-    print("usage: ", sys.argv[0], " filename")
-    sys.exit(1)
+if __name__ == '__main__':
+    if len(sys.argv) != 2:
+        print("usage: ", sys.argv[0], " filename")
+        sys.exit(1)
 
-filename = sys.argv[1] 
-filter(filename)
-sys.exit(0)
+    filename = sys.argv[1] 
+    filter(filename)
+    sys.exit(0)
