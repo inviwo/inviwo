@@ -63,6 +63,8 @@ size_t getDefaultFontIndex() {
     }
 }
 
+#include <warn/push>
+#include <warn/ignore/unused-variable>
 const ivec4 ghost_white(248, 248, 240, 255);
 const ivec4 light_ghost_white(248, 248, 242, 255);
 const ivec4 light_gray(204, 204, 204, 255);
@@ -79,6 +81,7 @@ const ivec4 orange(253, 151, 31, 255);
 const ivec4 light_orange(255, 213, 105, 255);
 const ivec4 green(166, 226, 46, 255);
 const ivec4 sea_green(166, 228, 48, 255);
+#include <warn/pop>
 
 }  // namespace
 
