@@ -33,6 +33,7 @@
 #include <inviwo/core/util/hashcombine.h>
 
 #include <string>
+#include <cstring>
 #include <iostream>
 
 namespace inviwo {
