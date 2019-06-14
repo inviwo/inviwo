@@ -222,10 +222,17 @@ public:
     auto dispatchPool(F&& f, Args&&... args)
         -> std::future<typename std::result_of<F(Args...)>::type>;
 
+    /**
+     * Enqueue a functor to be run in the GUI thread
+     * @returns a future with the result of the functor.
+     */
     template <class F, class... Args>
     auto dispatchFront(F&& f, Args&&... args)
         -> std::future<typename std::result_of<F(Args...)>::type>;
 
+    /**
+     * Enqueue a functor to be run in the GUI thread.
+     */
     void dispatchFrontAndForget(std::function<void()> fun);
 
     virtual void processFront();
@@ -252,7 +259,6 @@ public:
      */
     ResourceManager* getResourceManager();
 
- 
     /** @name Factories */
     ///@{
 
@@ -395,7 +401,7 @@ public:
      */
     RepresentationConverterMetaFactory* getRepresentationConverterMetaFactory() const;
 
-     ///@}
+    ///@}
 
     // Methods to be implemented by deriving classes
     virtual void closeInviwoApplication();
@@ -488,6 +494,10 @@ private:
     static InviwoApplication* instance_;
 };
 
+/**
+ * Enqueue a functor to be run in the GUI thread
+ * @returns a future with the result of the functor.
+ */
 template <class F, class... Args>
 auto dispatchFront(F&& f, Args&&... args)
     -> std::future<typename std::result_of<F(Args...)>::type> {
@@ -495,6 +505,9 @@ auto dispatchFront(F&& f, Args&&... args)
                                                       std::forward<Args>(args)...);
 }
 
+/**
+ * Enqueue a functor to be run in the GUI thread.
+ */
 inline void dispatchFrontAndForget(std::function<void()> fun) {
     InviwoApplication::getPtr()->dispatchFrontAndForget(std::move(fun));
 }

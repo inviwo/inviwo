@@ -36,4 +36,11 @@ NetworkLock::NetworkLock() : network_(InviwoApplication::getPtr()->getProcessorN
     if (network_) network_->lock();
 }
 
+NetworkLock::NetworkLock(NetworkLock&& rhs) : network_(rhs.network_) { rhs.network_ = nullptr; };
+NetworkLock& NetworkLock::operator=(NetworkLock&& that) {
+    NetworkLock lock(std::move(that));
+    std::swap(network_, lock.network_);
+    return *this;
+}
+
 }  // namespace inviwo

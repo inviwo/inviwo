@@ -32,25 +32,24 @@
 namespace inviwo {
 
 RepresentationMetaFactory* RepresentationFactoryManager::representationMetaFactory_ = nullptr;
-RepresentationConverterMetaFactory* RepresentationFactoryManager::representationConverterMetaFactory_ = nullptr;
+RepresentationConverterMetaFactory*
+    RepresentationFactoryManager::representationConverterMetaFactory_ = nullptr;
 
+RepresentationFactoryManager::RepresentationFactoryManager()
+    : oldRepresentationMetaFactory_{representationMetaFactory_}
+    , oldRepresentationConverterMetaFactory_{representationConverterMetaFactory_}
+    , localRepresentationMetaFactory_{std::make_unique<RepresentationMetaFactory>()}
+    , localRepresentationConverterMetaFactory_{
+          std::make_unique<RepresentationConverterMetaFactory>()} {
 
-    RepresentationFactoryManager::RepresentationFactoryManager()
-        : oldRepresentationMetaFactory_{representationMetaFactory_}
-        , oldRepresentationConverterMetaFactory_{representationConverterMetaFactory_}
-        , localRepresentationMetaFactory_{std::make_unique<RepresentationMetaFactory>()}
-        , localRepresentationConverterMetaFactory_{
-              std::make_unique<RepresentationConverterMetaFactory>()} {
+    representationMetaFactory_ = localRepresentationMetaFactory_.get();
+    representationConverterMetaFactory_ = localRepresentationConverterMetaFactory_.get();
+}
 
-        representationMetaFactory_ = localRepresentationMetaFactory_.get();
-        representationConverterMetaFactory_ = localRepresentationConverterMetaFactory_.get();
-    }
-
-    RepresentationFactoryManager::~RepresentationFactoryManager() {
-        representationMetaFactory_ = oldRepresentationMetaFactory_;
-        representationConverterMetaFactory_ = oldRepresentationConverterMetaFactory_;
-    }
-
+RepresentationFactoryManager::~RepresentationFactoryManager() {
+    representationMetaFactory_ = oldRepresentationMetaFactory_;
+    representationConverterMetaFactory_ = oldRepresentationConverterMetaFactory_;
+}
 
 void RepresentationFactoryManager::registerRepresentationFactory(
     std::unique_ptr<BaseRepresentationFactory> representationFactory) {
