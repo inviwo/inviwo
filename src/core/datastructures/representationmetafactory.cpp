@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,20 +27,23 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/network/networklock.h>
-#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/datastructures/representationmetafactory.h>
+#include <inviwo/core/util/stdextensions.h>
 
 namespace inviwo {
 
-NetworkLock::NetworkLock() : network_(InviwoApplication::getPtr()->getProcessorNetwork()) {
-    if (network_) network_->lock();
+bool RepresentationMetaFactory::registerObject(BaseRepresentationFactory* factory) {
+    if (!util::insert_unique(map_, factory->getBaseReprId(), factory))
+        throw(Exception("RepresentationFactory with supplied ID already registered",
+                                 IVW_CONTEXT));
+    return true;
 }
 
-NetworkLock::NetworkLock(NetworkLock&& rhs) : network_(rhs.network_) { rhs.network_ = nullptr; };
-NetworkLock& NetworkLock::operator=(NetworkLock&& that) {
-    NetworkLock lock(std::move(that));
-    std::swap(network_, lock.network_);
-    return *this;
+bool RepresentationMetaFactory::unRegisterObject(BaseRepresentationFactory* factory) {
+    size_t removed = util::map_erase_remove_if(
+        map_, [factory](const auto& elem) { return elem.second == factory; });
+
+    return removed > 0;
 }
 
 }  // namespace inviwo

@@ -36,12 +36,18 @@
 
 #include <inviwo/testutil/configurablegtesteventlistener.h>
 
+#include <inviwo/core/datastructures/representationutil.h>
+#include <inviwo/core/datastructures/representationfactorymanager.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <gtest/gtest.h>
 #include <warn/pop>
 
 int main(int argc, char** argv) {
+    inviwo::RepresentationFactoryManager rfm;
+    inviwo::util::registerCoreRepresentations(rfm);
+
     int ret = -1;
     {
 #ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST

@@ -136,9 +136,6 @@ public:
 
     template <typename Kind>
     const typename representation_traits<Volume, Kind>::type* getRep() const;
-
-protected:
-    virtual std::shared_ptr<VolumeRepresentation> createDefaultRepresentation() const override;
 };
 
 template <typename Kind>

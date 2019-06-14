@@ -56,5 +56,10 @@ function (ivw_add_py_wrapper target)
         set(_allPyBindWrappers "${_allPyBindWrappers};${target}" CACHE INTERNAL  "_allPyBindWrappers")
 
         ivw_define_standard_properties(${target})
+
+        # pybind will set the visibility to hidden by default, but we run into problems with dynamic cast
+        # of our templated precision types on OSX if hidden is used. So until we figure out how to manage 
+        # that make the visibility default.
+        set_target_properties(${target} PROPERTIES CXX_VISIBILITY_PRESET "default")
     endif()
 endfunction()

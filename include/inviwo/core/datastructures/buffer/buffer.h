@@ -94,9 +94,6 @@ public:
     void append(const Buffer<T, Target>&);
 
     virtual Document getInfo() const override;
-
-protected:
-    virtual std::shared_ptr<BufferRepresentation> createDefaultRepresentation() const override;
 };
 
 template <typename T, BufferTarget Target>
@@ -188,11 +185,6 @@ BufferRAMPrecision<T, Target>* Buffer<T, Target>::getEditableRAMRepresentation()
     ivwAssert(bufferRAM->getBufferTarget() == Target, "Invalid target for buffer representation");
 
     return static_cast<BufferRAMPrecision<T, Target>*>(bufferRAM);
-}
-
-template <typename T, BufferTarget Target>
-std::shared_ptr<BufferRepresentation> Buffer<T, Target>::createDefaultRepresentation() const {
-    return std::make_shared<BufferRAMPrecision<T, Target>>(size_, usage_);
 }
 
 template <typename T, BufferTarget Target>

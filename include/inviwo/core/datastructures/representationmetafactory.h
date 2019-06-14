@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,21 +26,50 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <inviwo/core/network/networklock.h>
-#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/datastructures/representationfactory.h>
 
 namespace inviwo {
 
-NetworkLock::NetworkLock() : network_(InviwoApplication::getPtr()->getProcessorNetwork()) {
-    if (network_) network_->lock();
-}
+/**
+ * The Representation Meta Factory holds RepresentationFactories for
+ * various kinds of representations (Volume Representation, Layer Representation, Buffer
+ * Representation, etc)
+ * @see Data
+ * @see DataRepresentation
+ * @see RepresentationFactoryObject
+ * @see RepresentationFactory
+ * @see InviwoApplication::getRepresentationMetaFactory()
+ * @see InviwoModule::registerRepresentationFactory()
+ */
+class IVW_CORE_API RepresentationMetaFactory {
+public:
+    using BaseReprId = BaseRepresentationFactory::BaseReprId;
+    using FactoryMap = std::unordered_map<BaseReprId, BaseRepresentationFactory*>;
 
-NetworkLock::NetworkLock(NetworkLock&& rhs) : network_(rhs.network_) { rhs.network_ = nullptr; };
-NetworkLock& NetworkLock::operator=(NetworkLock&& that) {
-    NetworkLock lock(std::move(that));
-    std::swap(network_, lock.network_);
-    return *this;
+    RepresentationMetaFactory() = default;
+    ~RepresentationMetaFactory() = default;
+
+    // Does not take ownership
+    bool registerObject(BaseRepresentationFactory* factory);
+    bool unRegisterObject(BaseRepresentationFactory* factory);
+
+    template <typename BaseRepr>
+    RepresentationFactory<BaseRepr>* getRepresentationFactory() const;
+
+private:
+    FactoryMap map_;
+};
+
+template <typename BaseRepr>
+RepresentationFactory<BaseRepr>* RepresentationMetaFactory::getRepresentationFactory() const {
+    const auto it = map_.find(BaseReprId(typeid(BaseRepr)));
+    if (it != map_.end()) {
+        return static_cast<RepresentationFactory<BaseRepr>*>(it->second);
+    }
+    return nullptr;
 }
 
 }  // namespace inviwo

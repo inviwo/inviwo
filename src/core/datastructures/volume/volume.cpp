@@ -30,7 +30,6 @@
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumedisk.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/util/document.h>
 
 namespace inviwo {
@@ -123,10 +122,6 @@ void Volume::setModelMatrix(const mat4& mat) {
 mat4 Volume::getWorldMatrix() const { return SpatialEntity<3>::getWorldMatrix(); }
 void Volume::setWorldMatrix(const mat4& mat) {
     SpatialEntity<3>::setWorldMatrix(Matrix<4, float>(mat));
-}
-
-std::shared_ptr<VolumeRepresentation> Volume::createDefaultRepresentation() const {
-    return createVolumeRAM(getDimensions(), getDataFormat());
 }
 
 vec3 Volume::getWorldSpaceGradientSpacing() const {

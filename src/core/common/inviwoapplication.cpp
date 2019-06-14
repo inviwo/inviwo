@@ -128,6 +128,7 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     , propertyConverterManager_{std::make_unique<PropertyConverterManager>()}
     , propertyFactory_{std::make_unique<PropertyFactory>()}
     , propertyWidgetFactory_{std::make_unique<PropertyWidgetFactory>()}
+    , representationMetaFactory_{std::make_unique<RepresentationMetaFactory>()}
     , representationConverterMetaFactory_{std::make_unique<RepresentationConverterMetaFactory>()}
     , systemSettings_{std::make_unique<SystemSettings>(this)}
     , systemCapabilities_{std::make_unique<SystemCapabilities>()}
@@ -353,6 +354,14 @@ void InviwoApplication::onResourceManagerEnableStateChanged() {
 }
 
 std::locale InviwoApplication::getUILocale() const { return std::locale(); }
+
+void InviwoApplication::dispatchFrontAndForget(std::function<void()> fun) {
+    {
+        std::unique_lock<std::mutex> lock(queue_.mutex);
+        queue_.tasks.push(std::move(fun));
+    }
+    if (queue_.postEnqueue) queue_.postEnqueue();
+}
 
 void InviwoApplication::processFront() {
     NetworkLock netlock(processorNetwork_.get());

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,21 +26,54 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <inviwo/core/network/networklock.h>
-#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/inviwocoredefine.h>
+
+#include <typeindex>
+#include <memory>
 
 namespace inviwo {
 
-NetworkLock::NetworkLock() : network_(InviwoApplication::getPtr()->getProcessorNetwork()) {
-    if (network_) network_->lock();
-}
+/**
+ * Base class for RepresentationFactoryObject
+ * @see RepresentationFactoryObject
+ */
+class IVW_CORE_API BaseRepresentationFactoryObject {
+public:
+    BaseRepresentationFactoryObject() = default;
+    virtual ~BaseRepresentationFactoryObject() = default;
+};
 
-NetworkLock::NetworkLock(NetworkLock&& rhs) : network_(rhs.network_) { rhs.network_ = nullptr; };
-NetworkLock& NetworkLock::operator=(NetworkLock&& that) {
-    NetworkLock lock(std::move(that));
-    std::swap(network_, lock.network_);
-    return *this;
-}
+/**
+ * Factory object for creating DataRepresentations
+ * @see Data
+ * @see DataRepresentation
+ * @see RepresentationFactory
+ * @see InviwoModule::registerRepresentationFactoryObject()
+ */
+template <typename Representation>
+class RepresentationFactoryObject : public BaseRepresentationFactoryObject {
+public:
+    using ReprId = std::type_index;
+
+    RepresentationFactoryObject(ReprId classIdentifier) : classIdentifier_{classIdentifier} {};
+    virtual ~RepresentationFactoryObject() = default;
+
+    ReprId getClassIdentifier() const { return classIdentifier_; }
+
+    virtual std::unique_ptr<Representation> create(const typename Representation::ReprOwner*) = 0;
+
+private:
+    ReprId classIdentifier_;
+};
+
+template <typename Representation, typename Derived>
+class RepresentationFactoryObjectTemplate : public RepresentationFactoryObject<Representation> {
+public:
+    RepresentationFactoryObjectTemplate()
+        : RepresentationFactoryObject<Representation>{std::type_index(typeid(Derived))} {}
+    virtual ~RepresentationFactoryObjectTemplate() = default;
+};
 
 }  // namespace inviwo

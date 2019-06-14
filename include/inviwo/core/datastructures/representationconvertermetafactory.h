@@ -37,8 +37,15 @@
 namespace inviwo {
 
 /**
- * \class RepresentationConverterMetaFactory
- * \brief A class to manage RepresentationConverterFactories
+ * The Representation Converter Meta Factory holds RepresentationConverterFactories for
+ * various kinds of representations (Volume Representation, Layer Representation, Buffer
+ * Representation, etc)
+ * @see Data
+ * @see DataRepresentation
+ * @see RepresentationConverter
+ * @see RepresentationConverterFactory
+ * @see InviwoApplication::getRepresentationConverterMetaFactory()
+ * @see InviwoModule::registerRepresentationConverterFactory()
  */
 class IVW_CORE_API RepresentationConverterMetaFactory {
 public:
@@ -46,7 +53,7 @@ public:
     using FactoryMap = std::unordered_map<BaseReprId, BaseRepresentationConverterFactory*>;
 
     RepresentationConverterMetaFactory() = default;
-    virtual ~RepresentationConverterMetaFactory() = default;
+    ~RepresentationConverterMetaFactory() = default;
 
     bool registerObject(BaseRepresentationConverterFactory* factory);
     bool unRegisterObject(BaseRepresentationConverterFactory* factory);
@@ -61,8 +68,9 @@ private:
 template <typename BaseRepr>
 RepresentationConverterFactory<BaseRepr>* RepresentationConverterMetaFactory::getConverterFactory()
     const {
-    if (auto ptr = util::map_find_or_null(map_, BaseReprId(typeid(BaseRepr)))) {
-        return static_cast<RepresentationConverterFactory<BaseRepr>*>(ptr);
+    const auto it = map_.find(BaseReprId(typeid(BaseRepr)));
+    if (it != map_.end()) {
+        return static_cast<RepresentationConverterFactory<BaseRepr>*>(it->second);
     }
     return nullptr;
 }

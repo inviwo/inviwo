@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,20 +27,9 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/network/networklock.h>
-#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/datastructures/representationfactoryobject.h>
 
 namespace inviwo {
 
-NetworkLock::NetworkLock() : network_(InviwoApplication::getPtr()->getProcessorNetwork()) {
-    if (network_) network_->lock();
-}
-
-NetworkLock::NetworkLock(NetworkLock&& rhs) : network_(rhs.network_) { rhs.network_ = nullptr; };
-NetworkLock& NetworkLock::operator=(NetworkLock&& that) {
-    NetworkLock lock(std::move(that));
-    std::swap(network_, lock.network_);
-    return *this;
-}
 
 }  // namespace inviwo
