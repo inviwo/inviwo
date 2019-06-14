@@ -39,6 +39,7 @@
 #include <warn/ignore/cast-align>
 #include <warn/ignore/catch-semantic-changed>
 #include <warn/ignore/char-subscripts>
+#include <warn/ignore/class-memaccess>
 #include <warn/ignore/conditional-uninitialized>
 #include <warn/ignore/constant-conditional>
 #include <warn/ignore/constant-conversion>
@@ -97,6 +98,7 @@
 #include <warn/ignore/padded>
 #include <warn/ignore/parentheses>
 #include <warn/ignore/pedantic>
+#include <warn/ignore/restrict>
 #include <warn/ignore/return-type>
 #include <warn/ignore/self-assign-overloaded>
 #include <warn/ignore/shadow>
@@ -107,6 +109,7 @@
 #include <warn/ignore/size_t-conversion>
 #include <warn/ignore/special-noexcept>
 #include <warn/ignore/static-ctor-not-thread-safe>
+#include <warn/ignore/stringop-truncation>
 #include <warn/ignore/switch>
 #include <warn/ignore/switch-enum>
 #include <warn/ignore/this-used-in-init>

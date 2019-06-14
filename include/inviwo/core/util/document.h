@@ -88,7 +88,7 @@ public:
         bool noIndent() const;
 
     private:
-        const ElementType type_;
+        ElementType type_;
         std::vector<std::unique_ptr<Element>> children_;
         std::string data_;
         std::unordered_map<std::string, std::string> attributes_;

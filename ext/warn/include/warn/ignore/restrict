@@ -28,23 +28,21 @@
  *********************************************************************************/
 
 #if !defined(WARN_INCLUDE_PUSH)
-#   error "`warn/ignore/four-char-constants` used without `warn/push`"
+#   error "`warn/ignore/restrict` used without `warn/push`"
 #endif
 
-#if defined(WARN_IGNORE_FOUR_CHAR_CONSTANTS)
-#   error "`warn/ignore/four-char-constants` already included"
+#if defined(WARN_IGNORE_RESTRICT)
+#   error "`warn/ignore/restrict` already included"
 #endif
 
-#define WARN_IGNORE_FOUR_CHAR_CONSTANTS
+#define WARN_IGNORE_RESTRICT
 
 #if defined(__clang__)
-#   if __clang_major__ > 3 || (__clang_major__ == 3  && __clang_minor__ >= 2)
-#       if __has_warning("-Wfour-char-constants")
-#           pragma clang diagnostic ignored "-Wfour-char-constants"
-#       endif
-#   endif
-#elif defined(__GNUC__)
 //  Not available
+#elif defined(__GNUC__)
+#   if __GNUC__ > 7 || (__GNUC__ == 7  && __GNUC_MINOR__ >= 0)
+#       pragma GCC diagnostic ignored "-Wrestrict"
+#   endif
 #elif defined(_MSC_VER)
 //  Not available
 #endif

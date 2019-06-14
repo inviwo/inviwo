@@ -38,7 +38,7 @@
 #define WARN_IGNORE_COVERED_SWITCH_DEFAULT
 
 #if defined(__clang__)
-#   if __clang_major__ > 3 || (__clang_major__ == 3  && __clang_minor__ > 2)
+#   if __clang_major__ > 3 || (__clang_major__ == 3  && __clang_minor__ >= 2)
 #       if __has_warning("-Wcovered-switch-default")
 #           pragma clang diagnostic ignored "-Wcovered-switch-default"
 #       endif

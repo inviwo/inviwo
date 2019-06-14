@@ -38,7 +38,7 @@
 #define WARN_IGNORE_NEWLINE_EOF
 
 #if defined(__clang__)
-#   if __clang_major__ > 3 || (__clang_major__ == 3  && __clang_minor__ > 4)
+#   if __clang_major__ > 3 || (__clang_major__ == 3  && __clang_minor__ >= 4)
 #       if __has_warning("-Wnewline-eof")
 #           pragma clang diagnostic ignored "-Wnewline-eof"
 #       endif

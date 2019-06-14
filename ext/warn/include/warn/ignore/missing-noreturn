@@ -38,13 +38,13 @@
 #define WARN_IGNORE_MISSING_NORETURN
 
 #if defined(__clang__)
-#   if __clang_major__ > 3 || (__clang_major__ == 3  && __clang_minor__ > 3)
+#   if __clang_major__ > 3 || (__clang_major__ == 3  && __clang_minor__ >= 3)
 #       if __has_warning("-Wmissing-noreturn")
 #           pragma clang diagnostic ignored "-Wmissing-noreturn"
 #       endif
 #   endif
 #elif defined(__GNUC__)
-#   if __GNUC__ > 3 || (__GNUC__ == 3  && __GNUC_MINOR__ > 4)
+#   if __GNUC__ > 3 || (__GNUC__ == 3  && __GNUC_MINOR__ >= 4)
 #       pragma GCC diagnostic ignored "-Wmissing-noreturn"
 #   endif
 #elif defined(_MSC_VER)
