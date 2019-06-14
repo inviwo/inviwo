@@ -32,8 +32,8 @@
 namespace inviwo {
 
 const ProcessorInfo ImageChannelSelect::processorInfo_{
-    "org.inviwo.ImageChannelSelect",  // Class identifier
-    "Image Channel Select",           // Display name
+    "org.inviwo.ImageChannelSelect",     // Class identifier
+    "Image Channel Select",              // Display name
     "Image Operation",                   // Category
     CodeState::Experimental,             // Code state
     Tags::GL,                            // Tags
@@ -59,7 +59,15 @@ ImageChannelSelect::ImageChannelSelect()
     channelSelector_.setCurrentStateAsDefault();
     addProperty(channelSelector_);
 
-    dataFormat_ = DataUInt8::get();
+}
+
+void ImageChannelSelect::preProcess(TextureUnitContainer &cont) {
+    auto inDF = inport_.getData()->getDataFormat();
+    dataFormat_ = DataFormatBase::get(inDF->getNumericType(), 1, inDF->getPrecision());
+}
+void ImageChannelSelect::postProcess() {
+    swizzleMask_ = swizzlemasks::luminance;
+
 }
 
 }  // namespace inviwo

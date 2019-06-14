@@ -45,9 +45,9 @@ namespace inviwo {
  *
  * ### Inports
  *   * __inport0__ Red input image
- *   * __inport0__ Green input image
- *   * __inport0__ Blue input image
- *   * __inport0__ Optional alpha input image
+ *   * __inport1__ Green input image
+ *   * __inport2__ Blue input image
+ *   * __inport3__ Optional alpha input image
  *
  * ### Outports
  *   * __outport__ Output Image

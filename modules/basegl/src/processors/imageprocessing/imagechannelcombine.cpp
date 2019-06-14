@@ -69,13 +69,33 @@ namespace inviwo {
     void ImageChannelCombine::process() {
         if (inport0_.getData()->getDimensions() != inport1_.getData()->getDimensions() ||
             inport0_.getData()->getDimensions() != inport2_.getData()->getDimensions() ||
-            inport3_.hasData() && inport0_.getData()->getDimensions() != inport3_.getData()->getDimensions()) {
-            LogError("inport dimensions don't match!");
-            return;
+            inport3_.isConnected() && inport0_.getData()->getDimensions() != inport3_.getData()->getDimensions()) {    
+            throw Exception("The image dimensions of all inports needs to be the same", IVW_CONTEXT);
         }
 
         if (inport0_.isChanged() || inport1_.isChanged() || inport2_.isChanged() || inport3_.isChanged()) {
             const auto dimensions = inport0_.getData()->getDimensions();
+            auto t1 = inport0_.getData()->getDataFormat()->getNumericType(); 
+            auto t2 = inport1_.getData()->getDataFormat()->getNumericType(); 
+            auto t3 = inport2_.getData()->getDataFormat()->getNumericType(); 
+            NumericType type;
+            if(t1 == t2 && t1 == t3){ 
+                // All have the same numType
+                type = t1;
+            }else if(t1 == NumericType::Float || t2 == NumericType::Float || t2 == NumericType::Float){
+                // At least one is a float type
+                type = NumericType::Float;
+            } else {
+                // At least one are signed, and at least one are unsigned
+                type = NumericType::Float;
+            }
+
+            auto p0 = inport0_.getData()->getDataFormat()->getPrecision();
+            auto p1 = inport1_.getData()->getDataFormat()->getPrecision();
+            auto p2 = inport2_.getData()->getDataFormat()->getPrecision();
+            size_t prcession = std::max({p0,p1,p2}); 
+            DataFormatBase::get(type,4,prcession);
+
             auto img = std::make_shared<Image>(dimensions, DataVec4UInt8::get());
             outport_.setData(img);
         }

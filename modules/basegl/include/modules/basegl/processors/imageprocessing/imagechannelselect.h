@@ -61,6 +61,10 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
+protected:
+    virtual void preProcess(TextureUnitContainer &cont);
+    virtual void postProcess();
+
 private:
     OptionPropertyString channelSelector_; //!< Selection between RED, GREEN, BLUE, and ALPHA
 };

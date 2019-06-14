@@ -44,7 +44,7 @@ ImageChannelReplicate::ImageChannelReplicate()
     : ImageGLProcessor("img_channel_replicate.frag")
     , alpha_("alpha", "Alpha", 1.0f, 0.0f, 1.0f, 0.001f)
 {
-    addProperty(alpha_);
+    addProperty(alpha_); 
     dataFormat_ = DataVec4UInt8::get();
 }
 
