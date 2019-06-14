@@ -66,7 +66,7 @@
 #include <modules/base/processors/singlevoxel.h>
 #include <modules/base/processors/spotlightsourceprocessor.h>
 #include <modules/base/processors/stereocamerasyncer.h>
-#include <modules/base/processors/surfaceextraction.h>
+#include <modules/base/processors/surfaceextractionprocessor.h>
 #include <modules/base/processors/trianglestowireframe.h>
 #include <modules/base/processors/volumecreator.h>
 #include <modules/base/processors/volumesequenceelementselectorprocessor.h>
