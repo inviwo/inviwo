@@ -38,7 +38,7 @@
 #define WARN_IGNORE_SELF_ASSIGN_OVERLOADED
 
 #if defined(__clang__)
-#   if __clang_major__ > 7 || (__clang_major__ == 7  && __clang_minor__ > 0)
+#   if __clang_major__ > 7 || (__clang_major__ == 7  && __clang_minor__ >= 0)
 #       if __has_warning("-Wself-assign-overloaded")
 #           pragma clang diagnostic ignored "-Wself-assign-overloaded"
 #       endif

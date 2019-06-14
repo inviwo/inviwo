@@ -38,7 +38,7 @@
 #define WARN_IGNORE_UNREACHABLE_CODE_RETURN
 
 #if defined(__clang__)
-#   if __clang_major__ > 3 || (__clang_major__ == 3  && __clang_minor__ > 5)
+#   if __clang_major__ > 3 || (__clang_major__ == 3  && __clang_minor__ >= 5)
 #       if __has_warning("-Wunreachable-code-return")
 #           pragma clang diagnostic ignored "-Wunreachable-code-return"
 #       endif

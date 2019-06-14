@@ -38,13 +38,13 @@
 #define WARN_IGNORE_SIGN_CONVERSION
 
 #if defined(__clang__)
-#   if __clang_major__ > 3 || (__clang_major__ == 3  && __clang_minor__ > 2)
+#   if __clang_major__ > 3 || (__clang_major__ == 3  && __clang_minor__ >= 2)
 #       if __has_warning("-Wsign-conversion")
 #           pragma clang diagnostic ignored "-Wsign-conversion"
 #       endif
 #   endif
 #elif defined(__GNUC__)
-#   if __GNUC__ > 4 || (__GNUC__ == 4  && __GNUC_MINOR__ > 3)
+#   if __GNUC__ > 4 || (__GNUC__ == 4  && __GNUC_MINOR__ >= 3)
 #       pragma GCC diagnostic ignored "-Wsign-conversion"
 #   endif
 #elif defined(_MSC_VER)

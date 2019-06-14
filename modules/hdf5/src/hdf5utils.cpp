@@ -89,7 +89,7 @@ bool isOfType(const H5::Group& grp, const std::string& type) {
             dt.close();
             attr.close();
         }
-    } catch (H5::AttributeIException error) {
+    } catch (const H5::AttributeIException& error) {
     }
     return result;
 }
