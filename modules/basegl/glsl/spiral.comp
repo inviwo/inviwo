@@ -1,0 +1,35 @@
+
+
+uniform int numPoints;
+uniform float radius = 1;
+uniform float rotations = 1;
+uniform float height = 1;
+
+uniform sampler2D tf;
+
+layout(std430, binding=0) buffer posBuffer {    
+    vec4 pos[];
+};
+
+layout(std430, binding=1) buffer colBuffer {
+    vec4 col[];
+};
+
+layout (local_size_x = 1, local_size_y = 1, local_size_z = 1 ) in;
+void main(){
+    uint gid = gl_GlobalInvocationID.x;
+    float x = gid;
+    x /= numPoints-1;
+
+    vec4 P = vec4(0,0,0,1);
+     P.x = sin(x*3.14*2*rotations)*radius;
+     P.y = cos(x*3.14*2*rotations)*radius;
+     P.z = x * height - height/2;
+
+    vec4 C = vec4(mix(vec3(1,0,0),vec3(0,1,0),x),1);
+
+    C = texture(tf,vec2(x,0.5));
+
+    pos[gid] = P;
+    col[gid] = C;
+}   

@@ -31,6 +31,8 @@
 #include <inviwo/core/io/serialization/versionconverter.h>
 #include <modules/basegl/processors/axisalignedcutplane.h>
 #include <modules/basegl/processors/background.h>
+#include <modules/basegl/processors/computeshaderexamples/computeshaderbufferexample.h>
+#include <modules/basegl/processors/computeshaderexamples/computeshaderimageexample.h>
 #include <modules/basegl/processors/cuberenderer.h>
 #include <modules/basegl/processors/drawlines.h>
 #include <modules/basegl/processors/drawpoints.h>
@@ -100,6 +102,8 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
 
     registerProcessor<AxisAlignedCutPlane>();
     registerProcessor<Background>();
+    registerProcessor<ComputeShaderBufferExample>();
+    registerProcessor<ComputeShaderImageExample>();
     registerProcessor<CubeRenderer>();
     registerProcessor<DrawLines>();
     registerProcessor<DrawPoints>();

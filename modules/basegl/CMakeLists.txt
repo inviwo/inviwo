@@ -16,6 +16,9 @@ set(HEADER_FILES
     include/modules/basegl/datavisualizer/volumeslicevisualizer.h
     include/modules/basegl/processors/axisalignedcutplane.h
     include/modules/basegl/processors/background.h
+    include/modules/basegl/processors/computeshaderexamples/computeshaderbufferexample.h
+
+    include/modules/basegl/processors/computeshaderexamples/computeshaderimageexample.h
     include/modules/basegl/processors/cuberenderer.h
     include/modules/basegl/processors/drawlines.h
     include/modules/basegl/processors/drawpoints.h
@@ -85,6 +88,8 @@ set(SOURCE_FILES
     src/datavisualizer/volumeslicevisualizer.cpp
     src/processors/axisalignedcutplane.cpp
     src/processors/background.cpp
+    src/processors/computeshaderexamples/computeshaderbufferexample.cpp
+    src/processors/computeshaderexamples/computeshaderimageexample.cpp
     src/processors/cuberenderer.cpp
     src/processors/drawlines.cpp
     src/processors/drawpoints.cpp
@@ -204,6 +209,8 @@ set(SHADER_FILES
     glsl/volumegradientmagnitude.frag
     glsl/volumemerger.frag
     glsl/volumeslice.frag
+    glsl/roll.comp
+    glsl/spiral.comp
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 
