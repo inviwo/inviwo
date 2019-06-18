@@ -140,7 +140,7 @@ protected:
 
     SingleFileObserver fileObserver_;
 
-    IMPLEMENT_REFCOUNTING(WebBrowserProcessor)
+    IMPLEMENT_REFCOUNTING(WebBrowserProcessor);
 };
 #include <warn/pop>
 }  // namespace inviwo

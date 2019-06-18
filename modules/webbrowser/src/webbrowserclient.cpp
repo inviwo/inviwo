@@ -45,11 +45,12 @@ void WebBrowserClient::SetRenderHandler(CefRefPtr<RenderHandlerGL> renderHandler
 }
 
 bool WebBrowserClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
+                                                CefRefPtr<CefFrame> frame,
                                                 CefProcessId source_process,
                                                 CefRefPtr<CefProcessMessage> message) {
     CEF_REQUIRE_UI_THREAD();
 
-    return messageRouter_->OnProcessMessageReceived(browser, source_process, message);
+    return messageRouter_->OnProcessMessageReceived(browser, frame, source_process, message);
 }
 
 void WebBrowserClient::OnAfterCreated(CefRefPtr<CefBrowser> browser) {

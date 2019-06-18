@@ -53,7 +53,7 @@ public:
     CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() OVERRIDE { return this; }
 
 private:
-    IMPLEMENT_REFCOUNTING(WebBrowserApp)
+    IMPLEMENT_REFCOUNTING(WebBrowserApp);
 };
 #include <warn/pop>
 

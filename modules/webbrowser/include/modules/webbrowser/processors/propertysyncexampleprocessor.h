@@ -106,7 +106,7 @@ private:
     CefRefPtr<CefBrowser> browser_;
     bool isBrowserLoading_ = true;
 
-    IMPLEMENT_REFCOUNTING(PropertySyncExampleProcessor)
+    IMPLEMENT_REFCOUNTING(PropertySyncExampleProcessor);
 };
 #include <warn/pop>
 }  // namespace inviwo

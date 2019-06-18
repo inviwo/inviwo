@@ -38,10 +38,9 @@ RenderHandlerGL::RenderHandlerGL(std::function<void()> onWebPageCopiedCallback)
 
 void RenderHandlerGL::updateCanvasSize(size2_t newSize) { texture2D_.resize(newSize); }
 
-bool RenderHandlerGL::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) {
+void RenderHandlerGL::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) {
     rect = CefRect{0, 0, static_cast<int>(texture2D_.getWidth()),
                    static_cast<int>(texture2D_.getHeight())};
-    return true;
 }
 
 void RenderHandlerGL::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType,

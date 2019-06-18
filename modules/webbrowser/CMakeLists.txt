@@ -11,7 +11,8 @@
 # 3.3325.1758.g9aea513 Crashes on scroll event (Mac)
 # 3.3396.1775.g5340bb0 Crashes when switching web page
 # 3.3396.1775.g5340bb0 Crashes when using two fingers on trackpad (Mac)
-set(CEF_VERSION "3.3538.1849.g458cc98")
+# 3.3538.1849.g458cc98 Dropdown does not work Probably due to https://magpcss.org/ceforum/viewtopic.php?f=6&t=11618
+set(CEF_VERSION "75.0.7+g19229b6+chromium-75.0.3770.80")
 
 # Determine the platform.
 include("cmake/cef_platform.cmake")

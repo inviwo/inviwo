@@ -51,7 +51,7 @@ public:
     RenderHandlerGL(std::function<void()> onWebPageCopiedCallback);
     void updateCanvasSize(size2_t newSize);
 
-    bool GetViewRect(CefRefPtr<CefBrowser> browser, CefRect &rect) override;
+    virtual void GetViewRect(CefRefPtr<CefBrowser> browser, CefRect &rect) override;
 
     virtual void OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type,
                          const RectList &dirtyRects, const void *buffer, int width,
@@ -80,7 +80,7 @@ private:
     std::function<void()>
         onWebPageCopiedCallback;  /// Called after web page has been copied in OnPaint
 public:
-    IMPLEMENT_REFCOUNTING(RenderHandlerGL)
+    IMPLEMENT_REFCOUNTING(RenderHandlerGL);
 };
 #include <warn/pop>
 };  // namespace inviwo

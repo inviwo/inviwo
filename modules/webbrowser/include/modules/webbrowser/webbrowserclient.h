@@ -67,7 +67,8 @@ public:
 
     CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() override { return this; }
 
-    bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefProcessId source_process,
+    bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
+                                  CefProcessId source_process,
                                   CefRefPtr<CefProcessMessage> message) override;
 
     // CefLifeSpanHandler methods:
@@ -137,7 +138,7 @@ protected:
     int browserCount_ = 0;
 
 private:
-    IMPLEMENT_REFCOUNTING(WebBrowserClient)
+    IMPLEMENT_REFCOUNTING(WebBrowserClient);
     DISALLOW_COPY_AND_ASSIGN(WebBrowserClient);
 };
 #include <warn/pop>

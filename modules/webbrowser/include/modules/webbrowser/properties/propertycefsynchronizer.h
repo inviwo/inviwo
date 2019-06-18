@@ -122,7 +122,7 @@ private:
     std::vector<std::unique_ptr<PropertyWidgetFactoryObject>> propertyWidgets_;
 
     std::vector<std::unique_ptr<PropertyWidgetCEF>> widgets_;
-    IMPLEMENT_REFCOUNTING(PropertyCefSynchronizer)
+    IMPLEMENT_REFCOUNTING(PropertyCefSynchronizer);
 };
 #include <warn/pop>
 

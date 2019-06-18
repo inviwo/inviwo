@@ -92,7 +92,7 @@ PropertySyncExampleProcessor::PropertySyncExampleProcessor()
     // destructor
     auto url = getTestWebpageUrl();
     browser_ = CefBrowserHost::CreateBrowserSync(window_info, browserClient_, url, browserSettings,
-                                                 nullptr);
+                                                 nullptr, nullptr);
     browser_->GetMainFrame()->LoadURL(url);
     url_.setReadOnly(true);
     addProperty(url_);
