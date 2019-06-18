@@ -53,6 +53,20 @@ public:
 
     virtual void GetViewRect(CefRefPtr<CefBrowser> browser, CefRect &rect) override;
 
+    ///
+    // Called when the browser wants to show or hide the popup widget. The popup
+    // should be shown if |show| is true and hidden if |show| is false.
+    ///
+    /*--cef()--*/
+    virtual void OnPopupShow(CefRefPtr<CefBrowser> browser, bool show) override;
+
+    ///
+    // Called when the browser wants to move or resize the popup widget. |rect|
+    // contains the new location and size in view coordinates.
+    ///
+    /*--cef()--*/
+    virtual void OnPopupSize(CefRefPtr<CefBrowser> browser, const CefRect &rect) override;
+
     virtual void OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type,
                          const RectList &dirtyRects, const void *buffer, int width,
                          int height) override;
@@ -75,10 +89,18 @@ public:
      */
     uvec4 getPixel(int x, int y);
 
+    void ClearPopupRects();
+
 private:
+    CefRect GetPopupRectInWebView(const CefRect &original_rect);
+
     Texture2D texture2D_;
     std::function<void()>
         onWebPageCopiedCallback;  /// Called after web page has been copied in OnPaint
+
+    CefRect popup_rect_;
+    CefRect original_popup_rect_;
+
 public:
     IMPLEMENT_REFCOUNTING(RenderHandlerGL);
 };

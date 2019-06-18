@@ -43,7 +43,39 @@ void RenderHandlerGL::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) 
                    static_cast<int>(texture2D_.getHeight())};
 }
 
-void RenderHandlerGL::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType,
+void RenderHandlerGL::OnPopupShow(CefRefPtr<CefBrowser> browser, bool show) {
+    if (!show) {
+        // Clear the popup rectangle.
+        ClearPopupRects();
+    }
+}
+
+void RenderHandlerGL::OnPopupSize(CefRefPtr<CefBrowser> browser, const CefRect& rect) {
+    if (rect.width <= 0 || rect.height <= 0) return;
+    original_popup_rect_ = rect;
+    popup_rect_ = GetPopupRectInWebView(original_popup_rect_);
+}
+
+CefRect RenderHandlerGL::GetPopupRectInWebView(const CefRect& original_rect) {
+    CefRect rc(original_rect);
+    // if x or y are negative, move them to 0.
+    if (rc.x < 0) rc.x = 0;
+    if (rc.y < 0) rc.y = 0;
+    // if popup goes outside the view, try to reposition origin
+    if (rc.x + rc.width > texture2D_.getWidth()) rc.x = static_cast<int>(texture2D_.getWidth()) - rc.width;
+    if (rc.y + rc.height > texture2D_.getHeight()) rc.y = static_cast<int>(texture2D_.getHeight()) - rc.height;
+    // if x or y became negative, move them to 0 again.
+    if (rc.x < 0) rc.x = 0;
+    if (rc.y < 0) rc.y = 0;
+    return rc;
+}
+
+void RenderHandlerGL::ClearPopupRects() {
+    popup_rect_.Set(0, 0, 0, 0);
+    original_popup_rect_.Set(0, 0, 0, 0);
+}
+
+void RenderHandlerGL::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type,
                               const RectList& dirtyRects, const void* buffer, int width,
                               int height) {
     auto dims = texture2D_.getDimensions();
@@ -69,22 +101,49 @@ void RenderHandlerGL::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType,
         //        outdataV[outIndex] = {pixel[2], pixel[1], pixel[0], pixel[3]};
         //    }
         //}
+        if (type == PET_VIEW) {
 
-        if ((dirtyRects.size() == 1 && dirtyRects[0] == CefRect(0, 0, width, height))) {
-            // Upload all data
-            texture2D_.upload(buffer);
-        } else {
-            // Update dirty areas
-            texture2D_.bind();
-            glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-            glPixelStorei(GL_UNPACK_ROW_LENGTH, width);
-            for (const auto& rect : dirtyRects) {
-                // const CefRect& rect = *i;
-                glPixelStorei(GL_UNPACK_SKIP_PIXELS, rect.x);
-                glPixelStorei(GL_UNPACK_SKIP_ROWS, rect.y);
-                glTexSubImage2D(GL_TEXTURE_2D, 0, rect.x, rect.y, rect.width, rect.height,
-                                texture2D_.getFormat(), texture2D_.getDataType(), buffer);
+            if ((dirtyRects.size() == 1 && dirtyRects[0] == CefRect(0, 0, width, height))) {
+                // Upload all data
+                texture2D_.upload(buffer);
+            } else {
+                // Update dirty areas
+                texture2D_.bind();
+                glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+                glPixelStorei(GL_UNPACK_ROW_LENGTH, width);
+                for (const auto& rect : dirtyRects) {
+                    // const CefRect& rect = *i;
+                    glPixelStorei(GL_UNPACK_SKIP_PIXELS, rect.x);
+                    glPixelStorei(GL_UNPACK_SKIP_ROWS, rect.y);
+                    glTexSubImage2D(GL_TEXTURE_2D, 0, rect.x, rect.y, rect.width, rect.height,
+                                    texture2D_.getFormat(), texture2D_.getDataType(), buffer);
+                }
             }
+        } else if (type == PET_POPUP && popup_rect_.width > 0 && popup_rect_.height > 0) {
+            //  buffer only contains data for drawing the popup widget (including dropdown elements)
+            int skip_pixels = 0, x = popup_rect_.x;
+            int skip_rows = 0, y = popup_rect_.y;
+            int w = width;
+            int h = height;
+
+            // Adjust the popup to fit inside the view.
+            if (x < 0) {
+                skip_pixels = -x;
+                x = 0;
+            }
+            if (y < 0) {
+                skip_rows = -y;
+                y = 0;
+            }
+            if (x + w > texture2D_.getWidth()) w -= x + w - static_cast<int>(texture2D_.getWidth());
+            if (y + h > texture2D_.getHeight()) h -= y + h - static_cast<int>(texture2D_.getHeight());
+            texture2D_.bind();
+            // Update the popup rectangle.
+            glPixelStorei(GL_UNPACK_ROW_LENGTH, width);
+            glPixelStorei(GL_UNPACK_SKIP_PIXELS, skip_pixels);
+            glPixelStorei(GL_UNPACK_SKIP_ROWS, skip_rows);
+            glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, w, h, texture2D_.getFormat(),
+                            texture2D_.getDataType(), buffer);
         }
         // Reset states
         glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
