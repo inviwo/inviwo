@@ -34,6 +34,7 @@
 #include <modules/webbrowser/properties/propertywidgetcef.h>
 
 #include <inviwo/core/properties/property.h>
+#include <inviwo/core/properties/propertyownerobserver.h>
 #include <inviwo/core/properties/propertywidgetfactory.h>
 #include <inviwo/core/util/callback.h>
 
@@ -70,7 +71,8 @@ namespace inviwo {
 #include <warn/ignore/dll-interface-base>  // Fine if dependent libs use the same CEF lib binaries
 class IVW_MODULE_WEBBROWSER_API PropertyCefSynchronizer
     : public CefMessageRouterBrowserSide::Handler,
-      public CefLoadHandler {
+      public CefLoadHandler,
+      public PropertyOwnerObserver {
 public:
     explicit PropertyCefSynchronizer();
     virtual ~PropertyCefSynchronizer() = default;
@@ -104,6 +106,9 @@ public:
     void registerPropertyWidget(PropertySemantics semantics);
 
     PropertyWidgetFactory htmlWidgetFactory_;
+
+    // Remove widget if property is removed
+    virtual void onWillRemoveProperty(Property* property, size_t index) override;
 
 private:
     /**

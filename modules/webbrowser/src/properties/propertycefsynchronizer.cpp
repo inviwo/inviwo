@@ -30,6 +30,7 @@
 #include <modules/webbrowser/properties/propertycefsynchronizer.h>
 #include <modules/webbrowser/properties/boolpropertywidgetcef.h>
 #include <modules/webbrowser/properties/buttonpropertywidgetcef.h>
+#include <modules/webbrowser/properties/optionpropertywidgetcef.h>
 #include <modules/webbrowser/properties/ordinalpropertywidgetcef.h>
 #include <modules/webbrowser/properties/minmaxpropertywidgetcef.h>
 #include <modules/webbrowser/properties/stringpropertywidgetcef.h>
@@ -130,6 +131,10 @@ bool PropertyCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<C
     return false;
 }
 
+void PropertyCefSynchronizer::onWillRemoveProperty(Property* property, size_t index) {
+    stopSynchronize(property);
+}
+
 void PropertyCefSynchronizer::startSynchronize(Property* property, std::string htmlId) {
     auto widget = dynamic_cast<PropertyWidgetCEF*>(htmlWidgetFactory_.create(property).release());
     if (!widget) {
@@ -139,6 +144,9 @@ void PropertyCefSynchronizer::startSynchronize(Property* property, std::string h
     // auto widget = std::make_unique<OrdinalPropertyWidgetCEF<T>>(property,
     // browser_->GetMainFrame(), htmlId);
     widgets_.emplace_back(std::move(widget));
+    if (auto owner = property->getOwner()) {
+        owner->addObserver(this);
+    }
 }
 
 void PropertyCefSynchronizer::stopSynchronize(Property* property) {
