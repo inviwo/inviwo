@@ -46,7 +46,6 @@ void curvature(IntegralLine &line, dmat4 toWorld) {
     if (line.hasMetaData("curvature")) return;
     if (line.getPositions().size() <= 1) return;
     auto positions = line.getPositions();  // note, this creates a copy, we modify it below
-    auto dt = 1.0 / static_cast<float>(positions.size() - 1);
 
     std::transform(positions.begin(), positions.end(), positions.begin(), [&](dvec3 pos) {
         dvec4 P = toWorld * dvec4(pos, 1);
