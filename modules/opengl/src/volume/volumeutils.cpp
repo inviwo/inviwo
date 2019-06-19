@@ -132,7 +132,7 @@ void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, VolumeInport
     cont.push_back(std::move(unit));
 }
 
-IVW_MODULE_OPENGL_API void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
+void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
                                               const Volume& volume, const std::string& samplerID) {
     TextureUnit unit;
     utilgl::bindTexture(volume, unit);
