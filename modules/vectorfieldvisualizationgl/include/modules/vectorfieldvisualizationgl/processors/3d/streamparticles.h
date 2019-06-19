@@ -32,6 +32,7 @@
 #include <modules/vectorfieldvisualizationgl/vectorfieldvisualizationglmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/ports/meshport.h>
@@ -74,40 +75,46 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    VolumeInport volumes_{"volume"};
+    enum class SeedingSpace { Data, World };
+    VolumeInport volume_{"volume"};
     SeedPoints3DInport seeds_{"seeds"};
     MeshOutport meshPort_{"particles"};
 
-    FloatProperty stepLength_{"stepLength","Step Length",0.01,0,1};
-    IntProperty internalSteps_{"internalSteps","Internal Steps",10,1,100};
+    TemplateOptionProperty<SeedingSpace> seedingSpace_{
+        "seedingSpace",
+        "Seeding Space",
+        {{"data", "Data", SeedingSpace::Data}, {"world", "World", SeedingSpace::World}}};
+
+    FloatProperty stepLength_{"stepLength", "Step Length", 0.01, 0, 1};
+    IntProperty internalSteps_{"internalSteps", "Internal Steps", 10, 1, 100};
+
+    FloatMinMaxProperty particleSize_{
+        "particleSize", "Paricle Size (visual only)", 0.025, 0.035, 0, 1};
 
     FloatProperty minV_{"minV",
-        "Min velocity",
-        0,
-        0,
-        std::numeric_limits<float>::max(),
-        0.1,
-        InvalidationLevel::Valid,
-        PropertySemantics::Text};
+                        "Min velocity",
+                        0,
+                        0,
+                        std::numeric_limits<float>::max(),
+                        0.1,
+                        InvalidationLevel::Valid,
+                        PropertySemantics::Text};
     FloatProperty maxV_{"maxV",
-        "Max velocity",
-        1,
-        0,
-        std::numeric_limits<float>::max(),
-        0.1,
-        InvalidationLevel::Valid,
-        PropertySemantics::Text};
+                        "Max velocity",
+                        1,
+                        0,
+                        std::numeric_limits<float>::max(),
+                        0.1,
+                        InvalidationLevel::Valid,
+                        PropertySemantics::Text};
     TransferFunctionProperty tf_{"tf", "Velocity mapping"};
 
     FloatProperty reseedInterval_{"reseedsInterval", "Reseed interval", 1, 0, 10};
-
-
 
     Shader shader_{{{ShaderType::Compute, "streamparticles.comp"}}};
 
     // TODO probably needs to be destroyed?
     Timer timer_{Timer::Milliseconds(17), [&]() { update(); }};
-
 
     double reseedtime;
     double prevT = 0;
@@ -119,14 +126,12 @@ private:
     void advect();
     void reseed();
 
-
     bool buffersDirty = true;
     std::shared_ptr<Mesh> mesh_{nullptr};
     std::shared_ptr<Buffer<vec4>> bufPos_{nullptr};
     std::shared_ptr<Buffer<float>> bufLife_{nullptr};
     std::shared_ptr<Buffer<float>> bufRad_{nullptr};
     std::shared_ptr<Buffer<vec4>> bufCol_{nullptr};
-
 };
 
 }  // namespace inviwo

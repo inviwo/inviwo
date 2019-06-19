@@ -29,7 +29,6 @@
 
 #include <modules/vectorfieldvisualizationgl/processors/3d/streamparticles.h>
 
-
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/geometry/typedmesh.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
@@ -49,21 +48,22 @@ namespace inviwo {
 const ProcessorInfo StreamParticles::processorInfo_{
     "org.inviwo.StreamParticles",  // Class identifier
     "Stream Particles",            // Display name
-    "Particle",                   // Category
+    "Particle",                    // Category
     CodeState::Experimental,       // Code state
-    Tags::GL,                    // Tags
+    Tags::GL,                      // Tags
 };
 const ProcessorInfo StreamParticles::getProcessorInfo() const { return processorInfo_; }
 
 StreamParticles::StreamParticles(InviwoApplication *app) : Processor() {
 
-    addPort(volumes_);
+    addPort(volume_);
     addPort(seeds_);
     addPort(meshPort_);
 
-    addProperties(stepLength_,internalSteps_,minV_, maxV_, tf_, reseedInterval_);
+    addProperties(seedingSpace_, stepLength_, internalSteps_, particleSize_, minV_, maxV_, tf_,
+                  reseedInterval_);
 
-    tf_.get().load(app->getPath(PathType::TransferFunctions, "/matplotlib/viridis.itf"));
+    tf_.get().load(app->getPath(PathType::TransferFunctions, "/matplotlib/plasma.itf"));
     tf_.setCurrentStateAsDefault();
 
     shader_.onReload([this]() {
@@ -71,8 +71,9 @@ StreamParticles::StreamParticles(InviwoApplication *app) : Processor() {
         buffersDirty = true;
     });
 
+    seedingSpace_.onChange([=]() { buffersDirty = true; });
     seeds_.onChange([=]() { buffersDirty = true; });
-    volumes_.onChange([this]() { buffersDirty = true; });
+    // volume_.onChange([this]() { buffersDirty = true; });
 
     timer_.start();
 }
@@ -113,8 +114,20 @@ void StreamParticles::initBuffers() {
 
     auto &positions = bufPos_->getEditableRAMRepresentation()->getDataContainer();
     auto &lifes = bufLife_->getEditableRAMRepresentation()->getDataContainer();
-    std::transform(seeds->begin(), seeds->end(), positions.begin(),
-        [](vec3 seed) { return vec4(seed, 1.0f); });
+
+    if (seedingSpace_.get() == SeedingSpace::World) {
+        std::transform(seeds->begin(), seeds->end(), positions.begin(),
+                       [](vec3 seed) { return vec4(seed, 1.0f); });
+    } else {
+        std::transform(
+            seeds->begin(), seeds->end(), positions.begin(),
+            [toWorld =
+                 volume_.getData()->getCoordinateTransformer().getDataToWorldMatrix()](vec3 seed) {
+                vec4 p = toWorld * vec4(seed, 1.0);
+                return p / p.w;
+            });
+    }
+
     std::fill(lifes.begin(), lifes.end(), 1.0f);
 
     bufPos_->getEditableRepresentation<BufferGL>();
@@ -128,12 +141,11 @@ void StreamParticles::initBuffers() {
     mesh_->addBuffer(BufferType::ColorAttrib, bufCol_);
 
     reseedtime = c.getElapsedSeconds();
-
 }
 void StreamParticles::advect() {
     TextureUnitContainer cont;
 
-    auto volume = volumes_.getData();
+    auto volume = volume_.getData();
 
     auto bufPosGL = bufPos_->getEditableRepresentation<BufferGL>();
     auto bufLifeGL = bufLife_->getEditableRepresentation<BufferGL>();
@@ -142,12 +154,14 @@ void StreamParticles::advect() {
 
     shader_.activate();
 
-    utilgl::setUniforms(shader_,stepLength_,internalSteps_,minV_,maxV_);
-    utilgl::bindAndSetUniforms(shader_,cont,tf_);
+    utilgl::setUniforms(shader_, stepLength_, internalSteps_, minV_, maxV_);
+    utilgl::bindAndSetUniforms(shader_, cont, tf_);
 
     auto toWorld = volume->getCoordinateTransformer().getTextureToWorldMatrix();
     auto toTexture = volume->getCoordinateTransformer().getWorldToTextureMatrix();
 
+    shader_.setUniform("minR", particleSize_.get().x);
+    shader_.setUniform("maxR", particleSize_.get().y);
     shader_.setUniform("toWorldMatrix", toWorld);
     shader_.setUniform("toTextureMatrix", toTexture);
 
@@ -163,10 +177,15 @@ void StreamParticles::advect() {
     glMemoryBarrier(GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT);
 
     shader_.deactivate();
+
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, 0);  // bufPosGL->getId());
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, 0);  // bufLifeGL->getId());
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, 0);  // bufRadGL->getId());
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, 0);  // bufColGL->getId());
 }
 void StreamParticles::reseed() {
     auto curT = c.getElapsedSeconds();
-    if(curT >= reseedtime+reseedInterval_.get()){
+    if (curT >= reseedtime + reseedInterval_.get()) {
         size_t count = 0;
         auto seeds = seeds_.getData();
 
@@ -174,11 +193,23 @@ void StreamParticles::reseed() {
         auto &lifes = bufLife_->getEditableRAMRepresentation()->getDataContainer();
 
         std::mt19937 rand;
-        std::uniform_int_distribution<size_t> dist(0,seeds->size());
+        std::uniform_int_distribution<size_t> dist(0, seeds->size());
 
-        for(auto z : util::zip(positions,lifes)){
-            if(get<1>(z)<=0){
-                get<0>(z) = vec4( (*seeds)[dist(rand)] , 1.0 );
+        auto seedTransform =
+            [space = seedingSpace_.get(),
+             toWorld = volume_.getData()->getCoordinateTransformer().getDataToWorldMatrix()](
+                vec3 seed) -> vec4 {
+            if (space == SeedingSpace::World) {
+                return vec4(seed, 1.0f);
+            } else {
+                vec4 p = toWorld * vec4(seed, 1.0);
+                return p / p.w;
+            }
+        };
+
+        for (auto z : util::zip(positions, lifes)) {
+            if (get<1>(z) <= 0) {
+                get<0>(z) = seedTransform((*seeds)[dist(rand)]);
                 get<1>(z) = 1.0f;
                 count++;
             }
@@ -186,9 +217,7 @@ void StreamParticles::reseed() {
 
         LogInfo("Reseeded " << count << " particles");
         reseedtime = curT;
-
     }
-
-}
+}  // namespace inviwo
 
 }  // namespace inviwo
