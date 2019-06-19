@@ -41,6 +41,7 @@
 #include <modules/vectorfieldvisualizationgl/processors/2d/vector2ddivergence.h>
 
 #include <modules/vectorfieldvisualizationgl/processors/3d/lic3d.h>
+#include <modules/vectorfieldvisualizationgl/processors/3d/streamparticles.h>
 #include <modules/vectorfieldvisualizationgl/processors/3d/vector3dcurl.h>
 #include <modules/vectorfieldvisualizationgl/processors/3d/vector3ddivergence.h>
 #include <modules/vectorfieldvisualizationgl/processors/4d/tmip.h>
@@ -65,6 +66,7 @@ VectorFieldVisualizationGLModule::VectorFieldVisualizationGLModule(InviwoApplica
     registerProcessor<LIC2D>();
     registerProcessor<HedgeHog2D>();
 
+    registerProcessor<StreamParticles>();
     registerProcessor<Vector2DMagnitude>();
     registerProcessor<Vector2DCurl>();
     registerProcessor<Vector2DDivergence>();

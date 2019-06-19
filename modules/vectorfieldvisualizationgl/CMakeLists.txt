@@ -11,6 +11,7 @@ set(HEADER_FILES
     include/modules/vectorfieldvisualizationgl/processors/2d/vector2ddivergence.h
     include/modules/vectorfieldvisualizationgl/processors/2d/vector2dmagnitude.h
     include/modules/vectorfieldvisualizationgl/processors/3d/lic3d.h
+    include/modules/vectorfieldvisualizationgl/processors/3d/streamparticles.h
     include/modules/vectorfieldvisualizationgl/processors/3d/vector3dcurl.h
     include/modules/vectorfieldvisualizationgl/processors/3d/vector3ddivergence.h
     include/modules/vectorfieldvisualizationgl/processors/4d/tmip.h
@@ -32,6 +33,7 @@ set(SOURCE_FILES
     src/processors/2d/vector2ddivergence.cpp
     src/processors/2d/vector2dmagnitude.cpp
     src/processors/3d/lic3d.cpp
+    src/processors/3d/streamparticles.cpp
     src/processors/3d/vector3dcurl.cpp
     src/processors/3d/vector3ddivergence.cpp
     src/processors/4d/tmip.cpp
@@ -53,6 +55,7 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/streamlinesgl.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/streamlinesgl.geom
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/streamlinesgl.vert
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/streamparticles.comp
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/vector2dcurl.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/vector2ddivergence.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/vector2dmagnitude.frag

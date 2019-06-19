@@ -1,0 +1,89 @@
+uniform float stepLength = 0.01;
+uniform int internalSteps = 10;
+uniform sampler3D velocityField;
+
+uniform float minV;
+uniform float maxV;
+
+uniform float minR = 0.025;
+uniform float maxR = 0.035;
+
+uniform sampler2D tf;
+
+layout(std430, binding = 0) buffer posBuffer { vec4 pos[]; };
+layout(std430, binding = 1) buffer lifeBuffer { float life[]; };
+layout(std430, binding = 2) buffer radiBuffer { float radius[]; };
+layout(std430, binding = 3) buffer colBuffer { vec4 col[]; };
+
+vec3 norm(vec3 v) {
+    bool doNormalize = false;
+    if (doNormalize) {
+        float l2 = dot(v, v);
+        if (l2 == 0) return v;
+        return v / sqrt(l2);
+    } else {
+        return v;
+    }
+}
+
+vec4 getColor(float v) {
+    v = (v - minV) / (maxV - minV);
+    return texture(tf, vec2(v, 0.5));
+}
+
+uniform mat4 toWorldMatrix;
+uniform mat4 toTextureMatrix;
+vec3 toWorld(vec3 p) {
+    vec4 P = toWorldMatrix * vec4(p, 1);
+    return P.xyz / P.w;
+}
+
+vec3 toTexture(vec3 p) {
+    vec4 P = toTextureMatrix * vec4(p, 1);
+    return P.xyz / P.w;
+}
+
+bool inside(vec3 p) {
+    if (p.x < 0) return false;
+    if (p.y < 0) return false;
+    if (p.z < 0) return false;
+    if (p.x > 1) return false;
+    if (p.y > 1) return false;
+    if (p.z > 1) return false;
+    return true;
+}
+
+vec3 sample_(vec3 p) {
+    vec3 tex = toTexture(p);
+    if (!inside(tex)) return vec3(0);
+    return texture(velocityField, tex).xyz;
+}
+
+vec3 step(vec3 p) {
+    vec3 k1 = sample_(p);
+    vec3 k2 = sample_(p + norm(k1) * stepLength * 0.5);
+    vec3 k3 = sample_(p + norm(k2) * stepLength * 0.5);
+    vec3 k4 = sample_(p + norm(k3) * stepLength);
+    return p + norm((k1 + k2 + k2 + k3 + k3 + k4) / 6.0) * (stepLength);
+}
+
+layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+void main() {
+    uint gid = gl_GlobalInvocationID.x;
+    vec3 p = pos[gid].xyz;
+
+    for (int i = 0; i < internalSteps; i++) {
+        p = step(p);
+    }
+
+    float l = length(sample_(p));
+    if (l < 0.001) {
+        life[gid] -= 0.1; // die in 10 frames if stale
+    }else{
+        life[gid] = 1;
+    }
+
+    col[gid] = getColor(l);
+    radius[gid] = mix(0, mix(minR, maxR, l / maxV), life[gid] > 0);
+    pos[gid] = vec4(p, 1);
+}
