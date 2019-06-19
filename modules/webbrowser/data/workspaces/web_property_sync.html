@@ -37,12 +37,13 @@ var inviwo = new InviwoAPI();
 <body>
 <h3>HTML<->Inviwo synchronization (javascript & JSON)</h3>
 <div class="slidecontainer">
-  <p>Range<input type="range" min="1" max="100" value="50" class="slider" id="ordinalProperty">
+  <p>Range (line width)<input type="range" min="1" max="100" value="50" class="slider" id="ordinalProperty">
   <span id="ordinalPropertyValue"></span></p>
 </div>
   <p><input type="button" value="Button" id="buttonProperty" onclick="inviwo.setProperty('Background.switchColors', {value: this.value})"></p>
-  <p>Checkbox <input type="checkbox" value="Checkbox" id="boolProperty" onchange="inviwo.setProperty('TextOverlay.enable', {value: this.checked})"></p>
+  <p>Checkbox (enable text)<input type="checkbox" value="Checkbox" id="boolProperty" onchange="inviwo.setProperty('TextOverlay.enable', {value: this.checked})"></p>
   <p>Text <input type="text" id="stringProperty" value="not changed" oninput="inviwo.setProperty('TextOverlay.text', {value: this.value})" ></p>
+  <br></br>
   <p>Option<div class="selectionList">
 	<div class="selectionElement selectedElement">No Shading</div>
 	<div class="selectionElement">Diffuse</div>
@@ -61,30 +62,29 @@ var slider = document.getElementById("ordinalProperty");
 var ordinalPropertyValue = document.getElementById("ordinalPropertyValue");
 
 slider.oninput = function() {
-	inviwo.setProperty("MeshCreator.torusRadius2_", {value: Number(this.value)});
+	inviwo.setProperty("LineRenderer.lineWidth", {value: Number(this.value)});
     ordinalPropertyValue.innerHTML = this.value;
 }
-function ordinalProperty(prop) {
-    var property = document.getElementById("ordinalProperty");
-    if(property!=null){
-		property.min= prop["minValue"];
-		property.max= prop["maxValue"];
-		property.step=prop["increment"];
-		property.value= prop["value"];
-		// Send oninput event to update element
-		property.oninput();
-    };
-} 
+
 function syncOrdinal(prop) { inviwo.syncRange("ordinalProperty", prop); } 
 function syncCheckbox(prop) { inviwo.syncCheckbox("boolProperty", prop); } 
 // Update html inputs when corresponding Inviwo properties change
-inviwo.subscribe("MeshCreator.torusRadius2_", syncOrdinal); 
+inviwo.subscribe("LineRenderer.lineWidth", syncOrdinal); 
 inviwo.subscribe("TextOverlay.enable", syncCheckbox);
 //inviwo.subscribe("stringProperty", "TextOverlay.text");
 
 inviwo.getProperty("MeshRenderer.lighting.shadingMode", function(prop) {
 	console.log("Hello option property, value: " + prop["value"]);
 });
+
+inviwo.getProperty("CubeProxyGeometry.clipX", function(prop) {
+    for (var key in prop){
+        var attrName = key;
+        var attrValue = prop[key];
+        console.log("Hello MinMaxProperty " + attrName + ": " + attrValue);
+    }
+});
+
 
 
 </script>

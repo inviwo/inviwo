@@ -31,6 +31,7 @@
 #define IVW_ORDINALPROPERTYWIDGETCEF_H
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>
+#include <modules/webbrowser/io/json/ordinalpropertyjsonconverter.h>
 #include <modules/webbrowser/properties/templatepropertywidgetcef.h>
 
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -84,58 +85,6 @@ void OrdinalPropertyWidgetCEF<T>::updateFromProperty() {
     script << this->getOnChange() << "(" << p.dump() << ");";
     this->onQueryBlocker_++;
     this->frame_->ExecuteJavaScript(script.str(), this->frame_->GetURL(), 0);
-}
-
-/**
- * Converts an OrdinalProperty to a JSON object.
- * Produces layout according to the members of OrdinalProperty:
- * { {"value": val}, {"increment": increment},
- *   {"minValue": minVal}, {"maxValue": maxVal}
- * }
- * @see OrdinalProperty
- *
- * Usage example:
- * \code{.cpp}
- * OrdinalProperty<double> p;
- * json j = p;
- * \endcode
- */
-template <typename T>
-void to_json(json& j, const OrdinalProperty<T>& p) {
-    j = json{{"value", p.get()},
-             {"minValue", p.getMinValue()},
-             {"maxValue", p.getMaxValue()},
-             {"increment", p.getIncrement()}};
-}
-
-/**
- * Converts a JSON object to an OrdinalProperty.
- * Expects object layout according to the members of OrdinalProperty:
- * { {"value": val}, {"increment": increment},
- *   {"minValue": minVal}, {"maxValue": maxVal}
- * }
- * @see OrdinalProperty
- *
- * Usage example:
- * \code{.cpp}
- * auto p = j.get<OrdinalProperty<double>>();
- * \endcode
- */
-template <typename T>
-void from_json(const json& j, OrdinalProperty<T>& p) {
-    // Extract header and column types
-    if (j.empty() || !j.front().is_object()) {
-        // Only support object types, i.e. [ {key: value} ]
-        return;
-    }
-    T value = j.count("value") > 0 ? j.at("value").get<T>() : p.get();
-
-    // Optional parameters
-    T minVal = j.count("minValue") > 0 ? j.at("minValue").get<T>() : p.getMin();
-    T maxVal = j.count("maxValue") > 0 ? j.at("maxValue").get<T>() : p.getMax();
-    T increment = j.count("increment") > 0 ? j.at("increment").get<T>() : p.getIncrement();
-
-    p.set(value, minVal, maxVal, increment);
 }
 
 using FloatPropertyWidgetCEF = OrdinalPropertyWidgetCEF<float>;

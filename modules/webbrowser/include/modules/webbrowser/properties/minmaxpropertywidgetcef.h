@@ -32,6 +32,7 @@
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>
 #include <modules/webbrowser/properties/templatepropertywidgetcef.h>
+#include <modules/webbrowser/io/json/minmaxpropertyjsonconverter.h>
 
 #include <inviwo/core/properties/minmaxproperty.h>
 
@@ -98,14 +99,12 @@ public:
                                                         : p->getMinSeparation();
 
                 p->setInitiatingWidget(this);
-                p->set(value, range, increment, minSep);
+                from_json(j, *p);
+                //p->set(value, range, increment, minSep);
                 p->clearInitiatingWidget();
                 callback->Success("");
             } else if (command == "property.get") {
-                json res = {
-                    {"min", p->getRangeMin()}, {"max", p->getRangeMax()},
-                    {"increment", p->getIncrement()}, {"minSeparation", p->getMinSeparation()},
-                    {"start", p->getStart()}, {"end", p->getEnd()}};
+                json res = *p;
                 callback->Success(res.dump());
             }
         } catch (json::exception& ex) {
