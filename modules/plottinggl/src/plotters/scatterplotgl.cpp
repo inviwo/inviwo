@@ -33,7 +33,7 @@
 #include <modules/opengl/buffer/bufferobjectarray.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/openglutils.h>
-#include <modules/plotting/datastructures/dataframeutil.h>
+#include <inviwo/dataframe/datastructures/dataframeutil.h>
 
 
 #include <inviwo/core/processors/processor.h>
@@ -436,7 +436,7 @@ void ScatterPlotGL::setIndexColumn(std::shared_ptr<const TemplateColumn<uint32_t
     }
 }
 
-void ScatterPlotGL::setDataFrame(std::shared_ptr<const plot::DataFrame> dataFrame) {
+void ScatterPlotGL::setDataFrame(std::shared_ptr<const DataFrame> dataFrame) {
     dataFrame_ = dataFrame_;
 }
 
