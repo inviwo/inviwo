@@ -68,11 +68,11 @@ public:
      * Assumes that widget is HTML input attribute.
      */
     virtual void updateFromProperty() override;
-    
+
     virtual bool onQuery(
-                         CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 /*query_id*/,
-                         const CefString& request, bool /*persistent*/,
-                         CefRefPtr<CefMessageRouterBrowserSide::Handler::Callback> callback) override {
+        CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 /*query_id*/,
+        const CefString& request, bool /*persistent*/,
+        CefRefPtr<CefMessageRouterBrowserSide::Handler::Callback> callback) override {
         // Check if we are blocking queries
         if (onQueryBlocker_ > 0) {
             onQueryBlocker_--;
@@ -81,41 +81,38 @@ public:
         }
         const std::string& requestString = request;
         auto j = json::parse(requestString);
-        
+
         try {
             auto command = j.at("command").get<std::string>();
             auto p = static_cast<MinMaxProperty<T>*>(getProperty());
             if (command == "property.set") {
-                glm::tvec2<T> value{j.at("min").get<T>(),
-                                    j.at("max").get<T>()};
+                glm::tvec2<T> value{j.at("min").get<T>(), j.at("max").get<T>()};
 
-                
                 // Optional parameters
                 T rmin = j.count("start") > 0 ? j.at("start").get<T>() : p->getRangeMin();
                 T rmax = j.count("end") > 0 ? j.at("end").get<T>() : p->getRangeMax();
                 glm::tvec2<T> range{rmin, rmax};
-                T increment = j.count("increment") > 0 ? j.at("increment").get<T>() : p->getIncrement();
-                T minSep = j.count("minSeparation") > 0 ? j.at("minSeparation").get<T>() : p->getMinSeparation();
-                
+                T increment =
+                    j.count("increment") > 0 ? j.at("increment").get<T>() : p->getIncrement();
+                T minSep = j.count("minSeparation") > 0 ? j.at("minSeparation").get<T>()
+                                                        : p->getMinSeparation();
+
                 p->setInitiatingWidget(this);
                 p->set(value, range, increment, minSep);
                 p->clearInitiatingWidget();
                 callback->Success("");
             } else if (command == "property.get") {
                 json res = {
-                        "min", p->getRangeMin(),
-                        "max", p->getRangeMax(),
-                        "increment", p->getIncrement(),
-                        "minSeparation", p->getMinSeparation(),
-                        "start", p->getStart(),
-                        "end", p->getEnd()};
+                    {"min", p->getRangeMin()}, {"max", p->getRangeMax()},
+                    {"increment", p->getIncrement()}, {"minSeparation", p->getMinSeparation()},
+                    {"start", p->getStart()}, {"end", p->getEnd()}};
                 callback->Success(res.dump());
             }
         } catch (json::exception& ex) {
             LogError(ex.what());
             callback->Failure(0, ex.what());
         }
-        
+
         return true;
     }
 };
@@ -135,17 +132,19 @@ void MinMaxPropertyWidgetCEF<T>::updateFromProperty() {
     auto property = static_cast<MinMaxProperty<T>*>(this->getProperty());
 
     std::stringstream script;
-    script << "var property = document.getElementById(\"" << this->getHtmlId() << "\");";
-    script << "if(property!=null){";
-    script << "property.min=" << property->getRangeMin() << ";";
-    script << "property.max=" << property->getRangeMax() << ";";
-    script << "property.step=" << property->getIncrement() << ";";
-    script << "property.start=" << property->getStart() << ";";
-    script << "property.end=" << property->getEnd() << ";";
-    script << "property.minSeparation=" << property->getMinSeparation() << ";";
-    // Send oninput event to update element
-    script << "property.oninput();";
-    script << "}";
+    json p = *property;
+    script << this->getOnChange() << "(" << p.dump() << ");";
+    //script << "var property = document.getElementById(\"" << this->getHtmlId() << "\");";
+    //script << "if(property!=null){";
+    //script << "property.min=" << property->getRangeMin() << ";";
+    //script << "property.max=" << property->getRangeMax() << ";";
+    //script << "property.step=" << property->getIncrement() << ";";
+    //script << "property.start=" << property->getStart() << ";";
+    //script << "property.end=" << property->getEnd() << ";";
+    //script << "property.minSeparation=" << property->getMinSeparation() << ";";
+    //// Send oninput event to update element
+    //script << "property.oninput();";
+    //script << "}";
     // Need to figure out how to make sure the frame is drawn after changing values.
     // script << "window.focus();";
     // Block OnQuery, called due to property.oninput()

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,16 +27,42 @@
  *
  *********************************************************************************/
 
-#include <modules/webbrowser/properties/ordinalpropertywidgetcef.h>
+#pragma once
+
+#include <modules/webbrowser/webbrowsermoduledefine.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 
 namespace inviwo {
 
-// Scalar properties
-template class IVW_MODULE_WEBBROWSER_TMPL_INST OrdinalPropertyWidgetCEF<float>;
-template class IVW_MODULE_WEBBROWSER_TMPL_INST OrdinalPropertyWidgetCEF<int>;
-template class IVW_MODULE_WEBBROWSER_TMPL_INST OrdinalPropertyWidgetCEF<size_t>;
-template class IVW_MODULE_WEBBROWSER_TMPL_INST OrdinalPropertyWidgetCEF<glm::i64>;
-template class IVW_MODULE_WEBBROWSER_TMPL_INST OrdinalPropertyWidgetCEF<double>;
+/**
+ * Converts an BoolProperty to a JSON object.
+ * Produces layout according to the members of BoolProperty:
+ * { {"value": val} }
+ * @see BoolProperty
+ *
+ * Usage example:
+ * \code{.cpp}
+ * BoolProperty p;
+ * json j = p;
+ * \endcode
+ */
+IVW_MODULE_WEBBROWSER_API void to_json(json& j, const BoolProperty& p);
 
+/**
+ * Converts a JSON object to an BoolProperty.
+ * Expects object layout according to the members of BoolProperty:
+ * { {"value": val} }
+ * @see BoolProperty
+ *
+ * Usage example:
+ * \code{.cpp}
+ * auto p = j.get<BoolProperty>();
+ * \endcode
+ */
+IVW_MODULE_WEBBROWSER_API void from_json(const json& j, BoolProperty& p);
 
 }  // namespace inviwo
+

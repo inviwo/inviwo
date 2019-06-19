@@ -8,7 +8,31 @@
 // Initialize Inviwo API so that we can use it to synchronize properties
 var inviwo = new InviwoAPI();
 </script>
+<style>
+.selectionList {
+  background-color: white;
+  overflow-y: scroll;
+  max-height: 10em;
+  width: 18em;
+}
 
+.selectionElement {
+  font-family: 'Arial', sans-serif;
+  font-size: 0.9em;
+  border: 1px solid white;
+}
+
+.selectionElement:hover {
+  cursor: pointer;
+  border: 1px solid #ccc;
+}
+
+.selectedElement {
+  background-color: #0078d7;
+  color: white;
+}
+
+</style>
 </head>
 <body>
 <h3>HTML<->Inviwo synchronization (javascript & JSON)</h3>
@@ -19,8 +43,20 @@ var inviwo = new InviwoAPI();
   <p><input type="button" value="Button" id="buttonProperty" onclick="inviwo.setProperty('Background.switchColors', {value: this.value})"></p>
   <p>Checkbox <input type="checkbox" value="Checkbox" id="boolProperty" onchange="inviwo.setProperty('TextOverlay.enable', {value: this.checked})"></p>
   <p>Text <input type="text" id="stringProperty" value="not changed" oninput="inviwo.setProperty('TextOverlay.text', {value: this.value})" ></p>
+  <p>Option<div class="selectionList">
+	<div class="selectionElement selectedElement">No Shading</div>
+	<div class="selectionElement">Diffuse</div>
+	<div class="selectionElement">Specular</div></p>
+  </div>
 <script>
-	
+// Setup the selectionList to highlight the clicked/selected element.
+function updateClickableLists() {
+	$(".selectionElement").on("click", function() {
+		$(this).parent().children().removeClass("selectedElement");
+		$(this).addClass("selectedElement");
+	});
+}
+updateClickableLists();
 var slider = document.getElementById("ordinalProperty");
 var ordinalPropertyValue = document.getElementById("ordinalPropertyValue");
 
@@ -28,10 +64,29 @@ slider.oninput = function() {
 	inviwo.setProperty("MeshCreator.torusRadius2_", {value: Number(this.value)});
     ordinalPropertyValue.innerHTML = this.value;
 }
+function ordinalProperty(prop) {
+    var property = document.getElementById("ordinalProperty");
+    if(property!=null){
+		property.min= prop["minValue"];
+		property.max= prop["maxValue"];
+		property.step=prop["increment"];
+		property.value= prop["value"];
+		// Send oninput event to update element
+		property.oninput();
+    };
+} 
+function syncOrdinal(prop) { inviwo.syncRange("ordinalProperty", prop); } 
+function syncCheckbox(prop) { inviwo.syncCheckbox("boolProperty", prop); } 
 // Update html inputs when corresponding Inviwo properties change
-inviwo.subscribe("ordinalProperty", "MeshCreator.torusRadius2_");
-inviwo.subscribe("boolProperty", "TextOverlay.enable");
-inviwo.subscribe("stringProperty", "TextOverlay.text");
+inviwo.subscribe("MeshCreator.torusRadius2_", syncOrdinal); 
+inviwo.subscribe("TextOverlay.enable", syncCheckbox);
+//inviwo.subscribe("stringProperty", "TextOverlay.text");
+
+inviwo.getProperty("MeshRenderer.lighting.shadingMode", function(prop) {
+	console.log("Hello option property, value: " + prop["value"]);
+});
+
+
 </script>
 </body>
 </html>

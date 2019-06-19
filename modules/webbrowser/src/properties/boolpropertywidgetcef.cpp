@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/webbrowser/properties/boolpropertywidgetcef.h>
+#include <modules/webbrowser/io/json/boolpropertyjsonconverter.h>
 
 namespace inviwo {
 
@@ -44,10 +45,12 @@ void BoolPropertyWidgetCEF::updateFromProperty() {
     auto property = static_cast<BoolProperty*>(property_);
 
     std::stringstream script;
-    script << "var property = document.getElementById(\"" << htmlId_ << "\");";
-    // Use click instead of setting value to make sure that appropriate events are fired.
-    script << "if (property!=null){property.checked = "<< (property->get() ? "false;" : "true;")
-           << "property.click();}";
+        json p = *property;
+    script << this->getOnChange() << "(" << p.dump() << ");";
+    //script << "var property = document.getElementById(\"" << stringToFind_ << "\");";
+    //// Use click instead of setting value to make sure that appropriate events are fired.
+    //script << "if (property!=null){property.checked = "<< (property->get() ? "false;" : "true;")
+    //       << "property.click();}";
     // Need to figure out how to make sure the frame is drawn after changing values.
     // script << "window.focus();";
     // Block OnQuery, called due to property.oninput()

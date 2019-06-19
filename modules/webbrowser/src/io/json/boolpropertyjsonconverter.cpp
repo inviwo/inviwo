@@ -27,16 +27,23 @@
  *
  *********************************************************************************/
 
-#include <modules/webbrowser/properties/ordinalpropertywidgetcef.h>
+#include <modules/webbrowser/io/json/boolpropertyjsonconverter.h>
 
 namespace inviwo {
 
-// Scalar properties
-template class IVW_MODULE_WEBBROWSER_TMPL_INST OrdinalPropertyWidgetCEF<float>;
-template class IVW_MODULE_WEBBROWSER_TMPL_INST OrdinalPropertyWidgetCEF<int>;
-template class IVW_MODULE_WEBBROWSER_TMPL_INST OrdinalPropertyWidgetCEF<size_t>;
-template class IVW_MODULE_WEBBROWSER_TMPL_INST OrdinalPropertyWidgetCEF<glm::i64>;
-template class IVW_MODULE_WEBBROWSER_TMPL_INST OrdinalPropertyWidgetCEF<double>;
+
+void to_json(json& j, const BoolProperty& p) {
+    j = json{{"value", p.get()}};
+}
+
+void from_json(const json& j, BoolProperty& p) {
+    if (j.empty() || !j.front().is_object()) {
+        // Only support object types, i.e. [ {key: value} ]
+        return;
+    }
+    bool value = j.count("value") > 0 ? j.at("value").get<bool>() : p.get();
+    p.set(value);
+}
 
 
 }  // namespace inviwo

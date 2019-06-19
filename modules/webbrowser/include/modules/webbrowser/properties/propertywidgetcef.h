@@ -77,7 +77,7 @@ class IVW_MODULE_WEBBROWSER_API PropertyWidgetCEF : public PropertyWidget,
                                                     public Serializable {
 public:
     PropertyWidgetCEF() = default;
-    PropertyWidgetCEF(Property* prop, CefRefPtr<CefFrame> frame = nullptr, std::string htmlId = "");
+    PropertyWidgetCEF(Property* prop, CefRefPtr<CefFrame> frame = nullptr, std::string onChange = "");
 
     friend class CefDOMSearchId;
     friend class PropertyCefSynchronizer;
@@ -89,12 +89,12 @@ public:
      * CefFrame is required for communication between Inviwo and the web browser.
      */
     void setFrameIfPartOfFrame(CefRefPtr<CefFrame> frame);
-    /*
-     * Set id of corresponding element in HTML-webpage.
-     * @param id HTML element id in webpage.
-     */
-    void setHtmlId(std::string id) { htmlId_ = id; }
-    const std::string& getHtmlId() const { return htmlId_; }
+
+    void setOnChange(std::string onChange) { onChange_ = onChange; }
+    const std::string& getOnChange() const { return onChange_; }
+
+    void setPropertyObserverCallback(std::string propertyObserverCallback) { propertyObserverCallback_ = propertyObserverCallback; }
+    const std::string& getPropertyObserverCallback() const { return propertyObserverCallback_; }
 
     /*
      * Sets property value given by JSON-formated request if onQueryBlocker_ > 0,
@@ -121,13 +121,19 @@ public:
 
 protected:
     // PropertyObservable overrides
+    virtual void onSetIdentifier(Property* property, const std::string& identifier) override;
+    virtual void onSetDisplayName(Property* property, const std::string& displayName) override;
+    virtual void onSetSemantics(Property* property, const PropertySemantics& semantics) override;
     virtual void onSetReadOnly(Property* property, bool readonly) override;
+    virtual void onSetVisible(Property* property, bool visible) override;
+    virtual void onSetUsageMode(Property* property, UsageMode usageMode) override;
     /*
      * Set frame containing html item.
      */
     void setFrame(CefRefPtr<CefFrame> frame);
 
-    std::string htmlId_;         /// Id in used in html, usually Processor.PropertyId
+    std::string onChange_;       /// Callback to execute when property changes
+    std::string propertyObserverCallback_; /// Execute on any PropertyObserver notifications
     CefRefPtr<CefFrame> frame_;  /// Browser frame containing corresponding properties
     int onQueryBlocker_ = 0;     /// Block jacascript callback queries
 };

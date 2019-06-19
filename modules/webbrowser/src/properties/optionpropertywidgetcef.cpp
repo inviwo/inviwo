@@ -27,16 +27,16 @@
  *
  *********************************************************************************/
 
-#include <modules/webbrowser/properties/ordinalpropertywidgetcef.h>
+#include <modules/webbrowser/properties/optionpropertywidgetcef.h>
 
 namespace inviwo {
 
-// Scalar properties
-template class IVW_MODULE_WEBBROWSER_TMPL_INST OrdinalPropertyWidgetCEF<float>;
-template class IVW_MODULE_WEBBROWSER_TMPL_INST OrdinalPropertyWidgetCEF<int>;
-template class IVW_MODULE_WEBBROWSER_TMPL_INST OrdinalPropertyWidgetCEF<size_t>;
-template class IVW_MODULE_WEBBROWSER_TMPL_INST OrdinalPropertyWidgetCEF<glm::i64>;
-template class IVW_MODULE_WEBBROWSER_TMPL_INST OrdinalPropertyWidgetCEF<double>;
 
+template class IVW_MODULE_WEBBROWSER_TMPL_INST TemplateOptionPropertyWidgetCEF<unsigned int>;
+template class IVW_MODULE_WEBBROWSER_TMPL_INST TemplateOptionPropertyWidgetCEF<int>;
+template class IVW_MODULE_WEBBROWSER_TMPL_INST TemplateOptionPropertyWidgetCEF<size_t>;
+template class IVW_MODULE_WEBBROWSER_TMPL_INST TemplateOptionPropertyWidgetCEF<float>;
+template class IVW_MODULE_WEBBROWSER_TMPL_INST TemplateOptionPropertyWidgetCEF<double>;
+template class IVW_MODULE_WEBBROWSER_TMPL_INST TemplateOptionPropertyWidgetCEF<std::string>;
 
 }  // namespace inviwo

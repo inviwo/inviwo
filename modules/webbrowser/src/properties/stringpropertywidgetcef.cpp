@@ -48,12 +48,14 @@ void StringPropertyWidgetCEF::updateFromProperty() {
     auto property = static_cast<StringProperty*>(property_);
 
     std::stringstream script;
-    script << "var property = document.getElementById(\"" << htmlId_ << "\");";
-    script << "if(property!=null){";
-    script << "property.value='" << property->get() << "';";
-    // Send oninput event to update element
-    script << "property.oninput();";
-    script << "}";
+    json p = *property;
+    script << this->getOnChange() << "(" << p.dump() << ");";
+    //script << "var property = document.getElementById(\"" << stringToFind_ << "\");";
+    //script << "if(property!=null){";
+    //script << "property.value='" << property->get() << "';";
+    //// Send oninput event to update element
+    //script << "property.oninput();";
+    //script << "}";
     // Need to figure out how to make sure the frame is drawn after changing values.
     // script << "window.focus();";
     // Block OnQuery, called due to property.oninput()

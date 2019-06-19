@@ -112,13 +112,14 @@ public:
 
 private:
     /**
-     * Add property to synchronize using supplied identifier as HTML-element id.
+     * Add property to synchronize.
      * Stops synchronizing property when this object
-     * is destroyed or when stopSynchronize is called.
+     * is destroyed, property is removed, or when stopSynchronize is called.
      * @param property Property to synchronize
-     * @param htmlId HTML element id of corresponding property
+     * @param onChange Callback to execute when the property changes.
+     * @param propertyObserverCallback Callback to execute when on PropertyObserver notifications.
      */
-    void startSynchronize(Property* property, std::string htmlId);
+    void startSynchronize(Property* property, std::string onChange, std::string propertyObserverCallback);
     /**
      * Stop property from being synchronized.
      * @param property Property to remove

@@ -41,10 +41,12 @@ inline void ButtonPropertyWidgetCEF::updateFromProperty() {
         return;
     }
     std::stringstream script;
+
+    script << this->getOnChange() << "();";
     // Send click button event
-    script << "var property = document.getElementById(\"" << htmlId_ << "\");";
-    script << "if(property!=null){property.click();}";
-    // Block OnQuery, called due to property.click()
+    //script << "var property = document.getElementById(\"" << stringToFind_ << "\");";
+    //script << "if(property!=null){property.click();}";
+    //// Block OnQuery, called due to property.click()
     onQueryBlocker_++;
     frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);
 }

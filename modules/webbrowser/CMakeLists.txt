@@ -80,10 +80,12 @@ set(HEADER_FILES
     include/modules/webbrowser/cefimageconverter.h
     include/modules/webbrowser/interaction/cefinteractionhandler.h
     include/modules/webbrowser/interaction/cefkeyboardmapping.h
+	include/modules/webbrowser/io/json/boolpropertyjsonconverter.h
     include/modules/webbrowser/processors/propertysyncexampleprocessor.h
     include/modules/webbrowser/processors/webbrowserprocessor.h
     include/modules/webbrowser/properties/boolpropertywidgetcef.h
     include/modules/webbrowser/properties/buttonpropertywidgetcef.h
+	include/modules/webbrowser/properties/optionpropertywidgetcef.h
     include/modules/webbrowser/properties/ordinalpropertywidgetcef.h
     include/modules/webbrowser/properties/minmaxpropertywidgetcef.h
     include/modules/webbrowser/properties/propertycefsynchronizer.h
@@ -104,10 +106,12 @@ set(SOURCE_FILES
     src/cefimageconverter.cpp
     src/interaction/cefinteractionhandler.cpp
     src/interaction/cefkeyboardmapping.cpp
+	src/io/json/boolpropertyjsonconverter.cpp
     src/processors/propertysyncexampleprocessor.cpp
     src/processors/webbrowserprocessor.cpp
     src/properties/boolpropertywidgetcef.cpp
     src/properties/buttonpropertywidgetcef.cpp
+	src/properties/optionpropertywidgetcef.cpp
     src/properties/ordinalpropertywidgetcef.cpp
     src/properties/minmaxpropertywidgetcef.cpp
     src/properties/propertycefsynchronizer.cpp
