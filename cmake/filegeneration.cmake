@@ -134,10 +134,6 @@ function(ivw_private_generate_module_registration_files modules_var)
     set(static_functions "")
 
     foreach(mod ${${modules_var}})
-        if(NOT ${${mod}_opt})
-            continue()
-        endif()
-
         list(APPEND static_headers
             "#ifdef REG_${mod}\n"
             "#include <${${mod}_sharedLibInc}>\n"
@@ -148,7 +144,6 @@ function(ivw_private_generate_module_registration_files modules_var)
             "    modules.emplace_back(create${${mod}_class}())__SEMICOLON__\n"
             "    #endif\n"
         )
-        ivw_private_generate_module_registration_file(${mod})
     endforeach()
 
     ivw_join(";" "" static_headers ${static_headers})
