@@ -155,7 +155,6 @@ public:
 private:
     void bindAttributes();
 
-    void verify() const;
     void handleError(OpenGLException &e);
     std::string processLog(std::string log) const;
 

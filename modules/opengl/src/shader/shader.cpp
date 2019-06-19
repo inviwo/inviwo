@@ -111,7 +111,6 @@ Shader::Shader(const std::vector<std::pair<ShaderType, std::string>> &items, Bui
                                        item.first, utilgl::findShaderResource(item.second))));
     }
 
-    verify();
     if (buildShader == Build::Yes) build();
     ShaderManager::getPtr()->registerShader(this);
 }
@@ -125,7 +124,6 @@ Shader::Shader(
         shaderObjects_.emplace(item.first, ShaderAttachment(this, std::make_unique<ShaderObject>(
                                                                       item.first, item.second)));
     }
-    verify();
     if (buildShader == Build::Yes) build();
     ShaderManager::getPtr()->registerShader(this);
 }
@@ -138,15 +136,8 @@ Shader::Shader(std::vector<std::unique_ptr<ShaderObject>> &shaderObjects, bool b
         shaderObjects_.emplace(type, ShaderAttachment(this, std::move(obj)));
     }
 
-    verify();
     if (buildShader) build();
     ShaderManager::getPtr()->registerShader(this);
-}
-
-void Shader::verify() const {
-    if (shaderObjects_.count(ShaderType::Vertex) == 0) {
-        throw Exception("Vertex shader required, provide for example img_identity.vert");
-    }
 }
 
 Shader::Shader(std::string vertexFilename, std::string geometryFilename,
