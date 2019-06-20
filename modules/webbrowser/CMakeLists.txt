@@ -83,6 +83,7 @@ set(HEADER_FILES
 	include/modules/webbrowser/io/json/boolpropertyjsonconverter.h
 	include/modules/webbrowser/io/json/minmaxpropertyjsonconverter.h
 	include/modules/webbrowser/io/json/ordinalpropertyjsonconverter.h
+	include/modules/webbrowser/io/json/propertyjsonconverter.h
     include/modules/webbrowser/processors/propertysyncexampleprocessor.h
     include/modules/webbrowser/processors/webbrowserprocessor.h
     include/modules/webbrowser/properties/boolpropertywidgetcef.h
