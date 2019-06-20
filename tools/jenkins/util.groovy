@@ -15,13 +15,23 @@
 def getChangeString(build) {
     def MAX_MSG_LEN = 100
     def changeString = ""
-    build.rawBuild.changeSets.each {entries -> 
+    build.changeSets.each {entries -> 
         entries.each { entry -> 
             changeString += "${new Date(entry.timestamp).format("yyyy-MM-dd HH:mm:ss")} "
             changeString += "[${entry.commitId.take(8)}] ${entry.author}: ${entry.msg.take(MAX_MSG_LEN)}\n"
         }
     }
     return changeString ?: " - No new changes"
+}
+
+@NonCPS
+def getAffectedFiles(build) {
+    files = []
+    build.changeSets.each {entries -> 
+        entries.each { entry -> files += entry.affectedFiles }
+    }
+    files.unique()
+    return files
 }
 
 def defaultProperties() {
@@ -80,7 +90,6 @@ def printMap(String name, def map) {
 // this uses global pipeline var pullRequest
 def setLabel(def state, String label, Boolean add) {
     try {
-        //println "setlabel: ${label} add: ${add}"
         if (add) {
             state.addLabel(label)
         } else {
@@ -100,12 +109,12 @@ def checked(def state, String label, Boolean fail, Closure fun) {
         setLabel(state, "J: " + label  + " Failure", true)
         state.errors += label
         if (fail) {
-            state.build.result = 'FAILURE'
+            state.build.result = Result.FAILURE.toString()
             throw e
         } else {
             println e.toString()
-            state.build.result = 'UNSTABLE'
-         }
+            state.build.result = Result.UNSTABLE.toString()
+        }
     }
 }
 
@@ -115,13 +124,13 @@ def wrap(def state, String reportSlackChannel, Closure fun) {
         state.build.result = state.errors.isEmpty() ? 'SUCCESS' : 'UNSTABLE'
     } catch (e) {
         state.build.result = 'FAILURE'
-        println "State: ${state.build.result}"
+        println "State:  ${state.build.result}"
         println "Errors: ${state.errors.join(", ")}"
         println "Except: ${e}"
         throw e
     } finally {
-        if(!reportSlackChannel.isEmpty()) slack(state, reportSlackChannel)
-        if(!state.errors.isEmpty()) {
+        if (!reportSlackChannel.isEmpty()) slack(state, reportSlackChannel)
+        if (!state.errors.isEmpty()) {
             println "Errors in: ${state.errors.join(", ")}"
             state.build.description = "Errors in: ${state.errors.join(' ')}"
         } 
@@ -138,7 +147,8 @@ def filterfiles() {
 def format(def state) {
     stage("Format Tests") {
         dir('build') {
-            sh 'python3 ../inviwo/tools/jenkins/check-format.py'
+            String binary = state.env.CLANG_FORMAT ? '-binary ' + state.env.CLANG_FORMAT : ''
+            sh "python3 ../inviwo/tools/jenkins/check-format.py ${binary}"
             if (fileExists('clang-format-result.diff')) {
                 String format_diff = readFile('clang-format-result.diff')
                 setLabel(state, 'J: Format Test Failure', !format_diff.isEmpty())
@@ -153,7 +163,7 @@ def warn(def state, refjob = 'daily/appleclang') {
             recordIssues qualityGates: [[threshold: 1, type: 'NEW', unstable: true]], 
                          referenceJobName: refjob, 
                          sourceCodeEncoding: 'UTF-8', 
-                         tools: [clang(name: 'Clang')]   
+                         tools: [clang(name: 'Clang')] 
         }
     }
 }
@@ -237,8 +247,8 @@ def doxygen(def state) {
 
 def slack(def state, channel) {
     stage('Slack') {
-        echo "result: ${state.build.result}"
-        def res2color = ['SUCCESS' : 'good', 'UNSTABLE' : 'warning' , 'FAILURE' : 'danger' ]
+        echo "result: ${state.build.currentResult}"
+        def res2color = [(Result.SUCCESS) : 'good', (Result.UNSTABLE) : 'warning' , (Result.FAILURE) : 'danger' ]
         def color = res2color.containsKey(state.build.result) ? res2color[state.build.result] : 'warning'
         def errors = !state.errors.isEmpty() ? "Errors in: ${state.errors.join(" ")}\n" : ""
         slackSend(
@@ -311,7 +321,7 @@ def build(Map args = [:]) {
                     # tell ccache where the project root is
                     export CCACHE_BASEDIR=${args.state.env.WORKSPACE}           
                     ${cmake(args)}
-                    ninja
+                    ninja -d explain
                     ccache --show-stats
                 """
             }

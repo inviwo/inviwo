@@ -355,17 +355,17 @@ function(ivw_register_modules retval)
         endif()
     endforeach()
     
+    ivw_copy_if(enabled_sorted_modules LIST sorted_modules EVAL PROJECTOR _opt)
+
     # Generate module registration file
-    ivw_private_generate_module_registration_files(sorted_modules)
+    ivw_private_generate_module_registration_files(enabled_sorted_modules)
     
     # Add enabled modules in sorted order
     set(ivw_module_names "")
-    foreach(mod ${sorted_modules})
-        if(${${mod}_opt})
-            add_subdirectory(${${mod}_path} ${IVW_BINARY_DIR}/modules/${${mod}_dir})
-            list(APPEND ivw_module_names ${${mod}_modName})
-            ivw_private_generate_module_registration_file(${mod})
-        endif()
+    foreach(mod IN LISTS enabled_sorted_modules)
+        add_subdirectory(${${mod}_path} ${IVW_BINARY_DIR}/modules/${${mod}_dir})
+        list(APPEND ivw_module_names ${${mod}_modName})
+        ivw_private_generate_module_registration_file(${mod})
     endforeach()
 
     # Save list of modules
