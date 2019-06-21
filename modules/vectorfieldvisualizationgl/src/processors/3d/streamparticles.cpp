@@ -60,7 +60,7 @@ StreamParticles::StreamParticles(InviwoApplication *app) : Processor() {
     addPort(seeds_);
     addPort(meshPort_);
 
-    addProperties(seedingSpace_, stepLength_, internalSteps_, particleSize_, minV_, maxV_, tf_,
+    addProperties(seedingSpace_, advectionSpeed_, internalSteps_, particleSize_, minV_, maxV_, tf_,
                   reseedInterval_);
 
     tf_.get().load(app->getPath(PathType::TransferFunctions, "/matplotlib/plasma.itf"));
@@ -140,10 +140,14 @@ void StreamParticles::initBuffers() {
     mesh_->addBuffer(BufferType::RadiiAttrib, bufRad_);
     mesh_->addBuffer(BufferType::ColorAttrib, bufCol_);
 
-    reseedtime = c.getElapsedSeconds();
+    prevT = reseedtime = c.getElapsedSeconds();
 }
 void StreamParticles::advect() {
     TextureUnitContainer cont;
+
+    const auto t = c.getElapsedSeconds();
+    const auto dt = t - prevT;
+    prevT = t;
 
     auto volume = volume_.getData();
 
@@ -154,16 +158,15 @@ void StreamParticles::advect() {
 
     shader_.activate();
 
-    utilgl::setUniforms(shader_, stepLength_, internalSteps_, minV_, maxV_);
+    // using min(dt,0.1) prevent big jumps when execution is slow / have been paused
+    shader_.setUniform("dt", std::min(static_cast<float>(dt), 0.1f));
+    utilgl::setUniforms(shader_, advectionSpeed_, internalSteps_, minV_, maxV_);
     utilgl::bindAndSetUniforms(shader_, cont, tf_);
-
-    auto toWorld = volume->getCoordinateTransformer().getTextureToWorldMatrix();
-    auto toTexture = volume->getCoordinateTransformer().getWorldToTextureMatrix();
 
     shader_.setUniform("minR", particleSize_.get().x);
     shader_.setUniform("maxR", particleSize_.get().y);
-    shader_.setUniform("toWorldMatrix", toWorld);
-    shader_.setUniform("toTextureMatrix", toTexture);
+    shader_.setUniform("toTextureMatrix",
+                       volume->getCoordinateTransformer().getWorldToTextureMatrix());
 
     utilgl::bindAndSetUniforms(shader_, cont, *volume, "velocityField");
 
@@ -186,7 +189,6 @@ void StreamParticles::advect() {
 void StreamParticles::reseed() {
     auto curT = c.getElapsedSeconds();
     if (curT >= reseedtime + reseedInterval_.get()) {
-        size_t count = 0;
         auto seeds = seeds_.getData();
 
         auto &positions = bufPos_->getEditableRAMRepresentation()->getDataContainer();
@@ -202,7 +204,7 @@ void StreamParticles::reseed() {
             if (space == SeedingSpace::World) {
                 return vec4(seed, 1.0f);
             } else {
-                vec4 p = toWorld * vec4(seed, 1.0);
+                vec4 p = toWorld * vec4(seed, 1.0f);
                 return p / p.w;
             }
         };
@@ -211,11 +213,9 @@ void StreamParticles::reseed() {
             if (get<1>(z) <= 0) {
                 get<0>(z) = seedTransform((*seeds)[dist(rand)]);
                 get<1>(z) = 1.0f;
-                count++;
             }
         }
 
-        LogInfo("Reseeded " << count << " particles");
         reseedtime = curT;
     }
 }  // namespace inviwo

@@ -33,6 +33,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/ports/meshport.h>
@@ -85,11 +86,11 @@ private:
         "Seeding Space",
         {{"data", "Data", SeedingSpace::Data}, {"world", "World", SeedingSpace::World}}};
 
-    FloatProperty stepLength_{"stepLength", "Step Length", 0.01f, 0.0f, 1.0f};
-    IntProperty internalSteps_{"internalSteps", "Internal Steps", 10, 1, 100};
+    FloatProperty advectionSpeed_{"advectionSpeed", "Advection Speed", 0.01f, 0.0f, 1.0f};
+    IntProperty internalSteps_{"advectionsPerFrame", "Advections per Frame", 10, 1, 100};
 
     FloatMinMaxProperty particleSize_{
-        "particleSize", "Paricle Size (visual only)", 0.025f, 0.035f, 0.0f, 1.0f};
+        "particleSize", "Paricle radius (visual only)", 0.025f, 0.035f, 0.0f, 1.0f};
 
     FloatProperty minV_{"minV",
                         "Min velocity",
