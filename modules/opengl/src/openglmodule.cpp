@@ -65,9 +65,10 @@ class LayerGLFactoryObject
 public:
     virtual std::unique_ptr<LayerRepresentation> create(
         const typename LayerRepresentation::ReprOwner* layer) {
-        
-        auto layerGL = std::make_unique<LayerGL>(layer->getDimensions(), layer->getLayerType(),
-                                         layer->getDataFormat(), nullptr, layer->getSwizzleMask());
+
+        auto layerGL =
+            std::make_unique<LayerGL>(layer->getDimensions(), layer->getLayerType(),
+                                      layer->getDataFormat(), nullptr, layer->getSwizzleMask());
         layerGL->getTexture()->initialize(nullptr);
         return layerGL;
     }
@@ -78,7 +79,8 @@ class VolumeGLFactoryObject
 public:
     virtual std::unique_ptr<VolumeRepresentation> create(
         const typename VolumeRepresentation::ReprOwner* volume) {
-        auto volumeGL = std::make_unique<VolumeGL>(volume->getDimensions(), volume->getDataFormat());
+        auto volumeGL =
+            std::make_unique<VolumeGL>(volume->getDimensions(), volume->getDataFormat());
         volumeGL->getTexture()->initialize(nullptr);
         return volumeGL;
     }
@@ -127,6 +129,15 @@ OpenGLModule::OpenGLModule(InviwoApplication* app)
 
     registerSettings(std::move(settings));
     registerCapabilities(std::move(openGLCap));
+}
+
+OpenGLCapabilities& OpenGLModule::getOpenGLCapabilities() {
+    for (auto c : getCapabilities()) {
+        if (auto casted = dynamic_cast<OpenGLCapabilities*>(c)) {
+            return *casted;
+        }
+    }
+    throw Exception("No OpenGLCapabilities has been registered");
 }
 
 }  // namespace inviwo
