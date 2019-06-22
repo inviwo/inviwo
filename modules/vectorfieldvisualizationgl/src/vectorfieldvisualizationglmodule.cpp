@@ -29,6 +29,8 @@
 
 #include <modules/vectorfieldvisualizationgl/vectorfieldvisualizationglmodule.h>
 #include <modules/opengl/shader/shadermanager.h>
+#include <modules/opengl/openglmodule.h>
+#include <modules/opengl/openglcapabilities.h>
 
 #include <modules/vectorfieldvisualizationgl/processors/datageneration/lorenzsystem.h>
 #include <modules/vectorfieldvisualizationgl/processors/datageneration/vectorfieldgenerator2d.h>
@@ -51,6 +53,7 @@
 
 #include <inviwo/core/io/serialization/versionconverter.h>
 
+
 namespace inviwo {
 
 VectorFieldVisualizationGLModule::VectorFieldVisualizationGLModule(InviwoApplication* app)
@@ -66,7 +69,6 @@ VectorFieldVisualizationGLModule::VectorFieldVisualizationGLModule(InviwoApplica
     registerProcessor<LIC2D>();
     registerProcessor<HedgeHog2D>();
 
-    registerProcessor<StreamParticles>();
     registerProcessor<Vector2DMagnitude>();
     registerProcessor<Vector2DCurl>();
     registerProcessor<Vector2DDivergence>();
@@ -76,6 +78,15 @@ VectorFieldVisualizationGLModule::VectorFieldVisualizationGLModule(InviwoApplica
     registerProcessor<Vector3DDivergence>();
     registerProcessor<TMIP>();
     registerProcessor<VectorFieldGenerator4D>();
+
+    
+    auto& gl = app->getModuleByType<OpenGLModule>()->getOpenGLCapabilities();
+    if(gl.isComputeShadersSupported()){
+        registerProcessor<StreamParticles>();
+    }
+    
+
+
 }
 
 int VectorFieldVisualizationGLModule::getVersion() const { return 1; }
