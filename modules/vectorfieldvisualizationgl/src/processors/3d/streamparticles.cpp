@@ -78,12 +78,16 @@ StreamParticles::StreamParticles(InviwoApplication *app) : Processor() {
     timer_.start();
 }
 
+void StreamParticles::initializeResources() {
+    shader_.getShaderObject(ShaderType::Compute)
+        ->setShaderDefine("NUM_ADVECTIONS", true, toString(internalSteps_.get()));
+    shader_.build();
+}
+
 void StreamParticles::process() {
     initBuffers();
     reseed();
-
     advect();
-
     meshPort_.setData(mesh_);
 }
 
@@ -101,7 +105,6 @@ void StreamParticles::initBuffers() {
     buffersDirty = false;
 
     auto seeds = seeds_.getData();
-
     auto numPoints = seeds->size();
 
     bufPos_ = std::make_shared<Buffer<vec4>>(numPoints, BufferUsage::Dynamic);
@@ -140,14 +143,14 @@ void StreamParticles::initBuffers() {
     mesh_->addBuffer(BufferType::RadiiAttrib, bufRad_);
     mesh_->addBuffer(BufferType::ColorAttrib, bufCol_);
 
-    prevT = reseedtime = c.getElapsedSeconds();
+    prevT_ = reseedtime_ = clock_.getElapsedSeconds();
 }
 void StreamParticles::advect() {
     TextureUnitContainer cont;
 
-    const auto t = c.getElapsedSeconds();
-    const auto dt = t - prevT;
-    prevT = t;
+    const auto t = clock_.getElapsedSeconds();
+    const auto dt = t - prevT_;
+    prevT_ = t;
 
     auto volume = volume_.getData();
 
@@ -187,8 +190,8 @@ void StreamParticles::advect() {
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, 0);
 }
 void StreamParticles::reseed() {
-    auto curT = c.getElapsedSeconds();
-    if (curT >= reseedtime + reseedInterval_.get()) {
+    auto curT = clock_.getElapsedSeconds();
+    if (curT >= reseedtime_ + reseedInterval_.get()) {
         auto seeds = seeds_.getData();
 
         auto &positions = bufPos_->getEditableRAMRepresentation()->getDataContainer();
@@ -216,7 +219,7 @@ void StreamParticles::reseed() {
             }
         }
 
-        reseedtime = curT;
+        reseedtime_ = curT;
     }
 }  // namespace inviwo
 

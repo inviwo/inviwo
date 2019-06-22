@@ -70,6 +70,7 @@ public:
     StreamParticles(InviwoApplication *app);
     virtual ~StreamParticles() = default;
 
+    virtual void initializeResources() override;
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
@@ -87,7 +88,13 @@ private:
         {{"data", "Data", SeedingSpace::Data}, {"world", "World", SeedingSpace::World}}};
 
     FloatProperty advectionSpeed_{"advectionSpeed", "Advection Speed", 0.01f, 0.0f, 1.0f};
-    IntProperty internalSteps_{"advectionsPerFrame", "Advections per Frame", 10, 1, 100};
+    IntProperty internalSteps_{"advectionsPerFrame",
+                               "Advections per Frame",
+                               10,
+                               1,
+                               100,
+                               1,
+                               InvalidationLevel::InvalidResources};
 
     FloatMinMaxProperty particleSize_{
         "particleSize", "Paricle radius (visual only)", 0.025f, 0.035f, 0.0f, 1.0f};
@@ -112,13 +119,13 @@ private:
 
     FloatProperty reseedInterval_{"reseedsInterval", "Reseed interval", 1.0f, 0.0f, 10.0f};
 
-    Shader shader_{{{ShaderType::Compute, "streamparticles.comp"}}};
+    Shader shader_{{{ShaderType::Compute, "streamparticles.comp"}}, Shader::Build::No};
 
     Timer timer_{Timer::Milliseconds(17), [&]() { update(); }};
 
-    double reseedtime;
-    double prevT = 0;
-    Clock c;
+    double reseedtime_;
+    double prevT_;
+    Clock clock_;
     std::mutex mutex_;
     void update();
 
