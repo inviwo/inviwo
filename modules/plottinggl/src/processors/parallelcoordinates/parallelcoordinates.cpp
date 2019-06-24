@@ -83,10 +83,10 @@ ParallelCoordinates::ParallelCoordinates()
               {{0.0, vec4{1, 0, 0, 1}}, {0.5, vec4{1, 1, 0, 1}}, {1.0, vec4{0, 1, 0, 1}}}}}
 
     , axisSelection_("axisSelction", "Axis Selection",
-                    {{"single", "Single", AxisSelection::Single},
-                     {"multiple", "Multiple", AxisSelection::Multiple},
-                     {"none", "None", AxisSelection::None}},
-                    1)
+                     {{"single", "Single", AxisSelection::Single},
+                      {"multiple", "Multiple", AxisSelection::Multiple},
+                      {"none", "None", AxisSelection::None}},
+                     1)
     , lineSettings_{"lines", "Line Settings"}
     , blendMode_("blendMode", "Blend Mode",
                  {{"additive", "Additive", BlendMode::Additive},

@@ -55,13 +55,13 @@ struct IVW_MODULE_FONTRENDERING_API TextBoundingBox {
 
     size2_t textExtent{0};  //<! extent of textual bounding box
 
-    ivec2 glyphsOrigin{0};    //!< relative origin of bottom-left most glyph
-    size2_t glyphsExtent{0};  //!< extent of bbox containing all glyphs extending to top right corner
+    ivec2 glyphsOrigin{0};  //!< relative origin of bottom-left most glyph
+    size2_t glyphsExtent{
+        0};  //!< extent of bbox containing all glyphs extending to top right corner
 
     ivec2 glyphPenOffset{0};  //!< pen offset to align first glyph perfectly on first baseline
 
     void updateGlyphPenOffset(int baselineOffset);
 };
-
 
 }  // namespace inviwo

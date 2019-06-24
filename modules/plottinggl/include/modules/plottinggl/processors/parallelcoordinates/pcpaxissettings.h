@@ -72,13 +72,12 @@ public:
     virtual vec2 getOffset() const override;
     virtual float getRotation() const override;
     virtual const FontSettings& getFont() const override;
-   
+
     void setSettings(PCPAxisSettings* settings) { settings_ = settings; }
 
 private:
     PCPAxisSettings* settings_ = nullptr;
 };
-
 
 class IVW_MODULE_PLOTTINGGL_API PCPMajorTickSettings : public MajorTickSettings {
 public:
@@ -111,7 +110,6 @@ public:
 private:
     PCPAxisSettings* settings_ = nullptr;
 };
-
 
 /**
  * \class PCPAxisSettings
@@ -195,7 +193,7 @@ public:
     BoolProperty usePercentiles;
     BoolProperty invertRange;
     DoubleMinMaxProperty range;
-    
+
     ParallelCoordinates* pcp_ = nullptr;
     std::shared_ptr<const Column> col_;
     const CategoricalColumn* catCol_;

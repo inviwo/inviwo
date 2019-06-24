@@ -359,12 +359,12 @@ public:
     TypedMesh(DrawType dt = DrawType::Points, ConnectivityType ct = ConnectivityType::None)
         : Mesh(dt, ct), BufferTraits(*static_cast<Mesh *>(this))... {}
 
-    TypedMesh(DrawType dt, ConnectivityType ct, const std::vector<Vertex>& vertices,
-              std::vector<std::uint32_t>&& indices)
+    TypedMesh(DrawType dt, ConnectivityType ct, const std::vector<Vertex> &vertices,
+              std::vector<std::uint32_t> &&indices)
         : Mesh(dt, ct), BufferTraits(*static_cast<Mesh *>(this))... {
-    
+
         addVertices(vertices);
-        this->addIndices(MeshInfo{dt,ct}, util::makeIndexBuffer(std::move(indices)));
+        this->addIndices(MeshInfo{dt, ct}, util::makeIndexBuffer(std::move(indices)));
     }
 
     TypedMesh(const TypedMesh &rhs) : Mesh(rhs), BufferTraits()... {

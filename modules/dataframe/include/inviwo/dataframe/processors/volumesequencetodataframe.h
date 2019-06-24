@@ -46,8 +46,6 @@
 
 namespace inviwo {
 
-
-
 /** \docpage{org.inviwo.VolumeSequenceToDataFrame, Volume To DataFrame}
  * ![](org.inviwo.VolumeSequenceToDataFrame.png?classIdentifier=org.inviwo.VolumeSequenceToDataFrame)
  * This processor converts a volume sequence into a DataFrame.
@@ -83,8 +81,6 @@ private:
 
     void recomputeReduceBuffer();
 };
-
-
 
 }  // namespace inviwo
 

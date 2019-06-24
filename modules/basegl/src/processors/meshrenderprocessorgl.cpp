@@ -110,10 +110,10 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
     });
 
     resetViewParams_.onChange([this]() { camera_.resetCamera(); });
-    geomProperties_.addProperties(cullFace_, enableDepthTest_, overrideColorBuffer_, overrideColor_);
+    geomProperties_.addProperties(cullFace_, enableDepthTest_, overrideColorBuffer_,
+                                  overrideColor_);
 
-    overrideColor_
-        .setSemantics(PropertySemantics::Color)
+    overrideColor_.setSemantics(PropertySemantics::Color)
         .visibilityDependsOn(overrideColorBuffer_, [](const BoolProperty p) { return p.get(); });
 
     layers_.addProperties(colorLayer_, texCoordLayer_, normalsLayer_, viewNormalsLayer_);

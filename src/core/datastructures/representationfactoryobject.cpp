@@ -29,7 +29,4 @@
 
 #include <inviwo/core/datastructures/representationfactoryobject.h>
 
-namespace inviwo {
-
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

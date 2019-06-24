@@ -44,7 +44,6 @@
 
 namespace inviwo {
 
-
 /**
  * Base class for all RepresentationConverterFactorys
  * @see RepresentationConverterFactory

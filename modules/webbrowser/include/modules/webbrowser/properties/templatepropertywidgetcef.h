@@ -38,7 +38,7 @@
 using json = nlohmann::json;
 
 namespace inviwo {
-    
+
 /**
  * \class TemplatePropertyWidgetCEF
  * \brief CEF property widget for TemplateProperty<T>

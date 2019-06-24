@@ -173,9 +173,7 @@ void InviwoCore::Observer::fileChanged(const std::string& dir) { core_.scanDirFo
 InviwoCore::InviwoCore(InviwoApplication* app)
     : InviwoModule(app, "Core"), compositeDirObserver_{*this, app} {
 
-
     util::registerCoreRepresentations(*this);
-
 
     // Register MetaData
     registerMetaData(std::make_unique<BoolMetaData>());

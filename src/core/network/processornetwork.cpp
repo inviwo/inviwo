@@ -414,7 +414,8 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
                              exception.getContext());
     } catch (const std::exception& exception) {
         clear();
-        throw AbortException("Deserialization error: " + std::string(exception.what()), IVW_CONTEXT);
+        throw AbortException("Deserialization error: " + std::string(exception.what()),
+                             IVW_CONTEXT);
     } catch (...) {
         clear();
         throw AbortException("Unknown Exception during deserialization.", IVW_CONTEXT);
@@ -455,7 +456,8 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
                               exception.getContext());
     } catch (const std::exception& exception) {
         clear();
-        throw AbortException("Deserialization error: " + std::string(exception.what()), IVW_CONTEXT);
+        throw AbortException("Deserialization error: " + std::string(exception.what()),
+                             IVW_CONTEXT);
     } catch (...) {
         clear();
         throw AbortException("Unknown Exception during deserialization.", IVW_CONTEXT);
@@ -496,7 +498,8 @@ void ProcessorNetwork::deserialize(Deserializer& d) {
                               exception.getContext());
     } catch (const std::exception& exception) {
         clear();
-        throw AbortException("Deserialization error: " + std::string(exception.what()), IVW_CONTEXT);
+        throw AbortException("Deserialization error: " + std::string(exception.what()),
+                             IVW_CONTEXT);
     } catch (...) {
         clear();
         throw AbortException("Unknown Exception during deserialization.", IVW_CONTEXT);

@@ -33,8 +33,6 @@
 
 namespace inviwo {
 
-
-
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VolumeToDataFrame::processorInfo_{
     "org.inviwo.VolumeToDataFrame",  // Class identifier
@@ -245,7 +243,5 @@ void VolumeToDataFrame::process() {
         }
     }
 }
-
-
 
 }  // namespace inviwo

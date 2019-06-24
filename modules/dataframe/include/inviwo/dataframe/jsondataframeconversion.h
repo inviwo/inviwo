@@ -42,18 +42,18 @@ namespace inviwo {
 /**
  * \class JSONConversionException
  *
- * \brief This exception is thrown by the to_json(json& j, const DataFrame* df) in case the input is unsupported.
- * This includes empty sources, unmatched quotes, missing headers.
- * \see JSONDataFrameReader
+ * \brief This exception is thrown by the to_json(json& j, const DataFrame* df) in case the input is
+ * unsupported. This includes empty sources, unmatched quotes, missing headers. \see
+ * JSONDataFrameReader
  */
 class IVW_MODULE_DATAFRAME_API JSONConversionException : public DataReaderException {
 public:
     JSONConversionException(const std::string& message = "",
-                           ExceptionContext context = ExceptionContext());
+                            ExceptionContext context = ExceptionContext());
 };
 
 /**
- * Converts a DataFrame to a JSON object. 
+ * Converts a DataFrame to a JSON object.
  * Will write the DataFrame to an JSON object layout:
  * [ {"Col1": val11, "Col2": val12 },
  *   {"Col1": val21, "Col2": val22 } ]
@@ -68,7 +68,7 @@ public:
 IVW_MODULE_DATAFRAME_API void to_json(json& j, const DataFrame& df);
 
 /**
- * Converts a JSON object to a DataFrame. 
+ * Converts a JSON object to a DataFrame.
  * Expects object layout:
  * [ {"Col1": val11, "Col2": val12 },
  *   {"Col1": val21, "Col2": val22 } ]
@@ -82,4 +82,3 @@ IVW_MODULE_DATAFRAME_API void to_json(json& j, const DataFrame& df);
 IVW_MODULE_DATAFRAME_API void from_json(const json& j, DataFrame& df);
 
 }  // namespace inviwo
-

@@ -70,8 +70,6 @@ public:
     virtual CategoricalAxisProperty* clone() const override;
     virtual ~CategoricalAxisProperty() = default;
 
-    
-
     /*
      * Returns the categories displayed at the major ticks.
      */

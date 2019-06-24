@@ -56,7 +56,8 @@ void IvfVolumeWriter::writeData(const Volume* volume, const std::string filePath
                                   IVW_CONTEXT);
 
     if (filesystem::fileExists(rawPath) && !overwrite_)
-        throw DataWriterException("Error: Output file: " + rawPath + " already exists", IVW_CONTEXT);
+        throw DataWriterException("Error: Output file: " + rawPath + " already exists",
+                                  IVW_CONTEXT);
 
     std::string fileName = filesystem::getFileNameWithoutExtension(filePath);
     const VolumeRAM* vr = volume->getRepresentation<VolumeRAM>();

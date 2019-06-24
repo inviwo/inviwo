@@ -187,9 +187,10 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 }
 
 template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, BufferTarget bt) {
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
+                                             BufferTarget bt) {
     switch (bt) {
-        case BufferTarget::Data :
+        case BufferTarget::Data:
             ss << "Data";
             break;
         case BufferTarget::Index:

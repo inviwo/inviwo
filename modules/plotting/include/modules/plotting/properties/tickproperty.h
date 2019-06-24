@@ -45,8 +45,8 @@ namespace inviwo {
 
 namespace plot {
 
-
-class IVW_MODULE_PLOTTING_API MajorTickProperty : public MajorTickSettings, public CompositeProperty {
+class IVW_MODULE_PLOTTING_API MajorTickProperty : public MajorTickSettings,
+                                                  public CompositeProperty {
 public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
@@ -75,8 +75,8 @@ public:
     virtual bool getRangeBasedTicks() const override;
 };
 
-class IVW_MODULE_PLOTTING_API MinorTickProperty
-    : public MinorTickSettings, public CompositeProperty {
+class IVW_MODULE_PLOTTING_API MinorTickProperty : public MinorTickSettings,
+                                                  public CompositeProperty {
 public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;

@@ -68,11 +68,11 @@ public:
      * Assumes that widget is HTML input attribute.
      */
     virtual void updateFromProperty() override;
-    
+
     virtual bool onQuery(
-                         CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 /*query_id*/,
-                         const CefString& request, bool /*persistent*/,
-                         CefRefPtr<CefMessageRouterBrowserSide::Handler::Callback> callback) override {
+        CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 /*query_id*/,
+        const CefString& request, bool /*persistent*/,
+        CefRefPtr<CefMessageRouterBrowserSide::Handler::Callback> callback) override {
         // Check if we are blocking queries
         if (onQueryBlocker_ > 0) {
             onQueryBlocker_--;
@@ -81,19 +81,19 @@ public:
         }
         const std::string& requestString = request;
         auto j = json::parse(requestString);
-        
+
         try {
-            glm::tvec2<T> value{j.at("min").get<T>(),
-                                j.at("max").get<T>()};
+            glm::tvec2<T> value{j.at("min").get<T>(), j.at("max").get<T>()};
             auto p = static_cast<MinMaxProperty<T>*>(getProperty());
-            
+
             // Optional parameters
             T rmin = j.count("start") > 0 ? j.at("start").get<T>() : p->getRangeMin();
             T rmax = j.count("end") > 0 ? j.at("end").get<T>() : p->getRangeMax();
             glm::tvec2<T> range{rmin, rmax};
             T increment = j.count("step") > 0 ? j.at("step").get<T>() : p->getIncrement();
-            T minSep = j.count("minSeparation") > 0 ? j.at("minSeparation").get<T>() : p->getMinSeparation();
-            
+            T minSep = j.count("minSeparation") > 0 ? j.at("minSeparation").get<T>()
+                                                    : p->getMinSeparation();
+
             p->setInitiatingWidget(this);
             p->set(value, range, increment, minSep);
             p->clearInitiatingWidget();
@@ -102,7 +102,7 @@ public:
             LogError(ex.what());
             callback->Failure(0, ex.what());
         }
-        
+
         return true;
     }
 };

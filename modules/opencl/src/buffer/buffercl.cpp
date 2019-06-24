@@ -49,7 +49,7 @@ BufferCL::BufferCL(size_t size, const DataFormatBase* format, BufferUsage usage,
     } else {
         clBuffer_ =
             std::make_unique<cl::Buffer>(OpenCL::getPtr()->getContext(), readWriteFlag_,
-                                          std::max(std::size_t{1}, getSize()) * getSizeOfElement());
+                                         std::max(std::size_t{1}, getSize()) * getSizeOfElement());
     }
 }
 
@@ -60,7 +60,7 @@ BufferCL::BufferCL(const BufferCL& rhs)
     , size_(rhs.size_) {
     clBuffer_ =
         std::make_unique<cl::Buffer>(OpenCL::getPtr()->getContext(), readWriteFlag_,
-                                      std::max(std::size_t{1}, getSize()) * getSizeOfElement());
+                                     std::max(std::size_t{1}, getSize()) * getSizeOfElement());
     OpenCL::getPtr()->getQueue().enqueueCopyBuffer(rhs.get(), *clBuffer_, 0, 0,
                                                    getSize() * getSizeOfElement());
 }
@@ -73,7 +73,7 @@ void BufferCL::setSize(size_t size) {
     size_ = size;
     clBuffer_ =
         std::make_unique<cl::Buffer>(OpenCL::getPtr()->getContext(), readWriteFlag_,
-                                      std::max(std::size_t{1}, getSize()) * getSizeOfElement());
+                                     std::max(std::size_t{1}, getSize()) * getSizeOfElement());
 }
 size_t BufferCL::getSize() const { return size_; }
 

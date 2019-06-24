@@ -74,9 +74,8 @@ void copyBufferRange(std::shared_ptr<const BufferBase> src, std::shared_ptr<Buff
     }
 }
 
-std::shared_ptr<DataFrame> combineDataFrames(
-    std::vector<std::shared_ptr<DataFrame>> dataFrames, bool skipIndexColumn,
-    std::string skipcol) {
+std::shared_ptr<DataFrame> combineDataFrames(std::vector<std::shared_ptr<DataFrame>> dataFrames,
+                                             bool skipIndexColumn, std::string skipcol) {
     if (dataFrames.empty()) {
         throw inviwo::Exception("data frames vector is empty",
                                 IVW_CONTEXT_CUSTOM("dataframeutil::combineDataFrames"));

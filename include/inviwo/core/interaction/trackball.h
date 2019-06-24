@@ -162,11 +162,11 @@ protected:
                                          /// touch always follows finger)
     FloatProperty sensitivity_;          /// Controls the rotation sensitivity
     FloatProperty movementSpeed_;
-    BoolProperty fixUp_;               /// Fixes the up vector to world_up in all rotation methods
-    OptionPropertyInt worldUp_;        /// Defines which axis is considered up in world space
-    FloatVec3Property customWorldUp_;  /// The custom world up direction (normalized)
-    FloatProperty verticalAngleLimit_;   /// Limits the angle between world up and view direction
-                                         /// when fixUp is True
+    BoolProperty fixUp_;                /// Fixes the up vector to world_up in all rotation methods
+    OptionPropertyInt worldUp_;         /// Defines which axis is considered up in world space
+    FloatVec3Property customWorldUp_;   /// The custom world up direction (normalized)
+    FloatProperty verticalAngleLimit_;  /// Limits the angle between world up and view direction
+                                        /// when fixUp is True
 
     // Interaction restrictions
     BoolProperty handleInteractionEvents_;
@@ -227,17 +227,17 @@ protected:
 
 private:
     auto props() {
-        return std::tie(trackballMethod_, sensitivity_, movementSpeed_, fixUp_,
-                        worldUp_, customWorldUp_, verticalAngleLimit_, handleInteractionEvents_, allowHorizontalPanning_,
-                        allowVerticalPanning_, allowZooming_, allowWheelZooming_,
-                        allowHorizontalRotation_, allowVerticalRotation_,
+        return std::tie(trackballMethod_, sensitivity_, movementSpeed_, fixUp_, worldUp_,
+                        customWorldUp_, verticalAngleLimit_, handleInteractionEvents_,
+                        allowHorizontalPanning_, allowVerticalPanning_, allowZooming_,
+                        allowWheelZooming_, allowHorizontalRotation_, allowVerticalRotation_,
                         allowViewDirectionRotation_, allowRecenterView_, animate_);
     }
     auto props() const {
-        return std::tie(trackballMethod_, sensitivity_, movementSpeed_, fixUp_,
-                        worldUp_, customWorldUp_, verticalAngleLimit_, handleInteractionEvents_, allowHorizontalPanning_,
-                        allowVerticalPanning_, allowZooming_, allowWheelZooming_,
-                        allowHorizontalRotation_, allowVerticalRotation_,
+        return std::tie(trackballMethod_, sensitivity_, movementSpeed_, fixUp_, worldUp_,
+                        customWorldUp_, verticalAngleLimit_, handleInteractionEvents_,
+                        allowHorizontalPanning_, allowVerticalPanning_, allowZooming_,
+                        allowWheelZooming_, allowHorizontalRotation_, allowVerticalRotation_,
                         allowViewDirectionRotation_, allowRecenterView_, animate_);
     }
 

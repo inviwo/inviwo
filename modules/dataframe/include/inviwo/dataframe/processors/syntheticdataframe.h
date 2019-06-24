@@ -41,8 +41,6 @@
 
 namespace inviwo {
 
-
-
 /** \docpage{org.inviwo.SyntheticDataFrame, Synthetic DataFrame}
  * ![](org.inviwo.SyntheticDataFrame.png?classIdentifier=org.inviwo.SyntheticDataFrame)
  * This processor generates a DataFrame filled with random values.
@@ -74,10 +72,7 @@ private:
     CompositeProperty randomParams_;
     BoolProperty useSameSeed_;  ///< Use the same seed for each call to process.
     IntProperty seed_;          ///<  The seed used to initialize the random sequence
-    
 };
-
-
 
 }  // namespace inviwo
 

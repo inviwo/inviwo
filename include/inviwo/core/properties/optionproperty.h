@@ -150,7 +150,8 @@ public:
      * Adds a option to the property and stores it as a struct in the options_
      * The option name is the name of the option that will be displayed in the widget.
      */
-    TemplateOptionProperty& addOption(const std::string& identifier, const std::string& displayName, const T& value);
+    TemplateOptionProperty& addOption(const std::string& identifier, const std::string& displayName,
+                                      const T& value);
     template <typename U = T,
               class = typename std::enable_if<std::is_same<U, std::string>::value, void>::type>
     TemplateOptionProperty& addOption(const std::string& identifier,
@@ -183,8 +184,8 @@ public:
     virtual bool setSelectedDisplayName(const std::string& name) override;
     bool setSelectedValue(const T& val);
     virtual TemplateOptionProperty& replaceOptions(const std::vector<std::string>& ids,
-                                const std::vector<std::string>& displayNames,
-                                const std::vector<T>& values);
+                                                   const std::vector<std::string>& displayNames,
+                                                   const std::vector<T>& values);
     virtual TemplateOptionProperty& replaceOptions(std::vector<OptionPropertyOption<T>> options);
 
     virtual bool isSelectedIndex(size_t index) const override;
@@ -389,8 +390,8 @@ TemplateOptionProperty<T>::~TemplateOptionProperty() = default;
 
 template <typename T>
 TemplateOptionProperty<T>& TemplateOptionProperty<T>::addOption(const std::string& identifier,
-                                                             const std::string& displayName,
-                                                             const T& value) {
+                                                                const std::string& displayName,
+                                                                const T& value) {
     options_.push_back(OptionPropertyOption<T>(identifier, displayName, value));
 
     // in case we add the first option, we also select it

@@ -199,7 +199,7 @@ public:
     virtual void set(size_t idx, const std::string &str);
 
     virtual void add(const std::string &value) override;
-    
+
     /**
      * Returns the unique set of categorical values.
      */

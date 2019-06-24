@@ -52,7 +52,7 @@ public:
 
     void setFilename(const std::string& filename);
     const std::string& getFilename() const;
-    
+
     /**
      * Start observing the file, not only needed to call if stop has been called in the first
      * place since the constructor calls start()

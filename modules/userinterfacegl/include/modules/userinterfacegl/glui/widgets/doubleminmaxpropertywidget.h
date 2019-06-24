@@ -45,15 +45,15 @@ namespace glui {
  * \brief glui property widget for a double minmax property using glui::RangeSlider
  */
 class IVW_MODULE_USERINTERFACEGL_API DoubleMinMaxPropertyWidget : public RangeSlider,
-                                                                 public PropertyWidget,
-                                                                 public PropertyObserver {
+                                                                  public PropertyWidget,
+                                                                  public PropertyObserver {
 public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
     DoubleMinMaxPropertyWidget(DoubleMinMaxProperty &property, Processor &processor,
-                              Renderer &uiRenderer, const ivec2 &extent = ivec2(100, 24),
-                              UIOrientation orientation = UIOrientation::Horizontal);
+                               Renderer &uiRenderer, const ivec2 &extent = ivec2(100, 24),
+                               UIOrientation orientation = UIOrientation::Horizontal);
     virtual ~DoubleMinMaxPropertyWidget() = default;
 
     virtual void updateFromProperty() override;
@@ -78,6 +78,5 @@ private:
 };
 
 }  // namespace glui
-
 
 }  // namespace inviwo

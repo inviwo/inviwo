@@ -53,11 +53,16 @@ PropertyCefSynchronizer::PropertyCefSynchronizer() {
         PropertySemantics("Default"));
     registerPropertyWidget<Int64PropertyWidgetCEF, Int64Property>(PropertySemantics("Default"));
 
-    registerPropertyWidget<FloatMinMaxPropertyWidgetCEF, FloatMinMaxProperty>(PropertySemantics("Default"));
-    registerPropertyWidget<DoubleMinMaxPropertyWidgetCEF, DoubleMinMaxProperty>(PropertySemantics("Default"));
-    registerPropertyWidget<IntMinMaxPropertyWidgetCEF, IntMinMaxProperty>(PropertySemantics("Default"));
-    registerPropertyWidget<IntSizeTMinMaxPropertyWidgetCEF, IntSizeTMinMaxProperty>(PropertySemantics("Default"));
-    registerPropertyWidget<Int64MinMaxPropertyWidgetCEF, Int64MinMaxProperty>(PropertySemantics("Default"));
+    registerPropertyWidget<FloatMinMaxPropertyWidgetCEF, FloatMinMaxProperty>(
+        PropertySemantics("Default"));
+    registerPropertyWidget<DoubleMinMaxPropertyWidgetCEF, DoubleMinMaxProperty>(
+        PropertySemantics("Default"));
+    registerPropertyWidget<IntMinMaxPropertyWidgetCEF, IntMinMaxProperty>(
+        PropertySemantics("Default"));
+    registerPropertyWidget<IntSizeTMinMaxPropertyWidgetCEF, IntSizeTMinMaxProperty>(
+        PropertySemantics("Default"));
+    registerPropertyWidget<Int64MinMaxPropertyWidgetCEF, Int64MinMaxProperty>(
+        PropertySemantics("Default"));
 
     registerPropertyWidget<StringPropertyWidgetCEF, StringProperty>(PropertySemantics("Default"));
 };
@@ -89,7 +94,7 @@ bool PropertyCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<C
         LogError(ex.what());
         callback->Failure(0, ex.what());
     }
-    
+
     return false;
 }
 

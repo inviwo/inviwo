@@ -297,7 +297,7 @@ TEST(PickingControllerTest, MoveMouseAround) {
     }
     {
         SCOPED_TRACE("Move 1,1 -> 3,3");
-        //uvec2 pre{1, 1};  // id = 0
+        // uvec2 pre{1, 1};  // id = 0
         uvec2 pos{3, 3};  // id = 1
         auto event = mouseEvent(B::None, S::Move, Bs(flags::empty), pos, dim);
         TestPropagator tp;
@@ -370,8 +370,8 @@ void doMousePress(PickingControllerMouseState& ms) {
         ms.propagateEvent(&event, &tp, canvas[dim.y - pos.y][pos.x]);
         ASSERT_EQ(tp.events.size(), 0);
     }
-    {                     // Move
-        //uvec2 pre{1, 1};  // id = 0
+    {  // Move
+        // uvec2 pre{1, 1};  // id = 0
         uvec2 pos{3, 3};  // id = 1
         auto event = mouseEvent(B::None, S::Move, Bs(flags::empty), pos, dim);
         TestPropagator tp;
@@ -516,7 +516,7 @@ TEST(PickingControllerTest, MouseDrag0to1) {
     }
     {
         SCOPED_TRACE("Press 1,1");
-        //uvec2 pre{1, 1};  // id = 0
+        // uvec2 pre{1, 1};  // id = 0
         uvec2 pos{1, 1};  // id = 0
 
         auto event = mouseEvent(B::Left, S::Press, Bs{B::Left}, pos, dim);
@@ -527,7 +527,7 @@ TEST(PickingControllerTest, MouseDrag0to1) {
 
     {
         SCOPED_TRACE("Drag 1,1 -> 3,3");
-        //uvec2 pre{1, 1};  // id = 0
+        // uvec2 pre{1, 1};  // id = 0
         uvec2 pos{3, 3};  // id = 1
 
         auto event = mouseEvent(B::None, S::Move, Bs{B::Left}, pos, dim);
@@ -537,7 +537,7 @@ TEST(PickingControllerTest, MouseDrag0to1) {
     }
     {
         SCOPED_TRACE("Release 3,3");
-        //uvec2 pre{3, 3};  // id = 1
+        // uvec2 pre{3, 3};  // id = 1
         uvec2 pos{3, 3};  // id = 1
 
         auto event = mouseEvent(B::Left, S::Release, Bs{flags::empty}, pos, dim);

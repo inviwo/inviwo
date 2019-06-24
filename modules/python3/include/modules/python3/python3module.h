@@ -53,7 +53,6 @@ private:
     PythonLogger pythonLogger_;
     PythonProcessorFolderObserver pythonFolderObserver_;
     PythonProcessorFolderObserver settingsFolderObserver_;
-
 };
 
 }  // namespace inviwo
