@@ -48,23 +48,39 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.StreamParticles, Stream Particles}
  * ![](org.inviwo.StreamParticles.png?classIdentifier=org.inviwo.StreamParticles)
- * Explanation of how to use the processor.
+ *
+ * Processor that simulate particles moving through a velocity filed. Particles are initialized
+ * based on the __seeds__ inport and are advected through the field using the Velocity Volume on the
+ * __volume__ inport. If particles velocity has been zero for 0.5 seconds their position will be
+ * reset to a random element in the seedpoint input vector. Reseeding is done on a less frequent
+ * intervall than the advection based on the __Reseed interval__ property. Using GLSL Compute
+ * Shaders, requires OpenGL 4.3
+ *
  *
  * ### Inports
- *   * __<Inport1>__ <description>.
+ *   * __volume__ Velocity field.
+ *   * __seeds__ Starting position for particles.
  *
  * ### Outports
- *   * __<Outport1>__ <description>.
+ *   * __particles__ Mesh cotaining position, color and radii buffers. Can be conntected to (for
+ * example) the Sphere Renderer Processor to render them.
  *
  * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
+ *   * __Seeding Space__ Tells the processor which space the seeds are defined in.
+ *   * __Advection Speed__ How fast the particles will move each advection.
+ *   * __Advections per Frame__ Can be used to increase advection speed without loss of
+ * precision.
+ *   * __Paricle radius__ Maps velocity to radius of particle (For rendering that
+ * supports the Radii buffer, e.g. Sphere Renderer).
+ *   * __Min velocity__ See bellow.
+ *   * __Max velocity__ Used together with __Min velocity__ to map velocity magnitude from [Min
+ * velocity, Max velocity] -> [0 1], used for mapping velocity to radius and color.
+ *   * __Velocity mapping__ Transferfunction to map a velocity to color.
+ *   * __Reseed interval__ Seconds between reseeding. When reseeding particles whoes life is zero
+ * will get new position by selecting (randomly) from the input seed vector.
+ *
  */
 
-/**
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
- */
 class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API StreamParticles : public Processor {
 public:
     StreamParticles(InviwoApplication *app);
@@ -77,6 +93,11 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
+    void update();
+    void initBuffers();
+    void reseed();
+    void advect();
+
     enum class SeedingSpace { Data, World };
     VolumeInport volume_{"volume"};
     SeedPoints3DInport seeds_{"seeds"};
@@ -96,8 +117,7 @@ private:
                                1,
                                InvalidationLevel::InvalidResources};
 
-    FloatMinMaxProperty particleSize_{
-        "particleSize", "Paricle radius (visual only)", 0.025f, 0.035f, 0.0f, 1.0f};
+    FloatMinMaxProperty particleSize_{"particleSize", "Paricle radius", 0.025f, 0.035f, 0.0f, 1.0f};
 
     FloatProperty minV_{"minV",
                         "Min velocity",
@@ -126,14 +146,9 @@ private:
     double reseedtime_;
     double prevT_;
     Clock clock_;
-    std::mutex mutex_;
-    void update();
+    bool ready_;
+    bool buffersDirty_ = true;
 
-    void initBuffers();
-    void advect();
-    void reseed();
-
-    bool buffersDirty = true;
     std::shared_ptr<Mesh> mesh_{nullptr};
     std::shared_ptr<Buffer<vec4>> bufPos_{nullptr};
     std::shared_ptr<Buffer<float>> bufLife_{nullptr};

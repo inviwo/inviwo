@@ -68,12 +68,11 @@ StreamParticles::StreamParticles(InviwoApplication *app) : Processor() {
 
     shader_.onReload([this]() {
         invalidate(InvalidationLevel::InvalidOutput);
-        buffersDirty = true;
+        buffersDirty_ = true;
     });
 
-    seedingSpace_.onChange([=]() { buffersDirty = true; });
-    seeds_.onChange([=]() { buffersDirty = true; });
-    // volume_.onChange([this]() { buffersDirty = true; });
+    seedingSpace_.onChange([=]() { buffersDirty_ = true; });
+    seeds_.onChange([=]() { buffersDirty_ = true; });
 
     timer_.start();
 }
@@ -85,25 +84,21 @@ void StreamParticles::initializeResources() {
 }
 
 void StreamParticles::process() {
-    initBuffers();
+    if (buffersDirty_) initBuffers();
     reseed();
     advect();
     meshPort_.setData(mesh_);
+    ready_ = true;
 }
 
 void StreamParticles::update() {
-    if (mutex_.try_lock()) {
-        dispatchFront([this]() {
-            invalidate(InvalidationLevel::InvalidOutput);
-            mutex_.unlock();
-        });
+    if (ready_) {
+        ready_ = false;
+        invalidate(InvalidationLevel::InvalidOutput);
     }
 }
 
 void StreamParticles::initBuffers() {
-    if (!buffersDirty) return;
-    buffersDirty = false;
-
     auto seeds = seeds_.getData();
     auto numPoints = seeds->size();
 
@@ -144,7 +139,43 @@ void StreamParticles::initBuffers() {
     mesh_->addBuffer(BufferType::ColorAttrib, bufCol_);
 
     prevT_ = reseedtime_ = clock_.getElapsedSeconds();
+    buffersDirty_ = false;
 }
+
+void StreamParticles::reseed() {
+    auto curT = clock_.getElapsedSeconds();
+    if (curT >= reseedtime_ + reseedInterval_.get()) {
+        auto seeds = seeds_.getData();
+
+        auto &positions = bufPos_->getEditableRAMRepresentation()->getDataContainer();
+        auto &lifes = bufLife_->getEditableRAMRepresentation()->getDataContainer();
+
+        std::mt19937 rand;
+        std::uniform_int_distribution<size_t> dist(0, seeds->size());
+
+        auto seedTransform =
+            [space = seedingSpace_.get(),
+             toWorld = volume_.getData()->getCoordinateTransformer().getDataToWorldMatrix()](
+                vec3 seed) -> vec4 {
+            if (space == SeedingSpace::World) {
+                return vec4(seed, 1.0f);
+            } else {
+                vec4 p = toWorld * vec4(seed, 1.0f);
+                return p / p.w;
+            }
+        };
+
+        for (auto z : util::zip(positions, lifes)) {
+            if (get<1>(z) <= 0) {
+                get<0>(z) = seedTransform((*seeds)[dist(rand)]);
+                get<1>(z) = 1.0f;
+            }
+        }
+
+        reseedtime_ = curT;
+    }
+}
+
 void StreamParticles::advect() {
     TextureUnitContainer cont;
 
@@ -189,38 +220,5 @@ void StreamParticles::advect() {
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, 0);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, 0);
 }
-void StreamParticles::reseed() {
-    auto curT = clock_.getElapsedSeconds();
-    if (curT >= reseedtime_ + reseedInterval_.get()) {
-        auto seeds = seeds_.getData();
-
-        auto &positions = bufPos_->getEditableRAMRepresentation()->getDataContainer();
-        auto &lifes = bufLife_->getEditableRAMRepresentation()->getDataContainer();
-
-        std::mt19937 rand;
-        std::uniform_int_distribution<size_t> dist(0, seeds->size());
-
-        auto seedTransform =
-            [space = seedingSpace_.get(),
-             toWorld = volume_.getData()->getCoordinateTransformer().getDataToWorldMatrix()](
-                vec3 seed) -> vec4 {
-            if (space == SeedingSpace::World) {
-                return vec4(seed, 1.0f);
-            } else {
-                vec4 p = toWorld * vec4(seed, 1.0f);
-                return p / p.w;
-            }
-        };
-
-        for (auto z : util::zip(positions, lifes)) {
-            if (get<1>(z) <= 0) {
-                get<0>(z) = seedTransform((*seeds)[dist(rand)]);
-                get<1>(z) = 1.0f;
-            }
-        }
-
-        reseedtime_ = curT;
-    }
-}  // namespace inviwo
 
 }  // namespace inviwo

@@ -27,6 +27,8 @@
  *
  *********************************************************************************/
 
+#include "utils/classification.glsl"
+
 #ifndef NUM_ADVECTIONS
 #define NUM_ADVECTIONS 1
 #endif
@@ -51,11 +53,6 @@ layout(std430, binding = 0) buffer posBuffer { vec4 pos[]; };
 layout(std430, binding = 1) buffer lifeBuffer { float life[]; };
 layout(std430, binding = 2) buffer radiBuffer { float radius[]; };
 layout(std430, binding = 3) buffer colBuffer { vec4 col[]; };
-
-vec4 getColor(float v) {
-    v = (v - minV) / (maxV - minV);
-    return texture(tf, vec2(v, 0.5));
-}
 
 vec3 toTexture(vec3 p) {
     vec4 P = toTextureMatrix * vec4(p, 1);
@@ -89,16 +86,18 @@ void main() {
     uint gid = gl_GlobalInvocationID.x;
     vec3 p = pos[gid].xyz;
 
-    for (int i = 0; i < NUM_ADVECTIONS; i++) {
+    for (int i = 0; i < NUM_ADVECTIONS; i++) { 
         p = advect(p);
     }
 
-    float l = length(sampleVelocity(p));
-    if (l < 0.001) {
+    float v = length(sampleVelocity(p));
+    v = (v - minV) / (maxV - minV);
+
+    if (v < 0.001) {
         life[gid] -= 0.5 * dt;  // die in 0.5 seconds if stale
     }
 
-    col[gid] = getColor(l);
-    radius[gid] = mix(0, mix(minR, maxR, l / maxV), life[gid] > 0);
+    col[gid] = applyTF(tf, v);
+    radius[gid] = mix(0, mix(minR, maxR, v), life[gid] > 0);
     pos[gid] = vec4(p, 1);
 }
