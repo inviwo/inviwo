@@ -38,17 +38,15 @@ namespace inviwo {
 
 class InviwoApplication;
 
-
 struct IVW_MODULE_PYTHON3_API PythonProcessorFactoryObjectData {
     ProcessorInfo info;
     std::string name;
     std::string file;
 };
 
-
 class IVW_MODULE_PYTHON3_API PythonProcessorFactoryObjectBase : public ProcessorFactoryObject {
 public:
-    PythonProcessorFactoryObjectBase(PythonProcessorFactoryObjectData data); 
+    PythonProcessorFactoryObjectBase(PythonProcessorFactoryObjectData data);
     virtual ~PythonProcessorFactoryObjectBase() = default;
 
 protected:
@@ -56,8 +54,8 @@ protected:
     std::string file_;
 };
 
-class IVW_MODULE_PYTHON3_API PythonProcessorFactoryObject
-    : public PythonProcessorFactoryObjectBase, public FileObserver {
+class IVW_MODULE_PYTHON3_API PythonProcessorFactoryObject : public PythonProcessorFactoryObjectBase,
+                                                            public FileObserver {
 public:
     PythonProcessorFactoryObject(InviwoApplication* app, const std::string& file);
     virtual ~PythonProcessorFactoryObject() = default;

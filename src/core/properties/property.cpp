@@ -202,7 +202,10 @@ Property& Property::propertyModified() {
 
 void Property::setValid() { propertyModified_ = false; }
 
-Property& Property::setModified() { propertyModified_ = true; return *this;}
+Property& Property::setModified() {
+    propertyModified_ = true;
+    return *this;
+}
 
 bool Property::isModified() const { return propertyModified_; }
 
@@ -320,7 +323,10 @@ Property& Property::setCurrentStateAsDefault() {
     return *this;
 }
 
-Property& Property::resetToDefaultState() { propertyModified(); return *this; }
+Property& Property::resetToDefaultState() {
+    propertyModified();
+    return *this;
+}
 
 void Property::set(const Property* /*src*/) { propertyModified(); }
 

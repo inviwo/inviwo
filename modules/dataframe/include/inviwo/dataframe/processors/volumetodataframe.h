@@ -46,7 +46,6 @@
 
 namespace inviwo {
 
-
 /** \docpage{org.inviwo.VolumeToDataFrame, Volume To DataFrame}
  * ![](org.inviwo.VolumeToDataFrame.png?classIdentifier=org.inviwo.VolumeToDataFrame)
  * This processor converts a volume into a DataFrame.
@@ -86,8 +85,6 @@ private:
     IntSizeTMinMaxProperty rangeY_;
     IntSizeTMinMaxProperty rangeZ_;
 };
-
-
 
 }  // namespace inviwo
 

@@ -105,7 +105,6 @@ struct DataTraits<BrushingAndLinkingManager> {
     }
 };
 
-
 inline bool BrushingAndLinkingInport::isFiltered(size_t idx) const {
     if (isConnected()) {
         return getData()->isFiltered(idx);
@@ -121,7 +120,6 @@ inline bool BrushingAndLinkingInport::isSelected(size_t idx) const {
         return selectionCache_.find(idx) != selectionCache_.end();
     }
 }
-
 
 }  // namespace inviwo
 

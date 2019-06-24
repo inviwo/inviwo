@@ -63,7 +63,7 @@ namespace detail {
  * For example the AxisCaption caches a TextTextureObject by using two guards, one for the string:
  * caption_, and one for the text settings: settings_. When ever AxisCaption::getCaption is called
  * the guards are checked, and if they are changed the TextTextureObject is reset and the texture is
- * recreated. 
+ * recreated.
  */
 
 struct Resetter {
@@ -120,8 +120,7 @@ private:
 struct IVW_MODULE_PLOTTINGGL_API AxisMeshes {
     AxisMeshes();
 
-    Mesh* getAxis(const AxisSettings& settings, const vec3& start, const vec3& end,
-                  size_t pickId);
+    Mesh* getAxis(const AxisSettings& settings, const vec3& start, const vec3& end, size_t pickId);
     Mesh* getMajor(const AxisSettings& settings, const vec3& start, const vec3& end,
                    const vec3& tickDirection);
     Mesh* getMinor(const AxisSettings& settings, const vec3& start, const vec3& end,
@@ -155,8 +154,8 @@ struct AxisLabels {
 
     AxisLabels(Updater updatePos) : updatePos_{updatePos} {}
 
-    util::TextureAtlas& getAtlas(const AxisSettings& settings, const vec3& start,
-                                 const vec3& end, TextRenderer& renderer) {
+    util::TextureAtlas& getAtlas(const AxisSettings& settings, const vec3& start, const vec3& end,
+                                 TextRenderer& renderer) {
         startPos_.check(*this, start);
         endPos_.check(*this, end);
         range_.check(*this, settings.getRange());
@@ -174,9 +173,8 @@ struct AxisLabels {
 
     const util::TextureAtlas& getCurrentAtlas() const { return atlas_; }
 
-    const LabelPos& getLabelPos(const AxisSettings& settings, const vec3& start,
-                                const vec3& end, TextRenderer& renderer,
-                                const vec3& tickDirection) {
+    const LabelPos& getLabelPos(const AxisSettings& settings, const vec3& start, const vec3& end,
+                                TextRenderer& renderer, const vec3& tickDirection) {
 
         startPos_.check(*this, start);
         endPos_.check(*this, end);
@@ -282,8 +280,8 @@ public:
                 bool antialiasing = true);
 
     /**
-    * Returns the bounding rect (lower left, upper right) of the axis in pixels. 
-    */
+     * Returns the bounding rect (lower left, upper right) of the axis in pixels.
+     */
 
     std::pair<vec2, vec2> boundingRect(const size2_t& startPos, const size2_t& endPos);
 

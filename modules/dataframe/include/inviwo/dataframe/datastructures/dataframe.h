@@ -47,8 +47,6 @@ class DataPointBase;
 class BufferBase;
 class BufferRAM;
 
-
-
 class IVW_MODULE_DATAFRAME_API InvalidColCount : public Exception {
 public:
     InvalidColCount(const std::string &message = "", ExceptionContext context = ExceptionContext())
@@ -180,8 +178,6 @@ std::shared_ptr<TemplateColumn<T>> DataFrame::addColumn(const std::string &heade
     columns_.push_back(col);
     return col;
 }
-
-
 
 template <>
 struct DataTraits<DataFrame> {

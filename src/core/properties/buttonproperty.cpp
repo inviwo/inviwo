@@ -76,6 +76,6 @@ ButtonProperty& ButtonProperty::propertyModified() {
     return *this;
 }
 
-ButtonProperty& ButtonProperty::resetToDefaultState() { return *this;}
+ButtonProperty& ButtonProperty::resetToDefaultState() { return *this; }
 
 }  // namespace inviwo

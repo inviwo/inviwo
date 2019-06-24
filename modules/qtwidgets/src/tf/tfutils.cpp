@@ -90,8 +90,8 @@ void exportToFile(const TFPrimitiveSet& primitiveSet, QWidget* parent) {
         const auto fileExt = exportFileDialog.getSelectedFileExtension();
         try {
             primitiveSet.save(filename, fileExt);
-            util::log(IVW_CONTEXT_CUSTOM("util::exportToFile"), "Data exported to disk: " + filename,
-                      LogLevel::Info, LogAudience::User);
+            util::log(IVW_CONTEXT_CUSTOM("util::exportToFile"),
+                      "Data exported to disk: " + filename, LogLevel::Info, LogAudience::User);
         } catch (DataWriterException& e) {
             util::log(e.getContext(), e.getMessage(), LogLevel::Error, LogAudience::User);
         }

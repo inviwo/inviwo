@@ -138,8 +138,7 @@ void TFPropertyDialog::initializeDialog() {
     }
 
     tfEditor_ = std::make_unique<TFEditor>(propertyPtr_.get(), tfSets_, this);
-    tfSelectionWatcher_ =
-        std::make_unique<TFSelectionWatcher>(tfEditor_.get(), property_, tfSets_);
+    tfSelectionWatcher_ = std::make_unique<TFSelectionWatcher>(tfEditor_.get(), property_, tfSets_);
 
     connect(tfEditor_.get(), &TFEditor::selectionChanged, this,
             [this]() { tfSelectionWatcher_->updateSelection(tfEditor_->getSelectedPrimitives()); });

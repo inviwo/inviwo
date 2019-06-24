@@ -42,9 +42,10 @@ class CompositeProperty;
 
 namespace util {
 
-/** 
+/**
  * \class MetaDataToProperty
- * Helper class for adding and caching metadata properties, i.e. creating properties matching the data given in a metadata map.
+ * Helper class for adding and caching metadata properties, i.e. creating properties matching the
+ * data given in a metadata map.
  *
  * \see VolumeInformation, ImageInformation
  */

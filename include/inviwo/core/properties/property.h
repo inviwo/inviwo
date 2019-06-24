@@ -122,7 +122,9 @@ class PropertyOwner;
  *  * __PropertyWidget__: A property can have one or multiple PropertyWidgets. The widget are used
  *    in the user interface to implement interactivity
  */
-class IVW_CORE_API Property : public PropertyObservable, public virtual Serializable, public MetaDataOwner {
+class IVW_CORE_API Property : public PropertyObservable,
+                              public virtual Serializable,
+                              public MetaDataOwner {
 public:
     virtual std::string getClassIdentifier() const = 0;
 
@@ -284,19 +286,21 @@ public:
 
     /* \brief sets visibility depending another property `prop`, according to `callback`
      * @param prop is the property on which the visibility depends
-     * @param callback is a function that outputs a visibility boolean value. The function gets `prop` as parameter
+     * @param callback is a function that outputs a visibility boolean value. The function gets
+     * `prop` as parameter
      *
      * Checks the expression in `callback` every time `prop` is changed and sets the
      * visibility accordingly. Note that this registers an onChange callback on `prop`, which
      * might result in poor performance when `prop` is a very frequently changed property.
      */
-    template<typename P, typename DecisionFunc>
+    template <typename P, typename DecisionFunc>
     Property& visibilityDependsOn(P& prop, DecisionFunc callback) {
         typename std::result_of<DecisionFunc(P&)>::type b = true;
-        static_assert(std::is_same<decltype(b), bool>::value, "The visibility callback must return a boolean!");
+        static_assert(std::is_same<decltype(b), bool>::value,
+                      "The visibility callback must return a boolean!");
         static_assert(std::is_base_of<Property, P>::value, "P must be a Property!");
         this->setVisible(callback(prop));
-        prop.onChange([callback, &prop, this](){
+        prop.onChange([callback, &prop, this]() {
             bool visible = callback(prop);
             this->setVisible(visible);
         });
@@ -305,19 +309,21 @@ public:
 
     /* \brief sets readonly depending another property `prop`, according to `callback`
      * @param prop is the property on which the readonly state depends
-     * @param callback is a function that outputs a readonly boolean value. The function gets `prop` as parameter
+     * @param callback is a function that outputs a readonly boolean value. The function gets `prop`
+     * as parameter
      *
      * Checks the expression in `callback` every time `prop` is changed and sets the
      * readonly state accordingly. Note that this registers an onChange callback on `prop`, which
      * might result in poor performance when `prop` is a very frequently changed property.
      */
-    template<typename P, typename DecisionFunc>
+    template <typename P, typename DecisionFunc>
     Property& readonlyDependsOn(P& prop, DecisionFunc callback) {
         typename std::result_of<DecisionFunc(P&)>::type b = true;
-        static_assert(std::is_same<decltype(b), bool>::value, "The readonly callback must return a boolean!");
+        static_assert(std::is_same<decltype(b), bool>::value,
+                      "The readonly callback must return a boolean!");
         static_assert(std::is_base_of<Property, P>::value, "P must be a Property!");
         this->setReadOnly(callback(prop));
-        prop.onChange([callback, &prop, this](){
+        prop.onChange([callback, &prop, this]() {
             bool readonly = callback(prop);
             this->setReadOnly(readonly);
         });

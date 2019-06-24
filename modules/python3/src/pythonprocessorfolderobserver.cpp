@@ -37,9 +37,9 @@
 
 namespace inviwo {
 
-PythonProcessorFolderObserver::PythonProcessorFolderObserver(
-    InviwoApplication* app, const std::string& directory,
-    InviwoModule& module)
+PythonProcessorFolderObserver::PythonProcessorFolderObserver(InviwoApplication* app,
+                                                             const std::string& directory,
+                                                             InviwoModule& module)
     : FileObserver(app), app_(app), directory_{directory}, module_{module} {
 
     if (filesystem::directoryExists(directory)) {

@@ -71,7 +71,8 @@ RaycastingProperty::RaycastingProperty(std::string identifier, std::string displ
           3, InvalidationLevel::InvalidResources)
     , samplingRate_("samplingRate", "Sampling rate", 2.0f, 1.0f, 20.0f) {
 
-    addProperties(renderingType_, classification_, compositing_, gradientComputation_, samplingRate_);
+    addProperties(renderingType_, classification_, compositing_, gradientComputation_,
+                  samplingRate_);
 }
 
 RaycastingProperty::RaycastingProperty(const RaycastingProperty& rhs)

@@ -45,8 +45,9 @@ std::shared_ptr<DataFrame> JSONDataFrameReader::readData(const std::string& file
     auto file = filesystem::ifstream(fileName);
 
     if (!file.is_open()) {
-        throw FileException(std::string("JSONDataFrameReader: Could not open file \"" + fileName + "\"."),
-                            IVW_CONTEXT);
+        throw FileException(
+            std::string("JSONDataFrameReader: Could not open file \"" + fileName + "\"."),
+            IVW_CONTEXT);
     }
     file.seekg(0, std::ios::end);
     std::streampos len = file.tellg();

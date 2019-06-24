@@ -50,7 +50,7 @@ namespace plot {
 
 /** \docpage{org.inviwo.ColorScaleLegend, Color Scale Legend}
  * ![](org.inviwo.ColorScaleLegend.png?classIdentifier=org.inviwo.ColorScaleLegend)
- * Displays a color legend axis based o the linked transfer function. 
+ * Displays a color legend axis based o the linked transfer function.
  * The corresponding values of the colors can be displayed next to the colors.
  *
  * ### Inports

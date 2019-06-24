@@ -44,7 +44,8 @@ namespace inviwo {
 
 namespace plot {
 
-class IVW_MODULE_PLOTTING_API PlotTextProperty : public PlotTextSettings, public BoolCompositeProperty {
+class IVW_MODULE_PLOTTING_API PlotTextProperty : public PlotTextSettings,
+                                                 public BoolCompositeProperty {
 public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;

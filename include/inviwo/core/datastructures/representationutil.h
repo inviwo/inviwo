@@ -30,7 +30,6 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 
-
 namespace inviwo {
 
 class InviwoModule;

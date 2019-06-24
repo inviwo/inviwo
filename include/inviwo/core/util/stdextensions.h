@@ -424,8 +424,9 @@ auto ordering(T& cont, Pred pred) -> std::vector<size_t> {
 
     std::vector<size_t> res(std::distance(begin(cont), end(cont)));
     std::iota(res.begin(), res.end(), 0);
-    std::sort(res.begin(), res.end(),
-              [&](const size_t& a, const size_t& b) { return pred(begin(cont)[a], begin(cont)[b]); });
+    std::sort(res.begin(), res.end(), [&](const size_t& a, const size_t& b) {
+        return pred(begin(cont)[a], begin(cont)[b]);
+    });
 
     return res;
 }

@@ -58,7 +58,6 @@
 #include <inviwo/core/util/settings/settings.h>
 #include <inviwo/core/util/exception.h>
 
-
 namespace py = pybind11;
 
 PYBIND11_MAKE_OPAQUE(std::vector<int>)

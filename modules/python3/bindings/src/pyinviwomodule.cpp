@@ -133,7 +133,6 @@ void exposeInviwoModule(pybind11::module &m) {
             m->registerProcessor(std::make_unique<ProcessorFactoryObjectPythonWrapper>(pfo));
         });
 
-
     py::class_<InviwoModuleFactoryObject, InviwoModuleFactoryObjectTrampoline>(
         m, "InviwoModuleFactoryObject")
         .def(py::init<const std::string &, Version, const std::string &, Version,

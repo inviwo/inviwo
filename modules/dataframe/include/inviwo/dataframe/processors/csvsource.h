@@ -43,8 +43,6 @@
 
 namespace inviwo {
 
-
-
 /** \docpage{org.inviwo.CSVSource, CSVSource}
  * ![](org.inviwo.CSVSource.png?classIdentifier=org.inviwo.CSVSource)
  * Reads comma separated values (CSV) and converts it into a DataFrame.
@@ -74,8 +72,6 @@ private:
     StringProperty delimiters_;
     ButtonProperty reloadData_;
 };
-
-
 
 }  // namespace inviwo
 

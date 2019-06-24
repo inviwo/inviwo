@@ -32,14 +32,12 @@
 
 namespace inviwo {
 
-
 #if defined(CL_VERSION_1_1)
 #include <warn/push>
 #include <warn/ignore/ignored-attributes>
 std::map<cl_context, pfnclCreateEventFromSyncKHR> SyncCLGL::syncFunctionMap_;
 #include <warn/pop>
 #endif
-
 
 SyncCLGL::SyncCLGL(const cl::Context& context, const cl::CommandQueue& queue)
     :

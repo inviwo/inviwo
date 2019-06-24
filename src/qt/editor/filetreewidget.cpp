@@ -299,8 +299,7 @@ void FileTreeWidget::updateRegressionTestEntries() {
         for (auto item : filesystem::getDirectoryContentsRecursively(moduleRegressionTestsPath)) {
             // only accept inviwo workspace files
             if (filesystem::getFileExtension(item) != "inv") continue;
-            moduleTests.append(
-                createFileEntry(fileIcon_, item, true));
+            moduleTests.append(createFileEntry(fileIcon_, item, true));
         }
         if (!moduleTests.isEmpty()) {
             auto category = createCategory(utilqt::toQString(module->getIdentifier()),

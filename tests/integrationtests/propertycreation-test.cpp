@@ -99,8 +99,7 @@ TEST_P(PropertyCreationTests, Create) {
         auto sProps = sComp->getPropertiesRecursive();
         auto cProps = cComp->getPropertiesRecursive();
         ASSERT_EQ(sProps.size(), cProps.size())
-            << "Number of subproperties does not match for property copy \'" << GetParam()
-            << "\'";
+            << "Number of subproperties does not match for property copy \'" << GetParam() << "\'";
 
         for (auto&& item : util::zip(sProps, cProps)) {
             const std::string errorMsg = " in property copy \'" +

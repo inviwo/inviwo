@@ -63,7 +63,7 @@ DataFrameModule::DataFrameModule(InviwoApplication* app) : InviwoModule(app, "Da
     // Readers and writes
     registerDataReader(std::make_unique<CSVReader>());
     registerDataReader(std::make_unique<JSONDataFrameReader>());
-    //registerDataWriter(std::make_unique<JSONDataFrameWriter>());
+    // registerDataWriter(std::make_unique<JSONDataFrameWriter>());
 
     // Data converters
     // registerRepresentationConverter(std::make_unique<DataFrameDisk2RAMConverter>());
@@ -83,8 +83,8 @@ DataFrameModule::DataFrameModule(InviwoApplication* app) : InviwoModule(app, "Da
     // registerSettings(std::make_unique<DataFrameSettings>());
     // registerMetaData(std::make_unique<DataFrameMetaData>());
     // registerPortInspector("DataFrameOutport", "path/workspace.inv");
-    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget> processorWidget); 
-    // registerDrawer(util::make_unique_ptr<DataFrameDrawer>());
+    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget>
+    // processorWidget); registerDrawer(util::make_unique_ptr<DataFrameDrawer>());
 }
 
 }  // namespace inviwo
