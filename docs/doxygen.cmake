@@ -177,17 +177,18 @@ IMAGE_PATH             = ${image_paths}
 
 INCLUDE_PATH           = ${incpaths}
 
-EXTENSION_MAPPING      = no_extension=C++ frag=C++ vert=C++ geom=C++ glsl=C++
+EXTENSION_MAPPING      = no_extension=C++ frag=C++ vert=C++ geom=C++ glsl=C++ comp=C++
 
 FILE_PATTERNS          = *.c \\
                          *.cpp \\
                          *.hpp \\
                          *.h \\
                          *.cl \\
+                         *.dox \\
+                         *.comp \\
                          *.frag \\
                          *.vert \\
                          *.geom \\
-                         *.dox \\
                          *.glsl
 
 RECURSIVE              = YES
@@ -299,7 +300,7 @@ function(ivw_private_make_help)
         FILTER_PATTERNS
     )
     cmake_parse_arguments(HARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
-
+    
     string(TOLOWER ${HARG_NAME} name_lower)
 
     set(aliases_list
@@ -400,13 +401,20 @@ function(make_doxygen_target modules_var)
     set(GENERATE_IMG "YES")
 
     if(PYTHONINTERP_FOUND)
-        #set(PREFIX_PYTHON "")
-        set(PREFIX_PYTHON "${PYTHON_EXECUTABLE} ") # This is sometimes needed but gives errors on win7
+        if(${MSVC})
+            set(PREFIX_PYTHON "python ")
+        else()
+            set(PREFIX_PYTHON "python3 ")
+        endif()
+        #string(REPLACE " " "\ " SPACE_PYTHON ${PYTHON_EXECUTABLE})
+        #set(PREFIX_PYTHON "${SPACE_PYTHON} ") # This is sometimes needed but gives errors on win7
+        
         set(filer_patterns_list
             "\"*.frag=${PREFIX_PYTHON}${ivw_doxy_dir}/filter/glslfilter.py\""
             "\"*.vert=${PREFIX_PYTHON}${ivw_doxy_dir}/filter/glslfilter.py\""
             "\"*.geom=${PREFIX_PYTHON}${ivw_doxy_dir}/filter/glslfilter.py\""
             "\"*.glsl=${PREFIX_PYTHON}${ivw_doxy_dir}/filter/glslfilter.py\""
+            "\"*.comp=${PREFIX_PYTHON}${ivw_doxy_dir}/filter/glslfilter.py\""
          )
     else()
         set(filer_patterns_list "")
