@@ -131,4 +131,13 @@ OpenGLModule::OpenGLModule(InviwoApplication* app)
     registerCapabilities(std::move(openGLCap));
 }
 
+OpenGLCapabilities& OpenGLModule::getOpenGLCapabilities() {
+    for (auto c : getCapabilities()) {
+        if (auto casted = dynamic_cast<OpenGLCapabilities*>(c)) {
+            return *casted;
+        }
+    }
+    throw Exception("No OpenGLCapabilities has been registered");
+}
+
 }  // namespace inviwo

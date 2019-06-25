@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,34 +26,28 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+ 
+vec3 sampleVelocity(vec3 worldPos);
 
-#ifndef IVW_OPENGLMODULE_H
-#define IVW_OPENGLMODULE_H
+/**
+ * Advect point p at \p worldPos one step using Euler integration
+ * Caller needs to implement `vec3 sampleVelocity(vec3 worldPos)`
+ * @ see streamparticles.comp
+ */ 
+vec3 advectEuler(vec3 worldPos, float stepSize) {
+    return worldPos + sampleVelocity(worldPos) * stepSize;
+}
 
-#include <modules/opengl/openglmoduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
-#include <modules/opengl/sharedopenglresources.h>
-#include <modules/opengl/shader/shadermanager.h>
-
-namespace inviwo {
-
-class SharedOpenGLResources;
-class ShaderManager;
-
-class IVW_MODULE_OPENGL_API OpenGLModule : public InviwoModule {
-public:
-    OpenGLModule(InviwoApplication* app);
-
-    OpenGLModule(const OpenGLModule&) = delete;
-    OpenGLModule& operator=(const OpenGLModule&) = delete;
-
-    OpenGLCapabilities& getOpenGLCapabilities();
-
-private:
-    std::unique_ptr<ShaderManager> shaderManager_;
-    std::unique_ptr<SharedOpenGLResources> sharedResources_;
-};
-
-}  // namespace inviwo
-
-#endif  // IVW_OPENGLMODULE_H
+/**
+ * Advect point p at \p worldPos one step usig 4th order Runge-Kutta integration
+ * Caller needs to implement `vec3 sampleVelocity(vec3 worldPos)`
+ * @ see streamparticles.comp
+ */ 
+vec3 advectRK4(vec3 worldPos, float stepSize) {
+    const float h2 = stepSize / 2.0f;
+    vec3 k1 = sampleVelocity(worldPos);
+    vec3 k2 = sampleVelocity(worldPos + k1 * h2);
+    vec3 k3 = sampleVelocity(worldPos + k2 * h2);
+    vec3 k4 = sampleVelocity(worldPos + k3 * stepSize);
+    return worldPos + (k1 + k2 + k2 + k3 + k3 + k4) * stepSize / 6.0;
+}
