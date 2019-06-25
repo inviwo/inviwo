@@ -29,7 +29,8 @@
  
 layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 
-#include "utils/classification.glsl"
+#include "utils/classification.glsl" 
+#include "utils/advection.glsl"
 
 #ifndef NUM_ADVECTIONS
 #define NUM_ADVECTIONS 1
@@ -55,40 +56,31 @@ layout(std430, binding = 1) buffer lifeBuffer { float life[]; };
 layout(std430, binding = 2) buffer radiBuffer { float radius[]; };
 layout(std430, binding = 3) buffer colBuffer { vec4 col[]; };
 
-vec3 toTexture(vec3 p) {
-    vec4 P = toTextureMatrix * vec4(p, 1);
-    return P.xyz / P.w;
-}
 
 bool inside(vec3 texCoord) {
     if (any(lessThan(texCoord, vec3(0.0f)))) return false;
     if (any(greaterThan(texCoord, vec3(1.0f)))) return false;
     return true;
+} 
+
+vec3 toTexture(vec3 p) {
+    vec4 P = toTextureMatrix * vec4(p, 1);
+    return P.xyz / P.w;
 }
 
 vec3 sampleVelocity(vec3 worldPos) {
     vec3 tex = toTexture(worldPos);
     if (!inside(tex)) return vec3(0);
     return texture(velocityField, tex).xyz;
-}
+} 
 
-// Advect p one step usig 4th Order Runge-Kutta
-vec3 advect(vec3 p) {
-    const float h = (advectionSpeed * dt);
-    const float h2 = h / 2.0f;
-    vec3 k1 = sampleVelocity(p);
-    vec3 k2 = sampleVelocity(p + k1 * h2);
-    vec3 k3 = sampleVelocity(p + k2 * h2);
-    vec3 k4 = sampleVelocity(p + k3 * h);
-    return p + ((k1 + k2 + k2 + k3 + k3 + k4) / 6.0) * h;
-}
 
 void main() {
     uint gid = gl_GlobalInvocationID.x;
     vec3 p = pos[gid].xyz;
 
     for (int i = 0; i < NUM_ADVECTIONS; i++) { 
-        p = advect(p);
+        p = advectRK4(p, advectionSpeed * dt); 
     }
 
     float v = length(sampleVelocity(p));

@@ -49,6 +49,7 @@ ivw_group("Source Files" ${SOURCE_FILES})
 #--------------------------------------------------------------------
 # Add shaders
 set(SHADER_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/advection.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/lic2d.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/lic3d.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/lorenzsystem.frag
