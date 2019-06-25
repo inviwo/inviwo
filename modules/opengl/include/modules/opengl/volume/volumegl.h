@@ -52,7 +52,8 @@ class IVW_MODULE_OPENGL_API VolumeGL : public VolumeRepresentation {
 
 public:
     VolumeGL(size3_t dimensions = size3_t(128, 128, 128),
-             const DataFormatBase* format = DataFormatBase::get(), bool initializeTexture = true);
+             const DataFormatBase* format = DataFormatBase::get(), bool initializeTexture = true,
+             const SwizzleMask& swizzleMask = swizzlemasks::rgba);
     VolumeGL(std::shared_ptr<Texture3D> tex, const DataFormatBase* format);
     VolumeGL(const VolumeGL& rhs);
     VolumeGL& operator=(const VolumeGL& rhs);
@@ -68,9 +69,18 @@ public:
     std::shared_ptr<Texture3D> getTexture() const { return volumeTexture_; }
     virtual std::type_index getTypeIndex() const override final;
 
+    /**
+     * \brief update the swizzle mask of the color channels when sampling the volume
+     *
+     * @param mask new swizzle mask
+     */
+    virtual void setSwizzleMask(const SwizzleMask& mask) override;
+    virtual SwizzleMask getSwizzleMask() const override;
+
 private:
     size3_t dimensions_;
     std::shared_ptr<Texture3D> volumeTexture_;
+    SwizzleMask swizzleMask_;
 };
 
 template <>

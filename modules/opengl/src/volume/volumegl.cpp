@@ -35,29 +35,40 @@
 
 namespace inviwo {
 
-VolumeGL::VolumeGL(size3_t dimensions, const DataFormatBase* format, bool initializeTexture)
+VolumeGL::VolumeGL(size3_t dimensions, const DataFormatBase* format, bool initializeTexture,
+                   const SwizzleMask& swizzleMask)
     : VolumeRepresentation(format)
     , dimensions_(dimensions)
     , volumeTexture_(
-          std::make_shared<Texture3D>(dimensions_, GLFormats::get(format->getId()), GL_LINEAR)) {
+          std::make_shared<Texture3D>(dimensions_, GLFormats::get(format->getId()), GL_LINEAR))
+    , swizzleMask_(swizzleMask) {
     if (initializeTexture) {
         volumeTexture_->initialize(nullptr);
     }
+    volumeTexture_->setSwizzleMask(swizzleMask_);
+    volumeTexture_->getSwizzleMask();
 }
 
 VolumeGL::VolumeGL(std::shared_ptr<Texture3D> tex, const DataFormatBase* format)
-    : VolumeRepresentation(format), dimensions_(tex->getDimensions()), volumeTexture_(tex) {}
+    : VolumeRepresentation(format)
+    , dimensions_(tex->getDimensions())
+    , volumeTexture_(tex)
+    , swizzleMask_(tex ? tex->getSwizzleMask() : swizzlemasks::rgba) {}
 
 VolumeGL::VolumeGL(const VolumeGL& rhs)
     : VolumeRepresentation(rhs)
     , dimensions_(rhs.dimensions_)
-    , volumeTexture_(rhs.volumeTexture_->clone()) {}
+    , volumeTexture_(rhs.volumeTexture_->clone())
+    , swizzleMask_(rhs.swizzleMask_) {
+    volumeTexture_->setSwizzleMask(swizzleMask_);
+}
 
 VolumeGL& VolumeGL::operator=(const VolumeGL& rhs) {
     if (this != &rhs) {
         VolumeRepresentation::operator=(rhs);
         dimensions_ = rhs.dimensions_;
         volumeTexture_ = std::shared_ptr<Texture3D>(rhs.volumeTexture_->clone());
+        swizzleMask_ = rhs.swizzleMask_;
     }
     return *this;
 }
@@ -82,5 +93,17 @@ void VolumeGL::setDimensions(size3_t dimensions) {
 }
 
 std::type_index VolumeGL::getTypeIndex() const { return std::type_index(typeid(VolumeGL)); }
+
+void VolumeGL::setSwizzleMask(const SwizzleMask& mask) {
+    swizzleMask_ = mask;
+    if (volumeTexture_) {
+        volumeTexture_->setSwizzleMask(mask);
+    }
+    if (owner_) {
+        owner_->setSwizzleMask(mask);
+    }
+}
+
+SwizzleMask VolumeGL::getSwizzleMask() const { return swizzleMask_; }
 
 }  // namespace inviwo
