@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/webbrowser/properties/propertywidgetcef.h>
+
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/io/serialization/serialization.h>
 
@@ -71,8 +72,8 @@ private:
     IMPLEMENT_REFCOUNTING(CefDOMSearchId);
 };
 
-PropertyWidgetCEF::PropertyWidgetCEF(Property* prop, CefRefPtr<CefFrame> frame, std::string onChange)
-    : PropertyWidget(prop), onChange_(onChange), frame_(frame)  {
+PropertyWidgetCEF::PropertyWidgetCEF(Property* prop, std::unique_ptr<PropertyJSONConverter> converter, CefRefPtr<CefFrame> frame, std::string onChange)
+    : PropertyWidget(prop), converter_(std::move(converter)), onChange_(onChange), frame_(frame)  {
     if (prop) {
         prop->addObserver(this);
     }
@@ -93,14 +94,48 @@ void PropertyWidgetCEF::setFrameIfPartOfFrame(CefRefPtr<CefFrame> frame) {
     frame->GetSource(visitor);
 }
 
-void PropertyWidgetCEF::deserialize(Deserializer& d) {
-    if (onQueryBlocker_ > 0) {
-        onQueryBlocker_--;
+bool PropertyWidgetCEF::onQuery(
+                     CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 /*query_id*/,
+                     const CefString& request, bool /*persistent*/,
+                     CefRefPtr<CefMessageRouterBrowserSide::Handler::Callback> callback) {
+
+    const std::string& requestString = request;
+    auto j = json::parse(requestString);
+    try {
+        auto command = j.at("command").get<std::string>();
+        auto p = getProperty();
+        if (command == "property.set") {
+            p->setInitiatingWidget(this);
+            converter_->fromJSON(j.at("data"), *p);
+            p->clearInitiatingWidget();
+            callback->Success("");
+        } else if (command == "property.get") {
+            // TODO: Remove when moved to c++17
+            json res;
+            converter_->toJSON(res, *p);
+            callback->Success(res.dump());
+        }
+    } catch (json::exception& ex) {
+        LogError(ex.what());
+        callback->Failure(0, ex.what());
+    }
+    
+    return true;
+}
+    
+void PropertyWidgetCEF::updateFromProperty() {
+    // Frame might be null if for example webpage is not found on startup
+    if (!frame_) {
         return;
     }
-    property_->setInitiatingWidget(this);
-    d.deserialize("Property", *property_);
-    property_->clearInitiatingWidget();
+    
+    std::stringstream script;
+    json p;
+    converter_->toJSON(p, *getProperty());
+    script << this->getOnChange() << "(" << p.dump() << ");";
+    // Block OnQuery, called due to property.oninput()
+    onQueryBlocker_++;
+    frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);
 }
 
 void PropertyWidgetCEF::onSetIdentifier(Property* /*property*/, const std::string& identifier) {

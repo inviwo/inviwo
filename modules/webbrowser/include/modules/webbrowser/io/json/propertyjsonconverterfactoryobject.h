@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,16 +27,47 @@
  *
  *********************************************************************************/
 
-#include <modules/webbrowser/io/json/boolpropertyjsonconverter.h>
+#pragma once
+
+#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/properties/property.h>
+#include <modules/webbrowser/io/json/propertyjsonconverter.h>
+#include <string>
 
 namespace inviwo {
+    
+class Property;
+class PropertyWidget;
 
-void to_json(json& j, const BoolProperty& p) { j = json{{"value", p.get()}}; }
+class IVW_MODULE_WEBBROWSER_API PropertyJSONConverterFactoryObject {
+public:
+    PropertyJSONConverterFactoryObject();
+    virtual ~PropertyJSONConverterFactoryObject();
+    
+    virtual std::unique_ptr<PropertyJSONConverter> create(Property*) = 0;
+    
+    virtual std::string getClassIdentifier() const = 0;
+    
+private:
+};
 
-void from_json(const json& j, BoolProperty& p) {
-    bool value = j.count("value") > 0 ? j.at("value").get<bool>() : p.get();
-    p.set(value);
-}
+template <typename P>
+class PropertyJSONConverterFactoryObjectTemplate
+    : public PropertyJSONConverterFactoryObject {
+ public:
+  PropertyJSONConverterFactoryObjectTemplate()
+      : PropertyJSONConverterFactoryObject() {}
 
+  virtual ~PropertyJSONConverterFactoryObjectTemplate() {}
 
+  virtual std::unique_ptr<PropertyJSONConverter> create(Property* prop) {
+    return std::make_unique<TemplatePropertyJSONConverter<P>>();
+  }
+
+  virtual std::string getClassIdentifier() const {
+    return PropertyTraits<P>::classIdentifier();
+  };
+};
+    
 }  // namespace inviwo
+

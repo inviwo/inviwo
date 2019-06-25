@@ -186,7 +186,7 @@ void FileProperty::addNameFilters(const std::vector<FileExtension>& filters) {
 
 void FileProperty::clearNameFilters() { nameFilters_.clear(); }
 
-std::vector<FileExtension> FileProperty::getNameFilters() { return nameFilters_; }
+std::vector<FileExtension> FileProperty::getNameFilters() const { return nameFilters_; }
 
 void FileProperty::setAcceptMode(AcceptMode mode) { acceptMode_ = mode; }
 

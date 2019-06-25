@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,16 +27,12 @@
  *
  *********************************************************************************/
 
-#include <modules/webbrowser/properties/ordinalpropertywidgetcef.h>
+#include <modules/webbrowser/properties/propertywidgetceffactory.h>
 
 namespace inviwo {
+    
+PropertyWidgetCEFFactory::PropertyWidgetCEFFactory() = default;
 
-// Scalar properties
-template class IVW_MODULE_WEBBROWSER_TMPL_INST OrdinalPropertyWidgetCEF<float>;
-template class IVW_MODULE_WEBBROWSER_TMPL_INST OrdinalPropertyWidgetCEF<int>;
-template class IVW_MODULE_WEBBROWSER_TMPL_INST OrdinalPropertyWidgetCEF<size_t>;
-template class IVW_MODULE_WEBBROWSER_TMPL_INST OrdinalPropertyWidgetCEF<glm::i64>;
-template class IVW_MODULE_WEBBROWSER_TMPL_INST OrdinalPropertyWidgetCEF<double>;
-
+PropertyWidgetCEFFactory::~PropertyWidgetCEFFactory() = default;
 
 }  // namespace inviwo

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,33 +27,14 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_BOOLPROPERTYWIDGETCEF_H
-#define IVW_BOOLPROPERTYWIDGETCEF_H
-
-#include <modules/webbrowser/webbrowsermoduledefine.h>
-#include <modules/webbrowser/properties/templatepropertywidgetcef.h>
-
-#include <inviwo/core/properties/boolproperty.h>
+#include <modules/webbrowser/properties/propertywidgetceffactoryobject.h>
 
 namespace inviwo {
 
-/**
- * \class BoolPropertyWidgetCEF
- * Widget for synchronizing HTML elements:
- * <input type="checkbox">
- */
-class IVW_MODULE_WEBBROWSER_API BoolPropertyWidgetCEF : public TemplatePropertyWidgetCEF<bool> {
-public:
-    BoolPropertyWidgetCEF(BoolProperty* property = nullptr, CefRefPtr<CefFrame> frame = nullptr,
-                          std::string htmlId = "");
-    virtual ~BoolPropertyWidgetCEF() = default;
-    /**
-     * Update HTML widget using calls javascript oninput() function on element.
-     * Assumes that widget is HTML input attribute.
-     */
-    virtual void updateFromProperty() override;
-};
+PropertyWidgetCEFFactoryObject::PropertyWidgetCEFFactoryObject(
+    const PropertyJSONConverterFactory* converterFactory)
+    : converterFactory_(converterFactory) {}
+
+PropertyWidgetCEFFactoryObject::~PropertyWidgetCEFFactoryObject() = default;
 
 }  // namespace inviwo
-
-#endif  // IVW_BOOLPROPERTYWIDGETCEF_H

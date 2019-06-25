@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,16 +27,41 @@
  *
  *********************************************************************************/
 
-#include <modules/webbrowser/io/json/boolpropertyjsonconverter.h>
+#pragma once
+
+#include <modules/webbrowser/webbrowsermoduledefine.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 
 namespace inviwo {
 
-void to_json(json& j, const BoolProperty& p) { j = json{{"value", p.get()}}; }
+/**
+ * Converts an ButtonProperty to a JSON object.
+ * Produces layout according to the members of ButtonProperty:
+ * { {"value": val} }
+ * @see ButtonProperty
+ *
+ * Usage example:
+ * \code{.cpp}
+ * ButtonProperty p;
+ * json j = p;
+ * \endcode
+ */
+IVW_MODULE_WEBBROWSER_API void to_json(json& j, const ButtonProperty& p);
 
-void from_json(const json& j, BoolProperty& p) {
-    bool value = j.count("value") > 0 ? j.at("value").get<bool>() : p.get();
-    p.set(value);
-}
-
+/**
+ * Converts a JSON object to an ButtonProperty.
+ * Expects object layout according to the members of ButtonProperty:
+ * { {"value": val} }
+ * @see ButtonProperty
+ *
+ * Usage example:
+ * \code{.cpp}
+ * auto p = j.get<BoolProperty>();
+ * \endcode
+ */
+IVW_MODULE_WEBBROWSER_API void from_json(const json& j, ButtonProperty& p);
 
 }  // namespace inviwo

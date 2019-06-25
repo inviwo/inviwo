@@ -30,6 +30,7 @@
 #pragma once
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>
+#include <modules/webbrowser/io/json/glmjsonconverter.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <nlohmann/json.hpp>
 
@@ -74,17 +75,13 @@ void to_json(json& j, const OrdinalProperty<T>& p) {
  */
 template <typename T>
 void from_json(const json& j, OrdinalProperty<T>& p) {
-    // Extract header and column types
-    if (j.empty() || !j.front().is_object()) {
-        // Only support object types, i.e. [ {key: value} ]
-        return;
-    }
-    T value = j.count("value") > 0 ? j.at("value").get<T>() : p.get();
+
+    auto value = j.count("value") > 0 ? j.at("value").get<T>() : p.get();
 
     // Optional parameters
-    T minVal = j.count("minValue") > 0 ? j.at("minValue").get<T>() : p.getMin();
-    T maxVal = j.count("maxValue") > 0 ? j.at("maxValue").get<T>() : p.getMax();
-    T increment = j.count("increment") > 0 ? j.at("increment").get<T>() : p.getIncrement();
+    auto minVal = j.count("minValue") > 0 ? j.at("minValue").get<T>() : p.getMinValue();
+    auto maxVal = j.count("maxValue") > 0 ? j.at("maxValue").get<T>() : p.getMaxValue();
+    auto increment = j.count("increment") > 0 ? j.at("increment").get<T>() : p.getIncrement();
 
     p.set(value, minVal, maxVal, increment);
 }

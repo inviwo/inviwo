@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,6 +27,13 @@
  *
  *********************************************************************************/
 
-#include <modules/webbrowser/properties/minmaxpropertywidgetcef.h>
+#include <modules/webbrowser/io/json/propertyjsonconverterfactoryobject.h>
 
-namespace inviwo {}  // namespace inviwo
+namespace inviwo {
+
+PropertyJSONConverterFactoryObject::PropertyJSONConverterFactoryObject() =
+    default;
+
+PropertyJSONConverterFactoryObject::~PropertyJSONConverterFactoryObject() = default;
+
+}  // namespace inviwo

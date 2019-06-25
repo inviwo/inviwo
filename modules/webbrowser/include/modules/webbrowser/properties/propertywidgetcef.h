@@ -31,6 +31,7 @@
 #define IVW_PROPERTYWIDGETCEF_H
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>
+#include <modules/webbrowser/io/json/propertyjsonconverter.h>
 #include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/propertywidget.h>
@@ -73,11 +74,13 @@ namespace inviwo {
  * @see TemplatePropertyWidgetCEF
  */
 class IVW_MODULE_WEBBROWSER_API PropertyWidgetCEF : public PropertyWidget,
-                                                    public PropertyObserver,
-                                                    public Serializable {
+                                                    public PropertyObserver {
 public:
     PropertyWidgetCEF() = default;
-    PropertyWidgetCEF(Property* prop, CefRefPtr<CefFrame> frame = nullptr, std::string onChange = "");
+    PropertyWidgetCEF(Property* prop,
+                      std::unique_ptr<PropertyJSONConverter> converter,
+                      CefRefPtr<CefFrame> frame = nullptr,
+                      std::string onChange = "");
 
     friend class CefDOMSearchId;
     friend class PropertyCefSynchronizer;
@@ -114,10 +117,13 @@ public:
      */
     virtual bool onQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 query_id,
                          const CefString& request, bool persistent,
-                         CefRefPtr<CefMessageRouterBrowserSide::Handler::Callback> callback) = 0;
-
-    virtual void serialize(Serializer&) const override{};
-    virtual void deserialize(Deserializer& d) override;
+                         CefRefPtr<CefMessageRouterBrowserSide::Handler::Callback> callback);
+                                                        
+    /**
+     * Update HTML widget using calls javascript oninput() function on element.
+     * Assumes that widget is HTML input attribute.
+     */
+    virtual void updateFromProperty() override;
 
 protected:
     // PropertyObservable overrides
@@ -131,11 +137,12 @@ protected:
      * Set frame containing html item.
      */
     void setFrame(CefRefPtr<CefFrame> frame);
+                                                        
+    std::unique_ptr<PropertyJSONConverter> converter_;
 
     std::string onChange_;       /// Callback to execute when property changes
     std::string propertyObserverCallback_; /// Execute on any PropertyObserver notifications
     CefRefPtr<CefFrame> frame_;  /// Browser frame containing corresponding properties
-    int onQueryBlocker_ = 0;     /// Block jacascript callback queries
 };
 
 }  // namespace inviwo

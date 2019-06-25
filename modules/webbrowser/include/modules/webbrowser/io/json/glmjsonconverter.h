@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,34 +27,24 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_STRINGPROPERTYWIDGETCEF_H
-#define IVW_STRINGPROPERTYWIDGETCEF_H
+#pragma once
 
-#include <modules/webbrowser/webbrowsermoduledefine.h>
-#include <modules/webbrowser/properties/templatepropertywidgetcef.h>
+#include <inviwo/core/common/inviwo.h>
+#include <nlohmann/json.hpp>
 
-#include <inviwo/core/properties/stringproperty.h>
-
-namespace inviwo {
-
-/**
- * \class StringPropertyWidgetCEF
- * Widget for synchronizing HTML elements:
- * <input type="text">
- */
-class IVW_MODULE_WEBBROWSER_API StringPropertyWidgetCEF
-    : public TemplatePropertyWidgetCEF<std::string> {
-public:
-    StringPropertyWidgetCEF(StringProperty* property, CefRefPtr<CefFrame> frame = nullptr,
-                            std::string htmlId = "");
-    virtual ~StringPropertyWidgetCEF() = default;
-    /**
-     * Update HTML widget using calls javascript oninput() function on element.
-     * Assumes that widget is HTML input attribute.
-     */
-    virtual void updateFromProperty() override;
+namespace glm {
+template <typename T, precision P, template <typename, precision> class VecType>
+void from_json(const nlohmann::json& j, VecType<T, P>& v) {
+    //for (int i = 0; i < v.length(); i++) {
+    //    v[i] = j[i];
+    //}
 };
 
-}  // namespace inviwo
-
-#endif  // IVW_STRINGPROPERTYWIDGETCEF_H
+template <typename T, precision P, template <typename, precision> class VecType>
+void to_json(nlohmann::json& j, const VecType<T, P>& v) {
+    //for (int i = 0; i < v.length(); i++) {
+    //    j[i] = v[i];
+    //}
+};
+    
+}  // namespace glm

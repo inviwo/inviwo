@@ -57,17 +57,19 @@ class IVW_MODULE_WEBBROWSER_API WebBrowserClient : public CefClient,
                                                    public CefRequestHandler,
                                                    public CefLoadHandler {
 public:
-    WebBrowserClient(CefRefPtr<RenderHandlerGL> renderHandler);
+ WebBrowserClient(CefRefPtr<RenderHandlerGL> renderHandler,
+                  const PropertyWidgetCEFFactory* widgetFactory);
 
-    virtual CefRefPtr<CefLoadHandler> GetLoadHandler() override { return this; }
-    virtual CefRefPtr<CefRenderHandler> GetRenderHandler() override { return renderHandler_; }
+ virtual CefRefPtr<CefLoadHandler> GetLoadHandler() override { return this; }
+ virtual CefRefPtr<CefRenderHandler> GetRenderHandler() override {
+   return renderHandler_; }
     virtual CefRefPtr<CefRequestHandler> GetRequestHandler() override { return this; }
 
     void SetRenderHandler(CefRefPtr<RenderHandlerGL> renderHandler);
 
     CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() override { return this; }
 
-    bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
+    bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
                                   CefProcessId source_process,
                                   CefRefPtr<CefProcessMessage> message) override;
 
@@ -127,7 +129,7 @@ public:
     CefRefPtr<PropertyCefSynchronizer> propertyCefSynchronizer_;
 
 protected:
-    InviwoApplication* app_;
+    const PropertyWidgetCEFFactory* widgetFactory_; /// Non-owning reference
     CefRefPtr<CefRenderHandler> renderHandler_;
     // Handles the browser side of query routing.
     CefRefPtr<CefMessageRouterBrowserSide> messageRouter_;

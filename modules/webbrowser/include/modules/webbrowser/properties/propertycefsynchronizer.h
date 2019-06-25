@@ -32,10 +32,10 @@
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>
 #include <modules/webbrowser/properties/propertywidgetcef.h>
+#include <modules/webbrowser/properties/propertywidgetceffactory.h>
 
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/propertyownerobserver.h>
-#include <inviwo/core/properties/propertywidgetfactory.h>
 #include <inviwo/core/util/callback.h>
 
 #include <warn/push>
@@ -74,41 +74,34 @@ class IVW_MODULE_WEBBROWSER_API PropertyCefSynchronizer
       public CefLoadHandler,
       public PropertyOwnerObserver {
 public:
-    explicit PropertyCefSynchronizer();
-    virtual ~PropertyCefSynchronizer() = default;
+ explicit PropertyCefSynchronizer(
+     const PropertyWidgetCEFFactory* htmlWidgetFactory);
+ virtual ~PropertyCefSynchronizer() = default;
 
-    /**
-     * Synchronizes all widgets and sets their frame, called when frame has loaded.
-     */
-    virtual void OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
-                           int httpStatusCode) override;
+ /**
+  * Synchronizes all widgets and sets their frame, called when frame has loaded.
+  */
+ virtual void OnLoadEnd(CefRefPtr<CefBrowser> browser,
+                        CefRefPtr<CefFrame> frame, int httpStatusCode) override;
 
-    /**
-     * Called due to cefQuery execution in message_router.html.
-     * Expects the request for be a JSON-format. See inviwoapi.js:
-     * {command: "subscribe", "path": propertyPath, "id":htmlId}
-     * for synchronizing property to change.
-     * {command: "property.set", "path":"PropertyIdentifier", "value":0.5}
-     * for setting a value
-     * {command: "property.get", "path": propertyPath}
-     * for getting a value.
-     * Currently only supports a single property in the request.
-     * @see PropertyWidgetCEF
-     */
-    virtual bool OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 query_id,
-                         const CefString& request, bool persistent,
-                         CefRefPtr<Callback> callback) override;
+ /**
+  * Called due to cefQuery execution in message_router.html.
+  * Expects the request for be a JSON-format. See inviwoapi.js:
+  * {command: "subscribe", "path": propertyPath, "id":htmlId}
+  * for synchronizing property to change.
+  * {command: "property.set", "path":"PropertyIdentifier", "value":0.5}
+  * for setting a value
+  * {command: "property.get", "path": propertyPath}
+  * for getting a value.
+  * Currently only supports a single property in the request.
+  * @see PropertyWidgetCEF
+  */
+ virtual bool OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
+                      int64 query_id, const CefString& request, bool persistent,
+                      CefRefPtr<Callback> callback) override;
 
-
-
-    // Use own widget factory for now. Multiple widget types are not supported in Inviwo yet
-    template <typename T, typename P>
-    void registerPropertyWidget(PropertySemantics semantics);
-
-    PropertyWidgetFactory htmlWidgetFactory_;
-
-    // Remove widget if property is removed
-    virtual void onWillRemoveProperty(Property* property, size_t index) override;
+ // Remove widget if property is removed
+ virtual void onWillRemoveProperty(Property* property, size_t index) override;
 
 private:
     /**
@@ -125,20 +118,13 @@ private:
      * @param property Property to remove
      */
     void stopSynchronize(Property* property);
-    std::vector<std::unique_ptr<PropertyWidgetFactoryObject>> propertyWidgets_;
 
     std::vector<std::unique_ptr<PropertyWidgetCEF>> widgets_;
+    const PropertyWidgetCEFFactory* htmlWidgetFactory_; /// Non-owning reference
     IMPLEMENT_REFCOUNTING(PropertyCefSynchronizer);
 };
 #include <warn/pop>
 
-template <typename T, typename P>
-void PropertyCefSynchronizer::registerPropertyWidget(PropertySemantics semantics) {
-    auto propertyWidget = std::make_unique<PropertyWidgetFactoryObjectTemplate<T, P>>(semantics);
-    if (htmlWidgetFactory_.registerObject(propertyWidget.get())) {
-        propertyWidgets_.push_back(std::move(propertyWidget));
-    }
-}
 }  // namespace inviwo
 
 #endif  // IVW_PROPERTYCEFSYNCHRONIZER_H

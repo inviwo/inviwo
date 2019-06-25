@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,16 +27,12 @@
  *
  *********************************************************************************/
 
-#include <modules/webbrowser/io/json/boolpropertyjsonconverter.h>
+#include <modules/webbrowser/io/json/propertyjsonconverterfactory.h>
 
 namespace inviwo {
 
-void to_json(json& j, const BoolProperty& p) { j = json{{"value", p.get()}}; }
+PropertyJSONConverterFactory::PropertyJSONConverterFactory() = default;
 
-void from_json(const json& j, BoolProperty& p) {
-    bool value = j.count("value") > 0 ? j.at("value").get<bool>() : p.get();
-    p.set(value);
-}
-
-
+PropertyJSONConverterFactory::~PropertyJSONConverterFactory() = default;
+    
 }  // namespace inviwo

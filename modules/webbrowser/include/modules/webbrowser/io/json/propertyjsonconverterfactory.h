@@ -27,35 +27,23 @@
  *
  *********************************************************************************/
 
-#include <modules/webbrowser/properties/boolpropertywidgetcef.h>
-#include <modules/webbrowser/io/json/boolpropertyjsonconverter.h>
+#pragma once
+
+#include <modules/webbrowser/webbrowsermoduledefine.h>
+#include <modules/webbrowser/io/json/propertyjsonconverterfactoryobject.h>
+#include <inviwo/core/util/factory.h>
 
 namespace inviwo {
 
-BoolPropertyWidgetCEF::BoolPropertyWidgetCEF(BoolProperty* property, CefRefPtr<CefFrame> frame,
-                                             std::string htmlId)
-    : TemplatePropertyWidgetCEF<bool>(property, frame, htmlId) {}
+class IVW_MODULE_WEBBROWSER_API PropertyJSONConverterFactory
+    : public StandardFactory<PropertyJSONConverter,
+                             PropertyJSONConverterFactoryObject, std::string,
+                             Property*> {
+ public:
+  PropertyJSONConverterFactory();
+  virtual ~PropertyJSONConverterFactory();
 
-void BoolPropertyWidgetCEF::updateFromProperty() {
-    // Frame might be null if for example webpage is not found on startup
-    if (!frame_) {
-        return;
-    }
-    // LogInfo("updateFromProperty");
-    auto property = static_cast<BoolProperty*>(property_);
-
-    std::stringstream script;
-        json p = *property;
-    script << this->getOnChange() << "(" << p.dump() << ");";
-    //script << "var property = document.getElementById(\"" << stringToFind_ << "\");";
-    //// Use click instead of setting value to make sure that appropriate events are fired.
-    //script << "if (property!=null){property.checked = "<< (property->get() ? "false;" : "true;")
-    //       << "property.click();}";
-    // Need to figure out how to make sure the frame is drawn after changing values.
-    // script << "window.focus();";
-    // Block OnQuery, called due to property.oninput()
-    onQueryBlocker_++;
-    frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);
-}
+};
 
 }  // namespace inviwo
+

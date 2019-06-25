@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,36 +27,20 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_BUTTONPROPERTYWIDGETCEF_H
-#define IVW_BUTTONPROPERTYWIDGETCEF_H
-
-#include <modules/webbrowser/webbrowsermoduledefine.h>
-#include <modules/webbrowser/properties/propertywidgetcef.h>
-
-#include <inviwo/core/properties/buttonproperty.h>
+#include <modules/webbrowser/io/json/buttonpropertyjsonconverter.h>
 
 namespace inviwo {
 
-/**
- * \class ButtonPropertyWidgetCEF
- * Widget for synchronizing HTML elements:
- * <input type="button">
- */
-class IVW_MODULE_WEBBROWSER_API ButtonPropertyWidgetCEF : public PropertyWidgetCEF {
-public:
-    ButtonPropertyWidgetCEF(ButtonProperty* property = nullptr, CefRefPtr<CefFrame> frame = nullptr,
-                            std::string htmlId = "");
-    virtual ~ButtonPropertyWidgetCEF() = default;
 
-    virtual void updateFromProperty() override;
+void to_json(json& j, const ButtonProperty& p) {
+    j = json{{"pressButton", true}};
+}
 
-    // Override callback from javascript, use pressButton instead of deserialize
-    virtual bool onQuery(
-        CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 query_id,
-        const CefString& request, bool persistent,
-        CefRefPtr<CefMessageRouterBrowserSide::Handler::Callback> callback) override;
-};
+void from_json(const json& j, ButtonProperty& p) {
+  if (j.count("pressButton") > 0) {
+    p.pressButton();
+  }
+}
+
 
 }  // namespace inviwo
-
-#endif  // IVW_BUTTONPROPERTYWIDGETCEF_H

@@ -11,8 +11,12 @@
 # 3.3325.1758.g9aea513 Crashes on scroll event (Mac)
 # 3.3396.1775.g5340bb0 Crashes when switching web page
 # 3.3396.1775.g5340bb0 Crashes when using two fingers on trackpad (Mac)
-# 3.3538.1849.g458cc98 Dropdown does not work Probably due to https://magpcss.org/ceforum/viewtopic.php?f=6&t=11618
-set(CEF_VERSION "75.0.7+g19229b6+chromium-75.0.3770.80")
+# 3.3538.1849.g458cc98
+# 75.0.7+g19229b6+chromium-75.0.3770.80 Rendering stops working, https://bitbucket.org/chromiumembedded/cef/issues/2618/onacceleratedpaint-is-not-called-with-off#comment-51661853
+# FATAL:async_layer_tree_frame_sink.cc
+# Known issue: Dropdown does not work.
+# Probably due to https://magpcss.org/ceforum/viewtopic.php?f=6&t=11618
+set(CEF_VERSION "3.3538.1849.g458cc98")
 
 # Determine the platform.
 include("cmake/cef_platform.cmake")
@@ -81,20 +85,20 @@ set(HEADER_FILES
     include/modules/webbrowser/interaction/cefinteractionhandler.h
     include/modules/webbrowser/interaction/cefkeyboardmapping.h
 	include/modules/webbrowser/io/json/boolpropertyjsonconverter.h
+    include/modules/webbrowser/io/json/buttonpropertyjsonconverter.h
+    include/modules/webbrowser/io/json/filepropertyjsonconverter.h
+    include/modules/webbrowser/io/json/optionpropertyjsonconverter.h
 	include/modules/webbrowser/io/json/minmaxpropertyjsonconverter.h
 	include/modules/webbrowser/io/json/ordinalpropertyjsonconverter.h
+    include/modules/webbrowser/io/json/templatepropertyjsonconverter.h
 	include/modules/webbrowser/io/json/propertyjsonconverter.h
-    include/modules/webbrowser/processors/propertysyncexampleprocessor.h
+    include/modules/webbrowser/io/json/propertyjsonconverterfactory.h
+    include/modules/webbrowser/io/json/propertyjsonconverterfactoryobject.h
     include/modules/webbrowser/processors/webbrowserprocessor.h
-    include/modules/webbrowser/properties/boolpropertywidgetcef.h
-    include/modules/webbrowser/properties/buttonpropertywidgetcef.h
-	include/modules/webbrowser/properties/optionpropertywidgetcef.h
-    include/modules/webbrowser/properties/ordinalpropertywidgetcef.h
-    include/modules/webbrowser/properties/minmaxpropertywidgetcef.h
     include/modules/webbrowser/properties/propertycefsynchronizer.h
     include/modules/webbrowser/properties/propertywidgetcef.h
-    include/modules/webbrowser/properties/stringpropertywidgetcef.h
-    include/modules/webbrowser/properties/templatepropertywidgetcef.h
+    include/modules/webbrowser/properties/propertywidgetceffactory.h
+    include/modules/webbrowser/properties/propertywidgetceffactoryobject.h
     include/modules/webbrowser/renderhandlergl.h
     include/modules/webbrowser/webbrowserapp.h
     include/modules/webbrowser/webbrowserclient.h
@@ -110,16 +114,14 @@ set(SOURCE_FILES
     src/interaction/cefinteractionhandler.cpp
     src/interaction/cefkeyboardmapping.cpp
 	src/io/json/boolpropertyjsonconverter.cpp
-    src/processors/propertysyncexampleprocessor.cpp
+    src/io/json/buttonpropertyjsonconverter.cpp
+    src/io/json/propertyjsonconverterfactory.cpp
+    src/io/json/propertyjsonconverterfactoryobject.cpp
     src/processors/webbrowserprocessor.cpp
-    src/properties/boolpropertywidgetcef.cpp
-    src/properties/buttonpropertywidgetcef.cpp
-	src/properties/optionpropertywidgetcef.cpp
-    src/properties/ordinalpropertywidgetcef.cpp
-    src/properties/minmaxpropertywidgetcef.cpp
     src/properties/propertycefsynchronizer.cpp
     src/properties/propertywidgetcef.cpp
-    src/properties/stringpropertywidgetcef.cpp
+    src/properties/propertywidgetceffactory.cpp
+    src/properties/propertywidgetceffactoryobject.cpp
     src/renderhandlergl.cpp
     src/webbrowserapp.cpp
     src/webbrowserclient.cpp

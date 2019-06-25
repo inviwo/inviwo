@@ -38,9 +38,10 @@ RenderHandlerGL::RenderHandlerGL(std::function<void()> onWebPageCopiedCallback)
 
 void RenderHandlerGL::updateCanvasSize(size2_t newSize) { texture2D_.resize(newSize); }
 
-void RenderHandlerGL::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) {
+bool RenderHandlerGL::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) {
     rect = CefRect{0, 0, static_cast<int>(texture2D_.getWidth()),
                    static_cast<int>(texture2D_.getHeight())};
+    return true;
 }
 
 void RenderHandlerGL::OnPopupShow(CefRefPtr<CefBrowser> browser, bool show) {
@@ -62,8 +63,10 @@ CefRect RenderHandlerGL::GetPopupRectInWebView(const CefRect& original_rect) {
     if (rc.x < 0) rc.x = 0;
     if (rc.y < 0) rc.y = 0;
     // if popup goes outside the view, try to reposition origin
-    if (rc.x + rc.width > texture2D_.getWidth()) rc.x = static_cast<int>(texture2D_.getWidth()) - rc.width;
-    if (rc.y + rc.height > texture2D_.getHeight()) rc.y = static_cast<int>(texture2D_.getHeight()) - rc.height;
+    auto width = static_cast<int>(texture2D_.getWidth());
+    auto height = static_cast<int>(texture2D_.getHeight());
+    if (rc.x + rc.width > width) rc.x = width - rc.width;
+    if (rc.y + rc.height > height) rc.y = height - rc.height;
     // if x or y became negative, move them to 0 again.
     if (rc.x < 0) rc.x = 0;
     if (rc.y < 0) rc.y = 0;
@@ -135,8 +138,11 @@ void RenderHandlerGL::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType ty
                 skip_rows = -y;
                 y = 0;
             }
-            if (x + w > texture2D_.getWidth()) w -= x + w - static_cast<int>(texture2D_.getWidth());
-            if (y + h > texture2D_.getHeight()) h -= y + h - static_cast<int>(texture2D_.getHeight());
+            auto texWidth = static_cast<int>(texture2D_.getWidth());
+            auto texHeight = static_cast<int>(texture2D_.getHeight());
+                                          
+            if (x + w > texWidth) w -= x + w - texWidth;
+            if (y + h > texHeight) h -= y + h - texHeight;
             texture2D_.bind();
             // Update the popup rectangle.
             glPixelStorei(GL_UNPACK_ROW_LENGTH, width);

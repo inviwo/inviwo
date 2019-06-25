@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,40 +27,22 @@
  *
  *********************************************************************************/
 
-#include <modules/webbrowser/properties/stringpropertywidgetcef.h>
+#pragma once
+
+#include <modules/webbrowser/webbrowsermoduledefine.h>
+#include <modules/webbrowser/properties/propertywidgetceffactoryobject.h>
+#include <inviwo/core/util/factory.h>
 
 namespace inviwo {
 
-StringPropertyWidgetCEF::StringPropertyWidgetCEF(StringProperty* property,
-                                                 CefRefPtr<CefFrame> frame, std::string htmlId)
-    : TemplatePropertyWidgetCEF<std::string>(property, frame, htmlId) {}
+class IVW_MODULE_WEBBROWSER_API PropertyWidgetCEFFactory
+    : public StandardFactory<PropertyWidgetCEF, PropertyWidgetCEFFactoryObject,
+                             std::string, Property*> {
+ public:
+  PropertyWidgetCEFFactory();
+  virtual ~PropertyWidgetCEFFactory();
 
-/**
- * Update HTML widget using calls javascript oninput() function on element.
- * Assumes that widget is HTML input attribute.
- */
-
-void StringPropertyWidgetCEF::updateFromProperty() {
-    // Frame might be null if for example webpage is not found on startup
-    if (!frame_) {
-        return;
-    }
-    auto property = static_cast<StringProperty*>(property_);
-
-    std::stringstream script;
-    json p = *property;
-    script << this->getOnChange() << "(" << p.dump() << ");";
-    //script << "var property = document.getElementById(\"" << stringToFind_ << "\");";
-    //script << "if(property!=null){";
-    //script << "property.value='" << property->get() << "';";
-    //// Send oninput event to update element
-    //script << "property.oninput();";
-    //script << "}";
-    // Need to figure out how to make sure the frame is drawn after changing values.
-    // script << "window.focus();";
-    // Block OnQuery, called due to property.oninput()
-    onQueryBlocker_++;
-    frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);
-}
+};
 
 }  // namespace inviwo
+

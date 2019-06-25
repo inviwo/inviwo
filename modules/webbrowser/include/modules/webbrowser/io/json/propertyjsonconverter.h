@@ -27,11 +27,10 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROPERTYJSONCONVERTER_H
-#define IVW_PROPERTYJSONCONVERTER_H
+#pragma once
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>
-#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/property.h>
 #include <nlohmann/json.hpp>
 
 using json = nlohmann::json;
@@ -55,40 +54,38 @@ public:
      * Converts a JSON object to a Property to a JSON object.
      */
     virtual void fromJSON(const json& j, Property& p) const = 0;
-property:
 };
 
 template <typename SrcProperty>
 class TemplatePropertyJSONConverter : public PropertyJSONConverter {
-public:
-    TemplatePropertyJSONConverter() = default;
-    virtual ~TemplatePropertyJSONConverter() = default;
+ public:
+  TemplatePropertyJSONConverter() = default;
+  virtual ~TemplatePropertyJSONConverter() = default;
 
-    virtual std::string getPropClassIdentifier() const {
-        return PropertyTraits<SrcProperty>::classIdentifier(); }
-    /**
-     * Converts a Property to a JSON object.
-     * Requires that to_json(json& j, const SrcProperty& p) has been implemented.
-     */
-    virtual void toJSON(json& j, const Property& p) const override {
-        // Static cast will work here since we will only use the converter for its registered
-        // property types
-        to_json(j, static_cast<const SrcProperty&>(p));
-    }
-    /**
-     * Converts a JSON object to a Property to a JSON object.
-     * Requires that to_json(json& j, const SrcProperty& p) has been implemented.
-     */
-    virtual void fromJSON(const json& j, Property& p) const override {
-        // Static cast will work here since we will only use the converter for its registered
-        // property types
-        from_json(j, static_cast<const SrcProperty&>(p));
-    }
-
-
-protected:
+  virtual std::string getPropClassIdentifier() const override {
+    return PropertyTraits<SrcProperty>::classIdentifier();
+  }
+  /**
+   * Converts a Property to a JSON object.
+   * Requires that to_json(json& j, const SrcProperty& p) has been implemented.
+   */
+  virtual void toJSON(json& j, const Property& p) const override {
+    // Static cast will work here since we will only use the converter for its
+    // registered
+    // property types
+    to_json(j, static_cast<const SrcProperty&>(p));
+  }
+  /**
+   * Converts a JSON object to a Property to a JSON object.
+   * Requires that to_json(json& j, const SrcProperty& p) has been implemented.
+   */
+  virtual void fromJSON(const json& j, Property& p) const override {
+    // Static cast will work here since we will only use the converter for its
+    // registered
+    // property types
+    j.get_to(static_cast<SrcProperty&>(p));
+  }
 };
 
 }  // namespace inviwo
 
-#endif  // IVW_PROPERTYCONVERTER_H

@@ -51,7 +51,7 @@ public:
     RenderHandlerGL(std::function<void()> onWebPageCopiedCallback);
     void updateCanvasSize(size2_t newSize);
 
-    virtual void GetViewRect(CefRefPtr<CefBrowser> browser, CefRect &rect) override;
+    virtual bool GetViewRect(CefRefPtr<CefBrowser> browser, CefRect &rect) override;
 
     ///
     // Called when the browser wants to show or hide the popup widget. The popup

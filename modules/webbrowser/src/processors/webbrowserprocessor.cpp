@@ -56,21 +56,25 @@ const ProcessorInfo WebBrowserProcessor::getProcessorInfo() const { return proce
 
 WebBrowserProcessor::WebBrowserProcessor()
     : Processor()
-    // Output from CEF is 8-bits per channel
-    , background_("background")
-    , outport_("webpage", DataVec4UInt8::get())
-    , fileName_("fileName", "HTML file", "")
-    , autoReloadFile_("autoReloadFile", "Auto Reload", true)
-    , url_("URL", "URL", "http://www.inviwo.org")
-    , reload_("reload", "Reload")
-    , runJS_("runJS", "Run JS")
-    , js_("js", "JavaScript", "", InvalidationLevel::Valid)
-    , sourceType_("sourceType", "Source",
+      // Output from CEF is 8-bits per channel
+      ,
+      background_("background"),
+      outport_("webpage", DataVec4UInt8::get()),
+      fileName_("fileName", "HTML file", ""),
+      autoReloadFile_("autoReloadFile", "Auto Reload", true),
+      url_("URL", "URL", "http://www.inviwo.org"),
+      reload_("reload", "Reload"),
+      runJS_("runJS", "Run JS"),
+      js_("js", "JavaScript", "", InvalidationLevel::Valid),
+      sourceType_("sourceType", "Source",
                   {{"localFile", "Local File", SourceType::LocalFile},
-                   {"webAddress", "Web Address", SourceType::WebAddress}})
-    , picking_(this, 1, [&](PickingEvent* p) { cefInteractionHandler_.handlePickingEvent(p); })
-    , cefToInviwoImageConverter_(picking_.getColor())
-    , renderHandler_(new RenderHandlerGL([&]() {
+                   {"webAddress", "Web Address", SourceType::WebAddress}}),
+      picking_(this, 1,
+               [&](PickingEvent* p) {
+                 cefInteractionHandler_.handlePickingEvent(p);
+               }),
+      cefToInviwoImageConverter_(picking_.getColor()),
+      renderHandler_(new RenderHandlerGL([&]() {
         // Called as soon as new content is available
         // Queue an invalidation
         // Note: no need to queue invalidation using dispathFront since
@@ -78,83 +82,92 @@ WebBrowserProcessor::WebBrowserProcessor()
         // dispatchFront([&] {
         invalidate(InvalidationLevel::InvalidOutput);
         //});
-    }))
-    , browserClient_(new WebBrowserClient(renderHandler_)) {
-    addPort(background_);
-    background_.setOptional(true);
-    addPort(outport_);
+      })),
+      browserClient_(new WebBrowserClient(
+          renderHandler_, InviwoApplication::getPtr()
+                              ->getModuleByType<WebBrowserModule>()
+                              ->getPropertyWidgetCEFFactory())) {
+  addPort(background_);
+  background_.setOptional(true);
+  addPort(outport_);
 
-    addProperty(sourceType_);
-    addProperty(fileName_);
-    addProperty(autoReloadFile_);
-    addProperty(url_);
-    url_.setVisible(false);
-    addProperty(reload_);
+  addProperty(sourceType_);
+  addProperty(fileName_);
+  addProperty(autoReloadFile_);
+  addProperty(url_);
+  url_.setVisible(false);
+  addProperty(reload_);
 
-    addProperty(runJS_);
-    addProperty(js_);
+  addProperty(runJS_);
+  addProperty(js_);
 
-    auto updateVisibility = [this]() {
-        fileName_.setVisible(sourceType_ == SourceType::LocalFile);
-        autoReloadFile_.setVisible(sourceType_ == SourceType::LocalFile);
-        url_.setVisible(sourceType_ == SourceType::WebAddress);
-    };
+  auto updateVisibility = [this]() {
+    fileName_.setVisible(sourceType_ == SourceType::LocalFile);
+    autoReloadFile_.setVisible(sourceType_ == SourceType::LocalFile);
+    url_.setVisible(sourceType_ == SourceType::WebAddress);
+  };
+  updateVisibility();
+
+  auto reload = [this]() { browser_->GetMainFrame()->LoadURL(getSource()); };
+
+  sourceType_.onChange([reload, updateVisibility]() {
     updateVisibility();
+    reload();
+  });
+  fileName_.onChange([this, reload]() {
+    if (autoReloadFile_) {
+      fileObserver_.setFilename(fileName_);
+    }
+    reload();
+  });
+  autoReloadFile_.onChange([this]() {
+    if (autoReloadFile_) {
+      fileObserver_.setFilename(fileName_);
+    } else {
+      fileObserver_.stop();
+    }
+  });
+  url_.onChange(reload);
+  reload_.onChange(reload);
 
-    auto reload = [this]() { browser_->GetMainFrame()->LoadURL(getSource()); };
+  fileObserver_.onChange([this, reload]() {
+    if (sourceType_ == SourceType::LocalFile) {
+      reload();
+    }
+  });
 
-    sourceType_.onChange([reload, updateVisibility]() {
-        updateVisibility();
-        reload();
-    });
-    fileName_.onChange([this, reload]() {
-        if (autoReloadFile_) {
-            fileObserver_.setFilename(fileName_);
-        }
-        reload();
-    });
-    autoReloadFile_.onChange([this]() {
-        if (autoReloadFile_) {
-            fileObserver_.setFilename(fileName_);
-        } else {
-            fileObserver_.stop();
-        }
-    });
-    url_.onChange(reload);
-    reload_.onChange(reload);
+  // Setup CEF browser
+  CefWindowInfo window_info;
 
-    fileObserver_.onChange([this, reload]() {
-        if (sourceType_ == SourceType::LocalFile) {
-            reload();
-        }
-    });
+  CefBrowserSettings browserSettings;
 
-    // Setup CEF browser
-    CefWindowInfo window_info;
+  // Enable loading files from other locations than where the .html file is
+  browserSettings.file_access_from_file_urls = STATE_ENABLED;
 
-    CefBrowserSettings browserSettings;
+  browserSettings.windowless_frame_rate =
+      30;  // Must be between 1-60, 30 is default
 
-    // Enable loading files from other locations than where the .html file is
-    browserSettings.file_access_from_file_urls = STATE_ENABLED;
+  // in linux set a gtk widget, in windows a hwnd. If not available set nullptr
+  // - may cause
+  // some render errors, in context-menu and plugins.
+  window_info.SetAsWindowless(
+      nullptr);  // nullptr means no transparency (site background colour)
 
-    browserSettings.windowless_frame_rate = 30;  // Must be between 1-60, 30 is default
-
-    // in linux set a gtk widget, in windows a hwnd. If not available set nullptr - may cause
-    // some render errors, in context-menu and plugins.
-    window_info.SetAsWindowless(nullptr);  // nullptr means no transparency (site background colour)
-
-    // Note that browserClient_ outlives this class so make sure to remove renderHandler_ in
-    // destructor
-    browser_ = CefBrowserHost::CreateBrowserSync(window_info, browserClient_, getSource(),
-                                                 browserSettings, nullptr, nullptr);
-    // Observe when page has loaded
-    browserClient_->addLoadHandler(this);
-    // Do not process until frame is loaded
-    isReady_.setUpdate([this]() { return allInportsAreReady() && !isBrowserLoading_; });
-    // Inject events into CEF browser_
-    cefInteractionHandler_.setHost(browser_->GetHost());
-    cefInteractionHandler_.setRenderHandler(renderHandler_);
-    addInteractionHandler(&cefInteractionHandler_);
+  // Note that browserClient_ outlives this class so make sure to remove
+  // renderHandler_ in
+  // destructor
+  browser_ = CefBrowserHost::CreateBrowserSync(window_info, browserClient_,
+                                               getSource(), browserSettings,
+                                               nullptr);
+  // Observe when page has loaded
+  browserClient_->addLoadHandler(this);
+  // Do not process until frame is loaded
+  isReady_.setUpdate(
+      [this]() { return allInportsAreReady() && !isBrowserLoading_; });
+  // Inject events into CEF browser_
+  cefInteractionHandler_.setHost(browser_->GetHost());
+  cefInteractionHandler_.setRenderHandler(renderHandler_);
+  addInteractionHandler(&cefInteractionHandler_);
 }
 
 std::string WebBrowserProcessor::getSource() {

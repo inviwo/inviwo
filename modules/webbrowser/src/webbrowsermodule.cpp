@@ -31,6 +31,14 @@
 #include <modules/webbrowser/processors/webbrowserprocessor.h>
 #include <modules/webbrowser/webbrowserapp.h>
 
+#include <modules/webbrowser/io/json/boolpropertyjsonconverter.h>
+#include <modules/webbrowser/io/json/buttonpropertyjsonconverter.h>
+#include <modules/webbrowser/io/json/filepropertyjsonconverter.h>
+#include <modules/webbrowser/io/json/minmaxpropertyjsonconverter.h>
+#include <modules/webbrowser/io/json/optionpropertyjsonconverter.h>
+#include <modules/webbrowser/io/json/ordinalpropertyjsonconverter.h>
+#include <modules/webbrowser/io/json/templatepropertyjsonconverter.h>
+
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/settings/systemsettings.h>
 
@@ -47,12 +55,60 @@
 #include <warn/pop>
 
 namespace inviwo {
+    
+struct OrdinalCEFWidgetReghelper {
+    template <typename T>
+    auto operator()(WebBrowserModule& m) {
+        using PropertyType = OrdinalProperty<T>;
+        m.registerPropertyJSONConverterAndWidget<PropertyWidgetCEF, PropertyType>();
+    }
+};
+
+struct MinMaxCEFWidgetReghelper {
+    template <typename T>
+    auto operator()(WebBrowserModule& m) {
+        using PropertyType = MinMaxProperty<T>;
+        m.registerPropertyJSONConverterAndWidget<PropertyWidgetCEF, PropertyType>();
+    }
+};
+
+struct OptionCEFWidgetReghelper {
+    template <typename T>
+    auto operator()(WebBrowserModule& m) {
+        using PropertyType = TemplateOptionProperty<T>;
+        m.registerPropertyJSONConverterAndWidget<PropertyWidgetCEF, PropertyType>();
+    }
+};
 
 WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     : InviwoModule(app, "WebBrowser")
     // Call 60 times per second
     , doChromiumWork_(Timer::Milliseconds(1000 / 60), []() { CefDoMessageLoopWork(); }) {
-
+        
+    // Register JSON converters and corresponding widgets
+    registerPropertyJSONConverterAndWidget<PropertyWidgetCEF, BoolProperty>();
+    registerPropertyJSONConverterAndWidget<PropertyWidgetCEF, ButtonProperty>();
+    registerPropertyJSONConverterAndWidget<PropertyWidgetCEF, FileProperty>();
+    registerPropertyJSONConverterAndWidget<PropertyWidgetCEF, StringProperty>();
+    
+    // Register ordinal property widgets
+    // TODO: fix JSON conversion for glm-types
+    /*using OrdinalTypes =
+    std::tuple<float, vec2, vec3, vec4, mat2, mat3, mat4, double, dvec2, dvec3, dvec4, dmat2,
+    dmat3, dmat4, int, ivec2, ivec3, ivec4, glm::i64, unsigned int, uvec2, uvec3,
+    uvec4, size_t, size2_t, size3_t, size4_t, glm::fquat, glm::dquat>;*/
+    
+    using ScalarTypes = std::tuple<float, double, int, glm::i64, size_t>;
+    util::for_each_type<ScalarTypes>{}(OrdinalCEFWidgetReghelper{}, *this);
+    
+    // Register MinMaxProperty widgets
+    util::for_each_type<ScalarTypes>{}(MinMaxCEFWidgetReghelper{}, *this);
+    
+    // Register option property widgets
+    using OptionTypes = std::tuple<unsigned int, int, size_t, float, double, std::string>;
+    util::for_each_type<OptionTypes>{}(OptionCEFWidgetReghelper{}, *this);
+    
+  
     if (!app->getSystemSettings().enablePickingProperty_) {
         LogInfo(
             "Enabling picking system setting since it is required for interaction "
@@ -112,6 +168,8 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     CefMainArgs args;
     CefSettings settings;
 #endif
+        
+    
 
 #ifdef WIN32
     // Enable High-DPI support on Windows 7 or newer.
@@ -175,6 +233,12 @@ WebBrowserModule::~WebBrowserModule() {
     doChromiumWork_.stop();
     app_->waitForPool();
     CefShutdown();
+}
+    
+void WebBrowserModule::registerPropertyJSONConverter(std::unique_ptr<PropertyJSONConverterFactoryObject> propertyConverter) {
+    if (propertyJSONConverterFactory_.registerObject(propertyConverter.get())) {
+        propertyJSONConverters_.push_back(std::move(propertyConverter));
+    }
 }
 
 std::string WebBrowserModule::getDataURI(const std::string& data, const std::string& mime_type) {

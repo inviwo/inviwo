@@ -92,7 +92,7 @@ public:
     virtual void addNameFilter(FileExtension);
     virtual void addNameFilters(const std::vector<FileExtension>& filters);
     virtual void clearNameFilters();
-    virtual std::vector<FileExtension> getNameFilters();
+    virtual std::vector<FileExtension> getNameFilters() const;
 
     virtual void setAcceptMode(AcceptMode mode);
     AcceptMode getAcceptMode() const;

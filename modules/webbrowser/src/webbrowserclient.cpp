@@ -37,20 +37,21 @@
 
 namespace inviwo {
 
-WebBrowserClient::WebBrowserClient(CefRefPtr<RenderHandlerGL> renderHandler)
-    : renderHandler_(renderHandler) {}
+WebBrowserClient::WebBrowserClient(
+    CefRefPtr<RenderHandlerGL> renderHandler,
+    const PropertyWidgetCEFFactory* widgetFactory)
+    : widgetFactory_(widgetFactory), renderHandler_(renderHandler) {}
 
 void WebBrowserClient::SetRenderHandler(CefRefPtr<RenderHandlerGL> renderHandler) {
     renderHandler_ = renderHandler;
 }
 
 bool WebBrowserClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
-                                                CefRefPtr<CefFrame> frame,
                                                 CefProcessId source_process,
                                                 CefRefPtr<CefProcessMessage> message) {
     CEF_REQUIRE_UI_THREAD();
 
-    return messageRouter_->OnProcessMessageReceived(browser, frame, source_process, message);
+    return messageRouter_->OnProcessMessageReceived(browser, source_process, message);
 }
 
 void WebBrowserClient::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
@@ -62,7 +63,7 @@ void WebBrowserClient::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
         messageRouter_ = CefMessageRouterBrowserSide::Create(config);
 
         // Register handlers with the router.
-        propertyCefSynchronizer_ = new PropertyCefSynchronizer();
+        propertyCefSynchronizer_ = new PropertyCefSynchronizer(widgetFactory_);
         addLoadHandler(propertyCefSynchronizer_);
         messageRouter_->AddHandler(propertyCefSynchronizer_.get(), false);
     }

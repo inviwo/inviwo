@@ -28,12 +28,6 @@
  *********************************************************************************/
 
 #include <modules/webbrowser/properties/propertycefsynchronizer.h>
-#include <modules/webbrowser/properties/boolpropertywidgetcef.h>
-#include <modules/webbrowser/properties/buttonpropertywidgetcef.h>
-#include <modules/webbrowser/properties/optionpropertywidgetcef.h>
-#include <modules/webbrowser/properties/ordinalpropertywidgetcef.h>
-#include <modules/webbrowser/properties/minmaxpropertywidgetcef.h>
-#include <modules/webbrowser/properties/stringpropertywidgetcef.h>
 #include <modules/webbrowser/webbrowsermodule.h>
 
 #include <inviwo/core/util/stringconversion.h>
@@ -45,34 +39,8 @@
 
 namespace inviwo {
 
-PropertyCefSynchronizer::PropertyCefSynchronizer() {
-    registerPropertyWidget<BoolPropertyWidgetCEF, BoolProperty>(PropertySemantics("Default"));
-    registerPropertyWidget<ButtonPropertyWidgetCEF, ButtonProperty>(PropertySemantics("Default"));
-
-    // ordinal properties
-    registerPropertyWidget<FloatPropertyWidgetCEF, FloatProperty>(PropertySemantics("Default"));
-    registerPropertyWidget<DoublePropertyWidgetCEF, DoubleProperty>(PropertySemantics("Default"));
-    registerPropertyWidget<IntPropertyWidgetCEF, IntProperty>(PropertySemantics("Default"));
-    registerPropertyWidget<IntSizeTPropertyWidgetCEF, IntSizeTProperty>(
-        PropertySemantics("Default"));
-    registerPropertyWidget<Int64PropertyWidgetCEF, Int64Property>(PropertySemantics("Default"));
-
-    // Option properties
-    registerPropertyWidget<OptionPropertyWidgetCEFUInt, OptionPropertyUInt>(PropertySemantics("Default"));
-    registerPropertyWidget<OptionPropertyWidgetCEFInt, OptionPropertyInt>(PropertySemantics("Default"));
-    registerPropertyWidget<OptionPropertyWidgetCEFSize_t, OptionPropertySize_t>(PropertySemantics("Default"));
-    registerPropertyWidget<OptionPropertyWidgetCEFFloat, OptionPropertyFloat>(PropertySemantics("Default"));
-    registerPropertyWidget<OptionPropertyWidgetCEFDouble, OptionPropertyDouble>(PropertySemantics("Default"));
-    registerPropertyWidget<OptionPropertyWidgetCEFString, OptionPropertyString>(PropertySemantics("Default"));
-
-    // Min-max properties
-    registerPropertyWidget<FloatMinMaxPropertyWidgetCEF, FloatMinMaxProperty>(PropertySemantics("Default"));
-    registerPropertyWidget<DoubleMinMaxPropertyWidgetCEF, DoubleMinMaxProperty>(PropertySemantics("Default"));
-    registerPropertyWidget<IntMinMaxPropertyWidgetCEF, IntMinMaxProperty>(PropertySemantics("Default"));
-    registerPropertyWidget<IntSizeTMinMaxPropertyWidgetCEF, IntSizeTMinMaxProperty>(PropertySemantics("Default"));
-    registerPropertyWidget<Int64MinMaxPropertyWidgetCEF, Int64MinMaxProperty>(PropertySemantics("Default"));
-
-    registerPropertyWidget<StringPropertyWidgetCEF, StringProperty>(PropertySemantics("Default"));
+PropertyCefSynchronizer::PropertyCefSynchronizer(const PropertyWidgetCEFFactory* htmlWidgetFactory): htmlWidgetFactory_(htmlWidgetFactory) {
+ 
 };
 
 void PropertyCefSynchronizer::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
@@ -128,12 +96,11 @@ bool PropertyCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<C
             if (widget != widgets_.end()) {
                 return (*widget)->onQuery(browser, frame, query_id, request, persistent, callback);
             } else {
-                auto w = htmlWidgetFactory_.create(prop);
-                auto widgetp = dynamic_cast<PropertyWidgetCEF*>(w.get());
-                if (!widgetp) {
+                auto w = htmlWidgetFactory_->create(prop->getClassIdentifier(), prop);
+                if (!w) {
                     throw Exception("No HTML property widget for " + prop->getClassIdentifier());
                 }
-                return (widgetp)->onQuery(browser, frame, query_id, request, persistent, callback);
+                return w->onQuery(browser, frame, query_id, request, persistent, callback);
             }
         }
     } catch (json::exception& ex) {
@@ -149,7 +116,7 @@ void PropertyCefSynchronizer::onWillRemoveProperty(Property* property, size_t) {
 }
 
 void PropertyCefSynchronizer::startSynchronize(Property* property, std::string onChange, std::string propertyObserverCallback) {
-    auto widget = dynamic_cast<PropertyWidgetCEF*>(htmlWidgetFactory_.create(property).release());
+    auto widget = htmlWidgetFactory_->create(property->getClassIdentifier(), property);
     if (!widget) {
         throw Exception("No HTML property widget for " + property->getClassIdentifier());
     }

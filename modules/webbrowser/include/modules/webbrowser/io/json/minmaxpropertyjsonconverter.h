@@ -30,26 +30,11 @@
 #pragma once
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>
+#include <modules/webbrowser/io/json/glmjsonconverter.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <nlohmann/json.hpp>
 
 using json = nlohmann::json;
-
-namespace glm {
-template <typename T, precision P, template <typename, precision> class VecType>
-void from_json(const nlohmann::json& j, VecType<T, P>& v) {
-    for (int i = 0; i < v.length(); i++) {
-        v[i] = j[i];
-    }
-};
-
-template <typename T, precision P, template <typename, precision> class VecType>
-void to_json(nlohmann::json& j, const VecType<T, P>& v) {
-    for (int i = 0; i < v.length(); i++) {
-        j[i] = v[i];
-    }
-};
-}  // namespace glm
 
 namespace inviwo {
 
@@ -91,22 +76,19 @@ void to_json(json& j, const MinMaxProperty<T>& p) {
  */
 template <typename T>
 void from_json(const json& j, MinMaxProperty<T>& p) {
-    // Extract header and column types
-    if (j.empty() || !j.front().is_object()) {
-        // Only support object types, i.e. [ {key: value} ]
-        return;
-    }
+  auto start = j.count("start") > 0 ? j.at("start").get<T>() : p.getStart();
+  auto end = j.count("end") > 0 ? j.at("end").get<T>() : p.getEnd();
 
-    auto start = j.count("start") > 0 ? j.at("start").get<T>() : p.getStart();
-    auto end = j.count("end") > 0 ? j.at("end").get<T>() : p.getEnd();
+  auto rangeMin =
+      j.count("rangeMin") > 0 ? j.at("rangeMin").get<T>() : p.getRangeMin();
+  auto rangeMax =
+      j.count("rangeMax") > 0 ? j.at("rangeMax").get<T>() : p.getRangeMax();
 
-    auto rangeMin = j.count("rangeMin") > 0 ? j.at("rangeMin").get<T>() : p.getRangeMin();
-    auto rangeMax = j.count("rangeMax") > 0 ? j.at("rangeMax").get<T>() : p.getRangeMax();
-
-    auto increment = j.count("increment") > 0 ? j.at("increment").get<T>() : p.getIncrement();
-    auto minSep =
-        j.count("minSeparation") > 0 ? j.at("minSeparation").get<T>() : p.getMinSeparation();
-    p.set(start, end, rangeMin, rangeMax, increment, minSep);
+  auto increment =
+      j.count("increment") > 0 ? j.at("increment").get<T>() : p.getIncrement();
+  auto minSep = j.count("minSeparation") > 0 ? j.at("minSeparation").get<T>()
+                                             : p.getMinSeparation();
+  p.set(start, end, rangeMin, rangeMax, increment, minSep);
 }
 
 }  // namespace inviwo

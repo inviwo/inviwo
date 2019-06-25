@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,46 +27,47 @@
  *
  *********************************************************************************/
 
-#include <modules/webbrowser/properties/buttonpropertywidgetcef.h>
+#pragma once
+
+#include <modules/webbrowser/webbrowsermoduledefine.h>
+#include <modules/webbrowser/io/json/propertyjsonconverterfactory.h>
+#include <modules/webbrowser/properties/propertywidgetcef.h>
+#include <string>
 
 namespace inviwo {
+    
+class Property;
+class PropertyWidget;
 
-ButtonPropertyWidgetCEF::ButtonPropertyWidgetCEF(ButtonProperty* property,
-                                                 CefRefPtr<CefFrame> frame, std::string htmlId)
-    : PropertyWidgetCEF(property, frame, htmlId) {}
+class IVW_MODULE_WEBBROWSER_API PropertyWidgetCEFFactoryObject {
+public:
+    PropertyWidgetCEFFactoryObject(const PropertyJSONConverterFactory* converterFactory);
+    virtual ~PropertyWidgetCEFFactoryObject();
+    
+    virtual std::unique_ptr<PropertyWidgetCEF> create(Property*) = 0;
+    
+    virtual std::string getClassIdentifier() const = 0;
+    
+protected:
+    const PropertyJSONConverterFactory* converterFactory_;
+};
 
-inline void ButtonPropertyWidgetCEF::updateFromProperty() {
-    // Frame might be null if for example webpage is not found on startup
-    if (!frame_) {
-        return;
+template <typename T, typename P>
+class PropertyWidgetCEFFactoryObjectTemplate : public PropertyWidgetCEFFactoryObject {
+public:
+ PropertyWidgetCEFFactoryObjectTemplate(
+     const PropertyJSONConverterFactory* converterFactory)
+     : PropertyWidgetCEFFactoryObject(converterFactory) {}
+
+ virtual ~PropertyWidgetCEFFactoryObjectTemplate() {}
+
+ virtual std::unique_ptr<PropertyWidgetCEF> create(Property* prop) {
+   return std::make_unique<T>(
+       prop, converterFactory_->create(getClassIdentifier(), prop));
     }
-    std::stringstream script;
-
-    script << this->getOnChange() << "();";
-    // Send click button event
-    //script << "var property = document.getElementById(\"" << stringToFind_ << "\");";
-    //script << "if(property!=null){property.click();}";
-    //// Block OnQuery, called due to property.click()
-    onQueryBlocker_++;
-    frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);
-}
-
-bool ButtonPropertyWidgetCEF::onQuery(
-    CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 /*query_id*/,
-    const CefString& /*request*/, bool /*persistent*/,
-    CefRefPtr<CefMessageRouterBrowserSide::Handler::Callback> callback) {
-    if (onQueryBlocker_ > 0) {
-        // LogInfo("blocked");
-        onQueryBlocker_--;
-        callback->Success("");
-        return true;
-    }
-    // Prevent calling updateFromProperty() for this widget
-    property_->setInitiatingWidget(this);
-    static_cast<ButtonProperty*>(property_)->pressButton();
-    callback->Success("");
-    property_->clearInitiatingWidget();
-    return true;
-}
-
+    
+    virtual std::string getClassIdentifier() const { return PropertyTraits<P>::classIdentifier(); };
+};
+    
 }  // namespace inviwo
+

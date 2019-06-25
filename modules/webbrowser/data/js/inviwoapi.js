@@ -30,7 +30,7 @@ class InviwoAPI {
   async setProperty(path, parameters, onSuccess = function(response){}, 
                     onFailure = function(error_code, error_message){}) {
 	window.cefQuery({
-		request: JSON.stringify({"command":"property.set", "path": path, ... parameters}),
+		request: JSON.stringify({"command":"property.set", "path": path, "data": parameters}),
 		onSuccess: function(response) {
 			if(typeof onSuccess === 'function') { 
 				onSuccess(response);
@@ -68,6 +68,21 @@ class InviwoAPI {
 			}
 		});
 	}
+	async forceRedraw(element) {
+
+	    if (!element) { return; }
+
+	    var n = document.createTextNode(' ');
+	    var disp = element.style.display;  // don't worry about previous display style
+
+	    element.appendChild(n);
+	    element.style.display = 'none';
+
+	    setTimeout(function(){
+	        element.style.display = disp;
+	        n.parentNode.removeChild(n);
+	    },20); // you can play with this timeout to make it as short as possible
+	}
 	
 	
 	async syncRange(htmlId, prop) {
@@ -77,17 +92,26 @@ class InviwoAPI {
 			property.max = prop["maxValue"];
 			property.step =prop["increment"];
 			property.value = prop["value"];
-			// Send oninput event to update element
-			property.oninput();
 		};
 	}
 	
 	async syncCheckbox(htmlId, prop) {
 		var property = document.getElementById(htmlId);
 		if (property!=null) {
+			console.log("Setting bool value: " + prop["value"]);
 			property.checked = prop["value"];
 			// Send oninput event to update element
-			property.click();
+			//property.click();
+		};
+	}
+
+	async syncStringInput(htmlId, prop) {
+		var property = document.getElementById(htmlId);
+		if (property!=null) {
+			console.log("Setting string value: " + prop["value"]);
+			property.value = prop["value"];
+			// Send oninput event to update element
+			//property.oninput();
 		};
 	}
 }
