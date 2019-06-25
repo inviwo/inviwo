@@ -58,8 +58,6 @@ namespace inviwo {
 
 VectorFieldVisualizationGLModule::VectorFieldVisualizationGLModule(InviwoApplication* app)
     : InviwoModule(app, "VectorFieldVisualizationGL") {
-    // Add a directory to the search path of the Shadermanager
-
     vectorfieldvisualizationgl::addShaderResources(ShaderManager::getPtr(),
                                                    {getPath(ModulePath::GLSL)});
 
@@ -78,15 +76,11 @@ VectorFieldVisualizationGLModule::VectorFieldVisualizationGLModule(InviwoApplica
     registerProcessor<Vector3DDivergence>();
     registerProcessor<TMIP>();
     registerProcessor<VectorFieldGenerator4D>();
-
     
     auto& gl = app->getModuleByType<OpenGLModule>()->getOpenGLCapabilities();
     if(gl.isComputeShadersSupported()){
         registerProcessor<StreamParticles>();
     }
-    
-
-
 }
 
 int VectorFieldVisualizationGLModule::getVersion() const { return 1; }
