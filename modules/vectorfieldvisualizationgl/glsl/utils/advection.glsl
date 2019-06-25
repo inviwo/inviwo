@@ -29,25 +29,25 @@
  
 vec3 sampleVelocity(vec3 worldPos);
 
-/*
-* Advect p one step usig Euler
-* Caller needs to implement `vec3 sampleVelocity(vec3 worldPos)`
-* @ see streamparticles.comp
-*/ 
+/**
+ * Advect point p at \p worldPos one step using Euler integration
+ * Caller needs to implement `vec3 sampleVelocity(vec3 worldPos)`
+ * @ see streamparticles.comp
+ */ 
 vec3 advectEuler(vec3 worldPos, float stepSize) {
     return worldPos + sampleVelocity(worldPos) * stepSize;
 }
 
-/*
-* Advect p one step usig 4th Order Runge-Kutta
-* Caller needs to implement `vec3 sampleVelocity(vec3 worldPos)`
-* @ see streamparticles.comp
-*/ 
+/**
+ * Advect point p at \p worldPos one step usig 4th order Runge-Kutta integration
+ * Caller needs to implement `vec3 sampleVelocity(vec3 worldPos)`
+ * @ see streamparticles.comp
+ */ 
 vec3 advectRK4(vec3 worldPos, float stepSize) {
     const float h2 = stepSize / 2.0f;
     vec3 k1 = sampleVelocity(worldPos);
     vec3 k2 = sampleVelocity(worldPos + k1 * h2);
     vec3 k3 = sampleVelocity(worldPos + k2 * h2);
     vec3 k4 = sampleVelocity(worldPos + k3 * stepSize);
-    return worldPos + ((k1 + k2 + k2 + k3 + k3 + k4) / 6.0) * stepSize;
+    return worldPos + (k1 + k2 + k2 + k3 + k3 + k4) * stepSize / 6.0;
 }
