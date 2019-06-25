@@ -75,6 +75,8 @@ inviwo.subscribe("TextOverlay.enable", syncCheckbox);
 inviwo.subscribe("TextOverlay.text", syncString);
 
 function syncOption(prop) { 
+	// Currently, we cannot display select elements so we hack 
+	// this list of options instead
 	var path = "VolumeRaycaster.lighting.shadingMode";
 	var options = "";
 	for (var i in prop["options"]){
@@ -84,6 +86,10 @@ function syncOption(prop) {
 	console.log("Hello option property, selected value: " + prop["value"] + "\n selected index: " + prop["selectedIndex"] + "\n Options: " + options );
 	var htmlId = "shadingMode";
 	var property = document.getElementById(htmlId);
+	var oldSelect = document.getElementById(htmlId + "Select");
+	var select = document.createElement("select");
+	select.id = htmlId + "Select";
+	select.style.visibility = "hidden";
 	var optionIndex = 0;
 	for (var i in prop["options"]) {
 		var option = prop["options"][i];
@@ -92,28 +98,42 @@ function syncOption(prop) {
 		var oldOption = document.getElementById(optionId);
 
 		var optionDiv = document.createElement("div");
-		var optionValue = document.createElement("option");
-		optionValue.value = optionIndex;
-		optionValue.style.visibility = "hidden";
-		optionDiv.appendChild(optionValue);
+		var optionElem = document.createElement("option");
+		optionElem.id = option["id"];
+		optionElem.label = option["name"];
+		optionElem.value = option["value"];
+		optionElem.index = i;
+		optionElem.style.visibility = "hidden";
+		optionDiv.appendChild(optionElem);
 
 		if (i == prop["selectedIndex"]) {
 			optionDiv.className = "selectionElement selectedElement";
+			optionElem.selected = true;
 		} else {
 			optionDiv.className = "selectionElement";
 		}
 		optionDiv.innerHTML = option["name"];
+		optionDiv.title = option["value"];
 		optionDiv.id = optionId;
 		optionDiv.onclick = function () {
-			console.log("Setting value: " + Number(this.childNodes[0].nodeValue);
-			inviwo.setProperty(path, {selectedIndex: Number(this.childNodes[0].nodeValue)});
+			console.log("Setting value: " + this.title);
+			console.log("Setting value: " + this.lastChild.nodeValue + " Index: " + this.childNodes[0].textContent);
+			inviwo.setProperty(path, {value: Number(this.title)});
 		};
 		if (oldOption) {
 			property.replaceChild(optionDiv, oldOption);
+			select.replaceChild(optionElem, document.getElementById(option["id"]));
 		} else {
 			property.appendChild(optionDiv);
+			select.appendChild(optionElem);
 		}
-		optionIndex++;
+		optionIndex += 1;
+	}
+
+	if (oldSelect) {
+		property.replaceChild(select, oldSelect);
+	} else {
+		property.appendChild(select);
 	}
 	updateClickableLists();
 

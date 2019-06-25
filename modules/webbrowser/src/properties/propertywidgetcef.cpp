@@ -80,9 +80,6 @@ PropertyWidgetCEF::PropertyWidgetCEF(Property* prop, std::unique_ptr<PropertyJSO
 }
 void PropertyWidgetCEF::setFrame(CefRefPtr<CefFrame> frame) {
     setFrameIfPartOfFrame(frame);
-    // frame_ = frame;
-    // Make sure that we do not block synchronizations from new page.
-    onQueryBlocker_ = 0;
 }
 
 void PropertyWidgetCEF::setFrameIfPartOfFrame(CefRefPtr<CefFrame> frame) {
@@ -128,13 +125,10 @@ void PropertyWidgetCEF::updateFromProperty() {
     if (!frame_) {
         return;
     }
-    
     std::stringstream script;
     json p;
     converter_->toJSON(p, *getProperty());
     script << this->getOnChange() << "(" << p.dump() << ");";
-    // Block OnQuery, called due to property.oninput()
-    onQueryBlocker_++;
     frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);
 }
 
