@@ -136,7 +136,8 @@ void TubeRendering::process() {
                (mi.ct == ConnectivityType::StripAdjacency || mi.ct == ConnectivityType::Adjacency);
     };
     const auto hasLine = [](Mesh::MeshInfo mi) {
-        return mi.dt == DrawType::Lines && mi.ct == ConnectivityType::None;
+        return mi.dt == DrawType::Lines &&
+               (mi.ct == ConnectivityType::None || mi.ct == ConnectivityType::Strip);
     };
 
     const auto hasAnyLine = [](const Mesh& mesh, auto test) {
