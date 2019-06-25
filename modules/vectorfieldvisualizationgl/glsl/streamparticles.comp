@@ -26,6 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+ 
+layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 
 #include "utils/classification.glsl"
 
@@ -33,7 +35,6 @@
 #define NUM_ADVECTIONS 1
 #endif
 
-layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 
 uniform float dt;
 uniform float advectionSpeed;
@@ -91,7 +92,7 @@ void main() {
     }
 
     float v = length(sampleVelocity(p));
-    v = (v - minV) / (maxV - minV);
+    v = clamp((v - minV) / (maxV - minV), 0.0, 1.0);
 
     if (v < 0.001) {
         life[gid] -= 0.5 * dt;  // die in 0.5 seconds if stale

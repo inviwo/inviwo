@@ -76,7 +76,7 @@ namespace inviwo {
  *   * __Max velocity__ Used together with __Min velocity__ to map velocity magnitude from [Min
  * velocity, Max velocity] -> [0 1], used for mapping velocity to radius and color.
  *   * __Velocity mapping__ Transferfunction to map a velocity to color.
- *   * __Reseed interval__ Seconds between reseeding. When reseeding particles whoes life is zero
+ *   * __Reseed interval__ Seconds between reseeding. When reseeding particles whose life is zero
  * will get new position by selecting (randomly) from the input seed vector.
  *
  */
