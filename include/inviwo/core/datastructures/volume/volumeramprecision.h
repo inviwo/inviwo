@@ -46,8 +46,10 @@ class VolumeRAMPrecision : public VolumeRAM {
 public:
     using type = T;
 
-    VolumeRAMPrecision(size3_t dimensions = size3_t(128, 128, 128));
-    VolumeRAMPrecision(T* data, size3_t dimensions = size3_t(128, 128, 128));
+    VolumeRAMPrecision(size3_t dimensions = size3_t(128, 128, 128),
+                       const SwizzleMask& swizzleMask = swizzlemasks::rgba);
+    VolumeRAMPrecision(T* data, size3_t dimensions = size3_t(128, 128, 128),
+                       const SwizzleMask& swizzleMask = swizzlemasks::rgba);
     VolumeRAMPrecision(const VolumeRAMPrecision<T>& rhs);
     VolumeRAMPrecision<T>& operator=(const VolumeRAMPrecision<T>& that);
     virtual VolumeRAMPrecision<T>* clone() const override;
@@ -102,11 +104,20 @@ public:
 
     virtual size_t getNumberOfBytes() const override;
 
+    /**
+     * \brief update the swizzle mask of the color channels when sampling the volume
+     *
+     * @param mask new swizzle mask
+     */
+    virtual void setSwizzleMask(const SwizzleMask& mask) override;
+    virtual SwizzleMask getSwizzleMask() const override;
+
 private:
     size3_t dimensions_;
     bool ownsDataPtr_;
     std::unique_ptr<T[]> data_;
     mutable HistogramContainer histCont_;
+    SwizzleMask swizzleMask_;
 };
 
 /**
@@ -118,30 +129,34 @@ private:
  * @param dataPtr optional pointer to data to be handed into the volume.
  * @return nullptr if no valid format was specified.
  */
-IVW_CORE_API std::shared_ptr<VolumeRAM> createVolumeRAM(const size3_t& dimensions,
-                                                        const DataFormatBase* format,
-                                                        void* dataPtr = nullptr);
+IVW_CORE_API std::shared_ptr<VolumeRAM> createVolumeRAM(
+    const size3_t& dimensions, const DataFormatBase* format, void* dataPtr = nullptr,
+    const SwizzleMask& swizzleMask = swizzlemasks::rgba);
 
 template <typename T>
-VolumeRAMPrecision<T>::VolumeRAMPrecision(size3_t dimensions)
+VolumeRAMPrecision<T>::VolumeRAMPrecision(size3_t dimensions, const SwizzleMask& swizzleMask)
     : VolumeRAM(DataFormat<T>::get())
     , dimensions_(dimensions)
     , ownsDataPtr_(true)
-    , data_(new T[dimensions_.x * dimensions_.y * dimensions_.z]()) {}
+    , data_(new T[dimensions_.x * dimensions_.y * dimensions_.z]())
+    , swizzleMask_(swizzleMask) {}
 
 template <typename T>
-VolumeRAMPrecision<T>::VolumeRAMPrecision(T* data, size3_t dimensions)
+VolumeRAMPrecision<T>::VolumeRAMPrecision(T* data, size3_t dimensions,
+                                          const SwizzleMask& swizzleMask)
     : VolumeRAM(DataFormat<T>::get())
     , dimensions_(dimensions)
     , ownsDataPtr_(true)
-    , data_(data ? data : new T[dimensions_.x * dimensions_.y * dimensions_.z]()) {}
+    , data_(data ? data : new T[dimensions_.x * dimensions_.y * dimensions_.z]())
+    , swizzleMask_(swizzleMask) {}
 
 template <typename T>
 VolumeRAMPrecision<T>::VolumeRAMPrecision(const VolumeRAMPrecision<T>& rhs)
     : VolumeRAM(rhs)
     , dimensions_(rhs.dimensions_)
     , ownsDataPtr_(true)
-    , data_(new T[dimensions_.x * dimensions_.y * dimensions_.z]) {
+    , data_(new T[dimensions_.x * dimensions_.y * dimensions_.z])
+    , swizzleMask_(rhs.swizzleMask_) {
     std::memcpy(data_.get(), rhs.data_.get(),
                 dimensions_.x * dimensions_.y * dimensions_.z * sizeof(T));
 }
@@ -156,6 +171,7 @@ VolumeRAMPrecision<T>& VolumeRAMPrecision<T>::operator=(const VolumeRAMPrecision
         data_.swap(data);
         std::swap(dim, dimensions_);
         ownsDataPtr_ = true;
+        swizzleMask_ = that.swizzleMask_;
     }
     return *this;
 }
@@ -231,6 +247,19 @@ void VolumeRAMPrecision<T>::setDimensions(size3_t dimensions) {
     dimensions_ = dimensions;
     if (!ownsDataPtr_) data.release();
     ownsDataPtr_ = true;
+}
+
+template <typename T>
+void VolumeRAMPrecision<T>::setSwizzleMask(const SwizzleMask& mask) {
+    swizzleMask_ = mask;
+    if (owner_) {
+        owner_->setSwizzleMask(mask);
+    }
+}
+
+template <typename T>
+SwizzleMask VolumeRAMPrecision<T>::getSwizzleMask() const {
+    return swizzleMask_;
 }
 
 template <typename T>

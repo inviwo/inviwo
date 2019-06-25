@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/data.h>
 #include <inviwo/core/datastructures/spatialdata.h>
+#include <inviwo/core/datastructures/image/imagetypes.h>
 #include <inviwo/core/datastructures/datamapper.h>
 #include <inviwo/core/datastructures/representationtraits.h>
 #include <inviwo/core/datastructures/volume/volumerepresentation.h>
@@ -64,7 +65,8 @@ class IVW_CORE_API Volume : public Data<Volume, VolumeRepresentation>,
                             public MetaDataOwner {
 public:
     Volume(size3_t dimensions = size3_t(128, 128, 128),
-           const DataFormatBase* format = DataUInt8::get());
+           const DataFormatBase* format = DataUInt8::get(),
+           const SwizzleMask& swizzleMask = swizzlemasks::rgba);
     Volume(std::shared_ptr<VolumeRepresentation>);
     Volume(const Volume&) = default;
     Volume& operator=(const Volume& that) = default;
@@ -136,6 +138,17 @@ public:
 
     template <typename Kind>
     const typename representation_traits<Volume, Kind>::type* getRep() const;
+
+    /**
+     * \brief update the swizzle mask of the color channels when sampling the volume
+     *
+     * @param mask new swizzle mask
+     */
+    void setSwizzleMask(const SwizzleMask& mask);
+    SwizzleMask getSwizzleMask() const;
+
+protected:
+    SwizzleMask swizzleMask_;
 };
 
 template <typename Kind>

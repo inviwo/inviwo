@@ -34,17 +34,19 @@
 
 namespace inviwo {
 
-Volume::Volume(size3_t dimensions, const DataFormatBase* format)
+Volume::Volume(size3_t dimensions, const DataFormatBase* format, const SwizzleMask& swizzleMask)
     : Data<Volume, VolumeRepresentation>(format)
     , StructuredGridEntity<3>(dimensions)
     , MetaDataOwner()
-    , dataMap_(format) {}
+    , dataMap_(format)
+    , swizzleMask_(swizzleMask) {}
 
 Volume::Volume(std::shared_ptr<VolumeRepresentation> in)
     : Data<Volume, VolumeRepresentation>(in->getDataFormat())
     , StructuredGridEntity<3>(in->getDimensions())
     , MetaDataOwner()
-    , dataMap_(in->getDataFormat()) {
+    , dataMap_(in->getDataFormat())
+    , swizzleMask_(in->getSwizzleMask()) {
     addRepresentation(in);
 }
 
@@ -158,6 +160,21 @@ vec3 Volume::getWorldSpaceGradientSpacing() const {
     //         0             gradientSpacing.y           0
     //         0                   0               gradientSpacing.z }
     return ds;
+}
+
+void Volume::setSwizzleMask(const SwizzleMask& mask) {
+    // update swizzle mask of all representations
+    for (auto rep : representations_) {
+        rep.second->setSwizzleMask(mask);
+    }
+    swizzleMask_ = mask;
+}
+
+SwizzleMask Volume::getSwizzleMask() const {
+    if (this->hasRepresentations() && lastValidRepresentation_) {
+        return lastValidRepresentation_->getSwizzleMask();
+    }
+    return swizzleMask_;
 }
 
 uvec3 Volume::colorCode = uvec3(188, 101, 101);
