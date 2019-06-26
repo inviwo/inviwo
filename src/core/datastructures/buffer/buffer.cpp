@@ -31,14 +31,19 @@
 #include <inviwo/core/datastructures/buffer/bufferrepresentation.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
+#include <inviwo/core/util/formats.h>
 
 namespace inviwo {
 
-BufferBase::BufferBase(size_t size, const DataFormatBase* format, BufferUsage usage,
+BufferBase::BufferBase(size_t defaultSize, const DataFormatBase* defaultFormat, BufferUsage usage,
                        BufferTarget target)
-    : Data<BufferBase, BufferRepresentation>(format), size_(size), usage_(usage), target_(target) {}
+    : Data<BufferBase, BufferRepresentation>()
+    , defaultSize_(defaultSize)
+    , usage_(usage)
+    , target_(target)
+    , defaultDataFormat_(defaultFormat) {}
 
-size_t BufferBase::getSizeInBytes() const { return size_ * dataFormatBase_->getSize(); }
+size_t BufferBase::getSizeInBytes() const { return getSize() * getDataFormat()->getSize(); }
 
 BufferUsage BufferBase::getBufferUsage() const { return usage_; }
 
@@ -49,23 +54,34 @@ const std::string BufferBase::classIdentifier = "org.inviwo.Buffer";
 const std::string BufferBase::dataName = "Buffer";
 
 void BufferBase::setSize(size_t size) {
-    if (size != size_) {
-        size_ = size;
+    if (size == getSize()) return;
 
-        if (lastValidRepresentation_) {
-            // Resize last valid representation
-            lastValidRepresentation_->setSize(size);
-            removeOtherRepresentations(lastValidRepresentation_.get());
-        }
+    defaultSize_ = size;
+
+    if (lastValidRepresentation_) {
+        // Resize last valid representation
+        lastValidRepresentation_->setSize(size);
+        removeOtherRepresentations(lastValidRepresentation_.get());
     }
 }
 
 size_t BufferBase::getSize() const {
     // We need to update the size if a representation has changed size
-    if (lastValidRepresentation_)
-        const_cast<BufferBase*>(this)->size_ = lastValidRepresentation_->getSize();
+    if (lastValidRepresentation_) {
+        return lastValidRepresentation_->getSize();
+    }
 
-    return size_;
+    return defaultSize_;
+}
+
+void BufferBase::setDataFormat(const DataFormatBase* format) { defaultDataFormat_ = format; }
+
+const DataFormatBase* BufferBase::getDataFormat() const {
+    if (lastValidRepresentation_) {
+        return lastValidRepresentation_->getDataFormat();
+    }
+
+    return defaultDataFormat_;
 }
 
 }  // namespace inviwo

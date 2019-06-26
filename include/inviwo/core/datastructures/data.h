@@ -40,8 +40,6 @@
 
 namespace inviwo {
 
-class DataFormatBase;
-
 /**
  * \defgroup datastructures Datastructures
  */
@@ -166,16 +164,8 @@ public:
      */
     void invalidateAllOther(const Repr* repr);
 
-    /**
-     * Set the format of the data.
-     * @see DataFormatBase
-     * @param format The format of the data.
-     */
-    void setDataFormat(const DataFormatBase* format);
-    const DataFormatBase* getDataFormat() const;
-
 protected:
-    Data(const DataFormatBase* format);
+    Data() = default;
     Data(const Data<Self, Repr>& rhs);
     Data<Self, Repr>& operator=(const Data<Self, Repr>& rhs);
 
@@ -189,16 +179,11 @@ protected:
     mutable std::unordered_map<std::type_index, std::shared_ptr<Repr>> representations_;
     // A pointer to the the most recently updated representation. Makes updates and creation faster.
     mutable std::shared_ptr<Repr> lastValidRepresentation_;
-    const DataFormatBase* dataFormatBase_;
 };
 
 template <typename Self, typename Repr>
-Data<Self, Repr>::Data(const DataFormatBase* format)
-    : lastValidRepresentation_{nullptr}, dataFormatBase_{format} {}
-
-template <typename Self, typename Repr>
 Data<Self, Repr>::Data(const Data<Self, Repr>& rhs)
-    : lastValidRepresentation_{nullptr}, dataFormatBase_{rhs.dataFormatBase_} {
+    : lastValidRepresentation_{nullptr} {
     rhs.copyRepresentationsTo(this);
 }
 
@@ -206,7 +191,6 @@ template <typename Self, typename Repr>
 Data<Self, Repr>& Data<Self, Repr>::operator=(const Data<Self, Repr>& that) {
     if (this != &that) {
         that.copyRepresentationsTo(this);
-        dataFormatBase_ = that.dataFormatBase_;
     }
     return *this;
 }
@@ -368,16 +352,6 @@ template <typename Self, typename Repr>
 bool Data<Self, Repr>::hasRepresentations() const {
     std::unique_lock<std::mutex> lock(mutex_);
     return !representations_.empty();
-}
-
-template <typename Self, typename Repr>
-void Data<Self, Repr>::setDataFormat(const DataFormatBase* format) {
-    dataFormatBase_ = format;
-}
-
-template <typename Self, typename Repr>
-const DataFormatBase* Data<Self, Repr>::getDataFormat() const {
-    return dataFormatBase_;
 }
 
 }  // namespace inviwo

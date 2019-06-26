@@ -32,12 +32,12 @@
 namespace inviwo {
 
 LayerDisk::LayerDisk(LayerType type, const SwizzleMask& swizzleMask)
-    : LayerRepresentation(size2_t(0), type, DataFormatBase::get())
+    : LayerRepresentation(type, DataFormatBase::get())
     , DiskRepresentation<LayerRepresentation>()
     , swizzleMask_(swizzleMask) {}
 
 LayerDisk::LayerDisk(std::string url, LayerType type, const SwizzleMask& swizzleMask)
-    : LayerRepresentation(size2_t(0), type, DataFormatBase::get())
+    : LayerRepresentation(type, DataFormatBase::get())
     , DiskRepresentation<LayerRepresentation>(url)
     , swizzleMask_(swizzleMask) {}
 
@@ -63,6 +63,8 @@ void LayerDisk::setDimensions(size2_t dimensions) {
     dimensions_ = dimensions;
     updateBaseMetaFromRepresentation();
 }
+
+const size2_t& LayerDisk::getDimensions() const { return dimensions_; }
 
 bool LayerDisk::copyRepresentationsTo(LayerRepresentation*) const { return false; }
 

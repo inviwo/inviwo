@@ -31,9 +31,17 @@
 #define IVW_DATAREPRESENTATION_H
 
 #include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/exception.h>
 #include <typeindex>
 
 namespace inviwo {
+
+class IVW_CORE_API MissingRepresentation : public Exception {
+public:
+    MissingRepresentation(const std::string& message = "",
+                          ExceptionContext context = ExceptionContext());
+    virtual ~MissingRepresentation() noexcept = default;
+};
 
 /**
  * \ingroup datastructures

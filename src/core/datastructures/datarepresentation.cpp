@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,30 +27,11 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/datastructures/image/layerram.h>
-#include <inviwo/core/util/canvas.h>
-#include <inviwo/core/io/datawriter.h>
-#include <inviwo/core/datastructures/image/layer.h>
-#include <inviwo/core/io/datawriterfactory.h>
-#include <inviwo/core/io/datawriter.h>
+#include <inviwo/core/datastructures/datarepresentation.h>
 
 namespace inviwo {
 
-LayerRAM::LayerRAM(LayerType type, const DataFormatBase* format)
-    : LayerRepresentation(type, format) {}
-
-bool LayerRAM::copyRepresentationsTo(LayerRepresentation* targetLayerRam) const {
-    // We use a LayerDataWriter to copy/resize one representation into another. By asking for the
-    // bmp file-extension we will get the LayerWriter defined in the CImg module which implements
-    // the writeDataToRepresentation method
-    static DataWriterType<Layer>* layerWriter_ = InviwoApplication::getPtr()
-                                                     ->getDataWriterFactory()
-                                                     ->getWriterForTypeAndExtension<Layer>("bmp")
-                                                     .release();
-
-    return layerWriter_->writeDataToRepresentation(this, targetLayerRam);
-}
-
-std::type_index LayerRAM::getTypeIndex() const { return std::type_index(typeid(LayerRAM)); }
+MissingRepresentation::MissingRepresentation(const std::string& message, ExceptionContext context)
+    : Exception(message, context) {}
 
 }  // namespace inviwo

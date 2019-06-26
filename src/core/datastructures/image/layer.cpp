@@ -37,39 +37,67 @@
 
 namespace inviwo {
 
-Layer::Layer(size2_t dimensions, const DataFormatBase* format, LayerType type,
-             const SwizzleMask& swizzleMask)
-    : Data<Layer, LayerRepresentation>(format)
-    , StructuredGridEntity<2>(dimensions)
+Layer::Layer(size2_t defaultDimensions, const DataFormatBase* defaultFormat, LayerType type,
+             const SwizzleMask& defaultSwizzleMask)
+    : Data<Layer, LayerRepresentation>()
+    , StructuredGridEntity<2>()
     , layerType_(type)
-    , swizzleMask_(swizzleMask) {}
+    , defaultDimensions_(defaultDimensions)
+    , defaultDataFormat_(defaultFormat)
+    , defaultSwizzleMask_(defaultSwizzleMask) {}
 
 Layer::Layer(std::shared_ptr<LayerRepresentation> in)
-    : Data<Layer, LayerRepresentation>(in->getDataFormat())
-    , StructuredGridEntity<2>(in->getDimensions())
+    : Data<Layer, LayerRepresentation>()
+    , StructuredGridEntity<2>()
     , layerType_(in->getLayerType())
-    , swizzleMask_(in->getSwizzleMask()) {
+    , defaultDimensions_(in->getDimensions())
+    , defaultDataFormat_(in->getDataFormat())
+    , defaultSwizzleMask_(in->getSwizzleMask()) {
     addRepresentation(in);
 }
 
 Layer* Layer::clone() const { return new Layer(*this); }
 
-size2_t Layer::getDimensions() const {
-    if (hasRepresentations() && lastValidRepresentation_) {
-        size2_t dim = lastValidRepresentation_->getDimensions();
-        if (dim != size2_t(0)) return dim;
-    }
-    return StructuredGridEntity<2>::getDimensions();
-}
+LayerType Layer::getLayerType() const { return layerType_; }
 
 void Layer::setDimensions(const size2_t& dim) {
-    StructuredGridEntity<2>::setDimensions(dim);
-
+    defaultDimensions_ = dim;
     if (lastValidRepresentation_) {
         // Resize last valid representation
         removeOtherRepresentations(lastValidRepresentation_.get());
         lastValidRepresentation_->setDimensions(dim);
     }
+}
+
+size2_t Layer::getDimensions() const {
+    if (lastValidRepresentation_) {
+        return lastValidRepresentation_->getDimensions();
+    }
+    return defaultDimensions_;
+}
+
+void Layer::setDataFormat(const DataFormatBase* format) { defaultDataFormat_ = format; }
+
+const DataFormatBase* Layer::getDataFormat() const {
+    if (lastValidRepresentation_) {
+        return lastValidRepresentation_->getDataFormat();
+    }
+
+    return defaultDataFormat_;
+}
+
+void Layer::setSwizzleMask(const SwizzleMask& mask) {
+    defaultSwizzleMask_ = mask;
+    if (lastValidRepresentation_) {
+        lastValidRepresentation_->setSwizzleMask(mask);
+    }
+}
+
+SwizzleMask Layer::getSwizzleMask() const {
+    if (lastValidRepresentation_) {
+        return lastValidRepresentation_->getSwizzleMask();
+    }
+    return defaultSwizzleMask_;
 }
 
 void Layer::copyRepresentationsTo(Layer* targetLayer) {
@@ -92,14 +120,11 @@ void Layer::copyRepresentationsTo(Layer* targetLayer) {
     auto clone = std::shared_ptr<LayerRepresentation>(lastValidRepresentation_->clone());
     targetLayer->addRepresentation(clone);
     targetLayer->removeOtherRepresentations(clone.get());
-    targetLayer->StructuredGridEntity<2>::setDimensions(clone->getDimensions());
 
     if (!lastValidRepresentation_->copyRepresentationsTo(clone.get())) {
         throw Exception("Failed to copy Layer Representation", IVW_CONTEXT);
     }
 }
-
-LayerType Layer::getLayerType() const { return layerType_; }
 
 std::unique_ptr<std::vector<unsigned char>> Layer::getAsCodedBuffer(
     const std::string& fileExtension) const {
@@ -120,28 +145,9 @@ std::unique_ptr<std::vector<unsigned char>> Layer::getAsCodedBuffer(
     return std::unique_ptr<std::vector<unsigned char>>();
 }
 
-void Layer::setSwizzleMask(const SwizzleMask& mask) {
-    if ((layerType_ == LayerType::Color) && this->hasRepresentations()) {
-        // update swizzle mask of all representations
-        for (auto rep : representations_) {
-            rep.second->setSwizzleMask(mask);
-        }
-    }
-    swizzleMask_ = mask;
-}
-
-SwizzleMask Layer::getSwizzleMask() const {
-    if (this->hasRepresentations() && lastValidRepresentation_) {
-        return lastValidRepresentation_->getSwizzleMask();
-    }
-    return swizzleMask_;
-}
-
 void Layer::updateMetaFromRepresentation(const LayerRepresentation* layerRep) {
     if (layerRep) {
-        StructuredGridEntity<2>::setDimensions(layerRep->getDimensions());
         layerType_ = layerRep->getLayerType();
-        swizzleMask_ = layerRep->getSwizzleMask();
     }
 }
 

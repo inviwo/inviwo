@@ -116,7 +116,7 @@ private:
         template <typename Result, typename Format>
         Result operator()(const Volume* volume) {
             return std::make_unique<VolumeRAMPrecision<typename Format::type>>(
-                volume->getDimensions());
+                volume->getDimensions(), volume->getSwizzleMask());
         }
     };
 };

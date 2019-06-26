@@ -362,6 +362,7 @@ set(SOURCE_FILES
     datastructures/camerafactoryobject.cpp
     datastructures/coordinatetransformer.cpp
     datastructures/datamapper.cpp
+    datastructures/datarepresentation.cpp
     datastructures/datatraits.cpp
     datastructures/geometry/basicmesh.cpp
     datastructures/geometry/mesh.cpp

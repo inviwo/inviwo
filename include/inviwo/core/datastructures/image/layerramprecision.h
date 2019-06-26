@@ -66,6 +66,7 @@ public:
      * preserved. Use copyRepresentationsTo to update the data.
      */
     virtual void setDimensions(size2_t dimensions) override;
+    const size2_t& getDimensions() const override;
 
     /**
      * \brief update the swizzle mask of the channels for sampling the layer
@@ -97,6 +98,7 @@ public:
     virtual void setFromNormalizedDVec4(const size2_t& pos, dvec4 val) override;
 
 private:
+    size2_t dimensions_;
     std::unique_ptr<T[]> data_;
     SwizzleMask swizzleMask_;
 };
@@ -118,7 +120,8 @@ IVW_CORE_API std::shared_ptr<LayerRAM> createLayerRAM(
 template <typename T>
 LayerRAMPrecision<T>::LayerRAMPrecision(size2_t dimensions, LayerType type,
                                         const SwizzleMask& swizzleMask)
-    : LayerRAM(dimensions, type, DataFormat<T>::get())
+    : LayerRAM(type, DataFormat<T>::get())
+    , dimensions_(dimensions)
     , data_(new T[dimensions_.x * dimensions_.y]())
     , swizzleMask_(swizzleMask) {
     std::fill(data_.get(), data_.get() + glm::compMul(dimensions_),
@@ -128,7 +131,8 @@ LayerRAMPrecision<T>::LayerRAMPrecision(size2_t dimensions, LayerType type,
 template <typename T>
 LayerRAMPrecision<T>::LayerRAMPrecision(T* data, size2_t dimensions, LayerType type,
                                         const SwizzleMask& swizzleMask)
-    : LayerRAM(dimensions, type, DataFormat<T>::get())
+    : LayerRAM(type, DataFormat<T>::get())
+    , dimensions_(dimensions)
     , data_(data ? data : new T[dimensions_.x * dimensions_.y]())
     , swizzleMask_(swizzleMask) {
     if (!data) {
@@ -139,7 +143,10 @@ LayerRAMPrecision<T>::LayerRAMPrecision(T* data, size2_t dimensions, LayerType t
 
 template <typename T>
 LayerRAMPrecision<T>::LayerRAMPrecision(const LayerRAMPrecision<T>& rhs)
-    : LayerRAM(rhs), data_(new T[dimensions_.x * dimensions_.y]), swizzleMask_(rhs.swizzleMask_) {
+    : LayerRAM(rhs)
+    , dimensions_(rhs.dimensions_)
+    , data_(new T[dimensions_.x * dimensions_.y])
+    , swizzleMask_(rhs.swizzleMask_) {
     std::memcpy(data_.get(), rhs.data_.get(), dimensions_.x * dimensions_.y * sizeof(T));
 }
 
@@ -198,6 +205,11 @@ void LayerRAMPrecision<T>::setDimensions(size2_t dimensions) {
         std::swap(dimensions, dimensions_);
     }
     updateBaseMetaFromRepresentation();
+}
+
+template <typename T>
+const size2_t& LayerRAMPrecision<T>::getDimensions() const {
+    return dimensions_;
 }
 
 template <typename T>

@@ -34,24 +34,69 @@
 
 namespace inviwo {
 
-Volume::Volume(size3_t dimensions, const DataFormatBase* format, const SwizzleMask& swizzleMask)
-    : Data<Volume, VolumeRepresentation>(format)
-    , StructuredGridEntity<3>(dimensions)
+Volume::Volume(size3_t defaultDimensions, const DataFormatBase* defaultFormat,
+               const SwizzleMask& defaultSwizzleMask)
+    : Data<Volume, VolumeRepresentation>()
+    , StructuredGridEntity<3>()
     , MetaDataOwner()
-    , dataMap_(format)
-    , swizzleMask_(swizzleMask) {}
+    , dataMap_(defaultFormat)
+    , defaultDimensions_(defaultDimensions)
+    , defaultDataFormat_(defaultFormat)
+    , defaultSwizzleMask_(defaultSwizzleMask) {}
 
 Volume::Volume(std::shared_ptr<VolumeRepresentation> in)
-    : Data<Volume, VolumeRepresentation>(in->getDataFormat())
-    , StructuredGridEntity<3>(in->getDimensions())
+    : Data<Volume, VolumeRepresentation>()
+    , StructuredGridEntity<3>()
     , MetaDataOwner()
     , dataMap_(in->getDataFormat())
-    , swizzleMask_(in->getSwizzleMask()) {
+    , defaultDimensions_(in->getDimensions())
+    , defaultDataFormat_(in->getDataFormat())
+    , defaultSwizzleMask_(in->getSwizzleMask()) {
     addRepresentation(in);
 }
 
 Volume* Volume::clone() const { return new Volume(*this); }
 Volume::~Volume() = default;
+
+void Volume::setDimensions(const size3_t& dim) {
+    defaultDimensions_ = dim;
+
+    if (lastValidRepresentation_) {
+        // Resize last valid representation
+        lastValidRepresentation_->setDimensions(dim);
+        removeOtherRepresentations(lastValidRepresentation_.get());
+    }
+}
+
+size3_t Volume::getDimensions() const {
+    if (lastValidRepresentation_) {
+        return lastValidRepresentation_->getDimensions();
+    }
+    return defaultDimensions_;
+}
+
+void Volume::setDataFormat(const DataFormatBase* format) { defaultDataFormat_ = format; }
+
+const DataFormatBase* Volume::getDataFormat() const {
+    if (lastValidRepresentation_) {
+        return lastValidRepresentation_->getDataFormat();
+    }
+    return defaultDataFormat_;
+}
+
+void Volume::setSwizzleMask(const SwizzleMask& mask) {
+    defaultSwizzleMask_ = mask;
+    if (lastValidRepresentation_) {
+        lastValidRepresentation_->setSwizzleMask(mask);
+    }
+}
+
+SwizzleMask Volume::getSwizzleMask() const {
+    if (lastValidRepresentation_) {
+        return lastValidRepresentation_->getSwizzleMask();
+    }
+    return defaultSwizzleMask_;
+}
 
 Document Volume::getInfo() const {
     using P = Document::PathComponent;
@@ -91,41 +136,6 @@ Document Volume::getInfo() const {
     return doc;
 }
 
-size3_t Volume::getDimensions() const {
-    if (hasRepresentations() && lastValidRepresentation_) {
-        return lastValidRepresentation_->getDimensions();
-    }
-    return StructuredGridEntity<3>::getDimensions();
-}
-
-void Volume::setDimensions(const size3_t& dim) {
-    StructuredGridEntity<3>::setDimensions(dim);
-
-    if (lastValidRepresentation_) {
-        // Resize last valid representation
-        lastValidRepresentation_->setDimensions(dim);
-        removeOtherRepresentations(lastValidRepresentation_.get());
-    }
-}
-
-void Volume::setOffset(const vec3& offset) {
-    SpatialEntity<3>::setOffset(Vector<3, float>(offset));
-}
-vec3 Volume::getOffset() const { return SpatialEntity<3>::getOffset(); }
-
-mat3 Volume::getBasis() const { return SpatialEntity<3>::getBasis(); }
-void Volume::setBasis(const mat3& basis) { SpatialEntity<3>::setBasis(Matrix<3, float>(basis)); }
-
-mat4 Volume::getModelMatrix() const { return SpatialEntity<3>::getModelMatrix(); }
-void Volume::setModelMatrix(const mat4& mat) {
-    SpatialEntity<3>::setModelMatrix(Matrix<4, float>(mat));
-}
-
-mat4 Volume::getWorldMatrix() const { return SpatialEntity<3>::getWorldMatrix(); }
-void Volume::setWorldMatrix(const mat4& mat) {
-    SpatialEntity<3>::setWorldMatrix(Matrix<4, float>(mat));
-}
-
 vec3 Volume::getWorldSpaceGradientSpacing() const {
     mat3 textureToWorld = mat3(getCoordinateTransformer().getTextureToWorldMatrix());
     // Basis vectors with a length of one voxel.
@@ -160,21 +170,6 @@ vec3 Volume::getWorldSpaceGradientSpacing() const {
     //         0             gradientSpacing.y           0
     //         0                   0               gradientSpacing.z }
     return ds;
-}
-
-void Volume::setSwizzleMask(const SwizzleMask& mask) {
-    // update swizzle mask of all representations
-    for (auto rep : representations_) {
-        rep.second->setSwizzleMask(mask);
-    }
-    swizzleMask_ = mask;
-}
-
-SwizzleMask Volume::getSwizzleMask() const {
-    if (this->hasRepresentations() && lastValidRepresentation_) {
-        return lastValidRepresentation_->getSwizzleMask();
-    }
-    return swizzleMask_;
 }
 
 uvec3 Volume::colorCode = uvec3(188, 101, 101);

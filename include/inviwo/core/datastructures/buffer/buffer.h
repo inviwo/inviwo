@@ -38,9 +38,12 @@
 
 namespace inviwo {
 
+class DataFormatBase;
+
 class IVW_CORE_API BufferBase : public Data<BufferBase, BufferRepresentation> {
 public:
-    BufferBase(size_t size, const DataFormatBase* format, BufferUsage usage, BufferTarget target);
+    BufferBase(size_t defaultSize, const DataFormatBase* defaultFormat, BufferUsage usage,
+               BufferTarget target);
     BufferBase(const BufferBase& rhs) = default;
     BufferBase& operator=(const BufferBase& that) = default;
 
@@ -59,6 +62,16 @@ public:
     size_t getSizeInBytes() const;
     BufferUsage getBufferUsage() const;
     BufferTarget getBufferTarget() const;
+    /**
+     * Set the format of the data.
+     * @see DataFormatBase
+     * @param format The format of the data.
+     */
+    // clang-format off
+    [[ deprecated("use BufferRepresentation::setDataFormat() instead (deprecated since 2019-06-26)")]]
+    void setDataFormat(const DataFormatBase* format);
+    const DataFormatBase* getDataFormat() const;
+    // clang-format on
 
     virtual void append(const BufferBase&) = 0;
 
@@ -68,9 +81,10 @@ public:
     static const std::string dataName;
 
 protected:
-    size_t size_;
+    size_t defaultSize_;
     BufferUsage usage_;
     BufferTarget target_;
+    const DataFormatBase* defaultDataFormat_;
 };
 
 /**

@@ -49,9 +49,11 @@ public:
     LayerDisk(const LayerDisk& rhs);
     LayerDisk& operator=(const LayerDisk& that);
     virtual LayerDisk* clone() const override;
-    virtual ~LayerDisk();
+    virtual ~LayerDisk();    
 
     virtual void setDimensions(size2_t dimensions) override;
+    virtual const size2_t& getDimensions() const override;
+
     /**
      * Copy and resize the representations of this onto the target.
      */
@@ -76,6 +78,7 @@ public:
     virtual SwizzleMask getSwizzleMask() const override;
 
 private:
+    size2_t dimensions_;
     SwizzleMask swizzleMask_;
 };
 

@@ -64,7 +64,6 @@ public:
      *
      * @param mask new swizzle mask
      */
-    ;
     virtual void setSwizzleMask(const SwizzleMask& mask) override;
     virtual SwizzleMask getSwizzleMask() const override;
 

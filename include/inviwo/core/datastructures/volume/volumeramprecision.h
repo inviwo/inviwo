@@ -252,9 +252,6 @@ void VolumeRAMPrecision<T>::setDimensions(size3_t dimensions) {
 template <typename T>
 void VolumeRAMPrecision<T>::setSwizzleMask(const SwizzleMask& mask) {
     swizzleMask_ = mask;
-    if (owner_) {
-        owner_->setSwizzleMask(mask);
-    }
 }
 
 template <typename T>

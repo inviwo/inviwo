@@ -57,9 +57,6 @@ const size3_t& VolumeDisk::getDimensions() const { return dimensions_; }
 
 void VolumeDisk::setSwizzleMask(const SwizzleMask& mask) {
     swizzleMask_ = mask;
-    if (owner_) {
-        owner_->setSwizzleMask(mask);
-    }
 }
 
 SwizzleMask VolumeDisk::getSwizzleMask() const { return swizzleMask_; }
