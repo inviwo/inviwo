@@ -56,6 +56,7 @@ public:
     virtual LayerGL* clone() const override;
 
     virtual void setDimensions(size2_t dimensions) override;
+    virtual const size2_t& getDimensions() const override;
 
     /**
      * \brief update the swizzle mask of the channels for sampling the layer
@@ -76,6 +77,7 @@ public:
     virtual std::type_index getTypeIndex() const override final;
 
 private:
+    size2_t dimensions_;
     std::shared_ptr<Texture2D> texture_;  // Can be shared
     mutable GLenum texUnit_;
     SwizzleMask swizzleMask_;

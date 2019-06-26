@@ -63,8 +63,8 @@ public:
     void bindTexture(GLenum texUnit) const;
     void unbindTexture() const;
 
-    virtual const size3_t& getDimensions() const override;
     virtual void setDimensions(size3_t dimensions) override;
+    virtual const size3_t& getDimensions() const override;
 
     std::shared_ptr<Texture3D> getTexture() const { return volumeTexture_; }
     virtual std::type_index getTypeIndex() const override final;
