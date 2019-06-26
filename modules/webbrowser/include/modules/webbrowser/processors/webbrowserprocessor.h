@@ -59,21 +59,28 @@ namespace inviwo {
  * Display webpage, including transparency, on top of optional background and enable synchronization
  * of properties.
  *
- * Synchronization from Invwo to web page requires its html element id, i.e. <input type="text"
- * id="stringProperty">. Synchronization from web page to Inviwo requires that you add javascript
+ * Synchronization from Invwo to web page requires its html element id, i.e.
+ * \code{.html}
+ * <input type="text" id="stringProperty">.
+ * \endcode
+ * Synchronization from web page to Inviwo requires that you add javascript
  * code. Added properties can be linked. Their display name might change but it will not affect
- * their identifier. Example of code to add to HTML-page: \code{.js} <script language="JavaScript">
+ * their identifier. Example of code to add to HTML-page:
+ * \code{.js}
+ * <script language="JavaScript">
  * function onTextInput(val) {
- * window.cefQuery({
- * request: '<Properties><Property type="org.inviwo.stringProperty"
- * identifier="PropertySyncExample.stringProperty"><value content="' + val + '"
- * </Property></Properties>', onSuccess: function(response) {
- * document.getElementById("stringProperty").focus();}, onFailure: function(error_code,
- * error_message) {}
- * });
+ *     window.cefQuery({
+ *        request: '<Properties><Property type="org.inviwo.stringProperty"
+ *             identifier="PropertySyncExample.stringProperty"><value content="' + val + '"
+ *              </Property></Properties>',
+ *        onSuccess: function(response) {
+ *              document.getElementById("stringProperty").focus();},
+ *        onFailure: function(error_code, error_message) {}
+ *     });
  * }
  * </script>
  * \endcode
+ *
  * ### Inports
  *   * __background__ Background to render web page ontop of.
  *

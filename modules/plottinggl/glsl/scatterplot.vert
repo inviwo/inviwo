@@ -27,15 +27,15 @@
  *
  *********************************************************************************/
 
+#include "plotting/common.glsl"
+#include "utils/structs.glsl"
+#include "utils/sampler2d.glsl"
+
 layout(location = 0) in float X;
 layout(location = 1) in float Y;
 layout(location = 2) in float C;
 layout(location = 3) in float R;
 layout(location = 4) in uint in_PickId;
-
-#include "plotting/common.glsl"
-#include "utils/structs.glsl"
-#include "utils/sampler2d.glsl"
 
 uniform sampler2D transferFunction;
 

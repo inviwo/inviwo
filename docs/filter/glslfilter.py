@@ -114,7 +114,7 @@ def generateName(filename):
     '''
     root, ext = os.path.splitext(filename)
     head, tail = os.path.split(root)
-    return tail
+    return tail.capitalize()
     
 def writeLine(txt):
     sys.stdout.write(txt)
@@ -126,7 +126,7 @@ def writeLines(r):
 
 ## parse a shader and generate needed information along on the way
 ## - if comments contain a namespace move it the classname
-def parseShader(filename, txt, type = None):
+def parseShader(filename, txt, type = None, addClass = True):
     hasIncludeGuard = False
     ifCount = 0
     # extract name from doxygen-tag or use generic GLSL namespace
@@ -162,7 +162,10 @@ def parseShader(filename, txt, type = None):
             writeLine(txt.pop(0))
 
     if len(txt) > 0:
-        while txt[0].isspace() or txt[0].strip().startswith("#include"):
+        while len(txt) > 0 and (txt[0].isspace() or 
+            txt[0].strip().startswith("//") or
+            txt[0].strip().startswith("#extension") or  
+            txt[0].strip().startswith("#include")):
             writeLine(txt.pop(0))
 
     comment = []
@@ -176,14 +179,15 @@ def parseShader(filename, txt, type = None):
                 
     # dump the file and pad it with namespace/name class information
     # 1st: namespace + class padding, also declare everything public
-    writeLine("/** @namespace " + namespace + " */ ")
-    writeLine("public class " + namespace + "::" + className + " { public: ")
+    writeLine("namespace " + namespace + " { ")
+    if addClass: writeLine("public class " + className + " { public: ")
     # 2nd: dump original commentblock
     writeLines(comment)
     # 3rd: add type-remark and classname
     if type is not None:
         writeLine("/** @remark <b>" + type + "</b> */")
-    writeLine("/** @class " + namespace + "::" + className + " */\n")
+    if addClass: writeLine("/** @class " + className + " */")
+    writeLine("\n")
     # 4th: dump remaining file
 
     while len(txt) > 0:
@@ -191,12 +195,14 @@ def parseShader(filename, txt, type = None):
         if txt[0].strip().startswith("#endif"): ifCount -= 1
 
         if hasIncludeGuard and ifCount == 0:
-            writeLine("}\n")
+            if addClass: writeLine("}\n") #close class
+            writeLine("}  // namespace\n") #close namespace
         writeLine(txt.pop(0))
 
     # 5th: close dummy class
     if not hasIncludeGuard:
-        writeLine("}\n")
+        if addClass: writeLine("}\n") #close class
+        writeLine("}  // namespace\n") #close namespace
 
     writeLine("\n")
             
@@ -214,7 +220,7 @@ def filter(filename):
         elif (ext.lower() == ".geom"):
             parseShader(filename, txt, "Geometry-Shader")
         elif (ext.lower() == ".glsl"):
-            parseShader(filename, txt, "GLSL-Shader")
+            parseShader(filename, txt, "GLSL-Shader", False)
         else:
             writeLines(txt)
     except IOError as e:
@@ -226,5 +232,6 @@ if __name__ == '__main__':
         sys.exit(1)
 
     filename = sys.argv[1] 
+
     filter(filename)
     sys.exit(0)

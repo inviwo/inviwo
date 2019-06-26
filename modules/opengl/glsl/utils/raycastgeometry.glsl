@@ -27,6 +27,9 @@
  *
  *********************************************************************************/
 
+#ifndef IVW_RAYCASTGEOMETRY_GLSL
+#define IVW_RAYCASTGEOMETRY_GLSL
+
 vec4 drawPlanes(in vec4 oldres, in vec3 pos, in vec3 dir, in float inc, PlaneParameters plane, in float t, inout float tDepth) {
     vec4 result = oldres;
     
@@ -68,3 +71,5 @@ vec4 drawBackground(in vec4 oldres,in float depth, in float inc, in vec4 color,i
     
     return result;    
 }
+
+#endif  // IVW_RAYCASTGEOMETRY_GLSL

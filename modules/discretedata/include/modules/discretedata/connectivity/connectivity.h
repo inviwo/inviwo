@@ -87,6 +87,7 @@ public:
      * @param index Index of element in dimension 'from'
      * @param from Dimension the index lives in
      * @param to Dimension the result lives in
+     * @param isPosition
      */
     virtual void getConnections(std::vector<ind>& result, ind index, GridPrimitive from,
                                 GridPrimitive to, bool isPosition = false) const = 0;
@@ -100,7 +101,7 @@ public:
     /**
      * \brief Get the cell type (i.e. triangle, quad...; tetrahedron, voxel...)
      * @param dim Dimension of element (edge, face, volume...)
-     * @Param index Index of respective element type
+     * @param index Index of respective element type
      */
     virtual CellType getCellType(GridPrimitive dim, ind index) const;
 

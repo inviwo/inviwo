@@ -40,7 +40,9 @@ namespace inviwo {
 /**
  * \class BoolPropertyWidgetCEF
  * Widget for synchronizing HTML elements:
+ * \code{.html}
  * <input type="checkbox">
+ * \endcode
  */
 class IVW_MODULE_WEBBROWSER_API BoolPropertyWidgetCEF : public TemplatePropertyWidgetCEF<bool> {
 public:
