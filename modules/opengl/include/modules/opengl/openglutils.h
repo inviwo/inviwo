@@ -566,7 +566,7 @@ SimpleState<T1, T2, Entity, Getter, Setter, Validator>::SimpleState(
 IVW_MODULE_OPENGL_API GLfloat validateLineWidth(GLfloat width);
 
 /**
- * \struct DepthFuncState
+ * \struct inviwo::DepthFuncState
  * \brief RAII object for OpenGL depth func state
  *
  * \see glDepthFunc, GL_DEPTH_FUNC
@@ -574,7 +574,7 @@ IVW_MODULE_OPENGL_API GLfloat validateLineWidth(GLfloat width);
 using DepthFuncState = SimpleState<GLint, GLenum, GL_DEPTH_FUNC, glGetIntegerv, glDepthFunc>;
 
 /**
- * \struct DepthMaskState
+ * \struct inviwo::DepthMaskState
  * \brief RAII object for OpenGL depth mask to enable/disable writing depth
  *
  * \see glDepthMask, GL_DEPTH_WRITEMASK
@@ -583,7 +583,7 @@ using DepthMaskState =
     SimpleState<GLboolean, GLboolean, GL_DEPTH_WRITEMASK, glGetBooleanv, glDepthMask>;
 
 /**
- * \struct LineWidthState
+ * \struct inviwo::LineWidthState
  * \brief RAII object for OpenGL line width
  *
  * \see glLineWidth, GL_LINE_WIDTH
@@ -594,7 +594,7 @@ using LineWidthState [[deprecated(
     SimpleState<GLfloat, GLfloat, GL_LINE_WIDTH, glGetFloatv, glLineWidth, validateLineWidth>;
 
 /**
- * \struct PointSizeState
+ * \struct inviwo::PointSizeState
  * \brief RAII object for OpenGL point size
  *
  * \see glPointSize, GL_POINT_SIZE

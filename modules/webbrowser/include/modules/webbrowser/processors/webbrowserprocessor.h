@@ -96,8 +96,8 @@ namespace inviwo {
  *   * __Add property__ Create a property of selected type and identifier. Start to synchronize
  * against loaded webpage.
  */
-/**
- * \class WebBrowser
+
+ /**
  * \brief Render webpage into the color and picking layers (OpenGL).
  */
 #include <warn/push>

@@ -159,7 +159,7 @@ protected:
 };
 
 /**
- * \class ScopedClockGL
+ * \class inviwo::ScopedClockGL
  * scoped clock for OpenGL time measurements
  *
  * \see IVW_OPENGL_PROFILING(message), IVW_OPENGL_PROFILING_CUSTOM(src, message)

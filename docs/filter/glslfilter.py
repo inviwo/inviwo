@@ -186,7 +186,6 @@ def parseShader(filename, txt, type = None, addClass = True):
     # 3rd: add type-remark and classname
     if type is not None:
         writeLine("/** @remark <b>" + type + "</b> */")
-    if addClass: writeLine("/** @class " + className + " */")
     writeLine("\n")
     # 4th: dump remaining file
 
