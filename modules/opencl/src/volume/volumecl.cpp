@@ -34,19 +34,13 @@
 
 namespace inviwo {
 
-VolumeCL::VolumeCL(const DataFormatBase* format, const void* data)
-    : VolumeCLBase()
-    , VolumeRepresentation(format)
-    , dimensions_(size3_t(128, 128, 128))
-    , imageFormat_(dataFormatToCLImageFormat(format->getId())) {
-    initialize(data);
-}
-
-VolumeCL::VolumeCL(size3_t dimensions, const DataFormatBase* format, const void* data)
+VolumeCL::VolumeCL(size3_t dimensions, const DataFormatBase* format, const void* data,
+                   const SwizzleMask& swizzleMask)
     : VolumeCLBase()
     , VolumeRepresentation(format)
     , dimensions_(dimensions)
-    , imageFormat_(dataFormatToCLImageFormat(format->getId())) {
+    , imageFormat_(dataFormatToCLImageFormat(format->getId()))
+    , swizzleMask_(swizzleMask) {
     initialize(data);
 }
 
@@ -54,7 +48,8 @@ VolumeCL::VolumeCL(const VolumeCL& rhs)
     : VolumeCLBase(rhs)
     , VolumeRepresentation(rhs)
     , dimensions_(rhs.dimensions_)
-    , imageFormat_(rhs.imageFormat_) {
+    , imageFormat_(rhs.imageFormat_)
+    , swizzleMask_(rhs.swizzleMask_) {
     initialize(nullptr);
     OpenCL::getPtr()->getQueue().enqueueCopyImage(rhs.get(), *clImage_, glm::size3_t(0),
                                                   glm::size3_t(0), glm::size3_t(dimensions_));
@@ -100,6 +95,10 @@ cl::Image3D& VolumeCL::getEditable() { return *clImage_; }
 const cl::Image3D& VolumeCL::get() const { return *clImage_; }
 
 std::type_index VolumeCL::getTypeIndex() const { return std::type_index(typeid(VolumeCL)); }
+
+void VolumeCL::setSwizzleMask(const SwizzleMask& mask) { swizzleMask_ = mask; }
+
+SwizzleMask VolumeCL::getSwizzleMask() const { return swizzleMask_; }
 
 }  // namespace inviwo
 
