@@ -367,7 +367,7 @@ function(ivw_private_make_help)
                                  -P "${ivw_doxy_dir}/strip-qhp.cmake"
 
         COMMAND ${CMAKE_COMMAND} -E echo "Building ${name_lower}.qch"
-        COMMAND ${CMAKE_COMMAND} -E echo "Running: ${IVW_DOXY_QHELPGENERATOR} -o ${HARG_OUTPUT_DIR}/${name_lower}.qch 
+        COMMAND ${CMAKE_COMMAND} -E echo "Running: ${IVW_DOXY_QHELPGENERATOR} -o ${HARG_OUTPUT_DIR}/${name_lower}.qch \
                                  ${HARG_OUTPUT_DIR}/${name_lower}/html/index-stripped.qhp"
         COMMAND ${IVW_DOXY_QHELPGENERATOR} "-o" "${HARG_OUTPUT_DIR}/${name_lower}.qch"
                                             "${HARG_OUTPUT_DIR}/${name_lower}/html/index-stripped.qhp"
