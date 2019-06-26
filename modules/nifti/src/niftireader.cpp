@@ -112,7 +112,7 @@ std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(const std::st
             IVW_CONTEXT_CUSTOM("NiftiReader"));
     }
 
-    auto volume = std::make_shared<Volume>(dim);
+    auto volume = std::make_shared<Volume>(dim, format);
 
     std::string descrip(niftiImage->descrip);
     if (!descrip.empty()) {
@@ -223,9 +223,6 @@ std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(const std::st
 
     volume->setModelMatrix(basisAndOffset);
     volume->setWorldMatrix(modelToWorld);
-
-    volume->dataMap_.initWithFormat(format);
-    volume->setDataFormat(format);
 
     std::array<int, 7> start_index = {0, 0, 0, 0, 0, 0, 0};
     std::array<int, 7> region_size = {
