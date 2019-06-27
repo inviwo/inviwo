@@ -80,11 +80,8 @@ public:
      * @note Resizes the last valid representation and erases all representations.
      * Last valid representation will remain valid after changing the dimension.
      */
-    // clang-format off
-    [[ deprecated("use VolumeRepresentation::setDimensions() instead (deprecated since 2019-06-26)")]]    
     virtual void setDimensions(const size3_t& dim);
     virtual size3_t getDimensions() const override;
-    // clang-format on
 
     /**
      * Set the format of the data.

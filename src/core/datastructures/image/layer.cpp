@@ -64,8 +64,8 @@ void Layer::setDimensions(const size2_t& dim) {
     defaultDimensions_ = dim;
     if (lastValidRepresentation_) {
         // Resize last valid representation
-        removeOtherRepresentations(lastValidRepresentation_.get());
         lastValidRepresentation_->setDimensions(dim);
+        invalidateAllOther(lastValidRepresentation_.get());
     }
 }
 

@@ -67,11 +67,8 @@ public:
      * @see DataFormatBase
      * @param format The format of the data.
      */
-    // clang-format off
-    [[ deprecated("use BufferRepresentation::setDataFormat() instead (deprecated since 2019-06-26)")]]
     void setDataFormat(const DataFormatBase* format);
     const DataFormatBase* getDataFormat() const;
-    // clang-format on
 
     virtual void append(const BufferBase&) = 0;
 

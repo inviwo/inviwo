@@ -64,7 +64,7 @@ void Volume::setDimensions(const size3_t& dim) {
     if (lastValidRepresentation_) {
         // Resize last valid representation
         lastValidRepresentation_->setDimensions(dim);
-        removeOtherRepresentations(lastValidRepresentation_.get());
+        invalidateAllOther(lastValidRepresentation_.get());
     }
 }
 

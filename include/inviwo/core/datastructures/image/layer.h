@@ -65,12 +65,9 @@ public:
      * preserved. Use copyRepresentationsTo to update the data.
      * @note Resizes the last valid representation and erases all other representations.
      * Last valid representation will remain valid after changing the dimension.
-     */
-    // clang-format off
-    [[ deprecated("use LayerRepresentation::setDimensions() instead (deprecated since 2019-06-26)")]]    
+     */  
     virtual void setDimensions(const size2_t& dim);
     virtual size2_t getDimensions() const override;
-    // clang-format on
 
     /**
      * Set the format of the data.

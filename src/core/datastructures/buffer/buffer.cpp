@@ -61,7 +61,7 @@ void BufferBase::setSize(size_t size) {
     if (lastValidRepresentation_) {
         // Resize last valid representation
         lastValidRepresentation_->setSize(size);
-        removeOtherRepresentations(lastValidRepresentation_.get());
+        invalidateAllOther(lastValidRepresentation_.get());
     }
 }
 
