@@ -49,12 +49,6 @@ namespace inviwo {
  * ### Properties
  *   * __channelSelector__ Selection between RED, GREEN, BLUE, and ALPHA
  */
-
-/**
- * \class ImageChannelSelect
- *
- * \brief Creates a single channel texture with the selected channel from the drop down menu.
- */
 class IVW_MODULE_BASEGL_API ImageChannelSelect : public ImageGLProcessor {
 public:
     ImageChannelSelect();

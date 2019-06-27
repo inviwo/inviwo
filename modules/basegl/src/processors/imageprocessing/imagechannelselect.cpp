@@ -45,7 +45,7 @@ static const std::string channelShaderDefine = "CHANNEL";
 ImageChannelSelect::ImageChannelSelect()
     : ImageGLProcessor("img_channel_select.frag")
     , channelSelector_("channel", "Channel",
-                       {{"r", "Red", 0}, {"g", "Green", 1}, {"b", "Blue", 2}, {"a", "Aplha", 3}}) {
+                       {{"r", "Red", 0}, {"g", "Green", 1}, {"b", "Blue", 2}, {"a", "Alpha", 3}}) {
 
     addProperty(channelSelector_);
 }

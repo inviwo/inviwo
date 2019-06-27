@@ -51,13 +51,13 @@ ImageChannelCombine::ImageChannelCombine()
     , inport3_("inport3", true)
     , outport_("outport", false)
     , rChannelSrc_("redChannel", "Red Channel",
-                   {{"r", "Red", 0}, {"g", "Green", 1}, {"b", "Blue", 2}, {"a", "Aplha", 3}})
+                   {{"r", "Red", 0}, {"g", "Green", 1}, {"b", "Blue", 2}, {"a", "Alpha", 3}})
     , gChannelSrc_("greenChannel", "Green Channel",
-                   {{"r", "Red", 0}, {"g", "Green", 1}, {"b", "Blue", 2}, {"a", "Aplha", 3}})
+                   {{"r", "Red", 0}, {"g", "Green", 1}, {"b", "Blue", 2}, {"a", "Alpha", 3}})
     , bChannelSrc_("blueChannel", "Blue Channel",
-                   {{"r", "Red", 0}, {"g", "Green", 1}, {"b", "Blue", 2}, {"a", "Aplha", 3}})
-    , aChannelSrc_("alphaChannel", "Aplha Channel",
-                   {{"r", "Red", 0}, {"g", "Green", 1}, {"b", "Blue", 2}, {"a", "Aplha", 3}})
+                   {{"r", "Red", 0}, {"g", "Green", 1}, {"b", "Blue", 2}, {"a", "Alpha", 3}})
+    , aChannelSrc_("alphaChannel", "Alpha Channel",
+                   {{"r", "Red", 0}, {"g", "Green", 1}, {"b", "Blue", 2}, {"a", "Alpha", 3}})
     , alpha_("alpha", "Alpha", 1.0f, 0.0f, 1.0f, 0.001f)
     , shader_("img_channel_combine.frag") {
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
@@ -111,8 +111,7 @@ void ImageChannelCombine::process() {
         auto p0 = inport0_.getData()->getDataFormat()->getPrecision();
         auto p1 = inport1_.getData()->getDataFormat()->getPrecision();
         auto p2 = inport2_.getData()->getDataFormat()->getPrecision();
-        size_t prcession = std::max({p0, p1, p2});
-        DataFormatBase::get(type, 4, prcession);
+        DataFormatBase::get(type, 4, std::max({p0, p1, p2}));
 
         auto img = std::make_shared<Image>(dimensions, DataVec4UInt8::get());
         outport_.setData(img);

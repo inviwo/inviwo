@@ -59,17 +59,11 @@ namespace inviwo {
  *   * __Green Channel__ Channel of the 2nd input image to use for thre green channel of output
  * image.
  *   * __Blue Channel__ Channel of the 3rd input image to use for thre blue channel of output image.
- *   * __Aplha Channel__ Channel of the 4th input image to use for thre alpha channel of output
+ *   * __Alpha Channel__ Channel of the 4th input image to use for thre alpha channel of output
  * image.
  *   * __Alpha__ Alpha value in the final texture if no alpha channel is connected to the optional
  * input port
  *
- */
-
-/**
- * \class ImageChannelCombine
- *
- * \brief Creates a 4 channel image out of 3 or optionally 4 input textures.
  */
 class IVW_MODULE_BASEGL_API ImageChannelCombine : public Processor {
 public:
