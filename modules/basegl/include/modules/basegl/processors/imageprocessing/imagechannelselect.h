@@ -62,11 +62,11 @@ public:
     static const ProcessorInfo processorInfo_;
 
 protected:
-    virtual void preProcess(TextureUnitContainer &cont);
-    virtual void postProcess();
+    virtual void preProcess(TextureUnitContainer &cont) override;
+    virtual void postProcess() override;
 
 private:
-    OptionPropertyString channelSelector_; //!< Selection between RED, GREEN, BLUE, and ALPHA
+    OptionPropertyInt channelSelector_; //!< Selection between RED, GREEN, BLUE, and ALPHA
 };
 
 }  // namespace inviwo

@@ -33,9 +33,10 @@ uniform ImageParameters outportParameters_;
 
 uniform sampler2D inport_;
 
+uniform int channel;
+
 void main() {
     vec2 texCoords = gl_FragCoord.xy * outportParameters_.reciprocalDimensions;
-    float value = CHANNEL;
-    vec4 color = vec4(vec3(value), 1.0);
+    vec4 color = vec4(vec3(texture(inport_,texCoords)[channel]),1.0f);
     FragData0 = color;
 }

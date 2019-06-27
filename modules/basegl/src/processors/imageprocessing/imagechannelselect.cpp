@@ -32,42 +32,29 @@
 namespace inviwo {
 
 const ProcessorInfo ImageChannelSelect::processorInfo_{
-    "org.inviwo.ImageChannelSelect",     // Class identifier
-    "Image Channel Select",              // Display name
-    "Image Operation",                   // Category
-    CodeState::Experimental,             // Code state
-    Tags::GL,                            // Tags
+    "org.inviwo.ImageChannelSelect",  // Class identifier
+    "Image Channel Select",           // Display name
+    "Image Operation",                // Category
+    CodeState::Experimental,          // Code state
+    Tags::GL,                         // Tags
 };
 const ProcessorInfo ImageChannelSelect::getProcessorInfo() const { return processorInfo_; }
 
 static const std::string channelShaderDefine = "CHANNEL";
 
 ImageChannelSelect::ImageChannelSelect()
-    : ImageGLProcessor("img_channel_select.frag", false)
-    , channelSelector_("channel_selector", "Channel")
-{
-    channelSelector_.onChange([this]() {
-        shader_.getFragmentShaderObject()->clearShaderDefines();
-        shader_.getFragmentShaderObject()->addShaderDefine(channelShaderDefine, channelSelector_.getSelectedValue());
-        shader_.build();
-    });
-    channelSelector_.addOption("r", "R", "texture(inport_, texCoords).r");
-    channelSelector_.addOption("g", "G", "texture(inport_, texCoords).g");
-    channelSelector_.addOption("b", "B", "texture(inport_, texCoords).b");
-    channelSelector_.addOption("a", "A", "texture(inport_, texCoords).a");
-    channelSelector_.setSelectedIndex(0);
-    channelSelector_.setCurrentStateAsDefault();
-    addProperty(channelSelector_);
+    : ImageGLProcessor("img_channel_select.frag")
+    , channelSelector_("channel", "Channel",
+                       {{"r", "Red", 0}, {"g", "Green", 1}, {"b", "Blue", 2}, {"a", "Aplha", 3}}) {
 
+    addProperty(channelSelector_);
 }
 
 void ImageChannelSelect::preProcess(TextureUnitContainer &cont) {
     auto inDF = inport_.getData()->getDataFormat();
     dataFormat_ = DataFormatBase::get(inDF->getNumericType(), 1, inDF->getPrecision());
+    shader_.setUniform("channel", channelSelector_.get());
 }
-void ImageChannelSelect::postProcess() {
-    swizzleMask_ = swizzlemasks::luminance;
-
-}
+void ImageChannelSelect::postProcess() { swizzleMask_ = swizzlemasks::luminance; }
 
 }  // namespace inviwo

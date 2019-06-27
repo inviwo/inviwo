@@ -34,87 +34,97 @@
 
 namespace inviwo {
 
-    const ProcessorInfo ImageChannelCombine::processorInfo_{
-        "org.inviwo.ImageChannelCombine",  // Class identifier
-        "Image Channel Combine",           // Display name
-        "Image Operation",                 // Category
-        CodeState::Experimental,           // Code state
-        Tags::GL,                          // Tags
+const ProcessorInfo ImageChannelCombine::processorInfo_{
+    "org.inviwo.ImageChannelCombine",  // Class identifier
+    "Image Channel Combine",           // Display name
+    "Image Operation",                 // Category
+    CodeState::Experimental,           // Code state
+    Tags::GL,                          // Tags
+};
+const ProcessorInfo ImageChannelCombine::getProcessorInfo() const { return processorInfo_; }
+
+ImageChannelCombine::ImageChannelCombine()
+    : Processor()
+    , inport0_("inport0", true)
+    , inport1_("inport1", true)
+    , inport2_("inport2", true)
+    , inport3_("inport3", true)
+    , outport_("outport", false)
+    , alpha_("alpha", "Alpha", 1.0f, 0.0f, 1.0f, 0.001f)
+    , shader_("img_channel_combine.frag") {
+    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+
+    addPort(inport0_);
+    addPort(inport1_);
+    addPort(inport2_);
+    inport3_.setOptional(true);
+    addPort(inport3_);
+
+    addPort(outport_);
+
+    addProperty(alpha_);
+}
+
+void ImageChannelCombine::process() {
+    auto isSame = [](auto a, auto b, auto c) {
+        if (a != b) return false;
+        if (a != c) return false;
+        if (b != c) return false;
+        return true;
     };
-    const ProcessorInfo ImageChannelCombine::getProcessorInfo() const { return processorInfo_; }
+    auto img0 = inport0_.getData();
+    auto img1 = inport1_.getData();
+    auto img2 = inport2_.getData();
+    auto img3 = inport3_.getData();
 
-    ImageChannelCombine::ImageChannelCombine() :
-        Processor()
-        , inport0_("inport0", true)
-        , inport1_("inport1", true)
-        , inport2_("inport2", true)
-        , inport3_("inport3", true)
-        , outport_("outport", false)
-        , alpha_("alpha", "Alpha", 1.0f, 0.0f, 1.0f, 0.001f)
-        , shader_("img_channel_combine.frag")
-    {
-        shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-
-        addPort(inport0_);
-        addPort(inport1_);
-        addPort(inport2_);
-        inport3_.setOptional(true);
-        addPort(inport3_);
-
-        addPort(outport_);
-
-        addProperty(alpha_);
+    if (isSame(img0->getDimensions(),img1->getDimensions(),img2->getDimensions()) 
+        && (inport3_.isConnected() && img3 && img3->getDimensions() != img0->getDimensions())) {
+        throw Exception("The image dimensions of all inports needs to be the same", IVW_CONTEXT);
     }
 
-    void ImageChannelCombine::process() {
-        if (inport0_.getData()->getDimensions() != inport1_.getData()->getDimensions() ||
-            inport0_.getData()->getDimensions() != inport2_.getData()->getDimensions() ||
-            inport3_.isConnected() && inport0_.getData()->getDimensions() != inport3_.getData()->getDimensions()) {    
-            throw Exception("The image dimensions of all inports needs to be the same", IVW_CONTEXT);
+    if (inport0_.isChanged() || inport1_.isChanged() || inport2_.isChanged()) {
+        const auto dimensions = inport0_.getData()->getDimensions();
+        auto t1 = inport0_.getData()->getDataFormat()->getNumericType();
+        auto t2 = inport1_.getData()->getDataFormat()->getNumericType();
+        auto t3 = inport2_.getData()->getDataFormat()->getNumericType();
+        NumericType type;
+        if (t1 == t2 && t1 == t3) {
+            // All have the same numType
+            type = t1;
+        } else if (t1 == NumericType::Float || t2 == NumericType::Float ||
+                   t2 == NumericType::Float) {
+            // At least one is a float type
+            type = NumericType::Float;
+        } else {
+            // At least one are signed, and at least one are unsigned
+            type = NumericType::Float;
         }
 
-        if (inport0_.isChanged() || inport1_.isChanged() || inport2_.isChanged() || inport3_.isChanged()) {
-            const auto dimensions = inport0_.getData()->getDimensions();
-            auto t1 = inport0_.getData()->getDataFormat()->getNumericType(); 
-            auto t2 = inport1_.getData()->getDataFormat()->getNumericType(); 
-            auto t3 = inport2_.getData()->getDataFormat()->getNumericType(); 
-            NumericType type;
-            if(t1 == t2 && t1 == t3){ 
-                // All have the same numType
-                type = t1;
-            }else if(t1 == NumericType::Float || t2 == NumericType::Float || t2 == NumericType::Float){
-                // At least one is a float type
-                type = NumericType::Float;
-            } else {
-                // At least one are signed, and at least one are unsigned
-                type = NumericType::Float;
-            }
+        auto p0 = inport0_.getData()->getDataFormat()->getPrecision();
+        auto p1 = inport1_.getData()->getDataFormat()->getPrecision();
+        auto p2 = inport2_.getData()->getDataFormat()->getPrecision();
+        size_t prcession = std::max({p0, p1, p2});
+        DataFormatBase::get(type, 4, prcession);
 
-            auto p0 = inport0_.getData()->getDataFormat()->getPrecision();
-            auto p1 = inport1_.getData()->getDataFormat()->getPrecision();
-            auto p2 = inport2_.getData()->getDataFormat()->getPrecision();
-            size_t prcession = std::max({p0,p1,p2}); 
-            DataFormatBase::get(type,4,prcession);
-
-            auto img = std::make_shared<Image>(dimensions, DataVec4UInt8::get());
-            outport_.setData(img);
-        }
-
-        utilgl::activateAndClearTarget(outport_);
-        shader_.activate();
-        TextureUnitContainer units;
-        utilgl::bindAndSetUniforms(shader_, units, inport0_, ImageType::ColorOnly);
-        utilgl::bindAndSetUniforms(shader_, units, inport1_, ImageType::ColorOnly);
-        utilgl::bindAndSetUniforms(shader_, units, inport2_, ImageType::ColorOnly);
-        if (inport3_.hasData()) {
-            utilgl::bindAndSetUniforms(shader_, units, inport3_, ImageType::ColorOnly);
-        }
-        shader_.setUniform("use_alpha_texture_", inport3_.hasData());
-        shader_.setUniform("alpha_", alpha_.get());
-        utilgl::setUniforms(shader_, outport_);
-        utilgl::singleDrawImagePlaneRect();
-        shader_.deactivate();
-        utilgl::deactivateCurrentTarget();
+        auto img = std::make_shared<Image>(dimensions, DataVec4UInt8::get());
+        outport_.setData(img);
     }
+
+    utilgl::activateAndClearTarget(outport_);
+    shader_.activate();
+    TextureUnitContainer units;
+    utilgl::bindAndSetUniforms(shader_, units, inport0_, ImageType::ColorOnly);
+    utilgl::bindAndSetUniforms(shader_, units, inport1_, ImageType::ColorOnly);
+    utilgl::bindAndSetUniforms(shader_, units, inport2_, ImageType::ColorOnly);
+    if (inport3_.hasData()) {
+        utilgl::bindAndSetUniforms(shader_, units, inport3_, ImageType::ColorOnly);
+    }
+    shader_.setUniform("use_alpha_texture", inport3_.hasData());
+    shader_.setUniform("alpha", alpha_.get());
+    utilgl::setUniforms(shader_, outport_);
+    utilgl::singleDrawImagePlaneRect();
+    shader_.deactivate();
+    utilgl::deactivateCurrentTarget();
+}
 
 }  // namespace inviwo
