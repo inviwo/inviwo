@@ -37,6 +37,7 @@
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 
+#include <modules/opengl/image/layergl.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/texture2d.h>
 #include <modules/opengl/shader/shaderutils.h>
