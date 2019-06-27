@@ -70,6 +70,7 @@ private:
     ImageOutport outport_;
     FileProperty file_;
     IntVec2Property imageDimension_;
+    bool loadingFailed_ = false;
 };
 
 }  // namespace inviwo

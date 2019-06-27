@@ -220,9 +220,6 @@ std::shared_ptr<Texture2DArray> Renderer::createUITextureObject(
             // try to load texture data from current file
             try {
                 layer = reader->readData(sourcePath + "/" + filename);
-                auto layerRAM = layer->getRepresentation<LayerRAM>();
-                // Hack needs to set format here since LayerDisk does not have a format.
-                layer->setDataFormat(layerRAM->getDataFormat());
             } catch (DataReaderException const& e) {
                 util::log(e.getContext(),
                           "Could not load texture data: " + filename + ", " + e.getMessage(),
