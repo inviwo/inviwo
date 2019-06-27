@@ -46,10 +46,10 @@ class Texture2D;
  */
 class IVW_MODULE_OPENGL_API LayerGL : public LayerRepresentation {
 public:
-    LayerGL(size2_t dimensions = size2_t(256, 256), LayerType type = LayerType::Color,
-            const DataFormatBase* format = DataVec4UInt8::get(),
-            std::shared_ptr<Texture2D> tex = std::shared_ptr<Texture2D>(nullptr),
-            const SwizzleMask& swizzleMask = swizzlemasks::rgba);
+    explicit LayerGL(size2_t dimensions = size2_t(256, 256), LayerType type = LayerType::Color,
+                     const DataFormatBase* format = DataVec4UInt8::get(),
+                     std::shared_ptr<Texture2D> tex = std::shared_ptr<Texture2D>(nullptr),
+                     const SwizzleMask& swizzleMask = swizzlemasks::rgba);
     LayerGL(const LayerGL& rhs);
     LayerGL& operator=(const LayerGL& rhs);
     virtual ~LayerGL();

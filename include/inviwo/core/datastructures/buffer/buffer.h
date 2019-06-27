@@ -93,9 +93,10 @@ protected:
 template <typename T, BufferTarget Target = BufferTarget::Data>
 class Buffer : public BufferBase {
 public:
-    Buffer(size_t size, BufferUsage usage = BufferUsage::Static);
-    Buffer(BufferUsage usage = BufferUsage::Static);
-    Buffer(std::shared_ptr<BufferRAMPrecision<T, Target>> repr);
+    Buffer();
+    explicit Buffer(size_t size, BufferUsage usage = BufferUsage::Static);
+    explicit Buffer(BufferUsage usage);
+    explicit Buffer(std::shared_ptr<BufferRAMPrecision<T, Target>> repr);
     Buffer(const Buffer<T, Target>& rhs) = default;
     Buffer<T, Target>& operator=(const Buffer<T, Target>& that) = default;
     virtual Buffer<T, Target>* clone() const override;
@@ -162,6 +163,9 @@ struct IVW_CORE_API BufferDispatcher {
 };
 
 }  // namespace util
+
+template <typename T, BufferTarget Target>
+Buffer<T, Target>::Buffer() : Buffer(BufferUsage::Static) {}
 
 template <typename T, BufferTarget Target>
 Buffer<T, Target>::Buffer(std::shared_ptr<BufferRAMPrecision<T, Target>> repr)

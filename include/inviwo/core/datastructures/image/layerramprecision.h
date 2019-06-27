@@ -44,10 +44,10 @@ class LayerRAMPrecision : public LayerRAM {
 public:
     using type = T;
 
-    LayerRAMPrecision(size2_t dimensions = size2_t(8, 8), LayerType type = LayerType::Color,
-                      const SwizzleMask& swizzleMask = swizzlemasks::rgba);
-    LayerRAMPrecision(T* data, size2_t dimensions = size2_t(8, 8),
-                      LayerType type = LayerType::Color,
+    explicit LayerRAMPrecision(size2_t dimensions = size2_t(8, 8),
+                               LayerType type = LayerType::Color,
+                               const SwizzleMask& swizzleMask = swizzlemasks::rgba);
+    LayerRAMPrecision(T* data, size2_t dimensions, LayerType type = LayerType::Color,
                       const SwizzleMask& swizzleMask = swizzlemasks::rgba);
     LayerRAMPrecision(const LayerRAMPrecision<T>& rhs);
     LayerRAMPrecision<T>& operator=(const LayerRAMPrecision<T>& that);

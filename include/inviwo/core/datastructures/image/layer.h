@@ -48,11 +48,11 @@ class DataFormatBase;
  */
 class IVW_CORE_API Layer : public Data<Layer, LayerRepresentation>, public StructuredGridEntity<2> {
 public:
-    Layer(size2_t defaultDimensions = size2_t(8, 8),
-          const DataFormatBase* defaultFormat = DataVec4UInt8::get(),
-          LayerType type = LayerType::Color,
-          const SwizzleMask& defaultSwizzleMask = swizzlemasks::rgba);
-    Layer(std::shared_ptr<LayerRepresentation>);
+    explicit Layer(size2_t defaultDimensions = size2_t(8, 8),
+                   const DataFormatBase* defaultFormat = DataVec4UInt8::get(),
+                   LayerType type = LayerType::Color,
+                   const SwizzleMask& defaultSwizzleMask = swizzlemasks::rgba);
+    explicit Layer(std::shared_ptr<LayerRepresentation>);
     Layer(const Layer&) = default;
     Layer& operator=(const Layer& that) = default;
     virtual Layer* clone() const override;

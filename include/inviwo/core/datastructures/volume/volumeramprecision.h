@@ -46,9 +46,9 @@ class VolumeRAMPrecision : public VolumeRAM {
 public:
     using type = T;
 
-    VolumeRAMPrecision(size3_t dimensions = size3_t(128, 128, 128),
-                       const SwizzleMask& swizzleMask = swizzlemasks::rgba);
-    VolumeRAMPrecision(T* data, size3_t dimensions = size3_t(128, 128, 128),
+    explicit VolumeRAMPrecision(size3_t dimensions = size3_t(128, 128, 128),
+                                const SwizzleMask& swizzleMask = swizzlemasks::rgba);
+    VolumeRAMPrecision(T* data, size3_t dimensions,
                        const SwizzleMask& swizzleMask = swizzlemasks::rgba);
     VolumeRAMPrecision(const VolumeRAMPrecision<T>& rhs);
     VolumeRAMPrecision<T>& operator=(const VolumeRAMPrecision<T>& that);

@@ -64,10 +64,10 @@ class IVW_CORE_API Volume : public Data<Volume, VolumeRepresentation>,
                             public StructuredGridEntity<3>,
                             public MetaDataOwner {
 public:
-    Volume(size3_t defaultDimensions = size3_t(128, 128, 128),
-           const DataFormatBase* defaultFormat = DataUInt8::get(),
-           const SwizzleMask& defaultSwizzleMask = swizzlemasks::rgba);
-    Volume(std::shared_ptr<VolumeRepresentation>);
+    explicit Volume(size3_t defaultDimensions = size3_t(128, 128, 128),
+                    const DataFormatBase* defaultFormat = DataUInt8::get(),
+                    const SwizzleMask& defaultSwizzleMask = swizzlemasks::rgba);
+    explicit Volume(std::shared_ptr<VolumeRepresentation>);
     Volume(const Volume&) = default;
     Volume& operator=(const Volume& that) = default;
     virtual Volume* clone() const override;
