@@ -74,11 +74,6 @@ void ImageCL::update(bool editable) {
     } else {
         layerCL_ = const_cast<LayerCL*>(owner->getColorLayer()->getRepresentation<LayerCL>());
     }
-
-    if (layerCL_->getDataFormat() != owner->getDataFormat()) {
-        owner->getColorLayer()->setDataFormat(layerCL_->getDataFormat());
-        owner->getColorLayer()->setDimensions(layerCL_->getDimensions());
-    }
 }
 
 }  // namespace inviwo
