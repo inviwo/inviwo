@@ -40,8 +40,9 @@
 namespace inviwo {
 /** \docpage{org.inviwo.ImageChannelCombine, Image Channel Combine}
  * ![](org.inviwo.ImageChannelCombine.png?classIdentifier=org.inviwo.ImageChannelCombine)
- * Creates a 4 channel image with the connected inputs, from each of them the R channel is used.
- * If the optional alpha channel is not provided, the alpha property is used to set the alpha value of the whole image
+ * Creates a 4 channel image with the connected inputs, from each of them the R channel is used
+ * (note, also true for the alpha channel). If the optional alpha channel is not
+ * provided, the alpha property is used to set the alpha value of the whole image
  *
  * ### Inports
  *   * __inport0__ Red input image
@@ -53,7 +54,8 @@ namespace inviwo {
  *   * __outport__ Output Image
  *
  * ### Properties
- *   * __alpha__ Alpha value in the final texture if no alpha channel is connected to the optional input port
+ *   * __alpha__ Alpha value in the final texture if no alpha channel is connected to the optional
+ * input port
  */
 
 /**
@@ -70,14 +72,14 @@ public:
     virtual void process() override;
 
 private:
-    ImageInport inport0_; //!< red input image
-    ImageInport inport1_; //!< green input image
-    ImageInport inport2_; //!< blue input image
-    ImageInport inport3_; //!< optional alpha input image
+    ImageInport inport0_;  //!< red input image
+    ImageInport inport1_;  //!< green input image
+    ImageInport inport2_;  //!< blue input image
+    ImageInport inport3_;  //!< optional alpha input image
 
-    ImageOutport outport_; //!< output image
+    ImageOutport outport_;  //!< output image
 
-    FloatProperty alpha_; //!< alpha value if no alpha channel is connected
+    FloatProperty alpha_;  //!< alpha value if no alpha channel is connected
 
     Shader shader_;
 };
