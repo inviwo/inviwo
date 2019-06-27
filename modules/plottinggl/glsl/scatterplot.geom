@@ -27,6 +27,8 @@
  *
  *********************************************************************************/
 #include "utils/pickingutils.glsl"
+#include "plotting/common.glsl"
+
 #ifndef GLSL_VERSION_150
 #extension GL_EXT_gpu_shader4 : enable
 #extension GL_EXT_geometry_shader4 : enable
@@ -34,9 +36,6 @@
 
 layout(points) in;
 layout(triangle_strip, max_vertices = 4) out;
-
-#include "plotting/common.glsl"
-#include "utils/pickingutils.glsl"
 
 uniform vec2 pixelSize;
 uniform float borderWidth = 1;

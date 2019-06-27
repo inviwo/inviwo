@@ -39,8 +39,10 @@ namespace inviwo {
 
 /** \class MinMaxPropertyWidgetCEF
  * Widget for synchronizing HTML elements:
+ * \code{.html}
  * <input type="range">
  * <input type="number">
+ * \endcode
  * where there are min and max attributes.
  * The min and max attributes correspond to MinMaxProperty<T>::value
  * Optionally, there may also be start, end, step and minSeparation attributes.

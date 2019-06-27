@@ -46,7 +46,7 @@ public:
     /**
      * \brief Create an nD grid
      * @param gridDimension Dimension of grid (not vertices)
-     * @param gridSize Number of cells in each dimension, expect size gridDimension+1
+     * @param numCellsPerDim Number of cells in each dimension, expect size gridDimension+1
      */
     StructuredGrid(GridPrimitive gridDimension, const std::vector<ind>& numCellsPerDim);
     virtual ~StructuredGrid() = default;

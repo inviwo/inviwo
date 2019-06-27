@@ -29,51 +29,59 @@
 
 include(CMakeParseArguments)
 
-function(ivw_get_subdirs_recursive retval start)
-    set(res "")
-    get_property(subdirs DIRECTORY ${start} PROPERTY SUBDIRECTORIES)
-    list(APPEND res ${subdirs})
-    foreach(subdir IN LISTS subdirs)
-        ivw_get_subdirs_recursive(ret ${subdir})
-        list(APPEND res ${ret})
-        list(REMOVE_DUPLICATES res)
+function(ivw_get_glsl_dirs retval)
+    set(glslpaths "")
+    foreach(mod IN LISTS ARGN)
+        if(${${mod}_opt})
+            if(EXISTS "${${mod}_path}/glsl")
+                list(APPEND glslpaths "\"${${mod}_path}/glsl\"")
+            endif()
+            ivw_mod_name_to_mod_dep(depmods ${${mod}_dependencies})
+            ivw_get_glsl_dirs(deps ${depmods})
+            list(APPEND glslpaths ${deps})
+        endif()
     endforeach()
-    set(${retval} ${res} PARENT_SCOPE)
+    list(REMOVE_DUPLICATES glslpaths)
+    list(SORT glslpaths)
+    set(${retval} ${glslpaths} PARENT_SCOPE)
 endfunction()
 
-set(ivw_doxy_all_dirs "" CACHE INTERNAL "")
 function(ivw_get_include_dirs retval)
-    list(LENGTH ivw_doxy_all_dirs len)
-    if(${len} EQUAL 0)
-        set(temp "")
-        ivw_get_subdirs_recursive(subdirs ${IVW_ROOT_DIR})
-        foreach(subdir IN LISTS subdirs)
-            get_property(targets DIRECTORY ${subdir} PROPERTY BUILDSYSTEM_TARGETS)
-            foreach(target IN LISTS targets)
-                ivw_get_target_property_recursive(dirs ${target} INTERFACE_INCLUDE_DIRECTORIES True)
-                list(APPEND temp ${dirs})
-                ivw_get_target_property_recursive(dirs ${target} INCLUDE_DIRECTORIES False)
-                list(APPEND temp ${dirs})
-                list(REMOVE_DUPLICATES temp)
-            endforeach()
-        endforeach()
-
-        # filter generator expr
-        set(inc_dirs "")
-        foreach(item IN LISTS temp)
-            string(REGEX MATCH [=[^\$<BUILD_INTERFACE:([^$<>]+)>$]=] repl ${item})
-            if(CMAKE_MATCH_1)
-                list(APPEND inc_dirs "\"${CMAKE_MATCH_1}\"")
-            endif()
-            string(REGEX MATCH [=[^[^$<>]*$]=] repl ${item})
-            if(CMAKE_MATCH_0)
-                list(APPEND "inc_dirs" "\"${CMAKE_MATCH_0}\"")
-            endif()
-        endforeach()
+    set(inc_dirs "")
+    foreach(target IN LISTS ARGN)
+        ivw_get_target_property_recursive(dirs ${target} INTERFACE_INCLUDE_DIRECTORIES True)
+        list(APPEND inc_dirs ${dirs})
+        ivw_get_target_property_recursive(dirs ${target} INCLUDE_DIRECTORIES False)
+        list(APPEND inc_dirs ${dirs})
         list(REMOVE_DUPLICATES inc_dirs)
-        set(ivw_doxy_all_dirs ${inc_dirs} CACHE INTERNAL "")
-    endif()
-    set(${retval} ${ivw_doxy_all_dirs} PARENT_SCOPE)
+    endforeach()
+    
+    # filter generator expr
+    set(inc_dirs_nogen "")
+    foreach(item IN LISTS inc_dirs)
+        string(REGEX MATCH [=[^\$<BUILD_INTERFACE:([^$<>]+)>$]=] repl ${item})
+        if(CMAKE_MATCH_1)
+            list(APPEND inc_dirs_nogen "${CMAKE_MATCH_1}")
+        endif()
+        string(REGEX MATCH [=[^[^$<>]*$]=] repl ${item})
+        if(CMAKE_MATCH_0)
+            list(APPEND inc_dirs_nogen "${CMAKE_MATCH_0}")
+        endif()
+    endforeach()
+    list(REMOVE_DUPLICATES inc_dirs_nogen)
+    
+    # filter non existing folders
+    set(inc_dirs_exist "")
+    foreach(item IN LISTS inc_dirs_nogen)
+        if(EXISTS ${item})
+            get_filename_component(real ${item} REALPATH)
+            list(APPEND inc_dirs_exist "\"${real}\"")
+        endif()
+    endforeach()
+     list(REMOVE_DUPLICATES inc_dirs_exist)
+     list(SORT inc_dirs_exist)
+
+    set(${retval} ${inc_dirs_exist} PARENT_SCOPE)
 endfunction()
 
 if(${MSVC})
@@ -113,6 +121,7 @@ function(ivw_private_make_doxyfile)
         TAG_FILE
     )
     set(multiValueArgs
+        INCLUDE_PATHS
         INPUTS
         IMAGE_PATHS
         ALIASES
@@ -127,9 +136,7 @@ function(ivw_private_make_doxyfile)
     ivw_private_format_doxy_arg(aliases ${ARG_ALIASES})
     ivw_private_format_doxy_arg(input_tags ${ARG_INPUT_TAGS})
     ivw_private_format_doxy_arg(filter_patterns ${ARG_FILTER_PATTERNS})
-
-    ivw_get_include_dirs(incpaths)
-    ivw_private_format_doxy_arg(incpaths ${incpaths})
+    ivw_private_format_doxy_arg(incpaths ${ARG_INCLUDE_PATHS})
 
     string(REGEX REPLACE ";" "\n" additional_flags "${ARG_ADDITIONAL_FLAGS}")
 
@@ -209,7 +216,7 @@ FILTER_PATTERNS        = ${filter_patterns}
 
 USE_MDFILE_AS_MAINPAGE = ${ivw_doxy_dir}/markdown/Index.md
 
-HTML_EXTRA_FILES       = ${ivw_doxy_dir}/images
+HTML_EXTRA_FILES       = 
 
 EXAMPLE_PATH           = ${IVW_ROOT_DIR} \\
                          ${example_paths}
@@ -298,6 +305,7 @@ function(ivw_private_make_help)
         INPUTS
         IMAGE_PATHS
         FILTER_PATTERNS
+        INCLUDE_PATHS
     )
     cmake_parse_arguments(HARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
     
@@ -339,6 +347,7 @@ function(ivw_private_make_help)
         OUTPUT_DIR "${HARG_OUTPUT_DIR}"
         WARNING_FORMAT ${HARG_WARNING_FORMAT}
         INPUTS ${HARG_INPUTS}
+        INCLUDE_PATHS ${HARG_INCLUDE_PATHS}
         IMAGE_PATHS ${HARG_IMAGE_PATHS}
         ALIASES ${aliases_list}
         FILTER_PATTERNS ${HARG_FILTER_PATTERNS}
@@ -349,7 +358,7 @@ function(ivw_private_make_help)
     find_program(IVW_DOXY_QHELPGENERATOR "qhelpgenerator")
 
     add_custom_target("DOXY-HELP-${HARG_NAME}"
-        COMMAND ${CMAKE_COMMAND} -E echo "Building help for ${ARG_NAME}"
+        COMMAND ${CMAKE_COMMAND} -E echo "Running Doxygen for ${HARG_NAME}"
         COMMAND ${CMAKE_COMMAND} -E make_directory "${HARG_OUTPUT_DIR}/${name_lower}/html"
         COMMAND ${DOXYGEN_EXECUTABLE} "${HARG_OUTPUT_DIR}/${name_lower}.doxy"
 
@@ -358,7 +367,8 @@ function(ivw_private_make_help)
                                  -P "${ivw_doxy_dir}/strip-qhp.cmake"
 
         COMMAND ${CMAKE_COMMAND} -E echo "Building ${name_lower}.qch"
-        COMMAND ${CMAKE_COMMAND} -E echo "Running: ${IVW_DOXY_QHELPGENERATOR} -o ${HARG_OUTPUT_DIR}/${name_lower}.qch ${HARG_OUTPUT_DIR}/${name_lower}/html/index-stripped.qhp"
+        COMMAND ${CMAKE_COMMAND} -E echo "Running: ${IVW_DOXY_QHELPGENERATOR} -o ${HARG_OUTPUT_DIR}/${name_lower}.qch \
+                                 ${HARG_OUTPUT_DIR}/${name_lower}/html/index-stripped.qhp"
         COMMAND ${IVW_DOXY_QHELPGENERATOR} "-o" "${HARG_OUTPUT_DIR}/${name_lower}.qch"
                                             "${HARG_OUTPUT_DIR}/${name_lower}/html/index-stripped.qhp"
 
@@ -454,14 +464,20 @@ function(make_doxygen_target modules_var)
 
     # Modules
     set(module_bases "")
+    set(module_targets "")
     foreach(mod ${${modules_var}})
         if(${${mod}_opt}) # Only include enabled modules
             list(APPEND all_input ${${mod}_path})
+            list(APPEND module_targets ${${mod}_target})
             if(EXISTS "${${mod}_path}/docs/images")
                 list(APPEND image_path_list "${${mod}_path}/docs/images")
             endif()
         endif()
     endforeach()
+
+    # include paths
+    ivw_get_include_dirs(incpaths ${module_targets})
+    ivw_get_glsl_dirs(glslpaths ${${modules_var}})
 
     # Inviwo
     ivw_private_make_doxyfile(
@@ -470,6 +486,7 @@ function(make_doxygen_target modules_var)
         OUTPUT_DIR "${output_dir}"
         WARNING_FORMAT ${warn_format}
         INPUTS ${all_input}
+        INCLUDE_PATHS ${incpaths} ${glslpaths}
         IMAGE_PATHS ${image_path_list}
         ALIASES ${aliases_list}
         TAG_FILE ${output_dir}/inviwo/inviwo.tag
@@ -499,9 +516,7 @@ function(make_doxygen_target modules_var)
         COMMAND ${CMAKE_COMMAND} -E copy "${ivw_doxy_dir}/style/Montserrat-Regular.ttf" "${output_dir}/inviwo/html/Montserrat-Regular.ttf"
         COMMAND ${CMAKE_COMMAND} -E copy "${ivw_doxy_dir}/style/Montserrat-Bold.ttf" "${output_dir}/inviwo/html/Montserrat-Bold.ttf"
         COMMAND ${CMAKE_COMMAND} -E copy "${ivw_doxy_dir}/style/Merriweather-Regular.ttf" "${output_dir}/inviwo/html/Merriweather-Regular.ttf"
-
     )
-
 
     set_target_properties("DOXY-Inviwo" PROPERTIES FOLDER "doc" EXCLUDE_FROM_ALL TRUE)
     add_dependencies("DOXY-ALL" "DOXY-Inviwo")
@@ -542,23 +557,30 @@ function(make_doxygen_target modules_var)
     set(module_bases "")
     foreach(mod ${${modules_var}})
         if(${${mod}_opt}) # Only include enabled modules
+            if(${mod} STREQUAL "INVIWOCOREMODULE")
+                continue() # skip the core module
+            endif()
             if(EXISTS "${${mod}_path}/docs/images")
                 set(image_path "${${mod}_path}/docs/images")
             else()
                 set(image_path "")
             endif()
 
-             ivw_private_make_help(
-                NAME ${${mod}_class}
+            ivw_get_include_dirs(incpaths ${${mod}_target})
+            ivw_get_glsl_dirs(glslpaths ${mod})
+
+            ivw_private_make_help(
+                NAME ${${mod}_name}
                 OUTPUT_DIR "${output_dir}/help"
                 HTML_DIR "${ivw_doxy_dir}/help"
                 DOC_DIR "${${mod}_path}/docs"
                 INPUTS "${${mod}_path}"
+                INCLUDE_PATHS ${incpaths} ${glslpaths}
                 IMAGE_PATHS "${image_path}"
                 FILTER_PATTERNS ${filer_patterns_list}
                 WARNING_FORMAT ${warn_format}
             )
-            add_dependencies("DOXY-ALL" "DOXY-HELP-${${mod}_class}")
+            add_dependencies("DOXY-ALL" "DOXY-HELP-${${mod}_name}")
         endif()
     endforeach()
  endfunction()

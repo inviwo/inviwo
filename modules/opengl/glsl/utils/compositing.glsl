@@ -28,6 +28,10 @@
  *********************************************************************************/
 
 // set reference sampling interval for opacity correction
+
+#ifndef IVW_COMPOSITING_GLSL
+#define IVW_COMPOSITING_GLSL
+
 #define REF_SAMPLING_INTERVAL 150.0
 
 vec4 compositeDVR(in vec4 curResult, in vec4 color, in float t, inout float tDepth,
@@ -131,3 +135,5 @@ vec4 compositeISON(in vec4 curResult, in vec4 color, in float intensity, in vec3
 
     return result;
 }
+
+#endif  // IVW_COMPOSITING_GLSL

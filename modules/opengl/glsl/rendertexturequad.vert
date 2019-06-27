@@ -26,6 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  *********************************************************************************/
+
 #include "utils/structs.glsl"
 
 uniform GeometryParameters geometry_;

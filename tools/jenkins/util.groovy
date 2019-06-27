@@ -321,7 +321,7 @@ def build(Map args = [:]) {
                     # tell ccache where the project root is
                     export CCACHE_BASEDIR=${args.state.env.WORKSPACE}           
                     ${cmake(args)}
-                    ninja -d explain
+                    ninja
                     ccache --show-stats
                 """
             }

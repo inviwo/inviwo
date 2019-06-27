@@ -40,7 +40,9 @@ namespace inviwo {
 /**
  * \class StringPropertyWidgetCEF
  * Widget for synchronizing HTML elements:
+ * \code{.html}
  * <input type="text">
+ * \endcode
  */
 class IVW_MODULE_WEBBROWSER_API StringPropertyWidgetCEF
     : public TemplatePropertyWidgetCEF<std::string> {

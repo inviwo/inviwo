@@ -40,7 +40,9 @@ namespace inviwo {
 /**
  * \class ButtonPropertyWidgetCEF
  * Widget for synchronizing HTML elements:
+ * \code{.html}
  * <input type="button">
+ * \endcode
  */
 class IVW_MODULE_WEBBROWSER_API ButtonPropertyWidgetCEF : public PropertyWidgetCEF {
 public:
