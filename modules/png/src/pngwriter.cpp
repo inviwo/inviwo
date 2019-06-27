@@ -58,7 +58,7 @@ std::vector<Result> convert(const T* data, const size_t size, const T min, const
 }
 
 template <typename T, typename valueType = typename util::value_type<T>::type,
-          typename = typename std::enable_if<std::is_same_v<valueType, bool>>::type>
+          typename = typename std::enable_if<std::is_same<valueType, bool>::value>::type>
 auto convertToUnsigned(const T* data, const size_t size, const T min, const T max)
     -> std::vector<typename util::same_extent<T, unsigned char>::type> {
     using T2 = typename util::same_extent<T, unsigned char>::type;
@@ -66,8 +66,8 @@ auto convertToUnsigned(const T* data, const size_t size, const T min, const T ma
 }
 
 template <typename T, typename valueType = typename util::value_type<T>::type,
-          typename = typename std::enable_if<!std::is_same_v<valueType, bool> &&
-                                             std::is_integral_v<valueType>>::type>
+          typename = typename std::enable_if<!std::is_same<valueType, bool>::value &&
+                                             std::is_integral<valueType>::value>::type>
 auto convertToUnsigned(const T* data, const size_t size, const T min, const T max)
     -> std::vector<typename util::same_extent<T, std::make_unsigned_t<valueType>>::type> {
     using T2 = typename util::same_extent<T, std::make_unsigned_t<valueType>>::type;
@@ -75,7 +75,7 @@ auto convertToUnsigned(const T* data, const size_t size, const T min, const T ma
 }
 
 template <typename T, typename valueType = typename util::value_type<T>::type,
-          typename = typename std::enable_if<!std::is_integral_v<valueType>>::type>
+          typename = typename std::enable_if<!std::is_integral<valueType>::value>::type>
 auto convertToUnsigned(const T*, const size_t, const T, const T) -> std::vector<T> {
     return {};
 }
