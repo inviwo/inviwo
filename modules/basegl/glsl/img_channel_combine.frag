@@ -36,15 +36,19 @@ uniform sampler2D inport1Color;
 uniform sampler2D inport2Color;
 uniform sampler2D inport3Color;
 
+uniform int redChannel;
+uniform int greenChannel;
+uniform int blueChannel;
+uniform int alphaChannel;
+
 uniform bool use_alpha_texture = true;
 uniform float alpha = 1.0;
 
 void main() {
     vec2 texCoords = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
-    float r = texture(inport0Color, texCoords).r;
-    float g = texture(inport1Color, texCoords).r;
-    float b = texture(inport2Color, texCoords).r;
-    float a = mix(alpha,texture(inport3Color, texCoords).r, use_alpha_texture);
-    vec4 color = vec4(r, g, b, a);
-    FragData0 = color;
+    float r = texture(inport0Color, texCoords)[redChannel];
+    float g = texture(inport1Color, texCoords)[greenChannel];
+    float b = texture(inport2Color, texCoords)[blueChannel];
+    float a = mix(alpha,texture(inport3Color, texCoords)[alphaChannel], use_alpha_texture);
+    FragData0 = vec4(r, g, b, a);
 }

@@ -35,14 +35,15 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <modules/opengl/shader/shader.h>
 
 namespace inviwo {
 /** \docpage{org.inviwo.ImageChannelCombine, Image Channel Combine}
  * ![](org.inviwo.ImageChannelCombine.png?classIdentifier=org.inviwo.ImageChannelCombine)
- * Creates a 4 channel image with the connected inputs, from each of them the R channel is used
- * (note, also true for the alpha channel). If the optional alpha channel is not
- * provided, the alpha property is used to set the alpha value of the whole image
+ * Creates a 4 channel image with the connected inputs, from each of them the channel specified in
+ * its property is used. If the optional alpha channel is not provided, the alpha property is used
+ * to set the alpha value of the whole image
  *
  * ### Inports
  *   * __inport0__ Red input image
@@ -54,8 +55,15 @@ namespace inviwo {
  *   * __outport__ Output Image
  *
  * ### Properties
- *   * __alpha__ Alpha value in the final texture if no alpha channel is connected to the optional
+ *   * __Red Channel__ Channel of the 1st input image to use for thre red channel of output image.
+ *   * __Green Channel__ Channel of the 2nd input image to use for thre green channel of output
+ * image.
+ *   * __Blue Channel__ Channel of the 3rd input image to use for thre blue channel of output image.
+ *   * __Aplha Channel__ Channel of the 4th input image to use for thre alpha channel of output
+ * image.
+ *   * __Alpha__ Alpha value in the final texture if no alpha channel is connected to the optional
  * input port
+ *
  */
 
 /**
@@ -78,6 +86,11 @@ private:
     ImageInport inport3_;  //!< optional alpha input image
 
     ImageOutport outport_;  //!< output image
+
+    OptionPropertyInt rChannelSrc_;  //!< Channel of 1th input image for the red output channel
+    OptionPropertyInt gChannelSrc_;  //!< Channel of 2nd input image for the green output channel
+    OptionPropertyInt bChannelSrc_;  //!< Channel of 3rd input image for the blue output channel
+    OptionPropertyInt aChannelSrc_;  //!< Channel of 4th input image for the alpha output channel
 
     FloatProperty alpha_;  //!< alpha value if no alpha channel is connected
 

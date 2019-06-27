@@ -66,9 +66,9 @@ protected:
     virtual void postProcess() override;
 
 private:
-    OptionPropertyInt channelSelector_; //!< Selection between RED, GREEN, BLUE, and ALPHA
+    OptionPropertyInt channelSelector_;  //!< Selection between RED, GREEN, BLUE, and ALPHA
 };
 
 }  // namespace inviwo
 
-#endif // IVW_IMAGECHANNELSELECT_H
+#endif  // IVW_IMAGECHANNELSELECT_H

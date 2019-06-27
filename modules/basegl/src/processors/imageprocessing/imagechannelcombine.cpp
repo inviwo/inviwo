@@ -50,6 +50,14 @@ ImageChannelCombine::ImageChannelCombine()
     , inport2_("inport2", true)
     , inport3_("inport3", true)
     , outport_("outport", false)
+    , rChannelSrc_("redChannel", "Red Channel",
+                   {{"r", "Red", 0}, {"g", "Green", 1}, {"b", "Blue", 2}, {"a", "Aplha", 3}})
+    , gChannelSrc_("greenChannel", "Green Channel",
+                   {{"r", "Red", 0}, {"g", "Green", 1}, {"b", "Blue", 2}, {"a", "Aplha", 3}})
+    , bChannelSrc_("blueChannel", "Blue Channel",
+                   {{"r", "Red", 0}, {"g", "Green", 1}, {"b", "Blue", 2}, {"a", "Aplha", 3}})
+    , aChannelSrc_("alphaChannel", "Aplha Channel",
+                   {{"r", "Red", 0}, {"g", "Green", 1}, {"b", "Blue", 2}, {"a", "Aplha", 3}})
     , alpha_("alpha", "Alpha", 1.0f, 0.0f, 1.0f, 0.001f)
     , shader_("img_channel_combine.frag") {
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
@@ -62,7 +70,7 @@ ImageChannelCombine::ImageChannelCombine()
 
     addPort(outport_);
 
-    addProperty(alpha_);
+    addProperties(rChannelSrc_, gChannelSrc_, bChannelSrc_, aChannelSrc_, alpha_);
 }
 
 void ImageChannelCombine::process() {
@@ -77,8 +85,8 @@ void ImageChannelCombine::process() {
     auto img2 = inport2_.getData();
     auto img3 = inport3_.getData();
 
-    if (isSame(img0->getDimensions(),img1->getDimensions(),img2->getDimensions()) 
-        && (inport3_.isConnected() && img3 && img3->getDimensions() != img0->getDimensions())) {
+    if (isSame(img0->getDimensions(), img1->getDimensions(), img2->getDimensions()) &&
+        (inport3_.isConnected() && img3 && img3->getDimensions() != img0->getDimensions())) {
         throw Exception("The image dimensions of all inports needs to be the same", IVW_CONTEXT);
     }
 
@@ -119,8 +127,9 @@ void ImageChannelCombine::process() {
     if (inport3_.hasData()) {
         utilgl::bindAndSetUniforms(shader_, units, inport3_, ImageType::ColorOnly);
     }
+    utilgl::setUniforms(shader_, outport_, rChannelSrc_, gChannelSrc_, bChannelSrc_, aChannelSrc_,
+                        alpha_);
     shader_.setUniform("use_alpha_texture", inport3_.hasData());
-    shader_.setUniform("alpha", alpha_.get());
     utilgl::setUniforms(shader_, outport_);
     utilgl::singleDrawImagePlaneRect();
     shader_.deactivate();
