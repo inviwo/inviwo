@@ -120,8 +120,11 @@ QImage utilqt::generatePreview(const QString& classIdentifier) {
         scene->clearSelection();  // Selections would also render to the file
                                   // Re-shrink the scene to it's bounding contents
         scene->setSceneRect(scene->itemsBoundingRect().adjusted(-10.0, -padAbove, 10.0, padBelow));
+        const auto scale = utilqt::emToPx(QApplication::fontMetrics(), 1.0) /
+                           static_cast<double>(utilqt::refEm());
+
         QImage image(
-            scene->sceneRect().size().toSize(),
+            (scene->sceneRect().size() * scale).toSize(),
             QImage::Format_ARGB32);   // Create the image with the exact size of the shrunk scene
         image.fill(Qt::transparent);  // Start all pixels transparent
 

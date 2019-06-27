@@ -570,7 +570,7 @@ function(make_doxygen_target modules_var)
             ivw_get_glsl_dirs(glslpaths ${mod})
 
             ivw_private_make_help(
-                NAME ${${mod}_class}
+                NAME ${${mod}_name}
                 OUTPUT_DIR "${output_dir}/help"
                 HTML_DIR "${ivw_doxy_dir}/help"
                 DOC_DIR "${${mod}_path}/docs"
@@ -580,7 +580,7 @@ function(make_doxygen_target modules_var)
                 FILTER_PATTERNS ${filer_patterns_list}
                 WARNING_FORMAT ${warn_format}
             )
-            add_dependencies("DOXY-ALL" "DOXY-HELP-${${mod}_class}")
+            add_dependencies("DOXY-ALL" "DOXY-HELP-${${mod}_name}")
         endif()
     endforeach()
  endfunction()
