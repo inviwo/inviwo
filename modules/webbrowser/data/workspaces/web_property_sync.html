@@ -2,7 +2,7 @@
 <head>
 <title>Inviwo property syncing example</title>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<script src="../js/inviwoapi.js"></script>
+<script src="https://inviwo/modules/webbrowser/data/js/inviwoapi.js"></script>
 
 <script language="JavaScript">
 // Initialize Inviwo API so that we can use it to synchronize properties
@@ -90,7 +90,6 @@ function syncOption(prop) {
 	var select = document.createElement("select");
 	select.id = htmlId + "Select";
 	select.style.visibility = "hidden";
-	var optionIndex = 0;
 	for (var i in prop["options"]) {
 		var option = prop["options"][i];
 
@@ -104,7 +103,6 @@ function syncOption(prop) {
 		optionElem.value = option["value"];
 		optionElem.index = i;
 		optionElem.style.visibility = "hidden";
-		optionDiv.appendChild(optionElem);
 
 		if (i == prop["selectedIndex"]) {
 			optionDiv.className = "selectionElement selectedElement";
@@ -112,22 +110,20 @@ function syncOption(prop) {
 		} else {
 			optionDiv.className = "selectionElement";
 		}
+		select.appendChild(optionElem);
+
 		optionDiv.innerHTML = option["name"];
 		optionDiv.title = option["value"];
 		optionDiv.id = optionId;
 		optionDiv.onclick = function () {
-			console.log("Setting value: " + this.title);
-			console.log("Setting value: " + this.lastChild.nodeValue + " Index: " + this.childNodes[0].textContent);
 			inviwo.setProperty(path, {value: Number(this.title)});
 		};
 		if (oldOption) {
 			property.replaceChild(optionDiv, oldOption);
-			select.replaceChild(optionElem, document.getElementById(option["id"]));
 		} else {
 			property.appendChild(optionDiv);
-			select.appendChild(optionElem);
 		}
-		optionIndex += 1;
+		
 	}
 
 	if (oldSelect) {

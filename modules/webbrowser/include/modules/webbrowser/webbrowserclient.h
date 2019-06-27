@@ -43,6 +43,7 @@
 #include <include/cef_load_handler.h>
 #include <include/cef_life_span_handler.h>
 #include "include/wrapper/cef_message_router.h"
+#include "include/wrapper/cef_resource_manager.h"
 #include <warn/pop>
 
 namespace inviwo {
@@ -85,7 +86,13 @@ public:
 
     void OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
                                    TerminationStatus status) override;
-
+    cef_return_value_t OnBeforeResourceLoad(
+        CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
+        CefRefPtr<CefRequest> request,
+        CefRefPtr<CefRequestCallback> callback) override;
+    CefRefPtr<CefResourceHandler> GetResourceHandler(
+        CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
+        CefRefPtr<CefRequest> request) override;
     // CefLoadHandler methods:
     /*
      * Added handlers will receive CefLoadHandler calls.
@@ -135,6 +142,8 @@ protected:
     CefRefPtr<CefMessageRouterBrowserSide> messageRouter_;
 
     std::vector<CefLoadHandler*> loadHandlers_;
+    // Manages the registration and delivery of resources.
+    CefRefPtr<CefResourceManager> resourceManager_;
 
     // Track the number of browsers using this Client.
     int browserCount_ = 0;
