@@ -77,7 +77,6 @@ void ImageChannelCombine::process() {
     auto isSame = [](auto a, auto b, auto c) {
         if (a != b) return false;
         if (a != c) return false;
-        if (b != c) return false;
         return true;
     };
     auto img0 = inport0_.getData();
