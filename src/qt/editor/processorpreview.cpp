@@ -49,6 +49,7 @@
 #include <QBuffer>
 #include <QImage>
 #include <QByteArray>
+#include <QApplication>
 #include <warn/pop>
 
 namespace inviwo {
