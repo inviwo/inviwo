@@ -48,6 +48,12 @@ void updateWorkspaces(InviwoApplication* app) {
     }
 }
 
+void updateRegressionWorkspaces(InviwoApplication* app) {
+    for (const auto& m : app->getModules()) {
+        updateWorkspaces(app, m->getPath(ModulePath::RegressionTests));
+    }
+}
+
 void updateWorkspaces(InviwoApplication* app, const std::string& path) {
     auto update = [&](const std::string& fileName) {
         auto errorCounter = std::make_shared<LogErrorCounter>();
@@ -73,6 +79,7 @@ void updateWorkspaces(InviwoApplication* app, const std::string& path) {
                                     IVW_CONTEXT_CUSTOM("util::updateWorkspaces"));
                 }
             }
+            app->waitForPool();
             {
                 app->getWorkspaceManager()->save(fileName, [&](ExceptionContext ec) {
                     try {

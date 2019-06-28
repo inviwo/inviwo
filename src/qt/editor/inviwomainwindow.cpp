@@ -135,6 +135,10 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     , updateWorkspaces_{"", "update-workspaces",
                         "Update workspaces of all modules to the latest version "
                         "(located in '<module>/data/workspaces/*')"}
+    , updateRegressionWorkspaces_{"", "update-regression-workspaces",
+                                  "Update regression workspaces of all modules to the latest "
+                                  "version "
+                                  "(located in '<module>/tests/regression/*')"}
     , updateWorkspacesInPath_{"",
                               "update-workspaces-in-path",
                               "Update all workspaces in path to the latest version",
@@ -212,6 +216,10 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
 
     app->getCommandLineParser().add(&updateWorkspaces_, [this]() { util::updateWorkspaces(app_); },
                                     1250);
+
+    app->getCommandLineParser().add(&updateRegressionWorkspaces_,
+                                    [this]() { util::updateRegressionWorkspaces(app_); }, 1250);
+
     app->getCommandLineParser().add(
         &updateWorkspacesInPath_,
         [this]() { util::updateWorkspaces(app_, updateWorkspacesInPath_.getValue()); }, 1250);
