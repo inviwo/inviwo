@@ -169,12 +169,10 @@ std::shared_ptr<Volume> RawVolumeReader::readData(const std::string& filePath,
         // Center the data around origo.
         glm::vec3 offset(-0.5f * (basis[0] + basis[1] + basis[2]));
 
-        auto volume = std::make_shared<Volume>();
+        auto volume = std::make_shared<Volume>(dimensions_, format_);
         volume->setBasis(basis);
         volume->setOffset(offset);
         volume->setWorldMatrix(wtm);
-        volume->setDimensions(dimensions_);
-        volume->setDataFormat(format_);
         auto vd = std::make_shared<VolumeDisk>(filePath, dimensions_, format_);
 
         auto loader = std::make_unique<RawVolumeRAMLoader>(rawFile_, dataOffset_, dimensions_,

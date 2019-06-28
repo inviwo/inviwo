@@ -212,13 +212,11 @@ std::shared_ptr<Volume> Handle::getVolumeAtPathAsType(const Path& path,
             return res;
         });
 
-    auto volume = std::make_shared<Volume>();
+    auto volume = std::make_shared<Volume>(volumeDimensions, format);
     volume->dataMap_.dataRange.x = glm::compMin(minmax.first);
     volume->dataMap_.dataRange.y = glm::compMax(minmax.second);
     volume->dataMap_.valueRange = volume->dataMap_.dataRange;
 
-    volume->setDimensions(volumeram->getDimensions());
-    volume->setDataFormat(volumeram->getDataFormat());
     volume->addRepresentation(volumeram);
 
     return volume;

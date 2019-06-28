@@ -31,15 +31,19 @@
 
 namespace inviwo {
 
-VolumeDisk::VolumeDisk(size3_t dimensions, const DataFormatBase* format)
+VolumeDisk::VolumeDisk(size3_t dimensions, const DataFormatBase* format,
+                       const SwizzleMask& swizzleMask)
     : VolumeRepresentation(format)
     , DiskRepresentation<VolumeRepresentation>()
-    , dimensions_(dimensions) {}
+    , dimensions_(dimensions)
+    , swizzleMask_(swizzleMask) {}
 
-VolumeDisk::VolumeDisk(std::string srcFile, size3_t dimensions, const DataFormatBase* format)
+VolumeDisk::VolumeDisk(std::string srcFile, size3_t dimensions, const DataFormatBase* format,
+                       const SwizzleMask& swizzleMask)
     : VolumeRepresentation(format)
     , DiskRepresentation<VolumeRepresentation>(srcFile)
-    , dimensions_(dimensions) {}
+    , dimensions_(dimensions)
+    , swizzleMask_(swizzleMask) {}
 
 VolumeDisk* VolumeDisk::clone() const { return new VolumeDisk(*this); }
 
@@ -50,5 +54,9 @@ void VolumeDisk::setDimensions(size3_t) {
 }
 
 const size3_t& VolumeDisk::getDimensions() const { return dimensions_; }
+
+void VolumeDisk::setSwizzleMask(const SwizzleMask& mask) { swizzleMask_ = mask; }
+
+SwizzleMask VolumeDisk::getSwizzleMask() const { return swizzleMask_; }
 
 }  // namespace inviwo

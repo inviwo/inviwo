@@ -41,45 +41,44 @@
 
 namespace inviwo {
 
+class DataFormatBase;
+
 /**
  * \ingroup datastructures
  */
 class IVW_CORE_API Layer : public Data<Layer, LayerRepresentation>, public StructuredGridEntity<2> {
 public:
-    Layer(size2_t dimensions = size2_t(8, 8), const DataFormatBase* format = DataVec4UInt8::get(),
-          LayerType type = LayerType::Color, const SwizzleMask& swizzleMask = swizzlemasks::rgba);
-    Layer(std::shared_ptr<LayerRepresentation>);
+    explicit Layer(size2_t defaultDimensions = size2_t(8, 8),
+                   const DataFormatBase* defaultFormat = DataVec4UInt8::get(),
+                   LayerType type = LayerType::Color,
+                   const SwizzleMask& defaultSwizzleMask = swizzlemasks::rgba);
+    explicit Layer(std::shared_ptr<LayerRepresentation>);
     Layer(const Layer&) = default;
     Layer& operator=(const Layer& that) = default;
     virtual Layer* clone() const override;
     virtual ~Layer() = default;
 
-    virtual size2_t getDimensions() const override;
+    LayerType getLayerType() const;
 
     /**
      * Resize to dimension. This is destructive, the data will not be
      * preserved. Use copyRepresentationsTo to update the data.
      * @note Resizes the last valid representation and erases all other representations.
      * Last valid representation will remain valid after changing the dimension.
-     */
-    virtual void setDimensions(const size2_t& dim) override;
+     */  
+    virtual void setDimensions(const size2_t& dim);
+    virtual size2_t getDimensions() const override;
 
     /**
-     * Copy and resize the representation of this onto the representations of target.
-     * Does not change the dimensions of target.
+     * Set the format of the data.
+     * @see DataFormatBase
+     * @param format The format of the data.
      */
-    void copyRepresentationsTo(Layer* target);
-
-    LayerType getLayerType() const;
-
-    /**
-     * \brief encode the layer contents to a buffer considering the requested image format
-     *
-     * @param fileExtension   file extension of the requested image format
-     * @return encoded layer contents as std::vector
-     */
-    std::unique_ptr<std::vector<unsigned char>> getAsCodedBuffer(
-        const std::string& fileExtension) const;
+    // clang-format off
+    [[ deprecated("use LayerRepresentation::setDataFormat() instead (deprecated since 2019-06-26)")]]
+    void setDataFormat(const DataFormatBase* format);
+    const DataFormatBase* getDataFormat() const;
+    // clang-format on
 
     /**
      * \brief update the swizzle mask of the channels for sampling color layers
@@ -89,6 +88,21 @@ public:
      */
     void setSwizzleMask(const SwizzleMask& mask);
     SwizzleMask getSwizzleMask() const;
+
+    /**
+     * Copy and resize the representation of this onto the representations of target.
+     * Does not change the dimensions of target.
+     */
+    void copyRepresentationsTo(Layer* target);
+
+    /**
+     * \brief encode the layer contents to a buffer considering the requested image format
+     *
+     * @param fileExtension   file extension of the requested image format
+     * @return encoded layer contents as std::vector
+     */
+    std::unique_ptr<std::vector<unsigned char>> getAsCodedBuffer(
+        const std::string& fileExtension) const;
 
 private:
     friend class LayerRepresentation;
@@ -102,7 +116,9 @@ private:
     void updateMetaFromRepresentation(const LayerRepresentation* layerRep);
 
     LayerType layerType_;
-    SwizzleMask swizzleMask_;
+    size2_t defaultDimensions_;
+    const DataFormatBase* defaultDataFormat_;
+    SwizzleMask defaultSwizzleMask_;
 };
 
 // https://docs.microsoft.com/en-us/cpp/cpp/general-rules-and-limitations?view=vs-2017

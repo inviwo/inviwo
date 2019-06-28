@@ -38,8 +38,8 @@ namespace inviwo {
 std::shared_ptr<LayerRAM> LayerCLGL2RAMConverter::createFrom(
     std::shared_ptr<const LayerCLGL> layerCLGL) const {
     uvec2 dimensions = layerCLGL->getDimensions();
-    auto destination =
-        createLayerRAM(dimensions, layerCLGL->getLayerType(), layerCLGL->getDataFormat());
+    auto destination = createLayerRAM(dimensions, layerCLGL->getLayerType(),
+                                      layerCLGL->getDataFormat(), layerCLGL->getSwizzleMask());
 
     if (destination) {
         layerCLGL->getTexture()->download(destination->getData());
@@ -78,8 +78,8 @@ std::shared_ptr<LayerCL> LayerCLGL2CLConverter::createFrom(
 #ifdef IVW_DEBUG
     LogWarn("Performance warning: Use shared CLGL representation instead of CL ");
 #endif
-    auto destination =
-        std::make_shared<LayerCL>(src->getDimensions(), src->getLayerType(), src->getDataFormat());
+    auto destination = std::make_shared<LayerCL>(src->getDimensions(), src->getLayerType(),
+                                                 src->getDataFormat(), src->getSwizzleMask());
     {
         SyncCLGL glSync;
         glSync.addToAquireGLObjectList(src.get());

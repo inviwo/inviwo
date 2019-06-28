@@ -88,6 +88,7 @@ void forEachPixelParallel(const LayerRAM &layer, C callback, size_t jobs = 0) {
 }
 
 IVW_CORE_API std::shared_ptr<Image> readImageFromDisk(std::string filename);
+
 }  // namespace util
 
 }  // namespace inviwo

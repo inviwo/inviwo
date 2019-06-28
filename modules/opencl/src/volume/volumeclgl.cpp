@@ -36,14 +36,19 @@ CLTexture3DSharingMap VolumeCLGL::clVolumeSharingMap_;
 VolumeCLGL::VolumeCLGL(const DataFormatBase* format, Texture3D* data)
     : VolumeCLBase()
     , VolumeRepresentation(format)
-    , dimensions_(data != nullptr ? data->getDimensions() : size3_t(64))
-    , texture_(data) {
+    , dimensions_(data ? data->getDimensions() : size3_t(64))
+    , texture_(data)
+    , swizzleMask_(data ? data->getSwizzleMask() : swizzlemasks::rgba) {
     initialize();
 }
 
 VolumeCLGL::VolumeCLGL(const size3_t& dimensions, const DataFormatBase* format,
                        std::shared_ptr<Texture3D> data)
-    : VolumeCLBase(), VolumeRepresentation(format), dimensions_(dimensions), texture_(data) {
+    : VolumeCLBase()
+    , VolumeRepresentation(format)
+    , dimensions_(dimensions)
+    , texture_(data)
+    , swizzleMask_(data ? data->getSwizzleMask() : swizzlemasks::rgba) {
     initialize();
 }
 
@@ -51,7 +56,8 @@ VolumeCLGL::VolumeCLGL(const VolumeCLGL& rhs)
     : VolumeCLBase(rhs)
     , VolumeRepresentation(rhs)
     , dimensions_(rhs.dimensions_)
-    , texture_(rhs.texture_->clone()) {
+    , texture_(rhs.texture_->clone())
+    , swizzleMask_(rhs.swizzleMask_) {
     initialize();
 }
 
@@ -75,6 +81,15 @@ void VolumeCLGL::initialize() {
 }
 
 const size3_t& VolumeCLGL::getDimensions() const { return dimensions_; }
+
+void VolumeCLGL::setSwizzleMask(const SwizzleMask& mask) {
+    swizzleMask_ = mask;
+    if (texture_) {
+        texture_->setSwizzleMask(mask);
+    }
+}
+
+SwizzleMask VolumeCLGL::getSwizzleMask() const { return swizzleMask_; }
 
 VolumeCLGL* VolumeCLGL::clone() const { return new VolumeCLGL(*this); }
 

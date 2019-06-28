@@ -42,16 +42,19 @@ namespace inviwo {
 class IVW_CORE_API LayerDisk : public LayerRepresentation,
                                public DiskRepresentation<LayerRepresentation> {
 public:
-    LayerDisk(LayerType type = LayerType::Color,
-              const SwizzleMask& swizzleMask = swizzlemasks::rgba);
-    LayerDisk(std::string url, LayerType type = LayerType::Color,
-              const SwizzleMask& swizzleMask = swizzlemasks::rgba);
+    explicit LayerDisk(size2_t dimensions,
+                       const DataFormatBase* format, LayerType type = LayerType::Color,
+                       const SwizzleMask& swizzleMask = swizzlemasks::rgba);
+    explicit LayerDisk(std::string url, size2_t dimensions,
+                       const DataFormatBase* format, LayerType type = LayerType::Color,
+                       const SwizzleMask& swizzleMask = swizzlemasks::rgba);
     LayerDisk(const LayerDisk& rhs);
     LayerDisk& operator=(const LayerDisk& that);
     virtual LayerDisk* clone() const override;
     virtual ~LayerDisk();
 
-    virtual void setDimensions(size2_t dimensions) override;
+    virtual const size2_t& getDimensions() const override;
+
     /**
      * Copy and resize the representations of this onto the target.
      */
@@ -76,6 +79,12 @@ public:
     virtual SwizzleMask getSwizzleMask() const override;
 
 private:
+    // clang-format off
+    [[deprecated("does not work for DiskRepresentation (deprecated since 2019-06-27)")]]
+    virtual void setDimensions(size2_t dimensions) override;
+    // clang-format on
+
+    size2_t dimensions_;
     SwizzleMask swizzleMask_;
 };
 
