@@ -85,7 +85,6 @@ void VolumeGL::bindTexture(GLenum texUnit) const {
 
 void VolumeGL::unbindTexture() const { volumeTexture_->unbind(); }
 
-
 void VolumeGL::setDimensions(size3_t dimensions) {
     dimensions_ = dimensions;
     volumeTexture_->uploadAndResize(nullptr, dimensions_);
