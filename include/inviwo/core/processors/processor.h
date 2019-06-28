@@ -336,11 +336,23 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
-    // Assume ownership of port, needed for dynamic ports
+    /**
+     * Add port to processor and pass ownership to processor.
+     * @note Port group is a concept for event propagation. Currently only used for
+     * ResizeEvents, which only propagate from outports to inports in the same port group
+     * @param port to add
+     * @param portGroup name of group to propagate events through (defaults to "default")
+     */
     template <typename T, typename std::enable_if_t<std::is_base_of<Inport, T>::value, int> = 0>
     T& addPort(std::unique_ptr<T> port, const std::string& portGroup = "default");
 
-    // Assume ownership of port, needed for dynamic ports
+    /**
+     * Add port to processor and pass ownership to processor.
+     * @note Port group is a concept for event propagation. Currently only used for
+     * ResizeEvents, which only propagate from outports to inports in the same port group
+     * @param port to add
+     * @param portGroup name of group to propagate events through (defaults to "default")
+     */
     template <typename T, typename std::enable_if_t<std::is_base_of<Outport, T>::value, int> = 0>
     T& addPort(std::unique_ptr<T> port, const std::string& portGroup = "default");
 
@@ -395,7 +407,6 @@ private:
 
 inline ProcessorNetwork* Processor::getNetwork() const { return network_; }
 
-// Assume ownership of port, needed for dynamic ports
 template <typename T, typename std::enable_if_t<std::is_base_of<Inport, T>::value, int>>
 T& Processor::addPort(std::unique_ptr<T> port, const std::string& portGroup) {
     T& ret = *port;
@@ -404,7 +415,6 @@ T& Processor::addPort(std::unique_ptr<T> port, const std::string& portGroup) {
     return ret;
 }
 
-// Assume ownership of port, needed for dynamic ports
 template <typename T, typename std::enable_if_t<std::is_base_of<Outport, T>::value, int>>
 T& Processor::addPort(std::unique_ptr<T> port, const std::string& portGroup) {
     T& ret = *port;
@@ -413,13 +423,6 @@ T& Processor::addPort(std::unique_ptr<T> port, const std::string& portGroup) {
     return ret;
 }
 
-/**
- * Add port to processor.
- * @note Port group is a concept for event propagation. Currently only used for
- * ResizeEvents, which only propagate from outports to inports in the same port group
- * @param port to add
- * @param portGroup name of group to propagate events through (defaults to "default")
- */
 template <typename T>
 T& Processor::addPort(T& port, const std::string& portGroup) {
     static_assert(std::is_base_of<Inport, T>::value || std::is_base_of<Outport, T>::value,
