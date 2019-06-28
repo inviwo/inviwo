@@ -83,8 +83,9 @@ void curvature(IntegralLine &line, dmat4 toWorld) {
             }
             const auto nt1 = t1 / l1;  // normalize t1
             const auto nt2 = t2 / l2;  // normalize t2
-            const auto dot = std::clamp(glm::dot(nt1, nt2), -1.0, 1.0);
-            const auto angle = std::acos(dot);
+            const auto dot = glm::dot(nt1, nt2);
+            const auto cdot = dot < -1.0 ? -1.0 : (dot > 1.0 ? 1.0 : dot);
+            const auto angle = std::acos(cdot);
 
             const double meanL = 0.5 * (l1 + l2);
             K.emplace_back(angle / meanL);
