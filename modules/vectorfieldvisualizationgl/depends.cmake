@@ -4,5 +4,6 @@
 set(dependencies
     InviwoOpenGLModule
     InviwoBaseGLModule  
+    InviwoVectorFieldVisualizationModule  
 )
 set(EnableByDefault ON)

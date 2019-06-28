@@ -61,6 +61,12 @@ public:
      */
     ClockGL();
 
+    ClockGL(const ClockGL&) = delete;
+    ClockGL(ClockGL&&) = default;
+
+    ClockGL& operator=(const ClockGL&) = delete;
+    ClockGL& operator=(ClockGL&&) = default;
+
     ~ClockGL();
 
     /**
@@ -81,9 +87,15 @@ public:
     void stop();
 
     /**
-     * resets the queries and sets the accumulated time to 0
+     * resets the queries and sets the accumulated time and count to 0
      */
     void reset();
+
+    /**
+     * return the number of times start has been called. Useful for calculating averages.
+     */
+
+    size_t getCount() const;
 
     /**
      * returns the accumulated time. If the clock is running the result is accumulated
@@ -95,6 +107,17 @@ public:
      * @return accumulated time
      */
     duration getElapsedTime(std::chrono::seconds timeout = std::chrono::seconds{30});
+
+    /**
+     * returns the accumulated time divided by count. If the clock is running the result is
+     * accumulated time plus the current elapsed time divided by count. This function will wait at
+     * most \p timeout seconds for the performance queries to be completed. In case of a time out,
+     * the results are incorrect.
+     *
+     * @param timeout    time out in seconds when querying the OpenGL performance counters
+     * @return accumulated time
+     */
+    duration getAverageElapsedTime(std::chrono::seconds timeout = std::chrono::seconds{30});
 
     /**
      * returns the accumulated time. If the clock is running the result is accumulated
@@ -131,11 +154,12 @@ protected:
         GLuint stopId() const { return ids[1]; }
     };
     duration accumulatedTime_ = static_cast<duration>(0);
+    size_t count_ = 0;
     std::vector<Query> queries_;
 };
 
 /**
- * \class ScopedClockGL
+ * \class inviwo::ScopedClockGL
  * scoped clock for OpenGL time measurements
  *
  * \see IVW_OPENGL_PROFILING(message), IVW_OPENGL_PROFILING_CUSTOM(src, message)

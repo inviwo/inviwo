@@ -45,7 +45,7 @@ namespace inviwo {
  * onWebPageCopiedCallback afterwards.
  */
 #include <warn/push>
-#include <warn/ignore/dll-interface-base> // Fine if dependent libs use the same CEF lib binaries
+#include <warn/ignore/dll-interface-base>  // Fine if dependent libs use the same CEF lib binaries
 class IVW_MODULE_WEBBROWSER_API RenderHandlerGL : public CefRenderHandler {
 public:
     RenderHandlerGL(std::function<void()> onWebPageCopiedCallback);

@@ -33,7 +33,9 @@ def main():
             sys.stdout.write("Could not find clang format please use the '-binary'\n")
             sys.exit(1);
 
-
+    version = subprocess.getoutput(args.binary + " --version")
+    sys.stdout.write(version)
+    
     with open(args.compile_commands) as f: 
         data = json.load(f)
     

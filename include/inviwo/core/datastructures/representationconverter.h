@@ -45,12 +45,24 @@ public:
     virtual ~ConverterException() noexcept = default;
 };
 
+/**
+ * A base type for all RepresentationConverters
+ * @see RepresentationConverter
+ */
 class IVW_CORE_API BaseRepresentationConverter {
 public:
     BaseRepresentationConverter() = default;
     virtual ~BaseRepresentationConverter() = default;
 };
 
+/**
+ * A RepresentationConverter creates or updates a DataRepresentation from an other
+ * DataRepresentation using the createFrom() or update() functions
+ * @see DataRepresentation
+ * @see RepresentationConverterFactory
+ * @see InviwoApplication::getRepresentationConverterFactory()
+ * @see InviwoModule::registerRepresentationConverter()
+ */
 template <typename BaseRepr>
 class RepresentationConverter : public BaseRepresentationConverter {
 public:
@@ -64,6 +76,10 @@ public:
                         std::shared_ptr<BaseRepr> destination) const = 0;
 };
 
+/**
+ * A helper type to make it easier to create RepresentationConverters for specific types
+ * @see RepresentationConverter
+ */
 template <typename BaseRepr, typename From, typename To>
 class RepresentationConverterType : public RepresentationConverter<BaseRepr> {
 public:
@@ -86,6 +102,13 @@ public:
                         std::shared_ptr<To> destination) const = 0;
 };
 
+/**
+ * A set of RepresentationConverters to convert from one kind of representation to a different kind
+ * through multiple steps.
+ * @see RepresentationConverter
+ * @see DataRepresenation
+ * @see Data
+ */
 template <typename BaseRepr>
 class RepresentationConverterPackage {
 public:

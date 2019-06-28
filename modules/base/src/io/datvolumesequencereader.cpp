@@ -316,7 +316,7 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
             filePos_ = t * bytes;
 
             auto loader = std::make_unique<RawVolumeRAMLoader>(rawFile_, filePos_, dimensions_,
-                                                                littleEndian_, format_);
+                                                               littleEndian_, format_);
             diskRepr->setLoader(loader.release());
             volumes->back()->addRepresentation(diskRepr);
             // Compute data range if not specified

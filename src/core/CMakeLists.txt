@@ -64,7 +64,12 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/representationconverter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/representationconverterfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/representationconvertermetafactory.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/representationfactory.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/representationfactorymanager.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/representationfactoryobject.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/representationmetafactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/representationtraits.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/representationutil.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/spatialdata.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/tfprimitive.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/tfprimitiveset.h
@@ -284,6 +289,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formats.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formatsdefinefunc.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/glm.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/hashcombine.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/imagecache.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/imageramutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/imagesampler.h
@@ -313,6 +319,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/shuntingyard.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/singlefileobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/singleton.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/sourcecontext.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/spatial4dsampler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/spatialsampler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/stacktrace.h
@@ -376,6 +383,11 @@ set(SOURCE_FILES
     datastructures/isovaluecollection.cpp
     datastructures/light/baselightsource.cpp
     datastructures/representationconvertermetafactory.cpp
+    datastructures/representationfactory.cpp
+    datastructures/representationfactorymanager.cpp
+    datastructures/representationfactoryobject.cpp
+    datastructures/representationmetafactory.cpp
+    datastructures/representationutil.cpp
     datastructures/spatialdata.cpp
     datastructures/tfprimitive.cpp
     datastructures/tfprimitiveset.cpp
@@ -554,6 +566,7 @@ set(SOURCE_FILES
     util/formatdispatching.cpp
     util/formats.cpp
     util/glm.cpp
+    util/hashcombine.cpp
     util/imagecache.cpp
     util/imageramutils.cpp
     util/imagesampler.cpp
@@ -574,6 +587,7 @@ set(SOURCE_FILES
     util/sharedlibrary.cpp
     util/shuntingyard.cpp
     util/singlefileobserver.cpp
+    util/sourcecontext.cpp
     util/spatial4dsampler.cpp
     util/stacktrace.cpp
     util/statecoordinator.cpp
@@ -614,6 +628,7 @@ set(TEST_FILES
     tests/unittests/filesystem-test.cpp
     tests/unittests/glm-test.cpp
     tests/unittests/indirectiterator-tests.cpp
+    tests/unittests/interpolation-tests.cpp
     tests/unittests/inviwo-core-unittest-main.cpp
     tests/unittests/metadata-test.cpp
     tests/unittests/network-evaluator-test.cpp

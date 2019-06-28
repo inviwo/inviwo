@@ -1,0 +1,132 @@
+/* The standard CSS for doxygen 1.8.8 */
+
+html {
+	background-color: #323235;
+}
+
+body, table, div, p, dl {
+	color: #9d9995;
+    background-color: #323235;
+	font: 400 9pt/13pt Calibra, sans-serif;
+}
+
+h1, h2, h3 {
+	color: #c8ccd0;
+}
+
+b {
+	color: #bfbdbb;
+	font-weight: 600;
+}
+
+.title {
+	font: 400 14pt/20pt Calibra, sans-serif;
+	color: white;
+	font-weight: bold;
+	margin-top: 1em;
+}
+
+h3 {
+	margin-bottom: 0em;
+}
+
+a {
+	color: #268bd2;
+	font-weight: normal;
+	/*text-decoration: none;*/
+}
+
+body {
+	 margin: 0;
+	 margin-top: 1.0em;
+	margin-left: 1.2em;
+	margin-right: 0.8em;
+}
+
+div.contents {
+}
+
+div.center {
+	text-align: center;
+        margin-top: 0em;
+        margin-bottom: 0em;
+        padding: 0px;
+}
+
+div.center img {
+	border: 0em;
+}
+
+.image {
+    text-align: left;
+    margin-left: 2.0em;
+}
+
+div.BufferPort {
+	margin-right: 0.5em;
+	background-color: rgb(255, 133, 0);
+}
+div.MeshPort {
+	margin-right: 0.5em;
+	background-color: rgb(188, 188, 101);
+}
+div.ImagePort {
+	margin-right:0em;
+	background-color:rgb(90, 127, 183);
+}
+div.LightSourcePort {
+	margin-right: 0.5em;
+	background-color: rgb(128,64,196);
+}
+div.VolumePort {
+	margin-right: 0.5em;
+	background-color: rgb(188, 101, 101);
+}
+div.PointCloudPort {
+	margin-right: 0.5em;
+	background-color: rgb(255, 0, 255);
+}
+
+.fragment {
+	font-family: monospace, fixed;
+	font-size: 105%;
+}
+
+pre.fragment {
+	padding: 0.4em 0.6em;
+	margin: 0.4em 0.8em 0.4em 1em;
+	overflow: auto;
+	word-wrap: break-word;
+	font-size:  80%;
+	line-height: 125%;
+}
+
+/* @group Code Colorization */
+
+span.keyword {
+	color: #008000
+}
+
+span.keywordtype {
+	color: #604020
+}
+
+span.keywordflow {
+	color: #e08000
+}
+
+span.comment {
+	color: #800000
+}
+
+span.preprocessor {
+	color: #806020
+}
+
+span.stringliteral {
+	color: #002080
+}
+
+span.charliteral {
+	color: #008080
+}

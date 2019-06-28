@@ -49,8 +49,6 @@
 
 namespace inviwo {
 
-
-
 /** \docpage{org.inviwo.DataFrameExporter, DataFrame Exporter}
  * ![](org.inviwo.DataFrameExporter.png?classIdentifier=org.inviwo.DataFrameExporter)
  * This processor exports a DataFrame into a CSV or XML file.
@@ -92,8 +90,6 @@ private:
 
     bool export_;
 };
-
-
 
 }  // namespace inviwo
 

@@ -42,6 +42,8 @@ namespace inviwo {
 template <typename Owner>
 class DataRepresentation {
 public:
+    using ReprOwner = Owner;
+
     virtual DataRepresentation* clone() const = 0;
     virtual ~DataRepresentation() = default;
 

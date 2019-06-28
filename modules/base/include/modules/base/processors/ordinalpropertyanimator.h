@@ -272,7 +272,7 @@ private:
                                      Defaultvalues<T>::getName(), animator.type_.size());
             animator.factory_.push_back([]() -> std::unique_ptr<Property> {
                 return std::make_unique<OrdinalAnimationProperty<T>>(Defaultvalues<T>::getName(),
-                                                                      Defaultvalues<T>::getName());
+                                                                     Defaultvalues<T>::getName());
             });
         }
     };

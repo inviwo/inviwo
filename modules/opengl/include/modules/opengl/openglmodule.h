@@ -44,6 +44,11 @@ class IVW_MODULE_OPENGL_API OpenGLModule : public InviwoModule {
 public:
     OpenGLModule(InviwoApplication* app);
 
+    OpenGLModule(const OpenGLModule&) = delete;
+    OpenGLModule& operator=(const OpenGLModule&) = delete;
+
+    OpenGLCapabilities& getOpenGLCapabilities();
+
 private:
     std::unique_ptr<ShaderManager> shaderManager_;
     std::unique_ptr<SharedOpenGLResources> sharedResources_;

@@ -27,10 +27,10 @@
  *
  *********************************************************************************/
 
-layout(location = 4) in uint in_PickId;
-
 #include "plotting/common.glsl"
 #include "utils/structs.glsl"
+
+layout(location = 4) in uint in_PickId;
 
 uniform vec2 minmaxX;
 uniform vec2 minmaxY;

@@ -57,9 +57,8 @@ public:
     float tickWidth = 2.5f;
     double tickDelta = 0.0;
     bool rangeBasedTicks = false;
-
 };
 
-}
+}  // namespace plot
 
 }  // namespace inviwo

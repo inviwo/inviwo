@@ -100,7 +100,7 @@ std::unique_ptr<Processor> makeProcessor(empty_constructor, const std::string& i
     auto p = std::make_unique<T>();
     if (p->getIdentifier().empty()) p->setIdentifier(id);
     if (p->getDisplayName().empty()) p->setDisplayName(name);
-    return std::move(p);
+    return p;
 }
 
 template <typename T>
@@ -109,7 +109,7 @@ std::unique_ptr<Processor> makeProcessor(app_constructor, const std::string& id,
     auto p = std::make_unique<T>(app);
     if (p->getIdentifier().empty()) p->setIdentifier(id);
     if (p->getDisplayName().empty()) p->setDisplayName(name);
-    return std::move(p);
+    return p;
 }
 
 template <typename T>

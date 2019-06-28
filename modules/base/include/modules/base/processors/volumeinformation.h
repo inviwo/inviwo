@@ -90,7 +90,7 @@ private:
     CompositeProperty metaDataProperty_;
 
     DoubleVec3Property voxelSize_;
-    
+
     util::MetaDataToProperty metaDataProps_;
 };
 

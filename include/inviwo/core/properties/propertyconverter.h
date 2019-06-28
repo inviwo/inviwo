@@ -153,14 +153,16 @@ protected:
     }
 };
 
-class DirectoryToStringConverter : public TemplatePropertyConverter<DirectoryProperty, StringProperty> {
+class DirectoryToStringConverter
+    : public TemplatePropertyConverter<DirectoryProperty, StringProperty> {
 protected:
     virtual void convertimpl(const DirectoryProperty* src, StringProperty* dst) const override {
         dst->set(src->get());
     }
 };
 
-class StringToDirectoryConverter : public TemplatePropertyConverter<StringProperty, DirectoryProperty> {
+class StringToDirectoryConverter
+    : public TemplatePropertyConverter<StringProperty, DirectoryProperty> {
 protected:
     virtual void convertimpl(const StringProperty* src, DirectoryProperty* dst) const override {
         dst->set(src->get());

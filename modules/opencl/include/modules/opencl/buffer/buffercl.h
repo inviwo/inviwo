@@ -45,8 +45,8 @@ class IVW_MODULE_OPENCL_API BufferCL : public BufferCLBase, public BufferReprese
 public:
     /**
      * @param size
-     * @param type
      * @param format
+     * @param usage
      * @param data Data to transfer. Does not transfer data if data is nullptr.
      * @param readWriteFlag Determine how memory will be used by Kernels: CL_MEM_READ_ONLY,
      * CL_MEM_WRITE_ONLY, CL_MEM_READ_WRITE

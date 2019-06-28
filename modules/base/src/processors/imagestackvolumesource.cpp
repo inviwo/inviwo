@@ -144,7 +144,7 @@ std::shared_ptr<Volume> ImageStackVolumeSource::load() {
         const auto sext = filePattern_.getSelectedExtension();
         auto reader = readerFactory_->getReaderForTypeAndExtension<Layer>(sext, fext);
         auto ptr = reader.get();
-        readerMap.insert({fext, std::move(reader)});
+        readerMap.emplace(fext, std::move(reader));
         return ptr;
     };
 

@@ -29,6 +29,8 @@
 
 #include <modules/vectorfieldvisualizationgl/vectorfieldvisualizationglmodule.h>
 #include <modules/opengl/shader/shadermanager.h>
+#include <modules/opengl/openglmodule.h>
+#include <modules/opengl/openglcapabilities.h>
 
 #include <modules/vectorfieldvisualizationgl/processors/datageneration/lorenzsystem.h>
 #include <modules/vectorfieldvisualizationgl/processors/datageneration/vectorfieldgenerator2d.h>
@@ -41,6 +43,7 @@
 #include <modules/vectorfieldvisualizationgl/processors/2d/vector2ddivergence.h>
 
 #include <modules/vectorfieldvisualizationgl/processors/3d/lic3d.h>
+#include <modules/vectorfieldvisualizationgl/processors/3d/streamparticles.h>
 #include <modules/vectorfieldvisualizationgl/processors/3d/vector3dcurl.h>
 #include <modules/vectorfieldvisualizationgl/processors/3d/vector3ddivergence.h>
 #include <modules/vectorfieldvisualizationgl/processors/4d/tmip.h>
@@ -50,12 +53,11 @@
 
 #include <inviwo/core/io/serialization/versionconverter.h>
 
+
 namespace inviwo {
 
 VectorFieldVisualizationGLModule::VectorFieldVisualizationGLModule(InviwoApplication* app)
     : InviwoModule(app, "VectorFieldVisualizationGL") {
-    // Add a directory to the search path of the Shadermanager
-
     vectorfieldvisualizationgl::addShaderResources(ShaderManager::getPtr(),
                                                    {getPath(ModulePath::GLSL)});
 
@@ -74,6 +76,11 @@ VectorFieldVisualizationGLModule::VectorFieldVisualizationGLModule(InviwoApplica
     registerProcessor<Vector3DDivergence>();
     registerProcessor<TMIP>();
     registerProcessor<VectorFieldGenerator4D>();
+    
+    auto& gl = app->getModuleByType<OpenGLModule>()->getOpenGLCapabilities();
+    if(gl.isComputeShadersSupported()){
+        registerProcessor<StreamParticles>();
+    }
 }
 
 int VectorFieldVisualizationGLModule::getVersion() const { return 1; }

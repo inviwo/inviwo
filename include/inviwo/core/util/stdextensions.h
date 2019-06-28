@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/glm.h>
 #include <inviwo/core/util/foreacharg.h>
+#include <inviwo/core/util/hashcombine.h>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <memory>
@@ -423,8 +424,9 @@ auto ordering(T& cont, Pred pred) -> std::vector<size_t> {
 
     std::vector<size_t> res(std::distance(begin(cont), end(cont)));
     std::iota(res.begin(), res.end(), 0);
-    std::sort(res.begin(), res.end(),
-              [&](const size_t& a, const size_t& b) { return pred(begin(cont)[a], begin(cont)[b]); });
+    std::sort(res.begin(), res.end(), [&](const size_t& a, const size_t& b) {
+        return pred(begin(cont)[a], begin(cont)[b]);
+    });
 
     return res;
 }
@@ -531,6 +533,20 @@ public:
     static const bool value = decltype(check<Type>(0))::value;
 };
 
+template <typename F, typename... Args>
+struct is_invocable :
+    std::is_constructible<
+        std::function<void(Args ...)>,
+        std::reference_wrapper<typename std::remove_reference<F>::type>
+    >{};
+
+template <typename R, typename F, typename... Args>
+struct is_invocable_r :
+    std::is_constructible<
+        std::function<R(Args ...)>,
+        std::reference_wrapper<typename std::remove_reference<F>::type>
+    >{};
+
 namespace detail {
 
 // https://stackoverflow.com/a/22882504/600633
@@ -561,16 +577,6 @@ struct is_callable<F(A...)> : is_callable<F, A...> {};
 template <typename... A, typename F>
 constexpr detail::is_callable<F, A...> is_callable_with(F&&) {
     return detail::is_callable<F(A...)>{};
-}
-
-/**
- *    Function to combine several hash values
- *    http://stackoverflow.com/questions/2590677/how-do-i-combine-hash-values-in-c0x
- */
-template <class T>
-inline void hash_combine(std::size_t& seed, const T& v) {
-    std::hash<T> hasher;
-    seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
 
 namespace hashtuple {

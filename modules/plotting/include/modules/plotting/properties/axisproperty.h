@@ -64,7 +64,7 @@ public:
     virtual ~AxisProperty() = default;
 
     virtual void setCaption(const std::string& title);
-    
+
     void setLabelFormat(const std::string& formatStr);
     /**
      * \brief sets range property of axis and ensures the min/max limits are adjusted accordingly
@@ -75,14 +75,14 @@ public:
     // Inherited via AxisSettings
     virtual dvec2 getRange() const override;
     virtual bool getUseDataRange() const override;
-    
+
     virtual bool getVisible() const override;
     virtual bool getFlipped() const override;
     virtual vec4 getColor() const override;
     virtual float getWidth() const override;
     virtual Orientation getOrientation() const override;
     virtual Placement getPlacement() const override;
-    
+
     virtual const std::string& getCaption() const override;
     virtual const PlotTextSettings& getCaptionSettings() const override;
 

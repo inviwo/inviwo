@@ -82,7 +82,8 @@ void WaveFrontWriter::writeData(const Mesh* data, std::ostream& f) const {
             throw DataWriterException("Error: could not find a position buffer ram", IVW_CONTEXT);
         }
         if (posRam->getDataFormat()->getComponents() != 3) {
-            throw DataWriterException("Error: Only 3 dimensional meshes are supported", IVW_CONTEXT);
+            throw DataWriterException("Error: Only 3 dimensional meshes are supported",
+                                      IVW_CONTEXT);
         }
 
         f << "# List of vertex coordinates (" << posRam->getSize() << ")\n";

@@ -71,11 +71,11 @@ public:
     void setRange(double min, double max);
 
     /**
-    * \brief Overrides the timerEvent to prevent
-    * spinbox to be updated twice in case of
-    * calculations being slows
-    */
-    virtual void timerEvent(QTimerEvent* event) override;
+     * \brief Overrides the timerEvent to prevent
+     * spinbox to be updated twice in case of
+     * calculations being slows
+     */
+    virtual void timerEvent(QTimerEvent *event) override;
 
 protected:
     virtual QValidator::State validate(QString &text, int &pos) const override;

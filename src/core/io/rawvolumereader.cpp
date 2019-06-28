@@ -178,7 +178,7 @@ std::shared_ptr<Volume> RawVolumeReader::readData(const std::string& filePath,
         auto vd = std::make_shared<VolumeDisk>(filePath, dimensions_, format_);
 
         auto loader = std::make_unique<RawVolumeRAMLoader>(rawFile_, dataOffset_, dimensions_,
-                                                            littleEndian_, format_);
+                                                           littleEndian_, format_);
         vd->setLoader(loader.release());
         volume->addRepresentation(vd);
 

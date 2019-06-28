@@ -58,7 +58,6 @@ struct OptionDataFrameColumnConverterRegFunctor {
 
 PlottingModule::PlottingModule(InviwoApplication* app) : InviwoModule(app, "Plotting") {
 
-
     registerProcessor<plot::DataFrameColumnToColorVector>();
     registerProperty<plot::AxisProperty>();
     registerProperty<plot::CategoricalAxisProperty>();
@@ -68,10 +67,6 @@ PlottingModule::PlottingModule(InviwoApplication* app) : InviwoModule(app, "Plot
     registerProperty<plot::MinorTickProperty>();
     registerProperty<plot::PlotTextProperty>();
     registerProperty<plot::TickProperty>();
-
-    
-
-    
 
     // We create a std::function to register the created converter since the registration function
     // is protected in the inviwo module

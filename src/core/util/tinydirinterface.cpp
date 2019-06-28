@@ -38,6 +38,7 @@
 // push/pop warning state to prevent disabling of some warnings by tinydir header
 
 #include <warn/push>
+#include <warn/ignore/all>
 #include <tinydir.h>
 #include <warn/pop>
 

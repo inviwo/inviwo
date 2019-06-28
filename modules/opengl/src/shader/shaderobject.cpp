@@ -64,7 +64,8 @@ ShaderObject::ShaderObject(ShaderType shaderType, std::shared_ptr<const ShaderRe
     // Help developer to spot errors
     std::string fileExtension = filesystem::getFileExtension(resource_->key());
     if (fileExtension != shaderType_.extension()) {
-        LogWarn("File extension does not match shader type: " << resource_->key());
+        LogWarn("File extension does not match shader type: "
+                << resource_->key() << "\n    expected extension: " << shaderType_.extension());
     }
 
     if (shaderType_ == ShaderType::Fragment) {

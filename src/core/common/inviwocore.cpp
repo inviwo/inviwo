@@ -39,11 +39,6 @@
 // Cameras
 #include <inviwo/core/datastructures/camera.h>
 
-// Data Structures
-#include <inviwo/core/datastructures/volume/volumeramconverter.h>
-#include <inviwo/core/datastructures/image/layerramconverter.h>
-#include <inviwo/core/datastructures/representationconverterfactory.h>
-
 // Meta Data
 #include <inviwo/core/metadata/metadata.h>
 #include <inviwo/core/metadata/containermetadata.h>
@@ -103,6 +98,8 @@
 #include <inviwo/core/processors/compositesource.h>
 
 #include <inviwo/core/util/stdextensions.h>
+
+#include <inviwo/core/datastructures/representationutil.h>
 
 namespace inviwo {
 
@@ -175,19 +172,8 @@ void InviwoCore::Observer::fileChanged(const std::string& dir) { core_.scanDirFo
 
 InviwoCore::InviwoCore(InviwoApplication* app)
     : InviwoModule(app, "Core"), compositeDirObserver_{*this, app} {
-    // Register Converter Factories
-    registerRepresentationConverterFactory(
-        std::make_unique<RepresentationConverterFactory<VolumeRepresentation>>());
-    registerRepresentationConverterFactory(
-        std::make_unique<RepresentationConverterFactory<LayerRepresentation>>());
-    registerRepresentationConverterFactory(
-        std::make_unique<RepresentationConverterFactory<BufferRepresentation>>());
 
-    // Register Converters
-    registerRepresentationConverter<VolumeRepresentation>(
-        std::make_unique<VolumeDisk2RAMConverter>());
-    registerRepresentationConverter<LayerRepresentation>(
-        std::make_unique<LayerDisk2RAMConverter>());
+    util::registerCoreRepresentations(*this);
 
     // Register MetaData
     registerMetaData(std::make_unique<BoolMetaData>());

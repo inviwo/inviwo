@@ -77,7 +77,7 @@ bool OpenGLCapabilities::GLSLShaderVersion::sortHighestFirst(GLSLShaderVersion i
 OpenGLCapabilities::OpenGLCapabilities(OpenGLSettings* settings)
     : shadersAreSupported_(false)
     , shadersAreSupportedARB_(false)
-    , geometryShsadersAreSupported_(false)
+    , geometryShadersAreSupported_(false)
     , maxProgramLoopCount_(-1)
     , geometryShadersMaxVertices_(-1)
     , geometryShadersMaxOutputComponents_(-1)
@@ -262,9 +262,8 @@ bool OpenGLCapabilities::is3DTexturesSupported() const { return tex3DSupported_;
 bool OpenGLCapabilities::isFboSupported() const { return fboSupported_; }
 bool OpenGLCapabilities::isShadersSupported() const { return shadersAreSupported_; }
 bool OpenGLCapabilities::isShadersSupportedARB() const { return shadersAreSupportedARB_; }
-bool OpenGLCapabilities::isGeometryShadersSupported() const {
-    return geometryShsadersAreSupported_;
-}
+bool OpenGLCapabilities::isGeometryShadersSupported() const { return geometryShadersAreSupported_; }
+bool OpenGLCapabilities::isComputeShadersSupported() const { return isExtensionSupported("GL_ARB_compute_shader"); }
 
 int OpenGLCapabilities::getMaxProgramLoopCount() const { return maxProgramLoopCount_; }
 int OpenGLCapabilities::getNumTexUnits() const { return numTexUnits_; }
@@ -397,7 +396,7 @@ void OpenGLCapabilities::retrieveStaticInfo() {
     // GLSL
     shadersAreSupported_ = (glVersion_ >= 200);
     shadersAreSupportedARB_ = isExtensionSupported("GL_EXT_ARB_fragment_program");
-    geometryShsadersAreSupported_ = isExtensionSupported("GL_EXT_ARB_geometry_shader4");
+    geometryShadersAreSupported_ = isExtensionSupported("GL_EXT_ARB_geometry_shader4");
 
     GLint numberOfSupportedVersions = 0;
     const GLubyte* glslStrByte = nullptr;

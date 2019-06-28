@@ -82,8 +82,8 @@ void LayerCL::initialize(const void* texels) {
         // glm::size3_t(dimensions_, 1), 0, 0, texels);
     } else {
         clImage_ = std::make_unique<cl::Image2D>(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE,
-                                                  getFormat(), static_cast<size_t>(dimensions_.x),
-                                                  static_cast<size_t>(dimensions_.y));
+                                                 getFormat(), static_cast<size_t>(dimensions_.x),
+                                                 static_cast<size_t>(dimensions_.y));
     }
 }
 

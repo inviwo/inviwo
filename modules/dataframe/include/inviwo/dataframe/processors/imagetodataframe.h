@@ -43,8 +43,6 @@
 
 namespace inviwo {
 
-
-
 /** \docpage{org.inviwo.ImageToDataFrame, Image To DataFrame}
  * ![](org.inviwo.ImageToDataFrame.png?classIdentifier=org.inviwo.ImageToDataFrame)
  * This processor converts an image into a DataFrame.
@@ -85,8 +83,6 @@ private:
 
     IntSizeTMinMaxProperty range_;
 };
-
-
 
 }  // namespace inviwo
 

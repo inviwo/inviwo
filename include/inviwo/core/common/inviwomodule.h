@@ -36,6 +36,10 @@
 
 #include <inviwo/core/datastructures/camerafactory.h>
 #include <inviwo/core/datastructures/camerafactoryobject.h>
+
+#include <inviwo/core/datastructures/representationfactory.h>
+#include <inviwo/core/datastructures/representationfactoryobject.h>
+
 #include <inviwo/core/datastructures/representationconverter.h>
 #include <inviwo/core/datastructures/representationconverterfactory.h>
 
@@ -162,10 +166,14 @@ public:
     const std::vector<ProcessorWidgetFactoryObject*> getProcessorWidgets() const;
     const std::vector<PropertyFactoryObject*> getProperties() const;
     const std::vector<PropertyWidgetFactoryObject*> getPropertyWidgets() const;
+
+    const std::vector<BaseRepresentationFactoryObject*> getRepresentationFactoryObjects() const;
+    const std::vector<BaseRepresentationFactory*> getRepresentationFactories() const;
+
     const std::vector<BaseRepresentationConverter*> getRepresentationConverters() const;
     const std::vector<BaseRepresentationConverterFactory*> getRepresentationConverterFactories()
         const;
-    const std::vector<Settings*> getSettings() const;
+    const std::vector<Settings*>& getSettings() const;
 
     void registerCapabilities(std::unique_ptr<Capabilities> info);
 
@@ -181,7 +189,6 @@ public:
     void registerDrawer(std::unique_ptr<MeshDrawer> drawer);
     void registerMetaData(std::unique_ptr<MetaData> meta);
 
-    
     void registerProcessor(std::unique_ptr<ProcessorFactoryObject> pfo);
     template <typename T>
     void registerProcessor();
@@ -247,14 +254,68 @@ public:
 
     void registerPropertyConverter(std::unique_ptr<PropertyConverter> propertyConverter);
 
+    /**
+     * Register a representation factory object for creating representations with the respective
+     * representation factory. The template type BaseRepr is used to select representation
+     * factory. A representation factory object should implement RepresentationFactoryObject
+     * @see RepresentationFactory
+     * @see RepresentationFactoryObject
+     * @see DataRepresentation
+     * @see InviwoApplication::getRepresentationFactory()
+     */
+    template <typename BaseRepr>
+    void registerRepresentationFactoryObject(
+        std::unique_ptr<RepresentationFactoryObject<BaseRepr>> representation);
+
+    /**
+     * Register a factory for representations. Each base representation (Volume
+     * Representation, Layer Representation, Buffer Representation, etc) has its own representation
+     * factory. A representation factory should implement RepresentationFactory
+     * @see RepresentationFactory
+     * @see DataRepresentation
+     * @see InviwoApplication::getRepresentationMetaFactory()
+     */
+    void registerRepresentationFactory(
+        std::unique_ptr<BaseRepresentationFactory> representationFactory);
+
+    /**
+     * Register a representation converter with the respective representation converter factory.
+     * The template type BaseRepr is used to select representation converter factory.
+     * A representation converter should implement RepresentationConverterType
+     * @see RepresentationConverterFactory
+     * @see RepresentationConverter
+     * @see DataRepresentation
+     * @see InviwoApplication::getRepresentationConverterFactory()
+     */
     template <typename BaseRepr>
     void registerRepresentationConverter(
         std::unique_ptr<RepresentationConverter<BaseRepr>> converter);
 
+    /**
+     * Register a factory for representation converters. Each base representation (Volume
+     * Representation, Layer Representation, Buffer Representation, etc) has its own representation
+     * converter factory. A converter factory should implement RepresentationConverterFactory
+     * @see RepresentationConverterFactory
+     * @see RepresentationConverter
+     * @see DataRepresentation
+     * @see InviwoApplication::getRepresentationConverterMetaFactory()
+     */
     void registerRepresentationConverterFactory(
         std::unique_ptr<BaseRepresentationConverterFactory> converterFactory);
 
+    /**
+     * Register a Settings class and hand over ownership.
+     * @see Settings
+     * @see InviwoApplication::getModuleSettings()
+     */
     void registerSettings(std::unique_ptr<Settings> settings);
+
+    /**
+     * Register a Settings class.
+     * @see Settings
+     * @see InviwoApplication::getModuleSettings()
+     */
+    void registerSettings(Settings* settings);
 
     InviwoApplication* getInviwoApplication() const;
 
@@ -302,11 +363,19 @@ private:
     std::vector<std::unique_ptr<PropertyConverter>> propertyConverters_;
     std::vector<std::unique_ptr<PropertyFactoryObject>> properties_;
     std::vector<std::unique_ptr<PropertyWidgetFactoryObject>> propertyWidgets_;
+
+    std::vector<std::unique_ptr<BaseRepresentationFactoryObject>> representationFactoryObjects_;
+    std::vector<std::function<void()>> representationUnRegFunctors_;
+    std::vector<std::unique_ptr<BaseRepresentationFactory>> representationFactories_;
+
     std::vector<std::unique_ptr<BaseRepresentationConverter>> representationConverters_;
     std::vector<std::function<void()>> representationConvertersUnRegFunctors_;
+
     std::vector<std::unique_ptr<BaseRepresentationConverterFactory>>
         representationConverterFactories_;
-    std::vector<std::unique_ptr<Settings>> settings_;
+
+    std::vector<std::unique_ptr<Settings>> ownedSettings_;
+    std::vector<Settings*> settings_;
     std::vector<std::unique_ptr<DataVisualizer>> dataVisualizers_;
 };
 
@@ -376,6 +445,18 @@ void InviwoModule::registerRepresentationConverter(
             representationConvertersUnRegFunctors_.push_back(
                 [factory, conv = converter.get()]() { factory->unRegisterObject(conv); });
             representationConverters_.push_back(std::move(converter));
+        }
+    }
+}
+
+template <typename BaseRepr>
+void InviwoModule::registerRepresentationFactoryObject(
+    std::unique_ptr<RepresentationFactoryObject<BaseRepr>> representation) {
+    if (auto factory = app_->getRepresentationFactory<BaseRepr>()) {
+        if (factory->registerObject(representation.get())) {
+            representationUnRegFunctors_.push_back(
+                [factory, repr = representation.get()]() { factory->unRegisterObject(repr); });
+            representationFactoryObjects_.push_back(std::move(representation));
         }
     }
 }

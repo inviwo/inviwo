@@ -344,9 +344,8 @@ public:
      * @param portGroup name of group to propagate events through (defaults to "default")
      */
     template <typename T>
-    T& addPort(T& port, const std::string& portGroup = "default"){
-        static_assert(std::is_base_of<Inport,  T>::value ||
-                      std::is_base_of<Outport, T>::value,
+    T& addPort(T& port, const std::string& portGroup = "default") {
+        static_assert(std::is_base_of<Inport, T>::value || std::is_base_of<Outport, T>::value,
                       "T must be an Inport or Outport");
         addPortInternal(&port, portGroup);
         return port;

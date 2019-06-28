@@ -101,12 +101,12 @@ struct IVW_CORE_API Hideer {
 
 template <typename... Args>
 void show(Args&&... args) {
-    util::for_each_argument(detail::Shower{}, std::forward<Args>(args)...);
+    for_each_argument(detail::Shower{}, std::forward<Args>(args)...);
 }
 
 template <typename... Args>
 void hide(Args&&... args) {
-    util::for_each_argument(detail::Hideer{}, std::forward<Args>(args)...);
+    for_each_argument(detail::Hideer{}, std::forward<Args>(args)...);
 }
 
 }  // namespace util

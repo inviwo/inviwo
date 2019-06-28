@@ -82,7 +82,7 @@ public:
 
 private:
     const size_t maxShownIndexBuffers_ = 15;
-    
+
     auto props() {
         return std::tie(defaultDrawType_, defaultConnectivity_, numBuffers_, numIndexBuffers_,
                         modelTransform_, worldTransform_, basis_, offset_, min_, max_, extent_);
@@ -91,7 +91,7 @@ private:
         return std::tie(defaultDrawType_, defaultConnectivity_, numBuffers_, numIndexBuffers_,
                         modelTransform_, worldTransform_, basis_, offset_, min_, max_, extent_);
     }
-    
+
     auto compositeProps() {
         return std::tie(transformations_, meshProperties_, buffers_, indexBuffers_);
     }

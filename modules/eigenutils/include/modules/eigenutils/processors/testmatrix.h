@@ -55,7 +55,6 @@ private:
     EigenMatrixOutport matrix_;
 
     IntSizeTProperty size_;
-
 };
 
 }  // namespace inviwo

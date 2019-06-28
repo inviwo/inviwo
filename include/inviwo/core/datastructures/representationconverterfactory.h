@@ -44,6 +44,10 @@
 
 namespace inviwo {
 
+/**
+ * Base class for all RepresentationConverterFactorys
+ * @see RepresentationConverterFactory
+ */
 class IVW_CORE_API BaseRepresentationConverterFactory {
 public:
     using BaseReprId = std::type_index;
@@ -52,6 +56,14 @@ public:
     virtual BaseReprId getBaseReprId() = 0;
 };
 
+/**
+ * Factory for RepresentationConverters
+ * @see RepresentationConverter
+ * @see DataRepresentation
+ * @see InviwoApplication::getRepresentationConverterFactory()
+ * @see InviwoModule::registerRepresentationConverter()
+ * @see InviwoModule::registerRepresentationConverterFactory()
+ */
 template <typename BaseRepr>
 class RepresentationConverterFactory : public BaseRepresentationConverterFactory {
 public:

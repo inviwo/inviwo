@@ -47,9 +47,10 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    LayerInformationProperty(std::string identifier, std::string displayName,
-                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
-                  PropertySemantics semantics = PropertySemantics::Default);
+    LayerInformationProperty(
+        std::string identifier, std::string displayName,
+        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
+        PropertySemantics semantics = PropertySemantics::Default);
     LayerInformationProperty(const LayerInformationProperty& rhs);
     LayerInformationProperty& operator=(const LayerInformationProperty& that);
     virtual LayerInformationProperty* clone() const override;

@@ -120,12 +120,15 @@ public:
 protected:
     std::vector<cl::Memory> syncedObjects_;
 #if defined(CL_VERSION_1_1)
+#include <warn/push>
+#include <warn/ignore/ignored-attributes>
     // Faster synchronization might be supported when CL version >= 1.1
 
     // Store clCreateEventFromGLsync function per context
     // so that we only need to get them once
     static std::map<cl_context, pfnclCreateEventFromSyncKHR> syncFunctionMap_;
     GLsync glFenceSync_;  // OpenGL sync point - created in constructor
+#include <warn/pop>
 #endif
     const cl::Context& context_;
     const cl::CommandQueue& queue_;

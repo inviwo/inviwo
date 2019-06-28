@@ -87,7 +87,7 @@ set(HEADER_FILES
     include/modules/base/processors/singlevoxel.h
     include/modules/base/processors/spotlightsourceprocessor.h
     include/modules/base/processors/stereocamerasyncer.h
-    include/modules/base/processors/surfaceextraction.h
+    include/modules/base/processors/surfaceextractionprocessor.h
     include/modules/base/processors/tfselector.h
     include/modules/base/processors/trianglestowireframe.h
     include/modules/base/processors/vectorelementselectorprocessor.h
@@ -201,7 +201,7 @@ set(SOURCE_FILES
     src/processors/singlevoxel.cpp
     src/processors/spotlightsourceprocessor.cpp
     src/processors/stereocamerasyncer.cpp
-    src/processors/surfaceextraction.cpp
+    src/processors/surfaceextractionprocessor.cpp
     src/processors/tfselector.cpp
     src/processors/trianglestowireframe.cpp
     src/processors/volumeboundingbox.cpp

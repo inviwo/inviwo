@@ -41,7 +41,7 @@ class BrushingAndLinkingManager;
 class IVW_MODULE_BRUSHINGANDLINKING_API IndexList {
 public:
     IndexList() = default;
-    
+
     size_t getSize() const;
     bool has(size_t idx) const;
 

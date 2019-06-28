@@ -121,7 +121,7 @@ private:
     QFileSystemWatcher* fileWatcher_;
 
     std::locale uiLocal_;
-    std::function<void()> undoTrigger_ = [](){};
+    std::function<void()> undoTrigger_ = []() {};
 };
 
 }  // namespace inviwo

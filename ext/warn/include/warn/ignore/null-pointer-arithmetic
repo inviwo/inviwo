@@ -38,7 +38,7 @@
 #define WARN_IGNORE_NULL_POINTER_ARITHMETIC
 
 #if defined(__clang__)
-#   if __clang_major__ > 6 || (__clang_major__ == 6  && __clang_minor__ > 0)
+#   if __clang_major__ > 6 || (__clang_major__ == 6  && __clang_minor__ >= 0)
 #       if __has_warning("-Wnull-pointer-arithmetic")
 #           pragma clang diagnostic ignored "-Wnull-pointer-arithmetic"
 #       endif

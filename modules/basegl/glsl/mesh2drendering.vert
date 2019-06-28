@@ -27,10 +27,10 @@
  *
  *********************************************************************************/
 
-layout(location = 4) in uint in_PickId;
-
 #include "utils/structs.glsl"
 #include "utils/pickingutils.glsl"
+
+layout(location = 4) in uint in_PickId;
 
 uniform GeometryParameters geometry_;
 

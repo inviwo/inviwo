@@ -149,7 +149,7 @@ public:
 
 protected:
     void linePicked(PickingEvent* p);
-    enum class PickType {Axis, Lower, Upper, Groove};
+    enum class PickType { Axis, Lower, Upper, Groove };
     void axisPicked(PickingEvent* p, size_t pickedID, PickType pt);
 
 private:
@@ -178,7 +178,7 @@ private:
 
     bool enabledAxesModified_ = false;
     std::vector<size_t> enabledAxes_;
-    
+
     PickingMapper linePicking_;
     PickingMapper axisPicking_;
     bool isDragging_ = false;
@@ -195,7 +195,7 @@ private:
 
         // startFilter, startRegular, startSelected, end
         std::array<size_t, 4> offsets;
-        
+
         std::vector<float> axisPositions;
         // using int here for performance reasons since bool is not supported as GLSL uniform
         // A bool vector would internally be converted to an int array prior setting the uniform.

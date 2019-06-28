@@ -38,8 +38,6 @@
 
 namespace inviwo {
 
-
-
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo DataFrameExporter::processorInfo_{
     "org.inviwo.DataFrameExporter",      // Class identifier
@@ -216,7 +214,5 @@ void DataFrameExporter::exportAsXML() {
     serializer.writeFile(file);
     LogInfo("XML file exported to " << exportFile_);
 }
-
-
 
 }  // namespace inviwo

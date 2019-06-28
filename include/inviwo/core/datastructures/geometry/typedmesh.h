@@ -359,12 +359,12 @@ public:
     TypedMesh(DrawType dt = DrawType::Points, ConnectivityType ct = ConnectivityType::None)
         : Mesh(dt, ct), BufferTraits(*static_cast<Mesh *>(this))... {}
 
-    TypedMesh(DrawType dt, ConnectivityType ct, const std::vector<Vertex>& vertices,
-              std::vector<std::uint32_t>&& indices)
+    TypedMesh(DrawType dt, ConnectivityType ct, const std::vector<Vertex> &vertices,
+              std::vector<std::uint32_t> &&indices)
         : Mesh(dt, ct), BufferTraits(*static_cast<Mesh *>(this))... {
-    
+
         addVertices(vertices);
-        this->addIndices(MeshInfo{dt,ct}, util::makeIndexBuffer(std::move(indices)));
+        this->addIndices(MeshInfo{dt, ct}, util::makeIndexBuffer(std::move(indices)));
     }
 
     TypedMesh(const TypedMesh &rhs) : Mesh(rhs), BufferTraits()... {
@@ -450,7 +450,7 @@ public:
      */
     template <typename BT>
     void setVertex(size_t index, const typename BT::type &v) {
-        getTypedDataContainer<BT>().at(index) = v;
+        getTypedDataContainer<BT>()[index] = v;
     }
 
     /**
@@ -547,7 +547,7 @@ struct helper {
     }
     static void setVertexImplVertex(F &f, size_t index, const typename F::Vertex &v) {
         using BT = std::tuple_element_t<I - 1, typename F::Traits>;
-        f.template getTypedDataContainer<BT>().at(index) = std::get<I - 1>(v);
+        f.template getTypedDataContainer<BT>()[index] = std::get<I - 1>(v);
 
         helper<F, I - 1>::setVertexImplVertex(f, index, v);
     }

@@ -38,7 +38,7 @@
 #define WARN_IGNORE_DOCUMENTATION_UNKNOWN_COMMAND
 
 #if defined(__clang__)
-#   if __clang_major__ > 3 || (__clang_major__ == 3  && __clang_minor__ > 3)
+#   if __clang_major__ > 3 || (__clang_major__ == 3  && __clang_minor__ >= 3)
 #       if __has_warning("-Wdocumentation-unknown-command")
 #           pragma clang diagnostic ignored "-Wdocumentation-unknown-command"
 #       endif

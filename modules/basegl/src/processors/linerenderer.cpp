@@ -73,9 +73,9 @@ LineRenderer::LineRenderer()
     , camera_("camera", "Camera")
     , trackball_(&camera_)
     , lineShaders_{
-          {{ShaderType::Vertex, "linerenderer.vert"},
-           {ShaderType::Geometry, "linerenderer.geom"},
-           {ShaderType::Fragment, "linerenderer.frag"}},
+          {{ShaderType::Vertex, std::string{"linerenderer.vert"}},
+           {ShaderType::Geometry, std::string{"linerenderer.geom"}},
+           {ShaderType::Fragment, std::string{"linerenderer.frag"}}},
 
           {{BufferType::PositionAttrib, MeshShaderCache::Mandatory, "vec3"},
            {BufferType::ColorAttrib, MeshShaderCache::Mandatory, "vec4"},

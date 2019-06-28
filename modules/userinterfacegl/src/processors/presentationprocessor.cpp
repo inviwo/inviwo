@@ -219,7 +219,7 @@ void PresentationProcessor::updateProperties() {
     if (fileList_.size() < static_cast<std::size_t>(slideIndex_.get())) {
         slideIndex_.set(1);
     }
-    slideIndex_.setMaxValue(std::max(static_cast<const int>(fileList_.size()), 1));
+    slideIndex_.setMaxValue(std::max(static_cast<int>(fileList_.size()), 1));
     updateFileName();
 }
 

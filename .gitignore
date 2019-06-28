@@ -1,7 +1,6 @@
 inviwo-log.html
 **/.DS_Store
-tools/doxygen/doc
-tools/doxygen/doc-qt
 *.pyc
 pyconfig.ini
 .idea
+.vscode
