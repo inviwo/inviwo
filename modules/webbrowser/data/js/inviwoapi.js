@@ -35,7 +35,6 @@ class InviwoAPI {
 		onSuccess: function(response) {
 		},
 		onFailure: function(error_code, error_message) {}
-		
 	});
   }
   /*
