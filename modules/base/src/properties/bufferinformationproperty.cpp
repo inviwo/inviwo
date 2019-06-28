@@ -161,7 +161,7 @@ IndexBufferInformationProperty::IndexBufferInformationProperty(std::string ident
             e.setReadOnly(true);
             e.setSerializationMode(PropertySerializationMode::None);
             e.setCurrentStateAsDefault();
-            insertProperty(i++, e);
+            this->insertProperty(i++, e);
         },
         props());
 }

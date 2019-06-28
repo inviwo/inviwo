@@ -76,9 +76,9 @@ SphereRenderer::SphereRenderer()
     , camera_("camera", "Camera")
     , trackball_(&camera_)
     , lighting_("lighting", "Lighting", &camera_)
-    , shaders_{{{ShaderType::Vertex, "sphereglyph.vert"},
-                {ShaderType::Geometry, "sphereglyph.geom"},
-                {ShaderType::Fragment, "sphereglyph.frag"}},
+    , shaders_{{{ShaderType::Vertex, std::string{"sphereglyph.vert"}},
+                {ShaderType::Geometry, std::string{"sphereglyph.geom"}},
+                {ShaderType::Fragment, std::string{"sphereglyph.frag"}}},
 
                {{BufferType::PositionAttrib, MeshShaderCache::Mandatory, "vec3"},
                 {BufferType::ColorAttrib, MeshShaderCache::Optional, "vec4"},

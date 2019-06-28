@@ -139,7 +139,7 @@ private:
 
     FloatProperty reseedInterval_{"reseedsInterval", "Reseed interval", 1.0f, 0.0f, 10.0f};
 
-    Shader shader_{{{ShaderType::Compute, "streamparticles.comp"}}, Shader::Build::No};
+    Shader shader_{{{ShaderType::Compute, std::string{"streamparticles.comp"}}}, Shader::Build::No};
 
     Timer timer_{Timer::Milliseconds(17), [&]() { update(); }};
 
