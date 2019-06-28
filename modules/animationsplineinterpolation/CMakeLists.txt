@@ -9,7 +9,8 @@ set(HEADER_FILES
     include/inviwo/animationsplineinterpolation/animationsplineinterpolationmoduledefine.h
         include/inviwo/animationsplineinterpolation/interpolation/nurbsinterpolation.h
         include/inviwo/animationsplineinterpolation/interpolation/splineinterpolation.h
-)
+        include/inviwo/animationsplineinterpolation/interpolation/nurb.h
+        )
 ivw_group("Header Files" ${HEADER_FILES})
 
 #--------------------------------------------------------------------
@@ -17,6 +18,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 set(SOURCE_FILES
     src/animationsplineinterpolationmodule.cpp
         src/interpolation/nurbsinterpolation.cpp
+        src/interpolation/nurb.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

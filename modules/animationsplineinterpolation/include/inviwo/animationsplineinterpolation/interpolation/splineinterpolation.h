@@ -34,9 +34,9 @@
 #include <inviwo/core/common/inviwo.h>
 #include <modules/animation/interpolation/interpolation.h>
 #include <algorithm>
+#include "nurb.h"
 
-namespace inviwo {
-    namespace animation {
+namespace inviwo::animation {
         template <typename Key>
         class SplineInterpolation : public InterpolationTyped<Key> {
         public:
@@ -58,7 +58,15 @@ namespace inviwo {
             // keys should be sorted by time
             virtual auto operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds from, Seconds to,
                                     easing::EasingType) const -> typename Key::value_type override;
+        private:
+        Nurb _spline;
+        bool _init = false;
         };
+
+        template <typename Key>
+        SplineInterpolation<Key>* SplineInterpolation<Key>::clone() const {
+            return new SplineInterpolation<Key>(*this);
+        }
 
         namespace detail {
             template <typename T, typename std::enable_if<!std::is_enum<T>::value, int>::type = 0>
@@ -96,9 +104,13 @@ namespace inviwo {
         auto SplineInterpolation<Key>::operator()(const std::vector<std::unique_ptr<Key>>& keys,
                                                     Seconds from, Seconds to, easing::EasingType) const ->
         typename Key::value_type {
+            using VT = typename Key::value_type;
+
+
             auto it = std::upper_bound(keys.begin(), keys.end(), to, [](const auto& time, const auto& key) {
                 return time < key->getTime();
             });
+            return it->getValue();
 
         }
 
@@ -118,7 +130,6 @@ namespace inviwo {
                         IvwContext);
             }
         }
-    } //namespace splineinterpolation
-} // namespace inviwo
+} // namespace inviwo // namespace animation
 
 #endif //INVIWO_PROJECTS_SPLINEINTERPOLATION_H

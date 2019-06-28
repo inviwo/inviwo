@@ -1,0 +1,90 @@
+#include <utility>
+#include "../include/Nurb.h"
+#include "../include/interpolate.h"
+#include "../tinynurbs/tinynurbs.h"
+
+/**
+ * To be used if the control points are already known
+ * @param dim dimension of the nurb
+ * @param curves vector containing the individual three dimensional nurbs
+ */
+Nurb::Nurb(int dim, std::vector<tinynurbs::Curve<3, float>> curves): _dim(dim), _curves(std::move(curves)) {
+
+}
+
+/**
+ * To be used if the control points are unknown, will split the data in
+ * three dimensional sets and compute the interpolation.
+ * @param dim dimension of the desired nurb
+ * @param points points used for the interpolation
+ */
+Nurb::Nurb(int dim, std::vector<std::vector<float>> points): _dim(dim){
+    int nb_vecs = dim/3;
+    if (dim % 3) {
+        nb_vecs++;
+    }
+    std::vector<std::vector<glm::vec3>> vecs;
+
+    for (int i = 0; i < nb_vecs; i++) {
+        vecs.emplace_back();
+        for (int j = 0; j < points.size(); j++) {
+            if (!j%3) {
+                vecs[i].push_back(glm::vec3());
+            }
+            vecs[i][j/3][j%3] = points[i][j];
+        }
+    }
+
+    for (int i = 0; i < nb_vecs; i++) {
+        _curves.push_back(tinynurbs::interpolate(3, vecs[i]));
+    }
+}
+
+
+/**
+ * Collects the control point at the given rank from the individual 3-D nurbs
+ * @param rank the rank of the control point in the nurbs
+ * @return vector containing all the coordinates of the point
+ */
+std::vector<float> Nurb::element(int rank) {
+    std::vector<float> ret;
+    auto it = _curves.begin();
+    auto end = _curves.end();
+    while (it != end) {
+        auto tmp = (*it).control_points[rank];
+        ret.push_back(tmp[0]);
+        ret.push_back(tmp[1]);
+        ret.push_back(tmp[2]);
+        it++;
+    }
+    while (ret.size() != _dim) {
+        ret.pop_back();
+    }
+    return ret;
+}
+
+
+/**
+ * Computes the point matching the given paramaeter
+ * @param u
+ * @return
+ */
+std::vector<float> Nurb::evaluate(float u) {
+    std::vector<float> ret;
+    auto it = _curves.begin();
+    auto end = _curves.end();
+    while (it != end) {
+        auto tmp = tinynurbs::internal::curvePoint<3, float>((*it).degree, (*it).knots,(*it).control_points, u);
+        ret.push_back(tmp[0]);
+        ret.push_back(tmp[1]);
+        ret.push_back(tmp[2]);
+        it++;
+    } 
+    while (ret.size() != _dim) {
+        ret.pop_back();
+    }
+    return ret;
+
+}
+
+
