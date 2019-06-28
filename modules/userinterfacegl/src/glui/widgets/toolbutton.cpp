@@ -121,7 +121,7 @@ std::shared_ptr<Texture2D> ToolButton::loadImage(const std::string &filename) {
     auto factory = InviwoApplication::getPtr()->getDataReaderFactory();
     if (auto reader = factory->getReaderForTypeAndExtension<Layer>(ext)) {
         try {
-            // try to load texture data from current file   
+            // try to load texture data from current file
             auto layer = reader->readData(filename);
             return layer->getRepresentation<LayerGL>()->getTexture();
         } catch (DataReaderException const &e) {
