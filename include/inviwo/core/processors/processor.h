@@ -336,6 +336,14 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
+    // Assume ownership of port, needed for dynamic ports
+    template <typename T, typename std::enable_if_t<std::is_base_of<Inport, T>::value, int> = 0>
+    T& addPort(std::unique_ptr<T> port, const std::string& portGroup = "default");
+
+    // Assume ownership of port, needed for dynamic ports
+    template <typename T, typename std::enable_if_t<std::is_base_of<Outport, T>::value, int> = 0>
+    T& addPort(std::unique_ptr<T> port, const std::string& portGroup = "default");
+
     /**
      * Add port to processor.
      * @note Port group is a concept for event propagation. Currently only used for
@@ -344,17 +352,7 @@ public:
      * @param portGroup name of group to propagate events through (defaults to "default")
      */
     template <typename T>
-    T& addPort(T& port, const std::string& portGroup = "default") {
-        static_assert(std::is_base_of<Inport, T>::value || std::is_base_of<Outport, T>::value,
-                      "T must be an Inport or Outport");
-        addPortInternal(&port, portGroup);
-        return port;
-    }
-
-    // Assume ownership of port, needed for dynamic ports
-    void addPort(std::unique_ptr<Inport> port, const std::string& portGroup = "default");
-    // Assume ownership of port, needed for dynamic ports
-    void addPort(std::unique_ptr<Outport> port, const std::string& portGroup = "default");
+    T& addPort(T& port, const std::string& portGroup = "default");
 
     Port* removePort(const std::string& identifier);
     Inport* removePort(Inport* port);
@@ -396,6 +394,39 @@ private:
 };
 
 inline ProcessorNetwork* Processor::getNetwork() const { return network_; }
+
+// Assume ownership of port, needed for dynamic ports
+template <typename T, typename std::enable_if_t<std::is_base_of<Inport, T>::value, int>>
+T& Processor::addPort(std::unique_ptr<T> port, const std::string& portGroup) {
+    T& ret = *port;
+    addPortInternal(port.get(), portGroup);
+    ownedInports_.push_back(std::move(port));
+    return ret;
+}
+
+// Assume ownership of port, needed for dynamic ports
+template <typename T, typename std::enable_if_t<std::is_base_of<Outport, T>::value, int>>
+T& Processor::addPort(std::unique_ptr<T> port, const std::string& portGroup) {
+    T& ret = *port;
+    addPortInternal(port.get(), portGroup);
+    ownedOutports_.push_back(std::move(port));
+    return ret;
+}
+
+/**
+ * Add port to processor.
+ * @note Port group is a concept for event propagation. Currently only used for
+ * ResizeEvents, which only propagate from outports to inports in the same port group
+ * @param port to add
+ * @param portGroup name of group to propagate events through (defaults to "default")
+ */
+template <typename T>
+T& Processor::addPort(T& port, const std::string& portGroup) {
+    static_assert(std::is_base_of<Inport, T>::value || std::is_base_of<Outport, T>::value,
+                  "T must be an Inport or Outport");
+    addPortInternal(&port, portGroup);
+    return port;
+}
 
 }  // namespace inviwo
 
