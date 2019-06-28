@@ -115,6 +115,7 @@ set(SOURCE_FILES
     src/interaction/cefkeyboardmapping.cpp
 	src/io/json/boolpropertyjsonconverter.cpp
     src/io/json/buttonpropertyjsonconverter.cpp
+    src/io/json/filepropertyjsonconverter.cpp
     src/io/json/propertyjsonconverterfactory.cpp
     src/io/json/propertyjsonconverterfactoryobject.cpp
     src/processors/webbrowserprocessor.cpp

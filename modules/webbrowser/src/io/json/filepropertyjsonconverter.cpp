@@ -27,25 +27,51 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <modules/webbrowser/webbrowsermoduledefine.h>
-#include <modules/webbrowser/io/json/propertyjsonconverterfactoryobject.h>
-#include <inviwo/core/util/factory.h>
+#include <modules/webbrowser/io/json/filepropertyjsonconverter.h>
 
 namespace inviwo {
-/**
- * Factory for creating converters between a Property and JSON.
- */
-class IVW_MODULE_WEBBROWSER_API PropertyJSONConverterFactory
-    : public StandardFactory<PropertyJSONConverter,
-                             PropertyJSONConverterFactoryObject, std::string,
-                             Property*> {
- public:
-  PropertyJSONConverterFactory();
-  virtual ~PropertyJSONConverterFactory();
 
-};
+void to_json(json& j, const FileExtension& p) {
+    j = json{{"extension", p.extension_},
+        {"description", p.description_}
+    };
+}
+
+void from_json(const json& j, FileExtension& p) {
+    j["extension"].get_to(p.extension_);
+    j["description"].get_to(p.description_);
+}
+
+void to_json(json& j, const FileProperty& p) {
+    j = json{{"value", p.get()},
+        {"selectedExtension", p.getSelectedExtension()},
+        {"acceptMode", p.getAcceptMode()},
+        {"fileMode", p.getFileMode()},
+        {"contentType", p.getContentType()},
+        {"nameFilters", p.getNameFilters()}
+    };
+}
+
+void from_json(const json& j, FileProperty& p) {
+    if (j.count("value") > 0) {
+        p.set(j.at("value").get<std::string>());
+    }
+    if (j.count("selectedExtension") > 0) {
+        p.setSelectedExtension(j.at("selectedExtension").get<FileExtension>());
+    }
+    if (j.count("acceptMode") > 0) {
+        p.setAcceptMode(j.at("acceptMode").get<AcceptMode>());
+    }
+    if (j.count("fileMode") > 0) {
+        p.setFileMode(j.at("fileMode").get<FileMode>());
+    }
+    if (j.count("contentType") > 0) {
+        p.setContentType(j.at("contentType").get<std::string>());
+    }
+    if (j.count("requestFile") > 0) {
+        p.requestFile();
+    }
+}
+
 
 }  // namespace inviwo
-

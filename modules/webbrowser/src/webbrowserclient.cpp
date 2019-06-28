@@ -55,7 +55,7 @@ void setupResourceManager(CefRefPtr<CefResourceManager> resource_manager) {
 
     auto moduleOrigin = origin + "/modules";
     for (const auto& m : InviwoApplication::getPtr()->getModules()) {
-        auto mOrigin = moduleOrigin + "/" + m->getIdentifier();
+        auto mOrigin = moduleOrigin + "/" + toLower(m->getIdentifier());
         auto  moduleDir = m->getPath();
         resource_manager->AddDirectoryProvider(mOrigin, moduleDir, 100,
                                                std::string());

@@ -34,7 +34,11 @@
 #include <inviwo/core/util/factory.h>
 
 namespace inviwo {
-
+/**
+ * Factory for creating PropertyWidgetCEF for a property.
+ * The PropertyWidgetCEF requires a PropertyJSONConverter its corresponding
+ * Property.
+ */
 class IVW_MODULE_WEBBROWSER_API PropertyWidgetCEFFactory
     : public StandardFactory<PropertyWidgetCEF, PropertyWidgetCEFFactoryObject,
                              std::string, Property*> {

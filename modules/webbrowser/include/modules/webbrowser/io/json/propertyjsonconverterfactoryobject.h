@@ -45,7 +45,9 @@ public:
     virtual ~PropertyJSONConverterFactoryObject();
     
     virtual std::unique_ptr<PropertyJSONConverter> create(Property*) = 0;
-    
+    /**
+     * Property class identifier.
+     */
     virtual std::string getClassIdentifier() const = 0;
     
 private:

@@ -2,6 +2,7 @@
 <head>
 <title>Inviwo property syncing example</title>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<!-- https://inviwo/modules/yourmodulename will be rediredcted to the module directory on the harddrive -->
 <script src="https://inviwo/modules/webbrowser/data/js/inviwoapi.js"></script>
 
 <script language="JavaScript">
@@ -31,11 +32,11 @@ var inviwo = new InviwoAPI();
   background-color: #0078d7;
   color: white;
 }
-
 </style>
 </head>
 <body>
 <h3>HTML<->Inviwo synchronization (javascript & JSON)</h3>
+<!-- Examples of ways to send data back and fourth between Inviwo and the webpage -->
 <div class="slidecontainer">
   <p>Range (line width)<input type="range" min="1" max="100" value="50" class="slider" id="ordinalProperty">
   <span id="ordinalPropertyValue"></span></p>
@@ -44,6 +45,7 @@ var inviwo = new InviwoAPI();
   <p>Checkbox (enable text)<input type="checkbox" value="Checkbox" id="boolProperty" onchange="inviwo.setProperty('TextOverlay.enable', {value: this.checked})"></p>
   <p>Text <input type="text" id="stringProperty" value="not changed" oninput="inviwo.setProperty('TextOverlay.text', {value: this.value})" ></p>
   <br></br>
+  <!-- Note: One should use a select element for options, but they are currently not functioning -->
   <p>Option property<div class="selectionList" id="shadingMode">
   </div>
 <script>
@@ -58,18 +60,32 @@ updateClickableLists();
 var slider = document.getElementById("ordinalProperty");
 var ordinalPropertyValue = document.getElementById("ordinalPropertyValue");
 
+// If you only need one-way synchronization, e.g. always changing values from the 
+// webpage:
+// 1. Use inviwo.getProperty to retrieve and set the initial value in the webpage
+// 2. Use inviwo.setProperty to set the property from the webpage 
+//
+// If a property may change from other sources than your webpage (e.g. the Inviwo network editor):
+// 1. Use inviwo.subscribe to recieve callbacks when the property changes in Inviwo
+// 2. Use inviwo.setProperty to set the property from the webpage
+
+
+
 slider.oninput = function() {
 	inviwo.setProperty("LineRenderer.lineWidth", {value: Number(this.value)});
     ordinalPropertyValue.innerHTML = this.value;
 }
 
+// Callbacks that will be called when a property changes, need to be in global scope.
 function syncOrdinal(prop) { 
 	inviwo.syncRange("ordinalProperty", prop); 
 	ordinalPropertyValue.innerHTML = prop.value;
 } 
 function syncCheckbox(prop) { inviwo.syncCheckbox("boolProperty", prop); } 
 function syncString(prop) { inviwo.syncStringInput("stringProperty", prop); } 
+
 // Update html inputs when corresponding Inviwo properties change
+// The supplied callbacks must be declared in global scope.
 inviwo.subscribe("LineRenderer.lineWidth", syncOrdinal); 
 inviwo.subscribe("TextOverlay.enable", syncCheckbox);
 inviwo.subscribe("TextOverlay.text", syncString);
@@ -78,13 +94,15 @@ function syncOption(prop) {
 	// Currently, we cannot display select elements so we hack 
 	// this list of options instead
 	var path = "VolumeRaycaster.lighting.shadingMode";
+	var htmlId = "shadingMode";
 	var options = "";
+	// Example of accessing all options
 	for (var i in prop["options"]){
 		var option = prop["options"][i];
 		options += "Name: " + option["name"] + ", value:" + option["value"]+ ", id:" + option["id"] + "\n";
     }
 	console.log("Hello option property, selected value: " + prop["value"] + "\n selected index: " + prop["selectedIndex"] + "\n Options: " + options );
-	var htmlId = "shadingMode";
+	
 	var property = document.getElementById(htmlId);
 	var oldSelect = document.getElementById(htmlId + "Select");
 	var select = document.createElement("select");
@@ -136,6 +154,8 @@ function syncOption(prop) {
 } 
 inviwo.subscribe("VolumeRaycaster.lighting.shadingMode", syncOption); 
 
+
+// Example of retrieving property parameters
 inviwo.getProperty("CubeProxyGeometry.clipX", function(prop) {
     for (var key in prop){
         var attrName = key;

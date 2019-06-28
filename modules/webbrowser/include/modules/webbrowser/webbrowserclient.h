@@ -49,7 +49,11 @@
 namespace inviwo {
 
 /* \class WebBrowserClient
- * CefClient with custom render handler
+ * CefClient with custom render handler and call redirections.
+ * Calls to 'https://inviwo/modules/yourmodule' will be redirected to yourmodule
+ * directory, i.e. InviwoModule::getPath().
+ * Calls to 'https://inviwo/app' will be redirected to the InviwoApplication
+ * (executable) directory, i.e. InviwoApplication::getBasePath().
  */
 #include <warn/push>
 #include <warn/ignore/dll-interface-base>  // Fine if dependent libs use the same CEF lib binaries
@@ -86,10 +90,12 @@ public:
 
     void OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
                                    TerminationStatus status) override;
+                                                       
     cef_return_value_t OnBeforeResourceLoad(
         CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
         CefRefPtr<CefRequest> request,
         CefRefPtr<CefRequestCallback> callback) override;
+                                                       
     CefRefPtr<CefResourceHandler> GetResourceHandler(
         CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
         CefRefPtr<CefRequest> request) override;
@@ -142,7 +148,8 @@ protected:
     CefRefPtr<CefMessageRouterBrowserSide> messageRouter_;
 
     std::vector<CefLoadHandler*> loadHandlers_;
-    // Manages the registration and delivery of resources.
+    // Manages the registration and delivery of resources (redirections to
+    // modules/app folders).
     CefRefPtr<CefResourceManager> resourceManager_;
 
     // Track the number of browsers using this Client.

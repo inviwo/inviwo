@@ -55,7 +55,11 @@ public:
      */
     virtual void fromJSON(const json& j, Property& p) const = 0;
 };
-
+/**
+ * Convert between JSON and Property.
+ * A TemplatePropertyJSONConverter requires implementations of to_json(json& j,
+ * const SrcProperty& p) and from_json(const json& j, SrcProperty& p).
+ */
 template <typename SrcProperty>
 class TemplatePropertyJSONConverter : public PropertyJSONConverter {
  public:

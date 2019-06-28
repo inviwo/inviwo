@@ -30,7 +30,6 @@
 #pragma once
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>
-#include <modules/webbrowser/io/json/glmjsonconverter.h>
 #include <inviwo/core/properties/fileproperty.h>
 #include <nlohmann/json.hpp>
 
@@ -51,11 +50,7 @@ namespace inviwo {
  * json j = p;
  * \endcode
  */
-void to_json(json& j, const FileExtension& p) {
-    j = json{{"extension", p.extension_},
-        {"description", p.description_}
-    };
-}
+IVW_MODULE_WEBBROWSER_API void to_json(json& j, const FileExtension& p);
 
 /**
  * Converts a JSON object to an FileExtension.
@@ -69,10 +64,7 @@ void to_json(json& j, const FileExtension& p) {
  * auto p = j.get<FileExtension>();
  * \endcode
  */
-void from_json(const json& j, FileExtension& p) {
-    j["extension"].get_to(p.extension_);
-    j["description"].get_to(p.description_);
-}
+IVW_MODULE_WEBBROWSER_API void from_json(const json& j, FileExtension& p);
 
 /**
  * Converts an FileProperty to a JSON object.
@@ -92,15 +84,7 @@ void from_json(const json& j, FileExtension& p) {
  * json j = p;
  * \endcode
  */
-void to_json(json& j, const FileProperty& p) {
-    j = json{{"value", p.get()},
-        {"selectedExtension", p.getSelectedExtension()},
-        {"acceptMode", p.getAcceptMode()},
-        {"fileMode", p.getFileMode()},
-        {"contentType", p.getContentType()},
-        {"nameFilters", p.getNameFilters()}
-    };
-}
+IVW_MODULE_WEBBROWSER_API void to_json(json& j, const FileProperty& p);
 
 /**
  * Converts a JSON object to an FileProperty.
@@ -120,26 +104,7 @@ void to_json(json& j, const FileProperty& p) {
  * auto p = j.get<FileProperty>();
  * \endcode
  */
-void from_json(const json& j, FileProperty& p) {
-    if (j.count("value") > 0) {
-        p.set(j.at("value").get<std::string>());
-    }
-    if (j.count("selectedExtension") > 0) {
-       p.setSelectedExtension(j.at("selectedExtension").get<FileExtension>());
-    }
-    if (j.count("acceptMode") > 0) {
-        p.setAcceptMode(j.at("acceptMode").get<AcceptMode>());
-    }
-    if (j.count("fileMode") > 0) {
-        p.setFileMode(j.at("fileMode").get<FileMode>());
-    }
-    if (j.count("contentType") > 0) {
-        p.setContentType(j.at("contentType").get<std::string>());
-    }
-    if (j.count("requestFile") > 0) {
-        p.requestFile();
-    }
-}
+IVW_MODULE_WEBBROWSER_API void from_json(const json& j, FileProperty& p);
 
 }  // namespace inviwo
 

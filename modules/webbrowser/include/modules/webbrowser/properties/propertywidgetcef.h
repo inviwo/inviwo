@@ -47,31 +47,25 @@ namespace inviwo {
 
 /**
  * \class PropertyWidgetCEF
- * \brief Base class for HTML widgets.
- * Parses JSON-formated message and sets property values on the Inviwo-side and
- * executes javascript on the HTML-side.
+ * \brief Handler for setting, getting, onChange and PropertyObservable of a property from HTML.
+ * Handles "property.set", "property.get" commands sent from the Inviwo javascript API (see webbrowser/data/js/inviwoapi.js) and sets property values on the Inviwo-side.
+ *
+ * PropertyWidgetCEF must have a PropertyJSONConverter for its corresponding property.
+ * Thus, to add support for a new property it is only necessary to:
+ * 1. Implement to_json and from_json
+ * 2. Register converter using WebbrowserModule::registerPropertyJSONConverterAndWidget<PropertyWidgetCEF, MyNewProperty>()
+ *
  * Example code on HTML-side:
  * \code{.html}
- * <input type="range" class="slider" id="PropertyIdentifier">
- * <script>
- * var slider = document.getElementById("PropertyIdentifier");
- * slider.oninput = function() {
- *     window.cefQuery({
- *        request: '{"id":"PropertyIdentifier", "value":"' +  slider.value + '"}',
- *        onSuccess: function(response) {},
- *        onFailure: function(error_code, error_message) {}
- *     });
- * }
+ * <script language="JavaScript">
+ * // Initialize Inviwo API so that we can use it to synchronize properties
+ * var inviwo = new InviwoAPI();
  * </script>
+ * <input type="range" class="slider" id="PropertyIdentifier" oninput="inviwo.setProperty('MyProcessor.MyProperty', {value: Number(this.value)})">
  * \endcode
- * Subclasses should override updateFromProperty() and use javascript
- * to send values to HTML-elements.
- * HTML-element reference:
- * https://www.w3schools.com/html/html_form_elements.asp
  *
  * @note Property serialization cannot be used to implement synchronization since
  * it for example changes the property identifier if not set.
- * @see TemplatePropertyWidgetCEF
  */
 class IVW_MODULE_WEBBROWSER_API PropertyWidgetCEF : public PropertyWidget,
                                                     public PropertyObserver {
@@ -100,12 +94,7 @@ public:
     const std::string& getPropertyObserverCallback() const { return propertyObserverCallback_; }
 
     /*
-     * Sets property value given by JSON-formated request if onQueryBlocker_ > 0,
-     * otherwise decrements onQueryBlocker_ and returns true.
-     *
-     * Called from PropertyCefSynchronizer when cefQuery execution
-     * includes {"id":"htmlId"} property path request.
-     * Calls callback->Success("") if property is deserialized
+     * Handles "property.set" and "property.get" commands given by JSON-formated request.
      *
      * Return true to handle the query
      * or false to propagate the query to other registered handlers, if any. If
@@ -118,20 +107,58 @@ public:
     virtual bool onQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 query_id,
                          const CefString& request, bool persistent,
                          CefRefPtr<CefMessageRouterBrowserSide::Handler::Callback> callback);
-                                                        
+
     /**
-     * Update HTML widget using calls javascript oninput() function on element.
-     * Assumes that widget is HTML input attribute.
+     * Calls the currently set onChange function in javascript with the JSON
+     * encoded property as parameter.
+     * The onChange javascript function must be in global scope.
+     * @see setOnChange
      */
     virtual void updateFromProperty() override;
 
 protected:
     // PropertyObservable overrides
+    /**
+     * Calls the currently set propertyObserverCallback function in javascript with the JSON
+     * encoded changed value as parameter.
+     * The propertyObserverCallback javascript function must be in global scope.
+     * @see setPropertyObserverCallback
+     */
     virtual void onSetIdentifier(Property* property, const std::string& identifier) override;
+    /**
+     * Calls the currently set propertyObserverCallback function in javascript with the JSON
+     * encoded changed value as parameter.
+     * The propertyObserverCallback javascript function must be in global scope.
+     * @see setPropertyObserverCallback
+     */
     virtual void onSetDisplayName(Property* property, const std::string& displayName) override;
+    /**
+     * Calls the currently set propertyObserverCallback function in javascript with the JSON
+     * encoded changed value as parameter.
+     * The propertyObserverCallback javascript function must be in global scope.
+     * @see setPropertyObserverCallback
+     */
     virtual void onSetSemantics(Property* property, const PropertySemantics& semantics) override;
+    /**
+     * Calls the currently set propertyObserverCallback function in javascript with the JSON
+     * encoded changed value as parameter.
+     * The propertyObserverCallback javascript function must be in global scope.
+     * @see setPropertyObserverCallback
+     */
     virtual void onSetReadOnly(Property* property, bool readonly) override;
+    /**
+     * Calls the currently set propertyObserverCallback function in javascript with the JSON
+     * encoded changed value as parameter.
+     * The propertyObserverCallback javascript function must be in global scope.
+     * @see setPropertyObserverCallback
+     */
     virtual void onSetVisible(Property* property, bool visible) override;
+    /**
+     * Calls the currently set propertyObserverCallback function in javascript with the JSON
+     * encoded changed value as parameter.
+     * The propertyObserverCallback javascript function must be in global scope.
+     * @see setPropertyObserverCallback
+     */
     virtual void onSetUsageMode(Property* property, UsageMode usageMode) override;
     /*
      * Set frame containing html item.
@@ -140,9 +167,9 @@ protected:
                                                         
     std::unique_ptr<PropertyJSONConverter> converter_;
 
-    std::string onChange_;       /// Callback to execute when property changes
+    std::string onChange_;       /// Callback to execute in javascript when property changes
     std::string propertyObserverCallback_; /// Execute on any PropertyObserver notifications
-    CefRefPtr<CefFrame> frame_;  /// Browser frame containing corresponding properties
+    CefRefPtr<CefFrame> frame_;  /// Browser frame containing corresponding callbacks
 };
 
 }  // namespace inviwo

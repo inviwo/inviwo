@@ -47,23 +47,25 @@
 namespace inviwo {
 
 /** \class PropertyCefSynchronizer
+ * Handles "property.set", "property.get" and "property.subscribe" commands sent
+ * from the Inviwo javascript API (see webbrowser/data/js/inviwoapi.js).
  *
  * Flow of information between PropertyWidgetCEF and browser.
  * Changes can start from Inviwo (left) or browser (right).
- * PropertyWidgetCEF::onQueryBlocker is used to prevent loops.
- *
+ * Information is encoded in JSON format, e.g.
+ * ```
+ * {"command":"subscribe", "path": 'myprocessor.myproperty', "onChange":
+ * "onChangeCallbackJS", "propertyObserver": "observerName"}
+ * ```
  *     Inviwo           Browser (JavaScript)
  * Property change
  *        |
- * updateFromProperty()
- * onQueryBlocker_ += 1
- * ExecuteJavaScript()  --> set values
- *                          oninput()
+ * updateFromProperty() --> onChangeCallbackJS(property)
  *                             |
  *                             |
- *     OnQuery  <---------  cefQuery
- * onQueryBlocker_ -= 1
- *   Deserialize
+ *     OnQuery  <---------  inviwo.setProperty('myprocessor.myproperty', {value:
+ * 2.0});
+ *  from_json(json, property);
  *
  *
  */
