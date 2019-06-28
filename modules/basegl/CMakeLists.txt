@@ -25,6 +25,8 @@ set(HEADER_FILES
     include/modules/basegl/processors/heightfieldprocessor.h
     include/modules/basegl/processors/imageprocessing/findedges.h
     include/modules/basegl/processors/imageprocessing/imagebinary.h
+    include/modules/basegl/processors/imageprocessing/imagechannelcombine.h
+    include/modules/basegl/processors/imageprocessing/imagechannelselect.h
     include/modules/basegl/processors/imageprocessing/imagecompositeprocessorgl.h
     include/modules/basegl/processors/imageprocessing/imagegamma.h
     include/modules/basegl/processors/imageprocessing/imageglprocessor.h
@@ -94,6 +96,8 @@ set(SOURCE_FILES
     src/processors/heightfieldprocessor.cpp
     src/processors/imageprocessing/findedges.cpp
     src/processors/imageprocessing/imagebinary.cpp
+    src/processors/imageprocessing/imagechannelcombine.cpp
+    src/processors/imageprocessing/imagechannelselect.cpp
     src/processors/imageprocessing/imagecompositeprocessorgl.cpp
     src/processors/imageprocessing/imagegamma.cpp
     src/processors/imageprocessing/imageglprocessor.cpp
@@ -155,6 +159,8 @@ set(SHADER_FILES
     glsl/heightfield.vert
     glsl/imagegradient.frag
     glsl/img_binary.frag
+    glsl/img_channel_combine.frag
+    glsl/img_channel_select.frag
     glsl/img_convolution.frag
     glsl/img_findedges.frag
     glsl/img_gamma.frag
