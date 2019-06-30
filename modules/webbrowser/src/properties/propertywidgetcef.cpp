@@ -103,11 +103,10 @@ bool PropertyWidgetCEF::onQuery(
         auto p = getProperty();
         if (command == "property.set") {
             p->setInitiatingWidget(this);
-            converter_->fromJSON(j.at("data"), *p);
+            converter_->fromJSON(j.at("parameters"), *p);
             p->clearInitiatingWidget();
             callback->Success("");
         } else if (command == "property.get") {
-            // TODO: Remove when moved to c++17
             json res;
             converter_->toJSON(res, *p);
             callback->Success(res.dump());

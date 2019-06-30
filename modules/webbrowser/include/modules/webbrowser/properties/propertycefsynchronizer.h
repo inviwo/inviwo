@@ -88,7 +88,7 @@ public:
 
  /**
   * Called due to cefQuery execution in message_router.html.
-  * Expects the request for be a JSON-format. See inviwoapi.js:
+  * Expects the request to be a JSON data object, see inviwoapi.js:
   * {command: "subscribe", "path": propertyPath, "id":htmlId}
   * for synchronizing property to change.
   * {command: "property.set", "path":"PropertyIdentifier", "value":0.5}
