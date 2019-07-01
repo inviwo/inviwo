@@ -32,6 +32,7 @@ if(IVW_PACKAGE_PROJECT)
     # component namnes which we can't for some of the externals like HDF5
     set(CPACK_MONOLITHIC_INSTALL TRUE)
     set(CMAKE_INSTALL_UCRT_LIBRARIES TRUE)
+    set(CMAKE_INSTALL_OPENMP_LIBRARIES TRUE)
     if(OpenMP_ON)
         set(CMAKE_INSTALL_OPENMP_LIBRARIES TRUE)
     endif()

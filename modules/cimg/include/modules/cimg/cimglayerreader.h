@@ -55,32 +55,6 @@ public:
     virtual std::shared_ptr<Layer> readData(const std::string& filePath) override;
 };
 
-class IVW_MODULE_CIMG_API CImgLayerRAMLoader
-    : public DiskRepresentationLoader<LayerRepresentation> {
-public:
-    CImgLayerRAMLoader(LayerDisk* layerDisk);
-    virtual CImgLayerRAMLoader* clone() const override;
-    virtual ~CImgLayerRAMLoader() = default;
-    virtual std::shared_ptr<LayerRepresentation> createRepresentation() const override;
-    virtual void updateRepresentation(std::shared_ptr<LayerRepresentation> dest) const override;
-
-    using type = std::shared_ptr<LayerRAM>;
-
-    template <typename Result, typename T>
-    std::shared_ptr<LayerRAM> operator()(void* data) const {
-        using F = typename T::type;
-        auto layerRAM = std::make_shared<LayerRAMPrecision<F>>(
-            static_cast<F*>(data), layerDisk_->getDimensions(), layerDisk_->getLayerType(),
-            layerDisk_->getSwizzleMask());
-        return layerRAM;
-    }
-
-private:
-    static void updateSwizzleMask(LayerDisk* layerDisk);
-
-    LayerDisk* layerDisk_;
-};
-
 }  // namespace inviwo
 
 #endif  // IVW_CIMGLAYERREADER_H

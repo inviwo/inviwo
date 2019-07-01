@@ -432,8 +432,8 @@ function(make_doxygen_target modules_var)
 
     set(extra_files "${ivw_doxy_dir}/style/img_downArrow.png")
     set(aliases_list
-        "docpage{1}=\"\\ingroup processors \\n \#\\1\""
-        "docpage{2}=\"\\ingroup processors \\n \#\\2\""
+        "docpage{1}=\"\\ingroup processors\""
+        "docpage{2}=\"\\ingroup processors\""
     )
     set(image_path_list
         "${IVW_ROOT_DIR}/data/help/images"

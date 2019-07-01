@@ -118,7 +118,7 @@ std::shared_ptr<Volume> PVMVolumeReader::readPVMData(std::string filePath) {
                                   IVW_CONTEXT_CUSTOM("PVMVolumeReader"));
     }
 
-    auto volume = std::make_shared<Volume>();
+    auto volume = std::make_shared<Volume>(dim, format);
 
     if (format == DataUInt16::get()) {
         size_t bytes = format->getSize();
@@ -126,9 +126,9 @@ std::shared_ptr<Volume> PVMVolumeReader::readPVMData(std::string filePath) {
         swapbytes(data, static_cast<unsigned int>(size));
         // This format does not contain information about data range
         // so we need to compute it for correct results
-        auto minmax = std::minmax_element(reinterpret_cast<DataUInt16::type*>(data),
-                                          reinterpret_cast<DataUInt16::type*>(data + size));
-        volume->dataMap_.dataRange = dvec2(*minmax.first, *minmax.second);
+        auto max = std::max_element(reinterpret_cast<DataUInt16::type*>(data),
+                                    reinterpret_cast<DataUInt16::type*>(data + size));
+        volume->dataMap_.dataRange.y = static_cast<double>(*max);
     }
 
     // Additional information
@@ -168,13 +168,8 @@ std::shared_ptr<Volume> PVMVolumeReader::readPVMData(std::string filePath) {
 
     volume->setBasis(basis);
     volume->setOffset(-0.5f * (basis[0] + basis[1] + basis[2]));
-    volume->setDimensions(dim);
 
-    volume->dataMap_.initWithFormat(format);
-
-    volume->setDataFormat(format);
-
-    // Create RAM volume s all data has already is in memory
+    // Create RAM volume as all data has already is in memory
     auto volRAM = createVolumeRAM(dim, format, data);
     volume->addRepresentation(volRAM);
 

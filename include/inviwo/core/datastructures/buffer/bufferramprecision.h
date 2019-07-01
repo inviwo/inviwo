@@ -45,9 +45,9 @@ public:
     using type = T;
     static const BufferTarget target = Target;
 
-    BufferRAMPrecision(BufferUsage usage = BufferUsage::Static);
-    BufferRAMPrecision(size_t size, BufferUsage usage = BufferUsage::Static);
-    BufferRAMPrecision(std::vector<T> data, BufferUsage usage = BufferUsage::Static);
+    explicit BufferRAMPrecision(BufferUsage usage = BufferUsage::Static);
+    explicit BufferRAMPrecision(size_t size, BufferUsage usage = BufferUsage::Static);
+    explicit BufferRAMPrecision(std::vector<T> data, BufferUsage usage = BufferUsage::Static);
     BufferRAMPrecision(const BufferRAMPrecision<T, Target>& rhs) = default;
     BufferRAMPrecision<T, Target>& operator=(const BufferRAMPrecision<T, Target>& that) = default;
     virtual ~BufferRAMPrecision() = default;

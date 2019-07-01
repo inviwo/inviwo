@@ -92,9 +92,6 @@ TEST(ImageTests, ImageLoadRGB) {
 
     ASSERT_TRUE(filesystem::fileExists(imgFile));
 
-    auto disk = std::make_shared<LayerDisk>(imgFile);
-    ASSERT_TRUE(disk != 0);
-
     auto ext = filesystem::getFileExtension(imgFile);
     EXPECT_EQ(ext, "bmp");
 
@@ -131,11 +128,8 @@ TEST(ImageTests, ImageLoadRGB) {
 
 TEST(ImageTests, ImageLoadRange) {
     std::string imgFile = TestImgs::range();
-    ;
-    ASSERT_TRUE(filesystem::fileExists(imgFile));
 
-    auto disk = std::make_shared<LayerDisk>(imgFile);
-    ASSERT_TRUE(disk != 0);
+    ASSERT_TRUE(filesystem::fileExists(imgFile));
 
     std::string ext = filesystem::getFileExtension(imgFile);
     EXPECT_EQ(ext, "bmp");
@@ -165,9 +159,6 @@ TEST(ImageTests, ImageLoadRange) {
 TEST(ImageTests, ImageResize) {
     std::string imgFile = TestImgs::rgb();
     ASSERT_TRUE(filesystem::fileExists(imgFile));
-
-    auto disk = std::make_shared<LayerDisk>(imgFile);
-    ASSERT_TRUE(disk != 0);
 
     std::string ext = filesystem::getFileExtension(imgFile);
     EXPECT_EQ(ext, "bmp");

@@ -32,11 +32,8 @@
 
 namespace inviwo {
 
-LayerRepresentation::LayerRepresentation(size2_t dimensions, LayerType type,
-                                         const DataFormatBase* format)
-    : DataRepresentation(format), dimensions_(dimensions), layerType_(type) {}
-
-size2_t LayerRepresentation::getDimensions() const { return dimensions_; }
+LayerRepresentation::LayerRepresentation(LayerType type, const DataFormatBase* format)
+    : DataRepresentation(format), layerType_(type) {}
 
 LayerType LayerRepresentation::getLayerType() const { return layerType_; }
 

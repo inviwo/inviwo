@@ -67,6 +67,8 @@ public:
     void deinitialize();
 
     virtual void setDimensions(size2_t dimensions) override;
+    virtual const size2_t& getDimensions() const override;
+
     virtual bool copyRepresentationsTo(LayerRepresentation* target) const override;
 
     virtual cl::Image2DGL& getEditable() override { return *clImage_; }
@@ -116,6 +118,7 @@ protected:
     std::shared_ptr<Texture2D> texture_;      ///< Shared with LayerGL
     std::shared_ptr<cl::Image2DGL> clImage_;  ///< Potentially shared with other LayerCLGL
 
+    size2_t dimensions_;
     SwizzleMask swizzleMask_;
 };
 

@@ -65,7 +65,7 @@ public:
 private:
     std::string sourceFile_;
 
-    // DiskRepresentation owns a DataReader to be able to convert it self into RAM.
+    // DiskRepresentation owns a DataReader to be able to convert itself into RAM.
     util::cloneable_ptr<DiskRepresentationLoader<Repr>> loader_;
 };
 

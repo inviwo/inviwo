@@ -59,7 +59,6 @@ std::shared_ptr<Volume> TIFFStackVolumeReader::readData(const std::string& fileP
     auto header = cimgutil::getTIFFHeader(filePath);
     auto volume = std::make_shared<Volume>(header.dimensions, header.format);
     auto volumeDisk = std::make_shared<VolumeDisk>(filePath, header.dimensions, header.format);
-    volume->setDataFormat(header.format);
     volume->dataMap_.dataRange = dvec2{header.format->getLowest(), header.format->getMax()};
     volume->dataMap_.valueRange = dvec2{header.format->getLowest(), header.format->getMax()};
 

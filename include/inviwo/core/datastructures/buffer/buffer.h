@@ -38,9 +38,12 @@
 
 namespace inviwo {
 
+class DataFormatBase;
+
 class IVW_CORE_API BufferBase : public Data<BufferBase, BufferRepresentation> {
 public:
-    BufferBase(size_t size, const DataFormatBase* format, BufferUsage usage, BufferTarget target);
+    BufferBase(size_t defaultSize, const DataFormatBase* defaultFormat, BufferUsage usage,
+               BufferTarget target);
     BufferBase(const BufferBase& rhs) = default;
     BufferBase& operator=(const BufferBase& that) = default;
 
@@ -59,6 +62,16 @@ public:
     size_t getSizeInBytes() const;
     BufferUsage getBufferUsage() const;
     BufferTarget getBufferTarget() const;
+    /**
+     * Set the format of the data.
+     * @see DataFormatBase
+     * @param format The format of the data.
+     */
+    // clang-format off
+    [[ deprecated("use BufferRepresentation::setDataFormat() instead (deprecated since 2019-06-26)")]]
+    void setDataFormat(const DataFormatBase* format);
+    const DataFormatBase* getDataFormat() const;
+    // clang-format on
 
     virtual void append(const BufferBase&) = 0;
 
@@ -68,9 +81,10 @@ public:
     static const std::string dataName;
 
 protected:
-    size_t size_;
+    size_t defaultSize_;
     BufferUsage usage_;
     BufferTarget target_;
+    const DataFormatBase* defaultDataFormat_;
 };
 
 /**
@@ -79,9 +93,10 @@ protected:
 template <typename T, BufferTarget Target = BufferTarget::Data>
 class Buffer : public BufferBase {
 public:
-    Buffer(size_t size, BufferUsage usage = BufferUsage::Static);
-    Buffer(BufferUsage usage = BufferUsage::Static);
-    Buffer(std::shared_ptr<BufferRAMPrecision<T, Target>> repr);
+    Buffer();
+    explicit Buffer(size_t size, BufferUsage usage = BufferUsage::Static);
+    explicit Buffer(BufferUsage usage);
+    explicit Buffer(std::shared_ptr<BufferRAMPrecision<T, Target>> repr);
     Buffer(const Buffer<T, Target>& rhs) = default;
     Buffer<T, Target>& operator=(const Buffer<T, Target>& that) = default;
     virtual Buffer<T, Target>* clone() const override;
@@ -148,6 +163,9 @@ struct IVW_CORE_API BufferDispatcher {
 };
 
 }  // namespace util
+
+template <typename T, BufferTarget Target>
+Buffer<T, Target>::Buffer() : Buffer(BufferUsage::Static) {}
 
 template <typename T, BufferTarget Target>
 Buffer<T, Target>::Buffer(std::shared_ptr<BufferRAMPrecision<T, Target>> repr)

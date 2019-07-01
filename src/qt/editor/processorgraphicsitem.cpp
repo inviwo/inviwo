@@ -51,7 +51,6 @@
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/qtwidgets/qstringhelper.h>
 
-
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QApplication>

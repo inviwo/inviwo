@@ -82,11 +82,6 @@ void Processor::addPortInternal(Inport* port, const std::string& portGroup) {
     isReady_.update();
 }
 
-void Processor::addPort(std::unique_ptr<Inport> port, const std::string& portGroup) {
-    addPortInternal(port.get(), portGroup);
-    ownedInports_.push_back(std::move(port));
-}
-
 void Processor::addPortInternal(Outport* port, const std::string& portGroup) {
     if (getPort(port->getIdentifier()) != nullptr) {
         throw Exception("Processor \"" + getIdentifier() + "\" Can't add outport, identifier \"" +
@@ -105,11 +100,6 @@ void Processor::addPortInternal(Outport* port, const std::string& portGroup) {
     notifyObserversProcessorPortAdded(this, port);
     isSink_.update();
     isReady_.update();
-}
-
-void Processor::addPort(std::unique_ptr<Outport> port, const std::string& portGroup) {
-    addPortInternal(port.get(), portGroup);
-    ownedOutports_.push_back(std::move(port));
 }
 
 Port* Processor::removePort(const std::string& identifier) {

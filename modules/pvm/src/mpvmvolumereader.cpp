@@ -109,13 +109,10 @@ std::shared_ptr<Volume> MPVMVolumeReader::readData(const std::string& filePath) 
         DataFormatBase::get(format->getNumericType(), volumes.size(), format->getSize() * 8);
 
     // Create new volume
-    auto volume = std::make_shared<Volume>();
+    auto volume = std::make_shared<Volume>(mdim, mformat);
     glm::mat3 basis = volumes[0]->getBasis();
     volume->setBasis(basis);
     volume->setOffset(-0.5f * (basis[0] + basis[1] + basis[2]));
-    volume->setDimensions(mdim);
-    volume->dataMap_.initWithFormat(mformat);
-    volume->setDataFormat(mformat);
     volume->copyMetaDataFrom(*volumes[0]);
 
     // Merge descriptions but ignore the rest

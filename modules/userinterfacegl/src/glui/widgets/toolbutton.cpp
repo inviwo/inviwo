@@ -37,6 +37,7 @@
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 
+#include <modules/opengl/image/layergl.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/texture2d.h>
 #include <modules/opengl/shader/shaderutils.h>
@@ -119,18 +120,10 @@ std::shared_ptr<Texture2D> ToolButton::loadImage(const std::string &filename) {
     auto ext = filesystem::getFileExtension(filename);
     auto factory = InviwoApplication::getPtr()->getDataReaderFactory();
     if (auto reader = factory->getReaderForTypeAndExtension<Layer>(ext)) {
-        std::shared_ptr<Layer> layer;
-        // try to load texture data from current file
         try {
-            layer = reader->readData(filename);
-            auto layerRAM = layer->getRepresentation<LayerRAM>();
-            // Hack needs to set format here since LayerDisk does not have a format.
-            layer->setDataFormat(layerRAM->getDataFormat());
-
-            auto texture = std::make_shared<Texture2D>(
-                layer->getDimensions(), GLFormats::get(layer->getDataFormat()->getId()), GL_LINEAR);
-            texture->initialize(layerRAM->getData());
-            return texture;
+            // try to load texture data from current file
+            auto layer = reader->readData(filename);
+            return layer->getRepresentation<LayerGL>()->getTexture();
         } catch (DataReaderException const &e) {
             util::log(e.getContext(),
                       "Could not load texture data: " + filename + ", " + e.getMessage(),

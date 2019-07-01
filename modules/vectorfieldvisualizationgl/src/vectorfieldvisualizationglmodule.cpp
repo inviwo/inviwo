@@ -53,7 +53,6 @@
 
 #include <inviwo/core/io/serialization/versionconverter.h>
 
-
 namespace inviwo {
 
 VectorFieldVisualizationGLModule::VectorFieldVisualizationGLModule(InviwoApplication* app)
@@ -76,9 +75,9 @@ VectorFieldVisualizationGLModule::VectorFieldVisualizationGLModule(InviwoApplica
     registerProcessor<Vector3DDivergence>();
     registerProcessor<TMIP>();
     registerProcessor<VectorFieldGenerator4D>();
-    
+
     auto& gl = app->getModuleByType<OpenGLModule>()->getOpenGLCapabilities();
-    if(gl.isComputeShadersSupported()){
+    if (gl.isComputeShadersSupported()) {
         registerProcessor<StreamParticles>();
     }
 }

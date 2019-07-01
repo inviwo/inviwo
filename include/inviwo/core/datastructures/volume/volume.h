@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/data.h>
 #include <inviwo/core/datastructures/spatialdata.h>
+#include <inviwo/core/datastructures/image/imagetypes.h>
 #include <inviwo/core/datastructures/datamapper.h>
 #include <inviwo/core/datastructures/representationtraits.h>
 #include <inviwo/core/datastructures/volume/volumerepresentation.h>
@@ -63,16 +64,15 @@ class IVW_CORE_API Volume : public Data<Volume, VolumeRepresentation>,
                             public StructuredGridEntity<3>,
                             public MetaDataOwner {
 public:
-    Volume(size3_t dimensions = size3_t(128, 128, 128),
-           const DataFormatBase* format = DataUInt8::get());
-    Volume(std::shared_ptr<VolumeRepresentation>);
+    explicit Volume(size3_t defaultDimensions = size3_t(128, 128, 128),
+                    const DataFormatBase* defaultFormat = DataUInt8::get(),
+                    const SwizzleMask& defaultSwizzleMask = swizzlemasks::rgba);
+    explicit Volume(std::shared_ptr<VolumeRepresentation>);
     Volume(const Volume&) = default;
     Volume& operator=(const Volume& that) = default;
     virtual Volume* clone() const override;
     virtual ~Volume();
     Document getInfo() const;
-
-    size3_t getDimensions() const override;
 
     /**
      * Resize to dimension. This is destructive, the data will not be
@@ -80,19 +80,27 @@ public:
      * @note Resizes the last valid representation and erases all representations.
      * Last valid representation will remain valid after changing the dimension.
      */
-    void setDimensions(const size3_t& dim) override;
+    virtual void setDimensions(const size3_t& dim);
+    virtual size3_t getDimensions() const override;
 
-    void setOffset(const vec3& offset);
-    vec3 getOffset() const;
+    /**
+     * Set the format of the data.
+     * @see DataFormatBase
+     * @param format The format of the data.
+     */
+    // clang-format off
+    [[ deprecated("use VolumeRepresentation::setDataFormat() instead (deprecated since 2019-06-26)")]]
+    void setDataFormat(const DataFormatBase* format);
+    const DataFormatBase* getDataFormat() const;
+    // clang-format on
 
-    mat3 getBasis() const;
-    void setBasis(const mat3& basis);
-
-    mat4 getModelMatrix() const;
-    void setModelMatrix(const mat4& mat);
-
-    mat4 getWorldMatrix() const;
-    void setWorldMatrix(const mat4& mat);
+    /**
+     * \brief update the swizzle mask of the color channels when sampling the volume
+     *
+     * @param mask new swizzle mask
+     */
+    void setSwizzleMask(const SwizzleMask& mask);
+    SwizzleMask getSwizzleMask() const;
 
     virtual const StructuredCameraCoordinateTransformer<3>& getCoordinateTransformer(
         const Camera& camera) const override;
@@ -136,6 +144,11 @@ public:
 
     template <typename Kind>
     const typename representation_traits<Volume, Kind>::type* getRep() const;
+
+protected:
+    size3_t defaultDimensions_;
+    const DataFormatBase* defaultDataFormat_;
+    SwizzleMask defaultSwizzleMask_;
 };
 
 template <typename Kind>

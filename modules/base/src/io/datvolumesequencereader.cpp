@@ -283,13 +283,11 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
             offset = -0.5f * (basis[0] + basis[1] + basis[2]);
         }
 
-        auto volume = std::make_shared<Volume>();
+        auto volume = std::make_shared<Volume>(dimensions_, format_);
         volume->setBasis(basis);
         volume->setOffset(offset);
         volume->setWorldMatrix(wtm);
-        volume->setDimensions(dimensions_);
 
-        volume->dataMap_.initWithFormat(format_);
         if (datarange != dvec2(0)) {
             volume->dataMap_.dataRange = datarange;
         }
@@ -302,7 +300,6 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
             volume->dataMap_.valueUnit = unit;
         }
 
-        volume->setDataFormat(format_);
         size_t bytes = dimensions_.x * dimensions_.y * dimensions_.z * (format_->getSize());
 
         for (auto elem : metadata) volume->setMetaData<StringMetaData>(elem.first, elem.second);

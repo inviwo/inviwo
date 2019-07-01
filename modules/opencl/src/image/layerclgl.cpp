@@ -38,8 +38,9 @@ CLTextureSharingMap LayerCLGL::clImageSharingMap_;
 LayerCLGL::LayerCLGL(size2_t dimensions, LayerType type, const DataFormatBase* format,
                      std::shared_ptr<Texture2D> data, const SwizzleMask& swizzleMask)
     : LayerCLBase()
-    , LayerRepresentation(dimensions, type, format)
+    , LayerRepresentation(type, format)
     , texture_(data)
+    , dimensions_(dimensions)
     , swizzleMask_(swizzleMask) {
     if (data) {
         initialize(data.get());
@@ -62,6 +63,7 @@ LayerCLGL::LayerCLGL(const LayerCLGL& rhs)
     : LayerCLBase(rhs)
     , LayerRepresentation(rhs)
     , texture_(rhs.texture_->clone())
+    , dimensions_(rhs.dimensions_)
     , swizzleMask_(rhs.swizzleMask_) {
     initialize(texture_.get());
 }
@@ -113,6 +115,8 @@ void LayerCLGL::setDimensions(size2_t dimensions) {
     texture_->resize(dimensions);
     updateBaseMetaFromRepresentation();
 }
+
+const size2_t& LayerCLGL::getDimensions() const { return dimensions_; }
 
 bool LayerCLGL::copyRepresentationsTo(LayerRepresentation* targetRep) const {
     // ivwAssert(false, "Not implemented");
