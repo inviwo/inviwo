@@ -29,39 +29,47 @@
 
 #pragma once
 
-#include <modules/webbrowser/webbrowsermoduledefine.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <nlohmann/json.hpp>
-
-using json = nlohmann::json;
+#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/properties/property.h>
+#include <modules/json/io/json/propertyjsonconverter.h>
+#include <string>
 
 namespace inviwo {
+    
+class Property;
+class PropertyWidget;
 
-/**
- * Converts an ButtonProperty to a JSON object.
- * Produces layout according to the members of ButtonProperty:
- * { {"value": val} }
- * @see ButtonProperty
- *
- * Usage example:
- * \code{.cpp}
- * ButtonProperty p;
- * json j = p;
- * \endcode
- */
-IVW_MODULE_WEBBROWSER_API void to_json(json& j, const ButtonProperty& p);
+class IVW_MODULE_JSON_API PropertyJSONConverterFactoryObject {
+public:
+    PropertyJSONConverterFactoryObject();
+    virtual ~PropertyJSONConverterFactoryObject();
+    
+    virtual std::unique_ptr<PropertyJSONConverter> create(Property*) = 0;
+    /**
+     * Property class identifier.
+     */
+    virtual std::string getClassIdentifier() const = 0;
+    
+private:
+};
 
-/**
- * Converts a JSON object to an ButtonProperty.
- * Expects object layout according to the members of ButtonProperty:
- * { {"value": val} }
- * @see ButtonProperty
- *
- * Usage example:
- * \code{.cpp}
- * auto p = j.get<BoolProperty>();
- * \endcode
- */
-IVW_MODULE_WEBBROWSER_API void from_json(const json& j, ButtonProperty& p);
+template <typename P>
+class PropertyJSONConverterFactoryObjectTemplate
+    : public PropertyJSONConverterFactoryObject {
+ public:
+  PropertyJSONConverterFactoryObjectTemplate()
+      : PropertyJSONConverterFactoryObject() {}
 
+  virtual ~PropertyJSONConverterFactoryObjectTemplate() {}
+
+  virtual std::unique_ptr<PropertyJSONConverter> create(Property* prop) {
+    return std::make_unique<TemplatePropertyJSONConverter<P>>();
+  }
+
+  virtual std::string getClassIdentifier() const {
+    return PropertyTraits<P>::classIdentifier();
+  };
+};
+    
 }  // namespace inviwo
+

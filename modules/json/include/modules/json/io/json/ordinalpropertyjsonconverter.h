@@ -27,20 +27,63 @@
  *
  *********************************************************************************/
 
-#include <modules/webbrowser/io/json/buttonpropertyjsonconverter.h>
+#pragma once
+
+#include <modules/json/io/json/glmjsonconverter.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 
 namespace inviwo {
 
-
-void to_json(json& j, const ButtonProperty& p) {
-    j = json{{"pressButton", true}};
+/**
+ * Converts an OrdinalProperty to a JSON object.
+ * Produces layout according to the members of OrdinalProperty:
+ * { {"value": val}, {"increment": increment},
+ *   {"minValue": minVal}, {"maxValue": maxVal}
+ * }
+ * @see OrdinalProperty
+ *
+ * Usage example:
+ * \code{.cpp}
+ * OrdinalProperty<double> p;
+ * json j = p;
+ * \endcode
+ */
+template <typename T>
+void to_json(json& j, const OrdinalProperty<T>& p) {
+    j = json{{"value", p.get()},
+             {"minValue", p.getMinValue()},
+             {"maxValue", p.getMaxValue()},
+             {"increment", p.getIncrement()}};
 }
 
-void from_json(const json& j, ButtonProperty& p) {
-  if (j.count("pressButton") > 0) {
-    p.pressButton();
-  }
-}
+/**
+ * Converts a JSON object to an OrdinalProperty.
+ * Expects object layout according to the members of OrdinalProperty:
+ * { {"value": val}, {"increment": increment},
+ *   {"minValue": minVal}, {"maxValue": maxVal}
+ * }
+ * @see OrdinalProperty
+ *
+ * Usage example:
+ * \code{.cpp}
+ * auto p = j.get<OrdinalProperty<double>>();
+ * \endcode
+ */
+template <typename T>
+void from_json(const json& j, OrdinalProperty<T>& p) {
 
+    auto value = j.value("value", p.get());
+
+    // Optional parameters
+    auto minVal = j.value("minValue", p.getMinValue());
+    auto maxVal = j.value("maxValue", p.getMaxValue());
+    auto increment = j.value("increment", p.getIncrement());
+
+    p.set(value, minVal, maxVal, increment);
+}
 
 }  // namespace inviwo
+

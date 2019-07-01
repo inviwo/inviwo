@@ -29,8 +29,7 @@
 
 #pragma once
 
-#include <modules/webbrowser/webbrowsermoduledefine.h>
-#include <modules/webbrowser/io/json/glmjsonconverter.h>
+#include <modules/json/io/json/glmjsonconverter.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <nlohmann/json.hpp>
 

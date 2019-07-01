@@ -29,8 +29,8 @@
 
 #pragma once
 
-#include <modules/webbrowser/webbrowsermoduledefine.h>
-#include <inviwo/core/properties/fileproperty.h>
+#include <modules/json/io/json/glmjsonconverter.h>
+#include <inviwo/core/properties/templateproperty.h>
 #include <nlohmann/json.hpp>
 
 using json = nlohmann::json;
@@ -38,73 +38,38 @@ using json = nlohmann::json;
 namespace inviwo {
 
 /**
- * Converts an FileExtension to a JSON object.
- * Produces layout according to the members of FileExtension:
- * {{"extension", extension},
- * {"description", description} }
- * @see FileExtension
+ * Converts an TemplateProperty to a JSON object.
+ * Produces layout according to the members of TemplateProperty:
+ * { {"value": val} }
+ * @see TemplateProperty
  *
  * Usage example:
  * \code{.cpp}
- * FileExtension p;
+ * TemplateProperty<double> p;
  * json j = p;
  * \endcode
  */
-IVW_MODULE_WEBBROWSER_API void to_json(json& j, const FileExtension& p);
+template <typename T>
+void to_json(json& j, const TemplateProperty<T>& p) {
+  j = json{{"value", p.get()}};
+}
 
 /**
- * Converts a JSON object to an FileExtension.
- * Expects object layout according to the members of FileExtension:
- * {{"extension", extension},
- * {"description", description} }
- * @see FileExtension
+ * Converts a JSON object to an TemplateProperty.
+ * Expects object layout according to the members of TemplateProperty:
+ * { {"value": val} }
+ * @see TemplateProperty
  *
  * Usage example:
  * \code{.cpp}
- * auto p = j.get<FileExtension>();
+ * auto p = j.get<TemplateProperty<double>>();
  * \endcode
  */
-IVW_MODULE_WEBBROWSER_API void from_json(const json& j, FileExtension& p);
-
-/**
- * Converts an FileProperty to a JSON object.
- * Produces layout according to the members of FileProperty:
- * {{"value", filePath},
- *  {"selectedExtension", FileExtension},
- *  {"acceptMode", AcceptMode},
- *  {"fileMode", FileMode},
- *  {"contentType", ContentType},
- *  {"nameFilters", std::vector<FileExtension>}
- * }
- * @see FileProperty
- *
- * Usage example:
- * \code{.cpp}
- * FileProperty p;
- * json j = p;
- * \endcode
- */
-IVW_MODULE_WEBBROWSER_API void to_json(json& j, const FileProperty& p);
-
-/**
- * Converts a JSON object to an FileProperty.
- * Expects object layout according to the members of FileProperty:
- * {{"value", filePath},
- *  {"selectedExtension", FileExtension},
- *  {"acceptMode", AcceptMode},
- *  {"fileMode", FileMode},
- *  {"contentType", ContentType},
- *  {"nameFilters", std::vector<FileExtension>},
- *  {"requestFile", ""}, // Will call requestFile()
- * }
- * @see FileProperty
- *
- * Usage example:
- * \code{.cpp}
- * auto p = j.get<FileProperty>();
- * \endcode
- */
-IVW_MODULE_WEBBROWSER_API void from_json(const json& j, FileProperty& p);
+template <typename T>
+void from_json(const json& j, TemplateProperty<T>& p) {
+    auto value = j.value("value", p.get());
+    p.set(value);
+}
 
 }  // namespace inviwo
 

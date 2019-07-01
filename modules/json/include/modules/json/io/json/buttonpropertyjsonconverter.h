@@ -29,61 +29,39 @@
 
 #pragma once
 
-#include <modules/webbrowser/webbrowsermoduledefine.h>
-#include <inviwo/core/properties/property.h>
+#include <modules/json/jsonmoduledefine.h>
+#include <inviwo/core/properties/buttonproperty.h>
 #include <nlohmann/json.hpp>
 
 using json = nlohmann::json;
 
 namespace inviwo {
+
 /**
- * Interface for converting between JSON and Property.
+ * Converts an ButtonProperty to a JSON object.
+ * Produces layout according to the members of ButtonProperty:
+ * { {"value": val} }
+ * @see ButtonProperty
+ *
+ * Usage example:
+ * \code{.cpp}
+ * ButtonProperty p;
+ * json j = p;
+ * \endcode
  */
-class IVW_MODULE_WEBBROWSER_API PropertyJSONConverter {
-public:
-    PropertyJSONConverter() = default;
-    virtual ~PropertyJSONConverter() = default;
+IVW_MODULE_JSON_API void to_json(json& j, const ButtonProperty& p);
 
-    virtual std::string getPropClassIdentifier() const = 0;
-
-    /**
-     * Converts a Property to a JSON object.
-     */
-    virtual void toJSON(json& j, const Property& p) const = 0;
-    /**
-     * Converts a JSON object to a Property to a JSON object.
-     */
-    virtual void fromJSON(const json& j, Property& p) const = 0;
-};
 /**
- * Convert between JSON and Property.
- * A TemplatePropertyJSONConverter requires implementations of to_json(json& j,
- * const SrcProperty& p) and from_json(const json& j, SrcProperty& p).
+ * Converts a JSON object to an ButtonProperty.
+ * Expects object layout according to the members of ButtonProperty:
+ * { {"value": val} }
+ * @see ButtonProperty
+ *
+ * Usage example:
+ * \code{.cpp}
+ * auto p = j.get<BoolProperty>();
+ * \endcode
  */
-template <typename SrcProperty>
-class TemplatePropertyJSONConverter : public PropertyJSONConverter {
- public:
-  TemplatePropertyJSONConverter() = default;
-  virtual ~TemplatePropertyJSONConverter() = default;
-
-  virtual std::string getPropClassIdentifier() const override {
-    return PropertyTraits<SrcProperty>::classIdentifier();
-  }
-  /**
-   * Converts a Property to a JSON object.
-   * Requires that to_json(json& j, const SrcProperty& p) has been implemented.
-   */
-  virtual void toJSON(json& j, const Property& p) const override {
-    to_json(j, static_cast<const SrcProperty&>(p));
-  }
-  /**
-   * Converts a JSON object to a Property to a JSON object.
-   * Requires that to_json(json& j, const SrcProperty& p) has been implemented.
-   */
-  virtual void fromJSON(const json& j, Property& p) const override {
-    j.get_to(static_cast<SrcProperty&>(p));
-  }
-};
+IVW_MODULE_JSON_API void from_json(const json& j, ButtonProperty& p);
 
 }  // namespace inviwo
-

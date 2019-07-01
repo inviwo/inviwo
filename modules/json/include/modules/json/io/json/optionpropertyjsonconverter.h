@@ -29,7 +29,6 @@
 
 #pragma once
 
-#include <modules/webbrowser/webbrowsermoduledefine.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <nlohmann/json.hpp>
 

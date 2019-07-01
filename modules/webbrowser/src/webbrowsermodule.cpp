@@ -31,13 +31,13 @@
 #include <modules/webbrowser/processors/webbrowserprocessor.h>
 #include <modules/webbrowser/webbrowserapp.h>
 
-#include <modules/webbrowser/io/json/boolpropertyjsonconverter.h>
-#include <modules/webbrowser/io/json/buttonpropertyjsonconverter.h>
-#include <modules/webbrowser/io/json/filepropertyjsonconverter.h>
-#include <modules/webbrowser/io/json/minmaxpropertyjsonconverter.h>
-#include <modules/webbrowser/io/json/optionpropertyjsonconverter.h>
-#include <modules/webbrowser/io/json/ordinalpropertyjsonconverter.h>
-#include <modules/webbrowser/io/json/templatepropertyjsonconverter.h>
+#include <modules/json/io/json/boolpropertyjsonconverter.h>
+#include <modules/json/io/json/buttonpropertyjsonconverter.h>
+#include <modules/json/io/json/filepropertyjsonconverter.h>
+#include <modules/json/io/json/minmaxpropertyjsonconverter.h>
+#include <modules/json/io/json/optionpropertyjsonconverter.h>
+#include <modules/json/io/json/ordinalpropertyjsonconverter.h>
+#include <modules/json/io/json/templatepropertyjsonconverter.h>
 
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/settings/systemsettings.h>
@@ -60,7 +60,7 @@ struct OrdinalCEFWidgetReghelper {
     template <typename T>
     auto operator()(WebBrowserModule& m) {
         using PropertyType = OrdinalProperty<T>;
-        m.registerPropertyJSONConverterAndWidget<PropertyWidgetCEF, PropertyType>();
+        m.registerPropertyWidgetCEF<PropertyWidgetCEF, PropertyType>();
     }
 };
 
@@ -68,7 +68,7 @@ struct MinMaxCEFWidgetReghelper {
     template <typename T>
     auto operator()(WebBrowserModule& m) {
         using PropertyType = MinMaxProperty<T>;
-        m.registerPropertyJSONConverterAndWidget<PropertyWidgetCEF, PropertyType>();
+        m.registerPropertyWidgetCEF<PropertyWidgetCEF, PropertyType>();
     }
 };
 
@@ -76,7 +76,7 @@ struct OptionCEFWidgetReghelper {
     template <typename T>
     auto operator()(WebBrowserModule& m) {
         using PropertyType = TemplateOptionProperty<T>;
-        m.registerPropertyJSONConverterAndWidget<PropertyWidgetCEF, PropertyType>();
+        m.registerPropertyWidgetCEF<PropertyWidgetCEF, PropertyType>();
     }
 };
 
@@ -86,10 +86,10 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     , doChromiumWork_(Timer::Milliseconds(1000 / 60), []() { CefDoMessageLoopWork(); }) {
         
     // Register JSON converters and corresponding widgets
-    registerPropertyJSONConverterAndWidget<PropertyWidgetCEF, BoolProperty>();
-    registerPropertyJSONConverterAndWidget<PropertyWidgetCEF, ButtonProperty>();
-    registerPropertyJSONConverterAndWidget<PropertyWidgetCEF, FileProperty>();
-    registerPropertyJSONConverterAndWidget<PropertyWidgetCEF, StringProperty>();
+    registerPropertyWidgetCEF<PropertyWidgetCEF, BoolProperty>();
+    registerPropertyWidgetCEF<PropertyWidgetCEF, ButtonProperty>();
+    registerPropertyWidgetCEF<PropertyWidgetCEF, FileProperty>();
+    registerPropertyWidgetCEF<PropertyWidgetCEF, StringProperty>();
     
     // Register ordinal property widgets
     // TODO: fix JSON conversion for glm-types
@@ -233,12 +233,6 @@ WebBrowserModule::~WebBrowserModule() {
     doChromiumWork_.stop();
     app_->waitForPool();
     CefShutdown();
-}
-    
-void WebBrowserModule::registerPropertyJSONConverter(std::unique_ptr<PropertyJSONConverterFactoryObject> propertyConverter) {
-    if (propertyJSONConverterFactory_.registerObject(propertyConverter.get())) {
-        propertyJSONConverters_.push_back(std::move(propertyConverter));
-    }
 }
 
 std::string WebBrowserModule::getDataURI(const std::string& data, const std::string& mime_type) {

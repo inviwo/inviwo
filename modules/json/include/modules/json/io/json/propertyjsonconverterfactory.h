@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,16 +27,25 @@
  *
  *********************************************************************************/
 
-#include <modules/webbrowser/io/json/boolpropertyjsonconverter.h>
+#pragma once
+
+#include <modules/json/jsonmoduledefine.h>
+#include <modules/json/io/json/propertyjsonconverterfactoryobject.h>
+#include <inviwo/core/util/factory.h>
 
 namespace inviwo {
+/**
+ * Factory for creating converters between a Property and JSON.
+ */
+class IVW_MODULE_JSON_API PropertyJSONConverterFactory
+    : public StandardFactory<PropertyJSONConverter,
+                             PropertyJSONConverterFactoryObject, const std::string&,
+                             Property*> {
+ public:
+  PropertyJSONConverterFactory();
+  virtual ~PropertyJSONConverterFactory();
 
-void to_json(json& j, const BoolProperty& p) { j = json{{"value", p.get()}}; }
-
-void from_json(const json& j, BoolProperty& p) {
-    bool value = j.value("value", p.get());
-    p.set(value);
-}
-
+};
 
 }  // namespace inviwo
+

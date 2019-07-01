@@ -31,8 +31,9 @@
 #define IVW_WEBBROWSERMODULE_H
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>
-#include <modules/webbrowser/io/json/propertyjsonconverterfactory.h>
 #include <modules/webbrowser/properties/propertywidgetceffactory.h>
+
+#include <modules/json/jsonmodule.h>
 
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/util/timer.h>
@@ -61,11 +62,6 @@ public:
     template <typename T, typename P>
     void registerPropertyJSONConverterAndWidget();
     
-    template<typename P>
-    void registerPropertyJSONConverter();
-    void registerPropertyJSONConverter(std::unique_ptr<PropertyJSONConverterFactoryObject> propertyConverter);
-    inline const PropertyJSONConverterFactory* getPropertyJSONConverterFactory() const;
-    
     // Use own widget factory for now. Multiple widget types are not supported in Inviwo yet
     template <typename T, typename P>
     void registerPropertyWidgetCEF();
@@ -77,10 +73,6 @@ public:
     static std::string getCefErrorString(cef_errorcode_t code);
 
 protected:
-    // JSON Converter factory
-    std::vector<std::unique_ptr<PropertyJSONConverterFactoryObject>> propertyJSONConverters_;
-    PropertyJSONConverterFactory propertyJSONConverterFactory_;
-    
     // HTML-property synchronization widget factory
     PropertyWidgetCEFFactory htmlWidgetFactory_;
     std::vector<std::unique_ptr<PropertyWidgetCEFFactoryObject>>
@@ -91,25 +83,10 @@ protected:
     CefScopedLibraryLoader cefLib_;
 #endif
 };
-
-template <typename T, typename P>
-void WebBrowserModule::registerPropertyJSONConverterAndWidget() {
-    registerPropertyWidgetCEF<T,P>();
-    registerPropertyJSONConverter<P>();
-}
-    
-inline const PropertyJSONConverterFactory* WebBrowserModule::getPropertyJSONConverterFactory() const {
-    return &propertyJSONConverterFactory_;
-}
-    
-template <typename P>
-void WebBrowserModule::registerPropertyJSONConverter() {
-    registerPropertyJSONConverter(std::make_unique<PropertyJSONConverterFactoryObjectTemplate<P>>());
-}
     
 template <typename T, typename P>
 void WebBrowserModule::registerPropertyWidgetCEF() {
-    auto propertyWidget = std::make_unique<PropertyWidgetCEFFactoryObjectTemplate<T, P>>(getPropertyJSONConverterFactory());
+    auto propertyWidget = std::make_unique<PropertyWidgetCEFFactoryObjectTemplate<T, P>>(app_->getModuleByType<JSONModule>()->getPropertyJSONConverterFactory());
     if (htmlWidgetFactory_.registerObject(propertyWidget.get())) {
         propertyWidgets_.push_back(std::move(propertyWidget));
     }

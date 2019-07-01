@@ -27,50 +27,13 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <modules/webbrowser/webbrowsermoduledefine.h>
-#include <modules/webbrowser/io/json/glmjsonconverter.h>
-#include <inviwo/core/properties/templateproperty.h>
-#include <nlohmann/json.hpp>
-
-using json = nlohmann::json;
+#include <modules/json/io/json/propertyjsonconverterfactoryobject.h>
 
 namespace inviwo {
 
-/**
- * Converts an TemplateProperty to a JSON object.
- * Produces layout according to the members of TemplateProperty:
- * { {"value": val} }
- * @see TemplateProperty
- *
- * Usage example:
- * \code{.cpp}
- * TemplateProperty<double> p;
- * json j = p;
- * \endcode
- */
-template <typename T>
-void to_json(json& j, const TemplateProperty<T>& p) {
-  j = json{{"value", p.get()}};
-}
+PropertyJSONConverterFactoryObject::PropertyJSONConverterFactoryObject() =
+    default;
 
-/**
- * Converts a JSON object to an TemplateProperty.
- * Expects object layout according to the members of TemplateProperty:
- * { {"value": val} }
- * @see TemplateProperty
- *
- * Usage example:
- * \code{.cpp}
- * auto p = j.get<TemplateProperty<double>>();
- * \endcode
- */
-template <typename T>
-void from_json(const json& j, TemplateProperty<T>& p) {
-    auto value = j.value("value", p.get());
-    p.set(value);
-}
+PropertyJSONConverterFactoryObject::~PropertyJSONConverterFactoryObject() = default;
 
 }  // namespace inviwo
-

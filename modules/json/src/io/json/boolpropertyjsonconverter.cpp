@@ -27,13 +27,16 @@
  *
  *********************************************************************************/
 
-#include <modules/webbrowser/io/json/propertyjsonconverterfactoryobject.h>
+#include <modules/json/io/json/boolpropertyjsonconverter.h>
 
 namespace inviwo {
 
-PropertyJSONConverterFactoryObject::PropertyJSONConverterFactoryObject() =
-    default;
+void to_json(json& j, const BoolProperty& p) { j = json{{"value", p.get()}}; }
 
-PropertyJSONConverterFactoryObject::~PropertyJSONConverterFactoryObject() = default;
+void from_json(const json& j, BoolProperty& p) {
+    bool value = j.value("value", p.get());
+    p.set(value);
+}
+
 
 }  // namespace inviwo

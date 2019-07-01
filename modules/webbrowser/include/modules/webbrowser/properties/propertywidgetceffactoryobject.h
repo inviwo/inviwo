@@ -30,7 +30,7 @@
 #pragma once
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>
-#include <modules/webbrowser/io/json/propertyjsonconverterfactory.h>
+#include <modules/json/io/json/propertyjsonconverterfactory.h>
 #include <modules/webbrowser/properties/propertywidgetcef.h>
 #include <string>
 

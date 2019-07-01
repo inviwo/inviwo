@@ -27,41 +27,41 @@
  *
  *********************************************************************************/
 
-#pragma once
+#ifndef IVW_JSONMODULE_H
+#define IVW_JSONMODULE_H
 
-#include <modules/webbrowser/webbrowsermoduledefine.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <nlohmann/json.hpp>
-
-using json = nlohmann::json;
+#include <modules/json/jsonmoduledefine.h>
+#include <modules/json/io/json/propertyjsonconverterfactory.h>
+#include <inviwo/core/common/inviwomodule.h>
 
 namespace inviwo {
 
-/**
- * Converts an BoolProperty to a JSON object.
- * Produces layout according to the members of BoolProperty:
- * { {"value": val} }
- * @see BoolProperty
- *
- * Usage example:
- * \code{.cpp}
- * BoolProperty p;
- * json j = p;
- * \endcode
- */
-IVW_MODULE_WEBBROWSER_API void to_json(json& j, const BoolProperty& p);
+class IVW_MODULE_JSON_API JSONModule : public InviwoModule {
+public:
+    JSONModule(InviwoApplication* app);
+    virtual ~JSONModule() = default;
+    
+    template<typename P>
+    void registerPropertyJSONConverter();
+    void registerPropertyJSONConverter(std::unique_ptr<PropertyJSONConverterFactoryObject> propertyConverter);
+    inline const PropertyJSONConverterFactory* getPropertyJSONConverterFactory() const;
+protected:
+    // JSON Converter factory
+    std::vector<std::unique_ptr<PropertyJSONConverterFactoryObject>> propertyJSONConverters_;
+    PropertyJSONConverterFactory propertyJSONConverterFactory_;
+    
+};
+    
+inline const PropertyJSONConverterFactory* JSONModule::getPropertyJSONConverterFactory() const {
+    return &propertyJSONConverterFactory_;
+}
 
-/**
- * Converts a JSON object to an BoolProperty.
- * Expects object layout according to the members of BoolProperty:
- * { {"value": val} }
- * @see BoolProperty
- *
- * Usage example:
- * \code{.cpp}
- * auto p = j.get<BoolProperty>();
- * \endcode
- */
-IVW_MODULE_WEBBROWSER_API void from_json(const json& j, BoolProperty& p);
+template <typename P>
+void JSONModule::registerPropertyJSONConverter() {
+  registerPropertyJSONConverter(
+      std::make_unique<PropertyJSONConverterFactoryObjectTemplate<P>>());
+}
 
 }  // namespace inviwo
+
+#endif  // IVW_JSONMODULE_H

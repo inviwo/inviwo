@@ -27,49 +27,20 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/properties/property.h>
-#include <modules/webbrowser/io/json/propertyjsonconverter.h>
-#include <string>
+#include <modules/json/io/json/buttonpropertyjsonconverter.h>
 
 namespace inviwo {
-    
-class Property;
-class PropertyWidget;
 
-class IVW_MODULE_WEBBROWSER_API PropertyJSONConverterFactoryObject {
-public:
-    PropertyJSONConverterFactoryObject();
-    virtual ~PropertyJSONConverterFactoryObject();
-    
-    virtual std::unique_ptr<PropertyJSONConverter> create(Property*) = 0;
-    /**
-     * Property class identifier.
-     */
-    virtual std::string getClassIdentifier() const = 0;
-    
-private:
-};
 
-template <typename P>
-class PropertyJSONConverterFactoryObjectTemplate
-    : public PropertyJSONConverterFactoryObject {
- public:
-  PropertyJSONConverterFactoryObjectTemplate()
-      : PropertyJSONConverterFactoryObject() {}
+void to_json(json& j, const ButtonProperty& p) {
+    j = json{{"pressButton", true}};
+}
 
-  virtual ~PropertyJSONConverterFactoryObjectTemplate() {}
-
-  virtual std::unique_ptr<PropertyJSONConverter> create(Property* prop) {
-    return std::make_unique<TemplatePropertyJSONConverter<P>>();
+void from_json(const json& j, ButtonProperty& p) {
+  if (j.count("pressButton") > 0) {
+    p.pressButton();
   }
+}
 
-  virtual std::string getClassIdentifier() const {
-    return PropertyTraits<P>::classIdentifier();
-  };
-};
-    
+
 }  // namespace inviwo
-

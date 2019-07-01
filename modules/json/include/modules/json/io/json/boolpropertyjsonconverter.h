@@ -29,9 +29,8 @@
 
 #pragma once
 
-#include <modules/webbrowser/webbrowsermoduledefine.h>
-#include <modules/webbrowser/io/json/glmjsonconverter.h>
-#include <inviwo/core/properties/ordinalproperty.h>
+#include <modules/json/jsonmoduledefine.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <nlohmann/json.hpp>
 
 using json = nlohmann::json;
@@ -39,52 +38,30 @@ using json = nlohmann::json;
 namespace inviwo {
 
 /**
- * Converts an OrdinalProperty to a JSON object.
- * Produces layout according to the members of OrdinalProperty:
- * { {"value": val}, {"increment": increment},
- *   {"minValue": minVal}, {"maxValue": maxVal}
- * }
- * @see OrdinalProperty
+ * Converts an BoolProperty to a JSON object.
+ * Produces layout according to the members of BoolProperty:
+ * { {"value": val} }
+ * @see BoolProperty
  *
  * Usage example:
  * \code{.cpp}
- * OrdinalProperty<double> p;
+ * BoolProperty p;
  * json j = p;
  * \endcode
  */
-template <typename T>
-void to_json(json& j, const OrdinalProperty<T>& p) {
-    j = json{{"value", p.get()},
-             {"minValue", p.getMinValue()},
-             {"maxValue", p.getMaxValue()},
-             {"increment", p.getIncrement()}};
-}
+IVW_MODULE_JSON_API void to_json(json& j, const BoolProperty& p);
 
 /**
- * Converts a JSON object to an OrdinalProperty.
- * Expects object layout according to the members of OrdinalProperty:
- * { {"value": val}, {"increment": increment},
- *   {"minValue": minVal}, {"maxValue": maxVal}
- * }
- * @see OrdinalProperty
+ * Converts a JSON object to an BoolProperty.
+ * Expects object layout according to the members of BoolProperty:
+ * { {"value": val} }
+ * @see BoolProperty
  *
  * Usage example:
  * \code{.cpp}
- * auto p = j.get<OrdinalProperty<double>>();
+ * auto p = j.get<BoolProperty>();
  * \endcode
  */
-template <typename T>
-void from_json(const json& j, OrdinalProperty<T>& p) {
-
-    auto value = j.value("value", p.get());
-
-    // Optional parameters
-    auto minVal = j.value("minValue", p.getMinValue());
-    auto maxVal = j.value("maxValue", p.getMaxValue());
-    auto increment = j.value("increment", p.getIncrement());
-
-    p.set(value, minVal, maxVal, increment);
-}
+IVW_MODULE_JSON_API void from_json(const json& j, BoolProperty& p);
 
 }  // namespace inviwo
-

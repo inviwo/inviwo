@@ -31,7 +31,7 @@
 #define IVW_PROPERTYWIDGETCEF_H
 
 #include <modules/webbrowser/webbrowsermoduledefine.h>
-#include <modules/webbrowser/io/json/propertyjsonconverter.h>
+#include <modules/json/io/json/propertyjsonconverter.h>
 #include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/propertywidget.h>
