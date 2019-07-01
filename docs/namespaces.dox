@@ -15,11 +15,9 @@
  * \namespace inviwo::dispatching::filter dispatching::filter
  */
 
-
 /**
  * \namespace inviwo::color color
  */
-
 
 /**
  * \namespace inviwo::util util
@@ -83,7 +81,6 @@
 
 /**
  * \namespace inviwo::filesystem filesystem
- */
  */
 
 /**
