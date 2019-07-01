@@ -39,7 +39,7 @@ namespace inviwo {
  */
 class IVW_MODULE_WEBBROWSER_API PropertyJSONConverterFactory
     : public StandardFactory<PropertyJSONConverter,
-                             PropertyJSONConverterFactoryObject, std::string,
+                             PropertyJSONConverterFactoryObject, const std::string&,
                              Property*> {
  public:
   PropertyJSONConverterFactory();

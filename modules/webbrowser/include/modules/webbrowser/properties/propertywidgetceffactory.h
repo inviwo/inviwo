@@ -41,7 +41,7 @@ namespace inviwo {
  */
 class IVW_MODULE_WEBBROWSER_API PropertyWidgetCEFFactory
     : public StandardFactory<PropertyWidgetCEF, PropertyWidgetCEFFactoryObject,
-                             std::string, Property*> {
+                             const std::string&, Property*> {
  public:
   PropertyWidgetCEFFactory();
   virtual ~PropertyWidgetCEFFactory();

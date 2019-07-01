@@ -34,7 +34,7 @@ namespace inviwo {
 void to_json(json& j, const BoolProperty& p) { j = json{{"value", p.get()}}; }
 
 void from_json(const json& j, BoolProperty& p) {
-    bool value = j.count("value") > 0 ? j.at("value").get<bool>() : p.get();
+    bool value = j.value("value", p.get());
     p.set(value);
 }
 

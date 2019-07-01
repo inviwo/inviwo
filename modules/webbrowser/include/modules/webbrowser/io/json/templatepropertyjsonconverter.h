@@ -68,7 +68,7 @@ void to_json(json& j, const TemplateProperty<T>& p) {
  */
 template <typename T>
 void from_json(const json& j, TemplateProperty<T>& p) {
-    auto value = j.count("value") > 0 ? j.at("value").get<T>() : p.get();
+    auto value = j.value("value", p.get());
     p.set(value);
 }
 

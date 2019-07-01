@@ -84,14 +84,14 @@ set(HEADER_FILES
     include/modules/webbrowser/cefimageconverter.h
     include/modules/webbrowser/interaction/cefinteractionhandler.h
     include/modules/webbrowser/interaction/cefkeyboardmapping.h
-	include/modules/webbrowser/io/json/boolpropertyjsonconverter.h
+    include/modules/webbrowser/io/json/boolpropertyjsonconverter.h
     include/modules/webbrowser/io/json/buttonpropertyjsonconverter.h
     include/modules/webbrowser/io/json/filepropertyjsonconverter.h
     include/modules/webbrowser/io/json/optionpropertyjsonconverter.h
-	include/modules/webbrowser/io/json/minmaxpropertyjsonconverter.h
-	include/modules/webbrowser/io/json/ordinalpropertyjsonconverter.h
+    include/modules/webbrowser/io/json/minmaxpropertyjsonconverter.h
+    include/modules/webbrowser/io/json/ordinalpropertyjsonconverter.h
     include/modules/webbrowser/io/json/templatepropertyjsonconverter.h
-	include/modules/webbrowser/io/json/propertyjsonconverter.h
+    include/modules/webbrowser/io/json/propertyjsonconverter.h
     include/modules/webbrowser/io/json/propertyjsonconverterfactory.h
     include/modules/webbrowser/io/json/propertyjsonconverterfactoryobject.h
     include/modules/webbrowser/processors/webbrowserprocessor.h
@@ -113,7 +113,7 @@ set(SOURCE_FILES
     src/cefimageconverter.cpp
     src/interaction/cefinteractionhandler.cpp
     src/interaction/cefkeyboardmapping.cpp
-	src/io/json/boolpropertyjsonconverter.cpp
+    src/io/json/boolpropertyjsonconverter.cpp
     src/io/json/buttonpropertyjsonconverter.cpp
     src/io/json/filepropertyjsonconverter.cpp
     src/io/json/propertyjsonconverterfactory.cpp
@@ -142,7 +142,7 @@ ivw_group("Shader Files" ${SHADER_FILES})
 set(JS_FILES
     data/js/inviwoapi.js
 )
-ivw_group("JS Files" ${JS_FILES})
+ivw_group("Javascript Files" BASE "${CMAKE_CURRENT_SOURCE_DIR}/data/js" ${JS_FILES})
 
 #--------------------------------------------------------------------
 # Add Unittests

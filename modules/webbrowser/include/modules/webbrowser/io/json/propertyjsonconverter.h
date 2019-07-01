@@ -74,9 +74,6 @@ class TemplatePropertyJSONConverter : public PropertyJSONConverter {
    * Requires that to_json(json& j, const SrcProperty& p) has been implemented.
    */
   virtual void toJSON(json& j, const Property& p) const override {
-    // Static cast will work here since we will only use the converter for its
-    // registered
-    // property types
     to_json(j, static_cast<const SrcProperty&>(p));
   }
   /**
@@ -84,9 +81,6 @@ class TemplatePropertyJSONConverter : public PropertyJSONConverter {
    * Requires that to_json(json& j, const SrcProperty& p) has been implemented.
    */
   virtual void fromJSON(const json& j, Property& p) const override {
-    // Static cast will work here since we will only use the converter for its
-    // registered
-    // property types
     j.get_to(static_cast<SrcProperty&>(p));
   }
 };
