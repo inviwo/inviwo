@@ -71,6 +71,7 @@ namespace inviwo {
  */
 #include <warn/push>
 #include <warn/ignore/dll-interface-base>  // Fine if dependent libs use the same CEF lib binaries
+#include <warn/ignore/extra-semi>  // Due to IMPLEMENT_REFCOUNTING, remove when upgrading CEF
 class IVW_MODULE_WEBBROWSER_API PropertyCefSynchronizer
     : public CefMessageRouterBrowserSide::Handler,
       public CefLoadHandler,

@@ -69,7 +69,10 @@ private:
     std::string stringToFind_;
     PropertyWidgetCEF* widget_;
     const CefRefPtr<CefFrame> frame_;
+#include <warn/push>
+#include <warn/ignore/extra-semi>  // Due to IMPLEMENT_REFCOUNTING, remove when upgrading CEF
     IMPLEMENT_REFCOUNTING(CefDOMSearchId);
+#include <warn/pop>
 };
 
 PropertyWidgetCEF::PropertyWidgetCEF(Property* prop, std::unique_ptr<PropertyJSONConverter> converter, CefRefPtr<CefFrame> frame, std::string onChange)
