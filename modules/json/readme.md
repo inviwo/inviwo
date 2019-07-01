@@ -1,1 +1,1 @@
-Adds support for conversion of Inviwo objects (properties)  to and from JSON.
+Adds support for conversion of glm types and Inviwo objects (properties) to and from JSON.

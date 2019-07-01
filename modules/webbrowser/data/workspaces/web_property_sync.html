@@ -164,7 +164,13 @@ inviwo.getProperty("CubeProxyGeometry.clipX", function(prop) {
     }
 });
 
-
+inviwo.getProperty("EntryExitPoints.camera.lookFrom", function(prop) {
+    for (var key in prop){
+        var attrName = key;
+        var attrValue = prop[key];
+        console.log("Hello Camera look from: " + attrName + ": " + attrValue);
+    }
+});
 
 </script>
 </body>

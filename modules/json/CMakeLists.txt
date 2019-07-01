@@ -10,6 +10,7 @@ set(HEADER_FILES
     include/modules/json/io/json/boolpropertyjsonconverter.h
     include/modules/json/io/json/buttonpropertyjsonconverter.h
     include/modules/json/io/json/filepropertyjsonconverter.h
+    include/modules/json/io/json/glmjsonconverter.h
     include/modules/json/io/json/optionpropertyjsonconverter.h
     include/modules/json/io/json/minmaxpropertyjsonconverter.h
     include/modules/json/io/json/ordinalpropertyjsonconverter.h
@@ -35,7 +36,7 @@ ivw_group("Source Files" ${SOURCE_FILES})
 
 #--------------------------------------------------------------------
 # Add shaders
-set(SHADER_FILES
+set(SHADER_FILES$
     #${CMAKE_CURRENT_SOURCE_DIR}/glsl/jsonprocessor.frag
 )
 ivw_group("Shader Files" ${SHADER_FILES})

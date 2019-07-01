@@ -85,21 +85,20 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     // Call 60 times per second
     , doChromiumWork_(Timer::Milliseconds(1000 / 60), []() { CefDoMessageLoopWork(); }) {
         
-    // Register JSON converters and corresponding widgets
+    // Register widgets
     registerPropertyWidgetCEF<PropertyWidgetCEF, BoolProperty>();
     registerPropertyWidgetCEF<PropertyWidgetCEF, ButtonProperty>();
     registerPropertyWidgetCEF<PropertyWidgetCEF, FileProperty>();
     registerPropertyWidgetCEF<PropertyWidgetCEF, StringProperty>();
     
     // Register ordinal property widgets
-    // TODO: fix JSON conversion for glm-types
-    /*using OrdinalTypes =
+    using OrdinalTypes =
     std::tuple<float, vec2, vec3, vec4, mat2, mat3, mat4, double, dvec2, dvec3, dvec4, dmat2,
     dmat3, dmat4, int, ivec2, ivec3, ivec4, glm::i64, unsigned int, uvec2, uvec3,
-    uvec4, size_t, size2_t, size3_t, size4_t, glm::fquat, glm::dquat>;*/
+    uvec4, size_t, size2_t, size3_t, size4_t, glm::fquat, glm::dquat>;
     
     using ScalarTypes = std::tuple<float, double, int, glm::i64, size_t>;
-    util::for_each_type<ScalarTypes>{}(OrdinalCEFWidgetReghelper{}, *this);
+    util::for_each_type<OrdinalTypes>{}(OrdinalCEFWidgetReghelper{}, *this);
     
     // Register MinMaxProperty widgets
     util::for_each_type<ScalarTypes>{}(MinMaxCEFWidgetReghelper{}, *this);
