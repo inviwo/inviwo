@@ -246,6 +246,7 @@ InviwoCore::InviwoCore(InviwoApplication* app)
 
     registerDefaultsForDataType<Mesh>();
     registerDefaultsForDataType<Volume>();
+    registerDefaultsForDataType<VolumeSequence>();
     registerDefaultsForDataType<BufferBase>();
     registerDefaultsForDataType<LightSource>();
 
