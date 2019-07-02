@@ -563,7 +563,7 @@ function(ivw_private_get_ivw_module_name path retval)
      string(REPLACE "\n" ";" lines "${contents}")
      foreach(line ${lines})
         #\s*ivw_module\(\s*(\w+)\s*\)\s*
-        string(REGEX MATCH "\\s*ivw_module\\(\\s*([A-Za-z0-9_-]+)\\s*\\)\\s*" found_item ${line})
+        string(REGEX MATCH "[ ]*ivw_module\\([ ]*([A-Za-z0-9_-]+)[ ]*\\)[ ]*" found_item ${line})
         if(CMAKE_MATCH_1)
             set(${retval} ${CMAKE_MATCH_1} PARENT_SCOPE)
             return()
