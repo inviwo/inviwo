@@ -32,9 +32,7 @@
 namespace inviwo {
 
 void to_json(json& j, const FileExtension& p) {
-    j = json{{"extension", p.extension_},
-        {"description", p.description_}
-    };
+    j = json{{"extension", p.extension_}, {"description", p.description_}};
 }
 
 void from_json(const json& j, FileExtension& p) {
@@ -44,12 +42,11 @@ void from_json(const json& j, FileExtension& p) {
 
 void to_json(json& j, const FileProperty& p) {
     j = json{{"value", p.get()},
-        {"selectedExtension", p.getSelectedExtension()},
-        {"acceptMode", p.getAcceptMode()},
-        {"fileMode", p.getFileMode()},
-        {"contentType", p.getContentType()},
-        {"nameFilters", p.getNameFilters()}
-    };
+             {"selectedExtension", p.getSelectedExtension()},
+             {"acceptMode", p.getAcceptMode()},
+             {"fileMode", p.getFileMode()},
+             {"contentType", p.getContentType()},
+             {"nameFilters", p.getNameFilters()}};
 }
 
 void from_json(const json& j, FileProperty& p) {
@@ -72,6 +69,5 @@ void from_json(const json& j, FileProperty& p) {
         p.requestFile();
     }
 }
-
 
 }  // namespace inviwo

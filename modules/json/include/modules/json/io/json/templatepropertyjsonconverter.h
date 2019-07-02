@@ -51,7 +51,7 @@ namespace inviwo {
  */
 template <typename T>
 void to_json(json& j, const TemplateProperty<T>& p) {
-  j = json{{"value", p.get()}};
+    j = json{{"value", p.get()}};
 }
 
 /**
@@ -72,4 +72,3 @@ void from_json(const json& j, TemplateProperty<T>& p) {
 }
 
 }  // namespace inviwo
-

@@ -107,4 +107,3 @@ IVW_MODULE_JSON_API void to_json(json& j, const FileProperty& p);
 IVW_MODULE_JSON_API void from_json(const json& j, FileProperty& p);
 
 }  // namespace inviwo
-

@@ -65,7 +65,7 @@ public:
      * preserved. Use copyRepresentationsTo to update the data.
      * @note Resizes the last valid representation and erases all other representations.
      * Last valid representation will remain valid after changing the dimension.
-     */  
+     */
     virtual void setDimensions(const size2_t& dim);
     virtual size2_t getDimensions() const override;
 

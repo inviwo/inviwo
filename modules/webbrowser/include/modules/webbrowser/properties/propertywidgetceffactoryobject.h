@@ -35,7 +35,7 @@
 #include <string>
 
 namespace inviwo {
-    
+
 class Property;
 class PropertyWidget;
 
@@ -43,11 +43,11 @@ class IVW_MODULE_WEBBROWSER_API PropertyWidgetCEFFactoryObject {
 public:
     PropertyWidgetCEFFactoryObject(const PropertyJSONConverterFactory* converterFactory);
     virtual ~PropertyWidgetCEFFactoryObject();
-    
+
     virtual std::unique_ptr<PropertyWidgetCEF> create(Property*) = 0;
-    
+
     virtual std::string getClassIdentifier() const = 0;
-    
+
 protected:
     const PropertyJSONConverterFactory* converterFactory_;
 };
@@ -55,19 +55,16 @@ protected:
 template <typename T, typename P>
 class PropertyWidgetCEFFactoryObjectTemplate : public PropertyWidgetCEFFactoryObject {
 public:
- PropertyWidgetCEFFactoryObjectTemplate(
-     const PropertyJSONConverterFactory* converterFactory)
-     : PropertyWidgetCEFFactoryObject(converterFactory) {}
+    PropertyWidgetCEFFactoryObjectTemplate(const PropertyJSONConverterFactory* converterFactory)
+        : PropertyWidgetCEFFactoryObject(converterFactory) {}
 
- virtual ~PropertyWidgetCEFFactoryObjectTemplate() {}
+    virtual ~PropertyWidgetCEFFactoryObjectTemplate() {}
 
- virtual std::unique_ptr<PropertyWidgetCEF> create(Property* prop) {
-   return std::make_unique<T>(
-       prop, converterFactory_->create(getClassIdentifier(), prop));
+    virtual std::unique_ptr<PropertyWidgetCEF> create(Property* prop) {
+        return std::make_unique<T>(prop, converterFactory_->create(getClassIdentifier(), prop));
     }
-    
+
     virtual std::string getClassIdentifier() const { return PropertyTraits<P>::classIdentifier(); };
 };
-    
-}  // namespace inviwo
 
+}  // namespace inviwo

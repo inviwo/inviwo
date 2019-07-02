@@ -182,8 +182,7 @@ protected:
 };
 
 template <typename Self, typename Repr>
-Data<Self, Repr>::Data(const Data<Self, Repr>& rhs)
-    : lastValidRepresentation_{nullptr} {
+Data<Self, Repr>::Data(const Data<Self, Repr>& rhs) : lastValidRepresentation_{nullptr} {
     rhs.copyRepresentationsTo(this);
 }
 

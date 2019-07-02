@@ -97,7 +97,7 @@ namespace inviwo {
  * against loaded webpage.
  */
 
- /**
+/**
  * \brief Render webpage into the color and picking layers (OpenGL).
  */
 #include <warn/push>

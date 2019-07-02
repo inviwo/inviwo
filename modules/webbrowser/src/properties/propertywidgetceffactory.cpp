@@ -30,7 +30,7 @@
 #include <modules/webbrowser/properties/propertywidgetceffactory.h>
 
 namespace inviwo {
-    
+
 PropertyWidgetCEFFactory::PropertyWidgetCEFFactory() = default;
 
 PropertyWidgetCEFFactory::~PropertyWidgetCEFFactory() = default;

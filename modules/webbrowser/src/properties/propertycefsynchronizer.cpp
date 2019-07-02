@@ -39,9 +39,10 @@
 
 namespace inviwo {
 
-PropertyCefSynchronizer::PropertyCefSynchronizer(const PropertyWidgetCEFFactory* htmlWidgetFactory): htmlWidgetFactory_(htmlWidgetFactory) {
- 
-};
+PropertyCefSynchronizer::PropertyCefSynchronizer(const PropertyWidgetCEFFactory* htmlWidgetFactory)
+    : htmlWidgetFactory_(htmlWidgetFactory){
+
+      };
 
 void PropertyCefSynchronizer::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
                                         int /*httpStatusCode*/) {
@@ -59,7 +60,7 @@ bool PropertyCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<C
     const std::string& requestStr = request;
     // Assume format "id":"htmlId"
     auto j = json::parse(requestStr);
-    
+
     try {
         auto command = j.at("command").get<std::string>();
         auto propCommand = std::string("property");
@@ -70,8 +71,10 @@ bool PropertyCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<C
             auto prop = network->getProperty(path);
             if (prop) {
                 auto onChange = j.at("onChange").get<std::string>();
-                auto widget = std::find_if(std::begin(widgets_), std::end(widgets_),
-                                           [onChange, prop](const auto& widget) { return prop == widget->getProperty() && onChange == widget->getOnChange(); });
+                auto widget = std::find_if(
+                    std::begin(widgets_), std::end(widgets_), [onChange, prop](const auto& widget) {
+                        return prop == widget->getProperty() && onChange == widget->getOnChange();
+                    });
                 if (widget == widgets_.end()) {
                     auto propertyObserver = j.at("propertyObserver").get<std::string>();
                     startSynchronize(prop, onChange, propertyObserver);
@@ -91,8 +94,9 @@ bool PropertyCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<C
             }
             // Use synchronized widget if it exists
             // to avoid recursive loop when setting the property
-            auto widget = std::find_if(std::begin(widgets_), std::end(widgets_),
-                                       [prop](const auto& widget) { return prop == widget->getProperty(); });
+            auto widget =
+                std::find_if(std::begin(widgets_), std::end(widgets_),
+                             [prop](const auto& widget) { return prop == widget->getProperty(); });
             if (widget != widgets_.end()) {
                 return (*widget)->onQuery(browser, frame, query_id, request, persistent, callback);
             } else {
@@ -107,7 +111,7 @@ bool PropertyCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<C
         LogError(ex.what());
         callback->Failure(0, ex.what());
     }
-    
+
     return false;
 }
 
@@ -115,7 +119,8 @@ void PropertyCefSynchronizer::onWillRemoveProperty(Property* property, size_t) {
     stopSynchronize(property);
 }
 
-void PropertyCefSynchronizer::startSynchronize(Property* property, std::string onChange, std::string propertyObserverCallback) {
+void PropertyCefSynchronizer::startSynchronize(Property* property, std::string onChange,
+                                               std::string propertyObserverCallback) {
     auto widget = htmlWidgetFactory_->create(property->getClassIdentifier(), property);
     if (!widget) {
         throw Exception("No HTML property widget for " + property->getClassIdentifier());

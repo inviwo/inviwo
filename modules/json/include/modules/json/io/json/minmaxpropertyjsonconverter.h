@@ -75,18 +75,15 @@ void to_json(json& j, const MinMaxProperty<T>& p) {
  */
 template <typename T>
 void from_json(const json& j, MinMaxProperty<T>& p) {
-  auto start = j.value("start", p.getStart());
-  auto end = j.value("end", p.getEnd());
+    auto start = j.value("start", p.getStart());
+    auto end = j.value("end", p.getEnd());
 
-  auto rangeMin =
-      j.value("rangeMin", p.getRangeMin());
-  auto rangeMax =
-      j.value("rangeMax", p.getRangeMax());
+    auto rangeMin = j.value("rangeMin", p.getRangeMin());
+    auto rangeMax = j.value("rangeMax", p.getRangeMax());
 
-  auto increment =
-      j.value("increment", p.getIncrement());
-  auto minSep = j.value("minSeparation", p.getMinSeparation());
-  p.set(start, end, rangeMin, rangeMax, increment, minSep);
+    auto increment = j.value("increment", p.getIncrement());
+    auto minSep = j.value("minSeparation", p.getMinSeparation());
+    p.set(start, end, rangeMin, rangeMax, increment, minSep);
 }
 
 }  // namespace inviwo

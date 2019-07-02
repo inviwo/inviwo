@@ -117,7 +117,8 @@ private:
                                1,
                                InvalidationLevel::InvalidResources};
 
-    FloatMinMaxProperty particleSize_{"particleSize", "Particle radius", 0.025f, 0.035f, 0.0f, 1.0f};
+    FloatMinMaxProperty particleSize_{
+        "particleSize", "Particle radius", 0.025f, 0.035f, 0.0f, 1.0f};
 
     FloatProperty minV_{"minV",
                         "Min velocity",

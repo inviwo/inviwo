@@ -75,15 +75,15 @@ private:
 #include <warn/pop>
 };
 
-PropertyWidgetCEF::PropertyWidgetCEF(Property* prop, std::unique_ptr<PropertyJSONConverter> converter, CefRefPtr<CefFrame> frame, std::string onChange)
-    : PropertyWidget(prop), converter_(std::move(converter)), onChange_(onChange), frame_(frame)  {
+PropertyWidgetCEF::PropertyWidgetCEF(Property* prop,
+                                     std::unique_ptr<PropertyJSONConverter> converter,
+                                     CefRefPtr<CefFrame> frame, std::string onChange)
+    : PropertyWidget(prop), converter_(std::move(converter)), onChange_(onChange), frame_(frame) {
     if (prop) {
         prop->addObserver(this);
     }
 }
-void PropertyWidgetCEF::setFrame(CefRefPtr<CefFrame> frame) {
-    setFrameIfPartOfFrame(frame);
-}
+void PropertyWidgetCEF::setFrame(CefRefPtr<CefFrame> frame) { setFrameIfPartOfFrame(frame); }
 
 void PropertyWidgetCEF::setFrameIfPartOfFrame(CefRefPtr<CefFrame> frame) {
     // Create a visitor from this widget and run it on the frame to see if the widget id can be
@@ -95,9 +95,9 @@ void PropertyWidgetCEF::setFrameIfPartOfFrame(CefRefPtr<CefFrame> frame) {
 }
 
 bool PropertyWidgetCEF::onQuery(
-                     CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 /*query_id*/,
-                     const CefString& request, bool /*persistent*/,
-                     CefRefPtr<CefMessageRouterBrowserSide::Handler::Callback> callback) {
+    CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 /*query_id*/,
+    const CefString& request, bool /*persistent*/,
+    CefRefPtr<CefMessageRouterBrowserSide::Handler::Callback> callback) {
 
     const std::string& requestString = request;
     auto j = json::parse(requestString);
@@ -118,10 +118,10 @@ bool PropertyWidgetCEF::onQuery(
         LogError(ex.what());
         callback->Failure(0, ex.what());
     }
-    
+
     return true;
 }
-    
+
 void PropertyWidgetCEF::updateFromProperty() {
     // Frame might be null if for example webpage is not found on startup
     if (!frame_) {

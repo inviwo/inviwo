@@ -62,28 +62,27 @@ public:
  */
 template <typename SrcProperty>
 class TemplatePropertyJSONConverter : public PropertyJSONConverter {
- public:
-  TemplatePropertyJSONConverter() = default;
-  virtual ~TemplatePropertyJSONConverter() = default;
+public:
+    TemplatePropertyJSONConverter() = default;
+    virtual ~TemplatePropertyJSONConverter() = default;
 
-  virtual std::string getPropClassIdentifier() const override {
-    return PropertyTraits<SrcProperty>::classIdentifier();
-  }
-  /**
-   * Converts a Property to a JSON object.
-   * Requires that to_json(json& j, const SrcProperty& p) has been implemented.
-   */
-  virtual void toJSON(json& j, const Property& p) const override {
-    to_json(j, static_cast<const SrcProperty&>(p));
-  }
-  /**
-   * Converts a JSON object to a Property to a JSON object.
-   * Requires that to_json(json& j, const SrcProperty& p) has been implemented.
-   */
-  virtual void fromJSON(const json& j, Property& p) const override {
-    j.get_to(static_cast<SrcProperty&>(p));
-  }
+    virtual std::string getPropClassIdentifier() const override {
+        return PropertyTraits<SrcProperty>::classIdentifier();
+    }
+    /**
+     * Converts a Property to a JSON object.
+     * Requires that to_json(json& j, const SrcProperty& p) has been implemented.
+     */
+    virtual void toJSON(json& j, const Property& p) const override {
+        to_json(j, static_cast<const SrcProperty&>(p));
+    }
+    /**
+     * Converts a JSON object to a Property to a JSON object.
+     * Requires that to_json(json& j, const SrcProperty& p) has been implemented.
+     */
+    virtual void fromJSON(const json& j, Property& p) const override {
+        j.get_to(static_cast<SrcProperty&>(p));
+    }
 };
 
 }  // namespace inviwo
-

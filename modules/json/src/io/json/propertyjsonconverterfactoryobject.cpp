@@ -31,8 +31,7 @@
 
 namespace inviwo {
 
-PropertyJSONConverterFactoryObject::PropertyJSONConverterFactoryObject() =
-    default;
+PropertyJSONConverterFactoryObject::PropertyJSONConverterFactoryObject() = default;
 
 PropertyJSONConverterFactoryObject::~PropertyJSONConverterFactoryObject() = default;
 

@@ -77,34 +77,33 @@ class IVW_MODULE_WEBBROWSER_API PropertyCefSynchronizer
       public CefLoadHandler,
       public PropertyOwnerObserver {
 public:
- explicit PropertyCefSynchronizer(
-     const PropertyWidgetCEFFactory* htmlWidgetFactory);
- virtual ~PropertyCefSynchronizer() = default;
+    explicit PropertyCefSynchronizer(const PropertyWidgetCEFFactory* htmlWidgetFactory);
+    virtual ~PropertyCefSynchronizer() = default;
 
- /**
-  * Synchronizes all widgets and sets their frame, called when frame has loaded.
-  */
- virtual void OnLoadEnd(CefRefPtr<CefBrowser> browser,
-                        CefRefPtr<CefFrame> frame, int httpStatusCode) override;
+    /**
+     * Synchronizes all widgets and sets their frame, called when frame has loaded.
+     */
+    virtual void OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
+                           int httpStatusCode) override;
 
- /**
-  * Called due to cefQuery execution in message_router.html.
-  * Expects the request to be a JSON data object, see inviwoapi.js:
-  * {command: "subscribe", "path": propertyPath, "id":htmlId}
-  * for synchronizing property to change.
-  * {command: "property.set", "path":"PropertyIdentifier", "value":0.5}
-  * for setting a value
-  * {command: "property.get", "path": propertyPath}
-  * for getting a value.
-  * Currently only supports a single property in the request.
-  * @see PropertyWidgetCEF
-  */
- virtual bool OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
-                      int64 query_id, const CefString& request, bool persistent,
-                      CefRefPtr<Callback> callback) override;
+    /**
+     * Called due to cefQuery execution in message_router.html.
+     * Expects the request to be a JSON data object, see inviwoapi.js:
+     * {command: "subscribe", "path": propertyPath, "id":htmlId}
+     * for synchronizing property to change.
+     * {command: "property.set", "path":"PropertyIdentifier", "value":0.5}
+     * for setting a value
+     * {command: "property.get", "path": propertyPath}
+     * for getting a value.
+     * Currently only supports a single property in the request.
+     * @see PropertyWidgetCEF
+     */
+    virtual bool OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 query_id,
+                         const CefString& request, bool persistent,
+                         CefRefPtr<Callback> callback) override;
 
- // Remove widget if property is removed
- virtual void onWillRemoveProperty(Property* property, size_t index) override;
+    // Remove widget if property is removed
+    virtual void onWillRemoveProperty(Property* property, size_t index) override;
 
 private:
     /**
@@ -115,7 +114,8 @@ private:
      * @param onChange Callback to execute when the property changes.
      * @param propertyObserverCallback Callback to execute when on PropertyObserver notifications.
      */
-    void startSynchronize(Property* property, std::string onChangeJS, std::string propertyObserverCallbackJS);
+    void startSynchronize(Property* property, std::string onChangeJS,
+                          std::string propertyObserverCallbackJS);
     /**
      * Stop property from being synchronized.
      * @param property Property to remove
@@ -123,7 +123,7 @@ private:
     void stopSynchronize(Property* property);
 
     std::vector<std::unique_ptr<PropertyWidgetCEF>> widgets_;
-    const PropertyWidgetCEFFactory* htmlWidgetFactory_; /// Non-owning reference
+    const PropertyWidgetCEFFactory* htmlWidgetFactory_;  /// Non-owning reference
     IMPLEMENT_REFCOUNTING(PropertyCefSynchronizer);
 };
 #include <warn/pop>

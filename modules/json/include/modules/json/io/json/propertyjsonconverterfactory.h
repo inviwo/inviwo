@@ -38,14 +38,11 @@ namespace inviwo {
  * Factory for creating converters between a Property and JSON.
  */
 class IVW_MODULE_JSON_API PropertyJSONConverterFactory
-    : public StandardFactory<PropertyJSONConverter,
-                             PropertyJSONConverterFactoryObject, const std::string&,
-                             Property*> {
- public:
-  PropertyJSONConverterFactory();
-  virtual ~PropertyJSONConverterFactory();
-
+    : public StandardFactory<PropertyJSONConverter, PropertyJSONConverterFactoryObject,
+                             const std::string&, Property*> {
+public:
+    PropertyJSONConverterFactory();
+    virtual ~PropertyJSONConverterFactory();
 };
 
 }  // namespace inviwo
-

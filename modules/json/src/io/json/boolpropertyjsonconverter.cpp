@@ -38,5 +38,4 @@ void from_json(const json& j, BoolProperty& p) {
     p.set(value);
 }
 
-
 }  // namespace inviwo

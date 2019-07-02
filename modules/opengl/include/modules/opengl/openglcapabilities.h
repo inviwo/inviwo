@@ -155,7 +155,7 @@ private:
     bool shadersAreSupported_;
     bool shadersAreSupportedARB_;
     bool geometryShadersAreSupported_;
-    
+
     int maxProgramLoopCount_;
     int geometryShadersMaxVertices_;
     int geometryShadersMaxOutputComponents_;

@@ -63,20 +63,18 @@ class IVW_MODULE_WEBBROWSER_API WebBrowserClient : public CefClient,
                                                    public CefRequestHandler,
                                                    public CefLoadHandler {
 public:
- WebBrowserClient(CefRefPtr<RenderHandlerGL> renderHandler,
-                  const PropertyWidgetCEFFactory* widgetFactory);
+    WebBrowserClient(CefRefPtr<RenderHandlerGL> renderHandler,
+                     const PropertyWidgetCEFFactory* widgetFactory);
 
- virtual CefRefPtr<CefLoadHandler> GetLoadHandler() override { return this; }
- virtual CefRefPtr<CefRenderHandler> GetRenderHandler() override {
-   return renderHandler_; }
+    virtual CefRefPtr<CefLoadHandler> GetLoadHandler() override { return this; }
+    virtual CefRefPtr<CefRenderHandler> GetRenderHandler() override { return renderHandler_; }
     virtual CefRefPtr<CefRequestHandler> GetRequestHandler() override { return this; }
 
     void SetRenderHandler(CefRefPtr<RenderHandlerGL> renderHandler);
 
     CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() override { return this; }
 
-    bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
-                                  CefProcessId source_process,
+    bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefProcessId source_process,
                                   CefRefPtr<CefProcessMessage> message) override;
 
     // CefLifeSpanHandler methods:
@@ -91,15 +89,15 @@ public:
 
     void OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
                                    TerminationStatus status) override;
-                                                       
-    cef_return_value_t OnBeforeResourceLoad(
-        CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
-        CefRefPtr<CefRequest> request,
-        CefRefPtr<CefRequestCallback> callback) override;
-                                                       
-    CefRefPtr<CefResourceHandler> GetResourceHandler(
-        CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
-        CefRefPtr<CefRequest> request) override;
+
+    cef_return_value_t OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
+                                            CefRefPtr<CefFrame> frame,
+                                            CefRefPtr<CefRequest> request,
+                                            CefRefPtr<CefRequestCallback> callback) override;
+
+    CefRefPtr<CefResourceHandler> GetResourceHandler(CefRefPtr<CefBrowser> browser,
+                                                     CefRefPtr<CefFrame> frame,
+                                                     CefRefPtr<CefRequest> request) override;
     // CefLoadHandler methods:
     /*
      * Added handlers will receive CefLoadHandler calls.
@@ -143,7 +141,7 @@ public:
     CefRefPtr<PropertyCefSynchronizer> propertyCefSynchronizer_;
 
 protected:
-    const PropertyWidgetCEFFactory* widgetFactory_; /// Non-owning reference
+    const PropertyWidgetCEFFactory* widgetFactory_;  /// Non-owning reference
     CefRefPtr<CefRenderHandler> renderHandler_;
     // Handles the browser side of query routing.
     CefRefPtr<CefMessageRouterBrowserSide> messageRouter_;

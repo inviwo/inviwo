@@ -316,7 +316,6 @@ StructuredGridEntity<N>::StructuredGridEntity(const Matrix<N + 1, float>& modelM
                                               const Matrix<N + 1, float>& worldMatrix)
     : SpatialEntity<N>(modelMatrix, worldMatrix) {}
 
-
 template <unsigned int N>
 Matrix<N + 1, float> StructuredGridEntity<N>::getIndexMatrix() const {
     const auto dimensions = getDimensions();

@@ -41,8 +41,7 @@ namespace inviwo {
 class IVW_MODULE_OPENCL_API VolumeCL : public VolumeCLBase, public VolumeRepresentation {
 public:
     VolumeCL(size3_t dimensions, const DataFormatBase* format = DataFormatBase::get(),
-             const void* data = nullptr,
-             const SwizzleMask& swizzleMask = swizzlemasks::rgba);
+             const void* data = nullptr, const SwizzleMask& swizzleMask = swizzlemasks::rgba);
     virtual ~VolumeCL();
     VolumeCL(const VolumeCL& rhs);
 

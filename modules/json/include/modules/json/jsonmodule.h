@@ -40,26 +40,27 @@ class IVW_MODULE_JSON_API JSONModule : public InviwoModule {
 public:
     JSONModule(InviwoApplication* app);
     virtual ~JSONModule() = default;
-    
-    template<typename P>
+
+    template <typename P>
     void registerPropertyJSONConverter();
-    void registerPropertyJSONConverter(std::unique_ptr<PropertyJSONConverterFactoryObject> propertyConverter);
+    void registerPropertyJSONConverter(
+        std::unique_ptr<PropertyJSONConverterFactoryObject> propertyConverter);
     inline const PropertyJSONConverterFactory* getPropertyJSONConverterFactory() const;
+
 protected:
     // JSON Converter factory
     std::vector<std::unique_ptr<PropertyJSONConverterFactoryObject>> propertyJSONConverters_;
     PropertyJSONConverterFactory propertyJSONConverterFactory_;
-    
 };
-    
+
 inline const PropertyJSONConverterFactory* JSONModule::getPropertyJSONConverterFactory() const {
     return &propertyJSONConverterFactory_;
 }
 
 template <typename P>
 void JSONModule::registerPropertyJSONConverter() {
-  registerPropertyJSONConverter(
-      std::make_unique<PropertyJSONConverterFactoryObjectTemplate<P>>());
+    registerPropertyJSONConverter(
+        std::make_unique<PropertyJSONConverterFactoryObjectTemplate<P>>());
 }
 
 }  // namespace inviwo

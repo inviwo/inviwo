@@ -35,7 +35,7 @@
 #include <string>
 
 namespace inviwo {
-    
+
 class Property;
 class PropertyWidget;
 
@@ -43,33 +43,28 @@ class IVW_MODULE_JSON_API PropertyJSONConverterFactoryObject {
 public:
     PropertyJSONConverterFactoryObject();
     virtual ~PropertyJSONConverterFactoryObject();
-    
+
     virtual std::unique_ptr<PropertyJSONConverter> create(Property*) = 0;
     /**
      * Property class identifier.
      */
     virtual std::string getClassIdentifier() const = 0;
-    
+
 private:
 };
 
 template <typename P>
-class PropertyJSONConverterFactoryObjectTemplate
-    : public PropertyJSONConverterFactoryObject {
- public:
-  PropertyJSONConverterFactoryObjectTemplate()
-      : PropertyJSONConverterFactoryObject() {}
+class PropertyJSONConverterFactoryObjectTemplate : public PropertyJSONConverterFactoryObject {
+public:
+    PropertyJSONConverterFactoryObjectTemplate() : PropertyJSONConverterFactoryObject() {}
 
-  virtual ~PropertyJSONConverterFactoryObjectTemplate() {}
+    virtual ~PropertyJSONConverterFactoryObjectTemplate() {}
 
-  virtual std::unique_ptr<PropertyJSONConverter> create(Property* prop) {
-    return std::make_unique<TemplatePropertyJSONConverter<P>>();
-  }
+    virtual std::unique_ptr<PropertyJSONConverter> create(Property* prop) {
+        return std::make_unique<TemplatePropertyJSONConverter<P>>();
+    }
 
-  virtual std::string getClassIdentifier() const {
-    return PropertyTraits<P>::classIdentifier();
-  };
+    virtual std::string getClassIdentifier() const { return PropertyTraits<P>::classIdentifier(); };
 };
-    
-}  // namespace inviwo
 
+}  // namespace inviwo

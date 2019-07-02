@@ -86,4 +86,3 @@ void from_json(const json& j, OrdinalProperty<T>& p) {
 }
 
 }  // namespace inviwo
-

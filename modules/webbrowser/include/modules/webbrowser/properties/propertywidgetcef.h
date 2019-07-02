@@ -48,12 +48,14 @@ namespace inviwo {
 /**
  * \class PropertyWidgetCEF
  * \brief Handler for setting, getting, onChange and PropertyObservable of a property from HTML.
- * Handles "property.set", "property.get" commands sent from the Inviwo javascript API (see webbrowser/data/js/inviwoapi.js) and sets property values on the Inviwo-side.
+ * Handles "property.set", "property.get" commands sent from the Inviwo javascript API (see
+ * webbrowser/data/js/inviwoapi.js) and sets property values on the Inviwo-side.
  *
  * PropertyWidgetCEF must have a PropertyJSONConverter for its corresponding property.
  * Thus, to add support for a new property it is only necessary to:
  * 1. Implement to_json and from_json
- * 2. Register converter using WebbrowserModule::registerPropertyJSONConverterAndWidget<PropertyWidgetCEF, MyNewProperty>()
+ * 2. Register converter using
+ * WebbrowserModule::registerPropertyJSONConverterAndWidget<PropertyWidgetCEF, MyNewProperty>()
  *
  * Example code on HTML-side:
  * \code{.html}
@@ -61,20 +63,17 @@ namespace inviwo {
  * // Initialize Inviwo API so that we can use it to synchronize properties
  * var inviwo = new InviwoAPI();
  * </script>
- * <input type="range" class="slider" id="PropertyIdentifier" oninput="inviwo.setProperty('MyProcessor.MyProperty', {value: Number(this.value)})">
- * \endcode
+ * <input type="range" class="slider" id="PropertyIdentifier"
+ * oninput="inviwo.setProperty('MyProcessor.MyProperty', {value: Number(this.value)})"> \endcode
  *
  * @note Property serialization cannot be used to implement synchronization since
  * it for example changes the property identifier if not set.
  */
-class IVW_MODULE_WEBBROWSER_API PropertyWidgetCEF : public PropertyWidget,
-                                                    public PropertyObserver {
+class IVW_MODULE_WEBBROWSER_API PropertyWidgetCEF : public PropertyWidget, public PropertyObserver {
 public:
     PropertyWidgetCEF() = default;
-    PropertyWidgetCEF(Property* prop,
-                      std::unique_ptr<PropertyJSONConverter> converter,
-                      CefRefPtr<CefFrame> frame = nullptr,
-                      std::string onChange = "");
+    PropertyWidgetCEF(Property* prop, std::unique_ptr<PropertyJSONConverter> converter,
+                      CefRefPtr<CefFrame> frame = nullptr, std::string onChange = "");
 
     friend class CefDOMSearchId;
     friend class PropertyCefSynchronizer;
@@ -90,7 +89,9 @@ public:
     void setOnChange(std::string onChange) { onChange_ = onChange; }
     const std::string& getOnChange() const { return onChange_; }
 
-    void setPropertyObserverCallback(std::string propertyObserverCallback) { propertyObserverCallback_ = propertyObserverCallback; }
+    void setPropertyObserverCallback(std::string propertyObserverCallback) {
+        propertyObserverCallback_ = propertyObserverCallback;
+    }
     const std::string& getPropertyObserverCallback() const { return propertyObserverCallback_; }
 
     /*
@@ -164,12 +165,12 @@ protected:
      * Set frame containing html item.
      */
     void setFrame(CefRefPtr<CefFrame> frame);
-                                                        
+
     std::unique_ptr<PropertyJSONConverter> converter_;
 
-    std::string onChange_;       /// Callback to execute in javascript when property changes
-    std::string propertyObserverCallback_; /// Execute on any PropertyObserver notifications
-    CefRefPtr<CefFrame> frame_;  /// Browser frame containing corresponding callbacks
+    std::string onChange_;  /// Callback to execute in javascript when property changes
+    std::string propertyObserverCallback_;  /// Execute on any PropertyObserver notifications
+    CefRefPtr<CefFrame> frame_;             /// Browser frame containing corresponding callbacks
 };
 
 }  // namespace inviwo

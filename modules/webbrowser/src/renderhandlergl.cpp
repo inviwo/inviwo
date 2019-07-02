@@ -136,7 +136,7 @@ void RenderHandlerGL::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType ty
         }
         auto texWidth = static_cast<int>(texture2D_.getWidth());
         auto texHeight = static_cast<int>(texture2D_.getHeight());
-        
+
         if (x + w > texWidth) w -= x + w - texWidth;
         if (y + h > texHeight) h -= y + h - texHeight;
         texture2D_.bind();

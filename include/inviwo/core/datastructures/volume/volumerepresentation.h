@@ -52,7 +52,7 @@ public:
     // Needs to be overloaded by child classes.
     virtual void setDimensions(size3_t dimensions) = 0;
     virtual const size3_t& getDimensions() const = 0;
-    
+
     /**
      * \brief update the swizzle mask of the color channels when sampling the volume
      *

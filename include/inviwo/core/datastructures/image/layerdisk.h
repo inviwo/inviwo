@@ -42,11 +42,11 @@ namespace inviwo {
 class IVW_CORE_API LayerDisk : public LayerRepresentation,
                                public DiskRepresentation<LayerRepresentation> {
 public:
-    explicit LayerDisk(size2_t dimensions,
-                       const DataFormatBase* format, LayerType type = LayerType::Color,
+    explicit LayerDisk(size2_t dimensions, const DataFormatBase* format,
+                       LayerType type = LayerType::Color,
                        const SwizzleMask& swizzleMask = swizzlemasks::rgba);
-    explicit LayerDisk(std::string url, size2_t dimensions,
-                       const DataFormatBase* format, LayerType type = LayerType::Color,
+    explicit LayerDisk(std::string url, size2_t dimensions, const DataFormatBase* format,
+                       LayerType type = LayerType::Color,
                        const SwizzleMask& swizzleMask = swizzlemasks::rgba);
     LayerDisk(const LayerDisk& rhs);
     LayerDisk& operator=(const LayerDisk& that);

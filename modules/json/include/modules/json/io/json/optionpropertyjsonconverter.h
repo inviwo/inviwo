@@ -35,7 +35,7 @@
 using json = nlohmann::json;
 
 namespace inviwo {
-    
+
 /**
  * Converts an OptionPropertyOption to a JSON object.
  * Produces layout according to the members of OptionPropertyOption:
@@ -52,11 +52,9 @@ namespace inviwo {
  */
 template <typename T>
 void to_json(json& j, const OptionPropertyOption<T>& o) {
-    j = json{{"value", o.value_},
-        {"id", o.id_},
-        {"name", o.name_}};
+    j = json{{"value", o.value_}, {"id", o.id_}, {"name", o.name_}};
 }
-    
+
 /**
  * Converts a JSON object to OptionPropertyOption.
  * Expects object layout according to the members of OptionPropertyOption:
@@ -86,7 +84,7 @@ void from_json(const json& j, OptionPropertyOption<T>& o) {
         o.name_ = j.at("name").get<std::string>();
     }
 }
-    
+
 /**
  * Converts an TemplateOptionProperty to a JSON object.
  * Produces layout according to the members of TemplateOptionProperty:
@@ -103,9 +101,8 @@ void from_json(const json& j, OptionPropertyOption<T>& o) {
  */
 template <typename T>
 void to_json(json& j, const TemplateOptionProperty<T>& p) {
-    j = json{{"value", p.get()},
-        {"selectedIndex", p.getSelectedIndex()},
-        {"options", p.getOptions()}};
+    j = json{
+        {"value", p.get()}, {"selectedIndex", p.getSelectedIndex()}, {"options", p.getOptions()}};
 }
 
 /**
@@ -138,4 +135,3 @@ void from_json(const json& j, TemplateOptionProperty<T>& p) {
 }
 
 }  // namespace inviwo
-

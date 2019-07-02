@@ -57,11 +57,11 @@ class IVW_MODULE_WEBBROWSER_API WebBrowserModule : public InviwoModule {
 public:
     WebBrowserModule(InviwoApplication* app);
     virtual ~WebBrowserModule();
-    
+
     // Register a JSON converter and its corresponding HTML-synchronization widget.
     template <typename T, typename P>
     void registerPropertyJSONConverterAndWidget();
-    
+
     // Use own widget factory for now. Multiple widget types are not supported in Inviwo yet
     template <typename T, typename P>
     void registerPropertyWidgetCEF();
@@ -75,18 +75,18 @@ public:
 protected:
     // HTML-property synchronization widget factory
     PropertyWidgetCEFFactory htmlWidgetFactory_;
-    std::vector<std::unique_ptr<PropertyWidgetCEFFactoryObject>>
-        propertyWidgets_;
+    std::vector<std::unique_ptr<PropertyWidgetCEFFactoryObject>> propertyWidgets_;
 
     Timer doChromiumWork_;  /// Calls CefDoMessageLoopWork()
 #ifdef DARWIN               // Load library dynamically for Mac
     CefScopedLibraryLoader cefLib_;
 #endif
 };
-    
+
 template <typename T, typename P>
 void WebBrowserModule::registerPropertyWidgetCEF() {
-    auto propertyWidget = std::make_unique<PropertyWidgetCEFFactoryObjectTemplate<T, P>>(app_->getModuleByType<JSONModule>()->getPropertyJSONConverterFactory());
+    auto propertyWidget = std::make_unique<PropertyWidgetCEFFactoryObjectTemplate<T, P>>(
+        app_->getModuleByType<JSONModule>()->getPropertyJSONConverterFactory());
     if (htmlWidgetFactory_.registerObject(propertyWidget.get())) {
         propertyWidgets_.push_back(std::move(propertyWidget));
     }

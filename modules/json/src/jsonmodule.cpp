@@ -62,8 +62,7 @@ struct OptionReghelper {
 };
 
 JSONModule::JSONModule(InviwoApplication* app) : InviwoModule(app, "JSON") {
-    
-    
+
     // Register JSON converters
     // Note: Also add WebBrowserModule::registerPropertyWidgetCEF if a conversion is
     // added here
@@ -71,24 +70,23 @@ JSONModule::JSONModule(InviwoApplication* app) : InviwoModule(app, "JSON") {
     registerPropertyJSONConverter<ButtonProperty>();
     registerPropertyJSONConverter<FileProperty>();
     registerPropertyJSONConverter<StringProperty>();
-    
+
     // Register ordinal property widgets
     using OrdinalTypes =
-     std::tuple<float, vec2, vec3, vec4, mat2, mat3, mat4, double, dvec2, dvec3, dvec4, dmat2,
-     dmat3, dmat4, int, ivec2, ivec3, ivec4, glm::i64, unsigned int, uvec2, uvec3,
-     uvec4, size_t, size2_t, size3_t, size4_t, glm::fquat, glm::dquat>;
-    
+        std::tuple<float, vec2, vec3, vec4, mat2, mat3, mat4, double, dvec2, dvec3, dvec4, dmat2,
+                   dmat3, dmat4, int, ivec2, ivec3, ivec4, glm::i64, unsigned int, uvec2, uvec3,
+                   uvec4, size_t, size2_t, size3_t, size4_t, glm::fquat, glm::dquat>;
+
     using ScalarTypes = std::tuple<float, double, int, glm::i64, size_t>;
     util::for_each_type<OrdinalTypes>{}(OrdinalReghelper{}, *this);
-    
+
     // Register MinMaxProperty widgets
     util::for_each_type<ScalarTypes>{}(MinMaxReghelper{}, *this);
-    
+
     // Register option property widgets
     using OptionTypes = std::tuple<unsigned int, int, size_t, float, double, std::string>;
     util::for_each_type<OptionTypes>{}(OptionReghelper{}, *this);
-    
-    
+
     // Add a directory to the search path of the Shadermanager
     // ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
 
@@ -122,14 +120,15 @@ JSONModule::JSONModule(InviwoApplication* app) : InviwoModule(app, "JSON") {
     // registerSettings(std::make_unique<jsonSettings>());
     // registerMetaData(std::make_unique<jsonMetaData>());
     // registerPortInspector("jsonOutport", "path/workspace.inv");
-    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget> processorWidget);
-    // registerDrawer(util::make_unique_ptr<jsonDrawer>());
+    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget>
+    // processorWidget); registerDrawer(util::make_unique_ptr<jsonDrawer>());
 }
-    
-void JSONModule::registerPropertyJSONConverter(std::unique_ptr<PropertyJSONConverterFactoryObject> propertyConverter) {
-        if (propertyJSONConverterFactory_.registerObject(propertyConverter.get())) {
-            propertyJSONConverters_.push_back(std::move(propertyConverter));
-        }
+
+void JSONModule::registerPropertyJSONConverter(
+    std::unique_ptr<PropertyJSONConverterFactoryObject> propertyConverter) {
+    if (propertyJSONConverterFactory_.registerObject(propertyConverter.get())) {
+        propertyJSONConverters_.push_back(std::move(propertyConverter));
     }
-    
+}
+
 }  // namespace inviwo
