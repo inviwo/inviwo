@@ -126,8 +126,8 @@ BasisProperty::BasisProperty(const BasisProperty& rhs)
     overRideDefaults_.onChange([this]() { onOverrideChange(); });
     autoCenter_.onChange([&]() { onAutoCenterChange(); });
     resetOverride_.onChange([&]() { onResetOverride(); });
-    util::for_each_argument([this](auto& elem) { elem.onChange([this]() { this->save(); }); }, size_, a_, b_,
-                            c_, offset_);
+    util::for_each_argument([this](auto& elem) { elem.onChange([this]() { this->save(); }); },
+                            size_, a_, b_, c_, offset_);
 }
 
 BasisProperty& BasisProperty::operator=(const BasisProperty& that) {

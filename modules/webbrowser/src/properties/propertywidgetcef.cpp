@@ -28,8 +28,13 @@
  *********************************************************************************/
 
 #include <modules/webbrowser/properties/propertywidgetcef.h>
+
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/io/serialization/serialization.h>
+
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 
 namespace inviwo {
 
@@ -37,9 +42,9 @@ namespace inviwo {
 // Note: Cannot use CefDOMVisitor since it requires the renderer process.
 class CefDOMSearchId : public CefStringVisitor {
 public:
-    CefDOMSearchId(const std::string& htmlId, PropertyWidgetCEF* widget,
+    CefDOMSearchId(const std::string& stringToFind, PropertyWidgetCEF* widget,
                    const CefRefPtr<CefFrame> frame)
-        : CefStringVisitor(), htmlId_(htmlId), widget_(widget), frame_(frame){};
+        : CefStringVisitor(), stringToFind_(stringToFind), widget_(widget), frame_(frame){};
 
     void Visit(const CefString& string) OVERRIDE {
         std::string domString = string;
@@ -53,66 +58,120 @@ public:
             else
                 break;
         }
-
-        // Remove any occurences of " or ' from the domString_ to remove possible variations on html
-        // id declarations.
-        domString.erase(std::remove(domString.begin(), domString.end(), '"'), domString.end());
-        domString.erase(std::remove(domString.begin(), domString.end(), '\''), domString.end());
-
-        std::stringstream ss1;
-        ss1 << "id:" << htmlId_;
-        std::stringstream ss2;
-        ss2 << "id=" << htmlId_;
-
         // If the widget's html-id is in the given frame's DOM-document, set it's frame.
-        if (domString.find(ss1.str()) != std::string::npos ||
-            domString.find(ss2.str()) != std::string::npos) {
+        if (domString.find(stringToFind_) != std::string::npos) {
             widget_->frame_ = frame_;
             widget_->updateFromProperty();
         }
     };
 
 private:
-    std::string htmlId_;
+    std::string stringToFind_;
     PropertyWidgetCEF* widget_;
     const CefRefPtr<CefFrame> frame_;
-    IMPLEMENT_REFCOUNTING(CefDOMSearchId)
+#include <warn/push>
+#include <warn/ignore/extra-semi>  // Due to IMPLEMENT_REFCOUNTING, remove when upgrading CEF
+    IMPLEMENT_REFCOUNTING(CefDOMSearchId);
+#include <warn/pop>
 };
 
-PropertyWidgetCEF::PropertyWidgetCEF(Property* prop, CefRefPtr<CefFrame> frame, std::string htmlId)
-    : PropertyWidget(prop), htmlId_(htmlId), frame_(frame) {
+PropertyWidgetCEF::PropertyWidgetCEF(Property* prop,
+                                     std::unique_ptr<PropertyJSONConverter> converter,
+                                     CefRefPtr<CefFrame> frame, std::string onChange)
+    : PropertyWidget(prop), converter_(std::move(converter)), onChange_(onChange), frame_(frame) {
     if (prop) {
         prop->addObserver(this);
     }
 }
-void PropertyWidgetCEF::setFrame(CefRefPtr<CefFrame> frame) {
-    setFrameIfPartOfFrame(frame);
-    // frame_ = frame;
-    // Make sure that we do not block synchronizations from new page.
-    onQueryBlocker_ = 0;
-}
+void PropertyWidgetCEF::setFrame(CefRefPtr<CefFrame> frame) { setFrameIfPartOfFrame(frame); }
 
 void PropertyWidgetCEF::setFrameIfPartOfFrame(CefRefPtr<CefFrame> frame) {
     // Create a visitor from this widget and run it on the frame to see if the widget id can be
     // found in the frame's html code.
-    CefRefPtr<CefDOMSearchId> visitor = new CefDOMSearchId(htmlId_, this, frame);
+    std::stringstream function;
+    function << "function " << getOnChange();
+    CefRefPtr<CefDOMSearchId> visitor = new CefDOMSearchId(function.str(), this, frame);
     frame->GetSource(visitor);
 }
 
-void PropertyWidgetCEF::deserialize(Deserializer& d) {
-    if (onQueryBlocker_ > 0) {
-        onQueryBlocker_--;
-        return;
+bool PropertyWidgetCEF::onQuery(
+    CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 /*query_id*/,
+    const CefString& request, bool /*persistent*/,
+    CefRefPtr<CefMessageRouterBrowserSide::Handler::Callback> callback) {
+
+    const std::string& requestString = request;
+    auto j = json::parse(requestString);
+    try {
+        auto command = j.at("command").get<std::string>();
+        auto p = getProperty();
+        if (command == "property.set") {
+            p->setInitiatingWidget(this);
+            converter_->fromJSON(j.at("parameters"), *p);
+            p->clearInitiatingWidget();
+            callback->Success("");
+        } else if (command == "property.get") {
+            json res;
+            converter_->toJSON(res, *p);
+            callback->Success(res.dump());
+        }
+    } catch (json::exception& ex) {
+        LogError(ex.what());
+        callback->Failure(0, ex.what());
     }
-    property_->setInitiatingWidget(this);
-    d.deserialize("Property", *property_);
-    property_->clearInitiatingWidget();
+
+    return true;
 }
 
+void PropertyWidgetCEF::updateFromProperty() {
+    // Frame might be null if for example webpage is not found on startup
+    if (!frame_) {
+        return;
+    }
+    std::stringstream script;
+    json p;
+    converter_->toJSON(p, *getProperty());
+    script << this->getOnChange() << "(" << p.dump() << ");";
+    frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);
+}
+
+void PropertyWidgetCEF::onSetIdentifier(Property* /*property*/, const std::string& identifier) {
+    std::stringstream script;
+    auto p = json{{"identifier", identifier}};
+    script << this->getPropertyObserverCallback() << "(" << p.dump() << ");";
+    frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);
+}
+
+void PropertyWidgetCEF::onSetDisplayName(Property* /*property*/, const std::string& displayName) {
+    std::stringstream script;
+    auto p = json{{"displayName", displayName}};
+    script << this->getPropertyObserverCallback() << "(" << p.dump() << ");";
+    frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);
+}
+void PropertyWidgetCEF::onSetSemantics(Property* /*property*/, const PropertySemantics& semantics) {
+    std::stringstream script;
+    auto p = json{{"semantics", semantics.getString()}};
+    script << this->getPropertyObserverCallback() << "(" << p.dump() << ");";
+    frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);
+}
 void PropertyWidgetCEF::onSetReadOnly(Property* /*property*/, bool readonly) {
     std::stringstream script;
-    script << "var property = document.getElementById(\"" << htmlId_ << "\");";
-    script << "if(property!=null){property.readonly=" << (readonly ? "true" : "false") << ";}";
+    auto p = json{{"readOnly", (readonly ? "true" : "false")}};
+    script << this->getPropertyObserverCallback() << "(" << p.dump() << ");";
+    frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);
+}
+void PropertyWidgetCEF::onSetVisible(Property* /*property*/, bool visible) {
+    std::stringstream script;
+    auto p = json{{"visible", (visible ? "true" : "false")}};
+    script << this->getPropertyObserverCallback() << "(" << p.dump() << ");";
+    frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);
+}
+
+void PropertyWidgetCEF::onSetUsageMode(Property* /*property*/, UsageMode usageMode) {
+    std::stringstream script;
+    std::stringstream mode;
+    mode << usageMode;
+    auto p = json{{"usageMode", mode.str()}};
+    script << this->getPropertyObserverCallback() << "(" << p.dump() << ");";
     frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);
 }
 

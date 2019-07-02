@@ -11,6 +11,11 @@
 # 3.3325.1758.g9aea513 Crashes on scroll event (Mac)
 # 3.3396.1775.g5340bb0 Crashes when switching web page
 # 3.3396.1775.g5340bb0 Crashes when using two fingers on trackpad (Mac)
+# 3.3538.1849.g458cc98
+# 75.0.7+g19229b6+chromium-75.0.3770.80 Rendering stops working, https://bitbucket.org/chromiumembedded/cef/issues/2618/onacceleratedpaint-is-not-called-with-off#comment-51661853
+# FATAL:async_layer_tree_frame_sink.cc
+# Known issue: Dropdown does not work.
+# Probably due to https://magpcss.org/ceforum/viewtopic.php?f=6&t=11618
 set(CEF_VERSION "3.3538.1849.g458cc98")
 
 # Determine the platform.
@@ -79,16 +84,11 @@ set(HEADER_FILES
     include/modules/webbrowser/cefimageconverter.h
     include/modules/webbrowser/interaction/cefinteractionhandler.h
     include/modules/webbrowser/interaction/cefkeyboardmapping.h
-    include/modules/webbrowser/processors/propertysyncexampleprocessor.h
     include/modules/webbrowser/processors/webbrowserprocessor.h
-    include/modules/webbrowser/properties/boolpropertywidgetcef.h
-    include/modules/webbrowser/properties/buttonpropertywidgetcef.h
-    include/modules/webbrowser/properties/ordinalpropertywidgetcef.h
-    include/modules/webbrowser/properties/minmaxpropertywidgetcef.h
     include/modules/webbrowser/properties/propertycefsynchronizer.h
     include/modules/webbrowser/properties/propertywidgetcef.h
-    include/modules/webbrowser/properties/stringpropertywidgetcef.h
-    include/modules/webbrowser/properties/templatepropertywidgetcef.h
+    include/modules/webbrowser/properties/propertywidgetceffactory.h
+    include/modules/webbrowser/properties/propertywidgetceffactoryobject.h
     include/modules/webbrowser/renderhandlergl.h
     include/modules/webbrowser/webbrowserapp.h
     include/modules/webbrowser/webbrowserclient.h
@@ -103,15 +103,11 @@ set(SOURCE_FILES
     src/cefimageconverter.cpp
     src/interaction/cefinteractionhandler.cpp
     src/interaction/cefkeyboardmapping.cpp
-    src/processors/propertysyncexampleprocessor.cpp
     src/processors/webbrowserprocessor.cpp
-    src/properties/boolpropertywidgetcef.cpp
-    src/properties/buttonpropertywidgetcef.cpp
-    src/properties/ordinalpropertywidgetcef.cpp
-    src/properties/minmaxpropertywidgetcef.cpp
     src/properties/propertycefsynchronizer.cpp
     src/properties/propertywidgetcef.cpp
-    src/properties/stringpropertywidgetcef.cpp
+    src/properties/propertywidgetceffactory.cpp
+    src/properties/propertywidgetceffactoryobject.cpp
     src/renderhandlergl.cpp
     src/webbrowserapp.cpp
     src/webbrowserclient.cpp
@@ -127,6 +123,13 @@ set(SHADER_FILES
 ivw_group("Shader Files" ${SHADER_FILES})
 
 #--------------------------------------------------------------------
+# Add javascript
+set(JS_FILES
+    data/js/inviwoapi.js
+)
+ivw_group("Javascript Files" BASE "${CMAKE_CURRENT_SOURCE_DIR}/data/js" ${JS_FILES})
+
+#--------------------------------------------------------------------
 # Add Unittests
 set(TEST_FILES
     #${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/webbrowser-test.cpp
@@ -135,7 +138,7 @@ ivw_add_unittest(${TEST_FILES})
 
 #--------------------------------------------------------------------
 # Create module
-ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
+ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES} ${JS_FILES})
 target_include_directories(inviwo-module-webbrowser PUBLIC ${CEF_INCLUDE_PATH})
 target_link_libraries(inviwo-module-webbrowser PUBLIC
     $<$<NOT:$<BOOL:${OS_MACOSX}>>:libcef_lib>
@@ -147,6 +150,8 @@ target_link_libraries(inviwo-module-webbrowser PUBLIC
 #--------------------------------------------------------------------
 # Package or build shaders into resources
 ivw_handle_shader_resources(${CMAKE_CURRENT_SOURCE_DIR}/glsl ${SHADER_FILES})
+
+ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/data/js)
 
 # Inviwo: CEF only provides release/debug configurations. Set RelWithDebInfo and MinSizeRel to use release 
 set(CEF_BINARY_DIR "${_CEF_ROOT}/$<$<CONFIG:RelWithDebInfo>:Release>$<$<CONFIG:MinSizeRel>:Release>$<$<CONFIG:Debug>:Debug>$<$<CONFIG:Release>:Release>")

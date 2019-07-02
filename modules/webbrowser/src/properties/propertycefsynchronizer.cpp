@@ -28,13 +28,9 @@
  *********************************************************************************/
 
 #include <modules/webbrowser/properties/propertycefsynchronizer.h>
-#include <modules/webbrowser/properties/boolpropertywidgetcef.h>
-#include <modules/webbrowser/properties/buttonpropertywidgetcef.h>
-#include <modules/webbrowser/properties/ordinalpropertywidgetcef.h>
-#include <modules/webbrowser/properties/minmaxpropertywidgetcef.h>
-#include <modules/webbrowser/properties/stringpropertywidgetcef.h>
-
 #include <modules/webbrowser/webbrowsermodule.h>
+
+#include <inviwo/core/util/stringconversion.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -42,30 +38,11 @@
 #include <warn/pop>
 
 namespace inviwo {
-PropertyCefSynchronizer::PropertyCefSynchronizer() {
-    registerPropertyWidget<BoolPropertyWidgetCEF, BoolProperty>(PropertySemantics("Default"));
-    registerPropertyWidget<ButtonPropertyWidgetCEF, ButtonProperty>(PropertySemantics("Default"));
 
-    registerPropertyWidget<FloatPropertyWidgetCEF, FloatProperty>(PropertySemantics("Default"));
-    registerPropertyWidget<DoublePropertyWidgetCEF, DoubleProperty>(PropertySemantics("Default"));
-    registerPropertyWidget<IntPropertyWidgetCEF, IntProperty>(PropertySemantics("Default"));
-    registerPropertyWidget<IntSizeTPropertyWidgetCEF, IntSizeTProperty>(
-        PropertySemantics("Default"));
-    registerPropertyWidget<Int64PropertyWidgetCEF, Int64Property>(PropertySemantics("Default"));
+PropertyCefSynchronizer::PropertyCefSynchronizer(const PropertyWidgetCEFFactory* htmlWidgetFactory)
+    : htmlWidgetFactory_(htmlWidgetFactory){
 
-    registerPropertyWidget<FloatMinMaxPropertyWidgetCEF, FloatMinMaxProperty>(
-        PropertySemantics("Default"));
-    registerPropertyWidget<DoubleMinMaxPropertyWidgetCEF, DoubleMinMaxProperty>(
-        PropertySemantics("Default"));
-    registerPropertyWidget<IntMinMaxPropertyWidgetCEF, IntMinMaxProperty>(
-        PropertySemantics("Default"));
-    registerPropertyWidget<IntSizeTMinMaxPropertyWidgetCEF, IntSizeTMinMaxProperty>(
-        PropertySemantics("Default"));
-    registerPropertyWidget<Int64MinMaxPropertyWidgetCEF, Int64MinMaxProperty>(
-        PropertySemantics("Default"));
-
-    registerPropertyWidget<StringPropertyWidgetCEF, StringProperty>(PropertySemantics("Default"));
-};
+      };
 
 void PropertyCefSynchronizer::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
                                         int /*httpStatusCode*/) {
@@ -83,12 +60,52 @@ bool PropertyCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<C
     const std::string& requestStr = request;
     // Assume format "id":"htmlId"
     auto j = json::parse(requestStr);
+
     try {
-        auto id = j.at("id").get<std::string>();
-        auto widget = std::find_if(std::begin(widgets_), std::end(widgets_),
-                                   [id](const auto& widget) { return id == widget->getHtmlId(); });
-        if (widget != widgets_.end()) {
-            return (*widget)->onQuery(browser, frame, query_id, request, persistent, callback);
+        auto command = j.at("command").get<std::string>();
+        auto propCommand = std::string("property");
+        if (command == "subscribe") {
+            auto network = InviwoApplication::getPtr()->getProcessorNetwork();
+            auto p = j.at("path").get<std::string>();
+            auto path = splitString(p, '.');
+            auto prop = network->getProperty(path);
+            if (prop) {
+                auto onChange = j.at("onChange").get<std::string>();
+                auto widget = std::find_if(
+                    std::begin(widgets_), std::end(widgets_), [onChange, prop](const auto& widget) {
+                        return prop == widget->getProperty() && onChange == widget->getOnChange();
+                    });
+                if (widget == widgets_.end()) {
+                    auto propertyObserver = j.at("propertyObserver").get<std::string>();
+                    startSynchronize(prop, onChange, propertyObserver);
+                    widget = --(widgets_.end());
+                    (*widget)->setFrame(frame);
+                }
+            } else {
+                callback->Failure(0, "Could not find property: " + p);
+            }
+        } else if (!command.compare(0, propCommand.size(), propCommand)) {
+            auto network = InviwoApplication::getPtr()->getProcessorNetwork();
+            auto propertyPath = j.at("path").get<std::string>();
+            auto path = splitString(propertyPath, '.');
+            auto prop = network->getProperty(path);
+            if (!prop) {
+                throw Exception("Could not find property " + propertyPath);
+            }
+            // Use synchronized widget if it exists
+            // to avoid recursive loop when setting the property
+            auto widget =
+                std::find_if(std::begin(widgets_), std::end(widgets_),
+                             [prop](const auto& widget) { return prop == widget->getProperty(); });
+            if (widget != widgets_.end()) {
+                return (*widget)->onQuery(browser, frame, query_id, request, persistent, callback);
+            } else {
+                auto w = htmlWidgetFactory_->create(prop->getClassIdentifier(), prop);
+                if (!w) {
+                    throw Exception("No HTML property widget for " + prop->getClassIdentifier());
+                }
+                return w->onQuery(browser, frame, query_id, request, persistent, callback);
+            }
         }
     } catch (json::exception& ex) {
         LogError(ex.what());
@@ -98,25 +115,24 @@ bool PropertyCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<C
     return false;
 }
 
-void PropertyCefSynchronizer::startSynchronize(Property* property) {
-    // We cannot use path since Processor is not set until after construction.
-    // auto path = property->getPath();
-    // auto htmlId = std::accumulate(std::next(path.begin()), path.end(), path[0],
-    //                                     [](std::string &s, const std::string &piece) ->
-    //                                     decltype(auto) { return s += "." + piece; });
-    auto htmlId = property->getIdentifier();
-    startSynchronize(property, htmlId);
+void PropertyCefSynchronizer::onWillRemoveProperty(Property* property, size_t) {
+    stopSynchronize(property);
 }
 
-void PropertyCefSynchronizer::startSynchronize(Property* property, std::string htmlId) {
-    auto widget = dynamic_cast<PropertyWidgetCEF*>(htmlWidgetFactory_.create(property).release());
+void PropertyCefSynchronizer::startSynchronize(Property* property, std::string onChange,
+                                               std::string propertyObserverCallback) {
+    auto widget = htmlWidgetFactory_->create(property->getClassIdentifier(), property);
     if (!widget) {
         throw Exception("No HTML property widget for " + property->getClassIdentifier());
     }
-    widget->setHtmlId(htmlId);
+    widget->setOnChange(onChange);
+    widget->setPropertyObserverCallback(propertyObserverCallback);
     // auto widget = std::make_unique<OrdinalPropertyWidgetCEF<T>>(property,
     // browser_->GetMainFrame(), htmlId);
     widgets_.emplace_back(std::move(widget));
+    if (auto owner = property->getOwner()) {
+        owner->addObserver(this);
+    }
 }
 
 void PropertyCefSynchronizer::stopSynchronize(Property* property) {

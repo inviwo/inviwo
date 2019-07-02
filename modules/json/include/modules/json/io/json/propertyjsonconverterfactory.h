@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,36 +27,22 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_STRINGPROPERTYWIDGETCEF_H
-#define IVW_STRINGPROPERTYWIDGETCEF_H
+#pragma once
 
-#include <modules/webbrowser/webbrowsermoduledefine.h>
-#include <modules/webbrowser/properties/templatepropertywidgetcef.h>
-
-#include <inviwo/core/properties/stringproperty.h>
+#include <modules/json/jsonmoduledefine.h>
+#include <modules/json/io/json/propertyjsonconverterfactoryobject.h>
+#include <inviwo/core/util/factory.h>
 
 namespace inviwo {
-
 /**
- * \class StringPropertyWidgetCEF
- * Widget for synchronizing HTML elements:
- * \code{.html}
- * <input type="text">
- * \endcode
+ * Factory for creating converters between a Property and JSON.
  */
-class IVW_MODULE_WEBBROWSER_API StringPropertyWidgetCEF
-    : public TemplatePropertyWidgetCEF<std::string> {
+class IVW_MODULE_JSON_API PropertyJSONConverterFactory
+    : public StandardFactory<PropertyJSONConverter, PropertyJSONConverterFactoryObject,
+                             const std::string&, Property*> {
 public:
-    StringPropertyWidgetCEF(StringProperty* property, CefRefPtr<CefFrame> frame = nullptr,
-                            std::string htmlId = "");
-    virtual ~StringPropertyWidgetCEF() = default;
-    /**
-     * Update HTML widget using calls javascript oninput() function on element.
-     * Assumes that widget is HTML input attribute.
-     */
-    virtual void updateFromProperty() override;
+    PropertyJSONConverterFactory();
+    virtual ~PropertyJSONConverterFactory();
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_STRINGPROPERTYWIDGETCEF_H

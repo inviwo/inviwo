@@ -63,10 +63,6 @@ WebBrowserProcessor::WebBrowserProcessor()
     , autoReloadFile_("autoReloadFile", "Auto Reload", true)
     , url_("URL", "URL", "http://www.inviwo.org")
     , reload_("reload", "Reload")
-    , addPropertyGroup_("addProperty", "Add property to synchronize")
-    , type_("property", "Property")
-    , propertyHtmlId_("propertyHtmlId", "Html id")
-    , add_("add", "Add")
     , runJS_("runJS", "Run JS")
     , js_("js", "JavaScript", "", InvalidationLevel::Valid)
     , sourceType_("sourceType", "Source",
@@ -83,7 +79,9 @@ WebBrowserProcessor::WebBrowserProcessor()
         invalidate(InvalidationLevel::InvalidOutput);
         //});
     }))
-    , browserClient_(new WebBrowserClient(renderHandler_)) {
+    , browserClient_(new WebBrowserClient(renderHandler_, InviwoApplication::getPtr()
+                                                              ->getModuleByType<WebBrowserModule>()
+                                                              ->getPropertyWidgetCEFFactory())) {
     addPort(background_);
     background_.setOptional(true);
     addPort(outport_);
@@ -133,13 +131,6 @@ WebBrowserProcessor::WebBrowserProcessor()
         }
     });
 
-    // Do not serialize options, they are generated in code
-    type_.setSerializationMode(PropertySerializationMode::None);
-    addPropertyGroup_.addProperty(type_);
-    addPropertyGroup_.addProperty(propertyHtmlId_);
-    addPropertyGroup_.addProperty(add_);
-    addProperty(addPropertyGroup_);
-
     // Setup CEF browser
     CefWindowInfo window_info;
 
@@ -150,11 +141,13 @@ WebBrowserProcessor::WebBrowserProcessor()
 
     browserSettings.windowless_frame_rate = 30;  // Must be between 1-60, 30 is default
 
-    // in linux set a gtk widget, in windows a hwnd. If not available set nullptr - may cause
+    // in linux set a gtk widget, in windows a hwnd. If not available set nullptr
+    // - may cause
     // some render errors, in context-menu and plugins.
     window_info.SetAsWindowless(nullptr);  // nullptr means no transparency (site background colour)
 
-    // Note that browserClient_ outlives this class so make sure to remove renderHandler_ in
+    // Note that browserClient_ outlives this class so make sure to remove
+    // renderHandler_ in
     // destructor
     browser_ = CefBrowserHost::CreateBrowserSync(window_info, browserClient_, getSource(),
                                                  browserSettings, nullptr);
@@ -166,52 +159,6 @@ WebBrowserProcessor::WebBrowserProcessor()
     cefInteractionHandler_.setHost(browser_->GetHost());
     cefInteractionHandler_.setRenderHandler(renderHandler_);
     addInteractionHandler(&cefInteractionHandler_);
-
-    // Add all supported properties
-    auto app = InviwoApplication::getPtr();
-    for (auto propKey : app->getPropertyFactory()->getKeys()) {
-        auto prop = app->getPropertyFactory()->create(propKey);
-        if (browserClient_->propertyCefSynchronizer_->htmlWidgetFactory_.hasKey(prop.get())) {
-            type_.addOption(prop->getClassIdentifier(),
-                            filesystem::getFileExtension(prop->getClassIdentifier()), type_.size());
-        }
-    }
-    type_.setCurrentStateAsDefault();
-    propertyHtmlId_ = type_.getSelectedDisplayName();
-    type_.onChange([&]() { propertyHtmlId_ = type_.getSelectedDisplayName(); });
-
-    add_.onChange([&]() {
-        auto key = type_.getSelectedIdentifier();
-        auto p = getInviwoApplication()->getPropertyFactory()->create(key);
-
-        auto id = propertyHtmlId_.get();
-        try {
-            util::validateIdentifier(id, "Property", IVW_CONTEXT);
-        } catch (Exception& ex) {
-            LogError(ex.getMessage());
-            return;
-        }
-        if (getPropertyByIdentifier(id) != nullptr) {
-            LogError("Property with same id already added");
-            return;
-        }
-        p->setIdentifier(id);
-        p->setDisplayName(id);
-
-        p->setSerializationMode(PropertySerializationMode::All);
-        // InvalidationLevel::Valid is used to not get
-        // invalidations from both CEF (html) and Qt
-        p->setInvalidationLevel(InvalidationLevel::Valid);
-        // Add property to processor before propertyCefSynchronizer to
-        // include processor in property path
-        addProperty(p.get(), true);
-
-        browserClient_->propertyCefSynchronizer_->startSynchronize(p.get(), id);
-        // Must reload page to connect property with Frame, see PropertyCefSynchronizer::OnLoadEnd
-        browser_->GetMainFrame()->LoadURL(getSource());
-
-        p.release();
-    });
 }
 
 std::string WebBrowserProcessor::getSource() {
@@ -241,15 +188,6 @@ WebBrowserProcessor::~WebBrowserProcessor() {
 
 void WebBrowserProcessor::deserialize(Deserializer& d) {
     Processor::deserialize(d);
-
-    for (auto prop : *this) {
-        if (prop == &sourceType_ || prop == &fileName_ || prop == &url_ || prop == &reload_ ||
-            prop == &addPropertyGroup_ || prop == &type_ || prop == &propertyHtmlId_ ||
-            prop == &add_) {
-            continue;
-        }
-        browserClient_->propertyCefSynchronizer_->startSynchronize(prop, prop->getIdentifier());
-    }
     // Must reload page to connect property with Frame, see PropertyCefSynchronizer::OnLoadEnd
     browser_->GetMainFrame()->LoadURL(getSource());
 }

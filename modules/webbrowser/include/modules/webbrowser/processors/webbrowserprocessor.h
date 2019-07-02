@@ -97,11 +97,12 @@ namespace inviwo {
  * against loaded webpage.
  */
 
- /**
+/**
  * \brief Render webpage into the color and picking layers (OpenGL).
  */
 #include <warn/push>
 #include <warn/ignore/dll-interface-base>  // Fine if dependent libs use the same CEF lib binaries
+#include <warn/ignore/extra-semi>  // Due to IMPLEMENT_REFCOUNTING, remove when upgrading CEF
 class IVW_MODULE_WEBBROWSER_API WebBrowserProcessor : public Processor, public CefLoadHandler {
 public:
     WebBrowserProcessor();
@@ -125,10 +126,6 @@ public:
     BoolProperty autoReloadFile_;
     StringProperty url_;     ///< Web page to show
     ButtonProperty reload_;  ///< Force reload url
-    CompositeProperty addPropertyGroup_;
-    OptionPropertySize_t type_;      ///< List of all supported properties
-    StringProperty propertyHtmlId_;  ///< Html id of property to add
-    ButtonProperty add_;
 
     ButtonProperty runJS_;
     StringProperty js_;
@@ -151,7 +148,7 @@ protected:
 
     SingleFileObserver fileObserver_;
 
-    IMPLEMENT_REFCOUNTING(WebBrowserProcessor)
+    IMPLEMENT_REFCOUNTING(WebBrowserProcessor);
 };
 #include <warn/pop>
 }  // namespace inviwo

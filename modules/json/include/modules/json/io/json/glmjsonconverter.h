@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,44 +27,55 @@
  *
  *********************************************************************************/
 
-#include <modules/webbrowser/properties/buttonpropertywidgetcef.h>
+#pragma once
 
-namespace inviwo {
+#include <inviwo/core/common/inviwo.h>
+#include <nlohmann/json.hpp>
 
-ButtonPropertyWidgetCEF::ButtonPropertyWidgetCEF(ButtonProperty* property,
-                                                 CefRefPtr<CefFrame> frame, std::string htmlId)
-    : PropertyWidgetCEF(property, frame, htmlId) {}
+namespace glm {
 
-inline void ButtonPropertyWidgetCEF::updateFromProperty() {
-    // Frame might be null if for example webpage is not found on startup
-    if (!frame_) {
-        return;
+template <glm::length_t L, typename T, glm::qualifier Q>
+void from_json(const nlohmann::json& j, glm::vec<L, T, Q>& v) {
+    for (glm::length_t i = 0; i < L; ++i) {
+        v[i] = j[i].get<T>();
     }
-    std::stringstream script;
-    // Send click button event
-    script << "var property = document.getElementById(\"" << htmlId_ << "\");";
-    script << "if(property!=null){property.click();}";
-    // Block OnQuery, called due to property.click()
-    onQueryBlocker_++;
-    frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);
 }
 
-bool ButtonPropertyWidgetCEF::onQuery(
-    CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 /*query_id*/,
-    const CefString& /*request*/, bool /*persistent*/,
-    CefRefPtr<CefMessageRouterBrowserSide::Handler::Callback> callback) {
-    if (onQueryBlocker_ > 0) {
-        // LogInfo("blocked");
-        onQueryBlocker_--;
-        callback->Success("");
-        return true;
+template <typename T, glm::qualifier Q>
+void from_json(const nlohmann::json& j, glm::qua<T, Q>& v) {
+    for (glm::length_t i = 0; i < glm::qua<T, Q>::length(); ++i) {
+        v[i] = j[i].get<T>();
     }
-    // Prevent calling updateFromProperty() for this widget
-    property_->setInitiatingWidget(this);
-    static_cast<ButtonProperty*>(property_)->pressButton();
-    callback->Success("");
-    property_->clearInitiatingWidget();
-    return true;
 }
 
-}  // namespace inviwo
+template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
+void from_json(const nlohmann::json& js, glm::mat<C, R, T, Q>& v) {
+    for (glm::length_t i = 0; i < C; ++i) {
+        for (glm::length_t j = 0; j < R; ++j) {
+            v[i][j] = js[i * C + j].get<T>();
+        }
+    }
+}
+
+template <glm::length_t L, typename T, glm::qualifier Q>
+void to_json(nlohmann::json& j, const glm::vec<L, T, Q>& v) {
+    for (glm::length_t i = 0; i < L; ++i) {
+        j.push_back(v[i]);
+    }
+}
+
+template <typename T, glm::qualifier Q>
+void to_json(nlohmann::json& j, const glm::qua<T, Q>& v) {
+    for (glm::length_t i = 0; i < glm::qua<T, Q>::length(); ++i) {
+        j.push_back(v[i]);
+    }
+}
+
+template <glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
+void to_json(nlohmann::json& js, const glm::mat<C, R, T, Q>& v) {
+    for (glm::length_t i = 0; i < C; ++i) {
+        for (glm::length_t j = 0; j < R; ++j) js.push_back(v[i][j]);
+    }
+}
+
+}  // namespace glm

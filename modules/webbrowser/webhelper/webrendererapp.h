@@ -76,7 +76,7 @@ private:
     // Handles the renderer side of query routing.
     // Adds JavaScript function "cefQuery" to the 'window' object for sending a query.
     CefRefPtr<CefMessageRouterRendererSide> messageRouter_;
-    IMPLEMENT_REFCOUNTING(WebRendererApp)
+    IMPLEMENT_REFCOUNTING(WebRendererApp);
     DISALLOW_COPY_AND_ASSIGN(WebRendererApp);
 };
 

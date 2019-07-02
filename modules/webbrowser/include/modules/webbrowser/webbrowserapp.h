@@ -46,6 +46,7 @@ namespace inviwo {
  */
 #include <warn/push>
 #include <warn/ignore/dll-interface-base>  // Fine if dependent libs use the same CEF lib binaries
+#include <warn/ignore/extra-semi>  // Due to IMPLEMENT_REFCOUNTING, remove when upgrading CEF
 class IVW_MODULE_WEBBROWSER_API WebBrowserApp : public CefApp, public CefBrowserProcessHandler {
 public:
     WebBrowserApp();
@@ -53,7 +54,7 @@ public:
     CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() OVERRIDE { return this; }
 
 private:
-    IMPLEMENT_REFCOUNTING(WebBrowserApp)
+    IMPLEMENT_REFCOUNTING(WebBrowserApp);
 };
 #include <warn/pop>
 

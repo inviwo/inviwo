@@ -37,8 +37,39 @@
 
 namespace inviwo {
 
-WebBrowserClient::WebBrowserClient(CefRefPtr<RenderHandlerGL> renderHandler)
-    : renderHandler_(renderHandler) {}
+namespace detail {
+
+// Register inviwo application and module directories for resource loading
+void setupResourceManager(CefRefPtr<CefResourceManager> resource_manager) {
+    if (!CefCurrentlyOn(TID_IO)) {
+        // Execute on the browser IO thread.
+        CefPostTask(TID_IO, base::Bind(setupResourceManager, resource_manager));
+        return;
+    }
+    std::string origin = "https://inviwo";
+    // Redirect paths to corresponding app/module directories.
+    // Enables resource loading from these directories directory (js-files and so on).
+    auto appOrigin = origin + "/app";
+    resource_manager->AddDirectoryProvider(appOrigin, InviwoApplication::getPtr()->getBasePath(),
+                                           99, std::string());
+
+    auto moduleOrigin = origin + "/modules";
+    for (const auto& m : InviwoApplication::getPtr()->getModules()) {
+        auto mOrigin = moduleOrigin + "/" + toLower(m->getIdentifier());
+        auto moduleDir = m->getPath();
+        resource_manager->AddDirectoryProvider(mOrigin, moduleDir, 100, std::string());
+    }
+}
+
+}  // namespace detail
+
+WebBrowserClient::WebBrowserClient(CefRefPtr<RenderHandlerGL> renderHandler,
+                                   const PropertyWidgetCEFFactory* widgetFactory)
+    : widgetFactory_(widgetFactory)
+    , renderHandler_(renderHandler)
+    , resourceManager_(new CefResourceManager()) {
+    detail::setupResourceManager(resourceManager_);
+}
 
 void WebBrowserClient::SetRenderHandler(CefRefPtr<RenderHandlerGL> renderHandler) {
     renderHandler_ = renderHandler;
@@ -61,7 +92,7 @@ void WebBrowserClient::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
         messageRouter_ = CefMessageRouterBrowserSide::Create(config);
 
         // Register handlers with the router.
-        propertyCefSynchronizer_ = new PropertyCefSynchronizer();
+        propertyCefSynchronizer_ = new PropertyCefSynchronizer(widgetFactory_);
         addLoadHandler(propertyCefSynchronizer_);
         messageRouter_->AddHandler(propertyCefSynchronizer_.get(), false);
     }
@@ -127,6 +158,23 @@ void WebBrowserClient::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
     }
 
     messageRouter_->OnRenderProcessTerminated(browser);
+}
+
+cef_return_value_t WebBrowserClient::OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
+                                                          CefRefPtr<CefFrame> frame,
+                                                          CefRefPtr<CefRequest> request,
+                                                          CefRefPtr<CefRequestCallback> callback) {
+    CEF_REQUIRE_IO_THREAD();
+
+    return resourceManager_->OnBeforeResourceLoad(browser, frame, request, callback);
+}
+
+CefRefPtr<CefResourceHandler> WebBrowserClient::GetResourceHandler(CefRefPtr<CefBrowser> browser,
+                                                                   CefRefPtr<CefFrame> frame,
+                                                                   CefRefPtr<CefRequest> request) {
+    CEF_REQUIRE_IO_THREAD();
+
+    return resourceManager_->GetResourceHandler(browser, frame, request);
 }
 
 void WebBrowserClient::addLoadHandler(CefLoadHandler* loadHandler) {
