@@ -1,7 +1,6 @@
 <html>
 <head>
 <title>Inviwo property syncing example</title>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <!-- https://inviwo/modules/yourmodulename will be rediredcted to the module directory on the harddrive -->
 <script src="https://inviwo/modules/webbrowser/data/js/inviwoapi.js"></script>
 
@@ -10,27 +9,8 @@
 var inviwo = new InviwoAPI();
 </script>
 <style>
-.selectionList {
-  background-color: white;
-  overflow-y: scroll;
-  max-height: 10em;
-  width: 18em;
-}
-
-.selectionElement {
-  font-family: 'Arial', sans-serif;
-  font-size: 0.9em;
-  border: 1px solid white;
-}
-
-.selectionElement:hover {
-  cursor: pointer;
-  border: 1px solid #ccc;
-}
-
-.selectedElement {
-  background-color: #0078d7;
-  color: white;
+select {
+	background-color: white;
 }
 </style>
 </head>
@@ -45,18 +25,10 @@ var inviwo = new InviwoAPI();
   <p>Checkbox (enable text)<input type="checkbox" value="Checkbox" id="boolProperty" onchange="inviwo.setProperty('TextOverlay.enable', {value: this.checked})"></p>
   <p>Text <input type="text" id="stringProperty" value="not changed" oninput="inviwo.setProperty('TextOverlay.text', {value: this.value})" ></p>
   <br></br>
-  <!-- Note: One should use a select element for options, but they are currently not functioning -->
-  <p>Option property<div class="selectionList" id="shadingMode">
-  </div>
+  <p>Option property<select id="shadingMode">
+  </select>
 <script>
-// Setup the selectionList to highlight the clicked/selected element.
-function updateClickableLists() {
-	$(".selectionElement").on("click", function() {
-		$(this).parent().children().removeClass("selectedElement");
-		$(this).addClass("selectedElement");
-	});
-}
-updateClickableLists();
+
 var slider = document.getElementById("ordinalProperty");
 var ordinalPropertyValue = document.getElementById("ordinalPropertyValue");
 
@@ -68,7 +40,6 @@ var ordinalPropertyValue = document.getElementById("ordinalPropertyValue");
 // If a property may change from other sources than your webpage (e.g. the Inviwo network editor):
 // 1. Use inviwo.subscribe to recieve callbacks when the property changes in Inviwo
 // 2. Use inviwo.setProperty to set the property from the webpage
-
 
 
 slider.oninput = function() {
@@ -90,86 +61,37 @@ inviwo.subscribe("LineRenderer.lineWidth", syncOrdinal);
 inviwo.subscribe("TextOverlay.enable", syncCheckbox);
 inviwo.subscribe("TextOverlay.text", syncString);
 
-function syncOption(prop) { 
-	// Currently, we cannot display select elements so we hack 
-	// this list of options instead
-	var path = "VolumeRaycaster.lighting.shadingMode";
-	var htmlId = "shadingMode";
-	var options = "";
-	// Example of accessing all options
-	for (var i in prop["options"]){
-		var option = prop["options"][i];
-		options += "Name: " + option["name"] + ", value:" + option["value"]+ ", id:" + option["id"] + "\n";
-    }
-	console.log("Hello option property, selected value: " + prop["value"] + "\n selected index: " + prop["selectedIndex"] + "\n Options: " + options );
-	
-	var property = document.getElementById(htmlId);
-	var oldSelect = document.getElementById(htmlId + "Select");
-	var select = document.createElement("select");
-	select.id = htmlId + "Select";
-	select.style.visibility = "hidden";
-	for (var i in prop["options"]) {
-		var option = prop["options"][i];
-
-		var optionId = htmlId + option["id"];
-		var oldOption = document.getElementById(optionId);
-
-		var optionDiv = document.createElement("div");
-		var optionElem = document.createElement("option");
-		optionElem.id = option["id"];
-		optionElem.label = option["name"];
-		optionElem.value = option["value"];
-		optionElem.index = i;
-		optionElem.style.visibility = "hidden";
-
-		if (i == prop["selectedIndex"]) {
-			optionDiv.className = "selectionElement selectedElement";
-			optionElem.selected = true;
-		} else {
-			optionDiv.className = "selectionElement";
-		}
-		select.appendChild(optionElem);
-
-		optionDiv.innerHTML = option["name"];
-		optionDiv.title = option["value"];
-		optionDiv.id = optionId;
-		optionDiv.onclick = function () {
-			inviwo.setProperty(path, {value: Number(this.title)});
-		};
-		if (oldOption) {
-			property.replaceChild(optionDiv, oldOption);
-		} else {
-			property.appendChild(optionDiv);
-		}
-		
+// Example of assuming that the property will not change from the network editor.
+// Enough to get the shading mode once since the number of items will not change after startup.
+inviwo.getProperty("VolumeRaycaster.lighting.shadingMode", function(prop) {
+	inviwo.syncOption("shadingMode", prop);
+});
+document.getElementById("shadingMode").onchange = function() {
+	if (this.selectedIndex >= 0) { 
+		inviwo.setProperty('VolumeRaycaster.lighting.shadingMode', {selectedIndex: Number(this.selectedIndex)}); 
 	}
-
-	if (oldSelect) {
-		property.replaceChild(select, oldSelect);
-	} else {
-		property.appendChild(select);
-	}
-	updateClickableLists();
-
-} 
-inviwo.subscribe("VolumeRaycaster.lighting.shadingMode", syncOption); 
+}
 
 
 // Example of retrieving property parameters
 inviwo.getProperty("CubeProxyGeometry.clipX", function(prop) {
-    for (var key in prop){
+	var args = "Hello MinMaxProperty: \n";
+    for (var key in prop) {
         var attrName = key;
         var attrValue = prop[key];
-        console.log("Hello MinMaxProperty " + attrName + ": " + attrValue);
+        args += attrName + ": " + attrValue + "\n";
     }
+    console.log(args);
 });
 
 inviwo.getProperty("EntryExitPoints.camera.lookFrom", function(prop) {
-    for (var key in prop){
+	var args = "Hello Camera lookFrom: \n";
+    for (var key in prop) {
         var attrName = key;
         var attrValue = prop[key];
-        console.log("Hello Camera look from: " + attrName + ": " + attrValue);
+		args += attrName + ": " + attrValue + "\n";
     }
+    console.log(args);
 });
 
 </script>

@@ -51,7 +51,11 @@ class IVW_MODULE_WEBBROWSER_API RenderHandlerGL : public CefRenderHandler {
 public:
     RenderHandlerGL(std::function<void()> onWebPageCopiedCallback);
     void updateCanvasSize(size2_t newSize);
-
+    ///
+    // Called to retrieve the view rectangle which is relative to screen
+    // coordinates. Return true if the rectangle was provided.
+    ///
+    /*--cef()--*/
     virtual bool GetViewRect(CefRefPtr<CefBrowser> browser, CefRect &rect) override;
 
     ///
@@ -99,8 +103,8 @@ private:
     std::function<void()>
         onWebPageCopiedCallback;  /// Called after web page has been copied in OnPaint
 
-    CefRect popup_rect_;
-    CefRect original_popup_rect_;
+    CefRect popupRect_;
+    CefRect originalPopupRect_;
 
 public:
     IMPLEMENT_REFCOUNTING(RenderHandlerGL);

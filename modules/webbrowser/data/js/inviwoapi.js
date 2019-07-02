@@ -111,6 +111,29 @@ class InviwoAPI {
             property.focus();
         };
     }
+    async syncOption(htmlId, prop) {
+        var property = document.getElementById(htmlId);
+        var newOptions = prop["options"];
+        for (var i in newOptions) {
+            var option = newOptions[i];
+            var optionElem = property.options.namedItem(option["id"]);
+            if (!optionElem) {
+                optionElem = document.createElement("option");
+                property.options.add(optionElem);
+            }
+            optionElem.id = option["id"];
+            optionElem.text = option["name"];
+            optionElem.value = option["value"];
+            
+            if (i == prop["selectedIndex"]) {
+                optionElem.selected = true;
+            }
+        }
+        // Remove leftover properties
+        for (i = newOptions.length; i < property.length; i++ ) {
+            property.remove(i);
+        }
+    }
 }
 
 
