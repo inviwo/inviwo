@@ -29,8 +29,8 @@
 
 
 #include <utility>
-#include "../../include/inviwo/animationsplineinterpolation/interpolation/nurb.h"
-#include "../../include/inviwo/animationsplineinterpolation/interpolation/nurbsinterpolation.h"
+#include "../../include/inviwo/bspline/interpolation/nurb.h"
+#include "../../include/inviwo/bspline/interpolation/nurbutilities.h"
 
 
 /**

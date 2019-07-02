@@ -27,10 +27,10 @@
  *
  *********************************************************************************/
 
-#ifndef INVIWO_PROJECTS_INTERPOLATION_H
-#define INVIWO_PROJECTS_INTERPOLATION_H
+#ifndef IVW_NURB_UTILITIES_H
+#define IVW_NURB_UTILITIES_H
 
-#include "glm/glm.hpp"
+#include <glm/glm.hpp>
 
 void InterpolateCurveGlobalNoDeriv(const std::vector<glm::vec3>& InPoints, tinynurbs::Curve<3, float>& ResCurve);
 
@@ -42,4 +42,4 @@ void ApproximateCurve(const std::vector<glm::vec3>& InPoints, tinynurbs::Curve<3
 //
 //void SavePolyline(std::vector<glm::vec3>& Curve, const char* FileName);
 
-#endif //INVIWO_PROJECTS_INTERPOLATION_H
+#endif //IVW_NURB_UTILITIES_H

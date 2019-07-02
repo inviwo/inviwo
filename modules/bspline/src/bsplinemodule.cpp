@@ -27,46 +27,46 @@
  *
  *********************************************************************************/
 
-#include <inviwo/animationsplineinterpolation/animationsplineinterpolationmodule.h>
+#include <inviwo/bspline/bsplinemodule.h>
 
 namespace inviwo {
 
-animationsplineinterpolationModule::animationsplineinterpolationModule(InviwoApplication* app) : InviwoModule(app, "animationsplineinterpolation") {
+bsplineModule::bsplineModule(InviwoApplication* app) : InviwoModule(app, "bspline") {
     // Add a directory to the search path of the Shadermanager
     // ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
 
     // Register objects that can be shared with the rest of inviwo here:
 
     // Processors
-    // registerProcessor<animationsplineinterpolationProcessor>();
+    // registerProcessor<bsplineProcessor>();
 
     // Properties
-    // registerProperty<animationsplineinterpolationProperty>();
+    // registerProperty<bsplineProperty>();
 
     // Readers and writes
-    // registerDataReader(util::make_unique<animationsplineinterpolationReader>());
-    // registerDataWriter(util::make_unique<animationsplineinterpolationWriter>());
+    // registerDataReader(util::make_unique<bsplineReader>());
+    // registerDataWriter(util::make_unique<bsplineWriter>());
 
     // Data converters
-    // registerRepresentationConverter(util::make_unique<animationsplineinterpolationDisk2RAMConverter>());
+    // registerRepresentationConverter(util::make_unique<bsplineDisk2RAMConverter>());
 
     // Ports
-    // registerPort<animationsplineinterpolationOutport>();
-    // registerPort<animationsplineinterpolationInport>();
+    // registerPort<bsplineOutport>();
+    // registerPort<bsplineInport>();
 
     // PropertyWidgets
-    // registerPropertyWidget<animationsplineinterpolationPropertyWidget, animationsplineinterpolationProperty>("Default");
+    // registerPropertyWidget<bsplinePropertyWidget, bsplineProperty>("Default");
 
     // Dialogs
-    // registerDialog<animationsplineinterpolationDialog>(animationsplineinterpolationOutport);
+    // registerDialog<bsplineDialog>(bsplineOutport);
 
     // Other things
-    // registerCapabilities(util::make_unique<animationsplineinterpolationCapabilities>());
-    // registerSettings(util::make_unique<animationsplineinterpolationSettings>());
-    // registerMetaData(util::make_unique<animationsplineinterpolationMetaData>());
-    // registerPortInspector("animationsplineinterpolationOutport", "path/workspace.inv");
+    // registerCapabilities(util::make_unique<bsplineCapabilities>());
+    // registerSettings(util::make_unique<bsplineSettings>());
+    // registerMetaData(util::make_unique<bsplineMetaData>());
+    // registerPortInspector("bsplineOutport", "path/workspace.inv");
     // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget> processorWidget); 
-    // registerDrawer(util::make_unique_ptr<animationsplineinterpolationDrawer>());
+    // registerDrawer(util::make_unique_ptr<bsplineDrawer>());
 }
 
 }  // namespace inviwo
