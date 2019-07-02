@@ -28,15 +28,15 @@
  *********************************************************************************/
 #pragma once
 
-#include <inviwo/animationsplineinterpolation/animationsplineinterpolationmoduledefine.h>
+#include <inviwo/bspline/bsplinemoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
 
 namespace inviwo {
 
-class IVW_MODULE_ANIMATIONSPLINEINTERPOLATION_API animationsplineinterpolationModule : public InviwoModule {
+class IVW_MODULE_BSPLINE_API bsplineModule : public InviwoModule {
 public:
-    animationsplineinterpolationModule(InviwoApplication* app);
-    virtual ~animationsplineinterpolationModule() = default;
+    bsplineModule(InviwoApplication* app);
+    virtual ~bsplineModule() = default;
 };
 
 }  // namespace inviwo
