@@ -157,6 +157,14 @@ void forEachParallel(const Iterable& iterable, Callback&& callback, size_t jobs 
     }
 }
 
+template <typename Iterable, typename Callback>
+void forEach(const Iterable& iterable, Callback&& callback) {
+    using value_type = decltype(*begin(iterable));
+    using IncludeIndexType = typename util::is_invocable<Callback, value_type, size_t>::type;
+
+    detail::foreach_helper(IncludeIndexType{}, std::begin(iterable), std::end(iterable), std::forward<Callback>(callback),0);
+}
+
 }  // namespace util
 
 }  // namespace inviwo
