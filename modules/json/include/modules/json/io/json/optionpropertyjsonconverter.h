@@ -132,6 +132,10 @@ void from_json(const json& j, TemplateOptionProperty<T>& p) {
         auto selectedIndex = j.at("selectedIndex").get<size_t>();
         p.setSelectedIndex(selectedIndex);
     }
+    if (j.count("selectedDisplayName") > 0) {
+        auto selectedName = j.at("selectedDisplayName").get<std::string>();
+        p.setSelectedDisplayName(selectedName);
+    }
 }
 
 }  // namespace inviwo
