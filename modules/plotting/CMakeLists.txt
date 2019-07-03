@@ -17,6 +17,7 @@ set(HEADER_FILES
     include/modules/plotting/plottingmoduledefine.h
     include/modules/plotting/processors/dataframecolumntocolorvector.h
     include/modules/plotting/properties/axisproperty.h
+    include/modules/plotting/properties/axisstyleproperty.h
     include/modules/plotting/properties/categoricalaxisproperty.h
     include/modules/plotting/properties/dataframeproperty.h
     include/modules/plotting/properties/marginproperty.h
@@ -42,6 +43,7 @@ set(SOURCE_FILES
     src/plottingmodule.cpp
     src/processors/dataframecolumntocolorvector.cpp
     src/properties/axisproperty.cpp
+    src/properties/axisstyleproperty.cpp
     src/properties/categoricalaxisproperty.cpp
     src/properties/dataframeproperty.cpp
     src/properties/marginproperty.cpp
