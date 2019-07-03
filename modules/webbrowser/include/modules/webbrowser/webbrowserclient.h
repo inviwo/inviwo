@@ -61,7 +61,8 @@ namespace inviwo {
 class IVW_MODULE_WEBBROWSER_API WebBrowserClient : public CefClient,
                                                    public CefLifeSpanHandler,
                                                    public CefRequestHandler,
-                                                   public CefLoadHandler {
+                                                   public CefLoadHandler,
+                                                   public CefDisplayHandler {
 public:
     WebBrowserClient(CefRefPtr<RenderHandlerGL> renderHandler,
                      const PropertyWidgetCEFFactory* widgetFactory);
@@ -69,6 +70,7 @@ public:
     virtual CefRefPtr<CefLoadHandler> GetLoadHandler() override { return this; }
     virtual CefRefPtr<CefRenderHandler> GetRenderHandler() override { return renderHandler_; }
     virtual CefRefPtr<CefRequestHandler> GetRequestHandler() override { return this; }
+    virtual CefRefPtr<CefDisplayHandler> GetDisplayHandler() override { return this; }
 
     void SetRenderHandler(CefRefPtr<RenderHandlerGL> renderHandler);
 
@@ -139,6 +141,16 @@ public:
                              const CefString& failedUrl) override;
 
     CefRefPtr<PropertyCefSynchronizer> propertyCefSynchronizer_;
+
+    ///
+    // Inviwo: Overload to log console.log message from js to inviwo the inviwo::LogCentral
+    // Cef: Called to display a console message. Return true to stop the message from
+    // being output to the console.
+    ///
+    /*--cef(optional_param=message,optional_param=source)--*/
+    virtual bool OnConsoleMessage(CefRefPtr<CefBrowser> browser, cef_log_severity_t level,
+                                  const CefString& message, const CefString& source,
+                                  int line) override;
 
 protected:
     const PropertyWidgetCEFFactory* widgetFactory_;  /// Non-owning reference

@@ -79,7 +79,6 @@ bool WebBrowserClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
                                                 CefProcessId source_process,
                                                 CefRefPtr<CefProcessMessage> message) {
     CEF_REQUIRE_UI_THREAD();
-
     return messageRouter_->OnProcessMessageReceived(browser, source_process, message);
 }
 
@@ -225,6 +224,44 @@ void WebBrowserClient::OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefF
     ss << "</body></html>";
 
     frame->LoadURL(WebBrowserModule::getDataURI(ss.str(), "text/html"));
+}
+
+bool WebBrowserClient::OnConsoleMessage(CefRefPtr<CefBrowser> browser, cef_log_severity_t level,
+                                        const CefString& message, const CefString& source,
+                                        int line) {
+
+    if (auto lc = LogCentral::getPtr()) {
+        std::string src = source.ToString();
+
+        std::string file = "";
+        if (src.rfind("file://", 0) == 0) {
+            replaceInString(src, "\\", "/");
+            file = splitString(src, '/').back();
+        }
+
+        LogLevel loglevel;
+        switch (level) {
+            case LOGSEVERITY_DISABLE:
+                return false;
+            case LOGSEVERITY_ERROR:
+                loglevel = LogLevel::Error;
+                break;
+            case LOGSEVERITY_WARNING:
+                loglevel = LogLevel::Warn;
+                break;
+            case cef_log_severity_t::LOGSEVERITY_DEBUG:
+            case cef_log_severity_t::LOGSEVERITY_INFO:
+            case cef_log_severity_t::LOGSEVERITY_DEFAULT:
+            default:
+                loglevel = LogLevel::Info;
+                break;
+        }
+
+        lc->log("WebBrowserClient", loglevel, LogAudience::Developer, file.c_str(), "", line,
+                message.ToString());
+        return true; 
+    }
+    return false;
 }
 
 }  // namespace inviwo

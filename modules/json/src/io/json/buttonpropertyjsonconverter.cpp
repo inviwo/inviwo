@@ -31,7 +31,7 @@
 
 namespace inviwo {
 
-void to_json(json& j, const ButtonProperty& p) { j = json{{"pressButton", true}}; }
+void to_json(json& j, const ButtonProperty&) { j = json{{"pressButton", true}}; }
 
 void from_json(const json& j, ButtonProperty& p) {
     if (j.count("pressButton") > 0) {
