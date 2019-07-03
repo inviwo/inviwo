@@ -110,6 +110,12 @@ bool PropertyCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<C
     } catch (json::exception& ex) {
         LogError(ex.what());
         callback->Failure(0, ex.what());
+    } catch (inviwo::Exception& ex) {
+        util::log(ex.getContext(), ex.getMessage(), LogLevel::Error);
+        callback->Failure(0, ex.what());
+    } catch (std::exception& ex) {
+        LogError(ex.what());
+        callback->Failure(0, ex.what());
     }
 
     return false;
