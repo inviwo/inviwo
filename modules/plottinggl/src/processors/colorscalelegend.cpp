@@ -51,7 +51,6 @@ ColorScaleLegend::ColorScaleLegend()
     , volumeInport_("volumeInport")
     , isotfComposite_("isotfComposite", "TF & Isovalues")
     , positioning_("positioning", "Positioning & Size")
-    , style_("style", "Style")
     , legendPlacement_("legendPlacement", "Legend Placement",
                        {{"top", "Top", 0},
                         {"right", "Right", 1},
@@ -68,9 +67,8 @@ ColorScaleLegend::ColorScaleLegend()
     , position_("position", "Position", vec2(0.5f), vec2(0.0f), vec2(1.0f))
     , margin_("margin", "Margin (in pixels)", 25, 0, 100)
     , legendSize_("legendSize", "Legend Size", vec2(200, 25), vec2(50, 10), vec2(400, 50))
-    , title_("title", "Legend Title", "Legend Title")
-    , color_("color", "Color", vec4(0, 0, 0, 1))
-    , fontSize_("fontSize", "Font Size", 14, 8, 36)
+    , axisStyle_("style", "Style")
+    , title_("title", "Legend Title", "Legend")
     , backgroundStyle_("backgroundStyle", "Background",
                        {{"noBackground", "No background", BackgroundStyle::NoBackground},
                         {"checkerBoard", "Checker board", BackgroundStyle::CheckerBoard}},
@@ -102,15 +100,11 @@ ColorScaleLegend::ColorScaleLegend()
     addProperty(positioning_);
 
     // legend style
-    style_.addProperty(title_);
-    style_.addProperty(color_);
-    color_.setSemantics(PropertySemantics::Color);
-    style_.addProperty(fontSize_);
-    style_.addProperty(backgroundStyle_);
-    style_.addProperty(checkerBoardSize_);
-    style_.addProperty(borderWidth_);
+    axisStyle_.insertProperty(0, title_);
+    axisStyle_.addProperties(backgroundStyle_, checkerBoardSize_, borderWidth_);
     checkerBoardSize_.setVisible(false);
-    addProperty(style_);
+    addProperty(axisStyle_);    
+    axisStyle_.registerProperty(axis_);
 
     addProperty(axis_);
 
@@ -118,19 +112,6 @@ ColorScaleLegend::ColorScaleLegend()
 
     title_.onChange([&]() { axis_.setCaption(title_.get()); });
 
-    fontSize_.onChange([&]() {
-        // the caption should be bigger than labels
-        axis_.captionSettings_.font_.fontSize_.set(fontSize_.get() + 2);
-        axis_.labelSettings_.font_.fontSize_.set(fontSize_.get());
-    });
-
-    color_.onChange([&]() {
-        axis_.color_.set(color_.get());
-        axis_.captionSettings_.color_.set(color_.get());
-        axis_.labelSettings_.color_.set(color_.get());
-        axis_.majorTicks_.color_.set(color_.get());
-        axis_.minorTicks_.color_.set(color_.get());
-    });
     // set initial axis parameters
     axis_.width_ = 0;
     axis_.setCaption(title_.get());
@@ -139,8 +120,6 @@ ColorScaleLegend::ColorScaleLegend()
     axis_.captionSettings_.offset_.set(20);
     axis_.captionSettings_.font_.anchorPos_.set(vec2{0.0f, 0.0f});
     axis_.setCurrentStateAsDefault();
-
-    fontSize_.propertyModified();
 
     legendPlacement_.onChange([&]() { updateLegendState(); });
 
@@ -271,7 +250,7 @@ void ColorScaleLegend::process() {
     TextureUnitContainer units;
     utilgl::Activate<Shader> activate(&shader_);
     utilgl::bindAndSetUniforms(shader_, units, isotfComposite_);
-    utilgl::setUniforms(shader_, position_, color_, borderWidth_, backgroundStyle_,
+    utilgl::setUniforms(shader_, position_, axisStyle_.color_, borderWidth_, backgroundStyle_,
                         checkerBoardSize_, rotation_, isotfComposite_);
 
     const ivec2 legendSize = getRealSize();
