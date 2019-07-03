@@ -149,7 +149,8 @@ public:
     ///
     /*--cef(optional_param=message,optional_param=source)--*/
     virtual bool OnConsoleMessage(CefRefPtr<CefBrowser> browser, cef_log_severity_t level,
-                                  const CefString& message, const CefString& source, int line);
+                                  const CefString& message, const CefString& source,
+                                  int line) override;
 
 protected:
     const PropertyWidgetCEFFactory* widgetFactory_;  /// Non-owning reference
