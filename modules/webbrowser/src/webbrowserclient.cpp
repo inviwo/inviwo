@@ -244,7 +244,7 @@ bool WebBrowserClient::OnConsoleMessage(CefRefPtr<CefBrowser> browser, cef_log_s
             case LOGSEVERITY_DISABLE:
                 return false;
             case LOGSEVERITY_ERROR:
-                loglevel = LogLevel::Warn;
+                loglevel = LogLevel::Error;
                 break;
             case LOGSEVERITY_WARNING:
                 loglevel = LogLevel::Warn;
@@ -259,6 +259,7 @@ bool WebBrowserClient::OnConsoleMessage(CefRefPtr<CefBrowser> browser, cef_log_s
 
         lc->log("WebBrowserClient", loglevel, LogAudience::Developer, file.c_str(), "", line,
                 message.ToString());
+        return true; 
     }
     return false;
 }
