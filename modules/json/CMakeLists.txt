@@ -9,6 +9,7 @@ set(HEADER_FILES
     include/modules/json/jsonmoduledefine.h
     include/modules/json/io/json/boolpropertyjsonconverter.h
     include/modules/json/io/json/buttonpropertyjsonconverter.h
+    include/modules/json/io/json/directorypropertyjsonconverter.h
     include/modules/json/io/json/filepropertyjsonconverter.h
     include/modules/json/io/json/glmjsonconverter.h
     include/modules/json/io/json/optionpropertyjsonconverter.h
@@ -27,6 +28,7 @@ set(SOURCE_FILES
     src/jsonmodule.cpp
     src/io/json/boolpropertyjsonconverter.cpp
     src/io/json/buttonpropertyjsonconverter.cpp
+    src/io/json/directorypropertyjsonconverter.cpp
     src/io/json/filepropertyjsonconverter.cpp
     src/io/json/propertyjsonconverterfactory.cpp
     src/io/json/propertyjsonconverterfactoryobject.cpp

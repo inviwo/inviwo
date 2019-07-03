@@ -30,6 +30,7 @@
 #include <modules/json/jsonmodule.h>
 #include <modules/json/io/json/boolpropertyjsonconverter.h>
 #include <modules/json/io/json/buttonpropertyjsonconverter.h>
+#include <modules/json/io/json/directorypropertyjsonconverter.h>
 #include <modules/json/io/json/filepropertyjsonconverter.h>
 #include <modules/json/io/json/minmaxpropertyjsonconverter.h>
 #include <modules/json/io/json/optionpropertyjsonconverter.h>
@@ -68,6 +69,7 @@ JSONModule::JSONModule(InviwoApplication* app) : InviwoModule(app, "JSON") {
     // added here
     registerPropertyJSONConverter<BoolProperty>();
     registerPropertyJSONConverter<ButtonProperty>();
+    registerPropertyJSONConverter<DirectoryProperty>();
     registerPropertyJSONConverter<FileProperty>();
     registerPropertyJSONConverter<StringProperty>();
 

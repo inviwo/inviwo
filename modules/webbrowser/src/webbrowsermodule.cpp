@@ -33,6 +33,7 @@
 
 #include <modules/json/io/json/boolpropertyjsonconverter.h>
 #include <modules/json/io/json/buttonpropertyjsonconverter.h>
+#include <modules/json/io/json/directorypropertyjsonconverter.h>
 #include <modules/json/io/json/filepropertyjsonconverter.h>
 #include <modules/json/io/json/minmaxpropertyjsonconverter.h>
 #include <modules/json/io/json/optionpropertyjsonconverter.h>
@@ -89,6 +90,7 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     registerPropertyWidgetCEF<PropertyWidgetCEF, BoolProperty>();
     registerPropertyWidgetCEF<PropertyWidgetCEF, ButtonProperty>();
     registerPropertyWidgetCEF<PropertyWidgetCEF, FileProperty>();
+    registerPropertyWidgetCEF<PropertyWidgetCEF, DirectoryProperty>();
     registerPropertyWidgetCEF<PropertyWidgetCEF, StringProperty>();
 
     // Register ordinal property widgets
