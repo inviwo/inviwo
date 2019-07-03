@@ -59,9 +59,10 @@ VolumeAxis::VolumeAxis()
                   {"basis", "Volume Basis", AxisRangeMode::VolumeBasis},
                   {"custom", "Custom", AxisRangeMode::Custom}})
     , customRanges_("customRanges", "Custom Ranges")
-    , rangeXaxis_("rangeX", "X Axis", 0.0, 1.0, 0.0, 1.0e6)
-    , rangeYaxis_("rangeY", "Y Axis", 0.0, 1.0, 0.0, 1.0e6)
-    , rangeZaxis_("rangeZ", "Z Axis", 0.0, 1.0, 0.0, 1.0e6)
+    , rangeXaxis_("rangeX", "X Axis", 0.0, 1.0, DataFloat32::lowest(), DataFloat32::max())
+    , rangeYaxis_("rangeY", "Y Axis", 0.0, 1.0, DataFloat32::lowest(), DataFloat32::max())
+    , rangeZaxis_("rangeZ", "Z Axis", 0.0, 1.0, DataFloat32::lowest(), DataFloat32::max())
+    , axisStyle_("axisStyle", "Global Axis Style")
     , xAxis_("xAxis", "X Axis")
     , yAxis_("yAxis", "Y Axis")
     , zAxis_("zAxis", "Z Axis")
@@ -91,9 +92,9 @@ VolumeAxis::VolumeAxis()
     yAxis_.setCaption("y");
     zAxis_.setCaption("z");
 
-    addProperty(xAxis_);
-    addProperty(yAxis_);
-    addProperty(zAxis_);
+    axisStyle_.setCollapsed(true);
+    axisStyle_.registerProperties(xAxis_, yAxis_, zAxis_);
+    addProperties(axisStyle_, xAxis_, yAxis_, zAxis_);
 
     addProperty(camera_);
     addProperty(trackball_);

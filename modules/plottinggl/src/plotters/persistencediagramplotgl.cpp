@@ -80,31 +80,19 @@ PersistenceDiagramPlotGL::Properties::Properties(std::string identifier, std::st
     , borderColor_("borderColor", "Border color", vec4(0, 0, 0, 1))
     , hovering_("hovering", "Enable Hovering", true)
 
+    , axisStyle_("axisStyle", "Global Axis Style")
     , xAxis_("xAxis", "X Axis")
     , yAxis_("yAxis", "Y Axis", AxisProperty::Orientation::Vertical) {
-    addProperty(showPoints_);
-    addProperty(radius_);
-    addProperty(lineWidth_);
-    addProperty(lineWidthDiagonal_);
-    addProperty(pointColor_);
-    addProperty(lineColor_);
+
+    util::for_each_in_tuple([&](auto &e) { this->addProperty(e); }, props());
+
     hoverColor_.setSemantics(PropertySemantics::Color);
-    addProperty(hoverColor_);
-    addProperty(tf_);
-    addProperty(margins_);
-    addProperty(axisMargin_);
-
     borderColor_.setSemantics(PropertySemantics::Color);
-    addProperty(borderWidth_);
-    addProperty(borderColor_);
 
-    addProperty(hovering_);
-
-    addProperty(xAxis_);
-    addProperty(yAxis_);
+    axisStyle_.setCollapsed(true);
+    axisStyle_.registerProperties(xAxis_, yAxis_);
 
     yAxis_.flipped_.set(true);
-    yAxis_.captionSettings_.font_.anchorPos_.set({0.0f, 1.0f});
 
     pointColor_.setVisible(true);
     tf_.setVisible(!pointColor_.getVisible());
@@ -125,44 +113,21 @@ PersistenceDiagramPlotGL::Properties::Properties(const PersistenceDiagramPlotGL:
     , borderWidth_(rhs.borderWidth_)
     , borderColor_(rhs.borderColor_)
     , hovering_(rhs.hovering_)
+    , axisStyle_(rhs.axisStyle_)
     , xAxis_(rhs.xAxis_)
     , yAxis_(rhs.yAxis_) {
-    addProperty(showPoints_);
-    addProperty(radius_);
-    addProperty(lineWidth_);
-    addProperty(lineWidthDiagonal_);
-    addProperty(pointColor_);
-    addProperty(lineColor_);
-    addProperty(hoverColor_);
-    addProperty(tf_);
-    addProperty(margins_);
-    addProperty(axisMargin_);
-    addProperty(borderColor_);
-    addProperty(borderWidth_);
-    addProperty(hovering_);
-    addProperty(xAxis_);
-    addProperty(yAxis_);
+    util::for_each_in_tuple([&](auto &e) { this->addProperty(e); }, props());
+    axisStyle_.unregisterAll();
+    axisStyle_.registerProperties(xAxis_, yAxis_);
 }
 
 PersistenceDiagramPlotGL::Properties &PersistenceDiagramPlotGL::Properties::operator=(
     const PersistenceDiagramPlotGL::Properties &that) {
     if (this != &that) {
         CompositeProperty::operator=(that);
-        showPoints_ = that.showPoints_;
-        radius_ = that.radius_;
-        lineWidth_ = that.lineWidth_;
-        lineWidthDiagonal_ = that.lineWidthDiagonal_;
-        pointColor_ = that.pointColor_;
-        lineColor_ = that.lineColor_;
-        hoverColor_ = that.hoverColor_;
-        tf_ = that.tf_;
-        margins_ = that.margins_;
-        axisMargin_ = that.axisMargin_;
-        borderWidth_ = that.borderWidth_;
-        borderColor_ = that.borderColor_;
-        hovering_ = that.hovering_;
-        xAxis_ = that.xAxis_;
-        yAxis_ = that.yAxis_;
+        util::for_each_in_tuple([](auto &dst, auto &src) { dst = src; }, props(), that.props());
+        axisStyle_.unregisterAll();
+        axisStyle_.registerProperties(xAxis_, yAxis_);
     }
     return *this;
 }
