@@ -86,6 +86,9 @@
 </head>
 <body >
 <h1>Latest Changes</h1>
+<h2>2019-07-03 Plotting Improvements</h2>
+<p>We added a <code>AxisStyleProperty</code> for simplifying the setup of multiple axis in plots. Multiple axis properties can be registered with this new style property (<code>AxisStyleProperty::registerProperty()</code>). Changes to any of the style properties (line and text color, font size, tick length, etc.) are propagated to all registered axes, i.e. all axis share the same style. Note: this modifications can be overwritten in the individual axis.</p>
+<p>There is now also an <code>Image Plot Processor</code> which allows to plot a 2D image with matching x-y axes. Interactions are forwarded to the image port which allows, e.g., to browse through volume slices. See image plot example in <code>PlottingGL</code>.</p>
 <h2>2019-04-30 Python Processors</h2>
 <p>Inviwo Processors can now be implemented directly in Python by creating a python class and deriving from inviwopy.Processor.<br />
 Bellow follows an example of a python processor:</p>

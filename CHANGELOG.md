@@ -1,5 +1,10 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2019-07-03 Plotting Improvements
+We added a `AxisStyleProperty` for simplifying the setup of multiple axes in plots. Multiple axis properties can be registered with this new style property (`AxisStyleProperty::registerProperty()`). Changes to any of the style properties (line and text color, font size, tick length, etc.) are propagated to all registered axes, i.e. all axis share the same style. Note: this modifications can be overwritten in the individual axis.
+
+There is now also an `Image Plot Processor` which allows to plot a 2D image with matching x-y axes. Interactions are forwarded to the image port which allows, e.g., to browse through volume slices. See image plot example in `PlottingGL`.
+
 ## 2019-06-11 Webbrowser property synchronization
 Changed way of synchronizing/setting properties in javascript. Instead of adding properties to the webbrowser processor one can now set them using their path from javascript.
 See web_property_sync.html in the Webbrowser module
