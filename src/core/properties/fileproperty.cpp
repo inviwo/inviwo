@@ -206,32 +206,31 @@ void FileProperty::requestFile() {
             if (filerequestable->requestFile()) return;
         }
     }
-    if (getWidgets().empty()) {
-        // Currently, the only difference between using the widget (Qt) and the FileDialog directly
-        // is that the Qt widget stores the previously used directory
-        auto fileDialog = util::dynamic_unique_ptr_cast<FileDialog>(
-            InviwoApplication::getPtr()->getDialogFactory()->create("FileDialog"));
-        if (!fileDialog) {
-            throw Exception(
-                "Failed to create a FileDialog. Add one to the InviwoApplication::DialogFactory");
-        }
+    // No FileRequestable widget found, use the factory.
+    // Currently, the only difference between using the widget (Qt) and the FileDialog directly
+    // is that the Qt widget stores the previously used directory
+    auto fileDialog = util::dynamic_unique_ptr_cast<FileDialog>(
+        InviwoApplication::getPtr()->getDialogFactory()->create("FileDialog"));
+    if (!fileDialog) {
+        throw Exception(
+            "Failed to create a FileDialog. Add one to the InviwoApplication::DialogFactory");
+    }
 
-        // Setup Extensions
-        std::vector<FileExtension> filters = this->getNameFilters();
-        fileDialog->addExtensions(filters);
+    // Setup Extensions
+    std::vector<FileExtension> filters = this->getNameFilters();
+    fileDialog->addExtensions(filters);
 
-        fileDialog->setCurrentFile(get());
-        fileDialog->setTitle(getDisplayName());
-        fileDialog->setAcceptMode(getAcceptMode());
-        fileDialog->setFileMode(getFileMode());
+    fileDialog->setCurrentFile(get());
+    fileDialog->setTitle(getDisplayName());
+    fileDialog->setAcceptMode(getAcceptMode());
+    fileDialog->setFileMode(getFileMode());
 
-        auto ext = getSelectedExtension();
-        if (!ext.empty()) fileDialog->setSelectedExtension(ext);
+    auto ext = getSelectedExtension();
+    if (!ext.empty()) fileDialog->setSelectedExtension(ext);
 
-        if (fileDialog->show()) {
-            setSelectedExtension(fileDialog->getSelectedFileExtension());
-            set(fileDialog->getSelectedFile());
-        }
+    if (fileDialog->show()) {
+        setSelectedExtension(fileDialog->getSelectedFileExtension());
+        set(fileDialog->getSelectedFile());
     }
 }
 
