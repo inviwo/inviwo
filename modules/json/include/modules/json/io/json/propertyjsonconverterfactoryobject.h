@@ -60,7 +60,7 @@ public:
 
     virtual ~PropertyJSONConverterFactoryObjectTemplate() {}
 
-    virtual std::unique_ptr<PropertyJSONConverter> create(Property* prop) {
+    virtual std::unique_ptr<PropertyJSONConverter> create(Property*) {
         return std::make_unique<TemplatePropertyJSONConverter<P>>();
     }
 
