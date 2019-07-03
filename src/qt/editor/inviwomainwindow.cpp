@@ -164,16 +164,17 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
 
     fileAssociations_->registerFileType(
         "Inviwo.workspace", "Inviwo Workspace", ".inv", 0,
-        {{"Open", "-w %1", "open",
+        {{"Open", "-w \"%1\"", "open",
           [this](const std::string& file) { openWorkspaceAskToSave(utilqt::toQString(file)); }},
-         {"Append", "-w %1", "append",
+         {"Append", "-w \"%1\"", "append",
           [this](const std::string& file) { appendWorkspace(file); }}});
 
-    fileAssociations_->registerFileType("Inviwo.volume", "Inviwo Volume", ".dat", 0,
-                                        {{"Open", "-d %1", "data", [this](const std::string& file) {
-                                              auto net = app_->getProcessorNetwork();
-                                              util::insertNetworkForData(file, net);
-                                          }}});
+    fileAssociations_->registerFileType(
+        "Inviwo.volume", "Inviwo Volume", ".dat", 0,
+        {{"Open", "-d \"%1\"", "data", [this](const std::string& file) {
+              auto net = app_->getProcessorNetwork();
+              util::insertNetworkForData(file, net);
+          }}});
 
     const QDesktopWidget dw;
     auto screen = dw.screenGeometry(this);
@@ -878,18 +879,12 @@ void InviwoMainWindow::addActions() {
 }
 
 void InviwoMainWindow::updateWindowTitle() {
-    QString windowTitle = QString("Inviwo - Interactive Visualization Workshop - ");
-    windowTitle.append(currentWorkspaceFileName_);
+    static const QString format{"Inviwo - Interactive Visualization Workshop - %1%2 (%3)"};
 
-    if (getNetworkEditor()->isModified()) windowTitle.append("*");
-
-    if (visibilityModeAction_->isChecked()) {
-        windowTitle.append(" (Application mode)");
-    } else {
-        windowTitle.append(" (Developer mode)");
-    }
-
-    setWindowTitle(windowTitle);
+    setWindowTitle(
+        format.arg(currentWorkspaceFileName_)
+            .arg(getNetworkEditor()->isModified() ? "*" : "")
+            .arg(visibilityModeAction_->isChecked() ? "Application mode" : "Developer mode"));
 }
 
 void InviwoMainWindow::addToRecentWorkspaces(QString workspaceFileName) {

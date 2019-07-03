@@ -107,14 +107,10 @@ public:
             ::GlobalDeleteAtom(appAtom_);
         }
 
-        auto atom = ::GlobalFindAtom((const wchar_t*)appAtomName_.utf16());
-
-        if (atom == 0) {  // last inviwo running;
-            // remove dde commands when not running to avoid
-            // "There was a problem sending the command to the program." errors
-            for (const auto& ddeCommand : ddeCommandsToRemove_) {
-                ::RegDeleteTree(HKEY_CURRENT_USER, (const wchar_t*)ddeCommand.utf16());
-            }
+        // remove dde commands when not running to avoid
+        // "There was a problem sending the command to the program." errors
+        for (const auto& ddeCommand : ddeCommandsToRemove_) {
+            ::RegDeleteTree(HKEY_CURRENT_USER, (const wchar_t*)ddeCommand.utf16());
         }
 
         if (0 != systemTopicAtom_) {

@@ -82,8 +82,8 @@ ThreadPool::Worker::Worker(ThreadPool& pool)
         pool.onThreadStart_();
         util::OnScopeExit cleanup{[&pool]() { pool.onThreadStop_(); }};
 
-        std::function<void()> task;
         for (;;) {
+            std::function<void()> task;
             state = State::Free;
             {
                 std::unique_lock<std::mutex> lock(pool.queue_mutex);
