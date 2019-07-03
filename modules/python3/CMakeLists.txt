@@ -108,7 +108,7 @@ if(IVW_PACKAGE_PROJECT AND BUILD_SHARED_LIBS AND IVW_PACKAGE_EMBED_PYTHON)
         if(IVW_CMAKE_DEBUG)
             set(show SHOW_PROGRESS)
         else()
-            set(shiw "")
+            set(show "")
         endif()
 
         set(py_version "${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}.${PYTHON_VERSION_PATCH}")
