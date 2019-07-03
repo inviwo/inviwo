@@ -201,16 +201,23 @@ void AxisProperty::updateLabels() {
 }
 
 void AxisProperty::adjustAlignment() {
-    vec2 anchor;
-    if (orientation_.get() == Orientation::Horizontal) {
-        // horizontal axis, center labels
-        anchor = vec2(0.0f, (placement_.get() == Placement::Outside) ? 1.0 : -1.0);
-    } else {
-        // vertical axis
-        anchor = vec2((placement_.get() == Placement::Outside) ? 1.0 : -1.0, 0.0f);
-    }
-    labelSettings_.font_.anchorPos_.set(anchor);
-    captionSettings_.font_.anchorPos_.set(anchor);
+    vec2 labelAnchor = [this]() {
+        if (orientation_.get() == Orientation::Horizontal) {
+            return vec2(0.0f, (placement_.get() == Placement::Outside) ? 1.0 : -1.0);
+        } else {
+            return vec2((placement_.get() == Placement::Outside) ? 1.0 : -1.0, 0.0f);
+        }
+    }();
+    vec2 captionAnchor = [this]() {
+        vec2 anchor = vec2(0.0f, (placement_.get() == Placement::Outside) ? 1.0 : -1.0);
+        if (orientation_.get() == Orientation::Vertical) {
+            anchor.y = -anchor.y;
+        }
+        return anchor;
+    }();
+
+    labelSettings_.font_.anchorPos_.set(labelAnchor);
+    captionSettings_.font_.anchorPos_.set(captionAnchor);
 }
 
 bool AxisProperty::getVisible() const { return visible_.get(); }
