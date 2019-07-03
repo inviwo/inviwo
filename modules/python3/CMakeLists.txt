@@ -101,23 +101,54 @@ endif()
 
 #--------------------------------------------------------------------
 # Add Python to package
-if(IVW_PACKAGE_PROJECT AND BUILD_SHARED_LIBS)
+option(IVW_PACKAGE_EMBED_PYTHON "Embed a python dist in the installer.\
+ Otherwise a existing python installation is needed to run inviwo" ON)
+if(IVW_PACKAGE_PROJECT AND BUILD_SHARED_LIBS AND IVW_PACKAGE_EMBED_PYTHON)
     if(WIN32)
+        if(IVW_CMAKE_DEBUG)
+            set(show SHOW_PROGRESS)
+        else()
+            set(shiw "")
+        endif()
+
         set(py_version "${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}.${PYTHON_VERSION_PATCH}")
         set(py_url "https://www.python.org/ftp/python/${py_version}/python-${py_version}-embed-amd64.zip")
-        set(py_dir "${CMAKE_BINARY_DIR}/py_embedd/")
+        set(py_dir "${CMAKE_BINARY_DIR}/py_embedd")
         set(py_file "${py_dir}/py_embedd.${py_version}.zip")
         if(NOT EXISTS "${py_file}")
-            file(DOWNLOAD ${py_url} ${py_file} STATUS py_status SHOW_PROGRESS)
+            ivw_debug_message(STATUS "Download ${py_url}")
+            file(DOWNLOAD ${py_url} ${py_file} STATUS py_status ${show} LOG get_py_log)
             list(GET py_status 0 py_success)
             if(NOT py_success EQUAL 0)
-                message(FATAL_ERROR "Could not download python embedd: ${py_url}")
+                message(FATAL_ERROR "Could not download python embedd: '${py_url}':\n${get_py_log}")
             endif()
         endif()
-       
+
         file(MAKE_DIRECTORY "${py_dir}/python")
         execute_process(COMMAND ${CMAKE_COMMAND} -E tar "xf" ${py_file}
                         WORKING_DIRECTORY "${py_dir}/python")
+        file(APPEND ${py_dir}/python/python37._pth "import site")
+
+        set(pip_file "${py_dir}/python/get-pip.py")
+        if(NOT EXISTS "${pip_file}")
+            set(pip_urll "https://bootstrap.pypa.io/get-pip.py")
+            set(pip_url2 "https://github.com/pypa/get-pip/raw/master/get-pip.py")
+            ivw_debug_message(STATUS "Download ${pip_url2}")
+            file(DOWNLOAD "${pip_url2}" "${pip_file}" 
+                 STATUS pip_status ${show} LOG get_pip_log)
+            if(NOT pip_status EQUAL 0)
+                file(REMOVE "${pip_file}")
+                message(FATAL_ERROR "Could not download '${pip_url2}':\n ${get_pip_log}")
+            endif()
+        endif()
+
+        if(NOT EXISTS ${py_dir}/python/Scripts)
+            execute_process(COMMAND ./python.exe get-pip.py --no-warn-script-location 
+                WORKING_DIRECTORY "${py_dir}/python")    
+            execute_process(COMMAND ./python.exe -m pip install numpy --no-warn-script-location 
+                WORKING_DIRECTORY "${py_dir}/python")
+        endif()
+
         install(DIRECTORY "${py_dir}/python/" DESTINATION bin COMPONENT python)
     endif()
 endif()
