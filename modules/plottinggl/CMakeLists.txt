@@ -12,6 +12,7 @@ set(HEADER_FILES
     include/modules/plottinggl/plottingglmoduledefine.h
     include/modules/plottinggl/processors/axisrenderprocessor.h
     include/modules/plottinggl/processors/colorscalelegend.h
+    include/modules/plottinggl/processors/imageplotprocessor.h
     include/modules/plottinggl/processors/parallelcoordinates/parallelcoordinates.h
     include/modules/plottinggl/processors/parallelcoordinates/pcpaxissettings.h
     include/modules/plottinggl/processors/persistencediagramplotprocessor.h
@@ -31,6 +32,7 @@ set(SOURCE_FILES
     src/plottingglmodule.cpp
     src/processors/axisrenderprocessor.cpp
     src/processors/colorscalelegend.cpp
+    src/processors/imageplotprocessor.cpp
     src/processors/parallelcoordinates/parallelcoordinates.cpp
     src/processors/parallelcoordinates/pcpaxissettings.cpp
     src/processors/persistencediagramplotprocessor.cpp
