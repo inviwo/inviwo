@@ -31,7 +31,7 @@
 #pragma comment(linker, "/SUBSYSTEM:CONSOLE")
 
 #ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
-#include <ext/vld/vld.h>
+#include <vld.h>
 #endif
 
 #endif

@@ -58,7 +58,7 @@ template <typename T>
 class ValueDragger : public QWidget {
 public:
     explicit ValueDragger(NumberLineEdit *spinBox, QWidget *parent = nullptr);
-    virtual ~ValueDragger() override = default;
+    virtual ~ValueDragger() = default;
 
     virtual QSize sizeHint() const override;
 
@@ -88,7 +88,7 @@ private:
     double exponent_ = 1.2;
 
     NumberLineEdit *spinBox_;
-    IndicatorWidget *indicator_;
+    std::unique_ptr<IndicatorWidget> indicator_;
     int spinDeltaTimerId_ = -1;
     QPoint clickPos_;
     bool dragging_ = false;
@@ -100,7 +100,7 @@ private:
 
 template <typename T>
 ValueDragger<T>::ValueDragger(NumberLineEdit *spinBox, QWidget *parent)
-    : QWidget(parent), spinBox_(spinBox), indicator_(new IndicatorWidget()) {
+    : QWidget(parent), spinBox_(spinBox), indicator_(std::make_unique<IndicatorWidget>()) {
     indicator_->setVisible(false);
     setObjectName("valueDragger");
     setAttribute(Qt::WA_TranslucentBackground);

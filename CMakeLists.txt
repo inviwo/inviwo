@@ -134,6 +134,8 @@ if(NOT "${CMAKE_PREFIX_PATH}" MATCHES "[Qq][Tt]")
     endif()
 endif()
 
+add_custom_target(uninstall COMMENT "Dummy target to prevent other uninstalls")
+
 #--------------------------------------------------------------------
 # Add external libraries.
 #
@@ -173,8 +175,7 @@ add_subdirectory(tests/integrationtests) # Add integration tests project
 include(cmake/packaging.cmake)           # Package creation
 
 # Generate Doxygen setup.
-include(docs/doxygen.cmake)
-make_doxygen_target(all_modules)
+add_subdirectory(docs)
 
 string(TIMESTAMP time "%Y-%m-%d %H:%M:%S")
 message(STATUS "Configure started at ${timeStart} and ended at ${time}")
