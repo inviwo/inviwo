@@ -105,12 +105,21 @@ namespace inviwo::animation {
                                                     Seconds from, Seconds to, easing::EasingType) const ->
         typename Key::value_type {
             using VT = typename Key::value_type;
-
-
-            auto it = std::upper_bound(keys.begin(), keys.end(), to, [](const auto& time, const auto& key) {
-                return time < key->getTime();
-            });
-            return it->getValue();
+            std::vector<VT> values;
+            for(auto key : keys) {
+                values.push_back(key->getValue());
+            }
+            if (!_init) {
+                _spline = Nurb(values.size(), values);
+                _init = true;
+            } else {
+                if (!_spline.equalPoints(values)) {
+                    _spline = Nurb(values.size(), values);
+                }
+            }
+            auto time = ((to-from)/2)/((keys.end()-1)->getTime - keys.begin()->getTime());
+            double t = time.count();
+            return _spline.evaluate(t);
 
         }
 
