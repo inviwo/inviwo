@@ -31,6 +31,7 @@
 
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/network/networklock.h>
 #include <modules/fontrendering/util/fontutils.h>
 
 namespace inviwo {
@@ -46,7 +47,7 @@ AxisStyleProperty::AxisStyleProperty(const std::string& identifier, const std::s
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , fontFace_("fontFace", "Font Face")
     , fontSize_("fontSize", "Font Size", 14, 0, 144, 1)
-    , color_("color", "Color", vec4(0.0f), vec4(0.0f, 0.0f, 0.0f, 1.0f), vec4(1.0f))
+    , color_("defaultcolor", "Color", vec4(0.0f, 0.0f, 0.0f, 1.0f), vec4(0.0f), vec4(1.0f))
     , lineWidth_("lineWidth", "Line Width", 2.5f, 0.0f, 20.0f)
     , tickLength_("tickLength", "Tick Length", 8.0f, 0.0f, 20.0f)
     , labelFormat_("labelFormat", "Label Format", "%.1f") {
@@ -64,32 +65,38 @@ AxisStyleProperty::AxisStyleProperty(const std::string& identifier, const std::s
     color_.setSemantics(PropertySemantics::Color);
 
     fontFace_.onChange([this]() {
+        NetworkLock lock(this);
         for (auto a : axes_) {
             a->setFontFace(fontFace_);
         }
     });
     fontSize_.onChange([this]() {
+        NetworkLock lock(this);
         for (auto a : axes_) {
             a->setFontSize(fontSize_);
         }
     });
     color_.onChange([this]() {
+        NetworkLock lock(this);
         for (auto a : axes_) {
             a->setColor(color_);
         }
     });
     lineWidth_.onChange([this]() {
+        NetworkLock lock(this);
         for (auto a : axes_) {
             a->setLineWidth(lineWidth_);
         }
     });
     tickLength_.onChange([this]() {
+        NetworkLock lock(this);
         const auto len = tickLength_.get();
         for (auto a : axes_) {
             a->setTickLength(len, 0.75f * len);
         }
     });
     labelFormat_.onChange([this]() {
+        NetworkLock lock(this);
         for (auto a : axes_) {
             a->setLabelFormat(labelFormat_);
         }
