@@ -30,320 +30,148 @@
 #include "../../ext/tinynurbs/tinynurbs/tinynurbs.h"
 #include <inviwo/bspline/interpolation/nurbutilities.h>
 #include <glm/gtc/constants.hpp>
-#include "Eigen/Dense"
 #include <cmath>
-#include <iostream>
 
-using namespace Eigen;
+/* Solves a triangular system of linear equations using the Thomas Algorithm.
 
-///Based on The NURBS Book by Les Piegl and Wayne Tiller, Springer 1997, Chapter 9.2.1, Page 364
+    Vectors a,b,c represent the lower, main, and upper diagonal, respectively.
+    Vector x represents the right-hand side and will be overwritten with the solution.
+*/
+template <typename T>
+void SolveTridiagonalSystem(const std::vector<double>& a, const std::vector<double>& b, const std::vector<double>& c,
+                            std::vector<T>& x)
+{
+    //Allocate scratch space
+    const int N = a.size();
+    std::vector<double> cprime(N);
 
-void InterpolateCurveGlobalNoDeriv(const std::vector<glm::vec3> &InPoints, tinynurbs::Curve<3, float> &ResCurve) {
+    cprime[0] = c[0] / b[0];
+    x[0] = x[0] / b[0];
+
+    // loop from 1 to N - 1 inclusive
+    for (int ix = 1; ix < N; ix++)
+    {
+        const double m = 1.0f / (b[ix] - a[ix] * cprime[ix - 1]);
+        cprime[ix] = c[ix] * m;
+        x[ix] = (x[ix] - a[ix] * x[ix - 1]) * m;
+    }
+
+    // loop from N - 2 to 0 inclusive
+    for (int ix = N - 2; ix >= 0; ix--)
+    {
+        x[ix] -= cprime[ix] * x[ix + 1];
+    }
+}
+
+
+//Based on The NURBS Book by Les Piegl and Wayne Tiller, Springer 1997, Chapter 9.2.2, Page 370
+// and the lecture slides of Tino Weinkauf and Holger Theisel.
+template<typename value_type, int dim>
+void GetInterpolatingNaturalCubicSpline(const std::vector<glm::vec<dim, value_type>>& InPoints,
+                                        const std::vector<double>& CurveParameter,
+                                        tinynurbs::Curve<dim, value_type>& ResCurve)
+{
+    //Types
+    using VecType = typename glm::vec<dim, value_type>;
+
     //Let us use the classic variables, so that our math conforms to the book
     const int n = (int)InPoints.size() - 1;
-    const int DesiredDegree = 3; //We choose a piecewise cubic b-spline.
-
-    //Lower the degree when you have less points.
-    const int degree = (n < DesiredDegree) ? n : DesiredDegree;
+    const int degree = 3; //We choose a piecewise cubic b-spline.
     const int p = degree;
 
-    //Set up the resulting curve
-    ResCurve.degree = degree;
+    if (n < 1) return;
 
-    //We get as many de Boor points as input points with this method
-    ResCurve.control_points.resize(InPoints.size());
+    //Shorthand for the parametrization
+    const std::vector<double>& u = CurveParameter;
 
-    //Curve Parameter u: chord length parameterization according to formulae 9.4 and 9.5
-    // - get chord length of input points (interpreted as a polyline)
-    float d(0);
-    for(int i(1);i<=n;i++)
-    {
-        d += glm::length(InPoints[i] - InPoints[i-1]);
-    }
-    std::cout << "Chord Length is " << d << std::endl;
-    // - get parameters defining where we find our input points along the new interpolated curve
-    std::vector<float> CurveParameter(n+1);
-    CurveParameter[0] = 0;
-    CurveParameter[n] = 1;
-    for(int i(1);i<n;i++)
-    {
-        CurveParameter[i] = CurveParameter[i-1] + glm::length(InPoints[i] - InPoints[i-1]) / d;
-    }
-    // - shorthand
-    const std::vector<float>& u = CurveParameter;
-
-    //Knot Vector U using the method of averaging according to formula 9.8
-    const int m = n+p+1;
-    std::vector<float> Knots(m+1);
+    //Knot Vector U: interpolation of input points occurs at the knots
+    const int m = n+p+3; //Two additional knots compared to the spline interpolation without derivatives
+    std::vector<double> Knots(m+1);
     for(int i(0);i<=p;i++)
     {
         Knots[i] = 0;
         Knots[m-i] = 1;
     }
-    for(int j(1);j<=n-p;j++)
+    for(int j(1);j<=n-1;j++)
     {
-        float& ThisKnot = Knots[j+p];
-        ThisKnot = 0;
-
-        for(int i(j);i<=j+p-1;i++)
-        {
-            ThisKnot += u[i];
-        }
-
-        ThisKnot /= p; //p == degree
+        Knots[j+p] = u[j];
     }
     // - shorthand
-    const std::vector<float>& U = Knots;
+    const std::vector<double>& U = Knots;
 
-    //Coefficient matrix with n+1 equations
-    MatrixXf CoeffMat(n+1, n+1);
-    CoeffMat.setZero();
+    /////////////////////////////////////////////
+    //Coefficient matrix with n+3 equations.
+    //It is a tridiagonal system:
+    // a represents the diagonal below b.
+    // b represents the main diagonal.
+    // c represents the diagonal above b.
+    std::vector<double> a(n+3, 0), b(n+3, 0), c(n+3, 0);
+
+    //Interpolate the endpoints
+    b[0] = 1;
+    b[n+2] = 1;
+    //Each inner input point is constructed from 3 control points.
+    // Only 3 points, since we evaluate directly at an interior knot.
+    // The fourth basis function is always zero then.
+    for(int i(1);i<n;i++)
+    {
+        const int idxSpan = tinynurbs::findSpan<double>(degree, U, u[i]);
+        auto Basis = tinynurbs::bsplineBasis<double>(degree, idxSpan, U, u[i]);
+        a[i + 1] = Basis[0];
+        b[i + 1] = Basis[1];
+        c[i + 1] = Basis[2];
+    }
+
+    if (n >= 2)
+    {
+        //Natural end condition: second derivative is zero at the endpoints, meaning the curve becomes a straight line there.
+        // That is perfect for continuing any animation with a linear interpolation.
+        a[1] = u[2] - u[0];
+        b[1] = -(u[2] - u[0]) - (u[1] - u[0]);
+        c[1] = u[1] - u[0];
+        a[n+1] = u[n] - u[n-1];
+        b[n+1] = -(u[n] - u[n-1]) - (u[n] - u[n-2]);
+        c[n+1] = u[n] - u[n-2];
+    }
+    else
+    {
+        //We have only two input points. Keep it a straight line.
+        a[1] = -1;
+        b[1] = 1;
+        b[n+1] = -1;
+        c[n+1] = 1;
+    }
+
+
+    /////////////////////////////////////////////
+    //Right-hand side
+    ResCurve.control_points.resize(n+3);
+    std::vector<VecType>& Solution = ResCurve.control_points;
+    //Solution vector contains RightHandSide at first and will be overwritten by SolveTridiagonalSystem() 
+    int RowOffset(0);
     for(int i(0);i<=n;i++)
     {
-        const int idxSpan = tinynurbs::findSpan<float>(degree, U, u[i]);
-        auto Basis = tinynurbs::bsplineBasis<float>(degree, idxSpan, U, u[i]);
-        for(int c(0);c<=degree;c++)
-        {
-            CoeffMat(i, idxSpan - degree + c) = Basis[c];
-        }
+        if (i == 1) RowOffset++;
+        if (i == n) RowOffset++;
+        Solution[i + RowOffset] = InPoints[i];
     }
-
-    std::cout << CoeffMat << std::endl;
-
-    //Solve in each dimension
-    VectorXf Solution[3];
-    for(int d(0);d<3;d++)
+    if (n >= 2)
     {
-        //A vector with the input points' coordinates in that dimension
-        VectorXf RightSide(n+1);
-        for(int i(0);i<=n;i++)
-        {
-            RightSide(i) = InPoints[i][d];
-        }
-
-        Solution[d] = CoeffMat.colPivHouseholderQr().solve(RightSide);
-        std::cout << Solution[d] << std::endl;
+        //Natural end condition
+        Solution[1] = VecType(0);
+        Solution[n+1] = VecType(0);
+    }
+    else
+    {
+        //Keep it a straight line with equidistant sampling.
+        Solution[1] = (U[p+1] / p) * (InPoints[1] - InPoints[0]);
+        Solution[n+1] = (1 - U[m-p-1]) / p * (InPoints[1] - InPoints[0]);
     }
 
+    //Solve!
+    SolveTridiagonalSystem(a, b, c, Solution);
 
     //Set up the actual curve
     ResCurve.knots = U;
     ResCurve.degree = degree;
-    for(int i(0);i<=n;i++)
-    {
-        ResCurve.control_points[i].x = Solution[0][i];
-        ResCurve.control_points[i].y = Solution[1][i];
-        ResCurve.control_points[i].z = Solution[2][i];
-    }
-
-/*
-    if (!tinynurbs::curveIsValid(ResCurve))
-    {
-        // check if degree, knots and control points are configured as per
-        // #knots == #control points + degree + 1
-        printf("Not Valid\n\t#knots = %zd  ==  #ctrlpts = %zd  +  degree = %d  +  1\n\n",
-               ResCurve.knots.size(),
-               ResCurve.control_points.size(),
-               ResCurve.degree);
-    }
-    else
-    {
-        printf("Valid\n");
-    }
-    */
 }
-
-
-void InterpolateCurve(const std::vector<glm::vec3> &InPoints, tinynurbs::Curve<3, float> &ResCurve) {
-    //Let us use the classic variables, so that our math conforms to the lecture slides
-    const int n = (int)InPoints.size() - 1;
-    const int degree = 3; //We choose a piecewise cubic b-spline
-    const int k = degree + 1;
-    const int order = k;
-
-    //Set up the resulting curve
-    ResCurve.degree = degree;
-
-    //We get n+3 de Boor points when interpolating our input points
-    // - actually, the 3 refers to the cubic degree
-    ResCurve.control_points.resize(n + 3);
-
-    //Let us assume a simple knot vector first, maybe something more special later.
-    std::vector<float> InKnots(n+1);
-    for(int i(0);i<(int)InKnots.size();i++)
-    {
-        InKnots[i] = (float)i;
-    }
-    // - shorthand
-    const std::vector<float>& s = InKnots;
-
-    //For our output knot vector, we choose an interpolating one
-    {
-        ResCurve.knots.resize(n+7);
-        int i = 0;
-        int j = 0;
-        for(int i(0),j(0);i<ResCurve.knots.size();i++)
-        {
-            if (i >= degree + 1 && i <= ResCurve.knots.size() - degree - 1)
-            {
-                j++;
-            }
-            ResCurve.knots[i] = InKnots[j];
-        }
-    }
-    // - shorthand
-    const std::vector<float>& t = ResCurve.knots;
-
-    //A matrix with n+3 equations
-    MatrixXf TridiagonalMatrix(n+3, n+3);
-    TridiagonalMatrix.setZero();
-    // - first and last row
-    TridiagonalMatrix(0, 0) = 1;
-    TridiagonalMatrix(n+2, n+2) = 1;
-    // - alpha_zero, beta_zero, gamma_zero
-    TridiagonalMatrix(1, 0) = s[2] - s[0];
-    TridiagonalMatrix(1, 1) = -(s[2] - s[0]) - (s[1] - s[0]);
-    TridiagonalMatrix(1, 2) = s[1] - s[0];
-    // - alpha_n, beta_n, gamma_n
-    TridiagonalMatrix(n+1, n) = s[n] - s[n-1];
-    TridiagonalMatrix(n+1, n+1) = -(s[n] - s[n-1]) - (s[n] - s[n-2]);
-    TridiagonalMatrix(n+1, n+2) = s[n] - s[n-2];
-    // - all rows inbetween for the alpha_i, beta_i, gamma_i from i = 1 .. n-1
-    // - those are the rows r = 2 .. n
-    for(int r(2),i(1);r<=n;r++,i++)
-    {
-        //CoeffMat(r, i) = tinynurbs::bsplineOneBasis<float>(i, degree, s, s[i]);
-        //CoeffMat(r, i+1) = tinynurbs::bsplineOneBasis<float>(i+1, degree, s, s[i]);
-        //CoeffMat(r, i+2) = tinynurbs::bsplineOneBasis<float>(i+2, degree, s, s[i]);
-        TridiagonalMatrix(r, i  ) = tinynurbs::bsplineBasis<float>(degree, tinynurbs::findSpan<float>(degree, s, s[i]), s, s[i])[0];
-        TridiagonalMatrix(r, i+1) = tinynurbs::bsplineBasis<float>(degree, tinynurbs::findSpan<float>(degree, s, s[i+1]), s, s[i+1])[0];
-        if (i+2 < s.size())
-        {
-            TridiagonalMatrix(r, i+2) = tinynurbs::bsplineBasis<float>(degree, tinynurbs::findSpan<float>(degree, s, s[i+2]), s, s[i+2])[0];
-        }
-        else
-        {
-            TridiagonalMatrix(r, i+2) = 0;
-        }
-    }
-
-    std::cout << TridiagonalMatrix << std::endl;
-
-    //Compute proper control points that actually interpolate the given input points
-    //Solve in each dimension
-    VectorXf Solution[3];
-    for(int d(0);d<3;d++)
-    {
-        //A vector with the input points and some extras
-        VectorXf RightSide(n+3);
-        //RightSide.ro
-        RightSide(0) = InPoints[0][d];
-        RightSide(1) = 0;
-        RightSide(n+1) = 0;
-        RightSide(n+2) = InPoints[n][d];
-        for(int r(2),i(1);r<=n;r++,i++)
-        {
-            RightSide(r) = InPoints[i][d];
-        }
-
-        Solution[d] = TridiagonalMatrix.colPivHouseholderQr().solve(RightSide);
-        std::cout << Solution[d] << std::endl;
-    }
-
-    for(int i(0);i<n+3;i++)
-    {
-        ResCurve.control_points[i].x = Solution[0][i];
-        ResCurve.control_points[i].y = Solution[1][i];
-        ResCurve.control_points[i].z = Solution[2][i];
-    }
-
-/*
-    if (!tinynurbs::curveIsValid(ResCurve))
-    {
-        // check if degree, knots and control points are configured as per
-        // #knots == #control points + degree + 1
-        printf("Not Valid\n\t#knots = %zd  ==  #ctrlpts = %zd  +  degree = %d  +  1\n\n",
-               ResCurve.knots.size(),
-               ResCurve.control_points.size(),
-               ResCurve.degree);
-    }
-    else
-    {
-        printf("Valid\n");
-    }*/
-}
-
-
-
-void ApproximateCurve(const std::vector<glm::vec3> &InPoints, tinynurbs::Curve<3, float> &ResCurve) {
-    ResCurve.control_points = InPoints;
-    ResCurve.degree = 3;
-    //ResCurve.knots = {0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 6, 6, 6};
-    ResCurve.knots.resize(ResCurve.control_points.size() + ResCurve.degree + 1);
-    int i = 0;
-    int k = 0;
-    for(int i(0),k(0);i<ResCurve.knots.size();i++)
-    {
-        if (i >= (int)ResCurve.degree + 1 && i <= (int)ResCurve.knots.size() - (int)ResCurve.degree - 1)
-        {
-            k++;
-        }
-        ResCurve.knots[i] = (float)k;
-    }
-/*
-    if (!tinynurbs::curveIsValid(ResCurve))
-    {
-        // check if degree, knots and control points are configured as per
-        // #knots == #control points + degree + 1
-        printf("Not Valid\n\t#knots = %zd  ==  #ctrlpts = %zd  +  degree = %d  +  1\n\n",
-               ResCurve.knots.size(),
-               ResCurve.control_points.size(),
-               ResCurve.degree);
-    }
-    else
-    {
-        printf("Valid\n");
-    }
-    */
-}
-
-//
-//void SaveCurve(tinynurbs::Curve<3, float> &Curve, const char *FileName, const int NumPoints) {
-//    FILE* f = fopen(FileName, "wt");
-//    const float MinKnot = Curve.knots.front();
-//    const float MaxKnot = Curve.knots.back();
-//    for(int i=(0);i<NumPoints;i++)
-//    {
-//        const float t = float(i) / float(NumPoints - 1);
-//        float InterpolKnot = (1-t) * MinKnot + t * MaxKnot;
-//        if (InterpolKnot == MaxKnot) InterpolKnot -= 1e-5f; //tinynurbs is buggy and does not work with a knot value == MaxKnot
-//        glm::vec3 P = tinynurbs::curvePoint(Curve, InterpolKnot);
-//        fprintf(f, "v %g %g %g\n", P.x, P.y, P.z);
-//    }
-//
-//    fprintf(f, "l");
-//    for(int i=(0);i<NumPoints;i++)
-//    {
-//        fprintf(f, " %d", i+1);
-//    }
-//
-//    fclose(f);
-//}
-//
-//
-//void SavePolyline(std::vector<glm::vec3> &Curve, const char *FileName) {
-//    FILE* f = fopen(FileName, "wt");
-//    for(int i=(0);i<Curve.size();i++)
-//    {
-//        fprintf(f, "v %g %g %g\n", Curve[i].x, Curve[i].y, Curve[i].z);
-//    }
-//
-//    fprintf(f, "l");
-//    for(int i=(0);i<Curve.size();i++)
-//    {
-//        fprintf(f, " %d", i+1);
-//    }
-//
-//    fclose(f);
-//}
-

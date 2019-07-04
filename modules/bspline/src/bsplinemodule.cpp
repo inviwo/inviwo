@@ -28,45 +28,81 @@
  *********************************************************************************/
 
 #include <inviwo/bspline/bsplinemodule.h>
+#include <inviwo/bspline/interpolation/splineinterpolation.h>
+#include <modules/animation/animationmodule.h>
+
 
 namespace inviwo {
 
-bsplineModule::bsplineModule(InviwoApplication* app) : InviwoModule(app, "bspline") {
-    // Add a directory to the search path of the Shadermanager
-    // ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
+namespace {
 
-    // Register objects that can be shared with the rest of inviwo here:
+template <typename PropertyType>
+auto trackRegHelper(BSplineModule& am) {
+    using namespace animation;
+    using ValueType = typename PropertyType::value_type;
+    // Register PropertyTrack and the KeyFrame it should use
+    am.registerTrack<PropertyTrack<PropertyType, ValueKeyframe<ValueType>>>();
+    am.registerPropertyTrackConnection(
+        PropertyTraits<PropertyType>::classIdentifier(),
+        PropertyTrack<PropertyType, ValueKeyframe<ValueType>>::classIdentifier());
+}
 
-    // Processors
-    // registerProcessor<bsplineProcessor>();
+template <typename PropertyType, template <class> class Interpolation>
+auto interpolationRegHelper(BSplineModule& am) {
+    using namespace animation;
+    using ValueType = typename PropertyType::value_type;
 
-    // Properties
-    // registerProperty<bsplineProperty>();
+    // No need to add existing interpolation method. Will produce a warning if adding a duplicate
+    if (!am.getAnimationManager().getInterpolationFactory().hasKey(
+            Interpolation<ValueKeyframe<ValueType>>::classIdentifier())) {
+        am.registerInterpolation<Interpolation<ValueKeyframe<ValueType>>>();
+    }
 
-    // Readers and writes
-    // registerDataReader(util::make_unique<bsplineReader>());
-    // registerDataWriter(util::make_unique<bsplineWriter>());
+    // Default interpolation for this property
+    am.registerPropertyInterpolationConnection(
+        PropertyTraits<PropertyType>::classIdentifier(),
+        Interpolation<ValueKeyframe<ValueType>>::classIdentifier());
+}
 
-    // Data converters
-    // registerRepresentationConverter(util::make_unique<bsplineDisk2RAMConverter>());
+struct OrdinalReghelper {
+    template <typename T>
+    auto operator()(BSplineModule& am) {
+        using namespace animation;
+        using PropertyType = OrdinalProperty<T>;
+        trackRegHelper<PropertyType>(am);
+        interpolationRegHelper<PropertyType, SplineInterpolation>(am);
+    }
+};
 
-    // Ports
-    // registerPort<bsplineOutport>();
-    // registerPort<bsplineInport>();
+struct MinMaxReghelper {
+    template <typename T>
+    auto operator()(BSplineModule& am) {
+        using namespace animation;
+        using PropertyType = MinMaxProperty<T>;
 
-    // PropertyWidgets
-    // registerPropertyWidget<bsplinePropertyWidget, bsplineProperty>("Default");
+        trackRegHelper<PropertyType>(am);
+        interpolationRegHelper<PropertyType, SplineInterpolation>(am);
+    }
+};
 
-    // Dialogs
-    // registerDialog<bsplineDialog>(bsplineOutport);
+}
 
-    // Other things
-    // registerCapabilities(util::make_unique<bsplineCapabilities>());
-    // registerSettings(util::make_unique<bsplineSettings>());
-    // registerMetaData(util::make_unique<bsplineMetaData>());
-    // registerPortInspector("bsplineOutport", "path/workspace.inv");
-    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget> processorWidget); 
-    // registerDrawer(util::make_unique_ptr<bsplineDrawer>());
+
+BSplineModule::BSplineModule(InviwoApplication* app)
+    : InviwoModule(app, "bspline") 
+    , animation::AnimationSupplier(manager_)
+    , manager_(app, this)
+    , demoController_(app) {
+
+    // Register Ordinal properties
+    using Types = std::tuple<float, vec2, vec3, vec4, mat2, mat3, mat4, double, dvec2, dvec3, dvec4,
+                             dmat2, dmat3, dmat4, int, ivec2, ivec3, ivec4, unsigned int, uvec2,
+                             uvec3, uvec4, size_t, size2_t, size3_t, size4_t>;
+    util::for_each_type<Types>{}(OrdinalReghelper{}, *this);
+
+    // Register MinMaxProperties
+    using ScalarTypes = std::tuple<float, double, int, unsigned int, size_t>;
+    util::for_each_type<ScalarTypes>{}(MinMaxReghelper{}, *this);
 }
 
 }  // namespace inviwo
