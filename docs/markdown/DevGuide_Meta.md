@@ -15,11 +15,11 @@ a terminal.
 `./inviwo-meta-cli.exe -m <inviwo-dir>/modules/<module-name> -o modules`
 
 3. Create a processor by entering\
-`./inviwo-meta-cli.exe -p <module-dir>/src/processor/<processor-name>`
+`./inviwo-meta-cli.exe -p <module-dir>/src/processor/<processor-name>`\
 A small example processor is created which can then be modified
 
 4. To add, for example, a helper file in `utils` you can use\
-`./inviwo-meta-cli.exe -f <module-dir>/src/utils/<file-name>`\
+`./inviwo-meta-cli.exe -f <module-dir>/src/utils/<file-name>`
 
 A few more notes:
 - When creating a module, you might also want to change the `depends.cmake` to depend on other Inviwo modules. One
