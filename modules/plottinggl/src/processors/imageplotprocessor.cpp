@@ -30,6 +30,7 @@
 #include <modules/plottinggl/processors/imageplotprocessor.h>
 
 #include <modules/opengl/openglutils.h>
+#include <modules/opengl/texture/textureutils.h>
 
 namespace inviwo {
 
