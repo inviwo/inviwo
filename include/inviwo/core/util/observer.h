@@ -278,7 +278,9 @@ void Observable<T>::startBlockingNotifications() {
 }
 template <typename T>
 void Observable<T>::stopBlockingNotifications() {
-    --notificationsBlocked_;
+    if (notificationsBlocked_ != 0) {
+        --notificationsBlocked_;
+    }
 }
 
 template <typename T>
