@@ -1,5 +1,15 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2019-07-04 New Inviwo version
+We are releasing a new Inviwo version 0.9.10. 
+Major change since the last relase include:
+ * Embedded web browser support
+ * Get Started widget
+ * Python processors
+ * New module structure
+ * New meta tool for adding new modules/processors
+Moreover this will be that last version to not require c++17.
+
 ## 2019-06-11 Webbrowser property synchronization
 Changed way of synchronizing/setting properties in javascript. Instead of adding properties to the webbrowser processor one can now set them using their path from javascript.
 See web_property_sync.html in the Webbrowser module
