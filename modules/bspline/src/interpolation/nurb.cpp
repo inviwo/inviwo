@@ -116,7 +116,59 @@ std::vector<float> Nurb::evaluate(float u) {
         ret.pop_back();
     }
     return ret;
-
 }
 
 
+/**
+ * Builds the original control points from the stored curves
+ * @return a vector containing the control points
+ */
+std::vector<std::vector<float>> Nurb::controlPoints(){
+    std::vector<std::vector<float>> ret(_dim);
+    auto it = _curves.begin();
+    auto end = _curves.end();
+    while(it != end) {
+        auto ctrl = (*it).control_points.begin();
+        auto ctrl_end = (*it).control_points.end();
+        int j = 0;
+        while(ctrl != ctrl_end) {
+            ret[j].push_back((*ctrl)[0]);
+            ret[j].push_back((*ctrl)[1]);
+            ret[j].push_back((*ctrl)[2]);
+            ctrl++;
+            j++;
+        }
+        it++;
+    }
+    return ret;
+}
+
+
+/**
+ * Checks if the points provided are matching the control points of the nurb
+ * @param points a vector containing the points to be compared
+ * @return true if the vectors match, false otherwise
+ */
+bool Nurb::equalPoints(const std::vector<std::vector<float>> &points) {
+    auto ctrls = controlPoints();
+
+    auto it = points.begin();
+    auto end = points.end();
+
+    auto self = ctrls.begin();
+    auto self_end = ctrls.end();
+
+    if(ctrls.size() != points.size()) {
+        return false;
+    }
+
+    while (it != end) {
+        if (*self != *end || self == self_end || (*self).size() != (*it).size()) {
+            return false;
+        }
+        self++;
+        it++;
+    }
+
+    return self == self_end; //checks if the control points vector is longer than the one provided
+}

@@ -14,6 +14,9 @@ public:
     Nurb(int dim, std::vector<std::vector<float>> points);
     std::vector<float> element(int rank);
     std::vector<float> evaluate(float u);
+    std::vector<std::vector<float>> controlPoints();
+    bool equalPoints(const std::vector<std::vector<float>>  &points);
+
 private:
     std::vector<tinynurbs::Curve<3, float>> _curves;
     int _dim;

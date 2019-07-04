@@ -1,3 +1,4 @@
+#add_subdirectory(ext/tinynurbs)
 #--------------------------------------------------------------------
 # Inviwo bspline Module
 ivw_module(bspline)
@@ -10,7 +11,6 @@ set(HEADER_FILES
         include/inviwo/bspline/interpolation/nurb.h
         include/inviwo/bspline/interpolation/nurbutilities.h
         include/inviwo/bspline/interpolation/splineinterpolation.h
-        ext/tinynurbs/tinynurbs/tinynurbs.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -39,6 +39,14 @@ ivw_add_unittest(${TEST_FILES})
 #--------------------------------------------------------------------
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
+
+#target_link_libraries(inviwo-module-bspline PRIVATE inviwo::tinynurbs)
+#
+#ivw_register_license_file(ID tinynurbs NAME "Tinynurbs" TARGET inviwo::tinynurbs MODULE bspline
+#        URL https://github.com/pradeep-pyro/tinynurbs
+#        FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/tinynurbs/LICENSE
+#        )
+#
 
 #--------------------------------------------------------------------
 # Add shader directory to pack
