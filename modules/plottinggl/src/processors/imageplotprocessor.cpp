@@ -80,7 +80,7 @@ ImagePlotProcessor::ImagePlotProcessor()
 
     customRanges_.addProperties(rangeXaxis_, rangeYaxis_);
     customRanges_.setCollapsed(true);
-    
+
     axisStyle_.registerProperties(xAxis_, yAxis_);
     axisStyle_.setCollapsed(true);
     axisStyle_.labelFormat_.set("%g");

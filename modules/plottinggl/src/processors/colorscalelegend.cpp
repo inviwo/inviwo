@@ -103,7 +103,7 @@ ColorScaleLegend::ColorScaleLegend()
     axisStyle_.insertProperty(0, title_);
     axisStyle_.addProperties(backgroundStyle_, checkerBoardSize_, borderWidth_);
     checkerBoardSize_.setVisible(false);
-    addProperty(axisStyle_);    
+    addProperty(axisStyle_);
     axisStyle_.registerProperty(axis_);
 
     addProperty(axis_);

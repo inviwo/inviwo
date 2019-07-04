@@ -72,7 +72,7 @@ AxisRenderProcessor::AxisRenderProcessor()
 
     axis1_.captionSettings_.setChecked(true);
     axis1_.setCaption("x Axis");
-    
+
     // flip vertical axis to show labels on the left side
     axis2_.flipped_.set(true);
     axis2_.captionSettings_.setChecked(true);
@@ -84,7 +84,6 @@ AxisRenderProcessor::AxisRenderProcessor()
     style_.setCollapsed(true);
     style_.registerProperties(axis1_, axis2_, axis3_);
     addProperties(style_, axis1_, axis2_, axis3_);
-
 }
 
 void AxisRenderProcessor::process() {
