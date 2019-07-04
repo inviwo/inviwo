@@ -30,115 +30,117 @@
 #ifndef INVIWO_PROJECTS_SPLINEINTERPOLATION_H
 #define INVIWO_PROJECTS_SPLINEINTERPOLATION_H
 
-#include <modules/animation/animationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <modules/animation/interpolation/interpolation.h>
 #include <algorithm>
-#include "nurb.h"
 
 namespace inviwo::animation {
-        template <typename Key>
-        class SplineInterpolation : public InterpolationTyped<Key> {
-        public:
-            SplineInterpolation() = default;
-            virtual ~SplineInterpolation() = default;
 
-            virtual SplineInterpolation* clone() const override;
+/** \class SplineInterpolation
+ * Interpolation function for key frames based on cubic b-splines with natural end condition.
+ * With only two keyframes in the sequence, this is identical to a linear interpolation.
+ * With several keyframes in the sequence, a cubic spline will be formed,
+ * with zero curvature at either end - perfect for straight line continuation.
+ */
+template <typename Key>
+class SplineInterpolation : public InterpolationTyped<Key> {
+public:
+    SplineInterpolation() = default;
+    virtual ~SplineInterpolation() = default;
 
-            virtual std::string getName() const override;
+    virtual SplineInterpolation* clone() const override;
 
-            static std::string classIdentifier();
-            virtual std::string getClassIdentifier() const override;
+    virtual std::string getName() const override;
 
-            virtual bool equal (const Interpolation& other) const override;
+    static std::string classIdentifier();
+    virtual std::string getClassIdentifier() const override;
 
-            virtual void serialize(Serializer& s) const override;
-            virtual void deserialize(Deserializer& d) override;
+    virtual bool equal(const Interpolation& other) const override;
 
-            // keys should be sorted by time
-            virtual auto operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds from, Seconds to,
-                                    easing::EasingType) const -> typename Key::value_type override;
-        private:
-        Nurb _spline;
-        bool _init = false;
-        };
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
 
-        template <typename Key>
-        SplineInterpolation<Key>* SplineInterpolation<Key>::clone() const {
-            return new SplineInterpolation<Key>(*this);
-        }
+    // keys should be sorted by time
+    virtual auto operator()(const std::vector<std::unique_ptr<Key>>& keys, Seconds from, Seconds to,
+                            easing::EasingType) const -> typename Key::value_type override;
+};
 
-        namespace detail {
-            template <typename T, typename std::enable_if<!std::is_enum<T>::value, int>::type = 0>
-            std::string getSplineInterpolationClassIdentifier() {
-                return "org.inviwo.splineinterpolation.splineinterpolation." + Defaultvalues<T>::getName();
-            }
-            template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type = 0>
-            std::string getSplineInterpolationClassIdentifier() {
-                using ET = typename std::underlying_type<T>::type;
-                return "rg.inviwo.splineinterpolation.splineinterpolation.enum." + Defaultvalues<ET>::getName();
-            }
-        }  // namespace detail
+template <typename Key>
+SplineInterpolation<Key>* SplineInterpolation<Key>::clone() const {
+    return new SplineInterpolation<Key>(*this);
+}
+
+namespace detail {
+template <typename T, typename std::enable_if<!std::is_enum<T>::value, int>::type = 0>
+std::string getSplineInterpolationClassIdentifier() {
+    return "org.inviwo.bspline.splineinterpolation." + Defaultvalues<T>::getName();
+}
+template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type = 0>
+std::string getSplineInterpolationClassIdentifier() {
+    using ET = typename std::underlying_type<T>::type;
+    return "org.inviwo.bspline.splineinterpolation.enum." + Defaultvalues<ET>::getName();
+}
+}  // namespace detail
+
+template <typename Key>
+std::string SplineInterpolation<Key>::classIdentifier() {
+    return detail::getSplineInterpolationClassIdentifier<typename Key::value_type>();
+}
+
+template <typename Key>
+std::string SplineInterpolation<Key>::getClassIdentifier() const {
+    return classIdentifier();
+}
+
+template <typename Key>
+std::string SplineInterpolation<Key>::getName() const {
+    return "Cubic B-Spline";
+}
+
+template <typename Key>
+bool SplineInterpolation<Key>::equal(const Interpolation& other) const {
+    return classIdentifier() == other.getClassIdentifier();
+}
+template <typename Key>
+auto SplineInterpolation<Key>::operator()(const std::vector<std::unique_ptr<Key>>& keys,
+                                          Seconds /*from*/, Seconds to, easing::EasingType) const -> typename Key::value_type {
+
+    using VT = typename Key::value_type;
+    using DT = typename util::same_extent<VT, double>::type;
+
+    //Get ALL keyframe values and times, and build a spline from it
+    std::vector<DT> Values;
+    std::vector<double> Times;
+    for (auto key : keys) {
+        Values.push_back(static_cast<DT>(key->getValue()));
+        Times.push_back((key->getTime()).count());
+    }
+
+    //Build the spline
+    tinynurbs::Curve<1, DT> Spline;
+    GetInterpolatingNaturalCubicSpline(Values, Times, Spline);
+
+    //Evaluate the spline
+    return static_cast<VT>(tinynurbs::curvePoint(Spline, to.count()));
+}
+
+template <typename Key>
+void SplineInterpolation<Key>::serialize(Serializer& s) const {
+    s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
+}
+
+template <typename Key>
+void SplineInterpolation<Key>::deserialize(Deserializer& d) {
+    std::string className;
+    d.deserialize("type", className, SerializationTarget::Attribute);
+    if (className != getClassIdentifier()) {
+        throw SerializationException(
+            "Deserialized interpolation: " + getClassIdentifier() +
+                " from a serialized interpolation with a different class identifier: " + className,
+            IvwContext);
+    }
+}
+}  // namespace inviwo::animation
 
 
-        template <typename Key>
-        std::string SplineInterpolation<Key>::classIdentifier() {
-            return detail::getSplineInterpolationClassIdentifier<typename Key::value_type>();
-        }
-
-        template <typename Key>
-        std::string SplineInterpolation<Key>::getClassIdentifier() const {
-            return classIdentifier();
-        }
-
-        template <typename Key>
-        std::string SplineInterpolation<Key>::getName() const {
-            return "Spline";
-        }
-
-        template <typename Key>
-        bool SplineInterpolation<Key>::equal(const Interpolation& other) const {
-            return classIdentifier() == other.getClassIdentifier();
-        }
-        template <typename Key>
-        auto SplineInterpolation<Key>::operator()(const std::vector<std::unique_ptr<Key>>& keys,
-                                                    Seconds from, Seconds to, easing::EasingType) const ->
-        typename Key::value_type {
-            using VT = typename Key::value_type;
-            std::vector<VT> values;
-            for(auto key : keys) {
-                values.push_back(key->getValue());
-            }
-            if (!_init) {
-                _spline = Nurb(values.size(), values);
-                _init = true;
-            } else {
-                if (!_spline.equalPoints(values)) {
-                    _spline = Nurb(values.size(), values);
-                }
-            }
-            auto time = ((to-from)/2)/((keys.end()-1)->getTime - keys.begin()->getTime());
-            double t = time.count();
-            return _spline.evaluate(t);
-
-        }
-
-        template <typename Key>
-        void SplineInterpolation<Key>::serialize(Serializer& s) const {
-            s.serialize("type", getClassIdentifier(), SerializationTarget::Attribute);
-        }
-
-        template <typename Key>
-        void SplineInterpolation<Key>::deserialize(Deserializer& d) {
-            std::string className;
-            d.deserialize("type", className, SerializationTarget::Attribute);
-            if (className != getClassIdentifier()) {
-                throw SerializationException(
-                        "Deserialized interpolation: " + getClassIdentifier() +
-                        " from a serialized interpolation with a different class identifier: " + className,
-                        IvwContext);
-            }
-        }
-} // namespace inviwo // namespace animation
-
-#endif //INVIWO_PROJECTS_SPLINEINTERPOLATION_H
+#endif  // INVIWO_PROJECTS_SPLINEINTERPOLATION_H
