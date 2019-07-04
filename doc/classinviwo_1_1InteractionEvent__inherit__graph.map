@@ -1,0 +1,10 @@
+<map id="inviwo::InteractionEvent" name="inviwo::InteractionEvent">
+<area shape="rect" id="node1" title=" " alt="" coords="149,85,305,112"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1GestureEvent.html" title=" " alt="" coords="363,5,506,32"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1KeyboardEvent.html" title=" " alt="" coords="359,56,510,83"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1MouseInteractionEvent.html" title=" " alt="" coords="353,107,516,149"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1TouchEvent.html" title="Touch event contains all touch points associated with the event. Touch events are usually generated b..." alt="" coords="369,173,500,200"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1Event.html" title=" " alt="" coords="5,85,101,112"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1MouseEvent.html" title=" " alt="" coords="564,89,699,116"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1WheelEvent.html" title=" " alt="" coords="565,140,698,167"/>
+</map>

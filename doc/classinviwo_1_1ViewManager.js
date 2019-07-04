@@ -8,11 +8,11 @@ var classinviwo_1_1ViewManager =
     [ "clear", "classinviwo_1_1ViewManager.html#abd2332e29affcc10f2dd21259a20fc30", null ],
     [ "erase", "classinviwo_1_1ViewManager.html#a90612d5f1a1ae588b8891da1f92208f8", null ],
     [ "erase", "classinviwo_1_1ViewManager.html#a3fdf9811beced9bf29a3389c3599cb44", null ],
-    [ "getSelectedView", "classinviwo_1_1ViewManager.html#a179ccb55122717ac12209b57d91dc85b", null ],
-    [ "getViews", "classinviwo_1_1ViewManager.html#ab389729908927abaa7b29c7a7ead2bd2", null ],
+    [ "getSelectedView", "classinviwo_1_1ViewManager.html#aefc9079e49e1c1cd1ca8a9078abbdace", null ],
+    [ "getViews", "classinviwo_1_1ViewManager.html#ab435fde9a02984c914a3dc888a4e39ff", null ],
     [ "operator[]", "classinviwo_1_1ViewManager.html#ac8ab876695de1f877b6906c70652276b", null ],
     [ "propagateEvent", "classinviwo_1_1ViewManager.html#aa6837a9a61d4c7bfa039c8fef2fb307a", null ],
     [ "push_back", "classinviwo_1_1ViewManager.html#a03b33d969761141d199e665271cb25f8", null ],
     [ "replace", "classinviwo_1_1ViewManager.html#a7c25b79905f94aa30551e677d8dfbf20", null ],
-    [ "size", "classinviwo_1_1ViewManager.html#a088cdaa8812342137b2ecdeadbdff3b0", null ]
+    [ "size", "classinviwo_1_1ViewManager.html#afe3b4ef650d01fb70ae707baf3e94101", null ]
 ];

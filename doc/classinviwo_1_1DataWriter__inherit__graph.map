@@ -1,0 +1,15 @@
+<map id="inviwo::DataWriter" name="inviwo::DataWriter">
+<area shape="rect" id="node1" title=" " alt="" coords="5,195,132,221"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1DataWriterType.html" title=" " alt="" coords="488,49,643,90"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1DataWriterType.html" title=" " alt="" coords="488,150,643,191"/>
+<area shape="rect" id="node9" href="$classinviwo_1_1DataWriterType.html" title=" " alt="" coords="488,269,643,310"/>
+<area shape="rect" id="node13" href="$classinviwo_1_1DataWriterType.html" title=" " alt="" coords="181,149,367,176"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1CImgLayerWriter.html" title="Writer for Images files." alt="" coords="697,5,859,32"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1PNGLayerWriter.html" title=" " alt="" coords="699,56,857,83"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1BinarySTLWriter.html" title="Export Meshes in the binary STL format." alt="" coords="699,107,857,133"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1StlWriter.html" title="Export Meshes in the STL format." alt="" coords="721,157,835,184"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1WaveFrontWriter.html" title="Export Meshes in the Wavefront Obj format." alt="" coords="697,208,859,235"/>
+<area shape="rect" id="node10" href="$classinviwo_1_1DatVolumeWriter.html" title=" " alt="" coords="697,259,859,285"/>
+<area shape="rect" id="node11" href="$classinviwo_1_1IvfVolumeWriter.html" title=" " alt="" coords="701,309,855,336"/>
+<area shape="rect" id="node12" href="$classinviwo_1_1PVMVolumeWriter.html" title="Writer for *.pvm files." alt="" coords="692,360,864,387"/>
+</map>

@@ -1,0 +1,11 @@
+<map id="inviwo::TFPropertyDialog" name="inviwo::TFPropertyDialog">
+<area shape="rect" id="node1" title=" " alt="" coords="655,157,819,184"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1PropertyEditorWidgetQt.html" title=" " alt="" coords="404,81,607,108"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1InviwoDockWidget.html" title="dock widget with a custom title bar and sticky status. Docking while dragging the widget is prevented..." alt="" coords="177,5,347,32"/>
+<area shape="rect" id="node4" title=" " alt="" coords="11,5,114,32"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1PropertyEditorWidget.html" title=" " alt="" coords="168,56,356,83"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1PropertyObserver.html" title=" " alt="" coords="180,107,344,133"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1Observer.html" title=" " alt="" coords="5,157,120,184"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1TFPrimitiveSetObserver.html" title=" " alt="" coords="406,157,605,184"/>
+<area shape="rect" id="node9" href="$classinviwo_1_1TFPropertyObserver.html" title=" " alt="" coords="416,208,595,235"/>
+</map>

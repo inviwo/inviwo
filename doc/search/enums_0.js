@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['devicetype',['DeviceType',['../classinviwo_1_1TouchDevice.html#aa2ec655a2ad8a089a1c18f731d4280f7',1,'inviwo::TouchDevice']]]
+  ['bindingtype',['BindingType',['../classinviwo_1_1BufferObject.html#a921af5da3bd96e4a003087e3cfb692c6',1,'inviwo::BufferObject']]]
 ];

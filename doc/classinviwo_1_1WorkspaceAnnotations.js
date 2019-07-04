@@ -1,0 +1,28 @@
+var classinviwo_1_1WorkspaceAnnotations =
+[
+    [ "Base64Image", "structinviwo_1_1WorkspaceAnnotations_1_1Base64Image.html", "structinviwo_1_1WorkspaceAnnotations_1_1Base64Image" ],
+    [ "ImageVector", "classinviwo_1_1WorkspaceAnnotations.html#a3f65088ec3361bb8f3cfb80c68115071", null ],
+    [ "WorkspaceAnnotations", "classinviwo_1_1WorkspaceAnnotations.html#a12ab7f6c1cd7ae55269a02f299f2879e", null ],
+    [ "WorkspaceAnnotations", "classinviwo_1_1WorkspaceAnnotations.html#aa4c0b60ad47c539f609a3c5aa2aa38b5", null ],
+    [ "~WorkspaceAnnotations", "classinviwo_1_1WorkspaceAnnotations.html#a959228701029ac75078e1eb1e78cd15e", null ],
+    [ "deserialize", "classinviwo_1_1WorkspaceAnnotations.html#a83f577ea2d5600893deb5f936e7df3c3", null ],
+    [ "getAuthor", "classinviwo_1_1WorkspaceAnnotations.html#a7f32de190d56cc316b67745ed74996b2", null ],
+    [ "getCanvasImages", "classinviwo_1_1WorkspaceAnnotations.html#a591ada6441212e92b91055aeca9ea9a6", null ],
+    [ "getCategories", "classinviwo_1_1WorkspaceAnnotations.html#af70f795462dd68f7ff372e245bda3988", null ],
+    [ "getDescription", "classinviwo_1_1WorkspaceAnnotations.html#a336b600de27e2dde5b84fb4db0622acf", null ],
+    [ "getTags", "classinviwo_1_1WorkspaceAnnotations.html#a799213db7e8064d24cfc539f6d6c0999", null ],
+    [ "getTitle", "classinviwo_1_1WorkspaceAnnotations.html#a9c92ab99aeaeb134e2e7716ac905dd41", null ],
+    [ "serialize", "classinviwo_1_1WorkspaceAnnotations.html#a1fc808283098e49543293a61a3c5d121", null ],
+    [ "setAuthor", "classinviwo_1_1WorkspaceAnnotations.html#ad487da705f86e298f470bd65bc39499c", null ],
+    [ "setCanvasImages", "classinviwo_1_1WorkspaceAnnotations.html#af94c636746169ab265b319cc883471cc", null ],
+    [ "setCategories", "classinviwo_1_1WorkspaceAnnotations.html#aec8b7e1e72d92765819e6c200286adcf", null ],
+    [ "setDescription", "classinviwo_1_1WorkspaceAnnotations.html#aa8f769d229d2843487551559c9ab44d4", null ],
+    [ "setTags", "classinviwo_1_1WorkspaceAnnotations.html#a257bfae5afa82e79f439e12b089e9634", null ],
+    [ "setTitle", "classinviwo_1_1WorkspaceAnnotations.html#a401b81a8a0b93c66647528c584c8c5ea", null ],
+    [ "author_", "classinviwo_1_1WorkspaceAnnotations.html#a7655d0f649e510986ac8adf039ce3524", null ],
+    [ "canvases_", "classinviwo_1_1WorkspaceAnnotations.html#ab2eb31f6cb2d08f268ef4cd7a2f26596", null ],
+    [ "categories_", "classinviwo_1_1WorkspaceAnnotations.html#a167d1435d7e595e9e9d22462308cae0b", null ],
+    [ "description_", "classinviwo_1_1WorkspaceAnnotations.html#a715d3708aa9f95d9675a4339c5746f0f", null ],
+    [ "tags_", "classinviwo_1_1WorkspaceAnnotations.html#afb6d7412ccfbc69bac116383ade81f77", null ],
+    [ "title_", "classinviwo_1_1WorkspaceAnnotations.html#af6ed884fc4d4829ea92ff98cca894adc", null ]
+];

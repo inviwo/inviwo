@@ -7,6 +7,6 @@ var classinviwo_1_1StdVectorMetaData =
     [ "equal", "classinviwo_1_1StdVectorMetaData.html#a487476b2a14c080d3904fb4a176cc981", null ],
     [ "getClassIdentifier", "classinviwo_1_1StdVectorMetaData.html#aa2b2995ddc12a5645b66c7de121791b3", null ],
     [ "getVector", "classinviwo_1_1StdVectorMetaData.html#a63fb289b6930beb960e6f2f16d296c82", null ],
-    [ "getVector", "classinviwo_1_1StdVectorMetaData.html#a177c12848b5ca6d067767f9908c92c39", null ],
+    [ "getVector", "classinviwo_1_1StdVectorMetaData.html#ac26168fdf2a7e9e7b639df4bb6ef37ed", null ],
     [ "serialize", "classinviwo_1_1StdVectorMetaData.html#a92681b11516f19943efb7d5e29ae5738", null ]
 ];

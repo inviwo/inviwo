@@ -1,0 +1,7 @@
+<map id="inviwo::animation::Interpolation" name="inviwo::animation::Interpolation">
+<area shape="rect" id="node1" title=" " alt="" coords="184,53,312,94"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1animation_1_1InterpolationTyped.html" title=" " alt="" coords="360,53,535,94"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1Serializable.html" title=" " alt="" coords="5,60,136,87"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1animation_1_1ConstantInterpolation.html" title=" " alt="" coords="583,5,727,61"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1animation_1_1LinearInterpolation.html" title=" " alt="" coords="591,85,719,141"/>
+</map>

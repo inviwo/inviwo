@@ -2,7 +2,10 @@ var classinviwo_1_1QtWidgetsSettings =
 [
     [ "QtWidgetsSettings", "classinviwo_1_1QtWidgetsSettings.html#a8e40fd32d423e53c048f1ae49b085fe4", null ],
     [ "~QtWidgetsSettings", "classinviwo_1_1QtWidgetsSettings.html#a2fc6284772177a6dcd0c6f74f2575cde", null ],
+    [ "font_", "classinviwo_1_1QtWidgetsSettings.html#aa1aa456ad7a807a22820e7cc9772324d", null ],
+    [ "fontSize_", "classinviwo_1_1QtWidgetsSettings.html#a16d065c0715ca6f9df6518a6c7b550bd", null ],
     [ "glslBackgroundColor_", "classinviwo_1_1QtWidgetsSettings.html#a1dd05a0626aec5e2907a8b109ec002cf", null ],
+    [ "glslBackgroundHighLightColor_", "classinviwo_1_1QtWidgetsSettings.html#a46872404cf90d099a3630870a7cf7b84", null ],
     [ "glslBuiltinsColor_", "classinviwo_1_1QtWidgetsSettings.html#ad1cebf011f5ffadb758d2e1bfc0fd094", null ],
     [ "glslCommentColor_", "classinviwo_1_1QtWidgetsSettings.html#acb9fe9b1b6d4934fcc60ec8e36bc5c05", null ],
     [ "glslConstantsColor_", "classinviwo_1_1QtWidgetsSettings.html#a547d63c5f84c9dfad43a191876194296", null ],
@@ -14,8 +17,8 @@ var classinviwo_1_1QtWidgetsSettings =
     [ "glslTypeColor_", "classinviwo_1_1QtWidgetsSettings.html#ad7808d14ff28f07f84ddb2c13d8c5345", null ],
     [ "glslVoidMainColor_", "classinviwo_1_1QtWidgetsSettings.html#ab9dc5276354beffe011757ec7f2f2895", null ],
     [ "pyBGColor_", "classinviwo_1_1QtWidgetsSettings.html#ab76ac8e0ea9a9fcbdb7d9590721a4e5b", null ],
+    [ "pyBGHighLightColor_", "classinviwo_1_1QtWidgetsSettings.html#a6c57a19d0d278614536a11622ea9cf55", null ],
     [ "pyCommentsColor_", "classinviwo_1_1QtWidgetsSettings.html#aaa2e1585bb6e59cc424f5e1942100e37", null ],
-    [ "pyFontSize_", "classinviwo_1_1QtWidgetsSettings.html#af6b123e5994419e693e77154cdde0812", null ],
     [ "pyTextColor_", "classinviwo_1_1QtWidgetsSettings.html#aeaa4510a84b8a2880d3720fb579515bb", null ],
     [ "pythonSyntax_", "classinviwo_1_1QtWidgetsSettings.html#aa15dfd1a7ddaddc0e0b0472060c9c571", null ],
     [ "pyTypeColor_", "classinviwo_1_1QtWidgetsSettings.html#a8fe97548d5c55c9a822e03b860a363ed", null ]

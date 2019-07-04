@@ -1,9 +1,8 @@
 var searchData=
 [
-  ['xyy2xyz',['xyY2XYZ',['../namespaceinviwo_1_1color.html#add55dfbe15605e5fbe81944f12e9ec4e',1,'inviwo::color']]],
-  ['xyz2lab',['XYZ2lab',['../namespaceinviwo_1_1color.html#ab84284e9992bb68f41705d2c36ea5823',1,'inviwo::color']]],
-  ['xyz2luv',['XYZ2Luv',['../namespaceinviwo_1_1color.html#a763c4e497df3d86ba47decf304ac5d13',1,'inviwo::color']]],
-  ['xyz2luvchromaticity',['XYZ2LuvChromaticity',['../namespaceinviwo_1_1color.html#aa4a6fd1aa6750e7d23a59707844c1776',1,'inviwo::color']]],
-  ['xyz2rgb',['XYZ2rgb',['../namespaceinviwo_1_1color.html#a17a63ca3449f5e9c899ae86226739810',1,'inviwo::color']]],
-  ['xyz2xyy',['XYZ2xyY',['../namespaceinviwo_1_1color.html#ac56667f48bbcf2bb33e21ac5fc0d0ba6',1,'inviwo::color']]]
+  ['wildcardstringmatch',['wildcardStringMatch',['../namespaceinviwo_1_1filesystem.html#a21c16b5f1aee05ccaa426bd1cf144348',1,'inviwo::filesystem']]],
+  ['wildcardstringmatchdigits',['wildcardStringMatchDigits',['../namespaceinviwo_1_1filesystem.html#aacaefc581e9b1dcfdb3ebf572e2acbe2',1,'inviwo::filesystem']]],
+  ['writedata',['writeData',['../classinviwo_1_1IvfSequenceVolumeWriter.html#a4c7b97e4d58b40ec949eae278ba29ec8',1,'inviwo::IvfSequenceVolumeWriter::writeData(const VolumeSequence *volumes, const std::string filePath) const'],['../classinviwo_1_1IvfSequenceVolumeWriter.html#ad30f4d575d0bd9ce99091a10d4c6594b',1,'inviwo::IvfSequenceVolumeWriter::writeData(const VolumeSequence *volumes, std::string name, std::string path, std::string reltivePathToTimesteps=&quot;&quot;) const']]],
+  ['writefile',['writeFile',['../classinviwo_1_1Serializer.html#a9d4c6a2bb0202db839c85a819b72d051',1,'inviwo::Serializer::writeFile()'],['../classinviwo_1_1Serializer.html#aaa3f7c110082cff7101918df18800843',1,'inviwo::Serializer::writeFile(std::ostream &amp;stream, bool format=false)']]],
+  ['writeivfvolumesequence',['writeIvfVolumeSequence',['../namespaceinviwo_1_1util.html#a123be8ba6853952feb5fb0864f6029d5',1,'inviwo::util']]]
 ];

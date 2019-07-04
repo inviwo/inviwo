@@ -1,0 +1,8 @@
+<map id="inviwo::glui::IntMinMaxPropertyWidget" name="inviwo::glui::IntMinMaxPropertyWidget">
+<area shape="rect" id="node1" title="glui property widget for an int minmax property using glui::RangeSlider" alt="" coords="169,155,370,196"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1glui_1_1RangeSlider.html" title="glui::element representing a range slider, the label is positioned to the right. If the flipped flag ..." alt="" coords="5,80,168,107"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1glui_1_1Element.html" title="graphical UI element for use in combination with Layout" alt="" coords="17,5,157,32"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1PropertyWidget.html" title=" " alt="" coords="192,80,347,107"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1PropertyObserver.html" title=" " alt="" coords="371,80,535,107"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1Observer.html" title=" " alt="" coords="396,5,511,32"/>
+</map>

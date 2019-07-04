@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['offset_5f',['offset_',['../classinviwo_1_1plot_1_1PlotTextProperty.html#a5d8e127b354da94a3bad4b1d36da0ed5',1,'inviwo::plot::PlotTextProperty']]],
-  ['onmodulesdidregister_5f',['onModulesDidRegister_',['../classinviwo_1_1SettingsWidget.html#a750760255f3cd91ae1e05ee098f2d20d',1,'inviwo::SettingsWidget']]]
+  ['kernel_5fradius',['KERNEL_RADIUS',['../classglsl_1_1Bilateralblur.html#afdb7bebfe0b02810107e4302c9f6d9f3',1,'glsl::Bilateralblur::KERNEL_RADIUS()'],['../classglsl_1_1Hbao__blur.html#ac7af97c8a9cb5d0ad13ceab2808134f5',1,'glsl::Hbao_blur::KERNEL_RADIUS()']]]
 ];

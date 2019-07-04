@@ -1,0 +1,8 @@
+<map id="inviwo::glui::AbstractButton" name="inviwo::glui::AbstractButton">
+<area shape="rect" id="node1" title="glui::Element representing a generic button" alt="" coords="93,80,272,107"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1glui_1_1Button.html" title="glui::Element representing a button with the label centered within" alt="" coords="35,155,165,181"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1glui_1_1ToolButton.html" title="glui::Element representing a tool button with an image instead of a label" alt="" coords="201,155,356,181"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1glui_1_1Element.html" title="graphical UI element for use in combination with Layout" alt="" coords="113,5,253,32"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1glui_1_1ButtonPropertyWidget.html" title="GLUI property widget for a button property using a glui Button." alt="" coords="5,229,184,271"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1glui_1_1ToolButtonPropertyWidget.html" title="GLUI property widget for a button property using a glui ToolButton." alt="" coords="208,229,363,271"/>
+</map>

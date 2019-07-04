@@ -1,0 +1,7 @@
+<map id="inviwo::TemplateColumn&lt; T &gt;" name="inviwo::TemplateColumn&lt; T &gt;">
+<area shape="rect" id="node1" title="Data column used for plotting which represents a named buffer of type T. The name is used as column h..." alt="" coords="42,81,234,108"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1TemplateColumn.html" title=" " alt="" coords="5,171,167,212"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1TemplateColumn.html" title=" " alt="" coords="191,171,352,212"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1Column.html" title="pure interface for representing a data column, i.e. a Buffer with a name" alt="" coords="84,5,192,32"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1CategoricalColumn.html" title="Specialized data column representing categorical values, i.e. strings. Categorical values are interna..." alt="" coords="185,261,358,288"/>
+</map>

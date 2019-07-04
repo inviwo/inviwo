@@ -1,0 +1,7 @@
+<map id="inviwo::CSVDataReaderException" name="inviwo::CSVDataReaderException">
+<area shape="rect" id="node1" title="This exception is thrown by the CSVReader in case the input is malformed. This includes empty sources..." alt="" coords="5,304,223,331"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1DataReaderException.html" title=" " alt="" coords="19,229,209,256"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1Exception.html" title=" " alt="" coords="53,155,175,181"/>
+<area shape="rect" id="node4" title="STL class." alt="" coords="52,80,176,107"/>
+<area shape="rect" id="node5" title="STL class." alt="" coords="62,5,166,32"/>
+</map>

@@ -19,7 +19,7 @@ var classinviwo_1_1StructuredCameraCoordinateTransformer =
     [ "getIndexToTextureMatrix", "classinviwo_1_1StructuredCameraCoordinateTransformer.html#a7aa375876a329cab88cad2b47624d427", null ],
     [ "getIndexToViewMatrix", "classinviwo_1_1StructuredCameraCoordinateTransformer.html#a12a0d03e4424c96c14a3ad41db05852a", null ],
     [ "getIndexToWorldMatrix", "classinviwo_1_1StructuredCameraCoordinateTransformer.html#a34fccf532c386f8219ac126c69c665f6", null ],
-    [ "getMatrix", "classinviwo_1_1StructuredCameraCoordinateTransformer.html#a5af425658cd7750ca132fcc8b03dbb4d", null ],
+    [ "getMatrix", "classinviwo_1_1StructuredCameraCoordinateTransformer.html#ab7c4efd191cc47c060a4982acf08a409", null ],
     [ "getModelToClipMatrix", "classinviwo_1_1StructuredCameraCoordinateTransformer.html#a062b3e58cb0e2078b9e908d1c16e70ab", null ],
     [ "getModelToDataMatrix", "classinviwo_1_1StructuredCameraCoordinateTransformer.html#a8f03883dfc2d311f6babaca51ccfa6e8", null ],
     [ "getModelToIndexMatrix", "classinviwo_1_1StructuredCameraCoordinateTransformer.html#a541107354c9b13736ef02b9dac0ada01", null ],

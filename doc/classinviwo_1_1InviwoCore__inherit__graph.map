@@ -1,0 +1,4 @@
+<map id="inviwo::InviwoCore" name="inviwo::InviwoCore">
+<area shape="rect" id="node1" title="Module which registers all module related functionality available in the core." alt="" coords="13,80,138,107"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1InviwoModule.html" title="A module class contains registrations of functionality, such as processors, ports,..." alt="" coords="5,5,145,32"/>
+</map>

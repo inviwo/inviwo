@@ -1,0 +1,10 @@
+<map id="inviwo::PropertyEditorWidgetQt" name="inviwo::PropertyEditorWidgetQt">
+<area shape="rect" id="node1" title=" " alt="" coords="191,155,394,181"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1TextEditorDockWidget.html" title=" " alt="" coords="94,229,289,256"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1TFPropertyDialog.html" title=" " alt="" coords="313,229,477,256"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1InviwoDockWidget.html" title="dock widget with a custom title bar and sticky status. Docking while dragging the widget is prevented..." alt="" coords="5,80,175,107"/>
+<area shape="rect" id="node3" title=" " alt="" coords="39,5,141,32"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1PropertyEditorWidget.html" title=" " alt="" coords="199,80,387,107"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1PropertyObserver.html" title=" " alt="" coords="411,80,575,107"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1Observer.html" title=" " alt="" coords="435,5,550,32"/>
+</map>

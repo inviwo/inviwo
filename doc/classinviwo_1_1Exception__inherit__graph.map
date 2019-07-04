@@ -1,0 +1,40 @@
+<map id="inviwo::Exception" name="inviwo::Exception">
+<area shape="rect" id="node1" title=" " alt="" coords="329,725,452,752"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1AbortException.html" title=" " alt="" coords="529,5,682,32"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1colorbrewer_1_1ColorBrewerException.html" title=" " alt="" coords="526,57,685,98"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1colorbrewer_1_1ColorBrewerTooFewException.html" title=" " alt="" coords="504,122,707,163"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1colorbrewer_1_1ColorBrewerTooManyException.html" title=" " alt="" coords="500,187,711,229"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1ConverterException.html" title=" " alt="" coords="517,253,693,280"/>
+<area shape="rect" id="node9" href="$classinviwo_1_1DataFormatException.html" title=" " alt="" coords="510,304,701,331"/>
+<area shape="rect" id="node10" href="$classinviwo_1_1DataReaderException.html" title=" " alt="" coords="510,355,701,381"/>
+<area shape="rect" id="node16" href="$classinviwo_1_1DataTypeMismatch.html" title=" " alt="" coords="517,405,693,432"/>
+<area shape="rect" id="node17" href="$classinviwo_1_1DataWriterException.html" title=" " alt="" coords="513,456,697,483"/>
+<area shape="rect" id="node19" href="$classinviwo_1_1dispatching_1_1DispatchException.html" title=" " alt="" coords="536,507,675,549"/>
+<area shape="rect" id="node20" href="$classinviwo_1_1FileException.html" title=" " alt="" coords="534,573,677,600"/>
+<area shape="rect" id="node21" href="$classinviwo_1_1GLFWException.html" title=" " alt="" coords="525,624,685,651"/>
+<area shape="rect" id="node22" href="$classinviwo_1_1hdf5_1_1Exception.html" title=" " alt="" coords="528,675,683,701"/>
+<area shape="rect" id="node23" href="$classinviwo_1_1IgnoreException.html" title=" " alt="" coords="527,725,684,752"/>
+<area shape="rect" id="node24" href="$classinviwo_1_1InvalidColCount.html" title=" " alt="" coords="529,776,681,803"/>
+<area shape="rect" id="node25" href="$classinviwo_1_1InvalidConversion.html" title=" " alt="" coords="524,827,687,853"/>
+<area shape="rect" id="node26" href="$classinviwo_1_1MissingRepresentation.html" title=" " alt="" coords="507,877,703,904"/>
+<area shape="rect" id="node27" href="$classinviwo_1_1ModuleInitException.html" title=" " alt="" coords="515,928,696,955"/>
+<area shape="rect" id="node30" href="$classinviwo_1_1NoColumns.html" title=" " alt="" coords="540,979,671,1005"/>
+<area shape="rect" id="node31" href="$classinviwo_1_1NullPointerException.html" title=" " alt="" coords="513,1029,698,1056"/>
+<area shape="rect" id="node32" href="$classinviwo_1_1OpenCLException.html" title=" " alt="" coords="521,1080,690,1107"/>
+<area shape="rect" id="node33" href="$classinviwo_1_1OpenCLFormatException.html" title="Exception thrown when a data format is not supported by OpenCL." alt="" coords="500,1131,711,1157"/>
+<area shape="rect" id="node34" href="$classinviwo_1_1OpenGLException.html" title=" " alt="" coords="520,1181,691,1208"/>
+<area shape="rect" id="node35" href="$classinviwo_1_1RangeException.html" title=" " alt="" coords="526,1232,685,1259"/>
+<area shape="rect" id="node36" href="$classinviwo_1_1ResourceException.html" title=" " alt="" coords="517,1283,694,1309"/>
+<area shape="rect" id="node37" href="$classinviwo_1_1SerializationException.html" title=" " alt="" coords="509,1333,702,1360"/>
+<area shape="rect" id="node38" href="$classinviwo_1_1SingletonException.html" title=" " alt="" coords="517,1384,693,1411"/>
+<area shape="rect" id="node2" title="STL class." alt="" coords="157,725,281,752"/>
+<area shape="rect" id="node3" title="STL class." alt="" coords="5,725,109,752"/>
+<area shape="rect" id="node11" href="$classinviwo_1_1CSVDataReaderException.html" title="This exception is thrown by the CSVReader in case the input is malformed. This includes empty sources..." alt="" coords="761,228,979,255"/>
+<area shape="rect" id="node12" href="$classinviwo_1_1JSONConversionException.html" title="This exception is thrown by the to_json(json&amp; j, const DataFrame* df) in case the input is unsupporte..." alt="" coords="761,279,979,305"/>
+<area shape="rect" id="node13" href="$classinviwo_1_1PNGLayerReaderException.html" title=" " alt="" coords="759,329,981,356"/>
+<area shape="rect" id="node14" href="$classinviwo_1_1TIFFLayerReaderException.html" title=" " alt="" coords="759,380,981,407"/>
+<area shape="rect" id="node15" href="$classinviwo_1_1TIFFStackVolumeReaderException.html" title=" " alt="" coords="765,431,975,473"/>
+<area shape="rect" id="node18" href="$classinviwo_1_1PNGLayerWriterException.html" title=" " alt="" coords="761,497,979,524"/>
+<area shape="rect" id="node28" href="$classinviwo_1_1GLFWInitException.html" title=" " alt="" coords="781,903,959,929"/>
+<area shape="rect" id="node29" href="$classinviwo_1_1OpenGLInitException.html" title=" " alt="" coords="777,953,963,980"/>
+</map>

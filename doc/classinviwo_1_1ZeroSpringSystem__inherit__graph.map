@@ -1,0 +1,5 @@
+<map id="inviwo::ZeroSpringSystem&lt; N, ComponentType &gt;" name="inviwo::ZeroSpringSystem&lt; N, ComponentType &gt;">
+<area shape="rect" id="node1" title="this is a template mix&#45;in class, which is responsible for initializing the forces prior to each integ..." alt="" coords="27,259,198,300"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1SpringSystem.html" title=" " alt="" coords="5,153,220,209"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1SpringSystem.html" title="this class is representing a spring mass system including a solver using either the Verlet integratio..." alt="" coords="6,5,219,61"/>
+</map>

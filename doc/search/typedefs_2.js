@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['string_5fclass',['STRING_CLASS',['../namespacecl.html#ad3ff55c5fe80ec84842876af323559c7',1,'cl']]]
+  ['indexbuffer',['IndexBuffer',['../group__typedmesh.html#ga54e59997980f0c33a5f34c253bed3e53',1,'inviwo::buffertraits']]]
 ];

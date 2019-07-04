@@ -4,5 +4,5 @@ var classinviwo_1_1StringPropertyWidgetQt =
     [ "getEditorWidget", "classinviwo_1_1StringPropertyWidgetQt.html#afe61f716e3f61d6b5a6ebdbdde0d5f29", null ],
     [ "hasEditorWidget", "classinviwo_1_1StringPropertyWidgetQt.html#a292d783e8a754af565aca738db830817", null ],
     [ "setPropertyValue", "classinviwo_1_1StringPropertyWidgetQt.html#aaa8ef7edac3823b89ce9297c7e309d6a", null ],
-    [ "updateFromProperty", "classinviwo_1_1StringPropertyWidgetQt.html#a8eb50b57b2dab60865146dd91233ee4d", null ]
+    [ "updateFromProperty", "classinviwo_1_1StringPropertyWidgetQt.html#aba6ccb6d6066d5758fdd56b07b9eef72", null ]
 ];

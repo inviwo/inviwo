@@ -1,0 +1,7 @@
+<map id="inviwo::TFPrimitive" name="inviwo::TFPrimitive">
+<area shape="rect" id="node1" title="Base class for a variety of primitives as used by a transfer function." alt="" coords="150,261,278,288"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1Observable.html" title=" " alt="" coords="5,171,167,212"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1ObservableInterface.html" title=" " alt="" coords="13,5,191,32"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1Observable.html" title=" " alt="" coords="103,81,261,108"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1Serializable.html" title=" " alt="" coords="191,178,322,205"/>
+</map>

@@ -4,6 +4,8 @@ var classinviwo_1_1animation_1_1Interpolation =
     [ "~Interpolation", "classinviwo_1_1animation_1_1Interpolation.html#ac308709436e9566b80cfdd99ce926f94", null ],
     [ "clone", "classinviwo_1_1animation_1_1Interpolation.html#a3fd62dcfc78f8dc91bd039e46ce3fa96", null ],
     [ "deserialize", "classinviwo_1_1animation_1_1Interpolation.html#ae69014108538e10df365546ab6f289b0", null ],
+    [ "equal", "classinviwo_1_1animation_1_1Interpolation.html#a968e2c7575cf2d0789dcd154af79305a", null ],
     [ "getClassIdentifier", "classinviwo_1_1animation_1_1Interpolation.html#ab5a20d3fd69faf3eecdd6233d15b605e", null ],
+    [ "getName", "classinviwo_1_1animation_1_1Interpolation.html#a118a5255534271b1165f27523583d3d8", null ],
     [ "serialize", "classinviwo_1_1animation_1_1Interpolation.html#a1771bf5e8e967bad885d2ffb0b1e8a08", null ]
 ];

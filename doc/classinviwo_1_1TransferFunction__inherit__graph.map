@@ -1,0 +1,11 @@
+<map id="inviwo::TransferFunction" name="inviwo::TransferFunction">
+<area shape="rect" id="node1" title="data structure for holding 1D transfer function data" alt="" coords="187,413,347,440"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1TFPrimitiveSet.html" title="data structure managing multiple TFPrimitives" alt="" coords="193,337,341,364"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1Serializable.html" title=" " alt="" coords="5,261,136,288"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1TFPrimitiveSetObservable.html" title=" " alt="" coords="161,261,373,288"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1Observable.html" title=" " alt="" coords="176,171,357,212"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1ObservableInterface.html" title=" " alt="" coords="194,5,371,32"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1Observable.html" title=" " alt="" coords="283,81,442,108"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1TFPrimitiveObserver.html" title=" " alt="" coords="397,261,576,288"/>
+<area shape="rect" id="node9" href="$classinviwo_1_1Observer.html" title=" " alt="" coords="429,178,544,205"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="inviwo::OrthographicCamera" name="inviwo::OrthographicCamera">
+<area shape="rect" id="node1" title="Camera with no perspective projection. Objects far away will appear as large as objects close." alt="" coords="5,155,188,181"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1Camera.html" title="Base class for cameras. Override this class to set your own projection matrix." alt="" coords="42,80,151,107"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1Serializable.html" title=" " alt="" coords="31,5,162,32"/>
+</map>

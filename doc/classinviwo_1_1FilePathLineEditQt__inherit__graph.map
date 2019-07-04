@@ -1,0 +1,5 @@
+<map id="inviwo::FilePathLineEditQt" name="inviwo::FilePathLineEditQt">
+<area shape="rect" id="node1" title="QLineEdit for file paths. When editing the path, i.e. the widget is focused, the full path is shown...." alt="" coords="5,155,179,181"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1LineEditQt.html" title="customized line edit class based on QLineEdit. Pressing Escape will emit a cancel signal...." alt="" coords="29,80,155,107"/>
+<area shape="rect" id="node3" title=" " alt="" coords="53,5,131,32"/>
+</map>

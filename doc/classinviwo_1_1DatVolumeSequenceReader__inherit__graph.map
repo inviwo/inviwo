@@ -1,0 +1,6 @@
+<map id="inviwo::DatVolumeSequenceReader" name="inviwo::DatVolumeSequenceReader">
+<area shape="rect" id="node1" title="Reader for *.dat files." alt="" coords="5,291,192,332"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1DataReaderType.html" title=" " alt="" coords="13,185,184,241"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1DataReader.html" title="A abstract base class for all file readers." alt="" coords="53,5,185,32"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1DataReaderType.html" title="Template base class for file readers designating what type of data object the reader returns." alt="" coords="115,81,306,108"/>
+</map>

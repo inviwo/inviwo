@@ -1,0 +1,8 @@
+<map id="inviwo::discretedata::DataChannel&lt; T, N &gt;" name="inviwo::discretedata::DataChannel&lt; T, N &gt;">
+<area shape="rect" id="node1" title="A single vector component of a data set." alt="" coords="596,39,748,80"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1discretedata_1_1AnalyticChannel.html" title="Data channel by function evaluated at each (linear) index." alt="" coords="796,5,968,47"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1discretedata_1_1BufferChannel.html" title="Data channel as array data." alt="" coords="803,71,961,112"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1discretedata_1_1BaseChannel.html" title=" " alt="" coords="393,39,548,80"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1discretedata_1_1Channel.html" title="An untyped scalar or vector component of a data set." alt="" coords="211,39,345,80"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1MetaDataOwner.html" title="Holds metadata and access functionality for set/get." alt="" coords="5,46,163,73"/>
+</map>

@@ -2,13 +2,15 @@ var classinviwo_1_1LogCentral =
 [
     [ "LogCentral", "classinviwo_1_1LogCentral.html#a16f4fbe9810e2b4abf0b15b3e7fe4b8e", null ],
     [ "~LogCentral", "classinviwo_1_1LogCentral.html#ae703845c8641cb089f3e43122b0fc786", null ],
-    [ "getLogLevel", "classinviwo_1_1LogCentral.html#abc520bd940dd7c31818bc105a7a079bb", null ],
-    [ "getLogStacktrace", "classinviwo_1_1LogCentral.html#abe9128861d08166a83ba5ba2c44e4b3f", null ],
-    [ "log", "classinviwo_1_1LogCentral.html#abd78e83c96b2e1c0f6623d52d5bc3f6c", null ],
-    [ "logAssertion", "classinviwo_1_1LogCentral.html#a3c3cc0b8ad46c38929fbd4fe8ae17ed9", null ],
-    [ "logNetwork", "classinviwo_1_1LogCentral.html#a4a4db780ee6b3e06270156256bb69334", null ],
-    [ "logProcessor", "classinviwo_1_1LogCentral.html#a1accae4d600c9b159ad755bb0499f744", null ],
+    [ "getLogStacktrace", "classinviwo_1_1LogCentral.html#a2cb27818418ea1e7f64086c3ef37f750", null ],
+    [ "getMessageBreakLevel", "classinviwo_1_1LogCentral.html#a1d7348d086de821fca4f1a6c57b44f1b", null ],
+    [ "getVerbosity", "classinviwo_1_1LogCentral.html#a564033fc789c1896aaaff2c29e0615d1", null ],
+    [ "log", "classinviwo_1_1LogCentral.html#a1c55dcdb577cabe3801a7137ed2554a3", null ],
+    [ "logAssertion", "classinviwo_1_1LogCentral.html#a302270db7b6e721cd71780efdb653df4", null ],
+    [ "logNetwork", "classinviwo_1_1LogCentral.html#a168fdb22684715dbd2c0872b71e51055", null ],
+    [ "logProcessor", "classinviwo_1_1LogCentral.html#a81580051f42e1ab15a744a292a1dabfd", null ],
     [ "registerLogger", "classinviwo_1_1LogCentral.html#a5eeb127460684e9410b4d01db3c73530", null ],
-    [ "setLogLevel", "classinviwo_1_1LogCentral.html#a40b659e698fdfbe4de8287d971ab1137", null ],
-    [ "setLogStacktrace", "classinviwo_1_1LogCentral.html#aa889017d5d771eb192a4474699a35f38", null ]
+    [ "setLogStacktrace", "classinviwo_1_1LogCentral.html#aa889017d5d771eb192a4474699a35f38", null ],
+    [ "setMessageBreakLevel", "classinviwo_1_1LogCentral.html#affc93fc7b71d5ecec974e066d4e790eb", null ],
+    [ "setVerbosity", "classinviwo_1_1LogCentral.html#a2da91070c34d8c3c2a0f312a1e50eb6a", null ]
 ];

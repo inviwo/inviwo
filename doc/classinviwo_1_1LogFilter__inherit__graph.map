@@ -1,0 +1,5 @@
+<map id="inviwo::LogFilter" name="inviwo::LogFilter">
+<area shape="rect" id="node1" title="filters log messages based on the verbosity level. Messages below the selected verbosity will be igno..." alt="" coords="14,80,129,107"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1Deserializer.html" title=" " alt="" coords="5,155,137,181"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1Logger.html" title=" " alt="" coords="20,5,123,32"/>
+</map>

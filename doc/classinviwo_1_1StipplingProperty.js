@@ -9,7 +9,7 @@ var classinviwo_1_1StipplingProperty =
     [ "StipplingProperty", "classinviwo_1_1StipplingProperty.html#ad7d746aa9dd1ac6ec58d6f652c9df14a", null ],
     [ "~StipplingProperty", "classinviwo_1_1StipplingProperty.html#aa54677964cc440be55b85f8c9a4e7070", null ],
     [ "clone", "classinviwo_1_1StipplingProperty.html#a324265d4c47bdffbf7123cfb1703f48f", null ],
-    [ "InviwoPropertyInfo", "classinviwo_1_1StipplingProperty.html#adcae98753d3c451857eca373099c6b14", null ],
+    [ "getClassIdentifier", "classinviwo_1_1StipplingProperty.html#a9d6f19e41feaea48111c7e7489280204", null ],
     [ "operator=", "classinviwo_1_1StipplingProperty.html#a09869ae103cfcdf8b3c99b1be382cc27", null ],
     [ "length_", "classinviwo_1_1StipplingProperty.html#a4e2bf83b73c2ff61ea834a93dd994d29", null ],
     [ "mode_", "classinviwo_1_1StipplingProperty.html#a4fcc2955702968076ef12358b6013f4a", null ],

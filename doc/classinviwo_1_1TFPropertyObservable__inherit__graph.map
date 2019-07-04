@@ -1,0 +1,9 @@
+<map id="inviwo::TFPropertyObservable" name="inviwo::TFPropertyObservable">
+<area shape="rect" id="node1" title=" " alt="" coords="161,261,353,288"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1IsoTFProperty.html" title="composite property combining transfer function and isovalue properties" alt="" coords="5,345,151,371"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1IsoValueProperty.html" title="property managing a collection of isovalues" alt="" coords="175,345,338,371"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1TransferFunctionProperty.html" title=" " alt="" coords="362,337,522,379"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1Observable.html" title=" " alt="" coords="176,171,337,212"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1ObservableInterface.html" title=" " alt="" coords="184,5,361,32"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1Observable.html" title=" " alt="" coords="273,81,432,108"/>
+</map>

@@ -1,0 +1,17 @@
+<map id="inviwo::glui::Element" name="inviwo::glui::Element">
+<area shape="rect" id="node1" title="graphical UI element for use in combination with Layout" alt="" coords="5,209,145,235"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1glui_1_1AbstractButton.html" title="glui::Element representing a generic button" alt="" coords="193,74,372,101"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1glui_1_1CheckBox.html" title="glui::Element representing a checkbox with the label positioned on the right side" alt="" coords="207,173,359,199"/>
+<area shape="rect" id="node9" href="$classinviwo_1_1glui_1_1RangeSlider.html" title="glui::element representing a range slider, the label is positioned to the right. If the flipped flag ..." alt="" coords="201,243,364,270"/>
+<area shape="rect" id="node13" href="$classinviwo_1_1glui_1_1Slider.html" title="glui::element representing a slider, the label is positioned to the right" alt="" coords="220,394,345,421"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1glui_1_1Button.html" title="glui::Element representing a button with the label centered within" alt="" coords="455,17,586,43"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1glui_1_1ToolButton.html" title="glui::Element representing a tool button with an image instead of a label" alt="" coords="443,74,598,101"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1glui_1_1ButtonPropertyWidget.html" title="GLUI property widget for a button property using a glui Button." alt="" coords="669,5,848,47"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1glui_1_1ToolButtonPropertyWidget.html" title="GLUI property widget for a button property using a glui ToolButton." alt="" coords="681,71,836,112"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1glui_1_1BoolPropertyWidget.html" title="glui property widget for a bool property using glui::CheckBox" alt="" coords="437,125,604,167"/>
+<area shape="rect" id="node10" href="$classinviwo_1_1glui_1_1DoubleMinMaxPropertyWidget.html" title="glui property widget for a double minmax property using glui::RangeSlider" alt="" coords="431,191,610,232"/>
+<area shape="rect" id="node11" href="$classinviwo_1_1glui_1_1FloatMinMaxPropertyWidget.html" title="glui property widget for a float minmax property using glui::RangeSlider" alt="" coords="437,256,604,297"/>
+<area shape="rect" id="node12" href="$classinviwo_1_1glui_1_1IntMinMaxPropertyWidget.html" title="glui property widget for an int minmax property using glui::RangeSlider" alt="" coords="420,321,621,363"/>
+<area shape="rect" id="node14" href="$classinviwo_1_1glui_1_1FloatPropertyWidget.html" title="glui property widget for a float property using glui::Slider" alt="" coords="435,387,606,428"/>
+<area shape="rect" id="node15" href="$classinviwo_1_1glui_1_1IntPropertyWidget.html" title="glui property widget for an int property using glui::Slider" alt="" coords="443,452,598,493"/>
+</map>

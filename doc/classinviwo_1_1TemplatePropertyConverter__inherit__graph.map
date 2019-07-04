@@ -1,0 +1,34 @@
+<map id="inviwo::TemplatePropertyConverter&lt; SrcProperty, DstProperty &gt;" name="inviwo::TemplatePropertyConverter&lt; SrcProperty, DstProperty &gt;">
+<area shape="rect" id="node1" title=" " alt="" coords="221,555,388,611"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1OrdinalPropertyConverter.html" title=" " alt="" coords="657,9,865,50"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1TemplatePropertyConverter.html" title=" " alt="" coords="649,75,873,131"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1TemplatePropertyConverter.html" title=" " alt="" coords="672,155,851,211"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1TemplatePropertyConverter.html" title=" " alt="" coords="674,235,849,291"/>
+<area shape="rect" id="node10" href="$classinviwo_1_1TemplatePropertyConverter.html" title=" " alt="" coords="643,315,880,371"/>
+<area shape="rect" id="node12" href="$classinviwo_1_1TemplatePropertyConverter.html" title=" " alt="" coords="670,395,853,451"/>
+<area shape="rect" id="node14" href="$classinviwo_1_1TemplatePropertyConverter.html" title=" " alt="" coords="678,475,845,531"/>
+<area shape="rect" id="node17" href="$classinviwo_1_1TemplatePropertyConverter.html" title=" " alt="" coords="674,555,849,611"/>
+<area shape="rect" id="node19" href="$classinviwo_1_1TemplatePropertyConverter.html" title=" " alt="" coords="649,635,874,691"/>
+<area shape="rect" id="node21" href="$classinviwo_1_1TemplatePropertyConverter.html" title=" " alt="" coords="678,715,845,771"/>
+<area shape="rect" id="node23" href="$classinviwo_1_1TemplatePropertyConverter.html" title=" " alt="" coords="675,795,848,851"/>
+<area shape="rect" id="node25" href="$classinviwo_1_1TemplatePropertyConverter.html" title=" " alt="" coords="678,875,845,931"/>
+<area shape="rect" id="node27" href="$classinviwo_1_1TemplatePropertyConverter.html" title=" " alt="" coords="672,955,851,1011"/>
+<area shape="rect" id="node29" href="$classinviwo_1_1TemplatePropertyConverter.html" title=" " alt="" coords="665,1035,858,1091"/>
+<area shape="rect" id="node31" href="$classinviwo_1_1TemplatePropertyConverter.html" title=" " alt="" coords="666,1115,857,1171"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1PropertyConverter.html" title=" " alt="" coords="5,570,172,596"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1OptionToDataFrameColumnConverter.html" title=" " alt="" coords="929,82,1160,124"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1OptionToIntConverter.html" title=" " alt="" coords="953,162,1137,204"/>
+<area shape="rect" id="node9" href="$classinviwo_1_1StringToFileConverter.html" title=" " alt="" coords="951,250,1138,276"/>
+<area shape="rect" id="node11" href="$classinviwo_1_1TransferfunctionToIsoTFConverter.html" title=" " alt="" coords="967,320,1122,361"/>
+<area shape="rect" id="node13" href="$classinviwo_1_1IsoTFToTransferfunctionConverter.html" title=" " alt="" coords="944,385,1145,426"/>
+<area shape="rect" id="node15" href="$classinviwo_1_1ScalarToStringConverter.html" title=" " alt="" coords="943,450,1146,492"/>
+<area shape="rect" id="node16" href="$classinviwo_1_1VectorToStringConverter.html" title=" " alt="" coords="943,516,1147,557"/>
+<area shape="rect" id="node18" href="$classinviwo_1_1StringToDirectoryConverter.html" title=" " alt="" coords="963,581,1127,622"/>
+<area shape="rect" id="node20" href="$classinviwo_1_1DataFrameColumnToOptionConverter.html" title=" " alt="" coords="932,646,1157,688"/>
+<area shape="rect" id="node22" href="$classinviwo_1_1FileToStringConverter.html" title=" " alt="" coords="951,730,1138,756"/>
+<area shape="rect" id="node24" href="$classinviwo_1_1IsoTFToIsovalueConverter.html" title=" " alt="" coords="939,810,1150,836"/>
+<area shape="rect" id="node26" href="$classinviwo_1_1IntToOptionConverter.html" title=" " alt="" coords="953,882,1137,924"/>
+<area shape="rect" id="node28" href="$classinviwo_1_1OptionToStringConverter.html" title=" " alt="" coords="943,962,1147,1004"/>
+<area shape="rect" id="node30" href="$classinviwo_1_1DirectoryToStringConverter.html" title=" " alt="" coords="963,1042,1127,1084"/>
+<area shape="rect" id="node32" href="$classinviwo_1_1IsovalueToIsoTFConverter.html" title=" " alt="" coords="939,1130,1150,1156"/>
+</map>

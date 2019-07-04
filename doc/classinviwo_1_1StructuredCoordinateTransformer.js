@@ -9,7 +9,7 @@ var classinviwo_1_1StructuredCoordinateTransformer =
     [ "getIndexToModelMatrix", "classinviwo_1_1StructuredCoordinateTransformer.html#aa15482797d129384c66f49e866f2c711", null ],
     [ "getIndexToTextureMatrix", "classinviwo_1_1StructuredCoordinateTransformer.html#ab3cbaf7f9d0f48150fa9a203cd9de037", null ],
     [ "getIndexToWorldMatrix", "classinviwo_1_1StructuredCoordinateTransformer.html#a0f2cfe9d5de723f782599a3dfbec7a2c", null ],
-    [ "getMatrix", "classinviwo_1_1StructuredCoordinateTransformer.html#a42a88bf2dca274c03974936b42043c92", null ],
+    [ "getMatrix", "classinviwo_1_1StructuredCoordinateTransformer.html#abb48fd458689862027b55bd5ff561e6e", null ],
     [ "getModelToDataMatrix", "classinviwo_1_1StructuredCoordinateTransformer.html#a62e91b36aea9988a48fae98f19cfd41d", null ],
     [ "getModelToIndexMatrix", "classinviwo_1_1StructuredCoordinateTransformer.html#ae0f3a0f7140ace51d7520ecfd5f0ed76", null ],
     [ "getModelToTextureMatrix", "classinviwo_1_1StructuredCoordinateTransformer.html#a67ef0f83f41342e59119778e7b08375b", null ],

@@ -1,7 +1,7 @@
 var classinviwo_1_1animation_1_1AnimationControllerObserver =
 [
-    [ "onAnimationChanged", "classinviwo_1_1animation_1_1AnimationControllerObserver.html#ad890818b28a7fe9e28f7f3cada4ab9b7", null ],
-    [ "onPlaybackModeChanged", "classinviwo_1_1animation_1_1AnimationControllerObserver.html#aa83bb37e69849f4e52d0030d104c8606", null ],
-    [ "onStateChanged", "classinviwo_1_1animation_1_1AnimationControllerObserver.html#af045580c7db50206635e51a54c7e4ded", null ],
-    [ "onTimeChanged", "classinviwo_1_1animation_1_1AnimationControllerObserver.html#a9de55f4b7c5c06a4a3bd7548ff2e8490", null ]
+    [ "onAnimationChanged", "classinviwo_1_1animation_1_1AnimationControllerObserver.html#a5422a0eb2ee5801a31b46f217d78da96", null ],
+    [ "onPlaybackSettingsChanged", "classinviwo_1_1animation_1_1AnimationControllerObserver.html#aefdf5aa4c9de74fee74c058f1d7d2f5c", null ],
+    [ "onStateChanged", "classinviwo_1_1animation_1_1AnimationControllerObserver.html#a18907d022e00c593421c0055ba044ea6", null ],
+    [ "onTimeChanged", "classinviwo_1_1animation_1_1AnimationControllerObserver.html#a5362fce2afd3f28d7fb90d3c135ebc0c", null ]
 ];

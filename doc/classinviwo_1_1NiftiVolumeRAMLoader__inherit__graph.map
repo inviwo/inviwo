@@ -1,0 +1,5 @@
+<map id="inviwo::NiftiVolumeRAMLoader" name="inviwo::NiftiVolumeRAMLoader">
+<area shape="rect" id="node1" title="A loader of Nifti files. Used to create VolumeRAM representations. This class us used by the NiftiRea..." alt="" coords="14,200,213,227"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1DiskRepresentationLoader.html" title=" " alt="" coords="5,109,221,151"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1DiskRepresentationLoader.html" title=" " alt="" coords="25,5,202,47"/>
+</map>

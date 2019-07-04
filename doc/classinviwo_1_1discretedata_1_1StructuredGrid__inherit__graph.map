@@ -1,0 +1,5 @@
+<map id="inviwo::discretedata::StructuredGrid" name="inviwo::discretedata::StructuredGrid">
+<area shape="rect" id="node1" title="A curvilinear grid in nD." alt="" coords="5,95,140,136"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1discretedata_1_1PeriodicGrid.html" title="A curvilinear grid in nD, with some dimensions set to wrap Assume first point in a dimension equals t..." alt="" coords="5,184,140,225"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1discretedata_1_1Connectivity.html" title="Basis interface of all connectivity types." alt="" coords="5,5,140,47"/>
+</map>

@@ -5,6 +5,6 @@ var classinviwo_1_1NiftiVolumeRAMLoader =
     [ "~NiftiVolumeRAMLoader", "classinviwo_1_1NiftiVolumeRAMLoader.html#a585ddb967229458bc6b6d27edbf0986f", null ],
     [ "clone", "classinviwo_1_1NiftiVolumeRAMLoader.html#add02d56a80104bb93a9baa78cc4fbeb0", null ],
     [ "createRepresentation", "classinviwo_1_1NiftiVolumeRAMLoader.html#a84f5ab6e5392e95fda35a84beb67a1fa", null ],
-    [ "dispatch", "classinviwo_1_1NiftiVolumeRAMLoader.html#ad8f37da355b79d69041cef87598c22ab", null ],
+    [ "operator()", "classinviwo_1_1NiftiVolumeRAMLoader.html#a3412af519ac93f820492ac2924decd27", null ],
     [ "updateRepresentation", "classinviwo_1_1NiftiVolumeRAMLoader.html#a8411ba3fa9d7f73fee0fac7e20257b88", null ]
 ];

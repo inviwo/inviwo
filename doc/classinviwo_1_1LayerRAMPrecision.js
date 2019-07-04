@@ -2,7 +2,7 @@ var classinviwo_1_1LayerRAMPrecision =
 [
     [ "type", "classinviwo_1_1LayerRAMPrecision.html#aab3463535a51c16d4132b618d16542c2", null ],
     [ "LayerRAMPrecision", "classinviwo_1_1LayerRAMPrecision.html#a7fc14da737d4fbaff94c37eb4dd6b4a9", null ],
-    [ "LayerRAMPrecision", "classinviwo_1_1LayerRAMPrecision.html#a164a4e378bad95c5f7b06a3ec96c6c64", null ],
+    [ "LayerRAMPrecision", "classinviwo_1_1LayerRAMPrecision.html#ab273beb774d495459b81f2aa721f8d94", null ],
     [ "LayerRAMPrecision", "classinviwo_1_1LayerRAMPrecision.html#aba7a0f9e95899f8ff540cb6927b1ea7e", null ],
     [ "~LayerRAMPrecision", "classinviwo_1_1LayerRAMPrecision.html#add59b71d98acb5f5caaa30ea67da9957", null ],
     [ "clone", "classinviwo_1_1LayerRAMPrecision.html#abb2cc471a2919113740f0848d827af65", null ],
@@ -17,7 +17,8 @@ var classinviwo_1_1LayerRAMPrecision =
     [ "getData", "classinviwo_1_1LayerRAMPrecision.html#acf0578991892fb83b98a744099264ad4", null ],
     [ "getData", "classinviwo_1_1LayerRAMPrecision.html#a153c25b730bd22301014ba4df7f1eae2", null ],
     [ "getDataTyped", "classinviwo_1_1LayerRAMPrecision.html#a32a399f06d15d2c832f83b4395f6d618", null ],
-    [ "getDataTyped", "classinviwo_1_1LayerRAMPrecision.html#af9fb8b3ded5a33252df0b2388ab00a9d", null ],
+    [ "getDataTyped", "classinviwo_1_1LayerRAMPrecision.html#ad4edeb4ca57a3331edc9935d0485269e", null ],
+    [ "getDimensions", "classinviwo_1_1LayerRAMPrecision.html#a1bab1b751178b5e89a5d658bba0dbc8d", null ],
     [ "getSwizzleMask", "classinviwo_1_1LayerRAMPrecision.html#a2ef0aa834d9dc915a55e4f4425b49638", null ],
     [ "operator=", "classinviwo_1_1LayerRAMPrecision.html#af024e04a2868df2479d402e7d4e2934d", null ],
     [ "setData", "classinviwo_1_1LayerRAMPrecision.html#a475d86b87f4a21c3e59ac50ab66646b4", null ],

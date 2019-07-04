@@ -1,0 +1,25 @@
+<map id="inviwo::DataReader" name="inviwo::DataReader">
+<area shape="rect" id="node1" title="A abstract base class for all file readers." alt="" coords="5,336,137,363"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1DataReaderType.html" title=" " alt="" coords="592,235,752,277"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1DataReaderType.html" title=" " alt="" coords="592,146,752,187"/>
+<area shape="rect" id="node9" href="$classinviwo_1_1DataReaderType.html" title=" " alt="" coords="592,81,752,122"/>
+<area shape="rect" id="node11" href="$classinviwo_1_1DataReaderType.html" title=" " alt="" coords="587,356,757,412"/>
+<area shape="rect" id="node14" href="$classinviwo_1_1DataReaderType.html" title=" " alt="" coords="592,521,752,562"/>
+<area shape="rect" id="node21" href="$classinviwo_1_1DataReaderType.html" title=" " alt="" coords="592,586,752,627"/>
+<area shape="rect" id="node23" href="$classinviwo_1_1DataReaderType.html" title="Template base class for file readers designating what type of data object the reader returns." alt="" coords="187,336,377,363"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1CSVReader.html" title="A reader for comma separated value (CSV) files with customizable delimiters. The default delimiter is..." alt="" coords="845,208,977,235"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1JSONDataFrameReader.html" title=" " alt="" coords="810,259,1013,285"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1CImgLayerReader.html" title="Reader for Images files." alt="" coords="828,56,995,83"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1PNGLayerReader.html" title=" " alt="" coords="829,107,994,133"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1TIFFLayerReader.html" title=" " alt="" coords="830,157,993,184"/>
+<area shape="rect" id="node10" href="$classinviwo_1_1AssimpReader.html" title="Inviwo Module Assimp." alt="" coords="837,5,986,32"/>
+<area shape="rect" id="node12" href="$classinviwo_1_1DatVolumeSequenceReader.html" title="Reader for *.dat files." alt="" coords="818,310,1005,351"/>
+<area shape="rect" id="node13" href="$classinviwo_1_1NiftiReader.html" title="Volume data reader for Nifti&#45;1 files." alt="" coords="848,376,975,403"/>
+<area shape="rect" id="node15" href="$classinviwo_1_1CImgVolumeReader.html" title=" " alt="" coords="822,427,1001,453"/>
+<area shape="rect" id="node16" href="$classinviwo_1_1IvfVolumeReader.html" title=" " alt="" coords="831,477,991,504"/>
+<area shape="rect" id="node17" href="$classinviwo_1_1MPVMVolumeReader.html" title="Reader for *.mpvm files." alt="" coords="817,528,1006,555"/>
+<area shape="rect" id="node18" href="$classinviwo_1_1PVMVolumeReader.html" title="Reader for *.pvm files." alt="" coords="822,579,1001,605"/>
+<area shape="rect" id="node19" href="$classinviwo_1_1RawVolumeReader.html" title=" " alt="" coords="824,629,999,656"/>
+<area shape="rect" id="node20" href="$classinviwo_1_1TIFFStackVolumeReader.html" title=" " alt="" coords="807,680,1016,707"/>
+<area shape="rect" id="node22" href="$classinviwo_1_1IvfSequenceVolumeReader.html" title="Reader for *.ivfs sequnce files." alt="" coords="823,731,1000,773"/>
+</map>

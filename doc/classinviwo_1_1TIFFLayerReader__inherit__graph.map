@@ -1,0 +1,6 @@
+<map id="inviwo::TIFFLayerReader" name="inviwo::TIFFLayerReader">
+<area shape="rect" id="node1" title=" " alt="" coords="5,261,168,288"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1DataReaderType.html" title=" " alt="" coords="7,171,167,212"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1DataReader.html" title="A abstract base class for all file readers." alt="" coords="41,5,173,32"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1DataReaderType.html" title="Template base class for file readers designating what type of data object the reader returns." alt="" coords="103,81,294,108"/>
+</map>

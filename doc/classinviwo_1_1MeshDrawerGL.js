@@ -25,7 +25,7 @@ var classinviwo_1_1MeshDrawerGL =
     [ "create", "classinviwo_1_1MeshDrawerGL.html#a7cd2ae8e1e9c62d86a68a6bbf9d8d532", null ],
     [ "draw", "classinviwo_1_1MeshDrawerGL.html#aa9b69fb06b4c1fce89b9fdeac3416274", null ],
     [ "draw", "classinviwo_1_1MeshDrawerGL.html#a259a622c08b2b0a3687a5caf88408d76", null ],
-    [ "getDrawObject", "classinviwo_1_1MeshDrawerGL.html#a5c33624585331bbd0c3769a6ef041d20", null ],
+    [ "getDrawObject", "classinviwo_1_1MeshDrawerGL.html#a149bfd42fc42c41349da2750fd6932eb", null ],
     [ "getMesh", "classinviwo_1_1MeshDrawerGL.html#a24ec8ad379abcbdec192a66bcf13a6e8", null ],
     [ "operator=", "classinviwo_1_1MeshDrawerGL.html#ac69c1b2152deca42c3e42048c2bc93fd", null ],
     [ "operator=", "classinviwo_1_1MeshDrawerGL.html#ad2e2a522d05a036342ba260b11f845d8", null ],

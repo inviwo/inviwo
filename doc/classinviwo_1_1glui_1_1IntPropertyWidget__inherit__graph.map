@@ -1,0 +1,8 @@
+<map id="inviwo::glui::IntPropertyWidget" name="inviwo::glui::IntPropertyWidget">
+<area shape="rect" id="node1" title="glui property widget for an int property using glui::Slider" alt="" coords="162,155,317,196"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1glui_1_1Slider.html" title="glui::element representing a slider, the label is positioned to the right" alt="" coords="13,80,138,107"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1glui_1_1Element.html" title="graphical UI element for use in combination with Layout" alt="" coords="5,5,145,32"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1PropertyWidget.html" title=" " alt="" coords="162,80,317,107"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1PropertyObserver.html" title=" " alt="" coords="341,80,505,107"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1Observer.html" title=" " alt="" coords="366,5,481,32"/>
+</map>

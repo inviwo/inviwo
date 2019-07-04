@@ -1,0 +1,4 @@
+<map id="inviwo::ConsoleLogger" name="inviwo::ConsoleLogger">
+<area shape="rect" id="node1" title="A Logger class that log to the console using cout." alt="" coords="5,80,156,107"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1Logger.html" title=" " alt="" coords="29,5,132,32"/>
+</map>

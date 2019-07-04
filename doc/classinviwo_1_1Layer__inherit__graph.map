@@ -1,0 +1,8 @@
+<map id="inviwo::Layer" name="inviwo::Layer">
+<area shape="rect" id="node1" title=" " alt="" coords="939,39,1035,66"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1Data.html" title=" " alt="" coords="704,5,861,47"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1Data.html" title="The base class for all data objects." alt="" coords="268,5,397,47"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1StructuredGridEntity.html" title=" " alt="" coords="676,71,889,98"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1SpatialEntity.html" title="A convenience class to generate transformation matrices between the different coordinate systems in u..." alt="" coords="5,93,176,119"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1StructuredGridEntity.html" title=" " alt="" coords="225,122,440,149"/>
+</map>

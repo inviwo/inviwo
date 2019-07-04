@@ -1,0 +1,6 @@
+<map id="inviwo::glui::Layout" name="inviwo::glui::Layout">
+<area shape="rect" id="node1" title="base class for layouting glui::Elements" alt="" coords="115,5,245,32"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1glui_1_1BoxLayout.html" title="layout for aligning Elements either horizontally or vertically" alt="" coords="103,80,257,107"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1glui_1_1HBoxLayout.html" title="layout for aligning Elements horizontally (left to right)" alt="" coords="5,155,168,181"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1glui_1_1VBoxLayout.html" title="layout for aligning Elements vertically (top to bottom)" alt="" coords="192,155,355,181"/>
+</map>

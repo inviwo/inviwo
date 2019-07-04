@@ -17,7 +17,7 @@ var classinviwo_1_1Inviwo__ABufferGL4 =
     [ "aBuffer_resolveLinkList", "classinviwo_1_1Inviwo__ABufferGL4.html#a997267902a943b1f8d6f0681d6e7c835", null ],
     [ "abuffer_textureInfo", "classinviwo_1_1Inviwo__ABufferGL4.html#accda8e3adbfef59b8895fac01bdfd072", null ],
     [ "aBuffer_unbind", "classinviwo_1_1Inviwo__ABufferGL4.html#a343c239ff1d46a4c26e848eccd9f40b8", null ],
-    [ "getLogStatus", "classinviwo_1_1Inviwo__ABufferGL4.html#a16fe4f049b91575cf7895a002a459f54", null ],
+    [ "getLogStatus", "classinviwo_1_1Inviwo__ABufferGL4.html#a0f2a59c8017b66fc60d382a74b70341b", null ],
     [ "init", "classinviwo_1_1Inviwo__ABufferGL4.html#a304a6f185c0078b2655d4ff353875b87", null ],
     [ "setLogStatus", "classinviwo_1_1Inviwo__ABufferGL4.html#a1bce423e3c39d91adf5224ed13d635f1", null ],
     [ "abufferFragCountImgTexture_", "classinviwo_1_1Inviwo__ABufferGL4.html#a6d61a63bb37c916e6665b512a696b51e", null ],

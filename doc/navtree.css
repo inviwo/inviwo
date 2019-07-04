@@ -19,13 +19,6 @@
   margin:0px;
 }
 
-#nav-tree .selected {
-  background-image: url('tab_a.png');
-  background-repeat:repeat-x;
-  color: #fff;
-  text-shadow: 0px 1px 1px rgba(0, 0, 0, 1.0);
-}
-
 #nav-tree img {
   margin:0px;
   padding:0px;
@@ -43,7 +36,7 @@
 #nav-tree .label {
   margin:0px;
   padding:0px;
-  font: 12px 'Lucida Grande',Geneva,Helvetica,Arial,sans-serif;
+  font: 12px 'Montserrat',Geneva,Helvetica,Arial,sans-serif;
 }
 
 #nav-tree .label a {
@@ -52,7 +45,7 @@
 
 #nav-tree .selected a {
   text-decoration:none;
-  color:#fff;
+  color: #258bd2; 
 }
 
 #nav-tree .children_ul {
@@ -67,7 +60,7 @@
 
 #nav-tree {
   padding: 0px 0px;
-  background-color: #FAFAFF; 
+  background-color: #FAFAFB; 
   font-size:14px;
   overflow:auto;
 }
@@ -77,6 +70,7 @@
   display:block;
   padding:0px;
   margin:0px;
+  margin-left: 312px;
   -webkit-overflow-scrolling : touch; /* iOS 5+ */
 }
 
@@ -86,7 +80,7 @@
   display:block;
   position: absolute;
   left: 0px;
-  width: 300px;
+  width: 306px;
 }
 
 .ui-resizable .ui-resizable-handle {
@@ -94,12 +88,17 @@
 }
 
 .ui-resizable-e {
-  background:url("splitbar.png") repeat scroll right center transparent;
-  cursor:e-resize;
+  background-image: none;
+  background-color: none;
+  background-size:100%;
+  background-repeat:repeat-y;
+  background-attachment: scroll;
+  cursor:ew-resize;
   height:100%;
-  right:0;
+  right:5px;
   top:0;
-  width:6px;
+  width:9px;
+  border-right: 1px solid #d4d4d4;
 }
 
 .ui-resizable-handle {
@@ -110,12 +109,10 @@
 }
 
 #nav-tree-contents {
-  margin: 6px 0px 0px 0px;
+  margin: 6px 0px 0px 6px;
 }
 
 #nav-tree {
-  background-image:url('nav_h.png');
-  background-repeat:repeat-x;
   background-color: #FAFAFB;
   -webkit-overflow-scrolling : touch; /* iOS 5+ */
 }

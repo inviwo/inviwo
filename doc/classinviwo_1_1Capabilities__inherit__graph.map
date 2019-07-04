@@ -1,0 +1,7 @@
+<map id="inviwo::Capabilities" name="inviwo::Capabilities">
+<area shape="rect" id="node1" title=" " alt="" coords="5,81,136,108"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1OpenCLCapabilities.html" title=" " alt="" coords="191,5,370,32"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1OpenGLCapabilities.html" title=" " alt="" coords="191,56,370,83"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1OpenGLQtCapabilities.html" title=" " alt="" coords="184,107,377,133"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1SystemCapabilities.html" title=" " alt="" coords="193,157,369,184"/>
+</map>

@@ -8,9 +8,9 @@ var classinviwo_1_1DataGroup =
     [ "clearRepresentations", "classinviwo_1_1DataGroup.html#a27b5a26ae55d7f5ee0841856baf7ca61", null ],
     [ "clone", "classinviwo_1_1DataGroup.html#ab1b9e0cac690529a615292f0f3881d46", null ],
     [ "getEditableRepresentation", "classinviwo_1_1DataGroup.html#ac2c91a7cb4a615816ffbed4988f0572c", null ],
-    [ "getRepresentation", "classinviwo_1_1DataGroup.html#ac1818e62fe30af07dabd1d0870fbed47", null ],
-    [ "hasRepresentation", "classinviwo_1_1DataGroup.html#a0b87b9e483bf03138f16110b2939b383", null ],
-    [ "hasRepresentations", "classinviwo_1_1DataGroup.html#a662aa92583819e6b0290a832353dea5c", null ],
+    [ "getRepresentation", "classinviwo_1_1DataGroup.html#ac959940db890702ec71329130d03ee49", null ],
+    [ "hasRepresentation", "classinviwo_1_1DataGroup.html#a753204297227b7fddc1842c7d232f717", null ],
+    [ "hasRepresentations", "classinviwo_1_1DataGroup.html#ab6dad252cf13fbd2240c49e838f753a2", null ],
     [ "operator=", "classinviwo_1_1DataGroup.html#adb5fc013145545b67612d259a4bfee60", null ],
     [ "mutex_", "classinviwo_1_1DataGroup.html#a77fa251c18259f9b64038ca7a5eb9016", null ],
     [ "representations_", "classinviwo_1_1DataGroup.html#a5276a0d1a40d23efa744431ba34712e6", null ]

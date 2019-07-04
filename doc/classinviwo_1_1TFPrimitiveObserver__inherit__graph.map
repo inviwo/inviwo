@@ -1,0 +1,10 @@
+<map id="inviwo::TFPrimitiveObserver" name="inviwo::TFPrimitiveObserver">
+<area shape="rect" id="node1" title=" " alt="" coords="168,81,347,108"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1TFEditorControlPoint.html" title=" " alt="" coords="395,5,579,32"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1TFEditorIsovalue.html" title=" " alt="" coords="407,56,566,83"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1TFPrimitiveSet.html" title="data structure managing multiple TFPrimitives" alt="" coords="413,107,561,133"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1TFSelectionWatcher.html" title="observes a selection of primitives in a particular TF and sends signals to inform on position,..." alt="" coords="395,157,578,184"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1Observer.html" title=" " alt="" coords="5,81,120,108"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1IsoValueCollection.html" title="data structure representing isovalues" alt="" coords="627,81,797,108"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1TransferFunction.html" title="data structure for holding 1D transfer function data" alt="" coords="632,132,792,159"/>
+</map>

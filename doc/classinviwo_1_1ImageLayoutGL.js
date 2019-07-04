@@ -13,7 +13,7 @@ var classinviwo_1_1ImageLayoutGL =
     [ "ImageLayoutGL", "classinviwo_1_1ImageLayoutGL.html#a926febe89d1213405e2b23e334caa206", null ],
     [ "~ImageLayoutGL", "classinviwo_1_1ImageLayoutGL.html#aed64ca27d6a78a6d2d4ff94632f0aa67", null ],
     [ "getProcessorInfo", "classinviwo_1_1ImageLayoutGL.html#a3911dac9b74639de670318eb98225f7a", null ],
-    [ "onStatusChange", "classinviwo_1_1ImageLayoutGL.html#a712b6ca17d08a0b0852f70928c2a09fd", null ],
+    [ "onStatusChange", "classinviwo_1_1ImageLayoutGL.html#a24d211df7c2a0643ab6da3e557dba5b4", null ],
     [ "process", "classinviwo_1_1ImageLayoutGL.html#ab4b2e5faf693b02ad59245d3d6c1d212", null ],
     [ "propagateEvent", "classinviwo_1_1ImageLayoutGL.html#a8135b80a5ccf580bc4780ee7e49aff81", null ],
     [ "updateViewports", "classinviwo_1_1ImageLayoutGL.html#a3159c868652202fde0c0c87209fb4e8f", null ]

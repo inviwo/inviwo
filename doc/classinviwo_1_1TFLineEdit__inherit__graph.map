@@ -1,0 +1,4 @@
+<map id="inviwo::TFLineEdit" name="inviwo::TFLineEdit">
+<area shape="rect" id="node1" title="widget for entering double values within certain bounds and optional range mapping" alt="" coords="5,80,132,107"/>
+<area shape="rect" id="node2" title=" " alt="" coords="29,5,108,32"/>
+</map>

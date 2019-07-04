@@ -1,0 +1,6 @@
+<map id="inviwo::Deserializer" name="inviwo::Deserializer">
+<area shape="rect" id="node1" title=" " alt="" coords="87,155,219,181"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1SerializeBase.html" title=" " alt="" coords="5,80,149,107"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1LogFilter.html" title="filters log messages based on the verbosity level. Messages below the selected verbosity will be igno..." alt="" coords="173,80,288,107"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1Logger.html" title=" " alt="" coords="179,5,282,32"/>
+</map>

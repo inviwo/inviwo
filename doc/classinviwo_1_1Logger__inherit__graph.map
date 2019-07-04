@@ -1,0 +1,11 @@
+<map id="inviwo::Logger" name="inviwo::Logger">
+<area shape="rect" id="node1" title=" " alt="" coords="5,157,108,184"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1ConsoleLogger.html" title="A Logger class that log to the console using cout." alt="" coords="160,5,311,32"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1ConsoleWidget.html" title=" " alt="" coords="159,56,311,83"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1FileLogger.html" title="A logger class that logs to a file in html format." alt="" coords="173,107,297,133"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1LogCentral.html" title=" " alt="" coords="172,157,299,184"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1LogErrorCounter.html" title=" " alt="" coords="156,208,315,235"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1LogFilter.html" title="filters log messages based on the verbosity level. Messages below the selected verbosity will be igno..." alt="" coords="178,259,293,285"/>
+<area shape="rect" id="node9" href="$classinviwo_1_1StringLogger.html" title="A logger class that logs to a string." alt="" coords="167,309,304,336"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1Deserializer.html" title=" " alt="" coords="363,259,495,285"/>
+</map>

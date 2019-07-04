@@ -3,6 +3,7 @@ var classinviwo_1_1Serializer =
     [ "Serializer", "classinviwo_1_1Serializer.html#a3049bbffe46a71c7832f203e17c18969", null ],
     [ "~Serializer", "classinviwo_1_1Serializer.html#a0a3be583e6b70e43558d7ca8eb3375c8", null ],
     [ "serialize", "classinviwo_1_1Serializer.html#aa821b83c5662e6e0e0ff0da37500c385", null ],
+    [ "serialize", "classinviwo_1_1Serializer.html#a2a1fcc69d26a0cdb40fd6a3207c40113", null ],
     [ "serialize", "classinviwo_1_1Serializer.html#ac6076dad9adbd4355c03757db8484cea", null ],
     [ "serialize", "classinviwo_1_1Serializer.html#aab2ce79f20c612c0e9efb0de581ca6ab", null ],
     [ "serialize", "classinviwo_1_1Serializer.html#a4ef82cd5997b40d1259da0acd64128b8", null ],

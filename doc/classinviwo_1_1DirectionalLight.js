@@ -4,7 +4,7 @@ var classinviwo_1_1DirectionalLight =
     [ "~DirectionalLight", "classinviwo_1_1DirectionalLight.html#a22927e3021f96ceef723313ed5c12cb5", null ],
     [ "clone", "classinviwo_1_1DirectionalLight.html#a5a6d74099087eae0a8ada39a3ee33b76", null ],
     [ "getArea", "classinviwo_1_1DirectionalLight.html#a6429f0c38fa7904007eb3baf8de9859e", null ],
-    [ "getDirection", "classinviwo_1_1DirectionalLight.html#a1f4d1c4b3602e3d3bec73dcfa80576b2", null ],
+    [ "getDirection", "classinviwo_1_1DirectionalLight.html#a9849ed887497c0eb78e416f43d79df2a", null ],
     [ "getLightSourceType", "classinviwo_1_1DirectionalLight.html#ae9277a4496ec7bcfa5338e00facf474b", null ],
     [ "getPower", "classinviwo_1_1DirectionalLight.html#aeb060df62c35919054b974db90483c9d", null ],
     [ "setDirection", "classinviwo_1_1DirectionalLight.html#a709767d53c212461f1cf781b7283eb0a", null ],

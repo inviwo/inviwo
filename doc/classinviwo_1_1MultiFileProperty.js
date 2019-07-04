@@ -9,12 +9,13 @@ var classinviwo_1_1MultiFileProperty =
     [ "clearNameFilters", "classinviwo_1_1MultiFileProperty.html#a60e61a313d238b5cca92b80dc28b58d0", null ],
     [ "clone", "classinviwo_1_1MultiFileProperty.html#afc4bf7fe21e9d5bd8f5de8e8a2416e7d", null ],
     [ "deserialize", "classinviwo_1_1MultiFileProperty.html#aa73a9ae6dab20db5008a9ee3721125e6", null ],
-    [ "getAcceptMode", "classinviwo_1_1MultiFileProperty.html#ab3e49c2a0fe37f7f7c25e71909070750", null ],
-    [ "getContentType", "classinviwo_1_1MultiFileProperty.html#a634911df3bc0e614425cf95b79cb3226", null ],
+    [ "getAcceptMode", "classinviwo_1_1MultiFileProperty.html#af299fb84743ab3f2b5765d1153dfcd66", null ],
+    [ "getClassIdentifier", "classinviwo_1_1MultiFileProperty.html#af59a1d5bea370de6773cf28ba5583a60", null ],
+    [ "getContentType", "classinviwo_1_1MultiFileProperty.html#a7cb28b94c99de0ea12789f997df9fc9d", null ],
     [ "getDescription", "classinviwo_1_1MultiFileProperty.html#a05b5dd1cd1b11c025f4f29216a62b739", null ],
-    [ "getFileMode", "classinviwo_1_1MultiFileProperty.html#a6b07773d018f2b3854c87272597d2345", null ],
+    [ "getFileMode", "classinviwo_1_1MultiFileProperty.html#a243fbee2e7ec949d461392ed96b32054", null ],
     [ "getNameFilters", "classinviwo_1_1MultiFileProperty.html#ad61307cecac318d388823ccc1f4d9776", null ],
-    [ "InviwoPropertyInfo", "classinviwo_1_1MultiFileProperty.html#a90e3034e125b2fd2758782a77f54fc56", null ],
+    [ "getSelectedExtension", "classinviwo_1_1MultiFileProperty.html#ab87b9d3186f94d29e18e230bab437003", null ],
     [ "operator=", "classinviwo_1_1MultiFileProperty.html#a9476ed96fbb2adfaefb8454d00349996", null ],
     [ "operator=", "classinviwo_1_1MultiFileProperty.html#ae9babcfe27348dbf8428171a86a52f3d", null ],
     [ "requestFile", "classinviwo_1_1MultiFileProperty.html#ad4472838a718bac00c44cd9f0a2d878f", null ],
@@ -24,5 +25,6 @@ var classinviwo_1_1MultiFileProperty =
     [ "set", "classinviwo_1_1MultiFileProperty.html#a64d5c1a867a5793af7638beebb92a9a7", null ],
     [ "setAcceptMode", "classinviwo_1_1MultiFileProperty.html#a73676c5c871361d59a9104a7bd7d7c92", null ],
     [ "setContentType", "classinviwo_1_1MultiFileProperty.html#a115ded283d367ca3669167b300921549", null ],
-    [ "setFileMode", "classinviwo_1_1MultiFileProperty.html#a64693604a09da96e5e456f40ee663df8", null ]
+    [ "setFileMode", "classinviwo_1_1MultiFileProperty.html#a64693604a09da96e5e456f40ee663df8", null ],
+    [ "setSelectedExtension", "classinviwo_1_1MultiFileProperty.html#abd604f01bf294e1ac3c528fcbae9ffd3", null ]
 ];

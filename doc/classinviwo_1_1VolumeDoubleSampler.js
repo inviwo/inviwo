@@ -7,7 +7,7 @@ var classinviwo_1_1VolumeDoubleSampler =
     [ "getVoxel", "classinviwo_1_1VolumeDoubleSampler.html#adf0e2bfe22bee50c91a363121feb976c", null ],
     [ "getVoxel", "classinviwo_1_1VolumeDoubleSampler.html#af345fb019b9e97174b555ceb75d9e02e", null ],
     [ "getVoxel", "classinviwo_1_1VolumeDoubleSampler.html#a9a945c06afc1c3d440b72a24f9890335", null ],
-    [ "getVoxel", "classinviwo_1_1VolumeDoubleSampler.html#aa377190061d4072be1d4b61b2cd052e5", null ],
+    [ "getVoxel", "classinviwo_1_1VolumeDoubleSampler.html#a15bc57047717f33c62c58b11fdde42fb", null ],
     [ "getVoxel", "classinviwo_1_1VolumeDoubleSampler.html#a19275a33e88e429ff06989904760ebeb", null ],
     [ "getVoxel", "classinviwo_1_1VolumeDoubleSampler.html#a12edb5ea6c3c2e0b56228d559a887093", null ],
     [ "getVoxel", "classinviwo_1_1VolumeDoubleSampler.html#a3dac774a1579174d7d85c4007be14f8f", null ],

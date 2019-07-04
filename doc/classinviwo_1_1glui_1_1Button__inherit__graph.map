@@ -1,0 +1,6 @@
+<map id="inviwo::glui::Button" name="inviwo::glui::Button">
+<area shape="rect" id="node1" title="glui::Element representing a button with the label centered within" alt="" coords="29,155,160,181"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1glui_1_1ButtonPropertyWidget.html" title="GLUI property widget for a button property using a glui Button." alt="" coords="5,229,184,271"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1glui_1_1AbstractButton.html" title="glui::Element representing a generic button" alt="" coords="5,80,184,107"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1glui_1_1Element.html" title="graphical UI element for use in combination with Layout" alt="" coords="25,5,165,32"/>
+</map>

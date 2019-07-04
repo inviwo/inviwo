@@ -1,0 +1,6 @@
+<map id="inviwo::MPVMVolumeReader" name="inviwo::MPVMVolumeReader">
+<area shape="rect" id="node1" title="Reader for *.mpvm files." alt="" coords="5,261,195,288"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1DataReaderType.html" title=" " alt="" coords="20,171,180,212"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1DataReader.html" title="A abstract base class for all file readers." alt="" coords="54,5,186,32"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1DataReaderType.html" title="Template base class for file readers designating what type of data object the reader returns." alt="" coords="117,81,307,108"/>
+</map>

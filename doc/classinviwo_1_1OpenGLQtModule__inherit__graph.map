@@ -1,0 +1,6 @@
+<map id="inviwo::OpenGLQtModule" name="inviwo::OpenGLQtModule">
+<area shape="rect" id="node1" title=" " alt="" coords="81,169,249,196"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1InviwoModule.html" title="A module class contains registrations of functionality, such as processors, ports,..." alt="" coords="5,87,145,114"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1ProcessorNetworkEvaluationObserver.html" title=" " alt="" coords="170,80,341,121"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1Observer.html" title=" " alt="" coords="198,5,313,32"/>
+</map>

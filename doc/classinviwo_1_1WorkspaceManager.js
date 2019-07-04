@@ -9,13 +9,13 @@ var classinviwo_1_1WorkspaceManager =
     [ "WorkspaceManager", "classinviwo_1_1WorkspaceManager.html#a289bc34e30c4e75ffcac7ed70cb08a17", null ],
     [ "~WorkspaceManager", "classinviwo_1_1WorkspaceManager.html#ae57a6109e6193c6c8f719f526450f8f1", null ],
     [ "clear", "classinviwo_1_1WorkspaceManager.html#ac5e78843cabc51f309835afc39277fdf", null ],
-    [ "createWorkspaceDeserializer", "classinviwo_1_1WorkspaceManager.html#af8300b4710a0a5a750822f74addc7ff8", null ],
+    [ "createWorkspaceDeserializer", "classinviwo_1_1WorkspaceManager.html#a486238d720b5c2f5bb2967bfa58d8057", null ],
     [ "load", "classinviwo_1_1WorkspaceManager.html#ab182ff97f8927cece02ab09b160dd26e", null ],
     [ "load", "classinviwo_1_1WorkspaceManager.html#aa5eb1e6f8aa6c4f94856ec85ac3c686b", null ],
     [ "onClear", "classinviwo_1_1WorkspaceManager.html#a6c3673a561ef9aefa66a8cdf92902f69", null ],
     [ "onLoad", "classinviwo_1_1WorkspaceManager.html#ad63095cda583b85b7dd7c937b758ab6a", null ],
-    [ "onSave", "classinviwo_1_1WorkspaceManager.html#ade68da914bc55d1a65b92c507ab2e449", null ],
+    [ "onSave", "classinviwo_1_1WorkspaceManager.html#ac5b9722bf5b2a452d589c749cedaa072", null ],
     [ "registerFactory", "classinviwo_1_1WorkspaceManager.html#a37c01880a5705834847dadb6ef7ab545", null ],
-    [ "save", "classinviwo_1_1WorkspaceManager.html#a08e6cd52b795053b57f133a97ca56db7", null ],
-    [ "save", "classinviwo_1_1WorkspaceManager.html#acae4ec5bfad7ff2d23ab1210ef55b1b2", null ]
+    [ "save", "classinviwo_1_1WorkspaceManager.html#a68c64fcaa66cb08781e676d5de8b21e5", null ],
+    [ "save", "classinviwo_1_1WorkspaceManager.html#ac079dd6c955c02b4be7cd49b54c2cb7f", null ]
 ];

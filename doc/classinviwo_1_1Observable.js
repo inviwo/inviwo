@@ -9,6 +9,6 @@ var classinviwo_1_1Observable =
     [ "operator=", "classinviwo_1_1Observable.html#ae893ae3c28d44f320cd1a2efa704932e", null ],
     [ "operator=", "classinviwo_1_1Observable.html#a0ab0efc8a80e36322a1197e8750e036b", null ],
     [ "removeObserver", "classinviwo_1_1Observable.html#acbabbb01670a61065bfb2b58950feea3", null ],
-    [ "startBlockingNotifications", "classinviwo_1_1Observable.html#a24cfcc50481192a0f9dd6078c7e1523d", null ],
-    [ "stopBlockingNotifications", "classinviwo_1_1Observable.html#ab745ae6dc9c5eaebfa2fff6fbe6b23c5", null ]
+    [ "startBlockingNotifications", "classinviwo_1_1Observable.html#aceded27239088ecdeca8e590770614d9", null ],
+    [ "stopBlockingNotifications", "classinviwo_1_1Observable.html#a4abfbec3338d1ca97e9c1177337f824f", null ]
 ];

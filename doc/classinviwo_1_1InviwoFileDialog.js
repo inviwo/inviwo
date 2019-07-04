@@ -20,7 +20,7 @@ var classinviwo_1_1InviwoFileDialog =
     [ "setCurrentDirectory", "classinviwo_1_1InviwoFileDialog.html#a49bf0918c6b7662eea14441991654ba0", null ],
     [ "setCurrentFile", "classinviwo_1_1InviwoFileDialog.html#a62912594a026ac32e7c44e71486c93d9", null ],
     [ "setFileMode", "classinviwo_1_1InviwoFileDialog.html#a43388ca023a9ada9818fbbdf65bcb53a", null ],
-    [ "setSelectedExtenstion", "classinviwo_1_1InviwoFileDialog.html#a430210a612c38931dfbf95d2ab4f9380", null ],
+    [ "setSelectedExtension", "classinviwo_1_1InviwoFileDialog.html#a1e4ee719049e143702de04703ce2f8bc", null ],
     [ "setTitle", "classinviwo_1_1InviwoFileDialog.html#a386011a523f3799e98facd034e6f5e67", null ],
     [ "show", "classinviwo_1_1InviwoFileDialog.html#a1830f38d935a01f7a074cfd826e1b4cb", null ],
     [ "useNativeDialog", "classinviwo_1_1InviwoFileDialog.html#a6b03e9d7babcba4c4e960ae8165e650c", null ],

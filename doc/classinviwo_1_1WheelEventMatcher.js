@@ -5,7 +5,7 @@ var classinviwo_1_1WheelEventMatcher =
     [ "WheelEventMatcher", "classinviwo_1_1WheelEventMatcher.html#a3d52ab0050d5b0917a37fd06c0681b43", null ],
     [ "clone", "classinviwo_1_1WheelEventMatcher.html#ab03a30a819ff64916bcff07b714355db", null ],
     [ "deserialize", "classinviwo_1_1WheelEventMatcher.html#a80dbe2668cac006901c42bf632d58f0e", null ],
-    [ "modifiers", "classinviwo_1_1WheelEventMatcher.html#a7e2d2708a56f4b758da4d695434a0b74", null ],
+    [ "modifiers", "classinviwo_1_1WheelEventMatcher.html#ae1c0b6a6c5463f87c2c24f13d325b323", null ],
     [ "operator()", "classinviwo_1_1WheelEventMatcher.html#abb51a8abfcdaec71953d76d69ae9792f", null ],
     [ "operator=", "classinviwo_1_1WheelEventMatcher.html#a5b86450b82caf34a550117e09dee96d4", null ],
     [ "resetToDefaultState", "classinviwo_1_1WheelEventMatcher.html#a5ef553f1db7507891a3403b555791979", null ],

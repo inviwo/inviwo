@@ -1,0 +1,4 @@
+<map id="inviwo::utilgl::CullFaceState" name="inviwo::utilgl::CullFaceState">
+<area shape="rect" id="node1" title="RAII object for OpenGL cull face state, which enables GL_CULL_FACE if mode is different from GL_NONE." alt="" coords="15,80,165,121"/>
+<area shape="rect" id="node2" href="$structinviwo_1_1utilgl_1_1GlBoolState.html" title="RAII object for OpenGL bool states." alt="" coords="5,5,175,32"/>
+</map>

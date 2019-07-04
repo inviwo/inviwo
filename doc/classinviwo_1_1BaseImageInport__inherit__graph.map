@@ -1,0 +1,13 @@
+<map id="inviwo::BaseImageInport&lt; N &gt;" name="inviwo::BaseImageInport&lt; N &gt;">
+<area shape="rect" id="node1" title=" " alt="" coords="981,115,1176,142"/>
+<area shape="rect" id="node10" href="$classinviwo_1_1BaseImageInport.html" title=" " alt="" coords="1260,90,1452,117"/>
+<area shape="rect" id="node11" href="$classinviwo_1_1BaseImageInport.html" title=" " alt="" coords="1260,141,1452,167"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1DataInport.html" title=" " alt="" coords="794,72,917,113"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1Inport.html" title="Abstract base class for all inports An Inport can be connected to an Outport. The approved connection..." alt="" coords="344,75,440,102"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1DataInport.html" title=" " alt="" coords="519,13,641,55"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1Port.html" title="A abstract base class for all ports. A port can be connected to other ports and is owned by a process..." alt="" coords="185,75,273,102"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1Serializable.html" title=" " alt="" coords="5,75,136,102"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1InportIterable.html" title=" " alt="" coords="511,131,649,172"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1InportIterable.html" title=" " alt="" coords="323,5,461,47"/>
+<area shape="rect" id="node9" href="$classinviwo_1_1ImagePortBase.html" title=" " alt="" coords="779,138,932,165"/>
+</map>

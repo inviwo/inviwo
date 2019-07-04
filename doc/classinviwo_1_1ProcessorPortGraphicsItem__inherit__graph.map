@@ -1,0 +1,7 @@
+<map id="inviwo::ProcessorPortGraphicsItem" name="inviwo::ProcessorPortGraphicsItem">
+<area shape="rect" id="node1" title=" " alt="" coords="121,155,345,181"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1ProcessorInportGraphicsItem.html" title=" " alt="" coords="5,237,237,263"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1ProcessorOutportGraphicsItem.html" title=" " alt="" coords="262,229,429,271"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1EditorGraphicsItem.html" title=" " alt="" coords="146,80,321,107"/>
+<area shape="rect" id="node3" title=" " alt="" coords="165,5,301,32"/>
+</map>

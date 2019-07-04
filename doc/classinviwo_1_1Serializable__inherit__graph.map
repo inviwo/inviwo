@@ -1,0 +1,201 @@
+<map id="inviwo::Serializable" name="inviwo::Serializable">
+<area shape="rect" id="node1" title=" " alt="" coords="5,4257,136,4284"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1animation_1_1Animation.html" title=" " alt="" coords="231,258,359,299"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1animation_1_1Interpolation.html" title=" " alt="" coords="231,323,359,365"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1animation_1_1Keyframe.html" title=" " alt="" coords="231,389,359,430"/>
+<area shape="rect" id="node11" href="$classinviwo_1_1animation_1_1KeyframeSequence.html" title=" " alt="" coords="228,454,363,495"/>
+<area shape="rect" id="node16" href="$classinviwo_1_1animation_1_1Track.html" title=" " alt="" coords="231,558,359,599"/>
+<area shape="rect" id="node23" href="$classinviwo_1_1Camera.html" title="Base class for cameras. Override this class to set your own projection matrix." alt="" coords="241,755,350,781"/>
+<area shape="rect" id="node27" href="$classinviwo_1_1EventMatcher.html" title="A class to represent a event matcher for use in event properties." alt="" coords="224,969,367,996"/>
+<area shape="rect" id="node33" href="$classinviwo_1_1FileExtension.html" title=" " alt="" coords="224,1223,367,1249"/>
+<area shape="rect" id="node34" href="$classinviwo_1_1ImageLabel.html" title=" " alt="" coords="230,1273,361,1300"/>
+<area shape="rect" id="node35" href="$classinviwo_1_1InteractionHandler.html" title=" " alt="" coords="211,1324,379,1351"/>
+<area shape="rect" id="node39" href="$structinviwo_1_1InviwoSetupInfo.html" title=" " alt="" coords="219,1440,371,1467"/>
+<area shape="rect" id="node40" href="$structinviwo_1_1InviwoSetupInfo_1_1ModuleSetupInfo.html" title=" " alt="" coords="219,1491,371,1533"/>
+<area shape="rect" id="node41" href="$classinviwo_1_1MetaData.html" title=" " alt="" coords="235,1557,355,1584"/>
+<area shape="rect" id="node53" href="$classinviwo_1_1MetaDataMap.html" title=" " alt="" coords="223,1608,368,1635"/>
+<area shape="rect" id="node54" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="185,4128,405,4155"/>
+<area shape="rect" id="node55" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,3063,851,3105"/>
+<area shape="rect" id="node56" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,3373,851,3414"/>
+<area shape="rect" id="node57" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,3687,851,3729"/>
+<area shape="rect" id="node58" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,1759,851,1801"/>
+<area shape="rect" id="node59" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,1890,851,1931"/>
+<area shape="rect" id="node60" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,2187,851,2229"/>
+<area shape="rect" id="node61" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,2449,851,2490"/>
+<area shape="rect" id="node62" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,2953,851,3009"/>
+<area shape="rect" id="node63" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,3609,851,3650"/>
+<area shape="rect" id="node64" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,1955,851,1997"/>
+<area shape="rect" id="node65" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,2102,851,2143"/>
+<area shape="rect" id="node66" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,2253,851,2294"/>
+<area shape="rect" id="node67" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,2383,851,2425"/>
+<area shape="rect" id="node68" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,2516,851,2572"/>
+<area shape="rect" id="node69" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,2807,851,2849"/>
+<area shape="rect" id="node70" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,3142,851,3183"/>
+<area shape="rect" id="node71" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,3451,851,3493"/>
+<area shape="rect" id="node72" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,3766,851,3807"/>
+<area shape="rect" id="node73" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,2598,851,2639"/>
+<area shape="rect" id="node74" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,2741,851,2782"/>
+<area shape="rect" id="node75" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,2882,851,2923"/>
+<area shape="rect" id="node76" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,3219,851,3261"/>
+<area shape="rect" id="node77" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,3530,851,3571"/>
+<area shape="rect" id="node78" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,3845,851,3886"/>
+<area shape="rect" id="node79" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,1825,851,1866"/>
+<area shape="rect" id="node80" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,2027,851,2069"/>
+<area shape="rect" id="node81" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,2318,851,2359"/>
+<area shape="rect" id="node82" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,2667,851,2709"/>
+<area shape="rect" id="node83" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,3294,851,3335"/>
+<area shape="rect" id="node84" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,3923,851,3965"/>
+<area shape="rect" id="node85" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,6103,851,6145"/>
+<area shape="rect" id="node86" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,6401,851,6442"/>
+<area shape="rect" id="node87" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,5053,851,5094"/>
+<area shape="rect" id="node88" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,5389,851,5430"/>
+<area shape="rect" id="node89" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,5697,851,5738"/>
+<area shape="rect" id="node90" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,6011,851,6053"/>
+<area shape="rect" id="node91" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,6326,851,6367"/>
+<area shape="rect" id="node92" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,4259,851,4301"/>
+<area shape="rect" id="node93" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,4586,851,4627"/>
+<area shape="rect" id="node94" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,4978,851,5019"/>
+<area shape="rect" id="node95" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,5622,851,5663"/>
+<area shape="rect" id="node96" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,6251,851,6293"/>
+<area shape="rect" id="node97" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,4025,851,4066"/>
+<area shape="rect" id="node98" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,6467,851,6509"/>
+<area shape="rect" id="node99" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,4193,851,4234"/>
+<area shape="rect" id="node100" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,4330,851,4371"/>
+<area shape="rect" id="node101" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,4487,851,4529"/>
+<area shape="rect" id="node102" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,4665,851,4706"/>
+<area shape="rect" id="node103" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,4817,851,4858"/>
+<area shape="rect" id="node104" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,5145,851,5186"/>
+<area shape="rect" id="node105" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,5467,851,5509"/>
+<area shape="rect" id="node106" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,5789,851,5830"/>
+<area shape="rect" id="node107" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,4902,851,4943"/>
+<area shape="rect" id="node108" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,5225,851,5266"/>
+<area shape="rect" id="node109" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,5546,851,5587"/>
+<area shape="rect" id="node110" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,5863,851,5905"/>
+<area shape="rect" id="node111" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,6178,851,6219"/>
+<area shape="rect" id="node112" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,4123,851,4165"/>
+<area shape="rect" id="node113" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,4409,851,4450"/>
+<area shape="rect" id="node114" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="625,4742,888,4783"/>
+<area shape="rect" id="node115" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="639,5303,874,5345"/>
+<area shape="rect" id="node116" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,5937,851,5978"/>
+<area shape="rect" id="node117" href="$classinviwo_1_1Port.html" title="A abstract base class for all ports. A port can be connected to other ports and is owned by a process..." alt="" coords="251,6595,339,6621"/>
+<area shape="rect" id="node141" href="$classinviwo_1_1PortConnection.html" title=" " alt="" coords="219,6645,372,6672"/>
+<area shape="rect" id="node142" href="$classinviwo_1_1PortInspector.html" title=" " alt="" coords="225,6696,366,6723"/>
+<area shape="rect" id="node143" href="$classinviwo_1_1PortInspectorManager.html" title="Keep track of which port has port inspectors on them." alt="" coords="200,6747,391,6773"/>
+<area shape="rect" id="node144" href="$classinviwo_1_1ProcessorNetwork.html" title=" " alt="" coords="210,6797,381,6824"/>
+<area shape="rect" id="node145" href="$classinviwo_1_1ProgressBar.html" title=" " alt="" coords="227,6848,363,6875"/>
+<area shape="rect" id="node146" href="$classinviwo_1_1Property.html" title="A Property represents a parameter to a processor." alt="" coords="239,7924,352,7951"/>
+<area shape="rect" id="node182" href="$classinviwo_1_1PropertyLink.html" title=" " alt="" coords="227,7975,364,8001"/>
+<area shape="rect" id="node183" href="$classinviwo_1_1PropertyOwner.html" title=" " alt="" coords="220,6899,371,6925"/>
+<area shape="rect" id="node190" href="$classinviwo_1_1PropertySemantics.html" title=" " alt="" coords="208,8025,383,8052"/>
+<area shape="rect" id="node191" href="$classinviwo_1_1TFPrimitive.html" title="Base class for a variety of primitives as used by a transfer function." alt="" coords="231,8076,359,8103"/>
+<area shape="rect" id="node192" href="$classinviwo_1_1TFPrimitiveSet.html" title="data structure managing multiple TFPrimitives" alt="" coords="221,8127,369,8153"/>
+<area shape="rect" id="node195" href="$structinviwo_1_1util_1_1detail_1_1PartialConnection.html" title=" " alt="" coords="229,8178,361,8219"/>
+<area shape="rect" id="node196" href="$structinviwo_1_1util_1_1detail_1_1PartialDstLink.html" title=" " alt="" coords="235,8243,355,8285"/>
+<area shape="rect" id="node197" href="$structinviwo_1_1util_1_1detail_1_1PartialProcessorNetwork.html" title=" " alt="" coords="209,8309,382,8350"/>
+<area shape="rect" id="node198" href="$structinviwo_1_1util_1_1detail_1_1PartialSrcLink.html" title=" " alt="" coords="235,8374,355,8415"/>
+<area shape="rect" id="node199" href="$structinviwo_1_1WorkspaceAnnotations_1_1Base64Image.html" title=" " alt="" coords="196,8439,395,8481"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1animation_1_1InterpolationTyped.html" title=" " alt="" coords="669,93,844,134"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1animation_1_1ConstantInterpolation.html" title=" " alt="" coords="1156,85,1300,141"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1animation_1_1LinearInterpolation.html" title=" " alt="" coords="1164,5,1292,61"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1animation_1_1BaseKeyframe.html" title=" " alt="" coords="693,231,821,273"/>
+<area shape="rect" id="node9" href="$classinviwo_1_1animation_1_1ControlKeyframe.html" title=" " alt="" coords="1164,231,1292,273"/>
+<area shape="rect" id="node10" href="$classinviwo_1_1animation_1_1ValueKeyframe.html" title=" " alt="" coords="1157,166,1299,207"/>
+<area shape="rect" id="node12" href="$classinviwo_1_1animation_1_1BaseKeyframeSequence.html" title=" " alt="" coords="1145,377,1311,433"/>
+<area shape="rect" id="node14" href="$classinviwo_1_1animation_1_1BaseKeyframeSequence.html" title=" " alt="" coords="674,311,839,367"/>
+<area shape="rect" id="node13" href="$classinviwo_1_1animation_1_1ControlKeyframeSequence.html" title=" " alt="" coords="1387,385,1563,426"/>
+<area shape="rect" id="node15" href="$classinviwo_1_1animation_1_1KeyframeSequenceTyped.html" title=" " alt="" coords="1143,297,1313,353"/>
+<area shape="rect" id="node17" href="$classinviwo_1_1animation_1_1BaseTrack.html" title=" " alt="" coords="1132,463,1324,519"/>
+<area shape="rect" id="node19" href="$classinviwo_1_1animation_1_1BaseTrack.html" title=" " alt="" coords="1123,552,1333,608"/>
+<area shape="rect" id="node21" href="$classinviwo_1_1animation_1_1BaseTrack.html" title=" " alt="" coords="691,493,822,534"/>
+<area shape="rect" id="node22" href="$classinviwo_1_1animation_1_1TrackTyped.html" title=" " alt="" coords="689,558,825,599"/>
+<area shape="rect" id="node18" href="$classinviwo_1_1animation_1_1ControlTrack.html" title=" " alt="" coords="1411,470,1539,511"/>
+<area shape="rect" id="node20" href="$classinviwo_1_1animation_1_1PropertyTrack.html" title=" " alt="" coords="1401,552,1548,608"/>
+<area shape="rect" id="node24" href="$classinviwo_1_1OrthographicCamera.html" title="Camera with no perspective projection. Objects far away will appear as large as objects close." alt="" coords="665,675,848,701"/>
+<area shape="rect" id="node25" href="$classinviwo_1_1PerspectiveCamera.html" title=" " alt="" coords="669,725,845,752"/>
+<area shape="rect" id="node26" href="$classinviwo_1_1SkewedPerspectiveCamera.html" title="Camera with off axis perspective projection." alt="" coords="668,777,845,818"/>
+<area shape="rect" id="node28" href="$classinviwo_1_1GeneralEventMatcher.html" title=" " alt="" coords="663,893,851,920"/>
+<area shape="rect" id="node29" href="$classinviwo_1_1GestureEventMatcher.html" title=" " alt="" coords="662,944,851,971"/>
+<area shape="rect" id="node30" href="$classinviwo_1_1KeyboardEventMatcher.html" title=" " alt="" coords="657,995,856,1021"/>
+<area shape="rect" id="node31" href="$classinviwo_1_1MouseEventMatcher.html" title=" " alt="" coords="665,1045,848,1072"/>
+<area shape="rect" id="node32" href="$classinviwo_1_1WheelEventMatcher.html" title=" " alt="" coords="667,843,847,869"/>
+<area shape="rect" id="node36" href="$classinviwo_1_1CEFInteractionHandler.html" title=" " alt="" coords="659,1096,854,1123"/>
+<area shape="rect" id="node37" href="$classinviwo_1_1Inviwo__ABufferGL4_1_1ABufferGLInteractionHandler.html" title=" " alt="" coords="660,1147,853,1189"/>
+<area shape="rect" id="node38" href="$classinviwo_1_1PointLightInteractionHandler.html" title=" " alt="" coords="665,1213,848,1254"/>
+<area shape="rect" id="node42" href="$classinviwo_1_1MetaDataPrimitiveType.html" title=" " alt="" coords="672,1694,841,1735"/>
+<area shape="rect" id="node44" href="$classinviwo_1_1MetaDataPrimitiveType_3_01T_00_010_00_010_01_4.html" title=" " alt="" coords="672,1278,841,1319"/>
+<area shape="rect" id="node45" href="$classinviwo_1_1MetaDataPrimitiveType_3_01T_00_01N_00_010_01_4.html" title=" " alt="" coords="672,1343,841,1385"/>
+<area shape="rect" id="node47" href="$classinviwo_1_1MetaDataPrimitiveType_3_01T_00_01N_00_01N_01_4.html" title=" " alt="" coords="672,1409,841,1450"/>
+<area shape="rect" id="node49" href="$classinviwo_1_1ProcessorMetaData.html" title=" " alt="" coords="667,1475,846,1501"/>
+<area shape="rect" id="node50" href="$classinviwo_1_1ProcessorWidgetMetaData.html" title=" " alt="" coords="647,1525,867,1552"/>
+<area shape="rect" id="node51" href="$classinviwo_1_1StdUnorderedMapMetaData.html" title=" " alt="" coords="658,1577,855,1618"/>
+<area shape="rect" id="node52" href="$classinviwo_1_1StdVectorMetaData.html" title=" " alt="" coords="652,1643,861,1669"/>
+<area shape="rect" id="node43" href="$classinviwo_1_1PositionMetaData.html" title=" " alt="" coords="1145,1694,1311,1735"/>
+<area shape="rect" id="node46" href="$classinviwo_1_1VectorMetaData.html" title=" " alt="" coords="1149,1343,1307,1385"/>
+<area shape="rect" id="node48" href="$classinviwo_1_1MatrixMetaData.html" title=" " alt="" coords="1150,1409,1306,1450"/>
+<area shape="rect" id="node118" href="$classinviwo_1_1Inport.html" title="Abstract base class for all inports An Inport can be connected to an Outport. The approved connection..." alt="" coords="709,6584,805,6611"/>
+<area shape="rect" id="node140" href="$classinviwo_1_1Outport.html" title="Abstract base class for all outports The Outport can be connected to an arbitrary number of Inports." alt="" coords="703,6533,810,6560"/>
+<area shape="rect" id="node119" href="$classinviwo_1_1DataInport.html" title=" " alt="" coords="1151,6575,1305,6601"/>
+<area shape="rect" id="node120" href="$classinviwo_1_1DataInport.html" title=" " alt="" coords="1123,6626,1333,6667"/>
+<area shape="rect" id="node121" href="$classinviwo_1_1DataInport.html" title=" " alt="" coords="1167,6691,1289,6733"/>
+<area shape="rect" id="node122" href="$classinviwo_1_1DataInport.html" title=" " alt="" coords="1167,6757,1289,6798"/>
+<area shape="rect" id="node123" href="$classinviwo_1_1DataInport.html" title=" " alt="" coords="1161,6822,1295,6863"/>
+<area shape="rect" id="node124" href="$classinviwo_1_1DataInport.html" title=" " alt="" coords="1167,6887,1289,6929"/>
+<area shape="rect" id="node125" href="$classinviwo_1_1DataInport.html" title=" " alt="" coords="1167,6953,1289,6994"/>
+<area shape="rect" id="node126" href="$classinviwo_1_1DataInport.html" title=" " alt="" coords="1162,7018,1294,7059"/>
+<area shape="rect" id="node127" href="$classinviwo_1_1DataInport.html" title=" " alt="" coords="1152,7083,1304,7125"/>
+<area shape="rect" id="node128" href="$classinviwo_1_1DataInport.html" title=" " alt="" coords="1149,5699,1307,5741"/>
+<area shape="rect" id="node129" href="$classinviwo_1_1DataInport.html" title=" " alt="" coords="1138,5765,1318,5821"/>
+<area shape="rect" id="node130" href="$classinviwo_1_1DataInport.html" title=" " alt="" coords="1146,5845,1310,5901"/>
+<area shape="rect" id="node131" href="$classinviwo_1_1DataInport.html" title=" " alt="" coords="1162,5926,1294,5967"/>
+<area shape="rect" id="node132" href="$classinviwo_1_1DataInport.html" title=" " alt="" coords="1155,5991,1301,6033"/>
+<area shape="rect" id="node133" href="$classinviwo_1_1DataInport.html" title=" " alt="" coords="1159,6057,1297,6113"/>
+<area shape="rect" id="node134" href="$classinviwo_1_1DataInport.html" title=" " alt="" coords="1167,6138,1289,6179"/>
+<area shape="rect" id="node135" href="$classinviwo_1_1DataInport.html" title=" " alt="" coords="1167,6203,1289,6245"/>
+<area shape="rect" id="node136" href="$classinviwo_1_1DataInport.html" title=" " alt="" coords="1141,6269,1315,6310"/>
+<area shape="rect" id="node137" href="$classinviwo_1_1DataInport.html" title=" " alt="" coords="1145,6335,1311,6391"/>
+<area shape="rect" id="node138" href="$classinviwo_1_1DataInport.html" title=" " alt="" coords="1119,6415,1337,6471"/>
+<area shape="rect" id="node139" href="$classinviwo_1_1DataInport.html" title=" " alt="" coords="1147,6495,1309,6551"/>
+<area shape="rect" id="node147" href="$classinviwo_1_1BaseOptionProperty.html" title=" " alt="" coords="666,8979,847,9005"/>
+<area shape="rect" id="node148" href="$classinviwo_1_1ButtonProperty.html" title="The Button property class provides buttons that you can bind functions to." alt="" coords="681,9029,832,9056"/>
+<area shape="rect" id="node149" href="$classinviwo_1_1CompositeProperty.html" title=" " alt="" coords="669,6984,844,7011"/>
+<area shape="rect" id="node150" href="$classinviwo_1_1EventProperty.html" title=" " alt="" coords="684,7035,829,7061"/>
+<area shape="rect" id="node151" href="$classinviwo_1_1TemplateProperty.html" title=" " alt="" coords="658,8269,855,8296"/>
+<area shape="rect" id="node152" title=" " alt="" coords="1143,7836,1313,7892"/>
+<area shape="rect" id="node153" title=" " alt="" coords="1145,8543,1311,8599"/>
+<area shape="rect" id="node154" href="$classinviwo_1_1TemplateProperty.html" title=" " alt="" coords="1145,9429,1311,9470"/>
+<area shape="rect" id="node155" href="$classinviwo_1_1TemplateProperty.html" title=" " alt="" coords="1145,9041,1311,9082"/>
+<area shape="rect" id="node156" href="$classinviwo_1_1TemplateProperty.html" title=" " alt="" coords="1145,7761,1311,7802"/>
+<area shape="rect" id="node157" title=" " alt="" coords="1145,7214,1311,7255"/>
+<area shape="rect" id="node158" title=" " alt="" coords="1145,8249,1311,8305"/>
+<area shape="rect" id="node159" href="$classinviwo_1_1TemplateProperty.html" title=" " alt="" coords="1145,9495,1311,9537"/>
+<area shape="rect" id="node160" href="$classinviwo_1_1TemplateProperty.html" title=" " alt="" coords="1145,8725,1311,8766"/>
+<area shape="rect" id="node161" href="$classinviwo_1_1TemplateProperty.html" title=" " alt="" coords="1145,8363,1311,8405"/>
+<area shape="rect" id="node162" href="$classinviwo_1_1TemplateProperty.html" title=" " alt="" coords="1134,8643,1322,8685"/>
+<area shape="rect" id="node163" href="$classinviwo_1_1TemplateProperty.html" title=" " alt="" coords="1145,9127,1311,9169"/>
+<area shape="rect" id="node164" href="$classinviwo_1_1TemplateProperty.html" title=" " alt="" coords="1145,7149,1311,7190"/>
+<area shape="rect" id="node165" href="$classinviwo_1_1TemplateProperty.html" title=" " alt="" coords="1145,7286,1311,7327"/>
+<area shape="rect" id="node166" title=" " alt="" coords="1142,9195,1314,9251"/>
+<area shape="rect" id="node167" href="$classinviwo_1_1TemplateProperty.html" title=" " alt="" coords="1145,8442,1311,8483"/>
+<area shape="rect" id="node168" title=" " alt="" coords="1119,7590,1337,7631"/>
+<area shape="rect" id="node169" href="$classinviwo_1_1TemplateProperty.html" title=" " alt="" coords="1145,8877,1311,8918"/>
+<area shape="rect" id="node170" href="$classinviwo_1_1TemplateProperty.html" title=" " alt="" coords="1145,7434,1311,7475"/>
+<area shape="rect" id="node171" href="$classinviwo_1_1TemplateProperty.html" title=" " alt="" coords="1145,9289,1311,9330"/>
+<area shape="rect" id="node172" href="$classinviwo_1_1TemplateProperty.html" title=" " alt="" coords="1145,8015,1311,8057"/>
+<area shape="rect" id="node173" title=" " alt="" coords="1145,8163,1311,8219"/>
+<area shape="rect" id="node174" href="$classinviwo_1_1TemplateProperty.html" title=" " alt="" coords="1145,7362,1311,7403"/>
+<area shape="rect" id="node175" href="$classinviwo_1_1TemplateProperty.html" title=" " alt="" coords="1145,8086,1311,8127"/>
+<area shape="rect" id="node176" href="$classinviwo_1_1TemplateProperty.html" title=" " alt="" coords="1145,8959,1311,9001"/>
+<area shape="rect" id="node177" href="$classinviwo_1_1TemplateProperty.html" title=" " alt="" coords="1145,7675,1311,7717"/>
+<area shape="rect" id="node178" href="$classinviwo_1_1TemplateProperty.html" title=" " alt="" coords="1145,7514,1311,7555"/>
+<area shape="rect" id="node179" href="$classinviwo_1_1TemplateProperty.html" title=" " alt="" coords="1145,9361,1311,9402"/>
+<area shape="rect" id="node180" href="$classinviwo_1_1TemplateProperty.html" title=" " alt="" coords="1145,8805,1311,8846"/>
+<area shape="rect" id="node181" href="$classinviwo_1_1TemplateProperty.html" title=" " alt="" coords="1145,7934,1311,7975"/>
+<area shape="rect" id="node184" href="$classinviwo_1_1animation_1_1AnimationController.html" title=" " alt="" coords="689,6686,824,6727"/>
+<area shape="rect" id="node185" href="$classinviwo_1_1animation_1_1DemoController.html" title=" " alt="" coords="693,6751,821,6793"/>
+<area shape="rect" id="node186" href="$classinviwo_1_1animation_1_1DemoNavigatorDockWidgetQt.html" title=" " alt="" coords="659,6817,854,6858"/>
+<area shape="rect" id="node187" href="$classinviwo_1_1Processor.html" title="A processor generally performs operation on input data and outputs the new result." alt="" coords="695,6883,818,6909"/>
+<area shape="rect" id="node188" href="$classinviwo_1_1Settings.html" title=" " alt="" coords="701,6933,813,6960"/>
+<area shape="rect" id="node189" href="$classinviwo_1_1WorkspaceAnnotations.html" title=" " alt="" coords="657,6635,856,6661"/>
+<area shape="rect" id="node193" href="$classinviwo_1_1IsoValueCollection.html" title="data structure representing isovalues" alt="" coords="671,9605,842,9632"/>
+<area shape="rect" id="node194" href="$classinviwo_1_1TransferFunction.html" title="data structure for holding 1D transfer function data" alt="" coords="677,9555,837,9581"/>
+</map>

@@ -1,8 +1,8 @@
 var classinviwo_1_1VolumeRAMPrecision =
 [
     [ "type", "classinviwo_1_1VolumeRAMPrecision.html#ae37d35d8f55d5271c189e3572287e363", null ],
-    [ "VolumeRAMPrecision", "classinviwo_1_1VolumeRAMPrecision.html#ae89329dd8c37f7663e918304538b4f84", null ],
-    [ "VolumeRAMPrecision", "classinviwo_1_1VolumeRAMPrecision.html#a163c04ef9ce56a87f371a5365f24ec39", null ],
+    [ "VolumeRAMPrecision", "classinviwo_1_1VolumeRAMPrecision.html#ad1c5233a2b12eb5203507d113554307a", null ],
+    [ "VolumeRAMPrecision", "classinviwo_1_1VolumeRAMPrecision.html#abfdd50c03861a90ce77c11b7569a7252", null ],
     [ "VolumeRAMPrecision", "classinviwo_1_1VolumeRAMPrecision.html#a6cd6de3b5a30d2eeddb163fb8ef1108f", null ],
     [ "~VolumeRAMPrecision", "classinviwo_1_1VolumeRAMPrecision.html#abc5a805909846e70fc8b1df3e1750100", null ],
     [ "calculateHistograms", "classinviwo_1_1VolumeRAMPrecision.html#ad8e28631ae9ee493c6bc5a53743a7daa", null ],
@@ -20,11 +20,12 @@ var classinviwo_1_1VolumeRAMPrecision =
     [ "getData", "classinviwo_1_1VolumeRAMPrecision.html#adccb442f0cf60996fae9c00eb05729f1", null ],
     [ "getData", "classinviwo_1_1VolumeRAMPrecision.html#a6bcd2f483803be35c36c288dff8ef383", null ],
     [ "getDataTyped", "classinviwo_1_1VolumeRAMPrecision.html#aa2cf87cb49310ea79ece6b8f13db2298", null ],
-    [ "getDataTyped", "classinviwo_1_1VolumeRAMPrecision.html#ac78ca19c90e0879a8485e2080ee59f48", null ],
+    [ "getDataTyped", "classinviwo_1_1VolumeRAMPrecision.html#a8313dd3dbeaa5d452ede546fd46ff0f8", null ],
     [ "getDimensions", "classinviwo_1_1VolumeRAMPrecision.html#a803c690ae3e42cc1cec1edb4e1efa53a", null ],
     [ "getHistograms", "classinviwo_1_1VolumeRAMPrecision.html#af1431a30ebb1de56cb5344768c7b91b3", null ],
     [ "getHistograms", "classinviwo_1_1VolumeRAMPrecision.html#a06896c33819d1c6138de8548d96a27a6", null ],
     [ "getNumberOfBytes", "classinviwo_1_1VolumeRAMPrecision.html#adf5abda73eb1e107000904c71cf10f1c", null ],
+    [ "getSwizzleMask", "classinviwo_1_1VolumeRAMPrecision.html#a5c0a60d30a6c7625f0cd95138eed9006", null ],
     [ "hasHistograms", "classinviwo_1_1VolumeRAMPrecision.html#a4027abf69e05f11cd20ee5203c3a34b6", null ],
     [ "operator=", "classinviwo_1_1VolumeRAMPrecision.html#a4741b352cc2712ce99d04b6ce06e4d01", null ],
     [ "removeDataOwnership", "classinviwo_1_1VolumeRAMPrecision.html#ad3d4304259037c595605bce3c31e8b9e", null ],
@@ -38,5 +39,6 @@ var classinviwo_1_1VolumeRAMPrecision =
     [ "setFromNormalizedDVec2", "classinviwo_1_1VolumeRAMPrecision.html#a494e4f47cf5c48664bc2b1aef3d95bf4", null ],
     [ "setFromNormalizedDVec3", "classinviwo_1_1VolumeRAMPrecision.html#a9e9a5a0d4235e312ee28b889ed3b6aec", null ],
     [ "setFromNormalizedDVec4", "classinviwo_1_1VolumeRAMPrecision.html#a0bca245e7f9d9c4e936a1d1585503503", null ],
+    [ "setSwizzleMask", "classinviwo_1_1VolumeRAMPrecision.html#a39d6664131d0a7227c7af9b1900e6ea4", null ],
     [ "setValuesFromVolume", "classinviwo_1_1VolumeRAMPrecision.html#ac80188b9afb1ab28ba9cdc025a42013e", null ]
 ];

@@ -1,0 +1,8 @@
+<map id="inviwo::animation::SequenceEditorPanel" name="inviwo::animation::SequenceEditorPanel">
+<area shape="rect" id="node1" title=" " alt="" coords="403,90,549,131"/>
+<area shape="rect" id="node2" title=" " alt="" coords="215,5,307,32"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1animation_1_1AnimationControllerObserver.html" title=" " alt="" coords="168,57,355,98"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1Observer.html" title=" " alt="" coords="5,129,120,156"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1animation_1_1AnimationObserver.html" title=" " alt="" coords="196,122,327,163"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1animation_1_1TrackObserver.html" title=" " alt="" coords="197,187,325,229"/>
+</map>

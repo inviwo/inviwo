@@ -1,0 +1,9 @@
+<map id="inviwo::ProcessorFactoryObject" name="inviwo::ProcessorFactoryObject">
+<area shape="rect" id="node1" title=" " alt="" coords="5,136,172,177"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1CompositeProcessorFactoryObject.html" title=" " alt="" coords="231,5,417,47"/>
+<area shape="rect" id="node3" title=" " alt="" coords="241,71,407,112"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1ProcessorFactoryObjectTemplate.html" title=" " alt="" coords="241,136,407,177"/>
+<area shape="rect" id="node5" title=" " alt="" coords="241,201,407,243"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1PythonProcessorFactoryObjectBase.html" title=" " alt="" coords="220,267,428,308"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1PythonProcessorFactoryObject.html" title=" " alt="" coords="476,267,684,308"/>
+</map>

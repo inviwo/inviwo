@@ -6,7 +6,7 @@ var structinviwo_1_1NetworkLock =
     [ "NetworkLock", "structinviwo_1_1NetworkLock.html#a92d354b6bc397bd9513c2c9d6f73b111", null ],
     [ "~NetworkLock", "structinviwo_1_1NetworkLock.html#a48083f7cd87eb7b7719d8c40c771181d", null ],
     [ "NetworkLock", "structinviwo_1_1NetworkLock.html#a77375ab0bf6e7bed9c31edfec241819b", null ],
-    [ "NetworkLock", "structinviwo_1_1NetworkLock.html#a97f0fbe929018becec6b97a11ccb0d39", null ],
+    [ "NetworkLock", "structinviwo_1_1NetworkLock.html#a71483bd9b1e9e5ebef207c44cb59d72e", null ],
     [ "operator=", "structinviwo_1_1NetworkLock.html#adf381b95facff371d93f99a8f53e66bf", null ],
-    [ "operator=", "structinviwo_1_1NetworkLock.html#a5af190766421b903ca5fc8caaa05816c", null ]
+    [ "operator=", "structinviwo_1_1NetworkLock.html#a1fe07916a5c2e1d84122efd78615d553", null ]
 ];

@@ -1,0 +1,6 @@
+<map id="inviwo::JSONDataFrameReader" name="inviwo::JSONDataFrameReader">
+<area shape="rect" id="node1" title=" " alt="" coords="5,261,208,288"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1DataReaderType.html" title=" " alt="" coords="27,171,187,212"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1DataReader.html" title="A abstract base class for all file readers." alt="" coords="61,5,193,32"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1DataReaderType.html" title="Template base class for file readers designating what type of data object the reader returns." alt="" coords="123,81,314,108"/>
+</map>

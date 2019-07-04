@@ -10,6 +10,7 @@ var classinviwo_1_1SeedPointsFromMask =
     [ "seedPoints_", "classinviwo_1_1SeedPointsFromMask.html#abcede49e9311a86dc7ceaaea687d1361", null ],
     [ "superSample_", "classinviwo_1_1SeedPointsFromMask.html#a6a7eef684109a842d96b99a723a533aa", null ],
     [ "threshold_", "classinviwo_1_1SeedPointsFromMask.html#ab224507e788ebd33e758764fa9f46698", null ],
+    [ "transformToWorld_", "classinviwo_1_1SeedPointsFromMask.html#ad460a5eb8ceed209be4e930c2035a26f", null ],
     [ "useSameSeed_", "classinviwo_1_1SeedPointsFromMask.html#aff2a5cd8a312af4521dd9f7d42aa346f", null ],
     [ "volumes_", "classinviwo_1_1SeedPointsFromMask.html#a532c382fcc01a84d889d6dbecde35995", null ]
 ];

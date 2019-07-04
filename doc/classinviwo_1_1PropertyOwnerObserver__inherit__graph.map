@@ -1,0 +1,14 @@
+<map id="inviwo::PropertyOwnerObserver" name="inviwo::PropertyOwnerObserver">
+<area shape="rect" id="node1" title=" " alt="" coords="168,187,369,214"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1animation_1_1AnimationManager.html" title=" " alt="" coords="456,5,587,47"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1CollapsibleGroupBoxWidgetQt.html" title=" " alt="" coords="440,71,603,112"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1CompositeProcessor.html" title="A processor containing a network of processors, i.e. it will act as a sub network within a processor ..." alt="" coords="429,137,614,163"/>
+<area shape="rect" id="node9" href="$classinviwo_1_1glui_1_1GLUIProcessor.html" title="provides a simple user interface based on GLUI" alt="" coords="431,187,611,214"/>
+<area shape="rect" id="node10" href="$classinviwo_1_1ProcessorNetwork.html" title=" " alt="" coords="436,238,607,265"/>
+<area shape="rect" id="node11" href="$classinviwo_1_1PropertyCefSynchronizer.html" title=" " alt="" coords="417,289,625,315"/>
+<area shape="rect" id="node12" href="$classinviwo_1_1TFSelector.html" title="processor for selecting a transfer function from a number of customizable presets" alt="" coords="458,339,585,366"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1Observer.html" title=" " alt="" coords="5,187,120,214"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1BoolCompositePropertyWidgetQt.html" title=" " alt="" coords="673,37,875,79"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1CompositePropertyWidgetQt.html" title=" " alt="" coords="687,103,861,144"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1ListPropertyWidgetQt.html" title="PropertyWidget for a ListProperty." alt="" coords="923,110,1112,137"/>
+</map>

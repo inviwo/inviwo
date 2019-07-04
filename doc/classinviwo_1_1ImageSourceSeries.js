@@ -1,6 +1,6 @@
 var classinviwo_1_1ImageSourceSeries =
 [
-    [ "ImageSourceSeries", "classinviwo_1_1ImageSourceSeries.html#ae1f1e86b3c96851b45ea5a201118fffb", null ],
+    [ "ImageSourceSeries", "classinviwo_1_1ImageSourceSeries.html#acfc8599803741a574df66d5490394906", null ],
     [ "~ImageSourceSeries", "classinviwo_1_1ImageSourceSeries.html#a4f33ac53a42391a59a8d908722ee75e9", null ],
     [ "getProcessorInfo", "classinviwo_1_1ImageSourceSeries.html#a38fb1b101d5afc1c446209e81f4dc4ed", null ],
     [ "isValidImageFile", "classinviwo_1_1ImageSourceSeries.html#a77f73df728709f7fbc6935309f199b7f", null ],

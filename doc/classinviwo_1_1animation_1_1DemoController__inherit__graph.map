@@ -1,0 +1,12 @@
+<map id="inviwo::animation::DemoController" name="inviwo::animation::DemoController">
+<area shape="rect" id="node1" title=" " alt="" coords="1481,56,1609,97"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1animation_1_1DemoControllerObservable.html" title=" " alt="" coords="1083,19,1257,60"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1Observable.html" title=" " alt="" coords="608,5,795,47"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1ObservableInterface.html" title=" " alt="" coords="5,50,183,77"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1Observable.html" title=" " alt="" coords="232,50,391,77"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1Observable.html" title=" " alt="" coords="610,71,793,112"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1PropertyOwner.html" title=" " alt="" coords="1281,107,1432,134"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1PropertyOwnerObservable.html" title=" " alt="" coords="844,67,1059,94"/>
+<area shape="rect" id="node9" href="$classinviwo_1_1Serializable.html" title=" " alt="" coords="886,118,1017,145"/>
+<area shape="rect" id="node10" href="$classinviwo_1_1EventListener.html" title=" " alt="" coords="880,169,1023,195"/>
+</map>

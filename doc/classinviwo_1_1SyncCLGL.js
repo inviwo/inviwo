@@ -6,7 +6,7 @@ var classinviwo_1_1SyncCLGL =
     [ "addToAquireGLObjectList", "classinviwo_1_1SyncCLGL.html#a8ac9c79cbc4624e1288b494048ea1a1f", null ],
     [ "addToAquireGLObjectList", "classinviwo_1_1SyncCLGL.html#a54b1526336756d2d89b95aea2419f621", null ],
     [ "addToAquireGLObjectList", "classinviwo_1_1SyncCLGL.html#a7e4416f0cb10bf50f0ed70b030451560", null ],
-    [ "aquireAllObjects", "classinviwo_1_1SyncCLGL.html#a34dc82531e6857875992a5d57d88a748", null ],
+    [ "aquireAllObjects", "classinviwo_1_1SyncCLGL.html#a9a199f8d87513db8bfe1d686fbd8444e", null ],
     [ "releaseAllGLObjects", "classinviwo_1_1SyncCLGL.html#a1c8448e3557def3b03b0828354d07bd0", null ],
     [ "context_", "classinviwo_1_1SyncCLGL.html#ad0225c0c58a345f1fad79208ba9ed5a2", null ],
     [ "queue_", "classinviwo_1_1SyncCLGL.html#af4d0801680ae2a4e2b9b48565b7fe204", null ],

@@ -1,0 +1,6 @@
+<map id="inviwo::IvfSequenceVolumeReader" name="inviwo::IvfSequenceVolumeReader">
+<area shape="rect" id="node1" title="Reader for *.ivfs sequnce files." alt="" coords="5,261,183,303"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1DataReaderType.html" title=" " alt="" coords="14,171,174,212"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1DataReader.html" title="A abstract base class for all file readers." alt="" coords="48,5,180,32"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1DataReaderType.html" title="Template base class for file readers designating what type of data object the reader returns." alt="" coords="111,81,301,108"/>
+</map>

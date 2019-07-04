@@ -1,0 +1,6 @@
+<map id="inviwo::utilgl::GlBoolState" name="inviwo::utilgl::GlBoolState">
+<area shape="rect" id="node1" title="RAII object for OpenGL bool states." alt="" coords="93,5,263,32"/>
+<area shape="rect" id="node2" href="$structinviwo_1_1utilgl_1_1BlendModeState.html" title="RAII object for OpenGL blending and blend mode, enables blending if source mode is different from GL_..." alt="" coords="5,80,169,121"/>
+<area shape="rect" id="node4" href="$structinviwo_1_1utilgl_1_1CullFaceState.html" title="RAII object for OpenGL cull face state, which enables GL_CULL_FACE if mode is different from GL_NONE." alt="" coords="193,80,344,121"/>
+<area shape="rect" id="node3" href="$structinviwo_1_1utilgl_1_1BlendModeEquationState.html" title="RAII object for OpenGL blend equation." alt="" coords="5,169,169,211"/>
+</map>

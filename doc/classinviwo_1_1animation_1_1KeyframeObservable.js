@@ -1,4 +1,5 @@
 var classinviwo_1_1animation_1_1KeyframeObservable =
 [
-    [ "notifKeyframeTimeChanged", "classinviwo_1_1animation_1_1KeyframeObservable.html#a4ce552a5ad2352d19070426c2bc84125", null ]
+    [ "notifyKeyframeSelectionChanged", "classinviwo_1_1animation_1_1KeyframeObservable.html#a0999cd4a1118b79b8cd16512747e8129", null ],
+    [ "notifyKeyframeTimeChanged", "classinviwo_1_1animation_1_1KeyframeObservable.html#acc4bf877d0f44b8117c4a2792475ecac", null ]
 ];

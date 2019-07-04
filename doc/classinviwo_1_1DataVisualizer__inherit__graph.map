@@ -1,0 +1,8 @@
+<map id="inviwo::DataVisualizer" name="inviwo::DataVisualizer">
+<area shape="rect" id="node1" title=" " alt="" coords="5,107,153,133"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1ImageVisualizer.html" title=" " alt="" coords="230,5,386,32"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1MeshVisualizer.html" title=" " alt="" coords="231,56,385,83"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1PCPDataFrameVisualizer.html" title=" " alt="" coords="202,107,414,133"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1VolumeRaycastVisualizer.html" title=" " alt="" coords="201,157,415,184"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1VolumeSliceVisualizer.html" title=" " alt="" coords="211,208,405,235"/>
+</map>

@@ -1,0 +1,11 @@
+<map id="inviwo::animation::KeyframeObserver" name="inviwo::animation::KeyframeObserver">
+<area shape="rect" id="node1" title=" " alt="" coords="169,71,297,112"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1animation_1_1KeyframeEditorWidget.html" title=" " alt="" coords="347,5,499,47"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1animation_1_1KeyframeSequence.html" title=" " alt="" coords="355,71,490,112"/>
+<area shape="rect" id="node9" href="$classinviwo_1_1animation_1_1KeyframeWidgetQt.html" title="Graphical representation of a keyframe." alt="" coords="357,136,489,177"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1Observer.html" title=" " alt="" coords="5,78,120,105"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1animation_1_1BaseKeyframeSequence.html" title=" " alt="" coords="889,31,1055,87"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1animation_1_1BaseKeyframeSequence.html" title=" " alt="" coords="548,97,713,153"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1animation_1_1ControlKeyframeSequence.html" title=" " alt="" coords="1107,39,1283,80"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1animation_1_1KeyframeSequenceTyped.html" title=" " alt="" coords="887,111,1057,167"/>
+</map>

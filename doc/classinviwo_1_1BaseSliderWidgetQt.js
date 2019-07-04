@@ -1,6 +1,6 @@
 var classinviwo_1_1BaseSliderWidgetQt =
 [
-    [ "BaseSliderWidgetQt", "classinviwo_1_1BaseSliderWidgetQt.html#ac1ec685c782d790c3f66c9d387335562", null ],
+    [ "BaseSliderWidgetQt", "classinviwo_1_1BaseSliderWidgetQt.html#a9932265a1cd1e2119f733d1768f06bbe", null ],
     [ "~BaseSliderWidgetQt", "classinviwo_1_1BaseSliderWidgetQt.html#a309849789338d038633754912d776b4b", null ],
     [ "applyIncrement", "classinviwo_1_1BaseSliderWidgetQt.html#a99a4e748931ad26b6504038b35e44b5e", null ],
     [ "applyInit", "classinviwo_1_1BaseSliderWidgetQt.html#a7accd57ac0b2815595cd53dd2872ecae", null ],
@@ -9,6 +9,7 @@ var classinviwo_1_1BaseSliderWidgetQt =
     [ "applyValue", "classinviwo_1_1BaseSliderWidgetQt.html#a42eadfd423b3d97eb48861120c209e16", null ],
     [ "newSliderValue", "classinviwo_1_1BaseSliderWidgetQt.html#aa832c46c11b85251a75bfacb9fd39452", null ],
     [ "newSpinnerValue", "classinviwo_1_1BaseSliderWidgetQt.html#a7025eec10275ed9bf729ae5842912f4f", null ],
+    [ "setWrapping", "classinviwo_1_1BaseSliderWidgetQt.html#ae1c9e5d0f57486fe9d2291cd61d81147", null ],
     [ "transformIncrementToSlider", "classinviwo_1_1BaseSliderWidgetQt.html#aa24bce968a4cab4b153544a4a3794be4", null ],
     [ "transformIncrementToSpinner", "classinviwo_1_1BaseSliderWidgetQt.html#a41b5bdb530fd9ecb1a5c61ed435aa940", null ],
     [ "transformIncrementToSpinnerDecimals", "classinviwo_1_1BaseSliderWidgetQt.html#a4c09f99bdc1ce27e8bbaed7775c723fb", null ],
@@ -18,5 +19,6 @@ var classinviwo_1_1BaseSliderWidgetQt =
     [ "transformMinValueToSpinner", "classinviwo_1_1BaseSliderWidgetQt.html#a89c770cb89bd44e87140a41d38b80e69", null ],
     [ "transformValueToSlider", "classinviwo_1_1BaseSliderWidgetQt.html#ac53b615ff308ad3b64ced387d5b8e05b", null ],
     [ "transformValueToSpinner", "classinviwo_1_1BaseSliderWidgetQt.html#a12810393d8db5a86132ffeb0ecd0489d", null ],
-    [ "valueChanged", "classinviwo_1_1BaseSliderWidgetQt.html#a9b02e89ad34255efb5d837505989e1a5", null ]
+    [ "valueChanged", "classinviwo_1_1BaseSliderWidgetQt.html#a9b02e89ad34255efb5d837505989e1a5", null ],
+    [ "wrapping", "classinviwo_1_1BaseSliderWidgetQt.html#a066e57367d7066c20a34c45b96cc02be", null ]
 ];

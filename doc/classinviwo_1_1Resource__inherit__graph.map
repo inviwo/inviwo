@@ -1,0 +1,4 @@
+<map id="inviwo::Resource" name="inviwo::Resource">
+<area shape="rect" id="node1" title="Base class for resources." alt="" coords="39,5,157,32"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1TypedResource.html" title="Class used by ResourceManager to wrap a shared_ptr in a resource." alt="" coords="5,80,191,107"/>
+</map>

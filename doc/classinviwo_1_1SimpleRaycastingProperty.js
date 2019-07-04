@@ -4,7 +4,7 @@ var classinviwo_1_1SimpleRaycastingProperty =
     [ "SimpleRaycastingProperty", "classinviwo_1_1SimpleRaycastingProperty.html#abcc970a24b4d366326adb978acfb402f", null ],
     [ "~SimpleRaycastingProperty", "classinviwo_1_1SimpleRaycastingProperty.html#a31f3c68fe31e359b9fb7d1f78ad42aa3", null ],
     [ "clone", "classinviwo_1_1SimpleRaycastingProperty.html#a39109b0c4c87625de8d30d1c9f977cb2", null ],
-    [ "InviwoPropertyInfo", "classinviwo_1_1SimpleRaycastingProperty.html#ab71af6f5534f690a3b48db186ce85e35", null ],
+    [ "getClassIdentifier", "classinviwo_1_1SimpleRaycastingProperty.html#a47922c093396e9580828e1ea7219ef57", null ],
     [ "operator=", "classinviwo_1_1SimpleRaycastingProperty.html#a5d6cd187f0f352a12119406065e0de7c", null ],
     [ "classificationMode_", "classinviwo_1_1SimpleRaycastingProperty.html#a0c50c55a22799db6fd2779e488900fee", null ],
     [ "compositingMode_", "classinviwo_1_1SimpleRaycastingProperty.html#adf04dc2c09763fecd53688b15abfa024", null ],

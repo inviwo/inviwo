@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['scrollarea_5f',['scrollArea_',['../classinviwo_1_1SettingsWidget.html#a822a1423700f54362fc97fc123c5b6f0',1,'inviwo::SettingsWidget']]],
-  ['seed_5f',['seed_',['../classinviwo_1_1NoiseProcessor.html#a507231143a78e9e693c6755340cce91e',1,'inviwo::NoiseProcessor']]],
-  ['size_5f',['size_',['../classinviwo_1_1NoiseProcessor.html#a4e8cb5b5b3d71600c0262106fe12c4a4',1,'inviwo::NoiseProcessor']]],
-  ['squaregl_5f',['squareGL_',['../classinviwo_1_1CanvasGL.html#a437a2f4ff36685129ccfcaac704fb277',1,'inviwo::CanvasGL']]]
+  ['nearplanedist_5f',['nearPlaneDist_',['../classinviwo_1_1Camera.html#a08c6dcd7d5cf3941c9c1c3dde828c683',1,'inviwo::Camera']]],
+  ['noiseshader_5f',['noiseShader_',['../classinviwo_1_1CanvasGL.html#a43b258bd6442a6d35fa83b4475bcd1e2',1,'inviwo::CanvasGL']]],
+  ['numframes',['numFrames',['../classinviwo_1_1animation_1_1AnimationPlaySettings.html#a4bf08a18c184e967a4d70faf474cd7a6',1,'inviwo::animation::AnimationPlaySettings']]],
+  ['numgridprimitives_5f',['numGridPrimitives_',['../classinviwo_1_1discretedata_1_1Connectivity.html#ac4193e9640d3e46b331d609fe87711f0',1,'inviwo::discretedata::Connectivity']]]
 ];

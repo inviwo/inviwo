@@ -1,0 +1,6 @@
+<map id="inviwo::PVMVolumeWriter" name="inviwo::PVMVolumeWriter">
+<area shape="rect" id="node1" title="Writer for *.pvm files." alt="" coords="5,261,177,288"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1DataWriterType.html" title=" " alt="" coords="14,171,169,212"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1DataWriter.html" title=" " alt="" coords="47,5,173,32"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1DataWriterType.html" title=" " alt="" coords="108,81,293,108"/>
+</map>

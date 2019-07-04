@@ -1,0 +1,21 @@
+<map id="inviwo::Singleton&lt; T &gt;" name="inviwo::Singleton&lt; T &gt;">
+<area shape="rect" id="node1" title=" " alt="" coords="5,260,155,287"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1OpenCL.html" title=" " alt="" coords="386,5,569,32"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1Singleton.html" title=" " alt="" coords="414,57,541,98"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1Singleton.html" title=" " alt="" coords="412,122,543,163"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1Singleton.html" title=" " alt="" coords="409,187,545,229"/>
+<area shape="rect" id="node11" href="$classinviwo_1_1Singleton.html" title=" " alt="" coords="414,253,541,294"/>
+<area shape="rect" id="node13" href="$classinviwo_1_1Singleton.html" title=" " alt="" coords="414,318,541,359"/>
+<area shape="rect" id="node14" href="$classinviwo_1_1Singleton.html" title=" " alt="" coords="414,383,541,425"/>
+<area shape="rect" id="node16" href="$classinviwo_1_1Singleton.html" title=" " alt="" coords="383,449,572,490"/>
+<area shape="rect" id="node18" href="$classinviwo_1_1Singleton.html" title=" " alt="" coords="413,514,542,555"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1KernelManager.html" title=" " alt="" coords="653,64,804,91"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1PickingManager.html" title=" " alt="" coords="650,129,807,156"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1InviwoApplication.html" title="The main application which holds the instances of all modules." alt="" coords="647,195,810,221"/>
+<area shape="rect" id="node9" href="$classinviwo_1_1InviwoApplicationQt.html" title=" " alt="" coords="885,165,1061,192"/>
+<area shape="rect" id="node10" title=" " alt="" coords="892,217,1055,258"/>
+<area shape="rect" id="node12" href="$classinviwo_1_1LogCentral.html" title=" " alt="" coords="665,260,792,287"/>
+<area shape="rect" id="node15" href="$classinviwo_1_1RenderContext.html" title="Keeper of the default render context." alt="" coords="653,391,804,417"/>
+<area shape="rect" id="node17" href="$classinviwo_1_1SharedOpenGLResources.html" title=" " alt="" coords="621,456,836,483"/>
+<area shape="rect" id="node19" href="$classinviwo_1_1ShaderManager.html" title=" " alt="" coords="651,521,806,548"/>
+</map>

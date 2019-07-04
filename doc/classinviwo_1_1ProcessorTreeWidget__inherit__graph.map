@@ -1,0 +1,8 @@
+<map id="inviwo::ProcessorTreeWidget" name="inviwo::ProcessorTreeWidget">
+<area shape="rect" id="node1" title=" " alt="" coords="117,261,306,288"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1InviwoDockWidget.html" title="dock widget with a custom title bar and sticky status. Docking while dragging the widget is prevented..." alt="" coords="5,178,175,205"/>
+<area shape="rect" id="node3" title=" " alt="" coords="39,81,141,108"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1FactoryObserver.html" title=" " alt="" coords="199,171,386,212"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1Observer.html" title=" " alt="" coords="202,5,317,32"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1FactoryObserver.html" title=" " alt="" coords="256,81,447,108"/>
+</map>

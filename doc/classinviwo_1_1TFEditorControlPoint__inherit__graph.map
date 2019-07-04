@@ -1,0 +1,10 @@
+<map id="inviwo::TFEditorControlPoint" name="inviwo::TFEditorControlPoint">
+<area shape="rect" id="node1" title=" " alt="" coords="248,337,432,364"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1TFEditorPrimitive.html" title=" " alt="" coords="143,261,305,288"/>
+<area shape="rect" id="node3" title=" " alt="" coords="5,178,115,205"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1Observable.html" title=" " alt="" coords="139,171,333,212"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1ObservableInterface.html" title=" " alt="" coords="163,5,341,32"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1Observable.html" title=" " alt="" coords="253,81,411,108"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1TFPrimitiveObserver.html" title=" " alt="" coords="329,261,508,288"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1Observer.html" title=" " alt="" coords="361,178,476,205"/>
+</map>

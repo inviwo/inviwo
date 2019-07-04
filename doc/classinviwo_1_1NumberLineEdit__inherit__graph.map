@@ -1,0 +1,4 @@
+<map id="inviwo::NumberLineEdit" name="inviwo::NumberLineEdit">
+<area shape="rect" id="node1" title="widget for entering numbers with spinbox functionality. It uses less horizontal space than a QSpinBox..." alt="" coords="5,80,161,107"/>
+<area shape="rect" id="node2" title=" " alt="" coords="23,5,144,32"/>
+</map>

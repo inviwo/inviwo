@@ -1,0 +1,4 @@
+<map id="inviwo::MultilineTextEdit" name="inviwo::MultilineTextEdit">
+<area shape="rect" id="node1" title="Basic text editor based on QPlainTextEdit for showing strings in multiple lines. The height is automa..." alt="" coords="5,80,165,107"/>
+<area shape="rect" id="node2" title=" " alt="" coords="31,5,140,32"/>
+</map>

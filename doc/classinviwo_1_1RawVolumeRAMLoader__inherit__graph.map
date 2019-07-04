@@ -1,0 +1,5 @@
+<map id="inviwo::RawVolumeRAMLoader" name="inviwo::RawVolumeRAMLoader">
+<area shape="rect" id="node1" title="A loader of raw files. Used to create VolumeRAM representations. This class us used by the DatVolumeS..." alt="" coords="13,200,214,227"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1DiskRepresentationLoader.html" title=" " alt="" coords="5,109,221,151"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1DiskRepresentationLoader.html" title=" " alt="" coords="25,5,202,47"/>
+</map>

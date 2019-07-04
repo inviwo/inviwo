@@ -1,0 +1,5 @@
+<map id="inviwo::glui::CheckBox" name="inviwo::glui::CheckBox">
+<area shape="rect" id="node1" title="glui::Element representing a checkbox with the label positioned on the right side" alt="" coords="13,80,165,107"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1glui_1_1BoolPropertyWidget.html" title="glui property widget for a bool property using glui::CheckBox" alt="" coords="5,155,172,196"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1glui_1_1Element.html" title="graphical UI element for use in combination with Layout" alt="" coords="19,5,159,32"/>
+</map>

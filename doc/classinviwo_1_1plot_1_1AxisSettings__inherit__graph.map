@@ -1,0 +1,7 @@
+<map id="inviwo::plot::AxisSettings" name="inviwo::plot::AxisSettings">
+<area shape="rect" id="node1" title=" " alt="" coords="5,85,172,112"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1plot_1_1AxisData.html" title=" " alt="" coords="244,5,391,32"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1plot_1_1AxisProperty.html" title=" " alt="" coords="233,56,401,83"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1plot_1_1CategoricalAxisProperty.html" title="Axis for variables with a fixed number of possible values, e.g., categories. Will set the AxisPropert..." alt="" coords="238,107,397,149"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1plot_1_1PCPAxisSettings.html" title=" " alt="" coords="220,173,415,200"/>
+</map>
