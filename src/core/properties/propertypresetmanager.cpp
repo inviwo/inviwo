@@ -55,6 +55,9 @@ bool PropertyPresetManager::loadPreset(const std::string& name, Property* proper
         // We deserialize into a clone here and link it to the original to only set value not
         // identifiers and such.
         auto temp = std::unique_ptr<Property>(p->clone());
+        // Since Observers are copied when cloning we need to blockNotifications to prevent change
+        // of displayname of widgets
+        util::NotificationBlocker block(*temp);
         temp->deserialize(d);
         p->set(temp.get());
     };
