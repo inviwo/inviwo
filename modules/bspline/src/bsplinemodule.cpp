@@ -30,22 +30,12 @@
 #include <inviwo/bspline/bsplinemodule.h>
 #include <inviwo/bspline/interpolation/splineinterpolation.h>
 #include <modules/animation/animationmodule.h>
-
+#include <modules/animation/datastructures/valuekeyframe.h>
+#include <modules/animation/interpolation/interpolation.h>
 
 namespace inviwo {
 
 namespace {
-
-template <typename PropertyType>
-auto trackRegHelper(BSplineModule& am) {
-    using namespace animation;
-    using ValueType = typename PropertyType::value_type;
-    // Register PropertyTrack and the KeyFrame it should use
-    am.registerTrack<PropertyTrack<PropertyType, ValueKeyframe<ValueType>>>();
-    am.registerPropertyTrackConnection(
-        PropertyTraits<PropertyType>::classIdentifier(),
-        PropertyTrack<PropertyType, ValueKeyframe<ValueType>>::classIdentifier());
-}
 
 template <typename PropertyType, template <class> class Interpolation>
 auto interpolationRegHelper(BSplineModule& am) {
@@ -53,10 +43,8 @@ auto interpolationRegHelper(BSplineModule& am) {
     using ValueType = typename PropertyType::value_type;
 
     // No need to add existing interpolation method. Will produce a warning if adding a duplicate
-    if (!am.getAnimationManager().getInterpolationFactory().hasKey(
-            Interpolation<ValueKeyframe<ValueType>>::classIdentifier())) {
-        am.registerInterpolation<Interpolation<ValueKeyframe<ValueType>>>();
-    }
+    am.registerInterpolation<Interpolation<ValueKeyframe<ValueType>>>(
+        AnimationSupplier::IgnoreDuplicates::Yes);
 
     // Default interpolation for this property
     am.registerPropertyInterpolationConnection(
@@ -69,7 +57,6 @@ struct OrdinalReghelper {
     auto operator()(BSplineModule& am) {
         using namespace animation;
         using PropertyType = OrdinalProperty<T>;
-        trackRegHelper<PropertyType>(am);
         interpolationRegHelper<PropertyType, SplineInterpolation>(am);
     }
 };
@@ -80,24 +67,19 @@ struct MinMaxReghelper {
         using namespace animation;
         using PropertyType = MinMaxProperty<T>;
 
-        trackRegHelper<PropertyType>(am);
         interpolationRegHelper<PropertyType, SplineInterpolation>(am);
     }
 };
 
-}
-
+}  // namespace
 
 BSplineModule::BSplineModule(InviwoApplication* app)
-    : InviwoModule(app, "bspline") 
-    , animation::AnimationSupplier(manager_)
-    , manager_(app, this)
-    , demoController_(app) {
+    : InviwoModule(app, "BSpline"), animation::AnimationSupplier(app) {
 
     // Register Ordinal properties
-    using Types = std::tuple<float, vec2, vec3, vec4, mat2, mat3, mat4, double, dvec2, dvec3, dvec4,
-                             dmat2, dmat3, dmat4, int, ivec2, ivec3, ivec4, unsigned int, uvec2,
-                             uvec3, uvec4, size_t, size2_t, size3_t, size4_t>;
+    using Types =
+        std::tuple<float, vec2, vec3, vec4, double, dvec2, dvec3, dvec4, int, ivec2, ivec3, ivec4,
+                   unsigned int, uvec2, uvec3, uvec4, size_t, size2_t, size3_t, size4_t>;
     util::for_each_type<Types>{}(OrdinalReghelper{}, *this);
 
     // Register MinMaxProperties

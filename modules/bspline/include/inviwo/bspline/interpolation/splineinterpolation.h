@@ -32,7 +32,11 @@
 
 #include <inviwo/core/common/inviwo.h>
 #include <modules/animation/interpolation/interpolation.h>
+#include <inviwo/bspline/interpolation/nurbutilities.h>
+#include <tinynurbs/tinynurbs.h>
 #include <algorithm>
+
+#include <glm/gtc/vec1.hpp>
 
 namespace inviwo::animation {
 
@@ -94,7 +98,7 @@ std::string SplineInterpolation<Key>::getClassIdentifier() const {
 
 template <typename Key>
 std::string SplineInterpolation<Key>::getName() const {
-    return "Cubic B-Spline";
+    return "Cubic B-spline";
 }
 
 template <typename Key>
@@ -103,25 +107,35 @@ bool SplineInterpolation<Key>::equal(const Interpolation& other) const {
 }
 template <typename Key>
 auto SplineInterpolation<Key>::operator()(const std::vector<std::unique_ptr<Key>>& keys,
-                                          Seconds /*from*/, Seconds to, easing::EasingType) const -> typename Key::value_type {
+                                          Seconds /*from*/, Seconds to, easing::EasingType) const ->
+    typename Key::value_type {
 
     using VT = typename Key::value_type;
-    using DT = typename util::same_extent<VT, double>::type;
 
-    //Get ALL keyframe values and times, and build a spline from it
-    std::vector<DT> Values;
-    std::vector<double> Times;
-    for (auto key : keys) {
-        Values.push_back(static_cast<DT>(key->getValue()));
-        Times.push_back((key->getTime()).count());
+    // This will give you a vec type even for float and double as needed by
+    // GetInterpolatingNaturalCubicSpline, need to include glm/gtc/vec1.hpp
+    // By default inviwo uses float for floats.. not vec<1, float>
+    using DT = glm::vec<util::extent<VT>::value, double>;
+
+    // Get ALL keyframe values and times, and build a spline from it
+    std::vector<DT> values;
+    std::vector<double> times;
+    for (const auto& key : keys) {
+        values.push_back(static_cast<DT>(key->getValue()));
+        times.push_back((key->getTime()).count());
     }
 
-    //Build the spline
-    tinynurbs::Curve<1, DT> Spline;
-    GetInterpolatingNaturalCubicSpline(Values, Times, Spline);
+    // Build the spline
+    tinynurbs::Curve<util::extent<DT>::value, double> spline;
+    ::inviwo::util::GetInterpolatingNaturalCubicSpline(values, times, spline);
 
-    //Evaluate the spline
-    return static_cast<VT>(tinynurbs::curvePoint(Spline, to.count()));
+    // Evaluate the spline
+    if constexpr (util::extent<VT>::value == 1) {
+        // convert from glm:vec<1,scalar> to scalar, does not work with casting
+        return static_cast<VT>(tinynurbs::curvePoint(spline, to.count())[0]);
+    } else {
+        return static_cast<VT>(tinynurbs::curvePoint(spline, to.count()));
+    }
 }
 
 template <typename Key>
@@ -140,7 +154,7 @@ void SplineInterpolation<Key>::deserialize(Deserializer& d) {
             IvwContext);
     }
 }
-}  // namespace inviwo::animation
 
+}  // namespace inviwo::animation
 
 #endif  // INVIWO_PROJECTS_SPLINEINTERPOLATION_H

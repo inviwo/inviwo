@@ -63,10 +63,8 @@ auto interpolationRegHelper(AnimationModule& am) {
     using ValueType = typename PropertyType::value_type;
 
     // No need to add existing interpolation method. Will produce a warning if adding a duplicate
-    if (!am.getAnimationManager().getInterpolationFactory().hasKey(
-            Interpolation<ValueKeyframe<ValueType>>::classIdentifier())) {
-        am.registerInterpolation<Interpolation<ValueKeyframe<ValueType>>>();
-    }
+    am.registerInterpolation<Interpolation<ValueKeyframe<ValueType>>>(
+        AnimationSupplier::IgnoreDuplicates::Yes);
 
     // Default interpolation for this property
     am.registerPropertyInterpolationConnection(

@@ -52,6 +52,7 @@ namespace animation {
  */
 class IVW_MODULE_ANIMATION_API AnimationSupplier {
 public:
+    enum class IgnoreDuplicates { Yes, No };
     AnimationSupplier(AnimationManager& manager);
     AnimationSupplier(InviwoApplication* app);
     AnimationSupplier(const AnimationSupplier&) = delete;
@@ -62,13 +63,13 @@ public:
      * Register a Track with the Track Factory
      */
     template <typename T>
-    void registerTrack();
+    void registerTrack(IgnoreDuplicates ignoreDuplicates = IgnoreDuplicates::No);
 
     /**
      * Register a Interpolation with the Interpolation Factory
      */
     template <typename T>
-    void registerInterpolation();
+    void registerInterpolation(IgnoreDuplicates ignoreDuplicates = IgnoreDuplicates::No);
 
     /**
      * Register connection between a property and a track.
@@ -99,16 +100,28 @@ private:
 };
 
 template <typename T>
-void AnimationSupplier::registerInterpolation() {
+void AnimationSupplier::registerInterpolation(IgnoreDuplicates ignoreDuplicates) {
     auto interpolation = std::make_unique<InterpolationFactoryObjectTemplate<T>>();
+    
+    if (ignoreDuplicates == IgnoreDuplicates::Yes &&
+        manager_.getInterpolationFactory().hasKey(interpolation->getClassIdentifier())) {
+        return;
+    }
+
     if (manager_.getInterpolationFactory().registerObject(interpolation.get())) {
         interpolations_.push_back(std::move(interpolation));
     }
 }
 
 template <typename T>
-void AnimationSupplier::registerTrack() {
+void AnimationSupplier::registerTrack(IgnoreDuplicates ignoreDuplicates) {
     auto track = std::make_unique<TrackFactoryObjectTemplate<T>>();
+    
+    if (ignoreDuplicates == IgnoreDuplicates::Yes &&
+        manager_.getTrackFactory().hasKey(track->getClassIdentifier())) {
+        return;
+    }
+
     if (manager_.getTrackFactory().registerObject(track.get())) {
         tracks_.push_back(std::move(track));
     }
