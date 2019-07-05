@@ -9,28 +9,29 @@ project(sigar)
 
 #--------------------------------------------------------------------
 # Define defintions
-if(WIN32) 
-    ## make sure we only use the smallest set of 
-    ## headers on win32. Otherwise we get clashes 
+if(WIN32)
+    ## make sure we only use the smallest set of
+    ## headers on win32. Otherwise we get clashes
     ## between winsock2.h and winsock.h
     add_definitions(-DWIN32_LEAN_AND_MEAN)
 endif()
 
 source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
 
-set(HEADER_FILES include/sigar.h 
-    include/sigar_fileinfo.h 
-    include/sigar_format.h 
-    include/sigar_getline.h 
-    include/sigar_log.h 
-    include/sigar_private.h 
-    include/sigar_ptql.h 
+set(HEADER_FILES include/sigar.h
+    include/sigar_fileinfo.h
+    include/sigar_format.h
+    include/sigar_getline.h
+    include/sigar_log.h
+    include/sigar_private.h
+    include/sigar_ptql.h
     include/sigar_util.h
 )
 
 ## linux
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     set(SIGAR_SRC src/os/linux/linux_sigar.c)
+    find_package(TIRPC REQUIRED)
 endif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 
 ## macosx, freebsd
@@ -67,7 +68,7 @@ add_library(sigar ${SIGAR_SRC} ${HEADER_FILES})
 add_library(inviwo::sigar ALIAS sigar)
 set_target_properties(sigar PROPERTIES VERSION 1.6.4 SOVERSION 1.6)
 
-target_include_directories(sigar PUBLIC 
+target_include_directories(sigar PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include/ext/sigar>
 )
@@ -77,6 +78,7 @@ target_compile_definitions(sigar PUBLIC IVW_SIGAR)
 ## linux
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     set(sys_headers src/os/linux/)
+    target_link_libraries(sigar PRIVATE tirpc)
 endif()
 ## macosx, freebsd
 if(CMAKE_SYSTEM_NAME MATCHES "(Darwin|FreeBSD)")
@@ -87,14 +89,15 @@ if(WIN32)
         target_compile_definitions(sigar PUBLIC SIGAR_SHARED)
         target_compile_definitions(sigar PUBLIC SIGAR_EXPORTS)
     endif()
-    target_compile_definitions(sigar PRIVATE -D_CRT_SECURE_NO_WARNINGS 
+    target_compile_definitions(sigar PRIVATE -D_CRT_SECURE_NO_WARNINGS
                                              -D_CRT_SECURE_NO_DEPRECATE)
     target_link_libraries(sigar PRIVATE ws2_32 netapi32 version)
     set(sys_headers src/os/win32/)
 endif()
-target_include_directories(sigar PRIVATE 
+target_include_directories(sigar PRIVATE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${sys_headers}>
     $<INSTALL_INTERFACE:include/ext/sigar/${sys_headers}>
+    ${TIRPC_INCLUDE_DIRS}
 )
 
 if(SIGAR_LINK_FLAGS)
@@ -111,4 +114,3 @@ ivw_default_install_comp_targets(core sigar)
 ivw_make_package(Sigar sigar)
 
 ivw_suppress_compiler_warnings(sigar)
-
