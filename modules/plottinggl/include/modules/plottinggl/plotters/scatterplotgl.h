@@ -44,6 +44,7 @@
 #include <inviwo/dataframe/datastructures/dataframe.h>
 #include <modules/plotting/properties/marginproperty.h>
 #include <modules/plotting/properties/axisproperty.h>
+#include <modules/plotting/properties/axisstyleproperty.h>
 
 #include <modules/plottinggl/utils/axisrenderer.h>
 
@@ -74,9 +75,9 @@ public:
         BoolProperty useCircle_;
         FloatProperty radiusRange_;
         FloatProperty minRadius_;
+        TransferFunctionProperty tf_;
         FloatVec4Property color_;
         FloatVec4Property hoverColor_;
-        TransferFunctionProperty tf_;
         MarginProperty margins_;
         FloatProperty axisMargin_;
 
@@ -85,8 +86,21 @@ public:
 
         BoolProperty hovering_;
 
+        AxisStyleProperty axisStyle_;
         AxisProperty xAxis_;
         AxisProperty yAxis_;
+
+    private:
+        auto props() {
+            return std::tie(radiusRange_, useCircle_, minRadius_, tf_, color_, hoverColor_, 
+                            margins_, axisMargin_, borderWidth_, borderColor_, hovering_,
+                            axisStyle_, xAxis_, yAxis_);
+        }
+        auto props() const {
+            return std::tie(radiusRange_, useCircle_, minRadius_, tf_, color_, hoverColor_, 
+                            margins_, axisMargin_, borderWidth_, borderColor_, hovering_,
+                            axisStyle_, xAxis_, yAxis_);
+        }
     };
 
     explicit ScatterPlotGL(Processor *processor = nullptr);

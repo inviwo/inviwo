@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,96 +27,105 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMEAXIS_H
-#define IVW_VOLUMEAXIS_H
+#pragma once
 
 #include <modules/plottinggl/plottingglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/cameraproperty.h>
-#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/interaction/cameratrackball.h>
 
+#include <modules/basegl/viewmanager.h>
+#include <modules/opengl/rendering/texturequadrenderer.h>
+
+#include <modules/plotting/properties/marginproperty.h>
 #include <modules/plotting/properties/axisproperty.h>
 #include <modules/plotting/properties/axisstyleproperty.h>
-
 #include <modules/plottinggl/utils/axisrenderer.h>
 
 namespace inviwo {
 
 namespace plot {
 
-/** \docpage{org.inviwo.VolumeAxis, Volume Axis}
- * ![](org.inviwo.VolumeAxis.png?classIdentifier=org.inviwo.VolumeAxis)
- * Renders a x, y, and z axis next to the input volume.
+/** \docpage{org.inviwo.ImagePlotProcessor, Image Plot Processor}
+ * ![](org.inviwo.ImagePlotProcessor.png?classIdentifier=org.inviwo.ImagePlotProcessor)
+ * Renders a given image as a 2D plot with x and y axis.
  *
  * ### Inports
- *   * __Volume__      input volume
- *   * __imageInport__ background image (optional)
+ *   * __image__   this image is rendered into the plotting area
+ *   * __bg__      optional background image
  *
  * ### Outports
- *   * __image__       output image containing the rendered volume axes and the optional input image
+ *   * __outport__ output image of the plot
  *
- * ### Properties
- *   * __Axis Offset__      offset between each axis and the volume
- *   * __Axis Range Mode__  determines axis ranges (volume dimension, volume basis, or customized)
- *   * __X Axis__           axis properties for x
- *   * __Y Axis__           axis properties for y
- *   * __Z Axis__           axis properties for z
  */
 
 /**
- * \class VolumeAxis
- * \brief Processor for rendering axis annotations next to a volume
+ * \brief plot an image with an x and y axis
+ * Event handling based on ViewManager
+ * \see ViewManager, ImageOverlayGL
  */
-class IVW_MODULE_PLOTTINGGL_API VolumeAxis : public Processor {
+class IVW_MODULE_PLOTTINGGL_API ImagePlotProcessor : public Processor {
 public:
-    enum class AxisRangeMode { VolumeDims, VolumeBasis, Custom };
+    enum class AxisRangeMode { ImageDims, Custom };
 
-    VolumeAxis();
-    virtual ~VolumeAxis() = default;
+    ImagePlotProcessor();
+    virtual ~ImagePlotProcessor() = default;
 
     virtual void process() override;
+
+    virtual void propagateEvent(Event*, Outport* source) override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
+protected:
+    void updateViewport();
+    void updateViewports(size2_t dim, bool force = false);
+    void onStatusChange();
+
 private:
+    struct ImageBounds {
+        ivec2 pos;
+        size2_t extent;
+    };
+
+    ImageBounds calcImageBounds(const size2_t& dims) const;
     void adjustRanges();
 
-    VolumeInport inport_;
-    ImageInport imageInport_;
+    ImageInport imgInport_;
+    ImageInport bgInport_;
     ImageOutport outport_;
 
-    FloatProperty axisOffset_;
-
+    MarginProperty margins_;
+    FloatProperty axisMargin_;
+    
     TemplateOptionProperty<AxisRangeMode> rangeMode_;
-
+    
     CompositeProperty customRanges_;
     DoubleMinMaxProperty rangeXaxis_;
     DoubleMinMaxProperty rangeYaxis_;
-    DoubleMinMaxProperty rangeZaxis_;
-
+    
     AxisStyleProperty axisStyle_;
     AxisProperty xAxis_;
     AxisProperty yAxis_;
-    AxisProperty zAxis_;
 
-    CameraProperty camera_;
-    CameraTrackball trackball_;
+    BoolProperty imageInteraction_;  //<! allows to interact with the images, otherwise only
+                                     // the background image will receive interaction events
 
-    std::vector<AxisRenderer3D> axisRenderers_;
+    std::array<AxisRenderer, 2> axisRenderers_;
+    TextureQuadRenderer imgRenderer_;
 
-    bool propertyUpdate_;
+    ViewManager viewManager_;
+    ivec4 viewport_;
+    size2_t imgDims_;
+    bool propertyUpdate_ = false;
 };
 
 }  // namespace plot
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMEAXIS_H

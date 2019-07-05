@@ -1,5 +1,10 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2019-07-05 Plotting Improvements
+We added a `AxisStyleProperty` for simplifying the setup of multiple axes in plots. Multiple axis properties can be registered with this new style property (`AxisStyleProperty::registerProperty()`). Changes to any of the style properties (line and text color, font size, tick length, etc.) are propagated to all registered axes, i.e. all axis share the same style. Note: this modifications can be overwritten in the individual axis.
+
+There is now also an `Image Plot Processor` which allows to plot a 2D image with matching x-y axes. Interactions are forwarded to the image port which allows, e.g., to browse through volume slices. See image plot example in `PlottingGL`.
+
 ## 2019-07-04 New Inviwo version
 We are releasing a new Inviwo version 0.9.10. 
 Major change since the last relase include:

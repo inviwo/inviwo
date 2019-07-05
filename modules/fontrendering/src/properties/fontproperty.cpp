@@ -38,13 +38,13 @@ const std::string FontProperty::classIdentifier = "org.inviwo.FontProperty";
 std::string FontProperty::getClassIdentifier() const { return classIdentifier; }
 
 FontProperty::FontProperty(const std::string& identifier, const std::string& displayName,
-                           const std::string& fontFace, int size, float lineSpacing, vec2 ancharPos,
+                           const std::string& fontFace, int size, float lineSpacing, vec2 anchorPos,
                            InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , fontFace_("fontFace", "Font Face")
     , fontSize_("fontSize", "Font Size", size, 0, 144, 1)
     , lineSpacing_("lineSpacing", "Line Spacing", lineSpacing, -1.0f, 2.0f)
-    , anchorPos_("anchor", "Anchor", ancharPos, vec2(-1.5f), vec2(1.5f), vec2(0.01f)) {
+    , anchorPos_("anchor", "Anchor", anchorPos, vec2(-1.5f), vec2(1.5f), vec2(0.01f)) {
     auto fonts = util::getAvailableFonts();
 
     for (auto font : fonts) {

@@ -43,6 +43,7 @@
 #include <modules/opengl/shader/shader.h>
 #include <modules/plottinggl/utils/axisrenderer.h>
 #include <modules/plotting/properties/axisproperty.h>
+#include <modules/plotting/properties/axisstyleproperty.h>
 
 namespace inviwo {
 
@@ -73,8 +74,6 @@ namespace plot {
  *          margin to canvas borders in pixels
  *		+ __Legend Size__ Sets the legend width and height in pixels
  *   * __Style__
- *		+ __Legend Title__ Sets the axis caption
- *		+ __Color__ Sets the border, axis, title and label colors
  *		+ __Background__ Sets the legend background, either to none or to checkerboard
  *          pattern
  *		+ __Checker Board Size__ Sets the pattern size of the checkerboard
@@ -110,7 +109,6 @@ private:
     IsoTFProperty isotfComposite_;
 
     CompositeProperty positioning_;
-    CompositeProperty style_;
 
     // position properties
     OptionPropertyInt legendPlacement_;
@@ -120,9 +118,8 @@ private:
     IntVec2Property legendSize_;
 
     // style customization properties
+    AxisStyleProperty axisStyle_;
     StringProperty title_;
-    FloatVec4Property color_;
-    IntProperty fontSize_;
     TemplateOptionProperty<BackgroundStyle> backgroundStyle_;
     FloatProperty checkerBoardSize_;
     IntProperty borderWidth_;
@@ -132,11 +129,12 @@ private:
     Shader shader_;
 
     // axis properties
-    plot::AxisProperty axis_;
-    plot::AxisRenderer axisRenderer_;
+    AxisProperty axis_;
+    AxisRenderer axisRenderer_;
 };
 
 }  // namespace plot
+
 }  // namespace inviwo
 
 #endif  // IVW_COLORSCALELEGEND_H

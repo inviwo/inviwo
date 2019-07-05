@@ -30,6 +30,7 @@
 #include <modules/plotting/plottingmodule.h>
 #include <modules/plotting/processors/dataframecolumntocolorvector.h>
 #include <modules/plotting/properties/axisproperty.h>
+#include <modules/plotting/properties/axisstyleproperty.h>
 #include <modules/plotting/properties/categoricalaxisproperty.h>
 #include <modules/plotting/properties/dataframeproperty.h>
 #include <modules/plotting/properties/marginproperty.h>
@@ -60,6 +61,7 @@ PlottingModule::PlottingModule(InviwoApplication* app) : InviwoModule(app, "Plot
 
     registerProcessor<plot::DataFrameColumnToColorVector>();
     registerProperty<plot::AxisProperty>();
+    registerProperty<plot::AxisStyleProperty>();
     registerProperty<plot::CategoricalAxisProperty>();
     registerProperty<plot::DataFrameColumnProperty>();
     registerProperty<plot::MajorTickProperty>();
