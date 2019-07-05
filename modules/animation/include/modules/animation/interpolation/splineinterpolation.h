@@ -31,8 +31,9 @@
 #define INVIWO_PROJECTS_SPLINEINTERPOLATION_H
 
 #include <inviwo/core/common/inviwo.h>
-#include <modules/animation/interpolation/interpolation.h>
 #include <algorithm>
+#include <modules/animation/interpolation/interpolation.h>
+#include <inviwo/bspline/interpolation/nurbutilities.h>
 
 namespace inviwo::animation {
 
@@ -103,7 +104,7 @@ bool SplineInterpolation<Key>::equal(const Interpolation& other) const {
 }
 template <typename Key>
 auto SplineInterpolation<Key>::operator()(const std::vector<std::unique_ptr<Key>>& keys,
-                                          Seconds /*from*/, Seconds to, easing::EasingType) const -> typename Key::value_type {
+        Seconds /*from*/, Seconds to, easing::EasingType) const -> typename Key::value_type {
 
     using VT = typename Key::value_type;
     using DT = typename util::same_extent<VT, double>::type;
@@ -111,17 +112,21 @@ auto SplineInterpolation<Key>::operator()(const std::vector<std::unique_ptr<Key>
     //Get ALL keyframe values and times, and build a spline from it
     std::vector<DT> Values;
     std::vector<double> Times;
-    for (auto key : keys) {
-        Values.push_back(static_cast<DT>(key->getValue()));
-        Times.push_back((key->getTime()).count());
+    auto key = keys.begin();
+    auto end = keys.end();
+
+    while (key != end) {
+        Values.push_back(static_cast<DT>((*key)->getValue()));
+        Times.push_back(((*key)->getTime()).count());
+        key++;
     }
 
     //Build the spline
-    tinynurbs::Curve<1, DT> Spline;
-    GetInterpolatingNaturalCubicSpline(Values, Times, Spline);
+    tinynurbs::Curve<2, DT> Spline;
+    GetInterpolatingNaturalCubicSpline<DT, 2>(Values, Times, Spline);
 
     //Evaluate the spline
-    return static_cast<VT>(tinynurbs::curvePoint(Spline, to.count()));
+    return static_cast<VT>(tinynurbs::curvePoint(Spline, (double)to.count()));
 }
 
 template <typename Key>

@@ -30,22 +30,14 @@
 
 #include <inviwo/bspline/bsplinemoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
-#include <modules/animation/animationsupplier.h>
-#include <modules/animation/animationmanager.h>
-#include <modules/animation/demo/democontroller.h>
 
 
 namespace inviwo {
 
-class IVW_MODULE_BSPLINE_API BSplineModule : public InviwoModule,
-                                             public animation::AnimationSupplier {
+class IVW_MODULE_BSPLINE_API bsplineModule : public InviwoModule {
 public:
-    BSplineModule(InviwoApplication* app);
-    virtual ~BSplineModule() = default;
-
-private:
-    animation::AnimationManager manager_;
-    animation::DemoController demoController_;
+    bsplineModule(InviwoApplication* app);
+    virtual ~bsplineModule() = default;
 };
 
 }  // namespace inviwo

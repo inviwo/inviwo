@@ -38,6 +38,7 @@
 #include <inviwo/core/properties/stringproperty.h>
 
 #include <modules/animation/interpolation/constantinterpolation.h>
+#include <modules/animation/interpolation/splineinterpolation.h>
 #include <modules/animation/datastructures/keyframe.h>
 #include <modules/animation/datastructures/track.h>
 #include <modules/animation/datastructures/propertytrack.h>
@@ -82,6 +83,7 @@ struct OrdinalReghelper {
         trackRegHelper<PropertyType>(am);
         interpolationRegHelper<PropertyType, LinearInterpolation>(am);
         interpolationRegHelper<PropertyType, ConstantInterpolation>(am);
+        interpolationRegHelper<PropertyType, SplineInterpolation>(am);
     }
 };
 
@@ -94,6 +96,7 @@ struct MinMaxReghelper {
         trackRegHelper<PropertyType>(am);
         interpolationRegHelper<PropertyType, LinearInterpolation>(am);
         interpolationRegHelper<PropertyType, ConstantInterpolation>(am);
+        interpolationRegHelper<PropertyType, SplineInterpolation>(am);
     }
 };
 

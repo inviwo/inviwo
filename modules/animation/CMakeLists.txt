@@ -40,6 +40,7 @@ set(HEADER_FILES
     include/modules/animation/interpolation/constantinterpolation.h
     include/modules/animation/interpolation/interpolation.h
     include/modules/animation/interpolation/linearinterpolation.h
+        include/modules/animation/interpolation/splineinterpolation.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 

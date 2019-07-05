@@ -3,5 +3,6 @@
 # List modules on the format "Inviwo<ModuleName>Module"
 set(dependencies
     InviwoCImgModule
+        InviwoBsplineModule
 )
 set(EnableByDefault ON)
