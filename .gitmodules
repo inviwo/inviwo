@@ -40,3 +40,6 @@
 [submodule "modules/assimp/ext/assimp/assimp"]
     path = modules/assimp/ext/assimp/assimp
     url = https://github.com/inviwo/assimp.git
+[submodule "modules/bspline/ext/tinynurbs/tinynurbs"]
+	path = modules/bspline/ext/tinynurbs/tinynurbs
+	url = https://github.com/inviwo/tinynurbs.git
