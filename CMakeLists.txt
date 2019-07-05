@@ -27,49 +27,8 @@
  #
  #################################################################################
 
-cmake_minimum_required(VERSION 3.2.0)
-cmake_policy(VERSION 3.2.0)
-
-if(POLICY CMP0042) # MacOSX rpath policy.
-    cmake_policy(SET CMP0042 NEW)
-endif()
-
-if(POLICY CMP0043)
-    # The New bahaviour is to ignore COMPILE_DEFINITIONS_<CONFIG>
-    # and used COMPILE_DEFINITIONS with generator expressions"
-    cmake_policy(SET CMP0043 NEW)
-endif()
-
-if(POLICY CMP0046) # Warn when adding a missing dependency using add_dependencies()
-    cmake_policy(SET CMP0046 NEW)
-endif()
-
-if(POLICY CMP0051) # include TARGET_OBJECTS expressions in a target's SOURCES property
-    cmake_policy(SET CMP0051 NEW)
-endif()
-
-if(POLICY CMP0054) # only interpret if() arguments as variables or keywords when unquoted
-    cmake_policy(SET CMP0054 NEW)
-endif()
-
-if(POLICY CMP0057) # CMake 3.3 adds support for the new IN_LIST operator.
-    cmake_policy(SET CMP0057 NEW)
-endif()
-
-if(POLICY CMP0066) # Honor per-config flags in ``try_compile()`` source-file signature.
-    cmake_policy(SET CMP0066 NEW)
-endif()
-if(POLICY CMP0067) # Honor language standard in try_compile() source-file signature.
-    cmake_policy(SET CMP0067 NEW)
-endif()
-
-if(POLICY CMP0074) # find_package uses <PackageName>_ROOT variables
-    cmake_policy(SET CMP0074 NEW)
-endif()
-
-if(POLICY CMP0075)
-    cmake_policy(SET CMP0075 NEW)
-endif()
+cmake_minimum_required(VERSION 3.12.0)
+cmake_policy(VERSION 3.12.0)
 
 if(POLICY CMP0077)
      cmake_policy(SET CMP0077 NEW)

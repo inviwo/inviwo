@@ -18,6 +18,10 @@ set(BUILD_DOCS                 OFF CACHE INTERNAL "Build documentation using Dox
 set(INJECT_DEBUG_POSTFIX       ON  CACHE INTERNAL "Inject debug postfix in .a/.so lib names")
 set(IGNORE_GIT_HASH            ON  CACHE INTERNAL "Don't call git to get the hash.")
 
+SET( ASSIMP_LIB_INSTALL_DIR "${IVW_LIBRARY_INSTALL_DIR}" CACHE STRING  "Path the built library files are installed to." )
+SET( ASSIMP_INCLUDE_INSTALL_DIR "${IVW_INCLUDE_INSTALL_DIR}" CACHE STRING  "Path the header files are installed to." )
+SET( ASSIMP_BIN_INSTALL_DIR "${IVW_RUNTIME_INSTALL_DIR}" CACHE STRING "Path the tool executables are installed to." )
+
 # OpenEXR::IlmImf needs zlib:
 set(ZLIB_FOUND ON)
 set(ZLIB_LIBRARIES ZLIB::ZLIB)

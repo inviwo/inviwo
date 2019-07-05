@@ -55,7 +55,7 @@ struct TransformIterator {
     using base_reference = typename std::iterator_traits<Iter>::reference;
     using base_pointer = typename std::iterator_traits<Iter>::pointer;
 
-    using reference = std::result_of_t<Transform(base_reference)>;
+    using reference = std::invoke_result_t<Transform, base_reference>;
     using value_type = std::remove_reference_t<reference>;
     using pointer = std::add_pointer_t<value_type>;
 
