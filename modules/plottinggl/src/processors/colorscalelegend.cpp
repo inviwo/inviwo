@@ -199,11 +199,21 @@ void ColorScaleLegend::updateLegendState() {
     if (legendPlacement_.get() == 4) {
         rotation_.setVisible(true);
         position_.setVisible(true);
+        axis_.flipped_.setVisible(true);
     } else {
         rotation_.setVisible(false);
         position_.setVisible(false);
+        axis_.flipped_.setVisible(false);
         position_.set(pos[legendPlacement_]);
         rotation_.set(legendPlacement_.get());
+    }
+    if (legendPlacement_.get() == 0 || legendPlacement_.get() == 3) {
+        // Top/Left
+        axis_.flipped_ = false;
+    } else if (legendPlacement_.get() == 1 ||
+               legendPlacement_.get() == 2) {
+        // Right/Bottom
+        axis_.flipped_ = true;
     }
 
     if (rotation_ % 2 == 0) {
@@ -250,7 +260,7 @@ void ColorScaleLegend::process() {
     TextureUnitContainer units;
     utilgl::Activate<Shader> activate(&shader_);
     utilgl::bindAndSetUniforms(shader_, units, isotfComposite_);
-    utilgl::setUniforms(shader_, position_, axisStyle_.color_, borderWidth_, backgroundStyle_,
+    utilgl::setUniforms(shader_, position_, axis_.color_, borderWidth_, backgroundStyle_,
                         checkerBoardSize_, rotation_, isotfComposite_);
 
     const ivec2 legendSize = getRealSize();
