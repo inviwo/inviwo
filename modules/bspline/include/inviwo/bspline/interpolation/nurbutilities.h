@@ -81,13 +81,16 @@ void GetInterpolatingNaturalCubicSpline(const std::vector<glm::vec<dim, value_ty
     // Shorthand for the parametrization
     const std::vector<double>& u = CurveParameter;
 
+    //Get min/max of parametrization to init the Knots properly
+    const auto uMinMax = std::minmax_element(u.begin(), u.end());
+
     // Knot Vector U: interpolation of input points occurs at the knots
-    const int m =
-        n + p + 3;  // Two additional knots compared to the spline interpolation without derivatives
+    // Two additional knots compared to the spline interpolation without derivatives
+    const int m = n + p + 3;
     std::vector<double> Knots(m + 1);
     for (int i(0); i <= p; i++) {
-        Knots[i] = 0;
-        Knots[m - i] = 1;
+        Knots[i] = *uMinMax.first;
+        Knots[m - i] = *uMinMax.second;
     }
     for (int j(1); j <= n - 1; j++) {
         Knots[j + p] = u[j];
