@@ -36,7 +36,7 @@
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
 #include <modules/plottinggl/plotters/scatterplotgl.h>
-#include <modules/plotting/properties/dataframeproperty.h>
+#include <inviwo/dataframe/properties/dataframeproperty.h>
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 
 namespace inviwo {

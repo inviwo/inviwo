@@ -27,45 +27,45 @@
  *
  *********************************************************************************/
 
-#include <inviwo/dataframe/dataframemodule.h>
-#include <inviwo/dataframe/io/json/dataframepropertyjsonconverter.h>
-#include <inviwo/dataframe/processors/csvsource.h>
-#include <inviwo/dataframe/processors/dataframesource.h>
-#include <inviwo/dataframe/processors/dataframeexporter.h>
-#include <inviwo/dataframe/processors/imagetodataframe.h>
-#include <inviwo/dataframe/processors/syntheticdataframe.h>
-#include <inviwo/dataframe/processors/volumetodataframe.h>
-#include <inviwo/dataframe/processors/volumesequencetodataframe.h>
+#pragma once
 
-#include <inviwo/dataframe/io/csvreader.h>
-#include <inviwo/dataframe/io/jsonreader.h>
+#include <inviwo/dataframe/properties/dataframeproperty.h>
+#include <modules/json/io/json/optionpropertyjsonconverter.h>
+#include <nlohmann/json.hpp>
 
-#include <modules/json/jsonmodule.h>
+using json = nlohmann::json;
 
 namespace inviwo {
 
-DataFrameModule::DataFrameModule(InviwoApplication* app) : InviwoModule(app, "DataFrame") {
-    // Register objects that can be shared with the rest of inviwo here:
+/**
+ * Converts an DataFrameColumnProperty to a JSON object.
+ * Produces layout according to the members of TemplateOptionProperty:
+ * { {"value": val}, {"selectedIndex": selectedIndex},
+ *   {"options": [OptionPropertyOption ... ]}
+ * }
+ * @see DataFrameColumnProperty
+ *
+ * Usage example:
+ * \code{.cpp}
+ * DataFrameColumnProperty p;
+ * json j = p;
+ * \endcode
+ */
+IVW_MODULE_DATAFRAME_API void to_json(json& j, const DataFrameColumnProperty& p);
 
-    // Processors
-    registerProcessor<CSVSource>();
-    registerProcessor<DataFrameSource>();
-    registerProcessor<DataFrameExporter>();
-    registerProcessor<ImageToDataFrame>();
-    registerProcessor<SyntheticDataFrame>();
-    registerProcessor<VolumeToDataFrame>();
-    registerProcessor<VolumeSequenceToDataFrame>();
-
-    registerDefaultsForDataType<DataFrame>();
-    // Properties
-    registerProperty<DataFrameColumnProperty>();
-
-    // Readers and writes
-    registerDataReader(std::make_unique<CSVReader>());
-    registerDataReader(std::make_unique<JSONDataFrameReader>());
-
-    // Data converters
-    app->getModuleByType<JSONModule>()->registerPropertyJSONConverter<DataFrameColumnProperty>();
-}
+/**
+ * Converts a JSON object to an TemplateOptionProperty.
+ * Expects object layout according to the members of TemplateOptionProperty:
+ * { {"value": val}, {"selectedIndex": selectedIndex},
+ *   {"options": [OptionPropertyOption ... ]}
+ * }
+ * @see TemplateOptionProperty
+ *
+ * Usage example:
+ * \code{.cpp}
+ * auto p = j.get<TemplateOptionProperty<double>>();
+ * \endcode
+ */
+IVW_MODULE_DATAFRAME_API void from_json(const json& j, DataFrameColumnProperty& p);
 
 }  // namespace inviwo

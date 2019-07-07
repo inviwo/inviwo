@@ -27,11 +27,9 @@
  *
  *********************************************************************************/
 
-#include <modules/plotting/properties/dataframeproperty.h>
+#include <inviwo/dataframe/properties/dataframeproperty.h>
 
 namespace inviwo {
-
-namespace plot {
 
 const std::string DataFrameColumnProperty::classIdentifier = "org.inviwo.DataFrameColumnProperty";
 std::string DataFrameColumnProperty::getClassIdentifier() const { return classIdentifier; }
@@ -141,7 +139,5 @@ void DataFrameColumnProperty::set(const Property* srcProperty) {
         OptionPropertyInt::set(srcProperty);
     }
 }
-
-}  // namespace plot
 
 }  // namespace inviwo

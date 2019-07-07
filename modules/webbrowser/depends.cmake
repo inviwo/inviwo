@@ -4,4 +4,5 @@
 set(dependencies
     InviwoOpenGLModule
     InviwoJSONModule
+    InviwoDataFrameModule
 )

@@ -59,5 +59,13 @@ target_link_libraries(inviwo-module-json PUBLIC
 )
 
 #--------------------------------------------------------------------
+# Register license for external library
+ivw_register_license_file(NAME "JSON for Modern C++" target nlohmann_json MODULE DataFrame
+URL "https://github.com/nlohmann/json"
+TYPE "The MIT License"
+FILES  ${IVW_EXTENSIONS_DIR}/json/LICENSE.MIT
+)
+
+#--------------------------------------------------------------------
 # Add shader directory to pack
 # ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/glsl)
