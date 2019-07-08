@@ -31,7 +31,13 @@ set(HEADER_FILES include/sigar.h
 ## linux
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     set(SIGAR_SRC src/os/linux/linux_sigar.c)
-    find_package(TIRPC REQUIRED)
+    CHECK_INCLUDE_FILE("rpc/rpc.h" HAS_RPCH)
+    if(HAS_RPCH)
+        message("Using RPC from glibc")
+    else()
+        find_package(TIRPC REQUIRED)
+        message("Using libtirpc")
+    endif()
 endif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 
 ## macosx, freebsd
