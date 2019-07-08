@@ -92,7 +92,6 @@ class InviwoAPI {
             property.max = prop["maxValue"];
             property.step = prop["increment"];
             property.value = prop["value"];
-            property.focus();
         };
     }
     
@@ -100,7 +99,6 @@ class InviwoAPI {
         var property = document.getElementById(htmlId);
         if (property!=null) {
             property.checked = prop["value"];
-            property.focus();
         };
     }
 
@@ -108,7 +106,6 @@ class InviwoAPI {
         var property = document.getElementById(htmlId);
         if (property!=null) {
             property.value = prop["value"];
-            property.focus();
         };
     }
     async syncOption(htmlId, prop) {

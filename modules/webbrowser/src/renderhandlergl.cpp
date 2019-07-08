@@ -28,10 +28,12 @@
  *********************************************************************************/
 
 #include <modules/webbrowser/renderhandlergl.h>
+#include <modules/opengl/inviwoopengl.h>
+#include <inviwo/core/util/rendercontext.h>
 
 namespace inviwo {
 
-RenderHandlerGL::RenderHandlerGL(std::function<void()> onWebPageCopiedCallback)
+RenderHandlerGL::RenderHandlerGL(OnWebPageCopiedCallback onWebPageCopiedCallback)
     : CefRenderHandler()
     , texture2D_(size2_t{1, 1}, GL_BGRA, GL_RGBA, GL_UNSIGNED_BYTE, GL_NEAREST)
     , onWebPageCopiedCallback{onWebPageCopiedCallback} {}
@@ -48,6 +50,7 @@ void RenderHandlerGL::OnPopupShow(CefRefPtr<CefBrowser> browser, bool show) {
     if (!show) {
         // Clear the popup rectangle.
         ClearPopupRects();
+        browser->GetHost()->Invalidate(PET_VIEW);
     }
 }
 
@@ -81,6 +84,7 @@ void RenderHandlerGL::ClearPopupRects() {
 void RenderHandlerGL::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type,
                               const RectList& dirtyRects, const void* buffer, int width,
                               int height) {
+    RenderContext::getPtr()->activateLocalRenderContext();
     if (type == PET_VIEW && width == static_cast<int>(texture2D_.getWidth()) && height == static_cast<int>(texture2D_.getHeight())) {
         // CPU implementation using LayerRAM
 
@@ -108,7 +112,7 @@ void RenderHandlerGL::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType ty
         } else {
             // Update dirty areas
             texture2D_.bind();
-            glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+            glPixelStorei(GL_UNPACK_ALIGNMENT, 4); // RGBA 8-bit are always aligned
             glPixelStorei(GL_UNPACK_ROW_LENGTH, width);
             for (const auto& rect : dirtyRects) {
                 // const CefRect& rect = *i;
@@ -141,6 +145,7 @@ void RenderHandlerGL::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType ty
         if (y + h > texHeight) h -= y + h - texHeight;
         texture2D_.bind();
         // Update the popup rectangle.
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 4); // RGBA 8-bit are always aligned
         glPixelStorei(GL_UNPACK_ROW_LENGTH, width);
         glPixelStorei(GL_UNPACK_SKIP_PIXELS, skip_pixels);
         glPixelStorei(GL_UNPACK_SKIP_ROWS, skip_rows);
@@ -152,8 +157,13 @@ void RenderHandlerGL::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType ty
     glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
     glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
 
+
+    if (type == PET_VIEW && !popupRect_.IsEmpty()) {
+        browser->GetHost()->Invalidate(PET_POPUP);
+    }
     // Notify that we are done copying
     onWebPageCopiedCallback();
+
 }
 
 };  // namespace inviwo
