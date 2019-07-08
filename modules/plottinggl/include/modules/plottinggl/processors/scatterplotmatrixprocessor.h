@@ -42,7 +42,7 @@
 
 #include <inviwo/dataframe/datastructures/dataframe.h>
 #include <modules/plottinggl/plotters/scatterplotgl.h>
-#include <modules/plotting/properties/dataframeproperty.h>
+#include <inviwo/dataframe/properties/dataframeproperty.h>
 #include <modules/opengl/texture/texture2d.h>
 #include <modules/opengl/rendering/texturequadrenderer.h>
 #include <modules/fontrendering/textrenderer.h>

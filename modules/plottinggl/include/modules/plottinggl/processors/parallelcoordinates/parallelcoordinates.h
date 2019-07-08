@@ -53,7 +53,7 @@
 #include <modules/userinterfacegl/glui/widgets/doubleminmaxpropertywidget.h>
 
 #include <modules/plotting/properties/categoricalaxisproperty.h>
-#include <modules/plotting/properties/dataframeproperty.h>
+#include <inviwo/dataframe/properties/dataframeproperty.h>
 #include <modules/plotting/properties/marginproperty.h>
 
 #include <modules/plottinggl/utils/axisrenderer.h>

@@ -30,16 +30,14 @@
 #ifndef IVW_DATAFRAMEPROPERTY_H
 #define IVW_DATAFRAMEPROPERTY_H
 
-#include <modules/plotting/plottingmoduledefine.h>
+#include <inviwo/dataframe/dataframemoduledefine.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/dataframe/datastructures/dataframe.h>
 
 namespace inviwo {
 
-namespace plot {
-
-class IVW_MODULE_PLOTTING_API DataFrameColumnProperty : public OptionPropertyInt {
+class IVW_MODULE_DATAFRAME_API DataFrameColumnProperty : public OptionPropertyInt {
 public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
@@ -72,8 +70,6 @@ private:
     bool allowNone_;
     size_t firstIndex_;
 };
-
-}  // namespace plot
 
 }  // namespace inviwo
 
