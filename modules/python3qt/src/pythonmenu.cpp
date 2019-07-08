@@ -94,7 +94,7 @@ PythonMenu::PythonMenu(InviwoModule* pymodule, InviwoApplication* app) {
             saveFileDialog.setFileMode(FileMode::AnyFile);
             saveFileDialog.setAcceptMode(AcceptMode::Save);
             saveFileDialog.setConfirmOverwrite(true);
-            saveFileDialog.addExtension("*.py", "Python file");
+            saveFileDialog.addExtension("py", "Python file");
             const auto dir = app->getPath(PathType::Settings) + "/python_processors";
             filesystem::createDirectoryRecursively(dir);
             saveFileDialog.setCurrentDirectory(dir);

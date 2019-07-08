@@ -127,7 +127,6 @@ void ImagePlotProcessor::process() {
     utilgl::DepthFuncState depthfunc(GL_ALWAYS);
 
     const auto dims = outport_.getDimensions();
-
     const size2_t lowerLeft(margins_.getLeft(), margins_.getBottom());
     const size2_t upperRight(dims.x - 1 - margins_.getRight(), dims.y - 1 - margins_.getTop());
 
