@@ -65,8 +65,6 @@ protected:
  *
  * Several realizations extend this pure virtual class that differ in data storage/generation.
  * Direct indexing is virtual, avoid where possible.
- *
- * @author Anke Friederici and Tino Weinkauf
  */
 template <typename T, ind N>
 class DataChannel : public BaseChannel<T, N> {

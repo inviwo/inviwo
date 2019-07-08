@@ -68,6 +68,7 @@ public:
         : gridDimension_(gridDimension)
         , numGridPrimitives_(static_cast<ind>(gridDimension) + 1, 0) {
     }  // Initialize sizes with 0. Overwrite when known.
+
     virtual ~Connectivity() = default;
 
     //! Returns the maximal dimension of the grid
