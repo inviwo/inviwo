@@ -60,6 +60,7 @@ CreateConstantChannel::CreateConstantChannel()
         format_.addOption(name, name, format);
     }
 
+    dataInport.setOptional(true);
     addPort(dataInport);
     addPort(dataOutport);
     addProperty(name_);

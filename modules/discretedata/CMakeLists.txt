@@ -46,8 +46,6 @@ set(SOURCE_FILES
     src/connectivity/connectivity.cpp
     src/connectivity/elementiterator.cpp
     src/connectivity/euclideanmeasure.cpp
-    src/connectivity/periodicgrid.cpp
-    src/connectivity/structuredgrid.cpp
     src/processors/computegridmeasure.cpp
     src/processors/createchannel.cpp
     src/processors/datasetfrombase.cpp

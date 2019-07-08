@@ -59,8 +59,8 @@ TEST(CreatingCopyingIndexing, DataChannels) {
     // - Copy, assign BufferChannel and test again
 
     const ind numElements = 3;
-    std::vector<ind> size(numElements);
-    DataSet dataset(GridPrimitive::Volume, size);
+    std::array<ind, 1> size = {numElements};
+    DataSet dataset(size);
 
     auto base = [](glm::vec3& dest, ind idx) {
         dest[0] = 1.0f;

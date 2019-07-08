@@ -34,6 +34,8 @@
 #include <modules/discretedata/channels/analyticchannel.h>
 #include <inviwo/core/datastructures/spatialdata.h>
 
+#include <initializer_list>
+
 namespace inviwo {
 namespace discretedata {
 
@@ -41,21 +43,30 @@ class ElementIterator;
 
 /**
  * \brief A curvilinear grid in nD
- * @author Anke Friederici and Tino Weinkauf
+ * N needs to be positive.
  */
+template <ind N>
 class IVW_MODULE_DISCRETEDATA_API StructuredGrid : public Connectivity {
 public:
     /**
      * \brief Create an nD grid
-     * @param gridDimension Dimension of grid (not vertices)
-     * @param numCellsPerDim Number of cells in each dimension, expect size gridDimension+1
+     * @param gridSize Number of cells in each dimension
      */
-    StructuredGrid(GridPrimitive gridDimension, const std::vector<ind>& numCellsPerDim);
+    StructuredGrid(const std::array<ind, N>&);
+
+    /**
+     * \brief Create an nD grid
+     * @param val0 required size of first dimension
+     * @param valX Further sizes
+     */
+    template <typename... IND>
+    StructuredGrid(ind val0, IND... valX);
+
     virtual ~StructuredGrid() = default;
 
     virtual ind getNumCellsInDimension(ind dim) const;
 
-    void getNumCells(std::vector<ind>& result) const;
+    const std::array<ind, N>& getNumCells() const;
 
     virtual CellType getCellType(GridPrimitive dim, ind index) const override;
 
@@ -63,14 +74,17 @@ public:
                                 GridPrimitive to, bool positions = false) const override;
 
     static void sameLevelConnection(std::vector<ind>& result, ind idxLin,
-                                    const std::vector<ind>& size);
+                                    const std::array<ind, N>& size);
 
-    static std::vector<ind> indexFromLinear(ind idxLin, const std::vector<ind>& size);
+    static std::array<ind, N> indexFromLinear(ind idxLin, const std::array<ind, N>& size);
 
-    static ind indexToLinear(const std::vector<ind>& idx, const std::vector<ind>& size);
+    static ind indexToLinear(const std::array<ind, N>& idx, const std::array<ind, N>& size);
+
+private:
+    void calculateSizes();
 
 protected:
-    std::vector<ind> numCellsPerDimension_;
+    std::array<ind, N> numCellsPerDimension_;
 };
 
 // Making use of Matrix<N + 1, float> StructuredGridEntity<N>::getIndexMatrix() const
@@ -109,3 +123,5 @@ struct IVW_MODULE_DISCRETEDATA_API CurvilinearPositions {  //  : AnalyticChannel
 
 }  // namespace discretedata
 }  // namespace inviwo
+
+#include "structuredgrid.inl"

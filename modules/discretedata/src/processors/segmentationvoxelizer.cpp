@@ -113,43 +113,6 @@ void SegmentationVoxelizer::process() {
         return createVoxels(*voxels, *pGrid, *segDataChannel, *vertChannel);
     });
 
-    // switch (segChannel->getDataFormatId()) {
-    //     case DataFormatId::Float16:
-    //         result = convert<f16>(*channel, *pStructuredGrid);
-    //         break;
-    //     case DataFormatId::Float32:
-    //         result = convert<glm::f32>(*channel, *pStructuredGrid);
-    //         break;
-    //     case DataFormatId::Float64:
-    //         result = convert<glm::f64>(*channel, *pStructuredGrid);
-    //         break;
-    //     case DataFormatId::Int8:
-    //         result = convert<glm::i8>(*channel, *pStructuredGrid);
-    //         break;
-    //     case DataFormatId::Int16:
-    //         result = convert<glm::i16>(*channel, *pStructuredGrid);
-    //         break;
-    //     case DataFormatId::Int32:
-    //         result = convert<glm::i32>(*channel, *pStructuredGrid);
-    //         break;
-    //     case DataFormatId::Int64:
-    //         result = convert<glm::i64>(*channel, *pStructuredGrid);
-    //         break;
-    //     case DataFormatId::UInt8:
-    //         result = convert<glm::u8>(*channel, *pStructuredGrid);
-    //         break;
-    //     case DataFormatId::UInt16:
-    //         result = convert<glm::u16>(*channel, *pStructuredGrid);
-    //         break;
-    //     case DataFormatId::UInt32:
-    //         result = convert<glm::u32>(*channel, *pStructuredGrid);
-    //         break;
-    //     case DataFormatId::UInt64:
-    //         result = convert<glm::u64>(*channel, *pStructuredGrid);
-    //         break;
-    //     default:
-    //         break;
-    // }
     LogWarn("made volume");
 
     portOutMesh_.setData(voxels);

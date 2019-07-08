@@ -85,10 +85,10 @@ protected:
     // void updateChannelList();
 
     template <typename T>
-    inviwo::Volume* convert(const Channel& channel, const StructuredGrid& grid);
+    inviwo::Volume* convert(const Channel& channel, const StructuredGrid<3>& grid);
 
     template <typename T, typename To = T>
-    inviwo::Volume* convertTo(const Channel& channel, const StructuredGrid& grid);
+    inviwo::Volume* convertTo(const Channel& channel, const StructuredGrid<3>& grid);
 
     // Ports
 public:
@@ -104,7 +104,8 @@ public:
 };
 
 template <typename T, typename To>
-inviwo::Volume* VolumeFromDataSet::convertTo(const Channel& channel, const StructuredGrid& grid) {
+inviwo::Volume* VolumeFromDataSet::convertTo(const Channel& channel,
+                                             const StructuredGrid<3>& grid) {
 
     const BufferChannel<T, 1>* buffer = dynamic_cast<const BufferChannel<T, 1>*>(&channel);
     if (!buffer) {
@@ -143,11 +144,7 @@ inviwo::Volume* VolumeFromDataSet::convertTo(const Channel& channel, const Struc
 }
 
 template <typename T>
-inviwo::Volume* VolumeFromDataSet::convert(const Channel& channel, const StructuredGrid& grid) {
-
-    // T min, max;
-    // dynamic_cast<const DataChannel<T, 1>&>(channel).getMinMax(min, max);
-    // LogWarn("range: [" << min << ", " << max << ']');
+inviwo::Volume* VolumeFromDataSet::convert(const Channel& channel, const StructuredGrid<3>& grid) {
 
     if (floatVolumeOutput.get())
         return convertTo<T, float>(channel, grid);
