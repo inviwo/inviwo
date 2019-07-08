@@ -81,7 +81,8 @@ void RenderHandlerGL::ClearPopupRects() {
 void RenderHandlerGL::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type,
                               const RectList& dirtyRects, const void* buffer, int width,
                               int height) {
-    if (type == PET_VIEW && width == static_cast<int>(texture2D_.getWidth()) && height == static_cast<int>(texture2D_.getHeight())) {
+    if (type == PET_VIEW && width == static_cast<int>(texture2D_.getWidth()) &&
+        height == static_cast<int>(texture2D_.getHeight())) {
         // CPU implementation using LayerRAM
 
         // Flipping image and swizzling using CPU code was too slow.
