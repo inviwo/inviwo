@@ -57,15 +57,18 @@ using DataChannelMap =
 /**
  * \brief Data package containing structure by cell connectivity and data
  * Conglomerate of data grid and several data channels assigned to grid dimensions.
- *
- * @author Anke Friederici and Tino Weinkauf
  */
 class IVW_MODULE_DISCRETEDATA_API DataSet {
 public:
     DataSet(const std::shared_ptr<const Connectivity> grid) : grid(grid) {}
+    template <size_t N>
+    DataSet(const std::array<ind, N>& size)
+        : grid(std::make_shared<StructuredGrid<static_cast<ind>(N)>>(size)) {}
 
-    DataSet(GridPrimitive size, const std::vector<ind>& numCellsPerDim)
-        : grid(std::make_shared<StructuredGrid>(size, numCellsPerDim)) {}
+    template <typename... IND>
+    DataSet(ind val0, IND... valX)
+        : grid(std::make_shared<StructuredGrid<sizeof...(IND) + 1>>(val0, valX...)) {}
+
     virtual ~DataSet() = default;
 
     /**
@@ -81,14 +84,6 @@ public:
     const std::shared_ptr<const G> getGrid() const {
         return std::dynamic_pointer_cast<const G, const Connectivity>(grid);
     }
-
-    // /**
-    //  * Returns a typed shared pointer to the grid, if casting is possible.
-    //  */
-    // template <typename G>
-    // std::shared_ptr<G> getGrid() {
-    //     return std::dynamic_pointer_cast<G, Connectivity>(grid));
-    // }
 
     /**
      * Returns a shared pointer to the virtual grid.

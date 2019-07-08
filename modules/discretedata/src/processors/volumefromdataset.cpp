@@ -67,8 +67,8 @@ void VolumeFromDataSet::process() {
         return;
     }
 
-    auto pStructuredGrid = pInDataSet->getGrid<StructuredGrid>();
-    if (!pStructuredGrid || pStructuredGrid->getDimension() != GridPrimitive::Volume) {
+    auto pStructuredGrid = pInDataSet->getGrid<StructuredGrid<3>>();
+    if (!pStructuredGrid) {
         invalidate(InvalidationLevel::InvalidOutput);
         return;
     }

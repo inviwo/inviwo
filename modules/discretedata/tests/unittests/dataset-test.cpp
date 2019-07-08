@@ -46,8 +46,7 @@ TEST(DataSet, ChannelInsertRemoveEdit) {
     // - Create several channels
     // - Add and remove them
     // - Rename them
-    std::vector<ind> size(1, 100);
-    DataSet set(GridPrimitive::Edge, size);
+    DataSet set(100);
 
     auto monomeVert = std::make_shared<AnalyticChannel<float, 3, Vec3f>>(
         [](Vec3f& a, ind idx) {

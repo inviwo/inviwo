@@ -46,10 +46,9 @@ namespace discretedata {
 
 TEST(Using, Dataset) {
     // Create a curvelinear grid.
-    std::vector<ind> gridSize = {10, 1, 1};
-    std::vector<bool> periodic = {true, false, false};
-    std::shared_ptr<PeriodicGrid> grid =
-        std::make_shared<PeriodicGrid>(GridPrimitive::Volume, gridSize, periodic);
+    std::array<ind, 3> gridSize = {10, 1, 1};
+    std::array<bool, 3> periodic = {true, false, false};
+    auto grid = std::make_shared<PeriodicGrid<3>>(gridSize, periodic);
 
     // Make the x dimension periodic (redundant), that is, the outer yz-planes overlap.
     grid->setPeriodic(0, true);
@@ -106,6 +105,7 @@ TEST(Using, Dataset) {
      * Random algorithm: apply an average filter.
      *********************************************************************************/
     std::vector<float> filteredRandom(vertexChannel->getNumComponents() * vertexChannel->size());
+    std::cout << dataset.grid->getNumElements(GridPrimitive::Vertex) << std::endl;
 
     // Iterate through all vertices.
     for (auto vertex : dataset.grid->all(GridPrimitive::Vertex)) {
@@ -113,7 +113,7 @@ TEST(Using, Dataset) {
         ind numNeighbors = 0;
 
         // Iterate through all neighbors.
-        // If another GridPrimitive is specified, we get all such primitives connected to the
+        // If another GridPrimitive was specified, we would get all such primitives connected to the
         // current vertex.
         for (auto vertexNeighbor : vertex.connection(GridPrimitive::Vertex)) {
             // Because we have a buffer, we can directly access the data.
@@ -136,8 +136,7 @@ TEST(Using, Dataset) {
      * Grid does not have positions yet.
      * Add cylindric coordinates.
      *********************************************************************************/
-    std::vector<ind> size;
-    grid->getNumCells(size);
+    auto size = grid->getNumCells();
 
     // Our cylindric coordinates.
     auto posFunc = [&size](glm::vec3& pos, ind idx) {

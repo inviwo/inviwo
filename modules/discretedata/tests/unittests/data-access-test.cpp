@@ -44,8 +44,9 @@ namespace inviwo {
 namespace discretedata {
 
 TEST(AccessingData, Connectivity) {
-    std::vector<ind> size = {4, 5, 6};
-    auto grid = std::make_shared<StructuredGrid>(GridPrimitive::Volume, size);
+    std::array<ind, 3> size = {128, 256, 64};
+    auto grid = std::make_shared<StructuredGrid<3>>(size);
+    auto grid5D = StructuredGrid<5>(1, 1, 2, 3, 5);
     DataSet data(grid);  // Assume there is data.
 
     bool allFine = true;
@@ -59,7 +60,7 @@ TEST(AccessingData, Connectivity) {
             // Do something with them.
             ind idx = vert.getIndex();
 
-            // Make sure the gird is bi-directional.
+            // Make sure the grid is bi-directional.
             grid->getConnections(neighbors, idx, vert.getType(), cell.getType());
             if (std::find(neighbors.cbegin(), neighbors.cend(), cell.getIndex()) ==
                 neighbors.cend()) {

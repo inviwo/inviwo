@@ -37,18 +37,20 @@ namespace discretedata {
 /**
  * \brief A curvilinear grid in nD, with some dimensions set to wrap
  * Assume first point in a dimension equals the last point in that dimension
- *
- * @author Anke Friederici and Tino Weinkauf
  */
-class IVW_MODULE_DISCRETEDATA_API PeriodicGrid : public StructuredGrid {
+template <ind N>
+class IVW_MODULE_DISCRETEDATA_API PeriodicGrid : public StructuredGrid<N> {
 public:
+    using StructuredGrid<N>::indexFromLinear;
+    using StructuredGrid<N>::indexToLinear;
+    using StructuredGrid<N>::numCellsPerDimension_;
     /**
      * \brief Create an nD grid
      * @param gridDimension Dimension of grid (not vertices)
      * @param numCellsPerDim Number of cells in each dimension, expect size gridDimension+1
      */
-    PeriodicGrid(GridPrimitive gridDimension, const std::vector<ind>& numCellsPerDim,
-                 const std::vector<bool>& isDimPeriodic);
+    PeriodicGrid(const std::array<ind, N>& numCellsPerDim,
+                 const std::array<bool, N>& isDimPeriodic);
     virtual ~PeriodicGrid() = default;
 
     virtual ind getNumCellsInDimension(ind dim) const override;
@@ -62,11 +64,13 @@ public:
 
 protected:
     void sameLevelConnection(std::vector<ind>& result, ind idxLin,
-                             const std::vector<ind>& size) const;
+                             const std::array<ind, N>& size) const;
 
 protected:
-    std::vector<bool> isDimPeriodic_;
+    std::array<bool, N> isDimPeriodic_;
 };
 
 }  // namespace discretedata
 }  // namespace inviwo
+
+#include "periodicgrid.inl"
