@@ -22,7 +22,7 @@ set(HEADER_FILES
 	include/inviwo/dataframe/processors/syntheticdataframe.h
 	include/inviwo/dataframe/processors/volumesequencetodataframe.h
 	include/inviwo/dataframe/processors/volumetodataframe.h
-    include/inviwo/dataframe/properties/dataframeproperty.h
+	include/inviwo/dataframe/properties/dataframeproperty.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -44,7 +44,7 @@ set(SOURCE_FILES
 	src/processors/syntheticdataframe.cpp
 	src/processors/volumesequencetodataframe.cpp
 	src/processors/volumetodataframe.cpp
-    src/properties/dataframeproperty.cpp
+	src/properties/dataframeproperty.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
