@@ -34,13 +34,23 @@
 
 #define REF_SAMPLING_INTERVAL 150.0
 
+float basisSize;
+float modelSpaceStepSize;
+
+uniform bool useOld = false;
+
 vec4 compositeDVR(in vec4 curResult, in vec4 color, in float t, inout float tDepth,
                   in float tIncr) {
     vec4 result = curResult;
 
     if (tDepth == -1.0 && color.a > 0.0) tDepth = t;
 
-    color.a = 1.0 - pow(1.0 - color.a, tIncr * REF_SAMPLING_INTERVAL);
+    if (useOld) {
+        color.a = 1.0 - pow(1.0 - color.a, tIncr * REF_SAMPLING_INTERVAL);
+    }else{
+        color.a = 1.0 - pow(1.0 - color.a, REF_SAMPLING_INTERVAL * modelSpaceStepSize / basisSize  );
+    }
+
     result.rgb = result.rgb + (1.0 - result.a) * color.a * color.rgb;
     result.a = result.a + (1.0 - result.a) * color.a;
     return result;

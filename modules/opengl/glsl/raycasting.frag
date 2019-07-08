@@ -94,6 +94,16 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
                                   volumeParameters.textureToWorld * vec4(exitPoint, 1.0))
                                      .xyz);
 
+    vec3 entryWorld = (volumeParameters.dataToModel * vec4(entryPoint,1.0)).xyz;
+    vec3 exitWorld = (volumeParameters.dataToModel * vec4(exitPoint,1.0)).xyz;
+    modelSpaceStepSize = length(exitWorld-entryWorld)/samples;
+    vec3 b = vec3(length(volumeParameters.dataToModel[0].xyz), 
+                  length(volumeParameters.dataToModel[1].xyz), 
+                  length(volumeParameters.dataToModel[2].xyz));
+    //basisSize = (b.x + b.y + b.z)/3;
+    //basisSize = max(b.x,max(b.y,b.z));
+    basisSize = length(b)/sqrt(3);
+
     vec4 backgroundColor = vec4(0);
     float bgTDepth = -1;
 #ifdef BACKGROUND_AVAILABLE
