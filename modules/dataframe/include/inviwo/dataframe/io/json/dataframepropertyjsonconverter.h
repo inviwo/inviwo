@@ -33,8 +33,6 @@
 #include <modules/json/io/json/optionpropertyjsonconverter.h>
 #include <nlohmann/json.hpp>
 
-using json = nlohmann::json;
-
 namespace inviwo {
 
 /**
@@ -51,7 +49,7 @@ namespace inviwo {
  * json j = p;
  * \endcode
  */
-IVW_MODULE_DATAFRAME_API void to_json(json& j, const DataFrameColumnProperty& p);
+IVW_MODULE_DATAFRAME_API void to_json(nlohmann::json& j, const DataFrameColumnProperty& p);
 
 /**
  * Converts a JSON object to an TemplateOptionProperty.
@@ -66,6 +64,6 @@ IVW_MODULE_DATAFRAME_API void to_json(json& j, const DataFrameColumnProperty& p)
  * auto p = j.get<TemplateOptionProperty<double>>();
  * \endcode
  */
-IVW_MODULE_DATAFRAME_API void from_json(const json& j, DataFrameColumnProperty& p);
+IVW_MODULE_DATAFRAME_API void from_json(const nlohmann::json& j, DataFrameColumnProperty& p);
 
 }  // namespace inviwo

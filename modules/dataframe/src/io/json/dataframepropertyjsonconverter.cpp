@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/dataframe/io/json/dataframepropertyjsonconverter.h>
+using json = nlohmann::json;
 
 namespace inviwo {
 
