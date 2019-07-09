@@ -32,6 +32,7 @@
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/formatconversion.h>
+#include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/io/datareaderexception.h>
 #include <tidds/ddsbase.h>
@@ -66,112 +67,81 @@ std::shared_ptr<Volume> PVMVolumeReader::readData(const std::string& filePath) {
 }
 
 std::shared_ptr<Volume> PVMVolumeReader::readPVMData(std::string filePath) {
-
-    size3_t dim(0);
-    glm::mat3 basis(2.0f);
-    glm::vec3 spacing(0.0f);
-
-    // Reading MPVM volume
-    unsigned char* data = nullptr;
+    uvec3 udim{0};
+    vec3 spacing(0.0f);
     unsigned int bytesPerVoxel = 0;
+
+    // these pointers refer to positions within pvmdata
     unsigned char* description = nullptr;
     unsigned char* courtesy = nullptr;
     unsigned char* parameter = nullptr;
     unsigned char* comment = nullptr;
 
-    try {
-        uvec3 udim{0};
-        data =
-            readPVMvolume(filePath.c_str(), &udim.x, &udim.y, &udim.z, &bytesPerVoxel, &spacing.x,
-                          &spacing.y, &spacing.z, &description, &courtesy, &parameter, &comment);
-        dim = udim;
+    unsigned char* pvmdata =
+        readPVMvolume(filePath.c_str(), &udim.x, &udim.y, &udim.z, &bytesPerVoxel, &spacing.x,
+                      &spacing.y, &spacing.z, &description, &courtesy, &parameter, &comment);
 
-    } catch (Exception& e) {
-        LogErrorCustom("PVMVolumeReader", e.what());
-    }
+    util::OnScopeExit release([&]() { free(pvmdata); });
 
-    if (data == nullptr) {
+    if (!pvmdata) {
         throw DataReaderException("Error: Could not read data in PVM file: " + filePath,
                                   IVW_CONTEXT_CUSTOM("PVMVolumeReader"));
     }
-
-    const DataFormatBase* format = nullptr;
-
-    switch (bytesPerVoxel) {
-        case 1:
-            format = DataUInt8::get();
-            break;
-        case 2:
-            format = DataUInt16::get();
-            break;
-        case 3:
-            format = DataVec3UInt8::get();
-            break;
-        default:
-            throw DataReaderException(
-                "Error: Unsupported format (bytes per voxel) in .pvm file: " + filePath,
-                IVW_CONTEXT_CUSTOM("PVMVolumeReader"));
-    }
-
-    if (dim == size3_t(0)) {
+    if (udim == uvec3{0}) {
         throw DataReaderException("Error: Unable to find dimensions in .pvm file: " + filePath,
                                   IVW_CONTEXT_CUSTOM("PVMVolumeReader"));
     }
-
-    auto volume = std::make_shared<Volume>(dim, format);
-
-    if (format == DataUInt16::get()) {
-        size_t bytes = format->getSize();
-        size_t size = dim.x * dim.y * dim.z * bytes;
-        swapbytes(data, static_cast<unsigned int>(size));
-        // This format does not contain information about data range
-        // so we need to compute it for correct results
-        auto max = std::max_element(reinterpret_cast<DataUInt16::type*>(data),
-                                    reinterpret_cast<DataUInt16::type*>(data + size));
-        volume->dataMap_.dataRange.y = static_cast<double>(*max);
+    const size_t volsize = glm::compMul(udim) * bytesPerVoxel;
+    if (bytesPerVoxel == 2) {
+        // swap byte order for DataUInt16,
+        swapbytes(pvmdata, static_cast<unsigned int>(volsize));
     }
 
-    // Additional information
-    std::stringstream ss;
+    // re-allocate the volume using "new" and copy the data
+    auto data = std::make_unique<unsigned char[]>(volsize);
+    std::copy(pvmdata, pvmdata + volsize, data.get());
 
-    if (description) {
-        ss << description;
-        volume->setMetaData<StringMetaData>("description", ss.str());
-    }
+    const DataFormatBase* format = [bytesPerVoxel, filePath]() -> const DataFormatBase* {
+        switch (bytesPerVoxel) {
+            case 1:
+                return DataUInt8::get();
+            case 2:
+                return DataUInt16::get();
+            case 3:
+                return DataVec3UInt8::get();
+            default:
+                throw DataReaderException(
+                    "Error: Unsupported format (bytes per voxel) in .pvm file: " + filePath,
+                    IVW_CONTEXT_CUSTOM("PVMVolumeReader"));
+                return nullptr;
+        }
+    }();
 
-    if (courtesy) {
-        ss.clear();
-        ss.str("");
-        ss << courtesy;
-        volume->setMetaData<StringMetaData>("courtesy", ss.str());
-    }
+    auto volRAM = createVolumeRAM(size3_t(udim), format, data.release());
+    auto volume = std::make_shared<Volume>(volRAM);
 
-    if (parameter) {
-        ss.clear();
-        ss.str("");
-        ss << parameter;
-        volume->setMetaData<StringMetaData>("parameter", ss.str());
-    }
-
-    if (comment) {
-        ss.clear();
-        ss.str("");
-        ss << comment;
-        volume->setMetaData<StringMetaData>("comment", ss.str());
-    }
-
+    mat3 basis(2.0f);
     if (spacing != vec3(0.0f)) {
-        basis[0][0] = dim.x * spacing.x;
-        basis[1][1] = dim.y * spacing.y;
-        basis[2][2] = dim.z * spacing.z;
+        basis[0][0] = udim.x * spacing.x;
+        basis[1][1] = udim.y * spacing.y;
+        basis[2][2] = udim.z * spacing.z;
     }
-
     volume->setBasis(basis);
     volume->setOffset(-0.5f * (basis[0] + basis[1] + basis[2]));
 
-    // Create RAM volume as all data has already is in memory
-    auto volRAM = createVolumeRAM(dim, format, data);
-    volume->addRepresentation(volRAM);
+    // Additional information
+    if (description) {
+        volume->setMetaData<StringMetaData>("description", toString(description));
+    }
+    if (courtesy) {
+        volume->setMetaData<StringMetaData>("courtesy", toString(courtesy));
+    }
+    if (parameter) {
+        volume->setMetaData<StringMetaData>("parameter", toString(parameter));
+    }
+    if (comment) {
+        volume->setMetaData<StringMetaData>("comment", toString(comment));
+    }
 
     return volume;
 }
