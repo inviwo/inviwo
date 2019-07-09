@@ -210,8 +210,7 @@ void ColorScaleLegend::updateLegendState() {
     if (legendPlacement_.get() == 0 || legendPlacement_.get() == 3) {
         // Top/Left
         axis_.flipped_ = false;
-    } else if (legendPlacement_.get() == 1 ||
-               legendPlacement_.get() == 2) {
+    } else if (legendPlacement_.get() == 1 || legendPlacement_.get() == 2) {
         // Right/Bottom
         axis_.flipped_ = true;
     }
