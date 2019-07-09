@@ -51,11 +51,6 @@ PeriodicGrid<N>::PeriodicGrid(const std::array<ind, N>& numCellsPerDim,
 
     Connectivity::numGridPrimitives_[(ind)Connectivity::gridDimension_] = numCells;
     Connectivity::numGridPrimitives_[(ind)GridPrimitive::Vertex] = numVerts;
-
-    std::cout << "Creating periodic grid ";
-    for (ind n = 0; n < N; ++n)
-        std::cout << numCellsPerDimension_[n] << '(' << isDimPeriodic_[n] << ") ";
-    std::cout << std::endl;
 }
 
 template <ind N>

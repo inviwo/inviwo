@@ -41,8 +41,6 @@ template <ind N>
 StructuredGrid<N>::StructuredGrid(const std::array<ind, N>& numCells)
     : Connectivity(static_cast<GridPrimitive>(N)), numCellsPerDimension_(numCells) {
     calculateSizes();
-    std::cout << "Creating structured grid ";
-    for (ind n = 0; n < N; ++n) std::cout << numCellsPerDimension_[n] << ' ';
     std::cout << std::endl;
 }
 
@@ -347,10 +345,6 @@ void StructuredGrid<N>::calculateSizes() {
         // Add to correct dimension.
         numGridPrimitives_[numNormal] += product;
     }
-
-    std::cout << "Num cells in dim:\n";
-    for (ind n = 0; n < N + 1; ++n) std::cout << '\t' << n << ": " << numGridPrimitives_[n] << '\n';
-    std::cout << std::endl;
 }
 
 }  // namespace discretedata
