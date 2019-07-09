@@ -19,7 +19,6 @@ set(HEADER_FILES
     include/modules/plotting/properties/axisproperty.h
     include/modules/plotting/properties/axisstyleproperty.h
     include/modules/plotting/properties/categoricalaxisproperty.h
-    include/modules/plotting/properties/dataframeproperty.h
     include/modules/plotting/properties/marginproperty.h
     include/modules/plotting/properties/optionconverter.h
     include/modules/plotting/properties/plottextproperty.h
@@ -45,7 +44,6 @@ set(SOURCE_FILES
     src/properties/axisproperty.cpp
     src/properties/axisstyleproperty.cpp
     src/properties/categoricalaxisproperty.cpp
-    src/properties/dataframeproperty.cpp
     src/properties/marginproperty.cpp
     src/properties/plottextproperty.cpp
     src/properties/tickproperty.cpp

@@ -27,45 +27,17 @@
  *
  *********************************************************************************/
 
-#include <inviwo/dataframe/dataframemodule.h>
 #include <inviwo/dataframe/io/json/dataframepropertyjsonconverter.h>
-#include <inviwo/dataframe/processors/csvsource.h>
-#include <inviwo/dataframe/processors/dataframesource.h>
-#include <inviwo/dataframe/processors/dataframeexporter.h>
-#include <inviwo/dataframe/processors/imagetodataframe.h>
-#include <inviwo/dataframe/processors/syntheticdataframe.h>
-#include <inviwo/dataframe/processors/volumetodataframe.h>
-#include <inviwo/dataframe/processors/volumesequencetodataframe.h>
-
-#include <inviwo/dataframe/io/csvreader.h>
-#include <inviwo/dataframe/io/jsonreader.h>
-
-#include <modules/json/jsonmodule.h>
+using json = nlohmann::json;
 
 namespace inviwo {
 
-DataFrameModule::DataFrameModule(InviwoApplication* app) : InviwoModule(app, "DataFrame") {
-    // Register objects that can be shared with the rest of inviwo here:
+void to_json(json& j, const DataFrameColumnProperty& p) {
+    to_json(j, static_cast<const OptionPropertyInt&>(p));
+}
 
-    // Processors
-    registerProcessor<CSVSource>();
-    registerProcessor<DataFrameSource>();
-    registerProcessor<DataFrameExporter>();
-    registerProcessor<ImageToDataFrame>();
-    registerProcessor<SyntheticDataFrame>();
-    registerProcessor<VolumeToDataFrame>();
-    registerProcessor<VolumeSequenceToDataFrame>();
-
-    registerDefaultsForDataType<DataFrame>();
-    // Properties
-    registerProperty<DataFrameColumnProperty>();
-
-    // Readers and writes
-    registerDataReader(std::make_unique<CSVReader>());
-    registerDataReader(std::make_unique<JSONDataFrameReader>());
-
-    // Data converters
-    app->getModuleByType<JSONModule>()->registerPropertyJSONConverter<DataFrameColumnProperty>();
+void from_json(const json& j, DataFrameColumnProperty& p) {
+    from_json(j, static_cast<OptionPropertyInt&>(p));
 }
 
 }  // namespace inviwo
