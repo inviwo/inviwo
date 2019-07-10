@@ -63,7 +63,6 @@ namespace kth {
 	It is possible to create different configurations called modes and to switch between modes using select.
     
 
-    DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
 
     @author Raphael Rey
 */

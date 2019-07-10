@@ -62,8 +62,8 @@ OrdinalControlledProperty<T>::OrdinalControlledProperty(std::string identifier,s
 	,controlledProperty("controlledProperty","Controlled Property")
 	,sensitivity("sensitivity","Sensitivity")
 	{
-	std::list<std::string> buttons{"A","B","X","Y","R1","L1","R2","L2","Left","Right","Up","Down","L3","R3"
-		,"Left Joystick X", "Right Joystick X","Left Joystick Y", "Right Joystick Y","None"};
+	std::list<std::string> buttons{"A","B","X","Y","R1","L1","R2","L2","Left","Right","Up","Down","L3","R3","None"};
+	std::list<std::string> joysticks{ "Left Joystick X", "Right Joystick X","Left Joystick Y", "Right Joystick Y" };
 	for (size_t i = 0; i < controlledProperty.getDim()[0]; i++)
 	{
 		auto buttonPlus = new OptionPropertyString("buttonPlus" + toString(i+1), "Increase Button" + toString(i +1));
@@ -74,8 +74,21 @@ OrdinalControlledProperty<T>::OrdinalControlledProperty(std::string identifier,s
 		buttonPlus->addOption(button,button);
 		buttonMinus->addOption(button,button);
 	}
-	buttonMinus->setSelectedValue("B");
-	
+	for each (std::string joystick in joysticks)
+	{
+		buttonPlus->addOption(joystick, joystick);
+	}
+	buttonPlus->onChange([buttons, buttonPlus, buttonMinus]() {
+		std::string temp = buttonMinus->getSelectedValue();
+		buttonMinus->clearOptions();
+		for each (std::string button in buttons) {
+			if (button != buttonPlus->getSelectedValue() || button == "None") {
+				buttonMinus->addOption(button,button);
+			}
+		}
+		buttonMinus->setSelectedValue(temp);
+	});
+	buttonMinus->removeOption(buttonPlus->getSelectedValue());
 	addProperty(*buttonPlus);
 	addProperty(*buttonMinus);
 	actions.push_back(std::bind(&OrdinalControlledProperty<T>::incrementProperty, this,std::placeholders::_1,i));
