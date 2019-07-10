@@ -6,6 +6,7 @@ ivw_module(Base)
 # Add header files
 set(HEADER_FILES
     include/modules/base/algorithm/algorithmoptions.h
+    include/modules/base/algorithm/camerautils.h
     include/modules/base/algorithm/cohensutherland.h
     include/modules/base/algorithm/convexhull.h
     include/modules/base/algorithm/convexhullmesh.h
@@ -55,6 +56,7 @@ set(HEADER_FILES
     include/modules/base/processors/diffuselightsourceprocessor.h
     include/modules/base/processors/directionallightsourceprocessor.h
     include/modules/base/processors/distancetransformram.h
+    include/modules/base/processors/fitcameratodata.h
     include/modules/base/processors/heightfieldmapper.h
     include/modules/base/processors/imagecontourprocessor.h
     include/modules/base/processors/imageexport.h
@@ -126,6 +128,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 # Add source files
 set(SOURCE_FILES
     src/algorithm/algorithmoptions.cpp
+    src/algorithm/camerautils.cpp
     src/algorithm/cohensutherland.cpp
     src/algorithm/convexhullmesh.cpp
     src/algorithm/cubeproxygeometry.cpp
@@ -169,6 +172,7 @@ set(SOURCE_FILES
     src/processors/diffuselightsourceprocessor.cpp
     src/processors/directionallightsourceprocessor.cpp
     src/processors/distancetransformram.cpp
+    src/processors/fitcameratodata.cpp
     src/processors/heightfieldmapper.cpp
     src/processors/imagecontourprocessor.cpp
     src/processors/imageexport.cpp
