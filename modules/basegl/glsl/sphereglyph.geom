@@ -60,6 +60,11 @@ void main(void) {
     center_ = worldPosition_[0];
     radius_ = sphereRadius_[0];
 
+    if (radius_ <= 0 || sphereColor_[0].a <= 0) {
+        EndPrimitive();
+        return;
+    }
+
     mat4 worldToViewMatrixInv = inverse(camera.worldToView);
 
     vec3 camDir = normalize((worldToViewMatrixInv[2]).xyz);     
