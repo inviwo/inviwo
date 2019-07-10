@@ -43,7 +43,10 @@
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/rendering/meshdrawer.h>
+
+#include <modules/base/algorithm/camerautils.h>
 #include <modules/opengl/shader/shader.h>
+
 #include <vector>
 
 namespace inviwo {
@@ -62,9 +65,8 @@ namespace inviwo {
  *
  * ### Properties
  *   * __Camera__ Camera used for rendering the mesh
- *   * __Center view on geometry__ Adjusts the camera so that the geometry is rendered in the center
- *   * __Calculate Near and Far Plane__ Determine the near and far clip planes based on the mesh
- *                                      bounding box
+ *   * __Fit View to Mesh__ Contains button properties to set the view of the camera to contain all
+ * input meshes
  *   * __Reset Camera__ Reset the camera to its default state
  *   * __Geometry Rendering Properties__
  *       + __Cull Face__ (None, Front, Back, Back and Front)
@@ -103,8 +105,7 @@ protected:
     ImageOutport outport_;
 
     CameraProperty camera_;
-    ButtonProperty centerViewOnGeometry_;
-    ButtonProperty setNearFarPlane_;
+    camerautil::FitCameraPropertiesHelper cameraFitter_;
     ButtonProperty resetViewParams_;
     CameraTrackball trackball_;
 

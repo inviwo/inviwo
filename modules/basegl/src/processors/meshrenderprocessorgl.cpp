@@ -64,8 +64,7 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
     , outport_("image")
     , camera_("camera", "Camera", vec3(0.0f, 0.0f, 2.0f), vec3(0.0f, 0.0f, 0.0f),
               vec3(0.0f, 1.0f, 0.0f), &inport_)
-    , centerViewOnGeometry_("centerView", "Center view on geometry")
-    , setNearFarPlane_("setNearFarPlane", "Calculate Near and Far Plane")
+    , cameraFitter_("cameraFitter", "Fit View to Mesh", camera_, inport_)
     , resetViewParams_("resetView", "Reset Camera")
     , trackball_(&camera_)
     , overrideColorBuffer_("overrideColorBuffer", "Override Color Buffer", false,
@@ -95,19 +94,8 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
     addPort(imageInport_).setOptional(true);
     addPort(outport_).addResizeEventListener(&camera_);
 
-    addProperties(camera_, centerViewOnGeometry_, setNearFarPlane_, resetViewParams_);
-    addProperties(geomProperties_, lightingProperty_, trackball_, layers_);
-
-    centerViewOnGeometry_.onChange([&]() {
-        if (!inport_.hasData()) return;
-        meshutil::centerViewOnMeshes(inport_.getVectorData(), camera_);
-    });
-    setNearFarPlane_.onChange([&]() {
-        if (!inport_.hasData()) return;
-        auto nearFar = meshutil::computeNearFarPlanes(
-            meshutil::axisAlignedBoundingBox(inport_.getVectorData()), camera_);
-        camera_.setNearFarPlaneDist(nearFar.first, nearFar.second);
-    });
+    addProperties(camera_, cameraFitter_.getCompositeProperty(), resetViewParams_, geomProperties_,
+                  lightingProperty_, trackball_, layers_);
 
     resetViewParams_.onChange([this]() { camera_.resetCamera(); });
     geomProperties_.addProperties(cullFace_, enableDepthTest_, overrideColorBuffer_,
