@@ -81,7 +81,7 @@ CameraControlledProperty::CameraControlledProperty(std::string identifier, std::
 	buttonsList.push_back(&resetButton);
 
 
-	//TODO Very dirty fix so reset camera works, needs to be changed
+	//TODO Very dirty hotfix so reset camera works, needs to be changed
 	for (size_t i = 0; i <7; i++)
 	{
 			actions.push_back(std::bind(&CameraControlledProperty::resetCamera, this,std::placeholders::_1));

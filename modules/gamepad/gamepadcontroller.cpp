@@ -35,9 +35,6 @@ GamepadController::GamepadController()
 	,newMode("newMode","New Mode")
 	, timer_(std::chrono::milliseconds{ 10 }, [this]() {
 
-	// Some values could be taken into consideration only in alternative or normal mode to save some operations
-	// We have to convert the soherical coordinates to cartesian for the sum to be correct
-
 	rotate();
 	transfer();
 	for (size_t i = 0; i < 12; i++)

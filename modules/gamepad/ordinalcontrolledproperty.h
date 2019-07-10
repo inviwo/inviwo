@@ -46,19 +46,15 @@ public:
 	std::vector<JoyAction>& getJoyActions();
 
 	OrdinalProperty<T> controlledProperty;
-	OptionPropertyString buttonPlus;
-	OptionPropertyString buttonMinus;
 	OrdinalProperty<T> sensitivity;
-	
-	
-
-private:
 	std::vector<OptionPropertyString*> buttonsList;
+	
+private:
 	std::vector<Action> actions;
 	std::vector<JoyAction> joyActions;
-	void incrementProperty(bool isHeld);
-	void decrementProperty(bool isHeld);
-	void modifyProperty(double value);
+	void incrementProperty(bool isHeld,int propertyIndex);
+	void decrementProperty(bool isHeld,int propertyIndex);
+	void modifyProperty(double value, int propetyIndex);
 };
 
 template <typename T>
@@ -66,49 +62,76 @@ OrdinalControlledProperty<T>::OrdinalControlledProperty(std::string identifier,s
 	: GamepadControlledProperty(identifier,displayName)
 	,controlledProperty("controlledProperty","Controlled Property")
 	,sensitivity("sensitivity","Sensitivity")
-	,buttonPlus("buttonPlus", "Increase Button")
-	,buttonMinus("buttonMinus", "Decrease Button")
 	{
 	std::list<std::string> buttons{"A","B","X","Y","R1","L1","R2","L2","Left","Right","Up","Down","L3","R3"
-		,"Left Joystick X", "Right Joystick X","Left Joystick Y", "Right Joystick Y"};
+		,"Left Joystick X", "Right Joystick X","Left Joystick Y", "Right Joystick Y","None"};
+	for (size_t i = 0; i < controlledProperty.getDim()[0]; i++)
+	{
+		auto buttonPlus = new OptionPropertyString("buttonPlus" + toString(i+1), "Increase Button" + toString(i +1));
+		auto buttonMinus = new OptionPropertyString("buttonMinus" + toString(i +1), "Decrease Button" + toString(i +1));
+
 	for each (std::string button in buttons)
 	{
-		buttonPlus.addOption(button,button);
-		buttonMinus.addOption(button,button);
+		buttonPlus->addOption(button,button);
+		buttonMinus->addOption(button,button);
 	}
-	buttonMinus.setSelectedValue("B");
+	buttonMinus->setSelectedValue("B");
+	
+	addProperty(*buttonPlus);
+	addProperty(*buttonMinus);
+	actions.push_back(std::bind(&OrdinalControlledProperty<T>::incrementProperty, this,std::placeholders::_1,i));
+	actions.push_back(std::bind(&OrdinalControlledProperty<T>::decrementProperty,this,std::placeholders::_1,i));
+	joyActions.push_back(std::bind(&OrdinalControlledProperty<T>::modifyProperty, this, std::placeholders::_1,i));
+	buttonsList.push_back(buttonPlus);
+	buttonsList.push_back(buttonMinus);
+
+	}
 	addProperty(controlledProperty);
-	addProperty(buttonPlus);
-	addProperty(buttonMinus);
 	addProperty(sensitivity);
-	actions.push_back(std::bind(&OrdinalControlledProperty<T>::incrementProperty, this,std::placeholders::_1));
-	actions.push_back(std::bind(&OrdinalControlledProperty<T>::decrementProperty,this,std::placeholders::_1));
-	joyActions.push_back(std::bind(&OrdinalControlledProperty<T>::modifyProperty, this, std::placeholders::_1));
-	buttonsList.push_back(&buttonPlus);
-	buttonsList.push_back(&buttonMinus);
+
 
 }
 
 template<typename T>
-inline void OrdinalControlledProperty<T>::incrementProperty(bool isHeld)
+inline void OrdinalControlledProperty<T>::incrementProperty(bool isHeld , int propertyIndex)
 {
 	if (isHeld) {
-		controlledProperty = controlledProperty + sensitivity;
+		modifyProperty(1, propertyIndex);
 	}
 }
 
 template<typename T>
-inline void OrdinalControlledProperty<T>::decrementProperty(bool isHeld)
+inline void OrdinalControlledProperty<T>::decrementProperty(bool isHeld,int propertyIndex)
 {
 	if (isHeld) {
-		controlledProperty = controlledProperty - sensitivity;
+		modifyProperty(-1, propertyIndex);
 	}
 }
 
+
+//TODO find a better way to treat vecs and scalars differently
+
 template<typename T>
-inline void OrdinalControlledProperty<T>::modifyProperty(double value)
+inline void OrdinalControlledProperty<T>::modifyProperty(double value,int propertyIndex)
 {
-	controlledProperty = controlledProperty + value*sensitivity;
+	T temp = controlledProperty.get();
+	temp[propertyIndex] = temp[propertyIndex] + value * sensitivity.get()[propertyIndex];
+	controlledProperty = temp;
+}
+template <>
+inline void OrdinalControlledProperty<int>::modifyProperty(double value, int propertyIndex)
+{
+	controlledProperty = controlledProperty + value * sensitivity;
+}
+template <>
+inline void OrdinalControlledProperty<double>::modifyProperty(double value, int propertyIndex)
+{
+	controlledProperty = controlledProperty + value * sensitivity;
+}
+template <>
+inline void OrdinalControlledProperty<float>::modifyProperty(double value, int propertyIndex)
+{
+	controlledProperty = controlledProperty + value * sensitivity;
 }
 
 template<typename T>

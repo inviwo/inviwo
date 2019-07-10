@@ -43,7 +43,7 @@ namespace inviwo {
  */
 class IVW_MODULE_GAMEPAD_API ModeProperty : public CompositeProperty {
 public:
-	using Types = std::tuple<float, double, int, bool,CameraProperty>;
+	using Types = std::tuple<float, double, int, bool,CameraProperty ,vec2 , vec3 , vec4 , ivec2,ivec3,ivec4 , dvec2 , dvec3, dvec4>;
     ModeProperty(std::string identifier, std::string diplayName);
     virtual ~ModeProperty() = default;
 	void buttonPressed(std::string button, bool isHeld);
