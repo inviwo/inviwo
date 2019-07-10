@@ -65,7 +65,9 @@ VolumeRaycaster::VolumeRaycaster()
     , lighting_("lighting", "Lighting", &camera_)
     , positionIndicator_("positionindicator", "Position Indicator")
     , toggleShading_("toggleShading", "Toggle Shading", [this](Event* e) { toggleShading(e); },
-                     IvwKey::L) {
+                     IvwKey::L) 
+    , cameraFitter_("cameraFitter","Fit View to Volume",camera_,volumePort_)
+{
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
@@ -117,9 +119,11 @@ VolumeRaycaster::VolumeRaycaster()
     addProperty(isotfComposite_);
 
     addProperty(camera_);
+    addProperty(cameraFitter_.getCompositeProperty());
     addProperty(lighting_);
     addProperty(positionIndicator_);
     addProperty(toggleShading_);
+    
 }
 
 const ProcessorInfo VolumeRaycaster::getProcessorInfo() const { return processorInfo_; }
