@@ -32,8 +32,7 @@
 namespace inviwo {
 
 /**
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
+ * \brief The OrdinalControlledProperty class is the gamepadControlledProperty for all Ordinal Properties
  */
 template <typename T>
 class IVW_MODULE_GAMEPAD_API OrdinalControlledProperty : public GamepadControlledProperty

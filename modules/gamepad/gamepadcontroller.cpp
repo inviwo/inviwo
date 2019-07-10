@@ -70,7 +70,6 @@ GamepadController::GamepadController()
 	{
 		connectButtons();
 
-		//Sets variations to zero in case gamepad gets disconnected while being used
 	}); // Connection needed to handle windows behaviour
 	}
 

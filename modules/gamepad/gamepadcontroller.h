@@ -57,7 +57,10 @@ namespace kth {
 */
 
 /** \class GamepadController
-    \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
+    \brief A processor allowing the use of a controller, the user has to add the type of property he wants to control and then bind them
+	and connect them to the corresponding properties in the processor network.
+
+	It is possible to create different configurations called modes and to switch between modes using select.
     
 
     DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE

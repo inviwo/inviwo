@@ -38,8 +38,8 @@
 namespace inviwo {
 
 /**
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
+ * \brief ModeProperty defines the modes used in GamepadControlledProperty, a mode contains several GamepadControlledProperty
+	with the possibility to add more
  */
 class IVW_MODULE_GAMEPAD_API ModeProperty : public CompositeProperty {
 public:

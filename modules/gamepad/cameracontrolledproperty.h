@@ -36,8 +36,7 @@
 namespace inviwo {
 
 /**
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
+ * \brief GamepadControlledProperty for CameraProperties
  */
 class IVW_MODULE_GAMEPAD_API CameraControlledProperty : public GamepadControlledProperty {
 public:

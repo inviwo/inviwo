@@ -39,8 +39,9 @@
 namespace inviwo {
 
 /**
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
+ * \brief A virtual class that is implemented by all properties that we want to be able to control with a gamepad.
+	every inheriting class needs to implement getActions/joyActions and getButtons.
+	getButtons is the list of binded buttons and Actions/joyActions the corresponding actions.
  */
 class IVW_MODULE_GAMEPAD_API GamepadControlledProperty : public CompositeProperty{
 public:
