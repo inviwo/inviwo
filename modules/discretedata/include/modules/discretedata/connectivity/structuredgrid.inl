@@ -248,11 +248,6 @@ void StructuredGrid<N>::getConnections(std::vector<ind>& result, ind idxLin, Gri
     }
 
     if (from == GridPrimitive::Vertex && to == gridDimension_) {
-        // Compute dimensions for vertices
-        std::array<ind, N> vertDims;
-        for (ind dim = 0; dim < N; ++dim) {
-            vertDims[dim] = numCellsPerDimension_[dim] + 1;
-        }
 
         // Linear Index to nD Vertex Index.
         std::array<ind, N> vertexIndex = indexFromLinear(idxLin, vertDims);
