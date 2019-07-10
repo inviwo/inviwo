@@ -39,7 +39,7 @@ namespace discretedata {
  * Assume first point in a dimension equals the last point in that dimension
  */
 template <ind N>
-class IVW_MODULE_DISCRETEDATA_API PeriodicGrid : public StructuredGrid<N> {
+class PeriodicGrid : public StructuredGrid<N> {
 public:
     using StructuredGrid<N>::indexFromLinear;
     using StructuredGrid<N>::indexToLinear;

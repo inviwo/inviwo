@@ -46,7 +46,7 @@ class ElementIterator;
  * N needs to be positive.
  */
 template <ind N>
-class IVW_MODULE_DISCRETEDATA_API StructuredGrid : public Connectivity {
+class StructuredGrid : public Connectivity {
 public:
     /**
      * \brief Create an nD grid
