@@ -29,14 +29,8 @@ const ProcessorInfo GamepadController::getProcessorInfo() const { return process
 
 GamepadController::GamepadController()
 	: Processor()
-	, propCamera("camera","Camera")
-	,rotationSensitivity("rotationSensitivity", "Rotation Sensitivity",0.1,0.001,1)
-	,movementSensitivity("movementSensitivity", "Movement Sensitivity",0.1,0.001,1)
 	,newMode("newMode","New Mode")
 	, timer_(std::chrono::milliseconds{ 10 }, [this]() {
-
-	rotate();
-	transfer();
 	for (size_t i = 0; i < 12; i++)
 	{
 		if (buttonHeld[i]) {
@@ -70,18 +64,10 @@ GamepadController::GamepadController()
 		addProperty(mode);
 	});
     // addPort();
-     addProperty(propCamera);
-	 addProperty(movementSensitivity);
-	 addProperty(rotationSensitivity);
 	 addProperty(newMode);
     connectButtons();
     connect(QGamepadManager::instance(), &QGamepadManager::connectedGamepadsChanged, this, [this]()
 	{
-		lookFromRDelta = 0; 
-		horizontalMovement = 0;
-		verticalMovement = 0;
-		verticalRotateDelta = 0;
-		horizontalRotateDelta = 0;
 		connectButtons();
 
 		//Sets variations to zero in case gamepad gets disconnected while being used
@@ -94,27 +80,6 @@ GamepadController::GamepadController()
 
 void GamepadController::process() {}
 
-void GamepadController::transfer()
-{
-	const vec3 right = glm::normalize(glm::cross(propCamera.getLookTo() - propCamera.getLookFrom(), propCamera.getLookUp()));
-    propCamera.setLook(propCamera.getLookFrom() - horizontalMovement * right + verticalMovement * propCamera.getLookUp(),
-            propCamera.getLookTo() - horizontalMovement * right + verticalMovement * propCamera.getLookUp(), propCamera.getLookUp());
-}
-
-void GamepadController::rotate()
-{
-    const auto& to = propCamera.getLookTo();
-    const auto& from = propCamera.getLookFrom();
-    const auto& up = propCamera.getLookUp();
-
-        // Compute coordinates on a sphere to rotate from and to
-            const auto rot = glm::half_pi<float>() * (vec3(horizontalRotateDelta,verticalRotateDelta,0));
-            const auto Pa = glm::normalize(from - to);
-            const auto Pc = glm::rotate(glm::rotate(Pa, rot.y, glm::cross(Pa, up)), rot.x, up);
-            auto lastRot = glm::quat(Pc, Pa);
-
-        propCamera.setLook(to + glm::rotate(lastRot, from - to), to, glm::rotate(lastRot, up));
-}
 
 void GamepadController::connectButtons() {
     auto gamepads = QGamepadManager::instance()->connectedGamepads();
@@ -123,19 +88,15 @@ void GamepadController::connectButtons() {
         pPad = new QGamepad(*(gamepads.begin()));
 		if (!buttonsConnected) {
 			connect(pPad, &QGamepad::axisLeftXChanged, this, [this](double value) {
-				horizontalRotateDelta = value * rotationSensitivity;
 				joyStickValues[JoySticks(LeftX)] = value;
 			});
 			connect(pPad, &QGamepad::axisLeftYChanged, this, [this](double value) {
-				verticalRotateDelta = -value * rotationSensitivity;
 				joyStickValues[JoySticks(LeftY)] = value;
 			});
 			connect(pPad, &QGamepad::axisRightXChanged, this, [this](double value) {
-				horizontalMovement = value * movementSensitivity;
 				joyStickValues[JoySticks(RightX)] = value;
 			});
 			connect(pPad, &QGamepad::axisRightYChanged, this, [this](double value) {
-				verticalMovement = value * movementSensitivity;
 				joyStickValues[JoySticks(RightY)] = value;
 			});
 			connect(pPad, &QGamepad::buttonAChanged, this, [this](bool value) {
@@ -233,15 +194,9 @@ void GamepadController::connectButtons() {
 			});
 			connect(pPad, &QGamepad::buttonR2Changed, this, [this](double value) {
 				joyStickValues[JoySticks(R2)] = value;
-				if (lookFromRDelta >= 0) {
-					lookFromRDelta = value;
-				}
 			});
 			connect(pPad, &QGamepad::buttonL2Changed, this, [this](double value) {
 				joyStickValues[JoySticks(L2)] = value;
-				if (lookFromRDelta <= 0) {
-					lookFromRDelta = -value;
-				}
 			});
 			buttonsConnected = true;
 		}

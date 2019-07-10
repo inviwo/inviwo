@@ -87,9 +87,6 @@ public:
 
 // Properties
 public:
-    CameraProperty propCamera;
-	FloatProperty rotationSensitivity;
-	FloatProperty movementSensitivity;
 	ButtonProperty newMode;
 	std::vector<ModeProperty*> modes;
 
@@ -102,17 +99,6 @@ private:
     QGamepad* pPad;
 	Timer timer_;
 	int currentMode;
-	double lookFromRDelta = 0;
-
-
-	double horizontalRotateDelta = 0;
-	double verticalRotateDelta = 0;
-
-	double horizontalMovement = 0;
-	double verticalMovement = 0;
-
-	void transfer();
-	void rotate();
 
     void connectButtons();
 	void buttonPressed(std::string button,bool isHeld);
