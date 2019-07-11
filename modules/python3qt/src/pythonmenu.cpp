@@ -93,7 +93,7 @@ PythonMenu::PythonMenu(InviwoModule* pymodule, InviwoApplication* app) {
             InviwoFileDialog saveFileDialog(nullptr, "Create Python Processor", "PythonProcessor");
             saveFileDialog.setFileMode(FileMode::AnyFile);
             saveFileDialog.setAcceptMode(AcceptMode::Save);
-            saveFileDialog.setConfirmOverwrite(true);
+            saveFileDialog.setOption(QFileDialog::Option::DontConfirmOverwrite,false);
             saveFileDialog.addExtension("py", "Python file");
             const auto dir = app->getPath(PathType::Settings) + "/python_processors";
             filesystem::createDirectoryRecursively(dir);

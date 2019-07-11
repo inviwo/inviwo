@@ -74,7 +74,11 @@ void CodeEdit::setSyntax(SyntaxType type) {
         setStyleSheet(ss.str().c_str());
 
         QFontMetrics metrics(QFont(utilqt::toQString(family), size));
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
         setTabStopWidth(4 * metrics.width(' '));
+#else
+        setTabStopDistance(static_cast<qreal>(4 * metrics.horizontalAdvance(' ')));
+#endif
     };
     auto app = util::getInviwoApplication();
     auto settings = app->getSettingsByType<QtWidgetsSettings>();
@@ -161,7 +165,12 @@ int CodeEdit::lineNumberAreaWidth() {
         ++digits;
     }
 
-    return (annotationSpace_(digits) + 2) * fontMetrics().width(' ');
+#if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
+    const int w = fontMetrics().width(' ');
+#else
+    const int w = fontMetrics().horizontalAdvance(' ');
+#endif
+    return (annotationSpace_(digits) + 2) * w;
 }
 
 void CodeEdit::updateLineNumberAreaWidth(int /* newBlockCount */) {
@@ -212,7 +221,12 @@ void CodeEdit::lineNumberAreaPaintEvent(QPaintEvent *event) {
     int blockNumber = block.blockNumber();
     int top = static_cast<int>(blockBoundingGeometry(block).translated(contentOffset()).top());
     int bottom = top + static_cast<int>(blockBoundingRect(block).height());
+#if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
     const int offset = fontMetrics().width(' ');
+#else
+    const int offset = fontMetrics().horizontalAdvance(' ');
+#endif
+    
     const int height = fontMetrics().height();
     const int width = lineNumberArea_->width() - offset;
 

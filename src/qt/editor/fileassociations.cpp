@@ -273,7 +273,7 @@ private:
      * then.
      */
     bool SetHkcrUserRegKey(QString key, const QString& value,
-                           const QString& valueName = QString::null) {
+                           const QString& valueName = QString()) {
         HKEY hKey;
         key.prepend("Software\\Classes\\");
 
