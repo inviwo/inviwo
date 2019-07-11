@@ -123,6 +123,7 @@ void setCameraView(CameraProperty &cam, const mat4 &dataToWorld, Side side, floa
 }
 
 void setCameraLookRanges(CameraProperty &cam, const mat4 &dataToWorld, float zoomRange) {
+    NetworkLock lock(&cam);
     auto m = dataToWorld;
 
     vec3 lookTo(dataToWorld * vec4(vec3(.5f), 1.f));
