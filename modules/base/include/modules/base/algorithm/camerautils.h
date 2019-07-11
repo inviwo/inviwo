@@ -49,17 +49,15 @@ enum class Side { XNegative, XPositive, YNegative, YPositive, ZNegative, ZPositi
  * Setup the camera parameters such that the whole bounding box spaned by basisAndOffset will be
  * inside the view frustum.
  *
- * @param cam the Camera to update
+ * @param cam       the Camera to update
  * @param basisAndOffset the basis and offset of the bounding box that will fit inside the new view
  * frustum
- * @param side Which side of the bounding box that will face the camera
- * @param fitRatio determines how much spacing will be between edge of view and edge of volume. A
- * fit ratio of 1 means a perfect fit, not edge between view frustum and volume border (takes aspect
- * ratio into acount)
- * @param setNearFar set to true to also updated the cameras new/far clip ranges @see
- * setCameraNearFar
- * @param setLookRanges set to true to also updated the min/max ranges of the cameras
- * lookTo/lookFrom ranges @see setCameraLookRanges
+ * @param side       this side of the bounding box will be facing the camera afterward
+ * @param fitRatio   determines the spacing between volume and the boundaries of the view frustum. A 
+ *                   fit ratio of 1 means a perfect fit, no space between frustum and volume. The aspect 
+ *                   ratio is taken into account.
+ * @param setNearFar the camera's new/far clip ranges are updated if true @see setCameraNearFar
+ * @param setLookRanges   the camera's look-to/look-from ranges are updated if true @see setCameraLookRanges
  */
 IVW_MODULE_BASE_API void setCameraView(CameraProperty &cam, const mat4 &basisAndOffset, Side side,
                                        float fitRatio = 1.05f, bool setNearFar = false,
@@ -68,29 +66,27 @@ IVW_MODULE_BASE_API void setCameraView(CameraProperty &cam, const mat4 &basisAnd
 /**
  * Set the ranges of the look to and look from properties of the camera. Will center around the mid
  * point of dataToWorld. The lookTo will be set to ranges to stay within the volume. The lookFrom
- * will be set to the mid point +- the basis vector of dataToWorld times the zoom factor. i.e a zoom
- * factor of 25 will alow to zoom out to a distance of "25 volumes".
+ * will be set to the mid point +- the basis vector of dataToWorld times the zoom factor. That is a zoom
+ * factor of 25 will allow to zoom out to a distance of "25 volumes".
  *
- * @param cam camera to update
- * @param dataToWorld bounding volume used to determinte the ranges
+ * @param cam           camera to update
+ * @param dataToWorld   bounding volume used to determinte the ranges
  * @param maxZoomFactor determines how far away from the volume the user will be able to zoom out.
- * i.e a zoom factor of 25 will alow to zoom out to a distance of "25 volumes".
  */
 IVW_MODULE_BASE_API void setCameraLookRanges(CameraProperty &cam, const mat4 &dataToWorld,
                                              float maxZoomFactor = 25.f);
 
 /**
- * Computes good near and far clip distances for the given bounding volume and zoom factor. Makes
- * sure that far plane is far way enough to never be clipping given to current zoomfactor.
+ * Computes appropriate near and far clip distances for the given bounding volume and zoom factor. Makes
+ * sure that the far plane is distant enough to avoid clipping given to current zoomfactor.
  * @see setCameraLookRanges
  */
 IVW_MODULE_BASE_API std::pair<float, float> computeCameraNearFar(
     const mat4 &dataToWorld, float maxZoomFactor = 25.f, float nearFarRatio = 1.f / 10000.f);
 
 /**
- * Sets the near and far clip distances of the camera  based on the given bounding volume and zoom
- * factor. Makes sure that far plane is far way enough to never be clipping given to current
- * zoomfactor.
+ * Sets the near and far clip distances of the camera based on the given bounding volume and zoom
+ * factor. Ensures that the far plane is distant enough to avoid clipping given to current zoomfactor.
  * @see computeCameraNearFar
  * @see setCameraLookRanges
  */
@@ -106,7 +102,6 @@ IVW_MODULE_BASE_API void setCameraNearFar(CameraProperty &cam, const mat4 &dataT
  * @see setCameraNearFar
  */
 class IVW_MODULE_BASE_API FitCameraPropertiesHelper {
-
     FitCameraPropertiesHelper(std::string identifier, std::string displayName);
 
 public:
