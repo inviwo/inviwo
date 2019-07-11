@@ -35,7 +35,7 @@ namespace inviwo {
 const ProcessorInfo FitCameraToData::processorInfo_{
     "org.inviwo.FitCameraToData",  // Class identifier
     "Fit Camera To Data",          // Display name
-    "Utility",                     // Category
+    "Camera",                      // Category
     CodeState::Stable,             // Code state
     Tags::CPU,                     // Tags
 };
