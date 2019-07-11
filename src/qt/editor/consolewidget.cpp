@@ -160,7 +160,8 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     tableView_->verticalHeader()->setVisible(false);
     tableView_->verticalHeader()->setResizeContentsPrecision(0);
     tableView_->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
-    const auto height = QFontMetrics(QFontDatabase::systemFont(QFontDatabase::FixedFont)).height();
+
+    const auto height = fontMetrics().height();
     constexpr int margin = 2;
     tableView_->verticalHeader()->setMinimumSectionSize(height + margin);
     tableView_->verticalHeader()->setDefaultSectionSize(height + margin);
@@ -455,7 +456,7 @@ void ConsoleWidget::logEntry(LogTableModelEntry e) {
     }
 
     auto lines = std::count(e.message.begin(), e.message.end(), '\n') + 1;
-    auto height = QFontMetrics(QFontDatabase::systemFont(QFontDatabase::FixedFont)).height();
+    auto height = fontMetrics().height();
 
     tableView_->setUpdatesEnabled(false);
 
@@ -557,7 +558,6 @@ void LogTableModel::log(LogTableModelEntry entry) {
     items.reserve(static_cast<int>(LogTableModelEntry::size()));
     for (size_t i = 0; i < LogTableModelEntry::size(); ++i) {
         items.append(entry.get(static_cast<LogTableModelEntry::ColumnID>(i)));
-        items.last()->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
         items.last()->setTextAlignment(Qt::AlignLeft);
         items.last()->setEditable(false);
         // items.last()->setSizeHint(QSize(1, lines * height));
