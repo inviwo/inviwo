@@ -42,26 +42,16 @@ namespace inviwo {
 /** \docpage{org.inviwo.FitCameraToData, Fit Camera To Data}
  * ![](org.inviwo.FitCameraToData.png?classIdentifier=org.inviwo.FitCameraToData)
  *
- * Processor show how camerautil::FitCameraPropertiesHelper can be used to update a camera based on
- * data on volume/mesh ports.
- *
- *
- * ### Inports
- *   * __volume___ Describe port.
- *   * __mesh__ Describe port.
- *   * __meshMultiInport__ Describe port.
- *   * __meshFlatMultiInport__ Describe port.
+ * Processor demonstrating how camerautil::FitCameraPropertiesHelper can be used to update a camera
+ * based on data from volume and mesh inports.
  *
  * ### Properties
- *   * __Camera__ The camera that will be updated, can be linked to other processors.
- *   * __Fit Camera To Volume__ Contains buttons to update the camera based on the volume on the
- * volume inport.
- *   * __Fit Camera To Mesh__ Contains buttons to update the camera based on the mesh in the mesh
- * inport.
- *   * __Fit Camera To Multi Mesh__ Contains buttons to update the camera based on the meshes in the
- * multi mesh inport.
- *   * __Fit Camera To Multi Flat Mesh__ Contains buttons to update the camera based on the meshes
- * in the flat multi mesh inport.
+ *   * __Camera__                    camera that will be updated, can be linked to other processors
+ *   * __Fit Camera To Volume__      properties for updating the camera based on the volume inport
+ *   * __Fit Camera To Mesh__        properties for updating the camera based on the mesh inport
+ *   * __Fit Camera To Multi Mesh__  properties for updating the camera based on the multimesh inport
+ *   * __Fit Camera To Multi Flat Mesh__  properties for updating the camera based on the 
+ *                                   flat multimesh inport
  */
 
 class IVW_MODULE_BASE_API FitCameraToData : public Processor {
