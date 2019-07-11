@@ -29,6 +29,9 @@
 
 #include <modules/base/algorithm/camerautils.h>
 
+#include <inviwo/core/network/networklock.h>
+
+
 namespace inviwo {
 namespace camerautil {
 
