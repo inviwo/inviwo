@@ -31,8 +31,8 @@
 
 #include <inviwo/core/network/networklock.h>
 
-
 namespace inviwo {
+
 namespace camerautil {
 
 namespace detail {
@@ -51,11 +51,12 @@ vec3 getViewDir(Side side) {
             return vec3(0, 0, 1);
         case Side::ZPositive:
             return vec3(0, 0, -1);
+        default:
+            return vec3(0;
     }
-    return vec3(0, 0, 0);  // will not get here, but needed to not get warning
 }
 
-inviwo::vec3 getLookUp(Side side) {
+vec3 getLookUp(Side side) {
     switch (side) {
         case Side::XNegative:
             return vec3(0, 1, 0);
@@ -69,8 +70,9 @@ inviwo::vec3 getLookUp(Side side) {
             return vec3(0, 1, 0);
         case Side::ZPositive:
             return vec3(0, 1, 0);
+        default:
+            return vec3(0;
     }
-    return vec3(0, 0, 0);  // will not get here, but needed to not get warning
 }
 
 }  // namespace detail
@@ -116,7 +118,7 @@ void setCameraView(CameraProperty &cam, const mat4 &dataToWorld, Side side, floa
         cam.setLook(lookFrom, lookTo, camUp);
     } else {
         LogWarnCustom("camerautil::setCameraView",
-                      "Set Camera View only supports perspective cameras");
+                      "setCameraView only supports perspective cameras");
     }
 }
 
@@ -204,4 +206,5 @@ FitCameraPropertiesHelper::FitCameraPropertiesHelper(std::string identifier,
 }
 
 }  // namespace camerautil
+                        
 }  // namespace inviwo
