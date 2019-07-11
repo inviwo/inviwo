@@ -59,6 +59,7 @@ missing-braces                    | *same* (3.2)       | *same* (3.4)         | 
 missing-field-initializers        | *same* (3.2)       | *same* (4.0)         | *no*              
 missing-noreturn                  | *same* (3.3)       | *same* (3.4)         | *no*              
 name-length-exceeded              | *no*               | *no*                 | C4503 (13)        
+namespace-uses-itself             | *no*               | *no*                 | C4515 (13)        
 newline-eof                       | *same* (3.4)       | *no*                 | *no*              
 no-such-warning                   | *no*               | *no*                 | C4619 (12)        
 no-unnamed-raii-objects           | *no*               | *no*                 | C26444 (15)       
