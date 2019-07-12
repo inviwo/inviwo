@@ -55,7 +55,6 @@ void centerViewOnMeshes(const std::vector<std::shared_ptr<const Mesh>>& meshes,
     camera.setNearFarPlaneDist(nearFar.first, nearFar.second, minMaxRatio);
 }
 
-
 std::pair<float, float> computeNearFarPlanes(std::pair<vec3, vec3> worldSpaceBoundingBox,
                                              const CameraProperty& camera, float nearFarRatio) {
     auto m = glm::scale(worldSpaceBoundingBox.second - worldSpaceBoundingBox.first);
@@ -65,7 +64,7 @@ std::pair<float, float> computeNearFarPlanes(std::pair<vec3, vec3> worldSpaceBou
         std::max(glm::distance(camera.lookFrom_.getMaxValue(), camera.lookTo_.get()),
                  glm::distance(camera.lookFrom_.getMinValue(), camera.lookTo_.get()));
 
-    return camerautil::computeCameraNearFar(m,maxViewLength,nearFarRatio);
+    return camerautil::computeCameraNearFar(m, maxViewLength, nearFarRatio);
 }
 
 }  // namespace meshutil
