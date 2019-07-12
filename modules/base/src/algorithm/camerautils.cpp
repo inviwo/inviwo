@@ -77,7 +77,7 @@ vec3 getLookUp(Side side) {
 
 }  // namespace detail
 
-void setCameraView(CameraProperty &cam, const mat4 &dataToWorld, Side side, float scale,
+void setCameraView(CameraProperty &cam, const mat4 &boundingBox, Side side, float scale,
                    bool setNearFar, bool setLookRanges) {
     if (auto perspectiveCamera = dynamic_cast<PerspectiveCamera *>(&cam.get())) {
 
@@ -85,14 +85,14 @@ void setCameraView(CameraProperty &cam, const mat4 &dataToWorld, Side side, floa
         auto lookUp = detail::getLookUp(side);
 
         const float offset = .5f;
-        auto lookTo = vec3(dataToWorld * vec4(vec3(offset), 1.f));
+        auto lookTo = vec3(boundingBox * vec4(vec3(offset), 1.f));
         auto sideDir = glm::cross(viewDir, lookUp);
 
-        auto frontPoint = vec3(dataToWorld * vec4(vec3(offset) - (viewDir * offset), 1.f));
+        auto frontPoint = vec3(boundingBox * vec4(vec3(offset) - (viewDir * offset), 1.f));
         auto sidePoint =
-            vec3(dataToWorld * vec4(vec3(offset) + (sideDir * offset) - (viewDir * offset), 1.f));
+            vec3(boundingBox * vec4(vec3(offset) + (sideDir * offset) - (viewDir * offset), 1.f));
         auto topPoint =
-            vec3(dataToWorld * vec4(vec3(offset) + (lookUp * offset) - (viewDir * offset), 1.f));
+            vec3(boundingBox * vec4(vec3(offset) + (lookUp * offset) - (viewDir * offset), 1.f));
 
         float fovy = perspectiveCamera->getFovy() / 2.0f;
         float fovx = glm::degrees(std::atan(cam.getAspectRatio() * std::tan(glm::radians(fovy))));
@@ -109,10 +109,10 @@ void setCameraView(CameraProperty &cam, const mat4 &dataToWorld, Side side, floa
         NetworkLock lock(&cam);
 
         if (setNearFar) {
-            setCameraNearFar(cam, dataToWorld);
+            setCameraNearFar(cam, boundingBox);
         }
         if (setLookRanges) {
-            setCameraLookRanges(cam, dataToWorld);
+            setCameraLookRanges(cam, boundingBox);
         }
 
         cam.setLook(lookFrom, lookTo, camUp);
@@ -122,14 +122,30 @@ void setCameraView(CameraProperty &cam, const mat4 &dataToWorld, Side side, floa
     }
 }
 
-void setCameraLookRanges(CameraProperty &cam, const mat4 &dataToWorld, float zoomRange) {
+void setCameraView(CameraProperty &cam, const std::vector<std::shared_ptr<const Mesh>> &meshes,
+                   Side side, float fitRatio, bool setNearFar, bool setLookRanges) {
+    auto minMax = meshutil::axisAlignedBoundingBox(meshes);
+    auto m = glm::scale(minMax.second - minMax.first);
+    m[3] = vec4(minMax.first, 1.0f);
+    setCameraView(cam, m, side, fitRatio, setNearFar, setLookRanges);
+}
+
+void setCameraView(CameraProperty &cam, const Mesh &mesh, Side side, float fitRatio,
+                   bool setNearFar, bool setLookRanges) {
+    auto minMax = meshutil::axisAlignedBoundingBox(mesh);
+    auto m = glm::scale(minMax.second - minMax.first);
+    m[3] = vec4(minMax.first, 1.0f);
+    setCameraView(cam, m, side, fitRatio, setNearFar, setLookRanges);
+}
+
+void setCameraLookRanges(CameraProperty &cam, const mat4 &boundingBox, float zoomRange) {
     NetworkLock lock(&cam);
 
-    vec3 lookTo(dataToWorld * vec4(vec3(.5f), 1.f));
+    vec3 lookTo(boundingBox * vec4(vec3(.5f), 1.f));
 
-    vec3 dx(dataToWorld[0]);
-    vec3 dy(dataToWorld[1]);
-    vec3 dz(dataToWorld[2]);
+    vec3 dx(boundingBox[0]);
+    vec3 dy(boundingBox[1]);
+    vec3 dz(boundingBox[2]);
 
     auto p0 = lookTo + (dx + dy + dz) * zoomRange;
     auto p1 = lookTo - (dx + dy + dz) * zoomRange;
@@ -141,11 +157,11 @@ void setCameraLookRanges(CameraProperty &cam, const mat4 &dataToWorld, float zoo
     cam.lookTo_.setMaxValue(glm::max(p0, p1));
 }
 
-std::pair<float, float> computeCameraNearFar(const mat4 &dataToWorld, float zoomRange,
+std::pair<float, float> computeCameraNearFar(const mat4 &boundingBox, float zoomRange,
                                              float nearFarRatio) {
-    vec3 bx(dataToWorld[0]);
-    vec3 by(dataToWorld[1]);
-    vec3 bz(dataToWorld[2]);
+    vec3 bx(boundingBox[0]);
+    vec3 by(boundingBox[1]);
+    vec3 bz(boundingBox[2]);
 
     float dx = glm::length(bx);
     float dy = glm::length(by);
@@ -158,10 +174,10 @@ std::pair<float, float> computeCameraNearFar(const mat4 &dataToWorld, float zoom
     return {newNear, newFar};
 }
 
-void setCameraNearFar(CameraProperty &cam, const mat4 &dataToWorld, float zoomRange,
+void setCameraNearFar(CameraProperty &cam, const mat4 &boundingBox, float zoomRange,
                       float nearFarRatio) {
 
-    auto [newNear, newFar] = computeCameraNearFar(dataToWorld, zoomRange, nearFarRatio);
+    auto [newNear, newFar] = computeCameraNearFar(boundingBox, zoomRange, nearFarRatio);
 
     cam.setNearFarPlaneDist(newNear, newFar);
 }
@@ -206,5 +222,5 @@ FitCameraPropertiesHelper::FitCameraPropertiesHelper(std::string identifier,
 }
 
 }  // namespace camerautil
-                        
+
 }  // namespace inviwo

@@ -46,51 +46,70 @@ namespace camerautil {
 enum class Side { XNegative, XPositive, YNegative, YPositive, ZNegative, ZPositive };
 
 /**
- * Setup the camera parameters such that the whole bounding box spaned by basisAndOffset will be
- * inside the view frustum.
+ * Setup the camera parameters such that the whole boundingBox spaned by basis and offset
+ * will be inside the view frustum.
  *
  * @param cam       the Camera to update
- * @param basisAndOffset the basis and offset of the bounding box that will fit inside the new view
- * frustum
+ * @param boundingBox the basis and offset of the bounding box that will fit inside the new
+ * view frustum
  * @param side       this side of the bounding box will be facing the camera afterward
- * @param fitRatio   determines the spacing between volume and the boundaries of the view frustum. A 
- *                   fit ratio of 1 means a perfect fit, no space between frustum and volume. The aspect 
- *                   ratio is taken into account.
+ * @param fitRatio   determines the spacing between volume and the boundaries of the view frustum. A
+ *                   fit ratio of 1 means a perfect fit, no space between frustum and volume. The
+ * aspect ratio is taken into account.
  * @param setNearFar the camera's new/far clip ranges are updated if true @see setCameraNearFar
- * @param setLookRanges   the camera's look-to/look-from ranges are updated if true @see setCameraLookRanges
+ * @param setLookRanges   the camera's look-to/look-from ranges are updated if true @see
+ * setCameraLookRanges
  */
-IVW_MODULE_BASE_API void setCameraView(CameraProperty &cam, const mat4 &basisAndOffset, Side side,
+IVW_MODULE_BASE_API void setCameraView(CameraProperty &cam, const mat4 &boundingBox, Side side,
+                                       float fitRatio = 1.05f, bool setNearFar = false,
+                                       bool setLookRanges = false);
+
+/**
+ * Setup the camera parameters such that the all input meshes will be inside the view frustum.
+ * @see setCameraView
+ */
+IVW_MODULE_BASE_API void setCameraView(CameraProperty &cam,
+                                       const std::vector<std::shared_ptr<const Mesh>> &meshes,
+                                       Side side, float fitRatio = 1.05f, bool setNearFar = false,
+                                       bool setLookRanges = false);
+
+/**
+ * Setup the camera parameters such that the given mesh will be completely inside the view frustum.
+ * @see setCameraView
+ */
+IVW_MODULE_BASE_API void setCameraView(CameraProperty &cam, const Mesh &meshe, Side side,
                                        float fitRatio = 1.05f, bool setNearFar = false,
                                        bool setLookRanges = false);
 
 /**
  * Set the ranges of the look to and look from properties of the camera. Will center around the mid
  * point of dataToWorld. The lookTo will be set to ranges to stay within the volume. The lookFrom
- * will be set to the mid point +- the basis vector of dataToWorld times the zoom factor. That is a zoom
- * factor of 25 will allow to zoom out to a distance of "25 volumes".
+ * will be set to the mid point +- the basis vector of boundingBox times the zoom factor. That is
+ * a zoom factor of 25 will allow to zoom out to a distance of "25 volumes".
  *
  * @param cam           camera to update
- * @param dataToWorld   bounding volume used to determinte the ranges
+ * @param boundingBox  basis and offset of the bounding box used to determinte the ranges
  * @param maxZoomFactor determines how far away from the volume the user will be able to zoom out.
  */
-IVW_MODULE_BASE_API void setCameraLookRanges(CameraProperty &cam, const mat4 &dataToWorld,
+IVW_MODULE_BASE_API void setCameraLookRanges(CameraProperty &cam, const mat4 &boundingBox,
                                              float maxZoomFactor = 25.f);
 
 /**
- * Computes appropriate near and far clip distances for the given bounding volume and zoom factor. Makes
- * sure that the far plane is distant enough to avoid clipping given to current zoomfactor.
+ * Computes appropriate near and far clip distances for the given bounding box and zoom factor.
+ * Makes sure that the far plane is distant enough to avoid clipping given to current zoomfactor.
  * @see setCameraLookRanges
  */
 IVW_MODULE_BASE_API std::pair<float, float> computeCameraNearFar(
-    const mat4 &dataToWorld, float maxZoomFactor = 25.f, float nearFarRatio = 1.f / 10000.f);
+    const mat4 &boundingBox, float maxZoomFactor = 25.f, float nearFarRatio = 1.f / 10000.f);
 
 /**
  * Sets the near and far clip distances of the camera based on the given bounding volume and zoom
- * factor. Ensures that the far plane is distant enough to avoid clipping given to current zoomfactor.
+ * factor. Ensures that the far plane is distant enough to avoid clipping given to current
+ * zoomfactor.
  * @see computeCameraNearFar
  * @see setCameraLookRanges
  */
-IVW_MODULE_BASE_API void setCameraNearFar(CameraProperty &cam, const mat4 &dataToWorld,
+IVW_MODULE_BASE_API void setCameraNearFar(CameraProperty &cam, const mat4 &boundingBox,
                                           float maxZoomFactor = 25.f,
                                           float nearFarRatio = 1.f / 10000.f);
 
@@ -153,11 +172,11 @@ FitCameraPropertiesHelper::FitCameraPropertiesHelper(std::string identifier,
 }
 
 template <typename Callback, typename Port>
-void FitCameraPropertiesHelper::init(CameraProperty &camera, Callback getToWorld, Port &port) {
+void FitCameraPropertiesHelper::init(CameraProperty &camera, Callback getBoundingBox, Port &port) {
 
-    auto set = [getToWorld, p = &port, cam = &camera, this](auto side) {
+    auto set = [getBoundingBox, p = &port, cam = &camera, this](auto side) {
         if (p->hasData()) {
-            setCameraView(*cam, getToWorld(), side, fittingRatio_.get(), updateNearFar_.get(),
+            setCameraView(*cam, getBoundingBox(), side, fittingRatio_.get(), updateNearFar_.get(),
                           updateLookRanges_.get());
         }
     };
@@ -173,14 +192,14 @@ void FitCameraPropertiesHelper::init(CameraProperty &camera, Callback getToWorld
 
     flipUp_.onChange([cam = &camera]() { cam->setLookUp(-cam->getLookUp()); });
 
-    setNearFarButton_.onChange([getToWorld, p = &port, cam = &camera] {
+    setNearFarButton_.onChange([getBoundingBox, p = &port, cam = &camera] {
         if (p->hasData()) {
-            setCameraNearFar(*cam, getToWorld());
+            setCameraNearFar(*cam, getBoundingBox());
         }
     });
-    setLookRangesButton_.onChange([getToWorld, p = &port, cam = &camera] {
+    setLookRangesButton_.onChange([getBoundingBox, p = &port, cam = &camera] {
         if (p->hasData()) {
-            setCameraLookRanges(*cam, getToWorld());
+            setCameraLookRanges(*cam, getBoundingBox());
         }
     });
 }
