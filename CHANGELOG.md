@@ -1,5 +1,15 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2019-07-16 Transfer Function Editing
+
+Added some utility functions for editing transfer functions: 
+
+ * **flip positions** - swap the positions of all TF primitives with respect to their range
+ * **interpolate alpha** - interpolates the alpha values of all TF primitives in between the left-most and right-most TF primitive
+ * **equalize alpha** - averages the alpha value of all selected TF primitives
+
+These functions are accessible under `Transform` in the context menus of both TF editor and respective TF properties. All functions are applied to the current selection or the entire TF, if nothing is selected.
+
 ## 2019-07-05 Plotting Improvements
 We added a `AxisStyleProperty` for simplifying the setup of multiple axes in plots. Multiple axis properties can be registered with this new style property (`AxisStyleProperty::registerProperty()`). Changes to any of the style properties (line and text color, font size, tick length, etc.) are propagated to all registered axes, i.e. all axis share the same style. Note: this modifications can be overwritten in the individual axis.
 
@@ -8,11 +18,13 @@ There is now also an `Image Plot Processor` which allows to plot a 2D image with
 ## 2019-07-04 New Inviwo version
 We are releasing a new Inviwo version 0.9.10. 
 Major change since the last relase include:
+
  * Embedded web browser support
  * Get Started widget
  * Python processors
  * New module structure
  * New meta tool for adding new modules/processors
+
 Moreover this will be that last version to not require c++17.
 
 ## 2019-06-11 Webbrowser property synchronization
