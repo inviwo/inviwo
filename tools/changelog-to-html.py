@@ -161,7 +161,7 @@ htmlHeader = """<!DOCTYPE html>
 <body >
 <h1>Latest Changes</h1>
 """
-htmlBody = "</body></html>"
+htmlBody = "</body></html>\n"
 changelogBegin = "Here we document changes"
 
 def main(args):
