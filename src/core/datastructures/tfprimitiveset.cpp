@@ -412,6 +412,89 @@ void TFPrimitiveSet::interpolateAndStoreColors(vec4* dataArray, const size_t dat
     }
 }
 
+void TFPrimitiveSet::flipPositions(const std::vector<TFPrimitive*>& primitives) {
+    dvec2 range;
+    std::vector<TFPrimitive*> selection;
+
+    if (primitives.empty()) {
+        selection = sorted_;
+        range = getRange();
+    } else {
+        selection = util::copy_if(primitives, [&](auto p) { return util::contains(sorted_, p); });
+        if (!selection.empty()) {
+            auto minmax = std::minmax_element(
+                selection.begin(), selection.end(),
+                [](const TFPrimitive* a, const TFPrimitive* b) { return *a < *b; });
+            range.x = (*minmax.first)->getPosition();
+            range.y = (*minmax.second)->getPosition();
+        }
+    }
+
+    if (selection.size() < 2) {
+        return;
+    }
+
+    for (auto& elem : selection) {
+        elem->setPosition(range.y - (elem->getPosition() - range.x));
+    }
+}
+
+void TFPrimitiveSet::interpolateAlpha(const std::vector<TFPrimitive*>& primitives) {
+    dvec2 range;
+    vec2 alpha{0.0f, 1.0f};
+    std::vector<TFPrimitive*> selection;
+
+    if (primitives.empty()) {
+        selection = sorted_;
+        range = getRange();
+        if (!sorted_.empty()) {
+            alpha.x = sorted_.front()->getAlpha();
+            alpha.y = sorted_.back()->getAlpha();
+        }
+    } else {
+        selection = util::copy_if(primitives, [&](auto p) { return util::contains(sorted_, p); });
+        if (!selection.empty()) {
+            auto minmax = std::minmax_element(
+                selection.begin(), selection.end(),
+                [](const TFPrimitive* a, const TFPrimitive* b) { return *a < *b; });
+
+            range.x = (*minmax.first)->getPosition();
+            range.y = (*minmax.second)->getPosition();
+            alpha.x = (*minmax.first)->getColor().a;
+            alpha.y = (*minmax.second)->getColor().a;
+        }
+    }
+
+    if (selection.size() < 2) {
+        return;
+    }
+
+    for (auto& elem : selection) {
+        const float t = static_cast<float>((elem->getPosition() - range.x) / (range.y - range.x));
+        elem->setAlpha(glm::mix(alpha.x, alpha.y, t));
+    }
+}
+
+void TFPrimitiveSet::equalizeAlpha(const std::vector<TFPrimitive*>& primitives) {
+    std::vector<TFPrimitive*> selection =
+        (primitives.empty() ? sorted_ : util::copy_if(primitives, [&](auto p) {
+            return util::contains(sorted_, p);
+        }));
+
+    if (selection.size() < 2) {
+        return;
+    }
+
+    float alpha =
+        std::accumulate(selection.begin(), selection.end(), 0.0f,
+                        [](const float sum, TFPrimitive* p) { return sum + p->getAlpha(); });
+    alpha /= selection.size();
+
+    for (auto& elem : selection) {
+        elem->setAlpha(alpha);
+    }
+}
+
 std::string TFPrimitiveSet::getTitle() const { return "TFPrimitiveSet"; }
 
 std::string TFPrimitiveSet::serializationKey() const { return "TFPrimitives"; }
