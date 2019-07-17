@@ -496,6 +496,39 @@ void TFEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         });
     }
 
+    auto transformMenu = menu.addMenu("Trans&form");
+    menu.addSeparator();
+
+    {
+        auto flip = transformMenu->addAction("&Horizontal Flip");
+        auto interpolate = transformMenu->addAction("&Interpolate Alpha");
+        auto equalize = transformMenu->addAction("&Equalize Alpha");
+
+        connect(flip, &QAction::triggered, this, [this]() {
+            NetworkLock lock(tfPropertyPtr_->getProperty());
+            auto selection = getSelectedPrimitives();
+            for (auto& elem : tfSets_) {
+                elem->flipPositions(selection);
+            }
+        });
+
+        connect(interpolate, &QAction::triggered, this, [this]() {
+            NetworkLock lock(tfPropertyPtr_->getProperty());
+            auto selection = getSelectedPrimitives();
+            for (auto& elem : tfSets_) {
+                elem->interpolateAlpha(selection);
+            }
+        });
+
+        connect(equalize, &QAction::triggered, this, [this]() {
+            NetworkLock lock(tfPropertyPtr_->getProperty());
+            auto selection = getSelectedPrimitives();
+            for (auto& elem : tfSets_) {
+                elem->equalizeAlpha(selection);
+            }
+        });
+    }
+
     if (tfPropertyPtr_->supportsMask()) {
         auto maskMenu = menu.addMenu("&Mask");
         // TF masking

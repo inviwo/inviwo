@@ -229,6 +229,29 @@ public:
      */
     void interpolateAndStoreColors(vec4* dataArray, const size_t size) const;
 
+    /**
+     * flip the positions of the \p primitives with respect to the respective range, i.e.
+     *      p' = range.max - (p - range.min)
+     * with range.min/max corresponding to the lowest/highest position in \p primitives. If
+     * \p primitives is empty, the entire TFPrimitiveSet is flipped using
+     * TFPrimitiveSet::getRange().
+     *
+     * @param primitives   list of primitives to be flipped. If empty, the entire primitive set
+     *                     is flipped.
+     */
+    void flipPositions(const std::vector<TFPrimitive*>& primitives = {});
+    /**
+     * interpolate the alpha values of all primitives in between the first and the last primitive
+     * based on their relative position. If \p primitives is empty, the alpha of the entire
+     * TFPrimitiveSet will be adjusted.
+     */
+    void interpolateAlpha(const std::vector<TFPrimitive*>& primitives = {});
+    /**
+     * set the alphas value of all primitives to the average alpha value. If \p primitives is empty,
+     * the entire TFPrimitiveSet is equalized.
+     */
+    void equalizeAlpha(const std::vector<TFPrimitive*>& primitives = {});
+
 protected:
     void add(std::unique_ptr<TFPrimitive> primitive);
     bool remove(std::vector<std::unique_ptr<TFPrimitive>>::iterator it);
