@@ -33,7 +33,7 @@ namespace inviwo {
 
 CameraControlledProperty::CameraControlledProperty(std::string identifier, std::string displayName)
 	:GamepadControlledProperty(identifier, displayName), 
-	controlledProperty("controlledProperty","Camera"),
+	controlledProperty("controlledProperty","ControlledProperty"),
 	zoomPlus("zoomPlus","ZoomIn Button"),
 	zoomMinus("zoomMinus","ZoomOut Button"),
 	rotateHorizontal("rotateHorizontal","Horizontal Orientation Joystick Axis"),
@@ -43,7 +43,7 @@ CameraControlledProperty::CameraControlledProperty(std::string identifier, std::
 	resetButton("resetButton", "resetCamera"),
 	rotationSensitivity("rotationSensitivity", "Rotation Sensitivity",0.1,0.001,1),
 	transferSensitivity("movementSensitivity", "Movement Sensitivity",0.1,0.001,1),
-	zoomSensitivity("zoomSensitivity", "Zoom Sensitivity")
+	zoomSensitivity("zoomSensitivity", "Zoom Sensitivity",1)
 {
 	std::list<std::string> Joysticks{ "Left Joystick X","Left Joystick Y","Right Joystick X", "Right Joystick Y" };
 	std::list<std::string> Triggers{ "R2","L2" };
@@ -121,7 +121,7 @@ void CameraControlledProperty::zoom(double value)
 {
 	auto from = controlledProperty.getLookFrom();
 	float oldR = sqrtf(from.x * from.x + from.y * from.y + from.z * from.z);
-	float newR = oldR + value;
+	float newR = oldR + value*zoomSensitivity;
 	float ratio = oldR / newR;
 	controlledProperty.setLookFrom(
 		vec3(from.x* ratio, from.y* ratio, from.z* ratio)
@@ -131,8 +131,8 @@ void CameraControlledProperty::zoom(double value)
 void CameraControlledProperty::transfer(double horizontalMovement, double verticalMovement)
 {
 	const vec3 right = glm::normalize(glm::cross(controlledProperty.getLookTo() - controlledProperty.getLookFrom(), controlledProperty.getLookUp()));
-    controlledProperty.setLook(controlledProperty.getLookFrom() - horizontalMovement * right + verticalMovement * controlledProperty.getLookUp(),
-    controlledProperty.getLookTo() - horizontalMovement * right + verticalMovement * controlledProperty.getLookUp(), controlledProperty.getLookUp());
+    controlledProperty.setLook(controlledProperty.getLookFrom() - horizontalMovement*transferSensitivity * right + verticalMovement*transferSensitivity * controlledProperty.getLookUp(),
+    controlledProperty.getLookTo() - horizontalMovement*transferSensitivity * right + verticalMovement*transferSensitivity * controlledProperty.getLookUp(), controlledProperty.getLookUp());
 }
 
 void CameraControlledProperty::rotate(double horizontalRotation, double verticalRotation)
@@ -142,7 +142,7 @@ void CameraControlledProperty::rotate(double horizontalRotation, double vertical
     const auto& up = controlledProperty.getLookUp();
 
         // Compute coordinates on a sphere to rotate from and to
-            const auto rot = glm::half_pi<float>() * (vec3(horizontalRotation,verticalRotation,0));
+            const auto rot = glm::half_pi<float>() * (vec3(horizontalRotation*rotationSensitivity,verticalRotation*rotationSensitivity,0));
             const auto Pa = glm::normalize(from - to);
             const auto Pc = glm::rotate(glm::rotate(Pa, rot.y, glm::cross(Pa, up)), rot.x, up);
             auto lastRot = glm::quat(Pc, Pa);

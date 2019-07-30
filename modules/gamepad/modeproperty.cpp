@@ -34,7 +34,7 @@ namespace inviwo {
 	ModeProperty::ModeProperty(std::string identifier, std::string displayName)
 		:CompositeProperty(identifier, displayName),
 		type_("property", "Property"),
-		create_("add", "Add") {
+		create_("add", "Add"){
 
 	util::for_each_type<Types>{}(TypeFunctor{}, *this);
     type_.setSelectedIndex(0);
@@ -42,6 +42,7 @@ namespace inviwo {
 
     addProperty(type_);
     addProperty(create_);
+	
 	
 	 create_.onChange([&]() {
         auto p = factory_[type_.getSelectedIndex()]();

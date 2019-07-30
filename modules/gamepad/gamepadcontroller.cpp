@@ -30,21 +30,29 @@ const ProcessorInfo GamepadController::getProcessorInfo() const { return process
 GamepadController::GamepadController()
 	: Processor()
 	,newMode("newMode","New Mode")
+	,text_("text", "","Press select to switch between Modes")
+	,modeNotifier("modeNotifier","", "No mode currently selected")
 	, timer_(std::chrono::milliseconds{ 10 }, [this]() {
-	for (size_t i = 0; i < 12; i++)
-	{
-		if (buttonHeld[i]) {
-			buttonPressed(buttonIdentifiers[i],true);
-		}
-	}
-	for (size_t i = 0; i < 6; i++)
-	{
-		if (joyStickValues[i] != 0) {
-			joyStickTouched(joyStickIdentifiers[i], joyStickValues[i]);
-		}
-	}
-})
-{
+        for (size_t i = 0; i < NUMBER_OF_BUTTONS; i++) {
+            if (buttonHeld[i]) {
+                buttonPressed(buttonIdentifiers[i], true);
+            }
+        }
+        for (size_t i = 0; i < NUMBER_OF_JOYSTICKS; i++) {
+            if (joyStickValues[i] != 0) {
+                joyStickTouched(joyStickIdentifiers[i], joyStickValues[i]);
+            }
+        }
+    }) {
+	text_.setReadOnly(true);
+	modeNotifier.setReadOnly(true);
+    for (size_t i = 0; i < NUMBER_OF_BUTTONS; i++) {
+        buttonHeld[i] = false;
+    }
+    for (size_t i = 0; i < NUMBER_OF_JOYSTICKS; i++) {
+        joyStickValues[i] = 0;
+    }
+
 	newMode.onChange([&]() {
 		auto mode = new ModeProperty("mode", "Mode");
 
@@ -62,8 +70,13 @@ GamepadController::GamepadController()
 
 		modes.push_back(mode);
 		addProperty(mode);
+		if (modes.size() == 1) {
+			modeNotifier.set("You are currently in the " + (modes[currentMode])->getDisplayName() + " mode");
+		}
 	});
     // addPort();
+	addProperty(text_);
+	addProperty(modeNotifier);
 	 addProperty(newMode);
     connectButtons();
     connect(QGamepadManager::instance(), &QGamepadManager::connectedGamepadsChanged, this, [this]()
@@ -158,13 +171,14 @@ void GamepadController::connectButtons() {
 				}
 			});
 			connect(pPad, &QGamepad::buttonSelectChanged, this, [this](bool value) {
-				if (value) {
+				if (value && !modes.empty()) {
 					if (currentMode == modes.size() - 1) {
 						currentMode = 0;
 					}
 					else {
 						currentMode++;
 					}
+					modeNotifier.set("You are currently in the " + (modes[currentMode])->getDisplayName() + " mode");
 				}
 			});
 			connect(pPad, &QGamepad::buttonR1Changed, this, [this](bool value) {

@@ -34,6 +34,9 @@
 #include <gamepad/ordinalcontrolledproperty.h>
 #include <gamepad/modeproperty.h>
 
+constexpr auto NUMBER_OF_BUTTONS = 12;;
+constexpr auto NUMBER_OF_JOYSTICKS = 6;
+
 namespace inviwo {
 namespace kth {
 
@@ -91,6 +94,8 @@ public:
 public:
 	ButtonProperty newMode;
 	std::vector<ModeProperty*> modes;
+	StringProperty modeNotifier;
+	StringProperty text_;
 
 
 
@@ -100,17 +105,17 @@ private:
 	bool buttonsConnected = false;
     QGamepad* pPad;
 	Timer timer_;
-	int currentMode;
+	int currentMode =0 ;
 
     void connectButtons();
 	void buttonPressed(std::string button,bool isHeld);
 	void joyStickTouched(std::string joyStick, double value);
 	enum Buttons { A, B, X, Y, R1, L1, Up, Left, Right, Down, L3, R3 };
 	enum JoySticks {LeftX, LeftY, RightX, RightY,R2,L2};
-	bool buttonHeld[12];
-	std::string buttonIdentifiers[12] = { "A", "B", "X", "Y", "R1", "L1", "Up", "Left", "Right", "Down", "L3", "R3" };
-	std::string joyStickIdentifiers[6] = { "Left Joystick X","Left Joystick Y","Right Joystick X", "Right Joystick Y", "R2","L2" };
-	double joyStickValues[6];
+	bool buttonHeld[NUMBER_OF_BUTTONS];
+	std::string buttonIdentifiers[NUMBER_OF_BUTTONS] = { "A", "B", "X", "Y", "R1", "L1", "Up", "Left", "Right", "Down", "L3", "R3" };
+	std::string joyStickIdentifiers[NUMBER_OF_JOYSTICKS] = { "Left Joystick X","Left Joystick Y","Right Joystick X", "Right Joystick Y", "R2","L2" };
+	double joyStickValues[NUMBER_OF_JOYSTICKS];
 };
 
 }  // namespace kth
