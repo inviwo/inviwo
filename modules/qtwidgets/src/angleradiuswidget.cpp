@@ -118,7 +118,11 @@ void AngleRadiusWidget::paintEvent(QPaintEvent*) {
     int anglePosY = -10;
     QFontMetrics fm(painter.font());
     QString angleText = QString::fromStdString(angleStream.str()) + QChar(0260);
+#if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
     int angleTextWidth = fm.width(angleText);
+#else
+    int angleTextWidth = fm.horizontalAdvance(angleText);
+#endif
     if (anglePosX + angleTextWidth > referenceRadius) {
         anglePosX = referenceRadius + 2;
         anglePosY = -2;

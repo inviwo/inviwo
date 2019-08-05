@@ -115,7 +115,7 @@ TextEditorDockWidget::TextEditorDockWidget(Property* property)
 
             saveFileDialog.setFileMode(FileMode::AnyFile);
             saveFileDialog.setAcceptMode(AcceptMode::Save);
-            saveFileDialog.setConfirmOverwrite(true);
+            saveFileDialog.setOption(QFileDialog::Option::DontConfirmOverwrite, false);
 
             for (const auto& filter : fileProperty_->getNameFilters()) {
                 saveFileDialog.addExtension(filter);

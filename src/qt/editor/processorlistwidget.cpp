@@ -333,7 +333,7 @@ QTreeWidgetItem* ProcessorTreeWidget::addToplevelItemTo(QString title, const std
         newItem->setToolTip(0, utilqt::toLocalQString(desc));
     }
     processorTree_->addTopLevelItem(newItem);
-    processorTree_->setFirstItemColumnSpanned(newItem, true);
+    newItem->setFirstColumnSpanned(true);
 
     return newItem;
 }
@@ -546,7 +546,7 @@ void ProcessorTreeWidget::extractInfoAndAddProcessor(ProcessorFactoryObject* pro
         processorTree_->addTopLevelItem(newItem);
     }
     if (!hasTags) {
-        processorTree_->setFirstItemColumnSpanned(newItem, true);
+        newItem->setFirstColumnSpanned(true);
     }
 }
 
@@ -569,7 +569,7 @@ ProcessorDragObject::ProcessorDragObject(QWidget* source, std::unique_ptr<Proces
     auto mime = new ProcessorMimeData(std::move(processor));
     setMimeData(mime);
     setHotSpot(QPoint(img.width() / 2, img.height() / 2));
-    start(Qt::MoveAction);
+    exec(Qt::MoveAction);
 }
 
 bool ProcessorTreeItem::operator<(const QTreeWidgetItem& other) const {

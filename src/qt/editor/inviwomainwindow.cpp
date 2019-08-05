@@ -451,7 +451,7 @@ void InviwoMainWindow::addActions() {
                 InviwoFileDialog saveFileDialog(this, "Export Network ...", "image");
                 saveFileDialog.setFileMode(FileMode::AnyFile);
                 saveFileDialog.setAcceptMode(AcceptMode::Save);
-                saveFileDialog.setConfirmOverwrite(true);
+                saveFileDialog.setOption(QFileDialog::Option::DontConfirmOverwrite, false);
 
                 saveFileDialog.addSidebarPath(PathType::Workspaces);
                 saveFileDialog.addSidebarPath(workspaceFileDir_);
@@ -1085,7 +1085,7 @@ void InviwoMainWindow::saveWorkspaceAs() {
     InviwoFileDialog saveFileDialog(this, "Save Workspace ...", "workspace");
     saveFileDialog.setFileMode(FileMode::AnyFile);
     saveFileDialog.setAcceptMode(AcceptMode::Save);
-    saveFileDialog.setConfirmOverwrite(true);
+    saveFileDialog.setOption(QFileDialog::Option::DontConfirmOverwrite, false);
 
     saveFileDialog.addSidebarPath(PathType::Workspaces);
     saveFileDialog.addSidebarPath(workspaceFileDir_);
@@ -1107,7 +1107,7 @@ void InviwoMainWindow::saveWorkspaceAsCopy() {
     InviwoFileDialog saveFileDialog(this, "Save Workspace ...", "workspace");
     saveFileDialog.setFileMode(FileMode::AnyFile);
     saveFileDialog.setAcceptMode(AcceptMode::Save);
-    saveFileDialog.setConfirmOverwrite(true);
+    saveFileDialog.setOption(QFileDialog::Option::DontConfirmOverwrite, false);
 
     saveFileDialog.addSidebarPath(PathType::Workspaces);
     saveFileDialog.addSidebarPath(workspaceFileDir_);

@@ -286,7 +286,8 @@ void PythonEditorWidget::saveAs() {
 
     saveFileDialog.setFileMode(FileMode::AnyFile);
     saveFileDialog.setAcceptMode(AcceptMode::Save);
-    saveFileDialog.setConfirmOverwrite(true);
+    saveFileDialog.setOption(QFileDialog::Option::DontConfirmOverwrite, false);
+
     saveFileDialog.addSidebarPath(PathType::Scripts);
     saveFileDialog.addExtension("py", "Python Script");
 
