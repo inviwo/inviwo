@@ -1,5 +1,8 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2019-08-05 New version requirements
+We now require a C++17 compatible compiler, and CMake version of at least 3.12 
+
 ## 2019-07-16 Transfer Function Editing
 
 Added some utility functions for editing transfer functions: 
@@ -17,7 +20,8 @@ There is now also an `Image Plot Processor` which allows to plot a 2D image with
 
 ## 2019-07-04 New Inviwo version
 We are releasing a new Inviwo version 0.9.10. 
-Major change since the last relase include:
+
+Major change since the last release include:
 
  * Embedded web browser support
  * Get Started widget

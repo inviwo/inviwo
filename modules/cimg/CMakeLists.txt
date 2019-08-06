@@ -63,8 +63,6 @@ ivw_register_license_file(NAME CImg VERSION 2.1.5 MODULE CImg TYPE CeCILL-C
     FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/cimg/Licence_CeCILL-C_V1-en.txt
 )
 
-
-
 ivw_register_license_file(NAME libjpeg-turbo TARGET inviwo::libjpeg MODULE CImg
     TYPE "BSD-style, acknowledgement: This software is based in part on the work of the Independent JPEG Group"
     URL www.ijg.org

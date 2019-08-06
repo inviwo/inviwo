@@ -27,6 +27,23 @@
 # 
 #################################################################################
 
+# install related paths
+if(APPLE)
+    set(IVW_RUNTIME_INSTALL_DIR bin)
+    set(IVW_BUNDLE_INSTALL_DIR .)
+    set(IVW_LIBRARY_INSTALL_DIR Inviwo.app/Contents/MacOS)
+    set(IVW_ARCHIVE_INSTALL_DIR ${IVW_LIBRARY_INSTALL_DIR})
+    set(IVW_FRAMEWORK_INSTALL_DIR ${IVW_LIBRARY_INSTALL_DIR})
+    set(IVW_INCLUDE_INSTALL_DIR include)
+else()
+    set(IVW_RUNTIME_INSTALL_DIR bin)
+    set(IVW_BUNDLE_INSTALL_DIR "not used!!!")
+    set(IVW_LIBRARY_INSTALL_DIR ${IVW_RUNTIME_INSTALL_DIR})
+    set(IVW_ARCHIVE_INSTALL_DIR ${IVW_RUNTIME_INSTALL_DIR})
+    set(IVW_FRAMEWORK_INSTALL_DIR "not used!!!")
+    set(IVW_INCLUDE_INSTALL_DIR include)
+endif()
+
 #--------------------------------------------------------------------
 # Add folder to module pack
 macro(ivw_add_to_module_pack folder)
@@ -61,22 +78,15 @@ function(ivw_default_install_comp_targets comp)
     # OBJECTS           Object libraries
     # FRAMEWORK         Targets marked as FRAMEWORK
     # BUNDLE            Targets marked as BUNDLE
-    if(APPLE)
-        install(TARGETS ${ARGN}
-                EXPORT "${ARGN}-targets"
-                RUNTIME DESTINATION bin
-                BUNDLE DESTINATION .
-                ARCHIVE DESTINATION Inviwo.app/Contents/MacOS
-                LIBRARY DESTINATION Inviwo.app/Contents/MacOS
-                COMPONENT ${comp})
-    else()
-        install(TARGETS ${ARGN} 
-                EXPORT "${ARGN}-targets"
-                RUNTIME DESTINATION bin
-                ARCHIVE DESTINATION bin
-                LIBRARY DESTINATION bin
-                COMPONENT ${comp})
-    endif()
+    install(TARGETS ${ARGN}
+            EXPORT "${ARGN}-targets"
+            RUNTIME DESTINATION ${IVW_RUNTIME_INSTALL_DIR}
+            BUNDLE DESTINATION ${IVW_BUNDLE_INSTALL_DIR}
+            ARCHIVE DESTINATION ${IVW_ARCHIVE_INSTALL_DIR}
+            LIBRARY DESTINATION ${IVW_LIBRARY_INSTALL_DIR}
+            FRAMEWORK DESTINATION ${IVW_FRAMEWORK_INSTALL_DIR}
+            COMPONENT ${comp})
+
 endfunction()
 
 #--------------------------------------------------------------------
@@ -150,10 +160,22 @@ macro(ivw_qt_add_to_install ivw_comp)
     endforeach()
 endmacro()
 
+function(ivw_register_package name target)
+    get_target_property(incdirs ${target} INTERFACE_INCLUDE_DIRECTORIES)
+
+    file(WRITE "${CMAKE_BINARY_DIR}/pkg/${name}/${name}Config.cmake" 
+        "# Fake Config file for ${name}\n"
+        "set(${name}_FOUND ON)\n"
+        "set(${name}_LIBRARIES ${target})\n"
+        "set(${name}_INCLUDE_DIRS ${incdirs})\n"
+        )
+    set(${name}_DIR "${CMAKE_BINARY_DIR}/pkg/${name}" CACHE PATH "")
+endfunction()
 
 #--------------------------------------------------------------------
 # Make package (with configure file etc)
 macro(ivw_make_package package_name target)
+    ivw_register_package(${package_name} ${target})
  # Will uncomment in the future, this is for when we want to ship 
  # a version that also includes header files, so one can build modules 
  # without having to build all of inviwo. So far this is just work in progress

@@ -42,28 +42,24 @@ endif()
 # Requirement checks
 include(CheckCXXCompilerFlag)
 if(MSVC) 
-    if(MSVC_VERSION LESS 1900)
-        message(FATAL_ERROR "Inviwo requires C++14 features. " 
-                "You need at least Visual Studio 14 (Microsoft Visual Studio 2015) "
+    if(MSVC_VERSION LESS 1910)
+        message(FATAL_ERROR "Inviwo requires C++17 features. " 
+                "You need at least Visual Studio 15 (Microsoft Visual Studio 2017) "
                 "The latest Visual Studio version is available at "
                 "https://www.visualstudio.com/en-us/downloads/download-visual-studio-vs.aspx")
     endif()
-    CHECK_CXX_COMPILER_FLAG("/std:c++14" compiler_supports_cxx14)
     CHECK_CXX_COMPILER_FLAG("/std:c++17" compiler_supports_cxx17)
 else()
-    CHECK_CXX_COMPILER_FLAG("-std=c++14" compiler_supports_cxx14)
     CHECK_CXX_COMPILER_FLAG("-std=c++17" compiler_supports_cxx17)
 endif()
 if(compiler_supports_cxx17)
     message(STATUS "C++17 enabled")
     set(CMAKE_CXX_STANDARD 17 CACHE STRING "C++ ISO Standard" FORCE)
-elseif(compiler_supports_cxx14)
-    message(STATUS "C++14 enabled")
-    set(CMAKE_CXX_STANDARD 14 CACHE STRING "C++ ISO Standard" FORCE) 
 else()
-    message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++14 support. "
+    message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++17 support. "
             "Please use a different C++ compiler.")
 endif()
+
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -101,32 +97,25 @@ function(ivw_debug_message)
     endif()
 endfunction()
 
-#--------------------------------------------------------------------
 # Add our cmake modules to search path
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/modules")
 
-#--------------------------------------------------------------------
 # Add parameter for paths to external modules
 set(IVW_EXTERNAL_MODULES "" CACHE STRING "Semicolon (;) separated paths to directories containing external modules")
 # Convert to valid paths, i.e. exchange backslash to slash
 file(TO_CMAKE_PATH "${IVW_EXTERNAL_MODULES}" IVW_EXTERNAL_MODULES)
-#--------------------------------------------------------------------
 # Add parameter for paths to external projects
 set(IVW_EXTERNAL_PROJECTS "" CACHE STRING "Semicolon (;) separated paths to directories with apps. CMake add_subdirectory will be called for each path.")
 # Convert to valid paths, i.e. exchange backslash to slash
 file(TO_CMAKE_PATH "${IVW_EXTERNAL_PROJECTS}" IVW_EXTERNAL_PROJECTS)
+
+# Output paths for the executables, runtimes, archives and libraries
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib CACHE PATH
    "Single Directory for all static libraries.")
-
-#--------------------------------------------------------------------
-# Output paths for the executables, runtimes, archives and libraries
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin CACHE PATH
    "Single Directory for all Executables.")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib CACHE PATH
    "Single Directory for all Libraries")
-
-#--------------------------------------------------------------------
-# Path for this solution
 if(NOT EXECUTABLE_OUTPUT_PATH)
     set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin CACHE PATH 
         "Single output directory for building all executables.")
@@ -156,7 +145,6 @@ set(IVW_CMAKE_SOURCE_MODULE_DIR ${CMAKE_CURRENT_LIST_DIR}/modules)
 set(IVW_CMAKE_BINARY_MODULE_DIR ${CMAKE_BINARY_DIR}/cmake)
 set(IVW_CMAKE_TEMPLATES         ${IVW_ROOT_DIR}/cmake/templates)
 
-#--------------------------------------------------------------------
 # Add globalmacros
 include(${CMAKE_CURRENT_LIST_DIR}/globalutils.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/compileoptions.cmake)
@@ -172,40 +160,23 @@ configure_file(${IVW_CMAKE_TEMPLATES}/inviwocommondefines_template.h
                ${CMAKE_BINARY_DIR}/modules/core/include/inviwo/core/inviwocommondefines.h 
                @ONLY IMMEDIATE)
 
-#--------------------------------------------------------------------
-# Mac specific
-if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    add_definitions(-DDARWIN)
-endif()
-
-#--------------------------------------------------------------------
 # Package creation
 option(IVW_PACKAGE_PROJECT "Create Inviwo Package Project" OFF)
 
-#--------------------------------------------------------------------
 # Use and generate resources when available
 include(${CMAKE_CURRENT_LIST_DIR}/compileresources.cmake)
 
-#--------------------------------------------------------------------
 # Calculate and display profiling information
 option(IVW_PROFILING "Enable profiling" OFF)
 
-#--------------------------------------------------------------------
 # Build unittest for all modules
 include(${CMAKE_CURRENT_LIST_DIR}/unittests.cmake)
 
-#--------------------------------------------------------------------
 # Use Visual Studio memory leak test
 include(${CMAKE_CURRENT_LIST_DIR}/memleak.cmake)
 
-#--------------------------------------------------------------------
 # Use pybind11 for python bindings
 include(${CMAKE_CURRENT_LIST_DIR}/pybind11.cmake)
-
-#--------------------------------------------------------------------
-# Build shared libs or static libs
-mark_as_advanced(FORCE GLM_DIR)
-mark_as_advanced(FORCE CMAKE_CONFIGURATION_TYPES)
 
 if(WIN32 AND MSVC)
     # Determine runtime library linkage depending on BUILD_SHARED_LIBS setting.
@@ -230,8 +201,10 @@ if(WIN32 AND MSVC)
 
     # For >=VS2015 enable edit and continue "ZI"
     add_compile_options($<$<CONFIG:Debug>:/ZI>)
-
     add_compile_options(/bigobj)
+    
+    # Add debug postfix if WIN32
+    SET(CMAKE_DEBUG_POSTFIX "d")
 
     # set iterator debug level (default=2)
     # https://msdn.microsoft.com/en-us/library/hh697468.aspx
@@ -253,9 +226,12 @@ if(WIN32 AND MSVC)
         endif()
     endif()
 
-    if(NOT ${CMAKE_VERSION} VERSION_LESS "3.6")
-        set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT inviwo)
-    endif()
+    set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT inviwo)
+endif()
+
+# Mac specific
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    add_definitions(-DDARWIN)
 endif()
 
 if(UNIX AND NOT APPLE)
@@ -263,12 +239,10 @@ if(UNIX AND NOT APPLE)
     set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--as-needed") # Only link to libs as needed.
 endif()
 
-#--------------------------------------------------------------------
-# Calculate and display profiling information
+# Runtime module loading
 option(IVW_RUNTIME_MODULE_LOADING 
        "Load modules from dynamic libraries (dll/so) at application startup" OFF)
 
-#--------------------------------------------------------------------
 # Check if OpenMP is available and set it to use, and include the dll in packs
 find_package(OpenMP QUIET)
 option(OpenMP_ON "Use OpenMP" ${OPENMP_FOUND})
@@ -278,52 +252,6 @@ if(OpenMP_ON AND OPENMP_FOUND)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 elseif(OpenMP_ON)
     message(FATAL_ERROR "OpenMP not available")
-endif()
-
-
-#--------------------------------------------------------------------
-# Set preprocessor definition to indicate whether 
-# to use the debug postfix
-# Add debug postfix if WIN32
-IF(WIN32 AND MSVC)
-    SET(CMAKE_DEBUG_POSTFIX "d")
-ENDIF()
-
-if(DEBUG_POSTFIX)
-    add_definitions(-D_DEBUG_POSTFIX)
-endif(DEBUG_POSTFIX)
-
-#--------------------------------------------------------------------
-# Add option to enable include-what-you-use 
-# https://github.com/include-what-you-use/include-what-you-use
-if (${CMAKE_GENERATOR} STREQUAL "Unix Makefiles" OR ${CMAKE_GENERATOR} STREQUAL "Ninja")
-    find_program(iwyu_path NAMES include-what-you-use iwyu)
-    if(iwyu_path)
-        option(IVW_ENABLE_INCLUDE_WHAT_YOU_USE "Enable include-what-you-use" OFF)
-        if(IVW_ENABLE_INCLUDE_WHAT_YOU_USE)
-            set(CMAKE_CXX_INCLUDE_WHAT_YOU_USE ${iwyu_path})
-        endif()
-    endif()
-endif()
-
-#--------------------------------------------------------------------
-# force colors when using clang and ninja https://github.com/ninja-build/ninja/wiki/FAQ
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR
-    "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR
-    "${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
-    if (${CMAKE_GENERATOR} STREQUAL "Ninja")
-        option (IVW_FORCE_COLORED_OUTPUT "Always produce ANSI-colored output (GNU/Clang only)." ON)
-    else()
-        option (IVW_FORCE_COLORED_OUTPUT "Always produce ANSI-colored output (GNU/Clang only)." OFF)
-    endif()
-    if (IVW_FORCE_COLORED_OUTPUT)
-        if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-            add_compile_options (-fdiagnostics-color=always)
-        elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR
-            "${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
-            add_compile_options (-fcolor-diagnostics)
-        endif()
-    endif()
 endif()
 
 #--------------------------------------------------------------------
