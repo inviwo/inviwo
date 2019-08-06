@@ -56,7 +56,7 @@ public:
     path includePrefix() const { return fmt("{org}{lname}"); }
 
 protected:
-    static inline const path cmlists{"CMakeLists.txt"};
+    const path cmlists{"CMakeLists.txt"};
     std::string fmt(std::string_view str) const {
         using namespace fmt::literals;
         return fmt::format(str, "name"_a = name_, "uname"_a = util::toUpper(name_),
