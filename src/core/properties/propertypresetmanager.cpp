@@ -55,6 +55,7 @@ bool PropertyPresetManager::loadPreset(const std::string& name, Property* proper
         // We deserialize into a clone here and link it to the original to only set value not
         // identifiers and such.
         auto temp = std::unique_ptr<Property>(p->clone());
+        auto reset = scopedSerializationModeAll(temp);
         temp->deserialize(d);
         p->set(temp.get());
     };
