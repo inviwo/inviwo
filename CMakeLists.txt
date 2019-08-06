@@ -36,6 +36,23 @@ endif()
 
 string(TIMESTAMP timeStart "%Y-%m-%d %H:%M:%S")
 
+#--------------------------------------------------------------------
+# Disallow in-source builds, we require an out of source build
+get_filename_component(srcdir "${CMAKE_SOURCE_DIR}" REALPATH)
+get_filename_component(bindir "${CMAKE_BINARY_DIR}" REALPATH)
+set(prevbindir "")
+while(NOT "${bindir}" STREQUAL "${prevbindir}")
+    if("${bindir}" STREQUAL "${srcdir}")
+        message(FATAL_ERROR
+            "In-source builds are not permitted!\n"
+            "Make a separate folder for building, outside of the source directory.")
+    endif()
+    set(prevbindir "${bindir}")
+    get_filename_component(bindir ${bindir} DIRECTORY)
+endwhile()
+set(CMAKE_DISABLE_SOURCE_CHANGES ON)
+set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
+
 # option for setting the project/solution name of the Inviwo project
 set(IVW_PROJECT_NAME "inviwo-projects" CACHE STRING "Project/Solution name (default: inviwo-projects)")
 project(${IVW_PROJECT_NAME})
@@ -98,12 +115,17 @@ add_custom_target(uninstall COMMENT "Dummy target to prevent other uninstalls")
 #--------------------------------------------------------------------
 # Add external libraries.
 #
+#
 # Dependencies between libraries are solved using the given order
 # Note: We prefer building dependencies our self to using find_library,
 # since it does not necessarily give you the dll for packaging.
 # It also ensures that we are in control of the used version
 # and is built using the same, Inviwo, settings.
+
+set(CMAKE_FIND_PACKAGE_PREFER_CONFIG ON)
 add_subdirectory(ext/zlib-1.2.11) # Defines target ZLIB::ZLIB
+find_package(ZLIB REQUIRED)
+
 add_subdirectory(ext/libpng)      # Defines target inviwo::libpng and libpng
 add_subdirectory(ext/libjpeg)     # Defines target inviwo::libjpeg and libjpeg
 add_subdirectory(ext/tiff)        # Defines target inviwo::tiff and tiff

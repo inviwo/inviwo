@@ -528,9 +528,7 @@ function(ivw_create_module)
     # Add stuff to the installer
     ivw_default_install_targets(${${mod}_target})
     ivw_private_install_module_dirs()
-
-    # Make package (for other modules to find)
-    ivw_make_package($Inviwo${PROJECT_NAME}Module ${${mod}_target})
+    
     ivw_make_unittest_target("${${mod}_dir}" "${${mod}_target}")
 endfunction()
 

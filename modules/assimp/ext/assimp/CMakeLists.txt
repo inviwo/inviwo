@@ -22,11 +22,6 @@ SET( ASSIMP_LIB_INSTALL_DIR "${IVW_LIBRARY_INSTALL_DIR}" CACHE STRING  "Path the
 SET( ASSIMP_INCLUDE_INSTALL_DIR "${IVW_INCLUDE_INSTALL_DIR}" CACHE STRING  "Path the header files are installed to." )
 SET( ASSIMP_BIN_INSTALL_DIR "${IVW_RUNTIME_INSTALL_DIR}" CACHE STRING "Path the tool executables are installed to." )
 
-# OpenEXR::IlmImf needs zlib:
-set(ZLIB_FOUND ON)
-set(ZLIB_LIBRARIES ZLIB::ZLIB)
-get_target_property(ZLIB_INCLUDE_DIR ZLIB::ZLIB INTERFACE_INCLUDE_DIRECTORIES)
-
 add_subdirectory(assimp)
 
 ivw_move_targets_in_dir_to_folder(${CMAKE_CURRENT_SOURCE_DIR} ext/assimp)

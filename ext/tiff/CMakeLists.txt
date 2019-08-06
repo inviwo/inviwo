@@ -529,13 +529,12 @@ set(MDI_SUPPORT ON)
 # Inviwo: Hide option, always use ZLIB::ZLIB since it is built in inviwo
 #option(zlib "use zlib (required for Deflate compression)" ON)
 #if (zlib)
-  #find_package(ZLIB)
-  set(ZLIB_LIBRARIES ZLIB::ZLIB)
+  find_package(ZLIB)
 #endif()
-#set(ZLIB_SUPPORT 0)
-#if(ZLIB_FOUND)
+set(ZLIB_SUPPORT 0)
+if(ZLIB_FOUND)
   set(ZLIB_SUPPORT 1)
-#endif()
+endif()
 set(ZIP_SUPPORT ${ZLIB_SUPPORT})
 # Option for Pixar log-format algorithm
 
@@ -553,21 +552,20 @@ set(ZIP_SUPPORT ${ZLIB_SUPPORT})
 # Inviwo: Hide option, always use inviwo::libjpeg since it is built in inviwo
 #option(jpeg "use libjpeg (required for JPEG compression)" ON)
 #if (jpeg)
-#  find_package(JPEG)
-  set(JPEG_LIBRARIES inviwo::libjpeg)
+   find_package(JPEG)
 #endif()
 #set(JPEG_SUPPORT FALSE)
-#if(JPEG_FOUND)
+if(JPEG_FOUND)
   set(JPEG_SUPPORT TRUE)
-#endif()
+endif()
 # Inviwo: Hide option, always use since JPEG exist
 #option(old-jpeg "support for Old JPEG compression (read-only)" ON)
 #set(OJPEG_SUPPORT FALSE)
-#if (JPEG_SUPPORT)
+if (JPEG_SUPPORT)
 #  if (old-jpeg)
     set(OJPEG_SUPPORT TRUE)
 #  endif()
-#endif()
+endif()
 
 # JBIG-KIT
 # Inviwo: Hide option, don't uses since JBIT-KIT is not included in inviwo
@@ -784,6 +782,7 @@ if (TARGET tiffxx)
   ivw_suppress_compiler_warnings(tiffxx)
 endif()
 ##-------------------
+ivw_make_package(TIFF tiff)
 
 #message(STATUS "EXTRA_DIST: ${EXTRA_DIST}")
 #[[ Inviwo: Disable messages 

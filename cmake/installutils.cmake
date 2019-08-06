@@ -160,10 +160,22 @@ macro(ivw_qt_add_to_install ivw_comp)
     endforeach()
 endmacro()
 
+function(ivw_register_package name target)
+    get_target_property(incdirs ${target} INTERFACE_INCLUDE_DIRECTORIES)
+
+    file(WRITE "${CMAKE_BINARY_DIR}/pkg/${name}/${name}Config.cmake" 
+        "# Fake Config file for ${name}\n"
+        "set(${name}_FOUND ON)\n"
+        "set(${name}_LIBRARIES ${target})\n"
+        "set(${name}_INCLUDE_DIRS ${incdirs})\n"
+        )
+    set(${name}_DIR "${CMAKE_BINARY_DIR}/pkg/${name}" CACHE PATH "")
+endfunction()
 
 #--------------------------------------------------------------------
 # Make package (with configure file etc)
 macro(ivw_make_package package_name target)
+    ivw_register_package(${package_name} ${target})
  # Will uncomment in the future, this is for when we want to ship 
  # a version that also includes header files, so one can build modules 
  # without having to build all of inviwo. So far this is just work in progress
