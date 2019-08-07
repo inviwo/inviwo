@@ -163,13 +163,12 @@ endmacro()
 function(ivw_register_package name target)
     get_target_property(incdirs ${target} INTERFACE_INCLUDE_DIRECTORIES)
 
-    file(WRITE "${CMAKE_BINARY_DIR}/pkg/${name}/${name}Config.cmake" 
-        "# Fake Config file for ${name}\n"
+    file(WRITE "${CMAKE_BINARY_DIR}/pkg/Find${name}.cmake" 
+        "# Fake Find file for ${name}\n"
         "set(${name}_FOUND ON)\n"
         "set(${name}_LIBRARIES ${target})\n"
         "set(${name}_INCLUDE_DIRS ${incdirs})\n"
         )
-    set(${name}_DIR "${CMAKE_BINARY_DIR}/pkg/${name}" CACHE INTERNAL "")
 endfunction()
 
 #--------------------------------------------------------------------

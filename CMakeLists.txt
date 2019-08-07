@@ -64,7 +64,7 @@ verify_submodules("${CMAKE_CURRENT_LIST_DIR}/.gitmodules")
 option(BUILD_SHARED_LIBS "Build shared libs, else static libs" ON)
 
 # Needed for find_package(PythonLibsNew 3), which is an improved version of CMake shipped find_pythonLibs
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/ext/pybind11/tools")
+set(CMAKE_MODULE_PATH "${CMAKE_BINARY_DIR}/pkg/;${CMAKE_MODULE_PATH};${CMAKE_SOURCE_DIR}/ext/pybind11/tools")
 
 # Make sure we do look for python 3 here, before it is done in any subdirectory or external library.
 # If we do not specify version number on our first call to find_package(PythonLibs) it returns the
@@ -121,13 +121,7 @@ add_custom_target(uninstall COMMENT "Dummy target to prevent other uninstalls")
 # since it does not necessarily give you the dll for packaging.
 # It also ensures that we are in control of the used version
 # and is built using the same, Inviwo, settings.
-
-# Tell find_package() to try “Config” mode before “Module” mode if no mode was specified.
-# This lest us use <package>_DIR to provide "overrides" for various packages that we build.
-set(CMAKE_FIND_PACKAGE_PREFER_CONFIG ON)
 add_subdirectory(ext/zlib-1.2.11) # Defines target ZLIB::ZLIB
-find_package(ZLIB REQUIRED)
-
 add_subdirectory(ext/libpng)      # Defines target inviwo::libpng and libpng
 add_subdirectory(ext/libjpeg)     # Defines target inviwo::libjpeg and libjpeg
 add_subdirectory(ext/tiff)        # Defines target inviwo::tiff and tiff
