@@ -162,7 +162,6 @@ IVW_CORE_API const dvec2 TFPropertyModel<IsoValueProperty*>::getMaskInternal() c
 template <>
 IVW_CORE_API void TFPropertyModel<IsoValueProperty*>::clearMaskInternal();
 
-//template IVW_CORE_API class TFPropertyModel<IsoValueProperty*>;
 extern template class IVW_CORE_TMPL_EXP TFPropertyModel<IsoValueProperty*>;
 
 // IsoTFProperty
@@ -178,7 +177,6 @@ template <>
 IVW_CORE_API TransferFunctionProperty* TFPropertyModel<IsoTFProperty*>::getTFPropertyInternal()
     const;
 
-//template IVW_CORE_API class TFPropertyModel<IsoTFProperty*>;
 extern template class IVW_CORE_TMPL_EXP TFPropertyModel<IsoTFProperty*>;
 
 }  // namespace util
