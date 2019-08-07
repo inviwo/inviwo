@@ -42,6 +42,7 @@
 #include <inviwo/core/util/vectoroperations.h>
 #include <inviwo/core/util/interpolation.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/zip.h>
 
 #include <cmath>
 
@@ -227,7 +228,7 @@ void TransferFunction::load(const std::string& filename, const FileExtension& ex
 
             const auto points = [&]() {
                 std::vector<TFPrimitiveData> tmp;
-                for (int i = 0; i < size; ++i) {
+                for (size_t i = 0; i < size; ++i) {
                     tmp.push_back({static_cast<double>(i) / (size - 1),
                                    util::glm_convert_normalized<vec4>(data[i])});
                 }
@@ -241,14 +242,13 @@ void TransferFunction::load(const std::string& filename, const FileExtension& ex
             }();
 
             const auto simplified = simplify(points, 0.01);
-            this->addPoints(simplified);
+            this->add(simplified);
         });
     }
 }
 
 std::vector<TFPrimitiveData> TransferFunction::simplify(const std::vector<TFPrimitiveData>& points,
                                                         double delta) {
-
     if (points.size() < 3) return points;
     std::vector<TFPrimitiveData> simple{points};
 

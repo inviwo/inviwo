@@ -134,8 +134,13 @@ public:
 
     virtual std::string getTitle() const override;
 
-
-    static std::vector<TFPrimitiveData> simplify(const std::vector<TFPrimitiveData>& points, double delta);
+    /**
+     * Simplify a vector of TF points by removing points that can be replaced by interpolating
+     * between the previous and the next point, as long as the resulting error is less then delta.
+     * the error is the absolute maximal component wise error at the point to be removed.
+     */
+    static std::vector<TFPrimitiveData> simplify(const std::vector<TFPrimitiveData>& points,
+                                                 double delta = 0.01);
 
 protected:
     void calcTransferValues() const;
