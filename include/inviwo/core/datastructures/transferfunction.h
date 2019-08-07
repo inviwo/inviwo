@@ -134,6 +134,9 @@ public:
 
     virtual std::string getTitle() const override;
 
+
+    static std::vector<TFPrimitiveData> simplify(const std::vector<TFPrimitiveData>& points, double delta);
+
 protected:
     void calcTransferValues() const;
 

@@ -217,7 +217,7 @@ void TransferFunction::load(const std::string& filename, const FileExtension& ex
         if (!reader) {
             throw DataReaderException("Data reader not found for requested format", IVW_CONTEXT);
         }
-        auto layer = reader->readData(filename);
+        const auto layer = reader->readData(filename);
 
         clear();
 
@@ -225,38 +225,60 @@ void TransferFunction::load(const std::string& filename, const FileExtension& ex
             auto data = lrprecision->getDataTyped();
             const auto size = lrprecision->getDimensions().x;
 
-            std::vector<vec4> points;
-            bool nonZeroAlpha = false;
-            for (size_t i = 0; i < size; ++i) {
-                auto rgba = util::glm_convert_normalized<vec4>(data[i]);
-                nonZeroAlpha |= (rgba.a != 0.0f);
-                points.push_back(rgba);
-            }
-            if (points.empty()) return;
-            if (!nonZeroAlpha) {
-                // all points have zero alpha, assign alpha = 1
-                for (auto& p : points) {
-                    p.a = 1.0f;
+            const auto points = [&]() {
+                std::vector<TFPrimitiveData> tmp;
+                for (int i = 0; i < size; ++i) {
+                    tmp.push_back({static_cast<double>(i) / (size - 1),
+                                   util::glm_convert_normalized<vec4>(data[i])});
                 }
-            }
 
-            std::vector<std::pair<std::ptrdiff_t, vec4>> uniquePoints;
-            uniquePoints.emplace_back(0, points.front());
-            for (auto p = points.begin(), c = std::next(points.begin()),
-                      n = std::next(points.begin(), 2);
-                 n != points.end(); ++p, ++c, ++n) {
-                if (!glm::all(
-                        glm::lessThan(glm::abs(*c - 0.5f * (*p + *n)), vec4(1.0f / 255.0f)))) {
-                    uniquePoints.emplace_back(std::distance(points.begin(), c), *c);
+                if (std::all_of(tmp.cbegin(), tmp.cend(),
+                                [](const TFPrimitiveData& p) { return p.color.a == 0.0f; })) {
+                    std::for_each(tmp.begin(), tmp.end(),
+                                  [](TFPrimitiveData& p) { return p.color.a = 1.0f; });
                 }
-            }
-            uniquePoints.emplace_back(std::ptrdiff_t(size - 1), points.back());
+                return tmp;
+            }();
 
-            for (const auto& p : uniquePoints) {
-                this->add(static_cast<double>(p.first) / (size - 1), p.second);
-            }
+            const auto simplified = simplify(points, 0.01);
+            this->addPoints(simplified);
         });
     }
+}
+
+std::vector<TFPrimitiveData> TransferFunction::simplify(const std::vector<TFPrimitiveData>& points,
+                                                        double delta) {
+
+    if (points.size() < 3) return points;
+    std::vector<TFPrimitiveData> simple{points};
+
+    // Calculate the error resulting from using a linear interpolation between the prev and next
+    // point instead of including the current one
+    const auto error = [&](size_t i) {
+        const auto& prev = simple[i - 1];
+        const auto& curr = simple[i];
+        const auto& next = simple[i + 1];
+
+        const double x = (curr.pos - prev.pos) / (next.pos - prev.pos);
+        return glm::compMax(glm::abs(glm::mix(prev.color, next.color, x) - curr.color));
+    };
+
+    // Find the point which will result in the smallest error when removed.
+    const auto nextToRemove = [&]() {
+        const auto index = util::make_sequence<size_t>(1, simple.size() - 1, 1);
+        return *std::min_element(index.begin(), index.end(),
+                                 [&](size_t a, size_t b) { return error(a) < error(b); });
+    };
+
+    // Iteratively remove the point with the smallest error until the error gets larger then delta
+    // or only 2 points are left
+    auto toRemove = nextToRemove();
+    while (error(toRemove) < delta && simple.size() > 2) {
+        simple.erase(simple.begin() + toRemove);
+        toRemove = nextToRemove();
+    }
+
+    return simple;
 }
 
 void TransferFunction::calcTransferValues() const {
