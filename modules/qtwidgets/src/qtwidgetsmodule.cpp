@@ -81,6 +81,15 @@
 #include <QApplication>
 #include <warn/pop>
 
+#ifndef INVIWO_ALL_DYN_LINK
+struct InitQtResources {
+    // Needed for loading of resources when building statically 
+    // see https://wiki.qt.io/QtResources#Q_INIT_RESOURCE
+    InitQtResources() { Q_INIT_RESOURCE(inviwo); }
+    ~InitQtResources() { Q_CLEANUP_RESOURCE(inviwo); }
+} initQtResources;
+#endif
+
 namespace inviwo {
 
 struct ColorWidgetReghelper {
