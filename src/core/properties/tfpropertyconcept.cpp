@@ -92,6 +92,11 @@ TransferFunctionProperty* TFPropertyModel<IsoTFProperty*>::getTFPropertyInternal
     return &data_->tf_;
 }
 
+template class IVW_CORE_TMPL_INST TFPropertyModel<TransferFunctionProperty*>;
+template class IVW_CORE_TMPL_INST TFPropertyModel<IsoValueProperty*>;
+template class IVW_CORE_TMPL_INST TFPropertyModel<IsoTFProperty*>;
+
+
 }  // namespace util
 
 }  // namespace inviwo
