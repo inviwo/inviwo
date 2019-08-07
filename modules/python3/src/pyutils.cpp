@@ -29,6 +29,10 @@
 
 #include <modules/python3/pyutils.h>
 
+#include <inviwo/core/util/sourcecontext.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/stringconversion.h>
+
 #include <warn/push>
 #include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
