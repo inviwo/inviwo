@@ -103,7 +103,7 @@ endif()
 
 #--------------------------------------------------------------------
 # Add Python to package
-option(IVW_PACKAGE_EMBED_PYTHON "Embed a python dist in the installer.\
+option(IVW_PACKAGE_EMBED_PYTHON "Embed a python dist in the installer.\ 
  Otherwise a existing python installation is needed to run inviwo" ON)
 if(IVW_PACKAGE_PROJECT AND BUILD_SHARED_LIBS AND IVW_PACKAGE_EMBED_PYTHON)
     if(WIN32)
