@@ -50,6 +50,12 @@ PropertyOwner::PropertyOwner(const PropertyOwner& rhs)
     for (const auto& p : rhs.ownedProperties_) addProperty(p->clone());
 }
 
+PropertyOwner::~PropertyOwner() { 
+    while (begin() != end()) {
+        removeProperty(begin()); 
+    }
+}
+
 PropertyOwner& PropertyOwner::operator=(const PropertyOwner& that) {
     if (this != &that) {
         invalidationLevel_ = that.invalidationLevel_;

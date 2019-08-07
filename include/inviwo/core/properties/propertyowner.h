@@ -54,7 +54,7 @@ public:
     PropertyOwner();
     PropertyOwner(const PropertyOwner& rhs);
     PropertyOwner& operator=(const PropertyOwner& that);
-    virtual ~PropertyOwner() = default;
+    virtual ~PropertyOwner();
 
     virtual void addProperty(Property* property, bool owner = true);
     virtual void addProperty(Property& property);
