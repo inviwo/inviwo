@@ -169,7 +169,7 @@ function(ivw_register_package name target)
         "set(${name}_LIBRARIES ${target})\n"
         "set(${name}_INCLUDE_DIRS ${incdirs})\n"
         )
-    set(${name}_DIR "${CMAKE_BINARY_DIR}/pkg/${name}" CACHE PATH "")
+    set(${name}_DIR "${CMAKE_BINARY_DIR}/pkg/${name}" CACHE INTERNAL "")
 endfunction()
 
 #--------------------------------------------------------------------
