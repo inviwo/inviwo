@@ -5,7 +5,7 @@ set(ASSIMP_OPT_BUILD_PACKAGES  OFF CACHE INTERNAL "Set to ON to generate CPack c
 set(ASSIMP_INSTALL_PDB         OFF CACHE INTERNAL "Install MSVC debug files.")
 set(ASSIMP_ANDROID_JNIIOSYSTEM OFF CACHE INTERNAL "Android JNI IOSystem support is active")
 set(ASSIMP_NO_EXPORT           OFF CACHE INTERNAL "Disable Assimp's export functionality.")
-set(ASSIMP_BUILD_ZLIB          ON  CACHE INTERNAL "Build your own zlib")
+set(ASSIMP_BUILD_ZLIB          OFF CACHE INTERNAL "Build your own zlib")
 set(ASSIMP_BUILD_ASSIMP_TOOLS  OFF CACHE INTERNAL "If the supplementary tools for Assimp are built in addition to the library.")
 set(ASSIMP_BUILD_SAMPLES       OFF CACHE INTERNAL "If the official samples are built as well (needs Glut).")
 set(ASSIMP_BUILD_TESTS         OFF CACHE INTERNAL "If the test suite for Assimp is built in addition to the library.")
