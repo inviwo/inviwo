@@ -122,6 +122,8 @@ add_custom_target(uninstall COMMENT "Dummy target to prevent other uninstalls")
 # It also ensures that we are in control of the used version
 # and is built using the same, Inviwo, settings.
 
+# Tell find_package() to try “Config” mode before “Module” mode if no mode was specified.
+# This lest us use <package>_DIR to provide "overrides" for various packages that we build.
 set(CMAKE_FIND_PACKAGE_PREFER_CONFIG ON)
 add_subdirectory(ext/zlib-1.2.11) # Defines target ZLIB::ZLIB
 find_package(ZLIB REQUIRED)
