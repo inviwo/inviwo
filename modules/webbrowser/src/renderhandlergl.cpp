@@ -113,7 +113,7 @@ void RenderHandlerGL::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType ty
         } else {
             // Update dirty areas
             texture2D_.bind();
-            glPixelStorei(GL_UNPACK_ALIGNMENT, 4); // RGBA 8-bit are always aligned
+            glPixelStorei(GL_UNPACK_ALIGNMENT, 4);  // RGBA 8-bit are always aligned
             glPixelStorei(GL_UNPACK_ROW_LENGTH, width);
             for (const auto& rect : dirtyRects) {
                 // const CefRect& rect = *i;
@@ -158,13 +158,11 @@ void RenderHandlerGL::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType ty
     glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
     glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
 
-
     if (type == PET_VIEW && !popupRect_.IsEmpty()) {
         browser->GetHost()->Invalidate(PET_POPUP);
     }
     // Notify that we are done copying
     onWebPageCopiedCallback();
-
 }
 
 };  // namespace inviwo

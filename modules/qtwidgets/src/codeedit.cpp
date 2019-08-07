@@ -225,8 +225,7 @@ void CodeEdit::lineNumberAreaPaintEvent(QPaintEvent *event) {
     const int offset = fontMetrics().width(' ');
 #else
     const int offset = fontMetrics().horizontalAdvance(' ');
-#endif
-    
+#endif    
     const int height = fontMetrics().height();
     const int width = lineNumberArea_->width() - offset;
 
