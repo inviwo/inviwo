@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,31 +27,51 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PYTHONINTERPRETER_H
-#define IVW_PYTHONINTERPRETER_H
+#include <modules/python3/pyutils.h>
 
-#include <modules/python3/python3moduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <modules/python3/pythonexecutionoutputobservable.h>
+#include <inviwo/core/util/sourcecontext.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/stringconversion.h>
+
+#include <warn/push>
+#include <warn/ignore/shadow>
+#include <pybind11/pybind11.h>
+#include <warn/pop>
 
 namespace inviwo {
-class Python3Module;
 
-class IVW_MODULE_PYTHON3_API PythonInterpreter : public PythonExecutionOutputObservable {
-public:
-    PythonInterpreter();
-    virtual ~PythonInterpreter();
+namespace pyutil {
 
-    void addModulePath(const std::string& path);
-    void importModule(const std::string& moduleName);
+void addModulePath(const std::string& path) {
+    namespace py = pybind11;
 
-    bool runString(std::string code);
+    if (!Py_IsInitialized()) {
+        throw Exception("addModulePath(): Python is not initialized", IVW_CONTEXT_CUSTOM("pyutil"));
+    }
 
-private:
-    bool embedded_;
-    bool isInit_;
-};
+    std::string pathConv = path;
+    replaceInString(pathConv, "\\", "/");
+
+    py::module::import("sys").attr("path").cast<py::list>().append(pathConv);
+}
+
+void removeModulePath(const std::string& path) {
+    namespace py = pybind11;
+
+    if (!Py_IsInitialized()) {
+        throw Exception("addModulePath(): Python is not initialized", IVW_CONTEXT_CUSTOM("pyutil"));
+    }
+
+    std::string pathConv = path;
+    replaceInString(pathConv, "\\", "/");
+
+    py::module::import("sys").attr("path").attr("remove")(pathConv);
+}
+
+ModulePath::ModulePath(const std::string& path) : path_{path} { addModulePath(path_); }
+
+ModulePath::~ModulePath() { removeModulePath(path_); }
+
+}  // namespace pyutil
 
 }  // namespace inviwo
-
-#endif  // IVW_PYINVIWO_H

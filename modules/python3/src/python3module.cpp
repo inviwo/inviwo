@@ -53,7 +53,7 @@ namespace inviwo {
 
 Python3Module::Python3Module(InviwoApplication* app)
     : InviwoModule(app, "Python3")
-    , pythonInterpreter_(std::make_unique<PythonInterpreter>(this))
+    , pythonInterpreter_(std::make_unique<PythonInterpreter>())
     , pythonScriptArg_("p", "pythonScript", "Specify a python script to run at startup", false, "",
                        "python script")
     , argHolder_{app, pythonScriptArg_,
@@ -68,6 +68,7 @@ Python3Module::Python3Module(InviwoApplication* app)
                  },
                  100}
     , pythonLogger_{}
+    , scripts_{getPath() + "/scripts"}
     , pythonFolderObserver_{app, getPath() + "/processors", *this}
     , settingsFolderObserver_{app, app->getPath(PathType::Settings, "/python_processors", true),
                               *this} {

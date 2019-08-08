@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,32 +26,29 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_PYTHONINTERPRETER_H
-#define IVW_PYTHONINTERPRETER_H
+#pragma once
 
 #include <modules/python3/python3moduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <modules/python3/pythonexecutionoutputobservable.h>
+#include <string>
 
 namespace inviwo {
-class Python3Module;
 
-class IVW_MODULE_PYTHON3_API PythonInterpreter : public PythonExecutionOutputObservable {
-public:
-    PythonInterpreter();
-    virtual ~PythonInterpreter();
+namespace pyutil {
 
-    void addModulePath(const std::string& path);
-    void importModule(const std::string& moduleName);
+void addModulePath(const std::string& path);
+void removeModulePath(const std::string& path);
 
-    bool runString(std::string code);
+struct ModulePath {
+    ModulePath(const std::string& path);
+    ModulePath(const ModulePath&) = delete;
+    ModulePath(ModulePath&&) = default;
+    ModulePath& operator=(const ModulePath&) = delete;
+    ModulePath& operator=(ModulePath&&) = default;
+    ~ModulePath();
 
 private:
-    bool embedded_;
-    bool isInit_;
+    std::string path_;
 };
+}  // namespace pyutil
 
 }  // namespace inviwo
-
-#endif  // IVW_PYINVIWO_H
