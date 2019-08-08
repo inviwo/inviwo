@@ -30,6 +30,7 @@
 #include <modules/base/properties/basisproperty.h>
 #include <inviwo/core/util/foreacharg.h>
 #include <inviwo/core/util/utilities.h>
+#include <inviwo/core/util/raiiutils.h>
 
 namespace inviwo {
 
