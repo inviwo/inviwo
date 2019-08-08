@@ -68,7 +68,11 @@ set(BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS_TMP})
 
 # Determine the target output directory.
 # Inviwo: use module target directory as output dir$<TARGET_FILE_DIR:inviwo-module-webbrowser>
-set(CEF_TARGET_OUT_DIR ${EXECUTABLE_OUTPUT_PATH}/$<CONFIG>)
+if(GENERATOR_IS_MULTI_CONFIG) 
+    set(CEF_TARGET_OUT_DIR ${EXECUTABLE_OUTPUT_PATH}/$<CONFIG>)
+else()
+    set(CEF_TARGET_OUT_DIR ${EXECUTABLE_OUTPUT_PATH})
+endif()
 
 # Display configuration settings.
 #PRINT_CEF_CONFIG()
