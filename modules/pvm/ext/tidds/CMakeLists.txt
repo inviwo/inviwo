@@ -4,12 +4,12 @@ else()
 endif()
 
 # needs to be always used as a shared library due to LGPL of TinyDDS
-set(build shared libs ON) 
+set(BUILD_SHARED_LIBS ON) 
 add_subdirectory(tidds)
 
 #--------------------------------------------------------------------
 # Supress warnings
-#ivw_suppress_compiler_warnings(tidds)
+ivw_suppress_compiler_warnings(tidds)
 
 #--------------------------------------------------------------------
 # Define defintions
@@ -23,4 +23,3 @@ ivw_folder(tidds ext)
 # Make package (for other projects to find)
 ivw_default_install_targets(tidds)
 ivw_make_package(TiDDS tidds)
-ivw_suppress_compiler_warnings(tidds)
