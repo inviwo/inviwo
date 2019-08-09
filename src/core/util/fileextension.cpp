@@ -116,6 +116,16 @@ bool operator==(const FileExtension& rhs, const FileExtension& lhs) {
 }
 bool operator!=(const FileExtension& rhs, const FileExtension& lhs) { return !(rhs == lhs); }
 
+bool operator<(const FileExtension& a, const FileExtension& b) {
+    if (a == FileExtension::all() && b != FileExtension::all()) return true;
+    if (b == FileExtension::all() && a != FileExtension::all()) return false;
+    return std::tie(a.description_, a.extension_) < std::tie(b.description_, b.extension_);
+}
+
+bool operator>(const FileExtension& lhs, const FileExtension& rhs) { return operator<(rhs, lhs); }
+bool operator<=(const FileExtension& lhs, const FileExtension& rhs) { return !operator>(lhs, rhs); }
+bool operator>=(const FileExtension& lhs, const FileExtension& rhs) { return !operator<(lhs, rhs); }
+
 FileExtension FileExtension::all() { return FileExtension("*", "All Files"); }
 
 }  // namespace inviwo

@@ -30,7 +30,7 @@
 #ifndef IVW_BASEOPTIONPROPERTY_H
 #define IVW_BASEOPTIONPROPERTY_H
 
-#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/property.h>
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/introspection.h>
@@ -238,30 +238,15 @@ bool operator!=(const T& lhs, const TemplateOptionProperty<T>& rhs) {
     return lhs != rhs.get();
 }
 
-namespace detail {
-template <typename T, typename std::enable_if<!std::is_enum<T>::value, int>::type = 0>
-std::string getOptionPropertyClassIdentifier() {
-    return "org.inviwo.OptionProperty" + Defaultvalues<T>::getName();
-}
-template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type = 0>
-std::string getOptionPropertyClassIdentifier() {
-    return "org.inviwo.OptionProperty" + util::enumName<T>();
-}
-
-template <typename T, typename std::enable_if<!std::is_enum<T>::value, int>::type = 0>
-std::string getClassIdentifierForWidget() {
-    return getOptionPropertyClassIdentifier<T>();
-}
-template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type = 0>
-std::string getClassIdentifierForWidget() {
-    using ET = typename std::underlying_type<T>::type;
-    return getOptionPropertyClassIdentifier<ET>();
-}
-}  // namespace detail
-
 template <typename T>
 struct PropertyTraits<TemplateOptionProperty<T>> {
-    static std::string classIdentifier() { return detail::getOptionPropertyClassIdentifier<T>(); }
+    static std::string classIdentifier() {
+        if constexpr (std::is_enum_v<T>) {
+            return "org.inviwo.OptionProperty" + util::enumName<T>();
+        } else {
+            return "org.inviwo.OptionProperty" + Defaultvalues<T>::getName();
+        }
+    }
 };
 
 template <typename T>
@@ -271,7 +256,11 @@ std::string TemplateOptionProperty<T>::getClassIdentifier() const {
 
 template <typename T>
 std::string TemplateOptionProperty<T>::getClassIdentifierForWidget() const {
-    return detail::getClassIdentifierForWidget<T>();
+    if constexpr (std::is_enum_v<T>) {
+        return "org.inviwo.OptionProperty" + Defaultvalues<std::underlying_type_t<T>>::getName();
+    } else {
+        return PropertyTraits<TemplateOptionProperty<T>>::classIdentifier();
+    }
 }
 
 using OptionPropertyUIntOption = OptionPropertyOption<unsigned int>;

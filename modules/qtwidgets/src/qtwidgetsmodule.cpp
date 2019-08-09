@@ -45,6 +45,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/util/fileextension.h>
 
 #include <modules/qtwidgets/properties/anglepropertywidgetqt.h>
 #include <modules/qtwidgets/properties/boolpropertywidgetqt.h>
@@ -182,7 +183,7 @@ QtWidgetsModule::QtWidgetsModule(InviwoApplication* app)
     util::for_each_type<ScalarTypes>{}(MinMaxTextWidgetReghelper{}, *this, "Text");
 
     // Register option property widgets
-    using OptionTypes = std::tuple<unsigned int, int, size_t, float, double, std::string>;
+    using OptionTypes = std::tuple<unsigned int, int, size_t, float, double, std::string, FileExtension>;
     util::for_each_type<OptionTypes>{}(OptionWidgetReghelper{}, *this, "Default");
 
     // Register string property widgets

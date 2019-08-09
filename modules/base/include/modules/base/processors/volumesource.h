@@ -38,7 +38,9 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/util/fileextension.h>
 
 namespace inviwo {
 
@@ -70,13 +72,13 @@ public:
 
 private:
     void load(bool deserialize = false);
-    void addFileNameFilters();
 
     InviwoApplication* app_;
     std::shared_ptr<VolumeSequence> volumes_;
 
     VolumeOutport outport_;
     FileProperty file_;
+    TemplateOptionProperty<FileExtension> reader_;
     ButtonProperty reload_;
 
     BasisProperty basis_;
@@ -84,6 +86,7 @@ private:
     SequenceTimerProperty volumeSequence_;
 
     bool deserialized_ = false;
+    bool loadingFailed_ = false;
 };
 
 }  // namespace inviwo

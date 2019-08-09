@@ -53,6 +53,9 @@ public:
     virtual void setFileMode(FileMode mode) = 0;
     virtual FileMode getFileMode() const = 0;
 
+    virtual void setContentType(const std::string& contentType) = 0;
+    virtual std::string getContentType() const = 0;
+
     /**
      * \brief sets the current directory of the file dialog to the parent directory of the given
      *   file name or, if it is referring to a directory, to the given path. The file will be

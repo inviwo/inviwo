@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/properties/optionproperty.h>
 
 namespace inviwo {
 
@@ -40,7 +41,10 @@ class IVW_CORE_API FileExtension : public Serializable {
 public:
     FileExtension();
     FileExtension(const FileExtension&) = default;
+    FileExtension(FileExtension&&) = default;
+    FileExtension& operator=(FileExtension&&) = default;
     FileExtension& operator=(const FileExtension&) = default;
+
     FileExtension(std::string extension, std::string description);
     virtual ~FileExtension() = default;
 
@@ -85,6 +89,11 @@ public:
 IVW_CORE_API bool operator==(const FileExtension&, const FileExtension&);
 IVW_CORE_API bool operator!=(const FileExtension&, const FileExtension&);
 
+IVW_CORE_API bool operator<(const FileExtension&, const FileExtension&);
+IVW_CORE_API bool operator<=(const FileExtension&, const FileExtension&);
+IVW_CORE_API bool operator>(const FileExtension&, const FileExtension&);
+IVW_CORE_API bool operator>=(const FileExtension&, const FileExtension&);
+
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
                                              const FileExtension& ext) {
@@ -99,6 +108,11 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
     }
     return ss;
 }
+
+template <>
+struct PropertyTraits<TemplateOptionProperty<FileExtension>> {
+    static std::string classIdentifier() { return "org.inviwo.OptionPropertyFileExtension"; }
+};
 
 }  // namespace inviwo
 

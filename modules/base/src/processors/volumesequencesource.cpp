@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/base/processors/volumesequencesource.h>
+#include <modules/base/processors/datasource.h>
 #include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/io/datareaderexception.h>
@@ -56,39 +57,49 @@ VolumeSequenceSource::VolumeSequenceSource(InviwoApplication* app)
     , file_("filename", "Volume file")
     , folder_("folder", "Volume folder")
     , filter_("filter_", "Filter", "*.*")
+    , reader_("reader", "Data Reader")
     , reload_("reload", "Reload data")
     , basis_("Basis", "Basis and offset")
     , information_("Information", "Data information") {
     file_.setContentType("volume");
     folder_.setContentType("volume");
 
-    // make sure that we always process even if not connected
-    isSink_.setUpdate([]() { return true; });
-
-    addFileNameFilters();
-
     addPort(outport_);
-
-    addProperty(inputType_);
-    addProperty(folder_);
-    addProperty(filter_);
-    addProperty(file_);
-    addProperty(reload_);
-    addProperty(information_);
-    addProperty(basis_);
+    addProperties(inputType_, folder_, filter_, file_, reload_, information_, basis_);
 
     // It does not make sense to change these for an entire sequence
     information_.setReadOnly(true);
     basis_.setReadOnly(true);
 
+    util::updateFilenameFilters<VolumeSequence>(*rf_, file_, reader_);
+
     auto updateVisible = [&]() {
         file_.setVisible(inputType_.get() == InputType::SingleFile);
+        reader_.setVisible(inputType_.get() == InputType::SingleFile);
         folder_.setVisible(inputType_.get() == InputType::Folder);
         filter_.setVisible(inputType_.get() == InputType::Folder);
     };
-
     inputType_.onChange(updateVisible);
     updateVisible();
+
+    // make sure that we always process even if not connected
+    isSink_.setUpdate([]() { return true; });
+    isReady_.setUpdate([this]() {
+        return !loadingFailed_ && filesystem::fileExists(file_.get()) &&
+               !reader_.getSelectedValue().empty();
+    });
+
+    auto change = [this]() {
+        loadingFailed_ = false;
+        isReady_.update();
+    };
+    file_.onChange([this, change]() {
+        util::updateReaderFromFile(file_, reader_);
+        change();
+    });
+    reader_.onChange(change);
+    folder_.onChange(change);
+    filter_.onChange(change);
 }
 
 void VolumeSequenceSource::load(bool deserialize) {
@@ -113,9 +124,15 @@ void VolumeSequenceSource::loadFile(bool deserialize) {
             volumes_ = reader->readData(file_.get(), this);
         } catch (DataReaderException const& e) {
             LogProcessorError(e.getMessage());
+            volumes_.reset();
+            loadingFailed_ = true;
+            isReady_.update();
         }
     } else {
         LogProcessorError("Could not find a data reader for file: " << file_.get());
+        volumes_.reset();
+        loadingFailed_ = true;
+        isReady_.update();
     }
 
     if (volumes_ && !volumes_->empty() && (*volumes_)[0]) {
@@ -148,9 +165,15 @@ void VolumeSequenceSource::loadFolder(bool deserialize) {
                     }
                 } else {
                     LogProcessorError("Could not find a data reader for file: " << file);
+                    volumes_.reset();
+                    loadingFailed_ = true;
+                    isReady_.update();
                 }
             } catch (DataReaderException const& e) {
                 LogProcessorError(e.getMessage());
+                volumes_.reset();
+                loadingFailed_ = true;
+                isReady_.update();
             }
         }
     }
@@ -167,13 +190,9 @@ void VolumeSequenceSource::loadFolder(bool deserialize) {
             basis_.updateForNewEntity(*(*volumes_)[0], deserialize);
             information_.updateForNewVolume(*(*volumes_)[0], deserialize);
         }
+    } else {
+        outport_.detachData();
     }
-}
-
-void VolumeSequenceSource::addFileNameFilters() {
-    file_.clearNameFilters();
-    file_.addNameFilter(FileExtension::all());
-    file_.addNameFilters(rf_->getExtensionsForType<VolumeSequence>());
 }
 
 void VolumeSequenceSource::process() {
@@ -190,7 +209,7 @@ void VolumeSequenceSource::process() {
 
 void VolumeSequenceSource::deserialize(Deserializer& d) {
     Processor::deserialize(d);
-    addFileNameFilters();
+    util::updateFilenameFilters<VolumeSequence>(*rf_, file_, reader_);
     // It does not make sense to change these for an entire sequence
     information_.setReadOnly(true);
     basis_.setReadOnly(true);

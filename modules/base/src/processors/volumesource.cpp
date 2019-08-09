@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/base/processors/volumesource.h>
+#include <modules/base/processors/datasource.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/raiiutils.h>
@@ -41,6 +42,7 @@
 #include <inviwo/core/io/datareaderexception.h>
 #include <inviwo/core/metadata/metadata.h>
 
+#include <algorithm>
 #include <cmath>
 
 namespace inviwo {
@@ -58,32 +60,35 @@ VolumeSource::VolumeSource(InviwoApplication* app, const std::string& file)
     : Processor()
     , app_(app)
     , outport_("data")
-    , file_("filename", "File", file, "volume")
+    , file_("filename", "Volume file", file, "volume")
+    , reader_("reader", "Data Reader")
     , reload_("reload", "Reload data")
     , basis_("Basis", "Basis and offset")
     , information_("Information", "Data information")
     , volumeSequence_("Sequence", "Sequence") {
 
-    // make sure that we always process even if not connected
-    isSink_.setUpdate([]() { return true; });
-
-    file_.setContentType("volume");
-    file_.setDisplayName("Volume file");
-
+    addPort(outport_);
+    addProperties(file_, reader_, reload_, information_, basis_, volumeSequence_);
     volumeSequence_.setVisible(false);
 
-    addFileNameFilters();
+    util::updateFilenameFilters<Volume, VolumeSequence>(*app_->getDataReaderFactory(), file_,
+                                                        reader_);
 
-    addPort(outport_);
-
-    addProperty(file_);
-    addProperty(reload_);
-    addProperty(information_);
-    addProperty(basis_);
-    addProperty(volumeSequence_);
-
-    isReady_.setUpdate([this]() { return filesystem::fileExists(file_.get()); });
-    file_.onChange([this]() { isReady_.update(); });
+    // make sure that we always process even if not connected
+    isSink_.setUpdate([]() { return true; });
+    isReady_.setUpdate([this]() {
+        return !loadingFailed_ && filesystem::fileExists(file_.get()) &&
+               !reader_.getSelectedValue().empty();
+    });
+    file_.onChange([this]() {
+        loadingFailed_ = false;
+        util::updateReaderFromFile(file_, reader_);
+        isReady_.update();
+    });
+    reader_.onChange([this]() {
+        loadingFailed_ = false;
+        isReady_.update();
+    });
 }
 
 void VolumeSource::load(bool deserialize) {
@@ -92,7 +97,7 @@ void VolumeSource::load(bool deserialize) {
     auto rf = app_->getDataReaderFactory();
     auto rm = app_->getResourceManager();
 
-    const auto sext = file_.getSelectedExtension();
+    const auto sext = reader_.getSelectedValue();
     const auto fext = filesystem::getFileExtension(file_.get());
 
     // use resource unless the "Reload data"-button (reload_) was pressed,
@@ -114,9 +119,15 @@ void VolumeSource::load(bool deserialize) {
                 rm->addResource(file_.get(), volumes_, reload_.isModified());
             } else {
                 LogProcessorError("Could not find a data reader for file: " << file_.get());
+                volumes_.reset();
+                loadingFailed_ = true;
+                isReady_.update();
             }
         } catch (DataReaderException const& e) {
             LogProcessorError(e.getMessage());
+            volumes_.reset();
+            loadingFailed_ = true;
+            isReady_.update();
         }
     }
 
@@ -135,17 +146,8 @@ void VolumeSource::load(bool deserialize) {
     }
 }
 
-void VolumeSource::addFileNameFilters() {
-    auto rf = app_->getDataReaderFactory();
-
-    file_.clearNameFilters();
-    file_.addNameFilter(FileExtension::all());
-    file_.addNameFilters(rf->getExtensionsForType<Volume>());
-    file_.addNameFilters(rf->getExtensionsForType<VolumeSequence>());
-}
-
 void VolumeSource::process() {
-    if (file_.isModified() || reload_.isModified()) {
+    if (file_.isModified() || reload_.isModified() || reader_.isModified()) {
         load(deserialized_);
         deserialized_ = false;
     }
@@ -159,12 +161,15 @@ void VolumeSource::process() {
         information_.updateVolume(*(*volumes_)[index]);
 
         outport_.setData((*volumes_)[index]);
+    } else {
+        outport_.detachData();
     }
 }
 
 void VolumeSource::deserialize(Deserializer& d) {
     Processor::deserialize(d);
-    addFileNameFilters();
+    util::updateFilenameFilters<Volume, VolumeSequence>(*app_->getDataReaderFactory(), file_,
+                                                        reader_);
     deserialized_ = true;
 }
 
