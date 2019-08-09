@@ -35,10 +35,10 @@ namespace inviwo {
 
 namespace pyutil {
 
-void addModulePath(const std::string& path);
-void removeModulePath(const std::string& path);
+IVW_MODULE_PYTHON3_API void addModulePath(const std::string& path);
+IVW_MODULE_PYTHON3_API void removeModulePath(const std::string& path);
 
-struct ModulePath {
+struct IVW_MODULE_PYTHON3_API ModulePath {
     ModulePath(const std::string& path);
     ModulePath(const ModulePath&) = delete;
     ModulePath(ModulePath&&) = default;
