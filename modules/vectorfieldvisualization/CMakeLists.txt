@@ -61,4 +61,4 @@ ivw_group("Source Files" ${SOURCE_FILES})
 
 #--------------------------------------------------------------------
 # Create module
-ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
+ivw_create_module(GROUP inviwo-core-modules ${SOURCE_FILES} ${HEADER_FILES})

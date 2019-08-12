@@ -146,7 +146,7 @@ ivw_group("Shader Files" ${SHADER_FILES})
 
 #--------------------------------------------------------------------
 # Create module
-ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
+ivw_create_module(GROUP inviwo-core-modules ${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
 target_link_libraries(inviwo-module-opengl PUBLIC inviwo::GLEW)
 
 find_package(OpenGL QUIET REQUIRED)
@@ -155,7 +155,7 @@ target_include_directories(inviwo-module-opengl PUBLIC ${OPENGL_INCLUDE_DIR})
 
 #--------------------------------------------------------------------
 # Package or build shaders into resources
-ivw_handle_shader_resources(${CMAKE_CURRENT_SOURCE_DIR}/glsl ${SHADER_FILES})
+ivw_handle_shader_resources(GROUP inviwo-core-modules ${CMAKE_CURRENT_SOURCE_DIR}/glsl ${SHADER_FILES})
 
 ivw_register_license_file(ID glew NAME "GLEW" TARGET inviwo::GLEW MODULE OpenGL
     URL http://glew.sourceforge.net

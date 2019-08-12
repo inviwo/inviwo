@@ -71,7 +71,7 @@ ivw_group("Shader Files" ${SHADER_FILES})
 
 #--------------------------------------------------------------------
 # Create module
-ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
+ivw_create_module(GROUP inviwo-core-modules ${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
 
 #--------------------------------------------------------------------
 # Package or build shaders into resources

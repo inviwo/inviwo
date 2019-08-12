@@ -41,7 +41,7 @@ ivw_add_unittest(${TEST_FILES})
 
 #--------------------------------------------------------------------
 # Create module
-ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
+ivw_create_module(GROUP inviwo-core-modules ${SOURCE_FILES} ${HEADER_FILES})
 target_link_libraries(inviwo-module-cimg 
     PRIVATE
         inviwo::cimg

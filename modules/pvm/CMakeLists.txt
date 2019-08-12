@@ -28,7 +28,7 @@ ivw_group("Source Files" ${SOURCE_FILES})
 
 #--------------------------------------------------------------------
 # Create module
-ivw_create_module(${SOURCE_FILES} ${MOC_FILES} ${HEADER_FILES})
+ivw_create_module(GROUP inviwo-core-modules ${SOURCE_FILES} ${MOC_FILES} ${HEADER_FILES})
 target_link_libraries(inviwo-module-pvm PRIVATE tidds)
 
 ivw_register_license_file(NAME "Tiny DDS Package" MODULE PVM TYPE "LGPL"
