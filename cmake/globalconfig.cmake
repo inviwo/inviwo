@@ -125,6 +125,11 @@ if(NOT LIBRARY_OUTPUT_PATH)
         "Single output directory for building all libraries.")
 endif()
 
+# Sets IVW_GENERATOR_IS_MULTI_CONFIG to true if the generator is multi config, 
+# e.g. when building Debug or Release mode is selected in the IDE (like in Visual Studio) 
+# and not through cmake (as done when using make or ninja)
+get_property(IVW_GENERATOR_IS_MULTI_CONFIG GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+
 # Set Common Variables
 get_filename_component(IVW_ROOT_DIR ${CMAKE_CURRENT_LIST_DIR} PATH)
 set(IVW_INCLUDE_DIR             ${IVW_ROOT_DIR}/include)
