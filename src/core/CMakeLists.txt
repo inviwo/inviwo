@@ -850,8 +850,7 @@ string(REPLACE ";" "\n" build_info_script "${build_info_script_list}")
 file(WRITE "${IVW_CMAKE_BINARY_MODULE_DIR}/build_info.cmake" ${build_info_script})
 
 # Custom target for updating the build information (this target is always out-of-date)
-
-if(GENERATOR_IS_MULTI_CONFIG) 
+if(IVW_GENERATOR_IS_MULTI_CONFIG) 
     set(buildinfo_output_dir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/)
 else()
     set(buildinfo_output_dir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/)
