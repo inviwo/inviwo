@@ -171,8 +171,8 @@ std::tuple<ivec2, ivec2, ivec2, ivec2> ColorScaleLegend::getPositions(ivec2 dime
         const auto size =
             rotation % 2 == 0 ? legendSize_.get() : ivec2{legendSize_.get().y, legendSize_.get().x};
 
-        auto lpos = 0.5f * vec2{size + ivec2{margin_}} +
-                    initialPos * vec2{dimensions - size - ivec2{margin_}};
+        auto lpos = 0.5f * vec2{size + 2*ivec2{margin_}} +
+                    initialPos * vec2{dimensions - size - 2*ivec2{margin_}};
 
         return std::make_tuple(lpos, rotation, size);
     }();
