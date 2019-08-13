@@ -121,7 +121,7 @@ protected:
      * @return returns a valid value within the min max range
      */
     range_type clamp(const range_type& v) const;
-    T limitSeperation(T sep) const;
+    T limitSeparation(T sep) const;
 
 private:
     using TemplateProperty<range_type>::value_;
@@ -265,7 +265,7 @@ MinMaxProperty<T>& MinMaxProperty<T>::setIncrement(const T& newIncrement) {
 template <typename T>
 MinMaxProperty<T>& MinMaxProperty<T>::setMinSeparation(const T& newMinSeparation) {
     bool modified = false;
-    modified |= minSeparation_.update(limitSeperation(newMinSeparation));
+    modified |= minSeparation_.update(limitSeparation(newMinSeparation));
     modified |= value_.update(clamp(value_.value));
     if (modified) this->propertyModified();
     return *this;
@@ -293,7 +293,7 @@ void MinMaxProperty<T>::set(const range_type& value, const range_type& range, co
     const bool rangeModified = modified;
 
     modified |= increment_.update(increment);
-    modified |= minSeparation_.update(limitSeperation(minSep));
+    modified |= minSeparation_.update(limitSeparation(minSep));
     modified |= value_.update(clamp(value));
 
     if (modified) this->propertyModified();
@@ -393,7 +393,7 @@ auto MinMaxProperty<T>::clamp(const range_type& v) const -> range_type {
 }
 
 template <typename T>
-T MinMaxProperty<T>::limitSeperation(T sep) const {
+T MinMaxProperty<T>::limitSeparation(T sep) const {
     // ensure that min separation is not larger than the entire range
     return sep < range_.value.y - range_.value.x ? sep : range_.value.y - range_.value.x;
 }
