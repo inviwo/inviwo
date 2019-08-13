@@ -413,7 +413,7 @@ void TFPrimitiveSet::interpolateAndStoreColors(vec4* dataArray, const size_t dat
 }
 
 void TFPrimitiveSet::flipPositions(const std::vector<TFPrimitive*>& primitives) {
-    dvec2 range;
+    dvec2 range{};
     std::vector<TFPrimitive*> selection;
 
     if (primitives.empty()) {
@@ -440,7 +440,7 @@ void TFPrimitiveSet::flipPositions(const std::vector<TFPrimitive*>& primitives) 
 }
 
 void TFPrimitiveSet::interpolateAlpha(const std::vector<TFPrimitive*>& primitives) {
-    dvec2 range;
+    dvec2 range{};
     vec2 alpha{0.0f, 1.0f};
     std::vector<TFPrimitive*> selection;
 

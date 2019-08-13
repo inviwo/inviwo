@@ -113,7 +113,6 @@ std::shared_ptr<Volume> PVMVolumeReader::readPVMData(std::string filePath) {
                 throw DataReaderException(
                     "Error: Unsupported format (bytes per voxel) in .pvm file: " + filePath,
                     IVW_CONTEXT_CUSTOM("PVMVolumeReader"));
-                return nullptr;
         }
     }();
 
