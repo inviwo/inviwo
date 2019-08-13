@@ -82,7 +82,14 @@ public:
     virtual FileProperty* clone() const override;
     virtual ~FileProperty() = default;
 
-    virtual void set(const std::string& value) override;
+    /**
+     * Set the file name and also update the selected extension to the first one matching file.
+     */
+    virtual void set(const std::string& file) override;
+    /**
+     * Set the file name and the selected extension.
+     */
+    virtual void set(const std::string& file, const FileExtension& selectedExtension);
     virtual void set(const Property* property) override;
 
     virtual void serialize(Serializer& s) const override;
@@ -92,7 +99,7 @@ public:
     virtual void addNameFilter(FileExtension);
     virtual void addNameFilters(const std::vector<FileExtension>& filters);
     virtual void clearNameFilters();
-    virtual std::vector<FileExtension> getNameFilters() const;
+    virtual const std::vector<FileExtension>& getNameFilters() const;
 
     virtual void setAcceptMode(AcceptMode mode);
     AcceptMode getAcceptMode() const;
@@ -101,7 +108,7 @@ public:
     FileMode getFileMode() const;
 
     void setContentType(const std::string& contentType);
-    std::string getContentType() const;
+    const std::string& getContentType() const;
 
     const FileExtension& getSelectedExtension() const;
     void setSelectedExtension(const FileExtension& ext);
