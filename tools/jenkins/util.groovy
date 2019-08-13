@@ -238,7 +238,7 @@ def doxygen(def state) {
             allowMissing: true,
             alwaysLinkToLastBuild: true,
             keepAll: false,
-            reportDir: 'doc/inviwo/html',
+            reportDir: 'docs/inviwo/html',
             reportFiles: 'index.html',
             reportName: 'Doxygen'
         ])
