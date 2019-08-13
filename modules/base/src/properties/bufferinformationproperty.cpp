@@ -76,15 +76,6 @@ BufferInformationProperty::BufferInformationProperty(const BufferInformationProp
     util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props());
 }
 
-BufferInformationProperty& BufferInformationProperty::operator=(
-    const BufferInformationProperty& that) {
-    if (this != &that) {
-        CompositeProperty::operator=(that);
-        util::for_each_in_tuple([](auto& dst, auto& src) { dst = src; }, props(), that.props());
-    }
-    return *this;
-}
-
 BufferInformationProperty* BufferInformationProperty::clone() const {
     return new BufferInformationProperty(*this);
 }
@@ -124,15 +115,6 @@ MeshBufferInformationProperty::MeshBufferInformationProperty(
     util::for_each_in_tuple([&, i = 0](auto& e) mutable { this->insertProperty(i++, e); }, props());
 }
 
-MeshBufferInformationProperty& MeshBufferInformationProperty::operator=(
-    const MeshBufferInformationProperty& that) {
-    if (this != &that) {
-        BufferInformationProperty::operator=(that);
-        util::for_each_in_tuple([](auto& dst, auto& src) { dst = src; }, props(), that.props());
-    }
-    return *this;
-}
-
 MeshBufferInformationProperty* MeshBufferInformationProperty::clone() const {
     return new MeshBufferInformationProperty(*this);
 }
@@ -170,15 +152,6 @@ IndexBufferInformationProperty::IndexBufferInformationProperty(
     const IndexBufferInformationProperty& rhs)
     : BufferInformationProperty(rhs), drawType_(rhs.drawType_), connectivity_(rhs.connectivity_) {
     util::for_each_in_tuple([&, i = 0](auto& e) mutable { this->insertProperty(i++, e); }, props());
-}
-
-IndexBufferInformationProperty& IndexBufferInformationProperty::operator=(
-    const IndexBufferInformationProperty& that) {
-    if (this != &that) {
-        BufferInformationProperty::operator=(that);
-        util::for_each_in_tuple([](auto& dst, auto& src) { dst = src; }, props(), that.props());
-    }
-    return *this;
 }
 
 IndexBufferInformationProperty* IndexBufferInformationProperty::clone() const {

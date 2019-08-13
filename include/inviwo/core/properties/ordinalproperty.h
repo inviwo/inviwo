@@ -54,7 +54,6 @@ public:
                     PropertySemantics semantics = PropertySemantics::Default);
 
     OrdinalProperty(const OrdinalProperty<T>& rhs);
-    OrdinalProperty<T>& operator=(const OrdinalProperty<T>& that);
     OrdinalProperty<T>& operator=(const T& value);
     virtual OrdinalProperty<T>* clone() const override;
     virtual ~OrdinalProperty();
@@ -163,9 +162,6 @@ OrdinalProperty<T>::OrdinalProperty(const std::string& identifier, const std::st
 
 template <typename T>
 OrdinalProperty<T>::OrdinalProperty(const OrdinalProperty<T>& rhs) = default;
-
-template <typename T>
-OrdinalProperty<T>& OrdinalProperty<T>::operator=(const OrdinalProperty<T>& that) = default;
 
 template <typename T>
 OrdinalProperty<T>& OrdinalProperty<T>::operator=(const T& value) {

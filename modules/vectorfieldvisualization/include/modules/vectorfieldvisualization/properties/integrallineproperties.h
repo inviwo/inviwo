@@ -49,7 +49,6 @@ public:
 
     IntegralLineProperties(std::string identifier, std::string displayName);
     IntegralLineProperties(const IntegralLineProperties& rhs);
-    IntegralLineProperties& operator=(const IntegralLineProperties& that);
     virtual IntegralLineProperties* clone() const override;
     virtual ~IntegralLineProperties();
 

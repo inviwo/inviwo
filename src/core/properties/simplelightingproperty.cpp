@@ -101,22 +101,6 @@ SimpleLightingProperty::SimpleLightingProperty(const SimpleLightingProperty& rhs
     addProperty(lightAttenuation_);
 }
 
-SimpleLightingProperty& SimpleLightingProperty::operator=(const SimpleLightingProperty& that) {
-    if (this != &that) {
-        CompositeProperty::operator=(that);
-        shadingMode_ = that.shadingMode_;
-        referenceFrame_ = that.referenceFrame_;
-        lightPosition_ = that.lightPosition_;
-        lightAttenuation_ = that.lightAttenuation_;
-        applyLightAttenuation_ = that.applyLightAttenuation_;
-        ambientColor_ = that.ambientColor_;
-        diffuseColor_ = that.diffuseColor_;
-        specularColor_ = that.specularColor_;
-        specularExponent_ = that.specularExponent_;
-    }
-    return *this;
-}
-
 SimpleLightingProperty* SimpleLightingProperty::clone() const {
     return new SimpleLightingProperty(*this);
 }

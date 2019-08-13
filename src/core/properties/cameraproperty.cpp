@@ -171,28 +171,6 @@ void CameraProperty::changeCamera(std::unique_ptr<Camera> newCamera) {
     camera_->configureProperties(this);
 }
 
-CameraProperty& CameraProperty::operator=(const CameraProperty& that) {
-    if (this != &that) {
-        CompositeProperty::operator=(that);
-        changeCamera(std::unique_ptr<Camera>(that.camera_->clone()));
-
-        if (inport_) {
-            inport_->removeOnChange(callbackInportOnChange_);
-            callbackInportOnChange_ = nullptr;
-        }
-        inport_ = that.inport_;
-        if (inport_) {
-            callbackInportOnChange_ = inport_->onChange([this]() { inportChanged(); });
-        }
-        data_ = nullptr;
-        prevDataToWorldMatrix_ = mat4(0);
-        updatePropertyFromValue();
-
-        inportChanged();
-    }
-    return *this;
-}
-
 const Camera& CameraProperty::get() const { return *camera_; }
 Camera& CameraProperty::get() { return *camera_; }
 

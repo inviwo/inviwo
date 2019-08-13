@@ -67,18 +67,6 @@ IsoValueProperty::IsoValueProperty(const IsoValueProperty& rhs)
 }
 IsoValueProperty::~IsoValueProperty() = default;
 
-IsoValueProperty& IsoValueProperty::operator=(const IsoValueProperty& rhs) {
-    if (this != &rhs) {
-        value_.value.removeObserver(this);
-        TemplateProperty<IsoValueCollection>::operator=(rhs);
-        value_.value.addObserver(this);
-        zoomH_ = rhs.zoomH_;
-        zoomV_ = rhs.zoomV_;
-        histogramMode_ = rhs.histogramMode_;
-        volumeInport_ = rhs.volumeInport_;
-    }
-    return *this;
-}
 IsoValueProperty* IsoValueProperty::clone() const { return new IsoValueProperty(*this); }
 
 void IsoValueProperty::setZoomH(double zoomHMin, double zoomHMax) {

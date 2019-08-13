@@ -357,7 +357,7 @@ public:
 
 protected:
     Property(const Property& rhs);
-    Property& operator=(const Property& that);
+    Property& operator=(const Property& that) = delete;
 
     void updateWidgets();
     void notifyAboutChange();

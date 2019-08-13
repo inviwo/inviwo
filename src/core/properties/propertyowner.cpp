@@ -56,19 +56,6 @@ PropertyOwner::~PropertyOwner() {
     }
 }
 
-PropertyOwner& PropertyOwner::operator=(const PropertyOwner& that) {
-    if (this != &that) {
-        invalidationLevel_ = that.invalidationLevel_;
-        // PropertyOwner is only responsible for owned properties,
-        // not all, e.g. the ones in properties_.
-        while (!ownedProperties_.empty()) {
-            removeProperty(ownedProperties_.back().get());
-        }
-        for (const auto& p : that.ownedProperties_) addProperty(p->clone());
-    }
-    return *this;
-}
-
 void PropertyOwner::addProperty(Property* property, bool owner) {
     insertProperty(properties_.size(), property, owner);
 }

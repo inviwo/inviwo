@@ -53,7 +53,6 @@ public:
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
         PropertySemantics semantics = PropertySemantics::Default);
     MeshInformationProperty(const MeshInformationProperty& rhs);
-    MeshInformationProperty& operator=(const MeshInformationProperty& that);
     virtual MeshInformationProperty* clone() const override;
     virtual ~MeshInformationProperty() = default;
 

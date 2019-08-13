@@ -113,17 +113,6 @@ ScatterPlotGL::Properties *ScatterPlotGL::Properties::clone() const {
     return new Properties(*this);
 }
 
-ScatterPlotGL::Properties &ScatterPlotGL::Properties::operator=(
-    const ScatterPlotGL::Properties &that) {
-    if (this != &that) {
-        CompositeProperty::operator=(that);
-        util::for_each_in_tuple([](auto &dst, auto &src) { dst = src; }, props(), that.props());
-        axisStyle_.unregisterAll();
-        axisStyle_.registerProperties(xAxis_, yAxis_);
-    }
-    return *this;
-}
-
 ScatterPlotGL::ScatterPlotGL(Processor *processor)
     : properties_("scatterplot", "Scatterplot")
     , shader_("scatterplot.vert", "scatterplot.geom", "scatterplot.frag")

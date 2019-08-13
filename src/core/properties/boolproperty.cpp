@@ -40,13 +40,6 @@ BoolProperty::BoolProperty(std::string identifier, std::string displayName, bool
 
 BoolProperty::BoolProperty(const BoolProperty& rhs) : TemplateProperty<bool>(rhs) {}
 
-BoolProperty& BoolProperty::operator=(const BoolProperty& that) {
-    if (this != &that) {
-        TemplateProperty<bool>::operator=(that);
-    }
-    return *this;
-}
-
 BoolProperty& BoolProperty::operator=(const bool& value) {
     TemplateProperty<bool>::operator=(value);
     return *this;

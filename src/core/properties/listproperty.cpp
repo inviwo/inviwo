@@ -87,15 +87,6 @@ ListProperty::ListProperty(const ListProperty& rhs)
     , maxNumElements_(rhs.maxNumElements_)
     , prefabs_(detail::clonePropertyVector(rhs.prefabs_)) {}
 
-ListProperty& ListProperty::operator=(const ListProperty& that) {
-    if (this != &that) {
-        uiFlags_ = that.uiFlags_;
-        maxNumElements_ = that.maxNumElements_;
-        prefabs_ = detail::clonePropertyVector(that.prefabs_);
-    }
-    return *this;
-}
-
 ListProperty* ListProperty::clone() const { return new ListProperty(*this); }
 
 std::string ListProperty::getClassIdentifierForWidget() const {

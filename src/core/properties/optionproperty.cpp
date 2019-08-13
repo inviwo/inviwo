@@ -38,7 +38,6 @@ BaseOptionProperty::BaseOptionProperty(const std::string& identifier,
     : Property(identifier, displayName, invalidationLevel, semantics) {}
 
 BaseOptionProperty::BaseOptionProperty(const BaseOptionProperty& rhs) = default;
-BaseOptionProperty& BaseOptionProperty::operator=(const BaseOptionProperty&) = default;
 
 BaseOptionProperty::~BaseOptionProperty() = default;
 

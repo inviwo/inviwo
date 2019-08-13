@@ -57,16 +57,6 @@ MultiFileProperty::MultiFileProperty(const MultiFileProperty& rhs)
     , acceptMode_(rhs.acceptMode_)
     , fileMode_(rhs.fileMode_) {}
 
-MultiFileProperty& MultiFileProperty::operator=(const MultiFileProperty& that) {
-    if (this != &that) {
-        TemplateProperty<std::vector<std::string>>::operator=(that);
-        nameFilters_ = that.nameFilters_;
-        acceptMode_ = that.acceptMode_;
-        fileMode_ = that.fileMode_;
-    }
-    return *this;
-}
-
 MultiFileProperty& MultiFileProperty::operator=(const std::vector<std::string>& value) {
     TemplateProperty<std::vector<std::string>>::operator=(value);
     return *this;

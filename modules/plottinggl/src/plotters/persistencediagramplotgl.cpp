@@ -121,17 +121,6 @@ PersistenceDiagramPlotGL::Properties::Properties(const PersistenceDiagramPlotGL:
     axisStyle_.registerProperties(xAxis_, yAxis_);
 }
 
-PersistenceDiagramPlotGL::Properties &PersistenceDiagramPlotGL::Properties::operator=(
-    const PersistenceDiagramPlotGL::Properties &that) {
-    if (this != &that) {
-        CompositeProperty::operator=(that);
-        util::for_each_in_tuple([](auto &dst, auto &src) { dst = src; }, props(), that.props());
-        axisStyle_.unregisterAll();
-        axisStyle_.registerProperties(xAxis_, yAxis_);
-    }
-    return *this;
-}
-
 PersistenceDiagramPlotGL::Properties *PersistenceDiagramPlotGL::Properties::clone() const {
     return new Properties(*this);
 }

@@ -63,7 +63,6 @@ public:
     void onResetOverride();
 
     BasisProperty(const BasisProperty& rhs);
-    BasisProperty& operator=(const BasisProperty& that);
     virtual BasisProperty* clone() const override;
     virtual ~BasisProperty() = default;
 

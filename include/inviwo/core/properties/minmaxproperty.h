@@ -58,7 +58,6 @@ public:
                    PropertySemantics semantics = PropertySemantics::Default);
 
     MinMaxProperty(const MinMaxProperty& rhs) = default;
-    MinMaxProperty& operator=(const MinMaxProperty& that) = default;
     MinMaxProperty& operator=(const range_type& value);
 
     virtual MinMaxProperty<T>* clone() const override;

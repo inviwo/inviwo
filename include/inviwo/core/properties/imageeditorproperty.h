@@ -69,7 +69,7 @@ public:
                         PropertySemantics semantics = PropertySemantics::Default);
 
     ImageEditorProperty(const ImageEditorProperty& rhs);
-    ImageEditorProperty& operator=(const ImageEditorProperty& that);
+
     virtual ImageEditorProperty* clone() const override;
     virtual ~ImageEditorProperty();
 

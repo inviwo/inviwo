@@ -52,7 +52,7 @@ public:
                        PropertySemantics semantics = PropertySemantics::Default);
 
     BaseOptionProperty(const BaseOptionProperty& rhs);
-    BaseOptionProperty& operator=(const BaseOptionProperty&);
+
     virtual ~BaseOptionProperty();
 
     virtual std::string getClassIdentifier() const override = 0;
@@ -132,7 +132,7 @@ public:
                            PropertySemantics semantics = PropertySemantics::Default);
 
     TemplateOptionProperty(const TemplateOptionProperty<T>& rhs);
-    TemplateOptionProperty<T>& operator=(const TemplateOptionProperty<T>& that);
+
     virtual TemplateOptionProperty<T>* clone() const override;
     virtual ~TemplateOptionProperty();
 
@@ -369,10 +369,6 @@ TemplateOptionProperty<T>::TemplateOptionProperty(
 
 template <typename T>
 TemplateOptionProperty<T>::TemplateOptionProperty(const TemplateOptionProperty<T>& rhs) = default;
-
-template <typename T>
-TemplateOptionProperty<T>& TemplateOptionProperty<T>::operator=(
-    const TemplateOptionProperty<T>& that) = default;
 
 template <typename T>
 TemplateOptionProperty<T>::~TemplateOptionProperty() = default;

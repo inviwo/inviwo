@@ -66,7 +66,6 @@ public:
                             InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                             PropertySemantics semantics = PropertySemantics::Default);
     CategoricalAxisProperty(const CategoricalAxisProperty& rhs);
-    CategoricalAxisProperty& operator=(const CategoricalAxisProperty& rhs) = default;
     virtual CategoricalAxisProperty* clone() const override;
     virtual ~CategoricalAxisProperty() = default;
 

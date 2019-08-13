@@ -55,7 +55,6 @@ public:
                      InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                      PropertySemantics semantics = PropertySemantics::Default);
     PlotTextProperty(const PlotTextProperty& rhs);
-    PlotTextProperty& operator=(const PlotTextProperty& rhs) = default;
     virtual PlotTextProperty* clone() const override;
     virtual ~PlotTextProperty() = default;
 

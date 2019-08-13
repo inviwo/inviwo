@@ -84,7 +84,6 @@ public:
                              PropertySemantics semantics = PropertySemantics::Default);
 
     TransferFunctionProperty(const TransferFunctionProperty& rhs);
-    TransferFunctionProperty& operator=(const TransferFunctionProperty& that);
     virtual TransferFunctionProperty* clone() const override;
     virtual ~TransferFunctionProperty();
 
