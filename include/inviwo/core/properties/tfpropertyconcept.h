@@ -47,7 +47,7 @@ namespace util {
  * \class TFPropertyConcept
  * \brief property interface used by the TF dialog to support different TF properties
  */
-struct TFPropertyConcept {
+struct IVW_CORE_API TFPropertyConcept {
     virtual ~TFPropertyConcept() = default;
     virtual Property* getProperty() const = 0;
 
