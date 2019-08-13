@@ -197,7 +197,7 @@ void VolumeSequenceSource::loadFolder(bool deserialize) {
 
 void VolumeSequenceSource::process() {
     if (file_.isModified() || reload_.isModified() || folder_.isModified() ||
-        filter_.isModified()) {
+        filter_.isModified() || reader_.isModified()) {
         load(deserialized_);
         deserialized_ = false;
     }
