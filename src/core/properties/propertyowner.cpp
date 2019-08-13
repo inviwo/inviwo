@@ -49,12 +49,21 @@ PropertyOwner::PropertyOwner(const PropertyOwner& rhs)
 
     for (const auto& p : rhs.ownedProperties_) addProperty(p->clone());
 }
+    
+PropertyOwner::~PropertyOwner() {
+    while (size() != 0) {
+        removeProperty(begin());
+    }
+}
 
 PropertyOwner& PropertyOwner::operator=(const PropertyOwner& that) {
     if (this != &that) {
         invalidationLevel_ = that.invalidationLevel_;
-        properties_.clear();
-        ownedProperties_.clear();
+        // PropertyOwner is only responsible for owned properties,
+        // not all, e.g. the ones in properties_.
+        while (!ownedProperties_.empty()) {
+            removeProperty(ownedProperties_.back().get());
+        }
         for (const auto& p : that.ownedProperties_) addProperty(p->clone());
     }
     return *this;

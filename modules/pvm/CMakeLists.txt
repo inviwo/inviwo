@@ -33,8 +33,8 @@ target_link_libraries(inviwo-module-pvm PRIVATE tidds)
 
 ivw_register_license_file(NAME "Tiny DDS Package" MODULE PVM TYPE "LGPL"
     URL https://github.com/Eyescale/Equalizer
-    FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/tidds/README
-          ${CMAKE_CURRENT_SOURCE_DIR}/ext/tidds/LGPL
+    FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/tidds/tidds/README
+          ${CMAKE_CURRENT_SOURCE_DIR}/ext/tidds/tidds/LGPL
 )
 
 ivw_make_package(InviwoPVMModule inviwo-module-pvm)

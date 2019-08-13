@@ -69,6 +69,12 @@ Property::Property(const Property& rhs)
     , invalidationLevel_(rhs.invalidationLevel_)
     , owner_(rhs.owner_)
     , initiatingWidget_(rhs.initiatingWidget_) {}
+    
+Property::~Property() {
+    if (auto owner = getOwner()) {
+        owner->removeProperty(this);
+    }
+}
 
 Property& Property::operator=(const Property& that) {
     if (this != &that) {

@@ -132,7 +132,10 @@ public:
              InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
              PropertySemantics semantics = PropertySemantics::Default);
     virtual Property* clone() const = 0;
-    virtual ~Property() = default;
+    /**
+     * \brief Removes itself from its PropertyOwner.
+     */
+    virtual ~Property();
 
     /**
      * Property identifier has to be unique within the scope

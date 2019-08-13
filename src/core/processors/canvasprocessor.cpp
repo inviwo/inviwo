@@ -49,6 +49,7 @@ namespace inviwo {
 CanvasProcessor::CanvasProcessor()
     : Processor()
     , inport_("inport")
+    , inputSize_("inputSize", "Input Dimension Parameters")
     , dimensions_("dimensions", "Canvas Size", ivec2(256, 256), ivec2(128, 128), ivec2(4096, 4096),
                   ivec2(1, 1), InvalidationLevel::Valid)
     , enableCustomInputDimensions_("enableCustomInputDimensions", "Separate Image Size", false,
@@ -69,7 +70,6 @@ CanvasProcessor::CanvasProcessor()
     , saveLayerButton_("saveLayer", "Save Image Layer", InvalidationLevel::Valid)
     , saveLayerToFileButton_("saveLayerToFile", "Save Image Layer to File...",
                              InvalidationLevel::Valid)
-    , inputSize_("inputSize", "Input Dimension Parameters")
     , fullScreen_("fullscreen", "Toggle Full Screen", false)
     , fullScreenEvent_("fullscreenEvent", "FullScreen",
                        [this](Event*) { fullScreen_.set(!fullScreen_); }, IvwKey::F,

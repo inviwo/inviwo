@@ -54,7 +54,10 @@ public:
     PropertyOwner();
     PropertyOwner(const PropertyOwner& rhs);
     PropertyOwner& operator=(const PropertyOwner& that);
-    virtual ~PropertyOwner() = default;
+    /**
+     * \brief Removes all properties and notifies its observers of the removal.
+     */
+    virtual ~PropertyOwner();
 
     virtual void addProperty(Property* property, bool owner = true);
     virtual void addProperty(Property& property);
@@ -139,14 +142,14 @@ protected:
     // pointers to members of derived classes.
     std::vector<Property*> properties_;
 
+    // Cached lists of certain property types
+    std::vector<EventProperty*> eventProperties_;          //< non-owning references.
+    std::vector<CompositeProperty*> compositeProperties_;  //< non-owning references.
+
     // An additional list of properties for which PropertyOwner assumes ownership.
     // I.e. PropertyOwner will take care of deleting them. Usually used for dynamic properties
     // allocated on the heap.
     std::vector<std::unique_ptr<Property>> ownedProperties_;
-
-    // Cached lists of certain property types
-    std::vector<EventProperty*> eventProperties_;          //< non-owning references.
-    std::vector<CompositeProperty*> compositeProperties_;  //< non-owning references.
 
 private:
     Property* removeProperty(std::vector<Property*>::iterator it);
