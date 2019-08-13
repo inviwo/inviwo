@@ -184,7 +184,7 @@ public:
     Observable() = default;
 
     /**
-     * This operation does nothing. We will not touch the observers of other
+     * This operation does nothing. We will not touch the observers of other.
      */
     Observable(const Observable<T>& other);
 
@@ -194,14 +194,13 @@ public:
     Observable(Observable<T>&& other);
 
     /**
-     * This operation does nothing. We will not touch the observers of other
+     * This operation does nothing. We will not touch the observers of other.
      */
-
     Observable<T>& operator=(const Observable<T>& other);
 
     /**
-     * This operation will remove all observers of this, amek make all observers of other observe this
-     * instead
+     * This operation will remove all observers of this, and make all observers of other observe this
+     * instead.
      */
     Observable<T>& operator=(Observable<T>&& other);
     virtual ~Observable();
