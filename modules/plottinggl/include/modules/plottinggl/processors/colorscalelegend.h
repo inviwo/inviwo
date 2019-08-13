@@ -89,7 +89,6 @@ public:
     ColorScaleLegend();
     virtual ~ColorScaleLegend() = default;
 
-    virtual void initializeResources() override;
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
@@ -97,10 +96,7 @@ public:
 
 private:
     enum class BackgroundStyle { CheckerBoard, NoBackground };
-
-    std::pair<ivec2, ivec2> getAxisPosition();
-    void updateLegendState();
-    vec2 getRealSize();
+    std::tuple<ivec2, ivec2, ivec2, ivec2> getPositions(ivec2 dim) const;
 
     ImageInport inport_;
     ImageOutport outport_;

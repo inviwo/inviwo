@@ -149,7 +149,7 @@ template <typename T>
 void inviwo::TemplateProperty<T>::set(const TemplateProperty<T>* srcProperty) {
     if (this->value_.value == srcProperty->value_.value) return;
     this->value_.value = srcProperty->value_.value;
-    Property::set(srcProperty);
+    propertyModified();
 }
 
 template <typename T>
