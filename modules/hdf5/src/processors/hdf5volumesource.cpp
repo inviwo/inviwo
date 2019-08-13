@@ -62,7 +62,7 @@ HDF5ToVolume::HDF5ToVolume()
 
     , basisGroup_("basisGroup", "Basis")
     , basisSelection_("basisSelection", "Source")
-    , basis_("basis", "Matrix", mat4(1.0f), inviwo::util::filled<mat4>(1000.f),
+    , basis_("basis", "Matrix", mat4(1.0f), inviwo::util::filled<mat4>(-1000.f),
              inviwo::util::filled<mat4>(1000.f))
     , spacing_("spacing", "Spacing", vec3(0.01f), vec3(0.0f), vec3(1.0f))
 
