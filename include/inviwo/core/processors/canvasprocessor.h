@@ -92,6 +92,7 @@ protected:
 public:
     ImageInport inport_;
 
+    CompositeProperty inputSize_;
     IntVec2Property dimensions_;
     BoolProperty enableCustomInputDimensions_;
     IntVec2Property customInputDimensions_;
@@ -104,7 +105,6 @@ public:
     DirectoryProperty saveLayerDirectory_;
     ButtonProperty saveLayerButton_;
     ButtonProperty saveLayerToFileButton_;
-    CompositeProperty inputSize_;
     BoolProperty fullScreen_;
     EventProperty fullScreenEvent_;
     EventProperty saveLayerEvent_;
