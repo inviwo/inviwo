@@ -37,7 +37,7 @@
 float basisSize;
 float modelSpaceStepSize;
 
-uniform bool useOld = false;
+uniform bool useOld = true;
 
 vec4 compositeDVR(in vec4 curResult, in vec4 color, in float t, inout float tDepth,
                   in float tIncr) {

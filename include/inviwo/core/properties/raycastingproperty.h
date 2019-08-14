@@ -84,6 +84,9 @@ public:
     TemplateOptionProperty<GradientComputation> gradientComputation_;
 
     FloatProperty samplingRate_;
+
+    BoolProperty useNew_ {"useNew","useNew",false};
+    FloatProperty scale_ {"newScale","newScale",1, 0 , 100};
 };
 
 }  // namespace inviwo

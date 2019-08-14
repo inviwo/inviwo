@@ -41,6 +41,7 @@
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/eventproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/volumeindicatorproperty.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/volumeport.h>
@@ -110,6 +111,9 @@ protected:
     SimpleLightingProperty lighting_;
     VolumeIndicatorProperty positionIndicator_;
     EventProperty toggleShading_;
+
+
+    BoolProperty useOld_ {"useOld","useOld",false};
 };
 
 }  // namespace inviwo

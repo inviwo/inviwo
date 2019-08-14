@@ -74,7 +74,7 @@ uniform int channel;
 #if (!defined(INCLUDE_DVR) && !defined(INCLUDE_ISOSURFACES))
 #  define INCLUDE_DVR
 #endif
-
+ 
 
 vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgroundDepth) {
     vec4 result = vec4(0.0);
@@ -93,16 +93,19 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords, float backgro
     vec3 toCameraDir = normalize((volumeParameters.textureToWorld * vec4(entryPoint, 1.0) -
                                   volumeParameters.textureToWorld * vec4(exitPoint, 1.0))
                                      .xyz);
+    
 
-    vec3 entryWorld = (volumeParameters.dataToModel * vec4(entryPoint,1.0)).xyz;
-    vec3 exitWorld = (volumeParameters.dataToModel * vec4(exitPoint,1.0)).xyz;
-    modelSpaceStepSize = length(exitWorld-entryWorld)/samples;
-    vec3 b = vec3(length(volumeParameters.dataToModel[0].xyz), 
-                  length(volumeParameters.dataToModel[1].xyz), 
-                  length(volumeParameters.dataToModel[2].xyz));
+    mat4 m = volumeParameters.dataToModel;
+    vec3 entryModel = (m * vec4(entryPoint,1.0)).xyz;
+    vec3 exitModel = (m * vec4(exitPoint,1.0)).xyz;
+    modelSpaceStepSize = length(exitModel-entryModel)/samples;
+
+    vec3 b = vec3(length(m[0].xyz), 
+                  length(m[1].xyz), 
+                  length(m[2].xyz));
     //basisSize = (b.x + b.y + b.z)/3;
-    //basisSize = max(b.x,max(b.y,b.z));
-    basisSize = length(b)/sqrt(3);
+    basisSize = max(b.x, max(b.y, b.z));
+    //basisSize = length(b)/sqrt(3);
 
     vec4 backgroundColor = vec4(0);
     float bgTDepth = -1;

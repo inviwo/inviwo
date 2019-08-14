@@ -120,6 +120,7 @@ VolumeRaycaster::VolumeRaycaster()
     addProperty(lighting_);
     addProperty(positionIndicator_);
     addProperty(toggleShading_);
+    addProperty(useOld_);
 }
 
 const ProcessorInfo VolumeRaycaster::getProcessorInfo() const { return processorInfo_; }
@@ -160,6 +161,7 @@ void VolumeRaycaster::process() {
     shader_.activate();
 
     TextureUnitContainer units;
+    shader_.setUniform("useOld",useOld_.get());
     utilgl::bindAndSetUniforms(shader_, units, *loadedVolume_, "volume");
     utilgl::bindAndSetUniforms(shader_, units, isotfComposite_);
     utilgl::bindAndSetUniforms(shader_, units, entryPort_, ImageType::ColorDepthPicking);
