@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/vectorfieldvisualization/processors/datageneration/seedpointgenerator.h>
+#include <modules/base/algorithm/randomutils.h>
 
 #include <glm/gtx/vector_angle.hpp>
 #include <math.h>
@@ -152,9 +153,9 @@ void SeedPointGenerator::onGeneratorChange() {
 }
 
 void SeedPointGenerator::spherePoints() {
-    std::uniform_real_distribution<float> T(0.0f, 2.0f * static_cast<float>(M_PI));
-    std::uniform_real_distribution<float> cos_phi(-1.0f, 1.0f);
-    std::uniform_real_distribution<float> R(0, 1.0f);
+    auto T = [](auto&& r) { return util::randomNumber<float>(r, 0, glm::two_pi<float>()); };
+    auto cos_phi = [](auto&& r) { return util::randomNumber<float>(r, -1, 1); };
+    auto R = [](auto&& r) { return util::randomNumber<float>(r, 0, 1); };
 
     auto points = std::make_shared<std::vector<vec3>>();
 
@@ -195,8 +196,8 @@ void SeedPointGenerator::planePoints() {
     float dx = 1.0f / (planeResolution_.get().x - 1);
     float dy = 1.0f / (planeResolution_.get().y - 1);
 
-    vec3 ox = planeE1_.get();  // - planeOrigin_.get();
-    vec3 oy = planeE2_.get();  // - planeOrigin_.get();
+    vec3 ox = planeE1_.get();
+    vec3 oy = planeE2_.get();
 
     for (int i = 0; i < planeResolution_.get().x; i++) {
         for (int j = 0; j < planeResolution_.get().y; j++) {
@@ -211,10 +212,11 @@ void SeedPointGenerator::planePoints() {
 
 void SeedPointGenerator::randomPoints() {
     auto points = std::make_shared<std::vector<vec3>>();
-    std::uniform_real_distribution<float> r(0.0f, 1.0f);
     for (int i = 0; i < numberOfPoints_.get(); i++) {
-        vec3 p(r(mt_), r(mt_), r(mt_));
-        points->push_back(p);
+        const float x = util::randomNumber<float>(mt_);
+        const float y = util::randomNumber<float>(mt_);
+        const float z = util::randomNumber<float>(mt_);
+        points->emplace_back(x, y, z);
     }
     seedPoints_.setData(points);
 }
