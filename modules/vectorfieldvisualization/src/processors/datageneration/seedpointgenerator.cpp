@@ -213,8 +213,10 @@ void SeedPointGenerator::randomPoints() {
     auto points = std::make_shared<std::vector<vec3>>();
     std::uniform_real_distribution<float> r(0.0f, 1.0f);
     for (int i = 0; i < numberOfPoints_.get(); i++) {
-        vec3 p(r(mt_), r(mt_), r(mt_));
-        points->push_back(p);
+        const float x = r(mt_);
+        const float y = r(mt_);
+        const float z = r(mt_);
+        points->emplace_back(x, y, z);
     }
     seedPoints_.setData(points);
 }
