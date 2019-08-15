@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,46 +26,52 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#ifndef IVW_BUTTONPROPERTY_H
-#define IVW_BUTTONPROPERTY_H
+#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/properties/property.h>
 #include <functional>
+#include <optional>
 
 namespace inviwo {
+
 /**
  * \ingroup properties
- * \brief The Button property class provides buttons that you can bind functions to.
- *
- * The button property has a widget witch creates a button and register a function to it.
- * You can only assign one function to the property.
- * To bind a function to a button property use onChange.
- * Example usage:
- *
- *     myButton_.onChange([&](){doSomthing();});
- *
- * @see ButtonPropertyWidgetQt
+ * \brief The Button Group property class provides a group of button that you can bind functions to.
+ * The button group property has a widget witch creates a row of buttons and register functions to
+ * them.
+ * @see ButtonGroupPropertyWidgetQt
  */
-class IVW_CORE_API ButtonProperty : public Property {
-
+class IVW_CORE_API ButtonGroupProperty : public Property {
 public:
+
+    struct IVW_CORE_API Button {
+        std::optional<std::string> name;
+        std::optional<std::string> icon;
+        std::function<void()> action;
+    };
+
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    ButtonProperty(std::string identifier, std::string displayName,
+    ButtonGroupProperty(std::string identifier, std::string displayName,
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                    PropertySemantics semantics = PropertySemantics::Default);
 
-    
-    ButtonProperty(std::string identifier, std::string displayName, std::function<void()> callback,
+    ButtonGroupProperty(std::string identifier, std::string displayName, std::vector<Button> buttons,
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                    PropertySemantics semantics = PropertySemantics::Default);
 
-    ButtonProperty(const ButtonProperty& rhs);
-    ButtonProperty(const ButtonProperty& rhs, std::function<void()> callback);
-    virtual ButtonProperty* clone() const override;
-    virtual ~ButtonProperty();
+    ButtonGroupProperty(const ButtonGroupProperty& rhs);
+    ButtonGroupProperty(const ButtonGroupProperty& rhs, std::vector<Button> buttons);
+    virtual ButtonGroupProperty* clone() const override;
+    virtual ~ButtonGroupProperty() = default;
+
+    void addButton(Button button);
+    const Button& getButton(size_t i) const;
+    size_t size() const;
 
     /**
      * Overrides the default implementation to
@@ -78,21 +84,22 @@ public:
     virtual void set(const Property* src) override;
 
     /**
-     * Causes onChange to be called.
+     * Causes callback to be called.
      * @see propertyModified
      * @see onChange
      */
-    virtual void pressButton();
+    void pressButton(size_t index);
 
-    virtual ButtonProperty& propertyModified() override;  // override for custom onChange behavior
+
+    virtual ButtonGroupProperty& propertyModified() override;  // override for custom onChange behavior
 
     // Override Property::resetToDefaultState, to avoid calling propertyModified  on reset.
-    virtual ButtonProperty& resetToDefaultState() override;
+    virtual ButtonGroupProperty& resetToDefaultState() override;
 
 private:
-    bool buttonPressed_ = false;
+    std::vector<Button> buttons_;
+
+    size_t buttonPressed_ = std::numeric_limits<size_t>::max();
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_BUTTONPROPERTY_H
