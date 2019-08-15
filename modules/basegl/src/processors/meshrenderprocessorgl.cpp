@@ -94,7 +94,7 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
     addPort(imageInport_).setOptional(true);
     addPort(outport_).addResizeEventListener(&camera_);
 
-    addProperties(camera_, cameraFitter_.getCompositeProperty(), resetViewParams_, geomProperties_,
+    addProperties(camera_, cameraFitter_, resetViewParams_, geomProperties_,
                   lightingProperty_, trackball_, layers_);
 
     resetViewParams_.onChange([this]() { camera_.resetCamera(); });

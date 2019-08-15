@@ -1,6 +1,7 @@
 #--------------------------------------------------------------------
 # Dependencies for OpenglQt module
 set(dependencies 
+    InviwoBaseModule
     InviwoOpenGLModule
     InviwoQtWidgetsModule
 )

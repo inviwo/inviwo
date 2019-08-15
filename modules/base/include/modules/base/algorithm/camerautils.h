@@ -32,12 +32,14 @@
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/buttongroupproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/common/inviwo.h>
 
 #include <modules/base/algorithm/mesh/axisalignedboundingbox.h>
+
 
 namespace inviwo {
 
@@ -112,97 +114,6 @@ IVW_MODULE_BASE_API std::pair<float, float> computeCameraNearFar(
 IVW_MODULE_BASE_API void setCameraNearFar(CameraProperty &cam, const mat4 &boundingBox,
                                           float maxZoomFactor = 25.f,
                                           float nearFarRatio = 1.f / 10000.f);
-
-/**
- * Helper class for wrapping properties and setting up their callbacks to update the given camera.
- * Can be used together with mesh ports (both single, multi and flat) and volume ports.
- * @see setCameraView
- * @see setCameraLookRanges
- * @see setCameraNearFar
- */
-class IVW_MODULE_BASE_API FitCameraPropertiesHelper {
-    FitCameraPropertiesHelper(std::string identifier, std::string displayName);
-
-public:
-    FitCameraPropertiesHelper(std::string identifier, std::string displayName,
-                              CameraProperty &camera, VolumeInport &volumePort);
-
-    template <size_t N, bool Flat>
-    FitCameraPropertiesHelper(std::string identifier, std::string displayName,
-                              CameraProperty &camera, DataInport<Mesh, N, Flat> &meshPort);
-
-    CompositeProperty &getCompositeProperty() { return composite_; }
-
-private:
-    CompositeProperty composite_;
-    CompositeProperty lookAt_;
-    CompositeProperty lookAtSettings_;
-    ButtonProperty flipUp_;
-    BoolProperty updateNearFar_;
-    BoolProperty updateLookRanges_;
-    FloatProperty fittingRatio_;
-    ButtonProperty xNegative_;
-    ButtonProperty xPositive_;
-    ButtonProperty yNegative_;
-    ButtonProperty yPositive_;
-    ButtonProperty zNegative_;
-    ButtonProperty zPositive_;
-
-    ButtonProperty setNearFarButton_;
-    ButtonProperty setLookRangesButton_;
-
-    template <typename Callback, typename Port>
-    void init(CameraProperty &camera, Callback getToWorld, Port &port);
-};
-
-template <size_t N, bool Flat>
-FitCameraPropertiesHelper::FitCameraPropertiesHelper(std::string identifier,
-                                                     std::string displayName,
-                                                     CameraProperty &camera,
-                                                     DataInport<Mesh, N, Flat> &meshPort)
-    : FitCameraPropertiesHelper(identifier, displayName) {
-    auto getToWorld = [mp = &meshPort] {
-        auto minMax = meshutil::axisAlignedBoundingBox(mp->getVectorData());
-        auto m = glm::scale(minMax.second - minMax.first);
-        m[3] = vec4(minMax.first, 1.0f);
-        return m;
-    };
-
-    init(camera, getToWorld, meshPort);
-}
-
-template <typename Callback, typename Port>
-void FitCameraPropertiesHelper::init(CameraProperty &camera, Callback getBoundingBox, Port &port) {
-
-    auto set = [getBoundingBox, p = &port, cam = &camera, this](auto side) {
-        if (p->hasData()) {
-            setCameraView(*cam, getBoundingBox(), side, fittingRatio_.get(), updateNearFar_.get(),
-                          updateLookRanges_.get());
-        }
-    };
-
-    xNegative_.onChange([set] { set(Side::XNegative); });
-    xPositive_.onChange([set] { set(Side::XPositive); });
-
-    yNegative_.onChange([set] { set(Side::YNegative); });
-    yPositive_.onChange([set] { set(Side::YPositive); });
-
-    zNegative_.onChange([set] { set(Side::ZNegative); });
-    zPositive_.onChange([set] { set(Side::ZPositive); });
-
-    flipUp_.onChange([cam = &camera]() { cam->setLookUp(-cam->getLookUp()); });
-
-    setNearFarButton_.onChange([getBoundingBox, p = &port, cam = &camera] {
-        if (p->hasData()) {
-            setCameraNearFar(*cam, getBoundingBox());
-        }
-    });
-    setLookRangesButton_.onChange([getBoundingBox, p = &port, cam = &camera] {
-        if (p->hasData()) {
-            setCameraLookRanges(*cam, getBoundingBox());
-        }
-    });
-}
 
 }  // namespace camerautil
 

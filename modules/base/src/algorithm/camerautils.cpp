@@ -182,45 +182,6 @@ void setCameraNearFar(CameraProperty &cam, const mat4 &boundingBox, float zoomRa
     cam.setNearFarPlaneDist(newNear, newFar);
 }
 
-FitCameraPropertiesHelper::FitCameraPropertiesHelper(std::string identifier,
-                                                     std::string displayName,
-                                                     CameraProperty &camera,
-                                                     VolumeInport &volumePort)
-    : FitCameraPropertiesHelper(identifier, displayName) {
-    auto getToWorld = [vp = &volumePort] {
-        return vp->getData()->getCoordinateTransformer().getDataToWorldMatrix();
-    };
-    init(camera, getToWorld, volumePort);
-}
-
-FitCameraPropertiesHelper::FitCameraPropertiesHelper(std::string identifier,
-                                                     std::string displayName)
-    : composite_(identifier, displayName,
-                 InvalidationLevel::Valid)  // Indirect invalidation by setting the camera
-    , lookAt_("lookAt", "Look At")
-    , lookAtSettings_("lookAtSettings", "Settings")
-    , flipUp_("flipUp", "Flip Upvector")
-    , updateNearFar_("updateNearFar", "Update Near/Far Distances", true)
-    , updateLookRanges_("updateLookRanges", "Update Look-to/-from Ranges", true)
-    , fittingRatio_("fittingRatio", "Fitting Ratio", 1.05f, 0, 2, 0.01f)
-    , xNegative_("xNegative", "X -")
-    , xPositive_("xPostive", "X +")
-    , yNegative_("yNegative", "Y -")
-    , yPositive_("yPostive", "Y +")
-    , zNegative_("zNegative", "Z -")
-    , zPositive_("zPostive", "Z +")
-
-    , setNearFarButton_("setNearFarButton", "Set Near/Far Distances")
-    , setLookRangesButton_("setLookRangesButton", "Set Look-to/-from Ranges") {
-
-    composite_.addProperties(lookAt_, flipUp_, setNearFarButton_, setLookRangesButton_);
-
-    lookAt_.addProperties(xNegative_, xPositive_, yNegative_, yPositive_, zNegative_, zPositive_,
-                          lookAtSettings_);
-    lookAtSettings_.addProperties(updateNearFar_, updateLookRanges_, fittingRatio_);
-    lookAtSettings_.setCollapsed(true);
-}
-
 }  // namespace camerautil
 
 }  // namespace inviwo

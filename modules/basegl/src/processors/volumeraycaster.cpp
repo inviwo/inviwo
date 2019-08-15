@@ -39,6 +39,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/rendercontext.h>
 
+
 namespace inviwo {
 
 const ProcessorInfo VolumeRaycaster::processorInfo_{
@@ -118,7 +119,7 @@ VolumeRaycaster::VolumeRaycaster()
     addProperty(isotfComposite_);
 
     addProperty(camera_);
-    addProperty(cameraFitter_.getCompositeProperty());
+    addProperty(cameraFitter_);
     addProperty(lighting_);
     addProperty(positionIndicator_);
     addProperty(toggleShading_);

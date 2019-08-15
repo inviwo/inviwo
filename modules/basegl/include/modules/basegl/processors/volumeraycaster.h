@@ -47,6 +47,7 @@
 #include <modules/opengl/shader/shader.h>
 
 #include <modules/base/algorithm/camerautils.h>
+#include <modules/base/properties/camerafittingproperty.h>
 
 namespace inviwo {
 
@@ -113,7 +114,7 @@ protected:
     VolumeIndicatorProperty positionIndicator_;
     EventProperty toggleShading_;
 
-    camerautil::FitCameraPropertiesHelper cameraFitter_;
+    CameraFittingProperty cameraFitter_;
 };
 
 }  // namespace inviwo

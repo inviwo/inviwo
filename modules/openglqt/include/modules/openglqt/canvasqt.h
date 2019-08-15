@@ -48,6 +48,8 @@
 #include <modules/opengl/debugmessages.h>
 #include <modules/openglqt/canvasqglwidget.h>
 
+#include <modules/base/events/viewevent.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QMouseEvent>
@@ -200,6 +202,28 @@ void CanvasQtBase<T>::doContextMenu(QMouseEvent* event) {
             menu.addSeparator();
             utilqt::addImageActions(menu, *(this->image_), this->layerType_,
                                     this->activeRenderLayerIdx_);
+        }
+
+        {
+            menu.addSeparator();
+            auto prop = [this](camerautil::Side side) {
+                return [this, side]() {
+                    ViewEvent e{side};
+                    this->propagateEvent(&e);
+                };
+            };
+            this->connect(menu.addAction(QIcon(":svgicons/view-x-p.svg"), "X+"),
+                          &QAction::triggered, this, prop(camerautil::Side::XPositive));
+            this->connect(menu.addAction(QIcon(":svgicons/view-x-m.svg"), "X-"),
+                          &QAction::triggered, this, prop(camerautil::Side::XNegative));
+            this->connect(menu.addAction(QIcon(":svgicons/view-y-p.svg"), "Y+"),
+                          &QAction::triggered, this, prop(camerautil::Side::YPositive));
+            this->connect(menu.addAction(QIcon(":svgicons/view-y-m.svg"), "Y-"),
+                          &QAction::triggered, this, prop(camerautil::Side::YNegative));
+            this->connect(menu.addAction(QIcon(":svgicons/view-z-p.svg"), "Z+"),
+                          &QAction::triggered, this, prop(camerautil::Side::ZPositive));
+            this->connect(menu.addAction(QIcon(":svgicons/view-z-m.svg"), "Z-"),
+                          &QAction::triggered, this, prop(camerautil::Side::ZNegative));
         }
 
         menu.exec(event->globalPos());

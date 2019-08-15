@@ -92,6 +92,7 @@
 
 // Properties
 #include <modules/base/properties/basisproperty.h>
+#include <modules/base/properties/camerafittingproperty.h>
 #include <modules/base/properties/gaussianproperty.h>
 #include <modules/base/properties/imageinformationproperty.h>
 #include <modules/base/properties/layerinformationproperty.h>
@@ -198,6 +199,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
 
     registerProperty<SequenceTimerProperty>();
     registerProperty<BasisProperty>();
+    registerProperty<CameraFittingProperty>();
     registerProperty<ImageInformationProperty>();
     registerProperty<LayerInformationProperty>();
     registerProperty<MeshInformationProperty>();

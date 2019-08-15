@@ -372,6 +372,13 @@ QWidget#CompositeWidget > .QPushButton {
     min-height: 0.3125em;
     min-width: 2.5em;    
 }
+
+QWidget#ButtonGroupPropertyWidgetQt > .QPushButton {
+    /* overwrite minimum size for push buttons within the composite properties */
+    min-height: 0.3125em;
+    min-width: 0.5em;    
+}
+
 QPushButton:default {
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                 stop:0 #6f6f75, stop:0.1 #144c72, stop:0.9 #144c72, stop:1 #222224);

@@ -37,7 +37,7 @@ const ProcessorInfo FitCameraToData::processorInfo_{
     "Fit Camera To Data",          // Display name
     "Camera",                      // Category
     CodeState::Stable,             // Code state
-    Tags::CPU,                     // Tags
+    "CPU, Camera"                  // Tags
 };
 const ProcessorInfo FitCameraToData::getProcessorInfo() const { return processorInfo_; }
 
@@ -55,49 +55,43 @@ FitCameraToData::FitCameraToData()
                       meshFlatMultiInport_)
 
 {
-
     volume_.setOptional(true);
     mesh_.setOptional(true);
     meshMultiInport_.setOptional(true);
     meshFlatMultiInport_.setOptional(true);
 
-    fitterVolume_.getCompositeProperty().setVisible(false);
-    fitterMesh_.getCompositeProperty().setVisible(false);
-    fitterMeshMulti_.getCompositeProperty().setVisible(false);
-    fitterMeshFlat_.getCompositeProperty().setVisible(false);
+    fitterVolume_.setVisible(false);
+    fitterMesh_.setVisible(false);
+    fitterMeshMulti_.setVisible(false);
+    fitterMeshFlat_.setVisible(false);
 
-    fitterVolume_.getCompositeProperty().setCollapsed(true);
-    fitterMesh_.getCompositeProperty().setCollapsed(true);
-    fitterMeshMulti_.getCompositeProperty().setCollapsed(true);
-    fitterMeshFlat_.getCompositeProperty().setCollapsed(true);
+    fitterVolume_.setCollapsed(true);
+    fitterMesh_.setCollapsed(true);
+    fitterMeshMulti_.setCollapsed(true);
+    fitterMeshFlat_.setCollapsed(true);
 
-    fitterVolume_.getCompositeProperty().setCurrentStateAsDefault();
-    fitterMesh_.getCompositeProperty().setCurrentStateAsDefault();
-    fitterMeshMulti_.getCompositeProperty().setCurrentStateAsDefault();
-    fitterMeshFlat_.getCompositeProperty().setCurrentStateAsDefault();
+    fitterVolume_.setCurrentStateAsDefault();
+    fitterMesh_.setCurrentStateAsDefault();
+    fitterMeshMulti_.setCurrentStateAsDefault();
+    fitterMeshFlat_.setCurrentStateAsDefault();
 
-    volume_.onConnect([this] { fitterVolume_.getCompositeProperty().setVisible(true); });
-    volume_.onDisconnect([this] { fitterVolume_.getCompositeProperty().setVisible(false); });
+    volume_.onConnect([this] { fitterVolume_.setVisible(true); });
+    volume_.onDisconnect([this] { fitterVolume_.setVisible(false); });
 
-    mesh_.onConnect([this] { fitterMesh_.getCompositeProperty().setVisible(true); });
-    mesh_.onDisconnect([this] { fitterMesh_.getCompositeProperty().setVisible(false); });
+    mesh_.onConnect([this] { fitterMesh_.setVisible(true); });
+    mesh_.onDisconnect([this] { fitterMesh_.setVisible(false); });
 
-    meshMultiInport_.onConnect(
-        [this] { fitterMeshMulti_.getCompositeProperty().setVisible(true); });
-    meshMultiInport_.onDisconnect(
-        [this] { fitterMeshMulti_.getCompositeProperty().setVisible(false); });
+    meshMultiInport_.onConnect([this] { fitterMeshMulti_.setVisible(true); });
+    meshMultiInport_.onDisconnect([this] { fitterMeshMulti_.setVisible(false); });
 
-    meshFlatMultiInport_.onConnect(
-        [this] { fitterMeshFlat_.getCompositeProperty().setVisible(true); });
-    meshFlatMultiInport_.onDisconnect(
-        [this] { fitterMeshFlat_.getCompositeProperty().setVisible(false); });
+    meshFlatMultiInport_.onConnect([this] { fitterMeshFlat_.setVisible(true); });
+    meshFlatMultiInport_.onDisconnect([this] { fitterMeshFlat_.setVisible(false); });
 
     addPort(volume_);
     addPort(mesh_);
     addPort(meshMultiInport_);
     addPort(meshFlatMultiInport_);
-    addProperties(camera_, fitterVolume_.getCompositeProperty(), fitterMesh_.getCompositeProperty(),
-                  fitterMeshMulti_.getCompositeProperty(), fitterMeshFlat_.getCompositeProperty());
+    addProperties(camera_, fitterVolume_, fitterMesh_, fitterMeshMulti_, fitterMeshFlat_);
 
     camera_.setCollapsed(true);
 }

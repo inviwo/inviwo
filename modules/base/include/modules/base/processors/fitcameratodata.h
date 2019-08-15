@@ -35,7 +35,7 @@
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/ports/meshport.h>
 
-#include <modules/base/algorithm/camerautils.h>
+#include <modules/base/properties/camerafittingproperty.h>
 
 namespace inviwo {
 
@@ -53,7 +53,6 @@ namespace inviwo {
  *   * __Fit Camera To Multi Flat Mesh__  properties for updating the camera based on the 
  *                                   flat multimesh inport
  */
-
 class IVW_MODULE_BASE_API FitCameraToData : public Processor {
 public:
     FitCameraToData();
@@ -71,10 +70,10 @@ private:
     MeshFlatMultiInport meshFlatMultiInport_;
     CameraProperty camera_;
 
-    camerautil::FitCameraPropertiesHelper fitterVolume_;
-    camerautil::FitCameraPropertiesHelper fitterMesh_;
-    camerautil::FitCameraPropertiesHelper fitterMeshMulti_;
-    camerautil::FitCameraPropertiesHelper fitterMeshFlat_;
+    CameraFittingProperty fitterVolume_;
+    CameraFittingProperty fitterMesh_;
+    CameraFittingProperty fitterMeshMulti_;
+    CameraFittingProperty fitterMeshFlat_;
 };
 
 }  // namespace inviwo

@@ -38,6 +38,7 @@ set(HEADER_FILES
     include/modules/base/datastructures/disjointsets.h
     include/modules/base/datastructures/imagereusecache.h
     include/modules/base/datastructures/kdtree.h
+    include/modules/base/events/viewevent.h
     include/modules/base/io/binarystlwriter.h
     include/modules/base/io/datvolumesequencereader.h
     include/modules/base/io/datvolumewriter.h
@@ -114,6 +115,7 @@ set(HEADER_FILES
     include/modules/base/processors/worldtransform.h
     include/modules/base/properties/basisproperty.h
     include/modules/base/properties/bufferinformationproperty.h
+    include/modules/base/properties/camerafittingproperty.h
     include/modules/base/properties/gaussianproperty.h
     include/modules/base/properties/imageinformationproperty.h
     include/modules/base/properties/layerinformationproperty.h
@@ -156,6 +158,7 @@ set(SOURCE_FILES
     src/basemodule.cpp
     src/datastructures/disjointsets.cpp
     src/datastructures/imagereusecache.cpp
+    src/events/viewevent.cpp
     src/io/binarystlwriter.cpp
     src/io/datvolumesequencereader.cpp
     src/io/datvolumewriter.cpp
@@ -227,6 +230,7 @@ set(SOURCE_FILES
     src/processors/volumetospatialsampler.cpp
     src/properties/basisproperty.cpp
     src/properties/bufferinformationproperty.cpp
+    src/properties/camerafittingproperty.cpp
     src/properties/gaussianproperty.cpp
     src/properties/imageinformationproperty.cpp
     src/properties/layerinformationproperty.cpp
