@@ -194,9 +194,7 @@ void exposeProperties(py::module &m) {
         .def_property_readonly("viewMatrix", &CameraProperty::viewMatrix)
         .def_property_readonly("projectionMatrix", &CameraProperty::projectionMatrix)
         .def_property_readonly("inverseViewMatrix", &CameraProperty::inverseViewMatrix)
-        .def_property_readonly("inverseProjectionMatrix", &CameraProperty::inverseProjectionMatrix)
-        .def("adjustCameraToData", &CameraProperty::adjustCameraToData)
-        .def("resetAdjustCameraToData", &CameraProperty::resetAdjustCameraToData);
+        .def_property_readonly("inverseProjectionMatrix", &CameraProperty::inverseProjectionMatrix);
 
     PyPropertyClass<TransferFunctionProperty>(m, "TransferFunctionProperty")
         .def(py::init([](const std::string &identifier, const std::string &displayName,

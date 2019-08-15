@@ -140,23 +140,6 @@ public:
 
     void invokeEvent(Event* event) override;
 
-    void setInport(Inport* inport);
-
-    /**
-     * \brief Translates and scales camera to match new data and fit new object into view.
-     * Locks and unlocks processor network before and after changing property values.
-     * @param newDataToWorldMatrix Matrix of new object
-     */
-    void adjustCameraToData(const mat4& newDataToWorldMatrix);
-    /**
-     * \brief Reset the camera adjustment matrix to currently set inport data.
-     */
-    void resetAdjustCameraToData();
-    /**
-     * \brief Calls adjustCameraToData if "Adjust camera on data change" is set to true.
-     */
-    void inportChanged();
-
     // These properties enable linking of individual
     // camera properties but requires them to be synced
     // with the camera.
@@ -170,21 +153,9 @@ public:
 
 private:
     void changeCamera(std::unique_ptr<Camera> newCamera);
-    void updatePropertyFromValue();
-
+    
     OptionPropertyString cameraType_;
-
-    BoolProperty adjustCameraOnDataChange_;
-
     std::unique_ptr<Camera> camera_;
-
-    Inport* inport_;  ///< Allows the camera to be positioned relative to new data (VolumeInport,
-                      /// MeshInport)
-    const SpatialEntity<3>* data_;  //< non-owning reference;
-
-    mat4 prevDataToWorldMatrix_;  //< Data-to-world matrix of object currently being viewed
-
-    const BaseCallBack* callbackInportOnChange_ = nullptr;
 };
 
 }  // namespace inviwo
