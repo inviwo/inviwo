@@ -286,10 +286,8 @@ template <typename T>
 void MinMaxProperty<T>::set(const range_type& value, const range_type& range, const T& increment,
                             const T& minSep) {
 
-    const auto newRange = clamp({glm::min(range.x, range.y), glm::max(range.x, range.y)});
-
     bool modified = false;
-    modified |= range_.update(newRange);
+    modified |= range_.update(range);
     const bool rangeModified = modified;
 
     modified |= increment_.update(increment);
