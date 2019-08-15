@@ -126,7 +126,7 @@ auto SplineInterpolation<Key>::operator()(const std::vector<std::unique_ptr<Key>
     }
 
     // Build the spline
-    tinynurbs::Curve<util::extent<DT>::value, double> spline;
+    tinynurbs::Curve<DT> spline;
     ::inviwo::util::GetInterpolatingNaturalCubicSpline(values, times, spline);
 
     // Evaluate the spline

@@ -11,7 +11,7 @@ set(HEADER_FILES
     include/inviwo/bspline/bsplinemoduledefine.h
     include/inviwo/bspline/interpolation/nurbutilities.h
     include/inviwo/bspline/interpolation/splineinterpolation.h
-)
+        )
 ivw_group("Header Files" ${HEADER_FILES})
 
 #--------------------------------------------------------------------

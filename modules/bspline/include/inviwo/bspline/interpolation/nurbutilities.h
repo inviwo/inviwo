@@ -64,12 +64,12 @@ void SolveTridiagonalSystem(const std::vector<double>& a, const std::vector<doub
     }
 }
 
-template <typename value_type, int dim>
-void GetInterpolatingNaturalCubicSpline(const std::vector<glm::vec<dim, value_type>>& InPoints,
+template <typename T>
+void GetInterpolatingNaturalCubicSpline(const std::vector<T>& InPoints,
                                         const std::vector<double>& CurveParameter,
-                                        tinynurbs::Curve<dim, value_type>& ResCurve) {
+                                        tinynurbs::Curve<T>& ResCurve) {
     // Types
-    using VecType = typename glm::vec<dim, value_type>;
+    using VecType = T;
 
     // Let us use the classic variables, so that our math conforms to the book
     const int n = (int)InPoints.size() - 1;

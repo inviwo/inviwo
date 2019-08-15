@@ -32,6 +32,7 @@
 #include <modules/animation/animationmodule.h>
 #include <modules/animation/datastructures/valuekeyframe.h>
 #include <modules/animation/interpolation/interpolation.h>
+#include <inviwo/core/properties/cameraproperty.h>
 
 namespace inviwo {
 
@@ -50,6 +51,20 @@ auto interpolationRegHelper(BSplineModule& am) {
     am.registerPropertyInterpolationConnection(
         PropertyTraits<PropertyType>::classIdentifier(),
         Interpolation<ValueKeyframe<ValueType>>::classIdentifier());
+}
+
+template <template <class> class Interpolation>
+auto cameraRegHelper(BSplineModule& am) {
+    using namespace animation;
+    using ValueType = glm::vec3;
+
+    am.registerInterpolation<Interpolation<ValueKeyframe<ValueType>>>(
+            AnimationSupplier::IgnoreDuplicates::Yes);
+
+    // Default interpolation for this property
+    am.registerPropertyInterpolationConnection(
+            PropertyTraits<CameraProperty>::classIdentifier(),
+            Interpolation<ValueKeyframe<ValueType>>::classIdentifier());
 }
 
 struct OrdinalReghelper {
@@ -71,6 +86,16 @@ struct MinMaxReghelper {
     }
 };
 
+struct CameraReghelper {
+    template <typename T>
+    auto operator()(BSplineModule& am) {
+        using namespace animation;
+        using PropertyType = CameraProperty;
+
+        cameraRegHelper<SplineInterpolation>(am);
+    }
+};
+
 }  // namespace
 
 BSplineModule::BSplineModule(InviwoApplication* app)
@@ -85,6 +110,10 @@ BSplineModule::BSplineModule(InviwoApplication* app)
     // Register MinMaxProperties
     using ScalarTypes = std::tuple<float, double, int, unsigned int, size_t>;
     util::for_each_type<ScalarTypes>{}(MinMaxReghelper{}, *this);
+
+    //Register CameraProperty
+    using ScalarTypes = std::tuple<float, double, int, unsigned int, size_t>;
+    util::for_each_type<ScalarTypes>{}(CameraReghelper{}, *this);
 }
 
 }  // namespace inviwo
