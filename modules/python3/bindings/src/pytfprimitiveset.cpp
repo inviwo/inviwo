@@ -147,7 +147,7 @@ void exposeTFPrimitiveSet(pybind11::module &m) {
         .def("__getitem__",
              [](const TFPrimitiveSet &ps, size_t i) {
                  if (i >= ps.size()) throw py::index_error();
-                 return ps[i];
+                 return &ps[i];
              },
              py::return_value_policy::reference_internal)
         .def("__setitem__",
