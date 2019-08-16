@@ -83,7 +83,6 @@ public:
                   PropertySemantics semantics = PropertySemantics::Default);
 
     EventProperty(const EventProperty& rhs);
-    EventProperty& operator=(const EventProperty& that);
     virtual EventProperty* clone() const override;
     virtual ~EventProperty() = default;
 

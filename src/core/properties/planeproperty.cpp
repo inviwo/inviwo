@@ -67,8 +67,6 @@ PlaneProperty::PlaneProperty(const PlaneProperty& rhs)
     addProperty(color_);
 }
 
-PlaneProperty& PlaneProperty::operator=(const PlaneProperty& that) = default;
-
 PlaneProperty* PlaneProperty::clone() const { return new PlaneProperty(*this); }
 
 PlaneProperty::~PlaneProperty() = default;

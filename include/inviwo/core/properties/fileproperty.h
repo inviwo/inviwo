@@ -77,7 +77,7 @@ public:
                  PropertySemantics semantics = PropertySemantics::Default);
 
     FileProperty(const FileProperty& rhs) = default;
-    FileProperty& operator=(const FileProperty& that) = default;
+
     FileProperty& operator=(const std::string& value);
     virtual FileProperty* clone() const override;
     virtual ~FileProperty() = default;

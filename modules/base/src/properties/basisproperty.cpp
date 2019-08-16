@@ -111,14 +111,6 @@ BasisProperty::BasisProperty(const BasisProperty& rhs)
                             size_, a_, b_, c_, offset_);
 }
 
-BasisProperty& BasisProperty::operator=(const BasisProperty& that) {
-    if (this != &that) {
-        CompositeProperty::operator=(that);
-        util::for_each_in_tuple([](auto& dst, auto& src) { dst = src; }, props(), that.props());
-    }
-    return *this;
-}
-
 BasisProperty* BasisProperty::clone() const { return new BasisProperty(*this); }
 
 void BasisProperty::updateForNewEntity(const StructuredGridEntity<3>& volume, bool deserialize) {

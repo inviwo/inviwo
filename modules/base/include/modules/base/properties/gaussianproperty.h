@@ -64,7 +64,6 @@ public:
         addProperty(sigma_);
         addProperty(center_);
     }
-    GaussianProperty &operator=(const GaussianProperty &that) = default;
 
     virtual GaussianProperty<T> *clone() const override { return new GaussianProperty<T>(*this); }
 

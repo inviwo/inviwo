@@ -130,16 +130,6 @@ MeshInformationProperty::MeshInformationProperty(const MeshInformationProperty& 
                   meshProperties_, buffers_, indexBuffers_);
 }
 
-MeshInformationProperty& MeshInformationProperty::operator=(const MeshInformationProperty& that) {
-    if (this != &that) {
-        CompositeProperty::operator=(that);
-        util::for_each_in_tuple([](auto& dst, auto& src) { dst = src; }, props(), that.props());
-        util::for_each_in_tuple([](auto& dst, auto& src) { dst = src; }, compositeProps(),
-                                that.compositeProps());
-    }
-    return *this;
-}
-
 MeshInformationProperty* MeshInformationProperty::clone() const {
     return new MeshInformationProperty(*this);
 }

@@ -40,13 +40,6 @@ StringProperty::StringProperty(std::string identifier, std::string displayName, 
 
 StringProperty::StringProperty(const StringProperty& rhs) : TemplateProperty<std::string>(rhs) {}
 
-StringProperty& StringProperty::operator=(const StringProperty& that) {
-    if (this != &that) {
-        TemplateProperty<std::string>::operator=(that);
-    }
-    return *this;
-}
-
 StringProperty& StringProperty::operator=(const std::string& value) {
     TemplateProperty<std::string>::operator=(value);
     return *this;

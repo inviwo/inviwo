@@ -45,13 +45,6 @@ ButtonProperty::ButtonProperty(
 
 ButtonProperty::ButtonProperty(const ButtonProperty& rhs) : Property(rhs) {}
 
-ButtonProperty& ButtonProperty::operator=(const ButtonProperty& that) {
-    if (this != &that) {
-        Property::operator=(that);
-    }
-    return *this;
-}
-
 ButtonProperty* ButtonProperty::clone() const { return new ButtonProperty(*this); }
 
 ButtonProperty::~ButtonProperty() {}

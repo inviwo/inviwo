@@ -68,7 +68,6 @@ public:
                    PropertySemantics semantics = PropertySemantics::Default);
 
         Properties(const Properties &rhs);
-        Properties &operator=(const Properties &that);
         virtual Properties *clone() const override;
         virtual ~Properties() = default;
 

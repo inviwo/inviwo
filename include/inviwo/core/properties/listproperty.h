@@ -117,7 +117,7 @@ public:
                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                  PropertySemantics semantics = PropertySemantics::Default);
     ListProperty(const ListProperty& rhs);
-    ListProperty& operator=(const ListProperty& that);
+
     virtual ListProperty* clone() const override;
     virtual ~ListProperty() = default;
 

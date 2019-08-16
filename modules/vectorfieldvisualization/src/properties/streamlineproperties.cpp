@@ -44,13 +44,6 @@ StreamLineProperties* StreamLineProperties::clone() const {
     return new StreamLineProperties(*this);
 }
 
-StreamLineProperties::~StreamLineProperties() {}
-
-StreamLineProperties& StreamLineProperties::operator=(const StreamLineProperties& that) {
-    if (this != &that) {
-        IntegralLineProperties::operator=(that);
-    }
-    return *this;
-}
+StreamLineProperties::~StreamLineProperties() = default;
 
 }  // namespace inviwo

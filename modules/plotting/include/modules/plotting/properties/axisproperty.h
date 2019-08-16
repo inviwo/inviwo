@@ -59,7 +59,6 @@ public:
                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                  PropertySemantics semantics = PropertySemantics::Default);
     AxisProperty(const AxisProperty& rhs);
-    AxisProperty& operator=(const AxisProperty& rhs) = default;
     virtual AxisProperty* clone() const override;
     virtual ~AxisProperty() = default;
 

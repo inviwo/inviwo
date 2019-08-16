@@ -72,7 +72,6 @@ public:
 
 protected:
     TemplateProperty(const TemplateProperty& rhs) = default;
-    TemplateProperty<T>& operator=(const TemplateProperty<T>& that) = default;
     ValueWrapper<T> value_;
 };
 

@@ -45,14 +45,6 @@ PathLineProperties::PathLineProperties(const PathLineProperties& rhs)
     setUpProperties();
 }
 
-PathLineProperties& PathLineProperties::operator=(const PathLineProperties& that) {
-    if (this != &that) {
-        PathLineProperties::operator=(that);
-        startT_ = that.startT_;
-    }
-    return *this;
-}
-
 PathLineProperties* PathLineProperties::clone() const { return new PathLineProperties(*this); }
 
 PathLineProperties::~PathLineProperties() {}

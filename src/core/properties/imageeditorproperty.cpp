@@ -39,15 +39,6 @@ ImageLabel::ImageLabel(vec2 startPoint, vec2 rectSize, std::string name)
 ImageEditorProperty::ImageEditorProperty(const ImageEditorProperty& rhs)
     : FileProperty(rhs), labels_(rhs.labels_), dimensions_(rhs.dimensions_) {}
 
-ImageEditorProperty& ImageEditorProperty::operator=(const ImageEditorProperty& that) {
-    if (this != &that) {
-        FileProperty::operator=(that);
-        labels_ = that.labels_;
-        dimensions_ = that.dimensions_;
-    }
-    return *this;
-}
-
 ImageEditorProperty* ImageEditorProperty::clone() const { return new ImageEditorProperty(*this); }
 
 ImageEditorProperty::~ImageEditorProperty() = default;

@@ -63,7 +63,6 @@ public:
                      InvalidationLevel = InvalidationLevel::InvalidResources,
                      PropertySemantics semantics = PropertySemantics::Default);
     PositionProperty(const PositionProperty& rhs);
-    PositionProperty& operator=(const PositionProperty& that);
     virtual PositionProperty* clone() const override;
     virtual ~PositionProperty() {}
 

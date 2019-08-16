@@ -131,6 +131,12 @@ public:
     Property(const std::string& identifier = "", const std::string& displayName = "",
              InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
              PropertySemantics semantics = PropertySemantics::Default);
+
+    /**
+     * Creates a clone of this property. The clone will have the same identifier, hence the
+     * identifier must be changed if the clone should be added to the same owner as this. The new
+     * clone does not have any owner set.
+     */
     virtual Property* clone() const = 0;
     /**
      * \brief Removes itself from its PropertyOwner.
@@ -240,6 +246,12 @@ public:
     virtual void setValid();
     virtual Property& setModified();
     virtual bool isModified() const;
+
+    /**
+     * Set the value of this to that of src. The "value" is in this case considered to be for
+     * example the string in a StringProperty or the float value in a FloatProperty. But not things
+     * like the identifier of display name.
+     */
     virtual void set(const Property* src);
 
     virtual void serialize(Serializer& s) const override;
@@ -356,8 +368,20 @@ public:
     };
 
 protected:
+    /**
+     * Since property is a polymorphic class the copy constructor should only be used internally to
+     * implement the clone functionality
+     * @see clone
+     */
     Property(const Property& rhs);
-    Property& operator=(const Property& that);
+
+    /**
+     * Properties do not support copy assignment.
+     * To assign the "value" of a property to an other property the Property::set(const Property*
+     * src) function should be used
+     * @see set
+     */
+    Property& operator=(const Property& that) = delete;
 
     void updateWidgets();
     void notifyAboutChange();

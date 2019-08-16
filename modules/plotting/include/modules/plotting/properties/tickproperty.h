@@ -55,7 +55,6 @@ public:
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                       PropertySemantics semantics = PropertySemantics::Default);
     MajorTickProperty(const MajorTickProperty& rhs);
-    MajorTickProperty& operator=(const MajorTickProperty& rhs) = default;
     virtual MajorTickProperty* clone() const override;
     virtual ~MajorTickProperty() = default;
 
@@ -85,7 +84,6 @@ public:
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                       PropertySemantics semantics = PropertySemantics::Default);
     MinorTickProperty(const MinorTickProperty& rhs);
-    MinorTickProperty& operator=(const MinorTickProperty& rhs) = default;
     virtual MinorTickProperty* clone() const override;
     virtual ~MinorTickProperty() = default;
 
@@ -114,7 +112,6 @@ public:
                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                  PropertySemantics semantics = PropertySemantics::Default);
     TickProperty(const TickProperty& rhs);
-    TickProperty& operator=(const TickProperty& rhs) = default;
     virtual TickProperty* clone() const override;
     virtual ~TickProperty() = default;
 

@@ -70,7 +70,6 @@ public:
                            PropertySemantics semantics = PropertySemantics::Default);
 
     SimpleLightingProperty(const SimpleLightingProperty& rhs);
-    SimpleLightingProperty& operator=(const SimpleLightingProperty& that);
     virtual SimpleLightingProperty* clone() const override;
     virtual ~SimpleLightingProperty();
 

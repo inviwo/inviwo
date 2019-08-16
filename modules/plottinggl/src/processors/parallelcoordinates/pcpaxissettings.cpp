@@ -107,8 +107,6 @@ PCPAxisSettings::PCPAxisSettings(const PCPAxisSettings& rhs)
     });
 }
 
-PCPAxisSettings& PCPAxisSettings::operator=(const PCPAxisSettings& that) = default;
-
 PCPAxisSettings* PCPAxisSettings::clone() const { return new PCPAxisSettings(*this); }
 
 void PCPAxisSettings::updateFromColumn(std::shared_ptr<const Column> col) {

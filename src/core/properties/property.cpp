@@ -67,33 +67,13 @@ Property::Property(const Property& rhs)
     , visible_(rhs.visible_)
     , propertyModified_(rhs.propertyModified_)
     , invalidationLevel_(rhs.invalidationLevel_)
-    , owner_(rhs.owner_)
+    , owner_(nullptr)
     , initiatingWidget_(rhs.initiatingWidget_) {}
     
 Property::~Property() {
     if (auto owner = getOwner()) {
         owner->removeProperty(this);
     }
-}
-
-Property& Property::operator=(const Property& that) {
-    if (this != &that) {
-        PropertyObservable::operator=(that);
-        Serializable::operator=(that);
-        MetaDataOwner::operator=(that);
-        serializationMode_ = that.serializationMode_;
-        identifier_ = that.identifier_;
-        displayName_ = that.displayName_;
-        readOnly_ = that.readOnly_;
-        semantics_ = that.semantics_;
-        usageMode_ = that.usageMode_;
-        visible_ = that.visible_;
-        propertyModified_ = that.propertyModified_;
-        invalidationLevel_ = that.invalidationLevel_;
-        owner_ = that.owner_;
-        initiatingWidget_ = that.initiatingWidget_;
-    }
-    return *this;
 }
 
 std::string Property::getIdentifier() const { return identifier_; }

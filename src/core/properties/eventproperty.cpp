@@ -62,20 +62,6 @@ EventProperty::EventProperty(const EventProperty& rhs)
     , action_{rhs.action_}
     , enabled_{rhs.enabled_} {}
 
-EventProperty& EventProperty::operator=(const EventProperty& that) {
-    if (this != &that) {
-        Property::operator=(that);
-        std::unique_ptr<EventMatcher> e{that.matcher_ ? that.matcher_->clone() : nullptr};
-        Action a{that.action_};
-
-        std::swap(matcher_, e);
-        std::swap(action_, a);
-
-        enabled_ = that.enabled_;
-    }
-    return *this;
-}
-
 EventProperty* EventProperty::clone() const { return new EventProperty(*this); }
 
 void EventProperty::invokeEvent(Event* e) {

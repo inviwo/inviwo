@@ -57,7 +57,6 @@ public:
                    PropertySemantics semantics = PropertySemantics::Default);
 
     MarginProperty(const MarginProperty &rhs);
-    MarginProperty &operator=(const MarginProperty &that);
     virtual MarginProperty *clone() const override;
 
     virtual ~MarginProperty() = default;
