@@ -272,10 +272,10 @@ MinMaxProperty<T>& MinMaxProperty<T>::setMinSeparation(const T& newMinSeparation
 }
 
 template <typename T>
-MinMaxProperty<T>& MinMaxProperty<T>::setRange(const range_type& value) {
-    const auto newRange = clamp({glm::min(value.x, value.y), glm::max(value.x, value.y)});
+MinMaxProperty<T>& MinMaxProperty<T>::setRange(const range_type& newRange) {
+    if (range_.update({glm::min(newRange.x, newRange.y), glm::max(newRange.x, newRange.y)})) {
+        value_.update(clamp(value_));
 
-    if (value_.update(newRange)) {
         this->propertyModified();
         onRangeChangeCallback_.invokeAll();
     }
@@ -283,16 +283,16 @@ MinMaxProperty<T>& MinMaxProperty<T>::setRange(const range_type& value) {
 }
 
 template <typename T>
-void MinMaxProperty<T>::set(const range_type& value, const range_type& range, const T& increment,
-                            const T& minSep) {
+void MinMaxProperty<T>::set(const range_type& newValue, const range_type& newRange,
+                            const T& newIncrement, const T& newMinSep) {
 
     bool modified = false;
-    modified |= range_.update(range);
+    modified |= range_.update({glm::min(newRange.x, newRange.y), glm::max(newRange.x, newRange.y)});
     const bool rangeModified = modified;
 
-    modified |= increment_.update(increment);
-    modified |= minSeparation_.update(limitSeparation(minSep));
-    modified |= value_.update(clamp(value));
+    modified |= increment_.update(newIncrement);
+    modified |= minSeparation_.update(limitSeparation(newMinSep));
+    modified |= value_.update(clamp(newValue));
 
     if (modified) this->propertyModified();
     if (rangeModified) onRangeChangeCallback_.invokeAll();
@@ -308,8 +308,10 @@ template <typename T>
 MinMaxProperty<T>& MinMaxProperty<T>::setRangeNormalized(const range_type& newRange) {
     dvec2 val = this->get();
 
-    val = (val - static_cast<double>(range_.value.x)) /
-          (static_cast<double>(range_.value.y) - static_cast<double>(range_.value.x));
+    const auto nomalizedValue =
+        (dvec2{value_.value} - static_cast<double>(range_.value.x)) /
+        (static_cast<double>(range_.value.y) - static_cast<double>(range_.value.x));
+
     setRange(newRange);
 
     range_type newVal =
