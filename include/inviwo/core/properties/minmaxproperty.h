@@ -306,19 +306,20 @@ void MinMaxProperty<T>::set(const T& start, const T& end, const T& rangeMin, con
 
 template <typename T>
 MinMaxProperty<T>& MinMaxProperty<T>::setRangeNormalized(const range_type& newRange) {
-    dvec2 val = this->get();
-
     const auto nomalizedValue =
         (dvec2{value_.value} - static_cast<double>(range_.value.x)) /
         (static_cast<double>(range_.value.y) - static_cast<double>(range_.value.x));
 
-    setRange(newRange);
+    if (range_.update({glm::min(newRange.x, newRange.y), glm::max(newRange.x, newRange.y)})) {
+        const range_type newVal = nomalizedValue * (static_cast<double>(range_.value.y) -
+                                                    static_cast<double>(range_.value.x)) +
+                                  static_cast<double>(range_.value.x);
 
-    range_type newVal =
-        val * (static_cast<double>(range_.value.y) - static_cast<double>(range_.value.x)) +
-        static_cast<double>(range_.value.x);
+        value_.update(clamp(newVal));
+        this->propertyModified();
+        onRangeChangeCallback_.invokeAll();
+    }
 
-    this->set(newVal);
     return *this;
 }
 
