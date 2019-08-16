@@ -33,6 +33,8 @@
 #include <modules/animation/datastructures/valuekeyframe.h>
 #include <modules/animation/interpolation/interpolation.h>
 #include <inviwo/core/properties/cameraproperty.h>
+#include <modules/animation/datastructures/propertytrack.h>
+
 
 namespace inviwo {
 
@@ -52,6 +54,17 @@ auto interpolationRegHelper(BSplineModule& am) {
         PropertyTraits<PropertyType>::classIdentifier(),
         Interpolation<ValueKeyframe<ValueType>>::classIdentifier());
 }
+
+//auto trackRegHelper(AnimationModule& am) {
+//    using namespace animation;
+//    using PropertyType = CameraProperty;
+//    using ValueType = glm::vec3;
+//    // Register PropertyTrack and the KeyFrame it should use
+//    am.registerTrack<PropertyTrack<PropertyType, ValueKeyframe<ValueType>>>();
+//    am.registerPropertyTrackConnection(
+//            PropertyTraits<PropertyType>::classIdentifier(),
+//            PropertyTrack<PropertyType, ValueKeyframe<ValueType>>::classIdentifier());
+//}
 
 template <template <class> class Interpolation>
 auto cameraRegHelper(BSplineModule& am) {
@@ -91,7 +104,7 @@ struct CameraReghelper {
     auto operator()(BSplineModule& am) {
         using namespace animation;
         using PropertyType = CameraProperty;
-
+//        trackRegHelper(am);
         cameraRegHelper<SplineInterpolation>(am);
     }
 };
