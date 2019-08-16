@@ -45,6 +45,7 @@ BoolControlledProperty::BoolControlledProperty(std::string identifier, std::stri
 	addProperty(buttonController);
 	buttonsList.push_back(&buttonController);
 	actions.push_back(std::bind(&BoolControlledProperty::changeState, this,std::placeholders::_1));
+	setCurrentStateAsDefault();
 }
 
 const std::vector<OptionPropertyString*>& BoolControlledProperty::getButtons()

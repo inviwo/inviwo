@@ -99,7 +99,7 @@ CameraControlledProperty::CameraControlledProperty(std::string identifier, std::
 		, transferHorizontal, transferVertical, transferSensitivity
 		, resetButton);
 
-
+	setCurrentStateAsDefault();
 }
 
 const std::vector<OptionPropertyString*>& CameraControlledProperty::getButtons()

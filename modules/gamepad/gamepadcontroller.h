@@ -82,6 +82,7 @@ public:
 public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+	void deserialize(Deserializer& d) override;
 
 protected:
     /// Our main computation function

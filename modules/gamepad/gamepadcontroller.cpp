@@ -27,6 +27,17 @@ const ProcessorInfo GamepadController::processorInfo_{
 
 const ProcessorInfo GamepadController::getProcessorInfo() const { return processorInfo_; }
 
+void GamepadController::deserialize(Deserializer& d)
+{
+	Processor::deserialize(d);
+
+    for (auto mode : *this) {
+        if (auto m = dynamic_cast<ModeProperty*>(mode)) {
+            modes.push_back(m);
+        }
+    }
+}
+
 GamepadController::GamepadController()
 	: Processor()
 	,newMode("newMode","New Mode")
@@ -52,7 +63,6 @@ GamepadController::GamepadController()
     for (size_t i = 0; i < NUMBER_OF_JOYSTICKS; i++) {
         joyStickValues[i] = 0;
     }
-
 	newMode.onChange([&]() {
 		auto mode = new ModeProperty("mode", "Mode");
 
@@ -67,17 +77,18 @@ GamepadController::GamepadController()
 		}
 		mode->setIdentifier(id);
 		mode->setDisplayName(displayname);
+		mode->setSerializationMode(PropertySerializationMode::All);
 
 		modes.push_back(mode);
-		addProperty(mode);
 		if (modes.size() == 1) {
 			modeNotifier.set("You are currently in the " + (modes[currentMode])->getDisplayName() + " mode");
 		}
+		addProperty(mode);
 	});
     // addPort();
 	addProperty(text_);
 	addProperty(modeNotifier);
-	 addProperty(newMode);
+	addProperty(newMode);
     connectButtons();
     connect(QGamepadManager::instance(), &QGamepadManager::connectedGamepadsChanged, this, [this]()
 	{
@@ -95,7 +106,6 @@ void GamepadController::process() {}
 
 void GamepadController::connectButtons() {
     auto gamepads = QGamepadManager::instance()->connectedGamepads();
-    LogInfo(gamepads.isEmpty());
     if (!gamepads.isEmpty()) {
         pPad = new QGamepad(*(gamepads.begin()));
 		if (!buttonsConnected) {

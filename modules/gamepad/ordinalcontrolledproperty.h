@@ -64,6 +64,8 @@ OrdinalControlledProperty<T>::OrdinalControlledProperty(std::string identifier,s
 	{
 	std::list<std::string> buttons{"A","B","X","Y","R1","L1","R2","L2","Left","Right","Up","Down","L3","R3","None"};
 	std::list<std::string> joysticks{ "Left Joystick X", "Right Joystick X","Left Joystick Y", "Right Joystick Y" };
+	addProperty(controlledProperty);
+	addProperty(sensitivity);
 	for (size_t i = 0; i < controlledProperty.getDim()[0]; i++)
 	{
 		auto buttonPlus = new OptionPropertyString("buttonPlus" + toString(i+1), "Increase Button" + toString(i +1));
@@ -98,9 +100,7 @@ OrdinalControlledProperty<T>::OrdinalControlledProperty(std::string identifier,s
 	buttonsList.push_back(buttonMinus);
 
 	}
-	addProperty(controlledProperty);
-	addProperty(sensitivity);
-
+	setCurrentStateAsDefault();
 
 }
 
@@ -128,22 +128,59 @@ inline void OrdinalControlledProperty<T>::modifyProperty(double value,int proper
 {
 	T temp = controlledProperty.get();
 	temp[propertyIndex] = temp[propertyIndex] + value * sensitivity.get()[propertyIndex];
+	if (temp[propertyIndex] > controlledProperty.getMaxValue()[propertyIndex]) {
+		temp[propertyIndex] = controlledProperty.getMaxValue()[propertyIndex];
+	}
+	else {
+		if (temp[propertyIndex] < controlledProperty.getMinValue()[propertyIndex])
+			temp[propertyIndex] = controlledProperty.getMinValue()[propertyIndex];
+	}
 	controlledProperty = temp;
 }
 template <>
 inline void OrdinalControlledProperty<int>::modifyProperty(double value, int propertyIndex)
 {
-	controlledProperty = controlledProperty + value * sensitivity;
+	int temp =controlledProperty + value * sensitivity;
+	if (temp > controlledProperty.getMaxValue()) {
+		controlledProperty = controlledProperty.getMaxValue();
+	}
+	else {
+		if (temp < controlledProperty.getMinValue())
+			controlledProperty = controlledProperty.getMinValue();
+		else {
+			controlledProperty = temp;
+		}
+	}
 }
 template <>
 inline void OrdinalControlledProperty<double>::modifyProperty(double value, int propertyIndex)
 {
-	controlledProperty = controlledProperty + value * sensitivity;
+		double temp =controlledProperty + value * sensitivity;
+	if (temp > controlledProperty.getMaxValue()) {
+		controlledProperty = controlledProperty.getMaxValue();
+	}
+	else {
+		if (temp < controlledProperty.getMinValue())
+			controlledProperty = controlledProperty.getMinValue();
+		else {
+			controlledProperty = temp;
+		}
+	}
 }
 template <>
 inline void OrdinalControlledProperty<float>::modifyProperty(double value, int propertyIndex)
 {
-	controlledProperty = controlledProperty + value * sensitivity;
+		float temp =controlledProperty + value * sensitivity;
+	if (temp > controlledProperty.getMaxValue()) {
+		controlledProperty = controlledProperty.getMaxValue();
+	}
+	else {
+		if (temp < controlledProperty.getMinValue())
+			controlledProperty = controlledProperty.getMinValue();
+		else {
+			controlledProperty = temp;
+		}
+	}
 }
 
 template<typename T>

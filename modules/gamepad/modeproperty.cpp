@@ -35,7 +35,7 @@ namespace inviwo {
 		:CompositeProperty(identifier, displayName),
 		type_("property", "Property"),
 		create_("add", "Add"){
-
+		LogInfo("bonsoir");
 	util::for_each_type<Types>{}(TypeFunctor{}, *this);
     type_.setSelectedIndex(0);
     type_.setCurrentStateAsDefault();
@@ -100,5 +100,16 @@ namespace inviwo {
 			itProp++;
 		}
 	}
+
+	void ModeProperty::deserialize(Deserializer& d) {
+		CompositeProperty::deserialize(d);
+
+		for (auto prop : *this) {
+			if (auto p = dynamic_cast<GamepadControlledProperty*>(prop)) {
+				properties.push_back(p);
+			}
+		}
+	}
+
 
 }  // namespace inviwo

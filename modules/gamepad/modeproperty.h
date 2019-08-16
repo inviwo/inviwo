@@ -48,6 +48,7 @@ public:
     virtual ~ModeProperty() = default;
 	void buttonPressed(std::string button, bool isHeld);
 	void joyStickTouched(std::string joyStick, double value);
+	void deserialize(Deserializer& d) override;
 
 private:
     OptionPropertySize_t type_;
