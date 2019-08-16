@@ -60,6 +60,10 @@ public:
 
     virtual T& get();
     virtual const T& get() const;
+    const T& operator*() const;
+    T& operator*();
+    const T* operator->() const;
+    T* operator->();
     virtual void set(const T& value);
     void set(const TemplateProperty<T>* srcProperty);
     virtual void set(const Property* srcProperty) override;
@@ -129,6 +133,26 @@ T& TemplateProperty<T>::get() {
 template <typename T>
 const T& TemplateProperty<T>::get() const {
     return value_;
+}
+
+template <typename T>
+const T& TemplateProperty<T>::operator*() const {
+    return value_;
+}
+
+template <typename T>
+T& TemplateProperty<T>::operator*() {
+    return value_;
+}
+
+template <typename T>
+const T* TemplateProperty<T>::operator->() const {
+    return &value_.value;
+}
+
+template <typename T>
+T* TemplateProperty<T>::operator->() {
+    return &value_.value;
 }
 
 template <typename T>
