@@ -236,7 +236,14 @@ function(ivw_register_modules retval)
     ivw_add_module_option_to_cache(${mod} ON)
 
     foreach(module_path ${IVW_MODULE_DIR} ${IVW_EXTERNAL_MODULES})
-        get_filename_component(group_name ${module_path} NAME)    
+        get_filename_component(group_name ${module_path} NAME)
+        set(group_name "inviwo-${group_name}-modules")
+
+        # Check of there is a meta.cmake
+        # Optionally defines: group_name
+        if(EXISTS "${module_path}/meta.cmake")
+            include("${module_path}/meta.cmake")  
+        endif()
 
         string(STRIP ${module_path} module_path)
         if(NOT EXISTS ${module_path})
@@ -264,7 +271,7 @@ function(ivw_register_modules retval)
                 ivw_private_get_ivw_module_version(${module_path}/${dir}/CMakeLists.txt version)
                 ivw_private_setup_module_data(
                     NAME ${name} 
-                    GROUP "inviwo-${group_name}-modules" 
+                    GROUP ${group_name} 
                     VERSION ${version} 
                     DIR ${dir} 
                     BASE ${module_path}

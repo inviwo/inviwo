@@ -60,4 +60,4 @@ ivw_add_unittest(${TEST_FILES})
 
 #--------------------------------------------------------------------
 # Create module
-ivw_create_module(GROUP inviwo-core-modules NO_PCH ${SOURCE_FILES} ${HEADER_FILES})
+ivw_create_module(NO_PCH ${SOURCE_FILES} ${HEADER_FILES})

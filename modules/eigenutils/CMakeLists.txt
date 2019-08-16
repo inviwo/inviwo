@@ -30,7 +30,7 @@ ivw_group("Source Files" ${SOURCE_FILES})
 
 #--------------------------------------------------------------------
 # Create module
-ivw_create_module(GROUP inviwo-core-modules NO_PCH ${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
+ivw_create_module(NO_PCH ${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
 
 set_target_properties(inviwo-module-eigenutils PROPERTIES COTIRE_PREFIX_HEADER_PUBLIC_IGNORE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/ext/Eigen")
 ivw_compile_optimize_on_target(inviwo-module-eigenutils)

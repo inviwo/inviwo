@@ -74,7 +74,7 @@ source_group("Resource Files" FILES
 
 #--------------------------------------------------------------------
 # Create module
-ivw_create_module(GROUP inviwo-core-modules NO_PCH ${SOURCE_FILES} ${HEADER_FILES} ${QRC_FILE})
+ivw_create_module(NO_PCH ${SOURCE_FILES} ${HEADER_FILES} ${QRC_FILE})
 target_link_libraries(inviwo-module-animationqt PRIVATE Qt5::Core Qt5::Gui Qt5::Widgets)
 
 #ivw_compile_optimize_on_target(inviwo-module-animationqt)
