@@ -92,7 +92,7 @@ public:
 
     virtual void process() override;
 
-    void autoAdjustMargins();
+    void adjustMargins();
 
     void updateBrushing(PCPAxisSettings& axis);
 
@@ -139,7 +139,7 @@ public:
     FloatVec4Property handleFilteredColor_;
 
     MarginProperty margins_;
-    BoolProperty autoMargins_;
+    BoolProperty includeLabelsInMargin_;
     ButtonProperty resetHandlePositions_;
 
     int getHoveredAxis() const { return hoveredAxis_; }
@@ -211,6 +211,7 @@ private:
     };
     Lines lines_;
 
+    MarginProperty marginsInternal_; // Margins with/without considering labels
     int hoveredLine_ = -1;
     int hoveredAxis_ = -1;
 

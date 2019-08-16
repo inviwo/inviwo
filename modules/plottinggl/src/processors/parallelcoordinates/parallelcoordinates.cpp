@@ -140,14 +140,15 @@ ParallelCoordinates::ParallelCoordinates()
                            vec4(.6f, .6f, .6f, 1), vec4(0.0f), vec4(1.0f), vec4(0.01f),
                            InvalidationLevel::InvalidOutput, PropertySemantics::Color)
 
-    , margins_("margins", "Margins", 0, 0, 0, 0)
-    , autoMargins_("autoMargins", "Auto Margins", true)
+    , margins_("margins", "Margins")
+    , includeLabelsInMargin_("includeLabelsInMargins", "Include labels", true)
     , resetHandlePositions_("resetHandlePositions", "Reset Handle Positions")
 
     , linePicking_(this, 1, [&](PickingEvent* p) { linePicked(p); })
     , axisPicking_(this, 1,
                    [&](PickingEvent* p) { axisPicked(p, p->getPickedId(), PickType::Axis); })
     , lineShader_("pcp_lines.vert", "pcp_lines.geom", "pcp_lines.frag", false)
+    , marginsInternal_("marginsInternal", "Margins with/without labels")  // private property
     , lines_{}
     , brushingDirty_(true)  // needs to be true after deserialization
 {
@@ -211,15 +212,7 @@ ParallelCoordinates::ParallelCoordinates()
     axesSettings_.setCollapsed(true);
 
     addProperty(margins_);
-    margins_.insertProperty(0, autoMargins_);
-    const auto makeMarginReadonly = [&]() {
-        margins_.left_.setReadOnly(autoMargins_);
-        margins_.bottom_.setReadOnly(autoMargins_);
-        margins_.right_.setReadOnly(autoMargins_);
-        margins_.top_.setReadOnly(autoMargins_);
-    };
-    makeMarginReadonly();
-    autoMargins_.onChange(makeMarginReadonly);
+    margins_.insertProperty(0, includeLabelsInMargin_);
     margins_.setCollapsed(true);
 
     addProperty(resetHandlePositions_);
@@ -252,35 +245,44 @@ ParallelCoordinates::ParallelCoordinates()
     setAllPropertiesCurrentStateAsDefault();
 }
 
-void ParallelCoordinates::autoAdjustMargins() {
+void ParallelCoordinates::adjustMargins() {
     if (enabledAxes_.empty()) return;
 
-    const auto dim = outport_.getDimensions();
+    if (includeLabelsInMargin_) {
+        const auto dim = outport_.getDimensions();
 
-    auto llMargin = margins_.getLowerLeftMargin();
-    auto urMargin = margins_.getUpperRightMargin();
+        vec2 llMargin(0);
+        vec2 urMargin(0);
 
-    do {
-        std::pair<vec2, vec2> bRect = {vec2{dim} * 0.5f, vec2{dim} * 0.5f};
-        for (auto& axis : axes_) {
-            if (axis.pcp->isChecked()) {
-                const auto ap = axisPos(axis.pcp->columnId());
-                const auto axisBRect = axis.axisRender->boundingRect(ap.first, ap.second);
-                bRect.first = glm::min(bRect.first, axisBRect.first);
-                bRect.second = glm::max(bRect.second, axisBRect.second);
+        do {
+            std::pair<vec2, vec2> bRect = {vec2{dim} * 0.5f, vec2{dim} * 0.5f};
+            for (auto& axis : axes_) {
+                if (axis.pcp->isChecked()) {
+                    const auto ap = axisPos(axis.pcp->columnId());
+                    const auto axisBRect = axis.axisRender->boundingRect(ap.first, ap.second);
+                    bRect.first = glm::min(bRect.first, axisBRect.first);
+                    bRect.second = glm::max(bRect.second, axisBRect.second);
+                }
             }
-        }
 
-        const float padding = 5.0f;
-        const auto rect = margins_.getRect(vec2{dim} - 1.0f);
-        llMargin = rect.first - glm::floor(bRect.first) + vec2{padding};
-        urMargin = glm::ceil(bRect.second) - rect.second + vec2{padding};
+            const auto rect = marginsInternal_.getRect(vec2{dim} - 1.0f);
+            llMargin = rect.first - glm::floor(bRect.first);
+            urMargin = glm::ceil(bRect.second) - rect.second;
 
-        margins_.setLowerLeftMargin(llMargin);
-        margins_.setUpperRightMargin(urMargin);
+            marginsInternal_.setLowerLeftMargin(llMargin);
+            marginsInternal_.setUpperRightMargin(urMargin);
 
-    } while (margins_.getLowerLeftMargin() != llMargin ||
-             margins_.getUpperRightMargin() != urMargin);
+        } while (marginsInternal_.getLowerLeftMargin() != llMargin ||
+                 marginsInternal_.getUpperRightMargin() != urMargin);
+
+        marginsInternal_.setMargins(margins_.getTop() + marginsInternal_.getTop(),
+                                     margins_.getRight() + marginsInternal_.getRight(),
+                                     margins_.getBottom() + marginsInternal_.getBottom(),
+                                     margins_.getLeft() + marginsInternal_.getLeft());
+    } else {
+        marginsInternal_.setMargins(margins_.getTop(), margins_.getRight(), margins_.getBottom(),
+                                     margins_.getLeft());
+    }
 }
 
 ParallelCoordinates::~ParallelCoordinates() = default;
@@ -311,10 +313,11 @@ void ParallelCoordinates::process() {
     } else if (brushingAndLinking_.isChanged() || axisProperties_.isModified()) {
         partitionLines();
     }
-    if (autoMargins_ && (!isDragging_ || enabledAxesModified_) &&
-        (autoMargins_.isModified() || enabledAxesModified_ || captionSettings_.isModified() ||
-         labelSettings_.isModified() || axesSettings_.isModified())) {
-        autoAdjustMargins();
+    if ((!isDragging_ || enabledAxesModified_) &&
+        (margins_.isModified() || includeLabelsInMargin_.isModified() || enabledAxesModified_ ||
+         captionSettings_.isModified() || labelSettings_.isModified() ||
+         axesSettings_.isModified())) {
+        adjustMargins();
     }
 
     const vec4 backgroundColor(blendMode_.get() == BlendMode::Sutractive ? 1.0f : 0.0f);
@@ -573,7 +576,7 @@ void ParallelCoordinates::drawLines(size2_t size) {
         (blendMode_.get() == BlendMode::Additive || blendMode_.get() == BlendMode::Sutractive ||
          blendMode_.get() == BlendMode::Regular);
     // pcp_common.glsl
-    lineShader_.setUniform("spacing", margins_.getAsVec4());
+    lineShader_.setUniform("spacing", marginsInternal_.getAsVec4());
     lineShader_.setUniform("dims", ivec2(size));
     // pcp_lines.vert
     lineShader_.setUniform("axisPositions", lines_.axisPositions.size(),
@@ -738,7 +741,7 @@ void ParallelCoordinates::axisPicked(PickingEvent* p, size_t pickedID, PickType 
                                static_cast<float>(axisPos(enabledAxes_[id + 1]).first.x)) {
                     swap(id, id + 1);
                 } else if (pickedID < axes_.size()) {
-                    const auto rect = margins_.getRect(outport_.getDimensions());
+                    const auto rect = marginsInternal_.getRect(outport_.getDimensions());
                     lines_.axisPositions[pickedID] =
                         glm::clamp(float(p->getPosition().x * p->getCanvasSize().x - rect.first.x) /
                                        (rect.second.x - rect.first.x),
@@ -789,7 +792,7 @@ void ParallelCoordinates::updateBrushing() {
 
 std::pair<size2_t, size2_t> ParallelCoordinates::axisPos(size_t columnId) const {
     const auto dim = outport_.getDimensions();
-    const auto rect = margins_.getRect(vec2{dim} - 1.0f);
+    const auto rect = marginsInternal_.getRect(vec2{dim} - 1.0f);
     const size2_t lowerLeft(rect.first);
     const size2_t upperRight(rect.second);
 

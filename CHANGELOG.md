@@ -1,5 +1,8 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2019-08-16 Parallel coordinates plot margins
+It is now possible to specify margins including labels. Removed autoMargins property. 
+
 ## 2019-08-05 New version requirements
 We now require a C++17 compatible compiler, and CMake version of at least 3.12 
 
