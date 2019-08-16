@@ -34,11 +34,18 @@
 #include <inviwo/core/util/constexprhash.h>
 #include <modules/base/algorithm/camerautils.h>
 
+#include <variant>
+
 namespace inviwo {
 
 class IVW_MODULE_BASE_API ViewEvent : public Event {
 public:
-    ViewEvent(camerautil::Side side = camerautil::Side::XNegative);
+    struct FlipUp {};
+    struct FitData {};
+
+    using Action = std::variant<camerautil::Side, FlipUp, FitData>;
+
+    ViewEvent(Action action = camerautil::Side::XNegative);
     ViewEvent(const ViewEvent&) = default;
     ViewEvent& operator=(const ViewEvent&) = default;
 
@@ -52,10 +59,10 @@ public:
 
     virtual void print(std::ostream& ss) const override;
 
-    camerautil::Side getSide() const;
+    Action getAction() const;
 
 private:
-    camerautil::Side side_;
+    Action action_;
 };
 
 }  // namespace inviwo

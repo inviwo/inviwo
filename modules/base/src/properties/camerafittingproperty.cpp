@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/base/properties/camerafittingproperty.h>
+#include <inviwo/core/util/stdextensions.h>
 #include <modules/base/events/viewevent.h>
 
 namespace inviwo {
@@ -42,56 +43,19 @@ CameraFittingProperty::CameraFittingProperty(std::string identifier, std::string
     : CompositeProperty(identifier, displayName, InvalidationLevel::Valid)
     , camera_{camera}
     , getBoundingBox_{std::move(getBoundingBox)}
-    , setView_{[this](auto side) {
-        if (camera_ && getBoundingBox_) {
-            if (auto bb = getBoundingBox_(); bb) {
-                camerautil::setCameraView(*camera_, *bb, side, fittingRatio_.get(),
-                                          updateNearFar_.get(), updateLookRanges_.get());
-            }
-        }
-    }}
     , settings_("settings", "Settings")
-    , flipUp_("flipUp", "Flip Up vector",
-              [this]() {
-                  if (camera_) {
-                      camera_->setLookUp(-camera_->getLookUp());
-                  }
-              })
     , updateNearFar_("updateNearFar", "Update Near/Far Distances", true)
     , updateLookRanges_("updateLookRanges", "Update Look-to/-from Ranges", true)
     , fittingRatio_("fittingRatio", "Fitting Ratio", 1.05f, 0, 2, 0.01f)
-    , lookAt_("lookAt", "Look At",
-              {{std::nullopt, ":svgicons/view-x-m.svg",
-                [this] { setView_(camerautil::Side::XNegative); }},
-               {std::nullopt, ":svgicons/view-x-p.svg",
-                [this] { setView_(camerautil::Side::XPositive); }},
-               {std::nullopt, ":svgicons/view-y-m.svg",
-                [this] { setView_(camerautil::Side::YNegative); }},
-               {std::nullopt, ":svgicons/view-y-p.svg",
-                [this] { setView_(camerautil::Side::YPositive); }},
-               {std::nullopt, ":svgicons/view-z-m.svg",
-                [this] { setView_(camerautil::Side::ZNegative); }},
-               {std::nullopt, ":svgicons/view-z-p.svg",
-                [this] { setView_(camerautil::Side::ZPositive); }}})
+    , lookAt_{"lookAt", "Look At", buttons()}
 
-    , setNearFarButton_("setNearFarButton", "Set Near/Far Distances",
-                        [this] {
-                            if (camera_ && getBoundingBox_) {
-                                if (auto bb = getBoundingBox_(); bb) {
-                                    camerautil::setCameraNearFar(*camera_, *bb);
-                                }
-                            }
-                        })
-    , setLookRangesButton_("setLookRangesButton", "Set Look-to/-from Ranges", [this] {
-        if (camera_ && getBoundingBox_) {
-            if (auto bb = getBoundingBox_(); bb) {
-                camerautil::setCameraLookRanges(*camera_, *bb);
-            }
-        }
-    }) {
+    , setNearFarButton_("setNearFarButton", "Set Near/Far Distances", [this] { setNearFar(); })
+    , setLookRangesButton_("setLookRangesButton", "Set Look-to/-from Ranges",
+                           [this] { setLookRange(); }) {
 
-    addProperties(lookAt_, flipUp_, setNearFarButton_, setLookRangesButton_, settings_);
-    settings_.addProperties(updateNearFar_, updateLookRanges_, fittingRatio_);
+    addProperties(lookAt_, settings_);
+    settings_.addProperties(setNearFarButton_, setLookRangesButton_, updateNearFar_,
+                            updateLookRanges_, fittingRatio_);
     settings_.setCollapsed(true);
 }
 
@@ -101,10 +65,72 @@ CameraFittingProperty* CameraFittingProperty::clone() const {
 
 void CameraFittingProperty::invokeEvent(Event* event) {
     if (auto ve = event->getAs<ViewEvent>()) {
-        setView_(ve->getSide());
+        std::visit(util::overloaded{[&](camerautil::Side side) { setView(side); },
+                                    [&](ViewEvent::FlipUp) { flipUp(); },
+                                    [&](ViewEvent::FitData) { fitData(); }
+
+                   },
+                   ve->getAction());
+
         ve->markAsUsed();
     } else {
         CompositeProperty::invokeEvent(event);
+    }
+}
+
+std::vector<ButtonGroupProperty::Button> CameraFittingProperty::buttons() {
+    return {
+        {std::nullopt, ":svgicons/view-fit-to-data.svg", [this] { fitData(); }},
+        {std::nullopt, ":svgicons/view-x-m.svg", [this] { setView(camerautil::Side::XNegative); }},
+        {std::nullopt, ":svgicons/view-x-p.svg", [this] { setView(camerautil::Side::XPositive); }},
+        {std::nullopt, ":svgicons/view-y-m.svg", [this] { setView(camerautil::Side::YNegative); }},
+        {std::nullopt, ":svgicons/view-y-p.svg", [this] { setView(camerautil::Side::YPositive); }},
+        {std::nullopt, ":svgicons/view-z-m.svg", [this] { setView(camerautil::Side::ZNegative); }},
+        {std::nullopt, ":svgicons/view-z-p.svg", [this] { setView(camerautil::Side::ZPositive); }},
+        {std::nullopt, ":svgicons/view-flip.svg", [this] { flipUp(); }}};
+}
+
+void CameraFittingProperty::setView(camerautil::Side side) {
+    if (camera_ && getBoundingBox_) {
+        if (auto bb = getBoundingBox_(); bb) {
+            using namespace camerautil;
+            setCameraView(*camera_, *bb, side, fittingRatio_,
+                          updateNearFar_ ? UpdateNearFar::Yes : UpdateNearFar::No,
+                          updateLookRanges_ ? UpdateLookRanges::Yes : UpdateLookRanges::No);
+        }
+    }
+}
+
+void CameraFittingProperty::fitData() {
+    if (camera_ && getBoundingBox_) {
+        if (auto bb = getBoundingBox_(); bb) {
+            using namespace camerautil;
+            setCameraView(*camera_, *bb, fittingRatio_,
+                          updateNearFar_ ? UpdateNearFar::Yes : UpdateNearFar::No,
+                          updateLookRanges_ ? UpdateLookRanges::Yes : UpdateLookRanges::No);
+        }
+    }
+}
+
+void CameraFittingProperty::flipUp() {
+    if (camera_) {
+        camera_->setLookUp(-camera_->getLookUp());
+    }
+}
+
+void CameraFittingProperty::setNearFar() {
+    if (camera_ && getBoundingBox_) {
+        if (auto bb = getBoundingBox_(); bb) {
+            camerautil::setCameraNearFar(*camera_, *bb);
+        }
+    }
+}
+
+void CameraFittingProperty::setLookRange() {
+    if (camera_ && getBoundingBox_) {
+        if (auto bb = getBoundingBox_(); bb) {
+            camerautil::setCameraLookRanges(*camera_, *bb);
+        }
     }
 }
 
@@ -112,55 +138,17 @@ CameraFittingProperty::CameraFittingProperty(const CameraFittingProperty& rhs)
     : CompositeProperty(rhs)
     , camera_{rhs.camera_}
     , getBoundingBox_{rhs.getBoundingBox_}
-    , setView_{[this](auto side) {
-        if (camera_ && getBoundingBox_) {
-            if (auto bb = getBoundingBox_(); bb) {
-                camerautil::setCameraView(*camera_, *bb, side, fittingRatio_.get(),
-                                          updateNearFar_.get(), updateLookRanges_.get());
-            }
-        }
-    }}
     , settings_{rhs.settings_}
-    , flipUp_{rhs.flipUp_,
-              [this]() {
-                  if (camera_) {
-                      camera_->setLookUp(-camera_->getLookUp());
-                  }
-              }}
     , updateNearFar_{rhs.updateNearFar_}
     , updateLookRanges_{rhs.updateLookRanges_}
     , fittingRatio_{rhs.fittingRatio_}
-    , lookAt_{rhs.lookAt_,
-              {{std::nullopt, ":svgicons/view-x-m.svg",
-                [this] { setView_(camerautil::Side::XNegative); }},
-               {std::nullopt, ":svgicons/view-x-p.svg",
-                [this] { setView_(camerautil::Side::XPositive); }},
-               {std::nullopt, ":svgicons/view-y-m.svg",
-                [this] { setView_(camerautil::Side::YNegative); }},
-               {std::nullopt, ":svgicons/view-y-p.svg",
-                [this] { setView_(camerautil::Side::YPositive); }},
-               {std::nullopt, ":svgicons/view-z-m.svg",
-                [this] { setView_(camerautil::Side::ZNegative); }},
-               {std::nullopt, ":svgicons/view-z-p.svg",
-                [this] { setView_(camerautil::Side::ZPositive); }}}}
-    , setNearFarButton_{rhs.setNearFarButton_,
-                        [this] {
-                            if (camera_ && getBoundingBox_) {
-                                if (auto bb = getBoundingBox_(); bb) {
-                                    camerautil::setCameraNearFar(*camera_, *bb);
-                                }
-                            }
-                        }}
-    , setLookRangesButton_{rhs.setLookRangesButton_, [this] {
-                               if (camera_ && getBoundingBox_) {
-                                   if (auto bb = getBoundingBox_(); bb) {
-                                       camerautil::setCameraLookRanges(*camera_, *bb);
-                                   }
-                               }
-                           }} {
+    , lookAt_{rhs.lookAt_, buttons()}
+    , setNearFarButton_{rhs.setNearFarButton_, [this] { setNearFar(); }}
+    , setLookRangesButton_{rhs.setLookRangesButton_, [this] { setLookRange(); }} {
 
-    addProperties(lookAt_, flipUp_, setNearFarButton_, setLookRangesButton_, settings_);
-    settings_.addProperties(updateNearFar_, updateLookRanges_, fittingRatio_);
+    addProperties(lookAt_, settings_);
+    settings_.addProperties(setNearFarButton_, setLookRangesButton_, updateNearFar_,
+                            updateLookRanges_, fittingRatio_);
 }
 
 CameraFittingProperty::CameraFittingProperty(std::string identifier, std::string displayName,

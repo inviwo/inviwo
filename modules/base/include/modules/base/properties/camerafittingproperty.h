@@ -70,12 +70,18 @@ public:
     virtual void invokeEvent(Event* event) override;
 
 private:
+    std::vector<ButtonGroupProperty::Button> buttons();
+    void setView(camerautil::Side);
+    void fitData();
+    void flipUp();
+    void setNearFar();
+    void setLookRange();
+ 
     CameraProperty* camera_;
     std::function<std::optional<mat4>()> getBoundingBox_;
-    std::function<void(camerautil::Side)> setView_;
 
     CompositeProperty settings_;
-    ButtonProperty flipUp_;
+
     BoolProperty updateNearFar_;
     BoolProperty updateLookRanges_;
     FloatProperty fittingRatio_;

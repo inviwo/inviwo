@@ -77,41 +77,48 @@ vec3 getLookUp(Side side) {
 
 }  // namespace detail
 
-void setCameraView(CameraProperty &cam, const mat4 &boundingBox, Side side, float scale,
-                   bool setNearFar, bool setLookRanges) {
+void setCameraView(CameraProperty &cam, const mat4 &boundingBox, vec3 inViewDir, vec3 inLookUp,
+                   float fitRatio, UpdateNearFar updateNearFar, UpdateLookRanges updateLookRanges) {
     if (auto perspectiveCamera = dynamic_cast<PerspectiveCamera *>(&cam.get())) {
+        const auto offset = vec3{.5f};
+        const auto lookTo = vec3(boundingBox * vec4(offset, 1.f));
 
-        auto viewDir = detail::getViewDir(side);
-        auto lookUp = detail::getLookUp(side);
+        const auto viewDir = glm::normalize(inViewDir);
+        const auto lookUp = glm::normalize(inLookUp);
+        const auto sideDir = glm::cross(viewDir, lookUp);
 
-        const float offset = .5f;
-        auto lookTo = vec3(boundingBox * vec4(vec3(offset), 1.f));
-        auto sideDir = glm::cross(viewDir, lookUp);
+        const float fovy = perspectiveCamera->getFovy() / 2.0f;
+        const float fovx =
+            glm::degrees(std::atan(cam.getAspectRatio() * std::tan(glm::radians(fovy))));
 
-        auto frontPoint = vec3(boundingBox * vec4(vec3(offset) - (viewDir * offset), 1.f));
-        auto sidePoint =
-            vec3(boundingBox * vec4(vec3(offset) + (sideDir * offset) - (viewDir * offset), 1.f));
-        auto topPoint =
-            vec3(boundingBox * vec4(vec3(offset) + (lookUp * offset) - (viewDir * offset), 1.f));
+        const std::array<vec3, 8> corners = {vec3{0, 0, 0}, vec3{1, 0, 0}, vec3{1, 1, 0},
+                                             vec3{0, 1, 0}, vec3{0, 0, 1}, vec3{1, 0, 1},
+                                             vec3{1, 1, 1}, vec3{0, 1, 1}};
 
-        float fovy = perspectiveCamera->getFovy() / 2.0f;
-        float fovx = glm::degrees(std::atan(cam.getAspectRatio() * std::tan(glm::radians(fovy))));
+        const auto dist = [&](vec3 corner) {
+            const auto point = vec3(boundingBox * vec4(corner, 1.f));
 
-        float h1 = glm::distance(frontPoint, topPoint) * scale;
-        float d1 = h1 * std::tan(glm::radians(90 - fovy));
+            auto d0 = glm::dot(point - lookTo, -viewDir);
+            const auto height = glm::abs(glm::dot(point - lookTo, lookUp)) * fitRatio;
+            const auto width = glm::abs(glm::dot(point - lookTo, sideDir)) * fitRatio;
+            const float d1 = height * std::tan(glm::radians(90 - fovy));
+            const float d2 = width * std::tan(glm::radians(90 - fovx));
+            return d0 + std::max(d1, d2);
+        };
 
-        float h2 = glm::distance(frontPoint, sidePoint) * scale;
-        float d2 = h2 * std::tan(glm::radians(90 - fovx));
+        const auto it = std::max_element(corners.begin(), corners.end(),
+                                         [&](vec3 a, vec3 b) { return dist(a) < dist(b); });
 
-        auto lookFrom = frontPoint + std::max(d1, d2) * glm::normalize(frontPoint - lookTo);
-        auto camUp = glm::normalize(topPoint - frontPoint);
+        const auto lookFrom = dist(*it) * viewDir;
+
+        const auto camUp = lookUp;
 
         NetworkLock lock(&cam);
 
-        if (setNearFar) {
+        if (updateNearFar == UpdateNearFar::Yes) {
             setCameraNearFar(cam, boundingBox);
         }
-        if (setLookRanges) {
+        if (updateLookRanges == UpdateLookRanges::Yes) {
             setCameraLookRanges(cam, boundingBox);
         }
 
@@ -122,20 +129,33 @@ void setCameraView(CameraProperty &cam, const mat4 &boundingBox, Side side, floa
     }
 }
 
+void setCameraView(CameraProperty &cam, const mat4 &boundingBox, float fitRatio,
+                   UpdateNearFar updateNearFar, UpdateLookRanges updateLookRanges) {
+    setCameraView(cam, boundingBox, cam.getLookTo() - cam.getLookFrom(), cam.getLookUp(), fitRatio,
+                  updateNearFar, updateLookRanges);
+}
+
+void setCameraView(CameraProperty &cam, const mat4 &boundingBox, Side side, float fitRatio,
+                   UpdateNearFar updateNearFar, UpdateLookRanges updateLookRanges) {
+    setCameraView(cam, boundingBox, detail::getViewDir(side), detail::getLookUp(side), fitRatio,
+                  updateNearFar, updateLookRanges);
+}
+
 void setCameraView(CameraProperty &cam, const std::vector<std::shared_ptr<const Mesh>> &meshes,
-                   Side side, float fitRatio, bool setNearFar, bool setLookRanges) {
+                   Side side, float fitRatio, UpdateNearFar updateNearFar,
+                   UpdateLookRanges updateLookRanges) {
     auto minMax = meshutil::axisAlignedBoundingBox(meshes);
     auto m = glm::scale(minMax.second - minMax.first);
     m[3] = vec4(minMax.first, 1.0f);
-    setCameraView(cam, m, side, fitRatio, setNearFar, setLookRanges);
+    setCameraView(cam, m, side, fitRatio, updateNearFar, updateLookRanges);
 }
 
 void setCameraView(CameraProperty &cam, const Mesh &mesh, Side side, float fitRatio,
-                   bool setNearFar, bool setLookRanges) {
+                   UpdateNearFar updateNearFar, UpdateLookRanges updateLookRanges) {
     auto minMax = meshutil::axisAlignedBoundingBox(mesh);
     auto m = glm::scale(minMax.second - minMax.first);
     m[3] = vec4(minMax.first, 1.0f);
-    setCameraView(cam, m, side, fitRatio, setNearFar, setLookRanges);
+    setCameraView(cam, m, side, fitRatio, updateNearFar, updateLookRanges);
 }
 
 void setCameraLookRanges(CameraProperty &cam, const mat4 &boundingBox, float zoomRange) {

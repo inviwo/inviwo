@@ -105,6 +105,11 @@
         <file>svgicons/view-y-p.svg</file>
         <file>svgicons/view-z-m.svg</file>
         <file>svgicons/view-z-p.svg</file>
+        <file>svgicons/view-flip.svg</file>
+        <file>svgicons/view-fit-to-data.svg</file>
+
+        <file>svgicons/fullscreen.svg</file>
+        <file>svgicons/canvas-hide.svg</file>
 
         <file>icons/dense6pattern.png</file>
         <file>icons/python-run.png</file>

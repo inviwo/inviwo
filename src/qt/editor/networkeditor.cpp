@@ -542,12 +542,14 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             });
 
 #if IVW_PROFILING
-            QAction* resetTimeMeasurementsAction = menu.addAction(tr("Reset &Time Measurements"));
+            QAction* resetTimeMeasurementsAction =
+                menu.addAction(QIcon(":svgicons/timer.svg"), tr("Reset &Time Measurements"));
             connect(resetTimeMeasurementsAction, &QAction::triggered,
                     [processor]() { processor->resetTimeMeasurements(); });
 #endif
 
-            QAction* delprocessor = menu.addAction(tr("Delete && &Keep Connections"));
+            QAction* delprocessor = menu.addAction(QIcon(":/svgicons/edit-delete.svg"),
+                                                   tr("Delete && &Keep Connections"));
             connect(delprocessor, &QAction::triggered, [this, processor]() {
                 auto p = processor->getProcessor();
                 for (auto& prop : p->getPropertiesRecursive()) {

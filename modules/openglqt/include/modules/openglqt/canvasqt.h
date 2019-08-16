@@ -191,12 +191,15 @@ void CanvasQtBase<T>::doContextMenu(QMouseEvent* event) {
 
         QMenu menu(this);
 
-        this->connect(menu.addAction("&Select Processor"), &QAction::triggered, this, [&]() {
+        this->connect(menu.addAction(QIcon(":svgicons/edit-selectall.svg"), "&Select Processor"), &QAction::triggered, this, [&]() {
             canvasProcessor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)
                 ->setSelected(true);
         });
-        this->connect(menu.addAction("&Hide Canvas"), &QAction::triggered, this,
+        this->connect(menu.addAction(QIcon(":svgicons/canvas-hide.svg"), "&Hide Canvas"), &QAction::triggered, this,
                       [&]() { this->ownerWidget_->setVisible(false); });
+
+        this->connect(menu.addAction(QIcon(":svgicons/fullscreen.svg"), "&Toggle Full Screen"), &QAction::triggered, this,
+                      [&]() { this->setFullScreen(!Canvas::isFullScreen()); });
 
         if (this->image_) {
             menu.addSeparator();
@@ -206,24 +209,28 @@ void CanvasQtBase<T>::doContextMenu(QMouseEvent* event) {
 
         {
             menu.addSeparator();
-            auto prop = [this](camerautil::Side side) {
-                return [this, side]() {
-                    ViewEvent e{side};
+            auto prop = [this](auto action) {
+                return [this, action]() {
+                    ViewEvent e{action};
                     this->propagateEvent(&e);
                 };
             };
-            this->connect(menu.addAction(QIcon(":svgicons/view-x-p.svg"), "X+"),
+            this->connect(menu.addAction(QIcon(":svgicons/view-fit-to-data.svg"), "Fit to data"),
+                          &QAction::triggered, this, prop(ViewEvent::FitData{}));
+            this->connect(menu.addAction(QIcon(":svgicons/view-x-p.svg"), "View from X+"),
                           &QAction::triggered, this, prop(camerautil::Side::XPositive));
-            this->connect(menu.addAction(QIcon(":svgicons/view-x-m.svg"), "X-"),
+            this->connect(menu.addAction(QIcon(":svgicons/view-x-m.svg"), "View from X-"),
                           &QAction::triggered, this, prop(camerautil::Side::XNegative));
-            this->connect(menu.addAction(QIcon(":svgicons/view-y-p.svg"), "Y+"),
+            this->connect(menu.addAction(QIcon(":svgicons/view-y-p.svg"), "View from Y+"),
                           &QAction::triggered, this, prop(camerautil::Side::YPositive));
-            this->connect(menu.addAction(QIcon(":svgicons/view-y-m.svg"), "Y-"),
+            this->connect(menu.addAction(QIcon(":svgicons/view-y-m.svg"), "View from Y-"),
                           &QAction::triggered, this, prop(camerautil::Side::YNegative));
-            this->connect(menu.addAction(QIcon(":svgicons/view-z-p.svg"), "Z+"),
+            this->connect(menu.addAction(QIcon(":svgicons/view-z-p.svg"), "View from Z+"),
                           &QAction::triggered, this, prop(camerautil::Side::ZPositive));
-            this->connect(menu.addAction(QIcon(":svgicons/view-z-m.svg"), "Z-"),
+            this->connect(menu.addAction(QIcon(":svgicons/view-z-m.svg"), "View from Z-"),
                           &QAction::triggered, this, prop(camerautil::Side::ZNegative));
+            this->connect(menu.addAction(QIcon(":svgicons/view-flip.svg"), "Flip Up Vector"),
+                          &QAction::triggered, this, prop(ViewEvent::FlipUp{}));
         }
 
         menu.exec(event->globalPos());

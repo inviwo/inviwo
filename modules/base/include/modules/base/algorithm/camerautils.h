@@ -40,12 +40,53 @@
 
 #include <modules/base/algorithm/mesh/axisalignedboundingbox.h>
 
-
 namespace inviwo {
 
 namespace camerautil {
 
 enum class Side { XNegative, XPositive, YNegative, YPositive, ZNegative, ZPositive };
+enum class UpdateNearFar { Yes, No };
+enum class UpdateLookRanges { Yes, No };
+
+/**
+ * Setup the camera parameters such that the whole boundingBox spaned by basis and offset
+ * will be inside the view frustum, for the given view direction
+ *
+ * @param cam       the Camera to update
+ * @param boundingBox the basis and offset of the bounding box that will fit inside the new
+ *                    view frustum
+ * @param viewDir    the view direction of when viewing the bounding box
+ * @param lookDir    the up direction of when viewing the bounding box
+ * @param fitRatio   determines the spacing between volume and the boundaries of the view frustum. A
+ *                   fit ratio of 1 means a perfect fit, no space between frustum and volume. The
+ *                   aspect ratio is taken into account.
+ * @param updateNearFar the camera's new/far clip ranges are updated if Yes @see setCameraNearFar
+ * @param updateLookRanges   the camera's look-to/look-from ranges are updated if Yes @see
+ * setCameraLookRanges
+ */
+IVW_MODULE_BASE_API void setCameraView(CameraProperty &cam, const mat4 &boundingBox, vec3 viewDir,
+                                       vec3 lookUp, float fitRatio = 1.05f,
+                                       UpdateNearFar updateNearFar = UpdateNearFar::No,
+                                       UpdateLookRanges updateLookRanges = UpdateLookRanges::No);
+
+/**
+ * Setup the camera parameters such that the whole boundingBox spaned by basis and offset
+ * will be inside the view frustum, using the current view direction
+ *
+ * @param cam       the Camera to update
+ * @param boundingBox the basis and offset of the bounding box that will fit inside the new
+ *                    view frustum
+ * @param fitRatio   determines the spacing between volume and the boundaries of the view frustum. A
+ *                   fit ratio of 1 means a perfect fit, no space between frustum and volume. The
+ *                   aspect ratio is taken into account.
+ * @param updateNearFar the camera's new/far clip ranges are updated if Yes @see setCameraNearFar
+ * @param updateLookRanges   the camera's look-to/look-from ranges are updated if Yes @see
+ * setCameraLookRanges
+ */
+IVW_MODULE_BASE_API void setCameraView(CameraProperty &cam, const mat4 &boundingBox,
+                                       float fitRatio = 1.05f,
+                                       UpdateNearFar updateNearFar = UpdateNearFar::No,
+                                       UpdateLookRanges updateLookRanges = UpdateLookRanges::No);
 
 /**
  * Setup the camera parameters such that the whole boundingBox spaned by basis and offset
@@ -58,13 +99,14 @@ enum class Side { XNegative, XPositive, YNegative, YPositive, ZNegative, ZPositi
  * @param fitRatio   determines the spacing between volume and the boundaries of the view frustum. A
  *                   fit ratio of 1 means a perfect fit, no space between frustum and volume. The
  * aspect ratio is taken into account.
- * @param setNearFar the camera's new/far clip ranges are updated if true @see setCameraNearFar
- * @param setLookRanges   the camera's look-to/look-from ranges are updated if true @see
+ * @param updateNearFar the camera's new/far clip ranges are updated if Yes @see setCameraNearFar
+ * @param updateLookRanges   the camera's look-to/look-from ranges are updated if Yes @see
  * setCameraLookRanges
  */
 IVW_MODULE_BASE_API void setCameraView(CameraProperty &cam, const mat4 &boundingBox, Side side,
-                                       float fitRatio = 1.05f, bool setNearFar = false,
-                                       bool setLookRanges = false);
+                                       float fitRatio = 1.05f,
+                                       UpdateNearFar updateNearFar = UpdateNearFar::No,
+                                       UpdateLookRanges updateLookRanges = UpdateLookRanges::No);
 
 /**
  * Setup the camera parameters such that the all input meshes will be inside the view frustum.
@@ -72,16 +114,18 @@ IVW_MODULE_BASE_API void setCameraView(CameraProperty &cam, const mat4 &bounding
  */
 IVW_MODULE_BASE_API void setCameraView(CameraProperty &cam,
                                        const std::vector<std::shared_ptr<const Mesh>> &meshes,
-                                       Side side, float fitRatio = 1.05f, bool setNearFar = false,
-                                       bool setLookRanges = false);
+                                       Side side, float fitRatio = 1.05f,
+                                       UpdateNearFar updateNearFar = UpdateNearFar::No,
+                                       UpdateLookRanges updateLookRanges = UpdateLookRanges::No);
 
 /**
  * Setup the camera parameters such that the given mesh will be completely inside the view frustum.
  * @see setCameraView
  */
 IVW_MODULE_BASE_API void setCameraView(CameraProperty &cam, const Mesh &meshe, Side side,
-                                       float fitRatio = 1.05f, bool setNearFar = false,
-                                       bool setLookRanges = false);
+                                       float fitRatio = 1.05f,
+                                       UpdateNearFar updateNearFar = UpdateNearFar::No,
+                                       UpdateLookRanges updateLookRanges = UpdateLookRanges::No);
 
 /**
  * Set the ranges of the look to and look from properties of the camera. Will center around the mid

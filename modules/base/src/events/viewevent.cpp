@@ -31,7 +31,7 @@
 
 namespace inviwo {
 
-ViewEvent::ViewEvent(camerautil::Side side) : Event(), side_{side} {}
+ViewEvent::ViewEvent(Action action) : Event(), action_{action} {}
 
 Event* ViewEvent::clone() const { return new ViewEvent(*this); }
 
@@ -39,6 +39,6 @@ uint64_t ViewEvent::hash() const { return chash(); }
 
 void ViewEvent::print(std::ostream& ss) const { ss << "ViewEvent"; }
 
-camerautil::Side ViewEvent::getSide() const { return side_; }
+auto ViewEvent::getAction() const -> Action { return action_; }
 
 }  // namespace inviwo
