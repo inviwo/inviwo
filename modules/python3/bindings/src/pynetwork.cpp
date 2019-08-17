@@ -38,6 +38,8 @@
 #include <inviwo/core/ports/port.h>
 #include <inviwo/core/ports/inport.h>
 
+#include <inviwopy/vectoridentifierwrapper.h>
+
 namespace py = pybind11;
 
 namespace inviwo {

@@ -27,23 +27,22 @@
  *
  *********************************************************************************/
 
+#include "plotting/common.glsl"
+#include "utils/structs.glsl"
+#include "utils/sampler2d.glsl"
+
 layout(location = 0) in float X;
 layout(location = 1) in float Y;
 layout(location = 2) in float C;
 layout(location = 3) in float R;
 layout(location = 4) in uint in_PickId;
 
-#include "plotting/common.glsl"
-#include "utils/structs.glsl"
-#include "utils/sampler2d.glsl"
-#include "utils/pickingutils.glsl"
-
 uniform sampler2D transferFunction;
 
 out vec4 vColor;
 out float vRadius;
 out float vDepth;
-flat out vec4 pickColors_;
+flat out uint pickID_;
 
 uniform vec2 minmaxX;
 uniform vec2 minmaxY;
@@ -83,5 +82,5 @@ void main(void) {
     float y = norm(Y, minmaxY);
     gl_Position = vec4(x, y, 0.5, 1);
     
-    pickColors_ = vec4(pickingIndexToColor(in_PickId), pickingEnabled ? 1.0 : 0.0);
+    pickID_ = pickingEnabled ? in_PickId : 0;
 }

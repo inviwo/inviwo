@@ -30,6 +30,7 @@
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/network/networklock.h>
+#include <inviwo/core/properties/isotfproperty.h>
 
 namespace inviwo {
 
@@ -95,49 +96,39 @@ TransferFunctionProperty::TransferFunctionProperty(const TransferFunctionPropert
     this->value_.value.addObserver(this);
 }
 
-TransferFunctionProperty& TransferFunctionProperty::operator=(
-    const TransferFunctionProperty& that) {
-    if (this != &that) {
-        this->value_.value.removeObserver(this);
-        TemplateProperty<TransferFunction>::operator=(that);
-        this->value_.value.addObserver(this);
-        zoomH_ = that.zoomH_;
-        zoomV_ = that.zoomV_;
-        histogramMode_ = that.histogramMode_;
-        volumeInport_ = that.volumeInport_;
-    }
-    return *this;
-}
-
 TransferFunctionProperty* TransferFunctionProperty::clone() const {
     return new TransferFunctionProperty(*this);
 }
 
 TransferFunctionProperty::~TransferFunctionProperty() { volumeInport_ = nullptr; }
 
-void TransferFunctionProperty::setHistogramMode(HistogramMode mode) {
+TransferFunctionProperty& TransferFunctionProperty::setHistogramMode(HistogramMode mode) {
     if (histogramMode_ != mode) {
         histogramMode_ = mode;
         notifyHistogramModeChange(histogramMode_);
     }
+    return *this;
 }
 
 auto TransferFunctionProperty::getHistogramMode() -> HistogramMode { return histogramMode_; }
 
 VolumeInport* TransferFunctionProperty::getVolumeInport() { return volumeInport_; }
 
-void TransferFunctionProperty::resetToDefaultState() {
+TransferFunctionProperty& TransferFunctionProperty::resetToDefaultState() {
     NetworkLock lock(this);
     zoomH_.reset();
     zoomV_.reset();
     histogramMode_.reset();
     TemplateProperty<TransferFunction>::resetToDefaultState();
+    return *this;
 }
-void TransferFunctionProperty::setCurrentStateAsDefault() {
+
+TransferFunctionProperty& TransferFunctionProperty::setCurrentStateAsDefault() {
     TemplateProperty<TransferFunction>::setCurrentStateAsDefault();
     zoomH_.setAsDefault();
     zoomV_.setAsDefault();
     histogramMode_.setAsDefault();
+    return *this;
 }
 
 void TransferFunctionProperty::serialize(Serializer& s) const {
@@ -160,7 +151,7 @@ void TransferFunctionProperty::deserialize(Deserializer& d) {
     if (modified) propertyModified();
 }
 
-void TransferFunctionProperty::setMask(double maskMin, double maskMax) {
+TransferFunctionProperty& TransferFunctionProperty::setMask(double maskMin, double maskMax) {
     if (maskMax < maskMin) {
         maskMax = maskMin;
     }
@@ -173,9 +164,10 @@ void TransferFunctionProperty::setMask(double maskMin, double maskMax) {
 
         propertyModified();
     }
+    return *this;
 }
 
-void TransferFunctionProperty::clearMask() {
+TransferFunctionProperty& TransferFunctionProperty::clearMask() {
     auto prevMask = getMask();
 
     this->value_.value.clearMask();
@@ -183,6 +175,7 @@ void TransferFunctionProperty::clearMask() {
         notifyMaskChange(getMask());
     }
     propertyModified();
+    return *this;
 }
 
 const dvec2 TransferFunctionProperty::getMask() const {
@@ -191,7 +184,7 @@ const dvec2 TransferFunctionProperty::getMask() const {
 
 const dvec2& TransferFunctionProperty::getZoomH() const { return zoomH_; }
 
-void TransferFunctionProperty::setZoomH(double zoomHMin, double zoomHMax) {
+TransferFunctionProperty& TransferFunctionProperty::setZoomH(double zoomHMin, double zoomHMax) {
     if (zoomHMax < zoomHMin) {
         zoomHMax = zoomHMin;
     }
@@ -201,11 +194,12 @@ void TransferFunctionProperty::setZoomH(double zoomHMin, double zoomHMax) {
         zoomH_ = newZoomH;
         notifyZoomHChange(zoomH_);
     }
+    return *this;
 }
 
 const dvec2& TransferFunctionProperty::getZoomV() const { return zoomV_; }
 
-void TransferFunctionProperty::setZoomV(double zoomVMin, double zoomVMax) {
+TransferFunctionProperty& TransferFunctionProperty::setZoomV(double zoomVMin, double zoomVMax) {
     if (zoomVMax < zoomVMin) {
         zoomVMax = zoomVMin;
     }
@@ -215,6 +209,7 @@ void TransferFunctionProperty::setZoomV(double zoomVMin, double zoomVMax) {
         zoomV_ = newZoomV;
         notifyZoomVChange(zoomV_);
     }
+    return *this;
 }
 
 void TransferFunctionProperty::set(const TransferFunction& value) {
@@ -223,9 +218,13 @@ void TransferFunctionProperty::set(const TransferFunction& value) {
     this->value_.value.addObserver(this);
 }
 
+void TransferFunctionProperty::set(const IsoTFProperty& p) { set(p.tf_.get()); }
+
 void TransferFunctionProperty::set(const Property* property) {
     if (auto tfp = dynamic_cast<const TransferFunctionProperty*>(property)) {
         TemplateProperty<TransferFunction>::set(tfp);
+    } else if (auto isotfprop = dynamic_cast<const IsoTFProperty*>(property)) {
+        TemplateProperty<TransferFunction>::set(&isotfprop->tf_);
     }
 }
 

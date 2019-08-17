@@ -7,7 +7,10 @@ ivw_module(FontRendering)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
+    include/modules/fontrendering/datastructures/fontdata.h
+    include/modules/fontrendering/datastructures/fontsettings.h
     include/modules/fontrendering/datastructures/texatlasentry.h
+    include/modules/fontrendering/datastructures/textboundingbox.h
     include/modules/fontrendering/fontrenderingmodule.h
     include/modules/fontrendering/fontrenderingmoduledefine.h
     include/modules/fontrendering/processors/textoverlaygl.h
@@ -21,7 +24,10 @@ ivw_group("Header Files" ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
+    src/datastructures/fontdata.cpp
+    src/datastructures/fontsettings.cpp
     src/datastructures/texatlasentry.cpp
+    src/datastructures/textboundingbox.cpp
     src/fontrenderingmodule.cpp
     src/processors/textoverlaygl.cpp
     src/properties/fontproperty.cpp
@@ -58,7 +64,7 @@ ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/fonts)
 ivw_register_license_file(NAME FreeType MODULE FontRendering
     URL "https://www.freetype.org/"
     TYPE "BSD-style, acknowledgement: Portions of this software are copyright The FreeType Project (www.freetype.org). All rights reserved."
-    FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/freetype/FTL.txt
+    FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/freetype/freetype/docs/FTL.txt
 )
 
 #--------------------------------------------------------------------
@@ -66,6 +72,3 @@ ivw_register_license_file(NAME FreeType MODULE FontRendering
 target_link_libraries(inviwo-module-fontrendering PRIVATE utf)
 target_link_libraries(inviwo-module-fontrendering PUBLIC freetype)
 ivw_make_package(InviwoFontRenderingModule inviwo-module-fontrendering)
-
-
-

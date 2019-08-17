@@ -70,7 +70,6 @@ public:
                       PropertySemantics semantics = PropertySemantics::Default);
 
     MultiFileProperty(const MultiFileProperty& rhs);
-    MultiFileProperty& operator=(const MultiFileProperty& that);
     MultiFileProperty& operator=(const std::vector<std::string>& value);
     virtual MultiFileProperty* clone() const override;
     virtual ~MultiFileProperty() = default;
@@ -101,7 +100,7 @@ public:
     void setSelectedExtension(const FileExtension& ext);
 
     /**
-     *	Request a file from the user through the use of a widget.
+     *	Request a file from the user through the use of a widget or a FileDialog.
      */
     void requestFile();
 

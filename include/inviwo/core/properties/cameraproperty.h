@@ -64,7 +64,6 @@ public:
                    PropertySemantics semantics = PropertySemantics::Default);
 
     CameraProperty(const CameraProperty& rhs);
-    CameraProperty& operator=(const CameraProperty& that);
 
     operator const Camera&() const;
 

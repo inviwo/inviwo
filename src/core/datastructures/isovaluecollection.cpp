@@ -54,7 +54,7 @@ void IsoValueCollection::save(const std::string& filename, const FileExtension& 
         serialize(serializer);
         serializer.writeFile();
     } else {
-        throw DataWriterException("Unsupported format for saving isovalues", IvwContext);
+        throw DataWriterException("Unsupported format for saving isovalues", IVW_CONTEXT);
     }
 }
 
@@ -65,7 +65,7 @@ void IsoValueCollection::load(const std::string& filename, const FileExtension& 
         Deserializer deserializer(filename);
         deserialize(deserializer);
     } else {
-        throw DataReaderException("Unsupported format for loading isovalues", IvwContext);
+        throw DataReaderException("Unsupported format for loading isovalues", IVW_CONTEXT);
     }
 }
 

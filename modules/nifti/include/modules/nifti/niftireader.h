@@ -96,12 +96,12 @@ public:
 
         const std::size_t size = region_size[0] * region_size[1] * region_size[2] * region_size[3] *
                                  region_size[4] * region_size[5] * region_size[6];
-        auto data = util::make_unique<F[]>(size);
+        auto data = std::make_unique<F[]>(size);
 
         if (!data) {
             throw DataReaderException(
                 "Error: Could not allocate memory for loading raw file: " + std::string(nim->fname),
-                IvwContext);
+                IVW_CONTEXT);
         }
         auto dataPointer = reinterpret_cast<void*>(data.get());
         auto readBytes =
@@ -109,11 +109,11 @@ public:
                                        const_cast<int*>(region_size.data()), &dataPointer);
         if (readBytes < 0) {
             throw DataReaderException(
-                "Error: Could not read data from file: " + std::string(nim->fname), IvwContext);
+                "Error: Could not read data from file: " + std::string(nim->fname), IVW_CONTEXT);
         }
         // Flip data along axes if necessary
         if (flipAxis[0] || flipAxis[1] || flipAxis[2]) {
-            auto tmp = util::make_unique<F[]>(size);
+            auto tmp = std::make_unique<F[]>(size);
             std::memcpy(tmp.get(), dataPointer, size * sizeof(F));
             auto dim = size3_t{region_size[0], region_size[1], region_size[2]};
             util::IndexMapper3D mapper(dim);

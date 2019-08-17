@@ -86,18 +86,6 @@ IntegralLineVectorToMesh::ColorByProperty::ColorByProperty(const ColorByProperty
     addProperties();
 }
 
-IntegralLineVectorToMesh::ColorByProperty &IntegralLineVectorToMesh::ColorByProperty::operator=(
-    const ColorByProperty &that) {
-    if (this != &that) {
-        scaleBy_ = that.scaleBy_;
-        loopTF_ = that.loopTF_;
-        minValue_ = that.minValue_;
-        maxValue_ = that.maxValue_;
-        tf_ = that.tf_;
-    }
-    return *this;
-}
-
 IntegralLineVectorToMesh::ColorByProperty *IntegralLineVectorToMesh::ColorByProperty::clone()
     const {
     return new ColorByProperty(*this);
@@ -323,7 +311,7 @@ void IntegralLineVectorToMesh::process() {
             auto props = getPropertiesByType<ColorByProperty>();
             if (props.size() == 0) {
                 throw Exception("Couldn't get ColorByProperty for meta data " + metaDataKey,
-                                IvwContext);
+                                IVW_CONTEXT);
             }
             mdProp = props.front();
             LogWarn("Couldn't get ColorByProperty for meta data "
@@ -355,7 +343,7 @@ void IntegralLineVectorToMesh::process() {
                 ib->getDataContainer().reserve(size * 2);
                 return ib;
             }
-            throw Exception("Unsupported output type", IvwContext);
+            throw Exception("Unsupported output type", IVW_CONTEXT);
         }();
 
         auto coloring = [&, this](auto sample, size_t lineIndex, size_t lineNumber) -> vec4 {

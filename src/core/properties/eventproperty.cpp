@@ -45,7 +45,7 @@ EventProperty::EventProperty(const std::string& identifier, const std::string& d
                              Action action, IvwKey key, KeyStates states, KeyModifiers modifiers,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : EventProperty(identifier, displayName, std::move(action),
-                    util::make_unique<KeyboardEventMatcher>(key, states, modifiers),
+                    std::make_unique<KeyboardEventMatcher>(key, states, modifiers),
                     invalidationLevel, semantics) {}
 
 EventProperty::EventProperty(const std::string& identifier, const std::string& displayName,
@@ -53,7 +53,7 @@ EventProperty::EventProperty(const std::string& identifier, const std::string& d
                              KeyModifiers modifiers, InvalidationLevel invalidationLevel,
                              PropertySemantics semantics)
     : EventProperty(identifier, displayName, std::move(action),
-                    util::make_unique<MouseEventMatcher>(buttons, states, modifiers),
+                    std::make_unique<MouseEventMatcher>(buttons, states, modifiers),
                     invalidationLevel, semantics) {}
 
 EventProperty::EventProperty(const EventProperty& rhs)
@@ -61,20 +61,6 @@ EventProperty::EventProperty(const EventProperty& rhs)
     , matcher_{rhs.matcher_ ? rhs.matcher_->clone() : nullptr}
     , action_{rhs.action_}
     , enabled_{rhs.enabled_} {}
-
-EventProperty& EventProperty::operator=(const EventProperty& that) {
-    if (this != &that) {
-        Property::operator=(that);
-        std::unique_ptr<EventMatcher> e{that.matcher_ ? that.matcher_->clone() : nullptr};
-        Action a{that.action_};
-
-        std::swap(matcher_, e);
-        std::swap(action_, a);
-
-        enabled_ = that.enabled_;
-    }
-    return *this;
-}
 
 EventProperty* EventProperty::clone() const { return new EventProperty(*this); }
 
@@ -96,12 +82,14 @@ void EventProperty::setEventMatcher(std::unique_ptr<EventMatcher> matcher) {
 
 void EventProperty::setAction(Action action) { action_ = std::move(action); }
 
-void EventProperty::setCurrentStateAsDefault() {
+EventProperty& EventProperty::setCurrentStateAsDefault() {
     if (matcher_) matcher_->setCurrentStateAsDefault();
+    return *this;
 }
 
-void EventProperty::resetToDefaultState() {
+EventProperty& EventProperty::resetToDefaultState() {
     if (matcher_) matcher_->resetToDefaultState();
+    return *this;
 }
 
 void EventProperty::serialize(Serializer& s) const {

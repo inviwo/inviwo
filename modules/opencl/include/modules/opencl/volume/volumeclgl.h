@@ -68,6 +68,14 @@ public:
     virtual const size3_t& getDimensions() const override;
     virtual void setDimensions(size3_t dimensions) override;
 
+    /**
+     * \brief update the swizzle mask of the color channels when sampling the volume
+     *
+     * @param mask new swizzle mask
+     */
+    virtual void setSwizzleMask(const SwizzleMask& mask) override;
+    virtual SwizzleMask getSwizzleMask() const override;
+
     virtual cl::Image3DGL& getEditable() override;
     virtual const cl::Image3DGL& get() const override;
     std::shared_ptr<Texture3D> getTexture() const;
@@ -98,6 +106,7 @@ protected:
     size3_t dimensions_;
     std::shared_ptr<Texture3D> texture_;
     std::shared_ptr<cl::Image3DGL> clImage_;  ///< Potentially shared with other LayerCLGL
+    SwizzleMask swizzleMask_;
 };
 
 }  // namespace inviwo

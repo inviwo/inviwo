@@ -24,40 +24,30 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
+
+layout(location = 0) out vec3 velocity;
+layout(location = 1) out vec3 curl;
+layout(location = 2) out float div;
 
 uniform ivec3 volumeSize_;
 
 in vec4 texCoord_;
-in vec4 dataposition_;
+in vec4 worldPos_;
 
 uniform float rho;
 uniform float sigma;
 uniform float beta;
 
-uniform vec2 xRange;
-uniform vec2 yRange;
-uniform vec2 zRange;
-
-float getPos(float v ,vec2 range){ 
-	return range.x + v * (range.y - range.x);
-}
-
 void main() {
-    float x = getPos(dataposition_.x , xRange);
-    float y = getPos(dataposition_.y , yRange);
-    float z = getPos(dataposition_.z , zRange);
-    vec4 value = vec4(0,0,0,1);
-    value.x = sigma*(y-x);
-    value.y = x*(rho-z)-y ;
-    value.z = x*y - beta*z;
-    value.w = length(value.xyz);
+    float x = worldPos_.x;
+    float y = worldPos_.y;
+    float z = worldPos_.z;
 
-    /*
-    value.x = x;
-    value.y = y;
-    value.z = z;
-    //*/
-    FragData0 = value;
+    velocity = vec3(sigma * (y - x), x * (rho - z) - y, x * y - beta * z);
+
+    curl = vec3(2 * x, -y, rho - z - sigma);
+
+    div = -1 - sigma - beta;
 }

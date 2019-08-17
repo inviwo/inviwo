@@ -47,14 +47,13 @@ public:
     virtual LayerRepresentation* clone() const = 0;
     virtual ~LayerRepresentation() = default;
 
-    size2_t getDimensions() const;
-
     /**
      * Resize the representation to dimension. This is destructive, the data will not be
      * preserved. Use copyRepresentationsTo to update the data.
      * Needs to be overloaded by child classes.
      */
     virtual void setDimensions(size2_t dimensions) = 0;
+    virtual const size2_t& getDimensions() const = 0;
 
     /**
      * \brief update the swizzle mask of the channels for sampling color layers
@@ -73,14 +72,13 @@ public:
     LayerType getLayerType() const;
 
 protected:
-    LayerRepresentation(size2_t dimensions = size2_t(32, 32), LayerType type = LayerType::Color,
+    LayerRepresentation(LayerType type = LayerType::Color,
                         const DataFormatBase* format = DataVec4UInt8::get());
     LayerRepresentation(const LayerRepresentation& rhs) = default;
     LayerRepresentation& operator=(const LayerRepresentation& that) = default;
 
     void updateBaseMetaFromRepresentation();
 
-    size2_t dimensions_;
     LayerType layerType_;
 };
 

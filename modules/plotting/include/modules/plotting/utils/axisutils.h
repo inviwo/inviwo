@@ -33,7 +33,7 @@
 #include <modules/plotting/plottingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
-#include <modules/plotting/properties/axisproperty.h>
+#include <modules/plotting/datastructures/axissettings.h>
 
 #include <tuple>
 
@@ -43,63 +43,82 @@ class Mesh;
 
 namespace plot {
 
+IVW_MODULE_PLOTTING_API std::vector<double> getMajorTickPositions(const MajorTickSettings& ticks,
+                                                                  dvec2 range,
+                                                                  size_t maxTicks = 1000);
+IVW_MODULE_PLOTTING_API std::vector<double> getMinorTickPositions(
+    const MinorTickSettings& minorTicks, const MajorTickSettings& majorTicks, dvec2 range,
+    size_t maxTicks = 1000);
+
 /**
  * \brief returns tick positions along the axis range defined in the axis property
  *
- * @param property   axis property used for tick settings
+ * @param settings   axis property used for tick settings
+ * @param maxTicks maximum number of ticks
  * @return positions of tick marks
  */
-std::vector<double> IVW_MODULE_PLOTTING_API getMajorTickPositions(const AxisProperty& property);
-std::vector<double> IVW_MODULE_PLOTTING_API getMinorTickPositions(const AxisProperty& property);
+inline std::vector<double> getMajorTickPositions(const AxisSettings& settings,
+                                                 size_t maxTicks = 1000) {
+    return getMajorTickPositions(settings.getMajorTicks(), settings.getRange(), maxTicks);
+}
+inline std::vector<double> getMinorTickPositions(const AxisSettings& settings,
+                                                 size_t maxTicks = 1000) {
+    return getMinorTickPositions(settings.getMinorTicks(), settings.getMajorTicks(),
+                                 settings.getRange(), maxTicks);
+}
 
-vec2 IVW_MODULE_PLOTTING_API getAxisCaptionPosition(const AxisProperty& property,
+vec2 IVW_MODULE_PLOTTING_API getAxisCaptionPosition(const AxisSettings& settings,
                                                     const vec2& startPos, const vec2& endPos);
 
-std::vector<std::pair<double, vec2>> IVW_MODULE_PLOTTING_API
-getLabelPositions(const AxisProperty& property, const vec2& startPos, const vec2& endPos);
+IVW_MODULE_PLOTTING_API std::vector<std::pair<double, vec2>> getLabelPositions(
+    const AxisSettings& property, const vec2& startPos, const vec2& endPos);
 
-vec3 IVW_MODULE_PLOTTING_API getAxisCaptionPosition3D(const AxisProperty& property,
+vec3 IVW_MODULE_PLOTTING_API getAxisCaptionPosition3D(const AxisSettings& settings,
                                                       const vec3& startPos, const vec3& endPos,
                                                       const vec3& tickDirection);
 
-std::vector<std::pair<double, vec3>> IVW_MODULE_PLOTTING_API
-getLabelPositions3D(const AxisProperty& property, const vec3& startPos, const vec3& endPos,
-                    const vec3& tickDirection);
+IVW_MODULE_PLOTTING_API std::vector<std::pair<double, vec3>> getLabelPositions3D(
+    const AxisSettings& property, const vec3& startPos, const vec3& endPos,
+    const vec3& tickDirection);
 
 /**
  * \brief creates a mesh containing major ticks for an axis extending from start to
  * end position
  *
- * @param property    axis property used for tick settings
+ * @param settings    axis property used for tick settings
  * @param startPos  start position of axis
  * @param endPos    end position of axis
  * @return mesh containing of ticks, each tick is represented by two positions and matching colors
  */
-std::shared_ptr<Mesh> IVW_MODULE_PLOTTING_API generateMajorTicksMesh(const AxisProperty& property,
+IVW_MODULE_PLOTTING_API std::unique_ptr<Mesh> generateMajorTicksMesh(const AxisSettings& settings,
                                                                      const vec2& startPos,
                                                                      const vec2& endPos);
 
-std::shared_ptr<Mesh> IVW_MODULE_PLOTTING_API generateMinorTicksMesh(const AxisProperty& property,
+IVW_MODULE_PLOTTING_API std::unique_ptr<Mesh> generateMinorTicksMesh(const AxisSettings& settings,
                                                                      const vec2& startPos,
                                                                      const vec2& endPos);
+/**
+ * No picking buffer will be generated if pickingId = std::numeric_limits<size_t>::max()
+ */
+IVW_MODULE_PLOTTING_API std::unique_ptr<Mesh> generateAxisMesh(
+    const vec2& startPos, const vec2& endPos, const vec4& color,
+    const size_t& pickingId = std::numeric_limits<size_t>::max());
 
-std::shared_ptr<Mesh> IVW_MODULE_PLOTTING_API generateAxisMesh(const AxisProperty& property,
-                                                               const vec2& startPos,
-                                                               const vec2& endPos);
-
-std::shared_ptr<Mesh> IVW_MODULE_PLOTTING_API generateMajorTicksMesh3D(const AxisProperty& property,
+IVW_MODULE_PLOTTING_API std::unique_ptr<Mesh> generateMajorTicksMesh3D(const AxisSettings& settings,
                                                                        const vec3& startPos,
                                                                        const vec3& endPos,
                                                                        const vec3& tickDirection);
 
-std::shared_ptr<Mesh> IVW_MODULE_PLOTTING_API generateMinorTicksMesh3D(const AxisProperty& property,
+IVW_MODULE_PLOTTING_API std::unique_ptr<Mesh> generateMinorTicksMesh3D(const AxisSettings& settings,
                                                                        const vec3& startPos,
                                                                        const vec3& endPos,
                                                                        const vec3& tickDirection);
-
-std::shared_ptr<Mesh> IVW_MODULE_PLOTTING_API generateAxisMesh3D(const AxisProperty& property,
-                                                                 const vec3& startPos,
-                                                                 const vec3& endPos);
+/**
+ * No picking buffer will be generated id pickingId = std::numeric_limits<size_t>::max()
+ */
+IVW_MODULE_PLOTTING_API std::unique_ptr<Mesh> generateAxisMesh3D(
+    const vec3& startPos, const vec3& endPos, const vec4& color,
+    const size_t& pickingId = std::numeric_limits<size_t>::max());
 
 /**
  * \brief utility function to create a mesh for a given set of tick mark positions
@@ -117,9 +136,13 @@ std::shared_ptr<Mesh> IVW_MODULE_PLOTTING_API generateAxisMesh3D(const AxisPrope
  *                  location is bottom/left)
  * @return mesh containing of ticks, each tick is represented by two positions and matching colors
  */
-std::shared_ptr<Mesh> IVW_MODULE_PLOTTING_API generateTicksMesh(
-    const std::vector<double> tickMarks, dvec2 axisRange, const vec3& startPos, const vec3& endPos,
+IVW_MODULE_PLOTTING_API std::unique_ptr<Mesh> generateTicksMesh(
+    const std::vector<double>& tickMarks, dvec2 axisRange, const vec3& startPos, const vec3& endPos,
     const vec3& tickDirection, float tickLength, TickStyle style, const vec4& color, bool flip);
+
+IVW_MODULE_PLOTTING_API std::pair<vec2, vec2> tickBoundingRect(const AxisSettings& settings,
+                                                               const vec2& startPos,
+                                                               const vec2& endPos);
 
 }  // namespace plot
 

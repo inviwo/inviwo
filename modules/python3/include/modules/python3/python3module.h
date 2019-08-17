@@ -33,6 +33,8 @@
 #include <modules/python3/python3moduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <modules/python3/pythonlogger.h>
+#include <modules/python3/pythonprocessorfolderobserver.h>
+#include <modules/python3/pyutils.h>
 #include <string>
 
 namespace inviwo {
@@ -50,6 +52,10 @@ private:
     TCLAP::ValueArg<std::string> pythonScriptArg_;
     CommandLineArgHolder argHolder_;
     PythonLogger pythonLogger_;
+
+    pyutil::ModulePath scripts_;
+    PythonProcessorFolderObserver pythonFolderObserver_;
+    PythonProcessorFolderObserver settingsFolderObserver_;
 };
 
 }  // namespace inviwo

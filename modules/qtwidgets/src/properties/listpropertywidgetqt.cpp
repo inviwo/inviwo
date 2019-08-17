@@ -50,7 +50,7 @@ ListPropertyWidgetQt::ListPropertyWidgetQt(ListProperty* property)
     : CompositePropertyWidgetQt(property), listProperty_(property) {
 
     if (!listProperty_) {
-        throw Exception("ListPropertyWidgetQt got a null ListProperty", IvwContext);
+        throw Exception("ListPropertyWidgetQt got a null ListProperty", IVW_CONTEXT);
     }
 
     setShowIfEmpty(true);
@@ -58,7 +58,7 @@ ListPropertyWidgetQt::ListPropertyWidgetQt(ListProperty* property)
 
     auto headerlayout = dynamic_cast<QHBoxLayout*>(layout()->itemAt(0)->layout());
     if (!headerlayout) {
-        throw Exception("CompositePropertyWidget has no header layout.", IvwContext);
+        throw Exception("CompositePropertyWidget has no header layout.", IVW_CONTEXT);
     }
 
     // inject "add" button in the header of the composite property for adding list elements

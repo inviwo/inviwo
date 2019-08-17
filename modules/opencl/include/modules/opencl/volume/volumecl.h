@@ -40,9 +40,8 @@ namespace inviwo {
 
 class IVW_MODULE_OPENCL_API VolumeCL : public VolumeCLBase, public VolumeRepresentation {
 public:
-    VolumeCL(const DataFormatBase* format = DataFormatBase::get(), const void* data = nullptr);
     VolumeCL(size3_t dimensions, const DataFormatBase* format = DataFormatBase::get(),
-             const void* data = nullptr);
+             const void* data = nullptr, const SwizzleMask& swizzleMask = swizzlemasks::rgba);
     virtual ~VolumeCL();
     VolumeCL(const VolumeCL& rhs);
 
@@ -66,11 +65,20 @@ public:
 
     virtual std::type_index getTypeIndex() const override final;
 
+    /**
+     * \brief update the swizzle mask of the color channels when sampling the volume
+     *
+     * @param mask new swizzle mask
+     */
+    virtual void setSwizzleMask(const SwizzleMask& mask) override;
+    virtual SwizzleMask getSwizzleMask() const override;
+
 protected:
     void initialize(const void* voxels);
     size3_t dimensions_;
     cl::ImageFormat imageFormat_;
     std::unique_ptr<cl::Image3D> clImage_;
+    SwizzleMask swizzleMask_;
 };
 
 }  // namespace inviwo

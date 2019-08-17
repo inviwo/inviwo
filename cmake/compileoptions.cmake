@@ -61,14 +61,12 @@ function(ivw_define_standard_properties)
             list(APPEND comp_opts "/wd4201") # nameless struct/union https://msdn.microsoft.com/en-us/library/c89bw853.aspx
             list(APPEND comp_opts "/wd4251") # needs dll-interface   https://msdn.microsoft.com/en-us/library/esew7y1w.aspx
             list(APPEND comp_opts "/wd4505") # unreferenced funtion  https://msdn.microsoft.com/en-us/library/mt694070.aspx
-            if(MSVC_VERSION GREATER_EQUAL 1910)
-                list(APPEND comp_opts "/w35038") # class member reorder
-                if(NOT OpenMP_ON)
-                    list(APPEND comp_opts "/permissive-")
-                endif()
-                list(APPEND comp_opts "/std:c++latest")
-                #list(APPEND comp_opts "/diagnostics:caret") not supporeted by cmake yet... https://developercommunity.visualstudio.com/content/problem/9385/cmakeliststxt-cannot-override-diagnosticsclassic-d.html
+            list(APPEND comp_opts "/w35038") # class member reorder
+            if(NOT OpenMP_ON)
+                list(APPEND comp_opts "/permissive-")
             endif()
+            list(APPEND comp_opts "/std:c++latest")
+            #list(APPEND comp_opts "/diagnostics:caret") not supporeted by cmake yet... https://developercommunity.visualstudio.com/content/problem/9385/cmakeliststxt-cannot-override-diagnosticsclassic-d.html
         endif()
         if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR
             "${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
@@ -116,7 +114,7 @@ macro(ivw_define_standard_definitions project_name target)
             _CRT_SECURE_NO_WARNINGS
             _CRT_SECURE_NO_DEPRECATE
             _SCL_SECURE_NO_WARNINGS
-            _SILENCE_CXX17_RESULT_OF_DEPRECATION_WARNING
+            _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
             NOMINMAX
             WIN32_LEAN_AND_MEAN
             UNICODE
@@ -146,7 +144,11 @@ function(ivw_suppress_compiler_warnings)
             set_property(TARGET ${target} PROPERTY COMPILE_OPTIONS ${comp_opts})
     
             get_property(comp_defs TARGET ${target} PROPERTY COMPILE_DEFINITIONS)
-            list(APPEND comp_defs "_CRT_SECURE_NO_WARNINGS")
+            list(APPEND comp_defs _CRT_SECURE_NO_WARNINGS 
+                                  _SILENCE_CXX17_RESULT_OF_DEPRECATION_WARNING
+                                  _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
+                                  _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING
+                              )
             list(REMOVE_DUPLICATES comp_defs)
             set_property(TARGET ${target} PROPERTY COMPILE_DEFINITIONS ${comp_defs})
             

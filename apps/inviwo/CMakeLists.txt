@@ -144,7 +144,7 @@ if(WIN32)
         ${QRC_FILE} 
         ${RES_FILES}
     )
-    target_link_libraries(inviwo-cli  PUBLIC
+    target_link_libraries(inviwo-cli PUBLIC
         inviwo::core 
         inviwo::qtapplicationbase
         inviwo::qteditor
@@ -159,6 +159,9 @@ if(WIN32)
         add_dependencies(inviwo-cli ${_allPyBindWrappers})
     endif()
 
+    # prevent inviwo-cli from building in parallel with inviwo since that might cause errors with the moc generation
+    add_dependencies(inviwo-cli inviwo)
+
     ivw_memleak_setup(inviwo-cli)
 
     set_property(TARGET inviwo-cli APPEND_STRING PROPERTY LINK_FLAGS 
@@ -167,12 +170,6 @@ if(WIN32)
     install(TARGETS inviwo-cli RUNTIME DESTINATION bin COMPONENT qt_app)
 endif()
 
-
-
 # Save information for python tools.
 ivw_mod_name_to_class(ivw_module_classes ${enabled_modules})
 ivw_private_create_pyconfig("${IVW_MODULE_DIR};${IVW_EXTERNAL_MODULES}" "${ivw_module_classes}" inviwo)
-
-
-
-

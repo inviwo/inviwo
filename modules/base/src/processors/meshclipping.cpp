@@ -546,13 +546,13 @@ std::shared_ptr<Mesh> MeshClipping::clipGeometryAgainstPlane(const Mesh* in,
 
                         if (i == uniqueintersectionsEdges.size() - 1) {
                             throw Exception("Could not connect find intersecting edges",
-                                            IvwContext);
+                                            IVW_CONTEXT);
                         }
                     }
 
                     if (!createdPolygon) {
                         throw Exception("Could not connect clipped edges to manifold polygon",
-                                        IvwContext);
+                                        IVW_CONTEXT);
                     }
                 }
 

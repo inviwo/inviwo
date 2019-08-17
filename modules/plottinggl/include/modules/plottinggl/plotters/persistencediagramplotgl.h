@@ -44,9 +44,10 @@
 #include <modules/opengl/shader/shader.h>
 #include <modules/base/algorithm/dataminmax.h>
 
-#include <modules/plotting/datastructures/dataframe.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
 #include <modules/plotting/properties/marginproperty.h>
 #include <modules/plotting/properties/axisproperty.h>
+#include <modules/plotting/properties/axisstyleproperty.h>
 #include <modules/plottinggl/utils/axisrenderer.h>
 
 namespace inviwo {
@@ -73,7 +74,6 @@ public:
                    PropertySemantics semantics = PropertySemantics::Default);
 
         Properties(const Properties &rhs);
-        Properties &operator=(const Properties &that);
         virtual Properties *clone() const override;
         virtual ~Properties() = default;
 
@@ -93,8 +93,21 @@ public:
 
         BoolProperty hovering_;
 
+        AxisStyleProperty axisStyle_;
         AxisProperty xAxis_;
         AxisProperty yAxis_;
+
+    private:
+        auto props() {
+            return std::tie(showPoints_, radius_, lineWidth_, lineWidthDiagonal_, pointColor_,
+                            lineColor_, hoverColor_, tf_, margins_, axisMargin_, borderWidth_,
+                            borderColor_, hovering_, axisStyle_, xAxis_, yAxis_);
+        }
+        auto props() const {
+            return std::tie(showPoints_, radius_, lineWidth_, lineWidthDiagonal_, pointColor_,
+                            lineColor_, hoverColor_, tf_, margins_, axisMargin_, borderWidth_,
+                            borderColor_, hovering_, axisStyle_, xAxis_, yAxis_);
+        }
     };
 
     explicit PersistenceDiagramPlotGL(Processor *processor = nullptr);
@@ -113,9 +126,9 @@ public:
 
     void setYAxisLabel(const std::string &label);
 
-    void setXAxis(std::shared_ptr<const plot::Column> col);
+    void setXAxis(std::shared_ptr<const Column> col);
 
-    void setYAxis(std::shared_ptr<const plot::Column> col);
+    void setYAxis(std::shared_ptr<const Column> col);
 
     void setXAxisData(std::shared_ptr<const BufferBase> buffer);
     void setYAxisData(std::shared_ptr<const BufferBase> buffer);

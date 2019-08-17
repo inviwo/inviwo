@@ -64,7 +64,7 @@ public:
     virtual ~PropertyWidgetFactoryObjectTemplate() {}
 
     virtual std::unique_ptr<PropertyWidget> create(Property* prop) {
-        return util::make_unique<T>(static_cast<P*>(prop));
+        return std::make_unique<T>(static_cast<P*>(prop));
     }
 };
 

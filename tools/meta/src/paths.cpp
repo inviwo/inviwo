@@ -33,6 +33,7 @@
 #include <array>
 #include <algorithm>
 #include <fstream>
+#include <string>
 
 namespace inviwo::meta {
 

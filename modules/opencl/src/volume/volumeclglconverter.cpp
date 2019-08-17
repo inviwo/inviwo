@@ -38,7 +38,8 @@ namespace inviwo {
 std::shared_ptr<VolumeRAM> VolumeCLGL2RAMConverter::createFrom(
     std::shared_ptr<const VolumeCLGL> volumeCLGL) const {
     const size3_t dimensions{volumeCLGL->getDimensions()};
-    auto destination = createVolumeRAM(dimensions, volumeCLGL->getDataFormat());
+    auto destination = createVolumeRAM(dimensions, volumeCLGL->getDataFormat(), nullptr,
+                                       volumeCLGL->getSwizzleMask());
 
     if (destination) {
         volumeCLGL->getTexture()->download(destination->getData());
@@ -83,7 +84,8 @@ std::shared_ptr<VolumeCL> VolumeCLGL2CLConverter::createFrom(
     LogWarn("Performance warning: Use shared CLGL representation instead of CL ");
 #endif
     const size3_t dimensions{volumeCLGL->getDimensions()};
-    auto destination = std::make_shared<VolumeCL>(dimensions, volumeCLGL->getDataFormat());
+    auto destination = std::make_shared<VolumeCL>(dimensions, volumeCLGL->getDataFormat(), nullptr,
+                                                  volumeCLGL->getSwizzleMask());
     {
         SyncCLGL glSync;
         glSync.addToAquireGLObjectList(volumeCLGL.get());

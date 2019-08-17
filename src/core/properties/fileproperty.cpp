@@ -29,7 +29,10 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/core/util/dialogfactory.h>
+#include <inviwo/core/util/filedialog.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 namespace inviwo {
 
@@ -53,28 +56,56 @@ FileProperty& FileProperty::operator=(const std::string& value) {
 
 FileProperty* FileProperty::clone() const { return new FileProperty(*this); }
 
-void FileProperty::set(const std::string& value) {
-    TemplateProperty<std::string>::set(filesystem::cleanupPath(value));
+void FileProperty::set(const std::string& file) {
+    const auto value = filesystem::cleanupPath(file);
+    bool modified = false;
+    if (value_ != value) {
+        value_ = value;
+        modified |= true;
+    }
 
-    // figure out best matching extension based on given path
-    FileExtension ext;
-    FileExtension matchAll;
-    for (const auto& filter : getNameFilters()) {
-        if (filter.matchesAll()) {
-            matchAll = filter;
-        } else if (filter.matches(get())) {
-            ext = filter;
-            break;
+    if (!selectedExtension_.matches(value_)) {
+        const auto it = std::find_if(nameFilters_.begin(), nameFilters_.end(), [&](const auto& f) {
+            return !f.matchesAll() && f.matches(value_);
+        });
+        if (it != nameFilters_.end() && selectedExtension_ != *it) {
+            selectedExtension_ = *it;
+            modified |= true;
+
+        } else {
+            const auto allit = std::find_if(nameFilters_.begin(), nameFilters_.end(),
+                                            [&](const auto& f) { return f.matchesAll(); });
+            if (allit != nameFilters_.end() && selectedExtension_ != *allit) {
+                selectedExtension_ = *allit;
+                modified |= true;
+            }
         }
     }
-    if (ext.empty() && !matchAll.empty()) {
-        setSelectedExtension(matchAll);
-    } else {
-        setSelectedExtension(ext);
-    }
+
+    if (modified) propertyModified();
 }
 
-void FileProperty::set(const Property* property) { TemplateProperty<std::string>::set(property); }
+void FileProperty::set(const std::string& file, const FileExtension& selectedExtension) {
+    const auto value = filesystem::cleanupPath(file);
+    bool modified = false;
+    if (value_ != value) {
+        value_ = value;
+        modified |= true;
+    }
+    if (selectedExtension_ != selectedExtension) {
+        selectedExtension_ = selectedExtension;
+        modified |= true;
+    }
+    if (modified) propertyModified();
+}
+
+void FileProperty::set(const Property* property) {
+    if (auto prop = dynamic_cast<const FileProperty*>(property)) {
+        set(prop->get(), prop->getSelectedExtension());
+    } else {
+        TemplateProperty<std::string>::set(property);
+    }
+}
 
 void FileProperty::serialize(Serializer& s) const {
     /*
@@ -82,9 +113,9 @@ void FileProperty::serialize(Serializer& s) const {
     several version to have a higher success rate when moving stuff around.
 
     Saved path versions:
-     1) Absolute
-     2) Relative workspace
-     3) Relative filesystem::getPath(PathType::Data)
+    1) Absolute
+    2) Relative workspace
+    3) Relative filesystem::getPath(PathType::Data)
     */
     Property::serialize(s);
 
@@ -109,7 +140,9 @@ void FileProperty::serialize(Serializer& s) const {
     s.serialize("workspaceRelativePath", workspaceRelativePath);
     s.serialize("ivwdataRelativePath", ivwdataRelativePath);
 
-    s.serialize("nameFilter", nameFilters_, "filter");
+    // We don't serialize the filename Filter since they are usually a runtime thing depending
+    // on which readers/writers that a available
+    s.serialize("selectedExtension", selectedExtension_);
     s.serialize("acceptMode", acceptMode_);
     s.serialize("fileMode", fileMode_);
 }
@@ -158,8 +191,7 @@ void FileProperty::deserialize(Deserializer& d) {
     }
 
     try {
-        nameFilters_.clear();
-        d.deserialize("nameFilter", nameFilters_, "filter");
+        d.deserialize("selectedExtension", selectedExtension_);
         int acceptMode = static_cast<int>(acceptMode_);
         d.deserialize("acceptMode", acceptMode);
         acceptMode_ = static_cast<AcceptMode>(acceptMode);
@@ -183,7 +215,7 @@ void FileProperty::addNameFilters(const std::vector<FileExtension>& filters) {
 
 void FileProperty::clearNameFilters() { nameFilters_.clear(); }
 
-std::vector<FileExtension> FileProperty::getNameFilters() { return nameFilters_; }
+const std::vector<FileExtension>& FileProperty::getNameFilters() const { return nameFilters_; }
 
 void FileProperty::setAcceptMode(AcceptMode mode) { acceptMode_ = mode; }
 
@@ -195,7 +227,7 @@ FileMode FileProperty::getFileMode() const { return fileMode_; }
 
 void FileProperty::setContentType(const std::string& contentType) { contentType_ = contentType; }
 
-std::string FileProperty::getContentType() const { return contentType_; }
+const std::string& FileProperty::getContentType() const { return contentType_; }
 
 void FileProperty::requestFile() {
     for (auto widget : getWidgets()) {
@@ -203,10 +235,36 @@ void FileProperty::requestFile() {
             if (filerequestable->requestFile()) return;
         }
     }
+    // No FileRequestable widget found, use the factory.
+    // Currently, the only difference between using the widget (Qt) and the FileDialog directly
+    // is that the Qt widget stores the previously used directory
+    auto fileDialog = util::dynamic_unique_ptr_cast<FileDialog>(
+        InviwoApplication::getPtr()->getDialogFactory()->create("FileDialog"));
+    if (!fileDialog) {
+        throw Exception(
+            "Failed to create a FileDialog. Add one to the InviwoApplication::DialogFactory");
+    }
+
+    fileDialog->addExtensions(getNameFilters());
+    fileDialog->setSelectedExtension(getSelectedExtension());
+    fileDialog->setCurrentFile(get());
+    fileDialog->setTitle(getDisplayName());
+    fileDialog->setAcceptMode(getAcceptMode());
+    fileDialog->setFileMode(getFileMode());
+    fileDialog->setContentType(getContentType());
+
+    if (fileDialog->show()) {
+        set(fileDialog->getSelectedFile(), fileDialog->getSelectedFileExtension());
+    }
 }
 
 const FileExtension& FileProperty::getSelectedExtension() const { return selectedExtension_; }
-void FileProperty::setSelectedExtension(const FileExtension& ext) { selectedExtension_ = ext; }
+void FileProperty::setSelectedExtension(const FileExtension& ext) {
+    if (selectedExtension_ != ext) {
+        selectedExtension_ = ext;
+        propertyModified();
+    }
+}
 
 Document FileProperty::getDescription() const {
     using P = Document::PathComponent;

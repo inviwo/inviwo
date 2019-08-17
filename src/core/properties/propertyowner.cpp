@@ -49,15 +49,11 @@ PropertyOwner::PropertyOwner(const PropertyOwner& rhs)
 
     for (const auto& p : rhs.ownedProperties_) addProperty(p->clone());
 }
-
-PropertyOwner& PropertyOwner::operator=(const PropertyOwner& that) {
-    if (this != &that) {
-        invalidationLevel_ = that.invalidationLevel_;
-        properties_.clear();
-        ownedProperties_.clear();
-        for (const auto& p : that.ownedProperties_) addProperty(p->clone());
+    
+PropertyOwner::~PropertyOwner() {
+    while (size() != 0) {
+        removeProperty(begin());
     }
-    return *this;
 }
 
 void PropertyOwner::addProperty(Property* property, bool owner) {
@@ -76,12 +72,12 @@ void PropertyOwner::insertProperty(size_t index, Property* property, bool owner)
     if (getPropertyByIdentifier(property->getIdentifier()) != nullptr) {
         throw Exception(
             "Can't add property, identifier \"" + property->getIdentifier() + "\" already exist.",
-            IvwContext);
+            IVW_CONTEXT);
     }
     if (auto parent = dynamic_cast<Property*>(this)) {
         if (parent == property) {
             throw Exception("Can't add property \"" + property->getIdentifier() + "\" to itself.",
-                            IvwContext);
+                            IVW_CONTEXT);
         }
     }
 
@@ -122,7 +118,7 @@ Property* PropertyOwner::removeProperty(size_t index) {
     if (index >= size()) {
         throw RangeException("Invalid index when removing property " + std::to_string(index) +
                                  " (" + std::to_string(size()) + " elements)",
-                             IvwContext);
+                             IVW_CONTEXT);
     }
     return removeProperty(begin() + index);
 }

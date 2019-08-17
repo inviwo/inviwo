@@ -64,17 +64,7 @@ BasisProperty::BasisProperty(std::string identifier, std::string displayName,
     , resetOverride_("restore", "Revert Override", InvalidationLevel::Valid)
     , overrideModel_("overrideModel", mat4{1}) {
 
-    addProperty(mode_);
-    addProperty(reference_);
-    addProperty(overRideDefaults_);
-    addProperty(updateForNewEntiry_);
-    addProperty(size_);
-    addProperty(a_);
-    addProperty(b_);
-    addProperty(c_);
-    addProperty(autoCenter_);
-    addProperty(offset_);
-    addProperty(resetOverride_);
+    util::for_each_in_tuple([&](auto& e) { addProperty(e); }, props());
 
     size_.setVisible(false);
 
@@ -83,12 +73,13 @@ BasisProperty::BasisProperty(std::string identifier, std::string displayName,
     overRideDefaults_.onChange([this]() { onOverrideChange(); });
     autoCenter_.onChange([&]() { onAutoCenterChange(); });
     resetOverride_.onChange([&]() { onResetOverride(); });
+
     util::for_each_argument(
-        [&](auto& elem) {
+        [this](auto& elem) {
             elem.setReadOnly(true);
             elem.setSerializationMode(PropertySerializationMode::None);
             elem.setSemantics(PropertySemantics::SpinBox);
-            elem.onChange([&]() { save(); });
+            elem.onChange([this]() { this->save(); });
         },
         size_, a_, b_, c_, offset_);
 }
@@ -109,43 +100,15 @@ BasisProperty::BasisProperty(const BasisProperty& rhs)
     , model_(rhs.model_)
     , overrideModel_(rhs.overrideModel_) {
 
-    addProperty(mode_);
-    addProperty(reference_);
-    addProperty(overRideDefaults_);
-    addProperty(updateForNewEntiry_);
-    addProperty(size_);
-    addProperty(a_);
-    addProperty(b_);
-    addProperty(c_);
-    addProperty(autoCenter_);
-    addProperty(offset_);
-    addProperty(resetOverride_);
+    util::for_each_in_tuple([&](auto& e) { addProperty(e); }, props());   
 
     mode_.onChange([&]() { onModeChange(); });
     reference_.onChange([&]() { load(); });
     overRideDefaults_.onChange([this]() { onOverrideChange(); });
     autoCenter_.onChange([&]() { onAutoCenterChange(); });
     resetOverride_.onChange([&]() { onResetOverride(); });
-    util::for_each_argument([&](auto& elem) { elem.onChange([&]() { save(); }); }, size_, a_, b_,
-                            c_, offset_);
-}
-
-BasisProperty& BasisProperty::operator=(const BasisProperty& that) {
-    if (this != &that) {
-        CompositeProperty::operator=(that);
-        mode_ = that.mode_;
-        reference_ = that.reference_;
-        overRideDefaults_ = that.overRideDefaults_;
-        size_ = that.size_;
-        a_ = that.a_;
-        b_ = that.b_;
-        c_ = that.c_;
-        offset_ = that.offset_;
-        dimensions_ = that.dimensions_;
-        model_ = that.model_;
-        overrideModel_ = that.overrideModel_;
-    }
-    return *this;
+    util::for_each_argument([this](auto& elem) { elem.onChange([this]() { this->save(); }); },
+                            size_, a_, b_, c_, offset_);
 }
 
 BasisProperty* BasisProperty::clone() const { return new BasisProperty(*this); }
@@ -194,7 +157,7 @@ void BasisProperty::load() {
         offset /= dimensions_;
     }
 
-    util::KeepTrueWhileInScope block(&updateing_);
+    util::KeepTrueWhileInScope block(&updating_);
     a_.set(basis[0]);
     b_.set(basis[1]);
     c_.set(basis[2]);
@@ -203,7 +166,7 @@ void BasisProperty::load() {
 }
 
 void BasisProperty::save() {
-    if (!overRideDefaults_ || updateing_) return;
+    if (!overRideDefaults_ || updating_) return;
 
     mat3 basis{1};
     vec3 offset{0};
@@ -215,7 +178,7 @@ void BasisProperty::save() {
 
     if (autoCenter_) {
         offset = -0.5f * (basis[0] + basis[1] + basis[2]);
-        util::KeepTrueWhileInScope block(&updateing_);
+        util::KeepTrueWhileInScope block(&updating_);
         offset_ = offset;
     } else {
         offset = offset_.get();
@@ -298,15 +261,17 @@ void BasisProperty::deserialize(Deserializer& d) {
     if (modified) propertyModified();
 }
 
-void BasisProperty::setCurrentStateAsDefault() {
+BasisProperty& BasisProperty::setCurrentStateAsDefault() {
     CompositeProperty::setCurrentStateAsDefault();
     overrideModel_.setAsDefault();
+    return *this;
 }
 
-void BasisProperty::resetToDefaultState() {
+BasisProperty& BasisProperty::resetToDefaultState() {
     CompositeProperty::resetToDefaultState();
     overrideModel_.reset();
     load();
+    return *this;
 }
 
 void BasisProperty::updateEntity(SpatialEntity<3>& volume) {

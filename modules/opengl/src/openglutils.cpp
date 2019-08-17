@@ -489,14 +489,11 @@ void ScissorBox::get() { glGetIntegerv(GL_SCISSOR_BOX, box_.data()); }
 
 void ScissorBox::set() { glScissor(x(), y(), width(), height()); }
 
-
-
-
 ColorMaskState& ColorMaskState::operator=(ColorMaskState&& that) {
     if (this != &that) {
-        mask_ = { GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE };
+        mask_ = {GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE};
         std::swap(mask_, that.mask_);
-        oldMask_ = { GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE };
+        oldMask_ = {GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE};
         std::swap(oldMask_, that.oldMask_);
     }
     return *this;
@@ -529,17 +526,19 @@ void ColorMask::set() { glColorMask(red(), green(), blue(), alpha()); }
 ColorMaskiState& ColorMaskiState::operator=(ColorMaskiState&& that) {
     if (this != &that) {
         buf_ = that.buf_;
-        mask_ = { GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE };
+        mask_ = {GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE};
         std::swap(mask_, that.mask_);
-        oldMask_ = { GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE };
+        oldMask_ = {GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE};
         std::swap(oldMask_, that.oldMask_);
     }
     return *this;
 }
 
-ColorMaskiState::ColorMaskiState(ColorMaskiState&& rhs) : buf_(rhs.buf_), mask_(rhs.mask_), oldMask_(rhs.oldMask_) {}
+ColorMaskiState::ColorMaskiState(ColorMaskiState&& rhs)
+    : buf_(rhs.buf_), mask_(rhs.mask_), oldMask_(rhs.oldMask_) {}
 
-ColorMaskiState::ColorMaskiState(GLuint buf, GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha)
+ColorMaskiState::ColorMaskiState(GLuint buf, GLboolean red, GLboolean green, GLboolean blue,
+                                 GLboolean alpha)
     : buf_{buf}, mask_{red, green, blue, alpha}, oldMask_{} {
     oldMask_.get();
     mask_.set();
@@ -566,10 +565,10 @@ void ColorMaski::get() {
         GLint value;
         glGetIntegerv(GL_DRAW_BUFFER0 + i, &value);
         drawBuffers[i] = static_cast<GLenum>(value);
-    }    
+    }
 
     glDrawBuffer(buf_);
-    glGetBooleanv(GL_COLOR_WRITEMASK, mask_.data()); 
+    glGetBooleanv(GL_COLOR_WRITEMASK, mask_.data());
 
     // restore draw buffers
     glDrawBuffers(maxDrawBuffers, drawBuffers.data());

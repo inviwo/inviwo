@@ -215,19 +215,19 @@ std::pair<std::vector<float>, std::vector<vec4>> TFPrimitiveSet::getVectorsf() c
 }
 
 void TFPrimitiveSet::add(const TFPrimitive& primitive) {
-    add(util::make_unique<TFPrimitive>(primitive));
+    add(std::make_unique<TFPrimitive>(primitive));
 }
 
 void TFPrimitiveSet::add(double pos, const vec4& color) {
-    add(util::make_unique<TFPrimitive>(pos, color));
+    add(std::make_unique<TFPrimitive>(pos, color));
 }
 
 void TFPrimitiveSet::add(const dvec2& pos) {
     const vec4 color(vec3(interpolateColor(pos.x)), static_cast<float>(pos.y));
-    add(util::make_unique<TFPrimitive>(pos.x, color));
+    add(std::make_unique<TFPrimitive>(pos.x, color));
 }
 
-void TFPrimitiveSet::add(const TFPrimitiveData& data) { add(util::make_unique<TFPrimitive>(data)); }
+void TFPrimitiveSet::add(const TFPrimitiveData& data) { add(std::make_unique<TFPrimitive>(data)); }
 
 void TFPrimitiveSet::add(const std::vector<TFPrimitiveData>& primitives) {
     for (auto& v : primitives) {
@@ -247,7 +247,7 @@ void TFPrimitiveSet::add(std::unique_ptr<TFPrimitive> primitive) {
         ((primitive->getPosition() < 0.0f) || (primitive->getPosition() > 1.0f))) {
         throw RangeException("Adding TFPrimitive at " + std::to_string(primitive->getPosition()) +
                                  " outside of range [0,1]",
-                             IvwContext);
+                             IVW_CONTEXT);
     }
 
     primitive->addObserver(this);
@@ -409,6 +409,89 @@ void TFPrimitiveSet::interpolateAndStoreColors(vec4* dataArray, const size_t dat
             ++pLeft;
             ++pRight;
         }
+    }
+}
+
+void TFPrimitiveSet::flipPositions(const std::vector<TFPrimitive*>& primitives) {
+    dvec2 range{};
+    std::vector<TFPrimitive*> selection;
+
+    if (primitives.empty()) {
+        selection = sorted_;
+        range = getRange();
+    } else {
+        selection = util::copy_if(primitives, [&](auto p) { return util::contains(sorted_, p); });
+        if (!selection.empty()) {
+            auto minmax = std::minmax_element(
+                selection.begin(), selection.end(),
+                [](const TFPrimitive* a, const TFPrimitive* b) { return *a < *b; });
+            range.x = (*minmax.first)->getPosition();
+            range.y = (*minmax.second)->getPosition();
+        }
+    }
+
+    if (selection.size() < 2) {
+        return;
+    }
+
+    for (auto& elem : selection) {
+        elem->setPosition(range.y - (elem->getPosition() - range.x));
+    }
+}
+
+void TFPrimitiveSet::interpolateAlpha(const std::vector<TFPrimitive*>& primitives) {
+    dvec2 range{};
+    vec2 alpha{0.0f, 1.0f};
+    std::vector<TFPrimitive*> selection;
+
+    if (primitives.empty()) {
+        selection = sorted_;
+        range = getRange();
+        if (!sorted_.empty()) {
+            alpha.x = sorted_.front()->getAlpha();
+            alpha.y = sorted_.back()->getAlpha();
+        }
+    } else {
+        selection = util::copy_if(primitives, [&](auto p) { return util::contains(sorted_, p); });
+        if (!selection.empty()) {
+            auto minmax = std::minmax_element(
+                selection.begin(), selection.end(),
+                [](const TFPrimitive* a, const TFPrimitive* b) { return *a < *b; });
+
+            range.x = (*minmax.first)->getPosition();
+            range.y = (*minmax.second)->getPosition();
+            alpha.x = (*minmax.first)->getColor().a;
+            alpha.y = (*minmax.second)->getColor().a;
+        }
+    }
+
+    if (selection.size() < 2) {
+        return;
+    }
+
+    for (auto& elem : selection) {
+        const float t = static_cast<float>((elem->getPosition() - range.x) / (range.y - range.x));
+        elem->setAlpha(glm::mix(alpha.x, alpha.y, t));
+    }
+}
+
+void TFPrimitiveSet::equalizeAlpha(const std::vector<TFPrimitive*>& primitives) {
+    std::vector<TFPrimitive*> selection =
+        (primitives.empty() ? sorted_ : util::copy_if(primitives, [&](auto p) {
+            return util::contains(sorted_, p);
+        }));
+
+    if (selection.size() < 2) {
+        return;
+    }
+
+    float alpha =
+        std::accumulate(selection.begin(), selection.end(), 0.0f,
+                        [](const float sum, TFPrimitive* p) { return sum + p->getAlpha(); });
+    alpha /= selection.size();
+
+    for (auto& elem : selection) {
+        elem->setAlpha(alpha);
     }
 }
 

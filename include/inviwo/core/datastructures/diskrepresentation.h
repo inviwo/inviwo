@@ -65,7 +65,7 @@ public:
 private:
     std::string sourceFile_;
 
-    // DiskRepresentation owns a DataReader to be able to convert it self into RAM.
+    // DiskRepresentation owns a DataReader to be able to convert itself into RAM.
     util::cloneable_ptr<DiskRepresentationLoader<Repr>> loader_;
 };
 
@@ -96,13 +96,13 @@ void DiskRepresentation<Repr>::setLoader(DiskRepresentationLoader<Repr>* loader)
 
 template <typename Repr>
 std::shared_ptr<Repr> DiskRepresentation<Repr>::createRepresentation() const {
-    if (!loader_) throw Exception("No loader available to create representation", IvwContext);
+    if (!loader_) throw Exception("No loader available to create representation", IVW_CONTEXT);
     return loader_->createRepresentation();
 }
 
 template <typename Repr>
 void DiskRepresentation<Repr>::updateRepresentation(std::shared_ptr<Repr> dest) const {
-    if (!loader_) throw Exception("No loader available to update representation", IvwContext);
+    if (!loader_) throw Exception("No loader available to update representation", IVW_CONTEXT);
     loader_->updateRepresentation(dest);
 }
 

@@ -53,10 +53,7 @@ InviwoFileDialog::InviwoFileDialog(QWidget *parent, const std::string &title,
         QStandardPaths::writableLocation(QStandardPaths::HomeLocation));
 
     useNativeDialog();
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
     QFileDialog::setOption(QFileDialog::DontUseCustomDirectoryIcons);
-#endif
-
     QObject::connect(this, SIGNAL(filterSelected(const QString &)), this,
                      SLOT(filterSelectionChanged(const QString &)));
 }
@@ -164,6 +161,12 @@ FileMode InviwoFileDialog::getFileMode() const {
             return inviwo::FileMode::AnyFile;
     }
 }
+void InviwoFileDialog::setContentType(const std::string &contentType) {
+    pathType_ = utilqt::toQString(contentType);
+}
+
+std::string InviwoFileDialog::getContentType() const { return utilqt::fromQString(pathType_); }
+
 void InviwoFileDialog::useNativeDialog(const bool &use) {
     QFileDialog::setOption(QFileDialog::DontUseNativeDialog, !use);
 }

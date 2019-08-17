@@ -38,6 +38,7 @@
 #include <modules/base/processors/distancetransformram.h>
 #include <modules/base/processors/eventsilencer.h>
 #include <modules/base/processors/heightfieldmapper.h>
+#include <modules/base/processors/imageinformation.h>
 #include <modules/base/processors/inputselector.h>
 #include <modules/base/processors/layerdistancetransformram.h>
 #include <modules/base/processors/imageexport.h>
@@ -51,6 +52,7 @@
 #include <modules/base/processors/meshclipping.h>
 #include <modules/base/processors/meshcreator.h>
 #include <modules/base/processors/meshexport.h>
+#include <modules/base/processors/meshinformation.h>
 #include <modules/base/processors/meshmapping.h>
 #include <modules/base/processors/meshsequenceelementselectorprocessor.h>
 #include <modules/base/processors/meshsource.h>
@@ -67,7 +69,8 @@
 #include <modules/base/processors/singlevoxel.h>
 #include <modules/base/processors/spotlightsourceprocessor.h>
 #include <modules/base/processors/stereocamerasyncer.h>
-#include <modules/base/processors/surfaceextraction.h>
+#include <modules/base/processors/surfaceextractionprocessor.h>
+#include <modules/base/processors/trianglestowireframe.h>
 #include <modules/base/processors/volumecreator.h>
 #include <modules/base/processors/volumesequenceelementselectorprocessor.h>
 #include <modules/base/processors/volumesource.h>
@@ -92,6 +95,10 @@
 // Properties
 #include <modules/base/properties/basisproperty.h>
 #include <modules/base/properties/gaussianproperty.h>
+#include <modules/base/properties/imageinformationproperty.h>
+#include <modules/base/properties/layerinformationproperty.h>
+#include <modules/base/properties/meshinformationproperty.h>
+#include <modules/base/properties/bufferinformationproperty.h>
 #include <modules/base/properties/volumeinformationproperty.h>
 #include <modules/base/properties/volumedescriptionproperty.h>
 #include <modules/base/properties/sequencetimerproperty.h>
@@ -130,6 +137,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<EventSilencer>();
     registerProcessor<HeightFieldMapper>();
     registerProcessor<ImageExport>();
+    registerProcessor<ImageInformation>();
     registerProcessor<ImageSnapshot>();
     registerProcessor<ImageSource>();
     registerProcessor<ImageSourceSeries>();
@@ -138,6 +146,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<MathProcessor>();
     registerProcessor<MeshClipping>();
     registerProcessor<MeshCreator>();
+    registerProcessor<MeshInformation>();
     registerProcessor<MeshMapping>();
     registerProcessor<MultiVolumeSource>();
     registerProcessor<NoiseProcessor>();
@@ -150,6 +159,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<VolumeExport>();
     registerProcessor<BasisTransformMesh>();
     registerProcessor<BasisTransformVolume>();
+    registerProcessor<TrianglesToWireframe>();
     registerProcessor<WorldTransformMesh>();
     registerProcessor<WorldTransformVolume>();
     registerProcessor<VolumeSlice>();
@@ -193,6 +203,12 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
 
     registerProperty<SequenceTimerProperty>();
     registerProperty<BasisProperty>();
+    registerProperty<ImageInformationProperty>();
+    registerProperty<LayerInformationProperty>();
+    registerProperty<MeshInformationProperty>();
+    registerProperty<BufferInformationProperty>();
+    registerProperty<MeshBufferInformationProperty>();
+    registerProperty<IndexBufferInformationProperty>();
     registerProperty<VolumeInformationProperty>();
     registerProperty<VolumeDesriptionProperty>();
     registerProperty<VolumeDesriptionMetadataProperty>();
@@ -201,15 +217,15 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProperty<Gaussian2DProperty>();
 
     // Register Data readers
-    registerDataReader(util::make_unique<DatVolumeSequenceReader>());
-    registerDataReader(util::make_unique<IvfVolumeReader>());
-    registerDataReader(util::make_unique<IvfSequenceVolumeReader>());
+    registerDataReader(std::make_unique<DatVolumeSequenceReader>());
+    registerDataReader(std::make_unique<IvfVolumeReader>());
+    registerDataReader(std::make_unique<IvfSequenceVolumeReader>());
     // Register Data writers
-    registerDataWriter(util::make_unique<DatVolumeWriter>());
-    registerDataWriter(util::make_unique<IvfVolumeWriter>());
-    registerDataWriter(util::make_unique<StlWriter>());
-    registerDataWriter(util::make_unique<BinarySTLWriter>());
-    registerDataWriter(util::make_unique<WaveFrontWriter>());
+    registerDataWriter(std::make_unique<DatVolumeWriter>());
+    registerDataWriter(std::make_unique<IvfVolumeWriter>());
+    registerDataWriter(std::make_unique<StlWriter>());
+    registerDataWriter(std::make_unique<BinarySTLWriter>());
+    registerDataWriter(std::make_unique<WaveFrontWriter>());
 
     util::for_each_type<OrdinalPropertyAnimator::Types>{}(RegHelper{}, *this);
 }
@@ -217,7 +233,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
 int BaseModule::getVersion() const { return 3; }
 
 std::unique_ptr<VersionConverter> BaseModule::getConverter(int version) const {
-    return util::make_unique<Converter>(version);
+    return std::make_unique<Converter>(version);
 }
 
 BaseModule::Converter::Converter(int version) : version_(version) {}
@@ -354,7 +370,6 @@ bool BaseModule::Converter::convert(TxElement* root) {
         default:
             return false;  // No changes
     }
-    return true;
 }
 
 }  // namespace inviwo

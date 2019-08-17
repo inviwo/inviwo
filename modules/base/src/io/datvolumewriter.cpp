@@ -53,10 +53,11 @@ void DatVolumeWriter::writeData(const Volume* data, const std::string filePath) 
 
     if (filesystem::fileExists(filePath) && !overwrite_)
         throw DataWriterException("Error: Output file: " + filePath + " already exists",
-                                  IvwContext);
+                                  IVW_CONTEXT);
 
     if (filesystem::fileExists(rawPath) && !overwrite_)
-        throw DataWriterException("Error: Output file: " + rawPath + " already exists", IvwContext);
+        throw DataWriterException("Error: Output file: " + rawPath + " already exists",
+                                  IVW_CONTEXT);
 
     std::string fileName = filesystem::getFileNameWithoutExtension(filePath);
     // Write the .dat file content
@@ -90,13 +91,13 @@ void DatVolumeWriter::writeData(const Volume* data, const std::string filePath) 
     if (auto f = filesystem::ofstream(filePath)) {
         f << ss.str();
     } else {
-        throw DataWriterException("Error: Could not write to dat file: " + filePath, IvwContext);
+        throw DataWriterException("Error: Could not write to dat file: " + filePath, IVW_CONTEXT);
     }
 
     if (auto f = filesystem::ofstream(rawPath, std::ios::out | std::ios::binary)) {
         f.write((char*)vr->getData(), vr->getNumberOfBytes());
     } else {
-        throw DataWriterException("Error: Could not write to raw file: " + rawPath, IvwContext);
+        throw DataWriterException("Error: Could not write to raw file: " + rawPath, IVW_CONTEXT);
     }
 }
 

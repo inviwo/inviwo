@@ -55,16 +55,15 @@ public:
 
     bool valid() const;
 
-    bool empty() const;
-
     void clear();
 
     void fillAtlas(TextRenderer& textRenderer, std::vector<TexAtlasEntry>& atlas);
+    void fillAtlas(TextRenderer& textRenderer, const std::vector<std::string>& strings, vec4 color);
 
-    void initTexture(const size2_t& dims);
+    void fillAtlas(TextRenderer& textRenderer, std::vector<TexAtlasEntry>& entries,
+                   std::vector<TextBoundingBox>& bboxes);
 
     std::shared_ptr<Texture2D> getTexture() const;
-    const std::vector<TexAtlasEntry>& getEntries() const;
     const TexAtlasRenderInfo& getRenderInfo() const;
 
 private:
@@ -78,12 +77,13 @@ private:
      * @param margin  margin around each entry in texel
      * @return minimum texture size required to accommodate atlas
      */
-    ivec2 calcTexLayout(const std::vector<size_t> indices, double minArea);
+    ivec2 calcTexLayout(const std::vector<size_t> indices, std::vector<TexAtlasEntry>& entries,
+                        double minArea);
 
-    void initAtlas(TextRenderer& textRenderer);
+    void initAtlas(TextRenderer& textRenderer, const std::vector<TexAtlasEntry>& entries,
+                   std::vector<TextBoundingBox>&& bboxes);
 
     std::shared_ptr<Texture2D> atlasTex_;
-    std::vector<TexAtlasEntry> entries_;
     TexAtlasRenderInfo renderInfo_;
     static constexpr int maxTexSize_ = 8192;
     static constexpr int margin_ = 2;

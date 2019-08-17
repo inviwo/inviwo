@@ -122,7 +122,7 @@ exported and imported.</p>)";
 
 TFMenuHelper::TFMenuHelper() {
     if (utilqt::getApplicationMainWindow()) {
-        showAction_ = util::make_unique<QAction>(QString("&Transfer Function"), nullptr);
+        showAction_ = std::make_unique<QAction>(QString("&Transfer Function"), nullptr);
         QObject::connect(showAction_.get(), &QAction::triggered, this, [this]() {
             auto window = getWindow();
             window->activateWindow();
@@ -158,7 +158,7 @@ TFMenuHelper::~TFMenuHelper() {
 TFHelpWindow* TFMenuHelper::getWindow() const {
     if (!helpWindow_) {
         auto win = utilqt::getApplicationMainWindow();
-        helpWindow_ = util::make_unique<TFHelpWindow>(win);
+        helpWindow_ = std::make_unique<TFHelpWindow>(win);
         helpWindow_->setVisible(false);
         helpWindow_->setFloating(true);
         helpWindow_->loadState();

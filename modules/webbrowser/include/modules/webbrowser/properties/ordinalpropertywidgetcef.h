@@ -39,8 +39,10 @@ namespace inviwo {
 
 /** \class OrdinalPropertyWidgetCEF
  * Widget for synchronizing HTML elements:
+ * \code{.html}
  * <input type="range">
  * <input type="number">
+ * \endcode
  */
 template <typename T>
 class OrdinalPropertyWidgetCEF : public TemplatePropertyWidgetCEF<T> {

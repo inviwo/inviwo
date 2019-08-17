@@ -483,8 +483,8 @@ struct sequence {
         T inc_;
     };
 
-    iterator begin() { return iterator(begin_, end_, inc_); }
-    iterator end() { return iterator(end_, end_, inc_); }
+    iterator begin() const { return iterator(begin_, end_, inc_); }
+    iterator end() const { return iterator(end_, end_, inc_); }
 
 private:
     T begin_;

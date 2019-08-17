@@ -142,7 +142,7 @@ std::shared_ptr<LayerRAMPrecision<T>> util::layerSubSet(const Layer* in, ivec2 o
 
     return in->getRepresentation<LayerRAM>()->dispatch<std::shared_ptr<LayerRAMPrecision<T>>>(
         [offset, extent, clampBorderOutsideImage](auto layerpr) {
-            using ValueType = util::PrecsionValueType<decltype(layerpr)>;
+            using ValueType = util::PrecisionValueType<decltype(layerpr)>;
 
             return util::detail::extractLayerSubSet<ValueType, T>(layerpr, offset, extent,
                                                                   clampBorderOutsideImage);

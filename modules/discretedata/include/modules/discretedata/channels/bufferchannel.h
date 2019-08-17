@@ -58,7 +58,6 @@ public:
     /**
      * \brief Direct construction, empty data
      * @param numElements Total number of indexed positions
-     * @param numComponents Size of vector at each position
      * @param name Name associated with the channel
      * @param definedOn GridPrimitive the data is defined on, default: 0D vertices
      */
@@ -68,7 +67,7 @@ public:
 
     /**
      * \brief Direct construction
-     * @param data Raw data, copy values
+     * @param rawData Raw data, copy values
      * @param name Name associated with the channel
      * @param definedOn GridPrimitive the data is defined on, default: 0D vertices
      */

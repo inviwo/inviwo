@@ -46,6 +46,7 @@
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/properties/imageproperty.h>
+#include <inviwo/core/util/fileextension.h>
 
 #include <modules/qtwidgets/properties/anglepropertywidgetqt.h>
 #include <modules/qtwidgets/properties/boolpropertywidgetqt.h>
@@ -82,6 +83,15 @@
 #include <warn/ignore/all>
 #include <QApplication>
 #include <warn/pop>
+
+#ifndef INVIWO_ALL_DYN_LINK
+struct InitQtResources {
+    // Needed for loading of resources when building statically 
+    // see https://wiki.qt.io/QtResources#Q_INIT_RESOURCE
+    InitQtResources() { Q_INIT_RESOURCE(inviwo); }
+    ~InitQtResources() { Q_CLEANUP_RESOURCE(inviwo); }
+} initQtResources;
+#endif
 
 namespace inviwo {
 
@@ -133,11 +143,11 @@ struct OptionWidgetReghelper {
 };
 
 QtWidgetsModule::QtWidgetsModule(InviwoApplication* app)
-    : InviwoModule(app, "QtWidgets"), tfMenuHelper_(util::make_unique<TFMenuHelper>()) {
+    : InviwoModule(app, "QtWidgets"), tfMenuHelper_(std::make_unique<TFMenuHelper>()) {
     if (!qApp) {
         throw ModuleInitException("QApplication must be constructed before QtWidgetsModule");
     }
-    registerSettings(util::make_unique<QtWidgetsSettings>());
+    registerSettings(std::make_unique<QtWidgetsSettings>());
 
     // Register bool property widgets
     registerPropertyWidget<BoolPropertyWidgetQt, BoolProperty>("Default");
@@ -177,7 +187,7 @@ QtWidgetsModule::QtWidgetsModule(InviwoApplication* app)
     util::for_each_type<ScalarTypes>{}(MinMaxTextWidgetReghelper{}, *this, "Text");
 
     // Register option property widgets
-    using OptionTypes = std::tuple<unsigned int, int, size_t, float, double, std::string>;
+    using OptionTypes = std::tuple<unsigned int, int, size_t, float, double, std::string, FileExtension>;
     util::for_each_type<OptionTypes>{}(OptionWidgetReghelper{}, *this, "Default");
 
     // Register string property widgets

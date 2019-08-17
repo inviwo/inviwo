@@ -27,6 +27,9 @@
  * 
  *********************************************************************************/
 
+#ifndef IVW_SAMPLER3D_GLSL
+#define IVW_SAMPLER3D_GLSL
+
 #include "utils/structs.glsl"
 
 //
@@ -96,3 +99,5 @@ vec4 getSignNormalizedVoxel(sampler3D volume, VolumeParameters volumeParams, ive
         * (1.0 - volumeParams.signedFormatScaling);
 #endif
 }
+
+#endif  // IVW_SAMPLER2D_GLSL

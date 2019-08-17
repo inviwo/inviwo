@@ -43,23 +43,34 @@
 #include <include/cef_load_handler.h>
 #include <include/cef_life_span_handler.h>
 #include "include/wrapper/cef_message_router.h"
+#include "include/wrapper/cef_resource_manager.h"
 #include <warn/pop>
 
 namespace inviwo {
 
 /* \class WebBrowserClient
- * CefClient with custom render handler
+ * CefClient with custom render handler and call redirections.
+ * Calls to 'https://inviwo/modules/yourmodule' will be redirected to yourmodule
+ * directory, i.e. InviwoModule::getPath().
+ * Calls to 'https://inviwo/app' will be redirected to the InviwoApplication
+ * (executable) directory, i.e. InviwoApplication::getBasePath().
  */
+#include <warn/push>
+#include <warn/ignore/dll-interface-base>  // Fine if dependent libs use the same CEF lib binaries
+#include <warn/ignore/extra-semi>  // Due to IMPLEMENT_REFCOUNTING, remove when upgrading CEF
 class IVW_MODULE_WEBBROWSER_API WebBrowserClient : public CefClient,
                                                    public CefLifeSpanHandler,
                                                    public CefRequestHandler,
-                                                   public CefLoadHandler {
+                                                   public CefLoadHandler,
+                                                   public CefDisplayHandler {
 public:
-    WebBrowserClient(CefRefPtr<RenderHandlerGL> renderHandler);
+    WebBrowserClient(CefRefPtr<RenderHandlerGL> renderHandler,
+                     const PropertyWidgetCEFFactory* widgetFactory);
 
     virtual CefRefPtr<CefLoadHandler> GetLoadHandler() override { return this; }
     virtual CefRefPtr<CefRenderHandler> GetRenderHandler() override { return renderHandler_; }
     virtual CefRefPtr<CefRequestHandler> GetRequestHandler() override { return this; }
+    virtual CefRefPtr<CefDisplayHandler> GetDisplayHandler() override { return this; }
 
     void SetRenderHandler(CefRefPtr<RenderHandlerGL> renderHandler);
 
@@ -81,6 +92,14 @@ public:
     void OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
                                    TerminationStatus status) override;
 
+    cef_return_value_t OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
+                                            CefRefPtr<CefFrame> frame,
+                                            CefRefPtr<CefRequest> request,
+                                            CefRefPtr<CefRequestCallback> callback) override;
+
+    CefRefPtr<CefResourceHandler> GetResourceHandler(CefRefPtr<CefBrowser> browser,
+                                                     CefRefPtr<CefFrame> frame,
+                                                     CefRefPtr<CefRequest> request) override;
     // CefLoadHandler methods:
     /*
      * Added handlers will receive CefLoadHandler calls.
@@ -123,22 +142,35 @@ public:
 
     CefRefPtr<PropertyCefSynchronizer> propertyCefSynchronizer_;
 
+    ///
+    // Inviwo: Overload to log console.log message from js to inviwo the inviwo::LogCentral
+    // Cef: Called to display a console message. Return true to stop the message from
+    // being output to the console.
+    ///
+    /*--cef(optional_param=message,optional_param=source)--*/
+    virtual bool OnConsoleMessage(CefRefPtr<CefBrowser> browser, cef_log_severity_t level,
+                                  const CefString& message, const CefString& source,
+                                  int line) override;
+
 protected:
-    InviwoApplication* app_;
+    const PropertyWidgetCEFFactory* widgetFactory_;  /// Non-owning reference
     CefRefPtr<CefRenderHandler> renderHandler_;
     // Handles the browser side of query routing.
     CefRefPtr<CefMessageRouterBrowserSide> messageRouter_;
 
     std::vector<CefLoadHandler*> loadHandlers_;
+    // Manages the registration and delivery of resources (redirections to
+    // modules/app folders).
+    CefRefPtr<CefResourceManager> resourceManager_;
 
     // Track the number of browsers using this Client.
     int browserCount_ = 0;
 
 private:
-    IMPLEMENT_REFCOUNTING(WebBrowserClient)
+    IMPLEMENT_REFCOUNTING(WebBrowserClient);
     DISALLOW_COPY_AND_ASSIGN(WebBrowserClient);
 };
-
+#include <warn/pop>
 }  // namespace inviwo
 
 #endif  // IVW_WEBBROWSERCLIENT_H

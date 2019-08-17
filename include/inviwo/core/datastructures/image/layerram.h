@@ -42,7 +42,7 @@ namespace inviwo {
  */
 class IVW_CORE_API LayerRAM : public LayerRepresentation {
 public:
-    LayerRAM(size2_t dimensions = size2_t(32, 32), LayerType type = LayerType::Color,
+    LayerRAM(LayerType type = LayerType::Color,
              const DataFormatBase* format = DataVec4UInt8::get());
     LayerRAM(const LayerRAM& rhs) = default;
     LayerRAM& operator=(const LayerRAM& that) = default;
@@ -96,8 +96,8 @@ public:
      * ```{.cpp}
      * LayerRam* layerram = ...; // of some glm vector type.
      * auto count = layerram->dispatch<size_t, dispatching::filter::Vecs>([](auto lrprecision) {
-     *     using LayerType = util::PrecsionType<decltype(lrprecision)>;
-     *     using ValueType = util::PrecsionValueType<decltype(lrprecision)>;
+     *     using LayerType = util::PrecisionType<decltype(lrprecision)>;
+     *     using ValueType = util::PrecisionValueType<decltype(lrprecision)>;
      *
      *     T* data = lrprecision->getDataTyped();
      *     auto dim = lrprecision->getDimensions();

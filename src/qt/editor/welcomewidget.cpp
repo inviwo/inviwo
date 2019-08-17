@@ -138,7 +138,11 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
         }
 
         const auto dateformat = "yyyy-MM-dd hh:mm:ss";
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
         auto createdStr = utilqt::fromQString(info.created().toString(dateformat));
+#else
+        auto createdStr = utilqt::fromQString(info.birthTime().toString(dateformat));
+#endif
         auto modifiedStr = utilqt::fromQString(info.lastModified().toString(dateformat));
 
         const bool hasTitle = !annotations.getTitle().empty();
@@ -336,6 +340,7 @@ void WelcomeWidget::showEvent(QShowEvent *event) {
     if (!event->spontaneous()) {
         updateRecentWorkspaces();
         filetree_->updateExampleEntries();
+        filetree_->updateRegressionTestEntries();
 
         // select first entry of recent workspaces, if existing
         filetree_->selectRecentWorkspace(0);

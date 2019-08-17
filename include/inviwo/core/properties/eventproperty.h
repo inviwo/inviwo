@@ -83,7 +83,6 @@ public:
                   PropertySemantics semantics = PropertySemantics::Default);
 
     EventProperty(const EventProperty& rhs);
-    EventProperty& operator=(const EventProperty& that);
     virtual EventProperty* clone() const override;
     virtual ~EventProperty() = default;
 
@@ -98,8 +97,8 @@ public:
     bool isEnabled() const;
     void setEnabled(bool enabled);
 
-    virtual void setCurrentStateAsDefault() override;
-    virtual void resetToDefaultState() override;
+    virtual EventProperty& setCurrentStateAsDefault() override;
+    virtual EventProperty& resetToDefaultState() override;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;

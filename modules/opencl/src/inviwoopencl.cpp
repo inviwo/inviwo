@@ -62,7 +62,7 @@ void OpenCL::initialize(bool glSharing) {
         cl::Platform::get(&platforms);
 
         if (platforms.size() == 0) {
-            throw OpenCLException("No OpenCL platforms found", IvwContext);
+            throw OpenCLException("No OpenCL platforms found", IVW_CONTEXT);
         }
 
         cl::Platform platform;
@@ -388,7 +388,7 @@ void OpenCL::setDevice(cl::Device device, bool glSharing) {
             cl_int error = CL_SUCCESS;
             gpuContext_ = cl::Context(gpuDevice_, &properties[0], nullptr, nullptr, &error);
             if (error != CL_SUCCESS) {
-                throw OpenCLException("Error creating OpenCL context", IvwContext);
+                throw OpenCLException("Error creating OpenCL context", IVW_CONTEXT);
             }
 
         } catch (cl::Error&) {
@@ -399,7 +399,7 @@ void OpenCL::setDevice(cl::Device device, bool glSharing) {
             cl_int error = CL_SUCCESS;
             gpuContext_ = cl::Context(gpuDevice_, &properties[0], nullptr, nullptr, &error);
             if (error != CL_SUCCESS) {
-                throw OpenCLException("Error creating OpenCL context", IvwContext);
+                throw OpenCLException("Error creating OpenCL context", IVW_CONTEXT);
             }
             LogInfo("Succeeded creating OpenCL without OpenGL sharing.");
         }

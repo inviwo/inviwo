@@ -309,7 +309,7 @@ std::shared_ptr<Image> poissonDisk(size2_t dims, size_t poissonDotsAlongX, size_
         return glm::i32vec2(newX, newY);
     };
 
-    auto gridImg = util::make_unique<Image>(gridSize, DataVec2Int32::get());
+    auto gridImg = std::make_unique<Image>(gridSize, DataVec2Int32::get());
     auto grid = gridImg->getColorLayer()->getEditableRepresentation<LayerRAM>();
 
     auto imgData = static_cast<float *>(

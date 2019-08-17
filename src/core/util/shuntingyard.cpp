@@ -84,11 +84,11 @@ TokenQueue Calculator::toRPN(std::string expression, std::map<std::string, int> 
             // If the token is a number, add it to the output queue.
             double digit;
             expr >> digit;
-            rpnQueue.push(util::make_unique<Token<double>>(digit));
+            rpnQueue.push(std::make_unique<Token<double>>(digit));
             lastTokenWasOp = false;
 
         } else if (isvariablechar(static_cast<char>(expr.peek()))) {
-            rpnQueue.push(util::make_unique<Token<std::string>>(getVariable(expr)));
+            rpnQueue.push(std::make_unique<Token<std::string>>(getVariable(expr)));
             lastTokenWasOp = false;
 
         } else {
@@ -100,7 +100,7 @@ TokenQueue Calculator::toRPN(std::string expression, std::map<std::string, int> 
                     break;
                 case ')':
                     while (operatorStack.top().compare("(")) {
-                        rpnQueue.push(util::make_unique<Token<std::string>>(operatorStack.top()));
+                        rpnQueue.push(std::make_unique<Token<std::string>>(operatorStack.top()));
                         operatorStack.pop();
                     }
                     operatorStack.pop();
@@ -130,7 +130,7 @@ TokenQueue Calculator::toRPN(std::string expression, std::map<std::string, int> 
                     if (lastTokenWasOp) {
                         // Convert unary operators to binary in the RPN.
                         if (!str.compare("-") || !str.compare("+")) {
-                            rpnQueue.push(util::make_unique<Token<double>>(0));
+                            rpnQueue.push(std::make_unique<Token<double>>(0));
                         } else {
                             throw Exception("Unrecognized unary operator: '" + str + "'.");
                         }
@@ -138,7 +138,7 @@ TokenQueue Calculator::toRPN(std::string expression, std::map<std::string, int> 
 
                     while (!operatorStack.empty() &&
                            opPrecedence[str] <= opPrecedence[operatorStack.top()]) {
-                        rpnQueue.push(util::make_unique<Token<std::string>>(operatorStack.top()));
+                        rpnQueue.push(std::make_unique<Token<std::string>>(operatorStack.top()));
                         operatorStack.pop();
                     }
                     operatorStack.push(str);
@@ -149,7 +149,7 @@ TokenQueue Calculator::toRPN(std::string expression, std::map<std::string, int> 
         while (!expr.eof() && isspace(expr.peek())) expr.get(c);
     }
     while (!operatorStack.empty()) {
-        rpnQueue.push(util::make_unique<Token<std::string>>(operatorStack.top()));
+        rpnQueue.push(std::make_unique<Token<std::string>>(operatorStack.top()));
         operatorStack.pop();
     }
     return rpnQueue;

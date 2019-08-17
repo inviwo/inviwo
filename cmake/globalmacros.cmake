@@ -123,6 +123,7 @@ function(ivw_private_setup_module_data)
     if(${ARG_CORE})
         set(class "InviwoCore")
         set(alias "inviwo::core")
+        set(target "inviwo-core")
         set(header "inviwo/core/common/inviwocore.h")
         set(api "IVW_CORE_API")
         set(includePrefix "inviwo/core")
@@ -203,6 +204,12 @@ function(ivw_private_setup_module_data)
     # In that case set to INVIWO<NAME>MODULE_description
     if(EXISTS "${${mod}_path}/readme.md")
         file(READ "${${mod}_path}/readme.md" description)
+        # truncate description since some readme files are quite substantial
+        string(LENGTH "${description}" desc_len)
+        if(desc_len GREATER 250)
+            string(SUBSTRING "${description}" 0 250 description)
+            string(JOIN "" description "${description}" "...")
+        endif()
         # encode linebreaks, i.e. '\n', and semicolon in description for
         # proper handling in CMAKE
         encodeLineBreaks(cdescription ${description})
@@ -349,17 +356,17 @@ function(ivw_register_modules retval)
         endif()
     endforeach()
     
+    ivw_copy_if(enabled_sorted_modules LIST sorted_modules EVAL PROJECTOR _opt)
+
     # Generate module registration file
-    ivw_private_generate_module_registration_files(sorted_modules)
+    ivw_private_generate_module_registration_files(enabled_sorted_modules)
     
     # Add enabled modules in sorted order
     set(ivw_module_names "")
-    foreach(mod ${sorted_modules})
-        if(${${mod}_opt})
-            add_subdirectory(${${mod}_path} ${IVW_BINARY_DIR}/modules/${${mod}_dir})
-            list(APPEND ivw_module_names ${${mod}_modName})
-            ivw_private_generate_module_registration_file(${mod})
-        endif()
+    foreach(mod IN LISTS enabled_sorted_modules)
+        add_subdirectory(${${mod}_path} ${IVW_BINARY_DIR}/modules/${${mod}_dir})
+        list(APPEND ivw_module_names ${${mod}_modName})
+        ivw_private_generate_module_registration_file(${mod})
     endforeach()
 
     # Save list of modules
@@ -521,9 +528,7 @@ function(ivw_create_module)
     # Add stuff to the installer
     ivw_default_install_targets(${${mod}_target})
     ivw_private_install_module_dirs()
-
-    # Make package (for other modules to find)
-    ivw_make_package($Inviwo${PROJECT_NAME}Module ${${mod}_target})
+    
     ivw_make_unittest_target("${${mod}_dir}" "${${mod}_target}")
 endfunction()
 

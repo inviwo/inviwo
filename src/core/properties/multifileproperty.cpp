@@ -29,7 +29,10 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/properties/multifileproperty.h>
+#include <inviwo/core/util/dialogfactory.h>
+#include <inviwo/core/util/filedialog.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 namespace inviwo {
 
@@ -53,16 +56,6 @@ MultiFileProperty::MultiFileProperty(const MultiFileProperty& rhs)
     , nameFilters_(rhs.nameFilters_)
     , acceptMode_(rhs.acceptMode_)
     , fileMode_(rhs.fileMode_) {}
-
-MultiFileProperty& MultiFileProperty::operator=(const MultiFileProperty& that) {
-    if (this != &that) {
-        TemplateProperty<std::vector<std::string>>::operator=(that);
-        nameFilters_ = that.nameFilters_;
-        acceptMode_ = that.acceptMode_;
-        fileMode_ = that.fileMode_;
-    }
-    return *this;
-}
 
 MultiFileProperty& MultiFileProperty::operator=(const std::vector<std::string>& value) {
     TemplateProperty<std::vector<std::string>>::operator=(value);
@@ -262,6 +255,33 @@ void MultiFileProperty::requestFile() {
     for (auto widget : getWidgets()) {
         if (auto filerequestable = dynamic_cast<FileRequestable*>(widget)) {
             if (filerequestable->requestFile()) return;
+        }
+    }
+    if (getWidgets().empty()) {
+        // Currently, the only difference between using the widget (Qt) and the FileDialog directly
+        // is that the Qt widget remembers the previously used directory
+        auto fileDialog = util::dynamic_unique_ptr_cast<FileDialog>(
+            InviwoApplication::getPtr()->getDialogFactory()->create("FileDialog"));
+        if (!fileDialog) {
+            throw Exception(
+                "Failed to create a FileDialog. Add one to the InviwoApplication::DialogFactory");
+        }
+
+        // Setup Extensions
+        std::vector<FileExtension> filters = this->getNameFilters();
+        fileDialog->addExtensions(filters);
+
+        fileDialog->setCurrentFile(get().empty() ? "" : get().front());
+        fileDialog->setTitle(getDisplayName());
+        fileDialog->setAcceptMode(getAcceptMode());
+        fileDialog->setFileMode(getFileMode());
+
+        auto ext = getSelectedExtension();
+        if (!ext.empty()) fileDialog->setSelectedExtension(ext);
+
+        if (fileDialog->show()) {
+            setSelectedExtension(fileDialog->getSelectedFileExtension());
+            set(fileDialog->getSelectedFiles());
         }
     }
 }

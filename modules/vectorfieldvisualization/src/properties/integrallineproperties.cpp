@@ -53,19 +53,6 @@ IntegralLineProperties::IntegralLineProperties(const IntegralLineProperties& rhs
     setUpProperties();
 }
 
-IntegralLineProperties& IntegralLineProperties::operator=(const IntegralLineProperties& that) {
-    if (this != &that) {
-        CompositeProperty::operator=(that);
-        numberOfSteps_ = that.numberOfSteps_;
-        stepSize_ = that.stepSize_;
-        normalizeSamples_ = that.normalizeSamples_;
-        stepDirection_ = that.stepDirection_;
-        integrationScheme_ = that.integrationScheme_;
-        seedPointsSpace_ = that.seedPointsSpace_;
-    }
-    return *this;
-}
-
 IntegralLineProperties* IntegralLineProperties::clone() const {
     return new IntegralLineProperties(*this);
 }

@@ -271,8 +271,8 @@ private:
             animator.type_.addOption(PropertyTraits<OrdinalProperty<T>>::classIdentifier(),
                                      Defaultvalues<T>::getName(), animator.type_.size());
             animator.factory_.push_back([]() -> std::unique_ptr<Property> {
-                return util::make_unique<OrdinalAnimationProperty<T>>(Defaultvalues<T>::getName(),
-                                                                      Defaultvalues<T>::getName());
+                return std::make_unique<OrdinalAnimationProperty<T>>(Defaultvalues<T>::getName(),
+                                                                     Defaultvalues<T>::getName());
             });
         }
     };

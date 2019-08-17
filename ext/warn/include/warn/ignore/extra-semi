@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2017-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,7 @@
 #define WARN_IGNORE_EXTRA_SEMI
 
 #if defined(__clang__)
-#   if __clang_major__ > 3 || (__clang_major__ == 3  && __clang_minor__ > 2)
+#   if __clang_major__ > 3 || (__clang_major__ == 3  && __clang_minor__ >= 2)
 #       if __has_warning("-Wextra-semi")
 #           pragma clang diagnostic ignored "-Wextra-semi"
 #       endif

@@ -42,14 +42,14 @@ BufferCL::BufferCL(size_t size, const DataFormatBase* format, BufferUsage usage,
     if (data != nullptr) {
         // CL_MEM_COPY_HOST_PTR can be used with CL_MEM_ALLOC_HOST_PTR to initialize the contents of
         // the cl_mem object allocated using host-accessible (e.g. PCIe) memory.
-        clBuffer_ = util::make_unique<cl::Buffer>(
+        clBuffer_ = std::make_unique<cl::Buffer>(
             OpenCL::getPtr()->getContext(),
             readWriteFlag_ | CL_MEM_COPY_HOST_PTR | CL_MEM_ALLOC_HOST_PTR,
             std::max(std::size_t{1}, getSize()) * getSizeOfElement(), const_cast<void*>(data));
     } else {
         clBuffer_ =
-            util::make_unique<cl::Buffer>(OpenCL::getPtr()->getContext(), readWriteFlag_,
-                                          std::max(std::size_t{1}, getSize()) * getSizeOfElement());
+            std::make_unique<cl::Buffer>(OpenCL::getPtr()->getContext(), readWriteFlag_,
+                                         std::max(std::size_t{1}, getSize()) * getSizeOfElement());
     }
 }
 
@@ -59,8 +59,8 @@ BufferCL::BufferCL(const BufferCL& rhs)
     , readWriteFlag_(rhs.readWriteFlag_)
     , size_(rhs.size_) {
     clBuffer_ =
-        util::make_unique<cl::Buffer>(OpenCL::getPtr()->getContext(), readWriteFlag_,
-                                      std::max(std::size_t{1}, getSize()) * getSizeOfElement());
+        std::make_unique<cl::Buffer>(OpenCL::getPtr()->getContext(), readWriteFlag_,
+                                     std::max(std::size_t{1}, getSize()) * getSizeOfElement());
     OpenCL::getPtr()->getQueue().enqueueCopyBuffer(rhs.get(), *clBuffer_, 0, 0,
                                                    getSize() * getSizeOfElement());
 }
@@ -72,8 +72,8 @@ BufferCL::~BufferCL() {}
 void BufferCL::setSize(size_t size) {
     size_ = size;
     clBuffer_ =
-        util::make_unique<cl::Buffer>(OpenCL::getPtr()->getContext(), readWriteFlag_,
-                                      std::max(std::size_t{1}, getSize()) * getSizeOfElement());
+        std::make_unique<cl::Buffer>(OpenCL::getPtr()->getContext(), readWriteFlag_,
+                                     std::max(std::size_t{1}, getSize()) * getSizeOfElement());
 }
 size_t BufferCL::getSize() const { return size_; }
 
@@ -82,7 +82,7 @@ std::type_index BufferCL::getTypeIndex() const { return std::type_index(typeid(B
 void BufferCL::upload(const void* data, size_t size) {
     // Resize buffer if necessary
     if (size > size_ * getSizeOfElement()) {
-        clBuffer_ = util::make_unique<cl::Buffer>(
+        clBuffer_ = std::make_unique<cl::Buffer>(
             OpenCL::getPtr()->getContext(),
             readWriteFlag_ | CL_MEM_COPY_HOST_PTR | CL_MEM_ALLOC_HOST_PTR,
             std::max(std::size_t{1}, getSize()) * getSizeOfElement(), const_cast<void*>(data));

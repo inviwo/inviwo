@@ -4,7 +4,6 @@
 [submodule "modules/hdf5/ext/hdf5"]
     path = modules/hdf5/ext/hdf5
     url = https://github.com/live-clones/hdf5.git
-    branch = hdf5_1_10_0
 [submodule "ext/pybind11"]
     path = ext/pybind11
     url = https://github.com/pybind/pybind11.git
@@ -15,32 +14,32 @@
     path = ext/utf/utfcpp
     url = https://github.com/nemtrif/utfcpp
 [submodule "ext/benchmark/benchmark"]
-	path = ext/benchmark/benchmark
-	url = https://github.com/petersteneteg/benchmark
+    path = ext/benchmark/benchmark
+    url = https://github.com/petersteneteg/benchmark
 [submodule "ext/gtest/gtest"]
-	path = ext/gtest/gtest
-	url = https://github.com/inviwo/googletest.git
+    path = ext/gtest/gtest
+    url = https://github.com/inviwo/googletest.git
 [submodule "modules/glfw/ext/glfw/glfw"]
-	path = modules/glfw/ext/glfw/glfw
-	url = https://github.com/inviwo/glfw.git
+    path = modules/glfw/ext/glfw/glfw
+    url = https://github.com/inviwo/glfw.git
 [submodule "ext/glm/glm"]
-	path = ext/glm/glm
-	url = https://github.com/inviwo/glm.git
+    path = ext/glm/glm
+    url = https://github.com/inviwo/glm.git
 [submodule "ext/fmt/fmt"]
-	path = ext/fmt/fmt
-	url = https://github.com/fmtlib/fmt.git
+    path = ext/fmt/fmt
+    url = https://github.com/fmtlib/fmt.git
 [submodule "tools/meta/ext/pegtl"]
-	path = tools/meta/ext/pegtl
-	url = https://github.com/taocpp/PEGTL.git
+    path = tools/meta/ext/pegtl
+    url = https://github.com/taocpp/PEGTL.git
 [submodule "tools/meta/ext/inja"]
-	path = tools/meta/ext/inja
-	url=https://github.com/pantor/inja.git
+    path = tools/meta/ext/inja
+    url=https://github.com/pantor/inja.git
 [submodule "modules/cimg/ext/openexr/openexr"]
-	path = modules/cimg/ext/openexr/openexr
-	url = https://github.com/inviwo/openexr.git
+    path = modules/cimg/ext/openexr/openexr
+    url = https://github.com/inviwo/openexr.git
 [submodule "modules/assimp/ext/assimp/assimp"]
-	path = modules/assimp/ext/assimp/assimp
-	url = https://github.com/inviwo/assimp.git
-[submodule "modules/dicom/ext/gdcm"]
-	path = modules/dicom/ext/gdcm
-	url = https://git.code.sf.net/p/gdcm/gdcm
+    path = modules/assimp/ext/assimp/assimp
+    url = https://github.com/inviwo/assimp.git
+[submodule "modules/fontrendering/ext/freetype/freetype"]
+	path = modules/fontrendering/ext/freetype/freetype
+	url = git://git.sv.nongnu.org/freetype/freetype2.git

@@ -239,6 +239,8 @@ void NumberLineEdit::setMaximum(double max) { QDoubleSpinBox::setMaximum(max); }
 
 void NumberLineEdit::setRange(double min, double max) { QDoubleSpinBox::setRange(min, max); }
 
+void NumberLineEdit::timerEvent(QTimerEvent *event) { event->accept(); }
+
 void NumberLineEdit::focusInEvent(QFocusEvent *e) {
     abbreviated_ = false;
     lineEdit()->setText(textFromValue(value()));

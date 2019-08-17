@@ -47,11 +47,13 @@
 #include <modules/python3/pythonlogger.h>
 #include <modules/python3/processors/pythonscriptprocessor.h>
 
+#include <modules/python3/pythonprocessorfactoryobject.h>
+
 namespace inviwo {
 
 Python3Module::Python3Module(InviwoApplication* app)
     : InviwoModule(app, "Python3")
-    , pythonInterpreter_(util::make_unique<PythonInterpreter>(this))
+    , pythonInterpreter_(std::make_unique<PythonInterpreter>())
     , pythonScriptArg_("p", "pythonScript", "Specify a python script to run at startup", false, "",
                        "python script")
     , argHolder_{app, pythonScriptArg_,
@@ -65,7 +67,11 @@ Python3Module::Python3Module(InviwoApplication* app)
                      s.run();
                  },
                  100}
-    , pythonLogger_{} {
+    , pythonLogger_{}
+    , scripts_{getPath() + "/scripts"}
+    , pythonFolderObserver_{app, getPath() + "/processors", *this}
+    , settingsFolderObserver_{app, app->getPath(PathType::Settings, "/python_processors", true),
+                              *this} {
 
     pythonInterpreter_->addObserver(&pythonLogger_);
 
@@ -79,7 +85,7 @@ Python3Module::Python3Module(InviwoApplication* app)
     try {
         pybind11::module::import("inviwopy");
     } catch (const std::exception& e) {
-        throw ModuleInitException(e.what(), IvwContext);
+        throw ModuleInitException(e.what(), IVW_CONTEXT);
     }
 }
 

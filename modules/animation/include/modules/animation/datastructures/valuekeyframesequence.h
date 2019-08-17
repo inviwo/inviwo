@@ -198,7 +198,7 @@ void KeyframeSequenceTyped<Key>::setInterpolation(std::unique_ptr<Interpolation>
             util::dynamic_unique_ptr_cast<InterpolationTyped<Key>>(std::move(interpolation))) {
         setInterpolation(std::move(inter));
     } else {
-        throw Exception("Interpolation type does not match key", IvwContext);
+        throw Exception("Interpolation type does not match key", IVW_CONTEXT);
     }
 }
 

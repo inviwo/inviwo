@@ -53,14 +53,13 @@ public:
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
         PropertySemantics semantics = PropertySemantics::Default);
     VolumeInformationProperty(const VolumeInformationProperty& rhs);
-    VolumeInformationProperty& operator=(const VolumeInformationProperty& that);
     virtual VolumeInformationProperty* clone() const override;
     virtual ~VolumeInformationProperty() = default;
 
     void updateForNewVolume(const Volume& volume, bool deserialize = false);
     void updateVolume(Volume& volume);
-
     // Read only used to show information
+
     IntSize3Property dimensions_;
     FloatVec3Property voxelSpacing_;
     StringProperty format_;

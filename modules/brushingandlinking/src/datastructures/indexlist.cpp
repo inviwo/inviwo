@@ -32,13 +32,7 @@
 
 namespace inviwo {
 
-IndexList::IndexList() {}
-
-IndexList::~IndexList() {}
-
 size_t IndexList::getSize() const { return indices_.size(); }
-
-bool IndexList::has(size_t idx) const { return indices_.find(idx) != indices_.end(); }
 
 void IndexList::set(const BrushingAndLinkingInport *src,
                     const std::unordered_set<size_t> &indices) {

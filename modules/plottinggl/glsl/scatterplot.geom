@@ -26,6 +26,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#include "utils/pickingutils.glsl"
+#include "plotting/common.glsl"
 
 #ifndef GLSL_VERSION_150
 #extension GL_EXT_gpu_shader4 : enable
@@ -35,9 +37,6 @@
 layout(points) in;
 layout(triangle_strip, max_vertices = 4) out;
 
-#include "plotting/common.glsl"
-#include "utils/pickingutils.glsl"
-
 uniform vec2 pixelSize;
 uniform float borderWidth = 1;
 uniform float antialiasing = 1.5; // [pixel]
@@ -45,7 +44,7 @@ uniform float antialiasing = 1.5; // [pixel]
 in vec4 vColor[1];
 in float vRadius[1];
 in float vDepth[1];
-flat in vec4 pickColors_[];
+flat in uint pickID_[];
 
 out vec4 gColor;
 out vec2 gPos;
@@ -86,7 +85,7 @@ void main(void) {
 
     c = getPixelCoordsWithSpacing(c);
 
-    pickColor_ = pickColors_[0];
+    pickColor_ = vec4(pickingIndexToColor(pickID_[0]), pickID_[0] == 0 ? 0.0 : 1.0);
 
     emit(c, vRadius[0], 1, 1);
     emit(c, vRadius[0], 1, -1);

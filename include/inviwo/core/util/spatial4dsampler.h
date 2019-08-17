@@ -48,8 +48,8 @@ public:
 template <unsigned DataDims, typename T>
 class Spatial4DSampler : public Spatial4DSamplerBase {
 public:
-    static constexpr unsigned SpatialDimensions = 4;
-    static constexpr unsigned DataDimensions = DataDims;
+    static const unsigned SpatialDimensions = 4;
+    static const unsigned DataDimensions = DataDims;
     using Space = CoordinateSpace;
     using ReturnType = Vector<DataDims, T>;
 

@@ -209,7 +209,7 @@ TEST(NetworkEvaluator, Error) {
         func(p);
         static_cast<DataOutport<int>*>(p.getOutports()[0])->setData(std::make_shared<int>(0));
         if (shouldThrow) {
-            throw Exception("Error", IvwContextCustom("TestProcessor"));
+            throw Exception("Error", IVW_CONTEXT_CUSTOM("TestProcessor"));
         }
     };
 

@@ -38,13 +38,15 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 
+#include <modules/plotting/datastructures/majorticksettings.h>
+#include <modules/plotting/datastructures/minorticksettings.h>
+
 namespace inviwo {
 
 namespace plot {
 
-enum class TickStyle { None, Inside, Outside, Both };
-
-class IVW_MODULE_PLOTTING_API MajorTickProperty : public CompositeProperty {
+class IVW_MODULE_PLOTTING_API MajorTickProperty : public MajorTickSettings,
+                                                  public CompositeProperty {
 public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
@@ -53,7 +55,6 @@ public:
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                       PropertySemantics semantics = PropertySemantics::Default);
     MajorTickProperty(const MajorTickProperty& rhs);
-    MajorTickProperty& operator=(const MajorTickProperty& rhs) = default;
     virtual MajorTickProperty* clone() const override;
     virtual ~MajorTickProperty() = default;
 
@@ -63,9 +64,18 @@ public:
     FloatProperty tickWidth_;
     DoubleProperty tickDelta_;
     BoolProperty rangeBasedTicks_;
+
+    // Inherited via MajorTickSettings
+    virtual TickStyle getStyle() const override;
+    virtual vec4 getColor() const override;
+    virtual float getTickLength() const override;
+    virtual float getTickWidth() const override;
+    virtual double getTickDelta() const override;
+    virtual bool getRangeBasedTicks() const override;
 };
 
-class IVW_MODULE_PLOTTING_API MinorTickProperty : public CompositeProperty {
+class IVW_MODULE_PLOTTING_API MinorTickProperty : public MinorTickSettings,
+                                                  public CompositeProperty {
 public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
@@ -74,7 +84,6 @@ public:
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                       PropertySemantics semantics = PropertySemantics::Default);
     MinorTickProperty(const MinorTickProperty& rhs);
-    MinorTickProperty& operator=(const MinorTickProperty& rhs) = default;
     virtual MinorTickProperty* clone() const override;
     virtual ~MinorTickProperty() = default;
 
@@ -84,6 +93,14 @@ public:
     FloatProperty tickLength_;
     FloatProperty tickWidth_;
     IntProperty tickFrequency_;
+
+    // Inherited via MinorTickSettings
+    virtual TickStyle getStyle() const override;
+    virtual bool getFillAxis() const override;
+    virtual vec4 getColor() const override;
+    virtual float getTickLength() const override;
+    virtual float getTickWidth() const override;
+    virtual int getTickFrequency() const override;
 };
 
 class IVW_MODULE_PLOTTING_API TickProperty : public CompositeProperty {
@@ -95,7 +112,6 @@ public:
                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                  PropertySemantics semantics = PropertySemantics::Default);
     TickProperty(const TickProperty& rhs);
-    TickProperty& operator=(const TickProperty& rhs) = default;
     virtual TickProperty* clone() const override;
     virtual ~TickProperty() = default;
 

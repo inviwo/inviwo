@@ -55,7 +55,8 @@ public:
 
 protected:
     VolumeOutport outport_;
-    std::shared_ptr<Volume> volume_;
+    VolumeOutport curlOutport_;
+    VolumeOutport divOutport_;
 
     OrdinalProperty<size3_t> size_;
 

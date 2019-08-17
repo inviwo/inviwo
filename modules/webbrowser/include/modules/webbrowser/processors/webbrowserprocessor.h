@@ -43,7 +43,10 @@
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/util/singlefileobserver.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -57,21 +60,28 @@ namespace inviwo {
  * Display webpage, including transparency, on top of optional background and enable synchronization
  * of properties.
  *
- * Synchronization from Invwo to web page requires its html element id, i.e. <input type="text"
- * id="stringProperty">. Synchronization from web page to Inviwo requires that you add javascript
+ * Synchronization from Invwo to web page requires its html element id, i.e.
+ * \code{.html}
+ * <input type="text" id="stringProperty">.
+ * \endcode
+ * Synchronization from web page to Inviwo requires that you add javascript
  * code. Added properties can be linked. Their display name might change but it will not affect
- * their identifier. Example of code to add to HTML-page: \code{.js} <script language="JavaScript">
+ * their identifier. Example of code to add to HTML-page:
+ * \code{.js}
+ * <script language="JavaScript">
  * function onTextInput(val) {
- * window.cefQuery({
- * request: '<Properties><Property type="org.inviwo.stringProperty"
- * identifier="PropertySyncExample.stringProperty"><value content="' + val + '"
- * </Property></Properties>', onSuccess: function(response) {
- * document.getElementById("stringProperty").focus();}, onFailure: function(error_code,
- * error_message) {}
- * });
+ *     window.cefQuery({
+ *        request: '<Properties><Property type="org.inviwo.stringProperty"
+ *             identifier="PropertySyncExample.stringProperty"><value content="' + val + '"
+ *              </Property></Properties>',
+ *        onSuccess: function(response) {
+ *              document.getElementById("stringProperty").focus();},
+ *        onFailure: function(error_code, error_message) {}
+ *     });
  * }
  * </script>
  * \endcode
+ *
  * ### Inports
  *   * __background__ Background to render web page ontop of.
  *
@@ -87,10 +97,13 @@ namespace inviwo {
  *   * __Add property__ Create a property of selected type and identifier. Start to synchronize
  * against loaded webpage.
  */
+
 /**
- * \class WebBrowser
  * \brief Render webpage into the color and picking layers (OpenGL).
  */
+#include <warn/push>
+#include <warn/ignore/dll-interface-base>  // Fine if dependent libs use the same CEF lib binaries
+#include <warn/ignore/extra-semi>  // Due to IMPLEMENT_REFCOUNTING, remove when upgrading CEF
 class IVW_MODULE_WEBBROWSER_API WebBrowserProcessor : public Processor, public CefLoadHandler {
 public:
     WebBrowserProcessor();
@@ -111,12 +124,12 @@ public:
     ImageOutport outport_;
 
     FileProperty fileName_;
+    BoolProperty autoReloadFile_;
     StringProperty url_;     ///< Web page to show
     ButtonProperty reload_;  ///< Force reload url
-    CompositeProperty addPropertyGroup_;
-    OptionPropertySize_t type_;      ///< List of all supported properties
-    StringProperty propertyHtmlId_;  ///< Html id of property to add
-    ButtonProperty add_;
+
+    ButtonProperty runJS_;
+    StringProperty js_;
 
 protected:
     std::string getSource();
@@ -134,9 +147,11 @@ protected:
     CefRefPtr<CefBrowser> browser_;
     bool isBrowserLoading_ = true;
 
-    IMPLEMENT_REFCOUNTING(WebBrowserProcessor)
-};
+    SingleFileObserver fileObserver_;
 
+    IMPLEMENT_REFCOUNTING(WebBrowserProcessor);
+};
+#include <warn/pop>
 }  // namespace inviwo
 
 #endif  // IVW_WEBBROWSERPROCESSOR_H

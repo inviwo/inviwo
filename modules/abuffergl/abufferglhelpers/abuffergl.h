@@ -78,7 +78,6 @@ public:
         PropertySemantics semantics = PropertySemantics::Default);
 
     ABufferGLCompositeProperty(const ABufferGLCompositeProperty& rhs);
-    ABufferGLCompositeProperty& operator=(const ABufferGLCompositeProperty& that);
     virtual ABufferGLCompositeProperty* clone() const override;
     virtual ~ABufferGLCompositeProperty();
     virtual std::string getClassIdentifierForWidget() const override;

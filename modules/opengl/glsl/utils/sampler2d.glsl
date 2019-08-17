@@ -27,6 +27,9 @@
  * 
  *********************************************************************************/
 
+#ifndef IVW_SAMPLER2D_GLSL
+#define IVW_SAMPLER2D_GLSL
+
 #include "utils/structs.glsl"
 
 vec4 textureLookup2Dnormalized(sampler2D tex, ImageParameters textureParams, vec2 samplePos) {
@@ -36,3 +39,5 @@ vec4 textureLookup2Dnormalized(sampler2D tex, ImageParameters textureParams, vec
 vec4 textureLookup2Dscreen(sampler2D tex, ImageParameters textureParams, vec2 samplePos) {
     return texture(tex, samplePos*textureParams.reciprocalDimensions);
 }
+
+#endif  // IVW_SAMPLER2D_GLSL

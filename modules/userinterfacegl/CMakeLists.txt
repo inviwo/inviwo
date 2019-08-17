@@ -18,6 +18,7 @@ set(HEADER_FILES
     include/modules/userinterfacegl/glui/widgets/button.h
     include/modules/userinterfacegl/glui/widgets/buttonpropertywidget.h
     include/modules/userinterfacegl/glui/widgets/checkbox.h
+    include/modules/userinterfacegl/glui/widgets/doubleminmaxpropertywidget.h
     include/modules/userinterfacegl/glui/widgets/floatminmaxpropertywidget.h
     include/modules/userinterfacegl/glui/widgets/floatpropertywidget.h
     include/modules/userinterfacegl/glui/widgets/intminmaxpropertywidget.h
@@ -52,6 +53,7 @@ set(SOURCE_FILES
     src/glui/widgets/button.cpp
     src/glui/widgets/buttonpropertywidget.cpp
     src/glui/widgets/checkbox.cpp
+    src/glui/widgets/doubleminmaxpropertywidget.cpp
     src/glui/widgets/floatminmaxpropertywidget.cpp
     src/glui/widgets/floatpropertywidget.cpp
     src/glui/widgets/intminmaxpropertywidget.cpp
@@ -78,7 +80,7 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/renderui.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/renderui.vert
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/widgetrenderer.vert
-	${CMAKE_CURRENT_SOURCE_DIR}/glsl/widgettexture.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/widgettexture.frag
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 
@@ -86,7 +88,7 @@ ivw_group("Shader Files" ${SHADER_FILES})
 #--------------------------------------------------------------------
 # Add Unittests
 set(TEST_FILES
-	#${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/userinterfacegl-test.cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/userinterfacegl-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 

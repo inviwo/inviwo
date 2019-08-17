@@ -53,12 +53,12 @@ public:
     virtual bool hasKey(const FileExtension& key) const override;
 
     template <typename T>
-    std::vector<FileExtension> getExtensionsForType();
+    std::vector<FileExtension> getExtensionsForType() const;
 
     template <typename T>
-    std::unique_ptr<DataReaderType<T>> getReaderForTypeAndExtension(const std::string& ext);
+    std::unique_ptr<DataReaderType<T>> getReaderForTypeAndExtension(const std::string& ext) const;
     template <typename T>
-    std::unique_ptr<DataReaderType<T>> getReaderForTypeAndExtension(const FileExtension& ext);
+    std::unique_ptr<DataReaderType<T>> getReaderForTypeAndExtension(const FileExtension& ext) const;
 
     /**
      * First look for a reader using the FileExtension ext, and if no reader was found look for a
@@ -68,20 +68,20 @@ public:
      * extension.
      */
     template <typename T>
-    std::unique_ptr<DataReaderType<T>> getReaderForTypeAndExtension(const FileExtension& ext,
-                                                                    const std::string& fallbackExt);
+    std::unique_ptr<DataReaderType<T>> getReaderForTypeAndExtension(
+        const FileExtension& ext, const std::string& fallbackExt) const;
 
     template <typename T>
-    bool hasReaderForTypeAndExtension(const std::string& ext);
+    bool hasReaderForTypeAndExtension(const std::string& ext) const;
     template <typename T>
-    bool hasReaderForTypeAndExtension(const FileExtension& ext);
+    bool hasReaderForTypeAndExtension(const FileExtension& ext) const;
 
 protected:
     Map map_;
 };
 
 template <typename T>
-std::vector<FileExtension> DataReaderFactory::getExtensionsForType() {
+std::vector<FileExtension> DataReaderFactory::getExtensionsForType() const {
     std::vector<FileExtension> ext;
 
     for (auto reader : map_) {
@@ -94,7 +94,7 @@ std::vector<FileExtension> DataReaderFactory::getExtensionsForType() {
 
 template <typename T>
 std::unique_ptr<DataReaderType<T>> DataReaderFactory::getReaderForTypeAndExtension(
-    const std::string& ext) {
+    const std::string& ext) const {
 
     auto lkey = toLower(ext);
     for (auto& elem : map_) {
@@ -109,7 +109,7 @@ std::unique_ptr<DataReaderType<T>> DataReaderFactory::getReaderForTypeAndExtensi
 
 template <typename T>
 std::unique_ptr<DataReaderType<T>> DataReaderFactory::getReaderForTypeAndExtension(
-    const FileExtension& ext) {
+    const FileExtension& ext) const {
     return util::map_find_or_null(map_, ext, [](DataReader* o) {
         if (auto r = dynamic_cast<DataReaderType<T>*>(o)) {
             return std::unique_ptr<DataReaderType<T>>(r->clone());
@@ -121,7 +121,7 @@ std::unique_ptr<DataReaderType<T>> DataReaderFactory::getReaderForTypeAndExtensi
 
 template <typename T>
 std::unique_ptr<DataReaderType<T>> DataReaderFactory::getReaderForTypeAndExtension(
-    const FileExtension& ext, const std::string& fallbackExt) {
+    const FileExtension& ext, const std::string& fallbackExt) const {
     if (auto reader = getReaderForTypeAndExtension<T>(ext)) {
         return reader;
     }
@@ -129,7 +129,7 @@ std::unique_ptr<DataReaderType<T>> DataReaderFactory::getReaderForTypeAndExtensi
 }
 
 template <typename T>
-bool DataReaderFactory::hasReaderForTypeAndExtension(const std::string& ext) {
+bool DataReaderFactory::hasReaderForTypeAndExtension(const std::string& ext) const {
     auto lkey = toLower(ext);
     for (auto& elem : map_) {
         if (toLower(elem.first.extension_) == lkey) {
@@ -142,7 +142,7 @@ bool DataReaderFactory::hasReaderForTypeAndExtension(const std::string& ext) {
 }
 
 template <typename T>
-bool DataReaderFactory::hasReaderForTypeAndExtension(const FileExtension& ext) {
+bool DataReaderFactory::hasReaderForTypeAndExtension(const FileExtension& ext) const {
     return util::map_find_or_null(map_, ext, [](DataReader* o) {
         if (auto r = dynamic_cast<DataReaderType<T>*>(o)) {
             return true;

@@ -24,8 +24,11 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
+
+#ifndef IVW_CLASSIFICATION_GLSL
+#define IVW_CLASSIFICATION_GLSL
 
 vec4 applyTF(sampler2D transferFunction, vec4 voxel) {
     return texture(transferFunction, vec2(voxel.r, 0.5));
@@ -38,3 +41,5 @@ vec4 applyTF(sampler2D transferFunction, vec4 voxel, int channel) {
 vec4 applyTF(sampler2D transferFunction, float intensity) {
     return texture(transferFunction, vec2(intensity, 0.5));
 }
+
+#endif  // IVW_CLASSIFICATION_GLSL

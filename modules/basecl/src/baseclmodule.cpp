@@ -51,7 +51,7 @@ BaseCLModule::BaseCLModule(InviwoApplication* app) : InviwoModule(app, "BaseCL")
 int BaseCLModule::getVersion() const { return 1; }
 
 std::unique_ptr<VersionConverter> BaseCLModule::getConverter(int version) const {
-    return util::make_unique<Converter>(version);
+    return std::make_unique<Converter>(version);
 }
 
 BaseCLModule::Converter::Converter(int version) : version_(version) {}

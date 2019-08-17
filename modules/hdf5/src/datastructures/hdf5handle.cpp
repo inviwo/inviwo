@@ -132,7 +132,7 @@ std::shared_ptr<Volume> Handle::getVolumeAtPathAsType(const Path& path,
     const H5::DataSpace dataSpace = dataset.getSpace();
     const size_t rank = dataSpace.getSimpleExtentNdims();
     if (selection.size() != rank) {
-        throw Exception("Selection not of the same rank as the data", IvwContext);
+        throw Exception("Selection not of the same rank as the data", IVW_CONTEXT);
     }
 
     std::vector<hsize_t> dataDimensions(rank);
@@ -166,7 +166,7 @@ std::shared_ptr<Volume> Handle::getVolumeAtPathAsType(const Path& path,
         stride[i] = selection[i].stride;
 
         if (count[i] > 1) {
-            if (resRank > 2) throw Exception("Invalid selection, resulting rank > 3", IvwContext);
+            if (resRank > 2) throw Exception("Invalid selection, resulting rank > 3", IVW_CONTEXT);
             memoryDimensions[resRank] = count[i];
             volumeDimensions[resRank] = count[i];
             resRank++;
@@ -193,14 +193,14 @@ std::shared_ptr<Volume> Handle::getVolumeAtPathAsType(const Path& path,
 
     auto minmax = volumeram->dispatch<std::pair<dvec4, dvec4>, dispatching::filter::Scalars>(
         [&](auto vrprecision) {
-            using ValueType = ::inviwo::util::PrecsionValueType<decltype(vrprecision)>;
+            using ValueType = ::inviwo::util::PrecisionValueType<decltype(vrprecision)>;
 
             ValueType* data = vrprecision->getDataTyped();
 
             try {
                 dataset.read(data, TypeMap<ValueType>::getType(), memorySpace, dataSpace);
             } catch (H5::DataSetIException& e) {
-                throw Exception("HDF: unable to read data: " + e.getDetailMsg(), IvwContext);
+                throw Exception("HDF: unable to read data: " + e.getDetailMsg(), IVW_CONTEXT);
             }
 
             auto res = ::inviwo::util::dataMinMax(data, selectionSize);
@@ -212,13 +212,11 @@ std::shared_ptr<Volume> Handle::getVolumeAtPathAsType(const Path& path,
             return res;
         });
 
-    auto volume = std::make_shared<Volume>();
+    auto volume = std::make_shared<Volume>(volumeDimensions, format);
     volume->dataMap_.dataRange.x = glm::compMin(minmax.first);
     volume->dataMap_.dataRange.y = glm::compMax(minmax.second);
     volume->dataMap_.valueRange = volume->dataMap_.dataRange;
 
-    volume->setDimensions(volumeram->getDimensions());
-    volume->setDataFormat(volumeram->getDataFormat());
     volume->addRepresentation(volumeram);
 
     return volume;

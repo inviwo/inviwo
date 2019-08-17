@@ -83,13 +83,13 @@ struct INVIWO_META_API Command {
     Range<const_iterator> args() const;
 
 private:
-    static inline const filter_t filter = [](const ArgElement& elem) -> bool {
+    static inline constexpr filter_t filter = [](const ArgElement& elem) -> bool {
         return std::holds_alternative<Argument>(elem);
     };
-    static inline const transform_t transform = [](ArgElement& elem) -> Argument& {
+    static inline constexpr transform_t transform = [](ArgElement& elem) -> Argument& {
         return std::get<Argument>(elem);
     };
-    static inline const const_transform_t const_transform =
+    static inline constexpr const_transform_t const_transform =
         [](const ArgElement& elem) -> const Argument& { return std::get<Argument>(elem); };
 };
 
@@ -123,13 +123,13 @@ public:
 
     std::vector<FileElement> items;
 private:
-    static inline const filter_t filter = [](const FileElement& elem) -> bool {
+    static inline constexpr filter_t filter = [](const FileElement& elem) -> bool {
         return std::holds_alternative<Command>(elem);
     };
-    static inline const transform_t transform = [](FileElement& elem) -> Command& {
+    static inline constexpr transform_t transform = [](FileElement& elem) -> Command& {
         return std::get<Command>(elem);
     };
-    static inline const const_transform_t const_transform =
+    static inline constexpr const_transform_t const_transform =
         [](const FileElement& elem) -> const Command& { return std::get<Command>(elem); };
 };
 

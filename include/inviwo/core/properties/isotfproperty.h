@@ -70,10 +70,21 @@ public:
     IsoTFProperty(const IsoTFProperty& rhs);
     virtual ~IsoTFProperty() = default;
 
-    IsoTFProperty& operator=(const IsoTFProperty& rhs) = default;
     virtual IsoTFProperty* clone() const override;
 
     virtual std::string getClassIdentifierForWidget() const override;
+
+    virtual void set(const Property* property) override;
+    /**
+     * \brief sets only the isovalue property to \p p. The transfer function property remains
+     * unchanged.
+     */
+    void set(const IsoValueProperty& p);
+    /**
+     * \brief sets only the transfer function property to \p p. The isovalue property remains
+     * unchanged.
+     */
+    void set(const TransferFunctionProperty& p);
 
     void setMask(double maskMin, double maskMax);
     const dvec2 getMask() const;

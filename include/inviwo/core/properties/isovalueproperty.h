@@ -42,6 +42,8 @@
 
 namespace inviwo {
 
+class IsoTFProperty;
+
 /**
  * \ingroup properties
  * \class IsoValueProperty
@@ -67,7 +69,6 @@ public:
     IsoValueProperty(const IsoValueProperty& rhs);
     virtual ~IsoValueProperty();
 
-    IsoValueProperty& operator=(const IsoValueProperty& rhs);
     virtual IsoValueProperty* clone() const override;
 
     void setZoomH(double zoomHMin, double zoomHMax);
@@ -81,14 +82,15 @@ public:
 
     VolumeInport* getVolumeInport();
 
-    virtual void setCurrentStateAsDefault() override;
-    virtual void resetToDefaultState() override;
+    virtual IsoValueProperty& setCurrentStateAsDefault() override;
+    virtual IsoValueProperty& resetToDefaultState() override;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
     // Overrides
     virtual void set(const IsoValueCollection& c) override;
+    void set(const IsoTFProperty& p);
     virtual void set(const Property* property) override;
 
     // Overrides TFPrimitiveSetObserver

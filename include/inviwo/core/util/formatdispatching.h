@@ -108,7 +108,7 @@ struct DispatchHelper<Result, B, E, std::tuple<Formats...>> {
         if (B > E)
             throw DispatchException(
                 "Format " + std::string(DataFormatBase::get(id)->getString()) + " not supported",
-                IvwContextCustom("Dispatching"));
+                IVW_CONTEXT_CUSTOM("Dispatching"));
 
         if (id == Format::id()) {
 #ifdef _WIN32  // TODO: remove win fix when VS does the right thing...
@@ -142,7 +142,8 @@ struct DispatchHelper<Result, B, E, std::tuple<Formats...>> {
  * # Example
  * \snippet src/core/datastructures/buffer/bufferram.cpp Format Dispatching Example
  *
- * @param callable This should be a struct with a generic call operator taking two template
+ * @param format ID if for the dataformat to dispatch on
+ * @param obj This should be a struct with a generic call operator taking two template
  * arguments the result type and DataFormat type. The callable will be called with the supplied
  * arguments (`args`).
  * @param args Any arguments that should be passed on to the lambda.
@@ -257,13 +258,17 @@ namespace util {
  * ```{.cpp}
  * VolumeRam* volumeram = ...; // of some glm vector type.
  * auto count = volumeram->dispatch<size_t, dispatching::filter::Vecs>([](auto vrprecision) {
- *     using VolumeType = util::PrecsionType<decltype(vrprecision)>;
+ *     using VolumeType = util::PrecisionType<decltype(vrprecision)>;
  *     ....
  * ```
  * VolumeType will then be for example VolumeRamPrecision<vec3>
  */
 template <typename T>
-using PrecsionType = typename std::remove_pointer<typename std::remove_const<T>::type>::type;
+using PrecisionType = typename std::remove_pointer<typename std::remove_const<T>::type>::type;
+
+template <typename T>
+using PrecsionType [[deprecated("Use `PrecisionType` instead")]] =
+    typename std::remove_pointer<typename std::remove_const<T>::type>::type;
 
 /**
  * Utility for retrieving the type of a (Buffer/Layer/Volume)RamPrecision pointer variable.
@@ -271,13 +276,17 @@ using PrecsionType = typename std::remove_pointer<typename std::remove_const<T>:
  * ```{.cpp}
  * VolumeRam* volumeram = ...; // of some glm vector type.
  * auto count = volumeram->dispatch<size_t, dispatching::filter::Vecs>([](auto vrprecision) {
- *     using ValueType = util::PrecsionValueType<decltype(vrprecision)>;
+ *     using ValueType = util::PrecisionValueType<decltype(vrprecision)>;
  *     ....
  * ```
  * ValueType will then be for example vec3
  */
 template <typename T>
-using PrecsionValueType = typename PrecsionType<T>::type;
+using PrecisionValueType = typename PrecisionType<T>::type;
+
+template <typename T>
+using PrecsionValueType [[deprecated("Use `PrecisionValueType` instead")]] =
+    typename PrecisionType<T>::type;
 
 }  // namespace util
 

@@ -58,7 +58,6 @@ public:
                    PropertySemantics semantics = PropertySemantics::Default);
 
     ButtonProperty(const ButtonProperty& rhs);
-    ButtonProperty& operator=(const ButtonProperty& that);
     virtual ButtonProperty* clone() const override;
     virtual ~ButtonProperty();
 
@@ -79,10 +78,10 @@ public:
      */
     virtual void pressButton();
 
-    virtual void propertyModified() override;  // override for custom onChange behavior
+    virtual ButtonProperty& propertyModified() override;  // override for custom onChange behavior
 
     // Override Property::resetToDefaultState, to avoid calling propertyModified  on reset.
-    virtual void resetToDefaultState() override;
+    virtual ButtonProperty& resetToDefaultState() override;
 
 private:
     bool buttonPressed_ = false;

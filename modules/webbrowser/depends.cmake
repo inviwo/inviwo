@@ -3,4 +3,6 @@
 # List modules on the format "Inviwo<ModuleName>Module"
 set(dependencies
     InviwoOpenGLModule
+    InviwoJSONModule
+    InviwoDataFrameModule
 )

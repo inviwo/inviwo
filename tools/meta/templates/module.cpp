@@ -44,11 +44,11 @@ namespace inviwo {
     // registerProperty<{{ module/name }}Property>();
 
     // Readers and writes
-    // registerDataReader(util::make_unique<{{ module/name }}Reader>());
-    // registerDataWriter(util::make_unique<{{ module/name }}Writer>());
+    // registerDataReader(std::make_unique<{{ module/name }}Reader>());
+    // registerDataWriter(std::make_unique<{{ module/name }}Writer>());
 
     // Data converters
-    // registerRepresentationConverter(util::make_unique<{{ module/name }}Disk2RAMConverter>());
+    // registerRepresentationConverter(std::make_unique<{{ module/name }}Disk2RAMConverter>());
 
     // Ports
     // registerPort<{{ module/name }}Outport>();
@@ -61,9 +61,9 @@ namespace inviwo {
     // registerDialog<{{ module/name }}Dialog>({{ module/name }}Outport);
 
     // Other things
-    // registerCapabilities(util::make_unique<{{ module/name }}Capabilities>());
-    // registerSettings(util::make_unique<{{ module/name }}Settings>());
-    // registerMetaData(util::make_unique<{{ module/name }}MetaData>());
+    // registerCapabilities(std::make_unique<{{ module/name }}Capabilities>());
+    // registerSettings(std::make_unique<{{ module/name }}Settings>());
+    // registerMetaData(std::make_unique<{{ module/name }}MetaData>());
     // registerPortInspector("{{ module/name }}Outport", "path/workspace.inv");
     // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget> processorWidget); 
     // registerDrawer(util::make_unique_ptr<{{ module/name }}Drawer>());

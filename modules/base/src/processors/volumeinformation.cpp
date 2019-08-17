@@ -30,52 +30,11 @@
 #include <modules/base/processors/volumeinformation.h>
 
 #include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/util/stringconversion.h>
-#include <inviwo/core/metadata/metadata.h>
 #include <modules/base/algorithm/dataminmax.h>
 #include <modules/base/algorithm/volume/volumesignificantvoxels.h>
 
 namespace inviwo {
-
-struct RegisterOrdinalPropertyForMetaData {
-    template <typename T>
-    auto operator()(
-        std::unordered_map<std::string, std::function<void(const std::string& key, const MetaData*,
-                                                           CompositeProperty&)>>& factory) {
-
-        factory[MetaDataPrimitiveType<T, 0, 0>{}.getClassIdentifier()] =
-            [](const std::string& key, const MetaData* meta, CompositeProperty& container) {
-                auto m = static_cast<const MetaDataPrimitiveType<T, 0, 0>*>(meta);
-
-                if (auto existingProperty = container.getPropertyByIdentifier(key)) {
-                    if (auto p = dynamic_cast<OrdinalProperty<T>*>(existingProperty)) {
-                        p->set(m->get());
-                        p->setVisible(true);
-                        return;
-                    } else {
-                        delete container.removeProperty(existingProperty);
-                    }
-                }
-
-                using value_type = typename util::glmtype<T>::type;
-
-                T min = T{0} + std::numeric_limits<value_type>::lowest();
-                T max = T{0} + std::numeric_limits<value_type>::max();
-                T inc = T{0} + std::numeric_limits<value_type>::lowest();
-
-                auto p = std::make_unique<OrdinalProperty<T>>(key, key, m->get(), min, max, inc,
-                                                              InvalidationLevel::Valid,
-                                                              PropertySemantics::Text);
-                p->setSerializationMode(PropertySerializationMode::All);
-                p->setCurrentStateAsDefault();
-                p->setReadOnly(true);
-                container.addProperty(p.release(), true);
-            };
-    }
-};
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VolumeInformation::processorInfo_{
@@ -83,7 +42,7 @@ const ProcessorInfo VolumeInformation::processorInfo_{
     "Volume Information",            // Display name
     "Information",                   // Category
     CodeState::Stable,               // Code state
-    "CPU, Volume",                   // Tags
+    "CPU, Volume, Information",      // Tags
 };
 const ProcessorInfo VolumeInformation::getProcessorInfo() const { return processorInfo_; }
 
@@ -151,59 +110,13 @@ VolumeInformation::VolumeInformation()
 
     addProperty(metaDataProperty_);
 
-    using ordinalMetaTypes =
-        std::tuple<int, float, double, vec2, vec3, vec4, dvec2, dvec3, dvec4, ivec2, ivec3, ivec4,
-                   uvec2, uvec3, uvec4, mat2, mat3, mat4, dmat2, dmat3, dmat4>;
-    util::for_each_type<ordinalMetaTypes>{}(RegisterOrdinalPropertyForMetaData{}, factory_);
-
-    factory_[MetaDataPrimitiveType<bool, 0, 0>{}.getClassIdentifier()] =
-        [](const std::string& key, const MetaData* meta, CompositeProperty& container) {
-            auto m = static_cast<const MetaDataPrimitiveType<bool, 0, 0>*>(meta);
-
-            if (auto existingProperty = container.getPropertyByIdentifier(key)) {
-                if (auto p = dynamic_cast<BoolProperty*>(existingProperty)) {
-                    p->set(m->get());
-                    p->setVisible(true);
-                    return;
-                } else {
-                    delete container.removeProperty(existingProperty);
-                }
-            }
-
-            auto p = std::make_unique<BoolProperty>(key, key, m->get(), InvalidationLevel::Valid);
-            p->setSerializationMode(PropertySerializationMode::All);
-            p->setCurrentStateAsDefault();
-            p->setReadOnly(true);
-            container.addProperty(p.release(), true);
-        };
-
-    factory_[MetaDataPrimitiveType<std::string, 0, 0>{}.getClassIdentifier()] =
-        [](const std::string& key, const MetaData* meta, CompositeProperty& container) {
-            auto m = static_cast<const MetaDataPrimitiveType<std::string, 0, 0>*>(meta);
-
-            if (auto existingProperty = container.getPropertyByIdentifier(key)) {
-                if (auto p = dynamic_cast<StringProperty*>(existingProperty)) {
-                    p->set(m->get());
-                    p->setVisible(true);
-                    return;
-                } else {
-                    delete container.removeProperty(existingProperty);
-                }
-            }
-            auto p = std::make_unique<StringProperty>(key, key, m->get(), InvalidationLevel::Valid);
-            p->setSerializationMode(PropertySerializationMode::All);
-            p->setCurrentStateAsDefault();
-            p->setReadOnly(true);
-            container.addProperty(p.release(), true);
-        };
-
     setAllPropertiesCurrentStateAsDefault();
 }
 
 void VolumeInformation::process() {
     auto volume = volume_.getData();
 
-    volumeInfo_.updateForNewVolume(*(volume.get()));
+    volumeInfo_.updateForNewVolume(*volume);
 
     auto volumeRAM = volume->getRepresentation<VolumeRAM>();
 
@@ -247,29 +160,7 @@ void VolumeInformation::process() {
         minMaxChannel4_.set(minMaxD);
     }
 
-    auto metaMap = volume->getMetaDataMap();
-
-    auto keys = metaMap->getKeys();
-    for (auto key : keys) {
-        auto meta = metaMap->get(key);
-        auto it = factory_.find(meta->getClassIdentifier());
-        if (it != factory_.end()) {
-            it->second(key, meta, metaDataProperty_);
-        } else {
-            LogError("Unsupported MetaData type");
-        }
-    }
-
-    // Remove unused meta data properties
-    std::vector<std::string> ids;
-    for (auto p : metaDataProperty_.getProperties()) {
-        ids.push_back(p->getIdentifier());
-    }
-    for (auto id : ids) {
-        if (!metaMap->get(id)) {
-            delete metaDataProperty_.removeProperty(id);
-        }
-    }
+    metaDataProps_.updateProperty(metaDataProperty_, volume->getMetaDataMap());
 }
 
 }  // namespace inviwo

@@ -66,6 +66,12 @@ ScatterPlotProcessor::ScatterPlotProcessor()
     brushingPort_.setOptional(true);
     backgroundPort_.setOptional(true);
 
+    scatterPlot_.properties_.margins_.setLowerLeftMargin({50.0f, 40.0f});
+    scatterPlot_.properties_.xAxis_.captionSettings_.setChecked(true);
+    scatterPlot_.properties_.xAxis_.captionSettings_.offset_.set(20.0f);
+    scatterPlot_.properties_.yAxis_.captionSettings_.setChecked(true);
+    scatterPlot_.properties_.yAxis_.captionSettings_.offset_.set(30.0f);
+
     addProperty(scatterPlot_.properties_);
     addProperty(xAxis_);
     addProperty(yAxis_);

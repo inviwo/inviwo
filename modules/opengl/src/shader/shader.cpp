@@ -111,7 +111,6 @@ Shader::Shader(const std::vector<std::pair<ShaderType, std::string>> &items, Bui
                                        item.first, utilgl::findShaderResource(item.second))));
     }
 
-    verify();
     if (buildShader == Build::Yes) build();
     ShaderManager::getPtr()->registerShader(this);
 }
@@ -125,7 +124,6 @@ Shader::Shader(
         shaderObjects_.emplace(item.first, ShaderAttachment(this, std::make_unique<ShaderObject>(
                                                                       item.first, item.second)));
     }
-    verify();
     if (buildShader == Build::Yes) build();
     ShaderManager::getPtr()->registerShader(this);
 }
@@ -138,15 +136,8 @@ Shader::Shader(std::vector<std::unique_ptr<ShaderObject>> &shaderObjects, bool b
         shaderObjects_.emplace(type, ShaderAttachment(this, std::move(obj)));
     }
 
-    verify();
     if (buildShader) build();
     ShaderManager::getPtr()->registerShader(this);
-}
-
-void Shader::verify() const {
-    if (shaderObjects_.count(ShaderType::Vertex) == 0) {
-        throw Exception("Vertex shader required, provide for example img_identity.vert");
-    }
 }
 
 Shader::Shader(std::string vertexFilename, std::string geometryFilename,
@@ -179,7 +170,7 @@ Shader::Shader(const char *vertexFilename, const char *geometryFilename,
 Shader::Shader(const Shader &rhs) : program_{rhs.program_}, warningLevel_{rhs.warningLevel_} {
     for (auto &elem : rhs.shaderObjects_) {
         shaderObjects_.emplace(
-            elem.first, ShaderAttachment(this, util::make_unique<ShaderObject>(elem.second.obj())));
+            elem.first, ShaderAttachment(this, std::make_unique<ShaderObject>(elem.second.obj())));
     }
 
     if (rhs.isReady()) build();
@@ -211,7 +202,7 @@ Shader &Shader::operator=(const Shader &that) {
         for (auto &elem : that.shaderObjects_) {
             shaderObjects_.emplace(
                 elem.first,
-                ShaderAttachment(this, util::make_unique<ShaderObject>(elem.second.obj())));
+                ShaderAttachment(this, std::make_unique<ShaderObject>(elem.second.obj())));
         }
         warningLevel_ = that.warningLevel_;
 
@@ -246,7 +237,7 @@ Shader &Shader::operator=(Shader &&that) {
 }
 
 Shader::~Shader() {
-    if (ShaderManager::getPtr()->isRegistered(this)) {
+    if (ShaderManager::isInitialized() && ShaderManager::getPtr()->isRegistered(this)) {
         ShaderManager::getPtr()->unregisterShader(this);
     }
 }
@@ -276,7 +267,7 @@ void Shader::linkShader(bool notifyRebuild) {
 
     if (!util::all_of(shaderObjects_,
                       [](const auto &elem) { return elem.second.obj().isReady(); })) {
-        util::log(IvwContext, "Id: " + toString(program_.id) + " objects not ready when linking.",
+        util::log(IVW_CONTEXT, "Id: " + toString(program_.id) + " objects not ready when linking.",
                   LogLevel::Error, LogAudience::User);
         return;
     }
@@ -286,13 +277,13 @@ void Shader::linkShader(bool notifyRebuild) {
     if (!isReady()) {
         throw OpenGLException("Id: " + toString(program_.id) + " " +
                                   processLog(utilgl::getProgramInfoLog(program_.id)),
-                              IvwContext);
+                              IVW_CONTEXT);
     }
 
 #ifdef IVW_DEBUG
     auto log = utilgl::getProgramInfoLog(program_.id);
     if (!log.empty()) {
-        util::log(IvwContext, "Id: " + toString(program_.id) + " " + processLog(log),
+        util::log(IVW_CONTEXT, "Id: " + toString(program_.id) + " " + processLog(log),
                   LogLevel::Info, LogAudience::User);
     }
 #endif
@@ -321,7 +312,7 @@ void Shader::rebuildShader(ShaderObject *obj) {
 
         onReloadCallback_.invokeAll();
 
-        util::log(IvwContext,
+        util::log(IVW_CONTEXT,
                   "Id: " + toString(program_.id) + ", resource: " + obj->getFileName() +
                       " successfully reloaded",
                   LogLevel::Info, LogAudience::User);
@@ -350,17 +341,17 @@ std::string Shader::processLog(std::string log) const {
     while (std::getline(stream, line)) {
         // This log matching needs more testing. Mostly guessing here.
         auto lline = toLower(line);
-        if (lline.find("vertex"))
+        if (lline.find("vertex") != std::string::npos)
             type = ShaderType::Vertex;
-        else if (lline.find("geometry"))
+        else if (lline.find("geometry") != std::string::npos)
             type = ShaderType::Geometry;
-        else if (lline.find("fragment"))
+        else if (lline.find("fragment") != std::string::npos)
             type = ShaderType::Fragment;
-        else if (lline.find("tessellation control"))
+        else if (lline.find("tessellation control") != std::string::npos)
             type = ShaderType::TessellationControl;
-        else if (lline.find("tessellation evaluation"))
+        else if (lline.find("tessellation evaluation") != std::string::npos)
             type = ShaderType::TessellationEvaluation;
-        else if (lline.find("compute"))
+        else if (lline.find("compute") != std::string::npos)
             type = ShaderType::Compute;
 
         int origLineNumber = utilgl::getLogLineNumber(line);
@@ -388,7 +379,7 @@ bool Shader::isReady() const {
 void Shader::activate() {
     if (!ready_)
         throw OpenGLException(
-            "Shader Id: " + toString(program_.id) + " not ready: " + shaderNames(), IvwContext);
+            "Shader Id: " + toString(program_.id) + " not ready: " + shaderNames(), IVW_CONTEXT);
     glUseProgram(program_.id);
     LGL_ERROR;
 }
@@ -425,9 +416,9 @@ GLint Shader::findUniformLocation(const std::string &name) const {
         if (warningLevel_ == UniformWarning::Throw && location == -1) {
             throw OpenGLException("Unable to set uniform " + name + " in shader id: " +
                                       toString(program_.id) + " " + shaderNames(),
-                                  IvwContext);
+                                  IVW_CONTEXT);
         } else if (warningLevel_ == UniformWarning::Warn && location == -1) {
-            util::log(IvwContext,
+            util::log(IVW_CONTEXT,
                       "Unable to set uniform " + name + " in shader " +
                           " in shader id: " + toString(program_.id) + " " + shaderNames(),
                       LogLevel::Warn, LogAudience::User);

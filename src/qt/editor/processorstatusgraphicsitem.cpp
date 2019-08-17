@@ -65,7 +65,7 @@ void ProcessorStatusGraphicsItem::setRunning(bool running) {
 
 void ProcessorStatusGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem*, QWidget*) {
     qreal ledRadius = size_ / 2.0f;
-    QColor baseColor = QColor(0, 170, 0).light(200);
+    QColor baseColor = QColor(0, 170, 0).lighter(200);
 
     QColor ledColor;
     QColor borderColor(124, 124, 124);
@@ -78,7 +78,7 @@ void ProcessorStatusGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsI
             ledColor = QColor(255, 221, 85);
             break;
         case State::Invalid:
-            ledColor = baseColor.dark(400);
+            ledColor = baseColor.darker(400);
             break;
     }
     current_ = state_;

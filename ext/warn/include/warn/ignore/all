@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2017-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,6 +38,8 @@
 #include <warn/ignore/c++98-compat-pedantic>
 #include <warn/ignore/cast-align>
 #include <warn/ignore/catch-semantic-changed>
+#include <warn/ignore/char-subscripts>
+#include <warn/ignore/class-memaccess>
 #include <warn/ignore/conditional-uninitialized>
 #include <warn/ignore/constant-conditional>
 #include <warn/ignore/constant-conversion>
@@ -84,6 +86,7 @@
 #include <warn/ignore/missing-field-initializers>
 #include <warn/ignore/missing-noreturn>
 #include <warn/ignore/name-length-exceeded>
+#include <warn/ignore/namespace-uses-itself>
 #include <warn/ignore/newline-eof>
 #include <warn/ignore/no-such-warning>
 #include <warn/ignore/no-unnamed-raii-objects>
@@ -96,7 +99,9 @@
 #include <warn/ignore/padded>
 #include <warn/ignore/parentheses>
 #include <warn/ignore/pedantic>
+#include <warn/ignore/restrict>
 #include <warn/ignore/return-type>
+#include <warn/ignore/self-assign-overloaded>
 #include <warn/ignore/shadow>
 #include <warn/ignore/shorten-64-to-32>
 #include <warn/ignore/sign-compare>
@@ -105,6 +110,7 @@
 #include <warn/ignore/size_t-conversion>
 #include <warn/ignore/special-noexcept>
 #include <warn/ignore/static-ctor-not-thread-safe>
+#include <warn/ignore/stringop-truncation>
 #include <warn/ignore/switch>
 #include <warn/ignore/switch-enum>
 #include <warn/ignore/this-used-in-init>

@@ -71,11 +71,8 @@ RaycastingProperty::RaycastingProperty(std::string identifier, std::string displ
           3, InvalidationLevel::InvalidResources)
     , samplingRate_("samplingRate", "Sampling rate", 2.0f, 1.0f, 20.0f) {
 
-    addProperty(renderingType_);
-    addProperty(classification_);
-    addProperty(compositing_);
-    addProperty(gradientComputation_);
-    addProperty(samplingRate_);
+    addProperties(renderingType_, classification_, compositing_, gradientComputation_,
+                  samplingRate_);
 }
 
 RaycastingProperty::RaycastingProperty(const RaycastingProperty& rhs)
@@ -90,18 +87,6 @@ RaycastingProperty::RaycastingProperty(const RaycastingProperty& rhs)
     addProperty(compositing_);
     addProperty(gradientComputation_);
     addProperty(samplingRate_);
-}
-
-RaycastingProperty& RaycastingProperty::operator=(const RaycastingProperty& rhs) {
-    if (this != &rhs) {
-        CompositeProperty::operator=(rhs);
-        renderingType_ = rhs.renderingType_;
-        classification_ = rhs.classification_;
-        compositing_ = rhs.compositing_;
-        gradientComputation_ = rhs.gradientComputation_;
-        samplingRate_ = rhs.samplingRate_;
-    }
-    return *this;
 }
 
 RaycastingProperty* RaycastingProperty::clone() const { return new RaycastingProperty(*this); }

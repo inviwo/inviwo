@@ -155,7 +155,7 @@ ProcessorWidget* PortInspectorManager::addPortInspector(Outport* outport, ivec2 
 
             auto processorWidget = canvasProcessor->getProcessorWidget();
             if (!processorWidget) {
-                util::log(IvwContextCustom("PortInspector"), "Problem using port inspector",
+                util::log(IVW_CONTEXT_CUSTOM("PortInspector"), "Problem using port inspector",
                           LogLevel::Error);
                 return nullptr;
             }
@@ -165,7 +165,7 @@ ProcessorWidget* PortInspectorManager::addPortInspector(Outport* outport, ivec2 
     } catch (Exception& exception) {
         util::log(exception.getContext(), exception.getMessage(), LogLevel::Error);
     } catch (...) {
-        util::log(IvwContextCustom("PortInspector"), "Problem using port inspector",
+        util::log(IVW_CONTEXT_CUSTOM("PortInspector"), "Problem using port inspector",
                   LogLevel::Error);
     }
     return nullptr;
@@ -230,7 +230,7 @@ std::shared_ptr<const Image> PortInspectorManager::renderPortInspectorImage(Outp
     } catch (Exception& exception) {
         util::log(exception.getContext(), exception.getMessage(), LogLevel::Error);
     } catch (...) {
-        util::log(IvwContextCustom("PortInspector"), "Problem using port inspector",
+        util::log(IVW_CONTEXT_CUSTOM("PortInspector"), "Problem using port inspector",
                   LogLevel::Error);
     }
     return image;

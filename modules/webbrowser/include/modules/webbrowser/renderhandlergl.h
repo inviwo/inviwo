@@ -44,12 +44,35 @@ namespace inviwo {
  * Copies web page into a Texture2D each time it has been painted by the browser and calls
  * onWebPageCopiedCallback afterwards.
  */
+#include <warn/push>
+#include <warn/ignore/dll-interface-base>  // Fine if dependent libs use the same CEF lib binaries
+#include <warn/ignore/extra-semi>  // Due to IMPLEMENT_REFCOUNTING, remove when upgrading CEF
 class IVW_MODULE_WEBBROWSER_API RenderHandlerGL : public CefRenderHandler {
 public:
-    RenderHandlerGL(std::function<void()> onWebPageCopiedCallback);
+    typedef std::function<void()> OnWebPageCopiedCallback;
+    
+    RenderHandlerGL(OnWebPageCopiedCallback onWebPageCopiedCallback);
     void updateCanvasSize(size2_t newSize);
+    ///
+    // Called to retrieve the view rectangle which is relative to screen
+    // coordinates. Return true if the rectangle was provided.
+    ///
+    /*--cef()--*/
+    virtual bool GetViewRect(CefRefPtr<CefBrowser> browser, CefRect &rect) override;
 
-    bool GetViewRect(CefRefPtr<CefBrowser> browser, CefRect &rect) override;
+    ///
+    // Called when the browser wants to show or hide the popup widget. The popup
+    // should be shown if |show| is true and hidden if |show| is false.
+    ///
+    /*--cef()--*/
+    virtual void OnPopupShow(CefRefPtr<CefBrowser> browser, bool show) override;
+
+    ///
+    // Called when the browser wants to move or resize the popup widget. |rect|
+    // contains the new location and size in view coordinates.
+    ///
+    /*--cef()--*/
+    virtual void OnPopupSize(CefRefPtr<CefBrowser> browser, const CefRect &rect) override;
 
     virtual void OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type,
                          const RectList &dirtyRects, const void *buffer, int width,
@@ -73,14 +96,22 @@ public:
      */
     uvec4 getPixel(int x, int y);
 
-private:
-    Texture2D texture2D_;
-    std::function<void()>
-        onWebPageCopiedCallback;  /// Called after web page has been copied in OnPaint
-public:
-    IMPLEMENT_REFCOUNTING(RenderHandlerGL)
-};
+    void ClearPopupRects();
 
+private:
+    CefRect GetPopupRectInWebView(const CefRect &original_rect);
+
+    Texture2D texture2D_;
+    OnWebPageCopiedCallback
+        onWebPageCopiedCallback;  /// Called after web page has been copied in OnPaint
+
+    CefRect popupRect_;
+    CefRect originalPopupRect_;
+
+public:
+    IMPLEMENT_REFCOUNTING(RenderHandlerGL);
+};
+#include <warn/pop>
 };  // namespace inviwo
 
 #endif  // IVW_RENDERHANDLERGL_H

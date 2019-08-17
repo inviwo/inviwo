@@ -45,7 +45,6 @@ public:
 
     PathLineProperties(std::string identifier, std::string displayName);
     PathLineProperties(const PathLineProperties& rhs);
-    PathLineProperties& operator=(const PathLineProperties& that);
     virtual PathLineProperties* clone() const override;
     virtual ~PathLineProperties();
 

@@ -120,8 +120,8 @@ public:
      * ```{.cpp}
      * VolumeRam* volumeram = ...; // of some glm vector type.
      * auto count = volumeram->dispatch<size_t, dispatching::filter::Vecs>([](auto vrprecision) {
-     *     using VolumeType = util::PrecsionType<decltype(vrprecision)>;
-     *     using ValueType = util::PrecsionValueType<decltype(vrprecision)>;
+     *     using VolumeType = util::PrecisionType<decltype(vrprecision)>;
+     *     using ValueType = util::PrecisionValueType<decltype(vrprecision)>;
      *
      *     T* data = vrprecision->getDataTyped();
      *     auto dim = vrprecision->getDimensions();

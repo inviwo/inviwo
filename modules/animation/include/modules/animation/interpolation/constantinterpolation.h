@@ -147,7 +147,7 @@ void ConstantInterpolation<Key>::deserialize(Deserializer& d) {
         throw SerializationException(
             "Deserialized interpolation: " + getClassIdentifier() +
                 " from a serialized interpolation with a different class identifier: " + className,
-            IvwContext);
+            IVW_CONTEXT);
     }
 }
 

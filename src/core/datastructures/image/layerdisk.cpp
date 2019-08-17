@@ -31,25 +31,31 @@
 
 namespace inviwo {
 
-LayerDisk::LayerDisk(LayerType type, const SwizzleMask& swizzleMask)
-    : LayerRepresentation(size2_t(0), type, DataFormatBase::get())
+LayerDisk::LayerDisk(size2_t dimensions, const DataFormatBase* format, LayerType type,
+                     const SwizzleMask& swizzleMask)
+    : LayerRepresentation(type, format)
     , DiskRepresentation<LayerRepresentation>()
+    , dimensions_(dimensions)
     , swizzleMask_(swizzleMask) {}
 
-LayerDisk::LayerDisk(std::string url, LayerType type, const SwizzleMask& swizzleMask)
-    : LayerRepresentation(size2_t(0), type, DataFormatBase::get())
+LayerDisk::LayerDisk(std::string url, size2_t dimensions, const DataFormatBase* format,
+                     LayerType type, const SwizzleMask& swizzleMask)
+    : LayerRepresentation(type, format)
     , DiskRepresentation<LayerRepresentation>(url)
+    , dimensions_(dimensions)
     , swizzleMask_(swizzleMask) {}
 
 LayerDisk::LayerDisk(const LayerDisk& rhs)
     : LayerRepresentation(rhs)
     , DiskRepresentation<LayerRepresentation>(rhs)
+    , dimensions_(rhs.dimensions_)
     , swizzleMask_(rhs.swizzleMask_) {}
 
 LayerDisk& LayerDisk::operator=(const LayerDisk& that) {
     if (this != &that) {
         LayerRepresentation::operator=(that);
         DiskRepresentation<LayerRepresentation>::operator=(that);
+        dimensions_ = that.dimensions_;
         swizzleMask_ = that.swizzleMask_;
     }
     return *this;
@@ -63,6 +69,8 @@ void LayerDisk::setDimensions(size2_t dimensions) {
     dimensions_ = dimensions;
     updateBaseMetaFromRepresentation();
 }
+
+const size2_t& LayerDisk::getDimensions() const { return dimensions_; }
 
 bool LayerDisk::copyRepresentationsTo(LayerRepresentation*) const { return false; }
 

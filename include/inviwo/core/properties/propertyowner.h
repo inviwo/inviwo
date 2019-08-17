@@ -45,19 +45,22 @@ class CompositeProperty;
 class InviwoApplication;
 
 class IVW_CORE_API PropertyOwner : public PropertyOwnerObservable,
-                                   public Serializable,
+                                   public virtual Serializable,
                                    public EventListener {
 public:
     using iterator = std::vector<Property*>::iterator;
     using const_iterator = std::vector<Property*>::const_iterator;
 
-    PropertyOwner();
-    PropertyOwner(const PropertyOwner& rhs);
-    PropertyOwner& operator=(const PropertyOwner& that);
-    virtual ~PropertyOwner() = default;
+    /**
+     * \brief Removes all properties and notifies its observers of the removal.
+     */
+    virtual ~PropertyOwner();
 
     virtual void addProperty(Property* property, bool owner = true);
     virtual void addProperty(Property& property);
+
+    template <typename... Ts>
+    void addProperties(Ts&... properties);
 
     /**
      * \brief insert property \p property at position \p index
@@ -131,19 +134,24 @@ public:
     virtual InviwoApplication* getInviwoApplication();
 
 protected:
-    // Add the properties belonging the the property owner
+    PropertyOwner();
+    PropertyOwner(const PropertyOwner& rhs);
+    PropertyOwner& operator=(const PropertyOwner& that) = delete;
+
+
+    // Add the properties belonging the property owner
     // PropertyOwner do not assume owner ship here since in the most common case these are
     // pointers to members of derived classes.
     std::vector<Property*> properties_;
+
+    // Cached lists of certain property types
+    std::vector<EventProperty*> eventProperties_;          //< non-owning references.
+    std::vector<CompositeProperty*> compositeProperties_;  //< non-owning references.
 
     // An additional list of properties for which PropertyOwner assumes ownership.
     // I.e. PropertyOwner will take care of deleting them. Usually used for dynamic properties
     // allocated on the heap.
     std::vector<std::unique_ptr<Property>> ownedProperties_;
-
-    // Cached lists of certain property types
-    std::vector<EventProperty*> eventProperties_;          //< non-owning references.
-    std::vector<CompositeProperty*> compositeProperties_;  //< non-owning references.
 
 private:
     Property* removeProperty(std::vector<Property*>::iterator it);
@@ -167,6 +175,19 @@ std::vector<T*> PropertyOwner::getPropertiesByType(bool recursiveSearch /* = fal
     return foundProperties;
 }
 
+namespace detail {
+inline void addPropertyHelper(PropertyOwner&) {}
+template <typename... Ts>
+void addPropertyHelper(PropertyOwner& owner, Property& p, Ts&... props) {
+    owner.addProperty(p);
+    addPropertyHelper(owner, props...);
+}
+}  // namespace detail
+
+template <typename... Ts>
+void PropertyOwner::addProperties(Ts&... properties) {
+    detail::addPropertyHelper(*this, properties...);
+}
 }  // namespace inviwo
 
 #endif  // IVW_PROPERTYOWNER_H

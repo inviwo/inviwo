@@ -36,7 +36,7 @@ namespace inviwo {
 Serializer::Serializer(const std::string& fileName, bool allowReference)
     : SerializeBase(fileName, allowReference) {
     try {
-        auto decl = util::make_unique<TxDeclaration>(SerializeConstants::XmlVersion, "", "");
+        auto decl = std::make_unique<TxDeclaration>(SerializeConstants::XmlVersion, "", "");
         doc_.LinkEndChild(decl.get());
         rootElement_ = new TxElement(SerializeConstants::InviwoWorkspace);
 
@@ -45,14 +45,14 @@ Serializer::Serializer(const std::string& fileName, bool allowReference)
         doc_.LinkEndChild(rootElement_);
 
     } catch (TxException& e) {
-        throw SerializationException(e.what(), IvwContext);
+        throw SerializationException(e.what(), IVW_CONTEXT);
     }
 }
 
 Serializer::~Serializer() { delete rootElement_; }
 
 void Serializer::serialize(const std::string& key, const Serializable& sObj) {
-    auto newNode = util::make_unique<TxElement>(key);
+    auto newNode = std::make_unique<TxElement>(key);
     rootElement_->LinkEndChild(newNode.get());
     NodeSwitch nodeSwitch(*this, newNode.get());
     sObj.serialize(*this);
@@ -76,7 +76,7 @@ void Serializer::writeFile() {
         refDataContainer_.setReferenceAttributes();
         doc_.SaveFile(getFileName());
     } catch (TxException& e) {
-        throw SerializationException(e.what(), IvwContext);
+        throw SerializationException(e.what(), IVW_CONTEXT);
     }
 }
 
@@ -92,7 +92,7 @@ void Serializer::writeFile(std::ostream& stream, bool format) {
             stream << doc_;
         }
     } catch (TxException& e) {
-        throw SerializationException(e.what(), IvwContext);
+        throw SerializationException(e.what(), IVW_CONTEXT);
     }
 }
 

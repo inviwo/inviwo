@@ -38,8 +38,8 @@ pngModule::pngModule(InviwoApplication* app) : InviwoModule(app, "png") {
 
     LogInfo("Using LibPNG Version " << pngutil::getLibPNGVesrion());
 
-    registerDataReader(util::make_unique<PNGLayerReader>());
-    registerDataWriter(util::make_unique<PNGLayerWriter>());
+    registerDataReader(std::make_unique<PNGLayerReader>());
+    registerDataWriter(std::make_unique<PNGLayerWriter>());
 }
 
 }  // namespace inviwo

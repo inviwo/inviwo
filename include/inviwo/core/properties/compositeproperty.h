@@ -56,7 +56,7 @@ public:
                       PropertySemantics semantics = PropertySemantics::Default);
 
     CompositeProperty(const CompositeProperty& rhs) = default;
-    CompositeProperty& operator=(const CompositeProperty& that) = default;
+
     virtual CompositeProperty* clone() const override;
     virtual ~CompositeProperty() = default;
     virtual std::string getClassIdentifierForWidget() const override;
@@ -72,9 +72,9 @@ public:
     virtual void setValid() override;
     virtual InvalidationLevel getInvalidationLevel() const override;
 
-    virtual void setCurrentStateAsDefault() override;
-    virtual void resetToDefaultState() override;
-    virtual void setReadOnly(bool value) override;
+    virtual CompositeProperty& setCurrentStateAsDefault() override;
+    virtual CompositeProperty& resetToDefaultState() override;
+    virtual CompositeProperty& setReadOnly(bool value) override;
 
     // Override from the PropertyOwner
     virtual void invalidate(InvalidationLevel invalidationLevel,

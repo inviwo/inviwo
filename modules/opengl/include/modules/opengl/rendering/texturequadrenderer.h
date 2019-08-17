@@ -50,12 +50,12 @@ class Texture2D;
 class IVW_MODULE_OPENGL_API TextureQuadRenderer {
 public:
     TextureQuadRenderer();
-    TextureQuadRenderer(const Shader &shader);
-    TextureQuadRenderer(Shader &&shader);
+    TextureQuadRenderer(const Shader& shader);
+    TextureQuadRenderer(Shader&& shader);
     virtual ~TextureQuadRenderer();
 
-    Shader &getShader();
-    const Shader &getShader() const;
+    Shader& getShader();
+    const Shader& getShader() const;
 
     /**
      * \brief renders an image at position pos onto the current canvas. The image
@@ -72,12 +72,18 @@ public:
      * @param texTransform   optional transformation for texture coordinates, e.g.
      *                 for rendering a sub region of the input
      */
-    void render(const std::shared_ptr<Image> &image, const ivec2 &pos, const size2_t &canvasSize,
-                LayerType layerType = LayerType::Color, const mat4 &transformation = mat4(1),
-                const mat4 &texTransform = mat4(1));
-    void render(const std::shared_ptr<Image> &image, const std::vector<ivec2> &pos,
-                const std::vector<mat4> &texTransform, const size2_t &canvasSize,
-                LayerType layerType = LayerType::Color, const mat4 &transformation = mat4(1));
+    void render(const Image& image, const ivec2& pos, const size2_t& canvasSize,
+                LayerType layerType = LayerType::Color, const mat4& transformation = mat4(1),
+                const mat4& texTransform = mat4(1));
+    void render(const Image& image, const std::vector<ivec2>& pos,
+                const std::vector<mat4>& texTransform, const size2_t& canvasSize,
+                LayerType layerType = LayerType::Color, const mat4& transformation = mat4(1));
+    void render(const std::shared_ptr<Image>& image, const ivec2& pos, const size2_t& canvasSize,
+                LayerType layerType = LayerType::Color, const mat4& transformation = mat4(1),
+                const mat4& texTransform = mat4(1));
+    void render(const std::shared_ptr<Image>& image, const std::vector<ivec2>& pos,
+                const std::vector<mat4>& texTransform, const size2_t& canvasSize,
+                LayerType layerType = LayerType::Color, const mat4& transformation = mat4(1));
 
     /**
      * \brief renders a color layer of an image at position pos onto the current canvas. The layer
@@ -93,12 +99,18 @@ public:
      * @param texTransform   optional transformation for texture coordinates, e.g.
      *                 for rendering a sub region of the input
      */
-    void render(const std::shared_ptr<Image> &image, const ivec2 &pos, const size2_t &canvasSize,
-                std::size_t colorLayerIndex, const mat4 &transformation = mat4(1),
-                const mat4 &texTransform = mat4(1));
-    void render(const std::shared_ptr<Image> &image, const std::vector<ivec2> &pos,
-                const std::vector<mat4> &texTransform, const size2_t &canvasSize,
-                std::size_t colorLayerIndex, const mat4 &transformation = mat4(1));
+    void render(const Image& image, const ivec2& pos, const size2_t& canvasSize,
+                std::size_t colorLayerIndex, const mat4& transformation = mat4(1),
+                const mat4& texTransform = mat4(1));
+    void render(const Image& image, const std::vector<ivec2>& pos,
+                const std::vector<mat4>& texTransform, const size2_t& canvasSize,
+                std::size_t colorLayerIndex, const mat4& transformation = mat4(1));
+    void render(const std::shared_ptr<Image>& image, const ivec2& pos, const size2_t& canvasSize,
+                std::size_t colorLayerIndex, const mat4& transformation = mat4(1),
+                const mat4& texTransform = mat4(1));
+    void render(const std::shared_ptr<Image>& image, const std::vector<ivec2>& pos,
+                const std::vector<mat4>& texTransform, const size2_t& canvasSize,
+                std::size_t colorLayerIndex, const mat4& transformation = mat4(1));
 
     /**
      * \brief renders a layer at position pos onto the current canvas. The layer
@@ -113,11 +125,16 @@ public:
      * @param texTransform   optional transformation for texture coordinates, e.g.
      *                 for rendering a sub region of the input
      */
-    void render(const std::shared_ptr<Layer> &image, const ivec2 &pos, const size2_t &canvasSize,
-                const mat4 &transformation = mat4(1), const mat4 &texTransform = mat4(1));
-    void render(const std::shared_ptr<Layer> &image, const std::vector<ivec2> &pos,
-                const std::vector<mat4> &texTransform, const size2_t &canvasSize,
-                const mat4 &transformation = mat4(1));
+    void render(const Layer& image, const ivec2& pos, const size2_t& canvasSize,
+                const mat4& transformation = mat4(1), const mat4& texTransform = mat4(1));
+    void render(const Layer& image, const std::vector<ivec2>& pos,
+                const std::vector<mat4>& texTransform, const size2_t& canvasSize,
+                const mat4& transformation = mat4(1));
+    void render(const std::shared_ptr<Layer>& image, const ivec2& pos, const size2_t& canvasSize,
+                const mat4& transformation = mat4(1), const mat4& texTransform = mat4(1));
+    void render(const std::shared_ptr<Layer>& image, const std::vector<ivec2>& pos,
+                const std::vector<mat4>& texTransform, const size2_t& canvasSize,
+                const mat4& transformation = mat4(1));
 
     /**
      * \brief renders a texture at position pos onto the current canvas. The texture
@@ -132,12 +149,17 @@ public:
      * @param texTransform   optional transformation for texture coordinates, e.g.
      *                 for rendering a sub region of the input
      */
-    void render(const std::shared_ptr<Texture2D> &texture, const ivec2 &pos,
-                const size2_t &canvasSize, const mat4 &transformation = mat4(1),
-                const mat4 &texTransform = mat4(1));
-    void render(const std::shared_ptr<Texture2D> &texture, const std::vector<ivec2> &pos,
-                const std::vector<mat4> &texTransform, const size2_t &canvasSize,
-                const mat4 &transformation = mat4(1));
+    void render(const Texture2D& texture, const ivec2& pos, const size2_t& canvasSize,
+                const mat4& transformation = mat4(1), const mat4& texTransform = mat4(1));
+    void render(const Texture2D& texture, const std::vector<ivec2>& pos,
+                const std::vector<mat4>& texTransform, const size2_t& canvasSize,
+                const mat4& transformation = mat4(1));
+    void render(const std::shared_ptr<Texture2D>& texture, const ivec2& pos,
+                const size2_t& canvasSize, const mat4& transformation = mat4(1),
+                const mat4& texTransform = mat4(1));
+    void render(const std::shared_ptr<Texture2D>& texture, const std::vector<ivec2>& pos,
+                const std::vector<mat4>& texTransform, const size2_t& canvasSize,
+                const mat4& transformation = mat4(1));
 
     /**
      * \brief renders an image at position pos onto the current canvas with the given
@@ -156,13 +178,20 @@ public:
      * @param texTransform   optional transformation for texture coordinates, e.g.
      *                 for rendering a sub region of the input
      */
-    void renderToRect(const std::shared_ptr<Image> &image, const ivec2 &pos, const ivec2 &extent,
-                      const size2_t &canvasSize, LayerType layerType = LayerType::Color,
-                      const mat4 &transformation = mat4(1), const mat4 &texTransform = mat4(1));
-    void renderToRect(const std::shared_ptr<Image> &image, const std::vector<ivec2> &pos,
-                      const std::vector<ivec2> &extent, const std::vector<mat4> &texTransform,
-                      const size2_t &canvasSize, LayerType layerType = LayerType::Color,
-                      const mat4 &transformation = mat4(1));
+    void renderToRect(const Image& image, const ivec2& pos, const ivec2& extent,
+                      const size2_t& canvasSize, LayerType layerType = LayerType::Color,
+                      const mat4& transformation = mat4(1), const mat4& texTransform = mat4(1));
+    void renderToRect(const Image& image, const std::vector<ivec2>& pos,
+                      const std::vector<ivec2>& extent, const std::vector<mat4>& texTransform,
+                      const size2_t& canvasSize, LayerType layerType = LayerType::Color,
+                      const mat4& transformation = mat4(1));
+    void renderToRect(const std::shared_ptr<Image>& image, const ivec2& pos, const ivec2& extent,
+                      const size2_t& canvasSize, LayerType layerType = LayerType::Color,
+                      const mat4& transformation = mat4(1), const mat4& texTransform = mat4(1));
+    void renderToRect(const std::shared_ptr<Image>& image, const std::vector<ivec2>& pos,
+                      const std::vector<ivec2>& extent, const std::vector<mat4>& texTransform,
+                      const size2_t& canvasSize, LayerType layerType = LayerType::Color,
+                      const mat4& transformation = mat4(1));
 
     /**
      * \brief renders a color layer of an image at position pos onto the current canvas
@@ -180,13 +209,20 @@ public:
      * @param texTransform   optional transformation for texture coordinates, e.g.
      *                 for rendering a sub region of the input
      */
-    void renderToRect(const std::shared_ptr<Image> &image, const ivec2 &pos, const ivec2 &extent,
-                      const size2_t &canvasSize, std::size_t colorLayerIndex,
-                      const mat4 &transformation = mat4(1), const mat4 &texTransform = mat4(1));
-    void renderToRect(const std::shared_ptr<Image> &image, const std::vector<ivec2> &pos,
-                      const std::vector<ivec2> &extent, const std::vector<mat4> &texTransform,
-                      const size2_t &canvasSize, std::size_t colorLayerIndex,
-                      const mat4 &transformation = mat4(1));
+    void renderToRect(const Image& image, const ivec2& pos, const ivec2& extent,
+                      const size2_t& canvasSize, std::size_t colorLayerIndex,
+                      const mat4& transformation = mat4(1), const mat4& texTransform = mat4(1));
+    void renderToRect(const Image& image, const std::vector<ivec2>& pos,
+                      const std::vector<ivec2>& extent, const std::vector<mat4>& texTransform,
+                      const size2_t& canvasSize, std::size_t colorLayerIndex,
+                      const mat4& transformation = mat4(1));
+    void renderToRect(const std::shared_ptr<Image>& image, const ivec2& pos, const ivec2& extent,
+                      const size2_t& canvasSize, std::size_t colorLayerIndex,
+                      const mat4& transformation = mat4(1), const mat4& texTransform = mat4(1));
+    void renderToRect(const std::shared_ptr<Image>& image, const std::vector<ivec2>& pos,
+                      const std::vector<ivec2>& extent, const std::vector<mat4>& texTransform,
+                      const size2_t& canvasSize, std::size_t colorLayerIndex,
+                      const mat4& transformation = mat4(1));
 
     /**
      * \brief renders a layer at position pos onto the current canvas with the given
@@ -202,12 +238,18 @@ public:
      * @param texTransform   optional transformation for texture coordinates, e.g.
      *                 for rendering a sub region of the input
      */
-    void renderToRect(const std::shared_ptr<Layer> &image, const ivec2 &pos, const ivec2 &extent,
-                      const size2_t &canvasSize, const mat4 &transformation = mat4(1),
-                      const mat4 &texTransform = mat4(1));
-    void renderToRect(const std::shared_ptr<Layer> &image, const std::vector<ivec2> &pos,
-                      const std::vector<ivec2> &extent, const std::vector<mat4> &texTransform,
-                      const size2_t &canvasSize, const mat4 &transformation = mat4(1));
+    void renderToRect(const Layer& image, const ivec2& pos, const ivec2& extent,
+                      const size2_t& canvasSize, const mat4& transformation = mat4(1),
+                      const mat4& texTransform = mat4(1));
+    void renderToRect(const Layer& image, const std::vector<ivec2>& pos,
+                      const std::vector<ivec2>& extent, const std::vector<mat4>& texTransform,
+                      const size2_t& canvasSize, const mat4& transformation = mat4(1));
+    void renderToRect(const std::shared_ptr<Layer>& image, const ivec2& pos, const ivec2& extent,
+                      const size2_t& canvasSize, const mat4& transformation = mat4(1),
+                      const mat4& texTransform = mat4(1));
+    void renderToRect(const std::shared_ptr<Layer>& image, const std::vector<ivec2>& pos,
+                      const std::vector<ivec2>& extent, const std::vector<mat4>& texTransform,
+                      const size2_t& canvasSize, const mat4& transformation = mat4(1));
 
     /**
      * \brief renders a texture at position pos onto the current canvas with the given
@@ -223,12 +265,22 @@ public:
      * @param texTransform   optional transformation for texture coordinates, e.g.
      *                 for rendering a sub region of the input
      */
-    void renderToRect(const std::shared_ptr<Texture2D> &texture, const ivec2 &pos,
-                      const ivec2 &extent, const size2_t &canvasSize,
-                      const mat4 &transformation = mat4(1), const mat4 &texTransform = mat4(1));
-    void renderToRect(const std::shared_ptr<Texture2D> &texture, const std::vector<ivec2> &pos,
-                      const std::vector<ivec2> &extent, const std::vector<mat4> &texTransform,
-                      const size2_t &canvasSize, const mat4 &transformation = mat4(1));
+    void renderToRect(const Texture2D& texture, const ivec2& pos, const ivec2& extent,
+                      const size2_t& canvasSize, const mat4& transformation = mat4(1),
+                      const mat4& texTransform = mat4(1));
+    void renderToRect(const Texture2D& texture, const std::vector<ivec2>& pos,
+                      const std::vector<ivec2>& extent, const std::vector<mat4>& texTransform,
+                      const size2_t& canvasSize, const mat4& transformation = mat4(1));
+    void renderToRect(const std::shared_ptr<Texture2D>& texture, const ivec2& pos,
+                      const ivec2& extent, const size2_t& canvasSize,
+                      const mat4& transformation = mat4(1), const mat4& texTransform = mat4(1));
+    void renderToRect(const std::shared_ptr<Texture2D>& texture, const std::vector<ivec2>& pos,
+                      const std::vector<ivec2>& extent, const std::vector<mat4>& texTransform,
+                      const size2_t& canvasSize, const mat4& transformation = mat4(1));
+
+    void renderToRect(const Texture2D& texture, const std::vector<ivec2>& pos,
+                      const std::vector<ivec2>& extent, const std::vector<mat4>& texTransform,
+                      const size2_t& canvasSize, const std::vector<mat4>& transformation);
 
     /**
      * \brief renders a texture at world position pos onto the current canvas with the given
@@ -246,17 +298,27 @@ public:
      * @param texTransform   optional transformation for texture coordinates, e.g.
      *                 for rendering a sub region of the input
      */
-    void renderToRect3D(const Camera &camera, const std::shared_ptr<Texture2D> &texture,
-                        const vec3 &pos, const ivec2 &extent, const size2_t &canvasSize,
-                        const vec2 &anchor = vec2(-1.0f), const mat4 &transformation = mat4(1),
-                        const mat4 &texTransform = mat4(1));
-    void renderToRect3D(const Camera &camera, const std::shared_ptr<Texture2D> &texture,
-                        const std::vector<vec3> &pos, const std::vector<ivec2> &extent,
-                        const std::vector<mat4> &texTransform, const size2_t &canvasSize,
-                        const vec2 &anchor = vec2(-1.0f), const mat4 &transformation = mat4(1));
+    void renderToRect3D(const Camera& camera, const Texture2D& texture, const vec3& pos,
+                        const ivec2& extent, const size2_t& canvasSize,
+                        const vec2& anchor = vec2(-1.0f), const mat4& transformation = mat4(1),
+                        const mat4& texTransform = mat4(1));
+    void renderToRect3D(const Camera& camera, const Texture2D& texture,
+                        const std::vector<vec3>& pos, const std::vector<ivec2>& extent,
+                        const std::vector<mat4>& texTransform, const size2_t& canvasSize,
+                        const vec2& anchor = vec2(-1.0f), const mat4& transformation = mat4(1));
+    void renderToRect3D(const Camera& camera, const std::shared_ptr<Texture2D>& texture,
+                        const vec3& pos, const ivec2& extent, const size2_t& canvasSize,
+                        const vec2& anchor = vec2(-1.0f), const mat4& transformation = mat4(1),
+                        const mat4& texTransform = mat4(1));
+    void renderToRect3D(const Camera& camera, const std::shared_ptr<Texture2D>& texture,
+                        const std::vector<vec3>& pos, const std::vector<ivec2>& extent,
+                        const std::vector<mat4>& texTransform, const size2_t& canvasSize,
+                        const vec2& anchor = vec2(-1.0f), const mat4& transformation = mat4(1));
 
 private:
-    Shader shader_;
+    static std::shared_ptr<Shader> getDefaultShader();
+
+    std::shared_ptr<Shader> shader_;
 };
 
 }  // namespace inviwo

@@ -103,7 +103,7 @@ void AnimationEditorQt::onTrackAdded(Track* track) {
         updateSceneRect();
     } else {
         throw Exception("Not able to create widget for track: " + track->getIdentifier(),
-                        IvwContext);
+                        IVW_CONTEXT);
     }
 }
 

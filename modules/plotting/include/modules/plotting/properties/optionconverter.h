@@ -32,17 +32,17 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/propertyconverter.h>
-#include <modules/plotting/datastructures/dataframe.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
 #include <modules/plotting/plottingmoduledefine.h>
 
 namespace inviwo {
 
 template <typename OptionProperty>
 class DataFrameColumnToOptionConverter
-    : public TemplatePropertyConverter<plot::DataFrameColumnProperty, OptionProperty> {
+    : public TemplatePropertyConverter<DataFrameColumnProperty, OptionProperty> {
 protected:
 protected:
-    virtual void convertimpl(const plot::DataFrameColumnProperty *src,
+    virtual void convertimpl(const DataFrameColumnProperty *src,
                              OptionProperty *dst) const override {
         dst->setSelectedIndex(glm::clamp<size_t>(0, dst->size() - 1, src->getSelectedIndex()));
     }
@@ -50,11 +50,11 @@ protected:
 
 template <typename OptionProperty>
 class OptionToDataFrameColumnConverter
-    : public TemplatePropertyConverter<OptionProperty, plot::DataFrameColumnProperty> {
+    : public TemplatePropertyConverter<OptionProperty, DataFrameColumnProperty> {
 protected:
 protected:
     virtual void convertimpl(const OptionProperty *src,
-                             plot::DataFrameColumnProperty *dst) const override {
+                             DataFrameColumnProperty *dst) const override {
         dst->setSelectedIndex(glm::clamp<size_t>(0, dst->size() - 1, src->getSelectedIndex()));
     }
 };

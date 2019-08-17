@@ -50,7 +50,6 @@ public:
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                       PropertySemantics semantics = PropertySemantics::Default);
     StipplingProperty(const StipplingProperty& rhs);
-    StipplingProperty& operator=(const StipplingProperty& rhs) = default;
     virtual StipplingProperty* clone() const override;
     virtual ~StipplingProperty() = default;
 

@@ -86,20 +86,6 @@ ABufferGLCompositeProperty::ABufferGLCompositeProperty(const ABufferGLCompositeP
     setAllPropertiesCurrentStateAsDefault();
 }
 
-ABufferGLCompositeProperty& ABufferGLCompositeProperty::operator=(
-    const ABufferGLCompositeProperty& that) {
-    if (this != &that) {
-        CompositeProperty::operator=(that);
-        abufferEnable_ = that.abufferEnable_;
-        abufferPageSize_ = that.abufferPageSize_;
-        abufferLocalMemorySize_ = that.abufferLocalMemorySize_;
-        abufferReSize_ = that.abufferReSize_;
-        abufferWriteABufferInfoToFile_ = that.abufferWriteABufferInfoToFile_;
-        verboseLogging_ = that.verboseLogging_;
-    }
-    return *this;
-}
-
 ABufferGLCompositeProperty* ABufferGLCompositeProperty::clone() const {
     return new ABufferGLCompositeProperty(*this);
 }

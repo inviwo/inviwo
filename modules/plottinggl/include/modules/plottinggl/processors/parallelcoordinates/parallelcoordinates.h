@@ -32,6 +32,7 @@
 
 #include <modules/plottinggl/plottingglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/datastructures/geometry/typedmesh.h>
 #include <inviwo/core/interaction/pickingmapper.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/processors/processor.h>
@@ -43,20 +44,21 @@
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/core/rendering/meshdrawer.h>
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
-#include <modules/plotting/datastructures/dataframe.h>
-#include <modules/opengl/rendering/meshdrawergl.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/rendering/texturequadrenderer.h>
 #include <modules/fontrendering/textrenderer.h>
-#include <modules/plotting/properties/dataframeproperty.h>
+
+#include <modules/userinterfacegl/glui/widgets/doubleminmaxpropertywidget.h>
+
+#include <modules/plotting/properties/categoricalaxisproperty.h>
+#include <inviwo/dataframe/properties/dataframeproperty.h>
 #include <modules/plotting/properties/marginproperty.h>
 
-#include <modules/plottinggl/processors/parallelcoordinates/parallelcoordinatesaxissettingsproperty.h>
+#include <modules/plottinggl/utils/axisrenderer.h>
 
 namespace inviwo {
-class Mesh;
 class PickingEvent;
 
 /** \docpage{org.inviwo.ParallelCoordinates, Parallel Coordinates}
@@ -71,45 +73,28 @@ class PickingEvent;
  *   * __outport__   rendered image of the parallel coordinate plot
  *
  */
-
 namespace plot {
+
+class PCPAxisSettings;
 
 class IVW_MODULE_PLOTTINGGL_API ParallelCoordinates : public Processor {
 public:
     enum class BlendMode { None = 0, Additive = 1, Sutractive = 2, Regular = 3 };
-
     enum class LabelPosition { None, Above, Below };
+    enum class AxisSelection { Single, Multiple, None };
 
 public:
     ParallelCoordinates();
     virtual ~ParallelCoordinates();
 
-    virtual void process() override;
-
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-protected:
-    void linePicked(PickingEvent *p);
-    void axisPicked(PickingEvent *p);
-    void handlePicked(PickingEvent *p);
+    virtual void process() override;
 
-private:
-    void createOrUpdateProperties();
+    void autoAdjustMargins();
 
-    void buildLineMesh(const std::vector<ParallelCoordinatesAxisSettingsProperty *> &enabledAxis);
-    void drawAxis(size2_t size,
-                  const std::vector<ParallelCoordinatesAxisSettingsProperty *> &enabledAxis);
-    void drawHandles(size2_t size,
-                     const std::vector<ParallelCoordinatesAxisSettingsProperty *> &enabledAxis);
-    void drawLines(size2_t size);
-
-    void buildTextCache(const std::vector<ParallelCoordinatesAxisSettingsProperty *> &enabledAxis);
-
-    void renderText(size2_t size,
-                    const std::vector<ParallelCoordinatesAxisSettingsProperty *> &enabledAxis);
-
-    void updateBrushing();
+    void updateBrushing(PCPAxisSettings& axis);
 
     DataInport<DataFrame> dataFrame_;
     BrushingAndLinkingInport brushingAndLinking_;
@@ -117,74 +102,120 @@ private:
 
     CompositeProperty axisProperties_;
 
-    CompositeProperty colors_;
-    FloatVec4Property axisColor_;
-    FloatVec4Property axisHoverColor_;
-    FloatVec4Property axisSelectedColor_;
-    FloatVec4Property handleBaseColor_;
-    FloatVec4Property handleFilteredColor_;
+    DataFrameColumnProperty selectedColorAxis_;
     TransferFunctionProperty tf_;
-    TransferFunctionProperty tfSelection_;
-    BoolProperty enableHoverColor_;
 
-    CompositeProperty filteringOptions_;
-    BoolProperty showFiltered_;
-    FloatVec4Property filterColor_;
-    FloatProperty filterIntensity_;
+    TemplateOptionProperty<AxisSelection> axisSelection_;
 
-    ButtonProperty resetHandlePositions_;
-
+    CompositeProperty lineSettings_;
     TemplateOptionProperty<BlendMode> blendMode_;
-    FloatProperty alpha_;
-    FloatProperty filterAlpha_;
     FloatProperty falllofPower_;
     FloatProperty lineWidth_;
     FloatProperty selectedLineWidth_;
+    BoolProperty showFiltered_;
+    FloatVec3Property filterColor_;
+    FloatProperty filterAlpha_;
+    FloatProperty filterIntensity_;
 
-    FloatVec2Property handleSize_;
+    FontProperty captionSettings_;
+    TemplateOptionProperty<LabelPosition> captionPosition_;
+    FloatProperty captionOffset_;
+    FloatVec4Property captionColor_;
+
+    FontProperty labelSettings_;
+    BoolProperty showLabels_;
+    FloatProperty labelOffset_;
+    StringProperty labelFormat_;
+    FloatVec4Property labelColor_;
+
+    CompositeProperty axesSettings_;
+    FloatProperty axisSize_;
+    FloatVec4Property axisColor_;
+    FloatVec4Property axisHoverColor_;
+    FloatVec4Property axisSelectedColor_;
+    BoolProperty handlesVisible_;
+    FloatProperty handleSize_;
+    FloatVec4Property handleColor_;
+    FloatVec4Property handleFilteredColor_;
 
     MarginProperty margins_;
-    ButtonProperty autoMargins_;
+    BoolProperty autoMargins_;
+    ButtonProperty resetHandlePositions_;
 
-    DataFrameColumnProperty selectedColorAxis_;
+    int getHoveredAxis() const { return hoveredAxis_; }
 
-    CompositeProperty text_;
-    TemplateOptionProperty<LabelPosition> labelPosition_;
-    BoolProperty showValue_;
-    FloatVec4Property color_;
-    OptionPropertyInt fontSize_;
-    OptionPropertyInt valuesFontSize_;
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
 
-    Shader lineShader_;
-    Shader axisShader_;
-    Shader handleShader_;
+protected:
+    void linePicked(PickingEvent* p);
+    enum class PickType { Axis, Lower, Upper, Groove };
+    void axisPicked(PickingEvent* p, size_t pickedID, PickType pt);
 
-    std::unique_ptr<Mesh> handle_;
-    std::unique_ptr<MeshDrawer> handleDrawer_;
+private:
+    struct ColumnAxis {
+        PCPAxisSettings* pcp;
+        std::unique_ptr<AxisRenderer> axisRender;
+        std::unique_ptr<glui::DoubleMinMaxPropertyWidget> sliderWidget;
+    };
 
-    std::unique_ptr<Mesh> axis_;
-    std::unique_ptr<MeshDrawer> axisDrawer_;
+    void createOrUpdateProperties();
 
-    std::unique_ptr<Mesh> lines_;
-    std::unique_ptr<MeshDrawerGL> linesDrawer_;
+    void buildLineMesh();
+    void buildLineIndices();
+    void buildAxisPositions();
+    void partitionLines();
+    void drawAxis(size2_t size);
+    void drawHandles(size2_t size);
+    void drawLines(size2_t size);
 
-    std::vector<ParallelCoordinatesAxisSettingsProperty *> axisVector_;  // owned by axisProperty_
+    void updateBrushing();
+
+    std::pair<size2_t, size2_t> axisPos(size_t columnId) const;
+
+    glui::Renderer sliderWidgetRenderer_;
+    std::vector<ColumnAxis> axes_;
+
+    bool enabledAxesModified_ = false;
+    std::vector<size_t> enabledAxes_;
 
     PickingMapper linePicking_;
     PickingMapper axisPicking_;
-    PickingMapper handlePicking_;
+    bool isDragging_ = false;
 
-    TextRenderer textRenderer_;
-    TextureQuadRenderer textureRenderer_;
+    Shader lineShader_;
 
-    std::shared_ptr<Image> handleImg_;
+    struct Lines {
+        TypedMesh<buffertraits::PositionsBuffer1D, buffertraits::PickingBuffer,
+                  buffertraits::ScalarMetaBuffer>
+            mesh;
+        IndexBuffer indices;
+        std::vector<GLsizei> sizes;
+        std::vector<size_t> starts;
+
+        // startFilter, startRegular, startSelected, end
+        std::array<size_t, 4> offsets;
+
+        std::vector<float> axisPositions;
+        // using int here for performance reasons since bool is not supported as GLSL uniform
+        // A bool vector would internally be converted to an int array prior setting the uniform.
+        // \see UniformSetter<std::array<bool, N>>
+        std::vector<int> axisFlipped;
+
+        inline static size_t offsetToIndex(size_t offset, size_t cols) {
+            return offset / (cols * sizeof(uint32_t));
+        }
+        inline static size_t indexToOffset(size_t index, size_t cols) {
+            return index * cols * sizeof(uint32_t);
+        }
+    };
+    Lines lines_;
 
     int hoveredLine_ = -1;
     int hoveredAxis_ = -1;
 
-    bool recreateLines_;
-    bool textCacheDirty_;
     bool brushingDirty_;
+    bool updating_ = false;
 };
 
 }  // namespace plot

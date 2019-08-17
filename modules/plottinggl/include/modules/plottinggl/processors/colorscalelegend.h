@@ -32,16 +32,18 @@
 
 #include <modules/plottinggl/plottingglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/isotfproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/datastructures/image/image.h>
 #include <modules/opengl/rendering/texturequadrenderer.h>
 #include <modules/opengl/shader/shader.h>
-#include <inviwo/core/properties/optionproperty.h>
 #include <modules/plottinggl/utils/axisrenderer.h>
-#include <inviwo/core/properties/compositeproperty.h>
+#include <modules/plotting/properties/axisproperty.h>
+#include <modules/plotting/properties/axisstyleproperty.h>
 
 namespace inviwo {
 
@@ -49,7 +51,8 @@ namespace plot {
 
 /** \docpage{org.inviwo.ColorScaleLegend, Color Scale Legend}
  * ![](org.inviwo.ColorScaleLegend.png?classIdentifier=org.inviwo.ColorScaleLegend)
- * Explanation of how to use the processor.
+ * Displays a color legend axis based o the linked transfer function.
+ * The corresponding values of the colors can be displayed next to the colors.
  *
  * ### Inports
  *   * __<ImageInport>__ Inport image.
@@ -71,8 +74,6 @@ namespace plot {
  *          margin to canvas borders in pixels
  *		+ __Legend Size__ Sets the legend width and height in pixels
  *   * __Style__
- *		+ __Legend Title__ Sets the axis caption
- *		+ __Color__ Sets the border, axis, title and label colors
  *		+ __Background__ Sets the legend background, either to none or to checkerboard
  *          pattern
  *		+ __Checker Board Size__ Sets the pattern size of the checkerboard
@@ -88,7 +89,6 @@ public:
     ColorScaleLegend();
     virtual ~ColorScaleLegend() = default;
 
-    virtual void initializeResources() override;
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
@@ -96,10 +96,7 @@ public:
 
 private:
     enum class BackgroundStyle { CheckerBoard, NoBackground };
-
-    std::pair<ivec2, ivec2> getAxisPosition();
-    void updateLegendState();
-    vec2 getRealSize();
+    std::tuple<ivec2, ivec2, ivec2, ivec2> getPositions(ivec2 dim) const;
 
     ImageInport inport_;
     ImageOutport outport_;
@@ -108,7 +105,6 @@ private:
     IsoTFProperty isotfComposite_;
 
     CompositeProperty positioning_;
-    CompositeProperty style_;
 
     // position properties
     OptionPropertyInt legendPlacement_;
@@ -118,9 +114,8 @@ private:
     IntVec2Property legendSize_;
 
     // style customization properties
+    AxisStyleProperty axisStyle_;
     StringProperty title_;
-    FloatVec4Property color_;
-    IntProperty fontSize_;
     TemplateOptionProperty<BackgroundStyle> backgroundStyle_;
     FloatProperty checkerBoardSize_;
     IntProperty borderWidth_;
@@ -130,11 +125,12 @@ private:
     Shader shader_;
 
     // axis properties
-    plot::AxisProperty axis_;
-    plot::AxisRenderer axisRenderer_;
+    AxisProperty axis_;
+    AxisRenderer axisRenderer_;
 };
 
 }  // namespace plot
+
 }  // namespace inviwo
 
 #endif  // IVW_COLORSCALELEGEND_H

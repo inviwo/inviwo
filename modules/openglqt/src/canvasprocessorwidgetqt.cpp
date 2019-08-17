@@ -93,7 +93,6 @@ CanvasProcessorWidgetQt::CanvasProcessorWidgetQt(Processor* p)
     }
 
     {
-#if QT_VERSION > QT_VERSION_CHECK(5, 6, 0)
         // Trigger both resize event and move event by showing and hiding the widget
         // in order to set the correct, i.e. the de-serialized, size and position.
         //
@@ -101,8 +100,8 @@ CanvasProcessorWidgetQt::CanvasProcessorWidgetQt(Processor* p)
         // to its "initial" size of 160 by 160 at (0, 0) thereby overwriting our values.
         util::KeepTrueWhileInScope ignore(&ignoreEvents_);
         QWidget::setVisible(true);
+        QWidget::resize(QSize(dim.x, dim.y));
         QWidget::setVisible(false);
-#endif  // QT_VERSION
     }
 
     processor_->ProcessorObservable::addObserver(this);

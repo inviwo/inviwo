@@ -81,19 +81,6 @@ AdvancedMaterialProperty::AdvancedMaterialProperty(const AdvancedMaterialPropert
     addProperty(anisotropyProp);
 }
 
-AdvancedMaterialProperty& AdvancedMaterialProperty::operator=(
-    const AdvancedMaterialProperty& that) {
-    if (this != &that) {
-        CompositeProperty::operator=(that);
-        phaseFunctionProp = that.phaseFunctionProp;
-        indexOfRefractionProp = that.indexOfRefractionProp;
-        roughnessProp = that.roughnessProp;
-        specularColorProp = that.specularColorProp;
-        anisotropyProp = that.anisotropyProp;
-    }
-    return *this;
-}
-
 AdvancedMaterialProperty* AdvancedMaterialProperty::clone() const {
     return new AdvancedMaterialProperty(*this);
 }

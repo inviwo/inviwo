@@ -39,6 +39,7 @@
 #include <inviwo/core/ports/imageport.h>
 
 #include <modules/plotting/properties/axisproperty.h>
+#include <modules/plotting/properties/axisstyleproperty.h>
 #include <modules/plotting/properties/marginproperty.h>
 
 #include <modules/plottinggl/utils/axisrenderer.h>
@@ -73,8 +74,8 @@ private:
     MarginProperty margins_;
     FloatProperty axisMargin_;
     BoolProperty antialiasing_;
-    BoolProperty renderAtlas_;
 
+    AxisStyleProperty style_;
     AxisProperty axis1_;
     AxisProperty axis2_;
     AxisProperty axis3_;

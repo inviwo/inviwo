@@ -48,12 +48,38 @@ void exposePickingMapper(pybind11::module &m) {
         .value("Updated", PickingState::Updated)
         .value("Finished", PickingState::Finished);
 
+    py::enum_<PickingPressState>(m, "PickingPressState")
+        .value("DoubleClick", PickingPressState::DoubleClick)
+        .value("Move", PickingPressState::Move)
+        .value("None", PickingPressState::None)
+        .value("Press", PickingPressState::Press)
+        .value("Release", PickingPressState::Release);
+
+    py::enum_<PickingPressItem>(m, "PickingPressItem")
+        .value("None", PickingPressItem::None)
+        .value("Primary", PickingPressItem::Primary)
+        .value("Secondary", PickingPressItem::Secondary)
+        .value("Tertiary", PickingPressItem::Tertiary);
+
+    py::enum_<PickingHoverState>(m, "PickingHoverState")
+        .value("Enter", PickingHoverState::Enter)
+        .value("Exit", PickingHoverState::Exit)
+        .value("Move", PickingHoverState::Move)
+        .value("None", PickingHoverState::None);
+
     py::class_<PickingEvent>(m, "PickingEvent")
         .def_property_readonly("pickedId", &PickingEvent::getPickedId)
+        .def_property_readonly("globalPickingId", &PickingEvent::getGlobalPickingId)
+        .def_property_readonly("currentGlobalPickingId", &PickingEvent::getCurrentGlobalPickingId)
+        .def_property_readonly("currentLocalPickingId", &PickingEvent::getCurrentLocalPickingId)
         .def_property_readonly("position", &PickingEvent::getPosition)
         .def_property_readonly("depth", &PickingEvent::getDepth)
+        .def_property_readonly("previousGlobalPickingId", &PickingEvent::getPreviousGlobalPickingId)
+        .def_property_readonly("previousLocalPickingId", &PickingEvent::getPreviousLocalPickingId)
         .def_property_readonly("previousPosition", &PickingEvent::getPreviousPosition)
         .def_property_readonly("previousDepth", &PickingEvent::getPreviousDepth)
+        .def_property_readonly("pressedGlobalPickingId", &PickingEvent::getPressedGlobalPickingId)
+        .def_property_readonly("pressedLocalPickingId", &PickingEvent::getPressedLocalPickingId)
         .def_property_readonly("pressedPosition", &PickingEvent::getPressedPosition)
         .def_property_readonly("pressedDepth", &PickingEvent::getPressedDepth)
         .def_property_readonly("deltaPosition", &PickingEvent::getDeltaPosition)
@@ -65,6 +91,10 @@ void exposePickingMapper(pybind11::module &m) {
         .def_property_readonly("pressedNDC", &PickingEvent::getPressedNDC)
         .def_property_readonly("canvasSize", &PickingEvent::getCanvasSize)
         .def_property_readonly("state", &PickingEvent::getState)
+        .def_property_readonly("pressState", &PickingEvent::getPressState)
+        .def_property_readonly("pressItem", &PickingEvent::getPressItem)
+        .def_property_readonly("pressItems", &PickingEvent::getPressItems)
+        .def_property_readonly("hoverState", &PickingEvent::getHoverState)
         .def_property("used", &PickingEvent::hasBeenUsed,
                       [](PickingEvent *e, bool used) {
                           if (used) {

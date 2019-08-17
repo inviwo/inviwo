@@ -48,14 +48,14 @@ const MeshGL* SharedOpenGLResources::imagePlaneRect() {
 
 Shader* SharedOpenGLResources::getTextureShader() {
     if (!textureShader_) {
-        textureShader_ = util::make_unique<Shader>("img_texturequad.vert", "img_texturequad.frag");
+        textureShader_ = std::make_unique<Shader>("img_texturequad.vert", "img_texturequad.frag");
     }
     return textureShader_.get();
 }
 
 Shader* SharedOpenGLResources::getNoiseShader() {
     if (!noiseShader_) {
-        noiseShader_ = util::make_unique<Shader>("img_texturequad.vert", "img_noise.frag");
+        noiseShader_ = std::make_unique<Shader>("img_texturequad.vert", "img_noise.frag");
     }
     return noiseShader_.get();
 }
@@ -63,7 +63,7 @@ Shader* SharedOpenGLResources::getNoiseShader() {
 Shader* SharedOpenGLResources::getImageCopyShader(size_t colorLayers) {
     auto& elem = imgCopyShaders_[colorLayers];
     if (!elem) {
-        auto shader = util::make_unique<Shader>("standard.vert", "img_copy.frag", false);
+        auto shader = std::make_unique<Shader>("standard.vert", "img_copy.frag", false);
 
         std::stringstream ssUniform;
         for (size_t i = 1; i < colorLayers; ++i) {

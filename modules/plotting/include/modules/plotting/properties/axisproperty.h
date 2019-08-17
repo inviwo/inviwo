@@ -43,35 +43,76 @@
 #include <modules/plotting/properties/tickproperty.h>
 #include <modules/plotting/properties/plottextproperty.h>
 
+#include <modules/plotting/datastructures/axissettings.h>
+
 namespace inviwo {
 
 namespace plot {
 
-class IVW_MODULE_PLOTTING_API AxisProperty : public CompositeProperty {
+class IVW_MODULE_PLOTTING_API AxisProperty : public AxisSettings, public CompositeProperty {
 public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
-
-    enum class Orientation { Horizontal, Vertical };
-    enum class Placement { Outside, Inside };
 
     AxisProperty(const std::string& identifier, const std::string& displayName,
                  Orientation orientation = Orientation::Horizontal,
                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                  PropertySemantics semantics = PropertySemantics::Default);
     AxisProperty(const AxisProperty& rhs);
-    AxisProperty& operator=(const AxisProperty& rhs) = default;
     virtual AxisProperty* clone() const override;
     virtual ~AxisProperty() = default;
 
-    void setTitle(const std::string& title);
-    const std::string& getTitle() const;
+    virtual void setCaption(const std::string& title);
+
     void setLabelFormat(const std::string& formatStr);
     /**
      * \brief sets range property of axis and ensures the min/max limits are adjusted accordingly
      * @param range   new axis range
      */
     void setRange(const dvec2& range);
+
+    /**
+     * \brief set all colors to \p c, i.e. axis, ticks, labels, and caption
+     */
+    void setColor(const vec4& c);
+
+    /**
+     * \brief set font face of labels and caption to \p fontFace
+     */
+    void setFontFace(const std::string& fontFace);
+
+    /**
+     * \brief set font size for caption and labels
+     */
+    void setFontSize(int fontsize);
+
+    void setTickLength(float major, float minor);
+
+    /**
+     * \brief set the line width of the axis, major, and minor ticks. Minor ticks will be 2/3 the
+     * width.
+     */
+    void setLineWidth(float width);
+
+    // Inherited via AxisSettings
+    virtual dvec2 getRange() const override;
+    virtual bool getUseDataRange() const override;
+
+    virtual bool getVisible() const override;
+    virtual bool getFlipped() const override;
+    virtual vec4 getColor() const override;
+    virtual float getWidth() const override;
+    virtual Orientation getOrientation() const override;
+    virtual Placement getPlacement() const override;
+
+    virtual const std::string& getCaption() const override;
+    virtual const PlotTextSettings& getCaptionSettings() const override;
+
+    virtual const std::vector<std::string>& getLabels() const override;
+    virtual const PlotTextSettings& getLabelSettings() const override;
+
+    virtual const MajorTickSettings& getMajorTicks() const override;
+    virtual const MinorTickSettings& getMinorTicks() const override;
 
     // general properties
     BoolProperty visible_;
@@ -80,17 +121,22 @@ public:
     BoolProperty useDataRange_;
     DoubleMinMaxProperty range_;
 
+    BoolProperty flipped_;
     TemplateOptionProperty<Orientation> orientation_;
     TemplateOptionProperty<Placement> placement_;
 
     // caption besides axis
-    PlotTextProperty caption_;
+    PlotTextProperty captionSettings_;
     // labels showing numbers along axis
-    PlotTextProperty labels_;
+    PlotTextProperty labelSettings_;
+    std::vector<std::string> categories_;
 
-    TickProperty ticks_;
+    MajorTickProperty majorTicks_;
+    MinorTickProperty minorTicks_;
 
 private:
+    virtual void updateLabels();
+
     void adjustAlignment();
 };
 

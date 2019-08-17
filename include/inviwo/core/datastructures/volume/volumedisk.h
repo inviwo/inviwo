@@ -44,9 +44,11 @@ class IVW_CORE_API VolumeDisk : public VolumeRepresentation,
                                 public DiskRepresentation<VolumeRepresentation> {
 public:
     VolumeDisk(size3_t dimensions = size3_t(128, 128, 128),
-               const DataFormatBase* format = DataUInt8::get());
+               const DataFormatBase* format = DataUInt8::get(),
+               const SwizzleMask& swizzleMask = swizzlemasks::rgba);
     VolumeDisk(std::string url, size3_t dimensions = size3_t(128, 128, 128),
-               const DataFormatBase* format = DataUInt8::get());
+               const DataFormatBase* format = DataUInt8::get(),
+               const SwizzleMask& swizzleMask = swizzlemasks::rgba);
     VolumeDisk(const VolumeDisk& rhs) = default;
     VolumeDisk& operator=(const VolumeDisk& that) = default;
     virtual VolumeDisk* clone() const override;
@@ -57,8 +59,17 @@ public:
     virtual void setDimensions(size3_t dimensions) override;
     virtual const size3_t& getDimensions() const override;
 
+    /**
+     * \brief update the swizzle mask of the color channels when sampling the volume
+     *
+     * @param mask new swizzle mask
+     */
+    virtual void setSwizzleMask(const SwizzleMask& mask) override;
+    virtual SwizzleMask getSwizzleMask() const override;
+
 private:
     size3_t dimensions_;
+    SwizzleMask swizzleMask_;
 };
 
 template <>

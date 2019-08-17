@@ -47,7 +47,6 @@ class Texture2D;
 namespace glui {
 
 /**
- * \class ButtonProperty
  * \brief GLUI property widget for a button property using a glui Button
  */
 class IVW_MODULE_USERINTERFACEGL_API ButtonPropertyWidget : public Button,
@@ -73,7 +72,6 @@ private:
 };
 
 /**
- * \class ToolButtonProperty
  * \brief GLUI property widget for a button property using a glui ToolButton
  */
 class IVW_MODULE_USERINTERFACEGL_API ToolButtonPropertyWidget : public ToolButton,

@@ -100,7 +100,7 @@ VectorFieldVisualizationModule::VectorFieldVisualizationModule(InviwoApplication
 int VectorFieldVisualizationModule::getVersion() const { return 4; }
 
 std::unique_ptr<VersionConverter> VectorFieldVisualizationModule::getConverter(int version) const {
-    return util::make_unique<Converter>(version);
+    return std::make_unique<Converter>(version);
 }
 
 bool VectorFieldVisualizationModule::Converter::traverseNodes(TxElement* node, updateType update) {

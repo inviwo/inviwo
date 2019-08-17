@@ -156,7 +156,7 @@ void TMIP::initShader(Shader& s, int samplers) {
                 break;
             case OutputType::HighestVelocity:
                 if (i == 0) {
-                    maximum << "result = sample0.xyz;result.a = length(sample0.xyz);";
+                    maximum << "result = sample0;result.a = length(sample0.xyz);";
                 } else {
                     maximum << "{ float l = length(sample" << i
                             << ".xyz); if(l > result.a)   result = vec4(sample" << i << ".xyz,l);}";

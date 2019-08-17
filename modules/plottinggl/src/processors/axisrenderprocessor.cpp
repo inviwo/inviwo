@@ -51,13 +51,13 @@ AxisRenderProcessor::AxisRenderProcessor()
     : Processor()
     , inport_("inport")
     , outport_("outport")
-    , margins_("margins", "Margins")
+    , margins_("margins", "Margins", 5.0f, 5.0f, 55.0f, 60.0f)
     , axisMargin_("axisMargin", "Axis Margin", 15.0f, 0.0f, 50.0f)
     , antialiasing_("antialias", "Antialiasing", true)
-    , renderAtlas_("renderAtlas", "Render Texture Atlas", false)
+    , style_("style", "Global Style")
     , axis1_("axis1", "Axis 1")
-    , axis2_("axis2", "Axis 2")
-    , axis3_("axis3", "Axis 3", AxisProperty::Orientation::Vertical)
+    , axis2_("axis2", "Axis 2", AxisProperty::Orientation::Vertical)
+    , axis3_("axis3", "Axis 3")
     , axisRenderers_({axis1_, axis2_, axis3_}) {
 
     inport_.setOptional(true);
@@ -69,19 +69,25 @@ AxisRenderProcessor::AxisRenderProcessor()
     addProperty(axisMargin_);
 
     addProperty(antialiasing_);
-    addProperty(renderAtlas_);
 
-    addProperty(axis1_);
-    addProperty(axis2_);
-    addProperty(axis3_);
+    axis1_.captionSettings_.setChecked(true);
+    axis1_.setCaption("x Axis");
+
+    // flip vertical axis to show labels on the left side
+    axis2_.flipped_.set(true);
+    axis2_.captionSettings_.setChecked(true);
+    axis2_.setCaption("y Axis");
+
+    axis3_.captionSettings_.setChecked(true);
+    axis3_.setCaption("Diagonal Axis");
+
+    style_.setCollapsed(true);
+    style_.registerProperties(axis1_, axis2_, axis3_);
+    addProperties(style_, axis1_, axis2_, axis3_);
 }
 
 void AxisRenderProcessor::process() {
-    if (inport_.isReady()) {
-        utilgl::activateTargetAndCopySource(outport_, inport_, ImageType::ColorDepth);
-    } else {
-        utilgl::activateAndClearTarget(outport_, ImageType::ColorDepth);
-    }
+    utilgl::activateTargetAndClearOrCopySource(outport_, inport_, ImageType::ColorDepth);
 
     const auto dims = outport_.getDimensions();
     const size2_t lowerLeft(margins_.getLeft(), margins_.getBottom());
@@ -93,19 +99,14 @@ void AxisRenderProcessor::process() {
     axisRenderers_[0].render(dims, lowerLeft + size2_t(padding, 0),
                              size2_t(upperRight.x - padding, lowerLeft.y), antialiasing_.get());
 
-    // draw diagonally in upper half
-    axisRenderers_[1].render(
-        dims, size2_t(lowerLeft.x + padding, (lowerLeft.y + upperRight.y) * 0.5f),
-        size2_t(upperRight.x - padding, upperRight.y - padding), antialiasing_.get());
-
     // draw vertically
-    axisRenderers_[2].render(dims, lowerLeft + size2_t(0, padding),
+    axisRenderers_[1].render(dims, lowerLeft + size2_t(0, padding),
                              size2_t(lowerLeft.x, upperRight.y - padding), antialiasing_.get());
 
-    if (renderAtlas_.get()) {
-        TextureQuadRenderer texRenderer;
-        texRenderer.render(axisRenderers_[0].getLabelAtlasTexture(), ivec2(0), dims);
-    }
+    // draw diagonally in upper half
+    axisRenderers_[2].render(
+        dims, size2_t(lowerLeft.x + padding, (lowerLeft.y + upperRight.y) * 0.5f),
+        size2_t(upperRight.x - padding, upperRight.y - padding), antialiasing_.get());
 
     utilgl::deactivateCurrentTarget();
 }

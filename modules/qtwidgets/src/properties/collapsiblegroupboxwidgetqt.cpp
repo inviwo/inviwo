@@ -227,7 +227,7 @@ std::unique_ptr<QMenu> CollapsibleGroupBoxWidgetQt::getContextMenu() {
 }
 
 std::unique_ptr<QMimeData> CollapsibleGroupBoxWidgetQt::getPropertyOwnerMimeData() const {
-    auto mimeData = util::make_unique<QMimeData>();
+    auto mimeData = std::make_unique<QMimeData>();
     if (!propertyOwner_) return mimeData;
 
     Serializer serializer("");

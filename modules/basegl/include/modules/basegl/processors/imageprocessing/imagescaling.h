@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_IMAGESCALING_H
-#define IVW_IMAGESCALING_H
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -43,7 +42,7 @@ namespace inviwo {
 /** \docpage{org.inviwo.ImageScaling, Image Scaling}
  * ![](org.inviwo.ImageScaling.png?classIdentifier=org.inviwo.ImageScaling)
  * This processor provides functionality for up-scaling or down-scaling an image with respect to the
- * size of the input image.
+ * size of the input image. Alternatively, an absolut size can be set.
  *
  * ### Inports
  *   * __Source Image__ The mixed image
@@ -54,6 +53,8 @@ namespace inviwo {
  * ### Properties
  *   * __Enabled__   Enables or disables scaling of the input image
  *   * __Scaling Factor__
+ *   * __Custom Factor__   custom scaling factor is used if scaling factor is "Custom"
+ *   * __Absolute Size__   specific size is used if scaling factor is "Absolute"
  */
 
 /**
@@ -85,11 +86,10 @@ private:
     BoolProperty enabled_;
     OptionPropertyDouble scalingFactor_;  //<! if negative, use custom scaling factor
     DoubleProperty customFactor_;
+    IntSize2Property absoluteSize_;
 
     size2_t lastValidOutputSize_ = {0u, 0u};
     bool deserializing_ = false;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_IMAGESCALING_H

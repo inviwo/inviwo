@@ -46,6 +46,7 @@ bool ClockGL::isRunning() const {
 }
 
 void ClockGL::start() {
+    ++count_;
     collectTiming();
 
     if (!queries_.empty() && queries_.back().state == State::Started) {
@@ -73,7 +74,10 @@ void ClockGL::reset() {
         query.state = State::Unused;
     }
     accumulatedTime_ = static_cast<duration>(0);
+    count_ = 0;
 }
+
+size_t ClockGL::getCount() const { return count_; }
 
 auto ClockGL::getElapsedTime(std::chrono::seconds timeout) -> duration {
     auto startWaitingTime = std::chrono::high_resolution_clock::now();
@@ -117,6 +121,10 @@ auto ClockGL::getElapsedTime(std::chrono::seconds timeout) -> duration {
     }
 }
 
+auto ClockGL::getAverageElapsedTime(std::chrono::seconds timeout) -> duration {
+    return count_ > 0 ? duration{getElapsedTime(timeout).count() / count_} : duration{0};
+}
+
 void ClockGL::collectTiming() {
     for (auto& query : queries_) {
         if (query.state == State::Stopped) {
@@ -136,7 +144,7 @@ void ClockGL::collectTiming() {
                           [](auto& query) { return query.state == State::Unused; });
 }
 
-double ClockGL::getElapsedMiliseconds(std::chrono::seconds timeout) {
+double ClockGL::getElapsedMilliseconds(std::chrono::seconds timeout) {
     using duration_double = std::chrono::duration<double, std::chrono::milliseconds::period>;
     return std::chrono::duration_cast<duration_double>(getElapsedTime(timeout)).count();
 }

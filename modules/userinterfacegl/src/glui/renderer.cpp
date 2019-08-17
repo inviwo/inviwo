@@ -220,9 +220,6 @@ std::shared_ptr<Texture2DArray> Renderer::createUITextureObject(
             // try to load texture data from current file
             try {
                 layer = reader->readData(sourcePath + "/" + filename);
-                auto layerRAM = layer->getRepresentation<LayerRAM>();
-                // Hack needs to set format here since LayerDisk does not have a format.
-                layer->setDataFormat(layerRAM->getDataFormat());
             } catch (DataReaderException const& e) {
                 util::log(e.getContext(),
                           "Could not load texture data: " + filename + ", " + e.getMessage(),
@@ -232,7 +229,7 @@ std::shared_ptr<Texture2DArray> Renderer::createUITextureObject(
             textureLayers.push_back(layer);
         }
     } else {
-        throw Exception("Could not find a data reader for texture data (png).", IvwContext);
+        throw Exception("Could not find a data reader for texture data (png).", IVW_CONTEXT);
     }
 
     // find common texture size, use tex format of first available resource

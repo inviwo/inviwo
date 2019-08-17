@@ -111,7 +111,7 @@ VolumeSliceGL::VolumeSliceGL()
                                InvalidationLevel::Valid)
     , mouseShiftSlice_("mouseShiftSlice", "Mouse Slice Shift",
                        [this](Event* e) { eventShiftSlice(e); },
-                       util::make_unique<WheelEventMatcher>())
+                       std::make_unique<WheelEventMatcher>())
 
     , mouseSetMarker_("mouseSetMarker", "Mouse Set Marker", [this](Event* e) { eventSetMarker(e); },
                       MouseButton::Left, MouseState::Press | MouseState::Move)
@@ -226,6 +226,7 @@ VolumeSliceGL::VolumeSliceGL()
     pickGroup_.addProperty(posPicking_);
     pickGroup_.addProperty(showIndicator_);
     pickGroup_.addProperty(indicatorColor_);
+    pickGroup_.addProperty(indicatorSize_);
 
     posPicking_.onChange([this]() {
         if (posPicking_.get() && enablePolylinePicking_.get()) enablePolylinePicking_.set(false);
@@ -233,6 +234,7 @@ VolumeSliceGL::VolumeSliceGL()
         modeChange();
     });
     indicatorColor_.onChange([this]() { invalidateMesh(); });
+    indicatorSize_.onChange([this]() { invalidateMesh(); });
     showIndicator_.setReadOnly(posPicking_.get());
     indicatorColor_.setSemantics(PropertySemantics::Color);
 
@@ -506,7 +508,6 @@ void VolumeSliceGL::renderPositionIndicator() {
 
     utilgl::GlBoolState smooth(GL_LINE_SMOOTH, true);
     utilgl::BlendModeState blend(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    utilgl::LineWidthState linewidth(2.5f);
 
     indicatorShader_.activate();
     indicatorShader_.setUniform("dataToClip", mat4(1.0f));
@@ -520,10 +521,11 @@ void VolumeSliceGL::updateIndicatorMesh() {
     const vec2 pos = getScreenPosFromVolPos();
 
     const size2_t canvasSize(outport_.getDimensions());
-    const vec2 indicatorSize = vec2(4.0f / canvasSize.x, 4.0f / canvasSize.y);
+    const vec2 indicatorSize =
+        vec2(indicatorSize_.get() / canvasSize.x, indicatorSize_.get() / canvasSize.y);
     const vec4 color(indicatorColor_.get());
 
-    meshCrossHair_ = util::make_unique<Mesh>();
+    meshCrossHair_ = std::make_unique<Mesh>();
     meshCrossHair_->setModelMatrix(mat4(1.0f));
     // add two vertical and two horizontal lines with a gap around the selected position
     auto posBuf = util::makeBuffer<vec2>(

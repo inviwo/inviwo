@@ -36,6 +36,9 @@
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/util/fileextension.h>
 
 namespace inviwo {
 
@@ -69,7 +72,10 @@ private:
     DataReaderFactory* rf_;
     ImageOutport outport_;
     FileProperty file_;
+    TemplateOptionProperty<FileExtension> reader_;
+    ButtonProperty reload_;
     IntVec2Property imageDimension_;
+    bool loadingFailed_ = false;
 };
 
 }  // namespace inviwo

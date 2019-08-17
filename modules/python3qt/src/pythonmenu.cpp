@@ -30,6 +30,12 @@
 #include <modules/python3qt/pythonmenu.h>
 #include <modules/python3qt/pythoneditorwidget.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/inviwofiledialog.h>
+#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/util/filesystem.h>
+
+#include <fmt/format.h>
+#include <fmt/ostream.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -38,11 +44,13 @@
 #include <QMenuBar>
 #include <QAction>
 #include <QLayout>
+#include <QDesktopServices>
+#include <QUrl>
 #include <warn/pop>
 
 namespace inviwo {
 
-PythonMenu::PythonMenu(InviwoApplication* app) {
+PythonMenu::PythonMenu(InviwoModule* pymodule, InviwoApplication* app) {
     if (auto win = utilqt::getApplicationMainWindow()) {
 
         menu_.reset(utilqt::addMenu("&Python"));
@@ -73,10 +81,42 @@ PythonMenu::PythonMenu(InviwoApplication* app) {
             editors_.push_back(std::move(editor));
         });
 
-        auto pyPropertoes = menu_->addAction("&List unexposed properties");
-        win->connect(pyPropertoes, &QAction::triggered, [app]() {
+        auto pyProperties = menu_->addAction("&List unexposed properties");
+        win->connect(pyProperties, &QAction::triggered, [app]() {
             auto mod = app->getModuleByType<Python3Module>();
             PythonScriptDisk(mod->getPath() + "/scripts/list_not_exposed_properties.py").run();
+        });
+
+        auto newPythonProcessor =
+            menu_->addAction(QIcon(":/svgicons/processor-new.svg"), "&New Python Processor");
+        win->connect(newPythonProcessor, &QAction::triggered, [pymodule, app]() {
+            InviwoFileDialog saveFileDialog(nullptr, "Create Python Processor", "PythonProcessor");
+            saveFileDialog.setFileMode(FileMode::AnyFile);
+            saveFileDialog.setAcceptMode(AcceptMode::Save);
+            saveFileDialog.setOption(QFileDialog::Option::DontConfirmOverwrite, false);
+            saveFileDialog.addExtension("py", "Python file");
+            const auto dir = app->getPath(PathType::Settings) + "/python_processors";
+            filesystem::createDirectoryRecursively(dir);
+            saveFileDialog.setCurrentDirectory(dir);
+
+            if (saveFileDialog.exec()) {
+                QString qpath = saveFileDialog.selectedFiles().at(0);
+                const auto path = utilqt::fromQString(qpath);
+
+                const auto templatePath = pymodule->getPath() + "/templates/templateprocessor.py";
+
+                auto ifs = filesystem::ifstream(templatePath);
+                std::stringstream ss;
+                ss << ifs.rdbuf();
+                const auto script = std::move(ss).str();
+
+                const auto name = filesystem::getFileNameWithoutExtension(path);
+
+                auto ofs = filesystem::ofstream(path);
+                fmt::print(ofs, script, fmt::arg("name", name));
+
+                QDesktopServices::openUrl(QUrl("file:///" + qpath, QUrl::TolerantMode));
+            }
         });
     }
 }

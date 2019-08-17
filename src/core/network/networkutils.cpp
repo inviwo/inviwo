@@ -351,7 +351,7 @@ void detail::PartialProcessorNetwork::deserialize(Deserializer& d) {
         }
 
     } catch (Exception& e) {
-        util::log(IvwContextCustom("Paste"), e.getMessage(), LogLevel::Warn, LogAudience::User);
+        util::log(IVW_CONTEXT_CUSTOM("Paste"), e.getMessage(), LogLevel::Warn, LogAudience::User);
     }
 }
 

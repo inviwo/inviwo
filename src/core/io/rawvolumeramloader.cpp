@@ -51,7 +51,7 @@ void RawVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentati
     auto volumeDst = std::static_pointer_cast<VolumeRAM>(dest);
 
     if (dimensions_ != volumeDst->getDimensions()) {
-        throw Exception("Mismatching volume dimensions, can't update", IvwContext);
+        throw Exception("Mismatching volume dimensions, can't update", IVW_CONTEXT);
     }
 
     std::size_t size = dimensions_.x * dimensions_.y * dimensions_.z;

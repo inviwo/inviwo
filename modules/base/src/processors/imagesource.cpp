@@ -28,12 +28,15 @@
  *********************************************************************************/
 
 #include <modules/base/processors/imagesource.h>
+#include <modules/base/processors/datasource.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/datastructures/image/layerdisk.h>
 #include <inviwo/core/datastructures/image/imageram.h>
 #include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/io/datareaderexception.h>
+
+#include <algorithm>
 
 namespace inviwo {
 
@@ -51,62 +54,62 @@ ImageSource::ImageSource(InviwoApplication* app, const std::string& file)
     , rf_(app->getDataReaderFactory())
     , outport_("image", DataVec4UInt8::get(), false)
     , file_("imageFileName", "File name", file, "image")
+    , reader_("reader", "Data Reader")
+    , reload_("reload", "Reload data")
     , imageDimension_("imageDimension_", "Dimension", ivec2(0), ivec2(0), ivec2(10000), ivec2(1),
                       InvalidationLevel::Valid, PropertySemantics("Text")) {
 
     addPort(outport_);
-
-    file_.clearNameFilters();
-    file_.addNameFilter(FileExtension::all());
-    file_.addNameFilters(rf_->getExtensionsForType<Layer>());
-
-    addProperty(file_);
-
+    addProperties(file_, reader_, reload_, imageDimension_);
     imageDimension_.setReadOnly(true);
-    addProperty(imageDimension_);
 
+    util::updateFilenameFilters<Layer>(*rf_, file_, reader_);
+
+    // make sure that we always process even if not connected
     isSink_.setUpdate([]() { return true; });
-    isReady_.setUpdate([this]() { return filesystem::fileExists(file_.get()); });
-    file_.onChange([this]() { isReady_.update(); });
+    isReady_.setUpdate([this]() {
+        return !loadingFailed_ && filesystem::fileExists(file_.get()) &&
+               !reader_.getSelectedValue().empty();
+    });
+    file_.onChange([this]() {
+        loadingFailed_ = false;
+        util::updateReaderFromFile(file_, reader_);
+        isReady_.update();
+    });
+    reader_.onChange([this]() {
+        loadingFailed_ = false;
+        isReady_.update();
+    });
 }
 
 void ImageSource::process() {
     if (file_.get().empty()) return;
 
-    const auto sext = file_.getSelectedExtension();
+    const auto sext = reader_.getSelectedValue();
     const auto fext = filesystem::getFileExtension(file_.get());
     if (auto reader = rf_->getReaderForTypeAndExtension<Layer>(sext, fext)) {
         try {
             auto outLayer = reader->readData(file_.get());
-            // Call getRepresentation here to force read a ram representation.
-            // Otherwise the default image size, i.e. 256x265, will be reported
-            // until you do the conversion. Since the LayerDisk does not have any metadata.
-            auto ram = outLayer->getRepresentation<LayerRAM>();
-            // Hack needs to set format here since LayerDisk does not have a format.
-            outLayer->setDataFormat(ram->getDataFormat());
-
-            auto outImage = std::make_shared<Image>(outLayer);
-            outImage->getRepresentation<ImageRAM>();
-
-            outport_.setData(outImage);
+            outport_.setData(std::make_shared<Image>(outLayer));
             imageDimension_.set(outLayer->getDimensions());
-
         } catch (DataReaderException const& e) {
             util::log(e.getContext(), "Could not load data: " + file_.get() + ", " + e.getMessage(),
                       LogLevel::Error);
-            file_.set("");
+            loadingFailed_ = true;
+            outport_.detachData();
+            isReady_.update();
         }
     } else {
         LogError("Could not find a data reader for file: " << file_.get());
-        file_.set("");
+        loadingFailed_ = true;
+        outport_.detachData();
+        isReady_.update();
     }
 }
 
 void ImageSource::deserialize(Deserializer& d) {
     Processor::deserialize(d);
-    file_.clearNameFilters();
-    file_.addNameFilter(FileExtension::all());
-    file_.addNameFilters(rf_->getExtensionsForType<Layer>());
+    util::updateFilenameFilters<Layer>(*rf_, file_, reader_);
 }
 
 }  // namespace inviwo

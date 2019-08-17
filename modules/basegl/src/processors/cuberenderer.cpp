@@ -64,9 +64,9 @@ CubeRenderer::CubeRenderer()
     , camera_("camera", "Camera")
     , trackball_(&camera_)
     , lighting_("lighting", "Lighting", &camera_)
-    , shaders_{{{ShaderType::Vertex, "cubeglyph.vert"},
-                {ShaderType::Geometry, "cubeglyph.geom"},
-                {ShaderType::Fragment, "cubeglyph.frag"}},
+    , shaders_{{{ShaderType::Vertex, std::string{"cubeglyph.vert"}},
+                {ShaderType::Geometry, std::string{"cubeglyph.geom"}},
+                {ShaderType::Fragment, std::string{"cubeglyph.frag"}}},
 
                {{BufferType::PositionAttrib, MeshShaderCache::Mandatory, "vec3"},
                 {BufferType::ColorAttrib, MeshShaderCache::Optional, "vec4"},

@@ -39,7 +39,7 @@ namespace inviwo {
 
 class Processor;
 /**
- * \ProcessorWidget Base class for widgets connected to a Processor
+ * Base class for widgets connected to a Processor
  */
 class IVW_CORE_API ProcessorWidget : public ProcessorWidgetObservable,
                                      public ProcessorWidgetMetaDataObserver {

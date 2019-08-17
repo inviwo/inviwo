@@ -44,6 +44,7 @@
 #include <inviwo/core/util/introspection.h>
 
 #include <functional>
+#include <type_traits>
 
 namespace inviwo {
 
@@ -121,29 +122,40 @@ class PropertyOwner;
  *  * __PropertyWidget__: A property can have one or multiple PropertyWidgets. The widget are used
  *    in the user interface to implement interactivity
  */
-class IVW_CORE_API Property : public PropertyObservable, public Serializable, public MetaDataOwner {
+class IVW_CORE_API Property : public PropertyObservable,
+                              public virtual Serializable,
+                              public MetaDataOwner {
 public:
     virtual std::string getClassIdentifier() const = 0;
 
     Property(const std::string& identifier = "", const std::string& displayName = "",
              InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
              PropertySemantics semantics = PropertySemantics::Default);
+
+    /**
+     * Creates a clone of this property. The clone will have the same identifier, hence the
+     * identifier must be changed if the clone should be added to the same owner as this. The new
+     * clone does not have any owner set.
+     */
     virtual Property* clone() const = 0;
-    virtual ~Property() = default;
+    /**
+     * \brief Removes itself from its PropertyOwner.
+     */
+    virtual ~Property();
 
     /**
      * Property identifier has to be unique within the scope
      * of a PropertyOwner. Property identifiers should only contain alpha numeric
      * characters, "-" and "_".
      */
-    virtual void setIdentifier(const std::string& identifier);
+    virtual Property& setIdentifier(const std::string& identifier);
     virtual std::string getIdentifier() const;
     virtual std::vector<std::string> getPath() const;
 
     /**
      * \brief A property's name displayed to the user
      */
-    virtual void setDisplayName(const std::string& displayName);
+    virtual Property& setDisplayName(const std::string& displayName);
     virtual std::string getDisplayName() const;
 
     /**
@@ -154,16 +166,16 @@ public:
      */
     virtual std::string getClassIdentifierForWidget() const;
 
-    virtual void setSemantics(const PropertySemantics& semantics);
+    virtual Property& setSemantics(const PropertySemantics& semantics);
     virtual PropertySemantics getSemantics() const;
 
     /**
      * \brief Enable or disable editing of property
      */
-    virtual void setReadOnly(bool value);
+    virtual Property& setReadOnly(bool value);
     virtual bool getReadOnly() const;
 
-    virtual void setInvalidationLevel(InvalidationLevel invalidationLevel);
+    virtual Property& setInvalidationLevel(InvalidationLevel invalidationLevel);
     virtual InvalidationLevel getInvalidationLevel() const;
 
     virtual void setOwner(PropertyOwner* owner);
@@ -221,19 +233,25 @@ public:
      * It is important that all overriding properties make sure to call the base class
      * implementation.
      */
-    virtual void setCurrentStateAsDefault();
+    virtual Property& setCurrentStateAsDefault();
 
     /**
      * Reset the state of the property back to it's default value.
      * It is important that all overriding properties make sure to call the base class
      * implementation.
      */
-    virtual void resetToDefaultState();
+    virtual Property& resetToDefaultState();
 
-    virtual void propertyModified();
+    virtual Property& propertyModified();
     virtual void setValid();
-    virtual void setModified();
+    virtual Property& setModified();
     virtual bool isModified() const;
+
+    /**
+     * Set the value of this to that of src. The "value" is in this case considered to be for
+     * example the string in a StringProperty or the float value in a FloatProperty. But not things
+     * like the identifier of display name.
+     */
     virtual void set(const Property* src);
 
     virtual void serialize(Serializer& s) const override;
@@ -268,18 +286,64 @@ public:
     [[deprecated("was declared deprecated. Use `onChange(std::function<void()>)` instead")]]
     const BaseCallBack* onChange(T* object, void (T::*method)());
     template <typename T>
-    [[deprecated("was declared deprecated. Use `removeOnChange(const BaseCallBack*)` instead")]] 
+    [[deprecated("was declared deprecated. Use `removeOnChange(const BaseCallBack*)` instead")]]
     void removeOnChange(T* object);
     // clang-format on
 
-    virtual void setUsageMode(UsageMode usageMode);
+    virtual Property& setUsageMode(UsageMode usageMode);
     virtual UsageMode getUsageMode() const;
 
     virtual void setSerializationMode(PropertySerializationMode mode);
     virtual PropertySerializationMode getSerializationMode() const;
 
-    virtual void setVisible(bool val);
-    virtual bool getVisible();
+    virtual Property& setVisible(bool val);
+    virtual bool getVisible() const;
+
+    /* \brief sets visibility depending another property `prop`, according to `callback`
+     * @param prop is the property on which the visibility depends
+     * @param callback is a function that outputs a visibility boolean value. The function gets
+     * `prop` as parameter
+     *
+     * Checks the expression in `callback` every time `prop` is changed and sets the
+     * visibility accordingly. Note that this registers an onChange callback on `prop`, which
+     * might result in poor performance when `prop` is a very frequently changed property.
+     */
+    template <typename P, typename DecisionFunc>
+    Property& visibilityDependsOn(P& prop, DecisionFunc callback) {
+        typename std::result_of<DecisionFunc(P&)>::type b = true;
+        static_assert(std::is_same<decltype(b), bool>::value,
+                      "The visibility callback must return a boolean!");
+        static_assert(std::is_base_of<Property, P>::value, "P must be a Property!");
+        this->setVisible(callback(prop));
+        prop.onChange([callback, &prop, this]() {
+            bool visible = callback(prop);
+            this->setVisible(visible);
+        });
+        return *this;
+    }
+
+    /* \brief sets readonly depending another property `prop`, according to `callback`
+     * @param prop is the property on which the readonly state depends
+     * @param callback is a function that outputs a readonly boolean value. The function gets `prop`
+     * as parameter
+     *
+     * Checks the expression in `callback` every time `prop` is changed and sets the
+     * readonly state accordingly. Note that this registers an onChange callback on `prop`, which
+     * might result in poor performance when `prop` is a very frequently changed property.
+     */
+    template <typename P, typename DecisionFunc>
+    Property& readonlyDependsOn(P& prop, DecisionFunc callback) {
+        typename std::result_of<DecisionFunc(P&)>::type b = true;
+        static_assert(std::is_same<decltype(b), bool>::value,
+                      "The readonly callback must return a boolean!");
+        static_assert(std::is_base_of<Property, P>::value, "P must be a Property!");
+        this->setReadOnly(callback(prop));
+        prop.onChange([callback, &prop, this]() {
+            bool readonly = callback(prop);
+            this->setReadOnly(readonly);
+        });
+        return *this;
+    }
 
     virtual Document getDescription() const;
 
@@ -287,7 +351,7 @@ public:
     static void setStateAsDefault(T& property, const U& state);
 
     template <typename P>
-    void autoLinkToProperty(const std::string& propertyPath);
+    Property& autoLinkToProperty(const std::string& propertyPath);
     const std::vector<std::pair<std::string, std::string>>& getAutoLinkToProperty() const;
 
     class IVW_CORE_API OnChangeBlocker {
@@ -304,8 +368,20 @@ public:
     };
 
 protected:
+    /**
+     * Since property is a polymorphic class the copy constructor should only be used internally to
+     * implement the clone functionality
+     * @see clone
+     */
     Property(const Property& rhs);
-    Property& operator=(const Property& that);
+
+    /**
+     * Properties do not support copy assignment.
+     * To assign the "value" of a property to an other property the Property::set(const Property*
+     * src) function should be used
+     * @see set
+     */
+    Property& operator=(const Property& that) = delete;
 
     void updateWidgets();
     void notifyAboutChange();
@@ -335,7 +411,7 @@ private:
 
 // clang-format off
 template <typename T>
-[[deprecated("was declared deprecated. Use `onChange(std::function<void()>)` instead")]] 
+[[deprecated("was declared deprecated. Use `onChange(std::function<void()>)` instead")]]
 const BaseCallBack* Property::onChange(T* o, void (T::*m)()) {
     return onChangeCallback_.addLambdaCallback([o, m]() {
         if (m) (*o.*m)();
@@ -343,7 +419,7 @@ const BaseCallBack* Property::onChange(T* o, void (T::*m)()) {
 }
 
 template <typename T>
-[[deprecated("was declared deprecated. Use `removeOnChange(const BaseCallBack*)` instead")]] 
+[[deprecated("was declared deprecated. Use `removeOnChange(const BaseCallBack*)` instead")]]
 void Property::removeOnChange(T* o) {
     onChangeCallback_.removeMemberFunction(o);
 }
@@ -358,9 +434,10 @@ void Property::setStateAsDefault(T& property, const U& state) {
 }
 
 template <typename P>
-void Property::autoLinkToProperty(const std::string& propertyPath) {
+Property& Property::autoLinkToProperty(const std::string& propertyPath) {
     autoLinkTo_.push_back(
         std::make_pair(ProcessorTraits<P>::getProcessorInfo().classIdentifier, propertyPath));
+    return *this;
 }
 
 }  // namespace inviwo

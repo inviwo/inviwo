@@ -577,11 +577,11 @@ std::shared_ptr<Mesh> marchingcubes(std::shared_ptr<const Volume> volume, double
                                     std::function<bool(const size3_t &)> maskingCallback) {
 
     return volume->getRepresentation<VolumeRAM>()->dispatch<std::shared_ptr<Mesh>>([&](auto ram) {
-        using T = util::PrecsionValueType<decltype(ram)>;
+        using T = util::PrecisionValueType<decltype(ram)>;
         if (progressCallback) progressCallback(0.0f);
 
         if (!maskingCallback) {
-            throw Exception("Masking callback not set", IvwContextCustom("util::marchingcubes"));
+            throw Exception("Masking callback not set", IVW_CONTEXT_CUSTOM("util::marchingcubes"));
         }
 
         K3DTree<size_t, float> vertexTree;

@@ -40,27 +40,29 @@ SimpleLightingProperty::SimpleLightingProperty(std::string identifier, std::stri
                                                InvalidationLevel invalidationLevel,
                                                PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
-    , shadingMode_("shadingMode", "Shading", InvalidationLevel::InvalidResources)
+    , shadingMode_("shadingMode", "Shading",
+                   {{"none", "No Shading", ShadingMode::None},
+                    {"ambient", "Ambient", ShadingMode::Ambient},
+                    {"diffuse", "Diffuse", ShadingMode::Diffuse},
+                    {"specular", "Specular", ShadingMode::Specular},
+                    {"blinnphong", "Blinn Phong", ShadingMode::BlinnPhong},
+                    {"phong", "Phong", ShadingMode::Phong}},
+                   5, InvalidationLevel::InvalidResources)
     , referenceFrame_("referenceFrame", "Space")
     , lightPosition_("lightPosition", "Position", vec3(0.0f, 5.0f, 5.0f), vec3(-10, -10, -10),
-                     vec3(10, 10, 10))
+                     vec3(10, 10, 10), vec3(0.1f), InvalidationLevel::InvalidOutput,
+                     PropertySemantics::LightPosition)
     , lightAttenuation_("lightAttenuation", "Attenuation", vec3(1.0f, 0.0f, 0.0f))
     , applyLightAttenuation_("applyLightAttenuation", "Enable Light Attenuation", false)
 
-    , ambientColor_("lightColorAmbient", "Ambient color", vec3(0.15f))
-    , diffuseColor_("lightColorDiffuse", "Diffuse color", vec3(0.6f))
-    , specularColor_("lightColorSpecular", "Specular color", vec3(0.4f))
+    , ambientColor_("lightColorAmbient", "Ambient color", vec3(0.15f), vec3(0), vec3(1), vec3(0.1f),
+                    InvalidationLevel::InvalidOutput, PropertySemantics::Color)
+    , diffuseColor_("lightColorDiffuse", "Diffuse color", vec3(0.6f), vec3(0), vec3(1), vec3(0.1f),
+                    InvalidationLevel::InvalidOutput, PropertySemantics::Color)
+    , specularColor_("lightColorSpecular", "Specular color", vec3(0.4f), vec3(0), vec3(1),
+                     vec3(0.1f), InvalidationLevel::InvalidOutput, PropertySemantics::Color)
     , specularExponent_("materialShininess", "Shininess", 60.0f, 1.0f, 180.0f)
     , camera_(camera) {
-
-    shadingMode_.addOption("none", "No Shading", ShadingMode::None);
-    shadingMode_.addOption("ambient", "Ambient", ShadingMode::Ambient);
-    shadingMode_.addOption("diffuse", "Diffuse", ShadingMode::Diffuse);
-    shadingMode_.addOption("specular", "Specular", ShadingMode::Specular);
-    shadingMode_.addOption("blinnphong", "Blinn Phong", ShadingMode::BlinnPhong);
-    shadingMode_.addOption("phong", "Phong", ShadingMode::Phong);
-    shadingMode_.setSelectedValue(ShadingMode::Phong);
-    shadingMode_.setCurrentStateAsDefault();
 
     referenceFrame_.addOption("world", "World", static_cast<int>(Space::WORLD));
     referenceFrame_.setSelectedValue(static_cast<int>(Space::WORLD));
@@ -68,24 +70,11 @@ SimpleLightingProperty::SimpleLightingProperty(std::string identifier, std::stri
         referenceFrame_.addOption("view", "View", static_cast<int>(Space::VIEW));
         referenceFrame_.setSelectedValue(static_cast<int>(Space::VIEW));
     }
-
     referenceFrame_.setCurrentStateAsDefault();
 
-    lightPosition_.setSemantics(PropertySemantics("Spherical"));
-    ambientColor_.setSemantics(PropertySemantics::Color);
-    diffuseColor_.setSemantics(PropertySemantics::Color);
-    specularColor_.setSemantics(PropertySemantics::Color);
-
-    // add properties
-    addProperty(shadingMode_);
-    addProperty(referenceFrame_);
-    addProperty(lightPosition_);
-    addProperty(ambientColor_);
-    addProperty(diffuseColor_);
-    addProperty(specularColor_);
-    addProperty(specularExponent_);
-    addProperty(applyLightAttenuation_);
-    addProperty(lightAttenuation_);
+    addProperties(shadingMode_, referenceFrame_, lightPosition_);
+    addProperties(ambientColor_, diffuseColor_, specularColor_);
+    addProperties(specularExponent_, applyLightAttenuation_, lightAttenuation_);
 }
 
 SimpleLightingProperty::SimpleLightingProperty(const SimpleLightingProperty& rhs)
@@ -110,22 +99,6 @@ SimpleLightingProperty::SimpleLightingProperty(const SimpleLightingProperty& rhs
     addProperty(specularExponent_);
     addProperty(applyLightAttenuation_);
     addProperty(lightAttenuation_);
-}
-
-SimpleLightingProperty& SimpleLightingProperty::operator=(const SimpleLightingProperty& that) {
-    if (this != &that) {
-        CompositeProperty::operator=(that);
-        shadingMode_ = that.shadingMode_;
-        referenceFrame_ = that.referenceFrame_;
-        lightPosition_ = that.lightPosition_;
-        lightAttenuation_ = that.lightAttenuation_;
-        applyLightAttenuation_ = that.applyLightAttenuation_;
-        ambientColor_ = that.ambientColor_;
-        diffuseColor_ = that.diffuseColor_;
-        specularColor_ = that.specularColor_;
-        specularExponent_ = that.specularExponent_;
-    }
-    return *this;
 }
 
 SimpleLightingProperty* SimpleLightingProperty::clone() const {

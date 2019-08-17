@@ -67,7 +67,6 @@ public:
 
         ColorByProperty(const ColorByProperty& rhs);
 
-        ColorByProperty& operator=(const ColorByProperty& that);
         virtual ColorByProperty* clone() const override;
         virtual ~ColorByProperty();
 

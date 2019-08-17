@@ -61,7 +61,6 @@ public:
                   PropertySemantics semantics = PropertySemantics::Default);
 
     PlaneProperty(const PlaneProperty& rhs);
-    PlaneProperty& operator=(const PlaneProperty& that);
     virtual PlaneProperty* clone() const override;
     virtual ~PlaneProperty();
 

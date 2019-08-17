@@ -45,13 +45,6 @@ ButtonProperty::ButtonProperty(
 
 ButtonProperty::ButtonProperty(const ButtonProperty& rhs) : Property(rhs) {}
 
-ButtonProperty& ButtonProperty::operator=(const ButtonProperty& that) {
-    if (this != &that) {
-        Property::operator=(that);
-    }
-    return *this;
-}
-
 ButtonProperty* ButtonProperty::clone() const { return new ButtonProperty(*this); }
 
 ButtonProperty::~ButtonProperty() {}
@@ -70,11 +63,12 @@ void ButtonProperty::pressButton() {
     propertyModified();
 }
 
-void ButtonProperty::propertyModified() {
-    if (!buttonPressed_) return;
+ButtonProperty& ButtonProperty::propertyModified() {
+    if (!buttonPressed_) return *this;
     Property::propertyModified();
+    return *this;
 }
 
-void ButtonProperty::resetToDefaultState() {}
+ButtonProperty& ButtonProperty::resetToDefaultState() { return *this; }
 
 }  // namespace inviwo

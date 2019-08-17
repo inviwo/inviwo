@@ -137,16 +137,4 @@ void StandardExceptionHandler::operator()(ExceptionContext context) {
     }
 }
 
-ExceptionContext::ExceptionContext(std::string caller, std::string file, std::string function,
-                                   int line)
-    : caller_(caller), file_(file), function_(function), line_(line) {}
-
-const std::string& ExceptionContext::getCaller() const { return caller_; }
-
-const std::string& ExceptionContext::getFile() const { return file_; }
-
-const std::string& ExceptionContext::getFunction() const { return function_; }
-
-const int& ExceptionContext::getLine() const { return line_; }
-
 }  // namespace inviwo

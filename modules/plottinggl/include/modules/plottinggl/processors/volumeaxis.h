@@ -43,6 +43,7 @@
 #include <inviwo/core/interaction/cameratrackball.h>
 
 #include <modules/plotting/properties/axisproperty.h>
+#include <modules/plotting/properties/axisstyleproperty.h>
 
 #include <modules/plottinggl/utils/axisrenderer.h>
 
@@ -101,6 +102,7 @@ private:
     DoubleMinMaxProperty rangeYaxis_;
     DoubleMinMaxProperty rangeZaxis_;
 
+    AxisStyleProperty axisStyle_;
     AxisProperty xAxis_;
     AxisProperty yAxis_;
     AxisProperty zAxis_;

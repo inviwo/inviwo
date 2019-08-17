@@ -34,17 +34,19 @@ namespace inviwo {
 struct VolumeRamCreationDispatcher {
     using type = std::shared_ptr<VolumeRAM>;
     template <typename Result, typename T>
-    std::shared_ptr<VolumeRAM> operator()(void* dataPtr, const size3_t& dimensions) {
+    std::shared_ptr<VolumeRAM> operator()(void* dataPtr, const size3_t& dimensions,
+                                          const SwizzleMask& swizzleMask) {
         using F = typename T::type;
-        return std::make_shared<VolumeRAMPrecision<F>>(static_cast<F*>(dataPtr), dimensions);
+        return std::make_shared<VolumeRAMPrecision<F>>(static_cast<F*>(dataPtr), dimensions,
+                                                       swizzleMask);
     }
 };
 
 std::shared_ptr<VolumeRAM> createVolumeRAM(const size3_t& dimensions, const DataFormatBase* format,
-                                           void* dataPtr) {
+                                           void* dataPtr, const SwizzleMask& swizzleMask) {
     VolumeRamCreationDispatcher disp;
     return dispatching::dispatch<std::shared_ptr<VolumeRAM>, dispatching::filter::All>(
-        format->getId(), disp, dataPtr, dimensions);
+        format->getId(), disp, dataPtr, dimensions, swizzleMask);
 }
 
 }  // namespace inviwo

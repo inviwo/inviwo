@@ -32,6 +32,7 @@
 #include <inviwo/meta/inviwometadefine.hpp>
 #include <filesystem>
 #include <optional>
+#include <vector>
 
 namespace inviwo::meta {
 

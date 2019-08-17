@@ -57,11 +57,12 @@ public:
                    PropertySemantics semantics = PropertySemantics::Default);
 
     MarginProperty(const MarginProperty &rhs);
-    MarginProperty &operator=(const MarginProperty &that);
     virtual MarginProperty *clone() const override;
 
     virtual ~MarginProperty() = default;
-
+    /*
+     * Set margins and adjust min/max values if necessary
+     */
     void setMargins(float top, float right, float bottom, float left);
 
     void setTop(float top);
@@ -74,7 +75,23 @@ public:
     float getBottom() const;
     float getLeft() const;
 
+    vec2 getLowerLeftMargin() const;
+    vec2 getUpperRightMargin() const;
+
+    void setLowerLeftMargin(vec2 lowerLeft);
+    void setUpperRightMargin(vec2 upperRight);
+
     vec4 getAsVec4() const;
+
+    /**
+     * Returns the lower left point and the upper right point;
+     */
+    std::pair<vec2, vec2> getRect(vec2 size) const;
+
+    /**
+     * Returns the given size with the margins subtracted.
+     */
+    vec2 getSize(vec2 size) const;
 
     FloatProperty top_;
     FloatProperty right_;

@@ -63,7 +63,6 @@ public:
     void onResetOverride();
 
     BasisProperty(const BasisProperty& rhs);
-    BasisProperty& operator=(const BasisProperty& that);
     virtual BasisProperty* clone() const override;
     virtual ~BasisProperty() = default;
 
@@ -77,8 +76,8 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
-    virtual void setCurrentStateAsDefault() override;
-    virtual void resetToDefaultState() override;
+    virtual BasisProperty& setCurrentStateAsDefault() override;
+    virtual BasisProperty& resetToDefaultState() override;
 
     TemplateOptionProperty<BasisPropertyMode> mode_;
     TemplateOptionProperty<BasisPropertyReference> reference_;
@@ -95,6 +94,15 @@ public:
     ButtonProperty resetOverride_;
 
 private:
+    auto props() {
+        return std::tie(mode_, reference_, overRideDefaults_, updateForNewEntiry_, size_, a_, b_,
+                        c_, autoCenter_, offset_, resetOverride_);
+    }
+    auto props() const {
+        return std::tie(mode_, reference_, overRideDefaults_, updateForNewEntiry_, size_, a_, b_,
+                        c_, autoCenter_, offset_, resetOverride_);
+    }
+
     void update(const SpatialEntity<3>& volume, bool deserialize);
     void load();
     void save();
@@ -105,7 +113,7 @@ private:
     vec3 dimensions_{1.0f};
     mat4 model_{1.0f};
     ValueWrapper<mat4> overrideModel_;
-    bool updateing_ = false;
+    bool updating_ = false;
 };
 
 }  // namespace inviwo

@@ -87,15 +87,6 @@ ListProperty::ListProperty(const ListProperty& rhs)
     , maxNumElements_(rhs.maxNumElements_)
     , prefabs_(detail::clonePropertyVector(rhs.prefabs_)) {}
 
-ListProperty& ListProperty::operator=(const ListProperty& that) {
-    if (this != &that) {
-        uiFlags_ = that.uiFlags_;
-        maxNumElements_ = that.maxNumElements_;
-        prefabs_ = detail::clonePropertyVector(that.prefabs_);
-    }
-    return *this;
-}
-
 ListProperty* ListProperty::clone() const { return new ListProperty(*this); }
 
 std::string ListProperty::getClassIdentifierForWidget() const {
@@ -172,7 +163,7 @@ void ListProperty::addProperty(size_t prefabIndex) {
     if (prefabIndex >= prefabs_.size()) {
         throw RangeException("Invalid prefab index " + std::to_string(prefabIndex) + " (" +
                                  std::to_string(prefabs_.size()) + " prefabs)",
-                             IvwContext);
+                             IVW_CONTEXT);
     }
 
     if ((maxNumElements_ == 0) || (size() + 1 < maxNumElements_)) {
@@ -222,7 +213,7 @@ void ListProperty::insertProperty(size_t index, Property* property, bool owner) 
         })) {
         throw Exception("Unsupported property type, no prefab matching `" +
                             property->getClassIdentifier() + "`.",
-                        IvwContext);
+                        IVW_CONTEXT);
     }
 
     if ((maxNumElements_ == 0) || (size() + 1 < maxNumElements_)) {

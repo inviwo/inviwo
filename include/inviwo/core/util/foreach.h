@@ -36,32 +36,41 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <string>
+#include <utility>
 
 namespace inviwo {
 
 namespace util {
+
 namespace detail {
 template <typename Callback, typename IT>
-void foreach_helper(std::false_type, IT a, IT b, Callback callback, size_t /*startIndex*/ = 0) {
-    std::for_each(a, b, callback);
+void foreach_helper(std::false_type, IT a, IT b, Callback&& callback, size_t) {
+    std::for_each(a, b, std::forward<Callback>(callback));
 }
 
 template <typename Callback, typename IT>
-void foreach_helper(std::true_type, IT a, IT b, Callback callback, size_t startIndex = 0) {
-    std::for_each(a, b, [&](auto v) { callback(v, startIndex++); });
+void foreach_helper(std::true_type, IT a, IT b, Callback&& callback, size_t startIndex) {
+    std::for_each(a, b, [&](auto&& v) { callback(v, startIndex++); });
 }
 
-template <typename Callback, typename IT>
-auto foreach_helper_pool(std::true_type, IT a, IT b, Callback callback, size_t startIndex = 0) {
-    return dispatchPool([id = startIndex, c = std::move(callback), a, b]() mutable {
-        std::for_each(a, b, [&](auto v) { c(v, id++); });
+template <typename Callback, typename IT, typename OnDoneCallback>
+auto foreach_helper_pool(std::true_type, IT a, IT b, Callback&& callback, size_t startIndex,
+                         OnDoneCallback&& onTaskDone) {
+    return dispatchPool([id = startIndex, a, b, c = std::forward<Callback>(callback),
+                         onTaskDone = std::forward<OnDoneCallback>(onTaskDone)]() mutable {
+        std::for_each(a, b, [&](auto&& v) { c(v, id++); });
+        onTaskDone();
     });
 }
 
-template <typename Callback, typename IT>
-auto foreach_helper_pool(std::false_type, IT a, IT b, Callback callback,
-                         size_t /*startIndex*/ = 0) {
-    return dispatchPool([c = std::move(callback), a, b]() { std::for_each(a, b, c); });
+template <typename Callback, typename IT, typename OnDoneCallback>
+auto foreach_helper_pool(std::false_type, IT a, IT b, Callback&& callback, size_t,
+                         OnDoneCallback&& onTaskDone) {
+    return dispatchPool([a, b, c = std::forward<Callback>(callback),
+                         onTaskDone = std::forward<OnDoneCallback>(onTaskDone)]() {
+        std::for_each(a, b, c);
+        onTaskDone();
+    });
 }
 
 }  // namespace detail
@@ -78,17 +87,26 @@ auto foreach_helper_pool(std::false_type, IT a, IT b, Callback callback,
  * the data structure
  * @param jobs optional parameter specifying how many jobs to create, if jobs==0 (default) it will
  * create pool size * 4 jobs
+ * @param onTaskDone callback that will be called when each job is done
  * @return a vector of futures, one for each job created.
  */
-template <typename Iterable, typename T = typename Iterable::value_type, typename Callback>
-std::vector<std::future<void>> forEachParallelAsync(const Iterable& iterable, Callback callback,
-                                                    size_t jobs = 0) {
+template <typename Iterable, typename Callback, typename OnDoneCallback>
+std::vector<std::future<void>> forEachParallelAsync(const Iterable& iterable, Callback&& callback,
+                                                    size_t jobs, OnDoneCallback&& onTaskDone) {
+
+    using std::begin;
+    using std::end;
+
     auto settings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
     auto poolSize = settings->poolSize_.get();
-    using IncludeIndexType = typename std::conditional<util::is_callable_with<T, size_t>(callback),
-                                                       std::true_type, std::false_type>::type;
+
+    using value_type = decltype(*begin(iterable));
+    using IncludeIndexType = typename util::is_invocable<Callback, value_type, size_t>::type;
+
     if (poolSize == 0) {
-        detail::foreach_helper(IncludeIndexType(), iterable.begin(), iterable.end(), callback);
+        detail::foreach_helper(IncludeIndexType{}, begin(iterable), end(iterable),
+                               std::forward<Callback>(callback), 0);
+        onTaskDone();
         return {};
     }
 
@@ -96,16 +114,24 @@ std::vector<std::future<void>> forEachParallelAsync(const Iterable& iterable, Ca
         jobs = 4 * poolSize;
     }
 
-    auto s = iterable.size();
+    const auto s = iterable.size();
     std::vector<std::future<void>> futures;
     for (size_t job = 0; job < jobs; ++job) {
         size_t start = (s * job) / jobs;
         size_t end = (s * (job + 1)) / jobs;
-        auto a = iterable.begin() + start;
-        auto b = iterable.begin() + end;
-        futures.push_back(detail::foreach_helper_pool(IncludeIndexType(), a, b, callback, start));
+        auto a = begin(iterable) + start;
+        auto b = begin(iterable) + end;
+        futures.push_back(detail::foreach_helper_pool(IncludeIndexType{}, a, b,
+                                                      std::forward<Callback>(callback), start,
+                                                      std::forward<OnDoneCallback>(onTaskDone)));
     }
     return futures;
+}
+
+template <typename Iterable, typename Callback>
+std::vector<std::future<void>> forEachParallelAsync(const Iterable& iterable, Callback&& callback,
+                                                    size_t jobs) {
+    return forEachParallelAsync(iterable, std::forward<Callback>(callback), jobs, []() {});
 }
 
 /**
@@ -121,9 +147,10 @@ std::vector<std::future<void>> forEachParallelAsync(const Iterable& iterable, Ca
  * @param jobs optional parameter specifying how many jobs to create, if jobs==0 (default) it will
  * create pool size * 4 jobs
  */
-template <typename Iterable, typename T = typename Iterable::value_type, typename Callback>
-void forEachParallel(const Iterable& iterable, Callback callback, size_t jobs = 0) {
-    auto futures = forEachParallelAsync<Iterable, T, Callback>(iterable, callback, jobs);
+template <typename Iterable, typename Callback>
+void forEachParallel(const Iterable& iterable, Callback&& callback, size_t jobs = 0) {
+    const auto futures =
+        forEachParallelAsync<Iterable, Callback>(iterable, std::forward<Callback>(callback), jobs);
 
     for (const auto& e : futures) {
         e.wait();

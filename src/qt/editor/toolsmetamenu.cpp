@@ -52,7 +52,7 @@ void addInviwoMetaAction(QMenu* menu) {
         InviwoFileDialog saveFileDialog(nullptr, "Create " + name, "source");
         saveFileDialog.setFileMode(FileMode::AnyFile);
         saveFileDialog.setAcceptMode(AcceptMode::Save);
-        saveFileDialog.setConfirmOverwrite(true);
+        saveFileDialog.setOption(QFileDialog::Option::DontConfirmOverwrite, false);
 
         if (saveFileDialog.exec()) {
             QString qpath = saveFileDialog.selectedFiles().at(0);

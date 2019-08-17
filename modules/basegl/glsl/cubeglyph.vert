@@ -30,6 +30,7 @@
 // Owned by the CubeRenderer Processor
 
 #include "utils/structs.glsl"
+
 uniform GeometryParameters geometry;
 
 uniform vec4 defaultColor = vec4(1, 0, 0, 1);
