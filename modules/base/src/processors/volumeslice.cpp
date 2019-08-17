@@ -64,7 +64,7 @@ VolumeSlice::VolumeSlice()
                                InvalidationLevel::Valid)
     , mouseShiftSlice_("mouseShiftSlice", "Mouse Slice Shift",
                        [this](Event* e) { eventShiftSlice(e); },
-                       util::make_unique<WheelEventMatcher>())
+                       std::make_unique<WheelEventMatcher>())
 
     , stepSliceUp_("stepSliceUp", "Key Slice Up", [this](Event* e) { eventStepSliceUp(e); },
                    IvwKey::W, KeyState::Press)
@@ -75,7 +75,7 @@ VolumeSlice::VolumeSlice()
     , gestureShiftSlice_(
           "gestureShiftSlice", "Gesture Slice Shift",
           [this](Event* e) { eventGestureShiftSlice(e); },
-          util::make_unique<GestureEventMatcher>(GestureType::Pan, GestureStates(flags::any), 3)) {
+          std::make_unique<GestureEventMatcher>(GestureType::Pan, GestureStates(flags::any), 3)) {
 
     addPort(inport_);
     addPort(outport_);
@@ -141,7 +141,7 @@ void VolumeSlice::process() {
                 [axis = static_cast<CartesianCoordinateAxis>(sliceAlongAxis_.get()),
                  slice = static_cast<size_t>(sliceNumber_.get() - 1),
                  &cache = imageCache_](const auto vrprecision) {
-                    using T = util::PrecsionValueType<decltype(vrprecision)>;
+                    using T = util::PrecisionValueType<decltype(vrprecision)>;
 
                     const T* voldata = vrprecision->getDataTyped();
                     const auto voldim = vrprecision->getDimensions();

@@ -140,7 +140,7 @@ NetworkEditorView::NetworkEditorView(NetworkEditor* networkEditor, InviwoMainWin
                 case MenuItemType::cut: {
                     if (editor_->selectedItems().empty()) return;
                     auto data = editor_->cut();
-                    auto mimedata = util::make_unique<QMimeData>();
+                    auto mimedata = std::make_unique<QMimeData>();
                     mimedata->setData(utilqt::toQString(NetworkEditor::getMimeTag()), data);
                     mimedata->setData(QString("text/plain"), data);
                     QApplication::clipboard()->setMimeData(mimedata.release());
@@ -149,7 +149,7 @@ NetworkEditorView::NetworkEditorView(NetworkEditor* networkEditor, InviwoMainWin
                 case MenuItemType::copy: {
                     if (editor_->selectedItems().empty()) return;
                     auto data = editor_->copy();
-                    auto mimedata = util::make_unique<QMimeData>();
+                    auto mimedata = std::make_unique<QMimeData>();
                     mimedata->setData(utilqt::toQString(NetworkEditor::getMimeTag()), data);
                     mimedata->setData(QString("text/plain"), data);
                     QApplication::clipboard()->setMimeData(mimedata.release());

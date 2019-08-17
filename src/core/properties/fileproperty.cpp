@@ -29,7 +29,10 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/core/util/dialogfactory.h>
+#include <inviwo/core/util/filedialog.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 namespace inviwo {
 
@@ -82,9 +85,9 @@ void FileProperty::serialize(Serializer& s) const {
     several version to have a higher success rate when moving stuff around.
 
     Saved path versions:
-     1) Absolute
-     2) Relative workspace
-     3) Relative filesystem::getPath(PathType::Data)
+    1) Absolute
+    2) Relative workspace
+    3) Relative filesystem::getPath(PathType::Data)
     */
     Property::serialize(s);
 
@@ -183,7 +186,7 @@ void FileProperty::addNameFilters(const std::vector<FileExtension>& filters) {
 
 void FileProperty::clearNameFilters() { nameFilters_.clear(); }
 
-std::vector<FileExtension> FileProperty::getNameFilters() { return nameFilters_; }
+std::vector<FileExtension> FileProperty::getNameFilters() const { return nameFilters_; }
 
 void FileProperty::setAcceptMode(AcceptMode mode) { acceptMode_ = mode; }
 
@@ -202,6 +205,32 @@ void FileProperty::requestFile() {
         if (auto filerequestable = dynamic_cast<FileRequestable*>(widget)) {
             if (filerequestable->requestFile()) return;
         }
+    }
+    // No FileRequestable widget found, use the factory.
+    // Currently, the only difference between using the widget (Qt) and the FileDialog directly
+    // is that the Qt widget stores the previously used directory
+    auto fileDialog = util::dynamic_unique_ptr_cast<FileDialog>(
+        InviwoApplication::getPtr()->getDialogFactory()->create("FileDialog"));
+    if (!fileDialog) {
+        throw Exception(
+            "Failed to create a FileDialog. Add one to the InviwoApplication::DialogFactory");
+    }
+
+    // Setup Extensions
+    std::vector<FileExtension> filters = this->getNameFilters();
+    fileDialog->addExtensions(filters);
+
+    fileDialog->setCurrentFile(get());
+    fileDialog->setTitle(getDisplayName());
+    fileDialog->setAcceptMode(getAcceptMode());
+    fileDialog->setFileMode(getFileMode());
+
+    auto ext = getSelectedExtension();
+    if (!ext.empty()) fileDialog->setSelectedExtension(ext);
+
+    if (fileDialog->show()) {
+        setSelectedExtension(fileDialog->getSelectedFileExtension());
+        set(fileDialog->getSelectedFile());
     }
 }
 

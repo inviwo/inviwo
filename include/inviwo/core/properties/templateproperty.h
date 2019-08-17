@@ -64,8 +64,8 @@ public:
     void set(const TemplateProperty<T>* srcProperty);
     virtual void set(const Property* srcProperty) override;
 
-    virtual void setCurrentStateAsDefault() override;
-    virtual void resetToDefaultState() override;
+    virtual TemplateProperty& setCurrentStateAsDefault() override;
+    virtual TemplateProperty& resetToDefaultState() override;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
@@ -108,15 +108,17 @@ TemplateProperty<T>::operator const T&() const {
 }
 
 template <typename T>
-void inviwo::TemplateProperty<T>::resetToDefaultState() {
+TemplateProperty<T>& inviwo::TemplateProperty<T>::resetToDefaultState() {
     value_.reset();
     Property::resetToDefaultState();
+    return *this;
 }
 
 template <typename T>
-void inviwo::TemplateProperty<T>::setCurrentStateAsDefault() {
+TemplateProperty<T>& inviwo::TemplateProperty<T>::setCurrentStateAsDefault() {
     Property::setCurrentStateAsDefault();
     value_.setAsDefault();
+    return *this;
 }
 
 template <typename T>

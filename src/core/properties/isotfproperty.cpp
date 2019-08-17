@@ -72,6 +72,20 @@ std::string IsoTFProperty::getClassIdentifierForWidget() const {
     return IsoTFProperty::classIdentifier;
 }
 
+void IsoTFProperty::set(const Property* property) {
+    if (const auto isotfprop = dynamic_cast<const CompositeProperty*>(property)) {
+        CompositeProperty::set(isotfprop);
+    } else if (auto isoprop = dynamic_cast<const IsoValueProperty*>(property)) {
+        isovalues_.set(isoprop);
+    } else if (auto tfprop = dynamic_cast<const TransferFunctionProperty*>(property)) {
+        tf_.set(tfprop);
+    }
+}
+
+void IsoTFProperty::set(const IsoValueProperty& p) { isovalues_.set(p); }
+
+void IsoTFProperty::set(const TransferFunctionProperty& p) { tf_.set(p); }
+
 void IsoTFProperty::setMask(double maskMin, double maskMax) { tf_.setMask(maskMin, maskMax); }
 
 const dvec2 IsoTFProperty::getMask() const { return tf_.getMask(); }

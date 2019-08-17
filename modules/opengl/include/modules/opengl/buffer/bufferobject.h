@@ -46,7 +46,7 @@ public:
      * See <a
      * href="https://www.khronos.org/opengl/wiki/GLAPI/glVertexAttribPointer">glVertexAttribPointer</a>
      * and <a href="https://www.khronos.org/opengl/wiki/Vertex_Specification#Component_type">Vertex
-     * Specification</> for details.
+     * Specification</a> for details.
      */
     enum class BindingType {
         Native,      //!< uses glVertexAttribIPointer for integral types, glVertexAttribDPointer for

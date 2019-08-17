@@ -60,6 +60,7 @@ public:
 
     void updateRecentWorkspaces(const QStringList &recentFiles);
     void updateExampleEntries();
+    void updateRegressionTestEntries();
 
     bool selectRecentWorkspace(int index);
 
@@ -79,6 +80,7 @@ private:
 
     QTreeWidgetItem *recentWorkspaceItem_ = nullptr;
     QTreeWidgetItem *examplesItem_ = nullptr;
+    QTreeWidgetItem *regressionTestsItem_ = nullptr;
 
     QIcon fileIcon_;
 };

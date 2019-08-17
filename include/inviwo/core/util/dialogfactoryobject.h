@@ -57,7 +57,7 @@ public:
 
     virtual ~DialogFactoryObjectTemplate() {}
 
-    virtual std::unique_ptr<Dialog> create() override { return util::make_unique<T>(); }
+    virtual std::unique_ptr<Dialog> create() override { return std::make_unique<T>(); }
 };
 
 }  // namespace inviwo

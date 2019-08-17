@@ -169,7 +169,7 @@ std::shared_ptr<T> ResourceManager::getResource(const std::string &key) {
     IVW_ASSERT(!key.empty(), "Key should not be empty string");
     auto it = resources_.find(keyTypePair<T>(key));
     if (it == resources_.end()) {
-        throw inviwo::ResourceException("No resource with " + key + " registered", IvwContext);
+        throw inviwo::ResourceException("No resource with " + key + " registered", IVW_CONTEXT);
     }
     return static_cast<TypedResource<T> *>(it->second.get())->getData();
 }
@@ -187,7 +187,7 @@ void ResourceManager::addResource(const std::string &key, std::shared_ptr<T> res
             removeResource<T>(key);
         } else {
             throw inviwo::ResourceException("Resource with " + key + " already registered",
-                                            IvwContext);
+                                            IVW_CONTEXT);
         }
     }
     auto typedResource = std::make_shared<TypedResource<T>>(resource, key);

@@ -70,7 +70,7 @@ void PortConnection::deserialize(Deserializer& d) {
         const auto message = util::formatSerializationError(
             "Connection", out.data.nd.getDescription(), in.data.nd.getDescription(),
             "Outport and Inport not found.");
-        throw SerializationException(message, IvwContext, "Connection");
+        throw SerializationException(message, IVW_CONTEXT, "Connection");
     } else if (out.error) {
         const auto message = util::formatSerializationError(
             "Connection", out.data.nd.getDescription(),
@@ -81,7 +81,7 @@ void PortConnection::deserialize(Deserializer& d) {
             "Outport not found.");
 
         delete outport_;
-        throw SerializationException(message, IvwContext, "Connection");
+        throw SerializationException(message, IVW_CONTEXT, "Connection");
     } else if (in.error) {
         const auto message = util::formatSerializationError(
             "Connection",
@@ -92,7 +92,7 @@ void PortConnection::deserialize(Deserializer& d) {
             in.data.nd.getDescription(), "Inport not found.");
 
         delete inport_;
-        throw SerializationException(message, IvwContext, "Connection");
+        throw SerializationException(message, IVW_CONTEXT, "Connection");
     }
 }
 

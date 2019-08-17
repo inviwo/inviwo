@@ -62,7 +62,7 @@ vec4 hex2rgba(std::string str) {
             std::istringstream stream("0x" + numStr);
             if (!(stream >> std::hex >> v)) {
                 throw Exception("Invalid hex code \"#" + numStr + "\".",
-                                IvwContextCustom("color::hex2rgba"));
+                                IVW_CONTEXT_CUSTOM("color::hex2rgba"));
             }
             return v;
         }();
@@ -76,11 +76,11 @@ vec4 hex2rgba(std::string str) {
                 break;
             default:
                 throw Exception("Invalid hex code \"" + str + "\".",
-                                IvwContextCustom("color::hex2rgba"));
+                                IVW_CONTEXT_CUSTOM("color::hex2rgba"));
         }
 
     } else {
-        throw Exception("Invalid hex code \"" + str + "\".", IvwContextCustom("color::hex2rgba"));
+        throw Exception("Invalid hex code \"" + str + "\".", IVW_CONTEXT_CUSTOM("color::hex2rgba"));
     }
     return result;
 }

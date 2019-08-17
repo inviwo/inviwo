@@ -33,12 +33,14 @@
 #include <modules/eigenutils/processors/eigenmix.h>
 #include <modules/eigenutils/processors/eigennormalize.h>
 
+#include <modules/eigenutils/processors/testmatrix.h>
 namespace inviwo {
 
 EigenUtilsModule::EigenUtilsModule(InviwoApplication* app) : InviwoModule(app, "EigenUtils") {
     registerProcessor<EigenMatrixToImage>();
     registerProcessor<EigenMix>();
     registerProcessor<EigenNormalize>();
+    registerProcessor<TestMatrix>();
     // Add a directory to the search path of the Shadermanager
     // ShaderManager::getPtr()->addShaderSearchPath(PathType::Modules, "/eigenutils/glsl");
 
@@ -51,11 +53,11 @@ EigenUtilsModule::EigenUtilsModule(InviwoApplication* app) : InviwoModule(app, "
     // registerProperty<EigenUtilsProperty>());
 
     // Readers and writes
-    // registerDataReader(util::make_unique<EigenUtilsReader>());
-    // registerDataWriter(util::make_unique<EigenUtilsWriter>());
+    // registerDataReader(std::make_unique<EigenUtilsReader>());
+    // registerDataWriter(std::make_unique<EigenUtilsWriter>());
 
     // Data converters
-    // registerRepresentationConverter(util::make_unique<EigenUtilsDisk2RAMConverter>());
+    // registerRepresentationConverter(std::make_unique<EigenUtilsDisk2RAMConverter>());
 
     // Ports
     registerDefaultsForDataType<Eigen::MatrixXf>();
@@ -70,9 +72,9 @@ EigenUtilsModule::EigenUtilsModule(InviwoApplication* app) : InviwoModule(app, "
     // registerDialog<EigenUtilsDialog>(EigenUtilsOutport));
 
     // Other varius things
-    // registerCapabilities(util::make_unique<EigenUtilsCapabilities>()));
-    // registerSettings(util::make_unique<EigenUtilsSettings>());
-    // registerMetaData(util::make_unique<EigenUtilsMetaData>());
+    // registerCapabilities(std::make_unique<EigenUtilsCapabilities>()));
+    // registerSettings(std::make_unique<EigenUtilsSettings>());
+    // registerMetaData(std::make_unique<EigenUtilsMetaData>());
     // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget>
     // processorWidget);
     // registerDrawer(util::make_unique_ptr<EigenUtilsDrawer>());

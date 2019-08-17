@@ -77,8 +77,8 @@ public:
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
-    virtual void setCurrentStateAsDefault() override;
-    virtual void resetToDefaultState() override;
+    virtual BasisProperty& setCurrentStateAsDefault() override;
+    virtual BasisProperty& resetToDefaultState() override;
 
     TemplateOptionProperty<BasisPropertyMode> mode_;
     TemplateOptionProperty<BasisPropertyReference> reference_;

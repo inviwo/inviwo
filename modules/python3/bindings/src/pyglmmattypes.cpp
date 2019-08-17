@@ -40,6 +40,9 @@
 #include <string>
 #include <algorithm>
 
+#include <warn/push>
+#include <warn/ignore/self-assign-overloaded>
+
 namespace inviwo {
 
 namespace py = pybind11;
@@ -183,3 +186,5 @@ void exposeGLMMatTypes(py::module &glmModule) {
     mat<unsigned int>(glmModule, "u");
 }
 }  // namespace inviwo
+
+#include <warn/pop>

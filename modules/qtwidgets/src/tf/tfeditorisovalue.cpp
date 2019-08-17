@@ -69,11 +69,7 @@ QPainterPath TFEditorIsovalue::shape() const {
     const auto width = getSize() + 3.0;  //<! consider size of pen;
     path.addRect(QRectF(QPointF(-0.5 * width, -0.5 * width), QSizeF(width, width)));
 
-    // add box of vertical line
-    double verticalScaling = getVerticalSceneScaling();
-    QRectF rect = scene()->sceneRect();
-    path.moveTo(QPointF(0.0, -rect.height() * verticalScaling));
-    path.lineTo(QPointF(0.0, rect.height() * verticalScaling));
+    // do not add the vertical line to the shape in order to make only the square box selectable
 
     return path;
 }

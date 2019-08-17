@@ -94,6 +94,7 @@ private:
     void reload(const std::string& fileName) {
         const auto file = QString::fromStdString(fileName);
         const auto ns = QHelpEngineCore::namespaceName(file);
+
         engine_->unregisterDocumentation(ns);
 
         if (!engine_->registerDocumentation(file)) {
@@ -169,7 +170,7 @@ HelpWidget::HelpWidget(InviwoMainWindow* mainwindow)
         throw Exception("Failed to setup the help engine:" + error);
     }
 
-    fileObserver_ = util::make_unique<QCHFileObserver>(helpEngine_);
+    fileObserver_ = std::make_unique<QCHFileObserver>(helpEngine_);
 
     onModulesDidRegister_ =
         app->getModuleManager().onModulesDidRegister([this]() { registerQCHFiles(); });
@@ -209,9 +210,11 @@ void HelpWidget::updateDoc() {
     if (visibleRegion().isEmpty()) return;
     current_ = requested_;
 
-    const QString path("qthelp:///doc/docpage-%1.html");
+    const QString path("qthelp://org.inviwo.base/doc/docpage-%1.html");
     QUrl foundUrl = helpEngine_->findFile(QUrl(path.arg(QString::fromStdString(requested_))));
-    if (foundUrl.isValid()) {
+
+    if (foundUrl.isValid() && !helpEngine_->fileData(foundUrl).isEmpty()) {
+        auto txt = foundUrl.toString();
         helpBrowser_->setSource(foundUrl);
         return;
     }
@@ -219,7 +222,8 @@ void HelpWidget::updateDoc() {
     std::string classIdentifier = requested_;
     replaceInString(classIdentifier, ".", "_8");
     foundUrl = helpEngine_->findFile(QUrl(path.arg(QString::fromStdString(classIdentifier))));
-    if (foundUrl.isValid()) {
+    if (foundUrl.isValid() && !helpEngine_->fileData(foundUrl).isEmpty()) {
+        auto txt = foundUrl.toString();
         helpBrowser_->setSource(foundUrl);
         return;
     }

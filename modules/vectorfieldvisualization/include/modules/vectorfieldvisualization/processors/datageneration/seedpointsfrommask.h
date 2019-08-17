@@ -65,6 +65,7 @@ protected:
     CompositeProperty randomness_;
     BoolProperty useSameSeed_;
     IntProperty seed_;
+    BoolProperty transformToWorld_;
 
 private:
     std::mt19937 mt_;

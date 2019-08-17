@@ -11,6 +11,8 @@ c++98-compat                      | *same* (3.2)       | *no*                 | 
 c++98-compat-pedantic             | *same* (3.2)       | *no*                 | *no*              
 cast-align                        | *same* (3.2)       | *same* (3.4)         | *no*              
 catch-semantic-changed            | *no*               | *no*                 | C4571 (13)        
+char-subscripts                   | *same* (3.2)       | *same* (3.4)         | *no*              
+class-memaccess                   | *no*               | *same* (8)           | *no*              
 conditional-uninitialized         | *same* (3.2)       | *no*                 | *no*              
 constant-conditional              | *no*               | *no*                 | C4127 (13)        
 constant-conversion               | *same* (3.2)       | *no*                 | *no*              
@@ -69,7 +71,9 @@ overloaded-virtual                | *same* (3.2)       | *same* (3.4)         | 
 padded                            | *same* (3.2)       | *same* (3.4)         | C4820 (12)        
 parentheses                       | *same* (3.2)       | *same* (3.4)         | *no*              
 pedantic                          | *same* (3.2)       | *same* (4.8)         | *no*              
+restrict                          | *no*               | *same* (7)           | *no*              
 return-type                       | *same* (3.2)       | *same* (3.4)         | *no*              
+self-assign-overloaded            | *same* (7)         | *no*                 | *no*              
 shadow                            | *same* (3.2)       | *same* (3.4)         | *no*              
 shorten-64-to-32                  | *same* (3.2)       | *no*                 | *no*              
 sign-compare                      | *same* (3.2)       | *same* (3.4)         | C4389 (12)        
@@ -78,6 +82,7 @@ signed-unsigned-compare           | sign-compare (3.2) | sign-compare (3.4)   | 
 size_t-conversion                 | *no*               | *no*                 | C4267 (12)        
 special-noexcept                  | *no*               | *no*                 | C26439 (15)       
 static-ctor-not-thread-safe       | *no*               | *no*                 | C4640 (13)        
+stringop-truncation               | *no*               | *same* (8)           | *no*              
 switch                            | *same* (3.2)       | *same* (3.4)         | C4062 (13)        
 switch-enum                       | *same* (3.2)       | *same* (3.4)         | C4061 (13)        
 this-used-in-init                 | *no*               | *no*                 | C4355 (13)        

@@ -45,7 +45,7 @@ BinarySTLWriter* BinarySTLWriter::clone() const { return new BinarySTLWriter(*th
 
 void BinarySTLWriter::writeData(const Mesh* data, const std::string filePath) const {
     if (filesystem::fileExists(filePath) && !getOverwrite()) {
-        throw DataWriterException("File already exists: " + filePath, IvwContext);
+        throw DataWriterException("File already exists: " + filePath, IVW_CONTEXT);
     }
     auto f = filesystem::ofstream(filePath, std::ios_base::out | std::ios_base::binary);
     writeData(data, f);
@@ -56,7 +56,7 @@ std::unique_ptr<std::vector<unsigned char>> BinarySTLWriter::writeDataToBuffer(
     std::stringstream ss(std::ios_base::binary);
     writeData(data, ss);
     auto stringdata = ss.str();
-    return util::make_unique<std::vector<unsigned char>>(stringdata.begin(), stringdata.end());
+    return std::make_unique<std::vector<unsigned char>>(stringdata.begin(), stringdata.end());
 }
 
 void BinarySTLWriter::writeData(const Mesh* data, std::ostream& f) const {
@@ -65,16 +65,16 @@ void BinarySTLWriter::writeData(const Mesh* data, std::ostream& f) const {
     });
 
     if (pit == data->getBuffers().end()) {
-        throw DataWriterException("Error: could not find a position buffer", IvwContext);
+        throw DataWriterException("Error: could not find a position buffer", IVW_CONTEXT);
     }
 
     const auto posBuffer = pit->second;
     const auto posRam = posBuffer->getRepresentation<BufferRAM>();
     if (!posRam) {
-        throw DataWriterException("Error: could not find a position buffer ram", IvwContext);
+        throw DataWriterException("Error: could not find a position buffer ram", IVW_CONTEXT);
     }
     if (posRam->getDataFormat()->getComponents() != 3) {
-        throw DataWriterException("Error: Only 3 dimensional meshes are supported", IvwContext);
+        throw DataWriterException("Error: Only 3 dimensional meshes are supported", IVW_CONTEXT);
     }
 
     const auto model = data->getModelMatrix();
@@ -142,7 +142,7 @@ void BinarySTLWriter::writeData(const Mesh* data, std::ostream& f) const {
         if (inds.first.dt != DrawType::Triangles) {
             std::stringstream err;
             err << "Draw type: \n" << inds.first.dt << "\" not supported";
-            util::log(IvwContext, err.str(), LogLevel::Warn, LogAudience::User);
+            util::log(IVW_CONTEXT, err.str(), LogLevel::Warn, LogAudience::User);
             continue;
         }
 

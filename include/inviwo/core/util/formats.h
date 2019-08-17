@@ -298,7 +298,7 @@ std::string DataFormat<T>::str() {
             return prefix + "UINT" + std::to_string(precision());
         case NumericType::NotSpecialized:
         default:
-            throw DataFormatException("Invalid format", IvwContextCustom("DataFormat"));
+            throw DataFormatException("Invalid format", IVW_CONTEXT_CUSTOM("DataFormat"));
     }
 }
 

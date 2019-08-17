@@ -31,16 +31,17 @@
 # Add folder to module pack
 macro(ivw_add_to_module_pack folder)
     if(IVW_PACKAGE_PROJECT)
-        get_filename_component(FOLDER_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME)
         if(APPLE)
-            install(DIRECTORY ${folder}
-                     DESTINATION Inviwo.app/Contents/Resources/modules/${FOLDER_NAME}
-                     COMPONENT ${_cpackName})
+            set(prefix "Inviwo.app/Contents/Resources/")
         else()
-            install(DIRECTORY ${folder}
-                     DESTINATION modules/${FOLDER_NAME}
-                     COMPONENT ${_cpackName})
+            set(prefix "")
         endif()
+        get_filename_component(FOLDER_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+        install(
+            DIRECTORY ${folder}
+            DESTINATION ${prefix}modules/${FOLDER_NAME}
+            COMPONENT ${_cpackName}
+        )
     endif()
 endmacro()
 
@@ -60,26 +61,20 @@ function(ivw_default_install_comp_targets comp)
     # OBJECTS           Object libraries
     # FRAMEWORK         Targets marked as FRAMEWORK
     # BUNDLE            Targets marked as BUNDLE
-
-    if(WIN32)
-        install(TARGETS ${ARGN} 
-                EXPORT "${ARGN}-targets"
-                RUNTIME DESTINATION bin
-                ARCHIVE DESTINATION bin
-                LIBRARY DESTINATION bin
-                COMPONENT ${comp})
-    elseif(APPLE)
+    if(APPLE)
         install(TARGETS ${ARGN}
+                EXPORT "${ARGN}-targets"
                 RUNTIME DESTINATION bin
                 BUNDLE DESTINATION .
                 ARCHIVE DESTINATION Inviwo.app/Contents/MacOS
                 LIBRARY DESTINATION Inviwo.app/Contents/MacOS
                 COMPONENT ${comp})
     else()
-        install(TARGETS ${ARGN}
+        install(TARGETS ${ARGN} 
+                EXPORT "${ARGN}-targets"
                 RUNTIME DESTINATION bin
-                ARCHIVE DESTINATION lib
-                LIBRARY DESTINATION lib
+                ARCHIVE DESTINATION bin
+                LIBRARY DESTINATION bin
                 COMPONENT ${comp})
     endif()
 endfunction()
@@ -93,20 +88,22 @@ endfunction()
 #--------------------------------------------------------------------
 # Install files
 function(ivw_private_install_module_dirs)
-    if(IVW_PACKAGE_PROJECT) 
+    if(IVW_PACKAGE_PROJECT)
+        if(APPLE)
+            set(prefix "Inviwo.app/Contents/Resources/")
+        else()
+            set(prefix "")
+        endif()
         get_filename_component(module_name ${CMAKE_CURRENT_SOURCE_DIR} NAME)
-        foreach(folder data docs)
+        foreach(folder data docs tests/regression)
             set(dir ${CMAKE_CURRENT_SOURCE_DIR}/${folder})
+            get_filename_component(base ${folder} DIRECTORY)
             if(EXISTS ${dir})
-                if(APPLE)
-                    install(DIRECTORY ${dir}
-                            DESTINATION Inviwo.app/Contents/Resources/modules/${module_name}
-                            COMPONENT modules)
-                else()
-                    install(DIRECTORY ${dir}
-                            DESTINATION modules/${module_name}
-                            COMPONENT modules)
-                endif()
+                install(
+                    DIRECTORY ${dir}
+                    DESTINATION ${prefix}modules/${module_name}/${base}
+                    COMPONENT modules
+                )
             endif()
         endforeach()
     endif()
@@ -130,7 +127,7 @@ macro(ivw_qt_add_to_install ivw_comp)
                             DESTINATION bin 
                             COMPONENT ${ivw_comp} 
                             CONFIGURATIONS Release RelWithDebInfo)
-                    foreach(plugin ${${qtarget}_PLUGINS})
+                    foreach(plugin IN LISTS ${qtarget}_PLUGINS)
                         get_target_property(_loc ${plugin} LOCATION)
                         get_filename_component(_path ${_loc} PATH)
                         get_filename_component(_dirname ${_path} NAME)
@@ -139,7 +136,7 @@ macro(ivw_qt_add_to_install ivw_comp)
                                 COMPONENT ${ivw_comp})
                     endforeach()
                 elseif(APPLE)
-                    foreach(plugin ${${qtarget}_PLUGINS})
+                    foreach(plugin IN LISTS ${qtarget}_PLUGINS)
                         get_target_property(_loc ${plugin} LOCATION)
                         get_filename_component(_path ${_loc} PATH)
                         get_filename_component(_dirname ${_path} NAME)

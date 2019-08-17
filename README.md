@@ -3,7 +3,11 @@
 [![Build Status](http://jenkins.inviwo.org:8080/buildStatus/icon?job=inviwo-pub/master)](http://jenkins.inviwo.org:8080/job/inviwo-pub/job/master/) [![BSD licensed](https://img.shields.io/badge/license-BSD-blue.svg?maxAge=2592000)](https://github.com/inviwo/inviwo/blob/master/LICENSE)
 [![Release version](https://img.shields.io/github/release/inviwo/inviwo.svg?maxAge=86400)](https://github.com/inviwo/inviwo/releases/latest)
 
-<img src="/docs/images/inviwo-screenshot.png" width="600">
+<div class="inviwo-screenshot">
+
+![](docs/images/inviwo-screenshot.png)
+
+</div>
 
 Inviwo is a software framework for rapid visualization prototyping.
 
@@ -17,7 +21,7 @@ Below follow some general information about the framework:
 
 #### Core
  - The core is written in C/C++ only, with minor dependencies.
- 
+
 #### Modules
  - Modern graphics programming through OpenGL (>= 3.3 Core) related modules.
  - Parallel computing on multiple platforms (GPU/CPU) through OpenCL (>= 1.0) related modules.
@@ -37,10 +41,12 @@ Below follow some general information about the framework:
   - [API](https://inviwo.github.io/inviwo/doc/)
   - [Changelog](/CHANGELOG.md)
 
+For help and general discussion join us on our [Slack](https://join.slack.com/t/inviwo/shared_invite/enQtNTc2Nzc2NDQwNzIxLWM0N2VlYmNiZGU2MThiY2I5MGMwZTc3NzI2MjRkODg2M2NmMzRlYjRhNjU3YzUwNGQ1OWE0ZGE1NTAwZGU2YzI) server
+
 #### Sponsors
 This work was supported by Linköping University,  KTH Royal Institute of Technology, Ulm University, and through grants from the Swedish e-Science Research Centre (SeRC).
 
-<a href='http://www.liu.se'><img src="/resources/images/liu-black.png" width="200"></a>
-<a href='http://www.kth.se'><img src="/resources/images/kth.png" width="200"></a>
-<a href='http://e-science.se'><img src="/resources/images/serc.png" width="200"></a>
-<a href='http://www.uni-ulm.de/en/'><img src="/resources/images/uulm.png" width="200"></a>
+<a href='http://www.liu.se'><img src="docs/images/liu-600x600.png" width="200" style="margin-right:10px;"></a>
+<a href='http://www.kth.se'><img src="docs/images/kth-600x600.png" width="200" style="margin-right:10px;"></a>
+<a href='http://e-science.se'><img src="docs/images/serc-600x600.png" width="200" style="margin-right:10px;"></a>
+<a href='http://www.uni-ulm.de/en/'><img src="docs/images/uulm-600x600.png" width="200" style="margin-right:10px;"></a>

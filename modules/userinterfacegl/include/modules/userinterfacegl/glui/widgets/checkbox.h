@@ -44,7 +44,6 @@ namespace glui {
 class Renderer;
 
 /**
- * \class Checkbox
  * \brief glui::Element representing a checkbox with the label positioned on the right side
  */
 class IVW_MODULE_USERINTERFACEGL_API CheckBox : public Element {

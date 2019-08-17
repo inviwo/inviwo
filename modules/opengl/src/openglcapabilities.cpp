@@ -77,7 +77,7 @@ bool OpenGLCapabilities::GLSLShaderVersion::sortHighestFirst(GLSLShaderVersion i
 OpenGLCapabilities::OpenGLCapabilities(OpenGLSettings* settings)
     : shadersAreSupported_(false)
     , shadersAreSupportedARB_(false)
-    , geometryShsadersAreSupported_(false)
+    , geometryShadersAreSupported_(false)
     , maxProgramLoopCount_(-1)
     , geometryShadersMaxVertices_(-1)
     , geometryShadersMaxOutputComponents_(-1)
@@ -219,7 +219,7 @@ void OpenGLCapabilities::initializeGLEW() {
                 std::stringstream ss;
                 ss << "Initialized GLEW but failed to retrieve OpenGL Version, glError"
                    << getGLErrorString(glGetError());
-                throw OpenGLInitException(ss.str(), IvwContextCustom("OpenGLCapabilities"));
+                throw OpenGLInitException(ss.str(), IVW_CONTEXT_CUSTOM("OpenGLCapabilities"));
             }
             glVersionStr_ = std::string(
                 (glversion != nullptr ? reinterpret_cast<const char*>(glversion) : "INVALID"));
@@ -227,7 +227,7 @@ void OpenGLCapabilities::initializeGLEW() {
         } else {
             std::stringstream ss;
             ss << "Failed to initialize GLEW: " << glewGetErrorString(glewError);
-            throw OpenGLInitException(ss.str(), IvwContextCustom("OpenGLCapabilities"));
+            throw OpenGLInitException(ss.str(), IVW_CONTEXT_CUSTOM("OpenGLCapabilities"));
         }
         LGL_ERROR_SUPPRESS;
         glewInitialized_ = true;
@@ -262,8 +262,9 @@ bool OpenGLCapabilities::is3DTexturesSupported() const { return tex3DSupported_;
 bool OpenGLCapabilities::isFboSupported() const { return fboSupported_; }
 bool OpenGLCapabilities::isShadersSupported() const { return shadersAreSupported_; }
 bool OpenGLCapabilities::isShadersSupportedARB() const { return shadersAreSupportedARB_; }
-bool OpenGLCapabilities::isGeometryShadersSupported() const {
-    return geometryShsadersAreSupported_;
+bool OpenGLCapabilities::isGeometryShadersSupported() const { return geometryShadersAreSupported_; }
+bool OpenGLCapabilities::isComputeShadersSupported() const {
+    return isExtensionSupported("GL_ARB_compute_shader");
 }
 
 int OpenGLCapabilities::getMaxProgramLoopCount() const { return maxProgramLoopCount_; }
@@ -397,7 +398,7 @@ void OpenGLCapabilities::retrieveStaticInfo() {
     // GLSL
     shadersAreSupported_ = (glVersion_ >= 200);
     shadersAreSupportedARB_ = isExtensionSupported("GL_EXT_ARB_fragment_program");
-    geometryShsadersAreSupported_ = isExtensionSupported("GL_EXT_ARB_geometry_shader4");
+    geometryShadersAreSupported_ = isExtensionSupported("GL_EXT_ARB_geometry_shader4");
 
     GLint numberOfSupportedVersions = 0;
     const GLubyte* glslStrByte = nullptr;

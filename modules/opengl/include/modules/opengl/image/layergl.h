@@ -46,16 +46,17 @@ class Texture2D;
  */
 class IVW_MODULE_OPENGL_API LayerGL : public LayerRepresentation {
 public:
-    LayerGL(size2_t dimensions = size2_t(256, 256), LayerType type = LayerType::Color,
-            const DataFormatBase* format = DataVec4UInt8::get(),
-            std::shared_ptr<Texture2D> tex = std::shared_ptr<Texture2D>(nullptr),
-            const SwizzleMask& swizzleMask = swizzlemasks::rgba);
+    explicit LayerGL(size2_t dimensions = size2_t(256, 256), LayerType type = LayerType::Color,
+                     const DataFormatBase* format = DataVec4UInt8::get(),
+                     std::shared_ptr<Texture2D> tex = std::shared_ptr<Texture2D>(nullptr),
+                     const SwizzleMask& swizzleMask = swizzlemasks::rgba);
     LayerGL(const LayerGL& rhs);
     LayerGL& operator=(const LayerGL& rhs);
     virtual ~LayerGL();
     virtual LayerGL* clone() const override;
 
     virtual void setDimensions(size2_t dimensions) override;
+    virtual const size2_t& getDimensions() const override;
 
     /**
      * \brief update the swizzle mask of the channels for sampling the layer
@@ -76,6 +77,7 @@ public:
     virtual std::type_index getTypeIndex() const override final;
 
 private:
+    size2_t dimensions_;
     std::shared_ptr<Texture2D> texture_;  // Can be shared
     mutable GLenum texUnit_;
     SwizzleMask swizzleMask_;

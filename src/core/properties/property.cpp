@@ -39,7 +39,6 @@ namespace inviwo {
 Property::Property(const std::string& identifier, const std::string& displayName,
                    InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : PropertyObservable()
-    , Serializable()
     , MetaDataOwner()
     , serializationMode_(PropertySerializationMode::Default)
     , identifier_(identifier)
@@ -53,12 +52,11 @@ Property::Property(const std::string& identifier, const std::string& displayName
     , owner_(nullptr)
     , initiatingWidget_(nullptr) {
 
-    util::validateIdentifier(identifier, "Property", IvwContext);
+    util::validateIdentifier(identifier, "Property", IVW_CONTEXT);
 }
 
 Property::Property(const Property& rhs)
     : PropertyObservable(rhs)
-    , Serializable(rhs)
     , MetaDataOwner(rhs)
     , serializationMode_(rhs.serializationMode_)
     , identifier_(rhs.identifier_)
@@ -93,15 +91,16 @@ Property& Property::operator=(const Property& that) {
 }
 
 std::string Property::getIdentifier() const { return identifier_; }
-void Property::setIdentifier(const std::string& identifier) {
+Property& Property::setIdentifier(const std::string& identifier) {
     if (identifier_ != identifier) {
         identifier_ = identifier;
 
-        util::validateIdentifier(identifier, "Property", IvwContext);
+        util::validateIdentifier(identifier, "Property", IVW_CONTEXT);
 
         notifyObserversOnSetIdentifier(this, identifier_);
         notifyAboutChange();
     }
+    return *this;
 }
 std::vector<std::string> Property::getPath() const {
     std::vector<std::string> path;
@@ -114,38 +113,42 @@ std::vector<std::string> Property::getPath() const {
 
 std::string Property::getDisplayName() const { return displayName_; }
 
-void Property::setDisplayName(const std::string& displayName) {
+Property& Property::setDisplayName(const std::string& displayName) {
     if (displayName_ != displayName) {
         displayName_ = displayName;
         notifyObserversOnSetDisplayName(this, displayName_);
         notifyAboutChange();
     }
+    return *this;
 }
 
 PropertySemantics Property::getSemantics() const { return semantics_; }
 
-void Property::setSemantics(const PropertySemantics& semantics) {
+Property& Property::setSemantics(const PropertySemantics& semantics) {
     if (semantics_ != semantics) {
         semantics_ = semantics;
         notifyObserversOnSetSemantics(this, semantics_);
         notifyAboutChange();
     }
+    return *this;
 }
 
 std::string Property::getClassIdentifierForWidget() const { return getClassIdentifier(); }
 
 bool Property::getReadOnly() const { return readOnly_; }
-void Property::setReadOnly(bool readOnly) {
+Property& Property::setReadOnly(bool readOnly) {
     if (readOnly_ != readOnly) {
         readOnly_ = readOnly;
         notifyObserversOnSetReadOnly(this, readOnly_);
         notifyAboutChange();
     }
+    return *this;
 }
 
 InvalidationLevel Property::getInvalidationLevel() const { return invalidationLevel_; }
-void Property::setInvalidationLevel(InvalidationLevel invalidationLevel) {
+Property& Property::setInvalidationLevel(InvalidationLevel invalidationLevel) {
     invalidationLevel_ = invalidationLevel;
+    return *this;
 }
 
 PropertyOwner* Property::getOwner() { return owner_; }
@@ -176,7 +179,7 @@ void Property::updateWidgets() {
 
 bool Property::hasWidgets() const { return !propertyWidgets_.empty(); }
 
-void Property::propertyModified() {
+Property& Property::propertyModified() {
     NetworkLock lock(this);
     onChangeCallback_.invokeAll();
     setModified();
@@ -194,11 +197,15 @@ void Property::propertyModified() {
     }
 
     updateWidgets();
+    return *this;
 }
 
 void Property::setValid() { propertyModified_ = false; }
 
-void Property::setModified() { propertyModified_ = true; }
+Property& Property::setModified() {
+    propertyModified_ = true;
+    return *this;
+}
 
 bool Property::isModified() const { return propertyModified_; }
 
@@ -251,21 +258,23 @@ void Property::deserialize(Deserializer& d) {
 }
 
 inviwo::UsageMode Property::getUsageMode() const { return usageMode_; }
-void Property::setUsageMode(UsageMode usageMode) {
+Property& Property::setUsageMode(UsageMode usageMode) {
     if (usageMode_ != usageMode) {
         usageMode_ = usageMode;
         notifyObserversOnSetUsageMode(this, usageMode_);
         notifyAboutChange();
     }
+    return *this;
 }
 
-bool Property::getVisible() { return visible_; }
-void Property::setVisible(bool visible) {
+bool Property::getVisible() const { return visible_; }
+Property& Property::setVisible(bool visible) {
     if (visible_ != visible) {
         visible_ = visible;
         notifyObserversOnSetVisible(this, visible_);
         notifyAboutChange();
     }
+    return *this;
 }
 
 Document Property::getDescription() const {
@@ -305,15 +314,19 @@ void Property::notifyAboutChange() {
     }
 }
 
-void Property::setCurrentStateAsDefault() {
+Property& Property::setCurrentStateAsDefault() {
     displayName_.setAsDefault();
     readOnly_.setAsDefault();
     semantics_.setAsDefault();
     visible_.setAsDefault();
     usageMode_.setAsDefault();
+    return *this;
 }
 
-void Property::resetToDefaultState() { propertyModified(); }
+Property& Property::resetToDefaultState() {
+    propertyModified();
+    return *this;
+}
 
 void Property::set(const Property* /*src*/) { propertyModified(); }
 

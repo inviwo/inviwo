@@ -205,7 +205,9 @@ std::string randomString(size_t length) {
 
 // trim from start
 std::string ltrim(std::string s) {
-    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](auto c) { return !std::isspace(c); }));
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](auto c) {
+                return !std::isspace(static_cast<unsigned char>(c));
+            }));
     return s;
 }
 
@@ -250,7 +252,9 @@ bool iCaseLess(const std::string& l, const std::string& r) {
 
 // trim from end
 std::string rtrim(std::string s) {
-    s.erase(std::find_if(s.rbegin(), s.rend(), [](auto c) { return !std::isspace(c); }).base(),
+    s.erase(std::find_if(s.rbegin(), s.rend(),
+                         [](auto c) { return !std::isspace(static_cast<unsigned char>(c)); })
+                .base(),
             s.end());
     return s;
 }

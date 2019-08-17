@@ -89,6 +89,9 @@ ScatterPlotGL::Properties::Properties(std::string identifier, std::string displa
     addProperty(xAxis_);
     addProperty(yAxis_);
 
+    yAxis_.flipped_.set(true);
+    yAxis_.captionSettings_.font_.anchorPos_.set({0.0f, 1.0f});
+
     color_.setVisible(true);
     tf_.setVisible(!color_.getVisible());
     minRadius_.setVisible(false);
@@ -354,16 +357,20 @@ void ScatterPlotGL::plot(const size2_t &dims, IndexBuffer *indexBuffer, bool use
     renderAxis(dims);
 }
 
-void ScatterPlotGL::setXAxisLabel(const std::string &label) { properties_.xAxis_.setTitle(label); }
+void ScatterPlotGL::setXAxisLabel(const std::string &label) {
+    properties_.xAxis_.setCaption(label);
+}
 
-void ScatterPlotGL::setYAxisLabel(const std::string &label) { properties_.yAxis_.setTitle(label); }
+void ScatterPlotGL::setYAxisLabel(const std::string &label) {
+    properties_.yAxis_.setCaption(label);
+}
 
-void ScatterPlotGL::setXAxis(std::shared_ptr<const plot::Column> col) {
+void ScatterPlotGL::setXAxis(std::shared_ptr<const Column> col) {
     setXAxisLabel(col->getHeader());
     setXAxisData(col->getBuffer());
 }
 
-void ScatterPlotGL::setYAxis(std::shared_ptr<const plot::Column> col) {
+void ScatterPlotGL::setYAxis(std::shared_ptr<const Column> col) {
     setYAxisLabel(col->getHeader());
     setYAxisData(col->getBuffer());
 }
@@ -478,9 +485,9 @@ void ScatterPlotGL::objectPicked(PickingEvent *p) {
         if (std::get<0>(rowIndex) && xAxis_ && yAxis_) {
             std::ostringstream ss;
             ss << "Index: " << std::get<1>(rowIndex) << "\n"
-               << properties_.xAxis_.getTitle() << ": "
+               << properties_.xAxis_.getCaption() << ": "
                << xAxis_->getRepresentation<BufferRAM>()->getAsDouble(id) << "\n"
-               << properties_.yAxis_.getTitle() << ": "
+               << properties_.yAxis_.getCaption() << ": "
                << yAxis_->getRepresentation<BufferRAM>()->getAsDouble(id);
             if (color_) {
                 ss << "\nColor Value: " << color_->getRepresentation<BufferRAM>()->getAsDouble(id);

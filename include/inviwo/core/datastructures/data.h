@@ -26,17 +26,20 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_DATA_H
-#define IVW_DATA_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/datastructures/representationfactory.h>
 #include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/datastructures/representationfactorymanager.h>
+
 #include <typeindex>
+#include <mutex>
+#include <unordered_map>
+#include <memory>
 
 namespace inviwo {
+
 /**
  * \defgroup datastructures Datastructures
  */
@@ -161,20 +164,11 @@ public:
      */
     void invalidateAllOther(const Repr* repr);
 
-    /**
-     * Set the format of the data.
-     * @see DataFormatBase
-     * @param format The format of the data.
-     */
-    void setDataFormat(const DataFormatBase* format);
-    const DataFormatBase* getDataFormat() const;
-
 protected:
-    Data(const DataFormatBase*);
+    Data() = default;
     Data(const Data<Self, Repr>& rhs);
     Data<Self, Repr>& operator=(const Data<Self, Repr>& rhs);
 
-    virtual std::shared_ptr<Repr> createDefaultRepresentation() const = 0;
     template <typename T>
     const T* getValidRepresentation() const;
     void copyRepresentationsTo(Data<Self, Repr>* targetData) const;
@@ -185,16 +179,10 @@ protected:
     mutable std::unordered_map<std::type_index, std::shared_ptr<Repr>> representations_;
     // A pointer to the the most recently updated representation. Makes updates and creation faster.
     mutable std::shared_ptr<Repr> lastValidRepresentation_;
-    const DataFormatBase* dataFormatBase_;
 };
 
 template <typename Self, typename Repr>
-Data<Self, Repr>::Data(const DataFormatBase* format)
-    : lastValidRepresentation_(), dataFormatBase_(format) {}
-
-template <typename Self, typename Repr>
-Data<Self, Repr>::Data(const Data<Self, Repr>& rhs)
-    : lastValidRepresentation_(), dataFormatBase_(rhs.dataFormatBase_) {
+Data<Self, Repr>::Data(const Data<Self, Repr>& rhs) : lastValidRepresentation_{nullptr} {
     rhs.copyRepresentationsTo(this);
 }
 
@@ -202,7 +190,6 @@ template <typename Self, typename Repr>
 Data<Self, Repr>& Data<Self, Repr>::operator=(const Data<Self, Repr>& that) {
     if (this != &that) {
         that.copyRepresentationsTo(this);
-        dataFormatBase_ = that.dataFormatBase_;
     }
     return *this;
 }
@@ -213,9 +200,11 @@ const T* Data<Self, Repr>::getRepresentation() const {
     std::unique_lock<std::mutex> lock(mutex_);
     if (representations_.empty()) {
         lock.unlock();
-        auto repr = createDefaultRepresentation();
+        auto factory = RepresentationFactoryManager::getRepresentationFactory<Repr>();
+        auto repr = std::shared_ptr<Repr>{
+            factory->createOrDefault(std::type_index(typeid(T)), static_cast<const Self*>(this))};
         lock.lock();
-        if (!repr) throw Exception("Failed to create default representation", IvwContext);
+        if (!repr) throw Exception("Failed to create default representation", IVW_CONTEXT);
         lastValidRepresentation_ = addRepresentationInternal(repr);
     }
 
@@ -231,11 +220,9 @@ const T* Data<Self, Repr>::getRepresentation() const {
 template <typename Self, typename Repr>
 template <typename T>
 const T* Data<Self, Repr>::getValidRepresentation() const {
-    auto factory = InviwoApplication::getPtr()->getRepresentationConverterFactory<Repr>();
-    auto package = factory->getRepresentationConverter(lastValidRepresentation_->getTypeIndex(),
-                                                       std::type_index(typeid(T)));
-
-    if (package) {
+    auto factory = RepresentationFactoryManager::getRepresentationConverterFactory<Repr>();
+    if (auto package = factory->getRepresentationConverter(lastValidRepresentation_->getTypeIndex(),
+                                                           std::type_index(typeid(T)))) {
         for (auto converter : package->getConverters()) {
             auto dest = converter->getConverterID().second;
             auto it = representations_.find(dest);
@@ -245,13 +232,13 @@ const T* Data<Self, Repr>::getValidRepresentation() const {
                 lastValidRepresentation_->setValid(true);
             } else {  // No representation found, create it
                 auto result = converter->createFrom(lastValidRepresentation_);
-                if (!result) throw ConverterException("Converter failed to create", IvwContext);
+                if (!result) throw ConverterException("Converter failed to create", IVW_CONTEXT);
                 lastValidRepresentation_ = addRepresentationInternal(result);
             }
         }
         return dynamic_cast<const T*>(lastValidRepresentation_.get());
     } else {
-        throw ConverterException("Found no converters", IvwContext);
+        throw ConverterException("Found no converters", IVW_CONTEXT);
     }
 }
 
@@ -283,7 +270,7 @@ void Data<Self, Repr>::invalidateAllOther(const Repr* repr) {
             lastValidRepresentation_ = elem.second;
         }
     }
-    if (!found) throw Exception("Called with representation not in representations.", IvwContext);
+    if (!found) throw Exception("Called with representation not in representations.", IVW_CONTEXT);
 }
 
 template <typename Self, typename Repr>
@@ -366,16 +353,4 @@ bool Data<Self, Repr>::hasRepresentations() const {
     return !representations_.empty();
 }
 
-template <typename Self, typename Repr>
-void Data<Self, Repr>::setDataFormat(const DataFormatBase* format) {
-    dataFormatBase_ = format;
-}
-
-template <typename Self, typename Repr>
-const DataFormatBase* Data<Self, Repr>::getDataFormat() const {
-    return dataFormatBase_;
-}
-
 }  // namespace inviwo
-
-#endif  // IVW_DATA_H

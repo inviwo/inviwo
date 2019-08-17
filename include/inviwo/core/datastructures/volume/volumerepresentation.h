@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/datarepresentation.h>
 #include <inviwo/core/datastructures/representationtraits.h>
+#include <inviwo/core/datastructures/image/imagetypes.h>
 #include <inviwo/core/common/inviwo.h>
 
 namespace inviwo {
@@ -51,6 +52,14 @@ public:
     // Needs to be overloaded by child classes.
     virtual void setDimensions(size3_t dimensions) = 0;
     virtual const size3_t& getDimensions() const = 0;
+
+    /**
+     * \brief update the swizzle mask of the color channels when sampling the volume
+     *
+     * @param mask new swizzle mask
+     */
+    virtual void setSwizzleMask(const SwizzleMask& mask) = 0;
+    virtual SwizzleMask getSwizzleMask() const = 0;
 
 protected:
     VolumeRepresentation() = default;

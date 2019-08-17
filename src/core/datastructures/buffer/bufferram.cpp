@@ -78,7 +78,7 @@ bool operator==(const BufferBase &bufA, const BufferBase &bufB) {
     }
 
     return bufA.getRepresentation<BufferRAM>()->dispatch<bool>([&](const auto buffer) {
-        using ValueType = util::PrecsionValueType<decltype(buffer)>;
+        using ValueType = util::PrecisionValueType<decltype(buffer)>;
 
         auto containerA = buffer->getDataContainer();
         auto bufBRAM = bufB.getRepresentation<BufferRAM>();

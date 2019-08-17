@@ -53,7 +53,7 @@ public:
 
     void invoke(U* argument) const {
         if (!argument) {
-            throw Exception("Callback function argument does not match", IvwContext);
+            throw Exception("Callback function argument does not match", IVW_CONTEXT);
         }
 
         if (functionPtr_) {
@@ -84,7 +84,7 @@ public:
     }
     template <typename T, typename U>
     void addMemberFunction(T* o, void (T::*m)(U*)) {
-        callBack_ = util::make_unique<BaseModuleCallback<T, U>>(o, m);
+        callBack_ = std::make_unique<BaseModuleCallback<T, U>>(o, m);
     }
 
 private:

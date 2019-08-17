@@ -178,15 +178,8 @@ void PresentationProcessor::updateSlideImage() {
 
     try {
         auto layer = reader->readData(currentFileName);
-        // Call getRepresentation here to force read a ram representation.
-        // Otherwise the default image size, i.e. 256x256, will be reported
-        // until you do the conversion. Since the LayerDisk does not have any metadata.
-        auto ram = layer->getRepresentation<LayerRAM>();
-        // Hack needs to set format here since LayerDisk does not have a format.
-        layer->setDataFormat(ram->getDataFormat());
 
         currentSlide_ = std::make_shared<Image>(layer);
-        currentSlide_->getRepresentation<ImageRAM>();
     } catch (DataReaderException const &e) {
         LogError(e.getMessage());
     }
@@ -219,7 +212,7 @@ void PresentationProcessor::updateProperties() {
     if (fileList_.size() < static_cast<std::size_t>(slideIndex_.get())) {
         slideIndex_.set(1);
     }
-    slideIndex_.setMaxValue(std::max(static_cast<const int>(fileList_.size()), 1));
+    slideIndex_.setMaxValue(std::max(static_cast<int>(fileList_.size()), 1));
     updateFileName();
 }
 

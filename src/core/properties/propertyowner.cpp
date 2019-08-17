@@ -76,12 +76,12 @@ void PropertyOwner::insertProperty(size_t index, Property* property, bool owner)
     if (getPropertyByIdentifier(property->getIdentifier()) != nullptr) {
         throw Exception(
             "Can't add property, identifier \"" + property->getIdentifier() + "\" already exist.",
-            IvwContext);
+            IVW_CONTEXT);
     }
     if (auto parent = dynamic_cast<Property*>(this)) {
         if (parent == property) {
             throw Exception("Can't add property \"" + property->getIdentifier() + "\" to itself.",
-                            IvwContext);
+                            IVW_CONTEXT);
         }
     }
 
@@ -122,7 +122,7 @@ Property* PropertyOwner::removeProperty(size_t index) {
     if (index >= size()) {
         throw RangeException("Invalid index when removing property " + std::to_string(index) +
                                  " (" + std::to_string(size()) + " elements)",
-                             IvwContext);
+                             IVW_CONTEXT);
     }
     return removeProperty(begin() + index);
 }

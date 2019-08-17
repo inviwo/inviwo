@@ -66,8 +66,11 @@ ImageSource::ImageSource(InviwoApplication* app, const std::string& file)
     addProperty(imageDimension_);
 
     isSink_.setUpdate([]() { return true; });
-    isReady_.setUpdate([this]() { return filesystem::fileExists(file_.get()); });
-    file_.onChange([this]() { isReady_.update(); });
+    isReady_.setUpdate([this]() { return !loadingFailed_ && filesystem::fileExists(file_.get()); });
+    file_.onChange([this]() {
+        loadingFailed_ = false;
+        isReady_.update();
+    });
 }
 
 void ImageSource::process() {
@@ -78,27 +81,18 @@ void ImageSource::process() {
     if (auto reader = rf_->getReaderForTypeAndExtension<Layer>(sext, fext)) {
         try {
             auto outLayer = reader->readData(file_.get());
-            // Call getRepresentation here to force read a ram representation.
-            // Otherwise the default image size, i.e. 256x265, will be reported
-            // until you do the conversion. Since the LayerDisk does not have any metadata.
-            auto ram = outLayer->getRepresentation<LayerRAM>();
-            // Hack needs to set format here since LayerDisk does not have a format.
-            outLayer->setDataFormat(ram->getDataFormat());
-
-            auto outImage = std::make_shared<Image>(outLayer);
-            outImage->getRepresentation<ImageRAM>();
-
-            outport_.setData(outImage);
+            outport_.setData(std::make_shared<Image>(outLayer));
             imageDimension_.set(outLayer->getDimensions());
-
         } catch (DataReaderException const& e) {
             util::log(e.getContext(), "Could not load data: " + file_.get() + ", " + e.getMessage(),
                       LogLevel::Error);
-            file_.set("");
+            loadingFailed_ = true;
+            isReady_.update();
         }
     } else {
         LogError("Could not find a data reader for file: " << file_.get());
-        file_.set("");
+        loadingFailed_ = true;
+        isReady_.update();
     }
 }
 

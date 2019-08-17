@@ -32,6 +32,7 @@
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/datastructures/image/layerramprecision.h>
+#include <inviwo/core/util/filesystem.h>
 
 #include <png.h>
 #include <algorithm>
@@ -57,7 +58,7 @@ std::vector<Result> convert(const T* data, const size_t size, const T min, const
 }
 
 template <typename T, typename valueType = typename util::value_type<T>::type,
-          typename = typename std::enable_if<std::is_same_v<valueType, bool>>::type>
+          typename = typename std::enable_if<std::is_same<valueType, bool>::value>::type>
 auto convertToUnsigned(const T* data, const size_t size, const T min, const T max)
     -> std::vector<typename util::same_extent<T, unsigned char>::type> {
     using T2 = typename util::same_extent<T, unsigned char>::type;
@@ -65,8 +66,8 @@ auto convertToUnsigned(const T* data, const size_t size, const T min, const T ma
 }
 
 template <typename T, typename valueType = typename util::value_type<T>::type,
-          typename = typename std::enable_if<!std::is_same_v<valueType, bool> &&
-                                             std::is_integral_v<valueType>>::type>
+          typename = typename std::enable_if<!std::is_same<valueType, bool>::value &&
+                                             std::is_integral<valueType>::value>::type>
 auto convertToUnsigned(const T* data, const size_t size, const T min, const T max)
     -> std::vector<typename util::same_extent<T, std::make_unsigned_t<valueType>>::type> {
     using T2 = typename util::same_extent<T, std::make_unsigned_t<valueType>>::type;
@@ -74,7 +75,7 @@ auto convertToUnsigned(const T* data, const size_t size, const T min, const T ma
 }
 
 template <typename T, typename valueType = typename util::value_type<T>::type,
-          typename = typename std::enable_if<!std::is_integral_v<valueType>>::type>
+          typename = typename std::enable_if<!std::is_integral<valueType>::value>::type>
 auto convertToUnsigned(const T*, const size_t, const T, const T) -> std::vector<T> {
     return {};
 }
@@ -174,7 +175,7 @@ void write(const LayerRAMPrecision<T>* ram, png_voidp ioPtr, png_rw_ptr writeFun
 
 PNGLayerWriterException::PNGLayerWriterException(const std::string& message,
                                                  ExceptionContext context)
-    : Exception(message, context) {}
+    : DataWriterException(message, context) {}
 
 PNGLayerWriter::PNGLayerWriter() : DataWriterType<Layer>() {
     addExtension(FileExtension("png", "Portable Network Graphics"));
@@ -184,7 +185,7 @@ PNGLayerWriter* PNGLayerWriter::clone() const { return new PNGLayerWriter(*this)
 
 void PNGLayerWriter::writeData(const Layer* data, const std::string filePath) const {
     data->getRepresentation<LayerRAM>()->dispatch<void>([&](auto ram) {
-        FILE* fp = fopen(filePath.c_str(), "wb");
+        FILE* fp = filesystem::fopen(filePath, "wb");
         if (!fp) throw PNGLayerWriterException("Failed to open file for writing, " + filePath);
         util::OnScopeExit closeFile([&fp]() { fclose(fp); });
 

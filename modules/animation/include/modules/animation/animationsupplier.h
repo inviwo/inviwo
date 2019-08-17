@@ -100,7 +100,7 @@ private:
 
 template <typename T>
 void AnimationSupplier::registerInterpolation() {
-    auto interpolation = util::make_unique<InterpolationFactoryObjectTemplate<T>>();
+    auto interpolation = std::make_unique<InterpolationFactoryObjectTemplate<T>>();
     if (manager_.getInterpolationFactory().registerObject(interpolation.get())) {
         interpolations_.push_back(std::move(interpolation));
     }
@@ -108,7 +108,7 @@ void AnimationSupplier::registerInterpolation() {
 
 template <typename T>
 void AnimationSupplier::registerTrack() {
-    auto track = util::make_unique<TrackFactoryObjectTemplate<T>>();
+    auto track = std::make_unique<TrackFactoryObjectTemplate<T>>();
     if (manager_.getTrackFactory().registerObject(track.get())) {
         tracks_.push_back(std::move(track));
     }

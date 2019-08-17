@@ -27,6 +27,7 @@
  * 
  *********************************************************************************/
 #include "utils/structs.glsl"
+#include "utils/pickingutils.glsl"
 
 #if !defined(ENABLE_ADJACENCY)
 #  define ENABLE_ADJACENCY 0
@@ -48,7 +49,7 @@ uniform bool roundCaps = false;
 
 in vec4 vertexColor_[];
 in vec4 worldPosition_[];
-flat in vec4 pickColors_[];
+flat in uint pickID_[];
 
 out float segmentLength_; // total length of the current line segment in screen space
 out float distanceWorld_;  // distance in world coords to segment start
@@ -131,7 +132,7 @@ void main(void) {
     vec4 p3in = gl_in[1].gl_Position;
 
     // set pick color equivalent to first vertex
-    pickColor_ = pickColors_[0];
+    pickColor_ = vec4(pickingIndexToColor(pickID_[0]), pickID_[0] == 0 ? 0.0 : 1.0);
 
 #else
     // Get the four vertices passed to the shader
@@ -144,7 +145,7 @@ void main(void) {
     vec4 p3in = gl_in[3].gl_Position;
     
     // set pick color equivalent to first vertex
-    pickColor_ = pickColors_[1];
+    pickColor_ = vec4(pickingIndexToColor(pickID_[1]), pickID_[1] == 0 ? 0.0 : 1.0);
 #endif
     
     // perform homogeneous clipping

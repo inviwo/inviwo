@@ -103,6 +103,9 @@ PersistenceDiagramPlotGL::Properties::Properties(std::string identifier, std::st
     addProperty(xAxis_);
     addProperty(yAxis_);
 
+    yAxis_.flipped_.set(true);
+    yAxis_.captionSettings_.font_.anchorPos_.set({0.0f, 1.0f});
+
     pointColor_.setVisible(true);
     tf_.setVisible(!pointColor_.getVisible());
 }
@@ -412,20 +415,20 @@ void PersistenceDiagramPlotGL::renderPoints(const size2_t &dims,
                    indices.data());
 }
 
-void PersistenceDiagramPlotGL::setXAxisLabel(const std::string &label) {
-    properties_.xAxis_.setTitle(label);
+void PersistenceDiagramPlotGL::setXAxisLabel(const std::string &caption) {
+    properties_.xAxis_.setCaption(caption);
 }
 
-void PersistenceDiagramPlotGL::setYAxisLabel(const std::string &label) {
-    properties_.yAxis_.setTitle(label);
+void PersistenceDiagramPlotGL::setYAxisLabel(const std::string &caption) {
+    properties_.yAxis_.setCaption(caption);
 }
 
-void PersistenceDiagramPlotGL::setXAxis(std::shared_ptr<const plot::Column> col) {
+void PersistenceDiagramPlotGL::setXAxis(std::shared_ptr<const Column> col) {
     setXAxisLabel(col->getHeader());
     setXAxisData(col->getBuffer());
 }
 
-void PersistenceDiagramPlotGL::setYAxis(std::shared_ptr<const plot::Column> col) {
+void PersistenceDiagramPlotGL::setYAxis(std::shared_ptr<const Column> col) {
     setYAxisLabel(col->getHeader());
     setYAxisData(col->getBuffer());
 }
@@ -524,9 +527,9 @@ void PersistenceDiagramPlotGL::objectPicked(PickingEvent *p) {
     auto logRowData = [&]() {
         if (std::get<0>(rowIndex) && xAxis_ && yAxis_) {
             LogWarn("Index: " << std::get<1>(rowIndex) << "\n"
-                              << properties_.xAxis_.getTitle() << ": "
+                              << properties_.xAxis_.getCaption() << ": "
                               << xAxis_->getRepresentation<BufferRAM>()->getAsDouble(id) << "\n"
-                              << properties_.yAxis_.getTitle() << ": "
+                              << properties_.yAxis_.getCaption() << ": "
                               << yAxis_->getRepresentation<BufferRAM>()->getAsDouble(id));
         }
     };

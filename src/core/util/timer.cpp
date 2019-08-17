@@ -190,7 +190,7 @@ TimerThread &getDefaultTimerThread() {
     if (auto app = InviwoApplication::getPtr()) {
         return app->getTimerThread();
     } else {
-        throw Exception("No timer thread found", IvwContextCustom("TimerThread"));
+        throw Exception("No timer thread found", IVW_CONTEXT_CUSTOM("TimerThread"));
     }
 }
 

@@ -92,7 +92,7 @@ public:
     virtual void addNameFilter(FileExtension);
     virtual void addNameFilters(const std::vector<FileExtension>& filters);
     virtual void clearNameFilters();
-    virtual std::vector<FileExtension> getNameFilters();
+    virtual std::vector<FileExtension> getNameFilters() const;
 
     virtual void setAcceptMode(AcceptMode mode);
     AcceptMode getAcceptMode() const;
@@ -107,9 +107,9 @@ public:
     void setSelectedExtension(const FileExtension& ext);
 
     /**
-     *	Request a file from the user through the use of a widget.
+     *	Request a file from the user through the use of a widget or a FileDialog.
      */
-    void requestFile();
+    virtual void requestFile();
 
     virtual Document getDescription() const override;
 

@@ -73,22 +73,21 @@ public:
     std::string getSource() const;
 
     /**
-    * Runs the script once,
-    * if the script has changed since last compile a new compile call will be issued.
-    *
-    * If an error occurs, the error message is logged to the inviwo logger and python standard
-    output.
-    *
-    * @param extraLocalVariables a map of  keys and PyOjbects that will available as local
-    variables in the python scripts, eg {"number" , PyValueParser::toPyObject<int>(123) } will
-    be available as the local variable 'number' in the script
-    * @param callback a callback that will be called once the script has finished executing. The
-    callback takes a PyObject representing the python dict of local variables from the script.
-    Can be used to parse results from the script. This callback will only be called of the
-    script executed with out problems
-    *
-    * @return true, if script execution has been successful
-    */
+     * Runs the script once.
+     * If the script has changed since last compile a new compile call will be issued.
+     *
+     * If an error occurs, the error message is logged to the inviwo logger and python standard
+     * output.
+     *
+     * @param locals a map of  keys and pybind11::object that will available as local variables in
+     * the python scripts
+     * @param callback a callback that will be called once the script has finished executing. The
+     * callback takes a pybind11::dict) representing the python dict of local variables from the
+     * script. Can be used to parse results from the script. This callback will only be called of
+     * the script executed with out problems
+     *
+     * @return true, if script execution has been successful
+     */
     bool run(std::unordered_map<std::string, pybind11::object> locals =
                  std::unordered_map<std::string, pybind11::object>{},
              std::function<void(pybind11::dict)> callback = nullptr);

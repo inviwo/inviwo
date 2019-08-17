@@ -677,7 +677,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         cutAction->setEnabled(clickedProcessor || selectedItems().size() > 0);
         connect(cutAction, &QAction::triggered, this, [this]() {
             auto data = cut();
-            auto mimedata = util::make_unique<QMimeData>();
+            auto mimedata = std::make_unique<QMimeData>();
             mimedata->setData(utilqt::toQString(getMimeTag()), data);
             mimedata->setData(QString("text/plain"), data);
             QApplication::clipboard()->setMimeData(mimedata.release());
@@ -687,7 +687,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         copyAction->setEnabled(clickedProcessor || selectedItems().size() > 0);
         connect(copyAction, &QAction::triggered, this, [this]() {
             auto data = copy();
-            auto mimedata = util::make_unique<QMimeData>();
+            auto mimedata = std::make_unique<QMimeData>();
             mimedata->setData(utilqt::toQString(getMimeTag()), data);
             mimedata->setData(QString("text/plain"), data);
             QApplication::clipboard()->setMimeData(mimedata.release());

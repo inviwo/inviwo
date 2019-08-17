@@ -48,8 +48,8 @@ class OpenGLCapabilities;
  * Keeps a lookup table of from which include each line originates.
  * Handles a list of defines, that can be added or removed @see addShaderDefine
  * Handles a list of shader extensions @see addShaderExtension
- * Handles a list of input declarations @set addInDeclaration
- * Handles a list of output declarations @set addOutDeclaration
+ * Handles a list of input declarations @see addInDeclaration
+ * Handles a list of output declarations @see addOutDeclaration
  *
  * A fragment shader will by default have the following out declarations:
  *     out vec4 FragData0;   (location 0)

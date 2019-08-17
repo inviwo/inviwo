@@ -32,6 +32,7 @@
 #include <modules/webbrowser/webbrowsermodule.h>
 #include <modules/opengl/image/layergl.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/propertyfactory.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/utilities.h>
@@ -59,12 +60,11 @@ WebBrowserProcessor::WebBrowserProcessor()
     , background_("background")
     , outport_("webpage", DataVec4UInt8::get())
     , fileName_("fileName", "HTML file", "")
+    , autoReloadFile_("autoReloadFile", "Auto Reload", true)
     , url_("URL", "URL", "http://www.inviwo.org")
     , reload_("reload", "Reload")
-    , addPropertyGroup_("addProperty", "Add property to synchronize")
-    , type_("property", "Property")
-    , propertyHtmlId_("propertyHtmlId", "Html id")
-    , add_("add", "Add")
+    , runJS_("runJS", "Run JS")
+    , js_("js", "JavaScript", "", InvalidationLevel::Valid)
     , sourceType_("sourceType", "Source",
                   {{"localFile", "Local File", SourceType::LocalFile},
                    {"webAddress", "Web Address", SourceType::WebAddress}})
@@ -79,41 +79,57 @@ WebBrowserProcessor::WebBrowserProcessor()
         invalidate(InvalidationLevel::InvalidOutput);
         //});
     }))
-    , browserClient_(new WebBrowserClient(renderHandler_)) {
+    , browserClient_(new WebBrowserClient(renderHandler_, InviwoApplication::getPtr()
+                                                              ->getModuleByType<WebBrowserModule>()
+                                                              ->getPropertyWidgetCEFFactory())) {
     addPort(background_);
     background_.setOptional(true);
     addPort(outport_);
 
     addProperty(sourceType_);
     addProperty(fileName_);
+    addProperty(autoReloadFile_);
     addProperty(url_);
     url_.setVisible(false);
     addProperty(reload_);
 
-    sourceType_.onChange([&]() {
-        switch (sourceType_.get()) {
-            default:
-            case SourceType::LocalFile:
-                fileName_.setVisible(true);
-                url_.setVisible(false);
-                break;
-            case SourceType::WebAddress:
-                fileName_.setVisible(false);
-                url_.setVisible(true);
-                break;
-        }
-        browser_->GetMainFrame()->LoadURL(getSource());
-    });
-    fileName_.onChange([this]() { browser_->GetMainFrame()->LoadURL(getSource()); });
-    url_.onChange([this]() { browser_->GetMainFrame()->LoadURL(getSource()); });
-    reload_.onChange([this]() { browser_->GetMainFrame()->LoadURL(getSource()); });
+    addProperty(runJS_);
+    addProperty(js_);
 
-    // Do not serialize options, they are generated in code
-    type_.setSerializationMode(PropertySerializationMode::None);
-    addPropertyGroup_.addProperty(type_);
-    addPropertyGroup_.addProperty(propertyHtmlId_);
-    addPropertyGroup_.addProperty(add_);
-    addProperty(addPropertyGroup_);
+    auto updateVisibility = [this]() {
+        fileName_.setVisible(sourceType_ == SourceType::LocalFile);
+        autoReloadFile_.setVisible(sourceType_ == SourceType::LocalFile);
+        url_.setVisible(sourceType_ == SourceType::WebAddress);
+    };
+    updateVisibility();
+
+    auto reload = [this]() { browser_->GetMainFrame()->LoadURL(getSource()); };
+
+    sourceType_.onChange([reload, updateVisibility]() {
+        updateVisibility();
+        reload();
+    });
+    fileName_.onChange([this, reload]() {
+        if (autoReloadFile_) {
+            fileObserver_.setFilename(fileName_);
+        }
+        reload();
+    });
+    autoReloadFile_.onChange([this]() {
+        if (autoReloadFile_) {
+            fileObserver_.setFilename(fileName_);
+        } else {
+            fileObserver_.stop();
+        }
+    });
+    url_.onChange(reload);
+    reload_.onChange(reload);
+
+    fileObserver_.onChange([this, reload]() {
+        if (sourceType_ == SourceType::LocalFile) {
+            reload();
+        }
+    });
 
     // Setup CEF browser
     CefWindowInfo window_info;
@@ -125,11 +141,13 @@ WebBrowserProcessor::WebBrowserProcessor()
 
     browserSettings.windowless_frame_rate = 30;  // Must be between 1-60, 30 is default
 
-    // in linux set a gtk widget, in windows a hwnd. If not available set nullptr - may cause
+    // in linux set a gtk widget, in windows a hwnd. If not available set nullptr
+    // - may cause
     // some render errors, in context-menu and plugins.
     window_info.SetAsWindowless(nullptr);  // nullptr means no transparency (site background colour)
 
-    // Note that browserClient_ outlives this class so make sure to remove renderHandler_ in
+    // Note that browserClient_ outlives this class so make sure to remove
+    // renderHandler_ in
     // destructor
     browser_ = CefBrowserHost::CreateBrowserSync(window_info, browserClient_, getSource(),
                                                  browserSettings, nullptr);
@@ -141,51 +159,6 @@ WebBrowserProcessor::WebBrowserProcessor()
     cefInteractionHandler_.setHost(browser_->GetHost());
     cefInteractionHandler_.setRenderHandler(renderHandler_);
     addInteractionHandler(&cefInteractionHandler_);
-
-    // Add all supported properties
-    auto app = InviwoApplication::getPtr();
-    for (auto propKey : app->getPropertyFactory()->getKeys()) {
-        auto prop = app->getPropertyFactory()->create(propKey);
-        if (browserClient_->propertyCefSynchronizer_->htmlWidgetFactory_.hasKey(prop.get())) {
-            type_.addOption(prop->getClassIdentifier(),
-                            filesystem::getFileExtension(prop->getClassIdentifier()), type_.size());
-        }
-    }
-    propertyHtmlId_ = type_.getSelectedDisplayName();
-    type_.onChange([&]() { propertyHtmlId_ = type_.getSelectedDisplayName(); });
-
-    add_.onChange([&]() {
-        auto key = type_.getSelectedIdentifier();
-        auto p = getInviwoApplication()->getPropertyFactory()->create(key);
-
-        auto id = propertyHtmlId_.get();
-        try {
-            util::validateIdentifier(id, "Property", IvwContext);
-        } catch (Exception& ex) {
-            LogError(ex.getMessage());
-            return;
-        }
-        if (getPropertyByIdentifier(id) != nullptr) {
-            LogError("Property with same id already added");
-            return;
-        }
-        p->setIdentifier(id);
-        p->setDisplayName(id);
-
-        p->setSerializationMode(PropertySerializationMode::All);
-        // InvalidationLevel::Valid is used to not get
-        // invalidations from both CEF (html) and Qt
-        p->setInvalidationLevel(InvalidationLevel::Valid);
-        // Add property to processor before propertyCefSynchronizer to
-        // include processor in property path
-        addProperty(p.get(), true);
-
-        browserClient_->propertyCefSynchronizer_->startSynchronize(p.get(), id);
-        // Must reload page to connect property with Frame, see PropertyCefSynchronizer::OnLoadEnd
-        browser_->GetMainFrame()->LoadURL(getSource());
-
-        p.release();
-    });
 }
 
 std::string WebBrowserProcessor::getSource() {
@@ -215,15 +188,6 @@ WebBrowserProcessor::~WebBrowserProcessor() {
 
 void WebBrowserProcessor::deserialize(Deserializer& d) {
     Processor::deserialize(d);
-
-    for (auto prop : *this) {
-        if (prop == &sourceType_ || prop == &fileName_ || prop == &url_ || prop == &reload_ ||
-            prop == &addPropertyGroup_ || prop == &type_ || prop == &propertyHtmlId_ ||
-            prop == &add_) {
-            continue;
-        }
-        browserClient_->propertyCefSynchronizer_->startSynchronize(prop, prop->getIdentifier());
-    }
     // Must reload page to connect property with Frame, see PropertyCefSynchronizer::OnLoadEnd
     browser_->GetMainFrame()->LoadURL(getSource());
 }
@@ -237,6 +201,10 @@ void WebBrowserProcessor::OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bo
 }
 
 void WebBrowserProcessor::process() {
+    if (js_.isModified() && !js_.get().empty()) {
+        browser_->GetMainFrame()->ExecuteJavaScript(js_.get(), "", 1);
+    }
+
     // Vertical flip of CEF output image
     cefToInviwoImageConverter_.convert(renderHandler_->getTexture2D(), outport_, &background_);
 }

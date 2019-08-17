@@ -48,7 +48,7 @@ FontRenderingModule::FontRenderingModule(InviwoApplication* app)
 int FontRenderingModule::getVersion() const { return 3; }
 
 std::unique_ptr<VersionConverter> FontRenderingModule::getConverter(int version) const {
-    return util::make_unique<Converter>(version);
+    return std::make_unique<Converter>(version);
 }
 
 FontRenderingModule::Converter::Converter(int version) : version_(version) {}

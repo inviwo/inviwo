@@ -37,6 +37,7 @@
 #include <inviwo/core/interaction/events/touchevent.h>
 #include <inviwo/core/interaction/trackballobject.h>
 #include <inviwo/core/util/intersection/raysphereintersection.h>
+#include <inviwo/core/util/foreacharg.h>
 #include <inviwo/core/common/inviwoapplication.h>
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -50,38 +51,48 @@ Trackball::Trackball(TrackballObject* object)
     : CompositeProperty("trackball", "Trackball")
     , object_(object)
     , isMouseBeingPressedAndHold_(false)
-    , lastNDC_(vec3(0.0))
+    , lastNDC_(vec3(0.0f))
     , gestureStartNDCDepth_(-1)
-    , trackballMethod_("trackballMethod", "Trackball Method")
-    , fixUp_("fixUp", "Fix Up Vector", false)
+    , trackballMethod_("trackballMethod", "Trackball Method",
+                       {{"tb_vt", "Virtual Trackball", 0},
+                        {"tb_tav", "Two Axis Valuator Trackball", 1},
+                        {"tb_fps", "First Person Camera", 2},
+                        {"tb_fodr", "Object follows Cursor", 3}},
+                       0)
     , sensitivity_("sensitivity", "Sensitivity", 3.0f, 0.0f, 10.0f, 0.25f)
+    , movementSpeed_("movementSpeed", "Movement Speed", 0.025f, 0.0f, 1.0f)
+    , fixUp_("fixUp", "Fix Up Vector", false)
+    , worldUp_("worldUp", "World Up",
+               {{"xAxis", "X Axis", 0},
+                {"yAxis", "Y Axis", 1},
+                {"zAxis", "Z Axis", 2},
+                {"custom", "Custom", 3}},
+               1)
+    , customWorldUp_("customWup", "Custom World Up", vec3(0, 1, 0), vec3(-1, -1, -1), vec3(1, 1, 1))
     , verticalAngleLimit_("verticalAngleLimit", "Vertical Angle Limit", 0.125f, 0.0f,
                           glm::pi<float>() / 2.0f, 0.05f)
-    , movementSpeed_("movementSpeed", "Movement Speed", 0.025, 0.0f, 1.0f)
     , handleInteractionEvents_("handleEvents", "Handle interaction events", true,
                                InvalidationLevel::Valid)
     , allowHorizontalPanning_("allowHorizontalPanning", "Horizontal panning enabled", true)
     , allowVerticalPanning_("allowVerticalPanning", "Vertical panning enabled", true)
     , allowZooming_("allowZoom", "Zoom enabled", true)
-    , maxZoomInDistance_("minDistanceToLookAtPoint", "Minimum zoom distance", 0.0f, 0.0f, 1000.0f)
+    , allowWheelZooming_("allowWheelZoom", "Mouse Wheel Zoom enabled", true)
     , allowHorizontalRotation_("allowHorziontalRotation", "Rotation around horizontal axis", true)
     , allowVerticalRotation_("allowVerticalRotation", "Rotation around vertical axis", true)
     , allowViewDirectionRotation_("allowViewAxisRotation", "Rotation around view axis", true)
     , allowRecenterView_("allowRecenterView", "Recenter view with Double Click", false)
     , animate_("animate", "Animate rotations", false)
     // clang-format off
-    , mouseRotate_("trackballRotate", "Rotate", [this](Event* e) { rotate(e); }, MouseButton::Left, MouseState::Press | MouseState::Move)
-    , mousePan_("trackballPan", "Pan",          [this](Event* e) { pan(e); }, MouseButton::Middle, MouseState::Press | MouseState::Move)
-    , mouseReset_("mouseReset", "Reset",        [this](Event* e) { reset(e); }, MouseButtons(flags::any), MouseState::Release)
+    , mouseRotate_("trackballRotate", "Rotate", [this](Event* e) { rotate(e); }, MouseButton::Left, MouseState::Move)
+    , mouseZoom_("mouseZoom", "Zoom (Continuous)", [this](Event* e) { zoom(e); }, MouseButton::Right, MouseState::Move)
+    , wheelZoom_("wheelZoom", "Zoom (Steps)",      [this](Event* e) { zoomWheel(e); }, std::make_unique<WheelEventMatcher>())
+    , mousePan_("trackballPan", "Pan",          [this](Event* e) { pan(e); }, MouseButton::Middle, MouseState::Move)
     , mouseRecenterFocusPoint_("mouseRecenterFocusPoint", "Recenter Focus Point", [this](Event* e) { recenterFocusPoint(e); }, MouseButton::Left, MouseState::DoubleClick)
-
-    , wheelZoom_("wheelZoom", "Zoom (Steps)",      [this](Event* e) { zoomWheel(e); }, util::make_unique<WheelEventMatcher>())
-    , mouseZoom_("mouseZoom", "Zoom (Continuous)", [this](Event* e) { zoom(e); }, MouseButton::Right, MouseState::Press | MouseState::Move)
-
-    , moveLeft_("moveLeft", "Move Left",    [this](Event* e) { moveLeft(e); },  IvwKey::A, KeyState::Press)
-    , moveRight_("moveRight", "Move Right", [this](Event* e) { moveRight(e); }, IvwKey::D, KeyState::Press)
+    , mouseReset_("mouseReset", "Reset",        [this](Event* e) { reset(e); }, MouseButtons(flags::any), MouseState::Release)
     , moveUp_("moveUp", "Move Up",          [this](Event* e) { moveUp(e); },    IvwKey::R, KeyState::Press)
+    , moveLeft_("moveLeft", "Move Left",    [this](Event* e) { moveLeft(e); },  IvwKey::A, KeyState::Press)
     , moveDown_("moveDown", "Move Down",    [this](Event* e) { moveDown(e); },  IvwKey::F, KeyState::Press)
+    , moveRight_("moveRight", "Move Right", [this](Event* e) { moveRight(e); }, IvwKey::D, KeyState::Press)
     , moveForward_("moveForward", "Move Forward",    [this](Event* e) { moveForward(e); },  IvwKey::W, KeyState::Press)
     , moveBackward_("moveBackward", "Move Backward", [this](Event* e) { moveBackward(e); }, IvwKey::S, KeyState::Press)
 
@@ -96,63 +107,27 @@ Trackball::Trackball(TrackballObject* object)
     , stepPanLeft_("stepPanLeft", "Pan left",    [this](Event* e) { panRight(e); }, IvwKey::A, KeyState::Press, KeyModifier::Shift) // Left <-> Right switched for buttons
     , stepPanDown_("stepPanDown", "Pan down",    [this](Event* e) { panDown(e); },  IvwKey::S, KeyState::Press, KeyModifier::Shift)
     , stepPanRight_("stepPanRight", "Pan right", [this](Event* e) { panLeft(e); },  IvwKey::D, KeyState::Press, KeyModifier::Shift) // Left <-> Right switched for buttons
-    , touchGesture_("touchGesture", "Touch", [this](Event* e) { touchGesture(e); }, util::make_unique<GeneralEventMatcher>([](Event* e) { return e->hash() == TouchEvent::chash(); }))
+    , touchGesture_("touchGesture", "Touch", [this](Event* e) { touchGesture(e); }, std::make_unique<GeneralEventMatcher>([](Event* e) { return e->hash() == TouchEvent::chash(); }))
     // clang-format on
     , evaluated_(true)
-    , timer_(std::chrono::milliseconds{30}, [this]() { animate(); }) {
+    , timer_{std::chrono::milliseconds{30LL}, [this]() { animate(); }} {
+
+    util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props());
+    util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, eventprops());
+
+    customWorldUp_.visibilityDependsOn(
+        worldUp_, [](const OptionPropertyInt& opt) { return opt == 3 && opt.getVisible(); });
+    worldUp_.visibilityDependsOn(trackballMethod_,
+                                 [](const OptionPropertyInt& opt) { return opt == 1 || opt == 2; });
+
+    auto isTAV = [](const OptionPropertyInt& opt) { return opt == 1; };
+    verticalAngleLimit_.visibilityDependsOn(trackballMethod_, isTAV);
+    fixUp_.visibilityDependsOn(trackballMethod_, isTAV);
+    movementSpeed_.visibilityDependsOn(trackballMethod_,
+                                       [](const OptionPropertyInt& opt) { return opt == 2; });
 
     mouseReset_.setVisible(false);
-    mouseReset_.setCurrentStateAsDefault();
-
-    trackballMethod_.addOption("tb_vt", "Virtual Trackball", 0);
-    trackballMethod_.addOption("tb_tav", "Two Axis Valuator Trackball", 1);
-    trackballMethod_.addOption("tb_fps", "First Person Camera", 2);
-    trackballMethod_.addOption("tb_fodr", "Object follows Cursor", 3);
-    addProperty(trackballMethod_);
-    addProperty(sensitivity_);
-    addProperty(movementSpeed_);
-    addProperty(fixUp_);
-    addProperty(verticalAngleLimit_);
-
-    addProperty(handleInteractionEvents_);
-
-    addProperty(allowHorizontalPanning_);
-    addProperty(allowVerticalPanning_);
-    addProperty(allowZooming_);
-    // addProperty(maxZoomInDistance_);
-
-    addProperty(allowHorizontalRotation_);
-    addProperty(allowVerticalRotation_);
-    addProperty(allowViewDirectionRotation_);
-    addProperty(allowRecenterView_);
-    addProperty(animate_);
-
-    addProperty(mouseRotate_);
-    addProperty(mouseZoom_);
-    addProperty(mousePan_);
-    addProperty(mouseRecenterFocusPoint_);
-    addProperty(mouseReset_);
-    addProperty(wheelZoom_);
-    wheelZoom_.setVisible(false); // Is not displayed properly
-
-    addProperty(moveUp_);
-    addProperty(moveLeft_);
-    addProperty(moveDown_);
-    addProperty(moveRight_);
-    addProperty(moveForward_);
-    addProperty(moveBackward_);
-    addProperty(stepRotateUp_);
-    addProperty(stepRotateLeft_);
-    addProperty(stepRotateDown_);
-    addProperty(stepRotateRight_);
-    addProperty(stepZoomIn_);
-    addProperty(stepZoomOut_);
-    addProperty(stepPanUp_);
-    addProperty(stepPanLeft_);
-    addProperty(stepPanDown_);
-    addProperty(stepPanRight_);
-
-    addProperty(touchGesture_);
+    wheelZoom_.setVisible(false);     // Is not displayed properly
     touchGesture_.setVisible(false);  // No options to change button combination to trigger event
 
     setCollapsed(true);
@@ -165,15 +140,17 @@ Trackball::Trackball(const Trackball& rhs)
     , lastNDC_(vec3(0.0))
     , gestureStartNDCDepth_(-1)
     , trackballMethod_(rhs.trackballMethod_)
-    , fixUp_(rhs.fixUp_)
     , sensitivity_(rhs.sensitivity_)
-    , verticalAngleLimit_(rhs.verticalAngleLimit_)
     , movementSpeed_(rhs.movementSpeed_)
+    , fixUp_(rhs.fixUp_)
+    , worldUp_(rhs.worldUp_)
+    , customWorldUp_(rhs.customWorldUp_)
+    , verticalAngleLimit_(rhs.verticalAngleLimit_)
     , handleInteractionEvents_(rhs.handleInteractionEvents_)
     , allowHorizontalPanning_(rhs.allowHorizontalPanning_)
     , allowVerticalPanning_(rhs.allowVerticalPanning_)
     , allowZooming_(rhs.allowZooming_)
-    , maxZoomInDistance_(rhs.maxZoomInDistance_)
+    , allowWheelZooming_(rhs.allowWheelZooming_)
     , allowHorizontalRotation_(rhs.allowHorizontalRotation_)
     , allowVerticalRotation_(rhs.allowVerticalRotation_)
     , allowViewDirectionRotation_(rhs.allowViewDirectionRotation_)
@@ -185,10 +162,10 @@ Trackball::Trackball(const Trackball& rhs)
     , mousePan_(rhs.mousePan_)
     , mouseRecenterFocusPoint_(rhs.mouseRecenterFocusPoint_)
     , mouseReset_(rhs.mouseReset_)
-    , moveLeft_(rhs.moveLeft_)
-    , moveRight_(rhs.moveRight_)
     , moveUp_(rhs.moveUp_)
+    , moveLeft_(rhs.moveLeft_)
     , moveDown_(rhs.moveDown_)
+    , moveRight_(rhs.moveRight_)
     , moveForward_(rhs.moveForward_)
     , moveBackward_(rhs.moveBackward_)
     , stepRotateUp_(rhs.stepRotateUp_)
@@ -203,55 +180,13 @@ Trackball::Trackball(const Trackball& rhs)
     , stepPanRight_(rhs.stepPanRight_)
     , touchGesture_(rhs.touchGesture_)
     , evaluated_(true)
-    , timer_(std::chrono::milliseconds{30}, [this]() { animate(); }) {
+    , timer_(std::chrono::milliseconds{30LL}, [this]() { animate(); }) {
+
+    util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props());
+    util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, eventprops());
 
     mouseReset_.setVisible(false);
-    mouseReset_.setCurrentStateAsDefault();
-
-    addProperty(trackballMethod_);
-    addProperty(sensitivity_);
-    addProperty(fixUp_);
-    addProperty(verticalAngleLimit_);
-
-    addProperty(handleInteractionEvents_);
-
-    addProperty(allowHorizontalPanning_);
-    addProperty(allowVerticalPanning_);
-    addProperty(allowZooming_);
-    addProperty(maxZoomInDistance_);
-
-    addProperty(allowHorizontalRotation_);
-    addProperty(allowVerticalRotation_);
-    addProperty(allowViewDirectionRotation_);
-    addProperty(allowRecenterView_);
-
-    addProperty(animate_);
-
-    addProperty(mouseRotate_);
-    addProperty(mouseZoom_);
-    addProperty(mousePan_);
-    addProperty(mouseRecenterFocusPoint_);
-    addProperty(mouseReset_);
-    addProperty(wheelZoom_);
-    wheelZoom_.setVisible(false); // Is not displayed properly
-    addProperty(moveLeft_);
-    addProperty(moveRight_);
-    addProperty(moveUp_);
-    addProperty(moveDown_);
-    addProperty(moveForward_);
-    addProperty(moveBackward_);
-    addProperty(stepRotateUp_);
-    addProperty(stepRotateLeft_);
-    addProperty(stepRotateDown_);
-    addProperty(stepRotateRight_);
-    addProperty(stepZoomIn_);
-    addProperty(stepZoomOut_);
-    addProperty(stepPanUp_);
-    addProperty(stepPanLeft_);
-    addProperty(stepPanDown_);
-    addProperty(stepPanRight_);
-
-    addProperty(touchGesture_);
+    wheelZoom_.setVisible(false);     // Is not displayed properly
     touchGesture_.setVisible(false);  // No options to change button combination to trigger event
 
     setCollapsed(true);
@@ -264,43 +199,10 @@ Trackball& Trackball::operator=(const Trackball& that) {
         isMouseBeingPressedAndHold_ = false;
         lastNDC_ = vec3(0.0);
         gestureStartNDCDepth_ = -1;
-        trackballMethod_ = that.trackballMethod_;
-        sensitivity_ = that.sensitivity_;
-        movementSpeed_ = that.movementSpeed_;
-        fixUp_ = that.fixUp_;
-        verticalAngleLimit_ = that.verticalAngleLimit_;
-        handleInteractionEvents_ = that.handleInteractionEvents_;
-        allowHorizontalPanning_ = that.allowHorizontalPanning_;
-        allowVerticalPanning_ = that.allowVerticalPanning_;
-        allowZooming_ = that.allowZooming_;
-        allowHorizontalRotation_ = that.allowHorizontalRotation_;
-        allowVerticalRotation_ = that.allowVerticalRotation_;
-        allowViewDirectionRotation_ = that.allowViewDirectionRotation_;
-        allowRecenterView_ = that.allowRecenterView_;
-        animate_ = that.animate_;
-        mouseRotate_ = that.mouseRotate_;
-        mouseZoom_ = that.mouseZoom_;
-        wheelZoom_ = that.wheelZoom_;
-        mousePan_ = that.mousePan_;
-        mouseRecenterFocusPoint_ = that.mouseRecenterFocusPoint_;
-        mouseReset_ = that.mouseReset_;
-        moveLeft_ = that.moveLeft_;
-        moveRight_ = that.moveRight_;
-        moveUp_ = that.moveUp_;
-        moveDown_ = that.moveDown_;
-        moveForward_ = that.moveForward_;
-        moveBackward_ = that.moveBackward_;
-        stepRotateUp_ = that.stepRotateUp_;
-        stepRotateLeft_ = that.stepRotateLeft_;
-        stepRotateDown_ = that.stepRotateDown_;
-        stepRotateRight_ = that.stepRotateRight_;
-        stepZoomIn_ = that.stepZoomIn_;
-        stepZoomOut_ = that.stepZoomOut_;
-        stepPanUp_ = that.stepPanUp_;
-        stepPanLeft_ = that.stepPanLeft_;
-        stepPanDown_ = that.stepPanDown_;
-        stepPanRight_ = that.stepPanRight_;
-        touchGesture_ = that.touchGesture_;
+
+        util::for_each_in_tuple([](auto& dst, auto& src) { dst = src; }, props(), that.props());
+        util::for_each_in_tuple([](auto& dst, auto& src) { dst = src; }, eventprops(),
+                                that.eventprops());
     }
     return *this;
 }
@@ -320,6 +222,22 @@ const vec3 Trackball::getLookUp() const { return object_->getLookUp(); }
 
 const vec3 Trackball::getLookRight() const {
     return glm::normalize(glm::cross(getLookTo() - getLookFrom(), getLookUp()));
+}
+
+/* \brief Returns the World Up Vector according to `worldUp_` property. */
+const vec3 Trackball::getWorldUp() const {
+    switch (worldUp_) {
+        case 0:
+            return vec3(1, 0, 0);
+        case 1:
+            return vec3(0, 1, 0);
+        case 2:
+            return vec3(0, 0, 1);
+        case 3:
+            return glm::normalize(customWorldUp_.get());
+        default:
+            return vec3(0, 1, 0);
+    }
 }
 
 const vec3 Trackball::getLookFromMinValue() const { return object_->getLookFromMinValue(); }
@@ -405,7 +323,7 @@ void Trackball::rotateTAV(Event* event) {
         isMouseBeingPressedAndHold_ = true;
     } else {
         const vec2 diff = glm::xy(curNDC - this->lastNDC_);
-        const vec3 wUp = vec3(0, 1, 0);  // world up
+        const vec3 wUp = getWorldUp();  // world up
         // Get vector to camera
         vec3 camDir = getLookFrom() - getLookTo();
         const float dist =
@@ -507,9 +425,9 @@ void Trackball::rotateFPS(Event* event) {
         const mat4 matYaw = yaw(-diff.x);
         const mat4 matPitch = pitch(diff.y);
         const vec3 newLookTo = vec3(matYaw * matPitch * vec4(to, 1.f));
-        const vec3 yDir = vec3(0, 1, 0);
+        const vec3 wUp = getWorldUp();
         const vec3 viewDir = glm::normalize(newLookTo - from);
-        const vec3 rightDir = glm::normalize(glm::cross(viewDir, yDir));
+        const vec3 rightDir = glm::normalize(glm::cross(viewDir, wUp));
         const vec3 newLookUp = glm::normalize(glm::cross(rightDir, viewDir));
         setLook(from, newLookTo, newLookUp);
     }
@@ -526,7 +444,7 @@ mat4 Trackball::pitch(const float radians) const {
 
 mat4 Trackball::yaw(const float radians) const {
     return glm::translate(getLookFrom())  // to origin
-           * glm::rotate(radians, fixUp_ ? vec3(0.f, 1.f, 0.f) : getLookUp()) *
+           * glm::rotate(radians, fixUp_ ? getWorldUp() : getLookUp()) *
            glm::translate(-getLookFrom());  // translate back
 }
 
@@ -537,51 +455,45 @@ mat4 Trackball::roll(const float radians) const {
 }
 
 /* \brief Moves camera along -cam_right */
-void Trackball::moveLeft(Event* event) {
+void Trackball::moveLeft(Event*) {
     const vec3 right = getLookRight();
     setLook(getLookFrom() - movementSpeed_.get() * right,
-            getLookTo()   - movementSpeed_.get() * right,
-            getLookUp());
+            getLookTo() - movementSpeed_.get() * right, getLookUp());
 }
 
 /* \brief Moves camera along cam_right */
-void Trackball::moveRight(Event* event) {
+void Trackball::moveRight(Event*) {
     const vec3 right = getLookRight();
     setLook(getLookFrom() + movementSpeed_.get() * right,
-            getLookTo()   + movementSpeed_.get() * right,
-            getLookUp());
+            getLookTo() + movementSpeed_.get() * right, getLookUp());
 }
 
 /* \brief Moves camera along cam_up */
-void Trackball::moveUp(Event* event) {
+void Trackball::moveUp(Event*) {
     const vec3 up = getLookUp();
-    setLook(getLookFrom() + movementSpeed_.get() * up,
-            getLookTo()   + movementSpeed_.get() * up,
+    setLook(getLookFrom() + movementSpeed_.get() * up, getLookTo() + movementSpeed_.get() * up,
             getLookUp());
 }
 
 /* \brief Moves camera along -cam_up */
-void Trackball::moveDown(Event* event) {
+void Trackball::moveDown(Event*) {
     const vec3 up = getLookUp();
-    setLook(getLookFrom() - movementSpeed_.get() * up,
-            getLookTo()   - movementSpeed_.get() * up,
+    setLook(getLookFrom() - movementSpeed_.get() * up, getLookTo() - movementSpeed_.get() * up,
             getLookUp());
 }
 
 /* \brief Moves camera along view_dir */
-void Trackball::moveForward(Event* event) {
+void Trackball::moveForward(Event*) {
     const vec3 viewDir = glm::normalize(getLookTo() - getLookFrom());
     setLook(getLookFrom() + movementSpeed_.get() * viewDir,
-            getLookTo()   + movementSpeed_.get() * viewDir,
-            getLookUp());
+            getLookTo() + movementSpeed_.get() * viewDir, getLookUp());
 }
 
 /* \brief Moves camera along -view_dir */
-void Trackball::moveBackward(Event* event) {
+void Trackball::moveBackward(Event*) {
     const vec3 viewDir = glm::normalize(getLookTo() - getLookFrom());
     setLook(getLookFrom() - movementSpeed_.get() * viewDir,
-            getLookTo()   - movementSpeed_.get() * viewDir,
-            getLookUp());
+            getLookTo() - movementSpeed_.get() * viewDir, getLookUp());
 }
 
 /* \brief zoom based on mouse move event
@@ -991,9 +903,8 @@ float inviwo::Trackball::getBoundedZoom(const vec3& lookFrom, const vec3& zoomTo
 
     // Clamp so that the user does not zoom outside of the bounds and not
     // further than, or onto, the lookTo point.
-    return glm::clamp(
-        zoom, maxZoomOut,
-        directionLength - std::max(maxZoomInDistance_.get(), object_->getNearPlaneDist()));
+    return glm::clamp(zoom, maxZoomOut,
+                      directionLength - std::max(0.0f, object_->getNearPlaneDist()));
 }
 
 void Trackball::rotateLeft(Event* event) {
@@ -1042,6 +953,8 @@ void Trackball::panDown(Event* event) {
  * step per mouse wheel tick. Horizontal scrolling is disregarded
  */
 void Trackball::zoomWheel(Event* event) {
+    if (!allowWheelZooming_) return;
+
     auto wheelEvent = static_cast<WheelEvent*>(event);
     int steps = static_cast<int>(wheelEvent->delta().y);
 
@@ -1080,7 +993,7 @@ void Trackball::recenterFocusPoint(Event* event) {
     event->markAsUsed();
 }
 
-void inviwo::Trackball::animate() {
+void Trackball::animate() {
     if (this->evaluated_) {
         this->evaluated_ = false;
         dispatchFront([this]() {

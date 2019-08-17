@@ -59,6 +59,7 @@ set(HEADER_FILES
     include/modules/base/processors/heightfieldmapper.h
     include/modules/base/processors/imagecontourprocessor.h
     include/modules/base/processors/imageexport.h
+    include/modules/base/processors/imageinformation.h
     include/modules/base/processors/imagesequenceelementselectorprocessor.h
     include/modules/base/processors/imagesnapshot.h
     include/modules/base/processors/imagesource.h
@@ -72,6 +73,7 @@ set(HEADER_FILES
     include/modules/base/processors/meshconverterprocessor.h
     include/modules/base/processors/meshcreator.h
     include/modules/base/processors/meshexport.h
+    include/modules/base/processors/meshinformation.h
     include/modules/base/processors/meshmapping.h
     include/modules/base/processors/meshsequenceelementselectorprocessor.h
     include/modules/base/processors/meshsource.h
@@ -88,8 +90,9 @@ set(HEADER_FILES
     include/modules/base/processors/singlevoxel.h
     include/modules/base/processors/spotlightsourceprocessor.h
     include/modules/base/processors/stereocamerasyncer.h
-    include/modules/base/processors/surfaceextraction.h
+    include/modules/base/processors/surfaceextractionprocessor.h
     include/modules/base/processors/tfselector.h
+    include/modules/base/processors/trianglestowireframe.h
     include/modules/base/processors/vectorelementselectorprocessor.h
     include/modules/base/processors/volumebasistransformer.h
     include/modules/base/processors/volumeboundingbox.h
@@ -111,7 +114,11 @@ set(HEADER_FILES
     include/modules/base/processors/volumetospatialsampler.h
     include/modules/base/processors/worldtransform.h
     include/modules/base/properties/basisproperty.h
+    include/modules/base/properties/bufferinformationproperty.h
     include/modules/base/properties/gaussianproperty.h
+    include/modules/base/properties/imageinformationproperty.h
+    include/modules/base/properties/layerinformationproperty.h
+    include/modules/base/properties/meshinformationproperty.h
     include/modules/base/properties/sequencetimerproperty.h
     include/modules/base/properties/volumeinformationproperty.h
     include/modules/base/properties/volumedescriptionproperty.h
@@ -170,6 +177,7 @@ set(SOURCE_FILES
     src/processors/heightfieldmapper.cpp
     src/processors/imagecontourprocessor.cpp
     src/processors/imageexport.cpp
+    src/processors/imageinformation.cpp
     src/processors/imagesequenceelementselectorprocessor.cpp
     src/processors/imagesnapshot.cpp
     src/processors/imagesource.cpp
@@ -183,6 +191,7 @@ set(SOURCE_FILES
     src/processors/meshconverterprocessor.cpp
     src/processors/meshcreator.cpp
     src/processors/meshexport.cpp
+    src/processors/meshinformation.cpp
     src/processors/meshmapping.cpp
     src/processors/meshsequenceelementselectorprocessor.cpp
     src/processors/meshsource.cpp
@@ -199,8 +208,9 @@ set(SOURCE_FILES
     src/processors/singlevoxel.cpp
     src/processors/spotlightsourceprocessor.cpp
     src/processors/stereocamerasyncer.cpp
-    src/processors/surfaceextraction.cpp
+    src/processors/surfaceextractionprocessor.cpp
     src/processors/tfselector.cpp
+    src/processors/trianglestowireframe.cpp
     src/processors/volumeboundingbox.cpp
     src/processors/volumecreator.cpp
     src/processors/volumecurlcpuprocessor.cpp
@@ -219,7 +229,11 @@ set(SOURCE_FILES
     src/processors/volumesubset.cpp
     src/processors/volumetospatialsampler.cpp
     src/properties/basisproperty.cpp
+    src/properties/bufferinformationproperty.cpp
     src/properties/gaussianproperty.cpp
+    src/properties/imageinformationproperty.cpp
+    src/properties/layerinformationproperty.cpp
+    src/properties/meshinformationproperty.cpp
     src/properties/sequencetimerproperty.cpp
     src/properties/volumeinformationproperty.cpp
     src/properties/volumedescriptionproperty.cpp

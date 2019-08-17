@@ -6,3 +6,5 @@ option(GLFW_DOCUMENT_INTERNALS "Include internals in documentation" OFF)
 
 add_subdirectory(glfw)
 ivw_folder(glfw ext)
+
+ivw_suppress_compiler_warnings(glfw)

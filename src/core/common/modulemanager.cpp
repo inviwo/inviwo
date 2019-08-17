@@ -224,7 +224,7 @@ void ModuleManager::registerModules(RuntimeModuleLoading) {
 
         try {
             // Load library. Will throw exception if failed to load
-            auto sharedLib = util::make_unique<SharedLibrary>(tmpPath);
+            auto sharedLib = std::make_unique<SharedLibrary>(tmpPath);
             // Only consider libraries with Inviwo module creation function
             if (auto moduleFunc = sharedLib->findSymbolTyped<f_getModule>("createModule")) {
                 // Add module factory object

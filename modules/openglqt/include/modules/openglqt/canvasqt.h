@@ -145,7 +145,7 @@ std::unique_ptr<Canvas> CanvasQtBase<T>::createHiddenCanvas() {
     auto thread = QThread::currentThread();
     // The context has to be created on the main thread.
     auto res = dispatchFront([&thread]() {
-        auto canvas = util::make_unique<HiddenCanvasQt<CanvasQtBase<T>>>();
+        auto canvas = std::make_unique<HiddenCanvasQt<CanvasQtBase<T>>>();
         canvas->doneCurrent();
         canvas->context()->moveToThread(thread);
         return canvas;

@@ -49,7 +49,7 @@ TextureUnit::TextureUnit() : unitEnum_(0), unitNumber_(0) {
         }
     }
 
-    throw OpenGLException("Exceeding number of available texture units.", IvwContext);
+    throw OpenGLException("Exceeding number of available texture units.", IVW_CONTEXT);
 }
 
 TextureUnit::TextureUnit(TextureUnit&& rhs)

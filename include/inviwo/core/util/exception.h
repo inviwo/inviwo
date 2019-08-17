@@ -32,6 +32,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/sourcecontext.h>
 #include <string>
 #include <functional>
 #include <exception>
@@ -45,42 +46,7 @@
 
 namespace inviwo {
 
-struct IVW_CORE_API ExceptionContext {
-    ExceptionContext(std::string caller = "", std::string file = "", std::string function = "",
-                     int line = 0);
-    const std::string& getCaller() const;
-    const std::string& getFile() const;
-    const std::string& getFunction() const;
-    const int& getLine() const;
-
-private:
-    std::string caller_;
-    std::string file_;
-    std::string function_;
-    int line_ = 0;
-};
-
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             const ExceptionContext& ec) {
-    ss << ec.getCaller() << " (" << ec.getFile() << ":" << ec.getLine() << ")";
-    return ss;
-}
-
-#define IVW_CONTEXT                                                                            \
-    ExceptionContext(parseTypeIdName(std::string(typeid(this).name())), std::string(__FILE__), \
-                     std::string(__FUNCTION__), __LINE__)
-// Old deprecated macro, use uppercase
-#define IvwContext                                                                             \
-    ExceptionContext(parseTypeIdName(std::string(typeid(this).name())), std::string(__FILE__), \
-                     std::string(__FUNCTION__), __LINE__)
-
-#define IVW_CONTEXT_CUSTOM(source) \
-    ExceptionContext(source, std::string(__FILE__), std::string(__FUNCTION__), __LINE__)
-// Old deprecated macro, use uppercase
-#define IvwContextCustom(source) \
-    ExceptionContext(source, std::string(__FILE__), std::string(__FUNCTION__), __LINE__)
-
+using ExceptionContext = SourceContext;
 using ExceptionHandler = std::function<void(ExceptionContext)>;
 
 class IVW_CORE_API Exception : public std::runtime_error {

@@ -82,8 +82,14 @@ void ProcessorTree::mouseMoveEvent(QMouseEvent* e) {
         if (item &&
             item->data(0, ProcessorTree::typeRole).toInt() == ProcessorTree::ProcessoorType) {
             auto id = item->data(0, identifierRole).toString();
-            if (auto p = processorTreeWidget_->createProcessor(id)) {
-                new ProcessorDragObject(this, std::move(p));
+            try {
+                if (auto p = processorTreeWidget_->createProcessor(id)) {
+                    new ProcessorDragObject(this, std::move(p));
+                }
+            } catch (const std::exception& e) {
+                LogError("Error trying to create processor: " << utilqt::fromQString(id)
+                                                              << " Message:\n"
+                                                              << e.what());
             }
         }
     }

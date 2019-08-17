@@ -61,19 +61,24 @@ namespace inviwo {
  */
 class InviwoAssimpLogStream : public Assimp::LogStream {
 private:
-    LogLevel loglevel;
+    LogLevel loglevel_;
+    const std::string fileName_;
 
 public:
-    InviwoAssimpLogStream(LogLevel ploglevel) { loglevel = ploglevel; }
-
+    InviwoAssimpLogStream(LogLevel ploglevel, const std::string filename = "")
+        : loglevel_{ploglevel}, fileName_{filename} {}
     virtual ~InviwoAssimpLogStream() = default;
 
     void write(const char* message) {
+        if (strlen(message) == 0) return;
         std::string tmp(message);
         while ('\n' == tmp.back()) tmp.pop_back();
+        if (fileName_.size() > 0) {
+            tmp += " (" + fileName_ + ")";
+        }
 
-        inviwo::LogCentral::getPtr()->log("Assimp Geometry Importer", loglevel, LogAudience::User,
-                                          "<Assimp Bibliothek>", "<Funktion>", 0, tmp);
+        inviwo::LogCentral::getPtr()->log("AssimpReader", loglevel_, LogAudience::User, __FILE__,
+                                          "inviwo::AssimpReader::readData", 0, tmp);
     }
 };
 
@@ -81,7 +86,7 @@ AssimpReader::AssimpReader()
     : DataReaderType<Mesh>()
     , logLevel_(AssimpLogLevel::Warn)
     , verboseLog_(false)
-    , fixInvalidData_(true) {
+    , fixInvalidData_(false) {
     aiString str{};
     Assimp::Importer importer{};
 
@@ -123,19 +128,23 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::string& filePath) {
                                                               : Assimp::Logger::LogSeverity::NORMAL;
         Assimp::DefaultLogger::create("AssimpImportLog.txt", logSeverity, 0);
         // if logging is enabled, errors will always be logged
-        Assimp::DefaultLogger::get()->attachStream(new InviwoAssimpLogStream(LogLevel::Error),
-                                                   Assimp::Logger::ErrorSeverity::Err);
+        Assimp::DefaultLogger::get()->attachStream(
+            new InviwoAssimpLogStream(LogLevel::Error, filePath),
+            Assimp::Logger::ErrorSeverity::Err);
         if (logLevel_ >= AssimpLogLevel::Warn) {
-            Assimp::DefaultLogger::get()->attachStream(new InviwoAssimpLogStream(LogLevel::Warn),
-                                                       Assimp::Logger::ErrorSeverity::Warn);
+            Assimp::DefaultLogger::get()->attachStream(
+                new InviwoAssimpLogStream(LogLevel::Warn, filePath),
+                Assimp::Logger::ErrorSeverity::Warn);
         }
         if (logLevel_ >= AssimpLogLevel::Info) {
-            Assimp::DefaultLogger::get()->attachStream(new InviwoAssimpLogStream(LogLevel::Info),
-                                                       Assimp::Logger::ErrorSeverity::Info);
+            Assimp::DefaultLogger::get()->attachStream(
+                new InviwoAssimpLogStream(LogLevel::Info, filePath),
+                Assimp::Logger::ErrorSeverity::Info);
         }
         if (logLevel_ >= AssimpLogLevel::Debug) {
-            Assimp::DefaultLogger::get()->attachStream(new InviwoAssimpLogStream(LogLevel::Info),
-                                                       Assimp::Logger::ErrorSeverity::Debugging);
+            Assimp::DefaultLogger::get()->attachStream(
+                new InviwoAssimpLogStream(LogLevel::Info, filePath),
+                Assimp::Logger::ErrorSeverity::Debugging);
         }
     }
 
@@ -165,12 +174,12 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::string& filePath) {
     }
 
     if (!scene) {
-        throw DataReaderException(importer.GetErrorString(), IvwContext);
+        throw DataReaderException(importer.GetErrorString(), IVW_CONTEXT);
     }
 
     // at least one mesh
     if (0 == scene->mNumMeshes) {
-        throw DataReaderException("there are no meshes!", IvwContext);
+        throw DataReaderException("there are no meshes!", IVW_CONTEXT);
     }
 
     // because we use aiProcess_PreTransformVertices we can safely ignore the scenegraph,

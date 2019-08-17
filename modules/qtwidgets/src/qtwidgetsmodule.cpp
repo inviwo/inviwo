@@ -133,11 +133,11 @@ struct OptionWidgetReghelper {
 };
 
 QtWidgetsModule::QtWidgetsModule(InviwoApplication* app)
-    : InviwoModule(app, "QtWidgets"), tfMenuHelper_(util::make_unique<TFMenuHelper>()) {
+    : InviwoModule(app, "QtWidgets"), tfMenuHelper_(std::make_unique<TFMenuHelper>()) {
     if (!qApp) {
         throw ModuleInitException("QApplication must be constructed before QtWidgetsModule");
     }
-    registerSettings(util::make_unique<QtWidgetsSettings>());
+    registerSettings(std::make_unique<QtWidgetsSettings>());
 
     // Register bool property widgets
     registerPropertyWidget<BoolPropertyWidgetQt, BoolProperty>("Default");

@@ -106,7 +106,7 @@ SplitImage::SplitImage()
 }
 
 void SplitImage::initializeResources() {
-    shader_.getGeometryShaderObject()->addShaderDefine("ENABLE_ADJACENCY", "0");
+    shader_[ShaderType::Geometry]->addShaderDefine("ENABLE_ADJACENCY", "0");
 
     shader_.build();
     shader_.activate();

@@ -1,7 +1,7 @@
 #
 # Script to update regression reference images
 # example usage:
-# python.exe .\update-regression-images.py --update --min 0.00 --max 0.05 \
+# python.exe .\update-regression-images.py --user <github username> --token <github token> --save --min 0.00 --max 0.05 \
 #  -j "http://jenkins.inviwo.org:8080/job/inviwo/job/feature%252Fworkspaces2" \
 #  -r inviwo=C:/Users/petst55/Work/Inviwo/Inviwo-dev modules=C:/Users/petst55/Work/Inviwo/Inviwo-modules
 
@@ -9,6 +9,8 @@ import json
 import argparse
 import requests
 from pathlib import Path
+
+
 
 try:
     import colorama
@@ -37,25 +39,34 @@ class ImageTest:
         self.ref_mode = "RGBA"
         self.__dict__.update(entries)
 
-def updateImg(src, dst):
-    img = requests.get(src)
+def updateImg(src, dst, auth):
+    img = requests.get(src, auth=auth)
     with open(dst, "wb") as f:
         f.write(img.content)
 
 def main():
-    parser = argparse.ArgumentParser(description="")
+    desc = '''Script for updating the regression test images. Example call:\n\n
+     python.exe ./update-regression-images.py --user <github username> --token <github token>\n
+            --save --min 0.00 --max 0.05 -j "http://jenkins.inviwo.org:8080/job/inviwo/job/feature%252Fworkspaces2"\n 
+            -r inviwo=C:/Users/petst55/Work/Inviwo/Inviwo-dev modules=C:/Users/petst55/Work/Inviwo/Inviwo-modules'''
+
+    parser = argparse.ArgumentParser(description=desc)
+    parser.add_argument('-u', '--user', help='Github user name', required=True)
+    parser.add_argument('-t', '--token', help='Github password token (see https://github.com/settings/tokens)', required=True)
     parser.add_argument('-j', '--job', help='Jenkins url to job', required=True)
     parser.add_argument('-r', '--repos', required=True, nargs='+', help='List of name=repo "inviwo=C:/.../inviwo"')
-    parser.add_argument("-u", "--update", action="store_true",  help="Update local reference images")
+    parser.add_argument('-s', '--save', action="store_true",  help="Save local reference images")
     parser.add_argument('--min', type=float, default=0.0, help='Only images with errors larger then min')
     parser.add_argument('--max', type=float, default=0.1, help='Only images with errors smaller then max')
     
     args = parser.parse_args()
 
+    auth = (args.user, args.token)
+
     localRepos = {x.split('=')[0]: Path(x.split('=')[1]) for x in args.repos}
     jsonReport = Path('Regression', 'report.json')
     
-    request = requests.get(args.job + "/" + jsonReport.as_posix())
+    request = requests.get(args.job + "/" + jsonReport.as_posix(), auth=auth)
     report = request.json()
     imgcount = 0
 
@@ -84,9 +95,9 @@ def main():
                 dst = localdir / test.image
                 print("   src: {}".format(src))
                 print("   dst: {}".format(dst))
-                if args.update: 
-                    print_warn("   updated reference")
-                    updateImg(src, dst)
+                if args.save: 
+                    print_warn("   reference image saved")
+                    updateImg(src, dst, auth)
 
     print_warn("\n{} errors found".format(imgcount))
 

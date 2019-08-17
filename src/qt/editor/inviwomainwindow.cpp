@@ -135,6 +135,10 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     , updateWorkspaces_{"", "update-workspaces",
                         "Update workspaces of all modules to the latest version "
                         "(located in '<module>/data/workspaces/*')"}
+    , updateRegressionWorkspaces_{"", "update-regression-workspaces",
+                                  "Update regression workspaces of all modules to the latest "
+                                  "version "
+                                  "(located in '<module>/tests/regression/*')"}
     , updateWorkspacesInPath_{"",
                               "update-workspaces-in-path",
                               "Update all workspaces in path to the latest version",
@@ -152,7 +156,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     // make sure, tooltips are always shown (this includes port inspectors as well)
     this->setAttribute(Qt::WA_AlwaysShowToolTips, true);
 
-    networkEditor_ = util::make_unique<NetworkEditor>(this);
+    networkEditor_ = std::make_unique<NetworkEditor>(this);
 
     currentWorkspaceFileName_ = "";
 
@@ -160,16 +164,17 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
 
     fileAssociations_->registerFileType(
         "Inviwo.workspace", "Inviwo Workspace", ".inv", 0,
-        {{"Open", "-w %1", "open",
+        {{"Open", "-w \"%1\"", "open",
           [this](const std::string& file) { openWorkspaceAskToSave(utilqt::toQString(file)); }},
-         {"Append", "-w %1", "append",
+         {"Append", "-w \"%1\"", "append",
           [this](const std::string& file) { appendWorkspace(file); }}});
 
-    fileAssociations_->registerFileType("Inviwo.volume", "Inviwo Volume", ".dat", 0,
-                                        {{"Open", "-d %1", "data", [this](const std::string& file) {
-                                              auto net = app_->getProcessorNetwork();
-                                              util::insertNetworkForData(file, net);
-                                          }}});
+    fileAssociations_->registerFileType(
+        "Inviwo.volume", "Inviwo Volume", ".dat", 0,
+        {{"Open", "-d \"%1\"", "data", [this](const std::string& file) {
+              auto net = app_->getProcessorNetwork();
+              util::insertNetworkForData(file, net);
+          }}});
 
     const QDesktopWidget dw;
     auto screen = dw.screenGeometry(this);
@@ -212,6 +217,10 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
 
     app->getCommandLineParser().add(&updateWorkspaces_, [this]() { util::updateWorkspaces(app_); },
                                     1250);
+
+    app->getCommandLineParser().add(&updateRegressionWorkspaces_,
+                                    [this]() { util::updateRegressionWorkspaces(app_); }, 1250);
+
     app->getCommandLineParser().add(
         &updateWorkspacesInPath_,
         [this]() { util::updateWorkspaces(app_, updateWorkspacesInPath_.getValue()); }, 1250);
@@ -531,7 +540,7 @@ void InviwoMainWindow::addActions() {
         for (const auto& module : app_->getModules()) {
             auto moduleWorkspacePath = module->getPath(ModulePath::Workspaces);
             if (!filesystem::directoryExists(moduleWorkspacePath)) continue;
-            auto menu = util::make_unique<QMenu>(QString::fromStdString(module->getIdentifier()));
+            auto menu = std::make_unique<QMenu>(QString::fromStdString(module->getIdentifier()));
             for (auto item : filesystem::getDirectoryContents(moduleWorkspacePath)) {
                 // only accept inviwo workspace files
                 if (filesystem::getFileExtension(item) != "inv") continue;
@@ -561,7 +570,7 @@ void InviwoMainWindow::addActions() {
         for (const auto& module : app_->getModules()) {
             auto moduleTestPath = module->getPath(ModulePath::RegressionTests);
             if (!filesystem::directoryExists(moduleTestPath)) continue;
-            auto menu = util::make_unique<QMenu>(QString::fromStdString(module->getIdentifier()));
+            auto menu = std::make_unique<QMenu>(QString::fromStdString(module->getIdentifier()));
             for (auto test : filesystem::getDirectoryContents(moduleTestPath,
                                                               filesystem::ListMode::Directories)) {
                 std::string testdir = moduleTestPath + "/" + test;
@@ -572,7 +581,11 @@ void InviwoMainWindow::addActions() {
                     auto action = menu->addAction(QString::fromStdString(item));
                     auto path = QString::fromStdString(testdir + "/" + item);
                     connect(action, &QAction::triggered, this, [this, path]() {
-                        if (askToSaveWorkspaceChanges()) openWorkspace(path);
+                        if (askToSaveWorkspaceChanges()) {
+                            if (openWorkspace(path)) {
+                                hideWelcomeScreen();
+                            }
+                        }
                     });
                 }
             }
@@ -598,12 +611,8 @@ void InviwoMainWindow::addActions() {
         connect(reloadStyle, &QAction::triggered, [this](bool /*state*/) {
             // The following code snippet allows to reload the Qt style sheets during
             // runtime, which is handy while we change them.
-            QFile styleSheetFile(QString::fromStdString(app_->getPath(PathType::Resources) +
-                                                        "/stylesheets/inviwo.qss"));
-            styleSheetFile.open(QFile::ReadOnly);
-            QString styleSheet = QString::fromUtf8(styleSheetFile.readAll());
-            app_->setStyleSheet(styleSheet);
-            styleSheetFile.close();
+            app_->setStyleSheetFile(QString::fromStdString(app_->getPath(PathType::Resources) +
+                                                           "/stylesheets/inviwo.qss"));
         });
     }
 #endif
@@ -711,8 +720,8 @@ void InviwoMainWindow::addActions() {
     // Network
     {
         QIcon enableDisableIcon;
-        enableDisableIcon.addFile(":/svgicons/locked.svg", QSize(), QIcon::Normal, QIcon::Off);
-        enableDisableIcon.addFile(":/svgicons/unlocked.svg", QSize(), QIcon::Normal, QIcon::On);
+        enableDisableIcon.addFile(":/svgicons/unlocked.svg", QSize(), QIcon::Normal, QIcon::Off);
+        enableDisableIcon.addFile(":/svgicons/locked.svg", QSize(), QIcon::Normal, QIcon::On);
         auto disableEvalAction =
             new QAction(enableDisableIcon, tr("Disable &Network Evaluation"), this);
         disableEvalAction->setCheckable(true);
@@ -852,9 +861,8 @@ void InviwoMainWindow::addActions() {
                                                   .arg(utilqt::toQString(p->getIdentifier())));
                 action->setCheckable(true);
                 action->setChecked(p->getProcessorWidget()->isVisible());
-                QObject::connect(action, &QAction::toggled, this, [this, p](bool toggle) {
-                    p->getProcessorWidget()->setVisible(toggle);
-                });
+                QObject::connect(action, &QAction::toggled, this,
+                                 [p](bool toggle) { p->getProcessorWidget()->setVisible(toggle); });
             }
         });
     }
@@ -871,18 +879,12 @@ void InviwoMainWindow::addActions() {
 }
 
 void InviwoMainWindow::updateWindowTitle() {
-    QString windowTitle = QString("Inviwo - Interactive Visualization Workshop - ");
-    windowTitle.append(currentWorkspaceFileName_);
+    static const QString format{"Inviwo - Interactive Visualization Workshop - %1%2 (%3)"};
 
-    if (getNetworkEditor()->isModified()) windowTitle.append("*");
-
-    if (visibilityModeAction_->isChecked()) {
-        windowTitle.append(" (Application mode)");
-    } else {
-        windowTitle.append(" (Developer mode)");
-    }
-
-    setWindowTitle(windowTitle);
+    setWindowTitle(
+        format.arg(currentWorkspaceFileName_)
+            .arg(getNetworkEditor()->isModified() ? "*" : "")
+            .arg(visibilityModeAction_->isChecked() ? "Application mode" : "Developer mode"));
 }
 
 void InviwoMainWindow::addToRecentWorkspaces(QString workspaceFileName) {

@@ -47,8 +47,11 @@ public:
     /**
      * Creates a file observer for filename and start observing that file
      */
-    SingleFileObserver(std::string filename);
+    SingleFileObserver(std::string filename = "");
     virtual ~SingleFileObserver();
+
+    void setFilename(const std::string& filename);
+    const std::string& getFilename() const;
 
     /**
      * Start observing the file, not only needed to call if stop has been called in the first
@@ -70,7 +73,6 @@ public:
      * Remove a callback from the list of callbacks
      */
     void removeOnChange(const BaseCallBack* callback);
-    const std::string& getFilename() const;
 
 private:
     virtual void fileChanged(const std::string& filename);

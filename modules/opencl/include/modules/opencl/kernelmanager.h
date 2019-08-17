@@ -68,13 +68,7 @@ public:
 
     KernelManager();
     virtual ~KernelManager();
-    /**
 
-     *
-     * @param fileName File name
-     * @param defines Compiler defines
-     * @return Pointer to a program no matter if it was succesfully built or not.
-     */
     /**
      * Creates and builds an OpenCL program. Will automatically reload the program and
      * kernels when the file changes.
@@ -87,7 +81,7 @@ public:
      * program is used.
      * @param header Added before file contents. Example usage "#define DataType float \n"
      * @param defines Compiler defines, i.e #define FOO 1
-     * @return Pointer to a program no matter if it was succesfully built or not. Do not delete it.
+     * @return Pointer to a program no matter if it was successfully built or not. Do not delete it.
      */
     cl::Program* buildProgram(const std::string& fileName, const std::string& header,
                               const std::string& defines, bool& wasBuilt);

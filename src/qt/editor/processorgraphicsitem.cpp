@@ -49,6 +49,7 @@
 #include <modules/qtwidgets/propertylistwidget.h>
 #include <modules/qtwidgets/processors/processorwidgetqt.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/qtwidgets/qstringhelper.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -443,7 +444,9 @@ void ProcessorGraphicsItem::onProcessorPortRemoved(Processor*, Port* port) {
 #if IVW_PROFILING
 void ProcessorGraphicsItem::onProcessorAboutToProcess(Processor*) {
     processCount_++;
-    countLabel_->setText(QString::number(processCount_));
+    auto str =
+        QStringHelper<decltype(processCount_)>::toLocaleString(QLocale::system(), processCount_);
+    countLabel_->setText(str);
     clock_.reset();
     clock_.start();
 }

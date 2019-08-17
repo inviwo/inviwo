@@ -98,8 +98,8 @@ public:
     bool isEnabled() const;
     void setEnabled(bool enabled);
 
-    virtual void setCurrentStateAsDefault() override;
-    virtual void resetToDefaultState() override;
+    virtual EventProperty& setCurrentStateAsDefault() override;
+    virtual EventProperty& resetToDefaultState() override;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;

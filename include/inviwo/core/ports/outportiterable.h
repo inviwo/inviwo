@@ -55,7 +55,7 @@ struct OutportIterable {
 
         const_iterator() : self_(nullptr){};
         template <typename Wrapper>
-        const_iterator(Wrapper wrapper) : self_(util::make_unique<Model<Wrapper>>(wrapper)) {}
+        const_iterator(Wrapper wrapper) : self_(std::make_unique<Model<Wrapper>>(wrapper)) {}
         const_iterator(const const_iterator& rhs)
             : self_(rhs.self_ ? rhs.self_->clone() : nullptr) {}
         const_iterator& operator=(const const_iterator& that) {

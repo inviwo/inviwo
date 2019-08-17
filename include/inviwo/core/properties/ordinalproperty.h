@@ -78,8 +78,8 @@ public:
      */
     void set(const T& value, const T& minVal, const T& maxVal, const T& increment);
 
-    virtual void setCurrentStateAsDefault() override;
-    virtual void resetToDefaultState() override;
+    virtual OrdinalProperty<T>& setCurrentStateAsDefault() override;
+    virtual OrdinalProperty<T>& resetToDefaultState() override;
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
@@ -290,19 +290,21 @@ void OrdinalProperty<T>::set(const T& value, const T& minVal, const T& maxVal, c
 }
 
 template <typename T>
-void OrdinalProperty<T>::resetToDefaultState() {
+OrdinalProperty<T>& OrdinalProperty<T>::resetToDefaultState() {
     minValue_.reset();
     maxValue_.reset();
     increment_.reset();
     TemplateProperty<T>::resetToDefaultState();
+    return *this;
 }
 
 template <typename T>
-void OrdinalProperty<T>::setCurrentStateAsDefault() {
+OrdinalProperty<T>& OrdinalProperty<T>::setCurrentStateAsDefault() {
     TemplateProperty<T>::setCurrentStateAsDefault();
     minValue_.setAsDefault();
     maxValue_.setAsDefault();
     increment_.setAsDefault();
+    return *this;
 }
 
 template <typename T>

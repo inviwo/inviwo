@@ -163,7 +163,7 @@ GLUITestProcessor::GLUITestProcessor()
     //
     // create a small check box
     widgets_.emplace_back(
-        util::make_unique<glui::CheckBox>("checkbox 1", *this, uiRenderer_, ivec2(24, 24)));
+        std::make_unique<glui::CheckBox>("checkbox 1", *this, uiRenderer_, ivec2(24, 24)));
     // create a larger check box
     widgets_.emplace_back(
         std::make_unique<glui::CheckBox>("checkbox 2", *this, uiRenderer_, ivec2(32, 32)));

@@ -37,8 +37,39 @@
 
 namespace inviwo {
 
-WebBrowserClient::WebBrowserClient(CefRefPtr<RenderHandlerGL> renderHandler)
-    : renderHandler_(renderHandler) {}
+namespace detail {
+
+// Register inviwo application and module directories for resource loading
+void setupResourceManager(CefRefPtr<CefResourceManager> resource_manager) {
+    if (!CefCurrentlyOn(TID_IO)) {
+        // Execute on the browser IO thread.
+        CefPostTask(TID_IO, base::Bind(setupResourceManager, resource_manager));
+        return;
+    }
+    std::string origin = "https://inviwo";
+    // Redirect paths to corresponding app/module directories.
+    // Enables resource loading from these directories directory (js-files and so on).
+    auto appOrigin = origin + "/app";
+    resource_manager->AddDirectoryProvider(appOrigin, InviwoApplication::getPtr()->getBasePath(),
+                                           99, std::string());
+
+    auto moduleOrigin = origin + "/modules";
+    for (const auto& m : InviwoApplication::getPtr()->getModules()) {
+        auto mOrigin = moduleOrigin + "/" + toLower(m->getIdentifier());
+        auto moduleDir = m->getPath();
+        resource_manager->AddDirectoryProvider(mOrigin, moduleDir, 100, std::string());
+    }
+}
+
+}  // namespace detail
+
+WebBrowserClient::WebBrowserClient(CefRefPtr<RenderHandlerGL> renderHandler,
+                                   const PropertyWidgetCEFFactory* widgetFactory)
+    : widgetFactory_(widgetFactory)
+    , renderHandler_(renderHandler)
+    , resourceManager_(new CefResourceManager()) {
+    detail::setupResourceManager(resourceManager_);
+}
 
 void WebBrowserClient::SetRenderHandler(CefRefPtr<RenderHandlerGL> renderHandler) {
     renderHandler_ = renderHandler;
@@ -48,7 +79,6 @@ bool WebBrowserClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
                                                 CefProcessId source_process,
                                                 CefRefPtr<CefProcessMessage> message) {
     CEF_REQUIRE_UI_THREAD();
-
     return messageRouter_->OnProcessMessageReceived(browser, source_process, message);
 }
 
@@ -61,7 +91,7 @@ void WebBrowserClient::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
         messageRouter_ = CefMessageRouterBrowserSide::Create(config);
 
         // Register handlers with the router.
-        propertyCefSynchronizer_ = new PropertyCefSynchronizer();
+        propertyCefSynchronizer_ = new PropertyCefSynchronizer(widgetFactory_);
         addLoadHandler(propertyCefSynchronizer_);
         messageRouter_->AddHandler(propertyCefSynchronizer_.get(), false);
     }
@@ -129,6 +159,23 @@ void WebBrowserClient::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
     messageRouter_->OnRenderProcessTerminated(browser);
 }
 
+cef_return_value_t WebBrowserClient::OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
+                                                          CefRefPtr<CefFrame> frame,
+                                                          CefRefPtr<CefRequest> request,
+                                                          CefRefPtr<CefRequestCallback> callback) {
+    CEF_REQUIRE_IO_THREAD();
+
+    return resourceManager_->OnBeforeResourceLoad(browser, frame, request, callback);
+}
+
+CefRefPtr<CefResourceHandler> WebBrowserClient::GetResourceHandler(CefRefPtr<CefBrowser> browser,
+                                                                   CefRefPtr<CefFrame> frame,
+                                                                   CefRefPtr<CefRequest> request) {
+    CEF_REQUIRE_IO_THREAD();
+
+    return resourceManager_->GetResourceHandler(browser, frame, request);
+}
+
 void WebBrowserClient::addLoadHandler(CefLoadHandler* loadHandler) {
     loadHandlers_.emplace_back(loadHandler);
 }
@@ -177,6 +224,44 @@ void WebBrowserClient::OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefF
     ss << "</body></html>";
 
     frame->LoadURL(WebBrowserModule::getDataURI(ss.str(), "text/html"));
+}
+
+bool WebBrowserClient::OnConsoleMessage(CefRefPtr<CefBrowser> browser, cef_log_severity_t level,
+                                        const CefString& message, const CefString& source,
+                                        int line) {
+
+    if (auto lc = LogCentral::getPtr()) {
+        std::string src = source.ToString();
+
+        std::string file = "";
+        if (src.rfind("file://", 0) == 0) {
+            replaceInString(src, "\\", "/");
+            file = splitString(src, '/').back();
+        }
+
+        LogLevel loglevel;
+        switch (level) {
+            case LOGSEVERITY_DISABLE:
+                return false;
+            case LOGSEVERITY_ERROR:
+                loglevel = LogLevel::Error;
+                break;
+            case LOGSEVERITY_WARNING:
+                loglevel = LogLevel::Warn;
+                break;
+            case cef_log_severity_t::LOGSEVERITY_DEBUG:
+            case cef_log_severity_t::LOGSEVERITY_INFO:
+            case cef_log_severity_t::LOGSEVERITY_DEFAULT:
+            default:
+                loglevel = LogLevel::Info;
+                break;
+        }
+
+        lc->log("WebBrowserClient", loglevel, LogAudience::Developer, file.c_str(), "", line,
+                message.ToString());
+        return true; 
+    }
+    return false;
 }
 
 }  // namespace inviwo

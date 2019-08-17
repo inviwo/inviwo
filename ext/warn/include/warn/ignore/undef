@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2017-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@
 #if defined(__clang__)
 //  Not available
 #elif defined(__GNUC__)
-#   if __GNUC__ > 3 || (__GNUC__ == 3  && __GNUC_MINOR__ > 4)
+#   if __GNUC__ > 3 || (__GNUC__ == 3  && __GNUC_MINOR__ >= 4)
 #       pragma GCC diagnostic ignored "-Wundef"
 #   endif
 #elif defined(_MSC_VER)

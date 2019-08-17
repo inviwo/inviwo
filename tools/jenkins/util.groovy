@@ -15,13 +15,23 @@
 def getChangeString(build) {
     def MAX_MSG_LEN = 100
     def changeString = ""
-    build.rawBuild.changeSets.each {entries -> 
+    build.changeSets.each {entries -> 
         entries.each { entry -> 
             changeString += "${new Date(entry.timestamp).format("yyyy-MM-dd HH:mm:ss")} "
             changeString += "[${entry.commitId.take(8)}] ${entry.author}: ${entry.msg.take(MAX_MSG_LEN)}\n"
         }
     }
     return changeString ?: " - No new changes"
+}
+
+@NonCPS
+def getAffectedFiles(build) {
+    files = []
+    build.changeSets.each {entries -> 
+        entries.each { entry -> files += entry.affectedFiles }
+    }
+    files.unique()
+    return files
 }
 
 def defaultProperties() {
@@ -80,7 +90,6 @@ def printMap(String name, def map) {
 // this uses global pipeline var pullRequest
 def setLabel(def state, String label, Boolean add) {
     try {
-        //println "setlabel: ${label} add: ${add}"
         if (add) {
             state.addLabel(label)
         } else {
@@ -100,12 +109,12 @@ def checked(def state, String label, Boolean fail, Closure fun) {
         setLabel(state, "J: " + label  + " Failure", true)
         state.errors += label
         if (fail) {
-            state.build.result = 'FAILURE'
+            state.build.result = Result.FAILURE.toString()
             throw e
         } else {
             println e.toString()
-            state.build.result = 'UNSTABLE'
-         }
+            state.build.result = Result.UNSTABLE.toString()
+        }
     }
 }
 
@@ -115,10 +124,13 @@ def wrap(def state, String reportSlackChannel, Closure fun) {
         state.build.result = state.errors.isEmpty() ? 'SUCCESS' : 'UNSTABLE'
     } catch (e) {
         state.build.result = 'FAILURE'
+        println "State:  ${state.build.result}"
+        println "Errors: ${state.errors.join(", ")}"
+        println "Except: ${e}"
         throw e
     } finally {
-        if(!reportSlackChannel.isEmpty()) slack(state, reportSlackChannel)
-        if(!state.errors.isEmpty()) {
+        if (!reportSlackChannel.isEmpty()) slack(state, reportSlackChannel)
+        if (!state.errors.isEmpty()) {
             println "Errors in: ${state.errors.join(", ")}"
             state.build.description = "Errors in: ${state.errors.join(' ')}"
         } 
@@ -135,7 +147,8 @@ def filterfiles() {
 def format(def state) {
     stage("Format Tests") {
         dir('build') {
-            sh 'python3 ../inviwo/tools/jenkins/check-format.py'
+            String binary = state.env.CLANG_FORMAT ? '-binary ' + state.env.CLANG_FORMAT : ''
+            sh "python3 ../inviwo/tools/jenkins/check-format.py ${binary}"
             if (fileExists('clang-format-result.diff')) {
                 String format_diff = readFile('clang-format-result.diff')
                 setLabel(state, 'J: Format Test Failure', !format_diff.isEmpty())
@@ -144,19 +157,13 @@ def format(def state) {
     }
 }
 
-def warn(def state, refjob = 'inviwo/master') {
-    stage("Warn Tests") {
-        dir('build') {
-            // disabled for now, has some macro issues.
-            //sh '''cppcheck --enable=all --inconclusive --xml --xml-version=2 \
-            //      --project=compile_commands.json 2> cppcheck.xml'''    
-        }    
-        dir('inviwo') {
-            recordIssues failedNewAll: 0, referenceJobName: refjob, sourceCodeEncoding: 'UTF-8', 
-                tools: [gcc4(name: 'GCC', reportEncoding: 'UTF-8'), 
-                        clang(name: 'Clang', reportEncoding: 'UTF-8')]
-            //recordIssues referenceJobName: refjob, sourceCodeEncoding: 'UTF-8', 
-            //    tools: [cppCheck(name: 'CPPCheck', pattern: '../build/cppcheck.xml')]
+def warn(def state, refjob = 'daily/appleclang') {
+    cmd('Warn Tests', 'inviwo') {
+        checked(state, 'Warn Tests', false) {
+            recordIssues qualityGates: [[threshold: 1, type: 'NEW', unstable: true]], 
+                         referenceJobName: refjob, 
+                         sourceCodeEncoding: 'UTF-8', 
+                         tools: [clang(name: 'Clang')] 
         }
     }
 }
@@ -240,8 +247,8 @@ def doxygen(def state) {
 
 def slack(def state, channel) {
     stage('Slack') {
-        echo "result: ${state.build.result}"
-        def res2color = ['SUCCESS' : 'good', 'UNSTABLE' : 'warning' , 'FAILURE' : 'danger' ]
+        echo "result: ${state.build.currentResult}"
+        def res2color = [(Result.SUCCESS) : 'good', (Result.UNSTABLE) : 'warning' , (Result.FAILURE) : 'danger' ]
         def color = res2color.containsKey(state.build.result) ? res2color[state.build.result] : 'warning'
         def errors = !state.errors.isEmpty() ? "Errors in: ${state.errors.join(" ")}\n" : ""
         slackSend(
@@ -261,7 +268,7 @@ def cmake(Map args = [:]) {
     return "cmake -G Ninja " +
         (args.printCMakeVars ? " -LA " : "") +
         (args.opts?.collect{" -D${it.key}=${it.value}"}?.join('') ?: "") + 
-        (args.modulePaths ? " -DIVW_EXTERNAL_MODULES=" + args.modulePaths.join(";") : "" ) +
+        (args.modulePaths ? " -DIVW_EXTERNAL_MODULES=\"" + args.modulePaths.join(";") + "\"" : "" ) +
         (args.onModules?.collect{" -DIVW_MODULE_${it.toUpperCase()}=ON"}?.join('') ?: "") +
         (args.offModules?.collect{" -DIVW_MODULE_${it.toUpperCase()}=OFF"}?.join('') ?: "") +
         " ../inviwo"

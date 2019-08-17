@@ -84,11 +84,11 @@ BasisProperty::BasisProperty(std::string identifier, std::string displayName,
     autoCenter_.onChange([&]() { onAutoCenterChange(); });
     resetOverride_.onChange([&]() { onResetOverride(); });
     util::for_each_argument(
-        [&](auto& elem) {
+        [this](auto& elem) {
             elem.setReadOnly(true);
             elem.setSerializationMode(PropertySerializationMode::None);
             elem.setSemantics(PropertySemantics::SpinBox);
-            elem.onChange([&]() { save(); });
+            elem.onChange([this]() { this->save(); });
         },
         size_, a_, b_, c_, offset_);
 }
@@ -126,8 +126,8 @@ BasisProperty::BasisProperty(const BasisProperty& rhs)
     overRideDefaults_.onChange([this]() { onOverrideChange(); });
     autoCenter_.onChange([&]() { onAutoCenterChange(); });
     resetOverride_.onChange([&]() { onResetOverride(); });
-    util::for_each_argument([&](auto& elem) { elem.onChange([&]() { save(); }); }, size_, a_, b_,
-                            c_, offset_);
+    util::for_each_argument([this](auto& elem) { elem.onChange([this]() { this->save(); }); },
+                            size_, a_, b_, c_, offset_);
 }
 
 BasisProperty& BasisProperty::operator=(const BasisProperty& that) {
@@ -298,15 +298,17 @@ void BasisProperty::deserialize(Deserializer& d) {
     if (modified) propertyModified();
 }
 
-void BasisProperty::setCurrentStateAsDefault() {
+BasisProperty& BasisProperty::setCurrentStateAsDefault() {
     CompositeProperty::setCurrentStateAsDefault();
     overrideModel_.setAsDefault();
+    return *this;
 }
 
-void BasisProperty::resetToDefaultState() {
+BasisProperty& BasisProperty::resetToDefaultState() {
     CompositeProperty::resetToDefaultState();
     overrideModel_.reset();
     load();
+    return *this;
 }
 
 void BasisProperty::updateEntity(SpatialEntity<3>& volume) {

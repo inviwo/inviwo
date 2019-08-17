@@ -52,6 +52,7 @@ public:
      * \brief Direct construction
      * @param numComponents Size of vector at each position
      * @param name Name associated with the channel
+     * @param dataFormat Data format
      * @param definedOn GridPrimitive the data is defined on, default: 0D vertices
      */
     Channel(ind numComponents, const std::string& name, DataFormatId dataFormat,

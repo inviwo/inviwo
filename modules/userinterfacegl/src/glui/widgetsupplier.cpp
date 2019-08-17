@@ -46,7 +46,7 @@ WidgetSupplier::WidgetSupplier(InviwoApplication* app)
             }
         }
         throw Exception("Was not able to find the User Interface GL module",
-                        IvwContextCustom("UserInterfaceGLModule"));
+                        IVW_CONTEXT_CUSTOM("UserInterfaceGLModule"));
     }()} {}
 
 WidgetSupplier::~WidgetSupplier() { unregisterAll(); }

@@ -311,22 +311,20 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     settings.beginGroup(objectName());
 
     {
-        auto columnsActive = settings.value("columnsActive", QVariant(QList<QVariant>()));
-        auto columnsWidth = settings.value("columnsWidth", QVariant(QList<QVariant>()));
-
-        auto active = columnsActive.toList();
-        auto widths = columnsWidth.toList();
-        auto count = std::min(active.size(), widths.size());
+        auto colVisible = settings.value("columnsVisible", QVariantList()).toList();
+        auto colWidths = settings.value("columnsWidth", QVariantList()).toList();
+        auto count = std::min(colVisible.size(), colWidths.size());
 
         for (int i = 0; i < count; ++i) {
-            auto hidden = active[i].toBool();
-            tableView_->horizontalHeader()->setSectionHidden(i, hidden);
-            if (!hidden) tableView_->horizontalHeader()->resizeSection(i, widths[i].toInt());
+            const bool visible = colVisible[i].toBool();
+            viewColGroup->actions()[i]->setChecked(visible);
+            tableView_->horizontalHeader()->setSectionHidden(i, !visible);
+            if (visible) tableView_->horizontalHeader()->resizeSection(i, colWidths[i].toInt());
         }
     }
 
     {
-        auto levelsActive = settings.value("levelsActive", QVariant(QList<QVariant>()));
+        auto levelsActive = settings.value("levelsActive", QVariantList());
         int i = 0;
         for (const auto& level : levelsActive.toList()) {
             levels[i++].action->setChecked(level.toBool());
@@ -514,7 +512,7 @@ void ConsoleWidget::copy() {
         }
         prevrow = ind.row();
     }
-    auto mimedata = util::make_unique<QMimeData>();
+    auto mimedata = std::make_unique<QMimeData>();
     mimedata->setData(QString("text/plain"), text.toUtf8());
     QApplication::clipboard()->setMimeData(mimedata.release());
 }
@@ -524,12 +522,12 @@ void ConsoleWidget::closeEvent(QCloseEvent* event) {
     settings.beginGroup(objectName());
 
     const auto cols = tableView_->horizontalHeader()->count();
-    QList<QVariant> columnsActive;
+    QList<QVariant> columnsVisible;
     QList<QVariant> columnsWidth;
-    columnsActive.reserve(cols);
+    columnsVisible.reserve(cols);
     columnsWidth.reserve(cols);
     for (int i = 0; i < cols; ++i) {
-        columnsActive.append(tableView_->horizontalHeader()->isSectionHidden(i));
+        columnsVisible.append(!tableView_->horizontalHeader()->isSectionHidden(i));
         columnsWidth.append(tableView_->horizontalHeader()->sectionSize(i));
     }
     QList<QVariant> levelsActive;
@@ -537,7 +535,7 @@ void ConsoleWidget::closeEvent(QCloseEvent* event) {
         levelsActive.append(level.action->isChecked());
     }
 
-    settings.setValue("columnsActive", QVariant(columnsActive));
+    settings.setValue("columnsVisible", QVariant(columnsVisible));
     settings.setValue("columnsWidth", QVariant(columnsWidth));
     settings.setValue("levelsActive", QVariant(levelsActive));
     settings.setValue("filterText", QVariant(filterPattern_->text()));

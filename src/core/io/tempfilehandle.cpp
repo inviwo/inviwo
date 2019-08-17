@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/io/tempfilehandle.h>
+#include <inviwo/core/util/filesystem.h>
 
 #ifdef WIN32
 #define NOMINMAX
@@ -77,7 +78,7 @@ TempFileHandle::TempFileHandle(const std::string& prefix, const std::string& suf
                      tempFile.begin() + std::min<size_t>(wcslen(tempFile.data()), MAX_PATH));
     filename_ += suffix;
 
-    handle_ = fopen(filename_.c_str(), "w");
+    handle_ = filesystem::fopen(filename_, "w");
     if (!handle_) {
         throw Exception("could not open temporary file");
     }

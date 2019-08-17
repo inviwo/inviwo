@@ -94,7 +94,7 @@ T* MetaDataOwner::createMetaData(const std::string& key) {
     if (T* metaData = dynamic_cast<T*>(metaData_.get(key))) {
         return metaData;
     } else {
-        return metaData_.add(key, util::make_unique<T>());
+        return metaData_.add(key, std::make_unique<T>());
     }
 }
 
@@ -106,7 +106,7 @@ void MetaDataOwner::setMetaData(const std::string& key, U value) {
             return;
         }
     }
-    metaData_.add(key, util::make_unique<T>())->set(value);
+    metaData_.add(key, std::make_unique<T>())->set(value);
 }
 
 template <typename T>

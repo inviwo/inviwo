@@ -28,21 +28,14 @@
  *********************************************************************************/
 
 #include <modules/plotting/plottingmodule.h>
-#include <modules/plotting/processors/csvsource.h>
 #include <modules/plotting/processors/dataframecolumntocolorvector.h>
-#include <modules/plotting/processors/dataframeexporter.h>
-#include <modules/plotting/processors/imagetodataframe.h>
-#include <modules/plotting/processors/syntheticdataframe.h>
-#include <modules/plotting/processors/volumetodataframe.h>
-#include <modules/plotting/processors/volumesequencetodataframe.h>
 #include <modules/plotting/properties/axisproperty.h>
+#include <modules/plotting/properties/categoricalaxisproperty.h>
 #include <modules/plotting/properties/dataframeproperty.h>
 #include <modules/plotting/properties/marginproperty.h>
 #include <modules/plotting/properties/plottextproperty.h>
 #include <modules/plotting/properties/tickproperty.h>
 #include <modules/plotting/properties/optionconverter.h>
-
-#include <modules/plotting/datastructures/dataframe.h>
 
 namespace inviwo {
 
@@ -52,35 +45,28 @@ enum class OptionRegEnumUInt : unsigned int {};
 struct DataFrameColumnOptionConverterRegFunctor {
     template <typename T>
     auto operator()(std::function<void(std::unique_ptr<PropertyConverter>)> reg) {
-        reg(util::make_unique<DataFrameColumnToOptionConverter<TemplateOptionProperty<T>>>());
+        reg(std::make_unique<DataFrameColumnToOptionConverter<TemplateOptionProperty<T>>>());
     }
 };
 
 struct OptionDataFrameColumnConverterRegFunctor {
     template <typename T>
     auto operator()(std::function<void(std::unique_ptr<PropertyConverter>)> reg) {
-        reg(util::make_unique<OptionToDataFrameColumnConverter<TemplateOptionProperty<T>>>());
+        reg(std::make_unique<OptionToDataFrameColumnConverter<TemplateOptionProperty<T>>>());
     }
 };
 
 PlottingModule::PlottingModule(InviwoApplication* app) : InviwoModule(app, "Plotting") {
 
-    registerProcessor<plot::CSVSource>();
     registerProcessor<plot::DataFrameColumnToColorVector>();
-    registerProcessor<plot::DataFrameExporter>();
-    registerProcessor<plot::ImageToDataFrame>();
-    registerProcessor<plot::SyntheticDataFrame>();
-    registerProcessor<plot::VolumeToDataFrame>();
-    registerProcessor<plot::VolumeSequenceToDataFrame>();
     registerProperty<plot::AxisProperty>();
+    registerProperty<plot::CategoricalAxisProperty>();
     registerProperty<plot::DataFrameColumnProperty>();
     registerProperty<plot::MajorTickProperty>();
     registerProperty<plot::MarginProperty>();
     registerProperty<plot::MinorTickProperty>();
     registerProperty<plot::PlotTextProperty>();
     registerProperty<plot::TickProperty>();
-
-    registerDefaultsForDataType<plot::DataFrame>();
 
     // We create a std::function to register the created converter since the registration function
     // is protected in the inviwo module
@@ -101,7 +87,7 @@ PlottingModule::PlottingModule(InviwoApplication* app) : InviwoModule(app, "Plot
 int PlottingModule::getVersion() const { return 1; }
 
 std::unique_ptr<VersionConverter> PlottingModule::getConverter(int version) const {
-    return util::make_unique<Converter>(version);
+    return std::make_unique<Converter>(version);
 }
 
 PlottingModule::Converter::Converter(int version) : version_(version) {}

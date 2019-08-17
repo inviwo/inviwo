@@ -117,6 +117,7 @@ macro(ivw_define_standard_definitions project_name target)
             _CRT_SECURE_NO_DEPRECATE
             _SCL_SECURE_NO_WARNINGS
             _SILENCE_CXX17_RESULT_OF_DEPRECATION_WARNING
+            _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
             NOMINMAX
             WIN32_LEAN_AND_MEAN
             UNICODE
@@ -146,7 +147,11 @@ function(ivw_suppress_compiler_warnings)
             set_property(TARGET ${target} PROPERTY COMPILE_OPTIONS ${comp_opts})
     
             get_property(comp_defs TARGET ${target} PROPERTY COMPILE_DEFINITIONS)
-            list(APPEND comp_defs "_CRT_SECURE_NO_WARNINGS")
+            list(APPEND comp_defs _CRT_SECURE_NO_WARNINGS 
+                                  _SILENCE_CXX17_RESULT_OF_DEPRECATION_WARNING
+                                  _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
+                                  _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING
+                              )
             list(REMOVE_DUPLICATES comp_defs)
             set_property(TARGET ${target} PROPERTY COMPILE_DEFINITIONS ${comp_defs})
             

@@ -72,9 +72,9 @@ public:
     virtual void setValid() override;
     virtual InvalidationLevel getInvalidationLevel() const override;
 
-    virtual void setCurrentStateAsDefault() override;
-    virtual void resetToDefaultState() override;
-    virtual void setReadOnly(bool value) override;
+    virtual CompositeProperty& setCurrentStateAsDefault() override;
+    virtual CompositeProperty& resetToDefaultState() override;
+    virtual CompositeProperty& setReadOnly(bool value) override;
 
     // Override from the PropertyOwner
     virtual void invalidate(InvalidationLevel invalidationLevel,

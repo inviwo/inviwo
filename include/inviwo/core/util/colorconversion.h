@@ -44,7 +44,7 @@ namespace color {
  * hexcodes with a leading '#' and optional alpha value (single / double digit).
  * In case of 3 respective 6 digits, alpha is implicitly set to 1.0.
  *
- * Supports #RGB, #RGBA, #RRGGBB, #RRGGBBAA
+ * Supports "#RGB", "#RGBA", "#RRGGBB", "#RRGGBBAA"
  *
  * @param str    html color code in the form of "#10a0b0ff" or "#a0b0c0"
  * @return RGBA color in [0 1]^3 range

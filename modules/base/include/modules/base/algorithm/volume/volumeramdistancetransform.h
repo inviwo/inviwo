@@ -143,7 +143,7 @@ void util::volumeRAMDistanceTransform(const VolumeRAMPrecision<T> *inVolume,
         throw Exception(
             "DistanceTransformRAM: Dimensions does not match src = " + toString(srcDim) +
                 " dst = " + toString(dstDim) + " scaling = " + toString(sm),
-            IvwContextCustom("volumeRAMDistanceTransform"));
+            IVW_CONTEXT_CUSTOM("volumeRAMDistanceTransform"));
     }
 
     util::IndexMapper<3, int64> srcInd(srcDim);
@@ -297,7 +297,7 @@ void util::volumeDistanceTransform(const Volume *inVolume, VolumeRAMPrecision<U>
 
     const auto inputVolumeRep = inVolume->getRepresentation<VolumeRAM>();
     inputVolumeRep->dispatch<void, dispatching::filter::Scalars>([&](const auto vrprecision) {
-        using ValueType = util::PrecsionValueType<decltype(vrprecision)>;
+        using ValueType = util::PrecisionValueType<decltype(vrprecision)>;
 
         const auto predicateIn = [threshold](const ValueType &val) { return val < threshold; };
         const auto predicateOut = [threshold](const ValueType &val) { return val > threshold; };
@@ -349,7 +349,7 @@ void util::volumeDistanceTransform(const Volume *inVolume, VolumeRAMPrecision<U>
                                    const size3_t upsample, double threshold, bool normalize,
                                    bool flip, bool square, double scale) {
     util::volumeDistanceTransform(inVolume, outDistanceField, upsample, threshold, normalize, flip,
-                                  square, scale, [](double d) {});
+                                  square, scale, [](double) {});
 }
 
 }  // namespace inviwo

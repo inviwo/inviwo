@@ -64,7 +64,6 @@ const ProcessorInfo VolumeSliceGL::getProcessorInfo() const { return processorIn
 VolumeSliceGL::VolumeSliceGL()
     : Processor()
     , inport_("volume")
-    , polyline_("polyline")
     , outport_("outport", DataFormat<glm::u8vec4>::get(), false)
     , shader_("standard.vert", "volumeslice.frag", false)
     , indicatorShader_("standard.vert", "standard.frag", true)
@@ -88,12 +87,13 @@ VolumeSliceGL::VolumeSliceGL()
     , volumeWrapping_("volumeWrapping", "Volume Texture Wrapping")
     , fillColor_("fillColor", "Fill Color", vec4(0.0f, 0.0f, 0.0f, 0.0f), vec4(0.0f), vec4(1.0f),
                  vec4(0.01f), InvalidationLevel::InvalidOutput, PropertySemantics::Color)
-    , posPicking_("posPicking", "Enable Position Picking", false)
+    , posPicking_("posPicking", "Enable Picking", false)
     , showIndicator_("showIndicator", "Show Position Indicator", true)
     , indicatorColor_("indicatorColor", "Indicator Color", vec4(1.0f, 0.8f, 0.1f, 0.8f), vec4(0.0f),
                       vec4(1.0f), vec4(0.01f), InvalidationLevel::InvalidOutput,
                       PropertySemantics::Color)
-    , indicatorPointSize_("indicatorPointSize", "Indicator Point Size", 5.0f, 1.0f, 10.0f, 1.0f)
+    , indicatorSize_("indicatorSize", "Indicator Size", 4.0f, 0.0f, 100.0f, 0.01f,
+                     InvalidationLevel::InvalidOutput)
     , tfMappingEnabled_("tfMappingEnabled", "Enable Transfer Function", true,
                         InvalidationLevel::InvalidResources)
     , transferFunction_("transferFunction", "Transfer Function", &inport_)
@@ -111,7 +111,7 @@ VolumeSliceGL::VolumeSliceGL()
                                InvalidationLevel::Valid)
     , mouseShiftSlice_("mouseShiftSlice", "Mouse Slice Shift",
                        [this](Event* e) { eventShiftSlice(e); },
-                       util::make_unique<WheelEventMatcher>())
+                       std::make_unique<WheelEventMatcher>())
 
     , mouseSetMarker_("mouseSetMarker", "Mouse Set Marker", [this](Event* e) { eventSetMarker(e); },
                       MouseButton::Left, MouseState::Press | MouseState::Move)
@@ -126,13 +126,7 @@ VolumeSliceGL::VolumeSliceGL()
     , gestureShiftSlice_(
           "gestureShiftSlice", "Gesture Slice Shift",
           [this](Event* e) { eventGestureShiftSlice(e); },
-          util::make_unique<GestureEventMatcher>(GestureType::Pan, GestureStates(flags::any), 3))
-    , mousePickPolylinePoint_("mousePickPolylinePoint", "mouse Pick Polyline Point",
-                              [this](Event* e) { eventAddPolylinePoint(e); },
-                              MouseButton::Left | MouseButton::Right)
-    , enablePolylinePicking_("polylinePicking_", "Enable Polyline Picking", false)
-    , lastPolylinePoint_("lastPolylinePoint", "Last Polyline Point", vec3{0.0f})
-    , polylineVertexBuf_(util::makeBuffer<vec2>({}))
+          std::make_unique<GestureEventMatcher>(GestureType::Pan, GestureStates(flags::any), 3))
     , meshDirty_(true)
     , updating_(false)
     , sliceRotation_(1.0f)
@@ -143,10 +137,6 @@ VolumeSliceGL::VolumeSliceGL()
     addPort(outport_);
 
     inport_.onChange([this]() { updateMaxSliceNumber(); });
-
-    polyline_.setOptional(true);
-    addPort(polyline_);
-
     sliceAlongAxis_.addOption("x", "y-z plane (X axis)",
                               static_cast<int>(CartesianCoordinateAxis::X));
     sliceAlongAxis_.addOption("y", "z-x plane (Y axis)",
@@ -222,17 +212,14 @@ VolumeSliceGL::VolumeSliceGL()
     addProperty(trafoGroup_);
 
     // Position Selection
-    pickGroup_.addProperty(enablePolylinePicking_);
     pickGroup_.addProperty(posPicking_);
     pickGroup_.addProperty(showIndicator_);
     pickGroup_.addProperty(indicatorColor_);
+    pickGroup_.addProperty(indicatorSize_);
 
-    posPicking_.onChange([this]() {
-        if (posPicking_.get() && enablePolylinePicking_.get()) enablePolylinePicking_.set(false);
-        showIndicator_.set(posPicking_.get());
-        modeChange();
-    });
+    posPicking_.onChange([this]() { modeChange(); });
     indicatorColor_.onChange([this]() { invalidateMesh(); });
+    indicatorSize_.onChange([this]() { invalidateMesh(); });
     showIndicator_.setReadOnly(posPicking_.get());
     indicatorColor_.setSemantics(PropertySemantics::Color);
 
@@ -288,14 +275,6 @@ VolumeSliceGL::VolumeSliceGL()
     gestureShiftSlice_.setVisible(false);
     gestureShiftSlice_.setCurrentStateAsDefault();
     addProperty(gestureShiftSlice_);
-
-    mousePickPolylinePoint_.setVisible(false);
-    addProperty(mousePickPolylinePoint_);
-    lastPolylinePoint_.setReadOnly(true);
-    addProperty(lastPolylinePoint_);
-    enablePolylinePicking_.onChange([this]() {
-        if (enablePolylinePicking_.get() && posPicking_.get()) posPicking_.set(false);
-    });
 }
 
 VolumeSliceGL::~VolumeSliceGL() {}
@@ -472,17 +451,6 @@ void VolumeSliceGL::process() {
     shader_.deactivate();
 
     if (posPicking_.get() && showIndicator_.get()) renderPositionIndicator();
-
-    if (enablePolylinePicking_.get()) {
-        const auto points = polyline_.getData();
-        if (points) {
-            if (points->size() > 0) {
-                updatePolylineMesh();
-                renderPolyline();
-            }
-        }
-    }
-
     utilgl::deactivateCurrentTarget();
 
     // update volume sample from indicator position, if active
@@ -506,7 +474,6 @@ void VolumeSliceGL::renderPositionIndicator() {
 
     utilgl::GlBoolState smooth(GL_LINE_SMOOTH, true);
     utilgl::BlendModeState blend(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    utilgl::LineWidthState linewidth(2.5f);
 
     indicatorShader_.activate();
     indicatorShader_.setUniform("dataToClip", mat4(1.0f));
@@ -520,10 +487,11 @@ void VolumeSliceGL::updateIndicatorMesh() {
     const vec2 pos = getScreenPosFromVolPos();
 
     const size2_t canvasSize(outport_.getDimensions());
-    const vec2 indicatorSize = vec2(4.0f / canvasSize.x, 4.0f / canvasSize.y);
+    const vec2 indicatorSize =
+        vec2(indicatorSize_.get() / canvasSize.x, indicatorSize_.get() / canvasSize.y);
     const vec4 color(indicatorColor_.get());
 
-    meshCrossHair_ = util::make_unique<Mesh>();
+    meshCrossHair_ = std::make_unique<Mesh>();
     meshCrossHair_->setModelMatrix(mat4(1.0f));
     // add two vertical and two horizontal lines with a gap around the selected position
     auto posBuf = util::makeBuffer<vec2>(
@@ -560,98 +528,6 @@ void VolumeSliceGL::updateIndicatorMesh() {
     meshCrossHair_->addIndicies(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::Loop), indexBuf2);
 
     meshDirty_ = false;
-}
-
-void VolumeSliceGL::updatePolylineMesh() {
-    const auto& volPoints = polyline_.getData();
-    if (polyline_.hasData() && volPoints) {
-        std::vector<vec2> screenPoints;
-        for (const auto& p : *volPoints) {
-            vec2 screenPos = vec2(inverseSliceRotation_ * vec4(p, 1.0f)) * 2.0f - 1.0f;
-            screenPoints.push_back(screenPos);
-        }
-
-        polylineVertexBuf_ = util::makeBuffer<vec2>(std::vector<vec2>(screenPoints));
-    }
-}
-
-void VolumeSliceGL::renderPolyline() {
-    if (polyline_.hasData() && polyline_.getData()) {
-        auto indexBuf = util::makeIndexBuffer(util::table(
-            [&](int i) { return static_cast<uint32_t>(i); }, 0, polyline_.getData()->size()));
-
-        auto meshCurve_ = util::make_unique<Mesh>();
-        meshCurve_->setModelMatrix(mat4(1.0f));
-
-        // TODO color points whether they are on slice or above or below
-        const auto& pts = polyline_.getData();
-        auto colorBuf = util::makeBuffer<vec4>(std::vector<vec4>(pts->size()));
-
-        auto vColors = colorBuf->getEditableRAMRepresentation();
-        for (size_t idx = 0; idx < pts->size(); ++idx) {
-            const auto& pt = pts->at(idx);
-            const auto vol = inport_.getData();
-            const vec4 volumeCoordinate{pt, 1.0f};
-            const auto indexCoordinate =
-                ivec4(vol->getCoordinateTransformer().getTextureToIndexMatrix() * volumeCoordinate +
-                      0.5f);
-
-            float dist{0.0f};
-            bool isInSlice{false};
-            switch (sliceAlongAxis_.get()) {
-                case static_cast<int>(CartesianCoordinateAxis::X):
-                    dist = planePosition_.get().x - pt.x;
-                    isInSlice = sliceX_ - 1 == indexCoordinate.x;
-                    break;
-                case static_cast<int>(CartesianCoordinateAxis::Y):
-                    dist = planePosition_.get().y - pt.y;
-                    isInSlice = sliceY_ - 1 == indexCoordinate.y;
-                    break;
-                case static_cast<int>(CartesianCoordinateAxis::Z):
-                    dist = planePosition_.get().z - pt.z;
-                    isInSlice = sliceZ_ - 1 == indexCoordinate.z;
-                    break;
-                case 3: {  // plane equation, calc. distance to plane
-                    const auto diff = pt - planePosition_.get();
-                    const auto n = glm::normalize(planeNormal_.get());
-                    dist = glm::abs(glm::dot(n, diff));
-                    const float inPlaneThreshold{1e-5f};
-                    isInSlice = dist < inPlaneThreshold;
-                    break;
-                }
-                default:
-                    dist = std::numeric_limits<float>::infinity();
-
-                    LogError("This should not happen!");
-                    break;
-            }
-
-            const auto vColor =  // green if in slice, otherwise mix orange and red
-                isInSlice ? vec4{0.0f, 1.0f, 0.0f, 1.0f}
-                          : glm::mix(vec4{1.0f, 0.7f, 0.0f, 1.0f}, vec4{1.0f, 0.0f, 0.0f, 1.0f},
-                                     5.0f * glm::abs(dist));
-
-            vColors->setFromDVec4(idx, vColor);
-        }
-
-        meshCurve_->addBuffer(BufferType::ColorAttrib, colorBuf);
-        meshCurve_->addBuffer(BufferType::PositionAttrib, polylineVertexBuf_);
-        meshCurve_->addIndicies(Mesh::MeshInfo(DrawType::Points, ConnectivityType::None), indexBuf);
-
-        MeshDrawerGL drawer(meshCurve_.get());
-
-        utilgl::GlBoolState smooth(GL_LINE_SMOOTH, true);
-        utilgl::BlendModeState blend(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        utilgl::LineWidthState linewidth(2.5f);  // Only width 1 is guaranteed to be supported
-        utilgl::PointSizeState pointsize(indicatorPointSize_);
-
-        indicatorShader_.activate();
-        indicatorShader_.setUniform("dataToClip", mat4(1.0f));
-
-        utilgl::DepthFuncState depth(GL_ALWAYS);
-        drawer.draw();
-        indicatorShader_.deactivate();
-    }
 }
 
 void VolumeSliceGL::invalidateMesh() { meshDirty_ = true; }
@@ -754,21 +630,6 @@ void VolumeSliceGL::updateMaxSliceNumber() {
     worldPosition_.setMinValue(glm::min(min, max));
 }
 
-void VolumeSliceGL::eventAddPolylinePoint(Event* event) {
-    // return if event was not meant to be handeled here, multiple mouse click callbacks exist
-    if (!enablePolylinePicking_.get()) return;
-
-    const auto mouseEvent = static_cast<MouseEvent*>(event);
-    const auto mousePos = vec2(mouseEvent->posNormalized());
-    const auto volPos = convertScreenPosToVolume(mousePos);
-
-    // set last clicked point in volume to be grabbed
-    lastPolylinePoint_.set(volPos);
-
-    // do not mark as used, the polyline grabber uses this event also
-    //event->markAsUsed();
-}
-
 void VolumeSliceGL::eventShiftSlice(Event* event) {
     auto wheelEvent = static_cast<WheelEvent*>(event);
     int steps = static_cast<int>(wheelEvent->delta().y);
@@ -777,9 +638,6 @@ void VolumeSliceGL::eventShiftSlice(Event* event) {
 }
 
 void VolumeSliceGL::eventSetMarker(Event* event) {
-    // return if event was not meant to be handeled here, multiple mouse click callbacks exist
-    if (!posPicking_.get()) return;
-
     auto mouseEvent = static_cast<MouseEvent*>(event);
     setVolPosFromScreenPos(vec2(mouseEvent->posNormalized()));
     event->markAsUsed();

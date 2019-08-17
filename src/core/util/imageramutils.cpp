@@ -42,14 +42,9 @@ std::shared_ptr<Image> readImageFromDisk(std::string filename) {
     auto ext = filesystem::getFileExtension(filename);
     if (auto reader = factory->getReaderForTypeAndExtension<Layer>(ext)) {
         auto outLayer = reader->readData(filename);
-        auto ram = outLayer->getRepresentation<LayerRAM>();
-        outLayer->setDataFormat(ram->getDataFormat());
-
-        auto img = std::make_shared<Image>(outLayer);
-        img->getRepresentation<ImageRAM>();
-        return img;
+        return std::make_shared<Image>(outLayer);
     } else {
-        LogErrorCustom("util::readImageFromDisk", "Failed to read handle image");
+        LogErrorCustom("util::readImageFromDisk", "Failed to read image \'" << filename << "\'");
         return nullptr;
     }
 }

@@ -48,106 +48,48 @@ CImgLayerReader::CImgLayerReader() : DataReaderType<Layer>() {
 
 CImgLayerReader* CImgLayerReader::clone() const { return new CImgLayerReader(*this); }
 
-std::shared_ptr<Layer> CImgLayerReader::readData(const std::string& filePath) {
-    if (!filesystem::fileExists(filePath)) {
-        throw DataReaderException("Error could not find input file: " + filePath, IvwContext);
+namespace {
+
+struct Dispatch {
+    template <typename Result, typename T>
+    std::shared_ptr<LayerRAM> operator()(void* data, const uvec2& dims) const {
+        using F = typename T::type;
+
+        auto swizzleMask = [](std::size_t numComponents) {
+            switch (numComponents) {
+                case 1:
+                    return swizzlemasks::luminance;
+                case 2:
+                    return swizzlemasks::luminanceAlpha;
+                case 3:
+                    return swizzlemasks::rgb;
+                case 4:
+                default:
+                    return swizzlemasks::rgba;
+            }
+        };
+
+        return std::make_shared<LayerRAMPrecision<F>>(static_cast<F*>(data), dims, LayerType::Color,
+                                                      swizzleMask(T::comp));
     }
+};
 
-    auto layerDisk = std::make_shared<LayerDisk>(filePath);
-    layerDisk->setLoader(new CImgLayerRAMLoader(layerDisk.get()));
-    auto layer = std::make_shared<Layer>(layerDisk);
-    return layer;
-}
+}  // namespace
 
-CImgLayerRAMLoader::CImgLayerRAMLoader(LayerDisk* layerDisk) : layerDisk_(layerDisk) {}
-
-CImgLayerRAMLoader* CImgLayerRAMLoader::clone() const { return new CImgLayerRAMLoader(*this); }
-
-std::shared_ptr<LayerRepresentation> CImgLayerRAMLoader::createRepresentation() const {
-    void* data = nullptr;
-
-    uvec2 dimensions = layerDisk_->getDimensions();
-    DataFormatId formatId = DataFormatId::NotSpecialized;
-
-    std::string fileName = layerDisk_->getSourceFile();
-
+std::shared_ptr<Layer> CImgLayerReader::readData(const std::string& fileName) {
     if (!filesystem::fileExists(fileName)) {
-        std::string newPath = filesystem::addBasePath(fileName);
-
-        if (filesystem::fileExists(newPath)) {
-            fileName = newPath;
-        } else {
-            throw DataReaderException("Error could not find input file: " + fileName, IvwContext);
-        }
+        throw DataReaderException("Error could not find input file: " + fileName, IVW_CONTEXT);
     }
 
-    if (dimensions != uvec2(0)) {
-        // Load and rescale to input dimensions
-        data = cimgutil::loadLayerData(nullptr, fileName, dimensions, formatId, true);
-    } else {
-        // Load to original dimensions
-        data = cimgutil::loadLayerData(nullptr, fileName, dimensions, formatId, false);
-        layerDisk_->setDimensions(dimensions);
-    }
-
-    layerDisk_->updateDataFormat(DataFormatBase::get(formatId));
-    updateSwizzleMask(layerDisk_);
-
-    return dispatching::dispatch<std::shared_ptr<LayerRepresentation>, dispatching::filter::All>(
-        formatId, *this, data);
-}
-
-void CImgLayerRAMLoader::updateRepresentation(std::shared_ptr<LayerRepresentation> dest) const {
-    auto layerDst = std::static_pointer_cast<LayerRAM>(dest);
-
-    if (layerDisk_->getDimensions() != layerDst->getDimensions()) {
-        layerDst->setDimensions(layerDisk_->getDimensions());
-    }
-
-    uvec2 dimensions = layerDisk_->getDimensions();
+    uvec2 dimensions{0u};
     DataFormatId formatId = DataFormatId::NotSpecialized;
+    void* data = cimgutil::loadLayerData(nullptr, fileName, dimensions, formatId, false);
 
-    std::string fileName = layerDisk_->getSourceFile();
+    auto layerRAM =
+        dispatching::dispatch<std::shared_ptr<LayerRepresentation>, dispatching::filter::All>(
+            formatId, Dispatch{}, data, dimensions);
 
-    if (!filesystem::fileExists(fileName)) {
-        std::string newPath = filesystem::addBasePath(fileName);
-
-        if (filesystem::fileExists(newPath)) {
-            fileName = newPath;
-        } else {
-            throw DataReaderException("Error could not find input file: " + fileName, IvwContext);
-        }
-    }
-
-    if (dimensions != uvec2(0)) {
-        // Load and rescale to input dimensions
-        cimgutil::loadLayerData(layerDst->getData(), fileName, dimensions, formatId, true);
-    } else {
-        // Load to original dimensions
-        cimgutil::loadLayerData(layerDst->getData(), fileName, dimensions, formatId, false);
-        layerDisk_->setDimensions(dimensions);
-    }
-
-    layerDisk_->updateDataFormat(DataFormatBase::get(formatId));
-    updateSwizzleMask(layerDisk_);
-}
-
-void CImgLayerRAMLoader::updateSwizzleMask(LayerDisk* layerDisk) {
-    auto swizzleMask = [](std::size_t numComponents) {
-        switch (numComponents) {
-            case 1:
-                return swizzlemasks::luminance;
-            case 2:
-                return swizzlemasks::luminanceAlpha;
-            case 3:
-                return swizzlemasks::rgb;
-            case 4:
-            default:
-                return swizzlemasks::rgba;
-        }
-    };
-
-    layerDisk->setSwizzleMask(swizzleMask(layerDisk->getDataFormat()->getComponents()));
+    return std::make_shared<Layer>(layerRAM);
 }
 
 }  // namespace inviwo

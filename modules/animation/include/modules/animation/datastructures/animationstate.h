@@ -48,7 +48,7 @@ struct AnimationTimeState {
 
 /** Keeps animation settings related to playing or rendering.
  *
- *   The settings allow to work either with numFrames or @framesPerSecond.
+ *   The settings allow to work either with numFrames or framesPerSecond.
  *   If one is set, the other is computed accordingly in order to stay consistent.
  *
  *   The parameters firstTime and lastTime do not need to coincide
@@ -58,7 +58,7 @@ struct AnimationTimeState {
  *
  *   The smallest numFrames is 2, since we will visit at least
  *   firstTime and lastTime during an animation or rendering.
- *   The smallest @framesPerSecond is 1e-3, as an arbitrary but positive, non-zero minimum.
+ *   The smallest framesPerSecond is 1e-3, as an arbitrary but positive, non-zero minimum.
  */
 class IVW_MODULE_ANIMATION_API AnimationPlaySettings {
 public:
@@ -74,11 +74,11 @@ public:
     /// current @framesPerSecond.
     int getNumFrames() const;
 
-    /** Sets the number of frames to be rendered between @firstTime and lastTime, and adjusts
-     *  @framesPerSecond accordingly.
+    /** Sets the number of frames to be rendered between firstTime and lastTime, and adjusts
+     *  framesPerSecond accordingly.
      *
      *   The smallest numFrames is 2, since we will visit at least
-     *   @firstTime and lastTime during an animation or rendering.
+     *   firstTime and lastTime during an animation or rendering.
      *
      *   @returns true on success.
      */

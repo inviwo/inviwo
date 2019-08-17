@@ -34,8 +34,8 @@ namespace inviwo {
 
 std::shared_ptr<VolumeGL> VolumeRAM2GLConverter::createFrom(
     std::shared_ptr<const VolumeRAM> volumeRAM) const {
-    auto volume =
-        std::make_shared<VolumeGL>(volumeRAM->getDimensions(), volumeRAM->getDataFormat(), false);
+    auto volume = std::make_shared<VolumeGL>(volumeRAM->getDimensions(), volumeRAM->getDataFormat(),
+                                             false, volumeRAM->getSwizzleMask());
     volume->getTexture()->initialize(volumeRAM->getData());
     return volume;
 }
@@ -46,11 +46,13 @@ void VolumeRAM2GLConverter::update(std::shared_ptr<const VolumeRAM> volumeSrc,
         volumeDst->setDimensions(volumeSrc->getDimensions());
     }
     volumeDst->getTexture()->upload(volumeSrc->getData());
+    volumeDst->setSwizzleMask(volumeSrc->getSwizzleMask());
 }
 
 std::shared_ptr<VolumeRAM> VolumeGL2RAMConverter::createFrom(
     std::shared_ptr<const VolumeGL> volumeGL) const {
-    auto volume = createVolumeRAM(volumeGL->getDimensions(), volumeGL->getDataFormat());
+    auto volume = createVolumeRAM(volumeGL->getDimensions(), volumeGL->getDataFormat(), nullptr,
+                                  volumeGL->getSwizzleMask());
 
     if (volume) {
         volumeGL->getTexture()->download(volume->getData());
@@ -69,6 +71,7 @@ void VolumeGL2RAMConverter::update(std::shared_ptr<const VolumeGL> volumeSrc,
     }
 
     volumeSrc->getTexture()->download(volumeDst->getData());
+    volumeDst->setSwizzleMask(volumeSrc->getSwizzleMask());
 
     if (volumeDst->hasHistograms()) volumeDst->getHistograms()->setValid(false);
 }

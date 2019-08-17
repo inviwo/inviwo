@@ -48,6 +48,7 @@ public:
     bool runString(std::string code);
 
 private:
+    bool embedded_;
     bool isInit_;
 };
 

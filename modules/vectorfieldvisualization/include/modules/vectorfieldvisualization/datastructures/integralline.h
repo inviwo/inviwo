@@ -131,7 +131,7 @@ template <typename T>
 const std::vector<T> &IntegralLine::getMetaData(const std::string &name) const {
     auto it = metaData_.find(name);
     if (it == metaData_.end()) {
-        throw Exception("No meta data with name: " + name, IvwContext);
+        throw Exception("No meta data with name: " + name, IVW_CONTEXT);
     }
     auto askedDF = DataFormat<T>::get();
     auto isDF = it->second->getDataFormat();
@@ -139,7 +139,7 @@ const std::vector<T> &IntegralLine::getMetaData(const std::string &name) const {
         std::ostringstream oss;
         oss << "Incorrect dataformat for meta data " << name << " asking for "
             << askedDF->getString() << " but is" << isDF->getString();
-        throw Exception(oss.str(), IvwContext);
+        throw Exception(oss.str(), IVW_CONTEXT);
     }
 
     return static_cast<Buffer<T> *>(it->second.get())->getRAMRepresentation()->getDataContainer();
@@ -149,7 +149,7 @@ template <typename T>
 std::vector<T> &IntegralLine::getMetaData(const std::string &name, bool create) {
     auto it = metaData_.find(name);
     if (it == metaData_.end() && !create) {
-        throw Exception("No meta data with name: " + name, IvwContext);
+        throw Exception("No meta data with name: " + name, IVW_CONTEXT);
     } else if (it == metaData_.end()) {
         auto md = createMetaData<T>(name);
         return md->getEditableRAMRepresentation()->getDataContainer();
@@ -160,7 +160,7 @@ std::vector<T> &IntegralLine::getMetaData(const std::string &name, bool create) 
         std::ostringstream oss;
         oss << "Incorrect dataformat for meta data " << name << " asking for "
             << askedDF->getString() << " but is " << isDF->getString();
-        throw Exception(oss.str(), IvwContext);
+        throw Exception(oss.str(), IVW_CONTEXT);
     }
 
     return static_cast<Buffer<T> *>(it->second.get())

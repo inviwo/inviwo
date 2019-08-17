@@ -45,7 +45,7 @@ EventProperty::EventProperty(const std::string& identifier, const std::string& d
                              Action action, IvwKey key, KeyStates states, KeyModifiers modifiers,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : EventProperty(identifier, displayName, std::move(action),
-                    util::make_unique<KeyboardEventMatcher>(key, states, modifiers),
+                    std::make_unique<KeyboardEventMatcher>(key, states, modifiers),
                     invalidationLevel, semantics) {}
 
 EventProperty::EventProperty(const std::string& identifier, const std::string& displayName,
@@ -53,7 +53,7 @@ EventProperty::EventProperty(const std::string& identifier, const std::string& d
                              KeyModifiers modifiers, InvalidationLevel invalidationLevel,
                              PropertySemantics semantics)
     : EventProperty(identifier, displayName, std::move(action),
-                    util::make_unique<MouseEventMatcher>(buttons, states, modifiers),
+                    std::make_unique<MouseEventMatcher>(buttons, states, modifiers),
                     invalidationLevel, semantics) {}
 
 EventProperty::EventProperty(const EventProperty& rhs)
@@ -96,12 +96,14 @@ void EventProperty::setEventMatcher(std::unique_ptr<EventMatcher> matcher) {
 
 void EventProperty::setAction(Action action) { action_ = std::move(action); }
 
-void EventProperty::setCurrentStateAsDefault() {
+EventProperty& EventProperty::setCurrentStateAsDefault() {
     if (matcher_) matcher_->setCurrentStateAsDefault();
+    return *this;
 }
 
-void EventProperty::resetToDefaultState() {
+EventProperty& EventProperty::resetToDefaultState() {
     if (matcher_) matcher_->resetToDefaultState();
+    return *this;
 }
 
 void EventProperty::serialize(Serializer& s) const {

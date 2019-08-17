@@ -60,46 +60,48 @@ std::unique_ptr<Volume> divergenceVolume(const Volume& volume) {
     const vec3 oy(0, spacing.y, 0);
     const vec3 oz(0, 0, spacing.z);
 
-    volume.getRepresentation<VolumeRAM>()->dispatch<void, dispatching::filter::Vec3s>(
-        [&](auto vol) {
-            using ValueType = util::PrecsionValueType<decltype(vol)>;
-            using ComponentType = typename ValueType::value_type;
+    volume.getRepresentation<VolumeRAM>()->dispatch<void, dispatching::filter::Vec3s>([&](auto
+                                                                                              vol) {
+        using ValueType = util::PrecisionValueType<decltype(vol)>;
+        using ComponentType = typename ValueType::value_type;
+        using FloatType =
+            typename std::conditional_t<std::is_same<float, ComponentType>::value, float, double>;
+        using Sampler = TemplateVolumeSampler<ValueType, FloatType>;
 
-            util::IndexMapper3D index(volume.getDimensions());
-            auto data = newVolumeRep->getDataTyped();
-            float minV = std::numeric_limits<float>::max();
-            float maxV = std::numeric_limits<float>::lowest();
+        util::IndexMapper3D index(volume.getDimensions());
+        auto data = newVolumeRep->getDataTyped();
+        float minV = std::numeric_limits<float>::max();
+        float maxV = std::numeric_limits<float>::lowest();
 
-            const auto worldSpace = TemplateVolumeSampler<ValueType, ComponentType>::Space::World;
-            const TemplateVolumeSampler<ValueType, ComponentType> sampler(volume, worldSpace);
+        const auto worldSpace = Sampler::Space::World;
+        const Sampler sampler(volume, worldSpace);
 
-            util::forEachVoxel(*vol, [&](const size3_t& pos) {
-                const vec3 world{m *
-                                 vec4(vec3(pos) / vec3(volume.getDimensions() - size3_t(1)), 1)};
+        util::forEachVoxel(*vol, [&](const size3_t& pos) {
+            const vec3 world{m * vec4(vec3(pos) / vec3(volume.getDimensions() - size3_t(1)), 1)};
 
-                const auto Fxp = static_cast<vec3>(sampler.sample(world + ox));
-                const auto Fxm = static_cast<vec3>(sampler.sample(world - ox));
-                const auto Fyp = static_cast<vec3>(sampler.sample(world + oy));
-                const auto Fym = static_cast<vec3>(sampler.sample(world - oy));
-                const auto Fzp = static_cast<vec3>(sampler.sample(world + oz));
-                const auto Fzm = static_cast<vec3>(sampler.sample(world - oz));
+            const auto Fxp = static_cast<vec3>(sampler.sample(world + ox));
+            const auto Fxm = static_cast<vec3>(sampler.sample(world - ox));
+            const auto Fyp = static_cast<vec3>(sampler.sample(world + oy));
+            const auto Fym = static_cast<vec3>(sampler.sample(world - oy));
+            const auto Fzp = static_cast<vec3>(sampler.sample(world + oz));
+            const auto Fzm = static_cast<vec3>(sampler.sample(world - oz));
 
-                const vec3 Fx = (Fxp - Fxm) / (2.0f * spacing.x);
-                const vec3 Fy = (Fyp - Fym) / (2.0f * spacing.y);
-                const vec3 Fz = (Fzp - Fzm) / (2.0f * spacing.z);
+            const vec3 Fx = (Fxp - Fxm) / (2.0f * spacing.x);
+            const vec3 Fy = (Fyp - Fym) / (2.0f * spacing.y);
+            const vec3 Fz = (Fzp - Fzm) / (2.0f * spacing.z);
 
-                const float d = Fx.x + Fy.y + Fz.z;
+            const float d = Fx.x + Fy.y + Fz.z;
 
-                minV = std::min(minV, d);
-                maxV = std::max(maxV, d);
+            minV = std::min(minV, d);
+            maxV = std::max(maxV, d);
 
-                data[index(pos)] = d;
-            });
-
-            auto range = std::max(std::abs(minV), std::abs(maxV));
-            newVolume->dataMap_.dataRange = dvec2(-range, range);
-            newVolume->dataMap_.valueRange = dvec2(minV, maxV);
+            data[index(pos)] = d;
         });
+
+        auto range = std::max(std::abs(minV), std::abs(maxV));
+        newVolume->dataMap_.dataRange = dvec2(-range, range);
+        newVolume->dataMap_.valueRange = dvec2(minV, maxV);
+    });
 
     return newVolume;
 }

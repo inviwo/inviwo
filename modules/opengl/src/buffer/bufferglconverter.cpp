@@ -56,7 +56,7 @@ std::shared_ptr<BufferRAM> BufferGL2RAMConverter::createFrom(
     if (!dst)
         throw ConverterException(std::string("Cannot convert format from GL to RAM: ") +
                                      src->getDataFormat()->getString(),
-                                 IvwContext);
+                                 IVW_CONTEXT);
 
     src->download(dst->getData());
     return dst;

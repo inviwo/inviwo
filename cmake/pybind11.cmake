@@ -31,16 +31,10 @@
 
 # Needed for the function pybind11_add_module and dependency pybind11::module 
 
- set(_allPyBindWrappers "" CACHE INTERNAL  "")
-
+set(_allPyBindWrappers "" CACHE INTERNAL  "")
 if(PYTHONLIBS_FOUND)
     add_subdirectory(${IVW_EXTENSIONS_DIR}/pybind11)
-
-    if(MSVC)
-        # Prevent setting the /GL and -LTCG flag 
-        set(PYBIND11_LTO_CXX_FLAGS "" CACHE INTERNAL "")
-        set(PYBIND11_LTO_LINKER_FLAGS "" CACHE INTERNAL "")
-    elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
         # Workaround
         CHECK_CXX_COMPILER_FLAG("-flto-partition=none" HAS_LTO_PARTITION_FLAG)
         if(HAS_LTO_PARTITION_FLAG)
@@ -50,7 +44,6 @@ if(PYTHONLIBS_FOUND)
     endif()
 endif(PYTHONLIBS_FOUND)
 
-
 function (ivw_add_py_wrapper target)
     if(IVW_MODULE_PYTHON3)
         pybind11_add_module(${target} ${ARGN})
@@ -58,11 +51,15 @@ function (ivw_add_py_wrapper target)
         set_target_properties(${target} PROPERTIES PREFIX "")
         set_target_properties(${target} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
         ivw_define_standard_definitions(${target} ${target})
-        target_link_libraries(${target} PUBLIC inviwo::module::python3)
         ivw_folder(${target} pymodules)
 
         set(_allPyBindWrappers "${_allPyBindWrappers};${target}" CACHE INTERNAL  "_allPyBindWrappers")
 
         ivw_define_standard_properties(${target})
+
+        # pybind will set the visibility to hidden by default, but we run into problems with dynamic cast
+        # of our templated precision types on OSX if hidden is used. So until we figure out how to manage 
+        # that make the visibility default.
+        set_target_properties(${target} PROPERTIES CXX_VISIBILITY_PRESET "default")
     endif()
 endfunction()

@@ -39,7 +39,7 @@ CompositeProcessorFactoryObject::CompositeProcessorFactoryObject(const std::stri
 
 std::unique_ptr<Processor> CompositeProcessorFactoryObject::create(InviwoApplication* app) {
     auto pi = getProcessorInfo();
-    return util::make_unique<CompositeProcessor>(pi.displayName, pi.displayName, app, file_);
+    return std::make_unique<CompositeProcessor>(pi.displayName, pi.displayName, app, file_);
 }
 
 ProcessorInfo CompositeProcessorFactoryObject::makeProcessorInfo(const std::string& file) {

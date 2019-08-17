@@ -1,7 +1,137 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2019-06-11 Webbrowser property synchronization
+Changed way of synchronizing/setting properties in javascript. Instead of adding properties to the webbrowser processor one can now set them using their path from javascript.
+See web_property_sync.html in the Webbrowser module
+
+This means that you need to update workspaces/webpages which used the Webbrowser processor.
+```js
+// Update html inputs when corresponding Inviwo properties change
+inviwo.subscribe("ordinalProperty", "MeshCreator.torusRadius2_");
+var slider = document.getElementById("ordinalProperty");
+var ordinalPropertyValue = document.getElementById("ordinalPropertyValue");
+
+slider.oninput = function() {
+    inviwo.setProperty("MeshCreator.torusRadius2_", {value: Number(this.value)});
+    ordinalPropertyValue.innerHTML = this.value;
+}
+```
+
+## 2019-04-30 Python Processors
+Inviwo Processors can now be implemented directly in Python by creating a python class and deriving from inviwopy.Processor.
+Bellow follows an example of a python processor:
+```py
+# Name: PythonExample 
+
+import inviwopy as ivw
+
+class PythonExample(ivw.Processor):
+    def __init__(self, id, name):
+        ivw.Processor.__init__(self, id, name)
+        self.inport = ivw.data.VolumeInport("inport")
+        self.addInport(self.inport)
+        self.outport = ivw.data.VolumeOutport("outport")
+        self.addOutport(self.outport)
+
+        self.slider = ivw.properties.IntProperty("slider", "slider", 0, 0, 100, 1)
+        self.addProperty(self.slider)
+
+    @staticmethod
+    def processorInfo():
+        return ivw.ProcessorInfo(
+            classIdentifier = "org.inviwo.PythonExample",
+            displayName = "Python Example", 
+            category = "Python",
+            codeState = ivw.CodeState.Stable,
+            tags = ivw.Tags.PY
+        )
+
+    def getProcessorInfo(self):
+        return PythonExample.processorInfo()
+
+    def initializeResources(self):
+        print("init")
+
+    def process(self):
+        print("process: ", self.slider.value)
+        self.outport.setData(self.inport.getData())
+
+```
+The initial '# Name:' comment is needed for Inviwo to know what python class that is should look for.
+To register an Inviwo python processor one can put in in the <user setttings folder>/python_processor or by adding a `PythonProcessorFolderObserver` to an Inviwo module and have that observe a folder.
+
+
+## 2019-04-30 Python Applications
+It is now possible to run inviwo directly from python using a new inviwopyapp python package found in `apps/inviwopyapp`.
+An example of running inviwo can be found in `apps/inviwopyapp/inviwo.py`. 
+```py
+    import inviwopy as ivw
+    import inviwopyapp as qt
+    
+    if __name__ == '__main__':
+        # Inviwo requires that a logcentral is created.
+        lc = ivw.LogCentral()
+        
+        # Create and register a console logger
+        cl = ivw.ConsoleLogger()
+        lc.registerLogger(cl)
+    
+        # Create the inviwo application
+        app = qt.InviwoApplicationQt()
+        app.registerModules()
+    
+        # load a workspace
+        app.network.load(app.getPath(ivw.PathType.Workspaces) + "/boron.inv")
+    
+        # Make sure the app is ready
+        app.update()
+        app.waitForPool()
+        app.update()
+        # Save a snapshot
+        app.network.Canvas.snapshot("snapshot.png") 
+    
+        # run the app event loop
+        app.run()
+```
+
+## 2019-04-26 Parallel Coordinate Plot Update: flipped axes
+Axes of the parallel coordinate plot can now be inverted via a double click with the left mouse button or using the corresponding `Invert Range` property of the axis. In addition, the filtering handles can be hidden if necessary (`Axes Settings` → `Handles Visible`).
+
+## 2019-04-16 Moved DataFrame data structure from Plotting to new module (DataFrame)
+Types of breaking changes:
+```c++
+    #include <modules/plotting/datastructures/dataframe.h>
+    #include <modules/plotting/datastructures/dataframeutil.h>
+    #include <modules/plotting/datastructures/column.h>
+
+    plot::DataFrame
+    plot::Column
+```
+
+which need to be changed to 
+```c++
+    #include <inviwo/dataframe/datastructures/dataframe.h>
+    #include <inviwo/dataframe/datastructures/dataframeutil.h>
+    #include <inviwo/dataframe/datastructures/column.h>
+    // Namespace plot removed
+    DataFrame
+    Column
+```
+
+Also added a reader for JSON-files which outputs a DataFrame.
+
 ## 2019-03-06 
 New processor `Geometry Entry Exit Points` generates entry point and exit point images from any closed mesh to be used in raycasting. The positions of the input mesh are directly mapped to texture coordinates of a volume. This enables volume rendering within arbitrary bounding geometry.
+
+## 2019-02-24 Unified line rendering
+Line renderer vertex shader outputs `flat out uint pickID_;` and geometry shader takes `flat in uint pickID_[];` as input.
+Vertex shaders depending on linerenderer.geom must write the pickID_ instead of the picking color.
+
+Geometry shaders depending on previous linerenderer.vert should add the following:
+`#include "utils/pickingutils.glsl"`
+
+and modify the output to for example:
+`pickColor_ = vec4(pickingIndexToColor(pickID_[0]), pickID_[0] == 0 ? 0.0 : 1.0);`
 
 ## 2019-01-17 Get Started and Workspace Annotations
 Get Started screen provides an overview over recently used workspaces and available examples next to the latest changes.

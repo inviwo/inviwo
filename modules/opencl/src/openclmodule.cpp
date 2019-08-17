@@ -50,8 +50,8 @@ OpenCLModule::OpenCLModule(InviwoApplication* app) : InviwoModule(app, "OpenCL")
         OpenCL::getPtr()->addCommonIncludeDirectory(getPath(ModulePath::CL));
         KernelManager::init();
 
-        auto cap = util::make_unique<OpenCLCapabilities>();
-        auto setting = util::make_unique<OpenCLSettings>(cap.get());
+        auto cap = std::make_unique<OpenCLCapabilities>();
+        auto setting = std::make_unique<OpenCLSettings>(cap.get());
         registerCapabilities(std::move(cap));
         registerSettings(std::move(setting));
     } catch (OpenCLException& e) {
@@ -62,53 +62,53 @@ OpenCLModule::OpenCLModule(InviwoApplication* app) : InviwoModule(app, "OpenCL")
 
     // Buffer CL
     registerRepresentationConverter<BufferRepresentation>(
-        util::make_unique<BufferRAM2CLConverter>());
+        std::make_unique<BufferRAM2CLConverter>());
     registerRepresentationConverter<BufferRepresentation>(
-        util::make_unique<BufferCL2RAMConverter>());
+        std::make_unique<BufferCL2RAMConverter>());
 
     if (sharing) {
         // Buffer CLGL
         registerRepresentationConverter<BufferRepresentation>(
-            util::make_unique<BufferGL2CLGLConverter>());
+            std::make_unique<BufferGL2CLGLConverter>());
         registerRepresentationConverter<BufferRepresentation>(
-            util::make_unique<BufferCLGL2RAMConverter>());
+            std::make_unique<BufferCLGL2RAMConverter>());
         registerRepresentationConverter<BufferRepresentation>(
-            util::make_unique<BufferCLGL2GLConverter>());
+            std::make_unique<BufferCLGL2GLConverter>());
         registerRepresentationConverter<BufferRepresentation>(
-            util::make_unique<BufferCLGL2CLConverter>());
+            std::make_unique<BufferCLGL2CLConverter>());
     }
     // LayerCL
-    registerRepresentationConverter<LayerRepresentation>(util::make_unique<LayerRAM2CLConverter>());
-    registerRepresentationConverter<LayerRepresentation>(util::make_unique<LayerCL2RAMConverter>());
+    registerRepresentationConverter<LayerRepresentation>(std::make_unique<LayerRAM2CLConverter>());
+    registerRepresentationConverter<LayerRepresentation>(std::make_unique<LayerCL2RAMConverter>());
 
     if (sharing) {
         // LayerCLGL
         registerRepresentationConverter<LayerRepresentation>(
-            util::make_unique<LayerGL2CLGLConverter>());
+            std::make_unique<LayerGL2CLGLConverter>());
         registerRepresentationConverter<LayerRepresentation>(
-            util::make_unique<LayerCLGL2RAMConverter>());
+            std::make_unique<LayerCLGL2RAMConverter>());
         registerRepresentationConverter<LayerRepresentation>(
-            util::make_unique<LayerCLGL2CLConverter>());
+            std::make_unique<LayerCLGL2CLConverter>());
         registerRepresentationConverter<LayerRepresentation>(
-            util::make_unique<LayerCLGL2GLConverter>());
+            std::make_unique<LayerCLGL2GLConverter>());
     }
 
     // VolumeCL
     registerRepresentationConverter<VolumeRepresentation>(
-        util::make_unique<VolumeRAM2CLConverter>());
+        std::make_unique<VolumeRAM2CLConverter>());
     registerRepresentationConverter<VolumeRepresentation>(
-        util::make_unique<VolumeCL2RAMConverter>());
+        std::make_unique<VolumeCL2RAMConverter>());
 
     if (sharing) {
         // VolumeCLGL
         registerRepresentationConverter<VolumeRepresentation>(
-            util::make_unique<VolumeGL2CLGLConverter>());
+            std::make_unique<VolumeGL2CLGLConverter>());
         registerRepresentationConverter<VolumeRepresentation>(
-            util::make_unique<VolumeCLGL2RAMConverter>());
+            std::make_unique<VolumeCLGL2RAMConverter>());
         registerRepresentationConverter<VolumeRepresentation>(
-            util::make_unique<VolumeCLGL2CLConverter>());
+            std::make_unique<VolumeCLGL2CLConverter>());
         registerRepresentationConverter<VolumeRepresentation>(
-            util::make_unique<VolumeCLGL2GLConverter>());
+            std::make_unique<VolumeCLGL2GLConverter>());
     }
 }
 

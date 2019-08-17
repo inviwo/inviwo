@@ -84,6 +84,7 @@ public:
     bool isShadersSupported() const;
     bool isShadersSupportedARB() const;
     bool isGeometryShadersSupported() const;
+    bool isComputeShadersSupported() const;
 
     GLSLShaderVersion getCurrentShaderVersion();
     size_t getCurrentShaderIndex() const;
@@ -153,7 +154,8 @@ private:
     // GLSL
     bool shadersAreSupported_;
     bool shadersAreSupportedARB_;
-    bool geometryShsadersAreSupported_;
+    bool geometryShadersAreSupported_;
+
     int maxProgramLoopCount_;
     int geometryShadersMaxVertices_;
     int geometryShadersMaxOutputComponents_;

@@ -60,7 +60,7 @@ public:
     virtual ~ProcessorWidgetFactoryObjectTemplate() = default;
 
     virtual std::unique_ptr<ProcessorWidget> create(Processor* p) override {
-        return util::make_unique<T>(p);
+        return std::make_unique<T>(p);
     }
 };
 

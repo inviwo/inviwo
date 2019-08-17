@@ -144,7 +144,7 @@ if(WIN32)
         ${QRC_FILE} 
         ${RES_FILES}
     )
-    target_link_libraries(inviwo-cli  PUBLIC
+    target_link_libraries(inviwo-cli PUBLIC
         inviwo::core 
         inviwo::qtapplicationbase
         inviwo::qteditor
@@ -158,6 +158,9 @@ if(WIN32)
     if(_allPyBindWrappers)
         add_dependencies(inviwo-cli ${_allPyBindWrappers})
     endif()
+
+    # prevent inviwo-cli from building in parallel with inviwo since that might cause errors with the moc generation
+    add_dependencies(inviwo-cli inviwo)
 
     ivw_memleak_setup(inviwo-cli)
 

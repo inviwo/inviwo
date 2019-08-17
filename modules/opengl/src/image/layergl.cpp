@@ -38,7 +38,10 @@ namespace inviwo {
 
 LayerGL::LayerGL(size2_t dimensions, LayerType type, const DataFormatBase* format,
                  std::shared_ptr<Texture2D> tex, const SwizzleMask& swizzleMask)
-    : LayerRepresentation(dimensions, type, format), texture_(tex), swizzleMask_(swizzleMask) {
+    : LayerRepresentation(type, format)
+    , dimensions_(dimensions)
+    , texture_(tex)
+    , swizzleMask_(swizzleMask) {
     if (!texture_) {
         auto glFormat = GLFormats::get(getDataFormatId());
 
@@ -53,13 +56,17 @@ LayerGL::LayerGL(size2_t dimensions, LayerType type, const DataFormatBase* forma
 }
 
 LayerGL::LayerGL(const LayerGL& rhs)
-    : LayerRepresentation(rhs), texture_(rhs.texture_->clone()), swizzleMask_(rhs.swizzleMask_) {
+    : LayerRepresentation(rhs)
+    , dimensions_(rhs.dimensions_)
+    , texture_(rhs.texture_->clone())
+    , swizzleMask_(rhs.swizzleMask_) {
     texture_->setSwizzleMask(swizzleMask_);
 }
 
 LayerGL& LayerGL::operator=(const LayerGL& rhs) {
     if (this != &rhs) {
         LayerRepresentation::operator=(rhs);
+        dimensions_ = rhs.dimensions_;
         texture_ = std::shared_ptr<Texture2D>(rhs.texture_->clone());
         swizzleMask_ = rhs.swizzleMask_;
     }
@@ -113,6 +120,8 @@ void LayerGL::setDimensions(size2_t dimensions) {
         texture_->bind();
     }
 }
+
+const size2_t& LayerGL::getDimensions() const { return dimensions_; }
 
 void LayerGL::setSwizzleMask(const SwizzleMask& mask) {
     swizzleMask_ = mask;
