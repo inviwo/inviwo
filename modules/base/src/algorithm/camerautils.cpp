@@ -95,10 +95,12 @@ void setCameraView(CameraProperty &cam, const mat4 &boundingBox, vec3 inViewDir,
                                              vec3{0, 1, 0}, vec3{0, 0, 1}, vec3{1, 0, 1},
                                              vec3{1, 1, 1}, vec3{0, 1, 1}};
 
+        // Find the needed distance from the camera to lookTo given a field of view such that a
+        // corner of the bounding box are within the view
         const auto dist = [&](vec3 corner) {
             const auto point = vec3(boundingBox * vec4(corner, 1.f));
 
-            auto d0 = glm::dot(point - lookTo, -viewDir);
+            const auto d0 = glm::dot(point - lookTo, -viewDir);
             const auto height = glm::abs(glm::dot(point - lookTo, lookUp)) * fitRatio;
             const auto width = glm::abs(glm::dot(point - lookTo, sideDir)) * fitRatio;
             const float d1 = height * std::tan(glm::radians(90 - fovy));
@@ -106,23 +108,19 @@ void setCameraView(CameraProperty &cam, const mat4 &boundingBox, vec3 inViewDir,
             return d0 + std::max(d1, d2);
         };
 
+        // take the largest needed distance for all corners.
         const auto it = std::max_element(corners.begin(), corners.end(),
                                          [&](vec3 a, vec3 b) { return dist(a) < dist(b); });
-
         const auto lookFrom = dist(*it) * viewDir;
 
-        const auto camUp = lookUp;
-
         NetworkLock lock(&cam);
-
         if (updateNearFar == UpdateNearFar::Yes) {
             setCameraNearFar(cam, boundingBox);
         }
         if (updateLookRanges == UpdateLookRanges::Yes) {
             setCameraLookRanges(cam, boundingBox);
         }
-
-        cam.setLook(lookFrom, lookTo, camUp);
+        cam.setLook(lookFrom, lookTo, lookUp);
     } else {
         LogWarnCustom("camerautil::setCameraView",
                       "setCameraView only supports perspective cameras");
@@ -131,7 +129,7 @@ void setCameraView(CameraProperty &cam, const mat4 &boundingBox, vec3 inViewDir,
 
 void setCameraView(CameraProperty &cam, const mat4 &boundingBox, float fitRatio,
                    UpdateNearFar updateNearFar, UpdateLookRanges updateLookRanges) {
-    setCameraView(cam, boundingBox, cam.getLookTo() - cam.getLookFrom(), cam.getLookUp(), fitRatio,
+    setCameraView(cam, boundingBox, cam.getLookFrom() - cam.getLookTo(), cam.getLookUp(), fitRatio,
                   updateNearFar, updateLookRanges);
 }
 
