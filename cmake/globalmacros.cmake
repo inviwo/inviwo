@@ -237,7 +237,7 @@ function(ivw_register_modules retval)
 
     foreach(module_path ${IVW_MODULE_DIR} ${IVW_EXTERNAL_MODULES})
         get_filename_component(group_name ${module_path} NAME)
-        set(group_name "inviwo-${group_name}-modules")
+        set(group_name "modules-${group_name}")
 
         # Check of there is a meta.cmake
         # Optionally defines: group_name
