@@ -111,7 +111,7 @@ void setCameraView(CameraProperty &cam, const mat4 &boundingBox, vec3 inViewDir,
         // take the largest needed distance for all corners.
         const auto it = std::max_element(corners.begin(), corners.end(),
                                          [&](vec3 a, vec3 b) { return dist(a) < dist(b); });
-        const auto lookFrom = dist(*it) * viewDir;
+        const auto lookOffset = dist(*it) * viewDir;
 
         NetworkLock lock(&cam);
         if (updateNearFar == UpdateNearFar::Yes) {
@@ -120,7 +120,7 @@ void setCameraView(CameraProperty &cam, const mat4 &boundingBox, vec3 inViewDir,
         if (updateLookRanges == UpdateLookRanges::Yes) {
             setCameraLookRanges(cam, boundingBox);
         }
-        cam.setLook(lookFrom, lookTo, lookUp);
+        cam.setLook(lookTo + lookOffset, lookTo, lookUp);
     } else {
         LogWarnCustom("camerautil::setCameraView",
                       "setCameraView only supports perspective cameras");
@@ -135,7 +135,9 @@ void setCameraView(CameraProperty &cam, const mat4 &boundingBox, float fitRatio,
 
 void setCameraView(CameraProperty &cam, const mat4 &boundingBox, Side side, float fitRatio,
                    UpdateNearFar updateNearFar, UpdateLookRanges updateLookRanges) {
-    setCameraView(cam, boundingBox, detail::getViewDir(side), detail::getLookUp(side), fitRatio,
+    const auto viewDir = mat3(boundingBox) * detail::getViewDir(side);
+    const auto lookUp = mat3(boundingBox) * detail::getLookUp(side);
+    setCameraView(cam, boundingBox, viewDir, lookUp, fitRatio,
                   updateNearFar, updateLookRanges);
 }
 
