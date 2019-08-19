@@ -40,7 +40,7 @@ namespace inviwo {
 /**
  * \ingroup properties
  * \brief The Button Group property class provides a group of button that you can bind functions to.
- * The button group property has a widget witch creates a row of buttons and register functions to
+ * The button group property has a widget which creates a row of buttons and register functions to
  * them.
  * @see ButtonGroupPropertyWidgetQt
  */
@@ -50,6 +50,7 @@ public:
     struct IVW_CORE_API Button {
         std::optional<std::string> name;
         std::optional<std::string> icon;
+        std::optional<std::string> tooltip;
         std::function<void()> action;
     };
 

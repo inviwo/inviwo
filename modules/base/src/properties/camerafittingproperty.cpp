@@ -67,11 +67,8 @@ void CameraFittingProperty::invokeEvent(Event* event) {
     if (auto ve = event->getAs<ViewEvent>()) {
         std::visit(util::overloaded{[&](camerautil::Side side) { setView(side); },
                                     [&](ViewEvent::FlipUp) { flipUp(); },
-                                    [&](ViewEvent::FitData) { fitData(); }
-
-                   },
+                                    [&](ViewEvent::FitData) { fitData(); }},
                    ve->getAction());
-
         ve->markAsUsed();
     } else {
         CompositeProperty::invokeEvent(event);
@@ -80,19 +77,25 @@ void CameraFittingProperty::invokeEvent(Event* event) {
 
 std::vector<ButtonGroupProperty::Button> CameraFittingProperty::buttons() {
     return {
-        {std::nullopt, ":svgicons/view-fit-to-data.svg", [this] { fitData(); }},
-        {std::nullopt, ":svgicons/view-x-m.svg", [this] { setView(camerautil::Side::XNegative); }},
-        {std::nullopt, ":svgicons/view-x-p.svg", [this] { setView(camerautil::Side::XPositive); }},
-        {std::nullopt, ":svgicons/view-y-m.svg", [this] { setView(camerautil::Side::YNegative); }},
-        {std::nullopt, ":svgicons/view-y-p.svg", [this] { setView(camerautil::Side::YPositive); }},
-        {std::nullopt, ":svgicons/view-z-m.svg", [this] { setView(camerautil::Side::ZNegative); }},
-        {std::nullopt, ":svgicons/view-z-p.svg", [this] { setView(camerautil::Side::ZPositive); }},
-        {std::nullopt, ":svgicons/view-flip.svg", [this] { flipUp(); }}};
+        {std::nullopt, ":svgicons/view-fit-to-data.svg", "Fit data in view", [this] { fitData(); }},
+        {std::nullopt, ":svgicons/view-x-m.svg", "View data from X-",
+         [this] { setView(camerautil::Side::XNegative); }},
+        {std::nullopt, ":svgicons/view-x-p.svg", "View data from X+",
+         [this] { setView(camerautil::Side::XPositive); }},
+        {std::nullopt, ":svgicons/view-y-m.svg", "View data from Y-",
+         [this] { setView(camerautil::Side::YNegative); }},
+        {std::nullopt, ":svgicons/view-y-p.svg", "View data from Y+",
+         [this] { setView(camerautil::Side::YPositive); }},
+        {std::nullopt, ":svgicons/view-z-m.svg", "View data from Z-",
+         [this] { setView(camerautil::Side::ZNegative); }},
+        {std::nullopt, ":svgicons/view-z-p.svg", "View data from Z+",
+         [this] { setView(camerautil::Side::ZPositive); }},
+        {std::nullopt, ":svgicons/view-flip.svg", "Flip the up vector", [this] { flipUp(); }}};
 }
 
 void CameraFittingProperty::setView(camerautil::Side side) {
     if (camera_ && getBoundingBox_) {
-        if (auto bb = getBoundingBox_(); bb) {
+        if (auto bb = getBoundingBox_()) {
             using namespace camerautil;
             setCameraView(*camera_, *bb, side, fittingRatio_,
                           updateNearFar_ ? UpdateNearFar::Yes : UpdateNearFar::No,
@@ -103,7 +106,7 @@ void CameraFittingProperty::setView(camerautil::Side side) {
 
 void CameraFittingProperty::fitData() {
     if (camera_ && getBoundingBox_) {
-        if (auto bb = getBoundingBox_(); bb) {
+        if (auto bb = getBoundingBox_()) {
             using namespace camerautil;
             setCameraView(*camera_, *bb, fittingRatio_,
                           updateNearFar_ ? UpdateNearFar::Yes : UpdateNearFar::No,
@@ -120,7 +123,7 @@ void CameraFittingProperty::flipUp() {
 
 void CameraFittingProperty::setNearFar() {
     if (camera_ && getBoundingBox_) {
-        if (auto bb = getBoundingBox_(); bb) {
+        if (auto bb = getBoundingBox_()) {
             camerautil::setCameraNearFar(*camera_, *bb);
         }
     }
@@ -128,7 +131,7 @@ void CameraFittingProperty::setNearFar() {
 
 void CameraFittingProperty::setLookRange() {
     if (camera_ && getBoundingBox_) {
-        if (auto bb = getBoundingBox_(); bb) {
+        if (auto bb = getBoundingBox_()) {
             camerautil::setCameraLookRanges(*camera_, *bb);
         }
     }

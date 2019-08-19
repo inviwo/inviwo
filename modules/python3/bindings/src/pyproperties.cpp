@@ -400,7 +400,7 @@ void exposeProperties(py::module &m) {
 
     py::class_<ButtonGroupProperty::Button>(m, "ButtonGroupPropertyButton")
         .def(py::init<std::optional<std::string>, std::optional<std::string>,
-                      std::function<void()>>());
+                      std::optional<std::string>, std::function<void()>>());
 
     PyPropertyClass<ButtonGroupProperty, Property>(m, "ButtonGroupProperty")
         .def(py::init([](const std::string &identifier, const std::string &displayName,
