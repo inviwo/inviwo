@@ -135,12 +135,25 @@ QVariant TreeItem::data(int column, int role) const {
                 }
             case Qt::EditRole:
                 return caption_;
-            case Qt::ToolTipRole:
-                // prevent line breaks in the tooltip 
+            case Qt::ToolTipRole: {
+                QStringList list;
+                auto p = parent();
+                while (p) {
+                    list.append(p->caption_);
+                    p = p->parent();
+                }
+                std::reverse(list.begin(), list.end());
+
+                const QString hierarchy =
+                    (list.size() > 0) ? QString("(%1)").arg(list.join("/").remove(0, 1)) : "";
+
+                // prevent line breaks in the tooltip
                 // see https://doc.qt.io/qt-5/qtooltip.html#details
-                return QString("<p style='white-space:pre'><strong>%1</strong><br>%2</p>")
+                return QString("<p style='white-space:pre'><strong>%1</strong> %3<br>%2</p>")
                     .arg(file_)
-                    .arg(path_);
+                    .arg(path_)
+                    .arg(hierarchy);
+            }
             case Qt::DecorationRole:
                 if (column == 0) {
                     return {};
