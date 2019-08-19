@@ -36,7 +36,6 @@
 #include <modules/base/processors/diffuselightsourceprocessor.h>
 #include <modules/base/processors/directionallightsourceprocessor.h>
 #include <modules/base/processors/distancetransformram.h>
-#include <modules/base/processors/fitcameratodata.h>
 #include <modules/base/processors/heightfieldmapper.h>
 #include <modules/base/processors/imageinformation.h>
 #include <modules/base/processors/inputselector.h>
@@ -131,7 +130,6 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<DiffuseLightSourceProcessor>();
     registerProcessor<DirectionalLightSourceProcessor>();
     registerProcessor<DistanceTransformRAM>();
-    registerProcessor<FitCameraToData>();
     registerProcessor<MeshSource>();
     registerProcessor<HeightFieldMapper>();
     registerProcessor<ImageExport>();
