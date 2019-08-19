@@ -165,6 +165,7 @@ NumberLineEdit::NumberLineEdit(bool intMode, QWidget *parent)
     // need a high precision in QDoubleSpinBox since min and max values are rounded using the
     // number of decimals
     QDoubleSpinBox::setDecimals(20);
+    setFocusPolicy(Qt::StrongFocus);
 }
 
 NumberLineEdit::~NumberLineEdit() = default;
@@ -265,6 +266,10 @@ void NumberLineEdit::changeEvent(QEvent *e) {
         updateGeometry();
     }
     QDoubleSpinBox::changeEvent(e);
+}
+
+void NumberLineEdit::wheelEvent(QWheelEvent *e) {
+    if (hasFocus()) QDoubleSpinBox::wheelEvent(e);
 }
 
 }  // namespace inviwo

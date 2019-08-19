@@ -194,7 +194,7 @@ OrdinalPropertyWidgetQt<T>::OrdinalPropertyWidgetQt(OrdinalProperty<T>* property
 
     if ((ordinalproperty_->getSemantics() == PropertySemantics::SpinBox) ||
         (ordinalproperty_->getSemantics() == PropertySemantics("SphericalSpinBox"))) {
-        gridLayout->setHorizontalSpacing(5);
+        gridLayout->setHorizontalSpacing(utilqt::emToPx(this, 0.5));
         for (size_t j = 0; j < ordinalproperty_->getDim().y; j++) {
             for (size_t i = 0; i < ordinalproperty_->getDim().x; i++) {
 
@@ -206,18 +206,26 @@ OrdinalPropertyWidgetQt<T>::OrdinalPropertyWidgetQt(OrdinalProperty<T>* property
                     editor, static_cast<int>(i + j * ordinalproperty_->getDim().x));
                 editors_.push_back(editor);
 
-                if ((ordinalproperty_->getDim().y > 1) || (ordinalproperty_->getDim().x == 1)) {
-                    gridLayout->addWidget(editor, static_cast<int>(i), static_cast<int>(j));
+                auto sp = editor->sizePolicy();
+                sp.setHorizontalPolicy(QSizePolicy::Expanding);
+                editor->setSizePolicy(sp);
+
+                if (ordinalproperty_->getSemantics() == PropertySemantics("SphericalSpinBox")) {
+                    if (i > 0) editor->setWrapping(true);
+
+                    auto edwidget = new QWidget(this);
+                    auto edLayout = new QHBoxLayout();
+                    edLayout->setContentsMargins(0, 0, 0, 0);
+                    edLayout->setSpacing(7);
+                    edwidget->setLayout(edLayout);
+                    edLayout->addWidget(new QLabel(sphericalChars[i], this));
+                    edLayout->addWidget(static_cast<QWidget*>(editor));
+
+                    edwidget->setFocusPolicy(editor->focusPolicy());
+                    edwidget->setFocusProxy(editor);
+                    gridLayout->addWidget(edwidget, static_cast<int>(j), static_cast<int>(i));
                 } else {
-                    if (ordinalproperty_->getSemantics() == PropertySemantics("SphericalSpinBox")) {
-                        editor->setWrapping(true);
-                        ivec2 index{static_cast<int>(i), static_cast<int>(j)};
-                        gridLayout->addWidget(new QLabel(sphericalChars[i], this), index.y,
-                                              2 * index.x);
-                        gridLayout->addWidget(editor, index.y, index.x * 2 + 1);
-                    } else {
-                        gridLayout->addWidget(editor, static_cast<int>(j), static_cast<int>(i));
-                    }
+                    gridLayout->addWidget(editor, static_cast<int>(j), static_cast<int>(i));
                 }
             }
         }

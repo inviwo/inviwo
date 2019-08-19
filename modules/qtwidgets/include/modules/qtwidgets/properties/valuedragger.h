@@ -35,6 +35,7 @@
 
 #include <modules/qtwidgets/properties/indicatorwidget.h>
 #include <modules/qtwidgets/numberlineedit.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -113,7 +114,7 @@ ValueDragger<T>::ValueDragger(NumberLineEdit *spinBox, QWidget *parent)
 
 template <typename T>
 QSize ValueDragger<T>::sizeHint() const {
-    return QSize(8, 20);
+    return utilqt::emToPx(this, QSizeF(0.8, 2));
 }
 
 template <typename T>
