@@ -93,6 +93,7 @@ VolumeSliceGL::VolumeSliceGL()
     , indicatorColor_("indicatorColor", "Indicator Color", vec4(1.0f, 0.8f, 0.1f, 0.8f), vec4(0.0f),
                       vec4(1.0f), vec4(0.01f), InvalidationLevel::InvalidOutput,
                       PropertySemantics::Color)
+	, indicatorSize_("indicatorSize", "Indicator Size", 5.0f, 1.0f, 10.0f, 1.0f)
     , indicatorPointSize_("indicatorPointSize", "Indicator Point Size", 5.0f, 1.0f, 10.0f, 1.0f)
     , tfMappingEnabled_("tfMappingEnabled", "Enable Transfer Function", true,
                         InvalidationLevel::InvalidResources)

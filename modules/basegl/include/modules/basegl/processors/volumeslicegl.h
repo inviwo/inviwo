@@ -188,6 +188,7 @@ private:
     BoolProperty posPicking_;
     BoolProperty showIndicator_;
     FloatVec4Property indicatorColor_;
+	FloatProperty indicatorSize_;
     FloatProperty indicatorPointSize_;
 
     BoolProperty tfMappingEnabled_;

@@ -87,6 +87,7 @@ private:
     std::vector<std::shared_ptr<VolumeDesriptionProperty>> volumeDescriptions_;
     TemplateOptionProperty<FileExtension> reader_;
     ButtonProperty reload_;
+	IntSizeTProperty volumeIndex_;
 
     BasisProperty basis_;
     VolumeInformationProperty information_;
@@ -94,6 +95,8 @@ private:
 
     bool deserialized_ = false;
     bool loadingFailed_ = false;
+
+	std::vector<std::vector<unsigned char>> center_slice_img_data_;
 };
 
 }  // namespace inviwo

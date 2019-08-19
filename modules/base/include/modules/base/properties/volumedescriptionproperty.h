@@ -53,7 +53,6 @@ namespace inviwo {
             PropertySemantics semantics = PropertySemantics::Default);
 
         VolumeDesriptionMetadataProperty(const VolumeDesriptionMetadataProperty& rhs);
-        VolumeDesriptionMetadataProperty& operator=(const VolumeDesriptionMetadataProperty& that);
 
         virtual VolumeDesriptionMetadataProperty* clone() const override;
         virtual ~VolumeDesriptionMetadataProperty() = default;
@@ -83,7 +82,6 @@ namespace inviwo {
             PropertySemantics semantics = PropertySemantics::Default);
 
         VolumeDesriptionProperty(const VolumeDesriptionProperty& rhs);
-        VolumeDesriptionProperty& operator=(const VolumeDesriptionProperty& that);
 
         virtual VolumeDesriptionProperty* clone() const override;
         virtual ~VolumeDesriptionProperty() = default;

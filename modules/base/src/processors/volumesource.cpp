@@ -63,12 +63,13 @@ VolumeSource::VolumeSource(InviwoApplication* app, const std::string& file)
     , file_("filename", "Volume file", file, "volume")
     , reader_("reader", "Data Reader")
     , reload_("reload", "Reload data")
+	, volumeIndex_("volumeindex", "Volume Index", 0, 0, 0, 1)
     , basis_("Basis", "Basis and offset")
     , information_("Information", "Data information")
     , volumeSequence_("Sequence", "Sequence") {
 
     addPort(outport_);
-    addProperties(file_, reader_, reload_, information_, basis_, volumeSequence_);
+    addProperties(file_, reader_, reload_, volumeIndex_, information_, basis_, volumeSequence_);
     volumeSequence_.setVisible(false);
 
     util::updateFilenameFilters<Volume, VolumeSequence>(*app_->getDataReaderFactory(), file_,
@@ -132,10 +133,108 @@ void VolumeSource::load(bool deserialize) {
     }
 
     if (volumes_ && !volumes_->empty() && (*volumes_)[0]) {
+		for (auto& prop : volumeDescriptions_) {
+			removeProperty(*prop);
+		}
+		volumeDescriptions_.clear();
+
+		size_t volumeIdx{ 0 };
+		volumeDescriptions_.reserve(volumes_->size());
+		center_slice_img_data_.resize(volumes_->size());
+
         // store filename in metadata
         for (auto volume : *volumes_) {
             if (!volume->hasMetaData<StringMetaData>("filename"))
                 volume->setMetaData<StringMetaData>("filename", file_.get());
+
+			//TODO take code from de9005af878a3ccb9169d5affea5803143549e73
+
+			// extract center slice to show in image property
+			const auto volume_dim = volume->getDimensions();
+			const auto center_slice_idx = volume_dim.z / 2;
+			const auto volumeRAM = volume->getRepresentation<VolumeRAM>();
+
+			center_slice_img_data_[volumeIdx] =
+				std::vector<unsigned char>(volume_dim.x * volume_dim.y);
+
+			double min_value{ std::numeric_limits<double>::max() }, max_value{ 0.0 };
+			double min_value_normalized_manually{ std::numeric_limits<double>::max() },
+				max_value_normalized_manually{ 0.0 };
+
+			const size3_t step_size{ 1 };
+			for (size_t z{ 0 }; z < volume_dim.z; z += step_size.z) {
+				for (size_t y{ 0 }; y < volume_dim.y; y += step_size.y) {
+					for (size_t x{ 0 }; x < volume_dim.x; x += step_size.x) {
+						const size3_t pt{ x, y, z };
+
+						const auto value = volumeRAM->getAsDouble(pt); // in data range
+
+						const auto value_normalized_manually =
+							(value - volume->dataMap_.dataRange.x) /
+							(volume->dataMap_.dataRange.y - volume->dataMap_.dataRange.x)
+							* volume->dataMap_.rescaleSlope + volume->dataMap_.rescaleIntercept;
+
+						const auto img_value =
+							static_cast<unsigned char>(value_normalized_manually * 255.0);
+
+						max_value = glm::max(max_value, value);
+						min_value = glm::min(min_value, value);
+
+						max_value_normalized_manually =
+							glm::max(max_value_normalized_manually, value_normalized_manually);
+						min_value_normalized_manually =
+							glm::min(min_value_normalized_manually, value_normalized_manually);
+					}
+				}
+			}
+
+			LogInfo("############");
+			LogInfo("value range: " << volume->dataMap_.valueRange);
+			LogInfo("data range:  " << volume->dataMap_.dataRange);
+			LogInfo("slope:       " << volume->dataMap_.rescaleSlope);
+			LogInfo("intercept:   " << volume->dataMap_.rescaleIntercept);
+			LogInfo("min/max:     " << glm::dvec2(min_value, max_value));
+			LogInfo("min/max(nm): " << glm::dvec2(min_value_normalized_manually,
+				max_value_normalized_manually));
+
+			unsigned char min_value_img{ std::numeric_limits<unsigned char>::max() },
+				max_value_img{ 0 };
+			for (size_t y{ 0 }; y < volume_dim.y; y += step_size.y) {
+				for (size_t x{ 0 }; x < volume_dim.x; x += step_size.x) {
+					const size3_t pt{ x, y, center_slice_idx };
+
+					const auto value = volumeRAM->getAsDouble(pt); // in data range
+
+
+					const auto value_normalized_manually =
+						(value - volume->dataMap_.dataRange.x) /
+						(volume->dataMap_.dataRange.y - volume->dataMap_.dataRange.x);// * volume->dataMap_.rescaleSlope + volume->dataMap_.rescaleIntercept;
+
+					const auto img_value =
+						static_cast<unsigned char>(value_normalized_manually * 255.0);
+
+					max_value_img = glm::max(max_value_img, img_value);
+					min_value_img = glm::min(min_value_img, img_value);
+
+
+
+					center_slice_img_data_[volumeIdx][y * volume_dim.x + x] = img_value;
+				}
+			}
+
+			LogInfo("min/max(img):" << glm::dvec2(min_value_img, max_value_img));
+
+			auto volumeDescription = std::make_shared<VolumeDesriptionProperty>(
+				std::string("VolumeDescription") + std::to_string(volumeIdx),
+				std::string("Volume Description ") + std::to_string(volumeIdx), volumeIdx,
+				center_slice_img_data_[volumeIdx].data(), // sliceData,
+				volume_dim);
+			volumeDescriptions_.emplace_back(volumeDescription);
+			auto prop = volumeDescriptions_.back();
+			addProperty(*prop);
+			prop->setCollapsed(true);
+			prop->onChange([this, prop]() { volumeIndex_.set(prop->image_.getImageIdx()); });
+			volumeIdx++;
         }
 
         basis_.updateForNewEntity(*(*volumes_)[0], deserialize);
@@ -143,6 +242,9 @@ void VolumeSource::load(bool deserialize) {
 
         volumeSequence_.updateMax(volumes_->size());
         volumeSequence_.setVisible(volumes_->size() > 1);
+
+		volumeIndex_.set(size_t{ 0 });
+		volumeIndex_.setMaxValue(glm::max(static_cast<size_t>(volumes_->size()) - 1, size_t{ 0 }));
     }
 }
 
@@ -152,15 +254,19 @@ void VolumeSource::process() {
         deserialized_ = false;
     }
 
-    if (volumes_ && !volumes_->empty()) {
-        const size_t index = std::min(volumes_->size(), volumeSequence_.index_.get()) - 1;
+	if (volumes_ && !volumes_->empty() && volumeIndex_ >= 0 && volumeIndex_ < volumes_->size()) {
+		volumeSequence_.index_.set(volumeIndex_ + 1);
 
-        if (!(*volumes_)[index]) return;
+		const auto& vol = (*volumes_)[volumeIndex_];
+		if (!vol) {
+			return;
+		}
 
-        basis_.updateEntity(*(*volumes_)[index]);
-        information_.updateVolume(*(*volumes_)[index]);
+		basis_.updateForNewEntity(*vol, deserialized_);
+		information_.updateForNewVolume(*vol);
 
-        outport_.setData((*volumes_)[index]);
+		outport_.setData(vol);
+
     } else {
         outport_.detachData();
     }
