@@ -32,6 +32,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/stdextensions.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <tuple>
@@ -48,60 +49,345 @@
 
 namespace inviwo {
 
+TreeItem::TreeItem(TreeItem* parent) : parent_{parent} {}
+
+TreeItem::TreeItem(const QString& caption, FileTreeWidget::ListElemType type, TreeItem* parent)
+    : parent_{parent}, type_{type}, caption_{caption} {}
+
+TreeItem::TreeItem(const QIcon& icon, const std::string& filename, bool isExample, TreeItem* parent)
+    : parent_{parent} {
+    setData(icon, filename, isExample);
+}
+
+TreeItem::~TreeItem() { removeChildren(); }
+
+void TreeItem::addChild(TreeItem* child) {
+    childItems_.push_back(child);
+    child->parent_ = this;
+}
+
+void TreeItem::addChildren(std::vector<TreeItem*> children) {
+    for (auto child : children) {
+        child->parent_ = this;
+    }
+    util::append(childItems_, children);
+}
+
+bool TreeItem::insertChildren(int position, int count) {
+    if (position < 0 || position > childItems_.size()) return false;
+
+    for (int row = 0; row < count; ++row) {
+        TreeItem* item = new TreeItem(this);
+        childItems_.insert(childItems_.begin() + position, item);
+    }
+
+    return true;
+}
+
+bool TreeItem::removeChildren(int position, int count) {
+    if (position < 0 || position + count > childItems_.size()) return false;
+
+    for (int row = 0; row < count; ++row) delete childItems_[position];
+    childItems_.erase(childItems_.begin() + position);
+
+    return true;
+}
+
+void TreeItem::removeChildren() {
+    for (auto c : childItems_) {
+        delete c;
+    }
+}
+
+TreeItem* TreeItem::child(int row) {
+    if ((row < 0) || (row >= childItems_.size())) return nullptr;
+    return childItems_[row];
+}
+
+int TreeItem::row() const {
+    if (parent_) {
+        auto it = util::find(parent_->childItems_, const_cast<TreeItem*>(this));
+        if (it != parent_->childItems_.end()) {
+            return static_cast<int>(std::distance(parent_->childItems_.begin(), it));
+        }
+    }
+    return 0;
+}
+
+int TreeItem::childCount() const { return static_cast<int>(childItems_.size()); }
+
+int TreeItem::columnCount() const { return 2; }
+
+TreeItem* TreeItem::parent() const { return parent_; }
+
+QVariant TreeItem::data(int column, int role) const {
+    if ((column < 0) || (column >= columnCount())) {
+        return {};
+    }
+
+    if (type_ == FileTreeWidget::ListElemType::File) {
+        switch (role) {
+            case Qt::DisplayRole:
+                if (column == 0) {
+                    return {};
+                } else {
+                    return caption_;
+                }
+            case Qt::EditRole:
+                return caption_;
+            case Qt::ToolTipRole:
+                // prevent line breaks in the tooltip 
+                // see https://doc.qt.io/qt-5/qtooltip.html#details
+                return QString("<p style='white-space:pre'><strong>%1</strong><br>%2</p>")
+                    .arg(file_)
+                    .arg(path_);
+            case Qt::DecorationRole:
+                if (column == 0) {
+                    return {};
+                } else {
+                    return icon_;
+                }
+            case FileTreeWidget::ItemRoles::Type:
+                return type_;
+            case FileTreeWidget::ItemRoles::FileName:
+                return file_;
+            case FileTreeWidget::ItemRoles::Path:
+                return path_;
+            case FileTreeWidget::ItemRoles::ExampleWorkspace:
+                return isExample_;
+            default:
+                return {};
+        }
+    } else {
+        switch (role) {
+            case Qt::DisplayRole:
+            case Qt::EditRole:
+            case Qt::ToolTipRole:
+                return caption_;
+            case FileTreeWidget::ItemRoles::Type:
+                return type_;
+            default:
+                return {};
+        }
+    }
+}
+
+FileTreeWidget::ListElemType TreeItem::type() const { return type_; }
+
+void TreeItem::setData(const QString& caption, FileTreeWidget::ListElemType type) {
+    type_ = type;
+    caption_ = caption;
+}
+
+void TreeItem::setData(const QIcon& icon, const std::string& filename, bool isExample) {
+    type_ = FileTreeWidget::ListElemType::File;
+
+    icon_ = icon;
+    caption_ = utilqt::toQString(filename);
+    file_ = utilqt::toQString(filesystem::getFileNameWithExtension(filename));
+    path_ = utilqt::toQString(filesystem::getFileDirectory(filename));
+    isExample_ = isExample;
+
+    if (path_.isEmpty()) {
+        path_ = ".";
+    }
+}
+
+TreeModel::TreeModel(QObject* parent) : QAbstractItemModel(parent), root_{new TreeItem(nullptr)} {}
+
+TreeModel::~TreeModel() { delete root_; }
+
+QModelIndex TreeModel::index(int row, int column, const QModelIndex& parent) const {
+    if (parent.isValid() && parent.column() != 0) return QModelIndex();
+
+    TreeItem* parentItem = getItem(parent);
+    TreeItem* childItem = parentItem->child(row);
+
+    if (childItem) return createIndex(row, column, childItem);
+    return QModelIndex();
+}
+
+Qt::ItemFlags TreeModel::flags(const QModelIndex& index) const {
+    if (!index.isValid()) return Qt::NoItemFlags;
+
+    return QAbstractItemModel::flags(index);
+}
+
+QVariant TreeModel::data(const QModelIndex& index, int role) const {
+    if (!index.isValid()) return QVariant();
+    TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
+
+    return item->data(index.column(), role);
+}
+
+QVariant TreeModel::headerData(int, Qt::Orientation orientation, int role) const {
+    if (orientation == Qt::Horizontal && role == Qt::DisplayRole) return "Workspaces";
+
+    return QVariant();
+}
+
+QModelIndex TreeModel::parent(const QModelIndex& index) const {
+    if (!index.isValid()) return QModelIndex();
+
+    TreeItem* childItem = getItem(index);
+    TreeItem* parentItem = childItem ? childItem->parent() : nullptr;
+
+    if (parentItem == root_ || !parentItem) return QModelIndex();
+
+    return createIndex(parentItem->row(), 0, parentItem);
+}
+
+int TreeModel::rowCount(const QModelIndex& parent) const {
+    const TreeItem* parentItem = getItem(parent);
+    return parentItem ? parentItem->childCount() : 0;
+}
+
+int TreeModel::columnCount(const QModelIndex&) const { return root_->columnCount(); }
+
+bool TreeModel::insertRows(int position, int rows, const QModelIndex& parent) {
+    TreeItem* parentItem = getItem(parent);
+    if (!parentItem) return false;
+
+    beginInsertRows(parent, position, position + rows - 1);
+    const bool success = parentItem->insertChildren(position, rows);
+    endInsertRows();
+
+    return success;
+}
+
+bool TreeModel::removeRows(int position, int rows, const QModelIndex& parent) {
+    TreeItem* parentItem = getItem(parent);
+    if (!parentItem) return false;
+
+    beginRemoveRows(parent, position, position + rows - 1);
+    const bool success = parentItem->removeChildren(position, rows);
+    endRemoveRows();
+
+    return success;
+}
+
+void TreeModel::updateCategory(TreeItem* item, std::vector<TreeItem*> children) {
+    QModelIndex index = getIndex(item);
+
+    beginRemoveRows(index, 0, item->childCount());
+
+    endRemoveRows();
+    beginInsertRows(index, 0, static_cast<int>(children.size()));
+    for (auto c : children) {
+        item->addChild(c);
+    }
+    endInsertRows();
+}
+
+void TreeModel::addEntry(TreeItem* node, TreeItem* child) {
+    QModelIndex index = getIndex(node);
+    int pos = node ? node->childCount() : rowCount();
+    beginInsertRows(index, pos, pos + 1);
+
+    if (node) {
+        node->addChild(child);
+    } else {
+        if (!root_) {
+            root_ = new TreeItem();
+        }
+        root_->addChild(child);
+    }
+    endInsertRows();
+}
+
+bool TreeModel::removeEntry(TreeItem* node) {
+    return removeRows(node->row(), 1, getIndex(node->parent()));
+}
+
+bool TreeModel::removeChildren(TreeItem* root) {
+    if (!root || root == root_) {
+        beginResetModel();
+        root_->removeChildren();
+        endResetModel();
+        return true;
+    } else {
+        return removeRows(0, root->childCount(), getIndex(root));
+    }
+}
+
+QModelIndex TreeModel::getIndex(TreeItem* item, int column) const {
+    if (!item) return QModelIndex();
+
+    return createIndex(item->row(), column, item);
+}
+
+TreeItem* TreeModel::getItem(const QModelIndex& index) const {
+    if (index.isValid()) {
+        TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
+        if (item) return item;
+    }
+    return root_;
+}
+
 namespace {
 
 class SectionDelegate : public QStyledItemDelegate {
 public:
-    SectionDelegate(QWidget *parent = nullptr);
+    SectionDelegate(QWidget* parent = nullptr);
     virtual ~SectionDelegate() override = default;
 
-    virtual void paint(QPainter *painter, const QStyleOptionViewItem &option,
-                       const QModelIndex &index) const override;
-    QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const override;
+    virtual void paint(QPainter* painter, const QStyleOptionViewItem& option,
+                       const QModelIndex& index) const override;
+    QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const override;
 
 private:
-    std::tuple<QRect, QRect, QRect> getTextBoundingBox(const QStyleOptionViewItem &option,
-                                                       const QModelIndex &index) const;
+    std::tuple<QRect, QRect, QRect> getTextBoundingBox(const QStyleOptionViewItem& option,
+                                                       const QModelIndex& index) const;
 
-    static QString elidedText(const QString &str, const QFontMetrics &metrics, int width);
+    static QString elidedText(const QString& str, const QFontMetrics& metrics, int width);
 };
 
-SectionDelegate::SectionDelegate(QWidget *parent) : QStyledItemDelegate(parent) {}
+SectionDelegate::SectionDelegate(QWidget* parent) : QStyledItemDelegate(parent) {}
 
-void SectionDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o,
-                            const QModelIndex &index) const {
+void SectionDelegate::paint(QPainter* painter, const QStyleOptionViewItem& o,
+                            const QModelIndex& index) const {
+
     if (index.data(FileTreeWidget::ItemRoles::Type).toInt() == FileTreeWidget::ListElemType::File) {
         auto option = o;
         initStyleOption(&option, index);
 
         option.text = "";
-        QStyle *style = option.widget ? option.widget->style() : QApplication::style();
+        QStyle* style = option.widget ? option.widget->style() : QApplication::style();
         style->drawControl(QStyle::CE_ItemViewItem, &option, painter, option.widget);
 
-        const auto filename = index.data(FileTreeWidget::ItemRoles::FileName).toString();
-        const auto path = index.data(FileTreeWidget::ItemRoles::Path).toString();
-        auto boundingRects = getTextBoundingBox(option, index);
+        if (index.column() > 0) {
+            const auto filename = index.data(FileTreeWidget::ItemRoles::FileName).toString();
+            const auto path = index.data(FileTreeWidget::ItemRoles::Path).toString();
+            auto boundingRects = getTextBoundingBox(option, index);
 
-        // draw text
-        painter->save();
-        auto fontFilename = option.font;
-        fontFilename.setBold(true);
-        painter->setFont(fontFilename);
-        painter->setPen(option.palette.text().color().lighter());
-        painter->drawText(std::get<1>(boundingRects),
-                          Qt::AlignLeft | Qt::AlignTop | Qt::TextWordWrap, filename);
+            // draw text
+            painter->save();
+            auto fontFilename = option.font;
+            fontFilename.setBold(true);
+            painter->setFont(fontFilename);
+            painter->setPen(option.palette.text().color().lighter());
+            painter->drawText(std::get<1>(boundingRects),
+                              Qt::AlignLeft | Qt::AlignTop | Qt::TextWordWrap, filename);
 
-        painter->setFont(option.font);
-        painter->setPen(option.palette.text().color());
-        painter->drawText(std::get<2>(boundingRects), Qt::AlignLeft | Qt::AlignTop,
-                          elidedText(path, option.fontMetrics, std::get<0>(boundingRects).width()));
-        painter->restore();
+            painter->setFont(option.font);
+            painter->setPen(option.palette.text().color());
+            painter->drawText(
+                std::get<2>(boundingRects), Qt::AlignLeft | Qt::AlignTop,
+                elidedText(path, option.fontMetrics, std::get<0>(boundingRects).width()));
+            painter->restore();
+        }
     } else {
-        QStyledItemDelegate::paint(painter, o, index);
+        auto option = o;
+        initStyleOption(&option, index);
+        // enlarge and emphasize font of section headers
+        option.font.setBold(true);
+        option.font.setPointSizeF(option.font.pointSizeF() * 1.2);
+
+        QStyledItemDelegate::paint(painter, option, index);
     }
 }
 
-QSize SectionDelegate::sizeHint(const QStyleOptionViewItem &o, const QModelIndex &index) const {
+QSize SectionDelegate::sizeHint(const QStyleOptionViewItem& o, const QModelIndex& index) const {
     if (!index.isValid()) return QSize();
 
     if (index.data(FileTreeWidget::ItemRoles::Type).toInt() == FileTreeWidget::ListElemType::File) {
@@ -122,7 +408,7 @@ QSize SectionDelegate::sizeHint(const QStyleOptionViewItem &o, const QModelIndex
 }
 
 std::tuple<QRect, QRect, QRect> SectionDelegate::getTextBoundingBox(
-    const QStyleOptionViewItem &option, const QModelIndex &index) const {
+    const QStyleOptionViewItem& option, const QModelIndex& index) const {
     if (!index.isValid()) return {};
 
     const auto filename = index.data(FileTreeWidget::ItemRoles::FileName).toString();
@@ -139,7 +425,8 @@ std::tuple<QRect, QRect, QRect> SectionDelegate::getTextBoundingBox(
 
     auto textRect = (option.rect.isValid() ? option.rect : QRect());
     textRect.adjust(marginLeft + option.decorationSize.width(), margin, -marginRight, 0);
-    // set rect height to zero, since the font metric will calculate the required height of the text
+    // set rect height to zero, since the font metric will calculate the required height of
+    // the text
     textRect.setHeight(0);
 
     auto filenameRect = fm.boundingRect(textRect, Qt::AlignLeft | Qt::AlignTop, filename);
@@ -154,7 +441,7 @@ std::tuple<QRect, QRect, QRect> SectionDelegate::getTextBoundingBox(
     return {boundingRect, filenameRect, pathRect};
 }
 
-QString SectionDelegate::elidedText(const QString &str, const QFontMetrics &metrics, int width) {
+QString SectionDelegate::elidedText(const QString& str, const QFontMetrics& metrics, int width) {
     if (str.isEmpty() || (metrics.boundingRect(str).width() <= width)) {
         return str;
     }
@@ -172,7 +459,7 @@ QString SectionDelegate::elidedText(const QString &str, const QFontMetrics &metr
 
     std::vector<int> widthDirs;
     std::transform(directories.begin(), directories.end(), std::back_inserter(widthDirs),
-                   [&](const auto &dir) { return metrics.boundingRect("/" + dir).width(); });
+                   [&](const auto& dir) { return metrics.boundingRect("/" + dir).width(); });
 
     const int widthDots = metrics.boundingRect("/...").width();
 
@@ -184,7 +471,7 @@ QString SectionDelegate::elidedText(const QString &str, const QFontMetrics &metr
     int leftWidth = width - widthFirst - widthDots;
     QString result =
         std::accumulate(directories.begin(), directories.end(), QString(),
-                        [&, index = 0, leftWidth](QString str, const QString &dir) mutable {
+                        [&, index = 0, leftWidth](QString str, const QString& dir) mutable {
                             if (leftWidth >= widthDirs[index]) {
                                 str.prepend("/" + dir);
                                 leftWidth -= widthDirs[index];
@@ -199,130 +486,146 @@ QString SectionDelegate::elidedText(const QString &str, const QFontMetrics &metr
 
 }  // namespace
 
-FileTreeWidget::FileTreeWidget(InviwoApplication *app, QWidget *parent)
-    : QTreeWidget{parent}, inviwoApp_(app), fileIcon_{":/inviwo/inviwo_light.png"} {
+FileTreeWidget::FileTreeWidget(InviwoApplication* app, QWidget* parent)
+    : QTreeView{parent}
+    , inviwoApp_(app)
+    , model_{new TreeModel{this}}
+    , fileIcon_{":/inviwo/inviwo_light.png"} {
+
+    setModel(model_);
 
     setHeaderHidden(true);
-    setColumnCount(1);
+    setSelectionBehavior(QAbstractItemView::SelectRows);
     setIconSize(utilqt::emToPx(this, QSize(3, 3)));
     setIndentation(utilqt::emToPx(this, 1.0));
     setItemDelegate(new SectionDelegate(this));
 
+    // adjust width of first column
+    // file entries and icons start in column 2, sections headers span all columns
+    header()->setMinimumSectionSize(0);
+    header()->resizeSection(0, utilqt::emToPx(this, 1.0));
+
     QObject::connect(
-        this, &QTreeWidget::currentItemChanged, this,
-        [this](QTreeWidgetItem *current, QTreeWidgetItem *) {
-            if (current && (current->data(0, ItemRoles::Type) == ListElemType::File)) {
-                const auto filename = current->data(0, ItemRoles::Path).toString() + "/" +
-                                      current->data(0, ItemRoles::FileName).toString();
-                const auto isExample = current->data(0, ItemRoles::ExampleWorkspace).toBool();
+        selectionModel(), &QItemSelectionModel::currentRowChanged, this,
+        [this](const QModelIndex& current, const QModelIndex&) {
+            if (current.isValid() && (current.data(ItemRoles::Type) == ListElemType::File)) {
+                const auto filename = current.data(ItemRoles::Path).toString() + "/" +
+                                      current.data(ItemRoles::FileName).toString();
+                const auto isExample = current.data(ItemRoles::ExampleWorkspace).toBool();
                 emit selectedFileChanged(filename, isExample);
             } else {
                 emit selectedFileChanged("", false);
             }
         });
 
-    QObject::connect(
-        this, &QTreeWidget::itemDoubleClicked, this, [this](QTreeWidgetItem *item, int) {
-            if (item && (item->data(0, ItemRoles::Type) == ListElemType::File)) {
-                const auto filename = item->data(0, ItemRoles::Path).toString() + "/" +
-                                      item->data(0, ItemRoles::FileName).toString();
-                const auto isExample = item->data(0, ItemRoles::ExampleWorkspace).toBool();
-                emit loadFile(filename, isExample);
-            }
-        });
+    QObject::connect(this, &QTreeView::doubleClicked, this, [this](const QModelIndex& index) {
+        if (index.isValid() && (index.data(ItemRoles::Type) == ListElemType::File)) {
+            const auto filename = index.data(ItemRoles::Path).toString() + "/" +
+                                  index.data(ItemRoles::FileName).toString();
+            const auto isExample = index.data(ItemRoles::ExampleWorkspace).toBool();
+            emit loadFile(filename, isExample);
+        }
+    });
 }
 
-void FileTreeWidget::updateRecentWorkspaces(const QStringList &recentFiles) {
+void FileTreeWidget::updateRecentWorkspaces(const QStringList& recentFiles) {
     if (!recentWorkspaceItem_) {
-        recentWorkspaceItem_ = createCategory("Recent Workspaces");
-        addTopLevelItem(recentWorkspaceItem_);
-        recentWorkspaceItem_->setFirstColumnSpanned(true);
-        recentWorkspaceItem_->setExpanded(true);
+        recentWorkspaceItem_ = new TreeItem("Recent Workspaces", ListElemType::Section);
+
+        model_->addEntry(nullptr, recentWorkspaceItem_);
+        auto index = model_->getIndex(recentWorkspaceItem_);
+        expand(index);
+        setFirstColumnSpanned(index.row(), index.parent(), true);
     }
-    QList<QTreeWidgetItem *> items;
-    for (auto &elem : recentFiles) {
-        if (filesystem::fileExists(utilqt::fromQString(elem))) {
-            items.append(createFileEntry(fileIcon_, utilqt::fromQString(elem)));
+    std::vector<TreeItem*> items;
+    for (auto& elem : recentFiles) {
+        const std::string filename = utilqt::fromQString(elem);
+        if (filesystem::fileExists(filename)) {
+            items.push_back(new TreeItem{fileIcon_, filename});
         }
     }
     setUpdatesEnabled(false);
-    removeChildren(recentWorkspaceItem_);
-    recentWorkspaceItem_->addChildren(items);
+    model_->updateCategory(recentWorkspaceItem_, items);
     setUpdatesEnabled(true);
 }
 
 void FileTreeWidget::updateExampleEntries() {
-    QList<QTreeWidgetItem *> examples;
-    for (const auto &module : inviwoApp_->getModules()) {
+    std::vector<TreeItem*> examples;
+    for (const auto& module : inviwoApp_->getModules()) {
         auto moduleWorkspacePath = module->getPath(ModulePath::Workspaces);
         if (!filesystem::directoryExists(moduleWorkspacePath)) continue;
-        QList<QTreeWidgetItem *> moduleExamples;
+        std::vector<TreeItem*> moduleExamples;
         for (auto item : filesystem::getDirectoryContents(moduleWorkspacePath)) {
             // only accept inviwo workspace files
             if (filesystem::getFileExtension(item) != "inv") continue;
-            moduleExamples.append(
-                createFileEntry(fileIcon_, moduleWorkspacePath + "/" + item, true));
+            moduleExamples.emplace_back(
+                new TreeItem{fileIcon_, moduleWorkspacePath + "/" + item, true});
         }
-        if (!moduleExamples.isEmpty()) {
-            auto category = createCategory(utilqt::toQString(module->getIdentifier()),
-                                           ListElemType::SubSection);
+        if (!moduleExamples.empty()) {
+            auto category =
+                new TreeItem{utilqt::toQString(module->getIdentifier()), ListElemType::SubSection};
             category->addChildren(moduleExamples);
             examples.push_back(category);
         }
     }
-    if (!examplesItem_) {
-        examplesItem_ = createCategory("Examples");
-        addTopLevelItem(examplesItem_);
-        examplesItem_->setFirstColumnSpanned(true);
-        examplesItem_->setExpanded(true);
-    }
-    examplesItem_->setHidden(examples.isEmpty());
 
-    if (!examples.isEmpty()) {
+    if (!examplesItem_) {
+        examplesItem_ = new TreeItem("Examples", ListElemType::Section);
+        model_->addEntry(nullptr, examplesItem_);
+        auto index = model_->getIndex(examplesItem_);
+        expand(index);
+        setFirstColumnSpanned(index.row(), index.parent(), true);
+    }
+    setRowHidden(examplesItem_->row(), QModelIndex(), examples.empty());
+
+    if (!examples.empty()) {
         setUpdatesEnabled(false);
-        removeChildren(examplesItem_);
-        examplesItem_->addChildren(examples);
+        model_->updateCategory(examplesItem_, examples);
+
         for (auto elem : examples) {
-            elem->setExpanded(true);
-            elem->setFirstColumnSpanned(true);
+            auto index = model_->getIndex(elem);
+            expand(index);
+            setFirstColumnSpanned(index.row(), index.parent(), true);
         }
         setUpdatesEnabled(true);
     }
 }
 
 void FileTreeWidget::updateRegressionTestEntries() {
-    QList<QTreeWidgetItem *> tests;
-    for (const auto &module : inviwoApp_->getModules()) {
+    std::vector<TreeItem*> tests;
+    for (const auto& module : inviwoApp_->getModules()) {
         auto moduleRegressionTestsPath = module->getPath(ModulePath::RegressionTests);
         if (!filesystem::directoryExists(moduleRegressionTestsPath)) continue;
-        QList<QTreeWidgetItem *> moduleTests;
+        std::vector<TreeItem*> moduleTests;
         for (auto item : filesystem::getDirectoryContentsRecursively(moduleRegressionTestsPath)) {
             // only accept inviwo workspace files
             if (filesystem::getFileExtension(item) != "inv") continue;
-            moduleTests.append(createFileEntry(fileIcon_, item, true));
+            moduleTests.push_back(new TreeItem{fileIcon_, item, true});
         }
-        if (!moduleTests.isEmpty()) {
-            auto category = createCategory(utilqt::toQString(module->getIdentifier()),
-                                           ListElemType::SubSection);
+        if (!moduleTests.empty()) {
+            auto category =
+                new TreeItem{utilqt::toQString(module->getIdentifier()), ListElemType::SubSection};
             category->addChildren(moduleTests);
             tests.push_back(category);
         }
     }
     if (!regressionTestsItem_) {
-        regressionTestsItem_ = createCategory("Regression Tests");
-        addTopLevelItem(regressionTestsItem_);
-        regressionTestsItem_->setFirstColumnSpanned(true);
-        regressionTestsItem_->setExpanded(false);
+        regressionTestsItem_ = new TreeItem{"Regression Tests", ListElemType::Section};
+        model_->addEntry(nullptr, regressionTestsItem_);
+        auto index = model_->getIndex(regressionTestsItem_);
+        collapse(index);
+        setFirstColumnSpanned(index.row(), index.parent(), true);
     }
-    regressionTestsItem_->setHidden(tests.isEmpty());
+    setRowHidden(regressionTestsItem_->row(), QModelIndex(), tests.empty());
 
-    if (!tests.isEmpty()) {
+    if (!tests.empty()) {
         setUpdatesEnabled(false);
-        removeChildren(regressionTestsItem_);
-        regressionTestsItem_->addChildren(tests);
+        model_->updateCategory(regressionTestsItem_, tests);
+
         for (auto elem : tests) {
-            elem->setExpanded(true);
-            elem->setFirstColumnSpanned(true);
+            auto index = model_->getIndex(elem);
+            expand(index);
+            setFirstColumnSpanned(index.row(), index.parent(), true);
         }
         setUpdatesEnabled(true);
     }
@@ -332,43 +635,10 @@ bool FileTreeWidget::selectRecentWorkspace(int index) {
     if (!recentWorkspaceItem_) return false;
     if (recentWorkspaceItem_->childCount() < index) return false;
 
-    setCurrentItem(recentWorkspaceItem_->child(index));
+    auto idx = model_->index(index, 0, model_->index(recentWorkspaceItem_->row(), 0));
+    selectionModel()->select(idx, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+
     return true;
-}
-
-QTreeWidgetItem *FileTreeWidget::createCategory(const QString &caption, ListElemType type) {
-    auto item = new QTreeWidgetItem({caption}, type);
-    item->setData(0, ItemRoles::Type, type);
-    auto font = item->font(0);
-    font.setBold(true);
-    font.setPointSizeF(font.pointSize() * 1.2);
-    item->setFont(0, font);
-    return item;
-}
-
-QTreeWidgetItem *FileTreeWidget::createFileEntry(const QIcon &icon, const std::string &filename,
-                                                 bool isExample) {
-    auto file = filesystem::getFileNameWithExtension(filename);
-    auto path = filesystem::getFileDirectory(filename);
-    if (path.empty()) {
-        path = ".";
-    }
-    auto item = new QTreeWidgetItem({"", utilqt::toQString(filename)}, ListElemType::File);
-    item->setData(0, ItemRoles::Type, ListElemType::File);
-    item->setData(0, ItemRoles::FileName, utilqt::toQString(file));
-    item->setData(0, ItemRoles::Path, utilqt::toQString(path));
-    item->setData(0, ItemRoles::ExampleWorkspace, isExample);
-    item->setData(0, Qt::ToolTipRole, item->data(1, ItemRoles::Path));
-    item->setData(0, Qt::DecorationRole, icon);
-    return item;
-}
-
-void FileTreeWidget::removeChildren(QTreeWidgetItem *node) {
-    if (node) {
-        for (auto child : node->takeChildren()) {
-            delete child;
-        }
-    }
 }
 
 }  // namespace inviwo
