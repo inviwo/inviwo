@@ -172,6 +172,11 @@ private:
     void updateBrushing();
 
     std::pair<size2_t, size2_t> axisPos(size_t columnId) const;
+    
+    /**
+     * Returns display area excluding margins as lower left and upper right point.
+     */
+    std::pair<vec2, vec2> getDisplayRect(vec2 size) const;
 
     glui::Renderer sliderWidgetRenderer_;
     std::vector<ColumnAxis> axes_;
@@ -211,7 +216,7 @@ private:
     };
     Lines lines_;
 
-    MarginProperty marginsInternal_; // Margins with/without considering labels
+    std::pair<vec2, vec2> marginsInternal_;  // Margins with/without considering labels
     int hoveredLine_ = -1;
     int hoveredAxis_ = -1;
 

@@ -148,7 +148,7 @@ ParallelCoordinates::ParallelCoordinates()
     , axisPicking_(this, 1,
                    [&](PickingEvent* p) { axisPicked(p, p->getPickedId(), PickType::Axis); })
     , lineShader_("pcp_lines.vert", "pcp_lines.geom", "pcp_lines.frag", false)
-    , marginsInternal_("marginsInternal", "Margins with/without labels")  // private property
+    , marginsInternal_(0, 0)
     , lines_{}
     , brushingDirty_(true)  // needs to be true after deserialization
 {
@@ -265,23 +265,22 @@ void ParallelCoordinates::adjustMargins() {
                 }
             }
 
-            const auto rect = marginsInternal_.getRect(vec2{dim} - 1.0f);
+            const auto rect = getDisplayRect(vec2{dim} - 1.0f);
             llMargin = rect.first - glm::floor(bRect.first);
             urMargin = glm::ceil(bRect.second) - rect.second;
 
-            marginsInternal_.setLowerLeftMargin(llMargin);
-            marginsInternal_.setUpperRightMargin(urMargin);
+            marginsInternal_.first = llMargin;
+            marginsInternal_.second = urMargin;
 
-        } while (marginsInternal_.getLowerLeftMargin() != llMargin ||
-                 marginsInternal_.getUpperRightMargin() != urMargin);
+        } while (marginsInternal_.first != llMargin ||
+                 marginsInternal_.second != urMargin);
 
-        marginsInternal_.setMargins(margins_.getTop() + marginsInternal_.getTop(),
-                                     margins_.getRight() + marginsInternal_.getRight(),
-                                     margins_.getBottom() + marginsInternal_.getBottom(),
-                                     margins_.getLeft() + marginsInternal_.getLeft());
+        marginsInternal_.first += margins_.getLowerLeftMargin();
+        marginsInternal_.second += margins_.getUpperRightMargin();
+
     } else {
-        marginsInternal_.setMargins(margins_.getTop(), margins_.getRight(), margins_.getBottom(),
-                                     margins_.getLeft());
+        marginsInternal_.first = margins_.getLowerLeftMargin();
+        marginsInternal_.second = margins_.getUpperRightMargin();
     }
 }
 
@@ -576,7 +575,7 @@ void ParallelCoordinates::drawLines(size2_t size) {
         (blendMode_.get() == BlendMode::Additive || blendMode_.get() == BlendMode::Sutractive ||
          blendMode_.get() == BlendMode::Regular);
     // pcp_common.glsl
-    lineShader_.setUniform("spacing", marginsInternal_.getAsVec4());
+    lineShader_.setUniform("spacing", vec4(marginsInternal_.first, marginsInternal_.second));
     lineShader_.setUniform("dims", ivec2(size));
     // pcp_lines.vert
     lineShader_.setUniform("axisPositions", lines_.axisPositions.size(),
@@ -741,7 +740,7 @@ void ParallelCoordinates::axisPicked(PickingEvent* p, size_t pickedID, PickType 
                                static_cast<float>(axisPos(enabledAxes_[id + 1]).first.x)) {
                     swap(id, id + 1);
                 } else if (pickedID < axes_.size()) {
-                    const auto rect = marginsInternal_.getRect(outport_.getDimensions());
+                    const auto rect = getDisplayRect(outport_.getDimensions());
                     lines_.axisPositions[pickedID] =
                         glm::clamp(float(p->getPosition().x * p->getCanvasSize().x - rect.first.x) /
                                        (rect.second.x - rect.first.x),
@@ -792,7 +791,7 @@ void ParallelCoordinates::updateBrushing() {
 
 std::pair<size2_t, size2_t> ParallelCoordinates::axisPos(size_t columnId) const {
     const auto dim = outport_.getDimensions();
-    const auto rect = marginsInternal_.getRect(vec2{dim} - 1.0f);
+    const auto rect = getDisplayRect(vec2{dim} - 1.0f);
     const size2_t lowerLeft(rect.first);
     const size2_t upperRight(rect.second);
 
@@ -803,6 +802,10 @@ std::pair<size2_t, size2_t> ParallelCoordinates::axisPos(size_t columnId) const 
 
     return {startPos, endPos};
 }
+
+std::pair<vec2, vec2> ParallelCoordinates::getDisplayRect(vec2 size) const {
+    return {marginsInternal_.first, size - marginsInternal_.second};
+};
 
 void ParallelCoordinates::serialize(Serializer& s) const {
     Processor::serialize(s);
