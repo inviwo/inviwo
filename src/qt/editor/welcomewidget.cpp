@@ -55,6 +55,7 @@
 #include <QGridLayout>
 #include <QSpacerItem>
 #include <QCheckBox>
+#include <QLineEdit>
 #include <QLabel>
 #include <QTextEdit>
 #include <QFrame>
@@ -191,7 +192,26 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
         details_->setHtml(utilqt::toQString(doc));
     };
 
-    // left column: list of recently used workspaces and examples
+    // left column: workspace filter, list of recently used workspaces, and examples
+    filterLineEdit_ = new QLineEdit(leftWidget);
+    filterLineEdit_->setPlaceholderText("Search for Workspace...");
+    QIcon clearIcon;
+    clearIcon.addFile(":/svgicons/lineedit-clear.svg", utilqt::emToPx(this, QSizeF(0.3, 0.3)),
+                      QIcon::Normal);
+    clearIcon.addFile(":/svgicons/lineedit-clear-active.svg",
+                      utilqt::emToPx(this, QSizeF(0.3, 0.3)), QIcon::Active);
+    clearIcon.addFile(":/svgicons/lineedit-clear-active.svg",
+                      utilqt::emToPx(this, QSizeF(0.3, 0.3)), QIcon::Selected);
+    auto clearAction = filterLineEdit_->addAction(clearIcon, QLineEdit::TrailingPosition);
+    clearAction->setVisible(false);
+    connect(clearAction, &QAction::triggered, filterLineEdit_, &QLineEdit::clear);
+    connect(filterLineEdit_, &QLineEdit::textChanged, this,
+            [this, clearAction](const QString &str) {
+                filetree_->setFilter(str);
+                clearAction->setVisible(!str.isEmpty());
+            });
+    gridLayout->addWidget(filterLineEdit_, 1, 0, 1, 1);
+
     filetree_ = new FileTreeWidget(window->getInviwoApplication(), leftWidget);
     filetree_->setObjectName("FileTreeWidget");
     filetree_->setMinimumWidth(300);
@@ -207,7 +227,7 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
                      });
     QObject::connect(filetree_, &FileTreeWidget::loadFile, this, &WelcomeWidget::loadWorkspace);
 
-    gridLayout->addWidget(filetree_, 1, 0, 2, 1);
+    gridLayout->addWidget(filetree_, 2, 0, 2, 1);
 
     // center column: workspace details and buttons for loading workspaces
 
@@ -218,7 +238,7 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
     details_->setFrameShape(QFrame::NoFrame);
     details_->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 
-    gridLayout->addWidget(details_, 1, 1, 1, 1);
+    gridLayout->addWidget(details_, 1, 1, 2, 1);
 
     // tool buttons
     auto horizontalLayout_2 = new QHBoxLayout();
@@ -263,7 +283,7 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
 
     horizontalLayout_2->addWidget(toolButton_2);
 
-    gridLayout->addLayout(horizontalLayout_2, 2, 1, 1, 1);
+    gridLayout->addLayout(horizontalLayout_2, 3, 1, 1, 1);
 
     // add some space between center and right column
     auto horizontalSpacer_2 = new QSpacerItem(utilqt::emToPx(this, 2.0), utilqt::emToPx(this, 2.0),
@@ -271,8 +291,9 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
     gridLayout->addItem(horizontalSpacer_2, 1, 2, 1, 1);
 
     leftWidget->setLayout(gridLayout);
-    gridLayout->setRowStretch(1, 2);
-    gridLayout->setRowStretch(2, 1);
+    gridLayout->setRowStretch(1, 0);
+    gridLayout->setRowStretch(2, 2);
+    gridLayout->setRowStretch(3, 1);
     gridLayout->setColumnStretch(0, 1);
     gridLayout->setColumnStretch(1, 2);
 

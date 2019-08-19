@@ -44,6 +44,7 @@
 #include <QPainter>
 #include <QStyle>
 #include <QApplication>
+#include <QSortFilterProxyModel>
 
 #include <warn/pop>
 
@@ -128,11 +129,7 @@ QVariant TreeItem::data(int column, int role) const {
     if (type_ == FileTreeWidget::ListElemType::File) {
         switch (role) {
             case Qt::DisplayRole:
-                if (column == 0) {
-                    return {};
-                } else {
-                    return caption_;
-                }
+                return caption_;
             case Qt::EditRole:
                 return caption_;
             case Qt::ToolTipRole: {
@@ -503,9 +500,13 @@ FileTreeWidget::FileTreeWidget(InviwoApplication* app, QWidget* parent)
     : QTreeView{parent}
     , inviwoApp_(app)
     , model_{new TreeModel{this}}
+    , proxyModel_{new QSortFilterProxyModel{this}}
     , fileIcon_{":/inviwo/inviwo_light.png"} {
 
-    setModel(model_);
+    proxyModel_->setSourceModel(model_);
+    proxyModel_->setRecursiveFilteringEnabled(true);
+    proxyModel_->setFilterCaseSensitivity(Qt::CaseInsensitive);
+    setModel(proxyModel_);
 
     setHeaderHidden(true);
     setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -516,7 +517,7 @@ FileTreeWidget::FileTreeWidget(InviwoApplication* app, QWidget* parent)
     // adjust width of first column
     // file entries and icons start in column 2, sections headers span all columns
     header()->setMinimumSectionSize(0);
-    header()->resizeSection(0, utilqt::emToPx(this, 1.0));
+    header()->resizeSection(0, utilqt::emToPx(this, 2.0));
 
     QObject::connect(
         selectionModel(), &QItemSelectionModel::currentRowChanged, this,
@@ -546,7 +547,7 @@ void FileTreeWidget::updateRecentWorkspaces(const QStringList& recentFiles) {
         recentWorkspaceItem_ = new TreeItem("Recent Workspaces", ListElemType::Section);
 
         model_->addEntry(nullptr, recentWorkspaceItem_);
-        auto index = model_->getIndex(recentWorkspaceItem_);
+        auto index = proxyModel_->mapFromSource(model_->getIndex(recentWorkspaceItem_));
         expand(index);
         setFirstColumnSpanned(index.row(), index.parent(), true);
     }
@@ -585,7 +586,7 @@ void FileTreeWidget::updateExampleEntries() {
     if (!examplesItem_) {
         examplesItem_ = new TreeItem("Examples", ListElemType::Section);
         model_->addEntry(nullptr, examplesItem_);
-        auto index = model_->getIndex(examplesItem_);
+        auto index = proxyModel_->mapFromSource(model_->getIndex(examplesItem_));
         expand(index);
         setFirstColumnSpanned(index.row(), index.parent(), true);
     }
@@ -596,7 +597,7 @@ void FileTreeWidget::updateExampleEntries() {
         model_->updateCategory(examplesItem_, examples);
 
         for (auto elem : examples) {
-            auto index = model_->getIndex(elem);
+            auto index = proxyModel_->mapFromSource(model_->getIndex(elem));
             expand(index);
             setFirstColumnSpanned(index.row(), index.parent(), true);
         }
@@ -625,7 +626,7 @@ void FileTreeWidget::updateRegressionTestEntries() {
     if (!regressionTestsItem_) {
         regressionTestsItem_ = new TreeItem{"Regression Tests", ListElemType::Section};
         model_->addEntry(nullptr, regressionTestsItem_);
-        auto index = model_->getIndex(regressionTestsItem_);
+        auto index = proxyModel_->mapFromSource(model_->getIndex(regressionTestsItem_));
         collapse(index);
         setFirstColumnSpanned(index.row(), index.parent(), true);
     }
@@ -636,7 +637,7 @@ void FileTreeWidget::updateRegressionTestEntries() {
         model_->updateCategory(regressionTestsItem_, tests);
 
         for (auto elem : tests) {
-            auto index = model_->getIndex(elem);
+            auto index = proxyModel_->mapFromSource(model_->getIndex(elem));
             expand(index);
             setFirstColumnSpanned(index.row(), index.parent(), true);
         }
@@ -652,6 +653,10 @@ bool FileTreeWidget::selectRecentWorkspace(int index) {
     selectionModel()->select(idx, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
 
     return true;
+}
+
+void FileTreeWidget::setFilter(const QString& str) {
+    proxyModel_->setFilterRegExp(str);
 }
 
 }  // namespace inviwo

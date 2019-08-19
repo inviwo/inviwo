@@ -40,6 +40,8 @@
 
 #include <warn/pop>
 
+class QSortFilterProxyModel;
+
 namespace inviwo {
 
 class InviwoApplication;
@@ -65,6 +67,8 @@ public:
 
     bool selectRecentWorkspace(int index);
 
+    void setFilter(const QString& str);
+
 signals:
     void selectedFileChanged(const QString& filename, bool isExample);
     void loadFile(const QString& filename, bool isExample);
@@ -73,6 +77,7 @@ private:
     InviwoApplication* inviwoApp_;
 
     TreeModel* model_;
+    QSortFilterProxyModel *proxyModel_;
 
     TreeItem* recentWorkspaceItem_ = nullptr;
     TreeItem* examplesItem_ = nullptr;

@@ -39,6 +39,7 @@
 class QTabWidget;
 class QTextEdit;
 class QToolButton;
+class QLineEdit;
 
 namespace inviwo {
 
@@ -63,6 +64,7 @@ private:
     InviwoMainWindow *mainWindow_;
 
     FileTreeWidget *filetree_;
+    QLineEdit *filterLineEdit_;
     QTextEdit *details_;
     QTextEdit *changelog_;
     QToolButton *loadWorkspaceBtn_;
