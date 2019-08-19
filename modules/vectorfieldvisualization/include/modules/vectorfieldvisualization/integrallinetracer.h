@@ -42,72 +42,6 @@
 
 namespace inviwo {
 
-namespace detail {
-
-template <typename SpatialSampler, typename V, typename H, typename M, typename P>
-P seedTransform(std::true_type, const M &m, const P &pIn) {
-    auto p = m * P(V(pIn), 1.0f);
-    return P(V(p) / p[SpatialSampler::DataDimensions], pIn[SpatialSampler::DataDimensions]);
-}
-
-template <typename SpatialSampler, typename V, typename H, typename M, typename P>
-P seedTransform(std::false_type, const M &m, const P &pIn) {
-    auto p = m * H(pIn, 1.0f);
-    return P(p) / p[SpatialSampler::DataDimensions];
-}
-
-template <typename P, typename V, typename F>
-P moveHelper(std::true_type, const P &pos, const V &offset, F stepsize) {
-    return pos + P(offset, stepsize);
-}
-
-template <typename P, typename V, typename F>
-P moveHelper(std::false_type, const P &pos, const V &offset, F /*stepsize*/) {
-    return pos + offset;
-}
-
-template <bool TimeDependent, typename SpatialVector, typename DataVector, typename Sampler,
-          typename F, typename DataMatrix>
-std::pair<SpatialVector, DataVector> step(
-    const SpatialVector &oldPos, IntegralLineProperties::IntegrationScheme integrationScheme,
-    F stepSize, const DataMatrix &invBasis, bool normalizeSamples, const Sampler &sampler) {
-
-    auto normalize = [](auto v) {
-        auto l = glm::length(v);
-        if (l == 0) return v;
-        return v / l;
-    };
-
-    auto move = [&](auto pos, auto v, auto stepsize) {
-        if (normalizeSamples) {
-            v = normalize(v);
-        }
-        auto offset = (invBasis * (v * stepsize));
-
-        return moveHelper(typename std::integral_constant<bool, TimeDependent>::type(), pos, offset,
-                          stepsize);
-    };
-
-    auto k1 = sampler.sample(oldPos);
-
-    if (integrationScheme == IntegralLineProperties::IntegrationScheme::RK4) {
-        auto k2 = sampler.sample(move(oldPos, k1, stepSize / 2));
-        auto k3 = sampler.sample(move(oldPos, k2, stepSize / 2));
-        auto k4 = sampler.sample(move(oldPos, k3, stepSize));
-        auto K = k1 + k2 + k2 + k3 + k3 + k4;
-        if (normalizeSamples) {
-            K = normalize(K);
-        } else {
-            K = K / 6.0;
-        }
-
-        return {move(oldPos, K, stepSize), k1};
-    } else {
-        return {move(oldPos, k1, stepSize), k1};
-    }
-}
-}  // namespace detail
-
 /**
  * \class IntegralLineTracer
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
@@ -146,10 +80,11 @@ public:
 
     const DataHomogenouSpatialMatrixrix &getSeedTransformationMatrix() const;
 
-    void setTransformOutputToWorldSpace(bool transform);
-    bool isTransformingOutputToWorldSpace() const;
-
 private:
+    inline SpatialVector seedTransform(const SpatialVector &seed) const;
+
+    std::pair<SpatialVector, DataVector> step(const SpatialVector &oldPos, const double stepSize);
+
     bool addPoint(IntegralLine &line, const SpatialVector &pos);
     bool addPoint(IntegralLine &line, const SpatialVector &pos, const DataVector &worldVelocity);
 
@@ -168,8 +103,6 @@ private:
 
     DataMatrix invBasis_;
     DataHomogenouSpatialMatrixrix seedTransformation_;
-    DataHomogenouSpatialMatrixrix toWorld_;
-    bool transformOutputToWorldSpace_;
 };
 
 template <typename SpatialSampler, bool TimeDependent>
@@ -183,44 +116,35 @@ IntegralLineTracer<SpatialSampler, TimeDependent>::IntegralLineTracer(
     , sampler_(sampler)
     , invBasis_(glm::inverse(DataMatrix(sampler->getModelMatrix())))
     , seedTransformation_(
-          properties.getSeedPointTransformationMatrix(sampler->getCoordinateTransformer()))
-    , toWorld_(sampler->getCoordinateTransformer().getDataToWorldMatrix())
-    , transformOutputToWorldSpace_{false} {}
+          properties.getSeedPointTransformationMatrix(sampler->getCoordinateTransformer())) {}
 
 template <typename SpatialSampler, bool TimeDependent>
 typename IntegralLineTracer<SpatialSampler, TimeDependent>::Result
 IntegralLineTracer<SpatialSampler, TimeDependent>::traceFrom(const SpatialVector &pIn) {
-    SpatialVector p = detail::seedTransform<Sampler, DataVector, DataHomogenousVector>(
-        typename std::integral_constant<bool, TimeDependent>::type(), seedTransformation_, pIn);
-
+    const SpatialVector p = seedTransform(pIn);
     Result res;
     IntegralLine &line = res.line;
 
-    bool both = dir_ == IntegralLineProperties::Direction::BOTH;
-    bool fwd = both || dir_ == IntegralLineProperties::Direction::FWD;
-    bool bwd = both || dir_ == IntegralLineProperties::Direction::BWD;
-
-    size_t stepsFWD = 0;
-    size_t stepsBWD = 0;
-
-    if (both) {
-        stepsBWD = steps_ / 2;
-        stepsFWD = steps_ - stepsBWD;
-    } else if (fwd) {
-        line.setBackwardTerminationReason(IntegralLine::TerminationReason::StartPoint);
-        stepsFWD = steps_;
-    } else if (bwd) {
-        line.setForwardTerminationReason(IntegralLine::TerminationReason::StartPoint);
-        stepsBWD = steps_;
-    }
-
-    stepsBWD++;  // for adjendency info
-    stepsFWD++;
+    const auto [stepsBWD, stepsFWD] = [dir = dir_, steps = steps_,
+                                       &line]() -> std::pair<size_t, size_t> {
+        switch (dir) {
+            case inviwo::IntegralLineProperties::Direction::FWD:
+                line.setBackwardTerminationReason(IntegralLine::TerminationReason::StartPoint);
+                return {1, steps + 1};
+            case inviwo::IntegralLineProperties::Direction::BWD:
+                line.setForwardTerminationReason(IntegralLine::TerminationReason::StartPoint);
+                return {steps + 1, 1};
+            default:
+            case inviwo::IntegralLineProperties::Direction::BOTH: {
+                return {steps / 2 + 1, steps - (steps / 2) + 1};
+            }
+        }
+    }();
 
     line.getPositions().reserve(steps_ + 2);
     line.getMetaData<dvec3>("velocity", true).reserve(steps_ + 2);
 
-    if (TimeDependent) {
+    if constexpr (TimeDependent) {
         line.getMetaData<double>("timestamp", true).reserve(steps_ + 2);
     }
 
@@ -234,13 +158,12 @@ IntegralLineTracer<SpatialSampler, TimeDependent>::traceFrom(const SpatialVector
 
     line.setBackwardTerminationReason(integrate(stepsBWD, p, line, false));
 
-    if (!line.getPositions().empty()) {
+    if (line.getPositions().size() > 1) {
         line.reverse();
         res.seedIndex = line.getPositions().size() - 1;
     }
 
     line.setForwardTerminationReason(integrate(stepsFWD, p, line, true));
-
     return res;
 }
 
@@ -257,14 +180,64 @@ IntegralLineTracer<SpatialSampler, TimeDependent>::getSeedTransformationMatrix()
 }
 
 template <typename SpatialSampler, bool TimeDependent>
-void IntegralLineTracer<SpatialSampler, TimeDependent>::setTransformOutputToWorldSpace(
-    bool transform) {
-    transformOutputToWorldSpace_ = transform;
+inline typename IntegralLineTracer<SpatialSampler, TimeDependent>::SpatialVector
+IntegralLineTracer<SpatialSampler, TimeDependent>::seedTransform(const SpatialVector &seed) const {
+    if constexpr (IsTimeDependent) {
+        using V = DataVector;
+        auto p = seedTransformation_ * SpatialVector(V(seed), 1.0f);
+        return SpatialVector(V(p) / p[SpatialSampler::DataDimensions],
+                             seed[SpatialSampler::DataDimensions]);
+    } else {
+        using H = DataHomogenousVector;
+        auto p = seedTransformation_ * H(seed, 1.0f);
+        return SpatialVector(p) / p[SpatialSampler::DataDimensions];
+    }
 }
 
 template <typename SpatialSampler, bool TimeDependent>
-bool IntegralLineTracer<SpatialSampler, TimeDependent>::isTransformingOutputToWorldSpace() const {
-    return transformOutputToWorldSpace_;
+std::pair<typename IntegralLineTracer<SpatialSampler, TimeDependent>::SpatialVector,
+          typename IntegralLineTracer<SpatialSampler, TimeDependent>::DataVector>
+IntegralLineTracer<SpatialSampler, TimeDependent>::step(const SpatialVector &oldPos,
+                                                        const double stepSize) {
+    auto normalize = [](const auto v) {
+        auto l = glm::length(v);
+        if (l == 0) return v;
+        return v / l;
+    };
+
+    auto move = [&](const auto &pos, auto v, const auto stepsize) {
+        if (normalizeSamples_) {
+            v = normalize(v);
+        }
+        auto offset = (invBasis_ * (v * stepsize));
+        if constexpr (TimeDependent) {
+            return pos + SpatialVector(offset, stepsize);
+        } else {
+            return pos + offset;
+        }
+    };
+
+    auto k1 = sampler_->sample(oldPos);
+
+    switch (integrationScheme_) {
+        case inviwo::IntegralLineProperties::IntegrationScheme::Euler:
+            return {move(oldPos, k1, stepSize), k1};
+        default:
+            [[fallthrough]];
+        case inviwo::IntegralLineProperties::IntegrationScheme::RK4: {
+            const auto k2 = sampler_->sample(move(oldPos, k1, stepSize / 2));
+            const auto k3 = sampler_->sample(move(oldPos, k2, stepSize / 2));
+            const auto k4 = sampler_->sample(move(oldPos, k3, stepSize));
+            const auto &&K = [n = normalizeSamples_, normalize, &k1, &k2, &k3, &k4]() {
+                if (n) {
+                    return normalize(k1 + k2 + k2 + k3 + k3 + k4);
+                } else {
+                    return (k1 + k2 + k2 + k3 + k3 + k4) * (1.0 / 6.0);
+                }
+            };
+            return {move(oldPos, K(), stepSize), k1};
+        }
+    }
 }
 
 template <typename SpatialSampler, bool TimeDependent>
@@ -282,18 +255,10 @@ bool IntegralLineTracer<SpatialSampler, TimeDependent>::addPoint(IntegralLine &l
         return false;
     }
 
-    if (transformOutputToWorldSpace_) {
-        SpatialVector worldPos = detail::seedTransform<Sampler, DataVector, DataHomogenousVector>(
-            typename std::integral_constant<bool, TimeDependent>::type(), toWorld_, pos);
-
-        line.getPositions().emplace_back(util::glm_convert<dvec3>(worldPos));
-    } else {
-        line.getPositions().emplace_back(util::glm_convert<dvec3>(pos));
-    }
-
+    line.getPositions().emplace_back(util::glm_convert<dvec3>(pos));
     line.getMetaData<dvec3>("velocity").emplace_back(util::glm_convert<dvec3>(worldVelocity));
 
-    if (TimeDependent) {
+    if constexpr (TimeDependent) {
         line.getMetaData<double>("timestamp").emplace_back(pos[Sampler::SpatialDimensions - 1]);
     }
 
@@ -312,10 +277,7 @@ IntegralLine::TerminationReason IntegralLineTracer<SpatialSampler, TimeDependent
         if (!sampler_->withinBounds(pos)) {
             return IntegralLine::TerminationReason::OutOfBounds;
         }
-
-        auto res = detail::step<TimeDependent, SpatialVector, DataVector>(
-            pos, integrationScheme_, stepSize_ * (fwd ? 1.0 : -1.0), invBasis_, normalizeSamples_,
-            *sampler_);
+        auto res = step(pos, stepSize_ * (fwd ? 1.0 : -1.0));
         pos = res.first;
 
         if (!addPoint(line, pos, res.second)) {
