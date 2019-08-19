@@ -158,6 +158,44 @@ std::shared_ptr<Volume> haltonSequence(size3_t dims, size_t numberOfPoints, size
     return vol;
 }
 
+namespace detail {
+struct RandomNumberRangeValues {
+    template <typename T>
+    inline static constexpr T min() {
+        if constexpr (std::is_floating_point_v<T>) {
+            return 0;
+        } else {
+            return std::numeric_limits<T>::lowest();
+        }
+    }
+
+    template <typename T>
+    inline static constexpr T max() {
+        if constexpr (std::is_floating_point_v<T>) {
+            return 1;
+        } else {
+            return std::numeric_limits<T>::max();
+        }
+    }
+};
+}  // namespace detail
+
+/**
+ * Generates a random value of type T in the range [\p min, \p max).
+ * Will use the distribution of the random number generator \p rng.
+ * I.e when used with e.g. std::mt19937 it generates uniformly distributed number between \p min
+ * and \p max.
+ * \p min/\p max defaults to 0 and 1 for floating point types otherwise default to
+ * std::numeric_limits::lowest()/::max()
+ */
+template <typename T, typename RNG,
+          typename F = std::conditional_t<std::is_same_v<float, T>, float, double>>
+inline static T randomNumber(RNG &rng, T min = detail::RandomNumberRangeValues::min<T>(),
+                             T max = detail::RandomNumberRangeValues::max<T>()) {
+    const auto t = static_cast<F>(rng() - RNG::min()) / static_cast<F>(RNG::max() - RNG::min());
+    return static_cast<T>(min + t * (max - min));
+}
+
 /**
  * Fills a data container of type T with numberOfElements random numbers using the given random
  * number generator and distribution
