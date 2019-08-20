@@ -203,7 +203,7 @@ void TreeItem::addChildren(std::vector<std::unique_ptr<TreeItem>> children) {
 }
 
 bool TreeItem::insertChildren(int position, int count) {
-    if (position < 0 || position > childItems_.size()) return false;
+    if (position < 0 || position > static_cast<int>(childItems_.size())) return false;
 
     for (int row = 0; row < count; ++row) {
         auto item = std::make_unique<TreeItem>(this);
@@ -214,7 +214,7 @@ bool TreeItem::insertChildren(int position, int count) {
 }
 
 bool TreeItem::removeChildren(int position, int count) {
-    if (position < 0 || position + count > childItems_.size()) return false;
+    if (position < 0 || position + count > static_cast<int>(childItems_.size())) return false;
 
     childItems_.erase(childItems_.begin() + position);
 
@@ -224,7 +224,7 @@ bool TreeItem::removeChildren(int position, int count) {
 void TreeItem::removeChildren() { childItems_.clear(); }
 
 TreeItem* TreeItem::child(int row) {
-    if ((row < 0) || (row >= childItems_.size())) return nullptr;
+    if ((row < 0) || (row >= static_cast<int>(childItems_.size()))) return nullptr;
     return childItems_[row].get();
 }
 

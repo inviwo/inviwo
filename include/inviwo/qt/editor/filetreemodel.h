@@ -116,8 +116,8 @@ public:
     int columnCount() const;
     TreeItem* parent() const;
 
-    virtual QVariant data(int column, int role) const;
-    virtual FileTreeModel::ListElemType type() const;
+    QVariant data(int column, int role) const;
+    FileTreeModel::ListElemType type() const;
 
     void setData(const QString& caption, FileTreeModel::ListElemType type);
     void setData(const QIcon& icon, const std::string& filename, bool isExample);

@@ -277,7 +277,7 @@ void FileTreeWidget::updateRecentWorkspaces(const QStringList& recentFiles) {
     for (auto& elem : recentFiles) {
         const std::string filename = utilqt::fromQString(elem);
         if (filesystem::fileExists(filename)) {
-            items.push_back(std::move(std::make_unique<TreeItem>(fileIcon_, filename)));
+            items.push_back(std::make_unique<TreeItem>(fileIcon_, filename));
         }
     }
     setUpdatesEnabled(false);
@@ -296,8 +296,8 @@ void FileTreeWidget::updateExampleEntries() {
         for (auto item : filesystem::getDirectoryContents(moduleWorkspacePath)) {
             // only accept inviwo workspace files
             if (filesystem::getFileExtension(item) != "inv") continue;
-            category->addChild(std::move(
-                std::make_unique<TreeItem>(fileIcon_, moduleWorkspacePath + "/" + item, true)));
+            category->addChild(
+                std::make_unique<TreeItem>(fileIcon_, moduleWorkspacePath + "/" + item, true));
         }
         if (category->childCount() > 0) {
             examples.push_back(std::move(category));
@@ -341,7 +341,7 @@ void FileTreeWidget::updateRegressionTestEntries() {
         for (auto item : filesystem::getDirectoryContentsRecursively(moduleRegressionTestsPath)) {
             // only accept inviwo workspace files
             if (filesystem::getFileExtension(item) != "inv") continue;
-            category->addChild(std::move(std::make_unique<TreeItem>(fileIcon_, item, true)));
+            category->addChild(std::make_unique<TreeItem>(fileIcon_, item, true));
         }
         if (category->childCount() > 0) {
             tests.push_back(std::move(category));
@@ -390,7 +390,7 @@ void FileTreeWidget::setFilter(const QString& str) {
     // Avoid unnecessary expands, e.g. during typing
     if (isFiltering_ == str.isEmpty()) {
         isFiltering_ = !str.isEmpty();
-        
+
         if (isFiltering_) {
             expandAll();
         } else {
