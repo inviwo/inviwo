@@ -156,9 +156,20 @@ ProcessorTreeWidget::ProcessorTreeWidget(InviwoMainWindow* parent, HelpWidget* h
     vLayout->setContentsMargins(space, space, space, space);
     lineEdit_ = new QLineEdit(centralWidget);
     lineEdit_->setPlaceholderText("Filter processor list...");
-    lineEdit_->setClearButtonEnabled(true);
-
-    connect(lineEdit_, &QLineEdit::textChanged, this, [this]() { addProcessorsToTree(); });
+    QIcon clearIcon;
+    clearIcon.addFile(":/svgicons/lineedit-clear.svg", utilqt::emToPx(this, QSizeF(0.3, 0.3)),
+                      QIcon::Normal);
+    clearIcon.addFile(":/svgicons/lineedit-clear-active.svg",
+                      utilqt::emToPx(this, QSizeF(0.3, 0.3)), QIcon::Active);
+    clearIcon.addFile(":/svgicons/lineedit-clear-active.svg",
+                      utilqt::emToPx(this, QSizeF(0.3, 0.3)), QIcon::Selected);
+    auto clearAction = lineEdit_->addAction(clearIcon, QLineEdit::TrailingPosition);
+    clearAction->setVisible(false);
+    connect(clearAction, &QAction::triggered, lineEdit_, &QLineEdit::clear);
+    connect(lineEdit_, &QLineEdit::textChanged, this, [this, clearAction](const QString& str) {
+        addProcessorsToTree();
+        clearAction->setVisible(!str.isEmpty());
+    });
     vLayout->addWidget(lineEdit_);
     QHBoxLayout* listViewLayout = new QHBoxLayout();
     listViewLayout->addWidget(new QLabel("Group by", centralWidget));
