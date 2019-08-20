@@ -57,7 +57,6 @@ public:
                  PropertySemantics semantics = PropertySemantics::Default);
 
     FontProperty(const FontProperty& rhs);
-    FontProperty& operator=(const FontProperty& rhs) = default;
     virtual FontProperty* clone() const override;
     virtual ~FontProperty() = default;
 

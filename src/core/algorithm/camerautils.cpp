@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/base/algorithm/camerautils.h>
-
+#include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/network/networklock.h>
 
 namespace inviwo {
@@ -137,25 +136,7 @@ void setCameraView(CameraProperty &cam, const mat4 &boundingBox, Side side, floa
                    UpdateNearFar updateNearFar, UpdateLookRanges updateLookRanges) {
     const auto viewDir = mat3(boundingBox) * detail::getViewDir(side);
     const auto lookUp = mat3(boundingBox) * detail::getLookUp(side);
-    setCameraView(cam, boundingBox, viewDir, lookUp, fitRatio,
-                  updateNearFar, updateLookRanges);
-}
-
-void setCameraView(CameraProperty &cam, const std::vector<std::shared_ptr<const Mesh>> &meshes,
-                   Side side, float fitRatio, UpdateNearFar updateNearFar,
-                   UpdateLookRanges updateLookRanges) {
-    auto minMax = meshutil::axisAlignedBoundingBox(meshes);
-    auto m = glm::scale(minMax.second - minMax.first);
-    m[3] = vec4(minMax.first, 1.0f);
-    setCameraView(cam, m, side, fitRatio, updateNearFar, updateLookRanges);
-}
-
-void setCameraView(CameraProperty &cam, const Mesh &mesh, Side side, float fitRatio,
-                   UpdateNearFar updateNearFar, UpdateLookRanges updateLookRanges) {
-    auto minMax = meshutil::axisAlignedBoundingBox(mesh);
-    auto m = glm::scale(minMax.second - minMax.first);
-    m[3] = vec4(minMax.first, 1.0f);
-    setCameraView(cam, m, side, fitRatio, updateNearFar, updateLookRanges);
+    setCameraView(cam, boundingBox, viewDir, lookUp, fitRatio, updateNearFar, updateLookRanges);
 }
 
 void setCameraLookRanges(CameraProperty &cam, const mat4 &boundingBox, float zoomRange) {

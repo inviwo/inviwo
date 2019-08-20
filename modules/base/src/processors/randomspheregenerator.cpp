@@ -37,6 +37,7 @@
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/algorithm/boundingbox.h>
 
 #include <numeric>
 
@@ -62,7 +63,7 @@ RandomSphereGenerator::RandomSphereGenerator()
     , gridDim_("gridDim", "Grid Dimension", ivec3(12, 12, 12), ivec3(1), ivec3(128))
     , jigglePos_("jigglePos", "Jiggle Positions", true)
     , enablePicking_("enablePicking", "Enable Picking", false)
-    , camera_("camera", "Camera")
+    , camera_("camera", "Camera", util::boundingBox(meshOut_))
     , spherePicking_(
           this, gridDim_.get().x * gridDim_.get().y * gridDim_.get().z, [&](PickingEvent* p) {
               handlePicking(p, [&](vec3 delta) {

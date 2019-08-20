@@ -28,41 +28,48 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
+#include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/interaction/events/event.h>
-#include <inviwo/core/util/constexprhash.h>
-#include <modules/base/algorithm/camerautils.h>
 
-#include <variant>
+#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/ports/volumeport.h>
+
+#include <functional>
+#include <optional>
+
+class Inport;
+
+class Mesh;
+class Volume;
+
+template <typename T, size_t N = 1, bool Flat = false>
+class DataInport;
+
+template <typename T>
+class DataOutport;
 
 namespace inviwo {
 
-class IVW_MODULE_BASE_API ViewEvent : public Event {
-public:
-    struct FlipUp {};
-    struct FitData {};
+namespace util {
 
-    using Action = std::variant<camerautil::Side, FlipUp, FitData>;
+IVW_CORE_API mat4 boundingBox(const Mesh &mesh);
+IVW_CORE_API mat4 boundingBox(const std::vector<std::shared_ptr<const Mesh>> &meshes);
+IVW_CORE_API mat4 boundingBox(const Volume &volume);
+IVW_CORE_API mat4 boundingBox(const std::vector<std::shared_ptr<Volume>> &volumes);
 
-    ViewEvent(Action action = camerautil::Side::XNegative);
-    ViewEvent(const ViewEvent&) = default;
-    ViewEvent& operator=(const ViewEvent&) = default;
+IVW_CORE_API std::function<std::optional<mat4>()> boundingBox(const DataInport<Mesh> &mesh);
+IVW_CORE_API std::function<std::optional<mat4>()> boundingBox(const DataInport<Mesh, 0> &meshes);
+IVW_CORE_API std::function<std::optional<mat4>()> boundingBox(
+    const DataInport<Mesh, 0, true> &meshes);
+IVW_CORE_API std::function<std::optional<mat4>()> boundingBox(const DataOutport<Mesh> &mesh);
 
-    virtual ~ViewEvent() = default;
+IVW_CORE_API std::function<std::optional<mat4>()> boundingBox(const DataInport<Volume> &volume);
+IVW_CORE_API std::function<std::optional<mat4>()> boundingBox(
+    const DataInport<std::vector<std::shared_ptr<Volume>>> &volumes);
+IVW_CORE_API std::function<std::optional<mat4>()> boundingBox(const DataOutport<Volume> &volume);
+IVW_CORE_API std::function<std::optional<mat4>()> boundingBox(
+    const DataOutport<std::vector<std::shared_ptr<Volume>>> &volumes);
 
-    // Inherited via Event
-    virtual Event* clone() const override;
-    virtual uint64_t hash() const override;
-
-    static constexpr uint64_t chash() { return util::constexpr_hash("org.inviwo.ViewEvent"); }
-
-    virtual void print(std::ostream& ss) const override;
-
-    Action getAction() const;
-
-private:
-    Action action_;
-};
+}  // namespace util
 
 }  // namespace inviwo

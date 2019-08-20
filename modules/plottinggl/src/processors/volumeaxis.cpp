@@ -32,6 +32,7 @@
 #include <modules/plotting/utils/axisutils.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/algorithm/boundingbox.h>
 
 namespace inviwo {
 
@@ -66,7 +67,7 @@ VolumeAxis::VolumeAxis()
     , xAxis_("xAxis", "X Axis")
     , yAxis_("yAxis", "Y Axis")
     , zAxis_("zAxis", "Z Axis")
-    , camera_("camera", "Camera")
+    , camera_("camera", "Camera", util::boundingBox(inport_))
     , trackball_(&camera_)
     , axisRenderers_({{xAxis_, yAxis_, zAxis_}})
     , propertyUpdate_(false) {

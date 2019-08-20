@@ -46,9 +46,6 @@
 #include <inviwo/core/ports/volumeport.h>
 #include <modules/opengl/shader/shader.h>
 
-#include <modules/base/algorithm/camerautils.h>
-#include <modules/base/properties/camerafittingproperty.h>
-
 namespace inviwo {
 
 /** \docpage{org.inviwo.VolumeRaycaster, Volume Raycaster}
@@ -113,8 +110,6 @@ protected:
     SimpleLightingProperty lighting_;
     VolumeIndicatorProperty positionIndicator_;
     EventProperty toggleShading_;
-
-    CameraFittingProperty cameraFitter_;
 };
 
 }  // namespace inviwo

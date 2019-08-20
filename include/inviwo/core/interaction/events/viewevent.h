@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,35 +26,43 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <modules/base/processors/camerafrustum.h>
-#include <modules/base/algorithm/meshutils.h>
-#include <inviwo/core/algorithm/boundingbox.h>
+#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/interaction/events/event.h>
+#include <inviwo/core/util/constexprhash.h>
+#include <inviwo/core/algorithm/camerautils.h>
+
+#include <variant>
 
 namespace inviwo {
 
-// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo CameraFrustum::processorInfo_{
-    "org.inviwo.CameraFrustum",  // Class identifier
-    "Camera Frustum",            // Display name
-    "Information",               // Category
-    CodeState::Experimental,     // Code state
-    Tags::None,                  // Tags
+class IVW_CORE_API ViewEvent : public Event {
+public:
+    struct FlipUp {};
+    struct FitData {};
+
+    using Action = std::variant<camerautil::Side, FlipUp, FitData>;
+
+    ViewEvent(Action action = camerautil::Side::XNegative);
+    ViewEvent(const ViewEvent&) = default;
+    ViewEvent& operator=(const ViewEvent&) = default;
+
+    virtual ~ViewEvent() = default;
+
+    // Inherited via Event
+    virtual Event* clone() const override;
+    virtual uint64_t hash() const override;
+
+    static constexpr uint64_t chash() { return util::constexpr_hash("org.inviwo.ViewEvent"); }
+
+    virtual void print(std::ostream& ss) const override;
+
+    Action getAction() const;
+
+private:
+    Action action_;
 };
-const ProcessorInfo CameraFrustum::getProcessorInfo() const { return processorInfo_; }
-
-CameraFrustum::CameraFrustum()
-    : Processor()
-    , mesh_("mesh")
-    , camera_("camera", "Camera", util::boundingBox(mesh_))
-    , color_("color", "Color", vec4(1.f), vec4(0.f), vec4(1.f), vec4(.01f),
-             InvalidationLevel::InvalidOutput, PropertySemantics::Color) {
-
-    addPort(mesh_);
-    addProperty(color_);
-    addProperty(camera_);
-}
-
-void CameraFrustum::process() { mesh_.setData(meshutil::cameraFrustum(camera_, color_)); }
 
 }  // namespace inviwo

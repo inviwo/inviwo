@@ -33,6 +33,9 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/camera.h>
+#include <inviwo/core/algorithm/camerautils.h>
+#include <inviwo/core/properties/buttongroupproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -40,12 +43,13 @@
 #include <inviwo/core/interaction/events/eventlistener.h>
 #include <inviwo/core/interaction/trackballobject.h>
 
+#include <functional>
+#include <optional>
+
 namespace inviwo {
 
-template <unsigned int N>
-class SpatialEntity;
-
 class Inport;
+
 
 /**
  * \ingroup properties
@@ -57,7 +61,14 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    CameraProperty(std::string identifier, std::string displayName,
+    CameraProperty(const std::string& identifier, const std::string& displayName,
+                   std::function<std::optional<mat4>()> getBoundingBox,
+                   vec3 eye = vec3(0.0f, 0.0f, 2.0f), vec3 center = vec3(0.0f),
+                   vec3 lookUp = vec3(0.0f, 1.0f, 0.0f),
+                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
+                   PropertySemantics semantics = PropertySemantics::Default);
+
+    CameraProperty(const std::string& identifier, const std::string& displayName,
                    vec3 eye = vec3(0.0f, 0.0f, 2.0f), vec3 center = vec3(0.0f),
                    vec3 lookUp = vec3(0.0f, 1.0f, 0.0f), Inport* inport = nullptr,
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
@@ -144,6 +155,8 @@ public:
     // camera properties but requires them to be synced
     // with the camera.
     // Use NetworkLock if editing multiple properties at the same time
+    OptionPropertyString cameraType_;
+    ButtonGroupProperty cameraActions_;
     FloatVec3Property lookFrom_;
     FloatVec3Property lookTo_;
     FloatVec3Property lookUp_;
@@ -152,10 +165,23 @@ public:
     FloatProperty farPlane_;
 
 private:
+    std::vector<ButtonGroupProperty::Button> buttons();
+    void setView(::inviwo::camerautil::Side side);
+    void fitData();
+    void flipUp();
+    void setNearFar();
+    void setLookRange();
+
+    CompositeProperty settings_;
+    BoolProperty updateNearFar_;
+    BoolProperty updateLookRanges_;
+    FloatProperty fittingRatio_;
+    ButtonProperty setNearFarButton_;
+    ButtonProperty setLookRangesButton_;
+
     void changeCamera(std::unique_ptr<Camera> newCamera);
-    
-    OptionPropertyString cameraType_;
     std::unique_ptr<Camera> camera_;
+    std::function<std::optional<mat4>()> getBoundingBox_;
 };
 
 }  // namespace inviwo

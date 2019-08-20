@@ -43,6 +43,7 @@
 #include <modules/opengl/openglutils.h>
 
 #include <modules/base/algorithm/dataminmax.h>
+#include <inviwo/core/algorithm/boundingbox.h>
 
 #include <limits>
 
@@ -62,10 +63,7 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
     , inport_("geometry")
     , imageInport_("imageInport")
     , outport_("image")
-    , camera_("camera", "Camera", vec3(0.0f, 0.0f, 2.0f), vec3(0.0f, 0.0f, 0.0f),
-              vec3(0.0f, 1.0f, 0.0f), &inport_)
-    , cameraFitter_("cameraFitter", "Fit View to Mesh", camera_, inport_)
-    , resetViewParams_("resetView", "Reset Camera")
+    , camera_("camera", "Camera", util::boundingBox(inport_))
     , trackball_(&camera_)
     , overrideColorBuffer_("overrideColorBuffer", "Override Color Buffer", false,
                            InvalidationLevel::InvalidResources)
@@ -94,10 +92,8 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
     addPort(imageInport_).setOptional(true);
     addPort(outport_).addResizeEventListener(&camera_);
 
-    addProperties(camera_, cameraFitter_, resetViewParams_, geomProperties_,
-                  lightingProperty_, trackball_, layers_);
+    addProperties(camera_, geomProperties_, lightingProperty_, trackball_, layers_);
 
-    resetViewParams_.onChange([this]() { camera_.resetCamera(); });
     geomProperties_.addProperties(cullFace_, enableDepthTest_, overrideColorBuffer_,
                                   overrideColor_);
 

@@ -30,6 +30,7 @@
 #include <modules/basegl/processors/pointrenderer.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
 #include <modules/opengl/shader/shaderutils.h>
+#include <inviwo/core/algorithm/boundingbox.h>
 
 namespace inviwo {
 
@@ -53,7 +54,7 @@ PointRenderer::PointRenderer()
     , borderColor_("borderColor", "Border Color", vec4(0.0f, 0.0f, 0.0f, 1.0f), vec4(0.0f),
                    vec4(1.0f))
     , antialising_("antialising", "Antialising (pixel)", 1.5f, 0.0f, 10.0f, 0.1f)
-    , camera_("camera", "Camera")
+    , camera_("camera", "Camera", util::boundingBox(inport_))
     , trackball_(&camera_)
     , shader_("pointrenderer.vert", "pointrenderer.frag") {
 

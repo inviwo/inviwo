@@ -35,26 +35,47 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/interaction/events/viewevent.h>
+#include <inviwo/core/util/foreach.h>
+#include <inviwo/core/algorithm/boundingbox.h>
+#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/ports/volumeport.h>
+
 
 namespace inviwo {
 
 const std::string CameraProperty::classIdentifier = "org.inviwo.CameraProperty";
 std::string CameraProperty::getClassIdentifier() const { return classIdentifier; }
 
-CameraProperty::CameraProperty(std::string identifier, std::string displayName, vec3 eye,
-                               vec3 center, vec3 lookUp, Inport* /*inport*/,
-                               InvalidationLevel invalidationLevel, PropertySemantics semantics)
+CameraProperty::CameraProperty(const std::string& identifier, const std::string& displayName,
+                               std::function<std::optional<mat4>()> getBoundingBox, vec3 eye,
+                               vec3 center, vec3 lookUp, InvalidationLevel invalidationLevel,
+                               PropertySemantics semantics)
     : CompositeProperty{identifier, displayName, invalidationLevel, semantics}
+    , cameraType_("cameraType", "Camera Type",
+                  InviwoApplication::getPtr()->getCameraFactory()->getKeys(), 0)
+    , cameraActions_("actions", "Actions", buttons())
     , lookFrom_("lookFrom", "Look from", eye, -vec3(100.0f), vec3(100.0f), vec3(0.1f),
-                InvalidationLevel::InvalidOutput, PropertySemantics("Spherical"))
-    , lookTo_("lookTo", "Look to", center, -vec3(100.0f), vec3(100.0f), vec3(0.1f))
-    , lookUp_("lookUp", "Look up", lookUp, -vec3(1.f), vec3(1.f), vec3(0.1f))
+                InvalidationLevel::InvalidOutput, PropertySemantics{"SphericalSpinBox"})
+    , lookTo_("lookTo", "Look to", center, -vec3(100.0f), vec3(100.0f), vec3(0.1f),
+              InvalidationLevel::InvalidOutput, PropertySemantics::SpinBox)
+    , lookUp_("lookUp", "Look up", lookUp, -vec3(1.f), vec3(1.f), vec3(0.1f),
+              InvalidationLevel::InvalidOutput, PropertySemantics::SpinBox)
     , aspectRatio_{"aspectRatio", "Aspect Ratio", 1.0f, 0.01f, 100.0f, 0.01f}
     , nearPlane_("near", "Near Plane", 0.1f, 0.001f, 10.f, 0.001f)
     , farPlane_("far", "Far Plane", 100.0f, 1.0f, 1000.0f, 1.0f)
-    , cameraType_("cameraType", "Camera Type",
-                  InviwoApplication::getPtr()->getCameraFactory()->getKeys(), 0)
-    , camera_{} {
+
+    , settings_("settings", "Settings")
+    , updateNearFar_("updateNearFar", "Update Near/Far Distances", true)
+    , updateLookRanges_("updateLookRanges", "Update Look-to/-from Ranges", true)
+    , fittingRatio_("fittingRatio", "Fitting Ratio", 1.05f, 0, 2, 0.01f)
+
+    , setNearFarButton_("setNearFarButton", "Set Near/Far Distances", [this] { setNearFar(); })
+    , setLookRangesButton_("setLookRangesButton", "Set Look-to/-from Ranges",
+                           [this] { setLookRange(); })
+
+    , camera_{}
+    , getBoundingBox_{std::move(getBoundingBox)} {
 
     cameraType_.setSelectedIdentifier("PerspectiveCamera");
     cameraType_.setCurrentStateAsDefault();
@@ -70,27 +91,68 @@ CameraProperty::CameraProperty(std::string identifier, std::string displayName, 
     nearPlane_.onChange([&]() { camera_->setNearPlaneDist(nearPlane_); });
     farPlane_.onChange([&]() { camera_->setFarPlaneDist(farPlane_); });
 
-    addProperty(cameraType_);
-    addProperty(lookFrom_);
-    addProperty(lookTo_);
-    addProperty(lookUp_);
-    addProperty(aspectRatio_);
-    addProperty(nearPlane_);
-    addProperty(farPlane_);
+    aspectRatio_.setReadOnly(true);
+    aspectRatio_.setCurrentStateAsDefault();
+
+    addProperties(cameraType_, cameraActions_, lookFrom_, lookTo_, lookUp_, aspectRatio_,
+                  nearPlane_, farPlane_, settings_);
+    settings_.addProperties(setNearFarButton_, setLookRangesButton_, updateNearFar_,
+                            updateLookRanges_, fittingRatio_);
+    settings_.setCollapsed(true);
+
+    auto cameraFitVisible = [this]() {
+        util::for_each_argument(
+            [&](auto& p) {
+                p.setVisible(getBoundingBox_ && cameraType_ == "PerspectiveCamera");
+                p.setCurrentStateAsDefault();
+            },
+            cameraActions_, settings_, setNearFarButton_, setLookRangesButton_, updateNearFar_,
+            updateLookRanges_, fittingRatio_);
+    };
+
+    cameraType_.onChange(cameraFitVisible);
+    cameraFitVisible();
 
     changeCamera(InviwoApplication::getPtr()->getCameraFactory()->create(cameraType_));
 }
 
+CameraProperty::CameraProperty(const std::string& identifier, const std::string& displayName,
+                               vec3 eye, vec3 center, vec3 lookUp, Inport* inport,
+                               InvalidationLevel invalidationLevel, PropertySemantics semantics)
+    : CameraProperty(
+          identifier, displayName,
+          [&]() -> std::function<std::optional<mat4>()> {
+              if (auto vp = dynamic_cast<VolumeInport*>(inport)) {
+                  return util::boundingBox(*vp);
+              } else if (auto mp = dynamic_cast<MeshInport*>(inport)) {
+                  return util::boundingBox(*mp);
+              } else {
+                  return nullptr;
+              }
+          }(),
+          eye, center, lookUp, invalidationLevel, semantics) {}
+
+
 CameraProperty::CameraProperty(const CameraProperty& rhs)
     : CompositeProperty(rhs)
+    , cameraType_(rhs.cameraType_)
+    , cameraActions_{rhs.cameraActions_, buttons()}
     , lookFrom_(rhs.lookFrom_)
     , lookTo_(rhs.lookTo_)
     , lookUp_(rhs.lookUp_)
     , aspectRatio_(rhs.aspectRatio_)
     , nearPlane_(rhs.nearPlane_)
     , farPlane_(rhs.farPlane_)
-    , cameraType_(rhs.cameraType_)
-    , camera_() {
+
+    , settings_{rhs.settings_}
+    , updateNearFar_{rhs.updateNearFar_}
+    , updateLookRanges_{rhs.updateLookRanges_}
+    , fittingRatio_{rhs.fittingRatio_}
+    , setNearFarButton_{rhs.setNearFarButton_, [this] { setNearFar(); }}
+    , setLookRangesButton_{rhs.setLookRangesButton_, [this] { setLookRange(); }}
+
+    , camera_()
+    , getBoundingBox_(rhs.getBoundingBox_) {
 
     // Make sure that the Camera) is
     // in sync with the property values.
@@ -108,13 +170,17 @@ CameraProperty::CameraProperty(const CameraProperty& rhs)
         // Make sure we put these properties before any owned properties.
         size_t i = 0;
         insertProperty(i++, cameraType_);
+        insertProperty(i++, cameraActions_);
         insertProperty(i++, lookFrom_);
         insertProperty(i++, lookTo_);
         insertProperty(i++, lookUp_);
         insertProperty(i++, aspectRatio_);
         insertProperty(i++, nearPlane_);
         insertProperty(i++, farPlane_);
+        insertProperty(i++, settings_);
     }
+    settings_.addProperties(setNearFarButton_, setLookRangesButton_, updateNearFar_,
+                            updateLookRanges_, fittingRatio_);
 
     changeCamera(InviwoApplication::getPtr()->getCameraFactory()->create(cameraType_.get()));
 }
@@ -123,6 +189,7 @@ CameraProperty::~CameraProperty() = default;
 
 void CameraProperty::changeCamera(std::unique_ptr<Camera> newCamera) {
     NetworkLock lock(this);
+    if (camera_) camera_->configureProperties(this, Camera::Config::Hide);
     camera_ = std::move(newCamera);
     camera_->setLookFrom(lookFrom_);
     camera_->setLookTo(lookTo_);
@@ -130,7 +197,7 @@ void CameraProperty::changeCamera(std::unique_ptr<Camera> newCamera) {
     camera_->setAspectRatio(aspectRatio_);
     camera_->setNearPlaneDist(nearPlane_);
     camera_->setFarPlaneDist(farPlane_);
-    camera_->configureProperties(this);
+    camera_->configureProperties(this, Camera::Config::Show);
 }
 
 const Camera& CameraProperty::get() const { return *camera_; }
@@ -237,8 +304,14 @@ void CameraProperty::invokeEvent(Event* event) {
             const double height{static_cast<double>(canvasSize[1])};
             setAspectRatio(static_cast<float>(width / height));
         }
+    } else if (auto ve = event->getAs<ViewEvent>()) {
+        std::visit(util::overloaded{[&](camerautil::Side side) { setView(side); },
+                                    [&](ViewEvent::FlipUp) { flipUp(); },
+                                    [&](ViewEvent::FitData) { fitData(); }},
+                   ve->getAction());
+        ve->markAsUsed();
     } else {
-        PropertyOwner::invokeEvent(event);
+        CompositeProperty::invokeEvent(event);
     }
 }
 
@@ -260,6 +333,64 @@ const mat4& CameraProperty::inverseViewMatrix() const { return camera_->getInver
 
 const mat4& CameraProperty::inverseProjectionMatrix() const {
     return camera_->getInverseProjectionMatrix();
+}
+
+std::vector<ButtonGroupProperty::Button> CameraProperty::buttons() {
+    return {
+        {std::nullopt, ":svgicons/view-fit-to-data.svg", "Fit data in view", [this] { fitData(); }},
+        {std::nullopt, ":svgicons/view-x-m.svg", "View data from X-",
+         [this] { setView(camerautil::Side::XNegative); }},
+        {std::nullopt, ":svgicons/view-x-p.svg", "View data from X+",
+         [this] { setView(camerautil::Side::XPositive); }},
+        {std::nullopt, ":svgicons/view-y-m.svg", "View data from Y-",
+         [this] { setView(camerautil::Side::YNegative); }},
+        {std::nullopt, ":svgicons/view-y-p.svg", "View data from Y+",
+         [this] { setView(camerautil::Side::YPositive); }},
+        {std::nullopt, ":svgicons/view-z-m.svg", "View data from Z-",
+         [this] { setView(camerautil::Side::ZNegative); }},
+        {std::nullopt, ":svgicons/view-z-p.svg", "View data from Z+",
+         [this] { setView(camerautil::Side::ZPositive); }},
+        {std::nullopt, ":svgicons/view-flip.svg", "Flip the up vector", [this] { flipUp(); }}};
+}
+
+void CameraProperty::setView(camerautil::Side side) {
+    if (getBoundingBox_) {
+        if (auto bb = getBoundingBox_()) {
+            using namespace camerautil;
+            setCameraView(*this, *bb, side, fittingRatio_,
+                          updateNearFar_ ? UpdateNearFar::Yes : UpdateNearFar::No,
+                          updateLookRanges_ ? UpdateLookRanges::Yes : UpdateLookRanges::No);
+        }
+    }
+}
+
+void CameraProperty::fitData() {
+    if (getBoundingBox_) {
+        if (auto bb = getBoundingBox_()) {
+            using namespace camerautil;
+            setCameraView(*this, *bb, fittingRatio_,
+                          updateNearFar_ ? UpdateNearFar::Yes : UpdateNearFar::No,
+                          updateLookRanges_ ? UpdateLookRanges::Yes : UpdateLookRanges::No);
+        }
+    }
+}
+
+void CameraProperty::flipUp() { setLookUp(-getLookUp()); }
+
+void CameraProperty::setNearFar() {
+    if (getBoundingBox_) {
+        if (auto bb = getBoundingBox_()) {
+            camerautil::setCameraNearFar(*this, *bb);
+        }
+    }
+}
+
+void CameraProperty::setLookRange() {
+    if (getBoundingBox_) {
+        if (auto bb = getBoundingBox_()) {
+            camerautil::setCameraLookRanges(*this, *bb);
+        }
+    }
 }
 
 }  // namespace inviwo

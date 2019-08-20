@@ -39,6 +39,7 @@
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/interaction/events/touchevent.h>
 #include <inviwo/core/interaction/events/wheelevent.h>
+#include <inviwo/core/algorithm/boundingbox.h>
 
 namespace inviwo {
 
@@ -65,8 +66,7 @@ MeshPicking::MeshPicking()
                 2)
     , position_("position", "Position", vec3(0.0f), vec3(-100.f), vec3(100.f))
     , highlightColor_("highlightColor", "Highlight Color", vec4(1.0f, 0.0f, 0.0f, 1.0f))
-    , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
-              vec3(0.0f, 1.0f, 0.0f))
+    , camera_("camera", "Camera", util::boundingBox(meshInport_))
     , trackball_(&camera_)
     , picking_(this, 1, [&](PickingEvent* p) { handlePickingEvent(p); })
     , shader_("standard.vert", "picking.frag") {

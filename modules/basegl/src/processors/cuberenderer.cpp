@@ -33,6 +33,7 @@
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/openglutils.h>
 #include <modules/basegl/datastructures/meshshadercache.h>
+#include <inviwo/core/algorithm/boundingbox.h>
 
 namespace inviwo {
 
@@ -61,7 +62,7 @@ CubeRenderer::CubeRenderer()
                     InvalidationLevel::InvalidResources)
     , metaColor_("metaColor", "Meta Color Mapping")
 
-    , camera_("camera", "Camera")
+    , camera_("camera", "Camera", util::boundingBox(inport_))
     , trackball_(&camera_)
     , lighting_("lighting", "Lighting", &camera_)
     , shaders_{{{ShaderType::Vertex, std::string{"cubeglyph.vert"}},
