@@ -62,16 +62,6 @@ VolumeIndicatorProperty::VolumeIndicatorProperty(const VolumeIndicatorProperty& 
     addProperty(plane3_);
 }
 
-VolumeIndicatorProperty& VolumeIndicatorProperty::operator=(const VolumeIndicatorProperty& that) {
-    if (this != &that) {
-        BoolCompositeProperty::operator=(that);
-        plane1_ = that.plane1_;
-        plane2_ = that.plane2_;
-        plane3_ = that.plane3_;
-    }
-    return *this;
-}
-
 VolumeIndicatorProperty* VolumeIndicatorProperty::clone() const {
     return new VolumeIndicatorProperty(*this);
 }

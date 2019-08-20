@@ -59,7 +59,7 @@ public:
      */
     Trackball(TrackballObject* object);
     Trackball(const Trackball& rhs);
-    Trackball& operator=(const Trackball& that);
+    virtual Trackball* clone() const override;
     virtual ~Trackball();
 
     virtual void invokeEvent(Event* event) override;

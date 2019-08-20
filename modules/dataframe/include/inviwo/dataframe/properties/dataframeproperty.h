@@ -49,7 +49,6 @@ public:
                             size_t firstIndex = 0);
 
     DataFrameColumnProperty(const DataFrameColumnProperty& rhs);
-    DataFrameColumnProperty& operator=(const DataFrameColumnProperty& that);
     virtual DataFrameColumnProperty* clone() const override;
 
     virtual ~DataFrameColumnProperty() = default;

@@ -51,7 +51,6 @@ public:
                           PropertySemantics semantics = PropertySemantics::Default);
 
     BoolCompositeProperty(const BoolCompositeProperty& rhs);
-    BoolCompositeProperty& operator=(const BoolCompositeProperty& that) = default;
 
     virtual BoolCompositeProperty* clone() const override;
     virtual ~BoolCompositeProperty();

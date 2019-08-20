@@ -58,7 +58,6 @@ public:
                    PropertySemantics semantics = PropertySemantics::Default);
 
     MinMaxProperty(const MinMaxProperty& rhs) = default;
-    MinMaxProperty& operator=(const MinMaxProperty& that) = default;
     MinMaxProperty& operator=(const range_type& value);
 
     virtual MinMaxProperty<T>* clone() const override;
@@ -272,10 +271,10 @@ MinMaxProperty<T>& MinMaxProperty<T>::setMinSeparation(const T& newMinSeparation
 }
 
 template <typename T>
-MinMaxProperty<T>& MinMaxProperty<T>::setRange(const range_type& value) {
-    const auto newRange = clamp({glm::min(value.x, value.y), glm::max(value.x, value.y)});
+MinMaxProperty<T>& MinMaxProperty<T>::setRange(const range_type& newRange) {
+    if (range_.update({glm::min(newRange.x, newRange.y), glm::max(newRange.x, newRange.y)})) {
+        value_.update(clamp(value_));
 
-    if (value_.update(newRange)) {
         this->propertyModified();
         onRangeChangeCallback_.invokeAll();
     }
@@ -283,18 +282,16 @@ MinMaxProperty<T>& MinMaxProperty<T>::setRange(const range_type& value) {
 }
 
 template <typename T>
-void MinMaxProperty<T>::set(const range_type& value, const range_type& range, const T& increment,
-                            const T& minSep) {
-
-    const auto newRange = clamp({glm::min(range.x, range.y), glm::max(range.x, range.y)});
+void MinMaxProperty<T>::set(const range_type& newValue, const range_type& newRange,
+                            const T& newIncrement, const T& newMinSep) {
 
     bool modified = false;
-    modified |= range_.update(newRange);
+    modified |= range_.update({glm::min(newRange.x, newRange.y), glm::max(newRange.x, newRange.y)});
     const bool rangeModified = modified;
 
-    modified |= increment_.update(increment);
-    modified |= minSeparation_.update(limitSeparation(minSep));
-    modified |= value_.update(clamp(value));
+    modified |= increment_.update(newIncrement);
+    modified |= minSeparation_.update(limitSeparation(newMinSep));
+    modified |= value_.update(clamp(newValue));
 
     if (modified) this->propertyModified();
     if (rangeModified) onRangeChangeCallback_.invokeAll();
@@ -308,17 +305,20 @@ void MinMaxProperty<T>::set(const T& start, const T& end, const T& rangeMin, con
 
 template <typename T>
 MinMaxProperty<T>& MinMaxProperty<T>::setRangeNormalized(const range_type& newRange) {
-    dvec2 val = this->get();
+    const auto nomalizedValue =
+        (dvec2{value_.value} - static_cast<double>(range_.value.x)) /
+        (static_cast<double>(range_.value.y) - static_cast<double>(range_.value.x));
 
-    val = (val - static_cast<double>(range_.value.x)) /
-          (static_cast<double>(range_.value.y) - static_cast<double>(range_.value.x));
-    setRange(newRange);
+    if (range_.update({glm::min(newRange.x, newRange.y), glm::max(newRange.x, newRange.y)})) {
+        const range_type newVal = nomalizedValue * (static_cast<double>(range_.value.y) -
+                                                    static_cast<double>(range_.value.x)) +
+                                  static_cast<double>(range_.value.x);
 
-    range_type newVal =
-        val * (static_cast<double>(range_.value.y) - static_cast<double>(range_.value.x)) +
-        static_cast<double>(range_.value.x);
+        value_.update(clamp(newVal));
+        this->propertyModified();
+        onRangeChangeCallback_.invokeAll();
+    }
 
-    this->set(newVal);
     return *this;
 }
 

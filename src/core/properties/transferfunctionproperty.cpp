@@ -96,20 +96,6 @@ TransferFunctionProperty::TransferFunctionProperty(const TransferFunctionPropert
     this->value_.value.addObserver(this);
 }
 
-TransferFunctionProperty& TransferFunctionProperty::operator=(
-    const TransferFunctionProperty& that) {
-    if (this != &that) {
-        this->value_.value.removeObserver(this);
-        TemplateProperty<TransferFunction>::operator=(that);
-        this->value_.value.addObserver(this);
-        zoomH_ = that.zoomH_;
-        zoomV_ = that.zoomV_;
-        histogramMode_ = that.histogramMode_;
-        volumeInport_ = that.volumeInport_;
-    }
-    return *this;
-}
-
 TransferFunctionProperty* TransferFunctionProperty::clone() const {
     return new TransferFunctionProperty(*this);
 }

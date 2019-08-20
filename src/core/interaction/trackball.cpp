@@ -192,20 +192,7 @@ Trackball::Trackball(const Trackball& rhs)
     setCollapsed(true);
 }
 
-Trackball& Trackball::operator=(const Trackball& that) {
-    if (this != &that) {
-        CompositeProperty::operator=(that);
-        object_ = that.object_;
-        isMouseBeingPressedAndHold_ = false;
-        lastNDC_ = vec3(0.0);
-        gestureStartNDCDepth_ = -1;
-
-        util::for_each_in_tuple([](auto& dst, auto& src) { dst = src; }, props(), that.props());
-        util::for_each_in_tuple([](auto& dst, auto& src) { dst = src; }, eventprops(),
-                                that.eventprops());
-    }
-    return *this;
-}
+Trackball* Trackball::clone() const { return new Trackball(*this); }
 
 Trackball::~Trackball() = default;
 

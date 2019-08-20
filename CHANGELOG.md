@@ -1,7 +1,12 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
-## 2019-08-16 Parallel coordinates plot margins
-It is now possible to specify margins including labels. Removed autoMargins property. 
+
+## 2019-08-20 Parallel coordinates plot margins
+Removed autoMargins property and replaced it with includeLabels making it possible to specify margins with labels. 
+
+## 2019-08-16
+We decided to remove the assignment operator from Property and related classes. The reason being that it is hard to understand what is does and hard to implement. Hence if you have implemented your own properties in your code you will have to remove the assignment operators from them. And given that we couldn't find any uses of it we decided to remove it. If you want to assign the "value" of a property to an other property the Property::set(const Property* src) function should be used.
+
 
 ## 2019-08-05 New version requirements
 We now require a C++17 compatible compiler, and CMake version of at least 3.12 

@@ -51,9 +51,6 @@ public:
     using iterator = std::vector<Property*>::iterator;
     using const_iterator = std::vector<Property*>::const_iterator;
 
-    PropertyOwner();
-    PropertyOwner(const PropertyOwner& rhs);
-    PropertyOwner& operator=(const PropertyOwner& that);
     /**
      * \brief Removes all properties and notifies its observers of the removal.
      */
@@ -137,7 +134,12 @@ public:
     virtual InviwoApplication* getInviwoApplication();
 
 protected:
-    // Add the properties belonging the the property owner
+    PropertyOwner();
+    PropertyOwner(const PropertyOwner& rhs);
+    PropertyOwner& operator=(const PropertyOwner& that) = delete;
+
+
+    // Add the properties belonging the property owner
     // PropertyOwner do not assume owner ship here since in the most common case these are
     // pointers to members of derived classes.
     std::vector<Property*> properties_;

@@ -95,21 +95,6 @@ VolumeInformationProperty::VolumeInformationProperty(const VolumeInformationProp
     addProperty(valueUnit_);
 }
 
-VolumeInformationProperty& VolumeInformationProperty::operator=(
-    const VolumeInformationProperty& that) {
-    if (this != &that) {
-        CompositeProperty::operator=(that);
-        dimensions_ = that.dimensions_;
-        format_ = that.format_;
-        channels_ = that.channels_;
-        numVoxels_ = that.numVoxels_;
-        dataRange_ = that.dataRange_;
-        valueRange_ = that.valueRange_;
-        valueUnit_ = that.valueUnit_;
-    }
-    return *this;
-}
-
 VolumeInformationProperty* VolumeInformationProperty::clone() const {
     return new VolumeInformationProperty(*this);
 }

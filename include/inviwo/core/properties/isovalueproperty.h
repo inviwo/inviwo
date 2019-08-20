@@ -69,7 +69,6 @@ public:
     IsoValueProperty(const IsoValueProperty& rhs);
     virtual ~IsoValueProperty();
 
-    IsoValueProperty& operator=(const IsoValueProperty& rhs);
     virtual IsoValueProperty* clone() const override;
 
     void setZoomH(double zoomHMin, double zoomHMax);

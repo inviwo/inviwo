@@ -56,7 +56,6 @@ public:
         PropertySemantics semantics = PropertySemantics::Default);
 
     VolumeIndicatorProperty(const VolumeIndicatorProperty& rhs);
-    VolumeIndicatorProperty& operator=(const VolumeIndicatorProperty& that);
     virtual VolumeIndicatorProperty* clone() const override;
     virtual ~VolumeIndicatorProperty();
 

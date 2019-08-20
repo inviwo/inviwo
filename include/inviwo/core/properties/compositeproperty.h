@@ -56,7 +56,7 @@ public:
                       PropertySemantics semantics = PropertySemantics::Default);
 
     CompositeProperty(const CompositeProperty& rhs) = default;
-    CompositeProperty& operator=(const CompositeProperty& that) = default;
+
     virtual CompositeProperty* clone() const override;
     virtual ~CompositeProperty() = default;
     virtual std::string getClassIdentifierForWidget() const override;

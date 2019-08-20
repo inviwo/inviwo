@@ -52,7 +52,6 @@ public:
                       PropertySemantics semantics = PropertySemantics::Default);
 
     DirectoryProperty(const DirectoryProperty& rhs);
-    DirectoryProperty& operator=(const DirectoryProperty& that);
     virtual DirectoryProperty* clone() const override;
 
     virtual ~DirectoryProperty();

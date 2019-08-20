@@ -141,8 +141,6 @@ FilePatternProperty::FilePatternProperty(const FilePatternProperty& rhs)
     }
 }
 
-FilePatternProperty& FilePatternProperty::operator=(const FilePatternProperty& that) = default;
-
 FilePatternProperty* FilePatternProperty::clone() const { return new FilePatternProperty(*this); }
 
 FilePatternProperty::~FilePatternProperty() = default;

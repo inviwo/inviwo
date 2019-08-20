@@ -115,15 +115,6 @@ AxisStyleProperty::AxisStyleProperty(const AxisStyleProperty& rhs)
     util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props());
 }
 
-AxisStyleProperty& AxisStyleProperty::operator=(const AxisStyleProperty& rhs) {
-    if (this != &rhs) {
-        CompositeProperty::operator=(rhs);
-        util::for_each_in_tuple([](auto& dst, auto& src) { dst = src; }, props(), rhs.props());
-        axes_ = rhs.axes_;
-    }
-    return *this;
-}
-
 AxisStyleProperty* AxisStyleProperty::clone() const { return new AxisStyleProperty(*this); }
 
 void AxisStyleProperty::registerProperty(AxisProperty& p) {

@@ -66,18 +66,6 @@ LayerInformationProperty::LayerInformationProperty(const LayerInformationPropert
                             std::tie(layerType_, format_, channels_, swizzleMask_));
 }
 
-LayerInformationProperty& LayerInformationProperty::operator=(
-    const LayerInformationProperty& that) {
-    if (this != &that) {
-        CompositeProperty::operator=(that);
-        layerType_ = that.layerType_;
-        format_ = that.format_;
-        channels_ = that.channels_;
-        swizzleMask_ = that.swizzleMask_;
-    }
-    return *this;
-}
-
 LayerInformationProperty* LayerInformationProperty::clone() const {
     return new LayerInformationProperty(*this);
 }

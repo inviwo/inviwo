@@ -73,7 +73,6 @@ public:
                        PropertySemantics semantics = PropertySemantics::Default);
 
     RaycastingProperty(const RaycastingProperty& rhs);
-    RaycastingProperty& operator=(const RaycastingProperty& rhs);
     virtual ~RaycastingProperty() = default;
 
     virtual RaycastingProperty* clone() const override;

@@ -70,7 +70,6 @@ public:
     IsoTFProperty(const IsoTFProperty& rhs);
     virtual ~IsoTFProperty() = default;
 
-    IsoTFProperty& operator=(const IsoTFProperty& rhs) = default;
     virtual IsoTFProperty* clone() const override;
 
     virtual std::string getClassIdentifierForWidget() const override;

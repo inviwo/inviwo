@@ -52,7 +52,6 @@ public:
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
         PropertySemantics semantics = PropertySemantics::Default);
     LayerInformationProperty(const LayerInformationProperty& rhs);
-    LayerInformationProperty& operator=(const LayerInformationProperty& that);
     virtual LayerInformationProperty* clone() const override;
     virtual ~LayerInformationProperty() = default;
 

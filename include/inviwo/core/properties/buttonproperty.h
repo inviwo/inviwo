@@ -58,7 +58,6 @@ public:
                    PropertySemantics semantics = PropertySemantics::Default);
 
     ButtonProperty(const ButtonProperty& rhs);
-    ButtonProperty& operator=(const ButtonProperty& that);
     virtual ButtonProperty* clone() const override;
     virtual ~ButtonProperty();
 
