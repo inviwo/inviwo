@@ -1153,7 +1153,7 @@ void InviwoMainWindow::showWelcomeScreen() {
     }
 
     centralWidget_->setCurrentWidget(welcomeWidget_.get());
-    welcomeWidget_->setFocus();
+    welcomeWidget_->setFilterFocus();
 }
 
 void InviwoMainWindow::hideWelcomeScreen() {

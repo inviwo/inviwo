@@ -52,6 +52,7 @@ public:
     virtual ~WelcomeWidget() = default;
 
     void updateRecentWorkspaces();
+    void setFilterFocus();
 
 protected:
     virtual void showEvent(QShowEvent *event) override;

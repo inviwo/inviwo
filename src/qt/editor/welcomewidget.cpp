@@ -357,6 +357,10 @@ void WelcomeWidget::updateRecentWorkspaces() {
     filetree_->updateRecentWorkspaces(mainWindow_->getRecentWorkspaceList());
 }
 
+void WelcomeWidget::setFilterFocus() {
+    filterLineEdit_->setFocus(Qt::OtherFocusReason);
+}
+
 void WelcomeWidget::showEvent(QShowEvent *event) {
     if (!event->spontaneous()) {
         updateRecentWorkspaces();
