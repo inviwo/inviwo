@@ -574,7 +574,8 @@ void ParallelCoordinates::drawLines(size2_t size) {
         (blendMode_.get() == BlendMode::Additive || blendMode_.get() == BlendMode::Sutractive ||
          blendMode_.get() == BlendMode::Regular);
     // pcp_common.glsl
-    lineShader_.setUniform("spacing", vec4(marginsInternal_.first, marginsInternal_.second));
+    lineShader_.setUniform("spacing", vec4(marginsInternal_.second.y, marginsInternal_.second.x,
+                                           marginsInternal_.first.y, marginsInternal_.first.x));
     lineShader_.setUniform("dims", ivec2(size));
     // pcp_lines.vert
     lineShader_.setUniform("axisPositions", lines_.axisPositions.size(),
