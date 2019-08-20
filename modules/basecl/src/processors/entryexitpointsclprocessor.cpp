@@ -33,6 +33,7 @@
 #include <modules/opencl/image/imageclgl.h>
 #include <modules/opencl/settings/openclsettings.h>
 #include <modules/opencl/syncclgl.h>
+#include <inviwo/core/algorithm/boundingbox.h>
 
 namespace inviwo {
 
@@ -53,8 +54,7 @@ EntryExitPointsCLProcessor::EntryExitPointsCLProcessor()
           "entry-points",
           DataVec4Float32::get())  // Using 8-bits will create artifacts when entering the volume
     , exitPort_("exit-points", DataVec4Float32::get())
-    , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
-              vec3(0.0f, 1.0f, 0.0f), &geometryPort_)
+    , camera_("camera", "Camera", util::boundingBox(geometryPort_))
     , workGroupSize_("wgsize", "Work group size", ivec2(8, 8), ivec2(0), ivec2(256))
     , useGLSharing_("glsharing", "Use OpenGL sharing", true)
     , trackball_(&camera_) {

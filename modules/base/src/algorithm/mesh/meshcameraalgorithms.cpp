@@ -31,8 +31,7 @@
 #include <modules/base/algorithm/mesh/axisalignedboundingbox.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
-
-#include <modules/base/algorithm/camerautils.h>
+#include <inviwo/core/algorithm/camerautils.h>
 
 namespace inviwo {
 

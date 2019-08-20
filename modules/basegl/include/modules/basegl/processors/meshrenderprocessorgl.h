@@ -44,7 +44,6 @@
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/rendering/meshdrawer.h>
 
-#include <modules/base/properties/camerafittingproperty.h>
 #include <modules/opengl/shader/shader.h>
 
 #include <vector>
@@ -105,8 +104,6 @@ protected:
     ImageOutport outport_;
 
     CameraProperty camera_;
-    CameraFittingProperty cameraFitter_;
-    ButtonProperty resetViewParams_;
     CameraTrackball trackball_;
 
     BoolProperty overrideColorBuffer_;

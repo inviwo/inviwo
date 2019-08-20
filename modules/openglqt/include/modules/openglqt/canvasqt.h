@@ -39,6 +39,7 @@
 #include <inviwo/core/interaction/events/keyboardevent.h>
 #include <inviwo/core/interaction/events/touchevent.h>
 #include <inviwo/core/interaction/events/gestureevent.h>
+#include <inviwo/core/interaction/events/viewevent.h>
 #include <inviwo/core/processors/canvasprocessor.h>
 #include <inviwo/core/metadata/processormetadata.h>
 #include <modules/qtwidgets/eventconverterqt.h>
@@ -48,7 +49,7 @@
 #include <modules/opengl/debugmessages.h>
 #include <modules/openglqt/canvasqglwidget.h>
 
-#include <modules/base/events/viewevent.h>
+
 
 #include <warn/push>
 #include <warn/ignore/all>

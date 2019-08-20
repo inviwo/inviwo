@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/base/events/viewevent.h>
+#include <inviwo/core/interaction/events/viewevent.h>
 
 namespace inviwo {
 

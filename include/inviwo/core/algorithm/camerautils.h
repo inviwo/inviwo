@@ -28,19 +28,17 @@
  *********************************************************************************/
 #pragma once
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/properties/cameraproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/buttongroupproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 
-#include <modules/base/algorithm/mesh/axisalignedboundingbox.h>
+#include <memory>
+#include <vector>
+#include <utility>
 
 namespace inviwo {
+
+class Mesh;
+class CameraProperty;
 
 namespace camerautil {
 
@@ -64,10 +62,10 @@ enum class UpdateLookRanges { Yes, No };
  * @param updateLookRanges   the camera's look-to/look-from ranges are updated if Yes @see
  * setCameraLookRanges
  */
-IVW_MODULE_BASE_API void setCameraView(CameraProperty &cam, const mat4 &boundingBox, vec3 viewDir,
-                                       vec3 lookUp, float fitRatio = 1.05f,
-                                       UpdateNearFar updateNearFar = UpdateNearFar::No,
-                                       UpdateLookRanges updateLookRanges = UpdateLookRanges::No);
+IVW_CORE_API void setCameraView(CameraProperty &cam, const mat4 &boundingBox, vec3 viewDir,
+                                vec3 lookUp, float fitRatio = 1.05f,
+                                UpdateNearFar updateNearFar = UpdateNearFar::No,
+                                UpdateLookRanges updateLookRanges = UpdateLookRanges::No);
 
 /**
  * Setup the camera parameters such that the whole boundingBox spaned by basis and offset
@@ -83,10 +81,10 @@ IVW_MODULE_BASE_API void setCameraView(CameraProperty &cam, const mat4 &bounding
  * @param updateLookRanges   the camera's look-to/look-from ranges are updated if Yes @see
  * setCameraLookRanges
  */
-IVW_MODULE_BASE_API void setCameraView(CameraProperty &cam, const mat4 &boundingBox,
-                                       float fitRatio = 1.05f,
-                                       UpdateNearFar updateNearFar = UpdateNearFar::No,
-                                       UpdateLookRanges updateLookRanges = UpdateLookRanges::No);
+IVW_CORE_API void setCameraView(CameraProperty &cam, const mat4 &boundingBox,
+                                float fitRatio = 1.05f,
+                                UpdateNearFar updateNearFar = UpdateNearFar::No,
+                                UpdateLookRanges updateLookRanges = UpdateLookRanges::No);
 
 /**
  * Setup the camera parameters such that the whole boundingBox spaned by basis and offset
@@ -103,29 +101,11 @@ IVW_MODULE_BASE_API void setCameraView(CameraProperty &cam, const mat4 &bounding
  * @param updateLookRanges   the camera's look-to/look-from ranges are updated if Yes @see
  * setCameraLookRanges
  */
-IVW_MODULE_BASE_API void setCameraView(CameraProperty &cam, const mat4 &boundingBox, Side side,
-                                       float fitRatio = 1.05f,
-                                       UpdateNearFar updateNearFar = UpdateNearFar::No,
-                                       UpdateLookRanges updateLookRanges = UpdateLookRanges::No);
+IVW_CORE_API void setCameraView(CameraProperty &cam, const mat4 &boundingBox, Side side,
+                                float fitRatio = 1.05f,
+                                UpdateNearFar updateNearFar = UpdateNearFar::No,
+                                UpdateLookRanges updateLookRanges = UpdateLookRanges::No);
 
-/**
- * Setup the camera parameters such that the all input meshes will be inside the view frustum.
- * @see setCameraView
- */
-IVW_MODULE_BASE_API void setCameraView(CameraProperty &cam,
-                                       const std::vector<std::shared_ptr<const Mesh>> &meshes,
-                                       Side side, float fitRatio = 1.05f,
-                                       UpdateNearFar updateNearFar = UpdateNearFar::No,
-                                       UpdateLookRanges updateLookRanges = UpdateLookRanges::No);
-
-/**
- * Setup the camera parameters such that the given mesh will be completely inside the view frustum.
- * @see setCameraView
- */
-IVW_MODULE_BASE_API void setCameraView(CameraProperty &cam, const Mesh &meshe, Side side,
-                                       float fitRatio = 1.05f,
-                                       UpdateNearFar updateNearFar = UpdateNearFar::No,
-                                       UpdateLookRanges updateLookRanges = UpdateLookRanges::No);
 
 /**
  * Set the ranges of the look to and look from properties of the camera. Will center around the mid
@@ -137,16 +117,17 @@ IVW_MODULE_BASE_API void setCameraView(CameraProperty &cam, const Mesh &meshe, S
  * @param boundingBox  basis and offset of the bounding box used to determinte the ranges
  * @param maxZoomFactor determines how far away from the volume the user will be able to zoom out.
  */
-IVW_MODULE_BASE_API void setCameraLookRanges(CameraProperty &cam, const mat4 &boundingBox,
-                                             float maxZoomFactor = 25.f);
+IVW_CORE_API void setCameraLookRanges(CameraProperty &cam, const mat4 &boundingBox,
+                                      float maxZoomFactor = 25.f);
 
 /**
  * Computes appropriate near and far clip distances for the given bounding box and zoom factor.
  * Makes sure that the far plane is distant enough to avoid clipping given to current zoomfactor.
  * @see setCameraLookRanges
  */
-IVW_MODULE_BASE_API std::pair<float, float> computeCameraNearFar(
-    const mat4 &boundingBox, float maxZoomFactor = 25.f, float nearFarRatio = 1.f / 10000.f);
+IVW_CORE_API std::pair<float, float> computeCameraNearFar(const mat4 &boundingBox,
+                                                          float maxZoomFactor = 25.f,
+                                                          float nearFarRatio = 1.f / 10000.f);
 
 /**
  * Sets the near and far clip distances of the camera based on the given bounding volume and zoom
@@ -155,9 +136,8 @@ IVW_MODULE_BASE_API std::pair<float, float> computeCameraNearFar(
  * @see computeCameraNearFar
  * @see setCameraLookRanges
  */
-IVW_MODULE_BASE_API void setCameraNearFar(CameraProperty &cam, const mat4 &boundingBox,
-                                          float maxZoomFactor = 25.f,
-                                          float nearFarRatio = 1.f / 10000.f);
+IVW_CORE_API void setCameraNearFar(CameraProperty &cam, const mat4 &boundingBox,
+                                   float maxZoomFactor = 25.f, float nearFarRatio = 1.f / 10000.f);
 
 }  // namespace camerautil
 

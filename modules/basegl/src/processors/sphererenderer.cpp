@@ -34,6 +34,7 @@
 
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/algorithm/boundingbox.h>
 
 namespace inviwo {
 
@@ -73,7 +74,7 @@ SphereRenderer::SphereRenderer()
                     InvalidationLevel::InvalidResources)
     , metaColor_("metaColor", "Meta Color Mapping")
 
-    , camera_("camera", "Camera")
+    , camera_("camera", "Camera", util::boundingBox(inport_))
     , trackball_(&camera_)
     , lighting_("lighting", "Lighting", &camera_)
     , shaders_{{{ShaderType::Vertex, std::string{"sphereglyph.vert"}},
