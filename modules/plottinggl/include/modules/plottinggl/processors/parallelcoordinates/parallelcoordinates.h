@@ -172,7 +172,7 @@ private:
     void updateBrushing();
 
     std::pair<size2_t, size2_t> axisPos(size_t columnId) const;
-    
+
     /**
      * Returns display area excluding margins as lower left and upper right point.
      */

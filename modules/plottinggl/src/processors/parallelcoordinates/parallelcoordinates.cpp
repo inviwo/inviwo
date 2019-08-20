@@ -272,8 +272,7 @@ void ParallelCoordinates::adjustMargins() {
             marginsInternal_.first = llMargin;
             marginsInternal_.second = urMargin;
 
-        } while (marginsInternal_.first != llMargin ||
-                 marginsInternal_.second != urMargin);
+        } while (marginsInternal_.first != llMargin || marginsInternal_.second != urMargin);
 
         marginsInternal_.first += margins_.getLowerLeftMargin();
         marginsInternal_.second += margins_.getUpperRightMargin();
