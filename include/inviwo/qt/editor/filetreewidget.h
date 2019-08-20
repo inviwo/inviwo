@@ -29,13 +29,14 @@
 #pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
+#include <inviwo/qt/editor/filetreemodel.h>
 #include <inviwo/core/common/inviwo.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
 
+#include <QtGlobal>
 #include <QTreeView>
-#include <QAbstractItemModel>
 #include <QIcon>
 
 #include <warn/pop>
@@ -46,7 +47,7 @@ namespace inviwo {
 
 class InviwoApplication;
 class TreeItem;
-class TreeModel;
+class FileTreeModel;
 
 class IVW_QTEDITOR_API FileTreeWidget : public QTreeView {
 #include <warn/push>
@@ -54,10 +55,6 @@ class IVW_QTEDITOR_API FileTreeWidget : public QTreeView {
     Q_OBJECT
 #include <warn/pop>
 public:
-    enum ListElemType { File = 1, Section, SubSection, None };
-
-    enum ItemRoles { FileName = Qt::UserRole + 100, Path, Type, ExampleWorkspace };
-
     explicit FileTreeWidget(InviwoApplication* app, QWidget* parent = nullptr);
     virtual ~FileTreeWidget() = default;
 
@@ -68,99 +65,32 @@ public:
     bool selectRecentWorkspace(int index);
 
     void setFilter(const QString& str);
+    void defaultExpand();
 
 signals:
     void selectedFileChanged(const QString& filename, bool isExample);
     void loadFile(const QString& filename, bool isExample);
 
+protected:
+#if QT_VERSION < QT_VERSION_CHECK(5, 13, 0)
+    // QTreeView::expandRecursively() was introduced in Qt 5.13
+    // see https://doc.qt.io/qt-5/qtreeview.html#expandRecursively
+    void expandRecursively(const QModelIndex& index);
+#endif
+
 private:
     InviwoApplication* inviwoApp_;
 
-    TreeModel* model_;
-    QSortFilterProxyModel *proxyModel_;
+    FileTreeModel* model_;
+    QSortFilterProxyModel* proxyModel_;
 
     TreeItem* recentWorkspaceItem_ = nullptr;
     TreeItem* examplesItem_ = nullptr;
     TreeItem* regressionTestsItem_ = nullptr;
 
     QIcon fileIcon_;
-};
 
-class IVW_QTEDITOR_API TreeItem {
-public:
-    explicit TreeItem(TreeItem* parent = nullptr);
-    TreeItem(const QString& caption, FileTreeWidget::ListElemType type, TreeItem* parent = nullptr);
-    TreeItem(const QIcon& icon, const std::string& filename, bool isExample = false,
-             TreeItem* parent = nullptr);
-    virtual ~TreeItem();
-
-    void addChild(TreeItem* child);
-    void addChildren(std::vector<TreeItem*> children);
-
-    bool insertChildren(int position, int count);
-    bool removeChildren(int position, int count);
-    void removeChildren();
-
-    TreeItem* child(int row);
-    int row() const;
-    int childCount() const;
-    int columnCount() const;
-    TreeItem* parent() const;
-
-    virtual QVariant data(int column, int role) const;
-    virtual FileTreeWidget::ListElemType type() const;
-
-    void setData(const QString& caption, FileTreeWidget::ListElemType type);
-    void setData(const QIcon& icon, const std::string& filename, bool isExample);
-
-private:
-    TreeItem* parent_;
-    std::vector<TreeItem*> childItems_;
-
-    FileTreeWidget::ListElemType type_ = FileTreeWidget::ListElemType::None;
-
-    QIcon icon_;
-    QString caption_;
-    QString file_;
-    QString path_;
-    bool isExample_;
-};
-
-class IVW_QTEDITOR_API TreeModel : public QAbstractItemModel {
-#include <warn/push>
-#include <warn/ignore/all>
-    Q_OBJECT
-#include <warn/pop>
-public:
-    explicit TreeModel(QObject* parent = nullptr);
-    ~TreeModel();
-
-    virtual QModelIndex index(int row, int column,
-                              const QModelIndex& parent = QModelIndex()) const override;
-    virtual Qt::ItemFlags flags(const QModelIndex& index) const override;
-    virtual QVariant data(const QModelIndex& index, int role) const override;
-    virtual QVariant headerData(int section, Qt::Orientation orientation,
-                                int role = Qt::DisplayRole) const override;
-    virtual QModelIndex parent(const QModelIndex& index) const override;
-    virtual int rowCount(const QModelIndex& parent = QModelIndex()) const override;
-    virtual int columnCount(const QModelIndex& parent = QModelIndex()) const override;
-
-    virtual bool insertRows(int position, int rows,
-                            const QModelIndex& parent = QModelIndex()) override;
-    virtual bool removeRows(int position, int rows,
-                            const QModelIndex& parent = QModelIndex()) override;
-
-    void updateCategory(TreeItem* item, std::vector<TreeItem*> children);
-
-    void addEntry(TreeItem* root, TreeItem* child);
-    bool removeEntry(TreeItem* node);
-    bool removeChildren(TreeItem* root);
-    QModelIndex getIndex(TreeItem* item, int column = 0) const;
-
-private:
-    TreeItem* getItem(const QModelIndex& index) const;
-
-    TreeItem* root_;
+    bool isFiltering_ = false;
 };
 
 }  // namespace inviwo
