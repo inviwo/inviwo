@@ -180,6 +180,7 @@ private:
 
     glui::Renderer sliderWidgetRenderer_;
     std::vector<ColumnAxis> axes_;
+    std::shared_ptr<std::function<void()>> colormapChanged_;
 
     bool enabledAxesModified_ = false;
     std::vector<size_t> enabledAxes_;

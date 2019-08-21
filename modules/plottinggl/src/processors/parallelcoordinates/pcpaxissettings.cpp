@@ -69,11 +69,13 @@ std::string PCPAxisSettings::getClassIdentifier() const { return classIdentifier
 
 PCPAxisSettings::PCPAxisSettings(std::string identifier, std::string displayName, size_t columnId)
     : BoolCompositeProperty(identifier, displayName, true)
+    , colormap("colormap", "Colormap")
     , usePercentiles("usePercentiles", "Use Percentiles", false)
     , invertRange("invertRange", "Invert Range")
     , range("range", "Axis Range")
     , columnId_{columnId} {
 
+    addProperty(colormap);
     addProperty(range);
     addProperty(invertRange);
     addProperty(usePercentiles);
@@ -92,11 +94,13 @@ PCPAxisSettings::PCPAxisSettings(std::string identifier, std::string displayName
 
 PCPAxisSettings::PCPAxisSettings(const PCPAxisSettings& rhs)
     : BoolCompositeProperty(rhs)
+    , colormap(rhs.colormap)
     , usePercentiles{rhs.usePercentiles}
     , invertRange(rhs.invertRange)
     , range{rhs.range}
     , columnId_{rhs.columnId_} {
 
+    addProperty(colormap);
     addProperty(range);
     addProperty(invertRange);
     addProperty(usePercentiles);
@@ -112,6 +116,12 @@ PCPAxisSettings* PCPAxisSettings::clone() const { return new PCPAxisSettings(*th
 void PCPAxisSettings::updateFromColumn(std::shared_ptr<const Column> col) {
     col_ = col;
     catCol_ = dynamic_cast<const CategoricalColumn*>(col.get());
+    if (catCol_) {
+        colormap.category.set(colorbrewer::Category::Qualitative);
+        colormap.colormap.set(colorbrewer::Family::Paired);
+        colormap.nColors.set(catCol_->getCategories().size());
+        colormap.discrete_.set(true);
+    }
     col->getBuffer()->getRepresentation<BufferRAM>()->dispatch<void, dispatching::filter::Scalars>(
         [&](auto ram) -> void {
             using T = typename util::PrecisionValueType<decltype(ram)>;
@@ -145,6 +155,8 @@ void PCPAxisSettings::updateFromColumn(std::shared_ptr<const Column> col) {
             p75_ = static_cast<double>(pecentiles[2]);
             p100_ = static_cast<double>(pecentiles[3]);
             at = [vec = &dataVector](size_t idx) { return static_cast<double>(vec->at(idx)); };
+
+            colormap.divergenceMidPoint_.set(0.5 * (minV + maxV), minV, maxV, 0.1*(maxV - minV));
         });
 
     range.propertyModified();

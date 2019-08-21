@@ -158,6 +158,14 @@ ParallelCoordinates::ParallelCoordinates()
 
     addProperty(axisProperties_);
     addProperty(selectedColorAxis_);
+    selectedColorAxis_.onChange([&]() {
+        if (axes_.empty()) return;
+        auto& colormap =
+            axes_[glm::clamp(*selectedColorAxis_, 0, static_cast<int>(axes_.size()) - 1)]
+                .pcp->colormap;
+        *tf_ = colormap.get();
+        colormapChanged_ = colormap.onChangeScoped([&]() { *tf_ = colormap.get(); });
+    });
     addProperty(tf_);
 
     addProperty(axisSelection_);
