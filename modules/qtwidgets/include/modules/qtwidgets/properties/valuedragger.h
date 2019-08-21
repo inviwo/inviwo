@@ -154,7 +154,7 @@ void ValueDragger<T>::paintEvent(QPaintEvent *) {
 
     QPen pen(Qt::NoBrush, 2.0, Qt::SolidLine, Qt::FlatCap, Qt::MiterJoin);
     if (!(option.state & QStyle::State_Enabled)) {
-        pen.setColor(option.palette.color(QPalette::Disabled, QPalette::Foreground).darker());
+        pen.setColor(option.palette.color(QPalette::Disabled, QPalette::WindowText).darker());
     } else if (option.state & QStyle::State_MouseOver) {
         pen.setColor(option.palette.color(QPalette::Active, QPalette::Highlight));
     } else {

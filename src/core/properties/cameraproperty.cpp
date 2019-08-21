@@ -41,6 +41,8 @@
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/ports/volumeport.h>
 
+#include <limits>
+
 namespace inviwo {
 
 const std::string CameraProperty::classIdentifier = "org.inviwo.CameraProperty";
@@ -60,7 +62,8 @@ CameraProperty::CameraProperty(const std::string& identifier, const std::string&
               InvalidationLevel::InvalidOutput, PropertySemantics::SpinBox)
     , lookUp_("lookUp", "Look up", lookUp, -vec3(1.f), vec3(1.f), vec3(0.1f),
               InvalidationLevel::InvalidOutput, PropertySemantics::SpinBox)
-    , aspectRatio_{"aspectRatio", "Aspect Ratio", 1.0f, 0.01f, 100.0f, 0.01f}
+    , aspectRatio_("aspectRatio", "Aspect Ratio", 1.0f, 0.0f, std::numeric_limits<float>::max(),
+                   0.01f, InvalidationLevel::InvalidOutput, PropertySemantics::Text)
     , nearPlane_("near", "Near Plane", 0.1f, 0.001f, 10.f, 0.001f)
     , farPlane_("far", "Far Plane", 100.0f, 1.0f, 1000.0f, 1.0f)
 
@@ -176,7 +179,7 @@ CameraProperty::CameraProperty(const CameraProperty& rhs)
         insertProperty(i++, nearPlane_);
         insertProperty(i++, farPlane_);
     }
-    addProperty(settings_); // We want settings to be last
+    addProperty(settings_);  // We want settings to be last
     settings_.addProperties(setNearFarButton_, setLookRangesButton_, updateNearFar_,
                             updateLookRanges_, fittingRatio_);
 

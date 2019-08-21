@@ -48,7 +48,6 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QMenu>
-#include <QSignalMapper>
 #include <warn/pop>
 
 namespace inviwo {
@@ -146,7 +145,7 @@ public:
 
 private:
     // Connected to OrdinalEditorWidget::valueChanged()
-    void setPropertyValue(int);
+    void setPropertyValue(size_t);
     void showSettings();
 
     OrdinalProperty<T>* ordinalproperty_;
@@ -190,8 +189,6 @@ OrdinalPropertyWidgetQt<T>::OrdinalPropertyWidgetQt(OrdinalProperty<T>* property
     gridLayout->setContentsMargins(0, 0, 0, 0);
     gridLayout->setSpacing(0);
 
-    auto signalMapperSetPropertyValue = new QSignalMapper(this);
-
     if ((ordinalproperty_->getSemantics() == PropertySemantics::SpinBox) ||
         (ordinalproperty_->getSemantics() == PropertySemantics("SphericalSpinBox"))) {
         gridLayout->setHorizontalSpacing(utilqt::emToPx(this, 0.5));
@@ -199,11 +196,11 @@ OrdinalPropertyWidgetQt<T>::OrdinalPropertyWidgetQt(OrdinalProperty<T>* property
             for (size_t i = 0; i < ordinalproperty_->getDim().x; i++) {
 
                 auto editor = new OrdinalSpinBoxWidget<BT>();
-                connect(editor, &OrdinalSpinBoxWidget<BT>::valueChanged,
-                        signalMapperSetPropertyValue,
-                        static_cast<void (QSignalMapper::*)()>(&QSignalMapper::map));
-                signalMapperSetPropertyValue->setMapping(
-                    editor, static_cast<int>(i + j * ordinalproperty_->getDim().x));
+                connect(editor, &OrdinalSpinBoxWidget<BT>::valueChanged, this,
+                        [this, index = i + j * ordinalproperty_->getDim().x]() {
+                            setPropertyValue(index);
+                        });
+
                 editors_.push_back(editor);
 
                 auto sp = editor->sizePolicy();
@@ -238,18 +235,17 @@ OrdinalPropertyWidgetQt<T>::OrdinalPropertyWidgetQt(OrdinalProperty<T>* property
                     ordinalproperty_->getSemantics() == PropertySemantics::Text) {
 
                     auto editor = new OrdinalEditorWidget<BT>();
-                    connect(editor, &OrdinalEditorWidget<BT>::valueChanged,
-                            signalMapperSetPropertyValue,
-                            static_cast<void (QSignalMapper::*)()>(&QSignalMapper::map));
-                    signalMapperSetPropertyValue->setMapping(
-                        editor, static_cast<int>(i + j * ordinalproperty_->getDim().x));
+                    connect(editor, &OrdinalEditorWidget<BT>::valueChanged, this,
+                            [this, index = i + j * ordinalproperty_->getDim().x]() {
+                                setPropertyValue(index);
+                            });
+
                     editors_.push_back(editor);
                     controlWidget = editor;
                 } else {
                     auto editor = new SliderWidgetQt<BT>();
-                    connect(editor, &SliderWidgetQt<BT>::valueChanged, signalMapperSetPropertyValue,
-                            static_cast<void (QSignalMapper::*)()>(&QSignalMapper::map));
-                    signalMapperSetPropertyValue->setMapping(editor, static_cast<int>(i));
+                    connect(editor, &SliderWidgetQt<BT>::valueChanged, this,
+                            [this, i]() { setPropertyValue(i); });
                     editors_.push_back(editor);
                     controlWidget = editor;
                 }
@@ -291,10 +287,6 @@ OrdinalPropertyWidgetQt<T>::OrdinalPropertyWidgetQt(OrdinalProperty<T>* property
     sp.setVerticalPolicy(QSizePolicy::Fixed);
     centralWidget->setSizePolicy(sp);
 
-    connect(signalMapperSetPropertyValue,
-            static_cast<void (QSignalMapper::*)(int)>(&QSignalMapper::mapped), this,
-            &OrdinalPropertyWidgetQt<T>::setPropertyValue);
-
     setLayout(hLayout);
 
     setFixedHeight(sizeHint().height());
@@ -321,7 +313,7 @@ void OrdinalPropertyWidgetQt<T>::updateFromProperty() {
 }
 
 template <typename T>
-void OrdinalPropertyWidgetQt<T>::setPropertyValue(int editorId) {
+void OrdinalPropertyWidgetQt<T>::setPropertyValue(size_t editorId) {
     T propValue = transformer_->value(ordinalproperty_->get());
 
     util::glmcomp(propValue, editorId) = editors_[editorId]->getValue();
