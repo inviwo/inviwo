@@ -29,60 +29,68 @@
 #pragma once
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
+#include <inviwo/qt/editor/filetreemodel.h>
 #include <inviwo/core/common/inviwo.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
 
-#include <QTreeWidget>
+#include <QtGlobal>
+#include <QTreeView>
 #include <QIcon>
 
 #include <warn/pop>
 
-class QTreeWidgetItem;
+class QSortFilterProxyModel;
 
 namespace inviwo {
 
 class InviwoApplication;
+class TreeItem;
+class FileTreeModel;
 
-class IVW_QTEDITOR_API FileTreeWidget : public QTreeWidget {
+class IVW_QTEDITOR_API FileTreeWidget : public QTreeView {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT
 #include <warn/pop>
 public:
-    enum ListElemType { File = 1, Section, SubSection };
-
-    enum ItemRoles { FileName = Qt::UserRole + 100, Path, Type, ExampleWorkspace };
-
-    explicit FileTreeWidget(InviwoApplication *app, QWidget *parent = nullptr);
+    explicit FileTreeWidget(InviwoApplication* app, QWidget* parent = nullptr);
     virtual ~FileTreeWidget() = default;
 
-    void updateRecentWorkspaces(const QStringList &recentFiles);
+    void updateRecentWorkspaces(const QStringList& recentFiles);
     void updateExampleEntries();
     void updateRegressionTestEntries();
 
     bool selectRecentWorkspace(int index);
 
+    void setFilter(const QString& str);
+    void defaultExpand();
+
 signals:
-    void selectedFileChanged(const QString &filename, bool isExample);
-    void loadFile(const QString &filename, bool isExample);
+    void selectedFileChanged(const QString& filename, bool isExample);
+    void loadFile(const QString& filename, bool isExample);
+
+protected:
+#if QT_VERSION < QT_VERSION_CHECK(5, 13, 0)
+    // QTreeView::expandRecursively() was introduced in Qt 5.13
+    // see https://doc.qt.io/qt-5/qtreeview.html#expandRecursively
+    void expandRecursively(const QModelIndex& index);
+#endif
 
 private:
-    static QTreeWidgetItem *createCategory(const QString &caption,
-                                           ListElemType = ListElemType::Section);
-    static QTreeWidgetItem *createFileEntry(const QIcon &icon, const std::string &filename,
-                                            bool isExample = false);
+    InviwoApplication* inviwoApp_;
 
-    static void removeChildren(QTreeWidgetItem *node);
+    FileTreeModel* model_;
+    QSortFilterProxyModel* proxyModel_;
 
-    InviwoApplication *inviwoApp_;
-
-    QTreeWidgetItem *recentWorkspaceItem_ = nullptr;
-    QTreeWidgetItem *examplesItem_ = nullptr;
-    QTreeWidgetItem *regressionTestsItem_ = nullptr;
+    TreeItem* recentWorkspaceItem_ = nullptr;
+    TreeItem* examplesItem_ = nullptr;
+    TreeItem* regressionTestsItem_ = nullptr;
 
     QIcon fileIcon_;
+
+    bool isFiltering_ = false;
 };
 
 }  // namespace inviwo

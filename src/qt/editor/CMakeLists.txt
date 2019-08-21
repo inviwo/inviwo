@@ -7,6 +7,7 @@ project(inviwo-qteditor)
 set(MOC_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/connectiondraghelper.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/consolewidget.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/filetreemodel.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/filetreewidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialogscene.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdraghelper.h
@@ -31,8 +32,8 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialog.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialogcurvegraphicsitems.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialoggraphicsitems.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialogpropertygraphicsitems.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialogprocessorgraphicsitems.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialogpropertygraphicsitems.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialogview.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkgraphicsitem.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/networkeditorobserver.h
@@ -69,6 +70,7 @@ set(SOURCE_FILES
     dataopener.cpp
     editorgrapicsitem.cpp
     fileassociations.cpp
+    filetreemodel.cpp
     filetreewidget.cpp
     helpwidget.cpp
     inviwoaboutwindow.cpp
