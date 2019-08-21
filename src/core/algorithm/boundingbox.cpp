@@ -82,10 +82,17 @@ mat4 boundingBox(const std::vector<std::shared_ptr<const Mesh>> &meshes) {
 
     vec3 worldMin(std::numeric_limits<float>::max());
     vec3 worldMax(std::numeric_limits<float>::lowest());
+
+    const std::array<vec3, 8> corners = {vec3{0, 0, 0}, vec3{1, 0, 0}, vec3{1, 1, 0},
+                                         vec3{0, 1, 0}, vec3{0, 0, 1}, vec3{1, 0, 1},
+                                         vec3{1, 1, 1}, vec3{0, 1, 1}};
     for (const auto &mesh : meshes) {
         auto bb = boundingBox(*mesh);
-        worldMin = glm::min(worldMin, vec3{bb * vec4{0.0f, 0.0f, 0.0f, 1.0f}});
-        worldMax = glm::max(worldMax, vec3{bb * vec4{1.0f, 1.0f, 1.0f, 1.0f}});
+        for (const auto &corner : corners) {
+            const auto point = vec3(bb * vec4(corner, 1.f));
+            worldMin = glm::min(worldMin, point);
+            worldMax = glm::max(worldMax, point);
+        }
     }
     auto m = glm::scale(worldMax - worldMin);
     m[3] = vec4(worldMin, 1.0f);
@@ -101,10 +108,17 @@ mat4 boundingBox(const std::vector<std::shared_ptr<Volume>> &volumes) {
 
     vec3 worldMin(std::numeric_limits<float>::max());
     vec3 worldMax(std::numeric_limits<float>::lowest());
+
+    const std::array<vec3, 8> corners = {vec3{0, 0, 0}, vec3{1, 0, 0}, vec3{1, 1, 0},
+                                         vec3{0, 1, 0}, vec3{0, 0, 1}, vec3{1, 0, 1},
+                                         vec3{1, 1, 1}, vec3{0, 1, 1}};
     for (const auto &volume : volumes) {
         auto bb = boundingBox(*volume);
-        worldMin = glm::min(worldMin, vec3{bb * vec4{0.0f, 0.0f, 0.0f, 1.0f}});
-        worldMax = glm::max(worldMax, vec3{bb * vec4{1.0f, 1.0f, 1.0f, 1.0f}});
+        for (const auto &corner : corners) {
+            const auto point = vec3(bb * vec4(corner, 1.f));
+            worldMin = glm::min(worldMin, point);
+            worldMax = glm::max(worldMax, point);
+        }
     }
     auto m = glm::scale(worldMax - worldMin);
     m[3] = vec4(worldMin, 1.0f);
