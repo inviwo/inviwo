@@ -5,6 +5,8 @@ project(inviwo-core)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
+    ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/boundingbox.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/camerautils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/defaulttohighperformancegpu.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwo.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwoapplication.h
@@ -101,6 +103,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/resizeevent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/touchevent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/touchstate.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/viewevent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/wheelevent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/interactionhandler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingaction.h
@@ -202,6 +205,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/advancedmaterialproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/boolcompositeproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/boolproperty.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/properties/buttongroupproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/buttonproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/cameraproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/compositeproperty.h
@@ -347,6 +351,8 @@ ivw_group("Header Files" BASE "${IVW_INCLUDE_DIR}/inviwo/core" ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
+    algorithm/boundingbox.cpp
+    algorithm/camerautils.cpp
     common/inviwoapplication.cpp
     common/inviwocore.cpp
     common/inviwomodule.cpp
@@ -414,6 +420,7 @@ set(SOURCE_FILES
     interaction/events/pickingevent.cpp
     interaction/events/resizeevent.cpp
     interaction/events/touchevent.cpp
+    interaction/events/viewevent.cpp
     interaction/events/wheelevent.cpp
     interaction/interactionhandler.cpp
     interaction/pickingaction.cpp
@@ -497,6 +504,7 @@ set(SOURCE_FILES
     properties/advancedmaterialproperty.cpp
     properties/boolcompositeproperty.cpp
     properties/boolproperty.cpp
+    properties/buttongroupproperty.cpp
     properties/buttonproperty.cpp
     properties/cameraproperty.cpp
     properties/compositeproperty.cpp

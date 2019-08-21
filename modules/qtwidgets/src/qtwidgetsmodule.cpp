@@ -50,6 +50,7 @@
 #include <modules/qtwidgets/properties/anglepropertywidgetqt.h>
 #include <modules/qtwidgets/properties/boolpropertywidgetqt.h>
 #include <modules/qtwidgets/properties/boolcompositepropertywidgetqt.h>
+#include <modules/qtwidgets/properties/buttongrouppropertywidgetqt.h>
 #include <modules/qtwidgets/properties/buttonpropertywidgetqt.h>
 #include <modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h>
 #include <modules/qtwidgets/properties/colorpropertywidgetqt.h>
@@ -84,7 +85,7 @@
 
 #ifndef INVIWO_ALL_DYN_LINK
 struct InitQtResources {
-    // Needed for loading of resources when building statically 
+    // Needed for loading of resources when building statically
     // see https://wiki.qt.io/QtResources#Q_INIT_RESOURCE
     InitQtResources() { Q_INIT_RESOURCE(inviwo); }
     ~InitQtResources() { Q_CLEANUP_RESOURCE(inviwo); }
@@ -183,7 +184,8 @@ QtWidgetsModule::QtWidgetsModule(InviwoApplication* app)
     util::for_each_type<ScalarTypes>{}(MinMaxTextWidgetReghelper{}, *this, "Text");
 
     // Register option property widgets
-    using OptionTypes = std::tuple<unsigned int, int, size_t, float, double, std::string, FileExtension>;
+    using OptionTypes =
+        std::tuple<unsigned int, int, size_t, float, double, std::string, FileExtension>;
     util::for_each_type<OptionTypes>{}(OptionWidgetReghelper{}, *this, "Default");
 
     // Register string property widgets
@@ -207,6 +209,7 @@ QtWidgetsModule::QtWidgetsModule(InviwoApplication* app)
     // Register misc property widgets
     registerPropertyWidget<EventPropertyWidgetQt, EventProperty>("Default");
     registerPropertyWidget<FontSizePropertyWidgetQt, IntProperty>("Fontsize");
+    registerPropertyWidget<ButtonGroupPropertyWidgetQt, ButtonGroupProperty>("Default");
     registerPropertyWidget<ButtonPropertyWidgetQt, ButtonProperty>("Default");
 
     registerPropertyWidget<FloatAnglePropertyWidgetQt, FloatProperty>("Angle");

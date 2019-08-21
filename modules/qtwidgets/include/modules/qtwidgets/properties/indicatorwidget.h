@@ -31,6 +31,7 @@
 #define INDICATORWIDGET_H
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -53,8 +54,8 @@ protected:
 private:
     void set(QPoint base, int len);
 
-    const int grooveWidth_ = 2;
-    const int handleWidth_ = 12;
+    const int grooveWidth_ = utilqt::emToPx(this, 0.2);
+    const int handleWidth_ = utilqt::emToPx(this, 1.2);
 
     QPoint basePoint_;
     int length_;

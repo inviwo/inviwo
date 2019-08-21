@@ -34,6 +34,7 @@
 
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/buttongroupproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/properties/isovalueproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
@@ -193,9 +194,7 @@ void exposeProperties(py::module &m) {
         .def_property_readonly("viewMatrix", &CameraProperty::viewMatrix)
         .def_property_readonly("projectionMatrix", &CameraProperty::projectionMatrix)
         .def_property_readonly("inverseViewMatrix", &CameraProperty::inverseViewMatrix)
-        .def_property_readonly("inverseProjectionMatrix", &CameraProperty::inverseProjectionMatrix)
-        .def("adjustCameraToData", &CameraProperty::adjustCameraToData)
-        .def("resetAdjustCameraToData", &CameraProperty::resetAdjustCameraToData);
+        .def_property_readonly("inverseProjectionMatrix", &CameraProperty::inverseProjectionMatrix);
 
     PyPropertyClass<TransferFunctionProperty>(m, "TransferFunctionProperty")
         .def(py::init([](const std::string &identifier, const std::string &displayName,
@@ -388,7 +387,40 @@ void exposeProperties(py::module &m) {
              py::arg("identifier"), py::arg("displayName"),
              py::arg("invalidationLevel") = InvalidationLevel::InvalidResources,
              py::arg("semantics") = PropertySemantics::Default)
+        .def(py::init([](const std::string &identifier, const std::string &displayName,
+                         std::function<void()> action, InvalidationLevel invalidationLevel,
+                         PropertySemantics semantics) {
+                 return new ButtonProperty(identifier, displayName, action, invalidationLevel,
+                                           semantics);
+             }),
+             py::arg("identifier"), py::arg("displayName"), py::arg("action"),
+             py::arg("invalidationLevel") = InvalidationLevel::InvalidResources,
+             py::arg("semantics") = PropertySemantics::Default)
         .def("press", &ButtonProperty::pressButton);
+
+    py::class_<ButtonGroupProperty::Button>(m, "ButtonGroupPropertyButton")
+        .def(py::init<std::optional<std::string>, std::optional<std::string>,
+                      std::optional<std::string>, std::function<void()>>());
+
+    PyPropertyClass<ButtonGroupProperty, Property>(m, "ButtonGroupProperty")
+        .def(py::init([](const std::string &identifier, const std::string &displayName,
+                         InvalidationLevel invalidationLevel, PropertySemantics semantics) {
+                 return new ButtonGroupProperty(identifier, displayName, invalidationLevel,
+                                                semantics);
+             }),
+             py::arg("identifier"), py::arg("displayName"),
+             py::arg("invalidationLevel") = InvalidationLevel::InvalidResources,
+             py::arg("semantics") = PropertySemantics::Default)
+        .def(py::init([](const std::string &identifier, const std::string &displayName,
+                         std::vector<ButtonGroupProperty::Button> buttons,
+                         InvalidationLevel invalidationLevel, PropertySemantics semantics) {
+                 return new ButtonGroupProperty(identifier, displayName, std::move(buttons),
+                                                invalidationLevel, semantics);
+             }),
+             py::arg("identifier"), py::arg("displayName"), py::arg("buttons"),
+             py::arg("invalidationLevel") = InvalidationLevel::InvalidResources,
+             py::arg("semantics") = PropertySemantics::Default)
+        .def("press", &ButtonGroupProperty::pressButton);
 }
 
 }  // namespace inviwo

@@ -492,8 +492,8 @@ QImage layerToQImage(const Layer& layer) {
 }
 
 void addImageActions(QMenu& menu, const Image& image, LayerType visibleLayer, size_t visibleIndex) {
-    QMenu* copy = menu.addMenu("Copy");
-    QMenu* save = menu.addMenu("Save");
+    QMenu* copy = menu.addMenu(QIcon(":svgicons/edit-copy.svg"), "Copy");
+    QMenu* save = menu.addMenu(QIcon(":svgicons/save-as.svg"), "Save");
 
     auto addAction = [&copy, &save](const std::string& name, const Layer* layer, bool visible) {
         std::ostringstream oss;

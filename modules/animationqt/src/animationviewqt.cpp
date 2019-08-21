@@ -74,7 +74,7 @@ public:
         const auto viewEnd = view_->mapToScene(view_->viewport()->rect().right(), 0).x();
 
         const auto windowSize = rect().width();
-        const auto digitSize = fm.width('0');
+        const auto digitSize = fm.horizontalAdvance('0');
 
         const auto tgcGuess =
             static_cast<int>(std::floor(windowSize / digitSize / std::abs(3) / 2.0));

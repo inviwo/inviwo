@@ -30,6 +30,7 @@
 #include <modules/qtwidgets/properties/doublevaluedragspinbox.h>
 #include <modules/qtwidgets/properties/valuedragger.h>
 #include <modules/qtwidgets/numberlineedit.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -46,15 +47,14 @@ DoubleValueDragSpinBox::DoubleValueDragSpinBox(QWidget *parent)
     spinBox_->setButtonSymbols(QAbstractSpinBox::NoButtons);
 
     auto layout = new QHBoxLayout();
-    layout->setSpacing(2);
+    layout->setSpacing(utilqt::emToPx(this, 0.2));
     layout->setMargin(0);
-    layout->addWidget(valueDragger_);
     layout->addWidget(spinBox_);
+    layout->addWidget(valueDragger_);
 
     setLayout(layout);
 
     valueDragger_->setFocusPolicy(Qt::NoFocus);
-    spinBox_->setFocusPolicy(Qt::WheelFocus);
     setFocusProxy(spinBox_);
     setFocusPolicy(spinBox_->focusPolicy());
 

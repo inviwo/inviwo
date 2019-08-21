@@ -36,6 +36,7 @@
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/volume/volumeutils.h>
+#include <inviwo/core/algorithm/boundingbox.h>
 
 namespace inviwo {
 
@@ -59,7 +60,7 @@ SimpleRaycaster::SimpleRaycaster()
     , channel_("channel", "Render Channel", {{"channel1", "Channel 1", 0}})
     , transferFunction_("transferFunction", "Transfer Function", &volumePort_)
     , samplingRate_("samplingRate", "Sampling Rate", 2.0f, 1.0f, 10.0f)
-    , camera_("camera", "Camera") {
+    , camera_("camera", "Camera", util::boundingBox(volumePort_)) {
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 

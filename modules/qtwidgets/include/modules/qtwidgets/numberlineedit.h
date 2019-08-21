@@ -73,7 +73,7 @@ public:
     /**
      * \brief Overrides the timerEvent to prevent
      * spinbox to be updated twice in case of
-     * calculations being slows
+     * calculations being slow
      */
     virtual void timerEvent(QTimerEvent *event) override;
 
@@ -83,6 +83,7 @@ protected:
     virtual void focusOutEvent(QFocusEvent *e) override;
     virtual void resizeEvent(QResizeEvent *e) override;
     virtual void changeEvent(QEvent *e) override;
+    virtual void wheelEvent(QWheelEvent *e) override;
 
 private:
     const bool integerMode_;

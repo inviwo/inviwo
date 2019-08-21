@@ -123,6 +123,13 @@ T* defaultConstructType() {
 template <class...>
 using void_t = void;
 
+template <class... Ts>
+struct overloaded : Ts... {
+    using Ts::operator()...;
+};
+template <class... Ts>
+overloaded(Ts...)->overloaded<Ts...>;
+
 // type trait to check if T is derived from std::basic_string
 namespace detail {
 template <typename T, class Enable = void>

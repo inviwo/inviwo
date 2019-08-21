@@ -34,6 +34,7 @@
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/interaction/events/touchevent.h>
 #include <inviwo/core/interaction/events/wheelevent.h>
+#include <inviwo/core/algorithm/boundingbox.h>
 
 #include <modules/base/algorithm/meshutils.h>
 
@@ -93,7 +94,7 @@ RandomMeshGenerator::RandomMeshGenerator()
                         handlePicking(
                             p, [&](vec3 delta) { toruses_[p->getPickedId()].center += delta; });
                     })
-    , camera_("camera", "Camera") {
+    , camera_("camera", "Camera", util::boundingBox(mesh_)) {
 
     addPort(mesh_);
 

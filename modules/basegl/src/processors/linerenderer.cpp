@@ -30,6 +30,7 @@
 #include <modules/basegl/processors/linerenderer.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
 #include <modules/opengl/shader/shaderutils.h>
+#include <inviwo/core/algorithm/boundingbox.h>
 
 namespace inviwo {
 
@@ -70,7 +71,7 @@ LineRenderer::LineRenderer()
     , useAdjacency_("useAdjacency", "Use Adjacency Information", true,
                     InvalidationLevel::InvalidResources)
     , stippling_("stippling", "Stippling")
-    , camera_("camera", "Camera")
+    , camera_("camera", "Camera", util::boundingBox(inport_))
     , trackball_(&camera_)
     , lineShaders_{
           {{ShaderType::Vertex, std::string{"linerenderer.vert"}},
