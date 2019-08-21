@@ -233,9 +233,14 @@ std::shared_ptr<const T> DataInport<T, N, Flat>::getData() const {
 
 template <typename T, size_t N, bool Flat>
 std::vector<std::shared_ptr<const T>> DataInport<T, N, Flat>::getVectorData() const {
-    std::vector<std::shared_ptr<const T>> res(N);
+    std::vector<std::shared_ptr<const T>> res;
+    if constexpr (N > 0) {
+        res.reserve(N);
+    }
 
-    for (auto it = this->begin(); it != this->end(); ++it) res.push_back(it.operator->());
+    for (auto it = this->begin(); it != this->end(); ++it) {
+        res.push_back(it.operator->());
+    }
 
     return res;
 }
@@ -243,7 +248,10 @@ std::vector<std::shared_ptr<const T>> DataInport<T, N, Flat>::getVectorData() co
 template <typename T, size_t N, bool Flat>
 std::vector<std::pair<Outport*, std::shared_ptr<const T>>>
 DataInport<T, N, Flat>::getSourceVectorData() const {
-    std::vector<std::pair<Outport*, std::shared_ptr<const T>>> res(N);
+    std::vector<std::pair<Outport*, std::shared_ptr<const T>>> res;
+    if constexpr (N > 0) {
+        res.reserve(N);
+    }
 
     for (auto outport : connectedOutports_) {
         // Safe to static cast since we are unable to connect other outport types.

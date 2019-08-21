@@ -45,10 +45,22 @@
 
 namespace inviwo {
 
+namespace {
+
+class Slider : public QSlider {
+    using QSlider::QSlider;
+
+    virtual void wheelEvent(QWheelEvent *e) override {
+        if (hasFocus()) QSlider::wheelEvent(e);
+    }
+};
+
+}  // namespace
+
 BaseSliderWidgetQt::BaseSliderWidgetQt(bool intMode)
     : QWidget()
     , spinBox_(new NumberLineEdit(intMode))
-    , slider_(new QSlider())
+    , slider_(new Slider())
     , spinnerValue_(0.0)
     , sliderValue_(0) {
 

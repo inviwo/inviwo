@@ -66,6 +66,7 @@
 
 // Properties
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttongroupproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/directoryproperty.h>
@@ -281,6 +282,7 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerProperty<CompositeProperty>();
     registerProperty<AdvancedMaterialProperty>();
     registerProperty<BoolProperty>();
+    registerProperty<ButtonGroupProperty>();
     registerProperty<ButtonProperty>();
     registerProperty<CameraProperty>();
     registerProperty<DirectoryProperty>();

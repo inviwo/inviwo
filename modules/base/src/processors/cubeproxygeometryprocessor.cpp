@@ -55,10 +55,7 @@ CubeProxyGeometry::CubeProxyGeometry()
 
     addPort(inport_);
     addPort(outport_);
-    addProperty(clippingEnabled_);
-    addProperty(clipX_);
-    addProperty(clipY_);
-    addProperty(clipZ_);
+    addProperties(clippingEnabled_, clipX_, clipY_, clipZ_);
 
     // Since the clips depend on the input volume dimensions, we make sure to always
     // serialize them so we can do a proper renormalization when we load new data.
@@ -67,9 +64,9 @@ CubeProxyGeometry::CubeProxyGeometry()
     clipZ_.setSerializationMode(PropertySerializationMode::All);
 
     inport_.onChange([this]() {
-        auto volume = inport_.getData();
+        const auto volume = inport_.getData();
         // Update to the new dimensions.
-        auto dims = util::getVolumeDimensions(volume);
+        const auto dims = util::getVolumeDimensions(volume);
 
         if (dims !=
             size3_t(clipX_.getRangeMax() - 1, clipY_.getRangeMax() - 1, clipZ_.getRangeMax() - 1)) {
@@ -92,8 +89,8 @@ CubeProxyGeometry::~CubeProxyGeometry() {}
 void CubeProxyGeometry::process() {
     std::shared_ptr<Mesh> mesh;
     if (clippingEnabled_.get()) {
-        const size3_t clipMin(clipX_.get().x, clipY_.get().x, clipZ_.get().x);
-        const size3_t clipMax(clipX_.get().y, clipY_.get().y, clipZ_.get().y);
+        const size3_t clipMin(clipX_->x, clipY_->x, clipZ_->x);
+        const size3_t clipMax(clipX_->y, clipY_->y, clipZ_->y);
         mesh = algorithm::createCubeProxyGeometry(inport_.getData(), clipMin, clipMax);
     } else {
         mesh = algorithm::createCubeProxyGeometry(inport_.getData());

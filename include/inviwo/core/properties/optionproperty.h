@@ -194,6 +194,8 @@ public:
     bool isSelectedValue(const T& val) const;
 
     const T& get() const;
+    const T& operator*() const;
+    const T* operator->() const;
     void set(const T& value);
     virtual void set(const Property* srcProperty) override;
 
@@ -220,21 +222,21 @@ private:
     std::vector<OptionPropertyOption<T>> defaultOptions_;
 };
 
-template <typename T>
-bool operator==(const TemplateOptionProperty<T>& lhs, const T& rhs) {
+template <typename T, typename U>
+bool operator==(const TemplateOptionProperty<T>& lhs, const U& rhs) {
     return lhs.get() == rhs;
 }
-template <typename T>
-bool operator==(const T& lhs, const TemplateOptionProperty<T>& rhs) {
+template <typename T, typename U>
+bool operator==(const U& lhs, const TemplateOptionProperty<T>& rhs) {
     return lhs == rhs.get();
 }
 
-template <typename T>
-bool operator!=(const TemplateOptionProperty<T>& lhs, const T& rhs) {
+template <typename T, typename U>
+bool operator!=(const TemplateOptionProperty<T>& lhs, const U& rhs) {
     return lhs.get() != rhs;
 }
-template <typename T>
-bool operator!=(const T& lhs, const TemplateOptionProperty<T>& rhs) {
+template <typename T, typename U>
+bool operator!=(const U& lhs, const TemplateOptionProperty<T>& rhs) {
     return lhs != rhs.get();
 }
 
@@ -634,6 +636,16 @@ bool TemplateOptionProperty<T>::isSelectedValue(const T& val) const {
 template <typename T>
 const T& TemplateOptionProperty<T>::get() const {
     return options_[selectedIndex_].value_;
+}
+
+template <typename T>
+const T& TemplateOptionProperty<T>::operator*() const {
+    return options_[selectedIndex_].value_;
+}
+
+template <typename T>
+const T* TemplateOptionProperty<T>::operator->() const {
+    return &(options_[selectedIndex_].value_);
 }
 
 template <typename T>

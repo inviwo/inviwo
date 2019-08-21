@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/basegl/processors/geometryentryexitpoints.h>
+#include <inviwo/core/algorithm/boundingbox.h>
 
 namespace inviwo {
 
@@ -47,8 +48,7 @@ GeometryEntryExitPoints::GeometryEntryExitPoints()
     , meshInport_("geometry")
     , entryPort_("entry", DataVec4UInt16::get())
     , exitPort_("exit", DataVec4UInt16::get())
-    , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
-              vec3(0.0f, 1.0f, 0.0f), &meshInport_)
+    , camera_("camera", "Camera", util::boundingBox(meshInport_))
     , capNearClipping_("capNearClipping", "Cap near plane clipping", true)
     , trackball_(&camera_) {
     addPort(volumeInport_);

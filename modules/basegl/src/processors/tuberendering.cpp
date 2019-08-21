@@ -41,6 +41,7 @@ https://prideout.net/blog/old/blog/index.html@p=61.html
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/algorithm/boundingbox.h>
 
 namespace inviwo {
 
@@ -68,7 +69,7 @@ TubeRendering::TubeRendering()
     , useMetaColor_("useMetaColor", "Use meta color mapping", false,
                     InvalidationLevel::InvalidResources)
     , metaColor_("metaColor", "Meta Color Mapping")
-    , camera_("camera", "Camera")
+    , camera_("camera", "Camera", util::boundingBox(inport_))
     , trackball_(&camera_)
     , lighting_("lighting", "Lighting", &camera_)
     , shaderItems_{{{ShaderType::Vertex, "tuberendering.vert"},
