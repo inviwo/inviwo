@@ -36,6 +36,7 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QHBoxLayout>
+#include <QLayoutItem>
 #include <QLabel>
 #include <QPushButton>
 #include <QInputDialog>
@@ -72,11 +73,11 @@ ButtonGroupPropertyWidgetQt::ButtonGroupPropertyWidgetQt(ButtonGroupProperty* pr
         connect(buttonWidget, &QPushButton::released, this, [this, i]() {
             if (!property_->getReadOnly()) property_->pressButton(i);
         });
-        setFocusPolicy(buttonWidget->focusPolicy());
-        setFocusProxy(buttonWidget);
-
         hLayout->addWidget(buttonWidget);
     }
+    setFocusPolicy(hLayout->itemAt(0)->widget()->focusPolicy());
+    setFocusProxy(hLayout->itemAt(0)->widget());
+
     setLayout(hLayout);
 }
 

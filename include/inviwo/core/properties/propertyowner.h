@@ -81,7 +81,7 @@ public:
      */
     virtual void insertProperty(size_t index, Property& property);
 
-    virtual Property* removeProperty(const std::string& identifier);    
+    virtual Property* removeProperty(const std::string& identifier);
     virtual Property* removeProperty(Property* property);
     virtual Property* removeProperty(Property& property);
     /**
@@ -137,7 +137,6 @@ protected:
     PropertyOwner();
     PropertyOwner(const PropertyOwner& rhs);
     PropertyOwner& operator=(const PropertyOwner& that) = delete;
-
 
     // Add the properties belonging the property owner
     // PropertyOwner do not assume owner ship here since in the most common case these are

@@ -51,7 +51,7 @@ vec3 getViewDir(Side side) {
         case Side::ZPositive:
             return vec3(0, 0, -1);
         default:
-            return vec3(0);
+            return vec3(0, 0, -1);
     }
 }
 
@@ -70,7 +70,7 @@ vec3 getLookUp(Side side) {
         case Side::ZPositive:
             return vec3(0, 1, 0);
         default:
-            return vec3(0);
+            return vec3(0, 1, 0);
     }
 }
 
