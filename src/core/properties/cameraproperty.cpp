@@ -41,7 +41,6 @@
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/ports/volumeport.h>
 
-
 namespace inviwo {
 
 const std::string CameraProperty::classIdentifier = "org.inviwo.CameraProperty";
@@ -119,19 +118,17 @@ CameraProperty::CameraProperty(const std::string& identifier, const std::string&
 CameraProperty::CameraProperty(const std::string& identifier, const std::string& displayName,
                                vec3 eye, vec3 center, vec3 lookUp, Inport* inport,
                                InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : CameraProperty(
-          identifier, displayName,
-          [&]() -> std::function<std::optional<mat4>()> {
-              if (auto vp = dynamic_cast<VolumeInport*>(inport)) {
-                  return util::boundingBox(*vp);
-              } else if (auto mp = dynamic_cast<MeshInport*>(inport)) {
-                  return util::boundingBox(*mp);
-              } else {
-                  return nullptr;
-              }
-          }(),
-          eye, center, lookUp, invalidationLevel, semantics) {}
-
+    : CameraProperty(identifier, displayName,
+                     [&]() -> std::function<std::optional<mat4>()> {
+                         if (auto vp = dynamic_cast<VolumeInport*>(inport)) {
+                             return util::boundingBox(*vp);
+                         } else if (auto mp = dynamic_cast<MeshInport*>(inport)) {
+                             return util::boundingBox(*mp);
+                         } else {
+                             return nullptr;
+                         }
+                     }(),
+                     eye, center, lookUp, invalidationLevel, semantics) {}
 
 CameraProperty::CameraProperty(const CameraProperty& rhs)
     : CompositeProperty(rhs)
@@ -167,7 +164,8 @@ CameraProperty::CameraProperty(const CameraProperty& rhs)
     farPlane_.onChange([&]() { camera_->setFarPlaneDist(farPlane_); });
 
     {
-        // Make sure we put these properties before any owned properties.
+        // Make sure we put these properties before any owned properties, added from the
+        // CompositeProperty base class
         size_t i = 0;
         insertProperty(i++, cameraType_);
         insertProperty(i++, cameraActions_);
@@ -177,10 +175,23 @@ CameraProperty::CameraProperty(const CameraProperty& rhs)
         insertProperty(i++, aspectRatio_);
         insertProperty(i++, nearPlane_);
         insertProperty(i++, farPlane_);
-        insertProperty(i++, settings_);
     }
+    addProperty(settings_); // We want settings to be last
     settings_.addProperties(setNearFarButton_, setLookRangesButton_, updateNearFar_,
                             updateLookRanges_, fittingRatio_);
+
+    auto cameraFitVisible = [this]() {
+        util::for_each_argument(
+            [&](auto& p) {
+                p.setVisible(getBoundingBox_ && cameraType_ == "PerspectiveCamera");
+                p.setCurrentStateAsDefault();
+            },
+            cameraActions_, settings_, setNearFarButton_, setLookRangesButton_, updateNearFar_,
+            updateLookRanges_, fittingRatio_);
+    };
+
+    cameraType_.onChange(cameraFitVisible);
+    cameraFitVisible();
 
     changeCamera(InviwoApplication::getPtr()->getCameraFactory()->create(cameraType_.get()));
 }
@@ -336,20 +347,21 @@ const mat4& CameraProperty::inverseProjectionMatrix() const {
 }
 
 std::vector<ButtonGroupProperty::Button> CameraProperty::buttons() {
-    return {{
-        {std::nullopt, ":svgicons/view-fit-to-data.svg", "Fit data in view", [this] { fitData(); }},
-        {std::nullopt, ":svgicons/view-x-m.svg", "View data from X-",
-         [this] { setView(camerautil::Side::XNegative); }},
-        {std::nullopt, ":svgicons/view-x-p.svg", "View data from X+",
-         [this] { setView(camerautil::Side::XPositive); }},
-        {std::nullopt, ":svgicons/view-y-m.svg", "View data from Y-",
-         [this] { setView(camerautil::Side::YNegative); }},
-        {std::nullopt, ":svgicons/view-y-p.svg", "View data from Y+",
-         [this] { setView(camerautil::Side::YPositive); }},
-        {std::nullopt, ":svgicons/view-z-m.svg", "View data from Z-",
-         [this] { setView(camerautil::Side::ZNegative); }},
-        {std::nullopt, ":svgicons/view-z-p.svg", "View data from Z+",
-         [this] { setView(camerautil::Side::ZPositive); }},
+    return {
+        {{std::nullopt, ":svgicons/view-fit-to-data.svg", "Fit data in view",
+          [this] { fitData(); }},
+         {std::nullopt, ":svgicons/view-x-m.svg", "View data from X-",
+          [this] { setView(camerautil::Side::XNegative); }},
+         {std::nullopt, ":svgicons/view-x-p.svg", "View data from X+",
+          [this] { setView(camerautil::Side::XPositive); }},
+         {std::nullopt, ":svgicons/view-y-m.svg", "View data from Y-",
+          [this] { setView(camerautil::Side::YNegative); }},
+         {std::nullopt, ":svgicons/view-y-p.svg", "View data from Y+",
+          [this] { setView(camerautil::Side::YPositive); }},
+         {std::nullopt, ":svgicons/view-z-m.svg", "View data from Z-",
+          [this] { setView(camerautil::Side::ZNegative); }},
+         {std::nullopt, ":svgicons/view-z-p.svg", "View data from Z+",
+          [this] { setView(camerautil::Side::ZPositive); }},
          {std::nullopt, ":svgicons/view-flip.svg", "Flip the up vector", [this] { flipUp(); }}}};
 }
 
