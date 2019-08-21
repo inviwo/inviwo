@@ -336,7 +336,7 @@ const mat4& CameraProperty::inverseProjectionMatrix() const {
 }
 
 std::vector<ButtonGroupProperty::Button> CameraProperty::buttons() {
-    return {
+    return {{
         {std::nullopt, ":svgicons/view-fit-to-data.svg", "Fit data in view", [this] { fitData(); }},
         {std::nullopt, ":svgicons/view-x-m.svg", "View data from X-",
          [this] { setView(camerautil::Side::XNegative); }},
@@ -350,7 +350,7 @@ std::vector<ButtonGroupProperty::Button> CameraProperty::buttons() {
          [this] { setView(camerautil::Side::ZNegative); }},
         {std::nullopt, ":svgicons/view-z-p.svg", "View data from Z+",
          [this] { setView(camerautil::Side::ZPositive); }},
-        {std::nullopt, ":svgicons/view-flip.svg", "Flip the up vector", [this] { flipUp(); }}};
+         {std::nullopt, ":svgicons/view-flip.svg", "Flip the up vector", [this] { flipUp(); }}}};
 }
 
 void CameraProperty::setView(camerautil::Side side) {
