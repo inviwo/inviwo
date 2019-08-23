@@ -56,7 +56,10 @@ ColormapProperty::ColormapProperty(std::string identifier, std::string displayNa
     }
     auto updateColormaps = [&]() {
         colormap.replaceOptions(getFamiliesForCategory(getCategory()));
-        if (type == ColormapType::Categorical) diverging = false;
+        if (type == ColormapType::Categorical) {
+            diverging = false;
+            discrete = true;
+        }
     };
     updateColormaps();
     type.onChange(updateColormaps);
@@ -68,8 +71,8 @@ ColormapProperty::ColormapProperty(std::string identifier, std::string displayNa
     });
     type.setSelectedValue(selectedCategory);
     colormap.setSelectedValue(selectedFamily);
-    nColors.set(numColors,getMinNumberOfColorsForFamily(colormap),
-                    getMaxNumberOfColorsForFamily(colormap), 1);
+    nColors.set(numColors, getMinNumberOfColorsForFamily(colormap),
+                getMaxNumberOfColorsForFamily(colormap), 1);
     type.setCurrentStateAsDefault();
     colormap.setCurrentStateAsDefault();
 
