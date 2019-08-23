@@ -95,7 +95,6 @@ HeightFieldProcessor::HeightFieldProcessor()
     addProperty(camera_);
     resetViewParams_.onChange([this]() { camera_.resetCamera(); });
     addProperty(resetViewParams_);
-    outport_.addResizeEventListener(&camera_);
     inport_.onChange([this]() { updateDrawers(); });
 
     addProperty(lightingProperty_);

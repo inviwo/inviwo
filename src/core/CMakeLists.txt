@@ -650,6 +650,7 @@ set(TEST_FILES
     tests/unittests/utilities-test.cpp
     tests/unittests/volumesequenceutils-tests.cpp
     tests/unittests/zip-test.cpp
+    tests/unittests/resize-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 

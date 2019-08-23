@@ -149,6 +149,7 @@ public:
     const mat4& inverseViewMatrix() const;
     const mat4& inverseProjectionMatrix() const;
 
+    
     void invokeEvent(Event* event) override;
 
     // These properties enable linking of individual
@@ -182,6 +183,7 @@ private:
     void changeCamera(std::unique_ptr<Camera> newCamera);
     std::unique_ptr<Camera> camera_;
     std::function<std::optional<mat4>()> getBoundingBox_;
+    bool aspectSupplier_ = false;
 };
 
 }  // namespace inviwo

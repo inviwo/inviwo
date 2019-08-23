@@ -90,7 +90,7 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
 
     addPort(inport_).onChange([this]() { updateDrawers(); });
     addPort(imageInport_).setOptional(true);
-    addPort(outport_).addResizeEventListener(&camera_);
+    addPort(outport_);
 
     addProperties(camera_, geomProperties_, lightingProperty_, trackball_, layers_);
 

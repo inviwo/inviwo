@@ -80,14 +80,10 @@ CubeRenderer::CubeRenderer()
                    configureShader(shader);
                }} {
 
-    outport_.addResizeEventListener(&camera_);
 
     addPort(inport_);
-    addPort(imageInport_);
-    imageInport_.setOptional(true);
-
+    addPort(imageInport_).setOptional(true);
     addPort(outport_);
-    outport_.addResizeEventListener(&camera_);
 
     cubeProperties_.addProperty(forceSize_);
     cubeProperties_.addProperty(defaultSize_);

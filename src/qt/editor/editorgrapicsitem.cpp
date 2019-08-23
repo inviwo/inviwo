@@ -76,6 +76,7 @@ void EditorGraphicsItem::showToolTipHelper(QGraphicsSceneHelpEvent* e, QString s
     QGraphicsView* v = scene()->views().first();
     QRectF rect = this->mapRectToScene(this->rect());
     QRect viewRect = v->mapFromScene(rect).boundingRect();
+    e->accept();
     QToolTip::showText(e->screenPos(), string, v, viewRect);
 }
 
@@ -166,7 +167,7 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
             }
         }
     }
-
+    
     // Need to make sure that we have not pending qt stuff before showing tooltip
     // otherwise we might loose focus and the tooltip will go away...
     qApp->processEvents();

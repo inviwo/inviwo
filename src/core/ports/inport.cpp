@@ -79,10 +79,10 @@ std::vector<const Outport*> Inport::getChangedOutports() const { return changedS
 
 void Inport::propagateEvent(Event* event, Outport* target) {
     if (target) {
-        target->propagateEvent(event);
+        target->propagateEvent(event, this);
     } else {
         for (auto outport : getConnectedOutports()) {
-            outport->propagateEvent(event);
+            outport->propagateEvent(event, this);
         }
     }
 }

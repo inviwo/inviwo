@@ -72,7 +72,7 @@ int main(int argc, char** argv) {
 #else
         ::testing::InitGoogleTest(&argc, argv);
 #endif
-        ConfigurableGTestEventListener::setup();
+        //ConfigurableGTestEventListener::setup();
         ret = RUN_ALL_TESTS();
     }
 

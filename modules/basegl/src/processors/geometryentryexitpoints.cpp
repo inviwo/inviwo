@@ -58,7 +58,6 @@ GeometryEntryExitPoints::GeometryEntryExitPoints()
     addProperty(capNearClipping_);
     addProperty(camera_);
     addProperty(trackball_);
-    entryPort_.addResizeEventListener(&camera_);
 
     for (auto& shader : entryExitHelper_.getShaders()) {
         shader.get().onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });

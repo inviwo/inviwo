@@ -77,16 +77,6 @@ ImageLayoutGL::ImageLayoutGL()
 
     addPort(multiinport_);
 
-    multiinport_.onConnect([this]() {
-        ResizeEvent e(currentDim_);
-        propagateEvent(&e, &outport_);
-    });
-
-    multiinport_.onDisconnect([this]() {
-        ResizeEvent e(currentDim_);
-        propagateEvent(&e, &outport_);
-    });
-
     addPort(outport_);
 
     addProperty(layout_);

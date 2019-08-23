@@ -179,9 +179,10 @@ ProcessorGraphicsItem* NetworkEditor::addProcessorGraphicsItem(Processor* proces
     processorGraphicsItems_[processor] = processorGraphicsItem;
     addItem(processorGraphicsItem);
     updateSceneSize();
-    if (adjustSceneToChange_) {
+    if (adjustSceneToChange_ && processorGraphicsItem->isVisible()) {
         for (auto v : views()) {
             v->ensureVisible(processorGraphicsItem);
+
         }
     }
     return processorGraphicsItem;

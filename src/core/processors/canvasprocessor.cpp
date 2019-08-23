@@ -50,12 +50,12 @@ CanvasProcessor::CanvasProcessor()
     : Processor()
     , inport_("inport")
     , inputSize_("inputSize", "Input Dimension Parameters")
-    , dimensions_("dimensions", "Canvas Size", ivec2(256, 256), ivec2(128, 128), ivec2(4096, 4096),
-                  ivec2(1, 1), InvalidationLevel::Valid)
+    , dimensions_("dimensions", "Canvas Size", size2_t(256, 256), size2_t(1, 1),
+                  size2_t(4096, 4096), size2_t(1, 1), InvalidationLevel::Valid)
     , enableCustomInputDimensions_("enableCustomInputDimensions", "Separate Image Size", false,
                                    InvalidationLevel::Valid)
-    , customInputDimensions_("customInputDimensions", "Image Size", ivec2(256, 256),
-                             ivec2(128, 128), ivec2(4096, 4096), ivec2(1, 1),
+    , customInputDimensions_("customInputDimensions", "Image Size", size2_t(256, 256),
+                             size2_t(1, 1), size2_t(4096, 4096), size2_t(1, 1),
                              InvalidationLevel::Valid)
     , keepAspectRatio_("keepAspectRatio", "Lock Aspect Ratio", true, InvalidationLevel::Valid)
     , aspectRatioScaling_("aspectRatioScaling", "Image Scale", 1.f, 0.1f, 4.f, 0.01f,
@@ -216,16 +216,16 @@ void CanvasProcessor::onProcessorWidgetVisibilityChange(ProcessorWidgetMetaData*
     invalidate(InvalidationLevel::InvalidOutput);
 }
 
-void CanvasProcessor::setCanvasSize(ivec2 dim) {
+void CanvasProcessor::setCanvasSize(size2_t dim) {
     NetworkLock lock(this);
     dimensions_.set(dim);
     sizeChanged();
 }
 
-ivec2 CanvasProcessor::getCanvasSize() const { return dimensions_; }
+size2_t CanvasProcessor::getCanvasSize() const { return dimensions_; }
 
 bool CanvasProcessor::getUseCustomDimensions() const { return enableCustomInputDimensions_; }
-ivec2 CanvasProcessor::getCustomDimensions() const { return customInputDimensions_; }
+size2_t CanvasProcessor::getCustomDimensions() const { return customInputDimensions_; }
 
 void CanvasProcessor::sizeChanged() {
     NetworkLock lock(this);
@@ -235,24 +235,21 @@ void CanvasProcessor::sizeChanged() {
     keepAspectRatio_.setVisible(enableCustomInputDimensions_);
     aspectRatioScaling_.setVisible(enableCustomInputDimensions_ && keepAspectRatio_);
 
-    if (keepAspectRatio_) customInputDimensions_.get() = calcSize();  // avoid triggering on change
-    ResizeEvent resizeEvent(uvec2(0));
-    if (enableCustomInputDimensions_) {
-        resizeEvent.setSize(static_cast<uvec2>(customInputDimensions_.get()));
-        resizeEvent.setPreviousSize(static_cast<uvec2>(previousImageSize_));
-        previousImageSize_ = customInputDimensions_;
-    } else {
-        resizeEvent.setSize(static_cast<uvec2>(dimensions_.get()));
-        resizeEvent.setPreviousSize(static_cast<uvec2>(previousImageSize_));
-        previousImageSize_ = dimensions_;
+    if (keepAspectRatio_) {
+        Property::OnChangeBlocker block{customInputDimensions_};  // avoid recursive onChange
+        customInputDimensions_ = calcSize();
     }
+
+    ResizeEvent resizeEvent{enableCustomInputDimensions_ ? customInputDimensions_ : dimensions_,
+                            previousImageSize_};
+    previousImageSize_ = resizeEvent.size();
 
     inputSize_.invalidate(InvalidationLevel::Valid, &customInputDimensions_);
     inport_.propagateEvent(&resizeEvent);
 }
 
-ivec2 CanvasProcessor::calcSize() {
-    ivec2 size = dimensions_;
+size2_t CanvasProcessor::calcSize() {
+    size2_t size = dimensions_;
 
     int maxDim, minDim;
 
@@ -264,9 +261,9 @@ ivec2 CanvasProcessor::calcSize() {
         minDim = 0;
     }
 
-    float ratio = static_cast<float>(size[minDim]) / static_cast<float>(size[maxDim]);
-    size[maxDim] = static_cast<int>(static_cast<float>(size[maxDim]) * aspectRatioScaling_);
-    size[minDim] = static_cast<int>(static_cast<float>(size[maxDim]) * ratio);
+    double ratio = static_cast<double>(size[minDim]) / static_cast<double>(size[maxDim]);
+    size[maxDim] = static_cast<int>(static_cast<double>(size[maxDim]) * aspectRatioScaling_);
+    size[minDim] = static_cast<int>(static_cast<double>(size[maxDim]) * ratio);
 
     return size;
 }
@@ -325,9 +322,7 @@ void CanvasProcessor::propagateEvent(Event* event, Outport* source) {
     invokeEvent(event);
     if (event->hasBeenUsed()) return;
 
-    if (event->hash() == ResizeEvent::chash()) {
-        auto resizeEvent = static_cast<ResizeEvent*>(event);
-
+    if (auto resizeEvent = event->getAs<ResizeEvent>()) {
         // Avoid continues evaluation when port dimensions changes
         NetworkLock lock(this);
         dimensions_.set(resizeEvent->size());

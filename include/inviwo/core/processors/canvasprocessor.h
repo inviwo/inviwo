@@ -59,11 +59,11 @@ public:
     virtual void process() override;
     virtual void doIfNotReady() override;
 
-    void setCanvasSize(ivec2);
-    ivec2 getCanvasSize() const;
+    void setCanvasSize(size2_t);
+    size2_t getCanvasSize() const;
 
     bool getUseCustomDimensions() const;
-    ivec2 getCustomDimensions() const;
+    size2_t getCustomDimensions() const;
 
     void saveImageLayer();
     void saveImageLayer(std::string filePath, const FileExtension& extension = FileExtension());
@@ -93,9 +93,9 @@ public:
     ImageInport inport_;
 
     CompositeProperty inputSize_;
-    IntVec2Property dimensions_;
+    IntSize2Property dimensions_;
     BoolProperty enableCustomInputDimensions_;
-    IntVec2Property customInputDimensions_;
+    IntSize2Property customInputDimensions_;
     BoolProperty keepAspectRatio_;
     FloatProperty aspectRatioScaling_;
     IntVec2Property position_;
@@ -113,9 +113,9 @@ public:
 
 private:
     void sizeChanged();
-    ivec2 calcSize();
+    size2_t calcSize();
 
-    ivec2 previousImageSize_;
+    size2_t previousImageSize_;
     ProcessorWidgetMetaData* widgetMetaData_;
 };
 

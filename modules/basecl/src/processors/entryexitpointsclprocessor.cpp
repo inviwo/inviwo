@@ -65,7 +65,7 @@ EntryExitPointsCLProcessor::EntryExitPointsCLProcessor()
     addProperty(workGroupSize_);
     addProperty(useGLSharing_);
     addProperty(trackball_);
-    entryPort_.addResizeEventListener(&camera_);
+
     // Will enable the processor to invalidate when the kernel has recompiled
     entryExitPoints_.addObserver(this);
 
