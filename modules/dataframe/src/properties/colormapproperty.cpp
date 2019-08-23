@@ -28,142 +28,136 @@
  *********************************************************************************/
 
 #include <inviwo/dataframe/properties/colormapproperty.h>
+#include <inviwo/core/network/networklock.h>
+
+#include <modules/base/algorithm/dataminmax.h>
 
 namespace inviwo {
 
-const std::string ColorMapProperty::classIdentifier = "org.inviwo.ColorMapProperty";
-std::string ColorMapProperty::getClassIdentifier() const { return classIdentifier; }
+const std::string ColormapProperty::classIdentifier = "org.inviwo.ColormapProperty";
+std::string ColormapProperty::getClassIdentifier() const { return classIdentifier; }
 
-ColorMapProperty::ColorMapProperty(std::string identifier, std::string displayName,
-                                   colorbrewer::Category selectedCategory,
+ColormapProperty::ColormapProperty(std::string identifier, std::string displayName,
+                                   ColormapType selectedCategory,
                                    colorbrewer::Family selectedFamily, size_t numColors,
                                    InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
-    , category("category", "Category")
+    , type("type", "Type")
     , colormap("colormap", "Colormap")
-    , nColors("nColors", "Number of classes")
-    , discrete_("discrete", "Discrete")
-    , divergenceMidPoint_("midPoint", "Mid point", 0.5, 0., 1.) {
+    , diverging("diverging", "Diverging", false)
+    , divergenceMidPoint("midPoint", "Mid point", 0.5, 0., 1.)
+    , discrete("discrete", "Discrete")
+    , nColors("nColors", "Classes") {
     using namespace colorbrewer;
-    auto categories = {Category::Diverging, Category::Qualitative, Category::Sequential};
+    auto categories = {ColormapType::Continous, ColormapType::Categorical};
     for (auto cat : categories) {
         auto name = toString(cat);
-        category.addOption(name, name, cat);
+        type.addOption(name, name, cat);
     }
-    category.onChange([&]() {
-        colormap.clearOptions();
-        for (const auto& family : getFamiliesForCategory(
-                 static_cast<colorbrewer::Category>(category.getSelectedValue()))) {
-            auto familyName = toString(family);
-            colormap.addOption(familyName, familyName, static_cast<colorbrewer::Family>(family));
-        }
-    });
+    auto updateColormaps = [&]() {
+        colormap.replaceOptions(getFamiliesForCategory(getCategory()));
+        if (type == ColormapType::Categorical) diverging = false;
+    };
+    updateColormaps();
+    type.onChange(updateColormaps);
+    diverging.onChange(updateColormaps);
 
     colormap.onChange([&]() {
-        nColors.set(*nColors, getMinNumberOfColorsForFamily(*colormap),
-                    getMaxNumberOfColorsForFamily(*colormap), 1);
+        nColors.set(*nColors, getMinNumberOfColorsForFamily(colormap),
+                    getMaxNumberOfColorsForFamily(colormap), 1);
     });
-    category.setSelectedValue(selectedCategory);
+    type.setSelectedValue(selectedCategory);
     colormap.setSelectedValue(selectedFamily);
-    nColors.set(numColors);
-    category.setCurrentStateAsDefault();
+    nColors.set(numColors,getMinNumberOfColorsForFamily(colormap),
+                    getMaxNumberOfColorsForFamily(colormap), 1);
+    type.setCurrentStateAsDefault();
     colormap.setCurrentStateAsDefault();
 
-    divergenceMidPoint_.visibilityDependsOn(
-        category, [](auto prop) -> bool { return *prop == Category::Diverging; });
+    diverging.visibilityDependsOn(
+        type, [](auto prop) -> bool { return prop == ColormapType::Continous; });
+    divergenceMidPoint.visibilityDependsOn(diverging, [](auto prop) -> bool { return prop; });
+    // Always discrete for categorical data
+    discrete.visibilityDependsOn(type, [](auto prop) { return prop == ColormapType::Continous; });
 
-    addProperty(category);
+    addProperty(type);
     addProperty(colormap);
+    addProperty(diverging);
+    addProperty(divergenceMidPoint);
+
+    addProperty(discrete);
     addProperty(nColors);
-    addProperty(discrete_);
-    addProperty(divergenceMidPoint_);
 }
 
-ColorMapProperty::ColorMapProperty(const ColorMapProperty& rhs)
+ColormapProperty::ColormapProperty(const ColormapProperty& rhs)
     : CompositeProperty(rhs)
-    , category(rhs.category)
+    , type(rhs.type)
     , colormap(rhs.colormap)
     , nColors(rhs.nColors)
-    , discrete_(rhs.discrete_)
-    , divergenceMidPoint_(rhs.divergenceMidPoint_) {
-    addProperty(category);
+    , diverging(rhs.diverging)
+    , divergenceMidPoint(rhs.divergenceMidPoint)
+    , discrete(rhs.discrete) {
+    addProperty(type);
     addProperty(colormap);
+    addProperty(diverging);
+    addProperty(divergenceMidPoint);
+
+    addProperty(discrete);
     addProperty(nColors);
-    addProperty(discrete_);
-    addProperty(divergenceMidPoint_);
 }
 
-ColorMapProperty* ColorMapProperty::clone() const { return new ColorMapProperty(*this); }
+ColormapProperty* ColormapProperty::clone() const { return new ColormapProperty(*this); }
 
-TransferFunction ColorMapProperty::get() const {
-    TransferFunction tf;
-    auto colors = colorbrewer::getColormap(*colormap, static_cast<glm::uint8>(*nColors));
-
-    if (*category == colorbrewer::Category::Diverging) {
-        // Mid point in [0 1]
-        auto midPoint = (*divergenceMidPoint_ - divergenceMidPoint_.getMinValue()) /
-                        (divergenceMidPoint_.getMaxValue() - divergenceMidPoint_.getMinValue());
-
-        if (*discrete_) {
-            auto dt = midPoint / (0.5 * (colors.size()));
-            double start = 0, end = std::max(dt - std::numeric_limits<double>::epsilon(), 0.);
-            for (auto i = 0; i < colors.size() / 2; i++) {
-                tf.add(start, vec4(colors[i]));
-                tf.add(end, vec4(colors[i]));
-                start += dt;
-                end += dt;
-            }
-            tf.add(start, vec4(colors[colors.size() / 2]));
-            if (midPoint < 1.0) {
-                dt = (1.0 - midPoint) / (0.5 * (colors.size()));
-                tf.add(start + dt - std::numeric_limits<double>::epsilon(),
-                       vec4(colors[colors.size() / 2]));
-                start = start + dt;
-                end = start + dt - std::numeric_limits<double>::epsilon();
-                for (auto i = colors.size() / 2 + 1; i < colors.size(); i++) {
-                    // Avoid numerical issues with min
-                    tf.add(std::min(start, 1.0), vec4(colors[i]));
-                    tf.add(std::min(end, 1.0), vec4(colors[i]));
-                    start += dt;
-                    end += dt;
-                }
-            }
-        } else {
-            auto dt = midPoint / (0.5 * (colors.size() - 1.0));
-            for (auto i = 0; i < colors.size() / 2; i++) {
-                tf.add(i * dt, vec4(colors[i]));
-            }
-            tf.add(midPoint, vec4(colors[colors.size() / 2]));
-            if (midPoint < 1.0) {
-                dt = (1.0 - midPoint) / (0.5 * (colors.size() - 1.0));
-                auto t = midPoint + dt;
-                for (auto i = colors.size() / 2 + 1; i < colors.size(); i++) {
-                    // Avoid numerical issues with min
-                    tf.add(std::min(t, 1.0), vec4(colors[i]));
-                    t += dt;
-                }
-            }
-        }
-
-    } else {
-        if (*discrete_) {
-            double dt = 1.0 / (colors.size());
-            double start = 0, end = dt - std::numeric_limits<double>::epsilon();
-            for (const auto& c : colors) {
-                tf.add(start, vec4(c));
-                tf.add(end, vec4(c));
-                start += dt;
-                end += dt;
-            }
-        } else {
-            auto dt = 1.0 / (colors.size() - 1.0);
-            size_t idx = 0;
-            for (const auto& c : colors) {
-                tf.add(idx++ * dt, vec4(c));
-            }
-        }
+colorbrewer::Category ColormapProperty::getCategory() const {
+    colorbrewer::Category cat;
+    // clang-format off
+    switch (type) {
+        case ColormapType::Continous: 
+            cat = diverging ? colorbrewer::Category::Diverging : colorbrewer::Category::Sequential; break;
+        case ColormapType::Categorical: cat =  colorbrewer::Category::Qualitative; break;
     }
-    return tf;
+    // clang-format on
+    return cat;
+}
+
+colorbrewer::Family ColormapProperty::getFamily() const { return *colormap; }
+
+void ColormapProperty::setupForColumn(const Column& col) {
+    col.getBuffer()->getRepresentation<BufferRAM>()->dispatch<void, dispatching::filter::Scalars>(
+        [&](auto ram) -> void {
+            using T = typename util::PrecisionValueType<decltype(ram)>;
+            auto minMax = util::bufferMinMax(ram, IgnoreSpecialValues::Yes);
+            setupForColumn(col, minMax.first.x, minMax.second.x);
+        });
+}
+void ColormapProperty::setupForColumn(const Column& col, double minVal, double maxVal) {
+    NetworkLock lock(this);
+
+    if (auto catCol = dynamic_cast<const CategoricalColumn*>(&col)) {
+        type.set(ColormapType::Categorical);
+        colormap.set(colorbrewer::Family::Paired);
+        auto maxColors = getMaxNumberOfColorsForFamily(colormap);
+        auto numCategories = catCol->getCategories().size();
+        if (maxColors < numCategories) {
+            LogWarn("Categories exceed maximum classes in colormap. "
+                    << maxColors << " will be used but " << numCategories
+                    << " needed. Override colormap to provide your own colormap with more classes.")
+        }
+        nColors = numCategories;
+        discrete = true;
+    } else {
+        type.set(ColormapType::Continous);
+        // Better contrast when using many classes
+        nColors = getMaxNumberOfColorsForFamily(colormap);
+        discrete = false;
+    }
+    divergenceMidPoint.set(0.5 * (minVal + maxVal), minVal, maxVal, 0.1 * (maxVal - minVal));
+}
+
+TransferFunction ColormapProperty::getTransferFunction() const {
+    auto midPoint = (divergenceMidPoint - divergenceMidPoint.getMinValue()) /
+                    (divergenceMidPoint.getMaxValue() - divergenceMidPoint.getMinValue());
+    return getTransferfunction(getCategory(), *colormap, static_cast<glm::uint8>(*nColors),
+                               *discrete, midPoint);
 }  // namespace inviwo
 
 }  // namespace inviwo

@@ -190,7 +190,6 @@ public:
     virtual const MajorTickSettings& getMajorTicks() const override;
     virtual const MinorTickSettings& getMinorTicks() const override;
 
-    ColorMapProperty colormap;
     BoolProperty usePercentiles;
     BoolProperty invertRange;
     DoubleMinMaxProperty range;

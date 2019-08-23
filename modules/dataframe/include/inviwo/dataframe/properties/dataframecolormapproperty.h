@@ -26,49 +26,46 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <inviwo/dataframe/dataframemodule.h>
-#include <inviwo/dataframe/io/json/dataframepropertyjsonconverter.h>
-#include <inviwo/dataframe/processors/csvsource.h>
-#include <inviwo/dataframe/processors/dataframesource.h>
-#include <inviwo/dataframe/processors/dataframeexporter.h>
-#include <inviwo/dataframe/processors/imagetodataframe.h>
-#include <inviwo/dataframe/processors/syntheticdataframe.h>
-#include <inviwo/dataframe/processors/volumetodataframe.h>
-#include <inviwo/dataframe/processors/volumesequencetodataframe.h>
-
+#include <inviwo/dataframe/dataframemoduledefine.h>
+#include <inviwo/dataframe/properties/dataframeproperty.h>
 #include <inviwo/dataframe/properties/colormapproperty.h>
-
-#include <inviwo/dataframe/io/csvreader.h>
-#include <inviwo/dataframe/io/jsonreader.h>
-
-#include <modules/json/jsonmodule.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/common/inviwo.h>
 
 namespace inviwo {
 
-DataFrameModule::DataFrameModule(InviwoApplication* app) : InviwoModule(app, "DataFrame") {
-    // Register objects that can be shared with the rest of inviwo here:
+/**
+ * \brief Property for selecting which column to apply colormapping to.
+ * Allows the user to select a column and options for the color map.
+ * A ColormapProperty for each column will be added to this property, but only the 
+ * one corresponding to the selected axis will be visible. 
+ *
+ * It is possible to override the ColormapProperty
+ *
+ */
+class IVW_MODULE_DATAFRAME_API DataFrameColormapProperty : public CompositeProperty {
+public:
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
 
-    // Processors
-    registerProcessor<CSVSource>();
-    registerProcessor<DataFrameSource>();
-    registerProcessor<DataFrameExporter>();
-    registerProcessor<ImageToDataFrame>();
-    registerProcessor<SyntheticDataFrame>();
-    registerProcessor<VolumeToDataFrame>();
-    registerProcessor<VolumeSequenceToDataFrame>();
+    DataFrameColormapProperty(std::string identifier, std::string displayName, DataInport<DataFrame>& port);
+    virtual ~DataFrameColormapProperty() = default;
 
-    registerDefaultsForDataType<DataFrame>();
-    // Properties
-    registerProperty<ColormapProperty>();
-    registerProperty<DataFrameColumnProperty>();
+    void createOrUpdateProperties(std::shared_ptr<const DataFrame> dataframe);
 
-    // Readers and writes
-    registerDataReader(std::make_unique<CSVReader>());
-    registerDataReader(std::make_unique<JSONDataFrameReader>());
+    DataFrameColumnProperty selectedColorAxis;
+    BoolProperty overrideColormap;
+    TransferFunctionProperty tf;
 
-    // Data converters
-    app->getModuleByType<JSONModule>()->registerPropertyJSONConverter<DataFrameColumnProperty>();
-}
+protected:
+
+    std::vector<ColormapProperty*> colormaps_;
+    std::shared_ptr<const DataFrame> dataframe_;
+    std::shared_ptr<std::function<void()>> colormapChanged_;
+};
 
 }  // namespace inviwo

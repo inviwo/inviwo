@@ -76,12 +76,7 @@ ParallelCoordinates::ParallelCoordinates()
     , outport_{"outport"}
 
     , axisProperties_{"axisProps_", "Axis"}
-    , selectedColorAxis_{"selectedColorAxis", "Selected Color Axis", dataFrame_, false, 1}
-
-    , tf_{"tf", "Line Color",
-          TransferFunction{
-              {{0.0, vec4{1, 0, 0, 1}}, {0.5, vec4{1, 1, 0, 1}}, {1.0, vec4{0, 1, 0, 1}}}}}
-
+    , colormap_("colormap", "Colormap", dataFrame_)
     , axisSelection_("axisSelction", "Axis Selection",
                      {{"single", "Single", AxisSelection::Single},
                       {"multiple", "Multiple", AxisSelection::Multiple},
@@ -157,16 +152,7 @@ ParallelCoordinates::ParallelCoordinates()
     addPort(outport_);
 
     addProperty(axisProperties_);
-    addProperty(selectedColorAxis_);
-    selectedColorAxis_.onChange([&]() {
-        if (axes_.empty()) return;
-        auto& colormap =
-            axes_[glm::clamp(*selectedColorAxis_, 0, static_cast<int>(axes_.size()) - 1)]
-                .pcp->colormap;
-        *tf_ = colormap.get();
-        colormapChanged_ = colormap.onChangeScoped([&]() { *tf_ = colormap.get(); });
-    });
-    addProperty(tf_);
+    addProperty(colormap_);
 
     addProperty(axisSelection_);
 
@@ -312,7 +298,7 @@ void ParallelCoordinates::process() {
     }();
 
     if (brushingDirty_) updateBrushing();
-    if (selectedColorAxis_.isModified() || dataFrame_.isChanged()) {
+    if (colormap_.isModified() || dataFrame_.isChanged()) {
         buildLineMesh();
     } else if (enabledAxesModified_) {
         buildLineIndices();
@@ -396,13 +382,14 @@ void ParallelCoordinates::createOrUpdateProperties() {
         // initialize corresponding flipped flag for the line shader
         lines_.axisFlipped[i] = static_cast<int>(prop->invertRange);
 
-        axes_.push_back({prop, std::move(renderer), std::move(slider)});
+        axes_.push_back({prop, std::move(renderer), std::move(slider)});        
     }
 
     for (auto& axis : axes_) {
         axis.pcp->updateFromColumn(data->getColumn(axis.pcp->columnId()));
         axis.pcp->setParallelCoordinates(this);
     }
+
     updating_ = false;
     updateBrushing();
 }
@@ -420,7 +407,7 @@ void ParallelCoordinates::buildLineMesh() {
     mesh.reserveSizeInVertexBuffer(numberOfAxis * numberOfLines);
     linePicking_.resize(numberOfLines);
 
-    const auto metaAxisId = selectedColorAxis_.get();
+    const auto metaAxisId = colormap_.selectedColorAxis.get();
     const auto metaAxes = axes_[glm::clamp(metaAxisId, 0, static_cast<int>(axes_.size()) - 1)].pcp;
 
     for (size_t i = 0; i < numberOfLines; i++) {
@@ -576,7 +563,7 @@ void ParallelCoordinates::drawLines(size2_t size) {
     // Draw lines
 
     TextureUnitContainer unit;
-    utilgl::bindAndSetUniforms(lineShader_, unit, tf_);
+    utilgl::bindAndSetUniforms(lineShader_, unit, colormap_.tf);
 
     bool enableBlending =
         (blendMode_.get() == BlendMode::Additive || blendMode_.get() == BlendMode::Sutractive ||

@@ -38,41 +38,85 @@
 #include <inviwo/core/util/colorbrewer.h>
 
 namespace inviwo {
+/**
+ * Continuous is suitable for ordered/sequential data.
+ * Categorical is suitable for data where there should be no magnitude difference between classes,
+ * such as volvo and audi.
+ */
+enum class ColormapType { Continous, Categorical };
 
-class IVW_MODULE_DATAFRAME_API ColorMapProperty : public CompositeProperty {
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& os,
+                                             ColormapType colormap) {
+    // clang-format off
+    switch (colormap) {
+        case ColormapType::Continous: os << "Continous"; break;
+        case ColormapType::Categorical: os << "Categorical"; break;
+    }
+    // clang-format on
+    return os;
+}
+
+/**
+ * \brief Selection of pre-defined color maps based on data type.
+ *
+ * The following data types are supported:
+ * Continous: Ordered/Sequential data progressing from low to high
+ * Continous discrete: Constant inbetween colors to emphasize differences in the scale.
+ * Continuous diverging: Emphasis on mid-point or critical values. Break in the middle.
+ *
+ * Categorical: Suitable for categorical/nominal data where there should be no magnitude difference
+ * between classes. Is discrete and cannot be diverging so those options will be hidden.
+ */
+class IVW_MODULE_DATAFRAME_API ColormapProperty : public CompositeProperty {
 public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    ColorMapProperty(std::string identifier,
-                     std::string displayName,
-                     colorbrewer::Category category = colorbrewer::Category::Sequential,
+    ColormapProperty(std::string identifier, std::string displayName,
+                     ColormapType type = ColormapType::Continous,
                      colorbrewer::Family family = colorbrewer::Family::Blues,
-                     size_t numColors = getMinNumberOfColorsForFamily(colorbrewer::Family::Blues), 
+                     size_t numColors = getMinNumberOfColorsForFamily(colorbrewer::Family::Blues),
                      InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                      PropertySemantics semantics = PropertySemantics::Default);
 
-    ColorMapProperty(const ColorMapProperty& rhs);
-    virtual ColorMapProperty* clone() const override;
+    ColormapProperty(const ColormapProperty& rhs);
+    virtual ColormapProperty* clone() const override;
 
-    virtual ~ColorMapProperty() = default;
+    virtual ~ColormapProperty() = default;
 
     virtual std::string getClassIdentifierForWidget() const override {
         return CompositeProperty::classIdentifier;
     }
 
-    //virtual void set(const Property* p) override;
-    TransferFunction get() const;
+    // Get settings according to Colorbrewer style
+    virtual colorbrewer::Category getCategory() const;
+    virtual colorbrewer::Family getFamily() const;
 
-    TemplateOptionProperty<colorbrewer::Category> category;
+    /**
+     * Update settings based on Column.
+     * Uses ColormapType::Categorical for CategoricalColumn and ColormapType::Continous otherwise.
+     * Divergence mid point and rawill be computed 
+     */
+    void setupForColumn(const Column& col);
+    void setupForColumn(const Column& col, double minVal, double maxVal);
+
+    /**
+     * Get TransferFunction given current settings
+     * @see colorbrewer::getTransferFunction
+     */
+    TransferFunction getTransferFunction() const;
+
+    TemplateOptionProperty<ColormapType> type;
     TemplateOptionProperty<colorbrewer::Family> colormap;
+    BoolProperty diverging;
+    DoubleProperty divergenceMidPoint;
+    BoolProperty discrete;
     IntSizeTProperty nColors;
-    BoolProperty discrete_;
-    DoubleProperty divergenceMidPoint_;
+
+
 
 private:
-
 };
 
 }  // namespace inviwo
-

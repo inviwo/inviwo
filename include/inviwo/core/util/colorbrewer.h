@@ -37,6 +37,7 @@ tools/codegen/colorbrewer/colorbrewer.py
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/datastructures/transferfunction.h>
 #include <vector>
 #include <ostream>
 
@@ -542,6 +543,16 @@ IVW_CORE_API glm::uint8 getMaxNumberOfColorsForFamily(const Family &family);
  * Returns all families contained in the specified category.
  **/
 IVW_CORE_API std::vector<Family> getFamiliesForCategory(const Category &category);
+
+/**
+ * Returns a transfer function for the given parameters. 
+ * 
+ * @param category according to ColorBrewer2
+ * @param family color scheme name
+ * @param discrete will make each color constant instead of linearly varying inbetween colors.
+ * @param divergenceMidpoint in [0 1]. Only used when category is Diverging 
+ **/
+IVW_CORE_API TransferFunction getTransferfunction(const Category &category, const Family &family, glm::uint8 nColors, bool discrete, double divergenceMidPoint);
 
 }  // namespace colorbrewer
 }  // namespace inviwo

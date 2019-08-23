@@ -188,6 +188,10 @@ public:
                                                    const std::vector<T>& values);
     virtual TemplateOptionProperty& replaceOptions(std::vector<OptionPropertyOption<T>> options);
 
+    template <typename U = T,
+              class = typename std::enable_if<util::is_stream_insertable<U>::value, void>::type>
+    TemplateOptionProperty& replaceOptions(const std::vector<T>& options);
+
     virtual bool isSelectedIndex(size_t index) const override;
     virtual bool isSelectedIdentifier(const std::string& identifier) const override;
     virtual bool isSelectedDisplayName(const std::string& name) const override;
@@ -601,6 +605,27 @@ TemplateOptionProperty<T>& TemplateOptionProperty<T>::replaceOptions(
     if (!options_.empty()) selectId = getSelectedIdentifier();
 
     options_ = std::move(options);
+    auto it = util::find_if(options_, [&](auto& opt) { return opt.id_ == selectId; });
+    if (it != options_.end()) {
+        selectedIndex_ = std::distance(options_.begin(), it);
+    } else {
+        selectedIndex_ = 0;
+    }
+    propertyModified();
+    return *this;
+}
+
+template <typename T>
+template <typename U, class>
+TemplateOptionProperty<T>& TemplateOptionProperty<T>::replaceOptions(
+    const std::vector<T>& options) {
+
+    std::string selectId{};
+    if (!options_.empty()) selectId = getSelectedIdentifier();
+
+    options_.clear();
+    for (size_t i = 0; i < options.size(); i++) options_.emplace_back(options[i]);
+
     auto it = util::find_if(options_, [&](auto& opt) { return opt.id_ == selectId; });
     if (it != options_.end()) {
         selectedIndex_ = std::distance(options_.begin(), it);
