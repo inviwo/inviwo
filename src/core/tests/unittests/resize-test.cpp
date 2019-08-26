@@ -224,8 +224,6 @@ TEST(ResizeEvent, dontHandleResizeEvents) {
     network.addConnection(&p1.outport, &p2a.inport);
     network.addConnection(&p1.outport, &p2b.inport);
 
-    const auto size = p0.outport.getDimensions();
-
     p1.outport.setHandleResizeEvents(false);
 
     {
