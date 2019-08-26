@@ -2942,7 +2942,7 @@ std::vector<Family> getFamiliesForCategory(const Category &category) {
     return v;
 }
 
-TransferFunction getTransferfunction(const Category &category, const Family &family,
+TransferFunction getTransferFunction(const Category &category, const Family &family,
                                      glm::uint8 nColors, bool discrete, double midPoint) {
     TransferFunction tf;
     auto colors = colorbrewer::getColormap(family, nColors);

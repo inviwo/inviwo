@@ -32,8 +32,7 @@ This complete file is auto-generated with python script
 tools/codegen/colorbrewer/colorbrewer.py
 */
 
-#ifndef IWW_COLORBREWER_H
-#define IWW_COLORBREWER_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -68,7 +67,6 @@ public:
         : Exception(message, context) {}
     virtual ~ColorBrewerTooManyException() throw() {}
 };
-
 // clang-format off
 enum class Colormap {
     Accent_3, Accent_4, Accent_5, Accent_6, Accent_7, Accent_8, 
@@ -108,7 +106,6 @@ enum class Colormap {
     YlOrRd_3, YlOrRd_4, YlOrRd_5, YlOrRd_6, YlOrRd_7, YlOrRd_8, 
     FirstMap=Accent_3, LastMap=YlOrRd_8
 };
-// clang-format on
 
 enum class Category { Diverging, Qualitative, Sequential, NumberOfColormapCategories, Undefined };
 
@@ -151,7 +148,7 @@ enum class Family {
     NumberOfColormapFamilies,
     Undefined
 };
-
+// clang-format on
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &os,
                                              Colormap colormap) {
@@ -421,6 +418,7 @@ std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &o
     case Colormap::YlOrRd_6: os << "YlOrRd_6"; break;
     case Colormap::YlOrRd_7: os << "YlOrRd_7"; break;
     case Colormap::YlOrRd_8: os << "YlOrRd_8"; break;
+
     }
     // clang-format on
     return os;
@@ -446,7 +444,6 @@ std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &o
             os << "Undefined";
             break;
     }
-
     return os;
 }
 
@@ -491,6 +488,7 @@ std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &o
     case Family::YlOrRd: os << "YlOrRd"; break;
     case Family::NumberOfColormapFamilies: os << "NumberOfColormapFamilies"; break;
     case Family::Undefined: os << "Undefined"; break;
+
     }
     // clang-format on
     return os;
@@ -545,16 +543,16 @@ IVW_CORE_API glm::uint8 getMaxNumberOfColorsForFamily(const Family &family);
 IVW_CORE_API std::vector<Family> getFamiliesForCategory(const Category &category);
 
 /**
- * Returns a transfer function for the given parameters. 
- * 
+ * Returns a transfer function for the given parameters.
+ *
  * @param category according to ColorBrewer2
  * @param family color scheme name
  * @param discrete will make each color constant instead of linearly varying inbetween colors.
- * @param divergenceMidpoint in [0 1]. Only used when category is Diverging 
+ * @param divergenceMidpoint in [0 1]. Only used when category is Diverging
  **/
-IVW_CORE_API TransferFunction getTransferfunction(const Category &category, const Family &family, glm::uint8 nColors, bool discrete, double divergenceMidPoint);
+IVW_CORE_API TransferFunction getTransferFunction(const Category &category, const Family &family,
+                                                  glm::uint8 nColors, bool discrete,
+                                                  double divergenceMidPoint);
 
 }  // namespace colorbrewer
 }  // namespace inviwo
-
-#endif  // COLORBREWER_H

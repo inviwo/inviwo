@@ -42,28 +42,19 @@ ColormapProperty::ColormapProperty(std::string identifier, std::string displayNa
                                    colorbrewer::Family selectedFamily, size_t numColors,
                                    InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
-    , type("type", "Type")
+    , type("type", "Type",
+           {{"continous", "Continous", ColormapType::Continous},
+            {"categorical", "Categorical", ColormapType::Categorical}})
     , colormap("colormap", "Colormap")
     , diverging("diverging", "Diverging", false)
     , divergenceMidPoint("midPoint", "Mid point", 0.5, 0., 1.)
     , discrete("discrete", "Discrete")
     , nColors("nColors", "Classes") {
     using namespace colorbrewer;
-    auto categories = {ColormapType::Continous, ColormapType::Categorical};
-    for (auto cat : categories) {
-        auto name = toString(cat);
-        type.addOption(name, name, cat);
-    }
-    auto updateColormaps = [&]() {
-        colormap.replaceOptions(getFamiliesForCategory(getCategory()));
-        if (type == ColormapType::Categorical) {
-            diverging = false;
-            discrete = true;
-        }
-    };
+
     updateColormaps();
-    type.onChange(updateColormaps);
-    diverging.onChange(updateColormaps);
+    type.onChange([&]() { updateColormaps(); });
+    diverging.onChange([&]() { updateColormaps(); });
 
     colormap.onChange([&]() {
         nColors.set(*nColors, getMinNumberOfColorsForFamily(colormap),
@@ -95,10 +86,26 @@ ColormapProperty::ColormapProperty(const ColormapProperty& rhs)
     : CompositeProperty(rhs)
     , type(rhs.type)
     , colormap(rhs.colormap)
-    , nColors(rhs.nColors)
     , diverging(rhs.diverging)
     , divergenceMidPoint(rhs.divergenceMidPoint)
-    , discrete(rhs.discrete) {
+    , discrete(rhs.discrete)
+    , nColors(rhs.nColors) {
+
+    updateColormaps();
+    type.onChange([&]() { updateColormaps(); });
+    diverging.onChange([&]() { updateColormaps(); });
+
+    colormap.onChange([&]() {
+        nColors.set(*nColors, getMinNumberOfColorsForFamily(colormap),
+                    getMaxNumberOfColorsForFamily(colormap), 1);
+    });
+
+    diverging.visibilityDependsOn(
+        type, [](auto prop) -> bool { return prop == ColormapType::Continous; });
+    divergenceMidPoint.visibilityDependsOn(diverging, [](auto prop) -> bool { return prop; });
+    // Always discrete for categorical data
+    discrete.visibilityDependsOn(type, [](auto prop) { return prop == ColormapType::Continous; });
+
     addProperty(type);
     addProperty(colormap);
     addProperty(diverging);
@@ -112,13 +119,14 @@ ColormapProperty* ColormapProperty::clone() const { return new ColormapProperty(
 
 colorbrewer::Category ColormapProperty::getCategory() const {
     colorbrewer::Category cat;
-    // clang-format off
     switch (type) {
-        case ColormapType::Continous: 
-            cat = diverging ? colorbrewer::Category::Diverging : colorbrewer::Category::Sequential; break;
-        case ColormapType::Categorical: cat =  colorbrewer::Category::Qualitative; break;
+        case ColormapType::Continous:
+            cat = diverging ? colorbrewer::Category::Diverging : colorbrewer::Category::Sequential;
+            break;
+        case ColormapType::Categorical:
+            cat = colorbrewer::Category::Qualitative;
+            break;
     }
-    // clang-format on
     return cat;
 }
 
@@ -159,8 +167,16 @@ void ColormapProperty::setupForColumn(const Column& col, double minVal, double m
 TransferFunction ColormapProperty::getTransferFunction() const {
     auto midPoint = (divergenceMidPoint - divergenceMidPoint.getMinValue()) /
                     (divergenceMidPoint.getMaxValue() - divergenceMidPoint.getMinValue());
-    return getTransferfunction(getCategory(), *colormap, static_cast<glm::uint8>(*nColors),
-                               *discrete, midPoint);
+    return colorbrewer::getTransferFunction(getCategory(), *colormap,
+                                            static_cast<glm::uint8>(*nColors), *discrete, midPoint);
 }  // namespace inviwo
+
+void ColormapProperty::updateColormaps() {
+    colormap.replaceOptions(getFamiliesForCategory(getCategory()));
+    if (type == ColormapType::Categorical) {
+        diverging = false;
+        discrete = true;
+    }
+}
 
 }  // namespace inviwo

@@ -117,6 +117,7 @@ public:
 
 
 private:
+    void updateColormaps();
 };
 
 }  // namespace inviwo
