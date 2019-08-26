@@ -182,7 +182,6 @@ ProcessorGraphicsItem* NetworkEditor::addProcessorGraphicsItem(Processor* proces
     if (adjustSceneToChange_ && processorGraphicsItem->isVisible()) {
         for (auto v : views()) {
             v->ensureVisible(processorGraphicsItem);
-
         }
     }
     return processorGraphicsItem;

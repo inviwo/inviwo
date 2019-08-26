@@ -56,8 +56,8 @@ ImageSource::ImageSource(InviwoApplication* app, const std::string& file)
     , file_("imageFileName", "File name", file, "image")
     , reader_("reader", "Data Reader")
     , reload_("reload", "Reload data")
-    , imageDimension_("imageDimension_", "Dimension", ivec2(0), ivec2(0), ivec2(10000), ivec2(1),
-                      InvalidationLevel::Valid, PropertySemantics("Text")) {
+    , imageDimension_("imageDimension_", "Dimension", size2_t(0), size2_t(0), size2_t(10000),
+                      size2_t(1), InvalidationLevel::Valid, PropertySemantics("Text")) {
 
     addPort(outport_);
     addProperties(file_, reader_, reload_, imageDimension_);

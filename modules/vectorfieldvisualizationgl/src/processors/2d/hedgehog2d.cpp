@@ -43,7 +43,7 @@ const ProcessorInfo HedgeHog2D::getProcessorInfo() const { return processorInfo_
 
 HedgeHog2D::HedgeHog2D()
     : Processor()
-    , vectorFeild_("vectorFeild")
+    , vectorFeild_("vectorFeild", true)
     , mesh_("mesh")
     , glyphScale_("glyphScale", "Glyph Scale", 0.9f, 0.0f, 2.0f)
     , numberOfGlyphs_("numberOfGlyphs", "Number of Glyphs", ivec2(30), ivec2(1), ivec2(1000))
@@ -93,7 +93,7 @@ HedgeHog2D::HedgeHog2D()
     setAllPropertiesCurrentStateAsDefault();
 }
 
-HedgeHog2D::~HedgeHog2D() {}
+HedgeHog2D::~HedgeHog2D() = default;
 
 void HedgeHog2D::process() {
     auto mesh = std::make_shared<BasicMesh>();

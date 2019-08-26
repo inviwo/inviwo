@@ -1,4 +1,4 @@
-/*********************************************************************************
+﻿/*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
  *
@@ -69,11 +69,11 @@ struct TestProcessor : Processor {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo TestProcessor::processorInfo_{
-    "org.inviwo.TestProcessor",  // Class identifier
-    "TestProcessor",             // Display name
-    "Testing",                   // Category
-    CodeState::Stable,           // Code state
-    Tags::CPU,                   // Tags
+    "org.inviwo.ResizeEvent.TestProcessor",  // Class identifier
+    "TestProcessor",                         // Display name
+    "Testing",                               // Category
+    CodeState::Stable,                       // Code state
+    Tags::CPU,                               // Tags
 };
 
 }  // namespace
@@ -81,6 +81,18 @@ const ProcessorInfo TestProcessor::processorInfo_{
 TEST(ResizeEvent, basic) {
     ProcessorNetwork network{InviwoApplication::getPtr()};
     ProcessorNetworkEvaluator evaluator{&network};
+
+/*                    
+ *     ┌───────────┐
+ *     │    P0     │
+ *     └─────┬─────┘
+ *     ┌─────┴─────┐
+ *     │    P1     │
+ *     └─────┬─────┘
+ *     ┌─────┴─────┐
+ *     │    P2     │
+ *     └───────────┘
+ */
 
     auto proc0 = std::make_unique<TestProcessor>("p0");
     auto proc1 = std::make_unique<TestProcessor>("p1");
@@ -100,25 +112,39 @@ TEST(ResizeEvent, basic) {
     {
         ResizeEvent event{size2_t{100}};
         p2.outport.propagateEvent(&event, nullptr);
+        EXPECT_EQ(p1.outport.getDimensions(), size2_t{100});
         EXPECT_EQ(p0.outport.getDimensions(), size2_t{100});
     }
 
     {
         ResizeEvent event{size2_t{200}};
         p2.outport.propagateEvent(&event, nullptr);
+        EXPECT_EQ(p1.outport.getDimensions(), size2_t{200});
         EXPECT_EQ(p0.outport.getDimensions(), size2_t{200});
     }
 }
 
-TEST(ResizeEvent, two) {
+TEST(ResizeEvent, twoSinks) {
     ProcessorNetwork network{InviwoApplication::getPtr()};
     ProcessorNetworkEvaluator evaluator{&network};
+
+/*                    
+ *             ┌───────────┐
+ *             │    P0     │
+ *             └─────┬─────┘
+ *             ┌─────┴─────┐
+ *             │    P1     │
+ *             └─────┬─────┘
+ *           ┌───────┴───────┐
+ *     ┌─────┴─────┐   ┌─────┴─────┐ 
+ *     │    P2a    │   │    P2a    │
+ *     └───────────┘   └───────────┘
+ */
 
     auto proc0 = std::make_unique<TestProcessor>("p0");
     auto proc1 = std::make_unique<TestProcessor>("p1");
     auto proc2a = std::make_unique<TestProcessor>("p2a");
     auto proc2b = std::make_unique<TestProcessor>("p2b");
-
 
     auto& p0 = *proc0;
     auto& p1 = *proc1;
@@ -141,6 +167,7 @@ TEST(ResizeEvent, two) {
         ResizeEvent eventB{size2_t{50}};
         p2b.outport.propagateEvent(&eventB, nullptr);
 
+        EXPECT_EQ(p1.outport.getDimensions(), size2_t{100});
         EXPECT_EQ(p0.outport.getDimensions(), size2_t{100});
     }
 
@@ -148,13 +175,15 @@ TEST(ResizeEvent, two) {
         ResizeEvent eventB{size2_t{150}};
         p2b.outport.propagateEvent(&eventB, nullptr);
 
+        EXPECT_EQ(p1.outport.getDimensions(), size2_t{150});
         EXPECT_EQ(p0.outport.getDimensions(), size2_t{150});
     }
 
-    {   
+    {
         ResizeEvent eventB{size2_t{50}};
         p2b.outport.propagateEvent(&eventB, nullptr);
 
+        EXPECT_EQ(p1.outport.getDimensions(), size2_t{100});
         EXPECT_EQ(p0.outport.getDimensions(), size2_t{100});
     }
 }
@@ -163,11 +192,23 @@ TEST(ResizeEvent, dontHandleResizeEvents) {
     ProcessorNetwork network{InviwoApplication::getPtr()};
     ProcessorNetworkEvaluator evaluator{&network};
 
+/*                    
+ *             ┌───────────┐
+ *             │    P0     │
+ *             └─────┬─────┘
+ *             ┌─────┴─────┐
+ *             │    P1     │
+ *             └─────┬─────┘
+ *           ┌───────┴───────┐
+ *     ┌─────┴─────┐   ┌─────┴─────┐ 
+ *     │    P2a    │   │    P2a    │
+ *     └───────────┘   └───────────┘
+ */
+
     auto proc0 = std::make_unique<TestProcessor>("p0");
     auto proc1 = std::make_unique<TestProcessor>("p1");
     auto proc2a = std::make_unique<TestProcessor>("p2a");
     auto proc2b = std::make_unique<TestProcessor>("p2b");
-
 
     auto& p0 = *proc0;
     auto& p1 = *proc1;
@@ -194,21 +235,88 @@ TEST(ResizeEvent, dontHandleResizeEvents) {
         ResizeEvent eventB{size2_t{50}};
         p2b.outport.propagateEvent(&eventB, nullptr);
 
-        EXPECT_EQ(p0.outport.getDimensions(), size);
+        EXPECT_EQ(p1.outport.getDimensions(), size2_t{1}) << "Should not be resized";
+        EXPECT_EQ(p0.outport.getDimensions(), size2_t{100});
     }
 
     {
         ResizeEvent eventB{size2_t{150}};
         p2b.outport.propagateEvent(&eventB, nullptr);
 
-        EXPECT_EQ(p0.outport.getDimensions(), size);
+        EXPECT_EQ(p1.outport.getDimensions(), size2_t{1});
+        EXPECT_EQ(p0.outport.getDimensions(), size2_t{150});
     }
 
-    {   
+    {
         ResizeEvent eventB{size2_t{50}};
         p2b.outport.propagateEvent(&eventB, nullptr);
 
-        EXPECT_EQ(p0.outport.getDimensions(), size);
+        EXPECT_EQ(p1.outport.getDimensions(), size2_t{1});
+        EXPECT_EQ(p0.outport.getDimensions(), size2_t{100});
+    }
+}
+
+TEST(ResizeEvent, twoSinksDisconnect) {
+    ProcessorNetwork network{InviwoApplication::getPtr()};
+    ProcessorNetworkEvaluator evaluator{&network};
+
+/*                    
+ *             ┌───────────┐
+ *             │    P0     │
+ *             └─────┬─────┘
+ *             ┌─────┴─────┐
+ *             │    P1     │
+ *             └─────┬─────┘
+ *           ┌───────┴───────┐
+ *     ┌─────┴─────┐   ┌─────┴─────┐ 
+ *     │    P2a    │   │    P2a    │
+ *     └───────────┘   └───────────┘
+ */
+
+    auto proc0 = std::make_unique<TestProcessor>("p0");
+    auto proc1 = std::make_unique<TestProcessor>("p1");
+    auto proc2a = std::make_unique<TestProcessor>("p2a");
+    auto proc2b = std::make_unique<TestProcessor>("p2b");
+
+    auto& p0 = *proc0;
+    auto& p1 = *proc1;
+    auto& p2a = *proc2a;
+    auto& p2b = *proc2b;
+
+    network.addProcessor(std::move(proc0));
+    network.addProcessor(std::move(proc1));
+    network.addProcessor(std::move(proc2a));
+    network.addProcessor(std::move(proc2b));
+
+    network.addConnection(&p0.outport, &p1.inport);
+    network.addConnection(&p1.outport, &p2a.inport);
+    network.addConnection(&p1.outport, &p2b.inport);
+
+    {
+        ResizeEvent eventA{size2_t{100}};
+        p2a.outport.propagateEvent(&eventA, nullptr);
+
+        ResizeEvent eventB{size2_t{50}};
+        p2b.outport.propagateEvent(&eventB, nullptr);
+
+        EXPECT_EQ(p1.outport.getDimensions(), size2_t{100});
+        EXPECT_EQ(p0.outport.getDimensions(), size2_t{100});
+    }
+
+    network.removeConnection(&p1.outport, &p2a.inport);
+
+    {
+        EXPECT_EQ(p1.outport.getDimensions(), size2_t{50});
+        EXPECT_EQ(p0.outport.getDimensions(), size2_t{50});
+    }
+
+    network.addConnection(&p1.outport, &p2a.inport);
+
+    {
+        ResizeEvent eventA{size2_t{100}};
+        p2a.outport.propagateEvent(&eventA, nullptr);
+        EXPECT_EQ(p1.outport.getDimensions(), size2_t{100});
+        EXPECT_EQ(p0.outport.getDimensions(), size2_t{100});
     }
 }
 

@@ -36,13 +36,11 @@ namespace inviwo {
 
 ImageOutport::ImageOutport(std::string identifier, const DataFormatBase* format,
                            bool handleResizeEvents)
-    : DataOutport<Image>(identifier)
-    , format_(format)
-    , handleResizeEvents_(handleResizeEvents) {
+    : DataOutport<Image>(identifier), format_(format), handleResizeEvents_(handleResizeEvents) {
 
     // create a default image
     if (handleResizeEvents) {
-        setData(std::make_shared<Image>(size2_t{1,1}, format));
+        setData(std::make_shared<Image>(size2_t{1, 1}, format));
     }
 }
 
@@ -104,25 +102,34 @@ void ImageOutport::pruneCache() {
     cache_.prune(registeredDimensions);
 }
 
-void ImageOutport::disconnectFrom(Inport* port) {
+void ImageOutport::disconnectFrom(Inport* inport) {
     const auto oldSize = getLargestReqDim();
 
-    requestedDimensions_.erase(port);
+    requestedDimensions_.erase(inport);
     pruneCache();
 
+    const auto newDimensions = getLargestReqDim();
     if (handleResizeEvents_) {
-        const auto newSize = getLargestReqDim();
-        setDimensions(newSize);  // resize data.
-        ResizeEvent newEvent{newSize, oldSize};
-        getProcessor()->propagateEvent(&newEvent, this);
-    }
+        setDimensions(newDimensions);  // resize data.
 
-    DataOutport<Image>::disconnectFrom(port);
+        // Make sure that all ImageOutports in the same group that has the same size.
+        for (auto port : getProcessor()->getPortsInSameGroup(this)) {
+            if (port != this) {
+                if (auto imageOutport = dynamic_cast<ImageOutport*>(port)) {
+                    imageOutport->setDimensions(newDimensions);
+                }
+            }
+        }
+    }
+    ResizeEvent newEvent{newDimensions, oldSize};
+    getProcessor()->propagateEvent(&newEvent, this);
+
+    DataOutport<Image>::disconnectFrom(inport);
 }
 
-void ImageOutport::connectTo(Inport* port) {
-    DataOutport<Image>::connectTo(port);
-    requestedDimensions_[port] = size2_t{0};
+void ImageOutport::connectTo(Inport* inport) {
+    DataOutport<Image>::connectTo(inport);
+    requestedDimensions_[inport] = size2_t{0};
 }
 
 void ImageOutport::propagateEvent(Event* event, Inport* source) {
@@ -133,13 +140,12 @@ void ImageOutport::propagateEvent(Event* event, Inport* source) {
     auto resizeEvent = static_cast<ResizeEvent*>(event);
     requestedDimensions_[source] = resizeEvent->size();
 
-    if (handleResizeEvents_) {
-        const auto newDimensions = getLargestReqDim();
+    const auto newDimensions = getLargestReqDim();
 
+    if (handleResizeEvents_) {
         setDimensions(newDimensions);  // resize data.
 
-        // Make sure that all ImageOutports in the same group (dependency set) that has the same
-        // size. This functionality needs testing.
+        // Make sure that all ImageOutports in the same group that has the same size.
         for (auto port : getProcessor()->getPortsInSameGroup(this)) {
             if (port != this) {
                 if (auto imageOutport = dynamic_cast<ImageOutport*>(port)) {
@@ -147,14 +153,14 @@ void ImageOutport::propagateEvent(Event* event, Inport* source) {
                 }
             }
         }
-
-        // Propagate the resize event
-        ResizeEvent newEvent{*resizeEvent};
-        newEvent.setSize(newDimensions);
-
-        getProcessor()->propagateEvent(&newEvent, this);
-        getProcessor()->invalidate(InvalidationLevel::InvalidOutput);
     }
+
+    // Propagate the resize event
+    ResizeEvent newEvent{*resizeEvent};
+    newEvent.setSize(newDimensions);
+
+    getProcessor()->propagateEvent(&newEvent, this);
+    getProcessor()->invalidate(InvalidationLevel::InvalidOutput);
 }
 
 const DataFormatBase* ImageOutport::getDataFormat() const { return format_; }

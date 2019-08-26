@@ -167,7 +167,7 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
             }
         }
     }
-    
+
     // Need to make sure that we have not pending qt stuff before showing tooltip
     // otherwise we might loose focus and the tooltip will go away...
     qApp->processEvents();

@@ -168,18 +168,18 @@ struct PortTraits<BaseImageInport<0>> {
  *                    └──────────────────────────────────┴──────────────────────────────────┘
  * \endverbatim
  *
- * The ImageOutport records all the requested sizes from all it's connected inports. If the outport
- * 'isHandlingResizeEvents' the port will resize its data to the largest of the requested sizes, And
- * propagate that size an a new event upwards in the network. If it does not handle resize event it
- * will not propagate any resize events nor resize it's data.
+ * The ImageOutport records all the requested sizes from all its connected inports. If the outport
+ * 'isHandlingResizeEvents', the port will resize its data to the largest the requested size and
+ * propagate that size and a new event upwards in the network. If it does not handle resize events,
+ * it will propagate the resize events but not resize its data.
  *
- * When a inport is disconnected from the outport the port will remove it's requested size and
+ * When an inport is disconnected from a outport, the port will remove its requested size and
  * propagate a new resize event upwards with the new largest size, given that the port handles
  * resize events.
  *
- * A soon as the network adds or removes a connection all the image sinks, (processors that
- * consume images) are responsible for pushing a new resize event to the network to make sure the
- * all the image ports above in the network have an up to date view on which image sizes to use.
+ * As soon as the network adds or removes a connection, all the image sinks (processors that
+ * consume images) are responsible for pushing a new resize event to the network to make sure that
+ * all the image ports in the network above have an up-to-date view on which image sizes to use.
  * (@see ImageExport, @see CanvasProcessorWidget)
  *
  * @see BaseImageInport

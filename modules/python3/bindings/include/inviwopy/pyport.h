@@ -64,7 +64,7 @@ pybind11::class_<Port, Outport, PortPtr<Port>> exposeOutport(pybind11::module& m
     using T = typename Port::type;
     return pybind11::class_<Port, Outport, PortPtr<Port>>(m, (name + "Outport").c_str())
         .def(py::init<std::string>())
-        .def("getData", &Port::getData) 
+        .def("getData", &Port::getData)
         .def("detatchData", &Port::detachData)
         .def("setData", [](Port* port, std::shared_ptr<T> data) { port->setData(data); })
         .def("hasData", &Port::hasData);

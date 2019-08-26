@@ -46,7 +46,7 @@ const ProcessorInfo LayerDistanceTransformRAM::getProcessorInfo() const { return
 
 LayerDistanceTransformRAM::LayerDistanceTransformRAM()
     : Processor()
-    , imagePort_("inputImage")
+    , imagePort_("inputImage", true)
     , outport_("outputImage", DataVec4UInt8::get(), false)
     , threshold_("threshold", "Threshold", 0.5, 0.0, 1.0)
     , flip_("flip", "Flip", false)
