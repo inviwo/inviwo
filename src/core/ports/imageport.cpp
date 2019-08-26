@@ -201,7 +201,6 @@ bool ImageOutport::isHandlingResizeEvents() const { return handleResizeEvents_ &
 
 Document ImageOutport::getInfo() const {
     using P = Document::PathComponent;
-    using H = utildoc::TableBuilder::Header;
 
     auto doc = DataOutport<Image>::getInfo();
     auto p = doc.append("p");
