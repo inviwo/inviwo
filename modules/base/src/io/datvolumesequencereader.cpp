@@ -43,32 +43,15 @@
 namespace inviwo {
 
 DatVolumeSequenceReader::DatVolumeSequenceReader()
-    : DataReaderType<VolumeSequence>()
-    , rawFile_("")
-    , filePos_(0)
-    , littleEndian_(true)
-    , dimensions_(0)
-    , format_(nullptr)
-    , enableLogOutput_(true) {
+    : DataReaderType<VolumeSequence>(), enableLogOutput_(true) {
     addExtension(FileExtension("dat", "Inviwo dat file format"));
 }
 
 DatVolumeSequenceReader::DatVolumeSequenceReader(const DatVolumeSequenceReader& rhs)
-    : DataReaderType<VolumeSequence>(rhs)
-    , rawFile_(rhs.rawFile_)
-    , filePos_(rhs.filePos_)
-    , littleEndian_(rhs.littleEndian_)
-    , dimensions_(rhs.dimensions_)
-    , format_(rhs.format_)
-    , enableLogOutput_(true) {}
+    : DataReaderType<VolumeSequence>(rhs), enableLogOutput_(rhs.enableLogOutput_) {}
 
 DatVolumeSequenceReader& DatVolumeSequenceReader::operator=(const DatVolumeSequenceReader& that) {
     if (this != &that) {
-        rawFile_ = that.rawFile_;
-        filePos_ = that.filePos_;
-        littleEndian_ = that.littleEndian_;
-        dimensions_ = that.dimensions_;
-        format_ = that.format_;
         enableLogOutput_ = that.enableLogOutput_;
         DataReaderType<VolumeSequence>::operator=(that);
     }
@@ -103,7 +86,12 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
         throw DataReaderException("Error could open file: " + fileName, IVW_CONTEXT);
     }
 
-    std::string textLine;
+    std::string rawFile;
+    size3_t dimensions{0u};
+    size_t dataOffset = 0u;
+    const DataFormatBase* format = nullptr;
+    bool littleEndian = true;
+
     std::string formatFlag = "";
     glm::mat3 basis(2.0f);
     glm::vec3 offset(0.0f);
@@ -111,7 +99,6 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
     glm::vec3 spacing(0.0f);
     glm::mat4 wtm(1.0f);
     glm::vec3 a(0.0f), b(0.0f), c(0.0f);
-    std::vector<std::string> parts;
     std::string key;
     std::string value;
     dvec2 datarange(0);
@@ -124,6 +111,8 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
     // For dat file containing references to multiple datfiles
     std::vector<std::string> datFiles;
 
+    std::string textLine;
+    std::vector<std::string> parts;
     while (!f.eof()) {
         getline(f, textLine);
 
@@ -139,21 +128,21 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
         std::stringstream ss(value);
 
         if (key == "objectfilename" || key == "rawfile") {
-            rawFile_ = fileDirectory + "/" + value;
+            rawFile = fileDirectory + "/" + value;
         } else if (key == "datfile") {
             datFiles.push_back(fileDirectory + "/" + value);
         } else if (key == "byteorder") {
             if (toLower(value) == "bigendian") {
-                littleEndian_ = false;
-            } else {
-                littleEndian_ = true;
+                littleEndian = false;
             }
+        } else if (key == "dataoffset") {
+            ss >> dataOffset;
         } else if (key == "sequences") {
             ss >> sequences;
         } else if (key == "resolution" || key == "dimensions") {
-            ss >> dimensions_.x;
-            ss >> dimensions_.y;
-            ss >> dimensions_.z;
+            ss >> dimensions.x;
+            ss >> dimensions.y;
+            ss >> dimensions.z;
         } else if (key == "spacing" || key == "slicethickness") {
             ss >> spacing.x;
             ss >> spacing.y;
@@ -199,13 +188,13 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
             ss >> formatFlag;
             // Backward support for USHORT_12 key
             if (formatFlag == "USHORT_12") {
-                format_ = DataUInt16::get();
+                format = DataUInt16::get();
                 // Check so that data range has not been set before
                 if (glm::all(glm::equal(datarange, dvec2(0)))) {
                     datarange.y = 4095;
                 }
             } else {
-                format_ = DataFormatBase::get(formatFlag);
+                format = DataFormatBase::get(formatFlag);
             }
         } else if (key == "datarange") {
             ss >> datarange.x;
@@ -236,13 +225,13 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
         }
 
     } else {
-        if (dimensions_ == size3_t(0))
+        if (dimensions == size3_t(0))
             throw DataReaderException(
                 "Error: Unable to find \"Resolution\" tag in .dat file: " + fileName, IVW_CONTEXT);
-        else if (format_ == nullptr)
+        else if (format == nullptr)
             throw DataReaderException(
                 "Error: Unable to find \"Format\" tag in .dat file: " + fileName, IVW_CONTEXT);
-        else if (format_->getId() == DataFormatId::NotSpecialized)
+        else if (format->getId() == DataFormatId::NotSpecialized)
             throw DataReaderException(
                 "Error: Invalid format string found: " + formatFlag + " in " + fileName +
                     "\nThe valid formats are:\n" +
@@ -255,15 +244,15 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
                     "Vec4UINT8, Vec4UINT16, Vec4UINT32, Vec4UINT64",
                 IVW_CONTEXT);
 
-        else if (rawFile_ == "")
+        else if (rawFile == "")
             throw DataReaderException(
                 "Error: Unable to find \"ObjectFilename\" tag in .dat file: " + fileName,
                 IVW_CONTEXT);
 
         if (spacing != vec3(0.0f)) {
-            basis[0][0] = dimensions_.x * spacing.x;
-            basis[1][1] = dimensions_.y * spacing.y;
-            basis[2][2] = dimensions_.z * spacing.z;
+            basis[0][0] = dimensions.x * spacing.x;
+            basis[1][1] = dimensions.y * spacing.y;
+            basis[2][2] = dimensions.z * spacing.z;
         }
 
         if (a != vec3(0.0f) && b != vec3(0.0f) && c != vec3(0.0f)) {
@@ -283,7 +272,7 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
             offset = -0.5f * (basis[0] + basis[1] + basis[2]);
         }
 
-        auto volume = std::make_shared<Volume>(dimensions_, format_);
+        auto volume = std::make_shared<Volume>(dimensions, format);
         volume->setBasis(basis);
         volume->setOffset(offset);
         volume->setWorldMatrix(wtm);
@@ -300,7 +289,7 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
             volume->dataMap_.valueUnit = unit;
         }
 
-        size_t bytes = dimensions_.x * dimensions_.y * dimensions_.z * (format_->getSize());
+        size_t bytes = dimensions.x * dimensions.y * dimensions.z * (format->getSize());
 
         for (auto elem : metadata) volume->setMetaData<StringMetaData>(elem.first, elem.second);
 
@@ -309,11 +298,11 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
                 volumes->push_back(std::move(volume));
             else
                 volumes->push_back(std::shared_ptr<Volume>(volumes->front()->clone()));
-            auto diskRepr = std::make_shared<VolumeDisk>(fileName, dimensions_, format_);
-            filePos_ = t * bytes;
+            auto diskRepr = std::make_shared<VolumeDisk>(fileName, dimensions, format);
+            size_t filePos = t * bytes + dataOffset;
 
-            auto loader = std::make_unique<RawVolumeRAMLoader>(rawFile_, filePos_, dimensions_,
-                                                               littleEndian_, format_);
+            auto loader = std::make_unique<RawVolumeRAMLoader>(rawFile, filePos, dimensions,
+                                                               littleEndian, format);
             diskRepr->setLoader(loader.release());
             volumes->back()->addRepresentation(diskRepr);
             // Compute data range if not specified
@@ -325,7 +314,7 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
                 // minmax always have four components, unused components are set to zero.
                 // Hence, only consider components used by the data format
                 dvec2 computedRange(minmax.first[0], minmax.second[0]);
-                for (size_t component = 1; component < format_->getComponents(); ++component) {
+                for (size_t component = 1; component < format->getComponents(); ++component) {
                     computedRange = dvec2(glm::min(computedRange[0], minmax.first[component]),
                                           glm::max(computedRange[1], minmax.second[component]));
                 }

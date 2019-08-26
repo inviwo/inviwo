@@ -37,13 +37,7 @@
 
 namespace inviwo {
 
-IvfVolumeReader::IvfVolumeReader()
-    : DataReaderType<Volume>()
-    , rawFile_("")
-    , filePos_(0)
-    , littleEndian_(true)
-    , dimensions_(size3_t(0))
-    , format_(nullptr) {
+IvfVolumeReader::IvfVolumeReader() : DataReaderType<Volume>() {
     addExtension(FileExtension("ivf", "Inviwo ivf file format"));
 }
 
@@ -58,15 +52,22 @@ std::shared_ptr<Volume> IvfVolumeReader::readData(const std::string& filePath) {
 
     Deserializer d(filePath);
 
+    std::string rawFile;
+    size3_t dimensions{0u};
+    size_t dataOffset = 0u;
+    const DataFormatBase* format = nullptr;
+    bool littleEndian = true;
+
     d.registerFactory(InviwoApplication::getPtr()->getMetaDataFactory());
-    d.deserialize("RawFile", rawFile_);
-    rawFile_ = fileDirectory + "/" + rawFile_;
+    d.deserialize("RawFile", rawFile);
+    rawFile = fileDirectory + "/" + rawFile;
+    d.deserialize("DataOffset", dataOffset);
     std::string formatFlag;
     d.deserialize("Format", formatFlag);
-    format_ = DataFormatBase::get(formatFlag);
-    d.deserialize("Dimension", dimensions_);
+    format = DataFormatBase::get(formatFlag);
+    d.deserialize("Dimension", dimensions);
 
-    auto volume = std::make_shared<Volume>(dimensions_, format_);
+    auto volume = std::make_shared<Volume>(dimensions, format);
     mat4 basisAndOffset = volume->getModelMatrix();
     mat4 worldTransform = volume->getWorldMatrix();
     d.deserialize("BasisAndOffset", basisAndOffset);
@@ -79,11 +80,11 @@ std::shared_ptr<Volume> IvfVolumeReader::readData(const std::string& filePath) {
     d.deserialize("Unit", volume->dataMap_.valueUnit);
 
     volume->getMetaDataMap()->deserialize(d);
-    littleEndian_ = volume->getMetaData<BoolMetaData>("LittleEndian", littleEndian_);
-    auto vd = std::make_shared<VolumeDisk>(filePath, dimensions_, format_);
+    littleEndian = volume->getMetaData<BoolMetaData>("LittleEndian", littleEndian);
+    auto vd = std::make_shared<VolumeDisk>(filePath, dimensions, format);
 
-    auto loader = std::make_unique<RawVolumeRAMLoader>(rawFile_, filePos_, dimensions_,
-                                                       littleEndian_, format_);
+    auto loader =
+        std::make_unique<RawVolumeRAMLoader>(rawFile, dataOffset, dimensions, littleEndian, format);
     vd->setLoader(loader.release());
 
     volume->addRepresentation(vd);

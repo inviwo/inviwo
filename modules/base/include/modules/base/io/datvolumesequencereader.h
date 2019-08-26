@@ -45,12 +45,14 @@ namespace inviwo {
  *   - __Rawfile__ The name of the raw data file, should be in the same directory (Mandatory).
  *   - __ByteOrder__ the byte order in the raw data file. (Optional, LittleEndian|BigEndian,
  *     default: LittleEndian).
+ *   - __DataOffset__  offset in byte to where the data starts
  *   - __Resolution | Dimension__ The size of the data grid: nx,ny,nz (Mandatory).
  *   - __Format__ The type of values in the raw file. (Mandatory)
  *   - __Spacing | SliceThickness__ The size of the voxels in the data. (Optional)
  *   - __BasisVector(1|2|3)__ Defines a coordinate system for the data. (Optional, overides spacing,
  *     default: 2*IdentityMatrix);
- *   - __Offset__ Offsets the basisvecors in space. (Optional, defaults to center the data on origo)
+ *   - __Offset__ Offsets the basisvecors in space. (Optional, defaults to center the data at the
+ *     origin)
  *   - __WorldVector(1|2|3|4)__ Defines a world transformation matrix that is applied last to orient
  *     the data in world space. (Optional, default: IdentityMatrix)
  *   - __DatFile__ Relative path to other file to create a VolumeSequence from
@@ -59,10 +61,11 @@ namespace inviwo {
  *
  * Supports reading VolumeSequence (for example time-varying volume data) by specifying multiple
  *.dat files.
+ *
  * Example:
- *     Datfile: sequence0.dat
- *     Datfile: sequence1.dat
- *     Datfile: sequence2.dat
+ *     + Datfile: sequence0.dat
+ *     + Datfile: sequence1.dat
+ *     + Datfile: sequence2.dat
  */
 class IVW_MODULE_BASE_API DatVolumeSequenceReader
     : public DataReaderType<std::vector<std::shared_ptr<Volume>>> {
@@ -78,11 +81,6 @@ public:
     virtual std::shared_ptr<VolumeSequence> readData(const std::string& filePath) override;
 
 private:
-    std::string rawFile_;
-    size_t filePos_;
-    bool littleEndian_;
-    size3_t dimensions_;
-    const DataFormatBase* format_;
     bool enableLogOutput_;
 };
 
