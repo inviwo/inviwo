@@ -84,6 +84,10 @@ public:
  *                    │                                  │                                  │
  *                    └──────────────────────────────────┴──────────────────────────────────┘
  * \endverbatim
+ *
+ * @see ImageOutport
+ * @see ResizeEvent
+ *
  */
 template <size_t N = 1>
 class BaseImageInport : public DataInport<Image, N>, public ImagePortBase {
@@ -132,7 +136,7 @@ struct PortTraits<BaseImageInport<0>> {
 
 /**
  * \ingroup ports
- * ImageOutport extends  DataOutport<Image> with extra functionality for handing
+ * ImageOutport extends DataOutport<Image> with extra functionality for handing
  * ResizeEvents. The following table explains the behaviors:
  *
  * \verbatim
@@ -163,6 +167,24 @@ struct PortTraits<BaseImageInport<0>> {
  *                    │                                  │                                  │
  *                    └──────────────────────────────────┴──────────────────────────────────┘
  * \endverbatim
+ *
+ * The ImageOutport records all the requested sizes from all it's connected inports. If the outport
+ * 'isHandlingResizeEvents' the port will resize its data to the largest of the requested sizes, And
+ * propagate that size an a new event upwards in the network. If it does not handle resize event it
+ * will not propagate any resize events nor resize it's data.
+ *
+ * When a inport is disconnected from the outport the port will remove it's requested size and
+ * propagate a new resize event upwards with the new largest size, given that the port handles
+ * resize events.
+ *
+ * A soon as the network adds or removes a connection all the image sinks, (processors that
+ * consume images) are responsible for pushing a new resize event to the network to make sure the
+ * all the image ports above in the network have an up to date view on which image sizes to use.
+ * (@see ImageExport, @see CanvasProcessorWidget)
+ *
+ * @see BaseImageInport
+ * @see ResizeEvent
+ *
  */
 class IVW_CORE_API ImageOutport : public DataOutport<Image> {
     template <size_t N>
@@ -221,7 +243,7 @@ private:
 
     std::unordered_map<const Inport*, size2_t> requestedDimensions_;
     std::shared_ptr<Image> image_;
- 
+
     const DataFormatBase* format_;
     bool handleResizeEvents_;  // True if data should be resized during a resize propagation,
                                // otherwise false

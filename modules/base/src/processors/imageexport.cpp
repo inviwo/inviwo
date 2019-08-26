@@ -28,6 +28,11 @@
  *********************************************************************************/
 
 #include <modules/base/processors/imageexport.h>
+#include <inviwo/core/processors/processorutils.h>
+#include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/network/portconnection.h>
+#include <inviwo/core/interaction/events/resizeevent.h>
+
 
 namespace inviwo {
 

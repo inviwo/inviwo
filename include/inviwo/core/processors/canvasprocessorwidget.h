@@ -40,9 +40,13 @@ namespace inviwo {
 class Canvas;
 
 /**
- * \class CanvasProcessorWidget
  * \brief A processor widget that has a canvas.
  * CanvasProcessorWidget is the base class for all processor widgets with canvases.
+ *
+ * The CanvasProcessorWidget is responsible for sending ResizeEvents up the network when ever there
+ * are connections added or removed to the network to make sure the all the image ports above in the
+ * network have an up to date view on which image sizes to use.
+ * @see ResizeEvent
  */
 class IVW_CORE_API CanvasProcessorWidget : public ProcessorWidget, public ProcessorNetworkObserver {
 public:

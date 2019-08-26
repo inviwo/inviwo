@@ -110,12 +110,12 @@ void ImageOutport::disconnectFrom(Inport* port) {
     requestedDimensions_.erase(port);
     pruneCache();
 
-    const auto newSize = getLargestReqDim();
     if (handleResizeEvents_) {
+        const auto newSize = getLargestReqDim();
         setDimensions(newSize);  // resize data.
+        ResizeEvent newEvent{newSize, oldSize};
+        getProcessor()->propagateEvent(&newEvent, this);
     }
-    ResizeEvent newEvent{newSize, oldSize};
-    getProcessor()->propagateEvent(&newEvent, this);
 
     DataOutport<Image>::disconnectFrom(port);
 }
