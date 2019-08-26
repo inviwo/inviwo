@@ -110,7 +110,7 @@ public:
     bool removeChildren(int position, int count);
     void removeChildren();
 
-    TreeItem* child(int row);
+    TreeItem* child(int row) const;
     int row() const;
     int childCount() const;
     int columnCount() const;
@@ -122,6 +122,9 @@ public:
     void setData(const QString& caption, FileTreeModel::ListElemType type);
     void setData(const QIcon& icon, const std::string& filename, bool isExample);
 
+    bool operator==(const TreeItem& tree) const;
+    bool operator!=(const TreeItem& tree) const;
+
 private:
     TreeItem* parent_;
     std::vector<std::unique_ptr<TreeItem>> childItems_;
@@ -132,7 +135,7 @@ private:
     QString caption_;
     QString file_;
     QString path_;
-    bool isExample_;
+    bool isExample_ = false;
 };
 
 }  // namespace inviwo

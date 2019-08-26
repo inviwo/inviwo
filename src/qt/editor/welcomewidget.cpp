@@ -67,13 +67,80 @@
 #include <QDateTime>
 #include <QShowEvent>
 #include <QKeyEvent>
+#include < QCoreApplication >
 #include <QFile>
 
 #include <warn/pop>
 
 namespace inviwo {
 
-WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
+namespace {
+
+class LineEditEventFilter : public QObject {
+public:
+    explicit LineEditEventFilter(QWidget* w, QObject* parent = nullptr)
+        : QObject(parent), widget_(w) {}
+    virtual ~LineEditEventFilter() = default;
+
+    bool eventFilter(QObject* obj, QEvent* e) {
+        switch (e->type()) {
+            case QEvent::KeyPress: {
+                QKeyEvent* keyEvent = static_cast<QKeyEvent*>(e);
+                switch (keyEvent->key()) {
+                    case Qt::Key_Down: {
+                        // set focus to the tree widget
+                        widget_->setFocus(Qt::ShortcutFocusReason);
+                        // move cursor down one row
+                        QKeyEvent* keydown =
+                            new QKeyEvent(QKeyEvent::KeyPress, Qt::Key_Down, Qt::NoModifier);
+                        QCoreApplication::postEvent(widget_, keydown);
+                        break;
+                    }
+                    case Qt::Key_Escape:
+                        reinterpret_cast<QLineEdit*>(parent())->clear();
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            }
+            default:
+                break;
+        }
+        return QObject::eventFilter(obj, e);
+    }
+
+private:
+    QWidget* widget_;
+};
+
+class FileTreeWidgetEventFilter : public QObject {
+public:
+    FileTreeWidgetEventFilter(QWidget* w, QObject* parent = nullptr)
+        : QObject(parent), widget_(w) {}
+    virtual ~FileTreeWidgetEventFilter() = default;
+
+    bool eventFilter(QObject* obj, QEvent* e) {
+        switch (e->type()) {
+            case QEvent::KeyPress: {
+                QKeyEvent* keyEvent = static_cast<QKeyEvent*>(e);
+                if (keyEvent->key() == Qt::Key_Up) {
+                }
+                break;
+            }
+            default:
+                break;
+        }
+        return QObject::eventFilter(obj, e);
+    }
+
+private:
+    QWidget* widget_;
+};
+
+}  // namespace
+
+WelcomeWidget::WelcomeWidget(InviwoMainWindow* window, QWidget* parent)
     : QSplitter(parent), mainWindow_(window) {
 
     setObjectName("WelcomeWidget");
@@ -107,7 +174,7 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
 
     gridLayout->addLayout(horizontalLayout, 0, 0, 1, 2);
 
-    auto updateDetails = [this](const QString &filename) {
+    auto updateDetails = [this](const QString& filename) {
         QFileInfo info(filename);
         if (filename.isEmpty() || !info.exists()) {
             details_->clear();
@@ -133,7 +200,7 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
             } else {
                 fileBroken = true;
             }
-        } catch (Exception &e) {
+        } catch (Exception& e) {
             util::log(e.getContext(), e.getMessage(), LogLevel::Warn);
             fileBroken = "true";
         }
@@ -184,7 +251,7 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
                  {"src", "data:image/jpeg;base64," + item.base64jpeg}});
         };
 
-        for (auto &elem : annotations.getCanvasImages()) {
+        for (auto& elem : annotations.getCanvasImages()) {
             addImage(elem);
         }
         addImage(annotations.getNetworkImage());
@@ -193,8 +260,25 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
     };
 
     // left column: workspace filter, list of recently used workspaces, and examples
+    filetree_ = new FileTreeWidget(window->getInviwoApplication(), leftWidget);
+    filetree_->setObjectName("FileTreeWidget");
+    filetree_->setMinimumWidth(300);
+    filetree_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    QObject::connect(filetree_, &FileTreeWidget::selectedFileChanged, this,
+                     [this, updateDetails](const QString& filename, bool isExample) {
+                         updateDetails(filename);
+
+                         loadWorkspaceBtn_->disconnect();
+                         QObject::connect(
+                             loadWorkspaceBtn_, &QToolButton::clicked, this,
+                             [this, filename, isExample]() { loadWorkspace(filename, isExample); });
+                     });
+    QObject::connect(filetree_, &FileTreeWidget::loadFile, this, &WelcomeWidget::loadWorkspace);
+
     filterLineEdit_ = new QLineEdit(leftWidget);
     filterLineEdit_->setPlaceholderText("Search for Workspace...");
+    filterLineEdit_->installEventFilter(new LineEditEventFilter(filetree_, filterLineEdit_));
+
     QIcon clearIcon;
     clearIcon.addFile(":/svgicons/lineedit-clear.svg", utilqt::emToPx(this, QSizeF(0.3, 0.3)),
                       QIcon::Normal);
@@ -206,27 +290,11 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
     clearAction->setVisible(false);
     connect(clearAction, &QAction::triggered, filterLineEdit_, &QLineEdit::clear);
     connect(filterLineEdit_, &QLineEdit::textChanged, this,
-            [this, clearAction](const QString &str) {
+            [this, clearAction](const QString& str) {
                 filetree_->setFilter(str);
                 clearAction->setVisible(!str.isEmpty());
             });
     gridLayout->addWidget(filterLineEdit_, 1, 0, 1, 1);
-
-    filetree_ = new FileTreeWidget(window->getInviwoApplication(), leftWidget);
-    filetree_->setObjectName("FileTreeWidget");
-    filetree_->setMinimumWidth(300);
-    filetree_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    QObject::connect(filetree_, &FileTreeWidget::selectedFileChanged, this,
-                     [this, updateDetails](const QString &filename, bool isExample) {
-                         updateDetails(filename);
-
-                         loadWorkspaceBtn_->disconnect();
-                         QObject::connect(
-                             loadWorkspaceBtn_, &QToolButton::clicked, this,
-                             [this, filename, isExample]() { loadWorkspace(filename, isExample); });
-                     });
-    QObject::connect(filetree_, &FileTreeWidget::loadFile, this, &WelcomeWidget::loadWorkspace);
-
     gridLayout->addWidget(filetree_, 2, 0, 2, 1);
 
     // center column: workspace details and buttons for loading workspaces
@@ -244,7 +312,7 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
     auto horizontalLayout_2 = new QHBoxLayout();
     horizontalLayout_2->setSpacing(6);
 
-    auto createButton = [leftWidget, this](const QString &str, auto iconpath) {
+    auto createButton = [leftWidget, this](const QString& str, auto iconpath) {
         auto button = new QToolButton(leftWidget);
         button->setText(str);
         button->setIcon(QIcon(iconpath));
@@ -350,6 +418,15 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow *window, QWidget *parent)
     // see https://bugreports.qt.io/browse/QTBUG-13768
     handle(1)->setAttribute(Qt::WA_Hover);
 
+    setTabOrder(filterLineEdit_, filetree_);
+    setTabOrder(filetree_, loadWorkspaceBtn_);
+    setTabOrder(loadWorkspaceBtn_, toolButton);
+    setTabOrder(toolButton, toolButton_2);
+    setTabOrder(toolButton_2, details_);
+    setTabOrder(details_, changelog_);
+    setTabOrder(changelog_, autoloadWorkspace);
+    setTabOrder(autoloadWorkspace, showOnStartup);
+
     initChangelog();
 }
 
@@ -357,23 +434,25 @@ void WelcomeWidget::updateRecentWorkspaces() {
     filetree_->updateRecentWorkspaces(mainWindow_->getRecentWorkspaceList());
 }
 
-void WelcomeWidget::setFilterFocus() {
-    filterLineEdit_->setFocus(Qt::OtherFocusReason);
-}
+void WelcomeWidget::setFilterFocus() { filterLineEdit_->setFocus(Qt::OtherFocusReason); }
 
-void WelcomeWidget::showEvent(QShowEvent *event) {
+void WelcomeWidget::showEvent(QShowEvent* event) {
     if (!event->spontaneous()) {
+        QModelIndex index = filetree_->selectionModel()->currentIndex();
+
         updateRecentWorkspaces();
         filetree_->updateExampleEntries();
         filetree_->updateRegressionTestEntries();
 
-        // select first entry of recent workspaces, if existing
-        filetree_->selectRecentWorkspace(0);
+        filetree_->expandItems();
+
+        filetree_->selectionModel()->setCurrentIndex(
+            index, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
     }
     QWidget::showEvent(event);
 }
 
-void WelcomeWidget::keyPressEvent(QKeyEvent *event) {
+void WelcomeWidget::keyPressEvent(QKeyEvent* event) {
     if ((event->key() >= Qt::Key_0) && (event->key() <= Qt::Key_9)) {
         int number = [key = event->key()]() {
             if (key == Qt::Key_0) return 9;
@@ -392,7 +471,7 @@ void WelcomeWidget::keyPressEvent(QKeyEvent *event) {
     QWidget::keyPressEvent(event);
 }
 
-void WelcomeWidget::loadWorkspace(const QString &filename, bool isExample) const {
+void WelcomeWidget::loadWorkspace(const QString& filename, bool isExample) const {
     if (mainWindow_->askToSaveWorkspaceChanges()) {
         bool hide = [&]() {
             bool controlPressed =

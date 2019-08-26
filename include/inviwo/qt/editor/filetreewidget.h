@@ -65,7 +65,17 @@ public:
     bool selectRecentWorkspace(int index);
 
     void setFilter(const QString& str);
+    /**
+     * \brief expand recent workspaces and examples, but not test workspaces
+     */
     void defaultExpand();
+    /**
+     * \brief expand all items depending on whether there is a filter enabled. If not, this will
+     * call defaultExpand().
+     *
+     * \see defaultExpand
+     */
+    void expandItems();
 
 signals:
     void selectedFileChanged(const QString& filename, bool isExample);
@@ -78,6 +88,8 @@ protected:
     void expandRecursively(const QModelIndex& index);
 #endif
 
+    QModelIndex findFirstLeaf(QModelIndex parent = QModelIndex()) const;
+
 private:
     InviwoApplication* inviwoApp_;
 
@@ -89,8 +101,6 @@ private:
     TreeItem* regressionTestsItem_ = nullptr;
 
     QIcon fileIcon_;
-
-    bool isFiltering_ = false;
 };
 
 }  // namespace inviwo
