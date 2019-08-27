@@ -43,14 +43,14 @@ namespace inviwo {
  * Categorical is suitable for data where there should be no magnitude difference between classes,
  * such as volvo and audi.
  */
-enum class ColormapType { Continous, Categorical };
+enum class ColormapType { Continuous, Categorical };
 
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& os,
                                              ColormapType colormap) {
     // clang-format off
     switch (colormap) {
-        case ColormapType::Continous: os << "Continous"; break;
+        case ColormapType::Continuous: os << "Continuous"; break;
         case ColormapType::Categorical: os << "Categorical"; break;
     }
     // clang-format on
@@ -61,8 +61,8 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& o
  * \brief Selection of pre-defined color maps based on data type.
  *
  * The following data types are supported:
- * Continous: Ordered/Sequential data progressing from low to high
- * Continous discrete: Constant inbetween colors to emphasize differences in the scale.
+ * Continuous: Ordered/Sequential data progressing from low to high
+ * Continuous discrete: Constant inbetween colors to emphasize differences in the scale.
  * Continuous diverging: Emphasis on mid-point or critical values. Break in the middle.
  *
  * Categorical: Suitable for categorical/nominal data where there should be no magnitude difference
@@ -74,7 +74,7 @@ public:
     static const std::string classIdentifier;
 
     ColormapProperty(std::string identifier, std::string displayName,
-                     ColormapType type = ColormapType::Continous,
+                     ColormapType type = ColormapType::Continuous,
                      colorbrewer::Family family = colorbrewer::Family::Blues,
                      size_t numColors = getMinNumberOfColorsForFamily(colorbrewer::Family::Blues),
                      InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
@@ -95,8 +95,11 @@ public:
 
     /**
      * Update settings based on Column.
-     * Uses ColormapType::Categorical for CategoricalColumn and ColormapType::Continous otherwise.
-     * Divergence mid point and rawill be computed 
+     * Uses ColormapType::Categorical for CategoricalColumn and ColormapType::Continuous otherwise.
+     * Divergence mid-point and its min-max range will be updated based on the Column values.
+     * The mid-point will be set to the average of the column,
+     * unless the min value is negative and the max value is positive in which case it 
+     * will be set to 0.
      */
     void setupForColumn(const Column& col);
     void setupForColumn(const Column& col, double minVal, double maxVal);
@@ -113,8 +116,6 @@ public:
     DoubleProperty divergenceMidPoint;
     BoolProperty discrete;
     IntSizeTProperty nColors;
-
-
 
 private:
     void updateColormaps();

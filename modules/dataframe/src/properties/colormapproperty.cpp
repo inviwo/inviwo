@@ -43,7 +43,7 @@ ColormapProperty::ColormapProperty(std::string identifier, std::string displayNa
                                    InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , type("type", "Type",
-           {{"continous", "Continous", ColormapType::Continous},
+           {{"continous", "Continuous", ColormapType::Continuous},
             {"categorical", "Categorical", ColormapType::Categorical}})
     , colormap("colormap", "Colormap")
     , diverging("diverging", "Diverging", false)
@@ -68,10 +68,10 @@ ColormapProperty::ColormapProperty(std::string identifier, std::string displayNa
     colormap.setCurrentStateAsDefault();
 
     diverging.visibilityDependsOn(
-        type, [](auto prop) -> bool { return prop == ColormapType::Continous; });
+        type, [](auto prop) -> bool { return prop == ColormapType::Continuous; });
     divergenceMidPoint.visibilityDependsOn(diverging, [](auto prop) -> bool { return prop; });
     // Always discrete for categorical data
-    discrete.visibilityDependsOn(type, [](auto prop) { return prop == ColormapType::Continous; });
+    discrete.visibilityDependsOn(type, [](auto prop) { return prop == ColormapType::Continuous; });
 
     addProperty(type);
     addProperty(colormap);
@@ -101,10 +101,10 @@ ColormapProperty::ColormapProperty(const ColormapProperty& rhs)
     });
 
     diverging.visibilityDependsOn(
-        type, [](auto prop) -> bool { return prop == ColormapType::Continous; });
+        type, [](auto prop) -> bool { return prop == ColormapType::Continuous; });
     divergenceMidPoint.visibilityDependsOn(diverging, [](auto prop) -> bool { return prop; });
     // Always discrete for categorical data
-    discrete.visibilityDependsOn(type, [](auto prop) { return prop == ColormapType::Continous; });
+    discrete.visibilityDependsOn(type, [](auto prop) { return prop == ColormapType::Continuous; });
 
     addProperty(type);
     addProperty(colormap);
@@ -120,7 +120,7 @@ ColormapProperty* ColormapProperty::clone() const { return new ColormapProperty(
 colorbrewer::Category ColormapProperty::getCategory() const {
     colorbrewer::Category cat;
     switch (type) {
-        case ColormapType::Continous:
+        case ColormapType::Continuous:
             cat = diverging ? colorbrewer::Category::Diverging : colorbrewer::Category::Sequential;
             break;
         case ColormapType::Categorical:
@@ -156,12 +156,17 @@ void ColormapProperty::setupForColumn(const Column& col, double minVal, double m
         nColors = numCategories;
         discrete = true;
     } else {
-        type.set(ColormapType::Continous);
+        type.set(ColormapType::Continuous);
         // Better contrast when using many classes
         nColors = getMaxNumberOfColorsForFamily(colormap);
         discrete = false;
     }
-    divergenceMidPoint.set(0.5 * (minVal + maxVal), minVal, maxVal, 0.1 * (maxVal - minVal));
+    if (minVal < 0 && maxVal > 0) {
+        divergenceMidPoint.set(0, minVal, maxVal, 0.01 * (maxVal - minVal));
+    } else {
+        divergenceMidPoint.set(0.5 * (minVal + maxVal), minVal, maxVal, 0.01 * (maxVal - minVal));
+    }
+    
 }
 
 TransferFunction ColormapProperty::getTransferFunction() const {
