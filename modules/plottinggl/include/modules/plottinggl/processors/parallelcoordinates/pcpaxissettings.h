@@ -35,7 +35,6 @@
 #include <inviwo/core/properties/boolproperty.h>
 #include <modules/opengl/texture/texture2d.h>
 
-#include <inviwo/dataframe/properties/colormapproperty.h>
 #include <modules/plotting/datastructures/axissettings.h>
 
 namespace inviwo {

@@ -382,7 +382,7 @@ void ParallelCoordinates::createOrUpdateProperties() {
         // initialize corresponding flipped flag for the line shader
         lines_.axisFlipped[i] = static_cast<int>(prop->invertRange);
 
-        axes_.push_back({prop, std::move(renderer), std::move(slider)});        
+        axes_.push_back({prop, std::move(renderer), std::move(slider)});
     }
 
     for (auto& axis : axes_) {

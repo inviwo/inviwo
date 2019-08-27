@@ -34,6 +34,7 @@
 #include <inviwo/core/datastructures/transferfunction.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/util/colorbrewer.h>
 
