@@ -51,7 +51,7 @@ namespace inviwo {
  *   - __Spacing | SliceThickness__ The size of the voxels in the data. (Optional)
  *   - __BasisVector(1|2|3)__ Defines a coordinate system for the data. (Optional, overides spacing,
  *     default: 2*IdentityMatrix);
- *   - __Offset__ Offsets the basisvecors in space. (Optional, defaults to center the data at the
+ *   - __Offset__ Offsets the basis vectors in space. (Optional, defaults to center the data at the
  *     origin)
  *   - __WorldVector(1|2|3|4)__ Defines a world transformation matrix that is applied last to orient
  *     the data in world space. (Optional, default: IdentityMatrix)

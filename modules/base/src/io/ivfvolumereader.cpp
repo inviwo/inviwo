@@ -54,14 +54,14 @@ std::shared_ptr<Volume> IvfVolumeReader::readData(const std::string& filePath) {
 
     std::string rawFile;
     size3_t dimensions{0u};
-    size_t dataOffset = 0u;
+    size_t byteOffset = 0u;
     const DataFormatBase* format = nullptr;
     bool littleEndian = true;
 
     d.registerFactory(InviwoApplication::getPtr()->getMetaDataFactory());
     d.deserialize("RawFile", rawFile);
     rawFile = fileDirectory + "/" + rawFile;
-    d.deserialize("DataOffset", dataOffset);
+    d.deserialize("ByteOffset", byteOffset);
     std::string formatFlag;
     d.deserialize("Format", formatFlag);
     format = DataFormatBase::get(formatFlag);
@@ -84,7 +84,7 @@ std::shared_ptr<Volume> IvfVolumeReader::readData(const std::string& filePath) {
     auto vd = std::make_shared<VolumeDisk>(filePath, dimensions, format);
 
     auto loader =
-        std::make_unique<RawVolumeRAMLoader>(rawFile, dataOffset, dimensions, littleEndian, format);
+        std::make_unique<RawVolumeRAMLoader>(rawFile, byteOffset, dimensions, littleEndian, format);
     vd->setLoader(loader.release());
 
     volume->addRepresentation(vd);

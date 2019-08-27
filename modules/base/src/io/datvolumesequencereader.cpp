@@ -88,7 +88,7 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
 
     std::string rawFile;
     size3_t dimensions{0u};
-    size_t dataOffset = 0u;
+    size_t byteOffset = 0u;
     const DataFormatBase* format = nullptr;
     bool littleEndian = true;
 
@@ -135,8 +135,8 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
             if (toLower(value) == "bigendian") {
                 littleEndian = false;
             }
-        } else if (key == "dataoffset") {
-            ss >> dataOffset;
+        } else if (key == "byteoffset") {
+            ss >> byteOffset;
         } else if (key == "sequences") {
             ss >> sequences;
         } else if (key == "resolution" || key == "dimensions") {
@@ -299,7 +299,7 @@ std::shared_ptr<DatVolumeSequenceReader::VolumeSequence> DatVolumeSequenceReader
             else
                 volumes->push_back(std::shared_ptr<Volume>(volumes->front()->clone()));
             auto diskRepr = std::make_shared<VolumeDisk>(fileName, dimensions, format);
-            size_t filePos = t * bytes + dataOffset;
+            size_t filePos = t * bytes + byteOffset;
 
             auto loader = std::make_unique<RawVolumeRAMLoader>(rawFile, filePos, dimensions,
                                                                littleEndian, format);

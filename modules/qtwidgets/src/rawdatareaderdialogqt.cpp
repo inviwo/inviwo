@@ -175,11 +175,11 @@ RawDataReaderDialogQt::RawDataReaderDialogQt() {
     dataSizeBox->setLayout(dataSizeLayout);
 
     QGridLayout* readOptionsLayout = new QGridLayout();
-    QLabel* dataOffsetLabel = new QLabel("Data offset");
-    dataOffset_ = new QSpinBox();
-    dataOffset_->setRange(0, 4096);
-    dataOffset_->setValue(0);
-    dataOffset_->setSuffix(" Byte");
+    QLabel* byteOffsetLabel = new QLabel("Byte offset");
+    byteOffset_ = new QSpinBox();
+    byteOffset_->setRange(0, 4096);
+    byteOffset_->setValue(0);
+    byteOffset_->setSuffix(" Byte");
     /*
     QLabel* timeStepOffsetLabel = new QLabel("Time step offset");
     timeStepOffset_ = new QSpinBox();
@@ -191,8 +191,8 @@ RawDataReaderDialogQt::RawDataReaderDialogQt() {
     endianess_ = new QComboBox();
     endianess_->addItem("Little Endian");
     endianess_->addItem("Big Endian");
-    readOptionsLayout->addWidget(dataOffsetLabel, 0, 0);
-    readOptionsLayout->addWidget(dataOffset_, 0, 1);
+    readOptionsLayout->addWidget(byteOffsetLabel, 0, 0);
+    readOptionsLayout->addWidget(byteOffset_, 0, 1);
     /*
     readOptionsLayout->addWidget(timeStepOffsetLabel, 1, 0);
     readOptionsLayout->addWidget(timeStepOffset_, 1, 1);
@@ -304,12 +304,12 @@ void RawDataReaderDialogQt::setDataMapper(const DataMapper& datamapper) {
     valueUnit_->setText(utilqt::toLocalQString(datamapper.valueUnit));
 }
 
-size_t RawDataReaderDialogQt::getDataOffset() const {
-    return static_cast<size_t>(dataOffset_->value());
+size_t RawDataReaderDialogQt::getByteOffset() const {
+    return static_cast<size_t>(byteOffset_->value());
 }
 
-void RawDataReaderDialogQt::setDataOffset(size_t offset) {
-    dataOffset_->setValue(static_cast<int>(offset));
+void RawDataReaderDialogQt::setByteOffset(size_t offset) {
+    byteOffset_->setValue(static_cast<int>(offset));
 }
 
 void RawDataReaderDialogQt::selectedDataTypeChanged(int index) {

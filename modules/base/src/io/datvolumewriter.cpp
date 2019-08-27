@@ -69,7 +69,7 @@ void DatVolumeWriter::writeData(const Volume* data, const std::string filePath) 
     writeKeyToString(ss, "RawFile", fileName + ".raw");
     writeKeyToString(ss, "Resolution", vr->getDimensions());
     writeKeyToString(ss, "Format", vr->getDataFormatString());
-    writeKeyToString(ss, "DataOffset", 0);
+    writeKeyToString(ss, "ByteOffset", 0);
     writeKeyToString(ss, "BasisVector1", basis[0]);
     writeKeyToString(ss, "BasisVector2", basis[1]);
     writeKeyToString(ss, "BasisVector3", basis[2]);

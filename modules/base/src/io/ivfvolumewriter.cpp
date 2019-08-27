@@ -64,7 +64,7 @@ void IvfVolumeWriter::writeData(const Volume* volume, const std::string filePath
     Serializer s(filePath);
     s.serialize("RawFile", fileName + ".raw");
     s.serialize("Format", vr->getDataFormatString());
-    s.serialize("DataOffset", 0u);
+    s.serialize("ByteOffset", 0u);
     s.serialize("BasisAndOffset", volume->getModelMatrix());
     s.serialize("WorldTransform", volume->getWorldMatrix());
     s.serialize("Dimension", volume->getDimensions());
