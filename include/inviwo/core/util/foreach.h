@@ -31,11 +31,9 @@
 #define IVW_FOREACH_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/exception.h>
-#include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/settings/systemsettings.h>
-#include <string>
+
 #include <utility>
 
 namespace inviwo {
@@ -43,37 +41,30 @@ namespace inviwo {
 namespace util {
 
 namespace detail {
-template <typename Callback, typename IT>
-void foreach_helper(std::false_type, IT a, IT b, Callback&& callback, size_t) {
-    std::for_each(a, b, std::forward<Callback>(callback));
-}
 
 template <typename Callback, typename IT>
-void foreach_helper(std::true_type, IT a, IT b, Callback&& callback, size_t startIndex) {
-    std::for_each(a, b, [&](auto&& v) { callback(v, startIndex++); });
-}
-
-template <typename Callback, typename IT, typename OnDoneCallback>
-auto foreach_helper_pool(std::true_type, IT a, IT b, Callback&& callback, size_t startIndex,
-                         OnDoneCallback&& onTaskDone) {
-    return dispatchPool([id = startIndex, a, b, c = std::forward<Callback>(callback),
-                         onTaskDone = std::forward<OnDoneCallback>(onTaskDone)]() mutable {
-        std::for_each(a, b, [&](auto&& v) { c(v, id++); });
-        onTaskDone();
-    });
-}
-
-template <typename Callback, typename IT, typename OnDoneCallback>
-auto foreach_helper_pool(std::false_type, IT a, IT b, Callback&& callback, size_t,
-                         OnDoneCallback&& onTaskDone) {
-    return dispatchPool([a, b, c = std::forward<Callback>(callback),
-                         onTaskDone = std::forward<OnDoneCallback>(onTaskDone)]() {
-        std::for_each(a, b, c);
-        onTaskDone();
-    });
+void foreach (IT a, IT b, Callback && callback, size_t startIndex = 0) {
+    using value_type = decltype(*a);
+    if constexpr (std::is_invocable_v<Callback, value_type, size_t>) {
+        std::for_each(a, b, [&](auto&& v) { callback(v, startIndex++); });
+    } else {
+        std::for_each(a, b, std::forward<Callback>(callback));
+    }
 }
 
 }  // namespace detail
+
+/**
+ * Utility function to iterate over all element in an iterable data structure (such as std::vector).
+ * @param iterable the data structure to iterate over
+ * @param callback to call for each element, can be either `[](auto &a){}` or `[](auto &a,
+ * size_t id){}` where `a` is an data item from the iterable data structure and `id` is the index in
+ * the data structure
+ */
+template <typename Iterable, typename Callback>
+void forEach(const Iterable& iterable, Callback&& callback) {
+    detail::foreach (std::begin(iterable), std::end(iterable), std::forward<Callback>(callback));
+}
 
 /**
  * Use multiple threads to iterate over all elements in an iterable data structure (such as
@@ -93,19 +84,15 @@ auto foreach_helper_pool(std::false_type, IT a, IT b, Callback&& callback, size_
 template <typename Iterable, typename Callback, typename OnDoneCallback>
 std::vector<std::future<void>> forEachParallelAsync(const Iterable& iterable, Callback&& callback,
                                                     size_t jobs, OnDoneCallback&& onTaskDone) {
-
     using std::begin;
-    using std::end;
 
     auto settings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
     auto poolSize = settings->poolSize_.get();
 
     using value_type = decltype(*begin(iterable));
-    using IncludeIndexType = typename util::is_invocable<Callback, value_type, size_t>::type;
 
     if (poolSize == 0) {
-        detail::foreach_helper(IncludeIndexType{}, begin(iterable), end(iterable),
-                               std::forward<Callback>(callback), 0);
+        forEach(iterable, std::forward<Callback>(callback));
         onTaskDone();
         return {};
     }
@@ -121,16 +108,19 @@ std::vector<std::future<void>> forEachParallelAsync(const Iterable& iterable, Ca
         size_t end = (s * (job + 1)) / jobs;
         auto a = begin(iterable) + start;
         auto b = begin(iterable) + end;
-        futures.push_back(detail::foreach_helper_pool(IncludeIndexType{}, a, b,
-                                                      std::forward<Callback>(callback), start,
-                                                      std::forward<OnDoneCallback>(onTaskDone)));
+        auto future = dispatchPool([a, b, start, c = std::forward<Callback>(callback),
+                                    onTaskDone = std::forward<OnDoneCallback>(onTaskDone)]() {
+            detail::foreach (a, b, c, start);
+            onTaskDone();
+        });
+        futures.push_back(std::move(future));
     }
     return futures;
 }
 
 template <typename Iterable, typename Callback>
 std::vector<std::future<void>> forEachParallelAsync(const Iterable& iterable, Callback&& callback,
-                                                    size_t jobs) {
+                                                    size_t jobs = 0) {
     return forEachParallelAsync(iterable, std::forward<Callback>(callback), jobs, []() {});
 }
 
@@ -155,14 +145,6 @@ void forEachParallel(const Iterable& iterable, Callback&& callback, size_t jobs 
     for (const auto& e : futures) {
         e.wait();
     }
-}
-
-template <typename Iterable, typename Callback>
-void forEach(const Iterable& iterable, Callback&& callback) {
-    using value_type = decltype(*begin(iterable));
-    using IncludeIndexType = typename util::is_invocable<Callback, value_type, size_t>::type;
-
-    detail::foreach_helper(IncludeIndexType{}, std::begin(iterable), std::end(iterable), std::forward<Callback>(callback),0);
 }
 
 }  // namespace util
