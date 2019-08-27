@@ -139,6 +139,7 @@ void ImageOutport::propagateEvent(Event* event, Inport* source) {
     }
     auto resizeEvent = static_cast<ResizeEvent*>(event);
     requestedDimensions_[source] = resizeEvent->size();
+    pruneCache();
 
     const auto newDimensions = getLargestReqDim();
 
@@ -153,14 +154,15 @@ void ImageOutport::propagateEvent(Event* event, Inport* source) {
                 }
             }
         }
+
+        // Since we have destructively resized the output we need to invalidate.
+        getProcessor()->invalidate(InvalidationLevel::InvalidOutput);
     }
 
     // Propagate the resize event
     ResizeEvent newEvent{*resizeEvent};
     newEvent.setSize(newDimensions);
-
     getProcessor()->propagateEvent(&newEvent, this);
-    getProcessor()->invalidate(InvalidationLevel::InvalidOutput);
 }
 
 const DataFormatBase* ImageOutport::getDataFormat() const { return format_; }
@@ -179,6 +181,8 @@ void ImageOutport::setDimensions(const size2_t& newDimension) {
         // Set new dimensions
         image_->setDimensions(newDimension);
         cache_.setInvalid();
+    } else {
+        setData(std::make_shared<Image>(newDimension, format_));
     }
 }
 

@@ -34,6 +34,8 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processortraits.h>
 
+#include <type_traits>
+
 namespace inviwo {
 
 class Processor;
@@ -92,7 +94,15 @@ private:
 template <typename T, typename... Args>
 std::unique_ptr<T> makeProcessor(ivec2 pos, Args&&... args) {
     auto name = ProcessorTraits<T>::getProcessorInfo().displayName;
-    auto p = std::make_unique<T>(std::forward<Args>(args)...);
+
+    std::unique_ptr<T> p;
+
+    if constexpr (std::is_constructible_v<T, Args...>) {
+        p = std::make_unique<T>(std::forward<Args>(args)...);
+    } else {
+        p = std::make_unique<T>(std::forward<Args>(args)..., InviwoApplication::getPtr());
+    }
+
     if (p->getIdentifier().empty()) p->setIdentifier(name);
     if (p->getDisplayName().empty()) p->setDisplayName(name);
 

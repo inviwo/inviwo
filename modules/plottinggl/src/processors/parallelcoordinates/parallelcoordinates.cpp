@@ -149,7 +149,7 @@ ParallelCoordinates::ParallelCoordinates()
                    [&](PickingEvent* p) { axisPicked(p, p->getPickedId(), PickType::Axis); })
     , lineShader_("pcp_lines.vert", "pcp_lines.geom", "pcp_lines.frag", false)
     , lines_{}
-    , marginsInternal_(0, 0)
+    , marginsInternal_(0.0f, 0.0f)
     , brushingDirty_(true)  // needs to be true after deserialization
 {
     addPort(dataFrame_);

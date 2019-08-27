@@ -42,6 +42,7 @@
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/eventproperty.h>
 #include <inviwo/core/metadata/processorwidgetmetadata.h>
+#include <inviwo/core/util/fileextension.h>
 
 namespace inviwo {
 
@@ -53,7 +54,7 @@ class DataWriterType;
 
 class IVW_CORE_API CanvasProcessor : public Processor, public ProcessorWidgetMetaDataObserver {
 public:
-    CanvasProcessor();
+    CanvasProcessor(InviwoApplication* app);
     virtual ~CanvasProcessor();
 
     virtual void process() override;
@@ -101,7 +102,7 @@ public:
     IntVec2Property position_;
     TemplateOptionProperty<LayerType> visibleLayer_;
     IntProperty colorLayer_;
-    OptionPropertyString imageTypeExt_;
+    TemplateOptionProperty<FileExtension> imageTypeExt_;
     DirectoryProperty saveLayerDirectory_;
     ButtonProperty saveLayerButton_;
     ButtonProperty saveLayerToFileButton_;

@@ -46,16 +46,16 @@
 
 namespace inviwo {
 
-CanvasProcessor::CanvasProcessor()
+CanvasProcessor::CanvasProcessor(InviwoApplication* app)
     : Processor()
     , inport_("inport")
     , inputSize_("inputSize", "Input Dimension Parameters")
     , dimensions_("dimensions", "Canvas Size", size2_t(256, 256), size2_t(1, 1),
-                  size2_t(4096, 4096), size2_t(1, 1), InvalidationLevel::Valid)
+                  size2_t(10000, 10000), size2_t(1, 1), InvalidationLevel::Valid)
     , enableCustomInputDimensions_("enableCustomInputDimensions", "Separate Image Size", false,
                                    InvalidationLevel::Valid)
     , customInputDimensions_("customInputDimensions", "Image Size", size2_t(256, 256),
-                             size2_t(1, 1), size2_t(4096, 4096), size2_t(1, 1),
+                             size2_t(1, 1), size2_t(10000, 10000), size2_t(1, 1),
                              InvalidationLevel::Valid)
     , keepAspectRatio_("keepAspectRatio", "Lock Aspect Ratio", true, InvalidationLevel::Valid)
     , aspectRatioScaling_("aspectRatioScaling", "Image Scale", 1.f, 0.1f, 4.f, 0.01f,
@@ -63,12 +63,39 @@ CanvasProcessor::CanvasProcessor()
     , position_("position", "Canvas Position", ivec2(128, 128),
                 ivec2(std::numeric_limits<int>::lowest()), ivec2(std::numeric_limits<int>::max()),
                 ivec2(1, 1), InvalidationLevel::Valid, PropertySemantics::Text)
-    , visibleLayer_("visibleLayer", "Visible Layer")
+    , visibleLayer_("visibleLayer", "Visible Layer",
+                    {{"color", "Color layer", LayerType::Color},
+                     {"depth", "Depth layer", LayerType::Depth},
+                     {"picking", "Picking layer", LayerType::Picking}},
+                    0)
     , colorLayer_("colorLayer_", "Color Layer ID", 0, 0, 0)
-    , imageTypeExt_("fileExt", "Image Type")
+    , imageTypeExt_(
+          "fileExt", "Image Type",
+          [app]() {
+              const auto exts = app->getDataWriterFactory()->getExtensionsForType<Layer>();
+              std::vector<OptionPropertyOption<FileExtension>> res;
+              std::transform(exts.begin(), exts.end(), std::back_inserter(res), [](auto& ext) {
+                  return OptionPropertyOption<FileExtension>{ext.toString(), ext.toString(), ext};
+              });
+              return res;
+          }(),
+          [app]() {
+              const auto exts = app->getDataWriterFactory()->getExtensionsForType<Layer>();
+              const auto it = std::find_if(exts.begin(), exts.end(),
+                                           [](auto& ext) { return ext.extension_ == "png"; });
+              return it == exts.end() ? 0 : std::distance(exts.begin(), it);
+          }())
     , saveLayerDirectory_("layerDir", "Output Directory", "", "image")
-    , saveLayerButton_("saveLayer", "Save Image Layer", InvalidationLevel::Valid)
+    , saveLayerButton_("saveLayer", "Save Image Layer", [this]() { saveImageLayer(); },
+                       InvalidationLevel::Valid)
     , saveLayerToFileButton_("saveLayerToFile", "Save Image Layer to File...",
+                             [this]() {
+                                 if (auto layer = getVisibleLayer()) {
+                                     util::saveLayer(*layer);
+                                 } else {
+                                     LogError("Could not find visible layer");
+                                 }
+                             },
                              InvalidationLevel::Valid)
     , fullScreen_("fullscreen", "Toggle Full Screen", false)
     , fullScreenEvent_("fullscreenEvent", "FullScreen",
@@ -85,65 +112,22 @@ CanvasProcessor::CanvasProcessor()
     setEvaluateWhenHidden(false);
 
     addPort(inport_);
-    addProperty(inputSize_);
 
     dimensions_.setSerializationMode(PropertySerializationMode::None);
     dimensions_.onChange([this]() { widgetMetaData_->setDimensions(dimensions_.get()); });
-    inputSize_.addProperty(dimensions_);
 
     enableCustomInputDimensions_.onChange([this]() { sizeChanged(); });
-    inputSize_.addProperty(enableCustomInputDimensions_);
 
     customInputDimensions_.onChange([this]() { sizeChanged(); });
     customInputDimensions_.setVisible(false);
-    inputSize_.addProperty(customInputDimensions_);
 
     keepAspectRatio_.onChange([this]() { sizeChanged(); });
     keepAspectRatio_.setVisible(false);
-    inputSize_.addProperty(keepAspectRatio_);
 
     aspectRatioScaling_.onChange([this]() { sizeChanged(); });
     aspectRatioScaling_.setVisible(false);
-    inputSize_.addProperty(aspectRatioScaling_);
 
     position_.onChange([this]() { widgetMetaData_->setPosition(position_.get()); });
-    addProperty(position_);
-
-    visibleLayer_.addOption("color", "Color layer", LayerType::Color);
-    visibleLayer_.addOption("depth", "Depth layer", LayerType::Depth);
-    visibleLayer_.addOption("picking", "Picking layer", LayerType::Picking);
-    visibleLayer_.set(LayerType::Color);
-
-    // add all supported image extensions to option property
-    auto wf = InviwoApplication::getPtr()->getDataWriterFactory();
-    // save first writer extension matching "png" to be used as default
-    std::string defaultExt;
-    for (auto ext : wf->getExtensionsForType<Layer>()) {
-        imageTypeExt_.addOption(ext.toString(), ext.toString());
-        if (defaultExt.empty() && ext.extension_ == "png") {
-            defaultExt = ext.toString();
-        }
-    }
-    if (!defaultExt.empty()) {
-        imageTypeExt_.setSelectedIdentifier(defaultExt);
-    }
-
-    addProperty(visibleLayer_);
-    addProperty(colorLayer_);
-    addProperty(saveLayerDirectory_);
-    addProperty(imageTypeExt_);
-
-    saveLayerButton_.onChange([this]() { saveImageLayer(); });
-    addProperty(saveLayerButton_);
-
-    saveLayerToFileButton_.onChange([this]() {
-        if (auto layer = getVisibleLayer()) {
-            util::saveLayer(*layer);
-        } else {
-            LogError("Could not find visible layer");
-        }
-    });
-    addProperty(saveLayerToFileButton_);
 
     colorLayer_.setSerializationMode(PropertySerializationMode::All);
     colorLayer_.setVisible(false);
@@ -155,15 +139,20 @@ CanvasProcessor::CanvasProcessor()
         }
     });
 
-    addProperty(fullScreen_);
     fullScreen_.onChange([this]() {
         if (auto c = getCanvas()) {
             c->setFullScreen(fullScreen_.get());
         }
     });
-    addProperty(fullScreenEvent_);
-    addProperty(saveLayerEvent_);
-    addProperty(allowContextMenu_);
+
+    imageTypeExt_.setSerializationMode(PropertySerializationMode::None);
+
+    inputSize_.addProperties(dimensions_, enableCustomInputDimensions_, customInputDimensions_,
+                             keepAspectRatio_, aspectRatioScaling_);
+
+    addProperties(inputSize_, position_, visibleLayer_, colorLayer_, saveLayerDirectory_,
+                  imageTypeExt_, saveLayerButton_, saveLayerToFileButton_, fullScreen_,
+                  fullScreenEvent_, saveLayerEvent_, allowContextMenu_);
 
     inport_.onChange([&]() {
         int layers = static_cast<int>(inport_.getData()->getNumberOfColorLayers());
@@ -271,10 +260,9 @@ size2_t CanvasProcessor::calcSize() {
 void CanvasProcessor::saveImageLayer() {
     if (saveLayerDirectory_.get().empty()) saveLayerDirectory_.requestFile();
 
-    auto ext = FileExtension::createFileExtensionFromString(imageTypeExt_.get());
     std::string snapshotPath(saveLayerDirectory_.get() + "/" + toLower(getIdentifier()) + "-" +
-                             currentDateTime() + "." + ext.extension_);
-    saveImageLayer(snapshotPath, ext);
+                             currentDateTime() + "." + imageTypeExt_->extension_);
+    saveImageLayer(snapshotPath, imageTypeExt_);
 }
 
 void CanvasProcessor::saveImageLayer(std::string snapshotPath, const FileExtension& extension) {
