@@ -120,12 +120,12 @@ ColormapProperty* ColormapProperty::clone() const { return new ColormapProperty(
 colorbrewer::Category ColormapProperty::getCategory() const {
     colorbrewer::Category cat;
     switch (type) {
-        case ColormapType::Continuous:
-            cat = diverging ? colorbrewer::Category::Diverging : colorbrewer::Category::Sequential;
-            break;
         case ColormapType::Categorical:
             cat = colorbrewer::Category::Qualitative;
             break;
+        case ColormapType::Continuous:
+            [[fallthrough]];
+        default: cat = diverging ? colorbrewer::Category::Diverging : colorbrewer::Category::Sequential;
     }
     return cat;
 }
