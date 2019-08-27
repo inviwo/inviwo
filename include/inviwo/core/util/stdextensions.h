@@ -123,6 +123,19 @@ T* defaultConstructType() {
 template <class...>
 using void_t = void;
 
+/**
+* Helper struct to allow passing multiple lambda expressions to std::visit.
+* Example useage:
+* \code{.cpp}
+*  std::variant<int, std::string, float, double> data = ...;
+*  std::visit(overloaded{[](const int& arg) {   }, // called if data contains an int
+                         [](const std::string &arg) {  }, // called if data contains a string
+                         [](const auto& arg) {  }} // use auto to capture "the other types"
+                   , data);
+*
+* \endcode
+*
+*/
 template <class... Ts>
 struct overloaded : Ts... {
     using Ts::operator()...;
