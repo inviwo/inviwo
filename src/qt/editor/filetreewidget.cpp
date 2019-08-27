@@ -386,16 +386,24 @@ bool FileTreeWidget::selectRecentWorkspace(int index) {
 void FileTreeWidget::setFilter(const QString& str) {
     proxyModel_->setFilterRegExp(str);
 
-    // fold/unfold all tree item based on filtering
-    // Avoid unnecessary expands, e.g. during typing
-    if (isFiltering_ == str.isEmpty()) {
-        isFiltering_ = !str.isEmpty();
+    expandItems();    
 
-        if (isFiltering_) {
-            expandAll();
-        } else {
-            defaultExpand();
-        }
+    // select first leaf node
+    auto index = findFirstLeaf(QModelIndex());
+    if (index.isValid()) {
+        selectionModel()->setCurrentIndex(
+            index, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+    }
+}
+
+void FileTreeWidget::expandItems() {
+    const bool filtering = !proxyModel_->filterRegExp().isEmpty();
+
+    // fold/unfold all tree items based on filtering
+    if (proxyModel_->filterRegExp().isEmpty()) {
+        defaultExpand();
+    } else {
+        expandAll();
     }
 }
 
@@ -415,6 +423,11 @@ void FileTreeWidget::expandRecursively(const QModelIndex& index) {
     }
 }
 #endif
+
+QModelIndex FileTreeWidget::findFirstLeaf(QModelIndex parent) const {
+    if (!proxyModel_->hasChildren(parent)) return parent;
+    return findFirstLeaf(proxyModel_->index(0, 0, parent));
+}
 
 void FileTreeWidget::defaultExpand() {
     setUpdatesEnabled(false);

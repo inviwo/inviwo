@@ -125,6 +125,15 @@ void FileTreeModel::updateCategory(TreeItem* item,
                                    std::vector<std::unique_ptr<TreeItem>> children) {
     if (!item) return;
 
+    // if children are identical, skip update
+    if (children.size() == static_cast<size_t>(item->childCount())) {
+        bool match = true;
+        for (int i = 0; i < item->childCount() && match; ++i) {
+            match &= children[i].get()->operator==(*item->child(i));
+        }
+        if (match) return;
+    }
+
     QModelIndex index = getIndex(item);
 
     if (item->childCount() > 0) {
@@ -223,7 +232,7 @@ bool TreeItem::removeChildren(int position, int count) {
 
 void TreeItem::removeChildren() { childItems_.clear(); }
 
-TreeItem* TreeItem::child(int row) {
+TreeItem* TreeItem::child(int row) const {
     if ((row < 0) || (row >= static_cast<int>(childItems_.size()))) return nullptr;
     return childItems_[row].get();
 }
@@ -327,5 +336,20 @@ void TreeItem::setData(const QIcon& icon, const std::string& filename, bool isEx
         path_ = ".";
     }
 }
+
+bool TreeItem::operator==(const TreeItem& tree) const {
+    bool match = (type_ == tree.type_) && (caption_ == tree.caption_) &&
+                 (isExample_ == tree.isExample_) && (childCount() == tree.childCount());
+    // check children
+    if (match) {
+        for (int i = 0; i < childCount() && match; ++i) {
+            match &= childItems_[i].get()->operator==(*tree.child(i));
+        }
+    }
+
+    return match;
+}
+
+bool TreeItem::operator!=(const TreeItem& tree) const { return !operator==(tree); }
 
 }  // namespace inviwo
