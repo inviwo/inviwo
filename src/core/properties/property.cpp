@@ -69,7 +69,7 @@ Property::Property(const Property& rhs)
     , invalidationLevel_(rhs.invalidationLevel_)
     , owner_(nullptr)
     , initiatingWidget_(rhs.initiatingWidget_) {}
-    
+
 Property::~Property() {
     if (auto owner = getOwner()) {
         owner->removeProperty(this);

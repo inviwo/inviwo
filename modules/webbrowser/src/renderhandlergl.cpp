@@ -146,7 +146,7 @@ void RenderHandlerGL::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType ty
         if (y + h > texHeight) h -= y + h - texHeight;
         texture2D_.bind();
         // Update the popup rectangle.
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 4); // RGBA 8-bit are always aligned
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 4);  // RGBA 8-bit are always aligned
         glPixelStorei(GL_UNPACK_ROW_LENGTH, width);
         glPixelStorei(GL_UNPACK_SKIP_PIXELS, skip_pixels);
         glPixelStorei(GL_UNPACK_SKIP_ROWS, skip_rows);

@@ -137,7 +137,7 @@ void SurfaceExtraction::process() {
             result_[i].set(method, iso, color, invert, enclose, 0.0f,
                            dispatchPool([this, vol, method, iso, color, invert, enclose,
                                          i]() -> std::shared_ptr<Mesh> {
-                            RenderContext::getPtr()->activateLocalRenderContext();
+                               RenderContext::getPtr()->activateLocalRenderContext();
                                auto progressCallBack = [this, i](float s) {
                                    this->result_[i].status = s;
                                    float status = 0;
