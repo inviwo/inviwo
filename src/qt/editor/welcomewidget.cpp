@@ -67,7 +67,7 @@
 #include <QDateTime>
 #include <QShowEvent>
 #include <QKeyEvent>
-#include < QCoreApplication >
+#include <QCoreApplication>
 #include <QFile>
 
 #include <warn/pop>
