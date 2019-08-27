@@ -48,13 +48,6 @@ public:
     virtual ~IvfVolumeReader() = default;
 
     virtual std::shared_ptr<Volume> readData(const std::string& filePath) override;
-
-private:
-    std::string rawFile_;
-    size_t filePos_;
-    bool littleEndian_;
-    size3_t dimensions_;
-    const DataFormatBase* format_;
 };
 
 }  // namespace inviwo

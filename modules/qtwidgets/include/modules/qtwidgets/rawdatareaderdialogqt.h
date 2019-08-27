@@ -56,14 +56,14 @@ public:
     virtual dvec3 getSpacing() const override;
     virtual bool getEndianess() const override;
     virtual DataMapper getDataMapper() const override;
-    virtual size_t getDataOffset() const override;
+    virtual size_t getByteOffset() const override;
 
     virtual void setFormat(const DataFormatBase* format) override;
     virtual void setDimensions(uvec3 dim) override;
     virtual void setSpacing(dvec3 spacing) override;
     virtual void setEndianess(bool endian) override;
     virtual void setDataMapper(const DataMapper& datamapper) override;
-    virtual void setDataOffset(size_t offset) override;
+    virtual void setByteOffset(size_t offset) override;
 
 private:
     QLabel* fileName_;
@@ -82,7 +82,7 @@ private:
     QLineEdit* spaceY_;
     QLineEdit* spaceZ_;
 
-    QSpinBox* dataOffset_;
+    QSpinBox* byteOffset_;
     /*
     QSpinBox* timeSteps_;
     QSpinBox* timeStepOffset_;

@@ -45,7 +45,7 @@ RawVolumeReader::RawVolumeReader()
     , dimensions_(0)
     , spacing_(0.01f)
     , format_(nullptr)
-    , dataOffset_(0u)
+    , byteOffset_(0u)
     , parametersSet_(false) {
     addExtension(FileExtension("raw", "Raw binary file"));
 }
@@ -57,7 +57,7 @@ RawVolumeReader::RawVolumeReader(const RawVolumeReader& rhs)
     , dimensions_(rhs.dimensions_)
     , spacing_(rhs.spacing_)
     , format_(rhs.format_)
-    , dataOffset_(rhs.dataOffset_)
+    , byteOffset_(rhs.byteOffset_)
     , parametersSet_(false) {}
 
 RawVolumeReader& RawVolumeReader::operator=(const RawVolumeReader& that) {
@@ -68,7 +68,7 @@ RawVolumeReader& RawVolumeReader::operator=(const RawVolumeReader& that) {
         spacing_ = that.spacing_;
         format_ = that.format_;
         dataMapper_ = that.dataMapper_;
-        dataOffset_ = that.dataOffset_;
+        byteOffset_ = that.byteOffset_;
         DataReaderType<Volume>::operator=(that);
     }
 
@@ -78,13 +78,13 @@ RawVolumeReader& RawVolumeReader::operator=(const RawVolumeReader& that) {
 RawVolumeReader* RawVolumeReader::clone() const { return new RawVolumeReader(*this); }
 
 void RawVolumeReader::setParameters(const DataFormatBase* format, ivec3 dimensions,
-                                    bool littleEndian, DataMapper dataMapper, size_t dataOffset) {
+                                    bool littleEndian, DataMapper dataMapper, size_t byteOffset) {
     parametersSet_ = true;
     format_ = format;
     dimensions_ = dimensions;
     littleEndian_ = littleEndian;
     dataMapper_ = dataMapper;
-    dataOffset_ = dataOffset;
+    byteOffset_ = byteOffset;
 }
 
 std::shared_ptr<Volume> RawVolumeReader::readData(const std::string& filePath) {
@@ -127,8 +127,8 @@ std::shared_ptr<Volume> RawVolumeReader::readData(const std::string& filePath,
                 "rawReaderData.dataMapper.valueUnit", datamap.valueUnit);
             readerDialog->setDataMapper(datamap);
 
-            readerDialog->setDataOffset(metadata->getMetaData<SizeMetaData>(
-                "rawReaderData.dataOffset", readerDialog->getDataOffset()));
+            readerDialog->setByteOffset(metadata->getMetaData<SizeMetaData>(
+                "rawReaderData.byteOffset", readerDialog->getByteOffset()));
         }
 
         if (readerDialog->show()) {
@@ -137,7 +137,7 @@ std::shared_ptr<Volume> RawVolumeReader::readData(const std::string& filePath,
             littleEndian_ = readerDialog->getEndianess();
             spacing_ = static_cast<glm::vec3>(readerDialog->getSpacing());
             dataMapper_ = readerDialog->getDataMapper();
-            dataOffset_ = readerDialog->getDataOffset();
+            byteOffset_ = readerDialog->getByteOffset();
 
             if (metadata) {
                 metadata->setMetaData<IntMetaData>("rawReaderData.formatid",
@@ -150,7 +150,7 @@ std::shared_ptr<Volume> RawVolumeReader::readData(const std::string& filePath,
                                                           dataMapper_.valueRange);
                 metadata->setMetaData<StringMetaData>("rawReaderData.dataMapper.valueUnit",
                                                       dataMapper_.valueUnit);
-                metadata->setMetaData<SizeMetaData>("rawReaderData.dataOffset", dataOffset_);
+                metadata->setMetaData<SizeMetaData>("rawReaderData.byteOffset", byteOffset_);
             }
 
         } else {
@@ -175,7 +175,7 @@ std::shared_ptr<Volume> RawVolumeReader::readData(const std::string& filePath,
         volume->setWorldMatrix(wtm);
         auto vd = std::make_shared<VolumeDisk>(filePath, dimensions_, format_);
 
-        auto loader = std::make_unique<RawVolumeRAMLoader>(rawFile_, dataOffset_, dimensions_,
+        auto loader = std::make_unique<RawVolumeRAMLoader>(rawFile_, byteOffset_, dimensions_,
                                                            littleEndian_, format_);
         vd->setLoader(loader.release());
         volume->addRepresentation(vd);
