@@ -114,30 +114,6 @@ private:
     QWidget* widget_;
 };
 
-class FileTreeWidgetEventFilter : public QObject {
-public:
-    FileTreeWidgetEventFilter(QWidget* w, QObject* parent = nullptr)
-        : QObject(parent), widget_(w) {}
-    virtual ~FileTreeWidgetEventFilter() = default;
-
-    bool eventFilter(QObject* obj, QEvent* e) {
-        switch (e->type()) {
-            case QEvent::KeyPress: {
-                QKeyEvent* keyEvent = static_cast<QKeyEvent*>(e);
-                if (keyEvent->key() == Qt::Key_Up) {
-                }
-                break;
-            }
-            default:
-                break;
-        }
-        return QObject::eventFilter(obj, e);
-    }
-
-private:
-    QWidget* widget_;
-};
-
 }  // namespace
 
 WelcomeWidget::WelcomeWidget(InviwoMainWindow* window, QWidget* parent)
