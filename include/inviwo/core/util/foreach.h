@@ -84,12 +84,8 @@ void forEach(const Iterable& iterable, Callback&& callback) {
 template <typename Iterable, typename Callback, typename OnDoneCallback>
 std::vector<std::future<void>> forEachParallelAsync(const Iterable& iterable, Callback&& callback,
                                                     size_t jobs, OnDoneCallback&& onTaskDone) {
-    using std::begin;
-
     auto settings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
-    auto poolSize = settings->poolSize_.get();
-
-    using value_type = decltype(*begin(iterable));
+    const auto poolSize = settings->poolSize_.get();
 
     if (poolSize == 0) {
         forEach(iterable, std::forward<Callback>(callback));
@@ -106,8 +102,8 @@ std::vector<std::future<void>> forEachParallelAsync(const Iterable& iterable, Ca
     for (size_t job = 0; job < jobs; ++job) {
         size_t start = (s * job) / jobs;
         size_t end = (s * (job + 1)) / jobs;
-        auto a = begin(iterable) + start;
-        auto b = begin(iterable) + end;
+        auto a = std::begin(iterable) + start;
+        auto b = std::begin(iterable) + end;
         auto future = dispatchPool([a, b, start, c = std::forward<Callback>(callback),
                                     onTaskDone = std::forward<OnDoneCallback>(onTaskDone)]() {
             detail::foreach (a, b, c, start);
