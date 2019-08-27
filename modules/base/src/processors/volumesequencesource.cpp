@@ -72,6 +72,7 @@ VolumeSequenceSource::VolumeSequenceSource(InviwoApplication* app)
     basis_.setReadOnly(true);
 
     util::updateFilenameFilters<VolumeSequence>(*rf_, file_, reader_);
+    util::updateReaderFromFile(file_, reader_);
 
     auto updateVisible = [&]() {
         file_.setVisible(inputType_.get() == InputType::SingleFile);
