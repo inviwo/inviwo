@@ -135,7 +135,6 @@ colorbrewer::Family ColormapProperty::getFamily() const { return *colormap; }
 void ColormapProperty::setupForColumn(const Column& col) {
     col.getBuffer()->getRepresentation<BufferRAM>()->dispatch<void, dispatching::filter::Scalars>(
         [&](auto ram) -> void {
-            using T = typename util::PrecisionValueType<decltype(ram)>;
             auto minMax = util::bufferMinMax(ram, IgnoreSpecialValues::Yes);
             setupForColumn(col, minMax.first.x, minMax.second.x);
         });

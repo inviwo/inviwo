@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/dataframe/properties/dataframecolormapproperty.h>
+#include <inviwo/core/util/utilities.h>
 
 namespace inviwo {
 
@@ -57,14 +58,14 @@ DataFrameColormapProperty::DataFrameColormapProperty(std::string identifier,
 
 
     selectedColorAxis.onChange([&]() {
-        if (colormaps_.size() <= selectedColorAxis || overrideColormap) return;
+        if (colormaps_.size() <= static_cast<size_t>(*selectedColorAxis) || overrideColormap) return;
 
-        for (auto i = 0; i < colormaps_.size(); i++) {
-            colormaps_[i]->setVisible(i == selectedColorAxis);
+        for (auto i = 0u; i < colormaps_.size(); i++) {
+            colormaps_[i]->setVisible(i == static_cast<size_t>(*selectedColorAxis));
         }
 
         auto updateColormap = [&]() {
-            if (colormaps_.size() <= selectedColorAxis) return;
+            if (colormaps_.size() <= static_cast<size_t>(*selectedColorAxis)) return;
             auto cm = dynamic_cast<const ColormapProperty*>(colormaps_[selectedColorAxis]);
             if (cm) *tf = cm->getTransferFunction();
         };
