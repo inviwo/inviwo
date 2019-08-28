@@ -35,6 +35,7 @@
 #include <inviwo/core/processors/processortags.h>
 #include <inviwo/core/processors/processorinfo.h>
 #include <inviwo/core/processors/processortraits.h>
+#include <inviwo/core/processors/processor.h>
 
 #include <inviwo/core/util/stdextensions.h>
 
@@ -42,8 +43,6 @@
 #include <string>
 
 namespace inviwo {
-
-class Processor;
 
 class IVW_CORE_API ProcessorFactoryObject {
 public:
