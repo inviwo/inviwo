@@ -66,7 +66,7 @@ ButtonGroupPropertyWidgetQt::ButtonGroupPropertyWidgetQt(ButtonGroupProperty* pr
         if (button.name) {
             buttonWidget->setText(utilqt::toQString(*button.name));
         }
-        if(button.tooltip) {
+        if (button.tooltip) {
             buttonWidget->setToolTip(utilqt::toQString(*button.tooltip));
         }
 

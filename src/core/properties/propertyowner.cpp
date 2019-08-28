@@ -49,7 +49,7 @@ PropertyOwner::PropertyOwner(const PropertyOwner& rhs)
 
     for (const auto& p : rhs.ownedProperties_) addProperty(p->clone());
 }
-    
+
 PropertyOwner::~PropertyOwner() {
     while (size() != 0) {
         removeProperty(begin());
