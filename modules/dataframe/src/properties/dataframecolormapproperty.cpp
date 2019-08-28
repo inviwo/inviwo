@@ -37,8 +37,10 @@ std::string DataFrameColormapProperty::getClassIdentifier() const { return class
 
 DataFrameColormapProperty::DataFrameColormapProperty(std::string identifier,
                                                      std::string displayName,
-                                                     DataInport<DataFrame>& port)
-    : CompositeProperty(identifier, displayName)
+                                                     DataInport<DataFrame>& port,
+                                                     InvalidationLevel invalidationLevel,
+                                                     PropertySemantics semantics)
+    : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , selectedColorAxis{"selectedColorAxis", "Column", port, false, 1}
     , overrideColormap("overrideColormap", "Override", false)
     , tf{"tf", "Colormap"}
@@ -58,7 +60,7 @@ DataFrameColormapProperty::DataFrameColormapProperty(std::string identifier,
 
 
     selectedColorAxis.onChange([&]() {
-        if (colormaps_.size() <= static_cast<size_t>(*selectedColorAxis) || overrideColormap) return;
+        if (selectedColorAxis.size() == 0 || colormaps_.size() != selectedColorAxis.size() || overrideColormap) return;
 
         for (auto i = 0u; i < colormaps_.size(); i++) {
             colormaps_[i]->setVisible(i == static_cast<size_t>(*selectedColorAxis));
@@ -117,8 +119,8 @@ void DataFrameColormapProperty::createOrUpdateProperties(
             removeProperty(p);
         }
     }
-    selectedColorAxis.propertyModified();
     setCurrentStateAsDefault();
+    selectedColorAxis.propertyModified();
 }
 
 }  // namespace inviwo

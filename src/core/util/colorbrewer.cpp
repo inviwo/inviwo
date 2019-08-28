@@ -2951,7 +2951,7 @@ TransferFunction getTransferFunction(const Category &category, const Family &fam
         if (discrete) {
             auto dt = midPoint / (0.5 * (colors.size()));
             double start = 0, end = std::max(dt - std::numeric_limits<double>::epsilon(), 0.);
-            for (auto i = 0; i < colors.size() / 2; i++) {
+            for (auto i = 0u; i < colors.size() / 2; i++) {
                 tf.add(start, vec4(colors[i]));
                 tf.add(end, vec4(colors[i]));
                 start += dt;
@@ -2974,7 +2974,7 @@ TransferFunction getTransferFunction(const Category &category, const Family &fam
             }
         } else {
             auto dt = midPoint / (0.5 * (colors.size() - 1.0));
-            for (auto i = 0; i < colors.size() / 2; i++) {
+            for (auto i = 0u; i < colors.size() / 2; i++) {
                 tf.add(i * dt, vec4(colors[i]));
             }
             tf.add(midPoint, vec4(colors[colors.size() / 2]));

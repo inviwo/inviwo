@@ -52,7 +52,9 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    DataFrameColormapProperty(std::string identifier, std::string displayName, DataInport<DataFrame>& port);
+    DataFrameColormapProperty(std::string identifier, std::string displayName, DataInport<DataFrame>& port,
+                              InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                              PropertySemantics semantics = PropertySemantics::Default);
     virtual ~DataFrameColormapProperty() = default;
 
     void createOrUpdateProperties(std::shared_ptr<const DataFrame> dataframe);
