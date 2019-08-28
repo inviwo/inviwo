@@ -810,12 +810,6 @@ ivw_register_license_file(NAME "warn" MODULE Core
     FILES ${IVW_TOOLS_DIR}/codegen/warn/warn/LICENSE
 )
 
-ivw_register_license_file(NAME "zlib" TARGET ZLIB::ZLIB MODULE Core
-    URL "http://zlib.net/"
-    TYPE "The zlib/libpng License"
-    FILES ${IVW_EXTENSIONS_DIR}/zlib-1.2.11/LICENSE
-)
-
 if(IVW_UNITTESTS OR IVW_INTEGRATION_TESTS)
     ivw_register_license_file(NAME "Google C++ Testing Framework" TARGET gtest MODULE Core
         URL "https://github.com/google/googletest"

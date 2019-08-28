@@ -293,3 +293,8 @@ source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
 # Make package (for other projects to find)
 ivw_make_package(ZLIB zlib1)
 
+ivw_register_license_file(NAME "zlib" TARGET ZLIB::ZLIB MODULE Core
+    URL "http://zlib.net/"
+    TYPE "The zlib/libpng License"
+    FILES ${IVW_EXTENSIONS_DIR}/zlib-1.2.11/LICENSE
+)
