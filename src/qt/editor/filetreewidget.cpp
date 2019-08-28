@@ -397,8 +397,6 @@ void FileTreeWidget::setFilter(const QString& str) {
 }
 
 void FileTreeWidget::expandItems() {
-    const bool filtering = !proxyModel_->filterRegExp().isEmpty();
-
     // fold/unfold all tree items based on filtering
     if (proxyModel_->filterRegExp().isEmpty()) {
         defaultExpand();
