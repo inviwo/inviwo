@@ -17,7 +17,7 @@ bg.backgroundStyle.selectedDisplayName = "Uniform color"
 bg.bgColor1.value = glm.vec4(1, 1, 1, 1)
 
 canvas = app.processorFactory.create("org.inviwo.CanvasGL", glm.ivec2(0, 0))
-canvas.inputSize.dimensions.value = glm.ivec2(256, 600)
+canvas.inputSize.dimensions.value = glm.size2_t(256, 600)
 
 network.addProcessor(bg)
 network.addProcessor(canvas)

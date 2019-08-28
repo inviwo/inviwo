@@ -211,9 +211,17 @@ bool ImageOutport::isHandlingResizeEvents() const { return handleResizeEvents_ &
 
 Document ImageOutport::getInfo() const {
     using P = Document::PathComponent;
+    using H = utildoc::TableBuilder::Header;
 
     auto doc = DataOutport<Image>::getInfo();
-    auto p = doc.append("p");
+    auto b = doc.get({P{"html"}, P{"body"}});
+    {
+        auto t = b.get({P{"p"}, P{"table"}});
+        utildoc::TableBuilder tb(t);
+        tb(H("Has Editable Data"), hasEditableData());
+        tb(H("Handle Resize Events"), handleResizeEvents_);
+    }
+    auto p = b.append("p");
     p.append("b", "Requested sizes", {{"style", "color:white;"}});
     if (requestedDimensions_.empty()) {
         p += "No requested sizes";
@@ -225,6 +233,9 @@ Document ImageOutport::getInfo() const {
                size == master ? "Master" : "");
         }
     }
+
+    std::string d = doc;
+    std::cout << d << std::endl;
     return doc;
 }
 

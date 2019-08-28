@@ -185,6 +185,15 @@ Document::DocumentHandle Document::DocumentHandle::append(
     return insert(PathComponent::end(), name, content, attributes);
 }
 
+Document::DocumentHandle Document::DocumentHandle::insert(PathComponent pos, Document doc) {
+    auto iter = pos(elem_->children_);
+    auto it = elem_->children_.insert(iter, std::move(doc.root_));
+    return DocumentHandle(doc_, it->get());
+}
+Document::DocumentHandle Document::DocumentHandle::append(Document doc) {
+    return insert(PathComponent::end(), std::move(doc));
+}
+
 Document::Element& Document::DocumentHandle::element() { return *elem_; }
 
 const Document::Element& Document::DocumentHandle::element() const { return *elem_; }
@@ -222,6 +231,11 @@ Document::DocumentHandle Document::append(
     const std::unordered_map<std::string, std::string>& attributes) {
     return handle().append(name, content, attributes);
 }
+
+Document::DocumentHandle Document::insert(PathComponent pos, Document doc) {
+    return handle().insert(pos, std::move(doc));
+}
+Document::DocumentHandle Document::append(Document doc) { return handle().append(std::move(doc)); }
 
 utildoc::TableBuilder::TableBuilder(Document::DocumentHandle handle, Document::PathComponent pos,
                                     const std::unordered_map<std::string, std::string>& attributes)

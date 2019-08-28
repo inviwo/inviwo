@@ -245,10 +245,10 @@ Document DataInport<T, N, Flat>::getInfo() const {
     Document doc;
     using P = Document::PathComponent;
     using H = utildoc::TableBuilder::Header;
-    auto t = doc.append("html").append("body").append("table");
-    auto pi = t.append("tr").append("td");
-    pi.append("b", DataTraits<T>::dataName() + name(), {{"style", "color:white;"}});
-    utildoc::TableBuilder tb(pi, P::end());
+    auto b = doc.append("html").append("body");
+    auto p = b.append("p");
+    p.append("b", DataTraits<T>::dataName() + name(), {{"style", "color:white;"}});
+    utildoc::TableBuilder tb(p, P::end());
     tb(H("Identifier"), getIdentifier());
     tb(H("Class"), getClassIdentifier());
     tb(H("Ready"), isReady());
@@ -260,10 +260,9 @@ Document DataInport<T, N, Flat>::getInfo() const {
     tb(H("Optional"), isOptional());
 
     if (hasData()) {
-        auto datadoc = DataTraits<T>::info(*getData());
-        doc.append("p", datadoc);
+        b.append("p").append(DataTraits<T>::info(*getData()));
     } else {
-        doc.append("p", "Port has no data");
+        b.append("p", "Port has no data");
     }
     return doc;
 }

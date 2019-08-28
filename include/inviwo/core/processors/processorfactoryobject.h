@@ -74,20 +74,26 @@ public:
     virtual ~ProcessorFactoryObjectTemplate() = default;
 
     virtual std::unique_ptr<Processor> create(InviwoApplication* app) {
+        std::unique_ptr<Processor> p;
+
         if constexpr (std::is_constructible_v<T, const std::string&, const std::string&,
                                               InviwoApplication*>) {
-            return std::make_unique<T>(getDisplayName(), getDisplayName(), app);
+            p = std::make_unique<T>(getDisplayName(), getDisplayName(), app);
         } else if constexpr (std::is_constructible_v<T, const std::string&, const std::string&>) {
-            return std::make_unique<T>(getDisplayName(), getDisplayName());
+            p = std::make_unique<T>(getDisplayName(), getDisplayName());
         } else if constexpr (std::is_constructible_v<T, const std::string&, InviwoApplication*>) {
-            return std::make_unique<T>(getDisplayName(), app);
+            p = std::make_unique<T>(getDisplayName(), app);
         } else if constexpr (std::is_constructible_v<T, const std::string&>) {
-            return std::make_unique<T>(getDisplayName());
+            p = std::make_unique<T>(getDisplayName());
         } else if constexpr (std::is_constructible_v<T, InviwoApplication*>) {
-            return std::make_unique<T>(app);
+            p = std::make_unique<T>(app);
         } else {
-            return std::make_unique<T>();
+            p = std::make_unique<T>();
         }
+
+        if (p->getIdentifier().empty()) p->setIdentifier(getDisplayName());
+        if (p->getDisplayName().empty()) p->setDisplayName(getDisplayName());
+        return p;
     }
 };
 #include <warn/pop>

@@ -106,6 +106,8 @@ public:
 
     void passOnDataToOutport(ImageOutport* outport) const;
 
+    virtual Document getInfo() const override;
+
 private:
     std::shared_ptr<const Image> getImage(ImageOutport* port) const;
     bool outportDeterminesSize_;
@@ -331,6 +333,22 @@ void BaseImageInport<N>::passOnDataToOutport(ImageOutport* outport) const {
         std::shared_ptr<Image> out = outport->getEditableData();
         if (out) img->copyRepresentationsTo(out.get());
     }
+}
+
+template <size_t N>
+Document BaseImageInport<N>::getInfo() const {
+    using P = Document::PathComponent;
+    using H = utildoc::TableBuilder::Header;
+
+    auto doc = DataInport<Image, N>::getInfo();
+
+    auto b = doc.get({P{"html"}, P{"body"}});
+    auto t = b.get({P{"p"},  P{"table"}});
+
+    utildoc::TableBuilder tb(t);
+    tb(H("Outport Determining Size"), isOutportDeterminingSize());
+
+    return doc;
 }
 
 }  // namespace inviwo
