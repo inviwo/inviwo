@@ -64,6 +64,7 @@ ImageSource::ImageSource(InviwoApplication* app, const std::string& file)
     imageDimension_.setReadOnly(true);
 
     util::updateFilenameFilters<Layer>(*rf_, file_, reader_);
+    util::updateReaderFromFile(file_, reader_);
 
     // make sure that we always process even if not connected
     isSink_.setUpdate([]() { return true; });
