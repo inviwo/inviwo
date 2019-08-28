@@ -22,7 +22,7 @@ if len(missing_modules)>0:
     exit()
 
 def getReleatedFiles():
-    repo = git.Repo(search_parent_directories=True)
+    repo = git.Repo("../inviwo")
     if repo.head.object == repo.remotes.origin.refs.master.object: # this is the master brach
         def is_relevant(file):
             return True
