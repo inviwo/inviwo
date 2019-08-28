@@ -41,14 +41,15 @@ ivw_add_unittest(${TEST_FILES})
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
 
-target_link_libraries(inviwo-module-png PRIVATE inviwo::libpng)
+find_package(PNG REQUIRED)
+target_link_libraries(inviwo-module-png PRIVATE PNG::PNG)
 
 #--------------------------------------------------------------------
 # Add shader directory to pack
 # ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/glsl)
 
 
-ivw_register_license_file(NAME libpng TARGET inviwo::libpng MODULE CImg TYPE "libpng (BSD-style)"
+ivw_register_license_file(NAME libpng TARGET PNG::PNG MODULE CImg TYPE "libpng (BSD-style)"
     URL http://www.libpng.org/pub/png/libpng.html
     FILES ${IVW_EXTENSIONS_DIR}/libpng/LICENSE.txt
 )

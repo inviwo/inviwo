@@ -36,46 +36,35 @@ set(SOURCE_FILES
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
-
 #--------------------------------------------------------------------
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
 
-#--------------------------------------------------------------------
-# HDF5 Components
-set(HDF5_EXTERNALLY_CONFIGURED  1)
-set(HDF5_EXPORTED_TARGETS       "inviwo-hdf5-targets")
-set(HDF5_EXTERNAL_LIB_PREFIX    "ivw-")
-
-set(HDF5_INSTALL_NO_DEVELOPMENT ON)
-if(WIN32)
-    set(HDF5_INSTALL_BIN_DIR bin)
-    set(HDF5_INSTALL_LIB_DIR lib)
-elseif(APPLE)
-    set(HDF5_INSTALL_BIN_DIR bin)
-    set(HDF5_INSTALL_LIB_DIR Inviwo.app/Contents/MacOS)
-else()
-    set(HDF5_INSTALL_BIN_DIR bin)
-    set(HDF5_INSTALL_LIB_DIR lib)
-endif()
-
-option(HDF5_ENABLE_Z_LIB_SUPPORT "Enable Zlib Filters" ON)
-#get_target_property(ZLIB_INCLUDE_DIRS ZLIB::ZLIB INTERFACE_INCLUDE_DIRECTORIES)
-#set(ZLIB_LIBRARIES ZLIB::ZLIB)
-#set(H5_ZLIB_HEADER "zlib.h")
-#if(${BUILD_SHARED_LIBS})
-#    set(ZLIB_SHARED_LIBRARY "${ZLIB_LIBRARIES}")
-#else()
-#    set(ZLIB_STATIC_LIBRARY "${ZLIB_LIBRARIES}")
-#endif()
-
-set(HDF5_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-set(HDF5_BUILD_TOOLS OFF CACHE BOOL "" FORCE)
-set(BUILD_TESTING OFF CACHE BOOL "" FORCE)
-
-option (IVW_HDF5_USE_EXTERNAL "Link with external HDF5 library instead of building it." OFF)
-
-if (NOT IVW_HDF5_USE_EXTERNAL)
+option (IVW_USE_EXTERNAL_HDF5 "Link with external HDF5 library instead of building it." OFF)
+if (NOT IVW_USE_EXTERNAL_HDF5)
+    #--------------------------------------------------------------------
+    # HDF5 Components
+    set(HDF5_EXTERNALLY_CONFIGURED  1)
+    set(HDF5_EXPORTED_TARGETS       "inviwo-hdf5-targets")
+    set(HDF5_EXTERNAL_LIB_PREFIX    "ivw-")
+    
+    set(HDF5_INSTALL_NO_DEVELOPMENT ON)
+    if(WIN32)
+        set(HDF5_INSTALL_BIN_DIR bin)
+        set(HDF5_INSTALL_LIB_DIR lib)
+    elseif(APPLE)
+        set(HDF5_INSTALL_BIN_DIR bin)
+        set(HDF5_INSTALL_LIB_DIR Inviwo.app/Contents/MacOS)
+    else()
+        set(HDF5_INSTALL_BIN_DIR bin)
+        set(HDF5_INSTALL_LIB_DIR lib)
+    endif()
+    
+    option(HDF5_ENABLE_Z_LIB_SUPPORT "Enable Zlib Filters" ON)
+   
+    set(HDF5_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+    set(HDF5_BUILD_TOOLS OFF CACHE BOOL "" FORCE)
+    set(BUILD_TESTING OFF CACHE BOOL "" FORCE)
 
     add_subdirectory(ext/hdf5)
 
@@ -99,7 +88,7 @@ if (NOT IVW_HDF5_USE_EXTERNAL)
         set_property(TARGET ${h5-static} APPEND_STRING PROPERTY STATIC_LIBRARY_FLAGS " /IGNORE:4221")
     endif()
 
-    if(${BUILD_SHARED_LIBS})
+    if(BUILD_SHARED_LIBS)
         target_link_libraries(inviwo-module-hdf5 PUBLIC ${h5-shared})
     else()
         target_link_libraries(inviwo-module-hdf5 PUBLIC ${h5-static})
@@ -122,22 +111,13 @@ if (NOT IVW_HDF5_USE_EXTERNAL)
         TYPE "BSD-style"
         FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/hdf5/COPYING
     )
-
-else (IVW_HDF5_USE_EXTERNAL)
-
+else()
     if(NOT BUILD_SHARED_LIBS)
         set(HDF5_USE_STATIC_LIBRARIES ON)
     endif()
     find_package(HDF5 COMPONENTS C HL CXX REQUIRED)
-    if(HDF5_FOUND)
-        target_include_directories(inviwo-module-hdf5 PUBLIC ${HDF5_INCLUDE_DIR})
-	if(${BUILD_SHARED_LIBS})
-	    target_link_libraries(inviwo-module-hdf5 PUBLIC ${HDF5_LIBRARIES})
-	else()
-	    target_link_libraries(inviwo-module-hdf5 PUBLIC ${HDF5_LIBRARIES})
-	endif()
-    endif (HDF5_FOUND)
-
-endif (NOT IVW_HDF5_USE_EXTERNAL)
+    target_include_directories(inviwo-module-hdf5 PUBLIC ${HDF5_INCLUDE_DIR})
+    target_link_libraries(inviwo-module-hdf5 PUBLIC ${HDF5_LIBRARIES})
+endif()
 
 ivw_make_package(InviwoHDF5Module inviwo-module-hdf5)
