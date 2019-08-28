@@ -122,26 +122,12 @@ add_custom_target(uninstall COMMENT "Dummy target to prevent other uninstalls")
 # It also ensures that we are in control of the used version
 # and is built using the same, Inviwo, settings.
 
-option (IVW_IMG_USE_EXTERNAL "Link with external image libraries (zlib, png, jpeg, tiff) instead of building them." OFF)
-if (NOT IVW_IMG_USE_EXTERNAL)
+option (IVW_USE_EXTERNAL_IMG "Link with external image libraries (zlib, png, jpeg, tiff) instead of building them." OFF)
+if (NOT IVW_USE_EXTERNAL_IMG)
   add_subdirectory(ext/zlib-1.2.11) # Defines target ZLIB::ZLIB
-  add_subdirectory(ext/libpng)      # Defines target inviwo::libpng and libpng
-  add_subdirectory(ext/libjpeg)     # Defines target inviwo::libjpeg and libjpeg
-  add_subdirectory(ext/tiff)        # Defines target inviwo::tiff and tiff
-else()
-  find_package(ZLIB REQUIRED)
-
-  find_package(PNG REQUIRED)
-  set_target_properties(PNG::PNG PROPERTIES IMPORTED_GLOBAL TRUE)
-  add_library(inviwo::libpng ALIAS PNG::PNG)
-
-  find_package(JPEG REQUIRED)
-  set_target_properties(JPEG::JPEG PROPERTIES IMPORTED_GLOBAL TRUE)
-  add_library(inviwo::libjpeg ALIAS JPEG::JPEG)
-
-  find_package(TIFF REQUIRED)
-  set_target_properties(TIFF::TIFF PROPERTIES IMPORTED_GLOBAL TRUE)
-  add_library(inviwo::tiff ALIAS TIFF::TIFF)
+  add_subdirectory(ext/libpng)      # Defines target PNG::PNG
+  add_subdirectory(ext/libjpeg)     # Defines target JPEG::JPEG
+  add_subdirectory(ext/tiff)        # Defines target TIFF::TIFF
 endif()
 
 add_subdirectory(ext/flags)
