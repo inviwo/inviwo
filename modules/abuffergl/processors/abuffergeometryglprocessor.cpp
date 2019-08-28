@@ -90,7 +90,6 @@ ABufferGeometryGLProcessor::ABufferGeometryGLProcessor()
     imageInport_.setOptional(true);
 
     addProperty(camera_);
-    outport_.addResizeEventListener(&camera_);
 
     inport_.onChange([this]() { updateDrawers(); });
 

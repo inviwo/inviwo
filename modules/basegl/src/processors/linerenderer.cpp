@@ -86,7 +86,6 @@ LineRenderer::LineRenderer()
               shader.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
               configureShader(shader);
           }} {
-    outport_.addResizeEventListener(&camera_);
 
     addPort(inport_);
     addPort(imageInport_);

@@ -42,7 +42,8 @@ const ProcessorInfo ImageToSpatialSampler::processorInfo_{
 };
 const ProcessorInfo ImageToSpatialSampler::getProcessorInfo() const { return processorInfo_; }
 
-ImageToSpatialSampler::ImageToSpatialSampler() : Processor(), image_("image"), sampler_("sampler") {
+ImageToSpatialSampler::ImageToSpatialSampler()
+    : Processor(), image_("image", true), sampler_("sampler") {
     addPort(image_);
     addPort(sampler_);
 }

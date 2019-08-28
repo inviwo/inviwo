@@ -83,7 +83,6 @@ MeshPicking::MeshPicking()
     highlightColor_.setSemantics(PropertySemantics::Color);
     addProperty(highlightColor_);
 
-    outport_.addResizeEventListener(&camera_);
     addProperty(camera_);
     addProperty(trackball_);
 

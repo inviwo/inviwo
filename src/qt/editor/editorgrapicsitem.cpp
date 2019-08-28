@@ -76,6 +76,7 @@ void EditorGraphicsItem::showToolTipHelper(QGraphicsSceneHelpEvent* e, QString s
     QGraphicsView* v = scene()->views().first();
     QRectF rect = this->mapRectToScene(this->rect());
     QRect viewRect = v->mapFromScene(rect).boundingRect();
+    e->accept();
     QToolTip::showText(e->screenPos(), string, v, viewRect);
 }
 
@@ -91,8 +92,8 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
     using P = Document::PathComponent;
 
     auto doc = port->getInfo();
-    auto t = doc.get({P("html"), P("body"), P("table")});
-
+    auto b = doc.get({P("html"), P("body")});
+    
     auto inport = dynamic_cast<const Inport*>(port);
     auto outport = dynamic_cast<Outport*>(port);
     if (!outport && inport) {
@@ -133,18 +134,19 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
                 layers.push_back({"", image->getColorLayer(0)});
             }
 
-            auto tableCell = t.append("tr").append("td").append("table").append("tr");
-            size_t perRow = static_cast<size_t>(std::ceil(std::sqrt(layers.size())));
+            auto p = b.append("p");
+            p.append("b", "Port Inspector", {{"style", "color:white;"}});
+            auto t = p.append("table");
+            auto tableRow = t.append("tr");
+            const size_t perRow = static_cast<size_t>(std::ceil(std::sqrt(layers.size())));
             size_t rowCount = 0;
-            for (auto item : layers) {
+            for (const auto& [name, layer] : layers) {
                 if (rowCount >= perRow) {
                     rowCount = 0;
-                    tableCell = t.append("tr").append("td").append("table").append("tr");
+                    tableRow = t.append("tr");
                 }
-                auto name = item.first;
-                auto layer = item.second;
 
-                auto imgbuf = layer->getAsCodedBuffer("png");
+                const auto imgbuf = layer->getAsCodedBuffer("png");
                 // imgbuf might be null, if we don't have a data writer factory function to save
                 // the layer. Happens if cimg not used, and no other data writer is registered.
                 if (!imgbuf) continue;
@@ -152,7 +154,7 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
                 QByteArray byteArray(reinterpret_cast<char*>(imgbuf->data()),
                                      static_cast<int>(imgbuf->size()));
 
-                auto table = tableCell.append("td").append("table");
+                auto table = tableRow.append("td").append("table");
 
                 table.append("tr").append("td").append(
                     "img", "",

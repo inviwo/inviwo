@@ -36,7 +36,6 @@
 #include <inviwo/core/ports/outport.h>
 #include <inviwo/core/processors/processorobserver.h>
 #include <inviwo/core/interaction/events/eventpropagator.h>
-#include <inviwo/core/interaction/events/eventlistener.h>
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/core/processors/processorinfo.h>
 #include <inviwo/core/processors/processorstate.h>
@@ -48,7 +47,6 @@ namespace inviwo {
 class Event;
 class InteractionHandler;
 class ProcessorWidget;
-class ResizeEvent;
 class ProcessorNetwork;
 
 /**
@@ -210,7 +208,7 @@ public:
     ProcessorWidget* getProcessorWidget() const;
     bool hasProcessorWidget() const;
 
-    void setNetwork(ProcessorNetwork* network);
+    virtual void setNetwork(ProcessorNetwork* network);
     ProcessorNetwork* getNetwork() const;
 
     /**

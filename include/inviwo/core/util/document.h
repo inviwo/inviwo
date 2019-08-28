@@ -145,6 +145,10 @@ public:
         DocumentHandle append(const std::string& name, const std::string content = "",
                               const std::unordered_map<std::string, std::string>& attributes = {});
 
+
+        DocumentHandle insert(PathComponent pos, Document doc);
+        DocumentHandle append(Document doc);
+
         const Element& element() const;
         Element& element();
 
@@ -173,6 +177,9 @@ public:
 
     DocumentHandle append(const std::string& name, const std::string content = "",
                           const std::unordered_map<std::string, std::string>& attributes = {});
+
+    DocumentHandle insert(PathComponent pos, Document doc);
+    DocumentHandle append(Document doc);
 
     template <typename BeforVisitor, typename AfterVisitor>
     void visit(BeforVisitor before, AfterVisitor after) const {

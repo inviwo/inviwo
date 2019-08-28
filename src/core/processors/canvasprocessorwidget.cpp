@@ -29,5 +29,35 @@
 
 #include <inviwo/core/processors/canvasprocessorwidget.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/network/portconnection.h>
+#include <inviwo/core/network/networkutils.h>
+#include <inviwo/core/interaction/events/resizeevent.h>
+#include <inviwo/core/util/canvas.h>
+#include <inviwo/core/util/stdextensions.h>
 
-namespace inviwo {}  // namespace inviwo
+namespace inviwo {
+
+CanvasProcessorWidget::CanvasProcessorWidget(Processor* p) : ProcessorWidget(p) {
+    p->getNetwork()->addObserver(this);
+}
+
+void CanvasProcessorWidget::onProcessorNetworkDidAddConnection(const PortConnection& con) {
+    const auto successors = util::getSuccessors(con.getInport()->getProcessor());
+    if (util::contains(successors, processor_)) {
+        const auto size = getCanvas()->getCanvasDimensions();
+        ResizeEvent event{size, size};
+        getCanvas()->propagateEvent(&event);
+    }
+}
+
+void CanvasProcessorWidget::onProcessorNetworkDidRemoveConnection(const PortConnection& con) {
+    const auto successors = util::getSuccessors(con.getInport()->getProcessor());
+    if (util::contains(successors, processor_)) {
+        const auto size = getCanvas()->getCanvasDimensions();
+        ResizeEvent event{size, size};
+        getCanvas()->propagateEvent(&event);
+    }
+}
+
+}  // namespace inviwo

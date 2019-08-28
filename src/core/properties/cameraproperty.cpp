@@ -225,10 +225,17 @@ void CameraProperty::set(const Property* srcProperty) {
         }
 
         for (auto dest : getProperties()) {
-            if (auto src = cameraSrcProp->getPropertyByIdentifier(dest->getIdentifier())) {
-                dest->set(src);
+            if (!aspectSupplier_ || dest->getIdentifier() != aspectRatio_.getIdentifier()) {
+                if (auto src = cameraSrcProp->getPropertyByIdentifier(dest->getIdentifier())) {
+                    dest->set(src);
+                }
             }
         }
+
+        if (aspectSupplier_) {
+            camera_->setAspectRatio(aspectRatio_);
+        }
+
         propertyModified();
     }
 }
@@ -311,6 +318,7 @@ vec3 CameraProperty::getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
 
 void CameraProperty::invokeEvent(Event* event) {
     if (auto resizeEvent = event->getAs<ResizeEvent>()) {
+        aspectSupplier_ = true;
         const auto canvasSize = resizeEvent->size();
         // Do not set aspect ratio if canvas size is 0 in any dimension.
         if (canvasSize.x > 0 && canvasSize.y > 0) {

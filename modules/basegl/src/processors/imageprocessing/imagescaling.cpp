@@ -99,14 +99,16 @@ void ImageScaling::process() {
 void ImageScaling::propagateEvent(Event* event, Outport* source) {
     if (event->hasVisitedProcessor(this)) return;
 
-    if (event->hash() == ResizeEvent::chash()) {
+    if (auto resizeEvent = event->getAs<ResizeEvent>()) {
         // cache size of the resize event
-        lastValidOutputSize_ = event->getAs<ResizeEvent>()->size();
+        lastValidOutputSize_ = resizeEvent->size();
 
         if (enabled_) {
-            event->markAsVisited(this);
+            resizeEvent->markAsVisited(this);
 
-            if (resizeInports()) event->markAsUsed();
+            if (resizeInports()) {
+                resizeEvent->markAsUsed();
+            }
             return;
         }
     }

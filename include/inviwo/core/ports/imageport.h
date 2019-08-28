@@ -34,7 +34,6 @@
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/datastructures/image/image.h>
-#include <inviwo/core/interaction/events/eventhandler.h>
 #include <inviwo/core/interaction/events/resizeevent.h>
 #include <inviwo/core/util/imagecache.h>
 
@@ -47,7 +46,6 @@ class ImageOutport;
 class IVW_CORE_API ImagePortBase {
 public:
     virtual ~ImagePortBase() = default;
-    virtual size2_t getRequestedDimensions(Outport* outport) const = 0;
     virtual bool isOutportDeterminingSize() const = 0;
     virtual void setOutportDeterminesSize(bool outportDeterminesSize) = 0;
 };
@@ -86,6 +84,10 @@ public:
  *                    │                                  │                                  │
  *                    └──────────────────────────────────┴──────────────────────────────────┘
  * \endverbatim
+ *
+ * @see ImageOutport
+ * @see ResizeEvent
+ *
  */
 template <size_t N = 1>
 class BaseImageInport : public DataInport<Image, N>, public ImagePortBase {
@@ -94,34 +96,20 @@ public:
     virtual ~BaseImageInport();
     virtual std::string getClassIdentifier() const override;
 
-    /**
-     * Connects this inport to the Outport. Propagates the inport size to the Outport, if the
-     * Processor is a Processor::sink Processor, or any of the dependent Outports of this
-     * Inport are connected.
-     *
-     * @note Does not check if the outport is an ImageOutport
-     * @param outport ImageOutport to connect
-     */
-    virtual void connectTo(Outport* outport) override;
-    virtual void disconnectFrom(Outport* outport) override;
     virtual std::shared_ptr<const Image> getData() const override;
     virtual std::vector<std::shared_ptr<const Image>> getVectorData() const override;
     virtual std::vector<std::pair<Outport*, std::shared_ptr<const Image>>> getSourceVectorData()
         const override;
-
-    virtual size2_t getRequestedDimensions(Outport* outport) const override;
-
-    virtual void propagateEvent(Event* event, Outport* target = nullptr) override;
 
     virtual bool isOutportDeterminingSize() const override;
     virtual void setOutportDeterminesSize(bool outportDeterminesSize) override;
 
     void passOnDataToOutport(ImageOutport* outport) const;
 
+    virtual Document getInfo() const override;
+
 private:
     std::shared_ptr<const Image> getImage(ImageOutport* port) const;
-
-    std::unordered_map<Outport*, size2_t> requestedDimensionsMap_;
     bool outportDeterminesSize_;
 };
 
@@ -150,7 +138,7 @@ struct PortTraits<BaseImageInport<0>> {
 
 /**
  * \ingroup ports
- * ImageOutport extends  DataOutport<Image> with extra functionality for handing
+ * ImageOutport extends DataOutport<Image> with extra functionality for handing
  * ResizeEvents. The following table explains the behaviors:
  *
  * \verbatim
@@ -181,8 +169,26 @@ struct PortTraits<BaseImageInport<0>> {
  *                    │                                  │                                  │
  *                    └──────────────────────────────────┴──────────────────────────────────┘
  * \endverbatim
+ *
+ * The ImageOutport records all the requested sizes from all its connected inports. If the outport
+ * 'isHandlingResizeEvents', the port will resize its data to the largest the requested size and
+ * propagate that size and a new event upwards in the network. If it does not handle resize events,
+ * it will propagate the resize events but not resize its data.
+ *
+ * When an inport is disconnected from a outport, the port will remove its requested size and
+ * propagate a new resize event upwards with the new largest size, given that the port handles
+ * resize events.
+ *
+ * As soon as the network adds or removes a connection, all the image sinks (processors that
+ * consume images) are responsible for pushing a new resize event to the network to make sure that
+ * all the image ports in the network above have an up-to-date view on which image sizes to use.
+ * (@see ImageExport, @see CanvasProcessorWidget)
+ *
+ * @see BaseImageInport
+ * @see ResizeEvent
+ *
  */
-class IVW_CORE_API ImageOutport : public DataOutport<Image>, public EventHandler {
+class IVW_CORE_API ImageOutport : public DataOutport<Image> {
     template <size_t N>
     friend class BaseImageInport;
 
@@ -201,12 +207,13 @@ public:
 
     bool hasEditableData() const;
     std::shared_ptr<Image> getEditableData() const;
-    std::shared_ptr<const Image> getResizedImageData(size2_t dimensions) const;
+
+    std::shared_ptr<const Image> getDataForPort(const Inport* port) const;
 
     /**
      * Handle resize event
      */
-    void propagateEvent(Event* event) override;
+    void propagateEvent(Event* event, Inport* source) override;
     const DataFormatBase* getDataFormat() const;
     size2_t getDimensions() const;
     /**
@@ -215,9 +222,6 @@ public:
      * This is a destructive operation. The image port has to own it's data for this to work.
      */
     void setDimensions(const size2_t& newDimension);
-
-    bool addResizeEventListener(EventListener*);
-    bool removeResizeEventListener(EventListener*);
 
     /**
      * Determine if the image data should be resized during a resize event.
@@ -231,10 +235,17 @@ public:
     virtual void invalidate(InvalidationLevel invalidationLevel) override;
 
     virtual void disconnectFrom(Inport* port) override;
+    virtual void connectTo(Inport* port) override;
+
+    virtual Document getInfo() const override;
 
 private:
+    size2_t getLargestReqDim() const;
+    void pruneCache();
+
+    std::unordered_map<const Inport*, size2_t> requestedDimensions_;
     std::shared_ptr<Image> image_;
-    size2_t defaultDimensions_;
+
     const DataFormatBase* format_;
     bool handleResizeEvents_;  // True if data should be resized during a resize propagation,
                                // otherwise false
@@ -251,10 +262,7 @@ struct PortTraits<ImageOutport> {
 // Image Inport
 template <size_t N>
 BaseImageInport<N>::BaseImageInport(std::string identifier, bool outportDeterminesSize)
-    : DataInport<Image, N>(identifier), outportDeterminesSize_(outportDeterminesSize) {
-    // A default size
-    requestedDimensionsMap_[nullptr] = size2_t(0);
-}
+    : DataInport<Image, N>(identifier), outportDeterminesSize_(outportDeterminesSize) {}
 
 template <size_t N>
 BaseImageInport<N>::~BaseImageInport() = default;
@@ -265,74 +273,18 @@ std::string BaseImageInport<N>::getClassIdentifier() const {
 }
 
 template <size_t N>
-void BaseImageInport<N>::connectTo(Outport* outport) {
-    if (this->getNumberOfConnections() + 1 > this->getMaxNumberOfConnections())
-        throw Exception("Trying to connect to a full port.", IVW_CONTEXT);
-
-    if (requestedDimensionsMap_.find(outport) != requestedDimensionsMap_.end()) {
-        ResizeEvent resizeEvent(requestedDimensionsMap_[outport]);
-        outport->propagateEvent(&resizeEvent);
-    } else {
-        ResizeEvent resizeEvent(requestedDimensionsMap_[nullptr]);
-        outport->propagateEvent(&resizeEvent);
-    }
-
-    DataInport<Image, N>::connectTo(outport);
-}
-
-template <size_t N>
-void BaseImageInport<N>::disconnectFrom(Outport* outport) {
-    requestedDimensionsMap_.erase(outport);
-    DataInport<Image, N>::disconnectFrom(outport);
-}
-
-template <size_t N>
-void BaseImageInport<N>::propagateEvent(Event* event, Outport* target) {
-    if (event->hash() == ResizeEvent::chash()) {
-        auto resizeEvent = static_cast<ResizeEvent*>(event);
-        if (target) {
-            requestedDimensionsMap_[target] = resizeEvent->size();
-            target->propagateEvent(resizeEvent);
-        } else {
-            for (auto outport : this->connectedOutports_) {
-                requestedDimensionsMap_[outport] = resizeEvent->size();
-                outport->propagateEvent(resizeEvent);
-            }
-            // Save a default size.
-            requestedDimensionsMap_[nullptr] = resizeEvent->size();
-        }
-    } else {
-        DataInport<Image, N>::propagateEvent(event, target);
-    }
-}
-
-template <size_t N>
-size2_t BaseImageInport<N>::getRequestedDimensions(Outport* outport) const {
-    auto it = requestedDimensionsMap_.find(outport);
-    if (it != requestedDimensionsMap_.end()) {
-        return it->second;
-    } else {
-        it = requestedDimensionsMap_.find(nullptr);
-        if (it != requestedDimensionsMap_.end())
-            return it->second;
-        else
-            return size2_t(0);
-    }
-}
-
-template <size_t N>
 std::shared_ptr<const Image> BaseImageInport<N>::getData() const {
     if (this->hasData()) {
         auto imgport = static_cast<ImageOutport*>(this->getConnectedOutport());
         return getImage(imgport);
     } else {
-        return std::shared_ptr<const Image>();
+        return nullptr;
     }
 }
 
 template <size_t N>
 std::vector<std::shared_ptr<const Image>> BaseImageInport<N>::getVectorData() const {
-    std::vector<std::shared_ptr<const Image>> res(N);
+    std::vector<std::shared_ptr<const Image>> res;
 
     for (auto outport : this->connectedOutports_) {
         auto imgport = static_cast<ImageOutport*>(outport);
@@ -345,7 +297,7 @@ std::vector<std::shared_ptr<const Image>> BaseImageInport<N>::getVectorData() co
 template <size_t N>
 std::vector<std::pair<Outport*, std::shared_ptr<const Image>>>
 BaseImageInport<N>::getSourceVectorData() const {
-    std::vector<std::pair<Outport*, std::shared_ptr<const Image>>> res(N);
+    std::vector<std::pair<Outport*, std::shared_ptr<const Image>>> res;
 
     for (auto outport : this->connectedOutports_) {
         auto imgport = static_cast<ImageOutport*>(outport);
@@ -360,12 +312,7 @@ std::shared_ptr<const Image> BaseImageInport<N>::getImage(ImageOutport* port) co
     if (isOutportDeterminingSize()) {
         return port->getData();
     } else {
-        auto it = requestedDimensionsMap_.find(port);
-        if (it != requestedDimensionsMap_.end()) {
-            return port->getResizedImageData(it->second);
-        } else {
-            return port->getData();
-        }
+        return port->getDataForPort(this);
     }
 }
 
@@ -386,6 +333,22 @@ void BaseImageInport<N>::passOnDataToOutport(ImageOutport* outport) const {
         std::shared_ptr<Image> out = outport->getEditableData();
         if (out) img->copyRepresentationsTo(out.get());
     }
+}
+
+template <size_t N>
+Document BaseImageInport<N>::getInfo() const {
+    using P = Document::PathComponent;
+    using H = utildoc::TableBuilder::Header;
+
+    auto doc = DataInport<Image, N>::getInfo();
+
+    auto b = doc.get({P{"html"}, P{"body"}});
+    auto t = b.get({P{"p"},  P{"table"}});
+
+    utildoc::TableBuilder tb(t);
+    tb(H("Outport Determining Size"), isOutportDeterminingSize());
+
+    return doc;
 }
 
 }  // namespace inviwo

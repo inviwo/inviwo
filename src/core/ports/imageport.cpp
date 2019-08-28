@@ -30,18 +30,18 @@
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/datastructures/image/imageram.h>
+#include <inviwo/core/util/document.h>
 
 namespace inviwo {
 
 ImageOutport::ImageOutport(std::string identifier, const DataFormatBase* format,
                            bool handleResizeEvents)
-    : DataOutport<Image>(identifier)
-    , defaultDimensions_(8, 8)
-    , format_(format)
-    , handleResizeEvents_(handleResizeEvents) {
+    : DataOutport<Image>(identifier), format_(format), handleResizeEvents_(handleResizeEvents) {
 
     // create a default image
-    setData(std::make_shared<Image>(defaultDimensions_, format));
+    if (handleResizeEvents) {
+        setData(std::make_shared<Image>(size2_t{1, 1}, format));
+    }
 }
 
 ImageOutport::ImageOutport(std::string identifier, bool handleResizeEvents)
@@ -84,86 +84,105 @@ void ImageOutport::setData(Image* data) {
 
 bool ImageOutport::hasEditableData() const { return static_cast<bool>(image_); }
 
-void ImageOutport::disconnectFrom(Inport* port) {
-    DataOutport<Image>::disconnectFrom(port);
+size2_t ImageOutport::getLargestReqDim() const {
+    if (requestedDimensions_.empty()) return size2_t(0, 0);
 
-    // update image size
-    ResizeEvent event(uvec2(0, 0));
-    propagateEvent(&event);
+    return std::max_element(requestedDimensions_.begin(), requestedDimensions_.end(),
+                            [](const auto& a, const auto& b) {
+                                return a.second.x * a.second.y < b.second.x * b.second.y;
+                            })
+        ->second;
 }
 
-void ImageOutport::propagateEvent(Event* event) {
+void ImageOutport::pruneCache() {
+    std::vector<size2_t> registeredDimensions;
+    std::transform(requestedDimensions_.begin(), requestedDimensions_.end(),
+                   std::back_inserter(registeredDimensions),
+                   [](const auto& item) { return item.second; });
+    cache_.prune(registeredDimensions);
+}
+
+void ImageOutport::disconnectFrom(Inport* inport) {
+    const auto oldSize = getLargestReqDim();
+
+    requestedDimensions_.erase(inport);
+    pruneCache();
+
+    const auto newDimensions = getLargestReqDim();
+    if (handleResizeEvents_) {
+        setDimensions(newDimensions);  // resize data.
+
+        // Make sure that all ImageOutports in the same group that has the same size.
+        for (auto port : getProcessor()->getPortsInSameGroup(this)) {
+            if (port != this) {
+                if (auto imageOutport = dynamic_cast<ImageOutport*>(port)) {
+                    imageOutport->setDimensions(newDimensions);
+                }
+            }
+        }
+    }
+    ResizeEvent newEvent{newDimensions, oldSize};
+    getProcessor()->propagateEvent(&newEvent, this);
+
+    DataOutport<Image>::disconnectFrom(inport);
+}
+
+void ImageOutport::connectTo(Inport* inport) {
+    DataOutport<Image>::connectTo(inport);
+    requestedDimensions_[inport] = size2_t{0};
+}
+
+void ImageOutport::propagateEvent(Event* event, Inport* source) {
     if (event->hash() != ResizeEvent::chash()) {
-        DataOutport<Image>::propagateEvent(event);
+        DataOutport<Image>::propagateEvent(event, source);
         return;
     }
-
     auto resizeEvent = static_cast<ResizeEvent*>(event);
+    requestedDimensions_[source] = resizeEvent->size();
+    pruneCache();
 
-    // This function should check which dimensions request exists, by going through the successors
-    // and checking registeredDimensions.
-    // Allocates space holder, sets largest data, cleans up unused data
+    const auto newDimensions = getLargestReqDim();
 
-    std::vector<size2_t> registeredDimensions{resizeEvent->size()};
-    for (auto inport : connectedInports_) {
-        if (auto imageInport = dynamic_cast<ImagePortBase*>(inport)) {
-            util::push_back_unique(registeredDimensions, imageInport->getRequestedDimensions(this));
+    if (handleResizeEvents_) {
+        setDimensions(newDimensions);  // resize data.
+
+        // Make sure that all ImageOutports in the same group that has the same size.
+        for (auto port : getProcessor()->getPortsInSameGroup(this)) {
+            if (port != this) {
+                if (auto imageOutport = dynamic_cast<ImageOutport*>(port)) {
+                    imageOutport->setDimensions(newDimensions);
+                }
+            }
         }
-    }
 
-    // find the largest dimension.
-    size2_t newDimensions =
-        *std::max_element(registeredDimensions.begin(), registeredDimensions.end(),
-                          [](const size2_t& a, const size2_t& b) { return a.x * a.y < b.x * b.y; });
-
-    // fallback to default if newDim == 0
-    if (newDimensions == size2_t(0, 0)) newDimensions = defaultDimensions_;
-
-    std::unique_ptr<ResizeEvent> newEvent{resizeEvent->clone()};
-    newEvent->setSize(newDimensions);
-
-    if (image_ && handleResizeEvents_ && newDimensions != image_->getDimensions()) {
-        // resize data.
-        image_->setDimensions(newDimensions);
-        cache_.setInvalid();
-
-        broadcast(newEvent.get());
-    }
-
-    // remove unused image from cache
-    cache_.prune(registeredDimensions);
-
-    // Make sure that all ImageOutports in the same group (dependency set) that has the same size.
-    // This functionality needs testing.
-    for (auto port : getProcessor()->getPortsInSameGroup(this)) {
-        auto imageOutport = dynamic_cast<ImageOutport*>(port);
-        if (imageOutport && imageOutport != this) {
-            imageOutport->setDimensions(newDimensions);
-        }
+        // Since we have destructively resized the output we need to invalidate.
+        getProcessor()->invalidate(InvalidationLevel::InvalidOutput);
     }
 
     // Propagate the resize event
-    getProcessor()->propagateEvent(newEvent.get(), this);
-
-    if (handleResizeEvents_) getProcessor()->invalidate(InvalidationLevel::InvalidOutput);
+    ResizeEvent newEvent{*resizeEvent};
+    newEvent.setSize(newDimensions);
+    getProcessor()->propagateEvent(&newEvent, this);
 }
 
-const inviwo::DataFormatBase* ImageOutport::getDataFormat() const { return format_; }
+const DataFormatBase* ImageOutport::getDataFormat() const { return format_; }
 
-std::shared_ptr<const Image> ImageOutport::getResizedImageData(size2_t requiredDimensions) const {
-    return cache_.getImage(requiredDimensions);
+std::shared_ptr<const Image> ImageOutport::getDataForPort(const Inport* port) const {
+    const auto it = requestedDimensions_.find(port);
+    if (it != requestedDimensions_.end()) {
+        return cache_.getImage(it->second);
+    } else {
+        return nullptr;
+    }
 }
-
-bool ImageOutport::addResizeEventListener(EventListener* el) { return addEventListener(el); }
-
-bool ImageOutport::removeResizeEventListener(EventListener* el) { return removeEventListener(el); }
 
 void ImageOutport::setDimensions(const size2_t& newDimension) {
-    defaultDimensions_ = newDimension;  // update default
-    if (image_) {
+    if (image_ && newDimension != image_->getDimensions()) {
         // Set new dimensions
         image_->setDimensions(newDimension);
         cache_.setInvalid();
+    } else {
+        setData(std::make_shared<Image>(newDimension, format_));
     }
 }
 
@@ -173,7 +192,7 @@ size2_t ImageOutport::getDimensions() const {
     else if (data_)
         return data_->getDimensions();
     else
-        return defaultDimensions_;
+        return size2_t{0, 0};
 }
 
 std::shared_ptr<Image> ImageOutport::getEditableData() const {
@@ -189,5 +208,35 @@ void ImageOutport::setHandleResizeEvents(bool handleResizeEvents) {
 }
 
 bool ImageOutport::isHandlingResizeEvents() const { return handleResizeEvents_ && image_; }
+
+Document ImageOutport::getInfo() const {
+    using P = Document::PathComponent;
+    using H = utildoc::TableBuilder::Header;
+
+    auto doc = DataOutport<Image>::getInfo();
+    auto b = doc.get({P{"html"}, P{"body"}});
+    {
+        auto t = b.get({P{"p"}, P{"table"}});
+        utildoc::TableBuilder tb(t);
+        tb(H("Has Editable Data"), hasEditableData());
+        tb(H("Handle Resize Events"), handleResizeEvents_);
+    }
+    auto p = b.append("p");
+    p.append("b", "Requested sizes", {{"style", "color:white;"}});
+    if (requestedDimensions_.empty()) {
+        p += "No requested sizes";
+    } else {
+        const auto master = getLargestReqDim();
+        utildoc::TableBuilder tb(p, P::end());
+        for (const auto& [port, size] : requestedDimensions_) {
+            tb(port->getProcessor()->getIdentifier(), port->getIdentifier(), size,
+               size == master ? "Master" : "");
+        }
+    }
+
+    std::string d = doc;
+    std::cout << d << std::endl;
+    return doc;
+}
 
 }  // namespace inviwo

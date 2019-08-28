@@ -72,7 +72,7 @@ public:
     /**
      * Propagate events upwards, i.e. to the owning processor.
      */
-    virtual void propagateEvent(Event* event);
+    virtual void propagateEvent(Event* event, Inport* source);
 
     bool isConnectedTo(const Inport* port) const;
     const std::vector<Inport*>& getConnectedInports() const;
