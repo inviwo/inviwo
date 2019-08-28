@@ -6,6 +6,37 @@ import subprocess
 import json
 import sys
 import io
+import pathlib
+
+missing_modules = {}
+try:
+    import git
+except ImportError:
+    missing_modules['gitpython'] = "needed for git access"
+
+if len(missing_modules)>0: 
+    print_error("Error: Missing python modules:")
+    for k,v in missing_modules.items():
+        print_error("    {:20s} {}".format(k,v))    
+    print_info("    To install run: 'python -m pip install {}'".format(" ".join(missing_modules.keys())))
+    exit()
+
+def getReleatedFiles():
+    repo = git.Repo(search_parent_directories=True)
+    if repo.head.object == repo.remotes.origin.refs.master.object: # this is the master brach
+        def is_relevant(file):
+            return True
+        return is_relevant
+    else:
+        mb = repo.merge_base(repo.head, repo.remotes.origin.refs.master)[0]
+        wdir = pathlib.Path(repo.working_dir)
+        relevantFiles = set()
+        for i in mb.diff(repo.head):
+            relevantFiles.add(wdir / i.a_path)
+            relevantFiles.add(wdir / i.b_path)
+        def is_relevant(file):
+            return pathlib.Path(file) in relevantFiles
+        return is_relevant
 
 def test_cmd(cmd):
     try:  
@@ -39,9 +70,12 @@ def main():
     with open(args.compile_commands) as f: 
         data = json.load(f)
     
+    is_relevant = getReleatedFiles()
+
     with open(args.output, 'w') as out:
         for item in data:
             filename = item['file']
+            if not is_relevant(filename): continue
             command = [args.binary, filename]
             p = subprocess.Popen(command,
                 stdout=subprocess.PIPE,
