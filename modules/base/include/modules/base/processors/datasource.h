@@ -47,19 +47,15 @@ namespace inviwo {
 namespace util {
 inline void updateReaderFromFile(const FileProperty& file,
                                  TemplateOptionProperty<FileExtension>& reader) {
-    if (file.getSelectedExtension() == FileExtension::all() &&
-            !reader.getSelectedValue().matches(file) ||
+    if ((file.getSelectedExtension() == FileExtension::all() &&
+         !reader.getSelectedValue().matches(file)) ||
         file.getSelectedExtension().empty()) {
         const auto& opts = reader.getOptions();
-        auto it = std::find_if(opts.begin(), opts.end(),
+        const auto it = std::find_if(opts.begin(), opts.end(),
                                [&](const OptionPropertyOption<FileExtension>& opt) {
                                    return opt.value_.matches(file.get());
                                });
-        if (it != opts.end()) {
-            reader.setSelectedValue(it->value_);
-        } else {
-            reader.setSelectedValue(FileExtension{});
-        }
+        reader.setSelectedValue(it != opts.end() ? it->value_ : FileExtension{});
     } else {
         reader.setSelectedValue(file.getSelectedExtension());
     }
@@ -145,7 +141,6 @@ DataSource<DataType, PortType>::DataSource(InviwoApplication* app, const std::st
 
     util::updateFilenameFilters<DataType>(*rf_, file_, reader_);
     util::updateReaderFromFile(file_, reader_);
-
 
     // make sure that we always process even if not connected
     isSink_.setUpdate([]() { return true; });
