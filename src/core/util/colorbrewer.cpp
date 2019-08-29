@@ -2942,6 +2942,74 @@ std::vector<Family> getFamiliesForCategory(const Category &category) {
     return v;
 }
 
+TransferFunction getTransferFunction(const Category &category, const Family &family,
+                                     glm::uint8 nColors, bool discrete, double midPoint) {
+    TransferFunction tf;
+    auto colors = colorbrewer::getColormap(family, nColors);
+
+    if (category == colorbrewer::Category::Diverging) {
+        if (discrete) {
+            auto dt = midPoint / (0.5 * (colors.size()));
+            double start = 0, end = std::max(dt - std::numeric_limits<double>::epsilon(), 0.);
+            for (auto i = 0u; i < colors.size() / 2; i++) {
+                tf.add(start, vec4(colors[i]));
+                tf.add(end, vec4(colors[i]));
+                start += dt;
+                end += dt;
+            }
+            tf.add(start, vec4(colors[colors.size() / 2]));
+            if (midPoint < 1.0) {
+                dt = (1.0 - midPoint) / (0.5 * (colors.size()));
+                tf.add(start + dt - std::numeric_limits<double>::epsilon(),
+                       vec4(colors[colors.size() / 2]));
+                start = start + dt;
+                end = start + dt - std::numeric_limits<double>::epsilon();
+                for (auto i = colors.size() / 2 + 1; i < colors.size(); i++) {
+                    // Avoid numerical issues with min
+                    tf.add(std::min(start, 1.0), vec4(colors[i]));
+                    tf.add(std::min(end, 1.0), vec4(colors[i]));
+                    start += dt;
+                    end += dt;
+                }
+            }
+        } else {
+            auto dt = midPoint / (0.5 * (colors.size() - 1.0));
+            for (auto i = 0u; i < colors.size() / 2; i++) {
+                tf.add(i * dt, vec4(colors[i]));
+            }
+            tf.add(midPoint, vec4(colors[colors.size() / 2]));
+            if (midPoint < 1.0) {
+                dt = (1.0 - midPoint) / (0.5 * (colors.size() - 1.0));
+                auto t = midPoint + dt;
+                for (auto i = colors.size() / 2 + 1; i < colors.size(); i++) {
+                    // Avoid numerical issues with min
+                    tf.add(std::min(t, 1.0), vec4(colors[i]));
+                    t += dt;
+                }
+            }
+        }
+
+    } else {
+        if (discrete) {
+            double dt = 1.0 / (colors.size());
+            double start = 0, end = dt - std::numeric_limits<double>::epsilon();
+            for (const auto &c : colors) {
+                tf.add(start, vec4(c));
+                tf.add(end, vec4(c));
+                start += dt;
+                end += dt;
+            }
+        } else {
+            auto dt = 1.0 / (colors.size() - 1.0);
+            size_t idx = 0;
+            for (const auto &c : colors) {
+                tf.add(idx++ * dt, vec4(c));
+            }
+        }
+    }
+    return tf;
+}
+
 }  // namespace colorbrewer
 
 }  // namespace inviwo

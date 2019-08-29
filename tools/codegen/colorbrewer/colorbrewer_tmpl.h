@@ -32,11 +32,11 @@ This complete file is auto-generated with python script
 tools/codegen/colorbrewer/colorbrewer.py
 */
 
-#ifndef IWW_COLORBREWER_H
-#define IWW_COLORBREWER_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/datastructures/transferfunction.h>
 #include <vector>
 #include <ostream>
 
@@ -52,28 +52,32 @@ public:
 };
 class IVW_CORE_API ColorBrewerTooFewException : public Exception {
 public:
-    ColorBrewerTooFewException(const std::string &message = "Requested colormap does not support selected number of colors.",
-        ExceptionContext context = ExceptionContext())
+    ColorBrewerTooFewException(const std::string &message =
+                                   "Requested colormap does not support selected number of colors.",
+                               ExceptionContext context = ExceptionContext())
         : Exception(message, context) {}
     virtual ~ColorBrewerTooFewException() throw() {}
 };
 class IVW_CORE_API ColorBrewerTooManyException : public Exception {
 public:
-    ColorBrewerTooManyException(const std::string &message = "Requested colormap does not support selected number of colors.",
+    ColorBrewerTooManyException(
+        const std::string &message =
+            "Requested colormap does not support selected number of colors.",
         ExceptionContext context = ExceptionContext())
         : Exception(message, context) {}
     virtual ~ColorBrewerTooManyException() throw() {}
 };
-
+// clang-format off
 ##PLACEHOLDER##
-
+// clang-format on
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &os,
-                                             Colormap colormap) {
+                                                 Colormap colormap) {
+    // clang-format off
     switch (colormap) {
 ##PLACEHOLDER_NAMES##
     }
-
+    // clang-format on
     return os;
 }
 
@@ -83,17 +87,16 @@ std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &o
     switch (category) {
 ##PLACEHOLDER_CATEGORIES##
     }
-
     return os;
 }
 
 template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &os,
-                                             Family family) {
+std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &os, Family family) {
+    // clang-format off
     switch (family) {
 ##PLACEHOLDER_FAMILIES##
     }
-
+    // clang-format on
     return os;
 }
 
@@ -145,9 +148,18 @@ IVW_CORE_API glm::uint8 getMaxNumberOfColorsForFamily(const Family &family);
  **/
 IVW_CORE_API std::vector<Family> getFamiliesForCategory(const Category &category);
 
+/**
+ * Returns a transfer function for the given parameters.
+ *
+ * @param category according to ColorBrewer2
+ * @param family color scheme name
+ * @param discrete will make each color constant instead of linearly varying inbetween colors.
+ * @param divergenceMidpoint in [0 1]. Only used when category is Diverging
+ **/
+IVW_CORE_API TransferFunction getTransferFunction(const Category &category, const Family &family,
+                                                  glm::uint8 nColors, bool discrete,
+                                                  double divergenceMidPoint);
+
 }  // namespace colorbrewer
 }  // namespace inviwo
-
-#endif  // COLORBREWER_H
-
 

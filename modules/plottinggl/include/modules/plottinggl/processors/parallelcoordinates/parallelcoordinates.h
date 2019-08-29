@@ -43,7 +43,6 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
 #include <modules/opengl/shader/shader.h>
@@ -54,6 +53,7 @@
 
 #include <modules/plotting/properties/categoricalaxisproperty.h>
 #include <inviwo/dataframe/properties/dataframeproperty.h>
+#include <inviwo/dataframe/properties/dataframecolormapproperty.h>
 #include <modules/plotting/properties/marginproperty.h>
 
 #include <modules/plottinggl/utils/axisrenderer.h>
@@ -102,8 +102,7 @@ public:
 
     CompositeProperty axisProperties_;
 
-    DataFrameColumnProperty selectedColorAxis_;
-    TransferFunctionProperty tf_;
+    DataFrameColormapProperty colormap_;
 
     TemplateOptionProperty<AxisSelection> axisSelection_;
 

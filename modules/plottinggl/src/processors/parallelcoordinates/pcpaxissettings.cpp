@@ -112,6 +112,7 @@ PCPAxisSettings* PCPAxisSettings::clone() const { return new PCPAxisSettings(*th
 void PCPAxisSettings::updateFromColumn(std::shared_ptr<const Column> col) {
     col_ = col;
     catCol_ = dynamic_cast<const CategoricalColumn*>(col.get());
+
     col->getBuffer()->getRepresentation<BufferRAM>()->dispatch<void, dispatching::filter::Scalars>(
         [&](auto ram) -> void {
             using T = typename util::PrecisionValueType<decltype(ram)>;
@@ -145,6 +146,7 @@ void PCPAxisSettings::updateFromColumn(std::shared_ptr<const Column> col) {
             p75_ = static_cast<double>(pecentiles[2]);
             p100_ = static_cast<double>(pecentiles[3]);
             at = [vec = &dataVector](size_t idx) { return static_cast<double>(vec->at(idx)); };
+
         });
 
     range.propertyModified();
