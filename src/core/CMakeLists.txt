@@ -811,6 +811,7 @@ ivw_register_license_file(NAME "warn" MODULE Core
     FILES ${IVW_TOOLS_DIR}/codegen/warn/warn/LICENSE
 )
 
+find_package(ZLIB REQUIRED)
 ivw_register_license_file(NAME "zlib" TARGET ZLIB::ZLIB MODULE Core
     URL "http://zlib.net/"
     TYPE "The zlib/libpng License"
