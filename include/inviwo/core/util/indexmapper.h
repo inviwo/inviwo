@@ -50,7 +50,7 @@ struct IndexMapper<2, IndexType> {
         return pos.x + pos.y * dimx;
     }
     constexpr Vector<2, IndexType> operator()(const IndexType index) const noexcept {
-        return Vector<2, IndexType>(index / dimx, index % dimx);
+        return Vector<2, IndexType>(index % dimx, index / dimx);
     }
 
 private:
