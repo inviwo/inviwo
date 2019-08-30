@@ -121,10 +121,15 @@ add_custom_target(uninstall COMMENT "Dummy target to prevent other uninstalls")
 # since it does not necessarily give you the dll for packaging.
 # It also ensures that we are in control of the used version
 # and is built using the same, Inviwo, settings.
-add_subdirectory(ext/zlib-1.2.11) # Defines target ZLIB::ZLIB
-add_subdirectory(ext/libpng)      # Defines target inviwo::libpng and libpng
-add_subdirectory(ext/libjpeg)     # Defines target inviwo::libjpeg and libjpeg
-add_subdirectory(ext/tiff)        # Defines target inviwo::tiff and tiff
+
+option (IVW_USE_EXTERNAL_IMG "Link with external image libraries (zlib, png, jpeg, tiff) instead of building them." OFF)
+if (NOT IVW_USE_EXTERNAL_IMG)
+  add_subdirectory(ext/zlib-1.2.11) # Defines target ZLIB::ZLIB
+  add_subdirectory(ext/libpng)      # Defines target PNG::PNG
+  add_subdirectory(ext/libjpeg)     # Defines target JPEG::JPEG
+  add_subdirectory(ext/tiff)        # Defines target TIFF::TIFF
+endif()
+
 add_subdirectory(ext/flags)
 add_subdirectory(ext/glm)
 add_subdirectory(ext/ticpp)

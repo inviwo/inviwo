@@ -575,7 +575,11 @@ bool rescaleLayerRamToLayerRam(const LayerRAM* source, LayerRAM* target) {
 std::string getLibJPGVersion() {
 #ifdef cimg_use_jpeg
     std::ostringstream oss;
+#if defined(JPEG_LIB_VERSION_MAJOR) && defined(JPEG_LIB_VERSION_MINOR)
     oss << JPEG_LIB_VERSION_MAJOR << "." << JPEG_LIB_VERSION_MINOR;
+#else
+    oss << JPEG_LIB_VERSION;
+#endif
     return oss.str();
 #else
     return "LibJPG not available";
