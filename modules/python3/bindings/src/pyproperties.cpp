@@ -317,18 +317,14 @@ void exposeProperties(py::module &m) {
              py::arg("identifier"), py::arg("displayName"), py::arg("inport"),
              py::arg("invalidationLevel") = InvalidationLevel::InvalidResources,
              py::arg("semantics") = PropertySemantics::Default)
-
-        .def_property(
+        .def_property_readonly(
             "isovalues",
             py::cpp_function([](IsoTFProperty &tp) -> IsoValueProperty & { return tp.isovalues_; },
-                             py::return_value_policy::reference_internal),
-            py::overload_cast<const IsoValueProperty &>(&IsoTFProperty::set))
-        .def_property(
+                             py::return_value_policy::reference_internal))
+        .def_property_readonly(
             "tf",
             py::cpp_function([](IsoTFProperty &tp) -> TransferFunctionProperty & { return tp.tf_; },
-                             py::return_value_policy::reference_internal),
-            py::overload_cast<const TransferFunctionProperty &>(&IsoTFProperty::set))
-
+                             py::return_value_policy::reference_internal))
         .def_property("mask", &IsoTFProperty::getMask, &IsoTFProperty::setMask)
         .def_property("zoomH", &IsoTFProperty::getZoomH, &IsoTFProperty::setZoomH)
         .def_property("zoomV", &IsoTFProperty::getZoomV, &IsoTFProperty::setZoomV);
