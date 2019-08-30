@@ -29,9 +29,6 @@ node {
     ]
 
     util.wrap(state, "#jenkins-branch-pr") {
-
-        println currentBuild.previousBuild.absoluteUrl
-
         util.buildStandard(
             state: state,
             modulePaths: [], 
@@ -39,12 +36,11 @@ node {
             offModules: ["ABufferGL"],
             opts: [:]
         )
-        
         util.format(state, ["${env.WORKSPACE}/inviwo"])
         util.warn(state)
         util.unittest(state)
         util.integrationtest(state)        
-        // util.regression(state, ["${env.WORKSPACE}/inviwo/modules"])
+        util.regression(state, ["${env.WORKSPACE}/inviwo/modules"])
         util.copyright(state)    
         util.doxygen(state)
     }

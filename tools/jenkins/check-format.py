@@ -106,8 +106,6 @@ def main():
                 if args.fix:
                     with codecs.open(filename, 'w', encoding="UTF-8") as f:
                         f.write(formatted_code)
-            else:
-                sys.stdout.write(str(filename) + " OK\n")
 
 if __name__ == '__main__':
     main()
