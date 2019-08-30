@@ -144,14 +144,24 @@ def filterfiles() {
     }
 }
 
-def format(def state) {
+def format(def state, repos) {
     stage("Format Tests") {
         dir('build') {
+            String master = state.env.Master_Build?.equals("true")? '--master' : ''
             String binary = state.env.CLANG_FORMAT ? '-binary ' + state.env.CLANG_FORMAT : ''
-            sh "python3 ../inviwo/tools/jenkins/check-format.py ${binary}"
+            sh "python3 ../inviwo/tools/jenkins/check-format.py ${master} ${binary} ${repos.join(' ')}"
             if (fileExists('clang-format-result.diff')) {
                 String format_diff = readFile('clang-format-result.diff')
                 setLabel(state, 'J: Format Test Failure', !format_diff.isEmpty())
+
+                publishHTML([
+                    allowMissing: false,
+                    alwaysLinkToLastBuild: false,
+                    keepAll: false,
+                    reportDir: '.',
+                    reportFiles: 'clang-format-result.diff',
+                    reportName: 'Format'
+                ])
             }
         }
     }
