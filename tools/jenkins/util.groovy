@@ -144,22 +144,31 @@ def filterfiles() {
     }
 }
 
-def format(def state) {
-    stage("Format Tests") {
-        dir('build') {
-            String binary = state.env.CLANG_FORMAT ? '-binary ' + state.env.CLANG_FORMAT : ''
-            sh "python3 ../inviwo/tools/jenkins/check-format.py ${binary}"
-            if (fileExists('clang-format-result.diff')) {
-                String format_diff = readFile('clang-format-result.diff')
-                setLabel(state, 'J: Format Test Failure', !format_diff.isEmpty())
+def format(def state, repos) {
+    cmd("Format Tests", 'build') {
+        checked(state, 'Format Test', false) {
+            String master = state.env.Master_Build?.equals("true")? '--master' : ''
+            String binary = state.env.CLANG_FORMAT ? '--binary ' + state.env.CLANG_FORMAT : ''
+            sh "python3 ../inviwo/tools/jenkins/check-format.py ${master} ${binary} ${repos.join(' ')}"
+            publishHTML([
+                allowMissing: true,
+                alwaysLinkToLastBuild: false,
+                keepAll: false,
+                reportDir: '.',
+                reportFiles: 'clang-format-result.diff',
+                reportName: 'Format'
+            ])
+            if (fileExists('clang-format-result.diff') 
+                && !readFile('clang-format-result.diff').isEmpty()) {
+                throw new Exception("There are formatting issues")
             }
         }
     }
 }
 
 def warn(def state, refjob = 'daily/appleclang') {
-    cmd('Warn Tests', 'inviwo') {
-        checked(state, 'Warn Tests', false) {
+    cmd('Warning Tests', 'inviwo') {
+        checked(state, 'Warning Test', false) {
             recordIssues qualityGates: [[threshold: 1, type: 'NEW', unstable: true]], 
                          referenceJobName: refjob, 
                          sourceCodeEncoding: 'UTF-8', 

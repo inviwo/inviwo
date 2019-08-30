@@ -36,8 +36,7 @@ node {
             offModules: ["ABufferGL"],
             opts: [:]
         )
-        util.filterfiles()
-        util.format(state)
+        util.format(state, ["${env.WORKSPACE}/inviwo"])
         util.warn(state)
         util.unittest(state)
         util.integrationtest(state)        
