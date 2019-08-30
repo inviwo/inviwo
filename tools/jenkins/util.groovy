@@ -150,19 +150,16 @@ def format(def state, repos) {
             String master = state.env.Master_Build?.equals("true")? '--master' : ''
             String binary = state.env.CLANG_FORMAT ? '--binary ' + state.env.CLANG_FORMAT : ''
             sh "python3 ../inviwo/tools/jenkins/check-format.py ${master} ${binary} ${repos.join(' ')}"
-            if (fileExists('clang-format-result.diff')) {
-                String format_diff = readFile('clang-format-result.diff')
-                setLabel(state, 'J: Format Test Failure', !format_diff.isEmpty())
-
-                publishHTML([
-                    allowMissing: false,
-                    alwaysLinkToLastBuild: false,
-                    keepAll: false,
-                    reportDir: '.',
-                    reportFiles: 'clang-format-result.diff',
-                    reportName: 'Format'
-                ])
-
+            publishHTML([
+                allowMissing: true,
+                alwaysLinkToLastBuild: false,
+                keepAll: false,
+                reportDir: '.',
+                reportFiles: 'clang-format-result.diff',
+                reportName: 'Format'
+            ])
+            if (fileExists('clang-format-result.diff') 
+                && !readFile('clang-format-result.diff').isEmpty()) {
                 throw new Exception("There are formatting issues")
             }
         }
