@@ -145,8 +145,8 @@ def filterfiles() {
 }
 
 def format(def state, repos) {
-    stage("Format Tests") {
-        dir('build') {
+    cmd("Format Tests", 'build') {
+        checked(state, 'Format Tests', false) {
             String master = state.env.Master_Build?.equals("true")? '--master' : ''
             String binary = state.env.CLANG_FORMAT ? '--binary ' + state.env.CLANG_FORMAT : ''
             sh "python3 ../inviwo/tools/jenkins/check-format.py ${master} ${binary} ${repos.join(' ')}"
@@ -162,6 +162,8 @@ def format(def state, repos) {
                     reportFiles: 'clang-format-result.diff',
                     reportName: 'Format'
                 ])
+
+                throw new Exception("There are formatting issues")
             }
         }
     }
