@@ -146,7 +146,7 @@ def filterfiles() {
 
 def format(def state, repos) {
     cmd("Format Tests", 'build') {
-        checked(state, 'Format Tests', false) {
+        checked(state, 'Format Test', false) {
             String master = state.env.Master_Build?.equals("true")? '--master' : ''
             String binary = state.env.CLANG_FORMAT ? '--binary ' + state.env.CLANG_FORMAT : ''
             sh "python3 ../inviwo/tools/jenkins/check-format.py ${master} ${binary} ${repos.join(' ')}"
@@ -170,8 +170,8 @@ def format(def state, repos) {
 }
 
 def warn(def state, refjob = 'daily/appleclang') {
-    cmd('Warn Tests', 'inviwo') {
-        checked(state, 'Warn Tests', false) {
+    cmd('Warning Tests', 'inviwo') {
+        checked(state, 'Warning Test', false) {
             recordIssues qualityGates: [[threshold: 1, type: 'NEW', unstable: true]], 
                          referenceJobName: refjob, 
                          sourceCodeEncoding: 'UTF-8', 

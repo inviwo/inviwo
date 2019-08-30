@@ -56,12 +56,12 @@ ScatterPlotGL::Properties::Properties(std::string identifier, std::string displa
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , useCircle_("useCircle", "Use Circles (else squares)", true)
     , radiusRange_("radius", "Radius", 5, 0, 10, 0.01f)
-    ,    minRadius_("minRadius", "Min Radius", 0.1f, 0, 10, 0.01f)
+    , minRadius_("minRadius", "Min Radius", 0.1f, 0, 10, 0.01f)
     , tf_("transferFunction", "Transfer Function",
           TransferFunction({{0.0, vec4(1.0f)}, {1.0, vec4(1.0f)}}))
     , color_("color", "Color", vec4(1, 0, 0, 1), vec4(0), vec4(1), vec4(0.1f),
              InvalidationLevel::InvalidOutput, PropertySemantics::Color)
-    , hoverColor_("hoverColor",     "Hover color", vec4(1.0f, 0.77f, 0.25f, 1))
+    , hoverColor_("hoverColor", "Hover color", vec4(1.0f, 0.77f, 0.25f, 1))
     , margins_("margins", "Margins", 5, 5, 5, 5)
     , axisMargin_("axisMargin", "Axis Margin", 15.0f, 0.0f, 50.0f)
 
@@ -71,7 +71,7 @@ ScatterPlotGL::Properties::Properties(std::string identifier, std::string displa
 
     , axisStyle_("axisStyle", "Global Axis Style")
     , xAxis_("xAxis", "X Axis")
-    , yAxis_("yAxis",           "Y Axis", AxisProperty::Orientation::Vertical) {
+    , yAxis_("yAxis", "Y Axis", AxisProperty::Orientation::Vertical) {
     hoverColor_.setSemantics(PropertySemantics::Color);
     borderColor_.setSemantics(PropertySemantics::Color);
 
