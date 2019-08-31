@@ -278,7 +278,7 @@ def slack(def state, channel) {
                      "Status: ${state.currentBuild.result}\n" + 
                      "Job: ${state.env.BUILD_URL} \n" + 
                      "Regression: ${state.env.JOB_URL}Regression_Report/\n" + 
-                     errors)
+                     errors
         )
     }
 }
