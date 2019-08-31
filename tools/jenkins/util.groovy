@@ -88,35 +88,28 @@ def printMap(String name, def map) {
 }
 
 // this uses global pipeline var pullRequest
-def setLabel(def state, String label, Boolean add) {
-    if (add) {
-        try {
+def label(def state, String label, Boolean add) {
+    try {
+        if (add) {
             ifdef({state.pullRequest})?.addLabels([label])
-        } catch (e) {
-            println "Error adding label: ${label}"
-            println e.toString()
-        }
-    } else {
-        try { 
-            util.ifdef({state.pullRequest})?.removeLabel(label) 
-        } catch(e) {
-        }
-    }
-          
+        } else {
+            ifdef({state.pullRequest})?.removeLabel(label) 
+        } 
+    } catch(e) {}    
 }
 
 def checked(def state, String label, Boolean fail, Closure fun) {
     try {
         fun()
-        setLabel(state, "J: " + label  + " Failure", false)
+        label(state, "J: " + label  + " Failure", false)
     } catch (e) {
-        setLabel(state, "J: " + label  + " Failure", true)
+        label(state, "J: " + label  + " Failure", true)
         state.cfg.errors += label
         if (fail) {
             state.currentBuild.result = Result.FAILURE.toString()
             throw e
         } else {
-            println e.toString()
+            println "${label} Failure: ${e.getMessage()}"
             state.currentBuild.result = Result.UNSTABLE.toString()
         }
     }
