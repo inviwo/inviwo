@@ -136,7 +136,7 @@ def wrap(def state, String reportSlackChannel, Closure fun) {
         if (!reportSlackChannel.isEmpty()) slack(state, reportSlackChannel)
         if (!state.cfg.errors.isEmpty()) {
             println "Errors in: ${state.cfg.errors.join(", ")}"
-            state.currentBuild.description = "Errors in: ${state.errors.join(' ')}"
+            state.currentBuild.description = "Errors in: ${state.cfg.errors.join(' ')}"
         } 
     }
 }
