@@ -125,7 +125,8 @@ colorbrewer::Category ColormapProperty::getCategory() const {
             break;
         case ColormapType::Continuous:
             [[fallthrough]];
-        default: cat = diverging ? colorbrewer::Category::Diverging : colorbrewer::Category::Sequential;
+        default:
+            cat = diverging ? colorbrewer::Category::Diverging : colorbrewer::Category::Sequential;
     }
     return cat;
 }
@@ -165,7 +166,6 @@ void ColormapProperty::setupForColumn(const Column& col, double minVal, double m
     } else {
         divergenceMidPoint.set(0.5 * (minVal + maxVal), minVal, maxVal, 0.01 * (maxVal - minVal));
     }
-    
 }
 
 TransferFunction ColormapProperty::getTransferFunction() const {

@@ -50,7 +50,7 @@ namespace inviwo {
 class IVW_MODULE_WEBBROWSER_API RenderHandlerGL : public CefRenderHandler {
 public:
     typedef std::function<void()> OnWebPageCopiedCallback;
-    
+
     RenderHandlerGL(OnWebPageCopiedCallback onWebPageCopiedCallback);
     void updateCanvasSize(size2_t newSize);
     ///

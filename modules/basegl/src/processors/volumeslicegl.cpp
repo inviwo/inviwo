@@ -184,7 +184,7 @@ VolumeSliceGL::VolumeSliceGL()
     imageRotation_.setVisible(false);
 
     trafoGroup_.addProperties(rotationAroundAxis_, imageRotation_, imageScale_, flipHorizontal_,
-                            flipVertical_, volumeWrapping_, fillColor_);
+                              flipVertical_, volumeWrapping_, fillColor_);
 
     rotationAroundAxis_.onChange([this]() { rotationModeChange(); });
     imageRotation_.onChange([this]() { planeSettingsChanged(); });

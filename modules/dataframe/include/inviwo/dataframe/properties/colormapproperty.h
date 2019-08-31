@@ -100,7 +100,7 @@ public:
      * Uses ColormapType::Categorical for CategoricalColumn and ColormapType::Continuous otherwise.
      * Divergence mid-point and its min-max range will be updated based on the Column values.
      * The mid-point will be set to the average of the column,
-     * unless the min value is negative and the max value is positive in which case it 
+     * unless the min value is negative and the max value is positive in which case it
      * will be set to 0.
      */
     void setupForColumn(const Column& col);

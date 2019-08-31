@@ -50,7 +50,6 @@ namespace inviwo {
 
 class Inport;
 
-
 /**
  * \ingroup properties
  * A property wrapping the Camera data structure
@@ -149,7 +148,6 @@ public:
     const mat4& inverseViewMatrix() const;
     const mat4& inverseProjectionMatrix() const;
 
-    
     void invokeEvent(Event* event) override;
 
     // These properties enable linking of individual

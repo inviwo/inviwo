@@ -51,7 +51,7 @@ ImageGLProcessor::ImageGLProcessor(std::shared_ptr<const ShaderResource> fragmen
     , internalInvalid_(false)
     , shader_({utilgl::imgQuadVert(), {ShaderType::Fragment, fragmentShader}},
               buildShader ? Shader::Build::Yes : Shader::Build::No) {
-    
+
     addPort(inport_);
     addPort(outport_);
 

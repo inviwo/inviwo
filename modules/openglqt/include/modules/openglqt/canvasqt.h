@@ -49,8 +49,6 @@
 #include <modules/opengl/debugmessages.h>
 #include <modules/openglqt/canvasqglwidget.h>
 
-
-
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QMouseEvent>
@@ -192,14 +190,17 @@ void CanvasQtBase<T>::doContextMenu(QMouseEvent* event) {
 
         QMenu menu(this);
 
-        this->connect(menu.addAction(QIcon(":svgicons/edit-selectall.svg"), "&Select Processor"), &QAction::triggered, this, [&]() {
-            canvasProcessor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)
-                ->setSelected(true);
-        });
-        this->connect(menu.addAction(QIcon(":svgicons/canvas-hide.svg"), "&Hide Canvas"), &QAction::triggered, this,
-                      [&]() { this->ownerWidget_->setVisible(false); });
+        this->connect(menu.addAction(QIcon(":svgicons/edit-selectall.svg"), "&Select Processor"),
+                      &QAction::triggered, this, [&]() {
+                          canvasProcessor
+                              ->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)
+                              ->setSelected(true);
+                      });
+        this->connect(menu.addAction(QIcon(":svgicons/canvas-hide.svg"), "&Hide Canvas"),
+                      &QAction::triggered, this, [&]() { this->ownerWidget_->setVisible(false); });
 
-        this->connect(menu.addAction(QIcon(":svgicons/fullscreen.svg"), "&Toggle Full Screen"), &QAction::triggered, this,
+        this->connect(menu.addAction(QIcon(":svgicons/fullscreen.svg"), "&Toggle Full Screen"),
+                      &QAction::triggered, this,
                       [&]() { this->setFullScreen(!Canvas::isFullScreen()); });
 
         if (this->image_) {

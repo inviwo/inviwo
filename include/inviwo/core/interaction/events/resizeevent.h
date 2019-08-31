@@ -46,7 +46,7 @@ class Outport;
  * Image inports and outports within a processor must be in the same group for the event to be
  * propagated.
  *
-  * As soon as the network adds or removes a connection, all the image sinks (processors that
+ * As soon as the network adds or removes a connection, all the image sinks (processors that
  * consume images) are responsible for pushing a new resize event to the network to make sure that
  * all the image ports in the network above it have an up-to-date view on which image sizes to use.
  * (@see ImageExport, @see CanvasProcessorWidget)

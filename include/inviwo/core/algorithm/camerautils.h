@@ -106,7 +106,6 @@ IVW_CORE_API void setCameraView(CameraProperty &cam, const mat4 &boundingBox, Si
                                 UpdateNearFar updateNearFar = UpdateNearFar::No,
                                 UpdateLookRanges updateLookRanges = UpdateLookRanges::No);
 
-
 /**
  * Set the ranges of the look to and look from properties of the camera. Will center around the mid
  * point of dataToWorld. The lookTo will be set to ranges to stay within the volume. The lookFrom

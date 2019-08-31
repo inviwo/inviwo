@@ -53,7 +53,7 @@ public:
     virtual void setFileMode(FileMode mode) = 0;
     virtual FileMode getFileMode() const = 0;
 
-    virtual void setContentType(const std::string& contentType) = 0;
+    virtual void setContentType(const std::string &contentType) = 0;
     virtual std::string getContentType() const = 0;
 
     /**

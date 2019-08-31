@@ -52,7 +52,8 @@ PointRenderer::PointRenderer()
     , pointSize_("pointSize", "Point Size (pixel)", 1.0f, 0.00001f, 50.0f, 0.1f)
     , borderWidth_("borderWidth", "Border Width (pixel)", 2.0f, 0.0f, 50.0f, 0.1f)
     , borderColor_("borderColor", "Border Color", vec4(0.0f, 0.0f, 0.0f, 1.0f), vec4(0.0f),
-                   vec4(1.0f), vec4(0.01f), InvalidationLevel::InvalidOutput, PropertySemantics::Color)
+                   vec4(1.0f), vec4(0.01f), InvalidationLevel::InvalidOutput,
+                   PropertySemantics::Color)
     , antialising_("antialising", "Antialising (pixel)", 1.5f, 0.0f, 10.0f, 0.1f)
     , camera_("camera", "Camera", util::boundingBox(inport_))
     , trackball_(&camera_)

@@ -146,7 +146,6 @@ void PCPAxisSettings::updateFromColumn(std::shared_ptr<const Column> col) {
             p75_ = static_cast<double>(pecentiles[2]);
             p100_ = static_cast<double>(pecentiles[3]);
             at = [vec = &dataVector](size_t idx) { return static_cast<double>(vec->at(idx)); };
-
         });
 
     range.propertyModified();

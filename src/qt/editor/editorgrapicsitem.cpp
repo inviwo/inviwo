@@ -93,7 +93,7 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
 
     auto doc = port->getInfo();
     auto b = doc.get({P("html"), P("body")});
-    
+
     auto inport = dynamic_cast<const Inport*>(port);
     auto outport = dynamic_cast<Outport*>(port);
     if (!outport && inport) {

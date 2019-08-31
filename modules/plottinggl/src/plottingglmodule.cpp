@@ -118,13 +118,11 @@ bool PlottingGLModule::Converter::convert(TxElement* root) {
 
                 TxElement propNode{"Properties"};
                 // Move old TF and selected color into new DataFrameColormapProperty
-                if (auto tf = xml::getElement(props,
-                                              "Property&identifier=tf")) {
+                if (auto tf = xml::getElement(props, "Property&identifier=tf")) {
                     propNode.InsertEndChild(*tf);
                 }
 
-                if (auto color = xml::getElement(props,
-                                                 "Property&identifier=selectedColorAxis")) {
+                if (auto color = xml::getElement(props, "Property&identifier=selectedColorAxis")) {
                     propNode.InsertEndChild(*color);
                 }
 

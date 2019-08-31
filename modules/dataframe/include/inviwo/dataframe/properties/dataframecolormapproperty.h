@@ -41,8 +41,8 @@ namespace inviwo {
 /**
  * \brief Property for selecting which column to apply colormapping to.
  * Allows the user to select a column and options for the color map.
- * A ColormapProperty for each column will be added to this property, but only the 
- * one corresponding to the selected axis will be visible. 
+ * A ColormapProperty for each column will be added to this property, but only the
+ * one corresponding to the selected axis will be visible.
  *
  * It is possible to override the ColormapProperty
  *
@@ -52,9 +52,10 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    DataFrameColormapProperty(std::string identifier, std::string displayName, DataInport<DataFrame>& port,
-                              InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-                              PropertySemantics semantics = PropertySemantics::Default);
+    DataFrameColormapProperty(
+        std::string identifier, std::string displayName, DataInport<DataFrame>& port,
+        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+        PropertySemantics semantics = PropertySemantics::Default);
     virtual ~DataFrameColormapProperty() = default;
 
     void createOrUpdateProperties(std::shared_ptr<const DataFrame> dataframe);
@@ -64,7 +65,6 @@ public:
     TransferFunctionProperty tf;
 
 protected:
-
     std::vector<ColormapProperty*> colormaps_;
     std::shared_ptr<const DataFrame> dataframe_;
     std::shared_ptr<std::function<void()>> colormapChanged_;

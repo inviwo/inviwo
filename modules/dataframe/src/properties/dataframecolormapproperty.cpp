@@ -32,7 +32,8 @@
 
 namespace inviwo {
 
-const std::string DataFrameColormapProperty::classIdentifier = "org.inviwo.DataFrameColormapProperty";
+const std::string DataFrameColormapProperty::classIdentifier =
+    "org.inviwo.DataFrameColormapProperty";
 std::string DataFrameColormapProperty::getClassIdentifier() const { return classIdentifier; }
 
 DataFrameColormapProperty::DataFrameColormapProperty(std::string identifier,
@@ -58,9 +59,10 @@ DataFrameColormapProperty::DataFrameColormapProperty(std::string identifier,
         tf.setReadOnly(!*overrideColormap);
     });
 
-
     selectedColorAxis.onChange([&]() {
-        if (selectedColorAxis.size() == 0 || colormaps_.size() != selectedColorAxis.size() || overrideColormap) return;
+        if (selectedColorAxis.size() == 0 || colormaps_.size() != selectedColorAxis.size() ||
+            overrideColormap)
+            return;
 
         for (auto i = 0u; i < colormaps_.size(); i++) {
             colormaps_[i]->setVisible(i == static_cast<size_t>(*selectedColorAxis));
@@ -115,7 +117,7 @@ void DataFrameColormapProperty::createOrUpdateProperties(
     }
     // Remove properties that were not reused
     for (auto p : oldColormapProperties) {
-        if (util::find(colormaps_, p) == colormaps_.end()) { 
+        if (util::find(colormaps_, p) == colormaps_.end()) {
             removeProperty(p);
         }
     }

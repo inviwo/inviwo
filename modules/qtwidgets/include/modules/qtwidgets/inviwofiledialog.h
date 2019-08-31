@@ -67,7 +67,7 @@ public:
     virtual void setFileMode(inviwo::FileMode mode) override;
     virtual inviwo::FileMode getFileMode() const override;
 
-    virtual void setContentType(const std::string& contentType) override;
+    virtual void setContentType(const std::string &contentType) override;
     virtual std::string getContentType() const override;
 
     /**

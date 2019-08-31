@@ -47,7 +47,7 @@ class CompositeProperty;
  */
 class IVW_CORE_API Camera : public Serializable {
 public:
-    enum class Config {Show, Hide};
+    enum class Config { Show, Hide };
 
     /**
      * \brief Default parameters creates a right handed coordinate system

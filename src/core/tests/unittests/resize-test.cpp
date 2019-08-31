@@ -82,17 +82,17 @@ TEST(ResizeEvent, basic) {
     ProcessorNetwork network{InviwoApplication::getPtr()};
     ProcessorNetworkEvaluator evaluator{&network};
 
-/*                    
- *     ┌───────────┐
- *     │    P0     │
- *     └─────┬─────┘
- *     ┌─────┴─────┐
- *     │    P1     │
- *     └─────┬─────┘
- *     ┌─────┴─────┐
- *     │    P2     │
- *     └───────────┘
- */
+    /*
+     *     ┌───────────┐
+     *     │    P0     │
+     *     └─────┬─────┘
+     *     ┌─────┴─────┐
+     *     │    P1     │
+     *     └─────┬─────┘
+     *     ┌─────┴─────┐
+     *     │    P2     │
+     *     └───────────┘
+     */
 
     auto proc0 = std::make_unique<TestProcessor>("p0");
     auto proc1 = std::make_unique<TestProcessor>("p1");
@@ -128,18 +128,18 @@ TEST(ResizeEvent, twoSinks) {
     ProcessorNetwork network{InviwoApplication::getPtr()};
     ProcessorNetworkEvaluator evaluator{&network};
 
-/*                    
- *             ┌───────────┐
- *             │    P0     │
- *             └─────┬─────┘
- *             ┌─────┴─────┐
- *             │    P1     │
- *             └─────┬─────┘
- *           ┌───────┴───────┐
- *     ┌─────┴─────┐   ┌─────┴─────┐ 
- *     │    P2a    │   │    P2a    │
- *     └───────────┘   └───────────┘
- */
+    /*
+     *             ┌───────────┐
+     *             │    P0     │
+     *             └─────┬─────┘
+     *             ┌─────┴─────┐
+     *             │    P1     │
+     *             └─────┬─────┘
+     *           ┌───────┴───────┐
+     *     ┌─────┴─────┐   ┌─────┴─────┐
+     *     │    P2a    │   │    P2a    │
+     *     └───────────┘   └───────────┘
+     */
 
     auto proc0 = std::make_unique<TestProcessor>("p0");
     auto proc1 = std::make_unique<TestProcessor>("p1");
@@ -192,18 +192,18 @@ TEST(ResizeEvent, dontHandleResizeEvents) {
     ProcessorNetwork network{InviwoApplication::getPtr()};
     ProcessorNetworkEvaluator evaluator{&network};
 
-/*                    
- *             ┌───────────┐
- *             │    P0     │
- *             └─────┬─────┘
- *             ┌─────┴─────┐
- *             │    P1     │
- *             └─────┬─────┘
- *           ┌───────┴───────┐
- *     ┌─────┴─────┐   ┌─────┴─────┐ 
- *     │    P2a    │   │    P2a    │
- *     └───────────┘   └───────────┘
- */
+    /*
+     *             ┌───────────┐
+     *             │    P0     │
+     *             └─────┬─────┘
+     *             ┌─────┴─────┐
+     *             │    P1     │
+     *             └─────┬─────┘
+     *           ┌───────┴───────┐
+     *     ┌─────┴─────┐   ┌─────┴─────┐
+     *     │    P2a    │   │    P2a    │
+     *     └───────────┘   └───────────┘
+     */
 
     auto proc0 = std::make_unique<TestProcessor>("p0");
     auto proc1 = std::make_unique<TestProcessor>("p1");
@@ -258,18 +258,18 @@ TEST(ResizeEvent, twoSinksDisconnect) {
     ProcessorNetwork network{InviwoApplication::getPtr()};
     ProcessorNetworkEvaluator evaluator{&network};
 
-/*                    
- *             ┌───────────┐
- *             │    P0     │
- *             └─────┬─────┘
- *             ┌─────┴─────┐
- *             │    P1     │
- *             └─────┬─────┘
- *           ┌───────┴───────┐
- *     ┌─────┴─────┐   ┌─────┴─────┐ 
- *     │    P2a    │   │    P2a    │
- *     └───────────┘   └───────────┘
- */
+    /*
+     *             ┌───────────┐
+     *             │    P0     │
+     *             └─────┬─────┘
+     *             ┌─────┴─────┐
+     *             │    P1     │
+     *             └─────┬─────┘
+     *           ┌───────┴───────┐
+     *     ┌─────┴─────┐   ┌─────┴─────┐
+     *     │    P2a    │   │    P2a    │
+     *     └───────────┘   └───────────┘
+     */
 
     auto proc0 = std::make_unique<TestProcessor>("p0");
     auto proc1 = std::make_unique<TestProcessor>("p1");
