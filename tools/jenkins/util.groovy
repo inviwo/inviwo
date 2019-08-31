@@ -88,7 +88,7 @@ def printMap(String name, def map) {
 }
 
 // this uses global pipeline var pullRequest
-def label(def state, String label, Boolean add) {
+def cfgLabel(def state, String label, Boolean add) {
     try {
         if (add) {
             ifdef({state.pullRequest})?.addLabels([label])
@@ -101,9 +101,9 @@ def label(def state, String label, Boolean add) {
 def checked(def state, String label, Boolean fail, Closure fun) {
     try {
         fun()
-        label(state, "J: " + label  + " Failure", false)
+        cfgLabel(state, "J: " + label  + " Failure", false)
     } catch (e) {
-        label(state, "J: " + label  + " Failure", true)
+        cfgLabel(state, "J: " + label  + " Failure", true)
         state.cfg.errors += label
         if (fail) {
             state.currentBuild.result = Result.FAILURE.toString()
