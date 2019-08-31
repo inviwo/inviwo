@@ -112,16 +112,19 @@ def printMap(String name, def map) {
 
 // this uses global pipeline var pullRequest
 def setLabel(def state, String label, Boolean add) {
-    try {
-        if (add) {
-            state.addLabel(label)
-        } else {
-            state.removeLabel(label)
+    if (add) {
+        try {
+            ifdef({state.pullRequest})?.addLabels([label])
+        } catch (e) {
+            println "Error adding label: ${label}"
+            println e.toString()
         }
-    } catch (e) {
-        println "Error adding label: ${label} add: ${add}"
-        println e.toString()
-    }      
+    } else {
+        try { 
+            util.ifdef({state.pullRequest})?.removeLabel(label) 
+        } catch(e) {}}
+    }
+          
 }
 
 def checked(def state, String label, Boolean fail, Closure fun) {
@@ -130,13 +133,13 @@ def checked(def state, String label, Boolean fail, Closure fun) {
         setLabel(state, "J: " + label  + " Failure", false)
     } catch (e) {
         setLabel(state, "J: " + label  + " Failure", true)
-        state.errors += label
+        state.cfg.errors += label
         if (fail) {
-            state.build.result = Result.FAILURE.toString()
+            state.currentBuild.result = Result.FAILURE.toString()
             throw e
         } else {
             println e.toString()
-            state.build.result = Result.UNSTABLE.toString()
+            state.currentBuild.result = Result.UNSTABLE.toString()
         }
     }
 }
@@ -144,26 +147,19 @@ def checked(def state, String label, Boolean fail, Closure fun) {
 def wrap(def state, String reportSlackChannel, Closure fun) {
     try {
         fun()
-        state.build.result = state.errors.isEmpty() ? 'SUCCESS' : 'UNSTABLE'
+        state.currentBuild.result = state.cfg.errors.isEmpty() ? 'SUCCESS' : 'UNSTABLE'
     } catch (e) {
-        state.build.result = 'FAILURE'
-        println "State:  ${state.build.result}"
-        println "Errors: ${state.errors.join(", ")}"
+        state.currentBuild.result = 'FAILURE'
+        println "State:  ${state.currentBuild.result}"
+        println "Errors: ${state.cfg.errors.join(", ")}"
         println "Except: ${e}"
         throw e
     } finally {
         if (!reportSlackChannel.isEmpty()) slack(state, reportSlackChannel)
-        if (!state.errors.isEmpty()) {
+        if (!state.cfg.errors.isEmpty()) {
             println "Errors in: ${state.errors.join(", ")}"
-            state.build.description = "Errors in: ${state.errors.join(' ')}"
+            state.currentBuild.description = "Errors in: ${state.errors.join(' ')}"
         } 
-    }
-}
-
-def filterfiles() {
-    dir('build') {
-        sh 'cp compile_commands.json compile_commands_org.json'
-        sh 'python3 ../inviwo/tools/jenkins/filter-compilecommands.py'
     }
 }
 
@@ -216,7 +212,7 @@ def warn(def state, refjob = 'daily/appleclang') {
 
 def unittest(def state) {
     if(state.env.disableUnittest) return
-    cmd('Unit Tests', 'build/bin', ['DISPLAY=:' + state.display]) {
+    cmd('Unit Tests', 'build/bin', ['DISPLAY=:' + state.cfg.display]) {
         checked(state, "Unit Test", false) {
             sh '''
                 rc=0
@@ -231,7 +227,7 @@ def unittest(def state) {
 
 def integrationtest(def state) {
     if(state.env.disableIntegration) return
-    cmd('Integration Tests', 'build/bin', ['DISPLAY=:' + state.display]) {
+    cmd('Integration Tests', 'build/bin', ['DISPLAY=:' + state.cfg.display]) {
         checked(state, 'Integration Test', false) {
             sh './inviwo-integrationtests'
         }
@@ -240,7 +236,7 @@ def integrationtest(def state) {
 
 def regression(def state, modulepaths) {
     if(state.env.disableRegression) return
-    cmd('Regression Tests', 'regress', ['DISPLAY=:' + state.display]) {
+    cmd('Regression Tests', 'regress', ['DISPLAY=:' + state.cfg.display]) {
         checked(state, 'Regression Test', false) {
             sh """
                 python3 ../inviwo/tools/regression.py \
@@ -275,8 +271,8 @@ def copyright(def state, extraPaths = []) {
 }
 
 def doxygen(def state) {
-    if(state.env.disableDoxygen) return
-    cmd('Doxygen', 'build', ['DISPLAY=:' + state.display]) {
+    if (state.env.disableDoxygen) return
+    cmd('Doxygen', 'build', ['DISPLAY=:' + state.cfg.display]) {
         checked(state, "Doxygen", false) {
             sh 'ninja DOXY-Inviwo'
         }
@@ -293,15 +289,15 @@ def doxygen(def state) {
 
 def slack(def state, channel) {
     stage('Slack') {
-        echo "result: ${state.build.currentResult}"
+        echo "result: ${state.currentBuild.currentResult}"
         def res2color = [(Result.SUCCESS) : 'good', (Result.UNSTABLE) : 'warning' , (Result.FAILURE) : 'danger' ]
-        def color = res2color.containsKey(state.build.result) ? res2color[state.build.result] : 'warning'
-        def errors = !state.errors.isEmpty() ? "Errors in: ${state.errors.join(" ")}\n" : ""
+        def color = res2color.containsKey(state.currentBuild.result) ? res2color[state.currentBuild.result] : 'warning'
+        def errors = !state.cfg.errors.isEmpty() ? "Errors in: ${state.cfg.errors.join(" ")}\n" : ""
         slackSend(
             color: color, 
             channel: channel, 
             message: "Branch: ${state.env.BRANCH_NAME}\n" + 
-                     "Status: ${state.build.result}\n" + 
+                     "Status: ${state.currentBuild.result}\n" + 
                      "Job: ${state.env.BUILD_URL} \n" + 
                      "Regression: ${state.env.JOB_URL}Regression_Report/\n" + 
                      errors +

@@ -11,34 +11,23 @@ node {
     if (!env.disabledProperties) properties(util.defaultProperties())
     util.printMap("Environment", env.getEnvironment())
     
-    Map state = [
-        env: env,
-        build: currentBuild, 
-        errors: [],
-        display: 0,
-        addLabel: {String l -> util.ifdef({pullRequest})?.addLabels([l])},
-        removeLabel: {String l -> try { util.ifdef({pullRequest})?.removeLabel(l) } catch(e) {}}
-    ]
+    cfg = [ errors: [], display: 0 ]
 
-    util.repl(this, scmVars)
-    util.repl(this, state)
-    util.repl(this, util.ifdef({pullRequest}))
-
-    util.wrap(state, "#jenkins-branch-pr") {
+    util.wrap(this, "#jenkins-branch-pr") {
         util.touchwarn()
         util.buildStandard(
-            state: state,
+            state: this,
             modulePaths: [], 
             onModules: ["DiscreteData", "HDF5", "OpenCL", "BaseCL", "WebBrowser", "Example"],  
             offModules: ["ABufferGL"],
             opts: [:]
         )
-        util.format(state, ["${env.WORKSPACE}/inviwo"])
-        util.warn(state)
-        util.unittest(state)
-        util.integrationtest(state)        
-        //util.regression(state, ["${env.WORKSPACE}/inviwo/modules"])
-        util.copyright(state)    
-        util.doxygen(state)
+        util.format(this, ["${env.WORKSPACE}/inviwo"])
+        util.warn(this)
+        util.unittest(this)
+        util.integrationtest(this)        
+        //util.regression(this, ["${env.WORKSPACE}/inviwo/modules"])
+        util.copyright(this)    
+        util.doxygen(this)
     }
 }
