@@ -34,6 +34,19 @@ def getAffectedFiles(build) {
     return files
 }
 
+def repl(x, y) { 
+    while (true) {
+        def cmd = input message: 'What to run:', parameters: [string(defaultValue: '', description: '', name: 'cmd')]
+        if (cmd == "quit") return
+        try {
+            print Eval.xy(x,y,cmd)
+        } catch (e) {
+            print e
+        }
+    }
+}
+
+
 def defaultProperties() {
     def params = [
         parameters([
@@ -166,13 +179,27 @@ def format(def state, repos) {
     }
 }
 
+def touchwarn() {
+    if (fileExists('build/warnings.txt')) {
+        readFile('build/warnings.txt').tokenize('\n').each{file ->
+            println "touching ${file}"
+            touch file
+        }
+    }
+}
+
 def warn(def state, refjob = 'daily/appleclang') {
     cmd('Warning Tests', 'inviwo') {
         checked(state, 'Warning Test', false) {
-            recordIssues qualityGates: [[threshold: 1, type: 'NEW', unstable: true]], 
-                         referenceJobName: refjob, 
-                         sourceCodeEncoding: 'UTF-8', 
-                         tools: [clang(name: 'Clang')] 
+            def clangIssues = scanForIssues sourceCodeEncoding: 'UTF-8', tool: clang(name: 'clang')
+            def warnings = clangIssues.getReport().collect {issue -> issue.getFileName() }
+            writeFile encoding: 'UTF-8', file: '../build/warnings.txt', text : warnings.join('\n')
+            publishIssues issues: [clangIssues],
+                          referenceJobName: 'daily/appleclang',
+                          qualityGates: [[threshold: 1, type: 'NEW', unstable: true]]
+            if (clangIssues.size() > 0) {
+                throw new Exception("There are warning issues")
+            }
         }
     }
 }
