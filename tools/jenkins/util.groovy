@@ -11,29 +11,6 @@
  *  * opts
  */
 
-@NonCPS
-def getChangeString(build) {
-    def MAX_MSG_LEN = 100
-    def changeString = ""
-    build.changeSets.each {entries -> 
-        entries.each { entry -> 
-            changeString += "${new Date(entry.timestamp).format("yyyy-MM-dd HH:mm:ss")} "
-            changeString += "[${entry.commitId.take(8)}] ${entry.author}: ${entry.msg.take(MAX_MSG_LEN)}\n"
-        }
-    }
-    return changeString ?: " - No new changes"
-}
-
-@NonCPS
-def getAffectedFiles(build) {
-    files = []
-    build.changeSets.each {entries -> 
-        entries.each { entry -> files += entry.affectedFiles }
-    }
-    files.unique()
-    return files
-}
-
 // usage given a var for with method bar
 // ifdef({foo})?.bar() will call foo.bar() if foo is defined otherwise nothing.
 def ifdef(varExpr) {
@@ -301,8 +278,7 @@ def slack(def state, channel) {
                      "Status: ${state.currentBuild.result}\n" + 
                      "Job: ${state.env.BUILD_URL} \n" + 
                      "Regression: ${state.env.JOB_URL}Regression_Report/\n" + 
-                     errors +
-                     "Changes: " + getChangeString(state.build)
+                     errors)
         )
     }
 }
