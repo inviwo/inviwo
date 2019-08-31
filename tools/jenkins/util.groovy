@@ -122,7 +122,8 @@ def setLabel(def state, String label, Boolean add) {
     } else {
         try { 
             util.ifdef({state.pullRequest})?.removeLabel(label) 
-        } catch(e) {}}
+        } catch(e) {
+        }
     }
           
 }
