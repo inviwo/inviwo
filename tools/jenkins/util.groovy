@@ -34,6 +34,16 @@ def getAffectedFiles(build) {
     return files
 }
 
+// usage given a var for with method bar
+// ifdef({foo})?.bar() will call foo.bar() if foo is defined otherwise nothing.
+def ifdef(varExpr) {
+    try {
+        varExpr()
+    } catch (exc) {
+        null
+    }
+}
+
 def repl(x, y) { 
     while (true) {
         def cmd = input message: 'What to run:', parameters: [string(defaultValue: '', description: '', name: 'cmd')]

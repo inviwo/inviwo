@@ -1,7 +1,7 @@
 node {
     stage('Fetch') { 
         dir('inviwo') {
-            checkout scm
+            scmVars = checkout scm
             sh 'git submodule sync --recursive' // needed when a submodule has a new url  
             sh 'git submodule update --init --recursive'
         }
@@ -16,21 +16,13 @@ node {
         build: currentBuild, 
         errors: [],
         display: 0,
-        addLabel: {String label -> 
-            if (env.CHANGE_ID  && !(label in pullRequest.labels)) pullRequest.addLabels([label])
-        },
-        removeLabel: {String label -> 
-            if (env.CHANGE_ID && !(label in pullRequest.labels)) {
-                def labels = pullRequest.labels.collect { it }
-                labels.removeAll { it == label }
-                pullRequest.labels = labels
-            }
-        }
+        addLabel: {String l -> util.ifdef({pullRequest})?.addLabels([l])},
+        removeLabel: {String l -> try { util.ifdef({pullRequest})?.removeLabel(l) } catch(e) {}}
     ]
 
+    util.repl(this, scmVars)
     util.repl(this, state)
-
-    util.repl(this, pullRequest)
+    util.repl(this, util.ifdef({pullRequest}))
 
     util.wrap(state, "#jenkins-branch-pr") {
         util.touchwarn()
