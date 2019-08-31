@@ -8,7 +8,7 @@ node {
     }
 
     def util = load "${env.WORKSPACE}/inviwo/tools/jenkins/util.groovy"
-    if(!env.disabledProperties) properties(util.defaultProperties())
+    if (!env.disabledProperties) properties(util.defaultProperties())
     util.printMap("Environment", env.getEnvironment())
     
     Map state = [
@@ -28,6 +28,10 @@ node {
         }
     ]
 
+    util.repl(this, state)
+
+    util.repl(this, pullRequest)
+
     util.wrap(state, "#jenkins-branch-pr") {
         util.touchwarn()
         util.buildStandard(
@@ -41,7 +45,7 @@ node {
         util.warn(state)
         util.unittest(state)
         util.integrationtest(state)        
-        util.regression(state, ["${env.WORKSPACE}/inviwo/modules"])
+        //util.regression(state, ["${env.WORKSPACE}/inviwo/modules"])
         util.copyright(state)    
         util.doxygen(state)
     }
