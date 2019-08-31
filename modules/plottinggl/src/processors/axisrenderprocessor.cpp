@@ -85,8 +85,8 @@ AxisRenderProcessor::AxisRenderProcessor()
 
     auto& a = axis3_;
 
-    style_.setCollapsed(true);
-    style_.registerProperties(axis1_, axis2_, axis3_);
+        style_.setCollapsed(true);
+                    style_.registerProperties(axis1_, axis2_, axis3_);
     addProperties(style_, axis1_, axis2_, axis3_);
 }
 
