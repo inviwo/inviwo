@@ -168,10 +168,11 @@ def touchwarn() {
 def warn(def state, refjob = 'daily/appleclang') {
     cmd('Warning Tests', 'inviwo') {
         checked(state, 'Warning Test', false) {
-            def clangIssues = scanForIssues sourceCodeEncoding: 'UTF-8', tool: clang(name: 'clang')
+            def clangIssues = scanForIssues sourceCodeEncoding: 'UTF-8', tool: clang()
             def warnings = clangIssues.getReport().collect {issue -> issue.getFileName() }
             writeFile encoding: 'UTF-8', file: '../build/warnings.txt', text : warnings.join('\n')
             publishIssues issues: [clangIssues],
+                          name: 'Clang',
                           referenceJobName: 'daily/appleclang',
                           qualityGates: [[threshold: 1, type: 'NEW', unstable: true]]
             if (clangIssues.size() > 0) {
