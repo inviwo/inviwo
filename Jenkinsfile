@@ -8,11 +8,8 @@ node {
     }
 
     def util = load "${env.WORKSPACE}/inviwo/tools/jenkins/util.groovy"
-    if (!env.disabledProperties) properties(util.defaultProperties())
-    util.printMap("Environment", env.getEnvironment())
+    util.config(this)
     
-    cfg = [ errors: [], display: 0 ]
-
     util.wrap(this, "#jenkins-branch-pr") {
         util.touchwarn()
         util.buildStandard(

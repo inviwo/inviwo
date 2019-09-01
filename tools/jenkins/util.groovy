@@ -115,6 +115,12 @@ def checked(def state, String label, Boolean fail, Closure fun) {
     }
 }
 
+def config(def state) {
+    if (!state.env.disabledProperties) state.properties(defaultProperties())
+    util.printMap("Environment", state.env.getEnvironment())
+    state.cfg = [ errors: [], display: 0 ]
+}
+
 def wrap(def state, String reportSlackChannel, Closure fun) {
     try {
         fun()
