@@ -86,9 +86,31 @@
 </head>
 <body >
 <h1>Latest Changes</h1>
+<h2>2019-09-02 New Inviwo Version 0.9.11</h2>
+<p>Major change since the last release include:</p>
+<ul>
+<li>We have updated a number of build requirements:<ul>
+<li>A compiler supporting C++17 (We have built Inviwo with VS 2017, Clang 7, GCC 8, and XCode 10)</li>
+<li>CMake version &gt;= 3.12</li>
+<li>Qt version &gt;= 5.12</li>
+</ul>
+</li>
+<li>New transfer function transforms: flip positions, interpolate alpha, equalize alpha (#618)</li>
+<li>Better import of transfer functions from images (#626)</li>
+<li>Source processors now have an option to see and explicitly set the data reader used. (#635)</li>
+<li>We now group add the module targets in a folder per external modules directory. The folder name can be customized by adding a <code>meta.cmake</code> file to the external modules directory with <code>set(group_name &lt;name&gt;)</code> otherwise the folder name is used. (#637)</li>
+<li>Image port resize refactoring. The handling of image resize event is now more robust. (#645, #658)</li>
+<li>The Volume '.dat' reader now supports a ByteOffset option. </li>
+<li>The Camera now has a set off buttons to easily fit data into the view. The buttons are also available via the canvas context menu. (#656)</li>
+<li>The Welcome widget got a search feature (#654, #662)</li>
+<li>Jenkins got better at tracking warning and format issues.</li>
+<li>Lots of fixes for static builds (#627, #631, #633)</li>
+<li>Observables no longer makes its observers also observe its clones (#643)</li>
+<li>PropertyOnwer will let all its observers know about the property removal on destruction (#632)</li>
+</ul>
 <h2>2019-08-20 Parallel coordinates plot margins</h2>
 <p>Removed autoMargins property and replaced it with includeLabels making it possible to specify margins with labels. </p>
-<h2>2019-08-16</h2>
+<h2>2019-08-16 Property Assignment</h2>
 <p>We decided to remove the assignment operator from Property and related classes. The reason being that it is hard to understand what is does and hard to implement. Hence if you have implemented your own properties in your code you will have to remove the assignment operators from them. And given that we couldn't find any uses of it we decided to remove it. If you want to assign the "value" of a property to an other property the Property::set(const Property* src) function should be used.</p>
 <h2>2019-08-05 New version requirements</h2>
 <p>We now require a C++17 compatible compiler, and CMake version of at least 3.12 </p>
@@ -103,8 +125,7 @@
 <h2>2019-07-05 Plotting Improvements</h2>
 <p>We added a <code>AxisStyleProperty</code> for simplifying the setup of multiple axes in plots. Multiple axis properties can be registered with this new style property (<code>AxisStyleProperty::registerProperty()</code>). Changes to any of the style properties (line and text color, font size, tick length, etc.) are propagated to all registered axes, i.e. all axis share the same style. Note: this modifications can be overwritten in the individual axis.</p>
 <p>There is now also an <code>Image Plot Processor</code> which allows to plot a 2D image with matching x-y axes. Interactions are forwarded to the image port which allows, e.g., to browse through volume slices. See image plot example in <code>PlottingGL</code>.</p>
-<h2>2019-07-04 New Inviwo version</h2>
-<p>We are releasing a new Inviwo version 0.9.10. </p>
+<h2>2019-07-04 New Inviwo version 0.9.10</h2>
 <p>Major change since the last release include:</p>
 <ul>
 <li>Embedded web browser support</li>
