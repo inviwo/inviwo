@@ -343,7 +343,7 @@ Document BaseImageInport<N>::getInfo() const {
     auto doc = DataInport<Image, N>::getInfo();
 
     auto b = doc.get({P{"html"}, P{"body"}});
-    auto t = b.get({P{"p"},  P{"table"}});
+    auto t = b.get({P{"p"}, P{"table"}});
 
     utildoc::TableBuilder tb(t);
     tb(H("Outport Determining Size"), isOutportDeterminingSize());

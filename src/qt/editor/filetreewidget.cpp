@@ -386,7 +386,7 @@ bool FileTreeWidget::selectRecentWorkspace(int index) {
 void FileTreeWidget::setFilter(const QString& str) {
     proxyModel_->setFilterRegExp(str);
 
-    expandItems();    
+    expandItems();
 
     // select first leaf node
     auto index = findFirstLeaf(QModelIndex());

@@ -52,9 +52,9 @@ inline void updateReaderFromFile(const FileProperty& file,
         file.getSelectedExtension().empty()) {
         const auto& opts = reader.getOptions();
         const auto it = std::find_if(opts.begin(), opts.end(),
-                               [&](const OptionPropertyOption<FileExtension>& opt) {
-                                   return opt.value_.matches(file.get());
-                               });
+                                     [&](const OptionPropertyOption<FileExtension>& opt) {
+                                         return opt.value_.matches(file.get());
+                                     });
         reader.setSelectedValue(it != opts.end() ? it->value_ : FileExtension{});
     } else {
         reader.setSelectedValue(file.getSelectedExtension());

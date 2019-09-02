@@ -80,7 +80,6 @@ CubeRenderer::CubeRenderer()
                    configureShader(shader);
                }} {
 
-
     addPort(inport_);
     addPort(imageInport_).setOptional(true);
     addPort(outport_);

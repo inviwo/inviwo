@@ -46,7 +46,6 @@ namespace inviwo {
  */
 class IVW_CORE_API ButtonGroupProperty : public Property {
 public:
-
     struct IVW_CORE_API Button {
         std::optional<std::string> name;
         std::optional<std::string> icon;
@@ -58,12 +57,13 @@ public:
     static const std::string classIdentifier;
 
     ButtonGroupProperty(std::string identifier, std::string displayName,
-                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-                   PropertySemantics semantics = PropertySemantics::Default);
+                        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                        PropertySemantics semantics = PropertySemantics::Default);
 
-    ButtonGroupProperty(std::string identifier, std::string displayName, std::vector<Button> buttons,
-                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-                   PropertySemantics semantics = PropertySemantics::Default);
+    ButtonGroupProperty(std::string identifier, std::string displayName,
+                        std::vector<Button> buttons,
+                        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                        PropertySemantics semantics = PropertySemantics::Default);
 
     ButtonGroupProperty(const ButtonGroupProperty& rhs);
     ButtonGroupProperty(const ButtonGroupProperty& rhs, std::vector<Button> buttons);
@@ -91,8 +91,8 @@ public:
      */
     void pressButton(size_t index);
 
-
-    virtual ButtonGroupProperty& propertyModified() override;  // override for custom onChange behavior
+    virtual ButtonGroupProperty& propertyModified()
+        override;  // override for custom onChange behavior
 
     // Override Property::resetToDefaultState, to avoid calling propertyModified  on reset.
     virtual ButtonGroupProperty& resetToDefaultState() override;

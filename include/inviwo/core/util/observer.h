@@ -199,8 +199,8 @@ public:
     Observable<T>& operator=(const Observable<T>& other);
 
     /**
-     * This operation will remove all observers of this, and make all observers of other observe this
-     * instead.
+     * This operation will remove all observers of this, and make all observers of other observe
+     * this instead.
      */
     Observable<T>& operator=(Observable<T>&& other);
     virtual ~Observable();
