@@ -75,8 +75,10 @@ ButtonGroupPropertyWidgetQt::ButtonGroupPropertyWidgetQt(ButtonGroupProperty* pr
         });
         hLayout->addWidget(buttonWidget);
     }
-    setFocusPolicy(hLayout->itemAt(0)->widget()->focusPolicy());
-    setFocusProxy(hLayout->itemAt(0)->widget());
+    if (property->size() > 0) {
+        setFocusPolicy(hLayout->itemAt(0)->widget()->focusPolicy());
+        setFocusProxy(hLayout->itemAt(0)->widget());
+    }
 
     setLayout(hLayout);
 }
