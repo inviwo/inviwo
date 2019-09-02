@@ -32,192 +32,39 @@ This complete file is auto-generated with python script
 tools/codegen/colorbrewer/colorbrewer.py
 */
 
-#include <inviwo/core/util/colorbrewer.h>
-#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/colorbrewer-generated.h>
 
 namespace inviwo {
 namespace colorbrewer {
 
 const std::vector<dvec4> &getColormap(Colormap colormap) {
     switch (colormap) {
+        // clang-format off
 ##PLACEHOLDER##
+        // clang-format on
     }
-    throw ColorBrewerException("Invalid colorbrewer colormap");
-}
-
-const std::vector<dvec4> &getColormap(const Family &family, glm::uint8 numberOfColors) {
-    if (getMinNumberOfColorsForFamily(family) > numberOfColors){
-        throw ColorBrewerTooFewException();
-    } 
-    if (getMaxNumberOfColorsForFamily(family) < numberOfColors) {
-        throw ColorBrewerTooManyException();
-    }
-
-    // Calculate offset into the std::vector<dvec4> enum class
-    auto familyIndex = static_cast<int>(family);
-    int accumulated = 0;
-    for (int i = 0; i < familyIndex; i++) {
-        auto a = getMinNumberOfColorsForFamily(static_cast<Family>(i));
-        auto b = getMaxNumberOfColorsForFamily(static_cast<Family>(i));
-        accumulated += (b - a) + 1;
-    }
-
-    accumulated += numberOfColors - getMinNumberOfColorsForFamily(family);
-
-    auto c = static_cast<Colormap>(accumulated);
-
-    return getColormap(c);
-}
-
-std::vector<std::vector<dvec4>> getColormaps(const Family &family) {
-    // Calculate offset into the std::vector<dvec4> enum class
-    auto familyIndex = static_cast<int>(family);
-    int accumulated = 0;
-    for (int i = 0; i < familyIndex; i++) {
-        auto a = getMinNumberOfColorsForFamily(static_cast<Family>(i));
-        auto b = getMaxNumberOfColorsForFamily(static_cast<Family>(i));
-        accumulated += (b - a) + 1;
-    }
-
-    auto numColormapsInThisFamily =
-        getMaxNumberOfColorsForFamily(static_cast<Family>(familyIndex)) -
-        getMinNumberOfColorsForFamily(static_cast<Family>(familyIndex));
-
-    std::vector<Colormap> v;
-    for (int i = 0; i < numColormapsInThisFamily; i++)
-        v.emplace_back(static_cast<Colormap>(accumulated + i));
-
-    std::vector<std::vector<dvec4>> ret;
-    for (const auto &c : v) {
-        ret.emplace_back(getColormap(c));
-    }
-
-    return ret;
-}
-
-std::map<Family, std::vector<std::vector<dvec4>>> getColormaps(const Category &category) {
-    std::map<Family, std::vector<std::vector<dvec4>>> v;
-
-    for (const auto &family : getFamiliesForCategory(category))
-        v.emplace(family, getColormaps(family));
-
-    return v;
-}
-
-std::map<Family, std::vector<dvec4>> getColormaps(const Category &category,
-                                                   glm::uint8 numberOfColors) {
-    std::map<Family, std::vector<dvec4>> v;
-
-    for (const auto &family : getFamiliesForCategory(category)) {
-        // We catch the exceptions here because otherwise, the method would just throw an
-        // exception if one of the requested colormaps is not available, even if the others were.
-        // This way, if 3 out of 4 requested colormaps exist, they are returned.
-        try {
-            v.emplace(family, getColormap(family, numberOfColors));
-        } catch (ColorBrewerTooFewException &) {
-            LogWarnCustom(
-                "colorbrewer",
-                "Family " << family
-                          << " omitted because the number of colors was not supported (too few, "
-                          << std::to_string(numberOfColors) << ")");
-        } catch (ColorBrewerTooManyException &) {
-            LogWarnCustom(
-                "colorbrewer",
-                "Family " << family
-                          << " omitted because the number of colors was not supported (too many, "
-                          << std::to_string(numberOfColors) << ")");
-        }
-    }
-
-    if (v.empty()) {
-        throw ColorBrewerException();
-    }
-
-    return v;
+    IVW_ASSERT(false, "Unhandled enum value");
+    static const std::vector<dvec4> dummy{};
+    return dummy;
 }
 
 glm::uint8 getMinNumberOfColorsForFamily(const Family &) { return 3; }
 
 glm::uint8 getMaxNumberOfColorsForFamily(const Family &family) {
+    // clang-format off
 ##GETMAXIMPL##
+    // clang-format on
     return 0;
 }
 
 std::vector<Family> getFamiliesForCategory(const Category &category) {
     std::vector<Family> v;
     switch (category) {
+        // clang-format off
 ##GETFAMILIESIMPL##
+            // clang-format on
     }
-
     return v;
-}
-
-TransferFunction getTransferFunction(const Category &category, const Family &family,
-                                     glm::uint8 nColors, bool discrete, double midPoint) {
-    TransferFunction tf;
-    auto colors = colorbrewer::getColormap(family, nColors);
-
-    if (category == colorbrewer::Category::Diverging) {
-        if (discrete) {
-            auto dt = midPoint / (0.5 * (colors.size()));
-            double start = 0, end = std::max(dt - std::numeric_limits<double>::epsilon(), 0.);
-            for (auto i = 0u; i < colors.size() / 2; i++) {
-                tf.add(start, vec4(colors[i]));
-                tf.add(end, vec4(colors[i]));
-                start += dt;
-                end += dt;
-            }
-            tf.add(start, vec4(colors[colors.size() / 2]));
-            if (midPoint < 1.0) {
-                dt = (1.0 - midPoint) / (0.5 * (colors.size()));
-                tf.add(start + dt - std::numeric_limits<double>::epsilon(),
-                       vec4(colors[colors.size() / 2]));
-                start = start + dt;
-                end = start + dt - std::numeric_limits<double>::epsilon();
-                for (auto i = colors.size() / 2 + 1; i < colors.size(); i++) {
-                    // Avoid numerical issues with min
-                    tf.add(std::min(start, 1.0), vec4(colors[i]));
-                    tf.add(std::min(end, 1.0), vec4(colors[i]));
-                    start += dt;
-                    end += dt;
-                }
-            }
-        } else {
-            auto dt = midPoint / (0.5 * (colors.size() - 1.0));
-            for (auto i = 0u; i < colors.size() / 2; i++) {
-                tf.add(i * dt, vec4(colors[i]));
-            }
-            tf.add(midPoint, vec4(colors[colors.size() / 2]));
-            if (midPoint < 1.0) {
-                dt = (1.0 - midPoint) / (0.5 * (colors.size() - 1.0));
-                auto t = midPoint + dt;
-                for (auto i = colors.size() / 2 + 1; i < colors.size(); i++) {
-                    // Avoid numerical issues with min
-                    tf.add(std::min(t, 1.0), vec4(colors[i]));
-                    t += dt;
-                }
-            }
-        }
-
-    } else {
-        if (discrete) {
-            double dt = 1.0 / (colors.size());
-            double start = 0, end = dt - std::numeric_limits<double>::epsilon();
-            for (const auto &c : colors) {
-                tf.add(start, vec4(c));
-                tf.add(end, vec4(c));
-                start += dt;
-                end += dt;
-            }
-        } else {
-            auto dt = 1.0 / (colors.size() - 1.0);
-            size_t idx = 0;
-            for (const auto &c : colors) {
-                tf.add(idx++ * dt, vec4(c));
-            }
-        }
-    }
-    return tf;
 }
 
 }  // namespace colorbrewer
