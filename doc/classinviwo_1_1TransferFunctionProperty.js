@@ -17,7 +17,6 @@ var classinviwo_1_1TransferFunctionProperty =
     [ "onTFPrimitiveChanged", "classinviwo_1_1TransferFunctionProperty.html#a4dabf0be917d1af8faa86187d2d28bfd", null ],
     [ "onTFPrimitiveRemoved", "classinviwo_1_1TransferFunctionProperty.html#a2dabffdf7fd2f4683d5cf8cec5673b5f", null ],
     [ "onTFTypeChanged", "classinviwo_1_1TransferFunctionProperty.html#ae043634b49643b6d7d052ddfaac68a22", null ],
-    [ "operator=", "classinviwo_1_1TransferFunctionProperty.html#af4d2dfa4663d0d40ee8c18f86306feb1", null ],
     [ "resetToDefaultState", "classinviwo_1_1TransferFunctionProperty.html#a08d36842453e2c0d676fabf2d39b758b", null ],
     [ "serialize", "classinviwo_1_1TransferFunctionProperty.html#a5f2440d23adb4f49a978b102b62a7d77", null ],
     [ "set", "classinviwo_1_1TransferFunctionProperty.html#a476c969ad1feea755b61e38eeea5faf0", null ],

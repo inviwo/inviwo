@@ -31,7 +31,7 @@
   <td id="projectlogo"><img alt="Logo" src="inviwo_dark.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Inviwo
-   &#160;<span id="projectnumber">0.9.10</span>
+   &#160;<span id="projectnumber">0.9.10.1</span>
    </div>
    <div id="projectbrief">Inviwo documentation</div>
   </td>
@@ -105,17 +105,16 @@ $(document).ready(function(){initNavTree('classinviwo_1_1ImageOutport.html','');
 <div id="dynsection-0-content" class="dyncontent" style="display:none;">
 <div class="center"><img src="classinviwo_1_1ImageOutport__inherit__graph.png" border="0" usemap="#inviwo_1_1ImageOutport_inherit__map" alt="Inheritance graph"/></div>
 <map name="inviwo_1_1ImageOutport_inherit__map" id="inviwo_1_1ImageOutport_inherit__map">
-<area shape="rect"  title=" " alt="" coords="351,468,494,495"/>
-<area shape="rect"  href="classinviwo_1_1DataOutport.html" title=" " alt="" coords="235,377,370,419"/>
-<area shape="rect"  href="classinviwo_1_1Outport.html" title="Abstract base class for all outports The Outport can be connected to an arbitrary number of Inports." alt="" coords="407,212,513,239"/>
-<area shape="rect"  href="classinviwo_1_1DataOutport.html" title=" " alt="" coords="220,288,385,315"/>
+<area shape="rect"  title=" " alt="" coords="229,468,371,495"/>
+<area shape="rect"  href="classinviwo_1_1DataOutport.html" title=" " alt="" coords="233,377,367,419"/>
+<area shape="rect"  href="classinviwo_1_1Outport.html" title="Abstract base class for all outports The Outport can be connected to an arbitrary number of Inports." alt="" coords="383,212,489,239"/>
+<area shape="rect"  href="classinviwo_1_1DataOutport.html" title=" " alt="" coords="217,288,383,315"/>
 <area shape="rect"  href="classinviwo_1_1Port.html" title="A abstract base class for all ports. A port can be connected to other ports and is owned by a process..." alt="" coords="433,89,521,115"/>
 <area shape="rect"  href="classinviwo_1_1Serializable.html" title=" " alt="" coords="412,5,543,32"/>
 <area shape="rect"  href="structinviwo_1_1OutportIterableImpl.html" title=" " alt="" coords="5,147,179,188"/>
 <area shape="rect"  href="structinviwo_1_1OutportIterable.html" title=" " alt="" coords="109,5,289,32"/>
-<area shape="rect"  href="structinviwo_1_1OutportIterableImpl.html" title=" " alt="" coords="178,212,382,239"/>
+<area shape="rect"  href="structinviwo_1_1OutportIterableImpl.html" title=" " alt="" coords="154,212,358,239"/>
 <area shape="rect"  href="structinviwo_1_1OutportIterableImpl.html" title=" " alt="" coords="236,81,409,123"/>
-<area shape="rect"  href="classinviwo_1_1EventHandler.html" title=" " alt="" coords="394,385,534,411"/>
 </map>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
@@ -148,25 +147,19 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasEditableData</b> (
 <tr class="memitem:aa8e91f4bca4cc52def3da3c8ff0e9e00"><td class="memItemLeft" align="right" valign="top"><a id="aa8e91f4bca4cc52def3da3c8ff0e9e00"></a>
 std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Image.html">Image</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getEditableData</b> () const</td></tr>
 <tr class="separator:aa8e91f4bca4cc52def3da3c8ff0e9e00"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aab499de33ba742034e051acf7589d6f8"><td class="memItemLeft" align="right" valign="top"><a id="aab499de33ba742034e051acf7589d6f8"></a>
-std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1Image.html">Image</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getResizedImageData</b> (size2_t dimensions) const</td></tr>
-<tr class="separator:aab499de33ba742034e051acf7589d6f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a618210a838607fa9ae77ba8329bdf47e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1ImageOutport.html#a618210a838607fa9ae77ba8329bdf47e">propagateEvent</a> (<a class="el" href="classinviwo_1_1Event.html">Event</a> *event) override</td></tr>
-<tr class="separator:a618210a838607fa9ae77ba8329bdf47e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a32641c7cf746732364716ca8e35a3bdd"><td class="memItemLeft" align="right" valign="top"><a id="a32641c7cf746732364716ca8e35a3bdd"></a>
+<tr class="memitem:aea88575fc1bf3eaa7ae2166d1bdcb584"><td class="memItemLeft" align="right" valign="top"><a id="aea88575fc1bf3eaa7ae2166d1bdcb584"></a>
+std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1Image.html">Image</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getDataForPort</b> (const <a class="el" href="classinviwo_1_1Inport.html">Inport</a> *port) const</td></tr>
+<tr class="separator:aea88575fc1bf3eaa7ae2166d1bdcb584"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e02490fd7580e6fbd20ceab026d68c2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1ImageOutport.html#a1e02490fd7580e6fbd20ceab026d68c2">propagateEvent</a> (<a class="el" href="classinviwo_1_1Event.html">Event</a> *event, <a class="el" href="classinviwo_1_1Inport.html">Inport</a> *source) override</td></tr>
+<tr class="separator:a1e02490fd7580e6fbd20ceab026d68c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3ff6f27b2db62d4129ae8da0c4cdec5"><td class="memItemLeft" align="right" valign="top"><a id="ae3ff6f27b2db62d4129ae8da0c4cdec5"></a>
 const <a class="el" href="classinviwo_1_1DataFormatBase.html">DataFormatBase</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getDataFormat</b> () const</td></tr>
-<tr class="separator:a32641c7cf746732364716ca8e35a3bdd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:ae3ff6f27b2db62d4129ae8da0c4cdec5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a53706fdaf40e500d9409f88a014b1bc7"><td class="memItemLeft" align="right" valign="top"><a id="a53706fdaf40e500d9409f88a014b1bc7"></a>
 size2_t&#160;</td><td class="memItemRight" valign="bottom"><b>getDimensions</b> () const</td></tr>
 <tr class="separator:a53706fdaf40e500d9409f88a014b1bc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acfb322aec2c07b1801b0db61b4585db6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1ImageOutport.html#acfb322aec2c07b1801b0db61b4585db6">setDimensions</a> (const size2_t &amp;newDimension)</td></tr>
 <tr class="separator:acfb322aec2c07b1801b0db61b4585db6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9eeb53bb8d2442d1233966d09b343d1d"><td class="memItemLeft" align="right" valign="top"><a id="a9eeb53bb8d2442d1233966d09b343d1d"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>addResizeEventListener</b> (<a class="el" href="classinviwo_1_1EventListener.html">EventListener</a> *)</td></tr>
-<tr class="separator:a9eeb53bb8d2442d1233966d09b343d1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae0e33f4c360a357ee7e54316fa683acc"><td class="memItemLeft" align="right" valign="top"><a id="ae0e33f4c360a357ee7e54316fa683acc"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>removeResizeEventListener</b> (<a class="el" href="classinviwo_1_1EventListener.html">EventListener</a> *)</td></tr>
-<tr class="separator:ae0e33f4c360a357ee7e54316fa683acc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a18dbedde49eb6809be7f42c328087863"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1ImageOutport.html#a18dbedde49eb6809be7f42c328087863">setHandleResizeEvents</a> (bool handleResizeEvents)</td></tr>
 <tr class="separator:a18dbedde49eb6809be7f42c328087863"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a16828e0cb9b08c33e3e46d9d82ccff84"><td class="memItemLeft" align="right" valign="top"><a id="a16828e0cb9b08c33e3e46d9d82ccff84"></a>
@@ -177,24 +170,27 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>isHandlingResizeEvent
 <tr class="memitem:a9f78053301634b41a3c263ddcfa2647e"><td class="memItemLeft" align="right" valign="top"><a id="a9f78053301634b41a3c263ddcfa2647e"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>disconnectFrom</b> (<a class="el" href="classinviwo_1_1Inport.html">Inport</a> *port) override</td></tr>
 <tr class="separator:a9f78053301634b41a3c263ddcfa2647e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_methods_classinviwo_1_1DataOutport"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classinviwo_1_1DataOutport')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1DataOutport.html">inviwo::DataOutport&lt; Image &gt;</a></td></tr>
-<tr class="memitem:abd2429a27fc6c1deb56eb74607dab45d inherit pub_methods_classinviwo_1_1DataOutport"><td class="memItemLeft" align="right" valign="top"><a id="abd2429a27fc6c1deb56eb74607dab45d"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>DataOutport</b> (std::string identifier)</td></tr>
-<tr class="separator:abd2429a27fc6c1deb56eb74607dab45d inherit pub_methods_classinviwo_1_1DataOutport"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae19dc61ce77a82a5e78ab76fe3cc5a5e inherit pub_methods_classinviwo_1_1DataOutport"><td class="memItemLeft" align="right" valign="top">virtual uvec3&#160;</td><td class="memItemRight" valign="bottom"><b>getColorCode</b> () const override</td></tr>
-<tr class="separator:ae19dc61ce77a82a5e78ab76fe3cc5a5e inherit pub_methods_classinviwo_1_1DataOutport"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae6d6be49ea22b61b44e634de29908b50 inherit pub_methods_classinviwo_1_1DataOutport"><td class="memItemLeft" align="right" valign="top"><a id="ae6d6be49ea22b61b44e634de29908b50"></a>
+<tr class="memitem:a214412f50d6ca18ff2681596475897b8"><td class="memItemLeft" align="right" valign="top"><a id="a214412f50d6ca18ff2681596475897b8"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>connectTo</b> (<a class="el" href="classinviwo_1_1Inport.html">Inport</a> *port) override</td></tr>
+<tr class="separator:a214412f50d6ca18ff2681596475897b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27d9137dd8b8f223b9c71614602f1a43"><td class="memItemLeft" align="right" valign="top"><a id="a27d9137dd8b8f223b9c71614602f1a43"></a>
 virtual <a class="el" href="classinviwo_1_1Document.html">Document</a>&#160;</td><td class="memItemRight" valign="bottom"><b>getInfo</b> () const override</td></tr>
-<tr class="separator:ae6d6be49ea22b61b44e634de29908b50 inherit pub_methods_classinviwo_1_1DataOutport"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a06492298f5ce57d6c40b783f1b3e9878 inherit pub_methods_classinviwo_1_1DataOutport"><td class="memItemLeft" align="right" valign="top"><a id="a06492298f5ce57d6c40b783f1b3e9878"></a>
+<tr class="separator:a27d9137dd8b8f223b9c71614602f1a43"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classinviwo_1_1DataOutport"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classinviwo_1_1DataOutport')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1DataOutport.html">inviwo::DataOutport&lt; Image &gt;</a></td></tr>
+<tr class="memitem:a63c82d8b211996cf9d505ff6b5384e2e inherit pub_methods_classinviwo_1_1DataOutport"><td class="memItemLeft" align="right" valign="top"><a id="a63c82d8b211996cf9d505ff6b5384e2e"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>DataOutport</b> (std::string identifier)</td></tr>
+<tr class="separator:a63c82d8b211996cf9d505ff6b5384e2e inherit pub_methods_classinviwo_1_1DataOutport"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6444f35030e9710d77b5a39f1d39e320 inherit pub_methods_classinviwo_1_1DataOutport"><td class="memItemLeft" align="right" valign="top">virtual uvec3&#160;</td><td class="memItemRight" valign="bottom"><b>getColorCode</b> () const override</td></tr>
+<tr class="separator:a6444f35030e9710d77b5a39f1d39e320 inherit pub_methods_classinviwo_1_1DataOutport"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27ed2d9167097c0163a0f14f3ddfedee inherit pub_methods_classinviwo_1_1DataOutport"><td class="memItemLeft" align="right" valign="top"><a id="a27ed2d9167097c0163a0f14f3ddfedee"></a>
 virtual std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1Image.html">Image</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getData</b> () const</td></tr>
-<tr class="separator:a06492298f5ce57d6c40b783f1b3e9878 inherit pub_methods_classinviwo_1_1DataOutport"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a68c65508b50fb1e4bb8d0706a133a55d inherit pub_methods_classinviwo_1_1DataOutport"><td class="memItemLeft" align="right" valign="top"><a id="a68c65508b50fb1e4bb8d0706a133a55d"></a>
+<tr class="separator:a27ed2d9167097c0163a0f14f3ddfedee inherit pub_methods_classinviwo_1_1DataOutport"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13cf4716e86faf22baf7a2f639377519 inherit pub_methods_classinviwo_1_1DataOutport"><td class="memItemLeft" align="right" valign="top"><a id="a13cf4716e86faf22baf7a2f639377519"></a>
 virtual std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1Image.html">Image</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>detachData</b> ()</td></tr>
-<tr class="separator:a68c65508b50fb1e4bb8d0706a133a55d inherit pub_methods_classinviwo_1_1DataOutport"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a35fa53eb85a401cc374011409620a952 inherit pub_methods_classinviwo_1_1DataOutport"><td class="memItemLeft" align="right" valign="top"><a id="a35fa53eb85a401cc374011409620a952"></a>
+<tr class="separator:a13cf4716e86faf22baf7a2f639377519 inherit pub_methods_classinviwo_1_1DataOutport"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48aec51e8c9ed9f26b2d560ea97aff66 inherit pub_methods_classinviwo_1_1DataOutport"><td class="memItemLeft" align="right" valign="top"><a id="a48aec51e8c9ed9f26b2d560ea97aff66"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasData</b> () const</td></tr>
-<tr class="separator:a35fa53eb85a401cc374011409620a952 inherit pub_methods_classinviwo_1_1DataOutport"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:a48aec51e8c9ed9f26b2d560ea97aff66 inherit pub_methods_classinviwo_1_1DataOutport"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1Outport"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classinviwo_1_1Outport')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1Outport.html">inviwo::Outport</a></td></tr>
 <tr class="memitem:aec675144beb6b7659b4b120087c462d2 inherit pub_methods_classinviwo_1_1Outport"><td class="memItemLeft" align="right" valign="top"><a id="aec675144beb6b7659b4b120087c462d2"></a>
 virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>isConnected</b> () const override</td></tr>
@@ -248,10 +244,6 @@ virtual const_iterator&#160;</td><td class="memItemRight" valign="bottom"><b>beg
 <tr class="memitem:a42ad816972ae868579840eb1c25700d7 inherit pub_methods_structinviwo_1_1OutportIterableImpl"><td class="memItemLeft" align="right" valign="top"><a id="a42ad816972ae868579840eb1c25700d7"></a>
 virtual const_iterator&#160;</td><td class="memItemRight" valign="bottom"><b>end</b> () const override</td></tr>
 <tr class="separator:a42ad816972ae868579840eb1c25700d7 inherit pub_methods_structinviwo_1_1OutportIterableImpl"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_methods_classinviwo_1_1EventHandler"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classinviwo_1_1EventHandler')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1EventHandler.html">inviwo::EventHandler</a></td></tr>
-<tr class="memitem:a9e6e5d71b284059d6c62baae3cf411b0 inherit pub_methods_classinviwo_1_1EventHandler"><td class="memItemLeft" align="right" valign="top"><a id="a9e6e5d71b284059d6c62baae3cf411b0"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>broadcast</b> (<a class="el" href="classinviwo_1_1Event.html">Event</a> *event) const</td></tr>
-<tr class="separator:a9e6e5d71b284059d6c62baae3cf411b0 inherit pub_methods_classinviwo_1_1EventHandler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
 Friends</h2></td></tr>
@@ -274,22 +266,12 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>const_iterator</b> =
 <tr class="memitem:acd227b08240ce0f7a175e31642ea28e3 inherit pro_methods_classinviwo_1_1Outport"><td class="memItemLeft" align="right" valign="top"><a id="acd227b08240ce0f7a175e31642ea28e3"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Outport</b> (std::string identifier=&quot;&quot;)</td></tr>
 <tr class="separator:acd227b08240ce0f7a175e31642ea28e3 inherit pro_methods_classinviwo_1_1Outport"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3adad4ab647c5523b69c0ba017a20905 inherit pro_methods_classinviwo_1_1Outport"><td class="memItemLeft" align="right" valign="top"><a id="a3adad4ab647c5523b69c0ba017a20905"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>connectTo</b> (<a class="el" href="classinviwo_1_1Inport.html">Inport</a> *port)</td></tr>
-<tr class="separator:a3adad4ab647c5523b69c0ba017a20905 inherit pro_methods_classinviwo_1_1Outport"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classinviwo_1_1Port"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classinviwo_1_1Port')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classinviwo_1_1Port.html">inviwo::Port</a></td></tr>
 <tr class="memitem:a20f620bce13874929ec03a614a11d8d9 inherit pro_methods_classinviwo_1_1Port"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Port.html#a20f620bce13874929ec03a614a11d8d9">Port</a> (std::string identifier=&quot;&quot;)</td></tr>
 <tr class="separator:a20f620bce13874929ec03a614a11d8d9 inherit pro_methods_classinviwo_1_1Port"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abff33ef934fbf12985fb8ed04d18664a inherit pro_methods_classinviwo_1_1Port"><td class="memItemLeft" align="right" valign="top"><a id="abff33ef934fbf12985fb8ed04d18664a"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setProcessor</b> (<a class="el" href="classinviwo_1_1Processor.html">Processor</a> *processor)</td></tr>
 <tr class="separator:abff33ef934fbf12985fb8ed04d18664a inherit pro_methods_classinviwo_1_1Port"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pro_methods_classinviwo_1_1EventHandler"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classinviwo_1_1EventHandler')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classinviwo_1_1EventHandler.html">inviwo::EventHandler</a></td></tr>
-<tr class="memitem:a026a09303ba1d91be27358f0c4d5ffe9 inherit pro_methods_classinviwo_1_1EventHandler"><td class="memItemLeft" align="right" valign="top"><a id="a026a09303ba1d91be27358f0c4d5ffe9"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>addEventListener</b> (<a class="el" href="classinviwo_1_1EventListener.html">EventListener</a> *)</td></tr>
-<tr class="separator:a026a09303ba1d91be27358f0c4d5ffe9 inherit pro_methods_classinviwo_1_1EventHandler"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a06dcd83ba3f7de72cbc94e689ecdce23 inherit pro_methods_classinviwo_1_1EventHandler"><td class="memItemLeft" align="right" valign="top"><a id="a06dcd83ba3f7de72cbc94e689ecdce23"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>removeEventListener</b> (<a class="el" href="classinviwo_1_1EventListener.html">EventListener</a> *)</td></tr>
-<tr class="separator:a06dcd83ba3f7de72cbc94e689ecdce23 inherit pro_methods_classinviwo_1_1EventHandler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classinviwo_1_1DataOutport"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classinviwo_1_1DataOutport')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classinviwo_1_1DataOutport.html">inviwo::DataOutport&lt; Image &gt;</a></td></tr>
 <tr class="memitem:a536a43d8c6d653bd077a69b7dbd2bf05 inherit pro_attribs_classinviwo_1_1DataOutport"><td class="memItemLeft" align="right" valign="top"><a id="a536a43d8c6d653bd077a69b7dbd2bf05"></a>
 std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1Image.html">Image</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>data_</b></td></tr>
@@ -346,7 +328,16 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>identifier_</b
 *                    │                                  │                                  │
 *                    │                                  │                                  │
 *                    └──────────────────────────────────┴──────────────────────────────────┘
-* </pre> </div><h2 class="groupheader">Member Function Documentation</h2>
+* </pre><p>The <a class="el" href="classinviwo_1_1ImageOutport.html">ImageOutport</a> records all the requested sizes from all its connected inports. If the outport 'isHandlingResizeEvents', the port will resize its data to the largest the requested size and propagate that size and a new event upwards in the network. If it does not handle resize events, it will propagate the resize events but not resize its data.</p>
+<p>When an inport is disconnected from a outport, the port will remove its requested size and propagate a new resize event upwards with the new largest size, given that the port handles resize events.</p>
+<p>As soon as the network adds or removes a connection, all the image sinks (processors that consume images) are responsible for pushing a new resize event to the network to make sure that all the image ports in the network above have an up-to-date view on which image sizes to use. (</p><dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1ImageExport.html">ImageExport</a>, </dd>
+<dd>
+<a class="el" href="classinviwo_1_1CanvasProcessorWidget.html" title="A processor widget that has a canvas. CanvasProcessorWidget is the base class for all processor widge...">CanvasProcessorWidget</a>)</dd>
+<dd>
+<a class="el" href="classinviwo_1_1BaseImageInport.html">BaseImageInport</a> </dd>
+<dd>
+<a class="el" href="classinviwo_1_1ResizeEvent.html">ResizeEvent</a> </dd></dl>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a3ef46963dbca9212badfccb759623283"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3ef46963dbca9212badfccb759623283">&#9670;&nbsp;</a></span>invalidate()</h2>
 
@@ -376,8 +367,8 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>identifier_</b
 
 </div>
 </div>
-<a id="a618210a838607fa9ae77ba8329bdf47e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a618210a838607fa9ae77ba8329bdf47e">&#9670;&nbsp;</a></span>propagateEvent()</h2>
+<a id="a1e02490fd7580e6fbd20ceab026d68c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e02490fd7580e6fbd20ceab026d68c2">&#9670;&nbsp;</a></span>propagateEvent()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -389,8 +380,18 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>identifier_</b
           <td class="memname">void inviwo::ImageOutport::propagateEvent </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classinviwo_1_1Event.html">Event</a> *&#160;</td>
-          <td class="paramname"><em>event</em></td><td>)</td>
+          <td class="paramname"><em>event</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1Inport.html">Inport</a> *&#160;</td>
+          <td class="paramname"><em>source</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -401,7 +402,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>identifier_</b
 </div><div class="memdoc">
 <p>Handle resize event </p>
 
-<p>Reimplemented from <a class="el" href="classinviwo_1_1Outport.html#a0a0b4f4417f7d66252f16e2fbd3d6812">inviwo::Outport</a>.</p>
+<p>Reimplemented from <a class="el" href="classinviwo_1_1Outport.html#ae04cf479ab22c0cfe9e270971f233919">inviwo::Outport</a>.</p>
 
 </div>
 </div>

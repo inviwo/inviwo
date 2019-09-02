@@ -11,7 +11,6 @@ var classinviwo_1_1plot_1_1MajorTickProperty =
     [ "getTickDelta", "classinviwo_1_1plot_1_1MajorTickProperty.html#a4e3e369f72e7cd0a1dd2ea3aee037c47", null ],
     [ "getTickLength", "classinviwo_1_1plot_1_1MajorTickProperty.html#ab2f60d38187f0d78b7f900bb5ffa66d7", null ],
     [ "getTickWidth", "classinviwo_1_1plot_1_1MajorTickProperty.html#a3d103a39ce06617c8fc4aa7bac8a3b9a", null ],
-    [ "operator=", "classinviwo_1_1plot_1_1MajorTickProperty.html#a7d3c9d0888f7a785a63688b5a044b9f6", null ],
     [ "color_", "classinviwo_1_1plot_1_1MajorTickProperty.html#a9179c8d7ef8e92d4d8c319b262b9c3d4", null ],
     [ "rangeBasedTicks_", "classinviwo_1_1plot_1_1MajorTickProperty.html#a08d7e9cf1aed0407569fb7984798d954", null ],
     [ "style_", "classinviwo_1_1plot_1_1MajorTickProperty.html#afc91bd598844e28c03dfe224524cf317", null ],

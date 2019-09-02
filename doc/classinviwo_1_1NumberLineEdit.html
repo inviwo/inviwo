@@ -31,7 +31,7 @@
   <td id="projectlogo"><img alt="Logo" src="inviwo_dark.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Inviwo
-   &#160;<span id="projectnumber">0.9.10</span>
+   &#160;<span id="projectnumber">0.9.10.1</span>
    </div>
    <div id="projectbrief">Inviwo documentation</div>
   </td>
@@ -147,7 +147,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setRange</b> (double 
 <tr class="separator:aae293ce45275bb4ce3447ed1c8a915be"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7db7260e19735e7b15614bce77eca390"><td class="memItemLeft" align="right" valign="top"><a id="a7db7260e19735e7b15614bce77eca390"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1NumberLineEdit.html#a7db7260e19735e7b15614bce77eca390">timerEvent</a> (QTimerEvent *event) override</td></tr>
-<tr class="memdesc:a7db7260e19735e7b15614bce77eca390"><td class="mdescLeft">&#160;</td><td class="mdescRight">Overrides the timerEvent to prevent spinbox to be updated twice in case of calculations being slows. <br /></td></tr>
+<tr class="memdesc:a7db7260e19735e7b15614bce77eca390"><td class="mdescLeft">&#160;</td><td class="mdescRight">Overrides the timerEvent to prevent spinbox to be updated twice in case of calculations being slow. <br /></td></tr>
 <tr class="separator:a7db7260e19735e7b15614bce77eca390"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
@@ -167,6 +167,9 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>resizeEvent</
 <tr class="memitem:ad733ab691ce38d1030d678e03c0ecbe9"><td class="memItemLeft" align="right" valign="top"><a id="ad733ab691ce38d1030d678e03c0ecbe9"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>changeEvent</b> (QEvent *e) override</td></tr>
 <tr class="separator:ad733ab691ce38d1030d678e03c0ecbe9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3992f9f3e4d485ad03f12a8c62c63a72"><td class="memItemLeft" align="right" valign="top"><a id="a3992f9f3e4d485ad03f12a8c62c63a72"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>wheelEvent</b> (QWheelEvent *e) override</td></tr>
+<tr class="separator:a3992f9f3e4d485ad03f12a8c62c63a72"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>widget for entering numbers with spinbox functionality. It uses less horizontal space than a QSpinBox and allows entering numbers in scientific notation. </p>

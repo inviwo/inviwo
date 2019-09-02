@@ -17,7 +17,6 @@ var classinviwo_1_1IsoTFProperty =
     [ "onMaskChange", "classinviwo_1_1IsoTFProperty.html#ae53aadf8809c27516a8ef264e017b944", null ],
     [ "onZoomHChange", "classinviwo_1_1IsoTFProperty.html#aa3e6d018d8d8e40ec2c901ae697090e4", null ],
     [ "onZoomVChange", "classinviwo_1_1IsoTFProperty.html#ada4b57647917d274fefa1f67bb78cf4f", null ],
-    [ "operator=", "classinviwo_1_1IsoTFProperty.html#a9115c57f02c092c569ebae9b56338cca", null ],
     [ "set", "classinviwo_1_1IsoTFProperty.html#a0aaa700aa94513623bc51aba3bc7347f", null ],
     [ "set", "classinviwo_1_1IsoTFProperty.html#a1c50d5903ef83ae1f5fa0e71eaff885a", null ],
     [ "set", "classinviwo_1_1IsoTFProperty.html#aee1a884f4182acfb7c07c6da9719dcd9", null ],

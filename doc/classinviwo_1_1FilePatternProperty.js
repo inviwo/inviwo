@@ -21,7 +21,6 @@ var classinviwo_1_1FilePatternProperty =
     [ "guessFilePattern", "classinviwo_1_1FilePatternProperty.html#a1cf1b2e1ce3eed0265378a7d68139786", null ],
     [ "hasOutOfRangeMatches", "classinviwo_1_1FilePatternProperty.html#aa2531f94e791fca5fa10a701c6f74ee2", null ],
     [ "hasRangeSelection", "classinviwo_1_1FilePatternProperty.html#ad9010aa7d208f3d1db15ba41ebe37125", null ],
-    [ "operator=", "classinviwo_1_1FilePatternProperty.html#a0a1ef35b7ce93a1c30b3a1d4a99aa25b", null ],
     [ "setSelectedExtension", "classinviwo_1_1FilePatternProperty.html#ac6a271884c34ebce6f614c67057a0552", null ],
     [ "sort", "classinviwo_1_1FilePatternProperty.html#a35bec190fdc8a15daf6db5bf8e3fc11a", null ],
     [ "updateFileList", "classinviwo_1_1FilePatternProperty.html#a4002c5cc5057104f6c8bab25ed2d45c4", null ]

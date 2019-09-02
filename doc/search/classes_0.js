@@ -38,7 +38,6 @@ var searchData=
   ['animationtimestate',['AnimationTimeState',['../structinviwo_1_1animation_1_1AnimationTimeState.html',1,'inviwo::animation']]],
   ['animationviewqt',['AnimationViewQt',['../classinviwo_1_1animation_1_1AnimationViewQt.html',1,'inviwo::animation']]],
   ['annotationswidget',['AnnotationsWidget',['../classinviwo_1_1AnnotationsWidget.html',1,'inviwo']]],
-  ['app_5fconstructor',['app_constructor',['../structinviwo_1_1detail_1_1app__constructor.html',1,'inviwo::detail']]],
   ['arrributewrapper',['ArrributeWrapper',['../structinviwo_1_1utildoc_1_1TableBuilder_1_1ArrributeWrapper.html',1,'inviwo::utildoc::TableBuilder']]],
   ['aspointer',['asPointer',['../structinviwo_1_1util_1_1detail__indirect_1_1asPointer.html',1,'inviwo::util::detail_indirect']]],
   ['aspointer_3c_20false_20_3e',['asPointer&lt; false &gt;',['../structinviwo_1_1util_1_1detail__indirect_1_1asPointer_3_01false_01_4.html',1,'inviwo::util::detail_indirect']]],
@@ -61,5 +60,6 @@ var searchData=
   ['axisrenderer3d',['AxisRenderer3D',['../classinviwo_1_1plot_1_1AxisRenderer3D.html',1,'inviwo::plot']]],
   ['axisrendererbase',['AxisRendererBase',['../classinviwo_1_1plot_1_1AxisRendererBase.html',1,'inviwo::plot']]],
   ['axisrenderprocessor',['AxisRenderProcessor',['../classinviwo_1_1plot_1_1AxisRenderProcessor.html',1,'inviwo::plot']]],
-  ['axissettings',['AxisSettings',['../classinviwo_1_1plot_1_1AxisSettings.html',1,'inviwo::plot']]]
+  ['axissettings',['AxisSettings',['../classinviwo_1_1plot_1_1AxisSettings.html',1,'inviwo::plot']]],
+  ['axisstyleproperty',['AxisStyleProperty',['../classinviwo_1_1plot_1_1AxisStyleProperty.html',1,'inviwo::plot']]]
 ];

@@ -15,7 +15,6 @@ var classinviwo_1_1BaseOptionProperty =
     [ "isSelectedDisplayName", "classinviwo_1_1BaseOptionProperty.html#afd57cd92a502be67a69a36cee2a284f8", null ],
     [ "isSelectedIdentifier", "classinviwo_1_1BaseOptionProperty.html#ac36b5a9de0ce8cc7dfb2a0e10889b9eb", null ],
     [ "isSelectedIndex", "classinviwo_1_1BaseOptionProperty.html#a99085aa06b98098504c8a1ffc3e99b50", null ],
-    [ "operator=", "classinviwo_1_1BaseOptionProperty.html#a3fdcd889a733a829d055a04983822252", null ],
     [ "set", "classinviwo_1_1BaseOptionProperty.html#a672258383c0fd84d769ad0b2041c958f", null ],
     [ "setSelectedDisplayName", "classinviwo_1_1BaseOptionProperty.html#a820df22d58cdb93fdb712b4a03dc8837", null ],
     [ "setSelectedIdentifier", "classinviwo_1_1BaseOptionProperty.html#aaebb4fc78239b018a88b45fbc95f6cc6", null ],

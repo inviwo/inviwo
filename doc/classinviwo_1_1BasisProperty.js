@@ -16,7 +16,6 @@ var classinviwo_1_1BasisProperty =
     [ "getBasisAndOffset", "classinviwo_1_1BasisProperty.html#a00f32c2fce768a80ec15ee10581a952d", null ],
     [ "getClassIdentifier", "classinviwo_1_1BasisProperty.html#aedf657811322c4a5fb2b117182da6878", null ],
     [ "onResetOverride", "classinviwo_1_1BasisProperty.html#ac88cd38a463c661863d2e598e8adedcd", null ],
-    [ "operator=", "classinviwo_1_1BasisProperty.html#a740bce6b4d1a18256c179691ca64c9b6", null ],
     [ "resetToDefaultState", "classinviwo_1_1BasisProperty.html#af9217684ad8203256b9a2490a060e916", null ],
     [ "serialize", "classinviwo_1_1BasisProperty.html#a44a3c7d0e3045b3dce40cf1fdef4c6d7", null ],
     [ "setCurrentStateAsDefault", "classinviwo_1_1BasisProperty.html#a4549edafc3be61779a8cd499ae1d2711", null ],

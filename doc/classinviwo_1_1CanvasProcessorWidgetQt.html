@@ -31,7 +31,7 @@
   <td id="projectlogo"><img alt="Logo" src="inviwo_dark.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Inviwo
-   &#160;<span id="projectnumber">0.9.10</span>
+   &#160;<span id="projectnumber">0.9.10.1</span>
    </div>
    <div id="projectbrief">Inviwo documentation</div>
   </td>
@@ -103,17 +103,18 @@ $(document).ready(function(){initNavTree('classinviwo_1_1CanvasProcessorWidgetQt
 <div id="dynsection-0-content" class="dyncontent" style="display:none;">
 <div class="center"><img src="classinviwo_1_1CanvasProcessorWidgetQt__inherit__graph.png" border="0" usemap="#inviwo_1_1CanvasProcessorWidgetQt_inherit__map" alt="Inheritance graph"/></div>
 <map name="inviwo_1_1CanvasProcessorWidgetQt_inherit__map" id="inviwo_1_1CanvasProcessorWidgetQt_inherit__map">
-<area shape="rect"  title=" " alt="" coords="237,529,457,556"/>
-<area shape="rect"  title=" " alt="" coords="147,453,220,480"/>
-<area shape="rect"  href="classinviwo_1_1CanvasProcessorWidget.html" title="A processor widget that has a canvas. CanvasProcessorWidget is the base class for all processor widge..." alt="" coords="244,453,451,480"/>
-<area shape="rect"  href="classinviwo_1_1ProcessorWidget.html" title=" " alt="" coords="265,377,429,404"/>
+<area shape="rect"  title=" " alt="" coords="305,569,525,596"/>
+<area shape="rect"  title=" " alt="" coords="215,493,288,520"/>
+<area shape="rect"  href="classinviwo_1_1CanvasProcessorWidget.html" title="A processor widget that has a canvas. CanvasProcessorWidget is the base class for all processor widge..." alt="" coords="312,493,519,520"/>
+<area shape="rect"  href="classinviwo_1_1ProcessorWidget.html" title=" " alt="" coords="247,392,411,419"/>
 <area shape="rect"  href="classinviwo_1_1ProcessorWidgetObservable.html" title=" " alt="" coords="5,269,233,295"/>
 <area shape="rect"  href="classinviwo_1_1Observable.html" title=" " alt="" coords="21,171,218,212"/>
 <area shape="rect"  href="classinviwo_1_1ObservableInterface.html" title=" " alt="" coords="47,5,224,32"/>
 <area shape="rect"  href="classinviwo_1_1Observable.html" title=" " alt="" coords="136,81,295,108"/>
 <area shape="rect"  href="classinviwo_1_1ProcessorWidgetMetaDataObserver.html" title=" " alt="" coords="257,261,451,303"/>
-<area shape="rect"  href="classinviwo_1_1Observer.html" title=" " alt="" coords="397,178,511,205"/>
-<area shape="rect"  href="classinviwo_1_1ProcessorObserver.html" title=" " alt="" coords="401,327,576,353"/>
+<area shape="rect"  href="classinviwo_1_1Observer.html" title=" " alt="" coords="431,178,546,205"/>
+<area shape="rect"  href="classinviwo_1_1ProcessorNetworkObserver.html" title=" " alt="" coords="365,327,535,368"/>
+<area shape="rect"  href="classinviwo_1_1ProcessorObserver.html" title=" " alt="" coords="469,443,644,469"/>
 </map>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
@@ -169,18 +170,14 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>notifyObserversAboutS
 void&#160;</td><td class="memItemRight" valign="bottom"><b>notifyObserversAboutHide</b> (<a class="el" href="classinviwo_1_1ProcessorWidget.html">ProcessorWidget</a> *p)</td></tr>
 <tr class="separator:ac9ae4e08c78be622e0bd2f24d564270e inherit pub_methods_classinviwo_1_1ProcessorWidgetObservable"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1Observable"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classinviwo_1_1Observable')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1Observable.html">inviwo::Observable&lt; ProcessorWidgetObserver &gt;</a></td></tr>
-<tr class="memitem:a22a72cba8a707ff5bd0e87fdaefdfab8 inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top"><a id="a22a72cba8a707ff5bd0e87fdaefdfab8"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Observable</b> (const <a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1ProcessorWidgetObserver.html">ProcessorWidgetObserver</a> &gt; &amp;other)</td></tr>
+<tr class="memitem:a22a72cba8a707ff5bd0e87fdaefdfab8 inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Observable.html#a22a72cba8a707ff5bd0e87fdaefdfab8">Observable</a> (const <a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1ProcessorWidgetObserver.html">ProcessorWidgetObserver</a> &gt; &amp;other)</td></tr>
 <tr class="separator:a22a72cba8a707ff5bd0e87fdaefdfab8 inherit pub_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab7afb68122ba0150f1c7c20eb9086987 inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top"><a id="ab7afb68122ba0150f1c7c20eb9086987"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Observable</b> (<a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1ProcessorWidgetObserver.html">ProcessorWidgetObserver</a> &gt; &amp;&amp;other)</td></tr>
+<tr class="memitem:ab7afb68122ba0150f1c7c20eb9086987 inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Observable.html#ab7afb68122ba0150f1c7c20eb9086987">Observable</a> (<a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1ProcessorWidgetObserver.html">ProcessorWidgetObserver</a> &gt; &amp;&amp;other)</td></tr>
 <tr class="separator:ab7afb68122ba0150f1c7c20eb9086987 inherit pub_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae893ae3c28d44f320cd1a2efa704932e inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top"><a id="ae893ae3c28d44f320cd1a2efa704932e"></a>
-<a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1ProcessorWidgetObserver.html">ProcessorWidgetObserver</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1ProcessorWidgetObserver.html">ProcessorWidgetObserver</a> &gt; &amp;&amp;other)</td></tr>
-<tr class="separator:ae893ae3c28d44f320cd1a2efa704932e inherit pub_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0ab0efc8a80e36322a1197e8750e036b inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top"><a id="a0ab0efc8a80e36322a1197e8750e036b"></a>
-<a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1ProcessorWidgetObserver.html">ProcessorWidgetObserver</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1ProcessorWidgetObserver.html">ProcessorWidgetObserver</a> &gt; &amp;other)</td></tr>
+<tr class="memitem:a0ab0efc8a80e36322a1197e8750e036b inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1ProcessorWidgetObserver.html">ProcessorWidgetObserver</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Observable.html#a0ab0efc8a80e36322a1197e8750e036b">operator=</a> (const <a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1ProcessorWidgetObserver.html">ProcessorWidgetObserver</a> &gt; &amp;other)</td></tr>
 <tr class="separator:a0ab0efc8a80e36322a1197e8750e036b inherit pub_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae893ae3c28d44f320cd1a2efa704932e inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1ProcessorWidgetObserver.html">ProcessorWidgetObserver</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Observable.html#ae893ae3c28d44f320cd1a2efa704932e">operator=</a> (<a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1ProcessorWidgetObserver.html">ProcessorWidgetObserver</a> &gt; &amp;&amp;other)</td></tr>
+<tr class="separator:ae893ae3c28d44f320cd1a2efa704932e inherit pub_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa342929bb9eb6a886ce783bc59dcf7f6 inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top"><a id="aa342929bb9eb6a886ce783bc59dcf7f6"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>addObserver</b> (<a class="el" href="classinviwo_1_1ProcessorWidgetObserver.html">ProcessorWidgetObserver</a> *observer)</td></tr>
 <tr class="separator:aa342929bb9eb6a886ce783bc59dcf7f6 inherit pub_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -213,6 +210,45 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>stopBlockingN
 <tr class="memitem:a73d692ac9fc055d97af7e7ce6f8f14b1 inherit pub_methods_classinviwo_1_1Observer"><td class="memItemLeft" align="right" valign="top"><a id="a73d692ac9fc055d97af7e7ce6f8f14b1"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>removeObservations</b> ()</td></tr>
 <tr class="separator:a73d692ac9fc055d97af7e7ce6f8f14b1 inherit pub_methods_classinviwo_1_1Observer"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classinviwo_1_1ProcessorNetworkObserver"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classinviwo_1_1ProcessorNetworkObserver')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1ProcessorNetworkObserver.html">inviwo::ProcessorNetworkObserver</a></td></tr>
+<tr class="memitem:a99103d63e219ff4db238b73aac540feb inherit pub_methods_classinviwo_1_1ProcessorNetworkObserver"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1ProcessorNetworkObserver.html#a99103d63e219ff4db238b73aac540feb">onProcessorNetworkChange</a> ()</td></tr>
+<tr class="separator:a99103d63e219ff4db238b73aac540feb inherit pub_methods_classinviwo_1_1ProcessorNetworkObserver"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3096d847ac1cd0e63b3461284f401fc inherit pub_methods_classinviwo_1_1ProcessorNetworkObserver"><td class="memItemLeft" align="right" valign="top"><a id="ae3096d847ac1cd0e63b3461284f401fc"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onProcessorNetworkEvaluateRequest</b> ()</td></tr>
+<tr class="separator:ae3096d847ac1cd0e63b3461284f401fc inherit pub_methods_classinviwo_1_1ProcessorNetworkObserver"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51701cae874861f2a3e9a512e5eaaa1d inherit pub_methods_classinviwo_1_1ProcessorNetworkObserver"><td class="memItemLeft" align="right" valign="top"><a id="a51701cae874861f2a3e9a512e5eaaa1d"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onProcessorNetworkUnlocked</b> ()</td></tr>
+<tr class="separator:a51701cae874861f2a3e9a512e5eaaa1d inherit pub_methods_classinviwo_1_1ProcessorNetworkObserver"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61fb4ae92329d0cfa6c19844b5c01557 inherit pub_methods_classinviwo_1_1ProcessorNetworkObserver"><td class="memItemLeft" align="right" valign="top"><a id="a61fb4ae92329d0cfa6c19844b5c01557"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onProcessorNetworkWillAddProcessor</b> (<a class="el" href="classinviwo_1_1Processor.html">Processor</a> *)</td></tr>
+<tr class="separator:a61fb4ae92329d0cfa6c19844b5c01557 inherit pub_methods_classinviwo_1_1ProcessorNetworkObserver"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeeff371acfe291eabf14fd332655cd0f inherit pub_methods_classinviwo_1_1ProcessorNetworkObserver"><td class="memItemLeft" align="right" valign="top"><a id="aeeff371acfe291eabf14fd332655cd0f"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onProcessorNetworkDidAddProcessor</b> (<a class="el" href="classinviwo_1_1Processor.html">Processor</a> *)</td></tr>
+<tr class="separator:aeeff371acfe291eabf14fd332655cd0f inherit pub_methods_classinviwo_1_1ProcessorNetworkObserver"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a691f05f72a22eefcb08770db9b4a9726 inherit pub_methods_classinviwo_1_1ProcessorNetworkObserver"><td class="memItemLeft" align="right" valign="top"><a id="a691f05f72a22eefcb08770db9b4a9726"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onProcessorNetworkWillRemoveProcessor</b> (<a class="el" href="classinviwo_1_1Processor.html">Processor</a> *)</td></tr>
+<tr class="separator:a691f05f72a22eefcb08770db9b4a9726 inherit pub_methods_classinviwo_1_1ProcessorNetworkObserver"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e55dca8bc2d7b971088f320bb878d87 inherit pub_methods_classinviwo_1_1ProcessorNetworkObserver"><td class="memItemLeft" align="right" valign="top"><a id="a9e55dca8bc2d7b971088f320bb878d87"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onProcessorNetworkDidRemoveProcessor</b> (<a class="el" href="classinviwo_1_1Processor.html">Processor</a> *)</td></tr>
+<tr class="separator:a9e55dca8bc2d7b971088f320bb878d87 inherit pub_methods_classinviwo_1_1ProcessorNetworkObserver"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a623f0cda8ec3a34d921c624a20bd47d5 inherit pub_methods_classinviwo_1_1ProcessorNetworkObserver"><td class="memItemLeft" align="right" valign="top"><a id="a623f0cda8ec3a34d921c624a20bd47d5"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onProcessorNetworkWillAddConnection</b> (const <a class="el" href="classinviwo_1_1PortConnection.html">PortConnection</a> &amp;)</td></tr>
+<tr class="separator:a623f0cda8ec3a34d921c624a20bd47d5 inherit pub_methods_classinviwo_1_1ProcessorNetworkObserver"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a264f75d65d803acbca824b2bf6bed0dd inherit pub_methods_classinviwo_1_1ProcessorNetworkObserver"><td class="memItemLeft" align="right" valign="top"><a id="a264f75d65d803acbca824b2bf6bed0dd"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onProcessorNetworkWillRemoveConnection</b> (const <a class="el" href="classinviwo_1_1PortConnection.html">PortConnection</a> &amp;)</td></tr>
+<tr class="separator:a264f75d65d803acbca824b2bf6bed0dd inherit pub_methods_classinviwo_1_1ProcessorNetworkObserver"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1da694acbd7f67e58761c033bf994c05 inherit pub_methods_classinviwo_1_1ProcessorNetworkObserver"><td class="memItemLeft" align="right" valign="top"><a id="a1da694acbd7f67e58761c033bf994c05"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onProcessorNetworkWillAddLink</b> (const <a class="el" href="classinviwo_1_1PropertyLink.html">PropertyLink</a> &amp;)</td></tr>
+<tr class="separator:a1da694acbd7f67e58761c033bf994c05 inherit pub_methods_classinviwo_1_1ProcessorNetworkObserver"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a774d430957bb4c78017c475a07bdb5db inherit pub_methods_classinviwo_1_1ProcessorNetworkObserver"><td class="memItemLeft" align="right" valign="top"><a id="a774d430957bb4c78017c475a07bdb5db"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onProcessorNetworkDidAddLink</b> (const <a class="el" href="classinviwo_1_1PropertyLink.html">PropertyLink</a> &amp;)</td></tr>
+<tr class="separator:a774d430957bb4c78017c475a07bdb5db inherit pub_methods_classinviwo_1_1ProcessorNetworkObserver"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a101f8b0ccdd32060f7fefefd10dc8f81 inherit pub_methods_classinviwo_1_1ProcessorNetworkObserver"><td class="memItemLeft" align="right" valign="top"><a id="a101f8b0ccdd32060f7fefefd10dc8f81"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onProcessorNetworkWillRemoveLink</b> (const <a class="el" href="classinviwo_1_1PropertyLink.html">PropertyLink</a> &amp;)</td></tr>
+<tr class="separator:a101f8b0ccdd32060f7fefefd10dc8f81 inherit pub_methods_classinviwo_1_1ProcessorNetworkObserver"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a207ad8ea6be2e6a4f0934e986c9609b1 inherit pub_methods_classinviwo_1_1ProcessorNetworkObserver"><td class="memItemLeft" align="right" valign="top"><a id="a207ad8ea6be2e6a4f0934e986c9609b1"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onProcessorNetworkDidRemoveLink</b> (const <a class="el" href="classinviwo_1_1PropertyLink.html">PropertyLink</a> &amp;)</td></tr>
+<tr class="separator:a207ad8ea6be2e6a4f0934e986c9609b1 inherit pub_methods_classinviwo_1_1ProcessorNetworkObserver"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1ProcessorObserver"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classinviwo_1_1ProcessorObserver')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1ProcessorObserver.html">inviwo::ProcessorObserver</a></td></tr>
 <tr class="memitem:a936e43c631a21dc002a01932bef0f344 inherit pub_methods_classinviwo_1_1ProcessorObserver"><td class="memItemLeft" align="right" valign="top"><a id="a936e43c631a21dc002a01932bef0f344"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onAboutPropertyChange</b> (<a class="el" href="classinviwo_1_1Property.html">Property</a> *)</td></tr>
@@ -297,6 +333,10 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>removeObservationHelp
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pub_attribs_classinviwo_1_1ProcessorNetworkObserver"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_classinviwo_1_1ProcessorNetworkObserver')"><img src="closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el" href="classinviwo_1_1ProcessorNetworkObserver.html">inviwo::ProcessorNetworkObserver</a></td></tr>
+<tr class="memitem:a76855c57d399601eabc736c0268b6a8d inherit pub_attribs_classinviwo_1_1ProcessorNetworkObserver"><td class="memItemLeft" align="right" valign="top"><a id="a76855c57d399601eabc736c0268b6a8d"></a>
+friend&#160;</td><td class="memItemRight" valign="bottom"><b>ProcessorNetworkObservable</b></td></tr>
+<tr class="separator:a76855c57d399601eabc736c0268b6a8d inherit pub_attribs_classinviwo_1_1ProcessorNetworkObserver"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_attribs_classinviwo_1_1ProcessorObserver"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_classinviwo_1_1ProcessorObserver')"><img src="closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el" href="classinviwo_1_1ProcessorObserver.html">inviwo::ProcessorObserver</a></td></tr>
 <tr class="memitem:ad1af35e09664c24551dab972d5a27fa7 inherit pub_attribs_classinviwo_1_1ProcessorObserver"><td class="memItemLeft" align="right" valign="top"><a id="ad1af35e09664c24551dab972d5a27fa7"></a>
 friend&#160;</td><td class="memItemRight" valign="bottom"><b>ProcessorObservable</b></td></tr>

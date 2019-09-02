@@ -31,7 +31,7 @@
   <td id="projectlogo"><img alt="Logo" src="inviwo_dark.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Inviwo
-   &#160;<span id="projectnumber">0.9.10</span>
+   &#160;<span id="projectnumber">0.9.10.1</span>
    </div>
    <div id="projectbrief">Inviwo documentation</div>
   </td>
@@ -535,6 +535,8 @@ template&lt;class Elem , class Traits &gt; </td></tr>
 <tr class="separator:a584035171f2b1c3874c056e9762b51d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a95b6329252116e47fd84a31e656f7e80"><td class="memItemLeft" align="right" valign="top">IVW_CORE_API std::vector&lt; Family &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceinviwo_1_1colorbrewer.html#a95b6329252116e47fd84a31e656f7e80">getFamiliesForCategory</a> (const Category &amp;category)</td></tr>
 <tr class="separator:a95b6329252116e47fd84a31e656f7e80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1a2c107b014bef97e35aca9e006c1e9"><td class="memItemLeft" align="right" valign="top">IVW_CORE_API <a class="el" href="classinviwo_1_1TransferFunction.html">TransferFunction</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceinviwo_1_1colorbrewer.html#af1a2c107b014bef97e35aca9e006c1e9">getTransferFunction</a> (const Category &amp;category, const Family &amp;family, glm::uint8 nColors, bool discrete, double divergenceMidPoint)</td></tr>
+<tr class="separator:af1a2c107b014bef97e35aca9e006c1e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>colorbrewer </p>
@@ -708,6 +710,62 @@ template&lt;class Elem , class Traits &gt; </td></tr>
       </table>
 </div><div class="memdoc">
 <p>Returns the minimum number of colors for which the requested family is available. </p>
+
+</div>
+</div>
+<a id="af1a2c107b014bef97e35aca9e006c1e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1a2c107b014bef97e35aca9e006c1e9">&#9670;&nbsp;</a></span>getTransferFunction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classinviwo_1_1TransferFunction.html">TransferFunction</a> inviwo::colorbrewer::getTransferFunction </td>
+          <td>(</td>
+          <td class="paramtype">const Category &amp;&#160;</td>
+          <td class="paramname"><em>category</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Family &amp;&#160;</td>
+          <td class="paramname"><em>family</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::uint8&#160;</td>
+          <td class="paramname"><em>nColors</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>discrete</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>divergenceMidPoint</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Returns a transfer function for the given parameters.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">category</td><td>according to ColorBrewer2 </td></tr>
+    <tr><td class="paramname">family</td><td>color scheme name </td></tr>
+    <tr><td class="paramname">discrete</td><td>will make each color constant instead of linearly varying inbetween colors. </td></tr>
+    <tr><td class="paramname">divergenceMidpoint</td><td>in [0 1]. Only used when category is Diverging </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

@@ -2,7 +2,7 @@ var classinviwo_1_1Property =
 [
     [ "OnChangeBlocker", "classinviwo_1_1Property_1_1OnChangeBlocker.html", "classinviwo_1_1Property_1_1OnChangeBlocker" ],
     [ "Property", "classinviwo_1_1Property.html#a8169e4b79e34fa2d155c99b8c8322619", null ],
-    [ "~Property", "classinviwo_1_1Property.html#a0b185868540da1f1a343fb8e1415f8fb", null ],
+    [ "~Property", "classinviwo_1_1Property.html#aff0639ae95bcf882925f6df45f18f991", null ],
     [ "Property", "classinviwo_1_1Property.html#a7387df70147c540ee4f5f388796bae32", null ],
     [ "autoLinkToProperty", "classinviwo_1_1Property.html#ae3711924959e2cb1f26a8f31dd5e7ac9", null ],
     [ "clearInitiatingWidget", "classinviwo_1_1Property.html#a9b18b9392d85f49d4cc2383732ecbc0e", null ],
@@ -31,7 +31,7 @@ var classinviwo_1_1Property =
     [ "onChange", "classinviwo_1_1Property.html#a357c3e31fa6be2eaf62ab8a8b88a0011", null ],
     [ "onChange", "classinviwo_1_1Property.html#a31cc1856c8f097cd3995760197989d70", null ],
     [ "onChangeScoped", "classinviwo_1_1Property.html#a2728d6de489f511a5e59e3fa8a7f079a", null ],
-    [ "operator=", "classinviwo_1_1Property.html#a2caf7021ea7ca2faa65f32e54a2853ce", null ],
+    [ "operator=", "classinviwo_1_1Property.html#a8eb203092d666a96f7f6d5c7334745e9", null ],
     [ "propertyModified", "classinviwo_1_1Property.html#a57a6806dba9ec9fbf5a1ed4d1f3121e4", null ],
     [ "readonlyDependsOn", "classinviwo_1_1Property.html#a9d0a67b21d69b9b0c6c14d01b748b40f", null ],
     [ "registerWidget", "classinviwo_1_1Property.html#af8646a9dd52ea2bd7f33b3a6b1410739", null ],

@@ -5,7 +5,6 @@ var classinviwo_1_1MeshInformationProperty =
     [ "~MeshInformationProperty", "classinviwo_1_1MeshInformationProperty.html#a930dd934630f031e0434a61576fbac06", null ],
     [ "clone", "classinviwo_1_1MeshInformationProperty.html#a219b8876f695234cb8339d6d4a86617e", null ],
     [ "getClassIdentifier", "classinviwo_1_1MeshInformationProperty.html#a4420402951f05c0c3581ae9713448740", null ],
-    [ "operator=", "classinviwo_1_1MeshInformationProperty.html#af956a01ae3681ddcd793005d63e1a23b", null ],
     [ "updateForNewMesh", "classinviwo_1_1MeshInformationProperty.html#a9fc6c4415abf84511943ba6760d241eb", null ],
     [ "basis_", "classinviwo_1_1MeshInformationProperty.html#abd0df12a3c13cc8a712680dce22639a3", null ],
     [ "buffers_", "classinviwo_1_1MeshInformationProperty.html#abb6c757bb6b39eccf90d91d3b5b7b87f", null ],

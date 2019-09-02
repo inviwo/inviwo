@@ -16,5 +16,6 @@ var classinviwo_1_1NumberLineEdit =
     [ "textFromValue", "classinviwo_1_1NumberLineEdit.html#a30f3097fecaf1400b85e3b6564aba188", null ],
     [ "timerEvent", "classinviwo_1_1NumberLineEdit.html#a7db7260e19735e7b15614bce77eca390", null ],
     [ "validate", "classinviwo_1_1NumberLineEdit.html#a02f2847c53314f946e84ca914b3adc17", null ],
-    [ "valueFromText", "classinviwo_1_1NumberLineEdit.html#a793785bbfad259b7d869690ed62d660f", null ]
+    [ "valueFromText", "classinviwo_1_1NumberLineEdit.html#a793785bbfad259b7d869690ed62d660f", null ],
+    [ "wheelEvent", "classinviwo_1_1NumberLineEdit.html#a3992f9f3e4d485ad03f12a8c62c63a72", null ]
 ];

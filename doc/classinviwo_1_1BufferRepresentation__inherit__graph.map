@@ -1,11 +1,9 @@
 <map id="inviwo::BufferRepresentation" name="inviwo::BufferRepresentation">
-<area shape="rect" id="node1" title=" " alt="" coords="190,200,374,227"/>
-<area shape="rect" id="node4" href="$classinviwo_1_1BufferCL.html" title=" " alt="" coords="5,276,119,303"/>
-<area shape="rect" id="node5" href="$classinviwo_1_1BufferCLGL.html" title=" " alt="" coords="143,276,274,303"/>
-<area shape="rect" id="node6" href="$classinviwo_1_1BufferGL.html" title=" " alt="" coords="298,276,413,303"/>
-<area shape="rect" id="node7" href="$classinviwo_1_1BufferRAM.html" title=" " alt="" coords="437,276,564,303"/>
-<area shape="rect" id="node2" href="$classinviwo_1_1DataRepresentation.html" title=" " alt="" coords="193,109,371,151"/>
-<area shape="rect" id="node3" href="$classinviwo_1_1DataRepresentation.html" title="Base class for all DataRepresentations." alt="" coords="193,5,371,47"/>
-<area shape="rect" id="node8" href="$classinviwo_1_1BufferRAMPrecision.html" title=" " alt="" coords="437,456,617,497"/>
-<area shape="rect" id="node9" href="$classinviwo_1_1BufferRAMPrecision.html" title=" " alt="" coords="523,352,703,393"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,200,189,227"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1BufferGL.html" title=" " alt="" coords="24,276,139,303"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1BufferRAM.html" title=" " alt="" coords="163,276,290,303"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1DataRepresentation.html" title=" " alt="" coords="8,109,187,151"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1DataRepresentation.html" title="Base class for all DataRepresentations." alt="" coords="8,5,187,47"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1BufferRAMPrecision.html" title=" " alt="" coords="163,456,343,497"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1BufferRAMPrecision.html" title=" " alt="" coords="249,352,429,393"/>
 </map>

@@ -20,7 +20,6 @@ var classinviwo_1_1plot_1_1CategoricalAxisProperty =
     [ "getUseDataRange", "classinviwo_1_1plot_1_1CategoricalAxisProperty.html#ae49859f0bc4fabcd700cfd97284774a2", null ],
     [ "getVisible", "classinviwo_1_1plot_1_1CategoricalAxisProperty.html#a39a4fa0338acbe32636091379b6c2843", null ],
     [ "getWidth", "classinviwo_1_1plot_1_1CategoricalAxisProperty.html#af17e0ce55166fe533708152c2ec706e9", null ],
-    [ "operator=", "classinviwo_1_1plot_1_1CategoricalAxisProperty.html#ad058aeff19fc1f5125d470315c6b3968", null ],
     [ "setCategories", "classinviwo_1_1plot_1_1CategoricalAxisProperty.html#a7f264261661fa87bf7106a13df002430", null ],
     [ "captionSettings_", "classinviwo_1_1plot_1_1CategoricalAxisProperty.html#a10c2025107f0489bc71eb26be844ed4b", null ],
     [ "color_", "classinviwo_1_1plot_1_1CategoricalAxisProperty.html#afca707686e2ea3c28c03dc04be78589e", null ],

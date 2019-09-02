@@ -16,7 +16,6 @@ var classinviwo_1_1MultiFileProperty =
     [ "getFileMode", "classinviwo_1_1MultiFileProperty.html#a243fbee2e7ec949d461392ed96b32054", null ],
     [ "getNameFilters", "classinviwo_1_1MultiFileProperty.html#ad61307cecac318d388823ccc1f4d9776", null ],
     [ "getSelectedExtension", "classinviwo_1_1MultiFileProperty.html#ab87b9d3186f94d29e18e230bab437003", null ],
-    [ "operator=", "classinviwo_1_1MultiFileProperty.html#a9476ed96fbb2adfaefb8454d00349996", null ],
     [ "operator=", "classinviwo_1_1MultiFileProperty.html#ae9babcfe27348dbf8428171a86a52f3d", null ],
     [ "requestFile", "classinviwo_1_1MultiFileProperty.html#ad4472838a718bac00c44cd9f0a2d878f", null ],
     [ "serialize", "classinviwo_1_1MultiFileProperty.html#a02e4d386010cb118da735479ede54308", null ],

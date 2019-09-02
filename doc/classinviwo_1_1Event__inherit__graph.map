@@ -1,9 +1,10 @@
 <map id="inviwo::Event" name="inviwo::Event">
-<area shape="rect" id="node1" title=" " alt="" coords="5,233,101,260"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,259,101,285"/>
 <area shape="rect" id="node2" href="$classinviwo_1_1BrushingAndLinkingEvent.html" title=" " alt="" coords="149,74,328,115"/>
 <area shape="rect" id="node6" href="$classinviwo_1_1InteractionEvent.html" title=" " alt="" coords="161,208,317,235"/>
 <area shape="rect" id="node13" href="$classinviwo_1_1PickingEvent.html" title=" " alt="" coords="169,259,308,285"/>
 <area shape="rect" id="node14" href="$classinviwo_1_1ResizeEvent.html" title=" " alt="" coords="171,309,307,336"/>
+<area shape="rect" id="node15" href="$classinviwo_1_1ViewEvent.html" title=" " alt="" coords="177,360,301,387"/>
 <area shape="rect" id="node3" href="$classinviwo_1_1ColumnSelectionEvent.html" title=" " alt="" coords="376,5,571,32"/>
 <area shape="rect" id="node4" href="$classinviwo_1_1FilteringEvent.html" title=" " alt="" coords="402,56,545,83"/>
 <area shape="rect" id="node5" href="$classinviwo_1_1SelectionEvent.html" title=" " alt="" coords="398,107,549,133"/>

@@ -9,7 +9,6 @@ var classinviwo_1_1ImageEditorProperty =
     [ "deserialize", "classinviwo_1_1ImageEditorProperty.html#a44d9362259b1f26296bef021c87c5149", null ],
     [ "getClassIdentifier", "classinviwo_1_1ImageEditorProperty.html#af7ff79bbfa2feeb1db68d498de7c08b1", null ],
     [ "getLabels", "classinviwo_1_1ImageEditorProperty.html#a8cd357f2e88125437715f628838b8d37", null ],
-    [ "operator=", "classinviwo_1_1ImageEditorProperty.html#ad1bfef004fb4e8b90480d339cdd9332b", null ],
     [ "serialize", "classinviwo_1_1ImageEditorProperty.html#aaa96936d0f557bce4a11af013cf3ea5a", null ],
     [ "setDimensions", "classinviwo_1_1ImageEditorProperty.html#ac3d542231b019245ce22848a40982a1e", null ]
 ];

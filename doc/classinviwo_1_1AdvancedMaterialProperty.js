@@ -11,7 +11,6 @@ var classinviwo_1_1AdvancedMaterialProperty =
     [ "getIndexOfRefractionTerm", "classinviwo_1_1AdvancedMaterialProperty.html#a52bb4237c9d1c49119c2d054d61b5f8a", null ],
     [ "getPhaseFunctionEnum", "classinviwo_1_1AdvancedMaterialProperty.html#a920d77602fd4c00b8a28f2bbe972ce08", null ],
     [ "HenyehGreensteinToSchlick", "classinviwo_1_1AdvancedMaterialProperty.html#a914923d8ab44b77dbaaeac89be5f4d22", null ],
-    [ "operator=", "classinviwo_1_1AdvancedMaterialProperty.html#ad56466b574df9d09e8bb362a6e41608c", null ],
     [ "phaseFunctionChanged", "classinviwo_1_1AdvancedMaterialProperty.html#aee1730a5ccf70bffa2fa7a99b045fbfe", null ],
     [ "roughnessToShininess", "classinviwo_1_1AdvancedMaterialProperty.html#a80ee50a50ee780e73e20820aa8f87992", null ],
     [ "WardParameterMapping", "classinviwo_1_1AdvancedMaterialProperty.html#a59d08eefb48ddfed3769b195a3af7dd9", null ],

@@ -5,7 +5,6 @@ var classinviwo_1_1VolumeInformationProperty =
     [ "~VolumeInformationProperty", "classinviwo_1_1VolumeInformationProperty.html#a115fd4389efbc7f2be692a5ad431ce1a", null ],
     [ "clone", "classinviwo_1_1VolumeInformationProperty.html#afa03966a033588366650f843e1379687", null ],
     [ "getClassIdentifier", "classinviwo_1_1VolumeInformationProperty.html#a96baf8a88cff5a19998173becbfacaf3", null ],
-    [ "operator=", "classinviwo_1_1VolumeInformationProperty.html#a50f45acdcf0de1f8d052b9d6e8b2772d", null ],
     [ "updateForNewVolume", "classinviwo_1_1VolumeInformationProperty.html#a62b7730452a559d808e69857fe1ba4fa", null ],
     [ "updateVolume", "classinviwo_1_1VolumeInformationProperty.html#a0d4804b91a65819d486dbe0bf55de51b", null ],
     [ "channels_", "classinviwo_1_1VolumeInformationProperty.html#a81275ee4fb056e8673baf284ced98409", null ],

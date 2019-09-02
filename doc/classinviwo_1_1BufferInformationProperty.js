@@ -5,7 +5,6 @@ var classinviwo_1_1BufferInformationProperty =
     [ "~BufferInformationProperty", "classinviwo_1_1BufferInformationProperty.html#abafdfa76531fcd63ae4ea349658e7f88", null ],
     [ "clone", "classinviwo_1_1BufferInformationProperty.html#a185a32e1adeeaab474df2168831aab22", null ],
     [ "getClassIdentifier", "classinviwo_1_1BufferInformationProperty.html#aaf04a28c23c70128b0c181964cf6e082", null ],
-    [ "operator=", "classinviwo_1_1BufferInformationProperty.html#a3ff07e6c07c935334941188d59098a9d", null ],
     [ "updateFromBuffer", "classinviwo_1_1BufferInformationProperty.html#a0043cbbb89d94fb1ac9d7bf88d540493", null ],
     [ "format_", "classinviwo_1_1BufferInformationProperty.html#a3bbdff05520ded94dd107aafaa8faaad", null ],
     [ "size_", "classinviwo_1_1BufferInformationProperty.html#a8f3010ca162fda50a89e90f57e7cdc3d", null ],

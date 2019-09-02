@@ -31,7 +31,7 @@
   <td id="projectlogo"><img alt="Logo" src="inviwo_dark.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Inviwo
-   &#160;<span id="projectnumber">0.9.10</span>
+   &#160;<span id="projectnumber">0.9.10.1</span>
    </div>
    <div id="projectbrief">Inviwo documentation</div>
   </td>
@@ -92,7 +92,8 @@ $(document).ready(function(){initNavTree('namespaceinviwo_1_1util.html','');});
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#enum-members">Enumerations</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">inviwo::util Namespace Reference</div>  </div>
 </div><!--header-->
@@ -199,10 +200,6 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1util_1_1is__floating__point_3_01half__float_1_1half_01_4.html">is_floating_point&lt; half_float::half &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1util_1_1is__invocable.html">is_invocable</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1util_1_1is__invocable__r.html">is_invocable_r</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1util_1_1is__stream__insertable.html">is_stream_insertable</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1util_1_1is__string.html">is_string</a></td></tr>
@@ -225,6 +222,8 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">calls the given function when leaving the current scope  <a href="structinviwo_1_1util_1_1OnScopeExit.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1util_1_1ostream__joiner.html">ostream_joiner</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1util_1_1overloaded.html">overloaded</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1util_1_1PropertyDistanceSorter.html">PropertyDistanceSorter</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -298,6 +297,18 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>IndexMapper3D</b> = 
 template&lt;class... &gt; </td></tr>
 <tr class="memitem:a33241d8467f892c3ffeaed160ffbc426"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>void_t</b> = void</td></tr>
 <tr class="separator:a33241d8467f892c3ffeaed160ffbc426"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c468609df4a639a947be6b7b971ec3f"><td class="memTemplParams" colspan="2"><a id="a3c468609df4a639a947be6b7b971ec3f"></a>
+template&lt;typename F , typename... Args&gt; </td></tr>
+<tr class="memitem:a3c468609df4a639a947be6b7b971ec3f"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>is_invocable</b> = std::is_invocable&lt; F, Args... &gt;</td></tr>
+<tr class="separator:a3c468609df4a639a947be6b7b971ec3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5a24c90ae109a9bfca01bbc805189aa"><td class="memTemplParams" colspan="2"><a id="ae5a24c90ae109a9bfca01bbc805189aa"></a>
+template&lt;typename R , typename F , typename... Args&gt; </td></tr>
+<tr class="memitem:ae5a24c90ae109a9bfca01bbc805189aa"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>is_invocable_r</b> = std::is_invocable_r&lt; F, Args... &gt;</td></tr>
+<tr class="separator:ae5a24c90ae109a9bfca01bbc805189aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad68cc926f3f2545bbdcf33a3f6a700a0"><td class="memTemplParams" colspan="2"><a id="ad68cc926f3f2545bbdcf33a3f6a700a0"></a>
+template&lt;typename F , typename... Args&gt; </td></tr>
+<tr class="memitem:ad68cc926f3f2545bbdcf33a3f6a700a0"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>is_callable</b> = std::is_invocable&lt; F, Args... &gt;</td></tr>
+<tr class="separator:ad68cc926f3f2545bbdcf33a3f6a700a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
@@ -318,6 +329,14 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:ab9cbceab56fd2c7c038943513adee77d"><td class="memItemLeft" align="right" valign="top">IVW_CORE_API mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceinviwo_1_1util.html#ab9cbceab56fd2c7c038943513adee77d">boundingBox</a> (const <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> &amp;mesh)</td></tr>
+<tr class="separator:ab9cbceab56fd2c7c038943513adee77d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4d58bb604edb7e6415018600549814c"><td class="memItemLeft" align="right" valign="top">IVW_CORE_API mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceinviwo_1_1util.html#ae4d58bb604edb7e6415018600549814c">boundingBox</a> (const std::vector&lt; std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> &gt;&gt; &amp;meshes)</td></tr>
+<tr class="separator:ae4d58bb604edb7e6415018600549814c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3e221abeeeff079a85a282b51bd62f1"><td class="memItemLeft" align="right" valign="top">IVW_CORE_API mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceinviwo_1_1util.html#ac3e221abeeeff079a85a282b51bd62f1">boundingBox</a> (const <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &amp;volume)</td></tr>
+<tr class="separator:ac3e221abeeeff079a85a282b51bd62f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6aad439e139fb2893a65eb2ce5f4567"><td class="memItemLeft" align="right" valign="top">IVW_CORE_API mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceinviwo_1_1util.html#ad6aad439e139fb2893a65eb2ce5f4567">boundingBox</a> (const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt;&gt; &amp;volumes)</td></tr>
+<tr class="separator:ad6aad439e139fb2893a65eb2ce5f4567"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0a83c9f2374441d3698563e90c35a115"><td class="memItemLeft" align="right" valign="top">IVW_CORE_API <a class="el" href="classinviwo_1_1InviwoApplication.html">InviwoApplication</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceinviwo_1_1util.html#a0a83c9f2374441d3698563e90c35a115">getInviwoApplication</a> (<a class="el" href="classinviwo_1_1ProcessorNetwork.html">ProcessorNetwork</a> *)</td></tr>
 <tr class="separator:a0a83c9f2374441d3698563e90c35a115"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abf13843c2e4fd0df7921e8c9365b044f"><td class="memItemLeft" align="right" valign="top">IVW_CORE_API <a class="el" href="classinviwo_1_1InviwoApplication.html">InviwoApplication</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceinviwo_1_1util.html#abf13843c2e4fd0df7921e8c9365b044f">getInviwoApplication</a> (<a class="el" href="classinviwo_1_1Processor.html">Processor</a> *)</td></tr>
@@ -469,13 +488,16 @@ template&lt;size_t len&gt; </td></tr>
 template&lt;typename T , typename std::enable_if&lt; HasEnumName&lt; T &gt;::value, std::size_t &gt;::type  = 0&gt; </td></tr>
 <tr class="memitem:aebfd07a246bca8b3fc3f3e243aaea23a"><td class="memTemplItemLeft" align="right" valign="top">std::string&#160;</td><td class="memTemplItemRight" valign="bottom"><b>enumName</b> ()</td></tr>
 <tr class="separator:aebfd07a246bca8b3fc3f3e243aaea23a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb6b8dfc1fe3a44825c0a2dbbc2ae65a"><td class="memTemplParams" colspan="2">template&lt;typename Iterable , typename Callback &gt; </td></tr>
+<tr class="memitem:aeb6b8dfc1fe3a44825c0a2dbbc2ae65a"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceinviwo_1_1util.html#aeb6b8dfc1fe3a44825c0a2dbbc2ae65a">forEach</a> (const Iterable &amp;iterable, Callback &amp;&amp;callback)</td></tr>
+<tr class="separator:aeb6b8dfc1fe3a44825c0a2dbbc2ae65a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a04d402243e60fc5c71c66b4418c0be25"><td class="memTemplParams" colspan="2">template&lt;typename Iterable , typename Callback , typename OnDoneCallback &gt; </td></tr>
 <tr class="memitem:a04d402243e60fc5c71c66b4418c0be25"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; std::future&lt; void &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceinviwo_1_1util.html#a04d402243e60fc5c71c66b4418c0be25">forEachParallelAsync</a> (const Iterable &amp;iterable, Callback &amp;&amp;callback, size_t jobs, OnDoneCallback &amp;&amp;onTaskDone)</td></tr>
 <tr class="separator:a04d402243e60fc5c71c66b4418c0be25"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa7723225213c22878a1f9e2cbb9bb6f9"><td class="memTemplParams" colspan="2"><a id="aa7723225213c22878a1f9e2cbb9bb6f9"></a>
+<tr class="memitem:a5548cc05a98b91738a8a716ea0f28f81"><td class="memTemplParams" colspan="2"><a id="a5548cc05a98b91738a8a716ea0f28f81"></a>
 template&lt;typename Iterable , typename Callback &gt; </td></tr>
-<tr class="memitem:aa7723225213c22878a1f9e2cbb9bb6f9"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; std::future&lt; void &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>forEachParallelAsync</b> (const Iterable &amp;iterable, Callback &amp;&amp;callback, size_t jobs)</td></tr>
-<tr class="separator:aa7723225213c22878a1f9e2cbb9bb6f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5548cc05a98b91738a8a716ea0f28f81"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; std::future&lt; void &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>forEachParallelAsync</b> (const Iterable &amp;iterable, Callback &amp;&amp;callback, size_t jobs=0)</td></tr>
+<tr class="separator:a5548cc05a98b91738a8a716ea0f28f81"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adc3ba8edf9868ee32bb79ba5f1c1b114"><td class="memTemplParams" colspan="2">template&lt;typename Iterable , typename Callback &gt; </td></tr>
 <tr class="memitem:adc3ba8edf9868ee32bb79ba5f1c1b114"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceinviwo_1_1util.html#adc3ba8edf9868ee32bb79ba5f1c1b114">forEachParallel</a> (const Iterable &amp;iterable, Callback &amp;&amp;callback, size_t jobs=0)</td></tr>
 <tr class="separator:adc3ba8edf9868ee32bb79ba5f1c1b114"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -704,6 +726,10 @@ template&lt;std::size_t N, typename Index  = size_t, typename Functor &gt; </td>
 template&lt;typename T , typename std::enable_if&lt;!std::is_abstract&lt; T &gt;::value &amp;&amp;std::is_default_constructible&lt; T &gt;::value, int &gt;::type  = 0&gt; </td></tr>
 <tr class="memitem:a90888f794252ba3891f368137a67369d"><td class="memTemplItemLeft" align="right" valign="top">T *&#160;</td><td class="memTemplItemRight" valign="bottom"><b>defaultConstructType</b> ()</td></tr>
 <tr class="separator:a90888f794252ba3891f368137a67369d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b52a4904b65ef59d70ebf2b2b0ad7b0"><td class="memTemplParams" colspan="2"><a id="a8b52a4904b65ef59d70ebf2b2b0ad7b0"></a>
+template&lt;class... Ts&gt; </td></tr>
+<tr class="memitem:a8b52a4904b65ef59d70ebf2b2b0ad7b0"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>overloaded</b> (Ts...) -&gt; <a class="el" href="structinviwo_1_1util_1_1overloaded.html">overloaded</a>&lt; Ts... &gt;</td></tr>
+<tr class="separator:a8b52a4904b65ef59d70ebf2b2b0ad7b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abf81e9808c5ba9826b5771e2542490bf"><td class="memTemplParams" colspan="2"><a id="abf81e9808c5ba9826b5771e2542490bf"></a>
 template&lt;typename T , typename V &gt; </td></tr>
 <tr class="memitem:abf81e9808c5ba9826b5771e2542490bf"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><b>erase_remove</b> (T &amp;cont, const V &amp;elem) -&gt; decltype(std::distance(std::declval&lt; T &gt;().begin(), std::declval&lt; T &gt;().end()))</td></tr>
@@ -844,9 +870,9 @@ template&lt;typename Generator &gt; </td></tr>
 template&lt;typename T &gt; </td></tr>
 <tr class="memitem:acdd7c9fa30cdd956764cfe090ff6a4bb"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>is_future_ready</b> (const std::future&lt; T &gt; &amp;future)</td></tr>
 <tr class="separator:acdd7c9fa30cdd956764cfe090ff6a4bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a120524c5de0bd62f52483f096e0374d4"><td class="memTemplParams" colspan="2">template&lt;typename... A, typename F &gt; </td></tr>
-<tr class="memitem:a120524c5de0bd62f52483f096e0374d4"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="structinviwo_1_1util_1_1detail_1_1is__callable.html">detail::is_callable</a>&lt; F, A... &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceinviwo_1_1util.html#a120524c5de0bd62f52483f096e0374d4">is_callable_with</a> (F &amp;&amp;)</td></tr>
-<tr class="separator:a120524c5de0bd62f52483f096e0374d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9043d4a86a79be19df535ce9731f0153"><td class="memTemplParams" colspan="2">template&lt;typename... A, typename F &gt; </td></tr>
+<tr class="memitem:a9043d4a86a79be19df535ce9731f0153"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceinviwo_1_1util.html#a9043d4a86a79be19df535ce9731f0153">is_callable_with</a> (F &amp;&amp;)</td></tr>
+<tr class="separator:a9043d4a86a79be19df535ce9731f0153"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a828ef8f28093e76d6de14668216ca4ed"><td class="memItemLeft" align="right" valign="top">std::wstring&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceinviwo_1_1util.html#a828ef8f28093e76d6de14668216ca4ed">toWstring</a> (const std::string &amp;str)</td></tr>
 <tr class="memdesc:a828ef8f28093e76d6de14668216ca4ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">convert the given std::string to std::wstring. On Windows, MultiByteToWideChar is used for this conversion assuming utf8 encoding. Otherwise, std::mbsrtowcs is used.  <a href="#a828ef8f28093e76d6de14668216ca4ed">More...</a><br /></td></tr>
 <tr class="separator:a828ef8f28093e76d6de14668216ca4ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1107,6 +1133,13 @@ IVW_MODULE_BASE_API size_t&#160;</td><td class="memItemRight" valign="bottom"><b
 <tr class="memitem:a123be8ba6853952feb5fb0864f6029d5"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_BASE_API std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceinviwo_1_1util.html#a123be8ba6853952feb5fb0864f6029d5">writeIvfVolumeSequence</a> (const VolumeSequence &amp;volumes, std::string name, std::string path, std::string reltivePathToElements=&quot;&quot;, bool overwrite=true)</td></tr>
 <tr class="memdesc:a123be8ba6853952feb5fb0864f6029d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes a volume sequence to disk.  <a href="#a123be8ba6853952feb5fb0864f6029d5">More...</a><br /></td></tr>
 <tr class="separator:a123be8ba6853952feb5fb0864f6029d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a782dc309f7a28419eb1eaad71adc9bf3"><td class="memItemLeft" align="right" valign="top"><a id="a782dc309f7a28419eb1eaad71adc9bf3"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>updateReaderFromFile</b> (const <a class="el" href="classinviwo_1_1FileProperty.html">FileProperty</a> &amp;file, <a class="el" href="classinviwo_1_1TemplateOptionProperty.html">TemplateOptionProperty</a>&lt; <a class="el" href="classinviwo_1_1FileExtension.html">FileExtension</a> &gt; &amp;reader)</td></tr>
+<tr class="separator:a782dc309f7a28419eb1eaad71adc9bf3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1473ec531e3e7e4cf4e2a3678acf5c82"><td class="memTemplParams" colspan="2"><a id="a1473ec531e3e7e4cf4e2a3678acf5c82"></a>
+template&lt;typename... Types&gt; </td></tr>
+<tr class="memitem:a1473ec531e3e7e4cf4e2a3678acf5c82"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>updateFilenameFilters</b> (const <a class="el" href="classinviwo_1_1DataReaderFactory.html">DataReaderFactory</a> &amp;rf, <a class="el" href="classinviwo_1_1FileProperty.html">FileProperty</a> &amp;file, <a class="el" href="classinviwo_1_1TemplateOptionProperty.html">TemplateOptionProperty</a>&lt; <a class="el" href="classinviwo_1_1FileExtension.html">FileExtension</a> &gt; &amp;reader)</td></tr>
+<tr class="separator:a1473ec531e3e7e4cf4e2a3678acf5c82"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adb6460164f5b8a6fb25519c63fa3fbd2"><td class="memItemLeft" align="right" valign="top"><a id="adb6460164f5b8a6fb25519c63fa3fbd2"></a>
 MeshDrawerGL::DrawMode&#160;</td><td class="memItemRight" valign="bottom"><b>getDrawMode</b> (LineRenderer::LineDrawMode drawMode, bool useAdjacency)</td></tr>
 <tr class="separator:adb6460164f5b8a6fb25519c63fa3fbd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1174,6 +1207,42 @@ IVW_MODULE_VECTORFIELDVISUALIZATION_API void&#160;</td><td class="memItemRight" 
 <tr class="memitem:ac7f21f382ef66964d2f149a4b6000de5"><td class="memItemLeft" align="right" valign="top"><a id="ac7f21f382ef66964d2f149a4b6000de5"></a>
 IVW_MODULE_VECTORFIELDVISUALIZATION_API void&#160;</td><td class="memItemRight" valign="bottom"><b>tortuosity</b> (<a class="el" href="classinviwo_1_1IntegralLineSet.html">IntegralLineSet</a> &amp;lines)</td></tr>
 <tr class="separator:ac7f21f382ef66964d2f149a4b6000de5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr><td colspan="2"><div class="groupHeader"></div></td></tr>
+<tr class="memitem:af85bdf94f60fbbf43b5289eb1728118e"><td class="memItemLeft" align="right" valign="top">IVW_CORE_API std::function&lt; std::optional&lt; mat4 &gt;)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceinviwo_1_1util.html#af85bdf94f60fbbf43b5289eb1728118e">boundingBox</a> (const <a class="el" href="classinviwo_1_1DataInport.html">DataInport</a>&lt; <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> &gt; &amp;mesh)</td></tr>
+<tr class="separator:af85bdf94f60fbbf43b5289eb1728118e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed41692996689c70f572b353dc60ea49"><td class="memItemLeft" align="right" valign="top"><a id="aed41692996689c70f572b353dc60ea49"></a>
+IVW_CORE_API std::function&lt; std::optional&lt; mat4 &gt;)&gt;&#160;</td><td class="memItemRight" valign="bottom"><b>boundingBox</b> (const <a class="el" href="classinviwo_1_1DataInport.html">DataInport</a>&lt; <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a>, 0 &gt; &amp;meshes)</td></tr>
+<tr class="separator:aed41692996689c70f572b353dc60ea49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a3d920c9275780e99ce9a4fb3ab71fd"><td class="memItemLeft" align="right" valign="top"><a id="a5a3d920c9275780e99ce9a4fb3ab71fd"></a>
+IVW_CORE_API std::function&lt; std::optional&lt; mat4 &gt;)&gt;&#160;</td><td class="memItemRight" valign="bottom"><b>boundingBox</b> (const <a class="el" href="classinviwo_1_1DataInport.html">DataInport</a>&lt; <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a>, 0, true &gt; &amp;meshes)</td></tr>
+<tr class="separator:a5a3d920c9275780e99ce9a4fb3ab71fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a151a4c72fab572fdc8c7ae0d93768a6d"><td class="memItemLeft" align="right" valign="top"><a id="a151a4c72fab572fdc8c7ae0d93768a6d"></a>
+IVW_CORE_API std::function&lt; std::optional&lt; mat4 &gt;)&gt;&#160;</td><td class="memItemRight" valign="bottom"><b>boundingBox</b> (const <a class="el" href="classinviwo_1_1DataOutport.html">DataOutport</a>&lt; <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> &gt; &amp;mesh)</td></tr>
+<tr class="separator:a151a4c72fab572fdc8c7ae0d93768a6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13d02b4718f6a8c42ab5fe409b91f254"><td class="memItemLeft" align="right" valign="top"><a id="a13d02b4718f6a8c42ab5fe409b91f254"></a>
+IVW_CORE_API std::function&lt; std::optional&lt; mat4 &gt;)&gt;&#160;</td><td class="memItemRight" valign="bottom"><b>boundingBox</b> (const <a class="el" href="classinviwo_1_1DataInport.html">DataInport</a>&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt; &amp;volume)</td></tr>
+<tr class="separator:a13d02b4718f6a8c42ab5fe409b91f254"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77da1f9cc9210f42adb34a2a36a93a5a"><td class="memItemLeft" align="right" valign="top"><a id="a77da1f9cc9210f42adb34a2a36a93a5a"></a>
+IVW_CORE_API std::function&lt; std::optional&lt; mat4 &gt;)&gt;&#160;</td><td class="memItemRight" valign="bottom"><b>boundingBox</b> (const <a class="el" href="classinviwo_1_1DataInport.html">DataInport</a>&lt; std::vector&lt; std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt;&gt;&gt; &amp;volumes)</td></tr>
+<tr class="separator:a77da1f9cc9210f42adb34a2a36a93a5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8e3f8bdb0d7d9be2920dfe8cb2e01bf"><td class="memItemLeft" align="right" valign="top"><a id="ae8e3f8bdb0d7d9be2920dfe8cb2e01bf"></a>
+IVW_CORE_API std::function&lt; std::optional&lt; mat4 &gt;)&gt;&#160;</td><td class="memItemRight" valign="bottom"><b>boundingBox</b> (const <a class="el" href="classinviwo_1_1DataOutport.html">DataOutport</a>&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt; &amp;volume)</td></tr>
+<tr class="separator:ae8e3f8bdb0d7d9be2920dfe8cb2e01bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9562e1909c9f35dc2cd311eb5a80d147"><td class="memItemLeft" align="right" valign="top"><a id="a9562e1909c9f35dc2cd311eb5a80d147"></a>
+IVW_CORE_API std::function&lt; std::optional&lt; mat4 &gt;)&gt;&#160;</td><td class="memItemRight" valign="bottom"><b>boundingBox</b> (const <a class="el" href="classinviwo_1_1DataOutport.html">DataOutport</a>&lt; std::vector&lt; std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt;&gt;&gt; &amp;volumes)</td></tr>
+<tr class="separator:a9562e1909c9f35dc2cd311eb5a80d147"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:a9c8996917ec6d4a4ed6325b4dda4d10b"><td class="memItemLeft" align="right" valign="top"><a id="a9c8996917ec6d4a4ed6325b4dda4d10b"></a>
+template class IVW_CORE_TMPL_EXP&#160;</td><td class="memItemRight" valign="bottom"><b>TFPropertyModel&lt; TransferFunctionProperty * &gt;</b></td></tr>
+<tr class="separator:a9c8996917ec6d4a4ed6325b4dda4d10b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab54e000892ac518a388ea6324cdebc5e"><td class="memItemLeft" align="right" valign="top"><a id="ab54e000892ac518a388ea6324cdebc5e"></a>
+template class IVW_CORE_TMPL_EXP&#160;</td><td class="memItemRight" valign="bottom"><b>TFPropertyModel&lt; IsoValueProperty * &gt;</b></td></tr>
+<tr class="separator:ab54e000892ac518a388ea6324cdebc5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe2e6689d658fa4f29e370210fc55f41"><td class="memItemLeft" align="right" valign="top"><a id="abe2e6689d658fa4f29e370210fc55f41"></a>
+template class IVW_CORE_TMPL_EXP&#160;</td><td class="memItemRight" valign="bottom"><b>TFPropertyModel&lt; IsoTFProperty * &gt;</b></td></tr>
+<tr class="separator:abe2e6689d658fa4f29e370210fc55f41"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>util </p>
@@ -1284,6 +1353,101 @@ template&lt;typename T &gt; </div>
       </table>
 </div><div class="memdoc">
 <p>Appends b to a if a is not empty and returns a. Useful if an empty a is considered an error and we want to propagate that error. </p>
+
+</div>
+</div>
+<a id="ab9cbceab56fd2c7c038943513adee77d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9cbceab56fd2c7c038943513adee77d">&#9670;&nbsp;</a></span>boundingBox() <span class="overload">[1/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">mat4 inviwo::util::boundingBox </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Calculate a bounding box of the position buffer of the mesh in world space. The bounding box is represented using a mat4, where all positions is between `bbox * (x,y,z,1) where x, y, and z are between 0 and 1. </p>
+
+</div>
+</div>
+<a id="ae4d58bb604edb7e6415018600549814c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4d58bb604edb7e6415018600549814c">&#9670;&nbsp;</a></span>boundingBox() <span class="overload">[2/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">mat4 inviwo::util::boundingBox </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> &gt;&gt; &amp;&#160;</td>
+          <td class="paramname"><em>meshes</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Calculate a bounding box of the position buffers of all the meshs in world space. The bounding box is represented using a mat4, where all positions is between `bbox * (x,y,z,1) where x, y, and z are between 0 and 1. </p>
+
+</div>
+</div>
+<a id="ac3e221abeeeff079a85a282b51bd62f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3e221abeeeff079a85a282b51bd62f1">&#9670;&nbsp;</a></span>boundingBox() <span class="overload">[3/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">mat4 inviwo::util::boundingBox </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &amp;&#160;</td>
+          <td class="paramname"><em>volume</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Calculate a bounding box of the volume in world space. The bounding box is represented using a mat4, where all positions is between `bbox * (x,y,z,1) where x, y, and z are between 0 and 1. </p>
+
+</div>
+</div>
+<a id="ad6aad439e139fb2893a65eb2ce5f4567"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6aad439e139fb2893a65eb2ce5f4567">&#9670;&nbsp;</a></span>boundingBox() <span class="overload">[4/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">mat4 inviwo::util::boundingBox </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt;&gt; &amp;&#160;</td>
+          <td class="paramname"><em>volumes</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Calculate a bounding box of all the volumes in world space. The bounding box is represented using a mat4, where all positions is between `bbox * (x,y,z,1) where x, y, and z are between 0 and 1. </p>
+
+</div>
+</div>
+<a id="af85bdf94f60fbbf43b5289eb1728118e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af85bdf94f60fbbf43b5289eb1728118e">&#9670;&nbsp;</a></span>boundingBox() <span class="overload">[5/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::function&lt; std::optional&lt; mat4 &gt;)&gt; inviwo::util::boundingBox </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classinviwo_1_1DataInport.html">DataInport</a>&lt; <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Construct function the returns the bounding box of the data in the port. I the port is empty the function should return std::nullopt; </p>
 
 </div>
 </div>
@@ -1614,6 +1778,43 @@ template&lt;typename M , typename T  = typename M::value_type&gt; </div>
       </table>
 </div><div class="memdoc">
 <p>Utility to augment an identifier with a number to make it unique. Will add an increasing number to the end of the given identifier until the isUnique test returns true. Example for a processor identifier: auto uniqueIdentifier = <a class="el" href="namespaceinviwo_1_1util.html#a947c6cae56d5239848a9e2fa42cc5d15">util::findUniqueIdentifier</a>( startIdentifier, [&amp;](const std::string&amp; id) { return processorNetwork-&gt;getProcessorByIdentifier(id) == nullptr; }, "" ); </p>
+
+</div>
+</div>
+<a id="aeb6b8dfc1fe3a44825c0a2dbbc2ae65a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb6b8dfc1fe3a44825c0a2dbbc2ae65a">&#9670;&nbsp;</a></span>forEach()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Iterable , typename Callback &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void inviwo::util::forEach </td>
+          <td>(</td>
+          <td class="paramtype">const Iterable &amp;&#160;</td>
+          <td class="paramname"><em>iterable</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Callback &amp;&amp;&#160;</td>
+          <td class="paramname"><em>callback</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Utility function to iterate over all element in an iterable data structure (such as std::vector). </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">iterable</td><td>the data structure to iterate over </td></tr>
+    <tr><td class="paramname">callback</td><td>to call for each element, can be either <code>[](auto &amp;a){}</code> or <code>[](auto &amp;a, size_t id){}</code> where <code>a</code> is an data item from the iterable data structure and <code>id</code> is the index in the data structure </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -2430,8 +2631,8 @@ template&lt;class T &gt; </div>
 
 </div>
 </div>
-<a id="a120524c5de0bd62f52483f096e0374d4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a120524c5de0bd62f52483f096e0374d4">&#9670;&nbsp;</a></span>is_callable_with()</h2>
+<a id="a9043d4a86a79be19df535ce9731f0153"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9043d4a86a79be19df535ce9731f0153">&#9670;&nbsp;</a></span>is_callable_with()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -2439,7 +2640,7 @@ template&lt;class T &gt; </div>
 template&lt;typename... A, typename F &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="structinviwo_1_1util_1_1detail_1_1is__callable.html">detail::is_callable</a>&lt;F, A...&gt; inviwo::util::is_callable_with </td>
+          <td class="memname">constexpr bool inviwo::util::is_callable_with </td>
           <td>(</td>
           <td class="paramtype">F &amp;&amp;&#160;</td>
           <td class="paramname"></td><td>)</td>

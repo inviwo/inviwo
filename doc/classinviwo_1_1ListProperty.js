@@ -22,7 +22,6 @@ var classinviwo_1_1ListProperty =
     [ "getUIFlags", "classinviwo_1_1ListProperty.html#ad8454b97efafaaa5110dd7140fc5cbea", null ],
     [ "insertProperty", "classinviwo_1_1ListProperty.html#af9c3d69fbd12701b19f8c3f42ff1b863", null ],
     [ "insertProperty", "classinviwo_1_1ListProperty.html#a08e0a202e4c503884d0c0ed7361f2b6d", null ],
-    [ "operator=", "classinviwo_1_1ListProperty.html#aff6a86bf13623da0ce3979290b08fa18", null ],
     [ "removeProperty", "classinviwo_1_1ListProperty.html#a63aed19d8134a3b605b26c2ef58d302d", null ],
     [ "removeProperty", "classinviwo_1_1ListProperty.html#a147b94cd83b64d47cab6f41776532a6d", null ],
     [ "removeProperty", "classinviwo_1_1ListProperty.html#a9c0a2697063dd0ae8387ebae87b86a0d", null ],

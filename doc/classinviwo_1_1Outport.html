@@ -31,7 +31,7 @@
   <td id="projectlogo"><img alt="Logo" src="inviwo_dark.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Inviwo
-   &#160;<span id="projectnumber">0.9.10</span>
+   &#160;<span id="projectnumber">0.9.10.1</span>
    </div>
    <div id="projectbrief">Inviwo documentation</div>
   </td>
@@ -153,8 +153,8 @@ virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>isConnected</
 <tr class="memitem:a6cf6b8b553b88055a8def2ea0c3bf762"><td class="memItemLeft" align="right" valign="top"><a id="a6cf6b8b553b88055a8def2ea0c3bf762"></a>
 virtual <a class="el" href="namespaceinviwo.html#ae0b7ff1e08626f6ee58e561ef4c9ffba">InvalidationLevel</a>&#160;</td><td class="memItemRight" valign="bottom"><b>getInvalidationLevel</b> () const</td></tr>
 <tr class="separator:a6cf6b8b553b88055a8def2ea0c3bf762"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0a0b4f4417f7d66252f16e2fbd3d6812"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Outport.html#a0a0b4f4417f7d66252f16e2fbd3d6812">propagateEvent</a> (<a class="el" href="classinviwo_1_1Event.html">Event</a> *event)</td></tr>
-<tr class="separator:a0a0b4f4417f7d66252f16e2fbd3d6812"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae04cf479ab22c0cfe9e270971f233919"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Outport.html#ae04cf479ab22c0cfe9e270971f233919">propagateEvent</a> (<a class="el" href="classinviwo_1_1Event.html">Event</a> *event, <a class="el" href="classinviwo_1_1Inport.html">Inport</a> *source)</td></tr>
+<tr class="separator:ae04cf479ab22c0cfe9e270971f233919"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1c51bf4120f71056f94f306614510e1d"><td class="memItemLeft" align="right" valign="top"><a id="a1c51bf4120f71056f94f306614510e1d"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>isConnectedTo</b> (const <a class="el" href="classinviwo_1_1Inport.html">Inport</a> *port) const</td></tr>
 <tr class="separator:a1c51bf4120f71056f94f306614510e1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -350,8 +350,8 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>Processor</b></td></
 
 </div>
 </div>
-<a id="a0a0b4f4417f7d66252f16e2fbd3d6812"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0a0b4f4417f7d66252f16e2fbd3d6812">&#9670;&nbsp;</a></span>propagateEvent()</h2>
+<a id="ae04cf479ab22c0cfe9e270971f233919"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae04cf479ab22c0cfe9e270971f233919">&#9670;&nbsp;</a></span>propagateEvent()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -363,8 +363,18 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>Processor</b></td></
           <td class="memname">void inviwo::Outport::propagateEvent </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classinviwo_1_1Event.html">Event</a> *&#160;</td>
-          <td class="paramname"><em>event</em></td><td>)</td>
+          <td class="paramname"><em>event</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1Inport.html">Inport</a> *&#160;</td>
+          <td class="paramname"><em>source</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -375,7 +385,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>Processor</b></td></
 </div><div class="memdoc">
 <p>Propagate events upwards, i.e. to the owning processor. </p>
 
-<p>Reimplemented in <a class="el" href="classinviwo_1_1ImageOutport.html#a618210a838607fa9ae77ba8329bdf47e">inviwo::ImageOutport</a>.</p>
+<p>Reimplemented in <a class="el" href="classinviwo_1_1ImageOutport.html#a1e02490fd7580e6fbd20ceab026d68c2">inviwo::ImageOutport</a>.</p>
 
 </div>
 </div>

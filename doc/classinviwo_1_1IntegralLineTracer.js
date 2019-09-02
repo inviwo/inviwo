@@ -11,7 +11,5 @@ var classinviwo_1_1IntegralLineTracer =
     [ "IntegralLineTracer", "classinviwo_1_1IntegralLineTracer.html#ab4a6e5cb9e46e43c58b2f696003a2678", null ],
     [ "addMetaDataSampler", "classinviwo_1_1IntegralLineTracer.html#ace6c1d5a70cb64ffcb43e5747af5de07", null ],
     [ "getSeedTransformationMatrix", "classinviwo_1_1IntegralLineTracer.html#a8525babe81f5b7b995e73fde56faeea8", null ],
-    [ "isTransformingOutputToWorldSpace", "classinviwo_1_1IntegralLineTracer.html#ab341eaf000df63536121a8f247858d68", null ],
-    [ "setTransformOutputToWorldSpace", "classinviwo_1_1IntegralLineTracer.html#a6dd6ef7ec3abb68695ec4b8c413f69c9", null ],
     [ "traceFrom", "classinviwo_1_1IntegralLineTracer.html#af20582bdb05a9c4cdc957cef07823343", null ]
 ];

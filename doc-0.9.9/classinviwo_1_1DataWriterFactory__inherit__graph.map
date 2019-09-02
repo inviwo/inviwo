@@ -1,5 +1,0 @@
-<map id="inviwo::DataWriterFactory" name="inviwo::DataWriterFactory">
-<area shape="rect" id="node2" href="$classinviwo_1_1Factory.html" title="inviwo::Factory\&lt; DataWriter,\l const FileExtension &amp; \&gt;" alt="" coords="5,200,192,241"/>
-<area shape="rect" id="node3" href="$classinviwo_1_1FactoryBase.html" title="inviwo::FactoryBase" alt="" coords="41,5,180,32"/>
-<area shape="rect" id="node4" href="$classinviwo_1_1Factory.html" title="inviwo::Factory\&lt; T,\l K, Args \&gt;" alt="" coords="115,81,245,123"/>
-</map>

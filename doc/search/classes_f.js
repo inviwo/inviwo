@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['packedlightsource',['PackedLightSource',['../structinviwo_1_1PackedLightSource.html',1,'inviwo']]],
   ['parallelcoordinates',['ParallelCoordinates',['../classinviwo_1_1plot_1_1ParallelCoordinates.html',1,'inviwo::plot']]],
   ['parsewrapper',['ParseWrapper',['../structinviwo_1_1ParseWrapper.html',1,'inviwo']]],
   ['partialconnection',['PartialConnection',['../structinviwo_1_1util_1_1detail_1_1PartialConnection.html',1,'inviwo::util::detail']]],
@@ -92,7 +91,6 @@ var searchData=
   ['processorgraphicsitem',['ProcessorGraphicsItem',['../classinviwo_1_1ProcessorGraphicsItem.html',1,'inviwo']]],
   ['processorinfo',['ProcessorInfo',['../structinviwo_1_1ProcessorInfo.html',1,'inviwo']]],
   ['processorinportgraphicsitem',['ProcessorInportGraphicsItem',['../classinviwo_1_1ProcessorInportGraphicsItem.html',1,'inviwo']]],
-  ['processorkernelowner',['ProcessorKernelOwner',['../classinviwo_1_1ProcessorKernelOwner.html',1,'inviwo']]],
   ['processorlinkgraphicsitem',['ProcessorLinkGraphicsItem',['../classinviwo_1_1ProcessorLinkGraphicsItem.html',1,'inviwo']]],
   ['processormetadata',['ProcessorMetaData',['../classinviwo_1_1ProcessorMetaData.html',1,'inviwo']]],
   ['processormetadataobserver',['ProcessorMetaDataObserver',['../classinviwo_1_1ProcessorMetaDataObserver.html',1,'inviwo']]],
@@ -135,7 +133,6 @@ var searchData=
   ['processorwidgetobservable',['ProcessorWidgetObservable',['../classinviwo_1_1ProcessorWidgetObservable.html',1,'inviwo']]],
   ['processorwidgetobserver',['ProcessorWidgetObserver',['../classinviwo_1_1ProcessorWidgetObserver.html',1,'inviwo']]],
   ['processorwidgetqt',['ProcessorWidgetQt',['../classinviwo_1_1ProcessorWidgetQt.html',1,'inviwo']]],
-  ['programidentifier',['ProgramIdentifier',['../structinviwo_1_1KernelManager_1_1ProgramIdentifier.html',1,'inviwo::KernelManager']]],
   ['progressbar',['ProgressBar',['../classinviwo_1_1ProgressBar.html',1,'inviwo']]],
   ['progressbarobservable',['ProgressBarObservable',['../classinviwo_1_1ProgressBarObservable.html',1,'inviwo']]],
   ['progressbarobserver',['ProgressBarObserver',['../classinviwo_1_1ProgressBarObserver.html',1,'inviwo']]],
@@ -181,6 +178,7 @@ var searchData=
   ['propertytraits_3c_20minmaxproperty_3c_20t_20_3e_20_3e',['PropertyTraits&lt; MinMaxProperty&lt; T &gt; &gt;',['../structinviwo_1_1PropertyTraits_3_01MinMaxProperty_3_01T_01_4_01_4.html',1,'inviwo']]],
   ['propertytraits_3c_20ordinalanimationproperty_3c_20t_20_3e_20_3e',['PropertyTraits&lt; OrdinalAnimationProperty&lt; T &gt; &gt;',['../structinviwo_1_1PropertyTraits_3_01OrdinalAnimationProperty_3_01T_01_4_01_4.html',1,'inviwo']]],
   ['propertytraits_3c_20ordinalproperty_3c_20t_20_3e_20_3e',['PropertyTraits&lt; OrdinalProperty&lt; T &gt; &gt;',['../structinviwo_1_1PropertyTraits_3_01OrdinalProperty_3_01T_01_4_01_4.html',1,'inviwo']]],
+  ['propertytraits_3c_20templateoptionproperty_3c_20fileextension_20_3e_20_3e',['PropertyTraits&lt; TemplateOptionProperty&lt; FileExtension &gt; &gt;',['../structinviwo_1_1PropertyTraits_3_01TemplateOptionProperty_3_01FileExtension_01_4_01_4.html',1,'inviwo']]],
   ['propertytraits_3c_20templateoptionproperty_3c_20t_20_3e_20_3e',['PropertyTraits&lt; TemplateOptionProperty&lt; T &gt; &gt;',['../structinviwo_1_1PropertyTraits_3_01TemplateOptionProperty_3_01T_01_4_01_4.html',1,'inviwo']]],
   ['propertytransformer',['PropertyTransformer',['../classinviwo_1_1PropertyTransformer.html',1,'inviwo']]],
   ['propertytransformer_3c_20glm_3a_3avec_3c_203_2c_20t_2c_20glm_3a_3adefaultp_20_3e_20_3e',['PropertyTransformer&lt; glm::vec&lt; 3, T, glm::defaultp &gt; &gt;',['../classinviwo_1_1PropertyTransformer.html',1,'inviwo']]],

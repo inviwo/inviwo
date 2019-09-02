@@ -1,5 +1,5 @@
 <map id="inviwo::OptionPropertyOption&lt; T &gt;" name="inviwo::OptionPropertyOption&lt; T &gt;">
-<area shape="rect" id="node1" title=" " alt="" coords="185,2059,405,2085"/>
+<area shape="rect" id="node1" title=" " alt="" coords="185,2156,405,2183"/>
 <area shape="rect" id="node3" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,26,851,67"/>
 <area shape="rect" id="node4" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,91,851,133"/>
 <area shape="rect" id="node5" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,157,851,198"/>
@@ -59,8 +59,11 @@
 <area shape="rect" id="node59" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,3717,851,3758"/>
 <area shape="rect" id="node60" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,3782,851,3823"/>
 <area shape="rect" id="node61" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,3847,851,3889"/>
-<area shape="rect" id="node62" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="625,3913,888,3954"/>
-<area shape="rect" id="node63" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="639,3978,874,4019"/>
-<area shape="rect" id="node64" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,4043,851,4085"/>
-<area shape="rect" id="node2" href="$classinviwo_1_1Serializable.html" title=" " alt="" coords="5,2059,136,2085"/>
+<area shape="rect" id="node62" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,3913,851,3954"/>
+<area shape="rect" id="node63" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,3978,851,4019"/>
+<area shape="rect" id="node64" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="625,4043,888,4085"/>
+<area shape="rect" id="node65" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="639,4109,874,4150"/>
+<area shape="rect" id="node66" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,4174,851,4215"/>
+<area shape="rect" id="node67" href="$classinviwo_1_1OptionPropertyOption.html" title=" " alt="" coords="662,4239,851,4281"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1Serializable.html" title=" " alt="" coords="5,2156,136,2183"/>
 </map>

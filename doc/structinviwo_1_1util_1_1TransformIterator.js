@@ -6,7 +6,7 @@ var structinviwo_1_1util_1_1TransformIterator =
     [ "difference_type", "structinviwo_1_1util_1_1TransformIterator.html#ad57463899b16855e1c0d9559a83db20d", null ],
     [ "iterator_category", "structinviwo_1_1util_1_1TransformIterator.html#ab7a159437cb867f13b86ec7dbf413b2b", null ],
     [ "pointer", "structinviwo_1_1util_1_1TransformIterator.html#a8270bb11f1172dc1d88437ead33b608d", null ],
-    [ "reference", "structinviwo_1_1util_1_1TransformIterator.html#a11d0c6812601f33869a6caf4be013f52", null ],
+    [ "reference", "structinviwo_1_1util_1_1TransformIterator.html#a36eb54c628d428da811ab3a390f30829", null ],
     [ "value_type", "structinviwo_1_1util_1_1TransformIterator.html#a3c56cc759f8cc51e8ee8c44efcb732f3", null ],
     [ "TransformIterator", "structinviwo_1_1util_1_1TransformIterator.html#aaf9b21dbf75320d1d08f3553a7c55295", null ],
     [ "TransformIterator", "structinviwo_1_1util_1_1TransformIterator.html#a1fd642926efa7f3b2d53e05af81e3341", null ],

@@ -7,8 +7,6 @@ var searchData=
   ['hascolorcode',['HasColorCode',['../classinviwo_1_1util_1_1HasColorCode.html',1,'inviwo::util']]],
   ['hascolorcodelower',['HasColorCodeLower',['../classinviwo_1_1util_1_1HasColorCodeLower.html',1,'inviwo::util']]],
   ['hascolorcodeupper',['HasColorCodeUpper',['../classinviwo_1_1util_1_1HasColorCodeUpper.html',1,'inviwo::util']]],
-  ['hasdata',['HasData',['../structinviwo_1_1detail_1_1HasData.html',1,'inviwo::detail']]],
-  ['hasdata_3c_20t_2c_200_20_3e',['HasData&lt; T, 0 &gt;',['../structinviwo_1_1detail_1_1HasData_3_01T_00_010_01_4.html',1,'inviwo::detail']]],
   ['hasdataformat',['HasDataFormat',['../structinviwo_1_1util_1_1HasDataFormat.html',1,'inviwo::util']]],
   ['hasdataformatimpl',['HasDataFormatImpl',['../structinviwo_1_1util_1_1detail_1_1HasDataFormatImpl.html',1,'inviwo::util::detail']]],
   ['hasdataformatimpl_3c_20t_2c_20defaultdataformats_20_3e',['HasDataFormatImpl&lt; T, DefaultDataFormats &gt;',['../structinviwo_1_1util_1_1detail_1_1HasDataFormatImpl.html',1,'inviwo::util::detail']]],

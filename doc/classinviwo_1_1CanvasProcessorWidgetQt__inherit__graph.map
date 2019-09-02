@@ -1,13 +1,14 @@
 <map id="inviwo::CanvasProcessorWidgetQt" name="inviwo::CanvasProcessorWidgetQt">
-<area shape="rect" id="node1" title=" " alt="" coords="237,529,457,556"/>
-<area shape="rect" id="node2" title=" " alt="" coords="147,453,220,480"/>
-<area shape="rect" id="node3" href="$classinviwo_1_1CanvasProcessorWidget.html" title="A processor widget that has a canvas. CanvasProcessorWidget is the base class for all processor widge..." alt="" coords="244,453,451,480"/>
-<area shape="rect" id="node4" href="$classinviwo_1_1ProcessorWidget.html" title=" " alt="" coords="265,377,429,404"/>
+<area shape="rect" id="node1" title=" " alt="" coords="305,569,525,596"/>
+<area shape="rect" id="node2" title=" " alt="" coords="215,493,288,520"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1CanvasProcessorWidget.html" title="A processor widget that has a canvas. CanvasProcessorWidget is the base class for all processor widge..." alt="" coords="312,493,519,520"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1ProcessorWidget.html" title=" " alt="" coords="247,392,411,419"/>
 <area shape="rect" id="node5" href="$classinviwo_1_1ProcessorWidgetObservable.html" title=" " alt="" coords="5,269,233,295"/>
 <area shape="rect" id="node6" href="$classinviwo_1_1Observable.html" title=" " alt="" coords="21,171,218,212"/>
 <area shape="rect" id="node7" href="$classinviwo_1_1ObservableInterface.html" title=" " alt="" coords="47,5,224,32"/>
 <area shape="rect" id="node8" href="$classinviwo_1_1Observable.html" title=" " alt="" coords="136,81,295,108"/>
 <area shape="rect" id="node9" href="$classinviwo_1_1ProcessorWidgetMetaDataObserver.html" title=" " alt="" coords="257,261,451,303"/>
-<area shape="rect" id="node10" href="$classinviwo_1_1Observer.html" title=" " alt="" coords="397,178,511,205"/>
-<area shape="rect" id="node11" href="$classinviwo_1_1ProcessorObserver.html" title=" " alt="" coords="401,327,576,353"/>
+<area shape="rect" id="node10" href="$classinviwo_1_1Observer.html" title=" " alt="" coords="431,178,546,205"/>
+<area shape="rect" id="node11" href="$classinviwo_1_1ProcessorNetworkObserver.html" title=" " alt="" coords="365,327,535,368"/>
+<area shape="rect" id="node12" href="$classinviwo_1_1ProcessorObserver.html" title=" " alt="" coords="469,443,644,469"/>
 </map>

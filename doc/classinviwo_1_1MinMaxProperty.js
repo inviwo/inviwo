@@ -4,6 +4,7 @@ var classinviwo_1_1MinMaxProperty =
     [ "MinMaxProperty", "classinviwo_1_1MinMaxProperty.html#ade90c6528b81450882159862e6b7a390", null ],
     [ "MinMaxProperty", "classinviwo_1_1MinMaxProperty.html#a9165f5ddefd697039238d165dadd9567", null ],
     [ "~MinMaxProperty", "classinviwo_1_1MinMaxProperty.html#a91ba22e952357ed4b2daa3e2f48a4321", null ],
+    [ "clamp", "classinviwo_1_1MinMaxProperty.html#ab0f9a2ac0f74cad5621a9bbf0afad529", null ],
     [ "clone", "classinviwo_1_1MinMaxProperty.html#a70f9e8f339a39957629d0b98fe7be7e5", null ],
     [ "deserialize", "classinviwo_1_1MinMaxProperty.html#aafaa865a562c4202763927b47d6cb333", null ],
     [ "getClassIdentifier", "classinviwo_1_1MinMaxProperty.html#a3b068d4253676526ac676f1e5e3616be", null ],
@@ -15,8 +16,8 @@ var classinviwo_1_1MinMaxProperty =
     [ "getRangeMax", "classinviwo_1_1MinMaxProperty.html#ac559e7b08013f8603a3b98c4c5977ccc", null ],
     [ "getRangeMin", "classinviwo_1_1MinMaxProperty.html#ad151cf3ae4ea0cabb2429d6f2f684d5d", null ],
     [ "getStart", "classinviwo_1_1MinMaxProperty.html#a09b21cc11a82edc92f432f81ab293c08", null ],
+    [ "limitSeparation", "classinviwo_1_1MinMaxProperty.html#a612b01f60c98b106f68fd57eb40f33c5", null ],
     [ "onRangeChange", "classinviwo_1_1MinMaxProperty.html#ac5beae7db7b9ae7d1bf6937c3363c2f7", null ],
-    [ "operator=", "classinviwo_1_1MinMaxProperty.html#a018c8eff94ef4f7cc49be16b0b252c97", null ],
     [ "operator=", "classinviwo_1_1MinMaxProperty.html#a5990767f57b87344539673701df5d831", null ],
     [ "removeOnRangeChange", "classinviwo_1_1MinMaxProperty.html#a7891af38b6f978900365b06ed03868a8", null ],
     [ "resetToDefaultState", "classinviwo_1_1MinMaxProperty.html#ac534494c33b04bbcd61486117bd8b215", null ],
@@ -33,6 +34,5 @@ var classinviwo_1_1MinMaxProperty =
     [ "setRangeMax", "classinviwo_1_1MinMaxProperty.html#a29fada405c48b9b5fb13cf7cf1cd77f9", null ],
     [ "setRangeMin", "classinviwo_1_1MinMaxProperty.html#adbea99df3245572c112eeda88b24a09c", null ],
     [ "setRangeNormalized", "classinviwo_1_1MinMaxProperty.html#a622c95a1674ce1accf9835e726fe4d17", null ],
-    [ "setStart", "classinviwo_1_1MinMaxProperty.html#a2b4eaef71df2e4f456b04b3cb89296ec", null ],
-    [ "validateValues", "classinviwo_1_1MinMaxProperty.html#a7ac5ea414feebb54a161b49dec659891", null ]
+    [ "setStart", "classinviwo_1_1MinMaxProperty.html#a2b4eaef71df2e4f456b04b3cb89296ec", null ]
 ];

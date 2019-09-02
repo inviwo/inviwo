@@ -1,6 +1,5 @@
 <map id="inviwo::ActivityIndicatorOwner" name="inviwo::ActivityIndicatorOwner">
-<area shape="rect" id="node1" title=" " alt="" coords="5,49,160,90"/>
-<area shape="rect" id="node2" href="$classinviwo_1_1SpringSystemProcessor.html" title=" " alt="" coords="217,5,422,32"/>
-<area shape="rect" id="node3" href="$classinviwo_1_1VolumeLaplacianProcessor.html" title=" " alt="" coords="208,56,431,83"/>
-<area shape="rect" id="node4" href="$classinviwo_1_1VolumeSubsample.html" title=" " alt="" coords="233,107,406,133"/>
+<area shape="rect" id="node1" title=" " alt="" coords="150,5,305,47"/>
+<area shape="rect" id="node2" href="$classinviwo_1_1VolumeLaplacianProcessor.html" title=" " alt="" coords="5,95,228,121"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1VolumeSubsample.html" title=" " alt="" coords="253,95,426,121"/>
 </map>

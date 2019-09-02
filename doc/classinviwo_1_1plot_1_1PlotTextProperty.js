@@ -11,7 +11,6 @@ var classinviwo_1_1plot_1_1PlotTextProperty =
     [ "getPosition", "classinviwo_1_1plot_1_1PlotTextProperty.html#a0a72922392e113b03c34a84090c8990e", null ],
     [ "getRotation", "classinviwo_1_1plot_1_1PlotTextProperty.html#ada49c1e02a8256b47f8631881de7f287", null ],
     [ "isEnabled", "classinviwo_1_1plot_1_1PlotTextProperty.html#ad13a3822315f3de4cc0b273976bc6027", null ],
-    [ "operator=", "classinviwo_1_1plot_1_1PlotTextProperty.html#ad18d288ee454de36b49e3fcd673df257", null ],
     [ "color_", "classinviwo_1_1plot_1_1PlotTextProperty.html#abcf6a629ef2ccd7f5361276233b4770c", null ],
     [ "font_", "classinviwo_1_1plot_1_1PlotTextProperty.html#af59ff85e3371bf67e2756564b80002f0", null ],
     [ "offset_", "classinviwo_1_1plot_1_1PlotTextProperty.html#a5d8e127b354da94a3bad4b1d36da0ed5", null ],

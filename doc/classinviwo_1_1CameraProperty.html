@@ -31,7 +31,7 @@
   <td id="projectlogo"><img alt="Logo" src="inviwo_dark.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Inviwo
-   &#160;<span id="projectnumber">0.9.10</span>
+   &#160;<span id="projectnumber">0.9.10.1</span>
    </div>
    <div id="projectbrief">Inviwo documentation</div>
   </td>
@@ -130,20 +130,19 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a7956671f508df0a3823e3d63a345adb9"><td class="memItemLeft" align="right" valign="top"><a id="a7956671f508df0a3823e3d63a345adb9"></a>
 virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><b>getClassIdentifier</b> () const override</td></tr>
 <tr class="separator:a7956671f508df0a3823e3d63a345adb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adc44a0adb72b146e6167072a81ab43f9"><td class="memItemLeft" align="right" valign="top"><a id="adc44a0adb72b146e6167072a81ab43f9"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>CameraProperty</b> (std::string identifier, std::string displayName, vec3 eye=vec3(0.0f, 0.0f, 2.0f), vec3 center=vec3(0.0f), vec3 lookUp=vec3(0.0f, 1.0f, 0.0f), Inport *inport=nullptr, InvalidationLevel invalidationLevel=InvalidationLevel::InvalidResources, PropertySemantics semantics=PropertySemantics::Default)</td></tr>
-<tr class="separator:adc44a0adb72b146e6167072a81ab43f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb86a7a114a007359b67c355dfbe734b"><td class="memItemLeft" align="right" valign="top"><a id="aeb86a7a114a007359b67c355dfbe734b"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>CameraProperty</b> (const std::string &amp;identifier, const std::string &amp;displayName, std::function&lt; std::optional&lt; mat4 &gt;()&gt; getBoundingBox, vec3 eye=vec3(0.0f, 0.0f, 2.0f), vec3 center=vec3(0.0f), vec3 lookUp=vec3(0.0f, 1.0f, 0.0f), InvalidationLevel invalidationLevel=InvalidationLevel::InvalidResources, PropertySemantics semantics=PropertySemantics::Default)</td></tr>
+<tr class="separator:aeb86a7a114a007359b67c355dfbe734b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a30630f6d4c874cb6bb1daba4ae8662"><td class="memItemLeft" align="right" valign="top"><a id="a1a30630f6d4c874cb6bb1daba4ae8662"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>CameraProperty</b> (const std::string &amp;identifier, const std::string &amp;displayName, vec3 eye=vec3(0.0f, 0.0f, 2.0f), vec3 center=vec3(0.0f), vec3 lookUp=vec3(0.0f, 1.0f, 0.0f), Inport *inport=nullptr, InvalidationLevel invalidationLevel=InvalidationLevel::InvalidResources, PropertySemantics semantics=PropertySemantics::Default)</td></tr>
+<tr class="separator:a1a30630f6d4c874cb6bb1daba4ae8662"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a811a9098d818e21e7f709f3d6d62a3a5"><td class="memItemLeft" align="right" valign="top"><a id="a811a9098d818e21e7f709f3d6d62a3a5"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>CameraProperty</b> (const <a class="el" href="classinviwo_1_1CameraProperty.html">CameraProperty</a> &amp;rhs)</td></tr>
 <tr class="separator:a811a9098d818e21e7f709f3d6d62a3a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaa298ffea064be8089b7563e5366b5f2"><td class="memItemLeft" align="right" valign="top"><a id="aaa298ffea064be8089b7563e5366b5f2"></a>
-<a class="el" href="classinviwo_1_1CameraProperty.html">CameraProperty</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classinviwo_1_1CameraProperty.html">CameraProperty</a> &amp;that)</td></tr>
-<tr class="separator:aaa298ffea064be8089b7563e5366b5f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a63e08a76941171795f26739f7519791f"><td class="memItemLeft" align="right" valign="top"><a id="a63e08a76941171795f26739f7519791f"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>operator const Camera &amp;</b> () const</td></tr>
 <tr class="separator:a63e08a76941171795f26739f7519791f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af0f50e58d75e3e887e1046538e4e70b6"><td class="memItemLeft" align="right" valign="top"><a id="af0f50e58d75e3e887e1046538e4e70b6"></a>
-virtual <a class="el" href="classinviwo_1_1CameraProperty.html">CameraProperty</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>clone</b> () const override</td></tr>
+<tr class="memitem:af0f50e58d75e3e887e1046538e4e70b6"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classinviwo_1_1CameraProperty.html">CameraProperty</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CameraProperty.html#af0f50e58d75e3e887e1046538e4e70b6">clone</a> () const override</td></tr>
 <tr class="separator:af0f50e58d75e3e887e1046538e4e70b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a988a566b883ee481a334ff91fe3b591c"><td class="memItemLeft" align="right" valign="top"><a id="a988a566b883ee481a334ff91fe3b591c"></a>
 virtual <a class="el" href="classinviwo_1_1Camera.html">Camera</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>get</b> ()</td></tr>
@@ -151,8 +150,7 @@ virtual <a class="el" href="classinviwo_1_1Camera.html">Camera</a> &amp;&#160;</
 <tr class="memitem:ad5f561c1170cb95bcbcc830d655fbe65"><td class="memItemLeft" align="right" valign="top"><a id="ad5f561c1170cb95bcbcc830d655fbe65"></a>
 virtual const <a class="el" href="classinviwo_1_1Camera.html">Camera</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>get</b> () const</td></tr>
 <tr class="separator:ad5f561c1170cb95bcbcc830d655fbe65"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4380ee11017a79f9c5885a4b07dfb53f"><td class="memItemLeft" align="right" valign="top"><a id="a4380ee11017a79f9c5885a4b07dfb53f"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>set</b> (const <a class="el" href="classinviwo_1_1Property.html">Property</a> *srcProperty) override</td></tr>
+<tr class="memitem:a4380ee11017a79f9c5885a4b07dfb53f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CameraProperty.html#a4380ee11017a79f9c5885a4b07dfb53f">set</a> (const <a class="el" href="classinviwo_1_1Property.html">Property</a> *srcProperty) override</td></tr>
 <tr class="separator:a4380ee11017a79f9c5885a4b07dfb53f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ace351502ccb2e7ec81ea3b1c3b6e360f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CameraProperty.html#ace351502ccb2e7ec81ea3b1c3b6e360f">resetCamera</a> ()</td></tr>
 <tr class="separator:ace351502ccb2e7ec81ea3b1c3b6e360f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -199,18 +197,18 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>setFarPlaneDist</b> (
 <tr class="separator:a804ffe4d2cceaabe6c98f21ea84e67ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab491f1caea601d5d9e7fe99699000d25"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CameraProperty.html#ab491f1caea601d5d9e7fe99699000d25">setNearFarPlaneDist</a> (float nearPlaneDist, float farPlaneDist, float minMaxRatio=10.f)</td></tr>
 <tr class="separator:ab491f1caea601d5d9e7fe99699000d25"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a201ee5063c17b534172e8a141a0d40fa"><td class="memItemLeft" align="right" valign="top"><a id="a201ee5063c17b534172e8a141a0d40fa"></a>
+<tr class="memitem:a8d5be1a34869dc32516800d71dd9adce"><td class="memItemLeft" align="right" valign="top"><a id="a8d5be1a34869dc32516800d71dd9adce"></a>
 virtual vec3&#160;</td><td class="memItemRight" valign="bottom"><b>getLookFromMinValue</b> () const override</td></tr>
-<tr class="separator:a201ee5063c17b534172e8a141a0d40fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af46d00b5f82f66d239ac42aa5d51d71a"><td class="memItemLeft" align="right" valign="top"><a id="af46d00b5f82f66d239ac42aa5d51d71a"></a>
+<tr class="separator:a8d5be1a34869dc32516800d71dd9adce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5907cb7f94660b8e9eed7ae0693833c5"><td class="memItemLeft" align="right" valign="top"><a id="a5907cb7f94660b8e9eed7ae0693833c5"></a>
 virtual vec3&#160;</td><td class="memItemRight" valign="bottom"><b>getLookFromMaxValue</b> () const override</td></tr>
-<tr class="separator:af46d00b5f82f66d239ac42aa5d51d71a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a21005fac2fce4c4fca2f30927681d459"><td class="memItemLeft" align="right" valign="top"><a id="a21005fac2fce4c4fca2f30927681d459"></a>
+<tr class="separator:a5907cb7f94660b8e9eed7ae0693833c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7123e6dca80e541f7207cb41ec68c88"><td class="memItemLeft" align="right" valign="top"><a id="ad7123e6dca80e541f7207cb41ec68c88"></a>
 virtual vec3&#160;</td><td class="memItemRight" valign="bottom"><b>getLookToMinValue</b> () const override</td></tr>
-<tr class="separator:a21005fac2fce4c4fca2f30927681d459"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af47ee28939a452cf28382a959089e37f"><td class="memItemLeft" align="right" valign="top"><a id="af47ee28939a452cf28382a959089e37f"></a>
+<tr class="separator:ad7123e6dca80e541f7207cb41ec68c88"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8ae5861b4734d120075e9b824676ac1"><td class="memItemLeft" align="right" valign="top"><a id="af8ae5861b4734d120075e9b824676ac1"></a>
 virtual vec3&#160;</td><td class="memItemRight" valign="bottom"><b>getLookToMaxValue</b> () const override</td></tr>
-<tr class="separator:af47ee28939a452cf28382a959089e37f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:af8ae5861b4734d120075e9b824676ac1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a48696d1460eed92d983402a2e78fa682"><td class="memItemLeft" align="right" valign="top">virtual vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CameraProperty.html#a48696d1460eed92d983402a2e78fa682">getWorldPosFromNormalizedDeviceCoords</a> (const vec3 &amp;ndcCoords) const override</td></tr>
 <tr class="memdesc:a48696d1460eed92d983402a2e78fa682"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert from normalized device coordinates (xyz in [-1 1]) to world coordinates.  <a href="#a48696d1460eed92d983402a2e78fa682">More...</a><br /></td></tr>
 <tr class="separator:a48696d1460eed92d983402a2e78fa682"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -235,30 +233,13 @@ const mat4 &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>inversePr
 <tr class="memitem:a58284735503ed6922fd51fa9d363e9a7"><td class="memItemLeft" align="right" valign="top"><a id="a58284735503ed6922fd51fa9d363e9a7"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>invokeEvent</b> (<a class="el" href="classinviwo_1_1Event.html">Event</a> *event) override</td></tr>
 <tr class="separator:a58284735503ed6922fd51fa9d363e9a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaee7018d43df67d3719bc367084d6d60"><td class="memItemLeft" align="right" valign="top"><a id="aaee7018d43df67d3719bc367084d6d60"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setInport</b> (<a class="el" href="classinviwo_1_1Inport.html">Inport</a> *inport)</td></tr>
-<tr class="separator:aaee7018d43df67d3719bc367084d6d60"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a83cbbd9d8e67413cc341ceac61be9aa9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CameraProperty.html#a83cbbd9d8e67413cc341ceac61be9aa9">adjustCameraToData</a> (const mat4 &amp;newDataToWorldMatrix)</td></tr>
-<tr class="memdesc:a83cbbd9d8e67413cc341ceac61be9aa9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Translates and scales camera to match new data and fit new object into view. Locks and unlocks processor network before and after changing property values.  <a href="#a83cbbd9d8e67413cc341ceac61be9aa9">More...</a><br /></td></tr>
-<tr class="separator:a83cbbd9d8e67413cc341ceac61be9aa9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5dba7f4e315985279f62f7fde2d8a257"><td class="memItemLeft" align="right" valign="top"><a id="a5dba7f4e315985279f62f7fde2d8a257"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CameraProperty.html#a5dba7f4e315985279f62f7fde2d8a257">resetAdjustCameraToData</a> ()</td></tr>
-<tr class="memdesc:a5dba7f4e315985279f62f7fde2d8a257"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset the camera adjustment matrix to currently set inport data. <br /></td></tr>
-<tr class="separator:a5dba7f4e315985279f62f7fde2d8a257"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a501db442c0925a51c9d150289203a158"><td class="memItemLeft" align="right" valign="top"><a id="a501db442c0925a51c9d150289203a158"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CameraProperty.html#a501db442c0925a51c9d150289203a158">inportChanged</a> ()</td></tr>
-<tr class="memdesc:a501db442c0925a51c9d150289203a158"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calls adjustCameraToData if "Adjust camera on data change" is set to true. <br /></td></tr>
-<tr class="separator:a501db442c0925a51c9d150289203a158"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1CompositeProperty"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classinviwo_1_1CompositeProperty')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1CompositeProperty.html">inviwo::CompositeProperty</a></td></tr>
-<tr class="memitem:af6f5ae072cf30ecaa5e47077c4246458 inherit pub_methods_classinviwo_1_1CompositeProperty"><td class="memItemLeft" align="right" valign="top"><a id="af6f5ae072cf30ecaa5e47077c4246458"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>CompositeProperty</b> (std::string identifier, std::string displayName, <a class="el" href="namespaceinviwo.html#ae0b7ff1e08626f6ee58e561ef4c9ffba">InvalidationLevel</a> invalidationLevel=InvalidationLevel::InvalidResources, <a class="el" href="classinviwo_1_1PropertySemantics.html">PropertySemantics</a> semantics=PropertySemantics::Default)</td></tr>
-<tr class="separator:af6f5ae072cf30ecaa5e47077c4246458 inherit pub_methods_classinviwo_1_1CompositeProperty"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e89aec428d678a565641d1f3269834d inherit pub_methods_classinviwo_1_1CompositeProperty"><td class="memItemLeft" align="right" valign="top"><a id="a0e89aec428d678a565641d1f3269834d"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>CompositeProperty</b> (const std::string &amp;identifier, const std::string &amp;displayName, <a class="el" href="namespaceinviwo.html#ae0b7ff1e08626f6ee58e561ef4c9ffba">InvalidationLevel</a> invalidationLevel=InvalidationLevel::InvalidResources, <a class="el" href="classinviwo_1_1PropertySemantics.html">PropertySemantics</a> semantics=PropertySemantics::Default)</td></tr>
+<tr class="separator:a0e89aec428d678a565641d1f3269834d inherit pub_methods_classinviwo_1_1CompositeProperty"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af4ad5b1d2071b2f7060588703fcc71f4 inherit pub_methods_classinviwo_1_1CompositeProperty"><td class="memItemLeft" align="right" valign="top"><a id="af4ad5b1d2071b2f7060588703fcc71f4"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>CompositeProperty</b> (const <a class="el" href="classinviwo_1_1CompositeProperty.html">CompositeProperty</a> &amp;rhs)=default</td></tr>
 <tr class="separator:af4ad5b1d2071b2f7060588703fcc71f4 inherit pub_methods_classinviwo_1_1CompositeProperty"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0b454599aa3c8bef2598bc7861eeaf9d inherit pub_methods_classinviwo_1_1CompositeProperty"><td class="memItemLeft" align="right" valign="top"><a id="a0b454599aa3c8bef2598bc7861eeaf9d"></a>
-<a class="el" href="classinviwo_1_1CompositeProperty.html">CompositeProperty</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classinviwo_1_1CompositeProperty.html">CompositeProperty</a> &amp;that)=default</td></tr>
-<tr class="separator:a0b454599aa3c8bef2598bc7861eeaf9d inherit pub_methods_classinviwo_1_1CompositeProperty"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a15906621ef158a3e4872408b6c583be2 inherit pub_methods_classinviwo_1_1CompositeProperty"><td class="memItemLeft" align="right" valign="top"><a id="a15906621ef158a3e4872408b6c583be2"></a>
 virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1CompositeProperty.html#a15906621ef158a3e4872408b6c583be2">getClassIdentifierForWidget</a> () const override</td></tr>
 <tr class="memdesc:a15906621ef158a3e4872408b6c583be2 inherit pub_methods_classinviwo_1_1CompositeProperty"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns which property's widget should be used when the WidgetFactory tries to create a widget. Defaults to getClassIdentifier(), should only be overridden if a subclass want to reuse another property's widget. <br /></td></tr>
@@ -311,6 +292,10 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>deserialize</
 <tr class="memitem:a8169e4b79e34fa2d155c99b8c8322619 inherit pub_methods_classinviwo_1_1Property"><td class="memItemLeft" align="right" valign="top"><a id="a8169e4b79e34fa2d155c99b8c8322619"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Property</b> (const std::string &amp;identifier=&quot;&quot;, const std::string &amp;displayName=&quot;&quot;, <a class="el" href="namespaceinviwo.html#ae0b7ff1e08626f6ee58e561ef4c9ffba">InvalidationLevel</a> invalidationLevel=InvalidationLevel::InvalidOutput, <a class="el" href="classinviwo_1_1PropertySemantics.html">PropertySemantics</a> semantics=PropertySemantics::Default)</td></tr>
 <tr class="separator:a8169e4b79e34fa2d155c99b8c8322619 inherit pub_methods_classinviwo_1_1Property"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff0639ae95bcf882925f6df45f18f991 inherit pub_methods_classinviwo_1_1Property"><td class="memItemLeft" align="right" valign="top"><a id="aff0639ae95bcf882925f6df45f18f991"></a>
+virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Property.html#aff0639ae95bcf882925f6df45f18f991">~Property</a> ()</td></tr>
+<tr class="memdesc:aff0639ae95bcf882925f6df45f18f991 inherit pub_methods_classinviwo_1_1Property"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes itself from its <a class="el" href="classinviwo_1_1PropertyOwner.html">PropertyOwner</a>. <br /></td></tr>
+<tr class="separator:aff0639ae95bcf882925f6df45f18f991 inherit pub_methods_classinviwo_1_1Property"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a88a62f64585a2447968454f09e2a7950 inherit pub_methods_classinviwo_1_1Property"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classinviwo_1_1Property.html">Property</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Property.html#a88a62f64585a2447968454f09e2a7950">setIdentifier</a> (const std::string &amp;identifier)</td></tr>
 <tr class="separator:a88a62f64585a2447968454f09e2a7950 inherit pub_methods_classinviwo_1_1Property"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5e6a49dc5ca3d402ccc503be99771716 inherit pub_methods_classinviwo_1_1Property"><td class="memItemLeft" align="right" valign="top"><a id="a5e6a49dc5ca3d402ccc503be99771716"></a>
@@ -413,18 +398,14 @@ template&lt;typename P &gt; </td></tr>
 const std::vector&lt; std::pair&lt; std::string, std::string &gt; &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getAutoLinkToProperty</b> () const</td></tr>
 <tr class="separator:a4e7a88448b9752bc2d037771357e6a63 inherit pub_methods_classinviwo_1_1Property"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1Observable"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classinviwo_1_1Observable')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1Observable.html">inviwo::Observable&lt; PropertyObserver &gt;</a></td></tr>
-<tr class="memitem:a22a72cba8a707ff5bd0e87fdaefdfab8 inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top"><a id="a22a72cba8a707ff5bd0e87fdaefdfab8"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Observable</b> (const <a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1PropertyObserver.html">PropertyObserver</a> &gt; &amp;other)</td></tr>
+<tr class="memitem:a22a72cba8a707ff5bd0e87fdaefdfab8 inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Observable.html#a22a72cba8a707ff5bd0e87fdaefdfab8">Observable</a> (const <a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1PropertyObserver.html">PropertyObserver</a> &gt; &amp;other)</td></tr>
 <tr class="separator:a22a72cba8a707ff5bd0e87fdaefdfab8 inherit pub_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab7afb68122ba0150f1c7c20eb9086987 inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top"><a id="ab7afb68122ba0150f1c7c20eb9086987"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Observable</b> (<a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1PropertyObserver.html">PropertyObserver</a> &gt; &amp;&amp;other)</td></tr>
+<tr class="memitem:ab7afb68122ba0150f1c7c20eb9086987 inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Observable.html#ab7afb68122ba0150f1c7c20eb9086987">Observable</a> (<a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1PropertyObserver.html">PropertyObserver</a> &gt; &amp;&amp;other)</td></tr>
 <tr class="separator:ab7afb68122ba0150f1c7c20eb9086987 inherit pub_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae893ae3c28d44f320cd1a2efa704932e inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top"><a id="ae893ae3c28d44f320cd1a2efa704932e"></a>
-<a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1PropertyObserver.html">PropertyObserver</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1PropertyObserver.html">PropertyObserver</a> &gt; &amp;&amp;other)</td></tr>
-<tr class="separator:ae893ae3c28d44f320cd1a2efa704932e inherit pub_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0ab0efc8a80e36322a1197e8750e036b inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top"><a id="a0ab0efc8a80e36322a1197e8750e036b"></a>
-<a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1PropertyObserver.html">PropertyObserver</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1PropertyObserver.html">PropertyObserver</a> &gt; &amp;other)</td></tr>
+<tr class="memitem:a0ab0efc8a80e36322a1197e8750e036b inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1PropertyObserver.html">PropertyObserver</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Observable.html#a0ab0efc8a80e36322a1197e8750e036b">operator=</a> (const <a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1PropertyObserver.html">PropertyObserver</a> &gt; &amp;other)</td></tr>
 <tr class="separator:a0ab0efc8a80e36322a1197e8750e036b inherit pub_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae893ae3c28d44f320cd1a2efa704932e inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1PropertyObserver.html">PropertyObserver</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Observable.html#ae893ae3c28d44f320cd1a2efa704932e">operator=</a> (<a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1PropertyObserver.html">PropertyObserver</a> &gt; &amp;&amp;other)</td></tr>
+<tr class="separator:ae893ae3c28d44f320cd1a2efa704932e inherit pub_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa342929bb9eb6a886ce783bc59dcf7f6 inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top"><a id="aa342929bb9eb6a886ce783bc59dcf7f6"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>addObserver</b> (<a class="el" href="classinviwo_1_1PropertyObserver.html">PropertyObserver</a> *observer)</td></tr>
 <tr class="separator:aa342929bb9eb6a886ce783bc59dcf7f6 inherit pub_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -485,12 +466,10 @@ template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a608d524b464690741d6b7eec9fc7ae07 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>hasMetaData</b> (const std::string &amp;key) const</td></tr>
 <tr class="separator:a608d524b464690741d6b7eec9fc7ae07 inherit pub_methods_classinviwo_1_1MetaDataOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1PropertyOwner"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classinviwo_1_1PropertyOwner')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1PropertyOwner.html">inviwo::PropertyOwner</a></td></tr>
-<tr class="memitem:a681bc09edf240726f664d54870803249 inherit pub_methods_classinviwo_1_1PropertyOwner"><td class="memItemLeft" align="right" valign="top"><a id="a681bc09edf240726f664d54870803249"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>PropertyOwner</b> (const <a class="el" href="classinviwo_1_1PropertyOwner.html">PropertyOwner</a> &amp;rhs)</td></tr>
-<tr class="separator:a681bc09edf240726f664d54870803249 inherit pub_methods_classinviwo_1_1PropertyOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a38276e28effbda7b3768ea2b9a30595c inherit pub_methods_classinviwo_1_1PropertyOwner"><td class="memItemLeft" align="right" valign="top"><a id="a38276e28effbda7b3768ea2b9a30595c"></a>
-<a class="el" href="classinviwo_1_1PropertyOwner.html">PropertyOwner</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classinviwo_1_1PropertyOwner.html">PropertyOwner</a> &amp;that)</td></tr>
-<tr class="separator:a38276e28effbda7b3768ea2b9a30595c inherit pub_methods_classinviwo_1_1PropertyOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a315d2c749dd21ee7f2a8ecce87baca5a inherit pub_methods_classinviwo_1_1PropertyOwner"><td class="memItemLeft" align="right" valign="top"><a id="a315d2c749dd21ee7f2a8ecce87baca5a"></a>
+virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1PropertyOwner.html#a315d2c749dd21ee7f2a8ecce87baca5a">~PropertyOwner</a> ()</td></tr>
+<tr class="memdesc:a315d2c749dd21ee7f2a8ecce87baca5a inherit pub_methods_classinviwo_1_1PropertyOwner"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes all properties and notifies its observers of the removal. <br /></td></tr>
+<tr class="separator:a315d2c749dd21ee7f2a8ecce87baca5a inherit pub_methods_classinviwo_1_1PropertyOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a07078ed2099e84b52b3f5472a32ae962 inherit pub_methods_classinviwo_1_1PropertyOwner"><td class="memItemLeft" align="right" valign="top"><a id="a07078ed2099e84b52b3f5472a32ae962"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>addProperty</b> (<a class="el" href="classinviwo_1_1Property.html">Property</a> *property, bool owner=true)</td></tr>
 <tr class="separator:a07078ed2099e84b52b3f5472a32ae962 inherit pub_methods_classinviwo_1_1PropertyOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -588,18 +567,14 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>notifyObserversWillRe
 void&#160;</td><td class="memItemRight" valign="bottom"><b>notifyObserversDidRemoveProperty</b> (<a class="el" href="classinviwo_1_1Property.html">Property</a> *property, size_t index)</td></tr>
 <tr class="separator:a248473aed339f03552daafbffd15dcbc inherit pub_methods_classinviwo_1_1PropertyOwnerObservable"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1Observable"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classinviwo_1_1Observable')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1Observable.html">inviwo::Observable&lt; PropertyOwnerObserver &gt;</a></td></tr>
-<tr class="memitem:a22a72cba8a707ff5bd0e87fdaefdfab8 inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top"><a id="a22a72cba8a707ff5bd0e87fdaefdfab8"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Observable</b> (const <a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1PropertyOwnerObserver.html">PropertyOwnerObserver</a> &gt; &amp;other)</td></tr>
+<tr class="memitem:a22a72cba8a707ff5bd0e87fdaefdfab8 inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Observable.html#a22a72cba8a707ff5bd0e87fdaefdfab8">Observable</a> (const <a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1PropertyOwnerObserver.html">PropertyOwnerObserver</a> &gt; &amp;other)</td></tr>
 <tr class="separator:a22a72cba8a707ff5bd0e87fdaefdfab8 inherit pub_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab7afb68122ba0150f1c7c20eb9086987 inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top"><a id="ab7afb68122ba0150f1c7c20eb9086987"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Observable</b> (<a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1PropertyOwnerObserver.html">PropertyOwnerObserver</a> &gt; &amp;&amp;other)</td></tr>
+<tr class="memitem:ab7afb68122ba0150f1c7c20eb9086987 inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Observable.html#ab7afb68122ba0150f1c7c20eb9086987">Observable</a> (<a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1PropertyOwnerObserver.html">PropertyOwnerObserver</a> &gt; &amp;&amp;other)</td></tr>
 <tr class="separator:ab7afb68122ba0150f1c7c20eb9086987 inherit pub_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae893ae3c28d44f320cd1a2efa704932e inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top"><a id="ae893ae3c28d44f320cd1a2efa704932e"></a>
-<a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1PropertyOwnerObserver.html">PropertyOwnerObserver</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1PropertyOwnerObserver.html">PropertyOwnerObserver</a> &gt; &amp;&amp;other)</td></tr>
-<tr class="separator:ae893ae3c28d44f320cd1a2efa704932e inherit pub_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0ab0efc8a80e36322a1197e8750e036b inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top"><a id="a0ab0efc8a80e36322a1197e8750e036b"></a>
-<a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1PropertyOwnerObserver.html">PropertyOwnerObserver</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1PropertyOwnerObserver.html">PropertyOwnerObserver</a> &gt; &amp;other)</td></tr>
+<tr class="memitem:a0ab0efc8a80e36322a1197e8750e036b inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1PropertyOwnerObserver.html">PropertyOwnerObserver</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Observable.html#a0ab0efc8a80e36322a1197e8750e036b">operator=</a> (const <a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1PropertyOwnerObserver.html">PropertyOwnerObserver</a> &gt; &amp;other)</td></tr>
 <tr class="separator:a0ab0efc8a80e36322a1197e8750e036b inherit pub_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae893ae3c28d44f320cd1a2efa704932e inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1PropertyOwnerObserver.html">PropertyOwnerObserver</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Observable.html#ae893ae3c28d44f320cd1a2efa704932e">operator=</a> (<a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1PropertyOwnerObserver.html">PropertyOwnerObserver</a> &gt; &amp;&amp;other)</td></tr>
+<tr class="separator:ae893ae3c28d44f320cd1a2efa704932e inherit pub_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa342929bb9eb6a886ce783bc59dcf7f6 inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top"><a id="aa342929bb9eb6a886ce783bc59dcf7f6"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>addObserver</b> (<a class="el" href="classinviwo_1_1PropertyOwnerObserver.html">PropertyOwnerObserver</a> *observer)</td></tr>
 <tr class="separator:aa342929bb9eb6a886ce783bc59dcf7f6 inherit pub_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -613,18 +588,14 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>startBlocking
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>stopBlockingNotifications</b> () override final</td></tr>
 <tr class="separator:a4abfbec3338d1ca97e9c1177337f824f inherit pub_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1Observable"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classinviwo_1_1Observable')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classinviwo_1_1Observable.html">inviwo::Observable&lt; CompositePropertyObserver &gt;</a></td></tr>
-<tr class="memitem:a22a72cba8a707ff5bd0e87fdaefdfab8 inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top"><a id="a22a72cba8a707ff5bd0e87fdaefdfab8"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Observable</b> (const <a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1CompositePropertyObserver.html">CompositePropertyObserver</a> &gt; &amp;other)</td></tr>
+<tr class="memitem:a22a72cba8a707ff5bd0e87fdaefdfab8 inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Observable.html#a22a72cba8a707ff5bd0e87fdaefdfab8">Observable</a> (const <a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1CompositePropertyObserver.html">CompositePropertyObserver</a> &gt; &amp;other)</td></tr>
 <tr class="separator:a22a72cba8a707ff5bd0e87fdaefdfab8 inherit pub_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab7afb68122ba0150f1c7c20eb9086987 inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top"><a id="ab7afb68122ba0150f1c7c20eb9086987"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Observable</b> (<a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1CompositePropertyObserver.html">CompositePropertyObserver</a> &gt; &amp;&amp;other)</td></tr>
+<tr class="memitem:ab7afb68122ba0150f1c7c20eb9086987 inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Observable.html#ab7afb68122ba0150f1c7c20eb9086987">Observable</a> (<a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1CompositePropertyObserver.html">CompositePropertyObserver</a> &gt; &amp;&amp;other)</td></tr>
 <tr class="separator:ab7afb68122ba0150f1c7c20eb9086987 inherit pub_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae893ae3c28d44f320cd1a2efa704932e inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top"><a id="ae893ae3c28d44f320cd1a2efa704932e"></a>
-<a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1CompositePropertyObserver.html">CompositePropertyObserver</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1CompositePropertyObserver.html">CompositePropertyObserver</a> &gt; &amp;&amp;other)</td></tr>
-<tr class="separator:ae893ae3c28d44f320cd1a2efa704932e inherit pub_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0ab0efc8a80e36322a1197e8750e036b inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top"><a id="a0ab0efc8a80e36322a1197e8750e036b"></a>
-<a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1CompositePropertyObserver.html">CompositePropertyObserver</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1CompositePropertyObserver.html">CompositePropertyObserver</a> &gt; &amp;other)</td></tr>
+<tr class="memitem:a0ab0efc8a80e36322a1197e8750e036b inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1CompositePropertyObserver.html">CompositePropertyObserver</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Observable.html#a0ab0efc8a80e36322a1197e8750e036b">operator=</a> (const <a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1CompositePropertyObserver.html">CompositePropertyObserver</a> &gt; &amp;other)</td></tr>
 <tr class="separator:a0ab0efc8a80e36322a1197e8750e036b inherit pub_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae893ae3c28d44f320cd1a2efa704932e inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1CompositePropertyObserver.html">CompositePropertyObserver</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Observable.html#ae893ae3c28d44f320cd1a2efa704932e">operator=</a> (<a class="el" href="classinviwo_1_1Observable.html">Observable</a>&lt; <a class="el" href="classinviwo_1_1CompositePropertyObserver.html">CompositePropertyObserver</a> &gt; &amp;&amp;other)</td></tr>
+<tr class="separator:ae893ae3c28d44f320cd1a2efa704932e inherit pub_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa342929bb9eb6a886ce783bc59dcf7f6 inherit pub_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top"><a id="aa342929bb9eb6a886ce783bc59dcf7f6"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>addObserver</b> (<a class="el" href="classinviwo_1_1CompositePropertyObserver.html">CompositePropertyObserver</a> *observer)</td></tr>
 <tr class="separator:aa342929bb9eb6a886ce783bc59dcf7f6 inherit pub_methods_classinviwo_1_1Observable"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -640,6 +611,12 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>stopBlockingN
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
+<tr class="memitem:a067fad4662899e797c80f428153e91e1"><td class="memItemLeft" align="right" valign="top"><a id="a067fad4662899e797c80f428153e91e1"></a>
+<a class="el" href="classinviwo_1_1TemplateOptionProperty.html">OptionPropertyString</a>&#160;</td><td class="memItemRight" valign="bottom"><b>cameraType_</b></td></tr>
+<tr class="separator:a067fad4662899e797c80f428153e91e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af10f503389a060cb33684651e0e8fc28"><td class="memItemLeft" align="right" valign="top"><a id="af10f503389a060cb33684651e0e8fc28"></a>
+<a class="el" href="classinviwo_1_1ButtonGroupProperty.html">ButtonGroupProperty</a>&#160;</td><td class="memItemRight" valign="bottom"><b>cameraActions_</b></td></tr>
+<tr class="separator:af10f503389a060cb33684651e0e8fc28"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a337823d7d716c2013cf6bf49453a843e"><td class="memItemLeft" align="right" valign="top"><a id="a337823d7d716c2013cf6bf49453a843e"></a>
 <a class="el" href="classinviwo_1_1OrdinalProperty.html">FloatVec3Property</a>&#160;</td><td class="memItemRight" valign="bottom"><b>lookFrom_</b></td></tr>
 <tr class="separator:a337823d7d716c2013cf6bf49453a843e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -684,12 +661,10 @@ template&lt;typename T , typename U &gt; </td></tr>
 <tr class="memitem:a2b6170c484c3f96a6e488e87d199d0d6 inherit pub_static_methods_classinviwo_1_1Property"><td class="memTemplItemLeft" align="right" valign="top">static void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>setStateAsDefault</b> (T &amp;property, const U &amp;state)</td></tr>
 <tr class="separator:a2b6170c484c3f96a6e488e87d199d0d6 inherit pub_static_methods_classinviwo_1_1Property"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classinviwo_1_1Property"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classinviwo_1_1Property')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classinviwo_1_1Property.html">inviwo::Property</a></td></tr>
-<tr class="memitem:a7387df70147c540ee4f5f388796bae32 inherit pro_methods_classinviwo_1_1Property"><td class="memItemLeft" align="right" valign="top"><a id="a7387df70147c540ee4f5f388796bae32"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Property</b> (const <a class="el" href="classinviwo_1_1Property.html">Property</a> &amp;rhs)</td></tr>
+<tr class="memitem:a7387df70147c540ee4f5f388796bae32 inherit pro_methods_classinviwo_1_1Property"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Property.html#a7387df70147c540ee4f5f388796bae32">Property</a> (const <a class="el" href="classinviwo_1_1Property.html">Property</a> &amp;rhs)</td></tr>
 <tr class="separator:a7387df70147c540ee4f5f388796bae32 inherit pro_methods_classinviwo_1_1Property"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2caf7021ea7ca2faa65f32e54a2853ce inherit pro_methods_classinviwo_1_1Property"><td class="memItemLeft" align="right" valign="top"><a id="a2caf7021ea7ca2faa65f32e54a2853ce"></a>
-<a class="el" href="classinviwo_1_1Property.html">Property</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classinviwo_1_1Property.html">Property</a> &amp;that)</td></tr>
-<tr class="separator:a2caf7021ea7ca2faa65f32e54a2853ce inherit pro_methods_classinviwo_1_1Property"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8eb203092d666a96f7f6d5c7334745e9 inherit pro_methods_classinviwo_1_1Property"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classinviwo_1_1Property.html">Property</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Property.html#a8eb203092d666a96f7f6d5c7334745e9">operator=</a> (const <a class="el" href="classinviwo_1_1Property.html">Property</a> &amp;that)=delete</td></tr>
+<tr class="separator:a8eb203092d666a96f7f6d5c7334745e9 inherit pro_methods_classinviwo_1_1Property"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a131cc525cef66f46ea838f4093fecc4f inherit pro_methods_classinviwo_1_1Property"><td class="memItemLeft" align="right" valign="top"><a id="a131cc525cef66f46ea838f4093fecc4f"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>updateWidgets</b> ()</td></tr>
 <tr class="separator:a131cc525cef66f46ea838f4093fecc4f inherit pro_methods_classinviwo_1_1Property"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -726,6 +701,13 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>addObservationHelper<
 <tr class="memitem:ac3efb1aaffc402b45b07c2c599b9785e inherit pro_methods_classinviwo_1_1ObservableInterface"><td class="memItemLeft" align="right" valign="top"><a id="ac3efb1aaffc402b45b07c2c599b9785e"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>removeObservationHelper</b> (<a class="el" href="classinviwo_1_1Observer.html">Observer</a> *observer)</td></tr>
 <tr class="separator:ac3efb1aaffc402b45b07c2c599b9785e inherit pro_methods_classinviwo_1_1ObservableInterface"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_methods_classinviwo_1_1PropertyOwner"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classinviwo_1_1PropertyOwner')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classinviwo_1_1PropertyOwner.html">inviwo::PropertyOwner</a></td></tr>
+<tr class="memitem:a681bc09edf240726f664d54870803249 inherit pro_methods_classinviwo_1_1PropertyOwner"><td class="memItemLeft" align="right" valign="top"><a id="a681bc09edf240726f664d54870803249"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>PropertyOwner</b> (const <a class="el" href="classinviwo_1_1PropertyOwner.html">PropertyOwner</a> &amp;rhs)</td></tr>
+<tr class="separator:a681bc09edf240726f664d54870803249 inherit pro_methods_classinviwo_1_1PropertyOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24291887b38845ea990ad285631207df inherit pro_methods_classinviwo_1_1PropertyOwner"><td class="memItemLeft" align="right" valign="top"><a id="a24291887b38845ea990ad285631207df"></a>
+<a class="el" href="classinviwo_1_1PropertyOwner.html">PropertyOwner</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classinviwo_1_1PropertyOwner.html">PropertyOwner</a> &amp;that)=delete</td></tr>
+<tr class="separator:a24291887b38845ea990ad285631207df inherit pro_methods_classinviwo_1_1PropertyOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classinviwo_1_1Observable"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classinviwo_1_1Observable')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classinviwo_1_1Observable.html">inviwo::Observable&lt; PropertyOwnerObserver &gt;</a></td></tr>
 <tr class="memitem:a980d804dbfb060d91d5b54161f14dc8f inherit pro_methods_classinviwo_1_1Observable"><td class="memItemLeft" align="right" valign="top"><a id="a980d804dbfb060d91d5b54161f14dc8f"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>forEachObserver</b> (C callback)</td></tr>
@@ -753,42 +735,44 @@ PropertySerializationMode&#160;</td><td class="memItemRight" valign="bottom"><b>
 <tr class="memitem:ad3c2cac8220e0db8eab3689ff3fe95a6 inherit pro_attribs_classinviwo_1_1PropertyOwner"><td class="memItemLeft" align="right" valign="top"><a id="ad3c2cac8220e0db8eab3689ff3fe95a6"></a>
 std::vector&lt; <a class="el" href="classinviwo_1_1Property.html">Property</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>properties_</b></td></tr>
 <tr class="separator:ad3c2cac8220e0db8eab3689ff3fe95a6 inherit pro_attribs_classinviwo_1_1PropertyOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7f38e8a56e5ad85b5067720aacd1fff3 inherit pro_attribs_classinviwo_1_1PropertyOwner"><td class="memItemLeft" align="right" valign="top"><a id="a7f38e8a56e5ad85b5067720aacd1fff3"></a>
-std::vector&lt; std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Property.html">Property</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>ownedProperties_</b></td></tr>
-<tr class="separator:a7f38e8a56e5ad85b5067720aacd1fff3 inherit pro_attribs_classinviwo_1_1PropertyOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a92de9184aaed282b56924b795bbb75ac inherit pro_attribs_classinviwo_1_1PropertyOwner"><td class="memItemLeft" align="right" valign="top"><a id="a92de9184aaed282b56924b795bbb75ac"></a>
 std::vector&lt; <a class="el" href="classinviwo_1_1EventProperty.html">EventProperty</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>eventProperties_</b></td></tr>
 <tr class="separator:a92de9184aaed282b56924b795bbb75ac inherit pro_attribs_classinviwo_1_1PropertyOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:add5d29351f4c255ce323a50f02f8f2f8 inherit pro_attribs_classinviwo_1_1PropertyOwner"><td class="memItemLeft" align="right" valign="top"><a id="add5d29351f4c255ce323a50f02f8f2f8"></a>
 std::vector&lt; <a class="el" href="classinviwo_1_1CompositeProperty.html">CompositeProperty</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>compositeProperties_</b></td></tr>
 <tr class="separator:add5d29351f4c255ce323a50f02f8f2f8 inherit pro_attribs_classinviwo_1_1PropertyOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f38e8a56e5ad85b5067720aacd1fff3 inherit pro_attribs_classinviwo_1_1PropertyOwner"><td class="memItemLeft" align="right" valign="top"><a id="a7f38e8a56e5ad85b5067720aacd1fff3"></a>
+std::vector&lt; std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Property.html">Property</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>ownedProperties_</b></td></tr>
+<tr class="separator:a7f38e8a56e5ad85b5067720aacd1fff3 inherit pro_attribs_classinviwo_1_1PropertyOwner"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A property wrapping the <a class="el" href="classinviwo_1_1Camera.html" title="Base class for cameras. Override this class to set your own projection matrix.">Camera</a> data structure </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1Camera.html" title="Base class for cameras. Override this class to set your own projection matrix.">Camera</a> </dd></dl>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a83cbbd9d8e67413cc341ceac61be9aa9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a83cbbd9d8e67413cc341ceac61be9aa9">&#9670;&nbsp;</a></span>adjustCameraToData()</h2>
+<a id="af0f50e58d75e3e887e1046538e4e70b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0f50e58d75e3e887e1046538e4e70b6">&#9670;&nbsp;</a></span>clone()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void inviwo::CameraProperty::adjustCameraToData </td>
+          <td class="memname"><a class="el" href="classinviwo_1_1CameraProperty.html">CameraProperty</a> * inviwo::CameraProperty::clone </td>
           <td>(</td>
-          <td class="paramtype">const mat4 &amp;&#160;</td>
-          <td class="paramname"><em>newDataToWorldMatrix</em></td><td>)</td>
-          <td></td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
+<p>Creates a clone of this property. The clone will have the same identifier, hence the identifier must be changed if the clone should be added to the same owner as this. The new clone does not have any owner set. </p>
 
-<p>Translates and scales camera to match new data and fit new object into view. Locks and unlocks processor network before and after changing property values. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">newDataToWorldMatrix</td><td>Matrix of new object </td></tr>
-  </table>
-  </dd>
-</dl>
+<p>Reimplemented from <a class="el" href="classinviwo_1_1CompositeProperty.html#a64c34a9876a350b37e8ccf0ddbb8d2da">inviwo::CompositeProperty</a>.</p>
 
 </div>
 </div>
@@ -871,6 +855,35 @@ std::vector&lt; <a class="el" href="classinviwo_1_1CompositeProperty.html">Compo
       </table>
 </div><div class="memdoc">
 <p>Reset camera position, direction to default state. </p>
+
+</div>
+</div>
+<a id="a4380ee11017a79f9c5885a4b07dfb53f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4380ee11017a79f9c5885a4b07dfb53f">&#9670;&nbsp;</a></span>set()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void inviwo::CameraProperty::set </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classinviwo_1_1Property.html">Property</a> *&#160;</td>
+          <td class="paramname"><em>src</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Set the value of this to that of src. The "value" is in this case considered to be for example the string in a <a class="el" href="classinviwo_1_1StringProperty.html" title="The StringProperty holds a string as value.">StringProperty</a> or the float value in a FloatProperty. But not things like the identifier of display name. </p>
+
+<p>Reimplemented from <a class="el" href="classinviwo_1_1CompositeProperty.html#af7a2b72dbb5e83871a348adfa38eab86">inviwo::CompositeProperty</a>.</p>
 
 </div>
 </div>

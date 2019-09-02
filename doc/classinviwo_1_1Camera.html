@@ -31,7 +31,7 @@
   <td id="projectlogo"><img alt="Logo" src="inviwo_dark.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Inviwo
-   &#160;<span id="projectnumber">0.9.10</span>
+   &#160;<span id="projectnumber">0.9.10.1</span>
    </div>
    <div id="projectbrief">Inviwo documentation</div>
   </td>
@@ -89,6 +89,7 @@ $(document).ready(function(){initNavTree('classinviwo_1_1Camera.html','');});
 
 <div class="header">
   <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
@@ -117,6 +118,13 @@ $(document).ready(function(){initNavTree('classinviwo_1_1Camera.html','');});
 </map>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a1292a35004b7b2ae28154256c5815a1d"><td class="memItemLeft" align="right" valign="top"><a id="a1292a35004b7b2ae28154256c5815a1d"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>Config</b> { <b>Show</b>, 
+<b>Hide</b>
+ }</td></tr>
+<tr class="separator:a1292a35004b7b2ae28154256c5815a1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ac1e015da17c20eb515f696fb83ecc32a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1Camera.html#ac1e015da17c20eb515f696fb83ecc32a">Camera</a> (vec3 lookFrom=vec3(0.0f, 0.0f, 2.0f), vec3 lookTo=vec3(0.0f), vec3 lookUp=vec3(0.0f, 1.0f, 0.0f), float nearPlane=0.01f, float farPlane=10000.0f)</td></tr>
@@ -134,9 +142,9 @@ virtual <a class="el" href="classinviwo_1_1Camera.html">Camera</a> *&#160;</td><
 <tr class="memitem:a92d8119361ace1aedd771155a7dc7ae8"><td class="memItemLeft" align="right" valign="top"><a id="a92d8119361ace1aedd771155a7dc7ae8"></a>
 virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>update</b> (const <a class="el" href="classinviwo_1_1Camera.html">Camera</a> *source)=0</td></tr>
 <tr class="separator:a92d8119361ace1aedd771155a7dc7ae8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a118ec883793bb3127ba91c21f163781f"><td class="memItemLeft" align="right" valign="top"><a id="a118ec883793bb3127ba91c21f163781f"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>configureProperties</b> (<a class="el" href="classinviwo_1_1CompositeProperty.html">CompositeProperty</a> *comp)=0</td></tr>
-<tr class="separator:a118ec883793bb3127ba91c21f163781f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aecb1bc888b153ba2179069c2f4b7a4dc"><td class="memItemLeft" align="right" valign="top"><a id="aecb1bc888b153ba2179069c2f4b7a4dc"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>configureProperties</b> (<a class="el" href="classinviwo_1_1CompositeProperty.html">CompositeProperty</a> *comp, Config config)=0</td></tr>
+<tr class="separator:aecb1bc888b153ba2179069c2f4b7a4dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab53313bd3ee5564fe5f56724b0d2376f"><td class="memItemLeft" align="right" valign="top"><a id="ab53313bd3ee5564fe5f56724b0d2376f"></a>
 const vec3 &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getLookFrom</b> () const</td></tr>
 <tr class="separator:ab53313bd3ee5564fe5f56724b0d2376f"><td class="memSeparator" colspan="2">&#160;</td></tr>

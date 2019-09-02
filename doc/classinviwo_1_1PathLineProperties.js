@@ -6,6 +6,5 @@ var classinviwo_1_1PathLineProperties =
     [ "clone", "classinviwo_1_1PathLineProperties.html#a9e0859ec39161e83dad1a58403643ea5", null ],
     [ "getClassIdentifier", "classinviwo_1_1PathLineProperties.html#a0859b0c24c80829ab7dc0bb4b7fcf767", null ],
     [ "getStartT", "classinviwo_1_1PathLineProperties.html#a757dfbd72daea060d56f9fbc93091c36", null ],
-    [ "operator=", "classinviwo_1_1PathLineProperties.html#a63616f693096b31273d3a72c83c15542", null ],
     [ "startT_", "classinviwo_1_1PathLineProperties.html#a0d43dda8af80f870a3e5c1e91ca5cea3", null ]
 ];

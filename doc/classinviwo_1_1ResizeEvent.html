@@ -31,7 +31,7 @@
   <td id="projectlogo"><img alt="Logo" src="inviwo_dark.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Inviwo
-   &#160;<span id="projectnumber">0.9.10</span>
+   &#160;<span id="projectnumber">0.9.10.1</span>
    </div>
    <div id="projectbrief">Inviwo documentation</div>
   </td>
@@ -195,7 +195,16 @@ Additional Inherited Members</h2></td></tr>
 <tr class="separator:a1b01bbf6200fd16ad2eda7a3afed4ac3 inherit pro_methods_classinviwo_1_1Event"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p><a class="el" href="classinviwo_1_1Event.html">Event</a> propagating image/canvas size changes upwards in the network. <a class="el" href="classinviwo_1_1Image.html">Image</a> inports and outports within a processor must be in the same group for the event to be propagated. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1Processor.html#a84fbe878e780b7c42c101d730a117b21">Processor::addPort</a> </dd></dl>
+<div class="textblock"><p><a class="el" href="classinviwo_1_1Event.html">Event</a> propagating image/canvas size changes upwards in the network. <a class="el" href="classinviwo_1_1Image.html">Image</a> inports and outports within a processor must be in the same group for the event to be propagated.</p>
+<p>As soon as the network adds or removes a connection, all the image sinks (processors that consume images) are responsible for pushing a new resize event to the network to make sure that all the image ports in the network above it have an up-to-date view on which image sizes to use. (</p><dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1ImageExport.html">ImageExport</a>, </dd>
+<dd>
+<a class="el" href="classinviwo_1_1CanvasProcessorWidget.html" title="A processor widget that has a canvas. CanvasProcessorWidget is the base class for all processor widge...">CanvasProcessorWidget</a>)</dd>
+<dd>
+<a class="el" href="classinviwo_1_1BaseImageInport.html">BaseImageInport</a> </dd>
+<dd>
+<a class="el" href="classinviwo_1_1ImageOutport.html">ImageOutport</a> </dd>
+<dd>
+<a class="el" href="classinviwo_1_1Processor.html#a84fbe878e780b7c42c101d730a117b21">Processor::addPort</a> </dd></dl>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a04899ebb60c44406afa1d663c70de9a8"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a04899ebb60c44406afa1d663c70de9a8">&#9670;&nbsp;</a></span>shouldPropagateTo()</h2>

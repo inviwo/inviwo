@@ -1,17 +1,17 @@
 var classinviwo_1_1DataInport =
 [
     [ "type", "classinviwo_1_1DataInport.html#aa069937e6acdd7d7ff543f7e951c5c23", null ],
-    [ "DataInport", "classinviwo_1_1DataInport.html#a57622c4d57a41aa982dce4a381b4598f", null ],
+    [ "DataInport", "classinviwo_1_1DataInport.html#ac3ff14cdaea5df4dcc2b01a7a0735ffc", null ],
     [ "~DataInport", "classinviwo_1_1DataInport.html#a7c539337cca4dadb921e05eff4f6ae47", null ],
-    [ "canConnectTo", "classinviwo_1_1DataInport.html#a03bcc69642a250f4c2244ab3bc20a7e1", null ],
-    [ "connectTo", "classinviwo_1_1DataInport.html#a9a416ca03c49e9c7f3a348e2132096e4", null ],
-    [ "getClassIdentifier", "classinviwo_1_1DataInport.html#a09e0bb9d2cda9dda705eb98f48c9c65e", null ],
-    [ "getColorCode", "classinviwo_1_1DataInport.html#af4236498c4f1a8f70ebbd1df5e949e3b", null ],
-    [ "getData", "classinviwo_1_1DataInport.html#ad0ff9e7ada6da4650d10fddf545adca8", null ],
-    [ "getInfo", "classinviwo_1_1DataInport.html#a0cdb1be1c190675c88b4e9faa3274842", null ],
-    [ "getMaxNumberOfConnections", "classinviwo_1_1DataInport.html#a0aa8c495a9bad0d3bd4fd3f88578231c", null ],
-    [ "getSourceVectorData", "classinviwo_1_1DataInport.html#a97641339132a0b8fe51eaaecdb0fe14c", null ],
-    [ "getVectorData", "classinviwo_1_1DataInport.html#a14c27f34e820f34a016dc4821ace3a7f", null ],
-    [ "hasData", "classinviwo_1_1DataInport.html#ae0131aa41845a55f051fb27111f673e3", null ],
-    [ "isConnected", "classinviwo_1_1DataInport.html#a8a427d75677e3b4053f9a4589e16f8b7", null ]
+    [ "canConnectTo", "classinviwo_1_1DataInport.html#a327dd2aa8d65dfe4f9f3f052bcd554dc", null ],
+    [ "connectTo", "classinviwo_1_1DataInport.html#a7aaa6503ed5f6e867b2a57073b0fac6b", null ],
+    [ "getClassIdentifier", "classinviwo_1_1DataInport.html#a81dbb79b1ccc112885723beca16c9c7a", null ],
+    [ "getColorCode", "classinviwo_1_1DataInport.html#a7a9535ff395f9b6343096381faf685bf", null ],
+    [ "getData", "classinviwo_1_1DataInport.html#a076114eeae21bcf553c79066a0219025", null ],
+    [ "getInfo", "classinviwo_1_1DataInport.html#a870db3f40ec403998ba5336d138e7f15", null ],
+    [ "getMaxNumberOfConnections", "classinviwo_1_1DataInport.html#a29828a607a92e5e9a416c6cb8d3a2571", null ],
+    [ "getSourceVectorData", "classinviwo_1_1DataInport.html#a56303263fd7590f4e1d99f0c35422503", null ],
+    [ "getVectorData", "classinviwo_1_1DataInport.html#a575a7bf3b96e4ee829da7275101435a2", null ],
+    [ "hasData", "classinviwo_1_1DataInport.html#ad9d8359121b9672666db3ab00630c8fc", null ],
+    [ "isConnected", "classinviwo_1_1DataInport.html#a5644bd806fa0f08439e4c2da6968d653", null ]
 ];

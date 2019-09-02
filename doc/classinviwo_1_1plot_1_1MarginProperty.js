@@ -14,7 +14,6 @@ var classinviwo_1_1plot_1_1MarginProperty =
     [ "getSize", "classinviwo_1_1plot_1_1MarginProperty.html#afc0604aa80d6da5d65dd8d803c974d25", null ],
     [ "getTop", "classinviwo_1_1plot_1_1MarginProperty.html#a013478d9c0a65f9bd6b98c597a39d7a5", null ],
     [ "getUpperRightMargin", "classinviwo_1_1plot_1_1MarginProperty.html#aaf9c85fe5b04f4ab8e958f396bcc6972", null ],
-    [ "operator=", "classinviwo_1_1plot_1_1MarginProperty.html#a7adff5608a3cc199998c0f7f1cbfaf14", null ],
     [ "setBottom", "classinviwo_1_1plot_1_1MarginProperty.html#ad19731426b0aefd3ef053872df0dc704", null ],
     [ "setLeft", "classinviwo_1_1plot_1_1MarginProperty.html#ad032d8378e6e8f1ab4baac21ecb4c4e2", null ],
     [ "setLowerLeftMargin", "classinviwo_1_1plot_1_1MarginProperty.html#a991d49c00a6591c625d8f79886344edf", null ],

@@ -1,6 +1,6 @@
 var classinviwo_1_1CompositeProperty =
 [
-    [ "CompositeProperty", "classinviwo_1_1CompositeProperty.html#af6f5ae072cf30ecaa5e47077c4246458", null ],
+    [ "CompositeProperty", "classinviwo_1_1CompositeProperty.html#a0e89aec428d678a565641d1f3269834d", null ],
     [ "CompositeProperty", "classinviwo_1_1CompositeProperty.html#af4ad5b1d2071b2f7060588703fcc71f4", null ],
     [ "~CompositeProperty", "classinviwo_1_1CompositeProperty.html#acaec646b463e03e3ed7d0385b9cd3135", null ],
     [ "clone", "classinviwo_1_1CompositeProperty.html#a64c34a9876a350b37e8ccf0ddbb8d2da", null ],
@@ -13,7 +13,6 @@ var classinviwo_1_1CompositeProperty =
     [ "getProcessor", "classinviwo_1_1CompositeProperty.html#af769959c101280683d2623209bf4b5f2", null ],
     [ "invalidate", "classinviwo_1_1CompositeProperty.html#acf6083530c63ac7f3830e311e728d2e4", null ],
     [ "isCollapsed", "classinviwo_1_1CompositeProperty.html#a1ef87a6f150f68f2c6c12f62886e0ae1", null ],
-    [ "operator=", "classinviwo_1_1CompositeProperty.html#a0b454599aa3c8bef2598bc7861eeaf9d", null ],
     [ "resetToDefaultState", "classinviwo_1_1CompositeProperty.html#acbcb8a07d284c626a6a4207a1be4a831", null ],
     [ "serialize", "classinviwo_1_1CompositeProperty.html#a4b0a6958adde4b4fd890f9ea85eebf64", null ],
     [ "set", "classinviwo_1_1CompositeProperty.html#af7a2b72dbb5e83871a348adfa38eab86", null ],

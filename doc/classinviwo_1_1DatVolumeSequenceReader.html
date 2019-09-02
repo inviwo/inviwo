@@ -31,7 +31,7 @@
   <td id="projectlogo"><img alt="Logo" src="inviwo_dark.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Inviwo
-   &#160;<span id="projectnumber">0.9.10</span>
+   &#160;<span id="projectnumber">0.9.10.1</span>
    </div>
    <div id="projectbrief">Inviwo documentation</div>
   </td>
@@ -175,15 +175,21 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>addExtension</b> (<a 
 <p>The following tags are supported:</p><ul>
 <li><b>Rawfile</b> The name of the raw data file, should be in the same directory (Mandatory).</li>
 <li><b>ByteOrder</b> the byte order in the raw data file. (Optional, LittleEndian|BigEndian, default: LittleEndian).</li>
+<li><b>DataOffset</b> offset in byte to where the data starts</li>
 <li><b>Resolution | Dimension</b> The size of the data grid: nx,ny,nz (Mandatory).</li>
 <li><b>Format</b> The type of values in the raw file. (Mandatory)</li>
 <li><b>Spacing | SliceThickness</b> The size of the voxels in the data. (Optional)</li>
 <li><b>BasisVector(1|2|3)</b> Defines a coordinate system for the data. (Optional, overides spacing, default: 2*IdentityMatrix);</li>
-<li><b>Offset</b> Offsets the basisvecors in space. (Optional, defaults to center the data on origo)</li>
+<li><b>Offset</b> Offsets the basis vectors in space. (Optional, defaults to center the data at the origin)</li>
 <li><b>WorldVector(1|2|3|4)</b> Defines a world transformation matrix that is applied last to orient the data in world space. (Optional, default: IdentityMatrix)</li>
 <li><b>DatFile</b> Relative path to other file to create a VolumeSequence from The tag names are case insensitive and should always be followed by a ":" Anything after a '#' will be considered a comment.</li>
 </ul>
-<p>Supports reading VolumeSequence (for example time-varying volume data) by specifying multiple .dat files. Example: Datfile: sequence0.dat Datfile: sequence1.dat Datfile: sequence2.dat </p>
+<p>Supports reading VolumeSequence (for example time-varying volume data) by specifying multiple .dat files.</p>
+<p>Example:</p><ul>
+<li>Datfile: sequence0.dat</li>
+<li>Datfile: sequence1.dat</li>
+<li>Datfile: sequence2.dat </li>
+</ul>
 </div><hr/>The documentation for this class was generated from the following files:<ul>
 <li>datvolumesequencereader.h</li>
 <li>datvolumesequencereader.cpp</li>

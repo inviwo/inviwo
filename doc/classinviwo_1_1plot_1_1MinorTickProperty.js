@@ -11,7 +11,6 @@ var classinviwo_1_1plot_1_1MinorTickProperty =
     [ "getTickFrequency", "classinviwo_1_1plot_1_1MinorTickProperty.html#a60d14f26d88d9b0151372fd6f9e1ab73", null ],
     [ "getTickLength", "classinviwo_1_1plot_1_1MinorTickProperty.html#aa4a964583f4d586a07f3a20920b10c3f", null ],
     [ "getTickWidth", "classinviwo_1_1plot_1_1MinorTickProperty.html#a13fa8b201834de7efde513759b9ee559", null ],
-    [ "operator=", "classinviwo_1_1plot_1_1MinorTickProperty.html#a7e8ed43fd139b9bd1b42536de50dbaf8", null ],
     [ "color_", "classinviwo_1_1plot_1_1MinorTickProperty.html#a5f39861d13d397451bdb013117ea3cd3", null ],
     [ "fillAxis_", "classinviwo_1_1plot_1_1MinorTickProperty.html#aae42dbef6bb0295d261e4ea0a0f54039", null ],
     [ "style_", "classinviwo_1_1plot_1_1MinorTickProperty.html#a39280210a2df063a501b89d40afcf462", null ],

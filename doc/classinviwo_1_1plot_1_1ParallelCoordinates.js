@@ -24,7 +24,7 @@ var classinviwo_1_1plot_1_1ParallelCoordinates =
     ] ],
     [ "ParallelCoordinates", "classinviwo_1_1plot_1_1ParallelCoordinates.html#ad796b45babc6b3bd7dc7ad1111798ae3", null ],
     [ "~ParallelCoordinates", "classinviwo_1_1plot_1_1ParallelCoordinates.html#a406acbd98e42ea04d1c055d2ce2ea750", null ],
-    [ "autoAdjustMargins", "classinviwo_1_1plot_1_1ParallelCoordinates.html#a1add896ff048888de4f8eef043159ea0", null ],
+    [ "adjustMargins", "classinviwo_1_1plot_1_1ParallelCoordinates.html#a29cbf15faa6170e865f48b8d40f3b8df", null ],
     [ "axisPicked", "classinviwo_1_1plot_1_1ParallelCoordinates.html#a9490f6851a03e645475cd8fdaf06c6fd", null ],
     [ "deserialize", "classinviwo_1_1plot_1_1ParallelCoordinates.html#a7a9948cb97acd61ecce99358cf9910ec", null ],
     [ "getHoveredAxis", "classinviwo_1_1plot_1_1ParallelCoordinates.html#a1b9b89ce157efa506b30cd0fedfdf92f", null ],
@@ -33,7 +33,6 @@ var classinviwo_1_1plot_1_1ParallelCoordinates =
     [ "process", "classinviwo_1_1plot_1_1ParallelCoordinates.html#a2df885fd3f8a0effb9889187479189fe", null ],
     [ "serialize", "classinviwo_1_1plot_1_1ParallelCoordinates.html#af1e0342fc0d0caca66f1b6202b1fe675", null ],
     [ "updateBrushing", "classinviwo_1_1plot_1_1ParallelCoordinates.html#a4c6e2635beb75ba1b7f8c63537030149", null ],
-    [ "autoMargins_", "classinviwo_1_1plot_1_1ParallelCoordinates.html#adeef1161354373a33fefe235d41fd7ed", null ],
     [ "axesSettings_", "classinviwo_1_1plot_1_1ParallelCoordinates.html#a91c45729468df05f87b4d6528a37e894", null ],
     [ "axisColor_", "classinviwo_1_1plot_1_1ParallelCoordinates.html#a97fa06737f3094f8b2bd7472a067d0a9", null ],
     [ "axisHoverColor_", "classinviwo_1_1plot_1_1ParallelCoordinates.html#afc9bed421a5f1006a6347e67e214f531", null ],
@@ -47,6 +46,7 @@ var classinviwo_1_1plot_1_1ParallelCoordinates =
     [ "captionOffset_", "classinviwo_1_1plot_1_1ParallelCoordinates.html#a3360ae8917a3a5dfa83c075ed052d5c5", null ],
     [ "captionPosition_", "classinviwo_1_1plot_1_1ParallelCoordinates.html#a35122e14829d9802de6416c535a9bcf0", null ],
     [ "captionSettings_", "classinviwo_1_1plot_1_1ParallelCoordinates.html#ad82a94a76cbf70abd4608232d9024f1b", null ],
+    [ "colormap_", "classinviwo_1_1plot_1_1ParallelCoordinates.html#a8309df356698c1e972770df89dce8118", null ],
     [ "dataFrame_", "classinviwo_1_1plot_1_1ParallelCoordinates.html#ab9546935be6a491986f9ad1840b1c17d", null ],
     [ "falllofPower_", "classinviwo_1_1plot_1_1ParallelCoordinates.html#a6806f0006aa968061f4dfca7758a0db0", null ],
     [ "filterAlpha_", "classinviwo_1_1plot_1_1ParallelCoordinates.html#a9fe20154c4844e59c47e6ef4cb708166", null ],
@@ -56,6 +56,7 @@ var classinviwo_1_1plot_1_1ParallelCoordinates =
     [ "handleFilteredColor_", "classinviwo_1_1plot_1_1ParallelCoordinates.html#ad998ca0989b41bd6992b756125234a94", null ],
     [ "handleSize_", "classinviwo_1_1plot_1_1ParallelCoordinates.html#a840c71bae9ff5a4716166cfcef492508", null ],
     [ "handlesVisible_", "classinviwo_1_1plot_1_1ParallelCoordinates.html#a987cb25d61525e01eeb7cd03e88a73e2", null ],
+    [ "includeLabelsInMargin_", "classinviwo_1_1plot_1_1ParallelCoordinates.html#aa5926838436d129684171f2a88ee85bf", null ],
     [ "labelColor_", "classinviwo_1_1plot_1_1ParallelCoordinates.html#a416346f7f0ca7fa10010ab90394d070f", null ],
     [ "labelFormat_", "classinviwo_1_1plot_1_1ParallelCoordinates.html#a5254436680daf9faafe1b61155386d89", null ],
     [ "labelOffset_", "classinviwo_1_1plot_1_1ParallelCoordinates.html#abc4d1ff8a92de80c59c5881a335a1457", null ],
@@ -65,9 +66,7 @@ var classinviwo_1_1plot_1_1ParallelCoordinates =
     [ "margins_", "classinviwo_1_1plot_1_1ParallelCoordinates.html#acf67236f1099721f7c34c0c34cb6eefb", null ],
     [ "outport_", "classinviwo_1_1plot_1_1ParallelCoordinates.html#a3b16917f885e57d41bb51fca69070a0b", null ],
     [ "resetHandlePositions_", "classinviwo_1_1plot_1_1ParallelCoordinates.html#a27a1e6a66625d8e111fa62a61baedf7a", null ],
-    [ "selectedColorAxis_", "classinviwo_1_1plot_1_1ParallelCoordinates.html#a7432ffe8d6752bd8f0c2959bddd88975", null ],
     [ "selectedLineWidth_", "classinviwo_1_1plot_1_1ParallelCoordinates.html#a604faeb2ce9d299df2c921b1decae7f8", null ],
     [ "showFiltered_", "classinviwo_1_1plot_1_1ParallelCoordinates.html#a31608236c0d8f810102645289c16d82c", null ],
-    [ "showLabels_", "classinviwo_1_1plot_1_1ParallelCoordinates.html#ab13aeb0c624429493e77075af3a0c3ab", null ],
-    [ "tf_", "classinviwo_1_1plot_1_1ParallelCoordinates.html#a7762cb767ca90bcc7ac21cda5680486c", null ]
+    [ "showLabels_", "classinviwo_1_1plot_1_1ParallelCoordinates.html#ab13aeb0c624429493e77075af3a0c3ab", null ]
 ];

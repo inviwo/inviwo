@@ -1,11 +1,10 @@
 <map id="inviwo::FileObserver" name="inviwo::FileObserver">
-<area shape="rect" id="node1" title=" " alt="" coords="5,209,141,236"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,188,141,215"/>
 <area shape="rect" id="node2" href="$classinviwo_1_1FileShaderResource.html" title=" " alt="" coords="203,5,384,32"/>
-<area shape="rect" id="node3" href="$classinviwo_1_1KernelManager.html" title=" " alt="" coords="218,56,369,83"/>
-<area shape="rect" id="node4" href="$classinviwo_1_1PythonProcessorFactoryObject.html" title=" " alt="" coords="189,107,397,149"/>
-<area shape="rect" id="node5" href="$classinviwo_1_1PythonProcessorFolderObserver.html" title=" " alt="" coords="193,173,393,214"/>
-<area shape="rect" id="node6" href="$classinviwo_1_1PythonScriptDisk.html" title=" " alt="" coords="211,239,376,265"/>
-<area shape="rect" id="node7" title=" " alt="" coords="211,289,375,316"/>
-<area shape="rect" id="node8" href="$classinviwo_1_1SingleFileObserver.html" title="SingleFileObserver observes a single file for changes on disk. SingleFileObserver observes a single f..." alt="" coords="207,340,379,367"/>
-<area shape="rect" id="node9" href="$classinviwo_1_1utilqt_1_1EditorFileObserver.html" title=" " alt="" coords="216,391,371,433"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1PythonProcessorFactoryObject.html" title=" " alt="" coords="189,57,397,98"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1PythonProcessorFolderObserver.html" title=" " alt="" coords="193,122,393,163"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1PythonScriptDisk.html" title=" " alt="" coords="211,188,376,215"/>
+<area shape="rect" id="node6" title=" " alt="" coords="211,239,375,265"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1SingleFileObserver.html" title="SingleFileObserver observes a single file for changes on disk. SingleFileObserver observes a single f..." alt="" coords="207,289,379,316"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1utilqt_1_1EditorFileObserver.html" title=" " alt="" coords="216,341,371,382"/>
 </map>

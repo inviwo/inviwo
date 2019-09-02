@@ -5,7 +5,7 @@ var classinviwo_1_1OrthographicCamera =
     [ "OrthographicCamera", "classinviwo_1_1OrthographicCamera.html#a8dd6e434497272f3ebb3b56ae0ed7006", null ],
     [ "calculateProjectionMatrix", "classinviwo_1_1OrthographicCamera.html#a428b2861f556ffa3d70a3fe41daf2f06", null ],
     [ "clone", "classinviwo_1_1OrthographicCamera.html#a4e4517b7189c1687e22171c490a34d22", null ],
-    [ "configureProperties", "classinviwo_1_1OrthographicCamera.html#a52131169a77fc767e49c1372f8866b43", null ],
+    [ "configureProperties", "classinviwo_1_1OrthographicCamera.html#a8864764295cfa3f1dc08ce5cd86eec0b", null ],
     [ "deserialize", "classinviwo_1_1OrthographicCamera.html#a79f11c4ccfa43b53755882c6695f9ce6", null ],
     [ "getAspectRatio", "classinviwo_1_1OrthographicCamera.html#af160a238b3d34813f1775b77ed8634fa", null ],
     [ "getFrustum", "classinviwo_1_1OrthographicCamera.html#a51ec182f1d7a9b8be1024dfac5016807", null ],

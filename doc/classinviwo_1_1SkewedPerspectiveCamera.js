@@ -5,7 +5,7 @@ var classinviwo_1_1SkewedPerspectiveCamera =
     [ "SkewedPerspectiveCamera", "classinviwo_1_1SkewedPerspectiveCamera.html#ae09497054c9c55db2f9258bb2aeba1c8", null ],
     [ "calculateProjectionMatrix", "classinviwo_1_1SkewedPerspectiveCamera.html#abae75539f6507ac50aee87568cc47933", null ],
     [ "clone", "classinviwo_1_1SkewedPerspectiveCamera.html#a7110f2c1b07a0bd228f18287e5f242b3", null ],
-    [ "configureProperties", "classinviwo_1_1SkewedPerspectiveCamera.html#a01c5021f5da1e2f7808d4e77da01cc29", null ],
+    [ "configureProperties", "classinviwo_1_1SkewedPerspectiveCamera.html#ae59eb60b36978664d0c2cf6f0ed078e9", null ],
     [ "deserialize", "classinviwo_1_1SkewedPerspectiveCamera.html#ae20a0006850c6f8af60d45a9a20d1e63", null ],
     [ "getAspectRatio", "classinviwo_1_1SkewedPerspectiveCamera.html#aa6d9b458d0bfe615f4202f66ff632a54", null ],
     [ "getFrustum", "classinviwo_1_1SkewedPerspectiveCamera.html#a76f0da374b74b3b1f9d4913c40520925", null ],

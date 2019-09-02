@@ -20,7 +20,6 @@ var classinviwo_1_1IntegralLineProperties =
     [ "getSeedPointTransformationMatrix", "classinviwo_1_1IntegralLineProperties.html#ae9470159fedf2a5893df1eea3d7a4f7b", null ],
     [ "getStepDirection", "classinviwo_1_1IntegralLineProperties.html#a2feee03eea741373da1db1e48797c894", null ],
     [ "getStepSize", "classinviwo_1_1IntegralLineProperties.html#a88f2db8d54664ac3d7c954c17989e77c", null ],
-    [ "operator=", "classinviwo_1_1IntegralLineProperties.html#ac2cce846dcc0dcd5b7f34b13ead77fe9", null ],
     [ "integrationScheme_", "classinviwo_1_1IntegralLineProperties.html#aad2d61e9f2d9e1c9f79171038fad7fbf", null ],
     [ "normalizeSamples_", "classinviwo_1_1IntegralLineProperties.html#abeb3faad1de438166879235599403ab0", null ],
     [ "numberOfSteps_", "classinviwo_1_1IntegralLineProperties.html#a4b32b945f879ae42cdd745e237f34ef9", null ],

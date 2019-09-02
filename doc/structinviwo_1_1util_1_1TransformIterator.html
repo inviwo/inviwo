@@ -31,7 +31,7 @@
   <td id="projectlogo"><img alt="Logo" src="inviwo_dark.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Inviwo
-   &#160;<span id="projectnumber">0.9.10</span>
+   &#160;<span id="projectnumber">0.9.10.1</span>
    </div>
    <div id="projectbrief">Inviwo documentation</div>
   </td>
@@ -114,9 +114,9 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>base_reference</b> =
 <tr class="memitem:af26a940c05a99a13234fc33095cac476"><td class="memItemLeft" align="right" valign="top"><a id="af26a940c05a99a13234fc33095cac476"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>base_pointer</b> = typename std::iterator_traits&lt; Iter &gt;::pointer</td></tr>
 <tr class="separator:af26a940c05a99a13234fc33095cac476"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a11d0c6812601f33869a6caf4be013f52"><td class="memItemLeft" align="right" valign="top"><a id="a11d0c6812601f33869a6caf4be013f52"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>reference</b> = std::result_of_t&lt; Transform(base_reference)&gt;</td></tr>
-<tr class="separator:a11d0c6812601f33869a6caf4be013f52"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36eb54c628d428da811ab3a390f30829"><td class="memItemLeft" align="right" valign="top"><a id="a36eb54c628d428da811ab3a390f30829"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>reference</b> = std::invoke_result_t&lt; Transform, base_reference &gt;</td></tr>
+<tr class="separator:a36eb54c628d428da811ab3a390f30829"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3c56cc759f8cc51e8ee8c44efcb732f3"><td class="memItemLeft" align="right" valign="top"><a id="a3c56cc759f8cc51e8ee8c44efcb732f3"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>value_type</b> = std::remove_reference_t&lt; reference &gt;</td></tr>
 <tr class="separator:a3c56cc759f8cc51e8ee8c44efcb732f3"><td class="memSeparator" colspan="2">&#160;</td></tr>

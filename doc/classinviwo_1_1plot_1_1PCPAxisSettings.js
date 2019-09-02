@@ -26,7 +26,6 @@ var classinviwo_1_1plot_1_1PCPAxisSettings =
     [ "getWidth", "classinviwo_1_1plot_1_1PCPAxisSettings.html#a3b154f14b8c6f37e3fbe33b6f8b347b0", null ],
     [ "isFiltering", "classinviwo_1_1plot_1_1PCPAxisSettings.html#a82ed9d21aaea9ae207901b4f3f26005e", null ],
     [ "moveHandle", "classinviwo_1_1plot_1_1PCPAxisSettings.html#aa6ffe0d9bc67b39dc9ee0caddf17648f", null ],
-    [ "operator=", "classinviwo_1_1plot_1_1PCPAxisSettings.html#affa90277b912d11022c6e07e4eddc2ed", null ],
     [ "setColumnId", "classinviwo_1_1plot_1_1PCPAxisSettings.html#ac43e8efa5864dd28e29c23688d7237f0", null ],
     [ "setParallelCoordinates", "classinviwo_1_1plot_1_1PCPAxisSettings.html#a6ffe1ac35fa84a356e0d72af98b0a154", null ],
     [ "updateFromColumn", "classinviwo_1_1plot_1_1PCPAxisSettings.html#ab7499a749c10109f936de93c6c32e52f", null ],

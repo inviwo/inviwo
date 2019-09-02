@@ -31,7 +31,7 @@
   <td id="projectlogo"><img alt="Logo" src="inviwo_dark.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Inviwo
-   &#160;<span id="projectnumber">0.9.10</span>
+   &#160;<span id="projectnumber">0.9.10.1</span>
    </div>
    <div id="projectbrief">Inviwo documentation</div>
   </td>
@@ -133,9 +133,9 @@ virtual <a class="el" href="classinviwo_1_1OrthographicCamera.html">Orthographic
 <tr class="memitem:a9e7daa104f307821964ad08353302380"><td class="memItemLeft" align="right" valign="top"><a id="a9e7daa104f307821964ad08353302380"></a>
 virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>update</b> (const <a class="el" href="classinviwo_1_1Camera.html">Camera</a> *source) override</td></tr>
 <tr class="separator:a9e7daa104f307821964ad08353302380"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a52131169a77fc767e49c1372f8866b43"><td class="memItemLeft" align="right" valign="top"><a id="a52131169a77fc767e49c1372f8866b43"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>configureProperties</b> (<a class="el" href="classinviwo_1_1CompositeProperty.html">CompositeProperty</a> *comp) override</td></tr>
-<tr class="separator:a52131169a77fc767e49c1372f8866b43"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8864764295cfa3f1dc08ce5cd86eec0b"><td class="memItemLeft" align="right" valign="top"><a id="a8864764295cfa3f1dc08ce5cd86eec0b"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>configureProperties</b> (<a class="el" href="classinviwo_1_1CompositeProperty.html">CompositeProperty</a> *comp, Config config) override</td></tr>
+<tr class="separator:a8864764295cfa3f1dc08ce5cd86eec0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a51ec182f1d7a9b8be1024dfac5016807"><td class="memItemLeft" align="right" valign="top"><a id="a51ec182f1d7a9b8be1024dfac5016807"></a>
 const vec4 &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getFrustum</b> () const</td></tr>
 <tr class="separator:a51ec182f1d7a9b8be1024dfac5016807"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -291,6 +291,14 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (const
 <tr class="memitem:a23c051c84bb1d83087457f1bd03f1838"><td class="memItemLeft" align="right" valign="top"><a id="a23c051c84bb1d83087457f1bd03f1838"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (const <a class="el" href="classinviwo_1_1OrthographicCamera.html">OrthographicCamera</a> &amp;lhs, const <a class="el" href="classinviwo_1_1OrthographicCamera.html">OrthographicCamera</a> &amp;rhs)</td></tr>
 <tr class="separator:a23c051c84bb1d83087457f1bd03f1838"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
+Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pub_types_classinviwo_1_1Camera"><td colspan="2" onclick="javascript:toggleInherit('pub_types_classinviwo_1_1Camera')"><img src="closed.png" alt="-"/>&#160;Public Types inherited from <a class="el" href="classinviwo_1_1Camera.html">inviwo::Camera</a></td></tr>
+<tr class="memitem:a1292a35004b7b2ae28154256c5815a1d inherit pub_types_classinviwo_1_1Camera"><td class="memItemLeft" align="right" valign="top"><a id="a1292a35004b7b2ae28154256c5815a1d"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>Config</b> { <b>Show</b>, 
+<b>Hide</b>
+ }</td></tr>
+<tr class="separator:a1292a35004b7b2ae28154256c5815a1d inherit pub_types_classinviwo_1_1Camera"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="classinviwo_1_1Camera.html" title="Base class for cameras. Override this class to set your own projection matrix.">Camera</a> with no perspective projection. Objects far away will appear as large as objects close. </p>

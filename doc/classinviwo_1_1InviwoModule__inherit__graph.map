@@ -1,38 +1,35 @@
 <map id="inviwo::InviwoModule" name="inviwo::InviwoModule">
-<area shape="rect" id="node1" title="A module class contains registrations of functionality, such as processors, ports,..." alt="" coords="5,883,145,909"/>
+<area shape="rect" id="node1" title="A module class contains registrations of functionality, such as processors, ports,..." alt="" coords="5,807,145,833"/>
 <area shape="rect" id="node2" href="$classinviwo_1_1ABufferGLModule.html" title=" " alt="" coords="213,5,378,32"/>
 <area shape="rect" id="node3" href="$classinviwo_1_1AnimationModule.html" title=" " alt="" coords="213,56,377,83"/>
 <area shape="rect" id="node4" href="$classinviwo_1_1AnimationQtModule.html" title=" " alt="" coords="206,107,385,133"/>
 <area shape="rect" id="node5" href="$classinviwo_1_1AssimpModule.html" title=" " alt="" coords="220,157,371,184"/>
-<area shape="rect" id="node6" href="$classinviwo_1_1BaseCLModule.html" title=" " alt="" coords="219,208,371,235"/>
-<area shape="rect" id="node7" href="$classinviwo_1_1BaseGLModule.html" title=" " alt="" coords="219,259,372,285"/>
-<area shape="rect" id="node8" href="$classinviwo_1_1BaseModule.html" title=" " alt="" coords="227,309,363,336"/>
-<area shape="rect" id="node9" href="$classinviwo_1_1BrushingAndLinkingModule.html" title=" " alt="" coords="206,361,385,402"/>
-<area shape="rect" id="node10" href="$classinviwo_1_1CImgModule.html" title=" " alt="" coords="227,427,363,453"/>
-<area shape="rect" id="node11" href="$classinviwo_1_1DataFrameModule.html" title=" " alt="" coords="210,477,381,504"/>
-<area shape="rect" id="node12" href="$classinviwo_1_1DiscreteDataModule.html" title=" " alt="" coords="205,528,386,555"/>
-<area shape="rect" id="node13" href="$classinviwo_1_1EigenUtilsModule.html" title=" " alt="" coords="213,579,378,605"/>
-<area shape="rect" id="node14" href="$classinviwo_1_1ExampleModule.html" title=" " alt="" coords="217,629,374,656"/>
-<area shape="rect" id="node15" href="$classinviwo_1_1FontRenderingModule.html" title=" " alt="" coords="200,680,391,707"/>
-<area shape="rect" id="node16" href="$classinviwo_1_1GLFWModule.html" title=" " alt="" coords="223,731,367,757"/>
-<area shape="rect" id="node17" href="$classinviwo_1_1HDF5Module.html" title=" " alt="" coords="226,781,365,808"/>
-<area shape="rect" id="node18" href="$classinviwo_1_1InviwoCore.html" title="Module which registers all module related functionality available in the core." alt="" coords="233,832,358,859"/>
-<area shape="rect" id="node19" href="$classinviwo_1_1JSONModule.html" title=" " alt="" coords="225,883,365,909"/>
-<area shape="rect" id="node20" href="$classinviwo_1_1NiftiModule.html" title=" " alt="" coords="231,933,359,960"/>
-<area shape="rect" id="node21" href="$classinviwo_1_1OpenCLModule.html" title=" " alt="" coords="219,984,372,1011"/>
-<area shape="rect" id="node22" href="$classinviwo_1_1OpenGLModule.html" title=" " alt="" coords="218,1035,373,1061"/>
-<area shape="rect" id="node23" href="$classinviwo_1_1OpenGLQtModule.html" title=" " alt="" coords="211,1085,379,1112"/>
-<area shape="rect" id="node24" href="$classinviwo_1_1PlottingGLModule.html" title=" " alt="" coords="212,1136,379,1163"/>
-<area shape="rect" id="node25" href="$classinviwo_1_1PlottingModule.html" title=" " alt="" coords="220,1187,371,1213"/>
-<area shape="rect" id="node26" href="$classinviwo_1_1pngModule.html" title=" " alt="" coords="232,1237,359,1264"/>
-<area shape="rect" id="node27" href="$classinviwo_1_1PostProcessingModule.html" title=" " alt="" coords="196,1288,395,1315"/>
-<area shape="rect" id="node28" href="$classinviwo_1_1PVMModule.html" title=" " alt="" coords="228,1339,363,1365"/>
-<area shape="rect" id="node29" href="$classinviwo_1_1Python3Module.html" title=" " alt="" coords="218,1389,373,1416"/>
-<area shape="rect" id="node30" href="$classinviwo_1_1Python3QtModule.html" title=" " alt="" coords="211,1440,379,1467"/>
-<area shape="rect" id="node31" href="$classinviwo_1_1QtWidgetsModule.html" title=" " alt="" coords="211,1491,379,1517"/>
-<area shape="rect" id="node32" href="$classinviwo_1_1SpringSystemModule.html" title=" " alt="" coords="201,1541,389,1568"/>
-<area shape="rect" id="node33" href="$classinviwo_1_1UserInterfaceGLModule.html" title=" " alt="" coords="196,1592,395,1619"/>
-<area shape="rect" id="node34" href="$classinviwo_1_1VectorFieldVisualizationGLModule.html" title=" " alt="" coords="193,1643,397,1685"/>
-<area shape="rect" id="node35" href="$classinviwo_1_1VectorFieldVisualizationModule.html" title=" " alt="" coords="193,1709,397,1750"/>
-<area shape="rect" id="node36" href="$classinviwo_1_1WebBrowserModule.html" title=" " alt="" coords="205,1775,385,1801"/>
+<area shape="rect" id="node6" href="$classinviwo_1_1BaseGLModule.html" title=" " alt="" coords="219,208,372,235"/>
+<area shape="rect" id="node7" href="$classinviwo_1_1BaseModule.html" title=" " alt="" coords="227,259,363,285"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1BrushingAndLinkingModule.html" title=" " alt="" coords="206,310,385,351"/>
+<area shape="rect" id="node9" href="$classinviwo_1_1CImgModule.html" title=" " alt="" coords="227,376,363,403"/>
+<area shape="rect" id="node10" href="$classinviwo_1_1DataFrameModule.html" title=" " alt="" coords="210,427,381,453"/>
+<area shape="rect" id="node11" href="$classinviwo_1_1DiscreteDataModule.html" title=" " alt="" coords="205,477,386,504"/>
+<area shape="rect" id="node12" href="$classinviwo_1_1EigenUtilsModule.html" title=" " alt="" coords="213,528,378,555"/>
+<area shape="rect" id="node13" href="$classinviwo_1_1ExampleModule.html" title=" " alt="" coords="217,579,374,605"/>
+<area shape="rect" id="node14" href="$classinviwo_1_1FontRenderingModule.html" title=" " alt="" coords="200,629,391,656"/>
+<area shape="rect" id="node15" href="$classinviwo_1_1GLFWModule.html" title=" " alt="" coords="223,680,367,707"/>
+<area shape="rect" id="node16" href="$classinviwo_1_1HDF5Module.html" title=" " alt="" coords="226,731,365,757"/>
+<area shape="rect" id="node17" href="$classinviwo_1_1InviwoCore.html" title="Module which registers all module related functionality available in the core." alt="" coords="233,781,358,808"/>
+<area shape="rect" id="node18" href="$classinviwo_1_1JSONModule.html" title=" " alt="" coords="225,832,365,859"/>
+<area shape="rect" id="node19" href="$classinviwo_1_1NiftiModule.html" title=" " alt="" coords="231,883,359,909"/>
+<area shape="rect" id="node20" href="$classinviwo_1_1OpenGLModule.html" title=" " alt="" coords="218,933,373,960"/>
+<area shape="rect" id="node21" href="$classinviwo_1_1OpenGLQtModule.html" title=" " alt="" coords="211,984,379,1011"/>
+<area shape="rect" id="node22" href="$classinviwo_1_1PlottingGLModule.html" title=" " alt="" coords="212,1035,379,1061"/>
+<area shape="rect" id="node23" href="$classinviwo_1_1PlottingModule.html" title=" " alt="" coords="220,1085,371,1112"/>
+<area shape="rect" id="node24" href="$classinviwo_1_1pngModule.html" title=" " alt="" coords="232,1136,359,1163"/>
+<area shape="rect" id="node25" href="$classinviwo_1_1PostProcessingModule.html" title=" " alt="" coords="196,1187,395,1213"/>
+<area shape="rect" id="node26" href="$classinviwo_1_1PVMModule.html" title=" " alt="" coords="228,1237,363,1264"/>
+<area shape="rect" id="node27" href="$classinviwo_1_1Python3Module.html" title=" " alt="" coords="218,1288,373,1315"/>
+<area shape="rect" id="node28" href="$classinviwo_1_1Python3QtModule.html" title=" " alt="" coords="211,1339,379,1365"/>
+<area shape="rect" id="node29" href="$classinviwo_1_1QtWidgetsModule.html" title=" " alt="" coords="211,1389,379,1416"/>
+<area shape="rect" id="node30" href="$classinviwo_1_1UserInterfaceGLModule.html" title=" " alt="" coords="196,1440,395,1467"/>
+<area shape="rect" id="node31" href="$classinviwo_1_1VectorFieldVisualizationGLModule.html" title=" " alt="" coords="193,1491,397,1533"/>
+<area shape="rect" id="node32" href="$classinviwo_1_1VectorFieldVisualizationModule.html" title=" " alt="" coords="193,1557,397,1598"/>
+<area shape="rect" id="node33" href="$classinviwo_1_1WebBrowserModule.html" title=" " alt="" coords="205,1623,385,1649"/>
 </map>

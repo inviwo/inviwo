@@ -31,7 +31,7 @@
   <td id="projectlogo"><img alt="Logo" src="inviwo_dark.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Inviwo
-   &#160;<span id="projectnumber">0.9.10</span>
+   &#160;<span id="projectnumber">0.9.10.1</span>
    </div>
    <div id="projectbrief">Inviwo documentation</div>
   </td>
@@ -184,6 +184,10 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>serialize</b> (<a cla
 <tr class="memitem:a816b7c04bf164623d68a45166bf47f04"><td class="memItemLeft" align="right" valign="top"><a id="a816b7c04bf164623d68a45166bf47f04"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>deserialize</b> (<a class="el" href="classinviwo_1_1Deserializer.html">Deserializer</a> &amp;d, PropertySerializationMode mode=PropertySerializationMode::Default)</td></tr>
 <tr class="separator:a816b7c04bf164623d68a45166bf47f04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa321e5e679f9c86c04f32d93a92cdf4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1ValueWrapper.html#afa321e5e679f9c86c04f32d93a92cdf4">update</a> (const <a class="el" href="structinviwo_1_1ValueWrapper.html">ValueWrapper</a>&lt; T &gt; &amp;src)</td></tr>
+<tr class="separator:afa321e5e679f9c86c04f32d93a92cdf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb9b3cc44e55b4b7ad5293a964c93009"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structinviwo_1_1ValueWrapper.html#adb9b3cc44e55b4b7ad5293a964c93009">update</a> (const T &amp;src)</td></tr>
+<tr class="separator:adb9b3cc44e55b4b7ad5293a964c93009"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -197,6 +201,65 @@ T&#160;</td><td class="memItemRight" valign="bottom"><b>defaultValue</b></td></t
 std::string&#160;</td><td class="memItemRight" valign="bottom"><b>name</b></td></tr>
 <tr class="separator:ace01dc529f8ba103187791397a4e1cca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="afa321e5e679f9c86c04f32d93a92cdf4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa321e5e679f9c86c04f32d93a92cdf4">&#9670;&nbsp;</a></span>update() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="structinviwo_1_1ValueWrapper.html">inviwo::ValueWrapper</a>&lt; T &gt;::update </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structinviwo_1_1ValueWrapper.html">ValueWrapper</a>&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>src</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Update the value of this to that of src. </p><dl class="section return"><dt>Returns</dt><dd>if value was modified </dd></dl>
+
+</div>
+</div>
+<a id="adb9b3cc44e55b4b7ad5293a964c93009"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb9b3cc44e55b4b7ad5293a964c93009">&#9670;&nbsp;</a></span>update() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="structinviwo_1_1ValueWrapper.html">inviwo::ValueWrapper</a>&lt; T &gt;::update </td>
+          <td>(</td>
+          <td class="paramtype">const T &amp;&#160;</td>
+          <td class="paramname"><em>src</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Update the value of this to that of src. </p><dl class="section return"><dt>Returns</dt><dd>if value was modified </dd></dl>
+
+</div>
+</div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
 <li>valuewrapper.h</li>
 </ul>

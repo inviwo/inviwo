@@ -31,7 +31,7 @@
   <td id="projectlogo"><img alt="Logo" src="inviwo_dark.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Inviwo
-   &#160;<span id="projectnumber">0.9.10</span>
+   &#160;<span id="projectnumber">0.9.10.1</span>
    </div>
    <div id="projectbrief">Inviwo documentation</div>
   </td>
@@ -112,9 +112,9 @@ IVW_CORE_API bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasRadii
 <tr class="memitem:a5a7c46ea36a1ce2453d4b22230a149da"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_BASE_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceinviwo_1_1meshutil.html#a5a7c46ea36a1ce2453d4b22230a149da">centerViewOnMeshes</a> (const std::vector&lt; std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> &gt;&gt; &amp;meshes, <a class="el" href="classinviwo_1_1CameraProperty.html">CameraProperty</a> &amp;camera, float minMaxRatio=10.f)</td></tr>
 <tr class="memdesc:a5a7c46ea36a1ce2453d4b22230a149da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set lookAt position of camera to the center point of the meshes and adjust near/far plane distances. Adjusts min/max parameters of lookTo and near/far plane according to the supplied minMaxRatio.  <a href="#a5a7c46ea36a1ce2453d4b22230a149da">More...</a><br /></td></tr>
 <tr class="separator:a5a7c46ea36a1ce2453d4b22230a149da"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6853d40cb35741d8ac359a2a79a6126e"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_BASE_API std::pair&lt; float, float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceinviwo_1_1meshutil.html#a6853d40cb35741d8ac359a2a79a6126e">computeNearFarPlanes</a> (std::pair&lt; vec3, vec3 &gt; worldSpaceBoundingBox, const <a class="el" href="classinviwo_1_1CameraProperty.html">CameraProperty</a> &amp;camera, float farNearRatio=1.f/10000.f)</td></tr>
-<tr class="memdesc:a6853d40cb35741d8ac359a2a79a6126e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute near and far plane parameters covering the bounding box when maximally zoomed out. Projects the bounding box onto the view direction and selects the distance furthest away as far plane (increased by 1% to make sure that mesh is not clipped). The view directions considered are lookFrom min/max -&gt; lookTo. Near plane is computed as max(1e^-6, farPlaneDistance * farNearRatio)  <a href="#a6853d40cb35741d8ac359a2a79a6126e">More...</a><br /></td></tr>
-<tr class="separator:a6853d40cb35741d8ac359a2a79a6126e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8fe3ff53e351b9e224ce0eeebfd51f04"><td class="memItemLeft" align="right" valign="top">IVW_MODULE_BASE_API std::pair&lt; float, float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceinviwo_1_1meshutil.html#a8fe3ff53e351b9e224ce0eeebfd51f04">computeNearFarPlanes</a> (std::pair&lt; vec3, vec3 &gt; worldSpaceBoundingBox, const <a class="el" href="classinviwo_1_1CameraProperty.html">CameraProperty</a> &amp;camera, float nearFarRatio=1.f/10000.f)</td></tr>
+<tr class="memdesc:a8fe3ff53e351b9e224ce0eeebfd51f04"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute near and far plane parameters covering the bounding box when maximally zoomed out. Projects the bounding box onto the view direction and selects the distance furthest away as far plane (increased by 1% to make sure that mesh is not clipped). The view directions considered are lookFrom min/max -&gt; lookTo. Near plane is computed as max(1e^-6, farPlaneDistance * farNearRatio)  <a href="#a8fe3ff53e351b9e224ce0eeebfd51f04">More...</a><br /></td></tr>
+<tr class="separator:a8fe3ff53e351b9e224ce0eeebfd51f04"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aefab0ef45f52d52f4003e6ca5e1da8a7"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceinviwo_1_1meshutil.html#aefab0ef45f52d52f4003e6ca5e1da8a7">toPointMesh</a> (const <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> &amp;mesh)</td></tr>
 <tr class="separator:aefab0ef45f52d52f4003e6ca5e1da8a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a776cc183c44c144cd82c90a36621a7eb"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceinviwo_1_1meshutil.html#a776cc183c44c144cd82c90a36621a7eb">toLineMesh</a> (const <a class="el" href="classinviwo_1_1Mesh.html">Mesh</a> &amp;mesh)</td></tr>
@@ -277,8 +277,8 @@ template&lt;typename Callback &gt; </td></tr>
 
 </div>
 </div>
-<a id="a6853d40cb35741d8ac359a2a79a6126e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6853d40cb35741d8ac359a2a79a6126e">&#9670;&nbsp;</a></span>computeNearFarPlanes()</h2>
+<a id="a8fe3ff53e351b9e224ce0eeebfd51f04"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8fe3ff53e351b9e224ce0eeebfd51f04">&#9670;&nbsp;</a></span>computeNearFarPlanes()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -299,7 +299,7 @@ template&lt;typename Callback &gt; </td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">float&#160;</td>
-          <td class="paramname"><em>farNearRatio</em> = <code>1.f&#160;/&#160;10000.f</code>&#160;</td>
+          <td class="paramname"><em>nearFarRatio</em> = <code>1.f&#160;/&#160;10000.f</code>&#160;</td>
         </tr>
         <tr>
           <td></td>

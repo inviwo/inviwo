@@ -7,7 +7,6 @@ var classinviwo_1_1ABufferGLCompositeProperty =
     [ "getClassIdentifier", "classinviwo_1_1ABufferGLCompositeProperty.html#a72144ea2bebf0b28ed39fcab2ee99309", null ],
     [ "getClassIdentifierForWidget", "classinviwo_1_1ABufferGLCompositeProperty.html#ae5c0fdd0ac28a65f2624fba24c2266f6", null ],
     [ "getSquaredPageSize", "classinviwo_1_1ABufferGLCompositeProperty.html#a531533028ffcbc07dd346a9fd4281577", null ],
-    [ "operator=", "classinviwo_1_1ABufferGLCompositeProperty.html#aa749c2aefb735bd3ed50e15963c3c5f4", null ],
     [ "abufferEnable_", "classinviwo_1_1ABufferGLCompositeProperty.html#a5c3fb64b910cd44a78f333d269251ab4", null ],
     [ "abufferLocalMemorySize_", "classinviwo_1_1ABufferGLCompositeProperty.html#ae72fe86986272969bf51b0be2a49fd1a", null ],
     [ "abufferPageSize_", "classinviwo_1_1ABufferGLCompositeProperty.html#a14bb57b515d4ef3d1e610fc2ec4d4dd6", null ],

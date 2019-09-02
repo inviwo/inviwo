@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['invalidationlevel',['InvalidationLevel',['../namespaceinviwo.html#ae0b7ff1e08626f6ee58e561ef4c9ffba',1,'inviwo']]]
+  ['devicetype',['DeviceType',['../classinviwo_1_1TouchDevice.html#aa2ec655a2ad8a089a1c18f731d4280f7',1,'inviwo::TouchDevice']]]
 ];

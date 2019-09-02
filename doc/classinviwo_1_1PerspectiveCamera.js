@@ -5,7 +5,7 @@ var classinviwo_1_1PerspectiveCamera =
     [ "PerspectiveCamera", "classinviwo_1_1PerspectiveCamera.html#ab1d2b16a676447b57251d0d9cebf30d1", null ],
     [ "calculateProjectionMatrix", "classinviwo_1_1PerspectiveCamera.html#ae4e30d6b1ba81170a7b60ed4cde8c37e", null ],
     [ "clone", "classinviwo_1_1PerspectiveCamera.html#a4f355037605220cb168607e85d82e237", null ],
-    [ "configureProperties", "classinviwo_1_1PerspectiveCamera.html#a9ebe91aafc6cf7f3e09156b167feb731", null ],
+    [ "configureProperties", "classinviwo_1_1PerspectiveCamera.html#a3a5e7e779e1d45b45fc2c9dfb4243210", null ],
     [ "deserialize", "classinviwo_1_1PerspectiveCamera.html#a85ea087df6db1a7b219afd3d83fc5eda", null ],
     [ "getAspectRatio", "classinviwo_1_1PerspectiveCamera.html#a781a9bd7740fb6bfb161f0ffad1d6ace", null ],
     [ "getFovy", "classinviwo_1_1PerspectiveCamera.html#a79b396f0c3e044db30c204721ae69490", null ],

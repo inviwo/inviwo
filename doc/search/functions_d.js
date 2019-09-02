@@ -1,22 +1,10 @@
 var searchData=
 [
-  ['main',['main',['../classglsl_1_1Minimal.html#ac1de4a87b9ef058d7c015a23586d8710',1,'glsl::Minimal::main()'],['../namespaceglsl.html#aae433c395751e05630c83def96313640',1,'glsl::main()']]],
-  ['make_5fsequence',['make_sequence',['../namespaceinviwo_1_1util.html#a0b4c1a60c4b345a81d28ca29ab9848d7',1,'inviwo::util']]],
-  ['makeindirectiterator',['makeIndirectIterator',['../namespaceinviwo_1_1util.html#af0257287b8cc817dc288c86611672e4c',1,'inviwo::util']]],
-  ['makemarchingcubevolume',['makeMarchingCubeVolume',['../namespaceinviwo_1_1util.html#a54ea5db009d3c6ea5afa9305a82d54f6',1,'inviwo::util']]],
-  ['makeprocessor',['makeProcessor',['../namespaceinviwo_1_1util.html#aa684a43196705f94133c4c6d488a39cc',1,'inviwo::util']]],
-  ['makeripplevolume',['makeRippleVolume',['../namespaceinviwo_1_1util.html#af7601a4221d0a73cbc4fbcf2a6397369',1,'inviwo::util']]],
-  ['makesinglevoxelvolume',['makeSingleVoxelVolume',['../namespaceinviwo_1_1util.html#afd7f0331189f7bab9a30abcaa2232203',1,'inviwo::util']]],
-  ['makesphericalvolume',['makeSphericalVolume',['../namespaceinviwo_1_1util.html#a3624bda720c599cf5ba2b1da294aba93',1,'inviwo::util']]],
-  ['marchingcubes',['marchingcubes',['../namespaceinviwo_1_1util.html#a0ac387ed6174ab4703bb420158fa90b3',1,'inviwo::util']]],
-  ['marchingcubesopt',['marchingCubesOpt',['../namespaceinviwo_1_1util.html#ae88ec0a8c821b0fbaf1b9044725fb0e0',1,'inviwo::util']]],
-  ['marchingtetrahedron',['marchingtetrahedron',['../namespaceinviwo_1_1util.html#ad05c658162fd0c9fb67eb70cfd537e52',1,'inviwo::util']]],
-  ['matches',['matches',['../classinviwo_1_1FileExtension.html#a195f12ac5fe3ac0744c0415f31b2ff51',1,'inviwo::FileExtension']]],
-  ['matchesall',['matchesAll',['../classinviwo_1_1FileExtension.html#a933daf0d826a00d6764846297b3cc931',1,'inviwo::FileExtension']]],
-  ['minmaxpropertywidgetcef',['MinMaxPropertyWidgetCEF',['../classinviwo_1_1MinMaxPropertyWidgetCEF.html#a9b8a58e9cb0f5345fd52af9124f82d73',1,'inviwo::MinMaxPropertyWidgetCEF']]],
-  ['moveaction',['moveAction',['../classinviwo_1_1glui_1_1Element.html#aba8a9e2319cffa85f97f4ba04a6fe5d2',1,'inviwo::glui::Element']]],
-  ['movehandle',['moveHandle',['../classinviwo_1_1plot_1_1PCPAxisSettings.html#aa6ffe0d9bc67b39dc9ee0caddf17648f',1,'inviwo::plot::PCPAxisSettings']]],
-  ['movepointontodesktop',['movePointOntoDesktop',['../namespaceinviwo_1_1utilqt.html#a82aa093ee058b3da42cd61dcfbad01ff',1,'inviwo::utilqt']]],
-  ['mstostring',['msToString',['../namespaceinviwo.html#a138c5c8deaa5ecf1db3cf0257ba89554',1,'inviwo']]],
-  ['multifileproperty',['MultiFileProperty',['../classinviwo_1_1MultiFileProperty.html#a3cb481a24919497b77efd24dc3b4ce43',1,'inviwo::MultiFileProperty']]]
+  ['ndc',['ndc',['../classinviwo_1_1GestureEvent.html#af8a8ec2481d3e497440da66822a6ab6a',1,'inviwo::GestureEvent::ndc()'],['../classinviwo_1_1MouseInteractionEvent.html#a0eea64cff82e417ce0a7da3bc929f478',1,'inviwo::MouseInteractionEvent::ndc()'],['../classinviwo_1_1TouchPoint.html#ab17bb87a2f41e0d2bdfd4c8e6f5f6b55',1,'inviwo::TouchPoint::ndc()']]],
+  ['newworkspace',['newWorkspace',['../classinviwo_1_1InviwoMainWindow.html#a7ac8168f25ee8400724c647a9104f5d0',1,'inviwo::InviwoMainWindow']]],
+  ['niftidatatypetoinviwodataformat',['niftiDataTypeToInviwoDataFormat',['../classinviwo_1_1NiftiReader.html#abbf88fb522ae5ba05e869bc532a4da02',1,'inviwo::NiftiReader']]],
+  ['nodeswitch',['NodeSwitch',['../classinviwo_1_1NodeSwitch.html#a84485d9e26fd35f1528a4cf62a418783',1,'inviwo::NodeSwitch::NodeSwitch(SerializeBase &amp;serializer, TxElement *node, bool retrieveChild=true)'],['../classinviwo_1_1NodeSwitch.html#aa95d14f9ddd3f6347052ca8d7dc102b1',1,'inviwo::NodeSwitch::NodeSwitch(SerializeBase &amp;serializer, const std::string &amp;key, bool retrieveChild=true)']]],
+  ['notifyaftertextureinitialization',['notifyAfterTextureInitialization',['../classinviwo_1_1TextureObserver.html#ae0df43dec71ab95ff7036dd945c3753d',1,'inviwo::TextureObserver']]],
+  ['notifybeforetextureinitialization',['notifyBeforeTextureInitialization',['../classinviwo_1_1TextureObserver.html#ad249a53fb5ab3f67099e29a12993b385',1,'inviwo::TextureObserver']]],
+  ['numberofresources',['numberOfResources',['../classinviwo_1_1ResourceManager.html#ab983d75a02b0ede96b1741f417a2a14a',1,'inviwo::ResourceManager']]]
 ];

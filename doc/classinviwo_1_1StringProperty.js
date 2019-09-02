@@ -6,6 +6,5 @@ var classinviwo_1_1StringProperty =
     [ "clone", "classinviwo_1_1StringProperty.html#a0b5d30fe162491e4dbd3af014ae6e0ea", null ],
     [ "getClassIdentifier", "classinviwo_1_1StringProperty.html#a0e303e6510a19ab51a7bd73c03418ad3", null ],
     [ "getDescription", "classinviwo_1_1StringProperty.html#acd971e24a64076e6019b8bd192da0acb", null ],
-    [ "operator=", "classinviwo_1_1StringProperty.html#ac4d3b7472026762c3f3b06d4f7c7d508", null ],
     [ "operator=", "classinviwo_1_1StringProperty.html#a4279214685ab7031742b540fa4f4729c", null ]
 ];

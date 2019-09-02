@@ -1,31 +1,32 @@
 <map id="inviwo::PropertyWidgetQt" name="inviwo::PropertyWidgetQt">
-<area shape="rect" id="node1" title=" " alt="" coords="380,582,548,609"/>
+<area shape="rect" id="node1" title=" " alt="" coords="380,619,548,646"/>
 <area shape="rect" id="node6" href="$classinviwo_1_1AnglePropertyWidgetQt.html" title=" " alt="" coords="606,5,793,47"/>
 <area shape="rect" id="node7" href="$classinviwo_1_1BoolPropertyWidgetQt.html" title=" " alt="" coords="602,71,797,98"/>
-<area shape="rect" id="node8" href="$classinviwo_1_1ButtonPropertyWidgetQt.html" title=" " alt="" coords="596,122,803,149"/>
-<area shape="rect" id="node9" href="$classinviwo_1_1CollapsibleGroupBoxWidgetQt.html" title=" " alt="" coords="618,173,781,215"/>
-<area shape="rect" id="node13" href="$classinviwo_1_1ColorPropertyWidgetQt.html" title=" " alt="" coords="607,239,791,280"/>
-<area shape="rect" id="node14" href="$classinviwo_1_1EventPropertyWidgetQt.html" title=" " alt="" coords="599,305,799,331"/>
-<area shape="rect" id="node15" href="$classinviwo_1_1FilePropertyWidgetQt.html" title=" " alt="" coords="605,355,794,382"/>
-<area shape="rect" id="node16" href="$classinviwo_1_1FontSizePropertyWidgetQt.html" title=" " alt="" coords="617,407,782,448"/>
-<area shape="rect" id="node17" href="$classinviwo_1_1ImageEditorWidgetQt.html" title=" " alt="" coords="605,473,793,499"/>
-<area shape="rect" id="node18" href="$classinviwo_1_1IsoTFPropertyWidgetQt.html" title=" " alt="" coords="599,523,799,550"/>
-<area shape="rect" id="node19" href="$classinviwo_1_1IsoValuePropertyWidgetQt.html" title=" " alt="" coords="618,575,781,616"/>
-<area shape="rect" id="node20" href="$classinviwo_1_1LightPropertyWidgetQt.html" title=" " alt="" coords="601,641,797,667"/>
-<area shape="rect" id="node21" href="$classinviwo_1_1MultiFilePropertyWidgetQt.html" title="Property widget for MultiFileProperty showing only the first file name." alt="" coords="618,692,781,733"/>
-<area shape="rect" id="node22" href="$classinviwo_1_1OptionPropertyWidgetQt.html" title=" " alt="" coords="596,758,803,785"/>
-<area shape="rect" id="node23" href="$classinviwo_1_1OrdinalMinMaxPropertyWidgetQt.html" title=" " alt="" coords="599,809,799,851"/>
-<area shape="rect" id="node24" href="$classinviwo_1_1OrdinalMinMaxTextPropertyWidgetQt.html" title=" " alt="" coords="609,875,790,916"/>
-<area shape="rect" id="node25" href="$classinviwo_1_1OrdinalPropertyWidgetQt.html" title=" " alt="" coords="602,940,797,981"/>
-<area shape="rect" id="node26" href="$classinviwo_1_1StringMultilinePropertyWidgetQt.html" title="Property widget for string properties which shows the contents spread over multiple lines...." alt="" coords="602,1005,797,1047"/>
-<area shape="rect" id="node27" href="$classinviwo_1_1StringPropertyWidgetQt.html" title=" " alt="" coords="598,1071,801,1098"/>
-<area shape="rect" id="node28" href="$classinviwo_1_1TFPrimitiveSetWidgetQt.html" title="text&#45;based widget for editing TF primitives" alt="" coords="598,1122,801,1149"/>
-<area shape="rect" id="node29" href="$classinviwo_1_1TFPropertyWidgetQt.html" title=" " alt="" coords="608,1173,791,1199"/>
-<area shape="rect" id="node2" title=" " alt="" coords="213,531,287,558"/>
-<area shape="rect" id="node3" href="$classinviwo_1_1PropertyWidget.html" title=" " alt="" coords="173,582,327,609"/>
-<area shape="rect" id="node4" href="$classinviwo_1_1PropertyObserver.html" title=" " alt="" coords="168,633,332,659"/>
-<area shape="rect" id="node5" href="$classinviwo_1_1Observer.html" title=" " alt="" coords="5,633,120,659"/>
-<area shape="rect" id="node10" href="$classinviwo_1_1BoolCompositePropertyWidgetQt.html" title=" " alt="" coords="851,140,1052,181"/>
-<area shape="rect" id="node11" href="$classinviwo_1_1CompositePropertyWidgetQt.html" title=" " alt="" coords="864,205,1039,247"/>
-<area shape="rect" id="node12" href="$classinviwo_1_1ListPropertyWidgetQt.html" title="PropertyWidget for a ListProperty." alt="" coords="1100,213,1289,239"/>
+<area shape="rect" id="node8" href="$classinviwo_1_1ButtonGroupPropertyWidgetQt.html" title=" " alt="" coords="606,123,793,164"/>
+<area shape="rect" id="node9" href="$classinviwo_1_1ButtonPropertyWidgetQt.html" title=" " alt="" coords="596,189,803,215"/>
+<area shape="rect" id="node10" href="$classinviwo_1_1CollapsibleGroupBoxWidgetQt.html" title=" " alt="" coords="618,240,781,281"/>
+<area shape="rect" id="node14" href="$classinviwo_1_1ColorPropertyWidgetQt.html" title=" " alt="" coords="607,305,791,347"/>
+<area shape="rect" id="node15" href="$classinviwo_1_1EventPropertyWidgetQt.html" title=" " alt="" coords="599,371,799,398"/>
+<area shape="rect" id="node16" href="$classinviwo_1_1FilePropertyWidgetQt.html" title=" " alt="" coords="605,422,794,449"/>
+<area shape="rect" id="node17" href="$classinviwo_1_1FontSizePropertyWidgetQt.html" title=" " alt="" coords="617,473,782,515"/>
+<area shape="rect" id="node18" href="$classinviwo_1_1ImageEditorWidgetQt.html" title=" " alt="" coords="605,539,793,566"/>
+<area shape="rect" id="node19" href="$classinviwo_1_1IsoTFPropertyWidgetQt.html" title=" " alt="" coords="599,590,799,617"/>
+<area shape="rect" id="node20" href="$classinviwo_1_1IsoValuePropertyWidgetQt.html" title=" " alt="" coords="618,641,781,683"/>
+<area shape="rect" id="node21" href="$classinviwo_1_1LightPropertyWidgetQt.html" title=" " alt="" coords="601,707,797,734"/>
+<area shape="rect" id="node22" href="$classinviwo_1_1MultiFilePropertyWidgetQt.html" title="Property widget for MultiFileProperty showing only the first file name." alt="" coords="618,759,781,800"/>
+<area shape="rect" id="node23" href="$classinviwo_1_1OptionPropertyWidgetQt.html" title=" " alt="" coords="596,825,803,851"/>
+<area shape="rect" id="node24" href="$classinviwo_1_1OrdinalMinMaxPropertyWidgetQt.html" title=" " alt="" coords="599,876,799,917"/>
+<area shape="rect" id="node25" href="$classinviwo_1_1OrdinalMinMaxTextPropertyWidgetQt.html" title=" " alt="" coords="609,941,790,983"/>
+<area shape="rect" id="node26" href="$classinviwo_1_1OrdinalPropertyWidgetQt.html" title=" " alt="" coords="602,1007,797,1048"/>
+<area shape="rect" id="node27" href="$classinviwo_1_1StringMultilinePropertyWidgetQt.html" title="Property widget for string properties which shows the contents spread over multiple lines...." alt="" coords="602,1072,797,1113"/>
+<area shape="rect" id="node28" href="$classinviwo_1_1StringPropertyWidgetQt.html" title=" " alt="" coords="598,1138,801,1165"/>
+<area shape="rect" id="node29" href="$classinviwo_1_1TFPrimitiveSetWidgetQt.html" title="text&#45;based widget for editing TF primitives" alt="" coords="598,1189,801,1215"/>
+<area shape="rect" id="node30" href="$classinviwo_1_1TFPropertyWidgetQt.html" title=" " alt="" coords="608,1239,791,1266"/>
+<area shape="rect" id="node2" title=" " alt="" coords="213,569,287,595"/>
+<area shape="rect" id="node3" href="$classinviwo_1_1PropertyWidget.html" title=" " alt="" coords="173,619,327,646"/>
+<area shape="rect" id="node4" href="$classinviwo_1_1PropertyObserver.html" title=" " alt="" coords="168,670,332,697"/>
+<area shape="rect" id="node5" href="$classinviwo_1_1Observer.html" title=" " alt="" coords="5,670,120,697"/>
+<area shape="rect" id="node11" href="$classinviwo_1_1BoolCompositePropertyWidgetQt.html" title=" " alt="" coords="851,207,1052,248"/>
+<area shape="rect" id="node12" href="$classinviwo_1_1CompositePropertyWidgetQt.html" title=" " alt="" coords="864,272,1039,313"/>
+<area shape="rect" id="node13" href="$classinviwo_1_1ListPropertyWidgetQt.html" title="PropertyWidget for a ListProperty." alt="" coords="1100,279,1289,306"/>
 </map>

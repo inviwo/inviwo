@@ -104,12 +104,16 @@ var group__datastructures =
       [ "usage_", "classinviwo_1_1BufferRepresentation.html#a344ae1ae4ef51d089f16ca3e5d6c1c35", null ]
     ] ],
     [ "Camera", "classinviwo_1_1Camera.html", [
+      [ "Config", "classinviwo_1_1Camera.html#a1292a35004b7b2ae28154256c5815a1d", [
+        [ "Show", "classinviwo_1_1Camera.html#a1292a35004b7b2ae28154256c5815a1da498f79c4c5bbde77f1bceb6c86fd0f6d", null ],
+        [ "Hide", "classinviwo_1_1Camera.html#a1292a35004b7b2ae28154256c5815a1da62a5e490880a92eef74f167d9dc6dca0", null ]
+      ] ],
       [ "Camera", "classinviwo_1_1Camera.html#ac1e015da17c20eb515f696fb83ecc32a", null ],
       [ "~Camera", "classinviwo_1_1Camera.html#a3e35eeec729b9c0524766735237c950d", null ],
       [ "Camera", "classinviwo_1_1Camera.html#a1f138ccff852fc72743b138df3abc117", null ],
       [ "calculateProjectionMatrix", "classinviwo_1_1Camera.html#a60375053c59df21395765217dd0880c4", null ],
       [ "clone", "classinviwo_1_1Camera.html#a5a43cd4d6cc1d7b36683bef4e69d94c6", null ],
-      [ "configureProperties", "classinviwo_1_1Camera.html#a118ec883793bb3127ba91c21f163781f", null ],
+      [ "configureProperties", "classinviwo_1_1Camera.html#aecb1bc888b153ba2179069c2f4b7a4dc", null ],
       [ "deserialize", "classinviwo_1_1Camera.html#afab952bd4b62045ba61c05beb0e659c0", null ],
       [ "equalTo", "classinviwo_1_1Camera.html#a697c603a996e9221066ffe95277cf597", null ],
       [ "getAspectRatio", "classinviwo_1_1Camera.html#aa5cc8d0b2126e9da7889b9b8e0849e35", null ],
@@ -771,6 +775,8 @@ var group__datastructures =
       [ "empty", "classinviwo_1_1TFPrimitiveSet.html#a2b0de2a72c76fb4cf0d2d40dfdb6aadd", null ],
       [ "end", "classinviwo_1_1TFPrimitiveSet.html#a62dcd248cfdb84b47aa9ef93d53d6c91", null ],
       [ "end", "classinviwo_1_1TFPrimitiveSet.html#ae5580510caf11e6fb295d5ac8580abbf", null ],
+      [ "equalizeAlpha", "classinviwo_1_1TFPrimitiveSet.html#afc1e0e5be268b12de4df284f6b05002b", null ],
+      [ "flipPositions", "classinviwo_1_1TFPrimitiveSet.html#a1e79d552b2cfe4c3bbe616cbabeb6f9c", null ],
       [ "front", "classinviwo_1_1TFPrimitiveSet.html#a08366819c424a3f1b1202877efa218f0", null ],
       [ "front", "classinviwo_1_1TFPrimitiveSet.html#a90dcc94ff7627384a686a855e0334eff", null ],
       [ "get", "classinviwo_1_1TFPrimitiveSet.html#ab0bc1d9d86943e71c7e39cf7112cc58a", null ],
@@ -783,6 +789,7 @@ var group__datastructures =
       [ "getUnsorted", "classinviwo_1_1TFPrimitiveSet.html#a365b34303071a1eb33f202ccce4ed50b", null ],
       [ "getVectors", "classinviwo_1_1TFPrimitiveSet.html#a7ed0cda7d6ce78bfd0f2b16f51cce302", null ],
       [ "getVectorsf", "classinviwo_1_1TFPrimitiveSet.html#aa574064c052f636d15790edd9e4de8a1", null ],
+      [ "interpolateAlpha", "classinviwo_1_1TFPrimitiveSet.html#a38ab23aa5969184964266b82d1d74468", null ],
       [ "interpolateAndStoreColors", "classinviwo_1_1TFPrimitiveSet.html#a21efe6e8778007e5fe82d6592fda90fe", null ],
       [ "interpolateColor", "classinviwo_1_1TFPrimitiveSet.html#a6b1a58ebb0ef802d036dacb3916b4b12", null ],
       [ "invalidate", "classinviwo_1_1TFPrimitiveSet.html#aa81d479278c21303e9dedbcfc24447fe", null ],

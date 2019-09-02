@@ -13,7 +13,6 @@ var classinviwo_1_1EventProperty =
     [ "getEventMatcher", "classinviwo_1_1EventProperty.html#a9943bf0f8ea7e854ba706a5ff7096152", null ],
     [ "invokeEvent", "classinviwo_1_1EventProperty.html#aa249d17f796ec45b3b6c5fc0d69de49c", null ],
     [ "isEnabled", "classinviwo_1_1EventProperty.html#aabec539e5f808465373d9b338204811f", null ],
-    [ "operator=", "classinviwo_1_1EventProperty.html#aedb34b975c96bc1ecacdf4c796f4246c", null ],
     [ "resetToDefaultState", "classinviwo_1_1EventProperty.html#a8d2df633385f09419359dfeccce05878", null ],
     [ "serialize", "classinviwo_1_1EventProperty.html#ab1adc636933312c97cd188e00add111d", null ],
     [ "setAction", "classinviwo_1_1EventProperty.html#a8cf71168142b8e6a857fd7968c28ec12", null ],

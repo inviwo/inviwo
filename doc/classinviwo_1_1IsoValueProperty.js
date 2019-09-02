@@ -14,7 +14,6 @@ var classinviwo_1_1IsoValueProperty =
     [ "onTFPrimitiveAdded", "classinviwo_1_1IsoValueProperty.html#ae2f5b4631bdf4264c8e1ff710f3f80ab", null ],
     [ "onTFPrimitiveChanged", "classinviwo_1_1IsoValueProperty.html#a65ce10ae0ea3c4d38dbb4c0c19b49920", null ],
     [ "onTFPrimitiveRemoved", "classinviwo_1_1IsoValueProperty.html#ac6fdc90ddac0867c742fa4e1bcf3e020", null ],
-    [ "operator=", "classinviwo_1_1IsoValueProperty.html#ad07c0f3000b4fb69c38b874a27a01d28", null ],
     [ "resetToDefaultState", "classinviwo_1_1IsoValueProperty.html#aebd60a36f7b243c58beaf2ab7ff39102", null ],
     [ "serialize", "classinviwo_1_1IsoValueProperty.html#af62595744a7b977082b1bc078d026ec8", null ],
     [ "set", "classinviwo_1_1IsoValueProperty.html#a6848e87feb477cb5c377c8b437024a35", null ],

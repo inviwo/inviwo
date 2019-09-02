@@ -32,7 +32,6 @@ var classinviwo_1_1RaycastingProperty =
     [ "~RaycastingProperty", "classinviwo_1_1RaycastingProperty.html#a6da3b1d53077cb692ad9f79c035594fe", null ],
     [ "clone", "classinviwo_1_1RaycastingProperty.html#ad5d5bdea1de1585bcdee222cc96b3f23", null ],
     [ "getClassIdentifier", "classinviwo_1_1RaycastingProperty.html#ad499a3fd43675fa2e9d809a9353e168f", null ],
-    [ "operator=", "classinviwo_1_1RaycastingProperty.html#a9bf64963470d3ce9421edd4f9731d75e", null ],
     [ "classification_", "classinviwo_1_1RaycastingProperty.html#a71eedb71e38ec45135e76c0d4714577e", null ],
     [ "compositing_", "classinviwo_1_1RaycastingProperty.html#a0251f28c043b55d8979e80ed049171e0", null ],
     [ "gradientComputation_", "classinviwo_1_1RaycastingProperty.html#acb014840416d065cf8b5e9e1d3e8d58a", null ],

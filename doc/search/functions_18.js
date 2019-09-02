@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['ycbcr2rgb',['ycbcr2rgb',['../namespaceinviwo_1_1color.html#a537f5869837bf60b8ca19f9a30812cab',1,'inviwo::color']]]
+  ['zip',['zip',['../namespaceinviwo_1_1util.html#a2ec11e63479fff3c005d159414687d4e',1,'inviwo::util']]]
 ];

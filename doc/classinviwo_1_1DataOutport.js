@@ -1,15 +1,15 @@
 var classinviwo_1_1DataOutport =
 [
     [ "type", "classinviwo_1_1DataOutport.html#a8d08f94c57aec8f5c6d14e259d697fae", null ],
-    [ "DataOutport", "classinviwo_1_1DataOutport.html#abd2429a27fc6c1deb56eb74607dab45d", null ],
+    [ "DataOutport", "classinviwo_1_1DataOutport.html#a63c82d8b211996cf9d505ff6b5384e2e", null ],
     [ "~DataOutport", "classinviwo_1_1DataOutport.html#ab94ec4d7bb41ec49d81f5dfe99a5137d", null ],
-    [ "detachData", "classinviwo_1_1DataOutport.html#a68c65508b50fb1e4bb8d0706a133a55d", null ],
-    [ "getClassIdentifier", "classinviwo_1_1DataOutport.html#afe16c606b03a552d53430ad34fa4ded0", null ],
-    [ "getColorCode", "classinviwo_1_1DataOutport.html#ae19dc61ce77a82a5e78ab76fe3cc5a5e", null ],
-    [ "getData", "classinviwo_1_1DataOutport.html#a06492298f5ce57d6c40b783f1b3e9878", null ],
-    [ "getInfo", "classinviwo_1_1DataOutport.html#ae6d6be49ea22b61b44e634de29908b50", null ],
-    [ "hasData", "classinviwo_1_1DataOutport.html#a35fa53eb85a401cc374011409620a952", null ],
-    [ "setData", "classinviwo_1_1DataOutport.html#aa261c36084eecc100a919940559b2977", null ],
-    [ "setData", "classinviwo_1_1DataOutport.html#a087df440b39f06ed1ec6fa405da118eb", null ],
+    [ "detachData", "classinviwo_1_1DataOutport.html#a13cf4716e86faf22baf7a2f639377519", null ],
+    [ "getClassIdentifier", "classinviwo_1_1DataOutport.html#a782193e47b3e342ccac0e1c44c4af949", null ],
+    [ "getColorCode", "classinviwo_1_1DataOutport.html#a6444f35030e9710d77b5a39f1d39e320", null ],
+    [ "getData", "classinviwo_1_1DataOutport.html#a27ed2d9167097c0163a0f14f3ddfedee", null ],
+    [ "getInfo", "classinviwo_1_1DataOutport.html#a1d86ddbc31a9a209c719234e53cd1f64", null ],
+    [ "hasData", "classinviwo_1_1DataOutport.html#a48aec51e8c9ed9f26b2d560ea97aff66", null ],
+    [ "setData", "classinviwo_1_1DataOutport.html#a929dde895524fc81a61729a9236c115a", null ],
+    [ "setData", "classinviwo_1_1DataOutport.html#aa9d66518cd7967508438b712dc7bb6ae", null ],
     [ "data_", "classinviwo_1_1DataOutport.html#a536a43d8c6d653bd077a69b7dbd2bf05", null ]
 ];

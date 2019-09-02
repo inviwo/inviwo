@@ -9,6 +9,5 @@ var classinviwo_1_1BoolCompositeProperty =
     [ "getClassIdentifierForWidget", "classinviwo_1_1BoolCompositeProperty.html#a97d2568c3666975676da9daafa6821d5", null ],
     [ "isChecked", "classinviwo_1_1BoolCompositeProperty.html#a2963bf149d7710238878190be3cd9740", null ],
     [ "operator const bool &", "classinviwo_1_1BoolCompositeProperty.html#a6b961792b85a9da5bacba384e7e10a56", null ],
-    [ "operator=", "classinviwo_1_1BoolCompositeProperty.html#adf03fef3fea6f2325a60a834850921cf", null ],
     [ "setChecked", "classinviwo_1_1BoolCompositeProperty.html#ae6828698f1bac36fedb775934266b211", null ]
 ];

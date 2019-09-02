@@ -1,11 +1,15 @@
 var classinviwo_1_1Camera =
 [
+    [ "Config", "classinviwo_1_1Camera.html#a1292a35004b7b2ae28154256c5815a1d", [
+      [ "Show", "classinviwo_1_1Camera.html#a1292a35004b7b2ae28154256c5815a1da498f79c4c5bbde77f1bceb6c86fd0f6d", null ],
+      [ "Hide", "classinviwo_1_1Camera.html#a1292a35004b7b2ae28154256c5815a1da62a5e490880a92eef74f167d9dc6dca0", null ]
+    ] ],
     [ "Camera", "classinviwo_1_1Camera.html#ac1e015da17c20eb515f696fb83ecc32a", null ],
     [ "~Camera", "classinviwo_1_1Camera.html#a3e35eeec729b9c0524766735237c950d", null ],
     [ "Camera", "classinviwo_1_1Camera.html#a1f138ccff852fc72743b138df3abc117", null ],
     [ "calculateProjectionMatrix", "classinviwo_1_1Camera.html#a60375053c59df21395765217dd0880c4", null ],
     [ "clone", "classinviwo_1_1Camera.html#a5a43cd4d6cc1d7b36683bef4e69d94c6", null ],
-    [ "configureProperties", "classinviwo_1_1Camera.html#a118ec883793bb3127ba91c21f163781f", null ],
+    [ "configureProperties", "classinviwo_1_1Camera.html#aecb1bc888b153ba2179069c2f4b7a4dc", null ],
     [ "deserialize", "classinviwo_1_1Camera.html#afab952bd4b62045ba61c05beb0e659c0", null ],
     [ "equalTo", "classinviwo_1_1Camera.html#a697c603a996e9221066ffe95277cf597", null ],
     [ "getAspectRatio", "classinviwo_1_1Camera.html#aa5cc8d0b2126e9da7889b9b8e0849e35", null ],

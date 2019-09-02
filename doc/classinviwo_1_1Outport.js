@@ -12,7 +12,7 @@ var classinviwo_1_1Outport =
     [ "isReady", "classinviwo_1_1Outport.html#aa459ec8de7bcda3dfa6b03fe7faa34b7", null ],
     [ "onConnect", "classinviwo_1_1Outport.html#aff76d718168ee4089bb7c8e27f877c97", null ],
     [ "onDisconnect", "classinviwo_1_1Outport.html#a7c58b5401f6b1e9c2849e6c248f60e99", null ],
-    [ "propagateEvent", "classinviwo_1_1Outport.html#a0a0b4f4417f7d66252f16e2fbd3d6812", null ],
+    [ "propagateEvent", "classinviwo_1_1Outport.html#ae04cf479ab22c0cfe9e270971f233919", null ],
     [ "removeOnConnect", "classinviwo_1_1Outport.html#a4a0ccd86919e07dd7eeeee67015a95ab", null ],
     [ "removeOnDisconnect", "classinviwo_1_1Outport.html#a7b4c82469b785da19aa143f0073af374", null ],
     [ "setValid", "classinviwo_1_1Outport.html#aa16fe81ab410aec4c7148ed587ce261d", null ],

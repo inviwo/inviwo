@@ -31,7 +31,7 @@
   <td id="projectlogo"><img alt="Logo" src="inviwo_dark.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Inviwo
-   &#160;<span id="projectnumber">0.9.10</span>
+   &#160;<span id="projectnumber">0.9.10.1</span>
    </div>
    <div id="projectbrief">Inviwo documentation</div>
   </td>
@@ -91,16 +91,17 @@ $(document).ready(function(){initNavTree('functions_o.html','');});
 <div class="textblock">Here is a list of all documented class members with links to the class documentation for each member:</div>
 
 <h3><a id="index_o"></a>- o -</h3><ul>
+<li>Observable()
+: <a class="el" href="classinviwo_1_1Observable.html#a22a72cba8a707ff5bd0e87fdaefdfab8">inviwo::Observable&lt; T &gt;</a>
+</li>
 <li>offset_
 : <a class="el" href="classinviwo_1_1plot_1_1PlotTextProperty.html#a5d8e127b354da94a3bad4b1d36da0ed5">inviwo::plot::PlotTextProperty</a>
 </li>
 <li>onAfterBufferInitialization()
-: <a class="el" href="classinviwo_1_1BufferCLGL.html#af528478beb8a0335eeb069c413c7555d">inviwo::BufferCLGL</a>
-, <a class="el" href="classinviwo_1_1BufferObjectObserver.html#af6095f5dff767b383c0b1245335f0358">inviwo::BufferObjectObserver</a>
+: <a class="el" href="classinviwo_1_1BufferObjectObserver.html#af6095f5dff767b383c0b1245335f0358">inviwo::BufferObjectObserver</a>
 </li>
 <li>onBeforeBufferInitialization()
-: <a class="el" href="classinviwo_1_1BufferCLGL.html#a29f3138b51a9d4d7bd05a68e003fe6e1">inviwo::BufferCLGL</a>
-, <a class="el" href="classinviwo_1_1BufferObjectObserver.html#ae290ee3ea743c199d87dc5e0810570f5">inviwo::BufferObjectObserver</a>
+: <a class="el" href="classinviwo_1_1BufferObjectObserver.html#ae290ee3ea743c199d87dc5e0810570f5">inviwo::BufferObjectObserver</a>
 </li>
 <li>onChange()
 : <a class="el" href="classinviwo_1_1Inport.html#a1bf8e7693af8011b316555881a62d07f">inviwo::Inport</a>
@@ -128,11 +129,6 @@ $(document).ready(function(){initNavTree('functions_o.html','');});
 </li>
 <li>onItemSceneHasChanged()
 : <a class="el" href="classinviwo_1_1TFEditorPrimitive.html#a6169dd86ab838891fc7383c3b3697294">inviwo::TFEditorPrimitive</a>
-</li>
-<li>onKernelCompiled()
-: <a class="el" href="classinviwo_1_1EntryExitPointsCLProcessor.html#adade7f49ab134354ac5da66b801d88b4">inviwo::EntryExitPointsCLProcessor</a>
-, <a class="el" href="classinviwo_1_1KernelObserver.html#ab6938a24dcdc4f85c667bec681a84e51">inviwo::KernelObserver</a>
-, <a class="el" href="classinviwo_1_1VolumeRaycasterCLProcessor.html#a064d28722b81eb4ae2fa7e85cce4ba99">inviwo::VolumeRaycasterCLProcessor</a>
 </li>
 <li>onLabelGraphicsItemChanged()
 : <a class="el" href="classinviwo_1_1LabelGraphicsItemObserver.html#adecc9e3c7c5f7019ee64d3811ed42680">inviwo::LabelGraphicsItemObserver</a>
@@ -232,9 +228,13 @@ $(document).ready(function(){initNavTree('functions_o.html','');});
 , <a class="el" href="structinviwo_1_1util_1_1detailzip_1_1zipIterator.html#aef834383dddbb6c00b6927cbfc25d952">inviwo::util::detailzip::zipIterator&lt; Iterables &gt;</a>
 </li>
 <li>operator()()
-: <a class="el" href="classinviwo_1_1algorithm_1_1EntryExitPointsHelper.html#a0aced01ee23e1a784f4394a36748b4d8">inviwo::algorithm::EntryExitPointsHelper</a>
+: <a class="el" href="classinviwo_1_1algorithm_1_1EntryExitPointsHelper.html#a58cc7bfb2fdbca1b1a5744dfee70a58b">inviwo::algorithm::EntryExitPointsHelper</a>
 , <a class="el" href="classinviwo_1_1animation_1_1ControlTrack.html#a4a2252c0c6fb4c00faf486ac91cf9b2b">inviwo::animation::ControlTrack</a>
 , <a class="el" href="classinviwo_1_1animation_1_1PropertyTrack.html#ae6af4fefcc5fda623c67dd5135946607">inviwo::animation::PropertyTrack&lt; Prop, Key &gt;</a>
+</li>
+<li>operator=()
+: <a class="el" href="classinviwo_1_1Observable.html#a0ab0efc8a80e36322a1197e8750e036b">inviwo::Observable&lt; T &gt;</a>
+, <a class="el" href="classinviwo_1_1Property.html#a8eb203092d666a96f7f6d5c7334745e9">inviwo::Property</a>
 </li>
 <li>operator==()
 : <a class="el" href="structinviwo_1_1discretedata_1_1ChannelGetter.html#aa692f77c2f4d53d8289d70936b44f276">inviwo::discretedata::ChannelGetter&lt; T, N &gt;</a>
@@ -243,7 +243,7 @@ $(document).ready(function(){initNavTree('functions_o.html','');});
 , <a class="el" href="structinviwo_1_1util_1_1detailzip_1_1zipIterator.html#acf049f070fb78feefe03fb0c4802ce47">inviwo::util::detailzip::zipIterator&lt; Iterables &gt;</a>
 </li>
 <li>operator[]()
-: <a class="el" href="classinviwo_1_1discretedata_1_1BufferChannel.html#add120a832efdbbe3a8b8e4bee26a6dd3">inviwo::discretedata::BufferChannel&lt; T, N &gt;</a>
+: <a class="el" href="classinviwo_1_1discretedata_1_1BufferChannel.html#a78c3692cbf24b7968503175126b680d3">inviwo::discretedata::BufferChannel&lt; T, N &gt;</a>
 , <a class="el" href="classinviwo_1_1ViewManager.html#ac8ab876695de1f877b6906c70652276b">inviwo::ViewManager</a>
 </li>
 <li>OrdinalPropertyWidgetCEF()

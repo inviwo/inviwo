@@ -9,7 +9,9 @@ var classinviwo_1_1DataSource =
     [ "process", "classinviwo_1_1DataSource.html#ae84c0bacf05bb456a551a8ed7a406329", null ],
     [ "file_", "classinviwo_1_1DataSource.html#ac23d494566626128be859b0257eb21bd", null ],
     [ "loadedData_", "classinviwo_1_1DataSource.html#a73be763c99fb382413118b593ce0011c", null ],
+    [ "loadingFailed_", "classinviwo_1_1DataSource.html#a4bd9cbc1de8a73c531a6702e78172ada", null ],
     [ "port_", "classinviwo_1_1DataSource.html#a032dba235cf512041d52e568e0ee5f96", null ],
+    [ "reader_", "classinviwo_1_1DataSource.html#a9d0c44e8df5a1caf630e74c2a6a5dabc", null ],
     [ "reload_", "classinviwo_1_1DataSource.html#a18d5b19edff9b447db85c580c455c511", null ],
     [ "rf_", "classinviwo_1_1DataSource.html#a9bbc90b3c437147b1b9112e94d80bea1", null ]
 ];

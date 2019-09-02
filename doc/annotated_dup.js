@@ -124,5 +124,7 @@ var annotated_dup =
       [ "hash<::inviwo::SourceLocation >", "structstd_1_1hash_3_1_1inviwo_1_1SourceLocation_01_4.html", "structstd_1_1hash_3_1_1inviwo_1_1SourceLocation_01_4" ],
       [ "tuple_element< N, ::inviwo::util::detailzip::proxy< Ts... > >", "structstd_1_1tuple__element_3_01N_00_01_1_1inviwo_1_1util_1_1detailzip_1_1proxy_3_01Ts_8_8_8_01_4_01_4.html", "structstd_1_1tuple__element_3_01N_00_01_1_1inviwo_1_1util_1_1detailzip_1_1proxy_3_01Ts_8_8_8_01_4_01_4" ],
       [ "tuple_size<::inviwo::util::detailzip::proxy< Ts... > >", "structstd_1_1tuple__size_3_1_1inviwo_1_1util_1_1detailzip_1_1proxy_3_01Ts_8_8_8_01_4_01_4.html", null ]
-    ] ]
+    ] ],
+    [ "DataInport", "classDataInport.html", null ],
+    [ "DataOutport", "classDataOutport.html", null ]
 ];

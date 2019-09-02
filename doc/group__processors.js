@@ -112,10 +112,17 @@ var group__processors =
       [ "process", "classinviwo_1_1ImageContourProcessor.html#a8be88d2f07f7b9f82cec4a61f556c59c", null ]
     ] ],
     [ "ImageExport", "classinviwo_1_1ImageExport.html", [
-      [ "ImageExport", "classinviwo_1_1ImageExport.html#ac5a9db942203822618f393faf91b74a7", null ],
+      [ "ImageExport", "classinviwo_1_1ImageExport.html#a337ed8859f5e0bc5663a83f663e660c7", null ],
       [ "~ImageExport", "classinviwo_1_1ImageExport.html#a0a2301427c3b5a4f6f3e00c4ce520119", null ],
       [ "getData", "classinviwo_1_1ImageExport.html#ad5e610ce6204caaa3592fcb37296b972", null ],
-      [ "getProcessorInfo", "classinviwo_1_1ImageExport.html#a5f7d170eb0c0a5d8c9128689ff9e7c9e", null ]
+      [ "getProcessorInfo", "classinviwo_1_1ImageExport.html#a5f7d170eb0c0a5d8c9128689ff9e7c9e", null ],
+      [ "onProcessorNetworkDidAddConnection", "classinviwo_1_1ImageExport.html#a16ec2f38afaccf7b850f24afe0c85a6c", null ],
+      [ "onProcessorNetworkDidRemoveConnection", "classinviwo_1_1ImageExport.html#a8d867434cc31156c7075a9df4b0b6998", null ],
+      [ "sendResizeEvent", "classinviwo_1_1ImageExport.html#a484c428ea90f6d83ef8c4e457ef33fc1", null ],
+      [ "setNetwork", "classinviwo_1_1ImageExport.html#a3709b1a8dfba3bb4a2ba5418a57a5ae4", null ],
+      [ "imageSize_", "classinviwo_1_1ImageExport.html#a16f5fd402d5d7cb1cf3b6fb263036589", null ],
+      [ "outportDeterminesSize_", "classinviwo_1_1ImageExport.html#a3c4773246d4a4d8fb00f9fd5156feb20", null ],
+      [ "prevSize_", "classinviwo_1_1ImageExport.html#a99a7bdfe500d03c2efbc2f2f61f332dd", null ]
     ] ],
     [ "ImageSequenceElementSelectorProcessor", "classinviwo_1_1ImageSequenceElementSelectorProcessor.html", [
       [ "ImageSequenceElementSelectorProcessor", "classinviwo_1_1ImageSequenceElementSelectorProcessor.html#acfc8990a98b2e2c29b7ed25994440be0", null ],
@@ -609,7 +616,6 @@ var group__processors =
       [ "process", "classinviwo_1_1MeshRenderProcessorGL.html#a90e793825149d3e5c19da1f049bf714d", null ],
       [ "updateDrawers", "classinviwo_1_1MeshRenderProcessorGL.html#a48b12f3f045ebd6f9f11caf85253dd49", null ],
       [ "camera_", "classinviwo_1_1MeshRenderProcessorGL.html#a6a35dbf06391c8bac667600699b14273", null ],
-      [ "centerViewOnGeometry_", "classinviwo_1_1MeshRenderProcessorGL.html#a217d633e39433d9c65501b3a96462da4", null ],
       [ "colorLayer_", "classinviwo_1_1MeshRenderProcessorGL.html#a01cc4e168aad8f9773797a7d09f2b918", null ],
       [ "cullFace_", "classinviwo_1_1MeshRenderProcessorGL.html#ac3c69159c49f18d42a696e8f196451e0", null ],
       [ "drawers_", "classinviwo_1_1MeshRenderProcessorGL.html#ae3c967bce98f27b0b57b626eca567c4b", null ],
@@ -623,8 +629,6 @@ var group__processors =
       [ "outport_", "classinviwo_1_1MeshRenderProcessorGL.html#a82fe9a06931ead6b7d193c414fb2c244", null ],
       [ "overrideColor_", "classinviwo_1_1MeshRenderProcessorGL.html#a99f7841ebc3aa94ee3e9a2de88b6770d", null ],
       [ "overrideColorBuffer_", "classinviwo_1_1MeshRenderProcessorGL.html#a26d66c598ed9d0de1376ff213d5f0f34", null ],
-      [ "resetViewParams_", "classinviwo_1_1MeshRenderProcessorGL.html#a62066a4f92f0dfe2713125c1dcf3b78b", null ],
-      [ "setNearFarPlane_", "classinviwo_1_1MeshRenderProcessorGL.html#af71f5d05683f03eb3c7d78c07e84ff96", null ],
       [ "shader_", "classinviwo_1_1MeshRenderProcessorGL.html#a29db506e636573bfe680b16aecccfe75", null ],
       [ "texCoordLayer_", "classinviwo_1_1MeshRenderProcessorGL.html#a239f3e3fd78f14f10c0976097b361853", null ],
       [ "trackball_", "classinviwo_1_1MeshRenderProcessorGL.html#a673e7b724f8dcf1c2c3483d52a408283", null ],
@@ -632,7 +636,7 @@ var group__processors =
     ] ],
     [ "MultichannelRaycaster", "classinviwo_1_1MultichannelRaycaster.html", [
       [ "MultichannelRaycaster", "classinviwo_1_1MultichannelRaycaster.html#adda083d7f09ea652815545c472d7f9b0", null ],
-      [ "~MultichannelRaycaster", "classinviwo_1_1MultichannelRaycaster.html#a4a954c12ab6052c637a27c87a604ac59", null ],
+      [ "~MultichannelRaycaster", "classinviwo_1_1MultichannelRaycaster.html#ac7d809d0cb6f6e39b27f59cdaa537b34", null ],
       [ "deserialize", "classinviwo_1_1MultichannelRaycaster.html#ad83b09a88456fe90571463774c98ece9", null ],
       [ "getProcessorInfo", "classinviwo_1_1MultichannelRaycaster.html#a36dac4731ca5df113e906f8f5e470404", null ],
       [ "initializeResources", "classinviwo_1_1MultichannelRaycaster.html#ae3c6cdfe78fb1641427c8669ae034f23", null ],
@@ -688,41 +692,6 @@ var group__processors =
       [ "shader_", "classinviwo_1_1VolumeRaycaster.html#a25a589e2a34054c68585d3f50e5aefb1", null ],
       [ "toggleShading_", "classinviwo_1_1VolumeRaycaster.html#ac554bea54cdfd84f76c46817a230f31f", null ],
       [ "volumePort_", "classinviwo_1_1VolumeRaycaster.html#ab60ccd71e8016bb232f86ed2fd4380dc", null ]
-    ] ],
-    [ "EntryExitPointsCLProcessor", "classinviwo_1_1EntryExitPointsCLProcessor.html", [
-      [ "EntryExitPointsCLProcessor", "classinviwo_1_1EntryExitPointsCLProcessor.html#a6d078338eca86daac0422f2e1ed9145a", null ],
-      [ "~EntryExitPointsCLProcessor", "classinviwo_1_1EntryExitPointsCLProcessor.html#afef84ed983ec48487a09ec24cc03c003", null ],
-      [ "getProcessorInfo", "classinviwo_1_1EntryExitPointsCLProcessor.html#add5f0bb0f5cd02b483fb520963287aca", null ],
-      [ "onKernelCompiled", "classinviwo_1_1EntryExitPointsCLProcessor.html#adade7f49ab134354ac5da66b801d88b4", null ],
-      [ "process", "classinviwo_1_1EntryExitPointsCLProcessor.html#a5463f0f49f65580a98777a61bfbe035d", null ]
-    ] ],
-    [ "GrayscaleCLProcessor", "classinviwo_1_1GrayscaleCLProcessor.html", [
-      [ "GrayscaleCLProcessor", "classinviwo_1_1GrayscaleCLProcessor.html#ac067c199b9623ad7a25f0a7d5890b038", null ],
-      [ "~GrayscaleCLProcessor", "classinviwo_1_1GrayscaleCLProcessor.html#a612e1c9af4d016632a59512fb6e8091b", null ],
-      [ "getProcessorInfo", "classinviwo_1_1GrayscaleCLProcessor.html#a306cdd54ed26d607533ccc6dab378eff", null ],
-      [ "process", "classinviwo_1_1GrayscaleCLProcessor.html#a5f6d1ea02675f63a7c65e229b758d1a0", null ]
-    ] ],
-    [ "VolumeFirstHitCLProcessor", "classinviwo_1_1VolumeFirstHitCLProcessor.html", [
-      [ "VolumeFirstHitCLProcessor", "classinviwo_1_1VolumeFirstHitCLProcessor.html#aff34a2674d59f7881f9e81a3405a2e2a", null ],
-      [ "~VolumeFirstHitCLProcessor", "classinviwo_1_1VolumeFirstHitCLProcessor.html#a867d57168c6f6c351caf3b51407ea8f8", null ],
-      [ "firstHit", "classinviwo_1_1VolumeFirstHitCLProcessor.html#a987728cfbc7282b276f228e72987e958", null ],
-      [ "getProcessorInfo", "classinviwo_1_1VolumeFirstHitCLProcessor.html#ab5d72f441ea256c88dfdb3788e2a0292", null ],
-      [ "process", "classinviwo_1_1VolumeFirstHitCLProcessor.html#a550da21f7bd3d8023ce9674e5e82fe36", null ]
-    ] ],
-    [ "VolumeMaxCLProcessor", "classinviwo_1_1VolumeMaxCLProcessor.html", [
-      [ "VolumeMaxCLProcessor", "classinviwo_1_1VolumeMaxCLProcessor.html#ad196282b8c35bbbe9694f42472a7d2c8", null ],
-      [ "~VolumeMaxCLProcessor", "classinviwo_1_1VolumeMaxCLProcessor.html#ab559a3f3f08bbebd16d6998b87d342b6", null ],
-      [ "buildKernel", "classinviwo_1_1VolumeMaxCLProcessor.html#ab717b3cb9950ccbc4026b19f72453b23", null ],
-      [ "executeVolumeOperation", "classinviwo_1_1VolumeMaxCLProcessor.html#a1a507cb0708dafd190df53bc9bdfd0d1", null ],
-      [ "getProcessorInfo", "classinviwo_1_1VolumeMaxCLProcessor.html#a1d1017a1b467e1f37db988536062125b", null ],
-      [ "process", "classinviwo_1_1VolumeMaxCLProcessor.html#ae140ea096242d37a9dc86acd7f548871", null ]
-    ] ],
-    [ "VolumeRaycasterCLProcessor", "classinviwo_1_1VolumeRaycasterCLProcessor.html", [
-      [ "VolumeRaycasterCLProcessor", "classinviwo_1_1VolumeRaycasterCLProcessor.html#a2e192dc86b7d5b32526d6d1c5d465784", null ],
-      [ "~VolumeRaycasterCLProcessor", "classinviwo_1_1VolumeRaycasterCLProcessor.html#adb72a4184b5703b7e1193f08dff329d9", null ],
-      [ "getProcessorInfo", "classinviwo_1_1VolumeRaycasterCLProcessor.html#accdae23173e9aa3f5075a5cc34a3855a", null ],
-      [ "onKernelCompiled", "classinviwo_1_1VolumeRaycasterCLProcessor.html#a064d28722b81eb4ae2fa7e85cce4ba99", null ],
-      [ "process", "classinviwo_1_1VolumeRaycasterCLProcessor.html#ac7782b4815c14908f6f8d18311129db0", null ]
     ] ],
     [ "BrushingAndLinkingProcessor", "classinviwo_1_1BrushingAndLinkingProcessor.html", [
       [ "BrushingAndLinkingProcessor", "classinviwo_1_1BrushingAndLinkingProcessor.html#a54a6d179dd24fb14dc84b490f4c7fd29", null ],
@@ -849,6 +818,20 @@ var group__processors =
       [ "onWillRemoveProperty", "classinviwo_1_1glui_1_1GLUIProcessor.html#adf912f9013f5bc292f8cebc36b004c92", null ],
       [ "process", "classinviwo_1_1glui_1_1GLUIProcessor.html#aa37dc8229ea9ede4f9d348e8c66bed44", null ]
     ] ],
+    [ "ImagePlotProcessor", "classinviwo_1_1plot_1_1ImagePlotProcessor.html", [
+      [ "AxisRangeMode", "classinviwo_1_1plot_1_1ImagePlotProcessor.html#a0253c40f528e12a5466925be481d3e68", [
+        [ "ImageDims", "classinviwo_1_1plot_1_1ImagePlotProcessor.html#a0253c40f528e12a5466925be481d3e68a27393f3600bdc5730eaf27228d427b95", null ],
+        [ "Custom", "classinviwo_1_1plot_1_1ImagePlotProcessor.html#a0253c40f528e12a5466925be481d3e68a90589c47f06eb971d548591f23c285af", null ]
+      ] ],
+      [ "ImagePlotProcessor", "classinviwo_1_1plot_1_1ImagePlotProcessor.html#aa1e07b63917e78890ac9967479789239", null ],
+      [ "~ImagePlotProcessor", "classinviwo_1_1plot_1_1ImagePlotProcessor.html#ae8897d112bcd6e47740542ad41360529", null ],
+      [ "getProcessorInfo", "classinviwo_1_1plot_1_1ImagePlotProcessor.html#a8e979f9430d84d8e25ed8b56e6392598", null ],
+      [ "onStatusChange", "classinviwo_1_1plot_1_1ImagePlotProcessor.html#ae51b6333b80aac1729195aec5440e547", null ],
+      [ "process", "classinviwo_1_1plot_1_1ImagePlotProcessor.html#a157776c729a22dc59df98d73a2f6468a", null ],
+      [ "propagateEvent", "classinviwo_1_1plot_1_1ImagePlotProcessor.html#a394ecd0ceaa7330e3261aa0a042a3bcf", null ],
+      [ "updateViewport", "classinviwo_1_1plot_1_1ImagePlotProcessor.html#abf9193a84cf3e13d658422b1c32b632b", null ],
+      [ "updateViewports", "classinviwo_1_1plot_1_1ImagePlotProcessor.html#ad62bf9881cb0924eada0b39a3c5fb1fa", null ]
+    ] ],
     [ "ScatterPlotMatrixProcessor", "classinviwo_1_1plot_1_1ScatterPlotMatrixProcessor.html", [
       [ "ScatterPlotMatrixProcessor", "classinviwo_1_1plot_1_1ScatterPlotMatrixProcessor.html#abd1e0ccc3a2cc67e2c4f537d1bcbdf54", null ],
       [ "~ScatterPlotMatrixProcessor", "classinviwo_1_1plot_1_1ScatterPlotMatrixProcessor.html#a80eb86fdb69e48f1dbdbaea492d04110", null ],
@@ -886,16 +869,9 @@ var group__processors =
       [ "initializeResources", "classinviwo_1_1StreamParticles.html#a0a5d7efedf557a4861bef9dfae9d4d7b", null ],
       [ "process", "classinviwo_1_1StreamParticles.html#a6830bd8d90c8ad57b09a3d9906ad116f", null ]
     ] ],
-    [ "SpringSystemProcessor", "classinviwo_1_1SpringSystemProcessor.html", [
-      [ "SpringSystemProcessor", "classinviwo_1_1SpringSystemProcessor.html#a8529ea2a56b8cc984d0aaced08c20422", null ],
-      [ "~SpringSystemProcessor", "classinviwo_1_1SpringSystemProcessor.html#a2abde2cc57fc2b773151fcee01b34fd9", null ],
-      [ "deserialize", "classinviwo_1_1SpringSystemProcessor.html#a2bc1569d26bac1c0b975ac1dd18c146e", null ],
-      [ "getProcessorInfo", "classinviwo_1_1SpringSystemProcessor.html#ad71717ed00c3f393db2a74a2720214c9", null ],
-      [ "process", "classinviwo_1_1SpringSystemProcessor.html#a502fd2e318220c260de48c5431c1727c", null ]
-    ] ],
     [ "CanvasProcessorGL", "classinviwo_1_1CanvasProcessorGL.html", [
-      [ "CanvasProcessorGL", "classinviwo_1_1CanvasProcessorGL.html#ac5a1364ffa7134ea3093313b90cca6db", null ],
-      [ "~CanvasProcessorGL", "classinviwo_1_1CanvasProcessorGL.html#a17bf3ba1ca206b6be07742ef4a7dddbe", null ],
+      [ "CanvasProcessorGL", "classinviwo_1_1CanvasProcessorGL.html#ad21a705209b9fb86f034feebe2303cb7", null ],
+      [ "~CanvasProcessorGL", "classinviwo_1_1CanvasProcessorGL.html#acd53562b6dc8727b416c54fccfb593f3", null ],
       [ "getProcessorInfo", "classinviwo_1_1CanvasProcessorGL.html#adaa13c87a56f725e2b9feae3dc7955f9", null ]
     ] ],
     [ "BufferToMeshProcessor", "classinviwo_1_1BufferToMeshProcessor.html", [
@@ -1266,7 +1242,6 @@ var group__processors =
       [ "ColorScaleLegend", "classinviwo_1_1plot_1_1ColorScaleLegend.html#a48280355906d269b79e0222a9c6951ec", null ],
       [ "~ColorScaleLegend", "classinviwo_1_1plot_1_1ColorScaleLegend.html#a9db9872f46ff7e73b49a11fd83c80615", null ],
       [ "getProcessorInfo", "classinviwo_1_1plot_1_1ColorScaleLegend.html#a13f4a5f78b40ec2658c802c94d0cf3cc", null ],
-      [ "initializeResources", "classinviwo_1_1plot_1_1ColorScaleLegend.html#a64f83b470f628b250d424221b114fadc", null ],
       [ "process", "classinviwo_1_1plot_1_1ColorScaleLegend.html#a459c903effa76e4307e9f4f8daef06ff", null ]
     ] ],
     [ "PersistenceDiagramPlotProcessor", "classinviwo_1_1plot_1_1PersistenceDiagramPlotProcessor.html", [

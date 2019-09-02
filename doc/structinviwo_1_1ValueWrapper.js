@@ -11,6 +11,8 @@ var structinviwo_1_1ValueWrapper =
     [ "reset", "structinviwo_1_1ValueWrapper.html#a8b0f6789beff3f18ba8dafdb862403d4", null ],
     [ "serialize", "structinviwo_1_1ValueWrapper.html#a5f976d33ec850332118a8ae4f663d8e9", null ],
     [ "setAsDefault", "structinviwo_1_1ValueWrapper.html#a459e8414a976996b608b76e9cf736ca0", null ],
+    [ "update", "structinviwo_1_1ValueWrapper.html#afa321e5e679f9c86c04f32d93a92cdf4", null ],
+    [ "update", "structinviwo_1_1ValueWrapper.html#adb9b3cc44e55b4b7ad5293a964c93009", null ],
     [ "defaultValue", "structinviwo_1_1ValueWrapper.html#abe08043a7dcd47d60e98cf09d9c048a6", null ],
     [ "name", "structinviwo_1_1ValueWrapper.html#ace01dc529f8ba103187791397a4e1cca", null ],
     [ "value", "structinviwo_1_1ValueWrapper.html#ac926b3e5f0834354886699ed094bac69", null ]

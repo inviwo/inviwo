@@ -9,5 +9,5 @@ var classinviwo_1_1RawVolumeReader =
     [ "operator=", "classinviwo_1_1RawVolumeReader.html#a07acd908c928ccf2cd0aaae57f803e06", null ],
     [ "readData", "classinviwo_1_1RawVolumeReader.html#abda50421672b115cb059537f9b87a9d3", null ],
     [ "readData", "classinviwo_1_1RawVolumeReader.html#a8ec8125b20472efce5f2ba1a73e869d4", null ],
-    [ "setParameters", "classinviwo_1_1RawVolumeReader.html#a80399cb61dcfda375fe22a43d8f4861c", null ]
+    [ "setParameters", "classinviwo_1_1RawVolumeReader.html#af0d8083d9071b43d942d7b5a9204a218", null ]
 ];

@@ -31,7 +31,7 @@
   <td id="projectlogo"><img alt="Logo" src="inviwo_dark.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Inviwo
-   &#160;<span id="projectnumber">0.9.10</span>
+   &#160;<span id="projectnumber">0.9.10.1</span>
    </div>
    <div id="projectbrief">Inviwo documentation</div>
   </td>
@@ -89,9 +89,9 @@ $(document).ready(function(){initNavTree('classinviwo_1_1FileTreeWidget.html',''
 
 <div class="header">
   <div class="summary">
-<a href="#pub-types">Public Types</a> &#124;
 <a href="#signals">Signals</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="classinviwo_1_1FileTreeWidget-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">inviwo::FileTreeWidget Class Reference</div>  </div>
@@ -105,24 +105,10 @@ $(document).ready(function(){initNavTree('classinviwo_1_1FileTreeWidget.html',''
 <div class="center"><img src="classinviwo_1_1FileTreeWidget__inherit__graph.png" border="0" usemap="#inviwo_1_1FileTreeWidget_inherit__map" alt="Inheritance graph"/></div>
 <map name="inviwo_1_1FileTreeWidget_inherit__map" id="inviwo_1_1FileTreeWidget_inherit__map">
 <area shape="rect"  title=" " alt="" coords="5,80,156,107"/>
-<area shape="rect"  title=" " alt="" coords="31,5,130,32"/>
+<area shape="rect"  title=" " alt="" coords="38,5,123,32"/>
 </map>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
-Public Types</h2></td></tr>
-<tr class="memitem:afc5825c018cc4320c09f1831941687c6"><td class="memItemLeft" align="right" valign="top"><a id="afc5825c018cc4320c09f1831941687c6"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>ListElemType</b> { <b>File</b> = 1, 
-<b>Section</b>, 
-<b>SubSection</b>
- }</td></tr>
-<tr class="separator:afc5825c018cc4320c09f1831941687c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae9d967e89015e8817374ae074e77c945"><td class="memItemLeft" align="right" valign="top"><a id="ae9d967e89015e8817374ae074e77c945"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>ItemRoles</b> { <b>FileName</b> = Qt::UserRole + 100, 
-<b>Path</b>, 
-<b>Type</b>, 
-<b>ExampleWorkspace</b>
- }</td></tr>
-<tr class="separator:ae9d967e89015e8817374ae074e77c945"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="signals"></a>
 Signals</h2></td></tr>
 <tr class="memitem:ad9fa4b0319324f7c4e9f915ec62ed43b"><td class="memItemLeft" align="right" valign="top"><a id="ad9fa4b0319324f7c4e9f915ec62ed43b"></a>
@@ -149,7 +135,44 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>updateRegressionTestE
 <tr class="memitem:a863794dd1c3eed033deb8744313fa922"><td class="memItemLeft" align="right" valign="top"><a id="a863794dd1c3eed033deb8744313fa922"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>selectRecentWorkspace</b> (int index)</td></tr>
 <tr class="separator:a863794dd1c3eed033deb8744313fa922"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02a28f4590a282979f4d6e1fbeee097d"><td class="memItemLeft" align="right" valign="top"><a id="a02a28f4590a282979f4d6e1fbeee097d"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setFilter</b> (const QString &amp;str)</td></tr>
+<tr class="separator:a02a28f4590a282979f4d6e1fbeee097d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25eff55c55e71be66475253cde8688b7"><td class="memItemLeft" align="right" valign="top"><a id="a25eff55c55e71be66475253cde8688b7"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1FileTreeWidget.html#a25eff55c55e71be66475253cde8688b7">defaultExpand</a> ()</td></tr>
+<tr class="memdesc:a25eff55c55e71be66475253cde8688b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">expand recent workspaces and examples, but not test workspaces <br /></td></tr>
+<tr class="separator:a25eff55c55e71be66475253cde8688b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb59c0cc9671677dd17fd5edf23d2379"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1FileTreeWidget.html#aeb59c0cc9671677dd17fd5edf23d2379">expandItems</a> ()</td></tr>
+<tr class="memdesc:aeb59c0cc9671677dd17fd5edf23d2379"><td class="mdescLeft">&#160;</td><td class="mdescRight">expand all items depending on whether there is a filter enabled. If not, this will call <a class="el" href="classinviwo_1_1FileTreeWidget.html#a25eff55c55e71be66475253cde8688b7" title="expand recent workspaces and examples, but not test workspaces">defaultExpand()</a>.  <a href="#aeb59c0cc9671677dd17fd5edf23d2379">More...</a><br /></td></tr>
+<tr class="separator:aeb59c0cc9671677dd17fd5edf23d2379"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:a10f9bed8d3beb5a9b72f3f7f14ef9f64"><td class="memItemLeft" align="right" valign="top"><a id="a10f9bed8d3beb5a9b72f3f7f14ef9f64"></a>
+QModelIndex&#160;</td><td class="memItemRight" valign="bottom"><b>findFirstLeaf</b> (QModelIndex parent=QModelIndex()) const</td></tr>
+<tr class="separator:a10f9bed8d3beb5a9b72f3f7f14ef9f64"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="aeb59c0cc9671677dd17fd5edf23d2379"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb59c0cc9671677dd17fd5edf23d2379">&#9670;&nbsp;</a></span>expandItems()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void inviwo::FileTreeWidget::expandItems </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>expand all items depending on whether there is a filter enabled. If not, this will call <a class="el" href="classinviwo_1_1FileTreeWidget.html#a25eff55c55e71be66475253cde8688b7" title="expand recent workspaces and examples, but not test workspaces">defaultExpand()</a>. </p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1FileTreeWidget.html#a25eff55c55e71be66475253cde8688b7" title="expand recent workspaces and examples, but not test workspaces">defaultExpand</a> </dd></dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>filetreewidget.h</li>
 <li>filetreewidget.cpp</li>

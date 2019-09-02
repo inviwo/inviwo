@@ -1,6 +1,0 @@
-<map id="inviwo::GravitySpringSystem&lt; N, ComponentType &gt;" name="inviwo::GravitySpringSystem&lt; N, ComponentType &gt;">
-<area shape="rect" id="node1" title="Spring mass system config using a constant force, e.g. gravitational force." alt="" coords="715,29,901,70"/>
-<area shape="rect" id="node4" href="$classinviwo_1_1GravitySpringSystem.html" title=" " alt="" coords="1031,29,1217,70"/>
-<area shape="rect" id="node2" href="$classinviwo_1_1SpringSystem.html" title=" " alt="" coords="415,21,665,77"/>
-<area shape="rect" id="node3" href="$classinviwo_1_1SpringSystem.html" title="this class is representing a spring mass system including a solver using either the Verlet integratio..." alt="" coords="5,21,219,77"/>
-</map>

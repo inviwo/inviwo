@@ -1,6 +1,7 @@
 var classinviwo_1_1RenderHandlerGL =
 [
-    [ "RenderHandlerGL", "classinviwo_1_1RenderHandlerGL.html#ad26241624fe1dade8b763ec02f18712d", null ],
+    [ "OnWebPageCopiedCallback", "classinviwo_1_1RenderHandlerGL.html#ac0e81e94c1bbe7247330600a6b3413a7", null ],
+    [ "RenderHandlerGL", "classinviwo_1_1RenderHandlerGL.html#a10c214750b98619f8a25f8bc04e886cf", null ],
     [ "ClearPopupRects", "classinviwo_1_1RenderHandlerGL.html#a875ec463c2a0f08358c8f5859270c6b3", null ],
     [ "getPixel", "classinviwo_1_1RenderHandlerGL.html#a7947466393da93cd6a5051f5062d1668", null ],
     [ "getTexture2D", "classinviwo_1_1RenderHandlerGL.html#a0688a1d267c1197c505bbce483471eb0", null ],
