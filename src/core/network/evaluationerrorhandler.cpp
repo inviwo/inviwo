@@ -39,6 +39,8 @@ void StandardEvaluationErrorHandler::operator()(Processor* processor, Evaluation
         switch (type) {
             case EvaluationType::InitResource:
                 return "InitializeResources";
+            case EvaluationType::PortOnChange:
+                return "PortOnChange";
             case EvaluationType::Process:
                 return "Process";
             case EvaluationType::NotReady:
