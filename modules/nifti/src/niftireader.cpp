@@ -230,69 +230,65 @@ std::shared_ptr<NiftiReader::VolumeSequence> NiftiReader::readData(const std::st
     NiftiVolumeRAMLoader loader(niftiImage, start_index, region_size, flipAxis);
     // Load in data to determine data/value ranges if necessary
     auto volRAM = std::static_pointer_cast<VolumeRAM>(loader.createRepresentation());
-    /*
-    The cal_min and cal_max fields (if nonzero) are used for mapping (possibly
-    scaled) dataset values to display colors:
-    - Minimum display intensity (black) corresponds to dataset value cal_min.
-    - Maximum display intensity (white) corresponds to dataset value cal_max.
-    - Dataset values below cal_min should display as black also, and values
-    above cal_max as white.
-    - Colors "black" and "white", of course, may refer to any scalar display
-    scheme (e.g., a color lookup table specified via aux_file).
-    - cal_min and cal_max only make sense when applied to scalar-valued
-    datasets (i.e., dim[0] < 5 or dim[5] = 1)
-    */
-    if (niftiImage->cal_min != 0 || niftiImage->cal_max != 0) {
-        volume->dataMap_.dataRange.x = niftiImage->cal_min;
-        volume->dataMap_.dataRange.y = niftiImage->cal_max;
+
+    // No need to modify range for 8-bit formats since normalization will work well anyway
+    if (format->getPrecision() > 8) {
+        // These formats may have a tricky data range,
+        // so we need to compute it for valid display ranges
+        auto minmax = util::volumeMinMax(volRAM.get());
+        // minmax always have four components, unused components are set to zero.
+        // Hence, only consider components used by the data format
+        dvec2 dataRange(minmax.first[0], minmax.second[0]);
+        // min/max of all components
+        for (size_t component = 1; component < format->getComponents(); ++component) {
+            dataRange = dvec2(glm::min(dataRange[0], minmax.first[component]),
+                              glm::max(dataRange[1], minmax.second[component]));
+        }
+        if (format->getId() == DataFormatId::UInt16) {
+            // Try to make different UInt16 comparable
+            // by not modifying the range
+            if (dataRange.y < 4096.) {
+                // All values within 12-bit range so we guess that this is a 12-bit data set
+                dataRange = dvec2(0., 4095.);
+                LogInfo(
+                    "Guessing 12-bit data range in 16-bit data since all values are below "
+                    "4096. Change data range in VolumeSource to [0 65535] if this is "
+                    "incorrect.");
+            } else {
+                // This was probably a 16-bit data set after all
+                dataRange = dvec2(0., format->getMax());
+            }
+        }
+        volume->dataMap_.dataRange = dataRange;
+        volume->dataMap_.valueRange = dataRange;
+    }
+    if ((niftiImage->cal_min != 0 || niftiImage->cal_max != 0) && (niftiImage->dim[0] < 5 || niftiImage->dim[5] == 1)) {
+        /*
+            The cal_min and cal_max fields (if nonzero) are used for mapping (possibly
+            scaled) dataset values to display colors:
+            - Minimum display intensity (black) corresponds to dataset value cal_min.
+            - Maximum display intensity (white) corresponds to dataset value cal_max.
+            - Dataset values below cal_min should display as black also, and values
+            above cal_max as white.
+            - Colors "black" and "white", of course, may refer to any scalar display
+            scheme (e.g., a color lookup table specified via aux_file).
+            - cal_min and cal_max only make sense when applied to scalar-valued
+            datasets (i.e., dim[0] < 5 or dim[5] = 1)
+        */
         volume->dataMap_.valueRange.x = niftiImage->cal_min;
         volume->dataMap_.valueRange.y = niftiImage->cal_max;
-    } else {
-        // No need to modify range for 8-bit formats since normalization will work well anyway
-        if (format->getPrecision() > 8) {
-            // These formats may have a tricky data range,
-            // so we need to compute it for valid display ranges
-            auto minmax = util::volumeMinMax(volRAM.get());
-            // minmax always have four components, unused components are set to zero.
-            // Hence, only consider components used by the data format
-            dvec2 dataRange(minmax.first[0], minmax.second[0]);
-            // min/max of all components
-            for (size_t component = 1; component < format->getComponents(); ++component) {
-                dataRange = dvec2(glm::min(dataRange[0], minmax.first[component]),
-                                  glm::max(dataRange[1], minmax.second[component]));
-            }
-            if (format->getId() == DataFormatId::UInt16) {
-                // Try to make different UInt16 comparable
-                // by not modifying the range
-                if (dataRange.y < 4096.) {
-                    // All values within 12-bit range so we guess that this is a 12-bit data set
-                    dataRange = dvec2(0., 4095.);
-                    LogInfo(
-                        "Guessing 12-bit data range in 16-bit data since all values are below "
-                        "4096. Change data range in VolumeSource to [0 65535] if this is "
-                        "incorrect.");
-                } else {
-                    // This was probably a 16-bit data set after all
-                    dataRange = dvec2(0., format->getMax());
-                }
-            }
-            volume->dataMap_.dataRange = dataRange;
-            volume->dataMap_.valueRange = dataRange;
-        }
-
-        if (niftiImage->scl_slope != 0) {
-            // If the scl_slope field is nonzero, then each voxel value in the dataset
-            // should be scaled as
-            //     y = scl_slope  x + scl_inter
-            // where x = stored voxel value and
-            // y = "true" voxel value
-            volume->dataMap_.valueRange.x =
-                static_cast<double>(niftiImage->scl_slope) * volume->dataMap_.dataRange.x +
-                static_cast<double>(niftiImage->scl_inter);
-            volume->dataMap_.valueRange.y =
-                static_cast<double>(niftiImage->scl_slope) * volume->dataMap_.dataRange.y +
-                static_cast<double>(niftiImage->scl_inter);
-        }
+    } else if (niftiImage->scl_slope != 0) {
+        // If the scl_slope field is nonzero, then each voxel value in the dataset
+        // should be scaled as
+        //     y = scl_slope  x + scl_inter
+        // where x = stored voxel value and
+        // y = "true" voxel value
+        volume->dataMap_.valueRange.x =
+            static_cast<double>(niftiImage->scl_slope) * volume->dataMap_.dataRange.x +
+            static_cast<double>(niftiImage->scl_inter);
+        volume->dataMap_.valueRange.y =
+            static_cast<double>(niftiImage->scl_slope) * volume->dataMap_.dataRange.y +
+            static_cast<double>(niftiImage->scl_inter);
     }
 
     auto volumes = std::make_shared<VolumeSequence>();
