@@ -11,6 +11,8 @@
                     <Processor content="org.inviwo.Mesh.outport.metasource" />
                     <Processor content="org.inviwo.Volume.outport.metasink" />
                     <Processor content="org.inviwo.Volume.outport.metasource" />
+                    <Processor content="org.inviwo.Volume.shared_ptr.vector.outport.metasink" />
+                    <Processor content="org.inviwo.Volume.shared_ptr.vector.outport.metasource" />
                     <Processor content="org.inviwo.Buffer.outport.metasink" />
                     <Processor content="org.inviwo.Buffer.outport.metasource" />
                     <Processor content="org.inviwo.LightSource.outport.metasink" />
@@ -212,6 +214,7 @@
                     <Processor content="org.inviwo.BrushingAndLinkingProcessor" />
                 </Processors>
             </Module>
+            <Module name="JSON" version="0" />
             <Module name="DataFrame" version="0">
                 <Processors>
                     <Processor content="org.inviwo.CSVSource" />
@@ -270,10 +273,11 @@
                     <Processor content="org.inviwo.GLUITestProcessor" />
                 </Processors>
             </Module>
-            <Module name="PlottingGL" version="1">
+            <Module name="PlottingGL" version="2">
                 <Processors>
                     <Processor content="org.inviwo.AxisRenderProcessor" />
                     <Processor content="org.inviwo.ColorScaleLegend" />
+                    <Processor content="org.inviwo.ImagePlotProcessor" />
                     <Processor content="org.inviwo.ParallelCoordinates" />
                     <Processor content="org.inviwo.PersistenceDiagramPlotProcessor" />
                     <Processor content="org.inviwo.ScatterPlotMatrixProcessor" />
@@ -368,14 +372,14 @@
                     <PortGroup content="default" key="inport" />
                 </PortGroups>
                 <InPorts>
-                    <InPort type="org.inviwo.Image.inport" identifier="inport" id="ref2" />
+                    <InPort type="org.inviwo.Image.inport" identifier="inport" id="ref0" />
                 </InPorts>
                 <Properties>
                     <Property type="org.inviwo.CompositeProperty" identifier="inputSize">
                         <Properties>
-                            <Property type="org.inviwo.IntVec2Property" identifier="dimensions" />
+                            <Property type="org.inviwo.IntSize2Property" identifier="dimensions" />
                             <Property type="org.inviwo.BoolProperty" identifier="enableCustomInputDimensions" />
-                            <Property type="org.inviwo.IntVec2Property" identifier="customInputDimensions">
+                            <Property type="org.inviwo.IntSize2Property" identifier="customInputDimensions">
                                 <readonly content="1" />
                             </Property>
                             <Property type="org.inviwo.BoolProperty" identifier="keepAspectRatio" />
@@ -402,16 +406,14 @@
                         <absolutePath content="" />
                         <workspaceRelativePath content="" />
                         <ivwdataRelativePath content="" />
-                        <nameFilter>
-                            <filter>
-                                <extension content="*" />
-                                <description content="All Files" />
-                            </filter>
-                        </nameFilter>
+                        <selectedExtension>
+                            <extension content="*" />
+                            <description content="All Files" />
+                        </selectedExtension>
                         <acceptMode content="0" />
                         <fileMode content="4" />
                     </Property>
-                    <Property type="org.inviwo.OptionPropertyString" identifier="fileExt" />
+                    <Property type="org.inviwo.OptionPropertyFileExtension" identifier="fileExt" />
                     <Property type="org.inviwo.ButtonProperty" identifier="saveLayer" />
                     <Property type="org.inviwo.ButtonProperty" identifier="saveLayerToFile" />
                     <Property type="org.inviwo.BoolProperty" identifier="fullscreen" />
@@ -443,7 +445,7 @@
                     <PortGroup content="default" key="outport" />
                 </PortGroups>
                 <OutPorts>
-                    <OutPort type="org.inviwo.Volume.outport" identifier="outport" id="ref3" />
+                    <OutPort type="org.inviwo.Volume.outport" identifier="outport" id="ref1" />
                     <OutPort type="org.inviwo.Volume.outport" identifier="curl" />
                     <OutPort type="org.inviwo.Volume.outport" identifier="divergence" />
                 </OutPorts>
@@ -470,10 +472,10 @@
                     <PortGroup content="default" key="outputImage" />
                 </PortGroups>
                 <InPorts>
-                    <InPort type="org.inviwo.Volume.inport" identifier="inputVolume" id="ref0" />
+                    <InPort type="org.inviwo.Volume.inport" identifier="inputVolume" id="ref2" />
                 </InPorts>
                 <OutPorts>
-                    <OutPort type="org.inviwo.Image.outport" identifier="outputImage" id="ref1" />
+                    <OutPort type="org.inviwo.Image.outport" identifier="outputImage" id="ref3" />
                 </OutPorts>
                 <Properties>
                     <Property type="org.inviwo.OptionPropertyEnumInt" identifier="sliceAxis">
@@ -510,12 +512,12 @@
         </Processors>
         <Connections>
             <Connection>
-                <OutPort type="org.inviwo.Image.outport" identifier="outputImage" reference="ref1" />
-                <InPort type="org.inviwo.Image.inport" identifier="inport" reference="ref2" />
+                <OutPort type="org.inviwo.Image.outport" identifier="outputImage" reference="ref3" />
+                <InPort type="org.inviwo.Image.inport" identifier="inport" reference="ref0" />
             </Connection>
             <Connection>
-                <OutPort type="org.inviwo.Volume.outport" identifier="outport" reference="ref3" />
-                <InPort type="org.inviwo.Volume.inport" identifier="inputVolume" reference="ref0" />
+                <OutPort type="org.inviwo.Volume.outport" identifier="outport" reference="ref1" />
+                <InPort type="org.inviwo.Volume.inport" identifier="inputVolume" reference="ref2" />
             </Connection>
         </Connections>
     </ProcessorNetwork>
@@ -575,12 +577,10 @@
                         <absolutePath content="" />
                         <workspaceRelativePath content="" />
                         <ivwdataRelativePath content="" />
-                        <nameFilter>
-                            <filter>
-                                <extension content="*" />
-                                <description content="All Files" />
-                            </filter>
-                        </nameFilter>
+                        <selectedExtension>
+                            <extension content="*" />
+                            <description content="All Files" />
+                        </selectedExtension>
                         <acceptMode content="0" />
                         <fileMode content="4" />
                     </Property>

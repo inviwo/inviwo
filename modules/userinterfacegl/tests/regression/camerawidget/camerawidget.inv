@@ -11,6 +11,8 @@
                     <Processor content="org.inviwo.Mesh.outport.metasource" />
                     <Processor content="org.inviwo.Volume.outport.metasink" />
                     <Processor content="org.inviwo.Volume.outport.metasource" />
+                    <Processor content="org.inviwo.Volume.shared_ptr.vector.outport.metasink" />
+                    <Processor content="org.inviwo.Volume.shared_ptr.vector.outport.metasource" />
                     <Processor content="org.inviwo.Buffer.outport.metasink" />
                     <Processor content="org.inviwo.Buffer.outport.metasource" />
                     <Processor content="org.inviwo.LightSource.outport.metasink" />
@@ -212,6 +214,7 @@
                     <Processor content="org.inviwo.BrushingAndLinkingProcessor" />
                 </Processors>
             </Module>
+            <Module name="JSON" version="0" />
             <Module name="DataFrame" version="0">
                 <Processors>
                     <Processor content="org.inviwo.CSVSource" />
@@ -270,10 +273,11 @@
                     <Processor content="org.inviwo.GLUITestProcessor" />
                 </Processors>
             </Module>
-            <Module name="PlottingGL" version="1">
+            <Module name="PlottingGL" version="2">
                 <Processors>
                     <Processor content="org.inviwo.AxisRenderProcessor" />
                     <Processor content="org.inviwo.ColorScaleLegend" />
+                    <Processor content="org.inviwo.ImagePlotProcessor" />
                     <Processor content="org.inviwo.ParallelCoordinates" />
                     <Processor content="org.inviwo.PersistenceDiagramPlotProcessor" />
                     <Processor content="org.inviwo.ScatterPlotMatrixProcessor" />
@@ -437,6 +441,7 @@
                                 </OwnedPropertyIdentifiers>
                                 <Properties>
                                     <Property type="org.inviwo.OptionPropertyString" identifier="cameraType" />
+                                    <Property type="org.inviwo.ButtonGroupProperty" identifier="actions" />
                                     <Property type="org.inviwo.FloatVec3Property" identifier="lookFrom">
                                         <value x="1.3442025" y="-0.5350877" z="0.8221752" />
                                     </Property>
@@ -449,7 +454,6 @@
                                     <Property type="org.inviwo.FloatProperty" identifier="aspectRatio" />
                                     <Property type="org.inviwo.FloatProperty" identifier="near" />
                                     <Property type="org.inviwo.FloatProperty" identifier="far" />
-                                    <Property type="org.inviwo.BoolProperty" identifier="fitToBasis_" />
                                     <Property type="org.inviwo.FloatProperty" identifier="fov">
                                         <displayName content="FOV" />
                                         <semantics semantics="Default" />
@@ -460,6 +464,16 @@
                                         <maxvalue content="360" />
                                         <increment content="0.1" />
                                         <value content="38" />
+                                    </Property>
+                                    <Property type="org.inviwo.CompositeProperty" identifier="settings">
+                                        <Properties>
+                                            <Property type="org.inviwo.ButtonProperty" identifier="setNearFarButton" />
+                                            <Property type="org.inviwo.ButtonProperty" identifier="setLookRangesButton" />
+                                            <Property type="org.inviwo.BoolProperty" identifier="updateNearFar" />
+                                            <Property type="org.inviwo.BoolProperty" identifier="updateLookRanges" />
+                                            <Property type="org.inviwo.FloatProperty" identifier="fittingRatio" />
+                                        </Properties>
+                                        <collapsed content="1" />
                                     </Property>
                                 </Properties>
                                 <collapsed content="1" />
@@ -513,11 +527,11 @@
                 <Properties>
                     <Property type="org.inviwo.CompositeProperty" identifier="inputSize">
                         <Properties>
-                            <Property type="org.inviwo.IntVec2Property" identifier="dimensions" />
+                            <Property type="org.inviwo.IntSize2Property" identifier="dimensions" />
                             <Property type="org.inviwo.BoolProperty" identifier="enableCustomInputDimensions">
                                 <displayName content="Enable Custom Input Dimensions" />
                             </Property>
-                            <Property type="org.inviwo.IntVec2Property" identifier="customInputDimensions">
+                            <Property type="org.inviwo.IntSize2Property" identifier="customInputDimensions">
                                 <displayName content="Input Image Dimensions" />
                                 <readonly content="1" />
                             </Property>
@@ -549,10 +563,14 @@
                         <absolutePath content="" />
                         <workspaceRelativePath content="" />
                         <ivwdataRelativePath content="" />
+                        <selectedExtension>
+                            <extension content="*" />
+                            <description content="All Files" />
+                        </selectedExtension>
                         <acceptMode content="0" />
                         <fileMode content="4" />
                     </Property>
-                    <Property type="org.inviwo.OptionPropertyString" identifier="fileExt" />
+                    <Property type="org.inviwo.OptionPropertyFileExtension" identifier="fileExt" />
                     <Property type="org.inviwo.ButtonProperty" identifier="saveLayer" />
                     <Property type="org.inviwo.ButtonProperty" identifier="saveLayerToFile" />
                     <Property type="org.inviwo.BoolProperty" identifier="fullscreen" />
@@ -647,6 +665,7 @@
                                 </OwnedPropertyIdentifiers>
                                 <Properties>
                                     <Property type="org.inviwo.OptionPropertyString" identifier="cameraType" />
+                                    <Property type="org.inviwo.ButtonGroupProperty" identifier="actions" />
                                     <Property type="org.inviwo.FloatVec3Property" identifier="lookFrom">
                                         <value x="1.3442025" y="-0.5350877" z="0.8221752" />
                                     </Property>
@@ -659,7 +678,6 @@
                                     <Property type="org.inviwo.FloatProperty" identifier="aspectRatio" />
                                     <Property type="org.inviwo.FloatProperty" identifier="near" />
                                     <Property type="org.inviwo.FloatProperty" identifier="far" />
-                                    <Property type="org.inviwo.BoolProperty" identifier="fitToBasis_" />
                                     <Property type="org.inviwo.FloatProperty" identifier="fov">
                                         <displayName content="FOV" />
                                         <semantics semantics="Default" />
@@ -670,6 +688,16 @@
                                         <maxvalue content="360" />
                                         <increment content="0.1" />
                                         <value content="38" />
+                                    </Property>
+                                    <Property type="org.inviwo.CompositeProperty" identifier="settings">
+                                        <Properties>
+                                            <Property type="org.inviwo.ButtonProperty" identifier="setNearFarButton" />
+                                            <Property type="org.inviwo.ButtonProperty" identifier="setLookRangesButton" />
+                                            <Property type="org.inviwo.BoolProperty" identifier="updateNearFar" />
+                                            <Property type="org.inviwo.BoolProperty" identifier="updateLookRanges" />
+                                            <Property type="org.inviwo.FloatProperty" identifier="fittingRatio" />
+                                        </Properties>
+                                        <collapsed content="1" />
                                     </Property>
                                 </Properties>
                                 <collapsed content="1" />
@@ -794,6 +822,7 @@
                                 </OwnedPropertyIdentifiers>
                                 <Properties>
                                     <Property type="org.inviwo.OptionPropertyString" identifier="cameraType" />
+                                    <Property type="org.inviwo.ButtonGroupProperty" identifier="actions" />
                                     <Property type="org.inviwo.FloatVec3Property" identifier="lookFrom">
                                         <value x="1.3442025" y="-0.5350877" z="0.8221752" />
                                     </Property>
@@ -806,7 +835,6 @@
                                     <Property type="org.inviwo.FloatProperty" identifier="aspectRatio" />
                                     <Property type="org.inviwo.FloatProperty" identifier="near" />
                                     <Property type="org.inviwo.FloatProperty" identifier="far" />
-                                    <Property type="org.inviwo.BoolProperty" identifier="fitToBasis_" />
                                     <Property type="org.inviwo.FloatProperty" identifier="fov">
                                         <displayName content="FOV" />
                                         <semantics semantics="Default" />
@@ -817,6 +845,16 @@
                                         <maxvalue content="360" />
                                         <increment content="0.1" />
                                         <value content="38" />
+                                    </Property>
+                                    <Property type="org.inviwo.CompositeProperty" identifier="settings">
+                                        <Properties>
+                                            <Property type="org.inviwo.ButtonProperty" identifier="setNearFarButton" />
+                                            <Property type="org.inviwo.ButtonProperty" identifier="setLookRangesButton" />
+                                            <Property type="org.inviwo.BoolProperty" identifier="updateNearFar" />
+                                            <Property type="org.inviwo.BoolProperty" identifier="updateLookRanges" />
+                                            <Property type="org.inviwo.FloatProperty" identifier="fittingRatio" />
+                                        </Properties>
+                                        <collapsed content="1" />
                                     </Property>
                                 </Properties>
                                 <collapsed content="1" />
@@ -958,12 +996,10 @@
                         <absolutePath content="" />
                         <workspaceRelativePath content="" />
                         <ivwdataRelativePath content="" />
-                        <nameFilter>
-                            <filter>
-                                <extension content="*" />
-                                <description content="All Files" />
-                            </filter>
-                        </nameFilter>
+                        <selectedExtension>
+                            <extension content="*" />
+                            <description content="All Files" />
+                        </selectedExtension>
                         <acceptMode content="0" />
                         <fileMode content="4" />
                     </Property>

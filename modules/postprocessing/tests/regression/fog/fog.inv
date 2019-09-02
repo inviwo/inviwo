@@ -11,6 +11,8 @@
                     <Processor content="org.inviwo.Mesh.outport.metasource" />
                     <Processor content="org.inviwo.Volume.outport.metasink" />
                     <Processor content="org.inviwo.Volume.outport.metasource" />
+                    <Processor content="org.inviwo.Volume.shared_ptr.vector.outport.metasink" />
+                    <Processor content="org.inviwo.Volume.shared_ptr.vector.outport.metasource" />
                     <Processor content="org.inviwo.Buffer.outport.metasink" />
                     <Processor content="org.inviwo.Buffer.outport.metasource" />
                     <Processor content="org.inviwo.LightSource.outport.metasink" />
@@ -212,6 +214,7 @@
                     <Processor content="org.inviwo.BrushingAndLinkingProcessor" />
                 </Processors>
             </Module>
+            <Module name="JSON" version="0" />
             <Module name="DataFrame" version="0">
                 <Processors>
                     <Processor content="org.inviwo.CSVSource" />
@@ -270,10 +273,11 @@
                     <Processor content="org.inviwo.GLUITestProcessor" />
                 </Processors>
             </Module>
-            <Module name="PlottingGL" version="1">
+            <Module name="PlottingGL" version="2">
                 <Processors>
                     <Processor content="org.inviwo.AxisRenderProcessor" />
                     <Processor content="org.inviwo.ColorScaleLegend" />
+                    <Processor content="org.inviwo.ImagePlotProcessor" />
                     <Processor content="org.inviwo.ParallelCoordinates" />
                     <Processor content="org.inviwo.PersistenceDiagramPlotProcessor" />
                     <Processor content="org.inviwo.ScatterPlotMatrixProcessor" />
@@ -368,51 +372,91 @@
                     <PortGroup content="default" key="image" />
                 </PortGroups>
                 <OutPorts>
-                    <OutPort type="org.inviwo.Image.outport" identifier="image" id="ref17" />
+                    <OutPort type="org.inviwo.Image.outport" identifier="image" id="ref7" />
                 </OutPorts>
                 <Properties>
                     <Property type="org.inviwo.FileProperty" identifier="imageFileName">
                         <absolutePath content="C:/Users/petst55.AD/Documents/Inviwo/inviwo/data/images/canyon7.png" />
                         <workspaceRelativePath content="../../../../../data/images/canyon7.png" />
                         <ivwdataRelativePath content="images/canyon7.png" />
-                        <nameFilter>
-                            <filter>
-                                <extension content="*" />
-                                <description content="All Files" />
-                            </filter>
-                            <filter>
-                                <extension content="raw" />
-                                <description content="RAW" />
-                            </filter>
-                            <filter>
-                                <extension content="tif" />
-                                <description content="TIFF (Tagged Image File Format)" />
-                            </filter>
-                            <filter>
-                                <extension content="jpeg" />
-                                <description content="Joint Photographic Experts Group" />
-                            </filter>
-                            <filter>
-                                <extension content="jpg" />
-                                <description content="Joint Photographic Experts Group" />
-                            </filter>
-                            <filter>
-                                <extension content="bmp" />
-                                <description content="Windows bitmap" />
-                            </filter>
-                            <filter>
-                                <extension content="tiff" />
-                                <description content="TIFF (Tagged Image File Format)" />
-                            </filter>
-                            <filter>
-                                <extension content="png" />
-                                <description content="Portable Network Graphics" />
-                            </filter>
-                        </nameFilter>
+                        <selectedExtension>
+                            <extension content="png" />
+                            <description content="Portable Network Graphics" />
+                        </selectedExtension>
                         <acceptMode content="0" />
                         <fileMode content="0" />
                     </Property>
-                    <Property type="org.inviwo.IntVec2Property" identifier="imageDimension_">
+                    <Property type="org.inviwo.OptionPropertyFileExtension" identifier="reader">
+                        <options>
+                            <option>
+                                <id content="Joint Photographic Experts Group (*.jpeg)" />
+                                <name content="Joint Photographic Experts Group (*.jpeg)" />
+                                <value>
+                                    <extension content="jpeg" />
+                                    <description content="Joint Photographic Experts Group" />
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Joint Photographic Experts Group (*.jpg)" />
+                                <name content="Joint Photographic Experts Group (*.jpg)" />
+                                <value>
+                                    <extension content="jpg" />
+                                    <description content="Joint Photographic Experts Group" />
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Portable Network Graphics (*.png)" />
+                                <name content="Portable Network Graphics (*.png)" />
+                                <value>
+                                    <extension content="png" />
+                                    <description content="Portable Network Graphics" />
+                                </value>
+                            </option>
+                            <option>
+                                <id content="RAW (*.raw)" />
+                                <name content="RAW (*.raw)" />
+                                <value>
+                                    <extension content="raw" />
+                                    <description content="RAW" />
+                                </value>
+                            </option>
+                            <option>
+                                <id content="TIFF (Tagged Image File Format) (*.tif)" />
+                                <name content="TIFF (Tagged Image File Format) (*.tif)" />
+                                <value>
+                                    <extension content="tif" />
+                                    <description content="TIFF (Tagged Image File Format)" />
+                                </value>
+                            </option>
+                            <option>
+                                <id content="TIFF (Tagged Image File Format) (*.tiff)" />
+                                <name content="TIFF (Tagged Image File Format) (*.tiff)" />
+                                <value>
+                                    <extension content="tiff" />
+                                    <description content="TIFF (Tagged Image File Format)" />
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Windows bitmap (*.bmp)" />
+                                <name content="Windows bitmap (*.bmp)" />
+                                <value>
+                                    <extension content="bmp" />
+                                    <description content="Windows bitmap" />
+                                </value>
+                            </option>
+                            <option>
+                                <id content="noreader" />
+                                <name content="No available reader" />
+                                <value>
+                                    <extension content="" />
+                                    <description content="" />
+                                </value>
+                            </option>
+                        </options>
+                        <selectedIdentifier content="Portable Network Graphics (*.png)" />
+                    </Property>
+                    <Property type="org.inviwo.ButtonProperty" identifier="reload" />
+                    <Property type="org.inviwo.IntSize2Property" identifier="imageDimension_">
                         <readonly content="1" />
                         <value x="512" y="512" />
                     </Property>
@@ -425,74 +469,12 @@
                     </MetaDataItem>
                 </MetaDataMap>
             </Processor>
-            <Processor type="org.inviwo.ImageSource" identifier="Normal Map" displayName="Image Source">
-                <PortGroups>
-                    <PortGroup content="default" key="image" />
-                </PortGroups>
-                <OutPorts>
-                    <OutPort type="org.inviwo.Image.outport" identifier="image" id="ref2" />
-                </OutPorts>
-                <Properties>
-                    <Property type="org.inviwo.FileProperty" identifier="imageFileName">
-                        <absolutePath content="C:/Users/petst55.AD/Documents/Inviwo/inviwo/data/images/canyon7-normalmap.png" />
-                        <workspaceRelativePath content="../../../../../data/images/canyon7-normalmap.png" />
-                        <ivwdataRelativePath content="images/canyon7-normalmap.png" />
-                        <nameFilter>
-                            <filter>
-                                <extension content="*" />
-                                <description content="All Files" />
-                            </filter>
-                            <filter>
-                                <extension content="raw" />
-                                <description content="RAW" />
-                            </filter>
-                            <filter>
-                                <extension content="tif" />
-                                <description content="TIFF (Tagged Image File Format)" />
-                            </filter>
-                            <filter>
-                                <extension content="jpeg" />
-                                <description content="Joint Photographic Experts Group" />
-                            </filter>
-                            <filter>
-                                <extension content="jpg" />
-                                <description content="Joint Photographic Experts Group" />
-                            </filter>
-                            <filter>
-                                <extension content="bmp" />
-                                <description content="Windows bitmap" />
-                            </filter>
-                            <filter>
-                                <extension content="tiff" />
-                                <description content="TIFF (Tagged Image File Format)" />
-                            </filter>
-                            <filter>
-                                <extension content="png" />
-                                <description content="Portable Network Graphics" />
-                            </filter>
-                        </nameFilter>
-                        <acceptMode content="0" />
-                        <fileMode content="0" />
-                    </Property>
-                    <Property type="org.inviwo.IntVec2Property" identifier="imageDimension_">
-                        <readonly content="1" />
-                        <value x="512" y="512" />
-                    </Property>
-                </Properties>
-                <MetaDataMap>
-                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
-                        <position x="375" y="-75" />
-                        <visibility content="1" />
-                        <selection content="0" />
-                    </MetaDataItem>
-                </MetaDataMap>
-            </Processor>
             <Processor type="org.inviwo.MeshCreator" identifier="Mesh Creator" displayName="Mesh Creator">
                 <PortGroups>
                     <PortGroup content="default" key="outport" />
                 </PortGroups>
                 <OutPorts>
-                    <OutPort type="org.inviwo.Mesh.outport" identifier="outport" id="ref1" />
+                    <OutPort type="org.inviwo.Mesh.outport" identifier="outport" id="ref20" />
                 </OutPorts>
                 <Properties>
                     <Property type="org.inviwo.OptionPropertyEnumInt" identifier="meshType">
@@ -540,13 +522,23 @@
                     <Property type="org.inviwo.CameraProperty" identifier="camera">
                         <Properties>
                             <Property type="org.inviwo.OptionPropertyString" identifier="cameraType" />
+                            <Property type="org.inviwo.ButtonGroupProperty" identifier="actions" />
                             <Property type="org.inviwo.FloatVec3Property" identifier="lookFrom" />
                             <Property type="org.inviwo.FloatVec3Property" identifier="lookTo" />
                             <Property type="org.inviwo.FloatVec3Property" identifier="lookUp" />
                             <Property type="org.inviwo.FloatProperty" identifier="aspectRatio" />
                             <Property type="org.inviwo.FloatProperty" identifier="near" />
                             <Property type="org.inviwo.FloatProperty" identifier="far" />
-                            <Property type="org.inviwo.BoolProperty" identifier="fitToBasis_" />
+                            <Property type="org.inviwo.CompositeProperty" identifier="settings">
+                                <Properties>
+                                    <Property type="org.inviwo.ButtonProperty" identifier="setNearFarButton" />
+                                    <Property type="org.inviwo.ButtonProperty" identifier="setLookRangesButton" />
+                                    <Property type="org.inviwo.BoolProperty" identifier="updateNearFar" />
+                                    <Property type="org.inviwo.BoolProperty" identifier="updateLookRanges" />
+                                    <Property type="org.inviwo.FloatProperty" identifier="fittingRatio" />
+                                </Properties>
+                                <collapsed content="1" />
+                            </Property>
                         </Properties>
                         <collapsed content="1" />
                     </Property>
@@ -559,7 +551,7 @@
                     </MetaDataItem>
                 </MetaDataMap>
             </Processor>
-            <Processor type="org.inviwo.ImageSource" identifier="Heightfield" displayName="Image Source">
+            <Processor type="org.inviwo.ImageSource" identifier="Normal Map" displayName="Image Source">
                 <PortGroups>
                     <PortGroup content="default" key="image" />
                 </PortGroups>
@@ -568,47 +560,189 @@
                 </OutPorts>
                 <Properties>
                     <Property type="org.inviwo.FileProperty" identifier="imageFileName">
-                        <absolutePath content="C:/Users/petst55.AD/Documents/Inviwo/inviwo/data/images/canyon7-heightmap.png" />
-                        <workspaceRelativePath content="../../../../../data/images/canyon7-heightmap.png" />
-                        <ivwdataRelativePath content="images/canyon7-heightmap.png" />
-                        <nameFilter>
-                            <filter>
-                                <extension content="*" />
-                                <description content="All Files" />
-                            </filter>
-                            <filter>
-                                <extension content="raw" />
-                                <description content="RAW" />
-                            </filter>
-                            <filter>
-                                <extension content="tif" />
-                                <description content="TIFF (Tagged Image File Format)" />
-                            </filter>
-                            <filter>
-                                <extension content="jpeg" />
-                                <description content="Joint Photographic Experts Group" />
-                            </filter>
-                            <filter>
-                                <extension content="jpg" />
-                                <description content="Joint Photographic Experts Group" />
-                            </filter>
-                            <filter>
-                                <extension content="bmp" />
-                                <description content="Windows bitmap" />
-                            </filter>
-                            <filter>
-                                <extension content="tiff" />
-                                <description content="TIFF (Tagged Image File Format)" />
-                            </filter>
-                            <filter>
-                                <extension content="png" />
-                                <description content="Portable Network Graphics" />
-                            </filter>
-                        </nameFilter>
+                        <absolutePath content="C:/Users/petst55.AD/Documents/Inviwo/inviwo/data/images/canyon7-normalmap.png" />
+                        <workspaceRelativePath content="../../../../../data/images/canyon7-normalmap.png" />
+                        <ivwdataRelativePath content="images/canyon7-normalmap.png" />
+                        <selectedExtension>
+                            <extension content="png" />
+                            <description content="Portable Network Graphics" />
+                        </selectedExtension>
                         <acceptMode content="0" />
                         <fileMode content="0" />
                     </Property>
-                    <Property type="org.inviwo.IntVec2Property" identifier="imageDimension_">
+                    <Property type="org.inviwo.OptionPropertyFileExtension" identifier="reader">
+                        <options>
+                            <option>
+                                <id content="Joint Photographic Experts Group (*.jpeg)" />
+                                <name content="Joint Photographic Experts Group (*.jpeg)" />
+                                <value>
+                                    <extension content="jpeg" />
+                                    <description content="Joint Photographic Experts Group" />
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Joint Photographic Experts Group (*.jpg)" />
+                                <name content="Joint Photographic Experts Group (*.jpg)" />
+                                <value>
+                                    <extension content="jpg" />
+                                    <description content="Joint Photographic Experts Group" />
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Portable Network Graphics (*.png)" />
+                                <name content="Portable Network Graphics (*.png)" />
+                                <value>
+                                    <extension content="png" />
+                                    <description content="Portable Network Graphics" />
+                                </value>
+                            </option>
+                            <option>
+                                <id content="RAW (*.raw)" />
+                                <name content="RAW (*.raw)" />
+                                <value>
+                                    <extension content="raw" />
+                                    <description content="RAW" />
+                                </value>
+                            </option>
+                            <option>
+                                <id content="TIFF (Tagged Image File Format) (*.tif)" />
+                                <name content="TIFF (Tagged Image File Format) (*.tif)" />
+                                <value>
+                                    <extension content="tif" />
+                                    <description content="TIFF (Tagged Image File Format)" />
+                                </value>
+                            </option>
+                            <option>
+                                <id content="TIFF (Tagged Image File Format) (*.tiff)" />
+                                <name content="TIFF (Tagged Image File Format) (*.tiff)" />
+                                <value>
+                                    <extension content="tiff" />
+                                    <description content="TIFF (Tagged Image File Format)" />
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Windows bitmap (*.bmp)" />
+                                <name content="Windows bitmap (*.bmp)" />
+                                <value>
+                                    <extension content="bmp" />
+                                    <description content="Windows bitmap" />
+                                </value>
+                            </option>
+                            <option>
+                                <id content="noreader" />
+                                <name content="No available reader" />
+                                <value>
+                                    <extension content="" />
+                                    <description content="" />
+                                </value>
+                            </option>
+                        </options>
+                        <selectedIdentifier content="Portable Network Graphics (*.png)" />
+                    </Property>
+                    <Property type="org.inviwo.ButtonProperty" identifier="reload" />
+                    <Property type="org.inviwo.IntSize2Property" identifier="imageDimension_">
+                        <readonly content="1" />
+                        <value x="512" y="512" />
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="375" y="-75" />
+                        <visibility content="1" />
+                        <selection content="0" />
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.ImageSource" identifier="Heightfield" displayName="Image Source">
+                <PortGroups>
+                    <PortGroup content="default" key="image" />
+                </PortGroups>
+                <OutPorts>
+                    <OutPort type="org.inviwo.Image.outport" identifier="image" id="ref5" />
+                </OutPorts>
+                <Properties>
+                    <Property type="org.inviwo.FileProperty" identifier="imageFileName">
+                        <absolutePath content="C:/Users/petst55.AD/Documents/Inviwo/inviwo/data/images/canyon7-heightmap.png" />
+                        <workspaceRelativePath content="../../../../../data/images/canyon7-heightmap.png" />
+                        <ivwdataRelativePath content="images/canyon7-heightmap.png" />
+                        <selectedExtension>
+                            <extension content="png" />
+                            <description content="Portable Network Graphics" />
+                        </selectedExtension>
+                        <acceptMode content="0" />
+                        <fileMode content="0" />
+                    </Property>
+                    <Property type="org.inviwo.OptionPropertyFileExtension" identifier="reader">
+                        <options>
+                            <option>
+                                <id content="Joint Photographic Experts Group (*.jpeg)" />
+                                <name content="Joint Photographic Experts Group (*.jpeg)" />
+                                <value>
+                                    <extension content="jpeg" />
+                                    <description content="Joint Photographic Experts Group" />
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Joint Photographic Experts Group (*.jpg)" />
+                                <name content="Joint Photographic Experts Group (*.jpg)" />
+                                <value>
+                                    <extension content="jpg" />
+                                    <description content="Joint Photographic Experts Group" />
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Portable Network Graphics (*.png)" />
+                                <name content="Portable Network Graphics (*.png)" />
+                                <value>
+                                    <extension content="png" />
+                                    <description content="Portable Network Graphics" />
+                                </value>
+                            </option>
+                            <option>
+                                <id content="RAW (*.raw)" />
+                                <name content="RAW (*.raw)" />
+                                <value>
+                                    <extension content="raw" />
+                                    <description content="RAW" />
+                                </value>
+                            </option>
+                            <option>
+                                <id content="TIFF (Tagged Image File Format) (*.tif)" />
+                                <name content="TIFF (Tagged Image File Format) (*.tif)" />
+                                <value>
+                                    <extension content="tif" />
+                                    <description content="TIFF (Tagged Image File Format)" />
+                                </value>
+                            </option>
+                            <option>
+                                <id content="TIFF (Tagged Image File Format) (*.tiff)" />
+                                <name content="TIFF (Tagged Image File Format) (*.tiff)" />
+                                <value>
+                                    <extension content="tiff" />
+                                    <description content="TIFF (Tagged Image File Format)" />
+                                </value>
+                            </option>
+                            <option>
+                                <id content="Windows bitmap (*.bmp)" />
+                                <name content="Windows bitmap (*.bmp)" />
+                                <value>
+                                    <extension content="bmp" />
+                                    <description content="Windows bitmap" />
+                                </value>
+                            </option>
+                            <option>
+                                <id content="noreader" />
+                                <name content="No available reader" />
+                                <value>
+                                    <extension content="" />
+                                    <description content="" />
+                                </value>
+                            </option>
+                        </options>
+                        <selectedIdentifier content="Portable Network Graphics (*.png)" />
+                    </Property>
+                    <Property type="org.inviwo.ButtonProperty" identifier="reload" />
+                    <Property type="org.inviwo.IntSize2Property" identifier="imageDimension_">
                         <readonly content="1" />
                         <value x="512" y="512" />
                     </Property>
@@ -631,14 +765,14 @@
                     <PortGroup content="default" key="texture" />
                 </PortGroups>
                 <InPorts>
-                    <InPort type="org.inviwo.Mesh.flat.multi.inport" identifier="geometry" id="ref8" />
-                    <InPort type="org.inviwo.Image.inport" identifier="heightfield" id="ref9" />
-                    <InPort type="org.inviwo.Image.inport" identifier="texture" id="ref10" />
-                    <InPort type="org.inviwo.Image.inport" identifier="normalmap" id="ref11" />
+                    <InPort type="org.inviwo.Mesh.flat.multi.inport" identifier="geometry" id="ref14" />
+                    <InPort type="org.inviwo.Image.inport" identifier="heightfield" id="ref15" />
+                    <InPort type="org.inviwo.Image.inport" identifier="texture" id="ref16" />
+                    <InPort type="org.inviwo.Image.inport" identifier="normalmap" id="ref17" />
                     <InPort type="org.inviwo.Image.inport" identifier="imageInport" />
                 </InPorts>
                 <OutPorts>
-                    <OutPort type="org.inviwo.Image.outport" identifier="image" id="ref12" />
+                    <OutPort type="org.inviwo.Image.outport" identifier="image" id="ref18" />
                 </OutPorts>
                 <Properties>
                     <Property type="org.inviwo.FloatProperty" identifier="heightScale">
@@ -648,12 +782,13 @@
                     <Property type="org.inviwo.OptionPropertyInt" identifier="terrainShadingMode">
                         <selectedIdentifier content="shadingColorTex" />
                     </Property>
-                    <Property type="org.inviwo.CameraProperty" identifier="camera" id="ref13">
+                    <Property type="org.inviwo.CameraProperty" identifier="camera" id="ref19">
                         <OwnedPropertyIdentifiers>
                             <PropertyIdentifier content="fov" />
                         </OwnedPropertyIdentifiers>
                         <Properties>
                             <Property type="org.inviwo.OptionPropertyString" identifier="cameraType" />
+                            <Property type="org.inviwo.ButtonGroupProperty" identifier="actions" />
                             <Property type="org.inviwo.FloatVec3Property" identifier="lookFrom">
                                 <value x="0.99899894" y="-0.56962645" z="0.4593603" />
                             </Property>
@@ -670,7 +805,6 @@
                             <Property type="org.inviwo.FloatProperty" identifier="far">
                                 <value content="5" />
                             </Property>
-                            <Property type="org.inviwo.BoolProperty" identifier="fitToBasis_" />
                             <Property type="org.inviwo.FloatProperty" identifier="fov">
                                 <displayName content="FOV" />
                                 <semantics semantics="Default" />
@@ -681,6 +815,16 @@
                                 <maxvalue content="360" />
                                 <increment content="0.1" />
                                 <value content="38" />
+                            </Property>
+                            <Property type="org.inviwo.CompositeProperty" identifier="settings">
+                                <Properties>
+                                    <Property type="org.inviwo.ButtonProperty" identifier="setNearFarButton" />
+                                    <Property type="org.inviwo.ButtonProperty" identifier="setLookRangesButton" />
+                                    <Property type="org.inviwo.BoolProperty" identifier="updateNearFar" />
+                                    <Property type="org.inviwo.BoolProperty" identifier="updateLookRanges" />
+                                    <Property type="org.inviwo.FloatProperty" identifier="fittingRatio" />
+                                </Properties>
+                                <collapsed content="1" />
                             </Property>
                         </Properties>
                         <collapsed content="0" />
@@ -828,83 +972,16 @@
                     </MetaDataItem>
                 </MetaDataMap>
             </Processor>
-            <Processor type="org.inviwo.Fog" identifier="Fog" displayName="Fog">
-                <PortGroups>
-                    <PortGroup content="default" key="inport" />
-                    <PortGroup content="default" key="output" />
-                </PortGroups>
-                <InPorts>
-                    <InPort type="org.inviwo.Image.inport" identifier="inport" id="ref5" />
-                </InPorts>
-                <OutPorts>
-                    <OutPort type="org.inviwo.Image.outport" identifier="output" id="ref6" />
-                </OutPorts>
-                <Properties>
-                    <Property type="org.inviwo.FloatVec3Property" identifier="color">
-                        <semantics semantics="Color" />
-                    </Property>
-                    <Property type="org.inviwo.FloatProperty" identifier="density">
-                        <value content="2.329" />
-                    </Property>
-                    <Property type="org.inviwo.FloatMinMaxProperty" identifier="range">
-                        <value x="0.15270001" y="0.4305" />
-                    </Property>
-                    <Property type="org.inviwo.CameraProperty" identifier="camera" id="ref7">
-                        <OwnedPropertyIdentifiers>
-                            <PropertyIdentifier content="fov" />
-                        </OwnedPropertyIdentifiers>
-                        <Properties>
-                            <Property type="org.inviwo.OptionPropertyString" identifier="cameraType" />
-                            <Property type="org.inviwo.FloatVec3Property" identifier="lookFrom">
-                                <value x="0.99899894" y="-0.56962645" z="0.4593603" />
-                            </Property>
-                            <Property type="org.inviwo.FloatVec3Property" identifier="lookTo">
-                                <value x="0.020473864" y="0.013809802" z="-0.012511158" />
-                            </Property>
-                            <Property type="org.inviwo.FloatVec3Property" identifier="lookUp">
-                                <value x="-0.45287406" y="0.30505383" z="0.83776361" />
-                            </Property>
-                            <Property type="org.inviwo.FloatProperty" identifier="aspectRatio">
-                                <value content="1.5357143" />
-                            </Property>
-                            <Property type="org.inviwo.FloatProperty" identifier="near" />
-                            <Property type="org.inviwo.FloatProperty" identifier="far">
-                                <value content="5" />
-                            </Property>
-                            <Property type="org.inviwo.BoolProperty" identifier="fitToBasis_" />
-                            <Property type="org.inviwo.FloatProperty" identifier="fov">
-                                <displayName content="FOV" />
-                                <semantics semantics="Default" />
-                                <usageMode content="1" />
-                                <visible content="1" />
-                                <readonly content="0" />
-                                <minvalue content="30" />
-                                <maxvalue content="360" />
-                                <increment content="0.1" />
-                                <value content="38" />
-                            </Property>
-                        </Properties>
-                        <collapsed content="0" />
-                    </Property>
-                </Properties>
-                <MetaDataMap>
-                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
-                        <position x="0" y="125" />
-                        <visibility content="1" />
-                        <selection content="0" />
-                    </MetaDataItem>
-                </MetaDataMap>
-            </Processor>
             <Processor type="org.inviwo.HeightFieldMapper" identifier="Height Field Mapper" displayName="Height Field Mapper">
                 <PortGroups>
                     <PortGroup content="default" key="heightfield" />
                     <PortGroup content="default" key="image" />
                 </PortGroups>
                 <InPorts>
-                    <InPort type="org.inviwo.Image.inport" identifier="image" id="ref18" />
+                    <InPort type="org.inviwo.Image.inport" identifier="image" id="ref3" />
                 </InPorts>
                 <OutPorts>
-                    <OutPort type="org.inviwo.Image.outport" identifier="heightfield" id="ref19" />
+                    <OutPort type="org.inviwo.Image.outport" identifier="heightfield" id="ref4" />
                 </OutPorts>
                 <Properties>
                     <Property type="org.inviwo.OptionPropertyInt" identifier="scalingmode">
@@ -926,21 +1003,98 @@
                     </MetaDataItem>
                 </MetaDataMap>
             </Processor>
+            <Processor type="org.inviwo.Fog" identifier="Fog" displayName="Fog">
+                <PortGroups>
+                    <PortGroup content="default" key="inport" />
+                    <PortGroup content="default" key="output" />
+                </PortGroups>
+                <InPorts>
+                    <InPort type="org.inviwo.Image.inport" identifier="inport" id="ref11" />
+                </InPorts>
+                <OutPorts>
+                    <OutPort type="org.inviwo.Image.outport" identifier="output" id="ref12" />
+                </OutPorts>
+                <Properties>
+                    <Property type="org.inviwo.FloatVec3Property" identifier="color">
+                        <semantics semantics="Color" />
+                    </Property>
+                    <Property type="org.inviwo.FloatProperty" identifier="density">
+                        <value content="2.329" />
+                    </Property>
+                    <Property type="org.inviwo.FloatMinMaxProperty" identifier="range">
+                        <value x="0.15270001" y="0.4305" />
+                    </Property>
+                    <Property type="org.inviwo.CameraProperty" identifier="camera" id="ref13">
+                        <OwnedPropertyIdentifiers>
+                            <PropertyIdentifier content="fov" />
+                        </OwnedPropertyIdentifiers>
+                        <Properties>
+                            <Property type="org.inviwo.OptionPropertyString" identifier="cameraType" />
+                            <Property type="org.inviwo.ButtonGroupProperty" identifier="actions" />
+                            <Property type="org.inviwo.FloatVec3Property" identifier="lookFrom">
+                                <value x="0.99899894" y="-0.56962645" z="0.4593603" />
+                            </Property>
+                            <Property type="org.inviwo.FloatVec3Property" identifier="lookTo">
+                                <value x="0.020473864" y="0.013809802" z="-0.012511158" />
+                            </Property>
+                            <Property type="org.inviwo.FloatVec3Property" identifier="lookUp">
+                                <value x="-0.45287406" y="0.30505383" z="0.83776361" />
+                            </Property>
+                            <Property type="org.inviwo.FloatProperty" identifier="aspectRatio">
+                                <value content="1.5357143" />
+                            </Property>
+                            <Property type="org.inviwo.FloatProperty" identifier="near" />
+                            <Property type="org.inviwo.FloatProperty" identifier="far">
+                                <value content="5" />
+                            </Property>
+                            <Property type="org.inviwo.FloatProperty" identifier="fov">
+                                <displayName content="FOV" />
+                                <semantics semantics="Default" />
+                                <usageMode content="1" />
+                                <visible content="1" />
+                                <readonly content="0" />
+                                <minvalue content="30" />
+                                <maxvalue content="360" />
+                                <increment content="0.1" />
+                                <value content="38" />
+                            </Property>
+                            <Property type="org.inviwo.CompositeProperty" identifier="settings">
+                                <Properties>
+                                    <Property type="org.inviwo.ButtonProperty" identifier="setNearFarButton" />
+                                    <Property type="org.inviwo.ButtonProperty" identifier="setLookRangesButton" />
+                                    <Property type="org.inviwo.BoolProperty" identifier="updateNearFar" />
+                                    <Property type="org.inviwo.BoolProperty" identifier="updateLookRanges" />
+                                    <Property type="org.inviwo.FloatProperty" identifier="fittingRatio" />
+                                </Properties>
+                                <collapsed content="1" />
+                            </Property>
+                        </Properties>
+                        <collapsed content="0" />
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="0" y="125" />
+                        <visibility content="1" />
+                        <selection content="0" />
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
             <Processor type="org.inviwo.CanvasGL" identifier="Canvas" displayName="Canvas">
                 <PortGroups>
                     <PortGroup content="default" key="inport" />
                 </PortGroups>
                 <InPorts>
-                    <InPort type="org.inviwo.Image.inport" identifier="inport" id="ref20" />
+                    <InPort type="org.inviwo.Image.inport" identifier="inport" id="ref6" />
                 </InPorts>
                 <Properties>
                     <Property type="org.inviwo.CompositeProperty" identifier="inputSize">
                         <Properties>
-                            <Property type="org.inviwo.IntVec2Property" identifier="dimensions" />
+                            <Property type="org.inviwo.IntSize2Property" identifier="dimensions" />
                             <Property type="org.inviwo.BoolProperty" identifier="enableCustomInputDimensions">
                                 <displayName content="Enable Custom Input Dimensions" />
                             </Property>
-                            <Property type="org.inviwo.IntVec2Property" identifier="customInputDimensions">
+                            <Property type="org.inviwo.IntSize2Property" identifier="customInputDimensions">
                                 <displayName content="Input Image Dimensions" />
                                 <readonly content="1" />
                                 <value x="344" y="224" />
@@ -973,10 +1127,14 @@
                         <absolutePath content="" />
                         <workspaceRelativePath content="" />
                         <ivwdataRelativePath content="" />
+                        <selectedExtension>
+                            <extension content="*" />
+                            <description content="All Files" />
+                        </selectedExtension>
                         <acceptMode content="0" />
                         <fileMode content="4" />
                     </Property>
-                    <Property type="org.inviwo.OptionPropertyString" identifier="fileExt" />
+                    <Property type="org.inviwo.OptionPropertyFileExtension" identifier="fileExt" />
                     <Property type="org.inviwo.ButtonProperty" identifier="saveLayer" />
                     <Property type="org.inviwo.ButtonProperty" identifier="saveLayerToFile" />
                     <Property type="org.inviwo.BoolProperty" identifier="fullscreen" />
@@ -1007,10 +1165,10 @@
                     <PortGroup content="default" key="outport" />
                 </PortGroups>
                 <InPorts>
-                    <InPort type="org.inviwo.Image.inport" identifier="inport" id="ref3" />
+                    <InPort type="org.inviwo.Image.inport" identifier="inport" id="ref1" />
                 </InPorts>
                 <OutPorts>
-                    <OutPort type="org.inviwo.Image.outport" identifier="outport" id="ref4" />
+                    <OutPort type="org.inviwo.Image.outport" identifier="outport" id="ref2" />
                 </OutPorts>
                 <Properties>
                     <Property type="org.inviwo.OptionPropertyEnumInt" identifier="backgroundStyle" />
@@ -1043,11 +1201,11 @@
                     <PortGroup content="default" key="outport" />
                 </PortGroups>
                 <InPorts>
-                    <InPort type="org.inviwo.Image.inport" identifier="inputA" id="ref14" />
-                    <InPort type="org.inviwo.Image.inport" identifier="inputB" id="ref15" />
+                    <InPort type="org.inviwo.Image.inport" identifier="inputA" id="ref8" />
+                    <InPort type="org.inviwo.Image.inport" identifier="inputB" id="ref9" />
                 </InPorts>
                 <OutPorts>
-                    <OutPort type="org.inviwo.Image.outport" identifier="outport" id="ref16" />
+                    <OutPort type="org.inviwo.Image.outport" identifier="outport" id="ref10" />
                 </OutPorts>
                 <Properties>
                     <Property type="org.inviwo.OptionPropertyEnumInt" identifier="splitDirection" />
@@ -1090,54 +1248,54 @@
         </Processors>
         <Connections>
             <Connection>
-                <OutPort type="org.inviwo.Image.outport" identifier="outport" reference="ref4" />
-                <InPort type="org.inviwo.Image.inport" identifier="inport" reference="ref20" />
+                <OutPort type="org.inviwo.Image.outport" identifier="outport" reference="ref2" />
+                <InPort type="org.inviwo.Image.inport" identifier="inport" reference="ref6" />
             </Connection>
             <Connection>
-                <OutPort type="org.inviwo.Image.outport" identifier="heightfield" reference="ref19" />
-                <InPort type="org.inviwo.Image.inport" identifier="heightfield" reference="ref9" />
+                <OutPort type="org.inviwo.Image.outport" identifier="heightfield" reference="ref4" />
+                <InPort type="org.inviwo.Image.inport" identifier="heightfield" reference="ref15" />
             </Connection>
             <Connection>
-                <OutPort type="org.inviwo.Mesh.outport" identifier="outport" reference="ref1" />
-                <InPort type="org.inviwo.Mesh.flat.multi.inport" identifier="geometry" reference="ref8" />
+                <OutPort type="org.inviwo.Mesh.outport" identifier="outport" reference="ref20" />
+                <InPort type="org.inviwo.Mesh.flat.multi.inport" identifier="geometry" reference="ref14" />
             </Connection>
             <Connection>
-                <OutPort type="org.inviwo.Image.outport" identifier="image" reference="ref17" />
-                <InPort type="org.inviwo.Image.inport" identifier="texture" reference="ref10" />
+                <OutPort type="org.inviwo.Image.outport" identifier="image" reference="ref7" />
+                <InPort type="org.inviwo.Image.inport" identifier="texture" reference="ref16" />
+            </Connection>
+            <Connection>
+                <OutPort type="org.inviwo.Image.outport" identifier="image" reference="ref5" />
+                <InPort type="org.inviwo.Image.inport" identifier="image" reference="ref3" />
             </Connection>
             <Connection>
                 <OutPort type="org.inviwo.Image.outport" identifier="image" reference="ref0" />
-                <InPort type="org.inviwo.Image.inport" identifier="image" reference="ref18" />
+                <InPort type="org.inviwo.Image.inport" identifier="normalmap" reference="ref17" />
             </Connection>
             <Connection>
-                <OutPort type="org.inviwo.Image.outport" identifier="image" reference="ref2" />
-                <InPort type="org.inviwo.Image.inport" identifier="normalmap" reference="ref11" />
+                <OutPort type="org.inviwo.Image.outport" identifier="image" reference="ref18" />
+                <InPort type="org.inviwo.Image.inport" identifier="inport" reference="ref11" />
             </Connection>
             <Connection>
-                <OutPort type="org.inviwo.Image.outport" identifier="image" reference="ref12" />
-                <InPort type="org.inviwo.Image.inport" identifier="inport" reference="ref5" />
+                <OutPort type="org.inviwo.Image.outport" identifier="output" reference="ref12" />
+                <InPort type="org.inviwo.Image.inport" identifier="inputA" reference="ref8" />
             </Connection>
             <Connection>
-                <OutPort type="org.inviwo.Image.outport" identifier="output" reference="ref6" />
-                <InPort type="org.inviwo.Image.inport" identifier="inputA" reference="ref14" />
+                <OutPort type="org.inviwo.Image.outport" identifier="outport" reference="ref10" />
+                <InPort type="org.inviwo.Image.inport" identifier="inport" reference="ref1" />
             </Connection>
             <Connection>
-                <OutPort type="org.inviwo.Image.outport" identifier="outport" reference="ref16" />
-                <InPort type="org.inviwo.Image.inport" identifier="inport" reference="ref3" />
-            </Connection>
-            <Connection>
-                <OutPort type="org.inviwo.Image.outport" identifier="image" reference="ref12" />
-                <InPort type="org.inviwo.Image.inport" identifier="inputB" reference="ref15" />
+                <OutPort type="org.inviwo.Image.outport" identifier="image" reference="ref18" />
+                <InPort type="org.inviwo.Image.inport" identifier="inputB" reference="ref9" />
             </Connection>
         </Connections>
         <PropertyLinks>
             <PropertyLink>
-                <SourceProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref13" />
-                <DestinationProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref7" />
+                <SourceProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref19" />
+                <DestinationProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref13" />
             </PropertyLink>
             <PropertyLink>
-                <SourceProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref7" />
-                <DestinationProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref13" />
+                <SourceProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref13" />
+                <DestinationProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref19" />
             </PropertyLink>
         </PropertyLinks>
     </ProcessorNetwork>
@@ -1197,12 +1355,10 @@
                         <absolutePath content="" />
                         <workspaceRelativePath content="" />
                         <ivwdataRelativePath content="" />
-                        <nameFilter>
-                            <filter>
-                                <extension content="*" />
-                                <description content="All Files" />
-                            </filter>
-                        </nameFilter>
+                        <selectedExtension>
+                            <extension content="*" />
+                            <description content="All Files" />
+                        </selectedExtension>
                         <acceptMode content="0" />
                         <fileMode content="4" />
                     </Property>
