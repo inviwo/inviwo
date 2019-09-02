@@ -179,7 +179,7 @@ def warn(def state, refjob = 'daily/appleclang') {
             writeFile encoding: 'UTF-8', file: '../build/warnings.txt', text : warnings.join('\n')
             publishIssues issues: [clangIssues],
                           name: 'Clang',
-                          referenceJobName: 'daily/appleclang',
+                          referenceJobName: refjob,
                           qualityGates: [[threshold: 1, type: 'NEW', unstable: true]]
             if (clangIssues.size() > 0) {
                 throw new Exception("There are warning issues")
