@@ -9,9 +9,9 @@ processors require the outputs from the previous processors.
 
 In order to keep the application interactive, events (especially Mouse Events from the Canvas) are propagated
 upwards in the network until a processor consumes the event. Every processor on the way upwards can look at the event
-and determine whether this event *invalidates* the processor (TODO: link to invalidation), which means this processor has to update its outputs. After all events are processed and all processors that are invalid are now marked as such, the network
-is re-evaluated, meaning all invalid processors are re-executed.
-As a result, below all invalid processors, all subsequent processors along their sub-graphs are re-evaluated using the newly produced outputs. Any processors above the consuming processor(s) are unaffected and do not recompute their outputs. If no processor consumes the event, it is propagated up to the source processors, but unless the event invalidates a processor, it won't be re-evaluated.
+and determine whether this event *invalidates* the processor (TODO: link to invalidation), which means this processor has to update its outputs. Furthermore, if a processor is invalidated this way, this also invalidates all subsequent processors below. After all events are processed and all processors that are invalid are now marked as such, the network
+is re-evaluated, meaning all invalid processors are re-executed exactly once.
+Any processors above the consuming processor(s) are unaffected and do not recompute their outputs. If no processor consumes the event, it is propagated up to the source processors, but unless the event invalidates a processor, it won't be re-evaluated.
 
 Let's take camera manipulation as an example (compare figure below): A drag gesture (click and move) was executed in the Canvas in order to rotate the camera.
 This triggers a *Mouse Move Event* which is propagated upwards. In the figure below you can see the event goes upwards until
