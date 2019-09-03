@@ -35,20 +35,20 @@
 
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/shader/shaderresource.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
 
 #include <functional>
 #include <map>
+#include <optional>
 
 namespace inviwo {
-
-class Mesh;
 
 /**
  * \brief Keeps a set of shaders for various mesh configs
  */
 class IVW_MODULE_BASEGL_API MeshShaderCache {
 public:
-    using GetStateFunctor = std::function<int(const Mesh&)>;
+    using GetStateFunctor = std::function<int(const Mesh&, Mesh::MeshInfo)>;
     using UpdateShaderFunctor = std::function<void(int, Shader&)>;
 
     enum RequireBuffer { Mandatory, Optional };
@@ -56,10 +56,11 @@ public:
     struct IVW_MODULE_BASEGL_API Requirement {
         Requirement(BufferType bufferType, RequireBuffer required = Mandatory,
                     const std::string& glslType = "vec4", const std::string& name = "");
-        BufferType bufferType;
-        RequireBuffer required;
-        std::string glslType;
-        std::string name;
+
+        Requirement(GetStateFunctor state, UpdateShaderFunctor update);
+
+        GetStateFunctor getState;
+        UpdateShaderFunctor updateShader;
     };
 
     MeshShaderCache(std::vector<std::pair<ShaderType, std::shared_ptr<const ShaderResource>>> items,
@@ -76,18 +77,16 @@ public:
     MeshShaderCache& operator=(MeshShaderCache&&) = delete;
     ~MeshShaderCache() = default;
 
-    Shader& getShader(const Mesh& mesh);
+    Shader& getShader(const Mesh& mesh, std::optional<Mesh::MeshInfo> meshInfo = std::nullopt);
 
     std::map<std::vector<int>, Shader>& getShaders() { return shaders_; }
-
     void addState(GetStateFunctor getState, UpdateShaderFunctor updateShader);
 
 private:
     std::vector<std::pair<ShaderType, std::shared_ptr<const ShaderResource>>> items_;
     std::function<void(Shader&)> config_;
 
-    using StateFunctor = std::pair<GetStateFunctor, UpdateShaderFunctor>;
-    std::vector<StateFunctor> stateFunctors_;
+    std::vector<Requirement> stateFunctors_;
     std::map<std::vector<int>, Shader> shaders_;
 };
 
