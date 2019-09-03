@@ -37,53 +37,48 @@ namespace inviwo {
 
 MeshShaderCache::Requirement::Requirement(BufferType bufferType, RequireBuffer required,
                                           const std::string& glslType, const std::string& name)
-    : bufferType{bufferType}
-    , required{required}
-    , glslType{glslType}
-    , name{name.empty() ? toString(bufferType) : name} {}
+    : getState{[bufferType, required](const Mesh& mesh, Mesh::MeshInfo) -> int {
+        const auto res = mesh.findBuffer(bufferType);
+        if (res.first) {
+            return res.second;
+        } else if (required == Mandatory) {
+            throw Exception("Unsupported mesh type, a " + toString(bufferType) + " is needed",
+                            IVW_CONTEXT_CUSTOM("MeshShaderCache"));
+        } else {
+            return -1;
+        }
+    }}
+    , updateShader{[glslType, name = name.empty() ? toString(bufferType) : name](
+                       int location, Shader& shader) -> void {
+        if (location >= 0) {
+            const auto& buffername = name;
+            shader[ShaderType::Vertex]->addInDeclaration("in_" + buffername, location, glslType);
+            for (auto& obj : shader.getShaderObjects()) {
+                obj.addShaderDefine("HAS_" + toUpper(buffername));
+            }
+        }
+    }} {}
+
+MeshShaderCache::Requirement::Requirement(GetStateFunctor state, UpdateShaderFunctor update)
+    : getState{std::move(state)}, updateShader{std::move(update)} {}
 
 MeshShaderCache::MeshShaderCache(
     std::vector<std::pair<ShaderType, std::shared_ptr<const ShaderResource>>> items,
     std::vector<Requirement> requirements, std::function<void(Shader&)> configureShader)
-    : items_{std::move(items)}, config_{std::move(configureShader)} {
-
-    for (auto& requirement : requirements) {
-        stateFunctors_.emplace_back(
-            [requirement](const Mesh& mesh) -> int {
-                const auto res = mesh.findBuffer(requirement.bufferType);
-                if (res.first) {
-                    return res.second;
-                } else if (requirement.required == Mandatory) {
-                    throw Exception("Unsupported mesh type, a " + toString(requirement.bufferType) +
-                                        " is needed",
-                                    IVW_CONTEXT_CUSTOM("MeshShaderCache"));
-                } else {
-                    return -1;
-                }
-            },
-            [requirement](int location, Shader& shader) -> void {
-                if (location >= 0) {
-                    const auto& buffername = requirement.name;
-                    shader[ShaderType::Vertex]->addInDeclaration("in_" + buffername, location,
-                                                                 requirement.glslType);
-                    for (auto& obj : shader.getShaderObjects()) {
-                        obj.addShaderDefine("HAS_" + toUpper(buffername));
-                    }
-                }
-            });
-    }
-}
+    : items_{std::move(items)}
+    , config_{std::move(configureShader)}
+    , stateFunctors_{std::move(requirements)} {}
 
 MeshShaderCache::MeshShaderCache(std::vector<std::pair<ShaderType, std::string>> items,
-                                 std::vector<Requirement> buffers,
+                                 std::vector<Requirement> requirements,
                                  std::function<void(Shader&)> configureShader)
-    : MeshShaderCache(utilgl::toShaderResources(items), std::move(buffers),
+    : MeshShaderCache(utilgl::toShaderResources(items), std::move(requirements),
                       std::move(configureShader)) {}
 
-Shader& MeshShaderCache::getShader(const Mesh& mesh) {
+Shader& MeshShaderCache::getShader(const Mesh& mesh, std::optional<Mesh::MeshInfo> meshInfo) {
     std::vector<int> state;
     for (auto& functor : stateFunctors_) {
-        state.push_back(functor.first(mesh));
+        state.push_back(functor.getState(mesh, meshInfo ? *meshInfo : mesh.getDefaultMeshInfo()));
     }
 
     auto it = shaders_.find(state);
@@ -95,7 +90,7 @@ Shader& MeshShaderCache::getShader(const Mesh& mesh) {
         shader[ShaderType::Vertex]->clearInDeclarations();
 
         for (auto&& item : util::zip(stateFunctors_, state)) {
-            item.first().second(item.second(), shader);
+            item.first().updateShader(item.second(), shader);
         }
 
         config_(shader);
