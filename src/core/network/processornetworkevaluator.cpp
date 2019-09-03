@@ -109,12 +109,20 @@ void ProcessorNetworkEvaluator::evaluate() {
                     if (processor->getInvalidationLevel() >= InvalidationLevel::InvalidResources) {
                         processor->initializeResources();
                     }
+
+                } catch (...) {
+                    exceptionHandler_(processor, EvaluationType::InitResource, IVW_CONTEXT);
+                    processor->setValid();
+                    continue;
+                }
+
+                try {
                     // call onChange for all invalid inports
                     for (auto inport : processor->getInports()) {
                         inport->callOnChangeIfChanged();
                     }
                 } catch (...) {
-                    exceptionHandler_(processor, EvaluationType::InitResource, IVW_CONTEXT);
+                    exceptionHandler_(processor, EvaluationType::PortOnChange, IVW_CONTEXT);
                     processor->setValid();
                     continue;
                 }
