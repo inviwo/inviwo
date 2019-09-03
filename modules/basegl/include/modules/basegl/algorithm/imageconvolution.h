@@ -49,6 +49,9 @@ public:
 
     std::shared_ptr<Image> convolution(const Layer &layer, std::function<float(vec2)> kernelWeight,
                                        const float &kernelScale, ivec2 kernelSize);
+    std::shared_ptr<Image> convolution(const Layer &layer, int kw, int kh,
+                                                const std::vector<float> &kernel,
+                                                const float &kernelScale);
 
     std::shared_ptr<Image> convolution_separable(const Layer &layer, std::function<float(float)>,
                                                  int kernelSize, const float &kernelScale);
@@ -62,9 +65,7 @@ public:
 protected:
     Shader shader_;
 
-    std::shared_ptr<Image> convolution_internal(const Layer &layer, int kw, int kh,
-                                                const std::vector<float> &kernel,
-                                                const float &kernelScale);
+    
 };
 
 }  // namespace inviwo
