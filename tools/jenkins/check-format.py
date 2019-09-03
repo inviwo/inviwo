@@ -101,8 +101,8 @@ def main():
             diff_string = '\n'.join(diff)
             if len(diff_string) > 0:
                 sys.stdout.write(str(filename) + " Warning: Inconsistent format\n")
-                sys.stdout.write(diff_string)
-                out.write(diff_string)
+                sys.stdout.write(diff_string + "\n")
+                out.write(diff_string + "\n")
                 if args.fix:
                     with codecs.open(filename, 'w', encoding="UTF-8") as f:
                         f.write(formatted_code)
