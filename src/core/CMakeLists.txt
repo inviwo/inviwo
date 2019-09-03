@@ -266,6 +266,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/clock.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/cloneableptr.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/colorbrewer.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/colorbrewer-generated.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/colorconversion.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/commandlineparser.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/consolelogger.h
@@ -556,6 +557,7 @@ set(SOURCE_FILES
     util/capabilities.cpp
     util/clock.cpp
     util/colorbrewer.cpp
+    util/colorbrewer-generated.cpp
     util/colorconversion.cpp
     util/commandlineparser.cpp
     util/consolelogger.cpp
