@@ -52,7 +52,7 @@ std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &o
     switch (colormap) {
         // clang-format off
 ##PLACEHOLDER_NAMES##
-        // clang-format on
+            // clang-format on
     }
     return os;
 }
@@ -63,7 +63,7 @@ std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &o
     switch (category) {
         // clang-format off
 ##PLACEHOLDER_CATEGORIES##
-        // clang-format on
+            // clang-format on
     }
     return os;
 }
@@ -73,7 +73,7 @@ std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &o
     switch (family) {
         // clang-format off
 ##PLACEHOLDER_FAMILIES##
-        // clang-format on
+            // clang-format on
     }
     return os;
 }

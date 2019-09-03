@@ -363,7 +363,7 @@ std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &o
         case Colormap::YlOrRd_6: os << "YlOrRd_6"; break;
         case Colormap::YlOrRd_7: os << "YlOrRd_7"; break;
         case Colormap::YlOrRd_8: os << "YlOrRd_8"; break;
-        // clang-format on
+            // clang-format on
     }
     return os;
 }
@@ -378,7 +378,7 @@ std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &o
         case Category::Sequential: os << "Sequential"; break;
         case Category::NumberOfColormapCategories: os << "NumberOfColormapCategories"; break;
         case Category::Undefined: os << "Undefined"; break;
-        // clang-format on
+            // clang-format on
     }
     return os;
 }
@@ -424,7 +424,7 @@ std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &o
         case Family::YlOrRd: os << "YlOrRd"; break;
         case Family::NumberOfColormapFamilies: os << "NumberOfColormapFamilies"; break;
         case Family::Undefined: os << "Undefined"; break;
-        // clang-format on
+            // clang-format on
     }
     return os;
 }
