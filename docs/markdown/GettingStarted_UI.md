@@ -15,10 +15,10 @@ surrounded by the [*Processor*](#markdown-header-processors) *List* on the left,
 You can drag processors from the *Processor List* into the *Network Editor* using drag and drop.
 Processors are the basic building blocks of the network and perform one encapsulated action.
 Each processor can define its required input and produced output data through [*Ports*](#markdown-header-ports),
-which can be connected using the mouse. The resulting network represents an acyclic graph where
+which can be connected using the mouse. The resulting network represents a directed acyclic graph where
 the nodes are processors and the edges are port connections.
 In addition to inputs and outputs, a processor's [*Properties*](#markdown-header-properties) can be edited
-on the right when the processor is selected. Those properties represent the state of the processor and
+on the right when the processor is selected. Those properties represent the configuration of the processor and
 expose parameters to the user. Changing a property updates the network's results interactively.
 Examples for processors include:
 
@@ -64,15 +64,16 @@ As explained above, a processor's ports determine the inputs and outputs of the 
 ![Port Inspectors](images/PortInspector.png)
 
 This will show you the exact type, metadata like spatial dimensions and an actual preview of the data. When debugging a network, checking all inputs and outputs with the port inspector is often a good first step.
+Note that some inports are *multi inports*, meaning you can connect multiple outports to it. All the data from the connected outports is then available to the processor as a list.
 
 ## Properties
-Properties encode the state of a processor. That means they contain all parameters of a processor in an organized way, allowing for easy manipulation using boxes, sliders and widgets like a color picker.
+Properties let you define the configuration of a processor. That means they contain all parameters of a processor in an organized way, allowing for easy manipulation using boxes, sliders and widgets like a color picker.
 
 In addition to simple manipulation of parameters, properties can be *linked* together with properties from other processors in order to synchronize. Upon dragging a link from the *Property Link Connector* (see figure in the [Processors](#markdown-header-processors) section) onto another processor, the following window opens:
 
 ![Property Linking](images/PropertyLinks.png)
 
-This window lists all properties that can potentially be linked with the other processor's properties. Basically you can link anything that shares the same type. *Composite Properties* (properties that contain more properties) can be unfolded to reveal the underlying, more simple properties, which can be linked indivudally as well. When a link between two properties is dragged, a *bidirectional* link is established, meaning that a change to either property will update the other as well. By clicking on the link you can swap through *unidirectional* links. Note that some properties are linked automatically by default, like the *CameraProperty*. This ensures that all processors that require camera information get the same parameters and enables you to display multiple renderings in the same canvas. In a multi-canvas setup, where multiple viewports are required, some of those links might need to be removed.
+This window lists all properties that can potentially be linked with the other processor's properties. Basically you can link anything that shares the same type. *Composite Properties* (properties that contain more properties) can be unfolded to reveal the underlying, more simple properties, which can be linked indivudally as well. When a link between two properties is dragged, a *bidirectional* link is established, meaning that a change to either property will update the other as well. By clicking on the link you can swap through *unidirectional* links. Note that some properties are linked automatically by default, like the *CameraProperty*. This ensures that all processors that require camera information get the same parameters and enables you to display multiple renderings in the same canvas. In a multi-canvas setup, where multiple viewports are required, some of those links might need to be removed. You can also prevent automatic linking in the settings or by holding `Alt` while dragging in the processor.
 
 Another important aspect of properties is *Property Semantics*. This is basically another abstraction of a property, allowing for a different representation in the user interface. Take for example 3D vectors. They are used to represent 3D positions, directions and colors. The following image shows how, according to the *semantic*, different graphical representations can be used to make the property intuitive to set.
 

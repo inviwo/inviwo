@@ -3,7 +3,7 @@ Inviwo networks are built around a few concepts in order to keep the resulting g
 This guide explains those concepts and clarifies the chronological order of processor execution.
 
 Overall the networks are built to roughly represent the *Visualization Pipeline*, thus there is a data-flow from the
-top to the bottom of the network. There must be no cycles and horizontal connections should be mostly avoided.
+top to the bottom of the network. Note that there must not be cycles in the graph!
 This top-to-bottom data flow already enforces the processor executionm to be top-to-bottom as well, since the bottom
 processors require the outputs from the previous processors.
 

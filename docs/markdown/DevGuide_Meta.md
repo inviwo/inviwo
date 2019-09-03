@@ -1,9 +1,12 @@
-# Generating files for Processors, Properties and Modules with the Meta Module
+# Generating files for Processors, Properties and Modules with Inviwo Meta
 
 To create a new module for Inviwo there is a helper program which creates the folder structure,
 the CMake files, basic module files and if needed example processors and shaders. To use the
 helper, you need to build the inviwo-meta-tools target. After building them they can be found
 in the same directory as the Inviwo executable.
+
+Note that the same functionality as provided by this command line utility is also available inside the GUI through `Tools > Create Sources > Create Processor`.
+Make sure to also write any module and processor names in PascalCase and without file extension (Example `MyNewProcessor`).
 
 The following commands work on Windows. On Linux
 and Mac, simply omit the `.exe` from the commands.
@@ -12,11 +15,12 @@ and Mac, simply omit the `.exe` from the commands.
 a terminal.
 
 2. Create a new module by entering\
-`./inviwo-meta-cli.exe -m <inviwo-dir>/modules/<module-name> -o modules`
+`./inviwo-meta-cli.exe -m <inviwo-dir>/modules/ModuleNameInPascalCase -o modules`\
+**Note**: The module name needs to be globally unique.
 
 3. Create a processor by entering\
-`./inviwo-meta-cli.exe -p <module-dir>/src/processor/<processor-name>`\
-A small example processor is created which can then be modified
+`./inviwo-meta-cli.exe -p <module-dir>/src/processor/ProcessorNameInPascalCase`\
+A small example processor is created which can then be modified. The processor is automatically registered in the module and the CMake files.
 
 4. To add, for example, a helper file in `utils` you can use\
 `./inviwo-meta-cli.exe -f <module-dir>/src/utils/<file-name>`

@@ -7,17 +7,17 @@ You will need at least
 - [CMake](https://cmake.org/download/) >= 3.12.0\
     Also add the cmake binary to your PATH.
 
-- [Qt binaries](https://qt.io/download-open-source/) >= 5.6\
+- [Qt binaries](https://qt.io/download-open-source/) >= 5.12\
     Make sure you get the build for the 64 bit version for you Visual Studio version. Also add the Qt binary directory (something like `Qt/5.9.1/msvc2017_64/bin`) to your PATH.
 
 ### Building
 1. `git clone --recurse-submodules https://github.com/inviwo/inviwo`\
 The `--recurse-submodules` is necessary to pull dependencies.
 
-2. Open CMake (we recommend using the GUI here), enter the source path and the preferred build directory and hit configure. You can then select the desired Inviwo modules (`IVW_MODULE_*`) and configure again. When selecting the compiler, make sure to select the correct Visual Studio version that you use on 64-bit. 32-bit is not supported.
+2. Open CMake (we recommend using the GUI here), enter the source path and the preferred build directory (outside the inviwo directory!) and hit configure. You can then select the desired Inviwo modules (`IVW_MODULE_*`) and configure again. When selecting the compiler, make sure to select the correct Visual Studio version that you use on 64-bit. 32-bit is not supported.
 3. (Optional) To add external Inviwo modules, add those in `IVW_EXTERNAL_MODULES` in the format of\
 `C:/Inviwo/otherrepo/modules;C:/mysite/myrepo/mymodules;`\
- Use front slashes and no space between modules. Configure again.
+ Use front slashes and no space between modules. Configure again. External modules are developed in the [inviwo modules repository](https://github.com/inviwo/modules).
 4. Hit Generate and open the project in your IDE.
 
 ### Common Errors
@@ -35,7 +35,7 @@ You will need at least
 - [CMake](https://cmake.org/download/) >= 3.12.0\
     **Ubuntu**: Make sure to add the [Kitware APT Repository](https://apt.kitware.com/) when you want to install cmake via `apt-get`, since the official Ubuntu repo offers an outdated CMake version.\
     **Other distors**: You can try your package manager, just make sure you get version 3.12.0 or higher from it.
-- [Qt binaries](https://qt.io/download-open-source/) >= 5.6\
+- [Qt binaries](https://qt.io/download-open-source/) >= 5.12\
     Make sure you get the build for the 64 bit version of gcc or clang. Make sure to add the Qt folder to the `CMAKE_PREFIX_PATH` environment variable.\
     **Example**: `export CMAKE_PREFIX_PATH=/home/user/Qt/5.13.0/gcc_x64/`\
     **Note**: We highly recommend installing Qt with the official Qt installer instead of your package manager for Inviwo. While you can certainly get the versions from package managers to work, we experienced issues in the past with missing components and compiler incompatibilities.
@@ -55,11 +55,12 @@ The first two commands add the Kitware APT Repo and the appropriate signing key,
 ### Building
 1. `git clone --recurse-submodules https://github.com/inviwo/inviwo`\
 The `--recurse-submodules` is necessary to pull dependencies.
-2. Open CMake (we recommend using the GUI here), enter the source path and the preferred build directory and hit configure. You can then select the desired Inviwo modules (`IVW_MODULE_*`) and configure again.\
+2. Open CMake (we recommend using the GUI here), enter the source path and the preferred build directory (outside the inviwo directory!) and hit configure. You can then select the desired Inviwo modules (`IVW_MODULE_*`) and configure again.\
 If CMake cannot find Qt, make sure you adjust your `CMAKE_PREFIX_PATH` as described above.
 3. (Optional) To add external Inviwo modules, add those in `IVW_EXTERNAL_MODULES` in the format of\
 `C:/Inviwo/otherrepo/modules;C:/mysite/myrepo/mymodules;`\
  Use front slashes and no space between modules. Configure again.
+ External modules are developed in the [inviwo modules repository](https://github.com/inviwo/modules).
 4. Hit Generate and open the project in your IDE.
 
 
