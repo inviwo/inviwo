@@ -27,13 +27,10 @@
  *
  *********************************************************************************/
 
-/*
-This complete file is auto-generated with python script
-tools/codegen/colorbrewer/colorbrewer.py
-*/
-
 #include <inviwo/core/util/colorbrewer.h>
 #include <inviwo/core/util/exception.h>
+
+#include <fmt/format.h>
 
 namespace inviwo {
 namespace colorbrewer {
