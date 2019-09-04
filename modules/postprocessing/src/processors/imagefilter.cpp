@@ -72,8 +72,8 @@ ImageFilter::ImageFilter()
 
 void ImageFilter::process() {
     auto img = inport_.getData();
-	
-	const auto passes = passes_.get();
+
+    const auto passes = passes_.get();
 
     if (!passes || !enable_.get()) {
         outport_.setData(img);

@@ -69,8 +69,8 @@ std::shared_ptr<Image> ImageConvolution::gaussianLowpass(const Layer &layer, int
 }
 
 std::shared_ptr<Image> ImageConvolution::lowpass(const Layer &layer, int kernelSize) {
-    return convolution_separable(layer, [](float /*p*/) { return 1.f; }, kernelSize,
-                                 static_cast<float>(kernelSize));
+    return convolution_separable(
+        layer, [](float /*p*/) { return 1.f; }, kernelSize, static_cast<float>(kernelSize));
 }
 
 std::shared_ptr<Image> ImageConvolution::convolution(const Layer &layer,
@@ -114,8 +114,8 @@ std::shared_ptr<Image> ImageConvolution::convolution_separable(
 }
 
 std::shared_ptr<Image> ImageConvolution::convolution(const Layer &layer, int kw, int kh,
-                                                              const std::vector<float> &kernel,
-                                                              const float &kernelScale) {
+                                                     const std::vector<float> &kernel,
+                                                     const float &kernelScale) {
     shader_.getFragmentShaderObject()->addShaderDefine("KERNELWIDTH", std::to_string(kw));
     shader_.getFragmentShaderObject()->addShaderDefine("KERNELHEIGHT", std::to_string(kh));
     shader_.getFragmentShaderObject()->addShaderDefine("KERNELSIZE", std::to_string(kw * kh));
