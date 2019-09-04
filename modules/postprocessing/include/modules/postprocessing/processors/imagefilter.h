@@ -94,7 +94,7 @@ private:
         std::vector<float>{0,  0,  -1, 0,  0,  0,  -1, -2, -1, 0,  -1, -2, 16,
                            -2, -1, 0,  -1, -2, -1, 0,  0,  0,  -1, 0,  0}  // Laplacian of Gaussian
     };
-};  // namespace inviwo
+};
 
 }  // namespace inviwo
 
