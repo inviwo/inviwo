@@ -395,6 +395,10 @@ const BaseCallBack *Shader::onReload(std::function<void()> callback) {
     return onReloadCallback_.addLambdaCallback(callback);
 }
 
+std::shared_ptr<std::function<void()>> Shader::onReloadScoped(std::function<void()> callback) {
+    return onReloadCallback_.addLambdaCallbackRaii(callback);
+}
+
 void Shader::removeOnReload(const BaseCallBack *callback) { onReloadCallback_.remove(callback); }
 
 std::string Shader::shaderNames() const {

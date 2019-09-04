@@ -150,6 +150,7 @@ public:
 
     // Callback when the shader is reloaded. A reload can for example be triggered by a file change.
     const BaseCallBack *onReload(std::function<void()> callback);
+    std::shared_ptr<std::function<void()>> onReloadScoped(std::function<void()> callback);
     void removeOnReload(const BaseCallBack *callback);
 
 private:
