@@ -121,7 +121,8 @@ CameraProperty::CameraProperty(const std::string& identifier, const std::string&
 CameraProperty::CameraProperty(const std::string& identifier, const std::string& displayName,
                                vec3 eye, vec3 center, vec3 lookUp, Inport* inport,
                                InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : CameraProperty(identifier, displayName,
+    : CameraProperty(
+          identifier, displayName,
           [&]() -> std::function<std::optional<mat4>()> {
               if (auto vp = dynamic_cast<VolumeInport*>(inport)) {
                   return util::boundingBox(*vp);
