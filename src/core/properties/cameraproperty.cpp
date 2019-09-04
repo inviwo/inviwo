@@ -122,16 +122,16 @@ CameraProperty::CameraProperty(const std::string& identifier, const std::string&
                                vec3 eye, vec3 center, vec3 lookUp, Inport* inport,
                                InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : CameraProperty(identifier, displayName,
-                     [&]() -> std::function<std::optional<mat4>()> {
-                         if (auto vp = dynamic_cast<VolumeInport*>(inport)) {
-                             return util::boundingBox(*vp);
-                         } else if (auto mp = dynamic_cast<MeshInport*>(inport)) {
-                             return util::boundingBox(*mp);
-                         } else {
-                             return nullptr;
-                         }
-                     }(),
-                     eye, center, lookUp, invalidationLevel, semantics) {}
+          [&]() -> std::function<std::optional<mat4>()> {
+              if (auto vp = dynamic_cast<VolumeInport*>(inport)) {
+                  return util::boundingBox(*vp);
+              } else if (auto mp = dynamic_cast<MeshInport*>(inport)) {
+                  return util::boundingBox(*mp);
+              } else {
+                  return nullptr;
+              }
+          }(),
+          eye, center, lookUp, invalidationLevel, semantics) {}
 
 CameraProperty::CameraProperty(const CameraProperty& rhs)
     : CompositeProperty(rhs)
@@ -326,7 +326,7 @@ void CameraProperty::invokeEvent(Event* event) {
             const double height{static_cast<double>(canvasSize[1])};
             setAspectRatio(static_cast<float>(width / height));
         }
-    } else if (auto ve = event->getAs<ViewEvent>()) {
+    } else if (auto ve = event->getAs<ViewEvent>(); ve && getBoundingBox_) {
         std::visit(util::overloaded{[&](camerautil::Side side) { setView(side); },
                                     [&](ViewEvent::FlipUp) { flipUp(); },
                                     [&](ViewEvent::FitData) { fitData(); }},
