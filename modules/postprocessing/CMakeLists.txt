@@ -13,7 +13,7 @@ set(HEADER_FILES
     include/modules/postprocessing/processors/hdrbloom.h
     include/modules/postprocessing/processors/imagebrightnesscontrast.h
     include/modules/postprocessing/processors/imageedgedarken.h
-	include/modules/postprocessing/processors/imagefilter.h
+    include/modules/postprocessing/processors/imagefilter.h
     include/modules/postprocessing/processors/imagehuesaturationluminance.h
     include/modules/postprocessing/processors/imageopacity.h
     include/modules/postprocessing/processors/ssao.h
@@ -31,7 +31,7 @@ set(SOURCE_FILES
     src/processors/hdrbloom.cpp
     src/processors/imagebrightnesscontrast.cpp
     src/processors/imageedgedarken.cpp
-	src/processors/imagefilter.cpp
+    src/processors/imagefilter.cpp
     src/processors/imagehuesaturationluminance.cpp
     src/processors/imageopacity.cpp
     src/processors/ssao.cpp
