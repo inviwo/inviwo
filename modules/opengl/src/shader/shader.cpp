@@ -274,7 +274,7 @@ void Shader::linkShader(bool notifyRebuild) {
 
     glLinkProgram(program_.id);
 
-    if (!isReady()) {
+    if (!checkLinkStatus()) {
         throw OpenGLException("Id: " + toString(program_.id) + " " +
                                   processLog(utilgl::getProgramInfoLog(program_.id)),
                               IVW_CONTEXT);
@@ -370,7 +370,9 @@ std::string Shader::processLog(std::string log) const {
     return result.str();
 }
 
-bool Shader::isReady() const {
+bool Shader::isReady() const { return ready_ && checkLinkStatus(); }
+
+bool Shader::checkLinkStatus() const {
     GLint res;
     glGetProgramiv(program_.id, GL_LINK_STATUS, &res);
     return res == GL_TRUE;

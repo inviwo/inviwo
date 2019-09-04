@@ -120,6 +120,7 @@ public:
     void link();
     void build();
     bool isReady() const;  // returns whether the shader has been built and linked successfully
+    bool checkLinkStatus() const;
 
     GLuint getID() const { return program_.id; }
 
