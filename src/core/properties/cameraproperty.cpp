@@ -326,7 +326,7 @@ void CameraProperty::invokeEvent(Event* event) {
             const double height{static_cast<double>(canvasSize[1])};
             setAspectRatio(static_cast<float>(width / height));
         }
-    } else if (auto ve = event->getAs<ViewEvent>()) {
+    } else if (auto ve = event->getAs<ViewEvent>(); ve && getBoundingBox_) {
         std::visit(util::overloaded{[&](camerautil::Side side) { setView(side); },
                                     [&](ViewEvent::FlipUp) { flipUp(); },
                                     [&](ViewEvent::FitData) { fitData(); }},
