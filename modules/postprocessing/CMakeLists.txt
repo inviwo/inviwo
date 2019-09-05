@@ -13,9 +13,9 @@ set(HEADER_FILES
     include/modules/postprocessing/processors/hdrbloom.h
     include/modules/postprocessing/processors/imagebrightnesscontrast.h
     include/modules/postprocessing/processors/imageedgedarken.h
+    include/modules/postprocessing/processors/imagefilter.h
     include/modules/postprocessing/processors/imagehuesaturationluminance.h
     include/modules/postprocessing/processors/imageopacity.h
-    include/modules/postprocessing/processors/imagesharpen.h
     include/modules/postprocessing/processors/ssao.h
     include/modules/postprocessing/processors/tonemapping.h
 )
@@ -31,9 +31,9 @@ set(SOURCE_FILES
     src/processors/hdrbloom.cpp
     src/processors/imagebrightnesscontrast.cpp
     src/processors/imageedgedarken.cpp
+    src/processors/imagefilter.cpp
     src/processors/imagehuesaturationluminance.cpp
     src/processors/imageopacity.cpp
-    src/processors/imagesharpen.cpp
     src/processors/ssao.cpp
     src/processors/tonemapping.cpp
 )
@@ -66,7 +66,6 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/hbao_reinterleave.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/huesaturationluminance.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/imageopacity.frag
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/imagesharpen.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/rgbl.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/tonemapping.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/viewnormal.frag

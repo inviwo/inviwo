@@ -47,7 +47,8 @@ def getModifiedFiles(repoPaths, extensions, excludes=[""]):
             relevantFiles.add(wdir / i.b_path)
         files.extend([pathlib.Path(f) for f in relevantFiles 
                     if any(f.match(ext) for ext in extensions) 
-                    and not any(fnmatch.fnmatch(f, x) for x in excludes)])
+                    and not any(fnmatch.fnmatch(f, x) for x in excludes)
+                    and f.exists()])
     return files
 
 def main():
@@ -85,9 +86,17 @@ def main():
             p = subprocess.Popen(command,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE)
-            formatted_code_raw, err = p.communicate()
+            formatted_code_raw, err_raw = p.communicate()
+            formatted_code = codecs.decode(formatted_code_raw, encoding="UTF-8")
+            
             if p.returncode != 0:
+                sys.stdout.write("Problem checking format for: " + str(filename) + "\n")
+                err = codecs.decode(err_raw, encoding="UTF-8")
+                sys.stdout.write("Errore: \n")
                 sys.stdout.write(err)
+                sys.stdout.write("\nOutput: \n")
+                sys.stdout.write(formatted_code)
+                sys.stdout.write("\n")
                 sys.exit(p.returncode);
 
             formatted_code = codecs.decode(formatted_code_raw, encoding="UTF-8")
