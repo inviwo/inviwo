@@ -89,7 +89,7 @@ def main():
             formatted_code = codecs.decode(formatted_code_raw, encoding="UTF-8")
             
             if p.returncode != 0:
-                sys.stdout.write("Problem checking format for: " + filename + "\n")
+                sys.stdout.write("Problem checking format for: " + str(filename) + "\n")
                 err = codecs.decode(err_raw, encoding="UTF-8")
                 sys.stdout.write("Errore: \n")
                 sys.stdout.write(err)
