@@ -85,9 +85,17 @@ def main():
             p = subprocess.Popen(command,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE)
-            formatted_code_raw, err = p.communicate()
+            formatted_code_raw, err_raw = p.communicate()
+            formatted_code = codecs.decode(formatted_code_raw, encoding="UTF-8")
+            
             if p.returncode != 0:
+                sys.stdout.write("Problem checking format for: " + filename + "\n")
+                err = codecs.decode(err_raw, encoding="UTF-8")
+                sys.stdout.write("Errore: \n")
                 sys.stdout.write(err)
+                sys.stdout.write("\nOutput: \n")
+                sys.stdout.write(formatted_code)
+                sys.stdout.write("\n")
                 sys.exit(p.returncode);
 
             formatted_code = codecs.decode(formatted_code_raw, encoding="UTF-8")
