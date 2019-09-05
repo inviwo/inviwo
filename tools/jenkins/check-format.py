@@ -47,7 +47,8 @@ def getModifiedFiles(repoPaths, extensions, excludes=[""]):
             relevantFiles.add(wdir / i.b_path)
         files.extend([pathlib.Path(f) for f in relevantFiles 
                     if any(f.match(ext) for ext in extensions) 
-                    and not any(fnmatch.fnmatch(f, x) for x in excludes)])
+                    and not any(fnmatch.fnmatch(f, x) for x in excludes)
+                    and f.exists()])
     return files
 
 def main():
