@@ -32,6 +32,7 @@
 #include <inviwo/core/interaction/pickingmanager.h>
 #include <inviwo/core/interaction/events/eventpropagator.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/interaction/events/wheelevent.h>
 #include <inviwo/core/interaction/events/pickingevent.h>
 #include <inviwo/core/interaction/pickingaction.h>
 #include <inviwo/core/interaction/pickingcontroller.h>
@@ -65,10 +66,10 @@ struct Pressing {};
 
 // events;
 struct BaseEvent {
-    BaseEvent(const size_t globalId, MouseEvent* event, EventPropagator* propagator)
+    BaseEvent(const size_t globalId, MouseInteractionEvent* event, EventPropagator* propagator)
         : globalId{globalId}, event{event}, propagator{propagator} {}
     const size_t globalId;
-    MouseEvent* event;
+    MouseInteractionEvent* event;
     EventPropagator* propagator;
 };
 struct Move : BaseEvent {
@@ -81,6 +82,9 @@ struct Release : BaseEvent {
     using BaseEvent::BaseEvent;
 };
 struct DblClk : BaseEvent {
+    using BaseEvent::BaseEvent;
+};
+struct Wheel : BaseEvent {
     using BaseEvent::BaseEvent;
 };
 
@@ -116,7 +120,10 @@ auto send(PickingState state, PickingPressState pressState, PickingHoverState ho
         if (res.index == 0 || !res.action) return;
 
         auto me = fsmEvent.event;
-        const PickingPressItem pressItem = mouseButtonToPressItem(me->button());
+        const PickingPressItem pressItem =
+            (me->hash() == MouseEvent::chash()
+                 ? mouseButtonToPressItem(static_cast<MouseEvent*>(me)->button())
+                 : PickingPressItem::None);
         const PickingPressItems pressedState = mouseButtonsToPressItems(me->buttonState());
 
         PickingEvent pe(res.action, me, state, pressState, pressItem, hoverState, pressedState,
@@ -196,9 +203,12 @@ struct Fsm {
             pressing + event<Release> [diffId && zeroMB] / (send<Release>(S::Finished, P::Release, H::Exit, true, false), uidr, send<Release>(S::Started, P::None, H::Enter)) = hasId,
             pressing + event<Release> [!zeroMB]          / (send<Release>(S::Updated,  P::Release, H::None)),
             pressing + event<Press>                      / (send<Press>  (S::Updated,  P::Press,   H::None)),
-         
+
             hasId + event<DblClk> [sameId] / (send<DblClk>(S::Updated, P::DoubleClick, H::None)),
-            pressing + event<DblClk>       / (send<DblClk>(S::Updated, P::DoubleClick, H::None))
+            pressing + event<DblClk>       / (send<DblClk>(S::Updated, P::DoubleClick, H::None)),
+
+            hasId + event<Wheel> [sameId] / (send<Wheel>(S::Updated, P::None, H::None)),
+            pressing + event<Wheel>       / (send<Wheel>(S::Updated, P::None, H::None))
         );
         // clang-format on
     }
@@ -241,6 +251,11 @@ void PickingControllerMouseState::propagateEvent(MouseEvent* e, EventPropagator*
             break;
         }
     }
+}
+
+void PickingControllerMouseState::propagateEvent(WheelEvent* e, EventPropagator* propagator,
+                                                 size_t globalId) {
+    msm->sm.process_event(fsm::Wheel{globalId, e, propagator});
 }
 
 }  // namespace inviwo
