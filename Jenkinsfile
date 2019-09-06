@@ -12,6 +12,7 @@ node {
     
     util.wrap(this, "#jenkins-branch-pr") {
         util.touchwarn()
+        util.format(this, "${env.WORKSPACE}/inviwo")
         util.buildStandard(
             state: this,
             modulePaths: [], 
@@ -19,11 +20,10 @@ node {
             offModules: ["ABufferGL"],
             opts: [:]
         )
-        util.format(this, ["${env.WORKSPACE}/inviwo"])
         util.warn(this)
         util.unittest(this)
         util.integrationtest(this)        
-        util.regression(this, ["${env.WORKSPACE}/inviwo/modules"])
+        //util.regression(this, ["${env.WORKSPACE}/inviwo/modules"])
         util.copyright(this)    
         util.doxygen(this)
     }
