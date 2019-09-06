@@ -140,12 +140,17 @@ def wrap(def state, String reportSlackChannel, Closure fun) {
     }
 }
 
-def format(def state, repos) {
+def format(def state, repo) {
     cmd("Format Tests", 'build') {
         checked(state, 'Format Test', false) {
+            def labels = ifdef({state.pullRequest})?.labels.collect { it }
+            String fix = ""
+            if (labels && "J: Auto Format" in labels) {
+                fix = "--fix --commit ${state.pullRequest.headRef}"
+            }
             String master = state.env.Master_Build?.equals("true")? '--master' : ''
             String binary = state.env.CLANG_FORMAT ? '--binary ' + state.env.CLANG_FORMAT : ''
-            sh "python3 ../inviwo/tools/jenkins/check-format.py ${master} ${binary} ${repos.join(' ')}"
+            sh "python3 ../inviwo/tools/jenkins/check-format.py ${master} ${fix} ${binary} ${repo}"
             publishHTML([
                 allowMissing: true,
                 alwaysLinkToLastBuild: false,

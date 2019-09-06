@@ -19,7 +19,7 @@ node {
             offModules: ["ABufferGL"],
             opts: [:]
         )
-        util.format(this, ["${env.WORKSPACE}/inviwo"])
+        util.format(this, "${env.WORKSPACE}/inviwo")
         util.warn(this)
         util.unittest(this)
         util.integrationtest(this)        
