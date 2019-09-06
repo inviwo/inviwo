@@ -293,6 +293,12 @@ void Shader::linkShader(bool notifyRebuild) {
     if (notifyRebuild) onReloadCallback_.invokeAll();
 }
 
+bool Shader::checkLinkStatus() const {
+    GLint res;
+    glGetProgramiv(program_.id, GL_LINK_STATUS, &res);
+    return res == GL_TRUE;
+}
+
 void Shader::bindAttributes() {
     for (const auto &obj : getShaderObjects()) {
         for (const auto &item : obj.getInDeclarations()) {
@@ -370,13 +376,7 @@ std::string Shader::processLog(std::string log) const {
     return result.str();
 }
 
-bool Shader::isReady() const { return ready_ && checkLinkStatus(); }
-
-bool Shader::checkLinkStatus() const {
-    GLint res;
-    glGetProgramiv(program_.id, GL_LINK_STATUS, &res);
-    return res == GL_TRUE;
-}
+bool Shader::isReady() const { return ready_; }
 
 void Shader::activate() {
     if (!ready_)

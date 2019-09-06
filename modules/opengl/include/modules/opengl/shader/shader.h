@@ -120,7 +120,6 @@ public:
     void link();
     void build();
     bool isReady() const;  // returns whether the shader has been built and linked successfully
-    bool checkLinkStatus() const;
 
     GLuint getID() const { return program_.id; }
 
@@ -162,6 +161,8 @@ private:
 
     void rebuildShader(ShaderObject *obj);
     void linkShader(bool notifyRebuild = false);
+    bool checkLinkStatus() const;
+
 
     static const transform_t transform;
     static const const_transform_t const_transform;
