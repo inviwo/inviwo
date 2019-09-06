@@ -34,8 +34,7 @@ def find_files(path, extensions, excludes=[""]):
     return (f for ext in extensions for f in pathlib.Path(path).rglob(ext) 
             if not any(fnmatch.fnmatch(f, x) for x in excludes))
 
-def getModifiedFiles(repoPath, extensions, excludes=[""]):
-    repo = git.Repo(repoPath)
+def getModifiedFiles(repo, extensions, excludes=[""]):
     repo.remotes.origin.fetch("+refs/heads/master:refs/remotes/origin/master", no_tags=True)
     mb = repo.merge_base(repo.head, repo.remotes.origin.refs.master)[0]
     wdir = pathlib.Path(repo.working_dir)
@@ -73,13 +72,17 @@ def main():
     version = subprocess.getoutput(args.binary + " --version")
     sys.stdout.write(version + "\n")
     
+    repo = git.Repo(args.repo[0])
+    if args.commit:
+        repo.git.checkout(args.commit)
+
     extensions = ['*.h', '*.hpp', '*.cpp']
     excludes = ["*/ext/*", "*/templates/*", "*/tools/codegen/*" , "*moc_*", "*cmake*"]
     if args.master:
         files = find_files(args.repo[0], extensions, excludes)
     else:
-        files = getModifiedFiles(args.repo[0], extensions, excludes)
-    
+        files = getModifiedFiles(repo, extensions, excludes)
+
     with codecs.open(args.output, 'w', encoding="UTF-8") as out:
         for filename in files:
             command = [args.binary, str(filename)]
@@ -116,13 +119,10 @@ def main():
                     with codecs.open(filename, 'w', encoding="UTF-8") as f:
                         f.write(formatted_code)
 
-    if args.fix and args.commit:
-        repo = git.Repo(args.repo[0])
-        repo.git.checkout(args.commit)
+    if args.fix and len(args.commit)>0:
         repo.git.add(update=True)
         repo.index.commit("Jenkins: Format fixes")    
         repo.remotes.origin.push()    
 
 if __name__ == '__main__':
     main()
-
