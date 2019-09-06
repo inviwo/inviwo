@@ -76,9 +76,9 @@ def main():
     extensions = ['*.h', '*.hpp', '*.cpp']
     excludes = ["*/ext/*", "*/templates/*", "*/tools/codegen/*" , "*moc_*", "*cmake*"]
     if args.master:
-        files = find_files(args.repo, extensions, excludes)
+        files = find_files(args.repo[0], extensions, excludes)
     else:
-        files = getModifiedFiles(args.repo, extensions, excludes)
+        files = getModifiedFiles(args.repo[0], extensions, excludes)
     
     with codecs.open(args.output, 'w', encoding="UTF-8") as out:
         for filename in files:
@@ -117,7 +117,7 @@ def main():
                         f.write(formatted_code)
 
     if args.fix and args.commit:
-        repo = git.Repo(args.repo)
+        repo = git.Repo(args.repo[0])
         repo.git.checkout(args.commit)
         repo.git.add(update=True)
         repo.index.commit("Jenkins: Format fixes")    
