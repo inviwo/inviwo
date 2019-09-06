@@ -208,8 +208,6 @@ void RandomSphereGenerator::handlePicking(PickingEvent* p, std::function<void(ve
         else if (p->getState() == PickingState::Updated &&
             p->getEvent()->hash() == WheelEvent::chash()) {
             auto we = p->getEventAs<WheelEvent>();
-            LogInfo("wheel event: " << we->delta().y);
-
             if (radiiBuffer_) {
                 auto& radii = radiiBuffer_->getDataContainer();
 
