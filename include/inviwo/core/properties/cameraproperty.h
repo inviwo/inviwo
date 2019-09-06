@@ -89,6 +89,9 @@ public:
      */
     void resetCamera();
 
+    virtual CameraProperty& setCurrentStateAsDefault() override;
+    virtual CameraProperty& resetToDefaultState() override;
+
     virtual const vec3& getLookFrom() const override;
     virtual void setLookFrom(vec3 lookFrom) override;
     virtual const vec3& getLookTo() const override;

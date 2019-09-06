@@ -257,6 +257,24 @@ void CameraProperty::resetCamera() {
     camera_->setLookUp(lookUp_.get());
 }
 
+CameraProperty& CameraProperty::setCurrentStateAsDefault() {
+    Property::setCurrentStateAsDefault();
+    for (auto& elem : properties_) {
+        elem->setCurrentStateAsDefault();
+    }
+    return *this;
+}
+
+CameraProperty& CameraProperty::resetToDefaultState() {
+    NetworkLock lock(this);
+    for (auto& elem : properties_) {
+        if (elem != &aspectRatio_) { // We never want to reset the aspect
+            elem->resetToDefaultState();
+        }
+    }
+    return *this;
+}
+
 void CameraProperty::setLookFrom(vec3 lookFrom) { lookFrom_.set(lookFrom); }
 
 void CameraProperty::setLookTo(vec3 lookTo) { lookTo_.set(lookTo); }

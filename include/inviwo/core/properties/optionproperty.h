@@ -685,8 +685,15 @@ void TemplateOptionProperty<T>::set(const Property* srcProperty) {
 
 template <typename T>
 TemplateOptionProperty<T>& TemplateOptionProperty<T>::resetToDefaultState() {
-    options_ = defaultOptions_;
-    selectedIndex_ = defaultSelectedIndex_;
+    bool modified = false;
+    if (options_ != defaultOptions_) {
+        modified = true;
+        options_ = defaultOptions_;
+    }
+    if (selectedIndex_ != defaultSelectedIndex_) {
+        modified = true;
+        selectedIndex_ = defaultSelectedIndex_;
+    }
 
     if (defaultOptions_.empty()) {
         LogWarn("Resetting option property: " + this->getIdentifier() +
@@ -694,7 +701,7 @@ TemplateOptionProperty<T>& TemplateOptionProperty<T>::resetToDefaultState() {
                 "Remember to call setCurrentStateAsDefault() after adding all the options.")
     }
 
-    Property::resetToDefaultState();
+    if (modified) this->propertyModified();
     return *this;
 }
 

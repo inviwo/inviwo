@@ -324,10 +324,12 @@ MinMaxProperty<T>& MinMaxProperty<T>::setRangeNormalized(const range_type& newRa
 
 template <typename T>
 MinMaxProperty<T>& MinMaxProperty<T>::resetToDefaultState() {
-    range_.reset();
-    increment_.reset();
-    minSeparation_.reset();
-    TemplateProperty<range_type>::resetToDefaultState();
+    bool modified = false;
+    modified |= range_.reset();
+    modified |= increment_.reset();
+    modified |= minSeparation_.reset();
+    modified |= value_.reset();
+    if (modified) this->propertyModified();
     return *this;
 }
 
