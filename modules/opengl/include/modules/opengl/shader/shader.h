@@ -163,7 +163,6 @@ private:
     void linkShader(bool notifyRebuild = false);
     bool checkLinkStatus() const;
 
-
     static const transform_t transform;
     static const const_transform_t const_transform;
 
