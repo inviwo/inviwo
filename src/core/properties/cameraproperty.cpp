@@ -268,7 +268,7 @@ CameraProperty& CameraProperty::setCurrentStateAsDefault() {
 CameraProperty& CameraProperty::resetToDefaultState() {
     NetworkLock lock(this);
     for (auto& elem : properties_) {
-        if (elem != &aspectRatio_) {  // We never want to reset the aspect
+        if (elem != &aspectRatio_) { // We never want to reset the aspect
             elem->resetToDefaultState();
         }
     }
