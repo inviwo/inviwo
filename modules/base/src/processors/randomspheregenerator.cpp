@@ -204,9 +204,8 @@ void RandomSphereGenerator::handlePicking(PickingEvent* p, std::function<void(ve
                 invalidate(InvalidationLevel::InvalidOutput);
                 p->markAsUsed();
             }
-        }
-        else if (p->getState() == PickingState::Updated &&
-            p->getEvent()->hash() == WheelEvent::chash()) {
+        } else if (p->getState() == PickingState::Updated &&
+                   p->getEvent()->hash() == WheelEvent::chash()) {
             auto we = p->getEventAs<WheelEvent>();
             if (radiiBuffer_) {
                 auto& radii = radiiBuffer_->getDataContainer();
