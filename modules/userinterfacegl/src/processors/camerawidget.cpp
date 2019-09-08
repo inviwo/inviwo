@@ -114,7 +114,7 @@ CameraWidget::CameraWidget()
     , overlayShader_("img_identity.vert", "widgettexture.frag")
     , isMouseBeingPressedAndHold_(false)
     , mouseWasMoved_(false)
-    , activeWidgetID_(-1) {
+    , currentPickingID_(-1) {
     addPort(inport_);
     addPort(outport_);
 
@@ -351,92 +351,48 @@ void CameraWidget::drawWidgetTexture() {
     overlayShader_.deactivate();
 }
 
-void CameraWidget::objectPicked(PickingEvent *p) {
-    const auto pickedID = static_cast<int>(p->getPickedId());
+void CameraWidget::objectPicked(PickingEvent *e) {
+    const auto pickedID = static_cast<int>(e->getPickedId());
     if (pickedID >= static_cast<int>(pickingIDs_.size())) {
         return;
     }
 
     bool triggerMoveEvent = false;
     bool triggerSingleEvent = false;
-
-    if (p->getEvent()->hash() == MouseEvent::chash()) {
-        auto me = p->getEventAs<MouseEvent>();
-        if (!(me->buttonState() & MouseButton::Left) && (me->state() != MouseState::Release)) {
-            return;
-        }
-
-        const bool leftMouseBtn{me->button() == MouseButton::Left};
-        const bool mousePress{me->state() == MouseState::Press};
-        const bool mouseRelease{me->state() == MouseState::Release};
-
-        bool interactionBegin = false;
-        if (!isMouseBeingPressedAndHold_ && mousePress && leftMouseBtn) {
-            isMouseBeingPressedAndHold_ = true;
-            mouseWasMoved_ = false;
-            interactionBegin = true;
-            activeWidgetID_ = pickedID;
-            saveInitialCameraState();
-        } else if (isMouseBeingPressedAndHold_ && (me->state() == MouseState::Move)) {
+   
+    if (e->getPressState() != PickingPressState::None) {
+        if (e->getPressState() == PickingPressState::Move &&
+            e->getPressItems() & PickingPressItem::Primary) {
             // check whether mouse has been moved for more than 1 pixel
             if (!mouseWasMoved_) {
-                const dvec2 delta(p->getDeltaPressedPosition() * dvec2(p->getCanvasSize()));
+                const dvec2 delta(e->getDeltaPressedPosition() * dvec2(e->getCanvasSize()));
                 const double squaredDist = delta.x * delta.x + delta.y * delta.y;
                 mouseWasMoved_ = (squaredDist > 1.0);
             }
-        }
-
-        triggerMoveEvent = (isMouseBeingPressedAndHold_ && !mouseRelease && !interactionBegin);
-        // trigger single event on release of left mouse button, and only _if_ the mouse was not
-        // moved
-        triggerSingleEvent = (leftMouseBtn && isMouseBeingPressedAndHold_ && mouseRelease &&
-                              (activeWidgetID_ >= 0) && !mouseWasMoved_);
-
-        if (mouseRelease) {
+            triggerMoveEvent = true;
+        } else if (e->getPressState() == PickingPressState::Press &&
+                   e->getPressItem() & PickingPressItem::Primary) {
+            // initial activation with button press
+            isMouseBeingPressedAndHold_ = true;
+            mouseWasMoved_ = false;
+            currentPickingID_ = e->getPickedId();
+            saveInitialCameraState();
+        } else if (e->getPressState() == PickingPressState::Release &&
+                   e->getPressItem() & PickingPressItem::Primary) {
+            triggerSingleEvent = (isMouseBeingPressedAndHold_ &&
+                                  (currentPickingID_ >= 0) && !mouseWasMoved_);
             isMouseBeingPressedAndHold_ = false;
-            if (activeWidgetID_ >= 0) {
-                activeWidgetID_ = -1;
+            if (currentPickingID_ >= 0) {
+                currentPickingID_ = -1;
                 invalidate(InvalidationLevel::InvalidOutput);
             }
         }
-        p->markAsUsed();
-    } else if (p->getEvent()->hash() == TouchEvent::chash()) {
-        auto touchEvent = p->getEventAs<TouchEvent>();
-
-        if (touchEvent->touchPoints().size() == 1) {
-            // allow interaction only for a single touch point
-            const auto &touchPoint = touchEvent->touchPoints().front();
-
-            if (!isMouseBeingPressedAndHold_ && (touchPoint.state() == TouchState::Started)) {
-                isMouseBeingPressedAndHold_ = true;
-                mouseWasMoved_ = false;
-                activeWidgetID_ = pickedID;
-                saveInitialCameraState();
-            } else if (touchPoint.state() == TouchState::Finished) {
-                isMouseBeingPressedAndHold_ = false;
-                triggerSingleEvent = ((activeWidgetID_ >= 0) && !mouseWasMoved_);
-                if (activeWidgetID_ >= 0) {
-                    activeWidgetID_ = -1;
-                    invalidate(InvalidationLevel::InvalidOutput);
-                }
-            } else if (touchPoint.state() == TouchState::Updated) {
-                // check whether touch point has been moved for more than 3 pixels
-                // to accept touch "clicks" with a certain movement
-                if (!mouseWasMoved_) {
-                    const auto delta = touchPoint.pos() - touchPoint.pressedPos();
-                    const double squaredDist = delta.x * delta.x + delta.y * delta.y;
-                    mouseWasMoved_ =
-                        (squaredDist > minTouchMovement_.get() * minTouchMovement_.get());
-                }
-                triggerMoveEvent = true;
-            }
-            p->markAsUsed();
-        }
+        e->markAsUsed();
     }
 
     if (triggerMoveEvent) {
-        interaction(pickingIDs_[activeWidgetID_].dir,
-                    p->getDeltaPosition() * dvec2(p->getCanvasSize()));
+        interaction(pickingIDs_[currentPickingID_].dir,
+                    e->getDeltaPosition() * dvec2(e->getCanvasSize()));
 
     } else if (triggerSingleEvent) {
         singleStepInteraction(pickingIDs_[pickedID].dir, pickingIDs_[pickedID].clockwise);

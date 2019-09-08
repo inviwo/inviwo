@@ -195,7 +195,7 @@ private:
     // UI state and textures
     bool isMouseBeingPressedAndHold_;
     bool mouseWasMoved_;
-    int activeWidgetID_;
+    int currentPickingID_;
 
     // initial state of camera when an interaction is triggered to keep the rotation axis consistent
     struct InitialState {
