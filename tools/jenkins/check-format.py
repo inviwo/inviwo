@@ -73,7 +73,7 @@ def main():
     sys.stdout.write(version + "\n")
     
     repo = git.Repo(args.repo[0])
-    if args.commit:
+    #if args.commit:
         #repo.git.checkout(args.commit)
 
     extensions = ['*.h', '*.hpp', '*.cpp']
@@ -119,10 +119,12 @@ def main():
                     with codecs.open(filename, 'w', encoding="UTF-8") as f:
                         f.write(formatted_code)
 
-    if args.fix and args.commit:
+    #if args.fix and args.commit:
         #repo.git.add(update=True)
         #repo.index.commit("Jenkins: Format fixes")    
         #repo.remotes.origin.push()    
 
 if __name__ == '__main__':
     main()
+
+ 
