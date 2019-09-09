@@ -210,7 +210,9 @@ void RandomSphereGenerator::handlePicking(PickingEvent* p, std::function<void(ve
             if (radiiBuffer_) {
                 auto& radii = radiiBuffer_->getDataContainer();
 
-                radii[p->getPickedId()] *= 1.0f - 0.05f * static_cast<float>(-we->delta().y);
+                auto radius =
+                    radii[p->getPickedId()] * (1.0f - 0.05f * static_cast<float>(-we->delta().y));
+                radii[p->getPickedId()] = glm::clamp(radius, scale_ * 0.05f, scale_ * 20.0f);
 
                 radiiBuffer_->getOwner()->invalidateAllOther(radiiBuffer_.get());
             }
