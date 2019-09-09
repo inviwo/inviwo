@@ -264,10 +264,12 @@ void OrdinalProperty<T>::set(const T& value, const T& minVal, const T& maxVal, c
 
 template <typename T>
 OrdinalProperty<T>& OrdinalProperty<T>::resetToDefaultState() {
-    minValue_.reset();
-    maxValue_.reset();
-    increment_.reset();
-    TemplateProperty<T>::resetToDefaultState();
+    bool modified = false;
+    modified |= minValue_.reset();
+    modified |= maxValue_.reset();
+    modified |= increment_.reset();
+    modified |= value_.reset();
+    if (modified) this->propertyModified();
     return *this;
 }
 

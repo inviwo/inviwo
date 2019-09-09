@@ -53,7 +53,9 @@ struct ValueWrapper {
     operator const T&() const { return value; }
 
     bool isDefault() const { return value == defaultValue; }
-    void reset() { value = defaultValue; }
+
+    // return if the value changes while resetting
+    bool reset() { return update(defaultValue); }
     void setAsDefault() { defaultValue = value; }
 
     void serialize(Serializer& s,

@@ -109,7 +109,6 @@ CompositeProperty& CompositeProperty::resetToDefaultState() {
     for (auto& elem : properties_) {
         elem->resetToDefaultState();
     }
-    Property::resetToDefaultState();
     return *this;
 }
 
