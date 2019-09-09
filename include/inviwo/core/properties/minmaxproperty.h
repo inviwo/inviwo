@@ -237,7 +237,7 @@ void MinMaxProperty<T>::set(const Property* srcProperty) {
         const bool rangeChanged = modified;
         modified |= increment_.update(prop->increment_);
         modified |= minSeparation_.update(prop->minSeparation_);
-        modified |= value_.update(clamp(value_.value));
+        modified |= value_.update(clamp(prop->value_));
         if (modified) this->propertyModified();
         if (rangeChanged) onRangeChangeCallback_.invokeAll();
     } else {
