@@ -77,7 +77,7 @@ def main():
     if args.commit:
         print("Fixing format, checking out: " + args.commit)
         fref = repo.remotes.origin.fetch("+refs/heads/"+args.commit+":refs/remotes/origin/"+args.commit, no_tags=True)
-        localBranch = fref.ref.checkout(b=args.commit, track=True)
+        localBranch = fref[0].ref.checkout(b=args.commit, track=True)
 
     extensions = ['*.h', '*.hpp', '*.cpp']
     excludes = ["*/ext/*", "*/templates/*", "*/tools/codegen/*" , "*moc_*", "*cmake*"]
