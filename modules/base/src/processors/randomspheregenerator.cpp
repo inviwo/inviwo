@@ -124,6 +124,7 @@ void RandomSphereGenerator::process() {
 
         // keep a reference to vertex position buffer for picking
         positionBuffer_ = vertexRAM;
+        radiiBuffer_ = radiiRAM;
 
         mesh->addBuffer(Mesh::BufferInfo(BufferType::PositionAttrib),
                         std::make_shared<Buffer<vec3>>(vertexRAM));
@@ -203,6 +204,21 @@ void RandomSphereGenerator::handlePicking(PickingEvent* p, std::function<void(ve
                 invalidate(InvalidationLevel::InvalidOutput);
                 p->markAsUsed();
             }
+        } else if (p->getState() == PickingState::Updated &&
+                   p->getEvent()->hash() == WheelEvent::chash()) {
+            auto we = p->getEventAs<WheelEvent>();
+            if (radiiBuffer_) {
+                auto& radii = radiiBuffer_->getDataContainer();
+
+                auto radius =
+                    radii[p->getPickedId()] * (1.0f - 0.05f * static_cast<float>(-we->delta().y));
+                radii[p->getPickedId()] = glm::clamp(radius, scale_ * 0.05f, scale_ * 20.0f);
+
+                radiiBuffer_->getOwner()->invalidateAllOther(radiiBuffer_.get());
+            }
+
+            invalidate(InvalidationLevel::InvalidOutput);
+            p->markAsUsed();
         }
     }
 }
