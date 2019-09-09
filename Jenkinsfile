@@ -23,7 +23,7 @@ node {
         util.warn(this)
         util.unittest(this)
         util.integrationtest(this)        
-        //util.regression(this, ["${env.WORKSPACE}/inviwo/modules"])
+        util.regression(this, ["${env.WORKSPACE}/inviwo/modules"])
         util.copyright(this)    
         util.doxygen(this)
     }

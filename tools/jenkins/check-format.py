@@ -129,6 +129,10 @@ def main():
             repo.git.add(update=True)
             repo.index.commit("Jenkins: Format fixes")    
             repo.remotes.origin.push()
+            # remove outfile if wha have fixed formatting
+            output = pathlib.Path(args.output)
+            if output.exists():
+                output.unlink()
 
         print("Restoring repo state")
         repo.git.merge('origin/master')
