@@ -143,8 +143,6 @@ def wrap(def state, String reportSlackChannel, Closure fun) {
 def format(def state, repo) {
     cmd("Format Tests", 'build') {
         checked(state, 'Format Test', false) {
-            repl(this, state)
-
             def labels = ifdef({state.pullRequest})?.labels.collect { it }
             String fix = ""
             if (labels && "J: Auto Format" in labels) {
