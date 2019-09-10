@@ -59,8 +59,9 @@ namespace {
 
 class SelectVisualizerDialog : public QDialog {
 public:
-    SelectVisualizerDialog(const std::string& file, const std::vector<DataVisualizer*>& visualizers)
-        : QDialog{} {
+    SelectVisualizerDialog(const std::string& file, const std::vector<DataVisualizer*>& visualizers,
+                           QWidget* parent = nullptr)
+        : QDialog{parent} {
 
         setWindowTitle("Select Data Visualizer");
 
@@ -102,7 +103,7 @@ public:
 }  // namespace
 
 void util::insertNetworkForData(const std::string& dataFile, ProcessorNetwork* net,
-                                bool alwaysFirst, bool onlySource) {
+                                bool alwaysFirst, bool onlySource, QWidget* parent) {
     auto app = net->getApplication();
 
     auto visualizers = app->getDataVisualizerManager()->getDataVisualizersForExtension(
@@ -132,7 +133,7 @@ void util::insertNetworkForData(const std::string& dataFile, ProcessorNetwork* n
         addVisualizer(visualizers.front(), onlySource);
 
     } else {
-        auto dialog = new SelectVisualizerDialog(dataFile, visualizers);
+        auto dialog = new SelectVisualizerDialog(dataFile, visualizers, parent);
         if (dialog->exec() == QDialog::Accepted) {
             if (dialog->loader_->isChecked()) {
                 addVisualizer(visualizers.front(), true);
