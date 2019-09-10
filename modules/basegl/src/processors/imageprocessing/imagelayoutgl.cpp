@@ -68,6 +68,10 @@ ImageLayoutGL::ImageLayoutGL()
                                    0.f, 1.f)
     , vertical3Right1LeftSplitter_("vertical3Right1LeftSplitter", "Split Position", 2.0f / 3.0f,
                                    0.f, 1.f)
+    , leftMinMax_("leftMinMax", "Left min/max", 1, 1, 1, 1)     // max sizes updated on ResizeEvent
+    , rightMinMax_("rightMinMax", "Right min/max", 1, 1, 1, 1)  // note, min 1 to avoid zero size
+    , topMinMax_("topMinMax", "Top min/max", 1, 1, 1, 1)
+    , bottomMinMax_("bottomMinMax", "Bottom min/max", 1, 1, 1, 1)
     , shader_("img_texturequad.vert", "img_copy.frag")
     , viewManager_()
     , currentLayout_(Layout::CrossSplit)
@@ -97,6 +101,24 @@ ImageLayoutGL::ImageLayoutGL()
     vertical3Right1LeftSplitter_.onChange([this]() { onStatusChange(); });
     addProperty(vertical3Right1LeftSplitter_);
 
+    leftMinMax_.onChange([this]() {
+        ResizeEvent e(currentDim_);
+        propagateEvent(&e, &outport_);
+    });
+    rightMinMax_.onChange([this]() {
+        ResizeEvent e(currentDim_);
+        propagateEvent(&e, &outport_);
+    });
+    topMinMax_.onChange([this]() {
+        ResizeEvent e(currentDim_);
+        propagateEvent(&e, &outport_);
+    });
+    bottomMinMax_.onChange([this]() {
+        ResizeEvent e(currentDim_);
+        propagateEvent(&e, &outport_);
+    });
+    addProperties(leftMinMax_, rightMinMax_, topMinMax_, bottomMinMax_);
+
     layout_.onChange([this]() { onStatusChange(); });
 
     onStatusChange(false);
@@ -113,6 +135,7 @@ void ImageLayoutGL::propagateEvent(Event* event, Outport* source) {
 
     if (event->hash() == ResizeEvent::chash()) {
         auto resizeEvent = static_cast<ResizeEvent*>(event);
+        updateMaxSizes(resizeEvent->size());
         updateViewports(resizeEvent->size(), true);
         auto& outports = multiinport_.getConnectedOutports();
         size_t minNum = std::min(outports.size(), viewManager_.size());
@@ -141,22 +164,39 @@ void ImageLayoutGL::onStatusChange(bool propagate) {
     vertical3Left1RightSplitter_.setVisible(false);
     vertical3Right1LeftSplitter_.setVisible(false);
 
+    leftMinMax_.setVisible(false);
+    rightMinMax_.setVisible(false);
+    topMinMax_.setVisible(false);
+    bottomMinMax_.setVisible(false);
+
     switch (layout_.getSelectedValue()) {
         case Layout::HorizontalSplit:
             horizontalSplitter_.setVisible(true);
+            topMinMax_.setVisible(true);
+            bottomMinMax_.setVisible(true);
             break;
         case Layout::VerticalSplit:
             verticalSplitter_.setVisible(true);
+            leftMinMax_.setVisible(true);
+            rightMinMax_.setVisible(true);
             break;
         case Layout::CrossSplit:
             horizontalSplitter_.setVisible(true);
             verticalSplitter_.setVisible(true);
+            leftMinMax_.setVisible(true);
+            rightMinMax_.setVisible(true);
+            topMinMax_.setVisible(true);
+            bottomMinMax_.setVisible(true);
             break;
         case Layout::ThreeLeftOneRight:
             vertical3Left1RightSplitter_.setVisible(true);
+            leftMinMax_.setVisible(true);
+            rightMinMax_.setVisible(true);
             break;
         case Layout::ThreeRightOneLeft:
             vertical3Right1LeftSplitter_.setVisible(true);
+            leftMinMax_.setVisible(true);
+            rightMinMax_.setVisible(true);
             break;
         case Layout::HorizontalSplitMultiple:
         case Layout::VerticalSplitMultiple:
@@ -199,6 +239,20 @@ void ImageLayoutGL::process() {
     TextureUnit::setZeroUnit();
 }
 
+void ImageLayoutGL::updateMaxSizes(ivec2 dim) {
+    auto updateRange = [](auto& r, auto d) {
+        // Make max value == dimension if it already equaled max range
+        r.set(r.getStart(), r.getEnd() == r.getRangeMax() ? d : r.getEnd(), r.getRangeMin(), d,
+              r.getIncrement(), r.getMinSeparation());
+    };
+    // Prevent resize events while updating sizes
+    Property::OnChangeBlocker l(leftMinMax_), r(rightMinMax_), t(topMinMax_), b(bottomMinMax_);
+    updateRange(leftMinMax_, dim.y);
+    updateRange(rightMinMax_, dim.y);
+    updateRange(topMinMax_, dim.x);
+    updateRange(bottomMinMax_, dim.x);
+}
+
 void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
     if (!force && (currentDim_ == dim) && (currentLayout_ == layout_.get())) return;  // no changes
 
@@ -208,11 +262,26 @@ void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
     const int extra1 = dim.y % 3 >= 1 ? 1 : 0;  // add extra pixels to the small "windows" if the
     const int extra2 = dim.y % 3 >= 2 ? 1 : 0;  // size is not divisible by 3 to avoid black borders
 
-    const int midx = static_cast<int>(verticalSplitter_ * dim.x);
-    const int midy = static_cast<int>(horizontalSplitter_ * dim.y);
+    auto rightMinMax = 1.f - vec2(rightMinMax_.getEnd() / static_cast<float>(dim.x),
+                                  rightMinMax_.getStart() / static_cast<float>(dim.x));
+    auto bottomMinMax = 1.f - vec2(topMinMax_.getEnd() / static_cast<float>(dim.y),
+                                   topMinMax_.getStart() / static_cast<float>(dim.y));
 
-    const int leftWindow3L1RX = static_cast<int>(vertical3Left1RightSplitter_ * dim.x);
-    const int leftWindow3R1LX = static_cast<int>(vertical3Right1LeftSplitter_ * dim.x);
+    const int midx = glm::clamp(
+        static_cast<int>(glm::clamp(*verticalSplitter_, rightMinMax.x, rightMinMax.y) * dim.x),
+        leftMinMax_.getStart(), leftMinMax_.getEnd());
+    const int midy = glm::clamp(
+        static_cast<int>(glm::clamp(*horizontalSplitter_, bottomMinMax.x, bottomMinMax.y) * dim.y),
+        bottomMinMax_.getStart(), bottomMinMax_.getEnd());
+
+    const int leftWindow3L1RX = glm::clamp(
+        static_cast<int>(glm::clamp(*vertical3Left1RightSplitter_, rightMinMax.x, rightMinMax.y) *
+                         dim.x),
+        leftMinMax_.getStart(), leftMinMax_.getEnd());
+    const int leftWindow3R1LX = glm::clamp(
+        static_cast<int>(glm::clamp(*vertical3Right1LeftSplitter_, rightMinMax.x, rightMinMax.y) *
+                         dim.x),
+        leftMinMax_.getStart(), leftMinMax_.getEnd());
 
     const int portCount = static_cast<int>(multiinport_.getConnectedOutports().size());
 
