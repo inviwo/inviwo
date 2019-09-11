@@ -47,21 +47,28 @@
 namespace inviwo {
 
 class Mesh;
-
 /** \docpage{org.inviwo.EmbeddedVolumeSlice, Embedded Volume Slice}
  * ![](org.inviwo.EmbeddedVolumeSlice.png?classIdentifier=org.inviwo.EmbeddedVolumeSlice)
- * Explanation of how to use the processor.
+ *
+ * Render a arbitrary slice of a volume in place. I.e. the slice will oriented as it would have
+ * been in the volume.
+ *
  *
  * ### Inports
- *   * __<Inport1>__ <description>.
- *
+ *   * __volume__ The input volume
+ *   * __background__ Optional background image
  * ### Outports
- *   * __<Outport1>__ <description>.
+ *   * __outport__ Rendered slice
  *
  * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
+ *   * __Plane Normal__ Defines the normal of the plane
+ *   * __Plane Position__ Defines a point in the plane
+ *   * __Transfer Function__ Defines the transfer function for mapping voxel values to color and
+ *                           opacity
+ *   * __Camera__ Camera used for rendering
+ *   * __Trackball__ Trackball for handling interaction
  */
+
 class IVW_MODULE_BASEGL_API EmbeddedVolumeSlice : public Processor {
 public:
     EmbeddedVolumeSlice();

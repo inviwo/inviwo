@@ -27,8 +27,6 @@
  *
  *********************************************************************************/
 
-#pragma optimize("", off)
-
 #include <modules/basegl/processors/embeddedvolumeslice.h>
 #include <modules/opengl/volume/volumegl.h>
 #include <modules/opengl/image/layergl.h>
@@ -43,6 +41,7 @@
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/algorithm/boundingbox.h>
+#include <inviwo/core/interaction/events/pickingevent.h>
 
 #include <fmt/format.h>
 #include <fmt/ostream.h>
