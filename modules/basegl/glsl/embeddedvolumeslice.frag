@@ -55,9 +55,8 @@ void main() {
 
 #ifdef BACKGROUND_AVAILABLE
     vec4 background = texture(backgroundColor, gl_FragCoord.xy * backgroundParameters.reciprocalDimensions);
-    background.rgb *= background.a;
-    //voxel = voxel + (1.0 - voxel.a) * background;
     voxel = mix(background, voxel, voxel.a);
+    voxel.a = max(background.a, voxel.a);
 #endif // BACKGROUND_AVAILABLE    
 
     FragData0 = voxel;
