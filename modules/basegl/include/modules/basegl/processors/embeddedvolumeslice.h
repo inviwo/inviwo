@@ -50,7 +50,7 @@ class Mesh;
 /** \docpage{org.inviwo.EmbeddedVolumeSlice, Embedded Volume Slice}
  * ![](org.inviwo.EmbeddedVolumeSlice.png?classIdentifier=org.inviwo.EmbeddedVolumeSlice)
  *
- * Render an arbitrary slice of a volume in place, i.e. the slice will be oriented as it would 
+ * Render an arbitrary slice of a volume in place, i.e. the slice will be oriented as it would
  * have been in the volume.
  *
  * ### Inports
