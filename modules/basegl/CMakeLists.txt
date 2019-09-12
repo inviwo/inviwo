@@ -61,6 +61,7 @@ set(HEADER_FILES
     include/modules/basegl/processors/meshpicking.h
     include/modules/basegl/processors/meshrenderprocessorgl.h
     include/modules/basegl/processors/mprentryexitpointsprocessor.h
+    include/modules/basegl/processors/mprproxygeometryprocessor.h
     include/modules/basegl/processors/multichannelraycaster.h
     include/modules/basegl/processors/pointrenderer.h
     include/modules/basegl/processors/polylinegrabber.h
@@ -145,6 +146,7 @@ set(SOURCE_FILES
     src/processors/meshpicking.cpp
     src/processors/meshrenderprocessorgl.cpp
     src/processors/mprentryexitpointsprocessor.cpp
+    src/processors/mprproxygeometryprocessor.cpp
     src/processors/multichannelraycaster.cpp
     src/processors/pointrenderer.cpp
     src/processors/polylinegrabber.cpp
