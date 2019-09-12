@@ -24,18 +24,36 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
+#pragma once
 
-#include "utils/structs.glsl"
+#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/common/inviwo.h>
 
-uniform GeometryParameters geometry;
-uniform CameraParameters camera;
+#include <inviwo/core/datastructures/geometry/plane.h>
 
-out vec3 texCoord;
- 
-void main() {
-    texCoord = vec3(in_Vertex);
-    vec4 worldPosition = geometry.dataToWorld * vec4(in_Vertex, 1.0);
-    gl_Position = camera.worldToClip * worldPosition;
+namespace inviwo {
+
+namespace util {
+
+/**
+ * Intersects a unit cube with the given plane. The intersection points and the midpoint will be
+ * added to 'pos' and a list of triangle indicies referring to the pos array will be appended
+ * to 'inds'
+ */
+IVW_CORE_API void cubePlaneIntersectionAppend(const Plane& plane, std::vector<vec3>& pos,
+                                              std::vector<std::uint32_t>& inds);
+
+inline auto cubePlaneInstersection(const Plane& plane) {
+    std::vector<vec3> pos;
+    std::vector<std::uint32_t> inds;
+
+    cubePlaneIntersectionAppend(plane, pos, inds);
+
+    return std::make_tuple(pos, inds);
 }
+
+}  // namespace util
+
+}  // namespace inviwo

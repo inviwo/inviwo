@@ -104,7 +104,7 @@ private:
     FloatProperty pointPlaneMove_;
     FloatVec3Property planePoint_;   ///< World space plane position
     FloatVec3Property planeNormal_;  ///< World space plane normal
-    ButtonProperty alignPlaneNormalToCameraNormal_;
+    ButtonProperty alignPlaneNormalToCameraNormal_; 
     CameraProperty camera_;
 
     float previousPointPlaneMove_;

@@ -42,6 +42,7 @@
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/algorithm/boundingbox.h>
 #include <inviwo/core/interaction/events/pickingevent.h>
+#include <inviwo/core/algorithm/cubeplaneintersection.h>
 
 #include <fmt/format.h>
 #include <fmt/ostream.h>
@@ -104,71 +105,17 @@ void EmbeddedVolumeSlice::planeSettingsChanged() {
         embeddedMesh_.getEditableVertices()->getEditableRAMRepresentation()->getDataContainer();
     intersections.clear();
 
-    {
-        // Construct the edges of a unit box and intersect with the plane.
-        const std::array<vec3, 8> corners{
-            vec3{0.0f, 0.0f, 0.0f}, vec3{1.0f, 0.0f, 0.0f}, vec3{1.0f, 1.0f, 0.0f},
-            vec3{0.0f, 1.0f, 0.0f}, vec3{0.0f, 0.0f, 1.0f}, vec3{1.0f, 0.0f, 1.0f},
-            vec3{1.0f, 1.0f, 1.0f}, vec3{0.0f, 1.0f, 1.0f},
-        };
-        const std::array<size2_t, 12> edges{size2_t{0, 1}, size2_t{1, 2}, size2_t{2, 3},
-                                            size2_t{3, 0}, size2_t{4, 5}, size2_t{5, 6},
-                                            size2_t{6, 7}, size2_t{7, 4}, size2_t{0, 4},
-                                            size2_t{1, 5}, size2_t{2, 6}, size2_t{3, 7}};
-
-        for (auto edge : edges) {
-            const auto point = plane.getIntersection(corners[edge[0]], corners[edge[1]]);
-            if (point.intersects_) {
-                intersections.push_back(point.intersection_);
-            }
-        }
+    if (embeddedMesh_.getNumberOfIndicies() == 0) {
+        embeddedMesh_.addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
     }
-    if (intersections.size() > 2) {
-        const vec3 midpoint = std::accumulate(intersections.begin(), intersections.end(), vec3{0}) /
-                              intersections.size();
-        const vec3 mainVector = glm::normalize(intersections.back() - midpoint);
-        const vec3 mainNormal = glm::normalize(glm::cross(mainVector, *planeNormal_));
 
-        std::vector<float> dotProdVals;
-        dotProdVals.reserve(intersections.size());
-        for (auto& point : intersections) {
-            const vec3 candVector = glm::normalize(point - midpoint);
-            const auto dotProdModifier = glm::dot(candVector, mainNormal);
-            auto dotProd = glm::dot(candVector, mainVector);
-            if (dotProdModifier < 0 && candVector != mainVector) {
-                // let everything past 180 deg be in the domain -3 < x < -1
-                dotProd = -(dotProd + 2);
-            }
-            dotProdVals.push_back(dotProd);
-        }
+    auto& inds = embeddedMesh_.getIndices(0)->getEditableRAMRepresentation()->getDataContainer();
+    inds.clear();
 
-        std::vector<unsigned int> idx(dotProdVals.size());
-        std::iota(idx.begin(), idx.end(), 0);
+    util::cubePlaneIntersectionAppend(plane, intersections, inds);
 
-        sort(idx.begin(), idx.end(),
-             [&dotProdVals](size_t i1, size_t i2) { return dotProdVals[i1] > dotProdVals[i2]; });
-
-        if (embeddedMesh_.getNumberOfIndicies() == 0) {
-            embeddedMesh_.addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
-        }
-
-        auto& inds =
-            embeddedMesh_.getIndices(0)->getEditableRAMRepresentation()->getDataContainer();
-        inds.clear();
-
-        intersections.push_back(midpoint);
-        for (size_t i = 0; i < idx.size() - 1; i++) {
-            inds.push_back(idx[i]);
-            inds.push_back(idx[i + 1]);
-            inds.push_back(static_cast<unsigned int>(intersections.size() - 1));  // midpoint
-        }
-        inds.push_back(idx[idx.size() - 1]);
-        inds.push_back(idx[0]);                                               // wrap-around
-        inds.push_back(static_cast<unsigned int>(intersections.size() - 1));  // midpoint
-
-        embeddedMesh_.setModelMatrix(inport_.getData()->getModelMatrix());
-        embeddedMesh_.setWorldMatrix(inport_.getData()->getWorldMatrix());
-    }
+    embeddedMesh_.setModelMatrix(inport_.getData()->getModelMatrix());
+    embeddedMesh_.setWorldMatrix(inport_.getData()->getWorldMatrix());
 }
 
 void EmbeddedVolumeSlice::handlePicking(PickingEvent* p) {

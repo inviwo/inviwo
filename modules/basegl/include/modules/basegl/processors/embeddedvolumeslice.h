@@ -60,8 +60,8 @@ class Mesh;
  *   * __outport__ Rendered slice
  *
  * ### Properties
- *   * __Plane Normal__ Defines the normal of the plane
- *   * __Plane Position__ Defines a point in the plane
+ *   * __Plane Normal__ Defines the normal of the plane in texture/data space [0,1]
+ *   * __Plane Position__ Defines a point in the plane in texture/data space [0,1]
  *   * __Transfer Function__ Defines the transfer function for mapping voxel values to color and
  *                           opacity
  *   * __Camera__ Camera used for rendering
