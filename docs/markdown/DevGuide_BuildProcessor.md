@@ -66,7 +66,7 @@ The `Shader` class can be used to activate shaders and bind uniforms etc. Simila
 ```
 TextureUnit tex_unit;
 utilgl::bindColorTexture(tex_inport, tex_unit.getEnum());
-shader.setUniform("Uniform Name", tex_unit.getUnitNumber()); # shader is initialized in constructor
+shader.setUniform("Uniform Name", tex_unit.getUnitNumber()); // shader is initialized in constructor
 ```
 
 
