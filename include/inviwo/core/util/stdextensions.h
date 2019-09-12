@@ -123,6 +123,26 @@ T* defaultConstructType() {
 template <class...>
 using void_t = void;
 
+/**
+* Helper struct to allow passing multiple lambda expressions to std::visit.
+* Example useage:
+* \code{.cpp}
+*  std::variant<int, std::string, float, double> data = ...;
+*  std::visit(overloaded{[](const int& arg) {   }, // called if data contains an int
+                         [](const std::string &arg) {  }, // called if data contains a string
+                         [](const auto& arg) {  }} // use auto to capture "the other types"
+                   , data);
+*
+* \endcode
+*
+*/
+template <class... Ts>
+struct overloaded : Ts... {
+    using Ts::operator()...;
+};
+template <class... Ts>
+overloaded(Ts...)->overloaded<Ts...>;
+
 // type trait to check if T is derived from std::basic_string
 namespace detail {
 template <typename T, class Enable = void>
@@ -534,33 +554,14 @@ public:
 };
 
 template <typename F, typename... Args>
-struct is_invocable
-    : std::is_constructible<std::function<void(Args...)>,
-                            std::reference_wrapper<typename std::remove_reference<F>::type>> {};
+using is_invocable[[deprecated("Use `std::is_invocable` instead")]] = std::is_invocable<F, Args...>;
 
 template <typename R, typename F, typename... Args>
-struct is_invocable_r
-    : std::is_constructible<std::function<R(Args...)>,
-                            std::reference_wrapper<typename std::remove_reference<F>::type>> {};
+using is_invocable_r[[deprecated("Use `std::is_invocable_r` instead")]] =
+    std::is_invocable_r<F, Args...>;
 
-namespace detail {
-
-// https://stackoverflow.com/a/22882504/600633
-struct is_callable_test {
-    template <typename F, typename... A>
-    static decltype(std::declval<F>()(std::declval<A>()...), std::true_type()) f(int);
-
-    template <typename F, typename... A>
-    static std::false_type f(...);
-};
-
-template <typename F, typename... A>
-struct is_callable : decltype(is_callable_test::f<F, A...>(0)) {};
-
-template <typename F, typename... A>
-struct is_callable<F(A...)> : is_callable<F, A...> {};
-
-}  // namespace detail
+template <typename F, typename... Args>
+using is_callable[[deprecated("Use `std::is_invocable` instead")]] = std::is_invocable<F, Args...>;
 
 /**
  * A type trait to determine if type "callback" cann be called with certain arguments.
@@ -571,8 +572,8 @@ struct is_callable<F(A...)> : is_callable<F, A...> {};
  *        callback = [](std::string){}  -> false
  */
 template <typename... A, typename F>
-constexpr detail::is_callable<F, A...> is_callable_with(F&&) {
-    return detail::is_callable<F(A...)>{};
+constexpr bool is_callable_with(F&&) {
+    return std::is_invocable_v<F, A...>;
 }
 
 namespace hashtuple {

@@ -188,12 +188,18 @@ public:
                                                    const std::vector<T>& values);
     virtual TemplateOptionProperty& replaceOptions(std::vector<OptionPropertyOption<T>> options);
 
+    template <typename U = T,
+              class = typename std::enable_if<util::is_stream_insertable<U>::value, void>::type>
+    TemplateOptionProperty& replaceOptions(const std::vector<T>& options);
+
     virtual bool isSelectedIndex(size_t index) const override;
     virtual bool isSelectedIdentifier(const std::string& identifier) const override;
     virtual bool isSelectedDisplayName(const std::string& name) const override;
     bool isSelectedValue(const T& val) const;
 
     const T& get() const;
+    const T& operator*() const;
+    const T* operator->() const;
     void set(const T& value);
     virtual void set(const Property* srcProperty) override;
 
@@ -220,21 +226,21 @@ private:
     std::vector<OptionPropertyOption<T>> defaultOptions_;
 };
 
-template <typename T>
-bool operator==(const TemplateOptionProperty<T>& lhs, const T& rhs) {
+template <typename T, typename U>
+bool operator==(const TemplateOptionProperty<T>& lhs, const U& rhs) {
     return lhs.get() == rhs;
 }
-template <typename T>
-bool operator==(const T& lhs, const TemplateOptionProperty<T>& rhs) {
+template <typename T, typename U>
+bool operator==(const U& lhs, const TemplateOptionProperty<T>& rhs) {
     return lhs == rhs.get();
 }
 
-template <typename T>
-bool operator!=(const TemplateOptionProperty<T>& lhs, const T& rhs) {
+template <typename T, typename U>
+bool operator!=(const TemplateOptionProperty<T>& lhs, const U& rhs) {
     return lhs.get() != rhs;
 }
-template <typename T>
-bool operator!=(const T& lhs, const TemplateOptionProperty<T>& rhs) {
+template <typename T, typename U>
+bool operator!=(const U& lhs, const TemplateOptionProperty<T>& rhs) {
     return lhs != rhs.get();
 }
 
@@ -609,6 +615,27 @@ TemplateOptionProperty<T>& TemplateOptionProperty<T>::replaceOptions(
     return *this;
 }
 
+template <typename T>
+template <typename U, class>
+TemplateOptionProperty<T>& TemplateOptionProperty<T>::replaceOptions(
+    const std::vector<T>& options) {
+
+    std::string selectId{};
+    if (!options_.empty()) selectId = getSelectedIdentifier();
+
+    options_.clear();
+    for (size_t i = 0; i < options.size(); i++) options_.emplace_back(options[i]);
+
+    auto it = util::find_if(options_, [&](auto& opt) { return opt.id_ == selectId; });
+    if (it != options_.end()) {
+        selectedIndex_ = std::distance(options_.begin(), it);
+    } else {
+        selectedIndex_ = 0;
+    }
+    propertyModified();
+    return *this;
+}
+
 // Is...
 template <typename T>
 bool TemplateOptionProperty<T>::isSelectedIndex(size_t index) const {
@@ -637,6 +664,16 @@ const T& TemplateOptionProperty<T>::get() const {
 }
 
 template <typename T>
+const T& TemplateOptionProperty<T>::operator*() const {
+    return options_[selectedIndex_].value_;
+}
+
+template <typename T>
+const T* TemplateOptionProperty<T>::operator->() const {
+    return &(options_[selectedIndex_].value_);
+}
+
+template <typename T>
 void TemplateOptionProperty<T>::set(const T& value) {
     setSelectedValue(value);
 }
@@ -648,8 +685,15 @@ void TemplateOptionProperty<T>::set(const Property* srcProperty) {
 
 template <typename T>
 TemplateOptionProperty<T>& TemplateOptionProperty<T>::resetToDefaultState() {
-    options_ = defaultOptions_;
-    selectedIndex_ = defaultSelectedIndex_;
+    bool modified = false;
+    if (options_ != defaultOptions_) {
+        modified = true;
+        options_ = defaultOptions_;
+    }
+    if (selectedIndex_ != defaultSelectedIndex_) {
+        modified = true;
+        selectedIndex_ = defaultSelectedIndex_;
+    }
 
     if (defaultOptions_.empty()) {
         LogWarn("Resetting option property: " + this->getIdentifier() +
@@ -657,7 +701,7 @@ TemplateOptionProperty<T>& TemplateOptionProperty<T>::resetToDefaultState() {
                 "Remember to call setCurrentStateAsDefault() after adding all the options.")
     }
 
-    Property::resetToDefaultState();
+    if (modified) this->propertyModified();
     return *this;
 }
 

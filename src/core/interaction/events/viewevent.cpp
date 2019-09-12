@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,38 +27,18 @@
  *
  *********************************************************************************/
 
-#include <modules/postprocessing/processors/imagesharpen.h>
-#include <modules/opengl/shader/shaderutils.h>
+#include <inviwo/core/interaction/events/viewevent.h>
 
 namespace inviwo {
 
-// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo ImageSharpen::processorInfo_{
-    "org.inviwo.ImageSharpen",  // Class identifier
-    "Image Sharpen",            // Display name
-    "Image Operation",          // Category
-    CodeState::Experimental,    // Code state
-    Tags::None,                 // Tags
-};
-const ProcessorInfo ImageSharpen::getProcessorInfo() const { return processorInfo_; }
+ViewEvent::ViewEvent(Action action) : Event(), action_{action} {}
 
-ImageSharpen::ImageSharpen()
-    : ImageGLProcessor("imagesharpen.frag")
-    , kernel_("kernel", "Kernel", kernels_[0])
-    , sharpen_("sharpen", "Sharpen", true)
-    , filter_("filter", "Filter", {{"filter1", "Kernel 1", 0}, {"filter2", "Kernel 2", 1}}, 0) {
+Event* ViewEvent::clone() const { return new ViewEvent(*this); }
 
-    addProperty(sharpen_);
-    addProperty(filter_);
+uint64_t ViewEvent::hash() const { return chash(); }
 
-    kernel_.setReadOnly(true);
-    kernel_.setCurrentStateAsDefault();
-    addProperty(kernel_);
-}
+void ViewEvent::print(std::ostream& ss) const { ss << "ViewEvent"; }
 
-void ImageSharpen::preProcess(TextureUnitContainer &) {
-    kernel_.set(kernels_[filter_.get()]);
-    utilgl::setUniforms(shader_, sharpen_);
-    shader_.setUniform("kernel", kernels_[filter_.get()]);
-}
+auto ViewEvent::getAction() const -> Action { return action_; }
+
 }  // namespace inviwo

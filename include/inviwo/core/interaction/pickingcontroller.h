@@ -61,7 +61,6 @@ public:
     bool pickingEnabled() const;
 
 private:
-    void propagateEvent(WheelEvent*, EventPropagator*);
     void propagateEvent(TouchEvent*, EventPropagator*);
     void propagateEvent(GestureEvent*, EventPropagator*);
 

@@ -27,8 +27,8 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_IMAGESHARPEN_H
-#define IVW_IMAGESHARPEN_H
+#ifndef IVW_IMAGEFILTER_H
+#define IVW_IMAGEFILTER_H
 
 #include <modules/postprocessing/postprocessingmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -37,21 +37,12 @@
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
+#include <modules/basegl/algorithm/imageconvolution.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.ImageSharpen, Image Sharpen}
- * ![](org.inviwo.ImageSharpen.png?classIdentifier=org.inviwo.ImageSharpen)
- * Applies a laplacian filter to the input image.
- * Two kernels are available:
- *
- *     Filter1: -1  -1  -1
- *              -1   8  -1
- *              -1  -1  -1
- *
- *     Filter2:  0  -1   0
- *              -1   4  -1
- *               0  -1   0
+/** \docpage{org.inviwo.ImageFilter, Image Filter}
+ * ![](org.inviwo.ImageFilter.png?classIdentifier=org.inviwo.ImageFilter)
  *
  * ### Inports
  *   * __ImageInport__ Input image.
@@ -60,33 +51,51 @@ namespace inviwo {
  *   * __ImageOutport__ Output image.
  *
  * ### Properties
- *   * __Sharpen__ Turn filter on/off.
+ *   * __Enable__ Turn filter on/off.
  */
 
 /**
- * \class ImageSharpen
- * \brief Applies a laplacian filter to the input image.
+ * \class ImageFilter
+ * \brief Applies a kernel to the input image.
  */
-class IVW_MODULE_POSTPROCESSING_API ImageSharpen : public ImageGLProcessor {
+class IVW_MODULE_POSTPROCESSING_API ImageFilter : public Processor {
 public:
-    ImageSharpen();
-    virtual ~ImageSharpen() = default;
+    ImageFilter();
+    virtual ~ImageFilter() = default;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 protected:
-    virtual void preProcess(TextureUnitContainer &cont) override;
+    virtual void process() override;
 
 private:
-    std::array<mat3, 2> kernels_ = {{mat3(vec3(-1, -1, -1), vec3(-1, 8, -1), vec3(-1, -1, -1)),
-                                     mat3(vec3(0, -1, 0), vec3(-1, 4, -1), vec3(0, -1, 0))}};
+    // Ports
+    ImageInport inport_;
+    ImageOutport outport_;
 
-    FloatMat3Property kernel_;
-    BoolProperty sharpen_;
+    // Properties
+    BoolProperty enable_;
     OptionPropertyInt filter_;
+    IntProperty passes_;
+
+    // Members
+    ImageConvolution convolution_;
+    const std::array<std::vector<float>, 10> kernels_ = {
+        std::vector<float>{-1, -1, -1, -1, 9, -1, -1, -1, -1},  // Strong sharpen
+        std::vector<float>{0, -1, 0, -1, 5, -1, 0, -1, 0},      // Light sharpen
+        std::vector<float>{.0625, .125, .0625, .125, .25, .125, .0625, .125, .0625},  // Blur
+        std::vector<float>{-2, -1, 0, -1, 1, 1, 0, 1, 2},                             // Emboss
+        std::vector<float>{-1, -1, -1, -1, 8, -1, -1, -1, -1},                        // Outline
+        std::vector<float>{-1, -2, -1, 0, 0, 0, 1, 2, 1},                             // Sobel h
+        std::vector<float>{-1, 0, 1, -2, 0, 2, -1, 0, 1},                             // Sobel v
+        std::vector<float>{0, -1, 0, -1, 4, -1, 0, -1, 0},      // Laplacian excl diagonals
+        std::vector<float>{-1, -1, -1, -1, 8, -1, -1, -1, -1},  // Laplacian incl diagonals
+        std::vector<float>{0,  0,  -1, 0,  0,  0,  -1, -2, -1, 0,  -1, -2, 16,
+                           -2, -1, 0,  -1, -2, -1, 0,  0,  0,  -1, 0,  0}  // Laplacian of Gaussian
+    };
 };
 
 }  // namespace inviwo
 
-#endif  // IVW_IMAGESHARPEN_H
+#endif  // IVW_IMAGEFILTER_H

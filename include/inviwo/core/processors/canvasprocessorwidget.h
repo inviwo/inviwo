@@ -33,20 +33,29 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processorwidget.h>
+#include <inviwo/core/network/processornetworkobserver.h>
 
 namespace inviwo {
 
 class Canvas;
 
 /**
- * \class CanvasProcessorWidget
  * \brief A processor widget that has a canvas.
  * CanvasProcessorWidget is the base class for all processor widgets with canvases.
+ *
+ * The CanvasProcessorWidget is responsible for sending ResizeEvents up the network whenever there
+ * are connections added or removed to the network to make sure that all the image ports in the
+ * network above have an up-to-date view on which image sizes to use.
+ * @see ResizeEvent
  */
-class IVW_CORE_API CanvasProcessorWidget : public ProcessorWidget {
+class IVW_CORE_API CanvasProcessorWidget : public ProcessorWidget, public ProcessorNetworkObserver {
 public:
-    CanvasProcessorWidget(Processor* p) : ProcessorWidget(p) {}
+    CanvasProcessorWidget(Processor* p);
     virtual Canvas* getCanvas() const = 0;
+
+private:
+    virtual void onProcessorNetworkDidAddConnection(const PortConnection&) override;
+    virtual void onProcessorNetworkDidRemoveConnection(const PortConnection&) override;
 };
 
 }  // namespace inviwo

@@ -71,7 +71,12 @@ VolumeSliceGL::VolumeSliceGL()
     , trafoGroup_("trafoGroup", "Transformations")
     , pickGroup_("pickGroup", "Position Selection")
     , tfGroup_("tfGroup", "Transfer Function Properties")
-    , sliceAlongAxis_("sliceAxis", "Slice along axis")
+    , sliceAlongAxis_("sliceAxis", "Slice along axis",
+                      {{"x", "y-z plane (X axis)", static_cast<int>(CartesianCoordinateAxis::X)},
+                       {"y", "z-x plane (Y axis)", static_cast<int>(CartesianCoordinateAxis::Y)},
+                       {"z", "x-y plane (Z axis)", static_cast<int>(CartesianCoordinateAxis::Z)},
+                       {"p", "Plane Equation", 3}},
+                      0)
     , sliceX_("sliceX", "X Volume Position", 128, 1, 256, 1, InvalidationLevel::Valid)
     , sliceY_("sliceY", "Y Volume Position", 128, 1, 256, 1, InvalidationLevel::Valid)
     , sliceZ_("sliceZ", "Z Volume Position", 128, 1, 256, 1, InvalidationLevel::Valid)
@@ -81,11 +86,22 @@ VolumeSliceGL::VolumeSliceGL()
                    vec3(1.f, 1.f, 1.f), vec3(0.01f, 0.01f, 0.01f))
     , planePosition_("planePosition", "Plane Position", vec3(0.5f), vec3(0.0f), vec3(1.0f))
     , imageScale_("imageScale", "Scale", 1.0f, 0.1f, 10.0f)
-    , rotationAroundAxis_("rotation", "Rotation (ccw)", InvalidationLevel::Valid)
+    , rotationAroundAxis_("rotation", "Rotation (ccw)",
+                          {{"0", "0 deg", 0},
+                           {"90", "90 deg", 1},
+                           {"180", "180 deg", 2},
+                           {"270", "270 deg", 3},
+                           {"free", "Free Rotation", 4}},
+                          0, InvalidationLevel::Valid)
     , imageRotation_("imageRotation", "Angle", 0, 0, glm::radians(360.f))
     , flipHorizontal_("flipHorizontal", "Horizontal Flip", false)
     , flipVertical_("flipVertical", "Vertical Flip", false)
-    , volumeWrapping_("volumeWrapping", "Volume Texture Wrapping")
+    , volumeWrapping_("volumeWrapping", "Volume Texture Wrapping",
+                      {{"color", "Fill with Color", GL_CLAMP_TO_EDGE},
+                       {"edge", "Fill with Edge", GL_CLAMP_TO_EDGE},
+                       {"repeat", "Repeat", GL_REPEAT},
+                       {"m-repeat", "Mirrored Repeat", GL_MIRRORED_REPEAT}},
+                      0)
     , fillColor_("fillColor", "Fill Color", vec4(0.0f, 0.0f, 0.0f, 0.0f), vec4(0.0f), vec4(1.0f),
                  vec4(0.01f), InvalidationLevel::InvalidOutput, PropertySemantics::Color)
     , posPicking_("posPicking", "Enable Position Picking", false)
@@ -145,6 +161,7 @@ VolumeSliceGL::VolumeSliceGL()
 
     inport_.onChange([this]() { updateMaxSliceNumber(); });
 
+
     polyline_.setOptional(true);
     addPort(polyline_);
 
@@ -158,37 +175,17 @@ VolumeSliceGL::VolumeSliceGL()
     sliceAlongAxis_.set(static_cast<int>(CartesianCoordinateAxis::X));
     sliceAlongAxis_.setCurrentStateAsDefault();
     sliceAlongAxis_.onChange([this]() { modeChange(); });
-    addProperty(sliceAlongAxis_);
+    addProperties(sliceAlongAxis_, sliceX_, sliceY_, sliceZ_);
 
-    addProperty(sliceX_);
-    addProperty(sliceY_);
-    addProperty(sliceZ_);
     // Invalidate selected voxel cursor when current slice changes
     sliceX_.onChange([this]() { sliceChange(); });
     sliceY_.onChange([this]() { sliceChange(); });
     sliceZ_.onChange([this]() { sliceChange(); });
 
-    addProperty(planeNormal_);
-    addProperty(planePosition_);
+    addProperties(planeNormal_, planePosition_);
 
     planePosition_.onChange([this]() { positionChange(); });
     planeNormal_.onChange([this]() { planeSettingsChanged(); });
-
-    // Transformations
-    rotationAroundAxis_.addOption("0", "0 deg", 0);
-    rotationAroundAxis_.addOption("90", "90 deg", 1);
-    rotationAroundAxis_.addOption("180", "180 deg", 2);
-    rotationAroundAxis_.addOption("270", "270 deg", 3);
-    rotationAroundAxis_.addOption("free", "Free Rotation", 4);
-    rotationAroundAxis_.set(0);
-    rotationAroundAxis_.setCurrentStateAsDefault();
-
-    volumeWrapping_.addOption("color", "Fill with Color", GL_CLAMP_TO_EDGE);
-    volumeWrapping_.addOption("edge", "Fill with Edge", GL_CLAMP_TO_EDGE);
-    volumeWrapping_.addOption("repeat", "Repeat", GL_REPEAT);
-    volumeWrapping_.addOption("m-repeat", "Mirrored Repeat", GL_MIRRORED_REPEAT);
-    volumeWrapping_.setSelectedIndex(0);
-    volumeWrapping_.setCurrentStateAsDefault();
 
     volumeWrapping_.onChange([&]() {
         if (volumeWrapping_.getSelectedIdentifier() == "color") {
@@ -206,13 +203,8 @@ VolumeSliceGL::VolumeSliceGL()
 
     imageRotation_.setVisible(false);
 
-    trafoGroup_.addProperty(rotationAroundAxis_);
-    trafoGroup_.addProperty(imageRotation_);
-    trafoGroup_.addProperty(imageScale_);
-    trafoGroup_.addProperty(flipHorizontal_);
-    trafoGroup_.addProperty(flipVertical_);
-    trafoGroup_.addProperty(volumeWrapping_);
-    trafoGroup_.addProperty(fillColor_);
+    trafoGroup_.addProperties(rotationAroundAxis_, imageRotation_, imageScale_, flipHorizontal_,
+                              flipVertical_, volumeWrapping_, fillColor_);
 
     rotationAroundAxis_.onChange([this]() { rotationModeChange(); });
     imageRotation_.onChange([this]() { planeSettingsChanged(); });
@@ -301,7 +293,7 @@ VolumeSliceGL::VolumeSliceGL()
     });
 }
 
-VolumeSliceGL::~VolumeSliceGL() {}
+VolumeSliceGL::~VolumeSliceGL() = default;
 
 void VolumeSliceGL::initializeResources() {
     updateMaxSliceNumber();

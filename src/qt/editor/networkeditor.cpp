@@ -179,7 +179,7 @@ ProcessorGraphicsItem* NetworkEditor::addProcessorGraphicsItem(Processor* proces
     processorGraphicsItems_[processor] = processorGraphicsItem;
     addItem(processorGraphicsItem);
     updateSceneSize();
-    if (adjustSceneToChange_) {
+    if (adjustSceneToChange_ && processorGraphicsItem->isVisible()) {
         for (auto v : views()) {
             v->ensureVisible(processorGraphicsItem);
         }
@@ -542,12 +542,14 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             });
 
 #if IVW_PROFILING
-            QAction* resetTimeMeasurementsAction = menu.addAction(tr("Reset &Time Measurements"));
+            QAction* resetTimeMeasurementsAction =
+                menu.addAction(QIcon(":svgicons/timer.svg"), tr("Reset &Time Measurements"));
             connect(resetTimeMeasurementsAction, &QAction::triggered,
                     [processor]() { processor->resetTimeMeasurements(); });
 #endif
 
-            QAction* delprocessor = menu.addAction(tr("Delete && &Keep Connections"));
+            QAction* delprocessor = menu.addAction(QIcon(":/svgicons/edit-delete.svg"),
+                                                   tr("Delete && &Keep Connections"));
             connect(delprocessor, &QAction::triggered, [this, processor]() {
                 auto p = processor->getProcessor();
                 for (auto& prop : p->getPropertiesRecursive()) {
@@ -589,6 +591,20 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             connect(invalidateResourcesAction, &QAction::triggered, [processor]() {
                 processor->getProcessor()->invalidate(InvalidationLevel::InvalidResources);
             });
+
+            menu.addSeparator();
+
+            QAction* showPropAction = menu.addAction(tr("Show &Properties"));
+            connect(showPropAction, &QAction::triggered, [this, processor]() {
+                auto plw = std::make_unique<PropertyListWidget>(
+                    mainwindow_, mainwindow_->getInviwoApplication());
+                plw->setFloating(true);
+                plw->addProcessorProperties(processor->getProcessor());
+                plw->setWindowTitle(utilqt::toQString(processor->getProcessor()->getDisplayName()));
+                plw->show();
+                processor->adoptWidget(std::move(plw));
+            });
+
             menu.addSeparator();
 
             QAction* helpAction = menu.addAction(QIcon(":/svgicons/help.svg"), tr("Show &Help"));

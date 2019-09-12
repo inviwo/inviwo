@@ -74,7 +74,7 @@ private:
     FileProperty file_;
     TemplateOptionProperty<FileExtension> reader_;
     ButtonProperty reload_;
-    IntVec2Property imageDimension_;
+    IntSize2Property imageDimension_;
     bool loadingFailed_ = false;
 };
 

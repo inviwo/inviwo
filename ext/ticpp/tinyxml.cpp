@@ -31,14 +31,38 @@ distribution.
 #endif
 
 
+#if defined(WIN32)
+#define NOMINMAX
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
+
 bool TiXmlBase::condenseWhiteSpace = true;
+
+// FIX: unicode paths
+namespace {
+
+#if defined(_WIN32)
+std::wstring toWstring(const std::string& str) {
+    int size_needed = MultiByteToWideChar(CP_UTF8, 0, str.data(), (int)str.size(), NULL, 0);
+    std::wstring result(size_needed, 0);
+    MultiByteToWideChar(CP_UTF8, 0, str.data(), (int)str.size(), &result[0], size_needed);
+    return result;
+}
+#endif
+
+}
 
 // Microsoft compiler security
 FILE* TiXmlFOpen( const char* filename, const char* mode )
 {
 	#if defined(_MSC_VER) && (_MSC_VER >= 1400 )
 		FILE* fp = 0;
-		errno_t err = fopen_s( &fp, filename, mode );
+		//errno_t err = fopen_s( &fp, filename, mode );
+
+        // FIX: unicode paths
+        errno_t err = _wfopen_s(&fp, toWstring(filename).c_str(), toWstring(mode).c_str());
+
 		if ( !err && fp )
 			return fp;
 		return 0;

@@ -100,7 +100,7 @@ BasisProperty::BasisProperty(const BasisProperty& rhs)
     , model_(rhs.model_)
     , overrideModel_(rhs.overrideModel_) {
 
-    util::for_each_in_tuple([&](auto& e) { addProperty(e); }, props());   
+    util::for_each_in_tuple([&](auto& e) { addProperty(e); }, props());
 
     mode_.onChange([&]() { onModeChange(); });
     reference_.onChange([&]() { load(); });

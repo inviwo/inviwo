@@ -42,13 +42,17 @@ ivw_add_unittest(${TEST_FILES})
 #--------------------------------------------------------------------
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
+
+find_package(ZLIB REQUIRED)
+find_package(JPEG REQUIRED)
+find_package(TIFF REQUIRED)
+
 target_link_libraries(inviwo-module-cimg 
     PRIVATE
-        inviwo::cimg
-    
+        inviwo::cimg   
         ZLIB::ZLIB
-        inviwo::libjpeg
-        inviwo::tiff
+        JPEG::JPEG
+        TIFF::TIFF
 )
 
 target_compile_definitions(inviwo-module-cimg PRIVATE
@@ -63,13 +67,13 @@ ivw_register_license_file(NAME CImg VERSION 2.1.5 MODULE CImg TYPE CeCILL-C
     FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/cimg/Licence_CeCILL-C_V1-en.txt
 )
 
-ivw_register_license_file(NAME libjpeg-turbo TARGET inviwo::libjpeg MODULE CImg
+ivw_register_license_file(NAME libjpeg-turbo TARGET JPEG::JPEG MODULE CImg
     TYPE "BSD-style, acknowledgement: This software is based in part on the work of the Independent JPEG Group"
     URL www.ijg.org
     FILES ${IVW_EXTENSIONS_DIR}/libjpeg/README
 )
 
-ivw_register_license_file(NAME tiff TARGET inviwo::tiff MODULE CImg
+ivw_register_license_file(NAME tiff TARGET TIFF::TIFF MODULE CImg
     TYPE "The MIT License"
     URL http://www.libtiff.org/
     FILES ${IVW_EXTENSIONS_DIR}/tiff/COPYRIGHT
@@ -111,9 +115,4 @@ if(IVW_CIMG_USE_OPENEXR)
     target_compile_definitions(inviwo-module-cimg PRIVATE cimg_use_openexr)
 endif()
 
-
-
-
 ivw_make_package(InviwoCImgModule inviwo-module-cimg)
-
-

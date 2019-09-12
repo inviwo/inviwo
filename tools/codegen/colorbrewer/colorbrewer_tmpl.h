@@ -32,48 +32,28 @@ This complete file is auto-generated with python script
 tools/codegen/colorbrewer/colorbrewer.py
 */
 
-#ifndef IWW_COLORBREWER_H
-#define IWW_COLORBREWER_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
+
 #include <vector>
 #include <ostream>
 
 namespace inviwo {
 namespace colorbrewer {
 
-class IVW_CORE_API ColorBrewerException : public Exception {
-public:
-    ColorBrewerException(const std::string &message = "Requested colormap is not available.",
-                         ExceptionContext context = ExceptionContext())
-        : Exception(message, context) {}
-    virtual ~ColorBrewerException() throw() {}
-};
-class IVW_CORE_API ColorBrewerTooFewException : public Exception {
-public:
-    ColorBrewerTooFewException(const std::string &message = "Requested colormap does not support selected number of colors.",
-        ExceptionContext context = ExceptionContext())
-        : Exception(message, context) {}
-    virtual ~ColorBrewerTooFewException() throw() {}
-};
-class IVW_CORE_API ColorBrewerTooManyException : public Exception {
-public:
-    ColorBrewerTooManyException(const std::string &message = "Requested colormap does not support selected number of colors.",
-        ExceptionContext context = ExceptionContext())
-        : Exception(message, context) {}
-    virtual ~ColorBrewerTooManyException() throw() {}
-};
-
+// clang-format off
 ##PLACEHOLDER##
-
+// clang-format on
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &os,
                                              Colormap colormap) {
     switch (colormap) {
+        // clang-format off
 ##PLACEHOLDER_NAMES##
+            // clang-format on
     }
-
     return os;
 }
 
@@ -81,19 +61,20 @@ template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &os,
                                              Category category) {
     switch (category) {
+        // clang-format off
 ##PLACEHOLDER_CATEGORIES##
+            // clang-format on
     }
-
     return os;
 }
 
 template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &os,
-                                             Family family) {
+std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &os, Family family) {
     switch (family) {
+        // clang-format off
 ##PLACEHOLDER_FAMILIES##
+            // clang-format on
     }
-
     return os;
 }
 
@@ -101,34 +82,6 @@ std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &o
  * Returns the specified colormap. For reference see http://colorbrewer2.org/
  **/
 IVW_CORE_API const std::vector<dvec4> &getColormap(Colormap colormap);
-
-/**
- * Returns the colormap specified by its family and number of colors containted in the colormap. For
- * reference see http://colorbrewer2.org/. If the colormap is not available for the given number of
- * colors, a ColorBrewerException is thrown.
- **/
-IVW_CORE_API const std::vector<dvec4> &getColormap(const Family &family, glm::uint8 numberOfColors);
-
-/**
- * Returns all colormaps of a family. For example, if family Blues is requested, 6 cololormaps will
- * be returned since the family contains 6 levels of detail (Blues_3 - Blues_9).
- **/
-IVW_CORE_API std::vector<std::vector<dvec4>> getColormaps(const Family &family);
-
-/**
- * Returns all colormaps of a category. Returns a map with one entry per family storing all
- * colormaps for that family.
- **/
-IVW_CORE_API std::map<Family, std::vector<std::vector<dvec4>>> getColormaps(
-    const Category &category);
-
-/**
- * Returns all colormaps of a category with given number of colors. If a colormap is not available
- * for the given number of colors, it is omitted. If none of the colormaps are available for the
- * whole category and the given number of colors, a ColorBrewerException is thrown.
- **/
-IVW_CORE_API std::map<Family, std::vector<dvec4>> getColormaps(const Category &category,
-                                                               glm::uint8 numberOfColors);
 
 /**
  * Returns the minimum number of colors for which the requested family is available.
@@ -147,7 +100,3 @@ IVW_CORE_API std::vector<Family> getFamiliesForCategory(const Category &category
 
 }  // namespace colorbrewer
 }  // namespace inviwo
-
-#endif  // COLORBREWER_H
-
-

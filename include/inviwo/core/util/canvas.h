@@ -83,9 +83,9 @@ public:
      * @see setFullScreenInternal
      */
     void setFullScreen(bool fullscreen);
+    void propagateEvent(Event* e);
 
 protected:
-    void propagateEvent(Event* e);
     /**
      * Derived classes should override to implement actual window state.
      */

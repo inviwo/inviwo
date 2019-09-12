@@ -82,70 +82,6 @@ using MultiDataInport = DataInport<T, 0, false>;
 template <typename T>
 using FlatMultiDataInport = DataInport<T, 0, true>;
 
-namespace detail {
-template <size_t N>
-size_t getMaxNumberOfConnections() {
-    return N;
-}
-template <>
-inline size_t getMaxNumberOfConnections<0>() {
-    return std::numeric_limits<size_t>::max();
-}
-
-template <size_t N>
-bool isConnected(const std::vector<Outport*>& connectedOutports) {
-    return connectedOutports.size() >= 1 && connectedOutports.size() <= N;
-}
-template <>
-inline bool isConnected<0>(const std::vector<Outport*>& connectedOutports) {
-    return !connectedOutports.empty();
-}
-
-template <typename T, size_t N>
-struct HasData {
-    static bool get(const std::vector<Outport*>& connectedOutports, bool /*notEmpty*/) {
-        return isConnected<N>(connectedOutports) && util::all_of(connectedOutports, [](Outport* p) {
-                   return static_cast<DataOutport<T>*>(p)->hasData();
-               });
-    }
-};
-
-template <typename T>
-struct HasData<T, 0> {
-    static bool get(const std::vector<Outport*>& connectedOutports, bool notEmpty) {
-        return isConnected<0>(connectedOutports) && notEmpty;
-    }
-};
-
-template <typename T, bool Flat>
-struct CanConnectTo {};
-
-template <typename T>
-struct CanConnectTo<T, false> {
-    static bool get(const Port* port) {
-        if (dynamic_cast<const DataOutport<T>*>(port)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-};
-
-template <typename T>
-struct CanConnectTo<T, true> {
-    static bool get(const Port* port) {
-        if (dynamic_cast<const DataOutport<T>*>(port)) {
-            return true;
-        } else if (dynamic_cast<const OutportIterable<T>*>(port)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-};
-
-}  // namespace detail
-
 template <typename T, size_t N, bool Flat>
 struct PortTraits<DataInport<T, N, Flat>> {
     static std::string classIdentifier() {
@@ -181,7 +117,11 @@ uvec3 DataInport<T, N, Flat>::getColorCode() const {
 
 template <typename T, size_t N, bool Flat>
 size_t DataInport<T, N, Flat>::getMaxNumberOfConnections() const {
-    return detail::getMaxNumberOfConnections<N>();
+    if constexpr (N == 0) {
+        return std::numeric_limits<size_t>::max();
+    } else {
+        return N;
+    }
 }
 
 template <typename T, size_t N, bool Flat>
@@ -192,7 +132,17 @@ bool DataInport<T, N, Flat>::canConnectTo(const Port* port) const {
     auto pd = util::getPredecessors(port->getProcessor());
     if (pd.find(getProcessor()) != pd.end()) return false;
 
-    return detail::CanConnectTo<T, Flat>::get(port);
+    if constexpr (Flat) {
+        if (dynamic_cast<const OutportIterable<T>*>(port)) {
+            return true;
+        }
+    }
+
+    if (dynamic_cast<const DataOutport<T>*>(port)) {
+        return true;
+    }
+
+    return false;
 }
 
 template <typename T, size_t N, bool Flat>
@@ -214,12 +164,22 @@ void DataInport<T, N, Flat>::connectTo(Outport* port) {
 
 template <typename T, size_t N, bool Flat>
 bool DataInport<T, N, Flat>::isConnected() const {
-    return detail::isConnected<N>(connectedOutports_);
+    if constexpr (N == 0) {
+        return !connectedOutports_.empty();
+    } else {
+        return connectedOutports_.size() >= 1 && connectedOutports_.size() <= N;
+    }
 }
 
 template <typename T, size_t N, bool Flat>
 bool DataInport<T, N, Flat>::hasData() const {
-    return detail::HasData<T, N>::get(connectedOutports_, this->begin() != this->end());
+    if constexpr (N == 0) {
+        return isConnected() && this->begin() != this->end();
+    } else {
+        return isConnected() && util::all_of(connectedOutports_, [](Outport* p) {
+                   return static_cast<DataOutport<T>*>(p)->hasData();
+               });
+    }
 }
 
 template <typename T, size_t N, bool Flat>
@@ -233,9 +193,14 @@ std::shared_ptr<const T> DataInport<T, N, Flat>::getData() const {
 
 template <typename T, size_t N, bool Flat>
 std::vector<std::shared_ptr<const T>> DataInport<T, N, Flat>::getVectorData() const {
-    std::vector<std::shared_ptr<const T>> res(N);
+    std::vector<std::shared_ptr<const T>> res;
+    if constexpr (N > 0) {
+        res.reserve(N);
+    }
 
-    for (auto it = this->begin(); it != this->end(); ++it) res.push_back(it.operator->());
+    for (auto it = this->begin(); it != this->end(); ++it) {
+        res.push_back(it.operator->());
+    }
 
     return res;
 }
@@ -243,7 +208,10 @@ std::vector<std::shared_ptr<const T>> DataInport<T, N, Flat>::getVectorData() co
 template <typename T, size_t N, bool Flat>
 std::vector<std::pair<Outport*, std::shared_ptr<const T>>>
 DataInport<T, N, Flat>::getSourceVectorData() const {
-    std::vector<std::pair<Outport*, std::shared_ptr<const T>>> res(N);
+    std::vector<std::pair<Outport*, std::shared_ptr<const T>>> res;
+    if constexpr (N > 0) {
+        res.reserve(N);
+    }
 
     for (auto outport : connectedOutports_) {
         // Safe to static cast since we are unable to connect other outport types.
@@ -277,10 +245,10 @@ Document DataInport<T, N, Flat>::getInfo() const {
     Document doc;
     using P = Document::PathComponent;
     using H = utildoc::TableBuilder::Header;
-    auto t = doc.append("html").append("body").append("table");
-    auto pi = t.append("tr").append("td");
-    pi.append("b", DataTraits<T>::dataName() + name(), {{"style", "color:white;"}});
-    utildoc::TableBuilder tb(pi, P::end());
+    auto b = doc.append("html").append("body");
+    auto p = b.append("p");
+    p.append("b", DataTraits<T>::dataName() + name(), {{"style", "color:white;"}});
+    utildoc::TableBuilder tb(p, P::end());
     tb(H("Identifier"), getIdentifier());
     tb(H("Class"), getClassIdentifier());
     tb(H("Ready"), isReady());
@@ -292,10 +260,9 @@ Document DataInport<T, N, Flat>::getInfo() const {
     tb(H("Optional"), isOptional());
 
     if (hasData()) {
-        auto datadoc = DataTraits<T>::info(*getData());
-        doc.append("p", datadoc);
+        b.append("p").append(DataTraits<T>::info(*getData()));
     } else {
-        doc.append("p", "Port has no data");
+        b.append("p", "Port has no data");
     }
     return doc;
 }

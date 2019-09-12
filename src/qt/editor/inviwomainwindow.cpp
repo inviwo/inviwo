@@ -1153,7 +1153,7 @@ void InviwoMainWindow::showWelcomeScreen() {
     }
 
     centralWidget_->setCurrentWidget(welcomeWidget_.get());
-    welcomeWidget_->setFocus();
+    welcomeWidget_->setFilterFocus();
 }
 
 void InviwoMainWindow::hideWelcomeScreen() {
@@ -1348,27 +1348,30 @@ void InviwoMainWindow::dragMoveEvent(QDragMoveEvent* event) {
 void InviwoMainWindow::dropEvent(QDropEvent* event) {
     const QMimeData* mimeData = event->mimeData();
     if (mimeData->hasUrls()) {
-        QList<QUrl> urlList = mimeData->urls();
+        // use dispatch front here to avoid blocking the drag&drop source, e.g. Windows Explorer,
+        // while the drop operation is performed
+        app_->dispatchFrontAndForget([this, keyModifiers = event->keyboardModifiers(),
+                                      urlList = mimeData->urls()]() {
+            bool first = true;
+            for (auto& file : urlList) {
+                auto filename = file.toLocalFile();
 
-        bool first = true;
-
-        for (auto& file : urlList) {
-            auto filename = file.toLocalFile();
-
-            if (toLower(filesystem::getFileExtension(utilqt::fromQString(filename))) == "inv") {
-                if (!first || event->keyboardModifiers() & Qt::ControlModifier) {
-                    appendWorkspace(utilqt::fromQString(filename));
+                if (toLower(filesystem::getFileExtension(utilqt::fromQString(filename))) == "inv") {
+                    if (!first || keyModifiers & Qt::ControlModifier) {
+                        appendWorkspace(utilqt::fromQString(filename));
+                    } else {
+                        openWorkspaceAskToSave(filename);
+                    }
                 } else {
-                    openWorkspaceAskToSave(filename);
+                    util::insertNetworkForData(
+                        utilqt::fromQString(filename), app_->getProcessorNetwork(),
+                        static_cast<bool>(keyModifiers & Qt::ControlModifier),
+                        static_cast<bool>(keyModifiers & Qt::AltModifier), this);
                 }
-            } else {
-                util::insertNetworkForData(
-                    utilqt::fromQString(filename), app_->getProcessorNetwork(),
-                    static_cast<bool>(event->keyboardModifiers() & Qt::ControlModifier),
-                    static_cast<bool>(event->keyboardModifiers() & Qt::AltModifier));
+                first = false;
             }
-            first = false;
-        }
+        });
+
         event->accept();
     } else {
         event->ignore();

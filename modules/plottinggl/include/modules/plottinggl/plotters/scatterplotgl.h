@@ -91,12 +91,12 @@ public:
 
     private:
         auto props() {
-            return std::tie(radiusRange_, useCircle_, minRadius_, tf_, color_, hoverColor_, 
+            return std::tie(radiusRange_, useCircle_, minRadius_, tf_, color_, hoverColor_,
                             margins_, axisMargin_, borderWidth_, borderColor_, hovering_,
                             axisStyle_, xAxis_, yAxis_);
         }
         auto props() const {
-            return std::tie(radiusRange_, useCircle_, minRadius_, tf_, color_, hoverColor_, 
+            return std::tie(radiusRange_, useCircle_, minRadius_, tf_, color_, hoverColor_,
                             margins_, axisMargin_, borderWidth_, borderColor_, hovering_,
                             axisStyle_, xAxis_, yAxis_);
         }

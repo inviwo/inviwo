@@ -37,6 +37,7 @@
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/algorithm/boundingbox.h>
 
 #include <numeric>
 
@@ -62,7 +63,7 @@ RandomSphereGenerator::RandomSphereGenerator()
     , gridDim_("gridDim", "Grid Dimension", ivec3(12, 12, 12), ivec3(1), ivec3(128))
     , jigglePos_("jigglePos", "Jiggle Positions", true)
     , enablePicking_("enablePicking", "Enable Picking", false)
-    , camera_("camera", "Camera")
+    , camera_("camera", "Camera", util::boundingBox(meshOut_))
     , spherePicking_(
           this, gridDim_.get().x * gridDim_.get().y * gridDim_.get().z, [&](PickingEvent* p) {
               handlePicking(p, [&](vec3 delta) {
@@ -123,6 +124,7 @@ void RandomSphereGenerator::process() {
 
         // keep a reference to vertex position buffer for picking
         positionBuffer_ = vertexRAM;
+        radiiBuffer_ = radiiRAM;
 
         mesh->addBuffer(Mesh::BufferInfo(BufferType::PositionAttrib),
                         std::make_shared<Buffer<vec3>>(vertexRAM));
@@ -202,6 +204,21 @@ void RandomSphereGenerator::handlePicking(PickingEvent* p, std::function<void(ve
                 invalidate(InvalidationLevel::InvalidOutput);
                 p->markAsUsed();
             }
+        } else if (p->getState() == PickingState::Updated &&
+                   p->getEvent()->hash() == WheelEvent::chash()) {
+            auto we = p->getEventAs<WheelEvent>();
+            if (radiiBuffer_) {
+                auto& radii = radiiBuffer_->getDataContainer();
+
+                auto radius =
+                    radii[p->getPickedId()] * (1.0f - 0.05f * static_cast<float>(-we->delta().y));
+                radii[p->getPickedId()] = glm::clamp(radius, scale_ * 0.05f, scale_ * 20.0f);
+
+                radiiBuffer_->getOwner()->invalidateAllOther(radiiBuffer_.get());
+            }
+
+            invalidate(InvalidationLevel::InvalidOutput);
+            p->markAsUsed();
         }
     }
 }

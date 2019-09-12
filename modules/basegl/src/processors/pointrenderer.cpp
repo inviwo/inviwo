@@ -30,6 +30,7 @@
 #include <modules/basegl/processors/pointrenderer.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
 #include <modules/opengl/shader/shaderutils.h>
+#include <inviwo/core/algorithm/boundingbox.h>
 
 namespace inviwo {
 
@@ -51,28 +52,18 @@ PointRenderer::PointRenderer()
     , pointSize_("pointSize", "Point Size (pixel)", 1.0f, 0.00001f, 50.0f, 0.1f)
     , borderWidth_("borderWidth", "Border Width (pixel)", 2.0f, 0.0f, 50.0f, 0.1f)
     , borderColor_("borderColor", "Border Color", vec4(0.0f, 0.0f, 0.0f, 1.0f), vec4(0.0f),
-                   vec4(1.0f))
+                   vec4(1.0f), vec4(0.01f), InvalidationLevel::InvalidOutput,
+                   PropertySemantics::Color)
     , antialising_("antialising", "Antialising (pixel)", 1.5f, 0.0f, 10.0f, 0.1f)
-    , camera_("camera", "Camera")
+    , camera_("camera", "Camera", util::boundingBox(inport_))
     , trackball_(&camera_)
     , shader_("pointrenderer.vert", "pointrenderer.frag") {
 
-    outport_.addResizeEventListener(&camera_);
-
     addPort(inport_);
-    addPort(imageInport_);
+    addPort(imageInport_).setOptional(true);
     addPort(outport_);
-    imageInport_.setOptional(true);
 
-    borderColor_.setSemantics(PropertySemantics::Color);
-
-    addProperty(pointSize_);
-    addProperty(borderWidth_);
-    addProperty(borderColor_);
-    addProperty(antialising_);
-
-    addProperty(camera_);
-    addProperty(trackball_);
+    addProperties(pointSize_, borderWidth_, borderColor_, antialising_, camera_, trackball_);
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }

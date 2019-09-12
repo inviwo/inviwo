@@ -54,6 +54,7 @@ set(HEADER_FILES
     include/modules/qtwidgets/properties/anglepropertywidgetqt.h
     include/modules/qtwidgets/properties/boolcompositepropertywidgetqt.h
     include/modules/qtwidgets/properties/boolpropertywidgetqt.h
+    include/modules/qtwidgets/properties/buttongrouppropertywidgetqt.h
     include/modules/qtwidgets/properties/buttonpropertywidgetqt.h
     include/modules/qtwidgets/properties/collapsiblegroupboxwidgetqt.h
     include/modules/qtwidgets/properties/colorpropertywidgetqt.h
@@ -125,6 +126,7 @@ set(SOURCE_FILES
     src/properties/anglepropertywidgetqt.cpp
     src/properties/boolcompositepropertywidgetqt.cpp
     src/properties/boolpropertywidgetqt.cpp
+    src/properties/buttongrouppropertywidgetqt.cpp
     src/properties/buttonpropertywidgetqt.cpp
     src/properties/collapsiblegroupboxwidgetqt.cpp
     src/properties/colorlineedit.cpp

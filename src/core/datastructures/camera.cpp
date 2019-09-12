@@ -125,23 +125,30 @@ PerspectiveCamera* PerspectiveCamera::clone() const { return new PerspectiveCame
 bool PerspectiveCamera::update(const Camera* source) {
     if (auto perspectiveCamera = dynamic_cast<const PerspectiveCamera*>(source)) {
         *this = *perspectiveCamera;
+
         return true;
     } else {
         return false;
     }
 }
 
-void PerspectiveCamera::configureProperties(CompositeProperty* comp) {
+void PerspectiveCamera::configureProperties(CompositeProperty* comp, Config config) {
     auto fov = dynamic_cast<FloatProperty*>(comp->getPropertyByIdentifier("fov"));
+
+    if (config == Config::Hide) {
+        if (fov) fov->setVisible(false);
+        return;
+    }
+
     if (fov) {
         setFovy(fov->get());
     } else {
         fov = new FloatProperty("fov", "FOV", 38.0f, 10.0f, 180.0f, 0.1f);
         fov->setSerializationMode(PropertySerializationMode::All);
         fov->setCurrentStateAsDefault();
-        comp->addProperty(fov, true);
+        comp->insertProperty(comp->size() - 1, fov, true);
     }
-
+    fov->setVisible(true);
     fovCallbackHolder_ = fov->onChangeScoped([this, fov]() { setFovy(fov->get()); });
 }
 
@@ -179,8 +186,14 @@ bool OrthographicCamera::update(const Camera* source) {
     }
 }
 
-void OrthographicCamera::configureProperties(CompositeProperty* comp) {
+void OrthographicCamera::configureProperties(CompositeProperty* comp, Config config) {
     auto widthProp = dynamic_cast<FloatProperty*>(comp->getPropertyByIdentifier("width"));
+
+    if (config == Config::Hide) {
+        if (widthProp) widthProp->setVisible(false);
+        return;
+    }
+
     if (widthProp) {
         const float oldWidth{frustum_.y - frustum_.x};
         const float oldHeight{frustum_.w - frustum_.z};
@@ -189,10 +202,11 @@ void OrthographicCamera::configureProperties(CompositeProperty* comp) {
         setFrustum({-width / 2.0f, width / 2.0f, -width / 2.0f / aspect, +width / 2.0f / aspect});
     } else {
         widthProp = new FloatProperty("width", "Width", 10, 0.01f, 1000.0f, 0.1f);
-        comp->addProperty(widthProp, true);
+        comp->insertProperty(comp->size() - 1, widthProp, true);
         widthProp->setSerializationMode(PropertySerializationMode::All);
     }
 
+    widthProp->setVisible(true);
     widthCallbackHolder_ = widthProp->onChangeScoped([this, widthProp]() {
         // Left, right, bottom, top view volume
         const float oldWidth{frustum_.y - frustum_.x};
@@ -256,9 +270,18 @@ bool SkewedPerspectiveCamera::update(const Camera* source) {
     }
 }
 
-void SkewedPerspectiveCamera::configureProperties(CompositeProperty* comp) {
+void SkewedPerspectiveCamera::configureProperties(CompositeProperty* comp, Config config) {
     auto widthProp =
         dynamic_cast<FloatProperty*>(comp->getPropertyByIdentifier("skewed-frustum-width"));
+
+    auto offsetProp = dynamic_cast<FloatVec2Property*>(comp->getPropertyByIdentifier("seperation"));
+
+    if (config == Config::Hide) {
+        if (widthProp) widthProp->setVisible(false);
+        if (offsetProp) offsetProp->setVisible(false);
+        return;
+    }
+
     if (widthProp) {
         const float oldWidth{frustum_.y - frustum_.x};
         const float oldHeight{frustum_.w - frustum_.z};
@@ -268,10 +291,11 @@ void SkewedPerspectiveCamera::configureProperties(CompositeProperty* comp) {
     } else {
         widthProp = new FloatProperty("skewed-frustum-width", "Skewed Frustum Width", 0.1f, 0.001f,
                                       10.0f, 0.0001f);
-        comp->addProperty(widthProp, true);
+        comp->insertProperty(comp->size() - 1, widthProp, true);
         widthProp->setSerializationMode(PropertySerializationMode::All);
     }
 
+    widthProp->setVisible(true);
     widthCallbackHolder_ = widthProp->onChangeScoped([this, widthProp]() {
         // Left, right, bottom, top view volume
         const float oldWidth{frustum_.y - frustum_.x};
@@ -281,17 +305,17 @@ void SkewedPerspectiveCamera::configureProperties(CompositeProperty* comp) {
         setFrustum({-width / 2.0f, width / 2.0f, -width / 2.0f / aspect, +width / 2.0f / aspect});
     });
 
-    auto offsetProp = dynamic_cast<FloatVec2Property*>(comp->getPropertyByIdentifier("seperation"));
     if (offsetProp) {
         const vec2 offset = offsetProp->get();
         setFrustumOffset(offset);
     } else {
         offsetProp = new FloatVec2Property("seperation", "Separation", vec2(0.0f), vec2(-10.0f),
                                            vec2(10.0f), vec2(0.01f));
-        comp->addProperty(offsetProp, true);
+        comp->insertProperty(comp->size() - 1, offsetProp, true);
         offsetProp->setSerializationMode(PropertySerializationMode::All);
     }
 
+    offsetProp->setVisible(true);
     offsetCallbackHolder_ = offsetProp->onChangeScoped([this, offsetProp, widthProp]() {
         const vec2 offset = offsetProp->get();
         const float oldWidth{frustum_.y - frustum_.x};

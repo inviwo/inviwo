@@ -35,6 +35,9 @@
         <file>svgicons/dock-sticky.svg</file>
         <file>svgicons/dock-unsticky.svg</file>
 
+        <file>svgicons/lineedit-clear.svg</file>
+        <file>svgicons/lineedit-clear-active.svg</file>
+
         <file>svgicons/listitem-add-enabled.svg</file>
         <file>svgicons/listitem-add-disabled.svg</file>
         <file>svgicons/listitem-remove-enabled.svg</file>
@@ -98,6 +101,18 @@
         <file>svgicons/file-warning.svg</file>
 
         <file>svgicons/haptics.svg</file>
+
+        <file>svgicons/view-x-m.svg</file>
+        <file>svgicons/view-x-p.svg</file>
+        <file>svgicons/view-y-m.svg</file>
+        <file>svgicons/view-y-p.svg</file>
+        <file>svgicons/view-z-m.svg</file>
+        <file>svgicons/view-z-p.svg</file>
+        <file>svgicons/view-flip.svg</file>
+        <file>svgicons/view-fit-to-data.svg</file>
+
+        <file>svgicons/fullscreen.svg</file>
+        <file>svgicons/canvas-hide.svg</file>
 
         <file>icons/dense6pattern.png</file>
         <file>icons/python-run.png</file>

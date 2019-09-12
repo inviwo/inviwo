@@ -42,6 +42,7 @@
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/openglutils.h>
+#include <inviwo/core/algorithm/boundingbox.h>
 
 #include <fstream>
 
@@ -61,9 +62,7 @@ ABufferGeometryGLProcessor::ABufferGeometryGLProcessor()
     , inport_("geometry")
     , imageInport_("imageInport")
     , outport_("image")
-    , camera_("camera", "Camera", vec3(0.0f, 0.0f, 2.0f), vec3(0.0f, 0.0f, 0.0f),
-              vec3(0.0f, 1.0f, 0.0f), &inport_)
-    , resetViewParams_("resetView", "Reset Camera")
+    , camera_("camera", "Camera", util::boundingBox(inport_))
     , trackball_(&camera_)
     , overrideColorBuffer_("overrideColorBuffer", "Override Color Buffer", false,
                            InvalidationLevel::InvalidResources)
@@ -91,9 +90,6 @@ ABufferGeometryGLProcessor::ABufferGeometryGLProcessor()
     imageInport_.setOptional(true);
 
     addProperty(camera_);
-    resetViewParams_.onChange([this]() { camera_.resetCamera(); });
-    addProperty(resetViewParams_);
-    outport_.addResizeEventListener(&camera_);
 
     inport_.onChange([this]() { updateDrawers(); });
 

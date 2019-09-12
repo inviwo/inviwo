@@ -95,7 +95,7 @@ std::shared_ptr<Image> ImageConvolution::convolution(const Layer &layer,
         }
     }
 
-    return convolution_internal(layer, kernelSize.x, kernelSize.y, kernel, kernelScale);
+    return convolution(layer, kernelSize.x, kernelSize.y, kernel, kernelScale);
 }
 
 std::shared_ptr<Image> ImageConvolution::convolution_separable(
@@ -109,13 +109,13 @@ std::shared_ptr<Image> ImageConvolution::convolution_separable(
         kernel[i] = kernelWeight(p);
     }
 
-    auto hori = convolution_internal(layer, kernelSize, 1, kernel, kernelScale);
-    return convolution_internal(*hori->getColorLayer(), 1, kernelSize, kernel, kernelScale);
+    auto hori = convolution(layer, kernelSize, 1, kernel, kernelScale);
+    return convolution(*hori->getColorLayer(), 1, kernelSize, kernel, kernelScale);
 }
 
-std::shared_ptr<Image> ImageConvolution::convolution_internal(const Layer &layer, int kw, int kh,
-                                                              const std::vector<float> &kernel,
-                                                              const float &kernelScale) {
+std::shared_ptr<Image> ImageConvolution::convolution(const Layer &layer, int kw, int kh,
+                                                     const std::vector<float> &kernel,
+                                                     const float &kernelScale) {
     shader_.getFragmentShaderObject()->addShaderDefine("KERNELWIDTH", std::to_string(kw));
     shader_.getFragmentShaderObject()->addShaderDefine("KERNELHEIGHT", std::to_string(kh));
     shader_.getFragmentShaderObject()->addShaderDefine("KERNELSIZE", std::to_string(kw * kh));

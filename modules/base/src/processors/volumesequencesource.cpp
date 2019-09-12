@@ -46,6 +46,21 @@ const ProcessorInfo VolumeSequenceSource::processorInfo_{
 };
 const ProcessorInfo VolumeSequenceSource::getProcessorInfo() const { return processorInfo_; }
 
+namespace {
+
+std::string getFirstFileInFolder(const std::string& folder, const std::string& filter) {
+    auto files = filesystem::getDirectoryContents(folder);
+    for (auto f : files) {
+        auto file = folder + "/" + f;
+        if (filesystem::wildcardStringMatch(filter, file)) {
+            return file;
+        }
+    }
+    return "";
+}
+
+}  // namespace
+
 VolumeSequenceSource::VolumeSequenceSource(InviwoApplication* app)
     : Processor()
     , rf_{app->getDataReaderFactory()}
@@ -56,7 +71,7 @@ VolumeSequenceSource::VolumeSequenceSource(InviwoApplication* app)
                  1)
     , file_("filename", "Volume file")
     , folder_("folder", "Volume folder")
-    , filter_("filter_", "Filter", "*.*")
+    , filter_("filter_", "Filter", "*")
     , reader_("reader", "Data Reader")
     , reload_("reload", "Reload data")
     , basis_("Basis", "Basis and offset")
@@ -72,21 +87,26 @@ VolumeSequenceSource::VolumeSequenceSource(InviwoApplication* app)
     basis_.setReadOnly(true);
 
     util::updateFilenameFilters<VolumeSequence>(*rf_, file_, reader_);
+    util::updateReaderFromFile(file_, reader_);
 
-    auto updateVisible = [&]() {
-        file_.setVisible(inputType_.get() == InputType::SingleFile);
-        reader_.setVisible(inputType_.get() == InputType::SingleFile);
-        folder_.setVisible(inputType_.get() == InputType::Folder);
-        filter_.setVisible(inputType_.get() == InputType::Folder);
-    };
-    inputType_.onChange(updateVisible);
-    updateVisible();
+    auto singlefileCallback = [](auto& p) { return p.get() == InputType::SingleFile; };
+    auto folderCallback = [](auto& p) { return p.get() == InputType::Folder; };
+
+    file_.visibilityDependsOn(inputType_, singlefileCallback);
+    reader_.visibilityDependsOn(inputType_, singlefileCallback);
+    folder_.visibilityDependsOn(inputType_, folderCallback);
+    filter_.visibilityDependsOn(inputType_, folderCallback);
 
     // make sure that we always process even if not connected
     isSink_.setUpdate([]() { return true; });
     isReady_.setUpdate([this]() {
-        return !loadingFailed_ && filesystem::fileExists(file_.get()) &&
-               !reader_.getSelectedValue().empty();
+        if (inputType_ == InputType::SingleFile) {
+            return !loadingFailed_ && filesystem::fileExists(file_.get()) &&
+                   !reader_.getSelectedValue().empty();
+        } else {
+            return !loadingFailed_ &&
+                   filesystem::fileExists(getFirstFileInFolder(folder_, filter_));
+        }
     });
 
     auto change = [this]() {
@@ -215,4 +235,5 @@ void VolumeSequenceSource::deserialize(Deserializer& d) {
     basis_.setReadOnly(true);
     deserialized_ = true;
 }
+
 }  // namespace inviwo

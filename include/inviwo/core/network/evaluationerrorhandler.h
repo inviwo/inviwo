@@ -39,7 +39,7 @@ namespace inviwo {
 
 class Processor;
 
-enum class EvaluationType { InitResource, Process, NotReady };
+enum class EvaluationType { InitResource, PortOnChange, Process, NotReady };
 
 using EvaluationErrorHandler = std::function<void(Processor*, EvaluationType, ExceptionContext)>;
 

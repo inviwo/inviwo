@@ -66,7 +66,6 @@ DataFrameColumnProperty::DataFrameColumnProperty(const DataFrameColumnProperty& 
     , allowNone_{rhs.allowNone_}
     , firstIndex_{rhs.firstIndex_} {}
 
-
 DataFrameColumnProperty* DataFrameColumnProperty::clone() const {
     return new DataFrameColumnProperty(*this);
 }

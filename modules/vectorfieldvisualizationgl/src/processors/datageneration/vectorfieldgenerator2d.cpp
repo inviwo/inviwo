@@ -66,7 +66,7 @@ VectorFieldGenerator2D::VectorFieldGenerator2D()
     addProperty(yRange_);
 }
 
-VectorFieldGenerator2D::~VectorFieldGenerator2D() {}
+VectorFieldGenerator2D::~VectorFieldGenerator2D() = default;
 
 void VectorFieldGenerator2D::initializeResources() {
     shader_.getFragmentShaderObject()->addShaderDefine("X_VALUE(x,y)", xValue_.get());

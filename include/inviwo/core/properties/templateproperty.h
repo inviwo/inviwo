@@ -111,14 +111,13 @@ TemplateProperty<T>::operator const T&() const {
 }
 
 template <typename T>
-TemplateProperty<T>& inviwo::TemplateProperty<T>::resetToDefaultState() {
-    value_.reset();
-    Property::resetToDefaultState();
+TemplateProperty<T>& TemplateProperty<T>::resetToDefaultState() {
+    if (value_.reset()) propertyModified();
     return *this;
 }
 
 template <typename T>
-TemplateProperty<T>& inviwo::TemplateProperty<T>::setCurrentStateAsDefault() {
+TemplateProperty<T>& TemplateProperty<T>::setCurrentStateAsDefault() {
     Property::setCurrentStateAsDefault();
     value_.setAsDefault();
     return *this;

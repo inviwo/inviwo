@@ -42,6 +42,6 @@ const ProcessorInfo CanvasProcessorGL::processorInfo_{
 };
 const ProcessorInfo CanvasProcessorGL::getProcessorInfo() const { return processorInfo_; }
 
-CanvasProcessorGL::CanvasProcessorGL() : CanvasProcessor() {}
+CanvasProcessorGL::CanvasProcessorGL(InviwoApplication* app) : CanvasProcessor(app) {}
 
 }  // namespace inviwo

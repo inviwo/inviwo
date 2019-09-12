@@ -35,6 +35,7 @@
 
 #include <modules/qtwidgets/properties/indicatorwidget.h>
 #include <modules/qtwidgets/numberlineedit.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -113,7 +114,7 @@ ValueDragger<T>::ValueDragger(NumberLineEdit *spinBox, QWidget *parent)
 
 template <typename T>
 QSize ValueDragger<T>::sizeHint() const {
-    return QSize(8, 20);
+    return utilqt::emToPx(this, QSizeF(0.8, 2));
 }
 
 template <typename T>
@@ -153,7 +154,7 @@ void ValueDragger<T>::paintEvent(QPaintEvent *) {
 
     QPen pen(Qt::NoBrush, 2.0, Qt::SolidLine, Qt::FlatCap, Qt::MiterJoin);
     if (!(option.state & QStyle::State_Enabled)) {
-        pen.setColor(option.palette.color(QPalette::Disabled, QPalette::Foreground).darker());
+        pen.setColor(option.palette.color(QPalette::Disabled, QPalette::WindowText).darker());
     } else if (option.state & QStyle::State_MouseOver) {
         pen.setColor(option.palette.color(QPalette::Active, QPalette::Highlight));
     } else {

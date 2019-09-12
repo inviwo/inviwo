@@ -69,9 +69,6 @@ namespace inviwo {
  *   * __Pseudo Lighting__      enables radial shading as depth cue, i.e. tube like appearance
  *   * __Round Depth Profile__  modify line depth matching a round depth profile
  *   * __Write Depth Layer__    if enabled, line depths are rendered onto the background image
- *   * __Draw Mode__      overwrites mesh drawing mode
- *   * __Use Adjacency__  enable the use of adjacency information along the line. The
- *                        start and end points need to be duplicated.
  */
 
 /**
@@ -80,8 +77,6 @@ namespace inviwo {
  */
 class IVW_MODULE_BASEGL_API LineRenderer : public Processor {
 public:
-    enum class LineDrawMode { Auto, LineSegments, LineStrip, LineLoop };
-
     LineRenderer();
     virtual ~LineRenderer() = default;
 
@@ -108,8 +103,6 @@ private:
     BoolProperty pseudoLighting_;
     BoolProperty roundDepthProfile_;
     BoolProperty writeDepth_;
-    TemplateOptionProperty<LineDrawMode> drawMode_;
-    BoolProperty useAdjacency_;
 
     StipplingProperty stippling_;
 

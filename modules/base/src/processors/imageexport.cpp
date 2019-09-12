@@ -28,6 +28,11 @@
  *********************************************************************************/
 
 #include <modules/base/processors/imageexport.h>
+#include <inviwo/core/network/networkutils.h>
+#include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/network/portconnection.h>
+#include <inviwo/core/interaction/events/resizeevent.h>
+#include <inviwo/core/util/stdextensions.h>
 
 namespace inviwo {
 
@@ -38,13 +43,64 @@ const ProcessorInfo ImageExport::processorInfo_{
     CodeState::Stable,         // Code state
     Tags::CPU,                 // Tags
 };
+
+ImageExport::ImageExport()
+    : DataExport<Layer, ImageInport>{}
+    , outportDeterminesSize_{"outportDeterminesSize", "Let Outport Determine Size", false}
+    , imageSize_{"imageSize",   "Image Size",        size2_t(1024, 1024),
+                 size2_t(1, 1), size2_t(4096, 4096), size2_t(1, 1)}
+    , prevSize_{0} {
+
+    addProperties(outportDeterminesSize_, imageSize_);
+    imageSize_.visibilityDependsOn(outportDeterminesSize_,
+                                   [](const auto& p) -> bool { return !p; });
+
+    outportDeterminesSize_.onChange([this] {
+        this->port_.setOutportDeterminesSize(outportDeterminesSize_);
+        sendResizeEvent();
+    });
+
+    this->port_.setOutportDeterminesSize(outportDeterminesSize_);
+
+    imageSize_.onChange([this]() { sendResizeEvent(); });
+}
 const ProcessorInfo ImageExport::getProcessorInfo() const { return processorInfo_; }
+
+void ImageExport::setNetwork(ProcessorNetwork* network) {
+    if (network) network->addObserver(this);
+
+    Processor::setNetwork(network);
+}
+
+void ImageExport::sendResizeEvent() {
+    const size2_t newSize = outportDeterminesSize_ ? size2_t{0} : *imageSize_;
+
+    if (newSize != prevSize_) {
+        ResizeEvent event{newSize, prevSize_};
+        this->port_.propagateEvent(&event, nullptr);
+        prevSize_ = newSize;
+    }
+}
 
 const Layer* ImageExport::getData() {
     if (auto img = port_.getData()) {
         return img->getColorLayer();
     }
     return nullptr;
+}
+
+void ImageExport::onProcessorNetworkDidAddConnection(const PortConnection& con) {
+    const auto successors = util::getSuccessors(con.getInport()->getProcessor());
+    if (util::contains(successors, this)) {
+        sendResizeEvent();
+    }
+}
+
+void ImageExport::onProcessorNetworkDidRemoveConnection(const PortConnection& con) {
+    const auto successors = util::getSuccessors(con.getInport()->getProcessor());
+    if (util::contains(successors, this)) {
+        sendResizeEvent();
+    }
 }
 
 }  // namespace inviwo

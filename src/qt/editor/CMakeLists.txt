@@ -7,6 +7,7 @@ project(inviwo-qteditor)
 set(MOC_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/connectiondraghelper.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/consolewidget.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/filetreemodel.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/filetreewidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialogscene.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdraghelper.h
@@ -31,8 +32,8 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialog.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialogcurvegraphicsitems.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialoggraphicsitems.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialogpropertygraphicsitems.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialogprocessorgraphicsitems.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialogpropertygraphicsitems.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialogview.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkgraphicsitem.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/networkeditorobserver.h
@@ -69,6 +70,7 @@ set(SOURCE_FILES
     dataopener.cpp
     editorgrapicsitem.cpp
     fileassociations.cpp
+    filetreemodel.cpp
     filetreewidget.cpp
     helpwidget.cpp
     inviwoaboutwindow.cpp
@@ -110,7 +112,7 @@ ivw_group("Source Files" ${SOURCE_FILES})
 
 #--------------------------------------------------------------------
 # Create library
-find_package(Qt5Core QUIET REQUIRED)
+find_package(Qt5Core 5.12 QUIET REQUIRED)
 find_package(Qt5Gui QUIET REQUIRED)
 find_package(Qt5Widgets QUIET REQUIRED)
 find_package(Qt5Help QUIET REQUIRED)
@@ -172,7 +174,7 @@ ivw_default_install_comp_targets(qt_editor inviwo-qteditor)
 ivw_qt_add_to_install(qt_editor Qt5Core Qt5Gui Qt5Widgets Qt5Help Qt5Sql Qt5Svg) # Qt5Sql is needed by Qt5Help
 ivw_make_package(InviwoQtEditor inviwo-qteditor)
 
-ivw_register_license_file(NAME "DocumentWindow" MODULE QtEditor
+ivw_register_license_file(NAME "DocumentWindow" MODULE QtWidgets
     URL "https://wiki.qt.io/Assigning_a_file_type_to_an_Application_on_Windows"
     TYPE "Simplified BSD License"
     FILES ${IVW_INCLUDE_DIR}/inviwo/qt/editor/fileassociations.license.txt

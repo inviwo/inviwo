@@ -81,8 +81,11 @@ function(ivw_register_license_file)
         set(ARG_VERSION "0.0.0")
     endif()
 
-
     ivw_dir_to_mod_dep(mod ${ARG_MODULE})
+    if(NOT ${mod}_name)
+         message(FATAL_ERROR "ivw_register_license_file should be called from a module CMakeLists.txt")
+    endif()
+
     set("${mod}_licenses" "${${mod}_licenses};${ARG_ID}" CACHE INTERNAL "License ids")
 
     set(files "")

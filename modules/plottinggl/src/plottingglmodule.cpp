@@ -65,7 +65,7 @@ PlottingGLModule::PlottingGLModule(InviwoApplication* app) : InviwoModule(app, "
     registerDataVisualizer(std::make_unique<PCPDataFrameVisualizer>(app));
 }
 
-int PlottingGLModule::getVersion() const { return 1; }
+int PlottingGLModule::getVersion() const { return 2; }
 
 std::unique_ptr<VersionConverter> PlottingGLModule::getConverter(int version) const {
     return std::make_unique<Converter>(version);
@@ -97,11 +97,52 @@ bool PlottingGLModule::Converter::convert(TxElement* root) {
                     props->InsertEndChild(*color);
                 }
 
-                res = true;
                 return true;
             }};
 
-            conv.convert(root);
+            res |= conv.convert(root);
+            [[fallthrough]];
+        }
+        case 1: {
+            TraversingVersionConverter conv{[&](TxElement* node) -> bool {
+                std::string key;
+                node->GetValue(&key);
+                if (key != "Processor") return true;
+                const auto type = node->GetAttributeOrDefault("type", "");
+                if (type != "org.inviwo.ParallelCoordinates") return true;
+
+                auto props = xml::getElement(node, "Properties");
+                TxElement compNode{"Property"};
+                compNode.SetAttribute("type", "org.inviwo.DataFrameColormapProperty");
+                compNode.SetAttribute("identifier", "colormap");
+
+                TxElement propNode{"Properties"};
+                // Move old TF and selected color into new DataFrameColormapProperty
+                if (auto tf = xml::getElement(props, "Property&identifier=tf")) {
+                    propNode.InsertEndChild(*tf);
+                }
+
+                if (auto color = xml::getElement(props, "Property&identifier=selectedColorAxis")) {
+                    propNode.InsertEndChild(*color);
+                }
+
+                // Override colormap so that the old one is used
+                TxElement boolNode{"Property"};
+                boolNode.SetAttribute("type", "org.inviwo.BoolProperty");
+                boolNode.SetAttribute("identifier", "overrideColormap");
+
+                TxElement valNode{"value"};
+                valNode.SetAttribute("content", "1");
+
+                boolNode.InsertEndChild(valNode);
+                propNode.InsertEndChild(boolNode);
+                compNode.InsertEndChild(propNode);
+                props->InsertEndChild(compNode);
+
+                return true;
+            }};
+            res |= conv.convert(root);
+
             return res;
         }
 

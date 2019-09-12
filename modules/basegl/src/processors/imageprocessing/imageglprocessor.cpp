@@ -44,13 +44,14 @@ ImageGLProcessor::ImageGLProcessor(const std::string &fragmentShader, bool build
 ImageGLProcessor::ImageGLProcessor(std::shared_ptr<const ShaderResource> fragmentShader,
                                    bool buildShader)
     : Processor()
-    , inport_("inputImage")
-    , outport_("outputImage")
+    , inport_("inputImage", true)
+    , outport_("outputImage", false)
     , dataFormat_(nullptr)
     , swizzleMask_(swizzlemasks::rgba)
     , internalInvalid_(false)
     , shader_({utilgl::imgQuadVert(), {ShaderType::Fragment, fragmentShader}},
               buildShader ? Shader::Build::Yes : Shader::Build::No) {
+
     addPort(inport_);
     addPort(outport_);
 
@@ -58,12 +59,11 @@ ImageGLProcessor::ImageGLProcessor(std::shared_ptr<const ShaderResource> fragmen
         markInvalid();
         afterInportChanged();
     });
-    inport_.setOutportDeterminesSize(true);
-    outport_.setHandleResizeEvents(false);
+
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
 
-ImageGLProcessor::~ImageGLProcessor() {}
+ImageGLProcessor::~ImageGLProcessor() = default;
 
 void ImageGLProcessor::initializeResources() {
     shader_.build();

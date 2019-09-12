@@ -51,7 +51,7 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    CompositeProperty(std::string identifier, std::string displayName,
+    CompositeProperty(const std::string& identifier, const std::string& displayName,
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                       PropertySemantics semantics = PropertySemantics::Default);
 

@@ -37,6 +37,8 @@
 #include <inviwo/dataframe/processors/volumetodataframe.h>
 #include <inviwo/dataframe/processors/volumesequencetodataframe.h>
 
+#include <inviwo/dataframe/properties/colormapproperty.h>
+
 #include <inviwo/dataframe/io/csvreader.h>
 #include <inviwo/dataframe/io/jsonreader.h>
 
@@ -58,6 +60,7 @@ DataFrameModule::DataFrameModule(InviwoApplication* app) : InviwoModule(app, "Da
 
     registerDefaultsForDataType<DataFrame>();
     // Properties
+    registerProperty<ColormapProperty>();
     registerProperty<DataFrameColumnProperty>();
 
     // Readers and writes

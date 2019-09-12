@@ -37,7 +37,6 @@ using json = nlohmann::json;
 
 namespace inviwo {
 
-
 /**
  * Converts an DirectoryProperty to a JSON object.
  * Produces layout according to the members of DirectoryProperty:

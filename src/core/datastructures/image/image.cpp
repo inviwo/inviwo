@@ -265,9 +265,10 @@ Document Image::getInfo() const {
     tb(H("Picking"), getPickingLayer() ? "Yes" : "No");
     tb(H("Format"), getDataFormat()->getString());
     auto dims = getDimensions();
-    double ar = static_cast<double>(dims.x) / static_cast<double>(dims.y);
     tb(H("Dimension"), dims);
-    tb(H("Aspect Ratio"), ar);
+    tb(H("Aspect Ratio"),
+       dims.y == 0 ? "Invalid"
+                   : toString(static_cast<double>(dims.x) / static_cast<double>(dims.y)));
 
     return doc;
 }

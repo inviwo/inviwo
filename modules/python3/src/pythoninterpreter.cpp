@@ -113,9 +113,7 @@ PythonInterpreter::~PythonInterpreter() {
     }
 }
 
-void PythonInterpreter::addModulePath(const std::string& path) {
-    pyutil::addModulePath(path);
-}
+void PythonInterpreter::addModulePath(const std::string& path) { pyutil::addModulePath(path); }
 
 void PythonInterpreter::importModule(const std::string& moduleName) {
     namespace py = pybind11;
