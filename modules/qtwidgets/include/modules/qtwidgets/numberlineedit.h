@@ -77,6 +77,9 @@ public:
      */
     virtual void timerEvent(QTimerEvent *event) override;
 
+    bool isValid() const;
+    void setInvalid(bool invalid = true);
+
 protected:
     virtual QValidator::State validate(QString &text, int &pos) const override;
     virtual void focusInEvent(QFocusEvent *e) override;
@@ -93,6 +96,7 @@ private:
     mutable QSize cachedMinimumSizeHint_;
     int visibleDecimals_ = 2;
     bool abbreviated_ = true;
+    bool invalid_ = false;
 
     static std::unique_ptr<NumberLineEditPrivate> nlePrivate_;
 };

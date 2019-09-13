@@ -194,7 +194,18 @@ QSize NumberLineEdit::minimumSizeHint() const {
     return cachedMinimumSizeHint_;
 }
 
+bool NumberLineEdit::isValid() const { return !invalid_; }
+
+void NumberLineEdit::setInvalid(bool invalid) { 
+    invalid_ = invalid;
+    setValue(value());
+}
+
 QString NumberLineEdit::textFromValue(double value) const {
+    if (invalid_) {
+        return "-";
+    }
+
     auto formatNumber = [&](double v) {
         if (integerMode_) {
             return nlePrivate_->formatAsInt(v);
@@ -269,7 +280,7 @@ void NumberLineEdit::changeEvent(QEvent *e) {
 }
 
 void NumberLineEdit::wheelEvent(QWheelEvent *e) {
-    if (hasFocus()) QDoubleSpinBox::wheelEvent(e);
+    if (hasFocus() && !invalid_) QDoubleSpinBox::wheelEvent(e);
 }
 
 }  // namespace inviwo

@@ -58,7 +58,7 @@ public:
     virtual QSize sizeHint() const override;
 
     /**
-     * set the color value of the line edit, if the value is ambiguous nothing will be shown.
+     * set the color value of the line edit, if the value is ambiguous a "-" will be shown.
      * Otherwise the rgb components of the color are shown as hexadecimal color code, e.g.
      * "#f9a033".
      *

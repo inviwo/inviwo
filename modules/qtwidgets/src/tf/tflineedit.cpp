@@ -35,66 +35,68 @@
 #include <QLocale>
 #include <QSizePolicy>
 #include <QSignalBlocker>
+#include <QLayout>
 #include <warn/pop>
 
+#include <sstream>
 #include <limits>
 
 namespace inviwo {
 
-TFLineEdit::TFLineEdit(QWidget* parent)
-    : QLineEdit(parent)
-    , value_(0.0)
-    , ambiguous_(true)
-    , validator_(std::make_unique<QDoubleValidator>()) {
-    validator_->setDecimals(10);
-    setValidator(validator_.get());
+TFLineEdit::TFLineEdit(QWidget* parent) : QWidget(parent), value_(0.0), ambiguous_(true) {
+    spinbox_.setInvalid(ambiguous_);
 
-    connect(this, &QLineEdit::editingFinished, this, [this]() {
-        value_ = getValueFromText();
-        // set same value again to get proper formatting in the line edit
-        {
-            QSignalBlocker block(this);
-            setValue(value_, false);
-        }
-
-        emit valueChanged(value_);
-    });
+    connect(&spinbox_, &DoubleValueDragSpinBox::editingFinished, this,
+            [this]() { emit valueChanged(value()); });
+    connect(&spinbox_,
+            static_cast<void (DoubleValueDragSpinBox::*)(double)>(
+                &DoubleValueDragSpinBox::valueChanged),
+            [this]() { emit valueChanged(value()); });
 
     setSizePolicy(QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred));
+
+    // "steal" layout from spinbox and add it to this widget instead
+    QLayout* layout = spinbox_.layout();
+    setLayout(layout);
 }
 
 QSize TFLineEdit::sizeHint() const { return QSize(18, 18); }
 
-void TFLineEdit::setValidRange(const dvec2& range) { validator_->setRange(range.x, range.y, 10); }
+void TFLineEdit::setValidRange(const dvec2& range, double inc) {
+    spinbox_.setMinimum(range.x);
+    spinbox_.setMaximum(range.y);
 
-dvec2 TFLineEdit::getValidRange() const { return dvec2{validator_->bottom(), validator_->top()}; }
+    spinbox_.setSingleStep(inc);
+    spinbox_.setDecimals(spinbox_.spinnerDecimals(inc));
+}
 
-void TFLineEdit::setValueMapping(bool enable, const dvec2& range) {
+dvec2 TFLineEdit::getValidRange() const { return dvec2{spinbox_.minimum(), spinbox_.maximum()}; }
+
+void TFLineEdit::setValueMapping(bool enable, const dvec2& range, double inc) {
+    QSignalBlocker block{spinbox_};
+
     valueMappingEnabled_ = enable;
     valueRange_ = range;
+    setValidRange(range, inc);
 
     // update text
     setValue(value_, ambiguous_);
 }
 
 void TFLineEdit::setValue(double value, bool ambiguous) {
-    value_ = value;
     ambiguous_ = ambiguous;
+    spinbox_.setInvalid(ambiguous);
 
-    if (ambiguous) {
-        // clear text field
-        clear();
-    } else {
+    if (!ambiguous) {
         if (valueMappingEnabled_) {
             value = value * (valueRange_.y - valueRange_.x) + valueRange_.x;
         }
-
-        setText(QLocale::system().toString(value));
+        spinbox_.setValue(value);
     }
 }
 
-double TFLineEdit::getValueFromText() const {
-    auto value = QLocale::system().toDouble(text());
+double TFLineEdit::value() const {
+    auto value = spinbox_.value();
     if (valueMappingEnabled_) {
         // renormalize value to [0,1]
         value = (value - valueRange_.x) / (valueRange_.y - valueRange_.x);

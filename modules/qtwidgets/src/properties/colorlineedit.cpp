@@ -54,6 +54,7 @@ ColorLineEdit::ColorLineEdit(QWidget *parent)
 
     connect(this, &QLineEdit::textChanged, this, [&](const QString &) {
         if (hasFocus()) {
+            invalid_ = false;
             setProperty("input", hasAcceptableInput() ? "valid" : "invalid");
             style()->unpolish(this);
             style()->polish(this);
@@ -65,6 +66,7 @@ void ColorLineEdit::setColor(ivec3 v, ColorRepresentation rep) {
     color_ = dvec4(glm::clamp(v, ivec3(0), ivec3(255)), 1.0) / 255.0;
     hasAlpha_ = false;
     representation_ = rep;
+    invalid_ = false;
     updateText();
 }
 
@@ -72,6 +74,7 @@ void ColorLineEdit::setColor(ivec4 v, ColorRepresentation rep) {
     color_ = dvec4(glm::clamp(v, ivec4(0), ivec4(255))) / 255.0;
     hasAlpha_ = true;
     representation_ = rep;
+    invalid_ = false;
     updateText();
 }
 
@@ -83,6 +86,7 @@ void ColorLineEdit::setColor(dvec3 v, ColorRepresentation rep) {
     color_ = dvec4(v, 1.0);
     hasAlpha_ = false;
     representation_ = rep;
+    invalid_ = false;
     updateText();
 }
 
@@ -90,6 +94,7 @@ void ColorLineEdit::setColor(dvec4 v, ColorRepresentation rep) {
     color_ = v;
     hasAlpha_ = true;
     representation_ = rep;
+    invalid_ = false;
     updateText();
 }
 
@@ -104,6 +109,15 @@ void ColorLineEdit::setRepresentation(ColorRepresentation rep) {
 
 ColorLineEdit::ColorRepresentation ColorLineEdit::getRepresentation() const {
     return representation_;
+}
+
+bool ColorLineEdit::isValid() const { return !invalid_; }
+
+void ColorLineEdit::setInvalid(bool invalid) { 
+    if (invalid_ == invalid) return;
+
+    invalid_ = invalid;
+    updateText();
 }
 
 void ColorLineEdit::changeEvent(QEvent *event) {
@@ -148,6 +162,11 @@ void ColorLineEdit::keyPressEvent(QKeyEvent *event) {
 }
 
 void ColorLineEdit::updateText() {
+    if (invalid_) {
+        setText("-");
+        return;
+    }
+
     // create appropriate textual representation
     QString str;
     switch (representation_) {
@@ -162,7 +181,7 @@ void ColorLineEdit::updateText() {
             if (hasAlpha_) {
                 str = utilqt::toQString(color::rgba2hex(vec4(color_)));
             } else {
-                str = utilqt::toQString(color::rgb2hex(vec4(color_)));
+                str = utilqt::toQString(color::rgb2hex(vec3(color_)));
             }
             break;
         case inviwo::ColorLineEdit::ColorRepresentation::FloatingPoint:
@@ -198,9 +217,9 @@ void ColorLineEdit::updateColor() {
             color[i] = locale.toDouble(tokens[i]);
         }
 
-        // detect type of representation based on first number
-        // If it contains a decimal point it must be a float range color, i.e. [0,1]
-        if (!tokens.front().contains(locale.decimalPoint())) {
+        // detect type of representation
+        // If it contains at least one decimal point it must be a float range color, i.e. [0,1]
+        if (tokens.filter(locale.decimalPoint()).size() == 0) {
             // assuming uint8 representation, renormalize values to [0,1]
             color /= 255.0;
         }
