@@ -196,7 +196,7 @@ QSize NumberLineEdit::minimumSizeHint() const {
 
 bool NumberLineEdit::isValid() const { return !invalid_; }
 
-void NumberLineEdit::setInvalid(bool invalid) { 
+void NumberLineEdit::setInvalid(bool invalid) {
     invalid_ = invalid;
     setValue(value());
 }

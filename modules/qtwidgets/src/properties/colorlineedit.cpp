@@ -113,7 +113,7 @@ ColorLineEdit::ColorRepresentation ColorLineEdit::getRepresentation() const {
 
 bool ColorLineEdit::isValid() const { return !invalid_; }
 
-void ColorLineEdit::setInvalid(bool invalid) { 
+void ColorLineEdit::setInvalid(bool invalid) {
     if (invalid_ == invalid) return;
 
     invalid_ = invalid;
