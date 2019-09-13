@@ -229,23 +229,7 @@ void TFPropertyDialog::initializeDialog() {
 
         // ensure that the range of primitive scalar is matching value range of volume data
         if (auto port = propertyPtr_->getVolumeInport()) {
-            const auto portChange = [this, port]() {
-                auto range =
-                    port->hasData() ? port->getData()->dataMap_.valueRange : dvec2(0.0, 1.0);
-                // TODO: how to handle different TF types?
-                // perform mapping only, if all TF are of relative type
-                bool allRelative =
-                    std::all_of(tfSets_.begin(), tfSets_.end(), [](TFPrimitiveSet* elem) {
-                        return elem->getType() == TFPrimitiveSetType::Relative;
-                    });
-                primitivePos_->setValueMapping(allRelative, range);
-
-                zoomHSlider_->setTooltipFormat([sliderRange = sliderRange_, range](int, int val) {
-                    return toString(
-                        glm::mix(range.x, range.y, static_cast<double>(val) / sliderRange));
-                });
-            };
-            portChange();
+            const auto portChange = [this]() { onTFTypeChangedInternal(); };
 
             port->onChange(portChange);
             port->onConnect(portChange);
@@ -263,6 +247,7 @@ void TFPropertyDialog::initializeDialog() {
                 &TFSelectionWatcher::setAlpha);
 
         primitiveColor_ = new TFColorEdit();
+        primitiveColor_->setColor(QColor(Qt::black), true);
         connect(tfSelectionWatcher_.get(), &TFSelectionWatcher::updateWidgetColor, primitiveColor_,
                 &TFColorEdit::setColor);
         connect(primitiveColor_, &TFColorEdit::colorChanged, tfSelectionWatcher_.get(),
@@ -454,10 +439,24 @@ void TFPropertyDialog::onTFTypeChangedInternal() {
             valueRange = port->getData()->dataMap_.valueRange;
         }
     }
+    // TODO: how to handle different TF types?
+    // perform mapping only, if all TF are of relative type
     const bool allRelative = std::all_of(tfSets_.begin(), tfSets_.end(), [](TFPrimitiveSet* elem) {
         return elem->getType() == TFPrimitiveSetType::Relative;
     });
-    primitivePos_->setValueMapping(allRelative, valueRange);
+
+    // make increment depending on the size of the underlying TF texture
+    const double incr =
+        propertyPtr_->hasTF()
+            ? 1.0 / static_cast<double>(propertyPtr_->getTFProperty()->get().getTextureSize())
+            : 0.01;
+
+    primitivePos_->setValueMapping(allRelative, valueRange, incr * (valueRange.y - valueRange.x));
+
+    zoomHSlider_->setTooltipFormat([sliderRange = sliderRange_, valueRange](int, int val) {
+        return toString(
+            glm::mix(valueRange.x, valueRange.y, static_cast<double>(val) / sliderRange));
+    });
 }
 
 void TFPropertyDialog::onMaskChange(const dvec2&) { updateTFPreview(); }

@@ -55,8 +55,7 @@ QSize TFColorEdit::sizeHint() const { return QSize(18, 18); }
 
 void TFColorEdit::setColor(const QColor& color, bool ambiguous) {
     if (ambiguous) {
-        // clear text field
-        clear();
+        setInvalid(true);
     } else {
         ColorLineEdit::setColor(utilqt::tovec3(color), ColorRepresentation::Hexadecimal);
     }

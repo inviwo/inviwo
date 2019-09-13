@@ -57,6 +57,8 @@ public:
     void setReadOnly(bool r);
     bool isReadOnly() const;
 
+    bool isValid() const;
+
     void setSpecialValueText(const QString &txt);
     QString specialValueText() const;
 
@@ -81,6 +83,14 @@ public:
     QString suffix() const;
     double value() const;
 
+    /**
+     * \brief determine the number of required decimals for the given \p value
+     * This function can be used, e.g., to fit the precision of the spinbox to the increment.
+     *
+     * @param value   number used to determine the number of digits after the decimal point
+     */
+    int spinnerDecimals(double value) const;
+
 signals:
     void valueChanged(double d);
     void valueChanged(const QString &text);
@@ -91,10 +101,15 @@ public slots:
     void selectAll();
     void stepDown();
     void stepUp();
+    void setInvalid(bool invalid = true);
 
 private:
+    void updateState();
+
     NumberLineEdit *spinBox_;
     ValueDragger<double> *valueDragger_;
+
+    bool invalid_;
 };
 
 }  // namespace inviwo

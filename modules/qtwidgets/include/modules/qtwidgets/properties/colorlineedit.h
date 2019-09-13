@@ -69,8 +69,13 @@ public:
     void setRepresentation(ColorRepresentation rep);
     ColorRepresentation getRepresentation() const;
 
+    bool isValid() const;
+
 signals:
     void colorChanged();
+
+public slots:
+    void setInvalid(bool invalid = true);
 
 protected:
     virtual void changeEvent(QEvent *event) override;  // use to change validator
@@ -89,6 +94,8 @@ private:
     ColorRepresentation representation_ = ColorRepresentation::FloatingPoint;
     dvec4 color_ = dvec4(0.0);
     bool hasAlpha_ = true;
+
+    bool invalid_ = false;
 };
 
 template <typename T>
