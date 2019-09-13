@@ -71,6 +71,7 @@
 #include <modules/basegl/processors/meshpicking.h>
 #include <modules/basegl/processors/meshrenderprocessorgl.h>
 #include <modules/basegl/processors/mprentryexitpointsprocessor.h>
+#include <modules/basegl/processors/mprproxygeometryprocessor.h>
 #include <modules/basegl/processors/multichannelraycaster.h>
 #include <modules/basegl/processors/pointrenderer.h>
 #include <modules/basegl/processors/polylinegrabber.h>
@@ -132,6 +133,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerProcessor<MeshPicking>();
     registerProcessor<MeshRenderProcessorGL>();
     registerProcessor<MPREntryExitPoints>();
+	registerProcessor<MPRProxyGeometry>();
     registerProcessor<MultichannelRaycaster>();
     registerProcessor<PointRenderer>();
     registerProcessor<PolylineGrabber>();

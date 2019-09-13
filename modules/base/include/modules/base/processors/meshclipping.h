@@ -74,6 +74,7 @@ namespace inviwo {
  */
 class IVW_MODULE_BASE_API MeshClipping : public Processor {
 public:
+
     MeshClipping();
     ~MeshClipping();
 
@@ -83,13 +84,39 @@ public:
 protected:
     virtual void process() override;
 
+
+
+	struct ClipSpace {
+		std::vector<std::shared_ptr<Plane>> planes;
+
+		bool isInside(vec3 p) {
+			for (const auto plane : planes) {
+				const auto isInside = plane->isInside(p);
+				if (!isInside) return false;
+			}
+			return true;
+		}
+
+		vec3 getIntersection(vec3 start, vec3 end) {
+			vec3 closestPoint(std::numeric_limits<float>::infinity());
+			for (const auto plane : planes) {
+				const auto in = plane->getIntersection(start, end);
+				if (in.intersects_) {
+					if (glm::distance(in.intersection_, start) < glm::distance(closestPoint, start))
+						closestPoint = in.intersection_;
+				}
+			}
+			return closestPoint;
+		}
+	};
+
     /**
      * Clip mesh against plane. Replaces removed parts with triangles aligned with the plane.
      * @throws Exception if mesh is not a SimpleMesh or BasicMesh
      * @param mesh to clip
      * @param plane in world space coordinate system.
      */
-    std::shared_ptr<Mesh> clipGeometryAgainstPlane(const Mesh *mesh, const Plane &plane);
+    std::shared_ptr<Mesh> clipGeometryAgainstPlane(const Mesh *mesh, const Plane& worldSpacePlane);
 
 private:
     void onAlignPlaneNormalToCameraNormalPressed();
@@ -102,8 +129,17 @@ private:
     BoolProperty movePointAlongNormal_;
     BoolProperty moveCameraAlongNormal_;
     FloatProperty pointPlaneMove_;
+
+	BoolProperty outputLineMesh_;
+	BoolProperty convexManifoldInput_;
+	BoolProperty capClippedHoles_;
+
+	CompositeProperty clippingPlanes_;
+	ButtonProperty addPlane_;
     FloatVec3Property planePoint_;   ///< World space plane position
     FloatVec3Property planeNormal_;  ///< World space plane normal
+	std::vector<std::shared_ptr<FloatVec3Property>> additionalPlanes_;
+
     ButtonProperty alignPlaneNormalToCameraNormal_;
     CameraProperty camera_;
 
