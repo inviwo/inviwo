@@ -137,14 +137,17 @@ void PickingController::propagateEvent(TouchEvent* e, EventPropagator* propagato
         PickingPressItem pressItem = [points, e]() {
             if (e->getDevice()->getType() == TouchDevice::DeviceType::TouchPad) {
                 // Possible to press touchpads
-                auto nPressed = std::accumulate(points.begin(), points.end(), 0u, [](size_t v, const auto& p) -> size_t { return v + (p.state() == TouchState::Stationary ? 1 : 0); });
+                auto nPressed = std::accumulate(
+                    points.begin(), points.end(), 0u, [](size_t v, const auto& p) -> size_t {
+                        return v + (p.state() == TouchState::Stationary ? 1 : 0);
+                    });
                 if (nPressed == 0) {
                     return PickingPressItem::None;
                 } else if (nPressed == 1) {
                     return PickingPressItem::Primary;
                 } else if (nPressed == 2) {
                     return PickingPressItem::Secondary;
-                } else { // nPressed > 2
+                } else {  // nPressed > 2
                     return PickingPressItem::Tertiary;
                 }
             } else {
@@ -153,12 +156,10 @@ void PickingController::propagateEvent(TouchEvent* e, EventPropagator* propagato
             }
         }();
 
-        PickingEvent pickingEvent(
-            pickingIdToAction[pickingId], &te, ps,
-            pressState,
-            pressItem, PickingHoverState::None, pressItem,
-            pickingId, currentId, pressedId, previousId, tstate_.pickingIdToPressNDC[pickingId],
-            tstate_.pickingIdToPreviousNDC[pickingId]);
+        PickingEvent pickingEvent(pickingIdToAction[pickingId], &te, ps, pressState, pressItem,
+                                  PickingHoverState::None, pressItem, pickingId, currentId,
+                                  pressedId, previousId, tstate_.pickingIdToPressNDC[pickingId],
+                                  tstate_.pickingIdToPreviousNDC[pickingId]);
 
         propagator->propagateEvent(&pickingEvent, nullptr);
         if (pickingEvent.hasBeenUsed() || te.hasBeenUsed()) {

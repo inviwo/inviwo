@@ -359,7 +359,7 @@ void CameraWidget::objectPicked(PickingEvent *e) {
 
     bool triggerMoveEvent = false;
     bool triggerSingleEvent = false;
-   
+
     if (e->getPressState() != PickingPressState::None) {
         if (e->getPressState() == PickingPressState::Move &&
             e->getPressItems() & PickingPressItem::Primary) {
@@ -379,8 +379,8 @@ void CameraWidget::objectPicked(PickingEvent *e) {
             saveInitialCameraState();
         } else if (e->getPressState() == PickingPressState::Release &&
                    e->getPressItem() & PickingPressItem::Primary) {
-            triggerSingleEvent = (isMouseBeingPressedAndHold_ &&
-                                  (currentPickingID_ >= 0) && !mouseWasMoved_);
+            triggerSingleEvent =
+                (isMouseBeingPressedAndHold_ && (currentPickingID_ >= 0) && !mouseWasMoved_);
             isMouseBeingPressedAndHold_ = false;
             if (currentPickingID_ >= 0) {
                 currentPickingID_ = -1;
