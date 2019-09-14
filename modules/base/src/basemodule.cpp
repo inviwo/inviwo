@@ -52,6 +52,7 @@
 #include <modules/base/processors/meshexport.h>
 #include <modules/base/processors/meshinformation.h>
 #include <modules/base/processors/meshmapping.h>
+#include <modules/base/processors/meshplaneclipping.h>
 #include <modules/base/processors/meshsequenceelementselectorprocessor.h>
 #include <modules/base/processors/meshsource.h>
 #include <modules/base/processors/noiseprocessor.h>
@@ -142,6 +143,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<MeshCreator>();
     registerProcessor<MeshInformation>();
     registerProcessor<MeshMapping>();
+    registerProcessor<MeshPlaneClipping>();
     registerProcessor<NoiseProcessor>();
     registerProcessor<PixelToBufferProcessor>();
     registerProcessor<PointLightSourceProcessor>();
