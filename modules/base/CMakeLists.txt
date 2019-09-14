@@ -94,6 +94,7 @@ set(HEADER_FILES
     include/modules/base/processors/trianglestowireframe.h
     include/modules/base/processors/vectorelementselectorprocessor.h
     include/modules/base/processors/volumebasistransformer.h
+    include/modules/base/processors/volumeboundaryplanes.h
     include/modules/base/processors/volumeboundingbox.h
     include/modules/base/processors/volumecreator.h
     include/modules/base/processors/volumecurlcpuprocessor.h
@@ -208,6 +209,7 @@ set(SOURCE_FILES
     src/processors/surfaceextractionprocessor.cpp
     src/processors/tfselector.cpp
     src/processors/trianglestowireframe.cpp
+    src/processors/volumeboundaryplanes.cpp
     src/processors/volumeboundingbox.cpp
     src/processors/volumecreator.cpp
     src/processors/volumecurlcpuprocessor.cpp
