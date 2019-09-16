@@ -910,6 +910,10 @@ QStringList InviwoMainWindow::getRecentWorkspaceList() const {
     return list;
 }
 
+bool InviwoMainWindow::hasRestoreWorkspace() const { return undoManager_.hasRestore(); }
+
+void InviwoMainWindow::restoreWorkspace() { undoManager_.restore(); }
+
 void InviwoMainWindow::saveRecentWorkspaceList(const QStringList& list) {
     QSettings settings;
     settings.beginGroup(objectName());

@@ -35,10 +35,9 @@
 #include <inviwo/core/network/processornetworkobserver.h>
 #include <inviwo/core/network/workspacemanager.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QObject>
-#include <warn/pop>
+#include <memory>
+#include <optional>
+#include <string>
 
 class QAction;
 class QEvent;
@@ -46,14 +45,19 @@ class QEvent;
 namespace inviwo {
 
 class InviwoMainWindow;
+class AutoSaver;
 
 /**
  * \class UndoManager
  */
-class IVW_QTEDITOR_API UndoManager : public QObject, public ProcessorNetworkObserver {
+class IVW_QTEDITOR_API UndoManager : public ProcessorNetworkObserver {
 public:
     UndoManager(InviwoMainWindow* mainWindow);
-    virtual ~UndoManager() = default;
+    UndoManager(const UndoManager&) = delete;
+    UndoManager(UndoManager&&) = delete;
+    UndoManager& operator=(const UndoManager&) = delete;
+    UndoManager& operator=(UndoManager&&) = delete;
+    virtual ~UndoManager();
 
     void pushStateIfDirty();
     void markDirty();
@@ -65,6 +69,9 @@ public:
 
     QAction* getUndoAction() const;
     QAction* getRedoAction() const;
+
+    bool hasRestore() const;
+    void restore();
 
 private:
     using DiffType = std::vector<std::string>::iterator::difference_type;
@@ -87,13 +94,15 @@ private:
     bool dirty_ = true;
     bool isRestoring = false;
     DiffType head_ = -1;
-    std::vector<std::string> undoBuffer_;
+    std::vector<std::shared_ptr<const std::string>> undoBuffer_;
 
     QAction* undoAction_;
     QAction* redoAction_;
 
     WorkspaceManager::ClearHandle clearHandle_;
     WorkspaceManager::DeserializationHandle loadHandle_;
+
+    std::unique_ptr<AutoSaver> autoSaver_;
 };
 
 }  // namespace inviwo
