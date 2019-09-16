@@ -1,6 +1,6 @@
 ## Inviwo - Interactive Visualization Workshop
 
-[![Build Status](http://jenkins.inviwo.org:8080/buildStatus/icon?job=inviwo-pub/master)](http://jenkins.inviwo.org:8080/job/inviwo-pub/job/master/) [![BSD licensed](https://img.shields.io/badge/license-BSD-blue.svg?maxAge=2592000)](https://github.com/inviwo/inviwo/blob/master/LICENSE)
+[![Build Status](http://jenkins.inviwo.org:8080/buildStatus/icon?job=inviwo/master)](http://jenkins.inviwo.org:8080/job/inviwo/job/master/) [![BSD licensed](https://img.shields.io/badge/license-BSD-blue.svg?maxAge=2592000)](https://github.com/inviwo/inviwo/blob/master/LICENSE)
 [![Release version](https://img.shields.io/github/release/inviwo/inviwo.svg?maxAge=86400)](https://github.com/inviwo/inviwo/releases/latest)
 
 <div class="inviwo-screenshot">
