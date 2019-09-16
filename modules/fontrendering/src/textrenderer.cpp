@@ -646,7 +646,7 @@ TextTextureObject createTextTextureObject(TextRenderer& textRenderer, std::strin
     auto bbox = textRenderer.computeBoundingBox(text);
     // Prevent OpenGL errors due to 0 size
     bbox.glyphsExtent = glm::max(bbox.glyphsExtent, size2_t(1));
-    
+
     if (!tex || tex->getDimensions() != bbox.glyphsExtent) {
         tex = std::make_shared<Texture2D>(bbox.glyphsExtent, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE,
                                           GL_LINEAR);
