@@ -68,10 +68,18 @@ ImageLayoutGL::ImageLayoutGL()
                                    0.f, 1.f)
     , vertical3Right1LeftSplitter_("vertical3Right1LeftSplitter", "Split Position", 2.0f / 3.0f,
                                    0.f, 1.f)
-    , leftMinMax_("leftMinMax", "Left min/max", 1, 1, 1, 1)     // max sizes updated on ResizeEvent
-    , rightMinMax_("rightMinMax", "Right min/max", 1, 1, 1, 1)  // note, min 1 to avoid zero size
-    , topMinMax_("topMinMax", "Top min/max", 1, 1, 1, 1)
-    , bottomMinMax_("bottomMinMax", "Bottom min/max", 1, 1, 1, 1)
+    , leftMinMax_("leftMinMax", "Left", 1, std::numeric_limits<int>::max(), 1,
+                  std::numeric_limits<int>::max(), 1, 0, InvalidationLevel::InvalidOutput,
+                  PropertySemantics::Text)  // note, min 1 to avoid zero size
+    , rightMinMax_("rightMinMax", "Right", 1, std::numeric_limits<int>::max(), 1,
+                   std::numeric_limits<int>::max(), 1, 0, InvalidationLevel::InvalidOutput,
+                   PropertySemantics::Text)
+    , topMinMax_("topMinMax", "Top", 1, std::numeric_limits<int>::max(), 1,
+                 std::numeric_limits<int>::max(), 1, 0, InvalidationLevel::InvalidOutput,
+                 PropertySemantics::Text)
+    , bottomMinMax_("bottomMinMax", "Bottom", 1, std::numeric_limits<int>::max(), 1,
+                    std::numeric_limits<int>::max(), 1, 0, InvalidationLevel::InvalidOutput,
+                    PropertySemantics::Text)
     , shader_("img_texturequad.vert", "img_copy.frag")
     , viewManager_()
     , currentLayout_(Layout::CrossSplit)
@@ -135,7 +143,6 @@ void ImageLayoutGL::propagateEvent(Event* event, Outport* source) {
 
     if (event->hash() == ResizeEvent::chash()) {
         auto resizeEvent = static_cast<ResizeEvent*>(event);
-        updateMaxSizes(resizeEvent->size());
         updateViewports(resizeEvent->size(), true);
         auto& outports = multiinport_.getConnectedOutports();
         size_t minNum = std::min(outports.size(), viewManager_.size());
@@ -237,20 +244,6 @@ void ImageLayoutGL::process() {
     shader_.deactivate();
     utilgl::deactivateCurrentTarget();
     TextureUnit::setZeroUnit();
-}
-
-void ImageLayoutGL::updateMaxSizes(ivec2 dim) {
-    auto updateRange = [](auto& r, auto d) {
-        // Make max value == dimension if it already equaled max range
-        r.set(r.getStart(), r.getEnd() == r.getRangeMax() ? d : r.getEnd(), r.getRangeMin(), d,
-              r.getIncrement(), r.getMinSeparation());
-    };
-    // Prevent resize events while updating sizes
-    Property::OnChangeBlocker l(leftMinMax_), r(rightMinMax_), t(topMinMax_), b(bottomMinMax_);
-    updateRange(leftMinMax_, dim.y);
-    updateRange(rightMinMax_, dim.y);
-    updateRange(topMinMax_, dim.x);
-    updateRange(bottomMinMax_, dim.x);
 }
 
 void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {

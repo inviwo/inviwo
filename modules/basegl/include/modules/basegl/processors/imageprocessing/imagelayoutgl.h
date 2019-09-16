@@ -107,7 +107,6 @@ public:
 protected:
     virtual void process() override;
 
-    void updateMaxSizes(ivec2 outputDim);
     void updateViewports(ivec2 size, bool force = false);
     void onStatusChange(bool propagate = true);
 
