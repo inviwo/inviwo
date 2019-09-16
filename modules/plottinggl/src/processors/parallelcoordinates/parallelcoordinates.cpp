@@ -395,6 +395,10 @@ void ParallelCoordinates::createOrUpdateProperties() {
 }
 
 void ParallelCoordinates::buildLineMesh() {
+    if (axes_.empty()) {
+        // Nothing to build from
+        return;
+    }
     auto& mesh = lines_.mesh;
 
     for (auto& item : mesh.getBuffers()) {
