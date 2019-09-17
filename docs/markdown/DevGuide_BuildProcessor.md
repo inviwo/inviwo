@@ -98,6 +98,8 @@ Below we will go through the implementation of an example processor that takes a
 ## Inports and Outports - How to receive and send data to/from other processors
 Ports are used as the primary way of sending data between processors. You can add ports as private members of your class and initialize them in the constructor. Ports also need to be added to the processor using `addPort()`, otherwise they won't be displayed. Note that the convention is to put optional inports to the right of the processor (added last). If your processor performs some kind of rendering, it should usually also include an optional `ImageInport`, where previously rendered parts of an image can be passed through, so that the processor's outport produces a composited image of the current and previous renderings.
 
+To access data from an inport, you can use the `getData()` method. To output data through an outport, you can use the `setData(...)` method.
+
 **Example**: Let's change `MyProcessor` to receive and produce an image.
 ```
 // MyProcessor.h (inside class definition)
@@ -119,7 +121,7 @@ Note that the automatically generated processor template also has a `FloatVec3Pr
 
 ## process() - Implement functionality
 The `process()` method is where the functionality of your processor is defined. Every time the processor is invalidated (either by changing inputs, events or property changes), the `process()` method is executed.
-Inside `process()` you can access your inports' data by using `yourinport.getData()` and similarly you can write data to the outports using `youroutport.setData(...)`. What happens with your data in between is fully up to you.
+Inside `process()` you can access your inports' data by using `inport_.getData()` and similarly you can write data to the outports using `outport_.setData(...)`. What happens with your data in between is fully up to you.
 You can also use all your defined properties here. This let's you access all your algorithm's parameters directly from the GUI with automatic updates upon change.
 
 **Example**: Let's have our processor apply gaussian blur to the input image.
