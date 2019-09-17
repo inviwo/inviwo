@@ -228,15 +228,26 @@ Here you can find utilities and easy solutions for common problems.
 #### Render on top of an input image:
 As mentioned above, most processors that output an image should also have an optional image inport for compositing of different renders. Usually by default you want to render on top of this incoming image, which holds an OpenGL framebuffer. That means you usually want to copy the inport data to the outport and activate it as target framebuffer for your rendering. `utilgl::activateTargetAndClearOrCopySource(outport, image_inport)` does exactly this for you. All your rendering will be automatically composited according to the framebuffer depth layer. Note that it is good practice to deactivate the target at the end of your `process()` by using `utilgl::deactivateCurrentTarget()`. You can include the function from `modules/opengl/texture/textureutils.h`.
 
+A nice example for this can be found in `MeshRenderProcessorGL::process()` (`modules/basegl/src/processors/meshrenderprocessorgl.cpp`)
+
 #### Shader and Texture utilities:
 The `utilgl` namespace includes more useful functions for OpenGL, like controlling various OpenGL states (see `modules/opengl/openglutils.h`), utilities for working with `Shader`s (see `modules/opengl/shader/shaderutils/h`), drawing full screen quads and more.
 
-The `Shader` class can be used to activate shaders and bind uniforms etc. Similarly you can use the `TextureUnit` class as a wrapper for texture units. An image inport can be bound to a texture unit using
+The `Shader` class can be used to activate shaders and bind uniforms etc. Similarly you can use the `TextureUnit` class as a wrapper for texture units. An image inport can be bound to an OpenGL texture unit using the following:
 ```
 TextureUnit tex_unit;
 utilgl::bindColorTexture(tex_inport, tex_unit.getEnum());
 shader.setUniform("Uniform Name", tex_unit.getUnitNumber()); // shader is initialized in constructor
 ```
+Examples for both `Shader` and `TextureUnit` can also be found in `HeightFieldProcessor::process()` (`modules/basegl/src/processors/heightfieldprocessor.cpp`).
+
+
+Another useful class is the `TextureUnitContainer`, which can be used to make working with multiple `TextureUnit`s easier. Essentially this let's you do:
+```
+TextureUnitContainer units;
+utilgl::bindAndSetUniforms(shader, units, texture);
+```
+where `texture` can be any of `ImageInport`, `ImageOutport`, `Texture`, `Image`, `TransferFunctionProperty` or `IsoTFProperty`. The container will automatically take care of handling all texture units correctly. A nice example where this is used is the `VolumeSliceGL::process()` (`modules/basegl/src/processors/volumeslicegl.cpp`)
 
 #### Accessing data in RAM:
 Inviwo has different data representations, depending on where the data is stored (Hard drive, RAM, GPU RAM) and by which API it is used (e.g. OpenGL, OpenCL). You can request each of those representations using `getRepresentation<RepresentationType>()`. For example you could get a volume representation in RAM as follows:
@@ -267,6 +278,21 @@ This piece of code takes the volume from the inport (more specifically its `Volu
 - The template parameter of `dispatch<>()`, in this case `std::shared_ptr<Volume>`, is the return type of the lambda and `dispatch<>()`. This must be the same for all data types.
 - All the data that comes from an inport, like the `srcVol` in the example, is `const`. If you want to modify the volume, you will have to create a new one as demonstrated in the example.
 - If you need any other variables from outside the scope of the `dispatch<>()`'s lambda, you can pass them into the lambda like so: `dispatch<...>([&my_local_var] (auto ram) { ... })`
+
+An easy example can be found in `src/core/algorithm/boundingbox.cpp` in `mat4 boundingBox(const Mesh)`, where the meshes vertex buffer is accessed through `dispatch()` to compute an axis aligned bounding box.
+
+#### Accessing OpenGL textures
+If you have a volume and need to access it directly through the OpenGL api, this is how you can get the texture ID from a `Volume`:
+
+```
+auto volume = volumeInport.getData();
+const VolumeGL* volumeGL = volume->getRepresentation<VolumeGL>();
+
+std::shared_ptr<const Texture3D> tex = volumeGL->getTexture();
+GLuint textureID = tex->getID();
+
+glBindTexture(GL_TEXTURE_3D, textureID);
+```
 
 
 ## Event Handling and Invalidation
