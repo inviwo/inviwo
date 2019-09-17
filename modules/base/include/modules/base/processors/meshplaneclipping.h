@@ -54,7 +54,6 @@ namespace inviwo {
  *   * __Enable Clipping__ Enable clipping.
  *   * __Cap clipped holes__ Replaces removed parts with triangles aligned with the plane. Input
  * mesh must be manifold.
- *   * __Input mesh is convex__ Allows faster triangulation of the hole.
  */
 
 class IVW_MODULE_BASE_API MeshPlaneClipping : public Processor {
@@ -74,7 +73,6 @@ private:
 
     BoolProperty clippingEnabled_;
     BoolProperty capClippedHoles_;
-    BoolProperty convexInput_;
 };
 
 }  // namespace inviwo

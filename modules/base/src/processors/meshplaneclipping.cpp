@@ -36,7 +36,7 @@ namespace inviwo {
 const ProcessorInfo MeshPlaneClipping::processorInfo_{
     "org.inviwo.MeshPlaneClipping",  // Class identifier
     "Mesh Plane Clipping",           // Display name
-    "Undefined",                     // Category
+    "Mesh Creation",                 // Category
     CodeState::Experimental,         // Code state
     Tags::None,                      // Tags
 };
@@ -48,13 +48,12 @@ MeshPlaneClipping::MeshPlaneClipping()
     , planes_("inputPlanes")
     , outputMesh_("outputMesh")
     , clippingEnabled_("clippingEnabled", "Enable Clipping", true)
-    , capClippedHoles_("capClippedHoles", "Cap clipped holes", true)
-    , convexInput_("convexInput", "Input mesh is convex", false) {
+    , capClippedHoles_("capClippedHoles", "Cap clipped holes", true) {
 
     addPort(inputMesh_);
     addPort(planes_);
     addPort(outputMesh_);
-    addProperties(clippingEnabled_, capClippedHoles_, convexInput_);
+    addProperties(clippingEnabled_, capClippedHoles_);
 }
 
 void MeshPlaneClipping::process() {
@@ -62,7 +61,7 @@ void MeshPlaneClipping::process() {
         std::shared_ptr<const Mesh> currentMesh = inputMesh_.getData();
         const auto planes = *(planes_.getData());
         for (const auto& plane : planes) {
-            currentMesh = meshutil::clipMeshAgainstPlane(*currentMesh, plane, capClippedHoles_, convexInput_);
+            currentMesh = meshutil::clipMeshAgainstPlane(*currentMesh, plane, capClippedHoles_);
         }
         outputMesh_.setData(currentMesh);
     } else {
