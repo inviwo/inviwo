@@ -47,16 +47,15 @@ namespace meshutil {
  * Supported mesh types: SimpleMesh and BasicMesh.
  * Supported draw types: Triangle.
  * Supported connectivity types: Strip and None.
- * @throws Exception if mesh is not a SimpleMesh or BasicMesh
  * @param mesh to clip
  * @param plane in world space coordinate system
  * @param capClippedHoles: replaces removed parts with triangles aligned with the plane
- * @param inputIsConvex: allows easier triangulation of the hole
+ * @throws Exception if mesh is not supported, or if capClippedHoles is set, but
+ * mesh is not manifold.
  * @returns SimpleMesh with connectivity None
  */
 IVW_MODULE_BASE_API std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh& mesh, const Plane& plane,
-                                                               bool capClippedHoles = true,
-                                                               bool inputIsConvex = false);
+                                                               bool capClippedHoles = true);
 
 }  // namespace meshutil
 
