@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
 #include <modules/discretedata/ports/datasetport.h>
 #include <modules/discretedata/channels/analyticchannel.h>
 #include <modules/discretedata/channels/channeldispatching.h>
