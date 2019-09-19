@@ -1356,7 +1356,7 @@ void InviwoMainWindow::dropEvent(QDropEvent* event) {
         // use dispatch front here to avoid blocking the drag&drop source, e.g. Windows Explorer,
         // while the drop operation is performed
         auto action = [this, keyModifiers = event->keyboardModifiers(),
-                                      urlList = mimeData->urls()]() {
+                       urlList = mimeData->urls()]() {
             RenderContext::getPtr()->activateDefaultRenderContext();
 
             bool first = true;
