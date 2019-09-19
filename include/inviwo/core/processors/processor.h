@@ -370,9 +370,9 @@ public:
 
     /**
      * Return true if ProcessorNetworkEvaluator should evaluate the connection during
-     * ProcessorNetwork traversal. An inactive connection will propagate invalidations and events but
-     * will not be processed. 
-     * Useful if the Processor has states in which it does not use an inport.
+     * ProcessorNetwork traversal. An inactive connection will propagate invalidations and events
+     * but will not be processed. Useful if the Processor has states in which it does not use an
+     * inport.
      * @param This processor's inport
      * @param Another processor's outport
      * @see InputSelector for an example
