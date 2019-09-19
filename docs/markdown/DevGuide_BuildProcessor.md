@@ -135,7 +135,7 @@ private:
     ImageOutport outport_;
 
     ImageConvolution conv_;  // This will apply the convolution for us on the GPU
-    const std::vector<float> gaussian_kernel_ = { // Convolution kernel
+    const std::vector<float> gaussianKernel_ = { // Convolution kernel
         1, 2, 1,
         2, 4, 2,
         1, 2, 1
@@ -156,7 +156,7 @@ MyProcessor::MyProcessor()
 void MyProcessor::process() {
     auto img = inport_.getData();  // Get image from inport
     // convolution() takes the image layer, kernel width & height, the kernel, and the scale to divide
-    auto filtered = conv_.convolution(*img->getColorLayer(), 3, 3, gaussian_kernel_, 16.f);
+    auto filtered = conv_.convolution(*img->getColorLayer(), 3, 3, gaussianKernel_, 16.f);
     outport_.setData(filtered);    // Output filtered image
 }
 ```
@@ -226,12 +226,12 @@ All properties are initialized with an identifier (should be unique inside this 
 Here you can find utilities and easy solutions for common problems.
 
 #### Render on top of an input image:
-As mentioned above, most processors that output an image should also have an optional image inport for compositing of different renders. Usually by default you want to render on top of this incoming image, which holds an OpenGL framebuffer. That means you usually want to copy the inport data to the outport and activate it as target framebuffer for your rendering. `utilgl::activateTargetAndClearOrCopySource(outport, image_inport)` does exactly this for you. All your rendering will be automatically composited according to the framebuffer depth layer. Note that it is good practice to deactivate the target at the end of your `process()` by using `utilgl::deactivateCurrentTarget()`. You can include the function from `modules/opengl/texture/textureutils.h`.
+As mentioned above, most processors that output an image should also have an optional image inport for compositing of different renderings. Usually you want to render on top of this incoming image, which holds an OpenGL framebuffer. This can be done by copying the inport data to the outport and activate it as target framebuffer for your rendering. `utilgl::activateTargetAndClearOrCopySource(outport, image_inport)` does exactly this for you. All your rendering will be automatically composited according to the framebuffer depth layer. Note that it is good practice to deactivate the target at the end of `process()`  using `utilgl::deactivateCurrentTarget()`. You can include the function from `modules/opengl/texture/textureutils.h`.
 
-A nice example for this can be found in `MeshRenderProcessorGL::process()` (`modules/basegl/src/processors/meshrenderprocessorgl.cpp`)
+A good example for this can be found in `MeshRenderProcessorGL::process()` (`modules/basegl/src/processors/meshrenderprocessorgl.cpp`)
 
 #### Shader and Texture utilities:
-The `utilgl` namespace includes more useful functions for OpenGL, like controlling various OpenGL states (see `modules/opengl/openglutils.h`), utilities for working with `Shader`s (see `modules/opengl/shader/shaderutils/h`), drawing full screen quads and more.
+The `utilgl` namespace includes many useful convenience functions for OpenGL, like controlling OpenGL states (see `modules/opengl/openglutils.h`), utilities for working with `Shader`s (see `modules/opengl/shader/shaderutils/h`), drawing full screen quads and more.
 
 The `Shader` class can be used to activate shaders and bind uniforms etc. Similarly you can use the `TextureUnit` class as a wrapper for texture units. An image inport can be bound to an OpenGL texture unit using the following:
 ```
@@ -242,19 +242,19 @@ shader.setUniform("Uniform Name", tex_unit.getUnitNumber()); // shader is initia
 Examples for both `Shader` and `TextureUnit` can also be found in `HeightFieldProcessor::process()` (`modules/basegl/src/processors/heightfieldprocessor.cpp`).
 
 
-Another useful class is the `TextureUnitContainer`, which can be used to make working with multiple `TextureUnit`s easier. Essentially this let's you do:
+Another useful class is the `TextureUnitContainer`, which makes it easier to handle multiple `TextureUnit`s. Essentially this let's you do:
 ```
 TextureUnitContainer units;
 utilgl::bindAndSetUniforms(shader, units, texture);
 ```
-where `texture` can be any of `ImageInport`, `ImageOutport`, `Texture`, `Image`, `TransferFunctionProperty` or `IsoTFProperty`. The container will automatically take care of handling all texture units correctly. A nice example where this is used is the `VolumeSliceGL::process()` (`modules/basegl/src/processors/volumeslicegl.cpp`)
+where `texture` can be any of `ImageInport`, `ImageOutport`, `Texture`, `Image`, `TransferFunctionProperty` or `IsoTFProperty`. The container will automatically take care of handling all texture units correctly. A good example can be found in `VolumeSliceGL::process()` (`modules/basegl/src/processors/volumeslicegl.cpp`)
 
 #### Accessing data in RAM:
 Inviwo has different data representations, depending on where the data is stored (Hard drive, RAM, GPU RAM) and by which API it is used (e.g. OpenGL, OpenCL). You can request each of those representations using `getRepresentation<RepresentationType>()`. For example you could get a volume representation in RAM as follows:
 ```
 auto volume_ram_repr = volumeInport.getData()->getRepresentation<VolumeRAM>();
 ```
-However, you cannot directly use this representation to modify your data. This basic `VolumeRAM` representation only exposes a `void*` pointer to the raw data (`VolumeRAM::getData()`). To get the underlying concrete type (`int`, `float`, `vec3`) we use a dispatch concept. This allows you to implement an algorithm once, but support mutiple concrete types in one go.
+This basic `VolumeRAM` representation exposes a `void*` pointer to the raw data (`VolumeRAM::getData()`). To get the underlying concrete type (`int`, `float`, `vec3`) we use a dispatch concept. This allows you to implement an algorithm once, but support mutiple concrete types in one go. 
 
 The `dispatch<>()` method takes a lambda as parameter, inside which you get access to the correctly typed data through the lambda's parameter. You can only access your data directly inside `dispatch<>()` lambda. Furthermore, `dispatch<ReturnType>()` has a type parameter as well, which is the return type of the lambda. See the following example:
 ```
@@ -262,7 +262,7 @@ volume_ram_repr->dispatch<  std::shared_ptr<Volume>  >([] (auto ram) {
     // ValueType is the concrete type of the volume, e.g. int, float
     using ValueType = util::PrecisionValueType<decltype(ram)>;
     const size3_t dims = ram->getDimensions();
-
+    // Create a representation of same type as the input volume
     dstRam = std::make_shared<VolumeRAMPrecision< typename ValueType> >(dims);
     const ValueType* srcVol = ram->getDataTyped(); // This is always const for data coming from inports!
     ValueType* dstData = dstRam->getDataTyped();
@@ -282,7 +282,7 @@ This piece of code takes the volume from the inport (more specifically its `Volu
 An easy example can be found in `src/core/algorithm/boundingbox.cpp` in `mat4 boundingBox(const Mesh)`, where the meshes vertex buffer is accessed through `dispatch()` to compute an axis aligned bounding box.
 
 #### Accessing OpenGL textures
-If you have a volume and need to access it directly through the OpenGL api, this is how you can get the texture ID from a `Volume`:
+If you have a volume and need to access it directly through the OpenGL API, this is how you can get the texture ID from a `Volume`:
 
 ```
 auto volume = volumeInport.getData();
