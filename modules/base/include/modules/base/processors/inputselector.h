@@ -115,9 +115,8 @@ InputSelector<Inport, Outport>::InputSelector()
     inport_.onDisconnect([updateOptions]() { updateOptions(); });
 
     inport_.setIsReadyUpdater([this]() {
-        return selectedPort_.size() > 0 &&
-                   inport_.getConnectedOutports().size() > *selectedPort_ &&
-                   inport_.getConnectedOutports()[*selectedPort_]->isReady();
+        return selectedPort_.size() > 0 && inport_.getConnectedOutports().size() > *selectedPort_ &&
+               inport_.getConnectedOutports()[*selectedPort_]->isReady();
     });
 
     addProperty(selectedPort_);

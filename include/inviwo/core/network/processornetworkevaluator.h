@@ -63,7 +63,7 @@ private:
 
     // ProcessorObserver overrides
     virtual void onProcessorSinkChanged(Processor*) override;
-    virtual void onProcessorActiveConnectionsChanged(Processor* ) override;
+    virtual void onProcessorActiveConnectionsChanged(Processor*) override;
 
     void requestEvaluate();
     void evaluate();

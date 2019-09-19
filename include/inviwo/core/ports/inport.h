@@ -160,7 +160,6 @@ protected:
      */
     virtual void setValid(const Outport* source);
 
-
     // Usually called with false (reset) by Processor::setValid after the Processor::process
     virtual void setChanged(bool changed = true, const Outport* source = nullptr);
 

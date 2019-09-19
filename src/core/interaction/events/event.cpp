@@ -37,7 +37,6 @@ bool Event::shouldPropagateTo(Inport* /*inport*/, Processor* /*processor*/, Outp
     return true;
 }
 
-
 bool Event::markAsVisited(Processor* p) { return util::push_back_unique(visitedProcessors_, p); }
 
 void Event::markAsVisited(Event& e) {
