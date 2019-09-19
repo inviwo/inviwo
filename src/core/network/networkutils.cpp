@@ -98,6 +98,25 @@ std::vector<Processor*> topologicalSort(ProcessorNetwork* network) {
     return sorted;
 }
 
+std::vector<Processor*> topologicalSortFiltered(ProcessorNetwork* network) {
+    // perform topological sorting and store processor order in sorted
+
+    std::vector<Processor*> sinkProcessors;
+    util::copy_if(network->getProcessors(), std::back_inserter(sinkProcessors),
+                  [](Processor* p) { return p->isSink(); });
+
+    std::unordered_set<Processor*> state;
+    std::vector<Processor*> sorted;
+    for (auto processor : sinkProcessors) {
+        traverseNetwork<TraversalDirection::Up, VisitPattern::Post>(
+            state, processor, [&sorted](Processor* p) { sorted.push_back(p); },
+            [](Processor* p, Inport* from, Outport* to) {
+                return p->isConnectionActive(from, to);
+            });
+    }
+    return sorted;
+}
+
 std::vector<ivec2> getPositions(const std::vector<Processor*>& processors) {
     return util::transform(processors, [](Processor* p) { return getPosition(p); });
 }

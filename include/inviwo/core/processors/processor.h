@@ -368,6 +368,8 @@ public:
     Inport* removePort(Inport* port);
     Outport* removePort(Outport* port);
 
+    virtual bool isConnectionActive(Inport*, Outport*) const { return true; }
+
 protected:
     std::unique_ptr<ProcessorWidget> processorWidget_;
     StateCoordinator<bool> isReady_;

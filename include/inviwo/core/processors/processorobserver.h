@@ -89,6 +89,8 @@ public:
      * The processor argument is the modified processor
      */
     virtual void onProcessorReadyChanged(Processor*){};
+
+    virtual void onProcessorActiveConnectionsChanged(Processor*){};
 };
 
 /** \class ProcessorObservable
@@ -145,6 +147,9 @@ protected:
     }
     void notifyObserversReadyChange(Processor* p) {
         forEachObserver([&](ProcessorObserver* o) { o->onProcessorReadyChanged(p); });
+    }
+    void notifyObserversActiveConnectionsChange(Processor* p) {
+        forEachObserver([&](ProcessorObserver* o) { o->onProcessorActiveConnectionsChanged(p); });
     }
 };
 
