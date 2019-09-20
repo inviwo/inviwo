@@ -247,7 +247,7 @@ void PCPAxisSettings::setParallelCoordinates(ParallelCoordinates* pcp) {
     minor_.setSettings(this);
 
     auto updateLabels = [this]() {
-        const auto tickmarks = plot::getMajorTickPositions(major_, range);
+        const auto tickmarks = plot::getMajorTickPositions(major_, range.getRange());
         labels_.clear();
         const auto& format = pcp_->labelFormat_.get();
         std::transform(tickmarks.begin(), tickmarks.end(), std::back_inserter(labels_),
