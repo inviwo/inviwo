@@ -138,6 +138,13 @@ public:
     void removeOnConnect(const BaseCallBack* callback);
     void removeOnDisconnect(const BaseCallBack* callback);
 
+    /**
+     * Called by the connected outports to let the inport know that their ready status has
+     * changed.
+     */
+    void readyUpdate();
+    void setIsReadyUpdater(std::function<bool()> updater);
+
 protected:
     Inport(std::string identifier = "");
 
@@ -152,12 +159,6 @@ protected:
      * Processor:process. From above in the network.
      */
     virtual void setValid(const Outport* source);
-
-    /**
-     * Called by the connected outports to let the inport know that their ready status has
-     * changed.
-     */
-    void readyUpdate();
 
     // Usually called with false (reset) by Processor::setValid after the Processor::process
     virtual void setChanged(bool changed = true, const Outport* source = nullptr);
