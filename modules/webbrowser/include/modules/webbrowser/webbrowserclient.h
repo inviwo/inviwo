@@ -33,6 +33,7 @@
 #include <modules/webbrowser/webbrowsermoduledefine.h>
 #include <modules/webbrowser/renderhandlergl.h>
 #include <modules/webbrowser/properties/propertycefsynchronizer.h>
+#include <modules/webbrowser/processors/processorcefsynchronizer.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/stdextensions.h>
@@ -157,6 +158,8 @@ protected:
     CefRefPtr<CefRenderHandler> renderHandler_;
     // Handles the browser side of query routing.
     CefRefPtr<CefMessageRouterBrowserSide> messageRouter_;
+
+    CefRefPtr<ProcessorCefSynchronizer> processorCefSynchronizer_;
 
     std::vector<CefLoadHandler*> loadHandlers_;
     // Manages the registration and delivery of resources (redirections to
