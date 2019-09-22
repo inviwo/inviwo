@@ -42,20 +42,20 @@ float ProgressBar::getProgress() const { return progress_; }
 void ProgressBar::resetProgress() {
     setActive(false);
     progress_ = 0.0f;
-    notifyProgressChanged();
+    notifyProgressChanged(progress_);
 }
 
 void ProgressBar::finishProgress() {
     setActive(false);
     progress_ = 1.0f;
-    notifyProgressChanged();
+    notifyProgressChanged(progress_);
 }
 
 void ProgressBar::updateProgress(float progress) {
     setActive(progress > 0.0f && progress < 1.0f);
     if (visible_) {
         progress_ = progress;
-        notifyProgressChanged();
+        notifyProgressChanged(progress_);
     }
 }
 
@@ -68,20 +68,20 @@ void ProgressBar::updateProgressLoop(size_t loopVar, size_t maxLoopVar, float en
 
         if (loopVar == maxLoopVar) beginLoopProgress_ = -1.0f;
 
-        notifyProgressChanged();
+        notifyProgressChanged(progress_);
     }
 }
 
 void ProgressBar::show() {
     visible_ = true;
     setActive(true);
-    notifyVisibilityChanged();
+    notifyVisibilityChanged(visible_);
 }
 
 void ProgressBar::hide() {
     visible_ = false;
     setActive(false);
-    notifyVisibilityChanged();
+    notifyVisibilityChanged(visible_);
 }
 
 bool ProgressBar::isVisible() const { return visible_; }
@@ -90,15 +90,15 @@ void ProgressBar::serialize(Serializer& s) const { s.serialize("visible", visibl
 
 void ProgressBar::deserialize(Deserializer& d) {
     d.deserialize("visible", visible_);
-    notifyVisibilityChanged();
+    notifyVisibilityChanged(visible_);
 }
 
-void ProgressBarObservable::notifyProgressChanged() {
-    forEachObserver([](ProgressBarObserver* o) { o->progressChanged(); });
+void ProgressBarObservable::notifyProgressChanged(float progress) {
+    forEachObserver([progress](ProgressBarObserver* o) { o->progressChanged(progress); });
 }
 
-void ProgressBarObservable::notifyVisibilityChanged() {
-    forEachObserver([](ProgressBarObserver* o) { o->progressBarVisibilityChanged(); });
+void ProgressBarObservable::notifyVisibilityChanged(bool visible) {
+    forEachObserver([visible](ProgressBarObserver* o) { o->progressBarVisibilityChanged(visible); });
 }
 
 }  // namespace inviwo

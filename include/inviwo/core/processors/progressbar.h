@@ -49,14 +49,16 @@ public:
     /**
      * This method will be called when observed object changes.
      * Override it to add behavior.
+     * @param New progress 
      */
-    virtual void progressChanged(){};
+    virtual void progressChanged(float){};
 
     /**
      * This method will be called when observed object changes.
      * Override it to add behavior.
+     * @param visibility state that ProgressBar changed into
      */
-    virtual void progressBarVisibilityChanged(){};
+    virtual void progressBarVisibilityChanged(bool){};
 };
 
 /** \class ProgressBarObservable
@@ -66,8 +68,8 @@ public:
  */
 class IVW_CORE_API ProgressBarObservable : public Observable<ProgressBarObserver> {
 protected:
-    void notifyProgressChanged();
-    void notifyVisibilityChanged();
+    void notifyProgressChanged(float progress);
+    void notifyVisibilityChanged(bool visible);
 };
 
 /** \class ProgressBar
