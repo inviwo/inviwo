@@ -668,12 +668,27 @@ void ParallelCoordinates::linePicked(PickingEvent* p) {
 }
 
 void ParallelCoordinates::axisPicked(PickingEvent* p, size_t pickedID, PickType pt) {
+    auto showValuesAsToolTip = [&](size_t pickedID, PickType pt) {
+        if (axes_[pickedID].pcp->catCol_) return;
+
+        if (pt == PickType::Upper) {
+            std::ostringstream oss;
+            oss << axes_[pickedID].pcp->range.getEnd();
+            p->setToolTip(oss.str());
+        } else if (pt == PickType::Lower) {
+            std::ostringstream oss;
+            oss << axes_[pickedID].pcp->range.getStart();
+            p->setToolTip(oss.str());
+        }
+    };
 
     if (p->getHoverState() == PickingHoverState::Enter) {
         hoveredAxis_ = static_cast<int>(pickedID);
+        showValuesAsToolTip(pickedID, pt);
         invalidate(InvalidationLevel::InvalidOutput);
     } else if (p->getHoverState() == PickingHoverState::Exit) {
         hoveredAxis_ = -1;
+        p->setToolTip("");
         invalidate(InvalidationLevel::InvalidOutput);
     }
 
