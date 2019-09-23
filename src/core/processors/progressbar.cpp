@@ -98,7 +98,8 @@ void ProgressBarObservable::notifyProgressChanged(float progress) {
 }
 
 void ProgressBarObservable::notifyVisibilityChanged(bool visible) {
-    forEachObserver([visible](ProgressBarObserver* o) { o->progressBarVisibilityChanged(visible); });
+    forEachObserver(
+        [visible](ProgressBarObserver* o) { o->progressBarVisibilityChanged(visible); });
 }
 
 }  // namespace inviwo

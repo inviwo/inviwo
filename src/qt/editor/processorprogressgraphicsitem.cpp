@@ -81,13 +81,13 @@ void ProcessorProgressGraphicsItem::paint(QPainter* p, const QStyleOptionGraphic
     p->restore();
 }
 
-void ProcessorProgressGraphicsItem::progressChanged() {
+void ProcessorProgressGraphicsItem::progressChanged(float) {
     // mark item as dirty to force an redraw
     this->update();
 }
 
-void ProcessorProgressGraphicsItem::progressBarVisibilityChanged() {
-    setVisible(progressBar_->isVisible());
+void ProcessorProgressGraphicsItem::progressBarVisibilityChanged(bool visible) {
+    setVisible(visible);
     // mark item as dirty to force an redraw
     this->update();
 }

@@ -54,8 +54,16 @@ protected:
     void paint(QPainter* p, const QStyleOptionGraphicsItem* options, QWidget* widget);
 
     // ProgressBarObserver methods
-    virtual void progressChanged();
-    virtual void progressBarVisibilityChanged();
+    /**
+     * This method will be called when observed object changes.
+     * @param New progress between [0 1]
+     */
+    virtual void progressChanged(float) override;
+    /**
+     * This method will be called when observed object changes.
+     * @param visibility state that ProgressBar changed into
+     */
+    virtual void progressBarVisibilityChanged(bool) override;
 
 private:
     QSize size_;

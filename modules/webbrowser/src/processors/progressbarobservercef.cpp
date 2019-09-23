@@ -36,7 +36,7 @@ namespace inviwo {
 ProgressBarObserverCEF::ProgressBarObserverCEF(CefRefPtr<CefFrame> frame,
                                                std::string onProgressChange,
                                                std::string onVisibleChange)
-    : onProgressChange_(onProgressChange), onVisibleChange_(onVisibleChange), frame_(frame) {}
+    : onProgressChange_(onProgressChange), onProgressVisibleChange_(onVisibleChange), frame_(frame) {}
 
 void ProgressBarObserverCEF::progressChanged(float progress) {
     // Frame might be null if for example webpage is not found on startup
@@ -50,11 +50,11 @@ void ProgressBarObserverCEF::progressChanged(float progress) {
 
 void ProgressBarObserverCEF::progressBarVisibilityChanged(bool visible) {
     // Frame might be null if for example webpage is not found on startup
-    if (!frame_ || getOnVisibleChange().empty()) {
+    if (!frame_ || getOnProgressVisibleChange().empty()) {
         return;
     }
     std::stringstream script;
-    script << getOnVisibleChange() << "(" << (visible ? "true" : "false") << ");";
+    script << getOnProgressVisibleChange() << "(" << (visible ? "true" : "false") << ");";
     frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);
 }
 

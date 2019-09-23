@@ -48,20 +48,26 @@ public:
     virtual ~ProgressBarObserverCEF(){};
 
     /**
-     * This method will be called when observed object changes.
+     * Execute currently set onProgressChange javascript function
+     * @param New progress between [0 1]
      */
     virtual void progressChanged(float progress) override;
 
     /**
-     * This method will be called when observed object changes.
+     * Execute currently set OnProgressVisibleChange javascript function
+     * @param visibility state that ProgressBar changed into
      */
     virtual void progressBarVisibilityChanged(bool visible) override;
-
+    /*
+     * Name of javascript function to call when progress changes
+     */
     void setOnProgressChange(std::string onChange) { onProgressChange_ = onChange; }
     const std::string& getOnProgressChange() const { return onProgressChange_; }
-
-    void setOnVisibleChange(std::string onChange) { onVisibleChange_ = onChange; }
-    const std::string& getOnVisibleChange() const { return onVisibleChange_; }
+    /*
+     * Name of javascript function to call when progress bar visibility changes
+     */
+    void setOnProgressVisibleChange(std::string onChange) { onProgressVisibleChange_ = onChange; }
+    const std::string& getOnProgressVisibleChange() const { return onProgressVisibleChange_; }
 
     /*
      * Set frame containing html item.
@@ -69,9 +75,9 @@ public:
     void setFrame(CefRefPtr<CefFrame> frame);
 
 private:
-    std::string onProgressChange_;  /// Callback to execute in javascript when progress changes
-    std::string onVisibleChange_;   /// Callback to execute in javascript when vibility changes
-    CefRefPtr<CefFrame> frame_;     /// Browser frame containing corresponding callbacks
+    std::string onProgressChange_;         /// Javascript callback to execute when progress changes
+    std::string onProgressVisibleChange_;  /// Javascript callback to execute when vibility changes
+    CefRefPtr<CefFrame> frame_;            /// Browser frame containing corresponding callbacks
 };
 
 }  // namespace inviwo
