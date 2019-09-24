@@ -280,6 +280,14 @@ void ParallelCoordinates::adjustMargins() {
 ParallelCoordinates::~ParallelCoordinates() = default;
 
 void ParallelCoordinates::process() {
+    if (axes_.empty()) {
+        // Nothing render, just draw the background
+        const vec4 backgroundColor(blendMode_.get() == BlendMode::Sutractive ? 1.0f : 0.0f);
+        utilgl::ClearColor clearColor(backgroundColor);
+        utilgl::activateAndClearTarget(outport_, ImageType::ColorPicking);
+        utilgl::deactivateCurrentTarget();
+        return;
+    }
     const auto dims = outport_.getDimensions();
 
     enabledAxesModified_ |= [&]() {

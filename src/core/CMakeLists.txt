@@ -7,6 +7,7 @@ project(inviwo-core)
 set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/boundingbox.h
     ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/camerautils.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/cubeplaneintersection.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/defaulttohighperformancegpu.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwo.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwoapplication.h
@@ -265,8 +266,8 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/capabilities.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/clock.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/cloneableptr.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/util/colorbrewer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/colorbrewer-generated.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/colorbrewer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/colorconversion.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/commandlineparser.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/consolelogger.h
@@ -354,6 +355,7 @@ ivw_group("Header Files" BASE "${IVW_INCLUDE_DIR}/inviwo/core" ${HEADER_FILES})
 set(SOURCE_FILES
     algorithm/boundingbox.cpp
     algorithm/camerautils.cpp
+    algorithm/cubeplaneintersection.cpp
     common/inviwoapplication.cpp
     common/inviwocore.cpp
     common/inviwomodule.cpp
@@ -556,8 +558,8 @@ set(SOURCE_FILES
     util/canvas.cpp
     util/capabilities.cpp
     util/clock.cpp
-    util/colorbrewer.cpp
     util/colorbrewer-generated.cpp
+    util/colorbrewer.cpp
     util/colorconversion.cpp
     util/commandlineparser.cpp
     util/consolelogger.cpp

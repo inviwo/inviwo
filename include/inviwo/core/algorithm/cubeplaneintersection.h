@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,39 +26,34 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <modules/qtwidgets/tf/tfcoloredit.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
+#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/common/inviwo.h>
 
-#include <inviwo/core/util/colorconversion.h>
-
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QSizePolicy>
-#include <warn/pop>
+#include <inviwo/core/datastructures/geometry/plane.h>
 
 namespace inviwo {
 
-TFColorEdit::TFColorEdit(QWidget* parent) : ColorLineEdit(parent) {
-    setRepresentation(ColorRepresentation::Hexadecimal);
+namespace util {
 
-    connect(this, &ColorLineEdit::colorChanged, this, [this]() {
-        // QColor(QString) should only be used for 6-digit hex codes, since
-        // 8-digit hex codes in Qt are in the form of #AARRGGBB while Inviwo uses #RRGGBBAA
-        emit colorChanged(utilqt::toQColor(getColor<vec3>()));
-    });
+/**
+ * Intersects a unit cube with the given plane. The intersection points and the midpoint will be
+ * added to 'pos' and a list of triangle indicies referring to the pos array will be appended
+ * to 'inds'
+ */
+IVW_CORE_API void cubePlaneIntersectionAppend(const Plane& plane, std::vector<vec3>& pos,
+                                              std::vector<std::uint32_t>& inds);
 
-    setSizePolicy(QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred));
+inline auto cubePlaneInstersection(const Plane& plane) {
+    std::vector<vec3> pos;
+    std::vector<std::uint32_t> inds;
+
+    cubePlaneIntersectionAppend(plane, pos, inds);
+
+    return std::make_tuple(pos, inds);
 }
 
-QSize TFColorEdit::sizeHint() const { return QSize(18, 18); }
-
-void TFColorEdit::setColor(const QColor& color, bool ambiguous) {
-    if (ambiguous) {
-        setInvalid(true);
-    } else {
-        ColorLineEdit::setColor(utilqt::tovec3(color), ColorRepresentation::Hexadecimal);
-    }
-}
+}  // namespace util
 
 }  // namespace inviwo

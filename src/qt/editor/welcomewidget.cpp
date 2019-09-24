@@ -285,8 +285,8 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow* window, QWidget* parent)
     gridLayout->addWidget(details_, 1, 1, 2, 1);
 
     // tool buttons
-    auto horizontalLayout_2 = new QHBoxLayout();
-    horizontalLayout_2->setSpacing(6);
+    auto buttonLayout = new QHBoxLayout();
+    buttonLayout->setSpacing(6);
 
     auto createButton = [leftWidget, this](const QString& str, auto iconpath) {
         auto button = new QToolButton(leftWidget);
@@ -298,36 +298,45 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow* window, QWidget* parent)
     };
 
     loadWorkspaceBtn_ = createButton("Load", ":/svgicons/open.svg");
+    loadWorkspaceBtn_->setToolTip("Open selected workspace");
     loadWorkspaceBtn_->setObjectName("LoadWorkspaceToolButton");
-
-    horizontalLayout_2->addWidget(loadWorkspaceBtn_);
+    buttonLayout->addWidget(loadWorkspaceBtn_);
 
     auto horizontalSpacer = new QSpacerItem(utilqt::emToPx(this, 2.0), utilqt::emToPx(this, 2.0),
                                             QSizePolicy::Expanding, QSizePolicy::Minimum);
+    buttonLayout->addItem(horizontalSpacer);
 
-    horizontalLayout_2->addItem(horizontalSpacer);
-
-    auto toolButton = createButton("New", ":/svgicons/newfile.svg");
-    toolButton->setObjectName("NewWorkspaceToolButton");
-    QObject::connect(toolButton, &QToolButton::clicked, this, [window]() {
+    auto newButton = createButton("New", ":/svgicons/newfile.svg");
+    newButton->setObjectName("NewWorkspaceToolButton");
+    newButton->setToolTip("Create an empty workspace");
+    QObject::connect(newButton, &QToolButton::clicked, this, [window]() {
         if (window->newWorkspace()) {
             window->hideWelcomeScreen();
         }
     });
+    buttonLayout->addWidget(newButton);
 
-    horizontalLayout_2->addWidget(toolButton);
-
-    auto toolButton_2 = createButton("Open", ":/svgicons/open.svg");
-    toolButton_2->setObjectName("OpenWorkspaceToolButton");
-    QObject::connect(toolButton_2, &QToolButton::clicked, this, [window]() {
+    auto openFileButton = createButton("Open...", ":/svgicons/open.svg");
+    openFileButton->setObjectName("OpenWorkspaceToolButton");
+    openFileButton->setToolTip("Open workspace from disk");
+    QObject::connect(openFileButton, &QToolButton::clicked, this, [window]() {
         if (window->openWorkspace()) {
             window->hideWelcomeScreen();
         }
     });
+    buttonLayout->addWidget(openFileButton);
 
-    horizontalLayout_2->addWidget(toolButton_2);
+    auto restoreButton = createButton("Restore", ":/svgicons/revert.svg");
+    restoreButton->setObjectName("OpenWorkspaceToolButton");
+    restoreButton->setEnabled(window->hasRestoreWorkspace());
+    restoreButton->setToolTip("Restore last automatically saved workspace if available");
+    QObject::connect(restoreButton, &QToolButton::clicked, this, [window]() {
+        window->restoreWorkspace();
+        window->hideWelcomeScreen();
+    });
+    buttonLayout->addWidget(restoreButton);
 
-    gridLayout->addLayout(horizontalLayout_2, 3, 1, 1, 1);
+    gridLayout->addLayout(buttonLayout, 3, 1, 1, 1);
 
     // add some space between center and right column
     auto horizontalSpacer_2 = new QSpacerItem(utilqt::emToPx(this, 2.0), utilqt::emToPx(this, 2.0),
@@ -396,9 +405,10 @@ WelcomeWidget::WelcomeWidget(InviwoMainWindow* window, QWidget* parent)
 
     setTabOrder(filterLineEdit_, filetree_);
     setTabOrder(filetree_, loadWorkspaceBtn_);
-    setTabOrder(loadWorkspaceBtn_, toolButton);
-    setTabOrder(toolButton, toolButton_2);
-    setTabOrder(toolButton_2, details_);
+    setTabOrder(loadWorkspaceBtn_, newButton);
+    setTabOrder(newButton, openFileButton);
+    setTabOrder(openFileButton, restoreButton);
+    setTabOrder(restoreButton, details_);
     setTabOrder(details_, changelog_);
     setTabOrder(changelog_, autoloadWorkspace);
     setTabOrder(autoloadWorkspace, showOnStartup);
@@ -422,8 +432,12 @@ void WelcomeWidget::showEvent(QShowEvent* event) {
 
         filetree_->expandItems();
 
-        filetree_->selectionModel()->setCurrentIndex(
-            index, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+        if (index.isValid()) {
+            filetree_->selectionModel()->setCurrentIndex(
+                index, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+        } else {
+            filetree_->selectRecentWorkspace(0);
+        }
     }
     QWidget::showEvent(event);
 }

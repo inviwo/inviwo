@@ -37,13 +37,7 @@ bool Event::shouldPropagateTo(Inport* /*inport*/, Processor* /*processor*/, Outp
     return true;
 }
 
-void Event::markAsUsed() { used_ = true; }
-
-bool Event::hasBeenUsed() const { return used_; }
-
-void Event::markAsUnused() { used_ = false; }
-
-void Event::markAsVisited(Processor* p) { util::push_back_unique(visitedProcessors_, p); }
+bool Event::markAsVisited(Processor* p) { return util::push_back_unique(visitedProcessors_, p); }
 
 void Event::markAsVisited(Event& e) {
     visitedProcessors_.reserve(visitedProcessors_.size() + e.visitedProcessors_.size());

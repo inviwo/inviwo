@@ -153,6 +153,9 @@ public:
      */
     QStringList getRecentWorkspaceList() const;
 
+    bool hasRestoreWorkspace() const;
+    void restoreWorkspace();
+
 protected:
     virtual void dragEnterEvent(QDragEnterEvent* event) override;
     virtual void dragMoveEvent(QDragMoveEvent* event) override;

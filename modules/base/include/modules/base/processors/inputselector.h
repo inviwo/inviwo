@@ -61,7 +61,7 @@ namespace inviwo {
  * \class InputSelector
  * \brief processor for selecting one of n connected inputs
  */
-template <typename Inport, typename Outport>
+template <typename InportType, typename OutportType>
 class InputSelector : public Processor {
 public:
     InputSelector();
@@ -71,16 +71,15 @@ public:
 
     virtual void process() override;
 
+    virtual bool isConnectionActive(Inport* from, Outport* to) const override;
+
 private:
     void portSettings();
 
-    Inport inport_;
-    Outport outport_;
+    InportType inport_;
+    OutportType outport_;
 
-    OptionPropertyInt selectedPort_;
-
-    void updateOptions();
-    bool updatedNedded_ = true;
+    OptionPropertySize_t selectedPort_;
 };
 
 template <typename Inport, typename Outport>
@@ -99,37 +98,48 @@ InputSelector<Inport, Outport>::InputSelector()
     addPort(inport_);
     addPort(outport_);
 
-    inport_.onConnect([&]() { updatedNedded_ = true; });
+    auto updateOptions = [this]() {
+        if (getNetwork()->isDeserializing()) return;
+        std::vector<OptionPropertySize_tOption> options;
 
-    inport_.onChange([&]() {
-        if (selectedPort_.size() != inport_.getConnectedOutports().size()) updatedNedded_ = true;
+        for (auto port : inport_.getConnectedOutports()) {
+            const auto id = port->getProcessor()->getIdentifier();
+            const auto dispName = port->getProcessor()->getDisplayName();
+            options.emplace_back(id, dispName, options.size());
+        }
+        selectedPort_.replaceOptions(options);
+        selectedPort_.setCurrentStateAsDefault();
+    };
+
+    inport_.onConnect([updateOptions]() { updateOptions(); });
+    inport_.onDisconnect([updateOptions]() { updateOptions(); });
+
+    inport_.setIsReadyUpdater([this]() {
+        return selectedPort_.size() > 0 && inport_.getConnectedOutports().size() > *selectedPort_ &&
+               inport_.getConnectedOutports()[*selectedPort_]->isReady();
     });
 
     addProperty(selectedPort_);
 
     selectedPort_.setSerializationMode(PropertySerializationMode::All);
-
     setAllPropertiesCurrentStateAsDefault();
-}
 
-template <typename Inport, typename Outport>
-void InputSelector<Inport, Outport>::updateOptions() {
-    std::vector<OptionPropertyIntOption> options;
-
-    for (auto port : inport_.getConnectedOutports()) {
-        auto id = port->getProcessor()->getIdentifier();
-        auto dispName = port->getProcessor()->getDisplayName();
-        options.emplace_back(id, dispName, static_cast<int>(options.size()));
-    }
-    selectedPort_.replaceOptions(options);
-    selectedPort_.setCurrentStateAsDefault();
-    updatedNedded_ = false;
+    selectedPort_.onChange([this]() {
+        inport_.readyUpdate();
+        this->notifyObserversActiveConnectionsChange(this);
+    });
 }
 
 template <typename Inport, typename Outport>
 void InputSelector<Inport, Outport>::process() {
-    if (updatedNedded_) updateOptions();
     outport_.setData(inport_.getVectorData().at(selectedPort_.get()));
+}
+
+template <typename InportType, typename OutportType>
+bool InputSelector<InportType, OutportType>::isConnectionActive(Inport* from, Outport* to) const {
+    IVW_ASSERT(from == &inport_, "only one inport");
+    return from->getConnectedOutports().size() > *selectedPort_ &&
+           from->getConnectedOutports()[*selectedPort_] == to;
 }
 
 template <>

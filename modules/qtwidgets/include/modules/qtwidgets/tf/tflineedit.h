@@ -32,10 +32,10 @@
 
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <modules/qtwidgets/properties/doublevaluedragspinbox.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QLineEdit>
 #include <QDoubleValidator>
 #include <warn/pop>
 
@@ -45,7 +45,7 @@ namespace inviwo {
  * \class TFLineEdit
  * \brief widget for entering double values within certain bounds and optional range mapping
  */
-class IVW_MODULE_QTWIDGETS_API TFLineEdit : public QLineEdit {
+class IVW_MODULE_QTWIDGETS_API TFLineEdit : public QWidget {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT
@@ -60,8 +60,9 @@ public:
      * set the upper and lower bounds of values the line edit should accept
      *
      * @param range   lower and upper bound used for input validation of doubles
+     * @param inc      increment for the spinbox
      */
-    void setValidRange(const dvec2& range);
+    void setValidRange(const dvec2& range, double inc = 0.01);
     dvec2 getValidRange() const;
 
     /**
@@ -70,8 +71,9 @@ public:
      * @param enable   if true, values will be mapped to the given range while displayed
      *                 in the line edit
      * @param range    value range used for mapping if enabled
+     * @param inc      increment for the spinbox
      */
-    void setValueMapping(bool enable, const dvec2& range = dvec2(0.0, 1.0));
+    void setValueMapping(bool enable, const dvec2& range = dvec2(0.0, 1.0), double inc = 0.01);
 
     /**
      * set the value of the line edit, if the value is ambiguous nothing will be shown.
@@ -79,6 +81,8 @@ public:
      * prior display.
      */
     void setValue(double value, bool ambiguous);
+
+    double value() const;
 
 signals:
     /**
@@ -88,15 +92,13 @@ signals:
     void valueChanged(double value);
 
 private:
-    double getValueFromText() const;
-
     bool valueMappingEnabled_ = false;
     dvec2 valueRange_ = dvec2(0.0, 1.0);  //!< used for mapping relative TF positions to values
 
     double value_;
     bool ambiguous_;
 
-    std::unique_ptr<QDoubleValidator> validator_;
+    DoubleValueDragSpinBox spinbox_;
 };
 
 }  // namespace inviwo

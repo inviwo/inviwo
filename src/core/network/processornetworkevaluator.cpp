@@ -40,7 +40,7 @@ namespace inviwo {
 
 ProcessorNetworkEvaluator::ProcessorNetworkEvaluator(ProcessorNetwork* processorNetwork)
     : processorNetwork_(processorNetwork)
-    , processorsSorted_(util::topologicalSort(processorNetwork_))
+    , processorsSorted_(util::topologicalSortFiltered(processorNetwork_))
     , evaulationQueued_(false)
     , exceptionHandler_(StandardEvaluationErrorHandler()) {
 
@@ -158,25 +158,29 @@ void ProcessorNetworkEvaluator::evaluate() {
 }
 
 void ProcessorNetworkEvaluator::onProcessorSinkChanged(Processor*) {
-    processorsSorted_ = util::topologicalSort(processorNetwork_);
+    processorsSorted_ = util::topologicalSortFiltered(processorNetwork_);
+}
+
+void ProcessorNetworkEvaluator::onProcessorActiveConnectionsChanged(Processor*) {
+    processorsSorted_ = util::topologicalSortFiltered(processorNetwork_);
 }
 
 void ProcessorNetworkEvaluator::onProcessorNetworkDidAddProcessor(Processor* p) {
     p->ProcessorObservable::addObserver(this);
-    processorsSorted_ = util::topologicalSort(processorNetwork_);
+    processorsSorted_ = util::topologicalSortFiltered(processorNetwork_);
 }
 
 void ProcessorNetworkEvaluator::onProcessorNetworkDidRemoveProcessor(Processor* p) {
     p->ProcessorObservable::removeObserver(this);
-    processorsSorted_ = util::topologicalSort(processorNetwork_);
+    processorsSorted_ = util::topologicalSortFiltered(processorNetwork_);
 }
 
 void ProcessorNetworkEvaluator::onProcessorNetworkDidAddConnection(const PortConnection&) {
-    processorsSorted_ = util::topologicalSort(processorNetwork_);
+    processorsSorted_ = util::topologicalSortFiltered(processorNetwork_);
 }
 
 void ProcessorNetworkEvaluator::onProcessorNetworkDidRemoveConnection(const PortConnection&) {
-    processorsSorted_ = util::topologicalSort(processorNetwork_);
+    processorsSorted_ = util::topologicalSortFiltered(processorNetwork_);
 }
 
 }  // namespace inviwo

@@ -81,9 +81,12 @@ void Inport::propagateEvent(Event* event, Outport* target) {
     if (target) {
         target->propagateEvent(event, this);
     } else {
+        bool used = event->hasBeenUsed();
         for (auto outport : getConnectedOutports()) {
             outport->propagateEvent(event, this);
+            used |= event->markAsUnused();
         }
+        event->setUsed(used);
     }
 }
 
@@ -167,6 +170,10 @@ const BaseCallBack* Inport::onDisconnect(std::function<void()> lambda) {
 }
 void Inport::removeOnDisconnect(const BaseCallBack* callback) {
     onDisconnectCallback_.remove(callback);
+}
+
+void Inport::setIsReadyUpdater(std::function<bool()> updater) {
+    isReady_.setUpdate(std::move(updater));
 }
 
 }  // namespace inviwo

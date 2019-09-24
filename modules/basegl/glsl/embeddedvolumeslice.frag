@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,41 +24,40 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  *********************************************************************************/
 
-#include <modules/qtwidgets/tf/tfcoloredit.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
+#include "utils/structs.glsl"
+#include "utils/sampler3d.glsl"
+#include "utils/classification.glsl"
+#include "utils/pickingutils.glsl"
 
-#include <inviwo/core/util/colorconversion.h>
+uniform sampler3D volume;
+uniform VolumeParameters volumeParameters;
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QSizePolicy>
-#include <warn/pop>
+uniform vec3 pickColor = vec3(0.0, 0.0, 0.0);
 
-namespace inviwo {
+#ifdef BACKGROUND_AVAILABLE
+uniform ImageParameters backgroundParameters;
+uniform sampler2D backgroundColor;
+uniform sampler2D backgroundPicking;
+uniform sampler2D backgroundDepth;
+#endif
 
-TFColorEdit::TFColorEdit(QWidget* parent) : ColorLineEdit(parent) {
-    setRepresentation(ColorRepresentation::Hexadecimal);
+uniform sampler2D transferFunction;
 
-    connect(this, &ColorLineEdit::colorChanged, this, [this]() {
-        // QColor(QString) should only be used for 6-digit hex codes, since
-        // 8-digit hex codes in Qt are in the form of #AARRGGBB while Inviwo uses #RRGGBBAA
-        emit colorChanged(utilqt::toQColor(getColor<vec3>()));
-    });
+in vec3 texCoord;
 
-    setSizePolicy(QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred));
+void main() {
+    vec4 voxel = getNormalizedVoxel(volume, volumeParameters, texCoord);
+    voxel = applyTF(transferFunction, voxel);
+    PickingData = vec4(pickColor,1.0);
+
+#ifdef BACKGROUND_AVAILABLE
+    vec4 background = texture(backgroundColor, gl_FragCoord.xy * backgroundParameters.reciprocalDimensions);
+    voxel = mix(background, voxel, voxel.a);
+    voxel.a = max(background.a, voxel.a);
+#endif // BACKGROUND_AVAILABLE    
+
+    FragData0 = voxel;
 }
-
-QSize TFColorEdit::sizeHint() const { return QSize(18, 18); }
-
-void TFColorEdit::setColor(const QColor& color, bool ambiguous) {
-    if (ambiguous) {
-        setInvalid(true);
-    } else {
-        ColorLineEdit::setColor(utilqt::tovec3(color), ColorRepresentation::Hexadecimal);
-    }
-}
-
-}  // namespace inviwo
