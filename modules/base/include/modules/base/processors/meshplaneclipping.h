@@ -68,7 +68,7 @@ public:
 
 private:
     MeshInport inputMesh_;
-    FlatMultiDataInport<Plane> planes_; 
+    FlatMultiDataInport<Plane> planes_;
     MeshOutport outputMesh_;
 
     BoolProperty clippingEnabled_;
