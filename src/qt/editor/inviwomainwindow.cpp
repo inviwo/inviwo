@@ -40,6 +40,7 @@
 #include <inviwo/core/util/vectoroperations.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/network/workspacemanager.h>
 #include <inviwo/qt/editor/consolewidget.h>
 #include <inviwo/qt/editor/helpwidget.h>
@@ -1354,8 +1355,10 @@ void InviwoMainWindow::dropEvent(QDropEvent* event) {
     if (mimeData->hasUrls()) {
         // use dispatch front here to avoid blocking the drag&drop source, e.g. Windows Explorer,
         // while the drop operation is performed
-        app_->dispatchFrontAndForget([this, keyModifiers = event->keyboardModifiers(),
-                                      urlList = mimeData->urls()]() {
+        auto action = [this, keyModifiers = event->keyboardModifiers(),
+                       urlList = mimeData->urls()]() {
+            RenderContext::getPtr()->activateDefaultRenderContext();
+
             bool first = true;
             for (auto& file : urlList) {
                 auto filename = file.toLocalFile();
@@ -1374,7 +1377,9 @@ void InviwoMainWindow::dropEvent(QDropEvent* event) {
                 }
                 first = false;
             }
-        });
+            undoManager_.pushStateIfDirty();
+        };
+        app_->dispatchFrontAndForget(action);
 
         event->accept();
     } else {

@@ -66,6 +66,8 @@ public:
 
     CanvasProcessorGL(InviwoApplication* app);
     virtual ~CanvasProcessorGL() = default;
+
+    virtual void process() override;
 };
 
 }  // namespace inviwo
