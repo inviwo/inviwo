@@ -48,10 +48,10 @@ public:
 
     // override for qgraphicsitem_cast (refer qt documentation)
     enum { Type = UserType + ProcessorProgressGraphicsType };
-    int type() const { return Type; }
+    int type() const override { return Type; }
 
 protected:
-    void paint(QPainter* p, const QStyleOptionGraphicsItem* options, QWidget* widget);
+    void paint(QPainter* p, const QStyleOptionGraphicsItem* options, QWidget* widget) override;
 
     // ProgressBarObserver methods
     /**

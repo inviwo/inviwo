@@ -121,7 +121,7 @@ void WebBrowserClient::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
         messageRouter_->RemoveHandler(processorCefSynchronizer_.get());
         removeLoadHandler(processorCefSynchronizer_);
         processorCefSynchronizer_ = nullptr;
-        
+
         messageRouter_ = NULL;
     }
 

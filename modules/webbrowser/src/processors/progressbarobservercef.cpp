@@ -36,7 +36,9 @@ namespace inviwo {
 ProgressBarObserverCEF::ProgressBarObserverCEF(CefRefPtr<CefFrame> frame,
                                                std::string onProgressChange,
                                                std::string onVisibleChange)
-    : onProgressChange_(onProgressChange), onProgressVisibleChange_(onVisibleChange), frame_(frame) {}
+    : onProgressChange_(onProgressChange)
+    , onProgressVisibleChange_(onVisibleChange)
+    , frame_(frame) {}
 
 void ProgressBarObserverCEF::progressChanged(float progress) {
     // Frame might be null if for example webpage is not found on startup
