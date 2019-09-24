@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,49 +27,39 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROCESSORPROGRESSGRAPHICSITEM_H
-#define IVW_PROCESSORPROGRESSGRAPHICSITEM_H
+#include <modules/webbrowser/processors/progressbarobservercef.h>
 
-#include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <inviwo/qt/editor/editorgrapicsitem.h>
-#include <inviwo/core/processors/progressbar.h>
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QEvent>
-#include <warn/pop>
+#include <inviwo/core/processors/progressbarowner.h>
 
 namespace inviwo {
 
-class IVW_QTEDITOR_API ProcessorProgressGraphicsItem : public EditorGraphicsItem,
-                                                       public ProgressBarObserver {
-public:
-    ProcessorProgressGraphicsItem(QGraphicsRectItem* parent, ProgressBar* processor);
-    virtual ~ProcessorProgressGraphicsItem() {}
+ProgressBarObserverCEF::ProgressBarObserverCEF(CefRefPtr<CefFrame> frame,
+                                               std::string onProgressChange,
+                                               std::string onVisibleChange)
+    : onProgressChange_(onProgressChange)
+    , onProgressVisibleChange_(onVisibleChange)
+    , frame_(frame) {}
 
-    // override for qgraphicsitem_cast (refer qt documentation)
-    enum { Type = UserType + ProcessorProgressGraphicsType };
-    int type() const override { return Type; }
+void ProgressBarObserverCEF::progressChanged(float progress) {
+    // Frame might be null if for example webpage is not found on startup
+    if (!frame_ || getOnProgressChange().empty()) {
+        return;
+    }
+    std::stringstream script;
+    script << getOnProgressChange() << "(" << progress << ");";
+    frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);
+}
 
-protected:
-    void paint(QPainter* p, const QStyleOptionGraphicsItem* options, QWidget* widget) override;
+void ProgressBarObserverCEF::progressBarVisibilityChanged(bool visible) {
+    // Frame might be null if for example webpage is not found on startup
+    if (!frame_ || getOnProgressVisibleChange().empty()) {
+        return;
+    }
+    std::stringstream script;
+    script << getOnProgressVisibleChange() << "(" << (visible ? "true" : "false") << ");";
+    frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);
+}
 
-    // ProgressBarObserver methods
-    /**
-     * This method will be called when observed object changes.
-     * @param New progress between [0 1]
-     */
-    virtual void progressChanged(float) override;
-    /**
-     * This method will be called when observed object changes.
-     * @param visibility state that ProgressBar changed into
-     */
-    virtual void progressBarVisibilityChanged(bool) override;
-
-private:
-    QSize size_;
-    ProgressBar* progressBar_;
-};
+void ProgressBarObserverCEF::setFrame(CefRefPtr<CefFrame> frame) { frame_ = frame; }
 
 }  // namespace inviwo
-
-#endif  // IVW_PROCESSORPROGRESSGRAPHICSITEM_H

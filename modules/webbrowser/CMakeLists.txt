@@ -87,6 +87,8 @@ set(HEADER_FILES
     include/modules/webbrowser/cefimageconverter.h
     include/modules/webbrowser/interaction/cefinteractionhandler.h
     include/modules/webbrowser/interaction/cefkeyboardmapping.h
+    include/modules/webbrowser/processors/processorcefsynchronizer.h
+    include/modules/webbrowser/processors/progressbarobservercef.h
     include/modules/webbrowser/processors/webbrowserprocessor.h
     include/modules/webbrowser/properties/propertycefsynchronizer.h
     include/modules/webbrowser/properties/propertywidgetcef.h
@@ -106,6 +108,8 @@ set(SOURCE_FILES
     src/cefimageconverter.cpp
     src/interaction/cefinteractionhandler.cpp
     src/interaction/cefkeyboardmapping.cpp
+    src/processors/processorcefsynchronizer.cpp
+    src/processors/progressbarobservercef.cpp
     src/processors/webbrowserprocessor.cpp
     src/properties/propertycefsynchronizer.cpp
     src/properties/propertywidgetcef.cpp
