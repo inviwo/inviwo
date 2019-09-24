@@ -68,16 +68,17 @@ ImageLayoutGL::ImageLayoutGL()
                                    0.f, 1.f)
     , vertical3Right1LeftSplitter_("vertical3Right1LeftSplitter", "Split Position", 2.0f / 3.0f,
                                    0.f, 1.f)
-    , leftMinMax_("leftMinMax", "Left", 1, std::numeric_limits<int>::max(), 1,
+    , bounds_("bounds", "Min/Max dimensions (px)")
+    , leftMinMax_("leftMinMax", "Left", 0, std::numeric_limits<int>::max(), 0,
                   std::numeric_limits<int>::max(), 1, 0, InvalidationLevel::InvalidOutput,
                   PropertySemantics::Text)  // note, min 1 to avoid zero size
-    , rightMinMax_("rightMinMax", "Right", 1, std::numeric_limits<int>::max(), 1,
+    , rightMinMax_("rightMinMax", "Right", 0, std::numeric_limits<int>::max(), 0,
                    std::numeric_limits<int>::max(), 1, 0, InvalidationLevel::InvalidOutput,
                    PropertySemantics::Text)
-    , topMinMax_("topMinMax", "Top", 1, std::numeric_limits<int>::max(), 1,
-                 std::numeric_limits<int>::max(), 1, 0, InvalidationLevel::InvalidOutput,
+    , topMinMax_("topMinMax", "Top", 0, std::numeric_limits<int>::max(), 0,
+                 std::numeric_limits<int>::max(), 0, 0, InvalidationLevel::InvalidOutput,
                  PropertySemantics::Text)
-    , bottomMinMax_("bottomMinMax", "Bottom", 1, std::numeric_limits<int>::max(), 1,
+    , bottomMinMax_("bottomMinMax", "Bottom", 0, std::numeric_limits<int>::max(), 0,
                     std::numeric_limits<int>::max(), 1, 0, InvalidationLevel::InvalidOutput,
                     PropertySemantics::Text)
     , shader_("img_texturequad.vert", "img_copy.frag")
@@ -88,6 +89,15 @@ ImageLayoutGL::ImageLayoutGL()
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
     addPort(multiinport_);
+    multiinport_.setIsReadyUpdater([this]() {
+        // Only ports with non-zero dimensions are active
+        auto ready = true;
+        for (auto p : multiinport_.getConnectedOutports()) {
+            auto op = static_cast<ImageOutport*>(p);
+            ready |= glm::any(glm::equal(op->getDimensions(), size2_t(0))) ? true : p->isReady();
+        }
+        return ready;
+    });
 
     addPort(outport_);
 
@@ -125,7 +135,8 @@ ImageLayoutGL::ImageLayoutGL()
         ResizeEvent e(currentDim_);
         propagateEvent(&e, &outport_);
     });
-    addProperties(leftMinMax_, rightMinMax_, topMinMax_, bottomMinMax_);
+    bounds_.addProperties(leftMinMax_, rightMinMax_, topMinMax_, bottomMinMax_);
+    addProperties(bounds_);
 
     layout_.onChange([this]() { onStatusChange(); });
 
@@ -143,13 +154,30 @@ void ImageLayoutGL::propagateEvent(Event* event, Outport* source) {
 
     if (event->hash() == ResizeEvent::chash()) {
         auto resizeEvent = static_cast<ResizeEvent*>(event);
+        // Note, no auto since we want a copy of the views
+        std::vector<ViewManager::View> prevViews = viewManager_.getViews();
         updateViewports(resizeEvent->size(), true);
         auto& outports = multiinport_.getConnectedOutports();
         size_t minNum = std::min(outports.size(), viewManager_.size());
 
+        auto changedFromZeroDim = [](int prev, int current) {
+            return (prev <= 0 && current > 0) || (prev > 0 && current <= 0);
+        };
+
         for (size_t i = 0; i < minNum; ++i) {
             ResizeEvent e(uvec2(viewManager_[i].size));
             multiinport_.propagateEvent(&e, outports[i]);
+            // Only evaluate connections if they will be displayed
+            if (i < prevViews.size() &&
+                (changedFromZeroDim(prevViews[i].size.x, viewManager_[i].size.x) ||
+                 changedFromZeroDim(prevViews[i].size.y, viewManager_[i].size.y))) {
+                multiinport_.readyUpdate();
+                notifyObserversActiveConnectionsChange(this);
+            } else if (glm::any(glm::lessThanEqual(viewManager_[i].size, ivec2(0)))) {
+                // New view has zero size
+                multiinport_.readyUpdate();
+                notifyObserversActiveConnectionsChange(this);
+            }
         }
     } else {
         auto& data = multiinport_.getConnectedOutports();
@@ -166,56 +194,76 @@ void ImageLayoutGL::propagateEvent(Event* event, Outport* source) {
 }
 
 void ImageLayoutGL::onStatusChange(bool propagate) {
-    horizontalSplitter_.setVisible(false);
-    verticalSplitter_.setVisible(false);
-    vertical3Left1RightSplitter_.setVisible(false);
-    vertical3Right1LeftSplitter_.setVisible(false);
+    bool hVisible = false;        // horizontalSplitter_
+    bool vVisible = false;        // verticalSplitter_
+    bool v3LeftVisible = false;   // vertical3Left1RightSplitter_
+    bool v3RightVisible = false;  // vertical3Right1LeftSplitter_
 
-    leftMinMax_.setVisible(false);
-    rightMinMax_.setVisible(false);
-    topMinMax_.setVisible(false);
-    bottomMinMax_.setVisible(false);
+    bool boundsVisible = true;
+    bool lVisible = false;  // leftMinMax_
+    bool rVisible = false;  // rightMinMax_
+    bool tVisible = false;  // topMinMax_
+    bool bVisible = false;  // bottomMinMax_
 
     switch (layout_.getSelectedValue()) {
         case Layout::HorizontalSplit:
-            horizontalSplitter_.setVisible(true);
-            topMinMax_.setVisible(true);
-            bottomMinMax_.setVisible(true);
+            hVisible = true;
+            tVisible = true;
+            bVisible = true;
+
             break;
         case Layout::VerticalSplit:
-            verticalSplitter_.setVisible(true);
-            leftMinMax_.setVisible(true);
-            rightMinMax_.setVisible(true);
+            vVisible = true;
+            lVisible = true;
+            rVisible = true;
             break;
         case Layout::CrossSplit:
-            horizontalSplitter_.setVisible(true);
-            verticalSplitter_.setVisible(true);
-            leftMinMax_.setVisible(true);
-            rightMinMax_.setVisible(true);
-            topMinMax_.setVisible(true);
-            bottomMinMax_.setVisible(true);
+            hVisible = true;
+            vVisible = true;
+
+            lVisible = true;
+            rVisible = true;
+            tVisible = true;
+            bVisible = true;
             break;
         case Layout::ThreeLeftOneRight:
-            vertical3Left1RightSplitter_.setVisible(true);
-            leftMinMax_.setVisible(true);
-            rightMinMax_.setVisible(true);
+            v3LeftVisible = true;
+            lVisible = true;
+            rVisible = true;
             break;
         case Layout::ThreeRightOneLeft:
-            vertical3Right1LeftSplitter_.setVisible(true);
-            leftMinMax_.setVisible(true);
-            rightMinMax_.setVisible(true);
+            v3RightVisible = true;
+            lVisible = true;
+            rVisible = true;
             break;
         case Layout::HorizontalSplitMultiple:
         case Layout::VerticalSplitMultiple:
         case Layout::Single:
         default:
+            boundsVisible = false;
             break;
     }
+
+    horizontalSplitter_.setVisible(hVisible);
+    verticalSplitter_.setVisible(vVisible);
+    vertical3Left1RightSplitter_.setVisible(v3LeftVisible);
+    vertical3Right1LeftSplitter_.setVisible(v3RightVisible);
+
+    bounds_.setVisible(boundsVisible);
+    leftMinMax_.setVisible(lVisible);
+    rightMinMax_.setVisible(rVisible);
+    topMinMax_.setVisible(tVisible);
+    bottomMinMax_.setVisible(bVisible);
 
     if (propagate) {
         ResizeEvent e(currentDim_);
         propagateEvent(&e, &outport_);
     }
+}
+
+inline bool ImageLayoutGL::isConnectionActive(Inport*, Outport* from) const {
+    auto p = static_cast<ImageOutport*>(from);
+    return !glm::any(glm::equal(p->getDimensions(), size2_t(0)));
 }
 
 void ImageLayoutGL::process() {
@@ -232,6 +280,9 @@ void ImageLayoutGL::process() {
 
     size_t minNum = std::min(images.size(), viewManager_.size());
     for (size_t i = 0; i < minNum; ++i) {
+        if (glm::any(glm::lessThanEqual(viewManager_[i].size, ivec2(0)))) {
+            continue;
+        }
         utilgl::bindTextures(*images[i], colorUnit, depthUnit, pickingUnit);
         glViewport(viewManager_[i].pos.x, viewManager_[i].pos.y, viewManager_[i].size.x,
                    viewManager_[i].size.y);
@@ -259,22 +310,25 @@ void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
                                   rightMinMax_.getStart() / static_cast<float>(dim.x));
     auto bottomMinMax = 1.f - vec2(topMinMax_.getEnd() / static_cast<float>(dim.y),
                                    topMinMax_.getStart() / static_cast<float>(dim.y));
+    // Bounds cannot be smaller/larger than output size
+    auto leftBounds = glm::min(*leftMinMax_, dim);
+    auto bottomBounds = glm::min(*bottomMinMax_, dim);
 
     const int midx = glm::clamp(
         static_cast<int>(glm::clamp(*verticalSplitter_, rightMinMax.x, rightMinMax.y) * dim.x),
-        leftMinMax_.getStart(), leftMinMax_.getEnd());
+        leftBounds.x, leftBounds.y);
     const int midy = glm::clamp(
         static_cast<int>(glm::clamp(*horizontalSplitter_, bottomMinMax.x, bottomMinMax.y) * dim.y),
-        bottomMinMax_.getStart(), bottomMinMax_.getEnd());
+       bottomBounds.x, bottomBounds.y);
 
     const int leftWindow3L1RX = glm::clamp(
         static_cast<int>(glm::clamp(*vertical3Left1RightSplitter_, rightMinMax.x, rightMinMax.y) *
                          dim.x),
-        leftMinMax_.getStart(), leftMinMax_.getEnd());
+        leftBounds.x, leftBounds.y);
     const int leftWindow3R1LX = glm::clamp(
         static_cast<int>(glm::clamp(*vertical3Right1LeftSplitter_, rightMinMax.x, rightMinMax.y) *
                          dim.x),
-        leftMinMax_.getStart(), leftMinMax_.getEnd());
+        leftBounds.x, leftBounds.y);
 
     const int portCount = static_cast<int>(multiinport_.getConnectedOutports().size());
 
