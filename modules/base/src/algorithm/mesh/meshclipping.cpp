@@ -41,8 +41,8 @@ namespace detail {
 
 // Check point equality with threshold
 inline bool equal(vec3 v1, vec3 v2, float eps) {
-    return (std::fabs(v1.x - v2.x) < eps && std::fabs(v1.y - v2.y) < eps &&
-            std::fabs(v1.z - v2.z) < eps);
+    return (std::abs(v1.x - v2.x) < eps && std::abs(v1.y - v2.y) < eps &&
+            std::abs(v1.z - v2.z) < eps);
 }
 
 // Compute barycentric coordinates/weights for
@@ -128,21 +128,23 @@ inline vec3 barycentricTriangle(vec3 p, vec3 a, vec3 b, vec3 c) {
 }
 
 std::vector<Edge3D> findUniqueEdges(const std::vector<Edge3D>& edges, const float EPSILON) {
-    std::vector<Edge3D> uniqueEdges;
-    for (const auto& edge : edges) {
-        if (!equal(edge.v1, edge.v2, EPSILON)) {
-            bool found = false;
-            for (const auto& existingEdge : uniqueEdges) {
-                if (equal(edge.v1, existingEdge.v1, EPSILON) &&
-                    equal(edge.v2, existingEdge.v2, EPSILON)) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) uniqueEdges.push_back(edge);
-        }
-    }
-    return uniqueEdges;
+
+    std::vector<Edge3D> result;
+
+    for (const auto& e : edges)
+        if (!equal(e.v1, e.v2, EPSILON)) result.push_back(e);
+
+    std::sort(result.begin(), result.end(), [](Edge3D a, Edge3D b) {
+        return glm::distance(a.v1, a.v2) > glm::distance(b.v1, b.v2);
+    });
+
+    const auto newEnd = std::unique(result.begin(), result.end(), [EPSILON](Edge3D a, Edge3D b) {
+        return equal(a.v1, b.v1, EPSILON) && equal(a.v2, b.v2, EPSILON);
+    });
+
+    result.resize(std::distance(result.begin(), newEnd));
+
+    return result;
 }
 
 std::vector<Polygon<Edge3D>> findLoops(const std::vector<Edge3D>& edges, const float EPSILON) {
@@ -161,7 +163,7 @@ std::vector<Polygon<Edge3D>> findLoops(const std::vector<Edge3D>& edges, const f
         for (size_t i = 0; i < edges.size(); ++i) {
             if (equal(edges[i].v1, currentEdge.v2, EPSILON) && edges[i].v2 != currentEdge.v1) {
                 connectedEdges.push_back(Edge3D(currentEdge.v2, edges[i].v2));
-                std::vector<Edge3D>::iterator it =
+                const auto it =
                     std::find(unconnectEdges.begin(), unconnectEdges.end(), currentEdge);
 
                 if (it != unconnectEdges.end()) unconnectEdges.erase(it);
@@ -171,7 +173,7 @@ std::vector<Polygon<Edge3D>> findLoops(const std::vector<Edge3D>& edges, const f
             } else if (equal(edges[i].v2, currentEdge.v2, EPSILON) &&
                        edges[i].v1 != currentEdge.v1) {
                 connectedEdges.push_back(Edge3D(currentEdge.v2, edges[i].v1));
-                std::vector<Edge3D>::iterator it =
+                const auto it =
                     std::find(unconnectEdges.begin(), unconnectEdges.end(), currentEdge);
 
                 if (it != unconnectEdges.end()) unconnectEdges.erase(it);
@@ -184,7 +186,7 @@ std::vector<Polygon<Edge3D>> findLoops(const std::vector<Edge3D>& edges, const f
             if (equal(connectedEdges[0].v1, currentEdge.v2, EPSILON)) {
                 if (currentEdge.v1 != currentEdge.v2) {
                     connectedEdges.push_back(Edge3D(currentEdge.v2, connectedEdges[0].v1));
-                    std::vector<Edge3D>::iterator it =
+                    const auto it =
                         std::find(unconnectEdges.begin(), unconnectEdges.end(), currentEdge);
 
                     if (it != unconnectEdges.end()) unconnectEdges.erase(it);
@@ -250,6 +252,30 @@ std::vector<Polygon<Edge3D>> simplifyPolygons(const std::vector<Polygon<Edge3D>>
     }
 
     return notDegenerated;
+}
+
+std::vector<vec3> findUniquePoints(const Polygon<Edge3D> polygon, const float EPSILON) {
+    std::vector<vec3> points;
+    for (size_t i = 0; i < polygon.size(); ++i) {
+        Edge3D e = polygon.get(i);
+        bool found = false;
+        for (const auto& pt : points) {
+            if (equal(pt, e.v1, EPSILON)) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) points.push_back(e.v1);
+        found = false;
+        for (vec3& pt : points) {
+            if (equal(pt, e.v2, EPSILON)) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) points.push_back(e.v2);
+    }
+    return points;
 }
 
 }  // namespace detail
@@ -400,6 +426,7 @@ std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh& mesh, const Plane& worldS
                     intersectionCol.push_back(std::make_pair(intersection, interCol));
 
                     // We save the intersection as part of edge on the clipping plane
+                    // Note that a bad triangle order could cause edges to cross each other
                     if (intersectionAdded)
                         intersectionsEdges.back().v1 = intersection;
                     else {
@@ -524,6 +551,10 @@ std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh& mesh, const Plane& worldS
 
     const auto polygons = simplifyPolygons(loops, EPSILON);
 
+    if (polygons.empty()) {
+        return outputMesh;
+    }
+
     // Calculate uv basis.
     const auto u = vec3(polygons[0].get(0).v2 - polygons[0].get(0).v1);
     const auto v = glm::cross(plane.getNormal(), u);
@@ -561,29 +592,20 @@ std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh& mesh, const Plane& worldS
         // For polygons with less than 5 unique points, we could do better triangulation without the
         // centroid, but the following works in any case.
 
-        // Calculate fake centroid
-        // (this will not give us the most optimal triangles,
-        // but it is sufficient to close the hole)
-        vec3 fakeCentroid(0.0f);
-        {
-            vec3 p1 = polygons[p].get(0).v1;
-            vec3 p2 = p1;
-            for (size_t i = 1; i < polygons[p].size(); i++) {
-                const auto edge = polygons[p].get(i);
-                if (glm::distance(p1, edge.v1) > glm::distance(p1, p2)) p2 = edge.v1;
-                if (glm::distance(p1, edge.v2) > glm::distance(p1, p2)) p2 = edge.v2;
-            }
-            fakeCentroid = p1 + 0.5f * (p2 - p1);
-        }
+        // Calculate mean in polygon as connection point for triangles.
+        // Note that the mean might not lie inside polygon in non-convex case.
+        const auto points = findUniquePoints(polygons[p], EPSILON);
+        vec3 sum(0.0f);
+        for (const auto& pt : points) sum += pt;
+        const auto mean = sum / points.size();
 
         // Calculate barycentric coordinates (weights) for all the vertices based on
         // centroid.
-        vec2 uvC(glm::dot(u, fakeCentroid), glm::dot(v, fakeCentroid));
+        vec2 uvC(glm::dot(u, mean), glm::dot(v, mean));
 
         // Barycentrics: uvC should not be too similar to any other coordinate in uv,
         // otherwise there could be problems in the interpolated colors and texcoords
-        std::vector<float> baryW;
-        barycentricInsidePolygon2D(uvC, uv, baryW);
+        std::vector<float> baryW = barycentricInsidePolygon2D(uvC, uv);
 
         vec3 texC(0.f);
         vec4 colC(0.f);
@@ -594,7 +616,7 @@ std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh& mesh, const Plane& worldS
 
         for (size_t i = 0; i < pSize; ++i) {
             size_t ip = (i + 1) % pSize;
-            newVertices.push_back(fakeCentroid);
+            newVertices.push_back(mean);
             newVertices.push_back(polygons[p].get(i).v2);
             newVertices.push_back(polygons[p].get(i).v1);
 

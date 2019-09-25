@@ -47,6 +47,8 @@ namespace inviwo {
 /** \docpage{org.inviwo.VolumeBoundaryPlanes, Volume Boundary Planes}
  * ![](org.inviwo.VolumeBoundaryPlanes.png?classIdentifier=org.inviwo.VolumeBoundaryPlanes)
  * Outputs the six planes that enclose the input volume in world space.
+ * Order of planes: -X, -Y, -Z, +X, +Y, +Z (sides of volume in model coordinates).
+ * Planes face outward by default, but can be flipped.
  *
  * ### Inports
  *   * __volumeInport__ Input volume.
