@@ -164,12 +164,12 @@ std::vector<Polygon<Edge3D>> simplifyPolygons(const std::vector<Polygon<Edge3D>>
 
         std::vector<Edge3D> simplifiedEdges{poly.get(0)};
         for (size_t i = 1; i < poly.size(); ++i) {
-            const auto pivotEdge = &simplifiedEdges.back();
+            auto& pivotEdge = simplifiedEdges.back();
             const auto testEdge = poly.get(i);
-            const auto pivotDir = glm::normalize(pivotEdge->v2 - pivotEdge->v1);
+            const auto pivotDir = glm::normalize(pivotEdge.v2 - pivotEdge.v1);
             const auto testDir = glm::normalize(testEdge.v2 - testEdge.v1);
             if (glm::abs(glm::dot(pivotDir, testDir) - 1.0f) < EPSILON) {
-                pivotEdge->v2 = testEdge.v2;
+                pivotEdge.v2 = testEdge.v2;
             } else {
                 simplifiedEdges.push_back(testEdge);
             }
@@ -203,7 +203,7 @@ std::vector<vec3> findUniquePoints(const Polygon<Edge3D> polygon, const float EP
         }
         if (!found) points.push_back(e.v1);
         found = false;
-        for (vec3& pt : points) {
+        for (const auto& pt : points) {
             if (equal(pt, e.v2, EPSILON)) {
                 found = true;
                 break;
@@ -486,12 +486,10 @@ std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh& mesh, const Plane& worldS
 
     // With convex input we could assume only one hole, that is a convex, non-self-intersecting,
     // closed polygon, but generally we have to find edge groups that form loops.
-
     const auto loops = findLoops(uniqueintersectionsEdges, EPSILON);
 
     // Simplify polygons, e.g. merging successive straight edges,
     // to prevent triangulation becoming too bad, espescially when clipping a mesh multiple times.
-
     const auto polygons = simplifyPolygons(loops, EPSILON);
 
     if (polygons.empty()) {
@@ -533,7 +531,7 @@ std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh& mesh, const Plane& worldS
         std::vector<vec4> newColors;
 
         // For polygons with less than 5 unique points, we could do better triangulation without the
-        // centroid, but the following works in any case.
+        // mean point, but the following works in any case.
 
         // Calculate mean in polygon as connection point for triangles.
         // Note that the mean might not lie inside polygon in non-convex case.
@@ -545,11 +543,9 @@ std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh& mesh, const Plane& worldS
         // Calculate barycentric coordinates (weights) for all the vertices based on
         // centroid.
         vec2 uvC(glm::dot(u, mean), glm::dot(v, mean));
-
-        // Barycentrics: uvC should not be too similar to any other coordinate in uv,
-        // otherwise there could be problems in the interpolated colors and texcoords
         std::vector<float> baryW = barycentricInsidePolygon2D(uvC, uv);
 
+        // Use weights for interpolation.
         vec3 texC(0.f);
         vec4 colC(0.f);
         for (size_t i = 0; i < pSize - 1; ++i) {
