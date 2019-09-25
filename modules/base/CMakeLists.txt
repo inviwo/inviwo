@@ -16,6 +16,7 @@ set(HEADER_FILES
     include/modules/base/algorithm/image/layerramsubset.h
     include/modules/base/algorithm/mesh/axisalignedboundingbox.h
     include/modules/base/algorithm/mesh/meshcameraalgorithms.h
+    include/modules/base/algorithm/mesh/meshclipping.h
     include/modules/base/algorithm/mesh/meshconverter.h
     include/modules/base/algorithm/meshutils.h
     include/modules/base/algorithm/randomutils.h
@@ -75,6 +76,7 @@ set(HEADER_FILES
     include/modules/base/processors/meshexport.h
     include/modules/base/processors/meshinformation.h
     include/modules/base/processors/meshmapping.h
+    include/modules/base/processors/meshplaneclipping.h
     include/modules/base/processors/meshsequenceelementselectorprocessor.h
     include/modules/base/processors/meshsource.h
     include/modules/base/processors/multivolumesource.h
@@ -95,6 +97,7 @@ set(HEADER_FILES
     include/modules/base/processors/trianglestowireframe.h
     include/modules/base/processors/vectorelementselectorprocessor.h
     include/modules/base/processors/volumebasistransformer.h
+    include/modules/base/processors/volumeboundaryplanes.h
     include/modules/base/processors/volumeboundingbox.h
     include/modules/base/processors/volumecreator.h
     include/modules/base/processors/volumecurlcpuprocessor.h
@@ -139,6 +142,7 @@ set(SOURCE_FILES
     src/algorithm/image/layerramsubset.cpp
     src/algorithm/mesh/axisalignedboundingbox.cpp
     src/algorithm/mesh/meshcameraalgorithms.cpp
+    src/algorithm/mesh/meshclipping.cpp
     src/algorithm/mesh/meshconverter.cpp
     src/algorithm/meshutils.cpp
     src/algorithm/volume/marchingcubes.cpp
@@ -193,6 +197,7 @@ set(SOURCE_FILES
     src/processors/meshexport.cpp
     src/processors/meshinformation.cpp
     src/processors/meshmapping.cpp
+    src/processors/meshplaneclipping.cpp
     src/processors/meshsequenceelementselectorprocessor.cpp
     src/processors/meshsource.cpp
     src/processors/multivolumesource.cpp
@@ -211,6 +216,7 @@ set(SOURCE_FILES
     src/processors/surfaceextractionprocessor.cpp
     src/processors/tfselector.cpp
     src/processors/trianglestowireframe.cpp
+    src/processors/volumeboundaryplanes.cpp
     src/processors/volumeboundingbox.cpp
     src/processors/volumecreator.cpp
     src/processors/volumecurlcpuprocessor.cpp
