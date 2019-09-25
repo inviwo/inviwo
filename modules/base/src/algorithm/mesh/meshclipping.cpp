@@ -46,71 +46,6 @@ inline bool equal(vec3 v1, vec3 v2, float eps) {
 }
 
 // Compute barycentric coordinates/weights for
-// point p (which is inside the polygon) with respect to polygons of vertices (v)
-// Based on Mean Value Coordinates by Hormann/Floater
-inline std::vector<float> barycentricInsidePolygon2D(vec2 p, const std::vector<vec2>& v) {
-
-    const size_t numV = v.size();
-
-    // Use float precision for result
-    std::vector<float> baryW(numV, 0.0f);
-
-    // Use double precision for intermediate values
-    std::vector<dvec2> s(numV);
-    std::vector<double> ri(numV);
-
-    for (size_t i = 0; i < numV; ++i) {
-        s[i] = v[i] - p;
-        ri[i] = std::sqrt(glm::dot(s[i], s[i]));
-    }
-
-    std::vector<double> A(numV);
-    std::vector<double> tanA(numV);
-
-    for (size_t i = 0; i < numV; ++i) {
-        size_t ip = (i + 1) % numV;
-        A[i] = s[i].x * s[ip].y - s[ip].x * s[i].y;
-        if (A[i] == 0.0) {
-            if (util::almostEqual(p, v[i])) {
-                baryW[i] = 1.f;
-                return baryW;
-            } else if (util::almostEqual(p, v[ip])) {
-                baryW[ip] = 1.f;
-                return baryW;
-            } else {
-                double l = ri[i] + ri[ip];
-                baryW[i] = static_cast<float>(ri[ip] / l);
-                baryW[ip] = static_cast<float>(ri[i] / l);
-                return baryW;
-            }
-        }
-        tanA[i] = (ri[i] * ri[ip] - glm::dot(s[i], s[ip])) / A[i];
-    }
-
-    double wsum = 0.0;
-
-    for (size_t i = 0; i < numV; ++i) {
-        size_t ip = (numV - 1 + i) % numV;
-        double wi = 2.0 * (tanA[i] + tanA[ip]) / ri[i];
-        baryW[i] = static_cast<float>(wi);
-        wsum += wi;
-    }
-
-    if (std::abs(wsum) > 0.f) {
-        for (size_t i = 0; i < numV; ++i) {
-            double wnorm = static_cast<double>(baryW[i]) / wsum;
-            baryW[i] = static_cast<float>(wnorm);
-        }
-    }
-
-    for (size_t i = 0; i < numV; ++i) {
-        if (std::isnan(baryW[i])) throw Exception("Mean Value Coordinate computation yield NaN");
-    }
-
-    return baryW;
-}
-
-// Compute barycentric coordinates/weights for
 // point p with respect to triangle (a, b, c)
 inline vec3 barycentricTriangle(vec3 p, vec3 a, vec3 b, vec3 c) {
     vec3 v0 = b - a, v1 = c - a, v2 = p - a;
@@ -637,6 +572,68 @@ std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh& mesh, const Plane& worldS
     }
 
     return outputMesh;
+}
+
+std::vector<float> barycentricInsidePolygon2D(vec2 p, const std::vector<vec2>& v) {
+
+    const size_t numV = v.size();
+
+    // Use float precision for result
+    std::vector<float> baryW(numV, 0.0f);
+
+    // Use double precision for intermediate values
+    std::vector<dvec2> s(numV);
+    std::vector<double> ri(numV);
+
+    for (size_t i = 0; i < numV; ++i) {
+        s[i] = v[i] - p;
+        ri[i] = std::sqrt(glm::dot(s[i], s[i]));
+    }
+
+    std::vector<double> A(numV);
+    std::vector<double> tanA(numV);
+
+    for (size_t i = 0; i < numV; ++i) {
+        size_t ip = (i + 1) % numV;
+        A[i] = s[i].x * s[ip].y - s[ip].x * s[i].y;
+        if (A[i] == 0.0) {
+            if (util::almostEqual(p, v[i])) {
+                baryW[i] = 1.f;
+                return baryW;
+            } else if (util::almostEqual(p, v[ip])) {
+                baryW[ip] = 1.f;
+                return baryW;
+            } else {
+                double l = ri[i] + ri[ip];
+                baryW[i] = static_cast<float>(ri[ip] / l);
+                baryW[ip] = static_cast<float>(ri[i] / l);
+                return baryW;
+            }
+        }
+        tanA[i] = (ri[i] * ri[ip] - glm::dot(s[i], s[ip])) / A[i];
+    }
+
+    double wsum = 0.0;
+
+    for (size_t i = 0; i < numV; ++i) {
+        size_t ip = (numV - 1 + i) % numV;
+        double wi = 2.0 * (tanA[i] + tanA[ip]) / ri[i];
+        baryW[i] = static_cast<float>(wi);
+        wsum += wi;
+    }
+
+    if (std::abs(wsum) > 0.f) {
+        for (size_t i = 0; i < numV; ++i) {
+            double wnorm = static_cast<double>(baryW[i]) / wsum;
+            baryW[i] = static_cast<float>(wnorm);
+        }
+    }
+
+    for (size_t i = 0; i < numV; ++i) {
+        if (std::isnan(baryW[i])) throw Exception("Mean Value Coordinate computation yield NaN");
+    }
+
+    return baryW;
 }
 
 }  // namespace meshutil

@@ -54,15 +54,15 @@ namespace meshutil {
  * mesh is not manifold.
  * @returns SimpleMesh with connectivity None
  */
-IVW_MODULE_BASE_API std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh& mesh, const Plane& plane,
+IVW_MODULE_BASE_API std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh&, const Plane&,
                                                                bool capClippedHoles = true);
 
-namespace detail {
-
-IVW_MODULE_BASE_API inline std::vector<float> barycentricInsidePolygon2D(
-    vec2 p, const std::vector<vec2>& v);
-
-}  // namespace detail
+/**
+ * Compute barycentric coordinates/weights for
+ * point p (which is inside the polygon) with respect to polygons of vertices (v)
+ * Based on Mean Value Coordinates by Hormann/Floater
+ */
+IVW_MODULE_BASE_API std::vector<float> barycentricInsidePolygon2D(vec2, const std::vector<vec2>&);
 
 }  // namespace meshutil
 
