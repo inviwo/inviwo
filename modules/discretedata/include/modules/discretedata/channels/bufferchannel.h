@@ -106,6 +106,8 @@ public:
         channel.fillRaw(buffer_.data(), 0, channel.size());
     }
 
+    virtual Channel* clone() const override { return new BufferChannel<T, N>(*this); }
+
     virtual ind size() const override { return buffer_.size() / N; }
 
     const std::vector<T>& data() const { return buffer_; }

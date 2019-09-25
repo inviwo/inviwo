@@ -64,6 +64,8 @@ public:
 
     virtual ~Channel() = default;
 
+    virtual Channel* clone() const = 0;
+
     const std::string getName() const;
 
     void setName(const std::string&);
