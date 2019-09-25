@@ -24,57 +24,40 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  *********************************************************************************/
 
-#pragma once
+#include "utils/structs.glsl"
+#include "utils/sampler3d.glsl"
+#include "utils/classification.glsl"
+#include "utils/pickingutils.glsl"
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
+uniform sampler3D volume;
+uniform VolumeParameters volumeParameters;
 
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/ports/dataoutport.h>
+uniform vec3 pickColor = vec3(0.0, 0.0, 0.0);
 
-#include <inviwo/core/properties/boolproperty.h>
+#ifdef BACKGROUND_AVAILABLE
+uniform ImageParameters backgroundParameters;
+uniform sampler2D backgroundColor;
+uniform sampler2D backgroundPicking;
+uniform sampler2D backgroundDepth;
+#endif
 
-#include <inviwo/core/datastructures/geometry/plane.h>
+uniform sampler2D transferFunction;
 
-#include <vector>
+in vec3 texCoord;
 
-namespace inviwo {
+void main() {
+    vec4 voxel = getNormalizedVoxel(volume, volumeParameters, texCoord);
+    voxel = applyTF(transferFunction, voxel);
+    PickingData = vec4(pickColor,1.0);
 
-/** \docpage{org.inviwo.VolumeBoundaryPlanes, Volume Boundary Planes}
- * ![](org.inviwo.VolumeBoundaryPlanes.png?classIdentifier=org.inviwo.VolumeBoundaryPlanes)
- * Outputs the six planes that enclose the input volume in world space.
- * Order of planes: -X, -Y, -Z, +X, +Y, +Z (sides of volume in model coordinates).
- * Planes face outward by default, but can be flipped.
- *
- * ### Inports
- *   * __volumeInport__ Input volume.
- *
- * ### Outports
- *   * __planeOutport__ The six boundary planes.
- *
- * ### Properties
- *   * __Flip planes__ Switch plane normals between inward and outward.
- */
+#ifdef BACKGROUND_AVAILABLE
+    vec4 background = texture(backgroundColor, gl_FragCoord.xy * backgroundParameters.reciprocalDimensions);
+    voxel = mix(background, voxel, voxel.a);
+    voxel.a = max(background.a, voxel.a);
+#endif // BACKGROUND_AVAILABLE    
 
-class IVW_MODULE_BASE_API VolumeBoundaryPlanes : public Processor {
-public:
-    VolumeBoundaryPlanes();
-    virtual ~VolumeBoundaryPlanes() = default;
-
-    virtual void process() override;
-
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-private:
-    VolumeInport volume_;
-    DataOutport<std::vector<Plane>> planes_;
-
-    BoolProperty flipPlanes_;
-};
-
-}  // namespace inviwo
+    FragData0 = voxel;
+}

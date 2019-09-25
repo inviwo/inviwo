@@ -41,23 +41,21 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.MeshPlaneClipping, Mesh Plane Clipping}
  * ![](org.inviwo.MeshPlaneClipping.png?classIdentifier=org.inviwo.MeshPlaneClipping)
- * Explanation of how to use the processor.
+ * Clips a mesh against multiple planes in world space.
  *
  * ### Inports
- *   * __<Inport1>__ <description>.
+ *   * __inputMesh__ Mesh to clip.
+ *   * __inputPlanes__ Clipping planes in world space.
  *
  * ### Outports
- *   * __<Outport1>__ <description>.
+ *   * __outputMesh__ Clipped mesh.
  *
  * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
+ *   * __Enable Clipping__ Enable clipping.
+ *   * __Cap clipped holes__ Replaces removed parts with triangles aligned with the plane. Input
+ * mesh must be manifold.
  */
 
-/**
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
- */
 class IVW_MODULE_BASE_API MeshPlaneClipping : public Processor {
 public:
     MeshPlaneClipping();
@@ -70,12 +68,11 @@ public:
 
 private:
     MeshInport inputMesh_;
-    DataInport<std::vector<Plane>> planes_;
+    FlatMultiDataInport<Plane> planes_;
     MeshOutport outputMesh_;
 
     BoolProperty clippingEnabled_;
     BoolProperty capClippedHoles_;
-    BoolProperty convexManifoldInput_;
 };
 
 }  // namespace inviwo

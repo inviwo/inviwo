@@ -422,8 +422,12 @@ void WelcomeWidget::showEvent(QShowEvent* event) {
 
         filetree_->expandItems();
 
-        filetree_->selectionModel()->setCurrentIndex(
-            index, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+        if (index.isValid()) {
+            filetree_->selectionModel()->setCurrentIndex(
+                index, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+        } else {
+            filetree_->selectRecentWorkspace(0);
+        }
     }
     QWidget::showEvent(event);
 }

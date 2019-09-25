@@ -95,7 +95,6 @@ private:
     BoolProperty moveCameraAlongNormal_;
     FloatProperty pointPlaneMove_;
 
-    BoolProperty convexManifoldInput_;
     BoolProperty capClippedHoles_;
 
     FloatVec3Property planePoint_;   ///< World space plane position

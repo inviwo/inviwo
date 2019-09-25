@@ -26,52 +26,34 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <modules/base/processors/volumeboundaryplanes.h>
+#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/common/inviwo.h>
+
+#include <inviwo/core/datastructures/geometry/plane.h>
 
 namespace inviwo {
 
-// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo VolumeBoundaryPlanes::processorInfo_{
-    "org.inviwo.VolumeBoundaryPlanes",  // Class identifier
-    "Volume Boundary Planes",           // Display name
-    "Data Creation",                    // Category
-    CodeState::Stable,                  // Code state
-    Tags::None,                         // Tags
-};
-const ProcessorInfo VolumeBoundaryPlanes::getProcessorInfo() const { return processorInfo_; }
+namespace util {
 
-VolumeBoundaryPlanes::VolumeBoundaryPlanes()
-    : Processor()
-    , volume_("volumeInport")
-    , planes_("planeOutport")
-    , flipPlanes_("flipPlanes", "Flip planes", false) {
+/**
+ * Intersects a unit cube with the given plane. The intersection points and the midpoint will be
+ * added to 'pos' and a list of triangle indicies referring to the pos array will be appended
+ * to 'inds'
+ */
+IVW_CORE_API void cubePlaneIntersectionAppend(const Plane& plane, std::vector<vec3>& pos,
+                                              std::vector<std::uint32_t>& inds);
 
-    addPort(volume_);
-    addPort(planes_);
-    addProperties(flipPlanes_);
+inline auto cubePlaneInstersection(const Plane& plane) {
+    std::vector<vec3> pos;
+    std::vector<std::uint32_t> inds;
+
+    cubePlaneIntersectionAppend(plane, pos, inds);
+
+    return std::make_tuple(pos, inds);
 }
 
-void VolumeBoundaryPlanes::process() {
-    const auto vol = volume_.getData();
-    const auto dataToWorld = vol->getCoordinateTransformer().getDataToWorldMatrix();
-    const auto basis = vol->getBasis();
-    const auto p0 = dataToWorld * vec4(vec3(0.0f), 1.0f);
-    const auto p1 = dataToWorld * vec4(1.0f);
-    const mat3 worldNormal = glm::transpose(glm::inverse(vol->getWorldMatrix()));
-    const float sign = flipPlanes_ ? -1.0f : 1.0f;
-
-    auto planes = std::make_shared<std::vector<Plane>>();
-
-    for (unsigned int i = 0; i < 3; i++) {
-        planes->emplace_back(p0, worldNormal * (-sign * basis[i]));
-    }
-
-    for (unsigned int i = 0; i < 3; i++) {
-        planes->emplace_back(p1, worldNormal * (sign * basis[i]));
-    }
-
-    planes_.setData(planes);
-}
+}  // namespace util
 
 }  // namespace inviwo

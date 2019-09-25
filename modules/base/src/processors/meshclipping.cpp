@@ -53,7 +53,6 @@ MeshClipping::MeshClipping()
     , moveCameraAlongNormal_("moveCameraAlongNormal", "Move Camera Along Normal", true,
                              InvalidationLevel::Valid)
     , pointPlaneMove_("pointPlaneMove", "Plane Point Along Normal Move", 0.f, 0.f, 2.f, 0.01f)
-    , convexManifoldInput_("convexManifoldInput", "Input is convex manifold", true)
     , capClippedHoles_("capClippedHoles", "Cap clipped holes", true)
     , planePoint_("planePoint", "Plane Point", vec3(0.0f), vec3(-10000.0f), vec3(10000.0f),
                   vec3(0.1f))
@@ -72,7 +71,6 @@ MeshClipping::MeshClipping()
     addProperty(moveCameraAlongNormal_);
     addProperty(pointPlaneMove_);
 
-    addProperty(convexManifoldInput_);
     addProperty(capClippedHoles_);
 
     addProperty(planePoint_);
@@ -130,8 +128,8 @@ void MeshClipping::process() {
             }
             previousPointPlaneMove_ = pointPlaneMove_.get();
         }
-        if (auto clippedPlaneGeom = meshutil::clipMeshAgainstPlane(
-                *inport_.getData(), *plane, capClippedHoles_, convexManifoldInput_)) {
+        if (auto clippedPlaneGeom =
+                meshutil::clipMeshAgainstPlane(*inport_.getData(), *plane, capClippedHoles_)) {
             clippedPlaneGeom->setModelMatrix(inport_.getData()->getModelMatrix());
             clippedPlaneGeom->setWorldMatrix(inport_.getData()->getWorldMatrix());
             outport_.setData(clippedPlaneGeom);
