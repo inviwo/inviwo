@@ -71,6 +71,8 @@ public:
 
     virtual ~AnalyticChannel() = default;
 
+    virtual Channel* clone() const override { return new AnalyticChannel<T, N, Vec>(*this); }
+
 public:
     ind size() const override { return numElements_; }
 
