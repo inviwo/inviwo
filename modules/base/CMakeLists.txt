@@ -123,8 +123,8 @@ set(HEADER_FILES
     include/modules/base/properties/layerinformationproperty.h
     include/modules/base/properties/meshinformationproperty.h
     include/modules/base/properties/sequencetimerproperty.h
-    include/modules/base/properties/volumeinformationproperty.h
     include/modules/base/properties/volumedescriptionproperty.h
+    include/modules/base/properties/volumeinformationproperty.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -241,8 +241,8 @@ set(SOURCE_FILES
     src/properties/layerinformationproperty.cpp
     src/properties/meshinformationproperty.cpp
     src/properties/sequencetimerproperty.cpp
-    src/properties/volumeinformationproperty.cpp
     src/properties/volumedescriptionproperty.cpp
+    src/properties/volumeinformationproperty.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
