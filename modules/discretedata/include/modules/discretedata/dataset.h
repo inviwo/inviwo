@@ -46,6 +46,12 @@ struct ChannelCompare {
         return (u.second < v.second) || (u.second == v.second && u.first.compare(v.first) < 0);
     }
 };
+
+struct DataSetInitializer {
+    std::shared_ptr<const Connectivity> grid_;
+    std::vector<std::shared_ptr<Channel>> channels_;
+};
+
 // Map used for storing and querying channels by name and GridPrimitive type.
 // Ordering by both name and GridPrimitive type,
 using DataChannelMap =
@@ -64,7 +70,7 @@ public:
      * \brief Create a DataSet from an existing grid
      * @param grid Existing grid to base the DataSet on
      */
-    DataSet(const std::shared_ptr<const Connectivity> grid) : grid(grid) {}
+    DataSet(std::shared_ptr<const Connectivity> grid) : grid(grid) {}
 
     /**
      * \brief Create a DataSet on an nD StructuredGrid
@@ -82,6 +88,15 @@ public:
     template <typename... IND>
     DataSet(ind val0, IND... valX)
         : grid(std::make_shared<StructuredGrid<sizeof...(IND) + 1>>(val0, valX...)) {}
+
+    /**
+     * \brief Create a DataSet from an existing grid and channel list
+     * @param data Existing grid and channels to base the DataSet on
+     */
+    DataSet(const DataSetInitializer& data) : grid(data.grid_) {
+        for (auto channel : data.channels_)
+            addChannel(std::const_pointer_cast<const Channel, Channel>(channel));
+    }
 
     virtual ~DataSet() = default;
 
@@ -111,7 +126,7 @@ public:
      * @param channel Pointer to data, takes memory ownership
      * @return Shared pointer for further handling
      */
-    std::shared_ptr<Channel> addChannel(Channel* channel);
+    std::shared_ptr<const Channel> addChannel(const Channel* channel);
 
     /**
      * Add a new channel to the set
