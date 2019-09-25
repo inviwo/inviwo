@@ -470,11 +470,11 @@ void CropWidget::objectPicked(PickingEvent *e) {
             isMouseBeingPressedAndHold_ = true;
             lastState_ = cropAxes_[axisID].range.get();
         } else if (e->getPressState() == PickingPressState::Move &&
-            e->getPressItems() & PickingPressItem::Primary) {
+                   e->getPressItems() & PickingPressItem::Primary) {
             InteractionElement element =
-            static_cast<InteractionElement>(e->getPickedId() % numInteractionWidgets);
+                static_cast<InteractionElement>(e->getPickedId() % numInteractionWidgets);
             rangePositionHandlePicked(cropAxes_[axisID], e, element);
-        }  else if (e->getPressState() == PickingPressState::Release &&
+        } else if (e->getPressState() == PickingPressState::Release &&
                    e->getPressItem() & PickingPressItem::Primary) {
             isMouseBeingPressedAndHold_ = false;
             lastState_ = ivec2(-1);
