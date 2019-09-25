@@ -50,23 +50,23 @@ class StructuredGrid : public Connectivity {
 public:
     /**
      * \brief Create an nD grid
-     * @param gridSize Number of cells in each dimension
+     * @param numVertices Number of vertices in each dimension
      */
-    StructuredGrid(const std::array<ind, N>&);
+    StructuredGrid(const std::array<ind, N>& numVertices);
 
     /**
      * \brief Create an nD grid
-     * @param val0 required size of first dimension
-     * @param valX Further sizes
+     * @param val0 Required size of first dimension
+     * @param valX Further N-1 sizes
      */
     template <typename... IND>
     StructuredGrid(ind val0, IND... valX);
 
     virtual ~StructuredGrid() = default;
 
-    virtual ind getNumCellsInDimension(ind dim) const;
+    virtual ind getNumVerticesInDimension(ind dim) const;
 
-    const std::array<ind, N>& getNumCells() const;
+    const std::array<ind, N>& getNumVertices() const;
 
     virtual CellType getCellType(GridPrimitive dim, ind index) const override;
 
@@ -84,7 +84,7 @@ private:
     void calculateSizes();
 
 protected:
-    std::array<ind, N> numCellsPerDimension_;
+    std::array<ind, N> numVerticesPerDimension_;
 };
 
 // Making use of Matrix<N + 1, float> StructuredGridEntity<N>::getIndexMatrix() const

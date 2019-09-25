@@ -113,9 +113,10 @@ inviwo::Volume* VolumeFromDataSet::convertTo(const Channel& channel,
         return nullptr;
     }
 
-    ind offset = channelName.gridPrimitive_.get() == GridPrimitive::Vertex ? 1 : 0;
-    ivec3 size(grid.getNumCellsInDimension(0) + offset, grid.getNumCellsInDimension(1) + offset,
-               grid.getNumCellsInDimension(2) + offset);
+    ind offset = channelName.gridPrimitive_.get() == GridPrimitive::Vertex ? 0 : -1;
+    ivec3 size(grid.getNumVerticesInDimension(0) + offset,
+               grid.getNumVerticesInDimension(1) + offset,
+               grid.getNumVerticesInDimension(2) + offset);
 
     ivwAssert(buffer->size() == size.x * size.y * size.z, "Inconsistency with buffer sizes.");
 

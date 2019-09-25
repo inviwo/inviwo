@@ -43,7 +43,7 @@ class PeriodicGrid : public StructuredGrid<N> {
 public:
     using StructuredGrid<N>::indexFromLinear;
     using StructuredGrid<N>::indexToLinear;
-    using StructuredGrid<N>::numCellsPerDimension_;
+    using StructuredGrid<N>::numVerticesPerDimension_;
     /**
      * \brief Create an nD grid
      * @param gridDimension Dimension of grid (not vertices)
@@ -53,7 +53,7 @@ public:
                  const std::array<bool, N>& isDimPeriodic);
     virtual ~PeriodicGrid() = default;
 
-    virtual ind getNumCellsInDimension(ind dim) const override;
+    virtual ind getNumVerticesInDimension(ind dim) const override;
 
     bool isPeriodic(ind dim) const { return isDimPeriodic_[dim]; }
 

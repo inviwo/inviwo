@@ -46,7 +46,7 @@ namespace discretedata {
 
 TEST(Using, Dataset) {
     // Create a curvelinear grid.
-    std::array<ind, 3> gridSize = {10, 1, 1};
+    std::array<ind, 3> gridSize = {11, 2, 2};
     std::array<bool, 3> periodic = {true, false, false};
     auto grid = std::make_shared<PeriodicGrid<3>>(gridSize, periodic);
 
@@ -136,7 +136,8 @@ TEST(Using, Dataset) {
      * Grid does not have positions yet.
      * Add cylindric coordinates.
      *********************************************************************************/
-    auto size = grid->getNumCells();
+    std::array<ind, 3> size = grid->getNumVertices();
+    for (ind dim = 0; dim < 3; ++dim) size[dim]--;
 
     // Our cylindric coordinates.
     auto posFunc = [&size](glm::vec3& pos, ind idx) {
