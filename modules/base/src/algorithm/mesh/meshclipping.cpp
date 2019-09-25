@@ -32,6 +32,7 @@
 #include <inviwo/core/datastructures/geometry/basicmesh.h>
 #include <inviwo/core/datastructures/geometry/edge.h>
 #include <inviwo/core/datastructures/geometry/polygon.h>
+#include <modules/base/algorithm/dataminmax.h>
 
 namespace inviwo {
 
@@ -219,8 +220,6 @@ std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh& mesh, const Plane& worldS
                                            bool capClippedHoles) {
 
     using namespace detail;
-
-    const float EPSILON = 0.00001f;
 
     // Perform clipping in data space
 
@@ -458,15 +457,24 @@ std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh& mesh, const Plane& worldS
 
     // =======================================================================================
 
+    // To close holes, we need to search for connections in intersection edges.
+    // This requires an EPSILON as lower threshold for which points are viewed as the same.
+    // We try to choose a good EPSILON based on mesh size to ensure we find connections.
+    // Effects of bad EPSILON can be:
+    // Too large => Uniqueness test wrongly discards edges => Missing triangles
+    // Too small => Loops may not be found => Exception or missing triangles
+
+    const auto& buffers = mesh.getBuffers();
+    const auto posBufferIt = std::find_if(buffers.begin(), buffers.end(), [](const auto& buff) {
+        return buff.first.type == BufferType::PositionAttrib;
+    });
+    if (posBufferIt == buffers.end() || posBufferIt->second->getSize() == 0) {
+        throw Exception("Mesh has no position buffer or position buffer is empty.");
+    }
+    const auto minmax = util::bufferMinMax(posBufferIt->second.get(), IgnoreSpecialValues::Yes);
+    const float EPSILON = 0.00001f * glm::length(vec3(minmax.second) - vec3(minmax.first));
+
     // Find unique edges that surround the hole(s):
-
-    // Triangulation can get very bad very quickly, when clipping a mesh successively,
-    // i.e. we get very thin triangles. Depending on the value of EPSILON,
-    // too many edges are discarded, because they are found to be the same (result: missing faces!),
-    // or we cannot find closed edge loops anymore. When EPSILON is really small, we find loops with
-    // less than 3 edges, i.e. not polygons anymore.
-
-    // Possible solution: Find unique edges with low epsilon, find loops with high epsilon!
 
     const auto uniqueintersectionsEdges = findUniqueEdges(intersectionsEdges, EPSILON);
 
