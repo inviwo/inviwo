@@ -60,11 +60,25 @@ using DataChannelMap =
  */
 class IVW_MODULE_DISCRETEDATA_API DataSet {
 public:
+    /**
+     * \brief Create a DataSet from an existing grid
+     * @param grid Existing grid to base the DataSet on
+     */
     DataSet(const std::shared_ptr<const Connectivity> grid) : grid(grid) {}
-    template <size_t N>
-    DataSet(const std::array<ind, N>& size)
-        : grid(std::make_shared<StructuredGrid<static_cast<ind>(N)>>(size)) {}
 
+    /**
+     * \brief Create a DataSet on an nD StructuredGrid
+     * @param numVertices Number of vertices in N dimensions
+     */
+    template <size_t N>
+    DataSet(const std::array<ind, N>& numVertices)
+        : grid(std::make_shared<StructuredGrid<static_cast<ind>(N)>>(numVertices)) {}
+
+    /**
+     * \brief Create a DataSet on an nD StructuredGrid
+     * @param val0 Required size of first dimension
+     * @param valX Further N-1 sizes
+     */
     template <typename... IND>
     DataSet(ind val0, IND... valX)
         : grid(std::make_shared<StructuredGrid<sizeof...(IND) + 1>>(val0, valX...)) {}
