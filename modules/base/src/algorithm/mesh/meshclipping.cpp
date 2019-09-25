@@ -311,6 +311,8 @@ std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh& mesh, const Plane& worldS
     }
 
     auto outputMesh = std::make_shared<SimpleMesh>(DrawType::Triangles, ConnectivityType::None);
+    outputMesh->setModelMatrix(mesh.getModelMatrix());
+    outputMesh->setWorldMatrix(mesh.getWorldMatrix());
 
     if (vertexList->empty()) {
         return outputMesh;  // nothing to do
