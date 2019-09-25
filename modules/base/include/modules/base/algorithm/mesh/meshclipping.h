@@ -57,6 +57,13 @@ namespace meshutil {
 IVW_MODULE_BASE_API std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh& mesh, const Plane& plane,
                                                                bool capClippedHoles = true);
 
+namespace detail {
+
+IVW_MODULE_BASE_API inline std::vector<float> barycentricInsidePolygon2D(
+    vec2 p, const std::vector<vec2>& v);
+
+}  // namespace detail
+
 }  // namespace meshutil
 
 }  // namespace inviwo
