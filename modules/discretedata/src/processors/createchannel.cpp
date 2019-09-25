@@ -76,7 +76,7 @@ CreateConstantChannel::CreateConstantChannel()
 void CreateConstantChannel::process() {
 
     if (!dataInport.getData()) return;
-    const auto& grid = dataInport.getData()->grid;
+    auto grid = dataInport.getData()->getGrid();
     GridPrimitive dimensionToProcess = primitive_.get();
     if (dimensionToProcess > grid->getDimension()) return;
 
