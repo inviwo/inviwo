@@ -44,16 +44,16 @@ namespace inviwo {
 /**
  *
  *
- * Constructs a proxy geometry based on one of three MPR planes, to generate entry/exit points for a raycaster.
- * Like CubeProxyGeometry.
- * Can be seen as general "Slab Proxy Geometry" to facilitate volume slice sampling on arbitrary planes with thickness.
- * It exists because Cube Proxy Geometry can only clip axis-aligned and Volume Slice has no thickness.
- * Slabs are constructed in world space and the side length is the length of the longest axis of the model, to display a complete volume slice.
- * Plug output into Geometry Entry Exit Points processor, not normal Entry Exit Points processor, 
- * to transform world space positions into volume positions, that are needed for raycasting.
- * Remember to deactivate near plane clipping in Geometry Entry Exit Points processor.
- * Remember to turn off interaction event handling in Trackball in Geometry Entry Exit Points processor,
- * when using static camera, i.e. always looking straight onto slice.
+ * Constructs a proxy geometry based on one of three MPR planes, to generate entry/exit points for a
+ * raycaster. Like CubeProxyGeometry. Can be seen as general "Slab Proxy Geometry" to facilitate
+ * volume slice sampling on arbitrary planes with thickness. It exists because Cube Proxy Geometry
+ * can only clip axis-aligned and Volume Slice has no thickness. Slabs are constructed in world
+ * space and the side length is the length of the longest axis of the model, to display a complete
+ * volume slice. Plug output into Geometry Entry Exit Points processor, not normal Entry Exit Points
+ * processor, to transform world space positions into volume positions, that are needed for
+ * raycasting. Remember to deactivate near plane clipping in Geometry Entry Exit Points processor.
+ * Remember to turn off interaction event handling in Trackball in Geometry Entry Exit Points
+ * processor, when using static camera, i.e. always looking straight onto slice.
  *
  * ### Inports
  *   * __Inport__ Input Volume
@@ -66,7 +66,7 @@ namespace inviwo {
 
 class IVW_MODULE_BASEGL_API MPRProxyGeometry : public Processor {
 public:
-	MPRProxyGeometry();
+    MPRProxyGeometry();
     ~MPRProxyGeometry();
 
     virtual const ProcessorInfo getProcessorInfo() const override;
@@ -79,33 +79,22 @@ private:
     VolumeInport inport_;
     MeshOutport outport_;
 
-	ButtonProperty recenterP_;
+    ButtonProperty recenterP_;
 
-	FloatVec3Property mprP_;
-	FloatVec3Property mprBasisN_;
-	FloatVec3Property mprBasisR_;
-	FloatVec3Property mprBasisU_;
+    FloatVec3Property mprP_;
+    FloatVec3Property mprBasisN_;
+    FloatVec3Property mprBasisR_;
+    FloatVec3Property mprBasisU_;
 
-	FloatProperty slabThickness_;
+    FloatProperty slabThickness_;
 
-	FloatProperty depth_;
+    FloatProperty depth_;
 
-	FloatProperty zoom_;
+    FloatProperty zoom_;
 
-	ButtonProperty adjustCam_;
-	BoolProperty enableStaticCam_;
-	CameraProperty cam_;
-
-	CompositeProperty clipPlanes_;
-	ButtonProperty calcClipPlanes_;
-	FloatVec3Property clipPlaneP0_;
-	FloatVec3Property clipPlaneP1_;
-	FloatVec3Property clipPlaneN0_;
-	FloatVec3Property clipPlaneN1_;
-	FloatVec3Property clipPlaneN2_;
-	FloatVec3Property clipPlaneN3_;
-	FloatVec3Property clipPlaneN4_;
-	FloatVec3Property clipPlaneN5_;
+    ButtonProperty adjustCam_;
+    BoolProperty enableStaticCam_;
+    CameraProperty cam_;
 };
 
 }  // namespace inviwo
