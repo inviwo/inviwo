@@ -58,7 +58,7 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-	void process() override;
+    void process() override;
 
 private:
     enum class InteractionState { NONE, MOVE, ROTATE };
@@ -81,19 +81,19 @@ private:
     FloatVec4Property color2_;
     FloatVec4Property color3_;
     FloatVec4Property color4_;
-	FloatVec4Property color5_;
+    FloatVec4Property color5_;
 
     IntSizeTProperty thickness1_;
     IntSizeTProperty thickness2_;
 
-	FloatProperty slab0Offset0_;
-	FloatProperty slab0Offset1_;
-	FloatProperty slab1Offset0_;
-	FloatProperty slab1Offset1_;
-	BoolProperty showSlabs_;
+    FloatProperty slab0Offset0_;
+    FloatProperty slab0Offset1_;
+    FloatProperty slab1Offset0_;
+    FloatProperty slab1Offset1_;
+    BoolProperty showSlabs_;
 
     std::shared_ptr<Mesh> crosshairMesh_;
-	std::shared_ptr<Mesh> slabMesh_;
+    std::shared_ptr<Mesh> slabMesh_;
     std::shared_ptr<Mesh> outlineMesh_;
     std::shared_ptr<Mesh> cursorCenterMesh_;
     Shader shader_;
