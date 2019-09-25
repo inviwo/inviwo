@@ -361,7 +361,14 @@ void CameraWidget::objectPicked(PickingEvent *e) {
     bool triggerSingleEvent = false;
 
     if (e->getPressState() != PickingPressState::None) {
-        if (e->getPressState() == PickingPressState::Move &&
+        if (e->getPressState() == PickingPressState::Press &&
+                 e->getPressItem() & PickingPressItem::Primary) {
+            // initial activation with button press
+            isMouseBeingPressedAndHold_ = true;
+            mouseWasMoved_ = false;
+            currentPickingID_ = e->getPickedId();
+            saveInitialCameraState();
+        } else if (e->getPressState() == PickingPressState::Move &&
             e->getPressItems() & PickingPressItem::Primary) {
             // check whether mouse has been moved for more than 1 pixel
             if (!mouseWasMoved_) {
@@ -370,13 +377,6 @@ void CameraWidget::objectPicked(PickingEvent *e) {
                 mouseWasMoved_ = (squaredDist > 1.0);
             }
             triggerMoveEvent = true;
-        } else if (e->getPressState() == PickingPressState::Press &&
-                   e->getPressItem() & PickingPressItem::Primary) {
-            // initial activation with button press
-            isMouseBeingPressedAndHold_ = true;
-            mouseWasMoved_ = false;
-            currentPickingID_ = e->getPickedId();
-            saveInitialCameraState();
         } else if (e->getPressState() == PickingPressState::Release &&
                    e->getPressItem() & PickingPressItem::Primary) {
             triggerSingleEvent =
