@@ -488,7 +488,7 @@ bool CanvasQtBase<T>::mapTouchEvent(QTouchEvent* touch) {
         device = &(touchDevices_[touch->device()] =
                        TouchDevice(deviceType, (touch->device()->name().toStdString())));
     }
-    TouchEvent touchEvent(touchPoints, device);
+    TouchEvent touchEvent(touchPoints, device, utilqt::getModifiers(touch));
     touch->accept();
 
     lastNumFingers_ = static_cast<int>(touch->touchPoints().size());
