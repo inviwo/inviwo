@@ -95,6 +95,8 @@ private:
     ButtonProperty adjustCam_;
     BoolProperty enableStaticCam_;
     CameraProperty cam_;
+
+    FloatVec2Property cursor_;
 };
 
 }  // namespace inviwo

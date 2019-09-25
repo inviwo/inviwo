@@ -64,18 +64,21 @@ MPRProxyGeometry::MPRProxyGeometry()
     , zoom_("zoom", "Zoom", 100.0f, 0.0f, 1000.0f, 0.01f)
     , adjustCam_("adjustCam", "Adjust Cam")
     , enableStaticCam_("enableStaticCam", "Static Cam", true)
-    , cam_("cam", "Camera") {
+    , cam_("cam", "Camera")
+    , cursor_("cursor", "Cursor", vec2(0.5f), vec2(0.0f), vec2(1.0f), vec2(0.1f),
+              InvalidationLevel::InvalidOutput, PropertySemantics::SpinBox) {
 
     addPort(inport_);
     addPort(outport_);
 
     addProperties(recenterP_, mprP_, mprBasisN_, mprBasisR_, mprBasisU_, slabThickness_, depth_,
-                  zoom_, adjustCam_, enableStaticCam_, cam_);
+                  zoom_, adjustCam_, enableStaticCam_, cam_, cursor_);
 
     mprP_.setReadOnly(true);
     mprBasisN_.setReadOnly(true);
     mprBasisU_.setReadOnly(true);
     mprBasisR_.setReadOnly(true);
+    cursor_.setReadOnly(true);
 
     const auto calcPRange = [this]() {
         // ...
@@ -100,8 +103,6 @@ MPRProxyGeometry::MPRProxyGeometry()
         // ...
     };
 
-    // TODO enable moving P around on plane (try reusing code from tube creator)
-
     // TODO prevent volume value clamping
 
     const auto calcSlabRange = [this]() {
@@ -117,22 +118,58 @@ MPRProxyGeometry::MPRProxyGeometry()
         cam_.setNearFarPlaneDist(0.1f, zoom_.get() + slabThickness_.get() + 1.0f);
     };
 
+    const auto intersectPlane = [](vec3 pos, vec3 dir, vec3 middle, vec3 normal) {
+        const float a = glm::dot(dir, normal);
+        const float b = glm::dot(middle - pos, normal);
+        return b / a;
+    };
+
+    const auto calcPFromCursor = [this, intersectPlane, calcCamera]() {
+        const auto pt = cursor_.get();
+        auto camPos = cam_.getLookFrom();
+        auto nearPlanePt =
+            cam_.getWorldPosFromNormalizedDeviceCoords(vec3(pt * 2.f - 1.f, -1.f));
+        auto viewDir = glm::normalize(nearPlanePt - camPos);
+        auto sign = glm::dot(viewDir, mprBasisN_.get()) >= 0.0f ? -1.0f : 1.0f;
+        float t = intersectPlane(nearPlanePt, viewDir, mprP_, sign * mprBasisN_.get());
+        if (t < 0.0f) {
+            throw Exception("No hit point");
+        }
+        mprP_.set(camPos + viewDir * t);
+    };
+
+    const auto projectP = [this]() {
+        const auto view = cam_.get().getViewMatrix();
+        const auto proj = cam_.get().getProjectionMatrix();
+        const auto p = proj * view * vec4(mprP_.get(), 1.0f);
+        return vec2(p / p.w + 1.0f) * 0.5f;
+    };
+
+    // Reset on new data
     inport_.onChange([this, calcCenter, calcSlabRange, calcPRange, calcCamera]() {
         calcPRange();
         calcCenter();
         calcSlabRange();
         calcCamera();
     });
+
     mprBasisN_.onChange([this, calcSlabRange, calcCamera]() {
         calcSlabRange();
         if (enableStaticCam_.get()) calcCamera();
     });
-    mprP_.onChange(calcSlabRange);
+
+    // MPR point interaction
+    mprP_.onChange([this, calcSlabRange, projectP]() {
+        calcSlabRange();
+        //cursor_.set(projectP()); //!!!! endless loop!!!!
+    });
     recenterP_.onChange(calcCenter);
     depth_.onChange(calcPFromDepth);
+    cursor_.onChange(calcPFromCursor);
+
+    // Camera interaction
     zoom_.onChange(calcCamera);
     adjustCam_.onChange(calcCamera);
-
     cam_.setReadOnly(enableStaticCam_.get());
     enableStaticCam_.onChange([this]() { cam_.setReadOnly(enableStaticCam_.get()); });
 }
