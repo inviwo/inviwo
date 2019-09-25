@@ -70,7 +70,7 @@ public:
      * \brief Create a DataSet from an existing grid
      * @param grid Existing grid to base the DataSet on
      */
-    DataSet(std::shared_ptr<const Connectivity> grid) : grid(grid) {}
+    DataSet(std::shared_ptr<const Connectivity> grid) : grid_(grid) {}
 
     /**
      * \brief Create a DataSet on an nD StructuredGrid
@@ -78,7 +78,7 @@ public:
      */
     template <size_t N>
     DataSet(const std::array<ind, N>& numVertices)
-        : grid(std::make_shared<StructuredGrid<static_cast<ind>(N)>>(numVertices)) {}
+        : grid_(std::make_shared<StructuredGrid<static_cast<ind>(N)>>(numVertices)) {}
 
     /**
      * \brief Create a DataSet on an nD StructuredGrid
@@ -87,13 +87,13 @@ public:
      */
     template <typename... IND>
     DataSet(ind val0, IND... valX)
-        : grid(std::make_shared<StructuredGrid<sizeof...(IND) + 1>>(val0, valX...)) {}
+        : grid_(std::make_shared<StructuredGrid<sizeof...(IND) + 1>>(val0, valX...)) {}
 
     /**
      * \brief Create a DataSet from an existing grid and channel list
      * @param data Existing grid and channels to base the DataSet on
      */
-    DataSet(const DataSetInitializer& data) : grid(data.grid_) {
+    DataSet(const DataSetInitializer& data) : grid_(data.grid_) {
         for (auto channel : data.channels_)
             addChannel(std::const_pointer_cast<const Channel, Channel>(channel));
     }
@@ -111,13 +111,13 @@ public:
      */
     template <typename G>
     const std::shared_ptr<const G> getGrid() const {
-        return std::dynamic_pointer_cast<const G, const Connectivity>(grid);
+        return std::dynamic_pointer_cast<const G, const Connectivity>(grid_);
     }
 
     /**
      * Returns a shared pointer to the virtual grid.
      */
-    std::shared_ptr<const Connectivity> getGrid() const { return grid; }
+    std::shared_ptr<const Connectivity> getGrid() const { return grid_; }
 
     // Channels
 
@@ -202,12 +202,11 @@ protected:
      */
     DataChannelMap channels_;
 
-public:
     /**
      * Connectivity of grid
      * Several grid types are possible (rectlinear, structured, unstructured)
      */
-    const std::shared_ptr<const Connectivity> grid;
+    const std::shared_ptr<const Connectivity> grid_;
 };
 
 template <typename T, ind N>

@@ -33,8 +33,8 @@
 namespace inviwo {
 namespace discretedata {
 
-std::shared_ptr<Channel> DataSet::addChannel(Channel* channel) {
-    std::shared_ptr<Channel> sharedChannel(channel);
+std::shared_ptr<const Channel> DataSet::addChannel(const Channel* channel) {
+    std::shared_ptr<const Channel> sharedChannel(channel);
     addChannel(sharedChannel);
 
     return sharedChannel;
