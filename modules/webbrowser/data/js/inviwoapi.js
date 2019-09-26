@@ -59,11 +59,35 @@ class InviwoAPI {
                     onSuccess(response);
                 }
             },
-            onFailure: function(error_code, error_message) {
+        onFailure: function(error_code, error_message) {
+        if (typeof onFailure === 'function') {
+            onFailure(error_code, error_message);
+        } else {
+            console.log('getProperty error (' + error_code + '): ' + error_message);
+                }
+            }
+        });
+    }
+
+    /*
+     * Set a property from another property
+     * @param toPath dot separated path to the property to set the value on
+     * @param fromPath dot separated path to the property to copy the value from
+     */
+    async setPropertyFrom(toPath, fromPath, parameters, onSuccess = function (response) { },
+        onFailure = function (error_code, error_message) { }) {
+        window.cefQuery({
+            request: JSON.stringify({ "command": "property.setFrom", "toPath": toPath, "fromPath": fromPath/*, "parameters": parameters */ }),
+            onSuccess: function (response) {
+                if (typeof onSuccess === 'function') {
+                    onSuccess(response);
+                }
+            },
+            onFailure: function (error_code, error_message) {
                 if (typeof onFailure === 'function') {
                     onFailure(error_code, error_message);
                 } else {
-                    console.log('getProperty error (' + error_code + '): ' + error_message);
+                    console.log("getProperty error (" + error_code + "): " + error_message);
                 }
             }
         });

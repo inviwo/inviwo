@@ -86,29 +86,51 @@ bool PropertyCefSynchronizer::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<C
             }
         } else if (!command.compare(0, propCommand.size(), propCommand)) {
             auto network = InviwoApplication::getPtr()->getProcessorNetwork();
-            auto propertyPath = j.at("path").get<std::string>();
-            auto path = splitString(propertyPath, '.');
-            auto prop = network->getProperty(path);
-            if (!prop) {
-                throw Exception("Could not find property " + propertyPath);
-            }
-            // Use synchronized widget if it exists
-            // to avoid recursive loop when setting the property
-            auto widget =
-                std::find_if(std::begin(widgets_), std::end(widgets_),
-                             [prop](const auto& widget) { return prop == widget->getProperty(); });
-            if (widget != widgets_.end()) {
-                return (*widget)->onQuery(browser, frame, query_id, request, persistent, callback);
-            } else {
-                auto w = htmlWidgetFactory_->create(prop->getClassIdentifier(), prop);
-                if (!w) {
-                    throw Exception("No HTML property widget for " + prop->getClassIdentifier());
+            if (command == "property.setFrom") {
+                auto toPropertyPath = j.at("toPath").get<std::string>();
+                auto fromPropertyPath = j.at("fromPath").get<std::string>();
+                auto toPath = splitString(toPropertyPath, '.');
+                auto fromPath = splitString(fromPropertyPath, '.');
+                auto toProp = network->getProperty(toPath);
+                auto fromProp = network->getProperty(fromPath);
+                if (!toProp) {
+                    throw Exception("Could not find property " + toPropertyPath);
                 }
-                return w->onQuery(browser, frame, query_id, request, persistent, callback);
+                if (!fromProp) {
+                    throw Exception("Could not find property " + fromPropertyPath);
+                }
+
+                toProp->set(fromProp);
+                return false;
+            } else {
+
+                auto propertyPath = j.at("path").get<std::string>();
+                auto path = splitString(propertyPath, '.');
+                auto prop = network->getProperty(path);
+                if (!prop) {
+                    throw Exception("Could not find property " + propertyPath);
+                }
+                // Use synchronized widget if it exists
+                // to avoid recursive loop when setting the property
+                auto widget = std::find_if(
+                    std::begin(widgets_), std::end(widgets_),
+                    [prop](const auto& widget) { return prop == widget->getProperty(); });
+                if (widget != widgets_.end()) {
+                    return (*widget)->onQuery(browser, frame, query_id, request, persistent,
+                                              callback);
+                } else {
+                    auto w = htmlWidgetFactory_->create(prop->getClassIdentifier(), prop);
+                    if (!w) {
+                        throw Exception("No HTML property widget for " +
+                                        prop->getClassIdentifier());
+                    }
+                    return w->onQuery(browser, frame, query_id, request, persistent, callback);
+                }
             }
         }
     } catch (json::exception& ex) {
         LogError(ex.what());
+        LogInfo("Request: " << requestStr);
         callback->Failure(0, ex.what());
     } catch (inviwo::Exception& ex) {
         util::log(ex.getContext(), ex.getMessage(), LogLevel::Error);
