@@ -261,9 +261,18 @@ void ImageLayoutGL::onStatusChange(bool propagate) {
     }
 }
 
-inline bool ImageLayoutGL::isConnectionActive(Inport*, Outport* from) const {
-    auto p = static_cast<ImageOutport*>(from);
-    return !glm::any(glm::equal(p->getDimensions(), size2_t(0)));
+inline bool ImageLayoutGL::isConnectionActive(Inport* from, Outport* to) const {
+    IVW_ASSERT(from == &multiinport_, "only one inport");
+    const auto ports = multiinport_.getConnectedOutports();
+    auto portIt = std::find(ports.begin(), ports.end(), to);
+    auto id = static_cast<size_t>(std::distance(ports.begin(), portIt));
+    if (id < viewManager_.size()) {
+        // Note: We cannot use Outport dimensions since it might not exist
+        return !glm::any(glm::equal(viewManager_.getViews()[id].size, ivec2(0)));
+    } else {
+        // More connections than views
+        return false;
+    }
 }
 
 void ImageLayoutGL::process() {
