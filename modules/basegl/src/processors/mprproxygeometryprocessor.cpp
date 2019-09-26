@@ -34,6 +34,7 @@
 #include <inviwo/core/datastructures/geometry/simplemeshcreator.h>
 #include <modules/base/algorithm/cubeproxygeometry.h>
 #include <modules/opengl/openglutils.h>
+#include <inviwo/core/datastructures/geometry/plane.h>
 
 namespace inviwo {
 
@@ -115,9 +116,7 @@ MPRProxyGeometry::MPRProxyGeometry()
         // ...
     };
 
-    const auto calcZoomRange = [this, volumeDiameter]() {
-        zoom_.setMaxValue(volumeDiameter());
-    };
+    const auto calcZoomRange = [this, volumeDiameter]() { zoom_.setMaxValue(volumeDiameter()); };
 
     const auto calcCamera = [this, volumeDiameter]() {
         cam_.cameraType_.set("OrthographicCamera");
@@ -127,30 +126,39 @@ MPRProxyGeometry::MPRProxyGeometry()
         cam_.setLookUp(mprBasisU_.get());
         // Orthographic cameras expose the frustum width.
         // Make the frustum width smaller/larger to "zoom in/out".
-        if (const auto widthProp =
-                dynamic_cast<FloatProperty*>(cam_.getPropertyByIdentifier("width"))) {
+        if (auto widthProp = dynamic_cast<FloatProperty*>(cam_.getPropertyByIdentifier("width"))) {
             widthProp->set(zoom_.getMaxValue() - zoom_.get());
         }
         cam_.setReadOnly(enableStaticCam_.get());
     };
 
     const auto calcPFromCursor = [this, calcCamera]() {
-        const auto intersectPlane = [](vec3 pos, vec3 dir, vec3 middle, vec3 normal) {
-            const float a = glm::dot(dir, normal);
-            const float b = glm::dot(middle - pos, normal);
-            return b / a;
-        };
-        const auto pt = cursor_.get();
-        const auto camPos = cam_.getLookFrom();
-        const auto nearPlanePt =
-            cam_.getWorldPosFromNormalizedDeviceCoords(vec3(pt * 2.f - 1.f, -1.f));
-        const auto viewDir = glm::normalize(nearPlanePt - camPos);
-        const auto sign = glm::dot(viewDir, mprBasisN_.get()) >= 0.0f ? -1.0f : 1.0f;
-        const float t = intersectPlane(nearPlanePt, viewDir, mprP_.get(), sign * mprBasisN_.get());
-        if (t < 0.0f) {
-            throw Exception("No hit point");
+        if (auto orthoCam = dynamic_cast<OrthographicCamera*>(&cam_.get())) {
+            const auto pt = cursor_.get() - 0.5f;  // range [-0.5, +0.5]
+            const auto viewDir = glm::normalize(orthoCam->getDirection());
+            const auto width = orthoCam->getFrustum().y - orthoCam->getFrustum().x;
+            const auto height = orthoCam->getFrustum().w - orthoCam->getFrustum().z;
+            const auto nearPt = (cam_.getLookFrom() + cam_.getNearPlaneDist() * viewDir) +
+                                (pt.x * cam_.getLookRight() * width) +
+                                (pt.y * cam_.getLookUp() * height);
+            const auto sign = glm::dot(viewDir, mprBasisN_.get()) >= 0.0f ? -1.0f : 1.0f;
+            const auto inter = Plane(mprP_.get(), sign * mprBasisN_.get())
+                        .getIntersection(nearPt, nearPt + viewDir * cam_.getFarPlaneDist());
+            if (!inter.intersects_) throw Exception("No hit point");
+            mprP_.set(inter.intersection_);
+        } else {
+            // intersection for perspective cameras
+            const auto pt = cursor_.get();
+            const auto camPos = cam_.getLookFrom();
+            const auto nearPt =
+                cam_.getWorldPosFromNormalizedDeviceCoords(vec3(pt * 2.f - 1.f, -1.f));
+            const auto viewDir = glm::normalize(nearPt - camPos);
+            const auto sign = glm::dot(viewDir, mprBasisN_.get()) >= 0.0f ? -1.0f : 1.0f;
+            const auto inter = Plane(mprP_.get(), sign * mprBasisN_.get())
+                        .getIntersection(nearPt, nearPt + viewDir * cam_.getFarPlaneDist());
+            if (!inter.intersects_) throw Exception("No hit point");
+            mprP_.set(inter.intersection_);
         }
-        mprP_.set(camPos + viewDir * t);
     };
 
     const auto projectP = [this]() {
