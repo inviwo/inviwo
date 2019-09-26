@@ -143,8 +143,12 @@ void PickingController::propagateEvent(TouchEvent* e, EventPropagator* propagato
                     });
                 if (nPressed == 0) {
                     return PickingPressItem::None;
-                } else {
+                } else if (nPressed == 1) {
                     return PickingPressItem::Primary;
+                } else if (nPressed == 2) {
+                    return PickingPressItem::Secondary;
+                } else {  // nPressed > 2
+                    return PickingPressItem::Tertiary;
                 }
             } else {
                 // Treat touch point on TouchScreen as "button down"
