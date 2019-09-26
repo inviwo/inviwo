@@ -18,6 +18,7 @@ set(HEADER_FILES
     include/modules/discretedata/connectivity/connectivity.h
     include/modules/discretedata/connectivity/elementiterator.h
     include/modules/discretedata/connectivity/euclideanmeasure.h
+    include/modules/discretedata/connectivity/lineset.h
     include/modules/discretedata/connectivity/periodicgrid.h
     include/modules/discretedata/connectivity/structuredgrid.h
     include/modules/discretedata/ports/datasetport.h
@@ -46,6 +47,7 @@ set(SOURCE_FILES
     src/connectivity/connectivity.cpp
     src/connectivity/elementiterator.cpp
     src/connectivity/euclideanmeasure.cpp
+    src/connectivity/lineset.cpp
     src/processors/computegridmeasure.cpp
     src/processors/createchannel.cpp
     src/processors/datasetfrombase.cpp
@@ -66,6 +68,7 @@ set(TEST_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/dataset-test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/data-access-test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/example-code.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/lineset-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 
