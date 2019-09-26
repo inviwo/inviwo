@@ -73,7 +73,7 @@ namespace inviwo {
  */
 
 template <typename T>
-class IVW_MODULE_BASE_API BasisTransform : public Processor {
+class BasisTransform : public Processor {
 public:
     BasisTransform();
     virtual ~BasisTransform() = default;
