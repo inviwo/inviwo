@@ -536,9 +536,17 @@ function(ivw_create_module)
     ivw_mod_name_to_alias(ivw_dep_targets ${${mod}_dependencies})
     target_link_libraries(${${mod}_target} PUBLIC ${ivw_dep_targets})
 
+    if(IVW_UNITY_BUILD)
+        set_target_properties(${${mod}_target} PROPERTIES UNITY_BUILD ON)
+    endif()
+
     # Optimize compilation with pre-compilied headers
     if(NOT ARG_NO_PCH)
-        ivw_compile_optimize_on_target(${${mod}_target})
+        if(PRECOMPILED_HEADERS_REUSE)
+            target_precompile_headers(${${mod}_target} REUSE_FROM inviwo-core-pch)
+        else()
+            ivw_compile_optimize_on_target(${${mod}_target})
+        endif()
     endif()
 
     # Add stuff to the installer

@@ -699,6 +699,10 @@ target_include_directories(inviwo-core PUBLIC
     $<BUILD_INTERFACE:${IVW_EXTENSIONS_DIR}> #Should we use this one?!?"
 )
 
+if(IVW_UNITY_BUILD)
+    set_target_properties(inviwo-core PROPERTIES UNITY_BUILD ON)
+endif()
+
 # Add core dependencies to this list
 target_link_libraries(inviwo-core PUBLIC 
     ticpp 
@@ -890,3 +894,20 @@ else()
     install(FILES ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/inviwo_buildinfo.ini DESTINATION bin COMPONENT modules CONFIGURATIONS Release Debug)
 endif()
 #--------------------------------------------------------------------
+
+
+if(PRECOMPILED_HEADERS_NEW OR PRECOMPILED_HEADERS_REUSE)
+    set(PCH_HEADERS ${HEADER_FILES})
+    list(REMOVE_ITEM PCH_HEADERS "${IVW_INCLUDE_DIR}/inviwo/core/common/defaulttohighperformancegpu.h")
+    if(PRECOMPILED_HEADERS_NEW)
+        target_precompile_headers(inviwo-core PUBLIC ${PCH_HEADERS})
+    else()
+        target_precompile_headers(inviwo-core PRIVATE ${PCH_HEADERS})
+        file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/pch-dummy.cpp "// Dummy file needed to create inviwo-core-pch target for reusing pch artifacts \n")
+        add_library(inviwo-core-pch STATIC ${CMAKE_CURRENT_BINARY_DIR}/pch-dummy.cpp)
+        ivw_define_standard_definitions_part(inviwo-core-pch)
+        ivw_define_standard_properties(inviwo-core-pch)
+        target_link_libraries(inviwo-core-pch PRIVATE inviwo-core)
+        target_precompile_headers(inviwo-core-pch PUBLIC ${PCH_HEADERS})
+    endif()
+endif()
