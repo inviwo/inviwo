@@ -25,6 +25,7 @@ set(HEADER_FILES
     include/modules/discretedata/processors/computegridmeasure.h
     include/modules/discretedata/processors/createchannel.h
     include/modules/discretedata/processors/datasetfrombase.h
+    include/modules/discretedata/processors/datasetsource.h
     include/modules/discretedata/processors/segmentationvoxelizer.h
     include/modules/discretedata/processors/volumefromdataset.h
     include/modules/discretedata/properties/datachannelproperty.h
@@ -51,6 +52,7 @@ set(SOURCE_FILES
     src/processors/computegridmeasure.cpp
     src/processors/createchannel.cpp
     src/processors/datasetfrombase.cpp
+    src/processors/datasetsource.cpp
     src/processors/segmentationvoxelizer.cpp
     src/processors/volumefromdataset.cpp
     src/properties/datachannelproperty.cpp

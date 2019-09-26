@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2019 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,35 +26,64 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
 #include <modules/discretedata/discretedatamoduledefine.h>
+#include <modules/base/processors/datasource.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <modules/discretedata/ports/datasetport.h>
 #include <modules/discretedata/dataset.h>
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/ports/dataoutport.h>
 
 namespace inviwo {
 namespace discretedata {
 
-using DataSetInport = DataInport<DataSet>;
+/** \docpage{org.inviwo.DataSetSource, DataSet Source}
+    ![](org.inviwo.DataSetSource.png?classIdentifier=org.inviwo.DataSetSource)
 
-class DataSetOutport : public DataOutport<DataSet> {
+    Loads a DataSet. The underlying connectivity depends on the file loaded.
+
+    ### Outports
+      * __Outport__ The loaded dataset.
+
+    ### Properties
+      * __File name__ File to load.
+*/
+
+/** \class DataSetSource
+    \brief Loads a DataSet. Data-driven.
+*/
+class IVW_MODULE_DISCRETEDATA_API DataSetSource
+    : public DataSource<DataSetInitializer, DataSetOutport> {
+    // Construction / Deconstruction
 public:
-    DataSetOutport(std::string identifier) : DataOutport<DataSet>(identifier) {}
+    DataSetSource();
+    virtual ~DataSetSource() = default;
 
-    using DataOutport<DataSet>::setData;
-    virtual void setData(const DataSetInitializer* data) { setData(new DataSet(*data)); }
-    virtual void setData(std::shared_ptr<DataSetInitializer> data) { setData(data.get()); }
-};
-}  // namespace discretedata
+    // Methods
+public:
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
-template <>
-struct PortTraits<discretedata::DataSetOutport> {
-    static std::string classIdentifier() {
-        return util::appendIfNotEmpty(DataTraits<discretedata::DataSet>::classIdentifier(),
-                                      ".outport");
+    // Update the list of channels loaded to let the user rename them.
+    void updateChannelNames(std::shared_ptr<DataSetInitializer> data);
+
+    // Called when we load new data.
+    virtual void dataLoaded(std::shared_ptr<DataSetInitializer> data) override {
+        updateChannelNames(data);
     }
+    // Called when we deserialized old data.
+    virtual void dataDeserialized(std::shared_ptr<DataSetInitializer> data) {
+        updateChannelNames(data);
+    }
+    // Change names.
+    virtual void process() override;
+
+    // Properties
+public:
+    CompositeProperty renameChannels_;
 };
 
+}  // namespace discretedata
 }  // namespace inviwo

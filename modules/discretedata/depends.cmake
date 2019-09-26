@@ -1,3 +1,5 @@
 #--------------------------------------------------------------------
 # Should always stay empty
-set(dependencies)
+set(dependencies
+    InviwoBaseModule
+)
