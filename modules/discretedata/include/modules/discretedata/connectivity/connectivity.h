@@ -79,7 +79,7 @@ public:
      * @param elementType Type to get number of
      * @return Number of elements
      */
-    virtual ind getNumElements(GridPrimitive elementType) const;
+    virtual ind getNumElements(GridPrimitive elementType = GridPrimitive::Vertex) const;
 
     /**
      * \brief Get the map from one element to another
