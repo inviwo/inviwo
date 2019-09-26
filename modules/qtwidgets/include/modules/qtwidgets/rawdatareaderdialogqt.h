@@ -27,6 +27,8 @@
  *
  *********************************************************************************/
 
+#pragma once
+
 #include <modules/qtwidgets/qtwidgetsmoduledefine.h>
 #include <inviwo/core/io/volumedatareaderdialog.h>
 

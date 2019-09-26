@@ -81,7 +81,7 @@ namespace inviwo {
  */
 
 template <typename T>
-class IVW_MODULE_BASE_API WorldTransform : public Processor {
+class WorldTransform : public Processor {
 public:
     WorldTransform();
 
