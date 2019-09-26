@@ -51,7 +51,7 @@ MPRProxyGeometry::MPRProxyGeometry()
     , inport_("volume")
     , outport_("proxyGeometry")
     , recenterP_("recenterP", "Re-center")
-    , mprP_("mprP_", "Center", vec3(0.0f), vec3(-100.0f), vec3(100.0f), vec3(1.0f),
+    , mprP_("mprP", "Center", vec3(0.0f), vec3(-1000.0f), vec3(1000.0f), vec3(1.0f),
             InvalidationLevel::InvalidOutput, PropertySemantics::SpinBox)
     , mprBasisN_("mprBasisN", "Normal", vec3(0.0f, 0.0f, 1.0f), vec3(-1.0f), vec3(1.0f), vec3(.1f),
                  InvalidationLevel::InvalidOutput, PropertySemantics::SpinBox)
@@ -61,7 +61,7 @@ MPRProxyGeometry::MPRProxyGeometry()
                  InvalidationLevel::InvalidOutput, PropertySemantics::SpinBox)
     , slabThickness_("slabThickness", "Thickness (mm)", 1.0f, 0.0f, 100.0f, 1.0f)
     , depth_("depth", "Depth", 0.0f, -100.0f, 100.0f)
-    , zoom_("zoom", "Zoom", 100.0f, 0.0f, 1000.0f, 0.01f)
+    , zoom_("zoom", "Zoom", 0.0f, 0.0f, 100.0f)
     , adjustCam_("adjustCam", "Adjust Cam")
     , enableStaticCam_("enableStaticCam", "Static Cam", true)
     , cam_("cam", "Camera")
@@ -80,6 +80,15 @@ MPRProxyGeometry::MPRProxyGeometry()
     mprBasisR_.setReadOnly(true);
     cursor_.setReadOnly(true);
 
+    const auto volumeDiameter = [this]() {
+        const auto vol = inport_.getData();
+        if (!vol) return 0.0f;
+        const auto toWorld = vol->getCoordinateTransformer().getDataToWorldMatrix();
+        const vec3 min = toWorld * vec4(vec3(0.0f), 1.0f);
+        const vec3 max = toWorld * vec4(1.0f);
+        return glm::distance(min, max);
+    };
+
     const auto calcPRange = [this]() {
         // ...
     };
@@ -91,47 +100,53 @@ MPRProxyGeometry::MPRProxyGeometry()
         mprP_.set(vol->getOffset() + diag * 0.5f);
     };
 
+    // TODO slide through volume (find available length along normal)
+
     const auto calcPFromDepth = [this]() {
         const auto N = glm::normalize(mprBasisN_.get());
         mprP_.set(mprP_.get() + depth_.get() * N);
-
-        // TODO slide through volume (find available length along normal)
-        // TODO how to calculate other planes when P is not center anymore?
     };
 
     const auto calcDepthRange = [this]() {
         // ...
     };
 
-    // TODO prevent volume value clamping
-
     const auto calcSlabRange = [this]() {
-        const auto vol = inport_.getData();
-        // TODO update slabOffset range in new model coords
+        // ...
     };
 
-    const auto calcCamera = [this]() {
-        // TODO set camera orthographic
-        cam_.setLookFrom(mprP_.get() + mprBasisN_.get() * zoom_.get());
+    const auto calcZoomRange = [this, volumeDiameter]() {
+        zoom_.setMaxValue(volumeDiameter());
+    };
+
+    const auto calcCamera = [this, volumeDiameter]() {
+        cam_.cameraType_.set("OrthographicCamera");
+        cam_.setNearFarPlaneDist(0.1f, volumeDiameter() * 2.0f);
+        cam_.setLookFrom(mprP_.get() + mprBasisN_.get() * volumeDiameter());
         cam_.setLookTo(mprP_.get());
         cam_.setLookUp(mprBasisU_.get());
-        cam_.setNearFarPlaneDist(0.1f, zoom_.get() + slabThickness_.get() + 1.0f);
+        // Orthographic cameras expose the frustum width.
+        // Make the frustum width smaller/larger to "zoom in/out".
+        if (const auto widthProp =
+                dynamic_cast<FloatProperty*>(cam_.getPropertyByIdentifier("width"))) {
+            widthProp->set(zoom_.getMaxValue() - zoom_.get());
+        }
+        cam_.setReadOnly(enableStaticCam_.get());
     };
 
-    const auto intersectPlane = [](vec3 pos, vec3 dir, vec3 middle, vec3 normal) {
-        const float a = glm::dot(dir, normal);
-        const float b = glm::dot(middle - pos, normal);
-        return b / a;
-    };
-
-    const auto calcPFromCursor = [this, intersectPlane, calcCamera]() {
+    const auto calcPFromCursor = [this, calcCamera]() {
+        const auto intersectPlane = [](vec3 pos, vec3 dir, vec3 middle, vec3 normal) {
+            const float a = glm::dot(dir, normal);
+            const float b = glm::dot(middle - pos, normal);
+            return b / a;
+        };
         const auto pt = cursor_.get();
-        auto camPos = cam_.getLookFrom();
-        auto nearPlanePt =
+        const auto camPos = cam_.getLookFrom();
+        const auto nearPlanePt =
             cam_.getWorldPosFromNormalizedDeviceCoords(vec3(pt * 2.f - 1.f, -1.f));
-        auto viewDir = glm::normalize(nearPlanePt - camPos);
-        auto sign = glm::dot(viewDir, mprBasisN_.get()) >= 0.0f ? -1.0f : 1.0f;
-        float t = intersectPlane(nearPlanePt, viewDir, mprP_, sign * mprBasisN_.get());
+        const auto viewDir = glm::normalize(nearPlanePt - camPos);
+        const auto sign = glm::dot(viewDir, mprBasisN_.get()) >= 0.0f ? -1.0f : 1.0f;
+        const float t = intersectPlane(nearPlanePt, viewDir, mprP_.get(), sign * mprBasisN_.get());
         if (t < 0.0f) {
             throw Exception("No hit point");
         }
@@ -146,10 +161,11 @@ MPRProxyGeometry::MPRProxyGeometry()
     };
 
     // Reset on new data
-    inport_.onChange([this, calcCenter, calcSlabRange, calcPRange, calcCamera]() {
+    inport_.onChange([this, calcCenter, calcSlabRange, calcPRange, calcZoomRange, calcCamera]() {
         calcPRange();
         calcCenter();
         calcSlabRange();
+        calcZoomRange();
         calcCamera();
     });
 
@@ -161,7 +177,10 @@ MPRProxyGeometry::MPRProxyGeometry()
     // MPR point interaction
     mprP_.onChange([this, calcSlabRange, projectP]() {
         calcSlabRange();
-        //cursor_.set(projectP()); //!!!! endless loop!!!!
+        // cursor_.set(projectP());
+        // We allow changing P only through Cursor and Depth controls.
+        // When P is updated through other ways, we do not pass the update on to Cursor and Depth,
+        // as this would create an endless loop.
     });
     recenterP_.onChange(calcCenter);
     depth_.onChange(calcPFromDepth);
@@ -170,7 +189,6 @@ MPRProxyGeometry::MPRProxyGeometry()
     // Camera interaction
     zoom_.onChange(calcCamera);
     adjustCam_.onChange(calcCamera);
-    cam_.setReadOnly(enableStaticCam_.get());
     enableStaticCam_.onChange([this]() { cam_.setReadOnly(enableStaticCam_.get()); });
 }
 
