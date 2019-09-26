@@ -90,15 +90,24 @@ ImageLayoutGL::ImageLayoutGL()
 
     addPort(multiinport_);
     multiinport_.setIsReadyUpdater([this]() {
-        // Only ports with non-zero dimensions are active
-        auto ready = true;
-        for (auto p : multiinport_.getConnectedOutports()) {
-            auto op = static_cast<ImageOutport*>(p);
-            ready |= glm::any(glm::equal(op->getDimensions(), size2_t(0))) ? true : p->isReady();
-        }
-        return ready;
+        // Ports with zero dimensions will not be active,
+        // so disregard them when considering ready status
+        return multiinport_.isConnected() &&
+               util::all_of(
+                   multiinport_.getConnectedOutports(), [](Outport* p) {
+                       auto ip = static_cast<ImageOutport*>(p);
+                       return (ip->hasData() && glm::any(glm::equal(
+                                ip->getDimensions(),
+                                size2_t(0))))
+                                ? true
+                                : p->isReady();
+                   });
     });
-
+    // Ensure that viewports are up-to-date
+    // before isConnectionActive is called
+    multiinport_.onConnect([this]() { updateViewports(currentDim_, true); });
+    multiinport_.onDisconnect([this]() { updateViewports(currentDim_, true); });
+    
     addPort(outport_);
 
     addProperty(layout_);
@@ -261,7 +270,7 @@ void ImageLayoutGL::onStatusChange(bool propagate) {
     }
 }
 
-inline bool ImageLayoutGL::isConnectionActive(Inport* from, Outport* to) const {
+bool ImageLayoutGL::isConnectionActive(Inport* from, Outport* to) const {
     IVW_ASSERT(from == &multiinport_, "only one inport");
     const auto ports = multiinport_.getConnectedOutports();
     auto portIt = std::find(ports.begin(), ports.end(), to);
@@ -320,8 +329,8 @@ void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
     auto bottomMinMax = 1.f - vec2(topMinMax_.getEnd() / static_cast<float>(dim.y),
                                    topMinMax_.getStart() / static_cast<float>(dim.y));
     // Bounds cannot be smaller/larger than output size
-    auto leftBounds = glm::min(*leftMinMax_, dim);
-    auto bottomBounds = glm::min(*bottomMinMax_, dim);
+    auto leftBounds = glm::min(*leftMinMax_, ivec2(dim.x));
+    auto bottomBounds = glm::min(*bottomMinMax_, ivec2(dim.y));
 
     const int midx = glm::clamp(
         static_cast<int>(glm::clamp(*verticalSplitter_, rightMinMax.x, rightMinMax.y) * dim.x),
