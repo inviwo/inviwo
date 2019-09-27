@@ -268,7 +268,9 @@ void ImageLayoutGL::onStatusChange(bool propagate) {
 }
 
 bool ImageLayoutGL::isConnectionActive(Inport* from, Outport* to) const {
-    IVW_ASSERT(from == &multiinport_, "only one inport");
+    IVW_ASSERT(from == &multiinport_,
+               "ImageLayoutGL was designed for one inport but isConnectionActive was called with "
+               "another inport");
     const auto ports = multiinport_.getConnectedOutports();
     auto portIt = std::find(ports.begin(), ports.end(), to);
     auto id = static_cast<size_t>(std::distance(ports.begin(), portIt));
