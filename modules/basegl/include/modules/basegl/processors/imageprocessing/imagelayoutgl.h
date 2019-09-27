@@ -35,6 +35,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -104,6 +105,13 @@ public:
 
     virtual void propagateEvent(Event*, Outport* source) override;
 
+    /**
+     * Return true if dimensions of connected port is greater than zero.
+     * @param This processor's inport
+     * @param Another processor's outport
+     */
+    virtual bool isConnectionActive(Inport*, Outport*) const override;
+
 protected:
     virtual void process() override;
 
@@ -120,6 +128,7 @@ private:
     FloatProperty vertical3Left1RightSplitter_;
     FloatProperty vertical3Right1LeftSplitter_;
 
+    CompositeProperty bounds_;
     // Bounds for vertical splitters
     IntMinMaxProperty leftMinMax_;
     IntMinMaxProperty rightMinMax_;
