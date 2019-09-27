@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,50 +26,58 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#ifndef IVW_PROCESSORPROGRESSGRAPHICSITEM_H
-#define IVW_PROCESSORPROGRESSGRAPHICSITEM_H
-
-#include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <inviwo/qt/editor/editorgrapicsitem.h>
+#include <modules/webbrowser/webbrowsermoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/progressbar.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
-#include <QEvent>
+#include <include/cef_frame.h>
 #include <warn/pop>
-
 namespace inviwo {
 
-class IVW_QTEDITOR_API ProcessorProgressGraphicsItem : public EditorGraphicsItem,
-                                                       public ProgressBarObserver {
+/**
+ * \brief Observes progress bar changes and notifies supplied javascript functions on change.
+ */
+class IVW_MODULE_WEBBROWSER_API ProgressBarObserverCEF : public ProgressBarObserver {
 public:
-    ProcessorProgressGraphicsItem(QGraphicsRectItem* parent, ProgressBar* processor);
-    virtual ~ProcessorProgressGraphicsItem() {}
+    ProgressBarObserverCEF(CefRefPtr<CefFrame> frame = nullptr, std::string onProgressChange = "",
+                           std::string onVisibleChange = "");
+    virtual ~ProgressBarObserverCEF(){};
 
-    // override for qgraphicsitem_cast (refer qt documentation)
-    enum { Type = UserType + ProcessorProgressGraphicsType };
-    int type() const override { return Type; }
-
-protected:
-    void paint(QPainter* p, const QStyleOptionGraphicsItem* options, QWidget* widget) override;
-
-    // ProgressBarObserver methods
     /**
-     * This method will be called when observed object changes.
+     * Execute currently set onProgressChange javascript function
      * @param New progress between [0 1]
      */
-    virtual void progressChanged(float) override;
+    virtual void progressChanged(float progress) override;
+
     /**
-     * This method will be called when observed object changes.
+     * Execute currently set OnProgressVisibleChange javascript function
      * @param visibility state that ProgressBar changed into
      */
-    virtual void progressBarVisibilityChanged(bool) override;
+    virtual void progressBarVisibilityChanged(bool visible) override;
+    /*
+     * Name of javascript function to call when progress changes
+     */
+    void setOnProgressChange(std::string onChange) { onProgressChange_ = onChange; }
+    const std::string& getOnProgressChange() const { return onProgressChange_; }
+    /*
+     * Name of javascript function to call when progress bar visibility changes
+     */
+    void setOnProgressVisibleChange(std::string onChange) { onProgressVisibleChange_ = onChange; }
+    const std::string& getOnProgressVisibleChange() const { return onProgressVisibleChange_; }
+
+    /*
+     * Set frame containing html item.
+     */
+    void setFrame(CefRefPtr<CefFrame> frame);
 
 private:
-    QSize size_;
-    ProgressBar* progressBar_;
+    std::string onProgressChange_;         /// Javascript callback to execute when progress changes
+    std::string onProgressVisibleChange_;  /// Javascript callback to execute when vibility changes
+    CefRefPtr<CefFrame> frame_;            /// Browser frame containing corresponding callbacks
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_PROCESSORPROGRESSGRAPHICSITEM_H

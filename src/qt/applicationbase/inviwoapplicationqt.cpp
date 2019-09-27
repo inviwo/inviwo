@@ -331,6 +331,10 @@ bool InviwoApplicationQt::notify(QObject* receiver, QEvent* e) {
             if (undoTrigger_) undoTrigger_();
             break;
         }
+        case QEvent::Drop: {
+            undoTrigger_();
+            break;
+        }
         default:
             break;
     }

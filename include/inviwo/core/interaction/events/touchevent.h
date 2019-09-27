@@ -178,7 +178,8 @@ private:
 class IVW_CORE_API TouchEvent : public InteractionEvent {
 public:
     TouchEvent();
-    TouchEvent(const std::vector<TouchPoint>& touchPoints, const TouchDevice* source);
+    TouchEvent(const std::vector<TouchPoint>& touchPoints, const TouchDevice* source,
+               KeyModifiers modifiers);
 
     virtual TouchEvent* clone() const override;
     virtual ~TouchEvent() = default;

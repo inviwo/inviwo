@@ -405,21 +405,19 @@ void Processor::invokeEvent(Event* event) {
 }
 
 void Processor::propagateEvent(Event* event, Outport* source) {
-    if (event->hasVisitedProcessor(this)) return;
-    event->markAsVisited(this);
+    if (!event->markAsVisited(this)) return;
 
     invokeEvent(event);
-    if (event->hasBeenUsed()) return;
-
     bool used = event->hasBeenUsed();
+    if (used) return;
+
     for (auto inport : getInports()) {
         if (event->shouldPropagateTo(inport, this, source)) {
             inport->propagateEvent(event);
-            used |= event->hasBeenUsed();
-            event->markAsUnused();
+            used |= event->markAsUnused();
         }
     }
-    if (used) event->markAsUsed();
+    event->setUsed(used);
 }
 
 std::vector<std::string> Processor::getPath() const {

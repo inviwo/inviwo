@@ -107,8 +107,9 @@ TouchDevice::TouchDevice(DeviceType type, std::string name) : type_(type), name_
 
 TouchEvent::TouchEvent() = default;
 
-TouchEvent::TouchEvent(const std::vector<TouchPoint>& touchPoints, const TouchDevice* source)
-    : InteractionEvent(), touchPoints_(touchPoints), device_(source) {}
+TouchEvent::TouchEvent(const std::vector<TouchPoint>& touchPoints, const TouchDevice* source,
+                       KeyModifiers modifiers)
+    : InteractionEvent(modifiers), touchPoints_(touchPoints), device_(source) {}
 
 TouchEvent* TouchEvent::clone() const { return new TouchEvent(*this); }
 

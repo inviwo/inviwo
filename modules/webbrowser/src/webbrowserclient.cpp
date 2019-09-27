@@ -90,10 +90,13 @@ void WebBrowserClient::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
         CefMessageRouterConfig config;
         messageRouter_ = CefMessageRouterBrowserSide::Create(config);
 
-        // Register handlers with the router.
+        // Register handlers with the router
         propertyCefSynchronizer_ = new PropertyCefSynchronizer(widgetFactory_);
         addLoadHandler(propertyCefSynchronizer_);
         messageRouter_->AddHandler(propertyCefSynchronizer_.get(), false);
+        processorCefSynchronizer_ = new ProcessorCefSynchronizer();
+        addLoadHandler(processorCefSynchronizer_);
+        messageRouter_->AddHandler(processorCefSynchronizer_.get(), false);
     }
 
     browserCount_++;
@@ -115,6 +118,10 @@ void WebBrowserClient::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
         messageRouter_->RemoveHandler(propertyCefSynchronizer_.get());
         removeLoadHandler(propertyCefSynchronizer_);
         propertyCefSynchronizer_ = nullptr;
+        messageRouter_->RemoveHandler(processorCefSynchronizer_.get());
+        removeLoadHandler(processorCefSynchronizer_);
+        processorCefSynchronizer_ = nullptr;
+
         messageRouter_ = NULL;
     }
 

@@ -58,8 +58,8 @@ CanvasQGLWidget::CanvasQGLWidget(QGLWidget* parent, size2_t dim)
     if (!sharedCanvas_) {
         sharedFormat_ = this->format();
         sharedCanvas_ = this;
-        QGLWidget::glInit();
     }
+    QGLWidget::glInit();
 
     setAutoBufferSwap(false);
     setFocusPolicy(Qt::StrongFocus);

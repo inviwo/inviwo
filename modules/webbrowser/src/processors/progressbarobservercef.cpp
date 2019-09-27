@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,38 +27,39 @@
  *
  *********************************************************************************/
 
-#include <modules/qtwidgets/tf/tfcoloredit.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
+#include <modules/webbrowser/processors/progressbarobservercef.h>
 
-#include <inviwo/core/util/colorconversion.h>
-
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QSizePolicy>
-#include <warn/pop>
+#include <inviwo/core/processors/progressbarowner.h>
 
 namespace inviwo {
 
-TFColorEdit::TFColorEdit(QWidget* parent) : ColorLineEdit(parent) {
-    setRepresentation(ColorRepresentation::Hexadecimal);
+ProgressBarObserverCEF::ProgressBarObserverCEF(CefRefPtr<CefFrame> frame,
+                                               std::string onProgressChange,
+                                               std::string onVisibleChange)
+    : onProgressChange_(onProgressChange)
+    , onProgressVisibleChange_(onVisibleChange)
+    , frame_(frame) {}
 
-    connect(this, &ColorLineEdit::colorChanged, this, [this]() {
-        // QColor(QString) should only be used for 6-digit hex codes, since
-        // 8-digit hex codes in Qt are in the form of #AARRGGBB while Inviwo uses #RRGGBBAA
-        emit colorChanged(utilqt::toQColor(getColor<vec3>()));
-    });
-
-    setSizePolicy(QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred));
-}
-
-QSize TFColorEdit::sizeHint() const { return QSize(18, 18); }
-
-void TFColorEdit::setColor(const QColor& color, bool ambiguous) {
-    if (ambiguous) {
-        setInvalid(true);
-    } else {
-        ColorLineEdit::setColor(utilqt::tovec3(color), ColorRepresentation::Hexadecimal);
+void ProgressBarObserverCEF::progressChanged(float progress) {
+    // Frame might be null if for example webpage is not found on startup
+    if (!frame_ || getOnProgressChange().empty()) {
+        return;
     }
+    std::stringstream script;
+    script << getOnProgressChange() << "(" << progress << ");";
+    frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);
 }
+
+void ProgressBarObserverCEF::progressBarVisibilityChanged(bool visible) {
+    // Frame might be null if for example webpage is not found on startup
+    if (!frame_ || getOnProgressVisibleChange().empty()) {
+        return;
+    }
+    std::stringstream script;
+    script << getOnProgressVisibleChange() << "(" << (visible ? "true" : "false") << ");";
+    frame_->ExecuteJavaScript(script.str(), frame_->GetURL(), 0);
+}
+
+void ProgressBarObserverCEF::setFrame(CefRefPtr<CefFrame> frame) { frame_ = frame; }
 
 }  // namespace inviwo

@@ -63,7 +63,6 @@ PostProcessingModule::PostProcessingModule(InviwoApplication* app)
     registerProcessor<DepthDarkening>();
     registerProcessor<ImageHueSaturationLuminance>();
     registerProcessor<ImageWindowLevelWidth>();
-    registerProcessor<ImageSharpen>();
     registerProcessor<ImageFilter>();
     registerProcessor<ImageOpacity>();
 

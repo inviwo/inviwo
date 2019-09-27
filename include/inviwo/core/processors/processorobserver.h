@@ -89,6 +89,12 @@ public:
      * The processor argument is the modified processor
      */
     virtual void onProcessorReadyChanged(Processor*){};
+    /**
+     * Called after a processor inport and its connected outport(s) changed active state.
+     * The processor argument is the modified processor
+     * @see Processor::isConnectionActive
+     */
+    virtual void onProcessorActiveConnectionsChanged(Processor*){};
 };
 
 /** \class ProcessorObservable
@@ -145,6 +151,9 @@ protected:
     }
     void notifyObserversReadyChange(Processor* p) {
         forEachObserver([&](ProcessorObserver* o) { o->onProcessorReadyChanged(p); });
+    }
+    void notifyObserversActiveConnectionsChange(Processor* p) {
+        forEachObserver([&](ProcessorObserver* o) { o->onProcessorActiveConnectionsChanged(p); });
     }
 };
 

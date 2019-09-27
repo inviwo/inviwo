@@ -119,19 +119,50 @@ void PickingController::propagateEvent(TouchEvent* e, EventPropagator* propagato
 
         auto ps = TouchEvent::getPickingState(points);
 
-        TouchEvent te(points, e->getDevice());
+        TouchEvent te(points, e->getDevice(), e->modifiers());
         auto prevPos = te.centerNDC();  // Need so save here since te might be modified
 
         size_t currentId = 0;   // TODO
         size_t pressedId = 0;   // TODO
         size_t previousId = 0;  // TODO
+        PickingPressState pressState = [ps]() {
+            switch (ps) {
+                case PickingState::Started:
+                    return PickingPressState::Press;
+                case PickingState::Updated:
+                    return PickingPressState::Move;
+                case PickingState::Finished:
+                    return PickingPressState::Release;
+                default:
+                    return PickingPressState::None;
+            }
+        }();
+        PickingPressItem pressItem = [points, e]() {
+            if (e->getDevice()->getType() == TouchDevice::DeviceType::TouchPad) {
+                // Possible to press touchpads
+                auto nPressed = std::accumulate(
+                    points.begin(), points.end(), 0u, [](size_t v, const auto& p) -> size_t {
+                        return v + (p.state() == TouchState::Stationary ? 1 : 0);
+                    });
+                if (nPressed == 0) {
+                    return PickingPressItem::None;
+                } else if (nPressed == 1) {
+                    return PickingPressItem::Primary;
+                } else if (nPressed == 2) {
+                    return PickingPressItem::Secondary;
+                } else {  // nPressed > 2
+                    return PickingPressItem::Tertiary;
+                }
+            } else {
+                // Treat touch point on TouchScreen as "button down"
+                return PickingPressItem::Primary;
+            }
+        }();
 
-        PickingEvent pickingEvent(
-            pickingIdToAction[pickingId], &te, ps,
-            ps == PickingState::Started ? PickingPressState::Press : PickingPressState::Move,
-            PickingPressItem::Primary, PickingHoverState::None, PickingPressItem::Primary,
-            pickingId, currentId, pressedId, previousId, tstate_.pickingIdToPressNDC[pickingId],
-            tstate_.pickingIdToPreviousNDC[pickingId]);
+        PickingEvent pickingEvent(pickingIdToAction[pickingId], &te, ps, pressState, pressItem,
+                                  PickingHoverState::None, pressItem, pickingId, currentId,
+                                  pressedId, previousId, tstate_.pickingIdToPressNDC[pickingId],
+                                  tstate_.pickingIdToPreviousNDC[pickingId]);
 
         propagator->propagateEvent(&pickingEvent, nullptr);
         if (pickingEvent.hasBeenUsed() || te.hasBeenUsed()) {
