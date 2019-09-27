@@ -1,7 +1,0 @@
-VolumeSource.filename:Boron
-VolumeSource.VolumeDescription0.image
-VolumeSource.VolumeDescription1.image
-VolumeSource.reload
-VolumeRaycaster.isotfComposite.transferFunction
-Canvas.showCanvas
-Mesh Renderer.geometry:Geo
