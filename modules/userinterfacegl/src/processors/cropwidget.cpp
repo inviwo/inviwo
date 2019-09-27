@@ -216,7 +216,7 @@ void CropWidget::process() {
         utilgl::activateAndClearTarget(outport_, ImageType::ColorDepthPicking);
     }
 
-    if (showWidget_.get()) {
+    if (showWidget_ || showCropPlane_) {
         utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
         utilgl::BlendModeState blending(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         shader_.activate();
@@ -329,7 +329,7 @@ void CropWidget::renderAxis(const CropAxis &axis) {
     float upperBound = (property.get().y - property.getRangeMin()) / range;
 
     // draw the interaction handles
-    {
+    if (showWidget_) {
         const int axisIDOffset = static_cast<int>(axis.axis) * numInteractionWidgets;
 
         shader_.activate();

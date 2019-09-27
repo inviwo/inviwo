@@ -51,7 +51,7 @@ try:
 			downgradeMarkdown = True
 			raise ImportError # need to downgrade markdown module, do NOT check for gfm module!
 except ImportError:
-	missing_modules["pip install \'markdown<3.0\'"] = "needed for markdown parsing (requires version prior 3 due to py-gfm dependency)"
+	missing_modules['"markdown<3.0"'] = "needed for markdown parsing (requires version prior 3 due to py-gfm dependency)"
 
 if not downgradeMarkdown:
 	try:
@@ -161,7 +161,7 @@ htmlHeader = """<!DOCTYPE html>
 <body >
 <h1>Latest Changes</h1>
 """
-htmlBody = "</body></html>"
+htmlBody = "</body></html>\n"
 changelogBegin = "Here we document changes"
 
 def main(args):

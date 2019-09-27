@@ -36,6 +36,7 @@
 #include <modules/basegl/processors/delaunaytriangulation2d.h>
 #include <modules/basegl/processors/drawlines.h>
 #include <modules/basegl/processors/drawpoints.h>
+#include <modules/basegl/processors/embeddedvolumeslice.h>
 #include <modules/basegl/processors/entryexitpointsprocessor.h>
 #include <modules/basegl/processors/firstivwprocessor.h>
 #include <modules/basegl/processors/geometryentryexitpoints.h>
@@ -71,6 +72,7 @@
 #include <modules/basegl/processors/meshpicking.h>
 #include <modules/basegl/processors/meshrenderprocessorgl.h>
 #include <modules/basegl/processors/mprentryexitpointsprocessor.h>
+#include <modules/basegl/processors/mprproxygeometryprocessor.h>
 #include <modules/basegl/processors/multichannelraycaster.h>
 #include <modules/basegl/processors/pointrenderer.h>
 #include <modules/basegl/processors/polylinegrabber.h>
@@ -115,6 +117,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerProcessor<DelaunayTriangulation2D>();
     registerProcessor<DrawLines>();
     registerProcessor<DrawPoints>();
+    registerProcessor<EmbeddedVolumeSlice>();
     registerProcessor<EntryExitPoints>();
     registerProcessor<FirstIvwProcessor>();
     registerProcessor<GeometryEntryExitPoints>();
@@ -132,6 +135,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerProcessor<MeshPicking>();
     registerProcessor<MeshRenderProcessorGL>();
     registerProcessor<MPREntryExitPoints>();
+	registerProcessor<MPRProxyGeometry>();
     registerProcessor<MultichannelRaycaster>();
     registerProcessor<PointRenderer>();
     registerProcessor<PolylineGrabber>();

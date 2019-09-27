@@ -35,26 +35,31 @@ namespace inviwo {
 const std::string ButtonProperty::classIdentifier = "org.inviwo.ButtonProperty";
 std::string ButtonProperty::getClassIdentifier() const { return classIdentifier; }
 
-ButtonProperty::ButtonProperty(
-    std::string identifier, std::string displayName,
-    InvalidationLevel invalidationLevel /*=InvalidationLevel::InvalidOutput*/,
-    PropertySemantics semantics /*= PropertySemantics::Default*/)
+ButtonProperty::ButtonProperty(std::string identifier, std::string displayName,
+                               InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : Property(identifier, displayName, invalidationLevel, semantics) {
     setValid();  // the initial state for a button should be valid
 }
 
+ButtonProperty::ButtonProperty(std::string identifier, std::string displayName,
+                               std::function<void()> callback, InvalidationLevel invalidationLevel,
+                               PropertySemantics semantics)
+    : Property(identifier, displayName, invalidationLevel, semantics) {
+    setValid();  // the initial state for a button should be valid
+    onChange(std::move(callback));
+}
+
 ButtonProperty::ButtonProperty(const ButtonProperty& rhs) : Property(rhs) {}
 
-ButtonProperty& ButtonProperty::operator=(const ButtonProperty& that) {
-    if (this != &that) {
-        Property::operator=(that);
-    }
-    return *this;
+ButtonProperty::ButtonProperty(const ButtonProperty& rhs, std::function<void()> callback)
+    : Property(rhs) {
+    setValid();
+    onChange(std::move(callback));
 }
 
 ButtonProperty* ButtonProperty::clone() const { return new ButtonProperty(*this); }
 
-ButtonProperty::~ButtonProperty() {}
+ButtonProperty::~ButtonProperty() = default;
 
 void ButtonProperty::set(const Property* src) {
     bool* ptr = nullptr;
@@ -71,8 +76,9 @@ void ButtonProperty::pressButton() {
 }
 
 ButtonProperty& ButtonProperty::propertyModified() {
-    if (!buttonPressed_) return *this;
-    Property::propertyModified();
+    if (buttonPressed_) {
+        Property::propertyModified();
+    }
     return *this;
 }
 

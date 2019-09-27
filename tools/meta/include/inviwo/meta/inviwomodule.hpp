@@ -95,11 +95,11 @@ public:
                                                           std::vector<std::filesystem::path> bases);
 
 private:
-    static inline const std::string_view headerGroup{"HEADER_FILES"};
-    static inline const std::string_view sourceGroup{"SOURCE_FILES"};
-    static inline const std::string_view shaderGroup{"SHADER_FILES"};
-    static inline const std::string_view testGroup{"TEST_FILES"};
-    static inline const std::string_view moduleCmd{"ivw_module"};
+    static inline constexpr std::string_view headerGroup{"HEADER_FILES"};
+    static inline constexpr std::string_view sourceGroup{"SOURCE_FILES"};
+    static inline constexpr std::string_view shaderGroup{"SHADER_FILES"};
+    static inline constexpr std::string_view testGroup{"TEST_FILES"};
+    static inline constexpr std::string_view moduleCmd{"ivw_module"};
 
     static void sortArgs(cmake::Command& cmd);
     static void addArg(std::vector<cmake::ArgElement>& args, std::string_view arg);

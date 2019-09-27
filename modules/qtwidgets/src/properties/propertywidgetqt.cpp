@@ -435,6 +435,7 @@ UsageMode PropertyWidgetQt::getApplicationUsageMode() {
 
 bool PropertyWidgetQt::event(QEvent* event) {
     if (event->type() == QEvent::ToolTip && property_) {
+        event->accept();
         auto helpEvent = static_cast<QHelpEvent*>(event);
         QToolTip::showText(helpEvent->globalPos(), utilqt::toQString(property_->getDescription()));
         return true;

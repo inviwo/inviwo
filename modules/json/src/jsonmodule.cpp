@@ -37,6 +37,8 @@
 #include <modules/json/io/json/ordinalpropertyjsonconverter.h>
 #include <modules/json/io/json/templatepropertyjsonconverter.h>
 
+#include <inviwo/core/properties/stringproperty.h>
+
 namespace inviwo {
 struct OrdinalReghelper {
     template <typename T>

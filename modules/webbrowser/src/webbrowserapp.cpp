@@ -33,4 +33,9 @@ namespace inviwo {
 
 WebBrowserApp::WebBrowserApp() = default;
 
+void WebBrowserApp::OnBeforeCommandLineProcessing(const CefString& process_type,
+                                                  CefRefPtr<CefCommandLine> command_line) {
+    command_line->AppendSwitch("allow-file-access-from-files");
+}
+
 }  // namespace inviwo

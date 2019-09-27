@@ -48,13 +48,6 @@ namespace inviwo {
 
     ImageProperty::ImageProperty(const ImageProperty& rhs) : Property(rhs) {}
 
-    ImageProperty& ImageProperty::operator=(const ImageProperty& that) {
-        if (this != &that) {
-            Property::operator=(that);
-        }
-        return *this;
-    }
-
     ImageProperty* ImageProperty::clone() const { return new ImageProperty(*this); }
 
     ImageProperty::~ImageProperty() {}

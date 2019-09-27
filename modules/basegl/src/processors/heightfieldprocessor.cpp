@@ -43,6 +43,7 @@
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/texture/textureutils.h>
+#include <inviwo/core/algorithm/boundingbox.h>
 
 namespace inviwo {
 
@@ -70,8 +71,7 @@ HeightFieldProcessor::HeightFieldProcessor()
            {"shadingColorTex", "Color Texture", HeightFieldShading::ColorTexture},
            {"shadingHeightField", "Heightfield Texture", HeightFieldShading::HeightField}},
           0)
-    , camera_("camera", "Camera", vec3(0.0f, 0.0f, 2.0f), vec3(0.0f, 0.0f, 0.0f),
-              vec3(0.0f, 1.0f, 0.0f), &inport_)
+    , camera_("camera", "Camera", util::boundingBox(inport_))
     , resetViewParams_("resetView", "Reset Camera")
     , trackball_(&camera_)
     , lightingProperty_("lighting", "Lighting", &camera_)
@@ -95,7 +95,6 @@ HeightFieldProcessor::HeightFieldProcessor()
     addProperty(camera_);
     resetViewParams_.onChange([this]() { camera_.resetCamera(); });
     addProperty(resetViewParams_);
-    outport_.addResizeEventListener(&camera_);
     inport_.onChange([this]() { updateDrawers(); });
 
     addProperty(lightingProperty_);

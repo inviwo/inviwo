@@ -191,7 +191,7 @@ target_include_directories(tiff INTERFACE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/>
 )
 
-add_library(inviwo::tiff ALIAS tiff)
+add_library(TIFF::TIFF ALIAS tiff)
 #--------------------------------------------------------------------
 # Install library into target folder
 ivw_default_install_comp_targets(core tiff)
@@ -205,5 +205,5 @@ if(cxx)
       $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/>
       $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/>
   )
-  add_library(inviwo::tiffxx ALIAS tiffxx)
+  add_library(TIFF::TIFFXX ALIAS tiffxx)
 endif()

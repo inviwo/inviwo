@@ -28,12 +28,15 @@
  *********************************************************************************/
 
 #include <modules/base/processors/imagesource.h>
+#include <modules/base/processors/datasource.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/datastructures/image/layerdisk.h>
 #include <inviwo/core/datastructures/image/imageram.h>
 #include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/io/datareaderexception.h>
+
+#include <algorithm>
 
 namespace inviwo {
 
@@ -51,23 +54,30 @@ ImageSource::ImageSource(InviwoApplication* app, const std::string& file)
     , rf_(app->getDataReaderFactory())
     , outport_("image", DataVec4UInt8::get(), false)
     , file_("imageFileName", "File name", file, "image")
-    , imageDimension_("imageDimension_", "Dimension", ivec2(0), ivec2(0), ivec2(10000), ivec2(1),
-                      InvalidationLevel::Valid, PropertySemantics("Text")) {
+    , reader_("reader", "Data Reader")
+    , reload_("reload", "Reload data")
+    , imageDimension_("imageDimension_", "Dimension", size2_t(0), size2_t(0), size2_t(10000),
+                      size2_t(1), InvalidationLevel::Valid, PropertySemantics("Text")) {
 
     addPort(outport_);
-
-    file_.clearNameFilters();
-    file_.addNameFilter(FileExtension::all());
-    file_.addNameFilters(rf_->getExtensionsForType<Layer>());
-
-    addProperty(file_);
-
+    addProperties(file_, reader_, reload_, imageDimension_);
     imageDimension_.setReadOnly(true);
-    addProperty(imageDimension_);
 
+    util::updateFilenameFilters<Layer>(*rf_, file_, reader_);
+    util::updateReaderFromFile(file_, reader_);
+
+    // make sure that we always process even if not connected
     isSink_.setUpdate([]() { return true; });
-    isReady_.setUpdate([this]() { return !loadingFailed_ && filesystem::fileExists(file_.get()); });
+    isReady_.setUpdate([this]() {
+        return !loadingFailed_ && filesystem::fileExists(file_.get()) &&
+               !reader_.getSelectedValue().empty();
+    });
     file_.onChange([this]() {
+        loadingFailed_ = false;
+        util::updateReaderFromFile(file_, reader_);
+        isReady_.update();
+    });
+    reader_.onChange([this]() {
         loadingFailed_ = false;
         isReady_.update();
     });
@@ -76,7 +86,7 @@ ImageSource::ImageSource(InviwoApplication* app, const std::string& file)
 void ImageSource::process() {
     if (file_.get().empty()) return;
 
-    const auto sext = file_.getSelectedExtension();
+    const auto sext = reader_.getSelectedValue();
     const auto fext = filesystem::getFileExtension(file_.get());
     if (auto reader = rf_->getReaderForTypeAndExtension<Layer>(sext, fext)) {
         try {
@@ -87,20 +97,20 @@ void ImageSource::process() {
             util::log(e.getContext(), "Could not load data: " + file_.get() + ", " + e.getMessage(),
                       LogLevel::Error);
             loadingFailed_ = true;
+            outport_.detachData();
             isReady_.update();
         }
     } else {
         LogError("Could not find a data reader for file: " << file_.get());
         loadingFailed_ = true;
+        outport_.detachData();
         isReady_.update();
     }
 }
 
 void ImageSource::deserialize(Deserializer& d) {
     Processor::deserialize(d);
-    file_.clearNameFilters();
-    file_.addNameFilter(FileExtension::all());
-    file_.addNameFilters(rf_->getExtensionsForType<Layer>());
+    util::updateFilenameFilters<Layer>(*rf_, file_, reader_);
 }
 
 }  // namespace inviwo

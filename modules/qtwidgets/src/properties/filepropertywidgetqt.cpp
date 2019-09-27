@@ -83,6 +83,9 @@ FilePropertyWidgetQt::FilePropertyWidgetQt(FileProperty* property)
             // editing is done, sync property with contents
             if (lineEdit_->isModified()) {
                 property_->set(lineEdit_->getPath());
+                if (!property_->getSelectedExtension().matches(property_->get())) {
+                    property_->setSelectedExtension(FileExtension::all());
+                }
             }
         });
         auto sp = lineEdit_->sizePolicy();
@@ -134,22 +137,16 @@ FilePropertyWidgetQt::FilePropertyWidgetQt(FileProperty* property)
 void FilePropertyWidgetQt::setPropertyValue() {
     const std::string filename{property_->get()};
 
-    // Setup Extensions
-    std::vector<FileExtension> filters = property_->getNameFilters();
-    InviwoFileDialog importFileDialog(this, property_->getDisplayName(),
-                                      property_->getContentType(), filename);
+    InviwoFileDialog fileDialog(this, property_->getDisplayName(), property_->getContentType(),
+                                filename);
 
-    for (const auto& filter : filters) importFileDialog.addExtension(filter);
+    fileDialog.setAcceptMode(property_->getAcceptMode());
+    fileDialog.setFileMode(property_->getFileMode());
+    fileDialog.addExtensions(property_->getNameFilters());
+    fileDialog.setSelectedExtension(property_->getSelectedExtension());
 
-    importFileDialog.setAcceptMode(property_->getAcceptMode());
-    importFileDialog.setFileMode(property_->getFileMode());
-
-    auto ext = property_->getSelectedExtension();
-    if (!ext.empty()) importFileDialog.setSelectedExtension(ext);
-
-    if (importFileDialog.exec()) {
-        property_->setSelectedExtension(importFileDialog.getSelectedFileExtension());
-        property_->set(importFileDialog.getSelectedFile());
+    if (fileDialog.exec()) {
+        property_->set(fileDialog.getSelectedFile(), fileDialog.getSelectedFileExtension());
     }
 
     updateFromProperty();

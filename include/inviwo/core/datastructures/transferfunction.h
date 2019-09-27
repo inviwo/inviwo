@@ -61,37 +61,6 @@ public:
     const Layer* getData() const;
     size_t getTextureSize() const;
 
-    // clang-format off
-    [[deprecated("was declared deprecated (20180418). Use `size()` instead")]]
-    size_t getNumPoints() const;
-
-    [[deprecated("was declared deprecated (20180418). Use `get(size_t i)` instead")]]
-    TFPrimitive* getPoint(size_t i);
-    [[deprecated("was declared deprecated (20180418). Use `get(size_t i) const` instead")]]
-    const TFPrimitive* getPoint(size_t i) const;
-
-    [[deprecated("was declared deprecated (20180418). Use `add(const double& pos, const vec4& color)` instead")]]
-    void addPoint(const float& pos, const vec4& color);
-
-    [[deprecated("was declared deprecated (20180418). Use `add(const TFPrimitiveData& data)` instead")]]
-    void addPoint(const TFPrimitiveData& point);
-
-    [[deprecated("was declared deprecated (20180418). Use `add(const dvec2& pos)` instead")]]
-    void addPoint(const vec2& pos);
-
-    [[deprecated("was declared deprecated (20180418). Use `add(const std::vector<TFPrimitiveData>& primitives)` instead")]]
-    void addPoints(const std::vector<TFPrimitiveData>& points);
-
-    [[deprecated("was declared deprecated (20180418). Use `add(const double& pos, const vec4& color)` instead")]]
-    void addPoint(const vec2& pos, const vec4& color);
-
-    [[deprecated("was declared deprecated (20180418). Use `remove(TFPrimitive* primitive)` instead")]]
-    void removePoint(TFPrimitive* dataPoint);
-
-    [[deprecated("was declared deprecated (20180418). Use `clear()` instead")]]
-    void clearPoints();
-    // clang-format on
-
     void setMaskMin(double maskMin);
     double getMaskMin() const;
     void setMaskMax(double maskMax);
@@ -133,6 +102,14 @@ public:
                       const FileExtension& ext = FileExtension()) override;
 
     virtual std::string getTitle() const override;
+
+    /**
+     * Simplify a vector of TF points by removing points that can be replaced by interpolating
+     * between the previous and the next point, as long as the resulting error is less then delta.
+     * the error is the absolute maximal component wise error at the point to be removed.
+     */
+    static std::vector<TFPrimitiveData> simplify(const std::vector<TFPrimitiveData>& points,
+                                                 double delta = 0.01);
 
 protected:
     void calcTransferValues() const;

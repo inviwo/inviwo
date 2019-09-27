@@ -11,6 +11,8 @@
                     <Processor content="org.inviwo.Mesh.outport.metasource" />
                     <Processor content="org.inviwo.Volume.outport.metasink" />
                     <Processor content="org.inviwo.Volume.outport.metasource" />
+                    <Processor content="org.inviwo.Volume.shared_ptr.vector.outport.metasink" />
+                    <Processor content="org.inviwo.Volume.shared_ptr.vector.outport.metasource" />
                     <Processor content="org.inviwo.Buffer.outport.metasink" />
                     <Processor content="org.inviwo.Buffer.outport.metasource" />
                     <Processor content="org.inviwo.LightSource.outport.metasink" />
@@ -212,6 +214,7 @@
                     <Processor content="org.inviwo.BrushingAndLinkingProcessor" />
                 </Processors>
             </Module>
+            <Module name="JSON" version="0" />
             <Module name="DataFrame" version="0">
                 <Processors>
                     <Processor content="org.inviwo.CSVSource" />
@@ -270,10 +273,11 @@
                     <Processor content="org.inviwo.GLUITestProcessor" />
                 </Processors>
             </Module>
-            <Module name="PlottingGL" version="1">
+            <Module name="PlottingGL" version="2">
                 <Processors>
                     <Processor content="org.inviwo.AxisRenderProcessor" />
                     <Processor content="org.inviwo.ColorScaleLegend" />
+                    <Processor content="org.inviwo.ImagePlotProcessor" />
                     <Processor content="org.inviwo.ParallelCoordinates" />
                     <Processor content="org.inviwo.PersistenceDiagramPlotProcessor" />
                     <Processor content="org.inviwo.ScatterPlotMatrixProcessor" />
@@ -368,7 +372,7 @@
                     <PortGroup content="default" key="outport" />
                 </PortGroups>
                 <OutPorts>
-                    <OutPort type="org.inviwo.Image.outport" identifier="outport" id="ref12" />
+                    <OutPort type="org.inviwo.Image.outport" identifier="outport" id="ref4" />
                 </OutPorts>
                 <Properties>
                     <Property type="org.inviwo.IntVec2Property" identifier="size">
@@ -396,14 +400,14 @@
                     <PortGroup content="default" key="inport" />
                 </PortGroups>
                 <InPorts>
-                    <InPort type="org.inviwo.Image.inport" identifier="inport" id="ref5" />
+                    <InPort type="org.inviwo.Image.inport" identifier="inport" id="ref2" />
                 </InPorts>
                 <Properties>
                     <Property type="org.inviwo.CompositeProperty" identifier="inputSize">
                         <Properties>
-                            <Property type="org.inviwo.IntVec2Property" identifier="dimensions" id="ref6" />
+                            <Property type="org.inviwo.IntSize2Property" identifier="dimensions" id="ref3" />
                             <Property type="org.inviwo.BoolProperty" identifier="enableCustomInputDimensions" />
-                            <Property type="org.inviwo.IntVec2Property" identifier="customInputDimensions">
+                            <Property type="org.inviwo.IntSize2Property" identifier="customInputDimensions">
                                 <readonly content="1" />
                                 <value x="450" y="450" />
                             </Property>
@@ -431,16 +435,14 @@
                         <absolutePath content="" />
                         <workspaceRelativePath content="" />
                         <ivwdataRelativePath content="" />
-                        <nameFilter>
-                            <filter>
-                                <extension content="*" />
-                                <description content="All Files" />
-                            </filter>
-                        </nameFilter>
+                        <selectedExtension>
+                            <extension content="*" />
+                            <description content="All Files" />
+                        </selectedExtension>
                         <acceptMode content="0" />
                         <fileMode content="4" />
                     </Property>
-                    <Property type="org.inviwo.OptionPropertyString" identifier="fileExt" />
+                    <Property type="org.inviwo.OptionPropertyFileExtension" identifier="fileExt" />
                     <Property type="org.inviwo.ButtonProperty" identifier="saveLayer" />
                     <Property type="org.inviwo.ButtonProperty" identifier="saveLayerToFile" />
                     <Property type="org.inviwo.BoolProperty" identifier="fullscreen" />
@@ -465,6 +467,70 @@
                     </MetaDataItem>
                 </MetaDataMap>
             </Processor>
+            <Processor type="org.inviwo.LIC2D" identifier="LIC2D" displayName="LIC2D">
+                <PortGroups>
+                    <PortGroup content="default" key="LIC2D" />
+                    <PortGroup content="default" key="noiseTexture" />
+                    <PortGroup content="default" key="vectorField" />
+                </PortGroups>
+                <InPorts>
+                    <InPort type="org.inviwo.Image.inport" identifier="vectorField" id="ref8" />
+                    <InPort type="org.inviwo.Image.inport" identifier="noiseTexture" id="ref9" />
+                </InPorts>
+                <OutPorts>
+                    <OutPort type="org.inviwo.Image.outport" identifier="LIC2D" id="ref10" />
+                </OutPorts>
+                <Properties>
+                    <Property type="org.inviwo.IntProperty" identifier="samples" />
+                    <Property type="org.inviwo.FloatProperty" identifier="stepLength" />
+                    <Property type="org.inviwo.BoolProperty" identifier="normalizeVectors" />
+                    <Property type="org.inviwo.BoolProperty" identifier="intensityMapping">
+                        <value content="1" />
+                    </Property>
+                    <Property type="org.inviwo.BoolProperty" identifier="useRK4">
+                        <value content="0" />
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="-125" y="125" />
+                        <visibility content="1" />
+                        <selection content="1" />
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.LIC2D" identifier="LIC2D 2" displayName="LIC2D">
+                <PortGroups>
+                    <PortGroup content="default" key="LIC2D" />
+                    <PortGroup content="default" key="noiseTexture" />
+                    <PortGroup content="default" key="vectorField" />
+                </PortGroups>
+                <InPorts>
+                    <InPort type="org.inviwo.Image.inport" identifier="vectorField" id="ref5" />
+                    <InPort type="org.inviwo.Image.inport" identifier="noiseTexture" id="ref6" />
+                </InPorts>
+                <OutPorts>
+                    <OutPort type="org.inviwo.Image.outport" identifier="LIC2D" id="ref7" />
+                </OutPorts>
+                <Properties>
+                    <Property type="org.inviwo.IntProperty" identifier="samples">
+                        <value content="10" />
+                    </Property>
+                    <Property type="org.inviwo.FloatProperty" identifier="stepLength" />
+                    <Property type="org.inviwo.BoolProperty" identifier="normalizeVectors" />
+                    <Property type="org.inviwo.BoolProperty" identifier="intensityMapping" />
+                    <Property type="org.inviwo.BoolProperty" identifier="useRK4">
+                        <value content="0" />
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="-300" y="275" />
+                        <visibility content="1" />
+                        <selection content="0" />
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
             <Processor type="org.inviwo.CanvasGL" identifier="Enhanced LIC" displayName="Canvas">
                 <PortGroups>
                     <PortGroup content="default" key="inport" />
@@ -475,9 +541,9 @@
                 <Properties>
                     <Property type="org.inviwo.CompositeProperty" identifier="inputSize">
                         <Properties>
-                            <Property type="org.inviwo.IntVec2Property" identifier="dimensions" id="ref14" />
+                            <Property type="org.inviwo.IntSize2Property" identifier="dimensions" id="ref14" />
                             <Property type="org.inviwo.BoolProperty" identifier="enableCustomInputDimensions" />
-                            <Property type="org.inviwo.IntVec2Property" identifier="customInputDimensions">
+                            <Property type="org.inviwo.IntSize2Property" identifier="customInputDimensions">
                                 <readonly content="1" />
                                 <value x="450" y="450" />
                             </Property>
@@ -505,16 +571,14 @@
                         <absolutePath content="" />
                         <workspaceRelativePath content="" />
                         <ivwdataRelativePath content="" />
-                        <nameFilter>
-                            <filter>
-                                <extension content="*" />
-                                <description content="All Files" />
-                            </filter>
-                        </nameFilter>
+                        <selectedExtension>
+                            <extension content="*" />
+                            <description content="All Files" />
+                        </selectedExtension>
                         <acceptMode content="0" />
                         <fileMode content="4" />
                     </Property>
-                    <Property type="org.inviwo.OptionPropertyString" identifier="fileExt" />
+                    <Property type="org.inviwo.OptionPropertyFileExtension" identifier="fileExt" />
                     <Property type="org.inviwo.ButtonProperty" identifier="saveLayer" />
                     <Property type="org.inviwo.ButtonProperty" identifier="saveLayerToFile" />
                     <Property type="org.inviwo.BoolProperty" identifier="fullscreen" />
@@ -539,67 +603,28 @@
                     </MetaDataItem>
                 </MetaDataMap>
             </Processor>
-            <Processor type="org.inviwo.LIC2D" identifier="LIC2D 2" displayName="LIC2D">
+            <Processor type="org.inviwo.ImageHighPass" identifier="Image High Pass" displayName="Image High Pass">
                 <PortGroups>
-                    <PortGroup content="default" key="LIC2D" />
-                    <PortGroup content="default" key="noiseTexture" />
-                    <PortGroup content="default" key="vectorField" />
+                    <PortGroup content="default" key="inputImage" />
+                    <PortGroup content="default" key="outputImage" />
                 </PortGroups>
                 <InPorts>
-                    <InPort type="org.inviwo.Image.inport" identifier="vectorField" id="ref9" />
-                    <InPort type="org.inviwo.Image.inport" identifier="noiseTexture" id="ref10" />
+                    <InPort type="org.inviwo.Image.inport" identifier="inputImage" id="ref0" />
                 </InPorts>
                 <OutPorts>
-                    <OutPort type="org.inviwo.Image.outport" identifier="LIC2D" id="ref11" />
+                    <OutPort type="org.inviwo.Image.outport" identifier="outputImage" id="ref1" />
                 </OutPorts>
                 <Properties>
-                    <Property type="org.inviwo.IntProperty" identifier="samples">
-                        <value content="10" />
-                    </Property>
-                    <Property type="org.inviwo.FloatProperty" identifier="stepLength" />
-                    <Property type="org.inviwo.BoolProperty" identifier="normalizeVectors" />
-                    <Property type="org.inviwo.BoolProperty" identifier="intensityMapping" />
-                    <Property type="org.inviwo.BoolProperty" identifier="useRK4">
-                        <value content="0" />
-                    </Property>
-                </Properties>
-                <MetaDataMap>
-                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
-                        <position x="-300" y="275" />
-                        <visibility content="1" />
-                        <selection content="0" />
-                    </MetaDataItem>
-                </MetaDataMap>
-            </Processor>
-            <Processor type="org.inviwo.LIC2D" identifier="LIC2D" displayName="LIC2D">
-                <PortGroups>
-                    <PortGroup content="default" key="LIC2D" />
-                    <PortGroup content="default" key="noiseTexture" />
-                    <PortGroup content="default" key="vectorField" />
-                </PortGroups>
-                <InPorts>
-                    <InPort type="org.inviwo.Image.inport" identifier="vectorField" id="ref2" />
-                    <InPort type="org.inviwo.Image.inport" identifier="noiseTexture" id="ref3" />
-                </InPorts>
-                <OutPorts>
-                    <OutPort type="org.inviwo.Image.outport" identifier="LIC2D" id="ref4" />
-                </OutPorts>
-                <Properties>
-                    <Property type="org.inviwo.IntProperty" identifier="samples" />
-                    <Property type="org.inviwo.FloatProperty" identifier="stepLength" />
-                    <Property type="org.inviwo.BoolProperty" identifier="normalizeVectors" />
-                    <Property type="org.inviwo.BoolProperty" identifier="intensityMapping">
+                    <Property type="org.inviwo.IntProperty" identifier="kernelSize" />
+                    <Property type="org.inviwo.BoolProperty" identifier="sharpen">
                         <value content="1" />
                     </Property>
-                    <Property type="org.inviwo.BoolProperty" identifier="useRK4">
-                        <value content="0" />
-                    </Property>
                 </Properties>
                 <MetaDataMap>
                     <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
-                        <position x="-125" y="125" />
+                        <position x="-275" y="200" />
                         <visibility content="1" />
-                        <selection content="1" />
+                        <selection content="0" />
                     </MetaDataItem>
                 </MetaDataMap>
             </Processor>
@@ -608,10 +633,10 @@
                     <PortGroup content="default" key="noise" />
                 </PortGroups>
                 <OutPorts>
-                    <OutPort type="org.inviwo.Image.outport" identifier="noise" id="ref0" />
+                    <OutPort type="org.inviwo.Image.outport" identifier="noise" id="ref11" />
                 </OutPorts>
                 <Properties>
-                    <Property type="org.inviwo.IntSize2Property" identifier="size" id="ref1">
+                    <Property type="org.inviwo.IntSize2Property" identifier="size" id="ref12">
                         <minvalue x="128" y="128" />
                         <value x="450" y="450" />
                     </Property>
@@ -658,78 +683,53 @@
                     </MetaDataItem>
                 </MetaDataMap>
             </Processor>
-            <Processor type="org.inviwo.ImageHighPass" identifier="Image High Pass" displayName="Image High Pass">
-                <PortGroups>
-                    <PortGroup content="default" key="inputImage" />
-                    <PortGroup content="default" key="outputImage" />
-                </PortGroups>
-                <InPorts>
-                    <InPort type="org.inviwo.Image.inport" identifier="inputImage" id="ref7" />
-                </InPorts>
-                <OutPorts>
-                    <OutPort type="org.inviwo.Image.outport" identifier="outputImage" id="ref8" />
-                </OutPorts>
-                <Properties>
-                    <Property type="org.inviwo.IntProperty" identifier="kernelSize" />
-                    <Property type="org.inviwo.BoolProperty" identifier="sharpen">
-                        <value content="1" />
-                    </Property>
-                </Properties>
-                <MetaDataMap>
-                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
-                        <position x="-275" y="200" />
-                        <visibility content="1" />
-                        <selection content="0" />
-                    </MetaDataItem>
-                </MetaDataMap>
-            </Processor>
         </Processors>
         <Connections>
             <Connection>
-                <OutPort type="org.inviwo.Image.outport" identifier="noise" reference="ref0" />
-                <InPort type="org.inviwo.Image.inport" identifier="noiseTexture" reference="ref3" />
+                <OutPort type="org.inviwo.Image.outport" identifier="noise" reference="ref11" />
+                <InPort type="org.inviwo.Image.inport" identifier="noiseTexture" reference="ref9" />
             </Connection>
             <Connection>
-                <OutPort type="org.inviwo.Image.outport" identifier="outport" reference="ref12" />
-                <InPort type="org.inviwo.Image.inport" identifier="vectorField" reference="ref2" />
+                <OutPort type="org.inviwo.Image.outport" identifier="outport" reference="ref4" />
+                <InPort type="org.inviwo.Image.inport" identifier="vectorField" reference="ref8" />
             </Connection>
             <Connection>
-                <OutPort type="org.inviwo.Image.outport" identifier="LIC2D" reference="ref11" />
+                <OutPort type="org.inviwo.Image.outport" identifier="LIC2D" reference="ref7" />
                 <InPort type="org.inviwo.Image.inport" identifier="inport" reference="ref13" />
             </Connection>
             <Connection>
-                <OutPort type="org.inviwo.Image.outport" identifier="outport" reference="ref12" />
-                <InPort type="org.inviwo.Image.inport" identifier="vectorField" reference="ref9" />
+                <OutPort type="org.inviwo.Image.outport" identifier="outport" reference="ref4" />
+                <InPort type="org.inviwo.Image.inport" identifier="vectorField" reference="ref5" />
             </Connection>
             <Connection>
-                <OutPort type="org.inviwo.Image.outport" identifier="LIC2D" reference="ref4" />
-                <InPort type="org.inviwo.Image.inport" identifier="inputImage" reference="ref7" />
+                <OutPort type="org.inviwo.Image.outport" identifier="LIC2D" reference="ref10" />
+                <InPort type="org.inviwo.Image.inport" identifier="inputImage" reference="ref0" />
             </Connection>
             <Connection>
-                <OutPort type="org.inviwo.Image.outport" identifier="outputImage" reference="ref8" />
-                <InPort type="org.inviwo.Image.inport" identifier="noiseTexture" reference="ref10" />
+                <OutPort type="org.inviwo.Image.outport" identifier="outputImage" reference="ref1" />
+                <InPort type="org.inviwo.Image.inport" identifier="noiseTexture" reference="ref6" />
             </Connection>
             <Connection>
-                <OutPort type="org.inviwo.Image.outport" identifier="LIC2D" reference="ref4" />
-                <InPort type="org.inviwo.Image.inport" identifier="inport" reference="ref5" />
+                <OutPort type="org.inviwo.Image.outport" identifier="LIC2D" reference="ref10" />
+                <InPort type="org.inviwo.Image.inport" identifier="inport" reference="ref2" />
             </Connection>
         </Connections>
         <PropertyLinks>
             <PropertyLink>
-                <SourceProperty type="org.inviwo.IntVec2Property" identifier="dimensions" reference="ref14" />
-                <DestinationProperty type="org.inviwo.IntVec2Property" identifier="dimensions" reference="ref6" />
+                <SourceProperty type="org.inviwo.IntSize2Property" identifier="dimensions" reference="ref14" />
+                <DestinationProperty type="org.inviwo.IntSize2Property" identifier="dimensions" reference="ref3" />
             </PropertyLink>
             <PropertyLink>
-                <SourceProperty type="org.inviwo.IntSize2Property" identifier="size" reference="ref1" />
-                <DestinationProperty type="org.inviwo.IntVec2Property" identifier="dimensions" reference="ref6" />
+                <SourceProperty type="org.inviwo.IntSize2Property" identifier="size" reference="ref12" />
+                <DestinationProperty type="org.inviwo.IntSize2Property" identifier="dimensions" reference="ref3" />
             </PropertyLink>
             <PropertyLink>
-                <SourceProperty type="org.inviwo.IntVec2Property" identifier="dimensions" reference="ref6" />
-                <DestinationProperty type="org.inviwo.IntSize2Property" identifier="size" reference="ref1" />
+                <SourceProperty type="org.inviwo.IntSize2Property" identifier="dimensions" reference="ref3" />
+                <DestinationProperty type="org.inviwo.IntSize2Property" identifier="size" reference="ref12" />
             </PropertyLink>
             <PropertyLink>
-                <SourceProperty type="org.inviwo.IntVec2Property" identifier="dimensions" reference="ref6" />
-                <DestinationProperty type="org.inviwo.IntVec2Property" identifier="dimensions" reference="ref14" />
+                <SourceProperty type="org.inviwo.IntSize2Property" identifier="dimensions" reference="ref3" />
+                <DestinationProperty type="org.inviwo.IntSize2Property" identifier="dimensions" reference="ref14" />
             </PropertyLink>
         </PropertyLinks>
     </ProcessorNetwork>
@@ -794,12 +794,10 @@
                         <absolutePath content="" />
                         <workspaceRelativePath content="" />
                         <ivwdataRelativePath content="" />
-                        <nameFilter>
-                            <filter>
-                                <extension content="*" />
-                                <description content="All Files" />
-                            </filter>
-                        </nameFilter>
+                        <selectedExtension>
+                            <extension content="*" />
+                            <description content="All Files" />
+                        </selectedExtension>
                         <acceptMode content="0" />
                         <fileMode content="4" />
                     </Property>

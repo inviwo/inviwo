@@ -7,6 +7,7 @@ project(inviwo-qteditor)
 set(MOC_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/connectiondraghelper.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/consolewidget.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/filetreemodel.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/filetreewidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialogscene.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdraghelper.h
@@ -31,8 +32,8 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialog.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialogcurvegraphicsitems.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialoggraphicsitems.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialogpropertygraphicsitems.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialogprocessorgraphicsitems.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialogpropertygraphicsitems.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkdialog/linkdialogview.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/linkgraphicsitem.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/networkeditorobserver.h
@@ -69,6 +70,7 @@ set(SOURCE_FILES
     dataopener.cpp
     editorgrapicsitem.cpp
     fileassociations.cpp
+    filetreemodel.cpp
     filetreewidget.cpp
     helpwidget.cpp
     inviwoaboutwindow.cpp
@@ -110,7 +112,7 @@ ivw_group("Source Files" ${SOURCE_FILES})
 
 #--------------------------------------------------------------------
 # Create library
-find_package(Qt5Core QUIET REQUIRED)
+find_package(Qt5Core 5.12 QUIET REQUIRED)
 find_package(Qt5Gui QUIET REQUIRED)
 find_package(Qt5Widgets QUIET REQUIRED)
 find_package(Qt5Help QUIET REQUIRED)
@@ -148,8 +150,8 @@ ivw_compile_optimize_on_target(inviwo-qteditor)
 # Generate html version of changelog (for the welcome widget), if python is available
 find_package(PythonInterp QUIET)
 if (PYTHONINTERP_FOUND)
-    add_custom_command(OUTPUT ${IVW_RESOURCES_DIR}/changelog.html
-        COMMAND ${PYTHON_EXECUTABLE} ${IVW_ROOT_DIR}/tools/changelog-to-html.py -i ${IVW_ROOT_DIR}/CHANGELOG.md -o ${IVW_RESOURCES_DIR}/changelog.html
+    add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/changelog.html
+        COMMAND ${PYTHON_EXECUTABLE} ${IVW_ROOT_DIR}/tools/changelog-to-html.py -i ${IVW_ROOT_DIR}/CHANGELOG.md -o ${CMAKE_BINARY_DIR}/changelog.html
         WORKING_DIRECTORY ${IVW_ROOT_DIR}
         MAIN_DEPENDENCY ${IVW_ROOT_DIR}/CHANGELOG.md
         DEPENDS ${IVW_ROOT_DIR}/tools/changelog-to-html.py
@@ -157,7 +159,10 @@ if (PYTHONINTERP_FOUND)
         VERBATIM
     )
     add_custom_target("inviwo-changelog"
-        DEPENDS ${IVW_RESOURCES_DIR}/changelog.html
+        DEPENDS ${CMAKE_BINARY_DIR}/changelog.html
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${CMAKE_BINARY_DIR}/changelog.html
+            ${IVW_RESOURCES_DIR}/changelog.html
     )
 
     add_dependencies("inviwo-qteditor" "inviwo-changelog")
@@ -169,7 +174,7 @@ ivw_default_install_comp_targets(qt_editor inviwo-qteditor)
 ivw_qt_add_to_install(qt_editor Qt5Core Qt5Gui Qt5Widgets Qt5Help Qt5Sql Qt5Svg) # Qt5Sql is needed by Qt5Help
 ivw_make_package(InviwoQtEditor inviwo-qteditor)
 
-ivw_register_license_file(NAME "DocumentWindow" MODULE QtEditor
+ivw_register_license_file(NAME "DocumentWindow" MODULE QtWidgets
     URL "https://wiki.qt.io/Assigning_a_file_type_to_an_Application_on_Windows"
     TYPE "Simplified BSD License"
     FILES ${IVW_INCLUDE_DIR}/inviwo/qt/editor/fileassociations.license.txt

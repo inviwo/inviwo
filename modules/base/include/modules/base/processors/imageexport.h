@@ -33,9 +33,13 @@
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <modules/base/processors/dataexport.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/network/processornetworkobserver.h>
+
+#include <modules/base/processors/dataexport.h>
 
 namespace inviwo {
 
@@ -54,16 +58,28 @@ namespace inviwo {
  *   * __Overwrite__ Force overwrite.
  *
  */
-class IVW_MODULE_BASE_API ImageExport : public DataExport<Layer, ImageInport> {
+class IVW_MODULE_BASE_API ImageExport : public DataExport<Layer, ImageInport>,
+                                        public ProcessorNetworkObserver {
 public:
-    ImageExport() = default;
+    ImageExport();
     virtual ~ImageExport() = default;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
+    BoolProperty outportDeterminesSize_;
+    IntSize2Property imageSize_;
+
+    virtual void setNetwork(ProcessorNetwork* network) override;
+
 protected:
+    void sendResizeEvent();
+
     virtual const Layer* getData() override;
+    virtual void onProcessorNetworkDidAddConnection(const PortConnection&) override;
+    virtual void onProcessorNetworkDidRemoveConnection(const PortConnection&) override;
+
+    size2_t prevSize_;
 };
 
 }  // namespace inviwo

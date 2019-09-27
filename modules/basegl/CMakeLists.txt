@@ -26,6 +26,7 @@ set(HEADER_FILES
     include/modules/basegl/processors/delaunaytriangulation2d.h
     include/modules/basegl/processors/drawlines.h
     include/modules/basegl/processors/drawpoints.h
+    include/modules/basegl/processors/embeddedvolumeslice.h
     include/modules/basegl/processors/entryexitpointsprocessor.h
     include/modules/basegl/processors/firstivwprocessor.h
     include/modules/basegl/processors/geometryentryexitpoints.h
@@ -61,6 +62,7 @@ set(HEADER_FILES
     include/modules/basegl/processors/meshpicking.h
     include/modules/basegl/processors/meshrenderprocessorgl.h
     include/modules/basegl/processors/mprentryexitpointsprocessor.h
+    include/modules/basegl/processors/mprproxygeometryprocessor.h
     include/modules/basegl/processors/multichannelraycaster.h
     include/modules/basegl/processors/pointrenderer.h
     include/modules/basegl/processors/polylinegrabber.h
@@ -110,6 +112,7 @@ set(SOURCE_FILES
     src/processors/delaunaytriangulation2d.cpp
     src/processors/drawlines.cpp
     src/processors/drawpoints.cpp
+    src/processors/embeddedvolumeslice.cpp
     src/processors/entryexitpointsprocessor.cpp
     src/processors/firstivwprocessor.cpp
     src/processors/geometryentryexitpoints.cpp
@@ -145,6 +148,7 @@ set(SOURCE_FILES
     src/processors/meshpicking.cpp
     src/processors/meshrenderprocessorgl.cpp
     src/processors/mprentryexitpointsprocessor.cpp
+    src/processors/mprproxygeometryprocessor.cpp
     src/processors/multichannelraycaster.cpp
     src/processors/pointrenderer.cpp
     src/processors/polylinegrabber.cpp
@@ -174,6 +178,8 @@ ivw_group("Source Files" ${SOURCE_FILES})
 #--------------------------------------------------------------------
 # Add shaders
 set(SHADER_FILES
+    glsl/embeddedvolumeslice.frag
+    glsl/embeddedvolumeslice.vert
     glsl/axisalignedcutplaneboundingbox.frag
     glsl/axisalignedcutplaneslice.frag
     glsl/background.frag

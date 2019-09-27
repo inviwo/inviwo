@@ -101,13 +101,6 @@ namespace inviwo {
         addProperty(offset_);
     }
 
-    VolumeDesriptionMetadataProperty& VolumeDesriptionMetadataProperty::operator=(const VolumeDesriptionMetadataProperty& that) {
-        if (this != &that) {
-            CompositeProperty::operator=(that);
-        }
-        return *this;
-    }
-
     VolumeDesriptionMetadataProperty* VolumeDesriptionMetadataProperty::clone() const { return new VolumeDesriptionMetadataProperty(*this); }
 
     // ##############################################################################################################
@@ -156,13 +149,6 @@ namespace inviwo {
         addProperty(metadata_);
         //addProperty(basis_);
         //addProperty(information_);
-    }
-
-    VolumeDesriptionProperty& VolumeDesriptionProperty::operator=(const VolumeDesriptionProperty& that) {
-        if (this != &that) {
-            CompositeProperty::operator=(that);
-        }
-        return *this;
     }
 
     VolumeDesriptionProperty* VolumeDesriptionProperty::clone() const { return new VolumeDesriptionProperty(*this); }

@@ -57,10 +57,11 @@ ScatterPlotGL::Properties::Properties(std::string identifier, std::string displa
     , useCircle_("useCircle", "Use Circles (else squares)", true)
     , radiusRange_("radius", "Radius", 5, 0, 10, 0.01f)
     , minRadius_("minRadius", "Min Radius", 0.1f, 0, 10, 0.01f)
+    , tf_("transferFunction", "Transfer Function",
+          TransferFunction({{0.0, vec4(1.0f)}, {1.0, vec4(1.0f)}}))
     , color_("color", "Color", vec4(1, 0, 0, 1), vec4(0), vec4(1), vec4(0.1f),
              InvalidationLevel::InvalidOutput, PropertySemantics::Color)
     , hoverColor_("hoverColor", "Hover color", vec4(1.0f, 0.77f, 0.25f, 1))
-    , tf_("transferFunction", "Transfer Function")
     , margins_("margins", "Margins", 5, 5, 5, 5)
     , axisMargin_("axisMargin", "Axis Margin", 15.0f, 0.0f, 50.0f)
 
@@ -68,37 +69,22 @@ ScatterPlotGL::Properties::Properties(std::string identifier, std::string displa
     , borderColor_("borderColor", "Border color", vec4(0, 0, 0, 1))
     , hovering_("hovering", "Enable Hovering", true)
 
+    , axisStyle_("axisStyle", "Global Axis Style")
     , xAxis_("xAxis", "X Axis")
     , yAxis_("yAxis", "Y Axis", AxisProperty::Orientation::Vertical) {
-    addProperty(useCircle_);
-    addProperty(radiusRange_);
-    addProperty(minRadius_);
-    addProperty(tf_);
-    addProperty(color_);
     hoverColor_.setSemantics(PropertySemantics::Color);
-    addProperty(hoverColor_);
-    addProperty(margins_);
-    addProperty(axisMargin_);
-
     borderColor_.setSemantics(PropertySemantics::Color);
-    addProperty(borderWidth_);
-    addProperty(borderColor_);
 
-    addProperty(hovering_);
+    util::for_each_in_tuple([&](auto &e) { this->addProperty(e); }, props());
 
-    addProperty(xAxis_);
-    addProperty(yAxis_);
+    axisStyle_.registerProperties(xAxis_, yAxis_);
 
     yAxis_.flipped_.set(true);
-    yAxis_.captionSettings_.font_.anchorPos_.set({0.0f, 1.0f});
 
     color_.setVisible(true);
     tf_.setVisible(!color_.getVisible());
     minRadius_.setVisible(false);
 
-    tf_.get().clear();
-    tf_.get().add(0.0, vec4(1));
-    tf_.get().add(1.0, vec4(1));
     tf_.setCurrentStateAsDefault();
 }
 
@@ -107,54 +93,24 @@ ScatterPlotGL::Properties::Properties(const ScatterPlotGL::Properties &rhs)
     , useCircle_(rhs.useCircle_)
     , radiusRange_(rhs.radiusRange_)
     , minRadius_(rhs.minRadius_)
+    , tf_(rhs.tf_)
     , color_(rhs.color_)
     , hoverColor_(rhs.hoverColor_)
-    , tf_(rhs.tf_)
     , margins_(rhs.margins_)
     , axisMargin_(rhs.axisMargin_)
     , borderWidth_(rhs.borderWidth_)
     , borderColor_(rhs.borderColor_)
     , hovering_(rhs.hovering_)
+    , axisStyle_(rhs.axisStyle_)
     , xAxis_(rhs.xAxis_)
     , yAxis_(rhs.yAxis_) {
-    addProperty(useCircle_);
-    addProperty(radiusRange_);
-    addProperty(minRadius_);
-    addProperty(tf_);
-    addProperty(color_);
-    addProperty(hoverColor_);
-    addProperty(margins_);
-    addProperty(axisMargin_);
-    addProperty(borderWidth_);
-    addProperty(borderColor_);
-    addProperty(hovering_);
-    addProperty(xAxis_);
-    addProperty(yAxis_);
+    util::for_each_in_tuple([&](auto &e) { this->addProperty(e); }, props());
+    axisStyle_.unregisterAll();
+    axisStyle_.registerProperties(xAxis_, yAxis_);
 }
 
 ScatterPlotGL::Properties *ScatterPlotGL::Properties::clone() const {
     return new Properties(*this);
-}
-
-ScatterPlotGL::Properties &ScatterPlotGL::Properties::operator=(
-    const ScatterPlotGL::Properties &that) {
-    if (this != &that) {
-        CompositeProperty::operator=(that);
-        radiusRange_ = that.radiusRange_;
-        useCircle_ = that.useCircle_;
-        minRadius_ = that.minRadius_;
-        color_ = that.color_;
-        hoverColor_ = that.hoverColor_;
-        tf_ = that.tf_;
-        margins_ = that.margins_;
-        axisMargin_ = that.axisMargin_;
-        borderWidth_ = that.borderWidth_;
-        borderColor_ = that.borderColor_;
-        hovering_ = that.hovering_;
-        xAxis_ = that.xAxis_;
-        yAxis_ = that.yAxis_;
-    }
-    return *this;
 }
 
 ScatterPlotGL::ScatterPlotGL(Processor *processor)
@@ -167,7 +123,6 @@ ScatterPlotGL::ScatterPlotGL(Processor *processor)
     , axisRenderers_({{properties_.xAxis_, properties_.yAxis_}})
     , picking_(processor, 1, [this](PickingEvent *p) { objectPicked(p); })
     , processor_(processor) {
-
     if (processor_) {
         shader_.onReload([this]() { processor_->invalidate(InvalidationLevel::InvalidOutput); });
     }
@@ -210,7 +165,6 @@ void ScatterPlotGL::plot(const ivec2 &start, const ivec2 &size, IndexBuffer *ind
 }
 
 void ScatterPlotGL::plot(const size2_t &dims, IndexBuffer *indexBuffer, bool useAxisRanges) {
-
     // adjust all margins by axis margin
     vec4 margins = properties_.margins_.getAsVec4() + properties_.axisMargin_.get();
 
@@ -435,7 +389,6 @@ void ScatterPlotGL::setIndexColumn(std::shared_ptr<const TemplateColumn<uint32_t
 }
 
 void ScatterPlotGL::renderAxis(const size2_t &dims) {
-
     const size2_t lowerLeft(properties_.margins_.getLeft(), properties_.margins_.getBottom());
     const size2_t upperRight(dims.x - 1 - properties_.margins_.getRight(),
                              dims.y - 1 - properties_.margins_.getTop());

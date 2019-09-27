@@ -71,7 +71,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
     MultichannelRaycaster();
-    virtual ~MultichannelRaycaster();
+    virtual ~MultichannelRaycaster() = default;
 
     virtual void initializeResources() override;
     virtual void process() override;

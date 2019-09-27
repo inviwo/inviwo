@@ -34,6 +34,7 @@
 
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/algorithm/boundingbox.h>
 
 namespace inviwo {
 
@@ -68,12 +69,13 @@ SphereRenderer::SphereRenderer()
     , defaultRadius_("defaultRadius", "Default Radius", 0.05f, 0.00001f, 2.0f, 0.01f)
     , forceColor_("forceColor", "Force Color", false, InvalidationLevel::InvalidResources)
     , defaultColor_("defaultColor", "Default Color", vec4(0.7f, 0.7f, 0.7f, 1.0f), vec4(0.0f),
-                    vec4(1.0f))
+                    vec4(1.0f), vec4(0.01f), InvalidationLevel::InvalidOutput,
+                    PropertySemantics::Color)
     , useMetaColor_("useMetaColor", "Use meta color mapping", false,
                     InvalidationLevel::InvalidResources)
     , metaColor_("metaColor", "Meta Color Mapping")
 
-    , camera_("camera", "Camera")
+    , camera_("camera", "Camera", util::boundingBox(inport_))
     , trackball_(&camera_)
     , lighting_("lighting", "Lighting", &camera_)
     , shaders_{{{ShaderType::Vertex, std::string{"sphereglyph.vert"}},
@@ -92,31 +94,15 @@ SphereRenderer::SphereRenderer()
                }} {
 
     addPort(inport_);
-    addPort(imageInport_);
-    imageInport_.setOptional(true);
-
+    addPort(imageInport_).setOptional(true);
     addPort(outport_);
-    outport_.addResizeEventListener(&camera_);
 
-    clipping_.addProperty(clipMode_);
-    clipping_.addProperty(clipShadingFactor_);
-    clipping_.addProperty(shadeClippedArea_);
+    clipping_.addProperties(clipMode_, clipShadingFactor_, shadeClippedArea_);
 
-    sphereProperties_.addProperty(forceRadius_);
-    sphereProperties_.addProperty(defaultRadius_);
-    sphereProperties_.addProperty(forceColor_);
-    sphereProperties_.addProperty(defaultColor_);
-    sphereProperties_.addProperty(useMetaColor_);
-    sphereProperties_.addProperty(metaColor_);
-    defaultColor_.setSemantics(PropertySemantics::Color);
+    sphereProperties_.addProperties(forceRadius_, defaultRadius_, forceColor_, defaultColor_,
+                                    useMetaColor_, metaColor_);
 
-    addProperty(renderMode_);
-    addProperty(sphereProperties_);
-    addProperty(clipping_);
-
-    addProperty(camera_);
-    addProperty(lighting_);
-    addProperty(trackball_);
+    addProperties(renderMode_, sphereProperties_, clipping_, camera_, lighting_, trackball_);
 
     clipMode_.onChange([&]() {
         clipShadingFactor_.setReadOnly(clipMode_.get() == GlyphClippingMode::Discard);

@@ -33,6 +33,8 @@
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/core/common/inviwo.h>
 
+class QWidget;
+
 namespace inviwo {
 
 class ProcessorNetwork;
@@ -40,7 +42,8 @@ class ProcessorNetwork;
 namespace util {
 
 void IVW_QTEDITOR_API insertNetworkForData(const std::string& dataFile, ProcessorNetwork* net,
-                                           bool alwaysFirst = false, bool onlySource = false);
+                                           bool alwaysFirst = false, bool onlySource = false,
+                                           QWidget* parent = nullptr);
 }
 
 }  // namespace inviwo

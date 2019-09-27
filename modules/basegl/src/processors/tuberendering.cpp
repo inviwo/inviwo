@@ -41,6 +41,7 @@ https://prideout.net/blog/old/blog/index.html@p=61.html
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/algorithm/boundingbox.h>
 
 namespace inviwo {
 
@@ -64,11 +65,12 @@ TubeRendering::TubeRendering()
     , defaultRadius_("defaultRadius", "Tube Radius", 0.01f, 0.0001f, 2.f, 0.0001f)
     , forceColor_("forceColor", "Force Color", false, InvalidationLevel::InvalidResources)
     , defaultColor_("defaultColor", "Default Color", vec4(0.7f, 0.7f, 0.7f, 1.0f), vec4(0.0f),
-                    vec4(1.0f))
+                    vec4(1.0f), vec4(0.01f), InvalidationLevel::InvalidOutput,
+                    PropertySemantics::Color)
     , useMetaColor_("useMetaColor", "Use meta color mapping", false,
                     InvalidationLevel::InvalidResources)
     , metaColor_("metaColor", "Meta Color Mapping")
-    , camera_("camera", "Camera")
+    , camera_("camera", "Camera", util::boundingBox(inport_))
     , trackball_(&camera_)
     , lighting_("lighting", "Lighting", &camera_)
     , shaderItems_{{{ShaderType::Vertex, "tuberendering.vert"},
@@ -94,24 +96,12 @@ TubeRendering::TubeRendering()
                }} {
 
     addPort(inport_);
-    addPort(imageInport_);
-    imageInport_.setOptional(true);
-
+    addPort(imageInport_).setOptional(true);
     addPort(outport_);
-    outport_.addResizeEventListener(&camera_);
 
-    addProperty(tubeProperties_);
-    tubeProperties_.addProperty(forceRadius_);
-    tubeProperties_.addProperty(defaultRadius_);
-    tubeProperties_.addProperty(forceColor_);
-    tubeProperties_.addProperty(defaultColor_);
-    tubeProperties_.addProperty(useMetaColor_);
-    tubeProperties_.addProperty(metaColor_);
-    defaultColor_.setSemantics(PropertySemantics::Color);
-
-    addProperty(camera_);
-    addProperty(lighting_);
-    addProperty(trackball_);
+    tubeProperties_.addProperties(forceRadius_, defaultRadius_, forceColor_, defaultColor_,
+                                  useMetaColor_, metaColor_);
+    addProperties(tubeProperties_, camera_, lighting_, trackball_);
 }
 
 void TubeRendering::initializeResources() {

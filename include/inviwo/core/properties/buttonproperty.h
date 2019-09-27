@@ -30,8 +30,8 @@
 #ifndef IVW_BUTTONPROPERTY_H
 #define IVW_BUTTONPROPERTY_H
 
-#include <inviwo/core/util/callback.h>
 #include <inviwo/core/properties/property.h>
+#include <functional>
 
 namespace inviwo {
 /**
@@ -57,8 +57,12 @@ public:
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                    PropertySemantics semantics = PropertySemantics::Default);
 
+    ButtonProperty(std::string identifier, std::string displayName, std::function<void()> callback,
+                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                   PropertySemantics semantics = PropertySemantics::Default);
+
     ButtonProperty(const ButtonProperty& rhs);
-    ButtonProperty& operator=(const ButtonProperty& that);
+    ButtonProperty(const ButtonProperty& rhs, std::function<void()> callback);
     virtual ButtonProperty* clone() const override;
     virtual ~ButtonProperty();
 

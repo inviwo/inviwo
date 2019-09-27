@@ -11,28 +11,28 @@
  *  * opts
  */
 
-@NonCPS
-def getChangeString(build) {
-    def MAX_MSG_LEN = 100
-    def changeString = ""
-    build.changeSets.each {entries -> 
-        entries.each { entry -> 
-            changeString += "${new Date(entry.timestamp).format("yyyy-MM-dd HH:mm:ss")} "
-            changeString += "[${entry.commitId.take(8)}] ${entry.author}: ${entry.msg.take(MAX_MSG_LEN)}\n"
-        }
+// usage given a var for with method bar
+// ifdef({foo})?.bar() will call foo.bar() if foo is defined otherwise nothing.
+def ifdef(varExpr) {
+    try {
+        varExpr()
+    } catch (exc) {
+        null
     }
-    return changeString ?: " - No new changes"
 }
 
-@NonCPS
-def getAffectedFiles(build) {
-    files = []
-    build.changeSets.each {entries -> 
-        entries.each { entry -> files += entry.affectedFiles }
+def repl(x, y) { 
+    while (true) {
+        def cmd = input message: 'What to run:', parameters: [string(defaultValue: '', description: '', name: 'cmd')]
+        if (cmd == "quit") return
+        try {
+            print Eval.xy(x,y,cmd)
+        } catch (e) {
+            print e
+        }
     }
-    files.unique()
-    return files
 }
+
 
 def defaultProperties() {
     def params = [
@@ -88,89 +88,114 @@ def printMap(String name, def map) {
 }
 
 // this uses global pipeline var pullRequest
-def setLabel(def state, String label, Boolean add) {
+def cfgLabel(def state, String label, Boolean add) {
     try {
         if (add) {
-            state.addLabel(label)
+            ifdef({state.pullRequest})?.addLabels([label])
         } else {
-            state.removeLabel(label)
-        }
-    } catch (e) {
-        println "Error adding label: ${label} add: ${add}"
-        println e.toString()
-    }      
+            ifdef({state.pullRequest})?.removeLabel(label) 
+        } 
+    } catch(e) {}    
 }
 
 def checked(def state, String label, Boolean fail, Closure fun) {
     try {
         fun()
-        setLabel(state, "J: " + label  + " Failure", false)
+        cfgLabel(state, "J: " + label  + " Failure", false)
     } catch (e) {
-        setLabel(state, "J: " + label  + " Failure", true)
-        state.errors += label
+        cfgLabel(state, "J: " + label  + " Failure", true)
+        state.cfg.errors += label
         if (fail) {
-            state.build.result = Result.FAILURE.toString()
+            state.currentBuild.result = Result.FAILURE.toString()
             throw e
         } else {
-            println e.toString()
-            state.build.result = Result.UNSTABLE.toString()
+            println "${label} Failure: ${e.getMessage()}"
+            state.currentBuild.result = Result.UNSTABLE.toString()
         }
     }
+}
+
+def config(def state) {
+    if (!state.env.disabledProperties) state.properties(defaultProperties())
+    printMap("Environment", state.env.getEnvironment())
+    state.cfg = [ errors: [], display: 0 ]
 }
 
 def wrap(def state, String reportSlackChannel, Closure fun) {
     try {
         fun()
-        state.build.result = state.errors.isEmpty() ? 'SUCCESS' : 'UNSTABLE'
+        state.currentBuild.result = state.cfg.errors.isEmpty() ? 'SUCCESS' : 'UNSTABLE'
     } catch (e) {
-        state.build.result = 'FAILURE'
-        println "State:  ${state.build.result}"
-        println "Errors: ${state.errors.join(", ")}"
+        state.currentBuild.result = 'FAILURE'
+        println "State:  ${state.currentBuild.result}"
+        println "Errors: ${state.cfg.errors.join(", ")}"
         println "Except: ${e}"
         throw e
     } finally {
         if (!reportSlackChannel.isEmpty()) slack(state, reportSlackChannel)
-        if (!state.errors.isEmpty()) {
-            println "Errors in: ${state.errors.join(", ")}"
-            state.build.description = "Errors in: ${state.errors.join(' ')}"
+        if (!state.cfg.errors.isEmpty()) {
+            println "Errors in: ${state.cfg.errors.join(", ")}"
+            state.currentBuild.description = "Errors in: ${state.cfg.errors.join(' ')}"
         } 
     }
 }
 
-def filterfiles() {
-    dir('build') {
-        sh 'cp compile_commands.json compile_commands_org.json'
-        sh 'python3 ../inviwo/tools/jenkins/filter-compilecommands.py'
-    }
-}
-
-def format(def state) {
-    stage("Format Tests") {
-        dir('build') {
-            String binary = state.env.CLANG_FORMAT ? '-binary ' + state.env.CLANG_FORMAT : ''
-            sh "python3 ../inviwo/tools/jenkins/check-format.py ${binary}"
-            if (fileExists('clang-format-result.diff')) {
-                String format_diff = readFile('clang-format-result.diff')
-                setLabel(state, 'J: Format Test Failure', !format_diff.isEmpty())
+def format(def state, repo) {
+    cmd("Format Tests", 'build') {
+        checked(state, 'Format Test', false) {
+            def labels = ifdef({state.pullRequest})?.labels.collect { it }
+            String fix = ""
+            if (labels && "J: Auto Format" in labels) {
+                fix = "--fix --commit ${state.pullRequest.headRef}"
+            }
+            String master = state.env.Master_Build?.equals("true")? '--master' : ''
+            String binary = state.env.CLANG_FORMAT ? '--binary ' + state.env.CLANG_FORMAT : ''
+            sh "python3 ../inviwo/tools/jenkins/check-format.py ${master} ${fix} ${binary} ${repo}"
+            publishHTML([
+                allowMissing: true,
+                alwaysLinkToLastBuild: false,
+                keepAll: false,
+                reportDir: '.',
+                reportFiles: 'clang-format-result.diff',
+                reportName: 'Format'
+            ])
+            if (fileExists('clang-format-result.diff') 
+                && !readFile('clang-format-result.diff').isEmpty()) {
+                throw new Exception("There are formatting issues")
             }
         }
     }
 }
 
+def touchwarn() {
+    if (fileExists('build/warnings.txt')) {
+        readFile('build/warnings.txt').tokenize('\n').each{file ->
+            println "touching ${file}"
+            touch file
+        }
+    }
+}
+
 def warn(def state, refjob = 'daily/appleclang') {
-    cmd('Warn Tests', 'inviwo') {
-        checked(state, 'Warn Tests', false) {
-            recordIssues qualityGates: [[threshold: 1, type: 'NEW', unstable: true]], 
-                         referenceJobName: refjob, 
-                         sourceCodeEncoding: 'UTF-8', 
-                         tools: [clang(name: 'Clang')] 
+    cmd('Warning Tests', 'inviwo') {
+        checked(state, 'Warning Test', false) {
+            def clangIssues = scanForIssues sourceCodeEncoding: 'UTF-8', tool: clang()
+            def warnings = clangIssues.getReport().collect {issue -> issue.getFileName() }
+            writeFile encoding: 'UTF-8', file: '../build/warnings.txt', text : warnings.join('\n')
+            publishIssues issues: [clangIssues],
+                          name: 'Clang',
+                          referenceJobName: refjob,
+                          qualityGates: [[threshold: 1, type: 'NEW', unstable: true]]
+            if (clangIssues.size() > 0) {
+                throw new Exception("There are warning issues")
+            }
         }
     }
 }
 
 def unittest(def state) {
     if(state.env.disableUnittest) return
-    cmd('Unit Tests', 'build/bin', ['DISPLAY=:' + state.display]) {
+    cmd('Unit Tests', 'build/bin', ['DISPLAY=:' + state.cfg.display]) {
         checked(state, "Unit Test", false) {
             sh '''
                 rc=0
@@ -185,7 +210,7 @@ def unittest(def state) {
 
 def integrationtest(def state) {
     if(state.env.disableIntegration) return
-    cmd('Integration Tests', 'build/bin', ['DISPLAY=:' + state.display]) {
+    cmd('Integration Tests', 'build/bin', ['DISPLAY=:' + state.cfg.display]) {
         checked(state, 'Integration Test', false) {
             sh './inviwo-integrationtests'
         }
@@ -194,7 +219,7 @@ def integrationtest(def state) {
 
 def regression(def state, modulepaths) {
     if(state.env.disableRegression) return
-    cmd('Regression Tests', 'regress', ['DISPLAY=:' + state.display]) {
+    cmd('Regression Tests', 'regress', ['DISPLAY=:' + state.cfg.display]) {
         checked(state, 'Regression Test', false) {
             sh """
                 python3 ../inviwo/tools/regression.py \
@@ -229,8 +254,8 @@ def copyright(def state, extraPaths = []) {
 }
 
 def doxygen(def state) {
-    if(state.env.disableDoxygen) return
-    cmd('Doxygen', 'build', ['DISPLAY=:' + state.display]) {
+    if (state.env.disableDoxygen) return
+    cmd('Doxygen', 'build', ['DISPLAY=:' + state.cfg.display]) {
         checked(state, "Doxygen", false) {
             sh 'ninja DOXY-Inviwo'
         }
@@ -238,7 +263,7 @@ def doxygen(def state) {
             allowMissing: true,
             alwaysLinkToLastBuild: true,
             keepAll: false,
-            reportDir: 'doc/inviwo/html',
+            reportDir: 'docs/inviwo/html',
             reportFiles: 'index.html',
             reportName: 'Doxygen'
         ])
@@ -247,19 +272,18 @@ def doxygen(def state) {
 
 def slack(def state, channel) {
     stage('Slack') {
-        echo "result: ${state.build.currentResult}"
+        echo "result: ${state.currentBuild.currentResult}"
         def res2color = [(Result.SUCCESS) : 'good', (Result.UNSTABLE) : 'warning' , (Result.FAILURE) : 'danger' ]
-        def color = res2color.containsKey(state.build.result) ? res2color[state.build.result] : 'warning'
-        def errors = !state.errors.isEmpty() ? "Errors in: ${state.errors.join(" ")}\n" : ""
+        def color = res2color.containsKey(state.currentBuild.result) ? res2color[state.currentBuild.result] : 'warning'
+        def errors = !state.cfg.errors.isEmpty() ? "Errors in: ${state.cfg.errors.join(" ")}\n" : ""
         slackSend(
             color: color, 
             channel: channel, 
             message: "Branch: ${state.env.BRANCH_NAME}\n" + 
-                     "Status: ${state.build.result}\n" + 
+                     "Status: ${state.currentBuild.result}\n" + 
                      "Job: ${state.env.BUILD_URL} \n" + 
                      "Regression: ${state.env.JOB_URL}Regression_Report/\n" + 
-                     errors +
-                     "Changes: " + getChangeString(state.build)
+                     errors
         )
     }
 }

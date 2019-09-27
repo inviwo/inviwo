@@ -53,7 +53,9 @@ struct ValueWrapper {
     operator const T&() const { return value; }
 
     bool isDefault() const { return value == defaultValue; }
-    void reset() { value = defaultValue; }
+
+    // return if the value changes while resetting
+    bool reset() { return update(defaultValue); }
     void setAsDefault() { defaultValue = value; }
 
     void serialize(Serializer& s,
@@ -89,6 +91,31 @@ struct ValueWrapper {
                 return false;
             default:
                 return false;
+        }
+    }
+
+    /**
+     * Update the value of this to that of src.
+     * @returns if value was modified
+     */
+    bool update(const ValueWrapper<T>& src) {
+        if (value != src.value) {
+            value = src.value;
+            return true;
+        } else {
+            return false;
+        }
+    }
+    /**
+     * Update the value of this to that of src.
+     * @returns if value was modified
+     */
+    bool update(const T& src) {
+        if (value != src) {
+            value = src;
+            return true;
+        } else {
+            return false;
         }
     }
 

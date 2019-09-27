@@ -89,18 +89,6 @@ RaycastingProperty::RaycastingProperty(const RaycastingProperty& rhs)
     addProperty(samplingRate_);
 }
 
-RaycastingProperty& RaycastingProperty::operator=(const RaycastingProperty& rhs) {
-    if (this != &rhs) {
-        CompositeProperty::operator=(rhs);
-        renderingType_ = rhs.renderingType_;
-        classification_ = rhs.classification_;
-        compositing_ = rhs.compositing_;
-        gradientComputation_ = rhs.gradientComputation_;
-        samplingRate_ = rhs.samplingRate_;
-    }
-    return *this;
-}
-
 RaycastingProperty* RaycastingProperty::clone() const { return new RaycastingProperty(*this); }
 
 }  // namespace inviwo

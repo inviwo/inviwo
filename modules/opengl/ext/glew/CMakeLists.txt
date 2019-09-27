@@ -43,7 +43,7 @@ target_include_directories(GLEW PUBLIC
 if(BUILD_SHARED_LIBS)
     target_compile_definitions(GLEW PRIVATE GLEW_BUILD)
 else()
-    target_compile_definitions(GLEW PRIVATE GLEW_STATIC)
+    target_compile_definitions(GLEW PUBLIC GLEW_STATIC)
 endif()
 
 if(WIN32)

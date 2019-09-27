@@ -37,6 +37,7 @@
 #include <modules/opencl/syncclgl.h>
 #include <modules/opencl/volume/volumecl.h>
 #include <modules/opencl/volume/volumeclgl.h>
+#include <inviwo/core/algorithm/boundingbox.h>
 
 namespace inviwo {
 
@@ -62,7 +63,7 @@ VolumeRaycasterCLProcessor::VolumeRaycasterCLProcessor()
     , workGroupSize_("wgsize", "Work group size", ivec2(8, 8), ivec2(0), ivec2(256))
     , useGLSharing_("glsharing", "Use OpenGL sharing", true)
     , lighting_("lighting", "Lighting")
-    , camera_("camera", "Camera") {
+    , camera_("camera", "Camera", util::boundingBox(volumePort_)) {
 
     backgroundPort_.setOptional(true);
 

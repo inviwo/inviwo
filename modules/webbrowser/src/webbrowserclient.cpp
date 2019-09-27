@@ -259,7 +259,7 @@ bool WebBrowserClient::OnConsoleMessage(CefRefPtr<CefBrowser> browser, cef_log_s
 
         lc->log("WebBrowserClient", loglevel, LogAudience::Developer, file.c_str(), "", line,
                 message.ToString());
-        return true; 
+        return true;
     }
     return false;
 }

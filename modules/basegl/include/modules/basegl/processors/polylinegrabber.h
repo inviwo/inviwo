@@ -66,17 +66,20 @@ namespace inviwo {
 
         void processClickEvent(Event* e);
 
-        FloatVec3Property pt_;
+        std::shared_ptr<std::vector<vec3>> polyline_;
 
+        ButtonProperty clearPolyline_;
+        IntSizeTProperty numPolylinePts_;
+        FloatMinMaxProperty clip_;
+        FloatVec3Property pt_;
         EventProperty addOrRemovePolylinePoint_;
         FloatProperty pointRemovalDistanceThreshold_;
 
-        ButtonProperty clearPolyline_;
-
-        std::shared_ptr<std::vector<vec3>> polyline_;
-        IntSizeTProperty numPolylinePts_;
-
-        FloatMinMaxProperty clip_;
+        BoolProperty addCorridor_;
+        BoolProperty includeCorridorCenter_;
+        FloatProperty corridorWidth_;
+        FloatVec3Property corridorNormal_;
+        std::vector<vec3> corridor_;
 
         PolylineOutport outport_;
     };

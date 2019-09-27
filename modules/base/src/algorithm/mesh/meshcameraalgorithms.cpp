@@ -31,6 +31,7 @@
 #include <modules/base/algorithm/mesh/axisalignedboundingbox.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
+#include <inviwo/core/algorithm/camerautils.h>
 
 namespace inviwo {
 
@@ -54,30 +55,15 @@ void centerViewOnMeshes(const std::vector<std::shared_ptr<const Mesh>>& meshes,
 }
 
 std::pair<float, float> computeNearFarPlanes(std::pair<vec3, vec3> worldSpaceBoundingBox,
-                                             const CameraProperty& camera, float farNearRatio) {
-    auto nearPlaneDist = std::numeric_limits<float>::max();
-
-    auto farPlaneDist = 0.f;
-
-    auto cameraDir = glm::normalize(camera.get().getDirection());
+                                             const CameraProperty& camera, float nearFarRatio) {
+    auto m = glm::scale(worldSpaceBoundingBox.second - worldSpaceBoundingBox.first);
+    m[3] = vec4(worldSpaceBoundingBox.first, 1.0f);
 
     auto maxViewLength =
         std::max(glm::distance(camera.lookFrom_.getMaxValue(), camera.lookTo_.get()),
                  glm::distance(camera.lookFrom_.getMinValue(), camera.lookTo_.get()));
-    auto furthestViewPoint = camera.getLookFrom() - cameraDir * maxViewLength;
-    // Project min/max points onto view ray and compute distances to the most zoomed out view point
-    farPlaneDist =
-        std::max(glm::distance(furthestViewPoint,
-                               cameraDir * glm::dot(worldSpaceBoundingBox.first, cameraDir)),
-                 glm::distance(furthestViewPoint,
-                               cameraDir * glm::dot(worldSpaceBoundingBox.second, cameraDir)));
-    // Increase farPlaneDist by 1% to make sure that we do not clip the last vertex
-    farPlaneDist *= 1.01f;
 
-    // Try to have a reasonable precision in the depth buffer
-    nearPlaneDist = std::max(1e-6f, farNearRatio * farPlaneDist);
-
-    return {nearPlaneDist, farPlaneDist};
+    return camerautil::computeCameraNearFar(m, maxViewLength, nearFarRatio);
 }
 
 }  // namespace meshutil

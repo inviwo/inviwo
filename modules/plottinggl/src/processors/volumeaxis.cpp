@@ -32,6 +32,7 @@
 #include <modules/plotting/utils/axisutils.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/algorithm/boundingbox.h>
 
 namespace inviwo {
 
@@ -59,13 +60,14 @@ VolumeAxis::VolumeAxis()
                   {"basis", "Volume Basis", AxisRangeMode::VolumeBasis},
                   {"custom", "Custom", AxisRangeMode::Custom}})
     , customRanges_("customRanges", "Custom Ranges")
-    , rangeXaxis_("rangeX", "X Axis", 0.0, 1.0, 0.0, 1.0e6)
-    , rangeYaxis_("rangeY", "Y Axis", 0.0, 1.0, 0.0, 1.0e6)
-    , rangeZaxis_("rangeZ", "Z Axis", 0.0, 1.0, 0.0, 1.0e6)
+    , rangeXaxis_("rangeX", "X Axis", 0.0, 1.0, DataFloat32::lowest(), DataFloat32::max())
+    , rangeYaxis_("rangeY", "Y Axis", 0.0, 1.0, DataFloat32::lowest(), DataFloat32::max())
+    , rangeZaxis_("rangeZ", "Z Axis", 0.0, 1.0, DataFloat32::lowest(), DataFloat32::max())
+    , axisStyle_("axisStyle", "Global Axis Style")
     , xAxis_("xAxis", "X Axis")
     , yAxis_("yAxis", "Y Axis")
     , zAxis_("zAxis", "Z Axis")
-    , camera_("camera", "Camera")
+    , camera_("camera", "Camera", util::boundingBox(inport_))
     , trackball_(&camera_)
     , axisRenderers_({{xAxis_, yAxis_, zAxis_}})
     , propertyUpdate_(false) {
@@ -91,9 +93,9 @@ VolumeAxis::VolumeAxis()
     yAxis_.setCaption("y");
     zAxis_.setCaption("z");
 
-    addProperty(xAxis_);
-    addProperty(yAxis_);
-    addProperty(zAxis_);
+    axisStyle_.setCollapsed(true);
+    axisStyle_.registerProperties(xAxis_, yAxis_, zAxis_);
+    addProperties(axisStyle_, xAxis_, yAxis_, zAxis_);
 
     addProperty(camera_);
     addProperty(trackball_);

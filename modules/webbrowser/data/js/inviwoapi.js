@@ -92,7 +92,6 @@ class InviwoAPI {
             property.max = prop["maxValue"];
             property.step = prop["increment"];
             property.value = prop["value"];
-            property.focus();
         };
     }
     
@@ -100,7 +99,6 @@ class InviwoAPI {
         var property = document.getElementById(htmlId);
         if (property!=null) {
             property.checked = prop["value"];
-            property.focus();
         };
     }
 
@@ -108,7 +106,6 @@ class InviwoAPI {
         var property = document.getElementById(htmlId);
         if (property!=null) {
             property.value = prop["value"];
-            property.focus();
         };
     }
     async syncOption(htmlId, prop) {
@@ -116,11 +113,10 @@ class InviwoAPI {
         var newOptions = prop["options"];
         for (var i in newOptions) {
             var option = newOptions[i];
-            var optionElem = property.options.namedItem(option["id"]);
-            if (!optionElem) {
-                optionElem = document.createElement("option");
-                property.options.add(optionElem);
+            if (property.options.length <= i) {
+                property.options.add(document.createElement("option"));
             }
+            var optionElem = property.options[i];
             optionElem.id = option["id"];
             optionElem.text = option["name"];
             optionElem.value = option["value"];

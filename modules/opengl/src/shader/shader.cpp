@@ -274,7 +274,7 @@ void Shader::linkShader(bool notifyRebuild) {
 
     glLinkProgram(program_.id);
 
-    if (!isReady()) {
+    if (!checkLinkStatus()) {
         throw OpenGLException("Id: " + toString(program_.id) + " " +
                                   processLog(utilgl::getProgramInfoLog(program_.id)),
                               IVW_CONTEXT);
@@ -291,6 +291,12 @@ void Shader::linkShader(bool notifyRebuild) {
     LGL_ERROR;
     ready_ = true;
     if (notifyRebuild) onReloadCallback_.invokeAll();
+}
+
+bool Shader::checkLinkStatus() const {
+    GLint res;
+    glGetProgramiv(program_.id, GL_LINK_STATUS, &res);
+    return res == GL_TRUE;
 }
 
 void Shader::bindAttributes() {
@@ -341,17 +347,17 @@ std::string Shader::processLog(std::string log) const {
     while (std::getline(stream, line)) {
         // This log matching needs more testing. Mostly guessing here.
         auto lline = toLower(line);
-        if (lline.find("vertex"))
+        if (lline.find("vertex") != std::string::npos)
             type = ShaderType::Vertex;
-        else if (lline.find("geometry"))
+        else if (lline.find("geometry") != std::string::npos)
             type = ShaderType::Geometry;
-        else if (lline.find("fragment"))
+        else if (lline.find("fragment") != std::string::npos)
             type = ShaderType::Fragment;
-        else if (lline.find("tessellation control"))
+        else if (lline.find("tessellation control") != std::string::npos)
             type = ShaderType::TessellationControl;
-        else if (lline.find("tessellation evaluation"))
+        else if (lline.find("tessellation evaluation") != std::string::npos)
             type = ShaderType::TessellationEvaluation;
-        else if (lline.find("compute"))
+        else if (lline.find("compute") != std::string::npos)
             type = ShaderType::Compute;
 
         int origLineNumber = utilgl::getLogLineNumber(line);
@@ -370,11 +376,7 @@ std::string Shader::processLog(std::string log) const {
     return result.str();
 }
 
-bool Shader::isReady() const {
-    GLint res;
-    glGetProgramiv(program_.id, GL_LINK_STATUS, &res);
-    return res == GL_TRUE;
-}
+bool Shader::isReady() const { return ready_; }
 
 void Shader::activate() {
     if (!ready_)
@@ -393,6 +395,10 @@ void Shader::setUniformWarningLevel(UniformWarning level) { warningLevel_ = leve
 
 const BaseCallBack *Shader::onReload(std::function<void()> callback) {
     return onReloadCallback_.addLambdaCallback(callback);
+}
+
+std::shared_ptr<std::function<void()>> Shader::onReloadScoped(std::function<void()> callback) {
+    return onReloadCallback_.addLambdaCallbackRaii(callback);
 }
 
 void Shader::removeOnReload(const BaseCallBack *callback) { onReloadCallback_.remove(callback); }

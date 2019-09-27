@@ -36,6 +36,7 @@
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/volume/volumeutils.h>
 #include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/algorithm/boundingbox.h>
 
 namespace inviwo {
 
@@ -58,17 +59,17 @@ MultichannelRaycaster::MultichannelRaycaster()
     , outport_("outport")
     , transferFunctions_("transfer-functions", "Transfer functions")
     , raycasting_("raycaster", "Raycasting")
-    , camera_("camera", "Camera")
+    , camera_("camera", "Camera", util::boundingBox(volumePort_))
     , lighting_("lighting", "Lighting", &camera_)
     , positionIndicator_("positionindicator", "Position Indicator") {
     transferFunctions_.addProperty(
-        new TransferFunctionProperty("transferFunction1", "Channel 1", &volumePort_), false);
+        new TransferFunctionProperty("transferFunction1", "Channel 1", &volumePort_), true);
     transferFunctions_.addProperty(
-        new TransferFunctionProperty("transferFunction2", "Channel 2", &volumePort_), false);
+        new TransferFunctionProperty("transferFunction2", "Channel 2", &volumePort_), true);
     transferFunctions_.addProperty(
-        new TransferFunctionProperty("transferFunction3", "Channel 3", &volumePort_), false);
+        new TransferFunctionProperty("transferFunction3", "Channel 3", &volumePort_), true);
     transferFunctions_.addProperty(
-        new TransferFunctionProperty("transferFunction4", "Channel 4", &volumePort_), false);
+        new TransferFunctionProperty("transferFunction4", "Channel 4", &volumePort_), true);
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
@@ -90,12 +91,6 @@ MultichannelRaycaster::MultichannelRaycaster()
 
     backgroundPort_.onConnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
     backgroundPort_.onDisconnect([&]() { this->invalidate(InvalidationLevel::InvalidResources); });
-}
-
-MultichannelRaycaster::~MultichannelRaycaster() {
-    for (auto tf : transferFunctions_.getProperties()) {
-        delete tf;
-    }
 }
 
 void MultichannelRaycaster::initializeResources() {

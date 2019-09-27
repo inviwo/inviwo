@@ -64,7 +64,7 @@ ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/fonts)
 ivw_register_license_file(NAME FreeType MODULE FontRendering
     URL "https://www.freetype.org/"
     TYPE "BSD-style, acknowledgement: Portions of this software are copyright The FreeType Project (www.freetype.org). All rights reserved."
-    FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/freetype/FTL.txt
+    FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/freetype/freetype/docs/FTL.txt
 )
 
 #--------------------------------------------------------------------
@@ -72,6 +72,3 @@ ivw_register_license_file(NAME FreeType MODULE FontRendering
 target_link_libraries(inviwo-module-fontrendering PRIVATE utf)
 target_link_libraries(inviwo-module-fontrendering PUBLIC freetype)
 ivw_make_package(InviwoFontRenderingModule inviwo-module-fontrendering)
-
-
-

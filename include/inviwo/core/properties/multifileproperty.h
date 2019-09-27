@@ -70,7 +70,6 @@ public:
                       PropertySemantics semantics = PropertySemantics::Default);
 
     MultiFileProperty(const MultiFileProperty& rhs);
-    MultiFileProperty& operator=(const MultiFileProperty& that);
     MultiFileProperty& operator=(const std::vector<std::string>& value);
     virtual MultiFileProperty* clone() const override;
     virtual ~MultiFileProperty() = default;

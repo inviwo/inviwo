@@ -29,6 +29,7 @@
 
 #include <modules/basegl/processors/entryexitpointsprocessor.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
+#include <inviwo/core/algorithm/boundingbox.h>
 
 namespace inviwo {
 
@@ -46,8 +47,7 @@ EntryExitPoints::EntryExitPoints()
     , inport_("geometry")
     , entryPort_("entry", DataVec4UInt16::get())
     , exitPort_("exit", DataVec4UInt16::get())
-    , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
-              vec3(0.0f, 1.0f, 0.0f), &inport_)
+    , camera_("camera", "Camera", util::boundingBox(inport_))
     , capNearClipping_("capNearClipping", "Cap near plane clipping", true)
     , trackball_(&camera_) {
     addPort(inport_);
@@ -56,7 +56,6 @@ EntryExitPoints::EntryExitPoints()
     addProperty(capNearClipping_);
     addProperty(camera_);
     addProperty(trackball_);
-    entryPort_.addResizeEventListener(&camera_);
 
     for (auto& shader : entryExitHelper_.getShaders()) {
         shader.get().onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });

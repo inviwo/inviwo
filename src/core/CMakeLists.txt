@@ -5,6 +5,9 @@ project(inviwo-core)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
+    ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/boundingbox.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/camerautils.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/cubeplaneintersection.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/defaulttohighperformancegpu.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwo.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwoapplication.h
@@ -101,6 +104,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/resizeevent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/touchevent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/touchstate.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/viewevent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/wheelevent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/interactionhandler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingaction.h
@@ -202,6 +206,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/advancedmaterialproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/boolcompositeproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/boolproperty.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/properties/buttongroupproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/buttonproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/cameraproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/compositeproperty.h
@@ -262,6 +267,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/capabilities.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/clock.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/cloneableptr.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/colorbrewer-generated.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/colorbrewer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/colorconversion.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/commandlineparser.h
@@ -349,6 +355,9 @@ ivw_group("Header Files" BASE "${IVW_INCLUDE_DIR}/inviwo/core" ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
+    algorithm/boundingbox.cpp
+    algorithm/camerautils.cpp
+    algorithm/cubeplaneintersection.cpp
     common/inviwoapplication.cpp
     common/inviwocore.cpp
     common/inviwomodule.cpp
@@ -416,6 +425,7 @@ set(SOURCE_FILES
     interaction/events/pickingevent.cpp
     interaction/events/resizeevent.cpp
     interaction/events/touchevent.cpp
+    interaction/events/viewevent.cpp
     interaction/events/wheelevent.cpp
     interaction/interactionhandler.cpp
     interaction/pickingaction.cpp
@@ -499,6 +509,7 @@ set(SOURCE_FILES
     properties/advancedmaterialproperty.cpp
     properties/boolcompositeproperty.cpp
     properties/boolproperty.cpp
+    properties/buttongroupproperty.cpp
     properties/buttonproperty.cpp
     properties/cameraproperty.cpp
     properties/compositeproperty.cpp
@@ -550,6 +561,7 @@ set(SOURCE_FILES
     util/canvas.cpp
     util/capabilities.cpp
     util/clock.cpp
+    util/colorbrewer-generated.cpp
     util/colorbrewer.cpp
     util/colorconversion.cpp
     util/commandlineparser.cpp
@@ -646,6 +658,7 @@ set(TEST_FILES
     tests/unittests/utilities-test.cpp
     tests/unittests/volumesequenceutils-tests.cpp
     tests/unittests/zip-test.cpp
+    tests/unittests/resize-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 
@@ -806,6 +819,7 @@ ivw_register_license_file(NAME "warn" MODULE Core
     FILES ${IVW_TOOLS_DIR}/codegen/warn/warn/LICENSE
 )
 
+find_package(ZLIB REQUIRED)
 ivw_register_license_file(NAME "zlib" TARGET ZLIB::ZLIB MODULE Core
     URL "http://zlib.net/"
     TYPE "The zlib/libpng License"
@@ -854,9 +868,15 @@ string(REPLACE ";" "\n" build_info_script "${build_info_script_list}")
 file(WRITE "${IVW_CMAKE_BINARY_MODULE_DIR}/build_info.cmake" ${build_info_script})
 
 # Custom target for updating the build information (this target is always out-of-date)
+if(IVW_GENERATOR_IS_MULTI_CONFIG) 
+    set(buildinfo_output_dir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/)
+else()
+    set(buildinfo_output_dir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/)
+endif()
+
 add_custom_target(inviwo-buildinfo-header ALL
     BYPRODUCTS  ${CMAKE_CURRENT_BINARY_DIR}/src/util/inviwo_buildinfo.cpp
-    COMMAND ${CMAKE_COMMAND} -DINI_DEST_PATH=\"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/\" 
+    COMMAND ${CMAKE_COMMAND} -DINI_DEST_PATH=\"${buildinfo_output_dir}\" 
         -P "${IVW_CMAKE_BINARY_MODULE_DIR}/build_info.cmake"
     WORKING_DIRECTORY ${OUTPUT_DIR}
     COMMENT "Generating inviwo build info (buildinfo)"

@@ -39,7 +39,7 @@ class Python3Module;
 
 class IVW_MODULE_PYTHON3_API PythonInterpreter : public PythonExecutionOutputObservable {
 public:
-    PythonInterpreter(Python3Module* module);
+    PythonInterpreter();
     virtual ~PythonInterpreter();
 
     void addModulePath(const std::string& path);

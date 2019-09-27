@@ -60,6 +60,10 @@ public:
 
     virtual T& get();
     virtual const T& get() const;
+    const T& operator*() const;
+    T& operator*();
+    const T* operator->() const;
+    T* operator->();
     virtual void set(const T& value);
     void set(const TemplateProperty<T>* srcProperty);
     virtual void set(const Property* srcProperty) override;
@@ -72,7 +76,6 @@ public:
 
 protected:
     TemplateProperty(const TemplateProperty& rhs) = default;
-    TemplateProperty<T>& operator=(const TemplateProperty<T>& that) = default;
     ValueWrapper<T> value_;
 };
 
@@ -108,14 +111,13 @@ TemplateProperty<T>::operator const T&() const {
 }
 
 template <typename T>
-TemplateProperty<T>& inviwo::TemplateProperty<T>::resetToDefaultState() {
-    value_.reset();
-    Property::resetToDefaultState();
+TemplateProperty<T>& TemplateProperty<T>::resetToDefaultState() {
+    if (value_.reset()) propertyModified();
     return *this;
 }
 
 template <typename T>
-TemplateProperty<T>& inviwo::TemplateProperty<T>::setCurrentStateAsDefault() {
+TemplateProperty<T>& TemplateProperty<T>::setCurrentStateAsDefault() {
     Property::setCurrentStateAsDefault();
     value_.setAsDefault();
     return *this;
@@ -129,6 +131,26 @@ T& TemplateProperty<T>::get() {
 template <typename T>
 const T& TemplateProperty<T>::get() const {
     return value_;
+}
+
+template <typename T>
+const T& TemplateProperty<T>::operator*() const {
+    return value_;
+}
+
+template <typename T>
+T& TemplateProperty<T>::operator*() {
+    return value_;
+}
+
+template <typename T>
+const T* TemplateProperty<T>::operator->() const {
+    return &value_.value;
+}
+
+template <typename T>
+T* TemplateProperty<T>::operator->() {
+    return &value_.value;
 }
 
 template <typename T>
@@ -149,7 +171,7 @@ template <typename T>
 void inviwo::TemplateProperty<T>::set(const TemplateProperty<T>* srcProperty) {
     if (this->value_.value == srcProperty->value_.value) return;
     this->value_.value = srcProperty->value_.value;
-    Property::set(srcProperty);
+    propertyModified();
 }
 
 template <typename T>

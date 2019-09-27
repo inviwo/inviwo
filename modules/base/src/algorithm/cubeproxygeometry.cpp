@@ -145,9 +145,15 @@ std::shared_ptr<SimpleMesh> createCubeProxyGeometry(const std::shared_ptr<const 
         return createCubeProxyGeometry(volume);
     }
 
-    const vec3 extent(glm::max(vec3(util::getVolumeDimensions(volume)) - 1.0f, 1.0f));
-    vec3 clipOrigin(vec3(clipMin) / extent);
-    vec3 clipExtent(vec3(clipMax - clipMin) / extent);
+    const size3_t volDims = util::getVolumeDimensions(volume);
+    const vec3 extent(glm::max(vec3(volDims) - 1.0f, 1.0f));
+
+    // sanitize clip min/max args with respect to volume dimensions
+    const size3_t min = glm::min(clipMin, volDims);
+    const size3_t max = glm::min(clipMax, volDims);
+
+    vec3 clipOrigin(vec3(min) / extent);
+    vec3 clipExtent(vec3(max - min) / extent);
 
     return createCubeProxyGeometry(volume, clipOrigin, clipExtent);
 }

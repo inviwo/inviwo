@@ -86,6 +86,7 @@
 #include <warn/ignore/missing-field-initializers>
 #include <warn/ignore/missing-noreturn>
 #include <warn/ignore/name-length-exceeded>
+#include <warn/ignore/namespace-uses-itself>
 #include <warn/ignore/newline-eof>
 #include <warn/ignore/no-such-warning>
 #include <warn/ignore/no-unnamed-raii-objects>

@@ -44,6 +44,7 @@
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
 
 namespace inviwo {
 
@@ -100,7 +101,6 @@ private:
                      InvalidationLevel = InvalidationLevel::InvalidOutput);
 
         DimSelection(const DimSelection& rhs) = default;
-        DimSelection& operator=(const DimSelection& that) = default;
         virtual ~DimSelection() = default;
 
         IntMinMaxProperty range;
@@ -115,7 +115,6 @@ private:
                       InvalidationLevel = InvalidationLevel::InvalidOutput);
 
         DimSelections(const DimSelections& rhs) = default;
-        DimSelections& operator=(const DimSelections& that) = default;
         virtual ~DimSelections() = default;
 
         std::vector<Handle::Selection> getSelection() const;

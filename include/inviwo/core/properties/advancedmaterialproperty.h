@@ -67,7 +67,7 @@ public:
                              PropertySemantics semantics = PropertySemantics::Default);
 
     AdvancedMaterialProperty(const AdvancedMaterialProperty& rhs);
-    AdvancedMaterialProperty& operator=(const AdvancedMaterialProperty& that);
+
     virtual AdvancedMaterialProperty* clone() const override;
     virtual ~AdvancedMaterialProperty();
 

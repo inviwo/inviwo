@@ -70,7 +70,6 @@ public:
                         PropertySemantics semantics = PropertySemantics::Default);
 
     FilePatternProperty(const FilePatternProperty& rhs);
-    FilePatternProperty& operator=(const FilePatternProperty& that);
 
     virtual FilePatternProperty* clone() const override;
     virtual ~FilePatternProperty();

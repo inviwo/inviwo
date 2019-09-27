@@ -52,16 +52,8 @@ AxisProperty::AxisProperty(const std::string& identifier, const std::string& dis
              vec4{1.0f}, vec4{0.01f}, InvalidationLevel::InvalidOutput, PropertySemantics::Color}
     , width_{"width", "Width", 2.5f, 0.0f, 20.0f}
     , useDataRange_{"useDataRange", "Use Data Range", true}
-    , range_{"range",
-             "Axis Range",
-             0.0,
-             100.0,
-             0.0,
-             1.0e4,
-             0.01,
-             0.0,
-             InvalidationLevel::InvalidOutput,
-             PropertySemantics::Text}
+    , range_("range", "Axis Range", 0.0, 100.0, -1.0e6, 1.0e6, 0.01, 0.0,
+             InvalidationLevel::InvalidOutput, PropertySemantics::Text)
     , flipped_{"flipped", "Swap Label Position", false}
     , orientation_{"orientation",
                    "Orientation",
@@ -192,6 +184,35 @@ void AxisProperty::setRange(const dvec2& range) {
     }
 }
 
+void AxisProperty::setColor(const vec4& c) {
+    color_.set(c);
+    captionSettings_.color_.set(c);
+    labelSettings_.color_.set(c);
+    majorTicks_.color_.set(c);
+    minorTicks_.color_.set(c);
+}
+
+void AxisProperty::setFontFace(const std::string& fontFace) {
+    captionSettings_.font_.fontFace_.set(fontFace);
+    labelSettings_.font_.fontFace_.set(fontFace);
+}
+
+void AxisProperty::setFontSize(int fontsize) {
+    captionSettings_.font_.fontSize_.set(fontsize);
+    labelSettings_.font_.fontSize_.set(fontsize);
+}
+
+void AxisProperty::setTickLength(float major, float minor) {
+    majorTicks_.tickLength_.set(major);
+    minorTicks_.tickLength_.set(minor);
+}
+
+void AxisProperty::setLineWidth(float width) {
+    width_.set(width);
+    majorTicks_.tickWidth_.set(width);
+    minorTicks_.tickWidth_.set(width * 0.66667f);
+}
+
 void AxisProperty::updateLabels() {
     const auto tickmarks = plot::getMajorTickPositions(majorTicks_, range_);
     categories_.clear();
@@ -201,16 +222,23 @@ void AxisProperty::updateLabels() {
 }
 
 void AxisProperty::adjustAlignment() {
-    vec2 anchor;
-    if (orientation_.get() == Orientation::Horizontal) {
-        // horizontal axis, center labels
-        anchor = vec2(0.0f, (placement_.get() == Placement::Outside) ? 1.0 : -1.0);
-    } else {
-        // vertical axis
-        anchor = vec2((placement_.get() == Placement::Outside) ? 1.0 : -1.0, 0.0f);
-    }
-    labelSettings_.font_.anchorPos_.set(anchor);
-    captionSettings_.font_.anchorPos_.set(anchor);
+    vec2 labelAnchor = [this]() {
+        if (orientation_.get() == Orientation::Horizontal) {
+            return vec2(0.0f, (placement_.get() == Placement::Outside) ? 1.0 : -1.0);
+        } else {
+            return vec2((placement_.get() == Placement::Outside) ? 1.0 : -1.0, 0.0f);
+        }
+    }();
+    vec2 captionAnchor = [this]() {
+        vec2 anchor = vec2(0.0f, (placement_.get() == Placement::Outside) ? 1.0 : -1.0);
+        if (orientation_.get() == Orientation::Vertical) {
+            anchor.y = -anchor.y;
+        }
+        return anchor;
+    }();
+
+    labelSettings_.font_.anchorPos_.set(labelAnchor);
+    captionSettings_.font_.anchorPos_.set(captionAnchor);
 }
 
 bool AxisProperty::getVisible() const { return visible_.get(); }

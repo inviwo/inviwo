@@ -76,17 +76,6 @@ SequenceTimerProperty::SequenceTimerProperty(const SequenceTimerProperty& rhs)
     addProperty(playPause_);
 }
 
-SequenceTimerProperty& SequenceTimerProperty::operator=(const SequenceTimerProperty& that) {
-    if (this != &that) {
-        CompositeProperty::operator=(that);
-        index_ = that.index_;
-        play_ = that.play_;
-        framesPerSecond_ = that.framesPerSecond_;
-        playPause_ = that.playPause_;
-    }
-    return *this;
-}
-
 SequenceTimerProperty* SequenceTimerProperty::clone() const {
     return new SequenceTimerProperty(*this);
 }

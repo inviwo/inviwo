@@ -59,7 +59,6 @@ public:
                  InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                  PropertySemantics semantics = PropertySemantics::Default);
     AxisProperty(const AxisProperty& rhs);
-    AxisProperty& operator=(const AxisProperty& rhs) = default;
     virtual AxisProperty* clone() const override;
     virtual ~AxisProperty() = default;
 
@@ -71,6 +70,29 @@ public:
      * @param range   new axis range
      */
     void setRange(const dvec2& range);
+
+    /**
+     * \brief set all colors to \p c, i.e. axis, ticks, labels, and caption
+     */
+    void setColor(const vec4& c);
+
+    /**
+     * \brief set font face of labels and caption to \p fontFace
+     */
+    void setFontFace(const std::string& fontFace);
+
+    /**
+     * \brief set font size for caption and labels
+     */
+    void setFontSize(int fontsize);
+
+    void setTickLength(float major, float minor);
+
+    /**
+     * \brief set the line width of the axis, major, and minor ticks. Minor ticks will be 2/3 the
+     * width.
+     */
+    void setLineWidth(float width);
 
     // Inherited via AxisSettings
     virtual dvec2 getRange() const override;

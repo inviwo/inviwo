@@ -47,7 +47,7 @@
 
 namespace inviwo {
 
-class CameraProperty;
+class Camera;
 
 /**
  * \ingroup datastructures

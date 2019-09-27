@@ -47,6 +47,8 @@ class CompositeProperty;
  */
 class IVW_CORE_API Camera : public Serializable {
 public:
+    enum class Config { Show, Hide };
+
     /**
      * \brief Default parameters creates a right handed coordinate system
      * with camera looking towards the negative z-axis.
@@ -68,7 +70,7 @@ public:
     virtual Camera* clone() const = 0;
 
     virtual bool update(const Camera* source) = 0;
-    virtual void configureProperties(CompositeProperty* comp) = 0;
+    virtual void configureProperties(CompositeProperty* comp, Config config) = 0;
 
     const vec3& getLookFrom() const;
     void setLookFrom(vec3 val);
@@ -170,7 +172,7 @@ public:
     PerspectiveCamera& operator=(const PerspectiveCamera& other) = default;
     virtual PerspectiveCamera* clone() const override;
     virtual bool update(const Camera* source) override;
-    virtual void configureProperties(CompositeProperty* comp) override;
+    virtual void configureProperties(CompositeProperty* comp, Config config) override;
 
     friend bool operator==(const PerspectiveCamera& lhs, const PerspectiveCamera& rhs);
     friend bool operator!=(const PerspectiveCamera& lhs, const PerspectiveCamera& rhs);
@@ -212,7 +214,7 @@ public:
     OrthographicCamera& operator=(const OrthographicCamera& other) = default;
     virtual OrthographicCamera* clone() const override;
     virtual bool update(const Camera* source) override;
-    virtual void configureProperties(CompositeProperty* comp) override;
+    virtual void configureProperties(CompositeProperty* comp, Config config) override;
 
     friend bool operator==(const OrthographicCamera& lhs, const OrthographicCamera& rhs);
     friend bool operator!=(const OrthographicCamera& lhs, const OrthographicCamera& rhs);
@@ -261,7 +263,7 @@ public:
     SkewedPerspectiveCamera& operator=(const SkewedPerspectiveCamera& other) = default;
     virtual SkewedPerspectiveCamera* clone() const override;
     virtual bool update(const Camera* source) override;
-    virtual void configureProperties(CompositeProperty* comp) override;
+    virtual void configureProperties(CompositeProperty* comp, Config config) override;
 
     friend bool operator==(const SkewedPerspectiveCamera& lhs, const SkewedPerspectiveCamera& rhs);
     friend bool operator!=(const SkewedPerspectiveCamera& lhs, const SkewedPerspectiveCamera& rhs);

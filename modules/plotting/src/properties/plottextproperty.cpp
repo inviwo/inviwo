@@ -53,6 +53,8 @@ PlotTextProperty::PlotTextProperty(const std::string& identifier, const std::str
     addProperty(position_);
     addProperty(rotation_);
     addProperty(font_);
+
+    font_.anchorPos_.set(vec2(0.0f, 0.0f));
 }
 
 PlotTextProperty::PlotTextProperty(const PlotTextProperty& rhs)

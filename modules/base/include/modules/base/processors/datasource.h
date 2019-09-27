@@ -39,8 +39,52 @@
 #include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/io/datareaderexception.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/util/fileextension.h>
 
 namespace inviwo {
+
+namespace util {
+inline void updateReaderFromFile(const FileProperty& file,
+                                 TemplateOptionProperty<FileExtension>& reader) {
+    if ((file.getSelectedExtension() == FileExtension::all() &&
+         !reader.getSelectedValue().matches(file)) ||
+        file.getSelectedExtension().empty()) {
+        const auto& opts = reader.getOptions();
+        const auto it = std::find_if(opts.begin(), opts.end(),
+                                     [&](const OptionPropertyOption<FileExtension>& opt) {
+                                         return opt.value_.matches(file.get());
+                                     });
+        reader.setSelectedValue(it != opts.end() ? it->value_ : FileExtension{});
+    } else {
+        reader.setSelectedValue(file.getSelectedExtension());
+    }
+}
+
+template <typename... Types>
+void updateFilenameFilters(const DataReaderFactory& rf, FileProperty& file,
+                           TemplateOptionProperty<FileExtension>& reader) {
+    std::vector<FileExtension> extensions;
+
+    util::append(extensions, rf.getExtensionsForType<Types>()...);
+
+    std::sort(extensions.begin(), extensions.end());
+
+    std::vector<OptionPropertyOption<FileExtension>> options;
+    std::transform(extensions.begin(), extensions.end(), std::back_inserter(options), [](auto& fe) {
+        return OptionPropertyOption<FileExtension>{fe.toString(), fe.toString(), fe};
+    });
+
+    options.emplace_back("noreader", "No available reader", FileExtension{});
+
+    file.clearNameFilters();
+    file.addNameFilter(FileExtension::all());
+    file.addNameFilters(extensions);
+    reader.replaceOptions(options);
+}
+
+}  // namespace util
+
 /**
  * A base class for simple source processors.
  * Two functions to customize the behavior are available, dataLoaded and dataDeserialized.
@@ -73,8 +117,10 @@ protected:
     DataReaderFactory* rf_;
     PortType port_;
     FileProperty file_;
+    TemplateOptionProperty<FileExtension> reader_;
     ButtonProperty reload_;
     std::shared_ptr<DataType> loadedData_;
+    bool loadingFailed_ = false;
 
 private:
     bool deserialized_ = false;
@@ -87,21 +133,30 @@ DataSource<DataType, PortType>::DataSource(InviwoApplication* app, const std::st
     , rf_(app->getDataReaderFactory())
     , port_("data")
     , file_("filename", "File", file, content)
+    , reader_("reader", "Data Reader")
     , reload_("reload", "Reload data") {
+
+    addPort(port_);
+    addProperties(file_, reader_, reload_);
+
+    util::updateFilenameFilters<DataType>(*rf_, file_, reader_);
+    util::updateReaderFromFile(file_, reader_);
 
     // make sure that we always process even if not connected
     isSink_.setUpdate([]() { return true; });
-    isReady_.setUpdate([this]() { return filesystem::fileExists(file_.get()); });
-    file_.onChange([this]() { isReady_.update(); });
-
-    addPort(port_);
-
-    addProperty(file_);
-    addProperty(reload_);
-
-    file_.clearNameFilters();
-    file_.addNameFilter(FileExtension::all());
-    file_.addNameFilters(rf_->template getExtensionsForType<DataType>());
+    isReady_.setUpdate([this]() {
+        return !loadingFailed_ && filesystem::fileExists(file_.get()) &&
+               !reader_.getSelectedValue().empty();
+    });
+    file_.onChange([this]() {
+        loadingFailed_ = false;
+        util::updateReaderFromFile(file_, reader_);
+        isReady_.update();
+    });
+    reader_.onChange([this]() {
+        loadingFailed_ = false;
+        isReady_.update();
+    });
 }
 
 template <typename DataType, typename PortType>
@@ -116,7 +171,7 @@ template <typename DataType, typename PortType>
 void DataSource<DataType, PortType>::load(bool deserialized) {
     if (file_.get().empty()) return;
 
-    const auto sext = file_.getSelectedExtension();
+    const auto sext = reader_.getSelectedValue();
     const auto fext = filesystem::getFileExtension(file_.get());
     if (auto reader = rf_->template getReaderForTypeAndExtension<DataType>(sext, fext)) {
         try {
@@ -129,9 +184,15 @@ void DataSource<DataType, PortType>::load(bool deserialized) {
                 dataLoaded(data);
             }
         } catch (DataReaderException const& e) {
+            loadingFailed_ = true;
+            port_.detachData();
+            isReady_.update();
             LogProcessorError("Could not load data: " << file_.get() << ", " << e.getMessage());
         }
     } else {
+        loadingFailed_ = true;
+        port_.detachData();
+        isReady_.update();
         LogProcessorError("Could not find a data reader for file: " << file_.get());
     }
 }
@@ -139,9 +200,7 @@ void DataSource<DataType, PortType>::load(bool deserialized) {
 template <typename DataType, typename PortType>
 void DataSource<DataType, PortType>::deserialize(Deserializer& d) {
     Processor::deserialize(d);
-    file_.clearNameFilters();
-    file_.addNameFilter(FileExtension::all());
-    file_.addNameFilters(rf_->template getExtensionsForType<DataType>());
+    util::updateFilenameFilters<DataType>(*rf_, file_, reader_);
     deserialized_ = true;
 }
 

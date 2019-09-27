@@ -10,10 +10,10 @@ def dictToOrderedList(d):
         yield b
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Add new modules to inviwo', 
+    parser = argparse.ArgumentParser(description='Generate C++ source and header files exposing colorbrewer colors', 
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("-i", "--inviwo", type=str, default="", dest="ivwpath", 
-                        help="Path to the inviwo repository. Tries to find it in the current path")
+                        help="Path to the inviwo repository. If ommited, tries to find it in the current path")
     args = parser.parse_args()
     if args.ivwpath == "":
         ivwpath = ivwpy.ivwpaths.find_inv_path()
@@ -25,7 +25,7 @@ if __name__ == '__main__':
     cat = [];
     categories = "enum class Category { ";
 
-    families = "enum class Family {\n";
+    families = "enum class Family {";
 
     familiesInCategory = dict();
     getFamiliesForCategoryImpl = "";
@@ -45,13 +45,17 @@ if __name__ == '__main__':
 
     with open('colorbrewer.json','r') as cb_file:
         cb = json.load(cb_file);
+        famID = 0;
         for fam,arr in sorted(cb.items()):
-            families_os += "\tcase Family::" + fam + ": os << \"" + fam + "\"; break;\n";
-            families += "\t" + fam + ",\n";
-            arrs = {};
+            if famID % 7 == 0:
+                families += "\n\t"
+            famID += 1    
+            families_os += "\t\tcase Family::" + fam + ": os << \"" + fam + "\"; break;\n";
+            families +=  fam + ", "
+            arrs = {}
             for a,b in arr.items():
                 try:
-                    arrs[int(a)] = b;
+                    arrs[int(a)] = b
                 except:
                     pass
             if not arr["type"] in cat:
@@ -89,11 +93,11 @@ if __name__ == '__main__':
 
                 impls += "\n\t\t\tstatic const " + vector + "\n\t\t\treturn "+ enumname.lower() +";\n\t\t}\n"
 
-                names += "\tcase Colormap::" + enumname + ": os << \"" + enumname + "\"; break;\n";
+                names += "\t\tcase Colormap::" + enumname + ": os << \"" + enumname + "\"; break;\n";
                 
-        families += "\tNumberOfColormapFamilies,\n\tUndefined" + "\n};"
-        families_os += "\tcase Family::NumberOfColormapFamilies: os << \"NumberOfColormapFamilies\"; break;\n"
-        families_os += "\tcase Family::Undefined: os << \"Undefined\"; break;\n"
+        families += "\n\tNumberOfColormapFamilies, Undefined\n};"
+        families_os += "\t\tcase Family::NumberOfColormapFamilies: os << \"NumberOfColormapFamilies\"; break;\n"
+        families_os += "\t\tcase Family::Undefined: os << \"Undefined\"; break;"
         catset = set(cat);
         catlist = list(catset);
 
@@ -115,16 +119,16 @@ if __name__ == '__main__':
         getFamiliesForCategoryImpl += "\t\tdefault:\n\t\t\tbreak;";
 
         categories_os += "\t\tcase Category::NumberOfColormapCategories: os << \"NumberOfColormapCategories\"; break;\n";
-        categories_os += "\t\tcase Category::Undefined: os << \"Undefined\"; break;\n";
+        categories_os += "\t\tcase Category::Undefined: os << \"Undefined\"; break;";
 
-        r = 0;
+        r = 0
         for a in maxElementsForFamily:
             getMaxNumberOfColorsForFamilyImpl += "\tif (";
             for z in maxElementsForFamily[a]:
                 getMaxNumberOfColorsForFamilyImpl += "family == Family::" + z + " || "
                 if r % 2:
                     getMaxNumberOfColorsForFamilyImpl += "\n\t\t";
-                r=r+1;
+                r=r+1
             if not r % 2:
                 getMaxNumberOfColorsForFamilyImpl = getMaxNumberOfColorsForFamilyImpl[:-7];
             else:
@@ -146,21 +150,29 @@ if __name__ == '__main__':
     with open('colorbrewer_tmpl.cpp','r') as template_cpp:
         src = template_cpp.read();
 
+    while names.endswith("\n"):
+        names = names[0:-1]
+
+    while getMaxNumberOfColorsForFamilyImpl.endswith("\n"):
+        getMaxNumberOfColorsForFamilyImpl = getMaxNumberOfColorsForFamilyImpl[0:-1]
+
+    
+
     header = header.replace("##PLACEHOLDER##",enum + categories + "\n" + families);
     src = src.replace("##PLACEHOLDER##",impls);
     src = src.replace("##GETFAMILIESIMPL##", getFamiliesForCategoryImpl);
     src = src.replace("##GETMAXIMPL##", getMaxNumberOfColorsForFamilyImpl);
     header = header.replace("##PLACEHOLDER_NAMES##",names);
-    header = header.replace("##PLACEHOLDER_FAMILIES##",families_os);
     header = header.replace("##PLACEHOLDER_CATEGORIES##",categories_os);
+    header = header.replace("##PLACEHOLDER_FAMILIES##",families_os);
 
     # replace tabs with spaces
     src = src.replace("\t","    ");
     header = header.replace("\t","    ");
 
-    with open(ivwpath + '/include/inviwo/core/util/colorbrewer.h','w') as header_file:
-        print(header,file=header_file)
-        header_file.close();
-    with open(ivwpath + '/src/core/util/colorbrewer.cpp','w') as source_file:
-        print(src,file=source_file)
+    #with open(ivwpath + '/include/inviwo/core/util/colorbrewer-generated.h','w') as header_file:
+    #    print(header, file=header_file, end='')
+    #    header_file.close();
+    with open(ivwpath + '/src/core/util/colorbrewer-generated.cpp','w') as source_file:
+        print(src, file=source_file, end='')
         source_file.close();

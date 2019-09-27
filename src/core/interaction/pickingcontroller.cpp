@@ -71,7 +71,10 @@ void PickingController::propagateEvent(Event* event, EventPropagator* propagator
             break;
         }
         case WheelEvent::chash(): {
-            propagateEvent(static_cast<WheelEvent*>(event), propagator);
+            auto me = static_cast<WheelEvent*>(event);
+            const auto coord =
+                glm::clamp(me->pos(), dvec2(0.0), dvec2(me->canvasSize() - uvec2(1)));
+            mouseState_.propagateEvent(me, propagator, pickId(coord));
             break;
         }
         case GestureEvent::chash(): {
@@ -156,10 +159,6 @@ void PickingController::propagateEvent(TouchEvent* e, EventPropagator* propagato
     util::erase_remove_if(touchPoints,
                           [&](const auto& p) { return util::contains(usedPointIds, p.id()); });
     if (touchPoints.empty()) e->markAsUsed();
-}
-
-void PickingController::propagateEvent(WheelEvent*, EventPropagator*) {
-    // TODO
 }
 
 void PickingController::propagateEvent(GestureEvent*, EventPropagator*) {

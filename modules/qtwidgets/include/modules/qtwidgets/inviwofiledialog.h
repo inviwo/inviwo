@@ -67,6 +67,9 @@ public:
     virtual void setFileMode(inviwo::FileMode mode) override;
     virtual inviwo::FileMode getFileMode() const override;
 
+    virtual void setContentType(const std::string &contentType) override;
+    virtual std::string getContentType() const override;
+
     /**
      * \brief sets the current directory of the file dialog to the parent directory of the given
      *   file name or, if it is referring to a directory, to the given path. The file will be

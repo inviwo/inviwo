@@ -182,10 +182,27 @@ template <typename T>
 class Observable : public ObservableInterface {
 public:
     Observable() = default;
+
+    /**
+     * This operation does nothing. We will not touch the observers of other.
+     */
     Observable(const Observable<T>& other);
+
+    /**
+     * This operation will remove all observers from other and add them to this.
+     */
     Observable(Observable<T>&& other);
-    Observable<T>& operator=(Observable<T>&& other);
+
+    /**
+     * This operation does nothing. We will not touch the observers of other.
+     */
     Observable<T>& operator=(const Observable<T>& other);
+
+    /**
+     * This operation will remove all observers of this, and make all observers of other observe
+     * this instead.
+     */
+    Observable<T>& operator=(Observable<T>&& other);
     virtual ~Observable();
 
     void addObserver(T* observer);
@@ -218,9 +235,7 @@ private:
 };
 
 template <typename T>
-Observable<T>::Observable(const Observable<T>& rhs) {
-    for (auto& elem : rhs.observers_) addObserver(elem);
-}
+Observable<T>::Observable(const Observable<T>&) {}
 
 template <typename T>
 Observable<T>::Observable(Observable<T>&& rhs) {
@@ -229,11 +244,7 @@ Observable<T>::Observable(Observable<T>&& rhs) {
 }
 
 template <typename T>
-Observable<T>& inviwo::Observable<T>::operator=(const Observable<T>& that) {
-    if (this != &that) {
-        removeObservers();
-        for (auto& elem : that.observers_) addObserver(elem);
-    }
+Observable<T>& inviwo::Observable<T>::operator=(const Observable<T>&) {
     return *this;
 }
 

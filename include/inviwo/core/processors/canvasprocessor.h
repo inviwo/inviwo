@@ -42,6 +42,7 @@
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/eventproperty.h>
 #include <inviwo/core/metadata/processorwidgetmetadata.h>
+#include <inviwo/core/util/fileextension.h>
 
 namespace inviwo {
 
@@ -53,17 +54,17 @@ class DataWriterType;
 
 class IVW_CORE_API CanvasProcessor : public Processor, public ProcessorWidgetMetaDataObserver {
 public:
-    CanvasProcessor();
+    CanvasProcessor(InviwoApplication* app);
     virtual ~CanvasProcessor();
 
     virtual void process() override;
     virtual void doIfNotReady() override;
 
-    void setCanvasSize(ivec2);
-    ivec2 getCanvasSize() const;
+    void setCanvasSize(size2_t);
+    size2_t getCanvasSize() const;
 
     bool getUseCustomDimensions() const;
-    ivec2 getCustomDimensions() const;
+    size2_t getCustomDimensions() const;
 
     void saveImageLayer();
     void saveImageLayer(std::string filePath, const FileExtension& extension = FileExtension());
@@ -92,19 +93,19 @@ protected:
 public:
     ImageInport inport_;
 
-    IntVec2Property dimensions_;
+    CompositeProperty inputSize_;
+    IntSize2Property dimensions_;
     BoolProperty enableCustomInputDimensions_;
-    IntVec2Property customInputDimensions_;
+    IntSize2Property customInputDimensions_;
     BoolProperty keepAspectRatio_;
     FloatProperty aspectRatioScaling_;
     IntVec2Property position_;
     TemplateOptionProperty<LayerType> visibleLayer_;
     IntProperty colorLayer_;
-    OptionPropertyString imageTypeExt_;
+    TemplateOptionProperty<FileExtension> imageTypeExt_;
     DirectoryProperty saveLayerDirectory_;
     ButtonProperty saveLayerButton_;
     ButtonProperty saveLayerToFileButton_;
-    CompositeProperty inputSize_;
     BoolProperty fullScreen_;
     EventProperty fullScreenEvent_;
     EventProperty saveLayerEvent_;
@@ -113,9 +114,9 @@ public:
 
 private:
     void sizeChanged();
-    ivec2 calcSize();
+    size2_t calcSize();
 
-    ivec2 previousImageSize_;
+    size2_t previousImageSize_;
     ProcessorWidgetMetaData* widgetMetaData_;
 };
 

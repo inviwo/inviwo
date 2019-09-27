@@ -27,55 +27,31 @@
  #
  #################################################################################
 
-cmake_minimum_required(VERSION 3.2.0)
-cmake_policy(VERSION 3.2.0)
-
-if(POLICY CMP0042) # MacOSX rpath policy.
-    cmake_policy(SET CMP0042 NEW)
-endif()
-
-if(POLICY CMP0043)
-    # The New bahaviour is to ignore COMPILE_DEFINITIONS_<CONFIG>
-    # and used COMPILE_DEFINITIONS with generator expressions"
-    cmake_policy(SET CMP0043 NEW)
-endif()
-
-if(POLICY CMP0046) # Warn when adding a missing dependency using add_dependencies()
-    cmake_policy(SET CMP0046 NEW)
-endif()
-
-if(POLICY CMP0051) # include TARGET_OBJECTS expressions in a target's SOURCES property
-    cmake_policy(SET CMP0051 NEW)
-endif()
-
-if(POLICY CMP0054) # only interpret if() arguments as variables or keywords when unquoted
-    cmake_policy(SET CMP0054 NEW)
-endif()
-
-if(POLICY CMP0057) # CMake 3.3 adds support for the new IN_LIST operator.
-    cmake_policy(SET CMP0057 NEW)
-endif()
-
-if(POLICY CMP0066) # Honor per-config flags in ``try_compile()`` source-file signature.
-    cmake_policy(SET CMP0066 NEW)
-endif()
-if(POLICY CMP0067) # Honor language standard in try_compile() source-file signature.
-    cmake_policy(SET CMP0067 NEW)
-endif()
-
-if(POLICY CMP0074) # find_package uses <PackageName>_ROOT variables
-    cmake_policy(SET CMP0074 NEW)
-endif()
-
-if(POLICY CMP0075)
-    cmake_policy(SET CMP0075 NEW)
-endif()
+cmake_minimum_required(VERSION 3.12.0)
+cmake_policy(VERSION 3.12.0)
 
 if(POLICY CMP0077)
      cmake_policy(SET CMP0077 NEW)
 endif()
 
 string(TIMESTAMP timeStart "%Y-%m-%d %H:%M:%S")
+
+#--------------------------------------------------------------------
+# Disallow in-source builds, we require an out of source build
+get_filename_component(srcdir "${CMAKE_SOURCE_DIR}" REALPATH)
+get_filename_component(bindir "${CMAKE_BINARY_DIR}" REALPATH)
+set(prevbindir "")
+while(NOT "${bindir}" STREQUAL "${prevbindir}")
+    if("${bindir}" STREQUAL "${srcdir}")
+        message(FATAL_ERROR
+            "In-source builds are not permitted!\n"
+            "Make a separate folder for building, outside of the source directory.")
+    endif()
+    set(prevbindir "${bindir}")
+    get_filename_component(bindir ${bindir} DIRECTORY)
+endwhile()
+set(CMAKE_DISABLE_SOURCE_CHANGES ON)
+set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
 # option for setting the project/solution name of the Inviwo project
 set(IVW_PROJECT_NAME "inviwo-projects" CACHE STRING "Project/Solution name (default: inviwo-projects)")
@@ -88,7 +64,7 @@ verify_submodules("${CMAKE_CURRENT_LIST_DIR}/.gitmodules")
 option(BUILD_SHARED_LIBS "Build shared libs, else static libs" ON)
 
 # Needed for find_package(PythonLibsNew 3), which is an improved version of CMake shipped find_pythonLibs
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/ext/pybind11/tools")
+set(CMAKE_MODULE_PATH "${CMAKE_BINARY_DIR}/pkg/;${CMAKE_MODULE_PATH};${CMAKE_SOURCE_DIR}/ext/pybind11/tools")
 
 # Make sure we do look for python 3 here, before it is done in any subdirectory or external library.
 # If we do not specify version number on our first call to find_package(PythonLibs) it returns the
@@ -139,15 +115,21 @@ add_custom_target(uninstall COMMENT "Dummy target to prevent other uninstalls")
 #--------------------------------------------------------------------
 # Add external libraries.
 #
+#
 # Dependencies between libraries are solved using the given order
 # Note: We prefer building dependencies our self to using find_library,
 # since it does not necessarily give you the dll for packaging.
 # It also ensures that we are in control of the used version
 # and is built using the same, Inviwo, settings.
-add_subdirectory(ext/zlib-1.2.11) # Defines target ZLIB::ZLIB
-add_subdirectory(ext/libpng)      # Defines target inviwo::libpng and libpng
-add_subdirectory(ext/libjpeg)     # Defines target inviwo::libjpeg and libjpeg
-add_subdirectory(ext/tiff)        # Defines target inviwo::tiff and tiff
+
+option (IVW_USE_EXTERNAL_IMG "Link with external image libraries (zlib, png, jpeg, tiff) instead of building them." OFF)
+if (NOT IVW_USE_EXTERNAL_IMG)
+  add_subdirectory(ext/zlib-1.2.11) # Defines target ZLIB::ZLIB
+  add_subdirectory(ext/libpng)      # Defines target PNG::PNG
+  add_subdirectory(ext/libjpeg)     # Defines target JPEG::JPEG
+  add_subdirectory(ext/tiff)        # Defines target TIFF::TIFF
+endif()
+
 add_subdirectory(ext/flags)
 add_subdirectory(ext/glm)
 add_subdirectory(ext/ticpp)

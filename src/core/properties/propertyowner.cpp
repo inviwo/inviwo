@@ -50,14 +50,10 @@ PropertyOwner::PropertyOwner(const PropertyOwner& rhs)
     for (const auto& p : rhs.ownedProperties_) addProperty(p->clone());
 }
 
-PropertyOwner& PropertyOwner::operator=(const PropertyOwner& that) {
-    if (this != &that) {
-        invalidationLevel_ = that.invalidationLevel_;
-        properties_.clear();
-        ownedProperties_.clear();
-        for (const auto& p : that.ownedProperties_) addProperty(p->clone());
+PropertyOwner::~PropertyOwner() {
+    while (size() != 0) {
+        removeProperty(begin());
     }
-    return *this;
 }
 
 void PropertyOwner::addProperty(Property* property, bool owner) {

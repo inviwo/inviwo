@@ -86,18 +86,6 @@ IntegralLineVectorToMesh::ColorByProperty::ColorByProperty(const ColorByProperty
     addProperties();
 }
 
-IntegralLineVectorToMesh::ColorByProperty &IntegralLineVectorToMesh::ColorByProperty::operator=(
-    const ColorByProperty &that) {
-    if (this != &that) {
-        scaleBy_ = that.scaleBy_;
-        loopTF_ = that.loopTF_;
-        minValue_ = that.minValue_;
-        maxValue_ = that.maxValue_;
-        tf_ = that.tf_;
-    }
-    return *this;
-}
-
 IntegralLineVectorToMesh::ColorByProperty *IntegralLineVectorToMesh::ColorByProperty::clone()
     const {
     return new ColorByProperty(*this);

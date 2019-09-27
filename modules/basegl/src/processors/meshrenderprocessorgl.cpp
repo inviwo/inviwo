@@ -43,6 +43,7 @@
 #include <modules/opengl/openglutils.h>
 
 #include <modules/base/algorithm/dataminmax.h>
+#include <inviwo/core/algorithm/boundingbox.h>
 
 #include <limits>
 
@@ -62,11 +63,7 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
     , inport_("geometry")
     , imageInport_("imageInport")
     , outport_("image")
-    , camera_("camera", "Camera", vec3(0.0f, 0.0f, 2.0f), vec3(0.0f, 0.0f, 0.0f),
-              vec3(0.0f, 1.0f, 0.0f), &inport_)
-    , centerViewOnGeometry_("centerView", "Center view on geometry")
-    , setNearFarPlane_("setNearFarPlane", "Calculate Near and Far Plane")
-    , resetViewParams_("resetView", "Reset Camera")
+    , camera_("camera", "Camera", util::boundingBox(inport_))
     , trackball_(&camera_)
     , overrideColorBuffer_("overrideColorBuffer", "Override Color Buffer", false,
                            InvalidationLevel::InvalidResources)
@@ -93,23 +90,10 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
 
     addPort(inport_).onChange([this]() { updateDrawers(); });
     addPort(imageInport_).setOptional(true);
-    addPort(outport_).addResizeEventListener(&camera_);
+    addPort(outport_);
 
-    addProperties(camera_, centerViewOnGeometry_, setNearFarPlane_, resetViewParams_);
-    addProperties(geomProperties_, lightingProperty_, trackball_, layers_);
+    addProperties(camera_, geomProperties_, lightingProperty_, trackball_, layers_);
 
-    centerViewOnGeometry_.onChange([&]() {
-        if (!inport_.hasData()) return;
-        meshutil::centerViewOnMeshes(inport_.getVectorData(), camera_);
-    });
-    setNearFarPlane_.onChange([&]() {
-        if (!inport_.hasData()) return;
-        auto nearFar = meshutil::computeNearFarPlanes(
-            meshutil::axisAlignedBoundingBox(inport_.getVectorData()), camera_);
-        camera_.setNearFarPlaneDist(nearFar.first, nearFar.second);
-    });
-
-    resetViewParams_.onChange([this]() { camera_.resetCamera(); });
     geomProperties_.addProperties(cullFace_, enableDepthTest_, overrideColorBuffer_,
                                   overrideColor_);
 

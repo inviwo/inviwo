@@ -34,6 +34,8 @@
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
+#include <inviwo/core/algorithm/boundingbox.h>
+
 namespace inviwo {
 
 const ProcessorInfo ISORaycaster::processorInfo_{
@@ -56,8 +58,7 @@ ISORaycaster::ISORaycaster()
     , surfaceColor_("surfaceColor", "Surface Color", vec4(1, 1, 1, 1))
     , channel_("channel", "Render Channel")
     , raycasting_("raycasting", "Raycasting")
-    , camera_("camera", "Camera", vec3(0.0f, 0.0f, 3.5f), vec3(0.0f, 0.0f, 0.0f),
-              vec3(0.0f, 1.0f, 0.0f))
+    , camera_("camera", "Camera", util::boundingBox(volumePort_))
     , lighting_("lighting", "Lighting", &camera_) {
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 

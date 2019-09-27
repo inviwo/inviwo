@@ -77,7 +77,6 @@ private:
     ImageOutport outport_;
 
     CameraProperty camera_;
-    ButtonProperty resetViewParams_;
     CameraTrackball trackball_;
 
     BoolProperty overrideColorBuffer_;

@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/dataframe/dataframemodule.h>
+#include <inviwo/dataframe/io/json/dataframepropertyjsonconverter.h>
 #include <inviwo/dataframe/processors/csvsource.h>
 #include <inviwo/dataframe/processors/dataframesource.h>
 #include <inviwo/dataframe/processors/dataframeexporter.h>
@@ -36,15 +37,16 @@
 #include <inviwo/dataframe/processors/volumetodataframe.h>
 #include <inviwo/dataframe/processors/volumesequencetodataframe.h>
 
+#include <inviwo/dataframe/properties/colormapproperty.h>
+
 #include <inviwo/dataframe/io/csvreader.h>
 #include <inviwo/dataframe/io/jsonreader.h>
+
+#include <modules/json/jsonmodule.h>
 
 namespace inviwo {
 
 DataFrameModule::DataFrameModule(InviwoApplication* app) : InviwoModule(app, "DataFrame") {
-    // Add a directory to the search path of the Shadermanager
-    // ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
-
     // Register objects that can be shared with the rest of inviwo here:
 
     // Processors
@@ -58,33 +60,15 @@ DataFrameModule::DataFrameModule(InviwoApplication* app) : InviwoModule(app, "Da
 
     registerDefaultsForDataType<DataFrame>();
     // Properties
-    // registerProperty<DataFrameProperty>();
+    registerProperty<ColormapProperty>();
+    registerProperty<DataFrameColumnProperty>();
 
     // Readers and writes
     registerDataReader(std::make_unique<CSVReader>());
     registerDataReader(std::make_unique<JSONDataFrameReader>());
-    // registerDataWriter(std::make_unique<JSONDataFrameWriter>());
 
     // Data converters
-    // registerRepresentationConverter(std::make_unique<DataFrameDisk2RAMConverter>());
-
-    // Ports
-    // registerPort<DataFrameOutport>();
-    // registerPort<DataFrameInport>();
-
-    // PropertyWidgets
-    // registerPropertyWidget<DataFramePropertyWidget, DataFrameProperty>("Default");
-
-    // Dialogs
-    // registerDialog<DataFrameDialog>(DataFrameOutport);
-
-    // Other things
-    // registerCapabilities(std::make_unique<DataFrameCapabilities>());
-    // registerSettings(std::make_unique<DataFrameSettings>());
-    // registerMetaData(std::make_unique<DataFrameMetaData>());
-    // registerPortInspector("DataFrameOutport", "path/workspace.inv");
-    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget>
-    // processorWidget); registerDrawer(util::make_unique_ptr<DataFrameDrawer>());
+    app->getModuleByType<JSONModule>()->registerPropertyJSONConverter<DataFrameColumnProperty>();
 }
 
 }  // namespace inviwo

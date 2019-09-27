@@ -69,7 +69,7 @@ void Outport::setValid() {
     isReady_.update();
 }
 
-void Outport::propagateEvent(Event* event) { processor_->propagateEvent(event, this); }
+void Outport::propagateEvent(Event* event, Inport*) { processor_->propagateEvent(event, this); }
 
 const BaseCallBack* Outport::onConnect(std::function<void()> lambda) {
     return onConnectCallback_.addLambdaCallback(lambda);

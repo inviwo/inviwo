@@ -54,6 +54,7 @@
 #include <modules/base/processors/meshexport.h>
 #include <modules/base/processors/meshinformation.h>
 #include <modules/base/processors/meshmapping.h>
+#include <modules/base/processors/meshplaneclipping.h>
 #include <modules/base/processors/meshsequenceelementselectorprocessor.h>
 #include <modules/base/processors/meshsource.h>
 #include <modules/base/processors/multivolumesource.h>
@@ -71,6 +72,7 @@
 #include <modules/base/processors/stereocamerasyncer.h>
 #include <modules/base/processors/surfaceextractionprocessor.h>
 #include <modules/base/processors/trianglestowireframe.h>
+#include <modules/base/processors/volumeboundaryplanes.h>
 #include <modules/base/processors/volumecreator.h>
 #include <modules/base/processors/volumesequenceelementselectorprocessor.h>
 #include <modules/base/processors/volumesource.h>
@@ -148,6 +150,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<MeshCreator>();
     registerProcessor<MeshInformation>();
     registerProcessor<MeshMapping>();
+    registerProcessor<MeshPlaneClipping>();
     registerProcessor<MultiVolumeSource>();
     registerProcessor<NoiseProcessor>();
     registerProcessor<PixelToBufferProcessor>();
@@ -155,6 +158,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<OrdinalPropertyAnimator>();
     registerProcessor<SpotLightSourceProcessor>();
     registerProcessor<SurfaceExtraction>();
+    registerProcessor<VolumeBoundaryPlanes>();
     registerProcessor<VolumeSource>();
     registerProcessor<VolumeExport>();
     registerProcessor<BasisTransformMesh>();

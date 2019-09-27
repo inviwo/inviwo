@@ -80,17 +80,6 @@ PositionProperty::PositionProperty(const PositionProperty& rhs)
     }
 }
 
-PositionProperty& PositionProperty::operator=(const PositionProperty& that) {
-    if (this != &that) {
-        CompositeProperty::operator=(that);
-        referenceFrame_ = that.referenceFrame_;
-        position_ = that.position_;
-        camera_ = that.camera_;
-        positionWorldSpace_ = that.positionWorldSpace_;
-    }
-    return *this;
-}
-
 PositionProperty* PositionProperty::clone() const { return new PositionProperty(*this); }
 
 const vec3& PositionProperty::get() const { return positionWorldSpace_; }

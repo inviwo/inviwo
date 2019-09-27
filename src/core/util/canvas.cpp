@@ -57,8 +57,7 @@ void Canvas::resize(size2_t canvasSize) {
     if (propagator_) {
         NetworkLock lock;
         RenderContext::getPtr()->activateDefaultRenderContext();
-        ResizeEvent resizeEvent(screenDimensions_);
-        resizeEvent.setPreviousSize(previousScreenDimensions);
+        ResizeEvent resizeEvent(screenDimensions_, previousScreenDimensions);
         propagator_->propagateEvent(&resizeEvent, nullptr);
     }
 }

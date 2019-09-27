@@ -56,28 +56,56 @@ FileProperty& FileProperty::operator=(const std::string& value) {
 
 FileProperty* FileProperty::clone() const { return new FileProperty(*this); }
 
-void FileProperty::set(const std::string& value) {
-    TemplateProperty<std::string>::set(filesystem::cleanupPath(value));
+void FileProperty::set(const std::string& file) {
+    const auto value = filesystem::cleanupPath(file);
+    bool modified = false;
+    if (value_ != value) {
+        value_ = value;
+        modified |= true;
+    }
 
-    // figure out best matching extension based on given path
-    FileExtension ext;
-    FileExtension matchAll;
-    for (const auto& filter : getNameFilters()) {
-        if (filter.matchesAll()) {
-            matchAll = filter;
-        } else if (filter.matches(get())) {
-            ext = filter;
-            break;
+    if (!selectedExtension_.matches(value_)) {
+        const auto it = std::find_if(nameFilters_.begin(), nameFilters_.end(), [&](const auto& f) {
+            return !f.matchesAll() && f.matches(value_);
+        });
+        if (it != nameFilters_.end() && selectedExtension_ != *it) {
+            selectedExtension_ = *it;
+            modified |= true;
+
+        } else {
+            const auto allit = std::find_if(nameFilters_.begin(), nameFilters_.end(),
+                                            [&](const auto& f) { return f.matchesAll(); });
+            if (allit != nameFilters_.end() && selectedExtension_ != *allit) {
+                selectedExtension_ = *allit;
+                modified |= true;
+            }
         }
     }
-    if (ext.empty() && !matchAll.empty()) {
-        setSelectedExtension(matchAll);
-    } else {
-        setSelectedExtension(ext);
-    }
+
+    if (modified) propertyModified();
 }
 
-void FileProperty::set(const Property* property) { TemplateProperty<std::string>::set(property); }
+void FileProperty::set(const std::string& file, const FileExtension& selectedExtension) {
+    const auto value = filesystem::cleanupPath(file);
+    bool modified = false;
+    if (value_ != value) {
+        value_ = value;
+        modified |= true;
+    }
+    if (selectedExtension_ != selectedExtension) {
+        selectedExtension_ = selectedExtension;
+        modified |= true;
+    }
+    if (modified) propertyModified();
+}
+
+void FileProperty::set(const Property* property) {
+    if (auto prop = dynamic_cast<const FileProperty*>(property)) {
+        set(prop->get(), prop->getSelectedExtension());
+    } else {
+        TemplateProperty<std::string>::set(property);
+    }
+}
 
 void FileProperty::serialize(Serializer& s) const {
     /*
@@ -112,7 +140,9 @@ void FileProperty::serialize(Serializer& s) const {
     s.serialize("workspaceRelativePath", workspaceRelativePath);
     s.serialize("ivwdataRelativePath", ivwdataRelativePath);
 
-    s.serialize("nameFilter", nameFilters_, "filter");
+    // We don't serialize the filename Filter since they are usually a runtime thing depending
+    // on which readers/writers that a available
+    s.serialize("selectedExtension", selectedExtension_);
     s.serialize("acceptMode", acceptMode_);
     s.serialize("fileMode", fileMode_);
 }
@@ -161,8 +191,7 @@ void FileProperty::deserialize(Deserializer& d) {
     }
 
     try {
-        nameFilters_.clear();
-        d.deserialize("nameFilter", nameFilters_, "filter");
+        d.deserialize("selectedExtension", selectedExtension_);
         int acceptMode = static_cast<int>(acceptMode_);
         d.deserialize("acceptMode", acceptMode);
         acceptMode_ = static_cast<AcceptMode>(acceptMode);
@@ -186,7 +215,7 @@ void FileProperty::addNameFilters(const std::vector<FileExtension>& filters) {
 
 void FileProperty::clearNameFilters() { nameFilters_.clear(); }
 
-std::vector<FileExtension> FileProperty::getNameFilters() const { return nameFilters_; }
+const std::vector<FileExtension>& FileProperty::getNameFilters() const { return nameFilters_; }
 
 void FileProperty::setAcceptMode(AcceptMode mode) { acceptMode_ = mode; }
 
@@ -198,7 +227,7 @@ FileMode FileProperty::getFileMode() const { return fileMode_; }
 
 void FileProperty::setContentType(const std::string& contentType) { contentType_ = contentType; }
 
-std::string FileProperty::getContentType() const { return contentType_; }
+const std::string& FileProperty::getContentType() const { return contentType_; }
 
 void FileProperty::requestFile() {
     for (auto widget : getWidgets()) {
@@ -216,26 +245,26 @@ void FileProperty::requestFile() {
             "Failed to create a FileDialog. Add one to the InviwoApplication::DialogFactory");
     }
 
-    // Setup Extensions
-    std::vector<FileExtension> filters = this->getNameFilters();
-    fileDialog->addExtensions(filters);
-
+    fileDialog->addExtensions(getNameFilters());
+    fileDialog->setSelectedExtension(getSelectedExtension());
     fileDialog->setCurrentFile(get());
     fileDialog->setTitle(getDisplayName());
     fileDialog->setAcceptMode(getAcceptMode());
     fileDialog->setFileMode(getFileMode());
-
-    auto ext = getSelectedExtension();
-    if (!ext.empty()) fileDialog->setSelectedExtension(ext);
+    fileDialog->setContentType(getContentType());
 
     if (fileDialog->show()) {
-        setSelectedExtension(fileDialog->getSelectedFileExtension());
-        set(fileDialog->getSelectedFile());
+        set(fileDialog->getSelectedFile(), fileDialog->getSelectedFileExtension());
     }
 }
 
 const FileExtension& FileProperty::getSelectedExtension() const { return selectedExtension_; }
-void FileProperty::setSelectedExtension(const FileExtension& ext) { selectedExtension_ = ext; }
+void FileProperty::setSelectedExtension(const FileExtension& ext) {
+    if (selectedExtension_ != ext) {
+        selectedExtension_ = ext;
+        propertyModified();
+    }
+}
 
 Document FileProperty::getDescription() const {
     using P = Document::PathComponent;

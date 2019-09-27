@@ -103,7 +103,7 @@ endfunction()
 
 function(ivw_private_setup_module_data)
     set(options CORE)
-    set(oneValueArgs DIR BASE NAME)
+    set(oneValueArgs DIR BASE NAME GROUP)
     set(multiValueArgs "")
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -150,6 +150,7 @@ function(ivw_private_setup_module_data)
     set("${mod}_dir"          "${dir}"                CACHE INTERNAL "Module dir")
     set("${mod}_base"         "${module_path}"        CACHE INTERNAL "Module base")
     set("${mod}_path"         "${module_path}/${dir}" CACHE INTERNAL "Module path")
+    set("${mod}_group"        "${ARG_GROUP}"          CACHE INTERNAL "Module group")
     set("${mod}_opt"          "${opt}"                CACHE INTERNAL "Module cmake option")
     set("${mod}_target"       "${target}"             CACHE INTERNAL "Module target")
     set("${mod}_alias"        "${alias}"              CACHE INTERNAL "Module alias")
@@ -231,10 +232,19 @@ function(ivw_register_modules retval)
 
     ivw_dir_to_mod_dep(mod core)
     list(APPEND modules ${mod})
-    ivw_private_setup_module_data(CORE NAME "Core" DIR "core" BASE ${IVW_SOURCE_DIR})
+    ivw_private_setup_module_data(CORE NAME "Core" GROUP "" DIR "core" BASE ${IVW_SOURCE_DIR})
     ivw_add_module_option_to_cache(${mod} ON)
 
     foreach(module_path ${IVW_MODULE_DIR} ${IVW_EXTERNAL_MODULES})
+        get_filename_component(group_name ${module_path} NAME)
+        set(group_name "modules-${group_name}")
+
+        # Check of there is a meta.cmake
+        # Optionally defines: group_name
+        if(EXISTS "${module_path}/meta.cmake")
+            include("${module_path}/meta.cmake")  
+        endif()
+
         string(STRIP ${module_path} module_path)
         if(NOT EXISTS ${module_path})
              message("External module path does not exist: '${module_path}'")
@@ -259,7 +269,13 @@ function(ivw_register_modules retval)
                 list(APPEND modules ${mod})
                 ivw_private_get_ivw_module_name(${module_path}/${dir}/CMakeLists.txt name)
                 ivw_private_get_ivw_module_version(${module_path}/${dir}/CMakeLists.txt version)
-                ivw_private_setup_module_data(NAME ${name} VERSION ${version} DIR ${dir} BASE ${module_path})
+                ivw_private_setup_module_data(
+                    NAME ${name} 
+                    GROUP ${group_name} 
+                    VERSION ${version} 
+                    DIR ${dir} 
+                    BASE ${module_path}
+                )
             endif()
         endforeach()
     endforeach()
@@ -464,7 +480,7 @@ endfunction()
 # that is included from ivw_register_modules. 
 function(ivw_create_module)
     set(options "NO_PCH")
-    set(oneValueArgs "VERSION")
+    set(oneValueArgs "VERSION" "GROUP")
     set(multiValueArgs "")
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -528,10 +544,15 @@ function(ivw_create_module)
     # Add stuff to the installer
     ivw_default_install_targets(${${mod}_target})
     ivw_private_install_module_dirs()
-
-    # Make package (for other modules to find)
-    ivw_make_package($Inviwo${PROJECT_NAME}Module ${${mod}_target})
+    
     ivw_make_unittest_target("${${mod}_dir}" "${${mod}_target}")
+
+    if(ARG_GROUP)
+        ivw_folder(${${mod}_target} "${ARG_GROUP}")
+    else()
+        ivw_folder(${${mod}_target} "${${mod}_group}")
+    endif() 
+    
 endfunction()
 
 #--------------------------------------------------------------------

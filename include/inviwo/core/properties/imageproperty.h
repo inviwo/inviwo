@@ -51,7 +51,6 @@ namespace inviwo {
             PropertySemantics semantics = PropertySemantics::Default);
 
         ImageProperty(const ImageProperty& rhs);
-        ImageProperty& operator=(const ImageProperty& that);
 
         virtual ImageProperty* clone() const override;
         virtual ~ImageProperty();

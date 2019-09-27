@@ -123,7 +123,6 @@ public:
 
     PCPAxisSettings(std::string identifier, std::string displayName, size_t columnId = 0);
     PCPAxisSettings(const PCPAxisSettings& rhs);
-    PCPAxisSettings& operator=(const PCPAxisSettings& that);
     virtual PCPAxisSettings* clone() const override;
 
     virtual ~PCPAxisSettings() = default;

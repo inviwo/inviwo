@@ -107,13 +107,12 @@ PCPAxisSettings::PCPAxisSettings(const PCPAxisSettings& rhs)
     });
 }
 
-PCPAxisSettings& PCPAxisSettings::operator=(const PCPAxisSettings& that) = default;
-
 PCPAxisSettings* PCPAxisSettings::clone() const { return new PCPAxisSettings(*this); }
 
 void PCPAxisSettings::updateFromColumn(std::shared_ptr<const Column> col) {
     col_ = col;
     catCol_ = dynamic_cast<const CategoricalColumn*>(col.get());
+
     col->getBuffer()->getRepresentation<BufferRAM>()->dispatch<void, dispatching::filter::Scalars>(
         [&](auto ram) -> void {
             using T = typename util::PrecisionValueType<decltype(ram)>;

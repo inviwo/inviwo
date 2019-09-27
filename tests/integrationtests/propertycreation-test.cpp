@@ -101,20 +101,18 @@ TEST_P(PropertyCreationTests, Create) {
         ASSERT_EQ(sProps.size(), cProps.size())
             << "Number of subproperties does not match for property copy \'" << GetParam() << "\'";
 
-        for (auto&& item : util::zip(sProps, cProps)) {
-            const std::string errorMsg = " in property copy \'" +
-                                         item.first()->getClassIdentifier() +
+        for (auto&& [org, clone] : util::zip(sProps, cProps)) {
+            const std::string errorMsg = " in property copy \'" + org->getClassIdentifier() +
                                          "\' (base property: \'" + GetParam() + "\')";
 
-            EXPECT_EQ(item.first()->getIdentifier(), item.second()->getIdentifier())
+            EXPECT_EQ(org->getIdentifier(), clone->getIdentifier())
                 << "Identifier mismatch" << errorMsg;
-            EXPECT_EQ(item.first()->getPath(), item.second()->getPath())
-                << "Property path mismatch" << errorMsg;
-            EXPECT_EQ(item.first()->getDisplayName(), item.second()->getDisplayName())
+            EXPECT_EQ(org->getPath(), clone->getPath()) << "Property path mismatch" << errorMsg;
+            EXPECT_EQ(org->getDisplayName(), clone->getDisplayName())
                 << "DisplayName mismatch" << errorMsg;
-            EXPECT_EQ(item.first()->getClassIdentifier(), item.second()->getClassIdentifier())
+            EXPECT_EQ(org->getClassIdentifier(), clone->getClassIdentifier())
                 << "ClassIdentifier mismatch" << errorMsg;
-            EXPECT_EQ(item.first()->getSemantics(), item.second()->getSemantics())
+            EXPECT_EQ(org->getSemantics(), clone->getSemantics())
                 << "Semantics mismatch" << errorMsg;
         }
     }

@@ -43,9 +43,11 @@ PythonProcessorFolderObserver::PythonProcessorFolderObserver(InviwoApplication* 
     : FileObserver(app), app_(app), directory_{directory}, module_{module} {
 
     if (filesystem::directoryExists(directory)) {
-        auto files = filesystem::getDirectoryContents(directory);
+        const auto files = filesystem::getDirectoryContents(directory);
         for (const auto& file : files) {
-            registerFile(directory + "/" + file);
+            if (filesystem::getFileExtension(file) == "py") {
+                registerFile(directory + "/" + file);
+            }
         }
     }
 
@@ -79,8 +81,10 @@ void PythonProcessorFolderObserver::fileChanged(const std::string&) {
     if (filesystem::directoryExists(directory_)) {
         auto files = filesystem::getDirectoryContents(directory_);
         for (const auto& file : files) {
-            if (registerFile(directory_ + "/" + file)) {
-                LogInfo("Loaded python processor: " << directory_ + "/" + file);
+            if (filesystem::getFileExtension(file) == "py") {
+                if (registerFile(directory_ + "/" + file)) {
+                    LogInfo("Loaded python processor: " << directory_ + "/" + file);
+                }
             }
         }
     }

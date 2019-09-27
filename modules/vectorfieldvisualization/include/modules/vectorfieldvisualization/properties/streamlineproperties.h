@@ -44,7 +44,6 @@ public:
 
     StreamLineProperties(std::string identifier, std::string displayName);
     StreamLineProperties(const StreamLineProperties& rhs);
-    StreamLineProperties& operator=(const StreamLineProperties& that);
     virtual StreamLineProperties* clone() const override;
     virtual ~StreamLineProperties();
 };

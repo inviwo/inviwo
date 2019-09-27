@@ -67,9 +67,12 @@ ADD_LOGICAL_TARGET("libcef_lib" "${CEF_LIB_DEBUG}" "${CEF_LIB_RELEASE}")
 set(BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS_TMP})
 
 # Determine the target output directory.
-# Inviwo: use module target directory as output dir$<TARGET_FILE_DIR:inviwo-module-webbrowser>
-#SET_CEF_TARGET_OUT_DIR()
-set(CEF_TARGET_OUT_DIR $<TARGET_FILE_DIR:inviwo-module-webbrowser>)
+# Inviwo: use EXECUTABLE_OUTPUT_PATH directory as output dir
+if(IVW_GENERATOR_IS_MULTI_CONFIG) 
+    set(CEF_TARGET_OUT_DIR ${EXECUTABLE_OUTPUT_PATH}/$<CONFIG>)
+else()
+    set(CEF_TARGET_OUT_DIR ${EXECUTABLE_OUTPUT_PATH})
+endif()
 
 # Display configuration settings.
 #PRINT_CEF_CONFIG()

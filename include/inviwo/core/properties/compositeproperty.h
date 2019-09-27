@@ -51,12 +51,12 @@ public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    CompositeProperty(std::string identifier, std::string displayName,
+    CompositeProperty(const std::string& identifier, const std::string& displayName,
                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                       PropertySemantics semantics = PropertySemantics::Default);
 
     CompositeProperty(const CompositeProperty& rhs) = default;
-    CompositeProperty& operator=(const CompositeProperty& that) = default;
+
     virtual CompositeProperty* clone() const override;
     virtual ~CompositeProperty() = default;
     virtual std::string getClassIdentifierForWidget() const override;

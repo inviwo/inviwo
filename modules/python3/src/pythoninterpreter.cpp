@@ -40,10 +40,11 @@
 #include <modules/python3/pythoninterpreter.h>
 #include <modules/python3/python3module.h>
 #include <modules/python3/pythonscript.h>
+#include <modules/python3/pyutils.h>
 
 namespace inviwo {
 
-PythonInterpreter::PythonInterpreter(Python3Module* module) : embedded_{false}, isInit_(false) {
+PythonInterpreter::PythonInterpreter() : embedded_{false}, isInit_(false) {
     namespace py = pybind11;
 
     if (isInit_) {
@@ -103,8 +104,6 @@ sys.stderr = OutputRedirector(1)
             throw ModuleInitException(e.what(), IVW_CONTEXT);
         }
     }
-
-    addModulePath(module->getPath() + "/scripts");
 }
 
 PythonInterpreter::~PythonInterpreter() {
@@ -114,20 +113,7 @@ PythonInterpreter::~PythonInterpreter() {
     }
 }
 
-void PythonInterpreter::addModulePath(const std::string& path) {
-    namespace py = pybind11;
-    using namespace pybind11::literals;
-
-    if (!Py_IsInitialized()) {
-        LogWarn("addModulePath(): Python is not initialized");
-        return;
-    }
-
-    std::string pathConv = path;
-    replaceInString(pathConv, "\\", "/");
-
-    py::module::import("sys").attr("path").cast<py::list>().append(pathConv);
-}
+void PythonInterpreter::addModulePath(const std::string& path) { pyutil::addModulePath(path); }
 
 void PythonInterpreter::importModule(const std::string& moduleName) {
     namespace py = pybind11;

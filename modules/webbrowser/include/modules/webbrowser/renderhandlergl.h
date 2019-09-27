@@ -49,7 +49,9 @@ namespace inviwo {
 #include <warn/ignore/extra-semi>  // Due to IMPLEMENT_REFCOUNTING, remove when upgrading CEF
 class IVW_MODULE_WEBBROWSER_API RenderHandlerGL : public CefRenderHandler {
 public:
-    RenderHandlerGL(std::function<void()> onWebPageCopiedCallback);
+    typedef std::function<void()> OnWebPageCopiedCallback;
+
+    RenderHandlerGL(OnWebPageCopiedCallback onWebPageCopiedCallback);
     void updateCanvasSize(size2_t newSize);
     ///
     // Called to retrieve the view rectangle which is relative to screen
@@ -100,7 +102,7 @@ private:
     CefRect GetPopupRectInWebView(const CefRect &original_rect);
 
     Texture2D texture2D_;
-    std::function<void()>
+    OnWebPageCopiedCallback
         onWebPageCopiedCallback;  /// Called after web page has been copied in OnPaint
 
     CefRect popupRect_;

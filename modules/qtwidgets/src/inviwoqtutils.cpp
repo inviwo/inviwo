@@ -56,6 +56,7 @@
 #include <QBuffer>
 #include <QByteArray>
 #include <QStyle>
+#include <QScreen>
 #include <warn/pop>
 
 #include <ios>
@@ -381,7 +382,6 @@ QPoint movePointOntoDesktop(const QPoint& point, const QSize& /*size*/,
 #endif
 
     QPoint pos(point);
-    QDesktopWidget* desktop = QApplication::desktop();
 
     if (decorationOffset) {
         QPoint offset = windowDecorationOffset;
@@ -394,8 +394,9 @@ QPoint movePointOntoDesktop(const QPoint& point, const QSize& /*size*/,
     static constexpr int rightPadding = 10;
     static constexpr int bottomPadding = 10;
     const bool withinAnyDesktop = [&]() {
-        for (int i = 0; i < desktop->screenCount(); i++) {
-            auto geom = desktop->screenGeometry(i).marginsRemoved(
+        QList<QScreen*> screens = QGuiApplication::screens();
+        for (QScreen* screen : screens) {
+            auto geom = screen->geometry().marginsRemoved(
                 {leftPadding, topPadding, rightPadding, bottomPadding});
             if (geom.contains(pos)) {
                 return true;
@@ -491,8 +492,8 @@ QImage layerToQImage(const Layer& layer) {
 }
 
 void addImageActions(QMenu& menu, const Image& image, LayerType visibleLayer, size_t visibleIndex) {
-    QMenu* copy = menu.addMenu("Copy");
-    QMenu* save = menu.addMenu("Save");
+    QMenu* copy = menu.addMenu(QIcon(":svgicons/edit-copy.svg"), "Copy");
+    QMenu* save = menu.addMenu(QIcon(":svgicons/save-as.svg"), "Save");
 
     auto addAction = [&copy, &save](const std::string& name, const Layer* layer, bool visible) {
         std::ostringstream oss;

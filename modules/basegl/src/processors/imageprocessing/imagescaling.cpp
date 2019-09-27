@@ -62,9 +62,11 @@ ImageScaling::ImageScaling()
                          {"four", "400%", 4.0},
                          {"eight", "800%", 8.0},
                          {"custom", "Custom", -1.0},
+                         {"absolute", "Absolute", -2.0},
                      },
                      4)
-    , customFactor_("customFactor", "Custom Factor", 1.0, 1.0 / 32.0, 32.0) {
+    , customFactor_("customFactor", "Custom Factor", 1.0, 1.0 / 32.0, 32.0)
+    , absoluteSize_("absoluteSize", "Absolute Size", size2_t{200, 200}, size2_t{1}, size2_t{4096}) {
 
     addPort(inport_);
     addPort(outport_);
@@ -72,17 +74,15 @@ ImageScaling::ImageScaling()
     addProperty(enabled_);
     addProperty(scalingFactor_);
     addProperty(customFactor_);
+    addProperty(absoluteSize_);
 
-    customFactor_.setVisible(false);
+    customFactor_.visibilityDependsOn(scalingFactor_, [](auto& p) { return p == -1.0; });
+    absoluteSize_.visibilityDependsOn(scalingFactor_, [](auto& p) { return p == -2.0; });
 
-    scalingFactor_.onChange([this]() {
-        if (enabled_) {
-            customFactor_.setVisible(scalingFactor_.get() < 0.0);
-            resizeInports();
-        }
-    });
+    scalingFactor_.onChange([this]() { resizeInports(); });
     enabled_.onChange([this]() { resizeInports(); });
     customFactor_.onChange([this]() { resizeInports(); });
+    absoluteSize_.onChange([this]() { resizeInports(); });
 }
 
 void ImageScaling::process() {
@@ -99,14 +99,16 @@ void ImageScaling::process() {
 void ImageScaling::propagateEvent(Event* event, Outport* source) {
     if (event->hasVisitedProcessor(this)) return;
 
-    if (event->hash() == ResizeEvent::chash()) {
+    if (auto resizeEvent = event->getAs<ResizeEvent>()) {
         // cache size of the resize event
-        lastValidOutputSize_ = event->getAs<ResizeEvent>()->size();
+        lastValidOutputSize_ = resizeEvent->size();
 
         if (enabled_) {
-            event->markAsVisited(this);
+            resizeEvent->markAsVisited(this);
 
-            if (resizeInports()) event->markAsUsed();
+            if (resizeInports()) {
+                resizeEvent->markAsUsed();
+            }
             return;
         }
     }
@@ -122,12 +124,18 @@ void ImageScaling::deserialize(Deserializer& d) {
 size2_t ImageScaling::calcInputImageSize() const {
     if (!enabled_) return lastValidOutputSize_;
 
-    const double factor = (scalingFactor_.get() < 0.0) ? customFactor_.get() : scalingFactor_.get();
-    return size2_t(dvec2(lastValidOutputSize_) / factor);
+    if (scalingFactor_ == -1.0) {
+        return size2_t(dvec2(lastValidOutputSize_) / customFactor_.get());
+    } else if (scalingFactor_ == -2.0) {
+        return absoluteSize_;
+    } else {
+        return size2_t(dvec2(lastValidOutputSize_) / scalingFactor_.get());
+    }
 }
 
 bool ImageScaling::resizeInports() {
     if (deserializing_) return false;
+    if (!enabled_) return false;
 
     ResizeEvent e(calcInputImageSize());
 

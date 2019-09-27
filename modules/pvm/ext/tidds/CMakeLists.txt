@@ -1,30 +1,15 @@
-#--------------------------------------------------------------------
-# Tiny DDS Package
-project(tidds)
+if (BUILD_SHARED_LIBS)
+else()
+	message(WARNING "tidds is published under LGPL. Shared Liberary build will be enforced for tidds")
+endif()
+
+# needs to be always used as a shared library due to LGPL of TinyDDS
+set(BUILD_SHARED_LIBS ON) 
+add_subdirectory(tidds)
 
 #--------------------------------------------------------------------
-# Add header files
-set(HEADER_FILES
-    include/tidds/codebase.h
-    include/tidds/ddsbase.h
-)
-ivw_group("Header Files" ${HEADER_FILES})
-
-#--------------------------------------------------------------------
-# Add source files
-set(SOURCE_FILES
-    src/ddsbase.cpp
-)
-ivw_group("Source Files" ${SOURCE_FILES})
-
-
-#--------------------------------------------------------------------
-# Create library
-add_library(tidds ${SOURCE_FILES} ${HEADER_FILES})
-target_include_directories(tidds PUBLIC 
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:install>
-)
+# Supress warnings
+ivw_suppress_compiler_warnings(tidds)
 
 #--------------------------------------------------------------------
 # Define defintions
@@ -38,4 +23,3 @@ ivw_folder(tidds ext)
 # Make package (for other projects to find)
 ivw_default_install_targets(tidds)
 ivw_make_package(TiDDS tidds)
-ivw_suppress_compiler_warnings(tidds)

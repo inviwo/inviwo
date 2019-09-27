@@ -20,7 +20,7 @@ remove_definitions(-DHAVE_CONFIG_H)
 #--------------------------------------------------------------------
 # Create library
 add_library(libjpeg ${SOURCE_FILES} ${HEADER_FILES})
-add_library(inviwo::libjpeg ALIAS libjpeg)
+add_library(JPEG::JPEG ALIAS libjpeg)
 set_target_properties(libjpeg PROPERTIES VERSION 8.4.0 SOVERSION 8.4)
 #--------------------------------------------------------------------
 # Define defintions

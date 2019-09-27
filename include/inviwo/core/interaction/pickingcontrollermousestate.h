@@ -35,6 +35,7 @@ namespace inviwo {
 
 struct PickingControllerMouseStateSM;
 class MouseEvent;
+class WheelEvent;
 class EventPropagator;
 class PickingManager;
 
@@ -46,6 +47,7 @@ public:
     ~PickingControllerMouseState();
 
     void propagateEvent(MouseEvent* e, EventPropagator* propagator, size_t globalId);
+    void propagateEvent(WheelEvent* e, EventPropagator* propagator, size_t globalId);
 
     std::unique_ptr<PickingControllerMouseStateSM> msm;
 };

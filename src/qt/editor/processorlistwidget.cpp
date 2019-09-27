@@ -156,9 +156,20 @@ ProcessorTreeWidget::ProcessorTreeWidget(InviwoMainWindow* parent, HelpWidget* h
     vLayout->setContentsMargins(space, space, space, space);
     lineEdit_ = new QLineEdit(centralWidget);
     lineEdit_->setPlaceholderText("Filter processor list...");
-    lineEdit_->setClearButtonEnabled(true);
-
-    connect(lineEdit_, &QLineEdit::textChanged, this, [this]() { addProcessorsToTree(); });
+    QIcon clearIcon;
+    clearIcon.addFile(":/svgicons/lineedit-clear.svg", utilqt::emToPx(this, QSizeF(0.3, 0.3)),
+                      QIcon::Normal);
+    clearIcon.addFile(":/svgicons/lineedit-clear-active.svg",
+                      utilqt::emToPx(this, QSizeF(0.3, 0.3)), QIcon::Active);
+    clearIcon.addFile(":/svgicons/lineedit-clear-active.svg",
+                      utilqt::emToPx(this, QSizeF(0.3, 0.3)), QIcon::Selected);
+    auto clearAction = lineEdit_->addAction(clearIcon, QLineEdit::TrailingPosition);
+    clearAction->setVisible(false);
+    connect(clearAction, &QAction::triggered, lineEdit_, &QLineEdit::clear);
+    connect(lineEdit_, &QLineEdit::textChanged, this, [this, clearAction](const QString& str) {
+        addProcessorsToTree();
+        clearAction->setVisible(!str.isEmpty());
+    });
     vLayout->addWidget(lineEdit_);
     QHBoxLayout* listViewLayout = new QHBoxLayout();
     listViewLayout->addWidget(new QLabel("Group by", centralWidget));
@@ -333,7 +344,7 @@ QTreeWidgetItem* ProcessorTreeWidget::addToplevelItemTo(QString title, const std
         newItem->setToolTip(0, utilqt::toLocalQString(desc));
     }
     processorTree_->addTopLevelItem(newItem);
-    processorTree_->setFirstItemColumnSpanned(newItem, true);
+    newItem->setFirstColumnSpanned(true);
 
     return newItem;
 }
@@ -546,7 +557,7 @@ void ProcessorTreeWidget::extractInfoAndAddProcessor(ProcessorFactoryObject* pro
         processorTree_->addTopLevelItem(newItem);
     }
     if (!hasTags) {
-        processorTree_->setFirstItemColumnSpanned(newItem, true);
+        newItem->setFirstColumnSpanned(true);
     }
 }
 
@@ -569,7 +580,7 @@ ProcessorDragObject::ProcessorDragObject(QWidget* source, std::unique_ptr<Proces
     auto mime = new ProcessorMimeData(std::move(processor));
     setMimeData(mime);
     setHotSpot(QPoint(img.width() / 2, img.height() / 2));
-    start(Qt::MoveAction);
+    exec(Qt::MoveAction);
 }
 
 bool ProcessorTreeItem::operator<(const QTreeWidgetItem& other) const {
