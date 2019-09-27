@@ -72,16 +72,15 @@ const mat4& Camera::getInverseProjectionMatrix() const {
 
 vec3 Camera::getWorldPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const {
     vec4 clipCoords = getClipPosFromNormalizedDeviceCoords(ndcCoords);
-    vec4 eyeCoords = getInverseProjectionMatrix()*clipCoords;
-    vec4 worldCoords = getInverseViewMatrix()*eyeCoords;
+    vec4 eyeCoords = getInverseProjectionMatrix() * clipCoords;
+    vec4 worldCoords = getInverseViewMatrix() * eyeCoords;
     worldCoords /= worldCoords.w;
     return vec3(worldCoords);
 }
 
 vec4 Camera::getClipPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const {
     const auto& projection = getProjectionMatrix();
-    const float clipW = projection[2][3] / 
-        (ndcCoords.z - (projection[2][2] / projection[3][2]));
+    const float clipW = projection[2][3] / (ndcCoords.z - (projection[2][2] / projection[3][2]));
     return vec4(ndcCoords * clipW, clipW);
 }
 
@@ -110,7 +109,9 @@ void Camera::deserialize(Deserializer& d) {
 }
 
 bool Camera::equalTo(const Camera& other) const {
-    return !(glm::any(glm::notEqual(lookFrom_, other.lookFrom_)) | glm::any(glm::notEqual(lookTo_, other.lookTo_)) | (nearPlaneDist_ != other.nearPlaneDist_) | (farPlaneDist_ != other.farPlaneDist_));
+    return !(glm::any(glm::notEqual(lookFrom_, other.lookFrom_)) |
+             glm::any(glm::notEqual(lookTo_, other.lookTo_)) |
+             (nearPlaneDist_ != other.nearPlaneDist_) | (farPlaneDist_ != other.farPlaneDist_));
 }
 
 PerspectiveCamera::PerspectiveCamera(vec3 lookFrom, vec3 lookTo, vec3 lookUp, float nearPlane,
