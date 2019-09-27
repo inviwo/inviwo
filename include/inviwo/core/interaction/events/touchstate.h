@@ -42,10 +42,10 @@ namespace inviwo {
 
 enum class TouchState {
     None = 0,
-    Started = 1 << 0,     // Pressed
-    Updated = 1 << 1,     // Moved
-    Stationary = 1 << 2,  // No movement
-    Finished = 1 << 3,    // Released
+    Started = 1 << 0,     //!< Touches the surface of the TouchDevice
+    Updated = 1 << 1,     //!< Moved
+    Stationary = 1 << 2,  //!< No movement on TouchScreen, Pressed on TouchPad
+    Finished = 1 << 3,    //!< Released
 };
 
 ALLOW_FLAGS_FOR_ENUM(TouchState)

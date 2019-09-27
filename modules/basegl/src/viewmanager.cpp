@@ -181,7 +181,7 @@ bool ViewManager::propagateTouchEvent(TouchEvent* te, Propagator propagator) {
             p.setPressedPosNormalized(scale * (p.pressedPosNormalized() - offset));
         }
 
-        TouchEvent newEvent(points, te->getDevice());
+        TouchEvent newEvent(points, te->getDevice(), te->modifiers());
 
         propagator(&newEvent, viewId);
 
