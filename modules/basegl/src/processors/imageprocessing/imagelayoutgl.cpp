@@ -93,21 +93,18 @@ ImageLayoutGL::ImageLayoutGL()
         // Ports with zero dimensions will not be active,
         // so disregard them when considering ready status
         return multiinport_.isConnected() &&
-               util::all_of(
-                   multiinport_.getConnectedOutports(), [](Outport* p) {
-                       auto ip = static_cast<ImageOutport*>(p);
-                       return (ip->hasData() && glm::any(glm::equal(
-                                ip->getDimensions(),
-                                size2_t(0))))
-                                ? true
-                                : p->isReady();
-                   });
+               util::all_of(multiinport_.getConnectedOutports(), [](Outport* p) {
+                   auto ip = static_cast<ImageOutport*>(p);
+                   return (ip->hasData() && glm::any(glm::equal(ip->getDimensions(), size2_t(0))))
+                              ? true
+                              : p->isReady();
+               });
     });
     // Ensure that viewports are up-to-date
     // before isConnectionActive is called
     multiinport_.onConnect([this]() { updateViewports(currentDim_, true); });
     multiinport_.onDisconnect([this]() { updateViewports(currentDim_, true); });
-    
+
     addPort(outport_);
 
     addProperty(layout_);
@@ -337,7 +334,7 @@ void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
         leftBounds.x, leftBounds.y);
     const int midy = glm::clamp(
         static_cast<int>(glm::clamp(*horizontalSplitter_, bottomMinMax.x, bottomMinMax.y) * dim.y),
-       bottomBounds.x, bottomBounds.y);
+        bottomBounds.x, bottomBounds.y);
 
     const int leftWindow3L1RX = glm::clamp(
         static_cast<int>(glm::clamp(*vertical3Left1RightSplitter_, rightMinMax.x, rightMinMax.y) *
