@@ -127,7 +127,8 @@ def main():
         if repo.is_dirty():
             print("There were format fixes, pushing changes")
             repo.git.add(update=True)
-            repo.index.commit("Jenkins: Format fixes")    
+            ivwteam = git.Actor("Inviwo Team", "team@inviwo.org")
+            repo.index.commit("Jenkins: Format fixes", author=ivwteam, committer=ivwteam)    
             repo.remotes.origin.push()
             # remove outfile if wha have fixed formatting
             output = pathlib.Path(args.output)
