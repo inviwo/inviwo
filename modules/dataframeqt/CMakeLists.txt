@@ -1,0 +1,48 @@
+#--------------------------------------------------------------------
+# Inviwo DataFrameQt Module
+ivw_module(DataFrameQt)
+
+find_package(Qt5Core QUIET REQUIRED)
+find_package(Qt5Gui QUIET REQUIRED)
+find_package(Qt5Widgets QUIET REQUIRED)
+find_package(Qt5Svg QUIET REQUIRED)
+
+#-------------------------------------------------------------------- 
+# Add MOC files
+set(MOC_FILES
+    include/inviwo/dataframeqt/dataframetableview.h
+    include/inviwo/dataframeqt/dataframeviewprocessorwidget.h
+)
+
+#--------------------------------------------------------------------
+# Add header files
+set(HEADER_FILES
+    ${MOC_FILES}
+    include/inviwo/dataframeqt/dataframeqtmodule.h
+    include/inviwo/dataframeqt/dataframeqtmoduledefine.h
+    include/inviwo/dataframeqt/processors/dataframeview.h
+)
+ivw_group("Header Files" ${HEADER_FILES})
+
+#--------------------------------------------------------------------
+# Add source files
+set(SOURCE_FILES
+    src/dataframeqtmodule.cpp
+    src/dataframetableview.cpp
+    src/dataframeviewprocessorwidget.cpp
+    src/processors/dataframeview.cpp
+)
+ivw_group("Source Files" ${SOURCE_FILES})
+
+# Add moc files
+qt5_wrap_cpp(MOCED_FILES ${MOC_FILES})
+source_group("MOC Files" FILES ${MOCED_FILES})
+
+#--------------------------------------------------------------------
+# Create module
+ivw_create_module(NO_PCH ${SOURCE_FILES} ${MOCED_FILES} ${HEADER_FILES})
+target_link_libraries(inviwo-module-dataframeqt PRIVATE Qt5::Core Qt5::Gui Qt5::Widgets)
+
+ivw_compile_optimize_on_target(inviwo-module-dataframeqt)
+
+ivw_make_package(InviwoDataFrameQtModule inviwo-module-dataframeqt)
