@@ -30,13 +30,8 @@
 
 #include <inviwo/dataframeqt/dataframeqtmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processorwidget.h>
+#include <modules/qtwidgets/processors/processorwidgetqt.h>
 #include <inviwo/core/processors/processorobserver.h>
-
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QWidget>
-#include <warn/pop>
 
 namespace inviwo {
 
@@ -46,8 +41,7 @@ class DataFrameTableView;
 /**
  * \brief A processor widget showing a DataFrame in a table view.
  */
-class IVW_MODULE_DATAFRAMEQT_API DataFrameViewProcessorWidget : public QWidget,
-                                                                public ProcessorWidget,
+class IVW_MODULE_DATAFRAMEQT_API DataFrameViewProcessorWidget : public ProcessorWidgetQt,
                                                                 public ProcessorObserver {
 #include <warn/push>
 #include <warn/ignore/all>
@@ -57,12 +51,6 @@ public:
     DataFrameViewProcessorWidget(Processor* p);
     virtual ~DataFrameViewProcessorWidget() = default;
 
-    virtual void setVisible(bool visible) override;
-    virtual void show() override;
-    virtual void hide() override;
-    virtual void setPosition(ivec2 pos) override;
-    virtual void setDimensions(ivec2 dimensions) override;
-
     void setDataFrame(std::shared_ptr<const DataFrame> dataframe, bool vectorsIntoColumns = false);
     void setIndexColumnVisible(bool visible);
 
@@ -71,25 +59,10 @@ public:
     // Override ProcessorObserver
     virtual void onProcessorDisplayNameChanged(Processor*, const std::string&) override;
 
-protected:
-    virtual void updateVisible(bool visible) override;
-    virtual void updateDimensions(ivec2) override;
-    virtual void updatePosition(ivec2) override;
-
-    // Override QWidget events
-    virtual void resizeEvent(QResizeEvent*) override;
-    virtual void closeEvent(QCloseEvent*) override;
-    virtual void showEvent(QShowEvent*) override;
-    virtual void hideEvent(QHideEvent*) override;
-    virtual void moveEvent(QMoveEvent*) override;
-
 private:
     using tableview_ptr =
         std::unique_ptr<DataFrameTableView, std::function<void(DataFrameTableView*)>>;
     tableview_ptr tableview_;
-
-    bool ignoreEvents_{false};
-    bool ignoreUpdate_{false};
 };
 
 }  // namespace inviwo
