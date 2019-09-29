@@ -42,22 +42,27 @@
 
 namespace inviwo {
 
-class DataFrameViewProcessorWidget;
+class DataFrameTableProcessorWidget;
 
-/** \docpage{org.inviwo.DataFrameView, DataFrame View}
- * ![](org.inviwo.DataFrameView.png?classIdentifier=org.inviwo.DataFrameView)
+/** \docpage{org.inviwo.DataFrameTable, DataFrame Table}
+ * ![](org.inviwo.DataFrameTable.png?classIdentifier=org.inviwo.DataFrameTable)
  * Shows the content of a DataFrame in a tabular view.
  *
  * ### Inports
- *   * __inport__   DataFrame contents to be shown in the processor widget
+ *   * __inport__               DataFrame contents to be shown in the processor widget
+ *   * __brushingAndLinking__   inport for brushing & linking interactions
+ *
+ * ### Properties
+ *   * __Show Index Column__             show/hide index column in table
+ *   * __Vector Components as Columns__  print glm::vec components in separate columns
  *
  */
 
-class IVW_MODULE_DATAFRAMEQT_API DataFrameView : public Processor,
-                                                 public ProcessorWidgetMetaDataObserver {
+class IVW_MODULE_DATAFRAMEQT_API DataFrameTable : public Processor,
+                                                  public ProcessorWidgetMetaDataObserver {
 public:
-    DataFrameView();
-    virtual ~DataFrameView();
+    DataFrameTable();
+    virtual ~DataFrameTable();
 
     virtual void process() override;
 
@@ -80,7 +85,7 @@ protected:
     virtual void onProcessorWidgetDimensionChange(ProcessorWidgetMetaData*) override;
     virtual void onProcessorWidgetVisibilityChange(ProcessorWidgetMetaData*) override;
 
-    DataFrameViewProcessorWidget* getWidget() const;
+    DataFrameTableProcessorWidget* getWidget() const;
 
 private:
     DataFrameInport inport_;

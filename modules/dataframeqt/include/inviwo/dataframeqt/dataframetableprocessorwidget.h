@@ -41,22 +41,20 @@ class DataFrameTableView;
 /**
  * \brief A processor widget showing a DataFrame in a table view.
  */
-class IVW_MODULE_DATAFRAMEQT_API DataFrameViewProcessorWidget : public ProcessorWidgetQt,
-                                                                public ProcessorObserver {
+class IVW_MODULE_DATAFRAMEQT_API DataFrameTableProcessorWidget : public ProcessorWidgetQt,
+                                                                 public ProcessorObserver {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT
 #include <warn/pop>
 public:
-    DataFrameViewProcessorWidget(Processor* p);
-    virtual ~DataFrameViewProcessorWidget() = default;
+    DataFrameTableProcessorWidget(Processor* p);
+    virtual ~DataFrameTableProcessorWidget() = default;
 
     void setDataFrame(std::shared_ptr<const DataFrame> dataframe, bool vectorsIntoColumns = false);
     void setIndexColumnVisible(bool visible);
 
     void updateSelection();
-
-    DataFrameTableView* getTableView() const;
 
     // Override ProcessorObserver
     virtual void onProcessorDisplayNameChanged(Processor*, const std::string&) override;

@@ -11,7 +11,7 @@ find_package(Qt5Svg QUIET REQUIRED)
 # Add MOC files
 set(MOC_FILES
     include/inviwo/dataframeqt/dataframetableview.h
-    include/inviwo/dataframeqt/dataframeviewprocessorwidget.h
+    include/inviwo/dataframeqt/dataframetableprocessorwidget.h
 )
 
 #--------------------------------------------------------------------
@@ -20,7 +20,7 @@ set(HEADER_FILES
     ${MOC_FILES}
     include/inviwo/dataframeqt/dataframeqtmodule.h
     include/inviwo/dataframeqt/dataframeqtmoduledefine.h
-    include/inviwo/dataframeqt/processors/dataframeview.h
+    include/inviwo/dataframeqt/processors/dataframetable.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -29,8 +29,8 @@ ivw_group("Header Files" ${HEADER_FILES})
 set(SOURCE_FILES
     src/dataframeqtmodule.cpp
     src/dataframetableview.cpp
-    src/dataframeviewprocessorwidget.cpp
-    src/processors/dataframeview.cpp
+    src/dataframetableprocessorwidget.cpp
+    src/processors/dataframetable.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

@@ -27,8 +27,8 @@
  *
  *********************************************************************************/
 
-#include <inviwo/dataframeqt/dataframeviewprocessorwidget.h>
-#include <inviwo/dataframeqt/processors/dataframeview.h>
+#include <inviwo/dataframeqt/dataframetableprocessorwidget.h>
+#include <inviwo/dataframeqt/processors/dataframetable.h>
 #include <inviwo/dataframeqt/dataframetableview.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/raiiutils.h>
@@ -42,7 +42,7 @@
 
 namespace inviwo {
 
-DataFrameViewProcessorWidget::DataFrameViewProcessorWidget(Processor* p)
+DataFrameTableProcessorWidget::DataFrameTableProcessorWidget(Processor* p)
     : ProcessorWidgetQt(p), tableview_(nullptr) {
 
     this->setParent(utilqt::getApplicationMainWindow());
@@ -65,13 +65,13 @@ DataFrameViewProcessorWidget::DataFrameViewProcessorWidget(Processor* p)
 
     QObject::connect(tableview_.get(), &DataFrameTableView::columnSelectionChanged, this,
                      [this](const std::unordered_set<size_t>& columns) {
-                         if (auto p = dynamic_cast<DataFrameView*>(getProcessor())) {
+                         if (auto p = dynamic_cast<DataFrameTable*>(getProcessor())) {
                              p->selectColumns(columns);
                          }
                      });
     QObject::connect(tableview_.get(), &DataFrameTableView::rowSelectionChanged, this,
                      [this](const std::unordered_set<size_t>& rows) {
-                         if (auto p = dynamic_cast<DataFrameView*>(getProcessor())) {
+                         if (auto p = dynamic_cast<DataFrameTable*>(getProcessor())) {
                              p->selectRows(rows);
                          }
                      });
@@ -91,17 +91,17 @@ DataFrameViewProcessorWidget::DataFrameViewProcessorWidget(Processor* p)
     }
 }
 
-void DataFrameViewProcessorWidget::setDataFrame(std::shared_ptr<const DataFrame> dataframe,
-                                                bool vectorsIntoColumns) {
+void DataFrameTableProcessorWidget::setDataFrame(std::shared_ptr<const DataFrame> dataframe,
+                                                 bool vectorsIntoColumns) {
     tableview_->setDataFrame(dataframe, vectorsIntoColumns);
 }
 
-void DataFrameViewProcessorWidget::setIndexColumnVisible(bool visible) {
+void DataFrameTableProcessorWidget::setIndexColumnVisible(bool visible) {
     tableview_->setIndexColumnVisible(visible);
 }
 
-void DataFrameViewProcessorWidget::updateSelection() {
-    if (auto p = dynamic_cast<DataFrameView*>(getProcessor())) {
+void DataFrameTableProcessorWidget::updateSelection() {
+    if (auto p = dynamic_cast<DataFrameTable*>(getProcessor())) {
         if (!p->getSelectedColumns().empty()) {
             tableview_->selectColumns(p->getSelectedColumns());
         } else {
@@ -110,9 +110,7 @@ void DataFrameViewProcessorWidget::updateSelection() {
     }
 }
 
-DataFrameTableView* DataFrameViewProcessorWidget::getTableView() const { return tableview_.get(); }
-
-void DataFrameViewProcessorWidget::onProcessorDisplayNameChanged(Processor*, const std::string&) {
+void DataFrameTableProcessorWidget::onProcessorDisplayNameChanged(Processor*, const std::string&) {
     setWindowTitle(QString::fromStdString(processor_->getDisplayName()));
 }
 

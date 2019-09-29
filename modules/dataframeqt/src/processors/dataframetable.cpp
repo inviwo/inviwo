@@ -27,25 +27,25 @@
  *
  *********************************************************************************/
 
-#include <inviwo/dataframeqt/processors/dataframeview.h>
+#include <inviwo/dataframeqt/processors/dataframetable.h>
 
-#include <inviwo/dataframeqt/dataframeviewprocessorwidget.h>
+#include <inviwo/dataframeqt/dataframetableprocessorwidget.h>
 #include <inviwo/core/processors/processorwidget.h>
 #include <inviwo/core/network/networklock.h>
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo DataFrameView::processorInfo_{
-    "org.inviwo.DataFrameView",  // Class identifier
-    "DataFrame View",            // Display name
-    "Data Output",               // Category
-    CodeState::Stable,           // Code state
-    "CPU, DataFrame",            // Tags
+const ProcessorInfo DataFrameTable::processorInfo_{
+    "org.inviwo.DataFrameTable",  // Class identifier
+    "DataFrame Table",            // Display name
+    "Data Output",                // Category
+    CodeState::Stable,            // Code state
+    "CPU, DataFrame",             // Tags
 };
-const ProcessorInfo DataFrameView::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo DataFrameTable::getProcessorInfo() const { return processorInfo_; }
 
-DataFrameView::DataFrameView()
+DataFrameTable::DataFrameTable()
     : Processor()
     , inport_("inport")
     , brushLinkPort_("brushingAndLinking")
@@ -76,13 +76,13 @@ DataFrameView::DataFrameView()
     });
 }
 
-DataFrameView::~DataFrameView() {
+DataFrameTable::~DataFrameTable() {
     if (processorWidget_) {
         processorWidget_->hide();
     }
 }
 
-void DataFrameView::process() {
+void DataFrameTable::process() {
     if (auto w = getWidget()) {
         if (inport_.isChanged() || vectorCompAsColumn_.isModified()) {
             w->setDataFrame(inport_.getData(), vectorCompAsColumn_);
@@ -93,65 +93,65 @@ void DataFrameView::process() {
     }
 }
 
-void DataFrameView::selectColumns(const std::unordered_set<size_t>& columns) {
+void DataFrameTable::selectColumns(const std::unordered_set<size_t>& columns) {
     brushLinkPort_.sendColumnSelectionEvent(columns);
 }
 
-const std::unordered_set<size_t>& DataFrameView::getSelectedColumns() const {
+const std::unordered_set<size_t>& DataFrameTable::getSelectedColumns() const {
     return brushLinkPort_.getSelectedColumns();
 }
 
-void DataFrameView::selectRows(const std::unordered_set<size_t>& rows) {
+void DataFrameTable::selectRows(const std::unordered_set<size_t>& rows) {
     brushLinkPort_.sendSelectionEvent(rows);
 }
 
-const std::unordered_set<size_t>& DataFrameView::getSelectedRows() const {
+const std::unordered_set<size_t>& DataFrameTable::getSelectedRows() const {
     return brushLinkPort_.getSelectedIndices();
 }
 
-void DataFrameView::setProcessorWidget(std::unique_ptr<ProcessorWidget> processorWidget) {
-    if (processorWidget && !dynamic_cast<DataFrameViewProcessorWidget*>(processorWidget.get())) {
+void DataFrameTable::setProcessorWidget(std::unique_ptr<ProcessorWidget> processorWidget) {
+    if (processorWidget && !dynamic_cast<DataFrameTableProcessorWidget*>(processorWidget.get())) {
         throw Exception(
-            "Expected DataFrameViewProcessorWidget in DataFrameView::setProcessorWidget");
+            "Expected DataFrameTableProcessorWidget in DataFrameTable::setProcessorWidget");
     }
     Processor::setProcessorWidget(std::move(processorWidget));
     isSink_.update();
     isReady_.update();
 }
 
-void DataFrameView::onProcessorWidgetPositionChange(ProcessorWidgetMetaData*) {
+void DataFrameTable::onProcessorWidgetPositionChange(ProcessorWidgetMetaData*) {
     if (widgetMetaData_->getPosition() != position_.get()) {
         Property::OnChangeBlocker blocker{position_};
         position_.set(widgetMetaData_->getPosition());
     }
 }
 
-void DataFrameView::onProcessorWidgetDimensionChange(ProcessorWidgetMetaData*) {
+void DataFrameTable::onProcessorWidgetDimensionChange(ProcessorWidgetMetaData*) {
     if (widgetMetaData_->getDimensions() != dimensions_.get()) {
         Property::OnChangeBlocker blocker{dimensions_};
         dimensions_.set(widgetMetaData_->getDimensions());
     }
 }
 
-void DataFrameView::onProcessorWidgetVisibilityChange(ProcessorWidgetMetaData*) {
+void DataFrameTable::onProcessorWidgetVisibilityChange(ProcessorWidgetMetaData*) {
     isSink_.update();
     isReady_.update();
     invalidate(InvalidationLevel::InvalidOutput);
 }
 
-DataFrameViewProcessorWidget* DataFrameView::getWidget() const {
-    if (auto widget = static_cast<DataFrameViewProcessorWidget*>(processorWidget_.get())) {
+DataFrameTableProcessorWidget* DataFrameTable::getWidget() const {
+    if (auto widget = static_cast<DataFrameTableProcessorWidget*>(processorWidget_.get())) {
         return widget;
     } else {
         return nullptr;
     }
 }
 
-void DataFrameView::setWidgetSize(size2_t dim) {
+void DataFrameTable::setWidgetSize(size2_t dim) {
     NetworkLock lock(this);
     dimensions_.set(dim);
 }
 
-size2_t DataFrameView::getWidgetSize() const { return dimensions_; }
+size2_t DataFrameTable::getWidgetSize() const { return dimensions_; }
 
 }  // namespace inviwo
