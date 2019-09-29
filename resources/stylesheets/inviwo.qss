@@ -890,6 +890,7 @@ QTableView QHeaderView::up-arrow {
 QTableView, QTableWidget {
     border: none;
     color: #999999;
+    alternate-background-color: #3b3b3d;
     selection-color: #999;
     selection-background-color: #47474b;
     gridline-color: #4a4a4f;
@@ -901,7 +902,7 @@ QTableView QHeaderView::section {
     background: #2a2a2e;
 }
 QTableView QHeaderView::section:checked {
-    background-color: #3a3a3d;
+    background-color: #424245;
 }
 QTableView QHeaderView::section:horizontal {
     border-bottom: 0.125em solid #4a4a4f; 

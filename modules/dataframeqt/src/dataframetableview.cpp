@@ -47,6 +47,7 @@ DataFrameTableView::DataFrameTableView(QWidget* parent) : QTableWidget(3, 3, par
 
     // make it read-only
     setEditTriggers(QAbstractItemView::NoEditTriggers);
+    setAlternatingRowColors(true);
 
     QObject::connect(selectionModel(), &QItemSelectionModel::selectionChanged, this,
                      [this](const QItemSelection&, const QItemSelection&) {
