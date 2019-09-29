@@ -3,6 +3,7 @@
 set(dependencies
     InviwoDataFrameModule
     InviwoQtWidgetsModule
+    InviwoBrushingAndLinkingModule
 )
 
 # Add an alias for this module. Several modules can share an alias. 

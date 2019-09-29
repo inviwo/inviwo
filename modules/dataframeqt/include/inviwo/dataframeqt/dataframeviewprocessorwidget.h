@@ -54,6 +54,8 @@ public:
     void setDataFrame(std::shared_ptr<const DataFrame> dataframe, bool vectorsIntoColumns = false);
     void setIndexColumnVisible(bool visible);
 
+    void updateSelection();
+
     DataFrameTableView* getTableView() const;
 
     // Override ProcessorObserver

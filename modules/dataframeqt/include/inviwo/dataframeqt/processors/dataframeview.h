@@ -38,6 +38,8 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+
 namespace inviwo {
 
 class DataFrameViewProcessorWidget;
@@ -62,6 +64,12 @@ public:
     void setWidgetSize(size2_t);
     size2_t getWidgetSize() const;
 
+    void selectColumns(const std::unordered_set<size_t>& columns);
+    const std::unordered_set<size_t>& getSelectedColumns() const;
+
+    void selectRows(const std::unordered_set<size_t>& rows);
+    const std::unordered_set<size_t>& getSelectedRows() const;
+
     virtual void setProcessorWidget(std::unique_ptr<ProcessorWidget> processorWidget) override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
@@ -76,6 +84,8 @@ protected:
 
 private:
     DataFrameInport inport_;
+    BrushingAndLinkingInport brushLinkPort_;
+
     IntSize2Property dimensions_;
     IntVec2Property position_;
     BoolProperty showIndexColumn_;

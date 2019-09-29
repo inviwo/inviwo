@@ -48,6 +48,7 @@ const ProcessorInfo DataFrameView::getProcessorInfo() const { return processorIn
 DataFrameView::DataFrameView()
     : Processor()
     , inport_("inport")
+    , brushLinkPort_("brushingAndLinking")
 
     , dimensions_("dimensions", "Canvas Size", size2_t(512, 300), size2_t(1, 1),
                   size2_t(10000, 10000), size2_t(1, 1), InvalidationLevel::Valid)
@@ -61,6 +62,7 @@ DataFrameView::DataFrameView()
     widgetMetaData_->addObserver(this);
 
     addPort(inport_);
+    addPort(brushLinkPort_);
     addProperties(dimensions_, position_, showIndexColumn_, vectorCompAsColumn_);
 
     dimensions_.setSerializationMode(PropertySerializationMode::None);
@@ -78,6 +80,33 @@ DataFrameView::~DataFrameView() {
     if (processorWidget_) {
         processorWidget_->hide();
     }
+}
+
+void DataFrameView::process() {
+    if (auto w = getWidget()) {
+        if (inport_.isChanged() || vectorCompAsColumn_.isModified()) {
+            w->setDataFrame(inport_.getData(), vectorCompAsColumn_);
+        }
+        if (brushLinkPort_.isChanged()) {
+            w->updateSelection();
+        }
+    }
+}
+
+void DataFrameView::selectColumns(const std::unordered_set<size_t>& columns) {
+    brushLinkPort_.sendColumnSelectionEvent(columns);
+}
+
+const std::unordered_set<size_t>& DataFrameView::getSelectedColumns() const {
+    return brushLinkPort_.getSelectedColumns();
+}
+
+void DataFrameView::selectRows(const std::unordered_set<size_t>& rows) {
+    brushLinkPort_.sendSelectionEvent(rows);
+}
+
+const std::unordered_set<size_t>& DataFrameView::getSelectedRows() const {
+    return brushLinkPort_.getSelectedIndices();
 }
 
 void DataFrameView::setProcessorWidget(std::unique_ptr<ProcessorWidget> processorWidget) {
@@ -124,11 +153,5 @@ void DataFrameView::setWidgetSize(size2_t dim) {
 }
 
 size2_t DataFrameView::getWidgetSize() const { return dimensions_; }
-
-void DataFrameView::process() {
-    if (auto w = getWidget()) {
-        w->setDataFrame(inport_.getData(), vectorCompAsColumn_);
-    }
-}
 
 }  // namespace inviwo

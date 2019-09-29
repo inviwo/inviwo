@@ -36,6 +36,8 @@
 #include <QTableWidget>
 #include <warn/pop>
 
+#include <unordered_set>
+
 namespace inviwo {
 
 class DataFrame;
@@ -58,8 +60,20 @@ public:
     void setIndexColumnVisible(bool visible);
     bool isIndexColumnVisible() const;
 
+    void selectColumns(const std::unordered_set<size_t>& columns);
+    void selectRows(const std::unordered_set<size_t>& rows);
+
+signals:
+    void columnSelectionChanged(const std::unordered_set<size_t>& columns);
+    void rowSelectionChanged(const std::unordered_set<size_t>& rows);
+
 private:
     bool indexVisible_ = false;
+
+    std::shared_ptr<const DataFrame> data_;
+
+    bool ignoreEvents_{false};
+    bool ignoreUpdate_{ false };
 };
 
 }  // namespace inviwo

@@ -63,6 +63,19 @@ DataFrameViewProcessorWidget::DataFrameViewProcessorWidget(Processor* p)
     tableview_->setMouseTracking(true);
     tableview_->setAttribute(Qt::WA_OpaquePaintEvent);
 
+    QObject::connect(tableview_.get(), &DataFrameTableView::columnSelectionChanged, this,
+                     [this](const std::unordered_set<size_t>& columns) {
+                         if (auto p = dynamic_cast<DataFrameView*>(getProcessor())) {
+                             p->selectColumns(columns);
+                         }
+                     });
+    QObject::connect(tableview_.get(), &DataFrameTableView::rowSelectionChanged, this,
+                     [this](const std::unordered_set<size_t>& rows) {
+                         if (auto p = dynamic_cast<DataFrameView*>(getProcessor())) {
+                             p->selectRows(rows);
+                         }
+                     });
+
     setFocusProxy(tableview_.get());
 
     auto* layout = new QVBoxLayout(this);
@@ -85,6 +98,16 @@ void DataFrameViewProcessorWidget::setDataFrame(std::shared_ptr<const DataFrame>
 
 void DataFrameViewProcessorWidget::setIndexColumnVisible(bool visible) {
     tableview_->setIndexColumnVisible(visible);
+}
+
+void DataFrameViewProcessorWidget::updateSelection() {
+    if (auto p = dynamic_cast<DataFrameView*>(getProcessor())) {
+        if (!p->getSelectedColumns().empty()) {
+            tableview_->selectColumns(p->getSelectedColumns());
+        } else {
+            tableview_->selectRows(p->getSelectedRows());
+        }
+    }
 }
 
 DataFrameTableView* DataFrameViewProcessorWidget::getTableView() const { return tableview_.get(); }
