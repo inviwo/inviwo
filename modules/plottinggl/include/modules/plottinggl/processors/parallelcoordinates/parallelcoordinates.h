@@ -110,7 +110,10 @@ public:
     TemplateOptionProperty<BlendMode> blendMode_;
     FloatProperty falllofPower_;
     FloatProperty lineWidth_;
+    CompositeProperty selectedLine_;
     FloatProperty selectedLineWidth_;
+    BoolProperty selectedLineColorOverride_;
+    FloatVec4Property selectedLineColor_;
     BoolProperty showFiltered_;
     FloatVec3Property filterColor_;
     FloatProperty filterAlpha_;

@@ -35,8 +35,10 @@ uniform bool additiveBlend = true;
 uniform bool subtractiveBelnding = false;
 
 uniform vec4 color;
+uniform vec4 selectColor;
 uniform float mixColor;
 uniform float mixAlpha;
+uniform float mixSelection;
 
 uniform float fallofPower = 2.0;
 
@@ -49,8 +51,8 @@ void main() {
         res.rgb = 1 - res.rgb;
     }
     
-    res.rgb = mix(res.rgb, color.rgb, mixColor);
-    res.a = mix(res.a, color.a, mixAlpha);
+    res = mix(res, color, vec4(vec3(mixColor), mixAlpha));
+    res = mix(res, selectColor, vec4(mixSelection));
 
     if (additiveBlend) {
         res.a *= pow(lFalloffAlpha, fallofPower);
