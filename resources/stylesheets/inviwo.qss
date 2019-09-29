@@ -868,11 +868,9 @@ QWidget#CompositeWidget QToolButton#addListItemButton:disabled {
     image: url(:svgicons/listitem-add-disabled.svg);
 }
 
-
 /************************ 
-ConsoleWidget
+QTableView
 ************************/
-
 QTableView QTableCornerButton::section {
     border: none;
     border-bottom: 0.125em solid #4a4a4f; 
@@ -902,16 +900,19 @@ QTableView QHeaderView::section {
     border: 0.0325em solid #4a4a4f; 
     background: #2a2a2e;
 }
+QTableView QHeaderView::section:checked {
+    background-color: #3a3a3d;
+}
 QTableView QHeaderView::section:horizontal {
     border-bottom: 0.125em solid #4a4a4f; 
 }
 QTableView QHeaderView::section:vertical {
     border-right: 0.125em solid #4a4a4f; 
 }
-QTableView QHeaderView::section:checked {
-    background-color: #3a3a3d;
-}
 
+/************************ 
+ConsoleWidget
+************************/
 QDockWidget#ConsoleWidget QTextEdit {
     border: none;
     border-bottom: 0.125em ridge #4a4a4f;
