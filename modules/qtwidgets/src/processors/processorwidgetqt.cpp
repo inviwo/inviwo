@@ -82,8 +82,9 @@ void ProcessorWidgetQt::show() { ProcessorWidgetQt::setVisible(true); }
 void ProcessorWidgetQt::hide() { ProcessorWidgetQt::setVisible(false); }
 
 void ProcessorWidgetQt::setPosition(glm::ivec2 pos) {
-    // ProcessorWidget::setPosition(pos); Will be called by the Move event.
-    QWidget::move(pos.x, pos.y);
+    if (pos != utilqt::toGLM(QWidget::pos())) {
+        QWidget::move(pos.x, pos.y);  // This will trigger a move event.
+    }
 }
 
 void ProcessorWidgetQt::move(ivec2 pos) { ProcessorWidgetQt::setPosition(pos); }
@@ -123,6 +124,8 @@ void ProcessorWidgetQt::hideEvent(QHideEvent* event) {
 }
 
 void ProcessorWidgetQt::moveEvent(QMoveEvent* event) {
+    if (ignoreEvents_) return;
+    util::KeepTrueWhileInScope ignore(&ignoreUpdate_);
     ProcessorWidget::setPosition(ivec2(event->pos().x(), event->pos().y()));
     QWidget::moveEvent(event);
 }
