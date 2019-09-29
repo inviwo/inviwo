@@ -50,7 +50,8 @@ public:
     ProcessorWidgetQt(Processor* p);
     virtual ~ProcessorWidgetQt() = default;
 
-    virtual void setVisible(bool visible) override;   // Override QWidget && ProcessorWidget
+    using QWidget::setVisible;
+    //virtual void setVisible(bool visible) override;   // Override QWidget && ProcessorWidget
     virtual void show() override;                     // Override ProcessorWidget
     virtual void hide() override;                     // Override ProcessorWidget
     virtual void setPosition(ivec2 pos) override;     // Override ProcessorWidget
