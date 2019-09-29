@@ -49,7 +49,7 @@ DataFrameTableView::DataFrameTableView(QWidget* parent) : QTableWidget(3, 3, par
     setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     QObject::connect(selectionModel(), &QItemSelectionModel::selectionChanged, this,
-                     [this](const QItemSelection& selected, const QItemSelection&) {
+                     [this](const QItemSelection&, const QItemSelection&) {
                          if (ignoreEvents_) return;
                          util::KeepTrueWhileInScope ignore(&ignoreUpdate_);
                          auto cols = selectionModel()->selectedColumns();
@@ -72,7 +72,7 @@ DataFrameTableView::DataFrameTableView(QWidget* parent) : QTableWidget(3, 3, par
                                                             ->getDataContainer();
 
                                  std::unordered_set<size_t> selection;
-                                 for (auto& index : selected.indexes()) {
+                                 for (auto& index : selectionModel()->selection().indexes()) {
                                      selection.insert(indexCol[index.row()]);
                                  }
                                  emit rowSelectionChanged(selection);

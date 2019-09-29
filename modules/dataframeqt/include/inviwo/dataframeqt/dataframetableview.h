@@ -73,7 +73,7 @@ private:
     std::shared_ptr<const DataFrame> data_;
 
     bool ignoreEvents_{false};
-    bool ignoreUpdate_{ false };
+    bool ignoreUpdate_{false};
 };
 
 }  // namespace inviwo
