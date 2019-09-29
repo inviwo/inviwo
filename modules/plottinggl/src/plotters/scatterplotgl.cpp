@@ -468,24 +468,6 @@ void ScatterPlotGL::objectPicked(PickingEvent *p) {
         }
     }
 
-    auto logRowData = [&]() {
-        if (rowIndex && xAxis_ && yAxis_) {
-            std::ostringstream ss;
-            ss << "Index: " << rowIndex.value() << "\n"
-               << properties_.xAxis_.getCaption() << ": "
-               << xAxis_->getRepresentation<BufferRAM>()->getAsDouble(id) << "\n"
-               << properties_.yAxis_.getCaption() << ": "
-               << yAxis_->getRepresentation<BufferRAM>()->getAsDouble(id);
-            if (color_) {
-                ss << "\nColor Value: " << color_->getRepresentation<BufferRAM>()->getAsDouble(id);
-            }
-            if (radius_) {
-                ss << "\nRadius: " << radius_->getRepresentation<BufferRAM>()->getAsDouble(id);
-            }
-            LogWarn(ss.str());
-        }
-    };
-
     if ((p->getPressState() == PickingPressState::Release) &&
         (p->getPressItem() == PickingPressItem::Primary) &&
         (p->getCurrentGlobalPickingId() == p->getPressedGlobalPickingId())) {
