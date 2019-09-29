@@ -94,7 +94,7 @@ ParallelCoordinates::ParallelCoordinates()
     , selectedLine_("selectedLine", "Selected Line")
     , selectedLineWidth_("selectedLineWidth", "Line Width", 10.0f, 1.0f, 20.0f)
     , selectedLineColorOverride_("selectedLineColorOverride", "Override Line Color", false)
-    , selectedLineColor_("selectedLineColor", "Color", vec4(0.8f, 0.15f, 0.1f, 1.0f), vec4(0.0f),
+    , selectedLineColor_("selectedLineColor", "Color", vec4(1.0f, 0.769f, 0.247f, 1.0f), vec4(0.0f),
                          vec4(1.0f))
     , showFiltered_("showFiltered", "Show Filtered", false)
     , filterColor_("filterColor", "Filter Color", vec3(.2f, .2f, .2f), vec3(0.0f), vec3(1.0f),

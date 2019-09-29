@@ -66,8 +66,8 @@ ScatterPlotGL::Properties::Properties(std::string identifier, std::string displa
           TransferFunction({{0.0, vec4(1.0f)}, {1.0, vec4(1.0f)}}))
     , color_("color", "Color", vec4(1, 0, 0, 1), vec4(0), vec4(1), vec4(0.1f),
              InvalidationLevel::InvalidOutput, PropertySemantics::Color)
-    , hoverColor_("hoverColor", "Hover Color", vec4(1.0f, 0.77f, 0.25f, 1))
-    , selectionColor_("selectionColor", "Selection Color", vec4(1.0f, 0.15f, 0.1f, 1))
+    , hoverColor_("hoverColor", "Hover Color", vec4(1.0f, 0.906f, 0.612f, 1))
+    , selectionColor_("selectionColor", "Selection Color", vec4(1.0f, 0.769f, 0.247f, 1))
     , margins_("margins", "Margins", 5, 5, 5, 5)
     , axisMargin_("axisMargin", "Axis Margin", 15.0f, 0.0f, 50.0f)
 
