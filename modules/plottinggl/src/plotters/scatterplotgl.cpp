@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/plottinggl/plotters/scatterplotgl.h>
+#include <modules/plottinggl/processors/scatterplotprocessor.h>
 #include <modules/opengl/buffer/buffergl.h>
 #include <modules/opengl/buffer/bufferobject.h>
 #include <modules/opengl/buffer/bufferobjectarray.h>
@@ -40,7 +41,11 @@
 #include <inviwo/core/interaction/events/touchevent.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <inviwo/core/util/document.h>
+#include <inviwo/core/util/colorconversion.h>
 #include <modules/opengl/buffer/bufferobjectarray.h>
+
+#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -61,18 +66,20 @@ ScatterPlotGL::Properties::Properties(std::string identifier, std::string displa
           TransferFunction({{0.0, vec4(1.0f)}, {1.0, vec4(1.0f)}}))
     , color_("color", "Color", vec4(1, 0, 0, 1), vec4(0), vec4(1), vec4(0.1f),
              InvalidationLevel::InvalidOutput, PropertySemantics::Color)
-    , hoverColor_("hoverColor", "Hover color", vec4(1.0f, 0.77f, 0.25f, 1))
+    , hoverColor_("hoverColor", "Hover Color", vec4(1.0f, 0.77f, 0.25f, 1))
+    , selectionColor_("selectionColor", "Selection Color", vec4(1.0f, 0.15f, 0.1f, 1))
     , margins_("margins", "Margins", 5, 5, 5, 5)
     , axisMargin_("axisMargin", "Axis Margin", 15.0f, 0.0f, 50.0f)
 
-    , borderWidth_("borderWidth", "Border width", 2, 0, 20)
-    , borderColor_("borderColor", "Border color", vec4(0, 0, 0, 1))
+    , borderWidth_("borderWidth", "Border Width", 2, 0, 20)
+    , borderColor_("borderColor", "Border Color", vec4(0, 0, 0, 1))
     , hovering_("hovering", "Enable Hovering", true)
 
     , axisStyle_("axisStyle", "Global Axis Style")
     , xAxis_("xAxis", "X Axis")
     , yAxis_("yAxis", "Y Axis", AxisProperty::Orientation::Vertical) {
     hoverColor_.setSemantics(PropertySemantics::Color);
+    selectionColor_.setSemantics(PropertySemantics::Color);
     borderColor_.setSemantics(PropertySemantics::Color);
 
     util::for_each_in_tuple([&](auto &e) { this->addProperty(e); }, props());
@@ -96,6 +103,7 @@ ScatterPlotGL::Properties::Properties(const ScatterPlotGL::Properties &rhs)
     , tf_(rhs.tf_)
     , color_(rhs.color_)
     , hoverColor_(rhs.hoverColor_)
+    , selectionColor_(rhs.selectionColor_)
     , margins_(rhs.margins_)
     , axisMargin_(rhs.axisMargin_)
     , borderWidth_(rhs.borderWidth_)
@@ -128,7 +136,7 @@ ScatterPlotGL::ScatterPlotGL(Processor *processor)
     }
     properties_.hovering_.onChange([this]() {
         if (!properties_.hovering_.get()) {
-            hoveredIndices_.clear();
+            hoverIndex_ = std::nullopt;
         }
     });
 }
@@ -296,13 +304,24 @@ void ScatterPlotGL::plot(const size2_t &dims, IndexBuffer *indexBuffer, bool use
                    nullptr);
     indicesGL->getBufferObject()->unbind();
 
-    if (!hoveredIndices_.empty()) {
-        // draw hovered points on top
+    // draw selected and hovered points on top
+    if (!selectedIndices_.empty()) {
+        shader_.setUniform("has_color", 0);
+        shader_.setUniform("default_color", properties_.selectionColor_.get());
+
+        std::vector<uint32_t> selected;
+        selected.reserve(selectedIndices_.size());
+        std::transform(selectedIndices_.begin(), selectedIndices_.end(),
+                       std::back_inserter(selected),
+                       [](size_t i) { return static_cast<uint32_t>(i); });
+
+        glDrawElements(GL_POINTS, static_cast<uint32_t>(selected.size()), GL_UNSIGNED_INT,
+                       selected.data());
+    }
+    if (hoverIndex_) {
         shader_.setUniform("has_color", 0);
         shader_.setUniform("default_color", properties_.hoverColor_.get());
-        glDrawElements(
-            GL_POINTS, static_cast<uint32_t>(hoveredIndices_.size()), GL_UNSIGNED_INT,
-            std::vector<uint32_t>(hoveredIndices_.begin(), hoveredIndices_.end()).data());
+        glDrawElements(GL_POINTS, 1, GL_UNSIGNED_INT, &hoverIndex_.value());
     }
 
     shader_.deactivate();
@@ -388,6 +407,10 @@ void ScatterPlotGL::setIndexColumn(std::shared_ptr<const TemplateColumn<uint32_t
     }
 }
 
+void ScatterPlotGL::setSelectedIndices(const std::unordered_set<size_t> indices) {
+    selectedIndices_ = indices;
+}
+
 void ScatterPlotGL::renderAxis(const size2_t &dims) {
     const size2_t lowerLeft(properties_.margins_.getLeft(), properties_.margins_.getBottom());
     const size2_t upperRight(dims.x - 1 - properties_.margins_.getRight(),
@@ -404,30 +427,41 @@ void ScatterPlotGL::renderAxis(const size2_t &dims) {
 }
 
 void ScatterPlotGL::objectPicked(PickingEvent *p) {
-    auto idToDataFrameIndex = [this](uint32_t id) -> std::tuple<bool, uint32_t> {
+    auto idToDataFrameIndex = [this](uint32_t id) -> std::optional<uint32_t> {
         if (!indexColumn_) {
-            return std::tuple<bool, uint32_t>{false, 0};
+            return std::nullopt;
         }
         auto &indexCol = indexColumn_->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
         auto it = util::find(indexCol, static_cast<uint32_t>(id));
         if (it != indexCol.end()) {
-            return std::tuple<bool, uint32_t>{true, *it};
+            return *it;
         } else {
-            return std::tuple<bool, uint32_t>{false, 0};
+            return std::nullopt;
         }
     };
 
     const uint32_t id = static_cast<uint32_t>(p->getPickedId());
     auto rowIndex = idToDataFrameIndex(id);
 
+    // Show tooltip for current item
+    if (rowIndex) {
+        if (p->getHoverState() == PickingHoverState::Move ||
+            p->getHoverState() == PickingHoverState::Enter) {
+            p->setToolTip(createToolTipForItem(rowIndex.value()));
+
+        } else if (p->getHoverState() == PickingHoverState::Exit) {
+            p->setToolTip("");
+        }
+    }
+
     if (properties_.hovering_.get()) {
         if (p->getHoverState() == PickingHoverState::Enter) {
-            hoveredIndices_.insert(id);
+            hoverIndex_ = id;
             if (processor_) {
                 processor_->invalidate(InvalidationLevel::InvalidOutput);
             }
         } else if (p->getHoverState() == PickingHoverState::Exit) {
-            hoveredIndices_.erase(id);
+            hoverIndex_ = std::nullopt;
             if (processor_) {
                 processor_->invalidate(InvalidationLevel::InvalidOutput);
             }
@@ -435,9 +469,9 @@ void ScatterPlotGL::objectPicked(PickingEvent *p) {
     }
 
     auto logRowData = [&]() {
-        if (std::get<0>(rowIndex) && xAxis_ && yAxis_) {
+        if (rowIndex && xAxis_ && yAxis_) {
             std::ostringstream ss;
-            ss << "Index: " << std::get<1>(rowIndex) << "\n"
+            ss << "Index: " << rowIndex.value() << "\n"
                << properties_.xAxis_.getCaption() << ": "
                << xAxis_->getRepresentation<BufferRAM>()->getAsDouble(id) << "\n"
                << properties_.yAxis_.getCaption() << ": "
@@ -455,12 +489,39 @@ void ScatterPlotGL::objectPicked(PickingEvent *p) {
     if ((p->getPressState() == PickingPressState::Release) &&
         (p->getPressItem() == PickingPressItem::Primary) &&
         (p->getCurrentGlobalPickingId() == p->getPressedGlobalPickingId())) {
-        logRowData();
+        if (selectedIndices_.count(id)) {
+            selectedIndices_.erase(id);
+        } else {
+            selectedIndices_.insert(id);
+        }
+        // selection changed, inform processor
+        if (auto proc = dynamic_cast<ScatterPlotProcessor *>(processor_)) {
+            proc->setSelectedIndices(selectedIndices_);
+        }
     }
 }
 
 uint32_t ScatterPlotGL::getGlobalPickId(uint32_t localIndex) const {
     return static_cast<uint32_t>(picking_.getPickingId(localIndex));
+}
+
+std::string ScatterPlotGL::createToolTipForItem(std::uint32_t id) const {
+    using H = utildoc::TableBuilder::Header;
+    using P = Document::PathComponent;
+    Document doc;
+    doc.append("b", fmt::format("Data Point {}", id), {{"style", "color:white;"}});
+    utildoc::TableBuilder tb(doc.handle(), P::end());
+    tb(H(properties_.xAxis_.getCaption()), xAxis_->getRepresentation<BufferRAM>()->getAsDouble(id));
+    tb(H(properties_.yAxis_.getCaption()), yAxis_->getRepresentation<BufferRAM>()->getAsDouble(id));
+    if (color_) {
+        const double v = color_->getRepresentation<BufferRAM>()->getAsDouble(id);
+        tb(H("Color"),
+           fmt::format("{:.4g}, {}", v, color::rgba2hex(properties_.tf_.get().sample(v))));
+    }
+    if (radius_) {
+        tb(H("Radius"), radius_->getRepresentation<BufferRAM>()->getAsDouble(id));
+    }
+    return doc;
 }
 
 }  // namespace plot

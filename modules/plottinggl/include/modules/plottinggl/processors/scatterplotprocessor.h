@@ -63,6 +63,8 @@ public:
 
     virtual void process() override;
 
+    void setSelectedIndices(const std::unordered_set<size_t>& indices);
+
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 

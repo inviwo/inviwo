@@ -100,20 +100,23 @@ void ScatterPlotProcessor::process() {
     auto dataframe = dataFramePort_.getData();
 
     if (brushingPort_.isConnected()) {
+        if (brushingPort_.isChanged()) {
+            scatterPlot_.setSelectedIndices(brushingPort_.getSelectedIndices());
+        }
 
         auto dfSize = dataframe->getNumberOfRows();
 
         auto iCol = dataframe->getIndexColumn();
-        auto &indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+        auto& indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
 
         auto brushedIndicies = brushingPort_.getFilteredIndices();
         IndexBuffer indicies;
-        auto &vec = indicies.getEditableRAMRepresentation()->getDataContainer();
+        auto& vec = indicies.getEditableRAMRepresentation()->getDataContainer();
         vec.reserve(dfSize - brushedIndicies.size());
 
         auto seq = util::sequence<uint32_t>(0, static_cast<uint32_t>(dfSize), 1);
         std::copy_if(seq.begin(), seq.end(), std::back_inserter(vec),
-                     [&](const auto &id) { return !brushingPort_.isFiltered(indexCol[id]); });
+                     [&](const auto& id) { return !brushingPort_.isFiltered(indexCol[id]); });
 
         if (backgroundPort_.hasData()) {
             scatterPlot_.plot(*outport_.getEditableData(), *backgroundPort_.getData(), &indicies,
@@ -130,6 +133,10 @@ void ScatterPlotProcessor::process() {
             scatterPlot_.plot(*outport_.getEditableData(), nullptr, true);
         }
     }
+}
+
+void ScatterPlotProcessor::setSelectedIndices(const std::unordered_set<size_t>& indices) {
+    brushingPort_.sendSelectionEvent(indices);
 }
 
 void ScatterPlotProcessor::onXAxisChange() {

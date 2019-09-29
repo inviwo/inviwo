@@ -48,6 +48,9 @@
 
 #include <modules/plottinggl/utils/axisrenderer.h>
 
+#include <optional>
+#include <unordered_set>
+
 namespace inviwo {
 
 class Processor;
@@ -77,6 +80,7 @@ public:
         TransferFunctionProperty tf_;
         FloatVec4Property color_;
         FloatVec4Property hoverColor_;
+        FloatVec4Property selectionColor_;
         MarginProperty margins_;
         FloatProperty axisMargin_;
 
@@ -92,13 +96,13 @@ public:
     private:
         auto props() {
             return std::tie(radiusRange_, useCircle_, minRadius_, tf_, color_, hoverColor_,
-                            margins_, axisMargin_, borderWidth_, borderColor_, hovering_,
-                            axisStyle_, xAxis_, yAxis_);
+                            selectionColor_, margins_, axisMargin_, borderWidth_, borderColor_,
+                            hovering_, axisStyle_, xAxis_, yAxis_);
         }
         auto props() const {
             return std::tie(radiusRange_, useCircle_, minRadius_, tf_, color_, hoverColor_,
-                            margins_, axisMargin_, borderWidth_, borderColor_, hovering_,
-                            axisStyle_, xAxis_, yAxis_);
+                            selectionColor_, margins_, axisMargin_, borderWidth_, borderColor_,
+                            hovering_, axisStyle_, xAxis_, yAxis_);
         }
     };
 
@@ -128,6 +132,8 @@ public:
     void setRadiusData(std::shared_ptr<const BufferBase> buffer);
     void setIndexColumn(std::shared_ptr<const TemplateColumn<uint32_t>> indexcol);
 
+    void setSelectedIndices(const std::unordered_set<size_t> indices);
+
     Properties properties_;
     Shader shader_;
 
@@ -137,6 +143,7 @@ protected:
 
     void objectPicked(PickingEvent *p);
     uint32_t getGlobalPickId(uint32_t localIndex) const;
+    std::string createToolTipForItem(std::uint32_t id) const;
 
     std::shared_ptr<const BufferBase> xAxis_;
     std::shared_ptr<const BufferBase> yAxis_;
@@ -154,7 +161,8 @@ protected:
     std::array<AxisRenderer, 2> axisRenderers_;
 
     PickingMapper picking_;
-    std::set<uint32_t> hoveredIndices_;
+    std::unordered_set<size_t> selectedIndices_;
+    std::optional<uint32_t> hoverIndex_;
 
     std::unique_ptr<IndexBuffer> indices_;
     std::unique_ptr<BufferObjectArray> boa_;
