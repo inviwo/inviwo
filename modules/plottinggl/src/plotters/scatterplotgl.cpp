@@ -41,11 +41,8 @@
 #include <inviwo/core/interaction/events/touchevent.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
-#include <inviwo/core/util/document.h>
 #include <inviwo/core/util/colorconversion.h>
 #include <modules/opengl/buffer/bufferobjectarray.h>
-
-#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -411,6 +408,11 @@ void ScatterPlotGL::setSelectedIndices(const std::unordered_set<size_t> indices)
     selectedIndices_ = indices;
 }
 
+auto ScatterPlotGL::addToolTipCallback(std::function<ToolTipFunc> callback)
+    -> ToolTipCallbackHandle {
+    return tooltipCallback_.add(callback);
+}
+
 void ScatterPlotGL::renderAxis(const size2_t &dims) {
     const size2_t lowerLeft(properties_.margins_.getLeft(), properties_.margins_.getBottom());
     const size2_t upperRight(dims.x - 1 - properties_.margins_.getRight(),
@@ -447,7 +449,8 @@ void ScatterPlotGL::objectPicked(PickingEvent *p) {
     if (rowIndex) {
         if (p->getHoverState() == PickingHoverState::Move ||
             p->getHoverState() == PickingHoverState::Enter) {
-            p->setToolTip(createToolTipForItem(rowIndex.value()));
+
+            tooltipCallback_.invoke(p, rowIndex.value());
 
         } else if (p->getHoverState() == PickingHoverState::Exit) {
             p->setToolTip("");
@@ -485,25 +488,6 @@ void ScatterPlotGL::objectPicked(PickingEvent *p) {
 
 uint32_t ScatterPlotGL::getGlobalPickId(uint32_t localIndex) const {
     return static_cast<uint32_t>(picking_.getPickingId(localIndex));
-}
-
-std::string ScatterPlotGL::createToolTipForItem(std::uint32_t id) const {
-    using H = utildoc::TableBuilder::Header;
-    using P = Document::PathComponent;
-    Document doc;
-    doc.append("b", fmt::format("Data Point {}", id), {{"style", "color:white;"}});
-    utildoc::TableBuilder tb(doc.handle(), P::end());
-    tb(H(properties_.xAxis_.getCaption()), xAxis_->getRepresentation<BufferRAM>()->getAsDouble(id));
-    tb(H(properties_.yAxis_.getCaption()), yAxis_->getRepresentation<BufferRAM>()->getAsDouble(id));
-    if (color_) {
-        const double v = color_->getRepresentation<BufferRAM>()->getAsDouble(id);
-        tb(H("Color"),
-           fmt::format("{:.4g}, {}", v, color::rgba2hex(properties_.tf_.get().sample(v))));
-    }
-    if (radius_) {
-        tb(H("Radius"), radius_->getRepresentation<BufferRAM>()->getAsDouble(id));
-    }
-    return doc;
 }
 
 }  // namespace plot

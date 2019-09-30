@@ -27,9 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SCATTERPLOTGL_H
-#define IVW_SCATTERPLOTGL_H
-
+#pragma once
 #include <modules/plottinggl/plottingglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/transferfunction.h>
@@ -37,6 +35,7 @@
 #include <inviwo/core/interaction/pickingmapper.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/util/dispatcher.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/base/algorithm/dataminmax.h>
@@ -61,6 +60,9 @@ namespace plot {
 
 class IVW_MODULE_PLOTTINGGL_API ScatterPlotGL {
 public:
+    using ToolTipFunc = void(PickingEvent*, size_t);
+    using ToolTipCallbackHandle = std::shared_ptr<std::function<ToolTipFunc>>;
+
     class Properties : public CompositeProperty {
     public:
         virtual std::string getClassIdentifier() const override;
@@ -133,6 +135,8 @@ public:
     void setIndexColumn(std::shared_ptr<const TemplateColumn<uint32_t>> indexcol);
 
     void setSelectedIndices(const std::unordered_set<size_t> indices);
+        
+    ToolTipCallbackHandle addToolTipCallback(std::function<ToolTipFunc> callback);
 
     Properties properties_;
     Shader shader_;
@@ -143,7 +147,6 @@ protected:
 
     void objectPicked(PickingEvent *p);
     uint32_t getGlobalPickId(uint32_t localIndex) const;
-    std::string createToolTipForItem(std::uint32_t id) const;
 
     std::shared_ptr<const BufferBase> xAxis_;
     std::shared_ptr<const BufferBase> yAxis_;
@@ -168,10 +171,10 @@ protected:
     std::unique_ptr<BufferObjectArray> boa_;
 
     Processor *processor_;
+
+    Dispatcher<ToolTipFunc> tooltipCallback_;
 };
 
 }  // namespace plot
 
 }  // namespace inviwo
-
-#endif  // IVW_SCATTERPLOT_H

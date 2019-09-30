@@ -158,7 +158,8 @@ ParallelCoordinates::ParallelCoordinates()
     addProperties(axisProperties_, colormap_, axisSelection_);
 
     selectedLineColor_.setSemantics(PropertySemantics::Color);
-    selectedLine_.addProperties(selectedLineWidth_, selectedLineColorOverride_, selectedLineColor_);
+    selectedLineColorOverride_.addProperty(selectedLineColor_);
+    selectedLine_.addProperties(selectedLineWidth_, selectedLineColorOverride_);
     selectedLine_.setCollapsed(true);
 
     addProperty(lineSettings_);
@@ -594,7 +595,7 @@ void ParallelCoordinates::drawLines(size2_t size) {
         std::array<float, 3> width = {lineWidth_, lineWidth_, selectedLineWidth_};
         std::array<float, 3> mixColor = {filterIntensity_, 0.0f, 0.0f};
         std::array<float, 3> mixSelection = {0.0f, 0.0f,
-                                             selectedLineColorOverride_.get() ? 1.0f : 0.0f};
+                                             selectedLineColorOverride_.isChecked() ? 1.0f : 0.0f};
         std::array<float, 3> mixAlpha = {1.0, 0.0f, 0.0f};
 
         for (size_t i = showFiltered_ ? 0 : 1; i < lines_.offsets.size() - 1; ++i) {

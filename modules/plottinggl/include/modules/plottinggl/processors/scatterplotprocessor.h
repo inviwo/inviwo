@@ -85,6 +85,9 @@ private:
     void onYAxisChange();
     void onColorChange();
     void onRadiusChange();
+
+    using CallbackHandle = std::shared_ptr<std::function<void(PickingEvent*, size_t)>>;
+    CallbackHandle tooltipCallBack_;
 };
 
 }  // namespace plot

@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PARALLELCOORDINATES_H
-#define IVW_PARALLELCOORDINATES_H
+#pragma once
 
 #include <modules/plottinggl/plottingglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -112,7 +111,7 @@ public:
     FloatProperty lineWidth_;
     CompositeProperty selectedLine_;
     FloatProperty selectedLineWidth_;
-    BoolProperty selectedLineColorOverride_;
+    BoolCompositeProperty selectedLineColorOverride_;
     FloatVec4Property selectedLineColor_;
     BoolProperty showFiltered_;
     FloatVec3Property filterColor_;
@@ -229,5 +228,3 @@ private:
 }  // namespace plot
 
 }  // namespace inviwo
-
-#endif  // IVW_PARALLELCOORDINATES_H

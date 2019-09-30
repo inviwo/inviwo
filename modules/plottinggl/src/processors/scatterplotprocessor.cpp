@@ -30,6 +30,9 @@
 #include <modules/plottinggl/processors/scatterplotprocessor.h>
 #include <inviwo/core/util/zip.h>
 #include <modules/opengl/openglutils.h>
+#include <inviwo/core/interaction/events/pickingevent.h>
+
+#include <inviwo/dataframe/datastructures/dataframeutil.h>
 
 namespace inviwo {
 
@@ -65,6 +68,13 @@ ScatterPlotProcessor::ScatterPlotProcessor()
 
     brushingPort_.setOptional(true);
     backgroundPort_.setOptional(true);
+
+    tooltipCallBack_ = scatterPlot_.addToolTipCallback([this](PickingEvent* p, size_t rowId) {
+        if (!p) return;
+        if (auto dataframe = dataFramePort_.getData()) {
+            p->setToolTip(dataframeutil::createToolTipForRow(*dataFramePort_.getData(), rowId));
+        }
+    });
 
     scatterPlot_.properties_.margins_.setLowerLeftMargin({50.0f, 40.0f});
     scatterPlot_.properties_.xAxis_.captionSettings_.setChecked(true);
