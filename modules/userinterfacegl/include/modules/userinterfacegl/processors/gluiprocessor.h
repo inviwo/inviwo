@@ -125,12 +125,12 @@ private:
     IntProperty layoutSpacing_;
     IntVec4Property layoutMargins_;
 
+    std::unordered_map<Property*, std::unique_ptr<glui::Element>> propertyWidgetMap_;
     ListProperty dynamicProperties_;
 
     glui::Renderer uiRenderer_;
     glui::BoxLayout layout_;
 
-    std::unordered_map<Property*, std::unique_ptr<glui::Element>> propertyWidgetMap_;
     InviwoApplication* app_;
 };
 
