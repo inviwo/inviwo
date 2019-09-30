@@ -18,6 +18,15 @@ set(SOURCE_FILES
 ivw_group("Source Files" ${SOURCE_FILES})
 
 #--------------------------------------------------------------------
+# Add Unittests
+set(TEST_FILES
+    tests/unittests/dataframepython-unittest-main.cpp
+    tests/unittests/column-test.cpp
+    tests/unittests/dataframe-test.cpp
+)
+ivw_add_unittest(${TEST_FILES})
+
+#--------------------------------------------------------------------
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
 target_link_libraries(inviwo-module-dataframepython PUBLIC 
