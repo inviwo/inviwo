@@ -207,7 +207,7 @@ d.updateIndex()
     auto pyRow = dict["row"];
     int rowLen = py::eval<py::eval_expr>("len(row)", dict).cast<int>();
     ASSERT_EQ(numCols, rowLen) << "list returned by getRow() has incorrect length";
-    
+
     auto rowValues = dict["row"].cast<DataFrame::DataItem>();
     EXPECT_EQ(numCols, rowValues.size()) << "DataFrame::DataItem size incorrect";
 

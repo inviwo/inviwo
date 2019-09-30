@@ -58,7 +58,7 @@ int main(int argc, char** argv) {
     LogCentral::getPtr()->setVerbosity(LogVerbosity::Error);
     LogCentral::getPtr()->registerLogger(logger);
     InviwoApplication app(argc, argv, "Inviwo-Unittests-DataFramePython");
-    
+
     {
         std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules;
         modules.emplace_back(createInviwoCore());
