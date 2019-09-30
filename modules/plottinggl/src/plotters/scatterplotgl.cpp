@@ -79,7 +79,7 @@ ScatterPlotGL::Properties::Properties(std::string identifier, std::string displa
     selectionColor_.setSemantics(PropertySemantics::Color);
     borderColor_.setSemantics(PropertySemantics::Color);
 
-    util::for_each_in_tuple([&](auto &e) { this->addProperty(e); }, props());
+    util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props());
 
     axisStyle_.registerProperties(xAxis_, yAxis_);
 
@@ -92,7 +92,7 @@ ScatterPlotGL::Properties::Properties(std::string identifier, std::string displa
     tf_.setCurrentStateAsDefault();
 }
 
-ScatterPlotGL::Properties::Properties(const ScatterPlotGL::Properties &rhs)
+ScatterPlotGL::Properties::Properties(const ScatterPlotGL::Properties& rhs)
     : CompositeProperty(rhs)
     , useCircle_(rhs.useCircle_)
     , radiusRange_(rhs.radiusRange_)
@@ -109,16 +109,16 @@ ScatterPlotGL::Properties::Properties(const ScatterPlotGL::Properties &rhs)
     , axisStyle_(rhs.axisStyle_)
     , xAxis_(rhs.xAxis_)
     , yAxis_(rhs.yAxis_) {
-    util::for_each_in_tuple([&](auto &e) { this->addProperty(e); }, props());
+    util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props());
     axisStyle_.unregisterAll();
     axisStyle_.registerProperties(xAxis_, yAxis_);
 }
 
-ScatterPlotGL::Properties *ScatterPlotGL::Properties::clone() const {
+ScatterPlotGL::Properties* ScatterPlotGL::Properties::clone() const {
     return new Properties(*this);
 }
 
-ScatterPlotGL::ScatterPlotGL(Processor *processor)
+ScatterPlotGL::ScatterPlotGL(Processor* processor)
     : properties_("scatterplot", "Scatterplot")
     , shader_("scatterplot.vert", "scatterplot.geom", "scatterplot.frag")
     , xAxis_(nullptr)
@@ -126,7 +126,7 @@ ScatterPlotGL::ScatterPlotGL(Processor *processor)
     , color_(nullptr)
     , radius_(nullptr)
     , axisRenderers_({{properties_.xAxis_, properties_.yAxis_}})
-    , picking_(processor, 1, [this](PickingEvent *p) { objectPicked(p); })
+    , picking_(processor, 1, [this](PickingEvent* p) { objectPicked(p); })
     , processor_(processor) {
     if (processor_) {
         shader_.onReload([this]() { processor_->invalidate(InvalidationLevel::InvalidOutput); });
@@ -138,38 +138,38 @@ ScatterPlotGL::ScatterPlotGL(Processor *processor)
     });
 }
 
-void ScatterPlotGL::plot(Image &dest, IndexBuffer *indices, bool useAxisRanges) {
+void ScatterPlotGL::plot(Image& dest, IndexBuffer* indices, bool useAxisRanges) {
     utilgl::activateAndClearTarget(dest);
     plot(dest.getDimensions(), indices, useAxisRanges);
     utilgl::deactivateCurrentTarget();
 }
 
-void ScatterPlotGL::plot(Image &dest, const Image &src, IndexBuffer *indices, bool useAxisRanges) {
+void ScatterPlotGL::plot(Image& dest, const Image& src, IndexBuffer* indices, bool useAxisRanges) {
     utilgl::activateTargetAndCopySource(dest, src);
     plot(dest.getDimensions(), indices, useAxisRanges);
     utilgl::deactivateCurrentTarget();
 }
 
-void ScatterPlotGL::plot(ImageOutport &dest, IndexBuffer *indices, bool useAxisRanges) {
+void ScatterPlotGL::plot(ImageOutport& dest, IndexBuffer* indices, bool useAxisRanges) {
     utilgl::activateAndClearTarget(dest);
     plot(dest.getDimensions(), indices, useAxisRanges);
     utilgl::deactivateCurrentTarget();
 }
 
-void ScatterPlotGL::plot(ImageOutport &dest, ImageInport &src, IndexBuffer *indices,
+void ScatterPlotGL::plot(ImageOutport& dest, ImageInport& src, IndexBuffer* indices,
                          bool useAxisRanges) {
     utilgl::activateTargetAndCopySource(dest, src);
     plot(dest.getDimensions(), indices, useAxisRanges);
     utilgl::deactivateCurrentTarget();
 }
 
-void ScatterPlotGL::plot(const ivec2 &start, const ivec2 &size, IndexBuffer *indices,
+void ScatterPlotGL::plot(const ivec2& start, const ivec2& size, IndexBuffer* indices,
                          bool useAxisRanges) {
     utilgl::ViewportState viewport(start.x, start.y, size.x, size.y);
     plot(size, indices, useAxisRanges);
 }
 
-void ScatterPlotGL::plot(const size2_t &dims, IndexBuffer *indexBuffer, bool useAxisRanges) {
+void ScatterPlotGL::plot(const size2_t& dims, IndexBuffer* indexBuffer, bool useAxisRanges) {
     // adjust all margins by axis margin
     vec4 margins = properties_.margins_.getAsVec4() + properties_.axisMargin_.get();
 
@@ -256,7 +256,7 @@ void ScatterPlotGL::plot(const size2_t &dims, IndexBuffer *indexBuffer, bool use
         shader_.setUniform("has_radius", 0);
     }
 
-    IndexBuffer *indices;
+    IndexBuffer* indices;
     if (radius_) {
         if (indexBuffer) {
             // copy selected indices
@@ -264,19 +264,19 @@ void ScatterPlotGL::plot(const size2_t &dims, IndexBuffer *indexBuffer, bool use
         } else {
             // no indices given, draw all data points
             if (!indices_) indices_ = std::make_unique<IndexBuffer>(xbuf->getSize());
-            auto &inds = indices_->getEditableRAMRepresentation()->getDataContainer();
+            auto& inds = indices_->getEditableRAMRepresentation()->getDataContainer();
             inds.resize(xbuf->getSize());
             std::iota(inds.begin(), inds.end(), 0);
         }
         indices = indices_.get();
 
         // sort according to radii, larger first
-        auto &inds = indices->getEditableRAMRepresentation()->getDataContainer();
+        auto& inds = indices->getEditableRAMRepresentation()->getDataContainer();
 
         radius_->getRepresentation<BufferRAM>()->dispatch<void, dispatching::filter::Scalars>(
             [&inds](auto bufferpr) {
-                auto &radii = bufferpr->getDataContainer();
-                std::sort(inds.begin(), inds.end(), [&radii](const uint32_t &a, const uint32_t &b) {
+                auto& radii = bufferpr->getDataContainer();
+                std::sort(inds.begin(), inds.end(), [&radii](const uint32_t& a, const uint32_t& b) {
                     return radii[a] > radii[b];
                 });
             });
@@ -287,7 +287,7 @@ void ScatterPlotGL::plot(const size2_t &dims, IndexBuffer *indexBuffer, bool use
         } else {
             // no indices given, draw all data points
             if (!indices_) indices_ = std::make_unique<IndexBuffer>(xbuf->getSize());
-            auto &inds = indices_->getEditableRAMRepresentation()->getDataContainer();
+            auto& inds = indices_->getEditableRAMRepresentation()->getDataContainer();
             inds.resize(xbuf->getSize());
             std::iota(inds.begin(), inds.end(), 0);
             indices = indices_.get();
@@ -327,11 +327,11 @@ void ScatterPlotGL::plot(const size2_t &dims, IndexBuffer *indexBuffer, bool use
     renderAxis(dims);
 }
 
-void ScatterPlotGL::setXAxisLabel(const std::string &label) {
+void ScatterPlotGL::setXAxisLabel(const std::string& label) {
     properties_.xAxis_.setCaption(label);
 }
 
-void ScatterPlotGL::setYAxisLabel(const std::string &label) {
+void ScatterPlotGL::setYAxisLabel(const std::string& label) {
     properties_.yAxis_.setCaption(label);
 }
 
@@ -413,7 +413,7 @@ auto ScatterPlotGL::addToolTipCallback(std::function<ToolTipFunc> callback)
     return tooltipCallback_.add(callback);
 }
 
-void ScatterPlotGL::renderAxis(const size2_t &dims) {
+void ScatterPlotGL::renderAxis(const size2_t& dims) {
     const size2_t lowerLeft(properties_.margins_.getLeft(), properties_.margins_.getBottom());
     const size2_t upperRight(dims.x - 1 - properties_.margins_.getRight(),
                              dims.y - 1 - properties_.margins_.getTop());
@@ -428,12 +428,12 @@ void ScatterPlotGL::renderAxis(const size2_t &dims) {
                              size2_t(lowerLeft.x, upperRight.y - padding));
 }
 
-void ScatterPlotGL::objectPicked(PickingEvent *p) {
+void ScatterPlotGL::objectPicked(PickingEvent* p) {
     auto idToDataFrameIndex = [this](uint32_t id) -> std::optional<uint32_t> {
         if (!indexColumn_) {
             return std::nullopt;
         }
-        auto &indexCol = indexColumn_->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
+        auto& indexCol = indexColumn_->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
         auto it = util::find(indexCol, static_cast<uint32_t>(id));
         if (it != indexCol.end()) {
             return *it;
@@ -480,7 +480,7 @@ void ScatterPlotGL::objectPicked(PickingEvent *p) {
             selectedIndices_.insert(id);
         }
         // selection changed, inform processor
-        if (auto proc = dynamic_cast<ScatterPlotProcessor *>(processor_)) {
+        if (auto proc = dynamic_cast<ScatterPlotProcessor*>(processor_)) {
             proc->setSelectedIndices(selectedIndices_);
         }
     }

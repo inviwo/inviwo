@@ -72,8 +72,8 @@ public:
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                    PropertySemantics semantics = PropertySemantics::Default);
 
-        Properties(const Properties &rhs);
-        virtual Properties *clone() const override;
+        Properties(const Properties& rhs);
+        virtual Properties* clone() const override;
         virtual ~Properties() = default;
 
         BoolProperty useCircle_;
@@ -108,21 +108,21 @@ public:
         }
     };
 
-    explicit ScatterPlotGL(Processor *processor = nullptr);
+    explicit ScatterPlotGL(Processor* processor = nullptr);
     virtual ~ScatterPlotGL() = default;
 
-    void plot(Image &dest, IndexBuffer *indices = nullptr, bool useAxisRanges = false);
-    void plot(Image &dest, const Image &src, IndexBuffer *indices = nullptr,
+    void plot(Image& dest, IndexBuffer* indices = nullptr, bool useAxisRanges = false);
+    void plot(Image& dest, const Image& src, IndexBuffer* indices = nullptr,
               bool useAxisRanges = false);
-    void plot(ImageOutport &dest, IndexBuffer *indices = nullptr, bool useAxisRanges = false);
-    void plot(ImageOutport &dest, ImageInport &src, IndexBuffer *indices = nullptr,
+    void plot(ImageOutport& dest, IndexBuffer* indices = nullptr, bool useAxisRanges = false);
+    void plot(ImageOutport& dest, ImageInport& src, IndexBuffer* indices = nullptr,
               bool useAxisRanges = false);
-    void plot(const ivec2 &start, const ivec2 &size, IndexBuffer *indices = nullptr,
+    void plot(const ivec2& start, const ivec2& size, IndexBuffer* indices = nullptr,
               bool useAxisRanges = false);
 
-    void setXAxisLabel(const std::string &label);
+    void setXAxisLabel(const std::string& label);
 
-    void setYAxisLabel(const std::string &label);
+    void setYAxisLabel(const std::string& label);
 
     void setXAxis(std::shared_ptr<const Column> col);
 
@@ -135,17 +135,17 @@ public:
     void setIndexColumn(std::shared_ptr<const TemplateColumn<uint32_t>> indexcol);
 
     void setSelectedIndices(const std::unordered_set<size_t> indices);
-        
+
     ToolTipCallbackHandle addToolTipCallback(std::function<ToolTipFunc> callback);
 
     Properties properties_;
     Shader shader_;
 
 protected:
-    void plot(const size2_t &dims, IndexBuffer *indices, bool useAxisRanges);
-    void renderAxis(const size2_t &dims);
+    void plot(const size2_t& dims, IndexBuffer* indices, bool useAxisRanges);
+    void renderAxis(const size2_t& dims);
 
-    void objectPicked(PickingEvent *p);
+    void objectPicked(PickingEvent* p);
     uint32_t getGlobalPickId(uint32_t localIndex) const;
 
     std::shared_ptr<const BufferBase> xAxis_;
@@ -170,7 +170,7 @@ protected:
     std::unique_ptr<IndexBuffer> indices_;
     std::unique_ptr<BufferObjectArray> boa_;
 
-    Processor *processor_;
+    Processor* processor_;
 
     Dispatcher<ToolTipFunc> tooltipCallback_;
 };
