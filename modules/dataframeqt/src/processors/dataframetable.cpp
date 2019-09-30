@@ -88,32 +88,26 @@ void DataFrameTable::process() {
             w->setDataFrame(inport_.getData(), vectorCompAsColumn_);
         }
         if (brushLinkPort_.isChanged()) {
-            w->updateSelection();
+            w->updateSelection(brushLinkPort_.getSelectedColumns(),
+                               brushLinkPort_.getSelectedIndices());
         }
     }
 }
 
-void DataFrameTable::selectColumns(const std::unordered_set<size_t>& columns) {
-    brushLinkPort_.sendColumnSelectionEvent(columns);
-}
-
-const std::unordered_set<size_t>& DataFrameTable::getSelectedColumns() const {
-    return brushLinkPort_.getSelectedColumns();
-}
-
-void DataFrameTable::selectRows(const std::unordered_set<size_t>& rows) {
-    brushLinkPort_.sendSelectionEvent(rows);
-}
-
-const std::unordered_set<size_t>& DataFrameTable::getSelectedRows() const {
-    return brushLinkPort_.getSelectedIndices();
-}
-
 void DataFrameTable::setProcessorWidget(std::unique_ptr<ProcessorWidget> processorWidget) {
-    if (processorWidget && !dynamic_cast<DataFrameTableProcessorWidget*>(processorWidget.get())) {
+    auto widget = dynamic_cast<DataFrameTableProcessorWidget*>(processorWidget.get());
+    if (processorWidget && !widget) {
         throw Exception(
             "Expected DataFrameTableProcessorWidget in DataFrameTable::setProcessorWidget");
     }
+
+    if (widget) {
+        rowSelectionChanged_ =
+            widget->setRowSelectionChangedCallback([this](const std::unordered_set<size_t>& rows) {
+                brushLinkPort_.sendSelectionEvent(rows);
+            });
+    }
+
     Processor::setProcessorWidget(std::move(processorWidget));
     isSink_.update();
     isReady_.update();

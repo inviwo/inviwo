@@ -28,7 +28,6 @@
  *********************************************************************************/
 
 #include <inviwo/dataframeqt/dataframetableprocessorwidget.h>
-#include <inviwo/dataframeqt/processors/dataframetable.h>
 #include <inviwo/dataframeqt/dataframetableview.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/raiiutils.h>
@@ -65,16 +64,11 @@ DataFrameTableProcessorWidget::DataFrameTableProcessorWidget(Processor* p)
 
     QObject::connect(tableview_.get(), &DataFrameTableView::columnSelectionChanged, this,
                      [this](const std::unordered_set<size_t>& columns) {
-                         if (auto p = dynamic_cast<DataFrameTable*>(getProcessor())) {
-                             p->selectColumns(columns);
-                         }
+                         columnSelectionChanged_.invoke(columns);
                      });
-    QObject::connect(tableview_.get(), &DataFrameTableView::rowSelectionChanged, this,
-                     [this](const std::unordered_set<size_t>& rows) {
-                         if (auto p = dynamic_cast<DataFrameTable*>(getProcessor())) {
-                             p->selectRows(rows);
-                         }
-                     });
+    QObject::connect(
+        tableview_.get(), &DataFrameTableView::rowSelectionChanged, this,
+        [this](const std::unordered_set<size_t>& rows) { rowSelectionChanged_.invoke(rows); });
 
     setFocusProxy(tableview_.get());
 
@@ -100,14 +94,23 @@ void DataFrameTableProcessorWidget::setIndexColumnVisible(bool visible) {
     tableview_->setIndexColumnVisible(visible);
 }
 
-void DataFrameTableProcessorWidget::updateSelection() {
-    if (auto p = dynamic_cast<DataFrameTable*>(getProcessor())) {
-        if (!p->getSelectedColumns().empty()) {
-            tableview_->selectColumns(p->getSelectedColumns());
-        } else {
-            tableview_->selectRows(p->getSelectedRows());
-        }
+void DataFrameTableProcessorWidget::updateSelection(const std::unordered_set<size_t>& columns,
+                                                    const std::unordered_set<size_t>& rows) {
+    if (!columns.empty()) {
+        tableview_->selectColumns(columns);
+    } else {
+        tableview_->selectRows(rows);
     }
+}
+
+auto DataFrameTableProcessorWidget::setColumnSelectionChangedCallback(
+    std::function<SelectionChangedFunc> callback) -> CallbackHandle {
+    return columnSelectionChanged_.add(callback);
+}
+
+auto DataFrameTableProcessorWidget::setRowSelectionChangedCallback(
+    std::function<SelectionChangedFunc> callback) -> CallbackHandle {
+    return rowSelectionChanged_.add(callback);
 }
 
 void DataFrameTableProcessorWidget::onProcessorDisplayNameChanged(Processor*, const std::string&) {

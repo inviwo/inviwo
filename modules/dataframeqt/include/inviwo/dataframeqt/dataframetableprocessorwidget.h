@@ -32,6 +32,9 @@
 #include <inviwo/core/common/inviwo.h>
 #include <modules/qtwidgets/processors/processorwidgetqt.h>
 #include <inviwo/core/processors/processorobserver.h>
+#include <inviwo/core/util/dispatcher.h>
+
+#include <unordered_set>
 
 namespace inviwo {
 
@@ -48,13 +51,20 @@ class IVW_MODULE_DATAFRAMEQT_API DataFrameTableProcessorWidget : public Processo
     Q_OBJECT
 #include <warn/pop>
 public:
+    using SelectionChangedFunc = void(const std::unordered_set<size_t>&);
+    using CallbackHandle = std::shared_ptr<std::function<SelectionChangedFunc>>;
+
     DataFrameTableProcessorWidget(Processor* p);
     virtual ~DataFrameTableProcessorWidget() = default;
 
     void setDataFrame(std::shared_ptr<const DataFrame> dataframe, bool vectorsIntoColumns = false);
     void setIndexColumnVisible(bool visible);
 
-    void updateSelection();
+    void updateSelection(const std::unordered_set<size_t>& columns,
+                         const std::unordered_set<size_t>& rows);
+
+    CallbackHandle setColumnSelectionChangedCallback(std::function<SelectionChangedFunc> callback);
+    CallbackHandle setRowSelectionChangedCallback(std::function<SelectionChangedFunc> callback);
 
     // Override ProcessorObserver
     virtual void onProcessorDisplayNameChanged(Processor*, const std::string&) override;
@@ -63,6 +73,9 @@ private:
     using tableview_ptr =
         std::unique_ptr<DataFrameTableView, std::function<void(DataFrameTableView*)>>;
     tableview_ptr tableview_;
+
+    Dispatcher<SelectionChangedFunc> columnSelectionChanged_;
+    Dispatcher<SelectionChangedFunc> rowSelectionChanged_;
 };
 
 }  // namespace inviwo

@@ -61,6 +61,9 @@ class DataFrameTableProcessorWidget;
 class IVW_MODULE_DATAFRAMEQT_API DataFrameTable : public Processor,
                                                   public ProcessorWidgetMetaDataObserver {
 public:
+    using SelectionChangedFunc = void(const std::unordered_set<size_t>&);
+    using CallbackHandle = std::shared_ptr<std::function<SelectionChangedFunc>>;
+
     DataFrameTable();
     virtual ~DataFrameTable();
 
@@ -68,12 +71,6 @@ public:
 
     void setWidgetSize(size2_t);
     size2_t getWidgetSize() const;
-
-    void selectColumns(const std::unordered_set<size_t>& columns);
-    const std::unordered_set<size_t>& getSelectedColumns() const;
-
-    void selectRows(const std::unordered_set<size_t>& rows);
-    const std::unordered_set<size_t>& getSelectedRows() const;
 
     virtual void setProcessorWidget(std::unique_ptr<ProcessorWidget> processorWidget) override;
 
@@ -97,6 +94,8 @@ private:
     BoolProperty vectorCompAsColumn_;
 
     ProcessorWidgetMetaData* widgetMetaData_;
+
+    CallbackHandle rowSelectionChanged_;
 };
 
 }  // namespace inviwo

@@ -68,7 +68,10 @@ signals:
     void rowSelectionChanged(const std::unordered_set<size_t>& rows);
 
 private:
+    QStringList generateHeaders(const std::unordered_set<size_t>& selectedCols = {}) const;
+
     bool indexVisible_ = false;
+    bool vectorsIntoCols_ = false;
 
     std::shared_ptr<const DataFrame> data_;
 

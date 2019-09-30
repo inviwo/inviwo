@@ -53,31 +53,18 @@ DataFrameTableView::DataFrameTableView(QWidget* parent) : QTableWidget(3, 3, par
                      [this](const QItemSelection&, const QItemSelection&) {
                          if (ignoreEvents_) return;
                          util::KeepTrueWhileInScope ignore(&ignoreUpdate_);
-                         auto cols = selectionModel()->selectedColumns();
-                         // column selection is dominant, i.e. overwrites single index selection
-                         if (!cols.isEmpty()) {
+                         if (data_) {
+                             // translate model indices to row IDs
+                             const auto& indexCol = data_->getIndexColumn()
+                                                        ->getTypedBuffer()
+                                                        ->getRAMRepresentation()
+                                                        ->getDataContainer();
+
                              std::unordered_set<size_t> selection;
-                             for (auto& index : cols) {
-                                 selection.insert(index.column());
+                             for (auto& index : selectionModel()->selection().indexes()) {
+                                 selection.insert(indexCol[index.row()]);
                              }
-                             emit columnSelectionChanged(selection);
-                         } else {
-                             // send update that no columns are selected
-                             emit columnSelectionChanged({});
-
-                             if (data_) {
-                                 // translate model indices to row IDs
-                                 const auto& indexCol = data_->getIndexColumn()
-                                                            ->getTypedBuffer()
-                                                            ->getRAMRepresentation()
-                                                            ->getDataContainer();
-
-                                 std::unordered_set<size_t> selection;
-                                 for (auto& index : selectionModel()->selection().indexes()) {
-                                     selection.insert(indexCol[index.row()]);
-                                 }
-                                 emit rowSelectionChanged(selection);
-                             }
+                             emit rowSelectionChanged(selection);
                          }
                      });
 }
@@ -90,19 +77,8 @@ void DataFrameTableView::setDataFrame(std::shared_ptr<const DataFrame> dataframe
         return;
     }
 
-    const std::array<char, 4> componentNames = {'X', 'Y', 'Z', 'W'};
-
-    QStringList headers;
-    for (const auto& col : *dataframe) {
-        const auto components = col->getBuffer()->getDataFormat()->getComponents();
-        if (components > 1 && vectorsIntoColumns) {
-            for (size_t k = 0; k < components; k++) {
-                headers.push_back(utilqt::toQString(col->getHeader() + ' ' + componentNames[k]));
-            }
-        } else {
-            headers.push_back(utilqt::toQString(col->getHeader()));
-        }
-    }
+    vectorsIntoCols_ = vectorsIntoColumns;
+    auto headers = generateHeaders();
 
     // empty existing table, and disable sorting temporarily (messes up insertion otherwise)
     clear();
@@ -183,18 +159,7 @@ bool DataFrameTableView::isIndexColumnVisible() const { return indexVisible_; }
 void DataFrameTableView::selectColumns(const std::unordered_set<size_t>& columns) {
     if (!data_ || ignoreUpdate_) return;
 
-    util::KeepTrueWhileInScope ignore(&ignoreEvents_);
-    selectionModel()->clearSelection();
-
-    if (columns.empty() || (rowCount() == 0)) return;
-
-    QItemSelection s;
-    for (auto c : columns) {
-        QModelIndex start{model()->index(0, static_cast<int>(c))};
-        QModelIndex end{model()->index(rowCount() - 1, static_cast<int>(c))};
-        s.select(start, end);
-    }
-    selectionModel()->select(s, QItemSelectionModel::Select);
+    setHorizontalHeaderLabels(generateHeaders(columns));
 }
 
 void DataFrameTableView::selectRows(const std::unordered_set<size_t>& rows) {
@@ -218,6 +183,29 @@ void DataFrameTableView::selectRows(const std::unordered_set<size_t>& rows) {
         }
     }
     selectionModel()->select(s, QItemSelectionModel::Select);
+}
+
+QStringList DataFrameTableView::generateHeaders(
+    const std::unordered_set<size_t>& selectedCols) const {
+
+    const std::array<char, 4> componentNames = {'X', 'Y', 'Z', 'W'};
+    QStringList headers;
+    size_t colIndex = 0;
+    for (const auto& col : *data_) {
+        const std::string selected = (selectedCols.count(colIndex) > 0) ? " [+]" : "";
+        const auto components = col->getBuffer()->getDataFormat()->getComponents();
+        if (components > 1 && vectorsIntoCols_) {
+            for (size_t k = 0; k < components; k++) {
+                headers.push_back(
+                    utilqt::toQString(col->getHeader() + ' ' + componentNames[k] + selected));
+            }
+        } else {
+            headers.push_back(utilqt::toQString(col->getHeader() + selected));
+        }
+        ++colIndex;
+    }
+
+    return headers;
 }
 
 }  // namespace inviwo
