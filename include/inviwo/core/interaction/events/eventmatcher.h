@@ -203,6 +203,9 @@ public:
 
     virtual bool operator()(Event*) override;
 
+    template <typename EventType>
+    static std::unique_ptr<GeneralEventMatcher> create();
+
 protected:
     GeneralEventMatcher(const GeneralEventMatcher&) = default;
     GeneralEventMatcher& operator=(const GeneralEventMatcher&) = default;
@@ -210,6 +213,12 @@ protected:
 private:
     std::function<bool(Event*)> matcher_;
 };
+
+template <typename EventType>
+std::unique_ptr<GeneralEventMatcher> GeneralEventMatcher::create() {
+    return std::make_unique<GeneralEventMatcher>(
+        [](Event* e) -> bool { return e->hash() == EventType::chash(); });
+}
 
 }  // namespace inviwo
 
