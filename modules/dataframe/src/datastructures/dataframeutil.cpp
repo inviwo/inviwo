@@ -29,6 +29,9 @@
 
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/dataframe/datastructures/dataframeutil.h>
+#include <inviwo/core/util/document.h>
+
+#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -44,8 +47,8 @@ std::shared_ptr<BufferBase> cloneBufferRange(std::shared_ptr<const BufferBase> b
         [&](auto typed) {
             using ValueType = util::PrecisionValueType<decltype(typed)>;
             auto newBuffer = std::make_shared<Buffer<ValueType>>();
-            auto &vecOut = newBuffer->getEditableRAMRepresentation()->getDataContainer();
-            auto &vecIn = typed->getDataContainer();
+            auto& vecOut = newBuffer->getEditableRAMRepresentation()->getDataContainer();
+            auto& vecIn = typed->getDataContainer();
 
             vecOut.insert(vecOut.begin(), vecIn.begin() + range.x, vecIn.begin() + range.y + 1);
             return newBuffer;
@@ -61,9 +64,9 @@ void copyBufferRange(std::shared_ptr<const BufferBase> src, std::shared_ptr<Buff
     if (src->getDataFormat()->getId() == dst->getDataFormat()->getId()) {
         dst->getEditableRepresentation<BufferRAM>()->dispatch<void>([&](auto typed) {
             using ValueType = util::PrecisionValueType<decltype(typed)>;
-            auto typedInBuf = static_cast<const Buffer<ValueType> *>(src.get());
-            auto &vecIn = typedInBuf->getRAMRepresentation()->getDataContainer();
-            auto &vecOut = typed->getDataContainer();
+            auto typedInBuf = static_cast<const Buffer<ValueType>*>(src.get());
+            auto& vecIn = typedInBuf->getRAMRepresentation()->getDataContainer();
+            auto& vecOut = typed->getDataContainer();
 
             vecOut.insert(vecOut.begin() + dstStart, vecIn.begin() + range.x,
                           vecIn.begin() + range.y + 1);
@@ -85,7 +88,7 @@ std::shared_ptr<DataFrame> combineDataFrames(std::vector<std::shared_ptr<DataFra
     }
 
     size_t newSize = 0;
-    for (auto &hf : dataFrames) {
+    for (auto& hf : dataFrames) {
         newSize += hf->getNumberOfRows();
     }
 
@@ -96,7 +99,7 @@ std::shared_ptr<DataFrame> combineDataFrames(std::vector<std::shared_ptr<DataFra
 
     auto first = *dataFrames.front();
     {
-        std::map<std::string, const DataFormatBase *> columnType;
+        std::map<std::string, const DataFormatBase*> columnType;
 
         for (auto col : first) {
             if (skipIndexColumn && toLower(col->getHeader()) == skipcol) continue;
@@ -142,7 +145,7 @@ std::shared_ptr<DataFrame> combineDataFrames(std::vector<std::shared_ptr<DataFra
                 columns[col->getHeader()] = newDataFrame->addColumn<ValueType>(col->getHeader());
             });
     }
-    for (auto &data : dataFrames) {
+    for (auto& data : dataFrames) {
         for (auto col : *(data.get())) {
             if (skipIndexColumn && toLower(col->getHeader()) == skipcol) continue;
 
@@ -153,8 +156,8 @@ std::shared_ptr<DataFrame> combineDataFrames(std::vector<std::shared_ptr<DataFra
                     using ValueType = util::PrecisionValueType<decltype(typedBuf)>;
 
                     auto typedBuffer =
-                        static_cast<const Buffer<ValueType> *>(col->getBuffer().get());
-                    auto &vec = typedBuffer->getRAMRepresentation()->getDataContainer();
+                        static_cast<const Buffer<ValueType>*>(col->getBuffer().get());
+                    auto& vec = typedBuffer->getRAMRepresentation()->getDataContainer();
                     typedBuf->getDataContainer().insert(typedBuf->getDataContainer().end(),
                                                         vec.begin(), vec.end());
                 });
@@ -163,14 +166,17 @@ std::shared_ptr<DataFrame> combineDataFrames(std::vector<std::shared_ptr<DataFra
     return newDataFrame;
 }
 
-std::string createToolTipForRow(const DataFrame &dataframe, size_t rowId) {
-    std::ostringstream oss;
+std::string createToolTipForRow(const DataFrame& dataframe, size_t rowId) {
+    using H = utildoc::TableBuilder::Header;
+    using P = Document::PathComponent;
+    Document doc;
+    doc.append("b", fmt::format("Data Point {}", rowId), {{"style", "color:white;"}});
+    utildoc::TableBuilder tb(doc.handle(), P::end());
     for (size_t i = 0; i < dataframe.getNumberOfColumns(); i++) {
-        oss << dataframe.getHeader(i) << ": " << dataframe.getColumn(i)->getAsString(rowId)
-            << std::endl;
+        tb(H(dataframe.getHeader(i)), dataframe.getColumn(i)->getAsString(rowId));
     }
 
-    return oss.str();
+    return doc;
 }
 
 }  // namespace dataframeutil
