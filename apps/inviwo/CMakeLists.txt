@@ -173,3 +173,5 @@ endif()
 # Save information for python tools.
 ivw_mod_name_to_class(ivw_module_classes ${enabled_modules})
 ivw_private_create_pyconfig("${IVW_MODULE_DIR};${IVW_EXTERNAL_MODULES}" "${ivw_module_classes}" inviwo)
+
+ivw_deploy_qt(inviwo)
