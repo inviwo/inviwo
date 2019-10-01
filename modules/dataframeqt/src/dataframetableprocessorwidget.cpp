@@ -96,11 +96,8 @@ void DataFrameTableProcessorWidget::setIndexColumnVisible(bool visible) {
 
 void DataFrameTableProcessorWidget::updateSelection(const std::unordered_set<size_t>& columns,
                                                     const std::unordered_set<size_t>& rows) {
-    if (!columns.empty()) {
-        tableview_->selectColumns(columns);
-    } else {
-        tableview_->selectRows(rows);
-    }
+    tableview_->selectColumns(columns);
+    tableview_->selectRows(rows);
 }
 
 auto DataFrameTableProcessorWidget::setColumnSelectionChangedCallback(
