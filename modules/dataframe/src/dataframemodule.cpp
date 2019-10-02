@@ -36,11 +36,12 @@
 #include <inviwo/dataframe/processors/syntheticdataframe.h>
 #include <inviwo/dataframe/processors/volumetodataframe.h>
 #include <inviwo/dataframe/processors/volumesequencetodataframe.h>
-
 #include <inviwo/dataframe/properties/colormapproperty.h>
 
 #include <inviwo/dataframe/io/csvreader.h>
 #include <inviwo/dataframe/io/jsonreader.h>
+
+#include <inviwo/core/properties/propertyconverter.h>
 
 #include <modules/json/jsonmodule.h>
 
@@ -68,6 +69,7 @@ DataFrameModule::DataFrameModule(InviwoApplication* app) : InviwoModule(app, "Da
     registerDataReader(std::make_unique<JSONDataFrameReader>());
 
     // Data converters
+    registerPropertyConverter(std::make_unique<OptionToStringConverter<DataFrameColumnProperty>>());
     app->getModuleByType<JSONModule>()->registerPropertyJSONConverter<DataFrameColumnProperty>();
 }
 
