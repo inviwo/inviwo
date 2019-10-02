@@ -366,7 +366,7 @@ void CameraWidget::objectPicked(PickingEvent *e) {
             // initial activation with button press
             isMouseBeingPressedAndHold_ = true;
             mouseWasMoved_ = false;
-            currentPickingID_ = e->getPickedId();
+            currentPickingID_ = static_cast<int>(e->getPickedId());
             saveInitialCameraState();
         } else if (e->getPressState() == PickingPressState::Move &&
                    e->getPressItems() & PickingPressItem::Primary) {

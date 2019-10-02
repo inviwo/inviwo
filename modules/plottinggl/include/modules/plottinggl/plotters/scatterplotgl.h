@@ -27,9 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SCATTERPLOTGL_H
-#define IVW_SCATTERPLOTGL_H
-
+#pragma once
 #include <modules/plottinggl/plottingglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/transferfunction.h>
@@ -37,6 +35,7 @@
 #include <inviwo/core/interaction/pickingmapper.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/util/dispatcher.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/base/algorithm/dataminmax.h>
@@ -48,6 +47,9 @@
 
 #include <modules/plottinggl/utils/axisrenderer.h>
 
+#include <optional>
+#include <unordered_set>
+
 namespace inviwo {
 
 class Processor;
@@ -58,6 +60,9 @@ namespace plot {
 
 class IVW_MODULE_PLOTTINGGL_API ScatterPlotGL {
 public:
+    using ToolTipFunc = void(PickingEvent*, size_t);
+    using ToolTipCallbackHandle = std::shared_ptr<std::function<ToolTipFunc>>;
+
     class Properties : public CompositeProperty {
     public:
         virtual std::string getClassIdentifier() const override;
@@ -67,8 +72,8 @@ public:
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                    PropertySemantics semantics = PropertySemantics::Default);
 
-        Properties(const Properties &rhs);
-        virtual Properties *clone() const override;
+        Properties(const Properties& rhs);
+        virtual Properties* clone() const override;
         virtual ~Properties() = default;
 
         BoolProperty useCircle_;
@@ -77,6 +82,7 @@ public:
         TransferFunctionProperty tf_;
         FloatVec4Property color_;
         FloatVec4Property hoverColor_;
+        FloatVec4Property selectionColor_;
         MarginProperty margins_;
         FloatProperty axisMargin_;
 
@@ -92,31 +98,31 @@ public:
     private:
         auto props() {
             return std::tie(radiusRange_, useCircle_, minRadius_, tf_, color_, hoverColor_,
-                            margins_, axisMargin_, borderWidth_, borderColor_, hovering_,
-                            axisStyle_, xAxis_, yAxis_);
+                            selectionColor_, margins_, axisMargin_, borderWidth_, borderColor_,
+                            hovering_, axisStyle_, xAxis_, yAxis_);
         }
         auto props() const {
             return std::tie(radiusRange_, useCircle_, minRadius_, tf_, color_, hoverColor_,
-                            margins_, axisMargin_, borderWidth_, borderColor_, hovering_,
-                            axisStyle_, xAxis_, yAxis_);
+                            selectionColor_, margins_, axisMargin_, borderWidth_, borderColor_,
+                            hovering_, axisStyle_, xAxis_, yAxis_);
         }
     };
 
-    explicit ScatterPlotGL(Processor *processor = nullptr);
+    explicit ScatterPlotGL(Processor* processor = nullptr);
     virtual ~ScatterPlotGL() = default;
 
-    void plot(Image &dest, IndexBuffer *indices = nullptr, bool useAxisRanges = false);
-    void plot(Image &dest, const Image &src, IndexBuffer *indices = nullptr,
+    void plot(Image& dest, IndexBuffer* indices = nullptr, bool useAxisRanges = false);
+    void plot(Image& dest, const Image& src, IndexBuffer* indices = nullptr,
               bool useAxisRanges = false);
-    void plot(ImageOutport &dest, IndexBuffer *indices = nullptr, bool useAxisRanges = false);
-    void plot(ImageOutport &dest, ImageInport &src, IndexBuffer *indices = nullptr,
+    void plot(ImageOutport& dest, IndexBuffer* indices = nullptr, bool useAxisRanges = false);
+    void plot(ImageOutport& dest, ImageInport& src, IndexBuffer* indices = nullptr,
               bool useAxisRanges = false);
-    void plot(const ivec2 &start, const ivec2 &size, IndexBuffer *indices = nullptr,
+    void plot(const ivec2& start, const ivec2& size, IndexBuffer* indices = nullptr,
               bool useAxisRanges = false);
 
-    void setXAxisLabel(const std::string &label);
+    void setXAxisLabel(const std::string& label);
 
-    void setYAxisLabel(const std::string &label);
+    void setYAxisLabel(const std::string& label);
 
     void setXAxis(std::shared_ptr<const Column> col);
 
@@ -128,14 +134,18 @@ public:
     void setRadiusData(std::shared_ptr<const BufferBase> buffer);
     void setIndexColumn(std::shared_ptr<const TemplateColumn<uint32_t>> indexcol);
 
+    void setSelectedIndices(const std::unordered_set<size_t> indices);
+
+    ToolTipCallbackHandle addToolTipCallback(std::function<ToolTipFunc> callback);
+
     Properties properties_;
     Shader shader_;
 
 protected:
-    void plot(const size2_t &dims, IndexBuffer *indices, bool useAxisRanges);
-    void renderAxis(const size2_t &dims);
+    void plot(const size2_t& dims, IndexBuffer* indices, bool useAxisRanges);
+    void renderAxis(const size2_t& dims);
 
-    void objectPicked(PickingEvent *p);
+    void objectPicked(PickingEvent* p);
     uint32_t getGlobalPickId(uint32_t localIndex) const;
 
     std::shared_ptr<const BufferBase> xAxis_;
@@ -154,16 +164,17 @@ protected:
     std::array<AxisRenderer, 2> axisRenderers_;
 
     PickingMapper picking_;
-    std::set<uint32_t> hoveredIndices_;
+    std::unordered_set<size_t> selectedIndices_;
+    std::optional<uint32_t> hoverIndex_;
 
     std::unique_ptr<IndexBuffer> indices_;
     std::unique_ptr<BufferObjectArray> boa_;
 
-    Processor *processor_;
+    Processor* processor_;
+
+    Dispatcher<ToolTipFunc> tooltipCallback_;
 };
 
 }  // namespace plot
 
 }  // namespace inviwo
-
-#endif  // IVW_SCATTERPLOT_H

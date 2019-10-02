@@ -91,7 +91,11 @@ ParallelCoordinates::ParallelCoordinates()
                  2)
     , falllofPower_("falllofPower", "Falloff Power", 1.0f, 0.01f, 3.f, 0.01f)
     , lineWidth_("lineWidth", "Line Width", 7.0f, 1.0f, 20.0f)
-    , selectedLineWidth_("selectedLineWidth", "Selected Line Width", 10.0f, 1.0f, 20.0f)
+    , selectedLine_("selectedLine", "Selected Line")
+    , selectedLineWidth_("selectedLineWidth", "Line Width", 10.0f, 1.0f, 20.0f)
+    , selectedLineColorOverride_("selectedLineColorOverride", "Override Line Color", false)
+    , selectedLineColor_("selectedLineColor", "Color", vec4(1.0f, 0.769f, 0.247f, 1.0f), vec4(0.0f),
+                         vec4(1.0f))
     , showFiltered_("showFiltered", "Show Filtered", false)
     , filterColor_("filterColor", "Filter Color", vec3(.2f, .2f, .2f), vec3(0.0f), vec3(1.0f),
                    vec4(0.01f), InvalidationLevel::InvalidOutput, PropertySemantics::Color)
@@ -151,26 +155,21 @@ ParallelCoordinates::ParallelCoordinates()
     addPort(brushingAndLinking_);
     addPort(outport_);
 
-    addProperty(axisProperties_);
-    addProperty(colormap_);
+    addProperties(axisProperties_, colormap_, axisSelection_);
 
-    addProperty(axisSelection_);
+    selectedLineColor_.setSemantics(PropertySemantics::Color);
+    selectedLineColorOverride_.addProperty(selectedLineColor_);
+    selectedLine_.addProperties(selectedLineWidth_, selectedLineColorOverride_);
+    selectedLine_.setCollapsed(true);
 
     addProperty(lineSettings_);
-    lineSettings_.addProperty(blendMode_);
-    lineSettings_.addProperty(falllofPower_);
-    lineSettings_.addProperty(lineWidth_);
-    lineSettings_.addProperty(selectedLineWidth_);
-    lineSettings_.addProperty(showFiltered_);
-    lineSettings_.addProperty(filterColor_);
-    lineSettings_.addProperty(filterAlpha_);
-    lineSettings_.addProperty(filterIntensity_);
+    lineSettings_.addProperties(blendMode_, falllofPower_, lineWidth_, selectedLine_, showFiltered_,
+                                filterColor_, filterAlpha_, filterIntensity_);
     lineSettings_.setCollapsed(true);
 
     addProperty(captionSettings_);
     captionSettings_.insertProperty(0, captionPosition_);
-    captionSettings_.addProperty(captionOffset_);
-    captionSettings_.addProperty(captionColor_);
+    captionSettings_.addProperties(captionOffset_, captionColor_);
     captionPosition_.onChange([&]() {
         auto pos = captionSettings_.anchorPos_.get();
         auto offset = captionOffset_.get();
@@ -189,20 +188,13 @@ ParallelCoordinates::ParallelCoordinates()
 
     addProperty(labelSettings_);
     labelSettings_.insertProperty(0, showLabels_);
-    labelSettings_.addProperty(labelOffset_);
-    labelSettings_.addProperty(labelFormat_);
-    labelSettings_.addProperty(labelColor_);
+    labelSettings_.addProperties(labelOffset_, labelFormat_, labelColor_);
     labelSettings_.setCollapsed(true);
 
     addProperty(axesSettings_);
     axesSettings_.addProperty(axisSize_);
-    axesSettings_.addProperty(axisColor_);
-    axesSettings_.addProperty(axisHoverColor_);
-    axesSettings_.addProperty(axisSelectedColor_);
-    axesSettings_.addProperty(handlesVisible_);
-    axesSettings_.addProperty(handleSize_);
-    axesSettings_.addProperty(handleColor_);
-    axesSettings_.addProperty(handleFilteredColor_);
+    axesSettings_.addProperties(axisColor_, axisHoverColor_, axisSelectedColor_, handlesVisible_,
+                                handleSize_, handleColor_, handleFilteredColor_);
     axesSettings_.setCollapsed(true);
 
     addProperty(margins_);
@@ -592,6 +584,7 @@ void ParallelCoordinates::drawLines(size2_t size) {
     lineShader_.setUniform("subtractiveBelnding", blendMode_.get() == BlendMode::Sutractive);
     lineShader_.setUniform("fallofPower", falllofPower_.get());
     lineShader_.setUniform("color", vec4{filterColor_.get(), filterAlpha_.get()});
+    lineShader_.setUniform("selectColor", selectedLineColor_.get());
     lineShader_.setUniform("filterIntensity", filterIntensity_.get());
 
     {
@@ -601,6 +594,8 @@ void ParallelCoordinates::drawLines(size2_t size) {
 
         std::array<float, 3> width = {lineWidth_, lineWidth_, selectedLineWidth_};
         std::array<float, 3> mixColor = {filterIntensity_, 0.0f, 0.0f};
+        std::array<float, 3> mixSelection = {0.0f, 0.0f,
+                                             selectedLineColorOverride_.isChecked() ? 1.0f : 0.0f};
         std::array<float, 3> mixAlpha = {1.0, 0.0f, 0.0f};
 
         for (size_t i = showFiltered_ ? 0 : 1; i < lines_.offsets.size() - 1; ++i) {
@@ -611,6 +606,7 @@ void ParallelCoordinates::drawLines(size2_t size) {
             lineShader_.setUniform("lineWidth", width[i]);
             lineShader_.setUniform("mixColor", mixColor[i]);
             lineShader_.setUniform("mixAlpha", mixAlpha[i]);
+            lineShader_.setUniform("mixSelection", mixSelection[i]);
 
             glMultiDrawElements(
                 GL_LINE_STRIP, lines_.sizes.data() + begin, GL_UNSIGNED_INT,

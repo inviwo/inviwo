@@ -44,6 +44,7 @@ QWidget {
 QDockWidget > .QWidget, 
 QDockWidget > .QScrollArea, 
 QDockWidget > .QSplitter, 
+QWidget[bgType="window"],
 QDialog,
 QStatusBar,
 QSplitter#WelcomeWidget {
@@ -867,20 +868,58 @@ QWidget#CompositeWidget QToolButton#addListItemButton:disabled {
     image: url(:svgicons/listitem-add-disabled.svg);
 }
 
+/************************ 
+QTableView
+************************/
+QTableView QTableCornerButton::section {
+    border: none;
+    border-bottom: 0.125em solid #4a4a4f; 
+    border-right: 0.125em solid #4a4a4f; 
+    background: #2a2a2e;
+}
+QTableView QHeaderView::down-arrow {
+    image: url(:/svgicons/arrow-down-enabled.svg);
+    subcontrol-position: center left;
+    margin-left: 0.2em;
+}
+QTableView QHeaderView::up-arrow {
+    image: url(:/svgicons/arrow-up-enabled.svg);
+    subcontrol-position: center left;
+    padding-left: 0.2em;
+}
+QTableView, QTableWidget {
+    border: none;
+    color: #999999;
+    alternate-background-color: #3b3b3d;
+    selection-color: #999;
+    selection-background-color: #47474b;
+    gridline-color: #4a4a4f;
+}
+QTableView QHeaderView::section {
+    padding: 0.1875em;
+    padding-left: 0.4em;
+    border: 0.0325em solid #4a4a4f; 
+    background: #2a2a2e;
+}
+QTableView QHeaderView::section:checked {
+    background-color: #424245;
+}
+QTableView QHeaderView::section:horizontal {
+    border-bottom: 0.125em solid #4a4a4f; 
+}
+QTableView QHeaderView::section:vertical {
+    border-right: 0.125em solid #4a4a4f; 
+}
 
 /************************ 
 ConsoleWidget
 ************************/
-
 QDockWidget#ConsoleWidget QTextEdit {
     border: none;
     border-bottom: 0.125em ridge #4a4a4f;
 }
 QDockWidget#ConsoleWidget QTableView {
     border: none;
-    color: #999999;
-    selection-color: #999;
-    selection-background-color: #47474b;
     border-bottom: 0.125em ridge #4a4a4f;
 }
 QDockWidget#ConsoleWidget QTableView QHeaderView::section {

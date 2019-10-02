@@ -63,6 +63,8 @@ public:
 
     virtual void process() override;
 
+    void setSelectedIndices(const std::unordered_set<size_t>& indices);
+
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
@@ -83,6 +85,9 @@ private:
     void onYAxisChange();
     void onColorChange();
     void onRadiusChange();
+
+    using CallbackHandle = std::shared_ptr<std::function<void(PickingEvent*, size_t)>>;
+    CallbackHandle tooltipCallBack_;
 };
 
 }  // namespace plot

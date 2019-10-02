@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,53 +27,15 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROCESSORWIDGETQT_H
-#define IVW_PROCESSORWIDGETQT_H
-
-#include <modules/qtwidgets/qtwidgetsmoduledefine.h>
-#include <inviwo/core/processors/processorwidget.h>
-
-#include <warn/push>
-#include <warn/ignore/all>
-#include <QWidget>
-#include <warn/pop>
+#include <inviwo/dataframeqt/dataframeqtmodule.h>
+#include <inviwo/dataframeqt/processors/dataframetable.h>
+#include <inviwo/dataframeqt/dataframetableprocessorwidget.h>
 
 namespace inviwo {
 
-class IVW_MODULE_QTWIDGETS_API ProcessorWidgetQt : public QWidget, public ProcessorWidget {
-#include <warn/push>
-#include <warn/ignore/all>
-    Q_OBJECT
-#include <warn/pop>
-
-public:
-    ProcessorWidgetQt(Processor* p);
-    virtual ~ProcessorWidgetQt() = default;
-
-    using QWidget::setVisible;
-    virtual void show() override;                     // Override ProcessorWidget
-    virtual void hide() override;                     // Override ProcessorWidget
-    virtual void setPosition(ivec2 pos) override;     // Override ProcessorWidget
-    virtual void setDimensions(ivec2 dime) override;  // Override ProcessorWidget
-
-    virtual void move(ivec2 pos);  // Mirror QWidget::move
-
-protected:
-    virtual void updateVisible(bool visible) override;
-    virtual void updateDimensions(ivec2) override;
-    virtual void updatePosition(ivec2) override;
-
-    // Override QWidget events
-    virtual void resizeEvent(QResizeEvent*) override;
-    virtual void closeEvent(QCloseEvent*) override;
-    virtual void showEvent(QShowEvent*) override;
-    virtual void hideEvent(QHideEvent*) override;
-    virtual void moveEvent(QMoveEvent*) override;
-
-    bool ignoreEvents_{false};
-    bool ignoreUpdate_{false};
-};
+DataFrameQtModule::DataFrameQtModule(InviwoApplication* app) : InviwoModule(app, "DataFrameQt") {
+    registerProcessor<DataFrameTable>();
+    registerProcessorWidget<DataFrameTableProcessorWidget, DataFrameTable>();
+}
 
 }  // namespace inviwo
-
-#endif  // IVW_PROCESSORWIDGETQT_H

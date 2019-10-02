@@ -31,11 +31,13 @@
 #include <inviwo/core/util/raiiutils.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/qtwidgets/processors/processorwidgetqt.h>
+#include <inviwo/core/processors/processorwidgetfactory.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QMoveEvent>
 #include <QResizeEvent>
+#include <QLayout>
 #include <warn/pop>
 
 namespace inviwo {
@@ -44,12 +46,16 @@ ProcessorWidgetQt::ProcessorWidgetQt(Processor* p) : QWidget(nullptr), Processor
     ivec2 dim = ProcessorWidget::getDimensions();
     ivec2 pos = ProcessorWidget::getPosition();
 
-    QWidget::resize(dim.x, dim.y);
-
     if (auto mainWindow = utilqt::getApplicationMainWindow()) {
         // Move widget relative to main window to make sure that it is visible on screen.
-        QPoint newPos = utilqt::movePointOntoDesktop(QPoint(pos.x, pos.y), this->size(), true);
+        QPoint newPos =
+            utilqt::movePointOntoDesktop(QPoint(pos.x, pos.y), QSize(dim.x, dim.y), true);
+
         if (!(newPos.x() == 0 && newPos.y() == 0)) {
+            util::KeepTrueWhileInScope ignore(&ignoreEvents_);
+            // prevent move events, since this will automatically save the "adjusted" position.
+            // The processor widget already has its correct pos, i.e. the one de-serialized from
+            // file.
             QWidget::move(newPos);
         } else {  // We guess that this is a new widget and give a new position
             newPos = mainWindow->pos();
@@ -57,11 +63,18 @@ ProcessorWidgetQt::ProcessorWidgetQt(Processor* p) : QWidget(nullptr), Processor
             QWidget::move(newPos);
         }
     }
-}
 
-void ProcessorWidgetQt::setVisible(bool visible) {
-    // The subsequent events will call ProcessorWidget.
-    QWidget::setVisible(visible);
+    {
+        // Trigger both resize event and move event by showing and hiding the widget
+        // in order to set the correct, i.e. the de-serialized, size and position.
+        //
+        // Otherwise, a spontaneous event will be triggered which will set the widget
+        // to its "initial" size of 160 by 160 at (0, 0) thereby overwriting our values.
+        util::KeepTrueWhileInScope ignore(&ignoreEvents_);
+        QWidget::setVisible(true);
+        QWidget::resize(QSize(dim.x, dim.y));
+        QWidget::setVisible(false);
+    }
 }
 
 void ProcessorWidgetQt::show() { ProcessorWidgetQt::setVisible(true); }
@@ -69,8 +82,9 @@ void ProcessorWidgetQt::show() { ProcessorWidgetQt::setVisible(true); }
 void ProcessorWidgetQt::hide() { ProcessorWidgetQt::setVisible(false); }
 
 void ProcessorWidgetQt::setPosition(glm::ivec2 pos) {
-    // ProcessorWidget::setPosition(pos); Will be called by the Move event.
-    QWidget::move(pos.x, pos.y);
+    if (pos != utilqt::toGLM(QWidget::pos())) {
+        QWidget::move(pos.x, pos.y);  // This will trigger a move event.
+    }
 }
 
 void ProcessorWidgetQt::move(ivec2 pos) { ProcessorWidgetQt::setPosition(pos); }
@@ -110,6 +124,8 @@ void ProcessorWidgetQt::hideEvent(QHideEvent* event) {
 }
 
 void ProcessorWidgetQt::moveEvent(QMoveEvent* event) {
+    if (ignoreEvents_) return;
+    util::KeepTrueWhileInScope ignore(&ignoreUpdate_);
     ProcessorWidget::setPosition(ivec2(event->pos().x(), event->pos().y()));
     QWidget::moveEvent(event);
 }
