@@ -63,7 +63,7 @@ DataFrameModule::DataFrameModule(InviwoApplication* app) : InviwoModule(app, "Da
     // Properties
     registerProperty<ColormapProperty>();
     registerProperty<DataFrameColumnProperty>();
-    
+
     // Readers and writes
     registerDataReader(std::make_unique<CSVReader>());
     registerDataReader(std::make_unique<JSONDataFrameReader>());
