@@ -37,15 +37,6 @@ set(RES_FILES "")
 if(WIN32)
     set(RES_FILES ${RES_FILES} "${IVW_RESOURCES_DIR}/inviwo.rc")
 elseif(APPLE)
-    string(TIMESTAMP YEAR "%Y")
-    set(MACOSX_BUNDLE_BUNDLE_NAME          Inviwo)
-    set(MACOSX_BUNDLE_GUI_IDENTIFIER       "Inviwo")
-    set(MACOSX_BUNDLE_ICON_FILE            inviwo_light.icns)
-    set(MACOSX_BUNDLE_INFO_STRING          "Inviwo ${IVW_VERSION}, Copyright (c) 2012-${YEAR} Inviwo Foundation")
-    set(MACOSX_BUNDLE_SHORT_VERSION_STRING "${IVW_VERSION}")
-    set(MACOSX_BUNDLE_LONG_VERSION_STRING  "${IVW_VERSION}.")
-    set(MACOSX_BUNDLE_BUNDLE_VERSION       "${IVW_VERSION}")
-    set(MACOSX_BUNDLE_COPYRIGHT            "(C) 2012-${YEAR} Inviwo Foundation")
     set_source_files_properties(${IVW_ROOT_DIR}/resources/inviwo/inviwo_light.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
     set(RES_FILES ${RES_FILES} ${IVW_ROOT_DIR}/resources/inviwo/inviwo_light.icns)
 endif()
@@ -78,6 +69,19 @@ if(WIN32)
     install(TARGETS inviwo RUNTIME DESTINATION bin COMPONENT qt_app)
 
 elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    # Configure Info.plist
+    # https://cmake.org/cmake/help/v3.15/prop_tgt/MACOSX_BUNDLE_INFO_PLIST.html
+    string(TIMESTAMP YEAR "%Y")
+    set_target_properties(inviwo PROPERTIES
+        MACOSX_BUNDLE_INFO_STRING "Inviwo ${IVW_VERSION}, Copyright (c) 2012-${YEAR} Inviwo Foundation"
+        MACOSX_BUNDLE_ICON_FILE "inviwo_light.icns"
+        MACOSX_BUNDLE_GUI_IDENTIFIER "org.inviwo.Inviwo"
+        MACOSX_BUNDLE_LONG_VERSION_STRING "${IVW_VERSION}"
+        MACOSX_BUNDLE_BUNDLE_NAME "Inviwo"
+        MACOSX_BUNDLE_SHORT_VERSION_STRING "${IVW_VERSION}"
+        MACOSX_BUNDLE_BUNDLE_VERSION "${IVW_VERSION}"
+        MACOSX_BUNDLE_COPYRIGHT "C) 2012-${YEAR} Inviwo Foundation"
+    )
     #Following http://www.cmake.org/Wiki/BundleUtilitiesExample
     install(
         TARGETS inviwo 
@@ -100,6 +104,23 @@ elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
                   file(GLOB_RECURSE LIBS2 \"\${CMAKE_INSTALL_PREFIX}/Inviwo.app/Contents/plugins/*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
                   fixup_bundle(\"${APPS}\" \"\${LIBS1};\${LIBS2}\" \"${DIRS}\")"
             COMPONENT qt_app
+    )
+    install(
+        DIRECTORY   ${IVW_ROOT_DIR}/data/ 
+        DESTINATION Inviwo.app/Contents/Resources/data
+        COMPONENT   qt_app
+    )
+
+    set(CPACK_BINARY_DRAGNDROP ON)
+
+else()
+    install(
+        TARGETS   inviwo
+        RUNTIME   DESTINATION bin
+        BUNDLE    DESTINATION bin
+        ARCHIVE   DESTINATION lib
+        LIBRARY   DESTINATION lib
+        COMPONENT qt_app
     )
     install(
         DIRECTORY   ${IVW_ROOT_DIR}/data/ 
@@ -175,4 +196,4 @@ ivw_private_create_pyconfig("${IVW_MODULE_DIR};${IVW_EXTERNAL_MODULES}" "${ivw_m
 
 ivw_deploy_qt(inviwo)
 
-include(${IVW_ROOT_DIR}/cmake/packaging.cmake)           # Package creation
+include(packaging/packaging.cmake) # Package creation

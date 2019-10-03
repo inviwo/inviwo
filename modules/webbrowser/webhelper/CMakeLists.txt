@@ -53,7 +53,7 @@ if (OS_MACOSX)
     # Note: This is hardcoded to inviwo app.
     # Other apps need to copy the helper and the cef framework to its framework dir,
     # i.e. add the two commands add_custom_command and install below.
-    set(CEF_APP "$<TARGET_BUNDLE_DIR:${CEF_HELPER_TARGET}>/../inviwo.app")
+    set(CEF_APP "$<TARGET_BUNDLE_DIR:${CEF_HELPER_TARGET}>/../${IVW_APP_INSTALL_NAME}.app")
     set(CEF_HELPER_APP "$<TARGET_BUNDLE_DIR:${CEF_HELPER_TARGET}>") # full/path/to/helper.app
 
     # Copy files into the bin directory (used during development)
@@ -71,7 +71,7 @@ if (OS_MACOSX)
     )
     # Copy the helper app bundle into the Frameworks directory (used by installer)
     install(DIRECTORY "${CEF_HELPER_APP}"
-            DESTINATION "Inviwo.app/Contents/Frameworks/${CEF_HELPER_OUTPUT_NAME}.app"
+            DESTINATION "${IVW_APP_INSTALL_NAME}.app/Contents/Frameworks/${CEF_HELPER_OUTPUT_NAME}.app"
             COMPONENT inviwo-module-webbrowser)
 
     set_target_properties(${CEF_HELPER_TARGET} PROPERTIES
@@ -82,8 +82,8 @@ elseif (WIN32)
 	#ADD_WINDOWS_CEF_MANIFEST("${CEF_TARGET_OUT_DIR}" "${WEBBROWSER_MODULE_PATH}" "${CEF_HELPER_TARGET}" "exe")
 
 	# Copy helper executable into the bin directory (used by installer)
-	install(TARGETS ${CEF_HELPER_TARGET} RUNTIME DESTINATION bin COMPONENT inviwo-module-webbrowser)
+	install(TARGETS ${CEF_HELPER_TARGET} RUNTIME DESTINATION "${IVW_RUNTIME_INSTALL_DIR}" COMPONENT inviwo-module-webbrowser)
 else () # Linux
 	# Copy helper executable into the bin directory (used by installer)
-	install(TARGETS ${CEF_HELPER_TARGET} RUNTIME DESTINATION bin COMPONENT inviwo-module-webbrowser)
+	install(TARGETS ${CEF_HELPER_TARGET} RUNTIME DESTINATION "${IVW_RUNTIME_INSTALL_DIR}" COMPONENT inviwo-module-webbrowser)
 endif()
