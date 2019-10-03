@@ -29,12 +29,25 @@
 
 # install related paths
 if(APPLE)
-    set(IVW_RUNTIME_INSTALL_DIR bin)
+
+# See 
+# https://developer.apple.com/library/archive/documentation/CoreFoundation/Conceptual/CFBundles/BundleTypes/BundleTypes.html#//apple_ref/doc/uid/10000123i-CH101-SW1
+    if(IVW_PACKAGE_PROJECT)
+        # Hide this "advanced" setting since it will appear first in list
+        set(IVW_APP_INSTALL_NAME 
+            "Inviwo" CACHE STRING "Application bundle name. 
+             Override if you are packaging a custom application. 
+             Installed libraries and modules 
+             will be placed inside bundle <name>.app")
+    endif()
+    set(IVW_RUNTIME_INSTALL_DIR ${IVW_APP_INSTALL_NAME}.app/Contents/MacOS)
     set(IVW_BUNDLE_INSTALL_DIR .)
-    set(IVW_LIBRARY_INSTALL_DIR Inviwo.app/Contents/MacOS)
+    set(IVW_LIBRARY_INSTALL_DIR ${IVW_APP_INSTALL_NAME}.app/Contents/MacOS)
     set(IVW_ARCHIVE_INSTALL_DIR ${IVW_LIBRARY_INSTALL_DIR})
-    set(IVW_FRAMEWORK_INSTALL_DIR ${IVW_LIBRARY_INSTALL_DIR})
+    set(IVW_FRAMEWORK_INSTALL_DIR ${IVW_APP_INSTALL_NAME}.app/Contents/Frameworks)
     set(IVW_INCLUDE_INSTALL_DIR include)
+    set(IVW_RESOURCE_INSTALL_DIR ${IVW_APP_INSTALL_NAME}.app/Contents/Resources/)
+
 else()
     set(IVW_RUNTIME_INSTALL_DIR bin)
     set(IVW_BUNDLE_INSTALL_DIR "not used!!!")

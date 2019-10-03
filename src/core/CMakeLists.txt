@@ -891,6 +891,6 @@ if(IVW_EMBED_BUILDINFO)
     target_compile_definitions("inviwo-core" PRIVATE "IVW_EMBED_BUILDINFO")
 else()
     ## ensure that the ini file containing the build info is packaged and installed to the bin folder
-    install(FILES ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/inviwo_buildinfo.ini DESTINATION bin COMPONENT modules CONFIGURATIONS Release Debug)
+    install(FILES ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/inviwo_buildinfo.ini DESTINATION ${IVW_RUNTIME_INSTALL_DIR} COMPONENT modules CONFIGURATIONS Release Debug)
 endif()
 #--------------------------------------------------------------------

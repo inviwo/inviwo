@@ -13,7 +13,7 @@
 	<key>CFBundleIconFile</key>
 	<string>inviwo_light.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>Inviwo</string>
+	<string>org.inviwo.Inviwo</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleLongVersionString</key>
