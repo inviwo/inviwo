@@ -88,17 +88,9 @@ if(IVW_PACKAGE_PROJECT)
 
     elseif(APPLE)
         if(IVW_PACKAGE_INSTALLER)
-            configure_file(${IVW_CMAKE_TEMPLATES}/info_plist_template.txt
-               ${CMAKE_BINARY_DIR}/Info.plist
-               @ONLY)
-            #http://www.cmake.org/cmake/help/v3.2/module/CPackBundle.html
             set(CPACK_GENERATOR           "TGZ;DragNDrop")
-            set(CPACK_BUNDLE_NAME         "${CPACK_PACKAGE_NAME}")
-            set(CPACK_BUNDLE_ICON         "${IVW_ROOT_DIR}/Resources/inviwo/inviwo_light.icns")
-            set(CPACK_BUNDLE_PLIST        "${CMAKE_BINARY_DIR}/Info.plist")
             set(CPACK_DMG_DS_STORE        "${IVW_ROOT_DIR}/Resources/DS_mapp")
             set(CPACK_DMG_VOLUME_NAME     "${CPACK_PACKAGE_FILE_NAME}")
-            set(CPACK_OSX_PACKAGE_VERSION 10.10)
         else()
             set(CPACK_GENERATOR "TGZ")
         endif()
