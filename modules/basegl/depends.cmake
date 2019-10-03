@@ -3,5 +3,6 @@
 set(dependencies
     InviwoOpenGLModule
     InviwoBaseModule
+	InviwoBrushingAndLinkingModule
 )
 set(EnableByDefault ON)
