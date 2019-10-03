@@ -42,6 +42,7 @@
 
 #include <inviwo/core/util/defaultvalues.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
+#include <modules/python3/pyportutils.h>
 
 #include <fmt/format.h>
 
@@ -193,6 +194,8 @@ void exposeDataFrame(pybind11::module& m) {
             exampleRows     Rows for guessing data type of each column.
             colHeaders      Name of each column. If none are given, "Column 1", "Column 2", ... is used
         )delim");
+
+    exposeStandardDataPorts<DataFrame>(m, "DataFrame");
 }
 
 }  // namespace inviwo

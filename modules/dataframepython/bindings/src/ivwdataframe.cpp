@@ -42,11 +42,11 @@ PYBIND11_MODULE(ivwdataframe, m) {
 #ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
     VLDDisable();
 #endif
+    
+    py::module::import("inviwopy");
 
     using namespace inviwo;
     m.doc() = "Python interface for Inviwo DataFrame";
-
-    auto dataframeModule = m.def_submodule("dataframe", "Exposing Inviwo DataFrame");
 
     exposeDataFrame(m);
 
