@@ -172,7 +172,7 @@ ivw_register_license_file(NAME "Chromium Embedded Framework" VERSION ${CEF_VERSI
 if (OS_MACOSX)
     # Copy the CEF framework into the Frameworks directory (used by installer)
     install(DIRECTORY "${CEF_BINARY_DIR}/Chromium Embedded Framework.framework"
-            DESTINATION "Inviwo.app/Contents/Frameworks/Chromium Embedded Framework.framework"
+            DESTINATION "${IVW_APP_INSTALL_NAME}.app/Contents/Frameworks/Chromium Embedded Framework.framework"
             COMPONENT inviwo-module-webbrowser) 
 elseif (WIN32)
     if(USE_SANDBOX)
@@ -188,7 +188,7 @@ elseif (WIN32)
     # Copy files into the bin directory (used by installer)
     install(DIRECTORY "${CEF_BINARY_DIR}/" # Note importance of / in the end to not put files into subfolder
             "${CEF_RESOURCE_DIR}/"
-            DESTINATION bin
+            DESTINATION "${IVW_RUNTIME_INSTALL_DIR}"
             COMPONENT inviwo-module-webbrowser)
 
 else () # Linux
@@ -208,7 +208,7 @@ else () # Linux
     # Copy files into the bin directory (used by installer)
     install(DIRECTORY "${CEF_BINARY_DIR}/" # Note importance of / in the end to not put files into subfolder
             "${CEF_RESOURCE_DIR}/"
-            DESTINATION bin
+            DESTINATION "${IVW_RUNTIME_INSTALL_DIR}"
             COMPONENT inviwo-module-webbrowser)
 endif()
 
