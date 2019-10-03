@@ -354,7 +354,7 @@ void exposeProperties(py::module &m) {
 
     py::class_<FileExtension>(m, "FileExtension")
         .def(py::init<>())
-        .def(py::init<std::string, std::string>())
+        .def(py::init<std::string, std::string>(), py::arg("ext"), py::arg("desc"))
         .def("toString", &FileExtension::toString)
         .def("empty", &FileExtension::empty)
         .def("matchesAll", &FileExtension::matchesAll)

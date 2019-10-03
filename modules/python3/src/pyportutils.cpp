@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,18 +27,6 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PYPORT_H
-#define IVW_PYPORT_H
+#include <modules/python3/pyportutils.h>
 
-#include <warn/push>
-#include <warn/ignore/shadow>
-#include <pybind11/pybind11.h>
-#include <warn/pop>
-
-namespace inviwo {
-
-void exposePort(pybind11::module& m);
-
-}  // namespace inviwo
-
-#endif  // IVW_PYPORT_H
+namespace inviwo {}  // namespace inviwo

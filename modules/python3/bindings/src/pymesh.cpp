@@ -34,8 +34,8 @@
 #include <inviwopy/inviwopy.h>
 #include <inviwopy/pynetwork.h>
 #include <inviwopy/pyglmtypes.h>
-#include <inviwopy/pyport.h>
 
+#include <modules/python3/pyportutils.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/geometry/basicmesh.h>
 #include <inviwo/core/ports/meshport.h>

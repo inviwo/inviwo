@@ -19,6 +19,7 @@ set(HEADER_FILES
     include/modules/python3/processors/numpyvolume.h
     include/modules/python3/processors/pythonscriptprocessor.h
     include/modules/python3/pybindutils.h
+    include/modules/python3/pyportutils.h
     include/modules/python3/python3module.h
     include/modules/python3/python3moduledefine.h
     include/modules/python3/pythonexecutionoutputobservable.h
@@ -39,6 +40,7 @@ set(SOURCE_FILES
     src/processors/numpyvolume.cpp
     src/processors/pythonscriptprocessor.cpp
     src/pybindutils.cpp
+    src/pyportutils.cpp
     src/python3module.cpp
     src/pythonexecutionoutputobservable.cpp
     src/pythoninterpreter.cpp
