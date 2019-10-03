@@ -168,6 +168,8 @@ void ListProperty::addProperty(size_t prefabIndex) {
 
     if ((maxNumElements_ == 0) || (size() + 1 < maxNumElements_)) {
         auto property = prefabs_[prefabIndex]->clone();
+        IVW_ASSERT(property->getClassIdentifier() == prefabs_[prefabIndex]->getClassIdentifier(),
+                   "Class identifer missmatch after cloning, does your property implement clone?");
         property->setSerializationMode(PropertySerializationMode::All);
         property->setIdentifier(util::findUniqueIdentifier(
             property->getIdentifier(),
