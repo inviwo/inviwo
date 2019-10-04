@@ -246,7 +246,7 @@ void ScatterPlotGL::plot(const size2_t& dims, IndexBuffer* indexBuffer, bool use
 
     if (radius_) {
         shader_.setUniform("minmaxR", minmaxR_);
-        shader_.setUniform("has_radius", (minmaxR_.x != minmaxR_.y ? 1: 0));
+        shader_.setUniform("has_radius", (minmaxR_.x != minmaxR_.y ? 1 : 0));
 
         auto rbuf = radius_->getRepresentation<BufferGL>();
         auto rbufObj = rbuf->getBufferObject();
