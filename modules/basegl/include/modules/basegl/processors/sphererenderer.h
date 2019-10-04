@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SPHERERENDERER_H
-#define IVW_SPHERERENDERER_H
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -40,11 +39,13 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/basegl/datastructures/meshshadercache.h>
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 
 namespace inviwo {
 
@@ -115,6 +116,7 @@ private:
 
     MeshFlatMultiInport inport_;
     ImageInport imageInport_;
+    BrushingAndLinkingInport brushLinkPort_;
     ImageOutport outport_;
 
     TemplateOptionProperty<RenderMode> renderMode_;
@@ -132,6 +134,10 @@ private:
     BoolProperty useMetaColor_;
     TransferFunctionProperty metaColor_;
 
+    BoolCompositeProperty selectionProperties_;
+    FloatVec4Property selectionColor_;
+    FloatProperty selectionRadiusFactor_;
+
     CameraProperty camera_;
     CameraTrackball trackball_;
     SimpleLightingProperty lighting_;
@@ -140,5 +146,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_SPHERERENDERER_H

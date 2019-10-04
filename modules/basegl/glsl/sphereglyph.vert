@@ -37,6 +37,10 @@ uniform vec4 defaultColor = vec4(1, 0, 0, 1);
 uniform float defaultRadius = 0.1f;
 uniform sampler2D metaColor;
 
+uniform float selectionMix = 0.0;
+uniform float selectionScaleFactor = 1.0;
+uniform vec4 selectionColor = vec4(1.0, 0.769, 0.247, 1.0);
+
 out vec4 worldPosition_;
 out vec4 sphereColor_;
 flat out float sphereRadius_;
@@ -50,12 +54,14 @@ void main(void) {
 #else
     sphereColor_ = defaultColor;
 #endif
+    sphereColor_ = mix(sphereColor_, selectionColor, selectionMix);
 
 #if defined(HAS_RADII) && !defined(FORCE_RADIUS)
     sphereRadius_ = in_Radii;
 #else 
     sphereRadius_ = defaultRadius;
 #endif
+    sphereRadius_ = mix(sphereRadius_, sphereRadius_ * selectionScaleFactor, selectionMix);
 
 #if defined(HAS_PICKING)
     pickID_ = in_Picking;
