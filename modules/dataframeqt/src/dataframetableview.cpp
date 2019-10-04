@@ -71,6 +71,8 @@ DataFrameTableView::DataFrameTableView(QWidget* parent) : QTableWidget(3, 3, par
 
 void DataFrameTableView::setDataFrame(std::shared_ptr<const DataFrame> dataframe,
                                       bool vectorsIntoColumns) {
+    if (data_ == dataframe) return;
+
     data_ = dataframe;
     if (!dataframe) {
         clear();

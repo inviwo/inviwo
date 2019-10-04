@@ -27,30 +27,6 @@
  *
  *********************************************************************************/
 
-#include <ivwdataframe/ivwdataframe.h>
+#include <modules/python3/pyportutils.h>
 
-#include <modules/python3/python3module.h>
-#include <modules/python3/pybindutils.h>
-#include <modules/python3/pythoninterpreter.h>
-
-#include <ivwdataframe/pydataframe.h>
-
-namespace py = pybind11;
-
-PYBIND11_MODULE(ivwdataframe, m) {
-
-#ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
-    VLDDisable();
-#endif
-
-    py::module::import("inviwopy");
-
-    using namespace inviwo;
-    m.doc() = "Python interface for Inviwo DataFrame";
-
-    exposeDataFrame(m);
-
-#ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
-    VLDEnable();
-#endif
-}
+namespace inviwo {}  // namespace inviwo

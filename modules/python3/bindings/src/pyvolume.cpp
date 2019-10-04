@@ -35,7 +35,7 @@
 #include <inviwopy/pynetwork.h>
 #include <inviwopy/pyglmtypes.h>
 #include <modules/python3/pybindutils.h>
-#include <inviwopy/pyport.h>
+#include <modules/python3/pyportutils.h>
 
 #include <warn/push>
 #include <warn/ignore/shadow>

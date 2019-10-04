@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwopy/pyport.h>
+#include <modules/python3/pyportutils.h>
 
 #include <inviwopy/pyglmtypes.h>
 

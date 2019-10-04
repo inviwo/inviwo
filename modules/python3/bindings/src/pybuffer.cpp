@@ -43,8 +43,7 @@
 #include <inviwopy/pynetwork.h>
 #include <inviwopy/pyglmtypes.h>
 #include <modules/python3/pybindutils.h>
-#include <inviwopy/pyport.h>
-#include <modules/python3/pybindutils.h>
+#include <modules/python3/pyportutils.h>
 
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
