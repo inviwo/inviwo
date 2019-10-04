@@ -175,7 +175,7 @@ public:
     PickingPressItem getPressItem() const;
     PickingHoverState getHoverState() const;
     PickingPressItems getPressItems() const;
-        
+
     KeyModifiers modifiers() const;
 
     void invoke(Processor* p);
