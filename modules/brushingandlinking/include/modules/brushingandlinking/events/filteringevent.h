@@ -44,6 +44,8 @@ class IVW_MODULE_BRUSHINGANDLINKING_API FilteringEvent : public BrushingAndLinki
 public:
     FilteringEvent(const BrushingAndLinkingInport* src, const std::unordered_set<size_t>& indices);
     virtual ~FilteringEvent() = default;
+    
+    virtual void print(std::ostream& os) const override;
 };
 
 }  // namespace inviwo

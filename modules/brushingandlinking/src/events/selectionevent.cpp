@@ -35,4 +35,6 @@ SelectionEvent::SelectionEvent(const BrushingAndLinkingInport* src,
                                const std::unordered_set<size_t>& indices)
     : BrushingAndLinkingEvent(src, indices) {}
 
+void SelectionEvent::print(std::ostream& os) const { printEvent("SelectionEvent", os); }
+
 }  // namespace inviwo
