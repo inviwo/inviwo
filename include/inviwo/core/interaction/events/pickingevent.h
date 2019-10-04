@@ -175,6 +175,8 @@ public:
     PickingPressItem getPressItem() const;
     PickingHoverState getHoverState() const;
     PickingPressItems getPressItems() const;
+        
+    KeyModifiers modifiers() const;
 
     void invoke(Processor* p);
     const PickingAction* getPickingAction() const;
@@ -182,7 +184,7 @@ public:
     virtual uint64_t hash() const override;
     static constexpr uint64_t chash() { return util::constexpr_hash("org.inviwo.PickingEvent"); }
 
-    Event* getEvent() const;
+    InteractionEvent* getEvent() const;
 
     template <typename EventType>
     EventType* getEventAs() const;
