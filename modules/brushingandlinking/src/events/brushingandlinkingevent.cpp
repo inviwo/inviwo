@@ -28,6 +28,12 @@
  *********************************************************************************/
 
 #include <modules/brushingandlinking/events/brushingandlinkingevent.h>
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/interaction/events/eventutil.h>
+
+#include <algorithm>
+
 namespace inviwo {
 
 BrushingAndLinkingEvent::BrushingAndLinkingEvent(const BrushingAndLinkingInport* src,
@@ -45,5 +51,30 @@ const inviwo::BrushingAndLinkingInport* BrushingAndLinkingEvent::getSource() con
 const std::unordered_set<size_t>& BrushingAndLinkingEvent::getIndices() const { return indices_; }
 
 uint64_t BrushingAndLinkingEvent::hash() const { return chash(); }
+
+void BrushingAndLinkingEvent::print(std::ostream& os) const {
+    printEvent("BrushingAndLinkingEvent", os);
+}
+
+void BrushingAndLinkingEvent::printEvent(const std::string& eventType, std::ostream& os) const {
+    using namespace std::string_literals;
+
+    std::vector<size_t> indices(indices_.begin(), indices_.end());
+    std::sort(indices.begin(), indices.end());
+    const std::string indicesStr = [&]() -> std::string {
+        if (indices.empty()) return "none"s;
+        std::string str = joinString(indices.begin(),
+                                     indices.begin() + std::min<size_t>(indices.size(), 10), ", ");
+        if (indices_.size() > 10) {
+            str.append("...");
+        }
+        return str;
+    }();
+
+    util::printEvent(
+        os, eventType,
+        std::make_pair("source", (source_ ? source_->getProcessor()->getIdentifier() : "unknown"s)),
+        std::make_pair("indices", indicesStr));
+}
 
 }  // namespace inviwo

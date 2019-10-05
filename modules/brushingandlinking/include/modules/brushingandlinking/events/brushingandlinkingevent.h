@@ -58,6 +58,11 @@ public:
         return util::constexpr_hash("org.inviwo.BrushingAndLinkingEvent");
     }
 
+    virtual void print(std::ostream& os) const override;
+
+protected:
+    virtual void printEvent(const std::string& eventType, std::ostream& os) const;
+
 private:
     const BrushingAndLinkingInport* source_;
     const std::unordered_set<size_t>& indices_;

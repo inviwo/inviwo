@@ -44,6 +44,8 @@ public:
     ColumnSelectionEvent(const BrushingAndLinkingInport* src,
                          const std::unordered_set<size_t>& indices);
     virtual ~ColumnSelectionEvent() = default;
+
+    virtual void print(std::ostream& os) const override;
 };
 
 }  // namespace inviwo
