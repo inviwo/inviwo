@@ -27,50 +27,49 @@
  *
  *********************************************************************************/
 
-#include <modules/plottinggl/datavisualizer/pcpdataframevisualizer.h>
-
-#include <modules/plottinggl/processors/parallelcoordinates/parallelcoordinates.h>
+#include <modules/plottinggl/datavisualizer/scatterplotdataframevisualizer.h>
 
 #include <inviwo/dataframe/datastructures/dataframe.h>
 #include <inviwo/core/processors/processorutils.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/io/datareaderfactory.h>
 
 #include <inviwo/dataframe/processors/csvsource.h>
 #include <modules/basegl/processors/background.h>
 #include <modules/opengl/canvasprocessorgl.h>
-#include <inviwo/core/io/datareaderfactory.h>
+#include <modules/plottinggl/processors/scatterplotprocessor.h>
 
 namespace inviwo {
 
 using GP = util::GridPos;
 
-PCPDataFrameVisualizer::PCPDataFrameVisualizer(InviwoApplication* app)
+ScatterPlotDataFrameVisualizer::ScatterPlotDataFrameVisualizer(InviwoApplication* app)
     : DataVisualizer{}, app_(app) {}
 
-std::string PCPDataFrameVisualizer::getName() const { return "Parallel Coordinates Plot"; }
+std::string ScatterPlotDataFrameVisualizer::getName() const { return "Scatter Plot"; }
 
-Document PCPDataFrameVisualizer::getDescription() const {
+Document ScatterPlotDataFrameVisualizer::getDescription() const {
     Document doc;
     auto b = doc.append("html").append("body");
-    b.append("", "Construct Parallel Coordinates Plot from the given DataFrame");
+    b.append("", "Construct a Scatter Plot from the given DataFrame");
     return doc;
 }
 
-std::vector<FileExtension> PCPDataFrameVisualizer::getSupportedFileExtensions() const {
+std::vector<FileExtension> ScatterPlotDataFrameVisualizer::getSupportedFileExtensions() const {
     auto rf = app_->getDataReaderFactory();
     auto exts = rf->getExtensionsForType<DataFrame>();
     return exts;
 }
 
-bool PCPDataFrameVisualizer::isOutportSupported(const Outport* port) const {
+bool ScatterPlotDataFrameVisualizer::isOutportSupported(const Outport* port) const {
     return dynamic_cast<const DataFrameOutport*>(port) != nullptr;
 }
 
-bool PCPDataFrameVisualizer::hasSourceProcessor() const { return true; }
+bool ScatterPlotDataFrameVisualizer::hasSourceProcessor() const { return true; }
 
-bool PCPDataFrameVisualizer::hasVisualizerNetwork() const { return true; }
+bool ScatterPlotDataFrameVisualizer::hasVisualizerNetwork() const { return true; }
 
-std::pair<Processor*, Outport*> PCPDataFrameVisualizer::addSourceProcessor(
+std::pair<Processor*, Outport*> ScatterPlotDataFrameVisualizer::addSourceProcessor(
     const std::string& filename, ProcessorNetwork* network) const {
 
     auto source = network->addProcessor(util::makeProcessor<CSVSource>(GP{0, 0}, filename));
@@ -78,28 +77,28 @@ std::pair<Processor*, Outport*> PCPDataFrameVisualizer::addSourceProcessor(
     return {source, outport};
 }
 
-std::vector<Processor*> PCPDataFrameVisualizer::addVisualizerNetwork(
+std::vector<Processor*> ScatterPlotDataFrameVisualizer::addVisualizerNetwork(
     Outport* outport, ProcessorNetwork* network) const {
 
-    auto pcp = network->addProcessor(util::makeProcessor<plot::ParallelCoordinates>(GP{0, 3}));
+    auto scatter = network->addProcessor(util::makeProcessor<plot::ScatterPlotProcessor>(GP{0, 3}));
 
-    auto back = util::makeProcessor<Background>(GP{0, 6});
-    back->backgroundStyle_.setSelectedValue(Background::BackgroundStyle::Uniform);
-    back->bgColor1_ = vec4{1.0f, 1.0f, 1.0f, 1.0f};
-    auto bak = network->addProcessor(std::move(back));
+    auto background = util::makeProcessor<Background>(GP{0, 6});
+    background->backgroundStyle_.setSelectedValue(Background::BackgroundStyle::Uniform);
+    background->bgColor1_ = vec4{1.0f, 1.0f, 1.0f, 1.0f};
+    auto bg = network->addProcessor(std::move(background));
 
     auto canvas = util::makeProcessor<CanvasProcessorGL>(GP{0, 9});
     canvas->dimensions_ = ivec2{800, 400};
     auto cvs = network->addProcessor(std::move(canvas));
 
-    network->addConnection(pcp->getOutports()[0], bak->getInports()[0]);
-    network->addConnection(bak->getOutports()[0], cvs->getInports()[0]);
-    network->addConnection(outport, pcp->getInports()[0]);
+    network->addConnection(scatter->getOutports()[0], bg->getInports()[0]);
+    network->addConnection(bg->getOutports()[0], cvs->getInports()[0]);
+    network->addConnection(outport, scatter->getInports()[0]);
 
-    return {pcp, bak, cvs};
+    return {scatter, bg, cvs};
 }
 
-std::vector<Processor*> PCPDataFrameVisualizer::addSourceAndVisualizerNetwork(
+std::vector<Processor*> ScatterPlotDataFrameVisualizer::addSourceAndVisualizerNetwork(
     const std::string& filename, ProcessorNetwork* network) const {
 
     auto sourceAndOutport = addSourceProcessor(filename, network);

@@ -27,50 +27,46 @@
  *
  *********************************************************************************/
 
-#include <modules/plottinggl/datavisualizer/pcpdataframevisualizer.h>
-
-#include <modules/plottinggl/processors/parallelcoordinates/parallelcoordinates.h>
+#include <inviwo/dataframeqt/datavisualizer/dataframetablevisualizer.h>
 
 #include <inviwo/dataframe/datastructures/dataframe.h>
 #include <inviwo/core/processors/processorutils.h>
-#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/io/datareaderfactory.h>
 
 #include <inviwo/dataframe/processors/csvsource.h>
-#include <modules/basegl/processors/background.h>
-#include <modules/opengl/canvasprocessorgl.h>
-#include <inviwo/core/io/datareaderfactory.h>
+#include <inviwo/dataframeqt/processors/dataframetable.h>
 
 namespace inviwo {
 
 using GP = util::GridPos;
 
-PCPDataFrameVisualizer::PCPDataFrameVisualizer(InviwoApplication* app)
+DataFrameTableVisualizer::DataFrameTableVisualizer(InviwoApplication* app)
     : DataVisualizer{}, app_(app) {}
 
-std::string PCPDataFrameVisualizer::getName() const { return "Parallel Coordinates Plot"; }
+std::string DataFrameTableVisualizer::getName() const { return "DataFrame Table"; }
 
-Document PCPDataFrameVisualizer::getDescription() const {
+Document DataFrameTableVisualizer::getDescription() const {
     Document doc;
     auto b = doc.append("html").append("body");
-    b.append("", "Construct Parallel Coordinates Plot from the given DataFrame");
+    b.append("", "Show a table view for the given DataFrame");
     return doc;
 }
 
-std::vector<FileExtension> PCPDataFrameVisualizer::getSupportedFileExtensions() const {
+std::vector<FileExtension> DataFrameTableVisualizer::getSupportedFileExtensions() const {
     auto rf = app_->getDataReaderFactory();
     auto exts = rf->getExtensionsForType<DataFrame>();
     return exts;
 }
 
-bool PCPDataFrameVisualizer::isOutportSupported(const Outport* port) const {
+bool DataFrameTableVisualizer::isOutportSupported(const Outport* port) const {
     return dynamic_cast<const DataFrameOutport*>(port) != nullptr;
 }
 
-bool PCPDataFrameVisualizer::hasSourceProcessor() const { return true; }
+bool DataFrameTableVisualizer::hasSourceProcessor() const { return true; }
 
-bool PCPDataFrameVisualizer::hasVisualizerNetwork() const { return true; }
+bool DataFrameTableVisualizer::hasVisualizerNetwork() const { return true; }
 
-std::pair<Processor*, Outport*> PCPDataFrameVisualizer::addSourceProcessor(
+std::pair<Processor*, Outport*> DataFrameTableVisualizer::addSourceProcessor(
     const std::string& filename, ProcessorNetwork* network) const {
 
     auto source = network->addProcessor(util::makeProcessor<CSVSource>(GP{0, 0}, filename));
@@ -78,28 +74,16 @@ std::pair<Processor*, Outport*> PCPDataFrameVisualizer::addSourceProcessor(
     return {source, outport};
 }
 
-std::vector<Processor*> PCPDataFrameVisualizer::addVisualizerNetwork(
+std::vector<Processor*> DataFrameTableVisualizer::addVisualizerNetwork(
     Outport* outport, ProcessorNetwork* network) const {
 
-    auto pcp = network->addProcessor(util::makeProcessor<plot::ParallelCoordinates>(GP{0, 3}));
+    auto table = network->addProcessor(util::makeProcessor<DataFrameTable>(GP{0, 3}));
+    network->addConnection(outport, table->getInports()[0]);
 
-    auto back = util::makeProcessor<Background>(GP{0, 6});
-    back->backgroundStyle_.setSelectedValue(Background::BackgroundStyle::Uniform);
-    back->bgColor1_ = vec4{1.0f, 1.0f, 1.0f, 1.0f};
-    auto bak = network->addProcessor(std::move(back));
-
-    auto canvas = util::makeProcessor<CanvasProcessorGL>(GP{0, 9});
-    canvas->dimensions_ = ivec2{800, 400};
-    auto cvs = network->addProcessor(std::move(canvas));
-
-    network->addConnection(pcp->getOutports()[0], bak->getInports()[0]);
-    network->addConnection(bak->getOutports()[0], cvs->getInports()[0]);
-    network->addConnection(outport, pcp->getInports()[0]);
-
-    return {pcp, bak, cvs};
+    return {table};
 }
 
-std::vector<Processor*> PCPDataFrameVisualizer::addSourceAndVisualizerNetwork(
+std::vector<Processor*> DataFrameTableVisualizer::addSourceAndVisualizerNetwork(
     const std::string& filename, ProcessorNetwork* network) const {
 
     auto sourceAndOutport = addSourceProcessor(filename, network);

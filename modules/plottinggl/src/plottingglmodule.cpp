@@ -44,6 +44,7 @@
 #include <modules/plottinggl/processors/parallelcoordinates/pcpaxissettings.h>
 
 #include <modules/plottinggl/datavisualizer/pcpdataframevisualizer.h>
+#include <modules/plottinggl/datavisualizer/scatterplotdataframevisualizer.h>
 
 namespace inviwo {
 
@@ -63,6 +64,7 @@ PlottingGLModule::PlottingGLModule(InviwoApplication* app) : InviwoModule(app, "
     registerProperty<plot::PCPAxisSettings>();
 
     registerDataVisualizer(std::make_unique<PCPDataFrameVisualizer>(app));
+    registerDataVisualizer(std::make_unique<ScatterPlotDataFrameVisualizer>(app));
 }
 
 int PlottingGLModule::getVersion() const { return 2; }

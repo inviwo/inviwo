@@ -88,6 +88,7 @@
 #include <modules/basegl/datavisualizer/volumeraycastvisualizer.h>
 #include <modules/basegl/datavisualizer/volumeslicevisualizer.h>
 #include <modules/basegl/datavisualizer/imagevisualizer.h>
+#include <modules/basegl/datavisualizer/imagebackgroundvisualizer.h>
 #include <modules/basegl/datavisualizer/meshvisualizer.h>
 
 #include <modules/opengl/shader/shadermanager.h>
@@ -164,6 +165,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerDataVisualizer(std::make_unique<VolumeRaycastVisualizer>(app));
     registerDataVisualizer(std::make_unique<VolumeSliceVisualizer>(app));
     registerDataVisualizer(std::make_unique<ImageVisualizer>(app));
+    registerDataVisualizer(std::make_unique<ImageBackgroundVisualizer>(app));
     registerDataVisualizer(std::make_unique<MeshVisualizer>(app));
 }
 

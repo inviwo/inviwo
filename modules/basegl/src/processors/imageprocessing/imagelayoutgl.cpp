@@ -268,6 +268,7 @@ void ImageLayoutGL::onStatusChange(bool propagate) {
 }
 
 bool ImageLayoutGL::isConnectionActive(Inport* from, Outport* to) const {
+    IVW_UNUSED_PARAM(from);
     IVW_ASSERT(from == &multiinport_,
                "ImageLayoutGL was designed for one inport but isConnectionActive was called with "
                "another inport");

@@ -10,6 +10,7 @@ set(HEADER_FILES
     include/modules/basegl/baseglmodule.h
     include/modules/basegl/baseglmoduledefine.h
     include/modules/basegl/datastructures/meshshadercache.h
+    include/modules/basegl/datavisualizer/imagebackgroundvisualizer.h
     include/modules/basegl/datavisualizer/imagevisualizer.h
     include/modules/basegl/datavisualizer/meshvisualizer.h
     include/modules/basegl/datavisualizer/volumeraycastvisualizer.h
@@ -82,6 +83,7 @@ set(SOURCE_FILES
     src/algorithm/imageconvolution.cpp
     src/baseglmodule.cpp
     src/datastructures/meshshadercache.cpp
+    src/datavisualizer/imagebackgroundvisualizer.cpp
     src/datavisualizer/imagevisualizer.cpp
     src/datavisualizer/meshvisualizer.cpp
     src/datavisualizer/volumeraycastvisualizer.cpp
