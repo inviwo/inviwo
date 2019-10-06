@@ -43,16 +43,18 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 
+#include <fmt/format.h>
+
 namespace inviwo {
 
 namespace py = pybind11;
 
-void exposeMesh(pybind11::module &m) {
+void exposeMesh(pybind11::module& m) {
     py::class_<Mesh::MeshInfo>(m, "MeshInfo")
         .def(py::init<>())
         .def(py::init<DrawType, ConnectivityType>())
-        .def("__str__",
-             [](Mesh::MeshInfo &mi) {
+        .def("__repr__",
+             [](Mesh::MeshInfo& mi) {
                  std::ostringstream oss;
                  oss << "MeshInfo (" << mi.dt << ", " << mi.ct << ")";
                  return oss.str();
@@ -64,8 +66,8 @@ void exposeMesh(pybind11::module &m) {
         .def(py::init<>())
         .def(py::init<BufferType>())
         .def(py::init<BufferType, int>())
-        .def("__str__",
-             [](Mesh::BufferInfo &bi) {
+        .def("__repr__",
+             [](Mesh::BufferInfo& bi) {
                  std::ostringstream oss;
                  oss << "BufferInfo (" << bi.type << ", " << bi.location << ")";
                  return oss.str();
@@ -73,9 +75,9 @@ void exposeMesh(pybind11::module &m) {
         .def_readwrite("type", &Mesh::BufferInfo::type)
         .def_readwrite("location", &Mesh::BufferInfo::location);
 
-    auto getBuffers = [](auto buffers, auto &parent) {
+    auto getBuffers = [](auto buffers, auto& parent) {
         pybind11::list list;
-        for (auto &buffer : buffers) {
+        for (auto& buffer : buffers) {
             auto tupl = py::tuple(2);
             tupl[0] = py::cast(buffer.first);
             tupl[1] = py::cast(buffer.second.get(), py::return_value_policy::reference_internal,
@@ -87,34 +89,64 @@ void exposeMesh(pybind11::module &m) {
 
     py::class_<Mesh, std::shared_ptr<Mesh>>(m, "Mesh")
         .def(py::init<>())
-        .def_property_readonly("dataInfo", &Mesh::getInfo)
-        .def("addBuffer", [](Mesh *m, Mesh::BufferInfo info,
+        .def("addBuffer", [](Mesh* m, Mesh::BufferInfo info,
                              std::shared_ptr<BufferBase> att) { m->addBuffer(info, att); })
-        .def("addBuffer", [](Mesh *m, BufferType type,
+        .def("addBuffer", [](Mesh* m, BufferType type,
                              std::shared_ptr<BufferBase> att) { m->addBuffer(type, att); })
-        .def("removeBuffer", [](Mesh *m, size_t idx) { m->removeBuffer(idx); })
+        .def("removeBuffer", [](Mesh* m, size_t idx) { m->removeBuffer(idx); })
 
         .def("replaceBuffer",
-             [](Mesh *m, size_t idx, Mesh::BufferInfo info, std::shared_ptr<BufferBase> att) {
+             [](Mesh* m, size_t idx, Mesh::BufferInfo info, std::shared_ptr<BufferBase> att) {
                  m->replaceBuffer(idx, info, att);
              })
         .def("addIndexBuffer",
-             [](Mesh *mesh, DrawType dt, ConnectivityType ct) {
+             [](Mesh* mesh, DrawType dt, ConnectivityType ct) {
                  mesh->addIndexBuffer(dt, ct);
                  return mesh->getIndexBuffers().back().second.get();
              },
              py::return_value_policy::reference)
-        .def("addIndicies", [](Mesh *m, Mesh::MeshInfo info,
+        .def("addIndicies", [](Mesh* m, Mesh::MeshInfo info,
                                std::shared_ptr<IndexBuffer> ind) { m->addIndicies(info, ind); })
-        .def("removeIndexBuffer", [](Mesh *m, size_t idx) { m->removeIndexBuffer(idx); })
+        .def("removeIndexBuffer", [](Mesh* m, size_t idx) { m->removeIndexBuffer(idx); })
 
         .def("reserveSizeInVertexBuffer", &Mesh::reserveSizeInVertexBuffer)
         .def("reserveIndexBuffers", &Mesh::reserveIndexBuffers)
 
         .def_property_readonly("buffers",
-                               [&](Mesh *mesh) { return getBuffers(mesh->getBuffers(), mesh); })
+                               [&](Mesh* mesh) { return getBuffers(mesh->getBuffers(), mesh); })
         .def_property_readonly(
-            "indexBuffers", [&](Mesh *mesh) { return getBuffers(mesh->getIndexBuffers(), mesh); });
+            "indexBuffers", [&](Mesh* mesh) { return getBuffers(mesh->getIndexBuffers(), mesh); })
+        .def("__repr__", [](const Mesh& self) {
+            std::ostringstream ossBuffers;
+            ossBuffers << "\n  <Buffers (" << self.getNumberOfBuffers() << ")";
+            for (const auto& elem : self.getBuffers()) {
+                ossBuffers << "\n    " << elem.first << ", " << elem.second->getBufferUsage()
+                           << " (" << elem.second->getSize() << ")";
+            }
+            ossBuffers << ">";
+
+            if (self.getNumberOfIndicies() > 0) {
+                const size_t maxLines = 10;
+                const size_t numIndexBuffers = self.getNumberOfIndicies();
+
+                ossBuffers << "\n  <Indexbuffers (" << self.getNumberOfIndicies() << ")";
+                int line = 0;
+                for (const auto& elem : self.getIndexBuffers()) {
+                    ossBuffers << "\n    " << elem.first.dt << ", " << elem.first.ct << " ("
+                               << elem.second->getSize() << ")";
+                    ++line;
+                    if (line >= maxLines) break;
+                }
+                if (line < numIndexBuffers) {
+                    ossBuffers << "\n    ... (" << (numIndexBuffers - line)
+                               << " additional buffers)";
+                }
+                ossBuffers << ">";
+            }
+            auto meshinfo = self.getDefaultMeshInfo();
+            return fmt::format("<Mesh:\n  default mesh info = MeshInfo({}, {}){}>",
+                               toString(meshinfo.dt), toString(meshinfo.ct), ossBuffers.str());
+        });
 
     py::class_<BasicMesh::Vertex>(m, "BasicMeshVertex")
         .def(py::init<>())
@@ -126,18 +158,18 @@ void exposeMesh(pybind11::module &m) {
         .def(py::init<>())
         .def("addVertices", &BasicMesh::addVertices)
 
-        .def("addVertex", [](BasicMesh &self, vec3 pos, vec3 norm, vec3 texCoord,
+        .def("addVertex", [](BasicMesh& self, vec3 pos, vec3 norm, vec3 texCoord,
                              vec4 color) { return self.addVertex(pos, norm, texCoord, color); })
         .def("addVertex",
-             [](BasicMesh &self, const BasicMesh::Vertex &vertex) {
+             [](BasicMesh& self, const BasicMesh::Vertex& vertex) {
                  return self.addVertex(std::get<0>(vertex), std::get<1>(vertex),
                                        std::get<2>(vertex), std::get<3>(vertex));
              })
 
-        .def("setVertex", [](BasicMesh &self, size_t i, vec3 pos, vec3 norm, vec3 texCoord,
+        .def("setVertex", [](BasicMesh& self, size_t i, vec3 pos, vec3 norm, vec3 texCoord,
                              vec4 color) { self.setVertex(i, pos, norm, texCoord, color); })
         .def("setVertex",
-             [](BasicMesh &self, size_t i, const BasicMesh::Vertex &vertex) {
+             [](BasicMesh& self, size_t i, const BasicMesh::Vertex& vertex) {
                  self.setVertex(i, std::get<0>(vertex), std::get<1>(vertex), std::get<2>(vertex),
                                 std::get<3>(vertex));
              })
@@ -147,7 +179,7 @@ void exposeMesh(pybind11::module &m) {
         .def("setVertexColor", &BasicMesh::setVertexColor)
 
         .def("addIndexBuffer",
-             [](BasicMesh *mesh, DrawType dt, ConnectivityType ct) {
+             [](BasicMesh* mesh, DrawType dt, ConnectivityType ct) {
                  mesh->addIndexBuffer(dt, ct);
                  return mesh->getIndexBuffers().back().second.get();
              },
@@ -160,4 +192,5 @@ void exposeMesh(pybind11::module &m) {
 
     exposeStandardDataPorts<Mesh>(m, "Mesh");
 }
+
 }  // namespace inviwo

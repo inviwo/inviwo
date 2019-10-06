@@ -48,6 +48,8 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 
+#include <fmt/format.h>
+
 namespace inviwo {
 
 struct BufferRAMHelper {
@@ -56,16 +58,15 @@ struct BufferRAMHelper {
         namespace py = pybind11;
         using T = typename DataFormat::type;
 
-        std::ostringstream className;
-        className << "Buffer" << DataFormat::str();
+        std::string className = fmt::format("Buffer{}", DataFormat::str());
         py::class_<Buffer<T, BufferTarget::Data>, BufferBase,
-                   std::shared_ptr<Buffer<T, BufferTarget::Data>>>(m, className.str().c_str())
+                   std::shared_ptr<Buffer<T, BufferTarget::Data>>>(m, className.c_str())
             .def(py::init<size_t>())
             .def(py::init<size_t, BufferUsage>());
 
-        className << "Index";
+        className = fmt::format("Index{}", DataFormat::str());
         py::class_<Buffer<T, BufferTarget::Index>, BufferBase,
-                   std::shared_ptr<Buffer<T, BufferTarget::Index>>>(m, className.str().c_str())
+                   std::shared_ptr<Buffer<T, BufferTarget::Index>>>(m, className.c_str())
             .def(py::init<size_t>())
             .def(py::init<size_t, BufferUsage>());
     }
@@ -132,7 +133,12 @@ void exposeBuffer(pybind11::module &m) {
                           pyutil::checkDataFormat<1>(rep->getDataFormat(), rep->getSize(), data);
 
                           memcpy(rep->getData(), data.data(0), data.nbytes());
-                      });
+                      })
+        .def("__repr__", [](const BufferBase &self) {
+            return fmt::format("<Buffer:\n  target = {}\n  usage = {}\n  format = {}\n  size = {}>",
+                               toString(self.getBufferTarget()), toString(self.getBufferUsage()),
+                               self.getDataFormat()->getString(), self.getSize());
+        });
 
     util::for_each_type<DefaultDataFormats>{}(BufferRAMHelper{}, m);
 

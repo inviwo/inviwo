@@ -158,9 +158,10 @@ void exposeImage(py::module& m) {
                 memcpy(rep->getData(), data.data(0), data.nbytes());
             })
         .def("__repr__", [](const Layer& self) {
-            return fmt::format("<Layer:\n  type = {}\n  dimensions = {}\n  swizzlemask = {}>",
-                               toString(self.getLayerType()), toString(self.getDimensions()),
-                               toString(self.getSwizzleMask()));
+            return fmt::format(
+                "<Layer:\n  type = {}\n  format = {}\n  dimensions = {}\n  swizzlemask = {}>",
+                toString(self.getLayerType()), self.getDataFormat()->getString(),
+                toString(self.getDimensions()), toString(self.getSwizzleMask()));
         });
 
     exposeInport<ImageInport>(m, "Image");
