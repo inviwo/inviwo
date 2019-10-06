@@ -72,6 +72,7 @@ public:
 
     Mesh() = default;
     Mesh(DrawType dt, ConnectivityType ct);
+    Mesh(Mesh::MeshInfo meshInfo);
 
     Mesh(const Mesh& rhs);
     Mesh& operator=(const Mesh& that);

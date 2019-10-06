@@ -32,11 +32,13 @@
 
 namespace inviwo {
 
-Mesh::Mesh(DrawType dt, ConnectivityType ct)
+Mesh::Mesh(DrawType dt, ConnectivityType ct) : Mesh{MeshInfo{dt, ct}} {}
+
+Mesh::Mesh(Mesh::MeshInfo meshInfo)
     : DataGroup<Mesh, MeshRepresentation>()
-    , SpatialEntity<3>()
-    , MetaDataOwner()
-    , meshInfo_{dt, ct} {}
+    , SpatialEntity<3>{}
+    , MetaDataOwner{}
+    , meshInfo_{meshInfo} {}
 
 Mesh::Mesh(const Mesh& rhs)
     : DataGroup<Mesh, MeshRepresentation>(rhs)
