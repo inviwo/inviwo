@@ -83,10 +83,10 @@ public:
     virtual ~DataFrame() = default;
 
     /**
-    * \brief add existing column to DataFrame
-    * updateIndexBuffer() needs to be called after all columns have been added before
-    * the DataFrame can be used
-    */
+     * \brief add existing column to DataFrame
+     * updateIndexBuffer() needs to be called after all columns have been added before
+     * the DataFrame can be used
+     */
     std::shared_ptr<Column> addColumn(std::shared_ptr<Column> column);
 
     /**

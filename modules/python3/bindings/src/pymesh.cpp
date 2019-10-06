@@ -130,7 +130,7 @@ void exposeMesh(pybind11::module& m) {
                 const size_t numIndexBuffers = self.getNumberOfIndicies();
 
                 ossBuffers << "\n  <Indexbuffers (" << self.getNumberOfIndicies() << ")";
-                int line = 0;
+                size_t line = 0;
                 for (const auto& elem : self.getIndexBuffers()) {
                     ossBuffers << "\n    " << elem.first.dt << ", " << elem.first.ct << " ("
                                << elem.second->getSize() << ")";
