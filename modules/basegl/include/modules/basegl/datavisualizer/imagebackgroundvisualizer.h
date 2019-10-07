@@ -26,18 +26,37 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <inviwo/dataframeqt/dataframeqtmodule.h>
-#include <inviwo/dataframeqt/processors/dataframetable.h>
-#include <inviwo/dataframeqt/dataframetableprocessorwidget.h>
-#include <inviwo/dataframeqt/datavisualizer/dataframetablevisualizer.h>
+#include <modules/basegl/baseglmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+
+#include <inviwo/core/rendering/datavisualizer.h>
 
 namespace inviwo {
 
-DataFrameQtModule::DataFrameQtModule(InviwoApplication* app) : InviwoModule(app, "DataFrameQt") {
-    registerProcessor<DataFrameTable>();
-    registerProcessorWidget<DataFrameTableProcessorWidget, DataFrameTable>();
-    registerDataVisualizer(std::make_unique<DataFrameTableVisualizer>(app));
-}
+class IVW_MODULE_BASEGL_API ImageBackgroundVisualizer : public DataVisualizer {
+public:
+    ImageBackgroundVisualizer(InviwoApplication* app);
+    virtual ~ImageBackgroundVisualizer() = default;
+
+    virtual std::string getName() const override;
+    virtual Document getDescription() const override;
+    virtual std::vector<FileExtension> getSupportedFileExtensions() const override;
+    virtual bool isOutportSupported(const Outport* port) const override;
+
+    virtual bool hasSourceProcessor() const override;
+    virtual bool hasVisualizerNetwork() const override;
+
+    virtual std::pair<Processor*, Outport*> addSourceProcessor(
+        const std::string& filename, ProcessorNetwork* network) const override;
+    virtual std::vector<Processor*> addVisualizerNetwork(Outport* outport,
+                                                         ProcessorNetwork* network) const override;
+    virtual std::vector<Processor*> addSourceAndVisualizerNetwork(
+        const std::string& filename, ProcessorNetwork* network) const override;
+
+private:
+    InviwoApplication* app_;
+};
 
 }  // namespace inviwo

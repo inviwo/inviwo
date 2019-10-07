@@ -48,9 +48,13 @@ DataFrame::DataFrame(std::uint32_t size) : columns_() {
     std::iota(cont.begin(), cont.end(), 0);
 }
 
-/*
-In order to prevent data loss, external data will be casted to glm::f64
-*/
+std::shared_ptr<Column> DataFrame::addColumn(std::shared_ptr<Column> column) {
+    if (column) {
+        columns_.push_back(column);
+    }
+    return column;
+}
+
 std::shared_ptr<Column> DataFrame::addColumnFromBuffer(const std::string &identifier,
                                                        std::shared_ptr<const BufferBase> buffer) {
     return buffer->getRepresentation<BufferRAM>()

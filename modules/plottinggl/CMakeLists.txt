@@ -6,6 +6,7 @@ ivw_module(PlottingGL)
 # Add header files
 set(HEADER_FILES
     include/modules/plottinggl/datavisualizer/pcpdataframevisualizer.h
+    include/modules/plottinggl/datavisualizer/scatterplotdataframevisualizer.h
     include/modules/plottinggl/plotters/persistencediagramplotgl.h
     include/modules/plottinggl/plotters/scatterplotgl.h
     include/modules/plottinggl/plottingglmodule.h
@@ -27,6 +28,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 # Add source files
 set(SOURCE_FILES
     src/datavisualizer/pcpdataframevisualizer.cpp
+    src/datavisualizer/scatterplotdataframevisualizer.cpp
     src/plotters/persistencediagramplotgl.cpp
     src/plotters/scatterplotgl.cpp
     src/plottingglmodule.cpp

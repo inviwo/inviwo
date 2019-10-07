@@ -52,6 +52,8 @@
 
 #include <pybind11/functional.h>
 
+#include <fmt/format.h>
+
 namespace py = pybind11;
 
 namespace inviwo {
@@ -68,8 +70,23 @@ void exposeProperties(py::module &m) {
 
     py::class_<PropertySemantics>(m, "PropertySemantics")
         .def(py::init())
-        .def(py::init<std::string>())
-        .def("getString", &PropertySemantics::getString);
+        .def(py::init<std::string>(), py::arg("semantic"))
+        .def("getString", &PropertySemantics::getString)
+        // clang-format off
+        .def_property_readonly_static("Default", [](py::object) { return PropertySemantics::Default; })
+        .def_property_readonly_static("Text", [](py::object) { return PropertySemantics::Text; })
+        .def_property_readonly_static("SpinBox", [](py::object) { return PropertySemantics::SpinBox; })
+        .def_property_readonly_static("Color", [](py::object) { return PropertySemantics::Color; })
+        .def_property_readonly_static("LightPosition", [](py::object) { return PropertySemantics::LightPosition; })
+        .def_property_readonly_static("TextEditor", [](py::object) { return PropertySemantics::TextEditor; })
+        .def_property_readonly_static("Multiline", [](py::object) { return PropertySemantics::Multiline; })
+        .def_property_readonly_static("ImageEditor", [](py::object) { return PropertySemantics::ImageEditor; })
+        .def_property_readonly_static("ShaderEditor", [](py::object) { return PropertySemantics::ShaderEditor; })
+        .def_property_readonly_static("PythonEditor", [](py::object) { return PropertySemantics::PythonEditor; })
+        // clang-format on
+        .def("__repr__", [](const PropertySemantics &s) {
+            return fmt::format("<PropertySemantics: '{}'>", s.getString());
+        });
 
     py::class_<PropertyFactory>(m, "PropertyFactory")
         .def("hasKey", [](PropertyFactory *pf, std::string key) { return pf->hasKey(key); })

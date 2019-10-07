@@ -41,7 +41,7 @@ const ProcessorInfo ImagePlotProcessor::processorInfo_{
     "org.inviwo.ImagePlotProcessor",  // Class identifier
     "Image Plot",                     // Display name
     "Plotting",                       // Category
-    CodeState::Experimental,          // Code state
+    CodeState::Stable,                // Code state
     "GL, Plotting",                   // Tags
 };
 const ProcessorInfo ImagePlotProcessor::getProcessorInfo() const { return processorInfo_; }
@@ -140,7 +140,10 @@ void ImagePlotProcessor::process() {
                              size2_t(lowerLeft.x, upperRight.y - padding));
 
     const auto bounds = calcImageBounds(dims);
-    imgRenderer_.renderToRect(*imgInport_.getData(), bounds.pos, bounds.extent, dims);
+    // ensure that the image is rendered in the background with maximum depth
+    mat4 m = glm::translate(vec3(0.0f, 0.0f, 2.0f));
+    imgRenderer_.renderToRect(*imgInport_.getData(), bounds.pos, bounds.extent, dims,
+                              LayerType::Color, m);
 
     utilgl::deactivateCurrentTarget();
 }
