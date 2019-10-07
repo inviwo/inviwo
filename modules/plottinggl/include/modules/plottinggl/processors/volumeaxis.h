@@ -76,7 +76,7 @@ namespace plot {
  */
 class IVW_MODULE_PLOTTINGGL_API VolumeAxis : public Processor {
 public:
-    enum class AxisRangeMode { VolumeDims, VolumeBasis, Custom };
+    enum class AxisRangeMode { VolumeDims, VolumeBasis, VolumeBasisOffset, Custom };
 
     VolumeAxis();
     virtual ~VolumeAxis() = default;

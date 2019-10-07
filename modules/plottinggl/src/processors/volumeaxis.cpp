@@ -58,6 +58,7 @@ VolumeAxis::VolumeAxis()
     , rangeMode_("rangeMode", "Axis Range Mode",
                  {{"dims", "Volume Dimensions (voxel)", AxisRangeMode::VolumeDims},
                   {"basis", "Volume Basis", AxisRangeMode::VolumeBasis},
+                  {"basisOffset", "Volume Basis & Offset", AxisRangeMode::VolumeBasisOffset},
                   {"custom", "Custom", AxisRangeMode::Custom}})
     , customRanges_("customRanges", "Custom Ranges")
     , rangeXaxis_("rangeX", "X Axis", 0.0, 1.0, DataFloat32::lowest(), DataFloat32::max())
@@ -178,6 +179,7 @@ void VolumeAxis::process() {
 
 void VolumeAxis::adjustRanges() {
     dvec3 volDims(1.0);
+    dvec3 offset(0.0);
     dvec3 basisLen(1.0);
     auto volume = inport_.getData();
     if (volume) {
@@ -185,6 +187,7 @@ void VolumeAxis::adjustRanges() {
         for (size_t i = 0; i < 3; ++i) {
             basisLen[i] = glm::length(volume->getBasis()[i]);
         }
+        offset = volume->getOffset();
     }
 
     util::KeepTrueWhileInScope b(&propertyUpdate_);
@@ -198,6 +201,11 @@ void VolumeAxis::adjustRanges() {
             xAxis_.range_.set(dvec2(0.0, basisLen.x));
             yAxis_.range_.set(dvec2(0.0, basisLen.y));
             zAxis_.range_.set(dvec2(0.0, basisLen.z));
+            break;
+        case AxisRangeMode::VolumeBasisOffset:
+            xAxis_.range_.set(dvec2(offset.x, offset.x + basisLen.x));
+            yAxis_.range_.set(dvec2(offset.y, offset.y + basisLen.y));
+            zAxis_.range_.set(dvec2(offset.z, offset.z + basisLen.z));
             break;
         case AxisRangeMode::Custom:
             xAxis_.range_.set(rangeXaxis_.get());
