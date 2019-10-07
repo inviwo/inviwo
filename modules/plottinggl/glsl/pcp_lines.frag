@@ -27,9 +27,12 @@
  *
  *********************************************************************************/
 
-in vec4 lPickColor;
-in float lScalarMeta;
-in float lPixelsFromCenter; // Distance from line center [pixel]
+#include "utils/antialiasing.glsl"
+
+in vec4 pickColor_;
+in float scalarMeta_;
+in float orthogonalLineDistance_; // Distance from line center [pixel]
+in vec2 lineEdgeNormal_; // Normalized line edge normal (orthogonal to line)
 
 uniform vec4 color;
 uniform vec4 selectColor;
@@ -42,41 +45,35 @@ uniform float lineWidth; // line width [pixel]
 
 uniform sampler2D tf;
 
-// 'threshold ' is constant , 'distance ' is smoothly varying
-float aastep(float threshold, float distance) {
-    float afwidth = 0.7 * length(vec2(dFdx(distance), dFdy(distance)));
-    return smoothstep(threshold - afwidth, threshold + afwidth, distance);
-}
+
+
 
 void main() {
-    vec4 res = texture(tf, vec2(lScalarMeta, 0.5f));
+    vec4 res = texture(tf, vec2(scalarMeta_, 0.5f));
 
     res = mix(res, color, vec4(vec3(mixColor), mixAlpha));
     res = mix(res, selectColor, vec4(mixSelection));
 
+	// Analytic anti-aliasing
+	float alpha = 1.0;
+	float df = abs(orthogonalLineDistance_) - 0.5*lineWidth;
+	if (abs(df) <= 0.5*sqrt(2.0)) {
+		res.w *= linePixelCoverage(df, lineEdgeNormal_);
+	} else {
+		// edge is more than one pixel away
+	}
+	/*
+	// Filtered anti-aliasing
     float linewidthHalf = lineWidth * 0.5;
-    float distance = abs(lPixelsFromCenter);
+    float distance = abs(orthogonalLineDistance_);
     float d = distance - (linewidthHalf);
-    d = aastep(0.0, d);
-    float alpha = 1.0;
     // antialiasing around the edges
     if( d > 0) {
         // apply antialiasing by modifying the alpha [Rougier, Journal of Computer Graphics Techniques 2013]
         d /= antialiasing;
-        alpha = exp(-d*d);
-        float w = (1. * antialiasing);
-        //alpha = abs(aastep(0.0, d));
-        //alpha = aastep(0.0, abs(lPixelsFromCenter));
-        //alpha = d;
-    } else {
-        
-        //res = vec4(vec3(0), 1.0);
-    }
-    //d /= antialiasing;
-    //alpha = aastep(linewidthHalf, lPixelsFromCenter));
-    
-    res.w *= alpha;
+        res.w *= = exp(-d*d);
+    } */
     //res = vec4(vec3(alpha), 1.0);
-    PickingData = lPickColor;
+    PickingData = pickColor_;
     FragData0 = res;
 }

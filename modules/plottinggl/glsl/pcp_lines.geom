@@ -27,8 +27,6 @@
  *
  *********************************************************************************/
 
-
-#include "pcp_common.glsl"
 #include "utils/pickingutils.glsl"
 
 layout(lines) in;
@@ -37,21 +35,22 @@ layout(triangle_strip, max_vertices = 4) out;
 in float vScalarMeta[2];
 flat in uint vPicking[2];
 
-vec4 triverts[4];
-float signValues[4];
 
-out vec4 lPickColor;
-out float lScalarMeta;
-out float lPixelsFromCenter; // Distance from line center [pixel]
+out vec4 pickColor_;
+out float scalarMeta_;
+out float orthogonalLineDistance_; // Distance from line center [pixel]
+out vec2 lineEdgeNormal_; // Gradient
 
+uniform ivec2 dims;
 uniform float lineWidth = 3; // line width [pixel]
 uniform float antialiasing = 1.0; // width of antialised edged [pixel]
 
-void emit(in vec4 pos, in float scalarMeta, in float d, in uint picking) {
+void emit(in vec4 pos, in float scalarMeta, in float distanceToCenter, vec2 edgeNormal, in uint picking) {
     gl_Position = pos;
-    lPixelsFromCenter = d;
-    lPickColor = vec4(pickingIndexToColor(picking), picking == 0 ? 0.0 : 1.0);
-    lScalarMeta = scalarMeta;
+    orthogonalLineDistance_ = distanceToCenter;
+    pickColor_ = vec4(pickingIndexToColor(picking), picking == 0 ? 0.0 : 1.0);
+    scalarMeta_ = scalarMeta;
+	lineEdgeNormal_ = edgeNormal;
     EmitVertex();
 }
 
@@ -62,28 +61,30 @@ void main() {
     p[0] = gl_in[0].gl_Position;
     p[1] = gl_in[1].gl_Position;
 
-    // Create a vector that is orthogonal to the line
-    vec3 orthogonalLine = p[0].xyz - p[1].xyz;
-    orthogonalLine = normalize(vec3(orthogonalLine.y, -orthogonalLine.x, orthogonalLine.z));
+    
+    vec2 dir = p[1].xy - p[0].xy;
+	// Create a vector that is orthogonal to the line
+    vec2 n = normalize(vec2(-dir.y, dir.x));
 
     // Scale the linewidth with the window dimensions
-    float w = (lineWidth * 0.5 + 1.0 * antialiasing);
-    float r1 = w * getPixelSpacing().x;
-    float r2 = w * getPixelSpacing().y;
+	// Add half diagonal distance for anti-aliasing
+    float w = (lineWidth * 0.5 + 0.5*sqrt(2.0));
+	vec2 pixelSpacing = 1.0f / dims.xy;
+    float r1 = w * pixelSpacing.x;
+    float r2 = w * pixelSpacing.y;
 
     // Scale the orthogonal vector with the linewidth
-    vec3 j = vec3(orthogonalLine.x * r1, orthogonalLine.y * r2, orthogonalLine.z);
-    
+    vec3 j = vec3(n.x * r1, n.y * r2, 0);
     
     // Rectangle enclosing the line
     // Left top
-    emit(vec4(p[0].xyz + j, 1.0), vScalarMeta[0], w, vPicking[0]);
-    // Left bottom
-    emit(vec4(p[0].xyz - j, 1.0), vScalarMeta[0], -w, vPicking[0]);
+    emit(vec4(p[0].xyz + j, 1.0), vScalarMeta[0], w, n, vPicking[0]);
+    // Left bottom, edge normal pointing downwards
+    emit(vec4(p[0].xyz - j, 1.0), vScalarMeta[0], -w, vec2(n.x, -n.y), vPicking[0]);
     // Right top
-    emit(vec4(p[1].xyz + j, 1.0), vScalarMeta[1], w, vPicking[1]);
-    // Right bottom
-    emit(vec4(p[1].xyz - j, 1.0), vScalarMeta[1], -w, vPicking[1]);
+    emit(vec4(p[1].xyz + j, 1.0), vScalarMeta[1], w, n, vPicking[1]);
+    // Right bottom, edge normal pointing downwards
+    emit(vec4(p[1].xyz - j, 1.0), vScalarMeta[1], -w, vec2(n.x, -n.y), vPicking[1]);
     
     EndPrimitive();
 }

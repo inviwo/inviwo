@@ -27,13 +27,23 @@
  *
  *********************************************************************************/
 
-#include "pcp_common.glsl"
-
 out float vScalarMeta;
 flat out uint vPicking;
 
 uniform float axisPositions[NUMBER_OF_AXIS];
 uniform bool axisFlipped[NUMBER_OF_AXIS];
+
+uniform ivec2 dims;
+uniform vec4 spacing = vec4(0);
+
+/**
+ * Convert a normalized position  [0 1] into screen coordinates [-1 1] considering canvas dimensions
+ * and optional spacing
+ */
+vec2 getPosWithSpacing(vec2 inPos) {
+    vec2 pixelSpace = (inPos * (dims - spacing.wz - spacing.yx) + spacing.wz);
+    return pixelSpace * 2.0 / dims - 1.0;
+}
 
 void main() {
     vScalarMeta = in_ScalarMeta;
