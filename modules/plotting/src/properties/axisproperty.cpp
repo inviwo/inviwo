@@ -241,7 +241,7 @@ void AxisProperty::adjustAlignment() {
     captionSettings_.font_.anchorPos_.set(captionAnchor);
 }
 
-bool AxisProperty::getVisible() const { return visible_.get(); }
+bool AxisProperty::getAxisVisible() const { return visible_.get(); }
 
 bool AxisProperty::getFlipped() const { return flipped_.get(); }
 

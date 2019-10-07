@@ -211,7 +211,7 @@ AxisRenderer::AxisRenderer(const AxisSettings& settings)
 
 void AxisRenderer::render(const size2_t& outputDims, const size2_t& startPos, const size2_t& endPos,
                           bool antialiasing) {
-    if (!settings_.getVisible()) {
+    if (!settings_.getAxisVisible()) {
         return;
     }
 
@@ -360,7 +360,7 @@ AxisRenderer3D::AxisRenderer3D(const AxisSettings& settings)
 
 void AxisRenderer3D::render(Camera* camera, const size2_t& outputDims, const vec3& startPos,
                             const vec3& endPos, const vec3& tickDirection, bool antialiasing) {
-    if (!settings_.getVisible()) return;
+    if (!settings_.getAxisVisible()) return;
 
     utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     renderAxis(camera, startPos, endPos, tickDirection, outputDims, antialiasing);
