@@ -93,14 +93,14 @@ std::unique_ptr<Derived> dynamic_unique_ptr_cast(
 namespace detail {
 
 template <typename Index, typename Functor, Index... Is>
-auto make_array(Functor&& func, std::integer_sequence<Index, Is...>)
+constexpr auto make_array(Functor&& func, std::integer_sequence<Index, Is...>) noexcept
     -> std::array<decltype(func(std::declval<Index>())), sizeof...(Is)> {
     return {{func(Is)...}};
 }
 }  // namespace detail
 
 template <std::size_t N, typename Index = size_t, typename Functor>
-auto make_array(Functor&& func) -> std::array<decltype(func(std::declval<Index>())), N> {
+constexpr auto make_array(Functor&& func) noexcept -> std::array<decltype(func(std::declval<Index>())), N> {
     return detail::make_array<Index>(std::forward<Functor>(func),
                                      std::make_integer_sequence<Index, N>());
 }
