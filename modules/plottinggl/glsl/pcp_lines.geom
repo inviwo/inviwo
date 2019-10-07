@@ -32,7 +32,7 @@
 #include "utils/pickingutils.glsl"
 
 layout(lines) in;
-layout(triangle_strip, max_vertices = 24) out;
+layout(triangle_strip, max_vertices = 4) out;
 
 in float vScalarMeta[2];
 flat in uint vPicking[2];
@@ -42,26 +42,17 @@ float signValues[4];
 
 out vec4 lPickColor;
 out float lScalarMeta;
-out float lFalloffAlpha;
+out float lPixelsFromCenter; // Distance from line center [pixel]
 
-uniform float lineWidth = 3;
+uniform float lineWidth = 3; // line width [pixel]
+uniform float antialiasing = 1.0; // width of antialised edged [pixel]
 
-
-void emitV(int i) {
-    gl_Position = triverts[i];
-    lFalloffAlpha = signValues[i];
-    lPickColor = vec4(pickingIndexToColor(vPicking[i % 2]), vPicking[i % 2] == 0 ? 0.0 : 1.0);
-    lScalarMeta = vScalarMeta[i % 2];
+void emit(in vec4 pos, in float scalarMeta, in float d, in uint picking) {
+    gl_Position = pos;
+    lPixelsFromCenter = d;
+    lPickColor = vec4(pickingIndexToColor(picking), picking == 0 ? 0.0 : 1.0);
+    lScalarMeta = scalarMeta;
     EmitVertex();
-}
-
-
-void emit(int a, int b, int c, int d) {
-    emitV(a);
-    emitV(b);
-    emitV(c);
-    emitV(d);
-    EndPrimitive();
 }
 
 void main() {
@@ -76,31 +67,23 @@ void main() {
     orthogonalLine = normalize(vec3(orthogonalLine.y, -orthogonalLine.x, orthogonalLine.z));
 
     // Scale the linewidth with the window dimensions
-    float r1 = lineWidth * getPixelSpacing().x;
-    float r2 = lineWidth * getPixelSpacing().y;
+    float w = (lineWidth * 0.5 + 1.0 * antialiasing);
+    float r1 = w * getPixelSpacing().x;
+    float r2 = w * getPixelSpacing().y;
 
     // Scale the orthogonal vector with the linewidth
     vec3 j = vec3(orthogonalLine.x * r1, orthogonalLine.y * r2, orthogonalLine.z);
-
-    // Compute upper triangles
-    signValues[0] = 1.0;
-    triverts[0] = vec4(p[0].xyz, 1);
-    signValues[1] = 1.0;
-    triverts[1] = vec4(p[1].xyz, 1);
-    signValues[2] = 0.0;
-    triverts[2] = vec4(p[1].xyz + j * 1.0f, 1);
-    signValues[3] = 0.0;
-    triverts[3] = vec4(p[0].xyz + j * 1.0f, 1);
-    emit(0, 1, 3, 2);
-
-    // Compute lower triangles
-    signValues[0] = 1.0;
-    triverts[0] = vec4(p[0].xyz, 1);
-    signValues[1] = 1.0;
-    triverts[1] = vec4(p[1].xyz, 1);
-    signValues[2] = 0.0;
-    triverts[2] = vec4(p[1].xyz + j * -1.0f, 1);
-    signValues[3] = 0.0;
-    triverts[3] = vec4(p[0].xyz + j * -1.0f, 1);
-    emit(0, 1, 3, 2);
+    
+    
+    // Rectangle enclosing the line
+    // Left top
+    emit(vec4(p[0].xyz + j, 1.0), vScalarMeta[0], w, vPicking[0]);
+    // Left bottom
+    emit(vec4(p[0].xyz - j, 1.0), vScalarMeta[0], -w, vPicking[0]);
+    // Right top
+    emit(vec4(p[1].xyz + j, 1.0), vScalarMeta[1], w, vPicking[1]);
+    // Right bottom
+    emit(vec4(p[1].xyz - j, 1.0), vScalarMeta[1], -w, vPicking[1]);
+    
+    EndPrimitive();
 }

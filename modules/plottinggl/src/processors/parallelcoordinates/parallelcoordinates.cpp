@@ -83,14 +83,8 @@ ParallelCoordinates::ParallelCoordinates()
                       {"none", "None", AxisSelection::None}},
                      1)
     , lineSettings_{"lines", "Line Settings"}
-    , blendMode_("blendMode", "Blend Mode",
-                 {{"additive", "Additive", BlendMode::Additive},
-                  {"subractive", "Subractive", BlendMode::Sutractive},
-                  {"regular", "Regular", BlendMode::Regular},
-                  {"noblend", "None", BlendMode::None}},
-                 2)
-    , falllofPower_("falllofPower", "Falloff Power", 1.0f, 0.01f, 3.f, 0.01f)
-    , lineWidth_("lineWidth", "Line Width", 7.0f, 1.0f, 20.0f)
+    , antialiasing_("antialiasing", "Antialiasing", 0.5f, 0.01f, 3.f, 0.01f)
+    , lineWidth_("lineWidth", "Line Width", 3.0f, 1.0f, 20.0f)
     , selectedLine_("selectedLine", "Selected Line")
     , selectedLineWidth_("selectedLineWidth", "Line Width", 10.0f, 1.0f, 20.0f)
     , selectedLineColorOverride_("selectedLineColorOverride", "Override Line Color", false)
@@ -138,6 +132,9 @@ ParallelCoordinates::ParallelCoordinates()
     , handleFilteredColor_("handleFilteredColor", "Handle Color (When filtering)",
                            vec4(.6f, .6f, .6f, 1), vec4(0.0f), vec4(1.0f), vec4(0.01f),
                            InvalidationLevel::InvalidOutput, PropertySemantics::Color)
+    , handleBorderColor_("handleBorderColor", "Handle Border Color",
+                           vec4(0.0f, 0.0f, 0.0f, 1.0f), vec4(0.0f), vec4(1.0f), vec4(0.01f),
+                           InvalidationLevel::InvalidOutput, PropertySemantics::Color)
 
     , margins_("margins", "Margins")
     , includeLabelsInMargin_("includeLabelsInMargins", "Include labels", true)
@@ -163,7 +160,7 @@ ParallelCoordinates::ParallelCoordinates()
     selectedLine_.setCollapsed(true);
 
     addProperty(lineSettings_);
-    lineSettings_.addProperties(blendMode_, falllofPower_, lineWidth_, selectedLine_, showFiltered_,
+    lineSettings_.addProperties(antialiasing_, lineWidth_, selectedLine_, showFiltered_,
                                 filterColor_, filterAlpha_, filterIntensity_);
     lineSettings_.setCollapsed(true);
 
@@ -194,7 +191,7 @@ ParallelCoordinates::ParallelCoordinates()
     addProperty(axesSettings_);
     axesSettings_.addProperty(axisSize_);
     axesSettings_.addProperties(axisColor_, axisHoverColor_, axisSelectedColor_, handlesVisible_,
-                                handleSize_, handleColor_, handleFilteredColor_);
+                                handleSize_, handleColor_, handleFilteredColor_, handleBorderColor_);
     axesSettings_.setCollapsed(true);
 
     addProperty(margins_);
@@ -274,7 +271,7 @@ ParallelCoordinates::~ParallelCoordinates() = default;
 void ParallelCoordinates::process() {
     if (axes_.empty()) {
         // Nothing render, just draw the background
-        const vec4 backgroundColor(blendMode_.get() == BlendMode::Sutractive ? 1.0f : 0.0f);
+        const vec4 backgroundColor(0.0f);
         utilgl::ClearColor clearColor(backgroundColor);
         utilgl::activateAndClearTarget(outport_, ImageType::ColorPicking);
         utilgl::deactivateCurrentTarget();
@@ -312,7 +309,7 @@ void ParallelCoordinates::process() {
         adjustMargins();
     }
 
-    const vec4 backgroundColor(blendMode_.get() == BlendMode::Sutractive ? 1.0f : 0.0f);
+    const vec4 backgroundColor(0.0f);
     utilgl::ClearColor clearColor(backgroundColor);
     utilgl::activateAndClearTarget(outport_, ImageType::ColorPicking);
     utilgl::GlBoolState depthTest(GL_DEPTH_TEST, false);
@@ -507,7 +504,7 @@ void ParallelCoordinates::drawHandles(size2_t size) {
     if (!handlesVisible_) return;
 
     sliderWidgetRenderer_.setHoverColor(axisHoverColor_);
-
+    sliderWidgetRenderer_.setBorderColor(handleBorderColor_);
     for (auto& axis : axes_) {
         if (!axis.pcp->isChecked()) continue;
 
@@ -520,7 +517,7 @@ void ParallelCoordinates::drawHandles(size2_t size) {
         const auto handleWidth = axis.sliderWidget->getHandleWidth();
         axis.sliderWidget->setWidgetExtent(
             ivec2{handleSize_.get(), ap.second.y - ap.first.y + handleWidth});
-
+        
         if (brushingAndLinking_.isColumnSelected(i)) {
             sliderWidgetRenderer_.setUIColor(axisSelectedColor_);
         } else if (axis.pcp->isFiltering()) {
@@ -537,37 +534,16 @@ void ParallelCoordinates::drawHandles(size2_t size) {
 void ParallelCoordinates::drawLines(size2_t size) {
     lineShader_.activate();
 
-    auto state = [&]() {
-        switch (blendMode_.get()) {
-            case BlendMode::Additive:
-                return std::make_tuple(
-                    utilgl::GlBoolState(GL_DEPTH_TEST, false), utilgl::GlBoolState(GL_BLEND, true),
-                    utilgl::BlendModeEquationState(GL_SRC_ALPHA, GL_ONE, GL_FUNC_ADD));
-            case BlendMode::Sutractive:
-                return std::make_tuple(
-                    utilgl::GlBoolState(GL_DEPTH_TEST, false), utilgl::GlBoolState(GL_BLEND, true),
-                    utilgl::BlendModeEquationState(GL_SRC_ALPHA, GL_ONE, GL_FUNC_REVERSE_SUBTRACT));
-            case BlendMode::Regular:
-                return std::make_tuple(utilgl::GlBoolState(GL_DEPTH_TEST, false),
-                                       utilgl::GlBoolState(GL_BLEND, true),
-                                       utilgl::BlendModeEquationState(
-                                           GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_FUNC_ADD));
-            case BlendMode::None:
-            default:
-                return std::make_tuple(
-                    utilgl::GlBoolState(GL_DEPTH_TEST, false), utilgl::GlBoolState(GL_BLEND, false),
-                    utilgl::BlendModeEquationState(GL_NONE, GL_NONE, GL_FUNC_ADD));
-        };
-    }();
+    auto state = std::make_tuple(utilgl::GlBoolState(GL_DEPTH_TEST, false),
+                               utilgl::GlBoolState(GL_BLEND, true),
+                               utilgl::BlendModeEquationState(
+                                   GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_FUNC_ADD));
 
     // Draw lines
 
     TextureUnitContainer unit;
     utilgl::bindAndSetUniforms(lineShader_, unit, colormap_.tf);
 
-    bool enableBlending =
-        (blendMode_.get() == BlendMode::Additive || blendMode_.get() == BlendMode::Sutractive ||
-         blendMode_.get() == BlendMode::Regular);
     // pcp_common.glsl
     lineShader_.setUniform("spacing", vec4(marginsInternal_.second.y, marginsInternal_.second.x,
                                            marginsInternal_.first.y, marginsInternal_.first.x));
@@ -580,9 +556,7 @@ void ParallelCoordinates::drawLines(size2_t size) {
     // lineWidth;
 
     // pcp_lines.frag
-    lineShader_.setUniform("additiveBlend", enableBlending);
-    lineShader_.setUniform("subtractiveBelnding", blendMode_.get() == BlendMode::Sutractive);
-    lineShader_.setUniform("fallofPower", falllofPower_.get());
+    lineShader_.setUniform("antialiasing", antialiasing_.get());
     lineShader_.setUniform("color", vec4{filterColor_.get(), filterAlpha_.get()});
     lineShader_.setUniform("selectColor", selectedLineColor_.get());
     lineShader_.setUniform("filterIntensity", filterIntensity_.get());
@@ -616,7 +590,6 @@ void ParallelCoordinates::drawLines(size2_t size) {
 
         if (hoveredLine_ >= 0 && hoveredLine_ < static_cast<int>(lines_.sizes.size()) &&
             !brushingAndLinking_.isFiltered(hoveredLine_)) {
-            lineShader_.setUniform("fallofPower", 0.5f * falllofPower_.get());
 
             glDrawElements(GL_LINE_STRIP, lines_.sizes[hoveredLine_], GL_UNSIGNED_INT,
                            reinterpret_cast<GLvoid*>(

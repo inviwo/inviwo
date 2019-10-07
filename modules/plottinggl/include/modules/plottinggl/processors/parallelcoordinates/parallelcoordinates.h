@@ -106,8 +106,7 @@ public:
     TemplateOptionProperty<AxisSelection> axisSelection_;
 
     CompositeProperty lineSettings_;
-    TemplateOptionProperty<BlendMode> blendMode_;
-    FloatProperty falllofPower_;
+    FloatProperty antialiasing_;
     FloatProperty lineWidth_;
     CompositeProperty selectedLine_;
     FloatProperty selectedLineWidth_;
@@ -138,6 +137,7 @@ public:
     FloatProperty handleSize_;
     FloatVec4Property handleColor_;
     FloatVec4Property handleFilteredColor_;
+    FloatVec4Property handleBorderColor_;
 
     MarginProperty margins_;
     BoolProperty includeLabelsInMargin_;

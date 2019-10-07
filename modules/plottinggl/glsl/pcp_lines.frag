@@ -29,10 +29,7 @@
 
 in vec4 lPickColor;
 in float lScalarMeta;
-in float lFalloffAlpha;
-
-uniform bool additiveBlend = true;
-uniform bool subtractiveBelnding = false;
+in float lPixelsFromCenter; // Distance from line center [pixel]
 
 uniform vec4 color;
 uniform vec4 selectColor;
@@ -40,24 +37,46 @@ uniform float mixColor;
 uniform float mixAlpha;
 uniform float mixSelection;
 
-uniform float fallofPower = 2.0;
+uniform float antialiasing; // width of antialised edged [pixel]
+uniform float lineWidth; // line width [pixel]
 
 uniform sampler2D tf;
 
+// 'threshold ' is constant , 'distance ' is smoothly varying
+float aastep(float threshold, float distance) {
+    float afwidth = 0.7 * length(vec2(dFdx(distance), dFdy(distance)));
+    return smoothstep(threshold - afwidth, threshold + afwidth, distance);
+}
+
 void main() {
     vec4 res = texture(tf, vec2(lScalarMeta, 0.5f));
-    
-    if (subtractiveBelnding) {
-        res.rgb = 1 - res.rgb;
-    }
-    
+
     res = mix(res, color, vec4(vec3(mixColor), mixAlpha));
     res = mix(res, selectColor, vec4(mixSelection));
 
-    if (additiveBlend) {
-        res.a *= pow(lFalloffAlpha, fallofPower);
+    float linewidthHalf = lineWidth * 0.5;
+    float distance = abs(lPixelsFromCenter);
+    float d = distance - (linewidthHalf);
+    d = aastep(0.0, d);
+    float alpha = 1.0;
+    // antialiasing around the edges
+    if( d > 0) {
+        // apply antialiasing by modifying the alpha [Rougier, Journal of Computer Graphics Techniques 2013]
+        d /= antialiasing;
+        alpha = exp(-d*d);
+        float w = (1. * antialiasing);
+        //alpha = abs(aastep(0.0, d));
+        //alpha = aastep(0.0, abs(lPixelsFromCenter));
+        //alpha = d;
+    } else {
+        
+        //res = vec4(vec3(0), 1.0);
     }
-
+    //d /= antialiasing;
+    //alpha = aastep(linewidthHalf, lPixelsFromCenter));
+    
+    res.w *= alpha;
+    //res = vec4(vec3(alpha), 1.0);
     PickingData = lPickColor;
     FragData0 = res;
 }
