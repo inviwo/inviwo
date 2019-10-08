@@ -61,13 +61,8 @@ namespace discretedata {
 
     Requires a Structured Grid in the data set.
     Fails if that is not given.
-
-    @author Tino Weinkauf
 */
 class IVW_MODULE_DISCRETEDATA_API VolumeFromDataSet : public Processor {
-    // Friends
-    // Types
-public:
     // Construction / Deconstruction
 public:
     VolumeFromDataSet();

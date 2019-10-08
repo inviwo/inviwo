@@ -137,16 +137,15 @@ private:
 namespace detail_dd {
 struct ChannelDispatcher {
     template <typename Result, typename T, ind N, typename Callable, typename... Args>
-    Result operator()(Callable&& obj, Channel* channel, Args... args) {
+    auto operator()(Callable&& obj, Channel* channel, Args... args) -> Result {
         return obj(dynamic_cast<DataChannel<typename T::type, N>*>(channel),
                    std::forward<Args>(args)...);
-        //.template operator()<T, N>
     }
 };
 
 struct ChannelConstDispatcher {
     template <typename Result, typename T, ind N, typename Callable, typename... Args>
-    Result operator()(Callable&& obj, const Channel* channel, Args... args) {
+    auto operator()(Callable&& obj, const Channel* channel, Args... args) -> Result {
         static_assert(N > 0);
         return obj(dynamic_cast<const DataChannel<typename T::type, N>*>(channel),
                    std::forward<Args>(args)...);

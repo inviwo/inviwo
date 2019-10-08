@@ -48,9 +48,7 @@ namespace detail {
  * Helper class to find the matching ind based on the given numComponents.
  * Does a binary search within specified range.
  */
-template <typename Result, typename Scalar, int B,
-          int E>  //,
-                  // typename std::enable_if_t<E >= B, int> = 0>
+template <typename Result, typename Scalar, int B, int E>
 struct NumComponentDispatchHelper {
     static const int M = (B + E) / 2;
 

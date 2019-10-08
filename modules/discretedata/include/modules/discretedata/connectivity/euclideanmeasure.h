@@ -31,7 +31,6 @@
 
 #include <modules/discretedata/channels/datachannel.h>
 #include <modules/discretedata/connectivity/cell.h>
-#include <inviwo/core/util/formatdispatching.h>
 #include <modules/discretedata/connectivity/structuredgrid.h>
 
 namespace inviwo {
