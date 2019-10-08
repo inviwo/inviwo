@@ -84,7 +84,7 @@ public:
      */
     void fillRaw(T* dest, ind index, ind numElements = 1) const override {
         for (ind i = 0; i < numElements; ++i) {
-            Vec& destVec = *reinterpret_cast<Vec*>(dest + i);
+            Vec& destVec = *reinterpret_cast<Vec*>(dest + i * N);
             dataFunction_(destVec, index + i);
         }
     }
