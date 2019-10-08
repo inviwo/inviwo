@@ -29,70 +29,95 @@
 #ifndef IVW_ANTI_ALIASING_GLSL
 #define IVW_ANTI_ALIASING_GLSL
 
-
-const float PI_4 = 0.785398163397448309616;
 /*
  * \brief Compute pixel coverage based on distance to line and its normal.
- * Code based on 
+ * Code based on
  * Anti-aliased Euclidean distance transform
  * by Stefan Gustavsson and Robin Strand
  * (Note errata http://weber.itn.liu.se/~stegu/edtaa/errata.pdf)
+ *
+ * General idea is to compute the area the line covers the pixel using its angle.
+ * Notation for the two different types of areas (a1, a2) that need to be considered:
+ *
+ *  ___________
+ * |a1 /     /|
+ * |  /     / | Pixel
+ * | / a2  /a1|
+ * |/_____/___|
+ *
+ *
+ * Notation for line normal G:
+ * ____________
+ * | ^        |
+ * | |--> G   | Pixel
+ * |line      |
+ * |_|________|
+ *
  * @param df Distance from center of pixel to the line
  * @param G Line normal (orthogonal to line: |-> )
- * 
+ * @return Area covered [0 1], 1 meening fully covered.
+ *
  * See plottinggl pcp_lines.geom/frag for an example
  */
 float linePixelCoverage(float df, vec2 G) {
-	float a;
-	if (any(lessThan(G, vec2(1.0e-6)))) {
-		// Horizontal/vertical line, enough with linear approximation
-		a = 0.5 - df;
-	} else {
-		// The analytic function is antisymmetric around df = 0
-		// Both with respect to sign and transposition.
-		// Means that we only need to consider G.xy >= 0 and G.x > G.y
-		G = abs(G);
-		if (G.x < G.y) {
-			G.xy = G.yx;
-		}
+    const float PI_4 = 0.785398163397448309616;
 
-		float a1 = 0.5*G.y / G.x;
-		float d1 = G.y;
-		float d2 = (1.0/sqrt(2.0)) * sin(PI_4 - asin(G.y));
+    float a;  // resulting pixel coverage
+    if (any(lessThan(G, vec2(1.0e-5)))) {
+        // Horizontal/vertical line, enough with linear approximation
+        a = 0.5 - df;
+    } else {
+//#define ANALYTIC_ANTIALIASING_OPTIMIZED
+#ifdef ANALYTIC_ANTIALIASING_OPTIMIZED
+        // The analytic function is antisymmetric around df = 0
+        // Both with respect to sign and transposition.
+        // Means that we only need to consider G.xy >= 0 and G.x > G.y
+        G = abs(G);
+        if (G.x < G.y) {
+            G.xy = G.yx;
+        }
 
-		if (df <= (-d1 - d2)) {
-			a = 0;
-		} else if (-d1 - d2 <= df && df <= -d2) {
-			a = pow(d1 + d2 + df, 2)* (a1 / (d1*d1));
-		} else {//if (-d2 <= df && df <= d2) {
-			float a2 = 1.0 - 4.0*a1;
-			a = a1 + (a2/2.0) * (1.0 + df / d2);
-		} 
-		
-		// Code below is the unoptimized version of above
-		/* 
-		float a1 = 0.5*G.y / G.x;
-		float a2 = 1.0 - 4.0*a1;
-		float d1 = G.y;
-		float d2 = (1.0/sqrt(2.0)) * sin(PI_4 - asin(G.y));
-		
-		if (df <= (-d1 - d2)) {
-			a = 0;
-		} else if ((-d1 - d2) <= df && df <= -d2) {
-			a = pow(d1 + d2 + df, 2)* (a1 / (d1*d1));
-		} else if (-d2 <= df && df < d2) {
-			a = a1 + (a2/2.0) * (1.0 + df / d2);
-		} else if (d2 <= df && df <= (d1 + d2)) {
-			a = 1.0 - pow(d1 + d2 - df, 2) * (a1 / (d1*d1));
-		} else if (df >= (d1 + d2)) {
-			a = 1;
-		}
-		*/
-	}
+        float a1 = 0.5 * G.y / G.x;
+        float d1 = G.y;
+        float d2 = (1.0 / sqrt(2.0)) * sin(PI_4 - asin(G.y));
 
-	// clamping might not be necessary
-	a = clamp(a, 0, 1);
-	return a;
+        if (df <= (-d1 - d2)) {
+            a = 0;
+        } else if (-d1 - d2 <= df && df <= -d2) {
+            float d = d1 + d2 + df;
+            a = d * d * (a1 / (d1 * d1));
+        } else {  // if (-d2 <= df && df <= d2) {
+            float a2 = 1.0 - 2.0 * a1;
+            a = a1 + (a2 / 2.0) * (1.0 + df / d2);
+        }
+#else
+        // Code below is the unoptimized version of above
+
+        float a1 = 0.5 * G.y / G.x;  // tan (phi)
+        float a2 = 1.0 - 2.0 * a1;
+        float d1 = G.y;
+        float d2 = (1.0 / sqrt(2.0)) * sin(PI_4 - asin(G.y));
+
+        if (df <= (-d1 - d2)) {
+            a = 0;
+        } else if ((-d1 - d2) <= df && df <= -d2) {
+            a = pow(d1 + d2 + df, 2) * (a1 / (d1 * d1));
+
+        } else if (-d2 <= df && df < d2) {
+            a = a1 + (a2 / 2.0) * (1.0 + df / d2);
+
+        } else if (d2 <= df && df <= (d1 + d2)) {
+            a = 1.0 - pow(d1 + d2 - df, 2) * (a1 / (d1 * d1));
+        } else if (df >= (d1 + d2)) {
+            a = 1;
+        }
+
+#endif
+    }
+
+    // clamping might not be necessary
+    // a = clamp(a, 0, 1);
+    return a;
 }
 
 #endif

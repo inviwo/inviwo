@@ -67,8 +67,8 @@ void main() {
     vec2 n = normalize(vec2(-dir.y, dir.x));
 
     // Scale the linewidth with the window dimensions
-	// Add half diagonal distance for anti-aliasing
-    float w = (lineWidth * 0.5 + 0.5*sqrt(2.0));
+	// Add diagonal distance for anti-aliasing
+    float w = (lineWidth * 0.5 + antialiasing);
 	vec2 pixelSpacing = 1.0f / dims.xy;
     float r1 = w * pixelSpacing.x;
     float r2 = w * pixelSpacing.y;

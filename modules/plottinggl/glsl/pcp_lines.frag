@@ -42,10 +42,9 @@ uniform float mixSelection;
 
 uniform float antialiasing; // width of antialised edged [pixel]
 uniform float lineWidth; // line width [pixel]
+uniform ivec2 dims;
 
 uniform sampler2D tf;
-
-
 
 
 void main() {
@@ -55,25 +54,33 @@ void main() {
     res = mix(res, selectColor, vec4(mixSelection));
 
 	// Analytic anti-aliasing
-	float alpha = 1.0;
+    #define ANALYTIC_ANTIALIASING
+    #ifdef ANALYTIC_ANTIALIASING
 	float df = abs(orthogonalLineDistance_) - 0.5*lineWidth;
-	if (abs(df) <= 0.5*sqrt(2.0)) {
+	if (abs(df) <= antialiasing) {
+    //if (df > 0) {
+        vec2 pixelSpacing = 1.0f / dims.xy;
 		res.w *= linePixelCoverage(df, lineEdgeNormal_);
-	} else {
-		// edge is more than one pixel away
+	} else if (df < 0) {
+		// pixel is outside of line
+        res.w = 0;
 	}
-	/*
+	#else
 	// Filtered anti-aliasing
     float linewidthHalf = lineWidth * 0.5;
     float distance = abs(orthogonalLineDistance_);
     float d = distance - (linewidthHalf);
     // antialiasing around the edges
+    float kernelWidth = sqrt(2.0);
+    //if( abs(d) < antialiasing) {
     if( d > 0) {
         // apply antialiasing by modifying the alpha [Rougier, Journal of Computer Graphics Techniques 2013]
         d /= antialiasing;
-        res.w *= = exp(-d*d);
-    } */
-    //res = vec4(vec3(alpha), 1.0);
+
+        res.w *= exp(-d*d);
+    } 
+
+    #endif
     PickingData = pickColor_;
     FragData0 = res;
 }
