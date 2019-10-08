@@ -32,6 +32,7 @@
 #include <modules/discretedata/processors/datasetsource.h>
 #include <modules/discretedata/processors/computegridmeasure.h>
 #include <modules/discretedata/processors/volumefromdataset.h>
+#include <modules/discretedata/processors/meshfromdataset.h>
 #include <modules/discretedata/processors/segmentationvoxelizer.h>
 #include <modules/discretedata/processors/createchannel.h>
 
@@ -41,6 +42,7 @@ DiscreteDataModule::DiscreteDataModule(InviwoApplication* app) : InviwoModule(ap
     // Processors
     registerProcessor<discretedata::DataSetFromVolume>();
     registerProcessor<discretedata::ComputeGridMeasure>();
+    registerProcessor<discretedata::MeshFromDataSet>();
     registerProcessor<discretedata::VolumeFromDataSet>();
     registerProcessor<discretedata::CreateConstantChannel>();
     registerProcessor<discretedata::SegmentationVoxelizer>();

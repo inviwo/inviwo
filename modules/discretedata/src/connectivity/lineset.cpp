@@ -49,7 +49,6 @@ LineSet::LineSet(const std::vector<ind>& numVertsPerLine)
 
 void LineSet::getConnections(std::vector<ind>& result, ind idx, GridPrimitive from,
                              GridPrimitive to, bool) const {
-    result.clear();
     switch (from) {
         case GridPrimitive::Vertex: {
             IVW_ASSERT(idx >= 0 && idx < numGridPrimitives_[0], "Vertex index not valid.");

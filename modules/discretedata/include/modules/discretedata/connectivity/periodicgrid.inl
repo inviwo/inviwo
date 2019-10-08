@@ -54,7 +54,6 @@ PeriodicGrid<N>::PeriodicGrid(const std::array<ind, N>& numVertsPerDim,
 template <ind N>
 void PeriodicGrid<N>::getConnections(std::vector<ind>& result, ind idxLin, GridPrimitive from,
                                      GridPrimitive to, bool isPosition) const {
-    result.clear();
 
     std::array<ind, N> cellDims;
     for (ind dim = 0; dim < N; ++dim) {

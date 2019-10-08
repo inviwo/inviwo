@@ -49,6 +49,10 @@ class IVW_MODULE_DISCRETEDATA_API DataChannelProperty : public CompositeProperty
 public:
     using ChannelFilter = std::function<bool(const std::shared_ptr<const Channel>)>;
     static bool FilterPassAll(const std::shared_ptr<const Channel>) { return true; }
+    template <ind Dim>
+    static bool FilterPassDim(const std::shared_ptr<const Channel> channel) {
+        return channel->getGridPrimitiveType() == (GridPrimitive)Dim;
+    }
 
     // Methods
 public:
@@ -73,7 +77,6 @@ public:
     GridPrimitiveProperty gridPrimitive_;
 
 private:
-    //std::shared_ptr<std::function<void()>> gridPrimitiveOnChange_;
     bool ongoingChange_ = false;
 };
 

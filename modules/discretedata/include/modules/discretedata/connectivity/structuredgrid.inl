@@ -98,7 +98,6 @@ void StructuredGrid<N>::sameLevelConnection(std::vector<ind>& result, const ind 
 template <ind N>
 void StructuredGrid<N>::getConnections(std::vector<ind>& result, ind idxLin, GridPrimitive from,
                                        GridPrimitive to, bool) const {
-    result.clear();
 
     std::array<ind, N> cellDims;
     for (ind dim = 0; dim < N; ++dim) {

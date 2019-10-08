@@ -31,6 +31,9 @@
 
 #include <modules/discretedata/connectivity/connectivity.h>
 #include <modules/discretedata/connectivity/cell.h>
+#include <modules/discretedata/channels/datachannel.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/buffer/bufferram.h>
 
 namespace inviwo {
 namespace discretedata {
@@ -107,6 +110,27 @@ inline GridPrimitive cellTypeToGridPrimitive(CellType type) {
             return GridPrimitive::Undef;
     };
 }
+
+template <typename ToType>
+struct ChannelToBufferDispatcher {
+
+    template <typename T, ind N>
+    std::shared_ptr<BufferBase> operator()(const DataChannel<T, N>* positions) {
+        typedef typename DataChannel<T, N>::DefaultVec DefaultVec;
+        ind numElements = positions->size();
+        std::vector<DefaultVec> data(numElements);
+        positions->fill(*data.data(), 0, numElements);
+
+        std::vector<ToType> convBuffer;
+        convBuffer.reserve(data.size());
+
+        ind countTmp = 0;
+        for (const DefaultVec& val : data) convBuffer.push_back(util::glm_convert<ToType>(val));
+
+        auto buffer = util::makeBuffer(std::move(convBuffer));
+        return buffer;
+    }
+};
 
 }  // namespace dd_util
 }  // namespace discretedata

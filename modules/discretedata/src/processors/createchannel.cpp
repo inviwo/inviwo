@@ -87,12 +87,13 @@ void CreateConstantChannel::process() {
                                  primitiveName(static_cast<GridPrimitive>(dim)),
                                  static_cast<GridPrimitive>(dim));
     }
+    dimensionToProcess = primitive_.get();
 
     // Dispatch to create channel
     CreateChannelDispatcher dispatcher;
     Channel* channel = channeldispatching::dispatch<Channel*, dispatching::filter::Scalars, 1, 7>(
         static_cast<DataFormatId>(format_.get()), numComponents_.get(), dispatcher, value_.get(),
-        name_.get(), primitive_.get(), grid->getNumElements(dimensionToProcess));
+        name_.get(), dimensionToProcess, grid->getNumElements(dimensionToProcess));
 
     // Generate output data
     auto outData = std::make_shared<DataSet>(*dataInport.getData());
