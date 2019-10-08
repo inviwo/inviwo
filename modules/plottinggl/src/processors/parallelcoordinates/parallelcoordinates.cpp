@@ -39,6 +39,7 @@
 #include <inviwo/core/util/imagesampler.h>
 #include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/network/networklock.h>
 
 #include <modules/base/algorithm/dataminmax.h>
 
@@ -219,7 +220,11 @@ ParallelCoordinates::ParallelCoordinates()
         lineShader_.build();
     }
 
-    dataFrame_.onChange([&]() { createOrUpdateProperties(); });
+    dataFrame_.onChange([&]() {
+        if (dataframeCached_ == dataFrame_.getData()) return;
+        dataframeCached_ = dataFrame_.getData();
+        createOrUpdateProperties();
+    });
 
     resetHandlePositions_.onChange([&]() {
         for (auto& axis : axes_) {
@@ -327,6 +332,8 @@ void ParallelCoordinates::process() {
 }
 
 void ParallelCoordinates::createOrUpdateProperties() {
+    NetworkLock lock(this);
+
     axes_.clear();
     for (auto& p : axisProperties_.getProperties()) {
         p->setVisible(false);

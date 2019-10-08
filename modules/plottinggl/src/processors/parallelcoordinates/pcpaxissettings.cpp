@@ -110,6 +110,8 @@ PCPAxisSettings::PCPAxisSettings(const PCPAxisSettings& rhs)
 PCPAxisSettings* PCPAxisSettings::clone() const { return new PCPAxisSettings(*this); }
 
 void PCPAxisSettings::updateFromColumn(std::shared_ptr<const Column> col) {
+    if (col_ == col) return;
+
     col_ = col;
     catCol_ = dynamic_cast<const CategoricalColumn*>(col.get());
 

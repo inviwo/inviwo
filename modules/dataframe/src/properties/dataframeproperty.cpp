@@ -72,6 +72,9 @@ DataFrameColumnProperty* DataFrameColumnProperty::clone() const {
 
 void DataFrameColumnProperty::setOptions(std::shared_ptr<const DataFrame> dataframe) {
     if (!dataframe || dataframe->getNumberOfColumns() <= 1) return;
+
+    if (dataframe_ == dataframe) return;
+
     dataframe_ = dataframe;
 
     bool wasEmpty = options_.empty();

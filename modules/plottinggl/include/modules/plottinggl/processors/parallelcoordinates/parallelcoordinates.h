@@ -223,6 +223,7 @@ private:
 
     bool brushingDirty_;
     bool updating_ = false;
+    std::shared_ptr<const DataFrame> dataframeCached_;
 };
 
 }  // namespace plot

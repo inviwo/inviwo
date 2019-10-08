@@ -90,6 +90,9 @@ DataFrameColormapProperty::DataFrameColormapProperty(std::string identifier,
 void DataFrameColormapProperty::createOrUpdateProperties(
     std::shared_ptr<const DataFrame> dataframe) {
     if (!dataframe || dataframe->getNumberOfColumns() <= 1) return;
+
+    if (dataframe_ == dataframe) return;
+
     dataframe_ = dataframe;
     auto oldColormapProperties = colormaps_;
     colormaps_.clear();
