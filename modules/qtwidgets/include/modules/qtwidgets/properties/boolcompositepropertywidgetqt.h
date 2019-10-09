@@ -52,6 +52,8 @@ public:
 
     virtual void initState() override;
 
+    virtual void updateFromProperty() override;
+
 protected:
     // override from CollapsibleGroupBoxWidgetQt
     virtual void setCollapsed(bool value) override;
