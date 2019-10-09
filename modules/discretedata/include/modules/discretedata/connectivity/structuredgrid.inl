@@ -333,7 +333,7 @@ void StructuredGrid<N>::calculateSizes() {
     IVW_ASSERT(N == static_cast<ind>(gridDimension_),
                "Grid dimension should match cell dimension.");
     for (ind size : numVerticesPerDimension_)
-        IVW_ASSERT(size >= 1, "At least one vertex in each dimension required.")
+        IVW_ASSERT(size >= 1, "At least one vertex in each dimension required.");
 
     ind numCombinations = ind(1) << N;
     for (ind combo = 0; combo < numCombinations; ++combo) {
