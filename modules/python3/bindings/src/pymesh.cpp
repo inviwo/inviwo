@@ -89,6 +89,9 @@ void exposeMesh(pybind11::module& m) {
 
     py::class_<Mesh, std::shared_ptr<Mesh>>(m, "Mesh")
         .def(py::init<>())
+        .def(py::init<DrawType, ConnectivityType>(), py::arg("dt"), py::arg("ct"))
+        .def(py::init<Mesh::MeshInfo>(), py::arg("meshInfo"))
+        .def_property_readonly("defaultMeshInfo", &Mesh::getDefaultMeshInfo)
         .def("addBuffer", [](Mesh* m, Mesh::BufferInfo info,
                              std::shared_ptr<BufferBase> att) { m->addBuffer(info, att); })
         .def("addBuffer", [](Mesh* m, BufferType type,
