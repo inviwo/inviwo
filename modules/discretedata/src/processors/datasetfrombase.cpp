@@ -79,8 +79,9 @@ void DataSetFromVolume::process() {
         dataSet = new DataSet(*portInDataSet.getData());
     else {
         // Build a new grid.
-        std::array<ind, 3> size = {(ind)dimGrid.x - 1, (ind)dimGrid.y - 1, (ind)dimGrid.z - 1};
-        dataSet = new DataSet(size);
+        ind offset = dimensionTo == GridPrimitive::Vertex ? 0 : 1;
+        dataSet =
+            new DataSet((ind)dimGrid.x + offset, (ind)dimGrid.y + offset, (ind)dimGrid.z + offset);
     }
 
     // Copy data.
