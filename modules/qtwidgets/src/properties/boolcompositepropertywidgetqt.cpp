@@ -40,6 +40,9 @@ BoolCompositePropertyWidgetQt::BoolCompositePropertyWidgetQt(BoolCompositeProper
     setPropertyOwner(property);
     boolCompProperty_->PropertyOwnerObservable::addObserver(this);
     boolCompProperty_->CompositePropertyObservable::addObserver(this);
+    onBoolChanged_ = boolCompProperty_->getBoolProperty()->onChangeScoped([this]() {
+        CollapsibleGroupBoxWidgetQt::setChecked(boolCompProperty_->getBoolProperty()->get());
+    });
 }
 
 void BoolCompositePropertyWidgetQt::setCollapsed(bool value) {

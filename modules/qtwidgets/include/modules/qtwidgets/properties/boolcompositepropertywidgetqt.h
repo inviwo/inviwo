@@ -59,6 +59,7 @@ protected:
 private:
     virtual void setChecked(bool checked) override;
     BoolCompositeProperty* boolCompProperty_;
+    std::shared_ptr<std::function<void()>> onBoolChanged_;
 };
 
 }  // namespace inviwo
