@@ -46,7 +46,9 @@ PythonProcessorFolderObserver::PythonProcessorFolderObserver(InviwoApplication* 
         const auto files = filesystem::getDirectoryContents(directory);
         for (const auto& file : files) {
             if (filesystem::getFileExtension(file) == "py") {
-                registerFile(directory + "/" + file);
+                if (!registerFile(directory + "/" + file)) {
+                    startFileObservation(directory_ + "/" + file);
+                }
             }
         }
     }
@@ -77,14 +79,27 @@ bool PythonProcessorFolderObserver::registerFile(const std::string& filename) {
     return false;
 }
 
-void PythonProcessorFolderObserver::fileChanged(const std::string&) {
-    if (filesystem::directoryExists(directory_)) {
-        auto files = filesystem::getDirectoryContents(directory_);
-        for (const auto& file : files) {
-            if (filesystem::getFileExtension(file) == "py") {
+void PythonProcessorFolderObserver::fileChanged(const std::string& changed) {
+    if (changed == directory_) {
+        if (filesystem::directoryExists(directory_)) {
+            auto files = filesystem::getDirectoryContents(directory_);
+            for (const auto& file : files) {
+                if (isObserved(directory_ + "/" + file)) continue;
+                if (filesystem::getFileExtension(file) != "py") continue;
+
                 if (registerFile(directory_ + "/" + file)) {
                     LogInfo("Loaded python processor: " << directory_ + "/" + file);
+                    stopFileObservation(directory_ + "/" + file);
+                } else {
+                    startFileObservation(directory_ + "/" + file);
                 }
+            }
+        }
+    } else {
+        if (filesystem::getFileExtension(changed) == "py") {
+            if (registerFile(changed)) {
+                LogInfo("Loaded python processor: " << directory_ + "/" + changed);
+                stopFileObservation(directory_ + "/" + changed);
             }
         }
     }
