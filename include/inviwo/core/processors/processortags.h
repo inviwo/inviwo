@@ -44,6 +44,12 @@ public:
 
     friend std::ostream& operator<<(std::ostream& os, const inviwo::Tag& obj);
 
+    // pre-defined platform tags
+    static const Tag GL;
+    static const Tag CL;
+    static const Tag CPU;
+    static const Tag PY;
+
 private:
     std::string tag_;
 };
@@ -60,6 +66,16 @@ inline bool operator>=(const Tag& lhs, const Tag& rhs) { return !operator<(lhs, 
 class IVW_CORE_API Tags {
 public:
     Tags() = default;
+
+    /*
+     * Creates tags from a tag.
+     */
+    Tags(const Tag& tag);
+
+    /*
+     * Creates tags from a vector of tags.
+     */
+    Tags(std::vector<Tag> tags);
 
     /*
      * Creates tags from a string. Multiple tags are delimited by ','.
