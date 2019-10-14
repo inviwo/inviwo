@@ -125,6 +125,14 @@ void vecx(py::module &m, const std::string &prefix, const std::string &name,
     addInit<T, Vec, Dim>(pyv);
     pyv.def(py::init<T>())
         .def(py::init<>())
+        .def(py::init([](py::array_t<T> arr) {
+            if (arr.ndim() != 1) throw std::invalid_argument{"Invalid dimensions"};
+            if (arr.shape(0) != Dim) throw std::invalid_argument{"Invalid dimensions"};
+
+            Vec res;
+            std::copy(arr.data(0), arr.data(0) + Dim, glm::value_ptr(res));
+            return res;
+        }))
         .def(py::self * py::self)
         .def(py::self / py::self)
         .def(py::self *= py::self)
