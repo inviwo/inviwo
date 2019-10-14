@@ -310,6 +310,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/logcentral.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/logerrorcounter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/logfilter.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/logstream.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/memoryfilehandle.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/metadatatoproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/moduleutils.h
@@ -589,6 +590,7 @@ set(SOURCE_FILES
     util/logcentral.cpp
     util/logerrorcounter.cpp
     util/logfilter.cpp
+    util/logstream.cpp
     util/memoryfilehandle.cpp
     util/metadatatoproperty.cpp
     util/moduleutils.cpp
