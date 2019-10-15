@@ -48,6 +48,7 @@ class LogStream;
 class IVW_CORE_API SystemSettings : public Settings {
 public:
     SystemSettings(InviwoApplication* app);
+    virtual ~SystemSettings();
     StringProperty workspaceAuthor_;
     TemplateOptionProperty<UsageMode> applicationUsageMode_;
     IntSizeTProperty poolSize_;

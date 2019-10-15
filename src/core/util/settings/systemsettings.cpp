@@ -112,6 +112,8 @@ SystemSettings::SystemSettings(InviwoApplication* app)
     load();
 }
 
+SystemSettings::~SystemSettings() = default;
+
 size_t SystemSettings::defaultPoolSize() { return std::thread::hardware_concurrency() / 2; }
 
 }  // namespace inviwo
