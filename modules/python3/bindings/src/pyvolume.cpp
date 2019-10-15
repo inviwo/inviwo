@@ -59,11 +59,6 @@ void exposeVolume(pybind11::module &m) {
         .def_property("modelMatrix", &Volume::getModelMatrix, &Volume::setModelMatrix)
         .def_property("worldMatrix", &Volume::getWorldMatrix, &Volume::setWorldMatrix)
         .def_property("basis", &Volume::getBasis, &Volume::setBasis)
-        .def_property("basis", nullptr,
-                      [](Volume &v, const vec3 &basis) {
-                          v.setBasis(mat3(vec3(basis.x, 0.0f, 0.0f), vec3(0.0f, basis.y, 0.0f),
-                                          vec3(0.0f, 0.0f, basis.z)));
-                      })
         .def_property("offset", &Volume::getOffset, &Volume::setOffset)
         .def("copyMetaDataFrom", [](Volume &self, Volume &other) { self.copyMetaDataFrom(other); })
         .def("copyMetaDataTo", [](Volume &self, Volume &other) { self.copyMetaDataTo(other); })

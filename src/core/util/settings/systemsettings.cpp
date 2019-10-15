@@ -29,6 +29,7 @@
 
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/logstream.h>
 
 namespace inviwo {
 
@@ -58,7 +59,9 @@ SystemSettings::SystemSettings(InviwoApplication* app)
                        MessageBreakLevel::Info},
                       0}
     , breakOnException_{"breakOnException", "Break on Exception", false}
-    , stackTraceInException_{"stackTraceInException", "Create Stack Trace for Exceptions", false} {
+    , stackTraceInException_{"stackTraceInException", "Create Stack Trace for Exceptions", false}
+    , redirectCout_{"redirectCout", "Redirect cout to LogCentral", false}
+    , redirectCerr_{"redirectCerr", "Redirect cerr to LogCentral", false} {
 
     addProperty(workspaceAuthor_);
     addProperty(applicationUsageMode_);
@@ -74,6 +77,8 @@ SystemSettings::SystemSettings(InviwoApplication* app)
     addProperty(breakOnMessage_);
     addProperty(breakOnException_);
     addProperty(stackTraceInException_);
+    addProperty(redirectCout_);
+    addProperty(redirectCerr_);
 
     logStackTraceProperty_.onChange(
         [this]() { LogCentral::getPtr()->setLogStacktrace(logStackTraceProperty_.get()); });
@@ -86,8 +91,28 @@ SystemSettings::SystemSettings(InviwoApplication* app)
     breakOnMessage_.onChange(
         [this]() { LogCentral::getPtr()->setMessageBreakLevel(breakOnMessage_.get()); });
 
+    redirectCout_.onChange([&]() {
+        if (redirectCout_ && !cout_) {
+            cout_ = std::make_unique<LogStream>(std::cout, "cout", LogLevel::Info,
+                                                LogAudience::Developer);
+        } else if (!redirectCout_ && cout_) {
+            cout_.reset();
+        }
+    });
+
+    redirectCerr_.onChange([&]() {
+        if (redirectCout_ && !cerr_) {
+            cerr_ = std::make_unique<LogStream>(std::cerr, "cerr", LogLevel::Error,
+                                                LogAudience::Developer);
+        } else if (!redirectCout_ && cerr_) {
+            cerr_.reset();
+        }
+    });
+
     load();
 }
+
+SystemSettings::~SystemSettings() = default;
 
 size_t SystemSettings::defaultPoolSize() { return std::thread::hardware_concurrency() / 2; }
 

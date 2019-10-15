@@ -47,6 +47,15 @@ std::ostream& operator<<(std::ostream& os, const Tag& obj) {
     return os;
 }
 
+const Tag Tag::GL("GL");
+const Tag Tag::CL("CL");
+const Tag Tag::CPU("CPU");
+const Tag Tag::PY("PY");
+
+Tags::Tags(const Tag& tag) : tags_{tag} {}
+
+Tags::Tags(std::vector<Tag> tags) : tags_{std::move(tags)} {}
+
 Tags::Tags(const std::string& tags) {
     std::vector<std::string> strings = splitString(tags, ',');
     for (auto& strings_it : strings) {
@@ -109,11 +118,11 @@ std::ostream& operator<<(std::ostream& os, const Tags& obj) {
     return os;
 }
 
-const Tags Tags::None("");
-const Tags Tags::GL("GL");
-const Tags Tags::CL("CL");
-const Tags Tags::CPU("CPU");
-const Tags Tags::PY("PY");
+const Tags Tags::None{};
+const Tags Tags::GL{Tag::GL};
+const Tags Tags::CL{Tag::CL};
+const Tags Tags::CPU{Tag::CPU};
+const Tags Tags::PY{Tag::PY};
 
 namespace util {
 

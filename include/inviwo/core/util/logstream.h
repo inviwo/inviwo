@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,53 +24,43 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
+#pragma once
 
-#define M_E        2.71828182845904523536   // e
-#define M_LOG2E    1.44269504088896340736   // log2(e)
-#define M_LOG10E   0.434294481903251827651  // log10(e)
-#define M_LN2      0.693147180559945309417  // ln(2)
-#define M_LN10     2.30258509299404568402   // ln(10)
-#define M_PI       3.14159265358979323846   // pi
-#define M_PI_2     1.57079632679489661923   // pi/2
-#define M_PI_4     0.785398163397448309616  // pi/4
-#define M_1_PI     0.318309886183790671538  // 1/pi
-#define M_2_PI     0.636619772367581343076  // 2/pi
-#define M_2_SQRTPI 1.12837916709551257390   // 2/sqrt(pi)
-#define M_SQRT2    1.41421356237309504880   // sqrt(2)
-#define M_SQRT1_2  0.707106781186547524401  // 1/sqrt(2)
+#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/util/logcentral.h>
 
+#include <streambuf>
+#include <string>
+#include <ostream>
+#include <string_view>
+#include <mutex>
 
-uniform ivec3 volumeSize_;
+namespace inviwo {
 
-in vec4 texCoord_;
-in vec4 dataposition_;
+class IVW_CORE_API LogStream : public std::streambuf {
+    using int_type = typename std::streambuf::int_type;
+    using size_type = typename std::string::size_type;
+    using traits = typename std::string::traits_type;
 
-uniform vec2 xRange;
-uniform vec2 yRange;
-uniform vec2 zRange;
+public:
+    LogStream(std::ostream& stream, std::string source, LogLevel level, LogAudience audience);
+    ~LogStream();
+    std::streamsize xsputn(const char* s, std::streamsize count) override;
 
-float getPos(float v ,vec2 range){ 
-	return range.x + v * (range.y - range.x);
-}
+protected:
+    virtual int sync() override;
 
-vec4 getPos(){
-	return vec4(
-		      getPos(dataposition_.x , xRange)
-			, getPos(dataposition_.y , yRange)
-			, getPos(dataposition_.z , zRange)
-			, 1.0
-		);
-}
+private:
+    std::string source_;
+    LogLevel level_;
+    LogAudience audience_;
 
-void main() {
-    vec4 pos = getPos();
+    std::string buffer_;
+    std::ostream& stream_;
+    std::streambuf* orgBuffer_;
+    std::mutex mutex_;
+};
 
-    vec4 value = vec4(0,0,0,1);
-    value.x = X_VALUE(pos.x,pos.y,pos.z);
-    value.y = Y_VALUE(pos.x,pos.y,pos.z);
-    value.z = Z_VALUE(pos.x,pos.y,pos.z);
-
-    FragData0 = value;
-}
+}  // namespace inviwo

@@ -122,10 +122,16 @@ void exposeProcessors(pybind11::module &m) {
         .def(py::init())
         .def(py::init<std::string>())
         .def(py::init<Tag>())
-        .def("getString", &Tag::getString);
+        .def("getString", &Tag::getString)
+        .def_readonly_static("CPU", &Tag::CPU)
+        .def_readonly_static("GL", &Tag::GL)
+        .def_readonly_static("CL", &Tag::CL)
+        .def_readonly_static("PY", &Tag::PY);
 
     py::class_<Tags>(m, "Tags")
         .def(py::init())
+        .def(py::init<Tag>())
+        .def(py::init<std::vector<Tag>>())
         .def(py::init<std::string>())
         .def(py::init<Tags>())
         .def("addTag", &Tags::addTag)
@@ -137,6 +143,7 @@ void exposeProcessors(pybind11::module &m) {
         .def_readwrite("tags", &Tags::tags_)
         .def(py::self == py::self)
         .def(py::self < py::self)
+        .def_readonly_static("None", &Tags::None)
         .def_readonly_static("CPU", &Tags::CPU)
         .def_readonly_static("GL", &Tags::GL)
         .def_readonly_static("CL", &Tags::CL)

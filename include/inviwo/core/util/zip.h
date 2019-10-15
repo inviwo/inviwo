@@ -413,6 +413,8 @@ struct sequence {
         using reference = const T&;
         using iterator_category = std::random_access_iterator_tag;
 
+        iterator() = default;
+
         iterator(const T& val, const T& end, const T& inc) : val_{val}, end_{end}, inc_{inc} {}
         iterator& operator++() {
             val_ += inc_;
@@ -478,9 +480,9 @@ struct sequence {
             using std::min;
             val_ = inc_ > 0 ? min(val_, end_) : max(val_, end_);
         }
-        T val_;
-        T end_;
-        T inc_;
+        T val_{};
+        T end_{};
+        T inc_{};
     };
 
     iterator begin() const { return iterator(begin_, end_, inc_); }
@@ -502,7 +504,7 @@ private:
  * \endcode
  */
 template <typename T>
-auto make_sequence(const T& begin, const T& end, const T& inc) -> sequence<T> {
+auto make_sequence(const T& begin, const T& end, const T& inc = T{1}) -> sequence<T> {
     return sequence<T>(begin, end, inc);
 }
 
