@@ -100,7 +100,8 @@ constexpr auto make_array(Functor&& func, std::integer_sequence<Index, Is...>) n
 }  // namespace detail
 
 template <std::size_t N, typename Index = size_t, typename Functor>
-constexpr auto make_array(Functor&& func) noexcept -> std::array<decltype(func(std::declval<Index>())), N> {
+constexpr auto make_array(Functor&& func) noexcept
+    -> std::array<decltype(func(std::declval<Index>())), N> {
     return detail::make_array<Index>(std::forward<Functor>(func),
                                      std::make_integer_sequence<Index, N>());
 }

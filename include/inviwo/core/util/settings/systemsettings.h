@@ -71,7 +71,6 @@ public:
 
     std::unique_ptr<LogStream> cout_;
     std::unique_ptr<LogStream> cerr_;
-
 };
 
 }  // namespace inviwo

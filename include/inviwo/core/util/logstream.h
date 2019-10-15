@@ -60,7 +60,7 @@ private:
     std::string buffer_;
     std::ostream& stream_;
     std::streambuf* orgBuffer_;
-    std::mutex mutex_; 
+    std::mutex mutex_;
 };
 
 }  // namespace inviwo
