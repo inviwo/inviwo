@@ -129,10 +129,10 @@ using void_t = void;
 * Example useage:
 * \code{.cpp}
 *  std::variant<int, std::string, float, double> data = ...;
-*  std::visit(overloaded{[](const int& arg) {   }, // called if data contains an int
-                         [](const std::string &arg) {  }, // called if data contains a string
-                         [](const auto& arg) {  }} // use auto to capture "the other types"
-                   , data);
+*  std::visit(util::overloaded{[](const int& arg) {   }, // called if data contains an int
+                               [](const std::string &arg) {  }, // called if data contains a string
+                               [](const auto& arg) {  }} // use auto to capture "the other types"
+                               , data);
 *
 * \endcode
 *
@@ -555,17 +555,18 @@ public:
 };
 
 template <typename F, typename... Args>
-using is_invocable[[deprecated("Use `std::is_invocable` instead")]] = std::is_invocable<F, Args...>;
+using is_invocable [[deprecated("Use `std::is_invocable` instead")]] =
+    std::is_invocable<F, Args...>;
 
 template <typename R, typename F, typename... Args>
-using is_invocable_r[[deprecated("Use `std::is_invocable_r` instead")]] =
+using is_invocable_r [[deprecated("Use `std::is_invocable_r` instead")]] =
     std::is_invocable_r<F, Args...>;
 
 template <typename F, typename... Args>
-using is_callable[[deprecated("Use `std::is_invocable` instead")]] = std::is_invocable<F, Args...>;
+using is_callable [[deprecated("Use `std::is_invocable` instead")]] = std::is_invocable<F, Args...>;
 
 /**
- * A type trait to determine if type "callback" cann be called with certain arguments.
+ * A type trait to determine if type "callback" can be called with certain arguments.
  * Example:
  *     util::is_callable_with<float>(callback)
  *     where
