@@ -29,8 +29,9 @@
 
 #include <modules/plottinggl/processors/persistencediagramplotprocessor.h>
 
-#include <inviwo/dataframe/datastructures/dataframeutil.h>
+#include <inviwo/core/interaction/events/pickingevent.h>
 #include <inviwo/core/util/zip.h>
+#include <inviwo/dataframe/datastructures/dataframeutil.h>
 
 namespace inviwo {
 
@@ -39,7 +40,7 @@ namespace plot {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo PersistenceDiagramPlotProcessor::processorInfo_{
     "org.inviwo.PersistenceDiagramPlotProcessor",  // Class identifier
-    "Persistence Diagram Plot Processor",          // Display name
+    "Persistence Diagram Plot",                    // Display name
     "Plotting",                                    // Category
     CodeState::Stable,                             // Code state
     "GL, Plotting, Topology",                      // Tags

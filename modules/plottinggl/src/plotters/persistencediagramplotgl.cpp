@@ -25,7 +25,7 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * ********************************************************************************/
+ *********************************************************************************/
 
 #include <modules/plottinggl/plotters/persistencediagramplotgl.h>
 #include <modules/opengl/buffer/buffergl.h>
