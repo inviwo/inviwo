@@ -75,6 +75,10 @@ ScatterPlotProcessor::ScatterPlotProcessor()
             p->setToolTip(dataframeutil::createToolTipForRow(*dataFramePort_.getData(), rowId));
         }
     });
+    selectionChangedCallBack_ =
+        scatterPlot_.addSelectionChangedCallback([this](const std::unordered_set<size_t>& indices) {
+            brushingPort_.sendSelectionEvent(indices);
+        });
 
     scatterPlot_.properties_.margins_.setLowerLeftMargin({50.0f, 40.0f});
     scatterPlot_.properties_.xAxis_.captionSettings_.setChecked(true);
@@ -143,10 +147,6 @@ void ScatterPlotProcessor::process() {
             scatterPlot_.plot(*outport_.getEditableData(), nullptr, true);
         }
     }
-}
-
-void ScatterPlotProcessor::setSelectedIndices(const std::unordered_set<size_t>& indices) {
-    brushingPort_.sendSelectionEvent(indices);
 }
 
 void ScatterPlotProcessor::onXAxisChange() {

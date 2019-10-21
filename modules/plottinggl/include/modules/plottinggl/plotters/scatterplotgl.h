@@ -62,6 +62,8 @@ class IVW_MODULE_PLOTTINGGL_API ScatterPlotGL {
 public:
     using ToolTipFunc = void(PickingEvent*, size_t);
     using ToolTipCallbackHandle = std::shared_ptr<std::function<ToolTipFunc>>;
+    using SelectionFunc = void(const std::unordered_set<size_t>&);
+    using SelectionCallbackHandle = std::shared_ptr<std::function<SelectionFunc>>;
 
     class Properties : public CompositeProperty {
     public:
@@ -134,9 +136,10 @@ public:
     void setRadiusData(std::shared_ptr<const BufferBase> buffer);
     void setIndexColumn(std::shared_ptr<const TemplateColumn<uint32_t>> indexcol);
 
-    void setSelectedIndices(const std::unordered_set<size_t> indices);
+    void setSelectedIndices(const std::unordered_set<size_t>& indices);
 
     ToolTipCallbackHandle addToolTipCallback(std::function<ToolTipFunc> callback);
+    SelectionCallbackHandle addSelectionChangedCallback(std::function<SelectionFunc> callback);
 
     Properties properties_;
     Shader shader_;
@@ -173,6 +176,7 @@ protected:
     Processor* processor_;
 
     Dispatcher<ToolTipFunc> tooltipCallback_;
+    Dispatcher<SelectionFunc> selectionChangedCallback_;
 };
 
 }  // namespace plot

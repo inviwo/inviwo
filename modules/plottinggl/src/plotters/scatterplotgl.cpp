@@ -28,7 +28,6 @@
  *********************************************************************************/
 
 #include <modules/plottinggl/plotters/scatterplotgl.h>
-#include <modules/plottinggl/processors/scatterplotprocessor.h>
 #include <modules/opengl/buffer/buffergl.h>
 #include <modules/opengl/buffer/bufferobject.h>
 #include <modules/opengl/buffer/bufferobjectarray.h>
@@ -404,13 +403,18 @@ void ScatterPlotGL::setIndexColumn(std::shared_ptr<const TemplateColumn<uint32_t
     }
 }
 
-void ScatterPlotGL::setSelectedIndices(const std::unordered_set<size_t> indices) {
+void ScatterPlotGL::setSelectedIndices(const std::unordered_set<size_t>& indices) {
     selectedIndices_ = indices;
 }
 
 auto ScatterPlotGL::addToolTipCallback(std::function<ToolTipFunc> callback)
     -> ToolTipCallbackHandle {
     return tooltipCallback_.add(callback);
+}
+
+auto ScatterPlotGL::addSelectionChangedCallback(std::function<SelectionFunc> callback)
+    -> SelectionCallbackHandle {
+    return selectionChangedCallback_.add(callback);
 }
 
 void ScatterPlotGL::renderAxis(const size2_t& dims) {
@@ -480,9 +484,7 @@ void ScatterPlotGL::objectPicked(PickingEvent* p) {
             selectedIndices_.insert(id);
         }
         // selection changed, inform processor
-        if (auto proc = dynamic_cast<ScatterPlotProcessor*>(processor_)) {
-            proc->setSelectedIndices(selectedIndices_);
-        }
+        selectionChangedCallback_.invoke(selectedIndices_);
     }
 }
 

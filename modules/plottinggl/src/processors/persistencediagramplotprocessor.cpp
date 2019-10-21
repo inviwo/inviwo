@@ -29,7 +29,9 @@
 
 #include <modules/plottinggl/processors/persistencediagramplotprocessor.h>
 
+#include <inviwo/core/interaction/events/pickingevent.h>
 #include <inviwo/core/util/zip.h>
+#include <inviwo/dataframe/datastructures/dataframeutil.h>
 
 namespace inviwo {
 
@@ -38,10 +40,10 @@ namespace plot {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo PersistenceDiagramPlotProcessor::processorInfo_{
     "org.inviwo.PersistenceDiagramPlotProcessor",  // Class identifier
-    "Persistence Diagram Plot Processor",          // Display name
+    "Persistence Diagram Plot",                    // Display name
     "Plotting",                                    // Category
-    CodeState::Experimental,                       // Code state
-    "GL, Plotting",                                // Tags
+    CodeState::Stable,                             // Code state
+    "GL, Plotting, Topology",                      // Tags
 };
 const ProcessorInfo PersistenceDiagramPlotProcessor::getProcessorInfo() const {
     return processorInfo_;
@@ -50,7 +52,8 @@ const ProcessorInfo PersistenceDiagramPlotProcessor::getProcessorInfo() const {
 PersistenceDiagramPlotProcessor::PersistenceDiagramPlotProcessor()
     : Processor()
     , dataFrame_("dataFrame")
-    , brushing_("brushing")
+    , brushingPort_("brushing")
+    , backgroundPort_("background")
     , outport_("outport")
     , persistenceDiagramPlot_(this)
     , xAxis_("xAxis", "X-axis", dataFrame_, false, 1)
@@ -58,10 +61,24 @@ PersistenceDiagramPlotProcessor::PersistenceDiagramPlotProcessor()
     , colorCol_("colorCol", "Color column", dataFrame_, true, 3) {
 
     addPort(dataFrame_);
-    addPort(brushing_);
+    addPort(brushingPort_);
+    addPort(backgroundPort_);
     addPort(outport_);
 
-    brushing_.setOptional(true);
+    brushingPort_.setOptional(true);
+    backgroundPort_.setOptional(true);
+
+    tooltipCallBack_ =
+        persistenceDiagramPlot_.addToolTipCallback([this](PickingEvent *p, size_t rowId) {
+            if (!p) return;
+            if (auto dataframe = dataFrame_.getData()) {
+                p->setToolTip(dataframeutil::createToolTipForRow(*dataFrame_.getData(), rowId));
+            }
+        });
+    selectionChangedCallBack_ = persistenceDiagramPlot_.addSelectionChangedCallback(
+        [this](const std::unordered_set<size_t> &indices) {
+            brushingPort_.sendSelectionEvent(indices);
+        });
 
     addProperty(persistenceDiagramPlot_.properties_);
     addProperty(xAxis_);
@@ -84,25 +101,40 @@ PersistenceDiagramPlotProcessor::PersistenceDiagramPlotProcessor()
 }
 
 void PersistenceDiagramPlotProcessor::process() {
-    if (brushing_.isConnected()) {
+    if (brushingPort_.isConnected()) {
+        if (brushingPort_.isChanged()) {
+            persistenceDiagramPlot_.setSelectedIndices(brushingPort_.getSelectedIndices());
+        }
+
         auto dataframe = dataFrame_.getData();
         auto dfSize = dataframe->getNumberOfRows();
 
         auto iCol = dataframe->getIndexColumn();
         auto &indexCol = iCol->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
 
-        auto filteredIndicies = brushing_.getFilteredIndices();
+        auto filteredIndicies = brushingPort_.getFilteredIndices();
         IndexBuffer indicies;
         auto &vec = indicies.getEditableRAMRepresentation()->getDataContainer();
         vec.reserve(dfSize - filteredIndicies.size());
 
         auto seq = util::sequence<uint32_t>(0, static_cast<uint32_t>(dfSize), 1);
         std::copy_if(seq.begin(), seq.end(), std::back_inserter(vec),
-                     [&](const auto &id) { return !brushing_.isFiltered(indexCol[id]); });
+                     [&](const auto &id) { return !brushingPort_.isFiltered(indexCol[id]); });
 
-        persistenceDiagramPlot_.plot(outport_, &indicies, true);
+        if (backgroundPort_.hasData()) {
+            persistenceDiagramPlot_.plot(*outport_.getEditableData(), *backgroundPort_.getData(),
+                                         &indicies, true);
+        } else {
+            persistenceDiagramPlot_.plot(outport_, &indicies, true);
+        }
+
     } else {
-        persistenceDiagramPlot_.plot(outport_, nullptr, true);
+        if (backgroundPort_.hasData()) {
+            persistenceDiagramPlot_.plot(*outport_.getEditableData(), *backgroundPort_.getData(),
+                                         nullptr, true);
+        } else {
+            persistenceDiagramPlot_.plot(outport_, nullptr, true);
+        }
     }
 }
 

@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PERSISTENCEDIAGRAMPLOTGL_H
-#define IVW_PERSISTENCEDIAGRAMPLOTGL_H
+#pragma once
 
 #include <modules/plottinggl/plottingglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -39,6 +38,7 @@
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/interaction/pickingmapper.h>
 #include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/util/dispatcher.h>
 
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shader.h>
@@ -64,6 +64,11 @@ namespace plot {
  */
 class IVW_MODULE_PLOTTINGGL_API PersistenceDiagramPlotGL {
 public:
+    using ToolTipFunc = void(PickingEvent*, size_t);
+    using ToolTipCallbackHandle = std::shared_ptr<std::function<ToolTipFunc>>;
+    using SelectionFunc = void(const std::unordered_set<size_t>&);
+    using SelectionCallbackHandle = std::shared_ptr<std::function<SelectionFunc>>;
+
     class Properties : public CompositeProperty {
     public:
         virtual std::string getClassIdentifier() const override;
@@ -73,8 +78,8 @@ public:
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                    PropertySemantics semantics = PropertySemantics::Default);
 
-        Properties(const Properties &rhs);
-        virtual Properties *clone() const override;
+        Properties(const Properties& rhs);
+        virtual Properties* clone() const override;
         virtual ~Properties() = default;
 
         BoolProperty showPoints_;
@@ -84,6 +89,7 @@ public:
         FloatVec4Property pointColor_;
         FloatVec4Property lineColor_;
         FloatVec4Property hoverColor_;
+        FloatVec4Property selectionColor_;
         TransferFunctionProperty tf_;
         MarginProperty margins_;
         FloatProperty axisMargin_;
@@ -100,31 +106,31 @@ public:
     private:
         auto props() {
             return std::tie(showPoints_, radius_, lineWidth_, lineWidthDiagonal_, pointColor_,
-                            lineColor_, hoverColor_, tf_, margins_, axisMargin_, borderWidth_,
-                            borderColor_, hovering_, axisStyle_, xAxis_, yAxis_);
+                            lineColor_, hoverColor_, selectionColor_, tf_, margins_, axisMargin_,
+                            borderWidth_, borderColor_, hovering_, axisStyle_, xAxis_, yAxis_);
         }
         auto props() const {
             return std::tie(showPoints_, radius_, lineWidth_, lineWidthDiagonal_, pointColor_,
-                            lineColor_, hoverColor_, tf_, margins_, axisMargin_, borderWidth_,
-                            borderColor_, hovering_, axisStyle_, xAxis_, yAxis_);
+                            lineColor_, hoverColor_, selectionColor_, tf_, margins_, axisMargin_,
+                            borderWidth_, borderColor_, hovering_, axisStyle_, xAxis_, yAxis_);
         }
     };
 
-    explicit PersistenceDiagramPlotGL(Processor *processor = nullptr);
+    explicit PersistenceDiagramPlotGL(Processor* processor = nullptr);
     virtual ~PersistenceDiagramPlotGL() = default;
 
-    void plot(Image &dest, IndexBuffer *indices = nullptr, bool useAxisRanges = false);
-    void plot(Image &dest, const Image &src, IndexBuffer *indices = nullptr,
+    void plot(Image& dest, IndexBuffer* indices = nullptr, bool useAxisRanges = false);
+    void plot(Image& dest, const Image& src, IndexBuffer* indices = nullptr,
               bool useAxisRanges = false);
-    void plot(ImageOutport &dest, IndexBuffer *indices = nullptr, bool useAxisRanges = false);
-    void plot(ImageOutport &dest, ImageInport &src, IndexBuffer *indices = nullptr,
+    void plot(ImageOutport& dest, IndexBuffer* indices = nullptr, bool useAxisRanges = false);
+    void plot(ImageOutport& dest, ImageInport& src, IndexBuffer* indices = nullptr,
               bool useAxisRanges = false);
-    void plot(const ivec2 &start, const ivec2 &size, IndexBuffer *indices = nullptr,
+    void plot(const ivec2& start, const ivec2& size, IndexBuffer* indices = nullptr,
               bool useAxisRanges = false);
 
-    void setXAxisLabel(const std::string &label);
+    void setXAxisLabel(const std::string& label);
 
-    void setYAxisLabel(const std::string &label);
+    void setYAxisLabel(const std::string& label);
 
     void setXAxis(std::shared_ptr<const Column> col);
 
@@ -136,19 +142,24 @@ public:
 
     void setIndexColumn(std::shared_ptr<const TemplateColumn<uint32_t>> indexcol);
 
+    void setSelectedIndices(const std::unordered_set<size_t>& indices);
+
+    ToolTipCallbackHandle addToolTipCallback(std::function<ToolTipFunc> callback);
+    SelectionCallbackHandle addSelectionChangedCallback(std::function<SelectionFunc> callback);
+
     Properties properties_;
     Shader pointShader_;
     Shader lineShader_;
 
 protected:
-    void plot(const size2_t &dims, IndexBuffer *indices, bool useAxisRanges);
+    void plot(const size2_t& dims, IndexBuffer* indices, bool useAxisRanges);
 
-    void renderLines(const size2_t &dims, const std::vector<uint32_t> &diagonalIndices,
-                     const std::vector<uint32_t> &indices);
-    void renderPoints(const size2_t &dims, const std::vector<uint32_t> &indices);
-    void renderAxis(const size2_t &dims);
+    void renderLines(const size2_t& dims, const std::vector<uint32_t>& diagonalIndices,
+                     const std::vector<uint32_t>& indices);
+    void renderPoints(const size2_t& dims, const std::vector<uint32_t>& indices);
+    void renderAxis(const size2_t& dims);
 
-    void objectPicked(PickingEvent *p);
+    void objectPicked(PickingEvent* p);
     uint32_t getGlobalPickId(uint32_t localIndex) const;
 
     std::shared_ptr<const BufferBase> xAxis_;
@@ -164,13 +175,15 @@ protected:
     std::array<AxisRenderer, 2> axisRenderers_;
 
     PickingMapper picking_;
+    std::unordered_set<size_t> selectedIndices_;
     std::set<uint32_t> hoveredIndices_;
 
-    Processor *processor_;
+    Processor* processor_;
+
+    Dispatcher<ToolTipFunc> tooltipCallback_;
+    Dispatcher<SelectionFunc> selectionChangedCallback_;
 };
 
 }  // namespace plot
 
 }  // namespace inviwo
-
-#endif  // IVW_PERSISTENCEDIAGRAMPLOTGL_H

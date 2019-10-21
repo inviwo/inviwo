@@ -1,29 +1,29 @@
 /*********************************************************************************
  *
- * Inviwo - Interactive Visualization Workshop
+ *  Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2019 Inviwo Foundation
- * All rights reserved.
+ *  Copyright (c) 2018-2019 Inviwo Foundation
+ *  All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are met:
  *
- * 1. Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
+ *  1. Redistributions of source code must retain the above copyright notice, this
+ *  list of conditions and the following disclaimer.
+ *  2. Redistributions in binary form must reproduce the above copyright notice,
+ *  this list of conditions and the following disclaimer in the documentation
+ *  and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ *  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ *  ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ *  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ *  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
 
@@ -70,7 +70,8 @@ PersistenceDiagramPlotGL::Properties::Properties(std::string identifier, std::st
                   vec4(1), vec4(0.1f), InvalidationLevel::InvalidOutput, PropertySemantics::Color)
     , lineColor_("lineColor", "Line Color", vec4(vec3(34, 96, 150) / 255.0f, 1.0f), vec4(0),
                  vec4(1), vec4(0.1f), InvalidationLevel::InvalidOutput, PropertySemantics::Color)
-    , hoverColor_("hoverColor", "Hover color", vec4(1.0f, 0.77f, 0.25f, 1))
+    , hoverColor_("hoverColor", "Hover Color", vec4(1.0f, 0.906f, 0.612f, 1))
+    , selectionColor_("selectionColor", "Selection Color", vec4(1.0f, 0.769f, 0.247f, 1))
     , tf_("transferFunction", "Transfer Function",
           TransferFunction({{0.0, vec4(1.0f)}, {1.0, vec4(1.0f)}}))
     , margins_("margins", "Margins", 5, 5, 5, 5)
@@ -84,9 +85,10 @@ PersistenceDiagramPlotGL::Properties::Properties(std::string identifier, std::st
     , xAxis_("xAxis", "X Axis")
     , yAxis_("yAxis", "Y Axis", AxisProperty::Orientation::Vertical) {
 
-    util::for_each_in_tuple([&](auto &e) { this->addProperty(e); }, props());
+    util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props());
 
     hoverColor_.setSemantics(PropertySemantics::Color);
+    selectionColor_.setSemantics(PropertySemantics::Color);
     borderColor_.setSemantics(PropertySemantics::Color);
 
     axisStyle_.setCollapsed(true);
@@ -98,7 +100,7 @@ PersistenceDiagramPlotGL::Properties::Properties(std::string identifier, std::st
     tf_.setVisible(!pointColor_.getVisible());
 }
 
-PersistenceDiagramPlotGL::Properties::Properties(const PersistenceDiagramPlotGL::Properties &rhs)
+PersistenceDiagramPlotGL::Properties::Properties(const PersistenceDiagramPlotGL::Properties& rhs)
     : CompositeProperty(rhs)
     , showPoints_(rhs.showPoints_)
     , radius_(rhs.radius_)
@@ -107,6 +109,7 @@ PersistenceDiagramPlotGL::Properties::Properties(const PersistenceDiagramPlotGL:
     , pointColor_(rhs.pointColor_)
     , lineColor_(rhs.lineColor_)
     , hoverColor_(rhs.hoverColor_)
+    , selectionColor_(rhs.selectionColor_)
     , tf_(rhs.tf_)
     , margins_(rhs.margins_)
     , axisMargin_(rhs.axisMargin_)
@@ -116,16 +119,16 @@ PersistenceDiagramPlotGL::Properties::Properties(const PersistenceDiagramPlotGL:
     , axisStyle_(rhs.axisStyle_)
     , xAxis_(rhs.xAxis_)
     , yAxis_(rhs.yAxis_) {
-    util::for_each_in_tuple([&](auto &e) { this->addProperty(e); }, props());
+    util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props());
     axisStyle_.unregisterAll();
     axisStyle_.registerProperties(xAxis_, yAxis_);
 }
 
-PersistenceDiagramPlotGL::Properties *PersistenceDiagramPlotGL::Properties::clone() const {
+PersistenceDiagramPlotGL::Properties* PersistenceDiagramPlotGL::Properties::clone() const {
     return new Properties(*this);
 }
 
-PersistenceDiagramPlotGL::PersistenceDiagramPlotGL(Processor *processor)
+PersistenceDiagramPlotGL::PersistenceDiagramPlotGL(Processor* processor)
     : properties_("persistenceDiagram", "PersistenceDiagram")
     , pointShader_("persistencediagram.vert", "scatterplot.geom", "scatterplot.frag")
     , lineShader_("persistencediagramlines.vert", "linerenderer.geom", "linerenderer.frag")
@@ -133,7 +136,7 @@ PersistenceDiagramPlotGL::PersistenceDiagramPlotGL(Processor *processor)
     , yAxis_(nullptr)
     , color_(nullptr)
     , axisRenderers_({{properties_.xAxis_, properties_.yAxis_}})
-    , picking_(processor, 1, [this](PickingEvent *p) { objectPicked(p); })
+    , picking_(processor, 1, [this](PickingEvent* p) { objectPicked(p); })
     , processor_(processor) {
 
     if (processor_) {
@@ -149,39 +152,39 @@ PersistenceDiagramPlotGL::PersistenceDiagramPlotGL(Processor *processor)
     });
 }
 
-void PersistenceDiagramPlotGL::plot(Image &dest, IndexBuffer *indices, bool useAxisRanges) {
+void PersistenceDiagramPlotGL::plot(Image& dest, IndexBuffer* indices, bool useAxisRanges) {
     utilgl::activateAndClearTarget(dest);
     plot(dest.getDimensions(), indices, useAxisRanges);
     utilgl::deactivateCurrentTarget();
 }
 
-void PersistenceDiagramPlotGL::plot(Image &dest, const Image &src, IndexBuffer *indices,
+void PersistenceDiagramPlotGL::plot(Image& dest, const Image& src, IndexBuffer* indices,
                                     bool useAxisRanges) {
     utilgl::activateTargetAndCopySource(dest, src);
     plot(dest.getDimensions(), indices, useAxisRanges);
     utilgl::deactivateCurrentTarget();
 }
 
-void PersistenceDiagramPlotGL::plot(ImageOutport &dest, IndexBuffer *indices, bool useAxisRanges) {
+void PersistenceDiagramPlotGL::plot(ImageOutport& dest, IndexBuffer* indices, bool useAxisRanges) {
     utilgl::activateAndClearTarget(dest);
     plot(dest.getDimensions(), indices, useAxisRanges);
     utilgl::deactivateCurrentTarget();
 }
 
-void PersistenceDiagramPlotGL::plot(ImageOutport &dest, ImageInport &src, IndexBuffer *indices,
+void PersistenceDiagramPlotGL::plot(ImageOutport& dest, ImageInport& src, IndexBuffer* indices,
                                     bool useAxisRanges) {
     utilgl::activateTargetAndCopySource(dest, src);
     plot(dest.getDimensions(), indices, useAxisRanges);
     utilgl::deactivateCurrentTarget();
 }
 
-void PersistenceDiagramPlotGL::plot(const ivec2 &start, const ivec2 &size, IndexBuffer *indices,
+void PersistenceDiagramPlotGL::plot(const ivec2& start, const ivec2& size, IndexBuffer* indices,
                                     bool useAxisRanges) {
     utilgl::ViewportState viewport(start.x, start.y, size.x, size.y);
     plot(size, indices, useAxisRanges);
 }
 
-void PersistenceDiagramPlotGL::plot(const size2_t &dims, IndexBuffer *indices, bool useAxisRanges) {
+void PersistenceDiagramPlotGL::plot(const size2_t& dims, IndexBuffer* indices, bool useAxisRanges) {
     // create a new mesh
     using PosBuffer =
         buffertraits::TypedMeshBufferBase<float, 2, static_cast<int>(BufferType::PositionAttrib)>;
@@ -224,7 +227,7 @@ void PersistenceDiagramPlotGL::plot(const size2_t &dims, IndexBuffer *indices, b
         buffer->getRepresentation<BufferRAM>()->dispatch<void, dispatching::filter::Scalars>(
             [&](auto bufferpr) {
                 bufferpr->getDataContainer();
-                for (auto &&i : util::zip(xyPairs, bufferpr->getDataContainer())) {
+                for (auto&& i : util::zip(xyPairs, bufferpr->getDataContainer())) {
                     get<0>(i)[targetComponent] = static_cast<float>(get<1>(i));
                 }
             });
@@ -246,8 +249,8 @@ void PersistenceDiagramPlotGL::plot(const size2_t &dims, IndexBuffer *indices, b
     {
         // vertical lines
         uint32_t indexOffset = static_cast<uint32_t>(vertices.size());
-        for (auto &index : selectedIndices) {
-            auto &point = xyPairs[index];
+        for (auto& index : selectedIndices) {
+            auto& point = xyPairs[index];
 
             auto clipped = algorithm::clipLineCohenSutherland(vec2(point.x), vec2(point.x, point.y),
                                                               rectMin, rectMax);
@@ -275,6 +278,8 @@ void PersistenceDiagramPlotGL::plot(const size2_t &dims, IndexBuffer *indices, b
                          buffer = colorBuffer, normalizeValue](uint32_t index) {
             if (hoverEnabled && util::contains(hoveredIndices_, index)) {
                 return properties_.hoverColor_.get();
+            } else if (util::contains(selectedIndices_, index)) {
+                return properties_.selectionColor_.get();
             } else if (color_) {
                 return properties_.tf_.get().sample(normalizeValue(buffer->getAsDouble(index)));
             } else {
@@ -283,7 +288,7 @@ void PersistenceDiagramPlotGL::plot(const size2_t &dims, IndexBuffer *indices, b
         };
 
         uint32_t indexOffset = static_cast<uint32_t>(vertices.size());
-        for (auto &index : selectedIndices) {
+        for (auto& index : selectedIndices) {
             const vec2 pLower(xyPairs[index].x);
             const vec2 pUpper(xyPairs[index].x, xyPairs[index].y);
 
@@ -334,9 +339,9 @@ void PersistenceDiagramPlotGL::plot(const size2_t &dims, IndexBuffer *indices, b
     renderAxis(dims);
 }
 
-void PersistenceDiagramPlotGL::renderLines(const size2_t &dims,
-                                           const std::vector<uint32_t> &diagonalIndices,
-                                           const std::vector<uint32_t> &indices) {
+void PersistenceDiagramPlotGL::renderLines(const size2_t& dims,
+                                           const std::vector<uint32_t>& diagonalIndices,
+                                           const std::vector<uint32_t>& indices) {
     lineShader_.setUniform("roundCaps", true);
     lineShader_.setUniform("screenDim", vec2(dims));
     if (!diagonalIndices.empty()) {
@@ -356,8 +361,8 @@ void PersistenceDiagramPlotGL::renderLines(const size2_t &dims,
     }
 }
 
-void PersistenceDiagramPlotGL::renderPoints(const size2_t &dims,
-                                            const std::vector<uint32_t> &indices) {
+void PersistenceDiagramPlotGL::renderPoints(const size2_t& dims,
+                                            const std::vector<uint32_t>& indices) {
     pointShader_.setUniform("pixelSize", vec2(1.0f) / vec2(dims));
     pointShader_.setUniform("dims", ivec2(dims));
     pointShader_.setUniform("maxRadius", properties_.radius_.get());
@@ -369,11 +374,11 @@ void PersistenceDiagramPlotGL::renderPoints(const size2_t &dims,
                    indices.data());
 }
 
-void PersistenceDiagramPlotGL::setXAxisLabel(const std::string &caption) {
+void PersistenceDiagramPlotGL::setXAxisLabel(const std::string& caption) {
     properties_.xAxis_.setCaption(caption);
 }
 
-void PersistenceDiagramPlotGL::setYAxisLabel(const std::string &caption) {
+void PersistenceDiagramPlotGL::setYAxisLabel(const std::string& caption) {
     properties_.yAxis_.setCaption(caption);
 }
 
@@ -431,7 +436,21 @@ void PersistenceDiagramPlotGL::setIndexColumn(
     }
 }
 
-void PersistenceDiagramPlotGL::renderAxis(const size2_t &dims) {
+void PersistenceDiagramPlotGL::setSelectedIndices(const std::unordered_set<size_t>& indices) {
+    selectedIndices_ = indices;
+}
+
+auto PersistenceDiagramPlotGL::addToolTipCallback(std::function<ToolTipFunc> callback)
+    -> ToolTipCallbackHandle {
+    return tooltipCallback_.add(callback);
+}
+
+auto PersistenceDiagramPlotGL::addSelectionChangedCallback(std::function<SelectionFunc> callback)
+    -> SelectionCallbackHandle {
+    return selectionChangedCallback_.add(callback);
+}
+
+void PersistenceDiagramPlotGL::renderAxis(const size2_t& dims) {
 
     const size2_t lowerLeft(properties_.margins_.getLeft(), properties_.margins_.getBottom());
     const size2_t upperRight(dims.x - 1 - properties_.margins_.getRight(),
@@ -447,66 +466,59 @@ void PersistenceDiagramPlotGL::renderAxis(const size2_t &dims) {
                              size2_t(lowerLeft.x, upperRight.y - padding));
 }
 
-void PersistenceDiagramPlotGL::objectPicked(PickingEvent *p) {
-    auto idToDataFrameIndex = [this](uint32_t id) -> std::tuple<bool, uint32_t> {
+void PersistenceDiagramPlotGL::objectPicked(PickingEvent* p) {
+    auto idToDataFrameIndex = [this](uint32_t id) -> std::optional<uint32_t> {
         if (!indexColumn_) {
-            return std::tuple<bool, uint32_t>{false, 0};
+            return std::nullopt;
         }
-
-        auto &indexCol = indexColumn_->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
-
+        auto& indexCol = indexColumn_->getTypedBuffer()->getRAMRepresentation()->getDataContainer();
         auto it = util::find(indexCol, static_cast<uint32_t>(id));
         if (it != indexCol.end()) {
-            return std::tuple<bool, uint32_t>{true, *it};
+            return *it;
         } else {
-            return std::tuple<bool, uint32_t>{false, 0};
+            return std::nullopt;
         }
     };
 
     const uint32_t id = static_cast<uint32_t>(p->getPickedId());
     auto rowIndex = idToDataFrameIndex(id);
 
-    if (p->getState() == PickingState::Started) {
-        hoveredIndices_.insert(id);
-        if (processor_) {
-            processor_->invalidate(InvalidationLevel::InvalidOutput);
-        }
-    } else if (p->getState() == PickingState::Finished) {
-        hoveredIndices_.erase(id);
-        if (processor_) {
-            processor_->invalidate(InvalidationLevel::InvalidOutput);
+    // Show tooltip for current item
+    if (rowIndex) {
+        if (p->getHoverState() == PickingHoverState::Move ||
+            p->getHoverState() == PickingHoverState::Enter) {
+
+            tooltipCallback_.invoke(p, rowIndex.value());
+
+        } else if (p->getHoverState() == PickingHoverState::Exit) {
+            p->setToolTip("");
         }
     }
 
-    auto logRowData = [&]() {
-        if (std::get<0>(rowIndex) && xAxis_ && yAxis_) {
-            LogWarn("Index: " << std::get<1>(rowIndex) << "\n"
-                              << properties_.xAxis_.getCaption() << ": "
-                              << xAxis_->getRepresentation<BufferRAM>()->getAsDouble(id) << "\n"
-                              << properties_.yAxis_.getCaption() << ": "
-                              << yAxis_->getRepresentation<BufferRAM>()->getAsDouble(id));
-        }
-    };
-
-    if (auto me = p->getEventAs<MouseEvent>()) {
-        if (me->button() == MouseButton::Left) {
-            if (me->state() == MouseState::Release) {
-                // print information on current element
-                logRowData();
+    if (properties_.hovering_.get()) {
+        if (p->getHoverState() == PickingHoverState::Enter) {
+            hoveredIndices_.insert(id);
+            if (processor_) {
+                processor_->invalidate(InvalidationLevel::InvalidOutput);
             }
-            me->markAsUsed();
-        }
-    } else if (auto touchEvent = p->getEventAs<TouchEvent>()) {
-        if (touchEvent->touchPoints().size() == 1) {
-            // allow interaction only for a single touch point
-            const auto &touchPoint = touchEvent->touchPoints().front();
-
-            if (touchPoint.state() == TouchState::Started) {
-                // print information on current element
-                logRowData();
+        } else if (p->getHoverState() == PickingHoverState::Exit) {
+            hoveredIndices_.erase(id);
+            if (processor_) {
+                processor_->invalidate(InvalidationLevel::InvalidOutput);
             }
-            p->markAsUsed();
         }
+    }
+
+    if ((p->getPressState() == PickingPressState::Release) &&
+        (p->getPressItem() == PickingPressItem::Primary) &&
+        (p->getCurrentGlobalPickingId() == p->getPressedGlobalPickingId())) {
+        if (selectedIndices_.count(id)) {
+            selectedIndices_.erase(id);
+        } else {
+            selectedIndices_.insert(id);
+        }
+        // selection changed, inform processor
+        selectionChangedCallback_.invoke(selectedIndices_);
     }
 }
 
