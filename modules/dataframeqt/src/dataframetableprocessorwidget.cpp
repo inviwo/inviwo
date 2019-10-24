@@ -31,6 +31,7 @@
 #include <inviwo/dataframeqt/dataframetableview.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/processors/processor.h>
 #include <modules/qtwidgets/inviwoqtutils.h>
 
 #include <warn/push>
