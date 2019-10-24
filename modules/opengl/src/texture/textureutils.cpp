@@ -27,9 +27,10 @@
  *
  *********************************************************************************/
 
+#include <modules/opengl/texture/textureutils.h>
+
 #include <inviwo/core/datastructures/geometry/mesh.h>
 
-#include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/canvasgl.h>
 #include <modules/opengl/volume/volumegl.h>
 #include <modules/opengl/geometry/meshgl.h>
