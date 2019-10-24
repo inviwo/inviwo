@@ -51,7 +51,6 @@ DataFrameTableProcessorWidget::DataFrameTableProcessorWidget(Processor* p)
     setWindowFlags(Qt::Window);
 
     ivec2 dim = getDimensions();
-    ivec2 pos = getPosition();
 
     setWindowTitle(QString::fromStdString(processor_->getDisplayName()));
 

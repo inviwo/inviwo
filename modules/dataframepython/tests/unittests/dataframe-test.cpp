@@ -152,6 +152,7 @@ TEST(DataFrameTests, AddColumnFromBuffer) {
     const std::string source = fmt::format(R"delim(
 import inviwopy
 import ivwdataframe
+import numpy as np
 
 buffer = inviwopy.data.Buffer(np.array([1.0, 2.0, 3.0], dtype=np.single))
 
@@ -182,6 +183,7 @@ TEST(DataFrameTests, RowAccess) {
     const std::string source = R"delim(
 import inviwopy
 import ivwdataframe
+import numpy as np
 
 buffer = inviwopy.data.Buffer(np.array([1.0, 2.0, 3.0], dtype=np.single))
 
