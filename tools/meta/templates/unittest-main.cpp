@@ -49,7 +49,7 @@ int main(int argc, char** argv) {
     auto logger = std::make_shared<ConsoleLogger>();
     LogCentral::getPtr()->setVerbosity(LogVerbosity::Error);
     LogCentral::getPtr()->registerLogger(logger);
-    
+
     int ret = -1;
     {
 #ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
