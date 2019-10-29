@@ -333,7 +333,7 @@ void VolumeSliceGL::planeSettingsChanged() {
     const mat4 boxrotation(glm::toMat4(glm::rotation(worldNormal, vec3(0.0f, 0.0f, 1.0f))));
 
     // Construct the edges of a unit box and intersect with the plane.
-    std::vector<IntersectionResult> points;
+    std::vector<std::optional<vec3>> points;
     points.reserve(12);
 
     points.push_back(plane.getIntersection(vec3(0.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 0.0f)));
@@ -355,8 +355,8 @@ void VolumeSliceGL::planeSettingsChanged() {
     vec2 xrange(std::numeric_limits<float>::max(), std::numeric_limits<float>::min());
     vec2 yrange(std::numeric_limits<float>::max(), std::numeric_limits<float>::min());
     for (auto& point : points) {
-        if (point.intersects_) {
-            vec4 corner = vec4(point.intersection_, 1.0f);
+        if (point) {
+            vec4 corner = vec4(*point, 1.0f);
             corner = boxrotation * texToWorld * corner;
 
             xrange[0] = std::min(xrange[0], corner.x);

@@ -113,8 +113,7 @@ void forEachTriangle(const Mesh::MeshInfo& info, const IndexBuffer& ib, Callback
     }
 
     if (ram.size() < 3) {
-        throw inviwo::Exception("Not enough indices to create a single triangle",
-                                IVW_CONTEXT_CUSTOM("meshutil::forEachTriangle"));
+        return;
     }
 
     if (info.ct == ConnectivityType::None) {

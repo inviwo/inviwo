@@ -60,7 +60,7 @@ void MeshPlaneClipping::process() {
     if (clippingEnabled_) {
         std::shared_ptr<const Mesh> currentMesh = inputMesh_.getData();
         for (const auto& plane : planes_) {
-            currentMesh = meshutil::clipMeshAgainstPlane(*currentMesh, *plane, capClippedHoles_);
+            currentMesh = meshutil::clipMeshAgainstPlaneNew(*currentMesh, *plane, capClippedHoles_);
         }
         outputMesh_.setData(currentMesh);
     } else {

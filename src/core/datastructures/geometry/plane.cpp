@@ -34,60 +34,82 @@ namespace inviwo {
 inviwo::uvec3 Plane::COLOR_CODE = uvec3(225, 174, 225);
 const std::string Plane::CLASS_IDENTIFIER = "org.inviwo.Plane";
 
-Plane::Plane() : point_(vec3(0.0f, 0.0f, 0.0f)), normal_(vec3(0.0f, 1.0f, 0.0f)) {}
+Plane::Plane(vec3 point, vec3 normal) noexcept : point_(point), normal_(glm::normalize(normal)) {}
 
-Plane::Plane(vec3 point, vec3 normal) : point_(point), normal_(glm::normalize(normal)) {}
+const vec3& Plane::getPoint() const noexcept { return point_; }
 
-Plane::~Plane() {}
-
-vec3 Plane::getPoint() const { return point_; }
-
-vec3 Plane::getNormal() const { return normal_; }
+const vec3& Plane::getNormal() const noexcept { return normal_; }
 
 float Plane::distance(const vec3& p) const { return glm::dot(p - point_, normal_); }
 
 vec3 Plane::projectPoint(const vec3& p) const { return p - distance(p) * normal_; }
 
-bool Plane::isInside(const vec3& p) const { return (distance(p) >= 0.f) ? true : false; }
+bool Plane::isInside(const vec3& p) const { return distance(p) >= 0.f; }
 
 bool Plane::perpendicularToPlane(const vec3& p) const {
     return (glm::abs(glm::dot(normal_, p)) < glm::epsilon<float>());
 }
 
-void Plane::setPoint(const vec3 p) { this->point_ = p; }
+void Plane::setPoint(const vec3 p) { point_ = p; }
 
-void Plane::setNormal(const vec3& n) { this->normal_ = n; }
+void Plane::setNormal(const vec3& n) { normal_ = n; }
 
-IntersectionResult Plane::getIntersection(const vec3& start, const vec3& stop) const {
+Plane Plane::transform(const mat4& transform) const {
+    const auto newPos = vec3(transform * vec4(point_, 1.0));
+    const auto normalTransform = glm::transpose(glm::inverse(transform));
+    const auto newNormal = glm::normalize(vec3(normalTransform * vec4(normal_, 0.0)));
+    return Plane(newPos, newNormal);
+}
+
+std::optional<vec3> Plane::getIntersection(const vec3& start, const vec3& stop) const {
     // Distance from point to plane
-    float d = glm::dot(point_ - start, normal_);
+    const float d = glm::dot(point_ - start, normal_);
 
     if (glm::abs(d) < glm::epsilon<float>()) {
         // segment is in plane, return start point.
-        return IntersectionResult(true, start);
+        return start;
     }
 
-    vec3 segment = stop - start;
+    const vec3 segment = stop - start;
     // Distance of segment projected onto plane normal
     float denom = glm::dot(normal_, segment);  // if zero, segment is parallel to plane
     if (std::abs(denom) > glm::epsilon<float>()) {
         float tHit = d / denom;
 
         if (tHit >= 0.0f && tHit <= 1.0f) {
-            return IntersectionResult(true, start + tHit * segment);
+            return start + tHit * segment;
         }
     }
 
     // No intersection
-    return IntersectionResult(false);
+    return std::nullopt;
 }
 
+std::optional<float> Plane::getIntersectionWeight(const vec3& start, const vec3& stop) const {
+    // Distance from point to plane
+    const float d = glm::dot(point_ - start, normal_);
+
+    if (glm::abs(d) < glm::epsilon<float>()) {
+        // segment is in plane, return start point.
+        return 0.0f;
+    }
+
+    const vec3 segment = stop - start;
+    // Distance of segment projected onto plane normal
+    float denom = glm::dot(normal_, segment);  // if zero, segment is parallel to plane
+    if (std::abs(denom) > glm::epsilon<float>()) {
+        const float tHit = d / denom;
+
+        if (tHit >= 0.0f && tHit <= 1.0f) {
+            return tHit;
+        }
+    }
+
+    // No intersection
+    return std::nullopt;
+}
+
+
 std::string Plane::getDataInfo() const { return "Plane"; }
-
-IntersectionResult::IntersectionResult(bool intersects, vec3 intersection)
-    : intersection_(intersection), intersects_(intersects) {}
-
-IntersectionResult::IntersectionResult(bool intersects)
-    : intersection_(0.0f), intersects_(intersects) {}
 
 }  // namespace inviwo

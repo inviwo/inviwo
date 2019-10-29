@@ -241,10 +241,11 @@ ivw_group("Source Files" ${SOURCE_FILES})
 #--------------------------------------------------------------------
 # Unit tests
 set(TEST_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/base-unittest-main.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/kdtree-test.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/convexhull-test.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/marchingcubes-test.cpp
+    tests/unittests/base-unittest-main.cpp
+    tests/unittests/convexhull-test.cpp
+    tests/unittests/kdtree-test.cpp
+    tests/unittests/marchingcubes-test.cpp
+    tests/unittests/meshcutting-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 

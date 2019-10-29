@@ -129,7 +129,7 @@ void MeshClipping::process() {
             previousPointPlaneMove_ = pointPlaneMove_.get();
         }
         if (auto clippedPlaneGeom =
-                meshutil::clipMeshAgainstPlane(*inport_.getData(), *plane, capClippedHoles_)) {
+                meshutil::clipMeshAgainstPlaneNew(*inport_.getData(), *plane, capClippedHoles_)) {
             clippedPlaneGeom->setModelMatrix(inport_.getData()->getModelMatrix());
             clippedPlaneGeom->setWorldMatrix(inport_.getData()->getWorldMatrix());
             outport_.setData(clippedPlaneGeom);

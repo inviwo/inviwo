@@ -40,6 +40,89 @@ namespace inviwo {
 
 namespace meshutil {
 
+namespace detail {
+
+IVW_MODULE_BASE_API vec3 barycentricTriangle(vec3 p, vec3 a, vec3 b, vec3 c);
+
+// following https://www.mn.uio.no/math/english/people/aca/michaelf/papers/barycentric.pdf
+IVW_MODULE_BASE_API std::vector<float> barycentricInsidePolygon(vec2 v,
+                                                                const std::vector<vec2>& vis);
+
+/* Sutherland-Hodgman Clipping
+ *  1) Traverse each edge of each triangle
+ *  2) For each edge with vertices [v1, v2]
+ *      Case 1: If v1 and v2 is inside, add v2
+ *      Case 2: If v1 inside and v2 outside, add intersection
+ *      Case 3: If v1 outside and v2 inside, add intersection and then add v2
+ *      Case 4: If v1 and v2 is outside, add nothing
+ *    Observation: A clipped triangle can either contain
+ *      3 points (if only case 1 and 4 occurred) or
+ *      4 points (if case 2 and 3 occurred) or
+ *      0 points (if only case 4 occurred, thus no points)
+ *  3) If 4 points, make two triangles, 0 1 2 and 0 3 2, total 6 points.
+ */
+template <typename F>
+std::optional<glm::u32vec2> sutherlandHodgman(glm::u32vec3 triangle, const Plane& plane,
+                                              const std::vector<vec3>& positions,
+                                              std::vector<std::uint32_t>& indices,
+                                              const F& addInterpolatedVertex) {
+
+    std::vector<std::uint32_t> newIndices;
+    std::vector<std::uint32_t> newEdge;
+
+    for (size_t i = 0; i < 3; ++i) {
+        const auto i1 = triangle[i];
+        const auto i2 = triangle[(i + 1) % 3];
+        const auto i3 = triangle[(i + 2) % 3];
+        const auto v1 = positions[i1];
+        const auto v2 = positions[i2];
+        const auto v3 = positions[i3];
+
+        if (plane.isInside(v1)) {
+            if (plane.isInside(v2)) {  // Case 1
+                newIndices.push_back(i2);
+            } else {  // Case 2
+                const auto weight = *plane.getIntersectionWeight(v1, v2);
+                const auto newIndex = addInterpolatedVertex({i1, i2}, {1.0f - weight, weight});
+                newIndices.push_back(newIndex);
+                newEdge.push_back(newIndex);
+            }
+        } else if (plane.isInside(v2)) {  // Case 3
+            const auto weight = *plane.getIntersectionWeight(v1, v2);
+            const auto newIndex = addInterpolatedVertex({i1, i2}, {1.0f - weight, weight});
+            newIndices.push_back(newIndex);
+            newEdge.push_back(newIndex);
+            newIndices.push_back(i2);
+        }
+    }
+    if (newIndices.size() == 3) {
+        indices.push_back(newIndices[0]);
+        indices.push_back(newIndices[1]);
+        indices.push_back(newIndices[2]);
+    } else if (newIndices.size() == 4) {
+        indices.push_back(newIndices[0]);
+        indices.push_back(newIndices[1]);
+        indices.push_back(newIndices[2]);
+
+        indices.push_back(newIndices[0]);
+        indices.push_back(newIndices[3]);
+        indices.push_back(newIndices[2]);
+    }
+    if (newEdge.size() == 2) {
+        return glm::u32vec2{newEdge[0], newEdge[1]};
+    } else {
+        return std::nullopt;
+    }
+}
+
+IVW_MODULE_BASE_API void removeDuplicateEdges(std::vector<glm::u32vec2>& cuts,
+                                              const std::vector<vec3>& positions, float eps);
+
+IVW_MODULE_BASE_API std::vector<std::vector<std::uint32_t>> gatherLoops(
+    std::vector<glm::u32vec2>& edges, const std::vector<vec3>& positions, float eps);
+
+}  // namespace detail
+
 /**
  * Clip mesh against plane using Sutherland-Hodgman.
  * If holes should be closed, the input mesh must be manifold.
@@ -54,8 +137,13 @@ namespace meshutil {
  * mesh is not manifold.
  * @returns SimpleMesh with connectivity None
  */
-IVW_MODULE_BASE_API std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh&, const Plane&,
+IVW_MODULE_BASE_API std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh& mesh,
+                                                               const Plane& worldSpacePlane,
                                                                bool capClippedHoles = true);
+
+IVW_MODULE_BASE_API std::shared_ptr<Mesh> clipMeshAgainstPlaneNew(const Mesh& mesh,
+                                                                  const Plane& worldSpacePlane,
+                                                                  bool capClippedHoles = true);
 
 /**
  * Compute barycentric coordinates/weights for

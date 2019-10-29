@@ -32,7 +32,12 @@
 #include <inviwo/core/datastructures/geometry/basicmesh.h>
 #include <inviwo/core/datastructures/geometry/edge.h>
 #include <inviwo/core/datastructures/geometry/polygon.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <modules/base/algorithm/dataminmax.h>
+
+#include <optional>
+#include <algorithm>
 
 namespace inviwo {
 
@@ -41,14 +46,13 @@ namespace meshutil {
 namespace detail {
 
 // Check point equality with threshold
-inline bool equal(vec3 v1, vec3 v2, float eps) {
-    return (std::abs(v1.x - v2.x) < eps && std::abs(v1.y - v2.y) < eps &&
-            std::abs(v1.z - v2.z) < eps);
+bool equal(vec3 v1, vec3 v2, float eps) {
+    return glm::all(glm::lessThan(glm::abs(v1 - v2), vec3{eps}));
 }
 
 // Compute barycentric coordinates/weights for
 // point p with respect to triangle (a, b, c)
-inline vec3 barycentricTriangle(vec3 p, vec3 a, vec3 b, vec3 c) {
+vec3 barycentricTriangle(vec3 p, vec3 a, vec3 b, vec3 c) {
     vec3 v0 = b - a, v1 = c - a, v2 = p - a;
     float d00 = glm::dot(v0, v0);
     float d01 = glm::dot(v0, v1);
@@ -63,19 +67,20 @@ inline vec3 barycentricTriangle(vec3 p, vec3 a, vec3 b, vec3 c) {
     return bary;
 }
 
-std::vector<Edge3D> findUniqueEdges(const std::vector<Edge3D>& edges, const float EPSILON) {
+std::vector<Edge3D> findUniqueEdges(const std::vector<Edge3D>& edges, const float eps) {
 
     std::vector<Edge3D> result;
 
-    for (const auto& e : edges)
-        if (!equal(e.v1, e.v2, EPSILON)) result.push_back(e);
+    for (const auto& e : edges) {
+        if (!equal(e.v1, e.v2, eps)) result.push_back(e);
+    }
 
     std::sort(result.begin(), result.end(), [](Edge3D a, Edge3D b) {
         return glm::distance(a.v1, a.v2) > glm::distance(b.v1, b.v2);
     });
 
-    const auto newEnd = std::unique(result.begin(), result.end(), [EPSILON](Edge3D a, Edge3D b) {
-        return equal(a.v1, b.v1, EPSILON) && equal(a.v2, b.v2, EPSILON);
+    const auto newEnd = std::unique(result.begin(), result.end(), [eps](Edge3D a, Edge3D b) {
+        return equal(a.v1, b.v1, eps) && equal(a.v2, b.v2, eps);
     });
 
     result.resize(std::distance(result.begin(), newEnd));
@@ -83,7 +88,7 @@ std::vector<Edge3D> findUniqueEdges(const std::vector<Edge3D>& edges, const floa
     return result;
 }
 
-std::vector<Polygon<Edge3D>> findLoops(const std::vector<Edge3D>& edges, const float EPSILON) {
+std::vector<Polygon<Edge3D>> findLoops(const std::vector<Edge3D>& edges, const float eps) {
     std::vector<Polygon<Edge3D>> polygons;
     std::vector<Edge3D> connectedEdges;
     std::vector<Edge3D> unconnectEdges(edges);
@@ -97,7 +102,7 @@ std::vector<Polygon<Edge3D>> findLoops(const std::vector<Edge3D>& edges, const f
 
         // Search all edges for a connection
         for (size_t i = 0; i < edges.size(); ++i) {
-            if (equal(edges[i].v1, currentEdge.v2, EPSILON) && edges[i].v2 != currentEdge.v1) {
+            if (equal(edges[i].v1, currentEdge.v2, eps) && edges[i].v2 != currentEdge.v1) {
                 connectedEdges.push_back(Edge3D(currentEdge.v2, edges[i].v2));
                 const auto it =
                     std::find(unconnectEdges.begin(), unconnectEdges.end(), currentEdge);
@@ -106,8 +111,7 @@ std::vector<Polygon<Edge3D>> findLoops(const std::vector<Edge3D>& edges, const f
 
                 currentEdge = edges[i];
                 i = 0;
-            } else if (equal(edges[i].v2, currentEdge.v2, EPSILON) &&
-                       edges[i].v1 != currentEdge.v1) {
+            } else if (equal(edges[i].v2, currentEdge.v2, eps) && edges[i].v1 != currentEdge.v1) {
                 connectedEdges.push_back(Edge3D(currentEdge.v2, edges[i].v1));
                 const auto it =
                     std::find(unconnectEdges.begin(), unconnectEdges.end(), currentEdge);
@@ -119,7 +123,7 @@ std::vector<Polygon<Edge3D>> findLoops(const std::vector<Edge3D>& edges, const f
             }
 
             // Last edge connect to first edge, close the loop and make a polygon
-            if (equal(connectedEdges[0].v1, currentEdge.v2, EPSILON)) {
+            if (equal(connectedEdges[0].v1, currentEdge.v2, eps)) {
                 if (currentEdge.v1 != currentEdge.v2) {
                     connectedEdges.push_back(Edge3D(currentEdge.v2, connectedEdges[0].v1));
                     const auto it =
@@ -156,7 +160,7 @@ std::vector<Polygon<Edge3D>> findLoops(const std::vector<Edge3D>& edges, const f
 }
 
 std::vector<Polygon<Edge3D>> simplifyPolygons(const std::vector<Polygon<Edge3D>>& polygons,
-                                              const float EPSILON) {
+                                              const float eps) {
     std::vector<Polygon<Edge3D>> simplifiedPolygons;
 
     for (const auto& poly : polygons) {
@@ -168,7 +172,7 @@ std::vector<Polygon<Edge3D>> simplifyPolygons(const std::vector<Polygon<Edge3D>>
             const auto testEdge = poly.get(i);
             const auto pivotDir = glm::normalize(pivotEdge.v2 - pivotEdge.v1);
             const auto testDir = glm::normalize(testEdge.v2 - testEdge.v1);
-            if (glm::abs(glm::dot(pivotDir, testDir) - 1.0f) < EPSILON) {
+            if (glm::abs(glm::dot(pivotDir, testDir) - 1.0f) < eps) {
                 pivotEdge.v2 = testEdge.v2;
             } else {
                 simplifiedEdges.push_back(testEdge);
@@ -190,13 +194,13 @@ std::vector<Polygon<Edge3D>> simplifyPolygons(const std::vector<Polygon<Edge3D>>
     return notDegenerated;
 }
 
-std::vector<vec3> findUniquePoints(const Polygon<Edge3D> polygon, const float EPSILON) {
+std::vector<vec3> findUniquePoints(const Polygon<Edge3D> polygon, const float eps) {
     std::vector<vec3> points;
     for (size_t i = 0; i < polygon.size(); ++i) {
         Edge3D e = polygon.get(i);
         bool found = false;
         for (const auto& pt : points) {
-            if (equal(pt, e.v1, EPSILON)) {
+            if (equal(pt, e.v1, eps)) {
                 found = true;
                 break;
             }
@@ -204,7 +208,7 @@ std::vector<vec3> findUniquePoints(const Polygon<Edge3D> polygon, const float EP
         if (!found) points.push_back(e.v1);
         found = false;
         for (const auto& pt : points) {
-            if (equal(pt, e.v2, EPSILON)) {
+            if (equal(pt, e.v2, eps)) {
                 found = true;
                 break;
             }
@@ -214,7 +218,413 @@ std::vector<vec3> findUniquePoints(const Polygon<Edge3D> polygon, const float EP
     return points;
 }
 
+void removeDuplicateEdges(std::vector<glm::u32vec2>& cuts, const std::vector<vec3>& positions,
+                          float eps) {
+
+    cuts.erase(
+        std::remove_if(cuts.begin(), cuts.end(),
+                       [&](glm::u32vec2 edge) {
+                           return glm::all(glm::equal(positions[edge[0]], positions[edge[1]], eps));
+                       }),
+        cuts.end());
+
+    std::transform(cuts.begin(), cuts.end(), cuts.begin(), [&](glm::u32vec2 edge) {
+        const auto pa = glm::value_ptr(positions[edge[0]]);
+        const auto pb = glm::value_ptr(positions[edge[1]]);
+        return std::lexicographical_compare(pa, pa + 3, pb, pb + 3)
+                   ? edge
+                   : glm::u32vec2{edge[1], edge[0]};
+    });
+
+    std::sort(cuts.begin(), cuts.end(), [&](glm::u32vec2 a, glm::u32vec2 b) {
+        const auto pa0 = glm::value_ptr(positions[a[0]]);
+        const auto pb0 = glm::value_ptr(positions[b[0]]);
+        if (std::lexicographical_compare(pa0, pa0 + 3, pb0, pb0 + 3)) {
+            return true;
+        } else if (std::lexicographical_compare(pb0, pb0 + 3, pa0, pa0 + 3)) {
+            return false;
+        } else {
+            const auto pa1 = glm::value_ptr(positions[a[1]]);
+            const auto pb1 = glm::value_ptr(positions[b[1]]);
+            return std::lexicographical_compare(pa1, pa1 + 3, pb1, pb1 + 3);
+        }
+    });
+    cuts.erase(std::unique(cuts.begin(), cuts.end(),
+                           [&](glm::u32vec2 a, glm::u32vec2 b) {
+                               return glm::all(glm::equal(positions[a[0]], positions[b[0]], eps)) &&
+                                      glm::all(glm::equal(positions[a[1]], positions[b[1]], eps));
+                           }),
+               cuts.end());
+}
+
+std::vector<std::vector<std::uint32_t>> gatherLoops(std::vector<glm::u32vec2>& edges,
+                                                    const std::vector<vec3>& positions, float eps) {
+    std::vector<std::vector<std::uint32_t>> loops;
+
+    auto findMatch = [eps, &positions](std::vector<glm::u32vec2>& edges, std::uint32_t index) {
+        const auto it1 = std::find_if(edges.begin(), edges.end(), [&](glm::u32vec2 edge) {
+            return glm::all(glm::equal(positions[edge[0]], positions[index], eps));
+        });
+
+        if (it1 != edges.end()) {
+            return std::make_tuple(it1, (*it1)[1]);
+        }
+        const auto it2 = std::find_if(edges.begin(), edges.end(), [&](glm::u32vec2 edge) {
+            return glm::all(glm::equal(positions[edge[1]], positions[index], eps));
+        });
+
+        if (it2 != edges.end()) {
+            return std::make_tuple(it2, (*it2)[0]);
+        }
+
+        return std::make_tuple(edges.end(), uint32_t{0});
+    };
+
+    while (!edges.empty()) {
+        auto& loop = loops.emplace_back();
+        loop.push_back(edges.back()[0]);
+        loop.push_back(edges.back()[1]);
+        edges.pop_back();
+
+        while (!edges.empty()) {
+            const auto [it, index] = findMatch(edges, loop.back());
+            if (it != edges.end()) {
+                if (glm::all(glm::equal(positions[index], positions[loop.front()], eps))) {
+                    edges.erase(it);
+                    break;
+                } else {
+                    loop.push_back(index);
+                    edges.erase(it);
+                }
+            } else {
+                // throw Exception(
+                LogWarnCustom(
+                    "MeshClipping",
+                    "Found edge, that is not connected to any other edge. This could mean, the "
+                    "clipped mesh was not manifold.");
+                // IVW_CONTEXT_CUSTOM("MeshClipping"));
+                break;
+            }
+        }
+    }
+    return loops;
+}
+
+std::vector<float> barycentricInsidePolygon(vec2 v, const std::vector<vec2>& vis) {
+
+    std::vector<vec2> sis;
+    std::transform(vis.begin(), vis.end(), std::back_inserter(sis),
+                   [v](const vec2& vi) { return vi - v; });
+
+    std::vector<float> weights(vis.size(), 0.0f);
+
+    std::vector<float> tana(vis.size(), 0.0f);
+
+    for (size_t i = 0; i < vis.size(); ++i) {
+        const size_t j = (i + 1) % vis.size();
+        const auto ri = glm::length(sis[i]);
+        const auto Aij = glm::determinant(mat2{sis[i], sis[j]});
+        const auto Dij = glm::dot(sis[i], sis[j]);
+        if (util::almostEqual(ri, 0.0f)) {
+            weights[i] = 1.0f;
+            return weights;
+        }
+        const auto rj = glm::length(sis[j]);
+
+        if (util::almostEqual(Aij, 0.0f)) {
+            if (Dij < 0.0f) {
+                weights[i] = ri / (ri + rj);
+                weights[j] = rj / (ri + rj);
+                return weights;
+            }
+        } else {
+            tana[i] = (rj - Dij / ri) / Aij;
+        }
+    }
+
+    float total = 0.0f;
+    for (size_t i = 0; i < vis.size(); ++i) {
+        const auto prev = (i - 1 + vis.size()) % vis.size();
+        weights[i] = tana[prev] + tana[i];
+        total += weights[i];
+    }
+    std::transform(weights.begin(), weights.end(), weights.begin(),
+                   [total](float w) { return w / total; });
+
+    return weights;
+}
+
+template <typename F>
+void capHoles(std::vector<glm::u32vec2>& edges, vec3 normal, const std::vector<vec3>& positions,
+              std::vector<std::uint32_t>& indices, const F& addInterpolatedVertex) {
+
+    constexpr float relError = 0.00001f;
+    const auto eps =
+        relError * std::accumulate(edges.begin(), edges.end(), 0.0f, [&](float m, glm::u32vec2 e) {
+            return glm::max(m, glm::max(glm::compMax(glm::abs(positions[e[0]])),
+                                        glm::compMax(glm::abs(positions[e[1]]))));
+        });
+
+    removeDuplicateEdges(edges, positions, eps);
+    const auto loops = gatherLoops(edges, positions, eps);
+
+    for (const auto& loop : loops) {
+        const auto center =
+            std::accumulate(loop.begin(), loop.end(), vec3{0},
+                            [&](vec3 acc, uint32_t index) { return acc + positions[index]; }) /
+            static_cast<float>(loop.size());
+
+        const auto u = glm::normalize(positions[loop.front()] - center);
+        const auto v = glm::normalize(glm::cross(u, normal));
+        const auto trans = mat3{u, v, normal};
+
+        std::vector<vec2> uv;
+        std::transform(loop.begin(), loop.end(), std::back_inserter(uv),
+                       [&](uint32_t p) { return vec2{trans * positions[p]}; });
+
+        const auto weights = barycentricInsidePolygon(vec2{trans * center}, uv);
+        const auto centerIndex = addInterpolatedVertex(loop, weights);
+
+        for (size_t i = 0; i < loop.size(); ++i) {
+            indices.push_back(loop[i]);
+            indices.push_back(loop[(i + 1) % loop.size()]);
+            indices.push_back(centerIndex);
+        }
+    }
+}
+
+template <typename F>
+void clipIndices(const inviwo::Mesh::MeshInfo& meshInfo, std::shared_ptr<inviwo::Mesh>& clippedMesh,
+                 const std::vector<uint32_t>& indices, const inviwo::Plane& plane,
+                 const std::vector<inviwo::vec3>& positions, const F& addInterpolatedVertex,
+                 bool capClippedHoles) {
+
+    if (meshInfo.dt == DrawType::Points) {
+        auto outIndices = clippedMesh->addIndexBuffer(DrawType::Points, meshInfo.ct);
+        for (auto i : indices) {
+            if (plane.isInside(positions[i])) {
+                outIndices->add(i);
+            }
+        }
+
+    } else if (meshInfo.dt == DrawType::Lines) {
+        if (meshInfo.ct == ConnectivityType::None) {
+            if (indices.size() < 2) return;
+            auto outIndices = clippedMesh->addIndexBuffer(DrawType::Lines, ConnectivityType::None);
+            for (unsigned int l = 0; l < indices.size() - 1; l += 2) {
+                const auto i1 = indices[l];
+                const auto i2 = indices[l + 1];
+
+                const auto in1 = plane.isInside(positions[i1]);
+                const auto in2 = plane.isInside(positions[i2]);
+
+                if (in1 && in2) {
+                    outIndices->add(i1);
+                    outIndices->add(i2);
+                } else if (in1) {
+                    const auto weight = *plane.getIntersectionWeight(positions[i1], positions[i2]);
+                    outIndices->add(i1);
+                    outIndices->add(addInterpolatedVertex({i1, i2}, {1.0f - weight, weight}));
+                } else if (in2) {
+                    const auto weight = *plane.getIntersectionWeight(positions[i1], positions[i2]);
+                    outIndices->add(addInterpolatedVertex({i1, i2}, {1.0f - weight, weight}));
+                    outIndices->add(i2);
+                }
+            }
+        } else if (meshInfo.ct == ConnectivityType::Adjacency) {
+            if (indices.size() < 4) return;
+            auto outIndices =
+                clippedMesh->addIndexBuffer(DrawType::Lines, ConnectivityType::Adjacency);
+            for (unsigned int l = 0; l < indices.size() - 3; l += 4) {
+
+                const auto i1 = indices[l];
+                const auto i2 = indices[l + 1];
+                const auto i3 = indices[l + 2];
+                const auto i4 = indices[l + 3];
+
+                const auto in2 = plane.isInside(positions[i2]);
+                const auto in3 = plane.isInside(positions[i3]);
+
+                if (in2 && in3) {
+                    outIndices->add(i1);
+                    outIndices->add(i2);
+                    outIndices->add(i3);
+                    outIndices->add(i4);
+                } else if (in2) {
+                    const auto weight = *plane.getIntersectionWeight(positions[i2], positions[i3]);
+                    outIndices->add(i1);
+                    outIndices->add(i2);
+                    outIndices->add(addInterpolatedVertex({i2, i3}, {1.0f - weight, weight}));
+                    outIndices->add(i3);
+                } else if (in2) {
+                    const auto weight = *plane.getIntersectionWeight(positions[i2], positions[i3]);
+                    outIndices->add(i2);
+                    outIndices->add(addInterpolatedVertex({i2, i3}, {1.0f - weight, weight}));
+                    outIndices->add(i3);
+                    outIndices->add(i4);
+                }
+            }
+        } else if (meshInfo.ct == ConnectivityType::Strip) {
+            if (indices.size() < 2) return;
+
+            auto start = indices.begin();
+            const auto end = indices.end();
+
+            while (start != end) {
+                start = std::find_if(start, end,
+                                     [&](uint32_t i) { return plane.isInside(positions[i]); });
+                const auto lineEnd = std::find_if(
+                    start, end, [&](uint32_t i) { return !plane.isInside(positions[i]); });
+                if (start != end) {
+                    auto& outIndices =
+                        clippedMesh->addIndexBuffer(DrawType::Lines, ConnectivityType::Strip)
+                            ->getDataContainer();
+                    std::copy(start, lineEnd, std::back_inserter(outIndices));
+                }
+                start = lineEnd;
+            }
+
+        } else if (meshInfo.ct == ConnectivityType::StripAdjacency) {
+            if (indices.size() < 4) return;
+            auto start = indices.begin() + 1;
+            const auto end = indices.end() - 1;
+
+            while (start != end) {
+                start = std::find_if(start, end,
+                                     [&](uint32_t i) { return plane.isInside(positions[i]); });
+                const auto lineEnd = std::find_if(
+                    start, end, [&](uint32_t i) { return !plane.isInside(positions[i]); });
+                if (start != end) {
+                    auto& outIndices =
+                        clippedMesh
+                            ->addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency)
+                            ->getDataContainer();
+
+                    outIndices.push_back(*std::prev(start));
+                    std::copy(start, lineEnd, std::back_inserter(outIndices));
+                    outIndices.push_back(*lineEnd);
+                }
+                start = lineEnd;
+            }
+
+        } else {
+            throw Exception("Cannot clip, need line connectivity Strip or None",
+                            IVW_CONTEXT_CUSTOM("MeshClipping"));
+        }
+    } else if (meshInfo.dt == DrawType::Triangles) {
+        auto outIndices = clippedMesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
+        std::vector<glm::u32vec2> newEdges;
+        if (meshInfo.ct == ConnectivityType::Strip) {
+            for (unsigned int t = 0; t < indices.size() - 2; ++t) {
+                const glm::u32vec3 triangle{indices[t], indices[t & 1 ? t + 2 : t + 1],
+                                            indices[t & 1 ? t + 1 : t + 2]};
+                auto newEdge = detail::sutherlandHodgman(triangle, plane, positions,
+                                                         outIndices->getDataContainer(),
+                                                         addInterpolatedVertex);
+                if (newEdge) newEdges.push_back(*newEdge);
+            }
+        } else if (meshInfo.ct == ConnectivityType::None) {
+            for (unsigned int t = 0; t < indices.size() - 2; t += 3) {
+                const glm::u32vec3 triangle{indices[t], indices[t + 1], indices[t + 2]};
+                auto newEdge = detail::sutherlandHodgman(triangle, plane, positions,
+                                                         outIndices->getDataContainer(),
+                                                         addInterpolatedVertex);
+                if (newEdge) newEdges.push_back(*newEdge);
+            }
+        } else {
+            throw Exception("Cannot clip, need triangle connectivity Strip or None",
+                            IVW_CONTEXT_CUSTOM("MeshClipping"));
+        }
+        if (capClippedHoles) {
+            detail::capHoles(newEdges, plane.getNormal(), positions, outIndices->getDataContainer(),
+                             addInterpolatedVertex);
+        }
+    }
 }  // namespace detail
+
+}  // namespace detail
+
+std::shared_ptr<Mesh> clipMeshAgainstPlaneNew(const Mesh& mesh, const Plane& worldSpacePlane,
+                                              bool capClippedHoles) {
+
+    const auto plane =
+        worldSpacePlane.transform(mesh.getCoordinateTransformer().getWorldToDataMatrix());
+
+    auto clippedMesh = std::make_shared<Mesh>();
+    clippedMesh->setModelMatrix(mesh.getModelMatrix());
+    clippedMesh->setWorldMatrix(mesh.getWorldMatrix());
+
+    std::vector<
+        std::function<std::uint32_t(const std::vector<uint32_t>&, const std::vector<float>&)>>
+        addInterpolatedVertexFuncs;
+
+    for (const auto& buffer : mesh.getBuffers()) {
+        buffer.second->getRepresentation<BufferRAM>()->dispatch<void>([&](auto inBuffer) {
+            using PB = util::PrecisionType<decltype(inBuffer)>;
+            using ValueType = util::PrecisionValueType<decltype(inBuffer)>;
+
+            using T = typename util::same_extent<ValueType, float>::type;
+
+            auto outBuffer = std::make_shared<BufferRAMPrecision<ValueType, PB::target>>(*inBuffer);
+            auto buff = std::make_shared<Buffer<ValueType, PB::target>>(outBuffer);
+            clippedMesh->addBuffer(buffer.first, buff);
+
+            const auto inter = [outBuffer](const std::vector<uint32_t>& indices,
+                                           const std::vector<float>& weights) {
+                const T val =
+                    std::inner_product(indices.begin(), indices.end(), weights.begin(), T{0},
+                                       std::plus<>{}, [&](uint32_t index, float weight) {
+                                           return static_cast<T>((*outBuffer)[index]) * weight;
+                                       });
+
+                outBuffer->add(static_cast<ValueType>(val));
+                return static_cast<uint32_t>(outBuffer->getSize() - 1);
+            };
+
+            addInterpolatedVertexFuncs.emplace_back(std::move(inter));
+        });
+    }
+
+    const auto addInterpolatedVertex = [&addInterpolatedVertexFuncs](
+                                           const std::vector<uint32_t>& indices,
+                                           const std::vector<float>& weights) -> uint32_t {
+        uint32_t res = 0;
+        for (auto& fun : addInterpolatedVertexFuncs) res = fun(indices, weights);
+        return res;
+    };
+
+    const auto posBuffer = clippedMesh->findBuffer(BufferType::PositionAttrib);
+    if (!posBuffer.first) {
+        throw Exception("Unsupported mesh type, position buffer not found",
+                        IVW_CONTEXT_CUSTOM("MeshClipping"));
+    }
+    if (posBuffer.first->getDataFormat()->getId() != DataVec3Float32::id()) {
+        throw Exception("Unsupported mesh type, only vec3 position buffers supported",
+                        IVW_CONTEXT_CUSTOM("MeshClipping"));
+    }
+
+    const auto& positions =
+        static_cast<const Vec3BufferRAM*>(posBuffer.first->getRepresentation<BufferRAM>())
+            ->getDataContainer();
+
+    for (const auto& item : mesh.getIndexBuffers()) {
+        const auto meshInfo = item.first;
+        const auto indexBuffer = item.second;
+        const auto& indices = indexBuffer->getRAMRepresentation()->getDataContainer();
+
+        detail::clipIndices(meshInfo, clippedMesh, indices, plane, positions, addInterpolatedVertex,
+                            capClippedHoles);
+    }
+    if (mesh.getIndexBuffers().empty()) {
+        const auto meshInfo = mesh.getDefaultMeshInfo();
+        std::vector<uint32_t> indices(mesh.getBuffer(0)->getSize());
+        std::iota(indices.begin(), indices.end(), 0);
+        detail::clipIndices(meshInfo, clippedMesh, indices, plane, positions, addInterpolatedVertex,
+                            capClippedHoles);
+    }
+
+    return clippedMesh;
+}
 
 std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh& mesh, const Plane& worldSpacePlane,
                                            bool capClippedHoles) {
@@ -342,8 +752,8 @@ std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh& mesh, const Plane& worldS
                     // Add Intersection
                     const auto inter =
                         plane.getIntersection(vertexList->at(tri[i]), vertexList->at(tri[j]));
-                    if (!inter.intersects_) throw Exception("Edge must intersect plane");
-                    vec3 intersection = inter.intersection_;
+                    if (!inter) throw Exception("Edge must intersect plane");
+                    vec3 intersection = *inter;
                     newVertices.push_back(intersection);
                     vec3 interBC =
                         barycentricTriangle(intersection, vertexList->at(tri[0]),
@@ -374,8 +784,8 @@ std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh& mesh, const Plane& worldS
                     // Add Intersection
                     const auto inter =
                         plane.getIntersection(vertexList->at(tri[i]), vertexList->at(tri[j]));
-                    if (!inter.intersects_) throw Exception("Edge must intersect plane");
-                    vec3 intersection = inter.intersection_;
+                    if (!inter) throw Exception("Edge must intersect plane");
+                    vec3 intersection = *inter;
                     newVertices.push_back(intersection);
                     vec3 interBC =
                         barycentricTriangle(intersection, vertexList->at(tri[0]),

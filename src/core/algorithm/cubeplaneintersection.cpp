@@ -50,8 +50,8 @@ void cubePlaneIntersectionAppend(const Plane& plane, std::vector<vec3>& pos,
 
         for (auto edge : edges) {
             const auto point = plane.getIntersection(corners[edge[0]], corners[edge[1]]);
-            if (point.intersects_) {
-                pos.push_back(point.intersection_);
+            if (point) {
+                pos.push_back(*point);
             }
         }
     }
