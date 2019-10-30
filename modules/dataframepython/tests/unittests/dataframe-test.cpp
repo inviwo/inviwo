@@ -114,7 +114,7 @@ d2 = ivwdataframe.DataFrame(10)
 }
 
 TEST(DataFrameTests, AddColumn) {
-    using Scalars = std::tuple<float, double, int, glm::i64, size_t, std::uint32_t>;
+    using Scalars = std::tuple<float, double, int, glm::i64, std::uint32_t>;
 
     util::for_each_type<Scalars>{}(AddColumnScript{});
 }
