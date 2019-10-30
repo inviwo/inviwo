@@ -294,11 +294,14 @@ void exposeProcessors(pybind11::module &m) {
                               ->getDataWriterFactory()
                               ->getWriterForTypeAndExtension<Layer>(ext);
             if (!writer) {
-                throw Exception("No write for extension " + ext);
+                throw Exception("No writer for extension " + ext);
             }
 
-            auto layer = canvas->getVisibleLayer();
-            writer->writeData(layer, filepath);
+            if (auto layer = canvas->getVisibleLayer()) {
+                writer->writeData(layer, filepath);
+            } else {
+                 throw Exception("No image in canvas " + canvas->getIdentifier());
+            }
         });
 
     py::class_<PythonScriptProcessor, Processor, ProcessorPtr<PythonScriptProcessor>>(
