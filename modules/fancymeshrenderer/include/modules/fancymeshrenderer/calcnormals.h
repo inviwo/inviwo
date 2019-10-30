@@ -30,19 +30,19 @@
 #ifndef IVW_CALCNORMALS_H
 #define IVW_CALCNORMALS_H
 
-#include <fancymeshrenderer/fancymeshrenderermoduledefine.h>
+#include <modules/fancymeshrenderer/fancymeshrenderermoduledefine.h>
 #include <inviwo/core/datastructures/geometry/basicmesh.h>
 #include <memory>
 
 namespace inviwo {
-    class Mesh;
+class Mesh;
 
-    /**
+/**
  * \class CalcNormals
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
  * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
  */
-class IVW_MODULE_FANCYMESHRENDERER_API CalcNormals { 
+class IVW_MODULE_FANCYMESHRENDERER_API CalcNormals {
 public:
     CalcNormals() {}
     virtual ~CalcNormals() = default;
@@ -50,8 +50,7 @@ public:
     /**
      * \brief The weighting modes
      */
-    enum class Mode
-    {
+    enum class Mode {
         /**
          * \brief Pass through, mesh is not changed
          */
@@ -66,7 +65,8 @@ public:
         WeightArea,
         /**
          * \brief Weight based on the angle.
-         * As defined in "Computing vertex normals from polygonal facets" by Grit Thürmer and Charles A. Wüthrich 1998.
+         * As defined in "Computing vertex normals from polygonal facets" by Grit Thürmer and
+         * Charles A. Wüthrich 1998.
          */
         WeightAngle,
         /**
@@ -94,7 +94,6 @@ public:
     static Mode preferredMode() { return Mode::WeightNMax; }
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_CALCNORMALS_H
-
+#endif  // IVW_CALCNORMALS_H

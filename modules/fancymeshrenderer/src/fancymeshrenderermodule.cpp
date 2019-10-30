@@ -27,31 +27,32 @@
  *
  *********************************************************************************/
 
-#include <fancymeshrenderer/fancymeshrenderermodule.h>
-#include <fancymeshrenderer/processors/fancymeshrenderer.h>
+#include <modules/fancymeshrenderer/fancymeshrenderermodule.h>
+#include <modules/fancymeshrenderer/processors/fancymeshrenderer.h>
 #include <modules/opengl/shader/shadermanager.h>
-#include <fancymeshrenderer/processors/calcnormalsprocessor.h>
+#include <modules/fancymeshrenderer/processors/calcnormalsprocessor.h>
 
 namespace inviwo {
 
-FancyMeshRendererModule::FancyMeshRendererModule(InviwoApplication* app) : InviwoModule(app, "FancyMeshRenderer") {   
-    
-	// Add a directory to the search path of the Shadermanager
+FancyMeshRendererModule::FancyMeshRendererModule(InviwoApplication* app)
+    : InviwoModule(app, "FancyMeshRenderer") {
+
+    // Add a directory to the search path of the Shadermanager
     ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
 
     // Register objects that can be shared with the rest of inviwo here:
-    
+
     // Processors
-	registerProcessor<FancyMeshRenderer>();
+    registerProcessor<FancyMeshRenderer>();
     registerProcessor<CalcNormalsProcessor>();
-    
+
     // Properties
     // registerProperty<fancymeshrendererProperty>();
-    
+
     // Readers and writes
     // registerDataReader(util::make_unique<fancymeshrendererReader>());
     // registerDataWriter(util::make_unique<fancymeshrendererWriter>());
-    
+
     // Data converters
     // registerRepresentationConverter(util::make_unique<fancymeshrendererDisk2RAMConverter>());
 
@@ -60,18 +61,19 @@ FancyMeshRendererModule::FancyMeshRendererModule(InviwoApplication* app) : Inviw
     // registerPort<fancymeshrendererInport>("fancymeshrendererInport");
 
     // PropertyWidgets
-    // registerPropertyWidget<fancymeshrendererPropertyWidget, fancymeshrendererProperty>("Default");
-    
+    // registerPropertyWidget<fancymeshrendererPropertyWidget,
+    // fancymeshrendererProperty>("Default");
+
     // Dialogs
     // registerDialog<fancymeshrendererDialog>(fancymeshrendererOutport);
-    
+
     // Other varius things
     // registerCapabilities(util::make_unique<fancymeshrendererCapabilities>());
     // registerSettings(util::make_unique<fancymeshrendererSettings>());
-    // registerMetaData(util::make_unique<fancymeshrendererMetaData>());   
+    // registerMetaData(util::make_unique<fancymeshrendererMetaData>());
     // registerPortInspector("fancymeshrendererOutport", "path/workspace.inv");
-    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget> processorWidget);
-    // registerDrawer(util::make_unique_ptr<fancymeshrendererDrawer>());  
+    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget>
+    // processorWidget); registerDrawer(util::make_unique_ptr<fancymeshrendererDrawer>());
 }
 
-} // namespace
+}  // namespace inviwo

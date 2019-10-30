@@ -11,6 +11,8 @@ set(HEADER_FILES
     include/modules/fancymeshrenderer/processors/calcnormalsprocessor.h
     include/modules/fancymeshrenderer/processors/FragmentListRenderer.h
     include/modules/fancymeshrenderer/processors/fancymeshrenderer.h
+    include/modules/fancymeshrenderer/fancymeshrenderermodule.h
+    include/modules/fancymeshrenderer/fancymeshrenderermoduledefine.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -23,6 +25,7 @@ set(SOURCE_FILES
     src/processors/calcnormalsprocessor.cpp
     src/processors/FragmentListRenderer.cpp
     src/processors/fancymeshrenderer.cpp
+    src/fancymeshrenderermodule.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

@@ -27,28 +27,22 @@
  *
  *********************************************************************************/
 
-#include <fancymeshrenderer/processors/calcnormalsprocessor.h>
+#include <modules/fancymeshrenderer/processors/calcnormalsprocessor.h>
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo CalcNormalsProcessor::processorInfo_{
-    "org.inviwo.CalcNormalsProcessor",      // Class identifier
+    "org.inviwo.CalcNormalsProcessor",  // Class identifier
     "Calculate Normals",                // Display name
-    "Mesh Processing",              // Category
-    CodeState::Experimental,  // Code state
-    Tags::CPU,               // Tags
+    "Mesh Processing",                  // Category
+    CodeState::Experimental,            // Code state
+    Tags::CPU,                          // Tags
 };
-const ProcessorInfo CalcNormalsProcessor::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo CalcNormalsProcessor::getProcessorInfo() const { return processorInfo_; }
 
 CalcNormalsProcessor::CalcNormalsProcessor()
-    : Processor()
-    , inport_("inport")
-    , outport_("outport")
-    , mode_("mode", "Mode")
-{
+    : Processor(), inport_("inport"), outport_("outport"), mode_("mode", "Mode") {
     addPort(inport_);
     addPort(outport_);
 
@@ -61,17 +55,15 @@ CalcNormalsProcessor::CalcNormalsProcessor()
     mode_.setCurrentStateAsDefault();
     addProperty(mode_);
 }
-    
+
 void CalcNormalsProcessor::process() {
     auto vd = inport_.getVectorData();
-    if (vd.size() == 1)
-    {
-        outport_.setData(std::shared_ptr<Mesh>(CalcNormals().processMesh(vd[0].get(), mode_.get())));
-    } else
-    {
+    if (vd.size() == 1) {
+        outport_.setData(
+            std::shared_ptr<Mesh>(CalcNormals().processMesh(vd[0].get(), mode_.get())));
+    } else {
         std::shared_ptr<Mesh> m = std::make_shared<Mesh>();
-        for (auto i : vd)
-        {
+        for (auto i : vd) {
             auto i2 = CalcNormals().processMesh(i.get(), mode_.get());
             m->append(*i2);
             delete i2;
@@ -80,5 +72,4 @@ void CalcNormalsProcessor::process() {
     }
 }
 
-} // namespace
-
+}  // namespace inviwo

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <warn/push>
@@ -32,33 +32,27 @@
 #include <gtest/gtest.h>
 #include <warn/pop>
 
-#include <fancymeshrenderer/HalfEdges.h>
-#include <fancymeshrenderer/HalfEdges.cpp>
+#include <modules/fancymeshrenderer/HalfEdges.h>
+//#include <modules/fancymeshrenderer/HalfEdges.cpp>
 
-namespace inviwo{
+namespace inviwo {
 
 // 0<=x<=width, 0<=y<=height
-int toLinearIndex(int x, int y, int width, int height)
-{
-    return x + y * (width + 1);
-}
+int toLinearIndex(int x, int y, int width, int height) { return x + y * (width + 1); }
 
-std::shared_ptr<IndexBuffer> createPlane(int width, int height)
-{
+std::shared_ptr<IndexBuffer> createPlane(int width, int height) {
     std::shared_ptr<IndexBuffer> b = std::make_shared<IndexBuffer>();
     auto indices = b->getEditableRAMRepresentation();
 
-    for (int x=0; x<width; ++x)
-    {
-        for (int y=0; y<height; ++y)
-        {
+    for (int x = 0; x < width; ++x) {
+        for (int y = 0; y < height; ++y) {
             indices->add(toLinearIndex(x, y, width, height));
-            indices->add(toLinearIndex(x, y+1, width, height));
-            indices->add(toLinearIndex(x+1, y, width, height));
+            indices->add(toLinearIndex(x, y + 1, width, height));
+            indices->add(toLinearIndex(x + 1, y, width, height));
 
-            indices->add(toLinearIndex(x, y+1, width, height));
-            indices->add(toLinearIndex(x+1, y+1, width, height));
-            indices->add(toLinearIndex(x+1, y, width, height));
+            indices->add(toLinearIndex(x, y + 1, width, height));
+            indices->add(toLinearIndex(x + 1, y + 1, width, height));
+            indices->add(toLinearIndex(x + 1, y, width, height));
         }
     }
 
@@ -66,10 +60,9 @@ std::shared_ptr<IndexBuffer> createPlane(int width, int height)
 }
 
 /**
- * Create a plane 
+ * Create a plane
  */
-TEST(HalfEdges, plane)
-{
+TEST(HalfEdges, plane) {
     int width = 7;
     int height = 5;
     std::shared_ptr<IndexBuffer> b = createPlane(width, height);
@@ -80,49 +73,46 @@ TEST(HalfEdges, plane)
     ASSERT_EQ(6 * 2 * width * height, b2->getSize());
 
     auto indices = b2->getRAMRepresentation();
-    for (int x = 0; x < width; ++x)
-    {
-        for (int y = 0; y < height; ++y)
-        {
-            //I know that the implementation rotates all triangles one step around,
-            //keep that in mind when testing the indices.
+    for (int x = 0; x < width; ++x) {
+        for (int y = 0; y < height; ++y) {
+            // I know that the implementation rotates all triangles one step around,
+            // keep that in mind when testing the indices.
 
-            //first triangle
-            int tri1 = 2 * (y + x*height);
-            //base triangle
-            EXPECT_EQ(toLinearIndex(x, y+1, width, height), indices->get(6 * tri1));
-            EXPECT_EQ(toLinearIndex(x+1, y, width, height), indices->get(6 * tri1 + 2));
-            EXPECT_EQ(toLinearIndex(x, y, width, height), indices->get(6 * tri1 + 4));
-
-            //neighbors
+            // first triangle
+            int tri1 = 2 * (y + x * height);
+            // base triangle
             EXPECT_EQ(toLinearIndex(x, y + 1, width, height), indices->get(6 * tri1));
-            EXPECT_EQ(toLinearIndex(x + 1, y+1, width, height), indices->get(6 * tri1 + 1));
-            EXPECT_EQ(toLinearIndex(x+1, y, width, height), indices->get(6 * tri1 + 2));
+            EXPECT_EQ(toLinearIndex(x + 1, y, width, height), indices->get(6 * tri1 + 2));
+            EXPECT_EQ(toLinearIndex(x, y, width, height), indices->get(6 * tri1 + 4));
 
-            EXPECT_EQ(toLinearIndex(x+1, y, width, height), indices->get(6 * tri1 + 2));
-            if(y>0)
-                EXPECT_EQ(toLinearIndex(x+1, y-1, width, height), indices->get(6 * tri1 + 3));
+            // neighbors
+            EXPECT_EQ(toLinearIndex(x, y + 1, width, height), indices->get(6 * tri1));
+            EXPECT_EQ(toLinearIndex(x + 1, y + 1, width, height), indices->get(6 * tri1 + 1));
+            EXPECT_EQ(toLinearIndex(x + 1, y, width, height), indices->get(6 * tri1 + 2));
+
+            EXPECT_EQ(toLinearIndex(x + 1, y, width, height), indices->get(6 * tri1 + 2));
+            if (y > 0)
+                EXPECT_EQ(toLinearIndex(x + 1, y - 1, width, height), indices->get(6 * tri1 + 3));
             else
-                EXPECT_EQ(toLinearIndex(x, y+1, width, height), indices->get(6 * tri1 + 3));
+                EXPECT_EQ(toLinearIndex(x, y + 1, width, height), indices->get(6 * tri1 + 3));
             EXPECT_EQ(toLinearIndex(x, y, width, height), indices->get(6 * tri1 + 4));
 
             EXPECT_EQ(toLinearIndex(x, y, width, height), indices->get(6 * tri1 + 4));
-            if(x>0)
-                EXPECT_EQ(toLinearIndex(x-1, y+1, width, height), indices->get(6 * tri1 + 5));
+            if (x > 0)
+                EXPECT_EQ(toLinearIndex(x - 1, y + 1, width, height), indices->get(6 * tri1 + 5));
             else
                 EXPECT_EQ(toLinearIndex(x + 1, y, width, height), indices->get(6 * tri1 + 5));
-            EXPECT_EQ(toLinearIndex(x, y+1, width, height), indices->get(6 * tri1));
+            EXPECT_EQ(toLinearIndex(x, y + 1, width, height), indices->get(6 * tri1));
 
-
-            //second triangle
-            int tri2 = 2 * (y + x*height) + 1;
-            EXPECT_EQ(toLinearIndex(x+1, y+1, width, height), indices->get(6 * tri2));
-            EXPECT_EQ(toLinearIndex(x+1, y, width, height), indices->get(6 * tri2 + 2));
-            EXPECT_EQ(toLinearIndex(x, y+1, width, height), indices->get(6 * tri2 + 4));
-
-            //neighbors
+            // second triangle
+            int tri2 = 2 * (y + x * height) + 1;
             EXPECT_EQ(toLinearIndex(x + 1, y + 1, width, height), indices->get(6 * tri2));
-            if (x<width-1)
+            EXPECT_EQ(toLinearIndex(x + 1, y, width, height), indices->get(6 * tri2 + 2));
+            EXPECT_EQ(toLinearIndex(x, y + 1, width, height), indices->get(6 * tri2 + 4));
+
+            // neighbors
+            EXPECT_EQ(toLinearIndex(x + 1, y + 1, width, height), indices->get(6 * tri2));
+            if (x < width - 1)
                 EXPECT_EQ(toLinearIndex(x + 2, y, width, height), indices->get(6 * tri2 + 1));
             else
                 EXPECT_EQ(toLinearIndex(x, y + 1, width, height), indices->get(6 * tri2 + 1));
@@ -133,14 +123,14 @@ TEST(HalfEdges, plane)
             EXPECT_EQ(toLinearIndex(x, y + 1, width, height), indices->get(6 * tri2 + 4));
 
             EXPECT_EQ(toLinearIndex(x, y + 1, width, height), indices->get(6 * tri2 + 4));
-            if (y<height-1)
-                EXPECT_EQ(toLinearIndex(x, y+2, width, height), indices->get(6 * tri2 + 5));
+            if (y < height - 1)
+                EXPECT_EQ(toLinearIndex(x, y + 2, width, height), indices->get(6 * tri2 + 5));
             else
-                EXPECT_EQ(toLinearIndex(x+1, y, width, height), indices->get(6 * tri2 + 5));
-            EXPECT_EQ(toLinearIndex(x+1, y + 1, width, height), indices->get(6 * tri2 + 0));
+                EXPECT_EQ(toLinearIndex(x + 1, y, width, height), indices->get(6 * tri2 + 5));
+            EXPECT_EQ(toLinearIndex(x + 1, y + 1, width, height), indices->get(6 * tri2 + 0));
         }
     }
     ASSERT_TRUE(true);
 }
 
-}
+}  // namespace inviwo

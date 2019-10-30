@@ -24,18 +24,18 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_CALCNORMALSPROCESSOR_H
 #define IVW_CALCNORMALSPROCESSOR_H
 
-#include <fancymeshrenderer/fancymeshrenderermoduledefine.h>
+#include <modules/fancymeshrenderer/fancymeshrenderermoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/ports/meshport.h>
-#include <fancymeshrenderer/calcnormals.h>
+#include <modules/fancymeshrenderer/calcnormals.h>
 
 namespace inviwo {
 
@@ -48,34 +48,33 @@ namespace inviwo {
  *
  * ### Outports
  *   * __<Outport1>__ <description>.
- * 
+ *
  * ### Properties
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
  */
-
 
 /**
  * \class CalcNormalsProcessor
  * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
  * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
  */
-class IVW_MODULE_FANCYMESHRENDERER_API CalcNormalsProcessor : public Processor { 
+class IVW_MODULE_FANCYMESHRENDERER_API CalcNormalsProcessor : public Processor {
 public:
     CalcNormalsProcessor();
     virtual ~CalcNormalsProcessor() = default;
-     
+
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+
 private:
     MeshFlatMultiInport inport_;
     MeshOutport outport_;
     TemplateOptionProperty<CalcNormals::Mode> mode_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_CALCNORMALSPROCESSOR_H
-
+#endif  // IVW_CALCNORMALSPROCESSOR_H

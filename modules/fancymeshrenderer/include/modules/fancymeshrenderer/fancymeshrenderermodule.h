@@ -30,17 +30,17 @@
 #ifndef IVW_FANCYMESHRENDERERMODULE_H
 #define IVW_FANCYMESHRENDERERMODULE_H
 
-#include <fancymeshrenderer/fancymeshrenderermoduledefine.h>
+#include <modules/fancymeshrenderer/fancymeshrenderermoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
 
 namespace inviwo {
 
 class IVW_MODULE_FANCYMESHRENDERER_API FancyMeshRendererModule : public InviwoModule {
 public:
-	FancyMeshRendererModule(InviwoApplication* app);
+    FancyMeshRendererModule(InviwoApplication* app);
     virtual ~FancyMeshRendererModule() = default;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_FANCYMESHRENDERERMODULE_H
+#endif  // IVW_FANCYMESHRENDERERMODULE_H
