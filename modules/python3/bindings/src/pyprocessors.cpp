@@ -300,7 +300,7 @@ void exposeProcessors(pybind11::module &m) {
             if (auto layer = canvas->getVisibleLayer()) {
                 writer->writeData(layer, filepath);
             } else {
-                 throw Exception("No image in canvas " + canvas->getIdentifier());
+                throw Exception("No image in canvas " + canvas->getIdentifier());
             }
         });
 
