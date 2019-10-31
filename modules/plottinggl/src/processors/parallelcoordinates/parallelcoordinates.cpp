@@ -562,6 +562,9 @@ void ParallelCoordinates::drawLines(size2_t size) {
     lineShader_.setUniform("filterIntensity", filterIntensity_.get());
 
     {
+        // Lines are drawn using two triangles.
+        // We do not want the edges facing each other to be smoothed
+        utilgl::GlBoolState polygonSmooth(GL_POLYGON_SMOOTH, false);
         auto meshGL = lines_.mesh.getRepresentation<MeshGL>();
         utilgl::Enable<MeshGL> enable{meshGL};
         lines_.indices.getRepresentation<BufferGL>()->bind();

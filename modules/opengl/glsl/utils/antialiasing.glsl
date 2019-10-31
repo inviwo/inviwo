@@ -63,11 +63,12 @@ float linePixelCoverage(float df, vec2 G) {
     const float PI_4 = 0.785398163397448309616;
 
     float a;  // resulting pixel coverage
-    if (any(lessThan(G, vec2(1.0e-5)))) {
+    if (any(lessThan(abs(G), vec2(1.0e-5)))) {
         // Horizontal/vertical line, enough with linear approximation
         a = 0.5 - df;
+        
     } else {
-//#define ANALYTIC_ANTIALIASING_OPTIMIZED
+#define ANALYTIC_ANTIALIASING_OPTIMIZED
 #ifdef ANALYTIC_ANTIALIASING_OPTIMIZED
         // The analytic function is antisymmetric around df = 0
         // Both with respect to sign and transposition.
@@ -76,11 +77,26 @@ float linePixelCoverage(float df, vec2 G) {
         if (G.x < G.y) {
             G.xy = G.yx;
         }
-
+        
         float a1 = 0.5 * G.y / G.x;
-        float d1 = G.y;
-        float d2 = (1.0 / sqrt(2.0)) * sin(PI_4 - asin(G.y));
-
+        //float d1 = G.y;
+        float d1 = 0.5 * (G.x - G.y);
+        float d2 = 0.5 * (G.x + G.y);
+        //float d2 = (1.0 / sqrt(2.0)) * sin(PI_4 - asin(G.y));
+        
+        bool negative = df > 0 ? true : false;
+        df = abs(df);
+        if (df <= d1) {
+            a = 0.5 + df / G.x;
+        } else if (df < d2) {
+            a = 1.0 - 0.5 * (d2 - df)*(d2 - df)*(G.x/G.y + G.y/G.x);
+        } else {
+            a = 1.0;
+        }
+        if (negative) {
+            a = 1.0 - a;
+        }
+/*
         if (df <= (-d1 - d2)) {
             a = 0;
         } else if (-d1 - d2 <= df && df <= -d2) {
@@ -90,6 +106,7 @@ float linePixelCoverage(float df, vec2 G) {
             float a2 = 1.0 - 2.0 * a1;
             a = a1 + (a2 / 2.0) * (1.0 + df / d2);
         }
+ */
 #else
         // Code below is the unoptimized version of above
 
@@ -100,18 +117,20 @@ float linePixelCoverage(float df, vec2 G) {
 
         if (df <= (-d1 - d2)) {
             a = 0;
-        } else if ((-d1 - d2) <= df && df <= -d2) {
+        } else if ((-d1 - d2) <= df && df < -d2) {
             a = pow(d1 + d2 + df, 2) * (a1 / (d1 * d1));
-
+//a= 0;
         } else if (-d2 <= df && df < d2) {
             a = a1 + (a2 / 2.0) * (1.0 + df / d2);
-
+            //a= 0;
         } else if (d2 <= df && df <= (d1 + d2)) {
             a = 1.0 - pow(d1 + d2 - df, 2) * (a1 / (d1 * d1));
+            //a= 0;
         } else if (df >= (d1 + d2)) {
             a = 1;
+            //a= 0;
         }
-
+        
 #endif
     }
 

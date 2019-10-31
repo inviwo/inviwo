@@ -36,10 +36,11 @@ in float vScalarMeta[2];
 flat in uint vPicking[2];
 
 
-out vec4 pickColor_;
+flat out vec4 pickColor_;
 out float scalarMeta_;
 out float orthogonalLineDistance_; // Distance from line center [pixel]
 out vec2 lineEdgeNormal_; // Gradient
+flat out vec2 line_;
 
 uniform ivec2 dims;
 uniform float lineWidth = 3; // line width [pixel]
@@ -67,24 +68,24 @@ void main() {
     vec2 n = normalize(vec2(-dir.y, dir.x));
 
     // Scale the linewidth with the window dimensions
-	// Add diagonal distance for anti-aliasing
-    float w = ceil(lineWidth * 0.5 + antialiasing)*sqrt(2.0);
+	// Add one pixel diagonal distance for anti-aliasing
+    float w = ceil(lineWidth * 0.5 + sqrt(2.0));
 	vec2 pixelSpacing = 1.0f / dims.xy;
     float r1 = w * pixelSpacing.x;
     float r2 = w * pixelSpacing.y;
 
     // Scale the orthogonal vector with the linewidth
     vec3 j = vec3(n.x * r1, n.y * r2, 0);
-    
+    line_ = p[0].xy;
     // Rectangle enclosing the line
     // Left top
     emit(vec4(p[0].xyz + j, 1.0), vScalarMeta[0], w, n, vPicking[0]);
     // Left bottom, edge normal pointing downwards
-    emit(vec4(p[0].xyz - j, 1.0), vScalarMeta[0], -w, vec2(n.x, -n.y), vPicking[0]);
+    emit(vec4(p[0].xyz - j, 1.0), vScalarMeta[0], -w, -n, vPicking[0]);
     // Right top
     emit(vec4(p[1].xyz + j, 1.0), vScalarMeta[1], w, n, vPicking[1]);
     // Right bottom, edge normal pointing downwards
-    emit(vec4(p[1].xyz - j, 1.0), vScalarMeta[1], -w, vec2(n.x, -n.y), vPicking[1]);
+    emit(vec4(p[1].xyz - j, 1.0), vScalarMeta[1], -w, -n, vPicking[1]);
     
     EndPrimitive();
 }

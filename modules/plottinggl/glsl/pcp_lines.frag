@@ -29,11 +29,11 @@
 
 #include "utils/antialiasing.glsl"
 
-in vec4 pickColor_;
+flat in vec4 pickColor_;
 in float scalarMeta_;
 in float orthogonalLineDistance_; // Distance from line center [pixel]
 in vec2 lineEdgeNormal_; // Normalized line edge normal (orthogonal to line)
-
+flat in vec2 line_;
 uniform vec4 color;
 uniform vec4 selectColor;
 uniform float mixColor;
@@ -55,21 +55,41 @@ void main() {
 
 	// Analytic anti-aliasing
     #define ANALYTIC_ANTIALIASING
-    #ifdef ANALYTIC_ANTIALIASING
-    //if (lineWidth > 3) {
+    //#ifdef ANALYTIC_ANTIALIASING
+    if (lineWidth < 10) {
         
     
-    /*
+    vec2 n = normalize(lineEdgeNormal_);
 	float df = abs(orthogonalLineDistance_) - 0.5*lineWidth;
-	if (abs(df) <= antialiasing) {
+    vec2 o_line = (0.5*(1+line_)*(dims-1));
+    vec2 o_u = o_line + 0.5*lineWidth*n;
+    vec2 o_l = o_line - 0.5*lineWidth*n;
+    float du = dot(gl_FragCoord.xy-o_u, n);
+    float dl = dot(gl_FragCoord.xy-o_l, n);
+    //float df = abs(du) < abs(dl) ? du : dl;
+	if (abs(df) <= sqrt(2)) {
     //if (df > 0) {
         vec2 pixelSpacing = 1.0f / dims.xy;
-		res.w *= linePixelCoverage(df, lineEdgeNormal_);
-	} else if (df < 0) {
+		//res.w *= linePixelCoverage(df, normalize(lineEdgeNormal_));
+        //res.rgb = vec3(0, 1, 0);
+    } else if (df < -sqrt(2)) {
+        //df /= 100;
+        //res.rgb = vec3(0, abs(df)/(0.5*lineWidth), abs(df)/(0.5*lineWidth));
+	} else if (abs(df) > 0.5*sqrt(2)) {
 		// pixel is outside of line
-        res.w = 0;
-	}
-     */
+        //res.rgb = vec3(1, 0, 1);
+        //res.w = 1;
+    } else {
+        
+    }
+    //res.rgb = vec3(1);
+    
+    //res.w = abs(dl);
+                  res.w = linePixelCoverage(df, normalize(lineEdgeNormal_));
+   //         res= vec4(0.5*(1+line_), 0, 1.0);
+     
+    /*
+    // Based on
     // 2D Shape Rendering by Distance Fields
     // Distance field crossing 0 at edges:
     //      <-line width->
@@ -77,47 +97,50 @@ void main() {
     //    edge         edge
     //
     float D = 0.5*lineWidth - abs(orthogonalLineDistance_);
-    // Perform anisotropic analytic antialiasing
+    // Perform anisotropic analytic antialiasing.
+    // We can greatlty simplify the analytic computation
+    // becasue we know the partial derivative of our
+    // distance field, i.e. distance to line center, changes
+    // with exactly 1 per pixel.
+    // Hence, sqrt( (dF/dx)^2 + (dF/dy)^2 ) = sqrt(1+1)
+    // Multiply with 0.7 instead of 0.5 (linear ramp) to compensate
+    // for smoothstep's different endpoint smoothness and slope
     //float aastep = 0.7 * length(vec2(dFdx(D), dFdy(D)));
-    vec2 pixelSpacing = 1.0f / dims.xy;
-    float aastep = 0;
-    //if (abs(orthogonalLineDistance_) > 0.5*lineWidth) {
-        aastep = 0.7 * length(lineEdgeNormal_*pixelSpacing);
-    //}
-    //float aastep = 0.7 * length(lineEdgeNormal_);
-    // 1 where D > 0, 0 where D < 0, with proper AA around D =0.
+    float aastep = antialiasing * sqrt(1.0+1.0);
+    // 1 where D > 0, 0 where D < 0, with analytic AA around D = 0.
     float d = smoothstep(-aastep, aastep, D);
     res.w *= d;
     //res = vec4(vec3(d), 1.0);
-    //} else {
-    #else
+    */
+    } else {
+    //#else
         // Filtered anti-aliasing
         float linewidthHalf = lineWidth * 0.5;
         float distance = abs(orthogonalLineDistance_);
         float d = distance - (linewidthHalf);
         // antialiasing around the edges
-        float kernelWidth = sqrt(2.0);
-        if( d > -antialiasing) {
-        //if( d > 0) {
-        //d = abs(d);
+        //if( d > -antialiasing) {
+        if( d > 0) {
             // apply antialiasing by modifying the alpha [Rougier, Journal of Computer Graphics Techniques 2013]
             d /= antialiasing;
-            // increases from -d to 0 (edge approaching pixel center)
-            // decreases from 0 to d (edge
             /*
             if (d < 0) {
-                res.w = (exp(-d));
+                // increases from -d to 0 (edge approaching pixel center)
+                res.w = 1-(exp(-d*d));
             } else {
-                res.w = (exp(-d));
-            }*/
-            res.w *= (exp(-d*antialiasing*antialiasing));
+                // decreases from 0 to d (edge
+                res.w = (exp(-d*d));
+            }
+            */
+            //res.w *= (exp(-d*antialiasing*antialiasing));
+            res.w *= (exp(-d*d));
         } else if (d > antialiasing) {
             //res.w = 0;
             //discard;
         }
-    //}
+    }
 
-    #endif
+    //#endif
     PickingData = pickColor_;
     FragData0 = res;
 }
