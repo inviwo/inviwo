@@ -94,7 +94,8 @@ class TemplateColumn : public Column {
 public:
     using type = T;
 
-    TemplateColumn(const std::string &header);
+    TemplateColumn(const std::string &header,
+                   std::shared_ptr<Buffer<T>> buffer = std::make_shared<Buffer<T>>());
 
     TemplateColumn(const TemplateColumn<T> &rhs);
     TemplateColumn(TemplateColumn<T> &&rhs);
@@ -212,8 +213,8 @@ private:
 };
 
 template <typename T>
-TemplateColumn<T>::TemplateColumn(const std::string &header)
-    : header_(header), buffer_(std::make_shared<Buffer<T>>()) {}
+TemplateColumn<T>::TemplateColumn(const std::string &header, std::shared_ptr<Buffer<T>> buffer)
+    : header_(header), buffer_(buffer) {}
 
 template <typename T>
 TemplateColumn<T>::TemplateColumn(const TemplateColumn &rhs)
