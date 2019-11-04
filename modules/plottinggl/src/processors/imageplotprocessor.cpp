@@ -213,11 +213,14 @@ void ImagePlotProcessor::onStatusChange() {
 ImagePlotProcessor::ImageBounds ImagePlotProcessor::calcImageBounds(const size2_t& dims) const {
     // adjust all margins by axis margin
     const auto padding = axisMargin_.get();
-    const size2_t lowerLeft(margins_.getLeft() + padding, margins_.getBottom() + padding);
-    const size2_t upperRight(dims.x - 1 - (margins_.getRight() + padding),
-                             dims.y - 1 - (margins_.getTop() + padding));
+    const ivec2 lowerLeft(margins_.getLeft() + padding, margins_.getBottom() + padding);
+    ivec2 upperRight(dims.x - 1 - (margins_.getRight() + padding),
+                     dims.y - 1 - (margins_.getTop() + padding));
 
-    return {lowerLeft, upperRight - lowerLeft};
+    // ensure positive extent
+    upperRight = glm::max(upperRight, lowerLeft);
+
+    return {lowerLeft, size2_t{upperRight - lowerLeft}};
 }
 
 void ImagePlotProcessor::adjustRanges() {
