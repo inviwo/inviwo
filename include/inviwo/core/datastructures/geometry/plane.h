@@ -40,7 +40,7 @@ namespace inviwo {
 
 class IVW_CORE_API Plane {
 public:
-    constexpr Plane() noexcept = default;
+    constexpr Plane() = default;
     Plane(vec3 point, vec3 normal) noexcept;
     ~Plane() = default;
 
