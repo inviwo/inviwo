@@ -64,10 +64,8 @@ std::optional<glm::u32vec2> sutherlandHodgman(glm::u32vec3 triangle, const Plane
     for (size_t i = 0; i < 3; ++i) {
         const auto i1 = triangle[i];
         const auto i2 = triangle[(i + 1) % 3];
-        const auto i3 = triangle[(i + 2) % 3];
         const auto v1 = positions[i1];
         const auto v2 = positions[i2];
-        const auto v3 = positions[i3];
 
         if (plane.isInside(v1)) {
             if (plane.isInside(v2)) {  // Case 1
@@ -457,7 +455,9 @@ std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh& mesh, const Plane& worldS
     std::vector<detail::InterpolateFunctor> interpolateFunctors;
     std::shared_ptr<BufferRAMPrecision<vec3, BufferTarget::Data>> posBuffer;
 
-    for (const auto& [bufferType, inBuffer] : mesh.getBuffers()) {
+    for (const auto& item : mesh.getBuffers()) {
+        const auto& bufferType = item.first;
+        const auto& inBuffer = item.second;
         auto functor =
             inBuffer->getRepresentation<BufferRAM>()->dispatch<detail::InterpolateFunctor>(
                 [&clippedMesh, &inBuffer, bufferType,
