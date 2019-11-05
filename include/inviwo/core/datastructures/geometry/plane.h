@@ -60,9 +60,9 @@ public:
     std::optional<vec3> getIntersection(const vec3& start, const vec3& stop) const;
 
     /**
-    * Returns the intersection point as a fraction of the distance between
-    * start and stop. The point would be start + retval * (stop -start)
-    */
+     * Returns the intersection point as a fraction of the distance between
+     * start and stop. The point would be start + retval * (stop -start)
+     */
     std::optional<float> getIntersectionWeight(const vec3& start, const vec3& stop) const;
 
     /**
