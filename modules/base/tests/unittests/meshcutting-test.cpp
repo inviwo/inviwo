@@ -43,6 +43,39 @@
 
 namespace inviwo {
 
+TEST(MeshCutting, BarycentricInsidePolygon) {
+
+    auto testCorners = [](const std::vector<vec2>& poly) {
+        for (int i = 0; i < poly.size(); ++i) {
+            const auto res = meshutil::detail::barycentricInsidePolygon(poly[i], poly);
+            for (int j = 0; j < res.size(); ++j) {
+                if (i == j) {
+                    EXPECT_FLOAT_EQ(res[j], 1.0f);
+                } else {
+                    EXPECT_FLOAT_EQ(res[j], 0.0f);
+                }
+            }
+        }
+    };
+
+    auto testCenter = [](const std::vector<vec2>& poly) {
+        const auto res = meshutil::detail::barycentricInsidePolygon(vec2{0.5, 0.5}, poly);
+        for (int j = 0; j < res.size(); ++j) {
+            EXPECT_FLOAT_EQ(res[j], 1.0f / res.size());
+        }
+    };
+
+    std::vector<vec2> poly2{{0.0f, 0.0f}, {1.0f, 1.0f}};
+    testCorners(poly2);
+    testCenter(poly2);
+
+    std::vector<vec2> poly3{{0.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f}};
+    testCorners(poly3);
+
+    std::vector<vec2> poly4{{0.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 0.0f}};
+    testCorners(poly4);
+    testCenter(poly4);
+}
 
 TEST(MeshCutting, SutherlandHodgman) {
 
@@ -50,8 +83,9 @@ TEST(MeshCutting, SutherlandHodgman) {
     const Plane plane{vec3{0, 0, 0}, vec3{0, 1, 0}};
     std::vector<vec3> positions{vec3{-1, -1, 0}, vec3{1, -1, 0}, vec3{0, 1, 0}};
     std::vector<std::uint32_t> indicesVec{};
-    const auto addInterpolatedVertex = [&](const std::vector<uint32_t>& indices,
-                                           const std::vector<float>& weights) -> uint32_t {
+    const meshutil::detail::InterpolateFunctor addInterpolatedVertex =
+        [&](const std::vector<uint32_t>& indices, const std::vector<float>& weights,
+            std::optional<vec3>) -> uint32_t {
         const auto val = std::inner_product(
             indices.begin(), indices.end(), weights.begin(), vec3{0}, std::plus<>{},
             [&](uint32_t index, float weight) { return positions[index] * weight; });
@@ -83,7 +117,7 @@ TEST(MeshCutting, SutherlandHodgman) {
 
 TEST(MeshCutting, GatherLoops) {
     const std::vector<vec3> positions{vec3{-1, -1, 0}, vec3{1, -1, 0}, vec3{0, 1, 0}};
-    std::vector<glm::u32vec2> edges{{0,1},{1,2},{2,0}};
+    std::vector<glm::u32vec2> edges{{0, 1}, {1, 2}, {2, 0}};
 
     const auto loops = meshutil::detail::gatherLoops(edges, positions, 0.0000001f);
 
@@ -91,13 +125,12 @@ TEST(MeshCutting, GatherLoops) {
     ASSERT_EQ(loops[0].size(), 3);
 }
 
-
-TEST(MeshCutting, ClipMeshAgainstPlaneNew) {
+TEST(MeshCutting, ClipMeshAgainstPlane) {
 
     const auto mesh = meshutil::cube(mat4{1}, vec4{1, 1, 0, 1});
     const Plane plane{vec3{0.5, 0.5, 0.5}, vec3{0, 1, 0}};
 
-    const auto clipped = meshutil::clipMeshAgainstPlaneNew(*mesh, plane, true);
+    const auto clipped = meshutil::clipMeshAgainstPlane(*mesh, plane, true);
 
     EXPECT_EQ(clipped->getIndexBuffers().front().second->getSize(), 66);
 

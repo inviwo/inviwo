@@ -152,8 +152,7 @@ void forEachLineSegment(const Mesh::MeshInfo& info, const IndexBuffer& ib, Callb
     }
 
     if (ram.size() < 2) {
-        throw inviwo::Exception("Not enough indices to create a single line segment",
-                                IVW_CONTEXT_CUSTOM("meshutil::forEachLineSegment"));
+        return;
     }
 
     if (info.ct == ConnectivityType::None) {
