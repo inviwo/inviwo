@@ -46,9 +46,9 @@ namespace inviwo {
 TEST(MeshCutting, BarycentricInsidePolygon) {
 
     auto testCorners = [](const std::vector<vec2>& poly) {
-        for (int i = 0; i < poly.size(); ++i) {
+        for (size_t i = 0; i < poly.size(); ++i) {
             const auto res = meshutil::detail::barycentricInsidePolygon(poly[i], poly);
-            for (int j = 0; j < res.size(); ++j) {
+            for (size_t j = 0; j < res.size(); ++j) {
                 if (i == j) {
                     EXPECT_FLOAT_EQ(res[j], 1.0f);
                 } else {
@@ -60,7 +60,7 @@ TEST(MeshCutting, BarycentricInsidePolygon) {
 
     auto testCenter = [](const std::vector<vec2>& poly) {
         const auto res = meshutil::detail::barycentricInsidePolygon(vec2{0.5, 0.5}, poly);
-        for (int j = 0; j < res.size(); ++j) {
+        for (size_t j = 0; j < res.size(); ++j) {
             EXPECT_FLOAT_EQ(res[j], 1.0f / res.size());
         }
     };
