@@ -87,7 +87,7 @@ TEST(MeshCutting, SutherlandHodgman) {
     std::vector<std::uint32_t> indicesVec{};
     const meshutil::detail::InterpolateFunctor addInterpolatedVertex =
         [&](const std::vector<uint32_t>& indices, const std::vector<float>& weights,
-            std::optional<vec3>, std::optional<vec3>) -> uint32_t {
+            std::optional<vec3>) -> uint32_t {
         const auto val = std::inner_product(
             indices.begin(), indices.end(), weights.begin(), vec3{0}, std::plus<>{},
             [&](uint32_t index, float weight) { return positions[index] * weight; });
