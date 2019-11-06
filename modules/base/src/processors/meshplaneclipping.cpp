@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,30 +27,45 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_EDGE_H
-#define IVW_EDGE_H
+#include <modules/base/processors/meshplaneclipping.h>
+#include <modules/base/algorithm/mesh/meshclipping.h>
 
 namespace inviwo {
 
-template <typename T>
-class Edge {
-public:
-    T v1{};
-    T v2{};
-
-    constexpr Edge() noexcept = default;
-    constexpr Edge(T in1) noexcept : v1(in1), v2(in1){};
-    constexpr Edge(T in1, T in2) noexcept : v1(in1), v2(in2){};
-
-    constexpr bool operator==(const Edge<T>& e) const noexcept {
-        return ((v1 == e.v1) && (v2 == e.v2)) || ((v1 == e.v2) && (v2 == e.v1));
-    }
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo MeshPlaneClipping::processorInfo_{
+    "org.inviwo.MeshPlaneClipping",  // Class identifier
+    "Mesh Plane Clipping",           // Display name
+    "Mesh Creation",                 // Category
+    CodeState::Experimental,         // Code state
+    Tags::None,                      // Tags
 };
+const ProcessorInfo MeshPlaneClipping::getProcessorInfo() const { return processorInfo_; }
 
-using EdgeIndex = Edge<DataUInt32::type>;
-using Edge2D = Edge<DataVec2Float32::type>;
-using Edge3D = Edge<DataVec3Float32::type>;
+MeshPlaneClipping::MeshPlaneClipping()
+    : Processor()
+    , inputMesh_("inputMesh")
+    , planes_("inputPlanes")
+    , outputMesh_("outputMesh")
+    , clippingEnabled_("clippingEnabled", "Enable Clipping", true)
+    , capClippedHoles_("capClippedHoles", "Cap clipped holes", true) {
+
+    addPort(inputMesh_);
+    addPort(planes_);
+    addPort(outputMesh_);
+    addProperties(clippingEnabled_, capClippedHoles_);
+}
+
+void MeshPlaneClipping::process() {
+    if (clippingEnabled_) {
+        std::shared_ptr<const Mesh> currentMesh = inputMesh_.getData();
+        for (const auto& plane : planes_) {
+            currentMesh = meshutil::clipMeshAgainstPlane(*currentMesh, *plane, capClippedHoles_);
+        }
+        outputMesh_.setData(currentMesh);
+    } else {
+        outputMesh_.setData(inputMesh_.getData());
+    }
+}
 
 }  // namespace inviwo
-
-#endif  // IVW_EDGE_H

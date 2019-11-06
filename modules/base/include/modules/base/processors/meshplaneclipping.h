@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,30 +27,52 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_EDGE_H
-#define IVW_EDGE_H
+#pragma once
+
+#include <modules/base/basemoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/datastructures/geometry/plane.h>
+#include <inviwo/core/properties/boolproperty.h>
 
 namespace inviwo {
 
-template <typename T>
-class Edge {
+/** \docpage{org.inviwo.MeshPlaneClipping, Mesh Plane Clipping}
+ * ![](org.inviwo.MeshPlaneClipping.png?classIdentifier=org.inviwo.MeshPlaneClipping)
+ * Clips a mesh against multiple planes in world space.
+ *
+ * ### Inports
+ *   * __inputMesh__ Mesh to clip.
+ *   * __inputPlanes__ Clipping planes in world space.
+ *
+ * ### Outports
+ *   * __outputMesh__ Clipped mesh.
+ *
+ * ### Properties
+ *   * __Enable Clipping__ Enable clipping.
+ *   * __Cap clipped holes__ Replaces removed parts with triangles aligned with the plane. Input
+ * mesh must be manifold.
+ */
+
+class IVW_MODULE_BASE_API MeshPlaneClipping : public Processor {
 public:
-    T v1{};
-    T v2{};
+    MeshPlaneClipping();
+    virtual ~MeshPlaneClipping() = default;
 
-    constexpr Edge() noexcept = default;
-    constexpr Edge(T in1) noexcept : v1(in1), v2(in1){};
-    constexpr Edge(T in1, T in2) noexcept : v1(in1), v2(in2){};
+    virtual void process() override;
 
-    constexpr bool operator==(const Edge<T>& e) const noexcept {
-        return ((v1 == e.v1) && (v2 == e.v2)) || ((v1 == e.v2) && (v2 == e.v1));
-    }
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+    MeshInport inputMesh_;
+    FlatMultiDataInport<Plane> planes_;
+    MeshOutport outputMesh_;
+
+    BoolProperty clippingEnabled_;
+    BoolProperty capClippedHoles_;
 };
 
-using EdgeIndex = Edge<DataUInt32::type>;
-using Edge2D = Edge<DataVec2Float32::type>;
-using Edge3D = Edge<DataVec3Float32::type>;
-
 }  // namespace inviwo
-
-#endif  // IVW_EDGE_H

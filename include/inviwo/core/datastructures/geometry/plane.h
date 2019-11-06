@@ -33,18 +33,19 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 
-namespace inviwo {
+#include <optional>
+#include <string>
 
-struct IntersectionResult;
+namespace inviwo {
 
 class IVW_CORE_API Plane {
 public:
-    Plane();
-    Plane(vec3 point, vec3 normal);
-    virtual ~Plane();
+    constexpr Plane() = default;
+    Plane(vec3 point, vec3 normal) noexcept;
+    ~Plane() = default;
 
-    vec3 getPoint() const;
-    vec3 getNormal() const;
+    const vec3& getPoint() const noexcept { return point_; }
+    const vec3& getNormal() const noexcept { return normal_; };
 
     /**
      * \brief Get intersection point with plane and line segment.
@@ -54,9 +55,15 @@ public:
      * Returned intersection point is invalid if no intersection exist.
      * @param start Start point of segment
      * @param stop End point of segment
-     * @return Intersected point and true if intersecting.
+     * @return Intersected point if intersecting or nullopt.
      */
-    IntersectionResult getIntersection(const vec3& start, const vec3& stop) const;
+    std::optional<vec3> getIntersection(const vec3& start, const vec3& stop) const;
+
+    /**
+     * Returns the intersection point as a fraction of the distance between
+     * start and stop. The point would be start + retval * (stop -start)
+     */
+    std::optional<float> getIntersectionWeight(const vec3& start, const vec3& stop) const;
 
     /**
      * Return signed distance from plane to point, i.e. dot(x - p, normal).
@@ -99,8 +106,15 @@ public:
 
     bool perpendicularToPlane(const vec3&) const;
 
+    /**
+     * Calculate an basis in the plane, the normal will be the last component.
+     */
+    mat4 inPlaneBasis() const;
+
     void setPoint(const vec3);
     void setNormal(const vec3&);
+
+    Plane transform(const mat4& transform) const;
 
     std::string getDataInfo() const;
 
@@ -108,15 +122,8 @@ public:
     static const std::string CLASS_IDENTIFIER;
 
 private:
-    vec3 point_;
-    vec3 normal_;
-};
-
-struct IntersectionResult {
-    IntersectionResult(bool intersects, vec3 intersection);
-    IntersectionResult(bool intersects);
-    vec3 intersection_;
-    bool intersects_;
+    vec3 point_{0.0f, 0.0f, 0.0f};
+    vec3 normal_{0.0f, 1.0f, 0.0f};
 };
 
 }  // namespace inviwo

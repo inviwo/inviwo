@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,30 +27,54 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_EDGE_H
-#define IVW_EDGE_H
+#pragma once
+
+#include <modules/base/basemoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/ports/dataoutport.h>
+
+#include <inviwo/core/properties/boolproperty.h>
+
+#include <inviwo/core/datastructures/geometry/plane.h>
+
+#include <vector>
 
 namespace inviwo {
 
-template <typename T>
-class Edge {
+/** \docpage{org.inviwo.VolumeBoundaryPlanes, Volume Boundary Planes}
+ * ![](org.inviwo.VolumeBoundaryPlanes.png?classIdentifier=org.inviwo.VolumeBoundaryPlanes)
+ * Outputs the six planes that enclose the input volume in world space.
+ * Order of planes: -X, -Y, -Z, +X, +Y, +Z (sides of volume in model coordinates).
+ * Planes face outward by default, but can be flipped.
+ *
+ * ### Inports
+ *   * __volumeInport__ Input volume.
+ *
+ * ### Outports
+ *   * __planeOutport__ The six boundary planes.
+ *
+ * ### Properties
+ *   * __Flip planes__ Switch plane normals between inward and outward.
+ */
+
+class IVW_MODULE_BASE_API VolumeBoundaryPlanes : public Processor {
 public:
-    T v1{};
-    T v2{};
+    VolumeBoundaryPlanes();
+    virtual ~VolumeBoundaryPlanes() = default;
 
-    constexpr Edge() noexcept = default;
-    constexpr Edge(T in1) noexcept : v1(in1), v2(in1){};
-    constexpr Edge(T in1, T in2) noexcept : v1(in1), v2(in2){};
+    virtual void process() override;
 
-    constexpr bool operator==(const Edge<T>& e) const noexcept {
-        return ((v1 == e.v1) && (v2 == e.v2)) || ((v1 == e.v2) && (v2 == e.v1));
-    }
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+    VolumeInport volume_;
+    DataOutport<std::vector<Plane>> planes_;
+
+    BoolProperty flipPlanes_;
 };
 
-using EdgeIndex = Edge<DataUInt32::type>;
-using Edge2D = Edge<DataVec2Float32::type>;
-using Edge3D = Edge<DataVec3Float32::type>;
-
 }  // namespace inviwo
-
-#endif  // IVW_EDGE_H
