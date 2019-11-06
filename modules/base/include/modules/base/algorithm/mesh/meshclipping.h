@@ -45,9 +45,8 @@ namespace meshutil {
 
 namespace detail {
 
-using InterpolateFunctor =
-    std::function<std::uint32_t(const std::vector<uint32_t>&, const std::vector<float>&,
-                                std::optional<vec3>)>;
+using InterpolateFunctor = std::function<std::uint32_t(
+    const std::vector<uint32_t>&, const std::vector<float>&, std::optional<vec3>)>;
 
 /**
  * Compute barycentric coordinates/weights for

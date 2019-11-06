@@ -107,10 +107,9 @@ public:
     bool perpendicularToPlane(const vec3&) const;
 
     /**
-     * Calculate an basis in the plane, the normal will be the last component. 
+     * Calculate an basis in the plane, the normal will be the last component.
      */
     mat4 inPlaneBasis() const;
-
 
     void setPoint(const vec3);
     void setNormal(const vec3&);
