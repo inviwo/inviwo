@@ -29,16 +29,14 @@
 
 #include <inviwo/core/datastructures/geometry/plane.h>
 
+#include <glm/gtx/perpendicular.hpp>
+
 namespace inviwo {
 
 inviwo::uvec3 Plane::COLOR_CODE = uvec3(225, 174, 225);
 const std::string Plane::CLASS_IDENTIFIER = "org.inviwo.Plane";
 
 Plane::Plane(vec3 point, vec3 normal) noexcept : point_(point), normal_(glm::normalize(normal)) {}
-
-const vec3& Plane::getPoint() const noexcept { return point_; }
-
-const vec3& Plane::getNormal() const noexcept { return normal_; }
 
 float Plane::distance(const vec3& p) const { return glm::dot(p - point_, normal_); }
 
@@ -50,9 +48,23 @@ bool Plane::perpendicularToPlane(const vec3& p) const {
     return (glm::abs(glm::dot(normal_, p)) < glm::epsilon<float>());
 }
 
+mat4 Plane::inPlaneBasis() const {
+    std::array<vec3, 3> perp = {glm::perp(vec3{1.0f, 0.0f, 0.0}, normal_),
+                                glm::perp(vec3{0.0f, 1.0f, 0.0}, normal_),
+                                glm::perp(vec3{0.0f, 0.0f, 1.0}, normal_)};
+
+    const auto a1 = glm::normalize(*std::max_element(
+        perp.begin(), perp.end(),
+        [](const vec3& a, const vec3& b) { return glm::length2(a) < glm::length2(b); }));
+    const auto a2 = glm::cross(normal_, a1);
+
+    return glm::translate(point_) *
+           mat4{vec4{a1, 0.0f}, vec4{a2, 0.0f}, vec4{normal_, 0.0f}, vec4{vec3{0.0f}, 1.0}};
+}
+
 void Plane::setPoint(const vec3 p) { point_ = p; }
 
-void Plane::setNormal(const vec3& n) { normal_ = n; }
+void Plane::setNormal(const vec3& n) { normal_ = glm::normalize(n); }
 
 Plane Plane::transform(const mat4& transform) const {
     const auto newPos = vec3(transform * vec4(point_, 1.0));

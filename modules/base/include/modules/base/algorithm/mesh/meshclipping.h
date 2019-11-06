@@ -47,7 +47,7 @@ namespace detail {
 
 using InterpolateFunctor =
     std::function<std::uint32_t(const std::vector<uint32_t>&, const std::vector<float>&,
-                                std::optional<vec3>, std::optional<vec3>)>;
+                                std::optional<vec3>)>;
 
 /**
  * Compute barycentric coordinates/weights for
@@ -57,6 +57,12 @@ using InterpolateFunctor =
  */
 IVW_MODULE_BASE_API std::vector<float> barycentricInsidePolygon(vec2 v,
                                                                 const std::vector<vec2>& vis);
+
+/**
+ * Compute the Centroid of a planar polygon
+ * Following https://en.wikipedia.org/wiki/Centroid
+ */
+IVW_MODULE_BASE_API vec2 polygonCentroid(const std::vector<vec2>& polygon);
 
 IVW_MODULE_BASE_API std::optional<glm::u32vec2> sutherlandHodgman(
     glm::u32vec3 triangle, const Plane& plane, const std::vector<vec3>& positions,

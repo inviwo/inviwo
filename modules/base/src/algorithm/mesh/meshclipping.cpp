@@ -72,15 +72,15 @@ std::optional<glm::u32vec2> sutherlandHodgman(glm::u32vec3 triangle, const Plane
                 newIndices.push_back(i2);
             } else {  // Case 2
                 const auto weight = *plane.getIntersectionWeight(v1, v2);
-                const auto newIndex = addInterpolatedVertex({i1, i2}, {1.0f - weight, weight},
-                                                            std::nullopt, std::nullopt);
+                const auto newIndex =
+                    addInterpolatedVertex({i1, i2}, {1.0f - weight, weight}, std::nullopt);
                 newIndices.push_back(newIndex);
                 newEdge.push_back(newIndex);
             }
         } else if (plane.isInside(v2)) {  // Case 3
             const auto weight = *plane.getIntersectionWeight(v1, v2);
-            const auto newIndex = addInterpolatedVertex({i1, i2}, {1.0f - weight, weight},
-                                                        std::nullopt, std::nullopt);
+            const auto newIndex =
+                addInterpolatedVertex({i1, i2}, {1.0f - weight, weight}, std::nullopt);
             newIndices.push_back(newIndex);
             newEdge.push_back(newIndex);
             newIndices.push_back(i2);
@@ -96,8 +96,8 @@ std::optional<glm::u32vec2> sutherlandHodgman(glm::u32vec3 triangle, const Plane
         indices.push_back(newIndices[2]);
 
         indices.push_back(newIndices[0]);
-        indices.push_back(newIndices[3]);
         indices.push_back(newIndices[2]);
+        indices.push_back(newIndices[3]);
     }
     if (newEdge.size() == 2) {
         return glm::u32vec2{newEdge[0], newEdge[1]};
@@ -197,40 +197,35 @@ std::vector<std::vector<std::uint32_t>> gatherLoops(std::vector<glm::u32vec2>& e
 }
 
 std::vector<float> barycentricInsidePolygon(vec2 v, const std::vector<vec2>& vis) {
+    const auto N = vis.size();
+    std::vector<vec2> s(N);
+    std::transform(vis.begin(), vis.end(), s.begin(), [v](vec2 vi) { return vi - v; });
+    std::vector<float> r(N);
+    std::transform(s.begin(), s.end(), r.begin(), [](vec2 si) { return glm::length(si); });
 
-    std::vector<vec2> sis;
-    std::transform(vis.begin(), vis.end(), std::back_inserter(sis),
-                   [v](const vec2& vi) { return vi - v; });
+    std::vector<float> weights(N, 0.0f);
+    std::vector<float> tana(N, 0.0f);
 
-    std::vector<float> weights(vis.size(), 0.0f);
-    std::vector<float> tana(vis.size(), 0.0f);
-
-    for (size_t i = 0; i < vis.size(); ++i) {
-        const size_t j = (i + 1) % vis.size();
-        const auto ri = glm::length(sis[i]);
-        const auto Aij = glm::determinant(mat2{sis[i], sis[j]});
-        const auto Dij = glm::dot(sis[i], sis[j]);
-        if (util::almostEqual(ri, 0.0f)) {
+    for (size_t i = 0; i < N; ++i) {
+        const size_t j = (i + 1) % N;
+        const auto Aij = s[i].x * s[j].y - s[i].y * s[j].x;
+        const auto Dij = glm::dot(s[i], s[j]);
+        if (glm::all(glm::equal(r[i], 0.0f, 0.0000001f * r[i]))) {
             weights[i] = 1.0f;
             return weights;
         }
-        const auto rj = glm::length(sis[j]);
-
-        if (util::almostEqual(Aij, 0.0f)) {
-            if (Dij < 0.0f) {
-                weights[i] = ri / (ri + rj);
-                weights[j] = rj / (ri + rj);
-                return weights;
-            }
-        } else {
-            tana[i] = (rj - Dij / ri) / Aij;
+        if (glm::all(glm::equal(Aij, 0.0f, 0.0000001f * Aij)) && Dij < 0.0f) {
+            weights[i] = r[i] / (r[i] + r[j]);
+            weights[j] = r[j] / (r[i] + r[j]);
+            return weights;
         }
+        tana[i] = (r[i] * r[j] - Dij) / Aij;
     }
 
     float total = 0.0f;
-    for (size_t i = 0; i < vis.size(); ++i) {
-        const auto prev = (i - 1 + vis.size()) % vis.size();
-        weights[i] = tana[prev] + tana[i];
+    for (size_t i = 0; i < N; ++i) {
+        const auto prev = (N - 1 + i) % N;
+        weights[i] = 2.f * (tana[i] + tana[prev]) / r[i];
         total += weights[i];
     }
     std::transform(weights.begin(), weights.end(), weights.begin(),
@@ -239,8 +234,24 @@ std::vector<float> barycentricInsidePolygon(vec2 v, const std::vector<vec2>& vis
     return weights;
 }
 
-void capHoles(std::vector<glm::u32vec2>& edges, vec3 normal, const std::vector<vec3>& positions,
-              std::vector<std::uint32_t>& indices,
+vec2 polygonCentroid(const std::vector<vec2>& polygon) {
+    vec2 center{0.0f, 0.0f};
+    float A = 0.0f;
+
+    for (size_t i = 0; i < polygon.size(); ++i) {
+        const size_t j = (i + 1) % polygon.size();
+        const float a = polygon[i].x * polygon[j].y - polygon[j].x * polygon[i].y;
+        center += a * (polygon[i] + polygon[j]);
+        A += a;
+    }
+
+    center /= 3.0f * A;
+
+    return center;
+}
+
+void capHoles(std::vector<glm::u32vec2>& edges, const Plane& plane,
+              const std::vector<vec3>& positions, std::vector<std::uint32_t>& indices,
               const InterpolateFunctor& addInterpolatedVertex) {
 
     constexpr float relError = 0.000001f;
@@ -255,33 +266,39 @@ void capHoles(std::vector<glm::u32vec2>& edges, vec3 normal, const std::vector<v
 
     for (const auto& loop : loops) {
         if (loop.size() < 2) continue;
-        const auto center =
-            std::accumulate(loop.begin(), loop.end(), vec3{0},
-                            [&](vec3 acc, uint32_t index) { return acc + positions[index]; }) /
-            static_cast<float>(loop.size());
 
-        const auto u = glm::normalize(positions[loop.front()] - center);
-        const auto v = glm::normalize(glm::cross(u, normal));
-        const auto trans = mat3{u, v, normal};
+        const auto trans = glm::inverse(plane.inPlaneBasis());
+
+        std::vector<vec3> pos;
+        std::transform(loop.begin(), loop.end(), std::back_inserter(pos),
+                       [&](uint32_t p) { return positions[p]; });
+
+        std::vector<vec4> uv4;
+        std::transform(loop.begin(), loop.end(), std::back_inserter(uv4), [&](uint32_t p) {
+            return trans * vec4{positions[p], 1.0f};
+        });
 
         std::vector<vec2> uv;
-        std::transform(loop.begin(), loop.end(), std::back_inserter(uv),
-                       [&](uint32_t p) { return vec2{trans * positions[p]}; });
+        std::transform(loop.begin(), loop.end(), std::back_inserter(uv), [&](uint32_t p) {
+            return vec2{trans * vec4{positions[p], 1.0f}};
+        });
 
-        const auto weights = barycentricInsidePolygon(vec2{trans * center}, uv);
+        const auto uvCenter = polygonCentroid(uv);
+        const auto center = vec3{glm::inverse(trans) * vec4{uvCenter, 0.0f, 1.0f}};
+        const auto weights = barycentricInsidePolygon(uvCenter, uv);
 
         const auto orientation =
             glm::cross(positions[loop[0]] - center, positions[loop[1]] - center);
-        const auto dir = glm::dot(normal, orientation);
+        const auto dir = glm::dot(plane.getNormal(), orientation);
 
-        const auto centerIndex = addInterpolatedVertex(loop, weights, center, normal);
+        const auto centerIndex = addInterpolatedVertex(loop, weights, -plane.getNormal());
         for (size_t i = 0; i < loop.size(); ++i) {
             const auto j = (i + 1) % loop.size();
             indices.push_back(centerIndex);
             indices.push_back(
-                addInterpolatedVertex({loop[dir > 0 ? i : j]}, {1.0f}, std::nullopt, normal));
+                addInterpolatedVertex({loop[dir < 0 ? i : j]}, {1.0f}, -plane.getNormal()));
             indices.push_back(
-                addInterpolatedVertex({loop[dir > 0 ? j : i]}, {1.0f}, std::nullopt, normal));
+                addInterpolatedVertex({loop[dir < 0 ? j : i]}, {1.0f}, -plane.getNormal()));
         }
     }
 }
@@ -319,12 +336,12 @@ std::vector<glm::u32vec2> clipIndices(const Mesh::MeshInfo& meshInfo,
                 } else if (in1) {
                     const auto weight = *plane.getIntersectionWeight(positions[i1], positions[i2]);
                     outIndices->add(i1);
-                    outIndices->add(addInterpolatedVertex({i1, i2}, {1.0f - weight, weight},
-                                                          std::nullopt, std::nullopt));
+                    outIndices->add(
+                        addInterpolatedVertex({i1, i2}, {1.0f - weight, weight}, std::nullopt));
                 } else if (in2) {
                     const auto weight = *plane.getIntersectionWeight(positions[i1], positions[i2]);
-                    outIndices->add(addInterpolatedVertex({i1, i2}, {1.0f - weight, weight},
-                                                          std::nullopt, std::nullopt));
+                    outIndices->add(
+                        addInterpolatedVertex({i1, i2}, {1.0f - weight, weight}, std::nullopt));
                     outIndices->add(i2);
                 }
             }
@@ -351,14 +368,14 @@ std::vector<glm::u32vec2> clipIndices(const Mesh::MeshInfo& meshInfo,
                     const auto weight = *plane.getIntersectionWeight(positions[i2], positions[i3]);
                     outIndices->add(i1);
                     outIndices->add(i2);
-                    outIndices->add(addInterpolatedVertex({i2, i3}, {1.0f - weight, weight},
-                                                          std::nullopt, std::nullopt));
+                    outIndices->add(
+                        addInterpolatedVertex({i2, i3}, {1.0f - weight, weight}, std::nullopt));
                     outIndices->add(i3);
                 } else if (in2) {
                     const auto weight = *plane.getIntersectionWeight(positions[i2], positions[i3]);
                     outIndices->add(i2);
-                    outIndices->add(addInterpolatedVertex({i2, i3}, {1.0f - weight, weight},
-                                                          std::nullopt, std::nullopt));
+                    outIndices->add(
+                        addInterpolatedVertex({i2, i3}, {1.0f - weight, weight}, std::nullopt));
                     outIndices->add(i3);
                     outIndices->add(i4);
                 }
@@ -460,8 +477,7 @@ std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh& mesh, const Plane& worldS
         const auto& inBuffer = item.second;
         auto functor =
             inBuffer->getRepresentation<BufferRAM>()->dispatch<detail::InterpolateFunctor>(
-                [&clippedMesh, &inBuffer, bufferType,
-                 &posBuffer](auto inRam) -> detail::InterpolateFunctor {
+                [&clippedMesh, bufferType, &posBuffer](auto inRam) -> detail::InterpolateFunctor {
                     using PB = util::PrecisionType<decltype(inRam)>;
                     using ValueType = util::PrecisionValueType<decltype(inRam)>;
                     using T = typename util::same_extent<ValueType, float>::type;
@@ -483,35 +499,27 @@ std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh& mesh, const Plane& worldS
 
                     if constexpr (std::is_same_v<ValueType, vec3> &&
                                   PB::target == BufferTarget::Data) {
-                        if (bufferType == BufferType::PositionAttrib) {
-                            posBuffer = outRam;
+                        if (bufferType == BufferType::NormalAttrib) {
                             return [outRam](const std::vector<uint32_t>& indices,
                                             const std::vector<float>& weights,
-                                            std::optional<vec3> position, std::optional<vec3>) {
-                                outRam->add(position ? *position : mix(*outRam, indices, weights));
-                                return static_cast<uint32_t>(outRam->getSize() - 1);
-                            };
-                        } else if (bufferType == BufferType::NormalAttrib) {
-                            return [outRam](const std::vector<uint32_t>& indices,
-                                            const std::vector<float>& weights, std::optional<vec3>,
                                             std::optional<vec3> normal) {
                                 outRam->add(normal ? *normal : mix(*outRam, indices, weights));
                                 return static_cast<uint32_t>(outRam->getSize() - 1);
                             };
+                        } else if (bufferType == BufferType::PositionAttrib) {
+                            posBuffer = outRam;
                         }
                     }
 
                     if constexpr (DataFormat<ValueType>::numtype == NumericType::Float) {
                         return [outRam](const std::vector<uint32_t>& indices,
-                                        const std::vector<float>& weights, std::optional<vec3>,
-                                        std::optional<vec3>) {
+                                        const std::vector<float>& weights, std::optional<vec3>) {
                             outRam->add(mix(*outRam, indices, weights));
                             return static_cast<uint32_t>(outRam->getSize() - 1);
                         };
                     } else {  // Only interpolate floating point buffers;
                         return [outRam](const std::vector<uint32_t>& indices,
-                                        const std::vector<float>& weights, std::optional<vec3>,
-                                        std::optional<vec3>) {
+                                        const std::vector<float>& weights, std::optional<vec3>) {
                             const auto it = std::max_element(weights.begin(), weights.end());
                             const auto index = std::distance(weights.begin(), it);
 
@@ -525,10 +533,10 @@ std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh& mesh, const Plane& worldS
 
     const detail::InterpolateFunctor addInterpolatedVertex =
         [&interpolateFunctors](const std::vector<uint32_t>& indices,
-                               const std::vector<float>& weights, std::optional<vec3> position,
+                               const std::vector<float>& weights,
                                std::optional<vec3> normal) -> uint32_t {
         uint32_t res = 0;
-        for (auto& fun : interpolateFunctors) res = fun(indices, weights, position, normal);
+        for (auto& fun : interpolateFunctors) res = fun(indices, weights, normal);
         return res;
     };
 
@@ -560,7 +568,7 @@ std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh& mesh, const Plane& worldS
 
     if (capClippedHoles && !newEdges.empty()) {
         auto outIndices = clippedMesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
-        detail::capHoles(newEdges, plane.getNormal(), positions, outIndices->getDataContainer(),
+        detail::capHoles(newEdges, plane, positions, outIndices->getDataContainer(),
                          addInterpolatedVertex);
     }
 

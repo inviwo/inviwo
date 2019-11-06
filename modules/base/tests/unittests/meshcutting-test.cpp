@@ -41,6 +41,8 @@
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <modules/base/algorithm/meshutils.h>
 
+#include <glm/gtx/perpendicular.hpp>
+
 namespace inviwo {
 
 TEST(MeshCutting, BarycentricInsidePolygon) {
@@ -125,18 +127,68 @@ TEST(MeshCutting, GatherLoops) {
     ASSERT_EQ(loops[0].size(), 3);
 }
 
-TEST(MeshCutting, ClipMeshAgainstPlane) {
+TEST(MeshCutting, PolygonCentroid) {
 
-    const auto mesh = meshutil::cube(mat4{1}, vec4{1, 1, 0, 1});
-    const Plane plane{vec3{0.5, 0.5, 0.5}, vec3{0, 1, 0}};
+    const auto expected = vec2{0.5f, 0.5f};
+    {
+        const std::vector<vec2> polygon = {{0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f}};
+        const auto centroid = meshutil::detail::polygonCentroid(polygon);
 
-    const auto clipped = meshutil::clipMeshAgainstPlane(*mesh, plane, true);
+        EXPECT_FLOAT_EQ(centroid.x, expected.x);
+        EXPECT_FLOAT_EQ(centroid.y, expected.y);
+    }
+    {
+        const std::vector<vec2> polygon = {
+            {0.0f, 0.0f}, {0.1f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f}};
+        const auto centroid = meshutil::detail::polygonCentroid(polygon);
 
-    EXPECT_EQ(clipped->getIndexBuffers().front().second->getSize(), 66);
+        EXPECT_FLOAT_EQ(centroid.x, expected.x);
+        EXPECT_FLOAT_EQ(centroid.y, expected.y);
+    }
+    {
+        const std::vector<vec2> polygon = {{0.0f, 0.1f}, {0.0f, 0.0f}, {0.1f, 0.0f},
+                                           {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f}};
+        const auto centroid = meshutil::detail::polygonCentroid(polygon);
 
-    EXPECT_EQ(clipped->getBuffers()[0].second->getSize(), 41);
-    EXPECT_EQ(clipped->getBuffers()[1].second->getSize(), 41);
-    EXPECT_EQ(clipped->getBuffers()[2].second->getSize(), 41);
+        EXPECT_FLOAT_EQ(centroid.x, expected.x);
+        EXPECT_FLOAT_EQ(centroid.y, expected.y);
+    }
+}
+
+TEST(MeshCutting, PlaneBasis) {
+    Plane p{vec3{1, 1, 1}, vec3{0, 0, 1}};
+
+    std::array<vec3, 3> perp = {glm::perp(vec3{1.0f, 0.0f, 0.0}, p.getNormal()),
+                                glm::perp(vec3{0.0f, 1.0f, 0.0}, p.getNormal()),
+                                glm::perp(vec3{0.0f, 0.0f, 1.0}, p.getNormal())};
+
+    const auto trans = glm::inverse(p.inPlaneBasis());
+
+    {
+        const auto r = vec3{1, 1, 1};
+        const auto t = vec3{trans * vec4{r, 1.0f}};
+        const auto expected = vec3{0.0f, 0.0f, 0.0f};
+
+        EXPECT_FLOAT_EQ(t.x, expected.x);
+        EXPECT_FLOAT_EQ(t.y, expected.y);
+        EXPECT_FLOAT_EQ(t.z, expected.z);
+    }
+
+    {
+        const auto r = vec3{1, 1, 2};
+        const auto t = vec3{trans * vec4{r, 1.0f}};
+        const auto expected = vec3{0.0f, 0.0f, 1.0f};
+
+        EXPECT_FLOAT_EQ(t.x, expected.x);
+        EXPECT_FLOAT_EQ(t.y, expected.y);
+        EXPECT_FLOAT_EQ(t.z, expected.z);
+    }
+
+    {
+        const auto r = vec3{4, 2, 1};
+        const auto t = vec3{trans * vec4{r, 1.0f}};
+        EXPECT_FLOAT_EQ(t.z, 0.0f);
+    }
 }
 
 }  // namespace inviwo

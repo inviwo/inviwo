@@ -44,8 +44,8 @@ public:
     Plane(vec3 point, vec3 normal) noexcept;
     ~Plane() = default;
 
-    const vec3& getPoint() const noexcept;
-    const vec3& getNormal() const noexcept;
+    const vec3& getPoint() const noexcept { return point_; }
+    const vec3& getNormal() const noexcept { return normal_; };
 
     /**
      * \brief Get intersection point with plane and line segment.
@@ -105,6 +105,12 @@ public:
     bool isInside(const vec3& point) const;
 
     bool perpendicularToPlane(const vec3&) const;
+
+    /**
+     * Calculate an basis in the plane, the normal will be the last component. 
+     */
+    mat4 inPlaneBasis() const;
+
 
     void setPoint(const vec3);
     void setNormal(const vec3&);

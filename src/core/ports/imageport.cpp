@@ -235,9 +235,6 @@ Document ImageOutport::getInfo() const {
                size == master ? "Master" : "");
         }
     }
-
-    std::string d = doc;
-    std::cout << d << std::endl;
     return doc;
 }
 
