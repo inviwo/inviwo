@@ -78,15 +78,12 @@ IVW_MODULE_BASE_API std::vector<std::vector<std::uint32_t>> gatherLoops(
 /**
  * Clip mesh against plane using Sutherland-Hodgman.
  * If holes should be closed, the input mesh must be manifold.
- * Vertex attributes that are interpolated and saved: tex coords and color.
- * Supported mesh types: SimpleMesh and BasicMesh.
- * Supported draw types: Triangle.
- * Supported connectivity types: Strip and None.
+ * Vertex attributes are interpolated. Floating types use linear interpolation, integer types use
+ * nearest. Connectivity types loop and fan are not handled.
  * @param mesh to clip
  * @param plane in world space coordinate system
  * @param capClippedHoles: replaces removed parts with triangles aligned with the plane
- * @throws Exception if mesh is not supported, or if capClippedHoles is set, but
- * mesh is not manifold.
+ * @throws Exception if mesh is not supported.
  * @returns Clipped Mesh
  */
 IVW_MODULE_BASE_API std::shared_ptr<Mesh> clipMeshAgainstPlane(const Mesh& mesh,

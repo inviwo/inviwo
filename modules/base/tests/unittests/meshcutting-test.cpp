@@ -156,12 +156,7 @@ TEST(MeshCutting, PolygonCentroid) {
 }
 
 TEST(MeshCutting, PlaneBasis) {
-    Plane p{vec3{1, 1, 1}, vec3{0, 0, 1}};
-
-    std::array<vec3, 3> perp = {glm::perp(vec3{1.0f, 0.0f, 0.0}, p.getNormal()),
-                                glm::perp(vec3{0.0f, 1.0f, 0.0}, p.getNormal()),
-                                glm::perp(vec3{0.0f, 0.0f, 1.0}, p.getNormal())};
-
+    const Plane p{vec3{1, 1, 1}, vec3{0, 0, 1}};
     const auto trans = glm::inverse(p.inPlaneBasis());
 
     {

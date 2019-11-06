@@ -37,7 +37,7 @@ const ProcessorInfo VolumeBoundaryPlanes::processorInfo_{
     "Volume Boundary Planes",           // Display name
     "Data Creation",                    // Category
     CodeState::Stable,                  // Code state
-    Tags::None,                         // Tags
+    Tags::CPU,                          // Tags
 };
 const ProcessorInfo VolumeBoundaryPlanes::getProcessorInfo() const { return processorInfo_; }
 
