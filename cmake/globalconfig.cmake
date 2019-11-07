@@ -165,9 +165,6 @@ configure_file(${IVW_CMAKE_TEMPLATES}/inviwocommondefines_template.h
                ${CMAKE_BINARY_DIR}/modules/core/include/inviwo/core/inviwocommondefines.h 
                @ONLY IMMEDIATE)
 
-# Package creation
-option(IVW_PACKAGE_PROJECT "Create Inviwo Package Project" OFF)
-
 # Use and generate resources when available
 include(${CMAKE_CURRENT_LIST_DIR}/compileresources.cmake)
 
