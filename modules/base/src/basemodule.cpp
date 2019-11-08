@@ -86,7 +86,7 @@
 #include <modules/base/processors/volumegradientcpuprocessor.h>
 #include <modules/base/processors/volumelaplacianprocessor.h>
 #include <modules/base/processors/volumesequencetospatial4dsampler.h>
-#include <modules/base/processors/worldtransform.h>
+#include <modules/base/processors/worldtransformdeprecated.h>
 #include <modules/base/processors/camerafrustum.h>
 #include <modules/base/processors/imagetospatialsampler.h>
 #include <modules/base/processors/volumesequencesingletimestepsampler.h>
@@ -122,8 +122,8 @@ namespace inviwo {
 using BasisTransformMesh = BasisTransform<Mesh>;
 using BasisTransformVolume = BasisTransform<Volume>;
 
-using WorldTransformMesh = WorldTransform<Mesh>;
-using WorldTransformVolume = WorldTransform<Volume>;
+using WorldTransformMeshDeprecated = WorldTransformDeprecated<Mesh>;
+using WorldTransformVolumeDeprecated = WorldTransformDeprecated<Volume>;
 
 BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<ConvexHull2DProcessor>();
@@ -157,8 +157,8 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<BasisTransformMesh>();
     registerProcessor<BasisTransformVolume>();
     registerProcessor<TrianglesToWireframe>();
-    registerProcessor<WorldTransformMesh>();
-    registerProcessor<WorldTransformVolume>();
+    registerProcessor<WorldTransformMeshDeprecated>();
+    registerProcessor<WorldTransformVolumeDeprecated>();
     registerProcessor<VolumeSlice>();
     registerProcessor<VolumeSubsample>();
     registerProcessor<VolumeSubset>();
@@ -225,7 +225,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     util::for_each_type<OrdinalPropertyAnimator::Types>{}(RegHelper{}, *this);
 }
 
-int BaseModule::getVersion() const { return 3; }
+int BaseModule::getVersion() const { return 4; }
 
 std::unique_ptr<VersionConverter> BaseModule::getConverter(int version) const {
     return std::make_unique<Converter>(version);
@@ -317,6 +317,15 @@ bool BaseModule::Converter::convert(TxElement* root) {
         repl.push_back(ir2);
     }
 
+    std::vector<xml::IdentifierReplacement> replV3 = {
+        // WorldTransform (Deprecated)
+        {{xml::Kind::processor("org.inviwo.WorldTransformMeshDeprecated")},
+         "World Transform Mesh",
+         "World Transform Mesh (Deprecated)"},
+        {{xml::Kind::processor("org.inviwo.WorldTransformVolumeDeprecated")},
+         "World Transform Volume",
+         "World Transform Volume (Deprecated)"}};
+
     bool res = false;
     switch (version_) {
         case 0: {
@@ -359,6 +368,16 @@ bool BaseModule::Converter::convert(TxElement* root) {
             }};
 
             conv.convert(root);
+            [[fallthrough]];
+        }
+        case 3: {
+            res |= xml::changeAttribute(
+                root, {{xml::Kind::processor("org.inviwo.WorldTransformGeometry")}}, "type",
+                "org.inviwo.WorldTransformGeometry", "org.inviwo.WorldTransformMeshDeprecated");
+            res |= xml::changeAttribute(
+                root, {{xml::Kind::processor("org.inviwo.WorldTransformVolume")}}, "type",
+                "org.inviwo.WorldTransformVolume", "org.inviwo.WorldTransformVolumeDeprecated");
+            res |= xml::changeIdentifiers(root, replV3);
             return res;
         }
 

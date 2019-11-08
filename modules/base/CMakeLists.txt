@@ -112,7 +112,7 @@ set(HEADER_FILES
     include/modules/base/processors/volumesubsample.h
     include/modules/base/processors/volumesubset.h
     include/modules/base/processors/volumetospatialsampler.h
-    include/modules/base/processors/worldtransform.h
+    include/modules/base/processors/worldtransformdeprecated.h
     include/modules/base/properties/basisproperty.h
     include/modules/base/properties/bufferinformationproperty.h
     include/modules/base/properties/gaussianproperty.h
