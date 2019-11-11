@@ -66,18 +66,6 @@ protected:
     size3_t dims_;
 };
 
-template <>
-IVW_CORE_API Vector<1, double> VolumeDoubleSampler<1>::getVoxel(const size3_t &pos) const;
-
-template <>
-IVW_CORE_API Vector<2, double> VolumeDoubleSampler<2>::getVoxel(const size3_t &pos) const;
-
-template <>
-IVW_CORE_API Vector<3, double> VolumeDoubleSampler<3>::getVoxel(const size3_t &pos) const;
-
-template <>
-IVW_CORE_API Vector<4, double> VolumeDoubleSampler<4>::getVoxel(const size3_t &pos) const;
-
 using VolumeSampler = VolumeDoubleSampler<4>;
 
 template <unsigned int DataDims>
@@ -114,6 +102,30 @@ Vector<DataDims, double> VolumeDoubleSampler<DataDims>::sampleDataSpace(const dv
     samples[7] = getVoxel(indexPos + size3_t(1, 1, 1));
 
     return Interpolation<Vector<DataDims, double>>::trilinear(samples, interpolants);
+}
+
+template <>
+inline Vector<1, double> VolumeDoubleSampler<1>::getVoxel(const size3_t &pos) const {
+    const auto p = glm::clamp(pos, size3_t(0), dims_ - size3_t(1));
+    return ram_->getAsDouble(p);
+}
+
+template <>
+inline Vector<2, double> VolumeDoubleSampler<2>::getVoxel(const size3_t &pos) const {
+    const auto p = glm::clamp(pos, size3_t(0), dims_ - size3_t(1));
+    return ram_->getAsDVec2(p);
+}
+
+template <>
+inline Vector<3, double> VolumeDoubleSampler<3>::getVoxel(const size3_t &pos) const {
+    const auto p = glm::clamp(pos, size3_t(0), dims_ - size3_t(1));
+    return ram_->getAsDVec3(p);
+}
+
+template <>
+inline Vector<4, double> VolumeDoubleSampler<4>::getVoxel(const size3_t &pos) const {
+    const auto p = glm::clamp(pos, size3_t(0), dims_ - size3_t(1));
+    return ram_->getAsDVec4(p);
 }
 
 template <unsigned int DataDims>

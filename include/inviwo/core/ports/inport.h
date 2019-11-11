@@ -92,7 +92,7 @@ public:
     virtual const std::vector<Outport*>& getConnectedOutports() const;
     virtual size_t getMaxNumberOfConnections() const = 0;
     virtual size_t getNumberOfConnections() const;
-    virtual std::vector<const Outport*> getChangedOutports() const;
+    virtual const std::vector<const Outport*>& getChangedOutports() const;
 
     /**
      * Propagate event upwards towards connected outports, if targets is nullptr, propagate the
