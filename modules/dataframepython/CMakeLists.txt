@@ -26,10 +26,6 @@ set(TEST_FILES
 )
 ivw_add_unittest(${TEST_FILES})
 
-if(IVW_UNITTESTS)
-    add_dependencies(inviwo-unittests-dataframepython ivwdataframe)
-endif()
-
 #--------------------------------------------------------------------
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
@@ -39,3 +35,7 @@ target_link_libraries(inviwo-module-dataframepython PUBLIC
 )
 
 add_subdirectory(bindings)
+
+if(IVW_UNITTESTS)
+    add_dependencies(inviwo-unittests-dataframepython ivwdataframe)
+endif()
