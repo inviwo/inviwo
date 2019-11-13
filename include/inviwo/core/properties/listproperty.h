@@ -141,13 +141,13 @@ public:
     void clear();
 
     /**
-     * \brief add a list entry which is created from the respective prefab object.
+     * \brief construct a list entry which is created from the respective prefab object.
      * This function has no effect if the list size will exceed the maximum number of elements.
      *
      * @param prefabIndex   index of prefab object used for creating the new entry
      * @throw RangeException  in case prefabIndex is invalid
      */
-    void addProperty(size_t prefabIndex);
+    Property* constructProperty(size_t prefabIndex);
 
     /**
      * \brief add \p property as new list entry. The type of the property must match one of the
