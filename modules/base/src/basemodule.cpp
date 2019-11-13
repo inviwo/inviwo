@@ -68,6 +68,7 @@
 #include <modules/base/processors/spotlightsourceprocessor.h>
 #include <modules/base/processors/stereocamerasyncer.h>
 #include <modules/base/processors/surfaceextractionprocessor.h>
+#include <modules/base/processors/transform.h>
 #include <modules/base/processors/trianglestowireframe.h>
 #include <modules/base/processors/volumeboundaryplanes.h>
 #include <modules/base/processors/volumecreator.h>
@@ -122,6 +123,9 @@ namespace inviwo {
 using BasisTransformMesh = BasisTransform<Mesh>;
 using BasisTransformVolume = BasisTransform<Volume>;
 
+using TransformMesh = Transform<Mesh>;
+using TransformVolume = Transform<Volume>;
+
 using WorldTransformMeshDeprecated = WorldTransformDeprecated<Mesh>;
 using WorldTransformVolumeDeprecated = WorldTransformDeprecated<Volume>;
 
@@ -157,6 +161,8 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<BasisTransformMesh>();
     registerProcessor<BasisTransformVolume>();
     registerProcessor<TrianglesToWireframe>();
+    registerProcessor<TransformMesh>();
+    registerProcessor<TransformVolume>();
     registerProcessor<WorldTransformMeshDeprecated>();
     registerProcessor<WorldTransformVolumeDeprecated>();
     registerProcessor<VolumeSlice>();
@@ -210,6 +216,11 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
 
     registerProperty<Gaussian1DProperty>();
     registerProperty<Gaussian2DProperty>();
+
+    registerProperty<transform::TranslateProperty>();
+    registerProperty<transform::RotateProperty>();
+    registerProperty<transform::ScaleProperty>();
+    registerProperty<transform::CustomTransformProperty>();
 
     // Register Data readers
     registerDataReader(std::make_unique<DatVolumeSequenceReader>());
