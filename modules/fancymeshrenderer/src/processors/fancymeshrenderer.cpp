@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -79,7 +79,7 @@ FancyMeshRenderer::FancyMeshRenderer()
     , normalComputationMode_("normalComputationMode", "Normals Computation")
     , faceSettings_{true, false}
     , shader_("fancymeshrenderer.vert", "fancymeshrenderer.geom", "fancymeshrenderer.frag", false)
-    , depthShader_("geometryrendering.vert", "depthOnly.frag", false)
+    , depthShader_("geometryrendering.vert", "depthonly.frag", false)
     , needsRecompilation_(true)
     , originalMesh_(nullptr)
     , meshHasAdjacency_(false)
@@ -126,9 +126,10 @@ FancyMeshRenderer::FancyMeshRenderer()
 
     // New properties
     silhouetteColor_.setSemantics(PropertySemantics::Color);
-    normalSource_.addOption("inputVertex", "Input: Vertex", NormalSource::InputVertex);
-    normalSource_.addOption("generateVertex", "Generate: Vertex", NormalSource::GenerateVertex);
-    normalSource_.addOption("generateTriangle", "Generate: Triangle",
+    normalSource_.addOption("inputVertex", "Input: Vertex Normal", NormalSource::InputVertex);
+    normalSource_.addOption("generateVertex", "Generate: Vertex Normal",
+                            NormalSource::GenerateVertex);
+    normalSource_.addOption("generateTriangle", "Generate: Triangle Normal",
                             NormalSource::GenerateTriangle);
     normalSource_.set(NormalSource::InputVertex);
     normalSource_.setCurrentStateAsDefault();
@@ -305,14 +306,14 @@ FancyMeshRenderer::FaceRenderSettings::FaceRenderSettings(bool frontFace)
     , sameAsFrontFace_(prefix_ + "same", "Same as Front Face")
     , copyFrontToBack_(prefix_ + "copy", "Copy Front to Back")
     , transferFunction_(prefix_ + "tf", "Transfer Function")
-    , externalColor_(prefix_ + "extraColor", "Color", {1, 0.3, 0.01})
+    , externalColor_(prefix_ + "extraColor", "Color", {1.f, 0.3f, 0.01f})
     , colorSource_(prefix_ + "colorSource", "Color Source")
     , separateUniformAlpha_(prefix_ + "separateUniformAlpha", "Separate Uniform Alpha")
-    , uniformAlpha_(prefix_ + "uniformAlpha", "Uniform Alpha", 0.5, 0, 1, 0.01)
+    , uniformAlpha_(prefix_ + "uniformAlpha", "Uniform Alpha", 0.5f, 0.f, 1.f, 0.01f)
     , shadingMode_(prefix_ + "shadingMode", "Shading Mode")
     , showEdges_(prefix_ + "showEdges", "Show Edges")
-    , edgeColor_(prefix_ + "edgeColor", "Edge color", {0, 0, 0})
-    , edgeOpacity_(prefix_ + "edgeOpacity", "Edge Opacity", 0.5, 0, 2, 0.01)
+    , edgeColor_(prefix_ + "edgeColor", "Edge color", {0.f, 0.f, 0.f})
+    , edgeOpacity_(prefix_ + "edgeOpacity", "Edge Opacity", 0.5f, 0.f, 2.f, 0.01f)
     , hatching_(prefix_) {
     // initialize combo boxes
     colorSource_.addOption("vertexColor", "VertexColor", ColorSource::VertexColor);
@@ -429,12 +430,12 @@ void FancyMeshRenderer::FaceRenderSettings::setCallbacks(
 
 FancyMeshRenderer::IllustrationBufferSettings::IllustrationBufferSettings()
     : container_("illustrationBufferContainer", "Illustration Buffer Settings")
-    , edgeColor_("illustrationBufferEdgeColor", "Edge Color", vec3(0, 0, 0))
-    , edgeStrength_("illustrationBufferEdgeStrength", "Edge Strength", 0.5, 0, 1, 0.01)
-    , haloStrength_("illustrationBufferHaloStrength", "Halo Strength", 0.5, 0, 1, 0.01)
+    , edgeColor_("illustrationBufferEdgeColor", "Edge Color", vec3(0.f, 0.f, 0.f))
+    , edgeStrength_("illustrationBufferEdgeStrength", "Edge Strength", 0.5f, 0.f, 1.f, 0.01f)
+    , haloStrength_("illustrationBufferHaloStrength", "Halo Strength", 0.5f, 0.f, 1.f, 0.01f)
     , smoothingSteps_("illustrationBufferSmoothingSteps", "Smoothing Steps", 3, 0, 50, 1)
-    , edgeSmoothing_("illustrationBufferEdgeSmoothing", "Edge Smoothing", 0.8, 0, 1, 0.01)
-    , haloSmoothing_("illustrationBufferHaloSmoothing", "Halo Smoothing", 0.8, 0, 1, 0.01) {
+    , edgeSmoothing_("illustrationBufferEdgeSmoothing", "Edge Smoothing", 0.8f, 0.f, 1.f, 0.01f)
+    , haloSmoothing_("illustrationBufferHaloSmoothing", "Halo Smoothing", 0.8f, 0.f, 1.f, 0.01f) {
     edgeColor_.setSemantics(PropertySemantics::Color);
     container_.addProperty(edgeColor_);
     container_.addProperty(edgeStrength_);

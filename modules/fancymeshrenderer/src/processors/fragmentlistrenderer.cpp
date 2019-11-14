@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/fancymeshrenderer/processors/FragmentListRenderer.h>
+#include <modules/fancymeshrenderer/processors/fragmentlistrenderer.h>
 #include <modules/opengl/geometry/meshgl.h>
 #include <modules/opengl/sharedopenglresources.h>
 #include <modules/opengl/openglutils.h>
@@ -42,13 +42,13 @@ FragmentListRenderer::FragmentListRenderer()
     : screenSize_(0, 0)
     , fragmentSize_(1024)
     , oldFragmentSize_(0)
-    , abufferIdxUnit_(nullptr)
     , abufferIdxImg_(nullptr)
+    , abufferIdxUnit_(nullptr)
     , atomicCounter_(0)
     , pixelBuffer_(0)
     , totalFragmentQuery_(0)
-    , clearShader_("simpleQuad.vert", "clearABufferLinkedList.frag", false)
-    , displayShader_("simpleQuad.vert", "dispABufferLinkedList.frag", false)
+    , clearShader_("simplequad.vert", "clearabufferlinkedlist.frag", false)
+    , displayShader_("simplequad.vert", "dispabufferlinkedlist.frag", false)
     , enableIllustrationBuffer_(false)
     , illustrationBufferOldScreenSize_(0)
     , illustrationBufferOldFragmentSize_(0)
@@ -60,11 +60,11 @@ FragmentListRenderer::FragmentListRenderer()
     , illustrationSurfaceInfoBuffer_(0)
     , illustrationSmoothingBuffer_{0, 0}
     , activeIllustrationSmoothingBuffer_(0)
-    , fillIllustrationBufferShader_("simpleQuad.vert", "SortAndFillIllustrationBuffer.frag", false)
-    , resolveNeighborsIllustrationBufferShader_("simpleQuad.vert",
-                                                "ResolveNeighborsIllustrationBuffer.frag", false)
-    , drawIllustrationBufferShader_("simpleQuad.vert", "DisplayIllustrationBuffer.frag", false)
-    , smoothIllustrationBufferShader_("simpleQuad.vert", "SmoothIllustrationBuffer.frag", false) {
+    , fillIllustrationBufferShader_("simplequad.vert", "sortandfillillustrationbuffer.frag", false)
+    , resolveNeighborsIllustrationBufferShader_("simplequad.vert",
+                                                "resolveneighborsillustrationbuffer.frag", false)
+    , drawIllustrationBufferShader_("simplequad.vert", "displayillustrationbuffer.frag", false)
+    , smoothIllustrationBufferShader_("simplequad.vert", "smoothillustrationbuffer.frag", false) {
     initShaders();
 
     // init atomic counter
@@ -145,7 +145,7 @@ bool FragmentListRenderer::postPass(bool useIllustrationBuffer, bool debug) {
         LogInfo("fragment lists resolved, pixels drawn: "
                 << numFrags << ", available: " << fragmentSize_ << ", allocate space for "
                 << int(1.1f * numFrags) << " pixels");
-        fragmentSize_ = 1.1f * numFrags;
+        fragmentSize_ = static_cast<size_t>(1.1f * numFrags);
 
         // unbind texture
         delete abufferIdxUnit_;
@@ -224,8 +224,8 @@ void FragmentListRenderer::initBuffers(const size2_t& screenSize) {
         // that pixel
         abufferIdxImg_ = new Texture2D(screenSize, GL_RED, GL_R32F, GL_FLOAT, GL_NEAREST, 0);
         abufferIdxImg_->bind();
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, screenSize.x, screenSize.y, 0, GL_RED, GL_FLOAT,
-                     nullptr);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, static_cast<GLsizei>(screenSize.x),
+                     static_cast<GLsizei>(screenSize.y), 0, GL_RED, GL_FLOAT, nullptr);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         LGL_ERROR;
@@ -347,8 +347,8 @@ void FragmentListRenderer::initIllustrationBuffer() {
         illustrationBufferIdxImg_ =
             new Texture2D(screenSize_, GL_RED, GL_R32F, GL_FLOAT, GL_NEAREST, 0);
         illustrationBufferIdxImg_->bind();
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, screenSize_.x, screenSize_.y, 0, GL_RED, GL_FLOAT,
-                     nullptr);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, static_cast<GLsizei>(screenSize_.x),
+                     static_cast<GLsizei>(screenSize_.y), 0, GL_RED, GL_FLOAT, nullptr);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         LGL_ERROR;
@@ -356,8 +356,8 @@ void FragmentListRenderer::initIllustrationBuffer() {
         illustrationBufferCountImg_ =
             new Texture2D(screenSize_, GL_RED, GL_R32F, GL_FLOAT, GL_NEAREST, 0);
         illustrationBufferCountImg_->bind();
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, screenSize_.x, screenSize_.y, 0, GL_RED, GL_FLOAT,
-                     nullptr);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, static_cast<GLsizei>(screenSize_.x),
+                     static_cast<GLsizei>(screenSize_.y), 0, GL_RED, GL_FLOAT, nullptr);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         LGL_ERROR;

@@ -5,11 +5,10 @@ ivw_module(FancyMeshRenderer)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    #fancymeshrendererprocessor.h
-    include/modules/fancymeshrenderer/HalfEdges.h
+    include/modules/fancymeshrenderer/halfedges.h
     include/modules/fancymeshrenderer/calcnormals.h
     include/modules/fancymeshrenderer/processors/calcnormalsprocessor.h
-    include/modules/fancymeshrenderer/processors/FragmentListRenderer.h
+    include/modules/fancymeshrenderer/processors/fragmentlistrenderer.h
     include/modules/fancymeshrenderer/processors/fancymeshrenderer.h
     include/modules/fancymeshrenderer/fancymeshrenderermodule.h
     include/modules/fancymeshrenderer/fancymeshrenderermoduledefine.h
@@ -19,11 +18,10 @@ ivw_group("Header Files" ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-    #fancymeshrendererprocessor.cpp
-    src/HalfEdges.cpp
+    src/halfedges.cpp
     src/calcnormals.cpp
     src/processors/calcnormalsprocessor.cpp
-    src/processors/FragmentListRenderer.cpp
+    src/processors/fragmentlistrenderer.cpp
     src/processors/fancymeshrenderer.cpp
     src/fancymeshrenderermodule.cpp
 )
@@ -33,22 +31,21 @@ ivw_group("Source Files" ${SOURCE_FILES})
 #--------------------------------------------------------------------
 # Add shaders
 set(SHADER_FILES
-    #glsl/fancymeshrendererprocessor.frag
     glsl/fancymeshrenderer.frag
     glsl/fancymeshrenderer.geom
     glsl/fancymeshrenderer.vert
-    glsl/ABufferCommons.hglsl
-    glsl/ABufferLinkedList.hglsl
-    glsl/ABufferSort.hglsl
-    glsl/clearABufferLinkedList.frag
-    glsl/dispABufferLinkedList.frag
-    glsl/simpleQuad.vert
-    glsl/depthOnly.frag
-    glsl/IllustrationBuffer.hglsl
-    glsl/SortAndFillIllustrationBuffer.frag
-    glsl/DisplayIllustrationBuffer.frag
-    glsl/ResolveNeighborsIllustrationBuffer.frag
-    glsl/SmoothIllustrationBuffer.frag
+    glsl/abuffercommons.hglsl
+    glsl/abufferlinkedList.hglsl
+    glsl/abuffersort.hglsl
+    glsl/clearabufferlinkedlist.frag
+    glsl/dispabufferlinkedlist.frag
+    glsl/simplequad.vert
+    glsl/depthonly.frag
+    glsl/illustrationbuffer.hglsl
+    glsl/sortandfillillustrationbuffer.frag
+    glsl/displayIllustrationbuffer.frag
+    glsl/resolveneighborsillustrationbuffer.frag
+    glsl/smoothillustrationbuffer.frag
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 

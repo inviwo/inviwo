@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/fancymeshrenderer/HalfEdges.h>
+#include <modules/fancymeshrenderer/halfedges.h>
 
 #include <iostream>
 
@@ -36,7 +36,7 @@ namespace inviwo {
 HalfEdges::HalfEdges(const IndexBuffer* const indexBuffer) {
     // get CPU representation
     const auto* const indices = indexBuffer->getRAMRepresentation();
-    index_t numTris = indices->getSize() / 3;
+    index_t numTris = static_cast<index_t>(indices->getSize()) / 3;
 
     // map to fill in the opposite direction
     //(start_vertex, end_vertex) -> edge_index
@@ -82,7 +82,7 @@ std::shared_ptr<IndexBuffer> HalfEdges::createIndexBuffer() {
     auto* indices = buffer->getEditableRAMRepresentation();
     indices->reserve(edges_.size());
     // walk faces
-    int numTris = edges_.size() / 3;
+    index_t numTris = static_cast<index_t>(edges_.size()) / 3;
     for (index_t tri = 0; tri < numTris; ++tri) {
         for (index_t v = 0; v < 3; ++v) {
             index_t i1 = 3 * tri + v;
@@ -97,7 +97,7 @@ std::shared_ptr<IndexBuffer> HalfEdges::createIndexBufferWithAdjacency() {
     auto* indices = buffer->getEditableRAMRepresentation();
     indices->reserve(edges_.size() * 2);
     // walk faces
-    int numTris = edges_.size() / 3;
+    index_t numTris = static_cast<index_t>(edges_.size()) / 3;
     for (index_t tri = 0; tri < numTris; ++tri) {
         for (index_t v = 0; v < 3; ++v) {
             index_t i1 = 3 * tri + v;

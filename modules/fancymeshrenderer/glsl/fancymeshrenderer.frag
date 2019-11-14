@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -59,7 +59,7 @@ in fData
 } frag;
 
 #ifdef USE_FRAGMENT_LIST
-#include "ABufferLinkedList.hglsl"
+#include "abufferlinkedlist.hglsl"
 layout(pixel_center_integer) in vec4 gl_FragCoord;
 #endif
 

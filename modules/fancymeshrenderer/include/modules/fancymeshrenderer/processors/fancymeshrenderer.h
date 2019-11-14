@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,7 @@
 #define IVW_FANCYMESHRENDERER_H
 
 #include <modules/fancymeshrenderer/fancymeshrenderermoduledefine.h>
-#include <modules/fancymeshrenderer/HalfEdges.h>
+#include <modules/fancymeshrenderer/halfedges.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -48,7 +48,7 @@
 #include <inviwo/core/rendering/meshdrawer.h>
 #include <modules/opengl/shader/shader.h>
 
-#include <modules/fancymeshrenderer/processors/FragmentListRenderer.h>
+#include <modules/fancymeshrenderer/processors/fragmentlistrenderer.h>
 #include <modules/fancymeshrenderer/calcnormals.h>
 
 namespace inviwo {
@@ -78,7 +78,7 @@ namespace inviwo {
  *   * __Trackball__ Standard trackball settings
  *   * __Shade Opaque__ Draw the mesh opaquly instead of transparent. Disables all transparency
  * settings
- *   * __Alpha__ Assemble construction of the alpha value out of many factors
+ *   * __Alpha__ Assemble construction of the alpha value out of many factors (which are summed up)
  *       + __Uniform__ uniform alpha value
  *       + __Angle-based__ based on the angle between the pixel normal and the direction to the
  * camera

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,7 @@ namespace inviwo {
  * Code ideas taken from https://github.com/yig/halfedge and http://prideout.net/blog/?p=54,
  * both are public domain (11/12/2017).
  */
-class HalfEdges {
+class IVW_MODULE_FANCYMESHRENDERER_API HalfEdges {
 public:
     typedef int index_t;
 
