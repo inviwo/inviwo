@@ -72,7 +72,7 @@ function(ivw_define_standard_properties)
             "${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
             list(APPEND comp_opts "-Wno-mismatched-tags") # gives lots of warnings about redefinitions of structs as class.
         endif()
-        if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang"
+        if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
             list(APPEND comp_opts "-fsized-deallocation") # see https://github.com/pybind/pybind11/issues/1604
         endif()
 
