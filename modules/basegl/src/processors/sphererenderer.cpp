@@ -75,11 +75,7 @@ SphereRenderer::SphereRenderer()
     , useMetaColor_("useMetaColor", "Use meta color mapping", false,
                     InvalidationLevel::InvalidResources)
     , metaColor_("metaColor", "Meta Color Mapping")
-    , selectionProperties_("selection", "Show Selection", true)
-    , selectionColor_("selectionColor", "Color", vec4(1.0f, 0.769f, 0.247f, 1), vec4(0.0f),
-                      vec4(1.0f), vec4(0.01f), InvalidationLevel::InvalidOutput,
-                      PropertySemantics::Color)
-    , selectionRadiusFactor_("selectionRadiusFactor", "Radius Scaling", 1.5f, 0.0f, 10.0f)
+    , selection_(inport_, brushLinkPort_)
 
     , camera_("camera", "Camera", util::boundingBox(inport_))
     , trackball_(&camera_)
@@ -109,9 +105,7 @@ SphereRenderer::SphereRenderer()
     sphereProperties_.addProperties(forceRadius_, defaultRadius_, forceColor_, defaultColor_,
                                     useMetaColor_, metaColor_);
 
-    selectionProperties_.addProperties(selectionColor_, selectionRadiusFactor_);
-
-    addProperties(renderMode_, sphereProperties_, selectionProperties_, clipping_, camera_,
+    addProperties(renderMode_, sphereProperties_, selection_.properties, clipping_, camera_,
                   lighting_, trackball_);
 
     clipMode_.onChange([&]() {
@@ -141,17 +135,9 @@ void SphereRenderer::configureShader(Shader& shader) {
 
 void SphereRenderer::process() {
     utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
-
-    std::vector<uint32_t> indices;
-    if (selectionProperties_.isChecked()) {
-        const auto& selection = brushLinkPort_.getSelectedIndices();
-        indices.resize(selection.size());
-        std::transform(selection.begin(), selection.end(), indices.begin(),
-                       [](size_t i) { return static_cast<uint32_t>(i); });
-    }
-
     utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    for (const auto& mesh : inport_) {
+
+    for (const auto& [port, mesh] : inport_.getSourceVectorData()) {
         if (mesh->getNumberOfBuffers() == 0) continue;
 
         auto& shader = shaders_.getShader(*mesh);
@@ -170,7 +156,8 @@ void SphereRenderer::process() {
         utilgl::setShaderUniforms(shader, *mesh, "geometry");
         switch (renderMode_) {
             case RenderMode::PointsOnly: {
-                // render only index buffers marked as points (or the entire mesh if none exists)
+                // render only index buffers marked as points (or the entire mesh if none
+                // exists)
                 if (mesh->getNumberOfIndicies() > 0) {
                     for (size_t i = 0; i < mesh->getNumberOfIndicies(); ++i) {
                         auto meshinfo = mesh->getIndexMeshInfo(i);
@@ -196,12 +183,12 @@ void SphereRenderer::process() {
         }
 
         // render selection only for first mesh input
-        if (!indices.empty() && (mesh == inport_.getData())) {
+        if (auto indices = selection_.getIndices(port, *mesh)) {
             shader.setUniform("selectionMix", 1.0f);
-            shader.setUniform("selectionScaleFactor", selectionRadiusFactor_.get());
-            shader.setUniform("selectionColor", selectionColor_.get());
-            glDrawElements(GL_POINTS, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_INT,
-                           indices.data());
+            shader.setUniform("selectionScaleFactor", selection_.radiusFactor);
+            shader.setUniform("selectionColor", selection_.color);
+            glDrawElements(GL_POINTS, static_cast<GLsizei>(indices->size()), GL_UNSIGNED_INT,
+                           indices->data());
             // reset selection flag
             shader.setUniform("selectionMix", 0.0f);
         }

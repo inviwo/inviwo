@@ -75,7 +75,7 @@ void Inport::setValid(const Outport* source) {
 
 size_t Inport::getNumberOfConnections() const { return connectedOutports_.size(); }
 
-std::vector<const Outport*> Inport::getChangedOutports() const { return changedSources_; }
+const std::vector<const Outport*>& Inport::getChangedOutports() const { return changedSources_; }
 
 void Inport::propagateEvent(Event* event, Outport* target) {
     if (target) {
