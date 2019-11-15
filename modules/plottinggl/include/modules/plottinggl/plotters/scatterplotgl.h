@@ -141,6 +141,11 @@ public:
     ToolTipCallbackHandle addToolTipCallback(std::function<ToolTipFunc> callback);
     SelectionCallbackHandle addSelectionChangedCallback(std::function<SelectionFunc> callback);
 
+    void invokeEvent(Event* event, Image& dest, bool useAxisRanges = false);
+    void invokeEvent(Event* event, ImageOutport& dest, bool useAxisRanges = false);
+    void invokeEvent(Event* event, const ivec2& start, const ivec2& size,
+                     bool useAxisRanges = false);
+
     Properties properties_;
     Shader shader_;
 
@@ -150,6 +155,9 @@ protected:
 
     void objectPicked(PickingEvent* p);
     uint32_t getGlobalPickId(uint32_t localIndex) const;
+
+    void invokeEvent(Event* event, const ivec2& start, const size2_t& size, bool useAxisRange);
+    void selectionRectChanged(const dvec2& start, const dvec2& end);
 
     std::shared_ptr<const BufferBase> xAxis_;
     std::shared_ptr<const BufferBase> yAxis_;
@@ -177,6 +185,8 @@ protected:
 
     Dispatcher<ToolTipFunc> tooltipCallback_;
     Dispatcher<SelectionFunc> selectionChangedCallback_;
+
+    std::optional<dvec2> dragStart_;
 };
 
 }  // namespace plot

@@ -417,6 +417,59 @@ auto ScatterPlotGL::addSelectionChangedCallback(std::function<SelectionFunc> cal
     return selectionChangedCallback_.add(callback);
 }
 
+void ScatterPlotGL::invokeEvent(Event* event, Image& dest, bool useAxisRanges) {
+    invokeEvent(event, ivec2(0, 0), dest.getDimensions(), useAxisRanges);
+}
+
+void ScatterPlotGL::invokeEvent(Event* event, ImageOutport& dest, bool useAxisRanges) {
+    invokeEvent(event, ivec2(0, 0), dest.getDimensions(), useAxisRanges);
+}
+
+void ScatterPlotGL::invokeEvent(Event* event, const ivec2& start, const ivec2& size,
+                                bool useAxisRanges) {
+    invokeEvent(event, start, size2_t{size}, useAxisRanges);
+}
+
+void ScatterPlotGL::invokeEvent(Event* event, const ivec2& start, const size2_t& size,
+                                bool useAxisRanges) {
+    if (event->hash() == MouseEvent::chash()) {
+        auto me = event->getAs<MouseEvent>();
+        if ((me->button() == MouseButton::Left) && (me->state() == MouseState::Press)) {
+            dragStart_ = dvec2{me->pos().x, me->pos().y};
+        } else if ((me->button() == MouseButton::Left) && (me->state() == MouseState::Release)) {
+            dragStart_ = std::nullopt;
+        } else if ((me->buttonState() & MouseButton::Left) && (me->state() == MouseState::Move)) {
+            // convert position from screen coords to data range
+            auto translatePos = [&](dvec2 p) {
+                const dvec4 margins = properties_.margins_.getAsVec4() +
+                                      properties_.axisMargin_.get();  // top, right, bottom, left
+
+                dvec2 bottomLeft{margins.w + start.x, margins.z + start.y};
+                dvec2 topRight{size.x - margins.y, size.y - margins.x};
+                if (bottomLeft.x > topRight.x) {
+                    std::swap(bottomLeft.x, topRight.x);
+                }
+                if (bottomLeft.y > topRight.y) {
+                    std::swap(bottomLeft.y, topRight.y);
+                }
+
+                // clamp position to plotting area
+                p = glm::clamp(p, bottomLeft, topRight);
+                const dvec2 pNormalized = (p - bottomLeft) / (topRight - bottomLeft);
+
+                const dvec2 rangeX = (useAxisRanges ? properties_.xAxis_.range_.get() : minmaxX_);
+                const dvec2 rangeY = (useAxisRanges ? properties_.yAxis_.range_.get() : minmaxY_);
+                const dvec2 extent{rangeX.y - rangeX.x, rangeY.y - rangeY.x};
+
+                return dvec2{pNormalized * extent + dvec2{rangeX.x, rangeY.x}};
+            };
+            selectionRectChanged(
+                translatePos(*dragStart_),
+                translatePos(dvec2{me->pos().x, me->pos().y}));
+        }
+    }
+}
+
 void ScatterPlotGL::renderAxis(const size2_t& dims) {
     const size2_t lowerLeft(properties_.margins_.getLeft(), properties_.margins_.getBottom());
     const size2_t upperRight(dims.x - 1 - properties_.margins_.getRight(),
@@ -490,6 +543,10 @@ void ScatterPlotGL::objectPicked(PickingEvent* p) {
 
 uint32_t ScatterPlotGL::getGlobalPickId(uint32_t localIndex) const {
     return static_cast<uint32_t>(picking_.getPickingId(localIndex));
+}
+
+void ScatterPlotGL::selectionRectChanged(const dvec2& start, const dvec2& end) {
+    LogWarn("SelectionRect: " << start << " - " << end << ", size: " << (end - start));
 }
 
 }  // namespace plot
