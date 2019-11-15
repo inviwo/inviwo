@@ -60,7 +60,7 @@ public:
     SphereRendererSelection(Inport& inport, BrushingAndLinkingInport& brushLinkPort)
         : properties("selection", "Show Selection", true)
         , color("selectionColor", "Color", vec4(1.0f, 0.769f, 0.247f, 1), vec4(0.0f), vec4(1.0f),
-                 vec4(0.01f), InvalidationLevel::InvalidOutput, PropertySemantics::Color)
+                vec4(0.01f), InvalidationLevel::InvalidOutput, PropertySemantics::Color)
         , radiusFactor("selectionRadiusFactor", "Radius Scaling", 1.5f, 0.0f, 10.0f)
         , inport_{inport}
         , brushLinkPort_{brushLinkPort} {

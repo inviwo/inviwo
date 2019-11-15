@@ -247,63 +247,64 @@ template <typename Format>
 struct Vec4s : std::integral_constant<bool, Format::comp == 4> {};
 
 /**
- * Match all scalar signed or unsigned integer types 
+ * Match all scalar signed or unsigned integer types
  */
 template <typename Format>
 struct IntegerScalars
     : std::integral_constant<bool, Format::comp == 1 && Format::numtype != NumericType::Float> {};
 
 /**
- * Match all scalar signed integer types 
+ * Match all scalar signed integer types
  */
 template <typename Format>
 struct SignedIntegerScalars
-    : std::integral_constant<bool, Format::comp == 1 && Format::numtype == NumericType::SignedInteger> {};
+    : std::integral_constant<bool,
+                             Format::comp == 1 && Format::numtype == NumericType::SignedInteger> {};
 
 /**
- * Match all scalar unsigned integer types 
+ * Match all scalar unsigned integer types
  */
 template <typename Format>
 struct UnsignedIntegerScalars
-    : std::integral_constant<bool, Format::comp == 1 && Format::numtype == NumericType::UnsignedInteger> {};
+    : std::integral_constant<bool, Format::comp == 1 &&
+                                       Format::numtype == NumericType::UnsignedInteger> {};
 
 /**
- * Match all scalar floating point types 
+ * Match all scalar floating point types
  */
 template <typename Format>
 struct FloatScalars
     : std::integral_constant<bool, Format::comp == 1 && Format::numtype == NumericType::Float> {};
 
 /**
- * Match all signed or unsigned integer vector types 
+ * Match all signed or unsigned integer vector types
  */
 template <typename Format>
 struct IntegerVecs
     : std::integral_constant<bool, Format::comp >= 2 && Format::numtype != NumericType::Float> {};
 
-
 /**
- * Match all signed or unsigned integer vector types 
+ * Match all signed or unsigned integer vector types
  */
 template <typename Format>
 struct SignedIntegerVecs
-    : std::integral_constant<bool, Format::comp >= 2 && Format::numtype == NumericType::SignedInteger> {};
+    : std::integral_constant<bool,
+                             Format::comp >= 2 && Format::numtype == NumericType::SignedInteger> {};
 
 /**
- * Match all signed or unsigned integer vector types 
+ * Match all signed or unsigned integer vector types
  */
 template <typename Format>
 struct UnsignedIntegerVecs
-    : std::integral_constant<bool, Format::comp >= 2 && Format::numtype == NumericType::UnsignedInteger> {};
-
+    : std::integral_constant<bool, Format::comp >= 2 &&
+                                       Format::numtype == NumericType::UnsignedInteger> {};
 
 /**
- * Match all floating point vector types 
+ * Match all floating point vector types
  */
 template <typename Format>
 struct FloatVecs
     : std::integral_constant<bool, Format::comp >= 2 && Format::numtype == NumericType::Float> {};
-
 
 }  // namespace filter
 
