@@ -149,6 +149,12 @@ void ScatterPlotProcessor::process() {
     }
 }
 
+void ScatterPlotProcessor::invokeEvent(Event* event) {
+    Processor::invokeEvent(event);
+    if (event->hasBeenUsed()) return;
+    scatterPlot_.invokeEvent(event, outport_, true);
+}
+
 void ScatterPlotProcessor::onXAxisChange() {
     if (!dataFramePort_.hasData()) return;
     auto data = dataFramePort_.getData();
