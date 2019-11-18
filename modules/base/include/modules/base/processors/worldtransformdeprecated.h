@@ -40,8 +40,8 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.WorldTransformVolume, Basis Transform Mesh}
- * ![](org.inviwo.WorldTransformVolume.png?classIdentifier=org.inviwo.WorldTransformVolume)
+/** \docpage{org.inviwo.WorldTransformVolumeDeprecated, Basis Transform Mesh (Deprecated)}
+ * ![](org.inviwo.WorldTransformVolumeDeprecated.png?classIdentifier=org.inviwo.WorldTransformVolumeDeprecated)
  *
  * Sets the world transform of a volume.
  *
@@ -60,8 +60,8 @@ namespace inviwo {
  *   * __Transformation__ Arbitrary transformation
  */
 
-/** \docpage{org.inviwo.WorldTransformGeometry, Basis Transform Volume}
- * ![](org.inviwo.WorldTransformGeometry.png?classIdentifier=org.inviwo.WorldTransformGeometry)
+/** \docpage{org.inviwo.WorldTransformGeometryDeprecated, Basis Transform Volume (Deprecated)}
+ * ![](org.inviwo.WorldTransformGeometryDeprecated.png?classIdentifier=org.inviwo.WorldTransformGeometryDeprecated)
  *
  * Sets the world transform of a mesh.
  *
@@ -81,11 +81,11 @@ namespace inviwo {
  */
 
 template <typename T>
-class WorldTransform : public Processor {
+class WorldTransformDeprecated : public Processor {
 public:
-    WorldTransform();
+    WorldTransformDeprecated();
 
-    virtual ~WorldTransform() = default;
+    virtual ~WorldTransformDeprecated() = default;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
 
@@ -114,40 +114,40 @@ private:
 };
 
 template <typename T>
-const ProcessorInfo inviwo::WorldTransform<T>::getProcessorInfo() const {
-    return ProcessorTraits<WorldTransform<T>>::getProcessorInfo();
+const ProcessorInfo inviwo::WorldTransformDeprecated<T>::getProcessorInfo() const {
+    return ProcessorTraits<WorldTransformDeprecated<T>>::getProcessorInfo();
 }
 
 class Mesh;
 template <>
-struct ProcessorTraits<WorldTransform<Mesh>> {
+struct ProcessorTraits<WorldTransformDeprecated<Mesh>> {
     static ProcessorInfo getProcessorInfo() {
         return {
-            "org.inviwo.WorldTransformGeometry",  // Class identifier
-            "World Transform Mesh",               // Display name
-            "Coordinate Transforms",              // Category
-            CodeState::Stable,                    // Code state
-            Tags::None                            // Tags
+            "org.inviwo.WorldTransformMeshDeprecated",  // Class identifier
+            "World Transform Mesh (Deprecated)",        // Display name
+            "Coordinate Transforms",                    // Category
+            CodeState::Deprecated,                      // Code state
+            Tags::None                                  // Tags
         };
     }
 };
 
 class Volume;
 template <>
-struct ProcessorTraits<WorldTransform<Volume>> {
+struct ProcessorTraits<WorldTransformDeprecated<Volume>> {
     static ProcessorInfo getProcessorInfo() {
         return {
-            "org.inviwo.WorldTransformVolume",  // Class identifier
-            "World Transform Volume",           // Display name
-            "Coordinate Transforms",            // Category
-            CodeState::Stable,                  // Code state
-            Tags::None                          // Tags
+            "org.inviwo.WorldTransformVolumeDeprecated",  // Class identifier
+            "World Transform Volume (Deprecated)",        // Display name
+            "Coordinate Transforms",                      // Category
+            CodeState::Deprecated,                        // Code state
+            Tags::None                                    // Tags
         };
     }
 };
 
 template <typename T>
-WorldTransform<T>::WorldTransform()
+WorldTransformDeprecated<T>::WorldTransformDeprecated()
     : Processor()
     , inport_("inport_")
     , outport_("outport_")
@@ -187,14 +187,14 @@ WorldTransform<T>::WorldTransform()
 }
 
 template <typename T>
-void WorldTransform<T>::process() {
+void WorldTransformDeprecated<T>::process() {
     std::shared_ptr<T> data(inport_.getData()->clone());
     data->setWorldMatrix(matrix_.get() * data->getWorldMatrix());
     outport_.setData(data);
 }
 
 template <typename T>
-void WorldTransform<T>::changeVisibility() {
+void WorldTransformDeprecated<T>::changeVisibility() {
     bool translate = type_.get() == 0;
     bool rotate = type_.get() == 1;
     bool scale = type_.get() == 2;
@@ -207,7 +207,7 @@ void WorldTransform<T>::changeVisibility() {
 }
 
 template <typename T>
-void WorldTransform<T>::updateValues() {
+void WorldTransformDeprecated<T>::updateValues() {
     updatingValues_ = true;
     switch (type_.get()) {
         case 0:
@@ -226,7 +226,7 @@ void WorldTransform<T>::updateValues() {
 }
 
 template <typename T>
-void WorldTransform<T>::onMatrixChange() {
+void WorldTransformDeprecated<T>::onMatrixChange() {
     if (updatingValues_) return;
     type_.set(10);
 }

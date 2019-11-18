@@ -299,11 +299,14 @@ void ProcessorGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem* o
     p->save();
     p->setRenderHint(QPainter::Antialiasing, true);
     QColor selectionColor("#7a191b");
+    QColor deprecatedColor("#562e14");
     QColor backgroundColor("#3b3d3d");
     QColor borderColor("#282828");
 
     if (isSelected()) {
         p->setBrush(selectionColor);
+    } else if (processor_->getProcessorInfo().codeState == CodeState::Deprecated) {
+        p->setBrush(deprecatedColor);
     } else {
         p->setBrush(backgroundColor);
     }
