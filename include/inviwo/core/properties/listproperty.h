@@ -145,6 +145,7 @@ public:
      * This function has no effect if the list size will exceed the maximum number of elements.
      *
      * @param prefabIndex   index of prefab object used for creating the new entry
+     * @return constructed property, or nullptr if the new property cannot be added to the list
      * @throw RangeException  in case prefabIndex is invalid
      */
     Property* constructProperty(size_t prefabIndex);
