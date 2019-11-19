@@ -28,6 +28,9 @@ Make sure that the same Qt version used for building is found when running the a
 Add the path to the Python bin folder to your PATH environment variable.
 You can find the path to the Python binary in Visual Studio by right clicking on the inviwo-module-python3 project and go to "Properties->Linker->Input->Additional dependencies".
 
+#### Everything compiles but at runtime you get runtime error / Unhandled Exception in pybind11/embed.h
+This may happen when the `PYTHONHOME` variable is not set or is incorrect. Check your system settings to see if it is correctly pointing to your python installation found by CMake. If you do not have the `PYTHONHOME` variable you should set it. It should point to the root folder of your python installation, e.g `C:/python37 or C:\Program Files (x86)\Microsoft Visual Studio\Shared\Anaconda3_64` (if you installed Anaconda with Visual Studio). To know which python installation inviwo uses you can check the output from the configuration pass in CMake, in the very beginning of the log it prints which python interpreter it found and will use.
+
 ## Linux
 
 ### Dependencies
