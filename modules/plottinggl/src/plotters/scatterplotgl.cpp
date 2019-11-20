@@ -457,15 +457,16 @@ void ScatterPlotGL::invokeEvent(Event* event, const ivec2& start, const size2_t&
                 p = glm::clamp(p, bottomLeft, topRight);
                 const dvec2 pNormalized = (p - bottomLeft) / (topRight - bottomLeft);
 
-                const dvec2 rangeX = (useAxisRanges ? properties_.xAxis_.range_.get() : minmaxX_);
-                const dvec2 rangeY = (useAxisRanges ? properties_.yAxis_.range_.get() : minmaxY_);
+                const dvec2 rangeX =
+                    (useAxisRanges ? properties_.xAxis_.range_.get() : dvec2{minmaxX_});
+                const dvec2 rangeY =
+                    (useAxisRanges ? properties_.yAxis_.range_.get() : dvec2{minmaxY_});
                 const dvec2 extent{rangeX.y - rangeX.x, rangeY.y - rangeY.x};
 
                 return dvec2{pNormalized * extent + dvec2{rangeX.x, rangeY.x}};
             };
-            selectionRectChanged(
-                translatePos(*dragStart_),
-                translatePos(dvec2{me->pos().x, me->pos().y}));
+            selectionRectChanged(translatePos(*dragStart_),
+                                 translatePos(dvec2{me->pos().x, me->pos().y}));
         }
     }
 }
