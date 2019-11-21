@@ -48,6 +48,7 @@ namespace inviwo {
  *
  * Extracts a region of an image. First color layer, depth layer, and picking layer are
  * copied.
+ * The region can be moved using mouse/touch interaction.
  *
  * ### Inports
  *   * __image.inport__ Image to extract region from.
@@ -69,32 +70,29 @@ public:
     static const ProcessorInfo processorInfo_;
 
     virtual void process() override;
-    
-
-    void pan(ivec2 diff);
+    virtual void invokeEvent(Event* event) override;
+    /*
+     * \brief Pan from one pixel to another.
+     */
+    void pan(ivec2 from, ivec2 to);
     ImageInport inport_;
     ImageOutport outport_;
-    
+
     IntSizeTMinMaxProperty rangeX_;
     IntSizeTMinMaxProperty rangeY_;
-private:
-    void handlePan(Event* event);
-    void touchGesture(Event* event);
 
-    EventProperty mouseZoom_;
-    EventProperty mousePan_;
-    EventProperty touchGesture_;
-    
-    dvec2 lastInteractionPos_;
+private:
+    void handleMousePan(MouseEvent* event);
+    void handleTouchEvent(TouchEvent* event);
+
+    dvec2 pressedPos_;
     size2_t rangePressedX_;
     size2_t rangePressedY_;
-    bool mousePressed_ = false;
     size2_t dims_;
-    
+
     Shader shader_;
     Mesh rect_;
     std::shared_ptr<Buffer<vec2>> texCoordsBuffer_;
 };
 
 }  // namespace inviwo
-
