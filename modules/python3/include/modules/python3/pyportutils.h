@@ -41,6 +41,10 @@
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/datastructures/datatraits.h>
+#include <inviwo/core/util/exception.h>
+
+#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -55,31 +59,6 @@ struct PortDeleter {
 
 template <typename T>
 using PortPtr = std::unique_ptr<T, detail::PortDeleter<T>>;
-
-namespace util {
-
-template <typename Iter>
-struct IterRangeGenerator : iter_range<Iter> {
-    IterRangeGenerator(iter_range<Iter> base) : iter_range<Iter>{base} {};
-    using iter_range<Iter>::iter_range;
-    typename Iter::value_type next() {
-        if (this->first != this->second) {
-            return *(this->first++);
-        } else {
-            throw pybind11::stop_iteration{};
-        }
-    }
-};
-
-}  // namespace util
-
-template <typename Iter>
-pybind11::class_<util::IterRangeGenerator<Iter>> exposeIterRangeGenerator(pybind11::module& m,
-                                                                          const std::string& name) {
-
-    return pybind11::class_<util::IterRangeGenerator<Iter>>(m, (name + "Generator").c_str())
-        .def("__next__", &util::IterRangeGenerator<Iter>::next);
-}
 
 template <typename Port>
 pybind11::class_<Port, Outport, PortPtr<Port>> exposeOutport(pybind11::module& m,
@@ -127,6 +106,14 @@ pybind11::class_<Port, Inport, PortPtr<Port>> exposeInport(pybind11::module& m,
 
 template <typename T>
 void exposeStandardDataPorts(pybind11::module& m, const std::string& name) {
+    if (DataTraits<T>::classIdentifier().empty()) {
+        throw Exception(
+            fmt::format("exposing standard DataPorts to python for '{0}' failed due to missing "
+                        "class identifier. Have you provided a DataTraits<{0}> specialization?",
+                        parseTypeIdName(std::string(typeid(T).name()))),
+            IVW_CONTEXT_CUSTOM("exposeStandardDataPorts"));
+    }
+
     exposeOutport<DataOutport<T>>(m, name);
     exposeInport<DataInport<T>>(m, name);
     exposeInport<DataInport<T, 0>>(m, name + "Multi");

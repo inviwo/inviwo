@@ -65,6 +65,7 @@
 #include <inviwo/core/util/stringconversion.h>
 
 #include <type_traits>
+#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -406,9 +407,10 @@ void InviwoModule::registerPort() {
     try {
         registerPortInternal<T>();
     } catch (const Exception& e) {
-        LogError("Error registering port \"" << parseTypeIdName(std::string(typeid(T).name()))
-                                             << "\" in module " << getIdentifier()
-                                             << ". Reason: " << e.getMessage());
+        LogError(fmt::format(
+            "Error registering port '{0}' in module {1}. Reason: {2}. Have you provided a "
+            "DataTraits<{0}> specialization?",
+            parseTypeIdName(std::string(typeid(T).name())), getIdentifier(), e.getMessage()));
     }
 }
 
