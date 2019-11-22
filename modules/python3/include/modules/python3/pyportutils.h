@@ -40,6 +40,10 @@
 #include <inviwo/core/ports/outport.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/datastructures/datatraits.h>
+#include <inviwo/core/util/exception.h>
+
+#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -82,6 +86,14 @@ pybind11::class_<Port, Inport, PortPtr<Port>> exposeInport(pybind11::module& m,
 
 template <typename T>
 void exposeStandardDataPorts(pybind11::module& m, const std::string& name) {
+    if (DataTraits<T>::classIdentifier().empty()) {
+        throw Exception(
+            fmt::format("exposing standard DataPorts to python for '{0}' failed due to missing "
+                        "class identifier. Have you provided a DataTraits<{0}> specialization?",
+                        parseTypeIdName(std::string(typeid(T).name()))),
+            IVW_CONTEXT_CUSTOM("exposeStandardDataPorts"));
+    }
+
     exposeOutport<DataOutport<T>>(m, name);
     exposeInport<DataInport<T>>(m, name);
     exposeInport<DataInport<T, 0>>(m, name + "Multi");
