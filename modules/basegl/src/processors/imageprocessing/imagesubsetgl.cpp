@@ -63,8 +63,7 @@ ImageSubsetGL::ImageSubsetGL()
              {{1.0f, -1.0f}, {1.f, 0.f}},
              {{-1.0f, 1.0f}, {0.f, 1.f}},
              {{1.0f, 1.0f}, {1.f, 1.f}}},
-            {0u, 1u, 2u, 3u}) 
-{
+            {0u, 1u, 2u, 3u}) {
     addPort(inport_);
     addPort(outport_);
     addProperties(rangeX_, rangeY_);
