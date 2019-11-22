@@ -31,7 +31,7 @@
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/datastructures/geometry/typedmesh.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/processors/processor.h>
@@ -88,10 +88,9 @@ private:
     dvec2 pressedPos_;
     size2_t rangePressedX_;
     size2_t rangePressedY_;
-    size2_t dims_;
 
     Shader shader_;
-    Mesh rect_;
+    TypedMesh<buffertraits::PositionsBuffer2D, buffertraits::TexcoordBuffer<2>> rect_;
     std::shared_ptr<Buffer<vec2>> texCoordsBuffer_;
 };
 

@@ -51,18 +51,24 @@ const ProcessorInfo ImageSubsetGL::getProcessorInfo() const { return processorIn
 
 ImageSubsetGL::ImageSubsetGL()
     : Processor()
-    , inport_("inputImage")
-    , outport_("outputImage")
+    // Inport must use its connected outport's size
+    , inport_("inputImage", true)
+    // Outport shall not handle resize events
+    , outport_("outputImage", false)
     , rangeX_("rangeX", "X Slices", 0, 256, 0, 256, 1, 1)
     , rangeY_("rangeY", "Y Slices", 0, 256, 0, 256, 1, 1)
-    , shader_("img_texturequad.vert", "img_copy.frag") {
+    , shader_("img_texturequad.vert", "img_copy.frag")
+    , rect_(DrawType::Triangles, ConnectivityType::Strip,
+            {{{-1.0f, -1.0f}, {0.f, 0.f}},
+             {{1.0f, -1.0f}, {1.f, 0.f}},
+             {{-1.0f, 1.0f}, {0.f, 1.f}},
+             {{1.0f, 1.0f}, {1.f, 1.f}}},
+            {0u, 1u, 2u, 3u}) 
+{
     addPort(inport_);
     addPort(outport_);
     addProperties(rangeX_, rangeY_);
-    dims_ = size2_t(1, 1);
 
-    inport_.setOutportDeterminesSize(true);
-    outport_.setHandleResizeEvents(false);
     // Since the ranges depend on the input image dimensions, we make sure to always
     // serialize them so we can do a proper renormalization when we load new data.
     rangeX_.setSerializationMode(PropertySerializationMode::All);
@@ -72,28 +78,15 @@ ImageSubsetGL::ImageSubsetGL()
         NetworkLock lock(this);
 
         // Update to the new dimensions.
-        dims_ = inport_.getData()->getDimensions();
+        auto dims = inport_.getData()->getDimensions();
 
-        rangeX_.setRangeNormalized(size2_t(0, dims_.x));
-        rangeY_.setRangeNormalized(size2_t(0, dims_.y));
+        rangeX_.setRangeNormalized(size2_t(0, dims.x));
+        rangeY_.setRangeNormalized(size2_t(0, dims.y));
 
         // set the new dimensions to default if we were to press reset
         rangeX_.setCurrentStateAsDefault();
         rangeY_.setCurrentStateAsDefault();
     });
-
-    // Create a rectangle mesh for rendering.
-    // Texture coordinates will be modified
-    auto verticesBuffer =
-        util::makeBuffer<vec2>({{-1.0f, -1.0f}, {1.0f, -1.0f}, {-1.0f, 1.0f}, {1.0f, 1.0f}});
-    vec2 texOffset = vec2(0.f) / vec2(dims_);
-    vec2 texEnd = vec2(1.f) / vec2(dims_);
-    texCoordsBuffer_ = util::makeBuffer<vec2>(
-        {texOffset, {texEnd.x, texOffset.y}, {texOffset.x, texEnd.y}, texEnd});
-    auto indices = util::makeIndexBuffer({0, 1, 2, 3});
-    rect_.addBuffer(BufferType::PositionAttrib, verticesBuffer);
-    rect_.addBuffer(BufferType::TexcoordAttrib, texCoordsBuffer_);
-    rect_.addIndicies(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::Strip), indices);
 }
 
 ImageSubsetGL::~ImageSubsetGL() = default;
@@ -101,7 +94,8 @@ ImageSubsetGL::~ImageSubsetGL() = default;
 void ImageSubsetGL::process() {
     const ivec2 offset{rangeX_.get().x, rangeY_.get().x};
     const ivec2 dim = ivec2{rangeX_.get().y, rangeY_.get().y} - offset;
-    if (dim == ivec2(dims_))
+    auto inputDim = inport_.getData()->getDimensions();
+    if (dim == ivec2(inputDim))
         outport_.setData(inport_.getData());
     else {
         auto image = inport_.getData();
@@ -123,9 +117,10 @@ void ImageSubsetGL::process() {
 
         utilgl::bindTextures(*image, colorUnit, depthUnit, pickingUnit);
         // Texture coordinates of the region we should copy
-        vec2 texOffset = vec2(offset) / vec2(dims_);
-        vec2 texEnd = vec2(offset + dim) / vec2(dims_);
-        auto coords = texCoordsBuffer_->getEditableRAMRepresentation();
+        vec2 texOffset = vec2(offset) / vec2(inputDim);
+        vec2 texEnd = vec2(offset + dim) / vec2(inputDim);
+        auto texCoordsBuffer = rect_.getTypedBuffer<buffertraits::TexcoordBuffer<2>>();
+        auto coords = texCoordsBuffer->getEditableRAMRepresentation();
         coords->set(0, texOffset);
         coords->set(1, {texEnd.x, texOffset.y});
         coords->set(2, {texOffset.x, texEnd.y});
@@ -142,7 +137,12 @@ void ImageSubsetGL::process() {
 }
 
 void ImageSubsetGL::invokeEvent(Event* event) {
-    // Allow panning and prevent interaction events from propagating (does not make
+    // Allow panning but prevent interaction events from propagating because it does not
+    // make sense to be able to pan and at the same time forward other events (e.g. zooom).
+    // If you have a use for event propagation you should introduce a boolean property for
+    // controlling if events should be handled by this processor. Alternatively, you can use
+    // EventProperty, but make sure that it works on Trackpads since issues were spotted
+    // when trying that route.
     switch (event->hash()) {
         case MouseEvent::chash():
             handleMousePan(static_cast<MouseEvent*>(event));
@@ -153,8 +153,8 @@ void ImageSubsetGL::invokeEvent(Event* event) {
             event->markAsUsed();
             break;
         case WheelEvent::chash():
-        case GestureEvent::chash():
-            // GestureEvents are better handles using TouchEvent
+            [[fallthrough]];
+        case GestureEvent::chash():  // GestureEvents are better handles using TouchEvents
             event->markAsUsed();
         default:
             Processor::invokeEvent(event);
@@ -221,8 +221,8 @@ void ImageSubsetGL::handleTouchEvent(TouchEvent* touchEvent) {
             break;
     }
     if (panOp) {
-        // Assume that We require two touches when using trackpad since the first one will occur
-        // when sweeping over the canvas
+        // Assume that We require two touches when using trackpad since the first one will
+        // occur when sweeping over the canvas
         size_t usePointIndex = (type == TouchDevice::DeviceType::TouchScreen) ? 0 : 1;
         const auto& point = touchPoints[usePointIndex];
         if (point.state() == TouchState::Started) {
