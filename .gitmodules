@@ -41,5 +41,5 @@
     path = modules/assimp/ext/assimp/assimp
     url = https://github.com/inviwo/assimp.git
 [submodule "modules/fontrendering/ext/freetype/freetype"]
-	path = modules/fontrendering/ext/freetype/freetype
-	url = https://github.com/inviwo/freetype2.git
+    path = modules/fontrendering/ext/freetype/freetype
+    url = https://github.com/inviwo/freetype2.git
