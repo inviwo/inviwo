@@ -267,7 +267,7 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerDefaultsForDataType<std::vector<vec2>>();
     registerDefaultsForDataType<std::vector<dvec2>>();
     registerDefaultsForDataType<std::vector<ivec2>>();
-    registerDefaultsForDataType<std::vector<size2_t>();
+    registerDefaultsForDataType < std::vector<size2_t>();
     registerDefaultsForDataType<std::vector<vec3>>();
     registerDefaultsForDataType<std::vector<dvec3>>();
     registerDefaultsForDataType<std::vector<ivec3>>();
