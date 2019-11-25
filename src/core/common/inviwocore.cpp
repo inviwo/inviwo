@@ -254,22 +254,28 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerDefaultsForDataType<vec2>();
     registerDefaultsForDataType<dvec2>();
     registerDefaultsForDataType<ivec2>();
+    registerDefaultsForDataType<size2_t>();
     registerDefaultsForDataType<vec3>();
     registerDefaultsForDataType<dvec3>();
     registerDefaultsForDataType<ivec3>();
+    registerDefaultsForDataType<size3_t>();
     registerDefaultsForDataType<vec4>();
     registerDefaultsForDataType<dvec4>();
     registerDefaultsForDataType<ivec4>();
+    registerDefaultsForDataType<size4_t>();
 
     registerDefaultsForDataType<std::vector<vec2>>();
     registerDefaultsForDataType<std::vector<dvec2>>();
     registerDefaultsForDataType<std::vector<ivec2>>();
+    registerDefaultsForDataType<std::vector<size2_t>();
     registerDefaultsForDataType<std::vector<vec3>>();
     registerDefaultsForDataType<std::vector<dvec3>>();
     registerDefaultsForDataType<std::vector<ivec3>>();
+    registerDefaultsForDataType<std::vector<size3_t>>();
     registerDefaultsForDataType<std::vector<vec4>>();
     registerDefaultsForDataType<std::vector<dvec4>>();
     registerDefaultsForDataType<std::vector<ivec4>>();
+    registerDefaultsForDataType<std::vector<size4_t>>();
 
     // Register PortInspectors
     registerPortInspector(PortTraits<ImageOutport>::classIdentifier(),
