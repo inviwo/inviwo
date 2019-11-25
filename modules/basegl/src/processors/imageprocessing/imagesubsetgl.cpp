@@ -30,8 +30,7 @@
 #include <modules/basegl/processors/imageprocessing/imagesubsetgl.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/interaction/events/gestureevent.h>
-#include <inviwo/core/interaction/events/mouseevent.h>
-#include <inviwo/core/interaction/events/touchevent.h>
+#include <inviwo/core/interaction/events/wheelevent.h>
 #include <inviwo/core/network/networklock.h>
 
 #include <modules/opengl/geometry/meshgl.h>
