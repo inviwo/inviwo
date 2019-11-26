@@ -470,6 +470,74 @@ vec3 LuvChromaticity2XYZ(const vec3 &LuvChroma, vec3 whitePointXYZ) {
     return Luv2XYZ(vec3(L, u, v));
 }
 
+vec3 hcl2rgb(const vec3 &hcl) {
+    const auto PI = 3.1415926536f;
+    const auto hclGamma = 3.0f;
+    const auto hclY0 = 100.0f;
+    const auto hclMaxL = 0.530454533953517f;
+
+    vec3 rgb = vec3(0.0f);
+
+    if (hcl.z != 0.0f) {
+        auto h = hcl.x;
+        auto c = hcl.y;
+        auto l = hcl.z * hclMaxL;
+        auto q = glm::exp((1.0f - c / (2.0f * l)) * (hclGamma / hclY0));
+        auto u = (2.0f * l - c) / (2.0f * q - 1.0f);
+        auto v = c / q;
+        auto t = glm::tan(
+            (h + glm::min(glm::fract(2.0f * h) / 4.0f, glm::fract(-2.0f * h) / 8.0f)) * PI * 2.0f);
+        h *= 6.0f;
+        if (h <= 1.0f) {
+            rgb.r = 1.0f;
+            rgb.g = t / (1.0f + t);
+        } else if (h <= 2.0f) {
+            rgb.r = (1.0f + t) / t;
+            rgb.g = 1.0f;
+        } else if (h <= 3.0f) {
+            rgb.g = 1.0f;
+            rgb.b = 1.0f + t;
+        } else if (h <= 4.0f) {
+            rgb.g = 1.0f / (1.0f + t);
+            rgb.b = 1.0f;
+        } else if (h <= 5.0f) {
+            rgb.r = -1.0f / t;
+            rgb.b = 1.0f;
+        } else {
+            rgb.r = 1.0f;
+            rgb.b = -t;
+        }
+        rgb = rgb * v + u;
+    }
+
+    return rgb;
+}
+
+vec3 rgb2hcl(const vec3 &rgb) {
+    const float PI = 3.1415926536f;
+    const float hclGamma = 3.0f;
+    const float hclY0 = 100.0f;
+    const float hclMaxL = 0.530454533953517f;
+
+    vec3 hcl;
+    float h = 0.0f;
+    float u = glm::min(rgb.r, glm::min(rgb.g, rgb.b));
+    float v = glm::max(rgb.r, glm::max(rgb.g, rgb.b));
+    auto q = hclGamma / hclY0;
+    hcl.y = v - u;
+
+    if (hcl.y != 0.0f) {
+        h = glm::atan(rgb.g - rgb.b, rgb.r - rgb.g) / PI;
+        q *= u / v;
+    }
+
+    q = exp(q);
+    hcl.x = glm::fract(h / 2.0f - glm::min(glm::fract(h), glm::fract(-h)) / 6.0f);
+    hcl.y *= q;
+    hcl.z = glm::mix(-u, v, q) / (hclMaxL * 2.0f);
+
+    return hcl;
+}
 }  // namespace color
 
 }  // namespace inviwo
