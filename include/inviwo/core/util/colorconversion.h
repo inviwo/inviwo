@@ -302,7 +302,8 @@ IVW_CORE_API vec3 Luv2XYZ(const vec3 &Luv, vec3 whitePointXYZ = getD65WhitePoint
 /**
  * \brief convert from hcl to rgb.
  *
- * HCL (hue chroma luminance) is converted to RGB (red green blue) values.
+ * HCL (hue chroma luminance) in range [a, b] is converted to RGB (red green blue) in range [a, b],
+ * where usually a = 0 and b = 1.
  *
  * See https://en.wikipedia.org/wiki/HCL_color_space
  *
@@ -314,7 +315,8 @@ IVW_CORE_API vec3 hcl2rgb(const vec3 &hcl);
 /**
  * \brief convert from rgb to hcl.
  *
- * RGB (red green blue) is converted to HCL (hue chroma luminance) values.
+ * RGB (red green blue) in range [a, b] is converted to HCL (hue chroma luminance) in range [a, b],
+ * where usually a = 0 and b = 1.
  *
  * See https://en.wikipedia.org/wiki/HCL_color_space
  *
