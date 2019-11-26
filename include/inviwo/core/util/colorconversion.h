@@ -309,7 +309,7 @@ IVW_CORE_API vec3 Luv2XYZ(const vec3 &Luv, vec3 whitePointXYZ = getD65WhitePoint
  * @param hcl HCL color
  * @return RGB color
  */
-IVW_CORE_API vec3 hcl2rgb(const vec3& hcl);
+IVW_CORE_API vec3 hcl2rgb(const vec3 &hcl);
 
 /**
  * \brief convert from rgb to hcl.
@@ -321,7 +321,7 @@ IVW_CORE_API vec3 hcl2rgb(const vec3& hcl);
  * @param rgb RGB color
  * @return HCL color
  */
-IVW_CORE_API vec3 rgb2hcl(const vec3& rgb);
+IVW_CORE_API vec3 rgb2hcl(const vec3 &rgb);
 
 }  // namespace color
 
