@@ -250,8 +250,8 @@ std::unique_ptr<Mesh> generateTicksMesh(const std::vector<double>& tickmarks, dv
     std::vector<uint32_t> indices(numTicks * 2);
     std::iota(indices.begin(), indices.end(), 0);
 
-    mesh->addIndicies(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::None),
-                      inviwo::util::makeIndexBuffer(std::move(indices)));
+    mesh->addIndices(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::None),
+                     inviwo::util::makeIndexBuffer(std::move(indices)));
 
     return mesh;
 }
@@ -415,8 +415,8 @@ std::unique_ptr<Mesh> generateAxisMesh3D(const vec3& startPos, const vec3& endPo
         auto pickingBuffer = util::makeBuffer<uint32_t>({id, id});
         m->addBuffer(BufferType::PickingAttrib, pickingBuffer);
     }
-    m->addIndicies(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::None),
-                   util::makeIndexBuffer({0, 1}));
+    m->addIndices(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::None),
+                  util::makeIndexBuffer({0, 1}));
 
     return m;
 }

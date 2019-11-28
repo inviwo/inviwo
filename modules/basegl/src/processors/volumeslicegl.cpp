@@ -499,13 +499,10 @@ void VolumeSliceGL::updateIndicatorMesh() {
     auto indexBuf2 =
         util::makeIndexBuffer(util::table([&](int i) { return static_cast<uint32_t>(i); }, 8, 12));
 
-    // clear up existing attribute buffers
-    // meshCrossHair_->deinitialize();
     meshCrossHair_->addBuffer(BufferType::PositionAttrib, posBuf);
     meshCrossHair_->addBuffer(BufferType::ColorAttrib, colorBuf);
-    meshCrossHair_->addIndicies(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::None), indexBuf1);
-
-    meshCrossHair_->addIndicies(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::Loop), indexBuf2);
+    meshCrossHair_->addIndices(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::None), indexBuf1);
+    meshCrossHair_->addIndices(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::Loop), indexBuf2);
 
     meshDirty_ = false;
 }

@@ -383,7 +383,7 @@ std::unique_ptr<Mesh> planeRect() {
     auto m = std::make_unique<Mesh>();
     m->addBuffer(BufferType::PositionAttrib, verticesBuffer);
     m->addBuffer(BufferType::TexcoordAttrib, texCoordsBuffer);
-    m->addIndicies(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::Strip), indices_);
+    m->addIndices(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::Strip), indices_);
 
     return m;
 }

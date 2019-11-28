@@ -312,8 +312,8 @@ void CropWidget::createLineStripMesh() {
     linestrip->addBuffer(BufferType::PositionAttrib, vertices);
     linestrip->addBuffer(BufferType::ColorAttrib, colors);
     linestrip->addBuffer(BufferType::TexcoordAttrib, texCoords);
-    linestrip->addIndicies(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::StripAdjacency),
-                           indices);
+    linestrip->addIndices(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::StripAdjacency),
+                          indices);
 
     linestrip_ = linestrip;
 }
