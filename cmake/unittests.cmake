@@ -65,6 +65,7 @@ function(ivw_make_unittest_target name target)
     target_link_libraries(${test_name} 
         PUBLIC 
         gtest
+        gmock
         inviwo::testutil
         ${target}
     )
