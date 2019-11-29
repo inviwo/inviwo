@@ -149,6 +149,8 @@ public:
 
     virtual Vector<N, size_t> getDimensions() const = 0;
 
+    Vector<N, float> getSpacing() const;
+
     /**
      * Returns the matrix transformation mapping from texture coordinates
      * to voxel index coordinates, i.e. from [0,1] to [-0.5, number of voxels-0.5]
@@ -315,6 +317,20 @@ template <unsigned int N>
 StructuredGridEntity<N>::StructuredGridEntity(const Matrix<N + 1, float>& modelMatrix,
                                               const Matrix<N + 1, float>& worldMatrix)
     : SpatialEntity<N>(modelMatrix, worldMatrix) {}
+
+template <unsigned int N>
+Vector<N, float> StructuredGridEntity<N>::getSpacing() const {
+    const auto dimensions = getDimensions();
+    const auto basis = this->getBasis();
+
+    Vector<N, float> spacing;
+
+    for (unsigned int i{0}; i < N; ++i) {
+        spacing[i] = glm::length(basis[i]) / dimensions[i];
+    }
+
+    return spacing;
+}
 
 template <unsigned int N>
 Matrix<N + 1, float> StructuredGridEntity<N>::getIndexMatrix() const {
