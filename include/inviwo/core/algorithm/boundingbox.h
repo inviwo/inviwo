@@ -37,6 +37,8 @@
 #include <functional>
 #include <optional>
 
+namespace inviwo {
+
 class Inport;
 
 class Mesh;
@@ -47,8 +49,6 @@ class DataInport;
 
 template <typename T>
 class DataOutport;
-
-namespace inviwo {
 
 namespace util {
 
