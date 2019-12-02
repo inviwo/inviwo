@@ -162,7 +162,7 @@ public:
      * not been stopped. Hence it is safe to refer to the processor in this functor.
      *
      * \code{.cpp}
-     * const auto calc = [delay = delay_.get(), image = inport_.getData()]
+     * const auto calc = [image = inport_.getData()]
      *     ( pool::Stop stop, pool::Progress progress) -> std::shared_ptr<const Image> {
      *     if (stop) return nullptr;
      *     auto newImage = std::shared_ptr<Image>(image->clone());

@@ -1,5 +1,32 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
+## 2019-12-02 PoolProcessor
+Added a base processor to make background processing easier. Here is basic example of how the process function might look like:
+```c++
+const auto calc = [image = inport_.getData()](pool::Stop stop, pool::Progress progress) 
+    -> std::shared_ptr<const Image> {
+    if (stop) return nullptr;
+    auto newImage = std::shared_ptr<Image>(image->clone());
+    progress(0.5f);
+    // Do some work with the image
+    return newImage;
+};
+dispatchOne(calc, [this](std::shared_ptr<const Image> result) {
+    outport_.setData(result);
+    newResults();  // Let the network know that the processor has new results on the outport.
+});
+```
+The PoolProcessor automatically manages the Activity Indicator and the Progress Bar. It handles stopping old jobs. And it manages the lifetimes of the jobs and the processor. The Example module has an ExampleProgressBar processor with example code. And the PoolProcessor has examples in its documentation. 
+
+## 2019-11-05 Mesh Plane Clipping
+The mesh clipping processor can now handle most mesh types.
+
+## 2019-10-02 DataFrameQt
+A new sink processor that displays a spreadsheet view of a data frame, with selection support. 
+
+## 2019-09-16 Auto Save
+Inviwo now has a auto save feature that lets you restore a workspace on restart even if it was never saved.
+
 ## 2019-09-02 New Inviwo Version 0.9.11
 Major change since the last release include:
 
@@ -120,33 +147,33 @@ To register an Inviwo python processor one can put in in the <user setttings fol
 It is now possible to run inviwo directly from python using a new inviwopyapp python package found in `apps/inviwopyapp`.
 An example of running inviwo can be found in `apps/inviwopyapp/inviwo.py`. 
 ```py
-    import inviwopy as ivw
-    import inviwopyapp as qt
+import inviwopy as ivw
+import inviwopyapp as qt
+
+if __name__ == '__main__':
+    # Inviwo requires that a logcentral is created.
+    lc = ivw.LogCentral()
     
-    if __name__ == '__main__':
-        # Inviwo requires that a logcentral is created.
-        lc = ivw.LogCentral()
-        
-        # Create and register a console logger
-        cl = ivw.ConsoleLogger()
-        lc.registerLogger(cl)
-    
-        # Create the inviwo application
-        app = qt.InviwoApplicationQt()
-        app.registerModules()
-    
-        # load a workspace
-        app.network.load(app.getPath(ivw.PathType.Workspaces) + "/boron.inv")
-    
-        # Make sure the app is ready
-        app.update()
-        app.waitForPool()
-        app.update()
-        # Save a snapshot
-        app.network.Canvas.snapshot("snapshot.png") 
-    
-        # run the app event loop
-        app.run()
+    # Create and register a console logger
+    cl = ivw.ConsoleLogger()
+    lc.registerLogger(cl)
+
+    # Create the inviwo application
+    app = qt.InviwoApplicationQt()
+    app.registerModules()
+
+    # load a workspace
+    app.network.load(app.getPath(ivw.PathType.Workspaces) + "/boron.inv")
+
+    # Make sure the app is ready
+    app.update()
+    app.waitForPool()
+    app.update()
+    # Save a snapshot
+    app.network.Canvas.snapshot("snapshot.png") 
+
+    # run the app event loop
+    app.run()
 ```
 
 ## 2019-04-26 Parallel Coordinate Plot Update: flipped axes
@@ -155,22 +182,22 @@ Axes of the parallel coordinate plot can now be inverted via a double click with
 ## 2019-04-16 Moved DataFrame data structure from Plotting to new module (DataFrame)
 Types of breaking changes:
 ```c++
-    #include <modules/plotting/datastructures/dataframe.h>
-    #include <modules/plotting/datastructures/dataframeutil.h>
-    #include <modules/plotting/datastructures/column.h>
+#include <modules/plotting/datastructures/dataframe.h>
+#include <modules/plotting/datastructures/dataframeutil.h>
+#include <modules/plotting/datastructures/column.h>
 
-    plot::DataFrame
-    plot::Column
+plot::DataFrame
+plot::Column
 ```
 
 which need to be changed to 
 ```c++
-    #include <inviwo/dataframe/datastructures/dataframe.h>
-    #include <inviwo/dataframe/datastructures/dataframeutil.h>
-    #include <inviwo/dataframe/datastructures/column.h>
-    // Namespace plot removed
-    DataFrame
-    Column
+#include <inviwo/dataframe/datastructures/dataframe.h>
+#include <inviwo/dataframe/datastructures/dataframeutil.h>
+#include <inviwo/dataframe/datastructures/column.h>
+// Namespace plot removed
+DataFrame
+Column
 ```
 
 Also added a reader for JSON-files which outputs a DataFrame.
@@ -211,7 +238,7 @@ except for files under `/ext`, `/tests`, or paths excluded be the given filters.
 Added an option to control if a module should be on by default, and remove the old global setting.
 To enable the module by default add the following to the module `depends.cmake` file:
 ```c++
-    set(EnableByDefault ON)
+set(EnableByDefault ON)
 ```
 
 ## 2018-11-14
@@ -221,20 +248,20 @@ A new inviwo-meta library and an inviwo-meta-cli commandline app has been added 
 Generated files are now stored in the corresponding `CMAKE_CURRENT_BINAY_DIR` for the subdirectory in question.
 For a module this means `{build folder}/modules/{module name}`. `CMAKE_CURRENT_BINAY_DIR/include` path is added as an include path for each module. Hence, the generated headers are put in 
 ```
-    {build folder}/modules/{module name}/include/{organization}/{module name}/
+{build folder}/modules/{module name}/include/{organization}/{module name}/
 ```
 Same is true for the generated headers of inviwo core, like `moduleregistration.h`. They are now placed in:
 ```
-    {build folder}/modules/core/include/inviwo/core/
+{build folder}/modules/core/include/inviwo/core/
 ```
 Which means that for the module loading in apps
 ```c++
-    #include <moduleregistration.h>
+#include <moduleregistration.h>
 ```
 
 needs to be changed to 
 ```c++
-    #include <inviwo/core/moduleregistration.h>
+#include <inviwo/core/moduleregistration.h>
 ```
 
 ## 2018-11-14
@@ -249,7 +276,7 @@ and sources goes in the source folder:
 `{module name}` it the lower case name of the module, `{organization}` default to inviwo but can be user-specified. 
 The headers can then be included using 
 ```c++
-    #include <{organization}/{module name}/header.h>
+#include <{organization}/{module name}/header.h>
 ```
 The implementation is backwards compatible so old modules can continue to exist, but the structure is considered deprecated.
 The main reasons for the change are to make packaging of headers easier and to prevent accidentally including headers from modules without depending on them.
@@ -293,24 +320,24 @@ InviwoApplicationQt now has the same order of constructor arguments as InviwoApp
 ## 2018-08-21
 The property class identifier system no longer uses the `InviwoPropertyInfo` / `PropertyClassIdentifier` macros but rather implements
 ```c++
-    virtual std::string getClassIdentifier() const override
+virtual std::string getClassIdentifier() const override
 ```
 The static class identifier 
 ```c++
-    static const std::string CLASS_IDENTIFIER
+static const std::string CLASS_IDENTIFIER
 ```
 can still be added manually, but the preferred way is to either use
 ```c++
-    static const std::string classIdentifier
+static const std::string classIdentifier
 ```
 or specialize the `PropertyTraits` like:
 ```c++
-    template <>
-    struct PropertyTraits<MyProperty> {
-        static std::string classIdentifier() {
-            return "org.somename.myproperty";
-        }
-    };
+template <>
+struct PropertyTraits<MyProperty> {
+    static std::string classIdentifier() {
+        return "org.somename.myproperty";
+    }
+};
 ```
 To access a class identifier of a property type statically, the `PropertyTraits` class should be used  
 ```c++
@@ -321,19 +348,19 @@ instead of accessing the `CLASS_IDENTIFIER` directly.
 An enum traits class has been added to help working with enums and serialization, especially in the case of OptionProperties. 
 For example given an enum:
 ```c++
-    enum class MyEnum { a, b };
+enum class MyEnum { a, b };
 ```
 EnumTraits can be specialized to provided a name for `MyEnum`, i.e.
 ```c++
-    template <>
-    struct EnumTraits<MyEnum> {
-        static std::string name() {return "MyEnum"; }
-    };
+template <>
+struct EnumTraits<MyEnum> {
+    static std::string name() {return "MyEnum"; }
+};
 ```
 This name will then be used by the TemplateOptionProperty in its class identifier. 
 ```c++
-    TemplateOptionProperty<MyEnum> prop("test","test");    
-    prop.getClassIdentifier() == PropertyTraits<TemplateOptionProperty<MyEnum>>::classIdentifier == "org.inviwo.OptionPropertyMyEnum"
+TemplateOptionProperty<MyEnum> prop("test","test");    
+prop.getClassIdentifier() == PropertyTraits<TemplateOptionProperty<MyEnum>>::classIdentifier == "org.inviwo.OptionPropertyMyEnum"
 ```
 This makes it possible to differentiate `MyEnum` from other enum TemplateOptionPropertys.
 
@@ -346,30 +373,30 @@ Inviwo properties can be synchronized using javascript, see the web browser modu
 Added `ListProperty`, a new property for dynamically adding and removing properties.
 A ListProperty holds a number of "prefab" objects, i.e. unique_ptr to properties, which are used to instantiate new list entries. The property widget features small "x" buttons for removing individual elements (if removal is enabled). Pressing the "+" button next to the property label adds new elements (if adding is enabled). In case multiple prefabs exist, a drop-down menu is shown when pressing the "+" button.
 ```c++
-    // using a single prefab object and at most 10 elements
-    ListProperty listProperty("myListProperty", "My ListProperty",
-        std::make_unique<BoolProperty>("boolProp", "BoolProperty", true), 10);
+// using a single prefab object and at most 10 elements
+ListProperty listProperty("myListProperty", "My ListProperty",
+    std::make_unique<BoolProperty>("boolProp", "BoolProperty", true), 10);
 
-    // multiple prefab objects
-    ListProperty listProperty("myListProperty", "My List Property", 
-        []() {
-            std::vector<std::unique_ptr<Property>> v;
-            v.emplace_back(std::make_unique<IntProperty>("template1", "Template 1", 5, 0, 10));
-            v.emplace_back(std::make_unique<IntProperty>("template2", "Template 2", 2, 0, 99));
-            return v;
-        }());
+// multiple prefab objects
+ListProperty listProperty("myListProperty", "My List Property", 
+    []() {
+        std::vector<std::unique_ptr<Property>> v;
+        v.emplace_back(std::make_unique<IntProperty>("template1", "Template 1", 5, 0, 10));
+        v.emplace_back(std::make_unique<IntProperty>("template2", "Template 2", 2, 0, 99));
+        return v;
+    }());
 ```
 
 This also works when using different types of properties as prefab objects:
 ```c++
-    ListProperty listProperty("myListProperty", "My List Property", 
-        []() {
-            std::vector<std::unique_ptr<Property>> v;
-            v.emplace_back(std::make_unique<BoolProperty>("boolProperty1", "Boolean Flag", true));
-            v.emplace_back(std::make_unique<TransferFunctionProperty>("customTF1", "Transfer Function"));
-            v.emplace_back(std::make_unique<IntProperty>("template1", "Template 1", 5, 0, 10));
-            return v;
-        }());
+ListProperty listProperty("myListProperty", "My List Property", 
+    []() {
+        std::vector<std::unique_ptr<Property>> v;
+        v.emplace_back(std::make_unique<BoolProperty>("boolProperty1", "Boolean Flag", true));
+        v.emplace_back(std::make_unique<TransferFunctionProperty>("customTF1", "Transfer Function"));
+        v.emplace_back(std::make_unique<IntProperty>("template1", "Template 1", 5, 0, 10));
+        return v;
+    }());
 ```
 Prefabs can be added later on as well using `ListProperty::addPrefab(std::unique_ptr<Property>&& p)`.
 
