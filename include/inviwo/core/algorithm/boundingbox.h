@@ -36,7 +36,6 @@
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/ports/volumeport.h>
 
-
 #include <functional>
 #include <optional>
 
