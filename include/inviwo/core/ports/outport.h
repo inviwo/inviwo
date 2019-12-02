@@ -92,6 +92,16 @@ public:
      */
     virtual void setValid();
 
+    /**
+     * Query if the outport has any data 
+     */
+    virtual bool hasData() const = 0;
+
+    /**
+     * Clear the outport of any data 
+     */
+    virtual void clear() = 0;
+
 protected:
     Outport(std::string identifier = "");
 

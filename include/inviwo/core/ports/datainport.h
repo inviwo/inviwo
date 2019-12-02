@@ -48,14 +48,19 @@ namespace inviwo {
  * \ingroup ports
  * DataInport represents a general inport providing data as a std:shared_ptr<const T>
  * If N is set to 0 the port will accept multiple connections, and will provide a
- * std::vector<std::shared_ptr<const T>> of data. If N is larger then 1 exaclyt that many
+ * std::vector<std::shared_ptr<const T>> of data
+ . If N is larger then 1 exaclyt that many
  * connections are accepted. If Flat is set to true, the inport will also accept connections from
  * outport with vector data of type T and merge them into the data return data vector.
  */
 template <typename T, size_t N = 1, bool Flat = false>
-class DataInport : public Inport, public InportIterable<T, Flat> {
+class DataInport : public Inport, public InportIterable<DataInport<T, N, Flat>, T, Flat> {
 public:
     using type = T;
+    using value_type = std::shared_ptr<const T>;
+    static constexpr bool flattenData = Flat;
+    static constexpr size_t maxConnections = N;
+
     DataInport(std::string identifier);
     virtual ~DataInport() = default;
 
@@ -103,7 +108,7 @@ struct PortTraits<DataInport<T, N, Flat>> {
 
 template <typename T, size_t N, bool Flat>
 DataInport<T, N, Flat>::DataInport(std::string identifier)
-    : Inport(identifier), InportIterable<T, Flat>(&connectedOutports_) {}
+    : Inport(identifier), InportIterable<DataInport<T, N, Flat>, T, Flat>{} {}
 
 template <typename T, size_t N, bool Flat>
 std::string DataInport<T, N, Flat>::getClassIdentifier() const {

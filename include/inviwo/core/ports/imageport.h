@@ -204,6 +204,8 @@ public:
     virtual void setData(const Image* data) override;  // will assume ownership of data.
     void setData(std::shared_ptr<Image>);
     void setData(Image* data);  // will assume ownership of data.
+    virtual std::shared_ptr<const Image> detachData() override;
+    virtual void clear() override;
 
     bool hasEditableData() const;
     std::shared_ptr<Image> getEditableData() const;

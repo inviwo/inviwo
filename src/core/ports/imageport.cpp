@@ -82,6 +82,18 @@ void ImageOutport::setData(Image* data) {
     cache_.setMaster(data_);
 }
 
+std::shared_ptr<const Image> ImageOutport::detachData() {
+    image_.reset();
+    cache_.setMaster(nullptr);
+    return DataOutport<Image>::detachData();
+}
+
+void ImageOutport::clear() {
+    image_.reset();
+    cache_.setMaster(nullptr);
+    DataOutport<Image>::clear();
+}
+
 bool ImageOutport::hasEditableData() const { return static_cast<bool>(image_); }
 
 size2_t ImageOutport::getLargestReqDim() const {
