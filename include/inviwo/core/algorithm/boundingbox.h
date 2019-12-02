@@ -31,8 +31,11 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/ports/volumeport.h>
+
 
 #include <functional>
 #include <optional>
@@ -43,12 +46,6 @@ class Inport;
 
 class Mesh;
 class Volume;
-
-template <typename T, size_t N = 1, bool Flat = false>
-class DataInport;
-
-template <typename T>
-class DataOutport;
 
 namespace util {
 
