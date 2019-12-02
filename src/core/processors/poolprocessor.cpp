@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/processors/poolprocessor.h>
+#include <inviwo/core/network/processornetwork.h>
 
 namespace inviwo {
 
@@ -47,7 +48,7 @@ void pool::detail::State::setProgress(size_t id, float newProgress) {
     if (!progressUpdate.valid() || util::is_future_ready(progressUpdate)) {
         const auto total =
             std::accumulate(progress.begin(), progress.end(), 0.0f) / progress.size();
-        progressUpdate = dispatchFront([this, p = processor, id, total]() {
+        progressUpdate = dispatchFront([this, p = processor, total]() {
             if (auto wrapper = p.lock()) {
                 wrapper->processor.progress(this, total);
             }
