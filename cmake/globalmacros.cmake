@@ -538,7 +538,15 @@ function(ivw_create_module)
 
     # Optimize compilation with pre-compilied headers
     if(NOT ARG_NO_PCH)
-        ivw_compile_optimize_on_target(${${mod}_target})
+        if(IVW_PRECOMPILED_HEADERS_MODE STREQUAL "Reuse")
+            if ("${${mod}_dependencies}" MATCHES "InviwoBaseModule")
+                target_precompile_headers(${${mod}_target} REUSE_FROM inviwo-module-base-pch)
+            else()
+                target_precompile_headers(${${mod}_target} REUSE_FROM inviwo-core-pch)
+            endif()
+        else()
+            ivw_compile_optimize_on_target(${${mod}_target})
+        endif()
     endif()
 
     # Add stuff to the installer
@@ -568,8 +576,27 @@ endfunction()
 #-------------------------------------------------------------------#
 #                        Precompile headers                         #
 #-------------------------------------------------------------------#
-# Set header ignore paths for cotire
 
+# Set which headers files should be used for precompile headers of given target
+function(ivw_target_pch_headers target)
+    if(IVW_PRECOMPILED_HEADERS_MODE STREQUAL "CMake")
+        target_precompile_headers(${target} PUBLIC ${ARGN})
+    elseif(IVW_PRECOMPILED_HEADERS_MODE STREQUAL "Reuse")
+        target_precompile_headers(${target} PUBLIC ${ARGN})
+        file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/pch-dummy.cpp 
+            "// Dummy source file needed in target for reusing pch artifacts \n")
+        add_library(${target}-pch STATIC ${CMAKE_CURRENT_BINARY_DIR}/pch-dummy.cpp)
+        ivw_define_standard_definitions(${target}-pch ${target}-pch)
+        ivw_define_standard_properties(${target}-pch)
+        target_link_libraries(${target}-pch PRIVATE ${target})
+        target_precompile_headers(${target}-pch PUBLIC ${PCH_HEADERS})
+        ivw_folder(${target}-pch "pch-targets")
+    endif()
+endfunction()
+
+
+
+# Set header ignore paths for cotire
 function(ivw_get_header_path header retval)
     file(WRITE "${IVW_BINARY_DIR}/cmake/findheader.cpp" "#include <${header}>")
     string(TOLOWER "${header}" lheader)
@@ -632,7 +659,7 @@ endfunction()
 # We make sure that these properties are propagated to the 
 # depending targets.
 function(ivw_compile_optimize_on_target target)
-    if(PRECOMPILED_HEADERS)
+    if(IVW_PRECOMPILED_HEADERS_MODE STREQUAL "Cotire")
         ivw_get_target_property_recursive(publicIgnorePaths ${target} COTIRE_PREFIX_HEADER_PUBLIC_IGNORE_PATH False)
         get_target_property(ignorePaths ${target} COTIRE_PREFIX_HEADER_IGNORE_PATH)
         if(NOT ignorePaths)

@@ -261,7 +261,9 @@ ivw_add_unittest(${TEST_FILES})
 
 #--------------------------------------------------------------------
 # Create module
-ivw_create_module(${SOURCE_FILES} ${MOC_FILES} ${HEADER_FILES})
+ivw_create_module(NO_PCH ${SOURCE_FILES} ${MOC_FILES} ${HEADER_FILES})
 if(IVW_BENCHMARKS)
     add_subdirectory(tests/benchmarks)
 endif()
+
+ivw_target_pch_headers(inviwo-module-base ${HEADER_FILES})
