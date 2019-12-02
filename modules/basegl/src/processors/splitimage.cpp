@@ -318,9 +318,9 @@ void SplitImage::updateTriMesh() {
                     util::makeBuffer(std::vector<vec4>{6, triColor_}));
 
     mesh->addIndices(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::None),
-                      util::makeIndexBuffer({0, 1, 2}));
+                     util::makeIndexBuffer({0, 1, 2}));
     mesh->addIndices(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::None),
-                      util::makeIndexBuffer({3, 4, 5}));
+                     util::makeIndexBuffer({3, 4, 5}));
 
     triangleMesh_ = mesh;
 }

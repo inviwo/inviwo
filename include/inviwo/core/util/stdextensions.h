@@ -586,10 +586,10 @@ constexpr bool is_callable_with(F&&) {
  */
 template <class T, typename Tuple, size_t count = 0>
 constexpr size_t index_of() {
-    if constexpr(std::is_same_v<T, std::tuple_element_t<count, Tuple>>) {
-        return count;     
+    if constexpr (std::is_same_v<T, std::tuple_element_t<count, Tuple>>) {
+        return count;
     } else {
-        return index_of<T, Tuple, count+1>();
+        return index_of<T, Tuple, count + 1>();
     }
 };
 
@@ -598,13 +598,12 @@ constexpr size_t index_of() {
  */
 template <class T, typename Tuple, size_t count = 0>
 constexpr size_t index_of_derived() {
-  if constexpr (std::is_base_of_v<T, std::tuple_element_t<count, Tuple>>) {
-    return count;
-  } else {
-    return index_of_derived<T, Tuple, count + 1>();
-  }
+    if constexpr (std::is_base_of_v<T, std::tuple_element_t<count, Tuple>>) {
+        return count;
+    } else {
+        return index_of_derived<T, Tuple, count + 1>();
+    }
 };
-
 
 namespace hashtuple {
 

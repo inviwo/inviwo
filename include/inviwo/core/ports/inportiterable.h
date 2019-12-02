@@ -121,7 +121,7 @@ public:
         using value_type = std::pair<Outport*, std::shared_ptr<const T>>;
         using reference = std::pair<Outport*, std::shared_ptr<const T>>;
         using pointer = void;
-        
+
         const_iterator_port(PortIter pIterBegin, PortIter pIterEnd) : Base(pIterBegin, pIterEnd) {}
 
         reference operator*() const { return reference{*Base::pIter_, *Base::dIter_}; }
@@ -220,6 +220,7 @@ public:
     class const_iterator : public const_iterator_base<const_iterator> {
         using Base = const_iterator_base<const_iterator>;
         using PortIter = typename Base::PortIter;
+
     public:
         using difference_type = std::ptrdiff_t;
         using iterator_category = std::forward_iterator_tag;
@@ -240,6 +241,7 @@ public:
     class const_iterator_port : public const_iterator_base<const_iterator_port> {
         using Base = const_iterator_base<const_iterator_port>;
         using PortIter = typename Base::PortIter;
+
     public:
         using difference_type = std::ptrdiff_t;
         using iterator_category = std::forward_iterator_tag;
@@ -257,6 +259,7 @@ public:
     class const_iterator_changed : public const_iterator_base<const_iterator_changed> {
         using Base = const_iterator_base<const_iterator_changed>;
         using PortIter = typename Base::PortIter;
+
     public:
         using difference_type = std::ptrdiff_t;
         using iterator_category = std::forward_iterator_tag;

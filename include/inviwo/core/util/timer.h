@@ -123,10 +123,10 @@ public:
 
     void setInterval(Milliseconds interval);
     Milliseconds getInterval() const;
-    
+
     void setCallback(std::function<void()> callback);
     std::function<void()> getCallback() const;
-    
+
     bool isRunning() const;
 
 private:
@@ -157,7 +157,6 @@ public:
 
     void setDefaultCallback(std::function<void()> callback);
     std::function<void()> getDefaultCallback() const;
-
 
 private:
     std::function<void()> defaultCallback_;

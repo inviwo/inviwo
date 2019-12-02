@@ -76,7 +76,6 @@ private:
 
     BoolProperty enabled_;
     IntVec3Property subSampleFactors_;
-
 };
 }  // namespace inviwo
 

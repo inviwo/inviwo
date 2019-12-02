@@ -79,8 +79,7 @@ protected:
  * @see ProgressBarOwner
  * @see ProgressBarObserver
  */
-class IVW_CORE_API ProgressBar : public ActivityIndicator,
-                                 public ProgressBarObservable {
+class IVW_CORE_API ProgressBar : public ActivityIndicator, public ProgressBarObservable {
 public:
     ProgressBar();
     virtual ~ProgressBar();

@@ -63,13 +63,9 @@ void ProgressBar::updateProgress(float progress) {
     }
 }
 
-void ProgressBar::show() {
-    setVisible(true);
-}
+void ProgressBar::show() { setVisible(true); }
 
-void ProgressBar::hide() {
-    setVisible(false);
-}
+void ProgressBar::hide() { setVisible(false); }
 
 void ProgressBar::setVisible(bool visible) {
     setActive(visible);

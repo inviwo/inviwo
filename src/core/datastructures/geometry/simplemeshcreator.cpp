@@ -198,7 +198,7 @@ std::shared_ptr<SimpleMesh> SimpleMeshCreator::sphere(float radius, unsigned int
         }
 
         spheremesh->Mesh::addIndices(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::Strip),
-                                indexBuf);
+                                     indexBuf);
     }
 
     return spheremesh;
@@ -257,7 +257,7 @@ std::shared_ptr<SimpleMesh> SimpleMeshCreator::sphere(float radius, unsigned int
         }
 
         spheremesh->Mesh::addIndices(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::Strip),
-                                indexBuf);
+                                     indexBuf);
     }
 
     return spheremesh;
@@ -306,7 +306,8 @@ std::shared_ptr<SimpleMesh> SimpleMeshCreator::plane(glm::vec3 pos, glm::vec2 ex
             indices->set(count++, offset + x + pointsPerLine);
         }
 
-        plane->Mesh::addIndices(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::Strip), indexBuf);
+        plane->Mesh::addIndices(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::Strip),
+                                indexBuf);
     }
 
     return plane;

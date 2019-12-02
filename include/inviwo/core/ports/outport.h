@@ -93,12 +93,12 @@ public:
     virtual void setValid();
 
     /**
-     * Query if the outport has any data 
+     * Query if the outport has any data
      */
     virtual bool hasData() const = 0;
 
     /**
-     * Clear the outport of any data 
+     * Clear the outport of any data
      */
     virtual void clear() = 0;
 

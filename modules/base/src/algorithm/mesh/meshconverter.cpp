@@ -62,7 +62,7 @@ std::unique_ptr<Mesh> toPointMesh(const Mesh& mesh) {
 
     for (const auto& inds : mesh.getIndexBuffers()) {
         res->addIndices(Mesh::MeshInfo{DrawType::Points, ConnectivityType::None},
-                         std::shared_ptr<IndexBuffer>(inds.second->clone()));
+                        std::shared_ptr<IndexBuffer>(inds.second->clone()));
     }
     return res;
 }

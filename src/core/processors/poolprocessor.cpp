@@ -36,7 +36,7 @@ void pool::Progress::operator()(float progress) const noexcept {
 }
 
 void pool::Progress::operator()(double progress) const noexcept {
-     state_.setProgress(id_, static_cast<float>(progress));
+    state_.setProgress(id_, static_cast<float>(progress));
 }
 
 void pool::detail::State::setProgress(size_t id, float newProgress) {
