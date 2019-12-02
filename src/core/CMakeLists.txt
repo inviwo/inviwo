@@ -911,3 +911,9 @@ else()
     endif()
 endif()
 #--------------------------------------------------------------------
+
+
+set(PCH_HEADERS ${HEADER_FILES})
+list(REMOVE_ITEM PCH_HEADERS "${IVW_INCLUDE_DIR}/inviwo/core/common/defaulttohighperformancegpu.h")
+ivw_target_pch_headers(inviwo-core ${PCH_HEADERS})
+    

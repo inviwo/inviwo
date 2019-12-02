@@ -254,13 +254,45 @@ endif()
 
 #--------------------------------------------------------------------
 # Precompile headers
-if(WIN32)
-    option(PRECOMPILED_HEADERS "Create and use precompilied headers" ON)
+set(IVW_DEFAULT_PCH_MODE "No PCH")
+
+set(IVW_TURN_ON OFF) # Default off
+if(DEFINED PRECOMPILED_HEADERS) # Respect the value of our old variable, for backwards compatibility with old cmake-caches
+    set(IVW_TURN_ON ${PRECOMPILED_HEADERS})
+elseif(WIN32)
+    set(IVW_TURN_ON ON) 
+endif()
+
+if(${CMAKE_VERSION} VERSION_LESS "3.16.0") 
+    # CMake added support for precompiled headers in version 3.16, fallback on cotire
+    set(IVW_PCH_OPTIONS "No PCH" "Cotire")
+    set(IVW_PCH_DOCSTRING "Select mode for pch: \nNo PCH: Do not use precompiled headers\nCotire: Use Cotire to generate precompiled headers")
+    if(${IVW_TURN_ON})
+        set(IVW_DEFAULT_PCH_MODE "Cotire")
+    endif()
 else()
-    option(PRECOMPILED_HEADERS "Create and use precompilied headers" OFF)
+    set(IVW_PCH_OPTIONS "No PCH" "CMake" "Reuse" "Cotire")
+    string(CONCAT IVW_PCH_DOCSTRING "Select mode for pch:\n" 
+                                    "• No PCH: Do not use precompiled \n"
+                                    "• CMake: Use CMake functionality for precompiled headers (requires CMake 3.16 or newer) \n"
+                                    "• Reuse: (Unstable) Use CMake functionality for precompiled headers and reuse PCH artifacts from core or base (requires CMake 3.16 or newer) \n"
+                                    "• Cotire: Use Cotire to generate precompiled headers (the old way)")
+    if(${IVW_TURN_ON})
+        set(IVW_DEFAULT_PCH_MODE "CMake") 
+    endif()
+endif()
+
+
+set(IVW_PRECOMPILED_HEADERS_MODE ${IVW_DEFAULT_PCH_MODE} CACHE STRING ${IVW_PCH_DOCSTRING})
+set_property(CACHE IVW_PRECOMPILED_HEADERS_MODE PROPERTY STRINGS ${IVW_PCH_OPTIONS})
+
+if(IVW_PRECOMPILED_HEADERS_MODE STREQUAL "Reuse" AND NOT ${BUILD_SHARED_LIBS})
+    string(CONCAT _ERROR_MESSAGE "Resuing precompiled headerd artifacts is currently not supported when building statically.\n"
+                                 "Change either `IVW_PRECOMPILED_HEADERS_MODE` to `CMake` or enable `BUILD_SHARED_LIBS`\n" )
+    message(FATAL_ERROR ${_ERROR_MESSAGE})
 endif()
 
 include(${CMAKE_CURRENT_LIST_DIR}/utilities/clean_library_list.cmake)
-if(PRECOMPILED_HEADERS)
+if(IVW_PRECOMPILED_HEADERS_MODE STREQUAL "Cotire")
     include(${CMAKE_CURRENT_LIST_DIR}/cotire.cmake)
 endif()
