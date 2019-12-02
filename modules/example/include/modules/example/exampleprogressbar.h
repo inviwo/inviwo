@@ -34,8 +34,8 @@
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/processors/progressbarowner.h>
+#include <inviwo/core/processors/poolprocessor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 
 namespace inviwo {
 
@@ -53,7 +53,7 @@ namespace inviwo {
  *
  *
  */
-class IVW_MODULE_EXAMPLE_API ExampleProgressBar : public Processor, public ProgressBarOwner {
+class IVW_MODULE_EXAMPLE_API ExampleProgressBar : public PoolProcessor {
 public:
     ExampleProgressBar();
     virtual ~ExampleProgressBar();
@@ -67,6 +67,7 @@ protected:
 private:
     ImageInport inport_;
     ImageOutport outport_;
+    IntProperty delay_;
 };
 
 }  // namespace inviwo

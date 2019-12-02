@@ -36,43 +36,56 @@ const ProcessorInfo ExampleProgressBar::processorInfo_{
     "org.inviwo.ExampleProgressBar",  // Class identifier
     "Example Progress Bar",           // Display name
     "Various",                        // Category
-    CodeState::Experimental,          // Code state
-    Tags::None,                       // Tags
+    CodeState::Stable,                // Code state
+    Tags::CPU,                        // Tags
 };
 const ProcessorInfo ExampleProgressBar::getProcessorInfo() const { return processorInfo_; }
 
 ExampleProgressBar::ExampleProgressBar()
-    : Processor(), inport_("inputImage"), outport_("outputImage") {
+    : PoolProcessor(pool::Option::DelayDispatch)
+    , inport_("inputImage")
+    , outport_("outputImage")
+    , delay_{"delay", "Delay", 10, 0, 100, 1} {
+
     addPort(inport_);
     addPort(outport_);
 
-    // initially hide progress bar
-    // progressBar_.hide();
+    addProperties(delay_);
 }
 
 ExampleProgressBar::~ExampleProgressBar() = default;
 
 void ExampleProgressBar::process() {
-    // progressBar_.show();
 
-    // reset progress bar
-    progressBar_.resetProgress();
+    // Construct a calculation. The calculation should capture all its state by value since it will
+    // be evaluated on a different thread and any references might be dangling at the time of
+    // execution. It should be noted that this is also true for the processor itself, which might
+    // have been deleted before the calculation starts hence one can never capture `this` in the
+    // lambda. The calculation can take to optional arguments `pool::Stop` which can be queried to
+    // see if the calculation has been canceled and `pool::Progress` which can be called with a
+    // float [0,1] to report the progress of the calculation. If `pool::Progress` is present then
+    // the processor will show a ProgressBar in the NetworkEditor representing the progress
+    const auto calc = [delay = delay_.get(), image = inport_.getData()](
+                          pool::Stop stop,
+                          pool::Progress progress) -> std::shared_ptr<const Image> {
+        const int numSteps = 100;
+        for (int i = 0; i < 100; ++i) {
+            if (stop) return nullptr;
+            std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+            progress(i / static_cast<float>(numSteps));
+        }
+        return image;
+    };
 
-    const int sleepTime = 10;
+    outport_.clear();  // Discard any data already set since it is no longer valid
 
-    const int numSteps = 100;
-    for (int i = 0; i < numSteps; ++i) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
-        // update progress bar state
-        updateProgress(i / static_cast<float>(numSteps));
-    }
-
-    // set progress bar to 100%
-    progressBar_.finishProgress();
-    // progressBar_.hide();
-
-    // dummy operation, pass on image data
-    outport_.setData(inport_.getData());
+    // Dispatch the calculation to the thread pool. The second argument is a callback
+    // That will get evaluated on the main thread after the calculation is done. The callback should
+    // take the result of the calculation as argument.
+    dispatchOne(calc, [this](std::shared_ptr<const Image> result) {
+        outport_.setData(result);
+        newResults();  // Let the network know that the processor has new results on the outport.
+    });
 }
 
 }  // namespace inviwo
