@@ -94,6 +94,7 @@ private:
 class IVW_CORE_API Progress {
 public:
     void operator()(float progress) const noexcept;
+    void operator()(double progress) const noexcept;
 
 private:
     friend detail::State;
@@ -107,18 +108,22 @@ private:
  * \see PoolProcessor
  */
 enum class Option {
-    KeepOldResults = 1 << 0,    //! Also call done for old jobs
-    QueuedDispatch = 1 << 1,    //! Don't submit new jobs while old ones are running
-    DelayDispatch = 1 << 2,     //! Wait for a small delay of inactivity before submitting a job
-    DelayInvalidation = 1 << 3  //! Don't invalidate the outports until the job is done
+    KeepOldResults = 1 << 0,    ///< Also call done for old jobs
+    QueuedDispatch = 1 << 1,    ///< Don't submit new jobs while old ones are running
+    DelayDispatch = 1 << 2,     ///< Wait for a small delay of inactivity before submitting a job
+    DelayInvalidation = 1 << 3  ///< Don't invalidate the outports until the job is done
 };
 
 }  // namespace pool
 
 ALLOW_FLAGS_FOR_ENUM(pool::Option);
 namespace pool {
+
+/**
+ * \copydoc pool::Option
+ */
 using Options = flags::flags<pool::Option>;
-}
+}  // namespace pool
 
 /**
  * PoolProcessor is a base class to help make processors that dispatch work to the thread pool.
@@ -211,8 +216,8 @@ public:
 
     /**
      * handleError is called on the main thread whenever there has be an error in a background
-     * calculation this will by default just log the error message. Deriving classes can overload
-     * this to enable custom error handling if needed.
+     * calculation this will by default just log the error message, and clear any outports. Deriving
+     * classes can overload this to enable custom error handling if needed.
      */
     virtual void handleError();
 
