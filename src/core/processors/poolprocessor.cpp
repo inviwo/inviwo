@@ -29,6 +29,7 @@
 
 #include <inviwo/core/processors/poolprocessor.h>
 #include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 namespace inviwo {
 
