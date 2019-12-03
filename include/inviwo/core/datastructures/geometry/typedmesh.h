@@ -376,7 +376,7 @@ public:
         : Mesh(dt, ct), BufferTraits(*static_cast<Mesh *>(this))... {
 
         addVertices(vertices);
-        this->addIndicies(MeshInfo{dt, ct}, util::makeIndexBuffer(std::move(indices)));
+        this->addIndices(MeshInfo{dt, ct}, util::makeIndexBuffer(std::move(indices)));
     }
 
     TypedMesh(const TypedMesh &rhs) : Mesh(rhs), BufferTraits()... {

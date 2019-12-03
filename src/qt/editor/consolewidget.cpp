@@ -57,6 +57,7 @@
 #include <warn/pop>
 
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/qt/editor/consolewidget.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/stringconversion.h>
