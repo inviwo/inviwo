@@ -188,6 +188,10 @@ public:
     bool hasBuffer(BufferType type) const;
 
     BufferBase* getBuffer(size_t idx);
+   
+    /**
+     * @return The first buffer matching BufferType type or nullptr;
+     */
     BufferBase* getBuffer(BufferType type);
 
     IndexBuffer* getIndices(size_t idx);

@@ -80,7 +80,7 @@ void ExampleProgressBar::process() {
     outport_.clear();  // Discard any data already set since it is no longer valid
 
     // Dispatch the calculation to the thread pool. The second argument is a callback
-    // That will get evaluated on the main thread after the calculation is done. The callback should
+    // that will get evaluated on the main thread after the calculation is done. The callback should
     // take the result of the calculation as argument.
     dispatchOne(calc, [this](std::shared_ptr<const Image> result) {
         outport_.setData(result);

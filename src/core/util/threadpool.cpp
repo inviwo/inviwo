@@ -102,7 +102,7 @@ ThreadPool::Worker::Worker(ThreadPool& pool)
             state = State::Working;
             try {
                 task();
-            } catch (...) {
+            } catch (...) { // Make sure we don't leak any exceptions.
             }
         }
         state = State::Done;

@@ -81,9 +81,16 @@ public:
                std::function<void()> onThreadStop = []() {});
     ~ThreadPool();
 
+    /**
+     * Enqueue function f with arguments args. The function f may throw exceptions. 
+     * @return a future to the result of f
+     */
     template <class F, class... Args>
     auto enqueue(F&& f, Args&&... args) -> std::future<typename std::result_of<F(Args...)>::type>;
 
+    /**
+     * Enqueue a plain functor. The functor may not throw exceptions.
+     */
     void enqueueRaw(std::function<void()> f);
 
     size_t trySetSize(size_t size);

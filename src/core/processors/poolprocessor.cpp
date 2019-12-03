@@ -41,6 +41,10 @@ void pool::Progress::operator()(double progress) const noexcept {
     state_.setProgress(id_, static_cast<float>(progress));
 }
 
+void pool::Progress::operator()(size_t i, size_t max) const noexcept {
+    state_.setProgress(id_, static_cast<float>(i) / max);
+}
+
 void pool::detail::State::setProgress(size_t id, float newProgress) {
     IVW_ASSERT(id < progress.size(), "Invalid job id");
 
@@ -118,7 +122,8 @@ void PoolProcessor::newResults(const std::vector<Outport*>& outports) {
     notifyObserversInvalidationBegin(this);
     for (auto& outport : outports) {
         outport->invalidate(InvalidationLevel::InvalidOutput);
-        outport->setValid();
+        outport->setValid();  // Since we don't process this, we need to call setValid on the
+                              // outport ourself.
     }
     notifyObserversInvalidationEnd(this);
 }

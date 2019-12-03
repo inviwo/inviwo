@@ -205,7 +205,7 @@ void SurfaceExtraction::updateColors() {
                                           vec4(0x17, 0xbe, 0xcf, 255) / vec4(255)};
 
     size_t count = 0;
-    for ([[maybe_unused]] const auto& data : volume_) {
+    for ([[maybe_unused]] auto data : volume_) {
         count++;
         if (colors_.size() < count) {
             auto prop = new FloatVec4Property(fmt::format("color{}", count - 1),

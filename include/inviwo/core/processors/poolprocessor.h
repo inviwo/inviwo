@@ -82,10 +82,13 @@ private:
 
 /**
  * A class to signal the progress of a background calculation:
+ * The progress reported should be in the range of [0.0, 1.0]. If the pool processor is running
+ * multiple jobs the progress will automatically be normalized. Only the progress of the last
+ * submitted job will be reported to the user.
  * ```{.cpp}
  * auto calc = [mystate](pool::Progress progress) {
  *     for(int i = n; i < N; ++i) {
- *         progress(static_cast<float>(i) / N);
+ *         progress(i, N);
  *         // do work
  *     }
  *     return results;
@@ -97,6 +100,7 @@ class IVW_CORE_API Progress {
 public:
     void operator()(float progress) const noexcept;
     void operator()(double progress) const noexcept;
+    void operator()(size_t i, size_t max) const noexcept;
 
 private:
     friend detail::State;
@@ -110,10 +114,15 @@ private:
  * \see PoolProcessor
  */
 enum class Option {
-    KeepOldResults = 1 << 0,    ///< Also call done for old jobs
-    QueuedDispatch = 1 << 1,    ///< Don't submit new jobs while old ones are running
-    DelayDispatch = 1 << 2,     ///< Wait for a small delay of inactivity before submitting a job
-    DelayInvalidation = 1 << 3  ///< Don't invalidate the outports until the job is done
+    KeepOldResults =
+        1 << 0,  ///< Also call done for old jobs, by default old jobs will be discarded.
+    QueuedDispatch =
+        1 << 1,  ///< Don't submit new jobs while old ones are running. The last submission will be
+                 ///< queued and submitted when the current one is finished
+    DelayDispatch =
+        1 << 2,  ///< Wait for a small delay (500ms) of inactivity before submitting a job
+    DelayInvalidation = 1 << 3  ///< Don't invalidate the outports until the job is done. This will
+                                ///< override the default processor invalidation.
 };
 
 }  // namespace pool
@@ -157,7 +166,7 @@ public:
      * outlive the processor. The job can take two optional parameters
      *     * pool::Stop a stop token to periodically check if the job has been canceled.
      *     * pool::Progress a callback to report progress of the calculation. The progress is
-     *       represented as a float in the intervall [0.0, 1.0].
+     *       represented as a float in the interval [0.0, 1.0].
      * If the job takes a progress callback the processor will show a progress bar.
      * The second functor done is called with the result when the background job is finished. It
      * will be executed on the main thread, and only if the processor is still valid and the job has
@@ -189,7 +198,8 @@ public:
      * outlive the processor. The jobs can take two optional parameters
      *     * pool::Stop a stop token to periodically check if the job has been canceled.
      *     * pool::Progress a callback to report progress of the calculation. The progress is
-     *       represented as a float in the intervall [0.0, 1.0].
+     *       represented as a float in the interval [0.0, 1.0]. The progress is automatically
+     *       normalized across all the jobs
      * If the jobs takes a progress callback the processor will show a progress bar. The progress
      * from all the jobs will automatically be merged and normalized
      *
@@ -219,7 +229,8 @@ public:
     /**
      * handleError is called on the main thread whenever there has be an error in a background
      * calculation this will by default just log the error message, and clear any outports. Deriving
-     * classes can overload this to enable custom error handling if needed.
+     * classes can overload this and rethrow the caught exception to enable custom error handling if
+     * needed.
      */
     virtual void handleError();
 
@@ -230,6 +241,8 @@ public:
 
     /**
      * Call newResults to let the network know we have new data on our outports.
+     * Only invalidate the specified outports. Use this if you only set data to a subset of the
+     * outports.
      */
     void newResults(const std::vector<Outport*>& outports);
 
@@ -320,7 +333,7 @@ struct IVW_CORE_API State {
     void setProgress(size_t id, float progress);
 
     Progress getProgress(size_t id) {
-        IVW_ASSERT(id < count, "Id has to be less then count to be valid");
+        IVW_ASSERT(id < count, "Id has to be less than count to be valid");
         return Progress{*this, id};
     }
 };

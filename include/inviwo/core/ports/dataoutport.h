@@ -56,8 +56,15 @@ public:
     virtual Document getInfo() const override;
 
     virtual std::shared_ptr<const T> getData() const;
-    // Return data and release ownership. Data in the port will be nullptr after call.
+
+    /**
+     * Return data and release ownership. Data in the port will be nullptr after call.
+     */
     virtual std::shared_ptr<const T> detachData();
+
+    /**
+     * \copydoc Outport::clear
+     */
     virtual void clear() override;
 
     virtual void setData(std::shared_ptr<const T> data);
