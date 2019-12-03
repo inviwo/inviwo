@@ -30,6 +30,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/activityindicator.h>
@@ -372,7 +373,7 @@ inline void PoolProcessor::callDone(
     };
 
     if (state->count.fetch_sub(1) == 1) {
-        dispatchFrontAndForget([state]() {
+        getNetwork()->getApplication()->dispatchFrontAndForget([state]() {
             if (auto wrapper = state->processor.lock()) {
                 auto& p = wrapper->processor;
                 const bool isLast = p.removeState(state);
