@@ -36,6 +36,7 @@
 #include <inviwo/core/processors/activityindicator.h>
 #include <inviwo/core/processors/progressbarowner.h>
 #include <inviwo/core/util/timer.h>
+#include <inviwo/core/network/processornetwork.h>
 
 #include <atomic>
 #include <chrono>
