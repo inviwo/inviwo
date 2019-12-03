@@ -37,6 +37,7 @@
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/zip.h>
 #include <numeric>
 
 #include <inviwo/core/util/rendercontext.h>
@@ -116,7 +117,7 @@ void SurfaceExtraction::process() {
         };
     };
 
-    const auto changeColor = [this](vec4 color, std::shared_ptr<const Mesh> oldmesh) {
+    const auto changeColor = [](vec4 color, std::shared_ptr<const Mesh> oldmesh) {
         return [oldmesh, color](pool::Progress) -> std::shared_ptr<Mesh> {
             RenderContext::getPtr()->activateLocalRenderContext();
 
@@ -190,8 +191,6 @@ void SurfaceExtraction::process() {
     }
 }
 
-#include <warn/push>
-#include <warn/ignore/unused-variable>
 void SurfaceExtraction::updateColors() {
     const static vec4 defaultColor[11] = {vec4(1.0f),
                                           vec4(0x1f, 0x77, 0xb4, 255) / vec4(255),
@@ -206,7 +205,7 @@ void SurfaceExtraction::updateColors() {
                                           vec4(0x17, 0xbe, 0xcf, 255) / vec4(255)};
 
     size_t count = 0;
-    for (const auto& data : volume_) {
+    for ([[maybe_unused]] const auto& data : volume_) {
         count++;
         if (colors_.size() < count) {
             auto prop = new FloatVec4Property(fmt::format("color{}", count - 1),
@@ -224,7 +223,6 @@ void SurfaceExtraction::updateColors() {
         colors_[i]->setVisible(false);
     }
 }
-#include <warn/pop>
 
 vec4 SurfaceExtraction::getColor(size_t i) const {
     return static_cast<const FloatVec4Property*>(colors_[i])->get();
