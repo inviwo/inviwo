@@ -288,7 +288,8 @@ private:
                                                            pool::Progress progress);
 
     template <typename Result, typename Done>
-    static void callDone(std::shared_ptr<pool::detail::StateTemplate<Result, Done>> state);
+    static void callDone(InviwoApplication* app,
+                         std::shared_ptr<pool::detail::StateTemplate<Result, Done>> state);
 
     pool::Options options_;
     std::shared_ptr<pool::detail::Wrapper> wrapper_;
@@ -354,7 +355,7 @@ struct JobTraits {
 }  // namespace pool::detail
 
 template <typename Result, typename Done>
-inline void PoolProcessor::callDone(
+inline void PoolProcessor::callDone(InviwoApplication* app,
     std::shared_ptr<pool::detail::StateTemplate<Result, Done>> state) {
     static const auto done = [](PoolProcessor& p, auto state) {
         try {
@@ -373,7 +374,7 @@ inline void PoolProcessor::callDone(
     };
 
     if (state->count.fetch_sub(1) == 1) {
-        getNetwork()->getApplication()->dispatchFrontAndForget([state]() {
+        app->dispatchFrontAndForget([state]() {
             if (auto wrapper = state->processor.lock()) {
                 auto& p = wrapper->processor;
                 const bool isLast = p.removeState(state);
@@ -407,13 +408,14 @@ void PoolProcessor::dispatchMany(std::vector<Job> jobs, Done&& done) {
     auto state = makeState<Result, Done>(jobs.size(), std::forward<Done>(done));
     Submission sub{state, {}, [this]() { setupProgress<Job>(); }};
 
+    auto app = getNetwork()->getApplication();
     size_t i = 0;
     for (auto& job : jobs) {
         auto task = makeTask<Result>(std::move(job), state->getStop(), state->getProgress(i++));
         state->futures.push_back(task->get_future());
-        sub.tasks.emplace_back([state, task]() {
+        sub.tasks.emplace_back([state, task, app]() {
             if (!state->stop) (*task)();
-            callDone(state);
+            callDone(app, state);
         });
     }
 
@@ -442,11 +444,12 @@ void PoolProcessor::dispatchOne(Job&& job, Done&& done) {
     auto state = makeState<Result, Done>(1, std::forward<Done>(done));
     auto task = makeTask<Result>(std::forward<Job>(job), state->getStop(), state->getProgress(0));
     state->futures.push_back(task->get_future());
+    auto app = getNetwork()->getApplication();
 
     Submission sub{state,
-                   {[state, task]() {
+                   {[state, task, app]() {
                        if (!state->stop) (*task)();
-                       callDone(state);
+                       callDone(app, state);
                    }},
                    [this]() { setupProgress<Job>(); }};
 
