@@ -355,8 +355,8 @@ struct JobTraits {
 }  // namespace pool::detail
 
 template <typename Result, typename Done>
-inline void PoolProcessor::callDone(InviwoApplication* app,
-    std::shared_ptr<pool::detail::StateTemplate<Result, Done>> state) {
+inline void PoolProcessor::callDone(
+    InviwoApplication* app, std::shared_ptr<pool::detail::StateTemplate<Result, Done>> state) {
     static const auto done = [](PoolProcessor& p, auto state) {
         try {
             if constexpr (std::is_invocable_v<Done, Result>) {
