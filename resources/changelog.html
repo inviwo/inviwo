@@ -87,7 +87,8 @@
 <body >
 <h1>Latest Changes</h1>
 <h2>2019-12-02 PoolProcessor</h2>
-<p>Added a base processor to make background processing easier. Here is basic example of how the process function might look like:</p>
+<h2>2019-12-02 PoolProcessor</h2>
+<p>Added a processor base class to make background processing easier. Here is a basic example of how the process function might look like:</p>
 <div class="highlight"><pre><span></span><span class="k">const</span> <span class="k">auto</span> <span class="n">calc</span> <span class="o">=</span> <span class="p">[</span><span class="n">image</span> <span class="o">=</span> <span class="n">inport_</span><span class="p">.</span><span class="n">getData</span><span class="p">()](</span><span class="n">pool</span><span class="o">::</span><span class="n">Stop</span> <span class="n">stop</span><span class="p">,</span> <span class="n">pool</span><span class="o">::</span><span class="n">Progress</span> <span class="n">progress</span><span class="p">)</span> 
     <span class="o">-&gt;</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="k">const</span> <span class="n">Image</span><span class="o">&gt;</span> <span class="p">{</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">stop</span><span class="p">)</span> <span class="k">return</span> <span class="k">nullptr</span><span class="p">;</span>
@@ -103,7 +104,7 @@
 </pre></div>
 
 
-<p>The PoolProcessor automatically manages the Activity Indicator and the Progress Bar. It handles stopping old jobs. And it manages the lifetimes of the jobs and the processor. The Example module has an ExampleProgressBar processor with example code. And the PoolProcessor has examples in its documentation. </p>
+<p>The <code>PoolProcessor</code> automatically manages the Activity Indicator and the Progress Bar. It handles stopping old jobs and it manages the lifetimes of the jobs and the processor. The Example module has an <code>ExampleProgressBar</code> processor with example code. And the <code>PoolProcessor</code> has examples in its documentation as well.</p>
 <h2>2019-11-05 Mesh Plane Clipping</h2>
 <p>The mesh clipping processor can now handle most mesh types.</p>
 <h2>2019-10-02 DataFrameQt</h2>

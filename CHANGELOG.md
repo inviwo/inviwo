@@ -1,7 +1,8 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
 ## 2019-12-02 PoolProcessor
-Added a base processor to make background processing easier. Here is basic example of how the process function might look like:
+## 2019-12-02 PoolProcessor
+Added a processor base class to make background processing easier. Here is a basic example of how the process function might look like:
 ```c++
 const auto calc = [image = inport_.getData()](pool::Stop stop, pool::Progress progress) 
     -> std::shared_ptr<const Image> {
@@ -16,7 +17,7 @@ dispatchOne(calc, [this](std::shared_ptr<const Image> result) {
     newResults();  // Let the network know that the processor has new results on the outport.
 });
 ```
-The PoolProcessor automatically manages the Activity Indicator and the Progress Bar. It handles stopping old jobs. And it manages the lifetimes of the jobs and the processor. The Example module has an ExampleProgressBar processor with example code. And the PoolProcessor has examples in its documentation. 
+The `PoolProcessor` automatically manages the Activity Indicator and the Progress Bar. It handles stopping old jobs and it manages the lifetimes of the jobs and the processor. The Example module has an `ExampleProgressBar` processor with example code. And the `PoolProcessor` has examples in its documentation as well.
 
 ## 2019-11-05 Mesh Plane Clipping
 The mesh clipping processor can now handle most mesh types.
