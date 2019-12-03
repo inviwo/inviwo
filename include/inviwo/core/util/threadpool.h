@@ -82,7 +82,7 @@ public:
     ~ThreadPool();
 
     /**
-     * Enqueue function f with arguments args. The function f may throw exceptions. 
+     * Enqueue function f with arguments args. The function f may throw exceptions.
      * @return a future to the result of f
      */
     template <class F, class... Args>

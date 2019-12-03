@@ -188,7 +188,7 @@ public:
     bool hasBuffer(BufferType type) const;
 
     BufferBase* getBuffer(size_t idx);
-   
+
     /**
      * @return The first buffer matching BufferType type or nullptr;
      */
