@@ -62,7 +62,8 @@ PoolProcessor::PoolProcessor(pool::Options options, const std::string& identifie
     : Processor(identifier, displayName)
     , options_{options}
     , wrapper_{std::make_shared<pool::detail::Wrapper>(*this)}
-    , delay_{std::chrono::milliseconds(500), [wrapper = std::weak_ptr(wrapper_)]() {
+    , delay_{std::chrono::milliseconds(500),
+             [wrapper = std::weak_ptr<pool::detail::Wrapper>(wrapper_)]() {
                  if (auto w = wrapper.lock()) {
                      auto& p = w->processor;
 

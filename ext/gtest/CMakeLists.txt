@@ -3,6 +3,8 @@ if(IVW_UNITTESTS OR IVW_INTEGRATION_TESTS)
     # settings on Windows
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
+    set(BUILD_GMOCK ON CACHE BOOL "Builds the googlemock subproject" FORCE)
+
     add_subdirectory(gtest)
 
     ivw_folder(gtest ext)
