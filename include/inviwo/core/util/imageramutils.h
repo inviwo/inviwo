@@ -54,7 +54,7 @@ void forEachPixel(const size2_t dims, C callback) {
 
 template <typename C>
 void forEachPixel(const LayerRAM &layer, C callback) {
-    forEachPixel(layer.getDimensions());
+    forEachPixel(layer.getDimensions(), callback);
 }
 
 template <typename C>
