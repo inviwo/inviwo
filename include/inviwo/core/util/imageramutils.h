@@ -43,8 +43,7 @@ namespace inviwo {
 namespace util {
 
 template <typename C>
-void forEachPixel(const LayerRAM &layer, C callback) {
-    const auto &dims = layer.getDimensions();
+void forEachPixel(const size2_t dims, C callback) {
     size2_t pos;
     for (pos.y = 0; pos.y < dims.y; pos.y++) {
         for (pos.x = 0; pos.x < dims.x; pos.x++) {
@@ -54,9 +53,12 @@ void forEachPixel(const LayerRAM &layer, C callback) {
 }
 
 template <typename C>
-void forEachPixelParallel(const LayerRAM &layer, C callback, size_t jobs = 0) {
-    const auto dims = layer.getDimensions();
+void forEachPixel(const LayerRAM &layer, C callback) {
+    forEachPixel(layer.getDimensions());
+}
 
+template <typename C>
+void forEachPixelParallel(const size2_t dims, C callback, size_t jobs = 0) {
     if (jobs == 0) {
         auto settings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
         jobs = 4 * settings->poolSize_.get();
@@ -85,6 +87,11 @@ void forEachPixelParallel(const LayerRAM &layer, C callback, size_t jobs = 0) {
     for (const auto &e : futures) {
         e.wait();
     }
+}
+
+template <typename C>
+void forEachPixelParallel(const LayerRAM &layer, C callback, size_t jobs = 0) {
+    forEachPixelParallel(layer.getDimensions(), callback, jobs);
 }
 
 IVW_CORE_API std::shared_ptr<Image> readImageFromDisk(std::string filename);
