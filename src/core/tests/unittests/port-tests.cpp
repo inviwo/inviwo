@@ -30,9 +30,9 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include <warn/pop>
 
-#include <gmock/gmock.h>
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwoapplication.h>

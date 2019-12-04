@@ -45,7 +45,7 @@ ExampleProgressBar::ExampleProgressBar()
     : PoolProcessor(pool::Option::DelayDispatch)
     , inport_("inputImage")
     , outport_("outputImage")
-    , delay_{"delay", "Delay", 10, 0, 100, 1} {
+    , delay_{"delay", "Delay (ms)", 10, 0, 100, 1} {
 
     addPort(inport_);
     addPort(outport_);
@@ -72,7 +72,7 @@ void ExampleProgressBar::process() {
         for (int i = 0; i < 100; ++i) {
             if (stop) return nullptr;
             std::this_thread::sleep_for(std::chrono::milliseconds(delay));
-            progress(i / static_cast<float>(numSteps));
+            progress(i, numSteps);
         }
         return image;
     };

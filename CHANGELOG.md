@@ -1,7 +1,6 @@
 Here we document changes that affect the public API or changes that needs to be communicated to other developers. 
 
 ## 2019-12-02 PoolProcessor
-## 2019-12-02 PoolProcessor
 Added a processor base class to make background processing easier. Here is a basic example of how the process function might look like:
 ```c++
 const auto calc = [image = inport_.getData()](pool::Stop stop, pool::Progress progress) 

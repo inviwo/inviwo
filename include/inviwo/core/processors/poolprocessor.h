@@ -156,7 +156,7 @@ public:
     void stopJobs();
 
     /**
-     * Is there any ongoing background jobs
+     * Are there any ongoing background jobs
      */
     bool hasJobs();
 
@@ -486,7 +486,8 @@ inline void PoolProcessor::setupProgress() {
     updateProgress(0.0f);
     getProgressBar().setActive(true);
     if constexpr (std::is_invocable_v<Job, pool::Progress> ||
-                  std::is_invocable_v<Job, pool::Stop, pool::Progress>) {
+                  std::is_invocable_v<Job, pool::Stop, pool::Progress> ||
+                  std::is_invocable_v<Job, pool::Progress, pool::Stop>) {
         getProgressBar().show();
     }
 }
@@ -504,6 +505,9 @@ inline std::shared_ptr<std::packaged_task<Result()>> PoolProcessor::makeTask(
     if constexpr (std::is_invocable_v<Job, pool::Stop, pool::Progress>) {
         return std::make_shared<std::packaged_task<Result()>>(
             [job = std::forward<Job>(job), stop, progress]() { return job(stop, progress); });
+    } else if constexpr (std::is_invocable_v<Job, pool::Progress, pool::Stop>) {
+        return std::make_shared<std::packaged_task<Result()>>(
+            [job = std::forward<Job>(job), stop, progress]() { return job(progress, stop); });
     } else if constexpr (std::is_invocable_v<Job, pool::Stop>) {
         return std::make_shared<std::packaged_task<Result()>>(
             [job = std::forward<Job>(job), stop]() { return job(stop); });

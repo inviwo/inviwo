@@ -586,6 +586,7 @@ constexpr bool is_callable_with(F&&) {
  */
 template <class T, typename Tuple, size_t count = 0>
 constexpr size_t index_of() {
+    static_assert(count < std::tuple_size_v<Tuple>, "Type T not found in Tuple");
     if constexpr (std::is_same_v<T, std::tuple_element_t<count, Tuple>>) {
         return count;
     } else {
@@ -598,6 +599,7 @@ constexpr size_t index_of() {
  */
 template <class T, typename Tuple, size_t count = 0>
 constexpr size_t index_of_derived() {
+    static_assert(count < std::tuple_size_v<Tuple>, "Type T not found in Tuple");
     if constexpr (std::is_base_of_v<T, std::tuple_element_t<count, Tuple>>) {
         return count;
     } else {
