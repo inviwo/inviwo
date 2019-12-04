@@ -64,7 +64,7 @@ void forEachVoxelParallel(const size3_t dims, C callback, size_t jobs = 0) {
 
     if (jobs == 0 || !InviwoApplication::isInitialized()) {
         // fallback to serial version
-        forEachVoxel(v, callback);
+        forEachVoxel(dims, callback);
         return;
     }
 
