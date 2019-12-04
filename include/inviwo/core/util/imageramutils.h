@@ -63,7 +63,7 @@ void forEachPixelParallel(const size2_t dims, C callback, size_t jobs = 0) {
         auto settings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
         jobs = 4 * settings->poolSize_.get();
         if (jobs == 0) {  // if poolsize is zero
-            forEachPixel(layer, callback);
+            forEachPixel(dims, callback);
             return;
         }
     }
