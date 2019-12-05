@@ -36,6 +36,20 @@
 
 namespace inviwo {
 
+namespace {
+
+struct ExposePortsFunctor {
+    template <typename T>
+    void operator()(pybind11::module& m, const std::vector<std::string>& typenames) {
+        exposeStandardDataPorts<T>(m, typenames[index]);
+        exposeStandardDataPorts<std::vector<T>>(m, typenames[index] + std::string("Vector"));
+        ++index;
+    }
+    size_t index = 0;
+};
+
+}  // namespace
+
 void exposePort(pybind11::module& m) {
     namespace py = pybind11;
     py::class_<Port, PortPtr<Port>>(m, "Port")
@@ -65,18 +79,26 @@ void exposePort(pybind11::module& m) {
         .def("getConnectedInports", &Outport::getConnectedInports,
              py::return_value_policy::reference);
 
-    exposeStandardDataPorts<std::vector<vec2>>(m, "Vec2");
-    exposeStandardDataPorts<std::vector<vec3>>(m, "Vec3");
-    exposeStandardDataPorts<std::vector<vec4>>(m, "Vec4");
-    exposeStandardDataPorts<std::vector<dvec2>>(m, "dVec2");
-    exposeStandardDataPorts<std::vector<dvec3>>(m, "dVec3");
-    exposeStandardDataPorts<std::vector<dvec4>>(m, "dVec4");
-    exposeStandardDataPorts<std::vector<ivec2>>(m, "iVec2");
-    exposeStandardDataPorts<std::vector<ivec3>>(m, "iVec3");
-    exposeStandardDataPorts<std::vector<ivec4>>(m, "iVec4");
-    exposeStandardDataPorts<std::vector<size2_t>>(m, "Size2t");
-    exposeStandardDataPorts<std::vector<size3_t>>(m, "Size3t");
-    exposeStandardDataPorts<std::vector<size4_t>>(m, "Size4t");
+    // the datatypes for exposed ports should match those in inviwocore.cpp
+    // clang-format off
+    using types = std::tuple<
+        float, vec2, vec3, vec4,
+        double, dvec2, dvec3, dvec4,
+        int32_t, ivec2, ivec3, ivec4,
+        uint32_t, uvec2, uvec3, uvec4,
+        std::int64_t, i64vec2, i64vec3, i64vec4,
+        std::uint64_t, u64vec2, u64vec3, u64vec4
+    >;
+    const std::vector<std::string> typeNames = {
+        "float", "vec2", "vec3", "vec4",
+        "double", "dvec2", "dvec3", "dvec4",
+        "int32", "ivec2", "ivec3", "ivec4",
+        "uint32", "uvec2", "uvec3", "uvec4",
+        "int64", "i64vec2", "i64vec3", "i64vec4",
+        "uint64", "u64vec2", "u64vec3", "u64vec4"
+    };
+    // clang-format on
+    util::for_each_type<types>{}(ExposePortsFunctor{}, m, typeNames);
 }
 
 }  // namespace inviwo
