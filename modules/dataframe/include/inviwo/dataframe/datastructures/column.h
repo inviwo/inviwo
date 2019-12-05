@@ -159,14 +159,14 @@ public:
         return buffer_->getRepresentation<BufferRAM>()->getDataContainer().begin();
     }
     std::vector<T>::iterator end() {
-		return buffer_->getRepresentation<BufferRAM>()->getDataContainer().end();
-	};
+        return buffer_->getRepresentation<BufferRAM>()->getDataContainer().end();
+    };
     std::vector<T>::const_iterator begin() const {
-		return buffer_->getRepresentation<BufferRAM>()->getDataContainer().cbegin();
-	}
+        return buffer_->getRepresentation<BufferRAM>()->getDataContainer().cbegin();
+    }
     std::vector<T>::const_iterator end() const {
-		return buffer_->getRepresentation<BufferRAM>()->getDataContainer().cend();
-	}
+        return buffer_->getRepresentation<BufferRAM>()->getDataContainer().cend();
+    }
 
 protected:
     std::string header_;
