@@ -35,6 +35,7 @@
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/datastructures/histogram.h>
+#include <inviwo/core/datastructures/histogramtools.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -58,12 +59,12 @@ public:
     ~TFEditorView();
 
 protected:
-    const HistogramContainer* getNormalizedHistograms();
-
     virtual void resizeEvent(QResizeEvent* event) override;
     virtual void drawForeground(QPainter* painter, const QRectF& rect) override;
     virtual void drawBackground(QPainter* painter, const QRectF& rect) override;
+
     void updateHistogram();
+    void updateHistogram(const HistogramContainer& histCont);
     void updateZoom();
 
     // TransferFunctionPropertyObserver overloads
@@ -81,15 +82,13 @@ private:
 
     std::vector<QPolygonF> histograms_;
 
-    bool stopHistCalculation_ = false;
-    std::future<void> histCalculation_;
+    std::shared_ptr<HistogramCalculationState> histCalculation_;
 
     dvec2 maskHorizontal_;
 
-    const BaseCallBack* callbackOnInvalid = nullptr;
-    const BaseCallBack* callbackOnChange = nullptr;
-    const BaseCallBack* callbackOnConnect = nullptr;
-    const BaseCallBack* callbackOnDisconnect = nullptr;
+    std::shared_ptr<std::function<void()>> callbackOnChange = nullptr;
+    std::shared_ptr<std::function<void()>> callbackOnConnect = nullptr;
+    std::shared_ptr<std::function<void()>> callbackOnDisconnect = nullptr;
 };
 
 }  // namespace inviwo

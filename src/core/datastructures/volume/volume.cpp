@@ -28,7 +28,6 @@
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/volume/volume.h>
-#include <inviwo/core/datastructures/volume/volumedisk.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/util/document.h>
 
@@ -36,18 +35,19 @@ namespace inviwo {
 
 Volume::Volume(size3_t defaultDimensions, const DataFormatBase* defaultFormat,
                const SwizzleMask& defaultSwizzleMask)
-    : Data<Volume, VolumeRepresentation>()
-    , StructuredGridEntity<3>()
-    , MetaDataOwner()
+    : Data<Volume, VolumeRepresentation>{}
+    , StructuredGridEntity<3>{}
+    , MetaDataOwner{}
+    , HistogramSupplier{}
     , dataMap_(defaultFormat)
     , defaultDimensions_(defaultDimensions)
     , defaultDataFormat_(defaultFormat)
     , defaultSwizzleMask_(defaultSwizzleMask) {}
 
 Volume::Volume(std::shared_ptr<VolumeRepresentation> in)
-    : Data<Volume, VolumeRepresentation>()
-    , StructuredGridEntity<3>()
-    , MetaDataOwner()
+    : Data<Volume, VolumeRepresentation>{}
+    , StructuredGridEntity<3>{}
+    , MetaDataOwner{}
     , dataMap_(in->getDataFormat())
     , defaultDimensions_(in->getDimensions())
     , defaultDataFormat_(in->getDataFormat())
@@ -112,23 +112,21 @@ Document Volume::getInfo() const {
     tb(H("Unit"), dataMap_.valueUnit);
 
     if (hasRepresentation<VolumeRAM>()) {
-        auto volumeRAM = getRepresentation<VolumeRAM>();
-        if (volumeRAM->hasHistograms()) {
-            auto histograms = volumeRAM->getHistograms();
-            for (size_t i = 0; i < histograms->size(); ++i) {
+        if (hasHistograms()) {
+            const auto& histograms = getHistograms();
+            for (size_t i = 0; i < histograms.size(); ++i) {
                 std::stringstream ss;
-                ss << "Channel " << i << " Min: " << (*histograms)[i].stats_.min
-                   << " Mean: " << (*histograms)[i].stats_.mean
-                   << " Max: " << (*histograms)[i].stats_.max
-                   << " Std: " << (*histograms)[i].stats_.standardDeviation;
+                ss << "Channel " << i << " Min: " << histograms[i].stats_.min
+                   << " Mean: " << histograms[i].stats_.mean << " Max: " << histograms[i].stats_.max
+                   << " Std: " << histograms[i].stats_.standardDeviation;
                 tb(H("Stats"), ss.str());
 
                 std::stringstream ss2;
-                ss2 << "(1: " << (*histograms)[i].stats_.percentiles[1]
-                    << ", 25: " << (*histograms)[i].stats_.percentiles[25]
-                    << ", 50: " << (*histograms)[i].stats_.percentiles[50]
-                    << ", 75: " << (*histograms)[i].stats_.percentiles[75]
-                    << ", 99: " << (*histograms)[i].stats_.percentiles[99] << ")";
+                ss2 << "(1: " << histograms[i].stats_.percentiles[1]
+                    << ", 25: " << histograms[i].stats_.percentiles[25]
+                    << ", 50: " << histograms[i].stats_.percentiles[50]
+                    << ", 75: " << histograms[i].stats_.percentiles[75]
+                    << ", 99: " << histograms[i].stats_.percentiles[99] << ")";
                 tb(H("Percentiles"), ss2.str());
             }
         }
@@ -179,6 +177,13 @@ const std::string Volume::dataName = "Volume";
 const StructuredCameraCoordinateTransformer<3>& Volume::getCoordinateTransformer(
     const Camera& camera) const {
     return StructuredGridEntity<3>::getCoordinateTransformer(camera);
+}
+
+std::shared_ptr<HistogramCalculationState> Volume::calculateHistograms(size_t bins) const {
+
+    getRepresentation<VolumeRAM>();  // make sure lastValidRepresentation_ is VolumeRAM
+    return HistogramSupplier::startCalculation(
+        std::static_pointer_cast<VolumeRAM>(lastValidRepresentation_), dataMap_.dataRange, bins);
 }
 
 template class IVW_CORE_TMPL_INST DataReaderType<Volume>;

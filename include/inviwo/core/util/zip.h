@@ -336,7 +336,7 @@ struct zipIterator {
     }
 
     /**
-     * Should be true if __any__ underlaying iterators are equal.
+     * True if __any__ underlying iterators are equal.
      */
     bool operator==(const zipIterator& rhs) const {
         bool equal = false;
@@ -346,7 +346,7 @@ struct zipIterator {
     }
 
     /**
-     * Should be true if __all__ underlaying iterators are not equal.
+     * True if __all__ underlying iterators are not equal.
      */
     bool operator!=(const zipIterator& rhs) const {
         bool notEqual = true;

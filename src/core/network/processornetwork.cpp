@@ -283,16 +283,7 @@ void ProcessorNetwork::evaluateLinksFromProperty(Property* source) {
 void ProcessorNetwork::clear() {
     NetworkLock lock(this);
 
-    // make sure the pool is not doing any work.
-    application_->waitForPool();
-
-    std::vector<Processor*> processors = getProcessors();
-    // Invalidate inports to alert processors that they should stop their calculations.
-    for (auto processor : processors) {
-        for (auto inport : processor->getInports())
-            inport->invalidate(InvalidationLevel::InvalidOutput);
-    }
-
+    auto processors = getProcessors();
     for (auto processor : processors) {
         removeAndDeleteProcessor(processor);
     }
