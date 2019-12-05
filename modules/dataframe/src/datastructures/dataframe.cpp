@@ -33,6 +33,7 @@
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/dataframe/datastructures/datapoint.h>
 #include <inviwo/core/util/formatdispatching.h>
+#include <inviwo/core/util/stdextensions.h>
 
 namespace inviwo {
 
@@ -162,21 +163,11 @@ std::string DataFrame::getHeader(size_t idx) const { return columns_[idx]->getHe
 std::shared_ptr<const Column> DataFrame::getColumn(size_t index) const { return columns_[index]; }
 
 std::shared_ptr<Column> DataFrame::getColumn(const std::string &name) {
-    for (const auto col : columns_) {
-        if (col->getHeader() == name) {
-            return col;
-        }
-    }
-    return nullptr;
+    return util::find_if_or_null(columns_, [name](auto c) { return c->getHeader() == name; });
 }
 
 std::shared_ptr<const Column> DataFrame::getColumn(const std::string &name) const {
-    for (const auto col : columns_) {
-        if (col->getHeader() == name) {
-            return col;
-        }
-    }
-    return nullptr;
+    return util::find_if_or_null(columns_, [name](auto c) { return c->getHeader() == name; });
 }
 
 std::shared_ptr<Column> DataFrame::getColumn(size_t index) { return columns_[index]; }
