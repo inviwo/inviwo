@@ -68,7 +68,7 @@ pybind11::class_<Port, Outport, PortPtr<Port>> exposeOutport(pybind11::module& m
         .def(py::init<std::string>())
         .def("getData", &Port::getData)
         .def("detatchData", &Port::detachData)
-        .def("setData", [](Port* port, std::shared_ptr<T> data) { port->setData(data); })
+        .def("setData", static_cast<void (Port::*)(std::shared_ptr<const T>)>(&Port::setData))
         .def("hasData", &Port::hasData);
 }
 
@@ -95,10 +95,10 @@ void exposeStandardDataPorts(pybind11::module& m, const std::string& name) {
             IVW_CONTEXT_CUSTOM("exposeStandardDataPorts"));
     }
 
-    exposeOutport<DataOutport<T>>(m, name);
     exposeInport<DataInport<T>>(m, name);
     exposeInport<DataInport<T, 0>>(m, name + "Multi");
     exposeInport<DataInport<T, 0, true>>(m, name + "FlatMulti");
+    exposeOutport<DataOutport<T>>(m, name);
 }
 
 }  // namespace inviwo
