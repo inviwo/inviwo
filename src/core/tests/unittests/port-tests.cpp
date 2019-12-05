@@ -98,7 +98,6 @@ const ProcessorInfo VectorOutportTestProcessor::processorInfo_{
     Tags::CPU,                                // Tags
 };
 
-
 #include <warn/push>
 #include <warn/ignore/extra-semi>
 #include <warn/ignore/gnu-zero-variadic-macro-arguments>
@@ -158,7 +157,7 @@ const ProcessorInfo FlatMultiInportTestProcessor::processorInfo_{
     Tags::CPU,                                  // Tags
 };
 
-#include  <warn/pop>
+#include <warn/pop>
 
 }  // namespace
 
