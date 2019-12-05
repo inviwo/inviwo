@@ -221,7 +221,7 @@ TemplateColumn<T>::TemplateColumn(const std::string &header, std::shared_ptr<Buf
 
 template <typename T>
 TemplateColumn<T>::TemplateColumn(const std::string &header, std::vector<T> data)
-    : header_(header), buffer_(util::make_buffer(std::move(data))) {}
+    : header_(header), buffer_(util::makeBuffer(std::move(data))) {}
 
 template <typename T>
 TemplateColumn<T>::TemplateColumn(const TemplateColumn &rhs)
