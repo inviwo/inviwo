@@ -30,6 +30,7 @@
 #include <inviwo/core/common/inviwocore.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/foreacharg.h>
 
 #include <warn/push>
 #include <warn/ignore/unused-function>
@@ -162,6 +163,15 @@ struct IntOptionConverterRegFunctor {
     }
 };
 
+// Functor for registering defaults for datatypes
+struct DataTypeRegFunctor {
+    template <typename T>
+    auto operator()(InviwoModule& m) {
+        m.registerDefaultsForDataType<T>();
+        m.registerDefaultsForDataType<std::vector<T>>();
+    }
+};
+
 }  // namespace
 
 template class TemplateOptionProperty<OptionRegEnumInt>;
@@ -251,31 +261,17 @@ InviwoCore::InviwoCore(InviwoApplication* app)
     registerDefaultsForDataType<BufferBase>();
     registerDefaultsForDataType<LightSource>();
 
-    registerDefaultsForDataType<vec2>();
-    registerDefaultsForDataType<dvec2>();
-    registerDefaultsForDataType<ivec2>();
-    registerDefaultsForDataType<size2_t>();
-    registerDefaultsForDataType<vec3>();
-    registerDefaultsForDataType<dvec3>();
-    registerDefaultsForDataType<ivec3>();
-    registerDefaultsForDataType<size3_t>();
-    registerDefaultsForDataType<vec4>();
-    registerDefaultsForDataType<dvec4>();
-    registerDefaultsForDataType<ivec4>();
-    registerDefaultsForDataType<size4_t>();
-
-    registerDefaultsForDataType<std::vector<vec2>>();
-    registerDefaultsForDataType<std::vector<dvec2>>();
-    registerDefaultsForDataType<std::vector<ivec2>>();
-    registerDefaultsForDataType<std::vector<size2_t>>();
-    registerDefaultsForDataType<std::vector<vec3>>();
-    registerDefaultsForDataType<std::vector<dvec3>>();
-    registerDefaultsForDataType<std::vector<ivec3>>();
-    registerDefaultsForDataType<std::vector<size3_t>>();
-    registerDefaultsForDataType<std::vector<vec4>>();
-    registerDefaultsForDataType<std::vector<dvec4>>();
-    registerDefaultsForDataType<std::vector<ivec4>>();
-    registerDefaultsForDataType<std::vector<size4_t>>();
+    // Register Defaults for Datatypes
+    // clang-format off
+    using types = std::tuple<
+        float, vec2, vec3, vec4,
+        double, dvec2, dvec3, dvec4,
+        int32_t, ivec2, ivec3, ivec4,
+        uint32_t, uvec2, uvec3, uvec4,
+        std::int64_t, i64vec2, i64vec3, i64vec4,
+        std::uint64_t, u64vec2, u64vec3, u64vec4>;
+    // clang-format on
+    util::for_each_type<types>{}(DataTypeRegFunctor{}, *this);
 
     // Register PortInspectors
     registerPortInspector(PortTraits<ImageOutport>::classIdentifier(),
