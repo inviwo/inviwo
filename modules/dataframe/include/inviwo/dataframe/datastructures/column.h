@@ -121,6 +121,7 @@ public:
     virtual void set(size_t idx, const T &value);
 
     T get(size_t idx) const;
+    T operator[](size_t idx) const;
     /**
      * \brief returns the data value for the given index.
      *
@@ -352,6 +353,11 @@ std::string TemplateColumn<T>::getAsString(size_t idx) const {
 template <typename T>
 std::shared_ptr<DataPointBase> TemplateColumn<T>::get(size_t idx, bool) const {
     return std::make_shared<DataPoint<T>>(buffer_->getRAMRepresentation()->get(idx));
+}
+
+template <typename T>
+T TemplateColumn<T>::operator[](const size_t idx) const {
+    return get(idx);
 }
 
 template <typename T>
