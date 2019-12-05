@@ -70,6 +70,11 @@ std::shared_ptr<Column> DataFrame::addColumnFromBuffer(const std::string &identi
         });
 }
 
+void DataFrame::dropColumn(const std::string &header) {
+    std::remove(std::begin(columns_), std::end(columns_),
+                [header](std::shared_ptr<const Column> col) { return col->getHeader() == header; });
+}
+
 std::shared_ptr<CategoricalColumn> DataFrame::addCategoricalColumn(const std::string &header,
                                                                    size_t size) {
     auto col = std::make_shared<CategoricalColumn>(header);

@@ -106,6 +106,16 @@ public:
     std::shared_ptr<TemplateColumn<T>> addColumn(const std::string &header, size_t size = 0);
 
     /**
+     * \brief Drop a column from data frame
+     *
+     * Drop the header with the specified header. If the data frame does not have a column with the
+     * specified header, nothing happens.
+     *
+     * \param name Name of the column to be dropped
+     */
+	void dropColumn(const std::string& header);
+
+    /**
      * \brief add a categorical column
      * updateIndexBuffer() needs to be called after all columns have been added before
      * the DataFrame can be used
