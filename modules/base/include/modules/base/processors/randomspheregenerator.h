@@ -89,8 +89,8 @@ private:
 
     PickingMapper spherePicking_;
 
-    std::shared_ptr<BufferRAMPrecision<vec3>> positionBuffer_;
-    std::shared_ptr<BufferRAMPrecision<float>> radiiBuffer_;
+    std::shared_ptr<Buffer<vec3>> positions_;
+    std::shared_ptr<Buffer<float>> radii_;
 
     mutable std::mt19937 rand_;
     mutable std::uniform_real_distribution<float> dis_;

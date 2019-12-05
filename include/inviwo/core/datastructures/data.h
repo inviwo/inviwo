@@ -293,7 +293,7 @@ template <typename Self, typename Repr>
 std::shared_ptr<Repr> Data<Self, Repr>::addRepresentationInternal(
     std::shared_ptr<Repr> repr) const {
     repr->setValid(true);
-    repr->setOwner(static_cast<Self*>(const_cast<Data<Self, Repr>*>(this)));
+    repr->setOwner(static_cast<const Self*>(this));
     representations_[repr->getTypeIndex()] = repr;
     return repr;
 }
