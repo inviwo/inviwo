@@ -136,8 +136,8 @@ public:
      */
     std::shared_ptr<Column> getColumn(size_t index);
     std::shared_ptr<const Column> getColumn(size_t index) const;
-    std::shared_ptr<Column> getColumn(const std::string& name);
-    std::shared_ptr<const Column> getColumn(const std::string& name) const;
+    std::shared_ptr<Column> getColumn(const std::string &name);
+    std::shared_ptr<const Column> getColumn(const std::string &name) const;
 
     std::shared_ptr<TemplateColumn<std::uint32_t>> getIndexColumn();
     std::shared_ptr<const TemplateColumn<std::uint32_t>> getIndexColumn() const;
