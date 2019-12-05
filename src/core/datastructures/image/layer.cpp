@@ -41,7 +41,7 @@ Layer::Layer(size2_t defaultDimensions, const DataFormatBase* defaultFormat, Lay
              const SwizzleMask& defaultSwizzleMask)
     : Data<Layer, LayerRepresentation>()
     , StructuredGridEntity<2>()
-    , layerType_(type)
+    , defaultLayerType_(type)
     , defaultDimensions_(defaultDimensions)
     , defaultDataFormat_(defaultFormat)
     , defaultSwizzleMask_(defaultSwizzleMask) {}
@@ -49,7 +49,7 @@ Layer::Layer(size2_t defaultDimensions, const DataFormatBase* defaultFormat, Lay
 Layer::Layer(std::shared_ptr<LayerRepresentation> in)
     : Data<Layer, LayerRepresentation>()
     , StructuredGridEntity<2>()
-    , layerType_(in->getLayerType())
+    , defaultLayerType_(in->getLayerType())
     , defaultDimensions_(in->getDimensions())
     , defaultDataFormat_(in->getDataFormat())
     , defaultSwizzleMask_(in->getSwizzleMask()) {
@@ -58,7 +58,12 @@ Layer::Layer(std::shared_ptr<LayerRepresentation> in)
 
 Layer* Layer::clone() const { return new Layer(*this); }
 
-LayerType Layer::getLayerType() const { return layerType_; }
+LayerType Layer::getLayerType() const {
+    if (lastValidRepresentation_) {
+        return lastValidRepresentation_->getLayerType();
+    }
+    return defaultLayerType_;
+}
 
 void Layer::setDimensions(const size2_t& dim) {
     defaultDimensions_ = dim;
@@ -143,12 +148,6 @@ std::unique_ptr<std::vector<unsigned char>> Layer::getAsCodedBuffer(
     }
 
     return std::unique_ptr<std::vector<unsigned char>>();
-}
-
-void Layer::updateMetaFromRepresentation(const LayerRepresentation* layerRep) {
-    if (layerRep) {
-        layerType_ = layerRep->getLayerType();
-    }
 }
 
 template class IVW_CORE_TMPL_INST DataReaderType<Layer>;
