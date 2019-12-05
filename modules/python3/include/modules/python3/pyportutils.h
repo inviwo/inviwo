@@ -108,10 +108,9 @@ template <typename T>
 void exposeStandardDataPorts(pybind11::module& m, const std::string& name) {
     if (DataTraits<T>::classIdentifier().empty()) {
         throw Exception(
-            fmt::format(
-                "exposing standard DataPorts to python for '{0}' failed due to missing "
-                "class identifier. Have you provided a DataTraits<{0}> specialization?",
-                parseTypeIdName(std::string(typeid(typename util::value_type<T>::type).name()))),
+            fmt::format("exposing standard DataPorts to python for '{0}' failed due to missing "
+                        "class identifier. Have you provided a DataTraits<{0}> specialization?",
+                        parseTypeIdName(std::string(typeid(T).name()))),
             IVW_CONTEXT_CUSTOM("exposeStandardDataPorts"));
     }
 
