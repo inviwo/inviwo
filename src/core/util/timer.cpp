@@ -138,11 +138,16 @@ Timer::Timer(Milliseconds interval, std::function<void()> callback, TimerThread 
 
 Timer::~Timer() { stop(); }
 
-void Timer::start(Milliseconds interval) {
+void Timer::start(Milliseconds interval, std::function<void()> callback) {
     interval_ = interval;
-    controlblock_ = std::make_shared<TimerThread::ControlBlock>(callback_, interval);
+    callback_ = callback;
+    controlblock_ = std::make_shared<TimerThread::ControlBlock>(callback, interval);
     thread_.add(controlblock_);
 }
+void Timer::start(Milliseconds interval) { start(interval, callback_); }
+
+void Timer::start(std::function<void()> callback) { start(interval_, callback); }
+void Timer::start() { start(interval_, callback_); }
 
 void Timer::setInterval(Milliseconds interval) {
     if (controlblock_) {
@@ -159,7 +164,8 @@ void Timer::setCallback(std::function<void()> callback) {
     }
 }
 
-void Timer::start() { start(interval_); }
+std::function<void()> Timer::getCallback() const { return callback_; }
+
 Timer::Milliseconds Timer::getInterval() const {
     if (controlblock_) {
         return controlblock_->interval_;
@@ -172,17 +178,26 @@ bool Timer::isRunning() const { return controlblock_ != nullptr; }
 
 void Timer::stop() { controlblock_.reset(); }
 
-Delay::Delay(Milliseconds interval, std::function<void()> callback, TimerThread &thread)
-    : callback_{std::move(callback)}, interval_{interval}, thread_{thread} {}
+Delay::Delay(Milliseconds defaultDelay, std::function<void()> callback, TimerThread &thread)
+    : defaultCallback_{std::move(callback)}, defaultDelay_{defaultDelay}, thread_{thread} {}
 
 Delay::~Delay() { cancel(); }
 
-void Delay::start() {
-    controlblock_ = std::make_shared<TimerThread::ControlBlock>(callback_, interval_);
+void Delay::start(Milliseconds delay, std::function<void()> callback) {
+    controlblock_ = std::make_shared<TimerThread::ControlBlock>(callback, delay);
     thread_.add(controlblock_);
 }
+void Delay::start(Milliseconds delay) { start(delay, defaultCallback_); }
+void Delay::start(std::function<void()> callback) { start(defaultDelay_, callback); }
+void Delay::start() { start(defaultDelay_, defaultCallback_); }
 
 void Delay::cancel() { controlblock_.reset(); }
+
+void Delay::setDefaultDelay(Milliseconds delay) { defaultDelay_ = delay; }
+auto Delay::getDefaultDelay() const -> Milliseconds { return defaultDelay_; }
+
+void Delay::setDefaultCallback(std::function<void()> callback) { defaultCallback_ = callback; }
+std::function<void()> Delay::getDefaultCallback() const { return defaultCallback_; }
 
 namespace util {
 

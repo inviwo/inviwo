@@ -32,7 +32,7 @@
 
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/poolprocessor.h>
 #include <inviwo/core/processors/progressbarowner.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/ports/meshport.h>
@@ -60,7 +60,7 @@ namespace inviwo {
  *   * __Triangle Color__ ...
  *
  */
-class IVW_MODULE_BASE_API SurfaceExtraction : public Processor, public ProgressBarOwner {
+class IVW_MODULE_BASE_API SurfaceExtraction : public PoolProcessor {
 public:
     enum class Method {
         MarchingCubes,
@@ -72,50 +72,25 @@ public:
     static const ProcessorInfo processorInfo_;
 
     SurfaceExtraction();
-    virtual ~SurfaceExtraction();
-
     SurfaceExtraction(const SurfaceExtraction&) = delete;
     SurfaceExtraction& operator=(const SurfaceExtraction&) = delete;
+    virtual ~SurfaceExtraction();
+
+    virtual void process() override;
 
 protected:
-    virtual void process() override;
     void updateColors();
+    vec4 getColor(size_t i) const;
 
-    virtual void invalidate(InvalidationLevel invalidationLevel,
-                            Property* modifiedProperty = nullptr) override;
-
-    struct task {
-        task() = default;
-        task(const task&) = delete;
-        task& operator=(const task&) = delete;
-        task(task&&);
-        task& operator=(task&&);
-
-        std::future<std::shared_ptr<Mesh>> result;
-        Method method;
-        float iso = 0.0f;
-        vec4 color = vec4(0);
-        bool invert = false;
-        bool enclose = true;
-        float status = 0.0f;
-
-        bool isSame(Method m, float iso, vec4 color, bool invert, bool enclose) const;
-        void set(Method m, float iso, vec4 color, bool invert, bool enclose, float status,
-                 std::future<std::shared_ptr<Mesh>>&& result);
-    };
-
-    DataInport<Volume, 0> volume_;
+    DataInport<Volume, 0, true> volume_;
     DataOutport<std::vector<std::shared_ptr<Mesh>>> outport_;
-    std::shared_ptr<std::vector<std::shared_ptr<Mesh>>> meshes_;
+    std::vector<std::shared_ptr<Mesh>> meshes_;
 
     TemplateOptionProperty<Method> method_;
     FloatProperty isoValue_;
     BoolProperty invertIso_;
     BoolProperty encloseSurface_;
     CompositeProperty colors_;
-
-    std::vector<task> result_;
-    bool dirty_;
 };
 
 }  // namespace inviwo

@@ -53,7 +53,7 @@ unsigned int SimpleMesh::addVertex(vec3 pos, vec3 texCoord, vec4 color) {
 
 void SimpleMesh::addIndex(unsigned int idx) {
     if (indices_.empty()) {
-        addIndicies(Mesh::getDefaultMeshInfo(), std::make_shared<IndexBuffer>());
+        Mesh::addIndices(Mesh::getDefaultMeshInfo(), std::make_shared<IndexBuffer>());
     }
     static_cast<IndexBufferRAM*>(indices_[0].second->getEditableRepresentation<BufferRAM>())
         ->add(idx);
@@ -61,7 +61,7 @@ void SimpleMesh::addIndex(unsigned int idx) {
 
 void SimpleMesh::setIndicesInfo(DrawType dt, ConnectivityType ct) {
     if (indices_.empty()) {
-        addIndicies(Mesh::MeshInfo(dt, ct), std::make_shared<IndexBuffer>());
+        Mesh::addIndices(Mesh::MeshInfo(dt, ct), std::make_shared<IndexBuffer>());
     } else {
         indices_[0].first = Mesh::MeshInfo(dt, ct);
     }

@@ -41,6 +41,9 @@ namespace inviwo {
  */
 
 template <typename T>
+class DataOutport;
+
+template <typename T>
 struct OutportIterable {
     OutportIterable() = default;
     virtual ~OutportIterable() = default;
@@ -76,34 +79,30 @@ struct OutportIterable {
             return i;
         }
 
-        std::shared_ptr<const T> operator*() const { return self_->getref(); }
-        std::shared_ptr<const T> operator->() const { return self_->getptr(); }
+        reference operator*() const { return self_->get(); }
+        pointer operator->() const { return self_->get(); }
 
         bool operator==(const const_iterator& rhs) const {
-            if (!self_ && !(rhs.self_))
+            if (!self_ && !(rhs.self_)) {
                 return true;
-            else if (!self_ || !(rhs.self_))
-                return false;
-            else
+            } else if (self_) {
+                return self_->end();
+            } else if (rhs.self_) {
+                return rhs.self_->end();
+            } else {
                 return self_->equal(*(rhs.self_));
+            }
         }
-        bool operator!=(const const_iterator& rhs) const {
-            if (!self_ && !(rhs.self_))
-                return false;
-            else if (!self_ || !(rhs.self_))
-                return true;
-            else
-                return !self_->equal(*(rhs.self_));
-        }
+        bool operator!=(const const_iterator& rhs) const { return !(*this == rhs); }
 
     private:
         struct Concept {
             virtual ~Concept() = default;
             virtual Concept* clone() = 0;
             virtual void inc() = 0;
-            virtual std::shared_ptr<const T> getref() = 0;
-            virtual std::shared_ptr<const T> getptr() = 0;
-            virtual bool equal(const Concept& that) = 0;
+            virtual std::shared_ptr<const T> get() = 0;
+            virtual bool equal(const Concept& that) const = 0;
+            virtual bool end() const = 0;
         };
 
         template <typename U>
@@ -113,11 +112,11 @@ struct OutportIterable {
 
             virtual Model<U>* clone() override { return new Model<U>(*this); };
             virtual void inc() override { data_.inc(); };
-            virtual std::shared_ptr<const T> getref() override { return data_.getref(); };
-            virtual std::shared_ptr<const T> getptr() override { return data_.getptr(); };
-            virtual bool equal(const Concept& that) override {
+            virtual std::shared_ptr<const T> get() override { return data_.get(); };
+            virtual bool equal(const Concept& that) const override {
                 return data_.equal(static_cast<const Model<U>&>(that).data_);
             };
+            virtual bool end() const override { return data_.end(); }
 
         private:
             U data_;
@@ -130,252 +129,252 @@ struct OutportIterable {
     virtual const_iterator end() const = 0;
 };
 
-template <typename T>
-class DataOutport;
+namespace detail {
 
 // Base template for single data ptr
-template <typename T, typename Enable = void>
-struct OutportIterableImpl : public OutportIterable<T> {
-    OutportIterableImpl(DataOutport<T>* port) : port_(port) {}
-    using const_iterator = typename OutportIterable<T>::const_iterator;
+template <typename T>
+class OutportIterableWrapper {
+public:
+    OutportIterableWrapper() : data_(nullptr) {}
+    OutportIterableWrapper(const DataOutport<T>& port) : data_{port.getData()} {}
 
-    virtual const_iterator begin() const override { return const_iterator(Wrapper(port_, false)); }
-    virtual const_iterator end() const override { return const_iterator(Wrapper(port_, true)); }
+    std::shared_ptr<const T> get() { return data_; };
+
+    void inc() { data_.reset(); };
+    bool equal(const OutportIterableWrapper& rhs) const {
+        if (!data_ && !rhs.data_)
+            return true;
+        else if (!data_ != !rhs.data_)
+            return false;
+        else
+            return data_.get() == data_.get();
+    };
+    bool end() const { return data_ == nullptr; }
 
 private:
-    class Wrapper {
-    public:
-        Wrapper() : port_(nullptr), end_(true) {}
-        Wrapper(DataOutport<T>* port, bool end) : port_(port), end_(end || !port->getData()) {}
-
-        void inc() { end_ = true; };
-        std::shared_ptr<const T> getref() { return port_->getData(); };
-        std::shared_ptr<const T> getptr() { return port_->getData(); };
-        bool equal(const Wrapper& rhs) {
-            if (end_ && rhs.end_)
-                return true;
-            else if (end_ != rhs.end_)
-                return false;
-            else
-                return port_->getData().get() == port_->getData().get();
-        };
-
-    private:
-        DataOutport<T>* port_;
-        bool end_;
-    };
-
-    DataOutport<T>* port_;
+    std::shared_ptr<const T> data_;
 };
 
 // Specialization for vector of shared_ptr<data>.
 template <typename T, typename Alloc>
-struct OutportIterableImpl<std::vector<std::shared_ptr<T>, Alloc>> : public OutportIterable<T> {
-    using container = std::vector<std::shared_ptr<T>, Alloc>;
-    using const_iterator = typename OutportIterable<T>::const_iterator;
+class OutportIterableWrapper<std::vector<std::shared_ptr<T>, Alloc>> {
+public:
+    using Iter = typename std::vector<std::shared_ptr<T>, Alloc>::const_iterator;
+    OutportIterableWrapper() : iter_(), iterEnd_(), end_(true) {}
+    OutportIterableWrapper(const DataOutport<std::vector<std::shared_ptr<T>, Alloc>>& port)
+        : iter_{port.hasData() ? port.getData()->begin() : Iter{}}
+        , iterEnd_{port.hasData() ? port.getData()->end() : Iter{}}
+        , end_{iter_ == iterEnd_} {}
 
-    OutportIterableImpl(DataOutport<container>* port) : port_(port) {}
+    std::shared_ptr<const T> get() { return *iter_; };
 
-    virtual const_iterator begin() const override {
-        auto data = port_->getData();
-        if (!data)
-            return const_iterator(Wrapper());
-        else
-            return const_iterator(Wrapper(data->begin(), data->end()));
+    void inc() {
+        ++iter_;
+        if (iter_ == iterEnd_) end_ = true;
     };
-    virtual const_iterator end() const override {
-        auto data = port_->getData();
-        if (!data)
-            return const_iterator(Wrapper());
+
+    bool equal(const OutportIterableWrapper& rhs) const {
+        if (end_ && rhs.end_)
+            return true;
+        else if (end_ != rhs.end_)
+            return false;
         else
-            return const_iterator(Wrapper(data->end(), data->end()));
-    };
+            return iter_ == rhs.iter_;
+    }
+    bool end() const { return end_; }
 
 private:
-    class Wrapper {
-    public:
-        using Iter = typename container::const_iterator;
-        Wrapper() : iter_(), iterEnd_(), end_(true) {}
-        Wrapper(Iter begin, Iter end) : iter_(begin), iterEnd_(end), end_(iter_ == iterEnd_) {}
-        void inc() {
-            iter_++;
-            if (iter_ == iterEnd_) end_ = true;
-        };
-
-        std::shared_ptr<const T> getref() { return *iter_; };
-        std::shared_ptr<const T> getptr() { return *iter_; };
-
-        bool equal(const Wrapper& rhs) {
-            if (end_ && rhs.end_)
-                return true;
-            else if (end_ != rhs.end_)
-                return false;
-            else
-                return iter_ == rhs.iter_;
-        }
-
-    private:
-        Iter iter_;
-        Iter iterEnd_;
-        bool end_;
-    };
-
-    DataOutport<container>* port_;
+    Iter iter_;
+    Iter iterEnd_;
+    bool end_;
 };
 
 // Specialization for vector of data
 template <typename T, typename Alloc>
-struct OutportIterableImpl<std::vector<T, Alloc>> : public OutportIterable<T> {
-    using container = std::vector<T, Alloc>;
-    using const_iterator = typename OutportIterable<T>::const_iterator;
+class OutportIterableWrapper<std::vector<T, Alloc>> {
+public:
+    using Iter = typename std::vector<T, Alloc>::const_iterator;
 
-    OutportIterableImpl(DataOutport<container>* port) : port_(port) {}
+    OutportIterableWrapper() : data_(), iter_(), iterEnd_(), end_(true) {}
+    OutportIterableWrapper(const DataOutport<std::vector<T, Alloc>>& port)
+        : data_{port.getData()}
+        , iter_{port.hasData() ? port.getData()->begin() : Iter{}}
+        , iterEnd_{port.hasData() ? port.getData()->end() : Iter{}}
+        , end_{iter_ == iterEnd_} {}
 
-    virtual const_iterator begin() const override {
-        auto data = port_->getData();
-        if (!data) return const_iterator(Wrapper());
-        return const_iterator(Wrapper(data));
+    std::shared_ptr<const T> get() { return std::shared_ptr<const T>(data_, &(*iter_)); };
+
+    void inc() {
+        ++iter_;
+        if (iter_ == iterEnd_) end_ = true;
     };
-    virtual const_iterator end() const override { return const_iterator(Wrapper()); };
+
+    bool equal(const OutportIterableWrapper& rhs) const {
+        if (end_ && rhs.end_)
+            return true;
+        else if (end_ != rhs.end_)
+            return false;
+        else
+            return iter_ == rhs.iter_;
+    }
+
+    bool end() const { return end_; }
 
 private:
-    class Wrapper {
-    public:
-        using Iter = typename container::const_iterator;
-
-        Wrapper() : data_(), iter_(), iterEnd_(), end_(true) {}
-        Wrapper(std::shared_ptr<const container> data)
-            : data_(data), iter_(data->begin()), iterEnd_(data->end()), end_(iter_ == iterEnd_) {}
-
-        void inc() {
-            iter_++;
-            if (iter_ == iterEnd_) end_ = true;
-        };
-        std::shared_ptr<const T> getref() { return std::shared_ptr<const T>(data_, &(*iter_)); };
-        std::shared_ptr<const T> getptr() { return std::shared_ptr<const T>(data_, &(*iter_)); };
-        bool equal(const Wrapper& rhs) {
-            if (end_ && rhs.end_)
-                return true;
-            else if (end_ != rhs.end_)
-                return false;
-            else
-                return iter_ == rhs.iter_;
-        }
-
-    private:
-        std::shared_ptr<const container> data_;
-        Iter iter_;
-        Iter iterEnd_;
-        bool end_;
-    };
-
-    DataOutport<container>* port_;
+    std::shared_ptr<const std::vector<T, Alloc>> data_;
+    Iter iter_;
+    Iter iterEnd_;
+    bool end_;
 };
 
 // Specialization for vector of data pointer
 template <typename T, typename Alloc>
-struct OutportIterableImpl<std::vector<T*, Alloc>> : public OutportIterable<T> {
-    using container = std::vector<T*, Alloc>;
-    using const_iterator = typename OutportIterable<T>::const_iterator;
+struct OutportIterableWrapper<std::vector<T*, Alloc>> {
+public:
+    using Iter = typename std::vector<T*, Alloc>::const_iterator;
 
-    OutportIterableImpl(DataOutport<container>* port) : port_(port) {}
+    OutportIterableWrapper() : data_(), iter_(), iterEnd_(), end_(true) {}
+    OutportIterableWrapper(const DataOutport<std::vector<T*, Alloc>>& port)
+        : data_{port.getData()}
+        , iter_{port.hasData() ? port.getData()->begin() : Iter{}}
+        , iterEnd_{port.hasData() ? port.getData()->end() : Iter{}}
+        , end_{iter_ == iterEnd_} {}
 
-    virtual const_iterator begin() const override {
-        auto data = port_->getData();
-        if (!data) return const_iterator(Wrapper());
-        return const_iterator(Wrapper(data));
+    std::shared_ptr<const T> get() { return std::shared_ptr<const T>(data_, *iter_); };
+
+    void inc() {
+        ++iter_;
+        if (iter_ == iterEnd_) end_ = true;
     };
-    virtual const_iterator end() const override { return const_iterator(Wrapper()); };
+
+    bool equal(const OutportIterableWrapper& rhs) const {
+        if (end_ && rhs.end_)
+            return true;
+        else if (end_ != rhs.end_)
+            return false;
+        else
+            return iter_ == rhs.iter_;
+    }
+
+    bool end() const { return end_; }
 
 private:
-    class Wrapper {
-    public:
-        using Iter = typename container::const_iterator;
+    std::shared_ptr<const std::vector<T*, Alloc>> data_;
+    Iter iter_;
+    Iter iterEnd_;
+    bool end_;
+};
 
-        Wrapper() : data_(), iter_(), iterEnd_(), end_(true) {}
-        Wrapper(std::shared_ptr<const container> data)
-            : data_(data), iter_(data->begin()), iterEnd_(data->end()), end_(iter_ == iterEnd_) {}
+// Specialization for vector of data unique pointer
+template <typename T, typename Alloc>
+class OutportIterableWrapper<std::vector<std::unique_ptr<T>, Alloc>> {
+public:
+    using Iter = typename std::vector<std::unique_ptr<T>, Alloc>::const_iterator;
 
-        void inc() {
-            iter_++;
-            if (iter_ == iterEnd_) end_ = true;
-        };
+    OutportIterableWrapper() : data_(), iter_(), iterEnd_(), end_(true) {}
+    OutportIterableWrapper(const DataOutport<std::vector<std::unique_ptr<T>, Alloc>>& port)
+        : data_{port.getData()}
+        , iter_{port.hasData() ? port.getData()->begin() : Iter{}}
+        , iterEnd_{port.hasData() ? port.getData()->end() : Iter{}}
+        , end_{iter_ == iterEnd_} {}
 
-        std::shared_ptr<const T> getref() { return std::shared_ptr<const T>(data_, *iter_); };
-        std::shared_ptr<const T> getptr() { return std::shared_ptr<const T>(data_, *iter_); };
+    std::shared_ptr<const T> get() { return std::shared_ptr<const T>(data_, (*iter_).get()); };
 
-        bool equal(const Wrapper& rhs) {
-            if (end_ && rhs.end_)
-                return true;
-            else if (end_ != rhs.end_)
-                return false;
-            else
-                return iter_ == rhs.iter_;
-        }
-
-    private:
-        std::shared_ptr<const container> data_;
-        Iter iter_;
-        Iter iterEnd_;
-        bool end_;
+    void inc() {
+        ++iter_;
+        if (iter_ == iterEnd_) end_ = true;
     };
 
-    DataOutport<container>* port_;
+    bool equal(const OutportIterableWrapper& rhs) const {
+        if (end_ && rhs.end_)
+            return true;
+        else if (end_ != rhs.end_)
+            return false;
+        else
+            return iter_ == rhs.iter_;
+    }
+
+    bool end() const { return end_; }
+
+private:
+    std::shared_ptr<const std::vector<std::unique_ptr<T>, Alloc>> data_;
+    Iter iter_;
+    Iter iterEnd_;
+    bool end_;
+};
+
+}  // namespace detail
+
+// Base template for single data ptr
+template <typename Derived, typename T, typename Enable = void>
+struct OutportIterableImpl : public OutportIterable<T> {
+    using Container = T;
+    using const_iterator = typename OutportIterable<T>::const_iterator;
+
+    virtual const_iterator begin() const override {
+        return detail::OutportIterableWrapper<Container>{*static_cast<const Derived*>(this)};
+    }
+    virtual const_iterator end() const override {
+        return detail::OutportIterableWrapper<Container>{};
+    }
+};
+
+// Specialization for vector of shared_ptr<data>.
+template <typename Derived, typename T, typename Alloc>
+struct OutportIterableImpl<Derived, std::vector<std::shared_ptr<T>, Alloc>>
+    : public OutportIterable<T> {
+    using Container = std::vector<std::shared_ptr<T>, Alloc>;
+    using const_iterator = typename OutportIterable<T>::const_iterator;
+
+    virtual const_iterator begin() const override {
+        return detail::OutportIterableWrapper<Container>{*static_cast<const Derived*>(this)};
+    }
+    virtual const_iterator end() const override {
+        return detail::OutportIterableWrapper<Container>{};
+    }
+};
+
+// Specialization for vector of data
+template <typename Derived, typename T, typename Alloc>
+struct OutportIterableImpl<Derived, std::vector<T, Alloc>> : public OutportIterable<T> {
+    using Container = std::vector<T, Alloc>;
+    using const_iterator = typename OutportIterable<T>::const_iterator;
+
+    virtual const_iterator begin() const override {
+        return detail::OutportIterableWrapper<Container>{*static_cast<const Derived*>(this)};
+    }
+    virtual const_iterator end() const override {
+        return detail::OutportIterableWrapper<Container>{};
+    }
 };
 
 // Specialization for vector of data pointer
-template <typename T, typename Alloc>
-struct OutportIterableImpl<std::vector<std::unique_ptr<T>, Alloc>> : public OutportIterable<T> {
-    using container = std::vector<std::unique_ptr<T>, Alloc>;
+template <typename Derived, typename T, typename Alloc>
+struct OutportIterableImpl<Derived, std::vector<T*, Alloc>> : public OutportIterable<T> {
+    using Container = std::vector<T*, Alloc>;
     using const_iterator = typename OutportIterable<T>::const_iterator;
 
-    OutportIterableImpl(DataOutport<container>* port) : port_(port) {}
+    virtual const_iterator begin() const override {
+        return detail::OutportIterableWrapper<Container>{*static_cast<const Derived*>(this)};
+    }
+    virtual const_iterator end() const override {
+        return detail::OutportIterableWrapper<Container>{};
+    }
+};
+
+// Specialization for vector of data pointer
+template <typename Derived, typename T, typename Alloc>
+struct OutportIterableImpl<Derived, std::vector<std::unique_ptr<T>, Alloc>>
+    : public OutportIterable<T> {
+    using Container = std::vector<std::unique_ptr<T>, Alloc>;
+    using const_iterator = typename OutportIterable<T>::const_iterator;
 
     virtual const_iterator begin() const override {
-        auto data = port_->getData();
-        if (!data) return const_iterator(Wrapper());
-        return const_iterator(Wrapper(data));
-    };
-    virtual const_iterator end() const override { return const_iterator(Wrapper()); };
-
-private:
-    class Wrapper {
-    public:
-        using Iter = typename container::const_iterator;
-
-        Wrapper() : data_(), iter_(), iterEnd_(), end_(true) {}
-        Wrapper(std::shared_ptr<const container> data)
-            : data_(data), iter_(data->begin()), iterEnd_(data->end()), end_(iter_ == iterEnd_) {}
-
-        void inc() {
-            iter_++;
-            if (iter_ == iterEnd_) end_ = true;
-        };
-
-        std::shared_ptr<const T> getref() {
-            return std::shared_ptr<const T>(data_, (*iter_).get());
-        };
-        std::shared_ptr<const T> getptr() {
-            return std::shared_ptr<const T>(data_, (*iter_).get());
-        };
-
-        bool equal(const Wrapper& rhs) {
-            if (end_ && rhs.end_)
-                return true;
-            else if (end_ != rhs.end_)
-                return false;
-            else
-                return iter_ == rhs.iter_;
-        }
-
-    private:
-        std::shared_ptr<const container> data_;
-        Iter iter_;
-        Iter iterEnd_;
-        bool end_;
-    };
-
-    DataOutport<container>* port_;
+        return detail::OutportIterableWrapper<Container>{*static_cast<const Derived*>(this)};
+    }
+    virtual const_iterator end() const override {
+        return detail::OutportIterableWrapper<Container>{};
+    }
 };
 
 }  // namespace inviwo

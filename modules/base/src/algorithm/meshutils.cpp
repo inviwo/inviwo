@@ -754,7 +754,7 @@ std::shared_ptr<ColoredMesh> cameraFrustum(const Camera& camera, vec4 color,
     ib->add({off + 4, off + 5, off + 5, off + 7, off + 7, off + 6, off + 6, off + 4});  // back
     ib->add({off + 0, off + 4, off + 1, off + 5, off + 2, off + 6, off + 3, off + 7});  // sides
 
-    mesh->addIndicies(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::None), indices);
+    mesh->addIndices(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::None), indices);
 
     return mesh;
 }

@@ -63,7 +63,9 @@ void exposePort(pybind11::module& m) {
     py::class_<Outport, Port, PortPtr<Outport>>(m, "Outport")
         .def("isConnectedTo", &Outport::isConnectedTo)
         .def("getConnectedInports", &Outport::getConnectedInports,
-             py::return_value_policy::reference);
+             py::return_value_policy::reference)
+        .def("hasData", &Outport::hasData)
+        .def("clear", &Outport::clear);
 
     exposeStandardDataPorts<std::vector<vec2>>(m, "Vec2");
     exposeStandardDataPorts<std::vector<vec3>>(m, "Vec3");

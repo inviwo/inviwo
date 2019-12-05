@@ -187,6 +187,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/compositeprocessorutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/compositesink.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/compositesource.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/processors/poolprocessor.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processor.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorfactoryobject.h
@@ -493,6 +494,7 @@ set(SOURCE_FILES
     processors/compositeprocessorutils.cpp
     processors/compositesink.cpp
     processors/compositesource.cpp
+    processors/poolprocessor.cpp
     processors/processor.cpp
     processors/processorfactory.cpp
     processors/processorinfo.cpp
@@ -649,6 +651,8 @@ set(TEST_FILES
     tests/unittests/network-evaluator-test.cpp
     tests/unittests/picking-test.cpp
     tests/unittests/pickingcontroller-test.cpp
+    tests/unittests/port-tests.cpp
+    tests/unittests/resize-test.cpp
     tests/unittests/serialize-container-test.cpp
     tests/unittests/serializer-test.cpp
     tests/unittests/tfprimitiveset-test.cpp
@@ -656,7 +660,6 @@ set(TEST_FILES
     tests/unittests/utilities-test.cpp
     tests/unittests/volumesequenceutils-tests.cpp
     tests/unittests/zip-test.cpp
-    tests/unittests/resize-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 

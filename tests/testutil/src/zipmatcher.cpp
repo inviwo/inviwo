@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,56 +27,4 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMESUBSAMPLE_H
-#define IVW_VOLUMESUBSAMPLE_H
-
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/processors/poolprocessor.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <modules/base/algorithm/volume/volumeramsubsample.h>
-#include <inviwo/core/processors/activityindicator.h>
-
-namespace inviwo {
-
-/** \docpage{org.inviwo.VolumeSubsample, Volume Subsample}
- * ![](org.inviwo.VolumeSubsample.png?classIdentifier=org.inviwo.VolumeSubsample)
- *
- * ...
- *
- * ### Inports
- *   * __volume.inport__ ...
- *
- * ### Outports
- *   * __volume.outport__ ...
- *
- * ### Properties
- *   * __Enable Operation__ ...
- *   * __Factors__ ...
- *
- */
-class IVW_MODULE_BASE_API VolumeSubsample : public PoolProcessor {
-public:
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-    VolumeSubsample();
-    virtual ~VolumeSubsample() = default;
-
-protected:
-    virtual void process() override;
-
-    static std::shared_ptr<Volume> subsample(std::shared_ptr<const Volume> volume, size3_t f);
-
-private:
-    VolumeInport inport_;
-    VolumeOutport outport_;
-
-    BoolProperty enabled_;
-    IntVec3Property subSampleFactors_;
-};
-}  // namespace inviwo
-
-#endif  // IVW_VOLUMESUBSAMPLE_H
+#include <inviwo/testutil/zipmatcher.h>

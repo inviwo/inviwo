@@ -40,6 +40,7 @@
 #include <inviwo/core/ports/outport.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/util/stdextensions.h>
 
 namespace inviwo {
 
@@ -55,6 +56,31 @@ struct PortDeleter {
 template <typename T>
 using PortPtr = std::unique_ptr<T, detail::PortDeleter<T>>;
 
+namespace util {
+
+template <typename Iter>
+struct IterRangeGenerator : iter_range<Iter> {
+    IterRangeGenerator(iter_range<Iter> base) : iter_range<Iter>{base} {};
+    using iter_range<Iter>::iter_range;
+    typename Iter::value_type next() {
+        if (this->first != this->second) {
+            return *(this->first++);
+        } else {
+            throw pybind11::stop_iteration{};
+        }
+    }
+};
+
+}  // namespace util
+
+template <typename Iter>
+pybind11::class_<util::IterRangeGenerator<Iter>> exposeIterRangeGenerator(pybind11::module& m,
+                                                                          const std::string& name) {
+
+    return pybind11::class_<util::IterRangeGenerator<Iter>>(m, (name + "Generator").c_str())
+        .def("__next__", &util::IterRangeGenerator<Iter>::next);
+}
+
 template <typename Port>
 pybind11::class_<Port, Outport, PortPtr<Port>> exposeOutport(pybind11::module& m,
                                                              const std::string& name) {
@@ -64,20 +90,39 @@ pybind11::class_<Port, Outport, PortPtr<Port>> exposeOutport(pybind11::module& m
         .def(py::init<std::string>())
         .def("getData", &Port::getData)
         .def("detatchData", &Port::detachData)
-        .def("setData", [](Port* port, std::shared_ptr<T> data) { port->setData(data); })
-        .def("hasData", &Port::hasData);
+        .def("setData", [](Port* port, std::shared_ptr<T> data) { port->setData(data); });
 }
 
 template <typename Port>
 pybind11::class_<Port, Inport, PortPtr<Port>> exposeInport(pybind11::module& m,
                                                            const std::string& name) {
+
+    exposeIterRangeGenerator<typename Port::const_iterator>(m, name + "InportData");
+    exposeIterRangeGenerator<typename Port::const_iterator_port>(m, name + "InportOutportAndData");
+    exposeIterRangeGenerator<typename Port::const_iterator_changed>(m,
+                                                                    name + "InportChangedAndData");
+
     namespace py = pybind11;
     return pybind11::class_<Port, Inport, PortPtr<Port>>(m, (name + "Inport").c_str())
         .def(py::init<std::string>())
+        .def("hasData", &Port::hasData)
         .def("getData", &Port::getData)
         .def("getVectorData", &Port::getVectorData)
         .def("getSourceVectorData", &Port::getSourceVectorData)
-        .def("hasData", &Port::hasData);
+        .def("data",
+             [](Port* p) {
+                 return util::IterRangeGenerator<typename Port::const_iterator>(p->begin(),
+                                                                                p->end());
+             })
+        .def("outportAndData",
+             [](Port* p) {
+                 return util::IterRangeGenerator<typename Port::const_iterator_port>(
+                     p->outportAndData());
+             })
+        .def("changedAndData", [](Port* p) {
+            return util::IterRangeGenerator<typename Port::const_iterator_changed>(
+                p->changedAndData());
+        });
 }
 
 template <typename T>

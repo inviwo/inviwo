@@ -128,8 +128,8 @@ void BufferToMeshProcessor::process() {
                 "Index buffer must be of IndexBuffer type (Buffer<std::uint32_t, "
                 "BufferTarget::Index>)");
         }
-        mesh->addIndicies(Mesh::MeshInfo(drawType_.get(), connectivity_.get()),
-                          std::const_pointer_cast<IndexBuffer>(indexBuffer));
+        mesh->addIndices(Mesh::MeshInfo(drawType_.get(), connectivity_.get()),
+                         std::const_pointer_cast<IndexBuffer>(indexBuffer));
     }
 
     outport_.setData(mesh);

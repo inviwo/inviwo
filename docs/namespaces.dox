@@ -59,6 +59,10 @@
  * \namespace inviwo::plot plot
  */
 
+ /**
+ * \namespace inviwo::pool pool
+ */
+
 /**
  * \namespace inviwo::pyutil pyutil
  */
@@ -85,4 +89,8 @@
 
 /**
  * \namespace inviwo::animation animation
+ */
+ 
+/**
+ * \namespace inviwo::xml xml
  */

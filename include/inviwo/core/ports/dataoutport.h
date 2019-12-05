@@ -45,7 +45,7 @@ namespace inviwo {
  * DataOutport hold data of type T
  */
 template <typename T>
-class DataOutport : public Outport, public OutportIterableImpl<T> {
+class DataOutport : public Outport, public OutportIterableImpl<DataOutport<T>, T> {
 public:
     using type = T;
     DataOutport(std::string identifier);
@@ -56,12 +56,20 @@ public:
     virtual Document getInfo() const override;
 
     virtual std::shared_ptr<const T> getData() const;
-    // Return data and release ownership. Data in the port will be nullptr after call.
+
+    /**
+     * Return data and release ownership. Data in the port will be nullptr after call.
+     */
     virtual std::shared_ptr<const T> detachData();
+
+    /**
+     * \copydoc Outport::clear
+     */
+    virtual void clear() override;
 
     virtual void setData(std::shared_ptr<const T> data);
     virtual void setData(const T* data);  // will assume ownership of data.
-    bool hasData() const;
+    virtual bool hasData() const override;
 
 protected:
     std::shared_ptr<const T> data_;
@@ -76,7 +84,7 @@ struct PortTraits<DataOutport<T>> {
 
 template <typename T>
 DataOutport<T>::DataOutport(std::string identifier)
-    : Outport(identifier), OutportIterableImpl<T>(this), data_() {
+    : Outport(identifier), OutportIterableImpl<DataOutport<T>, T>{}, data_() {
 
     isReady_.setUpdate([this]() {
         return invalidationLevel_ == InvalidationLevel::Valid && data_.get() != nullptr;
@@ -121,6 +129,12 @@ std::shared_ptr<const T> DataOutport<T>::detachData() {
 template <typename T>
 bool DataOutport<T>::hasData() const {
     return data_.get() != nullptr;
+}
+
+template <typename T>
+void DataOutport<T>::clear() {
+    data_.reset();
+    isReady_.update();
 }
 
 template <typename T>

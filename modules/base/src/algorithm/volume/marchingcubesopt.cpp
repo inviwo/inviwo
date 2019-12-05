@@ -569,7 +569,7 @@ std::shared_ptr<Mesh> marchingCubesOpt(std::shared_ptr<const Volume> volume, dou
     auto mesh = std::make_shared<Mesh>();
     mesh->setModelMatrix(volume->getModelMatrix());
     mesh->setWorldMatrix(volume->getWorldMatrix());
-    mesh->addIndicies({DrawType::Triangles, ConnectivityType::None}, indexBuffer);
+    mesh->addIndices({DrawType::Triangles, ConnectivityType::None}, indexBuffer);
     mesh->addBuffer(BufferType::PositionAttrib, vertexBuffer);
     mesh->addBuffer(BufferType::TexcoordAttrib, textureBuffer);
     mesh->addBuffer(BufferType::ColorAttrib, colorBuffer);

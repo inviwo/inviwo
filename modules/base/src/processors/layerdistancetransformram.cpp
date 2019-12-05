@@ -45,7 +45,7 @@ const ProcessorInfo LayerDistanceTransformRAM::processorInfo_{
 const ProcessorInfo LayerDistanceTransformRAM::getProcessorInfo() const { return processorInfo_; }
 
 LayerDistanceTransformRAM::LayerDistanceTransformRAM()
-    : Processor()
+    : PoolProcessor()
     , imagePort_("inputImage")
     , outport_("outputImage", DataVec4UInt8::get(), false)
     , threshold_("threshold", "Threshold", 0.5, 0.0, 1.0)
@@ -56,114 +56,51 @@ LayerDistanceTransformRAM::LayerDistanceTransformRAM()
     , uniformUpsampling_("uniformUpsampling", "Uniform Upsampling", false)
     , upsampleFactorUniform_("upsampleFactorUniform", "Sampling Factor", 1, 1, 10)
     , upsampleFactorVec2_("upsampleFactorVec2", "Sampling Factor", size2_t(1), size2_t(1),
-                          size2_t(10))
-    , btnForceUpdate_("forceUpdate", "Update Distance Map")
-    , distTransformDirty_(true)
-    , hasNewData_(false) {
+                          size2_t(10)) {
 
     addPort(imagePort_);
     addPort(outport_);
 
-    addProperty(threshold_);
-    addProperty(flip_);
-    addProperty(normalize_);
-    addProperty(resultDistScale_);
-    addProperty(resultSquaredDist_);
-    addProperty(uniformUpsampling_);
-    addProperty(upsampleFactorVec2_);
-    addProperty(upsampleFactorUniform_);
+    addProperties(threshold_, flip_, normalize_, resultDistScale_, resultSquaredDist_,
+                  uniformUpsampling_, upsampleFactorVec2_, upsampleFactorUniform_);
 
-    auto triggerUpdate = [&]() {
-        bool uniform = uniformUpsampling_.get();
-        upsampleFactorVec2_.setVisible(!uniform);
-        upsampleFactorUniform_.setVisible(uniform);
-    };
-    uniformUpsampling_.onChange(triggerUpdate);
-    upsampleFactorUniform_.setVisible(false);
-
-    addProperty(btnForceUpdate_);
-
-    btnForceUpdate_.onChange([this]() { distTransformDirty_ = true; });
-
-    progressBar_.hide();
+    upsampleFactorVec2_.visibilityDependsOn(uniformUpsampling_,
+                                            [](const auto& p) { return !p.get(); });
+    upsampleFactorUniform_.visibilityDependsOn(uniformUpsampling_,
+                                               [](const auto& p) { return p.get(); });
 }
 
 LayerDistanceTransformRAM::~LayerDistanceTransformRAM() = default;
 
-void LayerDistanceTransformRAM::invalidate(InvalidationLevel invalidationLevel, Property* source) {
-    notifyObserversInvalidationBegin(this);
-    PropertyOwner::invalidate(invalidationLevel, source);
-    if (!isValid() && hasNewData_) {
-        for (auto& port : getOutports()) port->invalidate(InvalidationLevel::InvalidOutput);
-    }
-    notifyObserversInvalidationEnd(this);
-}
-
 void LayerDistanceTransformRAM::process() {
-    if (util::is_future_ready(newImage_)) {
-        try {
-            auto image = newImage_.get();
-            outport_.setData(image);
-            hasNewData_ = false;
-            btnForceUpdate_.setDisplayName("Update Distance Map");
-        } catch (Exception&) {
-            // Need to reset the future, VS bug:
-            // http://stackoverflow.com/questions/33899615/stdfuture-still-valid-after-calling-get-which-throws-an-exception
-            newImage_ = {};
-            outport_.setData(static_cast<Image*>(nullptr));
-            hasNewData_ = false;
-            throw;
-        }
-    } else if (!newImage_.valid()) {  // We are not waiting for a calculation
-        btnForceUpdate_.setDisplayName("Update Distance Map (dirty)");
-        if (imagePort_.isChanged() || distTransformDirty_) {
-            updateOutport();
-        }
-    }
-}
-
-void LayerDistanceTransformRAM::updateOutport() {
-    auto done = [this]() {
-        dispatchFront([this]() {
-            distTransformDirty_ = false;
-            hasNewData_ = true;
-            invalidate(InvalidationLevel::InvalidOutput);
-        });
-    };
-
-    auto calc = [pb = &progressBar_,
-                 upsample = uniformUpsampling_.get() ? size3_t(upsampleFactorUniform_.get())
-                                                     : upsampleFactorVec2_.get(),
-                 threshold = threshold_.get(), normalize = normalize_.get(), flip = flip_.get(),
-                 square = resultSquaredDist_.get(), scale = resultDistScale_.get(), done,
-                 &cache =
-                     imageCache_](std::shared_ptr<const Image> image) -> std::shared_ptr<Image> {
+    const auto calc = [image = imagePort_.getData(),
+                       upsample = uniformUpsampling_.get() ? size3_t(upsampleFactorUniform_.get())
+                                                           : upsampleFactorVec2_.get(),
+                       threshold = threshold_.get(), normalize = normalize_.get(),
+                       flip = flip_.get(), square = resultSquaredDist_.get(),
+                       scale = resultDistScale_.get(),
+                       &cache = imageCache_](pool::Progress progress) -> std::shared_ptr<Image> {
         auto imgDim = glm::max(image->getDimensions(), size2_t(1u));
 
-        auto res = cache.getTypedUnused<float>(upsample * imgDim);
-        std::shared_ptr<Image> dstImage = res.first;
-        LayerRAMPrecision<float>* dstRepr = res.second;
+        auto [dstImage, dstRepr] = cache.getTypedUnused<float>(upsample * imgDim);
 
         // pass meta data on
         dstImage->getColorLayer()->setModelMatrix(image->getColorLayer()->getModelMatrix());
         dstImage->getColorLayer()->setWorldMatrix(image->getColorLayer()->getWorldMatrix());
         dstImage->copyMetaDataFrom(*image);
 
-        const auto progress = [pb](double f) {
-            dispatchFront([f, pb]() {
-                f < 1.0 ? pb->show() : pb->hide();
-                pb->updateProgress(static_cast<float>(f));
-            });
-        };
         util::layerDistanceTransform(image->getColorLayer(), dstRepr, upsample, threshold,
                                      normalize, flip, square, scale, progress);
 
-        done();
         cache.add(dstImage);
         return dstImage;
     };
 
-    newImage_ = dispatchPool(calc, imagePort_.getData());
+    outport_.clear();
+    dispatchOne(calc, [this](std::shared_ptr<Image> result) {
+        outport_.setData(result);
+        newResults();
+    });
 }
 
 }  // namespace inviwo
