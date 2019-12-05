@@ -71,10 +71,11 @@ std::shared_ptr<Column> DataFrame::addColumnFromBuffer(const std::string &identi
 }
 
 void DataFrame::dropColumn(const std::string &header) {
-    columns_.erase(
-        std::remove(std::begin(columns_), std::end(columns_),
-                    [header](std::shared_ptr<Column> col) { return col->getHeader() == header; }),
-        std::end(columns_));
+    columns_.erase(std::remove(std::begin(columns_), std::end(columns_),
+                               [&](std::shared_ptr<Column> col) -> bool {
+                                   return col->getHeader() == header;
+                               }),
+                   std::end(columns_));
 }
 
 std::shared_ptr<CategoricalColumn> DataFrame::addCategoricalColumn(const std::string &header,
