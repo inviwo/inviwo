@@ -134,8 +134,10 @@ public:
      */
     void addIndices(MeshInfo info, std::shared_ptr<IndexBuffer> ind);
 
-    [[deprecated("Mesh::addIndicies is deprecated, use addIndices")]] void addIndicies(
-        MeshInfo info, std::shared_ptr<IndexBuffer> ind) { addIndices(info, ind); }
+    // clang-format off
+    [[deprecated("Mesh::addIndicies is deprecated, use addIndices (deprecated since 2019-12-04)")]]
+    void addIndicies(MeshInfo info, std::shared_ptr<IndexBuffer> ind) { addIndices(info, ind); }
+    // clang-format on
 
     /**
      * Creates and add a new index buffer to the mesh

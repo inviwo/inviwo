@@ -121,7 +121,7 @@ enum class Option {
                  ///< queued and submitted when the current one is finished
     DelayDispatch =
         1 << 2,  ///< Wait for a small delay (500ms) of inactivity before submitting a job
-    DelayInvalidation = 1 << 3  ///< Don't invalidate the outports until the job is done. This will
+    DelayInvalidation = 1 << 3  ///< Delay invalidation of outports until the job is finished. This will
                                 ///< override the default processor invalidation.
 };
 
