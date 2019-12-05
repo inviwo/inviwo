@@ -410,7 +410,8 @@ void InviwoModule::registerPort() {
         LogError(fmt::format(
             "Error registering port '{0}' in module {1}. Reason: {2}. Have you provided a "
             "DataTraits<{0}> specialization?",
-            parseTypeIdName(std::string(typeid(T).name())), getIdentifier(), e.getMessage()));
+            parseTypeIdName(std::string(typeid(typename util::value_type<T>::type).name())),
+            getIdentifier(), e.getMessage()));
     }
 }
 
