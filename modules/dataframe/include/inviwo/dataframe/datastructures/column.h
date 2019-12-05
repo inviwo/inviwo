@@ -97,6 +97,8 @@ public:
     TemplateColumn(const std::string &header,
                    std::shared_ptr<Buffer<T>> buffer = std::make_shared<Buffer<T>>());
 
+    TemplateColumn(const std::string &header, std::vector<T> data);
+
     TemplateColumn(const TemplateColumn<T> &rhs);
     TemplateColumn(TemplateColumn<T> &&rhs);
 
@@ -216,6 +218,10 @@ private:
 template <typename T>
 TemplateColumn<T>::TemplateColumn(const std::string &header, std::shared_ptr<Buffer<T>> buffer)
     : header_(header), buffer_(buffer) {}
+
+template <typename T>
+TemplateColumn<T>::TemplateColumn(const std::string &header, std::vector<T> data)
+    : header_(header), buffer_(util::makeBuffer(std::move(data))) {}
 
 template <typename T>
 TemplateColumn<T>::TemplateColumn(const TemplateColumn &rhs)
