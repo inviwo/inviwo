@@ -109,6 +109,7 @@ private:
     dvec2 getRelativeSceneOffset() const;
 
     const int sliderRange_;
+    static constexpr int verticalSliderRange_ = 1000;
     const int defaultOffset_ = 5;  //!< offset in pixel
 
     std::unique_ptr<util::TFPropertyConcept> propertyPtr_;

@@ -159,14 +159,14 @@ void TFPropertyDialog::initializeDialog() {
     tfEditorView_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     zoomVSlider_ = new RangeSliderQt(Qt::Vertical, this, true);
-    zoomVSlider_->setRange(0, sliderRange_);
+    zoomVSlider_->setRange(0, verticalSliderRange_);
     zoomVSlider_->setMinSeparation(5);
     // flip slider values to compensate for vertical slider layout
     onZoomVChange(propertyPtr_->getZoomV());
     connect(zoomVSlider_, &RangeSliderQt::valuesChanged, this,
             &TFPropertyDialog::changeVerticalZoom);
 
-    zoomVSlider_->setTooltipFormat([range = sliderRange_](int /*handle*/, int val) {
+    zoomVSlider_->setTooltipFormat([range = verticalSliderRange_](int /*handle*/, int val) {
         return toString(1.0f - static_cast<float>(val) / range);
     });
 
@@ -355,7 +355,7 @@ void TFPropertyDialog::initializeDialog() {
         chkShowHistogram_->setVisible(false);
     }
     loadState();
-}  // namespace inviwo
+} 
 
 QSize TFPropertyDialog::minimumSizeHint() const { return TFPropertyDialog::sizeHint(); }
 
@@ -381,8 +381,8 @@ void TFPropertyDialog::changeVerticalZoom(int zoomMin, int zoomMax) {
     // normalize zoom values, as sliders in TFPropertyDialog
     // have the range [0...100]
     // and flip/rescale values to compensate slider layout
-    const auto zoomMaxF = static_cast<float>(sliderRange_ - zoomMin) / sliderRange_;
-    const auto zoomMinF = static_cast<float>(sliderRange_ - zoomMax) / sliderRange_;
+    const auto zoomMaxF = static_cast<float>(verticalSliderRange_ - zoomMin) / verticalSliderRange_;
+    const auto zoomMinF = static_cast<float>(verticalSliderRange_ - zoomMax) / verticalSliderRange_;
 
     propertyPtr_->setZoomV(zoomMinF, zoomMaxF);
     tfEditor_->setRelativeSceneOffset(getRelativeSceneOffset());
@@ -467,8 +467,8 @@ void TFPropertyDialog::onZoomHChange(const dvec2& zoomH) {
 }
 
 void TFPropertyDialog::onZoomVChange(const dvec2& zoomV) {
-    zoomVSlider_->setValue(sliderRange_ - static_cast<int>(zoomV.y * sliderRange_),
-                           sliderRange_ - static_cast<int>(zoomV.x * sliderRange_));
+    zoomVSlider_->setValue(verticalSliderRange_ - static_cast<int>(zoomV.y * verticalSliderRange_),
+                           verticalSliderRange_ - static_cast<int>(zoomV.x * verticalSliderRange_));
 }
 
 void TFPropertyDialog::setReadOnly(bool readonly) {
