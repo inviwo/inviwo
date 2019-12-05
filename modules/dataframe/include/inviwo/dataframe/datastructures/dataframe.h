@@ -136,6 +136,10 @@ public:
      */
     std::shared_ptr<Column> getColumn(size_t index);
     std::shared_ptr<const Column> getColumn(size_t index) const;
+    /**
+     * fetch the first column where the header matches \p name.
+     * @return  matching column if existing, else nullptr
+     */
     std::shared_ptr<Column> getColumn(const std::string &name);
     std::shared_ptr<const Column> getColumn(const std::string &name) const;
 
