@@ -155,16 +155,16 @@ public:
 
     virtual size_t getSize() const override;
 
-    std::vector<T>::iterator begin() {
+    std::vector<typename T>::iterator begin() {
         return buffer_->getRepresentation<BufferRAM>()->getDataContainer().begin();
     }
-    std::vector<T>::iterator end() {
+    std::vector<typename T>::iterator end() {
         return buffer_->getRepresentation<BufferRAM>()->getDataContainer().end();
     };
-    std::vector<T>::const_iterator begin() const {
+    std::vector<typename T>::const_iterator begin() const {
         return buffer_->getRepresentation<BufferRAM>()->getDataContainer().cbegin();
     }
-    std::vector<T>::const_iterator end() const {
+    std::vector<typename T>::const_iterator end() const {
         return buffer_->getRepresentation<BufferRAM>()->getDataContainer().cend();
     }
 
