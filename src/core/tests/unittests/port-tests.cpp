@@ -98,6 +98,11 @@ const ProcessorInfo VectorOutportTestProcessor::processorInfo_{
     Tags::CPU,                                // Tags
 };
 
+
+#include <warn/push>
+#include <warn/ignore/extra-semi>
+#include <warn/ignore/gnu-zero-variadic-macro-arguments>
+
 struct InportTestProcessor : Processor {
     InportTestProcessor(const std::string& id) : Processor(id, id), inport{"inport"} {
         addPort(inport);
@@ -152,6 +157,8 @@ const ProcessorInfo FlatMultiInportTestProcessor::processorInfo_{
     CodeState::Stable,                          // Code state
     Tags::CPU,                                  // Tags
 };
+
+#include  <warn/pop>
 
 }  // namespace
 
