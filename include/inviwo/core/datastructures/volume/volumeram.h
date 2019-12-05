@@ -94,10 +94,6 @@ public:
     virtual void setFromNormalizedDVec3(const size3_t& pos, dvec3 val) = 0;
     virtual void setFromNormalizedDVec4(const size3_t& pos, dvec4 val) = 0;
 
-    virtual void setValuesFromVolume(const VolumeRAM* src, const size3_t& dstOffset,
-                                     const size3_t& subSize, const size3_t& subOffset) = 0;
-    void setValuesFromVolume(const VolumeRAM* src, const size3_t& dstOffset = size3_t(0));
-
     virtual size_t getNumberOfBytes() const = 0;
 
     template <typename T>
