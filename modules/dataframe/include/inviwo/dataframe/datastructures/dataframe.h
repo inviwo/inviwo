@@ -113,7 +113,7 @@ public:
      *
      * \param name Name of the column to be dropped
      */
-	void dropColumn(const std::string& header);
+    void dropColumn(const std::string &header);
 
     /**
      * \brief add a categorical column
