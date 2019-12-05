@@ -954,17 +954,13 @@ function(ivw_copy_if retval)
 endfunction()
 
 function(ivw_deploy_qt target)
-if(WIN32)
-find_program(WINDEPLOYQT_EXECUTABLE NAMES windeployqt HINTS ${QTDIR} ENV QTDIR PATH_SUFFIXES bin)
+    if(WIN32)
+        find_program(WINDEPLOYQT_EXECUTABLE NAMES windeployqt HINTS ${QTDIR} ENV QTDIR PATH_SUFFIXES bin)
 
-get_filename_component(qt_bin_dir ${WINDEPLOYQT_EXECUTABLE} DIRECTORY  )
-add_custom_command(TARGET ${target} POST_BUILD 
-    COMMAND echo %PATH%
-    COMMAND qmake --version
-    COMMAND ${qt_bin_dir}/qtenv2.bat
-    COMMAND echo %PATH%
-    COMMAND qmake --version
-    COMMAND ${WINDEPLOYQT_EXECUTABLE} --no-compiler-runtime --verbose 2 $<TARGET_FILE:${target}>
-    )
-endif()
+        get_filename_component(qt_bin_dir ${WINDEPLOYQT_EXECUTABLE} DIRECTORY  )
+        add_custom_command(TARGET ${target} POST_BUILD 
+                            COMMAND ${qt_bin_dir}/qtenv2.bat
+                            COMMAND ${WINDEPLOYQT_EXECUTABLE} --no-compiler-runtime --verbose 1 $<TARGET_FILE:${target}>
+            )
+    endif()
 endfunction()
