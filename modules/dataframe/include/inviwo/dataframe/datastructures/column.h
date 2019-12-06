@@ -155,18 +155,10 @@ public:
 
     virtual size_t getSize() const override;
 
-    auto begin() {
-        return buffer_->getEditableRAMRepresentation()->getDataContainer().begin();
-    }
-    auto end() {
-        return buffer_->getEditableRAMRepresentation()->getDataContainer().end();
-    }
-    auto begin() const {
-        return buffer_->getRAMRepresentation()->getDataContainer().begin();
-    }
-    auto end() const {
-        return buffer_->getRAMRepresentation()->getDataContainer().end();
-    }
+    auto begin() { return buffer_->getEditableRAMRepresentation()->getDataContainer().begin(); }
+    auto end() { return buffer_->getEditableRAMRepresentation()->getDataContainer().end(); }
+    auto begin() const { return buffer_->getRAMRepresentation()->getDataContainer().begin(); }
+    auto end() const { return buffer_->getRAMRepresentation()->getDataContainer().end(); }
 
 protected:
     std::string header_;
