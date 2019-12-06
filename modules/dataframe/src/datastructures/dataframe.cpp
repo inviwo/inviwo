@@ -72,9 +72,9 @@ std::shared_ptr<Column> DataFrame::addColumnFromBuffer(const std::string &identi
 
 void DataFrame::dropColumn(const std::string &header) {
     columns_.erase(std::remove_if(std::begin(columns_), std::end(columns_),
-                               [&](std::shared_ptr<Column> col) -> bool {
-                                   return col->getHeader() == header;
-                               }),
+                                  [&](std::shared_ptr<Column> col) -> bool {
+                                      return col->getHeader() == header;
+                                  }),
                    std::end(columns_));
 }
 
