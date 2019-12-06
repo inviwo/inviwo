@@ -60,6 +60,31 @@ struct PortDeleter {
 template <typename T>
 using PortPtr = std::unique_ptr<T, detail::PortDeleter<T>>;
 
+namespace util {
+
+template <typename Iter>
+struct IterRangeGenerator : iter_range<Iter> {
+    IterRangeGenerator(iter_range<Iter> base) : iter_range<Iter>{base} {};
+    using iter_range<Iter>::iter_range;
+    typename Iter::value_type next() {
+        if (this->first != this->second) {
+            return *(this->first++);
+        } else {
+            throw pybind11::stop_iteration{};
+        }
+    }
+};
+
+}  // namespace util
+
+template <typename Iter>
+pybind11::class_<util::IterRangeGenerator<Iter>> exposeIterRangeGenerator(pybind11::module& m,
+                                                                          const std::string& name) {
+
+    return pybind11::class_<util::IterRangeGenerator<Iter>>(m, (name + "Generator").c_str())
+        .def("__next__", &util::IterRangeGenerator<Iter>::next);
+}
+
 template <typename Port>
 pybind11::class_<Port, Outport, PortPtr<Port>> exposeOutport(pybind11::module& m,
                                                              const std::string& name) {
