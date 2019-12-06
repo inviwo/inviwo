@@ -106,7 +106,7 @@ public:
 
 private:
     friend class LayerRepresentation;
-    
+
     LayerType defaultLayerType_;
     size2_t defaultDimensions_;
     const DataFormatBase* defaultDataFormat_;

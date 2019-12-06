@@ -65,9 +65,7 @@ LayerDisk::~LayerDisk() {}
 
 LayerDisk* LayerDisk::clone() const { return new LayerDisk(*this); }
 
-void LayerDisk::setDimensions(size2_t dimensions) {
-    dimensions_ = dimensions;
-}
+void LayerDisk::setDimensions(size2_t dimensions) { dimensions_ = dimensions; }
 
 const size2_t& LayerDisk::getDimensions() const { return dimensions_; }
 
@@ -77,9 +75,7 @@ void LayerDisk::updateDataFormat(const DataFormatBase* format) { setDataFormat(f
 
 std::type_index LayerDisk::getTypeIndex() const { return std::type_index(typeid(LayerDisk)); }
 
-void LayerDisk::setSwizzleMask(const SwizzleMask& mask) {
-    swizzleMask_ = mask;
-}
+void LayerDisk::setSwizzleMask(const SwizzleMask& mask) { swizzleMask_ = mask; }
 
 SwizzleMask LayerDisk::getSwizzleMask() const { return swizzleMask_; }
 

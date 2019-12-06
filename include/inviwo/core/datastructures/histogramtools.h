@@ -75,9 +75,9 @@ public:
     HistogramSupplier(HistogramSupplier&& rhs) = default;
     HistogramSupplier& operator=(const HistogramSupplier& that);
     HistogramSupplier& operator=(HistogramSupplier&& that) = default;
-    
+
     virtual ~HistogramSupplier() = default;
-   
+
     bool hasHistograms() const { return !histograms_->empty(); }
     const HistogramContainer& getHistograms() const { return *histograms_; }
     HistogramContainer& getHistograms() { return *histograms_; }

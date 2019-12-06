@@ -355,7 +355,7 @@ void TFPropertyDialog::initializeDialog() {
         chkShowHistogram_->setVisible(false);
     }
     loadState();
-} 
+}
 
 QSize TFPropertyDialog::minimumSizeHint() const { return TFPropertyDialog::sizeHint(); }
 

@@ -46,7 +46,7 @@ HistogramSupplier::HistogramSupplier(const HistogramSupplier& rhs)
     : histograms_{std::make_shared<HistogramContainer>(*rhs.histograms_)} {}
 
 HistogramSupplier& HistogramSupplier::operator=(const HistogramSupplier& that) {
-    if(this != &that) {
+    if (this != &that) {
         histograms_ = std::make_shared<HistogramContainer>(*that.histograms_);
     }
     return *this;
