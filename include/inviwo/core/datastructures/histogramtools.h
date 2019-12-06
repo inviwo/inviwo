@@ -52,9 +52,9 @@ public:
         , dataRange_{dataRange} {}
 
     ~HistogramCalculationState() { *stop_ = true; }
-    
+
     void whenDone(std::function<void(const HistogramContainer&)> callback);
-    
+
     size_t getBins() const { return bins_; }
     dvec2 getDataRange() const { return dataRange_; }
 
