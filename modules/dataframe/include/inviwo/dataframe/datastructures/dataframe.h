@@ -108,10 +108,10 @@ public:
     /**
      * \brief Drop a column from data frame
      *
-     * Drop the header with the specified header. If the data frame does not have a column with the
+     * Drops all columns with the specified header. If the data frame does not have a column with the
      * specified header, nothing happens.
      *
-     * \param name Name of the column to be dropped
+     * \param header Name of the column to be dropped
      */
     void dropColumn(const std::string &header);
 
