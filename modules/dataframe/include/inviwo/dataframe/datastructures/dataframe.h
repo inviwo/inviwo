@@ -108,8 +108,8 @@ public:
     /**
      * \brief Drop a column from data frame
      *
-     * Drops all columns with the specified header. If the data frame does not have a column with the
-     * specified header, nothing happens.
+     * Drops all columns with the specified header. If the data frame does not have a column with
+     * the specified header, nothing happens.
      *
      * \param header Name of the column to be dropped
      */
