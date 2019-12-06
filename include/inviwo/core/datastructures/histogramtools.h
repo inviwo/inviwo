@@ -43,9 +43,6 @@ class HistogramSupplier;
 
 class IVW_CORE_API HistogramCalculationState {
 public:
-    void whenDone(std::function<void(const HistogramContainer&)> callback);
-    ~HistogramCalculationState() { *stop_ = true; }
-
     friend HistogramSupplier;
     HistogramCalculationState(std::weak_ptr<HistogramContainer> container, size_t bins,
                               dvec2 dataRange)
@@ -54,6 +51,10 @@ public:
         , bins_{bins}
         , dataRange_{dataRange} {}
 
+    ~HistogramCalculationState() { *stop_ = true; }
+    
+    void whenDone(std::function<void(const HistogramContainer&)> callback);
+    
     size_t getBins() const { return bins_; }
     dvec2 getDataRange() const { return dataRange_; }
 

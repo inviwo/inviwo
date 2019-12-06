@@ -48,6 +48,7 @@ Volume::Volume(std::shared_ptr<VolumeRepresentation> in)
     : Data<Volume, VolumeRepresentation>{}
     , StructuredGridEntity<3>{}
     , MetaDataOwner{}
+    , HistogramSupplier{}
     , dataMap_(in->getDataFormat())
     , defaultDimensions_(in->getDimensions())
     , defaultDataFormat_(in->getDataFormat())

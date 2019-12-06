@@ -29,6 +29,7 @@
 
 #include <inviwo/core/datastructures/histogramtools.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 namespace inviwo {
 
