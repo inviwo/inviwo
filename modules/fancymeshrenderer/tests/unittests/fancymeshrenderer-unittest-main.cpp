@@ -29,9 +29,17 @@
 
 #ifdef _MSC_VER
 #pragma comment(linker, "/SUBSYSTEM:CONSOLE")
+#ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
+#include <vld.h>
+#endif
 #endif
 
+#include <inviwo/testutil/configurablegtesteventlistener.h>
+
 #include <inviwo/core/common/inviwo.h>
+
+#include <inviwo/core/datastructures/representationutil.h>
+#include <inviwo/core/datastructures/representationfactorymanager.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -41,9 +49,11 @@
 using namespace inviwo;
 
 int main(int argc, char** argv) {
+    inviwo::RepresentationFactoryManager rfm;
+    inviwo::util::registerCoreRepresentations(rfm);
+
     int ret = -1;
     {
-
 #ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
         VLDDisable();
         ::testing::InitGoogleTest(&argc, argv);
@@ -51,6 +61,7 @@ int main(int argc, char** argv) {
 #else
         ::testing::InitGoogleTest(&argc, argv);
 #endif
+        inviwo::ConfigurableGTestEventListener::setup();
         ret = RUN_ALL_TESTS();
     }
 

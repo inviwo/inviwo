@@ -74,18 +74,18 @@ FancyMeshRenderer::FancyMeshRenderer()
                         InvalidationLevel::InvalidResources)
     , forceOpaque_("forceOpaque", "Shade Opaque", false)
     , drawSilhouette_("drawSilhouette", "Draw Silhouette")
-    , silhouetteColor_("silhouetteColor", "Silhouette Color", {0, 0, 0, 1})
+    , silhouetteColor_("silhouetteColor", "Silhouette Color", {0.f, 0.f, 0.f, 1.f})
     , normalSource_("normalSource", "Normals Source")
     , normalComputationMode_("normalComputationMode", "Normals Computation")
     , faceSettings_{true, false}
-    , shader_("fancymeshrenderer.vert", "fancymeshrenderer.geom", "fancymeshrenderer.frag", false)
-    , depthShader_("geometryrendering.vert", "depthonly.frag", false)
-    , needsRecompilation_(true)
+    , propUseIllustrationBuffer_("illustrationBuffer", "Use Illustration Buffer")
+    , propDebugFragmentLists_("debugFL", "Debug Fragment Lists")
+    , debugFragmentLists_(false)
     , originalMesh_(nullptr)
     , meshHasAdjacency_(false)
-    , propUseIllustrationBuffer_("illustrationBuffer", "Use Illustration Buffer")
-    , debugFragmentLists_(false)
-    , propDebugFragmentLists_("debugFL", "Debug Fragment Lists") {
+    , shader_("fancymeshrenderer.vert", "fancymeshrenderer.geom", "fancymeshrenderer.frag", false)
+    , depthShader_("geometryrendering.vert", "depthonly.frag", false)
+    , needsRecompilation_(true) {
     // query OpenGL Capability
     supportsFragmentLists_ = FragmentListRenderer::supportsFragmentLists();
     supportedIllustrationBuffer_ = FragmentListRenderer::supportsIllustrationBuffer();
@@ -143,17 +143,16 @@ FancyMeshRenderer::FancyMeshRenderer()
     addProperty(forceOpaque_);
     addProperty(drawSilhouette_);
     addProperty(silhouetteColor_);
-    addProperty(normalSource_);
-    addProperty(normalComputationMode_);
-    addProperty(propDebugFragmentLists_);  // DEBUG, to be removed
-    addProperty(alphaSettings_.container_);
-    addProperty(edgeSettings_.container_);
-    addProperty(faceSettings_[0].container_);
-    addProperty(faceSettings_[1].container_);
     if (supportedIllustrationBuffer_) {
         addProperty(propUseIllustrationBuffer_);
         addProperty(illustrationBufferSettings_.container_);
     }
+    addProperty(normalSource_);
+    addProperty(normalComputationMode_);
+    addProperty(alphaSettings_.container_);
+    addProperty(edgeSettings_.container_);
+    addProperty(faceSettings_[0].container_);
+    addProperty(faceSettings_[1].container_);
 
     // Callbacks
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
@@ -171,14 +170,15 @@ FancyMeshRenderer::FancyMeshRenderer()
     drawSilhouette_.onChange(triggerMeshUpdate);
     normalSource_.onChange(triggerMeshUpdate);
     normalComputationMode_.onChange(triggerMeshUpdate);
-    alphaSettings_.setCallbacks(triggerUpdate, triggerRecompilation);
-    edgeSettings_.setCallbacks(triggerUpdate, triggerRecompilation);
-    faceSettings_[0].setCallbacks(triggerUpdate, triggerRecompilation);
-    faceSettings_[1].setCallbacks(triggerUpdate, triggerRecompilation);
+    alphaSettings_.setCallbacks(triggerRecompilation);
+    edgeSettings_.setCallbacks(triggerRecompilation);
+    faceSettings_[0].setCallbacks(triggerRecompilation);
+    faceSettings_[1].setCallbacks(triggerRecompilation);
     faceSettings_[1].frontPart_ = &faceSettings_[0];
 
-    // DEBUG, to be removed
-    propDebugFragmentLists_.onChange([this]() { debugFragmentLists_ = true; });
+    // DEBUG, in case we need debugging fragment lists at a later point again
+    // addProperty(propDebugFragmentLists_);  // DEBUG, to be removed
+    // propDebugFragmentLists_.onChange([this]() { debugFragmentLists_ = true; });
 
     // Will this be used in any scenario?
     // addProperty(layers_);
@@ -197,16 +197,16 @@ FancyMeshRenderer::FancyMeshRenderer()
 FancyMeshRenderer::AlphaSettings::AlphaSettings()
     : container_("alphaContainer", "Alpha")
     , enableUniform_("alphaUniform", "Uniform", true)
-    , uniformScaling_("alphaUniformScaling", "Scaling", 0.5, 0, 1, 0.01)
+    , uniformScaling_("alphaUniformScaling", "Scaling", 0.5f, 0.f, 1.f, 0.01f)
     , enableAngleBased_("alphaAngleBased", "Angle-based", false)
-    , angleBasedExponent_("alphaAngleBasedExponent", "Exponent", 1, 0, 5, 0.01)
+    , angleBasedExponent_("alphaAngleBasedExponent", "Exponent", 1.f, 0.f, 5.f, 0.01f)
     , enableNormalVariation_("alphaNormalVariation", "Normal variation", false)
-    , normalVariationExponent_("alphaNormalVariationExponent", "Exponent", 1, 0, 5, 0.01)
+    , normalVariationExponent_("alphaNormalVariationExponent", "Exponent", 1.f, 0.f, 5.f, 0.01f)
     , enableDensity_("alphaDensity", "Density-based", false)
-    , baseDensity_("alphaBaseDensity", "Base density", 1, 0, 2, 0.01)
-    , densityExponent_("alphaDensityExponent", "Exponent", 1, 0, 5, 0.01)
+    , baseDensity_("alphaBaseDensity", "Base density", 1.f, 0.f, 2.f, 0.01f)
+    , densityExponent_("alphaDensityExponent", "Exponent", 1.f, 0.f, 5.f, 0.01f)
     , enableShape_("alphaShape", "Shape-based", false)
-    , shapeExponent_("alphaShapeExponent", "Exponent", 1, 0, 5, 0.01) {
+    , shapeExponent_("alphaShapeExponent", "Exponent", 1.f, 0.f, 5.f, 0.01f) {
     container_.addProperty(enableUniform_);
     container_.addProperty(uniformScaling_);
     container_.addProperty(enableAngleBased_);
@@ -221,7 +221,7 @@ FancyMeshRenderer::AlphaSettings::AlphaSettings()
 }
 
 void FancyMeshRenderer::AlphaSettings::setCallbacks(
-    const std::function<void()>& triggerUpdate, const std::function<void()>& triggerRecompilation) {
+    const std::function<void()>& triggerRecompilation) {
     enableUniform_.onChange(triggerRecompilation);
     enableAngleBased_.onChange(triggerRecompilation);
     enableNormalVariation_.onChange(triggerRecompilation);
@@ -240,7 +240,7 @@ void FancyMeshRenderer::AlphaSettings::update() {
 
 FancyMeshRenderer::EdgeSettings::EdgeSettings()
     : container_("edges", "Edges")
-    , edgeThickness_("edgesThickness", "Thickness", 2, 0.1, 10, 0.1)
+    , edgeThickness_("edgesThickness", "Thickness", 2.f, 0.1f, 10.f, 0.1f)
     , depthDependent_("edgesDepth", "Depth dependent", false)
     , smoothEdges_("edgesSmooth", "Smooth edges", true) {
     container_.addProperty(edgeThickness_);
@@ -249,7 +249,7 @@ FancyMeshRenderer::EdgeSettings::EdgeSettings()
 }
 
 void FancyMeshRenderer::EdgeSettings::setCallbacks(
-    const std::function<void()>& triggerUpdate, const std::function<void()>& triggerRecompilation) {
+    const std::function<void()>& triggerRecompilation) {
     depthDependent_.onChange(triggerRecompilation);
     smoothEdges_.onChange(triggerRecompilation);
 }
@@ -265,10 +265,11 @@ FancyMeshRenderer::HatchingSettings::HatchingSettings(const std::string& prefix)
     , baseFrequencyU_(prefix + "hatchingFrequencyU", "U-Frequency", 3, 1, 10)
     , baseFrequencyV_(prefix + "hatchingFrequencyV", "V-Frequency", 3, 1, 10)
     , modulationMode_(prefix + "hatchingModulationMode", "Modulation")
-    , modulationAnisotropy_(prefix + "hatchingModulationAnisotropy", "Anisotropy", 0.5, -1, 1, 0.01)
-    , modulationOffset_(prefix + "hatchingModulationOffset", "Offset", 0, 0, 1, 0.01)
-    , color_(prefix + "hatchingColor", "Color", {0, 0, 0})
-    , strength_(prefix + "hatchingStrength", "Strength", 0.5, 0, 1, 0.01)
+    , modulationAnisotropy_(prefix + "hatchingModulationAnisotropy", "Anisotropy", 0.5f, -1.f, 1.f,
+                            0.01f)
+    , modulationOffset_(prefix + "hatchingModulationOffset", "Offset", 0.f, 0.f, 1.f, 0.01f)
+    , color_(prefix + "hatchingColor", "Color", {0.f, 0.f, 0.f})
+    , strength_(prefix + "hatchingStrength", "Strength", 0.5f, 0.f, 1.f, 0.01f)
     , blendingMode_(prefix + "hatchingBlending", "Blending") {
     // init properties
     mode_.addOption("off", "Off", HatchingMode::Off);
@@ -422,7 +423,7 @@ void FancyMeshRenderer::FaceRenderSettings::update(bool opaque) {
 }
 
 void FancyMeshRenderer::FaceRenderSettings::setCallbacks(
-    const std::function<void()>& triggerUpdate, const std::function<void()>& triggerRecompilation) {
+    const std::function<void()>& triggerRecompilation) {
     showEdges_.onChange(triggerRecompilation);
     colorSource_.onChange(triggerRecompilation);
     hatching_.mode_.onChange(triggerRecompilation);

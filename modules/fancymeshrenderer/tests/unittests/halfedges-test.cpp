@@ -37,7 +37,7 @@
 namespace inviwo {
 
 // 0<=x<=width, 0<=y<=height
-int toLinearIndex(int x, int y, int width, int height) { return x + y * (width + 1); }
+int toLinearIndex(int x, int y, int width, int) { return x + y * (width + 1); }
 
 std::shared_ptr<IndexBuffer> createPlane(int width, int height) {
     std::shared_ptr<IndexBuffer> b = std::make_shared<IndexBuffer>();

@@ -581,21 +581,33 @@ void FragmentListRenderer::debugIllustrationBuffer(GLuint numFrags) {
                     "     depth=%5.3f, alpha=%5.3f, r=%5.3f, g=%5.3f, b=%5.3f, beta=%5.3f, "
                     "gamma=%5.3f, neighbors:",
                     depth, alpha, r, g, b, beta, gamma);
-                if (neighbors.x >= 0)
-                    printf("(%d:%5.3f)", neighbors.x, surfaceInfoBuffer[neighbors.x].x);
-                else
+                if (neighbors.x >= 0) {
+                    if (neighbors.x < size)
+                        printf("(%d:%5.3f)", neighbors.x, surfaceInfoBuffer[neighbors.x].x);
+                    else
+                        printf("(>size)");
+                } else
                     printf("(-1)");
-                if (neighbors.y >= 0)
-                    printf("(%d:%5.3f)", neighbors.y, surfaceInfoBuffer[neighbors.y].x);
-                else
+                if (neighbors.y >= 0) {
+                    if (neighbors.y < size)
+                        printf("(%d:%5.3f)", neighbors.y, surfaceInfoBuffer[neighbors.y].x);
+                    else
+                        printf("(>size)");
+                } else
                     printf("(-1)");
-                if (neighbors.z >= 0)
-                    printf("(%d:%5.3f)", neighbors.z, surfaceInfoBuffer[neighbors.z].x);
-                else
+                if (neighbors.z >= 0) {
+                    if (neighbors.z < size)
+                        printf("(%d:%5.3f)", neighbors.z, surfaceInfoBuffer[neighbors.z].x);
+                    else
+                        printf("(>size)");
+                } else
                     printf("(-1)");
-                if (neighbors.w >= 0)
-                    printf("(%d:%5.3f)", neighbors.w, surfaceInfoBuffer[neighbors.w].x);
-                else
+                if (neighbors.w >= 0) {
+                    if (neighbors.w < size)
+                        printf("(%d:%5.3f)", neighbors.w, surfaceInfoBuffer[neighbors.w].x);
+                    else
+                        printf("(>size)");
+                } else
                     printf("(-1)");
                 printf("\n");
             }

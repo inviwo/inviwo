@@ -217,11 +217,9 @@ protected:
         AlphaSettings();
         /**
          * \brief Set the callbacks that trigger property update and shader recompilation
-         * \param triggerUpdate triggers an update of the property visibility
          * \param triggerRecompilation triggers shader recompilation
          */
-        void setCallbacks(const std::function<void()>& triggerUpdate,
-                          const std::function<void()>& triggerRecompilation);
+        void setCallbacks(const std::function<void()>& triggerRecompilation);
         /**
          * \brief Update the visibility of the properties.
          */
@@ -244,8 +242,7 @@ protected:
          * \param triggerUpdate triggers an update of the property visibility
          * \param triggerRecompilation triggers shader recompilation
          */
-        void setCallbacks(const std::function<void()>& triggerUpdate,
-                          const std::function<void()>& triggerRecompilation);
+        void setCallbacks(const std::function<void()>& triggerRecompilation);
         /**
          * \brief Update the visibility of the properties.
          */
@@ -318,8 +315,7 @@ protected:
          * \param triggerUpdate triggers an update of the property visibility
          * \param triggerRecompilation triggers shader recompilation
          */
-        void setCallbacks(const std::function<void()>& triggerUpdate,
-                          const std::function<void()>& triggerRecompilation);
+        void setCallbacks(const std::function<void()>& triggerRecompilation);
 
         bool lastOpaque_;
     } faceSettings_[2];
