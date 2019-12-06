@@ -136,9 +136,7 @@ void LayerCL::setDimensions(size2_t dimensions) {
 
 const size2_t& LayerCL::getDimensions() const { return dimensions_; }
 
-void LayerCL::setSwizzleMask(const SwizzleMask& mask) {
-    swizzleMask_ = mask;
-}
+void LayerCL::setSwizzleMask(const SwizzleMask& mask) { swizzleMask_ = mask; }
 
 SwizzleMask LayerCL::getSwizzleMask() const { return swizzleMask_; }
 
