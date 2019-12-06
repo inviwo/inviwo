@@ -116,6 +116,15 @@ public:
     void dropColumn(const std::string &header);
 
     /**
+     * \brief Drop a column from data frame
+     *
+     * Drops the column at the specified psoition.
+     *
+     * \param index Position of the column to be dropped
+     */
+    void dropColumn(size_t index);
+
+    /**
      * \brief add a categorical column
      * updateIndexBuffer() needs to be called after all columns have been added before
      * the DataFrame can be used

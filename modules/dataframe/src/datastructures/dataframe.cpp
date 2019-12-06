@@ -78,6 +78,13 @@ void DataFrame::dropColumn(const std::string &header) {
                    std::end(columns_));
 }
 
+void DataFrame::dropColumn(const size_t index) {
+    if (index >= columns_.size()) {
+        return;
+    }
+    columns_.erase(std::begin(columns_) + index);
+}
+
 std::shared_ptr<CategoricalColumn> DataFrame::addCategoricalColumn(const std::string &header,
                                                                    size_t size) {
     auto col = std::make_shared<CategoricalColumn>(header);
