@@ -154,19 +154,32 @@ const BaseCallBack* Inport::onChange(std::function<void()> lambda) {
     return onChangeCallback_.addLambdaCallback(lambda);
 }
 
+std::shared_ptr<std::function<void()>> Inport::onChangeScoped(std::function<void()> lambda) {
+    return onChangeCallback_.addLambdaCallbackRaii(lambda);
+}
+
 void Inport::removeOnChange(const BaseCallBack* callback) { onChangeCallback_.remove(callback); }
 
 const BaseCallBack* Inport::onInvalid(std::function<void()> lambda) {
     return onInvalidCallback_.addLambdaCallback(lambda);
+}
+std::shared_ptr<std::function<void()>> Inport::onInvalidScoped(std::function<void()> lambda) {
+    return onInvalidCallback_.addLambdaCallbackRaii(lambda);
 }
 void Inport::removeOnInvalid(const BaseCallBack* callback) { onInvalidCallback_.remove(callback); }
 
 const BaseCallBack* Inport::onConnect(std::function<void()> lambda) {
     return onConnectCallback_.addLambdaCallback(lambda);
 }
+std::shared_ptr<std::function<void()>> Inport::onConnectScoped(std::function<void()> lambda) {
+    return onConnectCallback_.addLambdaCallbackRaii(lambda);
+}
 void Inport::removeOnConnect(const BaseCallBack* callback) { onConnectCallback_.remove(callback); }
 const BaseCallBack* Inport::onDisconnect(std::function<void()> lambda) {
     return onDisconnectCallback_.addLambdaCallback(lambda);
+}
+std::shared_ptr<std::function<void()>> Inport::onDisconnectScoped(std::function<void()> lambda) {
+    return onDisconnectCallback_.addLambdaCallbackRaii(lambda);
 }
 void Inport::removeOnDisconnect(const BaseCallBack* callback) {
     onDisconnectCallback_.remove(callback);

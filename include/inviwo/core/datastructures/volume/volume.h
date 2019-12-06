@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/data.h>
 #include <inviwo/core/datastructures/spatialdata.h>
+#include <inviwo/core/datastructures/histogramtools.h>
 #include <inviwo/core/datastructures/image/imagetypes.h>
 #include <inviwo/core/datastructures/datamapper.h>
 #include <inviwo/core/datastructures/representationtraits.h>
@@ -62,7 +63,8 @@ class Camera;
  */
 class IVW_CORE_API Volume : public Data<Volume, VolumeRepresentation>,
                             public StructuredGridEntity<3>,
-                            public MetaDataOwner {
+                            public MetaDataOwner,
+                            public HistogramSupplier {
 public:
     explicit Volume(size3_t defaultDimensions = size3_t(128, 128, 128),
                     const DataFormatBase* defaultFormat = DataUInt8::get(),
@@ -144,6 +146,8 @@ public:
 
     template <typename Kind>
     const typename representation_traits<Volume, Kind>::type* getRep() const;
+
+    std::shared_ptr<HistogramCalculationState> calculateHistograms(size_t bins = 2048) const;
 
 protected:
     size3_t defaultDimensions_;

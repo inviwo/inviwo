@@ -37,8 +37,4 @@ LayerRepresentation::LayerRepresentation(LayerType type, const DataFormatBase* f
 
 LayerType LayerRepresentation::getLayerType() const { return layerType_; }
 
-void LayerRepresentation::updateBaseMetaFromRepresentation() {
-    getOwner()->updateMetaFromRepresentation(this);
-}
-
 }  // namespace inviwo

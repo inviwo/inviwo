@@ -72,8 +72,6 @@ void VolumeGL2RAMConverter::update(std::shared_ptr<const VolumeGL> volumeSrc,
 
     volumeSrc->getTexture()->download(volumeDst->getData());
     volumeDst->setSwizzleMask(volumeSrc->getSwizzleMask());
-
-    if (volumeDst->hasHistograms()) volumeDst->getHistograms()->setValid(false);
 }
 
 }  // namespace inviwo

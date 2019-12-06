@@ -382,7 +382,7 @@ bool none_of(const T& cont, UnaryPredicate pred) {
 
 template <class Iter>
 struct iter_range : std::pair<Iter, Iter> {
-    using value_type = typename Iter::value_type;
+    using value_type = typename std::iterator_traits<Iter>::value_type;
     using const_iterator = Iter;
     using iterator = Iter;
     using std::pair<Iter, Iter>::pair;

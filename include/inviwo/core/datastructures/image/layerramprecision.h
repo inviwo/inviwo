@@ -204,7 +204,6 @@ void LayerRAMPrecision<T>::setDimensions(size2_t dimensions) {
         data_.swap(data);
         std::swap(dimensions, dimensions_);
     }
-    updateBaseMetaFromRepresentation();
 }
 
 template <typename T>
@@ -215,7 +214,6 @@ const size2_t& LayerRAMPrecision<T>::getDimensions() const {
 template <typename T>
 void LayerRAMPrecision<T>::setSwizzleMask(const SwizzleMask& mask) {
     swizzleMask_ = mask;
-    updateBaseMetaFromRepresentation();
 }
 
 template <typename T>

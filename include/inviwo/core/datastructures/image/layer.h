@@ -107,15 +107,7 @@ public:
 private:
     friend class LayerRepresentation;
 
-    /**
-     * \brief update the internal state of the layer based on the given representation
-     * This will affect layer type, dimension, and swizzle mask.
-     *
-     * @param layerRep    layer representation of which the values will be taken from
-     */
-    void updateMetaFromRepresentation(const LayerRepresentation* layerRep);
-
-    LayerType layerType_;
+    LayerType defaultLayerType_;
     size2_t defaultDimensions_;
     const DataFormatBase* defaultDataFormat_;
     SwizzleMask defaultSwizzleMask_;
