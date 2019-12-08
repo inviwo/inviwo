@@ -202,6 +202,8 @@ ivw_compile_optimize_on_target(inviwo-module-qtwidgets)
 ivw_make_package(InviwoQtWidgetsModule inviwo-module-qtwidgets)
 ivw_qt_add_to_install(qt_widgets Qt5Core Qt5Gui Qt5Widgets Qt5Svg)
 
+ivw_deploy_qt(inviwo-module-qtwidgets)
+
 ivw_register_license_file(NAME "Qt" VERSION ${Qt5Widgets_VERSION} MODULE QtWidgets TYPE "LGPLv3"
     URL https://www.qt.io/
     FILES ${IVW_EXTENSIONS_DIR}/qt/LICENSE.txt
