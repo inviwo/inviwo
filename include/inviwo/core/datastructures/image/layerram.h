@@ -99,7 +99,7 @@ public:
      *     using LayerType = util::PrecisionType<decltype(lrprecision)>;
      *     using ValueType = util::PrecisionValueType<decltype(lrprecision)>;
      *
-     *     auto data = lrprecision->getDataTyped();
+     *     ValueType* data = lrprecision->getDataTyped();
      *     auto dim = lrprecision->getDimensions();
      *     return std::count_if(data, data + dim.x * dim.y,
      *                          [](auto x){return x > ValueType{0};});
