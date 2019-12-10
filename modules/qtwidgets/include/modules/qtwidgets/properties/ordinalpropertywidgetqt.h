@@ -207,6 +207,15 @@ OrdinalPropertyWidgetQt<T>::OrdinalPropertyWidgetQt(OrdinalProperty<T>* property
                 sp.setHorizontalPolicy(QSizePolicy::Expanding);
                 editor->setSizePolicy(sp);
 
+                auto addToLayout = [&, multiDim = ordinalproperty_->getDim().y > 1](QWidget* w,
+                                                                                    int i, int j) {
+                    // vectors should be drawn in row major while matrices are column major
+                    if (!multiDim) {
+                        std::swap(i, j);
+                    }
+                    gridLayout->addWidget(w, static_cast<int>(i), static_cast<int>(j));
+                };
+
                 if (ordinalproperty_->getSemantics() == PropertySemantics("SphericalSpinBox")) {
                     if (i > 0) editor->setWrapping(true);
 
@@ -220,9 +229,9 @@ OrdinalPropertyWidgetQt<T>::OrdinalPropertyWidgetQt(OrdinalProperty<T>* property
 
                     edwidget->setFocusPolicy(editor->focusPolicy());
                     edwidget->setFocusProxy(editor);
-                    gridLayout->addWidget(edwidget, static_cast<int>(j), static_cast<int>(i));
+                    addToLayout(edwidget, static_cast<int>(i), static_cast<int>(j));
                 } else {
-                    gridLayout->addWidget(editor, static_cast<int>(j), static_cast<int>(i));
+                    addToLayout(editor, static_cast<int>(i), static_cast<int>(j));
                 }
             }
         }

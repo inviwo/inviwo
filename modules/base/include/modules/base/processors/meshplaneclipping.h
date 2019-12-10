@@ -27,20 +27,52 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_<uname>MODULE_H
-#define IVW_<uname>MODULE_H
+#pragma once
 
-#include <modules/<lname>/<lname>moduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
+#include <modules/base/basemoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/datastructures/geometry/plane.h>
+#include <inviwo/core/properties/boolproperty.h>
 
 namespace inviwo {
 
-class IVW_MODULE_<uname>_API <name>Module : public InviwoModule {
+/** \docpage{org.inviwo.MeshPlaneClipping, Mesh Plane Clipping}
+ * ![](org.inviwo.MeshPlaneClipping.png?classIdentifier=org.inviwo.MeshPlaneClipping)
+ * Clips a mesh against multiple planes in world space.
+ *
+ * ### Inports
+ *   * __inputMesh__ Mesh to clip.
+ *   * __inputPlanes__ Clipping planes in world space.
+ *
+ * ### Outports
+ *   * __outputMesh__ Clipped mesh.
+ *
+ * ### Properties
+ *   * __Enable Clipping__ Enable clipping.
+ *   * __Cap clipped holes__ Replaces removed parts with triangles aligned with the plane. Input
+ * mesh must be manifold.
+ */
+
+class IVW_MODULE_BASE_API MeshPlaneClipping : public Processor {
 public:
-    <name>Module(InviwoApplication* app);
-    virtual ~<name>Module() = default;
+    MeshPlaneClipping();
+    virtual ~MeshPlaneClipping() = default;
+
+    virtual void process() override;
+
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+    MeshInport inputMesh_;
+    FlatMultiDataInport<Plane> planes_;
+    MeshOutport outputMesh_;
+
+    BoolProperty clippingEnabled_;
+    BoolProperty capClippedHoles_;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_<uname>MODULE_H

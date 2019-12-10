@@ -35,7 +35,7 @@
 #include <inviwopy/pynetwork.h>
 #include <inviwopy/pyglmtypes.h>
 #include <modules/python3/pybindutils.h>
-#include <inviwopy/pyport.h>
+#include <modules/python3/pyportutils.h>
 
 #include <warn/push>
 #include <warn/ignore/shadow>
@@ -58,9 +58,12 @@ void exposeVolume(pybind11::module &m) {
         .def("clone", [](Volume &self) { return self.clone(); })
         .def_property("modelMatrix", &Volume::getModelMatrix, &Volume::setModelMatrix)
         .def_property("worldMatrix", &Volume::getWorldMatrix, &Volume::setWorldMatrix)
+        .def_property("basis", &Volume::getBasis, &Volume::setBasis)
+        .def_property("offset", &Volume::getOffset, &Volume::setOffset)
         .def("copyMetaDataFrom", [](Volume &self, Volume &other) { self.copyMetaDataFrom(other); })
         .def("copyMetaDataTo", [](Volume &self, Volume &other) { self.copyMetaDataTo(other); })
         .def_property_readonly("dimensions", &Volume::getDimensions)
+        .def_property("swizzlemask", &Volume::getSwizzleMask, &Volume::setSwizzleMask)
         .def_readwrite("dataMap", &Volume::dataMap_)
         .def_property(
             "data",

@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_SPHERERENDERER_H
-#define IVW_SPHERERENDERER_H
+#pragma once
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -40,13 +39,84 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/basegl/datastructures/meshshadercache.h>
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+
+#include <inviwo/core/util/zip.h>
+#include <unordered_map>
 
 namespace inviwo {
+
+class IVW_MODULE_BASEGL_API SphereRendererSelection {
+public:
+    SphereRendererSelection(Inport& inport, BrushingAndLinkingInport& brushLinkPort)
+        : properties("selection", "Show Selection", true)
+        , color("selectionColor", "Color", vec4(1.0f, 0.769f, 0.247f, 1), vec4(0.0f), vec4(1.0f),
+                vec4(0.01f), InvalidationLevel::InvalidOutput, PropertySemantics::Color)
+        , radiusFactor("selectionRadiusFactor", "Radius Scaling", 1.5f, 0.0f, 10.0f)
+        , inport_{inport}
+        , brushLinkPort_{brushLinkPort} {
+
+        properties.addProperties(color, radiusFactor);
+
+        inport_.onDisconnect([&]() {
+            util::map_erase_remove_if(
+                selectionIndices_, [&](auto elem) { return !inport_.isConnectedTo(elem.first); });
+        });
+    }
+
+    std::vector<uint32_t>* getIndices(const Outport* port, const Mesh& mesh) {
+        if (properties.isChecked()) {
+            std::vector<uint32_t>& indices = selectionIndices_[port];
+
+            if (properties.isModified() || brushLinkPort_.isChanged() ||
+                util::contains(inport_.getChangedOutports(), port)) {
+                const auto& selection = brushLinkPort_.getSelectedIndices();
+
+                indices.clear();
+                if (auto res = mesh.findBuffer(BufferType::IndexAttrib);
+                    res.first &&
+                    res.first->getDataFormat()->getId() == DataFormat<uint32_t>::id()) {
+
+                    const auto& indexBuffer =
+                        static_cast<const BufferRAMPrecision<uint32_t, BufferTarget::Data>*>(
+                            res.first->getRepresentation<BufferRAM>())
+                            ->getDataContainer();
+
+                    const auto seq = util::make_sequence(
+                        uint32_t{0}, static_cast<uint32_t>(indexBuffer.size()), uint32_t{1});
+                    std::copy_if(seq.begin(), seq.end(), std::back_inserter(indices),
+                                 [&](uint32_t i) { return selection.count(indexBuffer[i]) > 0; });
+
+                } else {
+                    std::transform(selection.begin(), selection.end(), std::back_inserter(indices),
+                                   [](size_t i) { return static_cast<uint32_t>(i); });
+                }
+            }
+            if (!indices.empty()) {
+                return &indices;
+            }
+        }
+        return nullptr;
+    }
+
+    BoolCompositeProperty properties;
+    FloatVec4Property color;
+    FloatProperty radiusFactor;
+
+private:
+    Inport& inport_;
+    BrushingAndLinkingInport& brushLinkPort_;
+    std::unordered_map<const Outport*, std::vector<uint32_t>> selectionIndices_;
+};
 
 /** \docpage{org.inviwo.SphereRenderer, Sphere Renderer}
  * ![](org.inviwo.SphereRenderer.png?classIdentifier=org.inviwo.SphereRenderer)
@@ -115,6 +185,7 @@ private:
 
     MeshFlatMultiInport inport_;
     ImageInport imageInport_;
+    BrushingAndLinkingInport brushLinkPort_;
     ImageOutport outport_;
 
     TemplateOptionProperty<RenderMode> renderMode_;
@@ -132,6 +203,8 @@ private:
     BoolProperty useMetaColor_;
     TransferFunctionProperty metaColor_;
 
+    SphereRendererSelection selection_;
+
     CameraProperty camera_;
     CameraTrackball trackball_;
     SimpleLightingProperty lighting_;
@@ -140,5 +213,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_SPHERERENDERER_H

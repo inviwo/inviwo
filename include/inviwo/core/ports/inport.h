@@ -92,7 +92,7 @@ public:
     virtual const std::vector<Outport*>& getConnectedOutports() const;
     virtual size_t getMaxNumberOfConnections() const = 0;
     virtual size_t getNumberOfConnections() const;
-    virtual std::vector<const Outport*> getChangedOutports() const;
+    virtual const std::vector<const Outport*>& getChangedOutports() const;
 
     /**
      * Propagate event upwards towards connected outports, if targets is nullptr, propagate the
@@ -100,41 +100,29 @@ public:
      */
     virtual void propagateEvent(Event* event, Outport* target = nullptr);
 
-    // clang-format off
     /**
      * The on change call back is invoked before Processor::process after a port has been connected,
      * disconnected, or has changed its validation level. Note it is only called if process is also
      * going to be called.
      */
-    template <typename T>
-    [[deprecated("was declared deprecated. Use `onChange(std::function<void()>)` instead")]]
-    const BaseCallBack* onChange(T* o, void (T::*m)());
     const BaseCallBack* onChange(std::function<void()> lambda);
+    std::shared_ptr<std::function<void()>> onChangeScoped(std::function<void()> lambda);
 
     /**
-     *    the onInvalid callback is called directly after the port has been invalidated. It's only
-     *    called once for each transition from valid to invalid.
+     * the onInvalid callback is called directly after the port has been invalidated. It's only
+     * called once for each transition from valid to invalid.
      */
-    template <typename T>
-    [[deprecated("was declared deprecated. Use `onInvalid(std::function<void()>)` instead")]]
-    const BaseCallBack* onInvalid(T* o, void (T::*m)());
     const BaseCallBack* onInvalid(std::function<void()> lambda);
+    std::shared_ptr<std::function<void()>> onInvalidScoped(std::function<void()> lambda);
 
     const BaseCallBack* onConnect(std::function<void()> lambda);
+    std::shared_ptr<std::function<void()>> onConnectScoped(std::function<void()> lambda);
+
     const BaseCallBack* onDisconnect(std::function<void()> lambda);
+    std::shared_ptr<std::function<void()>> onDisconnectScoped(std::function<void()> lambda);
 
     void removeOnChange(const BaseCallBack* callback);
-    template <typename T>
-    [[deprecated("was declared deprecated. Use `removeOnChange(const BaseCallBack*)` instead")]]
-    void removeOnChange(T* o);
-
     void removeOnInvalid(const BaseCallBack* callback);
-    template <typename T>
-    [[deprecated("was declared deprecated. Use `removeOnInvalid(const BaseCallBack*)` instead")]]
-    void removeOnInvalid(T* o);
-
-    // clang-format on
-
     void removeOnConnect(const BaseCallBack* callback);
     void removeOnDisconnect(const BaseCallBack* callback);
 
@@ -182,34 +170,6 @@ private:
     CallBackList onConnectCallback_;
     CallBackList onDisconnectCallback_;
 };
-
-// clang-format off
-
-template <typename T>
-[[deprecated("was declared deprecated. Use `onChange(std::function<void()>)` instead")]]
-const BaseCallBack* Inport::onChange(T* o, void (T::*m)()) {
-    return onChangeCallback_.addMemberFunction(o, m);
-}
-
-template <typename T>
-[[deprecated("was declared deprecated. Use `onInvalid(std::function<void()>)` instead")]]
-const BaseCallBack* Inport::onInvalid(T* o, void (T::*m)()) {
-    return onInvalidCallback_.addMemberFunction(o, m);
-}
-
-template <typename T>
-[[deprecated("was declared deprecated. Use `removeOnChange(const BaseCallBack*)` instead")]]
-void Inport::removeOnChange(T* o) {
-    onChangeCallback_.removeMemberFunction(o);
-}
-
-template <typename T>
-[[deprecated("was declared deprecated. Use `removeOnInvalid(const BaseCallBack*)` instead")]]
-void Inport::removeOnInvalid(T* o) {
-    onInvalidCallback_.removeMemberFunction(o);
-}
-
-// clang-format on
 
 }  // namespace inviwo
 

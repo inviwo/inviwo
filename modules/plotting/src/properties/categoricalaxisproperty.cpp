@@ -168,7 +168,7 @@ void CategoricalAxisProperty::adjustAlignment() {
     captionSettings_.font_.anchorPos_.set(anchor);
 }
 
-bool CategoricalAxisProperty::getVisible() const { return visible_.get(); }
+bool CategoricalAxisProperty::getAxisVisible() const { return visible_.get(); }
 
 bool CategoricalAxisProperty::getFlipped() const { return flipped_.get(); }
 

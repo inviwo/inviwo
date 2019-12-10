@@ -30,12 +30,14 @@
 #include <inviwo/dataframeqt/dataframeqtmodule.h>
 #include <inviwo/dataframeqt/processors/dataframetable.h>
 #include <inviwo/dataframeqt/dataframetableprocessorwidget.h>
+#include <inviwo/dataframeqt/datavisualizer/dataframetablevisualizer.h>
 
 namespace inviwo {
 
 DataFrameQtModule::DataFrameQtModule(InviwoApplication* app) : InviwoModule(app, "DataFrameQt") {
     registerProcessor<DataFrameTable>();
     registerProcessorWidget<DataFrameTableProcessorWidget, DataFrameTable>();
+    registerDataVisualizer(std::make_unique<DataFrameTableVisualizer>(app));
 }
 
 }  // namespace inviwo

@@ -122,10 +122,13 @@ int main(int argc, char** argv) {
             return inviwoApp.exec();
         } catch (const inviwo::Exception& e) {
             {
-                inviwo::util::log(e.getContext(), e.getMessage());
                 std::stringstream ss;
-                e.getStack(ss);
-                LogErrorCustom("Inviwo", ss.str());
+                ss << e.getMessage() << "\n";
+                if (!e.getStack().empty()) {
+                    ss << "\nStack Trace:\n";
+                    e.getStack(ss);
+                }
+                inviwo::util::log(e.getContext(), ss.str(), inviwo::LogLevel::Error);
             }
             {
                 std::stringstream ss;

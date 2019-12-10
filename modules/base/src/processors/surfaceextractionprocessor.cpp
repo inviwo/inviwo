@@ -34,10 +34,14 @@
 #include <modules/base/algorithm/volume/marchingcubes.h>
 #include <modules/base/algorithm/volume/marchingcubesopt.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/zip.h>
 #include <numeric>
 
 #include <inviwo/core/util/rendercontext.h>
+#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -50,11 +54,8 @@ const ProcessorInfo SurfaceExtraction::processorInfo_{
 };
 const ProcessorInfo SurfaceExtraction::getProcessorInfo() const { return processorInfo_; }
 
-// TODO make changing color not rerun extraction but only change the color, (and run only
-// extraction when volume change or iso change)
-
 SurfaceExtraction::SurfaceExtraction()
-    : Processor()
+    : PoolProcessor(pool::Option::KeepOldResults | pool::Option::DelayDispatch)
     , volume_("volume")
     , outport_("mesh")
     , method_("method", "Method",
@@ -65,8 +66,7 @@ SurfaceExtraction::SurfaceExtraction()
     , isoValue_("iso", "ISO Value", 0.5f, 0.0f, 1.0f, 0.01f)
     , invertIso_("invert", "Invert ISO", false)
     , encloseSurface_("enclose", "Enclose Surface", true)
-    , colors_("meshColors", "Mesh Colors")
-    , dirty_(false) {
+    , colors_("meshColors", "Mesh Colors") {
 
     addPort(volume_);
     addPort(outport_);
@@ -76,8 +76,6 @@ SurfaceExtraction::SurfaceExtraction()
     addProperty(invertIso_);
     addProperty(encloseSurface_);
     addProperty(colors_);
-
-    getProgressBar().hide();
 
     volume_.onChange([this]() {
         updateColors();
@@ -97,119 +95,126 @@ SurfaceExtraction::SurfaceExtraction()
     });
 }
 
-SurfaceExtraction::~SurfaceExtraction() {}
+SurfaceExtraction::~SurfaceExtraction() = default;
 
 void SurfaceExtraction::process() {
-    if (!meshes_) {
-        meshes_ = std::make_shared<std::vector<std::shared_ptr<Mesh>>>();
-    }
 
-    auto data = volume_.getSourceVectorData();
-    auto changed = volume_.getChangedOutports();
-    result_.resize(data.size());
-    meshes_->resize(data.size());
+    const auto computeSurface = [this](vec4 color, std::shared_ptr<const Volume> vol) {
+        return [vol, color, method = method_.get(), iso = isoValue_.get(),
+                invert = invertIso_.get(),
+                enclose = encloseSurface_.get()](pool::Progress progress) -> std::shared_ptr<Mesh> {
+            RenderContext::getPtr()->activateLocalRenderContext();
 
-    for (size_t i = 0; i < data.size(); ++i) {
-        auto vol = data[i].second;
+            switch (method) {
+                case Method::MarchingCubes:
+                    return util::marchingcubes(vol, iso, color, invert, enclose, progress);
+                case Method::MarchingCubesOpt:
+                    return util::marchingCubesOpt(vol, iso, color, invert, enclose, progress);
+                case Method::MarchingTetrahedron:
+                default:
+                    return util::marchingtetrahedron(vol, iso, color, invert, enclose, progress);
+            }
+        };
+    };
 
-        if (util::is_future_ready(result_[i].result)) {
-            (*meshes_)[i] = result_[i].result.get();
-            result_[i].status = 1.0f;
-            dirty_ = false;
-            auto meshes = std::make_shared<std::vector<std::shared_ptr<Mesh>>>();
-            std::copy_if(meshes_->begin(), meshes_->end(), std::back_inserter(*meshes),
-                         [](const auto& m) { return m != nullptr; });
-            if (!meshes->empty()) {
-                outport_.setData(meshes);
-            } else {
-                outport_.setData(nullptr);
+    const auto changeColor = [](vec4 color, std::shared_ptr<const Mesh> oldmesh) {
+        return [oldmesh, color](pool::Progress) -> std::shared_ptr<Mesh> {
+            RenderContext::getPtr()->activateLocalRenderContext();
+
+            auto mesh = std::make_shared<Mesh>(oldmesh->getDefaultMeshInfo());
+
+            mesh->setModelMatrix(oldmesh->getModelMatrix());
+            mesh->setWorldMatrix(oldmesh->getWorldMatrix());
+            mesh->copyMetaDataFrom(*oldmesh);
+
+            // We can share the buffers here since we won't ever change them in this processor
+            // and this is the only place with a non-const versions.
+            for (const auto& [info, buff] : oldmesh->getIndexBuffers()) {
+                mesh->addIndices(info, buff);
+            }
+
+            for (const auto& [info, buff] : oldmesh->getBuffers()) {
+                if (info.type == BufferType::ColorAttrib &&
+                    buff->getDataFormat()->getId() == DataFormat<vec4>::id()) {
+                    const auto newColors = std::make_shared<BufferRAMPrecision<vec4>>(
+                        std::vector<vec4>(buff->getSize(), color));
+                    mesh->addBuffer(info, std::make_shared<Buffer<vec4>>(newColors));
+                } else {
+                    mesh->addBuffer(info, buff);
+                }
+            }
+
+            return mesh;
+        };
+    };
+
+    const auto size = static_cast<size_t>(std::distance(volume_.begin(), volume_.end()));
+    if (colors_.size() < size) updateColors();
+
+    const bool stateChange = method_.isModified() || isoValue_.isModified() ||
+                             invertIso_.isModified() || encloseSurface_.isModified();
+
+    if (stateChange || size != meshes_.size()) {  // Need to recompute all...
+        std::vector<decltype(computeSurface(vec4{}, std::shared_ptr<const Volume>{}))> jobs;
+        for (auto [i, vol] : util::enumerate(volume_)) {
+            jobs.push_back(computeSurface(getColor(i), vol));
+        }
+        dispatchMany(jobs, [this](std::vector<std::shared_ptr<Mesh>> result) {
+            meshes_ = result;
+            outport_.setData(std::make_shared<std::vector<std::shared_ptr<Mesh>>>(meshes_));
+            newResults();
+        });
+    } else {  // Only update the modified ones
+        std::vector<std::function<std::shared_ptr<Mesh>(pool::Progress progress)>> jobs;
+        std::vector<size_t> inds;
+        for (auto [i, item] : util::enumerate(volume_.changedAndData())) {
+            const auto portChanged = item.first;
+            const auto data = item.second;
+
+            if (portChanged) {
+                jobs.push_back(computeSurface(getColor(i), data));
+                inds.push_back(i);
+            } else if (colors_[i]->isModified()) {
+                jobs.push_back(changeColor(getColor(i), meshes_[i]));
+                inds.push_back(i);
             }
         }
-
-        Method method = method_.get();
-        float iso = isoValue_.get();
-        vec4 color = static_cast<FloatVec4Property*>(colors_[i])->get();
-        bool invert = invertIso_.get();
-        bool enclose = encloseSurface_.get();
-        if (!result_[i].result.valid() &&
-            (util::contains(changed, data[i].first) ||
-             !result_[i].isSame(method, iso, color, invert, enclose))) {
-            result_[i].set(method, iso, color, invert, enclose, 0.0f,
-                           dispatchPool([this, vol, method, iso, color, invert, enclose,
-                                         i]() -> std::shared_ptr<Mesh> {
-                               RenderContext::getPtr()->activateLocalRenderContext();
-                               auto progressCallBack = [this, i](float s) {
-                                   this->result_[i].status = s;
-                                   float status = 0;
-                                   for (const auto& e : this->result_) status += e.status;
-                                   status /= result_.size();
-                                   dispatchFront(
-                                       [status](ProgressBar& pb) {
-                                           pb.updateProgress(status);
-                                           if (status < 1.0f)
-                                               pb.show();
-                                           else
-                                               pb.hide();
-                                       },
-                                       std::ref(this->getProgressBar()));
-                               };
-
-                               std::shared_ptr<Mesh> m;
-                               switch (method) {
-                                   case Method::MarchingCubes:
-                                       m = util::marchingcubes(vol, iso, color, invert, enclose,
-                                                               progressCallBack);
-                                       break;
-                                   case Method::MarchingCubesOpt:
-                                       m = util::marchingCubesOpt(vol, iso, color, invert, enclose,
-                                                                  progressCallBack);
-                                       break;
-                                   case Method::MarchingTetrahedron:
-                                   default:
-                                       m = util::marchingtetrahedron(vol, iso, color, invert,
-                                                                     enclose, progressCallBack);
-                                       break;
-                               }
-
-                               dispatchFront([this]() {
-                                   dirty_ = true;
-                                   invalidate(InvalidationLevel::InvalidOutput);
-                               });
-
-                               return m;
-                           }));
+        if (!jobs.empty()) {
+            dispatchMany(jobs, [this, inds](std::vector<std::shared_ptr<Mesh>> results) {
+                for (auto [i, result] : util::zip(inds, results)) {
+                    meshes_[i] = result;
+                }
+                outport_.setData(std::make_shared<std::vector<std::shared_ptr<Mesh>>>(meshes_));
+                newResults();
+            });
         }
     }
 }
 
-#include <warn/push>
-#include <warn/ignore/unused-variable>
 void SurfaceExtraction::updateColors() {
     const static vec4 defaultColor[11] = {vec4(1.0f),
-                                          vec4(0x1f, 0x77, 0xb4, 255) / vec4(255, 255, 255, 255),
-                                          vec4(0xff, 0x7f, 0x0e, 255) / vec4(255, 255, 255, 255),
-                                          vec4(0x2c, 0xa0, 0x2c, 255) / vec4(255, 255, 255, 255),
-                                          vec4(0xd6, 0x27, 0x28, 255) / vec4(255, 255, 255, 255),
-                                          vec4(0x94, 0x67, 0xbd, 255) / vec4(255, 255, 255, 255),
-                                          vec4(0x8c, 0x56, 0x4b, 255) / vec4(255, 255, 255, 255),
-                                          vec4(0xe3, 0x77, 0xc2, 255) / vec4(255, 255, 255, 255),
-                                          vec4(0x7f, 0x7f, 0x7f, 255) / vec4(255, 255, 255, 255),
-                                          vec4(0xbc, 0xbd, 0x22, 255) / vec4(255, 255, 255, 255),
-                                          vec4(0x17, 0xbe, 0xcf, 255) / vec4(255, 255, 255, 255)};
+                                          vec4(0x1f, 0x77, 0xb4, 255) / vec4(255),
+                                          vec4(0xff, 0x7f, 0x0e, 255) / vec4(255),
+                                          vec4(0x2c, 0xa0, 0x2c, 255) / vec4(255),
+                                          vec4(0xd6, 0x27, 0x28, 255) / vec4(255),
+                                          vec4(0x94, 0x67, 0xbd, 255) / vec4(255),
+                                          vec4(0x8c, 0x56, 0x4b, 255) / vec4(255),
+                                          vec4(0xe3, 0x77, 0xc2, 255) / vec4(255),
+                                          vec4(0x7f, 0x7f, 0x7f, 255) / vec4(255),
+                                          vec4(0xbc, 0xbd, 0x22, 255) / vec4(255),
+                                          vec4(0x17, 0xbe, 0xcf, 255) / vec4(255)};
 
     size_t count = 0;
-    for (const auto& data : volume_) {
+    for ([[maybe_unused]] auto data : volume_) {
         count++;
         if (colors_.size() < count) {
-            const static std::string color = "color";
-            const static std::string dispName = "Color for Volume ";
-            FloatVec4Property* colorProp =
-                new FloatVec4Property(color + toString(count - 1), dispName + toString(count),
-                                      defaultColor[(count - 1) % 11]);
-            colorProp->setCurrentStateAsDefault();
-            colorProp->setSemantics(PropertySemantics::Color);
-            colorProp->setSerializationMode(PropertySerializationMode::All);
-            colors_.addProperty(colorProp);
+            auto prop = new FloatVec4Property(fmt::format("color{}", count - 1),
+                                              fmt::format("Color for Volume {}", count),
+                                              defaultColor[(count - 1) % 11]);
+            prop->setCurrentStateAsDefault();
+            prop->setSemantics(PropertySemantics::Color);
+            prop->setSerializationMode(PropertySerializationMode::All);
+            colors_.addProperty(prop);
         }
         colors_[count - 1]->setVisible(true);
     }
@@ -218,55 +223,9 @@ void SurfaceExtraction::updateColors() {
         colors_[i]->setVisible(false);
     }
 }
-#include <warn/pop>
 
-// This will stop the invalidation of the network unless the dirty flag is set.
-void SurfaceExtraction::invalidate(InvalidationLevel invalidationLevel,
-                                   Property* modifiedProperty) {
-    notifyObserversInvalidationBegin(this);
-    PropertyOwner::invalidate(invalidationLevel, modifiedProperty);
-
-    if (dirty_ || volume_.isChanged()) outport_.invalidate(InvalidationLevel::InvalidOutput);
-
-    notifyObserversInvalidationEnd(this);
-}
-
-SurfaceExtraction::task::task(task&& rhs)
-    : result(std::move(rhs.result))
-    , method(rhs.method)
-    , iso(rhs.iso)
-    , color(std::move(rhs.color))
-    , invert(rhs.invert)
-    , enclose(rhs.enclose)
-    , status(rhs.status) {}
-
-bool SurfaceExtraction::task::isSame(Method m, float i, vec4 c, bool inv, bool enc) const {
-    return method == m && iso == i && color == c && inv == invert && enc == enclose;
-}
-
-void SurfaceExtraction::task::set(Method m, float i, vec4 c, bool inv, bool enc, float s,
-                                  std::future<std::shared_ptr<Mesh>>&& r) {
-    method = m;
-    iso = i;
-    color = c;
-    invert = inv;
-    enclose = enc;
-    status = s;
-    result = std::move(r);
-}
-
-SurfaceExtraction::task& SurfaceExtraction::task::operator=(task&& that) {
-    if (this != &that) {
-        result = std::move(that.result);
-        method = that.method;
-        iso = that.iso;
-        invert = that.invert;
-        enclose = that.enclose;
-        color = std::move(that.color);
-        status = that.status;
-    }
-
-    return *this;
+vec4 SurfaceExtraction::getColor(size_t i) const {
+    return static_cast<const FloatVec4Property*>(colors_[i])->get();
 }
 
 }  // namespace inviwo

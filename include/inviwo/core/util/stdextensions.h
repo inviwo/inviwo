@@ -93,14 +93,15 @@ std::unique_ptr<Derived> dynamic_unique_ptr_cast(
 namespace detail {
 
 template <typename Index, typename Functor, Index... Is>
-auto make_array(Functor&& func, std::integer_sequence<Index, Is...>)
+constexpr auto make_array(Functor&& func, std::integer_sequence<Index, Is...>) noexcept
     -> std::array<decltype(func(std::declval<Index>())), sizeof...(Is)> {
     return {{func(Is)...}};
 }
 }  // namespace detail
 
 template <std::size_t N, typename Index = size_t, typename Functor>
-auto make_array(Functor&& func) -> std::array<decltype(func(std::declval<Index>())), N> {
+constexpr auto make_array(Functor&& func) noexcept
+    -> std::array<decltype(func(std::declval<Index>())), N> {
     return detail::make_array<Index>(std::forward<Functor>(func),
                                      std::make_integer_sequence<Index, N>());
 }
@@ -381,6 +382,10 @@ bool none_of(const T& cont, UnaryPredicate pred) {
 
 template <class Iter>
 struct iter_range : std::pair<Iter, Iter> {
+    using value_type = typename std::iterator_traits<Iter>::value_type;
+    using const_iterator = Iter;
+    using iterator = Iter;
+    using std::pair<Iter, Iter>::pair;
     iter_range(std::pair<Iter, Iter> const& x) : std::pair<Iter, Iter>(x) {}
     Iter begin() const { return this->first; }
     Iter end() const { return this->second; }
@@ -575,6 +580,32 @@ template <typename... A, typename F>
 constexpr bool is_callable_with(F&&) {
     return std::is_invocable_v<F, A...>;
 }
+
+/**
+ * Get the index of a type in a tuple, returns the index of the first matching type
+ */
+template <class T, typename Tuple, size_t count = 0>
+constexpr size_t index_of() {
+    static_assert(count < std::tuple_size_v<Tuple>, "Type T not found in Tuple");
+    if constexpr (std::is_same_v<T, std::tuple_element_t<count, Tuple>>) {
+        return count;
+    } else {
+        return index_of<T, Tuple, count + 1>();
+    }
+};
+
+/**
+ * Get the index of the first type in the Tuple that is derived from T
+ */
+template <class T, typename Tuple, size_t count = 0>
+constexpr size_t index_of_derived() {
+    static_assert(count < std::tuple_size_v<Tuple>, "Type T not found in Tuple");
+    if constexpr (std::is_base_of_v<T, std::tuple_element_t<count, Tuple>>) {
+        return count;
+    } else {
+        return index_of_derived<T, Tuple, count + 1>();
+    }
+};
 
 namespace hashtuple {
 

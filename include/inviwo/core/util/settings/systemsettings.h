@@ -39,6 +39,7 @@
 namespace inviwo {
 
 class InviwoApplication;
+class LogStream;
 
 /**
  * System settings, owned by the application, loaded before all the factories so we can't use any
@@ -47,6 +48,7 @@ class InviwoApplication;
 class IVW_CORE_API SystemSettings : public Settings {
 public:
     SystemSettings(InviwoApplication* app);
+    virtual ~SystemSettings();
     StringProperty workspaceAuthor_;
     TemplateOptionProperty<UsageMode> applicationUsageMode_;
     IntSizeTProperty poolSize_;
@@ -62,7 +64,13 @@ public:
     BoolProperty breakOnException_;
     BoolProperty stackTraceInException_;
 
+    BoolProperty redirectCout_;
+    BoolProperty redirectCerr_;
+
     static size_t defaultPoolSize();
+
+    std::unique_ptr<LogStream> cout_;
+    std::unique_ptr<LogStream> cerr_;
 };
 
 }  // namespace inviwo

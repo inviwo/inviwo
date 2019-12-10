@@ -1,5 +1,6 @@
 #pragma once
 
+// clang-format off
 #ifdef INVIWO_ALL_DYN_LINK  //DYNAMIC
 	// If we are building DLL files we must declare dllexport/dllimport
 	#ifdef IVW_MODULE_{{ upper(module/name) }}_EXPORTS
@@ -18,3 +19,4 @@
 #else  //STATIC
 	#define {{ module/api }}
 #endif
+// clang-format on

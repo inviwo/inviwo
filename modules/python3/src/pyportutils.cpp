@@ -27,5 +27,6 @@
  *
  *********************************************************************************/
 
-void main(void) {
-}
+#include <modules/python3/pyportutils.h>
+
+namespace inviwo {}  // namespace inviwo

@@ -104,7 +104,8 @@ void exposePickingMapper(pybind11::module &m) {
                           }
                       })
         .def("markkAsUsed", &PickingEvent::markAsUsed)
-        .def("markkAsUnused", &PickingEvent::markAsUnused);
+        .def("markkAsUnused", &PickingEvent::markAsUnused)
+        .def("setToolTip", &PickingEvent::setToolTip);
 
     py::class_<PickingMapper>(m, "PickingMapper")
         .def(py::init([](Processor *p, size_t size, pybind11::function callback) {

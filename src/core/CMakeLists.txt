@@ -48,6 +48,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/simplemeshcreator.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/typedmesh.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/histogram.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/histogramtools.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/image.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/imageram.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/imagerepresentation.h
@@ -82,7 +83,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumedisk.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumeram.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumeramconverter.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumeramhistogram.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumeramprecision.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumerepresentation.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/cameratrackball.h
@@ -187,6 +187,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/compositeprocessorutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/compositesink.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/compositesource.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/processors/poolprocessor.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processor.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorfactoryobject.h
@@ -310,6 +311,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/logcentral.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/logerrorcounter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/logfilter.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/logstream.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/memoryfilehandle.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/metadatatoproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/moduleutils.h
@@ -381,6 +383,7 @@ set(SOURCE_FILES
     datastructures/geometry/simplemesh.cpp
     datastructures/geometry/simplemeshcreator.cpp
     datastructures/histogram.cpp
+    datastructures/histogramtools.cpp
     datastructures/image/image.cpp
     datastructures/image/imageram.cpp
     datastructures/image/imagerepresentation.cpp
@@ -492,6 +495,7 @@ set(SOURCE_FILES
     processors/compositeprocessorutils.cpp
     processors/compositesink.cpp
     processors/compositesource.cpp
+    processors/poolprocessor.cpp
     processors/processor.cpp
     processors/processorfactory.cpp
     processors/processorinfo.cpp
@@ -589,6 +593,7 @@ set(SOURCE_FILES
     util/logcentral.cpp
     util/logerrorcounter.cpp
     util/logfilter.cpp
+    util/logstream.cpp
     util/memoryfilehandle.cpp
     util/metadatatoproperty.cpp
     util/moduleutils.cpp
@@ -647,6 +652,8 @@ set(TEST_FILES
     tests/unittests/network-evaluator-test.cpp
     tests/unittests/picking-test.cpp
     tests/unittests/pickingcontroller-test.cpp
+    tests/unittests/port-tests.cpp
+    tests/unittests/resize-test.cpp
     tests/unittests/serialize-container-test.cpp
     tests/unittests/serializer-test.cpp
     tests/unittests/tfprimitiveset-test.cpp
@@ -654,7 +661,6 @@ set(TEST_FILES
     tests/unittests/utilities-test.cpp
     tests/unittests/volumesequenceutils-tests.cpp
     tests/unittests/zip-test.cpp
-    tests/unittests/resize-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 

@@ -38,6 +38,7 @@
 #include <modules/qtwidgets/numberlineedit.h>
 #include <modules/qtwidgets/editablelabelqt.h>
 #include <modules/qtwidgets/rangesliderqt.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/core/util/stringconversion.h>
 
@@ -138,13 +139,13 @@ OrdinalMinMaxPropertyWidgetQt<T>::OrdinalMinMaxPropertyWidgetQt(MinMaxProperty<T
     hSliderLayout->setContentsMargins(0, 0, 0, 0);
 
     spinBoxMin_->setKeyboardTracking(false);  // don't emit the valueChanged() signal while typing
-    spinBoxMin_->setFixedWidth(50);
+    spinBoxMin_->setFixedWidth(utilqt::emToPx(this, 4.6));
     hSliderLayout->addWidget(spinBoxMin_);
 
     hSliderLayout->addWidget(slider_);
 
     spinBoxMax_->setKeyboardTracking(false);  // don't emit the valueChanged() signal while typing
-    spinBoxMax_->setFixedWidth(50);
+    spinBoxMax_->setFixedWidth(utilqt::emToPx(this, 4.6));
     hSliderLayout->addWidget(spinBoxMax_);
 
     hLayout->addWidget(sliderWidget);

@@ -195,16 +195,16 @@ void Renderer::setupRectangleMesh() {
 
     // first row
     auto indices = util::makeIndexBuffer({0, 4, 1, 5, 2, 6, 3, 7});
-    rectangleMesh_->addIndicies(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::Strip),
-                                indices);
+    rectangleMesh_->addIndices(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::Strip),
+                               indices);
     // second row
     indices = util::makeIndexBuffer({4, 8, 5, 9, 6, 10, 7, 11});
-    rectangleMesh_->addIndicies(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::Strip),
-                                indices);
+    rectangleMesh_->addIndices(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::Strip),
+                               indices);
     // third row
     indices = util::makeIndexBuffer({8, 12, 9, 13, 10, 14, 11, 15});
-    rectangleMesh_->addIndicies(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::Strip),
-                                indices);
+    rectangleMesh_->addIndices(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::Strip),
+                               indices);
 
     meshDrawer_ = std::make_shared<MeshDrawerGL>(rectangleMesh_.get());
 }

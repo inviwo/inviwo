@@ -60,6 +60,12 @@ void BoolCompositePropertyWidgetQt::initState() {
     updateFromProperty();
 }
 
+void BoolCompositePropertyWidgetQt::updateFromProperty() {
+    CollapsibleGroupBoxWidgetQt::updateFromProperty();
+    CollapsibleGroupBoxWidgetQt::setCollapsed(boolCompProperty_->isCollapsed());
+    CollapsibleGroupBoxWidgetQt::setChecked(boolCompProperty_->getBoolProperty()->get());
+}
+
 void BoolCompositePropertyWidgetQt::onSetDisplayName(Property*, const std::string& displayName) {
     displayName_ = displayName;
     label_->setText(displayName);

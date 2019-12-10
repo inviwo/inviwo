@@ -86,8 +86,9 @@ void DataFrameTable::process() {
     if (auto w = getWidget()) {
         if (inport_.isChanged() || vectorCompAsColumn_.isModified()) {
             w->setDataFrame(inport_.getData(), vectorCompAsColumn_);
-        }
-        if (brushLinkPort_.isChanged()) {
+            w->updateSelection(brushLinkPort_.getSelectedColumns(),
+                               brushLinkPort_.getSelectedIndices());
+        } else if (brushLinkPort_.isChanged()) {
             w->updateSelection(brushLinkPort_.getSelectedColumns(),
                                brushLinkPort_.getSelectedIndices());
         }

@@ -35,4 +35,6 @@ ColumnSelectionEvent::ColumnSelectionEvent(const BrushingAndLinkingInport* src,
                                            const std::unordered_set<size_t>& indices)
     : BrushingAndLinkingEvent(src, indices) {}
 
+void ColumnSelectionEvent::print(std::ostream& os) const { printEvent("ColumnSelectionEvent", os); }
+
 }  // namespace inviwo

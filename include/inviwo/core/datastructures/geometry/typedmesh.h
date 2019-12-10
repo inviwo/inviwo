@@ -200,7 +200,19 @@ public:
  * \ingroup typedmesh
  * BufferTrait for Uint32 buffers
  */
-using IndexBuffer = TypedMeshBufferBase<uint32_t, 1, static_cast<int>(BufferType::IndexAttrib)>;
+class IndexBuffer
+    : public TypedMeshBufferBase<uint32_t, 1, static_cast<int>(BufferType::IndexAttrib)> {
+public:
+    using Base = TypedMeshBufferBase<uint32_t, 1, static_cast<int>(BufferType::IndexAttrib)>;
+    using Base::Base;
+
+    std::shared_ptr<const Buffer<Base::type>> getIndex() const { return Base::buffer_; }
+    std::shared_ptr<Buffer<Base::type>> getEditableIndex() { return Base::buffer_; }
+
+    void setVertexIndex(size_t index, uint32_t ind) {
+        getEditableIndex()->getEditableRAMRepresentation()->set(index, ind);
+    }
+};
 
 /**
  * \ingroup typedmesh

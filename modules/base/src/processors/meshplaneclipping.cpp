@@ -27,25 +27,45 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_<uname>_H
-#define IVW_<uname>_H
-
-#include <define>
-#include <inviwo/core/common/inviwo.h>
+#include <modules/base/processors/meshplaneclipping.h>
+#include <modules/base/algorithm/mesh/meshclipping.h>
 
 namespace inviwo {
 
-/**
- * \class <name>
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
- */
-class <api> <name> {
-public:
-    <name>();
-    virtual ~<name>() = default;
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo MeshPlaneClipping::processorInfo_{
+    "org.inviwo.MeshPlaneClipping",  // Class identifier
+    "Mesh Plane Clipping",           // Display name
+    "Mesh Creation",                 // Category
+    CodeState::Experimental,         // Code state
+    Tags::None,                      // Tags
 };
+const ProcessorInfo MeshPlaneClipping::getProcessorInfo() const { return processorInfo_; }
+
+MeshPlaneClipping::MeshPlaneClipping()
+    : Processor()
+    , inputMesh_("inputMesh")
+    , planes_("inputPlanes")
+    , outputMesh_("outputMesh")
+    , clippingEnabled_("clippingEnabled", "Enable Clipping", true)
+    , capClippedHoles_("capClippedHoles", "Cap clipped holes", true) {
+
+    addPort(inputMesh_);
+    addPort(planes_);
+    addPort(outputMesh_);
+    addProperties(clippingEnabled_, capClippedHoles_);
+}
+
+void MeshPlaneClipping::process() {
+    if (clippingEnabled_) {
+        std::shared_ptr<const Mesh> currentMesh = inputMesh_.getData();
+        for (const auto& plane : planes_) {
+            currentMesh = meshutil::clipMeshAgainstPlane(*currentMesh, *plane, capClippedHoles_);
+        }
+        outputMesh_.setData(currentMesh);
+    } else {
+        outputMesh_.setData(inputMesh_.getData());
+    }
+}
 
 }  // namespace inviwo
-
-#endif  // IVW_<uname>_H

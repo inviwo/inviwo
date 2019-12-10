@@ -26,47 +26,34 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <modules/<lname>/<lname>module.h>
+#include <modules/plottinggl/plottingglmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/rendering/datavisualizer.h>
 
 namespace inviwo {
 
-<name>Module::<name>Module(InviwoApplication* app) : InviwoModule(app, "<name>") {
-    // Add a directory to the search path of the Shadermanager
-    // ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
+class IVW_MODULE_PLOTTINGGL_API ScatterPlotDataFrameVisualizer : public DataVisualizer {
+public:
+    ScatterPlotDataFrameVisualizer(InviwoApplication* app);
+    virtual ~ScatterPlotDataFrameVisualizer() = default;
 
-    // Register objects that can be shared with the rest of inviwo here:
+    virtual std::string getName() const override;
+    virtual Document getDescription() const override;
+    virtual std::vector<FileExtension> getSupportedFileExtensions() const override;
+    virtual bool isOutportSupported(const Outport* port) const override;
+    virtual bool hasSourceProcessor() const override;
+    virtual bool hasVisualizerNetwork() const override;
+    virtual std::pair<Processor*, Outport*> addSourceProcessor(
+        const std::string& filename, ProcessorNetwork* network) const override;
+    virtual std::vector<Processor*> addVisualizerNetwork(Outport* outport,
+                                                         ProcessorNetwork* network) const override;
+    virtual std::vector<Processor*> addSourceAndVisualizerNetwork(
+        const std::string& filename, ProcessorNetwork* network) const override;
 
-    // Processors
-    // registerProcessor<<name>Processor>();
-
-    // Properties
-    // registerProperty<<name>Property>();
-
-    // Readers and writes
-    // registerDataReader(std::make_unique<<name>Reader>());
-    // registerDataWriter(std::make_unique<<name>Writer>());
-
-    // Data converters
-    // registerRepresentationConverter(std::make_unique<<name>Disk2RAMConverter>());
-
-    // Ports
-    // registerPort<<name>Outport>();
-    // registerPort<<name>Inport>();
-
-    // PropertyWidgets
-    // registerPropertyWidget<<name>PropertyWidget, <name>Property>("Default");
-
-    // Dialogs
-    // registerDialog<<name>Dialog>(<name>Outport);
-
-    // Other things
-    // registerCapabilities(std::make_unique<<name>Capabilities>());
-    // registerSettings(std::make_unique<<name>Settings>());
-    // registerMetaData(std::make_unique<<name>MetaData>());
-    // registerPortInspector("<name>Outport", "path/workspace.inv");
-    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget> processorWidget); 
-    // registerDrawer(util::make_unique_ptr<<name>Drawer>());
-}
+private:
+    InviwoApplication* app_;
+};
 
 }  // namespace inviwo

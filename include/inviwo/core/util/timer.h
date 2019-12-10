@@ -115,13 +115,18 @@ public:
           TimerThread &thread = util::getDefaultTimerThread());
     ~Timer();
 
-    void start();
+    void start(Milliseconds interval, std::function<void()> callback);
+    void start(std::function<void()> callback);
     void start(Milliseconds interval);
+    void start();
     void stop();
 
     void setInterval(Milliseconds interval);
-    void setCallback(std::function<void()> callback);
     Milliseconds getInterval() const;
+
+    void setCallback(std::function<void()> callback);
+    std::function<void()> getCallback() const;
+
     bool isRunning() const;
 
 private:
@@ -137,17 +142,26 @@ private:
 class IVW_CORE_API Delay {
 public:
     using Milliseconds = std::chrono::milliseconds;
-    Delay(Milliseconds delay, std::function<void()> callback,
+    Delay(Milliseconds defaultDelay, std::function<void()> defaltCallback,
           TimerThread &thread = util::getDefaultTimerThread());
     ~Delay();
 
+    void start(Milliseconds delay, std::function<void()> callback);
+    void start(Milliseconds delay);
+    void start(std::function<void()> callback);
     void start();
     void cancel();
 
+    void setDefaultDelay(Milliseconds delay);
+    Milliseconds getDefaultDelay() const;
+
+    void setDefaultCallback(std::function<void()> callback);
+    std::function<void()> getDefaultCallback() const;
+
 private:
-    std::function<void()> callback_;
+    std::function<void()> defaultCallback_;
     std::shared_ptr<TimerThread::ControlBlock> controlblock_;
-    Milliseconds interval_{0};
+    Milliseconds defaultDelay_;
     TimerThread &thread_;
 };
 

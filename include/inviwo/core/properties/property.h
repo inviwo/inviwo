@@ -281,15 +281,6 @@ public:
      */
     void removeOnChange(const BaseCallBack* callback);
 
-    // clang-format off
-    template <typename T>
-    [[deprecated("was declared deprecated. Use `onChange(std::function<void()>)` instead")]]
-    const BaseCallBack* onChange(T* object, void (T::*method)());
-    template <typename T>
-    [[deprecated("was declared deprecated. Use `removeOnChange(const BaseCallBack*)` instead")]]
-    void removeOnChange(T* object);
-    // clang-format on
-
     virtual Property& setUsageMode(UsageMode usageMode);
     virtual UsageMode getUsageMode() const;
 
@@ -408,22 +399,6 @@ private:
 
     std::vector<std::pair<std::string, std::string>> autoLinkTo_;
 };
-
-// clang-format off
-template <typename T>
-[[deprecated("was declared deprecated. Use `onChange(std::function<void()>)` instead")]]
-const BaseCallBack* Property::onChange(T* o, void (T::*m)()) {
-    return onChangeCallback_.addLambdaCallback([o, m]() {
-        if (m) (*o.*m)();
-    });
-}
-
-template <typename T>
-[[deprecated("was declared deprecated. Use `removeOnChange(const BaseCallBack*)` instead")]]
-void Property::removeOnChange(T* o) {
-    onChangeCallback_.removeMemberFunction(o);
-}
-// clang-format on
 
 template <typename T, typename U>
 void Property::setStateAsDefault(T& property, const U& state) {

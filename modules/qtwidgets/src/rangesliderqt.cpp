@@ -184,6 +184,7 @@ void RangeSliderQt::setMaxRange(int maxR) {
 
 void RangeSliderQt::resizeEvent(QResizeEvent *event) {
     QSplitter::resizeEvent(event);
+    updateSlidersFromState();
     setMinSeparation(minSeperation_);
 }
 

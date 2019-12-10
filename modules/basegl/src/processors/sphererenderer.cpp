@@ -44,7 +44,7 @@ const ProcessorInfo SphereRenderer::processorInfo_{
     "Sphere Renderer",            // Display name
     "Mesh Rendering",             // Category
     CodeState::Stable,            // Code state
-    Tags::GL,                     // Tags
+    "GL, Brushing, Linking",      // Tags
 };
 const ProcessorInfo SphereRenderer::getProcessorInfo() const { return processorInfo_; }
 
@@ -52,6 +52,7 @@ SphereRenderer::SphereRenderer()
     : Processor()
     , inport_("geometry")
     , imageInport_("imageInport")
+    , brushLinkPort_("brushingAndLinking")
     , outport_("image")
     , renderMode_("renderMode", "Render Mode",
                   {{"entireMesh", "Entire Mesh", RenderMode::EntireMesh},
@@ -74,6 +75,7 @@ SphereRenderer::SphereRenderer()
     , useMetaColor_("useMetaColor", "Use meta color mapping", false,
                     InvalidationLevel::InvalidResources)
     , metaColor_("metaColor", "Meta Color Mapping")
+    , selection_(inport_, brushLinkPort_)
 
     , camera_("camera", "Camera", util::boundingBox(inport_))
     , trackball_(&camera_)
@@ -95,6 +97,7 @@ SphereRenderer::SphereRenderer()
 
     addPort(inport_);
     addPort(imageInport_).setOptional(true);
+    addPort(brushLinkPort_);
     addPort(outport_);
 
     clipping_.addProperties(clipMode_, clipShadingFactor_, shadeClippedArea_);
@@ -102,7 +105,8 @@ SphereRenderer::SphereRenderer()
     sphereProperties_.addProperties(forceRadius_, defaultRadius_, forceColor_, defaultColor_,
                                     useMetaColor_, metaColor_);
 
-    addProperties(renderMode_, sphereProperties_, clipping_, camera_, lighting_, trackball_);
+    addProperties(renderMode_, sphereProperties_, selection_.properties, clipping_, camera_,
+                  lighting_, trackball_);
 
     clipMode_.onChange([&]() {
         clipShadingFactor_.setReadOnly(clipMode_.get() == GlyphClippingMode::Discard);
@@ -131,14 +135,14 @@ void SphereRenderer::configureShader(Shader& shader) {
 
 void SphereRenderer::process() {
     utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
+    utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    for (const auto& mesh : inport_) {
+    for (const auto& [port, mesh] : inport_.getSourceVectorData()) {
         if (mesh->getNumberOfBuffers() == 0) continue;
 
         auto& shader = shaders_.getShader(*mesh);
 
         shader.activate();
-        utilgl::BlendModeState blendModeStateGL(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         TextureUnitContainer units;
         utilgl::bindAndSetUniforms(shader, units, metaColor_);
@@ -147,12 +151,13 @@ void SphereRenderer::process() {
                             clipShadingFactor_);
         shader.setUniform("viewport", vec4(0.0f, 0.0f, 2.0f / outport_.getDimensions().x,
                                            2.0f / outport_.getDimensions().y));
+        MeshDrawerGL::DrawObject drawer(mesh->getRepresentation<MeshGL>(),
+                                        mesh->getDefaultMeshInfo());
+        utilgl::setShaderUniforms(shader, *mesh, "geometry");
         switch (renderMode_) {
             case RenderMode::PointsOnly: {
-                // render only index buffers marked as points (or the entire mesh if none exists)
-                MeshDrawerGL::DrawObject drawer(mesh->getRepresentation<MeshGL>(),
-                                                mesh->getDefaultMeshInfo());
-                utilgl::setShaderUniforms(shader, *mesh, "geometry");
+                // render only index buffers marked as points (or the entire mesh if none
+                // exists)
                 if (mesh->getNumberOfIndicies() > 0) {
                     for (size_t i = 0; i < mesh->getNumberOfIndicies(); ++i) {
                         auto meshinfo = mesh->getIndexMeshInfo(i);
@@ -168,19 +173,26 @@ void SphereRenderer::process() {
                         drawer.draw(MeshDrawerGL::DrawMode::Points);
                     }
                 }
-
                 break;
             }
             case RenderMode::EntireMesh:
                 [[fallthrough]];
             default:  // render all parts of the input meshes as points
-                MeshDrawerGL::DrawObject drawer(mesh->getRepresentation<MeshGL>(),
-                                                mesh->getDefaultMeshInfo());
-                utilgl::setShaderUniforms(shader, *mesh, "geometry");
                 drawer.draw(MeshDrawerGL::DrawMode::Points);
-
                 break;
         }
+
+        // render selection only for first mesh input
+        if (auto indices = selection_.getIndices(port, *mesh)) {
+            shader.setUniform("selectionMix", 1.0f);
+            shader.setUniform("selectionScaleFactor", selection_.radiusFactor);
+            shader.setUniform("selectionColor", selection_.color);
+            glDrawElements(GL_POINTS, static_cast<GLsizei>(indices->size()), GL_UNSIGNED_INT,
+                           indices->data());
+            // reset selection flag
+            shader.setUniform("selectionMix", 0.0f);
+        }
+
         shader.deactivate();
     }
 

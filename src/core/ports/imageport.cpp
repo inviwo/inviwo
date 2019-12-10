@@ -82,6 +82,18 @@ void ImageOutport::setData(Image* data) {
     cache_.setMaster(data_);
 }
 
+std::shared_ptr<const Image> ImageOutport::detachData() {
+    image_.reset();
+    cache_.setMaster(nullptr);
+    return DataOutport<Image>::detachData();
+}
+
+void ImageOutport::clear() {
+    image_.reset();
+    cache_.setMaster(nullptr);
+    DataOutport<Image>::clear();
+}
+
 bool ImageOutport::hasEditableData() const { return static_cast<bool>(image_); }
 
 size2_t ImageOutport::getLargestReqDim() const {
@@ -177,10 +189,12 @@ std::shared_ptr<const Image> ImageOutport::getDataForPort(const Inport* port) co
 }
 
 void ImageOutport::setDimensions(const size2_t& newDimension) {
-    if (image_ && newDimension != image_->getDimensions()) {
-        // Set new dimensions
-        image_->setDimensions(newDimension);
-        cache_.setInvalid();
+    if (image_) {
+        if (newDimension != image_->getDimensions()) {
+            // Set new dimensions
+            image_->setDimensions(newDimension);
+            cache_.setInvalid();
+        }
     } else {
         setData(std::make_shared<Image>(newDimension, format_));
     }
@@ -233,9 +247,6 @@ Document ImageOutport::getInfo() const {
                size == master ? "Master" : "");
         }
     }
-
-    std::string d = doc;
-    std::cout << d << std::endl;
     return doc;
 }
 

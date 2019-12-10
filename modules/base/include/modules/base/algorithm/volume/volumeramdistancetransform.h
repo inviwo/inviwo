@@ -33,6 +33,7 @@
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/indexmapper.h>
+#include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 
 #ifndef __clang__

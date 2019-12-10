@@ -36,24 +36,30 @@
 
 #include <inviwo/core/io/datawriterfactory.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/common/inviwoapplication.h>
 
 #include <inviwopy/inviwopy.h>
 #include <inviwopy/pynetwork.h>
 #include <inviwopy/pyglmtypes.h>
 #include <modules/python3/pybindutils.h>
-#include <inviwopy/pyport.h>
+#include <modules/python3/pyportutils.h>
 
 #include <warn/push>
 #include <warn/ignore/shadow>
 #include <pybind11/numpy.h>
+#include <pybind11/stl.h>
 #include <warn/pop>
+
+#include <fmt/format.h>
+
+PYBIND11_MAKE_OPAQUE(inviwo::SwizzleMask);
 
 namespace py = pybind11;
 
 namespace inviwo {
 
-auto getLayers = [](Image *img) {
+auto getLayers = [](Image* img) {
     pybind11::list list;
     for (size_t idx = 0; idx < img->getNumberOfColorLayers(); idx++) {
         list.append(py::cast(img->getColorLayer(idx), py::return_value_policy::reference_internal,
@@ -62,26 +68,62 @@ auto getLayers = [](Image *img) {
     return list;
 };
 
-void exposeImage(py::module &m) {
+void exposeImage(py::module& m) {
+
+    py::enum_<ImageChannel>(m, "ImageChannel")
+        .value("Red", ImageChannel::Red)
+        .value("Green", ImageChannel::Green)
+        .value("Blue", ImageChannel::Blue)
+        .value("Alpha", ImageChannel::Alpha)
+        .value("Zero", ImageChannel::Zero)
+        .value("One", ImageChannel::One);
+
+    py::class_<SwizzleMask>(m, "SwizzleMask")
+        .def(py::init<>([]() { return swizzlemasks::rgba; }))
+        .def(py::init<SwizzleMask>())
+        .def(py::init<ImageChannel, ImageChannel, ImageChannel, ImageChannel>(), py::arg("red"),
+             py::arg("green"), py::arg("blue"), py::arg("alpha"))
+        // clang-format off
+        .def_property_readonly_static("rgb", [](py::object) { return swizzlemasks::rgb; })
+        .def_property_readonly_static("rgba", [](py::object) { return swizzlemasks::rgba; })
+        .def_property_readonly_static("rgbZeroAlpha", [](py::object) { return swizzlemasks::rgbZeroAlpha; })
+        .def_property_readonly_static("luminance", [](py::object) { return swizzlemasks::luminance; })
+        .def_property_readonly_static("luminanceAlpha", [](py::object) { return swizzlemasks::luminanceAlpha; })
+        .def_property_readonly_static("redGreen", [](py::object) { return swizzlemasks::redGreen; })
+        .def_property_readonly_static("depth", [](py::object) { return swizzlemasks::depth; })
+        // clang-format on
+        .def("__repr__", [](const SwizzleMask& self) { return toString(self); });
 
     py::class_<Image, std::shared_ptr<Image>>(m, "Image")
-        .def(py::init<size2_t, const DataFormatBase *>())
+        .def(py::init<size2_t, const DataFormatBase*>())
         .def(py::init<std::shared_ptr<Layer>>())
-        .def("clone", [](Image &self) { return self.clone(); })
+        .def("clone", [](Image& self) { return self.clone(); })
         .def_property_readonly("dimensions", &Image::getDimensions)
-        .def_property_readonly("depth", [](Image &img) { return img.getDepthLayer(); },
+        .def_property_readonly("depth", [](Image& img) { return img.getDepthLayer(); },
                                py::return_value_policy::reference_internal)
-        .def_property_readonly("picking", [](Image &img) { return img.getPickingLayer(); },
+        .def_property_readonly("picking", [](Image& img) { return img.getPickingLayer(); },
                                py::return_value_policy::reference_internal)
-        .def_property_readonly("colorLayers", getLayers);
+        .def_property_readonly("colorLayers", getLayers)
+        .def("__repr__", [](const Image& self) {
+            const auto dims = self.getDimensions();
+            return fmt::format(
+                "<Image:\n  color channels = {}\n  depth = {}\n  picking = {}\n"
+                "  format = {}\n  dimensions = {}\n  aspect ratio = {}>",
+                self.getNumberOfColorLayers(), self.getDepthLayer() ? "yes" : "no",
+                self.getPickingLayer() ? "yes" : "no", self.getDataFormat()->getString(),
+                toString(dims),
+                dims.y == 0 ? "Invalid"
+                            : toString(static_cast<double>(dims.x) / static_cast<double>(dims.y)));
+        });
 
     py::class_<Layer, std::shared_ptr<Layer>>(m, "Layer")
-        .def(py::init<size2_t, const DataFormatBase *>())
-        .def("clone", [](Layer &self) { return self.clone(); })
+        .def(py::init<size2_t, const DataFormatBase*>())
+        .def("clone", [](Layer& self) { return self.clone(); })
         .def(py::init([](py::array data) { return pyutil::createLayer(data).release(); }))
         .def_property_readonly("dimensions", &Layer::getDimensions)
+        .def_property("swizzlemask", &Layer::getSwizzleMask, &Layer::setSwizzleMask)
         .def("save",
-             [](Layer &self, std::string filepath) {
+             [](Layer& self, std::string filepath) {
                  auto ext = filesystem::getFileExtension(filepath);
 
                  auto writer = InviwoApplication::getPtr()
@@ -94,7 +136,7 @@ void exposeImage(py::module &m) {
              })
         .def_property(
             "data",
-            [&](Layer *layer) -> py::array {
+            [&](Layer* layer) -> py::array {
                 auto df = layer->getDataFormat();
                 auto dims = layer->getDimensions();
 
@@ -109,12 +151,18 @@ void exposeImage(py::module &m) {
                 auto data = layer->getEditableRepresentation<LayerRAM>()->getData();
                 return py::array(pyutil::toNumPyFormat(df), shape, strides, data, py::cast<>(1));
             },
-            [](Layer *layer, py::array data) {
+            [](Layer* layer, py::array data) {
                 auto rep = layer->getEditableRepresentation<LayerRAM>();
                 pyutil::checkDataFormat<2>(rep->getDataFormat(), rep->getDimensions(), data);
 
                 memcpy(rep->getData(), data.data(0), data.nbytes());
-            });
+            })
+        .def("__repr__", [](const Layer& self) {
+            return fmt::format(
+                "<Layer:\n  type = {}\n  format = {}\n  dimensions = {}\n  swizzlemask = {}>",
+                toString(self.getLayerType()), self.getDataFormat()->getString(),
+                toString(self.getDimensions()), toString(self.getSwizzleMask()));
+        });
 
     exposeInport<ImageInport>(m, "Image");
     exposeInport<ImageMultiInport>(m, "ImageMulti");

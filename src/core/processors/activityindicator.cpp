@@ -32,8 +32,10 @@
 namespace inviwo {
 
 void ActivityIndicator::setActive(bool active) {
-    active_ = active;
-    notifyActivityIndicatorChanged(active_);
+    if (active_ != active) {
+        active_ = active;
+        notifyActivityIndicatorChanged(active_);
+    }
 }
 
 bool ActivityIndicator::isActive() const { return active_; }

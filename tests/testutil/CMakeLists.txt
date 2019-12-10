@@ -7,12 +7,14 @@ project(inviwo-testutil)
 # Add source files
 set(headers
 	include/inviwo/testutil/configurablegtesteventlistener.h
+	include/inviwo/testutil/zipmatcher.h
 )
 ivw_group("Header Files" BASE include/inviwo/testutil ${headers})
 
 # Add source files
 set(sources
     src/configurablegtesteventlistener.cpp
+    src/zipmatcher.cpp
 )
 ivw_group("Source Files" BASE src ${sources})
 
@@ -27,6 +29,7 @@ target_include_directories(inviwo-testutil PUBLIC
 target_link_libraries(inviwo-testutil PUBLIC
 	inviwo::warn 
     gtest
+    gmock
 )
 
 ivw_define_standard_properties(inviwo-testutil)

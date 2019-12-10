@@ -33,13 +33,11 @@
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/poolprocessor.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <modules/base/algorithm/volume/volumeramsubsample.h>
 #include <inviwo/core/processors/activityindicator.h>
-
-#include <future>
 
 namespace inviwo {
 
@@ -59,7 +57,7 @@ namespace inviwo {
  *   * __Factors__ ...
  *
  */
-class IVW_MODULE_BASE_API VolumeSubsample : public Processor, public ActivityIndicatorOwner {
+class IVW_MODULE_BASE_API VolumeSubsample : public PoolProcessor {
 public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
@@ -70,21 +68,14 @@ public:
 protected:
     virtual void process() override;
 
-    std::shared_ptr<Volume> subsample(std::shared_ptr<const Volume> volume, size3_t f);
-
-    virtual void invalidate(InvalidationLevel invalidationLevel,
-                            Property* modifiedProperty = nullptr) override;
+    static std::shared_ptr<Volume> subsample(std::shared_ptr<const Volume> volume, size3_t f);
 
 private:
     VolumeInport inport_;
     VolumeOutport outport_;
 
     BoolProperty enabled_;
-    BoolProperty waitForCompletion_;
     IntVec3Property subSampleFactors_;
-
-    std::future<std::shared_ptr<Volume>> result_;
-    bool dirty_;
 };
 }  // namespace inviwo
 

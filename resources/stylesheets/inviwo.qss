@@ -845,14 +845,20 @@ QWidget#CompositeWidget QToolButton#collapseButton {
     height: 0.8em;
     margin-right: 0.0625em;
 }
-QWidget#CompositeWidget QToolButton#addListItemButton {
+QWidget#CompositeWidget QToolButton#addListItemButton,
+QWidget#CompositeWidget QToolButton#removeListItemButton {
     border: 0.0625em solid transparent;
     background-color: transparent;
     width: 0.75em;
     height: 0.75em;
 }
+QWidget#CompositeWidget QToolButton#removeListItemButton {
+    width: 0.5em;
+    height: 0.5em;
+}
 QWidget#CompositeWidget QToolButton#collapseButton:hover,
-QWidget#CompositeWidget QToolButton#addListItemButton:hover {
+QWidget#CompositeWidget QToolButton#addListItemButton:hover,
+QWidget#CompositeWidget QToolButton#removeListItemButton:hover {
     border: 0.0625em solid #268bd2;
 }
 QWidget#CompositeWidget QToolButton#collapseButton:open {
@@ -866,6 +872,12 @@ QWidget#CompositeWidget QToolButton#addListItemButton {
 }
 QWidget#CompositeWidget QToolButton#addListItemButton:disabled {
     image: url(:svgicons/listitem-add-disabled.svg);
+}
+QWidget#CompositeWidget QToolButton#removeListItemButton {
+    image: url(:svgicons/listitem-remove-enabled.svg);
+}
+QWidget#CompositeWidget QToolButton#removeListItemButton:disabled {
+    image: url(:svgicons/listitem-remove-disabled.svg);
 }
 
 /************************ 

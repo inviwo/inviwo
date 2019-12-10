@@ -128,6 +128,10 @@ struct proxy {
         return std::get<2>(data);
     }
 
+    using first_type = std::tuple_element_t<0, std::tuple<Ts..., void>>;
+    using second_type = std::tuple_element_t<1, std::tuple<Ts..., void, void>>;
+    using third_type = std::tuple_element_t<2, std::tuple<Ts..., void, void, void>>;
+
     std::tuple<Ts...> data;
 };
 
@@ -170,12 +174,22 @@ auto getBegin(std::tuple<T...>& t) {
     return beginImpl(t, std::index_sequence_for<T...>{});
 }
 
+template <typename... T>
+auto getBegin(const std::tuple<T...>& t) {
+    return beginImpl(t, std::index_sequence_for<T...>{});
+}
+
 template <typename T, std::size_t... I>
 auto endImpl(T& t, std::index_sequence<I...>) {
     return std::make_tuple(std::end(std::get<I>(t))...);
 }
 template <typename... T>
 auto getEnd(std::tuple<T...>& t) {
+    return endImpl(t, std::index_sequence_for<T...>{});
+}
+
+template <typename... T>
+auto getEnd(const std::tuple<T...>& t) {
     return endImpl(t, std::index_sequence_for<T...>{});
 }
 
@@ -212,7 +226,7 @@ auto pointer(const std::tuple<T...>& t)
 
 template <typename T>
 struct get_iterator {
-    using type = decltype(std::begin(std::declval<typename std::add_lvalue_reference<T>::type>()));
+    using type = decltype(std::begin(std::declval<std::add_lvalue_reference_t<T>>()));
 };
 template <typename T>
 using get_iterator_t = typename get_iterator<T>::type;
@@ -291,7 +305,10 @@ struct zipIterator {
 
     template <typename I = Iterables, typename = require_t<std::random_access_iterator_tag, I>>
     difference_type operator-(const zipIterator& rhs) const {
-        return std::get<0>(iterators_) - std::get<0>(rhs.iterators_);
+        difference_type dist{std::numeric_limits<difference_type>::max()};
+        for_each_in_tuple([&](auto& i1, auto& i2) { dist = std::min(dist, i1 - i2); }, iterators_,
+                          rhs.iterators_);
+        return dist;
     }
     template <typename I = Iterables, typename = require_t<std::random_access_iterator_tag, I>>
     zipIterator operator+(difference_type rhs) const {
@@ -319,18 +336,23 @@ struct zipIterator {
     }
 
     /**
-     * Should be true if __all__ underlaying iterators are equal.
+     * True if __any__ underlying iterators are equal.
      */
-    bool operator==(const zipIterator& rhs) const { return iterators_ == rhs.iterators_; }
-
-    /**
-     * Should be true as soon as __one__ underlaying iterator are not equal.
-     */
-    bool operator!=(const zipIterator& rhs) const {
+    bool operator==(const zipIterator& rhs) const {
         bool equal = false;
         for_each_in_tuple([&](auto& i1, auto& i2) { equal |= i1 == i2; }, iterators_,
                           rhs.iterators_);
-        return !equal;
+        return equal;
+    }
+
+    /**
+     * True if __all__ underlying iterators are not equal.
+     */
+    bool operator!=(const zipIterator& rhs) const {
+        bool notEqual = true;
+        for_each_in_tuple([&](auto& i1, auto& i2) { notEqual &= i1 != i2; }, iterators_,
+                          rhs.iterators_);
+        return notEqual;
     }
 
     /*
@@ -367,11 +389,18 @@ template <typename... Iterable>
 struct zipper {
     using Iterables = std::tuple<Iterable...>;
     using iterator = zipIterator<Iterables>;
+    using const_iterator = zipIterator<Iterables>;
+
+    using value_type = typename zipIterator<Iterables>::value_type;
+
     template <typename... T>
     zipper(T&&... args) : iterables_(std::forward<T>(args)...) {}
 
     auto begin() -> iterator { return iterator(getBegin(iterables_)); }
     auto end() -> iterator { return iterator(getEnd(iterables_)); }
+
+    auto begin() const -> const_iterator { return const_iterator(getBegin(iterables_)); }
+    auto end() const -> const_iterator { return const_iterator(getEnd(iterables_)); }
 
     Iterables iterables_;
 };
@@ -412,6 +441,8 @@ struct sequence {
         using pointer = const T*;
         using reference = const T&;
         using iterator_category = std::random_access_iterator_tag;
+
+        iterator() = default;
 
         iterator(const T& val, const T& end, const T& inc) : val_{val}, end_{end}, inc_{inc} {}
         iterator& operator++() {
@@ -478,10 +509,13 @@ struct sequence {
             using std::min;
             val_ = inc_ > 0 ? min(val_, end_) : max(val_, end_);
         }
-        T val_;
-        T end_;
-        T inc_;
+        T val_{};
+        T end_{};
+        T inc_{};
     };
+
+    using value_type = typename iterator::value_type;
+    using const_iterator = iterator;
 
     iterator begin() const { return iterator(begin_, end_, inc_); }
     iterator end() const { return iterator(end_, end_, inc_); }
@@ -502,7 +536,7 @@ private:
  * \endcode
  */
 template <typename T>
-auto make_sequence(const T& begin, const T& end, const T& inc) -> sequence<T> {
+auto make_sequence(const T& begin, const T& end, const T& inc = T{1}) -> sequence<T> {
     return sequence<T>(begin, end, inc);
 }
 

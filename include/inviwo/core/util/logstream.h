@@ -26,14 +26,41 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#ifndef GLSL_VERSION_150
-#extension GL_EXT_gpu_shader4 : enable
-#extension GL_EXT_geometry_shader4 : enable
-#endif
+#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/util/logcentral.h>
 
-layout(triangles) in;
-layout(triangle_strip, max_vertices = 10) out;
+#include <streambuf>
+#include <string>
+#include <ostream>
+#include <string_view>
+#include <mutex>
 
-void main(void) {
-}
+namespace inviwo {
+
+class IVW_CORE_API LogStream : public std::streambuf {
+    using int_type = typename std::streambuf::int_type;
+    using size_type = typename std::string::size_type;
+    using traits = typename std::string::traits_type;
+
+public:
+    LogStream(std::ostream& stream, std::string source, LogLevel level, LogAudience audience);
+    ~LogStream();
+    std::streamsize xsputn(const char* s, std::streamsize count) override;
+
+protected:
+    virtual int sync() override;
+
+private:
+    std::string source_;
+    LogLevel level_;
+    LogAudience audience_;
+
+    std::string buffer_;
+    std::ostream& stream_;
+    std::streambuf* orgBuffer_;
+    std::mutex mutex_;
+};
+
+}  // namespace inviwo

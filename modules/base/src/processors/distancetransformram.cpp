@@ -44,7 +44,7 @@ const ProcessorInfo DistanceTransformRAM::processorInfo_{
 const ProcessorInfo DistanceTransformRAM::getProcessorInfo() const { return processorInfo_; }
 
 DistanceTransformRAM::DistanceTransformRAM()
-    : Processor()
+    : PoolProcessor(pool::Option::DelayDispatch)
     , volumePort_("inputVolume")
     , outport_("outputVolume")
     , threshold_("threshold", "Threshold", 0.5, 0.0, 1.0)
@@ -63,110 +63,42 @@ DistanceTransformRAM::DistanceTransformRAM()
                      {DataRangeMode::Diagonal, DataRangeMode::MinMax, DataRangeMode::Custom}, 0)
     , customDataRange_("customDataRange", "Custom Data Range", 0.0, 1.0, 0.0,
                        std::numeric_limits<double>::max(), 0.01, 0.0,
-                       InvalidationLevel::InvalidOutput, PropertySemantics::Text)
-    , btnForceUpdate_("forceUpdate", "Update Distance Map")
-    , distTransformDirty_(true)
-    , hasNewData_(false) {
+                       InvalidationLevel::InvalidOutput, PropertySemantics::Text) {
 
     addPort(volumePort_);
     addPort(outport_);
 
-    addProperty(threshold_);
-    addProperty(flip_);
-    addProperty(normalize_);
-    addProperty(resultDistScale_);
-    addProperty(resultSquaredDist_);
-    addProperty(uniformUpsampling_);
-    addProperty(upsampleFactorVec3_);
-    addProperty(upsampleFactorUniform_);
+    addProperties(threshold_, flip_, normalize_, resultDistScale_, resultSquaredDist_,
+                  uniformUpsampling_, upsampleFactorVec3_, upsampleFactorUniform_, dataRangeMode_,
+                  customDataRange_, dataRangeOutput_);
 
-    auto triggerUpdate = [&]() {
-        bool uniform = uniformUpsampling_.get();
-        upsampleFactorVec3_.setVisible(!uniform);
-        upsampleFactorUniform_.setVisible(uniform);
-    };
-    uniformUpsampling_.onChange(triggerUpdate);
-    upsampleFactorUniform_.setVisible(false);
+    upsampleFactorVec3_.visibilityDependsOn(uniformUpsampling_,
+                                            [](const auto& p) { return !p.get(); });
+    upsampleFactorUniform_.visibilityDependsOn(uniformUpsampling_,
+                                               [](const auto& p) { return p.get(); });
 
     dataRangeOutput_.setSerializationMode(PropertySerializationMode::None);
     dataRangeOutput_.setReadOnly(true);
 
-    addProperty(dataRangeMode_);
-    addProperty(customDataRange_);
-
-    addProperty(dataRangeOutput_);
-
-    dataRangeMode_.onChange([&]() {
-        customDataRange_.setReadOnly(dataRangeMode_.getSelectedValue() != DataRangeMode::Custom);
+    customDataRange_.readonlyDependsOn(dataRangeMode_, [](const auto& p) {
+        return p.getSelectedValue() != DataRangeMode::Custom;
     });
-
-    addProperty(btnForceUpdate_);
-
-    btnForceUpdate_.onChange([this]() { distTransformDirty_ = true; });
-
-    progressBar_.hide();
 }
 
 DistanceTransformRAM::~DistanceTransformRAM() = default;
 
-void DistanceTransformRAM::invalidate(InvalidationLevel invalidationLevel, Property* source) {
-    notifyObserversInvalidationBegin(this);
-    PropertyOwner::invalidate(invalidationLevel, source);
-    if (!isValid() && hasNewData_) {
-        for (auto& port : getOutports()) port->invalidate(InvalidationLevel::InvalidOutput);
-    }
-    notifyObserversInvalidationEnd(this);
-}
-
 void DistanceTransformRAM::process() {
-    if (util::is_future_ready(newVolume_)) {
-        try {
-            auto vol = newVolume_.get();
-            dataRangeOutput_.set(vol->dataMap_.dataRange);
-            outport_.setData(vol);
-            hasNewData_ = false;
-            btnForceUpdate_.setDisplayName("Update Distance Map");
-        } catch (Exception&) {
-            // Need to reset the future, VS bug:
-            // http://stackoverflow.com/questions/33899615/stdfuture-still-valid-after-calling-get-which-throws-an-exception
-            newVolume_ = {};
-            outport_.setData(nullptr);
-            hasNewData_ = false;
-            throw;
-        }
-    } else if (!newVolume_.valid()) {  // We are not waiting for a calculation
-        btnForceUpdate_.setDisplayName("Update Distance Map (dirty)");
-        if (volumePort_.isChanged() || distTransformDirty_) {
-            updateOutport();
-        }
-    }
-}
-
-void DistanceTransformRAM::updateOutport() {
-    auto done = [this]() {
-        dispatchFront([this]() {
-            distTransformDirty_ = false;
-            hasNewData_ = true;
-            invalidate(InvalidationLevel::InvalidOutput);
-        });
-    };
-
-    auto calc = [pb = &progressBar_,
-                 upsample = uniformUpsampling_.get() ? size3_t(upsampleFactorUniform_.get())
+    auto calc = [upsample = uniformUpsampling_.get() ? size3_t(upsampleFactorUniform_.get())
                                                      : upsampleFactorVec3_.get(),
                  threshold = threshold_.get(), normalize = normalize_.get(), flip = flip_.get(),
                  square = resultSquaredDist_.get(), scale = resultDistScale_.get(),
                  dataRangeMode = dataRangeMode_.get(), customDataRange = customDataRange_.get(),
-                 done](std::shared_ptr<const Volume> volume) -> std::shared_ptr<const Volume> {
+                 volume =
+                     volumePort_.getData()](pool::Progress fprogress) -> std::shared_ptr<Volume> {
         auto volDim = glm::max(volume->getDimensions(), size3_t(1u));
         auto dstRepr = std::make_shared<VolumeRAMPrecision<float>>(upsample * volDim);
 
-        const auto progress = [pb](double f) {
-            dispatchFront([f, pb]() {
-                f < 1.0 ? pb->show() : pb->hide();
-                pb->updateProgress(static_cast<float>(f));
-            });
-        };
+        const auto progress = [&](double f) { fprogress(static_cast<float>(f)); };
         util::volumeDistanceTransform(volume.get(), dstRepr.get(), upsample, threshold, normalize,
                                       flip, square, scale, progress);
 
@@ -201,12 +133,14 @@ void DistanceTransformRAM::updateOutport() {
             default:
                 break;
         }
-
-        done();
         return dstVol;
     };
 
-    newVolume_ = dispatchPool(calc, volumePort_.getData());
+    outport_.setData(nullptr);
+    dispatchOne(calc, [this](std::shared_ptr<Volume> result) {
+        outport_.setData(result);
+        newResults();
+    });
 }
 
 }  // namespace inviwo

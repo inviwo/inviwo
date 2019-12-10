@@ -60,8 +60,6 @@ void VolumeCLGL2RAMConverter::update(std::shared_ptr<const VolumeCLGL> volumeSrc
     }
 
     volumeSrc->getTexture()->download(volumeDst->getData());
-
-    if (volumeDst->hasHistograms()) volumeDst->getHistograms()->setValid(false);
 }
 
 std::shared_ptr<VolumeCLGL> VolumeGL2CLGLConverter::createFrom(

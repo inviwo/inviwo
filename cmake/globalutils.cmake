@@ -953,3 +953,18 @@ function(ivw_copy_if retval)
     set(${retval} ${res} PARENT_SCOPE)
 endfunction()
 
+#-----------------------------------------------------------------------
+# Uses QT's windeployqt.exe to copy necessary QT-dependencies (dlls etc) 
+# for the given target to the build folder. 
+# Does nothing on platforms other than Windows. 
+function(ivw_deploy_qt target)
+    if(WIN32)
+        find_program(WINDEPLOYQT_EXECUTABLE NAMES windeployqt HINTS ${QTDIR} ENV QTDIR PATH_SUFFIXES bin)
+
+        get_filename_component(qt_bin_dir ${WINDEPLOYQT_EXECUTABLE} DIRECTORY  )
+        add_custom_command(TARGET ${target} POST_BUILD 
+                            COMMAND ${qt_bin_dir}/qtenv2.bat
+                            COMMAND ${WINDEPLOYQT_EXECUTABLE} --no-compiler-runtime --verbose 1 $<TARGET_FILE:${target}>
+            )
+    endif()
+endfunction()

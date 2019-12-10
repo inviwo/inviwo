@@ -20,6 +20,7 @@ set(HEADER_FILES
     ${MOC_FILES}
     include/inviwo/dataframeqt/dataframeqtmodule.h
     include/inviwo/dataframeqt/dataframeqtmoduledefine.h
+    include/inviwo/dataframeqt/datavisualizer/dataframetablevisualizer.h
     include/inviwo/dataframeqt/processors/dataframetable.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
@@ -28,8 +29,9 @@ ivw_group("Header Files" ${HEADER_FILES})
 # Add source files
 set(SOURCE_FILES
     src/dataframeqtmodule.cpp
-    src/dataframetableview.cpp
     src/dataframetableprocessorwidget.cpp
+    src/dataframetableview.cpp
+    src/datavisualizer/dataframetablevisualizer.cpp
     src/processors/dataframetable.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})

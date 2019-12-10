@@ -113,7 +113,6 @@ void LayerCLGL::setDimensions(size2_t dimensions) {
     // By observing the texture we will make sure that the OpenCL layer is
     // deleted and reattached after resizing is done.
     texture_->resize(dimensions);
-    updateBaseMetaFromRepresentation();
 }
 
 const size2_t& LayerCLGL::getDimensions() const { return dimensions_; }
@@ -184,7 +183,6 @@ void LayerCLGL::setSwizzleMask(const SwizzleMask& mask) {
         texture_->setSwizzleMask(mask);
     }
     swizzleMask_ = mask;
-    updateBaseMetaFromRepresentation();
 }
 
 SwizzleMask LayerCLGL::getSwizzleMask() const {

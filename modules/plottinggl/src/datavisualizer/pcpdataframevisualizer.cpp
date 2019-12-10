@@ -52,7 +52,7 @@ std::string PCPDataFrameVisualizer::getName() const { return "Parallel Coordinat
 Document PCPDataFrameVisualizer::getDescription() const {
     Document doc;
     auto b = doc.append("html").append("body");
-    b.append("", "Construct Parallel Coordinates Plot from the given data frame");
+    b.append("", "Construct Parallel Coordinates Plot from the given DataFrame");
     return doc;
 }
 

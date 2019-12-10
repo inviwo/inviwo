@@ -33,6 +33,7 @@
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/dataframe/datastructures/datapoint.h>
 #include <inviwo/core/util/formatdispatching.h>
+#include <inviwo/core/util/stdextensions.h>
 
 namespace inviwo {
 
@@ -48,9 +49,13 @@ DataFrame::DataFrame(std::uint32_t size) : columns_() {
     std::iota(cont.begin(), cont.end(), 0);
 }
 
-/*
-In order to prevent data loss, external data will be casted to glm::f64
-*/
+std::shared_ptr<Column> DataFrame::addColumn(std::shared_ptr<Column> column) {
+    if (column) {
+        columns_.push_back(column);
+    }
+    return column;
+}
+
 std::shared_ptr<Column> DataFrame::addColumnFromBuffer(const std::string &identifier,
                                                        std::shared_ptr<const BufferBase> buffer) {
     return buffer->getRepresentation<BufferRAM>()
@@ -63,6 +68,21 @@ std::shared_ptr<Column> DataFrame::addColumnFromBuffer(const std::string &identi
             newVec.insert(newVec.end(), oldVec.begin(), oldVec.end());
             return col;
         });
+}
+
+void DataFrame::dropColumn(const std::string &header) {
+    columns_.erase(std::remove_if(std::begin(columns_), std::end(columns_),
+                                  [&](std::shared_ptr<Column> col) -> bool {
+                                      return col->getHeader() == header;
+                                  }),
+                   std::end(columns_));
+}
+
+void DataFrame::dropColumn(const size_t index) {
+    if (index >= columns_.size()) {
+        return;
+    }
+    columns_.erase(std::begin(columns_) + index);
 }
 
 std::shared_ptr<CategoricalColumn> DataFrame::addCategoricalColumn(const std::string &header,
@@ -156,6 +176,14 @@ const std::vector<std::pair<std::string, const DataFormatBase *>> DataFrame::get
 std::string DataFrame::getHeader(size_t idx) const { return columns_[idx]->getHeader(); }
 
 std::shared_ptr<const Column> DataFrame::getColumn(size_t index) const { return columns_[index]; }
+
+std::shared_ptr<Column> DataFrame::getColumn(const std::string &name) {
+    return util::find_if_or_null(columns_, [name](auto c) { return c->getHeader() == name; });
+}
+
+std::shared_ptr<const Column> DataFrame::getColumn(const std::string &name) const {
+    return util::find_if_or_null(columns_, [name](auto c) { return c->getHeader() == name; });
+}
 
 std::shared_ptr<Column> DataFrame::getColumn(size_t index) { return columns_[index]; }
 

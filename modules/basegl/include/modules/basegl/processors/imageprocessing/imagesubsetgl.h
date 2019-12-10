@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019 Inviwo Foundation
+ * Copyright (c) 2013-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,52 +27,73 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_<uname>_H
-#define IVW_<uname>_H
+#pragma once
 
-#include <define>
+#include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/datastructures/geometry/typedmesh.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/interaction/events/touchevent.h>
 #include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/eventproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+
+#include <modules/opengl/shader/shader.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.<name>, <dname>}
- * ![](org.inviwo.<name>.png?classIdentifier=org.inviwo.<name>)
- * Explanation of how to use the processor.
+/** \docpage{org.inviwo.ImageSubsetGL, Image Subset}
+ * ![](org.inviwo.ImageSubsetGL.png?classIdentifier=org.inviwo.ImageSubsetGL)
+ *
+ * Extracts a region of an image. First color layer, depth layer, and picking layer are
+ * copied.
+ * The region can be moved using mouse/touch interaction.
  *
  * ### Inports
- *   * __<Inport1>__ <description>.
+ *   * __image.inport__ Image to extract region from.
  *
  * ### Outports
- *   * __<Outport1>__ <description>.
+ *   * __image.outport__ Extracted region.
  *
  * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
+ *   * __Range X__ Min/max pixel along horizontal axis.
+ *   * __Range Y__ Min/max pixel along vertical axis.
+ *
  */
-
-/**
- * \class <name>
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
- */
-class <api> <name> : public Processor {
+class IVW_MODULE_BASEGL_API ImageSubsetGL : public Processor {
 public:
-    <name>();
-    virtual ~<name>() = default;
-
-    virtual void process() override;
+    ImageSubsetGL();
+    ~ImageSubsetGL();
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-private:
+    virtual void process() override;
+    virtual void invokeEvent(Event* event) override;
+    /*
+     * \brief Pan from one pixel to another.
+     */
+    void pan(ivec2 from, ivec2 to);
+    ImageInport inport_;
     ImageOutport outport_;
-    FloatVec3Property position_;
+
+    IntSizeTMinMaxProperty rangeX_;
+    IntSizeTMinMaxProperty rangeY_;
+
+private:
+    void handleMousePan(MouseEvent* event);
+    void handleTouchEvent(TouchEvent* event);
+
+    dvec2 pressedPos_;
+    size2_t rangePressedX_;
+    size2_t rangePressedY_;
+
+    Shader shader_;
+    TypedMesh<buffertraits::PositionsBuffer2D, buffertraits::TexcoordBuffer<2>> rect_;
+    std::shared_ptr<Buffer<vec2>> texCoordsBuffer_;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_<uname>_H

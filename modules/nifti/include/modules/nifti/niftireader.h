@@ -37,6 +37,7 @@
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/io/datareaderexception.h>
+#include <inviwo/core/util/indexmapper.h>
 #include <modules/nifti/niftimoduledefine.h>
 
 #include <array>
