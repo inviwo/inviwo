@@ -66,10 +66,8 @@ EntryExitPointsCLProcessor::EntryExitPointsCLProcessor()
     addProperty(workGroupSize_);
     addProperty(useGLSharing_);
     addProperty(trackball_);
-        
-    workGroupSize_.onChange([this]() {
-        entryExitPoints_.setWorkGroupSize(workGroupSize_.get());
-    });
+
+    workGroupSize_.onChange([this]() { entryExitPoints_.setWorkGroupSize(workGroupSize_.get()); });
 
     // Will enable the processor to invalidate when the kernel has recompiled
     entryExitPoints_.addObserver(this);
