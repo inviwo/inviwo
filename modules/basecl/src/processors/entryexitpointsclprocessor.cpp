@@ -57,7 +57,8 @@ EntryExitPointsCLProcessor::EntryExitPointsCLProcessor()
     , camera_("camera", "Camera", util::boundingBox(geometryPort_))
     , workGroupSize_("wgsize", "Work group size", ivec2(8, 8), ivec2(0), ivec2(256))
     , useGLSharing_("glsharing", "Use OpenGL sharing", true)
-    , trackball_(&camera_) {
+    , trackball_(&camera_)
+    , entryExitPoints_(workGroupSize_.get()) {
     addPort(geometryPort_);
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");
@@ -65,6 +66,10 @@ EntryExitPointsCLProcessor::EntryExitPointsCLProcessor()
     addProperty(workGroupSize_);
     addProperty(useGLSharing_);
     addProperty(trackball_);
+        
+    workGroupSize_.onChange([this]() {
+        entryExitPoints_.setWorkGroupSize(workGroupSize_.get());
+    });
 
     // Will enable the processor to invalidate when the kernel has recompiled
     entryExitPoints_.addObserver(this);
