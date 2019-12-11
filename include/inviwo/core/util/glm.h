@@ -107,9 +107,13 @@ using size2_t = glm::size2_t;
 using size3_t = glm::size3_t;
 using size4_t = glm::size4_t;
 
-using u64vec2 = glm::tvec2<glm::uint64>;
-using u64vec3 = glm::tvec3<glm::uint64>;
-using u64vec4 = glm::tvec4<glm::uint64>;
+using i64vec2 = glm::i64vec2;
+using i64vec3 = glm::i64vec3;
+using i64vec4 = glm::i64vec4;
+
+using u64vec2 = glm::u64vec2;
+using u64vec3 = glm::u64vec3;
+using u64vec4 = glm::u64vec4;
 
 namespace util {
 

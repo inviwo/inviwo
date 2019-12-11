@@ -41,6 +41,10 @@
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/datastructures/datatraits.h>
+#include <inviwo/core/util/exception.h>
+
+#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -90,7 +94,7 @@ pybind11::class_<Port, Outport, PortPtr<Port>> exposeOutport(pybind11::module& m
         .def(py::init<std::string>())
         .def("getData", &Port::getData)
         .def("detatchData", &Port::detachData)
-        .def("setData", [](Port* port, std::shared_ptr<T> data) { port->setData(data); });
+        .def("setData", static_cast<void (Port::*)(std::shared_ptr<const T>)>(&Port::setData));
 }
 
 template <typename Port>
@@ -127,10 +131,18 @@ pybind11::class_<Port, Inport, PortPtr<Port>> exposeInport(pybind11::module& m,
 
 template <typename T>
 void exposeStandardDataPorts(pybind11::module& m, const std::string& name) {
-    exposeOutport<DataOutport<T>>(m, name);
+    if (DataTraits<T>::classIdentifier().empty()) {
+        throw Exception(
+            fmt::format("exposing standard DataPorts to python for '{0}' failed due to missing "
+                        "class identifier. Have you provided a DataTraits<{0}> specialization?",
+                        parseTypeIdName(std::string(typeid(T).name()))),
+            IVW_CONTEXT_CUSTOM("exposeStandardDataPorts"));
+    }
+
     exposeInport<DataInport<T>>(m, name);
     exposeInport<DataInport<T, 0>>(m, name + "Multi");
     exposeInport<DataInport<T, 0, true>>(m, name + "FlatMulti");
+    exposeOutport<DataOutport<T>>(m, name);
 }
 
 }  // namespace inviwo

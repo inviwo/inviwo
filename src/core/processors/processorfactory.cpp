@@ -33,30 +33,33 @@
 #include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/util/stringconversion.h>
 
+#include <fmt/format.h>
+
 namespace inviwo {
 
 ProcessorFactory::ProcessorFactory(InviwoApplication* app) : Parent(), app_{app} {}
 
 bool ProcessorFactory::registerObject(ProcessorFactoryObject* processor) {
     if (!Parent::registerObject(processor)) {
-        LogWarn("Processor with class name: " << processor->getClassIdentifier()
-                                              << " is already registered");
+        LogWarn(fmt::format("Processor with class name: '{}' is already registered",
+                            processor->getClassIdentifier()));
         return false;
     }
 
     if (splitString(processor->getClassIdentifier(), '.').size() < 3) {
         LogWarn(
-            "All processor classIdentifiers should be named using reverse DNS "
-            "(org.inviwo.processor) not like: "
-            << processor->getClassIdentifier())
+            fmt::format("All processor classIdentifiers should be named using reverse DNS "
+                        "(org.inviwo.processor) not like: '{}'",
+                        processor->getClassIdentifier()));
     }
     if (processor->getCategory().empty()) {
-        LogWarn("Processor \"" + processor->getClassIdentifier() + "\" has no category");
+        LogWarn(fmt::format("Processor '{}' has no category", processor->getClassIdentifier()));
     } else if (processor->getCategory() == "Undefined") {
-        LogWarn("Processor \"" + processor->getClassIdentifier() + "\" has category \"Undefined\"")
+        LogWarn(fmt::format("Processor '{}' has category \"Undefined\"",
+                            processor->getClassIdentifier()));
     }
     if (processor->getDisplayName().empty()) {
-        LogWarn("Processor \"" + processor->getClassIdentifier() + "\" has no display name");
+        LogWarn(fmt::format("Processor '{}' has no display name", processor->getClassIdentifier()));
     }
 
     return true;
