@@ -112,7 +112,7 @@ public:
      *     using VolumeType = util::PrecisionType<decltype(vrprecision)>;
      *     using ValueType = util::PrecisionValueType<decltype(vrprecision)>;
      *
-     *     T* data = vrprecision->getDataTyped();
+     *     ValueType* data = vrprecision->getDataTyped();
      *     auto dim = vrprecision->getDimensions();
      *     return std::count_if(data, data + dim.x * dim.y * dim.z,
      *                          [](auto x){return x > ValueType{0};});
