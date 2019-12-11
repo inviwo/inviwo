@@ -122,23 +122,6 @@ else()
         LIBRARY   DESTINATION lib
         COMPONENT qt_app
     )
-    install(
-        DIRECTORY   ${IVW_ROOT_DIR}/data/ 
-        DESTINATION Inviwo.app/Contents/Resources/data
-        COMPONENT   qt_app
-    )
-
-    set(CPACK_BINARY_DRAGNDROP ON)
-
-else()
-    install(
-        TARGETS   inviwo
-        RUNTIME   DESTINATION bin
-        BUNDLE    DESTINATION bin
-        ARCHIVE   DESTINATION lib
-        LIBRARY   DESTINATION lib
-        COMPONENT qt_app
-    )
 endif()
 
 # Add build dependency towards any pybind11 targets and inviwo,
