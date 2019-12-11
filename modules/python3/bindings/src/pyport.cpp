@@ -82,22 +82,23 @@ void exposePort(pybind11::module& m) {
         .def("clear", &Outport::clear);
 
     // the datatypes for exposed ports should match those in inviwocore.cpp
+    //
+    // TODO: types for 'float', 'double', 'int32_t', 'uint32_t', and 64bit int are not exposed
+    //       since 'float' and 'double' cause some pybind11 issue with clang/gcc and the compiler
+    //       runs out of heap space due to the number of types.
+    //
     // clang-format off
     using types = std::tuple<
-        float, vec2, vec3, vec4,
-        double, dvec2, dvec3, dvec4,
-        int32_t, ivec2, ivec3, ivec4,
-        uint32_t, uvec2, uvec3, uvec4,
-        std::int64_t, i64vec2, i64vec3, i64vec4,
-        std::uint64_t, u64vec2, u64vec3, u64vec4
+        vec2, vec3, vec4,
+        dvec2, dvec3, dvec4,
+        ivec2, ivec3, ivec4,
+        uvec2, uvec3, uvec4
     >;
     const std::vector<std::string> typeNames = {
-        "float", "vec2", "vec3", "vec4",
-        "double", "dvec2", "dvec3", "dvec4",
-        "int32", "ivec2", "ivec3", "ivec4",
-        "uint32", "uvec2", "uvec3", "uvec4",
-        "int64", "i64vec2", "i64vec3", "i64vec4",
-        "uint64", "u64vec2", "u64vec3", "u64vec4"
+        "vec2", "vec3", "vec4",
+        "dvec2", "dvec3", "dvec4",
+        "ivec2", "ivec3", "ivec4",
+        "uvec2", "uvec3", "uvec4"
     };
     // clang-format on
     util::for_each_type<types>{}(ExposePortsFunctor{}, m, typeNames);
