@@ -28,7 +28,6 @@
  *
  *********************************************************************************/
 
-
 #include <modules/fontrendering/textrenderer.h>
 
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
@@ -42,7 +41,6 @@
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/sharedopenglresources.h>
-
 
 #include <utf8.h>
 
