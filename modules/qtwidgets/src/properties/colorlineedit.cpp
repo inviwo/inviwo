@@ -199,7 +199,7 @@ void ColorLineEdit::updateText() {
 }
 
 void ColorLineEdit::updateColor() {
-    QStringList tokens = text().split(QRegularExpression("\\s+"));
+    QStringList tokens = text().trimmed().split(QRegularExpression("\\s+"));
 
     ivwAssert((tokens.size() == 1) || (tokens.size() == 3) || (tokens.size() == 4),
               "Invalid number of color components");

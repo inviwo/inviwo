@@ -27,8 +27,9 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/util/formats.h>
 #include <modules/opengl/image/layergl.h>
+
+#include <inviwo/core/util/formats.h>
 #include <modules/opengl/glformats.h>
 #include <modules/opengl/texture/texture.h>
 #include <modules/opengl/texture/texture2d.h>
