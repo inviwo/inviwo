@@ -7,7 +7,7 @@ In order to create a Python Processor, Inviwo must be built with the Python3 mod
 
 ## Processor Definition
 First of all `inviwopy` needs to be imported (called `ivw` in the following) to get access to `ivw.Processor`, `ivw.properties.*`, `ivw.ports.*` and `ivw.glm.*` wrappers. In our NumpySource example the imports are:
-```
+```python
 import inviwopy as ivw
 from inviwopy.properties import FileProperty, InvalidationLevel
 from inviwopy.data       import Volume, VolumeOutport
@@ -17,7 +17,7 @@ from pathlib import Path
 ```
 
 Using those wrappers you can define Inviwo processors very similar to how it is done in C++. The actual processor definition happens inside your own processors class, inheriting from `ivw.Processor` and defining all the following methods:
-```
+```python
 class NumpySource(ivw.Processor):
     def __init__(self, id, name):    # Default processor signature
         super().__init__(id, name)   # Call super class (Processor) with id, name
@@ -47,11 +47,11 @@ As you can see, just as in C++, a processor needs to define a constructor to def
 Also do not forget the call to `ivw.Processor.__init__` in your processors `__init__`.
 
 In our `NumpySource` example we can use the following `__init__`:
-```
+```python
 class NumpySource(ivw.Processor):
     def __init__(self, id, name):
         ivw.Processor.__init__(self, id, name)
-        self.outport = VolumeOutport("outport)   # Define Outport
+        self.outport = VolumeOutport("outport")   # Define Outport
         self.addOutport(self.outport)            # Add port to processor
 
         self.file = FileProperty("file", "Numpy Volume (.npy)",
@@ -65,7 +65,7 @@ This `__init__` defines a volume outport to pass the loaded array to the network
 In order to transfer data between Python and C++, the Inviwo data structures  `Volume` (example below), `Layer` (for `Image`s, [example](https://inviwo.org/assets/media/inviwo-vcbm2019.pdf) slide 34-35) and `Buffer` (for `Mesh`es, [example](https://github.com/inviwo/modules/blob/2f07a0fffe916c413a520644b9fe2e45a3ee60a9/misc/vasp/python/vasputil.py#L109-L123)) can take Numpy arrays (`numpy.ndarray`) for initialization.
 
 Loading a Numpy array from disk, wrapping it in a `Volume` and outputting it to the network can be realized as follows:
-```
+```python
 def initializeResources(self):
     if Path(self.file.value).exists() and self.file.value.endswith('npy'):
         self.array = np.load(self.file.value)
