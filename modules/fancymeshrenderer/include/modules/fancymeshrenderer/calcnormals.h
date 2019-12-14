@@ -65,8 +65,8 @@ public:
         WeightArea,
         /**
          * \brief Weight based on the angle.
-         * As defined in "Computing vertex normals from polygonal facets" by Grit Thürmer and
-         * Charles A. Wüthrich 1998.
+         * As defined in "Computing vertex normals from polygonal facets" by Grit ThÃ¼rmer and
+         * Charles A. WÃ¼thrich 1998.
          */
         WeightAngle,
         /**
