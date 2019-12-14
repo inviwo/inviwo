@@ -60,10 +60,10 @@ VectorFieldVisualizationGLModule::VectorFieldVisualizationGLModule(InviwoApplica
     vectorfieldvisualizationgl::addShaderResources(ShaderManager::getPtr(),
                                                    {getPath(ModulePath::GLSL)});
 
-    registerProcessor<LorenzSystem>();
+    registerProcessor<LorenzSystem > ();
     registerProcessor<VectorFieldGenerator2D>();
     registerProcessor<VectorFieldGenerator3D>();
-    registerProcessor<LIC2D>();
+registerProcessor<LIC2D>();
     registerProcessor<HedgeHog2D>();
 
     registerProcessor<Vector2DMagnitude>();
