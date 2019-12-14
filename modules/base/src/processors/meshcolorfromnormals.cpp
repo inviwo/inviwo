@@ -27,52 +27,51 @@
  *
  *********************************************************************************/
 
-#include <modules/fancymeshrenderer/processors/calcnormalsprocessor.h>
+#include <modules/base/processors/meshcolorfromnormals.h>
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo CalcNormalsProcessor::processorInfo_{
-    "org.inviwo.CalcNormalsProcessor",  // Class identifier
-    "Calculate Normals",                // Display name
+const ProcessorInfo MeshColorFromNormals::processorInfo_{
+    "org.inviwo.MeshColorFromNormals",  // Class identifier
+    "Mesh Color From Normals",          // Display name
     "Mesh Processing",                  // Category
     CodeState::Experimental,            // Code state
-    Tags::CPU,                          // Tags
+    Tags::None,                         // Tags
 };
-const ProcessorInfo CalcNormalsProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo MeshColorFromNormals::getProcessorInfo() const { return processorInfo_; }
 
-CalcNormalsProcessor::CalcNormalsProcessor()
-    : Processor()
-    , inport_("inport")
-    , outport_("outport")
-    , mode_("mode", "Mode",
-            {
-                {"passThrough", "Pass Through", meshutil::CalculateMeshNormalsMode::PassThrough},
-                {"noWeighting", "No Weighting", meshutil::CalculateMeshNormalsMode::NoWeighting},
-                {"area", "Area-weighting", meshutil::CalculateMeshNormalsMode::WeightArea},
-                {"angle", "Angle-weighting", meshutil::CalculateMeshNormalsMode::WeightAngle},
-                {"nmax", "Based on N.Max", meshutil::CalculateMeshNormalsMode::WeightNMax},
-            },
-            4) {
+MeshColorFromNormals::MeshColorFromNormals() : Processor(), inport_("inport"), outport_("outport") {
     addPort(inport_);
     addPort(outport_);
-
-    addProperty(mode_);
 }
 
-void CalcNormalsProcessor::process() {
-    auto vd = inport_.getVectorData();
-    if (vd.size() == 1) {
-        outport_.setData(
-            std::shared_ptr<Mesh>(meshutil::calculateMeshNormals(*vd.front(), mode_.get())));
-    } else {
-        std::shared_ptr<Mesh> m = std::make_shared<Mesh>();
-        for (auto i : vd) {
-            auto mesh = meshutil::calculateMeshNormals(*i, mode_.get());
-            m->append(*mesh);
-        }
-        outport_.setData(m);
+void MeshColorFromNormals::process() {
+    auto inMesh = inport_.getData();
+    if (!inMesh->hasBuffer(BufferType::NormalAttrib)) {
+        throw Exception("Input mesh has no normals", IVW_CONTEXT);
     }
+    auto mesh = std::shared_ptr<Mesh>(inMesh->clone());
+
+    auto [normalsBuffer, _] = mesh->findBuffer(BufferType::NormalAttrib);
+
+    IVW_ASSERT(normalsBuffer, "Normal buffer not found in clone");
+
+    if (mesh->hasBuffer(BufferType::ColorAttrib)) {
+        bool removedBuffer = false;
+        for (size_t i = 0; i < mesh->getNumberOfBuffers(); i++) {
+            if (mesh->getBufferInfo(i).type == BufferType::ColorAttrib) {
+                mesh->removeBuffer(i);
+                removedBuffer = true;
+                break;
+            }
+        }
+        IVW_ASSERT(removedBuffer, "No buffer was removed");
+    }
+
+    mesh->addBuffer(BufferType::ColorAttrib, std::shared_ptr<BufferBase>(normalsBuffer->clone()));
+
+    outport_.setData(mesh);
 }
 
 }  // namespace inviwo

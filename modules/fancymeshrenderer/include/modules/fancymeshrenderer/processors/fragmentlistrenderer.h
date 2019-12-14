@@ -150,7 +150,6 @@ private:
     Shader displayShader_;
 
     // illustration buffers
-    bool enableIllustrationBuffer_;
     size2_t illustrationBufferOldScreenSize_;
     size_t illustrationBufferOldFragmentSize_;
     Texture2D* illustrationBufferIdxImg_;

@@ -70,10 +70,6 @@ namespace inviwo {
  *
  * ### Properties
  *   * __Camera__ Camera used for rendering the mesh
- *   * __Center view on geometry__ Adjusts the camera so that the geometry is rendered in the center
- *   * __Calculate Near and Far Plane__ Determine the near and far clip planes based on the mesh
- * bounding box
- *   * __Reset Camera__ Reset the camera to its default state
  *   * __Lighting__ Standard lighting settings
  *   * __Trackball__ Standard trackball settings
  *   * __Shade Opaque__ Draw the mesh opaquly instead of transparent. Disables all transparency
@@ -147,10 +143,7 @@ public:
     virtual void process() override;
 
 protected:
-    void centerViewOnGeometry();
-    std::pair<vec3, vec3> calcWorldBoundingBox() const;
 
-    void setNearFarPlane();
     /**
      * \brief Update the mesh drawer.
      * This is called when the inport is changed or when a property requires preprocessing steps on
@@ -173,9 +166,6 @@ protected:
     ImageOutport outport_;
 
     CameraProperty camera_;
-    ButtonProperty centerViewOnGeometry_;
-    ButtonProperty setNearFarPlane_;
-    ButtonProperty resetViewParams_;
     CameraTrackball trackball_;
     SimpleLightingProperty lightingProperty_;
 
@@ -191,7 +181,7 @@ protected:
 
     enum class NormalSource : int { InputVertex, GenerateVertex, GenerateTriangle };
     TemplateOptionProperty<NormalSource> normalSource_;
-    TemplateOptionProperty<CalcNormals::Mode> normalComputationMode_;
+    TemplateOptionProperty<meshutil::CalculateMeshNormalsMode> normalComputationMode_;
 
     /**
      * \brief Settings to assemble the equation for the alpha values.
@@ -336,7 +326,7 @@ protected:
     ButtonProperty propDebugFragmentLists_;
     bool debugFragmentLists_;
 
-    const Mesh* originalMesh_;
+    std::shared_ptr<const Mesh> originalMesh_;
     std::unique_ptr<Mesh> enhancedMesh_;
     /**
      * \brief This flag is set to true if adjacency information is available in the shader.

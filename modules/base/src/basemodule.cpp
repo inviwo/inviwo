@@ -48,6 +48,7 @@
 #include <modules/base/processors/imagecontourprocessor.h>
 #include <modules/base/processors/imagestackvolumesource.h>
 #include <modules/base/processors/meshclipping.h>
+#include <modules/base/processors/meshcolorfromnormals.h>
 #include <modules/base/processors/meshcreator.h>
 #include <modules/base/processors/meshexport.h>
 #include <modules/base/processors/meshinformation.h>
@@ -146,6 +147,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<ImageStackVolumeSource>();
     registerProcessor<LayerDistanceTransformRAM>();
     registerProcessor<MeshClipping>();
+    registerProcessor<MeshColorFromNormals>();
     registerProcessor<MeshCreator>();
     registerProcessor<MeshInformation>();
     registerProcessor<MeshMapping>();
