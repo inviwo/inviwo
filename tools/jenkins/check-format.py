@@ -78,7 +78,7 @@ def main():
         print("Fixing format, checking out: " + args.commit)
         fref = repo.remotes.origin.fetch("+refs/heads/"+args.commit+":refs/remotes/origin/"+args.commit, no_tags=True)
         repo.git.execute(["git", "remote", "set-branches", "--add", "origin", args.commit])  
-        localBranch = fref[0].ref.checkout(b=args.commit, track=True)
+        localBranch = fref[0].ref.checkout(B=args.commit, track=True)
 
     extensions = ['*.h', '*.hpp', '*.cpp']
     excludes = ["*/ext/*", "*/templates/*", "*/tools/codegen/*" , "*moc_*", "*cmake*"]
@@ -130,16 +130,12 @@ def main():
                 if args.fix:
                     with codecs.open(filename, 'w', encoding="UTF-8") as f:
                         f.write(formatted_code)
-                    if args.commit:
-                        f2 = os.path.relpath(str(filename),repo.working_tree_dir)
-                        print(repo.working_tree_dir)
-                        print(str(filename))
-                        print(f2)
-                        repo.index.add(f2)
 
     if args.fix and args.commit:
         if repo.is_dirty():
             print("There were format fixes, pushing changes")
+            repo.submodule_update()
+            repo.git.add(update=True)
             ivwteam = git.Actor("Inviwo Team", "team@inviwo.org")
             repo.index.commit("Jenkins: Format fixes", author=ivwteam, committer=ivwteam)    
             repo.remotes.origin.push()
