@@ -68,6 +68,7 @@ set(HEADER_FILES
     include/modules/base/processors/inputselector.h
     include/modules/base/processors/layerdistancetransformram.h
     include/modules/base/processors/meshclipping.h
+    include/modules/base/processors/meshcolorfromnormals.h
     include/modules/base/processors/meshconverterprocessor.h
     include/modules/base/processors/meshcreator.h
     include/modules/base/processors/meshexport.h
@@ -182,6 +183,7 @@ set(SOURCE_FILES
     src/processors/inputselector.cpp
     src/processors/layerdistancetransformram.cpp
     src/processors/meshclipping.cpp
+    src/processors/meshcolorfromnormals.cpp
     src/processors/meshconverterprocessor.cpp
     src/processors/meshcreator.cpp
     src/processors/meshexport.cpp
