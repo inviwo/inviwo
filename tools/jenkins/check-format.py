@@ -131,6 +131,8 @@ def main():
                     with codecs.open(filename, 'w', encoding="UTF-8") as f:
                         f.write(formatted_code)
                         if args.commit:
+                            print(repo.working_tree_dir)
+                            print(str(filename))
                             repo.index.add(str(filename))
 
     if args.fix and args.commit:
