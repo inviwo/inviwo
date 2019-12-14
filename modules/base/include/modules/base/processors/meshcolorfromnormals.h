@@ -27,57 +27,34 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_CALCNORMALS_H
-#define IVW_CALCNORMALS_H
+#pragma once
 
-#include <modules/fancymeshrenderer/fancymeshrenderermoduledefine.h>
-#include <inviwo/core/datastructures/geometry/mesh.h>
-#include <memory>
+#include <modules/base/basemoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/meshport.h>
 
 namespace inviwo {
 
-namespace meshutil {
-/**
- * \brief The weighting modes for calculating normals 
+/** \docpage{org.inviwo.MeshColorFromNormals, Mesh Color From Normals}
+ * ![](org.inviwo.MeshColorFromNormals.png?classIdentifier=org.inviwo.MeshColorFromNormals)
+ * Sets the color of a mesh based on its normal.
  */
-enum class CalculateMeshNormalsMode {
-    /**
-     * \brief Pass through, mesh is not changed
-     */
-    PassThrough,
-    /**
-     * \brief no weighting of the normals, simple average
-     */
-    NoWeighting,
-    /**
-     * \brief Weight = area of the triangle
-     */
-    WeightArea,
-    /**
-     * \brief Weight based on the angle.
-     * As defined in "Computing vertex normals from polygonal facets" by Grit Thürmer and
-     * Charles A. Wüthrich 1998.
-     */
-    WeightAngle,
-    /**
-     * \brief Based on "Weights for Computing Vertex Normals from Facet Normals", N. Max, 1999.
-     * This gives the best results in most cases.
-     */
-    WeightNMax
+class IVW_MODULE_BASE_API MeshColorFromNormals : public Processor {
+public:
+    MeshColorFromNormals();
+    virtual ~MeshColorFromNormals() = default;
+
+    virtual void process() override;
+
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+    MeshInport inport_;
+    MeshOutport outport_;
 };
 
-IVW_MODULE_FANCYMESHRENDERER_API void calculateMeshNormals(
-    Mesh& mesh, CalculateMeshNormalsMode mode = CalculateMeshNormalsMode::WeightNMax);
-
-inline std::unique_ptr<Mesh> calculateMeshNormals(
-    const Mesh& mesh, CalculateMeshNormalsMode mode = CalculateMeshNormalsMode::WeightNMax) {
-    auto cloned = std::unique_ptr<Mesh>(mesh.clone());
-    calculateMeshNormals(*cloned, mode);
-    return cloned;
-}
-
-}  // namespace meshutil
-
 }  // namespace inviwo
-
-#endif  // IVW_CALCNORMALS_H

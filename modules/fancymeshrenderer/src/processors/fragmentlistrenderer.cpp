@@ -36,6 +36,7 @@
 #include <modules/opengl/openglcapabilities.h>
 
 #include <cstdio>
+#include <fmt/format.h>
 
 namespace inviwo {
 FragmentListRenderer::FragmentListRenderer()
@@ -49,7 +50,6 @@ FragmentListRenderer::FragmentListRenderer()
     , totalFragmentQuery_(0)
     , clearShader_("simplequad.vert", "clearabufferlinkedlist.frag", false)
     , displayShader_("simplequad.vert", "dispabufferlinkedlist.frag", false)
-    , enableIllustrationBuffer_(false)
     , illustrationBufferOldScreenSize_(0)
     , illustrationBufferOldFragmentSize_(0)
     , illustrationBufferIdxImg_(nullptr)
@@ -283,7 +283,8 @@ void FragmentListRenderer::drawQuad() const {
 }
 
 void FragmentListRenderer::debugFragmentLists(GLuint numFrags) {
-    printf("========= Fragment List Renderer - DEBUG =========\n\n");
+    std::ostringstream oss;
+    oss << "========= Fragment List Renderer - DEBUG =========\n\n";
 
     // read global counter
     GLuint counter = 0xffffffff;
@@ -293,24 +294,27 @@ void FragmentListRenderer::debugFragmentLists(GLuint numFrags) {
     LGL_ERROR;
     glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
     LGL_ERROR;
-    LogInfo("FLR: value of the global counter: " << counter);
+    oss << "FLR: value of the global counter: " << counter << std::endl;
 
-    printf("fragment query: %d\n", numFrags);
-    printf("global counter: %d\n", counter);
+    oss << "fragment query: " << numFrags << std::endl;
+    oss << "global counter: " << counter << std::endl;
 
     // read index image
-    printf("\nIndex image:\n");
+    oss << "Index image:" << std::endl;
     std::vector<GLuint> idxImg(screenSize_.x * screenSize_.y);
     abufferIdxImg_->download(&idxImg[0]);
     LGL_ERROR;
-    for (int y = 0; y < screenSize_.y; ++y) {
-        printf("y=%5d:", y);
-        for (int x = 0; x < screenSize_.x; ++x) printf(" %5d", idxImg[x + screenSize_.x * y]);
-        printf("\n");
+    for (size_t y = 0; y < screenSize_.y; ++y) {
+        oss << "y = " << y;
+        for (size_t x = 0; x < screenSize_.x; ++x) {
+            oss << " " << idxImg[x + screenSize_.x * y];
+        }
+        oss << std::endl;
     }
 
     // read pixel storage buffer
-    printf("\nPixel storage:\n");
+
+    oss << std::endl << "Pixel storage: " << std::endl;
     glBindBuffer(GL_ARRAY_BUFFER, pixelBuffer_);
     LGL_ERROR;
     size_t size = std::min((size_t)counter, fragmentSize_);
@@ -319,7 +323,7 @@ void FragmentListRenderer::debugFragmentLists(GLuint numFrags) {
     LGL_ERROR;
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     LGL_ERROR;
-    for (int i = 0; i < size; ++i) {
+    for (size_t i = 0; i < size; ++i) {
         GLuint previous = *reinterpret_cast<GLuint*>(&pixelBuffer[4 * i]);
         GLfloat depth = pixelBuffer[4 * i + 1];
         GLfloat alpha = pixelBuffer[4 * i + 2];
@@ -327,11 +331,11 @@ void FragmentListRenderer::debugFragmentLists(GLuint numFrags) {
         float r = float((c >> 20) & 0x3ff) / 1023.0f;
         float g = float((c >> 10) & 0x3ff) / 1023.0f;
         float b = float(c & 0x3ff) / 1023.0f;
-        printf("%5d: previous=%5d, depth=%6.3f, alpha=%5.3f, r=%5.3f, g=%5.3f, b=%5.3f\n", i,
+        oss << fmt::format("%5d: previous=%5d, depth=%6.3f, alpha=%5.3f, r=%5.3f, g=%5.3f, b=%5.3f\n", i,
                (int)previous, (float)depth, (float)alpha, r, g, b);
     }
 
-    printf("\n==================================================\n");
+    oss << std::endl << "\n==================================================" << std::endl;
 }
 
 void FragmentListRenderer::initIllustrationBuffer() {
@@ -562,12 +566,12 @@ void FragmentListRenderer::debugIllustrationBuffer(GLuint numFrags) {
     LGL_ERROR;
 
     // print
-    for (int y = 0; y < screenSize_.y; ++y) {
-        for (int x = 0; x < screenSize_.x; ++x) {
-            int start = idxImg[x + screenSize_.x * y];
-            int count = countImg[x + screenSize_.x * y];
-            printf(" %4d:%4d:  start=%5d, count=%5d\n", x, y, start, count);
-            for (int i = 0; i < count; ++i) {
+    for (size_t y = 0; y < screenSize_.y; ++y) {
+        for (size_t x = 0; x < screenSize_.x; ++x) {
+            auto start = idxImg[x + screenSize_.x * y];
+            auto count = countImg[x + screenSize_.x * y];
+            printf(" %4d:%4d:  start=%5d, count=%5d\n", (int)x, (int)y, start, count);
+            for (uint32_t i = 0; i < count; ++i) {
                 float alpha = colorBuffer[start + i].x;
                 int rgb = *reinterpret_cast<int*>(&colorBuffer[start + i].y);
                 float depth = surfaceInfoBuffer[start + i].x;
@@ -582,17 +586,21 @@ void FragmentListRenderer::debugIllustrationBuffer(GLuint numFrags) {
                     "gamma=%5.3f, neighbors:",
                     depth, alpha, r, g, b, beta, gamma);
                 if (neighbors.x >= 0) {
-                    if (neighbors.x < size)
+                    if (neighbors.x < size) {
                         printf("(%d:%5.3f)", neighbors.x, surfaceInfoBuffer[neighbors.x].x);
-                    else
+                    } else {
+
                         printf("(>size)");
-                } else
+                    }
+                } else {
                     printf("(-1)");
+                }
                 if (neighbors.y >= 0) {
-                    if (neighbors.y < size)
+                    if (neighbors.y < size) {
                         printf("(%d:%5.3f)", neighbors.y, surfaceInfoBuffer[neighbors.y].x);
-                    else
+                    } else {
                         printf("(>size)");
+                    }
                 } else
                     printf("(-1)");
                 if (neighbors.z >= 0) {
