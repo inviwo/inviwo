@@ -131,9 +131,11 @@ def main():
                     with codecs.open(filename, 'w', encoding="UTF-8") as f:
                         f.write(formatted_code)
                         if args.commit:
+                            f2 = os.path.relpath(str(filename),repo.working_tree_dir)
                             print(repo.working_tree_dir)
                             print(str(filename))
-                            repo.index.add(str(filename))
+                            print(f2)
+                            repo.index.add(f2)
 
     if args.fix and args.commit:
         if repo.is_dirty():
