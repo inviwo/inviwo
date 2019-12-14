@@ -11,9 +11,9 @@ node {
     util.config(this)
     
     util.wrap(this, "#jenkins-branch-pr") {
-        util.touchwarn()
+        //util.touchwarn()
         util.format(this, "${env.WORKSPACE}/inviwo")
-        util.buildStandard(
+        /*util.buildStandard(
             state: this,
             modulePaths: [], 
             onModules: ["DiscreteData", "HDF5", "OpenCL", "BaseCL", "WebBrowser", "Example"],  
@@ -25,6 +25,6 @@ node {
         util.integrationtest(this)        
         util.regression(this, ["${env.WORKSPACE}/inviwo/modules"])
         util.copyright(this)    
-        util.doxygen(this)
+        util.doxygen(this)*/
     }
 }
