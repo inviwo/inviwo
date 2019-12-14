@@ -130,11 +130,12 @@ def main():
                 if args.fix:
                     with codecs.open(filename, 'w', encoding="UTF-8") as f:
                         f.write(formatted_code)
+                        if args.commit:
+                            repo.index.add(str(filename))
 
     if args.fix and args.commit:
         if repo.is_dirty():
             print("There were format fixes, pushing changes")
-            repo.git.add(update=True)
             ivwteam = git.Actor("Inviwo Team", "team@inviwo.org")
             repo.index.commit("Jenkins: Format fixes", author=ivwteam, committer=ivwteam)    
             repo.remotes.origin.push()
