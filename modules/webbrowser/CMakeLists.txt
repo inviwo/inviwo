@@ -153,7 +153,9 @@ target_link_libraries(inviwo-module-webbrowser PUBLIC
     nlohmann_json::nlohmann_json
     ${CEF_STANDARD_LIBS}
 )
-
+target_compile_definitions(inviwo-module-webbrowser PRIVATE
+    $<$<BOOL:${USE_SANDBOX}>:CEF_USE_SANDBOX>
+)
 #--------------------------------------------------------------------
 # Package or build shaders into resources
 ivw_handle_shader_resources(${CMAKE_CURRENT_SOURCE_DIR}/glsl ${SHADER_FILES})
