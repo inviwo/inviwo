@@ -46,36 +46,22 @@ void calculateMeshNormals(Mesh& mesh, CalculateMeshNormalsMode mode) {
     }
 
     // get input buffers
-    auto [bv, bvLoc] = mesh.findBuffer(BufferType::PositionAttrib);
-    auto [bn, bnLoc] = mesh.findBuffer(BufferType::NormalAttrib);
-
-    BufferBase* asdf = const_cast<BufferBase*>(bn);
+    auto bv = mesh.getBuffer(BufferType::PositionAttrib);
 
     if (!bv) {
         throw Exception("Input mesh has no position buffer",
                         IVW_CONTEXT_CUSTOM("meshutil::calculateMeshNormals"));
     }
 
-    // Make sure we have a normal buffer of type vec3
-    if (!bn || bn->getDataFormat() != DataVec3Float32::get()) {
-        auto newBuf = std::make_shared<Buffer<vec3>>();
-        if (bn) {
-            mesh.replaceBuffer(bnLoc, {BufferType::NormalAttrib, bnLoc}, newBuf);
-        } else {
-            mesh.addBuffer(BufferType::NormalAttrib, newBuf);
+    for (size_t i = 0; i < mesh.getNumberOfBuffers(); i++) {  // Remove old normal buffer
+        if (mesh.getBufferInfo(i).type == BufferType::NormalAttrib) {
+            mesh.removeBuffer(i);
+            break;
         }
-        bn = newBuf.get();
     }
 
     auto vertices = bv->getRepresentation<BufferRAM>();
-    auto normalBuffer = static_cast<Buffer<vec3>*>(asdf);
-    std::vector<vec3>& normals = normalBuffer->getEditableRAMRepresentation()->getDataContainer();
-    if (normals.empty()) {
-        normals.resize(vertices->getSize(), vec3(0.0f));
-    } else {
-        // reset normals
-        std::fill(normals.begin(), normals.end(), vec3(0.0f));
-    }
+    std::vector<vec3> normals(vertices->getSize(), vec3(0.0f));
 
     auto vertexLookUp =
         vertices->dispatch<std::function<vec3(size_t)>, dispatching::filter::Floats>([](auto ram) {
@@ -84,7 +70,7 @@ void calculateMeshNormals(Mesh& mesh, CalculateMeshNormalsMode mode) {
                 if constexpr (util::extent<T>::value == 1) {
                     return dvec3(v[i], 0, 0);
                 }
-                if constexpr (util::extent<T>::value == 2) {
+                else if constexpr (util::extent<T>::value == 2) {
                     return dvec3(v[i], 0);
                 } else {  // extent == 3 or extent == 4
                     return dvec3(v[i]);
@@ -157,6 +143,9 @@ void calculateMeshNormals(Mesh& mesh, CalculateMeshNormalsMode mode) {
         if (l < std::numeric_limits<float>::epsilon()) return n;
         return n / l;
     });
+
+    auto bufferRAM = std::make_shared<BufferRAMPrecision<vec3>>(std::move(normals));
+    mesh.addBuffer(BufferType::NormalAttrib, std::make_shared<Buffer<vec3>>(bufferRAM));
 }
 }  // namespace meshutil
 
