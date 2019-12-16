@@ -132,9 +132,9 @@ def main():
                         f.write(formatted_code)
 
     if args.fix and args.commit:
+        repo.submodule_update()
         if repo.is_dirty():
             print("There were format fixes, pushing changes")
-            repo.submodule_update()
             repo.git.add(update=True)
             ivwteam = git.Actor("Inviwo Team", "team@inviwo.org")
             repo.index.commit("Jenkins: Format fixes", author=ivwteam, committer=ivwteam)    
