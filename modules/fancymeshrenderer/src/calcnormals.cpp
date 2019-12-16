@@ -29,60 +29,80 @@
 
 #include <modules/fancymeshrenderer/calcnormals.h>
 
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
+
 namespace inviwo {
-Mesh* CalcNormals::processMesh(const Mesh* const input, Mode mode) {
-    // short cut: pass through
-    Mesh* m = input->clone();
+
+namespace meshutil {
+using Mode = CalculateMeshNormalsMode;
+
+void calculateMeshNormals(Mesh& mesh, CalculateMeshNormalsMode mode) {
     if (mode == Mode::PassThrough) {
-        return m;
+        return;
     }
 
     // get input buffers
-    const BufferBase* bv = nullptr;
-    BufferBase* bn = nullptr;
-    for (int i = 0; i < m->getNumberOfBuffers(); ++i) {
-        if (m->getBuffers().at(i).first.type == BufferType::PositionAttrib) {
-            bv = m->getBuffers().at(i).second.get();
-        } else if (m->getBuffers().at(i).first.type == BufferType::NormalAttrib) {
-            bn = m->getBuffers().at(i).second.get();
-        }
-    }
-    if (bv == nullptr || bn == nullptr) {
-        LogWarn("no position or normal buffer found in the mesh");
-        return m;
-    }
-    auto vertices = bv->getRepresentation<BufferRAM>();
-    auto normals = bn->getEditableRepresentation<BufferRAM>();
+    auto [bv, bvLoc] = mesh.findBuffer(BufferType::PositionAttrib);
+    auto [bn, bnLoc] = mesh.findBuffer(BufferType::NormalAttrib);
 
-    // reset normals
-    for (int i = 0; i < normals->getSize(); ++i) {
-        normals->setFromDVec3(i, dvec3(0));
+    BufferBase* asdf = const_cast<BufferBase*>(bn);
+
+    if (!bv) {
+        throw Exception("Input mesh has no position buffer",
+                        IVW_CONTEXT_CUSTOM("meshutil::calculateMeshNormals"));
     }
+
+    // Make sure we have a normal buffer of type vec3
+    if (!bn || bn->getDataFormat() != DataVec3Float32::get()) {
+        auto newBuf = std::make_shared<Buffer<vec3>>();
+        if (bn) {
+            mesh.replaceBuffer(bnLoc, {BufferType::NormalAttrib, bnLoc}, newBuf);
+        } else {
+            mesh.addBuffer(BufferType::NormalAttrib, newBuf);
+        }
+        bn = newBuf.get();
+    }
+
+    auto vertices = bv->getRepresentation<BufferRAM>();
+    auto normalBuffer = static_cast<Buffer<vec3>*>(asdf);
+    std::vector<vec3>& normals = normalBuffer->getEditableRAMRepresentation()->getDataContainer();
+    if (normals.empty()) {
+        normals.resize(vertices->getSize(), vec3(0.0f));
+    } else {
+        // reset normals
+        std::fill(normals.begin(), normals.end(), vec3(0.0f));
+    }
+
+    auto vertexLookUp =
+        vertices->dispatch<std::function<vec3(size_t)>, dispatching::filter::Floats>([](auto ram) {
+            using T = util::PrecisionValueType<decltype(ram)>;
+            return [&v = ram->getDataContainer()](size_t i) -> dvec3 {
+                if constexpr (util::extent<T>::value == 1) {
+                    return dvec3(v[i], 0, 0);
+                }
+                if constexpr (util::extent<T>::value == 2) {
+                    return dvec3(v[i], 0);
+                } else {  // extent == 3 or extent == 4
+                    return dvec3(v[i]);
+                }
+            };
+        });
 
     // loop over index buffers
-    for (int i = 0; i < m->getNumberOfIndicies(); ++i) {
-        if (m->getIndexMeshInfo(i).dt != DrawType::Triangles)
-            continue;  // only triangles are supported
-        auto ct = m->getIndexMeshInfo(i).ct;
-        if (ct != ConnectivityType::None) {
-            LogWarn("Only triangle lists are currently supported, not fans or strips");
-            continue;
-        }
-        const IndexBuffer* ib = m->getIndices(i);
-        auto indices = ib->getRAMRepresentation();
-        for (int j = 0; j < ib->getSize(); j += 3) {
-            auto a = indices->get(j);
-            auto b = indices->get(j + 1);
-            auto c = indices->get(j + 2);
-            dvec3 va = vertices->getAsDVec3(a);
-            dvec3 vb = vertices->getAsDVec3(b);
-            dvec3 vc = vertices->getAsDVec3(c);
-            // compute triangle normal
-            dvec3 n = cross(vb - va, vc - va);
-            double l = sqrt(n.x * n.x + n.y * n.y + n.z * n.z);
+    for (auto [meshInfo, buffer] : mesh.getIndexBuffers()) {
+        if (meshInfo.dt != DrawType::Triangles) continue;
+        meshutil::forEachTriangle(meshInfo, *buffer, [&](auto i0, auto i1, auto i2) {
+            const auto v0 = vertexLookUp(i0);
+            const auto v1 = vertexLookUp(i1);
+            const auto v2 = vertexLookUp(i2);
+
+            const dvec3 n = cross(v1 - v0, v2 - v0);
+            double l = glm::length(n);
             if (l < std::numeric_limits<float>::epsilon()) {
                 // degenerated triangle
-                continue;
+                return;
             }
             // weighting factor
             double weightA;
@@ -97,52 +117,45 @@ Mesh* CalcNormals::processMesh(const Mesh* const input, Mode mode) {
                     break;
                 case Mode::WeightAngle: {
                     // based on the angle between the edges
-                    dvec3 ea = vb - vc;
-                    ea /= sqrt(ea.x * ea.x + ea.y * ea.y + ea.z * ea.z);
-                    dvec3 eb = vc - va;
-                    eb /= sqrt(eb.x * eb.x + eb.y * eb.y + eb.z * eb.z);
-                    dvec3 ec = vb - va;
-                    ec /= sqrt(ec.x * ec.x + ec.y * ec.y + ec.z * ec.z);
-                    weightA = acos(dot(eb, ec)) / l;
-                    weightB = acos(dot(ea, ec)) / l;
-                    weightC = acos(dot(ea, eb)) / l;
+                    const dvec3 e0 = glm::normalize(v1 - v2);
+                    const dvec3 e1 = glm::normalize(v2 - v0);
+                    const dvec3 e2 = glm::normalize(v1 - v0);
+                    weightA = acos(dot(e1, e2)) / l;
+                    weightB = acos(dot(e0, e2)) / l;
+                    weightC = acos(dot(e0, e1)) / l;
                     break;
                 }
                 case Mode::WeightNMax: {
-                    dvec3 ea = vb - vc;
-                    double la = sqrt(ea.x * ea.x + ea.y * ea.y + ea.z * ea.z);
-                    ea /= la;
-                    dvec3 eb = vc - va;
-                    double lb = sqrt(eb.x * eb.x + eb.y * eb.y + eb.z * eb.z);
-                    eb /= lb;
-                    dvec3 ec = vb - va;
-                    double lc = sqrt(ec.x * ec.x + ec.y * ec.y + ec.z * ec.z);
-                    ec /= lc;
-                    weightA = sin(acos(dot(eb, ec))) / (l * lb * lc);
-                    weightB = sin(acos(dot(ea, ec))) / (l * la * lc);
-                    weightC = sin(acos(dot(ea, eb))) / (l * la * lb);
+                    auto edge = [](auto a, auto b) {
+                        auto e = a - b;
+                        auto l = glm::length(e);
+                        return std::make_pair(e / l, l);
+                    };
+                    const auto [e0, l0] = edge(v1, v2);
+                    const auto [e1, l1] = edge(v2, v0);
+                    const auto [e2, l2] = edge(v1, v0);
+                    weightA = sin(acos(dot(e1, e2))) / (l * l1 * l2);
+                    weightB = sin(acos(dot(e0, e2))) / (l * l0 * l2);
+                    weightC = sin(acos(dot(e0, e1))) / (l * l0 * l1);
                     break;
                 }
                 default:
-                    weightA = 1 / l;  // no weighting
-                    weightB = weightA;
-                    weightC = weightA;
+                    weightA = weightB = weightC = 1.0 / l;  // no weighting
             }
             // add it to the vertices
-            normals->setFromDVec3(a, normals->getAsDVec3(a) + (n * weightA));
-            normals->setFromDVec3(b, normals->getAsDVec3(b) + (n * weightB));
-            normals->setFromDVec3(c, normals->getAsDVec3(c) + (n * weightC));
-        }
+            normals[i0] += vec3(n * weightA);
+            normals[i1] += vec3(n * weightB);
+            normals[i2] += vec3(n * weightC);
+        });
     }
 
     // normalize normals
-    for (int i = 0; i < normals->getSize(); ++i) {
-        dvec3 n = normals->getAsDVec3(i);
-        double l = sqrt(n.x * n.x + n.y * n.y + n.z * n.z);
-        if (l > std::numeric_limits<float>::epsilon()) normals->setFromDVec3(i, n / l);
-    }
-
-    // done
-    return m;
+    std::transform(normals.begin(), normals.end(), normals.begin(), [](auto n) {
+        const auto l = glm::length(n);
+        if (l < std::numeric_limits<float>::epsilon()) return n;
+        return n / l;
+    });
 }
+}  // namespace meshutil
+
 }  // namespace inviwo

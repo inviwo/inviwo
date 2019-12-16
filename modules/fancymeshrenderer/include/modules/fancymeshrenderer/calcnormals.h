@@ -31,68 +31,52 @@
 #define IVW_CALCNORMALS_H
 
 #include <modules/fancymeshrenderer/fancymeshrenderermoduledefine.h>
-#include <inviwo/core/datastructures/geometry/basicmesh.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
 #include <memory>
 
 namespace inviwo {
-class Mesh;
 
+namespace meshutil {
 /**
- * \class CalcNormals
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
+ * \brief The weighting modes for calculating normals 
  */
-class IVW_MODULE_FANCYMESHRENDERER_API CalcNormals {
-public:
-    CalcNormals() {}
-    virtual ~CalcNormals() = default;
-
+enum class CalculateMeshNormalsMode {
     /**
-     * \brief The weighting modes
+     * \brief Pass through, mesh is not changed
      */
-    enum class Mode {
-        /**
-         * \brief Pass through, mesh is not changed
-         */
-        PassThrough,
-        /**
-         * \brief no weighting of the normals, simple average
-         */
-        NoWeighting,
-        /**
-         * \brief Weight = area of the triangle
-         */
-        WeightArea,
-        /**
-         * \brief Weight based on the angle.
-         * As defined in "Computing vertex normals from polygonal facets" by Grit Thürmer and
-         * Charles A. Wüthrich 1998.
-         */
-        WeightAngle,
-        /**
-         * \brief Based on "Weights for Computing Vertex Normals from Facet Normals", N. Max, 1999.
-         * This gives the best results in most cases.
-         */
-        WeightNMax
-    };
-
+    PassThrough,
     /**
-     * \brief Computes vertex normals for the specified mesh.
-     * The mesh is always cloned, even if Mode::PassThrough is chosen.
-     * TODO: only supports triangle meshes with triangle lists (connectivity=None)
-     * \param input the mesh to process
-     * \param mode the computation mode
-     * \return the new mesh with new normals
+     * \brief no weighting of the normals, simple average
      */
-    Mesh* processMesh(const Mesh* const input, Mode mode);
-
+    NoWeighting,
     /**
-     * \brief The "best" computation algorithm, as shown in some examples.
-     * Might be used as an initial value to the algorithm selection
-     * \return the preferred mode
+     * \brief Weight = area of the triangle
      */
-    static Mode preferredMode() { return Mode::WeightNMax; }
+    WeightArea,
+    /**
+     * \brief Weight based on the angle.
+     * As defined in "Computing vertex normals from polygonal facets" by Grit Thürmer and
+     * Charles A. Wüthrich 1998.
+     */
+    WeightAngle,
+    /**
+     * \brief Based on "Weights for Computing Vertex Normals from Facet Normals", N. Max, 1999.
+     * This gives the best results in most cases.
+     */
+    WeightNMax
 };
+
+IVW_MODULE_FANCYMESHRENDERER_API void calculateMeshNormals(
+    Mesh& mesh, CalculateMeshNormalsMode mode = CalculateMeshNormalsMode::WeightNMax);
+
+inline std::unique_ptr<Mesh> calculateMeshNormals(
+    const Mesh& mesh, CalculateMeshNormalsMode mode = CalculateMeshNormalsMode::WeightNMax) {
+    auto cloned = std::unique_ptr<Mesh>(mesh.clone());
+    calculateMeshNormals(*cloned, mode);
+    return cloned;
+}
+
+}  // namespace meshutil
 
 }  // namespace inviwo
 

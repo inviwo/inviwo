@@ -42,17 +42,21 @@ const ProcessorInfo CalcNormalsProcessor::processorInfo_{
 const ProcessorInfo CalcNormalsProcessor::getProcessorInfo() const { return processorInfo_; }
 
 CalcNormalsProcessor::CalcNormalsProcessor()
-    : Processor(), inport_("inport"), outport_("outport"), mode_("mode", "Mode") {
+    : Processor()
+    , inport_("inport")
+    , outport_("outport")
+    , mode_("mode", "Mode",
+            {
+                {"passThrough", "Pass Through", meshutil::CalculateMeshNormalsMode::PassThrough},
+                {"noWeighting", "No Weighting", meshutil::CalculateMeshNormalsMode::NoWeighting},
+                {"area", "Area-weighting", meshutil::CalculateMeshNormalsMode::WeightArea},
+                {"angle", "Angle-weighting", meshutil::CalculateMeshNormalsMode::WeightAngle},
+                {"nmax", "Based on N.Max", meshutil::CalculateMeshNormalsMode::WeightNMax},
+            },
+            4) {
     addPort(inport_);
     addPort(outport_);
 
-    mode_.addOption("passThrough", "Pass Through", CalcNormals::Mode::PassThrough);
-    mode_.addOption("noWeighting", "No Weighting", CalcNormals::Mode::NoWeighting);
-    mode_.addOption("area", "Area-weighting", CalcNormals::Mode::WeightArea);
-    mode_.addOption("angle", "Angle-weighting", CalcNormals::Mode::WeightAngle);
-    mode_.addOption("nmax", "Based on N.Max", CalcNormals::Mode::WeightNMax);
-    mode_.setSelectedValue(CalcNormals::preferredMode());
-    mode_.setCurrentStateAsDefault();
     addProperty(mode_);
 }
 
@@ -60,13 +64,12 @@ void CalcNormalsProcessor::process() {
     auto vd = inport_.getVectorData();
     if (vd.size() == 1) {
         outport_.setData(
-            std::shared_ptr<Mesh>(CalcNormals().processMesh(vd[0].get(), mode_.get())));
+            std::shared_ptr<Mesh>(meshutil::calculateMeshNormals(*vd.front(), mode_.get())));
     } else {
         std::shared_ptr<Mesh> m = std::make_shared<Mesh>();
         for (auto i : vd) {
-            auto i2 = CalcNormals().processMesh(i.get(), mode_.get());
-            m->append(*i2);
-            delete i2;
+            auto mesh = meshutil::calculateMeshNormals(*i, mode_.get());
+            m->append(*mesh);
         }
         outport_.setData(m);
     }

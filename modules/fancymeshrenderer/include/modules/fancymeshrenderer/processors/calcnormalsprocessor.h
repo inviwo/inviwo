@@ -53,12 +53,6 @@ namespace inviwo {
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
  */
-
-/**
- * \class CalcNormalsProcessor
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
- */
 class IVW_MODULE_FANCYMESHRENDERER_API CalcNormalsProcessor : public Processor {
 public:
     CalcNormalsProcessor();
@@ -72,7 +66,7 @@ public:
 private:
     MeshFlatMultiInport inport_;
     MeshOutport outport_;
-    TemplateOptionProperty<CalcNormals::Mode> mode_;
+    TemplateOptionProperty<meshutil::CalculateMeshNormalsMode> mode_;
 };
 
 }  // namespace inviwo
