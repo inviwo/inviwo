@@ -33,6 +33,8 @@
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 
+#include <modules/base/algorithm/meshutils.h>
+
 namespace inviwo {
 
 namespace meshutil {
