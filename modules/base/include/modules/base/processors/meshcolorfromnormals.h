@@ -34,6 +34,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/meshport.h>
 
 namespace inviwo {
 
