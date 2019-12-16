@@ -82,7 +82,7 @@ TEST(filesystemTest, absolutePathTest) {
     EXPECT_EQ(true, filesystem::isAbsolutePath("C:/dir"));
     EXPECT_EQ(true, filesystem::isAbsolutePath("\"c:/dir\""));
     EXPECT_EQ(true, filesystem::isAbsolutePath("\"C:/dir\""));
-    
+
     EXPECT_EQ(false, filesystem::isAbsolutePath("/dir"));
     EXPECT_EQ(false, filesystem::isAbsolutePath("dir"));
     EXPECT_EQ(false, filesystem::isAbsolutePath("\"/dir\""));
@@ -126,7 +126,7 @@ TEST(filesystemTest, relativePathTest) {
 
     EXPECT_STREQ("../test/file.txt",
                  filesystem::getRelativePath("C:/foo/bar", "C:/foo/test/file.txt").c_str());
-    
+
     EXPECT_STREQ("../test/file.txt",
                  filesystem::getRelativePath("C:/foo/bar", "c:/foo/test/file.txt").c_str());
 }
