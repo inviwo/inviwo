@@ -44,6 +44,9 @@ target_include_directories(${CEF_HELPER_TARGET} PRIVATE
 ivw_define_standard_definitions(WebBrowser ${CEF_HELPER_TARGET})
 ivw_define_standard_properties(${CEF_HELPER_TARGET})
 ivw_suppress_compiler_warnings(${CEF_HELPER_TARGET})
+target_compile_definitions(${CEF_HELPER_TARGET} PRIVATE
+    $<$<BOOL:${USE_SANDBOX}>:CEF_USE_SANDBOX>
+)
 
 # Put in ext folder in developer IDE
 ivw_folder(${CEF_HELPER_TARGET} ext/CEF)
@@ -77,6 +80,12 @@ if (OS_MACOSX)
     set_target_properties(${CEF_HELPER_TARGET} PROPERTIES
         MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/mac/helper-Info.plist
     )
+    if(USE_SANDBOX)
+        # Logical target used to link the cef_sandbox library.
+        ADD_LOGICAL_TARGET("cef_sandbox_lib" "${CEF_SANDBOX_LIB_DEBUG}" "${CEF_SANDBOX_LIB_RELEASE}")
+        target_link_libraries(${CEF_HELPER_TARGET} PRIVATE cef_sandbox_lib)
+    endif()
+
 elseif (WIN32)
 	# Inviwo: Needed? (Windows only) Add the custom manifest files to the executable.
 	#ADD_WINDOWS_CEF_MANIFEST("${CEF_TARGET_OUT_DIR}" "${WEBBROWSER_MODULE_PATH}" "${CEF_HELPER_TARGET}" "exe")
