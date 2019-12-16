@@ -144,7 +144,7 @@ FancyMeshRenderer::FancyMeshRenderer()
         needsRecompilation_ = true;
         update();
     };
-    auto triggerUpdate = [this]() { update(); };
+
     auto triggerMeshUpdate = [this]() {
         needsRecompilation_ = true;
         update();
@@ -764,7 +764,7 @@ void FancyMeshRenderer::updateDrawers() {
         }
 
         // add new index buffer with adjacency information
-        enhancedMesh2->addIndicies({DrawType::Triangles, ConnectivityType::Adjacency},
+        enhancedMesh2->addIndices({DrawType::Triangles, ConnectivityType::Adjacency},
                                    halfEdges_->createIndexBufferWithAdjacency());
         std::swap(enhancedMesh_, enhancedMesh2);
         LogProcessorInfo("Adjacency information created");
