@@ -74,6 +74,25 @@ TEST(filesystemTest, fileDirectoryTest) {
     EXPECT_STREQ("", filesystem::getFileDirectory("justafile.txt").c_str());
 }
 
+TEST(filesystemTest, absolutePathTest) {
+    EXPECT_EQ(false, filesystem::isAbsolutePath(""));
+
+#ifdef WIN32
+    EXPECT_EQ(true, filesystem::isAbsolutePath("c:/dir"));
+    EXPECT_EQ(true, filesystem::isAbsolutePath("C:/dir"));
+    EXPECT_EQ(true, filesystem::isAbsolutePath("\"c:/dir\""));
+    EXPECT_EQ(true, filesystem::isAbsolutePath("\"C:/dir\""));
+    
+    EXPECT_EQ(false, filesystem::isAbsolutePath("/dir"));
+    EXPECT_EQ(false, filesystem::isAbsolutePath("dir"));
+    EXPECT_EQ(false, filesystem::isAbsolutePath("\"/dir\""));
+    EXPECT_EQ(false, filesystem::isAbsolutePath("\"dir\""));
+#else
+    EXPECT_EQ(true, filesystem::isAbsolutePath("/usr/local/bin"));
+    EXPECT_EQ(false, filesystem::isAbsolutePath("local/bin"));
+#endif
+}
+
 TEST(filesystemTest, relativePathTest) {
 
     const std::string a = "/a/b/c/d";
@@ -107,6 +126,9 @@ TEST(filesystemTest, relativePathTest) {
 
     EXPECT_STREQ("../test/file.txt",
                  filesystem::getRelativePath("C:/foo/bar", "C:/foo/test/file.txt").c_str());
+    
+    EXPECT_STREQ("../test/file.txt",
+                 filesystem::getRelativePath("C:/foo/bar", "c:/foo/test/file.txt").c_str());
 }
 
 TEST(filesystemTest, pathCleanupTest) {
@@ -119,6 +141,12 @@ TEST(filesystemTest, pathCleanupTest) {
     // remove quotes and backslashes
     EXPECT_STREQ("C:/a/directory/for/test/file.txt",
                  filesystem::cleanupPath("\"C:\\a\\directory\\for\\test/file.txt\"").c_str());
+    // fix drive letter to upper case
+    EXPECT_STREQ("C:/a/directory/for/test/file.txt",
+                 filesystem::cleanupPath("c:/a/directory/for/test/file.txt").c_str());
+    // fix drive letter of quoted path to upper case
+    EXPECT_STREQ("C:/a/directory/for/test/file.txt",
+                 filesystem::cleanupPath("\"c:/a/directory/for/test/file.txt\"").c_str());
 
     // unmatched quote
     EXPECT_STREQ("\"C:/test/file.txt", filesystem::cleanupPath("\"C:\\test/file.txt").c_str());
