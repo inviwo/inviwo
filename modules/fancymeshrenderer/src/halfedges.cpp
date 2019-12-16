@@ -107,7 +107,6 @@ std::shared_ptr<IndexBuffer> HalfEdges::createIndexBufferWithAdjacency() {
             if (o == nullptr) {
                 // border! Add opposite vertex of own triangle (as if the tris is flipped)
                 indices->add(edges_[3 * tri + ((v + 2) % 3)].toVertex_);
-                std::cout << "Border edge" << std::endl;
             } else {
                 // add opposite vertex
                 indices->add(o->next_->toVertex_);

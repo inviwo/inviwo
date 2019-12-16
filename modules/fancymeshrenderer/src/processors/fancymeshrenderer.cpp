@@ -61,9 +61,6 @@ FancyMeshRenderer::FancyMeshRenderer()
     , outport_("image")
     , camera_("camera", "Camera", vec3(0.0f, 0.0f, 2.0f), vec3(0.0f, 0.0f, 0.0f),
               vec3(0.0f, 1.0f, 0.0f), &inport_)
-    , centerViewOnGeometry_("centerView", "Center view on geometry")
-    , setNearFarPlane_("setNearFarPlane", "Calculate Near and Far Plane")
-    , resetViewParams_("resetView", "Reset Camera")
     , trackball_(&camera_)
     , lightingProperty_("lighting", "Lighting", &camera_)
     , layers_("layers", "Output Layers")
@@ -75,8 +72,21 @@ FancyMeshRenderer::FancyMeshRenderer()
     , forceOpaque_("forceOpaque", "Shade Opaque", false)
     , drawSilhouette_("drawSilhouette", "Draw Silhouette")
     , silhouetteColor_("silhouetteColor", "Silhouette Color", {0.f, 0.f, 0.f, 1.f})
-    , normalSource_("normalSource", "Normals Source")
-    , normalComputationMode_("normalComputationMode", "Normals Computation")
+    , normalSource_(
+          "normalSource", "Normals Source",
+          {
+              {"inputVertex", "Input: Vertex Normal", NormalSource::InputVertex},
+              {"generateVertex", "Generate: Vertex Normal", NormalSource::GenerateVertex},
+              {"generateTriangle", "Generate: Triangle Normal", NormalSource::GenerateTriangle},
+          },
+          0)
+    , normalComputationMode_(
+          "normalComputationMode", "Normals Computation",
+          {{"noWeighting", "No Weighting", meshutil::CalculateMeshNormalsMode::NoWeighting},
+           {"area", "Area-weighting", meshutil::CalculateMeshNormalsMode::WeightArea},
+           {"angle", "Angle-weighting", meshutil::CalculateMeshNormalsMode::WeightAngle},
+           {"nmax", "Based on N.Max", meshutil::CalculateMeshNormalsMode::WeightNMax}},
+          3)
     , faceSettings_{true, false}
     , propUseIllustrationBuffer_("illustrationBuffer", "Use Illustration Buffer")
     , propDebugFragmentLists_("debugFL", "Debug Fragment Lists")
@@ -110,49 +120,23 @@ FancyMeshRenderer::FancyMeshRenderer()
     // outport_.addResizeEventListener(&camera_);
     inport_.onChange([this]() { updateDrawers(); });
 
-    // camera, light,
-    addProperty(camera_);
-    centerViewOnGeometry_.onChange([this]() { centerViewOnGeometry(); });
-    addProperty(centerViewOnGeometry_);
-    setNearFarPlane_.onChange([this]() { setNearFarPlane(); });
-    addProperty(setNearFarPlane_);
-    resetViewParams_.onChange([this]() { camera_.resetCamera(); });
-    addProperty(resetViewParams_);
-    addProperty(lightingProperty_);
-    addProperty(trackball_);
+    addProperties(camera_, lightingProperty_, trackball_, forceOpaque_, drawSilhouette_,
+                  silhouetteColor_);
+
+    if (supportedIllustrationBuffer_) {
+        addProperties(propUseIllustrationBuffer_, illustrationBufferSettings_.container_);
+    }
+
+    addProperties(normalSource_, normalComputationMode_, alphaSettings_.container_,
+                  edgeSettings_.container_, faceSettings_[0].container_,
+                  faceSettings_[1].container_);
+
     camera_.setCollapsed(true);
     lightingProperty_.setCollapsed(true);
     trackball_.setCollapsed(true);
 
     // New properties
     silhouetteColor_.setSemantics(PropertySemantics::Color);
-    normalSource_.addOption("inputVertex", "Input: Vertex Normal", NormalSource::InputVertex);
-    normalSource_.addOption("generateVertex", "Generate: Vertex Normal",
-                            NormalSource::GenerateVertex);
-    normalSource_.addOption("generateTriangle", "Generate: Triangle Normal",
-                            NormalSource::GenerateTriangle);
-    normalSource_.set(NormalSource::InputVertex);
-    normalSource_.setCurrentStateAsDefault();
-    normalComputationMode_.addOption("noWeighting", "No Weighting", CalcNormals::Mode::NoWeighting);
-    normalComputationMode_.addOption("area", "Area-weighting", CalcNormals::Mode::WeightArea);
-    normalComputationMode_.addOption("angle", "Angle-weighting", CalcNormals::Mode::WeightAngle);
-    normalComputationMode_.addOption("nmax", "Based on N.Max", CalcNormals::Mode::WeightNMax);
-    normalComputationMode_.setSelectedValue(CalcNormals::preferredMode());
-    normalComputationMode_.setCurrentStateAsDefault();
-
-    addProperty(forceOpaque_);
-    addProperty(drawSilhouette_);
-    addProperty(silhouetteColor_);
-    if (supportedIllustrationBuffer_) {
-        addProperty(propUseIllustrationBuffer_);
-        addProperty(illustrationBufferSettings_.container_);
-    }
-    addProperty(normalSource_);
-    addProperty(normalComputationMode_);
-    addProperty(alphaSettings_.container_);
-    addProperty(edgeSettings_.container_);
-    addProperty(faceSettings_[0].container_);
-    addProperty(faceSettings_[1].container_);
 
     // Callbacks
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
@@ -207,17 +191,10 @@ FancyMeshRenderer::AlphaSettings::AlphaSettings()
     , densityExponent_("alphaDensityExponent", "Exponent", 1.f, 0.f, 5.f, 0.01f)
     , enableShape_("alphaShape", "Shape-based", false)
     , shapeExponent_("alphaShapeExponent", "Exponent", 1.f, 0.f, 5.f, 0.01f) {
-    container_.addProperty(enableUniform_);
-    container_.addProperty(uniformScaling_);
-    container_.addProperty(enableAngleBased_);
-    container_.addProperty(angleBasedExponent_);
-    container_.addProperty(enableNormalVariation_);
-    container_.addProperty(normalVariationExponent_);
-    container_.addProperty(enableDensity_);
-    container_.addProperty(baseDensity_);
-    container_.addProperty(densityExponent_);
-    container_.addProperty(enableShape_);
-    container_.addProperty(shapeExponent_);
+    container_.addProperties(enableUniform_, uniformScaling_, enableAngleBased_,
+                             angleBasedExponent_, enableNormalVariation_, normalVariationExponent_,
+                             enableDensity_, baseDensity_, densityExponent_, enableShape_,
+                             shapeExponent_);
 }
 
 void FancyMeshRenderer::AlphaSettings::setCallbacks(
@@ -243,9 +220,7 @@ FancyMeshRenderer::EdgeSettings::EdgeSettings()
     , edgeThickness_("edgesThickness", "Thickness", 2.f, 0.1f, 10.f, 0.1f)
     , depthDependent_("edgesDepth", "Depth dependent", false)
     , smoothEdges_("edgesSmooth", "Smooth edges", true) {
-    container_.addProperty(edgeThickness_);
-    container_.addProperty(depthDependent_);
-    container_.addProperty(smoothEdges_);
+    container_.addProperties(edgeThickness_, depthDependent_, smoothEdges_);
 }
 
 void FancyMeshRenderer::EdgeSettings::setCallbacks(
@@ -259,45 +234,36 @@ void FancyMeshRenderer::EdgeSettings::update() {
 }
 
 FancyMeshRenderer::HatchingSettings::HatchingSettings(const std::string& prefix)
-    : mode_(prefix + "hatchingMode", "Hatching")
+    : mode_(prefix + "hatchingMode", "Hatching",
+            {{"off", "Off", HatchingMode::Off},
+             {"u", "U", HatchingMode::U},
+             {"v", "V", HatchingMode::V},
+             {"uv", "UV", HatchingMode::UV}})
     , container_(prefix + "hatchingContainer", "Hatching Settings")
     , steepness_(prefix + "hatchingSteepness", "Steepness", 5, 1, 10)
     , baseFrequencyU_(prefix + "hatchingFrequencyU", "U-Frequency", 3, 1, 10)
     , baseFrequencyV_(prefix + "hatchingFrequencyV", "V-Frequency", 3, 1, 10)
-    , modulationMode_(prefix + "hatchingModulationMode", "Modulation")
+    , modulationMode_(prefix + "hatchingModulationMode", "Modulation",
+                      {{"off", "Off", HatchingMode::Off},
+                       {"u", "U", HatchingMode::U},
+                       {"v", "V", HatchingMode::V},
+                       {"uv", "UV", HatchingMode::UV}})
     , modulationAnisotropy_(prefix + "hatchingModulationAnisotropy", "Anisotropy", 0.5f, -1.f, 1.f,
                             0.01f)
     , modulationOffset_(prefix + "hatchingModulationOffset", "Offset", 0.f, 0.f, 1.f, 0.01f)
     , color_(prefix + "hatchingColor", "Color", {0.f, 0.f, 0.f})
     , strength_(prefix + "hatchingStrength", "Strength", 0.5f, 0.f, 1.f, 0.01f)
-    , blendingMode_(prefix + "hatchingBlending", "Blending") {
+    , blendingMode_(prefix + "hatchingBlending", "Blending",
+                    {{"mult", "Multiplicative", HatchingBlendingMode::Multiplicative},
+                     {"add", "Additive", HatchingBlendingMode::Additive}}) {
     // init properties
-    mode_.addOption("off", "Off", HatchingMode::Off);
-    mode_.addOption("u", "U", HatchingMode::U);
-    mode_.addOption("v", "V", HatchingMode::V);
-    mode_.addOption("uv", "UV", HatchingMode::UV);
-    mode_.set(HatchingMode::Off);
-    mode_.setCurrentStateAsDefault();
-    modulationMode_.addOption("off", "Off", HatchingMode::Off);
-    modulationMode_.addOption("u", "U", HatchingMode::U);
-    modulationMode_.addOption("v", "V", HatchingMode::V);
-    modulationMode_.set(HatchingMode::Off);
-    modulationMode_.setCurrentStateAsDefault();
     color_.setSemantics(PropertySemantics::Color);
-    blendingMode_.addOption("mult", "Multiplicative", HatchingBlendingMode::Multiplicative);
-    blendingMode_.addOption("add", "Additive", HatchingBlendingMode::Additive);
 
     // add to container
-    container_.addProperty(steepness_);
-    container_.addProperty(baseFrequencyU_);
-    container_.addProperty(baseFrequencyV_);
-    container_.addProperty(modulationMode_);
-    container_.addProperty(modulationAnisotropy_);
-    container_.addProperty(modulationOffset_);
-    container_.addProperty(color_);
-    container_.addProperty(strength_);
-    container_.addProperty(blendingMode_);
-}
+    container_.addProperties(steepness_, baseFrequencyU_, baseFrequencyV_, modulationMode_,
+                             modulationAnisotropy_, modulationOffset_, color_, strength_,
+                             blendingMode_);
+}  // namespace inviwo
 
 FancyMeshRenderer::FaceRenderSettings::FaceRenderSettings(bool frontFace)
     : frontFace_(frontFace)
@@ -308,48 +274,37 @@ FancyMeshRenderer::FaceRenderSettings::FaceRenderSettings(bool frontFace)
     , copyFrontToBack_(prefix_ + "copy", "Copy Front to Back")
     , transferFunction_(prefix_ + "tf", "Transfer Function")
     , externalColor_(prefix_ + "extraColor", "Color", {1.f, 0.3f, 0.01f})
-    , colorSource_(prefix_ + "colorSource", "Color Source")
+    , colorSource_(prefix_ + "colorSource", "Color Source",
+                   {{"vertexColor", "VertexColor", ColorSource::VertexColor},
+                    {"tf", "Transfer Function", ColorSource::TransferFunction},
+                    {"external", "Constant Color", ColorSource::ExternalColor}},
+                   2)
     , separateUniformAlpha_(prefix_ + "separateUniformAlpha", "Separate Uniform Alpha")
     , uniformAlpha_(prefix_ + "uniformAlpha", "Uniform Alpha", 0.5f, 0.f, 1.f, 0.01f)
-    , shadingMode_(prefix_ + "shadingMode", "Shading Mode")
+    , shadingMode_(prefix_ + "shadingMode", "Shading Mode",
+                   {
+                       {"off", "Off", ShadingMode::Off},
+                       {"phong", "Phong", ShadingMode::Phong},
+                       {"pbr", "PBR", ShadingMode::Pbr},
+                   })
     , showEdges_(prefix_ + "showEdges", "Show Edges")
     , edgeColor_(prefix_ + "edgeColor", "Edge color", {0.f, 0.f, 0.f})
     , edgeOpacity_(prefix_ + "edgeOpacity", "Edge Opacity", 0.5f, 0.f, 2.f, 0.01f)
     , hatching_(prefix_) {
     // initialize combo boxes
-    colorSource_.addOption("vertexColor", "VertexColor", ColorSource::VertexColor);
-    colorSource_.addOption("tf", "Transfer Function", ColorSource::TransferFunction);
-    colorSource_.addOption("external", "Constant Color", ColorSource::ExternalColor);
-    colorSource_.set(ColorSource::ExternalColor);
-    colorSource_.setCurrentStateAsDefault();
+
     externalColor_.setSemantics(PropertySemantics::Color);
-
-    shadingMode_.addOption("off", "Off", ShadingMode::Off);
-    shadingMode_.addOption("phong", "Phong", ShadingMode::Phong);
-    shadingMode_.addOption("pbr", "PBR", ShadingMode::Pbr);
-    shadingMode_.set(ShadingMode::Off);
-    shadingMode_.setCurrentStateAsDefault();
-
     edgeColor_.setSemantics(PropertySemantics::Color);
 
     // layouting, add the properties
     container_.addProperty(show_);
     if (!frontFace) {
-        container_.addProperty(sameAsFrontFace_);
-        container_.addProperty(copyFrontToBack_);
+        container_.addProperties(sameAsFrontFace_, copyFrontToBack_);
         copyFrontToBack_.onChange([this]() { copyFrontToBack(); });
     }
-    container_.addProperty(colorSource_);
-    container_.addProperty(transferFunction_);
-    container_.addProperty(externalColor_);
-    container_.addProperty(separateUniformAlpha_);
-    container_.addProperty(uniformAlpha_);
-    container_.addProperty(shadingMode_);
-    container_.addProperty(showEdges_);
-    container_.addProperty(edgeColor_);
-    container_.addProperty(edgeOpacity_);
-    container_.addProperty(hatching_.mode_);
-    container_.addProperty(hatching_.container_);
+    container_.addProperties(colorSource_, transferFunction_, externalColor_, separateUniformAlpha_,
+                             uniformAlpha_, shadingMode_, showEdges_, edgeColor_, edgeOpacity_,
+                             hatching_.mode_, hatching_.container_);
 
     // set callbacks that will trigger update()
     auto triggerUpdate = [this]() { update(lastOpaque_); };
@@ -438,12 +393,8 @@ FancyMeshRenderer::IllustrationBufferSettings::IllustrationBufferSettings()
     , edgeSmoothing_("illustrationBufferEdgeSmoothing", "Edge Smoothing", 0.8f, 0.f, 1.f, 0.01f)
     , haloSmoothing_("illustrationBufferHaloSmoothing", "Halo Smoothing", 0.8f, 0.f, 1.f, 0.01f) {
     edgeColor_.setSemantics(PropertySemantics::Color);
-    container_.addProperty(edgeColor_);
-    container_.addProperty(edgeStrength_);
-    container_.addProperty(haloStrength_);
-    container_.addProperty(smoothingSteps_);
-    container_.addProperty(edgeSmoothing_);
-    container_.addProperty(haloSmoothing_);
+    container_.addProperties(edgeColor_, edgeStrength_, haloStrength_, smoothingSteps_,
+                             edgeSmoothing_, haloSmoothing_);
 }
 
 void FancyMeshRenderer::initializeResources() {
@@ -660,13 +611,15 @@ void FancyMeshRenderer::process() {
             shader_.setUniform(prefix + "showEdges", faceSettings_[i].showEdges_.get());
             shader_.setUniform(prefix + "edgeColor", vec4(faceSettings_[i].edgeColor_.get(),
                                                           faceSettings_[i].edgeOpacity_.get()));
-            if (faceSettings_[i].hatching_.mode_.get() == HatchingMode::UV)
+            if (faceSettings_[i].hatching_.mode_.get() == HatchingMode::UV) {
                 shader_.setUniform(
                     prefix + "hatchingMode",
                     3 + static_cast<int>(faceSettings_[i].hatching_.modulationMode_.get()));
-            else
+            } else {
+
                 shader_.setUniform(prefix + "hatchingMode",
                                    static_cast<int>(faceSettings_[i].hatching_.mode_.get()));
+            }
             shader_.setUniform(prefix + "hatchingSteepness",
                                faceSettings_[i].hatching_.steepness_.get());
             shader_.setUniform(prefix + "hatchingFreqU",
@@ -741,7 +694,6 @@ void FancyMeshRenderer::process() {
                 retry = true;
             }
         }
-
     } while (retry);
 
     // report elapsed time
@@ -771,71 +723,7 @@ void FancyMeshRenderer::process() {
     }
 
     utilgl::deactivateCurrentTarget();
-}
-
-void FancyMeshRenderer::centerViewOnGeometry() {
-    if (!inport_.hasData()) return;
-
-    auto minmax = calcWorldBoundingBox();
-    camera_.setLook(camera_.getLookFrom(), 0.5f * (minmax.first + minmax.second),
-                    camera_.getLookUp());
-}
-
-std::pair<vec3, vec3> FancyMeshRenderer::calcWorldBoundingBox() const {
-    vec3 worldMin(std::numeric_limits<float>::max());
-    vec3 worldMax(std::numeric_limits<float>::lowest());
-    const auto& mesh = inport_.getData();
-    const auto& buffers = mesh->getBuffers();
-    auto it = std::find_if(buffers.begin(), buffers.end(), [](const auto& buff) {
-        return buff.first.type == BufferType::PositionAttrib;
-    });
-    if (it != buffers.end()) {
-        auto minmax = util::bufferMinMax(it->second.get());
-
-        mat4 trans = mesh->getCoordinateTransformer().getDataToWorldMatrix();
-        worldMin = glm::min(worldMin, vec3(trans * vec4(vec3(minmax.first), 1.f)));
-        worldMax = glm::max(worldMax, vec3(trans * vec4(vec3(minmax.second), 1.f)));
-    }
-    return {worldMin, worldMax};
-}
-
-void FancyMeshRenderer::setNearFarPlane() {
-    if (!inport_.hasData()) return;
-
-    auto geom = inport_.getData();
-
-    auto posBuffer =
-        dynamic_cast<const Vec3BufferRAM*>(geom->getBuffer(0)->getRepresentation<BufferRAM>());
-
-    if (posBuffer == nullptr) return;
-
-    auto pos = posBuffer->getDataContainer();
-
-    if (pos.empty()) return;
-
-    float nearDist = std::numeric_limits<float>::infinity();
-    float farDist = 0;
-    vec3 nearPos;
-    vec3 farPos;
-    const vec3 camPos{geom->getCoordinateTransformer().getWorldToModelMatrix() *
-                      vec4(camera_.getLookFrom(), 1.0)};
-    for (auto& po : pos) {
-        auto d = glm::distance2(po, camPos);
-        if (d < nearDist) {
-            nearDist = d;
-            nearPos = po;
-        }
-        if (d > farDist) {
-            farDist = d;
-            farPos = po;
-        }
-    }
-
-    mat4 m = camera_.viewMatrix() * geom->getCoordinateTransformer().getModelToWorldMatrix();
-
-    camera_.setNearPlaneDist(std::max(0.0f, 0.5f * std::abs((m * vec4(nearPos, 1.0f)).z)));
-    camera_.setFarPlaneDist(std::max(0.0f, 2.0f * std::abs((m * vec4(farPos, 1.0f)).z)));
-}
+}  // namespace inviwo
 
 void FancyMeshRenderer::updateDrawers() {
     // sometimes, this is null:
@@ -843,7 +731,7 @@ void FancyMeshRenderer::updateDrawers() {
     // aquire mesh
     auto changed = inport_.getChangedOutports();
     auto factory = getNetwork()->getApplication()->getMeshDrawerFactory();
-    const Mesh* mesh = inport_.getData().get();
+    auto mesh = inport_.getData();
     originalMesh_ = mesh;
 
     // copy the mesh
@@ -851,8 +739,7 @@ void FancyMeshRenderer::updateDrawers() {
 
     // check if we have to compute the normals
     if (normalSource_.get() == NormalSource::GenerateVertex) {
-        enhancedMesh_ = std::unique_ptr<Mesh>(
-            CalcNormals().processMesh(enhancedMesh_.get(), normalComputationMode_.get()));
+        meshutil::calculateMeshNormals(*enhancedMesh_, normalComputationMode_.get());
         LogProcessorInfo("normals computed");
     }
 
