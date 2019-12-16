@@ -67,6 +67,7 @@ struct IUnknown;  // Workaround for "combaseapi.h(229): error C2187: syntax erro
 
 #include <array>
 #include <algorithm>
+#include <string_view>
 
 namespace inviwo {
 
@@ -765,13 +766,17 @@ std::string getCanonicalPath(const std::string& url) {
 
 bool isAbsolutePath(const std::string& path) {
 #ifdef WIN32
-    if (path.size() < 2) {
-        return false;
-    }
+    if (path.empty()) return false;
 
-    // check for '[A-Z]:' in the begin of path
-    char driveLetter = static_cast<char>(toupper(path[0]));
-    return ((driveLetter >= 'A') && (driveLetter <= 'Z') && (path[1] == ':'));
+    // check for '[A-Z]:' in the begin of path, which might be quoted
+    std::string_view str{path};
+    if (str[0] == '\"') {
+        str.remove_prefix(1);
+    }
+    if (str.length() < 2) return false;
+
+    char driveLetter = static_cast<char>(toupper(str[0]));
+    return ((driveLetter >= 'A') && (driveLetter <= 'Z') && (str[1] == ':'));
 
 #else
 
@@ -825,6 +830,14 @@ std::string cleanupPath(const std::string& path) {
     if ((result.size() > 1) && (result.front() == '\"') && (result.back() == '\"')) {
         result = result.substr(1, result.size() - 2);
     }
+    if (result.size() > 2) {
+        // ensure that drive letter is an uppercase character, but there might be an unmatched quote
+        const size_t driveLetter = (result[0] == '\"') ? 1 : 0;
+        if (result[driveLetter + 1] == ':') {
+            result[driveLetter] = static_cast<char>(toupper(result[driveLetter]));
+        }
+    }
+
     return result;
 }
 
