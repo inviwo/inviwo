@@ -114,7 +114,7 @@ d2 = ivwdataframe.DataFrame(10)
 }
 
 TEST(DataFrameTests, AddColumn) {
-    using Scalars = std::tuple<float, double, int, glm::i64, size_t, std::uint32_t>;
+    using Scalars = std::tuple<float, double, int, glm::i64, std::uint32_t>;
 
     util::for_each_type<Scalars>{}(AddColumnScript{});
 }
@@ -152,6 +152,7 @@ TEST(DataFrameTests, AddColumnFromBuffer) {
     const std::string source = fmt::format(R"delim(
 import inviwopy
 import ivwdataframe
+import numpy as np
 
 buffer = inviwopy.data.Buffer(np.array([1.0, 2.0, 3.0], dtype=np.single))
 
@@ -182,6 +183,7 @@ TEST(DataFrameTests, RowAccess) {
     const std::string source = R"delim(
 import inviwopy
 import ivwdataframe
+import numpy as np
 
 buffer = inviwopy.data.Buffer(np.array([1.0, 2.0, 3.0], dtype=np.single))
 

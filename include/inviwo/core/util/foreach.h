@@ -43,7 +43,7 @@ namespace util {
 namespace detail {
 
 template <typename Callback, typename IT>
-void foreach (IT a, IT b, Callback && callback, size_t startIndex = 0) {
+void foreach (IT a, IT b, Callback && callback, [[maybe_unused]] size_t startIndex = 0) {
     using value_type = decltype(*a);
     if constexpr (std::is_invocable_v<Callback, value_type, size_t>) {
         std::for_each(a, b, [&](auto&& v) { callback(v, startIndex++); });

@@ -41,7 +41,7 @@ const ProcessorInfo VolumeLaplacianProcessor::processorInfo_{
 const ProcessorInfo VolumeLaplacianProcessor::getProcessorInfo() const { return processorInfo_; }
 
 VolumeLaplacianProcessor::VolumeLaplacianProcessor()
-    : Processor()
+    : PoolProcessor()
     , inport_("inport")
     , outport_("outport")
     , postProcessing_(
@@ -60,42 +60,27 @@ VolumeLaplacianProcessor::VolumeLaplacianProcessor()
     addPort(inport_);
     addPort(outport_);
 
-    addProperty(postProcessing_);
-    scale_.setVisible(false);
-    postProcessing_.onChange([&]() {
-        scale_.setVisible(postProcessing_.get() == util::VolumeLaplacianPostProcessing::Scaled);
+    addProperties(postProcessing_, scale_, inVolume_, outVolume_);
+    scale_.visibilityDependsOn(postProcessing_, [](const auto& p) {
+        return p.get() == util::VolumeLaplacianPostProcessing::Scaled;
     });
-    addProperty(scale_);
-    addProperty(inVolume_);
-    addProperty(outVolume_);
 }
 
 void VolumeLaplacianProcessor::process() {
     auto invol = inport_.getData();
     inVolume_.updateForNewVolume(*invol.get());
 
-    auto calc = [this](std::shared_ptr<const Volume> volume,
-                       util::VolumeLaplacianPostProcessing postProcessing,
-                       double scale) -> std::shared_ptr<Volume> {
-        auto res = util::volumeLaplacian(volume, postProcessing, scale);
-        dispatchFront([this]() { invalidate(InvalidationLevel::InvalidOutput); });
-        return res;
+    const auto calc = [volume = invol, postProcessing = postProcessing_.get(),
+                       scale = scale_.get()]() -> std::shared_ptr<Volume> {
+        return util::volumeLaplacian(volume, postProcessing, scale);
     };
 
-    if (!result_.valid()) {
-        getActivityIndicator().setActive(true);
-        result_ = dispatchPool(calc, invol, postProcessing_.get(), scale_.get());
-    } else if (util::is_future_ready(result_)) {
-        auto outvol = result_.get();
-        outport_.setData(outvol);
-        outVolume_.updateForNewVolume(*outvol.get());
-        getActivityIndicator().setActive(false);
-    }
-}
-
-void VolumeLaplacianProcessor::invalidate(InvalidationLevel invalidationLevel,
-                                          Property* modifiedProperty) {
-    Processor::invalidate(invalidationLevel, modifiedProperty);
+    outport_.clear();
+    dispatchOne(calc, [this](std::shared_ptr<Volume> result) {
+        outVolume_.updateForNewVolume(*result);
+        outport_.setData(result);
+        newResults();
+    });
 }
 
 }  // namespace inviwo

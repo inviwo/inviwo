@@ -25,3 +25,8 @@ if (MSVC)
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${NLOHMANN_NATVIS_FILE}>  
     )
 endif()
+
+#  HACK: have the files showing in the IDE
+add_custom_target(json_dummy SOURCES ${PROJECT_SOURCE_DIR}/single_include/nlohmann/json.hpp)
+# Creates VS folder structure
+ivw_folder(json_dummy ext)

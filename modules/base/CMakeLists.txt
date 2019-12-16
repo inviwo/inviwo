@@ -16,6 +16,7 @@ set(HEADER_FILES
     include/modules/base/algorithm/image/layerramsubset.h
     include/modules/base/algorithm/mesh/axisalignedboundingbox.h
     include/modules/base/algorithm/mesh/meshcameraalgorithms.h
+    include/modules/base/algorithm/mesh/meshclipping.h
     include/modules/base/algorithm/mesh/meshconverter.h
     include/modules/base/algorithm/meshutils.h
     include/modules/base/algorithm/randomutils.h
@@ -74,6 +75,7 @@ set(HEADER_FILES
     include/modules/base/processors/meshexport.h
     include/modules/base/processors/meshinformation.h
     include/modules/base/processors/meshmapping.h
+    include/modules/base/processors/meshplaneclipping.h
     include/modules/base/processors/meshsequenceelementselectorprocessor.h
     include/modules/base/processors/meshsource.h
     include/modules/base/processors/noiseprocessor.h
@@ -90,9 +92,11 @@ set(HEADER_FILES
     include/modules/base/processors/stereocamerasyncer.h
     include/modules/base/processors/surfaceextractionprocessor.h
     include/modules/base/processors/tfselector.h
+    include/modules/base/processors/transform.h
     include/modules/base/processors/trianglestowireframe.h
     include/modules/base/processors/vectorelementselectorprocessor.h
     include/modules/base/processors/volumebasistransformer.h
+    include/modules/base/processors/volumeboundaryplanes.h
     include/modules/base/processors/volumeboundingbox.h
     include/modules/base/processors/volumecreator.h
     include/modules/base/processors/volumecurlcpuprocessor.h
@@ -110,7 +114,7 @@ set(HEADER_FILES
     include/modules/base/processors/volumesubsample.h
     include/modules/base/processors/volumesubset.h
     include/modules/base/processors/volumetospatialsampler.h
-    include/modules/base/processors/worldtransform.h
+    include/modules/base/processors/worldtransformdeprecated.h
     include/modules/base/properties/basisproperty.h
     include/modules/base/properties/bufferinformationproperty.h
     include/modules/base/properties/gaussianproperty.h
@@ -136,6 +140,7 @@ set(SOURCE_FILES
     src/algorithm/image/layerramsubset.cpp
     src/algorithm/mesh/axisalignedboundingbox.cpp
     src/algorithm/mesh/meshcameraalgorithms.cpp
+    src/algorithm/mesh/meshclipping.cpp
     src/algorithm/mesh/meshconverter.cpp
     src/algorithm/meshutils.cpp
     src/algorithm/volume/marchingcubes.cpp
@@ -189,6 +194,7 @@ set(SOURCE_FILES
     src/processors/meshexport.cpp
     src/processors/meshinformation.cpp
     src/processors/meshmapping.cpp
+    src/processors/meshplaneclipping.cpp
     src/processors/meshsequenceelementselectorprocessor.cpp
     src/processors/meshsource.cpp
     src/processors/noiseprocessor.cpp
@@ -205,7 +211,9 @@ set(SOURCE_FILES
     src/processors/stereocamerasyncer.cpp
     src/processors/surfaceextractionprocessor.cpp
     src/processors/tfselector.cpp
+    src/processors/transform.cpp
     src/processors/trianglestowireframe.cpp
+    src/processors/volumeboundaryplanes.cpp
     src/processors/volumeboundingbox.cpp
     src/processors/volumecreator.cpp
     src/processors/volumecurlcpuprocessor.cpp
@@ -237,10 +245,11 @@ ivw_group("Source Files" ${SOURCE_FILES})
 #--------------------------------------------------------------------
 # Unit tests
 set(TEST_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/base-unittest-main.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/kdtree-test.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/convexhull-test.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/marchingcubes-test.cpp
+    tests/unittests/base-unittest-main.cpp
+    tests/unittests/convexhull-test.cpp
+    tests/unittests/kdtree-test.cpp
+    tests/unittests/marchingcubes-test.cpp
+    tests/unittests/meshcutting-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 

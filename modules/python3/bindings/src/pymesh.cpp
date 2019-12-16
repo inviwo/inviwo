@@ -114,8 +114,14 @@ void exposeMesh(pybind11::module& m) {
                  return mesh->getIndexBuffers().back().second.get();
              },
              py::return_value_policy::reference)
-        .def("addIndicies", [](Mesh* m, Mesh::MeshInfo info,
-                               std::shared_ptr<IndexBuffer> ind) { m->addIndicies(info, ind); })
+        .def("addIndices", [](Mesh* m, Mesh::MeshInfo info,
+                              std::shared_ptr<IndexBuffer> ind) { m->addIndices(info, ind); })
+        .def("addIndicies",
+             [](Mesh* m, Mesh::MeshInfo info, std::shared_ptr<IndexBuffer> ind) {
+                 LogInfoCustom("inviwopy.data.Mesh",
+                               "Mesh::addIndicies is deprecated, use addIndices");
+                 m->addIndices(info, ind);
+             })
         .def("removeIndexBuffer", [](Mesh* m, size_t idx) { m->removeIndexBuffer(idx); })
 
         .def("reserveSizeInVertexBuffer", &Mesh::reserveSizeInVertexBuffer)

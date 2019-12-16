@@ -178,6 +178,8 @@ public:
 
     constexpr size_type count(enum_type e) const noexcept { return find(e) != end() ? 1 : 0; }
 
+    constexpr bool contains(enum_type e) const noexcept { return find(e) != end(); }
+
     std::pair<iterator, iterator> equal_range(enum_type e) const noexcept {
         auto i = find(e);
         auto j = i;

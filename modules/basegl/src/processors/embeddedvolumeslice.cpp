@@ -134,16 +134,14 @@ void EmbeddedVolumeSlice::handlePicking(PickingEvent* p) {
         const auto worldPos2 = camera_.getWorldPosFromNormalizedDeviceCoords(ndc2);
         const auto dataPos2 = vec3{ct.getWorldToDataMatrix() * vec4{worldPos2, 1.0f}};
 
-        if (const auto intersection = plane.getIntersection(dataPos1, dataPos2);
-            intersection.intersects_) {
-            const auto dataPoint = intersection.intersection_;
+        if (const auto dataPoint = plane.getIntersection(dataPos1, dataPos2); dataPoint) {
             const auto index =
-                static_cast<size3_t>(vec3{ct.getDataToIndexMatrix() * vec4{dataPoint, 1.0f}});
+                static_cast<size3_t>(vec3{ct.getDataToIndexMatrix() * vec4{*dataPoint, 1.0f}});
 
             const auto cind = glm::clamp(index, size3_t{0}, data->getDimensions() - size3_t{1});
             const auto value = data->getRepresentation<VolumeRAM>()->getAsDVec4(cind);
 
-            const auto worldPos = vec3{ct.getDataToWorldMatrix() * vec4{dataPoint, 1.0f}};
+            const auto worldPos = vec3{ct.getDataToWorldMatrix() * vec4{*dataPoint, 1.0f}};
 
             p->setToolTip(fmt::format("<div>{}\n<pre>Index: {}\nWorld: {}\nValue: {}</pre></div>",
                                       getDisplayName(), index, worldPos, value));

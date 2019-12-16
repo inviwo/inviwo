@@ -34,6 +34,9 @@
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/util/raiiutils.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
+
+#include <type_traits>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -100,8 +103,16 @@ void DataFrameTableView::setDataFrame(std::shared_ptr<const DataFrame> dataframe
             col->getBuffer()
                 ->getRepresentation<BufferRAM>()
                 ->dispatch<void, dispatching::filter::Scalars>([&getValueFunc](auto br) {
-                    getValueFunc.push_back(
-                        [br](size_t index) { return QVariant{br->getDataContainer()[index]}; });
+                    getValueFunc.push_back([br](size_t index) {
+                        auto val = br->getDataContainer()[index];
+                        if constexpr (std::is_floating_point_v<decltype(val)>) {
+                            return QVariant{val};
+                        } else if constexpr (std::is_signed_v<decltype(val)>) {
+                            return QVariant{static_cast<qlonglong>(val)};
+                        } else {
+                            return QVariant{static_cast<qulonglong>(val)};
+                        }
+                    });
                 });
         } else if (df->getComponents() > 1 && vectorsIntoColumns) {
             col->getBuffer()
@@ -110,7 +121,14 @@ void DataFrameTableView::setDataFrame(std::shared_ptr<const DataFrame> dataframe
                     using ValueType = util::PrecisionValueType<decltype(br)>;
                     for (size_t i = 0; i < util::flat_extent<ValueType>::value; ++i) {
                         getValueFunc.push_back([br, i](size_t index) {
-                            return QVariant{br->getDataContainer()[index][i]};
+                            auto val = br->getDataContainer()[index][i];
+                            if constexpr (std::is_floating_point_v<decltype(val)>) {
+                                return QVariant{val};
+                            } else if constexpr (std::is_signed_v<decltype(val)>) {
+                                return QVariant{static_cast<qlonglong>(val)};
+                            } else {
+                                return QVariant{static_cast<qulonglong>(val)};
+                            }
                         });
                     }
                 });

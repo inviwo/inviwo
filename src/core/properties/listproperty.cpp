@@ -136,6 +136,7 @@ void ListProperty::set(const ListProperty* src) {
 }
 
 void ListProperty::setMaxNumberOfElements(size_t n) {
+    NetworkLock lock(this);
     maxNumElements_ = n;
     if (n > 0) {  // n = 0 means no limit
         // remove superfluous list items
@@ -159,7 +160,7 @@ void ListProperty::clear() {
     propertyModified();
 }
 
-void ListProperty::addProperty(size_t prefabIndex) {
+Property* ListProperty::constructProperty(size_t prefabIndex) {
     if (prefabIndex >= prefabs_.size()) {
         throw RangeException("Invalid prefab index " + std::to_string(prefabIndex) + " (" +
                                  std::to_string(prefabs_.size()) + " prefabs)",
@@ -168,6 +169,8 @@ void ListProperty::addProperty(size_t prefabIndex) {
 
     if ((maxNumElements_ == 0) || (size() + 1 < maxNumElements_)) {
         auto property = prefabs_[prefabIndex]->clone();
+        IVW_ASSERT(property->getClassIdentifier() == prefabs_[prefabIndex]->getClassIdentifier(),
+                   "Class identifer missmatch after cloning, does your property implement clone?");
         property->setSerializationMode(PropertySerializationMode::All);
         property->setIdentifier(util::findUniqueIdentifier(
             property->getIdentifier(),
@@ -194,9 +197,11 @@ void ListProperty::addProperty(size_t prefabIndex) {
 
         CompositeProperty::addProperty(property, true);
         propertyModified();
+        return property;
     } else {
         LogError("Maximum number of list entries reached (" << this->getDisplayName() << ")");
     }
+    return nullptr;
 }
 
 void ListProperty::addProperty(Property* property, bool owner) {

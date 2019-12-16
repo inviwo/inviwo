@@ -57,7 +57,12 @@ PythonInterpreter::PythonInterpreter() : embedded_{false}, isInit_(false) {
         static wchar_t programName[] = L"PyInviwo";
         Py_SetProgramName(programName);
 
-        py::initialize_interpreter(false);
+        try {
+            py::initialize_interpreter(false);
+        } catch (const std::exception& e) {
+            throw ModuleInitException(e.what(), IVW_CONTEXT);
+        }
+
         isInit_ = true;
         embedded_ = true;
 

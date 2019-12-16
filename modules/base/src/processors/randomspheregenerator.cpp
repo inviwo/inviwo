@@ -67,10 +67,9 @@ RandomSphereGenerator::RandomSphereGenerator()
     , spherePicking_(
           this, gridDim_.get().x * gridDim_.get().y * gridDim_.get().z, [&](PickingEvent* p) {
               handlePicking(p, [&](vec3 delta) {
-                  if (positionBuffer_) {
-                      auto& pos = positionBuffer_->getDataContainer();
+                  if (positions_) {
+                      auto& pos = positions_->getEditableRAMRepresentation()->getDataContainer();
                       pos[p->getPickedId()] += delta;
-                      positionBuffer_->getOwner()->invalidateAllOther(positionBuffer_.get());
                   }
               });
           }) {
@@ -111,7 +110,7 @@ void RandomSphereGenerator::process() {
     const bool dirty = seed_.isModified() || size_.isModified() || scale_.isModified() ||
                        enablePicking_.isModified();
 
-    if (gridDim_.isModified() || dirty || !positionBuffer_) {
+    if (gridDim_.isModified() || dirty || !positions_) {
         const auto dim = gridDim_.get();
         const int numSpheres = dim.x * dim.y * dim.z;
         spherePicking_.resize(numSpheres);
@@ -123,15 +122,13 @@ void RandomSphereGenerator::process() {
         auto radiiRAM = std::make_shared<BufferRAMPrecision<float>>(numSpheres);
 
         // keep a reference to vertex position buffer for picking
-        positionBuffer_ = vertexRAM;
-        radiiBuffer_ = radiiRAM;
+        positions_ = std::make_shared<Buffer<vec3>>(vertexRAM);
+        radii_ = std::make_shared<Buffer<float>>(radiiRAM);
 
-        mesh->addBuffer(Mesh::BufferInfo(BufferType::PositionAttrib),
-                        std::make_shared<Buffer<vec3>>(vertexRAM));
+        mesh->addBuffer(Mesh::BufferInfo(BufferType::PositionAttrib), positions_);
         mesh->addBuffer(Mesh::BufferInfo(BufferType::ColorAttrib),
                         std::make_shared<Buffer<vec4>>(colorRAM));
-        mesh->addBuffer(Mesh::BufferInfo(BufferType::RadiiAttrib),
-                        std::make_shared<Buffer<float>>(radiiRAM));
+        mesh->addBuffer(Mesh::BufferInfo(BufferType::RadiiAttrib), radii_);
         if (enablePicking_.get()) {
             auto pickingRAM = std::make_shared<BufferRAMPrecision<uint32_t>>(numSpheres);
             auto& data = pickingRAM->getDataContainer();
@@ -207,14 +204,11 @@ void RandomSphereGenerator::handlePicking(PickingEvent* p, std::function<void(ve
         } else if (p->getState() == PickingState::Updated &&
                    p->getEvent()->hash() == WheelEvent::chash()) {
             auto we = p->getEventAs<WheelEvent>();
-            if (radiiBuffer_) {
-                auto& radii = radiiBuffer_->getDataContainer();
-
+            if (radii_) {
+                auto& radii = radii_->getEditableRAMRepresentation()->getDataContainer();
                 auto radius =
                     radii[p->getPickedId()] * (1.0f - 0.05f * static_cast<float>(-we->delta().y));
                 radii[p->getPickedId()] = glm::clamp(radius, scale_ * 0.05f, scale_ * 20.0f);
-
-                radiiBuffer_->getOwner()->invalidateAllOther(radiiBuffer_.get());
             }
 
             invalidate(InvalidationLevel::InvalidOutput);

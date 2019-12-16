@@ -75,6 +75,7 @@ public:
     ~TextureUnitContainer() = default;
 
     void push_back(TextureUnit&& unit);
+    TextureUnit& emplace_back();
 
     TextureUnit& operator[](size_t i);
     size_t size() const;

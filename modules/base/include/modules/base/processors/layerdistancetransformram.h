@@ -36,7 +36,7 @@
 #include <inviwo/core/util/clock.h>
 
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/poolprocessor.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
@@ -78,11 +78,9 @@ namespace inviwo {
 *       * Custom specify a custom range.
 *   * __Data Range__ The data range of the output volume. (ReadOnly)
 *   * __Custom Data Range__ Specify a custom output range.
-*   * __Update Distance Map__ Triggers a computation of the distance transform. Since the
-*     computation is time consuming one has to manually trigger it.
 *
 */
-class IVW_MODULE_BASE_API LayerDistanceTransformRAM : public Processor, public ProgressBarOwner {
+class IVW_MODULE_BASE_API LayerDistanceTransformRAM : public PoolProcessor {
 public:
     enum class DataRangeMode { Diagonal, MinMax, Custom };
 
@@ -92,19 +90,13 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    virtual void invalidate(InvalidationLevel invalidationLevel,
-                            Property* source = nullptr) override;
-
 protected:
     virtual void process() override;
 
 private:
-    void updateOutport();
-
     ImageInport imagePort_;
     ImageOutport outport_;
 
-    std::future<std::shared_ptr<Image>> newImage_;
     ImageReuseCache imageCache_;
 
     DoubleProperty threshold_;
@@ -115,11 +107,6 @@ private:
     BoolProperty uniformUpsampling_;
     IntProperty upsampleFactorUniform_;    // uniform upscaling of the output field
     IntSize2Property upsampleFactorVec2_;  // non-uniform upscaling of the output field
-
-    ButtonProperty btnForceUpdate_;
-
-    bool distTransformDirty_;
-    bool hasNewData_;
 };
 
 template <class Elem, class Traits>

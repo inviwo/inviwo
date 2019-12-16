@@ -59,6 +59,7 @@
 #include <modules/basegl/processors/imageprocessing/imageoverlaygl.h>
 #include <modules/basegl/processors/imageprocessing/imageresample.h>
 #include <modules/basegl/processors/imageprocessing/imagescaling.h>
+#include <modules/basegl/processors/imageprocessing/imagesubsetgl.h>
 #include <modules/basegl/processors/imageprocessing/jacobian2d.h>
 #include <modules/basegl/processors/isoraycaster.h>
 #include <modules/basegl/processors/lightingraycaster.h>
@@ -148,6 +149,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerProcessor<ImageNormalizationProcessor>();
     registerProcessor<ImageResample>();
     registerProcessor<ImageScaling>();
+    registerProcessor<ImageSubsetGL>();
     registerProcessor<SplitImage>();
 
     // volume processing

@@ -27,31 +27,4 @@
  *
  *********************************************************************************/
 
-#include <incfile>
-
-namespace inviwo {
-
-// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo <name>::processorInfo_{
-    "org.inviwo.<name>",      // Class identifier
-    "<dname>",                // Display name
-    "Undefined",              // Category
-    CodeState::Experimental,  // Code state
-    Tags::None,               // Tags
-};
-const ProcessorInfo <name>::getProcessorInfo() const { return processorInfo_; }
-
-<name>::<name>()
-    : Processor()
-    , outport_("outport")
-    , position_("position", "Position", vec3(0.0f), vec3(-100.0f), vec3(100.0f)) {
-
-    addPort(outport_);
-    addProperty(position_);
-}
-
-void <name>::process() {
-    // outport_.setData(myImage);
-}
-
-}  // namespace inviwo
+#include <inviwo/testutil/zipmatcher.h>

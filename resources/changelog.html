@@ -86,6 +86,30 @@
 </head>
 <body >
 <h1>Latest Changes</h1>
+<h2>2019-12-02 PoolProcessor</h2>
+<p>Added a processor base class to make background processing easier. Here is a basic example of how the process function might look like:</p>
+<div class="highlight"><pre><span></span><span class="k">const</span> <span class="k">auto</span> <span class="n">calc</span> <span class="o">=</span> <span class="p">[</span><span class="n">image</span> <span class="o">=</span> <span class="n">inport_</span><span class="p">.</span><span class="n">getData</span><span class="p">()](</span><span class="n">pool</span><span class="o">::</span><span class="n">Stop</span> <span class="n">stop</span><span class="p">,</span> <span class="n">pool</span><span class="o">::</span><span class="n">Progress</span> <span class="n">progress</span><span class="p">)</span> 
+    <span class="o">-&gt;</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="k">const</span> <span class="n">Image</span><span class="o">&gt;</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">stop</span><span class="p">)</span> <span class="k">return</span> <span class="k">nullptr</span><span class="p">;</span>
+    <span class="k">auto</span> <span class="n">newImage</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">Image</span><span class="o">&gt;</span><span class="p">(</span><span class="n">image</span><span class="o">-&gt;</span><span class="n">clone</span><span class="p">());</span>
+    <span class="n">progress</span><span class="p">(</span><span class="mf">0.5f</span><span class="p">);</span>
+    <span class="c1">// Do some work with the image</span>
+    <span class="k">return</span> <span class="n">newImage</span><span class="p">;</span>
+<span class="p">};</span>
+<span class="n">dispatchOne</span><span class="p">(</span><span class="n">calc</span><span class="p">,</span> <span class="p">[</span><span class="k">this</span><span class="p">](</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="k">const</span> <span class="n">Image</span><span class="o">&gt;</span> <span class="n">result</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">outport_</span><span class="p">.</span><span class="n">setData</span><span class="p">(</span><span class="n">result</span><span class="p">);</span>
+    <span class="n">newResults</span><span class="p">();</span>  <span class="c1">// Let the network know that the processor has new results on the outport.</span>
+<span class="p">});</span>
+</pre></div>
+
+
+<p>The <code>PoolProcessor</code> automatically manages the Activity Indicator and the Progress Bar. It handles stopping old jobs and it manages the lifetimes of the jobs and the processor. The Example module has an <code>ExampleProgressBar</code> processor with example code. And the <code>PoolProcessor</code> has examples in its documentation as well.</p>
+<h2>2019-11-05 Mesh Plane Clipping</h2>
+<p>The mesh clipping processor can now handle most mesh types.</p>
+<h2>2019-10-02 DataFrameQt</h2>
+<p>A new sink processor that displays a spreadsheet view of a data frame, with selection support. </p>
+<h2>2019-09-16 Auto Save</h2>
+<p>Inviwo now has a auto save feature that lets you restore a workspace on restart even if it was never saved.</p>
 <h2>2019-09-02 New Inviwo Version 0.9.11</h2>
 <p>Major change since the last release include:</p>
 <ul>
@@ -196,33 +220,33 @@ To register an Inviwo python processor one can put in in the <user setttings fol
 <h2>2019-04-30 Python Applications</h2>
 <p>It is now possible to run inviwo directly from python using a new inviwopyapp python package found in <code>apps/inviwopyapp</code>.<br />
 An example of running inviwo can be found in <code>apps/inviwopyapp/inviwo.py</code>. </p>
-<div class="highlight"><pre><span></span>    <span class="kn">import</span> <span class="nn">inviwopy</span> <span class="kn">as</span> <span class="nn">ivw</span>
-    <span class="kn">import</span> <span class="nn">inviwopyapp</span> <span class="kn">as</span> <span class="nn">qt</span>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">inviwopy</span> <span class="kn">as</span> <span class="nn">ivw</span>
+<span class="kn">import</span> <span class="nn">inviwopyapp</span> <span class="kn">as</span> <span class="nn">qt</span>
 
-    <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-        <span class="c1"># Inviwo requires that a logcentral is created.</span>
-        <span class="n">lc</span> <span class="o">=</span> <span class="n">ivw</span><span class="o">.</span><span class="n">LogCentral</span><span class="p">()</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="c1"># Inviwo requires that a logcentral is created.</span>
+    <span class="n">lc</span> <span class="o">=</span> <span class="n">ivw</span><span class="o">.</span><span class="n">LogCentral</span><span class="p">()</span>
 
-        <span class="c1"># Create and register a console logger</span>
-        <span class="n">cl</span> <span class="o">=</span> <span class="n">ivw</span><span class="o">.</span><span class="n">ConsoleLogger</span><span class="p">()</span>
-        <span class="n">lc</span><span class="o">.</span><span class="n">registerLogger</span><span class="p">(</span><span class="n">cl</span><span class="p">)</span>
+    <span class="c1"># Create and register a console logger</span>
+    <span class="n">cl</span> <span class="o">=</span> <span class="n">ivw</span><span class="o">.</span><span class="n">ConsoleLogger</span><span class="p">()</span>
+    <span class="n">lc</span><span class="o">.</span><span class="n">registerLogger</span><span class="p">(</span><span class="n">cl</span><span class="p">)</span>
 
-        <span class="c1"># Create the inviwo application</span>
-        <span class="n">app</span> <span class="o">=</span> <span class="n">qt</span><span class="o">.</span><span class="n">InviwoApplicationQt</span><span class="p">()</span>
-        <span class="n">app</span><span class="o">.</span><span class="n">registerModules</span><span class="p">()</span>
+    <span class="c1"># Create the inviwo application</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">qt</span><span class="o">.</span><span class="n">InviwoApplicationQt</span><span class="p">()</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">registerModules</span><span class="p">()</span>
 
-        <span class="c1"># load a workspace</span>
-        <span class="n">app</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">getPath</span><span class="p">(</span><span class="n">ivw</span><span class="o">.</span><span class="n">PathType</span><span class="o">.</span><span class="n">Workspaces</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;/boron.inv&quot;</span><span class="p">)</span>
+    <span class="c1"># load a workspace</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">getPath</span><span class="p">(</span><span class="n">ivw</span><span class="o">.</span><span class="n">PathType</span><span class="o">.</span><span class="n">Workspaces</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;/boron.inv&quot;</span><span class="p">)</span>
 
-        <span class="c1"># Make sure the app is ready</span>
-        <span class="n">app</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
-        <span class="n">app</span><span class="o">.</span><span class="n">waitForPool</span><span class="p">()</span>
-        <span class="n">app</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
-        <span class="c1"># Save a snapshot</span>
-        <span class="n">app</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Canvas</span><span class="o">.</span><span class="n">snapshot</span><span class="p">(</span><span class="s2">&quot;snapshot.png&quot;</span><span class="p">)</span> 
+    <span class="c1"># Make sure the app is ready</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">waitForPool</span><span class="p">()</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+    <span class="c1"># Save a snapshot</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Canvas</span><span class="o">.</span><span class="n">snapshot</span><span class="p">(</span><span class="s2">&quot;snapshot.png&quot;</span><span class="p">)</span> 
 
-        <span class="c1"># run the app event loop</span>
-        <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="c1"># run the app event loop</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 </pre></div>
 
 
@@ -230,22 +254,22 @@ An example of running inviwo can be found in <code>apps/inviwopyapp/inviwo.py</c
 <p>Axes of the parallel coordinate plot can now be inverted via a double click with the left mouse button or using the corresponding <code>Invert Range</code> property of the axis. In addition, the filtering handles can be hidden if necessary (<code>Axes Settings</code> → <code>Handles Visible</code>).</p>
 <h2>2019-04-16 Moved DataFrame data structure from Plotting to new module (DataFrame)</h2>
 <p>Types of breaking changes:</p>
-<div class="highlight"><pre><span></span>    <span class="cp">#include</span> <span class="cpf">&lt;modules/plotting/datastructures/dataframe.h&gt;</span><span class="cp"></span>
-    <span class="cp">#include</span> <span class="cpf">&lt;modules/plotting/datastructures/dataframeutil.h&gt;</span><span class="cp"></span>
-    <span class="cp">#include</span> <span class="cpf">&lt;modules/plotting/datastructures/column.h&gt;</span><span class="cp"></span>
+<div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;modules/plotting/datastructures/dataframe.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;modules/plotting/datastructures/dataframeutil.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;modules/plotting/datastructures/column.h&gt;</span><span class="cp"></span>
 
-    <span class="n">plot</span><span class="o">::</span><span class="n">DataFrame</span>
-    <span class="n">plot</span><span class="o">::</span><span class="n">Column</span>
+<span class="n">plot</span><span class="o">::</span><span class="n">DataFrame</span>
+<span class="n">plot</span><span class="o">::</span><span class="n">Column</span>
 </pre></div>
 
 
 <p>which need to be changed to </p>
-<div class="highlight"><pre><span></span>    <span class="cp">#include</span> <span class="cpf">&lt;inviwo/dataframe/datastructures/dataframe.h&gt;</span><span class="cp"></span>
-    <span class="cp">#include</span> <span class="cpf">&lt;inviwo/dataframe/datastructures/dataframeutil.h&gt;</span><span class="cp"></span>
-    <span class="cp">#include</span> <span class="cpf">&lt;inviwo/dataframe/datastructures/column.h&gt;</span><span class="cp"></span>
-    <span class="c1">// Namespace plot removed</span>
-    <span class="n">DataFrame</span>
-    <span class="n">Column</span>
+<div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;inviwo/dataframe/datastructures/dataframe.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;inviwo/dataframe/datastructures/dataframeutil.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;inviwo/dataframe/datastructures/column.h&gt;</span><span class="cp"></span>
+<span class="c1">// Namespace plot removed</span>
+<span class="n">DataFrame</span>
+<span class="n">Column</span>
 </pre></div>
 
 
@@ -275,7 +299,7 @@ except for files under <code>/ext</code>, <code>/tests</code>, or paths excluded
 <h2>2018-11-14</h2>
 <p>Added an option to control if a module should be on by default, and remove the old global setting.<br />
 To enable the module by default add the following to the module <code>depends.cmake</code> file:</p>
-<div class="highlight"><pre><span></span>    <span class="n">set</span><span class="p">(</span><span class="n">EnableByDefault</span> <span class="n">ON</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><span class="n">set</span><span class="p">(</span><span class="n">EnableByDefault</span> <span class="n">ON</span><span class="p">)</span>
 </pre></div>
 
 
@@ -284,22 +308,22 @@ To enable the module by default add the following to the module <code>depends.cm
 <h2>2018-11-14</h2>
 <p>Generated files are now stored in the corresponding <code>CMAKE_CURRENT_BINAY_DIR</code> for the subdirectory in question.<br />
 For a module this means <code>{build folder}/modules/{module name}</code>. <code>CMAKE_CURRENT_BINAY_DIR/include</code> path is added as an include path for each module. Hence, the generated headers are put in </p>
-<div class="highlight"><pre><span></span>    {build folder}/modules/{module name}/include/{organization}/{module name}/
+<div class="highlight"><pre><span></span>{build folder}/modules/{module name}/include/{organization}/{module name}/
 </pre></div>
 
 
 <p>Same is true for the generated headers of inviwo core, like <code>moduleregistration.h</code>. They are now placed in:</p>
-<div class="highlight"><pre><span></span>    {build folder}/modules/core/include/inviwo/core/
+<div class="highlight"><pre><span></span>{build folder}/modules/core/include/inviwo/core/
 </pre></div>
 
 
 <p>Which means that for the module loading in apps</p>
-<div class="highlight"><pre><span></span>    <span class="cp">#include</span> <span class="cpf">&lt;moduleregistration.h&gt;</span><span class="cp"></span>
+<div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;moduleregistration.h&gt;</span><span class="cp"></span>
 </pre></div>
 
 
 <p>needs to be changed to </p>
-<div class="highlight"><pre><span></span>    <span class="cp">#include</span> <span class="cpf">&lt;inviwo/core/moduleregistration.h&gt;</span><span class="cp"></span>
+<div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;inviwo/core/moduleregistration.h&gt;</span><span class="cp"></span>
 </pre></div>
 
 
@@ -316,7 +340,7 @@ For a module this means <code>{build folder}/modules/{module name}</code>. <code
 
 <p><code>{module name}</code> it the lower case name of the module, <code>{organization}</code> default to inviwo but can be user-specified. <br />
 The headers can then be included using </p>
-<div class="highlight"><pre><span></span>    <span class="cp">#include</span> <span class="cpf">&lt;{organization}/{module name}/header.h&gt;</span><span class="cp"></span>
+<div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;{organization}/{module name}/header.h&gt;</span><span class="cp"></span>
 </pre></div>
 
 
@@ -346,27 +370,27 @@ Invalid input is indicated by red border and changes discarded if either <code>&
 <p>InviwoApplicationQt now has the same order of constructor arguments as InviwoApplication.</p>
 <h2>2018-08-21</h2>
 <p>The property class identifier system no longer uses the <code>InviwoPropertyInfo</code> / <code>PropertyClassIdentifier</code> macros but rather implements</p>
-<div class="highlight"><pre><span></span>    <span class="k">virtual</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">getClassIdentifier</span><span class="p">()</span> <span class="k">const</span> <span class="k">override</span>
+<div class="highlight"><pre><span></span><span class="k">virtual</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">getClassIdentifier</span><span class="p">()</span> <span class="k">const</span> <span class="k">override</span>
 </pre></div>
 
 
 <p>The static class identifier </p>
-<div class="highlight"><pre><span></span>    <span class="k">static</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">CLASS_IDENTIFIER</span>
+<div class="highlight"><pre><span></span><span class="k">static</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">CLASS_IDENTIFIER</span>
 </pre></div>
 
 
 <p>can still be added manually, but the preferred way is to either use</p>
-<div class="highlight"><pre><span></span>    <span class="k">static</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">classIdentifier</span>
+<div class="highlight"><pre><span></span><span class="k">static</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">classIdentifier</span>
 </pre></div>
 
 
 <p>or specialize the <code>PropertyTraits</code> like:</p>
-<div class="highlight"><pre><span></span>    <span class="k">template</span> <span class="o">&lt;&gt;</span>
-    <span class="k">struct</span> <span class="n">PropertyTraits</span><span class="o">&lt;</span><span class="n">MyProperty</span><span class="o">&gt;</span> <span class="p">{</span>
-        <span class="k">static</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">classIdentifier</span><span class="p">()</span> <span class="p">{</span>
-            <span class="k">return</span> <span class="s">&quot;org.somename.myproperty&quot;</span><span class="p">;</span>
-        <span class="p">}</span>
-    <span class="p">};</span>
+<div class="highlight"><pre><span></span><span class="k">template</span> <span class="o">&lt;&gt;</span>
+<span class="k">struct</span> <span class="n">PropertyTraits</span><span class="o">&lt;</span><span class="n">MyProperty</span><span class="o">&gt;</span> <span class="p">{</span>
+    <span class="k">static</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">classIdentifier</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="s">&quot;org.somename.myproperty&quot;</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
 </pre></div>
 
 
@@ -378,21 +402,21 @@ Invalid input is indicated by red border and changes discarded if either <code>&
 <p>instead of accessing the <code>CLASS_IDENTIFIER</code> directly.</p>
 <p>An enum traits class has been added to help working with enums and serialization, especially in the case of OptionProperties. <br />
 For example given an enum:</p>
-<div class="highlight"><pre><span></span>    <span class="k">enum</span> <span class="k">class</span> <span class="nc">MyEnum</span> <span class="p">{</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="p">};</span>
+<div class="highlight"><pre><span></span><span class="k">enum</span> <span class="k">class</span> <span class="nc">MyEnum</span> <span class="p">{</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="p">};</span>
 </pre></div>
 
 
 <p>EnumTraits can be specialized to provided a name for <code>MyEnum</code>, i.e.</p>
-<div class="highlight"><pre><span></span>    <span class="k">template</span> <span class="o">&lt;&gt;</span>
-    <span class="k">struct</span> <span class="n">EnumTraits</span><span class="o">&lt;</span><span class="n">MyEnum</span><span class="o">&gt;</span> <span class="p">{</span>
-        <span class="k">static</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">name</span><span class="p">()</span> <span class="p">{</span><span class="k">return</span> <span class="s">&quot;MyEnum&quot;</span><span class="p">;</span> <span class="p">}</span>
-    <span class="p">};</span>
+<div class="highlight"><pre><span></span><span class="k">template</span> <span class="o">&lt;&gt;</span>
+<span class="k">struct</span> <span class="n">EnumTraits</span><span class="o">&lt;</span><span class="n">MyEnum</span><span class="o">&gt;</span> <span class="p">{</span>
+    <span class="k">static</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">name</span><span class="p">()</span> <span class="p">{</span><span class="k">return</span> <span class="s">&quot;MyEnum&quot;</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">};</span>
 </pre></div>
 
 
 <p>This name will then be used by the TemplateOptionProperty in its class identifier. </p>
-<div class="highlight"><pre><span></span>    <span class="n">TemplateOptionProperty</span><span class="o">&lt;</span><span class="n">MyEnum</span><span class="o">&gt;</span> <span class="n">prop</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">,</span><span class="s">&quot;test&quot;</span><span class="p">);</span>    
-    <span class="n">prop</span><span class="p">.</span><span class="n">getClassIdentifier</span><span class="p">()</span> <span class="o">==</span> <span class="n">PropertyTraits</span><span class="o">&lt;</span><span class="n">TemplateOptionProperty</span><span class="o">&lt;</span><span class="n">MyEnum</span><span class="o">&gt;&gt;::</span><span class="n">classIdentifier</span> <span class="o">==</span> <span class="s">&quot;org.inviwo.OptionPropertyMyEnum&quot;</span>
+<div class="highlight"><pre><span></span><span class="n">TemplateOptionProperty</span><span class="o">&lt;</span><span class="n">MyEnum</span><span class="o">&gt;</span> <span class="n">prop</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">,</span><span class="s">&quot;test&quot;</span><span class="p">);</span>    
+<span class="n">prop</span><span class="p">.</span><span class="n">getClassIdentifier</span><span class="p">()</span> <span class="o">==</span> <span class="n">PropertyTraits</span><span class="o">&lt;</span><span class="n">TemplateOptionProperty</span><span class="o">&lt;</span><span class="n">MyEnum</span><span class="o">&gt;&gt;::</span><span class="n">classIdentifier</span> <span class="o">==</span> <span class="s">&quot;org.inviwo.OptionPropertyMyEnum&quot;</span>
 </pre></div>
 
 
@@ -403,30 +427,30 @@ Inviwo properties can be synchronized using javascript, see the web browser modu
 <h2>2018-07-26 ListProperty</h2>
 <p>Added <code>ListProperty</code>, a new property for dynamically adding and removing properties.<br />
 A ListProperty holds a number of "prefab" objects, i.e. unique_ptr to properties, which are used to instantiate new list entries. The property widget features small "x" buttons for removing individual elements (if removal is enabled). Pressing the "+" button next to the property label adds new elements (if adding is enabled). In case multiple prefabs exist, a drop-down menu is shown when pressing the "+" button.</p>
-<div class="highlight"><pre><span></span>    <span class="c1">// using a single prefab object and at most 10 elements</span>
-    <span class="n">ListProperty</span> <span class="nf">listProperty</span><span class="p">(</span><span class="s">&quot;myListProperty&quot;</span><span class="p">,</span> <span class="s">&quot;My ListProperty&quot;</span><span class="p">,</span>
-        <span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">BoolProperty</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;boolProp&quot;</span><span class="p">,</span> <span class="s">&quot;BoolProperty&quot;</span><span class="p">,</span> <span class="nb">true</span><span class="p">),</span> <span class="mi">10</span><span class="p">);</span>
+<div class="highlight"><pre><span></span><span class="c1">// using a single prefab object and at most 10 elements</span>
+<span class="n">ListProperty</span> <span class="nf">listProperty</span><span class="p">(</span><span class="s">&quot;myListProperty&quot;</span><span class="p">,</span> <span class="s">&quot;My ListProperty&quot;</span><span class="p">,</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">BoolProperty</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;boolProp&quot;</span><span class="p">,</span> <span class="s">&quot;BoolProperty&quot;</span><span class="p">,</span> <span class="nb">true</span><span class="p">),</span> <span class="mi">10</span><span class="p">);</span>
 
-    <span class="c1">// multiple prefab objects</span>
-    <span class="n">ListProperty</span> <span class="nf">listProperty</span><span class="p">(</span><span class="s">&quot;myListProperty&quot;</span><span class="p">,</span> <span class="s">&quot;My List Property&quot;</span><span class="p">,</span> 
-        <span class="p">[]()</span> <span class="p">{</span>
-            <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">Property</span><span class="o">&gt;&gt;</span> <span class="n">v</span><span class="p">;</span>
-            <span class="n">v</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">IntProperty</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;template1&quot;</span><span class="p">,</span> <span class="s">&quot;Template 1&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">));</span>
-            <span class="n">v</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">IntProperty</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;template2&quot;</span><span class="p">,</span> <span class="s">&quot;Template 2&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">99</span><span class="p">));</span>
-            <span class="k">return</span> <span class="n">v</span><span class="p">;</span>
-        <span class="p">}());</span>
+<span class="c1">// multiple prefab objects</span>
+<span class="n">ListProperty</span> <span class="nf">listProperty</span><span class="p">(</span><span class="s">&quot;myListProperty&quot;</span><span class="p">,</span> <span class="s">&quot;My List Property&quot;</span><span class="p">,</span> 
+    <span class="p">[]()</span> <span class="p">{</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">Property</span><span class="o">&gt;&gt;</span> <span class="n">v</span><span class="p">;</span>
+        <span class="n">v</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">IntProperty</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;template1&quot;</span><span class="p">,</span> <span class="s">&quot;Template 1&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">));</span>
+        <span class="n">v</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">IntProperty</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;template2&quot;</span><span class="p">,</span> <span class="s">&quot;Template 2&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">99</span><span class="p">));</span>
+        <span class="k">return</span> <span class="n">v</span><span class="p">;</span>
+    <span class="p">}());</span>
 </pre></div>
 
 
 <p>This also works when using different types of properties as prefab objects:</p>
-<div class="highlight"><pre><span></span>    <span class="n">ListProperty</span> <span class="nf">listProperty</span><span class="p">(</span><span class="s">&quot;myListProperty&quot;</span><span class="p">,</span> <span class="s">&quot;My List Property&quot;</span><span class="p">,</span> 
-        <span class="p">[]()</span> <span class="p">{</span>
-            <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">Property</span><span class="o">&gt;&gt;</span> <span class="n">v</span><span class="p">;</span>
-            <span class="n">v</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">BoolProperty</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;boolProperty1&quot;</span><span class="p">,</span> <span class="s">&quot;Boolean Flag&quot;</span><span class="p">,</span> <span class="nb">true</span><span class="p">));</span>
-            <span class="n">v</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">TransferFunctionProperty</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;customTF1&quot;</span><span class="p">,</span> <span class="s">&quot;Transfer Function&quot;</span><span class="p">));</span>
-            <span class="n">v</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">IntProperty</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;template1&quot;</span><span class="p">,</span> <span class="s">&quot;Template 1&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">));</span>
-            <span class="k">return</span> <span class="n">v</span><span class="p">;</span>
-        <span class="p">}());</span>
+<div class="highlight"><pre><span></span><span class="n">ListProperty</span> <span class="nf">listProperty</span><span class="p">(</span><span class="s">&quot;myListProperty&quot;</span><span class="p">,</span> <span class="s">&quot;My List Property&quot;</span><span class="p">,</span> 
+    <span class="p">[]()</span> <span class="p">{</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">Property</span><span class="o">&gt;&gt;</span> <span class="n">v</span><span class="p">;</span>
+        <span class="n">v</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">BoolProperty</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;boolProperty1&quot;</span><span class="p">,</span> <span class="s">&quot;Boolean Flag&quot;</span><span class="p">,</span> <span class="nb">true</span><span class="p">));</span>
+        <span class="n">v</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">TransferFunctionProperty</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;customTF1&quot;</span><span class="p">,</span> <span class="s">&quot;Transfer Function&quot;</span><span class="p">));</span>
+        <span class="n">v</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">IntProperty</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;template1&quot;</span><span class="p">,</span> <span class="s">&quot;Template 1&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">));</span>
+        <span class="k">return</span> <span class="n">v</span><span class="p">;</span>
+    <span class="p">}());</span>
 </pre></div>
 
 

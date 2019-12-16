@@ -27,11 +27,51 @@
  *
  *********************************************************************************/
 
-#include <incfile>
+#include <modules/base/processors/volumeboundaryplanes.h>
 
 namespace inviwo {
 
-<name>::<name>() {
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo VolumeBoundaryPlanes::processorInfo_{
+    "org.inviwo.VolumeBoundaryPlanes",  // Class identifier
+    "Volume Boundary Planes",           // Display name
+    "Data Creation",                    // Category
+    CodeState::Stable,                  // Code state
+    Tags::CPU,                          // Tags
+};
+const ProcessorInfo VolumeBoundaryPlanes::getProcessorInfo() const { return processorInfo_; }
+
+VolumeBoundaryPlanes::VolumeBoundaryPlanes()
+    : Processor()
+    , volume_("volumeInport")
+    , planes_("planeOutport")
+    , flipPlanes_("flipPlanes", "Flip planes", false) {
+
+    addPort(volume_);
+    addPort(planes_);
+    addProperties(flipPlanes_);
+}
+
+void VolumeBoundaryPlanes::process() {
+    const auto vol = volume_.getData();
+    const auto dataToWorld = vol->getCoordinateTransformer().getDataToWorldMatrix();
+    const auto basis = vol->getBasis();
+    const auto p0 = dataToWorld * vec4(vec3(0.0f), 1.0f);
+    const auto p1 = dataToWorld * vec4(1.0f);
+    const mat3 worldNormal = glm::transpose(glm::inverse(vol->getWorldMatrix()));
+    const float sign = flipPlanes_ ? -1.0f : 1.0f;
+
+    auto planes = std::make_shared<std::vector<Plane>>();
+
+    for (unsigned int i = 0; i < 3; i++) {
+        planes->emplace_back(p0, worldNormal * (-sign * basis[i]));
+    }
+
+    for (unsigned int i = 0; i < 3; i++) {
+        planes->emplace_back(p1, worldNormal * (sign * basis[i]));
+    }
+
+    planes_.setData(planes);
 }
 
 }  // namespace inviwo

@@ -44,21 +44,17 @@ const ProcessorInfo VolumeSubsample::processorInfo_{
 const ProcessorInfo VolumeSubsample::getProcessorInfo() const { return processorInfo_; }
 
 VolumeSubsample::VolumeSubsample()
-    : Processor()
+    : PoolProcessor()
     , inport_("inputVolume")
     , outport_("outputVolume")
     , enabled_("enabled", "Enable Operation", true)
-    , waitForCompletion_("waitForCompletion", "Wait For Subsample Completion", false)
-    , subSampleFactors_("subSampleFactors", "Factors", ivec3(1), ivec3(1), ivec3(8))
-    , dirty_(false) {
+    , subSampleFactors_("subSampleFactors", "Factors", ivec3(1), ivec3(1), ivec3(8)) {
+
     addPort(inport_);
     addPort(outport_);
+
     addProperty(enabled_);
-    addProperty(waitForCompletion_);
-
     addProperty(subSampleFactors_);
-
-    waitForCompletion_.onChange([this]() { dirty_ = waitForCompletion_.get(); });
 }
 
 void VolumeSubsample::process() {
@@ -66,29 +62,14 @@ void VolumeSubsample::process() {
         glm::min(static_cast<size3_t>(glm::max(subSampleFactors_.get(), ivec3(1))),
                  inport_.getData()->getDimensions());
 
-    if (enabled_.get() && factors != size3_t(1, 1, 1)) {
-        if (waitForCompletion_.get()) {
-            outport_.setData(subsample(inport_.getData(), factors));
-        } else {
-            if (!result_.valid()) {
-                getActivityIndicator().setActive(true);
-                result_ = dispatchPool(
-                    [this](std::shared_ptr<const Volume> volume,
-                           size3_t f) -> std::shared_ptr<Volume> {
-                        auto sample = subsample(volume, f);
-                        dispatchFront([this]() {
-                            dirty_ = true;
-                            invalidate(InvalidationLevel::InvalidOutput);
-                        });
-                        return sample;
-                    },
-                    inport_.getData(), factors);
-            } else if (util::is_future_ready(result_)) {
-                outport_.setData(result_.get());
-                getActivityIndicator().setActive(false);
-                dirty_ = false;
-            }
-        }
+    if (enabled_ && factors != size3_t(1, 1, 1)) {
+        outport_.clear();
+        dispatchOne([volume = inport_.getData(),
+                     f = subSampleFactors_.get()]() { return subsample(volume, f); },
+                    [this](std::shared_ptr<Volume> result) {
+                        outport_.setData(result);
+                        newResults();
+                    });
     } else {
         outport_.setData(inport_.getData());
     }
@@ -103,17 +84,6 @@ std::shared_ptr<Volume> VolumeSubsample::subsample(std::shared_ptr<const Volume>
     sample->setModelMatrix(volume->getModelMatrix());
     sample->setWorldMatrix(volume->getWorldMatrix());
     return sample;
-}
-
-void VolumeSubsample::invalidate(InvalidationLevel invalidationLevel, Property* modifiedProperty) {
-    notifyObserversInvalidationBegin(this);
-    PropertyOwner::invalidate(invalidationLevel, modifiedProperty);
-
-    if (dirty_ || inport_.isChanged() || !enabled_.get()) {
-        outport_.invalidate(InvalidationLevel::InvalidOutput);
-    }
-
-    notifyObserversInvalidationEnd(this);
 }
 
 }  // namespace inviwo

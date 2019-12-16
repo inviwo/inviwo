@@ -74,52 +74,50 @@ ivw_define_standard_properties(inviwo)
 
 #--------------------------------------------------------------------
 # Add application to pack
-if(IVW_PACKAGE_PROJECT)
-    if(WIN32)
-        install(TARGETS inviwo RUNTIME DESTINATION bin COMPONENT qt_app)
+if(WIN32)
+    install(TARGETS inviwo RUNTIME DESTINATION bin COMPONENT qt_app)
 
-    elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-        #Following http://www.cmake.org/Wiki/BundleUtilitiesExample
-        install(
-            TARGETS inviwo 
-            RUNTIME   DESTINATION bin 
-            BUNDLE    DESTINATION . 
-            ARCHIVE   DESTINATION Inviwo.app/Contents/MacOS/ 
-            LIBRARY   DESTINATION Inviwo.app/Contents/MacOS/ 
+elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    #Following http://www.cmake.org/Wiki/BundleUtilitiesExample
+    install(
+        TARGETS inviwo 
+        RUNTIME   DESTINATION bin 
+        BUNDLE    DESTINATION . 
+        ARCHIVE   DESTINATION Inviwo.app/Contents/MacOS/ 
+        LIBRARY   DESTINATION Inviwo.app/Contents/MacOS/ 
+        COMPONENT qt_app
+    )
+    set(plugin_dest_dir Inviwo.app/Contents/MacOS)
+    set(qtconf_dest_dir Inviwo.app/Contents/Resources)
+    set(APPS "\${CMAKE_INSTALL_PREFIX}/Inviwo.app/Contents/MacOS/Inviwo")
+    set(DIRS "\${CMAKE_INSTALL_PREFIX}/${plugin_dest_dir}/")
+    
+    # get link errors with out this line.
+    install(CODE "file(WRITE \"\${CMAKE_INSTALL_PREFIX}/${qtconf_dest_dir}/qt.conf\" \"\")" COMPONENT qt_app)
+    install(CODE "set(BU_CHMOD_BUNDLE_ITEMS ON)
+                  include(BundleUtilities)
+                  file(GLOB_RECURSE LIBS1 \"\${CMAKE_INSTALL_PREFIX}/${plugin_dest_dir}\")
+                  file(GLOB_RECURSE LIBS2 \"\${CMAKE_INSTALL_PREFIX}/Inviwo.app/Contents/plugins/*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+                  fixup_bundle(\"${APPS}\" \"\${LIBS1};\${LIBS2}\" \"${DIRS}\")"
             COMPONENT qt_app
-        )
-        set(plugin_dest_dir Inviwo.app/Contents/MacOS)
-        set(qtconf_dest_dir Inviwo.app/Contents/Resources)
-        set(APPS "\${CMAKE_INSTALL_PREFIX}/Inviwo.app/Contents/MacOS/Inviwo")
-        set(DIRS "\${CMAKE_INSTALL_PREFIX}/${plugin_dest_dir}/")
-        
-        # get link errors with out this line.
-        install(CODE "file(WRITE \"\${CMAKE_INSTALL_PREFIX}/${qtconf_dest_dir}/qt.conf\" \"\")" COMPONENT qt_app)
-        install(CODE "set(BU_CHMOD_BUNDLE_ITEMS ON)
-                      include(BundleUtilities)
-                      file(GLOB_RECURSE LIBS1 \"\${CMAKE_INSTALL_PREFIX}/${plugin_dest_dir}\")
-                      file(GLOB_RECURSE LIBS2 \"\${CMAKE_INSTALL_PREFIX}/Inviwo.app/Contents/plugins/*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
-                      fixup_bundle(\"${APPS}\" \"\${LIBS1};\${LIBS2}\" \"${DIRS}\")"
-                COMPONENT qt_app
-        )
-        install(
-            DIRECTORY   ${IVW_ROOT_DIR}/data/ 
-            DESTINATION Inviwo.app/Contents/Resources/data
-            COMPONENT   qt_app
-        )
+    )
+    install(
+        DIRECTORY   ${IVW_ROOT_DIR}/data/ 
+        DESTINATION Inviwo.app/Contents/Resources/data
+        COMPONENT   qt_app
+    )
 
-        set(CPACK_BINARY_DRAGNDROP ON)
+    set(CPACK_BINARY_DRAGNDROP ON)
 
-    else()
-        install(
-            TARGETS   inviwo
-            RUNTIME   DESTINATION bin
-            BUNDLE    DESTINATION bin
-            ARCHIVE   DESTINATION lib
-            LIBRARY   DESTINATION lib
-            COMPONENT qt_app
-        )
-    endif()
+else()
+    install(
+        TARGETS   inviwo
+        RUNTIME   DESTINATION bin
+        BUNDLE    DESTINATION bin
+        ARCHIVE   DESTINATION lib
+        LIBRARY   DESTINATION lib
+        COMPONENT qt_app
+    )
 endif()
 
 # Add build dependency towards any pybind11 targets and inviwo,
@@ -173,3 +171,5 @@ endif()
 # Save information for python tools.
 ivw_mod_name_to_class(ivw_module_classes ${enabled_modules})
 ivw_private_create_pyconfig("${IVW_MODULE_DIR};${IVW_EXTERNAL_MODULES}" "${ivw_module_classes}" inviwo)
+
+ivw_deploy_qt(inviwo)

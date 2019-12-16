@@ -107,14 +107,14 @@ void Mesh::setBuffer(size_t idx, BufferInfo info, std::shared_ptr<BufferBase> at
     replaceBuffer(idx, info, att);
 }
 
-void Mesh::addIndicies(MeshInfo info, std::shared_ptr<IndexBuffer> ind) {
+void Mesh::addIndices(MeshInfo info, std::shared_ptr<IndexBuffer> ind) {
     indices_.push_back(std::make_pair(info, ind));
 }
 
 std::shared_ptr<inviwo::IndexBufferRAM> Mesh::addIndexBuffer(DrawType dt, ConnectivityType ct) {
     auto indicesRam = std::make_shared<IndexBufferRAM>();
     auto indices = std::make_shared<IndexBuffer>(indicesRam);
-    addIndicies(Mesh::MeshInfo(dt, ct), indices);
+    addIndices(Mesh::MeshInfo(dt, ct), indices);
     return indicesRam;
 }
 
@@ -182,6 +182,16 @@ BufferBase* Mesh::getBuffer(size_t idx) {
     return buffers_[idx].second.get();
 }
 
+BufferBase* Mesh::getBuffer(BufferType type) {
+    auto it = std::find_if(buffers_.begin(), buffers_.end(),
+                           [&](const auto& item) { return item.first.type == type; });
+    if (it != buffers_.end()) {
+        return it->second.get();
+    } else {
+        return nullptr;
+    }
+}
+
 IndexBuffer* Mesh::getIndices(size_t idx) {
     if (idx >= indices_.size()) {
         throw RangeException("Index out of range", IVW_CONTEXT);
@@ -223,7 +233,7 @@ void Mesh::append(const Mesh& mesh) {
         newInds.reserve(inds.size());
         std::transform(inds.begin(), inds.end(), std::back_inserter(newInds),
                        [&](auto& i) { return i + static_cast<uint32_t>(size); });
-        addIndicies(indbuffer.first, util::makeIndexBuffer(std::move(newInds)));
+        addIndices(indbuffer.first, util::makeIndexBuffer(std::move(newInds)));
     }
 }
 

@@ -195,6 +195,7 @@ private:
                                     {LogLevel::Warn, "Warnings", "warning", 0, nullptr, nullptr},
                                     {LogLevel::Info, "Info", "info", 0, nullptr, nullptr}}};
 
+    QLabel* threadPoolInfo_;
     QLineEdit* filterPattern_;
     QAction* clearAction_;
     InviwoMainWindow* mainwindow_;

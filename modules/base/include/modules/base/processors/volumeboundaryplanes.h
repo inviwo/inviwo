@@ -27,46 +27,54 @@
  *
  *********************************************************************************/
 
-#include <modules/<lname>/<lname>module.h>
+#pragma once
+
+#include <modules/base/basemoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/ports/dataoutport.h>
+
+#include <inviwo/core/properties/boolproperty.h>
+
+#include <inviwo/core/datastructures/geometry/plane.h>
+
+#include <vector>
 
 namespace inviwo {
 
-<name>Module::<name>Module(InviwoApplication* app) : InviwoModule(app, "<name>") {
-    // Add a directory to the search path of the Shadermanager
-    // ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
+/** \docpage{org.inviwo.VolumeBoundaryPlanes, Volume Boundary Planes}
+ * ![](org.inviwo.VolumeBoundaryPlanes.png?classIdentifier=org.inviwo.VolumeBoundaryPlanes)
+ * Outputs the six planes that enclose the input volume in world space.
+ * Order of planes: -X, -Y, -Z, +X, +Y, +Z (sides of volume in model coordinates).
+ * Planes face outward by default, but can be flipped.
+ *
+ * ### Inports
+ *   * __volumeInport__ Input volume.
+ *
+ * ### Outports
+ *   * __planeOutport__ The six boundary planes.
+ *
+ * ### Properties
+ *   * __Flip planes__ Switch plane normals between inward and outward.
+ */
 
-    // Register objects that can be shared with the rest of inviwo here:
+class IVW_MODULE_BASE_API VolumeBoundaryPlanes : public Processor {
+public:
+    VolumeBoundaryPlanes();
+    virtual ~VolumeBoundaryPlanes() = default;
 
-    // Processors
-    // registerProcessor<<name>Processor>();
+    virtual void process() override;
 
-    // Properties
-    // registerProperty<<name>Property>();
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
-    // Readers and writes
-    // registerDataReader(std::make_unique<<name>Reader>());
-    // registerDataWriter(std::make_unique<<name>Writer>());
+private:
+    VolumeInport volume_;
+    DataOutport<std::vector<Plane>> planes_;
 
-    // Data converters
-    // registerRepresentationConverter(std::make_unique<<name>Disk2RAMConverter>());
-
-    // Ports
-    // registerPort<<name>Outport>();
-    // registerPort<<name>Inport>();
-
-    // PropertyWidgets
-    // registerPropertyWidget<<name>PropertyWidget, <name>Property>("Default");
-
-    // Dialogs
-    // registerDialog<<name>Dialog>(<name>Outport);
-
-    // Other things
-    // registerCapabilities(std::make_unique<<name>Capabilities>());
-    // registerSettings(std::make_unique<<name>Settings>());
-    // registerMetaData(std::make_unique<<name>MetaData>());
-    // registerPortInspector("<name>Outport", "path/workspace.inv");
-    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget> processorWidget); 
-    // registerDrawer(util::make_unique_ptr<<name>Drawer>());
-}
+    BoolProperty flipPlanes_;
+};
 
 }  // namespace inviwo

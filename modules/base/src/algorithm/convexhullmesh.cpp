@@ -61,7 +61,7 @@ std::shared_ptr<Mesh> convertHullToMesh(const std::vector<vec2> &hull, bool useI
 
         indexBuffer->append(&seq);
 
-        mesh->addIndicies(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::Loop), indices);
+        mesh->addIndices(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::Loop), indices);
     }
 
     return mesh;

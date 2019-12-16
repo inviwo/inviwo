@@ -149,7 +149,7 @@ std::unique_ptr<QMenu> ListPropertyWidgetQt::getContextMenu() {
 
 void ListPropertyWidgetQt::addNewItem(size_t index) {
     listProperty_->setInitiatingWidget(this);
-    listProperty_->addProperty(index);
+    listProperty_->constructProperty(index);
     listProperty_->clearInitiatingWidget();
 }
 

@@ -35,37 +35,21 @@ namespace inviwo {
 template <typename T>
 class Edge {
 public:
-    T v1, v2;
+    T v1{};
+    T v2{};
 
-    Edge(T in1) : v1(in1), v2(in1){};
+    constexpr Edge() noexcept = default;
+    constexpr Edge(T in1) noexcept : v1(in1), v2(in1){};
+    constexpr Edge(T in1, T in2) noexcept : v1(in1), v2(in2){};
 
-    Edge(T in1, T in2) : v1(in1), v2(in2){};
-
-    bool operator==(const Edge<T>& e) const {
-        return ((this->v1 == e.v1) && (this->v2 == e.v2)) ||
-               ((this->v1 == e.v2) && (this->v2 == e.v1));
+    constexpr bool operator==(const Edge<T>& e) const noexcept {
+        return ((v1 == e.v1) && (v2 == e.v2)) || ((v1 == e.v2) && (v2 == e.v1));
     }
-
-protected:
-    // Protected as it can't instantiate v1 and v2;
-    Edge() {}
 };
 
-template <typename T>
-class EdgeDataFormat : public Edge<T> {
-public:
-    EdgeDataFormat() : Edge<T>() {
-        this->v1 = util::glm_convert<T>(0.0);
-        this->v2 = this->v1;
-    }
-
-    EdgeDataFormat(T in1) : Edge<T>(in1){};
-    EdgeDataFormat(T in1, T in2) : Edge<T>(in1, in2){};
-};
-
-typedef EdgeDataFormat<DataUInt32::type> EdgeIndex;
-typedef EdgeDataFormat<DataVec2Float32::type> Edge2D;
-typedef EdgeDataFormat<DataVec3Float32::type> Edge3D;
+using EdgeIndex = Edge<DataUInt32::type>;
+using Edge2D = Edge<DataVec2Float32::type>;
+using Edge3D = Edge<DataVec3Float32::type>;
 
 }  // namespace inviwo
 

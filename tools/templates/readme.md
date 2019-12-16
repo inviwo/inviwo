@@ -1,1 +1,0 @@
-description of the <name> module

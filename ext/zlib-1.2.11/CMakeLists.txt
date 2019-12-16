@@ -292,4 +292,10 @@ source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
 #--------------------------------------------------------------------
 # Make package (for other projects to find)
 ivw_make_package(ZLIB zlib1)
-
+# OpenEXR is dependent on zlib1 being exported  
+install(EXPORT ${PROJECT_NAME}
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+  FILE ${PROJECT_NAME}Config.cmake
+  NAMESPACE ${PROJECT_NAME}::
+  EXPORT_LINK_INTERFACE_LIBRARIES
+)

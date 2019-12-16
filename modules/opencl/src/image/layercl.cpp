@@ -132,15 +132,11 @@ void LayerCL::setDimensions(size2_t dimensions) {
                                                   getFormat(), dimensions.x, dimensions.y);
     LayerCLResizer::resize(*clImage_, *resizedLayer2D, dimensions);
     clImage_ = std::unique_ptr<cl::Image2D>(resizedLayer2D);
-    updateBaseMetaFromRepresentation();
 }
 
 const size2_t& LayerCL::getDimensions() const { return dimensions_; }
 
-void LayerCL::setSwizzleMask(const SwizzleMask& mask) {
-    swizzleMask_ = mask;
-    updateBaseMetaFromRepresentation();
-}
+void LayerCL::setSwizzleMask(const SwizzleMask& mask) { swizzleMask_ = mask; }
 
 SwizzleMask LayerCL::getSwizzleMask() const { return swizzleMask_; }
 

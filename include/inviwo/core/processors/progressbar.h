@@ -79,9 +79,7 @@ protected:
  * @see ProgressBarOwner
  * @see ProgressBarObserver
  */
-class IVW_CORE_API ProgressBar : public ActivityIndicator,
-                                 public ProgressBarObservable,
-                                 public Serializable {
+class IVW_CORE_API ProgressBar : public ActivityIndicator, public ProgressBarObservable {
 public:
     ProgressBar();
     virtual ~ProgressBar();
@@ -103,18 +101,14 @@ public:
      * @param progress between [0 1]
      */
     void updateProgress(float progress);
-    void updateProgressLoop(size_t loopVar, size_t maxLoopVar, float endProgress);
 
     void show();
     void hide();
+    void setVisible(bool visible);
     bool isVisible() const;
-
-    virtual void serialize(Serializer& s) const;
-    virtual void deserialize(Deserializer& d);
 
 private:
     float progress_;
-    float beginLoopProgress_;
     bool visible_;
 };
 

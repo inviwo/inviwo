@@ -94,7 +94,10 @@ class TemplateColumn : public Column {
 public:
     using type = T;
 
-    TemplateColumn(const std::string &header);
+    TemplateColumn(const std::string &header,
+                   std::shared_ptr<Buffer<T>> buffer = std::make_shared<Buffer<T>>());
+
+    TemplateColumn(const std::string &header, std::vector<T> data);
 
     TemplateColumn(const TemplateColumn<T> &rhs);
     TemplateColumn(TemplateColumn<T> &&rhs);
@@ -120,6 +123,7 @@ public:
     virtual void set(size_t idx, const T &value);
 
     T get(size_t idx) const;
+    T operator[](size_t idx) const;
     /**
      * \brief returns the data value for the given index.
      *
@@ -150,6 +154,11 @@ public:
     std::shared_ptr<const Buffer<T>> getTypedBuffer() const;
 
     virtual size_t getSize() const override;
+
+    auto begin() { return buffer_->getEditableRAMRepresentation()->getDataContainer().begin(); }
+    auto end() { return buffer_->getEditableRAMRepresentation()->getDataContainer().end(); }
+    auto begin() const { return buffer_->getRAMRepresentation()->getDataContainer().begin(); }
+    auto end() const { return buffer_->getRAMRepresentation()->getDataContainer().end(); }
 
 protected:
     std::string header_;
@@ -212,8 +221,12 @@ private:
 };
 
 template <typename T>
-TemplateColumn<T>::TemplateColumn(const std::string &header)
-    : header_(header), buffer_(std::make_shared<Buffer<T>>()) {}
+TemplateColumn<T>::TemplateColumn(const std::string &header, std::shared_ptr<Buffer<T>> buffer)
+    : header_(header), buffer_(buffer) {}
+
+template <typename T>
+TemplateColumn<T>::TemplateColumn(const std::string &header, std::vector<T> data)
+    : header_(header), buffer_(util::makeBuffer(std::move(data))) {}
 
 template <typename T>
 TemplateColumn<T>::TemplateColumn(const TemplateColumn &rhs)
@@ -351,6 +364,11 @@ std::string TemplateColumn<T>::getAsString(size_t idx) const {
 template <typename T>
 std::shared_ptr<DataPointBase> TemplateColumn<T>::get(size_t idx, bool) const {
     return std::make_shared<DataPoint<T>>(buffer_->getRAMRepresentation()->get(idx));
+}
+
+template <typename T>
+T TemplateColumn<T>::operator[](const size_t idx) const {
+    return get(idx);
 }
 
 template <typename T>

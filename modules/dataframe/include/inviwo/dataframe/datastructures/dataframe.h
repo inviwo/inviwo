@@ -106,6 +106,25 @@ public:
     std::shared_ptr<TemplateColumn<T>> addColumn(const std::string &header, size_t size = 0);
 
     /**
+     * \brief Drop a column from data frame
+     *
+     * Drops all columns with the specified header. If the data frame does not have a column with
+     * the specified header, nothing happens.
+     *
+     * \param header Name of the column to be dropped
+     */
+    void dropColumn(const std::string &header);
+
+    /**
+     * \brief Drop a column from data frame
+     *
+     * Drops the column at the specified psoition.
+     *
+     * \param index Position of the column to be dropped
+     */
+    void dropColumn(size_t index);
+
+    /**
      * \brief add a categorical column
      * updateIndexBuffer() needs to be called after all columns have been added before
      * the DataFrame can be used
@@ -136,6 +155,12 @@ public:
      */
     std::shared_ptr<Column> getColumn(size_t index);
     std::shared_ptr<const Column> getColumn(size_t index) const;
+    /**
+     * fetch the first column where the header matches \p name.
+     * @return  matching column if existing, else nullptr
+     */
+    std::shared_ptr<Column> getColumn(const std::string &name);
+    std::shared_ptr<const Column> getColumn(const std::string &name) const;
 
     std::shared_ptr<TemplateColumn<std::uint32_t>> getIndexColumn();
     std::shared_ptr<const TemplateColumn<std::uint32_t>> getIndexColumn() const;

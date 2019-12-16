@@ -33,65 +33,49 @@
 
 namespace inviwo {
 
-ProgressBar::ProgressBar() : progress_(0.0f), beginLoopProgress_(-1.0f) {}
+ProgressBar::ProgressBar() : progress_(0.0f), visible_{false} {}
 
-ProgressBar::~ProgressBar() {}
+ProgressBar::~ProgressBar() = default;
 
 float ProgressBar::getProgress() const { return progress_; }
 
 void ProgressBar::resetProgress() {
     setActive(false);
-    progress_ = 0.0f;
-    notifyProgressChanged(progress_);
+    if (progress_ != 0.0f) {
+        progress_ = 0.0f;
+        notifyProgressChanged(progress_);
+    }
 }
 
 void ProgressBar::finishProgress() {
     setActive(false);
-    progress_ = 1.0f;
-    notifyProgressChanged(progress_);
+    if (progress_ != 1.0f) {
+        progress_ = 1.0f;
+        notifyProgressChanged(progress_);
+    }
 }
 
 void ProgressBar::updateProgress(float progress) {
-    setActive(progress > 0.0f && progress < 1.0f);
-    if (visible_) {
+    setActive(progress < 1.0f);
+    if (progress_ != progress) {
         progress_ = progress;
         notifyProgressChanged(progress_);
     }
 }
 
-void ProgressBar::updateProgressLoop(size_t loopVar, size_t maxLoopVar, float endLoopProgress) {
-    if (visible_) {
-        if (beginLoopProgress_ <= 0.0f) beginLoopProgress_ = progress_;
+void ProgressBar::show() { setVisible(true); }
 
-        float normalizedLoopVar = static_cast<float>(loopVar) / static_cast<float>(maxLoopVar);
-        progress_ = beginLoopProgress_ + normalizedLoopVar * (endLoopProgress - beginLoopProgress_);
+void ProgressBar::hide() { setVisible(false); }
 
-        if (loopVar == maxLoopVar) beginLoopProgress_ = -1.0f;
-
-        notifyProgressChanged(progress_);
+void ProgressBar::setVisible(bool visible) {
+    setActive(visible);
+    if (visible_ != visible) {
+        visible_ = visible;
+        notifyVisibilityChanged(visible_);
     }
 }
 
-void ProgressBar::show() {
-    visible_ = true;
-    setActive(true);
-    notifyVisibilityChanged(visible_);
-}
-
-void ProgressBar::hide() {
-    visible_ = false;
-    setActive(false);
-    notifyVisibilityChanged(visible_);
-}
-
 bool ProgressBar::isVisible() const { return visible_; }
-
-void ProgressBar::serialize(Serializer& s) const { s.serialize("visible", visible_); }
-
-void ProgressBar::deserialize(Deserializer& d) {
-    d.deserialize("visible", visible_);
-    notifyVisibilityChanged(visible_);
-}
 
 void ProgressBarObservable::notifyProgressChanged(float progress) {
     forEachObserver([progress](ProgressBarObserver* o) { o->progressChanged(progress); });

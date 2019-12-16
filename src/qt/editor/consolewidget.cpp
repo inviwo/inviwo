@@ -53,9 +53,11 @@
 #include <QResizeEvent>
 #include <QWheelEvent>
 #include <QMessageBox>
+#include <QTimer>
 #include <warn/pop>
 
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/qt/editor/consolewidget.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/stringconversion.h>
@@ -241,8 +243,20 @@ ConsoleWidget::ConsoleWidget(InviwoMainWindow* parent)
     statusBar->addSpacing(5);
 
     statusBar->addStretch(3);
-    statusBar->addWidget(new QLabel("Filter", this));
 
+    threadPoolInfo_ = new QLabel("Pool: 0 Queued Jobs / 0 Threads", this);
+    statusBar->addWidget(threadPoolInfo_);
+    auto timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, threadPoolInfo_, [this]() {
+        const auto threads = mainwindow_->getInviwoApplication()->getThreadPool().getSize();
+        const auto queueSize = mainwindow_->getInviwoApplication()->getThreadPool().getQueueSize();
+        threadPoolInfo_->setText(
+            QString("Pool: %1 Queued Jobs / %2 Threads").arg(queueSize, 3).arg(threads, 2));
+    });
+    timer->start(1000);
+
+    statusBar->addSpacing(20);
+    statusBar->addWidget(new QLabel("Filter", this));
     filterPattern_->setMinimumWidth(200);
     statusBar->addWidget(filterPattern_, 1);
     statusBar->addSpacing(5);

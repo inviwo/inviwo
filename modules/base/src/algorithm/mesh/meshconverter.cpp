@@ -61,8 +61,8 @@ std::unique_ptr<Mesh> toPointMesh(const Mesh& mesh) {
     }
 
     for (const auto& inds : mesh.getIndexBuffers()) {
-        res->addIndicies(Mesh::MeshInfo{DrawType::Points, ConnectivityType::None},
-                         std::shared_ptr<IndexBuffer>(inds.second->clone()));
+        res->addIndices(Mesh::MeshInfo{DrawType::Points, ConnectivityType::None},
+                        std::shared_ptr<IndexBuffer>(inds.second->clone()));
     }
     return res;
 }
@@ -97,7 +97,7 @@ std::unique_ptr<Mesh> toLineMesh(const Mesh& mesh) {
         }
 
         if (inds.first.dt == DrawType::Lines) {
-            res->addIndicies(inds.first, std::shared_ptr<IndexBuffer>(inds.second->clone()));
+            res->addIndices(inds.first, std::shared_ptr<IndexBuffer>(inds.second->clone()));
         }
 
         if (inds.first.dt == DrawType::Triangles) {

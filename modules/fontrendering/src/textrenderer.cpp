@@ -28,6 +28,8 @@
  *
  *********************************************************************************/
 
+#include <modules/fontrendering/textrenderer.h>
+
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/zip.h>
@@ -39,8 +41,6 @@
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/sharedopenglresources.h>
-
-#include <modules/fontrendering/textrenderer.h>
 
 #include <utf8.h>
 

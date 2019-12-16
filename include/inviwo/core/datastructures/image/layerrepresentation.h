@@ -77,8 +77,6 @@ protected:
     LayerRepresentation(const LayerRepresentation& rhs) = default;
     LayerRepresentation& operator=(const LayerRepresentation& that) = default;
 
-    void updateBaseMetaFromRepresentation();
-
     LayerType layerType_;
 };
 

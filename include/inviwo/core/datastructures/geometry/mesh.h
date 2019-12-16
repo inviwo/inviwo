@@ -132,7 +132,12 @@ public:
      * @param info Rendering type and connectivity.
      * @param ind Index buffer, will be owned by mesh.
      */
-    void addIndicies(MeshInfo info, std::shared_ptr<IndexBuffer> ind);
+    void addIndices(MeshInfo info, std::shared_ptr<IndexBuffer> ind);
+
+    // clang-format off
+    [[deprecated("Mesh::addIndicies is deprecated, use addIndices (deprecated since 2019-12-04)")]]
+    void addIndicies(MeshInfo info, std::shared_ptr<IndexBuffer> ind) { addIndices(info, ind); }
+    // clang-format on
 
     /**
      * Creates and add a new index buffer to the mesh
@@ -191,6 +196,12 @@ public:
     bool hasBuffer(BufferType type) const;
 
     BufferBase* getBuffer(size_t idx);
+
+    /**
+     * @return The first buffer matching BufferType type or nullptr;
+     */
+    BufferBase* getBuffer(BufferType type);
+
     IndexBuffer* getIndices(size_t idx);
 
     MeshInfo getDefaultMeshInfo() const;

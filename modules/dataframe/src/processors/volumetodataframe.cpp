@@ -30,6 +30,7 @@
 #include <inviwo/dataframe/processors/volumetodataframe.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
+#include <inviwo/core/util/indexmapper.h>
 
 namespace inviwo {
 
