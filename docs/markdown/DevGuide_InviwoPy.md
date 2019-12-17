@@ -13,8 +13,6 @@ Using Inviwopy with Anaconda environments
 
 2. If not set automatically, also adapt the `PYTHON_LIBRARY` flag to `<conda env>/lib/libpython3.6m.so` (according to your Python version).
 
-3. Set the `USE_PYTHON_INCLUDE_DIR` flag, so Inviwo will attempt to install the dynamic libraries directly into your Python include directory, so that you can always access the Inviwopy library from within your conda environment.
-
 </p>
 </details>
 
@@ -22,7 +20,12 @@ Using Inviwopy with Anaconda environments
 - `inviwopy.cpython-36m-x76_64-linux-gnu.so`
 - `inviwopyapp.cpython-36m-x76_64-linux-gnu.so`
 
-On Windows similarly named `.dll`s are generated.
+On Windows similarly named `.dll`s are generated. Those libraries need to be in your `PYTHONPATH`.
+So make sure to add the following lines to the top of your Python script:
+```python
+import sys
+sys.path.append('<path to inviwo build>/bin')
+```
 
 
 ## Loading an Inviwo workspace
@@ -60,7 +63,7 @@ plw.addProcessorProperties(app.network.VolumeRaycaster)
 plw.show()
 ```
 
-See the full example [here](https://github.com/inviwo/inviwo/blob/master/apps/inviwopyapp/inviwo.py)
+See the full example [here](https://github.com/inviwo/inviwo/blob/master/apps/inviwopyapp/inviwo.py).
 
 
 ## Modifying Inviwo networks with Python
