@@ -2,6 +2,8 @@
 set(WEBBROWSER_HELPER_SOURCES
     app_switches.h
     app_switches.cpp
+    webotherapp.h
+    webotherapp.cpp
     webrendererapp.h
     webrendererapp.cpp
     cefprocesshelper.cpp
@@ -11,7 +13,7 @@ set(WEBBROWSER_RESOURCES_WINDOWS
   inviwo_web_helper.exe.manifest # Resolves "Check failed: fallback_available" in debug mode
 )
 set(WEBBROWSER_RESOURCES_MACOSX
-    mac/helper-Info.plist
+    resources/mac/helper-Info.plist
 )
 APPEND_PLATFORM_SOURCES(WEBBROWSER_RESOURCES)
 source_group(WebBrowser\\\\resources FILES ${WEBBROWSER_RESOURCES})
@@ -24,67 +26,121 @@ set(WEBBROWSER_HELPER_SOURCES
 # place helper in separate executable. CEF uses app name + helper by default
 set(CEF_HELPER_TARGET "inviwo_helper" CACHE INTERNAL "CEF_HELPER_TARGET")
 set(CEF_HELPER_OUTPUT_NAME "Inviwo Helper")
+if (NOT OS_MACOSX)
+    add_executable(${CEF_HELPER_TARGET} WIN32 MACOSX_BUNDLE ${WEBBROWSER_HELPER_SOURCES})
+    add_dependencies(${CEF_HELPER_TARGET} libcef_dll_wrapper)
+    # Build helper before module so that we can copy it
+    add_dependencies(inviwo-module-webbrowser ${CEF_HELPER_TARGET})
+    target_link_libraries(${CEF_HELPER_TARGET} PRIVATE
+        $<$<NOT:$<BOOL:${OS_MACOSX}>>:libcef_lib>
+        libcef_dll_wrapper
+        ${CEF_STANDARD_LIBS}
+        inviwo::warn
+    )
+    target_include_directories(${CEF_HELPER_TARGET} PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        "${CEF_INCLUDE_PATH}"
+    )
 
-add_executable(${CEF_HELPER_TARGET} WIN32 MACOSX_BUNDLE ${WEBBROWSER_HELPER_SOURCES})
-add_dependencies(${CEF_HELPER_TARGET} libcef_dll_wrapper)
-# Build helper before module so that we can copy it
-add_dependencies(inviwo-module-webbrowser ${CEF_HELPER_TARGET})
-target_link_libraries(${CEF_HELPER_TARGET} PRIVATE 
-    $<$<NOT:$<BOOL:${OS_MACOSX}>>:libcef_lib>
-    libcef_dll_wrapper 
-    ${CEF_STANDARD_LIBS}
-    inviwo::warn
-)
-target_include_directories(${CEF_HELPER_TARGET} PRIVATE 
-	${CMAKE_CURRENT_SOURCE_DIR}
-	"${CEF_INCLUDE_PATH}"
-)
+    # Use inviwo preprocessor definitions
+    ivw_define_standard_definitions(WebBrowser ${CEF_HELPER_TARGET})
+    ivw_define_standard_properties(${CEF_HELPER_TARGET})
+    ivw_suppress_compiler_warnings(${CEF_HELPER_TARGET})
+    target_compile_definitions(${CEF_HELPER_TARGET} PRIVATE
+        $<$<BOOL:${USE_SANDBOX}>:CEF_USE_SANDBOX>
+    )
 
-# Use inviwo preprocessor definitions  
-ivw_define_standard_definitions(WebBrowser ${CEF_HELPER_TARGET})
-ivw_define_standard_properties(${CEF_HELPER_TARGET})
-ivw_suppress_compiler_warnings(${CEF_HELPER_TARGET})
-target_compile_definitions(${CEF_HELPER_TARGET} PRIVATE
-    $<$<BOOL:${USE_SANDBOX}>:CEF_USE_SANDBOX>
-)
-
-# Put in ext folder in developer IDE
-ivw_folder(${CEF_HELPER_TARGET} ext/CEF)
-
+    # Put in ext folder in developer IDE
+    ivw_folder(${CEF_HELPER_TARGET} ext/CEF)
+endif()
 if (OS_MACOSX)
     # Output paths for the app bundles: bin/configuration, for example bin/Debug.
     # Note: This is hardcoded to inviwo app.
     # Other apps need to copy the helper and the cef framework to its framework dir,
     # i.e. add the two commands add_custom_command and install below.
     set(CEF_APP "$<TARGET_BUNDLE_DIR:${CEF_HELPER_TARGET}>/../${IVW_APP_INSTALL_NAME}.app")
-    set(CEF_HELPER_APP "$<TARGET_BUNDLE_DIR:${CEF_HELPER_TARGET}>") # full/path/to/helper.app
 
-    # Copy files into the bin directory (used during development)
-    add_custom_command(
-        TARGET ${CEF_HELPER_TARGET}
-        POST_BUILD
-        # Copy the CEF framework into the Frameworks directory.
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${CEF_BINARY_DIR}/Chromium Embedded Framework.framework"
-        "${CEF_APP}/Contents/Frameworks/Chromium Embedded Framework.framework"
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${CEF_HELPER_APP}"
-        "${CEF_APP}/Contents/Frameworks/${CEF_HELPER_OUTPUT_NAME}.app"
-        VERBATIM
-    )
-    # Copy the helper app bundle into the Frameworks directory (used by installer)
-    install(DIRECTORY "${CEF_HELPER_APP}"
-            DESTINATION "${IVW_APP_INSTALL_NAME}.app/Contents/Frameworks/${CEF_HELPER_OUTPUT_NAME}.app"
-            COMPONENT inviwo-module-webbrowser)
-
-    set_target_properties(${CEF_HELPER_TARGET} PROPERTIES
-        MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/mac/helper-Info.plist
-    )
+    set(CEF_TARGET inviwo-module-webbrowser)
     if(USE_SANDBOX)
         # Logical target used to link the cef_sandbox library.
         ADD_LOGICAL_TARGET("cef_sandbox_lib" "${CEF_SANDBOX_LIB_DEBUG}" "${CEF_SANDBOX_LIB_RELEASE}")
-        target_link_libraries(${CEF_HELPER_TARGET} PRIVATE cef_sandbox_lib)
+        #target_link_libraries(${CEF_HELPER_TARGET} PRIVATE cef_sandbox_lib)
     endif()
+    # Create the multiple Helper app bundle targets.
+    foreach(_suffix_list ${CEF_HELPER_APP_SUFFIXES})
+        # Convert to a list and extract the suffix values.
+        string(REPLACE ":" ";" _suffix_list ${_suffix_list})
+        list(GET _suffix_list 0 _name_suffix)
+        list(GET _suffix_list 1 _target_suffix)
+        list(GET _suffix_list 2 _plist_suffix)
+
+        # Define Helper target and output names.
+        set(_helper_target "${CEF_HELPER_TARGET}${_target_suffix}")
+        set(_helper_output_name "${CEF_HELPER_OUTPUT_NAME}${_name_suffix}")
+
+        # Create Helper-specific variants of the helper-Info.plist file. Do this
+        # manually because the configure_file command (which is executed as part of
+        # MACOSX_BUNDLE_INFO_PLIST) uses global env variables and would insert the
+        # wrong values with multiple targets.
+        set(_helper_info_plist "${CMAKE_CURRENT_BINARY_DIR}/helper-Info${_target_suffix}.plist")
+        file(READ "${CMAKE_CURRENT_SOURCE_DIR}/resources/mac/helper-Info.plist" _plist_contents)
+        string(REPLACE "\${EXECUTABLE_NAME}" "${_helper_output_name}" _plist_contents ${_plist_contents})
+        string(REPLACE "\${PRODUCT_NAME}" "${_helper_output_name}" _plist_contents ${_plist_contents})
+        string(REPLACE "\${BUNDLE_ID_SUFFIX}" "${_plist_suffix}" _plist_contents ${_plist_contents})
+        file(WRITE ${_helper_info_plist} ${_plist_contents})
+
+        # Create Helper executable target.
+        add_executable(${_helper_target} MACOSX_BUNDLE ${WEBBROWSER_HELPER_SOURCES})
+        #SET_EXECUTABLE_TARGET_PROPERTIES(${_helper_target})
+        add_dependencies(${_helper_target} libcef_dll_wrapper)
+        target_link_libraries(${_helper_target} libcef_dll_wrapper ${CEF_STANDARD_LIBS} inviwo::warn)
+        set_target_properties(${_helper_target} PROPERTIES
+            MACOSX_BUNDLE_INFO_PLIST ${_helper_info_plist}
+            OUTPUT_NAME ${_helper_output_name}
+        )
+        set(_helper_app "$<TARGET_BUNDLE_DIR:${_helper_target}>") # full/path/to/helper.app
+        if(USE_SANDBOX)
+            target_link_libraries(${_helper_target} cef_sandbox_lib)
+        endif()
+        target_include_directories(${_helper_target} PRIVATE
+            ${CMAKE_CURRENT_SOURCE_DIR}
+            "${CEF_INCLUDE_PATH}"
+        )
+
+        # Use inviwo preprocessor definitions
+        ivw_define_standard_definitions(WebBrowser ${_helper_target})
+        ivw_define_standard_properties(${_helper_target})
+        ivw_suppress_compiler_warnings(${_helper_target})
+        target_compile_definitions(${_helper_target} PRIVATE
+            $<$<BOOL:${USE_SANDBOX}>:CEF_USE_SANDBOX>
+        )
+        # Put in ext folder in developer IDE
+        ivw_folder(${_helper_target} ext/CEF)
+        # Add the Helper as a dependency of the main executable target.
+        add_dependencies(${CEF_TARGET} "${_helper_target}")
+
+        # Copy files into the bin directory (used during development)
+        add_custom_command(
+            TARGET ${_helper_target}
+            POST_BUILD
+            # Copy the CEF framework into the Frameworks directory.
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "${CEF_BINARY_DIR}/Chromium Embedded Framework.framework"
+            "${CEF_APP}/Contents/Frameworks/Chromium Embedded Framework.framework"
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "${_helper_app}"
+            "${CEF_APP}/Contents/Frameworks/${_helper_output_name}.app"
+            VERBATIM
+        )
+        # Copy the helper app bundle into the Frameworks directory (used by installer)
+        install(DIRECTORY "${_helper_app}"
+            DESTINATION "${IVW_APP_INSTALL_NAME}.app/Contents/Frameworks/${_helper_output_name}.app"
+            COMPONENT inviwo-module-webbrowser)
+
+        set_target_properties(${_helper_target} PROPERTIES
+            MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/resources/mac/helper-Info.plist
+        )
+    endforeach()
 
 elseif (WIN32)
 	# Inviwo: Needed? (Windows only) Add the custom manifest files to the executable.

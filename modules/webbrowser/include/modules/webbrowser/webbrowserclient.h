@@ -77,7 +77,7 @@ public:
 
     CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() override { return this; }
 
-    bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefProcessId source_process,
+    bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefProcessId source_process,
                                   CefRefPtr<CefProcessMessage> message) override;
 
     // CefLifeSpanHandler methods:
@@ -89,18 +89,15 @@ public:
     virtual bool OnBeforeBrowse(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
                                 CefRefPtr<CefRequest> request, bool user_gesture,
                                 bool is_redirect) override;
+    virtual bool OnCertificateError(CefRefPtr<CefBrowser> browser,
+                               cef_errorcode_t cert_error,
+                               const CefString& request_url,
+                               CefRefPtr<CefSSLInfo> ssl_info,
+                                    CefRefPtr<CefRequestCallback> callback) override;
 
     void OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
                                    TerminationStatus status) override;
 
-    cef_return_value_t OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
-                                            CefRefPtr<CefFrame> frame,
-                                            CefRefPtr<CefRequest> request,
-                                            CefRefPtr<CefRequestCallback> callback) override;
-
-    CefRefPtr<CefResourceHandler> GetResourceHandler(CefRefPtr<CefBrowser> browser,
-                                                     CefRefPtr<CefFrame> frame,
-                                                     CefRefPtr<CefRequest> request) override;
     // CefLoadHandler methods:
     /*
      * Added handlers will receive CefLoadHandler calls.

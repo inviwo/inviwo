@@ -67,9 +67,9 @@ public:
         messageRouter_->OnContextReleased(browser, frame, context);
     }
 
-    bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefProcessId source_process,
+    bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefProcessId source_process,
                                   CefRefPtr<CefProcessMessage> message) OVERRIDE {
-        return messageRouter_->OnProcessMessageReceived(browser, source_process, message);
+        return messageRouter_->OnProcessMessageReceived(browser, frame, source_process, message);
     }
 
 private:

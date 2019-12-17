@@ -38,12 +38,14 @@ RenderHandlerGL::RenderHandlerGL(OnWebPageCopiedCallback onWebPageCopiedCallback
     , texture2D_(size2_t{1, 1}, GL_BGRA, GL_RGBA, GL_UNSIGNED_BYTE, GL_NEAREST)
     , onWebPageCopiedCallback{onWebPageCopiedCallback} {}
 
-void RenderHandlerGL::updateCanvasSize(size2_t newSize) { texture2D_.resize(newSize); }
+void RenderHandlerGL::updateCanvasSize(size2_t newSize) {
+    // Prevent crash when newSize = 0
+    texture2D_.resize(glm::max(size2_t{1, 1}, newSize)); }
 
-bool RenderHandlerGL::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) {
+void RenderHandlerGL::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) {
     rect = CefRect{0, 0, static_cast<int>(texture2D_.getWidth()),
                    static_cast<int>(texture2D_.getHeight())};
-    return true;
+
 }
 
 void RenderHandlerGL::OnPopupShow(CefRefPtr<CefBrowser> browser, bool show) {
