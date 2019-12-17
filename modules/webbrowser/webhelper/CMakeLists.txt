@@ -124,10 +124,6 @@ if (OS_MACOSX)
         add_custom_command(
             TARGET ${_helper_target}
             POST_BUILD
-            # Copy the CEF framework into the Frameworks directory.
-            COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "${CEF_BINARY_DIR}/Chromium Embedded Framework.framework"
-            "${CEF_APP}/Contents/Frameworks/Chromium Embedded Framework.framework"
             COMMAND ${CMAKE_COMMAND} -E copy_directory
             "${_helper_app}"
             "${CEF_APP}/Contents/Frameworks/${_helper_output_name}.app"
@@ -142,7 +138,16 @@ if (OS_MACOSX)
             MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/resources/mac/helper-Info.plist
         )
     endforeach()
-
+    # Copy the CEF framework into the Frameworks directory
+    add_custom_command(
+        TARGET ${_helper_target}
+        POST_BUILD
+        # Copy the CEF framework into the Frameworks directory.
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CEF_BINARY_DIR}/Chromium Embedded Framework.framework"
+        "${CEF_APP}/Contents/Frameworks/Chromium Embedded Framework.framework"
+        VERBATIM
+    )
 elseif (WIN32)
 	# Inviwo: Needed? (Windows only) Add the custom manifest files to the executable.
 	#ADD_WINDOWS_CEF_MANIFEST("${CEF_TARGET_OUT_DIR}" "${WEBBROWSER_MODULE_PATH}" "${CEF_HELPER_TARGET}" "exe")
