@@ -36,6 +36,7 @@
 #include <modules/opengl/openglcapabilities.h>
 
 #include <cstdio>
+#include <fmt/format.h>
 
 namespace inviwo {
 FragmentListRenderer::FragmentListRenderer()
