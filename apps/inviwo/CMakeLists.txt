@@ -56,6 +56,7 @@ target_link_libraries(inviwo PUBLIC
     Qt5::Core
     Qt5::Widgets
 )
+set_target_properties(inviwo PROPERTIES OUTPUT_NAME "Inviwo")
 #--------------------------------------------------------------------
 # Register the use of modules
 # Determine dendendencies and set runtime module loading defines
@@ -153,6 +154,7 @@ if(WIN32)
         Qt5::Core 
         Qt5::Widgets
     )
+    set_target_properties(inviwo-cli PROPERTIES OUTPUT_NAME "Inviwo-cli")
     ivw_configure_application_module_dependencies(inviwo-cli ${enabled_modules})
     ivw_define_standard_definitions(inviwo-cli inviwo-cli)
     ivw_define_standard_properties(inviwo-cli)
