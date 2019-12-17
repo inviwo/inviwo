@@ -150,7 +150,7 @@ WebBrowserProcessor::WebBrowserProcessor()
     // renderHandler_ in
     // destructor
     browser_ = CefBrowserHost::CreateBrowserSync(window_info, browserClient_, getSource(),
-                                                 browserSettings, nullptr);
+                                                 browserSettings, nullptr, nullptr);
     // Observe when page has loaded
     browserClient_->addLoadHandler(this);
     // Do not process until frame is loaded

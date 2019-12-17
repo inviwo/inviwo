@@ -58,7 +58,7 @@ public:
     // coordinates. Return true if the rectangle was provided.
     ///
     /*--cef()--*/
-    virtual bool GetViewRect(CefRefPtr<CefBrowser> browser, CefRect &rect) override;
+    virtual void GetViewRect(CefRefPtr<CefBrowser> browser, CefRect &rect) override;
 
     ///
     // Called when the browser wants to show or hide the popup widget. The popup

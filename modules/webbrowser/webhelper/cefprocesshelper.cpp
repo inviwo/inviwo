@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <webrendererapp.h>
+#include <webotherapp.h>
 #include <app_switches.h>
 
 #if DARWIN  // Mac
@@ -83,6 +84,8 @@ int main(int argc, char* argv[]) {
         case PROCESS_TYPE_RENDERER:
             app = new inviwo::WebRendererApp();
             break;
+        case PROCESS_TYPE_OTHER:
+            app = new inviwo::ClientAppOther();
         default:
             // No app, but it is ok to pass nullptr to CefExecuteProcess
             break;

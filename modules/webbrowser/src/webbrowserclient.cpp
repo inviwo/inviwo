@@ -76,10 +76,11 @@ void WebBrowserClient::SetRenderHandler(CefRefPtr<RenderHandlerGL> renderHandler
 }
 
 bool WebBrowserClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
+                                                CefRefPtr<CefFrame> frame,
                                                 CefProcessId source_process,
                                                 CefRefPtr<CefProcessMessage> message) {
     CEF_REQUIRE_UI_THREAD();
-    return messageRouter_->OnProcessMessageReceived(browser, source_process, message);
+    return messageRouter_->OnProcessMessageReceived(browser, frame, source_process, message);
 }
 
 void WebBrowserClient::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
@@ -137,6 +138,15 @@ bool WebBrowserClient::OnBeforeBrowse(CefRefPtr<CefBrowser> browser, CefRefPtr<C
     messageRouter_->OnBeforeBrowse(browser, frame);
     return false;
 }
+bool WebBrowserClient::OnCertificateError(CefRefPtr<CefBrowser> browser,
+                                    cef_errorcode_t cert_error,
+                                    const CefString& request_url,
+                                    CefRefPtr<CefSSLInfo> ssl_info,
+                                    CefRefPtr<CefRequestCallback> callback) {
+    // Prevent dialog popup due to https::inviwo routing (used for the JS API)
+    callback->Continue(true);
+    return true;
+}
 
 void WebBrowserClient::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
                                                  TerminationStatus status) {
@@ -166,22 +176,6 @@ void WebBrowserClient::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
     messageRouter_->OnRenderProcessTerminated(browser);
 }
 
-cef_return_value_t WebBrowserClient::OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
-                                                          CefRefPtr<CefFrame> frame,
-                                                          CefRefPtr<CefRequest> request,
-                                                          CefRefPtr<CefRequestCallback> callback) {
-    CEF_REQUIRE_IO_THREAD();
-
-    return resourceManager_->OnBeforeResourceLoad(browser, frame, request, callback);
-}
-
-CefRefPtr<CefResourceHandler> WebBrowserClient::GetResourceHandler(CefRefPtr<CefBrowser> browser,
-                                                                   CefRefPtr<CefFrame> frame,
-                                                                   CefRefPtr<CefRequest> request) {
-    CEF_REQUIRE_IO_THREAD();
-
-    return resourceManager_->GetResourceHandler(browser, frame, request);
-}
 
 void WebBrowserClient::addLoadHandler(CefLoadHandler* loadHandler) {
     loadHandlers_.emplace_back(loadHandler);
