@@ -131,13 +131,9 @@ void WebBrowserClient::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
 }
 
 CefRefPtr<CefResourceRequestHandler> WebBrowserClient::GetResourceRequestHandler(
-                                                               CefRefPtr<CefBrowser> browser,
-                                                               CefRefPtr<CefFrame> frame,
-                                                               CefRefPtr<CefRequest> request,
-                                                               bool is_navigation,
-                                                               bool is_download,
-                                                               const CefString& request_initiator,
-                                                                                 bool& disable_default_handling) {
+    CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefRequest> request,
+    bool is_navigation, bool is_download, const CefString& request_initiator,
+    bool& disable_default_handling) {
     return this;
 }
 
@@ -177,7 +173,6 @@ void WebBrowserClient::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
 
     messageRouter_->OnRenderProcessTerminated(browser);
 }
-
 
 void WebBrowserClient::addLoadHandler(CefLoadHandler* loadHandler) {
     loadHandlers_.emplace_back(loadHandler);
@@ -271,17 +266,15 @@ cef_return_value_t WebBrowserClient::OnBeforeResourceLoad(CefRefPtr<CefBrowser> 
                                                           CefRefPtr<CefRequest> request,
                                                           CefRefPtr<CefRequestCallback> callback) {
     CEF_REQUIRE_IO_THREAD();
-    
+
     return resourceManager_->OnBeforeResourceLoad(browser, frame, request, callback);
 }
 
-    
-CefRefPtr<CefResourceHandler> WebBrowserClient::GetResourceHandler(
-                                                 CefRefPtr<CefBrowser> browser,
-                                                 CefRefPtr<CefFrame> frame,
-                                                 CefRefPtr<CefRequest> request) {
+CefRefPtr<CefResourceHandler> WebBrowserClient::GetResourceHandler(CefRefPtr<CefBrowser> browser,
+                                                                   CefRefPtr<CefFrame> frame,
+                                                                   CefRefPtr<CefRequest> request) {
     CEF_REQUIRE_IO_THREAD();
-    
+
     return resourceManager_->GetResourceHandler(browser, frame, request);
 }
 
