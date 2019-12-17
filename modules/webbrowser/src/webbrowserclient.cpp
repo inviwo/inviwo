@@ -130,6 +130,17 @@ void WebBrowserClient::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
     CefLifeSpanHandler::OnBeforeClose(browser);
 }
 
+CefRefPtr<CefResourceRequestHandler> WebBrowserClient::GetResourceRequestHandler(
+                                                               CefRefPtr<CefBrowser> browser,
+                                                               CefRefPtr<CefFrame> frame,
+                                                               CefRefPtr<CefRequest> request,
+                                                               bool is_navigation,
+                                                               bool is_download,
+                                                               const CefString& request_initiator,
+                                                                                 bool& disable_default_handling) {
+    return this;
+}
+
 bool WebBrowserClient::OnBeforeBrowse(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
                                       CefRefPtr<CefRequest> request, bool /*user_gesture*/,
                                       bool /*is_redirect*/) {
@@ -137,15 +148,6 @@ bool WebBrowserClient::OnBeforeBrowse(CefRefPtr<CefBrowser> browser, CefRefPtr<C
 
     messageRouter_->OnBeforeBrowse(browser, frame);
     return false;
-}
-bool WebBrowserClient::OnCertificateError(CefRefPtr<CefBrowser> browser,
-                                    cef_errorcode_t cert_error,
-                                    const CefString& request_url,
-                                    CefRefPtr<CefSSLInfo> ssl_info,
-                                    CefRefPtr<CefRequestCallback> callback) {
-    // Prevent dialog popup due to https::inviwo routing (used for the JS API)
-    callback->Continue(true);
-    return true;
 }
 
 void WebBrowserClient::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
@@ -263,6 +265,24 @@ bool WebBrowserClient::OnConsoleMessage(CefRefPtr<CefBrowser> browser, cef_log_s
         return true;
     }
     return false;
+}
+cef_return_value_t WebBrowserClient::OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
+                                                          CefRefPtr<CefFrame> frame,
+                                                          CefRefPtr<CefRequest> request,
+                                                          CefRefPtr<CefRequestCallback> callback) {
+    CEF_REQUIRE_IO_THREAD();
+    
+    return resourceManager_->OnBeforeResourceLoad(browser, frame, request, callback);
+}
+
+    
+CefRefPtr<CefResourceHandler> WebBrowserClient::GetResourceHandler(
+                                                 CefRefPtr<CefBrowser> browser,
+                                                 CefRefPtr<CefFrame> frame,
+                                                 CefRefPtr<CefRequest> request) {
+    CEF_REQUIRE_IO_THREAD();
+    
+    return resourceManager_->GetResourceHandler(browser, frame, request);
 }
 
 }  // namespace inviwo

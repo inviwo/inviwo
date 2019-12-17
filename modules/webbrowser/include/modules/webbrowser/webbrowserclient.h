@@ -43,8 +43,9 @@
 #include <include/cef_client.h>
 #include <include/cef_load_handler.h>
 #include <include/cef_life_span_handler.h>
-#include "include/wrapper/cef_message_router.h"
-#include "include/wrapper/cef_resource_manager.h"
+#include <include/cef_resource_request_handler.h>
+#include <include/wrapper/cef_message_router.h>
+#include <include/wrapper/cef_resource_manager.h>
 #include <warn/pop>
 
 namespace inviwo {
@@ -63,7 +64,8 @@ class IVW_MODULE_WEBBROWSER_API WebBrowserClient : public CefClient,
                                                    public CefLifeSpanHandler,
                                                    public CefRequestHandler,
                                                    public CefLoadHandler,
-                                                   public CefDisplayHandler {
+                                                   public CefDisplayHandler,
+                                                   public CefResourceRequestHandler {
 public:
     WebBrowserClient(CefRefPtr<RenderHandlerGL> renderHandler,
                      const PropertyWidgetCEFFactory* widgetFactory);
@@ -86,14 +88,17 @@ public:
     void OnBeforeClose(CefRefPtr<CefBrowser> browser) override;
 
     // CefRequestHandler methods:
+    CefRefPtr<CefResourceRequestHandler> GetResourceRequestHandler(
+                                                                  CefRefPtr<CefBrowser> browser,
+                                                                  CefRefPtr<CefFrame> frame,
+                                                                  CefRefPtr<CefRequest> request,
+                                                                  bool is_navigation,
+                                                                  bool is_download,
+                                                                  const CefString& request_initiator,
+                                                                  bool& disable_default_handling) override;
     virtual bool OnBeforeBrowse(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
                                 CefRefPtr<CefRequest> request, bool user_gesture,
                                 bool is_redirect) override;
-    virtual bool OnCertificateError(CefRefPtr<CefBrowser> browser,
-                               cef_errorcode_t cert_error,
-                               const CefString& request_url,
-                               CefRefPtr<CefSSLInfo> ssl_info,
-                                    CefRefPtr<CefRequestCallback> callback) override;
 
     void OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
                                    TerminationStatus status) override;
@@ -149,6 +154,39 @@ public:
     virtual bool OnConsoleMessage(CefRefPtr<CefBrowser> browser, cef_log_severity_t level,
                                   const CefString& message, const CefString& source,
                                   int line) override;
+                                                       
+    // CefResourceRequestHandler methods:
+    ///
+    // Called on the IO thread before a resource request is loaded. The |browser|
+    // and |frame| values represent the source of the request, and may be NULL for
+    // requests originating from service workers or CefURLRequest. To redirect or
+    // change the resource load optionally modify |request|. Modification of the
+    // request URL will be treated as a redirect. Return RV_CONTINUE to continue
+    // the request immediately. Return RV_CONTINUE_ASYNC and call
+    // CefRequestCallback:: Continue() at a later time to continue or cancel the
+    // request asynchronously. Return RV_CANCEL to cancel the request immediately.
+    //
+    ///
+    /*--cef(optional_param=browser,optional_param=frame,
+    default_retval=RV_CONTINUE)--*/
+    virtual ReturnValue OnBeforeResourceLoad(
+                                            CefRefPtr<CefBrowser> browser,
+                                            CefRefPtr<CefFrame> frame,
+                                            CefRefPtr<CefRequest> request,
+                                            CefRefPtr<CefRequestCallback> callback) override;
+    ///
+    // Called on the IO thread before a resource is loaded. The |browser| and
+    // |frame| values represent the source of the request, and may be NULL for
+    // requests originating from service workers or CefURLRequest. To allow the
+    // resource to load using the default network loader return NULL. To specify a
+    // handler for the resource return a CefResourceHandler object. The |request|
+    // object cannot not be modified in this callback.
+    ///
+    /*--cef(optional_param=browser,optional_param=frame)--*/
+    virtual CefRefPtr<CefResourceHandler> GetResourceHandler(
+                                                        CefRefPtr<CefBrowser> browser,
+                                                        CefRefPtr<CefFrame> frame,
+                                                        CefRefPtr<CefRequest> request) override;
 
 protected:
     const PropertyWidgetCEFFactory* widgetFactory_;  /// Non-owning reference
