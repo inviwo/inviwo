@@ -36,6 +36,11 @@ WebBrowserApp::WebBrowserApp() = default;
 void WebBrowserApp::OnBeforeCommandLineProcessing(const CefString&,
                                                   CefRefPtr<CefCommandLine> command_line) {
     command_line->AppendSwitch("allow-file-access-from-files");
+    // Avoid pop-up when application starts:
+    // "Inviwo wants to use your confidential information stored in
+    // Chromium Safe Storage in your keychain"
+    // https://bitbucket.org/chromiumembedded/cef/issues/2692/mac-networkservice-allow-custom-service
+    command_line->AppendSwitch("use-mock-keychain");
 }
 
 }  // namespace inviwo

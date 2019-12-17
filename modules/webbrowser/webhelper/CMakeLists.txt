@@ -54,11 +54,7 @@ if (NOT OS_MACOSX)
     ivw_folder(${CEF_HELPER_TARGET} ext/CEF)
 endif()
 if (OS_MACOSX)
-    # Output paths for the app bundles: bin/configuration, for example bin/Debug.
-    # Note: This is hardcoded to inviwo app.
-    # Other apps need to copy the helper and the cef framework to its framework dir,
-    # i.e. add the two commands add_custom_command and install below.
-    set(CEF_APP "$<TARGET_BUNDLE_DIR:${CEF_HELPER_TARGET}>/../${IVW_APP_INSTALL_NAME}.app")
+
 
     set(CEF_TARGET inviwo-module-webbrowser)
     if(USE_SANDBOX)
@@ -66,6 +62,7 @@ if (OS_MACOSX)
         ADD_LOGICAL_TARGET("cef_sandbox_lib" "${CEF_SANDBOX_LIB_DEBUG}" "${CEF_SANDBOX_LIB_RELEASE}")
         #target_link_libraries(${CEF_HELPER_TARGET} PRIVATE cef_sandbox_lib)
     endif()
+
     # Create the multiple Helper app bundle targets.
     foreach(_suffix_list ${CEF_HELPER_APP_SUFFIXES})
         # Convert to a list and extract the suffix values.
@@ -98,6 +95,10 @@ if (OS_MACOSX)
             MACOSX_BUNDLE_INFO_PLIST ${_helper_info_plist}
             OUTPUT_NAME ${_helper_output_name}
         )
+        # Output paths for the app bundles: bin/configuration, for example bin/Debug.
+        # Note: A custom app must change IVW_APP_INSTALL_NAME to the name of the app.
+        set(CEF_APP "$<TARGET_BUNDLE_DIR:${_helper_target}>/../${IVW_APP_INSTALL_NAME}.app")
+
         set(_helper_app "$<TARGET_BUNDLE_DIR:${_helper_target}>") # full/path/to/helper.app
         if(USE_SANDBOX)
             target_link_libraries(${_helper_target} cef_sandbox_lib)
