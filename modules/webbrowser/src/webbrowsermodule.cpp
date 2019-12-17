@@ -149,7 +149,7 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
 
     CefMainArgs args(app->getCommandLineParser().getARGC(), app->getCommandLineParser().getARGV());
     CefSettings settings;
-    //CefString(&settings.framework_dir_path).FromASCII((frameworkDirectory).c_str());
+    // CefString(&settings.framework_dir_path).FromASCII((frameworkDirectory).c_str());
     // Crashes if not set and non-default locale is used
     CefString(&settings.locales_dir_path)
         .FromASCII((frameworkDirectory + std::string("/Resources")).c_str());
@@ -207,7 +207,7 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     if (!filesystem::fileExists(subProcessExecutable)) {
         throw ModuleInitException("Could not find web helper executable:" + subProcessExecutable);
     }
-    //CefString(&settings.browser_subprocess_path).FromASCII(subProcessExecutable.c_str());
+    // CefString(&settings.browser_subprocess_path).FromASCII(subProcessExecutable.c_str());
 
     // Optional implementation of the CefApp interface.
     CefRefPtr<WebBrowserApp> browserApp(new WebBrowserApp);

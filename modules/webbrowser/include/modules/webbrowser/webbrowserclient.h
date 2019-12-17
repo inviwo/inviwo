@@ -79,7 +79,8 @@ public:
 
     CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() override { return this; }
 
-    bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefProcessId source_process,
+    bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
+                                  CefProcessId source_process,
                                   CefRefPtr<CefProcessMessage> message) override;
 
     // CefLifeSpanHandler methods:
@@ -89,13 +90,9 @@ public:
 
     // CefRequestHandler methods:
     CefRefPtr<CefResourceRequestHandler> GetResourceRequestHandler(
-                                                                  CefRefPtr<CefBrowser> browser,
-                                                                  CefRefPtr<CefFrame> frame,
-                                                                  CefRefPtr<CefRequest> request,
-                                                                  bool is_navigation,
-                                                                  bool is_download,
-                                                                  const CefString& request_initiator,
-                                                                  bool& disable_default_handling) override;
+        CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefRequest> request,
+        bool is_navigation, bool is_download, const CefString& request_initiator,
+        bool& disable_default_handling) override;
     virtual bool OnBeforeBrowse(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
                                 CefRefPtr<CefRequest> request, bool user_gesture,
                                 bool is_redirect) override;
@@ -154,7 +151,7 @@ public:
     virtual bool OnConsoleMessage(CefRefPtr<CefBrowser> browser, cef_log_severity_t level,
                                   const CefString& message, const CefString& source,
                                   int line) override;
-                                                       
+
     // CefResourceRequestHandler methods:
     ///
     // Called on the IO thread before a resource request is loaded. The |browser|
@@ -169,11 +166,10 @@ public:
     ///
     /*--cef(optional_param=browser,optional_param=frame,
     default_retval=RV_CONTINUE)--*/
-    virtual ReturnValue OnBeforeResourceLoad(
-                                            CefRefPtr<CefBrowser> browser,
-                                            CefRefPtr<CefFrame> frame,
-                                            CefRefPtr<CefRequest> request,
-                                            CefRefPtr<CefRequestCallback> callback) override;
+    virtual ReturnValue OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
+                                             CefRefPtr<CefFrame> frame,
+                                             CefRefPtr<CefRequest> request,
+                                             CefRefPtr<CefRequestCallback> callback) override;
     ///
     // Called on the IO thread before a resource is loaded. The |browser| and
     // |frame| values represent the source of the request, and may be NULL for
@@ -184,9 +180,8 @@ public:
     ///
     /*--cef(optional_param=browser,optional_param=frame)--*/
     virtual CefRefPtr<CefResourceHandler> GetResourceHandler(
-                                                        CefRefPtr<CefBrowser> browser,
-                                                        CefRefPtr<CefFrame> frame,
-                                                        CefRefPtr<CefRequest> request) override;
+        CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
+        CefRefPtr<CefRequest> request) override;
 
 protected:
     const PropertyWidgetCEFFactory* widgetFactory_;  /// Non-owning reference
