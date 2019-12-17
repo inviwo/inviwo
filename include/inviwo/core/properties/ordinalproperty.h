@@ -249,9 +249,9 @@ void OrdinalProperty<T>::set(const T& value, const T& minVal, const T& maxVal, c
 
     if ((minVal != minValue_.value) || (maxVal != maxValue_.value)) {
         if (glm::max(minVal, maxVal) != maxVal) {
-            LogWarn("Invalid range given for \"" << this->getDisplayName() << "\" ("
-                                                 << Defaultvalues<T>::getName()
-                                                 << "Property). Using min range as reference.");
+            LogWarn("Invalid range given for \""
+                    << this->getDisplayName() << "\" (" << Defaultvalues<T>::getName()
+                    << "Property, " << this->getPath() << "). Using min range as reference.");
         }
         minValue_.value = minVal;
         maxValue_.value = glm::max(minVal, maxVal);
