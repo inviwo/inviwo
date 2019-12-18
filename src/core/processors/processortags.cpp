@@ -42,7 +42,7 @@ std::ostream& operator<<(std::ostream& os, const Tag& obj) {
     return os;
 }
 
-Tags operator|(const Tag& lhs, const Tag& rhs) { return Tags{{lhs, rhs}}; }
+Tags operator|(const Tag& lhs, const Tag& rhs) { return Tags{std::vector<Tag>{lhs, rhs}}; }
 
 const Tag Tag::GL("GL");
 const Tag Tag::CL("CL");
