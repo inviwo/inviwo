@@ -35,14 +35,27 @@
 
 namespace inviwo {
 
+class Tags;
+
 class IVW_CORE_API Tag {
 public:
     Tag() = default;
     Tag(std::string tag);
-    Tag& operator=(const std::string& that);
     const std::string& getString() const;
 
-    friend std::ostream& operator<<(std::ostream& os, const inviwo::Tag& obj);
+    IVW_CORE_API friend std::ostream& operator<<(std::ostream& os, const inviwo::Tag& obj);
+    IVW_CORE_API friend Tags operator|(const Tag& lhs, const Tag& rhs);
+
+    friend inline bool operator==(const Tag& lhs, const Tag& rhs) {
+        return lhs.getString() == rhs.getString();
+    }
+    friend inline bool operator<(const Tag& lhs, const Tag& rhs) {
+        return lhs.getString() < rhs.getString();
+    }
+    friend inline bool operator!=(const Tag& lhs, const Tag& rhs) { return !operator==(lhs, rhs); }
+    friend inline bool operator>(const Tag& lhs, const Tag& rhs) { return operator<(rhs, lhs); }
+    friend inline bool operator<=(const Tag& lhs, const Tag& rhs) { return !operator>(lhs, rhs); }
+    friend inline bool operator>=(const Tag& lhs, const Tag& rhs) { return !operator<(lhs, rhs); }
 
     // pre-defined platform tags
     static const Tag GL;
@@ -53,15 +66,6 @@ public:
 private:
     std::string tag_;
 };
-
-inline bool operator==(const Tag& lhs, const Tag& rhs) {
-    return lhs.getString() == rhs.getString();
-}
-inline bool operator<(const Tag& lhs, const Tag& rhs) { return lhs.getString() < rhs.getString(); }
-inline bool operator!=(const Tag& lhs, const Tag& rhs) { return !operator==(lhs, rhs); }
-inline bool operator>(const Tag& lhs, const Tag& rhs) { return operator<(rhs, lhs); }
-inline bool operator<=(const Tag& lhs, const Tag& rhs) { return !operator>(lhs, rhs); }
-inline bool operator>=(const Tag& lhs, const Tag& rhs) { return !operator<(lhs, rhs); }
 
 class IVW_CORE_API Tags {
 public:
@@ -92,8 +96,8 @@ public:
      */
     Tags& operator=(const std::string& that);
 
-    void addTag(Tag);
-    void addTags(const Tags& t);
+    Tags& addTag(Tag);
+    Tags& addTags(const Tags& t);
 
     size_t size() const;
     bool empty() const;
@@ -102,9 +106,9 @@ public:
 
     int getMatches(const Tags&) const;
 
-    friend std::ostream& operator<<(std::ostream& os, const inviwo::Tags& obj);
-    friend bool operator==(const Tags& lhs, const Tags& rhs);
-    friend bool operator<(const Tags& lhs, const Tags& rhs);
+    IVW_CORE_API friend std::ostream& operator<<(std::ostream& os, const inviwo::Tags& obj);
+    IVW_CORE_API friend bool operator==(const Tags& lhs, const Tags& rhs);
+    IVW_CORE_API friend bool operator<(const Tags& lhs, const Tags& rhs);
 
     std::vector<Tag> tags_;
 
@@ -114,14 +118,22 @@ public:
     static const Tags CL;
     static const Tags CPU;
     static const Tags PY;
-};
 
-inline bool operator==(const Tags& lhs, const Tags& rhs) { return lhs.tags_ == rhs.tags_; }
-inline bool operator<(const Tags& lhs, const Tags& rhs) { return lhs.tags_ < rhs.tags_; }
-inline bool operator!=(const Tags& lhs, const Tags& rhs) { return !operator==(lhs, rhs); }
-inline bool operator>(const Tags& lhs, const Tags& rhs) { return operator<(rhs, lhs); }
-inline bool operator<=(const Tags& lhs, const Tags& rhs) { return !operator>(lhs, rhs); }
-inline bool operator>=(const Tags& lhs, const Tags& rhs) { return !operator<(lhs, rhs); }
+    friend inline bool operator==(const Tags& lhs, const Tags& rhs) {
+        return lhs.tags_ == rhs.tags_;
+    }
+    friend inline bool operator<(const Tags& lhs, const Tags& rhs) { return lhs.tags_ < rhs.tags_; }
+    friend inline bool operator!=(const Tags& lhs, const Tags& rhs) {
+        return !operator==(lhs, rhs);
+    }
+    friend inline bool operator>(const Tags& lhs, const Tags& rhs) { return operator<(rhs, lhs); }
+    friend inline bool operator<=(const Tags& lhs, const Tags& rhs) { return !operator>(lhs, rhs); }
+    friend inline bool operator>=(const Tags& lhs, const Tags& rhs) { return !operator<(lhs, rhs); }
+
+    friend inline Tags operator|(Tags lhs, const Tag& rhs) { return lhs.addTag(rhs); }
+    friend inline Tags operator|(const Tag& lhs, Tags rhs) { return rhs.addTag(lhs); }
+    friend inline Tags operator|(Tags lhs, const Tags& rhs) { return lhs.addTags(rhs); }
+};
 
 namespace util {
 
