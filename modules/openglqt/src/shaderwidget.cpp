@@ -29,12 +29,14 @@
 
 #include <modules/openglqt/shaderwidget.h>
 
-#include <modules/opengl/shader/shaderresource.h>
-#include <modules/opengl/shader/shadermanager.h>
-#include <modules/qtwidgets/properties/syntaxhighlighter.h>
-#include <modules/qtwidgets/inviwoqtutils.h>
+#include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/filesystem.h>
 
+#include <modules/opengl/shader/shaderresource.h>
+#include <modules/opengl/shader/shadermanager.h>
+
+#include <modules/qtwidgets/properties/syntaxhighlighter.h>
+#include <modules/qtwidgets/inviwoqtutils.h>
 #include <modules/qtwidgets/codeedit.h>
 
 #include <warn/push>
