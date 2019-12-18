@@ -118,10 +118,8 @@ void EditorFileObserver::queryReloadFile() {
         msgBox.setWindowModality(Qt::WindowModal);
 
         if (msgBox.exec() == QMessageBox::Yes) {
-            // readFile();
             reloadFileCallback_();
         } else {
-            // unsavedChanges_ = true;
             modifiedCallback_(true);
         }
         fileChangedInBackground_ = false;
@@ -131,7 +129,6 @@ void EditorFileObserver::queryReloadFile() {
 
 bool EditorFileObserver::widgetIsFocused() const {
     auto children = parent_->findChildren<QWidget*>();
-
     return std::any_of(children.begin(), children.end(), [](auto w) { return w->hasFocus(); });
 }
 
