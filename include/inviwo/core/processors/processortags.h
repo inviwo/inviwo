@@ -46,16 +46,16 @@ public:
     IVW_CORE_API friend std::ostream& operator<<(std::ostream& os, const inviwo::Tag& obj);
     IVW_CORE_API friend Tags operator|(const Tag& lhs, const Tag& rhs);
 
-    IVW_CORE_API friend bool operator==(const Tag& lhs, const Tag& rhs) {
+    friend inline bool operator==(const Tag& lhs, const Tag& rhs) {
         return lhs.getString() == rhs.getString();
     }
-    IVW_CORE_API friend bool operator<(const Tag& lhs, const Tag& rhs) {
+    friend inline bool operator<(const Tag& lhs, const Tag& rhs) {
         return lhs.getString() < rhs.getString();
     }
-    IVW_CORE_API friend bool operator!=(const Tag& lhs, const Tag& rhs) { return !operator==(lhs, rhs); }
-    IVW_CORE_API friend bool operator>(const Tag& lhs, const Tag& rhs) { return operator<(rhs, lhs); }
-    IVW_CORE_API friend bool operator<=(const Tag& lhs, const Tag& rhs) { return !operator>(lhs, rhs); }
-    IVW_CORE_API friend bool operator>=(const Tag& lhs, const Tag& rhs) { return !operator<(lhs, rhs); }
+    friend inline bool operator!=(const Tag& lhs, const Tag& rhs) { return !operator==(lhs, rhs); }
+    friend inline bool operator>(const Tag& lhs, const Tag& rhs) { return operator<(rhs, lhs); }
+    friend inline bool operator<=(const Tag& lhs, const Tag& rhs) { return !operator>(lhs, rhs); }
+    friend inline bool operator>=(const Tag& lhs, const Tag& rhs) { return !operator<(lhs, rhs); }
 
     // pre-defined platform tags
     static const Tag GL;
@@ -119,16 +119,20 @@ public:
     static const Tags CPU;
     static const Tags PY;
 
-    IVW_CORE_API friend bool operator==(const Tags& lhs, const Tags& rhs) { return lhs.tags_ == rhs.tags_; }
-    IVW_CORE_API friend bool operator<(const Tags& lhs, const Tags& rhs) { return lhs.tags_ < rhs.tags_; }
-    IVW_CORE_API friend bool operator!=(const Tags& lhs, const Tags& rhs) { return !operator==(lhs, rhs); }
-    IVW_CORE_API friend bool operator>(const Tags& lhs, const Tags& rhs) { return operator<(rhs, lhs); }
-    IVW_CORE_API friend bool operator<=(const Tags& lhs, const Tags& rhs) { return !operator>(lhs, rhs); }
-    IVW_CORE_API friend bool operator>=(const Tags& lhs, const Tags& rhs) { return !operator<(lhs, rhs); }
+    friend inline bool operator==(const Tags& lhs, const Tags& rhs) {
+        return lhs.tags_ == rhs.tags_;
+    }
+    friend inline bool operator<(const Tags& lhs, const Tags& rhs) { return lhs.tags_ < rhs.tags_; }
+    friend inline bool operator!=(const Tags& lhs, const Tags& rhs) {
+        return !operator==(lhs, rhs);
+    }
+    friend inline bool operator>(const Tags& lhs, const Tags& rhs) { return operator<(rhs, lhs); }
+    friend inline bool operator<=(const Tags& lhs, const Tags& rhs) { return !operator>(lhs, rhs); }
+    friend inline bool operator>=(const Tags& lhs, const Tags& rhs) { return !operator<(lhs, rhs); }
 
-    IVW_CORE_API friend Tags operator|(Tags lhs, const Tag& rhs) { return lhs.addTag(rhs); }
-    IVW_CORE_API friend Tags operator|(const Tag& lhs, Tags rhs) { return rhs.addTag(lhs); }
-    IVW_CORE_API friend Tags operator|(Tags lhs, const Tags& rhs) { return lhs.addTags(rhs); }
+    friend inline Tags operator|(Tags lhs, const Tag& rhs) { return lhs.addTag(rhs); }
+    friend inline Tags operator|(const Tag& lhs, Tags rhs) { return rhs.addTag(lhs); }
+    friend inline Tags operator|(Tags lhs, const Tags& rhs) { return lhs.addTags(rhs); }
 };
 
 namespace util {
