@@ -29,7 +29,6 @@
 
 #include <modules/openglqt/shaderwidget.h>
 
-#include <modules/opengl/shader/shaderobject.h>
 #include <modules/opengl/shader/shaderresource.h>
 #include <modules/opengl/shader/shadermanager.h>
 #include <modules/qtwidgets/properties/syntaxhighlighter.h>
