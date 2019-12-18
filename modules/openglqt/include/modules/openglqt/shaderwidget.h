@@ -33,6 +33,8 @@
 #include <modules/openglqt/openglqtmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <modules/qtwidgets/inviwodockwidget.h>
+#include <modules/opengl/shader/shaderobject.h>
+
 #include <algorithm>
 
 #include <warn/push>
@@ -45,7 +47,6 @@
 
 namespace inviwo {
 
-class ShaderObject;
 class CodeEdit;
 
 class IVW_MODULE_OPENGLQT_API ShaderWidget : public InviwoDockWidget {
