@@ -35,11 +35,26 @@
 #include <modules/opengl/openglmoduledefine.h>
 #include <modules/opengl/shader/shaderresource.h>
 #include <modules/opengl/shader/shadertype.h>
+#include <modules/opengl/shader/shadersegment.h>
 #include <inviwo/core/util/dispatcher.h>
+#include <modules/opengl/shader/linenumberresolver.h>
+
+#include <optional>
+#include <vector>
+#include <string>
+#include <iosfwd>
+#include <utility>
 
 namespace inviwo {
 
-class OpenGLCapabilities;
+namespace utilgl {
+IVW_MODULE_OPENGL_API void parseShaderSource(
+    const std::string& key, const std::string& source, std::ostream& output,
+    LineNumberResolver& lnr,
+    std::unordered_map<typename ShaderSegment::Type, std::vector<ShaderSegment>> replacements,
+    std::function<std::optional<std::pair<std::string, std::string>>(const std::string&)>
+        getSource);
+}
 
 /**
  * A wrapper for an OpenGL shader object.
@@ -132,6 +147,10 @@ public:
     bool hasShaderExtension(const std::string& extName) const;
     void clearShaderExtensions();
 
+    void addSegment(ShaderSegment segment);
+    void removeSegments(const std::string& key);
+    void clearSegments();
+
     /**
      * \brief adds an additional output specifier to the shader
      * The given name will be added as
@@ -201,23 +220,11 @@ public:
     std::shared_ptr<Callback> onChange(T&& callback);
 
 private:
-    struct LineNumberResolver {
-        LineNumberResolver() = default;
-        void addLine(const std::string& file, size_t line);
-        std::pair<std::string, size_t> resolveLine(size_t line) const;
-        void clear();
-        size_t size() { return lines_.size(); }
-        std::string resolveLog(const std::string& compileLog) const;
-        auto begin() const { return lines_.cbegin(); }
-        auto end() const { return lines_.cend(); }
-
-    private:
-        std::vector<std::pair<std::string, size_t>> lines_;
-    };
-
     static std::shared_ptr<const ShaderResource> loadResource(std::string fileName);
     void addDefines(std::ostringstream& source);
-    void addIncludes(std::ostringstream& source, std::shared_ptr<const ShaderResource> resource);
+    void parseSource(std::ostringstream& output);
+    std::string resolveLog(const std::string& compileLog) const;
+
 
     // state variables
     ShaderType shaderType_;
@@ -232,6 +239,8 @@ private:
 
     using ShaderExtensions = std::map<std::string, bool>;  // extension name, enable flag
     ShaderExtensions shaderExtensions_;
+
+    std::vector<ShaderSegment> shaderSegments_;
 
     // derived variables
     std::string sourceProcessed_;

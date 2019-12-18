@@ -27,14 +27,13 @@
  *
  *********************************************************************************/
 
-#include <stdio.h>
-#include <fstream>
-#include <string>
 #include <modules/opengl/shader/shaderobject.h>
 
 #include <inviwo/core/io/textfilereader.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/zip.h>
+#include <inviwo/core/util/ostreamjoiner.h>
 #include <modules/opengl/openglexception.h>
 #include <modules/opengl/shader/shadermanager.h>
 #include <modules/opengl/shader/shaderutils.h>
@@ -42,7 +41,220 @@
 
 #include <fmt/format.h>
 
+#include <cstdio>
+#include <fstream>
+#include <string>
+#include <cctype>
+
+#include <sml/sml.hpp>
+namespace sml = boost::sml;
+
 namespace inviwo {
+
+namespace psm {
+
+std::string indent(const std::string& block, size_t indent) {
+    std::stringstream ss;
+    bool first = true;
+    for (auto&& line : splitString(block, '\n')) {
+        if (!first) {
+            ss << '\n' << std::string(indent, ' ');
+        }
+        first = false;
+        ss << line;
+    }
+
+    return ss.str();
+}
+
+// States
+struct EmptyLine {};
+struct LineCom {};
+struct BlockCom1 {};
+struct BlockCom2 {};
+struct Include {};
+struct Replace {};
+struct Code {};
+struct Slash {};
+struct Error {};
+
+// Events
+struct Char {
+    using It = typename std::string::const_iterator;
+
+    It curr;
+    It end;
+
+    bool peek(std::string_view match) {
+        return std::mismatch(curr, end, match.begin(), match.end()).second == match.end();
+    };
+};
+struct Eof {};
+
+// States
+struct State {
+    std::ostream& output;
+    LineNumberResolver& lnr;
+    const std::string& key;
+    std::unordered_map<typename ShaderSegment::Type, std::vector<ShaderSegment>> replacements;
+    std::function<std::optional<std::pair<std::string, std::string>>(const std::string&)> getSource;
+    size_t lines = 0;
+    size_t column = 0;
+};
+
+struct Errors {
+    std::exception_ptr exception;
+};
+
+struct Psm {
+    auto operator()() const noexcept {
+        using namespace sml;
+
+        // actions
+        auto print = [](Char c, State& s) {
+            s.output << *c.curr;
+            ++s.column;
+        };
+        auto nl = [](State& s) {
+            s.lnr.addLine(s.key, ++s.lines);
+            s.column = 0;
+        };
+        auto il = [](State& s) { ++s.lines; };
+        auto include = [](Char c, State& s) {
+            auto pathBegin = std::find(c.curr, c.end, '"');
+            if (pathBegin == c.end) {
+                throw OpenGLException{
+                    fmt::format("Invalid include found at {}({})", s.key, s.lines + 1),
+                    IVW_CONTEXT_CUSTOM("ParseShaderSource")};
+            }
+
+            auto pathEnd = std::find(pathBegin + 1, c.end, '"');
+            if (pathEnd == c.end) {
+                throw OpenGLException{
+                    fmt::format("Invalid include found at {}({})", s.key, s.lines + 1),
+                    IVW_CONTEXT_CUSTOM("ParseShaderSource")};
+            }
+
+            auto path = std::string{pathBegin + 1, pathEnd};
+            if (auto res = s.getSource(path)) {
+                utilgl::parseShaderSource(res->first, res->second, s.output, s.lnr, s.replacements,
+                                          s.getSource);
+                ++s.lines;
+            } else {
+                s.lnr.addLine(s.key, ++s.lines);
+            }
+        };
+
+        auto replace = [](Char c, State& s) {
+            using SegType = typename ShaderSegment::Type;
+            const auto lineEnd = std::find(c.curr, c.end, '\n');
+            const auto type = SegType{trim(std::string{c.curr, lineEnd})};
+            const auto it = s.replacements.find(type);
+            if (it != s.replacements.end()) {
+                for (auto segIt = it->second.begin(); segIt != it->second.end(); ++segIt) {
+                    const auto& segment = *segIt;
+                    const auto snippet = psm::indent(segment.snippet, s.column);
+                    utilgl::parseShaderSource(
+                        fmt::format("{}[{},{}]", segment.name, segment.type.getString(),
+                                    segment.priority),
+                        snippet, s.output, s.lnr, s.replacements, s.getSource);
+                    if (std::next(segIt) != it->second.end()) {
+                        s.output << '\n' << std::string(s.column, ' ');
+                    }
+                }
+                ++s.lines;
+            }
+        };
+
+        auto onError = [](Errors& err) { err.exception = std::current_exception(); };
+
+        // guards
+        auto blank = [](Char c) { return std::isblank(*c.curr); };
+        auto eol = [](Char c) { return *c.curr == '\n'; };
+        auto slash = [](Char c) { return *c.curr == '/'; };
+        auto star = [](Char c) { return *c.curr == '*'; };
+        auto inc = [](Char c) { return c.peek("#include"); };
+
+        auto repl = [](Char c, State& s) {
+            for (auto& [key, val] : s.replacements) {
+                if (c.peek(key.getString())) return true;
+            }
+            return false;
+        };
+
+        // clang-format off
+        return make_transition_table(
+           *state<EmptyLine> + event<Char> [blank]    / (print)     = state<EmptyLine>,
+            state<EmptyLine> + event<Char> [eol]      / (print, nl) = state<EmptyLine>,
+            state<EmptyLine> + event<Char> [slash]    / (print)     = state<Slash>,
+            state<EmptyLine> + event<Char> [inc]      / (include)   = state<Include>,
+            state<EmptyLine> + event<Char> [repl]     / (replace)   = state<Replace>,
+            state<EmptyLine> + event<Char>            / (print)     = state<Code>,
+            state<EmptyLine> + event<Eof>             / (nl)        = X,
+
+            state<Slash>     + event<Char> [slash]    / (print)     = state<LineCom>,
+            state<Slash>     + event<Char> [star]     / (print)     = state<BlockCom1>,
+            state<Slash>     + event<Char> [eol]      / (print, nl) = state<EmptyLine>,
+            state<Slash>     + event<Char>            / (print)     = state<Code>,
+            state<Slash>     + event<Eof>             / (nl)        = X,
+
+            state<LineCom>   + event<Char> [eol]      / (print, nl) = state<EmptyLine>,
+            state<LineCom>   + event<Char>            / (print)     = state<LineCom>,
+            state<LineCom>   + event<Eof>             / (nl)        = X,
+
+            state<BlockCom1> + event<Char> [star]     / (print)     = state<BlockCom2>,
+            state<BlockCom1> + event<Char> [eol]      / (print, nl) = state<BlockCom1>,
+            state<BlockCom1> + event<Char>            / (print)     = state<BlockCom1>,
+            state<BlockCom2> + event<Char> [slash]    / (print)     = state<Code>,
+            state<BlockCom2> + event<Char> [eol]      / (print, nl) = state<BlockCom1>,
+            state<BlockCom2> + event<Char>            / (print)     = state<BlockCom1>,
+
+            state<Include>   + event<Char> [eol]      / (print)     = state<EmptyLine>,
+            state<Include>   + event<Char>                          = state<Include>,
+            state<Include>   + event<Eof>             / (il)        = X,
+
+            state<Replace>   + event<Char> [eol]      / (print)     = state<EmptyLine>,
+            state<Replace>   + event<Char>                          = state<Replace>,
+            state<Replace>   + event<Eof>             / (nl)        = X,
+
+            state<Code>      + event<Char> [slash]    / (print)     = state<Slash>,
+            state<Code>      + event<Char> [eol]      / (print, nl) = state<EmptyLine>,
+            state<Code>      + event<Char>            / (print)     = state<Code>,
+            state<Code>      + event<Eof>             / (nl)        = X,
+
+
+           *state<Error>     + exception<_>           / (onError)   = X
+
+        );
+        // clang-format on
+    }
+};
+}  // namespace psm
+
+void utilgl::parseShaderSource(
+    const std::string& key, const std::string& source, std::ostream& output,
+    LineNumberResolver& lnr,
+    std::unordered_map<typename ShaderSegment::Type, std::vector<ShaderSegment>> replacements,
+    std::function<std::optional<std::pair<std::string, std::string>>(const std::string&)>
+        getSource) {
+    using It = typename std::string::const_iterator;
+
+    size_t lines = 0;
+    psm::State state{output, lnr, key, replacements, getSource, lines};
+    psm::Errors errors;
+
+    sml::sm<psm::Psm> sm{state, errors};
+    for (auto it = source.begin(); it != source.end(); ++it) {
+        sm.process_event(psm::Char{it, source.end()});
+    }
+    sm.process_event(psm::Eof{});
+    if (errors.exception) {
+        std::rethrow_exception(errors.exception);
+    } else if (!sm.is(sml::X)) {
+        throw OpenGLException{fmt::format("Parsing of '{}' ended prematurely", key),
+                              IVW_CONTEXT_CUSTOM("ParseShaderSource")};
+    }
+}
 
 std::string ShaderObject::InDeclaration::toString() const {
     return fmt::format(decl, fmt::arg("type", type), fmt::arg("name", name),
@@ -186,7 +398,7 @@ void ShaderObject::preprocess() {
 
     std::ostringstream source;
     addDefines(source);
-    addIncludes(source, resource_);
+    parseSource(source);
     sourceProcessed_ = source.str();
 }
 
@@ -222,9 +434,20 @@ void ShaderObject::addDefines(std::ostringstream& source) {
         lnr_.addLine("Header", 0);
     }
 
+    size_t defineLines = 0;
     for (const auto& sd : shaderDefines_) {
-        source << "#define " << sd.first << " " << sd.second << "\n";
-        lnr_.addLine("Defines", 0);
+        auto lines = std::count(sd.second.begin(), sd.second.end(), '\n');
+
+        if (sd.second.empty() || (sd.first.size() + sd.second.size() < 60 && lines == 0)) {
+            source << "#define " << sd.first << " " << sd.second << "\n";
+            ++lines;
+        } else {
+            source << "#define " << sd.first << " \\\n    " << sd.second << "\n";
+            lines += 2;
+        }
+        for (int i = 0; i != lines; ++i) {
+            lnr_.addLine("Defines", ++defineLines);
+        }
     }
 
     for (auto decl : outDeclarations_) {
@@ -249,101 +472,75 @@ void ShaderObject::addStandardVertexInDeclarations() {
     addInDeclaration(InDeclaration{"in_TexCoord", 3, "vec3"});
 }
 
-void ShaderObject::addIncludes(std::ostringstream& source,
-                               std::shared_ptr<const ShaderResource> resource) {
-    std::ostringstream result;
-    std::string curLine;
-    includeResources_.push_back(resource);
+void ShaderObject::parseSource(std::ostringstream& output) {
+
+    using It = std::string::const_iterator;
+
+    auto out = [&output, this, num = size_t{0}](It it, It end, size_t count,
+                                                const std::string& key) mutable {
+        for (size_t i = 0; i < count && it != end; ++i, ++it) {
+            output << *it;
+            if (*it == '\n') lnr_.addLine(key, ++num);
+        }
+        return it;
+    };
+
+    includeResources_.push_back(resource_);
     resourceCallbacks_.push_back(
-        resource->onChange([this](const ShaderResource*) { callbacks_.invoke(this); }));
-    std::istringstream shaderSource(resource->source());
-    int localLineNumber = 1;
-    bool isInsideBlockComment = false;
-    while (std::getline(shaderSource, curLine)) {
-        size_t curPos = 0;
-        bool hasAddedInclude = false;
-        while (curPos != std::string::npos) {
-            if (isInsideBlockComment) {
-                // If we currently are inside a block comment, we only need to look for where it
-                // ends
-                curPos = curLine.find("*/", curPos);
-                isInsideBlockComment = curPos == std::string::npos;
-                if (!isInsideBlockComment) {
-                    curPos += 2;  // move curPos to the first character after the comment
-                }
+        resource_->onChange([this](const ShaderResource*) { callbacks_.invoke(this); }));
 
+    auto getSource =
+        [this](const std::string& path) -> std::optional<std::pair<std::string, std::string>> {
+        auto inc = ShaderManager::getPtr()->getShaderResource(path);
+        if (!inc) {
+            throw OpenGLException(
+                fmt::format("Include file '{}' not found in shader search paths.", path),
+                IVW_CONTEXT);
+        }
+        // Only include files once.
+        if (util::find(includeResources_, inc) == includeResources_.end()) {
+            includeResources_.push_back(inc);
+            resourceCallbacks_.push_back(
+                inc->onChange([this](const ShaderResource*) { callbacks_.invoke(this); }));
+            return std::pair{inc->key(), inc->source()};
+        } else {
+            return std::nullopt;
+        }
+    };
+
+    std::sort(shaderSegments_.begin(), shaderSegments_.end(),
+              [](const ShaderSegment& a, const ShaderSegment& b) {
+                  return std::tie(a.type, a.priority) < std::tie(b.type, b.priority);
+              });
+    std::unordered_map<typename ShaderSegment::Type, std::vector<ShaderSegment>> replacements;
+    for (const auto& segment : shaderSegments_) {
+        replacements[segment.type].push_back(segment);
+    }
+
+    utilgl::parseShaderSource(resource_->key(), resource_->source(), output, lnr_, replacements,
+                              getSource);
+}
+
+std::string ShaderObject::resolveLog(const std::string& compileLog) const {
+    std::ostringstream result;
+    std::istringstream origShaderInfoLog(compileLog);
+
+    std::string curLine;
+    while (std::getline(origShaderInfoLog, curLine)) {
+        if (!curLine.empty()) {
+            const int origLineNumber = utilgl::getLogLineNumber(curLine);
+            if (origLineNumber > 0) {
+                const auto res = lnr_.resolveLine(origLineNumber);
+                result << "\n"
+                       << res.first << " (" << res.second
+                       << "): " << curLine.substr(curLine.find(":") + 1);
             } else {
-
-                auto posInclude = curLine.find("#include", curPos);
-                auto posLineComment = curLine.find("//", curPos);
-                auto posBlockCommentStart = curLine.find("/*", curPos);
-
-                // If we find two includes on the same line
-                if (hasAddedInclude && posInclude != std::string::npos) {
-                    std::ostringstream oss;
-                    oss << "Found more than one include on line " << localLineNumber
-                        << " in resource " << resource->key();
-                    throw OpenGLException(oss.str(), IVW_CONTEXT);
-                }
-
-                // ignore everything after a line-comment "//" (unless it is inside a block comment)
-                if (posLineComment != std::string::npos && posLineComment < posInclude &&
-                    posLineComment < posBlockCommentStart) {
-                    break;
-                }
-
-                // there is a block comment starting on this line, before a include: update curPos
-                // and continue;
-                // the include should be found in the next iteration
-                if (posBlockCommentStart != std::string::npos &&
-                    posBlockCommentStart < posInclude) {
-                    isInsideBlockComment = true;
-                    curPos = posBlockCommentStart;
-                    continue;
-                }
-
-                // an include was found
-                if (posInclude != std::string::npos) {
-                    auto pathBegin = curLine.find("\"", posInclude + 1);
-                    auto pathEnd = curLine.find("\"", pathBegin + 1);
-                    std::string incfile(curLine, pathBegin + 1, pathEnd - pathBegin - 1);
-                    auto inc = ShaderManager::getPtr()->getShaderResource(incfile);
-                    if (!inc) {
-                        throw OpenGLException(
-                            "Include file " + incfile + " not found in shader search paths.",
-                            IVW_CONTEXT);
-                    }
-                    auto it = util::find(includeResources_, inc);
-                    if (it == includeResources_.end()) {  // Only include files once.
-                        addIncludes(source, inc);
-                        source << curLine.substr(pathEnd + 1);
-                    }
-                    hasAddedInclude = true;
-                }
-
-                // after the include it can still be comments, we need to detect if a block comment
-                // starts
-
-                // if the next thing is a line comment, we continue to next line
-                if (posLineComment != std::string::npos && posLineComment < posBlockCommentStart) {
-                    // there is a line-comment after the include and before any block comment, then
-                    // go to next line
-                    break;
-                }
-
-                // set curPos to either npos or the pos of the start of the next block comment
-                curPos = posBlockCommentStart;  // will be npos of it has not been found
-                // updated the flag to tell if we are in a block comment or not
-                isInsideBlockComment = posBlockCommentStart != std::string::npos;
+                result << "\n" << curLine;
             }
         }
-
-        if (!hasAddedInclude) {  // include the whole line
-            source << curLine << "\n";
-            lnr_.addLine(resource->key(), localLineNumber);
-        }
-        localLineNumber++;
     }
+
+    return std::move(result).str();
 }
 
 void ShaderObject::upload() {
@@ -362,13 +559,13 @@ void ShaderObject::compile() {
     glCompileShader(id_);
     if (!isReady()) {
         throw OpenGLException(
-            resource_->key() + " " + lnr_.resolveLog(utilgl::getShaderInfoLog(id_)), IVW_CONTEXT);
+            resource_->key() + " " + resolveLog(utilgl::getShaderInfoLog(id_)), IVW_CONTEXT);
     }
 
 #ifdef IVW_DEBUG
     const auto log = utilgl::getShaderInfoLog(id_);
     if (!log.empty()) {
-        util::log(IVW_CONTEXT, resource_->key() + " " + lnr_.resolveLog(log), LogLevel::Info,
+        util::log(IVW_CONTEXT, resource_->key() + " " + resolveLog(log), LogLevel::Info,
                   LogAudience::User);
     }
 #endif
@@ -407,6 +604,19 @@ bool ShaderObject::hasShaderExtension(const std::string& extName) const {
 
 void ShaderObject::clearShaderExtensions() { shaderExtensions_.clear(); }
 
+void ShaderObject::addSegment(ShaderSegment segment) {
+    shaderSegments_.push_back(std::move(segment));
+}
+
+void ShaderObject::removeSegments(const std::string& name) {
+    shaderSegments_.erase(
+        std::remove_if(shaderSegments_.begin(), shaderSegments_.end(),
+                       [&name](const ShaderSegment& segment) { return segment.name == name; }),
+        shaderSegments_.end());
+}
+
+void ShaderObject::clearSegments() { shaderSegments_.clear(); }
+
 void ShaderObject::addOutDeclaration(const std::string& name, int location,
                                      const std::string& type) {
     addOutDeclaration(OutDeclaration{name, location, type});
@@ -444,42 +654,6 @@ void ShaderObject::addInDeclaration(const InDeclaration& decl) {
 void ShaderObject::clearInDeclarations() { inDeclarations_.clear(); }
 auto ShaderObject::getInDeclarations() const -> const std::vector<InDeclaration>& {
     return inDeclarations_;
-}
-
-std::pair<std::string, size_t> ShaderObject::LineNumberResolver::resolveLine(size_t line) const {
-    if (line < lines_.size()) {
-        return lines_[line];
-    } else {
-        return {"", 0};
-    }
-}
-
-void ShaderObject::LineNumberResolver::addLine(const std::string& file, size_t line) {
-    lines_.emplace_back(file, line);
-}
-
-void ShaderObject::LineNumberResolver::clear() { lines_.clear(); }
-
-std::string ShaderObject::LineNumberResolver::resolveLog(const std::string& compileLog) const {
-    std::ostringstream result;
-    std::istringstream origShaderInfoLog(compileLog);
-
-    std::string curLine;
-    while (std::getline(origShaderInfoLog, curLine)) {
-        if (!curLine.empty()) {
-            const int origLineNumber = utilgl::getLogLineNumber(curLine);
-            if (origLineNumber > 0) {
-                const auto res = resolveLine(origLineNumber);
-                result << "\n"
-                       << res.first << " (" << res.second
-                       << "): " << curLine.substr(curLine.find(":") + 1);
-            } else {
-                result << "\n" << curLine;
-            }
-        }
-    }
-
-    return std::move(result).str();
 }
 
 std::pair<std::string, size_t> ShaderObject::resolveLine(size_t line) const {

@@ -100,4 +100,4 @@ vec4 getSignNormalizedVoxel(sampler3D volume, VolumeParameters volumeParams, ive
 #endif
 }
 
-#endif  // IVW_SAMPLER2D_GLSL
+#endif  // IVW_SAMPLER3D_GLSL

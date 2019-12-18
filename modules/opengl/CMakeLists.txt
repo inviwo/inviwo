@@ -38,10 +38,12 @@ set(HEADER_FILES
     include/modules/opengl/openglutils.h
     include/modules/opengl/rendering/meshdrawergl.h
     include/modules/opengl/rendering/texturequadrenderer.h
+    include/modules/opengl/shader/linenumberresolver.h
     include/modules/opengl/shader/shader.h
     include/modules/opengl/shader/shadermanager.h
     include/modules/opengl/shader/shaderobject.h
     include/modules/opengl/shader/shaderresource.h
+    include/modules/opengl/shader/shadersegment.h
     include/modules/opengl/shader/shadertype.h
     include/modules/opengl/shader/shaderutils.h
     include/modules/opengl/shader/standardshaders.h
@@ -87,10 +89,12 @@ set(SOURCE_FILES
     src/openglutils.cpp
     src/rendering/meshdrawergl.cpp
     src/rendering/texturequadrenderer.cpp
+    src/shader/linenumberresolver.cpp
     src/shader/shader.cpp
     src/shader/shadermanager.cpp
     src/shader/shaderobject.cpp
     src/shader/shaderresource.cpp
+    src/shader/shadersegment.cpp
     src/shader/shadertype.cpp
     src/shader/shaderutils.cpp
     src/shader/standardshaders.cpp
@@ -143,6 +147,14 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/structs.glsl
 )
 ivw_group("Shader Files" ${SHADER_FILES})
+
+#--------------------------------------------------------------------
+# Unit tests
+set(TEST_FILES
+    tests/unittests/opengl-unittest-main.cpp
+    tests/unittests/shaderobject-test.cpp
+)
+ivw_add_unittest(${TEST_FILES})
 
 #--------------------------------------------------------------------
 # Create module

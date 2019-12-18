@@ -27,12 +27,9 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/datastructures/coordinatetransformer.h>
 #include <modules/opengl/shader/shaderutils.h>
-#include <modules/opengl/shader/shadermanager.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/volume/volumeutils.h>
 
+#include <inviwo/core/datastructures/coordinatetransformer.h>
 #include <inviwo/core/properties/simpleraycastingproperty.h>
 #include <inviwo/core/properties/isotfproperty.h>
 #include <inviwo/core/properties/isovalueproperty.h>
@@ -40,6 +37,10 @@
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/volumeindicatorproperty.h>
 #include <inviwo/core/ports/imageport.h>
+
+#include <modules/opengl/shader/shadermanager.h>
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/volume/volumeutils.h>
 
 namespace inviwo {
 
