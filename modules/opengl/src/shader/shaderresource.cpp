@@ -52,6 +52,12 @@ std::string FileShaderResource::source() const {
     return cache_;
 }
 
+void FileShaderResource::setSource(const std::string& source) {
+    auto file = filesystem::ofstream(fileName_);
+    file << source;
+    file.close();
+}
+
 std::string FileShaderResource::file() const { return fileName_; }
 
 void FileShaderResource::fileChanged(const std::string& /*fileName*/) {

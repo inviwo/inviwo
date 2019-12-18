@@ -51,6 +51,8 @@ public:
     virtual std::string key() const = 0;
     virtual std::string source() const = 0;
 
+    virtual void setSource(const std::string& source) = 0;
+
     template <typename T>
     std::shared_ptr<Callback> onChange(T&& callback) const;
 
@@ -73,6 +75,8 @@ public:
     virtual std::string key() const override;
     virtual std::string source() const override;
 
+    virtual void setSource(const std::string& source) override;
+
     std::string file() const;
 
     virtual void fileChanged(const std::string& fileName) override;
@@ -94,7 +98,7 @@ public:
     virtual std::string key() const override;
     virtual std::string source() const override;
 
-    void setSource(const std::string& source);
+    virtual void setSource(const std::string& source) override;
 
 private:
     std::string key_;

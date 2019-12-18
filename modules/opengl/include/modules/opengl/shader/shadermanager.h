@@ -68,7 +68,8 @@ public:
     const std::vector<std::string>& getShaderSearchPaths();
 
     void addShaderResource(std::string key, std::string resource);
-    void addShaderResource(std::string key, std::unique_ptr<ShaderResource> resource);
+    void addShaderResource(std::unique_ptr<ShaderResource> resource);
+    void addShaderResource(std::shared_ptr<ShaderResource> resource);
     std::shared_ptr<ShaderResource> getShaderResource(std::string key);
 
     const std::vector<Shader*>& getShaders() const;
