@@ -57,7 +57,7 @@ public:
     virtual ~OpenGLQtMenu() = default;
 
 private:
-    void showShader(const ShaderObject* obj);
+    void showShader(ShaderObject* obj);
     void shadersReload();
 
     void addShaderObjects(Shader* shader, QMenu* menuItem);

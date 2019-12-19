@@ -223,9 +223,9 @@ IVW_MODULE_OPENGL_API void bindAndSetUniforms(Shader& shader, TextureUnitContain
                                               const Image& image, const std::string& id,
                                               ImageType type);
 IVW_MODULE_OPENGL_API void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
-                                              ImageInport& image, ImageType type);
+                                              const ImageInport& image, ImageType type);
 IVW_MODULE_OPENGL_API void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
-                                              ImageOutport& image, ImageType type);
+                                              const ImageOutport& image, ImageType type);
 }  // namespace utilgl
 }  // namespace inviwo
 

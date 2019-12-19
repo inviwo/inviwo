@@ -33,29 +33,49 @@
 #include <modules/openglqt/openglqtmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <modules/qtwidgets/inviwodockwidget.h>
-#include <modules/qtwidgets/editorfileobserver.h>
+#include <modules/opengl/shader/shaderobject.h>
+
+#include <algorithm>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QWidget>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QEvent>
+#include <warn/pop>
 
 namespace inviwo {
 
-class ShaderObject;
 class CodeEdit;
 
 class IVW_MODULE_OPENGLQT_API ShaderWidget : public InviwoDockWidget {
 public:
-    ShaderWidget(const ShaderObject*, QWidget* parent = nullptr);
+    ShaderWidget(ShaderObject* obj, QWidget* parent = nullptr);
     virtual ~ShaderWidget();
 
 protected:
     virtual void closeEvent(QCloseEvent* event) override;
 
+    virtual bool eventFilter(QObject* obj, QEvent* event) override;
+
 private:
     void save();
-    static std::string getFileName(const ShaderObject* obj);
+
+    void updateState();
+    void queryReloadFile();
+
+    void shaderObjectChanged();
 
     const ShaderObject* obj_;
-    utilqt::EditorFileObserver fileObserver_;
-
+    std::shared_ptr<typename ShaderObject::Callback> shaderObjOnChange_;
     CodeEdit* shadercode_;
+    QAction* preprocess_;
+    QAction* save_;
+
+    bool fileChangedInBackground_ = false;
+    bool reloadQueryInProgress_ = false;
+    bool ignoreNextUpdate_ = false;
 };
 
 }  // namespace inviwo

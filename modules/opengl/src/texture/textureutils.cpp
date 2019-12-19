@@ -30,6 +30,13 @@
 #include <modules/opengl/texture/textureutils.h>
 
 #include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/datastructures/image/image.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/properties/isotfproperty.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/volumeport.h>
 
 #include <modules/opengl/canvasgl.h>
 #include <modules/opengl/volume/volumegl.h>
@@ -41,12 +48,6 @@
 #include <modules/opengl/buffer/bufferobjectarray.h>
 #include <modules/opengl/sharedopenglresources.h>
 #include <modules/opengl/openglutils.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/core/properties/isotfproperty.h>
-#include <inviwo/core/datastructures/image/image.h>
-#include <inviwo/core/datastructures/volume/volume.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/volumeport.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/texture/texture.h>
@@ -511,12 +512,12 @@ void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const Image&
     }
 }
 
-void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, ImageInport& port,
+void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const ImageInport& port,
                         ImageType type) {
     bindAndSetUniforms(shader, cont, *port.getData(), port.getIdentifier(), type);
 }
 
-void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, ImageOutport& port,
+void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const ImageOutport& port,
                         ImageType type) {
     bindAndSetUniforms(shader, cont, *port.getData(), port.getIdentifier(), type);
 }
