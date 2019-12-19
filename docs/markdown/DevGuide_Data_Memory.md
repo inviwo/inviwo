@@ -1,14 +1,17 @@
 # Data Structures
-In Inviwo the main core data structures (`Volume`, `Image`, `Layer`, `Mesh`, `Buffer`) use a pattern of handles and representations. The volume data structure for example has a handle class called `Volume`. The handle class by itself does not have any data, it only stores metadata, and a list of representations. The representations is where the actual data is stored. The following first explains the basic data structures and how they relate, then shows what different representations exist and how to use them.
+In Inviwo the main core data structures (`Volume`, `Layer`, `Buffer`) use a pattern of handles and representations. Note that there also exists the `Image` and `Mesh` data structure which are containers of `Layer`s and `Buffer`s respectively. The volume data structure for example has a handle class called `Volume`. The handle class by itself does not have any data, it only stores metadata, and a list of representations. The representations is where the actual data is stored. Therefore, an `Image` or `Mesh` representation is a container for `Layer` and `Buffer` representations of the same representation type. The following first explains the basic data structures and how they relate, then shows what different representations exist and how to use them.
 
 ## The different structures
-In Inviwo, the `Volume` class wraps volumetric data, more specifically data in a structured grid. This corresponds to what you would expect from a rank 3 tensor (or rank 4 if you have a multi-channel volume).
+In Inviwo, the `Volume` class wraps volumetric data, more specifically data in a 3D structured grid, also with possibly multiple channels.
 
-The `Image` class is used to wrap *Frame buffers*, which are in essence packages for multiple images with potentially different shapes and data types. The actual single images inside those frame buffers are represented by a `Layer` in Inviwo.
-As an effect, most `Image` ports in Inviwo actually transfer multiple images, or one frame buffer, usually consisting of a color layer, depth layer and optionally a picking layer. In this example the `Image` would contain a `UInt8` color layer, a `Float32` depth layer and a `UInt8` picking layer. The picking layer basically encodes object instance IDs in color, so that a lookup in the picking layer gives the object ID for the pixel of interest. This is used for example to drag'n'drop objects in 3D space.
-Of course you can add more layers to the images in your custom processors as necessary.
+The `Image` class consists of a set of `Layer`s, usually a color layer (what we would regularly think of as an image), a depth layer and a picking layer.
+As an effect, most `Image` ports in Inviwo actually transfer multiple images in the conventional sense. In this example the `Image` would contain a `Vec3UInt8` color layer, a `Float32` depth layer and a `UInt8` picking layer. Of course you can add more layers to the images in your custom processors as necessary.
+<details>
+<summary>What is a picking layer?</summary>
+The picking layer basically encodes object instance IDs in color, so that a lookup in the picking layer gives the object ID for the pixel of interest. This is used for example to drag'n'drop objects in 3D space.
+</details>
 
-The third big data structure in Inviwo is the `Mesh` and its `Buffer`s. A `Buffer` is basically a wrapper for some linearly stored data and the `Mesh` holds a list of index buffers and other buffers, where you can add your data accordingly. That means when you load in a standard mesh, the resulting `Mesh` has the appropriate set of index buffers, a vertex buffer and probably a normal buffer.
+The third big data structure in Inviwo is the `Mesh` which consists of a set of `Buffer`s. A `Buffer` is basically a wrapper for some linearly stored data and the `Mesh` holds a list of index buffers and data buffers, such as vertex positions, normals, colors etc.
 
 # Memory Representations
 
@@ -36,18 +39,14 @@ The `Mesh` is passed on to the next processor with the `RAMRepresentation`s atta
 In the `Mesh-BB Renderer` processor, the first thing we do is computing the bounding box. As a first step, we will retrieve the appropriate `BufferRAM` representation from the `MeshInport` named `meshInport_`:
 ```cpp
 std::shared_ptr<const Mesh> mesh = meshInport_.getData(); // Get Mesh handle
-const auto &buffers = mesh->getBuffers(); // Retrieve vector of attached buffers
-// Iterate through buffers to find the Vertex Position buffer
-auto it = std::find_if(buffers.begin(), buffers.end(), [](const auto &buff) {
-    return buff.first.type == BufferType::PositionAttrib;
-});
+auto buf = mesh->getBuffer(BufferType::PositionAttrib);   // Get position buffer
 // If buffer exists and is not empty
-if (it != buffers.end() && it->second->getSize() > 0) {
-    const auto minmax = it->second           // Get actual pointer to buffer
+if (buf != nullptr && buf->second->getSize() > 0) {
+    const auto minmax = buf->second          // Get actual pointer to buffer
         ->getRepresentation<BufferRAM>()     // Get RAM representation
         ->dispatch<std::pair<dvec4, dvec4>>( // Dispatch to produce a pair of vec4s as result
-            [](auto br) { // Deduce actual data type automatically, set ValueType
-                // br's type is deduced to BufferRAMPrecision<ValueType, BufferTarget::Data>
+            [](auto br) { //  Define the lambda for all ValueTypes
+                // br's type in this example: BufferRAMPrecision<ValueType, BufferTarget::Data>
                 // which means it holds values of type ValueType and is a Data buffer
                 // ValueType can be extracted from br's complex type like so:
                 using ValueType = util::PrecisionValueType<decltype(br)>;
@@ -74,12 +73,12 @@ We start as expected: first the `Mesh` handle is retrieved, then we find the buf
 ```cpp
 rep->dispatch<ResultType>( [ &varFromOutsideScope ] (auto br) { ... })
 ```
-The Lambda must also take one parameter, in this case `auto br`, that specifies the actual data type of the elements inside the `Buffer`. By using `auto`, we can let C++ deduce the correct data type and define the operation in a type-agnostic way, so that it works for all different types automatically.
-If auto deduces the correct type, we can extract the simple underlying data type using
+The Lambda must also take one parameter, in this case `auto br`, that specifies the actual data type of the elements inside the `Buffer`. By using `auto`, we have C++ define the operation for all possible `ValueType`s, which is a [specified list of types](https://github.com/inviwo/inviwo/blob/master/include/inviwo/core/util/formats.h#L55). This way we define the function in a type-agnostic way and it will work for all data types that are used inside Inviwo. Note however, that this also requires the function to compile for all of those types.
+To get the correct data type inside of the Lambdas body we can use the following line:
 ```cpp
 using ValueType = util::PrecisionValueType<decltype(br)>
 ```
-which would correspond to `vec3` in our example. Calling `br->getDataContainer()` then gives us direct access to the data by returning a `std::vector<ValueType>` (`std::vector<vec3>` in this example).
+This would correspond to `vec3` in our example. Calling `br->getDataContainer()` then gives us direct access to the data by returning a `std::vector<ValueType>` (`std::vector<vec3>` in this example).
 From here we can work with the data as we are used to from C++. In this example that means first setting a start value for the bounding box, initializing it with maximimum extents. Next we iterate over the whole vector and reduce it using `glm::min` and `glm::max` which return the component-wise min or max respectively. Lastly we make sure to cast our result to the specified `ReturnType` (`std::pair<dvec4, dvec4>` here). This is a pair of double precision `vec4`s to make sure the computation supports precision up to `double`. Note that `util::glm_convert` casts the result from `vec3`s to `dvec4`s here, so it casts them from `float` to `double` and also adds a fourth component (defaulting to value `1`).
 
 When the bounding box is computed and the processor starts to render the mesh, it will request a `MeshGL` (and thus `BufferGL`) representation. Since that does not exist, the `BufferRAM` representations are converted to `BufferGL` representations by uploading the buffers as OpenGL buffers to the GPU. The rendering process then writes to a frame buffer, which is wrapped into an `Image` with different `Layer`s, each of which has a `LayerGL` representation only. Since the rendered image is never needed on CPU, there will only be this representation in our example.

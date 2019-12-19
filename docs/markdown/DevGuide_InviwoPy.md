@@ -20,7 +20,7 @@ Using Inviwopy with Anaconda environments
 - `inviwopy.cpython-36m-x76_64-linux-gnu.so`
 - `inviwopyapp.cpython-36m-x76_64-linux-gnu.so`
 
-On Windows similarly named `.dll`s are generated. Those libraries need to be in your `PYTHONPATH`.
+On Windows similarly named `.dll`s are generated. Note that those libraries depend heavily on the other libraries in the `bin` folder. Those libraries need to be in your `PYTHONPATH`.
 So make sure to add the following lines to the top of your Python script:
 ```python
 import sys
