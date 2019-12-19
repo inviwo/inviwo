@@ -207,8 +207,11 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
     if (!filesystem::fileExists(subProcessExecutable)) {
         throw ModuleInitException("Could not find web helper executable:" + subProcessExecutable);
     }
-    // CefString(&settings.browser_subprocess_path).FromASCII(subProcessExecutable.c_str());
-
+    #ifndef NOT DARWIN  
+        // Necessary to run helpers in separate sub-processes on non-mac systems
+        // Needed since we do not want to edit the "main" function
+        CefString(&settings.browser_subprocess_path).FromASCII(subProcessExecutable.c_str());
+    #endif
     // Optional implementation of the CefApp interface.
     CefRefPtr<WebBrowserApp> browserApp(new WebBrowserApp);
 
