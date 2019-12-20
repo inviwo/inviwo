@@ -28,9 +28,10 @@
  *********************************************************************************/
 
 #include <webrendererapp.h>
+#include <webotherapp.h>
 #include <app_switches.h>
 
-#if DARWIN  // Mac
+#if __APPLE__  // Mac
 #include "include/wrapper/cef_library_loader.h"
 // When generating projects with CMake the CEF_USE_SANDBOX value will be defined
 // automatically. Pass -DUSE_SANDBOX=OFF to the CMake command-line to disable
@@ -51,7 +52,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 
     // Provide CEF with command-line arguments.
     CefMainArgs mainArgs(hInstance);
-#elif DARWIN  // Mac
+#elif __APPLE__  // Mac
 int main(int argc, char* argv[]) {
 #if defined(CEF_USE_SANDBOX)
     // Initialize the macOS sandbox for this helper process.
@@ -81,8 +82,10 @@ int main(int argc, char* argv[]) {
     CefRefPtr<CefApp> app = nullptr;
     switch (GetProcessType(command_line)) {
         case PROCESS_TYPE_RENDERER:
-            app = new inviwo::WebRendererApp();
+            app = new inviwo::CefWebRendererApp();
             break;
+        case PROCESS_TYPE_OTHER:
+            app = new inviwo::CefWebAppOther();
         default:
             // No app, but it is ok to pass nullptr to CefExecuteProcess
             break;

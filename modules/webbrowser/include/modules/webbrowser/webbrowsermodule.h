@@ -42,7 +42,7 @@
 #include <warn/ignore/all>
 
 #include "include/internal/cef_types.h"
-#if DARWIN  // Mac
+#if __APPLE__  // Mac
 #include "include/wrapper/cef_library_loader.h"
 #endif
 
@@ -78,7 +78,7 @@ protected:
     std::vector<std::unique_ptr<PropertyWidgetCEFFactoryObject>> propertyWidgets_;
 
     Timer doChromiumWork_;  /// Calls CefDoMessageLoopWork()
-#ifdef DARWIN               // Load library dynamically for Mac
+#ifdef __APPLE__            // Load library dynamically for Mac
     CefScopedLibraryLoader cefLib_;
 #endif
 };

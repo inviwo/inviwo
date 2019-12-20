@@ -16,7 +16,7 @@
 # FATAL:async_layer_tree_frame_sink.cc
 # Known issue: Dropdown does not work.
 # Probably due to https://magpcss.org/ceforum/viewtopic.php?f=6&t=11618
-set(CEF_VERSION "3.3538.1849.g458cc98")
+set(CEF_VERSION "78.3.9+gc7345f2+chromium-78.0.3904.108")
 
 # Determine the platform.
 include("cmake/cef_platform.cmake")
@@ -153,7 +153,9 @@ target_link_libraries(inviwo-module-webbrowser PUBLIC
     nlohmann_json::nlohmann_json
     ${CEF_STANDARD_LIBS}
 )
-
+target_compile_definitions(inviwo-module-webbrowser PRIVATE
+    $<$<BOOL:${USE_SANDBOX}>:CEF_USE_SANDBOX>
+)
 #--------------------------------------------------------------------
 # Package or build shaders into resources
 ivw_handle_shader_resources(${CMAKE_CURRENT_SOURCE_DIR}/glsl ${SHADER_FILES})
@@ -170,9 +172,21 @@ ivw_register_license_file(NAME "Chromium Embedded Framework" VERSION ${CEF_VERSI
 )
 
 if (OS_MACOSX)
+	# Output path for the main app bundle.
+	set(CEF_APP "${CEF_TARGET_OUT_DIR}/${IVW_APP_INSTALL_NAME}.app")
+	# Copy the CEF framework into the Frameworks directory
+    add_custom_command(
+        TARGET inviwo-module-webbrowser
+        POST_BUILD
+        # Copy the CEF framework into the Frameworks directory.
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CEF_BINARY_DIR}/Chromium Embedded Framework.framework"
+        "${CEF_APP}/Contents/Frameworks/Chromium Embedded Framework.framework"
+        VERBATIM
+    )
     # Copy the CEF framework into the Frameworks directory (used by installer)
     install(DIRECTORY "${CEF_BINARY_DIR}/Chromium Embedded Framework.framework"
-            DESTINATION "Inviwo.app/Contents/Frameworks/Chromium Embedded Framework.framework"
+            DESTINATION "${IVW_APP_INSTALL_NAME}.app/Contents/Frameworks/Chromium Embedded Framework.framework"
             COMPONENT inviwo-module-webbrowser) 
 elseif (WIN32)
     if(USE_SANDBOX)
@@ -188,7 +202,7 @@ elseif (WIN32)
     # Copy files into the bin directory (used by installer)
     install(DIRECTORY "${CEF_BINARY_DIR}/" # Note importance of / in the end to not put files into subfolder
             "${CEF_RESOURCE_DIR}/"
-            DESTINATION bin
+            DESTINATION "${IVW_RUNTIME_INSTALL_DIR}"
             COMPONENT inviwo-module-webbrowser)
 
 else () # Linux
@@ -208,7 +222,7 @@ else () # Linux
     # Copy files into the bin directory (used by installer)
     install(DIRECTORY "${CEF_BINARY_DIR}/" # Note importance of / in the end to not put files into subfolder
             "${CEF_RESOURCE_DIR}/"
-            DESTINATION bin
+            DESTINATION "${IVW_RUNTIME_INSTALL_DIR}"
             COMPONENT inviwo-module-webbrowser)
 endif()
 

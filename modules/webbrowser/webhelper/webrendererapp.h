@@ -42,9 +42,9 @@ namespace inviwo {
 /**
  * App to be used in the renderer thread (web_helper). Handles message routing for javascript.
  */
-class WebRendererApp : public CefApp, public CefRenderProcessHandler {
+class CefWebRendererApp : public CefApp, public CefRenderProcessHandler {
 public:
-    WebRendererApp();
+    CefWebRendererApp();
 
     CefRefPtr<CefRenderProcessHandler> GetRenderProcessHandler() override;
 
@@ -67,17 +67,18 @@ public:
         messageRouter_->OnContextReleased(browser, frame, context);
     }
 
-    bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefProcessId source_process,
+    bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
+                                  CefProcessId source_process,
                                   CefRefPtr<CefProcessMessage> message) OVERRIDE {
-        return messageRouter_->OnProcessMessageReceived(browser, source_process, message);
+        return messageRouter_->OnProcessMessageReceived(browser, frame, source_process, message);
     }
 
 private:
     // Handles the renderer side of query routing.
     // Adds JavaScript function "cefQuery" to the 'window' object for sending a query.
     CefRefPtr<CefMessageRouterRendererSide> messageRouter_;
-    IMPLEMENT_REFCOUNTING(WebRendererApp);
-    DISALLOW_COPY_AND_ASSIGN(WebRendererApp);
+    IMPLEMENT_REFCOUNTING(CefWebRendererApp);
+    DISALLOW_COPY_AND_ASSIGN(CefWebRendererApp);
 };
 
 };      // namespace inviwo

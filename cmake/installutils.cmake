@@ -29,12 +29,23 @@
 
 # install related paths
 if(APPLE)
-    set(IVW_RUNTIME_INSTALL_DIR bin)
+
+# See 
+# https://developer.apple.com/library/archive/documentation/CoreFoundation/Conceptual/CFBundles/BundleTypes/BundleTypes.html#//apple_ref/doc/uid/10000123i-CH101-SW1
+	# Only show this "advanced" setting when packaging
+	set(IVW_APP_INSTALL_NAME 
+		"Inviwo" CACHE STRING "Application bundle name. 
+		 Override if you are packaging a custom application. 
+		 Installed libraries and modules 
+		 will be placed inside bundle <name>.app")
+    set(IVW_RUNTIME_INSTALL_DIR ${IVW_APP_INSTALL_NAME}.app/Contents/MacOS)
     set(IVW_BUNDLE_INSTALL_DIR .)
-    set(IVW_LIBRARY_INSTALL_DIR Inviwo.app/Contents/MacOS)
+    set(IVW_LIBRARY_INSTALL_DIR ${IVW_APP_INSTALL_NAME}.app/Contents/MacOS)
     set(IVW_ARCHIVE_INSTALL_DIR ${IVW_LIBRARY_INSTALL_DIR})
-    set(IVW_FRAMEWORK_INSTALL_DIR ${IVW_LIBRARY_INSTALL_DIR})
+    set(IVW_FRAMEWORK_INSTALL_DIR ${IVW_APP_INSTALL_NAME}.app/Contents/Frameworks)
     set(IVW_INCLUDE_INSTALL_DIR include)
+    set(IVW_RESOURCE_INSTALL_PREFIX ${IVW_APP_INSTALL_NAME}.app/Contents/Resources/)
+
 else()
     set(IVW_RUNTIME_INSTALL_DIR bin)
     set(IVW_BUNDLE_INSTALL_DIR "not used!!!")
@@ -42,20 +53,16 @@ else()
     set(IVW_ARCHIVE_INSTALL_DIR ${IVW_RUNTIME_INSTALL_DIR})
     set(IVW_FRAMEWORK_INSTALL_DIR "not used!!!")
     set(IVW_INCLUDE_INSTALL_DIR include)
+    set(IVW_RESOURCE_INSTALL_PREFIX "")
 endif()
 
 #--------------------------------------------------------------------
 # Add folder to module pack
 macro(ivw_add_to_module_pack folder)
-    if(APPLE)
-        set(prefix "Inviwo.app/Contents/Resources/")
-    else()
-        set(prefix "")
-    endif()
     get_filename_component(FOLDER_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME)
     install(
         DIRECTORY ${folder}
-        DESTINATION ${prefix}modules/${FOLDER_NAME}
+        DESTINATION ${IVW_RESOURCE_INSTALL_PREFIX}modules/${FOLDER_NAME}
         COMPONENT ${_cpackName}
     )
 endmacro()
@@ -92,11 +99,6 @@ endfunction()
 #--------------------------------------------------------------------
 # Install files
 function(ivw_private_install_module_dirs)
-    if(APPLE)
-        set(prefix "Inviwo.app/Contents/Resources/")
-    else()
-        set(prefix "")
-    endif()
     get_filename_component(module_name ${CMAKE_CURRENT_SOURCE_DIR} NAME)
     foreach(folder data docs tests/regression)
         set(dir ${CMAKE_CURRENT_SOURCE_DIR}/${folder})
@@ -104,7 +106,7 @@ function(ivw_private_install_module_dirs)
         if(EXISTS ${dir})
             install(
                 DIRECTORY ${dir}
-                DESTINATION ${prefix}modules/${module_name}/${base}
+                DESTINATION ${IVW_RESOURCE_INSTALL_PREFIX}modules/${module_name}/${base}
                 COMPONENT modules
             )
         endif()
@@ -142,7 +144,7 @@ macro(ivw_qt_add_to_install ivw_comp)
                     get_filename_component(_path ${_loc} PATH)
                     get_filename_component(_dirname ${_path} NAME)
                     install(FILES ${_loc} 
-                            DESTINATION Inviwo.app/Contents/plugins/${_dirname} 
+                            DESTINATION ${IVW_APP_INSTALL_NAME}.app/Contents/plugins/${_dirname} 
                             COMPONENT ${ivw_comp})
                 endforeach()
             endif()

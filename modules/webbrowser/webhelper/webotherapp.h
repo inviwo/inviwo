@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,12 +27,23 @@
  *
  *********************************************************************************/
 
-#include <webrendererapp.h>
+#pragma once
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <include/cef_app.h>
+#include <warn/pop>
 
 namespace inviwo {
 
-CefWebRendererApp::CefWebRendererApp() = default;
+// Client app implementation for other process types.
+class CefWebAppOther : public CefApp {
+public:
+    CefWebAppOther();
 
-CefRefPtr<CefRenderProcessHandler> CefWebRendererApp::GetRenderProcessHandler() { return this; }
+private:
+    IMPLEMENT_REFCOUNTING(CefWebAppOther);
+    DISALLOW_COPY_AND_ASSIGN(CefWebAppOther);
+};
 
 }  // namespace inviwo

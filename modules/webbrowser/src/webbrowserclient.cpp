@@ -76,10 +76,11 @@ void WebBrowserClient::SetRenderHandler(CefRefPtr<RenderHandlerGL> renderHandler
 }
 
 bool WebBrowserClient::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
+                                                CefRefPtr<CefFrame> frame,
                                                 CefProcessId source_process,
                                                 CefRefPtr<CefProcessMessage> message) {
     CEF_REQUIRE_UI_THREAD();
-    return messageRouter_->OnProcessMessageReceived(browser, source_process, message);
+    return messageRouter_->OnProcessMessageReceived(browser, frame, source_process, message);
 }
 
 void WebBrowserClient::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
@@ -129,6 +130,13 @@ void WebBrowserClient::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
     CefLifeSpanHandler::OnBeforeClose(browser);
 }
 
+CefRefPtr<CefResourceRequestHandler> WebBrowserClient::GetResourceRequestHandler(
+    CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefRequest> request,
+    bool is_navigation, bool is_download, const CefString& request_initiator,
+    bool& disable_default_handling) {
+    return this;
+}
+
 bool WebBrowserClient::OnBeforeBrowse(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
                                       CefRefPtr<CefRequest> request, bool /*user_gesture*/,
                                       bool /*is_redirect*/) {
@@ -164,23 +172,6 @@ void WebBrowserClient::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
     }
 
     messageRouter_->OnRenderProcessTerminated(browser);
-}
-
-cef_return_value_t WebBrowserClient::OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
-                                                          CefRefPtr<CefFrame> frame,
-                                                          CefRefPtr<CefRequest> request,
-                                                          CefRefPtr<CefRequestCallback> callback) {
-    CEF_REQUIRE_IO_THREAD();
-
-    return resourceManager_->OnBeforeResourceLoad(browser, frame, request, callback);
-}
-
-CefRefPtr<CefResourceHandler> WebBrowserClient::GetResourceHandler(CefRefPtr<CefBrowser> browser,
-                                                                   CefRefPtr<CefFrame> frame,
-                                                                   CefRefPtr<CefRequest> request) {
-    CEF_REQUIRE_IO_THREAD();
-
-    return resourceManager_->GetResourceHandler(browser, frame, request);
 }
 
 void WebBrowserClient::addLoadHandler(CefLoadHandler* loadHandler) {
@@ -269,6 +260,22 @@ bool WebBrowserClient::OnConsoleMessage(CefRefPtr<CefBrowser> browser, cef_log_s
         return true;
     }
     return false;
+}
+cef_return_value_t WebBrowserClient::OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
+                                                          CefRefPtr<CefFrame> frame,
+                                                          CefRefPtr<CefRequest> request,
+                                                          CefRefPtr<CefRequestCallback> callback) {
+    CEF_REQUIRE_IO_THREAD();
+
+    return resourceManager_->OnBeforeResourceLoad(browser, frame, request, callback);
+}
+
+CefRefPtr<CefResourceHandler> WebBrowserClient::GetResourceHandler(CefRefPtr<CefBrowser> browser,
+                                                                   CefRefPtr<CefFrame> frame,
+                                                                   CefRefPtr<CefRequest> request) {
+    CEF_REQUIRE_IO_THREAD();
+
+    return resourceManager_->GetResourceHandler(browser, frame, request);
 }
 
 }  // namespace inviwo

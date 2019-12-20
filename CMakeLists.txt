@@ -154,7 +154,6 @@ add_subdirectory(src/qt)                 # Add Qt
 add_subdirectory(apps)                   # Add applications
 ivw_add_external_projects()              # Add external projects
 add_subdirectory(tests/integrationtests) # Add integration tests project
-include(cmake/packaging.cmake)           # Package creation
 
 # Generate Doxygen setup.
 add_subdirectory(docs)

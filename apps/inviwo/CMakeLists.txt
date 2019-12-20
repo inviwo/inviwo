@@ -37,15 +37,6 @@ set(RES_FILES "")
 if(WIN32)
     set(RES_FILES ${RES_FILES} "${IVW_RESOURCES_DIR}/inviwo.rc")
 elseif(APPLE)
-    string(TIMESTAMP YEAR "%Y")
-    set(MACOSX_BUNDLE_BUNDLE_NAME          Inviwo)
-    set(MACOSX_BUNDLE_GUI_IDENTIFIER       "Inviwo")
-    set(MACOSX_BUNDLE_ICON_FILE            inviwo_light.icns)
-    set(MACOSX_BUNDLE_INFO_STRING          "Inviwo ${IVW_VERSION}, Copyright (c) 2012-${YEAR} Inviwo Foundation")
-    set(MACOSX_BUNDLE_SHORT_VERSION_STRING "${IVW_VERSION}")
-    set(MACOSX_BUNDLE_LONG_VERSION_STRING  "${IVW_VERSION}.")
-    set(MACOSX_BUNDLE_BUNDLE_VERSION       "${IVW_VERSION}")
-    set(MACOSX_BUNDLE_COPYRIGHT            "(C) 2012-${YEAR} Inviwo Foundation")
     set_source_files_properties(${IVW_ROOT_DIR}/resources/inviwo/inviwo_light.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
     set(RES_FILES ${RES_FILES} ${IVW_ROOT_DIR}/resources/inviwo/inviwo_light.icns)
 endif()
@@ -65,6 +56,7 @@ target_link_libraries(inviwo PUBLIC
     Qt5::Core
     Qt5::Widgets
 )
+set_target_properties(inviwo PROPERTIES OUTPUT_NAME "Inviwo")
 #--------------------------------------------------------------------
 # Register the use of modules
 # Determine dendendencies and set runtime module loading defines
@@ -78,6 +70,19 @@ if(WIN32)
     install(TARGETS inviwo RUNTIME DESTINATION bin COMPONENT qt_app)
 
 elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    # Configure Info.plist
+    # https://cmake.org/cmake/help/v3.15/prop_tgt/MACOSX_BUNDLE_INFO_PLIST.html
+    string(TIMESTAMP YEAR "%Y")
+    set_target_properties(inviwo PROPERTIES
+        MACOSX_BUNDLE_INFO_STRING "Inviwo ${IVW_VERSION}, Copyright (c) 2012-${YEAR} Inviwo Foundation"
+        MACOSX_BUNDLE_ICON_FILE "inviwo_light.icns"
+        MACOSX_BUNDLE_GUI_IDENTIFIER "org.inviwo.Inviwo"
+        MACOSX_BUNDLE_LONG_VERSION_STRING "${IVW_VERSION}"
+        MACOSX_BUNDLE_BUNDLE_NAME "Inviwo"
+        MACOSX_BUNDLE_SHORT_VERSION_STRING "${IVW_VERSION}"
+        MACOSX_BUNDLE_BUNDLE_VERSION "${IVW_VERSION}"
+        MACOSX_BUNDLE_COPYRIGHT "C) 2012-${YEAR} Inviwo Foundation"
+    )
     #Following http://www.cmake.org/Wiki/BundleUtilitiesExample
     install(
         TARGETS inviwo 
@@ -149,6 +154,7 @@ if(WIN32)
         Qt5::Core 
         Qt5::Widgets
     )
+    set_target_properties(inviwo-cli PROPERTIES OUTPUT_NAME "Inviwo-cli")
     ivw_configure_application_module_dependencies(inviwo-cli ${enabled_modules})
     ivw_define_standard_definitions(inviwo-cli inviwo-cli)
     ivw_define_standard_properties(inviwo-cli)
@@ -172,4 +178,7 @@ endif()
 ivw_mod_name_to_class(ivw_module_classes ${enabled_modules})
 ivw_private_create_pyconfig("${IVW_MODULE_DIR};${IVW_EXTERNAL_MODULES}" "${ivw_module_classes}" inviwo)
 
+
 ivw_deploy_qt(inviwo)
+
+include(packaging/packaging.cmake) # Package creation
