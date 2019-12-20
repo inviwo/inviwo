@@ -32,20 +32,18 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <include/cef_app.h>
-#include <include/wrapper/cef_helpers.h>
-#include "include/wrapper/cef_message_router.h"
 #include <warn/pop>
 
 namespace inviwo {
 
 // Client app implementation for other process types.
-class ClientAppOther : public CefApp {
+class WebAppOther : public CefApp {
 public:
-    ClientAppOther();
+    WebAppOther();
 
 private:
-    IMPLEMENT_REFCOUNTING(ClientAppOther);
-    DISALLOW_COPY_AND_ASSIGN(ClientAppOther);
+    IMPLEMENT_REFCOUNTING(WebAppOther);
+    DISALLOW_COPY_AND_ASSIGN(WebAppOther);
 };
 
 }  // namespace inviwo

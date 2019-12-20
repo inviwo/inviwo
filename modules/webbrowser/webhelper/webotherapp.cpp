@@ -31,6 +31,6 @@
 
 namespace inviwo {
 
-ClientAppOther::ClientAppOther() {}
+WebAppOther::WebAppOther() = default;
 
 }  // namespace inviwo

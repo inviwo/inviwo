@@ -85,7 +85,7 @@ int main(int argc, char* argv[]) {
             app = new inviwo::WebRendererApp();
             break;
         case PROCESS_TYPE_OTHER:
-            app = new inviwo::ClientAppOther();
+            app = new inviwo::WebAppOther();
         default:
             // No app, but it is ok to pass nullptr to CefExecuteProcess
             break;
