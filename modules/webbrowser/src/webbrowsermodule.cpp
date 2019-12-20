@@ -204,7 +204,7 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
 
     CefString(&settings.locale).FromASCII(locale.c_str());
 
-#ifndef __APPLE__ // Three different executables on Mac
+#ifndef __APPLE__  // Three different executables on Mac
     if (!filesystem::fileExists(subProcessExecutable)) {
         throw ModuleInitException("Could not find web helper executable:" + subProcessExecutable);
     }
