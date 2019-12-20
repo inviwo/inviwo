@@ -133,7 +133,7 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
 
     void* sandbox_info = NULL;  // Windows specific
 
-#ifdef DARWIN  // Mac specific
+#ifdef __APPLE__  // Mac specific
 
     // Find CEF framework and helper app in
     // exe.app/Contents/Frameworks directory first
@@ -204,11 +204,12 @@ WebBrowserModule::WebBrowserModule(InviwoApplication* app)
 
     CefString(&settings.locale).FromASCII(locale.c_str());
 
+#ifndef __APPLE__ // Three different executables on Mac
     if (!filesystem::fileExists(subProcessExecutable)) {
         throw ModuleInitException("Could not find web helper executable:" + subProcessExecutable);
     }
 
-#ifndef DARWIN  
+#ifndef __APPLE__  
     // Necessary to run helpers in separate sub-processes on non-mac systems
     // Needed since we do not want to edit the "main" function
     CefString(&settings.browser_subprocess_path).FromASCII(subProcessExecutable.c_str());
