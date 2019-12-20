@@ -78,7 +78,7 @@ protected:
     std::vector<std::unique_ptr<PropertyWidgetCEFFactoryObject>> propertyWidgets_;
 
     Timer doChromiumWork_;  /// Calls CefDoMessageLoopWork()
-#ifdef __APPLE__               // Load library dynamically for Mac
+#ifdef __APPLE__            // Load library dynamically for Mac
     CefScopedLibraryLoader cefLib_;
 #endif
 };
