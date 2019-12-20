@@ -172,6 +172,18 @@ ivw_register_license_file(NAME "Chromium Embedded Framework" VERSION ${CEF_VERSI
 )
 
 if (OS_MACOSX)
+	# Output path for the main app bundle.
+	set(CEF_APP "${CEF_TARGET_OUT_DIR}/${IVW_APP_INSTALL_NAME}.app")
+	# Copy the CEF framework into the Frameworks directory
+    add_custom_command(
+        TARGET inviwo-module-webbrowser
+        POST_BUILD
+        # Copy the CEF framework into the Frameworks directory.
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CEF_BINARY_DIR}/Chromium Embedded Framework.framework"
+        "${CEF_APP}/Contents/Frameworks/Chromium Embedded Framework.framework"
+        VERBATIM
+    )
     # Copy the CEF framework into the Frameworks directory (used by installer)
     install(DIRECTORY "${CEF_BINARY_DIR}/Chromium Embedded Framework.framework"
             DESTINATION "${IVW_APP_INSTALL_NAME}.app/Contents/Frameworks/Chromium Embedded Framework.framework"
