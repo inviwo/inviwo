@@ -32,14 +32,12 @@ if(APPLE)
 
 # See 
 # https://developer.apple.com/library/archive/documentation/CoreFoundation/Conceptual/CFBundles/BundleTypes/BundleTypes.html#//apple_ref/doc/uid/10000123i-CH101-SW1
-    if(IVW_PACKAGE_PROJECT)
-        # Only show this "advanced" setting when packaging
-        set(IVW_APP_INSTALL_NAME 
-            "Inviwo" CACHE STRING "Application bundle name. 
-             Override if you are packaging a custom application. 
-             Installed libraries and modules 
-             will be placed inside bundle <name>.app")
-    endif()
+	# Only show this "advanced" setting when packaging
+	set(IVW_APP_INSTALL_NAME 
+		"Inviwo" CACHE STRING "Application bundle name. 
+		 Override if you are packaging a custom application. 
+		 Installed libraries and modules 
+		 will be placed inside bundle <name>.app")
     set(IVW_RUNTIME_INSTALL_DIR ${IVW_APP_INSTALL_NAME}.app/Contents/MacOS)
     set(IVW_BUNDLE_INSTALL_DIR .)
     set(IVW_LIBRARY_INSTALL_DIR ${IVW_APP_INSTALL_NAME}.app/Contents/MacOS)
