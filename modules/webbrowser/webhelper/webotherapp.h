@@ -37,13 +37,13 @@
 namespace inviwo {
 
 // Client app implementation for other process types.
-class WebAppOther : public CefApp {
+class CefWebAppOther : public CefApp {
 public:
-    WebAppOther();
+    CefWebAppOther();
 
 private:
-    IMPLEMENT_REFCOUNTING(WebAppOther);
-    DISALLOW_COPY_AND_ASSIGN(WebAppOther);
+    IMPLEMENT_REFCOUNTING(CefWebAppOther);
+    DISALLOW_COPY_AND_ASSIGN(CefWebAppOther);
 };
 
 }  // namespace inviwo

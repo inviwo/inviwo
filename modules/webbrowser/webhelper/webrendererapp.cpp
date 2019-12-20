@@ -31,8 +31,8 @@
 
 namespace inviwo {
 
-WebRendererApp::WebRendererApp() = default;
+CefWebRendererApp::CefWebRendererApp() = default;
 
-CefRefPtr<CefRenderProcessHandler> WebRendererApp::GetRenderProcessHandler() { return this; }
+CefRefPtr<CefRenderProcessHandler> CefWebRendererApp::GetRenderProcessHandler() { return this; }
 
 }  // namespace inviwo
