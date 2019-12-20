@@ -26,6 +26,7 @@ set(WEBBROWSER_HELPER_SOURCES
 # place helper in separate executable. CEF uses app name + helper by default
 set(CEF_HELPER_TARGET "inviwo_helper" CACHE INTERNAL "CEF_HELPER_TARGET")
 set(CEF_HELPER_OUTPUT_NAME "Inviwo Helper")
+
 if (NOT OS_MACOSX)
     add_executable(${CEF_HELPER_TARGET} WIN32 MACOSX_BUNDLE ${WEBBROWSER_HELPER_SOURCES})
     add_dependencies(${CEF_HELPER_TARGET} libcef_dll_wrapper)
@@ -53,14 +54,14 @@ if (NOT OS_MACOSX)
     # Put in ext folder in developer IDE
     ivw_folder(${CEF_HELPER_TARGET} ext/CEF)
 endif()
+
 if (OS_MACOSX)
 
-
-    set(CEF_TARGET inviwo-module-webbrowser)
+	set(CEF_TARGET inviwo-module-webbrowser)
+    
     if(USE_SANDBOX)
         # Logical target used to link the cef_sandbox library.
         ADD_LOGICAL_TARGET("cef_sandbox_lib" "${CEF_SANDBOX_LIB_DEBUG}" "${CEF_SANDBOX_LIB_RELEASE}")
-        #target_link_libraries(${CEF_HELPER_TARGET} PRIVATE cef_sandbox_lib)
     endif()
 
     # Create the multiple Helper app bundle targets.
@@ -88,6 +89,7 @@ if (OS_MACOSX)
 
         # Create Helper executable target.
         add_executable(${_helper_target} MACOSX_BUNDLE ${WEBBROWSER_HELPER_SOURCES})
+		# Inviwo: Use Inviwo properties instead of CEF 
         #SET_EXECUTABLE_TARGET_PROPERTIES(${_helper_target})
         add_dependencies(${_helper_target} libcef_dll_wrapper)
         target_link_libraries(${_helper_target} libcef_dll_wrapper ${CEF_STANDARD_LIBS} inviwo::warn)
