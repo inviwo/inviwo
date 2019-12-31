@@ -148,6 +148,10 @@ constexpr uint64_t constexpr_hash(const char (&str)[len]) {
     return detail::crc64(str, len);
 }
 
+constexpr uint64_t constexpr_hash(const std::string_view& str) {
+    return detail::crc64(str.data(), str.length());
+}
+
 }  // namespace util
 
 }  // namespace inviwo
