@@ -34,7 +34,8 @@ set(HEADER_FILES
     include/modules/discretedata/discretedatamodule.h
     include/modules/discretedata/discretedatamoduledefine.h
     include/modules/discretedata/discretedatatypes.h
-    include/modules/discretedata/util.h
+    include/modules/discretedata/util/util.h
+    include/modules/discretedata/util/prefixsumvector.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -45,6 +46,7 @@ set(SOURCE_FILES
     src/channels/cachedgetter.cpp
     src/channels/channel.cpp
     src/channels/datachannel.cpp
+    src/connectivity/cell.cpp
     src/connectivity/connectioniterator.cpp
     src/connectivity/connectivity.cpp
     src/connectivity/elementiterator.cpp

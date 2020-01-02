@@ -104,13 +104,13 @@ public:
      * @param dim Dimension of element (edge, face, volume...)
      * @param index Index of respective element type
      */
-    virtual CellType getCellType(GridPrimitive dim, ind index) const;
+    virtual const CellStructure* getCellType(GridPrimitive dim, ind index) const;
 
     /**
      * \brief Get the cell type (i.e. triangle, quad...; tetrahedron, voxel...)
      * @param element Element to get measure of
      */
-    virtual CellType getCellType(ElementIterator& element) const;
+    virtual const CellStructure* getCellType(ElementIterator& element) const;
 
     // Attributes
 protected:

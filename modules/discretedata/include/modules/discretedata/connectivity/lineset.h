@@ -31,7 +31,7 @@
 
 #include <modules/discretedata/discretedatamoduledefine.h>
 #include <modules/discretedata/connectivity/connectivity.h>
-#include <modules/discretedata/util.h>
+#include <modules/discretedata/util/util.h>
 
 #include <initializer_list>
 

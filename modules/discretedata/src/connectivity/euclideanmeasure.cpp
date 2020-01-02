@@ -36,24 +36,21 @@ namespace euclidean {
 double getMeasure(const Connectivity& grid, const Channel& positions, GridPrimitive dim,
                   ind index) {
 
-    CellType cell = grid.getCellType(dim, index);
-    switch (cell) {
-        case CellType::Hexahedron:
-            if (positions.getNumComponents() == 3) {
-                // Only implemented 3D bodies so far.
-                if (dim != GridPrimitive::Volume) return -1;
+    const CellStructure* cell = grid.getCellType(dim, index);
+    if (cell == CellStructureByCellType[(int)CellType::Hexahedron]) {
+        if (positions.getNumComponents() == 3) {
+            // Only implemented 3D bodies so far.
+            if (dim != GridPrimitive::Volume) return -1;
 
-                double measure = -1;
+            double measure = -1;
 
-                measure = inviwo::dispatching::dispatch<double, dispatching::filter::Scalars>(
-                    positions.getDataFormatId(), HexVolumeComputer(), grid, positions, index);
+            measure = inviwo::dispatching::dispatch<double, dispatching::filter::Scalars>(
+                positions.getDataFormatId(), HexVolumeComputer(), grid, positions, index);
 
-                return measure;
-            }
-            [[fallthrough]];
-        default:
-            return -1.0;
+            return measure;
+        }
     }
+    return -1.0;
 }
 
 }  // namespace euclidean

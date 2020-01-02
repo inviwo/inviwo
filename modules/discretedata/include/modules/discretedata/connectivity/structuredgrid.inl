@@ -83,7 +83,6 @@ ind StructuredGrid<N>::indexToLinear(const std::array<ind, N>& idx,
 template <ind N>
 void StructuredGrid<N>::sameLevelConnection(std::vector<ind>& result, const ind idxLin,
                                             const std::array<ind, N>& size) {
-    result.clear();
     std::array<ind, N> index = indexFromLinear(idxLin, size);
 
     ind dimensionProduct = 1;
@@ -211,7 +210,6 @@ void StructuredGrid<N>::getConnections(std::vector<ind>& result, ind idxLin, Gri
     if (from == gridDimension_ && to == GridPrimitive::Vertex) {
         // Prepare corners
         const ind numCorners = ind(1) << N;
-        result.resize(numCorners);
 
         // Vertex Strides - how much to add to the linear index to go forward by 1 in each dimension
         std::vector<ind> vStrides(N);
@@ -236,14 +234,14 @@ void StructuredGrid<N>::getConnections(std::vector<ind>& result, ind idxLin, Gri
             lowerLeftFrontVertexLinearIndex += cellIndex[dim] * vStrides[dim];
         }
 
-        result[0] = lowerLeftFrontVertexLinearIndex;
+        result.push_back(lowerLeftFrontVertexLinearIndex);
         for (ind i(1); i < numCorners; i++) {
             // Base is the lower-left-front corner.
-            result[i] = lowerLeftFrontVertexLinearIndex;
+            result.push_back(lowerLeftFrontVertexLinearIndex);
 
             // Add strides to the lower-left-front corner.
             for (ind d(0); d < N; d++) {
-                if (i & (ind(1) << d)) result[i] += vStrides[d];
+                if (i & (ind(1) << d)) result[result.size() - 1] += vStrides[d];
             }
         }
         return;
@@ -262,7 +260,6 @@ void StructuredGrid<N>::getConnections(std::vector<ind>& result, ind idxLin, Gri
 
         // Prepare neighbors
         const ind maxNeighbors = ind(1) << N;
-        result.reserve(maxNeighbors);
 
         // Compute neighbors
         std::array<ind, N> currentNeighbor;
@@ -311,19 +308,25 @@ const std::array<ind, N>& StructuredGrid<N>::getNumVertices() const {
 }
 
 template <ind N>
-CellType StructuredGrid<N>::getCellType(GridPrimitive dim, ind) const {
+const CellStructure* StructuredGrid<N>::getCellType(GridPrimitive dim, ind) const {
+    CellType cell;
     switch (dim) {
         case GridPrimitive::Vertex:
-            return CellType::Vertex;
+            cell = CellType::Vertex;
+            break;
         case GridPrimitive::Edge:
-            return CellType::Line;
+            cell = CellType::Line;
+            break;
         case GridPrimitive::Face:
-            return CellType::Quad;
+            cell = CellType::Quad;
+            break;
         case GridPrimitive::Volume:
-            return CellType::Hexahedron;
+            cell = CellType::Hexahedron;
+            break;
         default:
-            return CellType::HigherOrderHexahedron;
+            cell = CellType::HigherOrderHexahedron;
     }
+    return CellStructureByCellType[(int)cell];
 }
 
 template <ind N>

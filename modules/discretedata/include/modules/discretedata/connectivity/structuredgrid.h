@@ -30,7 +30,7 @@
 #pragma once
 
 #include <modules/discretedata/connectivity/connectivity.h>
-#include <modules/discretedata/util.h>
+#include <modules/discretedata/util/util.h>
 #include <modules/discretedata/channels/analyticchannel.h>
 #include <inviwo/core/datastructures/spatialdata.h>
 
@@ -68,7 +68,7 @@ public:
 
     const std::array<ind, N>& getNumVertices() const;
 
-    virtual CellType getCellType(GridPrimitive dim, ind index) const override;
+    virtual const CellStructure* getCellType(GridPrimitive dim, ind index) const override;
 
     virtual void getConnections(std::vector<ind>& result, ind index, GridPrimitive from,
                                 GridPrimitive to, bool positions = false) const override;
