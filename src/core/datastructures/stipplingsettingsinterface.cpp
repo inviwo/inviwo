@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,46 +27,16 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_STIPPLINGPROPERTY_H
-#define IVW_STIPPLINGPROPERTY_H
-
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/stipplingsettingsinterface.h>
-
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
 
 namespace inviwo {
 
-class IVW_CORE_API StipplingProperty : public CompositeProperty, public StipplingSettingsInterface {
-public:
+bool operator==(const StipplingSettingsInterface& a, const StipplingSettingsInterface& b) {
+    return a.getMode() == b.getMode() && a.getLength() == b.getLength() &&
+    a.getSpacing() == b.getSpacing() && a.getOffset() == b.getOffset() &&
+    a.getWorldScale() == b.getWorldScale();
+}
 
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
-
-    StipplingProperty(const std::string& identifier, const std::string& displayName,
-                      InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
-                      PropertySemantics semantics = PropertySemantics::Default);
-    StipplingProperty(const StipplingProperty& rhs);
-    virtual StipplingProperty* clone() const override;
-    virtual ~StipplingProperty() = default;
-    
-    // StipplingSettingsInterface
-    virtual Mode getMode() const override { return mode_.get(); };
-    virtual float getLength() const override { return length_.get(); };
-    virtual float getSpacing() const override { return spacing_.get(); };
-    virtual float getOffset() const override { return offset_.get(); };
-    virtual float getWorldScale() const override { return worldScale_.get(); };
-
-    TemplateOptionProperty<StipplingSettingsInterface::Mode> mode_;
-    FloatProperty length_;
-    FloatProperty spacing_;
-    FloatProperty offset_;
-    FloatProperty worldScale_;
-};
+bool operator!=(const StipplingSettingsInterface& a, const StipplingSettingsInterface& b) { return !(a == b); }
 
 }  // namespace inviwo
-
-#endif  // IVW_STIPPLINGPROPERTY_H

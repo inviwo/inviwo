@@ -77,7 +77,11 @@ ScatterPlotProcessor::ScatterPlotProcessor()
     });
     selectionChangedCallBack_ =
         scatterPlot_.addSelectionChangedCallback([this](const std::unordered_set<size_t>& indices) {
-            brushingPort_.sendSelectionEvent(indices);
+            if (brushingPort_.isConnected()) {
+                brushingPort_.sendSelectionEvent(indices);
+            } else {
+                invalidate(InvalidationLevel::InvalidOutput);
+            }
         });
 
     scatterPlot_.properties_.margins_.setLowerLeftMargin({50.0f, 40.0f});

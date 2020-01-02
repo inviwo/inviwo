@@ -34,11 +34,13 @@
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/interaction/pickingmapper.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/properties/stipplingproperty.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/util/dispatcher.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/base/algorithm/dataminmax.h>
+#include <modules/basegl/datastructures/meshshadercache.h>
 
 #include <inviwo/dataframe/datastructures/dataframe.h>
 #include <modules/plotting/properties/marginproperty.h>
@@ -158,7 +160,8 @@ protected:
 
     void invokeEvent(Event* event, const ivec2& start, const size2_t& size, bool useAxisRange);
     void selectionRectChanged(const dvec2& start, const dvec2& end);
-
+    void configureShader(Shader& shader);
+    
     std::shared_ptr<const BufferBase> xAxis_;
     std::shared_ptr<const BufferBase> yAxis_;
     std::shared_ptr<const BufferBase> color_;
@@ -176,8 +179,12 @@ protected:
 
     PickingMapper picking_;
     std::unordered_set<size_t> selectedIndices_;
+    bool selectedIndicesGLDirty_ = true;
+    BufferObject selectedIndicesGL_ = BufferObject(sizeof(uint32_t), DataUInt32::get(), BufferUsage::Dynamic, BufferTarget::Index);
     std::optional<uint32_t> hoverIndex_;
-
+    BufferObject hoverIndexGL_ = BufferObject(sizeof(uint32_t), DataUInt32::get(),
+                                              BufferUsage::Dynamic, BufferTarget::Index);
+    
     std::unique_ptr<IndexBuffer> indices_;
     std::unique_ptr<BufferObjectArray> boa_;
 
@@ -186,7 +193,15 @@ protected:
     Dispatcher<ToolTipFunc> tooltipCallback_;
     Dispatcher<SelectionFunc> selectionChangedCallback_;
 
-    std::optional<dvec2> dragStart_;
+    std::optional<std::array<dvec2, 2>> dragRect_;
+    
+    FloatProperty lineWidth_;
+    FloatProperty antialiasing_;
+    FloatProperty miterLimit_;
+    BoolProperty roundCaps_;
+    
+    StipplingProperty stippling_;
+    MeshShaderCache lineShaders_;
 };
 
 }  // namespace plot
