@@ -89,21 +89,21 @@ protected:
  * \brief Data column used for plotting which represents a named buffer of type T. The name
  * is used as column header.
  */
-template <typename T>
+template <typename T, BufferTarget Target = BufferTarget::Data>
 class TemplateColumn : public Column {
 public:
     using type = T;
 
     TemplateColumn(const std::string &header,
-                   std::shared_ptr<Buffer<T>> buffer = std::make_shared<Buffer<T>>());
+                   std::shared_ptr<Buffer<T, Target>> buffer = std::make_shared<Buffer<T, Target>>());
 
     TemplateColumn(const std::string &header, std::vector<T> data);
 
-    TemplateColumn(const TemplateColumn<T> &rhs);
-    TemplateColumn(TemplateColumn<T> &&rhs);
+    TemplateColumn(const TemplateColumn<T, Target> &rhs);
+    TemplateColumn(TemplateColumn<T, Target> &&rhs);
 
-    TemplateColumn<T> &operator=(const TemplateColumn<T> &rhs);
-    TemplateColumn<T> &operator=(TemplateColumn<T> &&rhs);
+    TemplateColumn<T, Target> &operator=(const TemplateColumn<T> &rhs);
+    TemplateColumn<T, Target> &operator=(TemplateColumn<T> &&rhs);
 
     virtual TemplateColumn *clone() const override;
 
@@ -150,8 +150,8 @@ public:
     virtual std::shared_ptr<BufferBase> getBuffer() override;
     virtual std::shared_ptr<const BufferBase> getBuffer() const override;
 
-    std::shared_ptr<Buffer<T>> getTypedBuffer();
-    std::shared_ptr<const Buffer<T>> getTypedBuffer() const;
+    std::shared_ptr<Buffer<T, Target>> getTypedBuffer();
+    std::shared_ptr<const Buffer<T, Target>> getTypedBuffer() const;
 
     virtual size_t getSize() const override;
 
@@ -162,7 +162,7 @@ public:
 
 protected:
     std::string header_;
-    std::shared_ptr<Buffer<T>> buffer_;
+    std::shared_ptr<Buffer<T, Target>> buffer_;
 };
 
 /**
@@ -220,25 +220,25 @@ private:
     std::vector<std::string> lookUpTable_;
 };
 
-template <typename T>
-TemplateColumn<T>::TemplateColumn(const std::string &header, std::shared_ptr<Buffer<T>> buffer)
+template <typename T, BufferTarget Target>
+TemplateColumn<T, Target>::TemplateColumn(const std::string &header, std::shared_ptr<Buffer<T, Target>> buffer)
     : header_(header), buffer_(buffer) {}
 
-template <typename T>
-TemplateColumn<T>::TemplateColumn(const std::string &header, std::vector<T> data)
+template <typename T, BufferTarget Target>
+TemplateColumn<T, Target>::TemplateColumn(const std::string &header, std::vector<T> data)
     : header_(header), buffer_(util::makeBuffer(std::move(data))) {}
 
-template <typename T>
-TemplateColumn<T>::TemplateColumn(const TemplateColumn &rhs)
+template <typename T, BufferTarget Target>
+TemplateColumn<T, Target>::TemplateColumn(const TemplateColumn &rhs)
     : header_(rhs.getHeader())
-    , buffer_(std::shared_ptr<Buffer<T>>(rhs.getTypedBuffer()->clone())) {}
+    , buffer_(std::shared_ptr<Buffer<T, Target>>(rhs.getTypedBuffer()->clone())) {}
 
-template <typename T>
-TemplateColumn<T>::TemplateColumn(TemplateColumn<T> &&rhs)
+template <typename T, BufferTarget Target>
+TemplateColumn<T, Target>::TemplateColumn(TemplateColumn<T, Target> &&rhs)
     : header_(std::move(rhs.header_)), buffer_(std::move(rhs.buffer_)) {}
 
-template <typename T>
-TemplateColumn<T> &TemplateColumn<T>::operator=(const TemplateColumn<T> &rhs) {
+template <typename T, BufferTarget Target>
+TemplateColumn<T, Target> &TemplateColumn<T, Target>::operator=(const TemplateColumn<T> &rhs) {
     if (this != &rhs) {
         header_ = rhs.getHeader();
         buffer_ = std::shared_ptr<Buffer<T>>(rhs.getTypedBuffer()->clone());
@@ -246,8 +246,8 @@ TemplateColumn<T> &TemplateColumn<T>::operator=(const TemplateColumn<T> &rhs) {
     return *this;
 }
 
-template <typename T>
-TemplateColumn<T> &TemplateColumn<T>::operator=(TemplateColumn<T> &&rhs) {
+template <typename T, BufferTarget Target>
+TemplateColumn<T, Target> &TemplateColumn<T, Target>::operator=(TemplateColumn<T> &&rhs) {
     if (this != &rhs) {
         header_ = std::move(rhs.header_);
         buffer_ = std::move(rhs.buffer_);
@@ -255,30 +255,30 @@ TemplateColumn<T> &TemplateColumn<T>::operator=(TemplateColumn<T> &&rhs) {
     return *this;
 }
 
-template <typename T>
-TemplateColumn<T> *TemplateColumn<T>::clone() const {
+template <typename T, BufferTarget Target>
+TemplateColumn<T, Target> *TemplateColumn<T, Target>::clone() const {
     return new TemplateColumn(*this);
 }
 
-template <typename T>
-const std::string &TemplateColumn<T>::getHeader() const {
+template <typename T, BufferTarget Target>
+const std::string &TemplateColumn<T, Target>::getHeader() const {
     return header_;
 }
 
-template <typename T>
-void TemplateColumn<T>::setHeader(const std::string &header) {
+template <typename T, BufferTarget Target>
+void TemplateColumn<T, Target>::setHeader(const std::string &header) {
     header_ = header;
 }
 
-template <typename T>
-void TemplateColumn<T>::add(const T &value) {
+template <typename T, BufferTarget Target>
+void TemplateColumn<T, Target>::add(const T &value) {
     buffer_->getEditableRAMRepresentation()->add(value);
 }
 
 namespace detail {
 
-template <typename T, typename std::enable_if<std::is_integral<T>::value, int>::type = 0>
-void add(Buffer<T> *buffer, const std::string &value) {
+template <typename T, BufferTarget Target, typename std::enable_if<std::is_integral<T>::value, int>::type = 0>
+void add(Buffer<T, Target> *buffer, const std::string &value) {
     T result;
     std::istringstream stream(value);
     stream >> result;
@@ -288,8 +288,8 @@ void add(Buffer<T> *buffer, const std::string &value) {
     buffer->getEditableRAMRepresentation()->add(result);
 }
 // Specialization for float and double types, add NaN instead of throwing an error
-template <typename T, typename std::enable_if<std::is_floating_point<T>::value, int>::type = 0>
-void add(Buffer<T> *buffer, const std::string &value) {
+template <typename T, BufferTarget Target, typename std::enable_if<std::is_floating_point<T>::value, int>::type = 0>
+void add(Buffer<T, Target> *buffer, const std::string &value) {
     T result;
     std::istringstream stream(value);
     stream >> result;
@@ -300,99 +300,99 @@ void add(Buffer<T> *buffer, const std::string &value) {
     }
 }
 
-template <typename T,
+template <typename T, BufferTarget Target,
           typename std::enable_if<!std::is_integral<T>::value && !std::is_floating_point<T>::value,
                                   int>::type = 0>
-void add(Buffer<T> * /*buffer*/, const std::string &value) {
+void add(Buffer<T, Target> * /*buffer*/, const std::string &value) {
     throw InvalidConversion("conversion to target type not implemented (\"" + value + "\")");
 }
 
 }  // namespace detail
 
-template <typename T>
-void TemplateColumn<T>::add(const std::string &value) {
+template <typename T, BufferTarget Target>
+void TemplateColumn<T, Target>::add(const std::string &value) {
     detail::add<T>(buffer_.get(), value);
 }
 
-template <typename T>
-void TemplateColumn<T>::set(size_t idx, const T &value) {
+template <typename T, BufferTarget Target>
+void TemplateColumn<T, Target>::set(size_t idx, const T &value) {
     buffer_->getEditableRAMRepresentation()->set(idx, value);
 }
 
-template <typename T>
-T TemplateColumn<T>::get(size_t idx) const {
+template <typename T, BufferTarget Target>
+T TemplateColumn<T, Target>::get(size_t idx) const {
     auto val = buffer_->getRAMRepresentation()->getDataContainer()[idx];
     return val;
 }
 
-template <typename T>
-double TemplateColumn<T>::getAsDouble(size_t idx) const {
+template <typename T, BufferTarget Target>
+double TemplateColumn<T, Target>::getAsDouble(size_t idx) const {
     auto val = buffer_->getRAMRepresentation()->getDataContainer()[idx];
     return util::glm_convert<double>(val);
 }
 
-template <typename T>
-dvec2 TemplateColumn<T>::getAsDVec2(size_t idx) const {
+template <typename T, BufferTarget Target>
+dvec2 TemplateColumn<T, Target>::getAsDVec2(size_t idx) const {
     auto val = buffer_->getRAMRepresentation()->getDataContainer()[idx];
     return util::glm_convert<dvec2>(val);
 }
 
-template <typename T>
-dvec3 TemplateColumn<T>::getAsDVec3(size_t idx) const {
+template <typename T, BufferTarget Target>
+dvec3 TemplateColumn<T, Target>::getAsDVec3(size_t idx) const {
     auto val = buffer_->getRAMRepresentation()->getDataContainer()[idx];
     return util::glm_convert<dvec3>(val);
 }
 
-template <typename T>
-dvec4 TemplateColumn<T>::getAsDVec4(size_t idx) const {
+template <typename T, BufferTarget Target>
+dvec4 TemplateColumn<T, Target>::getAsDVec4(size_t idx) const {
     auto val = buffer_->getRAMRepresentation()->getDataContainer()[idx];
     return util::glm_convert<dvec4>(val);
 }
 
-template <typename T>
-void TemplateColumn<T>::setBuffer(std::shared_ptr<Buffer<T>> buffer) {
+template <typename T, BufferTarget Target>
+void TemplateColumn<T, Target>::setBuffer(std::shared_ptr<Buffer<T>> buffer) {
     buffer_ = buffer;
 }
 
-template <typename T>
-std::string TemplateColumn<T>::getAsString(size_t idx) const {
+template <typename T, BufferTarget Target>
+std::string TemplateColumn<T, Target>::getAsString(size_t idx) const {
     std::ostringstream ss;
     ss << buffer_->getRAMRepresentation()->get(idx);
     return ss.str();
 }
 
-template <typename T>
-std::shared_ptr<DataPointBase> TemplateColumn<T>::get(size_t idx, bool) const {
+template <typename T, BufferTarget Target>
+std::shared_ptr<DataPointBase> TemplateColumn<T, Target>::get(size_t idx, bool) const {
     return std::make_shared<DataPoint<T>>(buffer_->getRAMRepresentation()->get(idx));
 }
 
-template <typename T>
-T TemplateColumn<T>::operator[](const size_t idx) const {
+template <typename T, BufferTarget Target>
+T TemplateColumn<T, Target>::operator[](const size_t idx) const {
     return get(idx);
 }
 
-template <typename T>
-std::shared_ptr<BufferBase> TemplateColumn<T>::getBuffer() {
+template <typename T, BufferTarget Target>
+std::shared_ptr<BufferBase> TemplateColumn<T, Target>::getBuffer() {
     return buffer_;
 }
 
-template <typename T>
-std::shared_ptr<const BufferBase> TemplateColumn<T>::getBuffer() const {
+template <typename T, BufferTarget Target>
+std::shared_ptr<const BufferBase> TemplateColumn<T, Target>::getBuffer() const {
     return buffer_;
 }
 
-template <typename T>
-std::shared_ptr<Buffer<T>> TemplateColumn<T>::getTypedBuffer() {
+template <typename T, BufferTarget Target>
+std::shared_ptr<Buffer<T,Target>> TemplateColumn<T, Target>::getTypedBuffer() {
     return buffer_;
 }
 
-template <typename T>
-std::shared_ptr<const Buffer<T>> TemplateColumn<T>::getTypedBuffer() const {
+template <typename T, BufferTarget Target>
+std::shared_ptr<const Buffer<T, Target>> TemplateColumn<T, Target>::getTypedBuffer() const {
     return buffer_;
 }
 
-template <typename T>
-size_t TemplateColumn<T>::getSize() const {
+template <typename T, BufferTarget Target>
+size_t TemplateColumn<T, Target>::getSize() const {
     return buffer_->getSize();
 }
 

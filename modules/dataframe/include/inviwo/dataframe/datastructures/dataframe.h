@@ -102,8 +102,8 @@ public:
      * updateIndexBuffer() needs to be called after all columns have been added before
      * the DataFrame can be used
      */
-    template <typename T>
-    std::shared_ptr<TemplateColumn<T>> addColumn(const std::string &header, size_t size = 0);
+    template <typename T, BufferTarget Target = BufferTarget::Data>
+    std::shared_ptr<TemplateColumn<T, Target>> addColumn(const std::string &header, size_t size = 0);
 
     /**
      * \brief Drop a column from data frame
@@ -203,9 +203,9 @@ std::shared_ptr<DataFrame> IVW_MODULE_DATAFRAME_API
 createDataFrame(const std::vector<std::vector<std::string>> &exampleRows,
                 const std::vector<std::string> &colHeaders = {});
 
-template <typename T>
-std::shared_ptr<TemplateColumn<T>> DataFrame::addColumn(const std::string &header, size_t size) {
-    auto col = std::make_shared<TemplateColumn<T>>(header);
+template <typename T, BufferTarget Target>
+std::shared_ptr<TemplateColumn<T, Target>> DataFrame::addColumn(const std::string &header, size_t size) {
+    auto col = std::make_shared<TemplateColumn<T, Target>>(header);
     col->getTypedBuffer()->getEditableRAMRepresentation()->getDataContainer().resize(size);
     columns_.push_back(col);
     return col;

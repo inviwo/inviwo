@@ -42,7 +42,7 @@ namespace inviwo {
  */
 DataFrame::DataFrame(std::uint32_t size) : columns_() {
     // at the moment, GPUs only support uints up to 32bit
-    auto &cont = addColumn<std::uint32_t>("index", size)
+    auto &cont = addColumn<std::uint32_t, BufferTarget::Index>("index", size)
                      ->getTypedBuffer()
                      ->getEditableRAMRepresentation()
                      ->getDataContainer();
