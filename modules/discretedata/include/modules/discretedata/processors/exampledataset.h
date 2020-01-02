@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2021 Inviwo Foundation
+ * Copyright (c) 2012-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,32 +27,44 @@
  *
  *********************************************************************************/
 
-#include <modules/discretedata/discretedatamodule.h>
-#include <modules/discretedata/processors/datasetfrombase.h>
-#include <modules/discretedata/processors/datasetsource.h>
-#include <modules/discretedata/processors/computegridmeasure.h>
-#include <modules/discretedata/processors/volumefromdataset.h>
-#include <modules/discretedata/processors/meshfromdataset.h>
-#include <modules/discretedata/processors/segmentationvoxelizer.h>
-#include <modules/discretedata/processors/createchannel.h>
-#include <modules/discretedata/processors/exampledataset.h>
+#pragma once
+
+#include <modules/discretedata/discretedatamoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <modules/discretedata/ports/datasetport.h>
+#include <modules/discretedata/channels/analyticchannel.h>
+#include <modules/discretedata/channels/channeldispatching.h>
+#include <modules/discretedata/properties/datachannelproperty.h>
 
 namespace inviwo {
+namespace discretedata {
 
-DiscreteDataModule::DiscreteDataModule(InviwoApplication* app) : InviwoModule(app, "discretedata") {
-    // Processors
-    registerProcessor<discretedata::DataSetFromVolume>();
-    registerProcessor<discretedata::ComputeGridMeasure>();
-    registerProcessor<discretedata::MeshFromDataSet>();
-    registerProcessor<discretedata::VolumeFromDataSet>();
-    registerProcessor<discretedata::CreateConstantChannel>();
-    registerProcessor<discretedata::SegmentationVoxelizer>();
-    registerProcessor<discretedata::DataSetSource>();
-    registerProcessor<discretedata::ExampleDataset>();
+/** \class CreateConstantChannel
+    \brief Create a channel with constant values
+*/
+class IVW_MODULE_DISCRETEDATA_API ExampleDataset : public Processor {
+
+    // Construction / Deconstruction
+public:
+    ExampleDataset();
+    virtual ~ExampleDataset() = default;
+
+    // Methods
+public:
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+protected:
+    /// Our main computation function
+    virtual void process() override;
 
     // Ports
-    registerPort<discretedata::DataSetOutport>();
-    registerPort<discretedata::DataSetInport>();
-}
+public:
+    DataSetOutport dataOutport;
+};
 
+}  // namespace discretedata
 }  // namespace inviwo

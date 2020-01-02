@@ -26,6 +26,7 @@ set(HEADER_FILES
     include/modules/discretedata/processors/createchannel.h
     include/modules/discretedata/processors/datasetfrombase.h
     include/modules/discretedata/processors/datasetsource.h
+    include/modules/discretedata/processors/exampledataset.h
     include/modules/discretedata/processors/meshfromdataset.h
     include/modules/discretedata/processors/segmentationvoxelizer.h
     include/modules/discretedata/processors/volumefromdataset.h
