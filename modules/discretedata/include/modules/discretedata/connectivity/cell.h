@@ -29,8 +29,13 @@
 
 #pragma once
 
+#include <modules/discretedata/discretedatatypes.h>
+#include <modules/discretedata/util/prefixsumvector.h>
+
 namespace inviwo {
 namespace discretedata {
+
+struct CellStructure;
 
 /** Cell types of vtk **/
 enum class CellType {
@@ -109,6 +114,85 @@ enum class CellType {
 
     NumberOfCellTypes
 };
+
+/** Map from vtk cell types to corresponding cell structure structs **/
+extern const std::array<const CellStructure*, (int)CellType::NumberOfCellTypes>
+    CellStructureByCellType;
+
+struct CellStructure {
+    const GridPrimitive primitive_;
+    CellStructure(GridPrimitive prim) : primitive_(prim) {}
+    /** Number of primitves (e.g., edges) of this cell type **/
+    virtual ind getNumElements(GridPrimitive dim, const std::vector<ind>& vertices) const = 0;
+
+    /** Get the primitves (e.g., edges) by the vertices that make them up **/
+    virtual void getElementsByVertices(dd_util::PrefixSumVector<ind>& elementsOut,
+                                       GridPrimitive dim,
+                                       const std::vector<ind>& vertices) const = 0;
+    /** Get the type of primitives **/
+    virtual const CellStructure* getElementCellStructure(GridPrimitive dim, ind index) const = 0;
+};
+
+// template <GridPrimitive Primitive>
+struct DefaultCellStructure : CellStructure {
+    DefaultCellStructure(GridPrimitive prim) : CellStructure(prim) {}
+
+    virtual ind getNumElements(GridPrimitive, const std::vector<ind>&) const override { return 0; }
+
+    virtual void getElementsByVertices(dd_util::PrefixSumVector<ind>&, GridPrimitive,
+                                       const std::vector<ind>&) const override {}
+
+    virtual const CellStructure* getElementCellStructure(GridPrimitive, ind) const {
+        return nullptr;
+    }
+} static const UNDEFINED_CELL(GridPrimitive::Undef), VERTEX_CELL(GridPrimitive::Vertex),
+    EDGE_CELL(GridPrimitive::Edge);
+
+struct TriangleCellStructure : CellStructure {
+    TriangleCellStructure() : CellStructure(GridPrimitive::Face) {}
+
+    virtual ind getNumElements(GridPrimitive dim, const std::vector<ind>&) const override {
+        if (dim == GridPrimitive::Edge) return 3;
+        return 0;
+    }
+
+    virtual void getElementsByVertices(dd_util::PrefixSumVector<ind>& elementsOut,
+                                       GridPrimitive dim,
+                                       const std::vector<ind>& vertices) const override;
+    virtual const CellStructure* getElementCellStructure(GridPrimitive dim,
+                                                         ind index) const override;
+} static const TRIANGLE_CELL;
+
+struct QuadCellStructure : CellStructure {
+    QuadCellStructure() : CellStructure(GridPrimitive::Face) {}
+
+    virtual ind getNumElements(GridPrimitive dim, const std::vector<ind>&) const override {
+        if (dim == GridPrimitive::Edge) return 4;
+        return 0;
+    }
+
+    virtual void getElementsByVertices(dd_util::PrefixSumVector<ind>& elementsOut,
+                                       GridPrimitive dim,
+                                       const std::vector<ind>& vertices) const override;
+    virtual const CellStructure* getElementCellStructure(GridPrimitive dim,
+                                                         ind index) const override;
+} static const QUAD_CELL;
+
+struct PolygonCellStructure : CellStructure {
+    PolygonCellStructure() : CellStructure(GridPrimitive::Face) {}
+
+    virtual ind getNumElements(GridPrimitive dim, const std::vector<ind>& vertices) const override {
+        if (dim == GridPrimitive::Edge) return vertices.size();
+        return 0;
+    }
+
+    /** Get the primitves (e.g., edges) by the vertices that make them up **/
+    virtual void getElementsByVertices(dd_util::PrefixSumVector<ind>& elementsOut,
+                                       GridPrimitive dim,
+                                       const std::vector<ind>& vertices) const override;
+    virtual const CellStructure* getElementCellStructure(GridPrimitive dim,
+                                                         ind index) const override;
+} static const POLYGON_CELL;
 
 }  // namespace discretedata
 }  // namespace inviwo
