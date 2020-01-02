@@ -103,7 +103,8 @@ public:
      * the DataFrame can be used
      */
     template <typename T, BufferTarget Target = BufferTarget::Data>
-    std::shared_ptr<TemplateColumn<T, Target>> addColumn(const std::string &header, size_t size = 0);
+    std::shared_ptr<TemplateColumn<T, Target>> addColumn(const std::string &header,
+                                                         size_t size = 0);
 
     /**
      * \brief Drop a column from data frame
@@ -204,7 +205,8 @@ createDataFrame(const std::vector<std::vector<std::string>> &exampleRows,
                 const std::vector<std::string> &colHeaders = {});
 
 template <typename T, BufferTarget Target>
-std::shared_ptr<TemplateColumn<T, Target>> DataFrame::addColumn(const std::string &header, size_t size) {
+std::shared_ptr<TemplateColumn<T, Target>> DataFrame::addColumn(const std::string &header,
+                                                                size_t size) {
     auto col = std::make_shared<TemplateColumn<T, Target>>(header);
     col->getTypedBuffer()->getEditableRAMRepresentation()->getDataContainer().resize(size);
     columns_.push_back(col);

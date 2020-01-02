@@ -94,8 +94,8 @@ class TemplateColumn : public Column {
 public:
     using type = T;
 
-    TemplateColumn(const std::string &header,
-                   std::shared_ptr<Buffer<T, Target>> buffer = std::make_shared<Buffer<T, Target>>());
+    TemplateColumn(const std::string &header, std::shared_ptr<Buffer<T, Target>> buffer =
+                                                  std::make_shared<Buffer<T, Target>>());
 
     TemplateColumn(const std::string &header, std::vector<T> data);
 
@@ -221,7 +221,8 @@ private:
 };
 
 template <typename T, BufferTarget Target>
-TemplateColumn<T, Target>::TemplateColumn(const std::string &header, std::shared_ptr<Buffer<T, Target>> buffer)
+TemplateColumn<T, Target>::TemplateColumn(const std::string &header,
+                                          std::shared_ptr<Buffer<T, Target>> buffer)
     : header_(header), buffer_(buffer) {}
 
 template <typename T, BufferTarget Target>
@@ -277,7 +278,8 @@ void TemplateColumn<T, Target>::add(const T &value) {
 
 namespace detail {
 
-template <typename T, BufferTarget Target, typename std::enable_if<std::is_integral<T>::value, int>::type = 0>
+template <typename T, BufferTarget Target,
+          typename std::enable_if<std::is_integral<T>::value, int>::type = 0>
 void add(Buffer<T, Target> *buffer, const std::string &value) {
     T result;
     std::istringstream stream(value);
@@ -288,7 +290,8 @@ void add(Buffer<T, Target> *buffer, const std::string &value) {
     buffer->getEditableRAMRepresentation()->add(result);
 }
 // Specialization for float and double types, add NaN instead of throwing an error
-template <typename T, BufferTarget Target, typename std::enable_if<std::is_floating_point<T>::value, int>::type = 0>
+template <typename T, BufferTarget Target,
+          typename std::enable_if<std::is_floating_point<T>::value, int>::type = 0>
 void add(Buffer<T, Target> *buffer, const std::string &value) {
     T result;
     std::istringstream stream(value);
@@ -382,7 +385,7 @@ std::shared_ptr<const BufferBase> TemplateColumn<T, Target>::getBuffer() const {
 }
 
 template <typename T, BufferTarget Target>
-std::shared_ptr<Buffer<T,Target>> TemplateColumn<T, Target>::getTypedBuffer() {
+std::shared_ptr<Buffer<T, Target>> TemplateColumn<T, Target>::getTypedBuffer() {
     return buffer_;
 }
 
