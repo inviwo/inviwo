@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,46 +27,44 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_STIPPLINGPROPERTY_H
-#define IVW_STIPPLINGPROPERTY_H
-
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/datastructures/stipplingsettingsinterface.h>
-
+#include <modules/basegl/datastructures/linesettingsinterface.h>
 #include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/stipplingproperty.h>
 
 namespace inviwo {
-
-class IVW_CORE_API StipplingProperty : public CompositeProperty, public StipplingSettingsInterface {
+class IVW_MODULE_BASEGL_API LineSettingsProperty:
+    public LineSettingsInterface,
+    public CompositeProperty {
 public:
-
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
-
-    StipplingProperty(const std::string& identifier, const std::string& displayName,
-                      InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
-                      PropertySemantics semantics = PropertySemantics::Default);
-    StipplingProperty(const StipplingProperty& rhs);
-    virtual StipplingProperty* clone() const override;
-    virtual ~StipplingProperty() = default;
+    LineSettingsProperty(const std::string& identifier, const std::string& displayName,
+                             InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
+                             PropertySemantics semantics = PropertySemantics::Default);
+    virtual ~LineSettingsProperty() = default;
+        
+    // Inherited from LineSettingsInterface
+    // Line width in pixels
+    virtual float getWidth() const;
+    virtual float getAntialiasingWidth() const;
     
-    // StipplingSettingsInterface
-    virtual Mode getMode() const override { return mode_.get(); };
-    virtual float getLength() const override { return length_.get(); };
-    virtual float getSpacing() const override { return spacing_.get(); };
-    virtual float getOffset() const override { return offset_.get(); };
-    virtual float getWorldScale() const override { return worldScale_.get(); };
+    virtual float getMiterLimit() const;
+    virtual bool getRoundCaps() const;
+    virtual bool getPseudoLighting() const;
+    virtual bool getRoundDepthProfile() const;
+    
+    virtual const StipplingSettingsInterface& getStippling() const;
+        
+    FloatProperty lineWidth_;
+    FloatProperty antialiasing_;
+    FloatProperty miterLimit_;
+    BoolProperty roundCaps_;
 
-    TemplateOptionProperty<StipplingSettingsInterface::Mode> mode_;
-    FloatProperty length_;
-    FloatProperty spacing_;
-    FloatProperty offset_;
-    FloatProperty worldScale_;
+    BoolProperty pseudoLighting_;
+    BoolProperty roundDepthProfile_;
+
+    StipplingProperty stippling_;
+    
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_STIPPLINGPROPERTY_H

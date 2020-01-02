@@ -31,6 +31,7 @@
 #include <modules/opengl/buffer/buffergl.h>
 #include <modules/opengl/buffer/bufferobject.h>
 #include <modules/opengl/buffer/bufferobjectarray.h>
+#include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/openglutils.h>
 
@@ -40,7 +41,10 @@
 #include <inviwo/core/interaction/events/touchevent.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <inviwo/core/datastructures/geometry/basicmesh.h>
+#include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/util/colorconversion.h>
+#include <inviwo/core/util/zip.h>
 #include <modules/opengl/buffer/bufferobjectarray.h>
 
 namespace inviwo {
@@ -126,7 +130,33 @@ ScatterPlotGL::ScatterPlotGL(Processor* processor)
     , radius_(nullptr)
     , axisRenderers_({{properties_.xAxis_, properties_.yAxis_}})
     , picking_(processor, 1, [this](PickingEvent* p) { objectPicked(p); })
-    , processor_(processor) {
+    , processor_(processor)
+    , lineWidth_("lineWidth", "Line Width (pixel)", 1.0f, 0.0f, 50.0f, 0.1f)
+    , antialiasing_("antialiasing", "Antialiasing (pixel)", 0.5f, 0.0f, 10.0f, 0.1f)
+    , miterLimit_("miterLimit", "Miter Limit", 0.8f, 0.0f, 1.0f, 0.1f)
+    , roundCaps_("roundCaps", "Round Caps", true)
+    , stippling_("stippling", "Stippling")
+    , lineShaders_{
+        {{ShaderType::Vertex, std::string{"linerenderer.vert"}},
+            {ShaderType::Geometry, std::string{"linerenderer.geom"}},
+            {ShaderType::Fragment, std::string{"linerenderer.frag"}}},
+        
+        {{BufferType::PositionAttrib, MeshShaderCache::Mandatory, "vec3"},
+            {BufferType::ColorAttrib, MeshShaderCache::Mandatory, "vec4"},
+            {BufferType::PickingAttrib, MeshShaderCache::Optional, "uint"},
+            {[](const Mesh&, Mesh::MeshInfo mi) -> int {
+                return mi.ct == ConnectivityType::Adjacency ||
+                mi.ct == ConnectivityType::StripAdjacency
+                ? 1
+                : 0;
+            },
+                [](int mode, Shader& shader) {
+                    shader[ShaderType::Geometry]->addShaderDefine("ENABLE_ADJACENCY", toString(mode));
+                }}},
+        [&](Shader& shader) -> void {
+            configureShader(shader);
+        }}
+    {
     if (processor_) {
         shader_.onReload([this]() { processor_->invalidate(InvalidationLevel::InvalidOutput); });
     }
@@ -299,29 +329,72 @@ void ScatterPlotGL::plot(const size2_t& dims, IndexBuffer* indexBuffer, bool use
     glDrawElements(GL_POINTS, static_cast<uint32_t>(indices->getSize()), indicesGL->getFormatType(),
                    nullptr);
     indicesGL->getBufferObject()->unbind();
-
     // draw selected and hovered points on top
     if (!selectedIndices_.empty()) {
         shader_.setUniform("has_color", 0);
         shader_.setUniform("default_color", properties_.selectionColor_.get());
-
-        std::vector<uint32_t> selected;
-        selected.reserve(selectedIndices_.size());
-        std::transform(selectedIndices_.begin(), selectedIndices_.end(),
-                       std::back_inserter(selected),
-                       [](size_t i) { return static_cast<uint32_t>(i); });
-
-        glDrawElements(GL_POINTS, static_cast<uint32_t>(selected.size()), GL_UNSIGNED_INT,
-                       selected.data());
+        if (selectedIndicesGLDirty_) {
+            std::vector<uint32_t> selected;
+            selected.reserve(selectedIndices_.size());
+            std::transform(selectedIndices_.begin(), selectedIndices_.end(),
+                           std::back_inserter(selected),
+                           [](size_t i) { return static_cast<uint32_t>(i); });
+            if (selectedIndicesGL_.getSize() < selectedIndices_.size()*sizeof(uint32_t)) {
+                selectedIndicesGL_.setSize(selectedIndices_.size()*sizeof(uint32_t));
+            }
+            selectedIndicesGL_.upload(selected.data(), selectedIndices_.size()*sizeof(uint32_t));
+            selectedIndicesGLDirty_ = false;
+            
+        }
+        selectedIndicesGL_.bind();
+        glDrawElements(GL_POINTS, static_cast<uint32_t>(selectedIndices_.size()), selectedIndicesGL_.getFormatType(),
+                       nullptr);
+        selectedIndicesGL_.unbind();
     }
     if (hoverIndex_) {
         shader_.setUniform("has_color", 0);
         shader_.setUniform("default_color", properties_.hoverColor_.get());
-        glDrawElements(GL_POINTS, 1, GL_UNSIGNED_INT, &hoverIndex_.value());
+        
+        hoverIndexGL_.bind();
+        glDrawElements(GL_POINTS, 1, hoverIndexGL_.getFormatType(), nullptr);
+        hoverIndexGL_.unbind();
     }
 
     shader_.deactivate();
     boa_->unbind();
+    
+    if (dragRect_) {
+        auto mesh = std::make_shared<ColoredMesh>();
+        auto start = vec2((*dragRect_)[0]);
+        auto end = vec2((*dragRect_)[1]);
+        auto scale = vec2((*dragRect_)[1] - (*dragRect_)[0]);
+        mat4 m(vec4(scale.x, 0.f, 0.f, 0.f),
+               vec4(0.f, scale.y, 0.f, 0.f),
+               vec4(0.f, 0.f, 1.f, 0.f),
+               vec4(start.x, start.y, 0.f, 1.f));
+        mesh->setModelMatrix(m);
+        vec4 color(vec3(0.f), 1.f);
+        mesh->addVertices({{vec3{0.f, 0.f, 0.f}, color},
+            {vec3{1.f, 0.f, 0.f}, color},
+            {vec3{1.f, 1.f, 0.f}, color},
+            {vec3{0.f, 1.f, 0.f}, color}});
+        
+        auto inds = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::Strip);
+        inds->add({0, 1, 2, 3, 0});
+        MeshDrawerGL drawer(mesh.get());
+        auto& lineShader_ = lineShaders_.getShader(*mesh);
+        lineShader_.activate();
+        lineShader_.setUniform("screenDim", vec2(dims));
+        OrthographicCamera camera_; camera_.setFrustum(ivec4(0, dims.x, 0, dims.y));
+        utilgl::setShaderUniforms(lineShader_, camera_, "camera");
+
+        utilgl::setUniforms(lineShader_, lineWidth_, antialiasing_, miterLimit_,
+                            roundCaps_, stippling_);
+        utilgl::setShaderUniforms(lineShader_, *mesh, "geometry");
+
+        drawer.draw();
+        lineShader_.deactivate();
+    }
 
     renderAxis(dims);
 }
@@ -405,6 +478,7 @@ void ScatterPlotGL::setIndexColumn(std::shared_ptr<const TemplateColumn<uint32_t
 
 void ScatterPlotGL::setSelectedIndices(const std::unordered_set<size_t>& indices) {
     selectedIndices_ = indices;
+    selectedIndicesGLDirty_ = true;
 }
 
 auto ScatterPlotGL::addToolTipCallback(std::function<ToolTipFunc> callback)
@@ -435,9 +509,26 @@ void ScatterPlotGL::invokeEvent(Event* event, const ivec2& start, const size2_t&
     if (event->hash() == MouseEvent::chash()) {
         auto me = event->getAs<MouseEvent>();
         if ((me->button() == MouseButton::Left) && (me->state() == MouseState::Press)) {
-            dragStart_ = dvec2{me->pos().x, me->pos().y};
+            dragRect_ = {dvec2{me->pos().x, me->pos().y}, dvec2{me->pos().x, me->pos().y}};
+            if (processor_) {
+                processor_->invalidate(InvalidationLevel::InvalidOutput);
+            }
+            me->setUsed(true);
         } else if ((me->button() == MouseButton::Left) && (me->state() == MouseState::Release)) {
-            dragStart_ = std::nullopt;
+            if (dragRect_ && glm::compMax(glm::abs(me->pos() - (*dragRect_)[0])) <= 1) {
+                // Click in empty space
+                selectedIndices_.clear();
+                selectedIndicesGLDirty_ = true;
+                // selection changed, inform processor
+                selectionChangedCallback_.invoke(selectedIndices_);
+            } else {
+                if (processor_) {
+                    processor_->invalidate(InvalidationLevel::InvalidOutput);
+                }
+            }
+
+            dragRect_ = std::nullopt;
+            me->setUsed(true);
         } else if ((me->buttonState() & MouseButton::Left) && (me->state() == MouseState::Move)) {
             // convert position from screen coords to data range
             auto translatePos = [&](dvec2 p) {
@@ -465,8 +556,11 @@ void ScatterPlotGL::invokeEvent(Event* event, const ivec2& start, const size2_t&
 
                 return dvec2{pNormalized * extent + dvec2{rangeX.x, rangeY.x}};
             };
-            selectionRectChanged(translatePos(*dragStart_),
-                                 translatePos(dvec2{me->pos().x, me->pos().y}));
+            (*dragRect_)[1] = dvec2{me->pos().x, me->pos().y};
+            auto dstart = translatePos((*dragRect_)[0]);
+            auto dend = translatePos((*dragRect_)[1]);
+            selectionRectChanged(glm::min(dstart, dend), glm::max(dstart, dend));
+            me->setUsed(true);
         }
     }
 }
@@ -518,6 +612,7 @@ void ScatterPlotGL::objectPicked(PickingEvent* p) {
     if (properties_.hovering_.get()) {
         if (p->getHoverState() == PickingHoverState::Enter) {
             hoverIndex_ = id;
+            hoverIndexGL_.upload(static_cast<const void*>(&id), sizeof(uint32_t));
             if (processor_) {
                 processor_->invalidate(InvalidationLevel::InvalidOutput);
             }
@@ -537,9 +632,11 @@ void ScatterPlotGL::objectPicked(PickingEvent* p) {
         } else {
             selectedIndices_.insert(id);
         }
+        selectedIndicesGLDirty_ = true;
         // selection changed, inform processor
         selectionChangedCallback_.invoke(selectedIndices_);
     }
+    p->setUsed(true);
 }
 
 uint32_t ScatterPlotGL::getGlobalPickId(uint32_t localIndex) const {
@@ -547,7 +644,48 @@ uint32_t ScatterPlotGL::getGlobalPickId(uint32_t localIndex) const {
 }
 
 void ScatterPlotGL::selectionRectChanged(const dvec2& start, const dvec2& end) {
-    LogWarn("SelectionRect: " << start << " - " << end << ", size: " << (end - start));
+    auto xbuf = xAxis_->getRepresentation<BufferRAM>();
+    std::unordered_set<size_t> selectedIndices = xbuf->dispatch<std::unordered_set<size_t>, dispatching::filter::Scalars>([min = start[0], max = end[0]](auto brprecision) {
+        using ValueType = util::PrecisionValueType<decltype(brprecision)>;
+        auto tmin = static_cast<ValueType>(min);
+        auto tmax = static_cast<ValueType>(max);
+        std::unordered_set<size_t> selectedIndices;
+        for (auto&& [ind, elem] : util::enumerate(brprecision->getDataContainer())) {
+            if (elem < tmin || elem > tmax) {
+                continue;
+            } else {
+                selectedIndices.insert(ind);
+            }
+        }
+        return selectedIndices;
+    });
+    auto ybuf = yAxis_->getRepresentation<BufferRAM>();
+    selectedIndices_ = ybuf->dispatch<std::unordered_set<size_t>, dispatching::filter::Scalars>([subset = selectedIndices, min = start[1], max = end[1]](auto brprecision) {
+        using ValueType = util::PrecisionValueType<decltype(brprecision)>;
+        auto tmin = static_cast<ValueType>(min);
+        auto tmax = static_cast<ValueType>(max);
+        auto data = brprecision->getDataContainer();
+        std::unordered_set<size_t> selectedIndices;
+        for (auto ind : subset) {
+            auto elem = data[ind];
+            if (elem < tmin || elem > tmax) {
+                continue;
+            } else {
+                selectedIndices.insert(ind);
+            }
+        }
+        return selectedIndices;
+    });
+    selectedIndicesGLDirty_ = true;
+    selectionChangedCallback_.invoke(selectedIndices_);
+}
+    
+void ScatterPlotGL::configureShader(Shader& shader) {
+    //shader[ShaderType::Fragment]->setShaderDefine("ENABLE_PSEUDO_LIGHTING", pseudoLighting_);
+    //shader[ShaderType::Fragment]->setShaderDefine("ENABLE_ROUND_DEPTH_PROFILE", roundDepthProfile_);
+    
+    utilgl::addShaderDefines(shader, stippling_);
+    shader.build();
 }
 
 }  // namespace plot

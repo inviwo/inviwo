@@ -98,6 +98,10 @@ public:
      * @param sizeInBytes
      */
     void setSize(GLsizeiptr sizeInBytes);
+    /**
+     * Get the size of the buffer in bytes.
+     */
+    GLsizeiptr getSize() const;
 
     void upload(const void* data, GLsizeiptr sizeInBytes);
 
