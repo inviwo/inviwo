@@ -29,7 +29,7 @@
 
 #include <modules/discretedata/processors/meshfromdataset.h>
 #include <modules/discretedata/connectivity/structuredgrid.h>
-#include <modules/discretedata/util.h>
+#include <modules/discretedata/util/util.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 
@@ -81,12 +81,13 @@ void MeshFromDataSet::process() {
 
     if (portInDataSet_.isChanged()) {
         ind maxDim = std::min((ind)pInDataSet->getGrid()->getDimension(), ind(2));
+        GridPrimitive former = primitive_.get();
         primitive_.clearOptions();
         for (ind dim = 0; dim <= maxDim; ++dim) {
             GridPrimitive gridDim = (GridPrimitive)dim;
             primitive_.addOption(primitiveName(gridDim), primitiveName(gridDim), gridDim);
         }
-        primitive_.set(GridPrimitive(maxDim));
+        primitive_.set(GridPrimitive((former == GridPrimitive::Vertex) ? maxDim : (ind)former));
     }
 
     DrawType primType = (DrawType)((int)primitive_.get() + 1);
@@ -113,11 +114,22 @@ void MeshFromDataSet::process() {
     result->addBuffer(BufferType::ColorAttrib, colors);
 
     std::vector<ind> indexData;
-    for (auto element : pInDataSet->getGrid()->all(primitive_.get()))
+    std::vector<std::uint32_t> indexMeshData;
+    for (auto element : pInDataSet->getGrid()->all(primitive_.get())) {
+        indexData.clear();
         pInDataSet->getGrid()->getConnections(indexData, element.getIndex(), primitive_.get(),
                                               GridPrimitive::Vertex);
-    std::vector<std::uint32_t> indexMeshData;
-    indexMeshData.reserve(indexData.size());
+        if (primitive_.get() == GridPrimitive::Face)
+            for (size_t tri = 0; tri < indexData.size() - 2; ++tri) {
+                indexMeshData.push_back(static_cast<std::uint32_t>(indexData[tri]));
+                indexMeshData.push_back(static_cast<std::uint32_t>(indexData[tri + 1]));
+                indexMeshData.push_back(static_cast<std::uint32_t>(indexData[tri + 2]));
+            }
+        else
+            for (auto val : indexData) indexMeshData.push_back(static_cast<std::uint32_t>(val));
+    }
+
+    // indexMeshData.reserve(indexData.size());
     for (auto val : indexData) indexMeshData.push_back(static_cast<std::uint32_t>(val));
 
     auto indexBuff = util::makeIndexBuffer(std::move(indexMeshData));
